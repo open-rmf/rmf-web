@@ -1,0 +1,1 @@
+export const IMAGE_SCALE = 0.0125

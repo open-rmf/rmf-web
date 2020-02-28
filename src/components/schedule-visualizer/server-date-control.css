@@ -1,0 +1,3 @@
+.server-date-control + div.leaflet-control {
+  clear: none;
+}

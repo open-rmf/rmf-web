@@ -1,0 +1,31 @@
+/* FIXME: Check for changes when updating leaflet */
+.leaflet-vertical-center {
+  position: absolute;
+  z-index: 1000;
+  pointer-events: none;
+	top: 50%;
+	transform: translateY(-50%);
+	-ms-transform: translateY(-50%);
+	-webkit-transform: translateY(-50%);
+	-o-transform: translateY(-50%);
+	-moz-transform: translateY(-50%);
+}
+.leaflet-horizontal-center {
+	left: 50%;
+	transform: translateX(-50%);
+	-ms-transform: translateX(-50%);
+	-webkit-transform: translateX(-50%);
+	-o-transform: translateX(-50%);
+	-moz-transform: translateX(-50%);
+}
+.leaflet-vertical-center .leaflet-horizontal-center {
+	transform: translate(-50%,-50%) !important;
+	-ms-transform: translate(-50%,-50%) !important;
+	-webkit-transform: translate(-50%,-50%) !important;
+	-o-transform: translate(-50%,-50%) !important;
+	-moz-transform: translate(-50%,-50%) !important;
+}
+.leaflet-horizontal-center .leaflet-control {
+  float: none;
+  display: inline-block;
+}
