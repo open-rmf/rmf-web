@@ -11,7 +11,7 @@ import {
 } from '@material-ui/core/';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import 'typeface-roboto';
-import OmniPanel from './OmniPanel';
+import MainMenu from './main-menu';
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -50,7 +50,7 @@ export function App(props: any) {
       </AppBar>
       <ScheduleVisualizer />
       <div className={classes.omniPanel}>
-        <OmniPanel />
+        <MainMenu />
       </div>
     </div>
   );
