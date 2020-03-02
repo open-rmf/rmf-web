@@ -1,12 +1,12 @@
 import {
+  Button,
+  ButtonGroup,
+  Divider,
   ExpansionPanel,
   ExpansionPanelDetails,
   ExpansionPanelSummary,
   makeStyles,
   Typography,
-  Divider,
-  Button,
-  ButtonGroup,
   useTheme,
 } from '@material-ui/core';
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
@@ -30,7 +30,7 @@ function doorModeToString(doorState?: RomiCore.DoorState): string {
   }
 }
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles(theme => ({
   expansionSummaryContent: {
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -43,6 +43,7 @@ const useStyles = makeStyles(() => ({
   expansionDetailLine: {
     display: 'inline-flex',
     justifyContent: 'space-between',
+    padding: theme.spacing(0.5),
   },
 }));
 
@@ -52,7 +53,7 @@ const useDoorModeLabelStyles = makeStyles(theme => {
     borderStyle: 'solid',
     border: 2,
     padding: 5,
-    width: '5em',
+    width: '4rem',
     textAlign: 'center',
   };
 
@@ -105,6 +106,8 @@ function motionDirectionToString(motionDirection: number): string {
 interface DoorsPanelProps {
   buildingMap: RomiCore.BuildingMap;
   doorStates: { [key: string]: RomiCore.DoorState };
+  onOpenClick?: (door: RomiCore.Door) => void;
+  onCloseClick?: (door: RomiCore.Door) => void;
 }
 
 export default function DoorsPanel(props: DoorsPanelProps): JSX.Element {
@@ -136,13 +139,14 @@ export default function DoorsPanel(props: DoorsPanelProps): JSX.Element {
             expandIcon={<ExpandMoreIcon />}
           >
             <Typography variant="h5">{door.name}</Typography>
-            <div className={doorModelLabelClass(doorState.current_mode)}>
-              <Typography variant="button">
-                {doorModeToString(doorState)}
-              </Typography>
-            </div>
+            <Typography
+              className={doorModelLabelClass(doorState.current_mode)}
+              variant="button"
+            >
+              {doorModeToString(doorState)}
+            </Typography>
           </ExpansionPanelSummary>
-          <ExpansionPanelDetails className={classes.expansionDetail} >
+          <ExpansionPanelDetails className={classes.expansionDetail}>
             <div className={classes.expansionDetailLine}>
               <Typography variant="body1">Type:</Typography>
               <Typography variant="body1">
@@ -169,8 +173,16 @@ export default function DoorsPanel(props: DoorsPanelProps): JSX.Element {
               </Typography>
             </div>
             <ButtonGroup style={{ marginTop: theme.spacing(1) }} fullWidth>
-              <Button>Close</Button>
-              <Button>Open</Button>
+              <Button
+                onClick={() => props.onCloseClick && props.onCloseClick(door)}
+              >
+                Close
+              </Button>
+              <Button
+                onClick={() => props.onOpenClick && props.onOpenClick(door)}
+              >
+                Open
+              </Button>
             </ButtonGroup>
           </ExpansionPanelDetails>
         </ExpansionPanel>

@@ -1,7 +1,7 @@
+import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import LiftsPanel from '../lifts-panel';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import buildingMap from './data/building-map';
 
 const liftStates: { [key: string]: RomiCore.LiftState } = {
@@ -32,6 +32,12 @@ const liftStates: { [key: string]: RomiCore.LiftState } = {
 };
 
 ReactDOM.render(
-  <LiftsPanel buildingMap={buildingMap} liftStates={liftStates} />,
+  <LiftsPanel
+    buildingMap={buildingMap}
+    liftStates={liftStates}
+    onLiftRequest={(lift, destination) => {
+      console.log(`Request ${lift.name} to ${destination} clicked`);
+    }}
+  />,
   document.getElementById('root'),
 );

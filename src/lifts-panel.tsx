@@ -1,18 +1,21 @@
-import React from 'react';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import {
-  ExpansionPanel,
-  ExpansionPanelSummary,
-  makeStyles,
-  Typography,
-  ExpansionPanelDetails,
+  Button,
   Divider,
+  ExpansionPanel,
+  ExpansionPanelDetails,
+  ExpansionPanelSummary,
   List,
   ListItem,
-  Button,
+  makeStyles,
+  MenuItem,
+  Popover,
+  PopoverPosition,
+  Typography,
   useTheme,
 } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
+import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import React, { MouseEvent } from 'react';
 
 const useStyles = makeStyles(theme => ({
   expansionSummaryContent: {
@@ -27,6 +30,7 @@ const useStyles = makeStyles(theme => ({
   expansionDetailLine: {
     display: 'inline-flex',
     justifyContent: 'space-between',
+    padding: theme.spacing(0.5),
   },
 
   liftFloorLabel: {
@@ -35,22 +39,18 @@ const useStyles = makeStyles(theme => ({
     borderColor: theme.palette.info.main,
     border: 2,
     padding: 5,
-    width: '5em',
+    width: '4rem',
     textAlign: 'center',
   },
 }));
 
 function renderList(values: string[]): JSX.Element {
   const items = values.map(floor => (
-    <ListItem key={floor} dense >
+    <ListItem key={floor} dense style={{ padding: 0 }}>
       <Typography variant="body1">{floor}</Typography>
     </ListItem>
   ));
-  return (
-    <List>
-      {items}
-    </List>
-  );
+  return <List>{items}</List>;
 }
 
 function renderAvailableFloors(liftState?: RomiCore.LiftState): JSX.Element {
@@ -72,7 +72,7 @@ function liftModeToString(liftMode: number): string {
       return 'Human';
     default:
       return `Unknown (${liftMode})`;
-  };
+  }
 }
 
 function renderAvailableModes(liftState?: RomiCore.LiftState): JSX.Element {
@@ -93,7 +93,7 @@ function doorStateToString(doorState: number): string {
       return 'Moving';
     default:
       return `Unknown (${doorState})`;
-  };
+  }
 }
 
 function motionStateToString(motionState: number): string {
@@ -106,20 +106,58 @@ function motionStateToString(motionState: number): string {
       return 'Up';
     default:
       return `Unknown (${motionState})`;
-  };
+  }
 }
 
 interface LiftsPanelProps {
   buildingMap: RomiCore.BuildingMap;
   liftStates: { [key: string]: RomiCore.LiftState };
+  onLiftRequest?: (lift: RomiCore.Lift, destination: string) => void;
+}
+
+interface LiftRequestState {
+  lift: RomiCore.Lift;
+  liftState: RomiCore.LiftState;
+  anchor: PopoverPosition;
 }
 
 export default function LiftsPanel(props: LiftsPanelProps): JSX.Element {
   const theme = useTheme();
   const classes = useStyles();
+  const [liftRequestMenuState, setLiftRequestMenuState] = React.useState<
+    LiftRequestState | undefined
+  >(undefined);
+
+  const handleRequestClick = (
+    event: MouseEvent,
+    lift: RomiCore.Lift,
+    liftState: RomiCore.LiftState,
+  ) => {
+    setLiftRequestMenuState({
+      lift: lift,
+      liftState: liftState,
+      anchor: { top: event.clientY, left: event.clientX },
+    });
+  };
+
+  const renderRequestMenu = (state: LiftRequestState) => {
+    return state.liftState.available_floors.map(floor => (
+      <MenuItem
+        key={floor}
+        onClick={() => {
+          props.onLiftRequest && props.onLiftRequest(state.lift, floor);
+          setLiftRequestMenuState(undefined);
+        }}
+      >
+        {floor}
+      </MenuItem>
+    ));
+  };
 
   const listItems = props.buildingMap.lifts.map(lift => {
     const liftState = props.liftStates[lift.name];
+    const canRequestLift = liftState ? true : false;
+
     return (
       <ExpansionPanel key={lift.name}>
         <ExpansionPanelSummary
@@ -127,28 +165,27 @@ export default function LiftsPanel(props: LiftsPanelProps): JSX.Element {
           expandIcon={<ExpandMoreIcon />}
         >
           <Typography variant="h5">{lift.name}</Typography>
-          <div className={classes.liftFloorLabel}>
-            <Typography variant="button">
-              {liftState ? liftState.current_floor : 'Unknown'}
-            </Typography>
-          </div>
+          <Typography className={classes.liftFloorLabel} variant="button">
+            {liftState ? liftState.current_floor : 'Unknown'}
+          </Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails className={classes.expansionDetail}>
           <div className={classes.expansionDetailLine}>
+            <Typography variant="body1">Location:</Typography>
+            <Typography variant="body1">
+              {`(${lift.ref_x}, ${lift.ref_y})`}
+            </Typography>
+          </div>
+          <div className={classes.expansionDetailLine}>
+            <Typography variant="body1">Destination Floor:</Typography>
+            <Typography variant="body1">
+              {liftState ? liftState.destination_floor : 'Unknown'}
+            </Typography>
+          </div>
+          <Divider />
+          <div className={classes.expansionDetailLine}>
             <Typography variant="body1">Available Floors:</Typography>
             {renderAvailableFloors(liftState)}
-          </div>
-          <Divider />
-          <div className={classes.expansionDetailLine}>
-            <Typography variant="body1">Available Modes:</Typography>
-            {renderAvailableModes(liftState)}
-          </div>
-          <Divider />
-          <div className={classes.expansionDetailLine}>
-            <Typography variant="body1">Current Floor:</Typography>
-            <Typography variant="body1">
-              {liftState ? liftState.current_floor : 'Unknown'}
-            </Typography>
           </div>
           <Divider />
           <div className={classes.expansionDetailLine}>
@@ -159,10 +196,8 @@ export default function LiftsPanel(props: LiftsPanelProps): JSX.Element {
           </div>
           <Divider />
           <div className={classes.expansionDetailLine}>
-            <Typography variant="body1">Destination Floor:</Typography>
-            <Typography variant="body1">
-              {liftState ? liftState.destination_floor : 'Unknown'}
-            </Typography>
+            <Typography variant="body1">Available Modes:</Typography>
+            {renderAvailableModes(liftState)}
           </div>
           <Divider />
           <div className={classes.expansionDetailLine}>
@@ -175,11 +210,19 @@ export default function LiftsPanel(props: LiftsPanelProps): JSX.Element {
           <div className={classes.expansionDetailLine}>
             <Typography variant="body1">Motion State:</Typography>
             <Typography variant="body1">
-              {liftState ? motionStateToString(liftState.motion_state) : 'Unknown'}
+              {liftState
+                ? motionStateToString(liftState.motion_state)
+                : 'Unknown'}
             </Typography>
           </div>
 
-          <Button variant="outlined" style={{marginTop: theme.spacing(1)}} fullWidth>
+          <Button
+            variant="outlined"
+            style={{ marginTop: theme.spacing(1) }}
+            onClick={event => handleRequestClick(event, lift, liftState)}
+            disabled={!canRequestLift}
+            fullWidth
+          >
             Request
           </Button>
         </ExpansionPanelDetails>
@@ -187,5 +230,17 @@ export default function LiftsPanel(props: LiftsPanelProps): JSX.Element {
     );
   });
 
-  return <React.Fragment>{listItems}</React.Fragment>;
+  return (
+    <React.Fragment>
+      {listItems}
+      <Popover
+        anchorReference="anchorPosition"
+        anchorPosition={liftRequestMenuState?.anchor}
+        open={Boolean(liftRequestMenuState)}
+        onClose={() => setLiftRequestMenuState(undefined)}
+      >
+        {liftRequestMenuState && renderRequestMenu(liftRequestMenuState)}
+      </Popover>
+    </React.Fragment>
+  );
 }
