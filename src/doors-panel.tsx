@@ -36,6 +36,10 @@ const useStyles = makeStyles(() => ({
     justifyContent: 'space-between',
   },
 
+  expansionDetail: {
+    flexFlow: 'column',
+  },
+
   expansionDetailLine: {
     display: 'inline-flex',
     justifyContent: 'space-between',
@@ -100,7 +104,7 @@ function motionDirectionToString(motionDirection: number): string {
 
 interface DoorsPanelProps {
   buildingMap: RomiCore.BuildingMap;
-  doorStates: {[key: string]: RomiCore.DoorState};
+  doorStates: { [key: string]: RomiCore.DoorState };
 }
 
 export default function DoorsPanel(props: DoorsPanelProps): JSX.Element {
@@ -121,47 +125,57 @@ export default function DoorsPanel(props: DoorsPanelProps): JSX.Element {
     }
   };
 
-  const listItems = props.buildingMap.levels.flatMap(level => level.doors).map(door => {
-    const doorState = props.doorStates[door.name];
-    return <ExpansionPanel key={door.name}>
-      <ExpansionPanelSummary
-        classes={{ content: classes.expansionSummaryContent }}
-        expandIcon={<ExpandMoreIcon />}
-      >
-        <Typography variant="h5">{door.name}</Typography>
-        <div className={doorModelLabelClass(doorState.current_mode)}>
-          <Typography variant="button">
-            {doorModeToString(doorState)}
-          </Typography>
-        </div>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails style={{ flexFlow: 'column' }}>
-        <div className={classes.expansionDetailLine}>
-          <Typography variant="body1">Type:</Typography>
-          <Typography variant="body1">{doorTypeToString(door.door_type)}</Typography>
-        </div>
-        <Divider />
-        <div className={classes.expansionDetailLine}>
-          <Typography variant="body1">Motion Direction:</Typography>
-          <Typography variant="body1">{motionDirectionToString(door.motion_direction)}</Typography>
-        </div>
-        <Divider />
-        <div className={classes.expansionDetailLine}>
-          <Typography variant="body1">Motion Range:</Typography>
-          <Typography variant="body1">{door.motion_range}</Typography>
-        </div>
-        <Divider />
-        <div className={classes.expansionDetailLine}>
-          <Typography variant="body1">Location:</Typography>
-          <Typography variant="body1">({door.v1_x}, {door.v1_y})</Typography>
-        </div>
-        <ButtonGroup style={{marginTop: theme.spacing(1)}} fullWidth>
-          <Button>Close</Button>
-          <Button>Open</Button>
-        </ButtonGroup>
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
-  });
+  const listItems = props.buildingMap.levels
+    .flatMap(level => level.doors)
+    .map(door => {
+      const doorState = props.doorStates[door.name];
+      return (
+        <ExpansionPanel key={door.name}>
+          <ExpansionPanelSummary
+            classes={{ content: classes.expansionSummaryContent }}
+            expandIcon={<ExpandMoreIcon />}
+          >
+            <Typography variant="h5">{door.name}</Typography>
+            <div className={doorModelLabelClass(doorState.current_mode)}>
+              <Typography variant="button">
+                {doorModeToString(doorState)}
+              </Typography>
+            </div>
+          </ExpansionPanelSummary>
+          <ExpansionPanelDetails className={classes.expansionDetail} >
+            <div className={classes.expansionDetailLine}>
+              <Typography variant="body1">Type:</Typography>
+              <Typography variant="body1">
+                {doorTypeToString(door.door_type)}
+              </Typography>
+            </div>
+            <Divider />
+            <div className={classes.expansionDetailLine}>
+              <Typography variant="body1">Motion Direction:</Typography>
+              <Typography variant="body1">
+                {motionDirectionToString(door.motion_direction)}
+              </Typography>
+            </div>
+            <Divider />
+            <div className={classes.expansionDetailLine}>
+              <Typography variant="body1">Motion Range:</Typography>
+              <Typography variant="body1">{door.motion_range}</Typography>
+            </div>
+            <Divider />
+            <div className={classes.expansionDetailLine}>
+              <Typography variant="body1">Location:</Typography>
+              <Typography variant="body1">
+                ({door.v1_x}, {door.v1_y})
+              </Typography>
+            </div>
+            <ButtonGroup style={{ marginTop: theme.spacing(1) }} fullWidth>
+              <Button>Close</Button>
+              <Button>Open</Button>
+            </ButtonGroup>
+          </ExpansionPanelDetails>
+        </ExpansionPanel>
+      );
+    });
 
-  return <div>{listItems}</div>;
+  return <React.Fragment>{listItems}</React.Fragment>;
 }

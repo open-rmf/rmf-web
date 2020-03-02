@@ -33,7 +33,6 @@ export default function OmniPanel(props: any): JSX.Element {
   const mainMenuProps: MainMenuProps = {
     onDoorsClick: () => { console.log('doors clicked'); },
     onLiftsClick: () => { console.log('lifts clicked'); },
-    onFleetsClick: () => { console.log('fleets clicked'); },
     onRobotsClick: () => { console.log('robots clicked'); },
   };
 
@@ -50,7 +49,6 @@ export default function OmniPanel(props: any): JSX.Element {
       <MainMenu
         onDoorsClick={mainMenuProps.onDoorsClick}
         onLiftsClick={mainMenuProps.onLiftsClick}
-        onFleetsClick={mainMenuProps.onFleetsClick}
         onRobotsClick={mainMenuProps.onRobotsClick}
       />
     </div>
