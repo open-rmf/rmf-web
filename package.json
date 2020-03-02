@@ -52,6 +52,8 @@
     "@types/react": "^16.9.23",
     "@types/react-dom": "16.9.4",
     "@types/react-leaflet": "^2.5.0",
-    "@types/styled-components": "^4.4.1"
+    "@types/styled-components": "^4.4.1",
+    "prettier": "^1.19.1",
+    "selenium-webdriver": "^4.0.0-alpha.5"
   }
 }

@@ -18,7 +18,7 @@ import { IMAGE_SCALE } from '../../constants'
 import RobotTrajectoriesOverlay from './robot-trajectories-overlay'
 import ServerDateControl from './server-date-control'
 // import SliderControl from './slider-control'
-import { clockSource } from '../..'
+// import { clockSource } from '../..'
 
 const Map = styled(_Map)`
   height: 100%;
@@ -56,10 +56,10 @@ export default function ScheduleVisualizer() {
       setDate(new Date(time))
     }
 
-    clockSource.addOnClockUpdateCallback(cb)
+    // clockSource.addOnClockUpdateCallback(cb)
 
     return function cleanup() {
-      clockSource.removeOnClockUpdateCallback(cb)
+      // clockSource.removeOnClockUpdateCallback(cb)
     }
   }, []);
 
