@@ -15,34 +15,46 @@ import {
 } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import React, { MouseEvent } from 'react';
+import React, { CSSProperties, MouseEvent } from 'react';
 
-const useStyles = makeStyles(theme => ({
-  expansionSummaryContent: {
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-
-  expansionDetail: {
-    flexFlow: 'column',
-  },
-
-  expansionDetailLine: {
-    display: 'inline-flex',
-    justifyContent: 'space-between',
-    padding: theme.spacing(0.5),
-  },
-
-  liftFloorLabel: {
+const useStyles = makeStyles(theme => {
+  const liftFloorLabelBase: CSSProperties = {
     borderRadius: theme.shape.borderRadius,
     borderStyle: 'solid',
-    borderColor: theme.palette.info.main,
+
     border: 2,
     padding: 5,
     width: '4rem',
     textAlign: 'center',
-  },
-}));
+  };
+
+  return {
+    expansionSummaryContent: {
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+
+    expansionDetail: {
+      flexFlow: 'column',
+    },
+
+    expansionDetailLine: {
+      display: 'inline-flex',
+      justifyContent: 'space-between',
+      padding: theme.spacing(0.5),
+    },
+
+    liftFloorLabelStopped: {
+      ...liftFloorLabelBase,
+      borderColor: theme.palette.info.main,
+    },
+
+    liftFloorLabelMoving: {
+      ...liftFloorLabelBase,
+      borderColor: theme.palette.warning.main,
+    },
+  };
+});
 
 function renderList(values: string[]): JSX.Element {
   const items = values.map(floor => (
@@ -111,7 +123,7 @@ function motionStateToString(motionState: number): string {
 
 interface LiftsPanelProps {
   buildingMap: RomiCore.BuildingMap;
-  liftStates: { [key: string]: RomiCore.LiftState };
+  liftStates: Partial<{ [key: string]: RomiCore.LiftState }>;
   onLiftRequest?: (lift: RomiCore.Lift, destination: string) => void;
 }
 
@@ -127,6 +139,19 @@ export default function LiftsPanel(props: LiftsPanelProps): JSX.Element {
   const [liftRequestMenuState, setLiftRequestMenuState] = React.useState<
     LiftRequestState | undefined
   >(undefined);
+
+  function liftFloorLabel(liftState?: RomiCore.LiftState): string {
+    if (!liftState) {
+      return classes.liftFloorLabelStopped;
+    }
+    switch (liftState.motion_state) {
+      case RomiCore.LiftState.MOTION_UP:
+      case RomiCore.LiftState.MOTION_DOWN:
+        return classes.liftFloorLabelMoving;
+      default:
+        return classes.liftFloorLabelStopped;
+    }
+  }
 
   const handleRequestClick = (
     event: MouseEvent,
@@ -165,7 +190,7 @@ export default function LiftsPanel(props: LiftsPanelProps): JSX.Element {
           expandIcon={<ExpandMoreIcon />}
         >
           <Typography variant="h5">{lift.name}</Typography>
-          <Typography className={classes.liftFloorLabel} variant="button">
+          <Typography className={liftFloorLabel(liftState)} variant="button">
             {liftState ? liftState.current_floor : 'Unknown'}
           </Typography>
         </ExpansionPanelSummary>
@@ -219,7 +244,7 @@ export default function LiftsPanel(props: LiftsPanelProps): JSX.Element {
           <Button
             variant="outlined"
             style={{ marginTop: theme.spacing(1) }}
-            onClick={event => handleRequestClick(event, lift, liftState)}
+            onClick={event => handleRequestClick(event, lift, liftState!)}
             disabled={!canRequestLift}
             fullWidth
           >

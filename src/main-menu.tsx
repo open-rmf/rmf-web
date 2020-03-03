@@ -7,7 +7,7 @@ import {
 
 import React from 'react';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
   button: {
     justifyContent: 'left',
   },
@@ -25,13 +25,13 @@ export default function MainMenu(props: MainMenuProps): JSX.Element {
   return (
     <ButtonGroup orientation="vertical" variant="text" fullWidth>
       <Button size="large" className={classes.button} onClick={props.onDoorsClick}>
-        <Typography>Doors</Typography>
+        <Typography variant="h5">Doors</Typography>
       </Button>
       <Button size="large" className={classes.button} onClick={props.onLiftsClick}>
-        <Typography>Lifts</Typography>
+        <Typography variant="h5">Lifts</Typography>
       </Button>
       <Button size="large" className={classes.button} onClick={props.onRobotsClick}>
-        <Typography>Robots</Typography>
+        <Typography variant="h5">Robots</Typography>
       </Button>
     </ButtonGroup>
   );

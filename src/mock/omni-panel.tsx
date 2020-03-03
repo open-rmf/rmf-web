@@ -1,19 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import DoorsPanel from '../doors-panel';
+import OmniPanel, { OmniPanelView } from '../omni-panel';
 import buildingMap from './data/building-map';
 import doorStates from './data/door-states';
+import fleets from './data/fleets';
+import liftStates from './data/lift-states';
 
 ReactDOM.render(
-  <DoorsPanel
+  <OmniPanel
+    initialView={OmniPanelView.MainMenu}
     buildingMap={buildingMap}
     doorStates={doorStates}
-    onOpenClick={door => {
-      console.log(`${door.name} open clicked`);
-    }}
-    onCloseClick={door => {
-      console.log(`${door.name} close clicked`);
-    }}
+    liftStates={liftStates}
+    fleets={fleets}
   />,
   document.getElementById('root'),
 );

@@ -106,10 +106,6 @@ export default function RobotsPanel(props: RobotsPanelProps): JSX.Element {
               <Typography variant="body1">Battery:</Typography>
               <Typography variant="body1">{robot.battery_percent}</Typography>
             </div>
-
-            <Button variant="outlined" style={{ marginTop: theme.spacing(1) }}>
-              Request
-            </Button>
           </ExpansionPanelDetails>
         </ExpansionPanel>
       );
