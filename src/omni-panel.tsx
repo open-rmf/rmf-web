@@ -26,6 +26,7 @@ export enum OmniPanelView {
 }
 
 interface OmniPanelProps {
+  transport?: RomiCore.Transport;
   className?: string;
   classes?: {
     navigation?: string;
@@ -124,6 +125,7 @@ export default function OmniPanel(props: OmniPanelProps): JSX.Element {
 
       {currentView.value === OmniPanelView.Doors && (
         <DoorsPanel
+          transport={props.transport}
           buildingMap={props.buildingMap}
           doorStates={props.doorStates}
         />

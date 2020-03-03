@@ -12,7 +12,7 @@ import {
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 function doorModeToString(doorState?: RomiCore.DoorState): string {
   if (!doorState) {
@@ -104,6 +104,7 @@ function motionDirectionToString(motionDirection: number): string {
 }
 
 interface DoorsPanelProps {
+  transport?: RomiCore.Transport;
   buildingMap: RomiCore.BuildingMap;
   doorStates: { [key: string]: RomiCore.DoorState };
   onOpenClick?: (door: RomiCore.Door) => void;
@@ -127,6 +128,26 @@ export default function DoorsPanel(props: DoorsPanelProps): JSX.Element {
         return '';
     }
   };
+
+  const doorPublisher = props.transport ? props.transport.createPublisher(RomiCore.doorStates) : undefined;
+
+  function requestDoor(door: RomiCore.Door, mode: number): void {
+    doorPublisher?.publish({
+      door_name: door.name,
+      current_mode: { value: mode },
+      door_time: RomiCore.toRosTime(new Date()),
+    });
+  }
+
+  function handleOpenClick(door: RomiCore.Door): void {
+    requestDoor(door, RomiCore.DoorMode.MODE_OPEN)
+    props.onOpenClick && props.onOpenClick(door);
+  }
+
+  function handleCloseClick(door: RomiCore.Door): void {
+    requestDoor(door, RomiCore.DoorMode.MODE_CLOSED)
+    props.onCloseClick && props.onCloseClick(door);
+  }
 
   const listItems = props.buildingMap.levels
     .flatMap(level => level.doors)
@@ -174,12 +195,12 @@ export default function DoorsPanel(props: DoorsPanelProps): JSX.Element {
             </div>
             <ButtonGroup style={{ marginTop: theme.spacing(1) }} fullWidth>
               <Button
-                onClick={() => props.onCloseClick && props.onCloseClick(door)}
+                onClick={() => handleCloseClick(door)}
               >
                 Close
               </Button>
               <Button
-                onClick={() => props.onOpenClick && props.onOpenClick(door)}
+                onClick={() => handleOpenClick(door)}
               >
                 Open
               </Button>
