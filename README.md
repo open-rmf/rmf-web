@@ -4,7 +4,16 @@ Hello! `romi-dashboard` is a web application that provides overall visualization
 
 ## Setup
 
-With `npm` installed, clone the repository and install the required packages,
+Install `npm` and `nodejs`,
+
+```bash
+sudo apt update && sudo apt install curl
+curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -
+
+sudo apt install nodejs
+```
+
+Clone the repository and install the required packages,
 
 ```bash
 cd ~/.
