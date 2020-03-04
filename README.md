@@ -9,7 +9,6 @@ Install `npm` and `nodejs`,
 ```bash
 sudo apt update && sudo apt install curl
 curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -
-
 sudo apt install nodejs
 ```
 
@@ -19,7 +18,6 @@ Clone the repository and install the required packages,
 cd ~/.
 git clone ssh://git@github.com/osrf/romi-dashboard
 cd romi-dashboard
-
 npm install
 ```
 
@@ -29,7 +27,6 @@ Launch the web application using the commands below,
 
 ```bash
 cd ~/romi-dashboard
-
 npm start
 ```
 
