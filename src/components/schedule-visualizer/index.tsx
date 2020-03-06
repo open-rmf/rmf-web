@@ -90,6 +90,7 @@ export default function ScheduleVisualizer() {
           floor.image.data = SVGSVGElementToDataURI(svgElement)
 
           setMaxBounds(maxBounds.extend(floor.bounds))
+          mapElement?.leafletElement.setZoom(-2);
         }
         return draft as IFloor[]
       }))
