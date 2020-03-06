@@ -4,9 +4,11 @@ import DoorsPanel from '../doors-panel';
 import buildingMap from './data/building-map';
 import doorStates from './data/door-states';
 
+const doors = buildingMap.levels.flatMap(level => level.doors);
+
 ReactDOM.render(
   <DoorsPanel
-    buildingMap={buildingMap}
+    doors={doors}
     doorStates={doorStates}
     onOpenClick={door => {
       console.log(`${door.name} open clicked`);

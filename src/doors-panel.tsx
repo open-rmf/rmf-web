@@ -12,7 +12,7 @@ import {
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import React, { useEffect } from 'react';
+import React from 'react';
 
 function doorModeToString(doorState?: RomiCore.DoorState): string {
   if (!doorState) {
@@ -105,8 +105,8 @@ function motionDirectionToString(motionDirection: number): string {
 
 interface DoorsPanelProps {
   transport?: RomiCore.Transport;
-  buildingMap: RomiCore.BuildingMap;
-  doorStates: { [key: string]: RomiCore.DoorState };
+  doors: RomiCore.Door[];
+  doorStates: Partial<{ [key: string]: RomiCore.DoorState }>;
   onOpenClick?: (door: RomiCore.Door) => void;
   onCloseClick?: (door: RomiCore.Door) => void;
 }
@@ -116,8 +116,11 @@ export default function DoorsPanel(props: DoorsPanelProps): JSX.Element {
   const classes = useStyles();
 
   const doorModeLabelClasses = useDoorModeLabelStyles();
-  const doorModelLabelClass = (doorMode: RomiCore.DoorMode) => {
-    switch (doorMode.value) {
+  const doorModelLabelClass = (doorState?: RomiCore.DoorState) => {
+    if (!doorState) {
+      return '';
+    }
+    switch (doorState.current_mode.value) {
       case RomiCore.DoorMode.MODE_OPEN:
         return doorModeLabelClasses.open;
       case RomiCore.DoorMode.MODE_CLOSED:
@@ -129,7 +132,9 @@ export default function DoorsPanel(props: DoorsPanelProps): JSX.Element {
     }
   };
 
-  const doorPublisher = props.transport ? props.transport.createPublisher(RomiCore.doorStates) : undefined;
+  const doorPublisher = props.transport
+    ? props.transport.createPublisher(RomiCore.doorStates)
+    : undefined;
 
   function requestDoor(door: RomiCore.Door, mode: number): void {
     doorPublisher?.publish({
@@ -140,75 +145,60 @@ export default function DoorsPanel(props: DoorsPanelProps): JSX.Element {
   }
 
   function handleOpenClick(door: RomiCore.Door): void {
-    requestDoor(door, RomiCore.DoorMode.MODE_OPEN)
+    requestDoor(door, RomiCore.DoorMode.MODE_OPEN);
     props.onOpenClick && props.onOpenClick(door);
   }
 
   function handleCloseClick(door: RomiCore.Door): void {
-    requestDoor(door, RomiCore.DoorMode.MODE_CLOSED)
+    requestDoor(door, RomiCore.DoorMode.MODE_CLOSED);
     props.onCloseClick && props.onCloseClick(door);
   }
 
-  const listItems = props.buildingMap.levels
-    .flatMap(level => level.doors)
-    .map(door => {
-      const doorState = props.doorStates[door.name];
-      return (
-        <ExpansionPanel key={door.name}>
-          <ExpansionPanelSummary
-            classes={{ content: classes.expansionSummaryContent }}
-            expandIcon={<ExpandMoreIcon />}
-          >
-            <Typography variant="h5">{door.name}</Typography>
-            <Typography
-              className={doorModelLabelClass(doorState.current_mode)}
-              variant="button"
-            >
-              {doorModeToString(doorState)}
+  const listItems = props.doors.map(door => {
+    const doorState = props.doorStates[door.name];
+    return (
+      <ExpansionPanel key={door.name}>
+        <ExpansionPanelSummary
+          classes={{ content: classes.expansionSummaryContent }}
+          expandIcon={<ExpandMoreIcon />}
+        >
+          <Typography variant="h5">{door.name}</Typography>
+          <Typography className={doorModelLabelClass(doorState)} variant="button">
+            {doorModeToString(doorState)}
+          </Typography>
+        </ExpansionPanelSummary>
+        <ExpansionPanelDetails className={classes.expansionDetail}>
+          <div className={classes.expansionDetailLine}>
+            <Typography variant="body1">Type:</Typography>
+            <Typography variant="body1">{doorTypeToString(door.door_type)}</Typography>
+          </div>
+          <Divider />
+          <div className={classes.expansionDetailLine}>
+            <Typography variant="body1">Motion Direction:</Typography>
+            <Typography variant="body1">
+              {motionDirectionToString(door.motion_direction)}
             </Typography>
-          </ExpansionPanelSummary>
-          <ExpansionPanelDetails className={classes.expansionDetail}>
-            <div className={classes.expansionDetailLine}>
-              <Typography variant="body1">Type:</Typography>
-              <Typography variant="body1">
-                {doorTypeToString(door.door_type)}
-              </Typography>
-            </div>
-            <Divider />
-            <div className={classes.expansionDetailLine}>
-              <Typography variant="body1">Motion Direction:</Typography>
-              <Typography variant="body1">
-                {motionDirectionToString(door.motion_direction)}
-              </Typography>
-            </div>
-            <Divider />
-            <div className={classes.expansionDetailLine}>
-              <Typography variant="body1">Motion Range:</Typography>
-              <Typography variant="body1">{door.motion_range}</Typography>
-            </div>
-            <Divider />
-            <div className={classes.expansionDetailLine}>
-              <Typography variant="body1">Location:</Typography>
-              <Typography variant="body1">
-                ({door.v1_x}, {door.v1_y})
-              </Typography>
-            </div>
-            <ButtonGroup style={{ marginTop: theme.spacing(1) }} fullWidth>
-              <Button
-                onClick={() => handleCloseClick(door)}
-              >
-                Close
-              </Button>
-              <Button
-                onClick={() => handleOpenClick(door)}
-              >
-                Open
-              </Button>
-            </ButtonGroup>
-          </ExpansionPanelDetails>
-        </ExpansionPanel>
-      );
-    });
+          </div>
+          <Divider />
+          <div className={classes.expansionDetailLine}>
+            <Typography variant="body1">Motion Range:</Typography>
+            <Typography variant="body1">{door.motion_range}</Typography>
+          </div>
+          <Divider />
+          <div className={classes.expansionDetailLine}>
+            <Typography variant="body1">Location:</Typography>
+            <Typography variant="body1">
+              ({door.v1_x}, {door.v1_y})
+            </Typography>
+          </div>
+          <ButtonGroup style={{ marginTop: theme.spacing(1) }} fullWidth>
+            <Button onClick={() => handleCloseClick(door)}>Close</Button>
+            <Button onClick={() => handleOpenClick(door)}>Open</Button>
+          </ButtonGroup>
+        </ExpansionPanelDetails>
+      </ExpansionPanel>
+    );
+  });
 
   return <React.Fragment>{listItems}</React.Fragment>;
 }

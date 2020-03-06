@@ -6,7 +6,7 @@ import liftStates from './data/lift-states';
 
 ReactDOM.render(
   <LiftsPanel
-    buildingMap={buildingMap}
+    lifts={buildingMap.lifts}
     liftStates={liftStates}
     onLiftRequest={(lift, destination) => {
       console.log(`Request ${lift.name} to ${destination} clicked`);

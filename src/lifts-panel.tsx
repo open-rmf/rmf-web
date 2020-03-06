@@ -122,7 +122,7 @@ function motionStateToString(motionState: number): string {
 }
 
 interface LiftsPanelProps {
-  buildingMap: RomiCore.BuildingMap;
+  lifts: RomiCore.Lift[];
   liftStates: Partial<{ [key: string]: RomiCore.LiftState }>;
   onLiftRequest?: (lift: RomiCore.Lift, destination: string) => void;
 }
@@ -179,7 +179,7 @@ export default function LiftsPanel(props: LiftsPanelProps): JSX.Element {
     ));
   };
 
-  const listItems = props.buildingMap.lifts.map(lift => {
+  const listItems = props.lifts.map(lift => {
     const liftState = props.liftStates[lift.name];
     const canRequestLift = liftState ? true : false;
 

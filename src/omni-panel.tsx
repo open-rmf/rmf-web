@@ -1,8 +1,5 @@
 import { Button, ButtonGroup, makeStyles } from '@material-ui/core';
-import {
-  Close as CloseIcon,
-  KeyboardBackspace as BackIcon,
-} from '@material-ui/icons';
+import { Close as CloseIcon, KeyboardBackspace as BackIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 import DoorsPanel from './doors-panel';
@@ -34,10 +31,10 @@ interface OmniPanelProps {
     closeButton?: string;
   };
   initialView: OmniPanelView;
-  buildingMap: RomiCore.BuildingMap;
-  doorStates: { [key: string]: RomiCore.DoorState };
-  liftStates: { [key: string]: RomiCore.LiftState };
-  fleets: RomiCore.FleetState[];
+  buildingMap?: RomiCore.BuildingMap;
+  doorStates?: { [key: string]: RomiCore.DoorState };
+  liftStates?: { [key: string]: RomiCore.LiftState };
+  fleets?: RomiCore.FleetState[];
   onClose?: () => void;
 }
 
@@ -65,9 +62,7 @@ const viewMap = makeViewMap();
 
 export default function OmniPanel(props: OmniPanelProps): JSX.Element {
   const classes = useStyles();
-  const [currentView, setCurrentView] = React.useState(
-    viewMap[props.initialView],
-  );
+  const [currentView, setCurrentView] = React.useState(viewMap[props.initialView]);
 
   function handleBackClick() {
     if (!currentView.parent) {
@@ -91,6 +86,12 @@ export default function OmniPanel(props: OmniPanelProps): JSX.Element {
       setCurrentView(viewMap[OmniPanelView.Robots]);
     },
   };
+
+  const doors = props.buildingMap ? props.buildingMap.levels.flatMap(level => level.doors) : [];
+  const doorStates = props.doorStates ? props.doorStates : {};
+  const lifts = props.buildingMap ? props.buildingMap.lifts : [];
+  const liftStates = props.liftStates ? props.liftStates : {};
+  const fleets = props.fleets ? props.fleets : [];
 
   return (
     <div className={`${classes.container} ${props.className}`}>
@@ -123,24 +124,15 @@ export default function OmniPanel(props: OmniPanelProps): JSX.Element {
         />
       )}
 
-      {currentView.value === OmniPanelView.Doors && (
-        <DoorsPanel
-          transport={props.transport}
-          buildingMap={props.buildingMap}
-          doorStates={props.doorStates}
-        />
+      {currentView.value === OmniPanelView.Doors && props.buildingMap && (
+        <DoorsPanel transport={props.transport} doors={doors} doorStates={doorStates} />
       )}
 
-      {currentView.value === OmniPanelView.Lifts && (
-        <LiftsPanel
-          buildingMap={props.buildingMap}
-          liftStates={props.liftStates}
-        />
+      {currentView.value === OmniPanelView.Lifts && props.buildingMap && (
+        <LiftsPanel lifts={lifts} liftStates={liftStates} />
       )}
 
-      {currentView.value === OmniPanelView.Robots && (
-        <RobotsPanel fleets={props.fleets} />
-      )}
+      {currentView.value === OmniPanelView.Robots && <RobotsPanel fleets={fleets} />}
     </div>
   );
 }

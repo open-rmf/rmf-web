@@ -1,16 +1,19 @@
+/**
+ * WIP
+ */
 export interface AuthResult {
   success: boolean;
   err: string | undefined;
 }
 
 function arrayBufferToBase64(buffer: ArrayBuffer) {
-	var binary = '';
-	var bytes = new Uint8Array(buffer);
-	var len = bytes.byteLength;
-	for (var i = 0; i < len; i++) {
-			binary += String.fromCharCode(bytes[i]);
-	}
-	return window.btoa(binary);
+  var binary = '';
+  var bytes = new Uint8Array(buffer);
+  var len = bytes.byteLength;
+  for (var i = 0; i < len; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return window.btoa(binary);
 }
 
 export class AuthService {
@@ -51,6 +54,11 @@ export class AuthService {
       result.err = (e as Error).message;
     }
     return result;
+  }
+
+  token(): string {
+    const token = localStorage.getItem('token');
+    return token ? token : '';
   }
 
   async verifyToken(): Promise<boolean> {
