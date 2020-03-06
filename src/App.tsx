@@ -1,22 +1,17 @@
 import { AppBar, IconButton, makeStyles, Toolbar, Typography } from '@material-ui/core/';
 import { Dashboard as DashboardIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import { SossTransport } from '@osrf/romi-js-soss-transport';
 import React from 'react';
 import 'typeface-roboto';
-import AppConfig from './app-config';
 import './App.css';
 import ScheduleVisualizer from './components/schedule-visualizer';
 import LoadingScreen, { LoadingScreenProps } from './loading-screen';
 import doorStates from './mock/data/door-states';
 import fleets from './mock/data/fleets';
 import liftStates from './mock/data/lift-states';
-import { FakeAuthService } from './mock/fake-auth-service';
 import OmniPanel, { OmniPanelView } from './omni-panel';
 
 const borderRadius = 20;
-
-const auth = new FakeAuthService(AppConfig.authUrl);
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -47,7 +42,11 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function App() {
+interface AppProps {
+  transportFactory: () => Promise<RomiCore.Transport>;
+}
+
+export default function App(props: AppProps) {
   const classes = useStyles();
   const [transport, setTransport] = React.useState<RomiCore.Transport | undefined>(undefined);
   const [buildingMap, setBuildingMap] = React.useState<RomiCore.BuildingMap | undefined>(undefined);
@@ -58,7 +57,8 @@ export default function App() {
 
   React.useEffect(() => {
     setLoading({ caption: 'Connecting to SOSS server...' });
-    SossTransport.connect('romi-dashboard', AppConfig.sossUrl, auth.token())
+    props
+      .transportFactory()
       .then(x => {
         x.once('error', e => console.log('error', e));
         x.once('close', () => console.log('close'));
@@ -67,7 +67,7 @@ export default function App() {
       .catch((e: CloseEvent) => {
         setLoading({ caption: `Unable to connect to SOSS server (${e.code})`, variant: 'error' });
       });
-  }, []);
+  }, [props]);
 
   React.useEffect(() => {
     if (!transport) {

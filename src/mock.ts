@@ -2,7 +2,7 @@ import axios from 'axios';
 
 import { IFloor } from './models/Floor';
 
-// Data dump by running rmf cgh dp1++ 
+// Data dump by running rmf cgh dp1++
 export async function getFloors() {
   const floors: IFloor[] = [{
     name: 'B1',

@@ -1,12 +1,10 @@
 import {
-  Button,
   Divider,
   ExpansionPanel,
   ExpansionPanelDetails,
   ExpansionPanelSummary,
   makeStyles,
   Typography,
-  useTheme,
 } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
@@ -67,7 +65,6 @@ function robotModeToString(robotMode: RomiCore.RobotMode): string {
 }
 
 export default function RobotsPanel(props: RobotsPanelProps): JSX.Element {
-  const theme = useTheme();
   const classes = useStyles();
 
   const robots = props.fleets

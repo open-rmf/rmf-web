@@ -1,79 +1,50 @@
-import { AppBar, IconButton, makeStyles, Toolbar, Typography } from '@material-ui/core/';
-import { Dashboard as DashboardIcon } from '@material-ui/icons';
+import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
-import 'typeface-roboto';
-import ScheduleVisualizer from '../components/schedule-visualizer';
-import OmniPanel, { OmniPanelView } from '../omni-panel';
+import ReactDOM from 'react-dom';
+import App from '../App';
+import { extendControlPositions } from '../leaflet/control-positions';
 import buildingMap from './data/building-map';
-import doorStates from './data/door-states';
-import fleets from './data/fleets';
-import liftStates from './data/lift-states';
+import 'leaflet/dist/leaflet.css';
 
-const borderRadius = 20;
+extendControlPositions();
 
-const useStyles = makeStyles(theme => ({
-  container: {
-    display: 'flex',
-    flexFlow: 'column',
-    height: '100%',
-  },
-  toolBarTitle: {
-    flexGrow: 1,
-  },
-  omniPanel: {
-    position: 'fixed',
-    width: 350,
-    top: 100,
-    right: '2%',
-    bottom: '3%',
-    backgroundColor: theme.palette.background.default,
-    zIndex: 1024,
-    borderTopLeftRadius: borderRadius,
-    borderTopRightRadius: borderRadius,
-    boxShadow: theme.shadows[12],
-  },
-  topLeftBorder: {
-    borderTopLeftRadius: borderRadius,
-  },
-  topRightBorder: {
-    borderTopRightRadius: borderRadius,
-  },
-}));
+class FakeTransport extends RomiCore.TransportEvents implements RomiCore.Transport {
+  name: string = 'fake';
 
-export default function App() {
-  const classes = useStyles();
-  const [showOmniPanel, setShowOmniPanel] = React.useState(true);
+  createPublisher<Message extends object>(
+    topic: RomiCore.RomiTopic<Message>,
+    options?: RomiCore.Options | undefined,
+  ): RomiCore.Publisher<Message> {
+    return {
+      publish: () => {},
+    };
+  }
 
-  return (
-    <React.Fragment>
-      <div className={classes.container}>
-        <AppBar position="static">
-          <Toolbar>
-            <Typography variant="h6" className={classes.toolBarTitle}>
-              Dashboard
-            </Typography>
-            <IconButton color="inherit" onClick={() => setShowOmniPanel(true)}>
-              <DashboardIcon />
-            </IconButton>
-          </Toolbar>
-        </AppBar>
-        <ScheduleVisualizer />
-        {showOmniPanel && (
-          <OmniPanel
-            className={classes.omniPanel}
-            classes={{
-              backButton: classes.topLeftBorder,
-              closeButton: classes.topRightBorder,
-            }}
-            buildingMap={buildingMap}
-            doorStates={doorStates}
-            liftStates={liftStates}
-            fleets={fleets}
-            initialView={OmniPanelView.MainMenu}
-            onClose={() => setShowOmniPanel(false)}
-          />
-        )}
-      </div>
-    </React.Fragment>
-  );
+  subscribe<Message extends object>(
+    topic: RomiCore.RomiTopic<Message>,
+    cb: RomiCore.SubscriptionCb<Message>,
+    options?: RomiCore.Options | undefined,
+  ): RomiCore.Subscription {
+    return {
+      unsubscribe: () => {},
+    };
+  }
+
+  async call<Request extends object, Response extends object>(
+    service: RomiCore.RomiService<Request, Response>,
+    req: Request,
+  ): Promise<Response> {
+    if (service.service === 'get_building_map') {
+      return new RomiCore.GetBuildingMap_Response(buildingMap) as any;
+    }
+    throw new Error('not implemented');
+  }
+
+  destroy(): void {}
 }
+
+async function fakeTransportFactory(): Promise<RomiCore.Transport> {
+  return new FakeTransport();
+}
+
+ReactDOM.render(<App transportFactory={fakeTransportFactory} />, document.getElementById('root'));

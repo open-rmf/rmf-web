@@ -1,10 +1,14 @@
+import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import { SossTransport } from '@osrf/romi-js-soss-transport';
 import 'leaflet/dist/leaflet.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
+import AppConfig from './app-config';
 import './index.css';
 import { extendControlPositions } from './leaflet/control-positions';
 import './mock/doors-panel';
+import { FakeAuthService } from './mock/fake-auth-service';
 import * as serviceWorker from './serviceWorker';
 
 // import { WebSocketManager } from './util/websocket';
@@ -30,7 +34,13 @@ webSocketManager.addOnMessageCallback(async (event: WebSocketMessageEvent) => {
 })
 */
 
-ReactDOM.render(<App />, document.getElementById('root'));
+const auth = new FakeAuthService(AppConfig.authUrl);
+
+function transportFactory(): Promise<RomiCore.Transport> {
+  return SossTransport.connect('romi-dashboard', AppConfig.authUrl, auth.token());
+}
+
+ReactDOM.render(<App transportFactory={transportFactory} />, document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
