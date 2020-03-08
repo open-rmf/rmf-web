@@ -1,15 +1,12 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import React from 'react';
-import ReactDOM from 'react-dom';
-import App from '../App';
-import { extendControlPositions } from '../leaflet/control-positions';
 import buildingMap from './data/building-map';
-import 'leaflet/dist/leaflet.css';
 
-extendControlPositions();
-
-class FakeTransport extends RomiCore.TransportEvents implements RomiCore.Transport {
+export class FakeTransport extends RomiCore.TransportEvents implements RomiCore.Transport {
   name: string = 'fake';
+
+  constructor() {
+    super();
+  }
 
   createPublisher<Message extends object>(
     topic: RomiCore.RomiTopic<Message>,
@@ -42,9 +39,3 @@ class FakeTransport extends RomiCore.TransportEvents implements RomiCore.Transpo
 
   destroy(): void {}
 }
-
-async function fakeTransportFactory(): Promise<RomiCore.Transport> {
-  return new FakeTransport();
-}
-
-ReactDOM.render(<App transportFactory={fakeTransportFactory} />, document.getElementById('root'));

@@ -1,6 +1,6 @@
 import { AuthService, AuthResult } from '../auth-service';
 
-export class FakeAuthService extends AuthService {
+export class FakeAuthService implements AuthService {
   async login(user: string, password: string): Promise<AuthResult> {
     return {
       success: true,

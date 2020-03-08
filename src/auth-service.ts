@@ -16,7 +16,14 @@ function arrayBufferToBase64(buffer: ArrayBuffer) {
   return window.btoa(binary);
 }
 
-export class AuthService {
+export interface AuthService {
+  login(user: string, password: string): Promise<AuthResult>;
+  token(): string;
+  verifyToken(): Promise<boolean>;
+  isAuthenticated(): boolean;
+}
+
+export class OldAuthService {
   constructor(private _url: string) {}
 
   async login(user: string, password: string): Promise<AuthResult> {
