@@ -7,6 +7,7 @@ import LiftsPanel from './lifts-panel';
 import MainMenu, { MainMenuProps } from './main-menu';
 import RobotsPanel from './robots-panel';
 import * as CSSUtils from './util/css-utils';
+import FleetManager from './fleet-manager';
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -34,7 +35,7 @@ interface OmniPanelProps {
   buildingMap?: RomiCore.BuildingMap;
   doorStates?: { [key: string]: RomiCore.DoorState };
   liftStates?: { [key: string]: RomiCore.LiftState };
-  fleets?: RomiCore.FleetState[];
+  fleetManager: Readonly<FleetManager>;
   onClose?: () => void;
 }
 
@@ -63,6 +64,7 @@ const viewMap = makeViewMap();
 export default function OmniPanel(props: OmniPanelProps): JSX.Element {
   const classes = useStyles();
   const [currentView, setCurrentView] = React.useState(viewMap[props.initialView]);
+  const [fleets, setFleets] = React.useState<readonly RomiCore.FleetState[]>([]);
 
   function handleBackClick() {
     if (!currentView.parent) {
@@ -87,11 +89,19 @@ export default function OmniPanel(props: OmniPanelProps): JSX.Element {
     },
   };
 
+  React.useEffect(() => {
+    if (currentView.value !== OmniPanelView.Robots) {
+      return;
+    }
+    const listener = () => setFleets(props.fleetManager.fleets());
+    props.fleetManager.on('data', listener);
+    return () => { props.fleetManager.off('data', listener); };
+  }, [currentView.value, props.fleetManager]);
+
   const doors = props.buildingMap ? props.buildingMap.levels.flatMap(level => level.doors) : [];
   const doorStates = props.doorStates ? props.doorStates : {};
   const lifts = props.buildingMap ? props.buildingMap.lifts : [];
   const liftStates = props.liftStates ? props.liftStates : {};
-  const fleets = props.fleets ? props.fleets : [];
 
   return (
     <div className={`${classes.container} ${props.className}`}>

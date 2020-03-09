@@ -3,11 +3,11 @@ import { Dashboard as DashboardIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 import 'typeface-roboto';
-import './App.css';
+import './app.css';
 import ScheduleVisualizer from './components/schedule-visualizer';
+import FleetManager from './fleet-manager';
 import LoadingScreen, { LoadingScreenProps } from './loading-screen';
 import doorStates from './mock/data/door-states';
-import fleets from './mock/data/fleets';
 import liftStates from './mock/data/lift-states';
 import OmniPanel, { OmniPanelView } from './omni-panel';
 
@@ -50,24 +50,30 @@ export default function App(props: AppProps) {
   const classes = useStyles();
   const [transport, setTransport] = React.useState<RomiCore.Transport | undefined>(undefined);
   const [buildingMap, setBuildingMap] = React.useState<RomiCore.BuildingMap | undefined>(undefined);
+  const fleetManager = React.useRef(new FleetManager());
+  const [fleets, setFleets] = React.useState<ReadonlyArray<RomiCore.FleetState>>([]);
   const [showOmniPanel, setShowOmniPanel] = React.useState(true);
   const [loading, setLoading] = React.useState<LoadingScreenProps | null>({
     caption: 'Connecting to SOSS...',
   });
 
+  const transportFactory = props.transportFactory;
   React.useEffect(() => {
     setLoading({ caption: 'Connecting to SOSS server...' });
-    props
-      .transportFactory()
+    transportFactory()
       .then(x => {
-        x.once('error', e => console.log('error', e));
-        x.once('close', () => console.log('close'));
+        x.on('error', console.error);
+        x.once('close', () => {
+          setLoading({ caption: 'Lost connection to SOSS', variant: 'error' });
+          setTransport(undefined);
+        });
+        fleetManager.current.startSubscription(x);
         setTransport(x);
       })
       .catch((e: CloseEvent) => {
         setLoading({ caption: `Unable to connect to SOSS server (${e.code})`, variant: 'error' });
       });
-  }, [props]);
+  }, [transportFactory]);
 
   React.useEffect(() => {
     if (!transport) {
@@ -112,7 +118,7 @@ export default function App(props: AppProps) {
             buildingMap={buildingMap}
             doorStates={doorStates}
             liftStates={liftStates}
-            fleets={fleets}
+            fleetManager={fleetManager.current}
             initialView={OmniPanelView.MainMenu}
             onClose={() => setShowOmniPanel(false)}
           />

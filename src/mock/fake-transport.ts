@@ -1,5 +1,6 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import buildingMap from './data/building-map';
+import fleets from './data/fleets';
 
 export class FakeTransport extends RomiCore.TransportEvents implements RomiCore.Transport {
   name: string = 'fake';
@@ -18,6 +19,13 @@ export class FakeTransport extends RomiCore.TransportEvents implements RomiCore.
     cb: RomiCore.SubscriptionCb<Message>,
     options?: RomiCore.Options | undefined,
   ): RomiCore.Subscription {
+    if (topic === RomiCore.fleetStates) {
+      setInterval(() => {
+        for (const fleet of fleets) {
+          cb(fleet as Message);
+        }
+      }, 1000);
+    }
     return {
       unsubscribe: () => {},
     };

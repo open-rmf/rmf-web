@@ -11,7 +11,7 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 
 interface RobotsPanelProps {
-  fleets: RomiCore.FleetState[];
+  fleets: ReadonlyArray<RomiCore.FleetState>;
 }
 
 const useStyles = makeStyles(theme => ({
@@ -90,7 +90,7 @@ export default function RobotsPanel(props: RobotsPanelProps): JSX.Element {
             <div className={classes.expansionDetailLine}>
               <Typography variant="body1">Location:</Typography>
               <Typography variant="body1">
-                {`(${robot.location.x}, ${robot.location.y})`}
+                {`(${robot.location.x.toFixed(3)}, ${robot.location.y.toFixed(3)})`}
               </Typography>
             </div>
             <Divider />
