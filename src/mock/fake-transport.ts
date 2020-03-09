@@ -1,6 +1,8 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import buildingMap from './data/building-map';
+import doorStates from './data/door-states';
 import fleets from './data/fleets';
+import liftStates from './data/lift-states';
 
 export class FakeTransport extends RomiCore.TransportEvents implements RomiCore.Transport {
   name: string = 'fake';
@@ -19,12 +21,32 @@ export class FakeTransport extends RomiCore.TransportEvents implements RomiCore.
     cb: RomiCore.SubscriptionCb<Message>,
     options?: RomiCore.Options | undefined,
   ): RomiCore.Subscription {
-    if (topic === RomiCore.fleetStates) {
-      setInterval(() => {
-        for (const fleet of fleets) {
-          cb(fleet as Message);
-        }
-      }, 1000);
+    console.log('subscribe:', topic);
+    switch (topic) {
+      case RomiCore.doorStates: {
+        setInterval(() => {
+          for (const state of Object.values(doorStates)) {
+            cb(state as Message);
+          }
+        }, 1000);
+        break;
+      }
+      case RomiCore.liftStates: {
+        setInterval(() => {
+          for (const state of Object.values(liftStates)) {
+            cb(state as Message);
+          }
+        }, 1000);
+        break;
+      }
+      case RomiCore.fleetStates: {
+        setInterval(() => {
+          for (const fleet of fleets) {
+            cb(fleet as Message);
+          }
+        }, 1000);
+        break;
+      }
     }
     return {
       unsubscribe: () => {},
@@ -43,3 +65,5 @@ export class FakeTransport extends RomiCore.TransportEvents implements RomiCore.
 
   destroy(): void {}
 }
+
+export default FakeTransport;

@@ -1,21 +1,24 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import FleetManager from '../fleet-manager';
 import OmniPanel, { OmniPanelView } from '../components/omni-panel';
+import DoorStateManager from '../door-state-manager';
+import FleetManager from '../fleet-manager';
+import LiftStateManager from '../lift-state-manager';
 import buildingMap from './data/building-map';
-import doorStates from './data/door-states';
-import liftStates from './data/lift-states';
-import { FakeTransport } from './fake-transport';
+import FakeTransport from './fake-transport';
 
+const transport = new FakeTransport();
+const doorStateManager = new DoorStateManager();
+const liftStateManager = new LiftStateManager();
 const fleetManager = new FleetManager();
-fleetManager.startSubscription(new FakeTransport());
 
 ReactDOM.render(
   <OmniPanel
+    transport={transport}
     initialView={OmniPanelView.MainMenu}
     buildingMap={buildingMap}
-    doorStates={doorStates}
-    liftStates={liftStates}
+    doorStateManager={doorStateManager}
+    liftStateManager={liftStateManager}
     fleetManager={fleetManager}
   />,
   document.getElementById('root'),

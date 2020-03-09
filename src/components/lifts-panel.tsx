@@ -126,9 +126,9 @@ function motionStateToString(motionState: number): string {
 }
 
 interface LiftsPanelProps {
-  transport?: RomiCore.Transport;
-  lifts: RomiCore.Lift[];
-  liftStates: Partial<{ [key: string]: RomiCore.LiftState }>;
+  transport?: Readonly<RomiCore.Transport>;
+  lifts: readonly RomiCore.Lift[];
+  liftStates: Readonly<Record<string, RomiCore.LiftState | undefined>>;
   onLiftRequest?: (lift: RomiCore.Lift, destination: string) => void;
 }
 
@@ -214,7 +214,9 @@ export default function LiftsPanel(props: LiftsPanelProps): JSX.Element {
         <ExpansionPanelDetails className={classes.expansionDetail}>
           <div className={classes.expansionDetailLine}>
             <Typography variant="body1">Location:</Typography>
-            <Typography variant="body1">{`(${lift.ref_x}, ${lift.ref_y})`}</Typography>
+            <Typography variant="body1">
+              {`(${lift.ref_x.toFixed(3)}, ${lift.ref_y.toFixed(3)})`}
+            </Typography>
           </div>
           <div className={classes.expansionDetailLine}>
             <Typography variant="body1">Destination Floor:</Typography>

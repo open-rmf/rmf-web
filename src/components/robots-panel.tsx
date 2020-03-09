@@ -11,7 +11,7 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 
 interface RobotsPanelProps {
-  fleets: ReadonlyArray<RomiCore.FleetState>;
+  fleets: readonly RomiCore.FleetState[];
 }
 
 const useStyles = makeStyles(theme => ({

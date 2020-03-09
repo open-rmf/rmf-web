@@ -2,7 +2,7 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import EventEmitter from 'eventemitter3';
 
 type Events = {
-  data: [];
+  updated: [];
 }
 
 export default class FleetManager extends EventEmitter<Events> {
@@ -13,7 +13,7 @@ export default class FleetManager extends EventEmitter<Events> {
   startSubscription(transport: RomiCore.Transport) {
     transport.subscribe(RomiCore.fleetStates, fleetState => {
       this._fleets[fleetState.name] = fleetState;
-      this.emit('data');
+      this.emit('updated');
     });
   }
 

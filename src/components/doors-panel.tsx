@@ -108,9 +108,9 @@ function motionDirectionToString(motionDirection: number): string {
 }
 
 interface DoorsPanelProps {
-  transport?: RomiCore.Transport;
-  doors: RomiCore.Door[];
-  doorStates: Partial<{ [key: string]: RomiCore.DoorState }>;
+  transport?: Readonly<RomiCore.Transport>;
+  doors: readonly RomiCore.Door[];
+  doorStates: Readonly<Record<string, RomiCore.DoorState | undefined>>;
   onOpenClick?: (door: RomiCore.Door) => void;
   onCloseClick?: (door: RomiCore.Door) => void;
 }
@@ -199,7 +199,7 @@ export default function DoorsPanel(props: DoorsPanelProps): JSX.Element {
           <div className={classes.expansionDetailLine}>
             <Typography variant="body1">Location:</Typography>
             <Typography variant="body1">
-              ({door.v1_x}, {door.v1_y})
+              ({door.v1_x.toFixed(3)}, {door.v1_y.toFixed(3)})
             </Typography>
           </div>
           <ButtonGroup

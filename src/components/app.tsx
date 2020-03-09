@@ -3,13 +3,13 @@ import { Dashboard as DashboardIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 import 'typeface-roboto';
-import './app.css';
-import ScheduleVisualizer from './schedule-visualizer';
+import DoorStateManager from '../door-state-manager';
 import FleetManager from '../fleet-manager';
+import LiftStateManager from '../lift-state-manager';
+import './app.css';
 import LoadingScreen, { LoadingScreenProps } from './loading-screen';
-import doorStates from '../mock/data/door-states';
-import liftStates from '../mock/data/lift-states';
 import OmniPanel, { OmniPanelView } from './omni-panel';
+import ScheduleVisualizer from './schedule-visualizer';
 
 const borderRadius = 20;
 
@@ -50,6 +50,8 @@ export default function App(props: AppProps) {
   const classes = useStyles();
   const [transport, setTransport] = React.useState<RomiCore.Transport | undefined>(undefined);
   const [buildingMap, setBuildingMap] = React.useState<RomiCore.BuildingMap | undefined>(undefined);
+  const doorStateManager = React.useRef(new DoorStateManager());
+  const liftStateManager = React.useRef(new LiftStateManager());
   const fleetManager = React.useRef(new FleetManager());
   const [showOmniPanel, setShowOmniPanel] = React.useState(true);
   const [loading, setLoading] = React.useState<LoadingScreenProps | null>({
@@ -66,7 +68,6 @@ export default function App(props: AppProps) {
           setLoading({ caption: 'Lost connection to SOSS', variant: 'error' });
           setTransport(undefined);
         });
-        fleetManager.current.startSubscription(x);
         setTransport(x);
       })
       .catch((e: CloseEvent) => {
@@ -115,8 +116,8 @@ export default function App(props: AppProps) {
             }}
             transport={transport}
             buildingMap={buildingMap}
-            doorStates={doorStates}
-            liftStates={liftStates}
+            doorStateManager={doorStateManager.current}
+            liftStateManager={liftStateManager.current}
             fleetManager={fleetManager.current}
             initialView={OmniPanelView.MainMenu}
             onClose={() => setShowOmniPanel(false)}
