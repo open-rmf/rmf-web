@@ -48,6 +48,10 @@ const useStyles = makeStyles(theme => {
       padding: theme.spacing(0.5),
     },
 
+    noPadding: {
+      padding: 0,
+    },
+
     liftFloorLabelStopped: {
       ...liftFloorLabelBase,
       borderColor: theme.palette.info.main,
@@ -59,22 +63,6 @@ const useStyles = makeStyles(theme => {
     },
   };
 });
-
-function renderList(values: string[]): JSX.Element {
-  const items = values.map(floor => (
-    <ListItem key={floor} dense style={{ padding: 0 }}>
-      <Typography variant="body1">{floor}</Typography>
-    </ListItem>
-  ));
-  return <List>{items}</List>;
-}
-
-function renderAvailableFloors(liftState?: RomiCore.LiftState): JSX.Element {
-  if (!liftState) {
-    return <Typography variant="body1">Unknown</Typography>;
-  }
-  return renderList(liftState.available_floors);
-}
 
 function liftModeToString(liftMode: number): string {
   switch (liftMode) {
@@ -89,14 +77,6 @@ function liftModeToString(liftMode: number): string {
     default:
       return `Unknown (${liftMode})`;
   }
-}
-
-function renderAvailableModes(liftState?: RomiCore.LiftState): JSX.Element {
-  if (!liftState) {
-    return <Typography variant="body1">Unknown</Typography>;
-  }
-  const modes = Array.from(liftState.available_modes.values());
-  return renderList(modes.map(liftModeToString));
 }
 
 function doorStateToString(doorState: number): string {
@@ -148,6 +128,30 @@ export default function LiftsPanel(props: LiftsPanelProps): JSX.Element {
     liftRequestMenuState,
     setLiftRequestMenuState,
   ] = React.useState<LiftRequestMenuState | null>(null);
+
+  function renderList(values: string[]): JSX.Element {
+    const items = values.map(val => (
+      <ListItem key={val} dense className={classes.noPadding}>
+        <Typography variant="body1">{val}</Typography>
+      </ListItem>
+    ));
+    return <List>{items}</List>;
+  }
+
+  function renderAvailableFloors(liftState?: RomiCore.LiftState): JSX.Element {
+    if (!liftState) {
+      return <Typography variant="body1">Unknown</Typography>;
+    }
+    return renderList(liftState.available_floors);
+  }
+
+  function renderAvailableModes(liftState?: RomiCore.LiftState): JSX.Element {
+    if (!liftState) {
+      return <Typography variant="body1">Unknown</Typography>;
+    }
+    const modes = Array.from(liftState.available_modes.values());
+    return renderList(modes.map(liftModeToString));
+  }
 
   function liftFloorLabel(liftState?: RomiCore.LiftState): string {
     if (!liftState) {

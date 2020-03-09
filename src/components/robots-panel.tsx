@@ -30,6 +30,13 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(0.5),
   },
 
+  expansionDetailSubLine: {
+    display: 'inline-flex',
+    justifyContent: 'space-between',
+    paddingLeft: theme.spacing(2),
+    width: '100%',
+  },
+
   robotStatusLabel: {
     borderRadius: theme.shape.borderRadius,
     borderStyle: 'solid',
@@ -67,6 +74,26 @@ function robotModeToString(robotMode: RomiCore.RobotMode): string {
 export default function RobotsPanel(props: RobotsPanelProps): JSX.Element {
   const classes = useStyles();
 
+  function renderLocation(location: RomiCore.Location): JSX.Element {
+    const position = `(${location.x.toFixed(3)}, ${location.y.toFixed(3)})`;
+    return (
+      <React.Fragment>
+        <Typography className={classes.expansionDetailSubLine} variant="body1">
+          <span>Level:</span>
+          <span>{location.level_name}</span>
+        </Typography>
+        <Typography className={classes.expansionDetailSubLine} variant="body1">
+          <span>Pos:</span>
+          <span>{position}</span>
+        </Typography>
+        <Typography className={classes.expansionDetailSubLine} variant="body1">
+          <span>Yaw:</span>
+          <span>{location.yaw.toFixed(3)}</span>
+        </Typography>
+      </React.Fragment>
+    );
+  }
+
   const robots = props.fleets
     .flatMap(fleet => fleet.robots)
     .map(robot => {
@@ -87,16 +114,16 @@ export default function RobotsPanel(props: RobotsPanelProps): JSX.Element {
               <Typography variant="body1">{robot.model}</Typography>
             </div>
             <Divider />
-            <div className={classes.expansionDetailLine}>
+            <div>
               <Typography variant="body1">Location:</Typography>
-              <Typography variant="body1">
-                {`(${robot.location.x.toFixed(3)}, ${robot.location.y.toFixed(3)})`}
-              </Typography>
+              {renderLocation(robot.location)}
             </div>
             <Divider />
             <div className={classes.expansionDetailLine}>
               <Typography variant="body1">Task Id:</Typography>
-              <Typography variant="body1">{robot.task_id}</Typography>
+              <Typography variant="body1" noWrap>
+                {robot.task_id}
+              </Typography>
             </div>
             <Divider />
             <div className={classes.expansionDetailLine}>
