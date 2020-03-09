@@ -4,7 +4,7 @@
 import { makeStyles, Snackbar, TextField } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React from 'react';
-import { AuthService } from './auth-service';
+import { AuthService } from '../auth-service';
 
 const useStyles = makeStyles(theme => ({
   flexColumnContainer: {

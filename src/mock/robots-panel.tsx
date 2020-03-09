@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import RobotsPanel from '../robots-panel';
+import RobotsPanel from '../components/robots-panel';
 import fleets from './data/fleets';
 
 ReactDOM.render(

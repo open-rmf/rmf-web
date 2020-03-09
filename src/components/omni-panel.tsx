@@ -6,8 +6,8 @@ import DoorsPanel from './doors-panel';
 import LiftsPanel from './lifts-panel';
 import MainMenu, { MainMenuProps } from './main-menu';
 import RobotsPanel from './robots-panel';
-import * as CSSUtils from './util/css-utils';
-import FleetManager from './fleet-manager';
+import * as CSSUtils from '../util/css-utils';
+import FleetManager from '../fleet-manager';
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -93,6 +93,7 @@ export default function OmniPanel(props: OmniPanelProps): JSX.Element {
     if (currentView.value !== OmniPanelView.Robots) {
       return;
     }
+    setFleets(props.fleetManager.fleets());
     const listener = () => setFleets(props.fleetManager.fleets());
     props.fleetManager.on('data', listener);
     return () => { props.fleetManager.off('data', listener); };

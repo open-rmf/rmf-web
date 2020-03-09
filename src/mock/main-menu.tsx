@@ -1,5 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import MainMenu from '../main-menu';
+import MainMenu from '../components/main-menu';
 
 ReactDOM.render(<MainMenu />, document.getElementById('root'));

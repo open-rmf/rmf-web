@@ -1,7 +1,7 @@
 import 'leaflet/dist/leaflet.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './app';
+import App from './components/app';
 import AppConfig from './app-config';
 import { extendControlPositions } from './leaflet/control-positions';
 import * as serviceWorker from './serviceWorker';

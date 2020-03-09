@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import DoorsPanel from '../doors-panel';
+import DoorsPanel from '../components/doors-panel';
 import buildingMap from './data/building-map';
 import doorStates from './data/door-states';
 import { FakeTransport } from './fake-transport';

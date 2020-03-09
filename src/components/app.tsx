@@ -4,11 +4,11 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 import 'typeface-roboto';
 import './app.css';
-import ScheduleVisualizer from './components/schedule-visualizer';
-import FleetManager from './fleet-manager';
+import ScheduleVisualizer from './schedule-visualizer';
+import FleetManager from '../fleet-manager';
 import LoadingScreen, { LoadingScreenProps } from './loading-screen';
-import doorStates from './mock/data/door-states';
-import liftStates from './mock/data/lift-states';
+import doorStates from '../mock/data/door-states';
+import liftStates from '../mock/data/lift-states';
 import OmniPanel, { OmniPanelView } from './omni-panel';
 
 const borderRadius = 20;
@@ -51,7 +51,6 @@ export default function App(props: AppProps) {
   const [transport, setTransport] = React.useState<RomiCore.Transport | undefined>(undefined);
   const [buildingMap, setBuildingMap] = React.useState<RomiCore.BuildingMap | undefined>(undefined);
   const fleetManager = React.useRef(new FleetManager());
-  const [fleets, setFleets] = React.useState<ReadonlyArray<RomiCore.FleetState>>([]);
   const [showOmniPanel, setShowOmniPanel] = React.useState(true);
   const [loading, setLoading] = React.useState<LoadingScreenProps | null>({
     caption: 'Connecting to SOSS...',

@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import FleetManager from '../fleet-manager';
-import OmniPanel, { OmniPanelView } from '../omni-panel';
+import OmniPanel, { OmniPanelView } from '../components/omni-panel';
 import buildingMap from './data/building-map';
 import doorStates from './data/door-states';
 import liftStates from './data/lift-states';

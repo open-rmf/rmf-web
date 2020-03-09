@@ -6,7 +6,7 @@ type Events = {
 }
 
 export default class FleetManager extends EventEmitter<Events> {
-  fleets(): readonly RomiCore.FleetState[] {
+  fleets(): RomiCore.FleetState[] {
     return Array.from(Object.values(this._fleets));
   }
 
