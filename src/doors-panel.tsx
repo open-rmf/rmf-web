@@ -1,3 +1,7 @@
+/**
+ * TODO: Show indicator why door controls are disabled.
+ */
+
 import {
   Button,
   ButtonGroup,
@@ -111,9 +115,19 @@ interface DoorsPanelProps {
   onCloseClick?: (door: RomiCore.Door) => void;
 }
 
+type DoorRequestPublisher = RomiCore.Publisher<RomiCore.DoorRequest>;
+
 export default function DoorsPanel(props: DoorsPanelProps): JSX.Element {
   const theme = useTheme();
   const classes = useStyles();
+
+  const [doorRequestPub, setDoorRequestPub] = React.useState<DoorRequestPublisher | null>(null);
+
+  React.useEffect(() => {
+    setDoorRequestPub(
+      props.transport ? props.transport.createPublisher(RomiCore.doorRequests) : null,
+    );
+  }, [props.transport]);
 
   const doorModeLabelClasses = useDoorModeLabelStyles();
   const doorModelLabelClass = (doorState?: RomiCore.DoorState) => {
@@ -132,15 +146,12 @@ export default function DoorsPanel(props: DoorsPanelProps): JSX.Element {
     }
   };
 
-  const doorPublisher = props.transport
-    ? props.transport.createPublisher(RomiCore.doorStates)
-    : undefined;
-
   function requestDoor(door: RomiCore.Door, mode: number): void {
-    doorPublisher?.publish({
+    doorRequestPub?.publish({
       door_name: door.name,
-      current_mode: { value: mode },
-      door_time: RomiCore.toRosTime(new Date()),
+      requested_mode: { value: mode },
+      requester_id: props.transport!.name,
+      request_time: RomiCore.toRosTime(new Date()),
     });
   }
 
@@ -191,7 +202,11 @@ export default function DoorsPanel(props: DoorsPanelProps): JSX.Element {
               ({door.v1_x}, {door.v1_y})
             </Typography>
           </div>
-          <ButtonGroup style={{ marginTop: theme.spacing(1) }} fullWidth>
+          <ButtonGroup
+            style={{ marginTop: theme.spacing(1) }}
+            fullWidth
+            disabled={Boolean(!doorRequestPub)}
+          >
             <Button onClick={() => handleCloseClick(door)}>Close</Button>
             <Button onClick={() => handleOpenClick(door)}>Open</Button>
           </ButtonGroup>

@@ -4,16 +4,12 @@ import buildingMap from './data/building-map';
 export class FakeTransport extends RomiCore.TransportEvents implements RomiCore.Transport {
   name: string = 'fake';
 
-  constructor() {
-    super();
-  }
-
   createPublisher<Message extends object>(
     topic: RomiCore.RomiTopic<Message>,
     options?: RomiCore.Options | undefined,
   ): RomiCore.Publisher<Message> {
     return {
-      publish: () => {},
+      publish: console.log,
     };
   }
 

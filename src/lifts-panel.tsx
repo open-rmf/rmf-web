@@ -1,3 +1,7 @@
+/**
+ * TODO: Show indicator why lift controls are disabled.
+ */
+
 import {
   Button,
   Divider,
@@ -122,23 +126,28 @@ function motionStateToString(motionState: number): string {
 }
 
 interface LiftsPanelProps {
+  transport?: RomiCore.Transport;
   lifts: RomiCore.Lift[];
   liftStates: Partial<{ [key: string]: RomiCore.LiftState }>;
   onLiftRequest?: (lift: RomiCore.Lift, destination: string) => void;
 }
 
-interface LiftRequestState {
+interface LiftRequestMenuState {
   lift: RomiCore.Lift;
-  liftState: RomiCore.LiftState;
   anchor: PopoverPosition;
 }
+
+type LiftRequestPublisher = RomiCore.Publisher<RomiCore.LiftRequest>;
 
 export default function LiftsPanel(props: LiftsPanelProps): JSX.Element {
   const theme = useTheme();
   const classes = useStyles();
-  const [liftRequestMenuState, setLiftRequestMenuState] = React.useState<
-    LiftRequestState | undefined
-  >(undefined);
+
+  const [liftRequestPub, setLiftRequestPub] = React.useState<LiftRequestPublisher | null>(null);
+  const [
+    liftRequestMenuState,
+    setLiftRequestMenuState,
+  ] = React.useState<LiftRequestMenuState | null>(null);
 
   function liftFloorLabel(liftState?: RomiCore.LiftState): string {
     if (!liftState) {
@@ -153,35 +162,43 @@ export default function LiftsPanel(props: LiftsPanelProps): JSX.Element {
     }
   }
 
-  const handleRequestClick = (
-    event: MouseEvent,
-    lift: RomiCore.Lift,
-    liftState: RomiCore.LiftState,
-  ) => {
+  function handleRequestClick(event: MouseEvent, lift: RomiCore.Lift): void {
     setLiftRequestMenuState({
       lift: lift,
-      liftState: liftState,
       anchor: { top: event.clientY, left: event.clientX },
     });
-  };
+  }
 
-  const renderRequestMenu = (state: LiftRequestState) => {
-    return state.liftState.available_floors.map(floor => (
+  function renderRequestMenu(lift: RomiCore.Lift): JSX.Element[] {
+    return lift.levels.map(floor => (
       <MenuItem
         key={floor}
         onClick={() => {
-          props.onLiftRequest && props.onLiftRequest(state.lift, floor);
-          setLiftRequestMenuState(undefined);
+          liftRequestPub?.publish({
+            lift_name: lift.name,
+            destination_floor: floor,
+            door_state: RomiCore.LiftRequest.DOOR_OPEN,
+            request_time: RomiCore.toRosTime(new Date()),
+            request_type: RomiCore.LiftRequest.REQUEST_AGV_MODE,
+            session_id: props.transport!.name,
+          });
+          props.onLiftRequest && props.onLiftRequest(lift, floor);
+          setLiftRequestMenuState(null);
         }}
       >
         {floor}
       </MenuItem>
     ));
-  };
+  }
+
+  React.useEffect(() => {
+    setLiftRequestPub(
+      props.transport ? props.transport.createPublisher(RomiCore.liftRequests) : null,
+    );
+  }, [props.transport]);
 
   const listItems = props.lifts.map(lift => {
     const liftState = props.liftStates[lift.name];
-    const canRequestLift = liftState ? true : false;
 
     return (
       <ExpansionPanel key={lift.name}>
@@ -197,9 +214,7 @@ export default function LiftsPanel(props: LiftsPanelProps): JSX.Element {
         <ExpansionPanelDetails className={classes.expansionDetail}>
           <div className={classes.expansionDetailLine}>
             <Typography variant="body1">Location:</Typography>
-            <Typography variant="body1">
-              {`(${lift.ref_x}, ${lift.ref_y})`}
-            </Typography>
+            <Typography variant="body1">{`(${lift.ref_x}, ${lift.ref_y})`}</Typography>
           </div>
           <div className={classes.expansionDetailLine}>
             <Typography variant="body1">Destination Floor:</Typography>
@@ -235,17 +250,15 @@ export default function LiftsPanel(props: LiftsPanelProps): JSX.Element {
           <div className={classes.expansionDetailLine}>
             <Typography variant="body1">Motion State:</Typography>
             <Typography variant="body1">
-              {liftState
-                ? motionStateToString(liftState.motion_state)
-                : 'Unknown'}
+              {liftState ? motionStateToString(liftState.motion_state) : 'Unknown'}
             </Typography>
           </div>
 
           <Button
             variant="outlined"
             style={{ marginTop: theme.spacing(1) }}
-            onClick={event => handleRequestClick(event, lift, liftState!)}
-            disabled={!canRequestLift}
+            onClick={event => handleRequestClick(event, lift)}
+            disabled={Boolean(!liftRequestPub)}
             fullWidth
           >
             Request
@@ -261,10 +274,10 @@ export default function LiftsPanel(props: LiftsPanelProps): JSX.Element {
       <Popover
         anchorReference="anchorPosition"
         anchorPosition={liftRequestMenuState?.anchor}
-        open={Boolean(liftRequestMenuState)}
-        onClose={() => setLiftRequestMenuState(undefined)}
+        open={Boolean(liftRequestMenuState && liftRequestPub)}
+        onClose={() => setLiftRequestMenuState(null)}
       >
-        {liftRequestMenuState && renderRequestMenu(liftRequestMenuState)}
+        {liftRequestMenuState && renderRequestMenu(liftRequestMenuState.lift)}
       </Popover>
     </React.Fragment>
   );
