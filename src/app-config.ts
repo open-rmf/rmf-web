@@ -6,7 +6,6 @@ import { FakeTransport } from './mock/fake-transport';
 
 interface AppConfig {
   transportFactory: () => Promise<RomiCore.Transport>;
-  main: () => Promise<any>;
 }
 
 let auth: AuthService;
@@ -17,13 +16,11 @@ if (!process.env.REACT_APP_MOCK) {
   appConfig = {
     transportFactory: () =>
       SossTransport.connect('romi-dashboard', 'wss://localhost:50001', auth.token()),
-    main: () => import('./main'),
   };
 } else {
   auth = new FakeAuthService();
   appConfig = {
     transportFactory: async () => new FakeTransport(),
-    main: () => import('./mock/index'),
   };
 }
 
