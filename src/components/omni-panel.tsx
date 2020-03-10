@@ -98,17 +98,6 @@ export default function OmniPanel(props: OmniPanelProps): JSX.Element {
     },
   };
 
-  // start subscription to state publications
-  React.useEffect(() => {
-    props.transport && props.doorStateManager.startSubscription(props.transport);
-  }, [props.transport, props.doorStateManager]);
-  React.useEffect(() => {
-    props.transport && props.liftStateManager.startSubscription(props.transport);
-  }, [props.transport, props.liftStateManager]);
-  React.useEffect(() => {
-    props.transport && props.fleetManager.startSubscription(props.transport);
-  }, [props.transport, props.fleetManager]);
-
   // update state only when relevant view is active
   React.useEffect(() => {
     if (currentView.value !== OmniPanelView.Doors) {

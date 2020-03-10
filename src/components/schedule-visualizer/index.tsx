@@ -1,130 +1,135 @@
-import React from 'react'
+import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import * as L from 'leaflet';
+import React from 'react';
 import {
   AttributionControl,
   ImageOverlay,
   LayersControl,
   Map as _Map,
-} from 'react-leaflet'
-import { produce } from 'immer'
-import * as L from 'leaflet'
-import styled from 'styled-components'
-
-import { IFloor as _IFloor } from '../../models/Floor'
-import { IAffineImage as _IAffineImage } from '../../models/AffineImage'
-import { getFloors } from '../../mock'
-import { rawCompressedSVGToSVGSVGElement, SVGSVGElementToDataURI } from '../../util'
-
-import { IMAGE_SCALE } from '../../constants'
-import RobotTrajectoriesOverlay from './robot-trajectories-overlay'
-import ServerDateControl from './server-date-control'
-// import SliderControl from './slider-control'
-// import { clockSource } from '../..'
+  MapProps,
+} from 'react-leaflet';
+import styled from 'styled-components';
+import { IMAGE_SCALE } from '../../constants';
+import { toBlobUrl } from '../../util';
 
 const Map = styled(_Map)`
   height: 100%;
   width: 100%;
   margin: 0;
   padding: 0;
-`
+`;
 
-export interface IAffineImage extends Omit<_IAffineImage, 'data'> {
-  data: string
-}
-
-export interface IFloor extends Omit<_IFloor, 'image'> {
-  image: IAffineImage
-  bounds?: L.LatLngBounds
+interface MapFloor {
+  name: string;
+  elevation: number;
+  imageUrl: any;
+  bounds: L.LatLngBounds;
 }
 
 export interface State {
-  floors: IFloor[]
-  date: Date
-  maxBounds: L.LatLngBounds
+  floors: MapFloor[];
+  date: Date;
+  maxBounds: L.LatLngBounds;
 }
 
-export interface Props {}
+export interface ScheduleVisualizerProps {
+  buildingMap: Readonly<RomiCore.BuildingMap>;
+}
 
-export default function ScheduleVisualizer() {
-  const mapRef = React.useRef<_Map>(null)
-  const { current: mapElement } = mapRef
-  const [floors, setFloors] = React.useState<IFloor[]>([])
-  const [maxBounds, setMaxBounds] = React.useState(new L.LatLngBounds([0, 0], [0, 0]))
-  const [date, setDate] = React.useState(new Date())
-
-  React.useEffect(() => {
-    const cb = async (time: number) => {
-      setDate(new Date(time))
-    }
-
-    // clockSource.addOnClockUpdateCallback(cb)
-
-    return function cleanup() {
-      // clockSource.removeOnClockUpdateCallback(cb)
-    }
-  }, []);
+export default function ScheduleVisualizer(props: ScheduleVisualizerProps) {
+  const mapRef = React.useRef<_Map>(null);
+  const { current: mapElement } = mapRef;
+  const [floors, setFloors] = React.useState<MapFloor[]>([]);
+  const [mapProps, setMapProps] = React.useState<Partial<MapProps>>({});
 
   React.useEffect(() => {
-    getFloors().then((floors) => {
-      setFloors(produce(floors, (draft: any) => {
-        for (const floor of draft) {
-          const { elevation, image } = floor
-          const { pose, scale } = image
-          const { x, y } = pose
-
-          const svgElement = rawCompressedSVGToSVGSVGElement(image.data)
-          const height = svgElement.height.baseVal.value * scale / IMAGE_SCALE
-          const width = svgElement.width.baseVal.value * scale / IMAGE_SCALE
-
-          const offsetPixelsX = x / IMAGE_SCALE
-          const offsetPixelsY = y / IMAGE_SCALE
-
-          floor.bounds = new L.LatLngBounds(
-            new L.LatLng(offsetPixelsY, offsetPixelsX, elevation),
-            new L.LatLng(
-              offsetPixelsY - height,
-              offsetPixelsX + width,
-              elevation,
-            ),
-          )
-
-          floor.image.data = SVGSVGElementToDataURI(svgElement)
-
-          setMaxBounds(maxBounds.extend(floor.bounds))
-          mapElement?.leafletElement.setZoom(-2);
-        }
-        return draft as IFloor[]
-      }))
-    })
-
-    if (mapElement) {
-      mapElement.leafletElement.fitBounds(maxBounds);
+    if (!mapElement) {
+      return;
     }
-  }, [maxBounds, mapElement])
+
+    (async () => {
+      const promises: Promise<any>[] = [];
+      const mapFloors: MapFloor[] = [];
+      let maxBounds = new L.LatLngBounds([0, 0], [0, 0]);
+
+      for (const level of props.buildingMap.levels) {
+        const { elevation, images } = level;
+        const image = images[0]; // when will there be > 1 image?
+        const { x_offset, y_offset, scale } = image;
+
+        const imageElement = new Image();
+        const blobUrl = toBlobUrl(image.data);
+        imageElement.src = blobUrl;
+        promises.push(
+          new Promise(res => {
+            const listener = () => {
+              imageElement.removeEventListener('load', listener);
+              const width = imageElement.naturalWidth * scale;
+              const height = imageElement.naturalHeight * scale;
+
+              // TODO: support both svg and image
+              // const svgElement = rawCompressedSVGToSVGSVGElement(image.data);
+              // const height = (svgElement.height.baseVal.value * scale) / IMAGE_SCALE;
+              // const width = (svgElement.width.baseVal.value * scale) / IMAGE_SCALE;
+
+              const offsetPixelsX = x_offset * IMAGE_SCALE;
+              const offsetPixelsY = y_offset * IMAGE_SCALE;
+
+              const floor: MapFloor = {
+                name: level.name,
+                elevation: elevation,
+                bounds: new L.LatLngBounds(
+                  new L.LatLng(offsetPixelsY, offsetPixelsX, elevation),
+                  new L.LatLng(offsetPixelsY + height, offsetPixelsX + width, elevation),
+                ),
+                // imageData: SVGSVGElementToDataURI(svgElement),
+                imageUrl: blobUrl,
+              };
+              maxBounds = maxBounds.extend(floor.bounds);
+              mapFloors.push(floor);
+              res();
+            };
+            imageElement.addEventListener('load', listener);
+          }),
+        );
+      }
+
+      for (const p of promises) {
+        await p;
+      }
+      setMapProps({ ...mapProps, maxBounds: maxBounds });
+      const bestZoom = 10 - ~~Math.log2(maxBounds.getEast());
+      mapElement.leafletElement.setMinZoom(bestZoom - 2);
+      mapElement.leafletElement.setMaxZoom(bestZoom + 2);
+      mapElement.leafletElement.fitBounds(mapFloors[0].bounds);
+      setFloors(mapFloors.slice());
+      L.control.scale().addTo(mapElement.leafletElement);
+    })();
+  }, [props.buildingMap, mapElement]);
 
   return (
     <Map
       ref={mapRef}
       attributionControl={false}
       crs={L.CRS.Simple}
-      minZoom={-2}
-      maxZoom={2}
-      maxBounds={maxBounds}
+      zoomDelta={0.5}
+      zoomSnap={0.5}
+      wheelPxPerZoomLevel={120}
+      {...mapProps}
     >
       <AttributionControl position="bottomright" prefix="OSRC-SG" />
       {/* <ServerDateControl date={date} position="topright" /> */}
-      <LayersControl position="topright">
-        {
-          floors.map((floor, i) => (
-            <LayersControl.BaseLayer checked={i === 0} name={floor.name} key={floor.name}>
-              <ImageOverlay bounds={floor.bounds} url={floor.image.data} />
-            </LayersControl.BaseLayer>
-          ))
-        }
+      <LayersControl position="topleft">
+        {floors.map((floor, i) => (
+          <LayersControl.BaseLayer checked={i === 0} name={floor.name} key={floor.name}>
+            <ImageOverlay bounds={floor.bounds} url={floor.imageUrl} />
+          </LayersControl.BaseLayer>
+        ))}
         <LayersControl.Overlay name="Robots Trajectories" checked>
           {/* <RobotTrajectoriesOverlay /> */}
         </LayersControl.Overlay>
       </LayersControl>
       {/* <SliderControl /> */}
     </Map>
-  )
+  );
 }

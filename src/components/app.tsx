@@ -25,9 +25,9 @@ const useStyles = makeStyles(theme => ({
   omniPanel: {
     position: 'fixed',
     width: 350,
-    top: 100,
-    right: '2%',
-    bottom: '3%',
+    top: 80,
+    right: '1%',
+    bottom: '2%',
     backgroundColor: theme.palette.background.default,
     zIndex: 1024,
     borderTopLeftRadius: borderRadius,
@@ -68,6 +68,9 @@ export default function App(props: AppProps) {
           setLoading({ caption: 'Lost connection to SOSS', variant: 'error' });
           setTransport(undefined);
         });
+        doorStateManager.current.startSubscription(x);
+        liftStateManager.current.startSubscription(x);
+        fleetManager.current.startSubscription(x);
         setTransport(x);
       })
       .catch((e: CloseEvent) => {
@@ -106,7 +109,7 @@ export default function App(props: AppProps) {
             </IconButton>
           </Toolbar>
         </AppBar>
-        <ScheduleVisualizer />
+        {buildingMap && <ScheduleVisualizer buildingMap={buildingMap} />}
         {showOmniPanel && (
           <OmniPanel
             className={classes.omniPanel}

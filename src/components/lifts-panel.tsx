@@ -61,6 +61,11 @@ const useStyles = makeStyles(theme => {
       ...liftFloorLabelBase,
       borderColor: theme.palette.warning.main,
     },
+
+    liftFloorLabelUnknown: {
+      ...liftFloorLabelBase,
+      borderStyle: 'none',
+    }
   };
 });
 
@@ -155,7 +160,7 @@ export default function LiftsPanel(props: LiftsPanelProps): JSX.Element {
 
   function liftFloorLabel(liftState?: RomiCore.LiftState): string {
     if (!liftState) {
-      return classes.liftFloorLabelStopped;
+      return classes.liftFloorLabelUnknown;
     }
     switch (liftState.motion_state) {
       case RomiCore.LiftState.MOTION_UP:
