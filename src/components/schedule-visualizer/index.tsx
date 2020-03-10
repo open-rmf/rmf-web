@@ -9,7 +9,6 @@ import {
   MapProps,
 } from 'react-leaflet';
 import styled from 'styled-components';
-import { IMAGE_SCALE } from '../../constants';
 import { toBlobUrl } from '../../util';
 
 const Map = styled(_Map)`
@@ -19,17 +18,14 @@ const Map = styled(_Map)`
   padding: 0;
 `;
 
-interface MapFloor {
+interface MapFloorState {
   name: string;
   elevation: number;
-  imageUrl: any;
-  bounds: L.LatLngBounds;
-}
-
-export interface State {
-  floors: MapFloor[];
-  date: Date;
-  maxBounds: L.LatLngBounds;
+  imageUrl: string;
+  scale: number;
+  offsetX: number;
+  offsetY: number;
+  bounds?: L.LatLngBounds;
 }
 
 export interface ScheduleVisualizerProps {
@@ -39,54 +35,58 @@ export interface ScheduleVisualizerProps {
 export default function ScheduleVisualizer(props: ScheduleVisualizerProps) {
   const mapRef = React.useRef<_Map>(null);
   const { current: mapElement } = mapRef;
-  const [floors, setFloors] = React.useState<MapFloor[]>([]);
-  const [mapProps, setMapProps] = React.useState<Partial<MapProps>>({});
+  const [mapFloorStates, setMapFloorStates] = React.useState<Record<string, MapFloorState>>({});
+
+  // TODO: listen to overlayadded event to detect when an overlay is changed.
+  const [currentLevel, setCurrentLevel] = React.useState<string>(props.buildingMap.levels[0].name);
+
+  function handleMapImageLoad(target: L.ImageOverlay, floor: MapFloorState): void {}
 
   React.useEffect(() => {
     if (!mapElement) {
       return;
     }
 
+    // We need the image to be loaded to know the bounds, but the image cannot be loaded without a
+    // bounds, it is possible to use a temporary bounds but that would cause the viewport to move
+    // when we replace the temporary bounds. A solution is to load the image in a temporary HTML
+    // image element, then load the ImageOverlay in leaflet, the downside is that the image gets
+    // loaded twice.
     (async () => {
       const promises: Promise<any>[] = [];
-      const mapFloors: MapFloor[] = [];
-      let maxBounds = new L.LatLngBounds([0, 0], [0, 0]);
-
       for (const level of props.buildingMap.levels) {
         const { elevation, images } = level;
         const image = images[0]; // when will there be > 1 image?
-        const { x_offset, y_offset, scale } = image;
 
-        const imageElement = new Image();
-        const blobUrl = toBlobUrl(image.data);
-        imageElement.src = blobUrl;
+        const mapFloorState: MapFloorState = {
+          name: level.name,
+          elevation: elevation,
+          imageUrl: toBlobUrl(image.data),
+          scale: image.scale,
+          offsetX: image.x_offset,
+          offsetY: image.y_offset,
+        };
+
         promises.push(
           new Promise(res => {
+            const imageElement = new Image();
+            imageElement.src = mapFloorState.imageUrl;
+
             const listener = () => {
               imageElement.removeEventListener('load', listener);
-              const width = imageElement.naturalWidth * scale;
-              const height = imageElement.naturalHeight * scale;
-
+              const width = imageElement.naturalWidth * mapFloorState.scale;
+              const height = imageElement.naturalHeight * mapFloorState.scale;
               // TODO: support both svg and image
               // const svgElement = rawCompressedSVGToSVGSVGElement(image.data);
               // const height = (svgElement.height.baseVal.value * scale) / IMAGE_SCALE;
               // const width = (svgElement.width.baseVal.value * scale) / IMAGE_SCALE;
 
-              const offsetPixelsX = x_offset * IMAGE_SCALE;
-              const offsetPixelsY = y_offset * IMAGE_SCALE;
+              mapFloorState.bounds = new L.LatLngBounds(
+                [mapFloorState.offsetY, mapFloorState.offsetX],
+                [mapFloorState.offsetY + height, mapFloorState.offsetX + width],
+              );
 
-              const floor: MapFloor = {
-                name: level.name,
-                elevation: elevation,
-                bounds: new L.LatLngBounds(
-                  new L.LatLng(offsetPixelsY, offsetPixelsX, elevation),
-                  new L.LatLng(offsetPixelsY + height, offsetPixelsX + width, elevation),
-                ),
-                // imageData: SVGSVGElementToDataURI(svgElement),
-                imageUrl: blobUrl,
-              };
-              maxBounds = maxBounds.extend(floor.bounds);
-              mapFloors.push(floor);
+              mapFloorStates[mapFloorState.name] = mapFloorState;
               res();
             };
             imageElement.addEventListener('load', listener);
@@ -97,32 +97,32 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps) {
       for (const p of promises) {
         await p;
       }
-      setMapProps({ ...mapProps, maxBounds: maxBounds });
-      const bestZoom = 10 - ~~Math.log2(maxBounds.getEast());
-      mapElement.leafletElement.setMinZoom(bestZoom - 2);
-      mapElement.leafletElement.setMaxZoom(bestZoom + 2);
-      mapElement.leafletElement.fitBounds(mapFloors[0].bounds);
-      setFloors(mapFloors.slice());
-      L.control.scale().addTo(mapElement.leafletElement);
+      setMapFloorStates({ ...mapFloorStates });
     })();
   }, [props.buildingMap, mapElement]);
 
+  const currentMapFloorState = mapFloorStates[currentLevel];
   return (
     <Map
       ref={mapRef}
       attributionControl={false}
       crs={L.CRS.Simple}
+      minZoom={4}
+      maxZoom={8}
       zoomDelta={0.5}
       zoomSnap={0.5}
-      wheelPxPerZoomLevel={120}
-      {...mapProps}
+      bounds={currentMapFloorState?.bounds}
+      maxBounds={currentMapFloorState?.bounds}
     >
       <AttributionControl position="bottomright" prefix="OSRC-SG" />
-      {/* <ServerDateControl date={date} position="topright" /> */}
       <LayersControl position="topleft">
-        {floors.map((floor, i) => (
-          <LayersControl.BaseLayer checked={i === 0} name={floor.name} key={floor.name}>
-            <ImageOverlay bounds={floor.bounds} url={floor.imageUrl} />
+        {Object.values(mapFloorStates).map((floorState, i) => (
+          <LayersControl.BaseLayer checked={i === 0} name={floorState.name} key={floorState.name}>
+            <ImageOverlay
+              bounds={floorState.bounds}
+              url={floorState.imageUrl}
+              onload={(event: L.LayerEvent) => handleMapImageLoad(event.target, floorState)}
+            />
           </LayersControl.BaseLayer>
         ))}
         <LayersControl.Overlay name="Robots Trajectories" checked>
