@@ -1,13 +1,7 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import * as L from 'leaflet';
 import React from 'react';
-import {
-  AttributionControl,
-  ImageOverlay,
-  LayersControl,
-  Map as _Map,
-  MapProps,
-} from 'react-leaflet';
+import { AttributionControl, ImageOverlay, LayersControl, Map as _Map } from 'react-leaflet';
 import styled from 'styled-components';
 import { toBlobUrl } from '../../util';
 
@@ -20,12 +14,8 @@ const Map = styled(_Map)`
 
 interface MapFloorState {
   name: string;
-  elevation: number;
   imageUrl: string;
-  scale: number;
-  offsetX: number;
-  offsetY: number;
-  bounds?: L.LatLngBounds;
+  bounds: L.LatLngBounds;
 }
 
 export interface ScheduleVisualizerProps {
@@ -58,35 +48,31 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps) {
         const { elevation, images } = level;
         const image = images[0]; // when will there be > 1 image?
 
-        const mapFloorState: MapFloorState = {
-          name: level.name,
-          elevation: elevation,
-          imageUrl: toBlobUrl(image.data),
-          scale: image.scale,
-          offsetX: image.x_offset,
-          offsetY: image.y_offset,
-        };
-
         promises.push(
           new Promise(res => {
             const imageElement = new Image();
-            imageElement.src = mapFloorState.imageUrl;
+            const imageUrl = toBlobUrl(image.data);
+            imageElement.src = imageUrl;
 
             const listener = () => {
               imageElement.removeEventListener('load', listener);
-              const width = imageElement.naturalWidth * mapFloorState.scale;
-              const height = imageElement.naturalHeight * mapFloorState.scale;
+              const width = imageElement.naturalWidth * image.scale;
+              const height = imageElement.naturalHeight * image.scale;
               // TODO: support both svg and image
               // const svgElement = rawCompressedSVGToSVGSVGElement(image.data);
               // const height = (svgElement.height.baseVal.value * scale) / IMAGE_SCALE;
               // const width = (svgElement.width.baseVal.value * scale) / IMAGE_SCALE;
 
-              mapFloorState.bounds = new L.LatLngBounds(
-                [mapFloorState.offsetY, mapFloorState.offsetX],
-                [mapFloorState.offsetY + height, mapFloorState.offsetX + width],
+              const bounds = new L.LatLngBounds(
+                [image.y_offset, image.x_offset],
+                [image.y_offset + height, image.x_offset + width],
               );
 
-              mapFloorStates[mapFloorState.name] = mapFloorState;
+              mapFloorStates[level.name] = {
+                name: level.name,
+                imageUrl: imageUrl,
+                bounds: bounds,
+              };
               res();
             };
             imageElement.addEventListener('load', listener);
