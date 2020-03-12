@@ -4,8 +4,10 @@ import React from 'react';
 import { AttributionControl, ImageOverlay, LayersControl, Map as _Map } from 'react-leaflet';
 import styled from 'styled-components';
 import { toBlobUrl } from '../../util';
+import { computeRobotColor } from './colors';
+import { RobotMarker } from './robot-marker';
 
-const Map = styled(_Map)`
+const WorldMap = styled(_Map)`
   height: 100%;
   width: 100%;
   margin: 0;
@@ -20,17 +22,21 @@ interface MapFloorState {
 
 export interface ScheduleVisualizerProps {
   buildingMap: Readonly<RomiCore.BuildingMap>;
+  fleets: Readonly<RomiCore.FleetState[]>;
 }
 
-export default function ScheduleVisualizer(props: ScheduleVisualizerProps) {
+function robotColorKey(robot: RomiCore.RobotState): string {
+  return `${robot.model}__${robot.name}`;
+}
+
+export default function ScheduleVisualizer(props: ScheduleVisualizerProps): JSX.Element {
   const mapRef = React.useRef<_Map>(null);
   const { current: mapElement } = mapRef;
   const [mapFloorStates, setMapFloorStates] = React.useState<Record<string, MapFloorState>>({});
+  const [robotColors, setRobotColors] = React.useState<Record<string, string>>({});
 
   // TODO: listen to overlayadded event to detect when an overlay is changed.
   const [currentLevel, setCurrentLevel] = React.useState<string>(props.buildingMap.levels[0].name);
-
-  function handleMapImageLoad(target: L.ImageOverlay, floor: MapFloorState): void {}
 
   React.useEffect(() => {
     if (!mapElement) {
@@ -44,9 +50,9 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps) {
     // loaded twice.
     (async () => {
       const promises: Promise<any>[] = [];
+      const newMapFloorStates: Record<string, MapFloorState> = {};
       for (const level of props.buildingMap.levels) {
-        const { elevation, images } = level;
-        const image = images[0]; // when will there be > 1 image?
+        const image = level.images[0]; // when will there be > 1 image?
 
         promises.push(
           new Promise(res => {
@@ -65,10 +71,10 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps) {
 
               const bounds = new L.LatLngBounds(
                 [image.y_offset, image.x_offset],
-                [image.y_offset + height, image.x_offset + width],
+                [image.y_offset - height, image.x_offset + width],
               );
 
-              mapFloorStates[level.name] = {
+              newMapFloorStates[level.name] = {
                 name: level.name,
                 imageUrl: imageUrl,
                 bounds: bounds,
@@ -83,13 +89,32 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps) {
       for (const p of promises) {
         await p;
       }
-      setMapFloorStates({ ...mapFloorStates });
+      setMapFloorStates(m => ({ ...m, ...newMapFloorStates }));
     })();
   }, [props.buildingMap, mapElement]);
 
+  React.useEffect(() => {
+    setRobotColors(robotColors => {
+      (async () => {
+        let updated = false;
+        for (const robot of props.fleets.flatMap(f => f.robots)) {
+          const key = robotColorKey(robot);
+          if (robotColors[key] === undefined) {
+            robotColors[key] = await computeRobotColor(robot.name, robot.model);
+            updated = true;
+          }
+        }
+        if (updated) {
+          setRobotColors({ ...robotColors });
+        }
+      })();
+      return robotColors;
+    });
+  }, [props.fleets]);
+
   const currentMapFloorState = mapFloorStates[currentLevel];
   return (
-    <Map
+    <WorldMap
       ref={mapRef}
       attributionControl={false}
       crs={L.CRS.Simple}
@@ -101,14 +126,20 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps) {
       maxBounds={currentMapFloorState?.bounds}
     >
       <AttributionControl position="bottomright" prefix="OSRC-SG" />
+      {props.fleets.map(({ name: fleetName, robots }) =>
+        robots.map(robot => {
+          const robotColor = robotColors[robotColorKey(robot)];
+          return (
+            robotColor && (
+              <RobotMarker key={robot.name} robotState={robot} footprint={0.5} color={robotColor} />
+            )
+          );
+        }),
+      )}
       <LayersControl position="topleft">
         {Object.values(mapFloorStates).map((floorState, i) => (
           <LayersControl.BaseLayer checked={i === 0} name={floorState.name} key={floorState.name}>
-            <ImageOverlay
-              bounds={floorState.bounds}
-              url={floorState.imageUrl}
-              onload={(event: L.LayerEvent) => handleMapImageLoad(event.target, floorState)}
-            />
+            <ImageOverlay bounds={floorState.bounds} url={floorState.imageUrl} />
           </LayersControl.BaseLayer>
         ))}
         <LayersControl.Overlay name="Robots Trajectories" checked>
@@ -116,6 +147,6 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps) {
         </LayersControl.Overlay>
       </LayersControl>
       {/* <SliderControl /> */}
-    </Map>
+    </WorldMap>
   );
 }

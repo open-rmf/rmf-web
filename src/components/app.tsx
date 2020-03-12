@@ -52,7 +52,8 @@ export default function App(props: AppProps) {
   const [buildingMap, setBuildingMap] = React.useState<RomiCore.BuildingMap | undefined>(undefined);
   const doorStateManager = React.useRef(new DoorStateManager());
   const liftStateManager = React.useRef(new LiftStateManager());
-  const fleetManager = React.useRef(new FleetManager());
+  const { current: fleetManager } = React.useRef(new FleetManager());
+  const [fleets, setFleets] = React.useState(fleetManager.fleets());
   const [showOmniPanel, setShowOmniPanel] = React.useState(true);
   const [loading, setLoading] = React.useState<LoadingScreenProps | null>({
     caption: 'Connecting to SOSS...',
@@ -70,7 +71,8 @@ export default function App(props: AppProps) {
         });
         doorStateManager.current.startSubscription(x);
         liftStateManager.current.startSubscription(x);
-        fleetManager.current.startSubscription(x);
+        fleetManager.startSubscription(x);
+        fleetManager.on('updated', () => setFleets(fleetManager.fleets()));
         setTransport(x);
       })
       .catch((e: CloseEvent) => {
@@ -109,7 +111,7 @@ export default function App(props: AppProps) {
             </IconButton>
           </Toolbar>
         </AppBar>
-        {buildingMap && <ScheduleVisualizer buildingMap={buildingMap} />}
+        {buildingMap && <ScheduleVisualizer buildingMap={buildingMap} fleets={fleets} />}
         {showOmniPanel && (
           <OmniPanel
             className={classes.omniPanel}
@@ -121,7 +123,7 @@ export default function App(props: AppProps) {
             buildingMap={buildingMap}
             doorStateManager={doorStateManager.current}
             liftStateManager={liftStateManager.current}
-            fleetManager={fleetManager.current}
+            fleetManager={fleetManager}
             initialView={OmniPanelView.MainMenu}
             onClose={() => setShowOmniPanel(false)}
           />
