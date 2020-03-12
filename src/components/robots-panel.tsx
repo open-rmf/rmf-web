@@ -12,6 +12,7 @@ import React from 'react';
 
 interface RobotsPanelProps {
   fleets: readonly RomiCore.FleetState[];
+  spotlight?: string;
 }
 
 const useStyles = makeStyles(theme => ({
@@ -66,12 +67,36 @@ function robotModeToString(robotMode: RomiCore.RobotMode): string {
 
 export default function RobotsPanel(props: RobotsPanelProps): JSX.Element {
   const classes = useStyles();
+  const [expandState, setExpandState] = React.useState<Readonly<Record<string, boolean>>>({});
+  const [currentSpotlight, setCurrentSpotlight] = React.useState<string | undefined>(
+    props.spotlight,
+  );
+
+  const spotlight = props.spotlight;
+  if (spotlight && spotlight !== currentSpotlight) {
+    setExpandState(prev => {
+      const newState = { ...prev };
+      newState[spotlight] = true;
+      return newState;
+    });
+    setCurrentSpotlight(props.spotlight);
+  }
 
   const robots = props.fleets
     .flatMap(fleet => fleet.robots)
     .map(robot => {
       return (
-        <ExpansionPanel key={robot.name}>
+        <ExpansionPanel
+          key={robot.name}
+          expanded={Boolean(expandState[robot.name])}
+          onChange={(_, expanded) =>
+            setExpandState(prev => {
+              const newState = { ...prev };
+              newState[robot.name] = expanded;
+              return newState;
+            })
+          }
+        >
           <ExpansionPanelSummary
             classes={{ content: classes.expansionSummaryContent }}
             expandIcon={<ExpandMoreIcon />}

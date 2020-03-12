@@ -1,15 +1,21 @@
 import { AppBar, IconButton, makeStyles, Toolbar, Typography } from '@material-ui/core/';
 import { Dashboard as DashboardIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import debug from 'debug';
 import React from 'react';
 import 'typeface-roboto';
 import DoorStateManager from '../door-state-manager';
 import FleetManager from '../fleet-manager';
 import LiftStateManager from '../lift-state-manager';
 import './app.css';
+import DoorsPanel from './doors-panel';
 import LoadingScreen, { LoadingScreenProps } from './loading-screen';
-import OmniPanel, { OmniPanelView } from './omni-panel';
+import MainMenu from './main-menu';
+import OmniPanel from './omni-panel';
+import OmniPanelView from './omni-panel-view';
 import ScheduleVisualizer from './schedule-visualizer';
+import LiftsPanel from './lifts-panel';
+import RobotsPanel from './robots-panel';
 
 const borderRadius = 20;
 
@@ -42,19 +48,62 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-interface AppProps {
+export interface AppProps {
   transportFactory: () => Promise<RomiCore.Transport>;
 }
 
-export default function App(props: AppProps) {
+enum OmniPanelViewIndex {
+  MainMenu = 0,
+  Doors,
+  Lifts,
+  Robots,
+}
+
+class ViewMapNode {
+  constructor(public value: OmniPanelViewIndex, public parent?: ViewMapNode) {}
+
+  addChild(view: OmniPanelViewIndex): ViewMapNode {
+    return new ViewMapNode(view, this);
+  }
+}
+
+type ViewMap = { [key: number]: ViewMapNode };
+
+function makeViewMap(): ViewMap {
+  const viewMap: ViewMap = {};
+  const root = new ViewMapNode(OmniPanelViewIndex.MainMenu);
+  viewMap[OmniPanelViewIndex.MainMenu] = root;
+  viewMap[OmniPanelViewIndex.Doors] = root.addChild(OmniPanelViewIndex.Doors);
+  viewMap[OmniPanelViewIndex.Lifts] = root.addChild(OmniPanelViewIndex.Lifts);
+  viewMap[OmniPanelViewIndex.Robots] = root.addChild(OmniPanelViewIndex.Robots);
+  return viewMap;
+}
+
+const viewMap = makeViewMap();
+
+export default function App(props: AppProps): JSX.Element {
   const classes = useStyles();
   const [transport, setTransport] = React.useState<RomiCore.Transport | undefined>(undefined);
   const [buildingMap, setBuildingMap] = React.useState<RomiCore.BuildingMap | undefined>(undefined);
-  const doorStateManager = React.useRef(new DoorStateManager());
-  const liftStateManager = React.useRef(new LiftStateManager());
+
+  const { current: doorStateManager } = React.useRef(new DoorStateManager());
+  const [doorStates, setDoorStates] = React.useState<Readonly<Record<string, RomiCore.DoorState>>>(
+    {},
+  );
+  const [doors, setDoors] = React.useState<readonly RomiCore.Door[]>([]);
+
+  const { current: liftStateManager } = React.useRef(new LiftStateManager());
+  const [liftStates, setLiftStates] = React.useState<Readonly<Record<string, RomiCore.LiftState>>>(
+    {},
+  );
+  const [lifts, setLifts] = React.useState<readonly RomiCore.Lift[]>([]);
+
   const { current: fleetManager } = React.useRef(new FleetManager());
   const [fleets, setFleets] = React.useState(fleetManager.fleets());
+  const [robotSpotlight, setRobotSpotlight] = React.useState<string | undefined>(undefined);
+
   const [showOmniPanel, setShowOmniPanel] = React.useState(true);
+  const [currentView, setCurrentView] = React.useState(OmniPanelViewIndex.MainMenu);
   const [loading, setLoading] = React.useState<LoadingScreenProps | null>({
     caption: 'Connecting to SOSS...',
   });
@@ -69,8 +118,8 @@ export default function App(props: AppProps) {
           setLoading({ caption: 'Lost connection to SOSS', variant: 'error' });
           setTransport(undefined);
         });
-        doorStateManager.current.startSubscription(x);
-        liftStateManager.current.startSubscription(x);
+        doorStateManager.startSubscription(x);
+        liftStateManager.startSubscription(x);
         fleetManager.startSubscription(x);
         fleetManager.on('updated', () => setFleets(fleetManager.fleets()));
         setTransport(x);
@@ -97,6 +146,73 @@ export default function App(props: AppProps) {
       });
   }, [transport]);
 
+  React.useEffect(() => {
+    if (currentView === OmniPanelViewIndex.Doors) {
+      const listener = () => setDoorStates(doorStateManager.doorStates());
+      doorStateManager.on('updated', listener);
+      debug.log('started tracking door states');
+      return () => {
+        doorStateManager.off('updated', listener);
+        debug.log('stopped tracking door states');
+      };
+    }
+  }, [currentView, doorStateManager]);
+
+  React.useEffect(() => {
+    if (currentView === OmniPanelViewIndex.Lifts) {
+      const listener = () => setLiftStates(liftStateManager.liftStates());
+      liftStateManager.on('updated', listener);
+      debug.log('started tracking lift states');
+      return () => {
+        liftStateManager.off('updated', listener);
+        debug.log('stopped tracking lift states');
+      };
+    }
+  }, [currentView, liftStateManager]);
+
+  React.useEffect(() => {
+    setDoors(buildingMap ? buildingMap.levels.flatMap(x => x.doors) : []);
+    setLifts(buildingMap ? buildingMap.lifts : []);
+  }, [buildingMap]);
+
+  function handleRobotClick(robot: RomiCore.RobotState): void {
+    setShowOmniPanel(true);
+    setCurrentView(OmniPanelViewIndex.Robots);
+    setRobotSpotlight(robot.name);
+  }
+
+  React.useEffect(() => {
+    if (robotSpotlight) {
+      setRobotSpotlight(undefined);
+    }
+  }, [robotSpotlight]);
+
+  function handleClose() {
+    setShowOmniPanel(false);
+  }
+
+  function handleBack(index: number): void {
+    const parent = viewMap[index].parent;
+    if (!parent) {
+      return handleClose();
+    }
+    setCurrentView(parent.value);
+  }
+
+  function handleMainMenuDoorsClick(): void {
+    setDoorStates(doorStateManager.doorStates());
+    setCurrentView(OmniPanelViewIndex.Doors);
+  }
+
+  function handleMainMenuLiftsClick(): void {
+    setLiftStates(liftStateManager.liftStates());
+    setCurrentView(OmniPanelViewIndex.Lifts);
+  }
+
+  function handleMainMenuRobotsClick(): void {
+    setCurrentView(OmniPanelViewIndex.Robots);
+  }
+
   return (
     <React.Fragment>
       {loading && <LoadingScreen {...loading} />}
@@ -111,7 +227,13 @@ export default function App(props: AppProps) {
             </IconButton>
           </Toolbar>
         </AppBar>
-        {buildingMap && <ScheduleVisualizer buildingMap={buildingMap} fleets={fleets} />}
+        {buildingMap && (
+          <ScheduleVisualizer
+            buildingMap={buildingMap}
+            fleets={fleets}
+            onRobotClick={handleRobotClick}
+          />
+        )}
         {showOmniPanel && (
           <OmniPanel
             className={classes.omniPanel}
@@ -119,14 +241,27 @@ export default function App(props: AppProps) {
               backButton: classes.topLeftBorder,
               closeButton: classes.topRightBorder,
             }}
-            transport={transport}
-            buildingMap={buildingMap}
-            doorStateManager={doorStateManager.current}
-            liftStateManager={liftStateManager.current}
-            fleetManager={fleetManager}
-            initialView={OmniPanelView.MainMenu}
-            onClose={() => setShowOmniPanel(false)}
-          />
+            view={currentView}
+            onBack={handleBack}
+            onClose={handleClose}
+          >
+            <OmniPanelView value={currentView} index={OmniPanelViewIndex.MainMenu}>
+              <MainMenu
+                onDoorsClick={handleMainMenuDoorsClick}
+                onLiftsClick={handleMainMenuLiftsClick}
+                onRobotsClick={handleMainMenuRobotsClick}
+              />
+            </OmniPanelView>
+            <OmniPanelView value={currentView} index={OmniPanelViewIndex.Doors}>
+              <DoorsPanel transport={transport} doorStates={doorStates} doors={doors} />
+            </OmniPanelView>
+            <OmniPanelView value={currentView} index={OmniPanelViewIndex.Lifts}>
+              <LiftsPanel transport={transport} liftStates={liftStates} lifts={lifts} />
+            </OmniPanelView>
+            <OmniPanelView value={currentView} index={OmniPanelViewIndex.Robots}>
+              <RobotsPanel fleets={fleets} spotlight={robotSpotlight} />
+            </OmniPanelView>
+          </OmniPanel>
         )}
       </div>
     </React.Fragment>

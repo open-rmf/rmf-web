@@ -115,6 +115,7 @@ interface LiftsPanelProps {
   lifts: readonly RomiCore.Lift[];
   liftStates: Readonly<Record<string, RomiCore.LiftState | undefined>>;
   onLiftRequest?: (lift: RomiCore.Lift, destination: string) => void;
+  spotlight?: string;
 }
 
 interface LiftRequestMenuState {
@@ -210,7 +211,7 @@ export default function LiftsPanel(props: LiftsPanelProps): JSX.Element {
     const liftState = props.liftStates[lift.name];
 
     return (
-      <ExpansionPanel key={lift.name}>
+      <ExpansionPanel key={lift.name} defaultExpanded={props.spotlight === lift.name}>
         <ExpansionPanelSummary
           classes={{ content: classes.expansionSummaryContent }}
           expandIcon={<ExpandMoreIcon />}

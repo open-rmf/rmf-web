@@ -7,6 +7,7 @@ export interface RobotMarkerProps {
   robotState: RomiCore.RobotState;
   footprint: number;
   color: string;
+  onclick?: (robot: RomiCore.RobotState) => void;
 }
 
 export function RobotMarker(props: RobotMarkerProps): JSX.Element {
@@ -18,10 +19,20 @@ export function RobotMarker(props: RobotMarkerProps): JSX.Element {
     center.lng + Math.cos(yaw) * props.footprint,
   );
 
+  function handleClick(): void {
+    props.onclick && props.onclick(props.robotState);
+  }
+
   return (
     <React.Fragment>
-      <Circle center={center} fillOpacity={1} radius={props.footprint} color={props.color} />
-      <Polyline positions={[center, nose]} color="black" />
+      <Circle
+        center={center}
+        fillOpacity={1}
+        radius={props.footprint}
+        color={props.color}
+        onclick={handleClick}
+      />
+      <Polyline positions={[center, nose]} color="black" interactive={false} />
     </React.Fragment>
   );
 }

@@ -113,6 +113,7 @@ interface DoorsPanelProps {
   doorStates: Readonly<Record<string, RomiCore.DoorState | undefined>>;
   onOpenClick?: (door: RomiCore.Door) => void;
   onCloseClick?: (door: RomiCore.Door) => void;
+  spotlight?: string;
 }
 
 type DoorRequestPublisher = RomiCore.Publisher<RomiCore.DoorRequest>;
@@ -168,7 +169,7 @@ export default function DoorsPanel(props: DoorsPanelProps): JSX.Element {
   const listItems = props.doors.map(door => {
     const doorState = props.doorStates[door.name];
     return (
-      <ExpansionPanel key={door.name}>
+      <ExpansionPanel key={door.name} defaultExpanded={props.spotlight === door.name}>
         <ExpansionPanelSummary
           classes={{ content: classes.expansionSummaryContent }}
           expandIcon={<ExpandMoreIcon />}

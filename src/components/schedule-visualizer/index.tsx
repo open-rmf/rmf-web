@@ -23,6 +23,7 @@ interface MapFloorState {
 export interface ScheduleVisualizerProps {
   buildingMap: Readonly<RomiCore.BuildingMap>;
   fleets: Readonly<RomiCore.FleetState[]>;
+  onRobotClick?(robot: RomiCore.RobotState): void;
 }
 
 function robotColorKey(robot: RomiCore.RobotState): string {
@@ -53,6 +54,9 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): JSX.
       const newMapFloorStates: Record<string, MapFloorState> = {};
       for (const level of props.buildingMap.levels) {
         const image = level.images[0]; // when will there be > 1 image?
+        if (!image) {
+          continue;
+        }
 
         promises.push(
           new Promise(res => {
@@ -122,7 +126,11 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): JSX.
       maxZoom={8}
       zoomDelta={0.5}
       zoomSnap={0.5}
-      bounds={currentMapFloorState?.bounds}
+      bounds={
+        currentMapFloorState?.bounds
+          ? currentMapFloorState.bounds
+          : new L.LatLngBounds([0, 0], [0, 0])
+      }
       maxBounds={currentMapFloorState?.bounds}
     >
       <AttributionControl position="bottomright" prefix="OSRC-SG" />
@@ -131,7 +139,13 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): JSX.
           const robotColor = robotColors[robotColorKey(robot)];
           return (
             robotColor && (
-              <RobotMarker key={robot.name} robotState={robot} footprint={0.5} color={robotColor} />
+              <RobotMarker
+                key={robot.name}
+                robotState={robot}
+                footprint={0.5}
+                color={robotColor}
+                onclick={props.onRobotClick}
+              />
             )
           );
         }),
