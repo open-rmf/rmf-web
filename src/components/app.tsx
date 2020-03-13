@@ -194,11 +194,19 @@ export default function App(props: AppProps): JSX.Element {
     setRobotSpotlight({ value: robot.name });
   }
 
+  function clearSpotlights() {
+    setDoorSpotlight(undefined);
+    setLiftSpotlight(undefined);
+    setRobotSpotlight(undefined);
+  }
+
   function handleClose() {
+    clearSpotlights();
     setShowOmniPanel(false);
   }
 
   function handleBack(index: number): void {
+    clearSpotlights();
     const parent = viewMap[index].parent;
     if (!parent) {
       return handleClose();
