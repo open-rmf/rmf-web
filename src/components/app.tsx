@@ -9,13 +9,14 @@ import FleetManager from '../fleet-manager';
 import LiftStateManager from '../lift-state-manager';
 import './app.css';
 import DoorsPanel from './doors-panel';
+import LiftsPanel from './lifts-panel';
 import LoadingScreen, { LoadingScreenProps } from './loading-screen';
 import MainMenu from './main-menu';
 import OmniPanel from './omni-panel';
 import OmniPanelView from './omni-panel-view';
-import ScheduleVisualizer from './schedule-visualizer';
-import LiftsPanel from './lifts-panel';
 import RobotsPanel from './robots-panel';
+import ScheduleVisualizer from './schedule-visualizer';
+import { SpotlightValue } from './spotlight-expansion-panel';
 
 const borderRadius = 20;
 
@@ -86,21 +87,33 @@ export default function App(props: AppProps): JSX.Element {
   const [transport, setTransport] = React.useState<RomiCore.Transport | undefined>(undefined);
   const [buildingMap, setBuildingMap] = React.useState<RomiCore.BuildingMap | undefined>(undefined);
 
-  const { current: doorStateManager } = React.useRef(new DoorStateManager());
+  const { current: doorStateManager } = React.useRef(
+    React.useMemo(() => new DoorStateManager(), []),
+  );
   const [doorStates, setDoorStates] = React.useState<Readonly<Record<string, RomiCore.DoorState>>>(
     {},
   );
   const [doors, setDoors] = React.useState<readonly RomiCore.Door[]>([]);
+  const [doorSpotlight, setDoorSpotlight] = React.useState<SpotlightValue<string> | undefined>(
+    undefined,
+  );
 
-  const { current: liftStateManager } = React.useRef(new LiftStateManager());
+  const { current: liftStateManager } = React.useRef(
+    React.useMemo(() => new LiftStateManager(), []),
+  );
   const [liftStates, setLiftStates] = React.useState<Readonly<Record<string, RomiCore.LiftState>>>(
     {},
   );
   const [lifts, setLifts] = React.useState<readonly RomiCore.Lift[]>([]);
+  const [liftSpotlight, setLiftSpotlight] = React.useState<SpotlightValue<string> | undefined>(
+    undefined,
+  );
 
-  const { current: fleetManager } = React.useRef(new FleetManager());
+  const { current: fleetManager } = React.useRef(React.useMemo(() => new FleetManager(), []));
   const [fleets, setFleets] = React.useState(fleetManager.fleets());
-  const [robotSpotlight, setRobotSpotlight] = React.useState<string | undefined>(undefined);
+  const [robotSpotlight, setRobotSpotlight] = React.useState<SpotlightValue<string> | undefined>(
+    undefined,
+  );
 
   const [showOmniPanel, setShowOmniPanel] = React.useState(true);
   const [currentView, setCurrentView] = React.useState(OmniPanelViewIndex.MainMenu);
@@ -178,14 +191,8 @@ export default function App(props: AppProps): JSX.Element {
   function handleRobotClick(robot: RomiCore.RobotState): void {
     setShowOmniPanel(true);
     setCurrentView(OmniPanelViewIndex.Robots);
-    setRobotSpotlight(robot.name);
+    setRobotSpotlight({ value: robot.name });
   }
-
-  React.useEffect(() => {
-    if (robotSpotlight) {
-      setRobotSpotlight(undefined);
-    }
-  }, [robotSpotlight]);
 
   function handleClose() {
     setShowOmniPanel(false);

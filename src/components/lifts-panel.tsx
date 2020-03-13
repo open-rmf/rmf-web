@@ -5,7 +5,6 @@
 import {
   Button,
   Divider,
-  ExpansionPanel,
   ExpansionPanelDetails,
   ExpansionPanelSummary,
   List,
@@ -20,6 +19,7 @@ import {
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React, { CSSProperties, MouseEvent } from 'react';
+import SpotlightExpansionPanel, { SpotlightValue } from './spotlight-expansion-panel';
 
 const useStyles = makeStyles(theme => {
   const liftFloorLabelBase: CSSProperties = {
@@ -65,7 +65,7 @@ const useStyles = makeStyles(theme => {
     liftFloorLabelUnknown: {
       ...liftFloorLabelBase,
       borderStyle: 'none',
-    }
+    },
   };
 });
 
@@ -115,7 +115,7 @@ interface LiftsPanelProps {
   lifts: readonly RomiCore.Lift[];
   liftStates: Readonly<Record<string, RomiCore.LiftState | undefined>>;
   onLiftRequest?: (lift: RomiCore.Lift, destination: string) => void;
-  spotlight?: string;
+  spotlight?: SpotlightValue<string>;
 }
 
 interface LiftRequestMenuState {
@@ -129,6 +129,7 @@ export default function LiftsPanel(props: LiftsPanelProps): JSX.Element {
   const theme = useTheme();
   const classes = useStyles();
 
+  const [expanded, setExpanded] = React.useState<Readonly<Record<string, boolean>>>({});
   const [liftRequestPub, setLiftRequestPub] = React.useState<LiftRequestPublisher | null>(null);
   const [
     liftRequestMenuState,
@@ -211,7 +212,12 @@ export default function LiftsPanel(props: LiftsPanelProps): JSX.Element {
     const liftState = props.liftStates[lift.name];
 
     return (
-      <ExpansionPanel key={lift.name} defaultExpanded={props.spotlight === lift.name}>
+      <SpotlightExpansionPanel
+        key={lift.name}
+        index={lift.name}
+        spotlight={props.spotlight}
+        TransitionProps={{ unmountOnExit: true }}
+      >
         <ExpansionPanelSummary
           classes={{ content: classes.expansionSummaryContent }}
           expandIcon={<ExpandMoreIcon />}
@@ -276,7 +282,7 @@ export default function LiftsPanel(props: LiftsPanelProps): JSX.Element {
             Request
           </Button>
         </ExpansionPanelDetails>
-      </ExpansionPanel>
+      </SpotlightExpansionPanel>
     );
   });
 

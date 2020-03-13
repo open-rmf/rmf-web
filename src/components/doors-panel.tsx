@@ -6,7 +6,6 @@ import {
   Button,
   ButtonGroup,
   Divider,
-  ExpansionPanel,
   ExpansionPanelDetails,
   ExpansionPanelSummary,
   makeStyles,
@@ -17,6 +16,7 @@ import { CSSProperties } from '@material-ui/core/styles/withStyles';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
+import SpotlightExpansionPanel, { SpotlightValue } from './spotlight-expansion-panel';
 
 function doorModeToString(doorState?: RomiCore.DoorState): string {
   if (!doorState) {
@@ -113,7 +113,7 @@ interface DoorsPanelProps {
   doorStates: Readonly<Record<string, RomiCore.DoorState | undefined>>;
   onOpenClick?: (door: RomiCore.Door) => void;
   onCloseClick?: (door: RomiCore.Door) => void;
-  spotlight?: string;
+  spotlight?: SpotlightValue<string>;
 }
 
 type DoorRequestPublisher = RomiCore.Publisher<RomiCore.DoorRequest>;
@@ -169,7 +169,12 @@ export default function DoorsPanel(props: DoorsPanelProps): JSX.Element {
   const listItems = props.doors.map(door => {
     const doorState = props.doorStates[door.name];
     return (
-      <ExpansionPanel key={door.name} defaultExpanded={props.spotlight === door.name}>
+      <SpotlightExpansionPanel
+        key={door.name}
+        index={door.name}
+        spotlight={props.spotlight}
+        TransitionProps={{ unmountOnExit: true }}
+      >
         <ExpansionPanelSummary
           classes={{ content: classes.expansionSummaryContent }}
           expandIcon={<ExpandMoreIcon />}
@@ -212,7 +217,7 @@ export default function DoorsPanel(props: DoorsPanelProps): JSX.Element {
             <Button onClick={() => handleOpenClick(door)}>Open</Button>
           </ButtonGroup>
         </ExpansionPanelDetails>
-      </ExpansionPanel>
+      </SpotlightExpansionPanel>
     );
   });
 

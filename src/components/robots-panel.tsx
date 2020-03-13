@@ -1,6 +1,5 @@
 import {
   Divider,
-  ExpansionPanel,
   ExpansionPanelDetails,
   ExpansionPanelSummary,
   makeStyles,
@@ -9,10 +8,11 @@ import {
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
+import SpotlightExpansionPanel, { SpotlightValue } from './spotlight-expansion-panel';
 
-interface RobotsPanelProps {
+export interface RobotsPanelProps {
   fleets: readonly RomiCore.FleetState[];
-  spotlight?: string;
+  spotlight?: SpotlightValue<string>;
 }
 
 const useStyles = makeStyles(theme => ({
@@ -65,37 +65,18 @@ function robotModeToString(robotMode: RomiCore.RobotMode): string {
   }
 }
 
-export default function RobotsPanel(props: RobotsPanelProps): JSX.Element {
+export default function RobotsPanel(props: RobotsPanelProps): React.ReactElement {
   const classes = useStyles();
-  const [expandState, setExpandState] = React.useState<Readonly<Record<string, boolean>>>({});
-  const [currentSpotlight, setCurrentSpotlight] = React.useState<string | undefined>(
-    props.spotlight,
-  );
-
-  const spotlight = props.spotlight;
-  if (spotlight && spotlight !== currentSpotlight) {
-    setExpandState(prev => {
-      const newState = { ...prev };
-      newState[spotlight] = true;
-      return newState;
-    });
-    setCurrentSpotlight(props.spotlight);
-  }
 
   const robots = props.fleets
     .flatMap(fleet => fleet.robots)
     .map(robot => {
       return (
-        <ExpansionPanel
+        <SpotlightExpansionPanel
           key={robot.name}
-          expanded={Boolean(expandState[robot.name])}
-          onChange={(_, expanded) =>
-            setExpandState(prev => {
-              const newState = { ...prev };
-              newState[robot.name] = expanded;
-              return newState;
-            })
-          }
+          index={robot.name}
+          spotlight={props.spotlight}
+          TransitionProps={{ unmountOnExit: true }}
         >
           <ExpansionPanelSummary
             classes={{ content: classes.expansionSummaryContent }}
@@ -141,7 +122,7 @@ export default function RobotsPanel(props: RobotsPanelProps): JSX.Element {
               <Typography variant="body1">{robot.battery_percent}</Typography>
             </div>
           </ExpansionPanelDetails>
-        </ExpansionPanel>
+        </SpotlightExpansionPanel>
       );
     });
 

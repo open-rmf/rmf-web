@@ -5,14 +5,17 @@ import buildingMap from './data/building-map';
 import doorStates from './data/door-states';
 import { FakeTransport } from './fake-transport';
 
-const doors = buildingMap.levels.flatMap(level => level.doors);
-const transport = new FakeTransport();
+(async () => {
+  const bm = await buildingMap();
+  const doors = bm.levels.flatMap(level => level.doors);
+  const transport = new FakeTransport();
 
-ReactDOM.render(
-  <DoorsPanel
-    transport={transport}
-    doors={doors}
-    doorStates={doorStates}
-  />,
-  document.getElementById('root'),
-);
+  ReactDOM.render(
+    <DoorsPanel
+      transport={transport}
+      doors={doors}
+      doorStates={doorStates}
+    />,
+    document.getElementById('root'),
+  );
+})();

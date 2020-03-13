@@ -58,7 +58,7 @@ export class FakeTransport extends RomiCore.TransportEvents implements RomiCore.
     req: Request,
   ): Promise<Response> {
     if (service.service === 'get_building_map') {
-      return new RomiCore.GetBuildingMap_Response(buildingMap) as any;
+      return new RomiCore.GetBuildingMap_Response(await buildingMap()) as any;
     }
     throw new Error('not implemented');
   }

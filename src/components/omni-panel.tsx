@@ -12,7 +12,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-interface OmniPanelProps {
+export interface OmniPanelProps {
   transport?: Readonly<RomiCore.Transport>;
   className?: string;
   classes?: {
@@ -26,7 +26,7 @@ interface OmniPanelProps {
   children: React.ReactElement<OmniPanelViewProps>[];
 }
 
-export default function OmniPanel(props: OmniPanelProps): JSX.Element {
+export default function OmniPanel(props: OmniPanelProps): React.ReactElement {
   const classes = useStyles();
 
   function handleBackClick() {
