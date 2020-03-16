@@ -1,18 +1,64 @@
 import {
-  Button,
   Divider,
-  ExpansionPanel,
   ExpansionPanelDetails,
   ExpansionPanelSummary,
   makeStyles,
   Typography,
   useTheme,
 } from '@material-ui/core';
+import { CSSProperties } from '@material-ui/core/styles/withStyles';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import SpotlightExpansionPanel, { SpotlightValue } from './spotlight-expansion-panel';
 
+import Select from '@material-ui/core/Select';
+
 import React from 'react';
+
+const useStyles = makeStyles(theme => ({
+  expansionSummaryContent: {
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+
+  expansionDetail: {
+    flexFlow: 'column',
+  },
+
+  expansionDetailLine: {
+    display: 'inline-flex',
+    justifyContent: 'space-between',
+    padding: theme.spacing(0.5),
+  },
+}));
+
+const useDispenserModeLabelStyles = makeStyles(theme => {
+  const base: CSSProperties = {
+    borderRadius: theme.shape.borderRadius,
+    borderStyle: 'solid',
+    border: 2,
+    padding: 5,
+    width: '4rem',
+    textAlign: 'center',
+  };
+
+  return {
+    idle: {
+      ...base,
+      borderColor: theme.palette.warning.main,
+    },
+
+    busy: {
+      ...base,
+      borderColor: theme.palette.success.main,
+    },
+
+    offline: {
+      ...base,
+      borderColor: theme.palette.error.main,
+    },
+  };
+});
 
 function dispenserModeToString(dispenserState?: RomiCore.DispenserState): string {
   if (!dispenserState) {
@@ -30,22 +76,46 @@ function dispenserModeToString(dispenserState?: RomiCore.DispenserState): string
   }
 }
 
-const useStyles = makeStyles(theme => ({
-  expansionSummaryContent: {
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
+function RequestQueueLengthToString(dispenserState?: RomiCore.DispenserState): number {
+  if (!dispenserState) {
+    return -1;
+  }
+  return dispenserState.request_guid_queue.length;
+}
 
-  expansionDetail: {
-    flexFlow: 'column',
-  },
+function RequestIdToString(index: number, dispenserState?: RomiCore.DispenserState): string {
+  if (!dispenserState) {
+    return 'unknown';
+  } else if (dispenserState.request_guid_queue.length < index) {
+    return 'unknown';
+  }
+  return dispenserState.request_guid_queue[index];
+}
 
-  expansionDetialLine: {
-    display: 'inline-flex',
-    justifyContent: 'space-between',
-    padding: theme.spacing(0.5),
-  },
-}));
+function CurrentRequestToString(dispenserState?: RomiCore.DispenserState): string {
+  if (!dispenserState) {
+    return 'unknown';
+  }
+  return RequestIdToString(0, dispenserState);
+}
+
+function RequestQueueToString(dispenserState?: RomiCore.DispenserState): string {
+  if (!dispenserState) {
+    return 'unknown';
+  }
+  let queue_string = '';
+  dispenserState.request_guid_queue.map(id => {
+    queue_string += id + ', ';
+  });
+  return queue_string;
+}
+
+function SecondsRemainingToString(dispenserState?: RomiCore.DispenserState): number {
+  if (!dispenserState) {
+    return -1;
+  }
+  return dispenserState.seconds_remaining;
+}
 
 export interface DispenserPanelProps {
   transport?: Readonly<RomiCore.Transport>;
@@ -57,6 +127,38 @@ export default function DispensersPanel(props: DispenserPanelProps): React.React
   const theme = useTheme();
   const classes = useStyles();
 
+  const dispenserModeLabelClasses = useDispenserModeLabelStyles();
+  const dispenserModeLabelClass = (dispenserState?: RomiCore.DispenserState) => {
+    if (!dispenserState) {
+      return '';
+    }
+    switch (dispenserState.mode) {
+      case RomiCore.DispenserState.IDLE:
+        return dispenserModeLabelClasses.idle;
+      case RomiCore.DispenserState.BUSY:
+        return dispenserModeLabelClasses.busy;
+      case RomiCore.DispenserState.OFFLINE:
+        return dispenserModeLabelClasses.offline;
+      default:
+        return '';
+    }
+  };
+
+  const dispenserRequestQueueId = (dispenserState?: RomiCore.DispenserState) => {
+    if (!dispenserState) {
+      return (<div />);
+    } else if (dispenserState.request_guid_queue.length == 0) {
+      return (<div />);
+    }
+    return (
+      <Select multiple native>
+        {dispenserState.request_guid_queue.map(id => (
+          <option key={id} value={id}>{id}</option>
+        ))}
+      </Select>
+    );
+  }
+
   const dispensers = Object.keys(props.dispenserStates).map( (guid, index) => {
     const state = props.dispenserStates[guid];
     return (
@@ -66,14 +168,36 @@ export default function DispensersPanel(props: DispenserPanelProps): React.React
             TransitionProps={{ unmountOnExit: true }}>
           <ExpansionPanelSummary
             classes={{ content: classes.expansionSummaryContent }}
-            expandIcon={<ExpandMoreIcon />}
-          >
+            expandIcon={<ExpandMoreIcon />}>
             <Typography variant="h5">{guid}</Typography>
+            <Typography className={dispenserModeLabelClass(state)} 
+                variant="button">
+              {dispenserModeToString(state)}
+            </Typography>
           </ExpansionPanelSummary>
+          <ExpansionPanelDetails className={classes.expansionDetail}>
+            <div className={classes.expansionDetailLine}>
+              <Typography variant="body1">No. Queued Requests:</Typography>
+              <Typography variant="body1">
+                {RequestQueueLengthToString(state)}
+              </Typography>
+            </div>
+            <Divider />
+            <div className={classes.expansionDetailLine}>
+              <Typography variant="body1">Request Queue ID:</Typography>
+              {dispenserRequestQueueId(state)}
+            </div>
+            <Divider />
+            <div className={classes.expansionDetailLine}>
+              <Typography variant="body1">Seconds Remaining:</Typography>
+              <Typography variant="body1">
+                {SecondsRemainingToString(state)}
+              </Typography>
+            </div>
+          </ExpansionPanelDetails>
         </SpotlightExpansionPanel>
     );
-  })
+  });
 
   return <React.Fragment>{dispensers}</React.Fragment>;
-  // return <h1>This is the dispensers panel</h1>;
 }
