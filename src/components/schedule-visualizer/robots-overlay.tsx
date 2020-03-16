@@ -2,8 +2,8 @@ import { makeStyles } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import * as L from 'leaflet';
 import React from 'react';
-import { SVGOverlay as SVGOverlay_, SVGOverlayProps as SVGOverlayProps_ } from 'react-leaflet';
 import { computeRobotColor } from './colors';
+import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 
 const useStyles = makeStyles(() => ({
   robotMarker: {
@@ -11,14 +11,6 @@ const useStyles = makeStyles(() => ({
     pointerEvents: 'auto',
   },
 }));
-
-/**
- * SVGOverlay typings are broken, its missing the required attribute 'bounds'.
- */
-interface SVGOverlayProps extends SVGOverlayProps_ {
-  bounds: L.LatLngBoundsExpression;
-}
-const SVGOverlay: React.FunctionComponent<SVGOverlayProps> = SVGOverlay_ as any;
 
 export interface RobotsOverlayProps extends SVGOverlayProps {
   fleets: readonly RomiCore.FleetState[];
@@ -34,12 +26,8 @@ export default function RobotsOverlay(props: RobotsOverlayProps): React.ReactEle
 
   const [robotColors, setRobotColors] = React.useState<Record<string, string>>({});
 
-  let bounds;
-  if (props.bounds instanceof L.LatLngBounds) {
-    bounds = props.bounds;
-  } else {
-    bounds = new L.LatLngBounds(props.bounds);
-  }
+  const bounds =
+    props.bounds instanceof L.LatLngBounds ? props.bounds : new L.LatLngBounds(props.bounds);
   const width = bounds.getEast() - bounds.getWest();
   const height = bounds.getNorth() - bounds.getSouth();
   const viewBox = `0 0 ${width} ${height}`;
@@ -71,48 +59,46 @@ export default function RobotsOverlay(props: RobotsOverlayProps): React.ReactEle
   return (
     <SVGOverlay {...props}>
       <svg viewBox={viewBox}>
-        <g>
-          {props.fleets
-            .flatMap(x => x.robots)
-            .map(robot => {
-              const robotColor = robotColors[robotColorKey(robot)];
-              const nose = [
-                robot.location.x + Math.cos(robot.location.yaw) * footprint,
-                robot.location.y + Math.sin(robot.location.yaw) * footprint,
-              ];
-              return (
-                robotColor && (
-                  <g key={robot.name}>
-                    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-                      <feDropShadow
-                        dx="0"
-                        dy="0"
-                        stdDeviation={footprint * 0.15}
-                        floodColor="black"
-                      />
-                    </filter>
-                    <circle
-                      className={classes.robotMarker}
-                      onClick={() => handleRobotClick(robot)}
-                      cx={robot.location.x}
-                      cy={-robot.location.y}
-                      r={footprint}
-                      fill={robotColor}
-                      filter="url(#shadow)"
+        {props.fleets
+          .flatMap(x => x.robots)
+          .map(robot => {
+            const robotColor = robotColors[robotColorKey(robot)];
+            const nose = [
+              robot.location.x + Math.cos(robot.location.yaw) * footprint,
+              robot.location.y + Math.sin(robot.location.yaw) * footprint,
+            ];
+            return (
+              robotColor && (
+                <g key={robot.name}>
+                  <filter id={`${robot.name}-shadow`} x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow
+                      dx="0"
+                      dy="0"
+                      stdDeviation={footprint * 0.15}
+                      floodColor="black"
                     />
-                    <line
-                      x1={robot.location.x}
-                      y1={-robot.location.y}
-                      x2={nose[0]}
-                      y2={-nose[1]}
-                      stroke="black"
-                      strokeWidth="0.05"
-                    />
-                  </g>
-                )
-              );
-            })}
-        </g>
+                  </filter>
+                  <circle
+                    className={classes.robotMarker}
+                    onClick={() => handleRobotClick(robot)}
+                    cx={robot.location.x}
+                    cy={-robot.location.y}
+                    r={footprint}
+                    fill={robotColor}
+                    filter={`url(#${robot.name}-shadow)`}
+                  />
+                  <line
+                    x1={robot.location.x}
+                    y1={-robot.location.y}
+                    x2={nose[0]}
+                    y2={-nose[1]}
+                    stroke="black"
+                    strokeWidth="0.05"
+                  />
+                </g>
+              )
+            );
+          })}
       </svg>
     </SVGOverlay>
   );

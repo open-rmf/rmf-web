@@ -5,6 +5,7 @@ import { AttributionControl, ImageOverlay, LayersControl, Map as _Map } from 're
 import styled from 'styled-components';
 import { toBlobUrl } from '../../util';
 import RobotsOverlay from './robots-overlay';
+import PlacesOverlay from './places-overlay';
 
 const WorldMap = styled(_Map)`
   height: 100%;
@@ -22,6 +23,7 @@ interface MapFloorState {
 export interface ScheduleVisualizerProps {
   buildingMap: Readonly<RomiCore.BuildingMap>;
   fleets: Readonly<RomiCore.FleetState[]>;
+  onPlaceClick?(place: RomiCore.Place): void;
   onRobotClick?(robot: RomiCore.RobotState): void;
 }
 
@@ -31,7 +33,9 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): JSX.
   const [mapFloorStates, setMapFloorStates] = React.useState<Record<string, MapFloorState>>({});
 
   // TODO: listen to overlayadded event to detect when an overlay is changed.
-  const [currentLevel, setCurrentLevel] = React.useState<string>(props.buildingMap.levels[0].name);
+  const [currentLevel, setCurrentLevel] = React.useState<RomiCore.Level>(
+    props.buildingMap.levels[0],
+  );
 
   React.useEffect(() => {
     if (!mapElement) {
@@ -91,7 +95,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): JSX.
     })();
   }, [props.buildingMap, mapElement]);
 
-  const currentMapFloorState = mapFloorStates[currentLevel];
+  const currentMapFloorState = mapFloorStates[currentLevel.name];
   const bounds = currentMapFloorState?.bounds;
   return (
     <WorldMap
@@ -114,6 +118,15 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): JSX.
         ))}
         <LayersControl.Overlay name="Robots Trajectories" checked>
           {/* <RobotTrajectoriesOverlay /> */}
+        </LayersControl.Overlay>
+        <LayersControl.Overlay name="Places" checked>
+          {bounds && (
+            <PlacesOverlay
+              bounds={bounds}
+              places={currentLevel.places}
+              onPlaceClick={props.onPlaceClick}
+            />
+          )}
         </LayersControl.Overlay>
         <LayersControl.Overlay name="Robots" checked>
           {bounds && (

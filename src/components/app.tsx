@@ -14,6 +14,7 @@ import LoadingScreen, { LoadingScreenProps } from './loading-screen';
 import MainMenu from './main-menu';
 import OmniPanel from './omni-panel';
 import OmniPanelView from './omni-panel-view';
+import PlacesPanel from './places-panel';
 import RobotsPanel from './robots-panel';
 import ScheduleVisualizer from './schedule-visualizer';
 import { SpotlightValue } from './spotlight-expansion-panel';
@@ -58,6 +59,7 @@ enum OmniPanelViewIndex {
   Doors,
   Lifts,
   Robots,
+  Places,
 }
 
 class ViewMapNode {
@@ -77,6 +79,7 @@ function makeViewMap(): ViewMap {
   viewMap[OmniPanelViewIndex.Doors] = root.addChild(OmniPanelViewIndex.Doors);
   viewMap[OmniPanelViewIndex.Lifts] = root.addChild(OmniPanelViewIndex.Lifts);
   viewMap[OmniPanelViewIndex.Robots] = root.addChild(OmniPanelViewIndex.Robots);
+  viewMap[OmniPanelViewIndex.Places] = root.addChild(OmniPanelViewIndex.Places);
   return viewMap;
 }
 
@@ -115,6 +118,10 @@ export default function App(props: AppProps): JSX.Element {
     undefined,
   );
 
+  const [placeSpotlight, setPlaceSpotlight] = React.useState<SpotlightValue<string> | undefined>(
+    undefined,
+  );
+
   const [showOmniPanel, setShowOmniPanel] = React.useState(true);
   const [currentView, setCurrentView] = React.useState(OmniPanelViewIndex.MainMenu);
   const [loading, setLoading] = React.useState<LoadingScreenProps | null>({
@@ -140,7 +147,7 @@ export default function App(props: AppProps): JSX.Element {
       .catch((e: CloseEvent) => {
         setLoading({ caption: `Unable to connect to SOSS server (${e.code})`, variant: 'error' });
       });
-  }, [transportFactory]);
+  }, [transportFactory, doorStateManager, liftStateManager, fleetManager]);
 
   React.useEffect(() => {
     if (!transport) {
@@ -188,6 +195,12 @@ export default function App(props: AppProps): JSX.Element {
     setLifts(buildingMap ? buildingMap.lifts : []);
   }, [buildingMap]);
 
+  function handlePlaceClick(place: RomiCore.Place): void {
+    setShowOmniPanel(true);
+    setCurrentView(OmniPanelViewIndex.Places);
+    setPlaceSpotlight({ value: place.name });
+  }
+
   function handleRobotClick(robot: RomiCore.RobotState): void {
     setShowOmniPanel(true);
     setCurrentView(OmniPanelViewIndex.Robots);
@@ -228,6 +241,10 @@ export default function App(props: AppProps): JSX.Element {
     setCurrentView(OmniPanelViewIndex.Robots);
   }
 
+  function handleMainMenuPlacesClick(): void {
+    setCurrentView(OmniPanelViewIndex.Places);
+  }
+
   return (
     <React.Fragment>
       {loading && <LoadingScreen {...loading} />}
@@ -246,6 +263,7 @@ export default function App(props: AppProps): JSX.Element {
           <ScheduleVisualizer
             buildingMap={buildingMap}
             fleets={fleets}
+            onPlaceClick={handlePlaceClick}
             onRobotClick={handleRobotClick}
           />
         )}
@@ -265,6 +283,7 @@ export default function App(props: AppProps): JSX.Element {
                 onDoorsClick={handleMainMenuDoorsClick}
                 onLiftsClick={handleMainMenuLiftsClick}
                 onRobotsClick={handleMainMenuRobotsClick}
+                onPlacesClick={handleMainMenuPlacesClick}
               />
             </OmniPanelView>
             <OmniPanelView value={currentView} index={OmniPanelViewIndex.Doors}>
@@ -275,6 +294,9 @@ export default function App(props: AppProps): JSX.Element {
             </OmniPanelView>
             <OmniPanelView value={currentView} index={OmniPanelViewIndex.Robots}>
               <RobotsPanel fleets={fleets} spotlight={robotSpotlight} />
+            </OmniPanelView>
+            <OmniPanelView value={currentView} index={OmniPanelViewIndex.Places}>
+              {buildingMap && <PlacesPanel buildingMap={buildingMap} />}
             </OmniPanelView>
           </OmniPanel>
         )}
