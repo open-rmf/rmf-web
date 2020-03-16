@@ -4,8 +4,8 @@ import React from 'react';
 import { AttributionControl, ImageOverlay, LayersControl, Map as _Map } from 'react-leaflet';
 import styled from 'styled-components';
 import { toBlobUrl } from '../../util';
-import { computeRobotColor } from './colors';
-import { RobotMarker } from './robot-marker';
+import RobotsOverlay from './robots-overlay';
+import PlacesOverlay from './places-overlay';
 
 const WorldMap = styled(_Map)`
   height: 100%;
@@ -23,21 +23,19 @@ interface MapFloorState {
 export interface ScheduleVisualizerProps {
   buildingMap: Readonly<RomiCore.BuildingMap>;
   fleets: Readonly<RomiCore.FleetState[]>;
+  onPlaceClick?(place: RomiCore.Place): void;
   onRobotClick?(robot: RomiCore.RobotState): void;
-}
-
-function robotColorKey(robot: RomiCore.RobotState): string {
-  return `${robot.model}__${robot.name}`;
 }
 
 export default function ScheduleVisualizer(props: ScheduleVisualizerProps): JSX.Element {
   const mapRef = React.useRef<_Map>(null);
   const { current: mapElement } = mapRef;
   const [mapFloorStates, setMapFloorStates] = React.useState<Record<string, MapFloorState>>({});
-  const [robotColors, setRobotColors] = React.useState<Record<string, string>>({});
 
   // TODO: listen to overlayadded event to detect when an overlay is changed.
-  const [currentLevel, setCurrentLevel] = React.useState<string>(props.buildingMap.levels[0].name);
+  const [currentLevel, setCurrentLevel] = React.useState<RomiCore.Level>(
+    props.buildingMap.levels[0],
+  );
 
   React.useEffect(() => {
     if (!mapElement) {
@@ -97,26 +95,8 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): JSX.
     })();
   }, [props.buildingMap, mapElement]);
 
-  React.useEffect(() => {
-    setRobotColors(robotColors => {
-      (async () => {
-        let updated = false;
-        for (const robot of props.fleets.flatMap(f => f.robots)) {
-          const key = robotColorKey(robot);
-          if (robotColors[key] === undefined) {
-            robotColors[key] = await computeRobotColor(robot.name, robot.model);
-            updated = true;
-          }
-        }
-        if (updated) {
-          setRobotColors({ ...robotColors });
-        }
-      })();
-      return robotColors;
-    });
-  }, [props.fleets]);
-
-  const currentMapFloorState = mapFloorStates[currentLevel];
+  const currentMapFloorState = mapFloorStates[currentLevel.name];
+  const bounds = currentMapFloorState?.bounds;
   return (
     <WorldMap
       ref={mapRef}
@@ -126,30 +106,10 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): JSX.
       maxZoom={8}
       zoomDelta={0.5}
       zoomSnap={0.5}
-      bounds={
-        currentMapFloorState?.bounds
-          ? currentMapFloorState.bounds
-          : new L.LatLngBounds([0, 0], [0, 0])
-      }
+      bounds={bounds}
       maxBounds={currentMapFloorState?.bounds}
     >
       <AttributionControl position="bottomright" prefix="OSRC-SG" />
-      {props.fleets.map(({ name: fleetName, robots }) =>
-        robots.map(robot => {
-          const robotColor = robotColors[robotColorKey(robot)];
-          return (
-            robotColor && (
-              <RobotMarker
-                key={robot.name}
-                robotState={robot}
-                footprint={0.5}
-                color={robotColor}
-                onclick={props.onRobotClick}
-              />
-            )
-          );
-        }),
-      )}
       <LayersControl position="topleft">
         {Object.values(mapFloorStates).map((floorState, i) => (
           <LayersControl.BaseLayer checked={i === 0} name={floorState.name} key={floorState.name}>
@@ -158,6 +118,24 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): JSX.
         ))}
         <LayersControl.Overlay name="Robots Trajectories" checked>
           {/* <RobotTrajectoriesOverlay /> */}
+        </LayersControl.Overlay>
+        <LayersControl.Overlay name="Places" checked>
+          {bounds && (
+            <PlacesOverlay
+              bounds={bounds}
+              places={currentLevel.places}
+              onPlaceClick={props.onPlaceClick}
+            />
+          )}
+        </LayersControl.Overlay>
+        <LayersControl.Overlay name="Robots" checked>
+          {bounds && (
+            <RobotsOverlay
+              bounds={bounds}
+              fleets={props.fleets}
+              onRobotClick={props.onRobotClick}
+            />
+          )}
         </LayersControl.Overlay>
       </LayersControl>
       {/* <SliderControl /> */}

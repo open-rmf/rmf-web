@@ -7,38 +7,36 @@ export default async function buildingMap(): Promise<RomiCore.BuildingMap> {
 
   const doors = [
     {
-      name: 'Door1',
-      v1_x: 0,
-      v1_y: 0,
-      v2_x: 1,
-      v2_y: 1,
+      name: 'main_door',
+      v1_x: 7,
+      v1_y: -6,
+      v2_x: 8,
+      v2_y: -6.2,
       door_type: 1,
       motion_range: 1.571,
       motion_direction: 1,
     },
     {
-      name: 'Door2',
-      v1_x: 10,
-      v1_y: 10,
-      v2_x: 11,
-      v2_y: 11,
-      door_type: 2,
+      name: 'hardware_door',
+      v1_x: 4,
+      v1_y: -4,
+      v2_x: 4.1,
+      v2_y: -3.8,
+      door_type: 1,
       motion_range: 1.571,
       motion_direction: -1,
     },
-  ];
-  for (let i = 3; i < 10; i++) {
-    doors.push({
-      name: `Door${i}`,
-      v1_x: i,
-      v1_y: i,
-      v2_x: i + 1,
-      v2_y: i + 1,
-      door_type: 1,
-      motion_range: 1.571,
+    {
+      name: 'coe_door',
+      v1_x: 6,
+      v1_y: -6,
+      v2_x: 6.2,
+      v2_y: -5.9,
+      door_type: 2,
+      motion_range: -1.571,
       motion_direction: 1,
-    });
-  }
+    },
+  ];
 
   return {
     name: 'test building',
@@ -57,7 +55,22 @@ export default async function buildingMap(): Promise<RomiCore.BuildingMap> {
             yaw: 0,
           },
         ],
-        places: [],
+        places: [{
+          name: 'Place1',
+          x: 2,
+          y: -2,
+          yaw: 0,
+          position_tolerance: 0,
+          yaw_tolerance: 0,
+        },
+        {
+          name: 'Place2',
+          x: 8,
+          y: -4,
+          yaw: 0,
+          position_tolerance: 0,
+          yaw_tolerance: 0,
+        }],
         doors: doors,
         nav_graphs: [],
         wall_graph: {
