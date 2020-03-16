@@ -106,9 +106,6 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): JSX.
       maxBounds={currentMapFloorState?.bounds}
     >
       <AttributionControl position="bottomright" prefix="OSRC-SG" />
-      {bounds && (
-        <RobotsOverlay bounds={bounds} fleets={props.fleets} onRobotClick={props.onRobotClick} />
-      )}
       <LayersControl position="topleft">
         {Object.values(mapFloorStates).map((floorState, i) => (
           <LayersControl.BaseLayer checked={i === 0} name={floorState.name} key={floorState.name}>
@@ -117,6 +114,15 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): JSX.
         ))}
         <LayersControl.Overlay name="Robots Trajectories" checked>
           {/* <RobotTrajectoriesOverlay /> */}
+        </LayersControl.Overlay>
+        <LayersControl.Overlay name="Robots" checked>
+          {bounds && (
+            <RobotsOverlay
+              bounds={bounds}
+              fleets={props.fleets}
+              onRobotClick={props.onRobotClick}
+            />
+          )}
         </LayersControl.Overlay>
       </LayersControl>
       {/* <SliderControl /> */}
