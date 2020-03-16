@@ -9,7 +9,7 @@ for (let i = 1; i <= 20; i++) {
     location: {
       level_name: 'L1',
       x: i,
-      y: 0,
+      y: -2,
       yaw: (i * 0.1) % 2 * Math.PI,
       t: { sec: 0, nanosec: 0 },
     },
@@ -34,7 +34,7 @@ const fleets: RomiCore.FleetState[] = [
         mode: { mode: RomiCore.RobotMode.MODE_MOVING },
         location: {
           level_name: 'L1',
-          x: 0,
+          x: 2,
           y: -5,
           yaw: 0,
           t: { sec: 0, nanosec: 0 },
@@ -49,7 +49,7 @@ const fleets: RomiCore.FleetState[] = [
         mode: { mode: RomiCore.RobotMode.MODE_WAITING },
         location: {
           level_name: 'L1',
-          x: 10,
+          x: 12,
           y: -10,
           yaw: 0,
           t: { sec: 0, nanosec: 0 },
@@ -69,8 +69,8 @@ const fleets: RomiCore.FleetState[] = [
         mode: { mode: RomiCore.RobotMode.MODE_EMERGENCY },
         location: {
           level_name: 'L2',
-          x: 0,
-          y: -15,
+          x: 4,
+          y: -12,
           yaw: 0,
           t: { sec: 0, nanosec: 0 },
         },
