@@ -17,6 +17,7 @@ export interface MainMenuProps {
   onDoorsClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   onLiftsClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   onRobotsClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  onDispensersClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
 
 export default function MainMenu(props: MainMenuProps): JSX.Element {
@@ -32,6 +33,9 @@ export default function MainMenu(props: MainMenuProps): JSX.Element {
       </Button>
       <Button size="large" className={classes.button} onClick={props.onRobotsClick}>
         <Typography variant="h5">Robots</Typography>
+      </Button>
+      <Button size="large" className={classes.button} onClick={props.onDispensersClick}>
+        <Typography variant="h5">Dispensers</Typography>
       </Button>
     </ButtonGroup>
   );
