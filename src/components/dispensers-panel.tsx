@@ -149,7 +149,9 @@ export default function DispensersPanel(props: DispenserPanelProps): React.React
       return (<div />);
     } else if (dispenserState.request_guid_queue.length == 0) {
       return (<div />);
+
     }
+  
     return (
       <Select multiple native>
         {dispenserState.request_guid_queue.map(id => (
@@ -199,5 +201,9 @@ export default function DispensersPanel(props: DispenserPanelProps): React.React
     );
   });
 
-  return <React.Fragment>{dispensers}</React.Fragment>;
+  return (
+    <React.Fragment>
+      {dispensers}
+    </React.Fragment>
+  );
 }

@@ -6,7 +6,7 @@ export interface MainMenuProps {
   onLiftsClick?(event: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
   onRobotsClick?(event: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
   onPlacesClick?(event: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
-  onDispensersClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  onDispensersClick?(event: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
 }
 
 export default function MainMenu(props: MainMenuProps): React.ReactElement {
@@ -33,6 +33,8 @@ export default function MainMenu(props: MainMenuProps): React.ReactElement {
       <ListItem button={true} onClick={props.onPlacesClick}>
         <Typography variant="h5">Places</Typography>
       </ListItem>
+
+      <Divider />
 
       <ListItem button={true} onClick={props.onDispensersClick}>
         <Typography variant="h5">Dispensers</Typography>

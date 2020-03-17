@@ -61,11 +61,8 @@ enum OmniPanelViewIndex {
   Doors,
   Lifts,
   Robots,
-<<<<<<< HEAD
-  Dispensers,
-=======
   Places,
->>>>>>> wip
+  Dispensers,
 }
 
 class ViewMapNode {
@@ -85,11 +82,8 @@ function makeViewMap(): ViewMap {
   viewMap[OmniPanelViewIndex.Doors] = root.addChild(OmniPanelViewIndex.Doors);
   viewMap[OmniPanelViewIndex.Lifts] = root.addChild(OmniPanelViewIndex.Lifts);
   viewMap[OmniPanelViewIndex.Robots] = root.addChild(OmniPanelViewIndex.Robots);
-<<<<<<< HEAD
-  viewMap[OmniPanelViewIndex.Dispensers] = root.addChild(OmniPanelViewIndex.Dispensers);
-=======
   viewMap[OmniPanelViewIndex.Places] = root.addChild(OmniPanelViewIndex.Places);
->>>>>>> wip
+  viewMap[OmniPanelViewIndex.Dispensers] = root.addChild(OmniPanelViewIndex.Dispensers);
   return viewMap;
 }
 
@@ -128,6 +122,10 @@ export default function App(props: AppProps): JSX.Element {
     undefined,
   );
   
+  const [placeSpotlight, setPlaceSpotlight] = React.useState<SpotlightValue<string> | undefined>(
+    undefined,
+  );
+
   const { current: dispenserStateManager } = React.useRef(
     React.useMemo(() => new DispenserStateManager(), []),
   );
@@ -135,10 +133,6 @@ export default function App(props: AppProps): JSX.Element {
     {}
   );
   const [dispenserSpotlight, setDispenserSpotlight] = React.useState<SpotlightValue<string> | undefined>(
-    undefined,
-  );
-
-  const [placeSpotlight, setPlaceSpotlight] = React.useState<SpotlightValue<string> | undefined>(
     undefined,
   );
 
@@ -321,11 +315,8 @@ export default function App(props: AppProps): JSX.Element {
                 onDoorsClick={handleMainMenuDoorsClick}
                 onLiftsClick={handleMainMenuLiftsClick}
                 onRobotsClick={handleMainMenuRobotsClick}
-<<<<<<< HEAD
-                onDispensersClick={handleMainMenuDispensersClick}
-=======
                 onPlacesClick={handleMainMenuPlacesClick}
->>>>>>> wip
+                onDispensersClick={handleMainMenuDispensersClick}
               />
             </OmniPanelView>
             <OmniPanelView value={currentView} index={OmniPanelViewIndex.Doors}>
@@ -337,14 +328,12 @@ export default function App(props: AppProps): JSX.Element {
             <OmniPanelView value={currentView} index={OmniPanelViewIndex.Robots}>
               <RobotsPanel fleets={fleets} spotlight={robotSpotlight} />
             </OmniPanelView>
-<<<<<<< HEAD
+            <OmniPanelView value={currentView} index={OmniPanelViewIndex.Places}>
+              {buildingMap && <PlacesPanel buildingMap={buildingMap} />}
+            </OmniPanelView>
             <OmniPanelView value={currentView} index={OmniPanelViewIndex.Dispensers}>
               <DispensersPanel transport={transport} dispenserStates={dispenserStates}
                    spotlight={dispenserSpotlight} />
-=======
-            <OmniPanelView value={currentView} index={OmniPanelViewIndex.Places}>
-              {buildingMap && <PlacesPanel buildingMap={buildingMap} />}
->>>>>>> wip
             </OmniPanelView>
           </OmniPanel>
         )}
