@@ -1,74 +1,52 @@
-import React from 'react'
-import { Polyline, Marker, CircleMarker } from 'react-leaflet'
-// import { webSocketManager } from '../..'
-import { TrajectoryResponse, fromRawKnotsToKnots } from '../../models/Trajectory'
-import { LatLngExpression } from 'leaflet'
-import { IMAGE_SCALE } from '../../constants'
+import * as L from 'leaflet';
+import React from 'react';
+import { rawKnotsToKnots, Trajectory } from '../../robot-trajectory-manager';
+import { bezierControlPoints, knotsToSegmentCoefficientsArray } from '../../util/cublic-spline';
+import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 
-export interface Trajectory {
-  shape: string
-  dimensions: number[]
-  positions: LatLngExpression[]
+export interface RobotTrajectoriesOverlayProps extends SVGOverlayProps {
+  trajs: readonly Trajectory[];
 }
 
-export default function RobotTrajectoriesOverlay() {
-  const [trajectories, setTrajectories] = React.useState<Trajectory[]>([])
+export default function RobotTrajectoriesOverlay(
+  props: RobotTrajectoriesOverlayProps,
+): React.ReactElement {
+  const { trajs, ...otherProps } = props;
 
-  const onMessageCallback = React.useRef(async (event: WebSocketMessageEvent) => {
-    const data: TrajectoryResponse = JSON.parse(event.data)
+  const bounds =
+    props.bounds instanceof L.LatLngBounds ? props.bounds : new L.LatLngBounds(props.bounds);
+  const width = bounds.getEast() - bounds.getWest();
+  const height = bounds.getNorth() - bounds.getSouth();
+  const viewBox = `0 0 ${width} ${height}`;
 
-    if (data.response !== 'trajectory') return
+  const bezierSplines = trajs.map(traj => {
+    const knots = rawKnotsToKnots(traj.segments);
+    return knotsToSegmentCoefficientsArray(knots).map(coeff => bezierControlPoints(coeff));
+  });
 
-    const { values } = data
-    const trajectories: Trajectory[] = []
+  const ds = bezierSplines.map(bzSpline => {
+    let d = `M ${bzSpline[0][0][0]} ${-bzSpline[0][0][1]} C `;
+    bzSpline.map(
+      bzCurves =>
+        (d +=
+          `${bzCurves[1][0]} ${-bzCurves[1][1]} ` +
+          `${bzCurves[2][0]} ${-bzCurves[2][1]} ` +
+          `${bzCurves[3][0]} ${-bzCurves[3][1]} `),
+    );
+    return d;
+  });
 
-    if (!values) {
-      setTrajectories([])
-      return
-    }
-
-    for (const value of values) {
-      const { shape, dimensions } = value
-      const trajectory: Trajectory = {
-        shape,
-        dimensions,
-        positions: [],
-      }
-
-      const { segments } = value
-      const knots = fromRawKnotsToKnots(segments)
-
-      for (const knot of knots) {
-        const { pose } = knot
-        const { x, y } = pose
-        trajectory.positions.push([
-          y / IMAGE_SCALE,
-          x / IMAGE_SCALE,
-        ])
-      }
-      trajectories.push(trajectory)
-    }
-
-    console.log(trajectories)
-
-    setTrajectories(trajectories)
-  })
-
-  // React.useEffect(() => {
-  //   webSocketManager.addOnMessageCallback(onMessageCallback.current)
-  //   return function cleanup() {
-  //     webSocketManager.removeOnMessageCallback(onMessageCallback.current)
-  //   }
-  // }, [onMessageCallback])
+  // console.log(bezierSplines);
 
   return (
-    <React.Fragment>
-      <CircleMarker center={[0, 0]} radius={5}/>
-      {
-        trajectories.map((trajectory, i) => (
-          <Polyline key={i} positions={trajectory.positions} />
-        ))
-      }
-    </React.Fragment>
-  )
+    <SVGOverlay {...otherProps}>
+      <svg viewBox={viewBox}>
+        {ds.map((d, i) => (
+          <g key={i}>
+            <path d={d} stroke="red" strokeWidth="0.05" fill="none" />
+          </g>
+        ))}
+      </svg>
+    </SVGOverlay>
+  );
 }

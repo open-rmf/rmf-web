@@ -1,5 +1,4 @@
-import './app';
-// import './main-menu';
+import './main-menu';
 // import './doors-panel';
 // import './lifts.panel';
 // import './robots-panel';

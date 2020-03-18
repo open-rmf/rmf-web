@@ -1,12 +1,15 @@
 import { AppBar, IconButton, makeStyles, Toolbar, Typography } from '@material-ui/core/';
 import { Dashboard as DashboardIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import Big from 'big.js';
 import debug from 'debug';
 import React from 'react';
 import 'typeface-roboto';
+import { AppConfig } from '../app-config';
 import DoorStateManager from '../door-state-manager';
 import FleetManager from '../fleet-manager';
 import LiftStateManager from '../lift-state-manager';
+import { RobotTrajectoryManager, Trajectory } from '../robot-trajectory-manager';
 import './app.css';
 import DoorsPanel from './doors-panel';
 import LiftsPanel from './lifts-panel';
@@ -51,7 +54,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export interface AppProps {
-  transportFactory: () => Promise<RomiCore.Transport>;
+  appConfig: AppConfig;
 }
 
 enum OmniPanelViewIndex {
@@ -87,8 +90,11 @@ const viewMap = makeViewMap();
 
 export default function App(props: AppProps): JSX.Element {
   const classes = useStyles();
+  const { transportFactory, trajectoryManagerFactory } = props.appConfig;
   const [transport, setTransport] = React.useState<RomiCore.Transport | undefined>(undefined);
   const [buildingMap, setBuildingMap] = React.useState<RomiCore.BuildingMap | undefined>(undefined);
+  const trajManRef = React.useRef<RobotTrajectoryManager | null>(null);
+  const [trajs, setTrajs] = React.useState<Trajectory[]>([]);
 
   const { current: doorStateManager } = React.useRef(
     React.useMemo(() => new DoorStateManager(), []),
@@ -128,7 +134,22 @@ export default function App(props: AppProps): JSX.Element {
     caption: 'Connecting to SOSS...',
   });
 
-  const transportFactory = props.transportFactory;
+  React.useEffect(() => {
+    let interval: number;
+    (async () => {
+      if (!trajectoryManagerFactory) {
+        return;
+      }
+      const trajMan = await trajectoryManagerFactory();
+      interval = setInterval(async () => {
+        const traj = await trajMan.latestTrajectory(new Big(6000000));
+        setTrajs(traj ? traj : []);
+      }, 1000);
+      trajManRef.current = trajMan;
+    })();
+    return () => clearInterval(interval);
+  }, [trajectoryManagerFactory]);
+
   React.useEffect(() => {
     setLoading({ caption: 'Connecting to SOSS server...' });
     transportFactory()
@@ -263,6 +284,7 @@ export default function App(props: AppProps): JSX.Element {
           <ScheduleVisualizer
             buildingMap={buildingMap}
             fleets={fleets}
+            trajs={trajs}
             onPlaceClick={handlePlaceClick}
             onRobotClick={handleRobotClick}
           />

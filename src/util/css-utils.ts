@@ -1,12 +1,12 @@
 import * as L from 'leaflet';
 
-type Classes = Partial<{ [key: string]: string }>;
+type Classes = Partial<Record<string, string>>;
 
-export function className<T extends Classes>(classes: T | undefined, name: keyof T): string {
-  if (!classes || !classes[name]) {
-    return '';
-  }
-  return classes[name]!;
+export function className<T extends Classes>(
+  classes: T | undefined,
+  name: keyof T,
+): string | undefined {
+  return classes && classes[name];
 }
 
 export function viewBoxFromLeafletBounds(bounds: L.LatLngBoundsExpression): string {
