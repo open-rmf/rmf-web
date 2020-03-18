@@ -43,8 +43,14 @@ export interface TrajectoryResponse {
   values: Trajectory[];
 }
 
-export class RobotTrajectoryManager {
-  static async create(url: string): Promise<RobotTrajectoryManager> {
+export interface RobotTrajectoryManager {
+  trajectory(request: TrajectoryRequest): Promise<TrajectoryResponse>;
+  serverTime(request: TimeRequest): Promise<TimeResponse>;
+  latestTrajectory(period: Big): Promise<Trajectory[]>;
+}
+
+export class DefaultTrajectoryManager {
+  static async create(url: string): Promise<DefaultTrajectoryManager> {
     const ws = new WebSocket(url);
     await new Promise(res => {
       const listener = () => {
@@ -53,7 +59,7 @@ export class RobotTrajectoryManager {
       };
       ws.addEventListener('open', listener);
     });
-    return new RobotTrajectoryManager(ws);
+    return new DefaultTrajectoryManager(ws);
   }
 
   async trajectory(request: TrajectoryRequest): Promise<TrajectoryResponse> {

@@ -1,6 +1,7 @@
 import Big from 'big.js';
 import * as ChildProcses from 'child_process';
-import { RobotTrajectoryManager } from '../robot-trajectory-manager';
+import * as FileSystem from 'fs';
+import { DefaultTrajectoryManager } from '../robot-trajectory-manager';
 
 // trajectory server is broken atm
 describe('robot trajectory manager', () => {
@@ -22,12 +23,14 @@ describe('robot trajectory manager', () => {
   //   rmfDemo.kill();
   // });
 
-  let trajMan: RobotTrajectoryManager;
+  let trajMan: DefaultTrajectoryManager;
   beforeAll(async () => {
-    trajMan = await RobotTrajectoryManager.create('ws://localhost:8006');
+    trajMan = await DefaultTrajectoryManager.create('ws://localhost:8006');
   });
 
-  it('is able to get trajectory data', async () => {
+  fit('is able to get trajectory data', async () => {
+    const trajs = await trajMan.latestTrajectory(new Big(6000000000));
+    FileSystem.writeFileSync('test.json', JSON.stringify(trajs));
     expect(await trajMan.latestTrajectory(new Big(6000000000))).toBeTruthy();
   });
 });
