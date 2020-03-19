@@ -19,6 +19,7 @@ import {
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React, { CSSProperties, MouseEvent } from 'react';
+import DisableableTypography from './disableable-typography';
 import SpotlightExpansionPanel, { SpotlightValue } from './spotlight-expansion-panel';
 
 const useStyles = makeStyles(theme => {
@@ -147,14 +148,22 @@ export default function LiftsPanel(props: LiftsPanelProps): JSX.Element {
 
   function renderAvailableFloors(liftState?: RomiCore.LiftState): JSX.Element {
     if (!liftState) {
-      return <Typography variant="body1">Unknown</Typography>;
+      return (
+        <DisableableTypography disabled={!liftState} variant="body1">
+          Unknown
+        </DisableableTypography>
+      );
     }
     return renderList(liftState.available_floors);
   }
 
   function renderAvailableModes(liftState?: RomiCore.LiftState): JSX.Element {
     if (!liftState) {
-      return <Typography variant="body1">Unknown</Typography>;
+      return (
+        <DisableableTypography disabled={!liftState} variant="body1">
+          Unknown
+        </DisableableTypography>
+      );
     }
     const modes = Array.from(liftState.available_modes.values());
     return renderList(modes.map(liftModeToString));
@@ -236,9 +245,9 @@ export default function LiftsPanel(props: LiftsPanelProps): JSX.Element {
           </div>
           <div className={classes.expansionDetailLine}>
             <Typography variant="body1">Destination Floor:</Typography>
-            <Typography variant="body1">
+            <DisableableTypography disabled={!liftState} variant="body1">
               {liftState ? liftState.destination_floor : 'Unknown'}
-            </Typography>
+            </DisableableTypography>
           </div>
           <Divider />
           <div className={classes.expansionDetailLine}>
@@ -248,9 +257,9 @@ export default function LiftsPanel(props: LiftsPanelProps): JSX.Element {
           <Divider />
           <div className={classes.expansionDetailLine}>
             <Typography variant="body1">Current Mode:</Typography>
-            <Typography variant="body1">
+            <DisableableTypography disabled={!liftState} variant="body1">
               {liftState ? liftModeToString(liftState.current_mode) : 'Unknown'}
-            </Typography>
+            </DisableableTypography>
           </div>
           <Divider />
           <div className={classes.expansionDetailLine}>
@@ -260,16 +269,16 @@ export default function LiftsPanel(props: LiftsPanelProps): JSX.Element {
           <Divider />
           <div className={classes.expansionDetailLine}>
             <Typography variant="body1">Door State:</Typography>
-            <Typography variant="body1">
+            <DisableableTypography disabled={!liftState} variant="body1">
               {liftState ? doorStateToString(liftState.door_state) : 'Unknown'}
-            </Typography>
+            </DisableableTypography>
           </div>
           <Divider />
           <div className={classes.expansionDetailLine}>
             <Typography variant="body1">Motion State:</Typography>
-            <Typography variant="body1">
+            <DisableableTypography disabled={!liftState} variant="body1">
               {liftState ? motionStateToString(liftState.motion_state) : 'Unknown'}
-            </Typography>
+            </DisableableTypography>
           </div>
 
           <Button
