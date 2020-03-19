@@ -118,7 +118,7 @@ export default function App(props: AppProps): JSX.Element {
     undefined,
   );
 
-  const { current: fleetManager } = React.useRef(React.useMemo(() => new FleetManager(), []));
+  const fleetManager = React.useMemo(() => new FleetManager(), []);
   const [fleets, setFleets] = React.useState(fleetManager.fleets());
   const [robotSpotlight, setRobotSpotlight] = React.useState<SpotlightValue<string> | undefined>(
     undefined,
