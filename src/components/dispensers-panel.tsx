@@ -76,45 +76,18 @@ function dispenserModeToString(dispenserState?: RomiCore.DispenserState): string
   }
 }
 
-function RequestQueueLengthToString(dispenserState?: RomiCore.DispenserState): number {
-  if (!dispenserState) {
-    return -1;
-  }
-  return dispenserState.request_guid_queue.length;
-}
-
-function RequestIdToString(index: number, dispenserState?: RomiCore.DispenserState): string {
-  if (!dispenserState) {
-    return 'unknown';
-  } else if (dispenserState.request_guid_queue.length < index) {
-    return 'unknown';
-  }
-  return dispenserState.request_guid_queue[index];
-}
-
-function CurrentRequestToString(dispenserState?: RomiCore.DispenserState): string {
+function requestQueueLengthToString(dispenserState?: RomiCore.DispenserState): string {
   if (!dispenserState) {
     return 'unknown';
   }
-  return RequestIdToString(0, dispenserState);
+  return String(dispenserState.request_guid_queue.length);
 }
 
-function RequestQueueToString(dispenserState?: RomiCore.DispenserState): string {
+function secondsRemainingToString(dispenserState?: RomiCore.DispenserState): string {
   if (!dispenserState) {
     return 'unknown';
   }
-  let queue_string = '';
-  dispenserState.request_guid_queue.map(id => {
-    queue_string += id + ', ';
-  });
-  return queue_string;
-}
-
-function SecondsRemainingToString(dispenserState?: RomiCore.DispenserState): number {
-  if (!dispenserState) {
-    return -1;
-  }
-  return dispenserState.seconds_remaining;
+  return String(dispenserState.seconds_remaining);
 }
 
 export interface DispenserPanelProps {
@@ -146,10 +119,9 @@ export default function DispensersPanel(props: DispenserPanelProps): React.React
 
   const dispenserRequestQueueId = (dispenserState?: RomiCore.DispenserState) => {
     if (!dispenserState) {
-      return (<div />);
+      return null;
     } else if (dispenserState.request_guid_queue.length == 0) {
-      return (<div />);
-
+      return null;
     }
   
     return (
@@ -181,7 +153,7 @@ export default function DispensersPanel(props: DispenserPanelProps): React.React
             <div className={classes.expansionDetailLine}>
               <Typography variant="body1">No. Queued Requests:</Typography>
               <Typography variant="body1">
-                {RequestQueueLengthToString(state)}
+                {requestQueueLengthToString(state)}
               </Typography>
             </div>
             <Divider />
@@ -193,7 +165,7 @@ export default function DispensersPanel(props: DispenserPanelProps): React.React
             <div className={classes.expansionDetailLine}>
               <Typography variant="body1">Seconds Remaining:</Typography>
               <Typography variant="body1">
-                {SecondsRemainingToString(state)}
+                {secondsRemainingToString(state)}
               </Typography>
             </div>
           </ExpansionPanelDetails>
