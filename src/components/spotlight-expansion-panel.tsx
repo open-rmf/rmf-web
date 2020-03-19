@@ -22,15 +22,16 @@ const SpotlightExpansionPanel = React.forwardRef(function<T extends string | num
   props: Props<T>,
   ref: React.Ref<unknown>,
 ): React.ReactElement {
+  const {expanded, onChange, ...otherProps} = props;
   const innerRef = React.useRef<HTMLElement>(null);
-  const [expanded, setExpanded] = React.useState(false);
+  const [expandedState, setExpandedState] = React.useState(false);
 
   React.useEffect(() => {
     const spotlightValue = props.spotlight?.value;
     if (!spotlightValue || spotlightValue !== props.index) {
       return;
     }
-    setExpanded(true);
+    setExpandedState(true);
     innerRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [props.spotlight, props.index, ref]);
 
@@ -43,14 +44,15 @@ const SpotlightExpansionPanel = React.forwardRef(function<T extends string | num
   });
 
   function handleChange(e: React.ChangeEvent<{}>, newExpanded: boolean) {
-    setExpanded(newExpanded);
+    setExpandedState(newExpanded);
     props.onChange && props.onChange(e, newExpanded);
   }
 
   return (
     <ExpansionPanel
+      {...otherProps}
       ref={innerRef}
-      expanded={Boolean(expanded || props.expanded)}
+      expanded={Boolean(expandedState || expanded)}
       onChange={handleChange}
     >
       {props.children}

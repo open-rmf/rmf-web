@@ -110,6 +110,20 @@ export default async function buildingMap(): Promise<RomiCore.BuildingMap> {
           params: [],
         },
       },
+      {
+        name: 'mysterious_lift',
+        doors: [],
+        levels: ['L1', 'L2', 'L3', 'L4'],
+        ref_x: 10,
+        ref_y: 10,
+        ref_yaw: 1.571,
+        wall_graph: {
+          name: 'wallgraph',
+          vertices: [],
+          edges: [],
+          params: [],
+        },
+      }
     ],
   };
 }

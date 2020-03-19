@@ -3,9 +3,12 @@ import * as L from 'leaflet';
 import React from 'react';
 import { AttributionControl, ImageOverlay, LayersControl, Map as _Map } from 'react-leaflet';
 import styled from 'styled-components';
+import { Trajectory } from '../../robot-trajectory-manager';
 import { toBlobUrl } from '../../util';
-import RobotsOverlay from './robots-overlay';
+import ColorManager from './colors';
 import PlacesOverlay from './places-overlay';
+import RobotTrajectoriesOverlay from './robot-trajectories-overlay';
+import RobotsOverlay from './robots-overlay';
 
 const WorldMap = styled(_Map)`
   height: 100%;
@@ -23,6 +26,7 @@ interface MapFloorState {
 export interface ScheduleVisualizerProps {
   buildingMap: Readonly<RomiCore.BuildingMap>;
   fleets: Readonly<RomiCore.FleetState[]>;
+  trajs: readonly Trajectory[];
   onPlaceClick?(place: RomiCore.Place): void;
   onRobotClick?(robot: RomiCore.RobotState): void;
 }
@@ -31,6 +35,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): JSX.
   const mapRef = React.useRef<_Map>(null);
   const { current: mapElement } = mapRef;
   const [mapFloorStates, setMapFloorStates] = React.useState<Record<string, MapFloorState>>({});
+  const colorManager = React.useMemo(() => new ColorManager(), []);
 
   // TODO: listen to overlayadded event to detect when an overlay is changed.
   const [currentLevel, setCurrentLevel] = React.useState<RomiCore.Level>(
@@ -128,11 +133,21 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): JSX.
             />
           )}
         </LayersControl.Overlay>
+        <LayersControl.Overlay name="RobotTrajectories" checked>
+          {bounds && (
+            <RobotTrajectoriesOverlay
+              bounds={bounds}
+              trajs={props.trajs}
+              colorManager={colorManager}
+            />
+          )}
+        </LayersControl.Overlay>
         <LayersControl.Overlay name="Robots" checked>
           {bounds && (
             <RobotsOverlay
               bounds={bounds}
               fleets={props.fleets}
+              colorManager={colorManager}
               onRobotClick={props.onRobotClick}
             />
           )}
