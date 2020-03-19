@@ -52,12 +52,16 @@ export interface RobotTrajectoryManager {
 export class DefaultTrajectoryManager {
   static async create(url: string): Promise<DefaultTrajectoryManager> {
     const ws = new WebSocket(url);
-    await new Promise(res => {
-      const listener = () => {
+    await new Promise((res, rej) => {
+      ws.addEventListener('open', function listener() {
         ws.removeEventListener('open', listener);
         res();
-      };
-      ws.addEventListener('open', listener);
+      });
+
+      ws.addEventListener('error', function listener(e) {
+        ws.removeEventListener('error', listener);
+        rej(e);
+      });
     });
     return new DefaultTrajectoryManager(ws);
   }

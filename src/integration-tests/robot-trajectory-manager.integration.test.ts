@@ -1,36 +1,36 @@
 import Big from 'big.js';
 import * as ChildProcses from 'child_process';
-import * as FileSystem from 'fs';
 import { DefaultTrajectoryManager } from '../robot-trajectory-manager';
 
 // trajectory server is broken atm
 describe('robot trajectory manager', () => {
-  let rmfDemo: ChildProcses.ChildProcessWithoutNullStreams;
-  let scheduleServer: ChildProcses.ChildProcessWithoutNullStreams;
-
-  // FIXME: ros2 launch/run does not clean up child processes
-  // beforeAll(() => {
-  //   rmfDemo = ChildProcses.spawn('ros2', ['launch', 'demos', 'office.launch.xml']);
-  //   scheduleServer = ChildProcses.spawn('ros2', [
-  //     'run',
-  //     'rmf_schedule_visualizer',
-  //     'schedule_visualizer',
-  //   ]);
-  // });
-
-  // afterAll(async () => {
-  //   scheduleServer.kill();
-  //   rmfDemo.kill();
-  // });
-
   let trajMan: DefaultTrajectoryManager;
-  beforeAll(async () => {
-    trajMan = await DefaultTrajectoryManager.create('ws://localhost:8006');
-  });
+  let rmfDemo: ChildProcses.ChildProcessWithoutNullStreams;
 
-  fit('is able to get trajectory data', async () => {
-    const trajs = await trajMan.latestTrajectory(new Big(6000000000));
-    FileSystem.writeFileSync('test.json', JSON.stringify(trajs));
-    expect(await trajMan.latestTrajectory(new Big(6000000000))).toBeTruthy();
+  beforeAll(async () => {
+    rmfDemo = ChildProcses.spawn('ros2', ['launch', 'demos', 'office.launch.xml']);
+    await new Promise(res => {
+      const interval = setInterval(async () => {
+        try {
+          trajMan = await DefaultTrajectoryManager.create('ws://localhost:8006');
+          clearInterval(interval);
+          res();
+        } catch (e) {
+          // do nothing, try again later
+        }
+      }, 1000);
+    });
+  }, 30000);
+
+  afterAll(async () => {
+    await new Promise(res => {
+      // ros2 launch only cleans up children with SIGINT, SIGTERM doesn't work
+      rmfDemo.kill('SIGINT');
+      rmfDemo.once('exit', res);
+    });
+  }, Infinity);
+
+  it('is able to get trajectory data', async () => {
+    await trajMan.latestTrajectory(new Big(6000000000));
   });
 });
