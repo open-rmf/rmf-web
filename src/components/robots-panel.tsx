@@ -66,7 +66,6 @@ function robotModeToString(robotMode: RomiCore.RobotMode): string {
 }
 
 export default function RobotsPanel(props: RobotsPanelProps): React.ReactElement {
-  console.log('a');
   const classes = useStyles();
 
   const robots = props.fleets
@@ -127,6 +126,5 @@ export default function RobotsPanel(props: RobotsPanelProps): React.ReactElement
       );
     });
 
-  console.log('b');
   return <React.Fragment>{robots}</React.Fragment>;
 }

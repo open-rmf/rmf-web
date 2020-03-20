@@ -1,21 +1,23 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import * as L from 'leaflet';
 import React from 'react';
-import { AttributionControl, ImageOverlay, LayersControl, Map as _Map } from 'react-leaflet';
-import styled from 'styled-components';
+import { AttributionControl, ImageOverlay, LayersControl, Map as LMap } from 'react-leaflet';
 import { Trajectory } from '../../robot-trajectory-manager';
 import { toBlobUrl } from '../../util';
 import ColorManager from './colors';
 import PlacesOverlay from './places-overlay';
 import RobotTrajectoriesOverlay from './robot-trajectories-overlay';
 import RobotsOverlay from './robots-overlay';
+import { makeStyles } from '@material-ui/core';
 
-const WorldMap = styled(_Map)`
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-`;
+const useStyles = makeStyles(() => ({
+  map: {
+    height: '100%',
+    width: '100%',
+    margin: 0,
+    padding: 0,
+  },
+}));
 
 interface MapFloorState {
   name: string;
@@ -32,7 +34,8 @@ export interface ScheduleVisualizerProps {
 }
 
 export default function ScheduleVisualizer(props: ScheduleVisualizerProps): JSX.Element {
-  const mapRef = React.useRef<_Map>(null);
+  const classes = useStyles();
+  const mapRef = React.useRef<LMap>(null);
   const { current: mapElement } = mapRef;
   const [mapFloorStates, setMapFloorStates] = React.useState<Record<string, MapFloorState>>({});
   const colorManager = React.useMemo(() => new ColorManager(), []);
@@ -103,8 +106,9 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): JSX.
   const currentMapFloorState = mapFloorStates[currentLevel.name];
   const bounds = currentMapFloorState?.bounds;
   return (
-    <WorldMap
+    <LMap
       ref={mapRef}
+      className={classes.map}
       attributionControl={false}
       crs={L.CRS.Simple}
       minZoom={4}
@@ -121,9 +125,6 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): JSX.
             <ImageOverlay bounds={floorState.bounds} url={floorState.imageUrl} />
           </LayersControl.BaseLayer>
         ))}
-        <LayersControl.Overlay name="Robots Trajectories" checked>
-          {/* <RobotTrajectoriesOverlay /> */}
-        </LayersControl.Overlay>
         <LayersControl.Overlay name="Places" checked>
           {bounds && (
             <PlacesOverlay
@@ -133,7 +134,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): JSX.
             />
           )}
         </LayersControl.Overlay>
-        <LayersControl.Overlay name="RobotTrajectories" checked>
+        <LayersControl.Overlay name="Robot Trajectories" checked>
           {bounds && (
             <RobotTrajectoriesOverlay
               bounds={bounds}
@@ -153,7 +154,6 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): JSX.
           )}
         </LayersControl.Overlay>
       </LayersControl>
-      {/* <SliderControl /> */}
-    </WorldMap>
+    </LMap>
   );
 }

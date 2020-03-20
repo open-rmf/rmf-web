@@ -9,8 +9,6 @@ import {
 } from '../robot-trajectory-manager';
 import trajectories from './data/trajectories.json';
 
-console.log(trajectories);
-
 export default class FakeTrajectoryManager implements RobotTrajectoryManager {
   trajectory(request: TrajectoryRequest): Promise<TrajectoryResponse> {
     throw new Error('Method not implemented.');

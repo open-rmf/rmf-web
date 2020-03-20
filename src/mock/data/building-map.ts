@@ -2,8 +2,14 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import officePng from './office.png';
 
 export default async function buildingMap(): Promise<RomiCore.BuildingMap> {
-  const resp = await fetch(officePng);
-  const officeImageData = new Uint8Array(await resp.arrayBuffer());
+  let officeImageData: Uint8Array;
+  if (process.env.NODE_ENV === 'test') {
+    const fs = await import('fs');
+    officeImageData = fs.readFileSync(`${__dirname}/office.png`);
+  } else {
+    const resp = await fetch(officePng);
+    officeImageData = new Uint8Array(await resp.arrayBuffer());
+  }
 
   const doors = [
     {

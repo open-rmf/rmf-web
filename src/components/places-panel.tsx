@@ -1,11 +1,4 @@
-import {
-  ExpansionPanelSummary,
-  ListItemText,
-  makeStyles,
-  ExpansionPanelDetails,
-  Typography,
-  Divider,
-} from '@material-ui/core';
+import { Divider, ExpansionPanelDetails, ExpansionPanelSummary, ListItemText, makeStyles, Typography } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
@@ -47,7 +40,12 @@ export default function PlacesPanel(props: PlacesPanelProps): React.ReactElement
     <React.Fragment>
       {props.buildingMap.levels.flatMap(level =>
         level.places.map(place => (
-          <SpotlightExpansionPanel key={place.name} index={place.name} spotlight={props.spotlight}>
+          <SpotlightExpansionPanel
+            key={place.name}
+            index={place.name}
+            spotlight={props.spotlight}
+            TransitionProps={{ unmountOnExit: true }}
+          >
             <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
               <ListItemText
                 className={classes.summary}

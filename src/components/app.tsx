@@ -141,7 +141,7 @@ export default function App(props: AppProps): JSX.Element {
         return;
       }
       const trajMan = await trajectoryManagerFactory();
-      interval = setInterval(async () => {
+      interval = window.setInterval(async () => {
         const traj = await trajMan.latestTrajectory(new Big(6000000));
         setTrajs(traj ? traj : []);
       }, 1000);
