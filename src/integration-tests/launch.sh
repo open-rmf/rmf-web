@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+set -x
 
 ros2 launch demos office.launch.xml &
 RMF_DEMO=$!
@@ -9,7 +11,7 @@ VIS_SERVER=$!
 sleep 5
 ros2 launch demos office_loop.launch.xml
 
-npx react-scripts test --testPathPattern integration-tests
+node node_modules/.bin/react-scripts "$@"
 
 # ros2 launch only cleans up children with SIGINT, SIGTERM doesn't work
 kill -SIGINT $RMF_DEMO

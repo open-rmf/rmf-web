@@ -37,7 +37,7 @@
     "start:mock": "REACT_APP_MOCK=1 react-scripts start",
     "build": "react-scripts build",
     "test": "REACT_APP_MOCK=1 react-scripts test --testPathIgnorePatterns integration-tests",
-    "test:integration": "src/integration-tests/launch.sh",
+    "test:integration": "src/integration-tests/launch.sh test --testPathPattern integration-tests",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
