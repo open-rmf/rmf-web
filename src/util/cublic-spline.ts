@@ -1,5 +1,3 @@
-import Big from 'big.js';
-
 export interface Pose2D {
   x: number;
   y: number;
@@ -11,24 +9,15 @@ export interface Segment {
   finalPose: number;
   initialVelocity: number;
   finalVelocity: number;
-  initialTime: Big;
-  finalTime: Big;
-}
-
-export interface BigSegment {
-  initialPose: Big;
-  finalPose: Big;
-  initialVelocity: Big;
-  finalVelocity: Big;
-  initialTime: Big;
-  finalTime: Big;
+  initialTime: number;
+  finalTime: number;
 }
 
 export interface CoefficientSet {
-  a: Big;
-  b: Big;
-  c: Big;
-  d: Big;
+  a: number;
+  b: number;
+  c: number;
+  d: number;
 }
 
 export interface Velocity {
@@ -40,28 +29,15 @@ export interface Velocity {
 export interface Knot {
   pose: Pose2D;
   velocity: Velocity;
-  time: Big;
+  time: number;
 }
 
 export interface SegmentCoefficients {
   x: CoefficientSet;
   y: CoefficientSet;
   theta: CoefficientSet;
-  initialTime: Big;
-  finalTime: Big;
-}
-
-export function segmentToBig(segment: Segment): BigSegment {
-  const { initialTime, finalTime } = segment;
-
-  return {
-    initialPose: new Big(segment.initialPose),
-    finalPose: new Big(segment.finalPose),
-    initialVelocity: new Big(segment.initialVelocity),
-    finalVelocity: new Big(segment.finalVelocity),
-    initialTime,
-    finalTime,
-  };
+  initialTime: number;
+  finalTime: number;
 }
 
 export function segmentToCoefficientSet(segment: Segment): CoefficientSet {
@@ -72,21 +48,14 @@ export function segmentToCoefficientSet(segment: Segment): CoefficientSet {
     finalVelocity: v1,
     initialTime,
     finalTime,
-  } = segmentToBig(segment);
+  } = segment;
 
-  const dt = finalTime.minus(initialTime);
-  const w0 = v0.div(dt);
-  const w1 = v1.div(dt);
+  const dt = finalTime - initialTime;
+  const w0 = v0 / dt;
+  const w1 = v1 / dt;
 
-  const a = w1
-    .plus(w0)
-    .minus(x1.times(2))
-    .plus(x0.times(2));
-  const b = Big(0)
-    .minus(w1)
-    .minus(w0.times(2))
-    .plus(x1.times(3))
-    .minus(x0.times(3));
+  const a = w1 + w0 - x1 * 2 + x0 * 2;
+  const b = -w1 - w0 * 2 + x1 * 3 + x0 * 3;
 
   return {
     a,
@@ -128,28 +97,26 @@ export function knotsToSegmentCoefficientsArray(knots: Knot[]): SegmentCoefficie
   return scs;
 }
 
-export function getInterpolatedTime(initialTime: Big, finalTime: Big, time: Big) {
-  return time.minus(initialTime).div(finalTime.minus(initialTime));
+export function getInterpolatedTime(initialTime: number, finalTime: number, time: number) {
+  return (time - initialTime) / (finalTime - initialTime);
 }
 
 export function resolveSpline(
   coefficientSet: CoefficientSet,
-  interpolatedTime: Big,
-  interpolatedTimePow2 = interpolatedTime.pow(2),
-  interpolatedTimePow3 = interpolatedTime.pow(3),
+  interpolatedTime: number,
+  interpolatedTimePow2 = interpolatedTime ** 2,
+  interpolatedTimePow3 = interpolatedTime ** 3,
 ): number {
-  return parseFloat(
-    coefficientSet.a
-      .times(interpolatedTimePow3)
-      .plus(coefficientSet.b.times(interpolatedTimePow2))
-      .plus(coefficientSet.c.times(interpolatedTime))
-      .plus(coefficientSet.d)
-      .toJSON(),
+  return (
+    coefficientSet.a * interpolatedTimePow3 +
+    coefficientSet.b * interpolatedTimePow2 +
+    coefficientSet.c * interpolatedTime +
+    coefficientSet.d
   );
 }
 
 export function getPositionFromSegmentCoefficientsArray(
-  time: Big,
+  time: number,
   scs: SegmentCoefficients[],
 ): Pose2D | null {
   let sc: SegmentCoefficients | undefined;
@@ -167,8 +134,8 @@ export function getPositionFromSegmentCoefficientsArray(
   const { x: xCoeff, y: yCoeff, theta: thetaCoeff, initialTime, finalTime } = sc;
 
   const interpolatedTime = getInterpolatedTime(initialTime, finalTime, time);
-  const interpolatedTimePow2 = interpolatedTime.pow(2);
-  const interpolatedTimePow3 = interpolatedTime.pow(3);
+  const interpolatedTimePow2 = interpolatedTime ** 2;
+  const interpolatedTimePow3 = interpolatedTime ** 3;
 
   return {
     x: resolveSpline(xCoeff, interpolatedTime, interpolatedTimePow2, interpolatedTimePow3),
@@ -177,21 +144,15 @@ export function getPositionFromSegmentCoefficientsArray(
   };
 }
 
-function bezierHelper(coeffs: CoefficientSet): Big[] {
+function bezierHelper(coeffs: CoefficientSet): [number, number, number, number] {
   const a = coeffs.a;
   const b = coeffs.b;
   const c = coeffs.c;
   const d = coeffs.d;
   const p0 = d;
-  const p1 = c.plus(p0.mul(3)).div(3);
-  const p2 = b
-    .minus(p0.mul(3))
-    .plus(p1.mul(6))
-    .div(3);
-  const p3 = a
-    .plus(p0)
-    .minus(p1.mul(3))
-    .plus(p2.mul(3));
+  const p1 = (c + p0*3) / 3;
+  const p2 = ((b - p0*3) + p1*6) / 3;
+  const p3 = ((a + p0) - p1*3) + p2*3;
 
   return [p0, p1, p2, p3];
 }

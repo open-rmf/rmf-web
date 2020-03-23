@@ -1,5 +1,4 @@
-import Big from 'big.js';
-import { Knot, Pose2D, Velocity } from './util/cublic-spline';
+import { Knot } from './util/cublic-spline';
 
 // RawVelocity received from server is in this format (x, y, theta)
 export type RawVelocity = [number, number, number];
@@ -8,7 +7,7 @@ export type RawVelocity = [number, number, number];
 export type RawPose2D = [number, number, number];
 
 interface RawKnot {
-  t: string; // nanoseconds
+  t: number; // milliseconds
   v: RawVelocity;
   x: RawPose2D;
 }
@@ -17,8 +16,7 @@ export interface TrajectoryRequest {
   request: 'trajectory';
   param: {
     map_name: string;
-    start_time: Big;
-    finish_time: Big;
+    duration: number;
   };
 }
 
@@ -34,7 +32,7 @@ export interface TimeResponse {
 
 export interface Trajectory {
   shape: string;
-  dimensions: Big[];
+  dimensions: number[];
   segments: RawKnot[];
 }
 
@@ -44,9 +42,8 @@ export interface TrajectoryResponse {
 }
 
 export interface RobotTrajectoryManager {
-  trajectory(request: TrajectoryRequest): Promise<TrajectoryResponse>;
   serverTime(request: TimeRequest): Promise<TimeResponse>;
-  latestTrajectory(period: Big): Promise<Trajectory[]>;
+  latestTrajectory(request: TrajectoryRequest): Promise<TrajectoryResponse>;
 }
 
 export class DefaultTrajectoryManager {
@@ -66,7 +63,7 @@ export class DefaultTrajectoryManager {
     return new DefaultTrajectoryManager(ws);
   }
 
-  async trajectory(request: TrajectoryRequest): Promise<TrajectoryResponse> {
+  async latestTrajectory(request: TrajectoryRequest): Promise<TrajectoryResponse> {
     if (this._ongoingRequest['trajectory']) {
       throw new Error('only one request can be sent at once');
     }
@@ -98,20 +95,6 @@ export class DefaultTrajectoryManager {
     });
   }
 
-  async latestTrajectory(period: Big): Promise<Trajectory[]> {
-    const timeResp = await this.serverTime({ request: 'time', param: {} });
-    const startTime = new Big(timeResp.values[0]);
-    const resp = await this.trajectory({
-      request: 'trajectory',
-      param: {
-        start_time: startTime,
-        finish_time: startTime.add(period),
-        map_name: 'L1',
-      },
-    });
-    return resp.values;
-  }
-
   private _ongoingRequest: Record<string, boolean> = {};
 
   private constructor(private _webSocket: WebSocket) {}
@@ -134,7 +117,7 @@ export function rawKnotsToKnots(rawKnots: RawKnot[]): Knot[] {
         y: velocityY,
         theta: velocityTheta,
       },
-      time: new Big(rawKnot.t),
+      time: rawKnot.t,
     });
   }
 
