@@ -154,8 +154,6 @@ function bezierHelper(coeffs: CoefficientSet): [number, number, number, number] 
   const p2 = (b - p0 * 3 + p1 * 6) / 3;
   const p3 = a + p0 - p1 * 3 + p2 * 3;
 
-  console.log([p0, p1, p2, p3]);
-
   return [p0, p1, p2, p3];
 }
 

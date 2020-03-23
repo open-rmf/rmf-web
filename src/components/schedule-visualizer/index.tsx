@@ -2,7 +2,7 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import * as L from 'leaflet';
 import React from 'react';
 import { AttributionControl, ImageOverlay, LayersControl, Map as LMap } from 'react-leaflet';
-import { Trajectory } from '../../robot-trajectory-manager';
+import { Trajectory, RobotTrajectoryManager } from '../../robot-trajectory-manager';
 import { toBlobUrl } from '../../util';
 import ColorManager from './colors';
 import PlacesOverlay from './places-overlay';
@@ -28,7 +28,7 @@ interface MapFloorState {
 export interface ScheduleVisualizerProps {
   buildingMap: Readonly<RomiCore.BuildingMap>;
   fleets: Readonly<RomiCore.FleetState[]>;
-  trajs: readonly Trajectory[];
+  trajManager?: Readonly<RobotTrajectoryManager>
   onPlaceClick?(place: RomiCore.Place): void;
   onRobotClick?(robot: RomiCore.RobotState): void;
 }
@@ -39,6 +39,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): JSX.
   const { current: mapElement } = mapRef;
   const [mapFloorStates, setMapFloorStates] = React.useState<Record<string, MapFloorState>>({});
   const colorManager = React.useMemo(() => new ColorManager(), []);
+  const [trajs, setTrajs] = React.useState<Trajectory[]>([]);
 
   // TODO: listen to overlayadded event to detect when an overlay is changed.
   const [currentLevel, setCurrentLevel] = React.useState<RomiCore.Level>(
@@ -103,6 +104,27 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): JSX.
     })();
   }, [props.buildingMap, mapElement]);
 
+  React.useEffect(() => {
+    let interval: number;
+    (async () => {
+      const trajManager = props.trajManager;
+      if (!trajManager) {
+        return;
+      }
+      interval = window.setInterval(async () => {
+        const resp = await trajManager.latestTrajectory({
+          request: 'trajectory',
+          param: {
+            map_name: currentLevel.name,
+            duration: 60000,
+          },
+        });
+        setTrajs(resp.values ? resp.values : []);
+      }, 1000);
+    })();
+    return () => clearInterval(interval);
+  }, [props.trajManager, currentLevel]);
+
   const currentMapFloorState = mapFloorStates[currentLevel.name];
   const bounds = currentMapFloorState?.bounds;
   return (
@@ -138,7 +160,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): JSX.
           {bounds && (
             <RobotTrajectoriesOverlay
               bounds={bounds}
-              trajs={props.trajs}
+              trajs={trajs}
               colorManager={colorManager}
             />
           )}
