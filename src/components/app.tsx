@@ -1,7 +1,6 @@
 import { AppBar, IconButton, makeStyles, Toolbar, Typography } from '@material-ui/core/';
 import { Dashboard as DashboardIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import Big from 'big.js';
 import debug from 'debug';
 import React from 'react';
 import 'typeface-roboto';

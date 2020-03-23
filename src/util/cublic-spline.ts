@@ -55,7 +55,7 @@ export function segmentToCoefficientSet(segment: Segment): CoefficientSet {
   const w1 = v1 / dt;
 
   const a = w1 + w0 - x1 * 2 + x0 * 2;
-  const b = -w1 - w0 * 2 + x1 * 3 + x0 * 3;
+  const b = -w1 - w0 * 2 + x1 * 3 - x0 * 3;
 
   return {
     a,
@@ -150,9 +150,11 @@ function bezierHelper(coeffs: CoefficientSet): [number, number, number, number] 
   const c = coeffs.c;
   const d = coeffs.d;
   const p0 = d;
-  const p1 = (c + p0*3) / 3;
-  const p2 = ((b - p0*3) + p1*6) / 3;
-  const p3 = ((a + p0) - p1*3) + p2*3;
+  const p1 = (c + p0 * 3) / 3;
+  const p2 = (b - p0 * 3 + p1 * 6) / 3;
+  const p3 = a + p0 - p1 * 3 + p2 * 3;
+
+  console.log([p0, p1, p2, p3]);
 
   return [p0, p1, p2, p3];
 }

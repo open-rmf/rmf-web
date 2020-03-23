@@ -1,3 +1,4 @@
+import * as FileSystem from 'fs';
 import { DefaultTrajectoryManager } from '../robot-trajectory-manager';
 
 // trajectory server is broken atm
@@ -20,7 +21,10 @@ describe('robot trajectory manager', () => {
     const segments = traj.values[0].segments;
     expect(segments.length).toBeTruthy();
     const segment = segments[0];
-    console.log(segment);
-    expect(typeof segment.t).toBe('number');
+    // expect(typeof segment.t).toBe('number');
+    segments.forEach(seg => {
+      seg.t = ~~(parseInt(seg.t as any) / 1000000);
+    });
+    FileSystem.writeFileSync(`${__dirname}/../../trajectories.json`, JSON.stringify(traj));
   });
 });
