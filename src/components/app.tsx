@@ -8,7 +8,7 @@ import { AppConfig } from '../app-config';
 import DoorStateManager from '../door-state-manager';
 import FleetManager from '../fleet-manager';
 import LiftStateManager from '../lift-state-manager';
-import { RobotTrajectoryManager, Trajectory } from '../robot-trajectory-manager';
+import { RobotTrajectoryManager } from '../robot-trajectory-manager';
 import './app.css';
 import DoorsPanel from './doors-panel';
 import LiftsPanel from './lifts-panel';

@@ -52,14 +52,15 @@ export default function RobotTrajectoriesOverlay(
     })();
   });
 
-  const footprint = 0.5; // hardcode for now, as the source of the footprint is expected to change.
+  // FIXME: hardcode for now, as the source of the footprint is expected to change.
+  const footprint = 0.5;
 
   return (
     <SVGOverlay {...otherProps}>
       <svg viewBox={viewBox}>
         {ds.map((d, i) => (
           <g key={i}>
-            <path d={d} stroke="red" opacity="0.8" strokeWidth={footprint * 0.8} fill="none" />
+            <path d={d} stroke="green" opacity="0.8" strokeWidth={footprint * 0.8} fill="none" />
           </g>
         ))}
       </svg>

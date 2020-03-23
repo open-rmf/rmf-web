@@ -46,7 +46,7 @@ export default function RobotsOverlay(props: RobotsOverlayProps): React.ReactEle
     onRobotClick && onRobotClick(robot);
   }
 
-  const footprint = 0.5; // hardcode for now, footprint data not available.
+  const footprint = 0.5; // FIXME: hardcode for now, footprint data not available.
   return (
     <SVGOverlay {...otherProps}>
       <svg viewBox={viewBox}>

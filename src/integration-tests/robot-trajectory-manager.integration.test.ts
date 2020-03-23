@@ -1,7 +1,5 @@
-import * as FileSystem from 'fs';
 import { DefaultTrajectoryManager } from '../robot-trajectory-manager';
 
-// trajectory server is broken atm
 describe('robot trajectory manager', () => {
   let trajMan: DefaultTrajectoryManager;
 
@@ -21,10 +19,25 @@ describe('robot trajectory manager', () => {
     const segments = traj.values[0].segments;
     expect(segments.length).toBeTruthy();
     const segment = segments[0];
-    // expect(typeof segment.t).toBe('number');
-    segments.forEach(seg => {
-      seg.t = ~~(parseInt(seg.t as any) / 1000000);
-    });
-    FileSystem.writeFileSync(`${__dirname}/../../trajectories.json`, JSON.stringify(traj));
+    expect(typeof segment.t).toBe('number');
+  });
+
+  it('can send simultanenous requests', async () => {
+    const results = await Promise.all([
+      trajMan.serverTime({
+        request: 'time',
+        param: {},
+      }),
+      trajMan.latestTrajectory({
+        request: 'trajectory',
+        param: {
+          map_name: 'L1',
+          duration: 6000,
+        },
+      }),
+    ]);
+    expect(results.length).toBe(2);
+    expect(results[0].values).toBeTruthy();
+    expect(results[1].values).toBeTruthy();
   });
 });
