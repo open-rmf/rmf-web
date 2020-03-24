@@ -5,41 +5,47 @@ import Adapter from 'enzyme-adapter-react-16';
 import React from 'react';
 import fakeFleets from '../mock/data/fleets';
 import RobotsPanel from './robots-panel';
+import RobotItem from './robot-item';
+import { ExpansionPanelDetails, ExpansionPanelSummary } from '@material-ui/core';
 
 Enzyme.configure({ adapter: new Adapter() });
 const mount = createMount();
 
-let root: ReactWrapper;
 let fleets: RomiCore.FleetState[];
 let robots: RomiCore.RobotState[];
 
 beforeEach(() => {
   fleets = fakeFleets();
   robots = fleets.flatMap(x => x.robots);
-  root = mount(<RobotsPanel fleets={fleets} />);
-});
-
-afterEach(() => {
-  root.unmount();
 });
 
 it('renders robots', () => {
-  const robotNames = robots.reduce<Record<string, boolean>>(
-    (prev, robot) => (prev[robot.name] = true) && prev,
-    {},
-  );
-  const robotElements = root.findWhere(x => x.name() === null && robotNames[x.text()]);
+  const root = mount(<RobotsPanel fleets={fleets} />);
+  const robotElements = root.find(RobotItem);
   expect(robotElements.length).toBe(robots.length);
+  root.unmount();
 });
 
-it('expands on click', () => {
-  const robotElement = root.findWhere(x => x.text() === robots[0].name).at(0);
+it('umount on exit', () => {
+  const root = mount(<RobotsPanel fleets={fleets} />);
+  const robotElement = root.find(RobotItem).at(0);
 
-  // expansion details should be unmount at the start
-  expect(root.findWhere(x => x.text().startsWith('Model')).length).toBeFalsy();
+  // expansion details should be unmounted at the start
+  expect(robotElement.find(ExpansionPanelDetails).length).toBe(0);
 
+  robotElement.find(ExpansionPanelSummary).simulate('click');
+
+  // now the details should be mounted
+  expect(robotElement.update().find(ExpansionPanelDetails).length).toBe(1);
+
+  root.unmount();
+});
+
+it('fires robot click event', () => {
+  let clicked = false;
+  const root = mount(<RobotsPanel fleets={fleets} onRobotClick={() => (clicked = true)} />);
+  const robotElement = root.find(RobotItem).at(0);
   robotElement.simulate('click');
-
-  // now the details should be mounted and visible
-  expect(root.findWhere(x => x.text().startsWith('Model')).length).toBeTruthy();
+  expect(clicked).toBe(true);
+  root.unmount();
 });

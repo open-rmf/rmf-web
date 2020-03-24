@@ -1,4 +1,3 @@
-import { ExpansionPanelSummary } from '@material-ui/core';
 import { createMount } from '@material-ui/core/test-utils';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Enzyme from 'enzyme';
@@ -19,17 +18,6 @@ beforeEach(async () => {
   map = await buildingMap();
   door = map.levels.flatMap(l => l.doors)[0];
   doorState = fakeDoorStates()[door.name];
-});
-
-it('responds to click', () => {
-  let clicked = false;
-  const root = mount(
-    <DoorItem door={door} doorState={doorState} onDoorClick={() => (clicked = true)} />,
-  );
-  root.find(ExpansionPanelSummary).simulate('click');
-
-  expect(clicked).toBe(true);
-  root.unmount();
 });
 
 it('responds to open click', () => {

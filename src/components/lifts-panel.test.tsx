@@ -1,51 +1,66 @@
+import { MenuItem } from '@material-ui/core';
 import { createMount } from '@material-ui/core/test-utils';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import Enzyme, { ReactWrapper } from 'enzyme';
+import Enzyme from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import React from 'react';
 import buildingMap from '../mock/data/building-map';
 import fakeLiftStates from '../mock/data/lift-states';
+import FakeTransport from '../mock/fake-transport';
+import { LiftItem } from './lift-item';
 import LiftsPanel from './lifts-panel';
 
 Enzyme.configure({ adapter: new Adapter() });
 const mount = createMount();
 
-let root: ReactWrapper;
 let map: RomiCore.BuildingMap;
 let liftStates: Record<string, RomiCore.LiftState>;
 let lifts: RomiCore.Lift[];
+let transport: FakeTransport;
 
-beforeAll(async () => {
+beforeEach(async () => {
   map = await buildingMap();
   liftStates = fakeLiftStates();
   lifts = map.lifts;
-});
-
-beforeEach(() => {
-  root = mount(<LiftsPanel liftStates={liftStates} lifts={lifts} />);
-});
-
-afterEach(() => {
-  root.unmount();
+  transport = new FakeTransport();
 });
 
 it('renders lifts', () => {
-  const liftNames = lifts.reduce<Record<string, boolean>>(
-    (prev, door) => (prev[door.name] = true) && prev,
-    {},
-  );
-  const doorElements = root.findWhere(x => x.name() === null && liftNames[x.text()]);
-  expect(doorElements.length).toBe(lifts.length);
+  const root = mount(<LiftsPanel liftStates={liftStates} lifts={lifts} />);
+  const liftElements = root.find(LiftItem);
+  expect(liftElements.length).toBe(lifts.length);
+  root.unmount();
 });
 
-it('expands on click', () => {
-  const liftElement = root.findWhere(x => x.text() === lifts[0].name).at(0);
+it('publish request on request click', () => {
+  const publishMock = jest.fn();
+  jest.spyOn(transport, 'createPublisher').mockImplementation(() => {
+    return {
+      publish: publishMock,
+    };
+  });
+  const root = mount(<LiftsPanel liftStates={liftStates} lifts={lifts} transport={transport} />);
+  const liftElement = root.find(LiftItem).at(0);
 
-  // expansion details should be unmount at the start
-  expect(root.findWhere(x => x.text().startsWith('Destination Floor')).length).toBeFalsy();
+  const requestButton = liftElement.findWhere(x => x.name() === 'button' && x.text() === 'Request');
+  requestButton.simulate('click', { clientX: 10, clientY: 10 });
+  const requestItem = liftElement
+    .update()
+    .find(MenuItem)
+    .at(0);
+  requestItem.simulate('click');
 
+  expect(publishMock).toHaveBeenCalledTimes(1);
+  root.unmount();
+});
+
+it('fires on lift click event', () => {
+  let clicked = false;
+  const root = mount(
+    <LiftsPanel liftStates={liftStates} lifts={lifts} onLiftClick={() => (clicked = true)} />,
+  );
+  const liftElement = root.find(LiftItem).at(0);
   liftElement.simulate('click');
-
-  // now the details should be mounted and visible
-  expect(root.findWhere(x => x.text().startsWith('Destination Floor')).length).toBeTruthy();
+  expect(clicked).toBe(true);
+  root.unmount();
 });

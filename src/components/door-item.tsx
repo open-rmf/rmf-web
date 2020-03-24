@@ -4,6 +4,7 @@ import {
   Divider,
   ExpansionPanel,
   ExpansionPanelDetails,
+  ExpansionPanelProps,
   ExpansionPanelSummary,
   makeStyles,
   Typography,
@@ -13,7 +14,7 @@ import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 
-export interface DoorItemProps {
+export interface DoorItemProps extends ExpansionPanelProps {
   door: Readonly<RomiCore.Door>;
   doorState?: Readonly<RomiCore.DoorState>;
   enableControls?: boolean;
@@ -22,14 +23,13 @@ export interface DoorItemProps {
   onCloseClick?(door: RomiCore.Door): void;
 }
 
-export const DoorItem = React.forwardRef(function DoorItem(
+export const DoorItem = React.forwardRef(function(
   props: DoorItemProps,
   ref: React.Ref<HTMLElement>,
 ): React.ReactElement {
-  const { door, doorState, enableControls, onDoorClick, onOpenClick, onCloseClick } = props;
+  const { door, doorState, enableControls, onOpenClick, onCloseClick, ...otherProps } = props;
   const classes = useStyles();
   const theme = useTheme();
-  const [expanded, setExpanded] = React.useState(false);
 
   function doorModeLabelClasses(doorState?: RomiCore.DoorState): string {
     if (!doorState) {
@@ -48,12 +48,7 @@ export const DoorItem = React.forwardRef(function DoorItem(
   }
 
   return (
-    <ExpansionPanel
-      ref={ref}
-      expanded={expanded}
-      onClick={() => onDoorClick && onDoorClick(door)}
-      onChange={(_, newExpanded) => setExpanded(newExpanded)}
-    >
+    <ExpansionPanel ref={ref} {...otherProps}>
       <ExpansionPanelSummary
         classes={{ content: classes.expansionSummaryContent }}
         expandIcon={<ExpandMoreIcon />}

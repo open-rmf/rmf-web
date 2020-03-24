@@ -1,311 +1,75 @@
-/**
- * TODO: Show indicator why lift controls are disabled.
- */
-
-import {
-  Button,
-  Divider,
-  ExpansionPanelDetails,
-  ExpansionPanelSummary,
-  List,
-  ListItem,
-  makeStyles,
-  MenuItem,
-  Popover,
-  PopoverPosition,
-  Typography,
-  useTheme,
-} from '@material-ui/core';
-import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import React, { CSSProperties, MouseEvent } from 'react';
-import DisableableTypography from './disableable-typography';
-import SpotlightExpansionPanel, { SpotlightValue } from './spotlight-expansion-panel';
-
-const useStyles = makeStyles(theme => {
-  const liftFloorLabelBase: CSSProperties = {
-    borderRadius: theme.shape.borderRadius,
-    borderStyle: 'solid',
-
-    border: 2,
-    padding: 5,
-    width: '4rem',
-    textAlign: 'center',
-  };
-
-  return {
-    expansionSummaryContent: {
-      alignItems: 'center',
-      justifyContent: 'space-between',
-    },
-
-    expansionDetail: {
-      flexFlow: 'column',
-    },
-
-    expansionDetailLine: {
-      display: 'inline-flex',
-      justifyContent: 'space-between',
-      padding: theme.spacing(0.5),
-    },
-
-    noPadding: {
-      padding: 0,
-    },
-
-    liftFloorLabelStopped: {
-      ...liftFloorLabelBase,
-      borderColor: theme.palette.info.main,
-    },
-
-    liftFloorLabelMoving: {
-      ...liftFloorLabelBase,
-      borderColor: theme.palette.warning.main,
-    },
-
-    liftFloorLabelUnknown: {
-      ...liftFloorLabelBase,
-      borderStyle: 'none',
-    },
-  };
-});
-
-function liftModeToString(liftMode: number): string {
-  switch (liftMode) {
-    case RomiCore.LiftState.MODE_AGV:
-      return 'AGV';
-    case RomiCore.LiftState.MODE_EMERGENCY:
-      return 'Emergency';
-    case RomiCore.LiftState.MODE_FIRE:
-      return 'Fire';
-    case RomiCore.LiftState.MODE_HUMAN:
-      return 'Human';
-    default:
-      return `Unknown (${liftMode})`;
-  }
-}
-
-function doorStateToString(doorState: number): string {
-  switch (doorState) {
-    case RomiCore.LiftState.DOOR_OPEN:
-      return 'Open';
-    case RomiCore.LiftState.DOOR_CLOSED:
-      return 'Closed';
-    case RomiCore.LiftState.DOOR_MOVING:
-      return 'Moving';
-    default:
-      return `Unknown (${doorState})`;
-  }
-}
-
-function motionStateToString(motionState: number): string {
-  switch (motionState) {
-    case RomiCore.LiftState.MOTION_DOWN:
-      return 'Down';
-    case RomiCore.LiftState.MOTION_STOPPED:
-      return 'Stopped';
-    case RomiCore.LiftState.MOTION_UP:
-      return 'Up';
-    default:
-      return `Unknown (${motionState})`;
-  }
-}
+import React from 'react';
+import { LiftItem } from './lift-item';
+import { SpotlightValue } from './spotlight-expansion-panel';
 
 interface LiftsPanelProps {
-  transport?: Readonly<RomiCore.Transport>;
   lifts: readonly RomiCore.Lift[];
-  liftStates: Readonly<Record<string, RomiCore.LiftState | undefined>>;
-  onLiftRequest?: (lift: RomiCore.Lift, destination: string) => void;
-  spotlight?: SpotlightValue<string>;
+  liftStates: Readonly<Record<string, RomiCore.LiftState>>;
+  transport?: Readonly<RomiCore.Transport>;
+  spotlight?: Readonly<SpotlightValue<string>>;
+  onLiftRequest?(lift: RomiCore.Lift, destination: string): void;
+  onLiftClick?(lift: RomiCore.Lift): void;
 }
-
-interface LiftRequestMenuState {
-  lift: RomiCore.Lift;
-  anchor: PopoverPosition;
-}
-
-type LiftRequestPublisher = RomiCore.Publisher<RomiCore.LiftRequest>;
 
 export default function LiftsPanel(props: LiftsPanelProps): JSX.Element {
-  const theme = useTheme();
-  const classes = useStyles();
-
+  const { transport, spotlight, onLiftRequest, onLiftClick } = props;
+  const liftRequestPub = React.useMemo(
+    () => (transport ? transport.createPublisher(RomiCore.liftRequests) : null),
+    [transport],
+  );
+  const liftRefs = React.useRef<Record<string, HTMLElement | null>>({});
   const [expanded, setExpanded] = React.useState<Readonly<Record<string, boolean>>>({});
-  const [liftRequestPub, setLiftRequestPub] = React.useState<LiftRequestPublisher | null>(null);
-  const [
-    liftRequestMenuState,
-    setLiftRequestMenuState,
-  ] = React.useState<LiftRequestMenuState | null>(null);
 
-  function renderList(values: string[]): JSX.Element {
-    const items = values.map(val => (
-      <ListItem key={val} dense className={classes.noPadding}>
-        <Typography variant="body1">{val}</Typography>
-      </ListItem>
-    ));
-    return <List>{items}</List>;
-  }
-
-  function renderAvailableFloors(liftState?: RomiCore.LiftState): JSX.Element {
-    if (!liftState) {
-      return (
-        <DisableableTypography disabled={!liftState} variant="body1">
-          Unknown
-        </DisableableTypography>
-      );
-    }
-    return renderList(liftState.available_floors);
-  }
-
-  function renderAvailableModes(liftState?: RomiCore.LiftState): JSX.Element {
-    if (!liftState) {
-      return (
-        <DisableableTypography disabled={!liftState} variant="body1">
-          Unknown
-        </DisableableTypography>
-      );
-    }
-    const modes = Array.from(liftState.available_modes.values());
-    return renderList(modes.map(liftModeToString));
-  }
-
-  function liftFloorLabel(liftState?: RomiCore.LiftState): string {
-    if (!liftState) {
-      return classes.liftFloorLabelUnknown;
-    }
-    switch (liftState.motion_state) {
-      case RomiCore.LiftState.MOTION_UP:
-      case RomiCore.LiftState.MOTION_DOWN:
-        return classes.liftFloorLabelMoving;
-      default:
-        return classes.liftFloorLabelStopped;
-    }
-  }
-
-  function handleRequestClick(event: MouseEvent, lift: RomiCore.Lift): void {
-    setLiftRequestMenuState({
-      lift: lift,
-      anchor: { top: event.clientY, left: event.clientX },
+  function handleLiftRequest(lift: RomiCore.Lift, destination: string): void {
+    liftRequestPub?.publish({
+      lift_name: lift.name,
+      door_state: RomiCore.LiftRequest.DOOR_OPEN,
+      request_type: RomiCore.LiftRequest.REQUEST_AGV_MODE,
+      request_time: RomiCore.toRosTime(new Date()),
+      destination_floor: destination,
+      session_id: transport!.name,
     });
-  }
-
-  function renderRequestMenu(lift: RomiCore.Lift): JSX.Element[] {
-    return lift.levels.map(floor => (
-      <MenuItem
-        key={floor}
-        onClick={() => {
-          liftRequestPub?.publish({
-            lift_name: lift.name,
-            destination_floor: floor,
-            door_state: RomiCore.LiftRequest.DOOR_OPEN,
-            request_time: RomiCore.toRosTime(new Date()),
-            request_type: RomiCore.LiftRequest.REQUEST_AGV_MODE,
-            session_id: props.transport!.name,
-          });
-          props.onLiftRequest && props.onLiftRequest(lift, floor);
-          setLiftRequestMenuState(null);
-        }}
-      >
-        {floor}
-      </MenuItem>
-    ));
+    onLiftRequest && onLiftRequest(lift, destination);
   }
 
   React.useEffect(() => {
-    setLiftRequestPub(
-      props.transport ? props.transport.createPublisher(RomiCore.liftRequests) : null,
-    );
-  }, [props.transport]);
-
-  const listItems = props.lifts.map(lift => {
-    const liftState = props.liftStates[lift.name];
-
-    return (
-      <SpotlightExpansionPanel
-        key={lift.name}
-        index={lift.name}
-        spotlight={props.spotlight}
-        TransitionProps={{ unmountOnExit: true }}
-      >
-        <ExpansionPanelSummary
-          classes={{ content: classes.expansionSummaryContent }}
-          expandIcon={<ExpandMoreIcon />}
-        >
-          <Typography variant="h5">{lift.name}</Typography>
-          <Typography className={liftFloorLabel(liftState)} variant="button">
-            {liftState ? liftState.current_floor : 'Unknown'}
-          </Typography>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails className={classes.expansionDetail}>
-          <div className={classes.expansionDetailLine}>
-            <Typography variant="body1">Location:</Typography>
-            <Typography variant="body1">
-              {`(${lift.ref_x.toFixed(3)}, ${lift.ref_y.toFixed(3)})`}
-            </Typography>
-          </div>
-          <div className={classes.expansionDetailLine}>
-            <Typography variant="body1">Destination Floor:</Typography>
-            <DisableableTypography disabled={!liftState} variant="body1">
-              {liftState ? liftState.destination_floor : 'Unknown'}
-            </DisableableTypography>
-          </div>
-          <Divider />
-          <div className={classes.expansionDetailLine}>
-            <Typography variant="body1">Available Floors:</Typography>
-            {renderAvailableFloors(liftState)}
-          </div>
-          <Divider />
-          <div className={classes.expansionDetailLine}>
-            <Typography variant="body1">Current Mode:</Typography>
-            <DisableableTypography disabled={!liftState} variant="body1">
-              {liftState ? liftModeToString(liftState.current_mode) : 'Unknown'}
-            </DisableableTypography>
-          </div>
-          <Divider />
-          <div className={classes.expansionDetailLine}>
-            <Typography variant="body1">Available Modes:</Typography>
-            {renderAvailableModes(liftState)}
-          </div>
-          <Divider />
-          <div className={classes.expansionDetailLine}>
-            <Typography variant="body1">Door State:</Typography>
-            <DisableableTypography disabled={!liftState} variant="body1">
-              {liftState ? doorStateToString(liftState.door_state) : 'Unknown'}
-            </DisableableTypography>
-          </div>
-          <Divider />
-          <div className={classes.expansionDetailLine}>
-            <Typography variant="body1">Motion State:</Typography>
-            <DisableableTypography disabled={!liftState} variant="body1">
-              {liftState ? motionStateToString(liftState.motion_state) : 'Unknown'}
-            </DisableableTypography>
-          </div>
-
-          <Button
-            variant="outlined"
-            style={{ marginTop: theme.spacing(1) }}
-            onClick={event => handleRequestClick(event, lift)}
-            disabled={Boolean(!liftRequestPub)}
-            fullWidth
-          >
-            Request
-          </Button>
-        </ExpansionPanelDetails>
-      </SpotlightExpansionPanel>
-    );
-  });
+    if (!spotlight) {
+      return;
+    }
+    const ref = liftRefs.current[spotlight.value];
+    if (!ref) {
+      return;
+    }
+    setExpanded(prev => ({
+      ...prev,
+      [spotlight.value]: true,
+    }));
+    ref.scrollIntoView({ behavior: 'smooth' });
+  }, [spotlight]);
 
   return (
     <React.Fragment>
-      {listItems}
-      <Popover
-        anchorReference="anchorPosition"
-        anchorPosition={liftRequestMenuState?.anchor}
-        open={Boolean(liftRequestMenuState && liftRequestPub)}
-        onClose={() => setLiftRequestMenuState(null)}
-      >
-        {liftRequestMenuState && renderRequestMenu(liftRequestMenuState.lift)}
-      </Popover>
+      {props.lifts.map(lift => {
+        const liftState = props.liftStates[lift.name];
+        return (
+          <LiftItem
+            key={lift.name}
+            lift={lift}
+            liftState={liftState}
+            enableRequest={Boolean(transport)}
+            onRequest={handleLiftRequest}
+            onClick={() => onLiftClick && onLiftClick(lift)}
+            expanded={Boolean(expanded[lift.name])}
+            onChange={(_, newExpanded) =>
+              setExpanded(prev => ({
+                ...prev,
+                [lift.name]: newExpanded,
+              }))
+            }
+          />
+        );
+      })}
     </React.Fragment>
   );
 }

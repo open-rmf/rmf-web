@@ -64,3 +64,14 @@ it('publish request on close click', () => {
   expect(publishMock).toHaveBeenCalledTimes(1);
   root.unmount();
 });
+
+it('fires on door click event', () => {
+  let clicked = false;
+  const root = mount(
+    <DoorsPanel doorStates={doorStates} doors={doors} onDoorClick={() => (clicked = true)} />,
+  );
+  const doorElement = root.find(DoorItem).at(0);
+  doorElement.simulate('click');
+  expect(clicked).toBe(true);
+  root.unmount();
+});

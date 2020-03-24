@@ -1,7 +1,3 @@
-/**
- * TODO: Show indicator why door controls are disabled.
- */
-
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 import DoorItem from './door-item';
@@ -9,39 +5,43 @@ import { SpotlightValue } from './spotlight-expansion-panel';
 
 export interface DoorsPanelProps {
   doors: readonly RomiCore.Door[];
-  doorStates: Readonly<Record<string, RomiCore.DoorState | undefined>>;
+  doorStates: Readonly<Record<string, RomiCore.DoorState>>;
   transport?: Readonly<RomiCore.Transport>;
-  spotlight?: SpotlightValue<string>;
+  spotlight?: Readonly<SpotlightValue<string>>;
+  onDoorClick?(door: RomiCore.Door): void;
 }
 
 export default function DoorsPanel(props: DoorsPanelProps): JSX.Element {
-  const { transport, spotlight } = props;
+  const { transport, spotlight, onDoorClick } = props;
   const doorRefs = React.useRef<Record<string, HTMLElement | null>>({});
-  const [doorRequestPub, setDoorRequestPub] = React.useState<DoorRequestPublisher | null>(null);
+  const [expanded, setExpanded] = React.useState<Record<string, boolean>>({});
+  const doorRequestPub = React.useMemo(
+    () => (transport ? transport.createPublisher(RomiCore.doorRequests) : null),
+    [transport],
+  );
 
   function requestDoor(door: RomiCore.Door, mode: number): void {
     doorRequestPub?.publish({
       door_name: door.name,
       requested_mode: { value: mode },
-      requester_id: props.transport!.name,
+      requester_id: transport!.name,
       request_time: RomiCore.toRosTime(new Date()),
     });
   }
 
   React.useEffect(() => {
-    setDoorRequestPub(transport ? transport.createPublisher(RomiCore.doorRequests) : null);
-  }, [transport]);
-
-  React.useEffect(() => {
     if (!spotlight) {
       return;
     }
-    const doorRef = doorRefs.current[spotlight.value];
-    if (!doorRef) {
+    const ref = doorRefs.current[spotlight.value];
+    if (!ref) {
       return;
     }
-
-    doorRef.scrollIntoView({ behavior: 'smooth' });
+    setExpanded(prev => ({
+      ...prev,
+      [spotlight.value]: true,
+    }));
+    ref.scrollIntoView({ behavior: 'smooth' });
   }, [spotlight]);
 
   const listItems = props.doors.map(door => {
@@ -55,11 +55,17 @@ export default function DoorsPanel(props: DoorsPanelProps): JSX.Element {
         enableControls={Boolean(transport)}
         onOpenClick={() => requestDoor(door, RomiCore.DoorMode.MODE_OPEN)}
         onCloseClick={() => requestDoor(door, RomiCore.DoorMode.MODE_CLOSED)}
+        onClick={() => onDoorClick && onDoorClick(door)}
+        expanded={Boolean(expanded[door.name])}
+        onChange={(_, newExpanded) =>
+          setExpanded(prev => ({
+            ...prev,
+            [door.name]: newExpanded,
+          }))
+        }
       />
     );
   });
 
   return <React.Fragment>{listItems}</React.Fragment>;
 }
-
-type DoorRequestPublisher = RomiCore.Publisher<RomiCore.DoorRequest>;
