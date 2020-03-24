@@ -1,51 +1,66 @@
 import { createMount } from '@material-ui/core/test-utils';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import Enzyme, { ReactWrapper } from 'enzyme';
+import Enzyme from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import React from 'react';
 import buildingMap from '../mock/data/building-map';
 import fakeDoorStates from '../mock/data/door-states';
+import FakeTransport from '../mock/fake-transport';
+import DoorItem from './door-item';
 import DoorsPanel from './doors-panel';
 
 Enzyme.configure({ adapter: new Adapter() });
 const mount = createMount();
 
-let root: ReactWrapper;
 let map: RomiCore.BuildingMap;
 let doorStates: Record<string, RomiCore.DoorState>;
 let doors: RomiCore.Door[];
+let transport: FakeTransport;
 
-beforeAll(async () => {
+beforeEach(async () => {
   map = await buildingMap();
   doorStates = fakeDoorStates();
   doors = map.levels.flatMap(l => l.doors);
-});
-
-beforeEach(() => {
-  root = mount(<DoorsPanel doorStates={doorStates} doors={doors} />);
-});
-
-afterEach(() => {
-  root.unmount();
+  transport = new FakeTransport();
 });
 
 it('renders doors', () => {
-  const doorNames = doors.reduce<Record<string, boolean>>(
-    (prev, door) => (prev[door.name] = true) && prev,
-    {},
-  );
-  const doorElements = root.findWhere(x => x.name() === null && doorNames[x.text()]);
+  const root = mount(<DoorsPanel doorStates={doorStates} doors={doors} />);
+  const doorElements = root.find(DoorItem);
   expect(doorElements.length).toBe(doors.length);
+  root.unmount();
 });
 
-it('expands on click', () => {
-  const doorElement = root.findWhere(x => x.text() === doors[0].name).at(0);
+it('publish request on open click', () => {
+  const publishMock = jest.fn();
+  jest.spyOn(transport, 'createPublisher').mockImplementation(() => {
+    return {
+      publish: publishMock,
+    };
+  });
+  const root = mount(<DoorsPanel doorStates={doorStates} doors={doors} transport={transport} />);
+  const doorElement = root.find(DoorItem).at(0);
 
-  // expansion details should be unmount at the start
-  expect(root.findWhere(x => x.text().startsWith('Motion Direction')).length).toBeFalsy();
+  const openButton = doorElement.findWhere(x => x.name() === 'button' && x.text() === 'Open');
+  openButton.simulate('click');
 
-  doorElement.simulate('click');
+  expect(publishMock).toHaveBeenCalledTimes(1);
+  root.unmount();
+});
 
-  // now the details should be mounted and visible
-  expect(root.findWhere(x => x.text().startsWith('Motion Direction')).length).toBeTruthy();
+it('publish request on close click', () => {
+  const publishMock = jest.fn();
+  jest.spyOn(transport, 'createPublisher').mockImplementation(() => {
+    return {
+      publish: publishMock,
+    };
+  });
+  const root = mount(<DoorsPanel doorStates={doorStates} doors={doors} transport={transport} />);
+  const doorElement = root.find(DoorItem).at(0);
+
+  const openButton = doorElement.findWhere(x => x.name() === 'button' && x.text() === 'Close');
+  openButton.simulate('click');
+
+  expect(publishMock).toHaveBeenCalledTimes(1);
+  root.unmount();
 });

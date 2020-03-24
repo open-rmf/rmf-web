@@ -8,7 +8,7 @@ ros2 launch visualizer server.xml &
 VIS_SERVER=$!
 
 # FIXME: how to know if its ready to receive request?
-sleep 5
+sleep 10
 ros2 launch demos office_loop.launch.xml
 
 node node_modules/.bin/react-scripts "$@"

@@ -5,7 +5,8 @@ export interface SpotlightValue<T> {
   value: T;
 }
 
-export interface Props<T extends string | number> extends ExpansionPanelProps {
+export interface SpotlightExpansionPanelProps<T extends string | number>
+  extends ExpansionPanelProps {
   index: T;
 
   /**
@@ -19,10 +20,10 @@ export interface Props<T extends string | number> extends ExpansionPanelProps {
  * An extension to ExpansionPanel that adds a prop to open and focus on the panel.
  */
 const SpotlightExpansionPanel = React.forwardRef(function<T extends string | number>(
-  props: Props<T>,
+  props: SpotlightExpansionPanelProps<T>,
   ref: React.Ref<unknown>,
 ): React.ReactElement {
-  const {expanded, onChange, ...otherProps} = props;
+  const { expanded, onChange, ...otherProps } = props;
   const innerRef = React.useRef<HTMLElement>(null);
   const [expandedState, setExpandedState] = React.useState(false);
 
