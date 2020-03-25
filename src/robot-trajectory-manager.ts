@@ -108,6 +108,11 @@ export class DefaultTrajectoryManager {
       return;
     }
 
+    if (resp.response === 'trajectory') {
+      if (resp.values === null) {
+        resp.values = [];
+      }
+    }
     res(resp);
   }
 }
