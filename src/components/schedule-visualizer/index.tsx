@@ -43,7 +43,7 @@ function calcMaxBounds(mapFloorLayers: readonly MapFloorLayer[]): L.LatLngBounds
   return bounds.pad(0.2);
 }
 
-export default function ScheduleVisualizer(props: ScheduleVisualizerProps): JSX.Element {
+export default function ScheduleVisualizer(props: ScheduleVisualizerProps): React.ReactElement {
   const classes = useStyles();
   const mapRef = React.useRef<LMap>(null);
   const { current: mapElement } = mapRef;
@@ -162,7 +162,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): JSX.
           ...prev,
           [curMapFloorLayer.level.name]: { ...curMapFloorLayer, trajectories: resp.values },
         }));
-      }, 1000);
+      }, 2000);
     })();
     return () => clearInterval(interval);
   }, [props.trajManager, curMapFloorLayer]);
@@ -223,6 +223,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): JSX.
                 bounds={curMapFloorLayer.bounds}
                 trajs={curMapFloorLayer.trajectories}
                 colorManager={colorManager}
+                animationDuration={2000}
               />
             </Pane>
           )}

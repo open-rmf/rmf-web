@@ -10,7 +10,8 @@ import trajectories from './data/trajectories.json';
 export default class FakeTrajectoryManager implements RobotTrajectoryManager {
   async latestTrajectory(request: TrajectoryRequest): Promise<TrajectoryResponse> {
     if (request.param.map_name === 'L1') {
-      return trajectories as any;
+      // "deep clone" object
+      return JSON.parse(JSON.stringify(trajectories)) as any;
     }
     return {
       response: 'trajectory',
