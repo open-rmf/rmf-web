@@ -75,7 +75,7 @@ export default function RobotTrajectoriesOverlay(
           offset,
           strokeDashoffset: 1 - offset,
         })),
-        { duration: animationDuration, easing: 'linear' },
+        { duration: animationDuration, easing: 'linear', fill: 'forwards' },
       );
     });
   }, [animationDuration, trajPaths]);
