@@ -9,7 +9,7 @@ import DoorStateManager from '../door-state-manager';
 import FleetManager from '../fleet-manager';
 import LiftStateManager from '../lift-state-manager';
 import { RobotTrajectoryManager } from '../robot-trajectory-manager';
-import { defaultSettings, Settings, SettingsContext } from '../settings';
+import { loadSettings, saveSettings, Settings, SettingsContext } from '../settings';
 import './app.css';
 import DoorsPanel from './doors-panel';
 import LiftsPanel from './lifts-panel';
@@ -135,7 +135,7 @@ export default function App(props: AppProps): JSX.Element {
   });
 
   const [showSettings, setShowSettings] = React.useState(false);
-  const [settings, setSettings] = React.useState<Settings>(() => defaultSettings());
+  const [settings, setSettings] = React.useState<Settings>(() => loadSettings());
 
   React.useEffect(() => {
     setLoading({ caption: 'Connecting to SOSS server...' });
@@ -327,7 +327,10 @@ export default function App(props: AppProps): JSX.Element {
           <SettingsDrawer
             settings={settings}
             open={showSettings}
-            onSettingsChange={setSettings}
+            onSettingsChange={newSettings => {
+              setSettings(newSettings);
+              saveSettings(newSettings);
+            }}
             onClose={() => setShowSettings(false)}
           />
         </div>

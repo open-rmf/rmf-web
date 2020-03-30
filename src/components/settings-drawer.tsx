@@ -4,8 +4,11 @@ import {
   FormControl,
   FormControlLabel,
   FormLabel,
+  makeStyles,
   Radio,
   RadioGroup,
+  Divider,
+  Typography,
 } from '@material-ui/core';
 import React from 'react';
 import { Settings, TrajectoryAnimation } from '../settings';
@@ -16,6 +19,7 @@ export interface SettingsDrawerProps extends DrawerProps {
 }
 
 export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactElement {
+  const classes = useStyles();
   const { settings, onSettingsChange, ...otherProps } = props;
   const { trajectoryAnimation } = settings;
 
@@ -30,15 +34,45 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
   }
 
   return (
-    <Drawer anchor="right" {...otherProps}>
+    <Drawer PaperProps={{ className: classes.drawer }} anchor="right" {...otherProps}>
       <FormControl component="fieldset">
-        <FormLabel component="legend">Trajectory Animation</FormLabel>
-        <RadioGroup value={trajectoryAnimation} onChange={handleTrajectoryAnimationChange}>
+        <FormLabel component="legend" className={classes.legendLabel}>
+          Trajectory Animation
+        </FormLabel>
+        <Divider />
+        <RadioGroup
+          className={classes.trajGroup}
+          value={trajectoryAnimation}
+          onChange={handleTrajectoryAnimationChange}
+        >
           {trajAnimsText.map((text, i) => (
-            <FormControlLabel key={i} value={i} control={<Radio />} label={text} />
+            <FormControlLabel
+              key={i}
+              className={classes.flexBasis}
+              value={i}
+              control={<Radio />}
+              label={text}
+            />
           ))}
         </RadioGroup>
       </FormControl>
     </Drawer>
   );
 }
+
+const useStyles = makeStyles(theme => ({
+  drawer: {
+    width: 300,
+  },
+  legendLabel: {
+    fontSize: theme.typography.h6.fontSize,
+    padding: theme.spacing(1),
+  },
+  trajGroup: {
+    flexDirection: 'row',
+    paddingLeft: theme.spacing(2),
+  },
+  flexBasis: {
+    flexBasis: '40%',
+  },
+}));
