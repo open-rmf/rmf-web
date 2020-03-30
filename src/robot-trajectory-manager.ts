@@ -17,6 +17,7 @@ export interface TrajectoryRequest {
   param: {
     map_name: string;
     duration: number;
+    trim: boolean;
   };
 }
 

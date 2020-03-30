@@ -9,6 +9,8 @@ import ColorManager from './colors';
 import PlacesOverlay from './places-overlay';
 import RobotTrajectoriesOverlay from './robot-trajectories-overlay';
 import RobotsOverlay from './robots-overlay';
+import { makeFillAnimationComponent, withFillAnimation, withOutlineAnimation } from './trajectory-animations';
+import RobotTrajectory from './robot-trajectory';
 
 const useStyles = makeStyles(() => ({
   map: {
@@ -30,6 +32,7 @@ export interface ScheduleVisualizerProps {
   buildingMap: Readonly<RomiCore.BuildingMap>;
   fleets: Readonly<RomiCore.FleetState[]>;
   trajManager?: Readonly<RobotTrajectoryManager>;
+  trajAnimDuration?: Readonly<number>;
   onPlaceClick?(place: RomiCore.Place): void;
   onRobotClick?(robot: RomiCore.RobotState): void;
 }
@@ -44,6 +47,7 @@ function calcMaxBounds(mapFloorLayers: readonly MapFloorLayer[]): L.LatLngBounds
 }
 
 export default function ScheduleVisualizer(props: ScheduleVisualizerProps): React.ReactElement {
+  const trajAnimDuration = props.trajAnimDuration || 2000;
   const classes = useStyles();
   const mapRef = React.useRef<LMap>(null);
   const { current: mapElement } = mapRef;
@@ -81,6 +85,11 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     );
   }, [props.fleets, curMapFloorLayer]);
   const colorManager = React.useMemo(() => new ColorManager(), []);
+
+  const TrajectoryComponent = React.useMemo(
+    () => withOutlineAnimation(RobotTrajectory, trajAnimDuration * 0.8),
+    [trajAnimDuration],
+  );
 
   React.useEffect(() => {
     if (!mapElement) {
@@ -156,16 +165,17 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
           param: {
             map_name: curMapFloorLayer.level.name,
             duration: 60000,
+            trim: true,
           },
         });
         setMapFloorLayers(prev => ({
           ...prev,
           [curMapFloorLayer.level.name]: { ...curMapFloorLayer, trajectories: resp.values },
         }));
-      }, 2000);
+      }, trajAnimDuration);
     })();
     return () => clearInterval(interval);
-  }, [props.trajManager, curMapFloorLayer]);
+  }, [props.trajManager, curMapFloorLayer, trajAnimDuration]);
 
   function handleBaseLayerChange(e: L.LayersControlEvent): void {
     setCurLevelName(e.name);
@@ -223,7 +233,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
                 bounds={curMapFloorLayer.bounds}
                 trajs={curMapFloorLayer.trajectories}
                 colorManager={colorManager}
-                animationDuration={2000}
+                TrajectoryComponent={TrajectoryComponent}
               />
             </Pane>
           )}

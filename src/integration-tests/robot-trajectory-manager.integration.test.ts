@@ -13,6 +13,24 @@ describe('robot trajectory manager', () => {
       param: {
         map_name: 'L1',
         duration: 6000,
+        trim: true,
+      },
+    });
+    expect(traj.values.length).toBeTruthy();
+    const segments = traj.values[0].segments;
+    expect(segments.length).toBeTruthy();
+    const segment = segments[0];
+    expect(typeof segment.t).toBe('number');
+  });
+
+  // regression
+  it('is able to get long duration trajectory', async () => {
+    const traj = await trajMan.latestTrajectory({
+      request: 'trajectory',
+      param: {
+        map_name: 'L1',
+        duration: (2 ** 31) - 1,
+        trim: true,
       },
     });
     expect(traj.values.length).toBeTruthy();
@@ -33,6 +51,7 @@ describe('robot trajectory manager', () => {
         param: {
           map_name: 'L1',
           duration: 6000,
+          trim: true,
         },
       }),
     ]);
