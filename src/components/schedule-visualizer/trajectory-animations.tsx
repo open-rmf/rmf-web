@@ -1,7 +1,7 @@
+import { makeStyles } from '@material-ui/core';
 import React from 'react';
 import { Trajectory } from '../../robot-trajectory-manager';
-import { RobotTrajectoryProps, trajectoryPath } from './robot-trajectory';
-import { makeStyles } from '@material-ui/core';
+import { RobotTrajectoryProps } from './robot-trajectory';
 
 export interface TrajectoryAnimationProps extends React.SVGAttributes<SVGPathElement> {
   trajPath: TrajectoryPath;
@@ -12,63 +12,6 @@ export interface TrajectoryPath {
   traj: Trajectory;
   d: string;
   segOffsets: number[];
-}
-
-export function makeFillAnimationComponent(
-  animationDuration: number,
-): React.ComponentType<RobotTrajectoryProps> {
-  return props => {
-    const { trajectory, footprint, color } = props;
-    const pathRef = React.useRef<SVGPathElement>(null);
-
-    const trajPath = React.useMemo(() => trajectoryPath(trajectory), [trajectory]);
-
-    React.useEffect(() => {
-      if (!pathRef.current) {
-        return;
-      }
-
-      pathRef.current.animate(
-        trajPath.segOffsets.map(offset => ({
-          offset: offset,
-          strokeDashoffset: 1 - offset,
-        })),
-        {
-          duration: animationDuration,
-          easing: 'linear',
-          fill: 'forwards',
-        },
-      );
-    }, [trajPath]);
-
-    return (
-      <g>
-        <path
-          ref={pathRef}
-          d={trajPath.d}
-          stroke={color}
-          opacity="0.8"
-          strokeWidth={footprint * 0.8}
-          strokeLinecap="round"
-          fill="none"
-          pathLength={1}
-          strokeDasharray={1}
-          strokeDashoffset={0}
-        />
-        <path
-          d={trajPath.d}
-          stroke={color}
-          opacity="0.4"
-          strokeWidth={footprint * 0.8}
-          strokeLinecap="round"
-          fill="none"
-          pathLength={1}
-          strokeDasharray={1}
-          strokeDashoffset={0}
-        />
-      </g>
-    );
-  };
 }
 
 export function withFillAnimation(
@@ -86,11 +29,13 @@ export function withFillAnimation(
       }
 
       const offsets = keyframeOffsets(trajectory);
-      const highlight = pathRef.current.cloneNode(false) as SVGPathElement;
-      highlight.classList.add(classes.highlight);
-      pathRef.current.parentElement?.appendChild(highlight);
+      const pathAnim = pathRef.current.cloneNode(false) as SVGPathElement;
+      pathAnim.classList.add(classes.anim);
+      pathAnim.classList.remove(classes.highlight);
+      pathAnim.setAttribute('path-length', '1');
+      pathRef.current.parentElement?.appendChild(pathAnim);
 
-      pathRef.current.animate(
+      pathAnim.animate(
         offsets.map(offset => ({
           offset: offset,
           strokeDashoffset: 2 - offset,
@@ -102,12 +47,59 @@ export function withFillAnimation(
         },
       );
 
-      return () => highlight.remove();
-    }, [trajectory, classes.highlight]);
+      return () => pathAnim.remove();
+    }, [trajectory, classes.anim, classes.highlight]);
 
     return (
       <g>
-        <TrajectoryComponent ref={pathRef} {...props} />
+        <TrajectoryComponent ref={pathRef} {...props} className={classes.highlight} />
+      </g>
+    );
+  };
+}
+
+export function withFollowAnimation(
+  TrajectoryComponent: React.ComponentType<RobotTrajectoryProps>,
+  animationDuration: number,
+): React.ComponentType<RobotTrajectoryProps> {
+  return props => {
+    const classes = useFollowStyles();
+    const { trajectory } = props;
+    const pathRef = React.useRef<SVGPathElement>(null);
+
+    React.useLayoutEffect(() => {
+      if (!pathRef.current) {
+        return;
+      }
+
+      const offsets = keyframeOffsets(trajectory);
+      const pathAnim = pathRef.current.cloneNode(false) as SVGPathElement;
+      pathAnim.classList.add(classes.anim);
+      pathAnim.classList.remove(classes.highlight);
+      pathAnim.setAttribute('path-length', '1');
+      const strokeWidth = Number(pathAnim.getAttribute('stroke-width') || 1);
+      const strokeDash = strokeWidth / pathAnim.getTotalLength();
+      pathAnim.setAttribute('stroke-dasharray', `${strokeDash} ${2 - strokeDash}`);
+      pathRef.current.parentElement?.appendChild(pathAnim);
+
+      pathAnim.animate(
+        offsets.map(offset => ({
+          offset: offset,
+          strokeDashoffset: Math.max(2 - offset, strokeDash + 1),
+        })),
+        {
+          duration: animationDuration,
+          easing: 'linear',
+          fill: 'forwards',
+        },
+      );
+
+      return () => pathAnim.remove();
+    }, [trajectory, classes.anim, classes.highlight]);
+
+    return (
+      <g>
+        <TrajectoryComponent ref={pathRef} {...props} className={classes.highlight} />
       </g>
     );
   };
@@ -187,6 +179,21 @@ export function keyframeOffsets(traj: Trajectory): number[] {
 }
 
 const useFillStyles = makeStyles(() => ({
+  anim: {
+    opacity: 0.8,
+    strokeDasharray: 2,
+    strokeDashoffset: 2,
+  },
+  highlight: {
+    opacity: 0.4,
+  },
+}));
+
+const useFollowStyles = makeStyles(() => ({
+  anim: {
+    opacity: 0.8,
+    strokeDashoffset: 2,
+  },
   highlight: {
     opacity: 0.4,
   },

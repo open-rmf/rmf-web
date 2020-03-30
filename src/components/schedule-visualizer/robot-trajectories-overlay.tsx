@@ -8,14 +8,13 @@ import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 export interface RobotTrajectoriesOverlayProps extends SVGOverlayProps {
   trajs: readonly Trajectory[];
   colorManager: Readonly<ColorManager>;
-  TrajectoryComponent?: React.ComponentType<RobotTrajectoryProps>;
 }
 
 export default function RobotTrajectoriesOverlay(
   props: RobotTrajectoriesOverlayProps,
 ): React.ReactElement {
   const { trajs, colorManager, ...otherProps } = props;
-  const TrajectoryComponent = props.TrajectoryComponent || RobotTrajectory;
+  const trajectoryContext = React.useContext(RobotTrajectoryContext);
 
   const bounds =
     props.bounds instanceof L.LatLngBounds ? props.bounds : new L.LatLngBounds(props.bounds);
@@ -42,7 +41,7 @@ export default function RobotTrajectoriesOverlay(
     <SVGOverlay {...otherProps}>
       <svg viewBox={viewBox}>
         {trajs.map(traj => (
-          <TrajectoryComponent
+          <trajectoryContext.Component
             key={traj.id}
             trajectory={traj}
             footprint={footprint}
@@ -53,3 +52,11 @@ export default function RobotTrajectoriesOverlay(
     </SVGOverlay>
   );
 }
+
+export interface RobotTrajectoryContext {
+  Component: React.ComponentType<RobotTrajectoryProps>;
+}
+
+export const RobotTrajectoryContext = React.createContext<RobotTrajectoryContext>({
+  Component: RobotTrajectory,
+});

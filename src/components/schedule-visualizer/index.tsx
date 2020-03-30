@@ -4,13 +4,14 @@ import * as L from 'leaflet';
 import React from 'react';
 import { AttributionControl, ImageOverlay, LayersControl, Map as LMap, Pane } from 'react-leaflet';
 import { RobotTrajectoryManager, Trajectory } from '../../robot-trajectory-manager';
+import { AnimationSpeed, SettingsContext, TrajectoryAnimation } from '../../settings';
 import { toBlobUrl } from '../../util';
 import ColorManager from './colors';
 import PlacesOverlay from './places-overlay';
-import RobotTrajectoriesOverlay from './robot-trajectories-overlay';
-import RobotsOverlay from './robots-overlay';
-import { makeFillAnimationComponent, withFillAnimation, withOutlineAnimation } from './trajectory-animations';
+import RobotTrajectoriesOverlay, { RobotTrajectoryContext } from './robot-trajectories-overlay';
 import RobotTrajectory from './robot-trajectory';
+import RobotsOverlay from './robots-overlay';
+import { withFillAnimation, withOutlineAnimation, withFollowAnimation } from './trajectory-animations';
 
 const useStyles = makeStyles(() => ({
   map: {
@@ -32,7 +33,6 @@ export interface ScheduleVisualizerProps {
   buildingMap: Readonly<RomiCore.BuildingMap>;
   fleets: Readonly<RomiCore.FleetState[]>;
   trajManager?: Readonly<RobotTrajectoryManager>;
-  trajAnimDuration?: Readonly<number>;
   onPlaceClick?(place: RomiCore.Place): void;
   onRobotClick?(robot: RomiCore.RobotState): void;
 }
@@ -47,7 +47,6 @@ function calcMaxBounds(mapFloorLayers: readonly MapFloorLayer[]): L.LatLngBounds
 }
 
 export default function ScheduleVisualizer(props: ScheduleVisualizerProps): React.ReactElement {
-  const trajAnimDuration = props.trajAnimDuration || 2000;
   const classes = useStyles();
   const mapRef = React.useRef<LMap>(null);
   const { current: mapElement } = mapRef;
@@ -86,10 +85,29 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   }, [props.fleets, curMapFloorLayer]);
   const colorManager = React.useMemo(() => new ColorManager(), []);
 
-  const TrajectoryComponent = React.useMemo(
-    () => withOutlineAnimation(RobotTrajectory, trajAnimDuration * 0.8),
-    [trajAnimDuration],
-  );
+  const settings = React.useContext(SettingsContext);
+  const trajAnimDuration = React.useMemo(() => {
+    switch (settings.trajectoryAnimationSpeed) {
+      case AnimationSpeed.Slow:
+        return 4000;
+      case AnimationSpeed.Normal:
+        return 2000;
+      case AnimationSpeed.Fast:
+        return 1000;
+    }
+  }, [settings]);
+  const TrajectoryComponent = React.useMemo(() => {
+    switch (settings.trajectoryAnimation) {
+      case TrajectoryAnimation.None:
+        return RobotTrajectory;
+      case TrajectoryAnimation.Fill:
+        return withFillAnimation(RobotTrajectory, trajAnimDuration * 0.8);
+      case TrajectoryAnimation.Follow:
+        return withFollowAnimation(RobotTrajectory, trajAnimDuration * 0.8);
+      case TrajectoryAnimation.Outline:
+        return withOutlineAnimation(RobotTrajectory, trajAnimDuration * 0.8);
+    }
+  }, [settings.trajectoryAnimation, trajAnimDuration]);
 
   React.useEffect(() => {
     if (!mapElement) {
@@ -175,7 +193,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       }, trajAnimDuration);
     })();
     return () => clearInterval(interval);
-  }, [props.trajManager, curMapFloorLayer, trajAnimDuration]);
+  }, [props.trajManager, curMapFloorLayer, TrajectoryComponent, trajAnimDuration]);
 
   function handleBaseLayerChange(e: L.LayersControlEvent): void {
     setCurLevelName(e.name);
@@ -225,16 +243,16 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
             </Pane>
           )}
         </LayersControl.Overlay>
-
         <LayersControl.Overlay name="Robot Trajectories" checked>
           {curMapFloorLayer && (
             <Pane>
-              <RobotTrajectoriesOverlay
-                bounds={curMapFloorLayer.bounds}
-                trajs={curMapFloorLayer.trajectories}
-                colorManager={colorManager}
-                TrajectoryComponent={TrajectoryComponent}
-              />
+              <RobotTrajectoryContext.Provider value={{ Component: TrajectoryComponent }}>
+                <RobotTrajectoriesOverlay
+                  bounds={curMapFloorLayer.bounds}
+                  trajs={curMapFloorLayer.trajectories}
+                  colorManager={colorManager}
+                />
+              </RobotTrajectoryContext.Provider>
             </Pane>
           )}
         </LayersControl.Overlay>
