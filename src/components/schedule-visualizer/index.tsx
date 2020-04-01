@@ -1,45 +1,94 @@
+import { makeStyles } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import * as L from 'leaflet';
 import React from 'react';
-import { AttributionControl, ImageOverlay, LayersControl, Map as _Map } from 'react-leaflet';
-import styled from 'styled-components';
-import { Trajectory } from '../../robot-trajectory-manager';
+import { AttributionControl, ImageOverlay, LayersControl, Map as LMap, Pane } from 'react-leaflet';
+import { RobotTrajectoryManager, Trajectory } from '../../robot-trajectory-manager';
 import { toBlobUrl } from '../../util';
 import ColorManager from './colors';
 import PlacesOverlay from './places-overlay';
 import RobotTrajectoriesOverlay from './robot-trajectories-overlay';
 import RobotsOverlay from './robots-overlay';
+import { makeFillAnimationComponent, withFillAnimation, withOutlineAnimation } from './trajectory-animations';
+import RobotTrajectory from './robot-trajectory';
 
-const WorldMap = styled(_Map)`
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-`;
+const useStyles = makeStyles(() => ({
+  map: {
+    height: '100%',
+    width: '100%',
+    margin: 0,
+    padding: 0,
+  },
+}));
 
-interface MapFloorState {
-  name: string;
+interface MapFloorLayer {
+  level: RomiCore.Level;
   imageUrl: string;
   bounds: L.LatLngBounds;
+  trajectories: Trajectory[];
 }
 
 export interface ScheduleVisualizerProps {
   buildingMap: Readonly<RomiCore.BuildingMap>;
   fleets: Readonly<RomiCore.FleetState[]>;
-  trajs: readonly Trajectory[];
+  trajManager?: Readonly<RobotTrajectoryManager>;
+  trajAnimDuration?: Readonly<number>;
   onPlaceClick?(place: RomiCore.Place): void;
   onRobotClick?(robot: RomiCore.RobotState): void;
 }
 
-export default function ScheduleVisualizer(props: ScheduleVisualizerProps): JSX.Element {
-  const mapRef = React.useRef<_Map>(null);
+function calcMaxBounds(mapFloorLayers: readonly MapFloorLayer[]): L.LatLngBounds | undefined {
+  if (!mapFloorLayers.length) {
+    return undefined;
+  }
+  const bounds = new L.LatLngBounds([0, 0], [0, 0]);
+  Object.values(mapFloorLayers).forEach(x => bounds.extend(x.bounds));
+  return bounds.pad(0.2);
+}
+
+export default function ScheduleVisualizer(props: ScheduleVisualizerProps): React.ReactElement {
+  const trajAnimDuration = props.trajAnimDuration || 2000;
+  const classes = useStyles();
+  const mapRef = React.useRef<LMap>(null);
   const { current: mapElement } = mapRef;
-  const [mapFloorStates, setMapFloorStates] = React.useState<Record<string, MapFloorState>>({});
+
+  const [mapFloorLayers, setMapFloorLayers] = React.useState<
+    Readonly<Record<string, MapFloorLayer>>
+  >({});
+  const mapFloorLayerSort = React.useMemo<string[]>(
+    () => props.buildingMap.levels.sort((a, b) => a.elevation - b.elevation).map(x => x.name),
+    [props.buildingMap],
+  );
+  const [curLevelName, setCurLevelName] = React.useState(() => mapFloorLayerSort[0]);
+  const curMapFloorLayer = React.useMemo(() => mapFloorLayers[curLevelName], [
+    curLevelName,
+    mapFloorLayers,
+  ]);
+
+  const initialBounds = React.useMemo<Readonly<L.LatLngBounds> | undefined>(() => {
+    const initialLayer = mapFloorLayers[mapFloorLayerSort[0]];
+    if (!initialLayer) {
+      return undefined;
+    }
+    return initialLayer.bounds;
+  }, [mapFloorLayers, mapFloorLayerSort]);
+  const [maxBounds, setMaxBounds] = React.useState<Readonly<L.LatLngBounds> | undefined>(() =>
+    calcMaxBounds(Object.values(mapFloorLayers)),
+  );
+
+  const robotsInCurLevel = React.useMemo(() => {
+    if (!curMapFloorLayer) {
+      return [];
+    }
+    return props.fleets.flatMap(x =>
+      x.robots.filter(r => r.location.level_name === curMapFloorLayer.level.name),
+    );
+  }, [props.fleets, curMapFloorLayer]);
   const colorManager = React.useMemo(() => new ColorManager(), []);
 
-  // TODO: listen to overlayadded event to detect when an overlay is changed.
-  const [currentLevel, setCurrentLevel] = React.useState<RomiCore.Level>(
-    props.buildingMap.levels[0],
+  const TrajectoryComponent = React.useMemo(
+    () => withOutlineAnimation(RobotTrajectory, trajAnimDuration * 0.8),
+    [trajAnimDuration],
   );
 
   React.useEffect(() => {
@@ -54,7 +103,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): JSX.
     // loaded twice.
     (async () => {
       const promises: Promise<any>[] = [];
-      const newMapFloorStates: Record<string, MapFloorState> = {};
+      const mapFloorLayers: Record<string, MapFloorLayer> = {};
       for (const level of props.buildingMap.levels) {
         const image = level.images[0]; // when will there be > 1 image?
         if (!image) {
@@ -81,10 +130,11 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): JSX.
                 [image.y_offset - height, image.x_offset + width],
               );
 
-              newMapFloorStates[level.name] = {
-                name: level.name,
+              mapFloorLayers[level.name] = {
+                level: level,
                 imageUrl: imageUrl,
                 bounds: bounds,
+                trajectories: [],
               };
               res();
             };
@@ -96,64 +146,111 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): JSX.
       for (const p of promises) {
         await p;
       }
-      setMapFloorStates(m => ({ ...m, ...newMapFloorStates }));
+      setMapFloorLayers(mapFloorLayers);
+      setMaxBounds(calcMaxBounds(Object.values(mapFloorLayers)));
     })();
   }, [props.buildingMap, mapElement]);
 
-  const currentMapFloorState = mapFloorStates[currentLevel.name];
-  const bounds = currentMapFloorState?.bounds;
+  React.useEffect(() => {
+    const trajManager = props.trajManager;
+    if (!curMapFloorLayer || !trajManager) {
+      return;
+    }
+
+    let interval: number;
+    (async () => {
+      interval = window.setInterval(async () => {
+        const resp = await trajManager.latestTrajectory({
+          request: 'trajectory',
+          param: {
+            map_name: curMapFloorLayer.level.name,
+            duration: 60000,
+            trim: true,
+          },
+        });
+        setMapFloorLayers(prev => ({
+          ...prev,
+          [curMapFloorLayer.level.name]: { ...curMapFloorLayer, trajectories: resp.values },
+        }));
+      }, trajAnimDuration);
+    })();
+    return () => clearInterval(interval);
+  }, [props.trajManager, curMapFloorLayer, trajAnimDuration]);
+
+  function handleBaseLayerChange(e: L.LayersControlEvent): void {
+    setCurLevelName(e.name);
+  }
+
+  const sortedMapFloorLayers = mapFloorLayerSort.map(x => mapFloorLayers[x]);
+  const ref = React.useRef<ImageOverlay>(null);
+
+  if (ref.current) {
+    ref.current.leafletElement.setZIndex(0);
+  }
+
   return (
-    <WorldMap
+    <LMap
       ref={mapRef}
+      className={classes.map}
       attributionControl={false}
       crs={L.CRS.Simple}
       minZoom={4}
       maxZoom={8}
       zoomDelta={0.5}
       zoomSnap={0.5}
-      bounds={bounds}
-      maxBounds={currentMapFloorState?.bounds}
+      bounds={initialBounds}
+      maxBounds={maxBounds}
+      onbaselayerchange={handleBaseLayerChange}
     >
       <AttributionControl position="bottomright" prefix="OSRC-SG" />
       <LayersControl position="topleft">
-        {Object.values(mapFloorStates).map((floorState, i) => (
-          <LayersControl.BaseLayer checked={i === 0} name={floorState.name} key={floorState.name}>
-            <ImageOverlay bounds={floorState.bounds} url={floorState.imageUrl} />
-          </LayersControl.BaseLayer>
-        ))}
-        <LayersControl.Overlay name="Robots Trajectories" checked>
-          {/* <RobotTrajectoriesOverlay /> */}
-        </LayersControl.Overlay>
+        {sortedMapFloorLayers.every(x => x) &&
+          sortedMapFloorLayers.map((floorLayer, i) => (
+            <LayersControl.BaseLayer
+              checked={i === 0}
+              name={floorLayer.level.name}
+              key={floorLayer.level.name}
+            >
+              <ImageOverlay bounds={floorLayer.bounds} url={floorLayer.imageUrl} ref={ref} />
+            </LayersControl.BaseLayer>
+          ))}
         <LayersControl.Overlay name="Places" checked>
-          {bounds && (
-            <PlacesOverlay
-              bounds={bounds}
-              places={currentLevel.places}
-              onPlaceClick={props.onPlaceClick}
-            />
+          {curMapFloorLayer && (
+            <Pane>
+              <PlacesOverlay
+                bounds={curMapFloorLayer.bounds}
+                places={curMapFloorLayer.level.places}
+                onPlaceClick={props.onPlaceClick}
+              />
+            </Pane>
           )}
         </LayersControl.Overlay>
-        <LayersControl.Overlay name="RobotTrajectories" checked>
-          {bounds && (
-            <RobotTrajectoriesOverlay
-              bounds={bounds}
-              trajs={props.trajs}
-              colorManager={colorManager}
-            />
+
+        <LayersControl.Overlay name="Robot Trajectories" checked>
+          {curMapFloorLayer && (
+            <Pane>
+              <RobotTrajectoriesOverlay
+                bounds={curMapFloorLayer.bounds}
+                trajs={curMapFloorLayer.trajectories}
+                colorManager={colorManager}
+                TrajectoryComponent={TrajectoryComponent}
+              />
+            </Pane>
           )}
         </LayersControl.Overlay>
         <LayersControl.Overlay name="Robots" checked>
-          {bounds && (
-            <RobotsOverlay
-              bounds={bounds}
-              fleets={props.fleets}
-              colorManager={colorManager}
-              onRobotClick={props.onRobotClick}
-            />
+          {curMapFloorLayer && (
+            <Pane>
+              <RobotsOverlay
+                bounds={curMapFloorLayer.bounds}
+                robots={robotsInCurLevel}
+                colorManager={colorManager}
+                onRobotClick={props.onRobotClick}
+              />
+            </Pane>
           )}
         </LayersControl.Overlay>
       </LayersControl>
-      {/* <SliderControl /> */}
-    </WorldMap>
+    </LMap>
   );
 }

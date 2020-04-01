@@ -1,7 +1,6 @@
 import { AppBar, IconButton, makeStyles, Toolbar, Typography } from '@material-ui/core/';
 import { Dashboard as DashboardIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import Big from 'big.js';
 import debug from 'debug';
 import React from 'react';
 import 'typeface-roboto';
@@ -10,7 +9,7 @@ import DoorStateManager from '../door-state-manager';
 import FleetManager from '../fleet-manager';
 import LiftStateManager from '../lift-state-manager';
 import DispenserStateManager from '../dispenser-state-manager';
-import { RobotTrajectoryManager, Trajectory } from '../robot-trajectory-manager';
+import { RobotTrajectoryManager } from '../robot-trajectory-manager';
 import './app.css';
 import DoorsPanel from './doors-panel';
 import LiftsPanel from './lifts-panel';
@@ -97,8 +96,7 @@ export default function App(props: AppProps): JSX.Element {
   const { transportFactory, trajectoryManagerFactory } = props.appConfig;
   const [transport, setTransport] = React.useState<RomiCore.Transport | undefined>(undefined);
   const [buildingMap, setBuildingMap] = React.useState<RomiCore.BuildingMap | undefined>(undefined);
-  const trajManRef = React.useRef<RobotTrajectoryManager | null>(null);
-  const [trajs, setTrajs] = React.useState<Trajectory[]>([]);
+  const trajManager = React.useRef<RobotTrajectoryManager | undefined>(undefined);
 
   const { current: doorStateManager } = React.useRef(
     React.useMemo(() => new DoorStateManager(), []),
@@ -149,22 +147,6 @@ export default function App(props: AppProps): JSX.Element {
   });
 
   React.useEffect(() => {
-    let interval: number;
-    (async () => {
-      if (!trajectoryManagerFactory) {
-        return;
-      }
-      const trajMan = await trajectoryManagerFactory();
-      interval = setInterval(async () => {
-        const traj = await trajMan.latestTrajectory(new Big(6000000));
-        setTrajs(traj ? traj : []);
-      }, 1000);
-      trajManRef.current = trajMan;
-    })();
-    return () => clearInterval(interval);
-  }, [trajectoryManagerFactory]);
-
-  React.useEffect(() => {
     setLoading({ caption: 'Connecting to SOSS server...' });
     transportFactory()
       .then(x => {
@@ -201,6 +183,15 @@ export default function App(props: AppProps): JSX.Element {
         setLoading({ caption: 'Unable to download building map', variant: 'error' });
       });
   }, [transport]);
+
+  React.useEffect(() => {
+    if (!trajectoryManagerFactory) {
+      return;
+    }
+    (async () => {
+      trajManager.current = await trajectoryManagerFactory();
+    })();
+  }, [trajectoryManagerFactory]);
 
   React.useEffect(() => {
     if (currentView === OmniPanelViewIndex.Doors) {
@@ -316,7 +307,7 @@ export default function App(props: AppProps): JSX.Element {
           <ScheduleVisualizer
             buildingMap={buildingMap}
             fleets={fleets}
-            trajs={trajs}
+            trajManager={trajManager.current}
             onPlaceClick={handlePlaceClick}
             onRobotClick={handleRobotClick}
           />

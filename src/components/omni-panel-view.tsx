@@ -1,9 +1,11 @@
+import { makeStyles, Slide } from '@material-ui/core';
 import React from 'react';
-import { makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles(() => ({
   container: {
-    overflow: 'auto',
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
   },
 }));
 
@@ -17,10 +19,17 @@ export const OmniPanelView = React.forwardRef(
   (props: OmniPanelViewProps, ref: React.Ref<HTMLDivElement>) => {
     const classes = useStyles();
     const { value, index, children } = props;
+    const show = value === index;
     return (
-      <div ref={ref} className={classes.container}>
-        {value === index && children}
-      </div>
+      <Slide
+        direction="left"
+        in={show}
+        mountOnEnter
+        unmountOnExit
+        appear={false}
+      >
+        <div className={classes.container}>{children}</div>
+      </Slide>
     );
   },
 );

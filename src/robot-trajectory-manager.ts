@@ -1,5 +1,4 @@
-import Big from 'big.js';
-import { Knot, Pose2D, Velocity } from './util/cublic-spline';
+import { Knot } from './util/cublic-spline';
 
 // RawVelocity received from server is in this format (x, y, theta)
 export type RawVelocity = [number, number, number];
@@ -8,7 +7,7 @@ export type RawVelocity = [number, number, number];
 export type RawPose2D = [number, number, number];
 
 interface RawKnot {
-  t: string; // nanoseconds
+  t: number; // milliseconds
   v: RawVelocity;
   x: RawPose2D;
 }
@@ -17,8 +16,8 @@ export interface TrajectoryRequest {
   request: 'trajectory';
   param: {
     map_name: string;
-    start_time: Big;
-    finish_time: Big;
+    duration: number;
+    trim: boolean;
   };
 }
 
@@ -33,8 +32,9 @@ export interface TimeResponse {
 }
 
 export interface Trajectory {
+  id: number;
   shape: string;
-  dimensions: Big[];
+  dimensions: number[];
   segments: RawKnot[];
 }
 
@@ -44,9 +44,18 @@ export interface TrajectoryResponse {
 }
 
 export interface RobotTrajectoryManager {
-  trajectory(request: TrajectoryRequest): Promise<TrajectoryResponse>;
   serverTime(request: TimeRequest): Promise<TimeResponse>;
-  latestTrajectory(period: Big): Promise<Trajectory[]>;
+  latestTrajectory(request: TrajectoryRequest): Promise<TrajectoryResponse>;
+}
+
+interface Request {
+  request: string;
+  param: unknown;
+}
+
+interface Response {
+  response: string;
+  values: unknown;
 }
 
 export class DefaultTrajectoryManager {
@@ -66,55 +75,47 @@ export class DefaultTrajectoryManager {
     return new DefaultTrajectoryManager(ws);
   }
 
-  async trajectory(request: TrajectoryRequest): Promise<TrajectoryResponse> {
-    if (this._ongoingRequest['trajectory']) {
-      throw new Error('only one request can be sent at once');
-    }
-    this._ongoingRequest['trajectory'] = true;
-    this._webSocket.send(JSON.stringify(request));
+  async latestTrajectory(request: TrajectoryRequest): Promise<TrajectoryResponse> {
     return new Promise(res => {
-      const listener = (ev: MessageEvent) => {
-        this._webSocket.removeEventListener('message', listener);
-        delete this._ongoingRequest['trajectory'];
-        res(JSON.parse(ev.data));
-      };
-      this._webSocket.addEventListener('message', listener);
+      this._webSocket.send(JSON.stringify(request));
+      this._ongoingRequest.push([request, res as any]);
     });
   }
 
   async serverTime(request: TimeRequest): Promise<TimeResponse> {
-    if (this._ongoingRequest['time']) {
-      throw new Error('only one request can be sent at once');
-    }
-    this._ongoingRequest['time'] = true;
-    this._webSocket.send(JSON.stringify(request));
     return new Promise(res => {
-      const listener = (ev: MessageEvent) => {
-        this._webSocket.removeEventListener('message', listener);
-        delete this._ongoingRequest['time'];
-        res(JSON.parse(ev.data));
-      };
-      this._webSocket.addEventListener('message', listener);
+      this._webSocket.send(JSON.stringify(request));
+      this._ongoingRequest.push([request, res as any]);
     });
   }
 
-  async latestTrajectory(period: Big): Promise<Trajectory[]> {
-    const timeResp = await this.serverTime({ request: 'time', param: {} });
-    const startTime = new Big(timeResp.values[0]);
-    const resp = await this.trajectory({
-      request: 'trajectory',
-      param: {
-        start_time: startTime,
-        finish_time: startTime.add(period),
-        map_name: 'L1',
-      },
-    });
-    return resp.values;
+  private _ongoingRequest: [Request, (resp: Response) => void][] = [];
+
+  private constructor(private _webSocket: WebSocket) {
+    this._webSocket.addEventListener('message', e => this._handleMessage(e));
   }
 
-  private _ongoingRequest: Record<string, boolean> = {};
+  private _handleMessage(e: MessageEvent): void {
+    const ongoingRequest = this._ongoingRequest.shift();
+    if (!ongoingRequest) {
+      console.warn('received response when no request is made');
+      return;
+    }
 
-  private constructor(private _webSocket: WebSocket) {}
+    const [request, res] = ongoingRequest;
+    const resp = JSON.parse(e.data) as Response;
+    if (request.request !== resp.response) {
+      console.warn('received response for wrong request');
+      return;
+    }
+
+    if (resp.response === 'trajectory') {
+      if (resp.values === null) {
+        resp.values = [];
+      }
+    }
+    res(resp);
+  }
 }
 
 export function rawKnotsToKnots(rawKnots: RawKnot[]): Knot[] {
@@ -134,7 +135,7 @@ export function rawKnotsToKnots(rawKnots: RawKnot[]): Knot[] {
         y: velocityY,
         theta: velocityTheta,
       },
-      time: new Big(rawKnot.t),
+      time: rawKnot.t,
     });
   }
 

@@ -4,14 +4,15 @@ import {
   ExpansionPanelSummary,
   makeStyles,
   Typography,
-  useTheme,
 } from '@material-ui/core';
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import SpotlightExpansionPanel, { SpotlightValue } from './spotlight-expansion-panel';
 
-import Select from '@material-ui/core/Select';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
 
 import React from 'react';
 
@@ -29,6 +30,12 @@ const useStyles = makeStyles(theme => ({
     display: 'inline-flex',
     justifyContent: 'space-between',
     padding: theme.spacing(0.5),
+  },
+
+  listRoot: {
+    position: 'relative',
+    overflow: 'auto',
+    maxHeight: 100,
   },
 }));
 
@@ -97,7 +104,6 @@ export interface DispenserPanelProps {
 }
 
 export default function DispensersPanel(props: DispenserPanelProps): React.ReactElement {
-  const theme = useTheme();
   const classes = useStyles();
 
   const dispenserModeLabelClasses = useDispenserModeLabelStyles();
@@ -123,13 +129,15 @@ export default function DispensersPanel(props: DispenserPanelProps): React.React
     } else if (dispenserState.request_guid_queue.length == 0) {
       return null;
     }
-  
+
     return (
-      <Select multiple native>
+      <List className={classes.listRoot} dense={true}>
         {dispenserState.request_guid_queue.map(id => (
-          <option key={id} value={id}>{id}</option>
+          <ListItem>
+            <ListItemText primary={id}></ListItemText>
+          </ListItem>
         ))}
-      </Select>
+      </List>
     );
   }
 
@@ -150,6 +158,7 @@ export default function DispensersPanel(props: DispenserPanelProps): React.React
             </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails className={classes.expansionDetail}>
+
             <div className={classes.expansionDetailLine}>
               <Typography variant="body1">No. Queued Requests:</Typography>
               <Typography variant="body1">
@@ -157,17 +166,20 @@ export default function DispensersPanel(props: DispenserPanelProps): React.React
               </Typography>
             </div>
             <Divider />
+
             <div className={classes.expansionDetailLine}>
               <Typography variant="body1">Request Queue ID:</Typography>
               {dispenserRequestQueueId(state)}
             </div>
             <Divider />
+
             <div className={classes.expansionDetailLine}>
               <Typography variant="body1">Seconds Remaining:</Typography>
               <Typography variant="body1">
                 {secondsRemainingToString(state)}
               </Typography>
             </div>
+
           </ExpansionPanelDetails>
         </SpotlightExpansionPanel>
     );

@@ -9,20 +9,26 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     flexFlow: 'column',
   },
+
+  viewContainer: {
+    height: '100%',
+    overflowX: 'hidden',
+    position: 'relative',
+  },
 }));
 
 export interface OmniPanelProps {
-  transport?: Readonly<RomiCore.Transport>;
+  view: number;
   className?: string;
+  transport?: Readonly<RomiCore.Transport>;
   classes?: {
     navigation?: string;
     backButton?: string;
     closeButton?: string;
   };
-  view: number;
   onBack?: (current: number) => void;
   onClose?: () => void;
-  children: React.ReactElement<OmniPanelViewProps>[];
+  children?: React.ReactElement<OmniPanelViewProps>[];
 }
 
 export default function OmniPanel(props: OmniPanelProps): React.ReactElement {
@@ -46,7 +52,7 @@ export default function OmniPanel(props: OmniPanelProps): React.ReactElement {
           <CloseIcon />
         </Button>
       </ButtonGroup>
-      {props.children}
+      <div className={classes.viewContainer}>{props.children}</div>
     </div>
   );
 }

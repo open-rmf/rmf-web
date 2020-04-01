@@ -1,36 +1,62 @@
-import Big from 'big.js';
-import * as ChildProcses from 'child_process';
 import { DefaultTrajectoryManager } from '../robot-trajectory-manager';
 
-// trajectory server is broken atm
 describe('robot trajectory manager', () => {
   let trajMan: DefaultTrajectoryManager;
-  let rmfDemo: ChildProcses.ChildProcessWithoutNullStreams;
 
   beforeAll(async () => {
-    rmfDemo = ChildProcses.spawn('ros2', ['launch', 'demos', 'office.launch.xml']);
-    await new Promise(res => {
-      const interval = setInterval(async () => {
-        try {
-          trajMan = await DefaultTrajectoryManager.create('ws://localhost:8006');
-          clearInterval(interval);
-          res();
-        } catch (e) {
-          // do nothing, try again later
-        }
-      }, 1000);
-    });
-  }, 30000);
-
-  afterAll(async () => {
-    await new Promise(res => {
-      // ros2 launch only cleans up children with SIGINT, SIGTERM doesn't work
-      rmfDemo.kill('SIGINT');
-      rmfDemo.once('exit', res);
-    });
-  }, Infinity);
+    trajMan = await DefaultTrajectoryManager.create('ws://localhost:8006');
+  });
 
   it('is able to get trajectory data', async () => {
-    await trajMan.latestTrajectory(new Big(6000000000));
+    const traj = await trajMan.latestTrajectory({
+      request: 'trajectory',
+      param: {
+        map_name: 'L1',
+        duration: 6000,
+        trim: true,
+      },
+    });
+    expect(traj.values.length).toBeTruthy();
+    const segments = traj.values[0].segments;
+    expect(segments.length).toBeTruthy();
+    const segment = segments[0];
+    expect(typeof segment.t).toBe('number');
+  });
+
+  // regression
+  it('is able to get long duration trajectory', async () => {
+    const traj = await trajMan.latestTrajectory({
+      request: 'trajectory',
+      param: {
+        map_name: 'L1',
+        duration: (2 ** 31) - 1,
+        trim: true,
+      },
+    });
+    expect(traj.values.length).toBeTruthy();
+    const segments = traj.values[0].segments;
+    expect(segments.length).toBeTruthy();
+    const segment = segments[0];
+    expect(typeof segment.t).toBe('number');
+  });
+
+  it('can send simultanenous requests', async () => {
+    const results = await Promise.all([
+      trajMan.serverTime({
+        request: 'time',
+        param: {},
+      }),
+      trajMan.latestTrajectory({
+        request: 'trajectory',
+        param: {
+          map_name: 'L1',
+          duration: 6000,
+          trim: true,
+        },
+      }),
+    ]);
+    expect(results.length).toBe(2);
+    expect(results[0].values).toBeTruthy();
+    expect(results[1].values).toBeTruthy();
   });
 });

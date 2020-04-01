@@ -1,33 +1,17 @@
 import 'leaflet/dist/leaflet.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import AppConfig from './app-config';
+import appConfig from './app-config';
 import App from './components/app';
 import { extendControlPositions } from './leaflet/control-positions';
 import * as serviceWorker from './serviceWorker';
 
 extendControlPositions();
-// export const webSocketManager = new WebSocketManager('ws://localhost:8006')
 
-/*
-webSocketManager.addOnOpenCallback(async (event: Event) => {
-  if (!webSocketManager.client) return
-  webSocketManager.client.send(JSON.stringify({
-    request: 'time',
-    param: {}
-  }))
-})
-*/
+ReactDOM.render(<App appConfig={appConfig} />, document.getElementById('root'));
 
-// webSocketManager.connect()
-
-/*
-webSocketManager.addOnMessageCallback(async (event: WebSocketMessageEvent) => {
-  clockSource.timeDiff =
-})
-*/
-
-ReactDOM.render(<App appConfig={AppConfig} />, document.getElementById('root'));
+// NOTE: There is no point to have the app work offline as all the data must come from rmf/romi and
+// cannot be cached.
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

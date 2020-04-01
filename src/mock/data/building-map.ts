@@ -1,9 +1,20 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import officePng from './office.png';
+import airportPngUrl from './airport_terminal.png';
+import officePngUrl from './office.png';
 
 export default async function buildingMap(): Promise<RomiCore.BuildingMap> {
-  const resp = await fetch(officePng);
-  const officeImageData = new Uint8Array(await resp.arrayBuffer());
+  let officePng: Uint8Array;
+  let airportPng: Uint8Array;
+  if (process.env.NODE_ENV === 'test') {
+    const fs = await import('fs');
+    officePng = fs.readFileSync(`${__dirname}/office.png`);
+    airportPng = fs.readFileSync(`${__dirname}/airport_terminal.png`);
+  } else {
+    const officePngResp = await fetch(officePngUrl);
+    officePng = new Uint8Array(await officePngResp.arrayBuffer());
+    const airportPngResp = await fetch(airportPngUrl);
+    airportPng = new Uint8Array(await airportPngResp.arrayBuffer());
+  }
 
   const doors = [
     {
@@ -46,7 +57,7 @@ export default async function buildingMap(): Promise<RomiCore.BuildingMap> {
         elevation: 0,
         images: [
           {
-            data: officeImageData,
+            data: officePng,
             encoding: 'png',
             name: 'office',
             scale: 0.008465494960546494,
@@ -55,24 +66,50 @@ export default async function buildingMap(): Promise<RomiCore.BuildingMap> {
             yaw: 0,
           },
         ],
-        places: [{
-          name: 'Place1',
-          x: 2,
-          y: -2,
-          yaw: 0,
-          position_tolerance: 0,
-          yaw_tolerance: 0,
-        },
-        {
-          name: 'Place2',
-          x: 8,
-          y: -4,
-          yaw: 0,
-          position_tolerance: 0,
-          yaw_tolerance: 0,
-        }],
+        places: [
+          {
+            name: 'Place1',
+            x: 2,
+            y: -2,
+            yaw: 0,
+            position_tolerance: 0,
+            yaw_tolerance: 0,
+          },
+          {
+            name: 'Place2',
+            x: 8,
+            y: -4,
+            yaw: 0,
+            position_tolerance: 0,
+            yaw_tolerance: 0,
+          },
+        ],
         doors: doors,
         nav_graphs: [],
+        wall_graph: {
+          name: 'wallgraph',
+          vertices: [],
+          edges: [],
+          params: [],
+        },
+      },
+      {
+        name: 'Airport Terminal',
+        elevation: 10,
+        doors: [],
+        images: [
+          {
+            data: airportPng,
+            encoding: 'png',
+            name: 'airport_terminal',
+            scale: 0.08212187141180038,
+            x_offset: 0,
+            y_offset: 0,
+            yaw: 0,
+          },
+        ],
+        nav_graphs: [],
+        places: [],
         wall_graph: {
           name: 'wallgraph',
           vertices: [],
@@ -123,7 +160,7 @@ export default async function buildingMap(): Promise<RomiCore.BuildingMap> {
           edges: [],
           params: [],
         },
-      }
+      },
     ],
   };
 }

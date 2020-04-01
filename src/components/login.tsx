@@ -2,7 +2,6 @@
  * WIP
  */
 import { makeStyles, Snackbar, TextField } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
 import React from 'react';
 import { AuthService } from '../auth-service';
 
@@ -85,9 +84,7 @@ export default function Login(props: LoginProps): JSX.Element {
         autoHideDuration={3000}
         onClose={() => setShowLoginFail(false)}
       >
-        <Alert className={classes.loginFailSnackbar} severity="error">
-          {errorMessage}
-        </Alert>
+        {errorMessage}
       </Snackbar>
     </div>
   );
