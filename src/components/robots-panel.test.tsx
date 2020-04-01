@@ -1,14 +1,11 @@
+import { ExpansionPanelDetails, ExpansionPanelSummary } from '@material-ui/core';
 import { createMount } from '@material-ui/core/test-utils';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import Enzyme, { ReactWrapper } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
 import React from 'react';
 import fakeFleets from '../mock/data/fleets';
-import RobotsPanel from './robots-panel';
 import RobotItem from './robot-item';
-import { ExpansionPanelDetails, ExpansionPanelSummary } from '@material-ui/core';
+import RobotsPanel from './robots-panel';
 
-Enzyme.configure({ adapter: new Adapter() });
 const mount = createMount();
 
 let fleets: RomiCore.FleetState[];
