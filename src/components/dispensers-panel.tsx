@@ -75,7 +75,7 @@ function dispenserModeToString(dispenserState?: RomiCore.DispenserState): string
     case RomiCore.DispenserState.IDLE:
       return 'IDLE';
     case RomiCore.DispenserState.BUSY:
-      return 'BUSY';
+      return 'ONLINE';
     case RomiCore.DispenserState.OFFLINE:
       return 'OFFLINE';
     default:
