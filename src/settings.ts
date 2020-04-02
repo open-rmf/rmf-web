@@ -32,7 +32,7 @@ export function loadSettings(): Settings {
 
 export function defaultSettings(): Settings {
   return {
-    trajectoryAnimation: TrajectoryAnimation.None,
+    trajectoryAnimation: TrajectoryAnimation.Follow,
     trajectoryAnimationSpeed: AnimationSpeed.Normal,
   };
 }
