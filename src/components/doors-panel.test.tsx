@@ -1,7 +1,5 @@
 import { createMount } from '@material-ui/core/test-utils';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import Enzyme from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
 import React from 'react';
 import buildingMap from '../mock/data/building-map';
 import fakeDoorStates from '../mock/data/door-states';
@@ -9,7 +7,6 @@ import FakeTransport from '../mock/fake-transport';
 import DoorItem from './door-item';
 import DoorsPanel from './doors-panel';
 
-Enzyme.configure({ adapter: new Adapter() });
 const mount = createMount();
 
 let map: RomiCore.BuildingMap;

@@ -1,1 +1,0 @@
-export const IMAGE_SCALE = 1 / 256;

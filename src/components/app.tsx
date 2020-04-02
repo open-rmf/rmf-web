@@ -1,5 +1,5 @@
 import { AppBar, IconButton, makeStyles, Toolbar, Typography } from '@material-ui/core/';
-import { Dashboard as DashboardIcon } from '@material-ui/icons';
+import { Dashboard as DashboardIcon, Settings as SettingsIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import debug from 'debug';
 import React from 'react';
@@ -10,6 +10,7 @@ import FleetManager from '../fleet-manager';
 import LiftStateManager from '../lift-state-manager';
 import DispenserStateManager from '../dispenser-state-manager';
 import { RobotTrajectoryManager } from '../robot-trajectory-manager';
+import { loadSettings, saveSettings, Settings, SettingsContext } from '../settings';
 import './app.css';
 import DoorsPanel from './doors-panel';
 import LiftsPanel from './lifts-panel';
@@ -21,6 +22,7 @@ import PlacesPanel from './places-panel';
 import RobotsPanel from './robots-panel';
 import DispensersPanel from './dispensers-panel';
 import ScheduleVisualizer from './schedule-visualizer';
+import SettingsDrawer from './settings-drawer';
 import { SpotlightValue } from './spotlight-expansion-panel';
 
 const borderRadius = 20;
@@ -145,6 +147,9 @@ export default function App(props: AppProps): JSX.Element {
   const [loading, setLoading] = React.useState<LoadingScreenProps | null>({
     caption: 'Connecting to SOSS...',
   });
+
+  const [showSettings, setShowSettings] = React.useState(false);
+  const [settings, setSettings] = React.useState<Settings>(() => loadSettings());
 
   React.useEffect(() => {
     setLoading({ caption: 'Connecting to SOSS server...' });
@@ -291,66 +296,82 @@ export default function App(props: AppProps): JSX.Element {
 
   return (
     <React.Fragment>
-      {loading && <LoadingScreen {...loading} />}
-      <div className={classes.container}>
-        <AppBar position="static">
-          <Toolbar>
-            <Typography variant="h6" className={classes.toolBarTitle}>
-              Dashboard
-            </Typography>
-            <IconButton color="inherit" onClick={() => setShowOmniPanel(true)}>
-              <DashboardIcon />
-            </IconButton>
-          </Toolbar>
-        </AppBar>
-        {buildingMap && (
-          <ScheduleVisualizer
-            buildingMap={buildingMap}
-            fleets={fleets}
-            trajManager={trajManager.current}
-            onPlaceClick={handlePlaceClick}
-            onRobotClick={handleRobotClick}
-          />
-        )}
-        {showOmniPanel && (
-          <OmniPanel
-            className={classes.omniPanel}
-            classes={{
-              backButton: classes.topLeftBorder,
-              closeButton: classes.topRightBorder,
+      <SettingsContext.Provider value={settings}>
+        {loading && <LoadingScreen {...loading} />}
+        <div className={classes.container}>
+          <AppBar position="static">
+            <Toolbar>
+              <Typography variant="h6" className={classes.toolBarTitle}>
+                Dashboard
+              </Typography>
+              <IconButton color="inherit" onClick={() => setShowOmniPanel(true)}>
+                <DashboardIcon />
+              </IconButton>
+              <IconButton color="inherit" onClick={() => setShowSettings(true)}>
+                <SettingsIcon />
+              </IconButton>
+            </Toolbar>
+          </AppBar>
+          {buildingMap && (
+            <ScheduleVisualizer
+              buildingMap={buildingMap}
+              fleets={fleets}
+              trajManager={trajManager.current}
+              onPlaceClick={handlePlaceClick}
+              onRobotClick={handleRobotClick}
+            />
+          )}
+          {showOmniPanel && (
+            <OmniPanel
+              className={classes.omniPanel}
+              classes={{
+                backButton: classes.topLeftBorder,
+                closeButton: classes.topRightBorder,
+              }}
+              view={currentView}
+              onBack={handleBack}
+              onClose={handleClose}
+            >
+              <OmniPanelView value={currentView} index={OmniPanelViewIndex.MainMenu}>
+                <MainMenu
+                  onDoorsClick={handleMainMenuDoorsClick}
+                  onLiftsClick={handleMainMenuLiftsClick}
+                  onRobotsClick={handleMainMenuRobotsClick}
+                  onPlacesClick={handleMainMenuPlacesClick}
+                  onDispensersClick={handleMainMenuDispensersClick}
+                />
+              </OmniPanelView>
+              <OmniPanelView value={currentView} index={OmniPanelViewIndex.Doors}>
+                <DoorsPanel transport={transport} doorStates={doorStates} doors={doors} />
+              </OmniPanelView>
+              <OmniPanelView value={currentView} index={OmniPanelViewIndex.Lifts}>
+                <LiftsPanel transport={transport} liftStates={liftStates} lifts={lifts} />
+              </OmniPanelView>
+              <OmniPanelView value={currentView} index={OmniPanelViewIndex.Robots}>
+                <RobotsPanel fleets={fleets} spotlight={robotSpotlight} />
+              </OmniPanelView>
+              <OmniPanelView value={currentView} index={OmniPanelViewIndex.Places}>
+                {buildingMap && (
+                  <PlacesPanel buildingMap={buildingMap} spotlight={placeSpotlight} />
+                )}
+              </OmniPanelView>
+              <OmniPanelView value={currentView} index={OmniPanelViewIndex.Dispensers}>
+                <DispensersPanel transport={transport} dispenserStates={dispenserStates}
+                    spotlight={dispenserSpotlight} />
+              </OmniPanelView>
+            </OmniPanel>
+          )}
+          <SettingsDrawer
+            settings={settings}
+            open={showSettings}
+            onSettingsChange={newSettings => {
+              setSettings(newSettings);
+              saveSettings(newSettings);
             }}
-            view={currentView}
-            onBack={handleBack}
-            onClose={handleClose}
-          >
-            <OmniPanelView value={currentView} index={OmniPanelViewIndex.MainMenu}>
-              <MainMenu
-                onDoorsClick={handleMainMenuDoorsClick}
-                onLiftsClick={handleMainMenuLiftsClick}
-                onRobotsClick={handleMainMenuRobotsClick}
-                onPlacesClick={handleMainMenuPlacesClick}
-                onDispensersClick={handleMainMenuDispensersClick}
-              />
-            </OmniPanelView>
-            <OmniPanelView value={currentView} index={OmniPanelViewIndex.Doors}>
-              <DoorsPanel transport={transport} doorStates={doorStates} doors={doors} />
-            </OmniPanelView>
-            <OmniPanelView value={currentView} index={OmniPanelViewIndex.Lifts}>
-              <LiftsPanel transport={transport} liftStates={liftStates} lifts={lifts} />
-            </OmniPanelView>
-            <OmniPanelView value={currentView} index={OmniPanelViewIndex.Robots}>
-              <RobotsPanel fleets={fleets} spotlight={robotSpotlight} />
-            </OmniPanelView>
-            <OmniPanelView value={currentView} index={OmniPanelViewIndex.Places}>
-              {buildingMap && <PlacesPanel buildingMap={buildingMap} spotlight={placeSpotlight} />}
-            </OmniPanelView>
-            <OmniPanelView value={currentView} index={OmniPanelViewIndex.Dispensers}>
-              <DispensersPanel transport={transport} dispenserStates={dispenserStates}
-                   spotlight={dispenserSpotlight} />
-            </OmniPanelView>
-          </OmniPanel>
-        )}
-      </div>
+            onClose={() => setShowSettings(false)}
+          />
+        </div>
+      </SettingsContext.Provider>
     </React.Fragment>
   );
 }
