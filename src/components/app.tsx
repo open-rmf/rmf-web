@@ -356,7 +356,7 @@ export default function App(props: AppProps): JSX.Element {
                 )}
               </OmniPanelView>
               <OmniPanelView value={currentView} index={OmniPanelViewIndex.Dispensers}>
-                <DispensersPanel transport={transport} dispenserStates={dispenserStates}
+                <DispensersPanel dispenserStates={dispenserStates}
                     spotlight={dispenserSpotlight} />
               </OmniPanelView>
             </OmniPanel>
