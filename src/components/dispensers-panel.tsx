@@ -25,7 +25,7 @@ export default function DispenserPanel(props: DispenserPanelProps): JSX.Element 
       ...prev,
       [spotlight.value]: true,
     }));
-    ref.scrollIntoView({ behavior: 'smooth' });s
+    ref.scrollIntoView({ behavior: 'smooth' });
   }, [spotlight]);
 
   const listItems = Object.keys(props.dispenserStates).map( (guid, index) => {
@@ -35,7 +35,6 @@ export default function DispenserPanel(props: DispenserPanelProps): JSX.Element 
         key={state.guid}
         ref={ref => (dispenserRefs.current[state.guid] = ref)}
         dispenserState={state}
-        onClick={() => onDispenserClick && onDispenserClick(state)}
         expanded={Boolean(expanded[state.guid])}
         onChange={(_, newExpanded) =>
           setExpanded(prev => ({
@@ -46,6 +45,8 @@ export default function DispenserPanel(props: DispenserPanelProps): JSX.Element 
       />
     )
   });
+
+  return <React.Fragment>{listItems}</React.Fragment>
 
 }
 
