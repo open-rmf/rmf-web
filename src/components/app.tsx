@@ -1,4 +1,4 @@
-import { AppBar, IconButton, makeStyles, Toolbar, Typography } from '@material-ui/core/';
+import { AppBar, Fade, IconButton, makeStyles, Toolbar, Typography } from '@material-ui/core/';
 import { Dashboard as DashboardIcon, Settings as SettingsIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import debug from 'debug';
@@ -304,7 +304,7 @@ export default function App(props: AppProps): JSX.Element {
               <Typography variant="h6" className={classes.toolBarTitle}>
                 Dashboard
               </Typography>
-              <IconButton color="inherit" onClick={() => setShowOmniPanel(true)}>
+              <IconButton color="inherit" onClick={() => setShowOmniPanel(!showOmniPanel)}>
                 <DashboardIcon />
               </IconButton>
               <IconButton color="inherit" onClick={() => setShowSettings(true)}>
@@ -321,7 +321,7 @@ export default function App(props: AppProps): JSX.Element {
               onRobotClick={handleRobotClick}
             />
           )}
-          {showOmniPanel && (
+          <Fade in={showOmniPanel}>
             <OmniPanel
               className={classes.omniPanel}
               classes={{
@@ -360,7 +360,7 @@ export default function App(props: AppProps): JSX.Element {
                     spotlight={dispenserSpotlight} />
               </OmniPanelView>
             </OmniPanel>
-          )}
+          </Fade>
           <SettingsDrawer
             settings={settings}
             open={showSettings}

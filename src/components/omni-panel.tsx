@@ -17,7 +17,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export interface OmniPanelProps {
+export interface OmniPanelProps extends React.HTMLAttributes<HTMLDivElement> {
   view: number;
   className?: string;
   transport?: Readonly<RomiCore.Transport>;
@@ -31,7 +31,10 @@ export interface OmniPanelProps {
   children?: React.ReactElement<OmniPanelViewProps>[];
 }
 
-export default function OmniPanel(props: OmniPanelProps): React.ReactElement {
+export const OmniPanel = React.forwardRef(function(
+  props: OmniPanelProps,
+  ref: React.Ref<HTMLDivElement>,
+): React.ReactElement {
   const classes = useStyles();
 
   function handleBackClick() {
@@ -43,7 +46,7 @@ export default function OmniPanel(props: OmniPanelProps): React.ReactElement {
   }
 
   return (
-    <div className={`${classes.container} ${props.className}`}>
+    <div {...props} ref={ref} className={`${classes.container} ${props.className}`}>
       <ButtonGroup className={props.classes?.navigation} variant="text" fullWidth>
         <Button className={props.classes?.backButton} size="large" onClick={handleBackClick}>
           <BackIcon />
@@ -55,4 +58,6 @@ export default function OmniPanel(props: OmniPanelProps): React.ReactElement {
       <div className={classes.viewContainer}>{props.children}</div>
     </div>
   );
-}
+});
+
+export default OmniPanel;
