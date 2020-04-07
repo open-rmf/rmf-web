@@ -1,4 +1,5 @@
 import {
+  Divider,
   Drawer,
   DrawerProps,
   FormControl,
@@ -7,8 +8,6 @@ import {
   makeStyles,
   Radio,
   RadioGroup,
-  Divider,
-  Typography,
 } from '@material-ui/core';
 import React from 'react';
 import { Settings, TrajectoryAnimation } from '../settings';
