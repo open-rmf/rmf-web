@@ -34,7 +34,7 @@ export interface TimeResponse {
 export interface Trajectory {
   id: number;
   shape: string;
-  dimensions: number[];
+  dimensions: number;
   segments: RawKnot[];
 }
 
@@ -78,14 +78,14 @@ export class DefaultTrajectoryManager {
   async latestTrajectory(request: TrajectoryRequest): Promise<TrajectoryResponse> {
     return new Promise(res => {
       this._webSocket.send(JSON.stringify(request));
-      this._ongoingRequest.push([request, res as any]);
+      this._ongoingRequest.push([request, res as (resp: Response) => void]);
     });
   }
 
   async serverTime(request: TimeRequest): Promise<TimeResponse> {
     return new Promise(res => {
       this._webSocket.send(JSON.stringify(request));
-      this._ongoingRequest.push([request, res as any]);
+      this._ongoingRequest.push([request, res as (resp: Response) => void]);
     });
   }
 
