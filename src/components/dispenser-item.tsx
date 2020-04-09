@@ -60,7 +60,7 @@ export const DispenserItem = React.forwardRef(function(
     return (
       <List className={classes.listRoot} dense={true}>
         {dispenserState.request_guid_queue.map(id => (
-          <ListItem>
+          <ListItem key={id}>
             <ListItemText primary={id}></ListItemText>
           </ListItem>
         ))}
