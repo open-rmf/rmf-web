@@ -34,7 +34,7 @@ export interface TimeResponse {
 export interface Trajectory {
   id: number;
   shape: string;
-  dimensions: number[];
+  dimensions: number;
   segments: RawKnot[];
 }
 
@@ -76,45 +76,66 @@ export class DefaultTrajectoryManager {
   }
 
   async latestTrajectory(request: TrajectoryRequest): Promise<TrajectoryResponse> {
-    return new Promise(res => {
-      this._webSocket.send(JSON.stringify(request));
-      this._ongoingRequest.push([request, res as any]);
-    });
+    const event = await this._send(JSON.stringify(request));
+    const resp = JSON.parse(event.data);
+    this._checkResponse(request, resp);
+    if (resp.values === null) {
+      resp.values = [];
+    }
+    return resp as TrajectoryResponse;
   }
 
   async serverTime(request: TimeRequest): Promise<TimeResponse> {
-    return new Promise(res => {
-      this._webSocket.send(JSON.stringify(request));
-      this._ongoingRequest.push([request, res as any]);
+    const event = await this._send(JSON.stringify(request));
+    const resp = JSON.parse(event.data);
+    this._checkResponse(request, resp);
+    return resp as TimeResponse;
+  }
+
+  private _ongoingRequest: Promise<MessageEvent> | null = null;
+
+  private constructor(private _webSocket: WebSocket) {}
+
+  private _listenOnce<K extends keyof WebSocketEventMap>(
+    event: K,
+    listener: (e: WebSocketEventMap[K]) => unknown,
+  ): void {
+    this._webSocket.addEventListener(event, e => {
+      this._webSocket.removeEventListener(event, listener);
+      listener(e);
     });
   }
 
-  private _ongoingRequest: [Request, (resp: Response) => void][] = [];
+  /**
+   * Sends a message and waits for response from the server.
+   *
+   * @remarks This is an alternative to the old implementation of creating a promise, storing the
+   * resolver and processing each message in an event loop. Advantage of this is that each message
+   * processing logic can be self-contained without a need for a switch or if elses.
+   */
+  private async _send(payload: WebSocketSendParam0T): Promise<MessageEvent> {
+    // response should come in the order that requests are sent, this should allow multiple messages
+    // in-flight while processing the responses in the order they are sent.
+    this._webSocket.send(payload);
+    // waits for the earlier response to be processed.
+    if (this._ongoingRequest) {
+      await this._ongoingRequest;
+    }
 
-  private constructor(private _webSocket: WebSocket) {
-    this._webSocket.addEventListener('message', e => this._handleMessage(e));
+    this._ongoingRequest = new Promise(res => {
+      this._listenOnce('message', e => {
+        this._ongoingRequest = null;
+        res(e);
+      });
+    });
+    return this._ongoingRequest;
   }
 
-  private _handleMessage(e: MessageEvent): void {
-    const ongoingRequest = this._ongoingRequest.shift();
-    if (!ongoingRequest) {
-      console.warn('received response when no request is made');
-      return;
-    }
-
-    const [request, res] = ongoingRequest;
-    const resp = JSON.parse(e.data) as Response;
+  private _checkResponse(request: Request, resp: Response): void {
     if (request.request !== resp.response) {
       console.warn('received response for wrong request');
-      return;
+      throw new Error('received response for wrong request');
     }
-
-    if (resp.response === 'trajectory') {
-      if (resp.values === null) {
-        resp.values = [];
-      }
-    }
-    res(resp);
   }
 }
 
@@ -141,3 +162,5 @@ export function rawKnotsToKnots(rawKnots: RawKnot[]): Knot[] {
 
   return knots;
 }
+
+type WebSocketSendParam0T = Parameters<WebSocket['send']>[0];

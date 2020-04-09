@@ -56,7 +56,7 @@ describe('robot trajectory manager', () => {
       }),
     ]);
     expect(results.length).toBe(2);
-    expect(results[0].values).toBeTruthy();
-    expect(results[1].values).toBeTruthy();
+    expect(typeof results[0].values[0]).toBe('number');
+    expect(typeof results[1].values[0]).toBe('object');
   });
 });
