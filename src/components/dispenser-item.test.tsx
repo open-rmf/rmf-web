@@ -1,3 +1,6 @@
+import {
+  ListItem,
+} from '@material-ui/core';
 import { createMount } from '@material-ui/core/test-utils';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
@@ -13,9 +16,13 @@ beforeEach(() => {
   dispenserStates = fakeDispenserStates();
 });
 
-it('renders dispensers', () => {
-  const root = mount(<DispenserPanel dispenserStates={dispenserStates} />);
-  const dispenserElements = root.find(DispenserItem);
-  expect(dispenserElements.length).toBe(Object.keys(dispenserStates).length);
-  root.unmount();
+it('lists dispensers queued requests ID', () => {
+  Object.keys(dispenserStates).map( (guid, index) => {
+    const state = dispenserStates[guid];
+
+    const root = mount(<DispenserItem dispenserState={state} />);
+    const QueuedIds = root.find(ListItem);
+    expect(QueuedIds.length).toBe(state.request_guid_queue.length);
+    root.unmount();
+  });
 });
