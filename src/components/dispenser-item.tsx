@@ -25,22 +25,6 @@ export const DispenserItem = React.forwardRef(function(
 ): React.ReactElement {
   const { dispenserState, ...otherProps } = props;
   const classes = useStyles();
-
-  const useDispenserModeLabelStyles = makeStyles(theme => {
-    const base: CSSProperties = {
-      borderRadius: theme.shape.borderRadius,
-      borderStyle: 'solid',
-      border: 2,
-      padding: 5,
-      width: '4rem',
-      textAlign: 'center',
-    };
-    return {
-      idle: {...base, borderColor: theme.palette.warning.main},
-      busy: {...base, borderColor: theme.palette.success.main},
-      offline: {...base, borderColor: theme.palette.error.main}
-    };
-  });
   const dispenserModeLabelClasses = useDispenserModeLabelStyles();
 
   function dispenserModeLabelClass(): string {
@@ -148,3 +132,19 @@ const useStyles = makeStyles(theme => ({
     maxHeight: 100,
   },
 }));
+
+const useDispenserModeLabelStyles = makeStyles(theme => {
+  const base: CSSProperties = {
+    borderRadius: theme.shape.borderRadius,
+    borderStyle: 'solid',
+    border: 2,
+    padding: 5,
+    width: '4rem',
+    textAlign: 'center',
+  };
+  return {
+    idle: {...base, borderColor: theme.palette.warning.main},
+    busy: {...base, borderColor: theme.palette.success.main},
+    offline: {...base, borderColor: theme.palette.error.main}
+  };
+});

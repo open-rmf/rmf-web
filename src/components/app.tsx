@@ -170,7 +170,7 @@ export default function App(props: AppProps): JSX.Element {
       .catch((e: CloseEvent) => {
         setLoading({ caption: `Unable to connect to SOSS server (${e.code})`, variant: 'error' });
       });
-  }, [transportFactory, doorStateManager, liftStateManager, fleetManager]);
+  }, [transportFactory, doorStateManager, liftStateManager, dispenserStateManager, fleetManager]);
 
   React.useEffect(() => {
     if (!transport) {
