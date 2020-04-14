@@ -107,6 +107,8 @@ export default function App(props: AppProps): JSX.Element {
     {},
   );
   const [doors, setDoors] = React.useState<readonly RomiCore.Door[]>([]);
+  // FIXME: not used for now as there is not enough information to render doors.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [doorSpotlight, setDoorSpotlight] = React.useState<SpotlightValue<string> | undefined>(
     undefined,
   );
@@ -118,6 +120,8 @@ export default function App(props: AppProps): JSX.Element {
     {},
   );
   const [lifts, setLifts] = React.useState<readonly RomiCore.Lift[]>([]);
+  // FIXME: not used for now as there is not enough information to render lifts.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [liftSpotlight, setLiftSpotlight] = React.useState<SpotlightValue<string> | undefined>(
     undefined,
   );
