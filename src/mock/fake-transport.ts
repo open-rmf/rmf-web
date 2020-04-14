@@ -4,6 +4,7 @@ import buildingMap from './data/building-map';
 import fakeDoorStates from './data/door-states';
 import fakeFleets from './data/fleets';
 import fakeLiftStates from './data/lift-states';
+import fakeDispenserStates from './data/dispenser-states';
 
 export class FakeTransport extends RomiCore.TransportEvents implements RomiCore.Transport {
   name: string = 'fake';
@@ -47,6 +48,15 @@ export class FakeTransport extends RomiCore.TransportEvents implements RomiCore.
         setInterval(() => {
           for (const fleet of fleets) {
             cb(fleet as Message);
+          }
+        }, 1000);
+        break;
+      }
+      case RomiCore.dispenserStates: {
+        const dispenserStates = fakeDispenserStates();
+        setInterval(() => {
+          for (const state of Object.values(dispenserStates)) {
+            cb(state as Message);
           }
         }, 1000);
         break;
