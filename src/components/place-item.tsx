@@ -30,7 +30,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export interface PlaceItemProps extends ExpansionPanelProps {
+export interface PlaceItemProps extends Omit<ExpansionPanelProps, 'children'> {
   place: RomiCore.Place;
   level: RomiCore.Level;
 }

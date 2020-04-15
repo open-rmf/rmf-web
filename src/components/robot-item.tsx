@@ -11,7 +11,7 @@ import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 
-export interface RobotsPanelProps extends ExpansionPanelProps {
+export interface RobotsPanelProps extends Omit<ExpansionPanelProps, 'children'> {
   robot: Readonly<RomiCore.RobotState>;
   onRobotClick?(robot: RomiCore.RobotState): void;
 }

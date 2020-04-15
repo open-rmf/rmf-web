@@ -23,7 +23,7 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React, { CSSProperties } from 'react';
 import DisableableTypography from './disableable-typography';
 
-export interface LiftItemProps extends ExpansionPanelProps {
+export interface LiftItemProps extends Omit<ExpansionPanelProps, 'children'> {
   lift: Readonly<RomiCore.Lift>;
   liftState?: Readonly<RomiCore.LiftState>;
   enableRequest?: boolean;
