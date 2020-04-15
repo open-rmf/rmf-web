@@ -38,7 +38,8 @@
     "build": "react-scripts build",
     "test": "REACT_APP_MOCK=1 react-scripts test --testPathIgnorePatterns integration-tests",
     "test:integration": "node src/integration-tests/launch.js test --testPathPattern integration-tests",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy:demo": "NODE_DEBUG=gh-pages gh-pages -d build -m \"$(git rev-parse HEAD)\""
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -54,5 +55,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "gh-pages": "^2.2.0"
   }
 }
