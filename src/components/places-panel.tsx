@@ -35,6 +35,7 @@ export default function PlacesPanel(props: PlacesPanelProps): React.ReactElement
         level.places.map(place => (
           <PlaceItem
             key={place.name}
+            ref={ref => (placeRefs.current[place.name] = ref)}
             place={place}
             level={level}
             onClick={() => onPlaceClick && onPlaceClick(place)}
