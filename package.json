@@ -2,6 +2,7 @@
   "name": "romi-dashboard",
   "version": "0.0.1-alpha.0",
   "private": true,
+  "homepage": ".",
   "dependencies": {
     "@material-ui/core": "^4.9.4",
     "@material-ui/icons": "^4.9.1",
@@ -39,7 +40,7 @@
     "test": "REACT_APP_MOCK=1 react-scripts test --testPathIgnorePatterns integration-tests",
     "test:integration": "node src/integration-tests/launch.js test --testPathPattern integration-tests",
     "eject": "react-scripts eject",
-    "deploy:demo": "NODE_DEBUG=gh-pages gh-pages -d build -m \"$(git rev-parse HEAD)\""
+    "deploy:demo": "REACT_APP_MOCK=1 npm run build && NODE_DEBUG=gh-pages gh-pages -d build -m \"$(git rev-parse HEAD)\""
   },
   "eslintConfig": {
     "extends": "react-app"
