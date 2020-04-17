@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, makeStyles } from '@material-ui/core';
+import { Button, ButtonGroup, makeStyles, Slide } from '@material-ui/core';
 import { Close as CloseIcon, KeyboardBackspace as BackIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
@@ -14,6 +14,12 @@ const useStyles = makeStyles(() => ({
     height: '100%',
     overflowX: 'hidden',
     position: 'relative',
+  },
+
+  viewContainer2: {
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
   },
 }));
 
@@ -58,7 +64,20 @@ export const OmniPanel = React.forwardRef(function(
           <CloseIcon />
         </Button>
       </ButtonGroup>
-      <div className={classes.viewContainer}>{props.children}</div>
+      <div className={classes.viewContainer}>
+        {props.children?.map(child => (
+          <Slide
+            key={child.props.id}
+            direction="left"
+            in={child.props.id === view}
+            mountOnEnter
+            unmountOnExit
+            appear={false}
+          >
+            <div className={classes.viewContainer2}>{child}</div>
+          </Slide>
+        ))}
+      </div>
     </div>
   );
 });

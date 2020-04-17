@@ -11,7 +11,7 @@ export interface AppConfig {
 
 export let appConfig: AppConfig;
 
-if (!process.env.REACT_APP_MOCK) {
+if (!process.env.REACT_APP_MOCK && process.env.NODE_ENV !== 'test') {
   // { user: 'romi-dashboard' } signed with HS256 + secret 'rmf'
   // prettier-ignore
   const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoicm9taS1kYXNoYm9hcmQiLCJpYXQiOjE1ODMyODYyMTV9.x9aNjcLujQPHchWEsbrRbvctmnGQtEzw-81X0aPIE-Y'

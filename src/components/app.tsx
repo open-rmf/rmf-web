@@ -131,7 +131,7 @@ export default function App(props: AppProps): JSX.Element {
   const [robotSpotlight, setRobotSpotlight] = React.useState<SpotlightValue<string> | undefined>(
     undefined,
   );
-  
+
   const [placeSpotlight, setPlaceSpotlight] = React.useState<SpotlightValue<string> | undefined>(
     undefined,
   );
@@ -336,7 +336,7 @@ export default function App(props: AppProps): JSX.Element {
               onBack={handleBack}
               onClose={handleClose}
             >
-              <OmniPanelView value={currentView} index={OmniPanelViewIndex.MainMenu}>
+              <OmniPanelView id={OmniPanelViewIndex.MainMenu}>
                 <MainMenu
                   onDoorsClick={handleMainMenuDoorsClick}
                   onLiftsClick={handleMainMenuLiftsClick}
@@ -345,21 +345,21 @@ export default function App(props: AppProps): JSX.Element {
                   onDispensersClick={handleMainMenuDispensersClick}
                 />
               </OmniPanelView>
-              <OmniPanelView value={currentView} index={OmniPanelViewIndex.Doors}>
+              <OmniPanelView id={OmniPanelViewIndex.Doors}>
                 <DoorsPanel transport={transport} doorStates={doorStates} doors={doors} />
               </OmniPanelView>
-              <OmniPanelView value={currentView} index={OmniPanelViewIndex.Lifts}>
+              <OmniPanelView id={OmniPanelViewIndex.Lifts}>
                 <LiftsPanel transport={transport} liftStates={liftStates} lifts={lifts} />
               </OmniPanelView>
-              <OmniPanelView value={currentView} index={OmniPanelViewIndex.Robots}>
+              <OmniPanelView id={OmniPanelViewIndex.Robots}>
                 <RobotsPanel fleets={fleets} spotlight={robotSpotlight} />
               </OmniPanelView>
-              <OmniPanelView value={currentView} index={OmniPanelViewIndex.Places}>
+              <OmniPanelView id={OmniPanelViewIndex.Places}>
                 {buildingMap && (
                   <PlacesPanel buildingMap={buildingMap} spotlight={placeSpotlight} />
                 )}
               </OmniPanelView>
-              <OmniPanelView value={currentView} index={OmniPanelViewIndex.Dispensers}>
+              <OmniPanelView id={OmniPanelViewIndex.Dispensers}>
                 <DispensersPanel dispenserStates={dispenserStates}
                     spotlight={dispenserSpotlight} />
               </OmniPanelView>

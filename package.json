@@ -37,7 +37,7 @@
     "start": "react-scripts start",
     "start:mock": "REACT_APP_MOCK=1 react-scripts start",
     "build": "react-scripts build",
-    "test": "REACT_APP_MOCK=1 react-scripts test --testPathIgnorePatterns integration-tests",
+    "test": "react-scripts test --testPathIgnorePatterns integration-tests",
     "test:integration": "node src/integration-tests/launch.js test --testPathPattern integration-tests",
     "eject": "react-scripts eject",
     "deploy:demo": "REACT_APP_MOCK=1 npm run build && NODE_DEBUG=gh-pages gh-pages -d build -m \"$(git rev-parse HEAD)\""
