@@ -1,7 +1,7 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 import { PlaceItem } from './place-item';
-import { SpotlightValue } from './spotlight-expansion-panel';
+import { SpotlightValue } from './spotlight-value';
 
 export interface PlacesPanelProps {
   buildingMap: Readonly<RomiCore.BuildingMap>;

@@ -1,7 +1,7 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 import RobotItem from './robot-item';
-import { SpotlightValue } from './spotlight-expansion-panel';
+import { SpotlightValue } from './spotlight-value';
 
 export interface RobotsPanelProps {
   fleets: readonly RomiCore.FleetState[];

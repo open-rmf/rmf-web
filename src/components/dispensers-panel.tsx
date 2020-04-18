@@ -1,7 +1,7 @@
 import React from 'react';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import DispenserItem from './dispenser-item';
-import { SpotlightValue } from './spotlight-expansion-panel';
+import { SpotlightValue } from './spotlight-value';
 
 export interface DispenserPanelProps {
   dispenserStates: Readonly<Record<string, RomiCore.DispenserState>>;

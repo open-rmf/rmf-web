@@ -5,13 +5,14 @@ import debug from 'debug';
 import React from 'react';
 import 'typeface-roboto';
 import { AppConfig } from '../app-config';
+import DispenserStateManager from '../dispenser-state-manager';
 import DoorStateManager from '../door-state-manager';
 import FleetManager from '../fleet-manager';
 import LiftStateManager from '../lift-state-manager';
-import DispenserStateManager from '../dispenser-state-manager';
 import { RobotTrajectoryManager } from '../robot-trajectory-manager';
 import { loadSettings, saveSettings, Settings, SettingsContext } from '../settings';
 import './app.css';
+import DispensersPanel from './dispensers-panel';
 import DoorsPanel from './doors-panel';
 import LiftsPanel from './lifts-panel';
 import LoadingScreen, { LoadingScreenProps } from './loading-screen';
@@ -20,10 +21,9 @@ import OmniPanel from './omni-panel';
 import OmniPanelView from './omni-panel-view';
 import PlacesPanel from './places-panel';
 import RobotsPanel from './robots-panel';
-import DispensersPanel from './dispensers-panel';
 import ScheduleVisualizer from './schedule-visualizer';
 import SettingsDrawer from './settings-drawer';
-import { SpotlightValue } from './spotlight-expansion-panel';
+import { SpotlightValue } from './spotlight-value';
 
 const borderRadius = 20;
 
@@ -100,9 +100,7 @@ export default function App(props: AppProps): JSX.Element {
   const [buildingMap, setBuildingMap] = React.useState<RomiCore.BuildingMap | undefined>(undefined);
   const trajManager = React.useRef<RobotTrajectoryManager | undefined>(undefined);
 
-  const { current: doorStateManager } = React.useRef(
-    React.useMemo(() => new DoorStateManager(), []),
-  );
+  const doorStateManager = React.useMemo(() => new DoorStateManager(), []);
   const [doorStates, setDoorStates] = React.useState<Readonly<Record<string, RomiCore.DoorState>>>(
     {},
   );
@@ -113,9 +111,7 @@ export default function App(props: AppProps): JSX.Element {
     undefined,
   );
 
-  const { current: liftStateManager } = React.useRef(
-    React.useMemo(() => new LiftStateManager(), []),
-  );
+  const liftStateManager = React.useMemo(() => new LiftStateManager(), []);
   const [liftStates, setLiftStates] = React.useState<Readonly<Record<string, RomiCore.LiftState>>>(
     {},
   );
@@ -136,15 +132,13 @@ export default function App(props: AppProps): JSX.Element {
     undefined,
   );
 
-  const { current: dispenserStateManager } = React.useRef(
-    React.useMemo(() => new DispenserStateManager(), []),
-  );
-  const [dispenserStates, setDispenserStates] = React.useState<Readonly<Record<string, RomiCore.DispenserState>>>(
-    {}
-  );
-  const [dispenserSpotlight, setDispenserSpotlight] = React.useState<SpotlightValue<string> | undefined>(
-    undefined,
-  );
+  const dispenserStateManager = React.useMemo(() => new DispenserStateManager(), []);
+  const [dispenserStates, setDispenserStates] = React.useState<
+    Readonly<Record<string, RomiCore.DispenserState>>
+  >({});
+  const [dispenserSpotlight, setDispenserSpotlight] = React.useState<
+    SpotlightValue<string> | undefined
+  >(undefined);
 
   const [showOmniPanel, setShowOmniPanel] = React.useState(true);
   const [currentView, setCurrentView] = React.useState(OmniPanelViewIndex.MainMenu);
@@ -360,8 +354,7 @@ export default function App(props: AppProps): JSX.Element {
                 )}
               </OmniPanelView>
               <OmniPanelView id={OmniPanelViewIndex.Dispensers}>
-                <DispensersPanel dispenserStates={dispenserStates}
-                    spotlight={dispenserSpotlight} />
+                <DispensersPanel dispenserStates={dispenserStates} spotlight={dispenserSpotlight} />
               </OmniPanelView>
             </OmniPanel>
           </Fade>

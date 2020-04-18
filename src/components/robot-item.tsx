@@ -11,13 +11,13 @@ import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 
-export interface RobotsPanelProps extends Omit<ExpansionPanelProps, 'children'> {
+export interface RobotItemProps extends Omit<ExpansionPanelProps, 'children'> {
   robot: Readonly<RomiCore.RobotState>;
   onRobotClick?(robot: RomiCore.RobotState): void;
 }
 
 export const RobotItem = React.forwardRef(function(
-  props: RobotsPanelProps,
+  props: RobotItemProps,
   ref: React.Ref<HTMLElement>,
 ): React.ReactElement {
   const { robot, onRobotClick, ...otherProps } = props;

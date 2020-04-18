@@ -1,7 +1,7 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 import { LiftItem } from './lift-item';
-import { SpotlightValue } from './spotlight-expansion-panel';
+import { SpotlightValue } from './spotlight-value';
 
 interface LiftsPanelProps {
   lifts: readonly RomiCore.Lift[];
