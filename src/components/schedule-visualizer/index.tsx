@@ -21,6 +21,7 @@ import {
   withFollowAnimation,
   withOutlineAnimation,
 } from './trajectory-animations';
+import DoorsOverlay from './doors-overlay';
 
 const useStyles = makeStyles(() => ({
   map: {
@@ -39,8 +40,10 @@ interface MapFloorLayer {
 
 export interface ScheduleVisualizerProps {
   buildingMap: Readonly<RomiCore.BuildingMap>;
+  // doors: Readonly<RomiCore.DoorState[]>;
   fleets: Readonly<RomiCore.FleetState[]>;
   trajManager?: Readonly<RobotTrajectoryManager>;
+  onDoorClick?(door: RomiCore.Door): void;
   onPlaceClick?(place: RomiCore.Place): void;
   onRobotClick?(robot: RomiCore.RobotState): void;
 }
@@ -93,6 +96,18 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       x.robots.filter(r => r.location.level_name === curMapFloorLayer.level.name),
     );
   }, [props.fleets, curMapFloorLayer]);
+
+  // const doorsInCurLevel = React.useMemo(() => {
+  //   if (!curMapFloorLayer) {
+  //     return [];
+  //   }
+
+  //   return props.buildingMap.levels.flatMap((level: any) => {
+  //     const doors = level.name === curMapFloorLayer.level.name && level.doors;
+  //     return doors;
+  //   });
+  // }, [curMapFloorLayer]);
+
   const colorManager = React.useMemo(() => new ColorManager(), []);
 
   const settings = React.useContext(SettingsContext);
@@ -289,6 +304,22 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
                 robots={robotsInCurLevel}
                 colorManager={colorManager}
                 onRobotClick={props.onRobotClick}
+              />
+            </Pane>
+          )}
+        </LayersControl.Overlay>
+        <LayersControl.Overlay name="Doors" checked>
+          {curMapFloorLayer && (
+            <Pane>
+              <PlacesOverlay
+                bounds={curMapFloorLayer.bounds}
+                places={curMapFloorLayer.level.doors}
+                onPlaceClick={props.onPlaceClick}
+              />
+              <DoorsOverlay
+                bounds={curMapFloorLayer.bounds}
+                doors={curMapFloorLayer.level.doors}
+                onDoorClick={props.onDoorClick}
               />
             </Pane>
           )}
