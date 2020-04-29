@@ -243,6 +243,10 @@ export default function App(props: AppProps): JSX.Element {
     setPlaceSpotlight({ value: place.name });
   }
 
+  function handleDoorClick(place: RomiCore.Door): void {
+    console.log('door click');
+  }
+
   function handleRobotClick(robot: RomiCore.RobotState): void {
     setShowOmniPanel(true);
     setCurrentView(OmniPanelViewIndex.Robots);
@@ -315,6 +319,7 @@ export default function App(props: AppProps): JSX.Element {
               buildingMap={buildingMap}
               fleets={fleets}
               trajManager={trajManager.current}
+              onDoorClick={handleDoorClick}
               onPlaceClick={handlePlaceClick}
               onRobotClick={handleRobotClick}
             />

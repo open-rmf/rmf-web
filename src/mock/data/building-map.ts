@@ -96,7 +96,7 @@ export default async function buildingMap(): Promise<RomiCore.BuildingMap> {
       {
         name: 'Airport Terminal',
         elevation: 10,
-        doors: [],
+        doors: doors,
         images: [
           {
             data: airportPng,
