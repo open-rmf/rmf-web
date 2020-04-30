@@ -11,6 +11,7 @@ import { viewBoxFromLeafletBounds } from '../../util/css-utils';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 
 import Door from './door';
+import { DoorStateContext } from '../app';
 
 export interface DoorsOverlayProps extends SVGOverlayProps {
   doors: readonly RomiCore.Door[];
@@ -27,20 +28,20 @@ export default function DoorsOverlay(props: DoorsOverlayProps): React.ReactEleme
   // const height = bounds.getNorth() - bounds.getSouth();
   // const viewBox = `0 0 ${100} ${100}`;
   // const fillColor = 'rgba(0, 0, 0, 0.1)';
-  console.log(doors);
   return (
-    <SVGOverlay {...otherProps}>
-      <svg viewBox={viewBox}>
-        {doors.map(door => (
-          <Door
-            key={`img-${door.name}`}
-            door={door}
-            onClick={(_, door) => onDoorClick && onDoorClick(door)}
-          />
-        ))}
-      </svg>
-    </SVGOverlay>
-
+    <>
+      <SVGOverlay {...otherProps}>
+        <svg viewBox={viewBox}>
+          {doors.map(door => (
+            <Door
+              key={`img-${door.name}`}
+              door={door}
+              onClick={(_, door) => onDoorClick && onDoorClick(door)}
+            />
+          ))}
+        </svg>
+      </SVGOverlay>
+    </>
     // <SVGOverlay {...otherProps}>
     //   <svg viewBox={viewBox}>
     //     {doors.map(door => {
