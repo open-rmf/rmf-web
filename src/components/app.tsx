@@ -2,7 +2,7 @@ import { AppBar, Fade, IconButton, makeStyles, Toolbar, Typography } from '@mate
 import { Dashboard as DashboardIcon, Settings as SettingsIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import debug from 'debug';
-import React from 'react';
+import React, { createContext } from 'react';
 import 'typeface-roboto';
 import { AppConfig } from '../app-config';
 import DispenserStateManager from '../dispenser-state-manager';
@@ -91,6 +91,8 @@ function makeViewMap(): ViewMap {
   return viewMap;
 }
 
+export const DoorStateContext = createContext({});
+
 const viewMap = makeViewMap();
 
 export default function App(props: AppProps): JSX.Element {
@@ -105,8 +107,8 @@ export default function App(props: AppProps): JSX.Element {
     {},
   );
   const [doors, setDoors] = React.useState<readonly RomiCore.Door[]>([]);
+
   // FIXME: not used for now as there is not enough information to render doors.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [doorSpotlight, setDoorSpotlight] = React.useState<SpotlightValue<string> | undefined>(
     undefined,
   );
@@ -246,7 +248,7 @@ export default function App(props: AppProps): JSX.Element {
   function handleDoorClick(door: RomiCore.Door): void {
     setShowOmniPanel(true);
     setCurrentView(OmniPanelViewIndex.Doors);
-    setRobotSpotlight({ value: door.name });
+    setDoorSpotlight({ value: door.name });
   }
 
   function handleRobotClick(robot: RomiCore.RobotState): void {
@@ -317,14 +319,16 @@ export default function App(props: AppProps): JSX.Element {
             </Toolbar>
           </AppBar>
           {buildingMap && (
-            <ScheduleVisualizer
-              buildingMap={buildingMap}
-              fleets={fleets}
-              trajManager={trajManager.current}
-              onDoorClick={handleDoorClick}
-              onPlaceClick={handlePlaceClick}
-              onRobotClick={handleRobotClick}
-            />
+            <DoorStateContext.Provider value={doorStates}>
+              <ScheduleVisualizer
+                buildingMap={buildingMap}
+                fleets={fleets}
+                trajManager={trajManager.current}
+                onDoorClick={handleDoorClick}
+                onPlaceClick={handlePlaceClick}
+                onRobotClick={handleRobotClick}
+              />
+            </DoorStateContext.Provider>
           )}
           <Fade in={showOmniPanel}>
             <OmniPanel
@@ -347,7 +351,12 @@ export default function App(props: AppProps): JSX.Element {
                 />
               </OmniPanelView>
               <OmniPanelView id={OmniPanelViewIndex.Doors}>
-                <DoorsPanel transport={transport} doorStates={doorStates} doors={doors} />
+                <DoorsPanel
+                  transport={transport}
+                  doorStates={doorStates}
+                  doors={doors}
+                  spotlight={doorSpotlight}
+                />
               </OmniPanelView>
               <OmniPanelView id={OmniPanelViewIndex.Lifts}>
                 <LiftsPanel transport={transport} liftStates={liftStates} lifts={lifts} />
