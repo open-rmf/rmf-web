@@ -27,6 +27,7 @@ export default function DoorsOverlay(props: DoorsOverlayProps): React.ReactEleme
   // const height = bounds.getNorth() - bounds.getSouth();
   // const viewBox = `0 0 ${100} ${100}`;
   // const fillColor = 'rgba(0, 0, 0, 0.1)';
+  console.log(doors);
   return (
     <SVGOverlay {...otherProps}>
       <svg viewBox={viewBox}>
