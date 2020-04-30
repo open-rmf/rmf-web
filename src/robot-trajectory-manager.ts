@@ -41,7 +41,10 @@ export interface Trajectory {
 export interface TrajectoryResponse {
   response: 'trajectory';
   values: Trajectory[];
+  conflicts: Conflict[];
 }
+
+export type Conflict = number;
 
 export interface RobotTrajectoryManager {
   serverTime(request: TimeRequest): Promise<TimeResponse>;

@@ -1,15 +1,15 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import debug from 'debug';
 import buildingMap from './data/building-map';
+import fakeDispenserStates from './data/dispenser-states';
 import fakeDoorStates from './data/door-states';
 import fakeFleets from './data/fleets';
 import fakeLiftStates from './data/lift-states';
-import fakeDispenserStates from './data/dispenser-states';
 
 export class FakeTransport extends RomiCore.TransportEvents implements RomiCore.Transport {
   name: string = 'fake';
 
-  createPublisher<Message extends object>(
+  createPublisher<Message extends unknown>(
     topic: RomiCore.RomiTopic<Message>,
     options?: RomiCore.Options | undefined,
   ): RomiCore.Publisher<Message> {
@@ -18,7 +18,7 @@ export class FakeTransport extends RomiCore.TransportEvents implements RomiCore.
     };
   }
 
-  subscribe<Message extends object>(
+  subscribe<Message extends unknown>(
     topic: RomiCore.RomiTopic<Message>,
     cb: RomiCore.SubscriptionCb<Message>,
     options?: RomiCore.Options | undefined,
@@ -67,13 +67,19 @@ export class FakeTransport extends RomiCore.TransportEvents implements RomiCore.
     };
   }
 
-  async call<Request extends object, Response extends object>(
+  async call<Request extends unknown, Response extends unknown>(
     service: RomiCore.RomiService<Request, Response>,
     req: Request,
   ): Promise<Response> {
     if (service.service === 'get_building_map') {
       return new RomiCore.GetBuildingMap_Response(await buildingMap()) as any;
     }
+    throw new Error('not implemented');
+  }
+
+  createService<Request extends unknown, Response extends unknown>(
+    service: RomiCore.RomiService<Request, Response>,
+  ): RomiCore.Service<Request, Response> {
     throw new Error('not implemented');
   }
 

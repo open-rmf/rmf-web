@@ -1,19 +1,20 @@
 import * as L from 'leaflet';
 import React from 'react';
-import { Trajectory } from '../../robot-trajectory-manager';
+import { Conflict, Trajectory } from '../../robot-trajectory-manager';
 import ColorManager from './colors';
 import RobotTrajectory, { RobotTrajectoryProps } from './robot-trajectory';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 
 export interface RobotTrajectoriesOverlayProps extends SVGOverlayProps {
   trajs: readonly Trajectory[];
+  conflicts: Conflict[];
   colorManager: Readonly<ColorManager>;
 }
 
 export default function RobotTrajectoriesOverlay(
   props: RobotTrajectoriesOverlayProps,
 ): React.ReactElement {
-  const { trajs, colorManager, ...otherProps } = props;
+  const { trajs, conflicts, colorManager, ...otherProps } = props;
   const trajectoryContext = React.useContext(RobotTrajectoryContext);
 
   const bounds =
@@ -21,18 +22,6 @@ export default function RobotTrajectoriesOverlay(
   const width = bounds.getEast() - bounds.getWest();
   const height = bounds.getNorth() - bounds.getSouth();
   const viewBox = `0 0 ${width} ${height}`;
-
-  // React.useEffect(() => {
-  //   if (!pendingColors.length) {
-  //     return;
-  //   }
-  //   (async () => {
-  //     await Promise.all(
-  //       pendingColors.map(async robot => colorManager.robotColor(robot.name, robot.model)),
-  //     );
-  //     setPendingColors([]);
-  //   })();
-  // });
 
   // FIXME: hardcode for now, as the source of the footprint is expected to change.
   const footprint = 0.5;
@@ -45,7 +34,7 @@ export default function RobotTrajectoriesOverlay(
             key={traj.id}
             trajectory={traj}
             footprint={footprint}
-            color="green"
+            conflicts={conflicts}
           />
         ))}
       </svg>

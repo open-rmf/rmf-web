@@ -14,9 +14,16 @@ export interface TrajectoryPath {
   segOffsets: number[];
 }
 
+/**
+ * Fills the trajectory as the robot moves through it.
+ * @param TrajectoryComponent
+ * @param animationScale Animation duration is calculated from the trajectory and the animation
+ * scale. For example, a trajectory that lasts 10s with an animation of scale of will play over
+ * 10/5 = 2s.
+ */
 export function withFillAnimation(
   TrajectoryComponent: React.ComponentType<RobotTrajectoryProps>,
-  animationDuration: number,
+  animationScale: number,
 ): React.ComponentType<RobotTrajectoryProps> {
   return props => {
     const classes = useFillStyles();
@@ -41,7 +48,7 @@ export function withFillAnimation(
           strokeDashoffset: 2 - offset,
         })),
         {
-          duration: animationDuration,
+          duration: animationDuration(trajectory, animationScale),
           easing: 'linear',
           fill: 'forwards',
         },
@@ -58,9 +65,16 @@ export function withFillAnimation(
   };
 }
 
+/**
+ * Follows the robot's position as it moves through its trajectory.
+ * @param TrajectoryComponent
+ * @param animationScale Animation duration is calculated from the trajectory and the animation
+ * scale. For example, a trajectory that lasts 10s with an animation of scale of will play over
+ * 10/5 = 2s.
+ */
 export function withFollowAnimation(
   TrajectoryComponent: React.ComponentType<RobotTrajectoryProps>,
-  animationDuration: number,
+  animationScale: number,
 ): React.ComponentType<RobotTrajectoryProps> {
   return props => {
     const classes = useFollowStyles();
@@ -88,7 +102,7 @@ export function withFollowAnimation(
           strokeDashoffset: Math.max(2 - offset, strokeDash + 1),
         })),
         {
-          duration: animationDuration,
+          duration: animationDuration(trajectory, animationScale),
           easing: 'linear',
           fill: 'forwards',
         },
@@ -105,9 +119,16 @@ export function withFollowAnimation(
   };
 }
 
+/**
+ * Similar to fill animation, but only fills the outline of the trajectory.
+ * @param TrajectoryComponent
+ * @param animationScale Animation duration is calculated from the trajectory and the animation
+ * scale. For example, a trajectory that lasts 10s with an animation of scale of will play over
+ * 10/5 = 2s.
+ */
 export function withOutlineAnimation(
   TrajectoryComponent: React.ComponentType<RobotTrajectoryProps>,
-  animationDuration: number,
+  animationScale: number,
 ): React.ComponentType<RobotTrajectoryProps> {
   return props => {
     const classes = useOutlineStyles();
@@ -152,7 +173,7 @@ export function withOutlineAnimation(
           strokeDashoffset: 2 - offset,
         })),
         {
-          duration: animationDuration,
+          duration: animationDuration(trajectory, animationScale),
           easing: 'linear',
           fill: 'forwards',
         },
@@ -172,7 +193,7 @@ export function withOutlineAnimation(
   };
 }
 
-export function keyframeOffsets(traj: Trajectory): number[] {
+function keyframeOffsets(traj: Trajectory): number[] {
   const { segments } = traj;
   const totalDuration = segments[segments.length - 1].t - segments[0].t;
   return traj.segments.map(seg => (seg.t - segments[0].t) / totalDuration);
@@ -209,3 +230,7 @@ const useOutlineStyles = makeStyles(() => ({
     opacity: 1,
   },
 }));
+
+function animationDuration(traj: Trajectory, scale: number): number {
+  return (traj.segments[traj.segments.length - 1].t - traj.segments[0].t) / scale;
+}

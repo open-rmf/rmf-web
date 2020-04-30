@@ -1,5 +1,6 @@
+import { useTheme } from '@material-ui/core';
 import React from 'react';
-import { rawKnotsToKnots, Trajectory } from '../../robot-trajectory-manager';
+import { Conflict, rawKnotsToKnots, Trajectory } from '../../robot-trajectory-manager';
 import { bezierControlPoints, knotsToSegmentCoefficientsArray } from '../../util/cublic-spline';
 import { TrajectoryPath } from './trajectory-animations';
 
@@ -7,15 +8,16 @@ export interface RobotTrajectoryProps
   extends React.RefAttributes<SVGPathElement>,
     React.SVGAttributes<SVGPathElement> {
   trajectory: Trajectory;
+  conflicts: Conflict[];
   footprint: number;
-  color: string;
 }
 
 export const RobotTrajectory = React.forwardRef(function(
   props: RobotTrajectoryProps,
   ref: React.Ref<SVGPathElement>,
 ): React.ReactElement {
-  const { trajectory, footprint, color, ...otherProps } = props;
+  const { trajectory, conflicts, footprint, ...otherProps } = props;
+  const theme = useTheme();
 
   const pathD = React.useMemo(() => {
     const knots = rawKnotsToKnots(trajectory.segments);
@@ -33,6 +35,12 @@ export const RobotTrajectory = React.forwardRef(function(
 
     return d;
   }, [trajectory]);
+
+  const color = React.useMemo(
+    () =>
+      conflicts.includes(trajectory.id) ? theme.palette.error.main : theme.palette.success.main,
+    [trajectory, conflicts, theme],
+  );
 
   return (
     <path

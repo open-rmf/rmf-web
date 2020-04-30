@@ -3,7 +3,12 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import * as L from 'leaflet';
 import React from 'react';
 import { AttributionControl, ImageOverlay, LayersControl, Map as LMap, Pane } from 'react-leaflet';
-import { RobotTrajectoryManager, Trajectory } from '../../robot-trajectory-manager';
+import {
+  Conflict,
+  RobotTrajectoryManager,
+  Trajectory,
+  TrajectoryResponse,
+} from '../../robot-trajectory-manager';
 import { AnimationSpeed, SettingsContext, TrajectoryAnimation } from '../../settings';
 import { toBlobUrl } from '../../util';
 import ColorManager from './colors';
@@ -11,7 +16,11 @@ import PlacesOverlay from './places-overlay';
 import RobotTrajectoriesOverlay, { RobotTrajectoryContext } from './robot-trajectories-overlay';
 import RobotTrajectory from './robot-trajectory';
 import RobotsOverlay from './robots-overlay';
-import { withFillAnimation, withOutlineAnimation, withFollowAnimation } from './trajectory-animations';
+import {
+  withFillAnimation,
+  withFollowAnimation,
+  withOutlineAnimation,
+} from './trajectory-animations';
 
 const useStyles = makeStyles(() => ({
   map: {
@@ -26,7 +35,6 @@ interface MapFloorLayer {
   level: RomiCore.Level;
   imageUrl: string;
   bounds: L.LatLngBounds;
-  trajectories: Trajectory[];
 }
 
 export interface ScheduleVisualizerProps {
@@ -64,6 +72,8 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     mapFloorLayers,
   ]);
 
+  const [trajectories, setTrajectories] = React.useState<Record<string, TrajectoryResponse>>({});
+
   const initialBounds = React.useMemo<Readonly<L.LatLngBounds> | undefined>(() => {
     const initialLayer = mapFloorLayers[mapFloorLayerSort[0]];
     if (!initialLayer) {
@@ -86,6 +96,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   const colorManager = React.useMemo(() => new ColorManager(), []);
 
   const settings = React.useContext(SettingsContext);
+  const trajLookahead = 60000; // 1 min
   const trajAnimDuration = React.useMemo(() => {
     switch (settings.trajectoryAnimationSpeed) {
       case AnimationSpeed.Slow:
@@ -97,15 +108,16 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     }
   }, [settings]);
   const TrajectoryComponent = React.useMemo(() => {
+    const animationScale = trajLookahead / trajAnimDuration;
     switch (settings.trajectoryAnimation) {
       case TrajectoryAnimation.None:
         return RobotTrajectory;
       case TrajectoryAnimation.Fill:
-        return withFillAnimation(RobotTrajectory, trajAnimDuration * 0.8);
+        return withFillAnimation(RobotTrajectory, animationScale);
       case TrajectoryAnimation.Follow:
-        return withFollowAnimation(RobotTrajectory, trajAnimDuration * 0.8);
+        return withFollowAnimation(RobotTrajectory, animationScale);
       case TrajectoryAnimation.Outline:
-        return withOutlineAnimation(RobotTrajectory, trajAnimDuration * 0.8);
+        return withOutlineAnimation(RobotTrajectory, animationScale);
     }
   }, [settings.trajectoryAnimation, trajAnimDuration]);
 
@@ -152,7 +164,6 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
                 level: level,
                 imageUrl: imageUrl,
                 bounds: bounds,
-                trajectories: [],
               };
               res();
             };
@@ -170,33 +181,46 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   }, [props.buildingMap, mapElement]);
 
   React.useEffect(() => {
-    const trajManager = props.trajManager;
-    if (!curMapFloorLayer || !trajManager) {
-      return;
-    }
-
     let interval: number;
     (async () => {
-      interval = window.setInterval(async () => {
+      const trajManager = props.trajManager;
+
+      async function updateTrajectory() {
+        if (!curMapFloorLayer || !trajManager) {
+          return;
+        }
         const resp = await trajManager.latestTrajectory({
           request: 'trajectory',
           param: {
             map_name: curMapFloorLayer.level.name,
-            duration: 60000,
+            duration: trajLookahead,
             trim: true,
           },
         });
-        setMapFloorLayers(prev => ({
+        setTrajectories(prev => ({
           ...prev,
-          [curMapFloorLayer.level.name]: { ...curMapFloorLayer, trajectories: resp.values },
+          [curMapFloorLayer.level.name]: resp,
         }));
-      }, trajAnimDuration);
+      }
+
+      await updateTrajectory();
+      interval = window.setInterval(updateTrajectory, trajAnimDuration);
     })();
     return () => clearInterval(interval);
-  }, [props.trajManager, curMapFloorLayer, TrajectoryComponent, trajAnimDuration]);
+  }, [props.trajManager, curMapFloorLayer, trajAnimDuration]);
 
   function handleBaseLayerChange(e: L.LayersControlEvent): void {
     setCurLevelName(e.name);
+  }
+
+  function getTrajectory(levelName: string): Trajectory[] {
+    const resp = trajectories[levelName];
+    return resp ? resp.values : [];
+  }
+
+  function getConflicts(levelName: string): Conflict[] {
+    const resp = trajectories[levelName];
+    return resp ? resp.conflicts : [];
   }
 
   const sortedMapFloorLayers = mapFloorLayerSort.map(x => mapFloorLayers[x]);
@@ -249,7 +273,8 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
               <RobotTrajectoryContext.Provider value={{ Component: TrajectoryComponent }}>
                 <RobotTrajectoriesOverlay
                   bounds={curMapFloorLayer.bounds}
-                  trajs={curMapFloorLayer.trajectories}
+                  trajs={getTrajectory(curMapFloorLayer.level.name)}
+                  conflicts={getConflicts(curMapFloorLayer.level.name)}
                   colorManager={colorManager}
                 />
               </RobotTrajectoryContext.Provider>
