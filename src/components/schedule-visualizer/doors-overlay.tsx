@@ -3,16 +3,14 @@
  * length and orientationo of the door to draw it on the map.
  */
 
-// import { makeStyles } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 // import * as L from 'leaflet';
 import React from 'react';
 import { viewBoxFromLeafletBounds } from '../../util/css-utils';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import Door from './door';
-import { DoorStateContext } from '../app';
-
 export interface DoorsOverlayProps extends SVGOverlayProps {
   doors: readonly RomiCore.Door[];
   onDoorClick?(door: RomiCore.Door): void;
@@ -21,16 +19,10 @@ export interface DoorsOverlayProps extends SVGOverlayProps {
 export default function DoorsOverlay(props: DoorsOverlayProps): React.ReactElement {
   const { doors, onDoorClick, ...otherProps } = props;
   const viewBox = viewBoxFromLeafletBounds(props.bounds);
-  // const bounds =
-  //   props.bounds instanceof L.LatLngBounds ? props.bounds : new L.LatLngBounds(props.bounds);
-
-  // const width = bounds.getEast() - bounds.getWest();
-  // const height = bounds.getNorth() - bounds.getSouth();
-  // const viewBox = `0 0 ${100} ${100}`;
-  // const fillColor = 'rgba(0, 0, 0, 0.1)';
   return (
     <>
       <SVGOverlay {...otherProps}>
+        <CircularProgress color="secondary"></CircularProgress>
         <svg viewBox={viewBox}>
           {doors.map(door => (
             <Door
@@ -42,31 +34,5 @@ export default function DoorsOverlay(props: DoorsOverlayProps): React.ReactEleme
         </svg>
       </SVGOverlay>
     </>
-    // <SVGOverlay {...otherProps}>
-    //   <svg viewBox={viewBox}>
-    //     {doors.map(door => {
-    //       console.log(door);
-
-    //       console.log(width, height);
-    //       return (
-    //         <g key={door.name}>
-    //           <filter id={`${door.name}-shadow`} x="-150%" y="-150%" width="400%" height="400%">
-    //             <feDropShadow dx="0" dy="0" stdDeviation="0.1" floodColor="black" />
-    //           </filter>
-    //           <polygon
-    //             x={x}
-    //             y={-y}
-    //             width={10}
-    //             height={-10}
-    //             fill={fillColor}
-    //             stroke="black"
-    //             strokeWidth="0.03"
-    //             filter={`url(#${door.name}-shadow)`}
-    //           />
-    //         </g>
-    //       );
-    //     })}
-    //   </svg>
-    // </SVGOverlay>
   );
 }

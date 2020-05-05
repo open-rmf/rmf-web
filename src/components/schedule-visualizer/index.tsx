@@ -97,17 +97,6 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     );
   }, [props.fleets, curMapFloorLayer]);
 
-  // const doorsInCurLevel = React.useMemo(() => {
-  //   if (!curMapFloorLayer) {
-  //     return [];
-  //   }
-
-  //   return props.buildingMap.levels.flatMap((level: any) => {
-  //     const doors = level.name === curMapFloorLayer.level.name && level.doors;
-  //     return doors;
-  //   });
-  // }, [curMapFloorLayer]);
-
   const colorManager = React.useMemo(() => new ColorManager(), []);
 
   const settings = React.useContext(SettingsContext);

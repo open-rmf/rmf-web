@@ -12,5 +12,10 @@ export default function fakeDoorStates(): Record<string, RomiCore.DoorState> {
       current_mode: { value: RomiCore.DoorMode.MODE_CLOSED },
       door_time: { sec: 0, nanosec: 0 },
     },
+    Door3: {
+      door_name: 'exit_door',
+      current_mode: { value: RomiCore.DoorMode.MODE_MOVING },
+      door_time: { sec: 0, nanosec: 0 },
+    },
   };
 }
