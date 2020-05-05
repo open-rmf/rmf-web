@@ -47,6 +47,16 @@ export default async function buildingMap(): Promise<RomiCore.BuildingMap> {
       motion_range: -1.571,
       motion_direction: 1,
     },
+    {
+      name: 'exit_door',
+      v1_x: 12.5,
+      v1_y: -2.8,
+      v2_x: 13.5,
+      v2_y: -2.9,
+      door_type: 1,
+      motion_range: -1.571,
+      motion_direction: 1,
+    },
   ];
 
   return {
