@@ -40,7 +40,6 @@ interface MapFloorLayer {
 
 export interface ScheduleVisualizerProps {
   buildingMap: Readonly<RomiCore.BuildingMap>;
-  // doors: Readonly<RomiCore.DoorState[]>;
   fleets: Readonly<RomiCore.FleetState[]>;
   trajManager?: Readonly<RobotTrajectoryManager>;
   onDoorClick?(door: RomiCore.Door): void;
