@@ -1,9 +1,10 @@
 import { makeStyles } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import React, { useContext } from 'react';
-import { DoorStateContext } from '../app';
+import React from 'react';
 import { Spinner } from './spinner';
 
+// Door state
+//eslint-disable-next-line
 const CLOSE = 0;
 const PROCESS = 1;
 const OPEN = 2;
@@ -13,8 +14,9 @@ const DOOR_TYPE_SINGLE_SLIDING = 1;
 const DOOR_TYPE_DOUBLE_SLIDING = 2;
 export interface DoorProps {
   door: RomiCore.Door;
-  onClick?(e: React.MouseEvent<SVGGElement>, place: RomiCore.Door): void;
+  onClick?(e: React.MouseEvent<SVGGElement>, door: RomiCore.Door): void;
   currentMode?: number;
+  doorState?: RomiCore.DoorState;
 }
 
 const getDoorStyle = (classes: any, currentMode: number | undefined) => {
@@ -93,14 +95,9 @@ const Door = React.forwardRef(function(
   props: DoorProps,
   ref: React.Ref<SVGGElement>,
 ): React.ReactElement {
-  const { door, onClick } = props;
+  const { door, onClick, doorState } = props;
   const { door_type: doorType } = door;
-  // Door state
-  const useStateValue = () => useContext(DoorStateContext);
-  const doorState = useStateValue() as any;
-  const currentDoor = doorState && doorState[door.name];
-  const currentMode = currentDoor && currentDoor.current_mode.value;
-  console.log(doorState);
+  const currentMode = doorState && doorState.current_mode.value;
   return (
     <>
       {doorType === DOOR_TYPE_SINGLE_SLIDING && (

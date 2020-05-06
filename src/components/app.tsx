@@ -2,7 +2,7 @@ import { AppBar, Fade, IconButton, makeStyles, Toolbar, Typography } from '@mate
 import { Dashboard as DashboardIcon, Settings as SettingsIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import debug from 'debug';
-import React, { createContext } from 'react';
+import React from 'react';
 import 'typeface-roboto';
 import { AppConfig } from '../app-config';
 import DispenserStateManager from '../dispenser-state-manager';
@@ -24,6 +24,7 @@ import RobotsPanel from './robots-panel';
 import ScheduleVisualizer from './schedule-visualizer';
 import SettingsDrawer from './settings-drawer';
 import { SpotlightValue } from './spotlight-value';
+import { DoorStateContext } from './schedule-visualizer/doors-overlay';
 
 const borderRadius = 20;
 
@@ -90,8 +91,6 @@ function makeViewMap(): ViewMap {
   viewMap[OmniPanelViewIndex.Dispensers] = root.addChild(OmniPanelViewIndex.Dispensers);
   return viewMap;
 }
-
-export const DoorStateContext = createContext({});
 
 const viewMap = makeViewMap();
 
