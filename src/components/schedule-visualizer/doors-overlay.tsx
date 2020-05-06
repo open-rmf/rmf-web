@@ -4,7 +4,7 @@
  */
 
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import React from 'react';
+import React, { createContext, useContext } from 'react';
 import { viewBoxFromLeafletBounds } from '../../util/css-utils';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 
@@ -17,7 +17,8 @@ export interface DoorsOverlayProps extends SVGOverlayProps {
 export default function DoorsOverlay(props: DoorsOverlayProps): React.ReactElement {
   const { doors, onDoorClick, ...otherProps } = props;
   const viewBox = viewBoxFromLeafletBounds(props.bounds);
-
+  const useStateValue = () => useContext(DoorStateContext);
+  const doorsState = useStateValue();
   return (
     <>
       <SVGOverlay {...otherProps}>
@@ -27,6 +28,7 @@ export default function DoorsOverlay(props: DoorsOverlayProps): React.ReactEleme
               key={`img-${door.name}`}
               door={door}
               onClick={(_, door) => onDoorClick && onDoorClick(door)}
+              doorState={doorsState && doorsState[door.name]}
             />
           ))}
         </svg>
@@ -34,3 +36,5 @@ export default function DoorsOverlay(props: DoorsOverlayProps): React.ReactEleme
     </>
   );
 }
+
+export const DoorStateContext = createContext<Readonly<Record<string, RomiCore.DoorState>>>({});
