@@ -2,6 +2,7 @@ import { makeStyles } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React, { useContext } from 'react';
 import { DoorStateContext } from '../app';
+import { Spinner } from './spinner';
 
 const OPEN = 0;
 const PROCESS = 1;
@@ -94,14 +95,7 @@ const SingleHingeDoor = React.forwardRef(function(
       </g>
       {currentMode === PROCESS && (
         <g>
-          <circle
-            className={classes.path}
-            cx={hingeX}
-            cy={-hingeY}
-            r="0.4"
-            fill="none"
-            stroke-width="0.1"
-          ></circle>
+          <Spinner cx={hingeX} cy={-hingeY} r={0.4} strokeWidth={0.1}></Spinner>
         </g>
       )}
     </>
@@ -141,34 +135,5 @@ const useStyles = makeStyles(() => ({
   doorMarker: {
     cursor: 'pointer',
     pointerEvents: 'auto',
-  },
-  path: {
-    stroke: '#93bfec',
-    'stroke-linecap': 'round',
-    animation: `$dash 3s ease-in-out infinite`,
-  },
-
-  '@keyframes rotate': {
-    '0%': {
-      transform: 'rotateZ(0deg)',
-    },
-    '100%': {
-      transform: 'rotate(360deg)',
-    },
-  },
-
-  '@keyframes dash': {
-    '0%': {
-      strokeDasharray: '1, 150',
-      strokeDashoffset: '0',
-    },
-    '50%': {
-      strokeDasharray: '90, 150',
-      strokeDashoffset: '-35',
-    },
-    '100%': {
-      strokeDasharray: '90, 180',
-      strokeDashoffset: '-124',
-    },
   },
 }));
