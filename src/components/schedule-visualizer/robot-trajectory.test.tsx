@@ -7,20 +7,25 @@ const mount = createMount();
 
 it('renders without crashing', async () => {
   const trajMgr = new FakeTrajectoryManager();
-  const trajectory = (
-    await trajMgr.latestTrajectory({
-      request: 'trajectory',
-      param: {
-        map_name: 'L1',
-        duration: 1000,
-        trim: true,
-      },
-    })
-  ).values[0];
+  const trajectoryData = await trajMgr.latestTrajectory({
+    request: 'trajectory',
+    param: {
+      map_name: 'L1',
+      duration: 1000,
+      trim: true,
+    },
+  });
+  const trajectoryValue = trajectoryData.values[0];
+  const trajectoryConflict = trajectoryData.conflicts;
 
   const root = mount(
     <svg>
-      <RobotTrajectory trajectory={trajectory} footprint={0.5} color="black" />
+      <RobotTrajectory
+        trajectory={trajectoryValue}
+        conflicts={trajectoryConflict}
+        footprint={0.5}
+        color="black"
+      />
     </svg>,
   );
 
