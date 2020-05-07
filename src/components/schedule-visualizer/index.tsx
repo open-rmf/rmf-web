@@ -22,6 +22,7 @@ import {
   withOutlineAnimation,
 } from './trajectory-animations';
 import DoorsOverlay from './doors-overlay';
+import LiftsOverlay from './lift-overlay';
 
 const useStyles = makeStyles(() => ({
   map: {
@@ -43,6 +44,7 @@ export interface ScheduleVisualizerProps {
   fleets: Readonly<RomiCore.FleetState[]>;
   trajManager?: Readonly<RobotTrajectoryManager>;
   onDoorClick?(door: RomiCore.Door): void;
+  onLiftClick?(lift: RomiCore.Lift): void;
   onPlaceClick?(place: RomiCore.Place): void;
   onRobotClick?(robot: RomiCore.RobotState): void;
 }
@@ -306,6 +308,16 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
               />
             </Pane>
           )}
+        </LayersControl.Overlay>
+        <LayersControl.Overlay name="Lifts" checked>
+          <Pane>
+            <LiftsOverlay
+              bounds={curMapFloorLayer.bounds}
+              currentLevel={curLevelName}
+              lifts={props.buildingMap.lifts}
+              onLiftClick={props.onLiftClick}
+            />
+          </Pane>
         </LayersControl.Overlay>
       </LayersControl>
     </LMap>

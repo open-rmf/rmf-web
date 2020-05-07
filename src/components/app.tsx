@@ -25,6 +25,7 @@ import ScheduleVisualizer from './schedule-visualizer';
 import SettingsDrawer from './settings-drawer';
 import { SpotlightValue } from './spotlight-value';
 import { DoorStateContext } from './schedule-visualizer/doors-overlay';
+import { LiftStateContext } from './schedule-visualizer/lift-overlay';
 
 const borderRadius = 20;
 
@@ -256,6 +257,12 @@ export default function App(props: AppProps): JSX.Element {
     setRobotSpotlight({ value: robot.name });
   }
 
+  function handleLiftClick(lift: RomiCore.Lift): void {
+    setShowOmniPanel(true);
+    setCurrentView(OmniPanelViewIndex.Lifts);
+    setLiftSpotlight({ value: lift.name });
+  }
+
   function clearSpotlights() {
     setDoorSpotlight(undefined);
     setLiftSpotlight(undefined);
@@ -319,14 +326,17 @@ export default function App(props: AppProps): JSX.Element {
           </AppBar>
           {buildingMap && (
             <DoorStateContext.Provider value={doorStates}>
-              <ScheduleVisualizer
-                buildingMap={buildingMap}
-                fleets={fleets}
-                trajManager={trajManager.current}
-                onDoorClick={handleDoorClick}
-                onPlaceClick={handlePlaceClick}
-                onRobotClick={handleRobotClick}
-              />
+              <LiftStateContext.Provider value={liftStates}>
+                <ScheduleVisualizer
+                  buildingMap={buildingMap}
+                  fleets={fleets}
+                  trajManager={trajManager.current}
+                  onDoorClick={handleDoorClick}
+                  onLiftClick={handleLiftClick}
+                  onPlaceClick={handlePlaceClick}
+                  onRobotClick={handleRobotClick}
+                />
+              </LiftStateContext.Provider>
             </DoorStateContext.Provider>
           )}
           <Fade in={showOmniPanel}>
@@ -358,7 +368,12 @@ export default function App(props: AppProps): JSX.Element {
                 />
               </OmniPanelView>
               <OmniPanelView id={OmniPanelViewIndex.Lifts}>
-                <LiftsPanel transport={transport} liftStates={liftStates} lifts={lifts} />
+                <LiftsPanel
+                  transport={transport}
+                  liftStates={liftStates}
+                  lifts={lifts}
+                  spotlight={liftSpotlight}
+                />
               </OmniPanelView>
               <OmniPanelView id={OmniPanelViewIndex.Robots}>
                 <RobotsPanel fleets={fleets} spotlight={robotSpotlight} />
