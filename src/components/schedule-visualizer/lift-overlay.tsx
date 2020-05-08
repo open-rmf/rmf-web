@@ -6,8 +6,8 @@ import Lift from './lift';
 
 export interface LiftsOverlayProps extends SVGOverlayProps {
   currentLevel: string;
-  lifts: readonly RomiCore.Lift[];
-  onLiftClick?(lift: RomiCore.Lift): void;
+  lifts: readonly RomiCoreLift[];
+  onLiftClick?(lift: RomiCoreLift): void;
 }
 
 export default function LiftsOverlay(props: LiftsOverlayProps): React.ReactElement {
@@ -36,3 +36,10 @@ export default function LiftsOverlay(props: LiftsOverlayProps): React.ReactEleme
 }
 
 export const LiftStateContext = createContext<Readonly<Record<string, RomiCore.LiftState>>>({});
+
+// TODO: this should be replace by RomiCore.Lift once  we addressed this
+// https://github.com/osrf/romi-js-core-interfaces/issues/4
+export interface RomiCoreLift extends RomiCore.Lift {
+  width?: number;
+  depth?: number;
+}

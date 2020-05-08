@@ -25,7 +25,7 @@ import ScheduleVisualizer from './schedule-visualizer';
 import SettingsDrawer from './settings-drawer';
 import { SpotlightValue } from './spotlight-value';
 import { DoorStateContext } from './schedule-visualizer/doors-overlay';
-import { LiftStateContext } from './schedule-visualizer/lift-overlay';
+import { LiftStateContext, RomiCoreLift } from './schedule-visualizer/lift-overlay';
 
 const borderRadius = 20;
 
@@ -117,7 +117,9 @@ export default function App(props: AppProps): JSX.Element {
   const [liftStates, setLiftStates] = React.useState<Readonly<Record<string, RomiCore.LiftState>>>(
     {},
   );
-  const [lifts, setLifts] = React.useState<readonly RomiCore.Lift[]>([]);
+  // TODO: this should be replaced by RomiCore.Lift once we addressed this
+  // https://github.com/osrf/romi-js-core-interfaces/issues/4
+  const [lifts, setLifts] = React.useState<readonly RomiCoreLift[]>([]);
   // FIXME: not used for now as there is not enough information to render lifts.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [liftSpotlight, setLiftSpotlight] = React.useState<SpotlightValue<string> | undefined>(
@@ -256,8 +258,9 @@ export default function App(props: AppProps): JSX.Element {
     setCurrentView(OmniPanelViewIndex.Robots);
     setRobotSpotlight({ value: robot.name });
   }
-
-  function handleLiftClick(lift: RomiCore.Lift): void {
+  // TODO: this should be replaced by RomiCore.Lift once we addressed this
+  // https://github.com/osrf/romi-js-core-interfaces/issues/4
+  function handleLiftClick(lift: RomiCoreLift): void {
     setShowOmniPanel(true);
     setCurrentView(OmniPanelViewIndex.Lifts);
     setLiftSpotlight({ value: lift.name });

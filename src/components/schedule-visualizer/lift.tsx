@@ -1,12 +1,15 @@
 import { makeStyles } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
+import { RomiCoreLift } from './lift-overlay';
 
 export interface LiftProps {
   currentLevel: string;
-  lift: RomiCore.Lift;
+  // TODO: this should be replaced by RomiCore.Lift once we addressed this
+  // https://github.com/osrf/romi-js-core-interfaces/issues/4
+  lift: RomiCoreLift;
   liftState?: RomiCore.LiftState;
-  onClick?(e: React.MouseEvent<SVGGElement>, lift: RomiCore.Lift): void;
+  onClick?(e: React.MouseEvent<SVGGElement>, lift: RomiCoreLift): void;
 }
 
 const Lift = React.forwardRef(function(

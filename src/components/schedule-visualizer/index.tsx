@@ -22,7 +22,7 @@ import {
   withOutlineAnimation,
 } from './trajectory-animations';
 import DoorsOverlay from './doors-overlay';
-import LiftsOverlay from './lift-overlay';
+import LiftsOverlay, { RomiCoreLift } from './lift-overlay';
 
 const useStyles = makeStyles(() => ({
   map: {
@@ -44,7 +44,9 @@ export interface ScheduleVisualizerProps {
   fleets: Readonly<RomiCore.FleetState[]>;
   trajManager?: Readonly<RobotTrajectoryManager>;
   onDoorClick?(door: RomiCore.Door): void;
-  onLiftClick?(lift: RomiCore.Lift): void;
+  // TODO: this should be replaced by RomiCore.Lift once we addressed this
+  // https://github.com/osrf/romi-js-core-interfaces/issues/4
+  onLiftClick?(lift: RomiCoreLift): void;
   onPlaceClick?(place: RomiCore.Place): void;
   onRobotClick?(robot: RomiCore.RobotState): void;
 }
@@ -310,14 +312,16 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
           )}
         </LayersControl.Overlay>
         <LayersControl.Overlay name="Lifts" checked>
-          <Pane>
-            <LiftsOverlay
-              bounds={curMapFloorLayer.bounds}
-              currentLevel={curLevelName}
-              lifts={props.buildingMap.lifts}
-              onLiftClick={props.onLiftClick}
-            />
-          </Pane>
+          {curMapFloorLayer && (
+            <Pane>
+              <LiftsOverlay
+                bounds={curMapFloorLayer.bounds}
+                currentLevel={curLevelName}
+                lifts={props.buildingMap.lifts}
+                onLiftClick={props.onLiftClick}
+              />
+            </Pane>
+          )}
         </LayersControl.Overlay>
       </LayersControl>
     </LMap>
