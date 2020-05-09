@@ -5,13 +5,15 @@ import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 import Lift from './lift';
 
 export interface LiftsOverlayProps extends SVGOverlayProps {
-  currentLevel: string;
+  currentFloor: string;
+  // TODO: this should be replaced by RomiCore.Lift once we addressed this
+  // https://github.com/osrf/romi-js-core-interfaces/issues/4
   lifts: readonly RomiCoreLift[];
   onLiftClick?(lift: RomiCoreLift): void;
 }
 
 export default function LiftsOverlay(props: LiftsOverlayProps): React.ReactElement {
-  const { lifts, onLiftClick, currentLevel, ...otherProps } = props;
+  const { lifts, onLiftClick, currentFloor, ...otherProps } = props;
   const viewBox = viewBoxFromLeafletBounds(props.bounds);
   const useStateValue = () => useContext(LiftStateContext);
   const liftsState = useStateValue();
@@ -26,7 +28,7 @@ export default function LiftsOverlay(props: LiftsOverlayProps): React.ReactEleme
               lift={lift}
               onClick={(_, lift) => onLiftClick && onLiftClick(lift)}
               liftState={liftsState && liftsState[lift.name]}
-              currentLevel={currentLevel}
+              currentFloor={currentFloor}
             />
           ))}
         </svg>
@@ -37,7 +39,7 @@ export default function LiftsOverlay(props: LiftsOverlayProps): React.ReactEleme
 
 export const LiftStateContext = createContext<Readonly<Record<string, RomiCore.LiftState>>>({});
 
-// TODO: this should be replace by RomiCore.Lift once  we addressed this
+// TODO: this should be replaced by RomiCore.Lift once we addressed this
 // https://github.com/osrf/romi-js-core-interfaces/issues/4
 export interface RomiCoreLift extends RomiCore.Lift {
   width?: number;

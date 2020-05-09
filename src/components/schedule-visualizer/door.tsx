@@ -95,9 +95,8 @@ const Door = React.forwardRef(function(
   props: DoorProps,
   ref: React.Ref<SVGGElement>,
 ): React.ReactElement {
-  const { door, onClick, doorState } = props;
+  const { door, onClick, currentMode } = props;
   const { door_type: doorType } = door;
-  const currentMode = doorState && doorState.current_mode.value;
   return (
     <>
       {doorType === DOOR_TYPE_SINGLE_SLIDING && (

@@ -230,6 +230,12 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     return resp ? resp.conflicts : [];
   }
 
+  // Get all doors from the floor (including lift doors).
+  // function getFloorDoors() {
+  //   const singleDoors = curMapFloorLayer.level.doors;
+  //   const liftDoors = props.buildingMap.lifts;
+  // }
+
   const sortedMapFloorLayers = mapFloorLayerSort.map(x => mapFloorLayers[x]);
   const ref = React.useRef<ImageOverlay>(null);
 
@@ -316,7 +322,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
             <Pane>
               <LiftsOverlay
                 bounds={curMapFloorLayer.bounds}
-                currentLevel={curLevelName}
+                currentFloor={curLevelName}
                 lifts={props.buildingMap.lifts}
                 onLiftClick={props.onLiftClick}
               />

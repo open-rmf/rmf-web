@@ -59,6 +59,77 @@ export default async function buildingMap(): Promise<RomiCore.BuildingMap> {
     },
   ];
 
+  const lifts = [
+    {
+      name: 'Lift1',
+      doors: [{
+        name: 'lift1_front_door',
+        v1_x: 8.80,
+        v1_y: -2.3,
+        v2_x: 7.70,
+        v2_y: -4.5,
+        door_type: 1,
+        motion_range: 0,
+        motion_direction: 1,
+      }],
+      levels: ['L1', 'L2', 'L3'],
+      ref_x: 6.5,
+      ref_y: -1.2,
+      ref_yaw: 26,
+      width: 2.5,
+      depth: 2.5,
+      wall_graph: {
+        name: 'wallgraph',
+        vertices: [],
+        edges: [],
+        params: [],
+      },
+    },
+    {
+      name: 'Lift2',
+      doors: [
+        {
+          name: 'lift2_front_door',
+          v1_x: 9,
+          v1_y: -12.5,
+          v2_x: 10,
+          v2_y: -12.5,
+          door_type: 1,
+          motion_range: 0,
+          motion_direction: 1,
+        }
+      ],
+      levels: ['L1', 'L2', 'L3', 'L4'],
+      ref_x: 9,
+      ref_y: -12.5,
+      ref_yaw: 1.571,
+      width: 1,
+      depth: 1,
+      wall_graph: {
+        name: 'wallgraph',
+        vertices: [],
+        edges: [],
+        params: [],
+      },
+    },
+    {
+      name: 'mysterious_lift',
+      doors: [],
+      levels: ['L1', 'L2', 'L3', 'L4'],
+      ref_x: 22,
+      ref_y: -10,
+      ref_yaw: 1.571,
+      width: 1,
+      depth: 1,
+      wall_graph: {
+        name: 'wallgraph',
+        vertices: [],
+        edges: [],
+        params: [],
+      },
+    },
+  ];
+
   return {
     name: 'test building',
     levels: [
@@ -128,49 +199,6 @@ export default async function buildingMap(): Promise<RomiCore.BuildingMap> {
         },
       },
     ],
-    lifts: [
-      {
-        name: 'Lift1',
-        doors: [],
-        levels: ['L1', 'L2', 'L3'],
-        ref_x: 0,
-        ref_y: 0,
-        ref_yaw: 0,
-        wall_graph: {
-          name: 'wallgraph',
-          vertices: [],
-          edges: [],
-          params: [],
-        },
-      },
-      {
-        name: 'Lift2',
-        doors: [],
-        levels: ['L1', 'L2', 'L3', 'L4'],
-        ref_x: 10,
-        ref_y: 10,
-        ref_yaw: 1.571,
-        wall_graph: {
-          name: 'wallgraph',
-          vertices: [],
-          edges: [],
-          params: [],
-        },
-      },
-      {
-        name: 'mysterious_lift',
-        doors: [],
-        levels: ['L1', 'L2', 'L3', 'L4'],
-        ref_x: 10,
-        ref_y: 10,
-        ref_yaw: 1.571,
-        wall_graph: {
-          name: 'wallgraph',
-          vertices: [],
-          edges: [],
-          params: [],
-        },
-      },
-    ],
+    lifts: lifts
   };
 }
