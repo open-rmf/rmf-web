@@ -17,7 +17,6 @@ export default function LiftsOverlay(props: LiftsOverlayProps): React.ReactEleme
   const viewBox = viewBoxFromLeafletBounds(props.bounds);
   const useStateValue = () => useContext(LiftStateContext);
   const liftsState = useStateValue();
-  console.log(lifts);
   return (
     <>
       <SVGOverlay {...otherProps}>

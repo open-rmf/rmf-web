@@ -125,14 +125,14 @@ const useStyles = makeStyles(() => ({
     strokeWidth: '0.2',
   },
   doorOpen: {
-    stroke: '#33CC33',
+    stroke: '#AFDDAE',
     strokeDasharray: 0.1,
   },
   doorClose: {
-    stroke: 'red',
+    stroke: '#4A353E',
   },
   doorProcess: {
-    stroke: 'blue',
+    stroke: '#E9CE9F',
     strokeDasharray: 0.3,
   },
 }));

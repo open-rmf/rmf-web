@@ -26,18 +26,31 @@ export interface LiftProps {
   onClick?(e: React.MouseEvent<SVGGElement>, lift: RomiCoreLift): void;
 }
 
-const getLiftStyle = (
-  classes: any,
-  currentMode: number | undefined,
-  doorState: number | undefined,
-  motionState: number | undefined,
-  isInCurrentFloor: boolean,
-) => {
+const getLiftStyle = (classes: any, currentMode: number | undefined, isInCurrentFloor: boolean) => {
   const isDangerous = currentMode === MODE_EMERGENCY || currentMode === MODE_FIRE;
   const isOffLine = currentMode === MODE_OFFLINE || currentMode === MODE_UNKNOWN;
+  const isModeAGV = currentMode === MODE_AGV;
+  const isModeHuman = currentMode === MODE_HUMAN;
   if (isDangerous) return classes.danger;
   if (isOffLine) return classes.offLine;
-  return isInCurrentFloor ? classes.liftOnCurrentFloor : classes.liftOnAnotherFloor;
+  return isInCurrentFloor && (isModeAGV || isModeHuman)
+    ? classes.liftOnCurrentFloor
+    : classes.liftOnAnotherFloor;
+};
+
+const getLiftText = (
+  currentMode: number | undefined,
+  motionState: number | undefined,
+  destinationFloor: string | undefined,
+) => {
+  // if (currentMode === MODE_FIRE) return 'FIRE!';
+  if (currentMode === MODE_EMERGENCY) return 'EMERGENCY!';
+  if (currentMode === MODE_OFFLINE) return 'OFFLINE';
+
+  // Motion
+  if (motionState === MOTION_UNKNOWN) return '?';
+  if (motionState === MOTION_STOPPED) return 'STOPPED';
+  if (motionState === MOTION_UP || motionState === MOTION_UP) return `Dest: ${destinationFloor}`;
 };
 
 const calculateMiddleCoordsOfRect = (
@@ -66,12 +79,14 @@ const Lift = React.forwardRef(function(
   const currentMode = liftState?.current_mode;
   const doorState = liftState?.door_state;
   const motionState = liftState?.motion_state;
+  const destinationFloor = liftState?.destination_floor;
 
   const classes = useStyles();
-  const liftStyle = getLiftStyle(classes, currentMode, doorState, motionState, isInCurrentFloor);
+  const liftStyle = getLiftStyle(classes, currentMode, isInCurrentFloor);
+  const liftText = getLiftText(currentMode, motionState, destinationFloor);
   return (
     <>
-      <g ref={ref} onClick={e => onClick && onClick(e as any, lift)}>
+      <g ref={ref} onClick={e => onClick && onClick(e, lift)}>
         <rect
           className={`${classes.liftMarker} ${classes.lift} ${liftStyle}`}
           width={width}
@@ -80,22 +95,17 @@ const Lift = React.forwardRef(function(
           y={-topVerticey}
           transform={`rotate(${ref_yaw},${x},${-y})`}
         />
-        {motionState === MOTION_STOPPED && (
+        {liftText && (
           <text className={classes.liftText} x={x} y={-y}>
-            Stopped
-          </text>
-        )}
-        {motionState === MOTION_UNKNOWN && (
-          <text className={classes.liftText} x={x} y={-y}>
-            ?
+            {liftText}
           </text>
         )}
       </g>
+      {motionState === MOTION_UP && <UpArrow x={x} y={-y} size={0.04} />}
+      {motionState === MOTION_DOWN && <DownArrow x={x} y={-y} size={0.04} />}
       {doors.map(door => (
         <Door key={`lift-door-${door.name}`} door={door} currentMode={doorState} />
       ))}
-      {motionState === MOTION_UP && <UpArrow x={x} y={-y} size={0.04} />}
-      {motionState === MOTION_DOWN && <DownArrow x={x} y={-y} size={0.04} />}
     </>
   );
 });
@@ -116,6 +126,7 @@ const useStyles = makeStyles(() => ({
   },
   liftOnAnotherFloor: {
     fill: 'grey',
+    opacity: '40%',
   },
   danger: {
     stroke: 'red',

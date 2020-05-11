@@ -2,9 +2,10 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 import { LiftItem } from './lift-item';
 import { SpotlightValue } from './spotlight-value';
+import { RomiCoreLift } from './schedule-visualizer/lift-overlay';
 
 interface LiftsPanelProps {
-  lifts: readonly RomiCore.Lift[];
+  lifts: readonly RomiCoreLift[];
   liftStates: Readonly<Record<string, RomiCore.LiftState>>;
   transport?: Readonly<RomiCore.Transport>;
   spotlight?: Readonly<SpotlightValue<string>>;
@@ -56,6 +57,7 @@ export default function LiftsPanel(props: LiftsPanelProps): JSX.Element {
           <LiftItem
             key={lift.name}
             lift={lift}
+            ref={ref => (liftRefs.current[lift.name] = ref)}
             liftState={liftState}
             enableRequest={Boolean(transport)}
             onRequest={handleLiftRequest}
