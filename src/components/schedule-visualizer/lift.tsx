@@ -38,11 +38,18 @@ const getLiftStyle = (
   if (isDangerous) return classes.danger;
   if (isOffLine) return classes.offLine;
   return isInCurrentFloor ? classes.liftOnCurrentFloor : classes.liftOnAnotherFloor;
-  // return currentMode === OPEN
-  //   ? classes.doorOpen
-  //   : currentMode === PROCESS
-  //   ? classes.doorProcess
-  //   : classes.doorClose;
+};
+
+const calculateMiddleCoordsOfRect = (
+  x: number,
+  y: number,
+  width: number | undefined,
+  height: number | undefined,
+) => {
+  // TODO: the width and height should be not undefined we addressed this
+  // https://github.com/osrf/romi-js-core-interfaces/issues/4
+  if (!width || !height) throw new Error('Width and Height cannot be undefined');
+  return { x: x - width / 2, y: y + height / 2 };
 };
 
 const Lift = React.forwardRef(function(
@@ -51,6 +58,10 @@ const Lift = React.forwardRef(function(
 ): React.ReactElement {
   const { lift, onClick, liftState, currentFloor } = props;
   const { width, depth, ref_x: x, ref_y: y, ref_yaw, doors } = lift;
+  // The svg start drawing from the top left coordinate, and the backend sends us the middle X,Y so we need to transform that.
+  const { x: topVerticeX, y: topVerticey } = calculateMiddleCoordsOfRect(x, y, width, depth);
+
+  // Get properties from lift state
   const isInCurrentFloor = liftState?.current_floor === currentFloor;
   const currentMode = liftState?.current_mode;
   const doorState = liftState?.door_state;
@@ -65,21 +76,26 @@ const Lift = React.forwardRef(function(
           className={`${classes.liftMarker} ${classes.lift} ${liftStyle}`}
           width={width}
           height={depth}
-          x={x}
-          y={-y}
+          x={topVerticeX}
+          y={-topVerticey}
           transform={`rotate(${ref_yaw},${x},${-y})`}
         />
+        {motionState === MOTION_STOPPED && (
+          <text className={classes.liftText} x={x} y={-y}>
+            Stopped
+          </text>
+        )}
+        {motionState === MOTION_UNKNOWN && (
+          <text className={classes.liftText} x={x} y={-y}>
+            ?
+          </text>
+        )}
       </g>
       {doors.map(door => (
         <Door key={`lift-door-${door.name}`} door={door} currentMode={doorState} />
       ))}
-      {motionState === MOTION_UP && <UpArrow x={x} y={-y} size={0.05} />}
-      {motionState === MOTION_DOWN && <DownArrow x={x} y={-y} size={0.05} />}
-      {motionState === MOTION_STOPPED && (
-        <g>
-          <svg></svg>
-        </g>
-      )}
+      {motionState === MOTION_UP && <UpArrow x={x} y={-y} size={0.04} />}
+      {motionState === MOTION_DOWN && <DownArrow x={x} y={-y} size={0.04} />}
     </>
   );
 });
@@ -109,12 +125,9 @@ const useStyles = makeStyles(() => ({
     stroke: 'yellow',
     fill: 'yellow',
   },
-  doorOpen: {
-    stroke: '#33CC33',
-    strokeDasharray: 0.1,
-  },
-  doorProcess: {
-    stroke: 'blue',
-    strokeDasharray: 0.3,
+  liftText: {
+    dominantBaseline: 'central',
+    textAnchor: 'middle',
+    fontSize: '0.3px',
   },
 }));
