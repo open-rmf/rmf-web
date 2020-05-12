@@ -39,9 +39,9 @@ const getLiftStyle = (classes: any, currentMode: number | undefined, isInCurrent
   const isModeHuman = currentMode === MODE_HUMAN;
   if (isDangerous) return classes.danger;
   if (isOffLine) return classes.offLine;
-  return isInCurrentFloor && (isModeAGV || isModeHuman)
-    ? classes.liftOnCurrentFloor
-    : classes.liftOnAnotherFloor;
+  if (!isInCurrentFloor) return classes.liftOnAnotherFloor;
+  if (isInCurrentFloor && isModeAGV) return classes.liftOnCurrentFloor;
+  if (isInCurrentFloor && isModeHuman) return classes.humanMode;
 };
 
 /**
@@ -163,6 +163,10 @@ const useStyles = makeStyles(() => ({
   offLine: {
     stroke: 'yellow',
     fill: 'yellow',
+  },
+  humanMode: {
+    fill: '#90dfef',
+    opacity: '80%',
   },
   liftText: {
     dominantBaseline: 'central',
