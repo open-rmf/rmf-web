@@ -4,7 +4,6 @@ import React from 'react';
 import { Spinner } from './spinner';
 
 // Door state
-//eslint-disable-next-line
 export enum DoorStates {
   CLOSE,
   PROCESS,

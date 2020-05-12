@@ -5,17 +5,21 @@ import { RomiCoreLift } from './lift-overlay';
 import Door from './door';
 import { UpArrow, DownArrow } from './arrow';
 
-const MOTION_STOPPED = 0;
-const MOTION_UP = 1;
-const MOTION_DOWN = 2;
-const MOTION_UNKNOWN = 3;
+export enum LiftMotionStates {
+  STOPPED,
+  UP,
+  DOWN,
+  UNKNOWN,
+}
 
-const MODE_UNKNOWN = 0;
-const MODE_HUMAN = 1;
-const MODE_AGV = 2;
-const MODE_FIRE = 3;
-const MODE_OFFLINE = 4;
-const MODE_EMERGENCY = 5;
+export enum LiftModeStates {
+  UNKNOWN,
+  HUMAN,
+  AGV,
+  FIRE,
+  OFFLINE,
+  EMERGENCY,
+}
 
 export interface LiftProps {
   currentFloor: string;
@@ -33,10 +37,12 @@ export interface LiftProps {
  * @param isInCurrentFloor if the lift is in the current floor return true.
  */
 const getLiftStyle = (classes: any, currentMode: number | undefined, isInCurrentFloor: boolean) => {
-  const isDangerous = currentMode === MODE_EMERGENCY || currentMode === MODE_FIRE;
-  const isOffLine = currentMode === MODE_OFFLINE || currentMode === MODE_UNKNOWN;
-  const isModeAGV = currentMode === MODE_AGV;
-  const isModeHuman = currentMode === MODE_HUMAN;
+  const isDangerous =
+    currentMode === LiftModeStates.EMERGENCY || currentMode === LiftModeStates.FIRE;
+  const isOffLine =
+    currentMode === LiftModeStates.OFFLINE || currentMode === LiftModeStates.UNKNOWN;
+  const isModeAGV = currentMode === LiftModeStates.AGV;
+  const isModeHuman = currentMode === LiftModeStates.HUMAN;
   if (isDangerous) return classes.danger;
   if (isOffLine) return classes.offLine;
   if (!isInCurrentFloor) return classes.liftOnAnotherFloor;
@@ -53,14 +59,14 @@ const getLiftText = (
   destinationFloor: string | undefined,
   motionState: number | undefined,
 ) => {
-  if (currentMode === MODE_FIRE) return 'FIRE!';
-  if (currentMode === MODE_EMERGENCY) return 'EMERGENCY!';
-  if (currentMode === MODE_OFFLINE) return 'OFFLINE';
+  if (currentMode === LiftModeStates.FIRE) return 'FIRE!';
+  if (currentMode === LiftModeStates.EMERGENCY) return 'EMERGENCY!';
+  if (currentMode === LiftModeStates.OFFLINE) return 'OFFLINE';
 
   // Motion
-  if (motionState === MOTION_UNKNOWN) return '?';
-  if (motionState === MOTION_STOPPED) return 'STOPPED';
-  if (motionState === MOTION_UP || motionState === MOTION_UP)
+  if (motionState === LiftMotionStates.UNKNOWN) return '?';
+  if (motionState === LiftMotionStates.STOPPED) return 'STOPPED';
+  if (motionState === LiftMotionStates.UP || motionState === LiftMotionStates.DOWN)
     return `${currentFloor} → ${destinationFloor}`;
 };
 
@@ -127,8 +133,10 @@ const Lift = React.forwardRef(function(
           </text>
         )}
       </g>
-      {motionState === MOTION_UP && <UpArrow x={x} y={contextY} size={0.03} padding={[0, 0.1]} />}
-      {motionState === MOTION_DOWN && (
+      {motionState === LiftMotionStates.UP && (
+        <UpArrow x={x} y={contextY} size={0.03} padding={[0, 0.1]} />
+      )}
+      {motionState === LiftMotionStates.DOWN && (
         <DownArrow x={x} y={contextY} size={0.03} padding={[0, 0.1]} />
       )}
       {doors.map(door => (
