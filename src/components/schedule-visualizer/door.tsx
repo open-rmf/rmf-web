@@ -5,9 +5,11 @@ import { Spinner } from './spinner';
 
 // Door state
 //eslint-disable-next-line
-const CLOSE = 0;
-const PROCESS = 1;
-const OPEN = 2;
+export enum DoorStates {
+  CLOSE,
+  PROCESS,
+  OPEN,
+}
 
 // Door Type
 const DOOR_TYPE_SINGLE_SLIDING = 1;
@@ -20,14 +22,14 @@ export interface DoorProps {
 }
 
 const getDoorStyle = (classes: any, currentMode: number | undefined) => {
-  return currentMode === OPEN
+  return currentMode === DoorStates.OPEN
     ? classes.doorOpen
-    : currentMode === PROCESS
+    : currentMode === DoorStates.PROCESS
     ? classes.doorProcess
     : classes.doorClose;
 };
 
-const SingleHingeDoor = React.forwardRef(function(
+export const SingleHingeDoor = React.forwardRef(function(
   props: DoorProps,
   ref: React.Ref<SVGGElement>,
 ): React.ReactElement {
@@ -105,7 +107,7 @@ const Door = React.forwardRef(function(
       {doorType === DOOR_TYPE_DOUBLE_SLIDING && (
         <DoubleHingeDoor door={door} onClick={onClick} currentMode={currentMode} />
       )}
-      {currentMode === PROCESS && (
+      {currentMode === DoorStates.PROCESS && (
         <g>
           <Spinner cx={door.v1_x} cy={-door.v1_y} r={0.4} strokeWidth={0.1}></Spinner>
         </g>

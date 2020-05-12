@@ -1,5 +1,5 @@
-import React from 'react';
 import { makeStyles } from '@material-ui/core';
+import React from 'react';
 
 export interface SpinnerProps {
   cx: number;
@@ -18,7 +18,7 @@ export const Spinner = (props: SpinnerProps) => {
       cy={cy}
       r={r}
       fill="none"
-      stroke-width={strokeWidth || 0.1}
+      strokeWidth={strokeWidth || 0.1}
     ></circle>
   );
 };

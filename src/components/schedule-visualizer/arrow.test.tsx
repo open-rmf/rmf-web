@@ -43,7 +43,6 @@ it('Check correct negative calculation from UpArrow', async () => {
     .find(Arrow)
     .at(0)
     .props();
-  console.log([x1, y1, x2, y2, x3, y3]);
   expect([2, -2, 1, 0, 3, 0]).toEqual([x1, y1, x2, y2, x3, y3]);
   wrapper.unmount();
 });
