@@ -62,7 +62,7 @@ describe('Checks assignation of styles on different mode of the Lift', () => {
     state.current_mode = LiftModeStates.FIRE;
     const { wrapper, liftSVGRect } = buildWrapper(lift, state);
     expect(liftSVGRect.hasClass(/(makeStyles)-(danger)-(\d+)/)).toBe(true);
-    expect(wrapper.find('text').text()).toEqual('FIRE!');
+    expect(wrapper.find('#liftMode').text()).toEqual('FIRE!');
     wrapper.unmount();
   });
 
@@ -71,7 +71,7 @@ describe('Checks assignation of styles on different mode of the Lift', () => {
     state.current_mode = LiftModeStates.EMERGENCY;
     const { wrapper, liftSVGRect } = buildWrapper(lift, state);
     expect(liftSVGRect.hasClass(/(makeStyles)-(danger)-(\d+)/)).toBe(true);
-    expect(wrapper.find('text').text()).toEqual('EMERGENCY!');
+    expect(wrapper.find('#liftMode').text()).toEqual('EMERGENCY!');
     wrapper.unmount();
   });
 
@@ -80,6 +80,7 @@ describe('Checks assignation of styles on different mode of the Lift', () => {
     state.current_mode = LiftModeStates.OFFLINE;
     const { wrapper, liftSVGRect } = buildWrapper(lift, state);
     expect(liftSVGRect.hasClass(/(makeStyles)-(offLine)-(\d+)/)).toBe(true);
+    expect(wrapper.find('#liftMode').text()).toEqual('OFFLINE');
     wrapper.unmount();
   });
 });
@@ -99,6 +100,8 @@ describe('Checks assignation of styles on combination of motion states and mode 
     state.current_floor = 'L1';
     const { wrapper, liftSVGRect } = buildWrapper(lift, state);
     expect(liftSVGRect.hasClass(/(makeStyles)-(humanMode)-(\d+)/)).toBe(true);
+    expect(wrapper.find('#liftMotion').text()).toEqual('STOPPED');
+    expect(wrapper.find('#liftMode').text()).toEqual('HUMAN');
     wrapper.unmount();
   });
 
@@ -108,7 +111,8 @@ describe('Checks assignation of styles on combination of motion states and mode 
     state.current_floor = 'L1';
     const { wrapper, liftSVGRect } = buildWrapper(lift, state);
     expect(liftSVGRect.hasClass(/(makeStyles)-(liftOnCurrentFloor)-(\d+)/)).toBe(true);
-    expect(wrapper.find('text').text()).toEqual(`STOPPED`);
+    expect(wrapper.find('#liftMotion').text()).toEqual('STOPPED');
+    expect(wrapper.find('#liftMode').text()).toEqual('AGV');
     wrapper.unmount();
   });
 
@@ -119,7 +123,7 @@ describe('Checks assignation of styles on combination of motion states and mode 
     state.motion_state = LiftMotionStates.UP;
     const { wrapper, liftSVGRect } = buildWrapper(lift, state);
     expect(liftSVGRect.hasClass(/(makeStyles)-(liftOnAnotherFloor)-(\d+)/)).toBe(true);
-    expect(wrapper.find('text').text()).toEqual(`L3 → L4`);
+    expect(wrapper.find('#liftMotion').text()).toEqual('L3 → L4');
     wrapper.unmount();
   });
 
@@ -130,7 +134,7 @@ describe('Checks assignation of styles on combination of motion states and mode 
     state.motion_state = LiftMotionStates.DOWN;
     const { wrapper, liftSVGRect } = buildWrapper(lift, state);
     expect(liftSVGRect.hasClass(/(makeStyles)-(liftOnAnotherFloor)-(\d+)/)).toBe(true);
-    expect(wrapper.find('text').text()).toEqual(`L4 → L2`);
+    expect(wrapper.find('#liftMotion').text()).toEqual(`L4 → L2`);
     wrapper.unmount();
   });
 });

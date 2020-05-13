@@ -140,12 +140,13 @@ const Lift = React.forwardRef(function(
           transform={`rotate(${ref_yaw},${x},${contextY})`}
         />
         {liftMotionText && (
-          <text className={classes.liftText} x={x} y={contextY}>
+          <text id="liftMotion" className={classes.liftText} x={x} y={contextY}>
             {liftMotionText}
           </text>
         )}
         {liftModeText && (
           <text
+            id="liftMode"
             className={classes.liftText}
             x={x}
             y={getRelatedYCoord(contextTopVerticeY, depth, 0.25)}
