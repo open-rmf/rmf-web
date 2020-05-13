@@ -53,17 +53,20 @@ const getLiftStyle = (classes: any, currentMode: number | undefined, isInCurrent
 /**
  * Gets the text to insert to the lift, the text depend on the current mode, motion state and the  * current and destination floor of the lift.
  */
-const getLiftText = (
-  currentMode: number | undefined,
+const getLiftModeText = (currentMode: number | undefined) => {
+  if (currentMode === LiftModeStates.FIRE) return 'FIRE!';
+  if (currentMode === LiftModeStates.EMERGENCY) return 'EMERGENCY!';
+  if (currentMode === LiftModeStates.OFFLINE) return 'OFFLINE';
+  if (currentMode === LiftModeStates.HUMAN) return 'HUMAN';
+  if (currentMode === LiftModeStates.AGV) return 'AGV';
+  if (currentMode === LiftModeStates.UNKNOWN) return 'UNKNOWN';
+};
+
+const getLiftMotionText = (
   currentFloor: string | undefined,
   destinationFloor: string | undefined,
   motionState: number | undefined,
 ) => {
-  if (currentMode === LiftModeStates.FIRE) return 'FIRE!';
-  if (currentMode === LiftModeStates.EMERGENCY) return 'EMERGENCY!';
-  if (currentMode === LiftModeStates.OFFLINE) return 'OFFLINE';
-
-  // Motion
   if (motionState === LiftMotionStates.UNKNOWN) return '?';
   if (motionState === LiftMotionStates.STOPPED) return 'STOPPED';
   if (motionState === LiftMotionStates.UP || motionState === LiftMotionStates.DOWN)
@@ -83,6 +86,16 @@ const transformMiddleCoordsOfRectToSVGBeginPoint = (
   // https://github.com/osrf/romi-js-core-interfaces/issues/4
   if (!width || !depth) throw new Error('Width and Height cannot be undefined');
   return { x: x - width / 2, y: y + depth / 2 };
+};
+
+/**
+ * Get related Y coord starting from top to bottom.
+ */
+const getRelatedYCoord = (topY: number, height: number | undefined, percentage: number) => {
+  // TODO: the height should be not undefined we addressed this
+  // https://github.com/osrf/romi-js-core-interfaces/issues/4
+  if (!height) throw new Error('Height cannot be undefined');
+  return topY + height * percentage;
 };
 
 const Lift = React.forwardRef(function(
@@ -109,13 +122,10 @@ const Lift = React.forwardRef(function(
   const motionState = liftState?.motion_state;
 
   const classes = useStyles();
+
   const liftStyle = getLiftStyle(classes, currentMode, isInCurrentFloor);
-  const liftText = getLiftText(
-    currentMode,
-    liftState?.current_floor,
-    destinationFloor,
-    motionState,
-  );
+  const liftMotionText = getLiftMotionText(liftState?.current_floor, destinationFloor, motionState);
+  const liftModeText = getLiftModeText(currentMode);
   return (
     <>
       <g ref={ref} onClick={e => onClick && onClick(e, lift)}>
@@ -125,11 +135,22 @@ const Lift = React.forwardRef(function(
           height={depth}
           x={topVerticeX}
           y={contextTopVerticeY}
+          rx="0.1"
+          ry="0.1"
           transform={`rotate(${ref_yaw},${x},${contextY})`}
         />
-        {liftText && (
+        {liftMotionText && (
           <text className={classes.liftText} x={x} y={contextY}>
-            {liftText}
+            {liftMotionText}
+          </text>
+        )}
+        {liftModeText && (
+          <text
+            className={classes.liftText}
+            x={x}
+            y={getRelatedYCoord(contextTopVerticeY, depth, 0.25)}
+          >
+            {liftModeText}
           </text>
         )}
       </g>
@@ -179,6 +200,7 @@ const useStyles = makeStyles(() => ({
   liftText: {
     dominantBaseline: 'central',
     textAnchor: 'middle',
-    fontSize: '0.3px',
+    fontSize: '0.2px',
+    fontWeight: 'bold',
   },
 }));

@@ -90,10 +90,10 @@ export default async function buildingMap(): Promise<RomiCore.BuildingMap> {
       doors: [
         {
           name: 'lift2_front_door',
-          v1_x: 9,
-          v1_y: -12.5,
-          v2_x: 10,
-          v2_y: -12.5,
+          v1_x: 8.95,
+          v1_y: -12.38,
+          v2_x: 10.08,
+          v2_y: -12.38,
           door_type: 1,
           motion_range: 0,
           motion_direction: 1,
