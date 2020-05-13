@@ -1,7 +1,7 @@
 import { createMount } from '@material-ui/core/test-utils';
 import React from 'react';
-import FakeTrajectoryManager from '../../mock/fake-traj-manager';
-import RobotTrajectory from './robot-trajectory';
+import FakeTrajectoryManager from '../../../mock/fake-traj-manager';
+import RobotTrajectory from '../robot-trajectory';
 
 const mount = createMount();
 

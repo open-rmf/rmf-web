@@ -1,9 +1,9 @@
 import { createMount } from '@material-ui/core/test-utils';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
-import buildingMap from '../mock/data/building-map';
-import { PlaceItem } from './place-item';
-import PlacesPanel from './places-panel';
+import buildingMap from '../../mock/data/building-map';
+import { PlaceItem } from '../place-item';
+import PlacesPanel from '../places-panel';
 
 const mount = createMount();
 

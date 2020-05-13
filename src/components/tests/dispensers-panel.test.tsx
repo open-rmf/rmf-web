@@ -1,9 +1,9 @@
 import { createMount } from '@material-ui/core/test-utils';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
-import fakeDispenserStates from '../mock/data/dispenser-states';
-import DispenserItem from './dispenser-item';
-import DispenserPanel from './dispensers-panel';
+import fakeDispenserStates from '../../mock/data/dispenser-states';
+import DispenserItem from '../dispenser-item';
+import DispenserPanel from '../dispensers-panel';
 
 const mount = createMount();
 

@@ -2,9 +2,9 @@ import { MenuItem } from '@material-ui/core';
 import { createMount } from '@material-ui/core/test-utils';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
-import buildingMap from '../mock/data/building-map';
-import fakeLiftStates from '../mock/data/lift-states';
-import { LiftItem } from './lift-item';
+import buildingMap from '../../mock/data/building-map';
+import fakeLiftStates from '../../mock/data/lift-states';
+import { LiftItem } from '../lift-item';
 
 const mount = createMount();
 

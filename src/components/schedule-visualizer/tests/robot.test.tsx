@@ -1,8 +1,8 @@
 import { createMount } from '@material-ui/core/test-utils';
 import React from 'react';
-import getFleets from '../../mock/data/fleets';
-import ColorManager from './colors';
-import Robot from './robot';
+import getFleets from '../../../mock/data/fleets';
+import ColorManager from '../colors';
+import Robot from '../robot';
 
 const mount = createMount();
 
