@@ -2,7 +2,7 @@ import { makeStyles } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 import { RomiCoreLift } from './lift-overlay';
-import Door from './door';
+import Door from './door/door';
 import { UpArrow, DownArrow } from './arrow';
 
 export enum LiftMotionStates {
@@ -51,7 +51,8 @@ const getLiftStyle = (classes: any, currentMode: number | undefined, isInCurrent
 };
 
 /**
- * Gets the text to insert to the lift, the text depend on the current mode, motion state and the  * current and destination floor of the lift.
+ * Gets the text to insert to the lift, the text depend on the current mode, motion state and the
+ * current and destination floor of the lift.
  */
 const getLiftModeText = (currentMode: number | undefined) => {
   if (currentMode === LiftModeStates.FIRE) return 'FIRE!';

@@ -8,7 +8,11 @@ export interface ArrowProps {
   strokeWidth?: number;
   padding?: number[];
 }
-
+/**
+ * x1, y1: upper vertex of the triangle
+ * x2, y2: left vertex of the triangle
+ * x3, y3: right vertex of the triangle
+ */
 export interface BaseArrowProps {
   x1: number;
   y1: number;
@@ -62,13 +66,19 @@ export const UpArrow = (props: ArrowProps) => {
   );
 };
 
+/**
+ * To represent an arrow we a triangle. To build that triangle we use a SVG polygon element.
+ */
 export const Arrow = (props: BaseArrowProps) => {
   const { x1, y1, x2, y2, x3, y3, strokeWidth, padding = [0, 0] } = props;
   const classes = useStyles();
   return (
     <polygon
-      points={`${x1 + padding[0]},${y1 + padding[1]} ${x2 + padding[0]},${y2 + padding[1]} ${x3 +
-        padding[0]},${y3 + padding[1]} `}
+      points={
+        `${x1 + padding[0]},${y1 + padding[1]} ` +
+        `${x2 + padding[0]},${y2 + padding[1]} ` +
+        `${x3 + padding[0]},${y3 + padding[1]}`
+      }
       strokeWidth={strokeWidth}
       className={classes.arrow}
     />

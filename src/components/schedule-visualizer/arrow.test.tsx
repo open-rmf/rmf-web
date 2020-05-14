@@ -15,7 +15,7 @@ it('Check correct positive calculation from DownArrow', async () => {
     .find(Arrow)
     .at(0)
     .props();
-  expect([2, 2, 1, 0, 3, 0]).toEqual([x1, y1, x2, y2, x3, y3]);
+  expect([x1, y1, x2, y2, x3, y3]).toEqual([2, 2, 1, 0, 3, 0]);
   wrapper.unmount();
 });
 
@@ -29,7 +29,7 @@ it('Check correct negative calculation from DownArrow', async () => {
     .find(Arrow)
     .at(0)
     .props();
-  expect([2, -2, 1, -4, 3, -4]).toEqual([x1, y1, x2, y2, x3, y3]);
+  expect([x1, y1, x2, y2, x3, y3]).toEqual([2, -2, 1, -4, 3, -4]);
   wrapper.unmount();
 });
 
@@ -43,6 +43,6 @@ it('Check correct negative calculation from UpArrow', async () => {
     .find(Arrow)
     .at(0)
     .props();
-  expect([2, -2, 1, 0, 3, 0]).toEqual([x1, y1, x2, y2, x3, y3]);
+  expect([x1, y1, x2, y2, x3, y3]).toEqual([2, -2, 1, 0, 3, 0]);
   wrapper.unmount();
 });

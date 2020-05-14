@@ -8,7 +8,7 @@ import React, { createContext, useContext } from 'react';
 import { viewBoxFromLeafletBounds } from '../../util/css-utils';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 
-import Door from './door';
+import Door from './door/door';
 export interface DoorsOverlayProps extends SVGOverlayProps {
   doors: readonly RomiCore.Door[];
   onDoorClick?(door: RomiCore.Door): void;
