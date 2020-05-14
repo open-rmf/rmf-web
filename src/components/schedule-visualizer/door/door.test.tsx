@@ -3,6 +3,7 @@ import { Spinner } from '../spinner';
 import Door, { DoorMode } from './door';
 import React from 'react';
 import SingleHingeDoor from './door-single-hinge';
+import { ReactWrapper } from 'enzyme';
 
 const mainDoor = {
   name: 'main_door',
@@ -52,16 +53,21 @@ test('Checks spinner activation when the door its opening or closing', async () 
 });
 
 describe('Checks assignation of styles on different states of SingleHingeDoor', () => {
+  const getSingleDoorSVGLine = (wrapper: ReactWrapper) => {
+    return wrapper
+      .find(SingleHingeDoor)
+      .at(0)
+      .find('line')
+      .at(0);
+  };
+
   test('Style of SingleHingeDoor on Open', () => {
     const wrapper = mount(
       <svg>
         <SingleHingeDoor door={mainDoor} currentMode={DoorMode.OPEN} />
       </svg>,
     );
-    const singleDoorSVGLine = wrapper
-      .find(SingleHingeDoor)
-      .at(0)
-      .find('line');
+    const singleDoorSVGLine = getSingleDoorSVGLine(wrapper);
     expect(singleDoorSVGLine.hasClass(/(makeStyles)-(doorOpen)-(\d+)/)).toBe(true);
     wrapper.unmount();
   });
@@ -72,10 +78,7 @@ describe('Checks assignation of styles on different states of SingleHingeDoor', 
         <SingleHingeDoor door={mainDoor} currentMode={DoorMode.CLOSE} />
       </svg>,
     );
-    const singleDoorSVGLine = wrapper
-      .find(SingleHingeDoor)
-      .at(0)
-      .find('line');
+    const singleDoorSVGLine = getSingleDoorSVGLine(wrapper);
     expect(singleDoorSVGLine.hasClass(/(makeStyles)-(doorClose)-(\d+)/)).toBe(true);
     wrapper.unmount();
   });
@@ -86,10 +89,7 @@ describe('Checks assignation of styles on different states of SingleHingeDoor', 
         <SingleHingeDoor door={mainDoor} currentMode={DoorMode.PROCESS} />
       </svg>,
     );
-    const singleDoorSVGLine = wrapper
-      .find(SingleHingeDoor)
-      .at(0)
-      .find('line');
+    const singleDoorSVGLine = getSingleDoorSVGLine(wrapper);
     expect(singleDoorSVGLine.hasClass(/(makeStyles)-(doorProcess)-(\d+)/)).toBe(true);
     wrapper.unmount();
   });
