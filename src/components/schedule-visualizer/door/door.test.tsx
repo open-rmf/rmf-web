@@ -1,7 +1,8 @@
 import { createMount } from '@material-ui/core/test-utils';
 import { Spinner } from '../spinner';
-import Door, { SingleHingeDoor, DoorMode } from './door';
+import Door, { DoorMode } from './door';
 import React from 'react';
+import SingleHingeDoor from './door-single-hinge';
 
 const mainDoor = {
   name: 'main_door',

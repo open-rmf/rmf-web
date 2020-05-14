@@ -50,10 +50,8 @@ const getLiftStyle = (classes: any, currentMode: number | undefined, isInCurrent
   if (isInCurrentFloor && isModeHuman) return classes.humanMode;
 };
 
-/**
- * Gets the text to insert to the lift, the text depend on the current mode, motion state and the
- * current and destination floor of the lift.
- */
+// Gets the text to insert to the lift, the text depend on the current mode, motion state and the
+// current and destination floor of the lift.
 const getLiftModeText = (currentMode: number | undefined) => {
   if (currentMode === LiftModeStates.FIRE) return 'FIRE!';
   if (currentMode === LiftModeStates.EMERGENCY) return 'EMERGENCY!';

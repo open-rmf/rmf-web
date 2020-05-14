@@ -1,7 +1,6 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 import { Spinner } from '../spinner';
-import doorStyles from './door-style';
 import SingleHingeDoor from './door-single-hinge';
 import DoubleHingeDoor from './door-double-hinge';
 
@@ -22,10 +21,10 @@ export enum DoorType {
 }
 
 /**
- * currentMode: current mode of the door. E.g: 0 = CLOSE
- * door: door information on map
- * doorState: current state of the door.
- * onClick: action to trigger on click.
+ * currentMode: Current mode of the door. E.g: 0 = DoorMode.CLOSE.
+ * door: Door information provided by the map.
+ * doorState: Current state of the door.
+ * onClick: Action to trigger on click.
  */
 export interface DoorProps {
   currentMode?: number;
