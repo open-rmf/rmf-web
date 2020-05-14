@@ -19,6 +19,9 @@ const doorStyles = makeStyles(() => ({
     stroke: '#E9CE9F',
     strokeDasharray: 0.3,
   },
+  doorTransparent: {
+    stroke: 'transparent',
+  },
 }));
 
 export default doorStyles;

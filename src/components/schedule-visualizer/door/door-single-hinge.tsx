@@ -21,9 +21,18 @@ const SingleHingeDoor = React.forwardRef(function(
 
   return (
     <>
-      <g ref={ref} onClick={e => onClick && onClick(e as any, door)}>
+      <g>
         <line
           className={`${classes.doorMarker} ${classes.door} ${getDoorStyle(classes, currentMode)}`}
+          x1={hingeX}
+          y1={-hingeY}
+          x2={extendX}
+          y2={-extendY}
+        />
+      </g>
+      <g ref={ref} onClick={e => onClick && onClick(e as any, door)}>
+        <line
+          className={`${classes.doorMarker} ${classes.door} ${classes.doorTransparent}`}
           x1={hingeX}
           y1={-hingeY}
           x2={extendX}
