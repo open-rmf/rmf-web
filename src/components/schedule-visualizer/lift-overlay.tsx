@@ -15,8 +15,7 @@ export interface LiftsOverlayProps extends SVGOverlayProps {
 export default function LiftsOverlay(props: LiftsOverlayProps): React.ReactElement {
   const { lifts, onLiftClick, currentFloor, ...otherProps } = props;
   const viewBox = viewBoxFromLeafletBounds(props.bounds);
-  const useStateValue = () => useContext(LiftStateContext);
-  const liftsState = useStateValue();
+  const liftsState = useContext(LiftStateContext);
   return (
     <>
       <SVGOverlay {...otherProps}>

@@ -288,18 +288,6 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
             </Pane>
           )}
         </LayersControl.Overlay>
-        <LayersControl.Overlay name="Robots" checked>
-          {curMapFloorLayer && (
-            <Pane>
-              <RobotsOverlay
-                bounds={curMapFloorLayer.bounds}
-                robots={robotsInCurLevel}
-                colorManager={colorManager}
-                onRobotClick={props.onRobotClick}
-              />
-            </Pane>
-          )}
-        </LayersControl.Overlay>
         <LayersControl.Overlay name="Doors" checked>
           {curMapFloorLayer && (
             <Pane>
@@ -319,6 +307,18 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
                 currentFloor={curLevelName}
                 lifts={props.buildingMap.lifts}
                 onLiftClick={props.onLiftClick}
+              />
+            </Pane>
+          )}
+        </LayersControl.Overlay>
+        <LayersControl.Overlay name="Robots" checked>
+          {curMapFloorLayer && (
+            <Pane>
+              <RobotsOverlay
+                bounds={curMapFloorLayer.bounds}
+                robots={robotsInCurLevel}
+                colorManager={colorManager}
+                onRobotClick={props.onRobotClick}
               />
             </Pane>
           )}

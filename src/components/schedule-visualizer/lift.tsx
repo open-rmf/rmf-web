@@ -53,6 +53,7 @@ const getLiftStyle = (classes: any, currentMode: number | undefined, isInCurrent
 // Gets the text to insert to the lift, the text depend on the current mode, motion state and the
 // current and destination floor of the lift.
 const getLiftModeText = (currentMode: number | undefined) => {
+  if (!currentMode) return 'UNKNOWN';
   if (currentMode === LiftModeStates.FIRE) return 'FIRE!';
   if (currentMode === LiftModeStates.EMERGENCY) return 'EMERGENCY!';
   if (currentMode === LiftModeStates.OFFLINE) return 'OFFLINE';
@@ -179,19 +180,19 @@ const useStyles = makeStyles(() => ({
   },
   liftOnCurrentFloor: {
     fill: 'green',
-    opacity: '50%',
+    opacity: '70%',
   },
   liftOnAnotherFloor: {
     fill: 'grey',
-    opacity: '40%',
+    opacity: '80%',
   },
   danger: {
-    stroke: 'red',
     fill: 'red',
+    opacity: '80%',
   },
   offLine: {
-    stroke: 'yellow',
     fill: 'yellow',
+    opacity: '80%',
   },
   humanMode: {
     fill: '#90dfef',
@@ -200,7 +201,7 @@ const useStyles = makeStyles(() => ({
   liftText: {
     dominantBaseline: 'central',
     textAnchor: 'middle',
-    fontSize: '0.2px',
+    fontSize: '0.18px',
     fontWeight: 'bold',
   },
 }));

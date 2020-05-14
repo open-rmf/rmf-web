@@ -17,8 +17,7 @@ export interface DoorsOverlayProps extends SVGOverlayProps {
 export default function DoorsOverlay(props: DoorsOverlayProps): React.ReactElement {
   const { doors, onDoorClick, ...otherProps } = props;
   const viewBox = viewBoxFromLeafletBounds(props.bounds);
-  const useStateValue = () => useContext(DoorStateContext);
-  const doorsState = useStateValue();
+  const doorsState = useContext(DoorStateContext);
 
   const getCurrentDoorMode = (doorName: string) => {
     const currentDoor = doorsState && doorsState[doorName];
