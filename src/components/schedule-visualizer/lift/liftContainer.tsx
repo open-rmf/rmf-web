@@ -1,9 +1,10 @@
 import { makeStyles } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
-import { RomiCoreLift } from './lift-overlay';
-import Door from './door/door';
-import { UpArrow, DownArrow } from './arrow';
+import { RomiCoreLift } from '../lift-overlay';
+import Door from '../door/door';
+import { UpArrow, DownArrow } from '../arrow';
+import Lift from './lift';
 
 export enum LiftMotionStates {
   STOPPED,
@@ -98,7 +99,7 @@ const getRelatedYCoord = (topY: number, height: number | undefined, percentage: 
   return topY + height * percentage;
 };
 
-const Lift = React.forwardRef(function(
+const LiftContainer = React.forwardRef(function(
   props: LiftProps,
   ref: React.Ref<SVGGElement>,
 ): React.ReactElement {
@@ -121,40 +122,45 @@ const Lift = React.forwardRef(function(
   const isInCurrentFloor = liftState?.current_floor === currentFloor;
   const motionState = liftState?.motion_state;
 
-  const classes = useStyles();
+  const classes = liftStyles();
 
   const liftStyle = getLiftStyle(classes, currentMode, isInCurrentFloor);
   const liftMotionText = getLiftMotionText(liftState?.current_floor, destinationFloor, motionState);
   const liftModeText = getLiftModeText(currentMode);
+
+  const handleLiftClick = (event: any) => {
+    onClick && onClick(event, lift);
+  };
   return (
     <>
-      <g ref={ref} onClick={e => onClick && onClick(e, lift)}>
-        <rect
-          className={`${classes.liftMarker} ${classes.lift} ${liftStyle}`}
-          width={width}
-          height={depth}
-          x={topVerticeX}
-          y={contextTopVerticeY}
-          rx="0.1"
-          ry="0.1"
-          transform={`rotate(${ref_yaw},${x},${contextY})`}
+      {width && depth && (
+        <Lift
+          ref={ref}
+          lift={{
+            x: topVerticeX,
+            y: contextTopVerticeY,
+            width: width,
+            height: depth,
+            rx: 0.1,
+            ry: 0.1,
+            transform: `rotate(${ref_yaw},${x},${contextY})`,
+            style: liftStyle,
+          }}
+          liftMotionText={{
+            x: x,
+            y: contextY,
+            text: liftMotionText,
+            fontSize: '0.18px',
+          }}
+          liftModeText={{
+            x: x,
+            y: getRelatedYCoord(contextTopVerticeY, depth, 0.25),
+            text: liftModeText,
+            fontSize: '0.18px',
+          }}
+          onClick={handleLiftClick}
         />
-        {liftMotionText && (
-          <text id="liftMotion" className={classes.liftText} x={x} y={contextY}>
-            {liftMotionText}
-          </text>
-        )}
-        {liftModeText && (
-          <text
-            id="liftMode"
-            className={classes.liftText}
-            x={x}
-            y={getRelatedYCoord(contextTopVerticeY, depth, 0.25)}
-          >
-            {liftModeText}
-          </text>
-        )}
-      </g>
+      )}
       {motionState === LiftMotionStates.UP && (
         <UpArrow x={x} y={contextY} size={0.03} padding={[0, 0.1]} />
       )}
@@ -168,9 +174,9 @@ const Lift = React.forwardRef(function(
   );
 });
 
-export default Lift;
+export default LiftContainer;
 
-const useStyles = makeStyles(() => ({
+export const liftStyles = makeStyles(() => ({
   liftMarker: {
     cursor: 'pointer',
     pointerEvents: 'auto',
@@ -201,11 +207,5 @@ const useStyles = makeStyles(() => ({
   humanMode: {
     fill: '#90dfef',
     opacity: '80%',
-  },
-  liftText: {
-    dominantBaseline: 'central',
-    textAnchor: 'middle',
-    fontSize: '0.18px',
-    fontWeight: 'bold',
   },
 }));

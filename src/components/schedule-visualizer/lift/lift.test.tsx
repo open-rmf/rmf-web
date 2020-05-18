@@ -1,10 +1,11 @@
 import { createMount } from '@material-ui/core/test-utils';
-import { RomiCoreLift } from './lift-overlay';
+import { RomiCoreLift } from '../lift-overlay';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import fakeLiftStates from '../../mock/data/lift-states';
-import getBuildingMap from '../../mock/data/building-map';
-import Lift, { LiftModeStates, LiftMotionStates } from './lift';
+import fakeLiftStates from '../../../mock/data/lift-states';
+import getBuildingMap from '../../../mock/data/building-map';
 import React from 'react';
+import LiftContainer, { LiftModeStates, LiftMotionStates } from './liftContainer';
+import Lift from './lift';
 
 const mount = createMount();
 
@@ -15,12 +16,12 @@ const buildWrapper = (
 ) => {
   const wrapper = mount(
     <svg>
-      <Lift currentFloor={currentFloor} lift={lift} liftState={state} />
+      <LiftContainer currentFloor={currentFloor} lift={lift} liftState={state} />
     </svg>,
   );
 
   const liftSVGRect = wrapper
-    .find(Lift)
+    .find(LiftContainer)
     .at(0)
     .find('rect');
 
@@ -35,7 +36,7 @@ it('Trigger click event', async () => {
 
   const wrapper = mount(
     <svg>
-      <Lift currentFloor={'L1'} lift={lift} onClick={() => (clicked = true)} />
+      <LiftContainer currentFloor={'L1'} lift={lift} onClick={() => (clicked = true)} />
     </svg>,
   );
 

@@ -2,7 +2,7 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React, { createContext, useContext } from 'react';
 import { viewBoxFromLeafletBounds } from '../../util/css-utils';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
-import Lift from './lift';
+import LiftContainer from './lift/liftContainer';
 
 export interface LiftsOverlayProps extends SVGOverlayProps {
   currentFloor: string;
@@ -21,7 +21,7 @@ export default function LiftsOverlay(props: LiftsOverlayProps): React.ReactEleme
       <SVGOverlay {...otherProps}>
         <svg viewBox={viewBox}>
           {lifts.map(lift => (
-            <Lift
+            <LiftContainer
               key={`lift-${lift.name}`}
               lift={lift}
               onClick={(_, lift) => onLiftClick && onLiftClick(lift)}
