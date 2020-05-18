@@ -31,7 +31,7 @@
     "react-scripts": "^3.4.0",
     "selenium-webdriver": "^4.0.0-alpha.7",
     "typeface-roboto": "0.0.75",
-    "typescript": "3.7.2"
+    "typescript": "^3.9.2"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -40,7 +40,9 @@
     "test": "react-scripts test --testPathIgnorePatterns integration-tests",
     "test:integration": "node src/integration-tests/launch.js test --testPathPattern integration-tests",
     "eject": "react-scripts eject",
-    "deploy:demo": "REACT_APP_MOCK=1 npm run build && NODE_DEBUG=gh-pages gh-pages -d build -m \"$(git rev-parse HEAD)\""
+    "deploy:demo": "REACT_APP_MOCK=1 npm run build && NODE_DEBUG=gh-pages gh-pages -d build -m \"$(git rev-parse HEAD)\"",
+    "storybook": "start-storybook -p 9009 -s public",
+    "build-storybook": "build-storybook -s public"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -58,6 +60,11 @@
     ]
   },
   "devDependencies": {
+    "@storybook/addon-actions": "^5.3.18",
+    "@storybook/addon-links": "^5.3.18",
+    "@storybook/addons": "^5.3.18",
+    "@storybook/preset-create-react-app": "^2.1.2",
+    "@storybook/react": "^5.3.18",
     "gh-pages": "^2.2.0"
   }
 }
