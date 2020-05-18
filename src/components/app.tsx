@@ -103,25 +103,18 @@ export default function App(props: AppProps): JSX.Element {
   const trajManager = React.useRef<RobotTrajectoryManager | undefined>(undefined);
 
   const doorStateManager = React.useMemo(() => new DoorStateManager(), []);
-  const [doorStates, setDoorStates] = React.useState<Readonly<Record<string, RomiCore.DoorState>>>(
-    {},
-  );
+  const [doorStates, setDoorStates] = React.useState(doorStateManager.doorStates());
   const [doors, setDoors] = React.useState<readonly RomiCore.Door[]>([]);
 
-  // FIXME: not used for now as there is not enough information to render doors.
   const [doorSpotlight, setDoorSpotlight] = React.useState<SpotlightValue<string> | undefined>(
     undefined,
   );
 
   const liftStateManager = React.useMemo(() => new LiftStateManager(), []);
-  const [liftStates, setLiftStates] = React.useState<Readonly<Record<string, RomiCore.LiftState>>>(
-    {},
-  );
+  const [liftStates, setLiftStates] = React.useState(liftStateManager.liftStates());
   // TODO: this should be replaced by RomiCore.Lift once we addressed this
   // https://github.com/osrf/romi-js-core-interfaces/issues/4
   const [lifts, setLifts] = React.useState<readonly RomiCoreLift[]>([]);
-  // FIXME: not used for now as there is not enough information to render lifts.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [liftSpotlight, setLiftSpotlight] = React.useState<SpotlightValue<string> | undefined>(
     undefined,
   );
@@ -166,7 +159,10 @@ export default function App(props: AppProps): JSX.Element {
         liftStateManager.startSubscription(x);
         dispenserStateManager.startSubscription(x);
         fleetManager.startSubscription(x);
+
         fleetManager.on('updated', () => setFleets(fleetManager.fleets()));
+        liftStateManager.on('updated', () => setLiftStates(liftStateManager.liftStates()));
+        doorStateManager.on('updated', () => setDoorStates(doorStateManager.doorStates()));
         setTransport(x);
       })
       .catch((e: CloseEvent) => {

@@ -37,13 +37,13 @@ export interface LiftProps {
  * @param isInCurrentFloor if the lift is in the current floor return true.
  */
 const getLiftStyle = (classes: any, currentMode: number | undefined, isInCurrentFloor: boolean) => {
-  const isDangerous =
-    currentMode === LiftModeStates.EMERGENCY || currentMode === LiftModeStates.FIRE;
   const isOffLine =
     currentMode === LiftModeStates.OFFLINE || currentMode === LiftModeStates.UNKNOWN;
   const isModeAGV = currentMode === LiftModeStates.AGV;
   const isModeHuman = currentMode === LiftModeStates.HUMAN;
-  if (isDangerous) return classes.danger;
+
+  if (currentMode === LiftModeStates.EMERGENCY) return classes.emergency;
+  if (currentMode === LiftModeStates.FIRE) return classes.fire;
   if (isOffLine) return classes.offLine;
   if (!isInCurrentFloor) return classes.liftOnAnotherFloor;
   if (isInCurrentFloor && isModeAGV) return classes.liftOnCurrentFloor;
@@ -186,8 +186,12 @@ const useStyles = makeStyles(() => ({
     fill: 'grey',
     opacity: '80%',
   },
-  danger: {
+  emergency: {
     fill: 'red',
+    opacity: '80%',
+  },
+  fire: {
+    fill: '#ff562a',
     opacity: '80%',
   },
   offLine: {
