@@ -61,7 +61,7 @@ describe('Checks assignation of styles on different mode of the Lift', () => {
     const { lift, state } = await loadLift();
     state.current_mode = LiftModeStates.FIRE;
     const { wrapper, liftSVGRect } = buildWrapper(lift, state);
-    expect(liftSVGRect.hasClass(/(makeStyles)-(danger)-(\d+)/)).toBe(true);
+    expect(liftSVGRect.hasClass(/(makeStyles)-(fire)-(\d+)/)).toBe(true);
     expect(wrapper.find('#liftMode').text()).toEqual('FIRE!');
     wrapper.unmount();
   });
@@ -70,7 +70,7 @@ describe('Checks assignation of styles on different mode of the Lift', () => {
     const { lift, state } = await loadLift();
     state.current_mode = LiftModeStates.EMERGENCY;
     const { wrapper, liftSVGRect } = buildWrapper(lift, state);
-    expect(liftSVGRect.hasClass(/(makeStyles)-(danger)-(\d+)/)).toBe(true);
+    expect(liftSVGRect.hasClass(/(makeStyles)-(emergency)-(\d+)/)).toBe(true);
     expect(wrapper.find('#liftMode').text()).toEqual('EMERGENCY!');
     wrapper.unmount();
   });
