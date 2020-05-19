@@ -53,7 +53,10 @@ export const getDoorStyle = (classes: any, currentMode: number | undefined) => {
   }
 };
 
-const Door = React.forwardRef(function(props: DoorContainerProps): React.ReactElement {
+const Door = React.forwardRef(function(
+  props: DoorContainerProps,
+  ref: React.Ref<SVGGElement>,
+): React.ReactElement {
   const { door, onClick, currentMode } = props;
   const { door_type: doorType } = door;
   const v1 = [door.v1_x, door.v1_y];

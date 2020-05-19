@@ -1,9 +1,11 @@
 import { createMount } from '@material-ui/core/test-utils';
+import { ReactWrapper } from 'enzyme';
 import { Spinner } from '../spinner';
 import Door, { DoorMode } from './door';
 import React from 'react';
 import SingleHingeDoor from './door-single-hinge';
-import { ReactWrapper } from 'enzyme';
+import SingleSlideDoor from './door-single-slide';
+import DefaultDoor from './door-default';
 
 const mainDoor = {
   name: 'main_door',
@@ -20,16 +22,22 @@ const mount = createMount();
 
 test('Trigger click event', async () => {
   let clicked = false;
-
+  const handleClick = () => {
+    clicked = true;
+  };
   const wrapper = mount(
     <svg>
-      <Door door={mainDoor} onClick={() => (clicked = true)} />
+      <DefaultDoor
+        v1={[mainDoor.v1_x, mainDoor.v1_y]}
+        v2={[mainDoor.v2_x, mainDoor.v2_y]}
+        onClick={handleClick}
+      />
     </svg>,
   );
-
   wrapper
-    .find(Door)
+    .find(DefaultDoor)
     .at(0)
+    .find('g')
     .simulate('click');
   expect(clicked).toBe(true);
 
@@ -55,7 +63,7 @@ test('Checks spinner activation when the door its opening or closing', async () 
 describe('Checks assignation of styles on different states of SingleHingeDoor', () => {
   const getSingleDoorSVGLine = (wrapper: ReactWrapper) => {
     return wrapper
-      .find(SingleHingeDoor)
+      .find(DefaultDoor)
       .at(0)
       .find('line')
       .at(0);
@@ -64,7 +72,12 @@ describe('Checks assignation of styles on different states of SingleHingeDoor', 
   test('Style of SingleHingeDoor on Open', () => {
     const wrapper = mount(
       <svg>
-        <SingleHingeDoor door={mainDoor} currentMode={DoorMode.OPEN} />
+        <SingleHingeDoor
+          v1={[mainDoor.v1_x, mainDoor.v1_y]}
+          v2={[mainDoor.v2_x, mainDoor.v2_y]}
+          door={mainDoor}
+          currentMode={DoorMode.OPEN}
+        />
       </svg>,
     );
     const singleDoorSVGLine = getSingleDoorSVGLine(wrapper);
@@ -75,7 +88,12 @@ describe('Checks assignation of styles on different states of SingleHingeDoor', 
   test('Style of SingleHingeDoor on Close', () => {
     const wrapper = mount(
       <svg>
-        <SingleHingeDoor door={mainDoor} currentMode={DoorMode.CLOSE} />
+        <SingleHingeDoor
+          v1={[mainDoor.v1_x, mainDoor.v1_y]}
+          v2={[mainDoor.v2_x, mainDoor.v2_y]}
+          door={mainDoor}
+          currentMode={DoorMode.CLOSE}
+        />
       </svg>,
     );
     const singleDoorSVGLine = getSingleDoorSVGLine(wrapper);
@@ -86,7 +104,12 @@ describe('Checks assignation of styles on different states of SingleHingeDoor', 
   test('Style of SingleHingeDoor on Process', () => {
     const wrapper = mount(
       <svg>
-        <SingleHingeDoor door={mainDoor} currentMode={DoorMode.PROCESS} />
+        <SingleSlideDoor
+          v1={[mainDoor.v1_x, mainDoor.v1_y]}
+          v2={[mainDoor.v2_x, mainDoor.v2_y]}
+          door={mainDoor}
+          currentMode={DoorMode.PROCESS}
+        />
       </svg>,
     );
     const singleDoorSVGLine = getSingleDoorSVGLine(wrapper);
