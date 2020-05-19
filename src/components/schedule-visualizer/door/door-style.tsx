@@ -8,6 +8,9 @@ const doorStyles = makeStyles(() => ({
   door: {
     strokeWidth: '0.2',
   },
+  undefinedDoor: {
+    stroke: 'grey',
+  },
   doorOpen: {
     stroke: '#AFDDAE',
     strokeDasharray: 0.1,
