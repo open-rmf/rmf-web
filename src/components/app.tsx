@@ -103,7 +103,7 @@ export default function App(props: AppProps): JSX.Element {
   const trajManager = React.useRef<RobotTrajectoryManager | undefined>(undefined);
 
   const doorStateManager = React.useMemo(() => new DoorStateManager(), []);
-  const [doorStates, setDoorStates] = React.useState(doorStateManager.doorStates());
+  const [doorStates, setDoorStates] = React.useState(() => doorStateManager.doorStates());
   const [doors, setDoors] = React.useState<readonly RomiCore.Door[]>([]);
 
   const [doorSpotlight, setDoorSpotlight] = React.useState<SpotlightValue<string> | undefined>(
@@ -111,7 +111,7 @@ export default function App(props: AppProps): JSX.Element {
   );
 
   const liftStateManager = React.useMemo(() => new LiftStateManager(), []);
-  const [liftStates, setLiftStates] = React.useState(liftStateManager.liftStates());
+  const [liftStates, setLiftStates] = React.useState(() => liftStateManager.liftStates());
   // TODO: this should be replaced by RomiCore.Lift once we addressed this
   // https://github.com/osrf/romi-js-core-interfaces/issues/4
   const [lifts, setLifts] = React.useState<readonly RomiCoreLift[]>([]);

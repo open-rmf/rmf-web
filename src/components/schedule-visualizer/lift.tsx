@@ -37,13 +37,20 @@ export interface LiftProps {
  * @param isInCurrentFloor if the lift is in the current floor return true.
  */
 const getLiftStyle = (classes: any, currentMode: number | undefined, isInCurrentFloor: boolean) => {
-  const isOffLine =
-    currentMode === LiftModeStates.OFFLINE || currentMode === LiftModeStates.UNKNOWN;
-  const isModeAGV = currentMode === LiftModeStates.AGV;
-  const isModeHuman = currentMode === LiftModeStates.HUMAN;
+  const {
+    MODE_AGV,
+    MODE_EMERGENCY,
+    MODE_FIRE,
+    MODE_HUMAN,
+    MODE_OFFLINE,
+    MODE_UNKNOWN,
+  } = RomiCore.LiftState;
+  const isOffLine = currentMode === MODE_OFFLINE || currentMode === MODE_UNKNOWN;
+  const isModeAGV = currentMode === MODE_AGV;
+  const isModeHuman = currentMode === MODE_HUMAN;
 
-  if (currentMode === LiftModeStates.EMERGENCY) return classes.emergency;
-  if (currentMode === LiftModeStates.FIRE) return classes.fire;
+  if (currentMode === MODE_EMERGENCY) return classes.emergency;
+  if (currentMode === MODE_FIRE) return classes.fire;
   if (isOffLine) return classes.offLine;
   if (!isInCurrentFloor) return classes.liftOnAnotherFloor;
   if (isInCurrentFloor && isModeAGV) return classes.liftOnCurrentFloor;
@@ -53,13 +60,21 @@ const getLiftStyle = (classes: any, currentMode: number | undefined, isInCurrent
 // Gets the text to insert to the lift, the text depend on the current mode, motion state and the
 // current and destination floor of the lift.
 const getLiftModeText = (currentMode: number | undefined) => {
+  const {
+    MODE_AGV,
+    MODE_EMERGENCY,
+    MODE_FIRE,
+    MODE_HUMAN,
+    MODE_OFFLINE,
+    MODE_UNKNOWN,
+  } = RomiCore.LiftState;
   if (!currentMode) return 'UNKNOWN';
-  if (currentMode === LiftModeStates.FIRE) return 'FIRE!';
-  if (currentMode === LiftModeStates.EMERGENCY) return 'EMERGENCY!';
-  if (currentMode === LiftModeStates.OFFLINE) return 'OFFLINE';
-  if (currentMode === LiftModeStates.HUMAN) return 'HUMAN';
-  if (currentMode === LiftModeStates.AGV) return 'AGV';
-  if (currentMode === LiftModeStates.UNKNOWN) return 'UNKNOWN';
+  if (currentMode === MODE_FIRE) return 'FIRE!';
+  if (currentMode === MODE_EMERGENCY) return 'EMERGENCY!';
+  if (currentMode === MODE_OFFLINE) return 'OFFLINE';
+  if (currentMode === MODE_HUMAN) return 'HUMAN';
+  if (currentMode === MODE_AGV) return 'AGV';
+  if (currentMode === MODE_UNKNOWN) return 'UNKNOWN';
 };
 
 const getLiftMotionText = (
@@ -67,9 +82,10 @@ const getLiftMotionText = (
   destinationFloor: string | undefined,
   motionState: number | undefined,
 ) => {
-  if (motionState === LiftMotionStates.UNKNOWN) return '?';
-  if (motionState === LiftMotionStates.STOPPED) return 'STOPPED';
-  if (motionState === LiftMotionStates.UP || motionState === LiftMotionStates.DOWN)
+  const { MOTION_DOWN, MOTION_UP, MOTION_STOPPED, MOTION_UNKNOWN } = RomiCore.LiftState;
+  if (motionState === MOTION_UNKNOWN) return '?';
+  if (motionState === MOTION_STOPPED) return 'STOPPED';
+  if (motionState === MOTION_UP || motionState === MOTION_DOWN)
     return `${currentFloor} → ${destinationFloor}`;
 };
 
@@ -155,10 +171,10 @@ const Lift = React.forwardRef(function(
           </text>
         )}
       </g>
-      {motionState === LiftMotionStates.UP && (
+      {motionState === RomiCore.LiftState.MOTION_UP && (
         <UpArrow x={x} y={contextY} size={0.03} padding={[0, 0.1]} />
       )}
-      {motionState === LiftMotionStates.DOWN && (
+      {motionState === RomiCore.LiftState.MOTION_DOWN && (
         <DownArrow x={x} y={contextY} size={0.03} padding={[0, 0.1]} />
       )}
       {doors.map(door => (
