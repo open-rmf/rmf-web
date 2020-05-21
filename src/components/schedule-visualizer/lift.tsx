@@ -1,33 +1,14 @@
 import { makeStyles } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
-import { RomiCoreLift } from './lift-overlay';
 import Door from './door/door';
 import { UpArrow, DownArrow } from './arrow';
 
-export enum LiftMotionStates {
-  STOPPED,
-  UP,
-  DOWN,
-  UNKNOWN,
-}
-
-export enum LiftModeStates {
-  UNKNOWN,
-  HUMAN,
-  AGV,
-  FIRE,
-  OFFLINE,
-  EMERGENCY,
-}
-
 export interface LiftProps {
   currentFloor: string;
-  // TODO: this should be replaced by RomiCore.Lift once we addressed this
-  // https://github.com/osrf/romi-js-core-interfaces/issues/4
-  lift: RomiCoreLift;
+  lift: RomiCore.Lift;
   liftState?: RomiCore.LiftState;
-  onClick?(e: React.MouseEvent<SVGGElement>, lift: RomiCoreLift): void;
+  onClick?(e: React.MouseEvent<SVGGElement>, lift: RomiCore.Lift): void;
 }
 
 /**

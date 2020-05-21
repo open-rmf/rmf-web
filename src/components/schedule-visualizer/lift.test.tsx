@@ -1,5 +1,4 @@
 import { createMount } from '@material-ui/core/test-utils';
-import { RomiCoreLift } from './lift-overlay';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import fakeLiftStates from '../../mock/data/lift-states';
 import getBuildingMap from '../../mock/data/building-map';
@@ -9,7 +8,7 @@ import React from 'react';
 const mount = createMount();
 
 const buildWrapper = (
-  lift: RomiCoreLift,
+  lift: RomiCore.Lift,
   state: RomiCore.LiftState,
   currentFloor: string = 'L1',
 ) => {
