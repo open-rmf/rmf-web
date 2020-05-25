@@ -1,16 +1,18 @@
 import {
-  Divider,
   ExpansionPanel,
   ExpansionPanelDetails,
   ExpansionPanelProps,
   ExpansionPanelSummary,
   makeStyles,
   Typography,
-  Button,
 } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
+
+import { AntTabs, AntTab, TabPanel } from './tab';
+import { RobotLoopForm } from './robot-item-form';
+import { RobotInformation } from './robot-item-information';
 
 export interface RobotItemProps extends Omit<ExpansionPanelProps, 'children'> {
   robot: Readonly<RomiCore.RobotState>;
@@ -21,6 +23,11 @@ export const RobotItem = React.forwardRef(function(
   props: RobotItemProps,
   ref: React.Ref<HTMLElement>,
 ): React.ReactElement {
+  const [value, setValue] = React.useState(0);
+
+  const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+    setValue(newValue);
+  };
   const { robot, onRobotClick, ...otherProps } = props;
   const classes = useStyles();
 
@@ -36,43 +43,22 @@ export const RobotItem = React.forwardRef(function(
         </Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails className={classes.expansionDetail}>
-        <div className={classes.expansionDetailLine}>
-          <Typography variant="body1">Model:</Typography>
-          <Typography variant="body1">{robot.model}</Typography>
-        </div>
-        <Divider />
-        <div className={classes.expansionDetailLine}>
-          <Typography variant="body1">Level:</Typography>
-          <Typography variant="body1">{robot.location.level_name}</Typography>
-        </div>
-        <Divider />
-        <div className={classes.expansionDetailLine}>
-          <Typography variant="body1">Position:</Typography>
-          <Typography variant="body1">
-            {`(${robot.location.x.toFixed(3)}, ${robot.location.y.toFixed(3)})`}
-          </Typography>
-        </div>
-        <Divider />
-        <div className={classes.expansionDetailLine}>
-          <Typography variant="body1">Yaw:</Typography>
-          <Typography variant="body1">{robot.location.yaw.toFixed(3)}</Typography>
-        </div>
-        <Divider />
-        <div className={classes.expansionDetailLine}>
-          <Typography variant="body1">Task Id:</Typography>
-          <Typography variant="body1" noWrap>
-            {robot.task_id}
-          </Typography>
-        </div>
-        <Divider />
-        <div className={classes.expansionDetailLine}>
-          <Typography variant="body1">Battery:</Typography>
-          <Typography variant="body1">{robot.battery_percent}</Typography>
-        </div>
+        <AntTabs value={value} onChange={handleChange} aria-label="ant example">
+          <AntTab label="Info" />
+          <AntTab label="Loop" />
+          <AntTab label="Delivery" />
+        </AntTabs>
+        <TabPanel value={value} index={0}>
+          <RobotInformation robot={robot} />
+        </TabPanel>
+        <TabPanel value={value} index={1}>
+          <RobotLoopForm />
+        </TabPanel>
+        {/* <TabPanel value={value} index={2}>
+          Item Three
+        </TabPanel> */}
       </ExpansionPanelDetails>
       {/* onClick={() => onCloseClick && onCloseClick(door)} */}
-      <Button> Set Loop </Button>
-      <Button> Set Delivery </Button>
     </ExpansionPanel>
   );
 });
@@ -87,6 +73,7 @@ const useStyles = makeStyles(theme => ({
 
   expansionDetail: {
     flexFlow: 'column',
+    padding: '0',
   },
 
   expansionDetailLine: {
