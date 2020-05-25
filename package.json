@@ -16,6 +16,7 @@
     "@types/react": "^16.9.23",
     "@types/react-dom": "16.9.4",
     "@types/react-leaflet": "^2.5.0",
+    "@types/uuid": "^8.0.0",
     "clsx": "^1.1.0",
     "debug": "^4.1.1",
     "enzyme": "^3.11.0",
@@ -31,7 +32,8 @@
     "react-scripts": "^3.4.0",
     "selenium-webdriver": "^4.0.0-alpha.7",
     "typeface-roboto": "0.0.75",
-    "typescript": "3.7.2"
+    "typescript": "3.7.2",
+    "uuid": "^8.1.0"
   },
   "scripts": {
     "start": "react-scripts start",

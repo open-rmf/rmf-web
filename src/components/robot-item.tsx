@@ -6,6 +6,7 @@ import {
   ExpansionPanelSummary,
   makeStyles,
   Typography,
+  Button,
 } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
@@ -69,6 +70,9 @@ export const RobotItem = React.forwardRef(function(
           <Typography variant="body1">{robot.battery_percent}</Typography>
         </div>
       </ExpansionPanelDetails>
+      {/* onClick={() => onCloseClick && onCloseClick(door)} */}
+      <Button> Set Loop </Button>
+      <Button> Set Delivery </Button>
     </ExpansionPanel>
   );
 });
