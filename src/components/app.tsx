@@ -24,6 +24,8 @@ import RobotsPanel from './robots-panel';
 import ScheduleVisualizer from './schedule-visualizer';
 import SettingsDrawer from './settings-drawer';
 import { SpotlightValue } from './spotlight-value';
+import { DoorStateContext } from './schedule-visualizer/doors-overlay';
+import { LiftStateContext } from './schedule-visualizer/lift-overlay';
 
 const borderRadius = 20;
 
@@ -101,23 +103,17 @@ export default function App(props: AppProps): JSX.Element {
   const trajManager = React.useRef<RobotTrajectoryManager | undefined>(undefined);
 
   const doorStateManager = React.useMemo(() => new DoorStateManager(), []);
-  const [doorStates, setDoorStates] = React.useState<Readonly<Record<string, RomiCore.DoorState>>>(
-    {},
-  );
+  const [doorStates, setDoorStates] = React.useState(() => doorStateManager.doorStates());
   const [doors, setDoors] = React.useState<readonly RomiCore.Door[]>([]);
-  // FIXME: not used for now as there is not enough information to render doors.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   const [doorSpotlight, setDoorSpotlight] = React.useState<SpotlightValue<string> | undefined>(
     undefined,
   );
 
   const liftStateManager = React.useMemo(() => new LiftStateManager(), []);
-  const [liftStates, setLiftStates] = React.useState<Readonly<Record<string, RomiCore.LiftState>>>(
-    {},
-  );
+  const [liftStates, setLiftStates] = React.useState(() => liftStateManager.liftStates());
+
   const [lifts, setLifts] = React.useState<readonly RomiCore.Lift[]>([]);
-  // FIXME: not used for now as there is not enough information to render lifts.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [liftSpotlight, setLiftSpotlight] = React.useState<SpotlightValue<string> | undefined>(
     undefined,
   );
@@ -162,7 +158,10 @@ export default function App(props: AppProps): JSX.Element {
         liftStateManager.startSubscription(x);
         dispenserStateManager.startSubscription(x);
         fleetManager.startSubscription(x);
+
         fleetManager.on('updated', () => setFleets(fleetManager.fleets()));
+        liftStateManager.on('updated', () => setLiftStates(liftStateManager.liftStates()));
+        doorStateManager.on('updated', () => setDoorStates(doorStateManager.doorStates()));
         setTransport(x);
       })
       .catch((e: CloseEvent) => {
@@ -243,10 +242,22 @@ export default function App(props: AppProps): JSX.Element {
     setPlaceSpotlight({ value: place.name });
   }
 
+  function handleDoorClick(door: RomiCore.Door): void {
+    setShowOmniPanel(true);
+    setCurrentView(OmniPanelViewIndex.Doors);
+    setDoorSpotlight({ value: door.name });
+  }
+
   function handleRobotClick(robot: RomiCore.RobotState): void {
     setShowOmniPanel(true);
     setCurrentView(OmniPanelViewIndex.Robots);
     setRobotSpotlight({ value: robot.name });
+  }
+
+  function handleLiftClick(lift: RomiCore.Lift): void {
+    setShowOmniPanel(true);
+    setCurrentView(OmniPanelViewIndex.Lifts);
+    setLiftSpotlight({ value: lift.name });
   }
 
   function clearSpotlights() {
@@ -311,13 +322,19 @@ export default function App(props: AppProps): JSX.Element {
             </Toolbar>
           </AppBar>
           {buildingMap && (
-            <ScheduleVisualizer
-              buildingMap={buildingMap}
-              fleets={fleets}
-              trajManager={trajManager.current}
-              onPlaceClick={handlePlaceClick}
-              onRobotClick={handleRobotClick}
-            />
+            <DoorStateContext.Provider value={doorStates}>
+              <LiftStateContext.Provider value={liftStates}>
+                <ScheduleVisualizer
+                  buildingMap={buildingMap}
+                  fleets={fleets}
+                  trajManager={trajManager.current}
+                  onDoorClick={handleDoorClick}
+                  onLiftClick={handleLiftClick}
+                  onPlaceClick={handlePlaceClick}
+                  onRobotClick={handleRobotClick}
+                />
+              </LiftStateContext.Provider>
+            </DoorStateContext.Provider>
           )}
           <Fade in={showOmniPanel}>
             <OmniPanel
@@ -340,10 +357,20 @@ export default function App(props: AppProps): JSX.Element {
                 />
               </OmniPanelView>
               <OmniPanelView id={OmniPanelViewIndex.Doors}>
-                <DoorsPanel transport={transport} doorStates={doorStates} doors={doors} />
+                <DoorsPanel
+                  transport={transport}
+                  doorStates={doorStates}
+                  doors={doors}
+                  spotlight={doorSpotlight}
+                />
               </OmniPanelView>
               <OmniPanelView id={OmniPanelViewIndex.Lifts}>
-                <LiftsPanel transport={transport} liftStates={liftStates} lifts={lifts} />
+                <LiftsPanel
+                  transport={transport}
+                  liftStates={liftStates}
+                  lifts={lifts}
+                  spotlight={liftSpotlight}
+                />
               </OmniPanelView>
               <OmniPanelView id={OmniPanelViewIndex.Robots}>
                 <RobotsPanel fleets={fleets} spotlight={robotSpotlight} />

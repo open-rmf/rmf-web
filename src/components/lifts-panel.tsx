@@ -56,6 +56,7 @@ export default function LiftsPanel(props: LiftsPanelProps): JSX.Element {
           <LiftItem
             key={lift.name}
             lift={lift}
+            ref={ref => (liftRefs.current[lift.name] = ref)}
             liftState={liftState}
             enableRequest={Boolean(transport)}
             onRequest={handleLiftRequest}

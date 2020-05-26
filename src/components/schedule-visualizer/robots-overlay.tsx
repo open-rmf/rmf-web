@@ -19,7 +19,6 @@ export default function RobotsOverlay(props: RobotsOverlayProps): React.ReactEle
   const width = bounds.getEast() - bounds.getWest();
   const height = bounds.getNorth() - bounds.getSouth();
   const viewBox = `0 0 ${width} ${height}`;
-
   const footprint = 0.5; // FIXME: hardcode for now, footprint data not available.
   return (
     <SVGOverlay {...otherProps}>

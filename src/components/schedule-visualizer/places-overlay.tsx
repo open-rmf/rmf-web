@@ -17,7 +17,7 @@ export default function PlacesOverlay(props: PlacesOverlayProps): React.ReactEle
   return (
     <SVGOverlay {...otherProps}>
       <svg viewBox={viewBox}>
-        {props.places.map(place => (
+        {places.map(place => (
           <Place
             key={place.name}
             place={place}

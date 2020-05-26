@@ -18,34 +18,127 @@ export default async function buildingMap(): Promise<RomiCore.BuildingMap> {
 
   const doors = [
     {
+      //TODO: remove one of the names once this https://github.com/osrf/romi-js-core-interfaces/issues/5 is done.
       name: 'main_door',
-      v1_x: 7,
-      v1_y: -6,
-      v2_x: 8,
+      door_name: 'main_door',
+      v1_x: 8.2,
+      v1_y: -5.5,
+      v2_x: 7.85,
       v2_y: -6.2,
-      door_type: 1,
-      motion_range: 1.571,
+      door_type: 2,
+      motion_range: -1.571,
       motion_direction: 1,
     },
     {
+      //TODO: remove one of the names once this https://github.com/osrf/romi-js-core-interfaces/issues/5 is done.
       name: 'hardware_door',
-      v1_x: 4,
+      door_name: 'hardware_door',
+      v1_x: 4.9,
       v1_y: -4,
-      v2_x: 4.1,
-      v2_y: -3.8,
+      v2_x: 4.4,
+      v2_y: -5,
       door_type: 1,
       motion_range: 1.571,
       motion_direction: -1,
     },
     {
+      //TODO: remove one of the names once this https://github.com/osrf/romi-js-core-interfaces/issues/5 is done.
       name: 'coe_door',
-      v1_x: 6,
-      v1_y: -6,
-      v2_x: 6.2,
-      v2_y: -5.9,
-      door_type: 2,
+      door_name: 'coe_door',
+      v1_x: 19.5,
+      v1_y: -10.8,
+      v2_x: 19.5,
+      v2_y: -9.9,
+      door_type: 1,
+      motion_range: 1.571,
+      motion_direction: 1,
+    },
+    {
+      //TODO: remove one of the names once this https://github.com/osrf/romi-js-core-interfaces/issues/5 is done.
+      name: 'exit_door',
+      door_name: 'exit_door',
+      v1_x: 12.2,
+      v1_y: -2.7,
+      v2_x: 14.1,
+      v2_y: -2.7,
+      door_type: 1,
       motion_range: -1.571,
       motion_direction: 1,
+    },
+  ];
+
+  const lifts = [
+    {
+      name: 'Lift1',
+      doors: [{
+        //TODO: remove one of the names once this https://github.com/osrf/romi-js-core-interfaces/issues/5 is done.
+        name: 'lift1_front_door',
+        door_name: 'lift1_front_door',
+        v1_x: 8.80,
+        v1_y: -2.3,
+        v2_x: 7.70,
+        v2_y: -4.5,
+        door_type: 1,
+        motion_range: 0,
+        motion_direction: 1,
+      }],
+      levels: ['L1', 'L2', 'L3'],
+      ref_x: 7.1,
+      ref_y: -2.8,
+      ref_yaw: 26,
+      width: 2.5,
+      depth: 2.5,
+      wall_graph: {
+        name: 'wallgraph',
+        vertices: [],
+        edges: [],
+        params: [],
+      },
+    },
+    {
+      name: 'Lift2',
+      doors: [
+        {
+          //TODO: remove one of the names once this https://github.com/osrf/romi-js-core-interfaces/issues/5 is done.
+          name: 'lift2_front_door',
+          door_name: 'lift2_front_door',
+          v1_x: 8.95,
+          v1_y: -12.38,
+          v2_x: 10.08,
+          v2_y: -12.38,
+          door_type: 1,
+          motion_range: 0,
+          motion_direction: 1,
+        }
+      ],
+      levels: ['L1', 'L2', 'L3', 'L4'],
+      ref_x: 9.5,
+      ref_y: -13,
+      ref_yaw: 1.571,
+      width: 1,
+      depth: 1,
+      wall_graph: {
+        name: 'wallgraph',
+        vertices: [],
+        edges: [],
+        params: [],
+      },
+    },
+    {
+      name: 'mysterious_lift',
+      doors: [],
+      levels: ['L1', 'L2', 'L3', 'L4'],
+      ref_x: 22,
+      ref_y: -10,
+      ref_yaw: 1.571,
+      width: 1,
+      depth: 1,
+      wall_graph: {
+        name: 'wallgraph',
+        vertices: [],
+        edges: [],
+        params: [],
+      },
     },
   ];
 
@@ -118,49 +211,6 @@ export default async function buildingMap(): Promise<RomiCore.BuildingMap> {
         },
       },
     ],
-    lifts: [
-      {
-        name: 'Lift1',
-        doors: [],
-        levels: ['L1', 'L2', 'L3'],
-        ref_x: 0,
-        ref_y: 0,
-        ref_yaw: 0,
-        wall_graph: {
-          name: 'wallgraph',
-          vertices: [],
-          edges: [],
-          params: [],
-        },
-      },
-      {
-        name: 'Lift2',
-        doors: [],
-        levels: ['L1', 'L2', 'L3', 'L4'],
-        ref_x: 10,
-        ref_y: 10,
-        ref_yaw: 1.571,
-        wall_graph: {
-          name: 'wallgraph',
-          vertices: [],
-          edges: [],
-          params: [],
-        },
-      },
-      {
-        name: 'mysterious_lift',
-        doors: [],
-        levels: ['L1', 'L2', 'L3', 'L4'],
-        ref_x: 10,
-        ref_y: 10,
-        ref_yaw: 1.571,
-        wall_graph: {
-          name: 'wallgraph',
-          vertices: [],
-          edges: [],
-          params: [],
-        },
-      },
-    ],
+    lifts: lifts
   };
 }

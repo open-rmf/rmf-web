@@ -21,6 +21,8 @@ import {
   withFollowAnimation,
   withOutlineAnimation,
 } from './trajectory-animations';
+import DoorsOverlay from './doors-overlay';
+import LiftsOverlay from './lift-overlay';
 
 const useStyles = makeStyles(() => ({
   map: {
@@ -41,6 +43,8 @@ export interface ScheduleVisualizerProps {
   buildingMap: Readonly<RomiCore.BuildingMap>;
   fleets: Readonly<RomiCore.FleetState[]>;
   trajManager?: Readonly<RobotTrajectoryManager>;
+  onDoorClick?(door: RomiCore.Door): void;
+  onLiftClick?(lift: RomiCore.Lift): void;
   onPlaceClick?(place: RomiCore.Place): void;
   onRobotClick?(robot: RomiCore.RobotState): void;
 }
@@ -93,6 +97,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       x.robots.filter(r => r.location.level_name === curMapFloorLayer.level.name),
     );
   }, [props.fleets, curMapFloorLayer]);
+
   const colorManager = React.useMemo(() => new ColorManager(), []);
 
   const settings = React.useContext(SettingsContext);
@@ -278,6 +283,29 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
                   colorManager={colorManager}
                 />
               </RobotTrajectoryContext.Provider>
+            </Pane>
+          )}
+        </LayersControl.Overlay>
+        <LayersControl.Overlay name="Doors" checked>
+          {curMapFloorLayer && (
+            <Pane>
+              <DoorsOverlay
+                bounds={curMapFloorLayer.bounds}
+                doors={curMapFloorLayer.level.doors}
+                onDoorClick={props.onDoorClick}
+              />
+            </Pane>
+          )}
+        </LayersControl.Overlay>
+        <LayersControl.Overlay name="Lifts" checked>
+          {curMapFloorLayer && (
+            <Pane>
+              <LiftsOverlay
+                bounds={curMapFloorLayer.bounds}
+                currentFloor={curLevelName}
+                lifts={props.buildingMap.lifts}
+                onLiftClick={props.onLiftClick}
+              />
             </Pane>
           )}
         </LayersControl.Overlay>
