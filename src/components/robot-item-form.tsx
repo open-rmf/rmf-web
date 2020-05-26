@@ -1,6 +1,14 @@
-import { makeStyles, TextField, Fab, Button } from '@material-ui/core';
+import { makeStyles, TextField, Button, Input } from '@material-ui/core';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import React from 'react';
 import { successMsg, errorMsg } from '../util/alerts';
+
+const top100Films = [
+  { title: 'The Shawshank Redemption', year: 1994 },
+  { title: 'The Godfather', year: 1972 },
+  { title: 'The Godfather: Part II', year: 1974 },
+  { title: 'The Dark Knight', year: 2008 },
+];
 
 export const RobotLoopForm = () => {
   const classes = useStyles();
@@ -21,9 +29,10 @@ export const RobotLoopForm = () => {
   return (
     <form className={classes.form}>
       <div className={classes.divForm}>
+        <h4>Robot Type </h4>
         <TextField
           name="robotType"
-          placeholder="Robot Type"
+          placeholder="Name of the fleet"
           InputProps={{
             autoComplete: 'off',
           }}
@@ -32,40 +41,38 @@ export const RobotLoopForm = () => {
           // value={name}
         />
       </div>
+
+      <h4>Loops </h4>
       <div className={classes.divForm}>
-        <TextField
+        <Input
+          type="number"
           name="numLoops"
           placeholder="Number of loops"
-          InputProps={{
-            autoComplete: 'off',
-          }}
-          multiline
           // onChange={_handleInput}
           // value={description}
         />
       </div>
+
+      <h4>Start Location </h4>
       <div className={classes.divForm}>
-        <TextField
-          name="startName"
-          placeholder="Start Location"
-          InputProps={{
-            autoComplete: 'off',
-          }}
-          // onChange={_handleInput}
-          // value={description}
+        <Autocomplete
+          options={top100Films}
+          getOptionLabel={option => option.title}
+          style={{ width: 200 }}
+          renderInput={params => <TextField {...params} label="Pick a place" variant="outlined" />}
         />
       </div>
+
+      <h4>Finish Location </h4>
       <div className={classes.divForm}>
-        <TextField
-          name="finishName"
-          placeholder="Finish Location"
-          InputProps={{
-            autoComplete: 'off',
-          }}
-          // onChange={_handleInput}
-          // value={description}
+        <Autocomplete
+          options={top100Films}
+          getOptionLabel={option => option.title}
+          style={{ width: 200 }}
+          renderInput={params => <TextField {...params} label="Pick a place" variant="outlined" />}
         />
       </div>
+
       <div>
         <Button variant="contained" color="primary" onClick={() => successMsg('Success')}>
           {' '}
@@ -85,8 +92,10 @@ export const RobotLoopForm = () => {
 const useStyles = makeStyles(theme => ({
   form: {
     paddingLeft: '2rem',
+    display: 'flex',
+    flexDirection: 'column',
   },
   divForm: {
-    padding: '0.5rem',
+    padding: '0.2rem',
   },
 }));
