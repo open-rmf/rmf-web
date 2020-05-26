@@ -1,16 +1,15 @@
 import { createMount } from '@material-ui/core/test-utils';
-import { RomiCoreLift } from '../lift-overlay';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import fakeLiftStates from '../../../mock/data/lift-states';
 import getBuildingMap from '../../../mock/data/building-map';
 import React from 'react';
-import LiftContainer, { LiftModeStates, LiftMotionStates } from './liftContainer';
+import LiftContainer from './liftContainer';
 import Lift from './lift';
 
 const mount = createMount();
 
 const buildWrapper = (
-  lift: RomiCoreLift,
+  lift: RomiCore.Lift,
   state: RomiCore.LiftState,
   currentFloor: string = 'L1',
 ) => {
@@ -60,7 +59,7 @@ describe('Checks assignation of styles on different mode of the Lift', () => {
 
   test('Check red color and _Fire_ text when the lift its on Fire mode', async () => {
     const { lift, state } = await loadLift();
-    state.current_mode = LiftModeStates.FIRE;
+    state.current_mode = RomiCore.LiftState.MODE_FIRE;
     const { wrapper, liftSVGRect } = buildWrapper(lift, state);
     expect(liftSVGRect.hasClass(/(makeStyles)-(fire)-(\d+)/)).toBe(true);
     expect(wrapper.find('#liftMode').text()).toEqual('FIRE!');
@@ -69,7 +68,7 @@ describe('Checks assignation of styles on different mode of the Lift', () => {
 
   test('Lift on Emergency mode', async () => {
     const { lift, state } = await loadLift();
-    state.current_mode = LiftModeStates.EMERGENCY;
+    state.current_mode = RomiCore.LiftState.MODE_EMERGENCY;
     const { wrapper, liftSVGRect } = buildWrapper(lift, state);
     expect(liftSVGRect.hasClass(/(makeStyles)-(emergency)-(\d+)/)).toBe(true);
     expect(wrapper.find('#liftMode').text()).toEqual('EMERGENCY!');
@@ -78,7 +77,7 @@ describe('Checks assignation of styles on different mode of the Lift', () => {
 
   test('Lift on Disabled mode', async () => {
     const { lift, state } = await loadLift();
-    state.current_mode = LiftModeStates.OFFLINE;
+    state.current_mode = RomiCore.LiftState.MODE_OFFLINE;
     const { wrapper, liftSVGRect } = buildWrapper(lift, state);
     expect(liftSVGRect.hasClass(/(makeStyles)-(offLine)-(\d+)/)).toBe(true);
     expect(wrapper.find('#liftMode').text()).toEqual('OFFLINE');
@@ -97,7 +96,7 @@ describe('Checks assignation of styles on combination of motion states and mode 
 
   test('Lift its on current floor and its on Human mode', async () => {
     const { lift, state } = await loadLift();
-    state.current_mode = LiftModeStates.HUMAN;
+    state.current_mode = RomiCore.LiftState.MODE_HUMAN;
     state.current_floor = 'L1';
     const { wrapper, liftSVGRect } = buildWrapper(lift, state);
     expect(liftSVGRect.hasClass(/(makeStyles)-(humanMode)-(\d+)/)).toBe(true);
@@ -108,7 +107,7 @@ describe('Checks assignation of styles on combination of motion states and mode 
 
   test('Lift its on current floor and its on SVG mode', async () => {
     const { lift, state } = await loadLift();
-    state.current_mode = LiftModeStates.AGV;
+    state.current_mode = RomiCore.LiftState.MODE_AGV;
     state.current_floor = 'L1';
     const { wrapper, liftSVGRect } = buildWrapper(lift, state);
     expect(liftSVGRect.hasClass(/(makeStyles)-(liftOnCurrentFloor)-(\d+)/)).toBe(true);
@@ -121,7 +120,7 @@ describe('Checks assignation of styles on combination of motion states and mode 
     const { lift, state } = await loadLift();
     state.current_floor = 'L3';
     state.destination_floor = 'L4';
-    state.motion_state = LiftMotionStates.UP;
+    state.motion_state = RomiCore.LiftState.MOTION_UP;
     const { wrapper, liftSVGRect } = buildWrapper(lift, state);
     expect(liftSVGRect.hasClass(/(makeStyles)-(liftOnAnotherFloor)-(\d+)/)).toBe(true);
     expect(wrapper.find('#liftMotion').text()).toEqual('L3 → L4');
@@ -132,7 +131,7 @@ describe('Checks assignation of styles on combination of motion states and mode 
     const { lift, state } = await loadLift();
     state.current_floor = 'L4';
     state.destination_floor = 'L2';
-    state.motion_state = LiftMotionStates.DOWN;
+    state.motion_state = RomiCore.LiftState.MOTION_DOWN;
     const { wrapper, liftSVGRect } = buildWrapper(lift, state);
     expect(liftSVGRect.hasClass(/(makeStyles)-(liftOnAnotherFloor)-(\d+)/)).toBe(true);
     expect(wrapper.find('#liftMotion').text()).toEqual(`L4 → L2`);

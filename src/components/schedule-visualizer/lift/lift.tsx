@@ -31,7 +31,7 @@ interface LiftProps {
     fontSize?: string;
   };
 
-  onClick?: any; //(e: React.MouseEvent<SVGGElement>, lift: RomiCoreLift): void;
+  onClick?: any; //(e: React.MouseEvent<SVGGElement>, lift: RomiCore.Lift): void;
 }
 
 const Lift = React.forwardRef(function(
