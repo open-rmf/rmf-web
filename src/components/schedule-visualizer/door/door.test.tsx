@@ -1,7 +1,6 @@
+import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { createMount } from '@material-ui/core/test-utils';
 import { ReactWrapper } from 'enzyme';
-import { Spinner } from '../spinner';
-import Door, { DoorMode } from './door';
 import React from 'react';
 import SingleHingeDoor from './door-single-hinge';
 import SingleSlideDoor from './door-single-slide';
@@ -44,22 +43,6 @@ test('Trigger click event', async () => {
   wrapper.unmount();
 });
 
-test('Checks spinner activation when the door its opening or closing', async () => {
-  const wrapper = mount(
-    <svg>
-      <Door door={mainDoor} currentMode={DoorMode.PROCESS} />
-    </svg>,
-  );
-  expect(
-    wrapper
-      .find(Door)
-      .at(0)
-      .find(Spinner)
-      .exists(),
-  ).toBe(true);
-  wrapper.unmount();
-});
-
 describe('Checks assignation of styles on different states of SingleHingeDoor', () => {
   const getSingleDoorSVGLine = (wrapper: ReactWrapper) => {
     return wrapper
@@ -76,7 +59,7 @@ describe('Checks assignation of styles on different states of SingleHingeDoor', 
           v1={[mainDoor.v1_x, mainDoor.v1_y]}
           v2={[mainDoor.v2_x, mainDoor.v2_y]}
           door={mainDoor}
-          currentMode={DoorMode.OPEN}
+          currentMode={RomiCore.DoorMode.MODE_OPEN}
         />
       </svg>,
     );
@@ -92,7 +75,7 @@ describe('Checks assignation of styles on different states of SingleHingeDoor', 
           v1={[mainDoor.v1_x, mainDoor.v1_y]}
           v2={[mainDoor.v2_x, mainDoor.v2_y]}
           door={mainDoor}
-          currentMode={DoorMode.CLOSE}
+          currentMode={RomiCore.DoorMode.MODE_CLOSED}
         />
       </svg>,
     );
@@ -108,7 +91,7 @@ describe('Checks assignation of styles on different states of SingleHingeDoor', 
           v1={[mainDoor.v1_x, mainDoor.v1_y]}
           v2={[mainDoor.v2_x, mainDoor.v2_y]}
           door={mainDoor}
-          currentMode={DoorMode.PROCESS}
+          currentMode={RomiCore.DoorMode.MODE_MOVING}
         />
       </svg>,
     );

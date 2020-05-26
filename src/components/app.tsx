@@ -25,7 +25,7 @@ import ScheduleVisualizer from './schedule-visualizer';
 import SettingsDrawer from './settings-drawer';
 import { SpotlightValue } from './spotlight-value';
 import { DoorStateContext } from './schedule-visualizer/doors-overlay';
-import { LiftStateContext, RomiCoreLift } from './schedule-visualizer/lift-overlay';
+import { LiftStateContext } from './schedule-visualizer/lift-overlay';
 
 const borderRadius = 20;
 
@@ -103,7 +103,7 @@ export default function App(props: AppProps): JSX.Element {
   const trajManager = React.useRef<RobotTrajectoryManager | undefined>(undefined);
 
   const doorStateManager = React.useMemo(() => new DoorStateManager(), []);
-  const [doorStates, setDoorStates] = React.useState(doorStateManager.doorStates());
+  const [doorStates, setDoorStates] = React.useState(() => doorStateManager.doorStates());
   const [doors, setDoors] = React.useState<readonly RomiCore.Door[]>([]);
 
   const [doorSpotlight, setDoorSpotlight] = React.useState<SpotlightValue<string> | undefined>(
@@ -111,10 +111,9 @@ export default function App(props: AppProps): JSX.Element {
   );
 
   const liftStateManager = React.useMemo(() => new LiftStateManager(), []);
-  const [liftStates, setLiftStates] = React.useState(liftStateManager.liftStates());
-  // TODO: this should be replaced by RomiCore.Lift once we addressed this
-  // https://github.com/osrf/romi-js-core-interfaces/issues/4
-  const [lifts, setLifts] = React.useState<readonly RomiCoreLift[]>([]);
+  const [liftStates, setLiftStates] = React.useState(() => liftStateManager.liftStates());
+
+  const [lifts, setLifts] = React.useState<readonly RomiCore.Lift[]>([]);
   const [liftSpotlight, setLiftSpotlight] = React.useState<SpotlightValue<string> | undefined>(
     undefined,
   );
@@ -254,9 +253,8 @@ export default function App(props: AppProps): JSX.Element {
     setCurrentView(OmniPanelViewIndex.Robots);
     setRobotSpotlight({ value: robot.name });
   }
-  // TODO: this should be replaced by RomiCore.Lift once we addressed this
-  // https://github.com/osrf/romi-js-core-interfaces/issues/4
-  function handleLiftClick(lift: RomiCoreLift): void {
+
+  function handleLiftClick(lift: RomiCore.Lift): void {
     setShowOmniPanel(true);
     setCurrentView(OmniPanelViewIndex.Lifts);
     setLiftSpotlight({ value: lift.name });

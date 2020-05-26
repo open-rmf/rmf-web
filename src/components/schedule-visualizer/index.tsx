@@ -22,7 +22,7 @@ import {
   withOutlineAnimation,
 } from './trajectory-animations';
 import DoorsOverlay from './doors-overlay';
-import LiftsOverlay, { RomiCoreLift } from './lift-overlay';
+import LiftsOverlay from './lift-overlay';
 
 const useStyles = makeStyles(() => ({
   map: {
@@ -44,9 +44,7 @@ export interface ScheduleVisualizerProps {
   fleets: Readonly<RomiCore.FleetState[]>;
   trajManager?: Readonly<RobotTrajectoryManager>;
   onDoorClick?(door: RomiCore.Door): void;
-  // TODO: this should be replaced by RomiCore.Lift once we addressed this
-  // https://github.com/osrf/romi-js-core-interfaces/issues/4
-  onLiftClick?(lift: RomiCoreLift): void;
+  onLiftClick?(lift: RomiCore.Lift): void;
   onPlaceClick?(place: RomiCore.Place): void;
   onRobotClick?(robot: RomiCore.RobotState): void;
 }

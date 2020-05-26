@@ -18,7 +18,9 @@ export default async function buildingMap(): Promise<RomiCore.BuildingMap> {
 
   const doors = [
     {
+      //TODO: remove one of the names once this https://github.com/osrf/romi-js-core-interfaces/issues/5 is done.
       name: 'main_door',
+      door_name: 'main_door',
       v1_x: 8.2,
       v1_y: -5.5,
       v2_x: 7.85,
@@ -28,7 +30,9 @@ export default async function buildingMap(): Promise<RomiCore.BuildingMap> {
       motion_direction: 1,
     },
     {
+      //TODO: remove one of the names once this https://github.com/osrf/romi-js-core-interfaces/issues/5 is done.
       name: 'hardware_door',
+      door_name: 'hardware_door',
       v1_x: 4.9,
       v1_y: -4,
       v2_x: 4.4,
@@ -38,7 +42,9 @@ export default async function buildingMap(): Promise<RomiCore.BuildingMap> {
       motion_direction: -1,
     },
     {
+      //TODO: remove one of the names once this https://github.com/osrf/romi-js-core-interfaces/issues/5 is done.
       name: 'coe_door',
+      door_name: 'coe_door',
       v1_x: 19.5,
       v1_y: -10.8,
       v2_x: 19.5,
@@ -48,7 +54,9 @@ export default async function buildingMap(): Promise<RomiCore.BuildingMap> {
       motion_direction: 1,
     },
     {
+      //TODO: remove one of the names once this https://github.com/osrf/romi-js-core-interfaces/issues/5 is done.
       name: 'exit_door',
+      door_name: 'exit_door',
       v1_x: 12.2,
       v1_y: -2.7,
       v2_x: 14.1,
@@ -63,7 +71,9 @@ export default async function buildingMap(): Promise<RomiCore.BuildingMap> {
     {
       name: 'Lift1',
       doors: [{
+        //TODO: remove one of the names once this https://github.com/osrf/romi-js-core-interfaces/issues/5 is done.
         name: 'lift1_front_door',
+        door_name: 'lift1_front_door',
         v1_x: 8.80,
         v1_y: -2.3,
         v2_x: 7.70,
@@ -89,7 +99,9 @@ export default async function buildingMap(): Promise<RomiCore.BuildingMap> {
       name: 'Lift2',
       doors: [
         {
+          //TODO: remove one of the names once this https://github.com/osrf/romi-js-core-interfaces/issues/5 is done.
           name: 'lift2_front_door',
+          door_name: 'lift2_front_door',
           v1_x: 8.95,
           v1_y: -12.38,
           v2_x: 10.08,
