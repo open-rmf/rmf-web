@@ -14,7 +14,7 @@ let door: RomiCore.Door;
 beforeEach(async () => {
   map = await buildingMap();
   door = map.levels.flatMap(l => l.doors)[0];
-  doorState = fakeDoorStates()[door.name];
+  doorState = fakeDoorStates()[door.door_name];
 });
 
 it('responds to open click', () => {

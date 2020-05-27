@@ -53,7 +53,7 @@ export const DoorItem = React.forwardRef(function(
         classes={{ content: classes.expansionSummaryContent }}
         expandIcon={<ExpandMoreIcon />}
       >
-        <Typography variant="h5">{door.name}</Typography>
+        <Typography variant="h5">{door.door_name}</Typography>
         <Typography className={doorModeLabelClasses(doorState)} variant="button">
           {doorModeToString(doorState)}
         </Typography>

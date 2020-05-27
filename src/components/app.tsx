@@ -156,7 +156,6 @@ export default function App(props: AppProps): JSX.Element {
         });
         doorStateManager.startSubscription(x);
         liftStateManager.startSubscription(x);
-        dispenserStateManager.startSubscription(x);
         fleetManager.startSubscription(x);
 
         fleetManager.on('updated', () => setFleets(fleetManager.fleets()));
@@ -245,7 +244,7 @@ export default function App(props: AppProps): JSX.Element {
   function handleDoorClick(door: RomiCore.Door): void {
     setShowOmniPanel(true);
     setCurrentView(OmniPanelViewIndex.Doors);
-    setDoorSpotlight({ value: door.name });
+    setDoorSpotlight({ value: door.door_name });
   }
 
   function handleRobotClick(robot: RomiCore.RobotState): void {

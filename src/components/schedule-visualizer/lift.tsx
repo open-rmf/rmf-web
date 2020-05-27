@@ -144,7 +144,7 @@ const Lift = React.forwardRef(function(
         <DownArrow x={x} y={contextY} size={0.03} padding={[0, 0.1]} />
       )}
       {doors.map(door => (
-        <Door key={`lift-door-${door.name}`} door={door} currentMode={doorState} />
+        <Door key={`lift-door-${door.door_name}`} door={door} currentMode={doorState} />
       ))}
     </>
   );
