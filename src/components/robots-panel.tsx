@@ -24,15 +24,22 @@ export declare const loopRequest: RomiTopic<RomiCore.Loop>;
    */
 export function requestLoop(
   loopRequestPub: any,
-  robot: RomiCore.FleetState,
+  robotName: string,
   numLoops: number,
   startLocationPoint: string,
   endLocationPoint: string,
 ) {
+  console.log({
+    finish_name: endLocationPoint,
+    num_loops: numLoops,
+    robot_type: robotName,
+    start_name: startLocationPoint,
+    task_id: uuidv4(),
+  });
   loopRequestPub?.publish({
     finish_name: endLocationPoint,
     num_loops: numLoops,
-    robot_type: robot.name,
+    robot_type: robotName,
     start_name: startLocationPoint,
     task_id: uuidv4(),
   });
@@ -50,11 +57,20 @@ export default function RobotsPanel(props: RobotsPanelProps): React.ReactElement
   const robotRefs = React.useRef<Record<string, HTMLElement | null>>({});
   const [expanded, setExpanded] = React.useState<Readonly<Record<string, boolean>>>({});
 
-  // const loopRequestPub = React.useMemo(
-  //   // TODO: change for RomiCore.loopRequest
-  //   () => (transport ? transport.createPublisher(loopRequest) : null),
-  //   [transport],
-  // );
+  const loopRequestPub = React.useMemo(
+    // TODO: change for RomiCore.loopRequest
+    () => null,
+    [transport],
+  );
+
+  const handleRequestLoop = (
+    fleetName: string,
+    numLoops: number,
+    startLocationPoint: string,
+    endLocationPoint: string,
+  ) => {
+    requestLoop(loopRequestPub, fleetName, numLoops, startLocationPoint, endLocationPoint);
+  };
 
   React.useEffect(() => {
     if (!spotlight) {
@@ -78,6 +94,7 @@ export default function RobotsPanel(props: RobotsPanelProps): React.ReactElement
           <RobotItem
             key={robot.name}
             ref={ref => (robotRefs.current[robot.name] = ref)}
+            requestLoop={handleRequestLoop}
             robot={robot}
             onClick={() => onRobotClick && onRobotClick(robot)}
             expanded={Boolean(expanded[robot.name])}

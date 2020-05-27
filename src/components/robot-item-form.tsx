@@ -1,93 +1,124 @@
+import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { makeStyles, TextField, Button, Input } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { successMsg, errorMsg } from '../util/alerts';
+import fakePlaces from '../mock/data/places';
+import Robot from './schedule-visualizer/robot';
 
-const top100Films = [
-  { title: 'The Shawshank Redemption', year: 1994 },
-  { title: 'The Godfather', year: 1972 },
-  { title: 'The Godfather: Part II', year: 1974 },
-  { title: 'The Dark Knight', year: 2008 },
-];
+interface robotLoopFormProps {
+  robot: Readonly<RomiCore.RobotState>;
+  requestLoop: any;
+}
 
-export const RobotLoopForm = () => {
+export const RobotLoopForm = (props: robotLoopFormProps) => {
+  const { robot, requestLoop } = props;
+  const listOfPlacesToGo = fakePlaces()[robot.name];
+
   const classes = useStyles();
-  /**
-   * Handle the change of the elements of the form updating the state.
-   * @param {Object} change
-   */
-  // handleFormChange = (change:any) => {
-  // 	this.setState(() => change);
-  // };
 
-  // const onFormClick = (event:)
+  // Set a state variable which can be used to disable the save/submit button
+  // we set it to true so that the form is disabled on first render
+  const [disable, setDisabled] = useState(true);
 
-  // const _handleInput = (event: any) => {
-  //   onClick({ [event.target.name]: event.target.value });
-  // };
+  const [numLoops, setNumLoops] = useState(0);
+  const [startLocation, setStartLocation] = useState('');
+  const [finishLocation, setFinishLocation] = useState('');
+
+  const [numLoopsError, setNumLoopsError] = useState('');
+  const [startLocationError, setStartLocationError] = useState('');
+  const [finishLocationError, setFinishLocationError] = useState('');
+
+  const cleanUpForm = () => {
+    setNumLoops(0);
+    setStartLocation('');
+    setFinishLocation('');
+    cleanUpError();
+  };
+
+  const cleanUpError = () => {
+    setNumLoopsError('');
+    setStartLocationError('');
+    setFinishLocationError('');
+  };
+
+  const handleRequestLoop = (event: any) => {
+    event.preventDefault();
+    if (isformValid()) {
+      requestLoop(robot.name, numLoops, startLocation, finishLocation);
+      successMsg('Success');
+      cleanUpForm();
+    }
+  };
+
+  const isformValid = () => {
+    let isValid = true;
+    cleanUpError();
+    if (numLoops === 0 || numLoops < 0) {
+      setNumLoopsError('Loops can only be > 0');
+      isValid = false;
+    }
+    if (!startLocation) {
+      setStartLocationError('Location cannot be empty');
+      isValid = false;
+    }
+    if (!finishLocation) {
+      setFinishLocationError('Location cannot be empty');
+      isValid = false;
+    }
+
+    return isValid;
+  };
 
   return (
-    <form className={classes.form}>
-      <div className={classes.divForm}>
-        <h4>Robot Type </h4>
-        <TextField
-          name="robotType"
-          placeholder="Name of the fleet"
-          InputProps={{
-            autoComplete: 'off',
-          }}
-          multiline
-          // onChange={_handleInput}
-          // value={name}
-        />
-      </div>
-
+    <form className={classes.form} onSubmit={handleRequestLoop}>
       <h4>Loops </h4>
       <div className={classes.divForm}>
         <Input
-          type="number"
           name="numLoops"
+          onChange={e => setNumLoops(parseInt(e.target.value))}
           placeholder="Number of loops"
-          // onChange={_handleInput}
-          // value={description}
+          type="number"
+          value={numLoops}
         />
+        {numLoopsError && <p className={classes.error}>{numLoopsError}</p>}
       </div>
 
       <h4>Start Location </h4>
       <div className={classes.divForm}>
         <Autocomplete
-          options={top100Films}
-          getOptionLabel={option => option.title}
-          style={{ width: 200 }}
+          getOptionLabel={option => option}
+          onChange={(e, value) => setStartLocation(value || '')}
+          options={listOfPlacesToGo}
           renderInput={params => <TextField {...params} label="Pick a place" variant="outlined" />}
+          style={{ width: 200 }}
+          value={!!startLocation ? startLocation : null}
         />
+        {startLocationError && <p className={classes.error}>{startLocationError}</p>}
       </div>
 
       <h4>Finish Location </h4>
       <div className={classes.divForm}>
         <Autocomplete
-          options={top100Films}
-          getOptionLabel={option => option.title}
-          style={{ width: 200 }}
+          getOptionLabel={option => option}
+          onChange={(e, value) => setFinishLocation(value || '')}
+          options={listOfPlacesToGo}
           renderInput={params => <TextField {...params} label="Pick a place" variant="outlined" />}
+          style={{ width: 200 }}
+          value={!!finishLocation ? finishLocation : null}
         />
+        {finishLocationError && <p className={classes.error}>{finishLocationError}</p>}
       </div>
 
       <div>
-        <Button variant="contained" color="primary" onClick={() => successMsg('Success')}>
+        <Button variant="contained" color="primary" type="submit">
           {' '}
           Request
-        </Button>
-        <Button variant="contained" color="secondary" onClick={() => errorMsg('Error')}>
-          {' '}
-          Cancel
         </Button>
       </div>
     </form>
   );
 };
-//  className={classes.formButton} onClick={cancelRoleEditionMode}
-// className={classes.formButton} onClick={onClick}
 
 const useStyles = makeStyles(theme => ({
   form: {
@@ -97,5 +128,8 @@ const useStyles = makeStyles(theme => ({
   },
   divForm: {
     padding: '0.2rem',
+  },
+  error: {
+    color: 'red',
   },
 }));
