@@ -121,7 +121,7 @@ describe('Checks assignation of styles on combination of motion states and mode 
     state.destination_floor = 'L4';
     state.motion_state = RomiCore.LiftState.MOTION_UP;
     const { wrapper, liftSVGRect } = buildWrapper(lift, state);
-    expect(liftSVGRect.hasClass(/(makeStyles)-(liftOnAnotherFloor)-(\d+)/)).toBe(true);
+    expect(liftSVGRect.hasClass(/(makeStyles)-(liftMoving)-(\d+)/)).toBe(true);
     expect(wrapper.find('#liftMotion').text()).toEqual('L3 → L4');
     wrapper.unmount();
   });
@@ -132,7 +132,7 @@ describe('Checks assignation of styles on combination of motion states and mode 
     state.destination_floor = 'L2';
     state.motion_state = RomiCore.LiftState.MOTION_DOWN;
     const { wrapper, liftSVGRect } = buildWrapper(lift, state);
-    expect(liftSVGRect.hasClass(/(makeStyles)-(liftOnAnotherFloor)-(\d+)/)).toBe(true);
+    expect(liftSVGRect.hasClass(/(makeStyles)-(liftMoving)-(\d+)/)).toBe(true);
     expect(wrapper.find('#liftMotion').text()).toEqual(`L4 → L2`);
     wrapper.unmount();
   });
