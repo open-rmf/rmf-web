@@ -155,6 +155,7 @@ export default function App(props: AppProps): JSX.Element {
           setTransport(undefined);
         });
         doorStateManager.startSubscription(x);
+        dispenserStateManager.startSubscription(x);
         liftStateManager.startSubscription(x);
         fleetManager.startSubscription(x);
 

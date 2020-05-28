@@ -7,14 +7,14 @@ import fakePlaces from '../mock/data/places';
 import Robot from './schedule-visualizer/robot';
 
 interface robotLoopFormProps {
-  robot: Readonly<RomiCore.RobotState>;
+  fleetName: string;
   requestLoop: any;
 }
 
 export const RobotLoopForm = (props: robotLoopFormProps) => {
-  const { robot, requestLoop } = props;
-  const listOfPlacesToGo = fakePlaces()[robot.name];
-
+  const { requestLoop, fleetName } = props;
+  const listOfPlacesToGo = fakePlaces()[fleetName];
+  !listOfPlacesToGo && console.error('List of places to go it`s empty');
   const classes = useStyles();
 
   // Set a state variable which can be used to disable the save/submit button
@@ -22,8 +22,8 @@ export const RobotLoopForm = (props: robotLoopFormProps) => {
   const [disable, setDisabled] = useState(true);
 
   const [numLoops, setNumLoops] = useState(0);
-  const [startLocation, setStartLocation] = useState('');
-  const [finishLocation, setFinishLocation] = useState('');
+  const [startLocation, setStartLocation] = useState(listOfPlacesToGo[0]);
+  const [finishLocation, setFinishLocation] = useState(listOfPlacesToGo[1]);
 
   const [numLoopsError, setNumLoopsError] = useState('');
   const [startLocationError, setStartLocationError] = useState('');
@@ -45,7 +45,7 @@ export const RobotLoopForm = (props: robotLoopFormProps) => {
   const handleRequestLoop = (event: any) => {
     event.preventDefault();
     if (isformValid()) {
-      requestLoop(robot.name, numLoops, startLocation, finishLocation);
+      requestLoop(fleetName, numLoops, startLocation, finishLocation);
       successMsg('Success');
       cleanUpForm();
     }

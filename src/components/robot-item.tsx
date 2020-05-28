@@ -15,6 +15,7 @@ import { RobotLoopForm } from './robot-item-form';
 import { RobotInformation } from './robot-item-information';
 
 export interface RobotItemProps extends Omit<ExpansionPanelProps, 'children'> {
+  fleetName: string;
   robot: Readonly<RomiCore.RobotState>;
   onRobotClick?(robot: RomiCore.RobotState): void;
   requestLoop: any;
@@ -24,7 +25,7 @@ export const RobotItem = React.forwardRef(function(
   props: RobotItemProps,
   ref: React.Ref<HTMLElement>,
 ): React.ReactElement {
-  const { robot, onRobotClick, requestLoop, ...otherProps } = props;
+  const { robot, onRobotClick, requestLoop, fleetName, ...otherProps } = props;
   const [value, setValue] = React.useState(0);
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setValue(newValue);
@@ -52,7 +53,7 @@ export const RobotItem = React.forwardRef(function(
           <RobotInformation robot={robot} />
         </TabPanel>
         <TabPanel value={value} index={1}>
-          <RobotLoopForm robot={robot} requestLoop={requestLoop} />
+          <RobotLoopForm requestLoop={requestLoop} fleetName={fleetName} />
         </TabPanel>
         {/* <TabPanel value={value} index={2}>
           Item Three

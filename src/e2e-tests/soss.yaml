@@ -22,6 +22,7 @@ topics:
   lift_requests: { type: 'rmf_lift_msgs/LiftRequest', route: client_to_ros2 }
   fleet_states: { type: 'rmf_fleet_msgs/FleetState', route: ros2_to_client }
   dispenser_states: { type: 'rmf_dispenser_msgs/DispenserState', route: ros2_to_client }
+  loop_requests: { type: 'rmf_task_msgs/Loop', route: client_to_ros2 }
 
 services:
   get_building_map: { type: 'building_map_msgs/GetBuildingMap', route: ros2_service }
