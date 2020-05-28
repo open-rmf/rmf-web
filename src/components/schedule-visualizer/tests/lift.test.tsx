@@ -99,7 +99,7 @@ describe('Checks assignation of styles on combination of motion states and mode 
     state.current_floor = 'L1';
     const { wrapper, liftSVGRect } = buildWrapper(lift, state);
     expect(liftSVGRect.hasClass(/(makeStyles)-(humanMode)-(\d+)/)).toBe(true);
-    expect(wrapper.find('#liftMotion').text()).toEqual('STOPPED');
+    expect(wrapper.find('#liftMotion').text()).toEqual('L1');
     expect(wrapper.find('#liftMode').text()).toEqual('HUMAN');
     wrapper.unmount();
   });
@@ -110,7 +110,7 @@ describe('Checks assignation of styles on combination of motion states and mode 
     state.current_floor = 'L1';
     const { wrapper, liftSVGRect } = buildWrapper(lift, state);
     expect(liftSVGRect.hasClass(/(makeStyles)-(liftOnCurrentFloor)-(\d+)/)).toBe(true);
-    expect(wrapper.find('#liftMotion').text()).toEqual('STOPPED');
+    expect(wrapper.find('#liftMotion').text()).toEqual('L1');
     expect(wrapper.find('#liftMode').text()).toEqual('AGV');
     wrapper.unmount();
   });
