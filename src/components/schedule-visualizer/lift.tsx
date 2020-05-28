@@ -3,6 +3,7 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 import Door from './door/door';
 import { UpArrow, DownArrow } from './arrow';
+import { radiansToDegrees } from '../../util/angle-calculation';
 
 export interface LiftProps {
   currentFloor: string;
@@ -134,7 +135,7 @@ const Lift = React.forwardRef(function(
           y={contextTopVerticeY}
           rx="0.1"
           ry="0.1"
-          transform={`rotate(${ref_yaw},${x},${contextY})`}
+          transform={`rotate(${radiansToDegrees(ref_yaw)}, ${x},${contextY})`}
         />
         {liftMotionText && (
           <text id="liftMotion" className={classes.liftText} x={x} y={contextY}>
