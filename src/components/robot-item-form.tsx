@@ -15,20 +15,22 @@ export const RobotLoopForm = (props: robotLoopFormProps) => {
 
   const [listOfPlacesToGo, setListOfPlacesToGo] = useState(['']);
 
+  const [numLoops, setNumLoops] = useState(0);
+  const [startLocation, setStartLocation] = useState('');
+  const [finishLocation, setFinishLocation] = useState('');
+  // Error states
+  const [numLoopsError, setNumLoopsError] = useState('');
+  const [startLocationError, setStartLocationError] = useState('');
+  const [finishLocationError, setFinishLocationError] = useState('');
+
   useEffect(() => {
     const listOfPlaces = fakePlaces()[fleetName];
     setListOfPlacesToGo(listOfPlaces);
     !listOfPlacesToGo && console.error('List of places to go it`s empty');
+    setStartLocation(listOfPlaces[0]);
+    setFinishLocation(listOfPlaces[1]);
     // eslint-disable-next-line
   }, []);
-
-  const [numLoops, setNumLoops] = useState(0);
-  const [startLocation, setStartLocation] = useState(listOfPlacesToGo[0]);
-  const [finishLocation, setFinishLocation] = useState(listOfPlacesToGo[1]);
-
-  const [numLoopsError, setNumLoopsError] = useState('');
-  const [startLocationError, setStartLocationError] = useState('');
-  const [finishLocationError, setFinishLocationError] = useState('');
 
   const cleanUpForm = () => {
     setNumLoops(0);
@@ -73,45 +75,52 @@ export const RobotLoopForm = (props: robotLoopFormProps) => {
 
   return (
     <form className={classes.form} onSubmit={handleRequestLoop}>
-      <h4>Loops </h4>
+      {/* <h4>Loops </h4> */}
       <div className={classes.divForm}>
-        <Input
+        <TextField
           name="numLoops"
           onChange={e => e.target.value && setNumLoops(parseInt(e.target.value))}
           placeholder="Number of loops"
           type="number"
           value={numLoops}
           className={classes.input}
+          label="Number of loops"
+          variant="outlined"
+          error={!!numLoopsError}
         />
         {numLoopsError && <p className={classes.error}>{numLoopsError}</p>}
       </div>
 
-      <h4>Start Location </h4>
+      {/* <h4>Start Location </h4> */}
       <div className={classes.divForm}>
         <Autocomplete
           getOptionLabel={option => option}
           onChange={(e, value) => setStartLocation(value || '')}
           options={listOfPlacesToGo}
-          renderInput={params => <TextField {...params} label="Pick a place" variant="outlined" />}
+          renderInput={params => (
+            <TextField {...params} label="Pick Start Location" variant="outlined" />
+          )}
           value={!!startLocation ? startLocation : null}
         />
         {startLocationError && <p className={classes.error}>{startLocationError}</p>}
       </div>
 
-      <h4>Finish Location </h4>
+      {/* <h4>Finish Location </h4> */}
       <div className={classes.divForm}>
         <Autocomplete
           getOptionLabel={option => option}
           onChange={(e, value) => setFinishLocation(value || '')}
           options={listOfPlacesToGo}
-          renderInput={params => <TextField {...params} label="Pick a place" variant="outlined" />}
+          renderInput={params => (
+            <TextField {...params} label="Pick Finish Location" variant="outlined" />
+          )}
           value={!!finishLocation ? finishLocation : null}
         />
         {finishLocationError && <p className={classes.error}>{finishLocationError}</p>}
       </div>
 
       <div className={classes.buttonContainer}>
-        <Button variant="contained" color="primary" type="submit">
+        <Button variant="contained" color="primary" type="submit" className={classes.button}>
           {'Request'}
         </Button>
       </div>
@@ -126,7 +135,7 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
   },
   divForm: {
-    padding: '0.2rem',
+    padding: '0.5rem',
     width: '100%',
   },
   error: {
@@ -135,7 +144,12 @@ const useStyles = makeStyles(theme => ({
   input: {
     width: '100%',
   },
+  button: {
+    width: '100%',
+  },
   buttonContainer: {
-    alignSelf: 'center',
+    paddingTop: '0.5rem',
+    paddingLeft: '0.5rem',
+    width: '100%',
   },
 }));
