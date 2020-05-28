@@ -17,15 +17,15 @@ const DoubleHingeDoor = function(props: DoorProps): React.ReactElement {
   return (
     <>
       <SingleHingeDoor
-        v1={[hingeX1, -hingeY1]}
-        v2={[extendX1, -extendY1]}
+        v1={[hingeX1, hingeY1]}
+        v2={[extendX1, extendY1]}
         door={door}
         onClick={onClick}
         currentMode={currentMode}
       />
       <SingleHingeDoor
-        v1={[extendX1, -extendY1]}
-        v2={[hingeX2, -hingeY2]}
+        v1={[extendX1, extendY1]}
+        v2={[hingeX2, hingeY2]}
         door={door}
         onClick={onClick}
         currentMode={currentMode}
