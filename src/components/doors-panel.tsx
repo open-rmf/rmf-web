@@ -22,7 +22,7 @@ export default function DoorsPanel(props: DoorsPanelProps): JSX.Element {
 
   function requestDoor(door: RomiCore.Door, mode: number): void {
     doorRequestPub?.publish({
-      door_name: door.door_name,
+      door_name: door.name,
       requested_mode: { value: mode },
       requester_id: transport!.name,
       request_time: RomiCore.toRosTime(new Date()),
@@ -45,22 +45,22 @@ export default function DoorsPanel(props: DoorsPanelProps): JSX.Element {
   }, [spotlight]);
 
   const listItems = props.doors.map(door => {
-    const doorState = props.doorStates[door.door_name];
+    const doorState = props.doorStates[door.name];
     return (
       <DoorItem
-        key={door.door_name}
-        ref={ref => (doorRefs.current[door.door_name] = ref)}
+        key={door.name}
+        ref={ref => (doorRefs.current[door.name] = ref)}
         door={door}
         doorState={doorState}
         enableControls={Boolean(transport)}
         onOpenClick={() => requestDoor(door, RomiCore.DoorMode.MODE_OPEN)}
         onCloseClick={() => requestDoor(door, RomiCore.DoorMode.MODE_CLOSED)}
         onClick={() => onDoorClick && onDoorClick(door)}
-        expanded={Boolean(expanded[door.door_name])}
+        expanded={Boolean(expanded[door.name])}
         onChange={(_, newExpanded) =>
           setExpanded(prev => ({
             ...prev,
-            [door.door_name]: newExpanded,
+            [door.name]: newExpanded,
           }))
         }
       />

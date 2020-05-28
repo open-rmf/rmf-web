@@ -23,18 +23,17 @@ export default function DoorsOverlay(props: DoorsOverlayProps): React.ReactEleme
     const currentDoor = doorsState && doorsState[doorName];
     return currentDoor && currentDoor.current_mode.value;
   };
-  console.log(doors);
   return (
     <>
       <SVGOverlay {...otherProps}>
         <svg viewBox={viewBox}>
           {doors.map(door => (
             <Door
-              key={`building-door-${door.door_name}`}
+              key={`building-door-${door.name}`}
               door={door}
               onClick={(_, door) => onDoorClick && onDoorClick(door)}
-              doorState={doorsState && doorsState[door.door_name]}
-              currentMode={getCurrentDoorMode(door.door_name)}
+              doorState={doorsState && doorsState[door.name]}
+              currentMode={getCurrentDoorMode(door.name)}
             />
           ))}
         </svg>

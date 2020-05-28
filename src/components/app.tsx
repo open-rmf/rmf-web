@@ -244,7 +244,7 @@ export default function App(props: AppProps): JSX.Element {
   function handleDoorClick(door: RomiCore.Door): void {
     setShowOmniPanel(true);
     setCurrentView(OmniPanelViewIndex.Doors);
-    setDoorSpotlight({ value: door.door_name });
+    setDoorSpotlight({ value: door.name });
   }
 
   function handleRobotClick(robot: RomiCore.RobotState): void {
