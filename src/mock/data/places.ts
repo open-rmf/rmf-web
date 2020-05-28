@@ -16,7 +16,7 @@ export default function fakePlaces(): Record<string, string[]> {
             'cubicle_1',
             'hardware_1',
             'station_2'],
-        Geth1: ['supplies',
+        SuperFleet: ['supplies',
             'magni2_charger',
             'coe',
             'magni1_charger',

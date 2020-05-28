@@ -55,11 +55,7 @@ export const RobotItem = React.forwardRef(function(
         <TabPanel value={value} index={1}>
           <RobotLoopForm requestLoop={requestLoop} fleetName={fleetName} />
         </TabPanel>
-        {/* <TabPanel value={value} index={2}>
-          Item Three
-        </TabPanel> */}
       </ExpansionPanelDetails>
-      {/* onClick={() => onCloseClick && onCloseClick(door)} */}
     </ExpansionPanel>
   );
 });
@@ -75,6 +71,7 @@ const useStyles = makeStyles(theme => ({
   expansionDetail: {
     flexFlow: 'column',
     padding: '0',
+    overflowX: 'auto',
   },
 
   expansionDetailLine: {

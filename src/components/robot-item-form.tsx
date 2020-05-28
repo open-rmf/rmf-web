@@ -1,10 +1,8 @@
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { makeStyles, TextField, Button, Input } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import React, { useState, useEffect, useRef } from 'react';
-import { successMsg, errorMsg } from '../util/alerts';
+import React, { useState, useEffect } from 'react';
+import { successMsg } from '../util/alerts';
 import fakePlaces from '../mock/data/places';
-import Robot from './schedule-visualizer/robot';
 
 interface robotLoopFormProps {
   fleetName: string;
@@ -13,13 +11,16 @@ interface robotLoopFormProps {
 
 export const RobotLoopForm = (props: robotLoopFormProps) => {
   const { requestLoop, fleetName } = props;
-  const listOfPlacesToGo = fakePlaces()[fleetName];
-  !listOfPlacesToGo && console.error('List of places to go it`s empty');
   const classes = useStyles();
 
-  // Set a state variable which can be used to disable the save/submit button
-  // we set it to true so that the form is disabled on first render
-  const [disable, setDisabled] = useState(true);
+  const [listOfPlacesToGo, setListOfPlacesToGo] = useState(['']);
+
+  useEffect(() => {
+    const listOfPlaces = fakePlaces()[fleetName];
+    setListOfPlacesToGo(listOfPlaces);
+    !listOfPlacesToGo && console.error('List of places to go it`s empty');
+    // eslint-disable-next-line
+  }, []);
 
   const [numLoops, setNumLoops] = useState(0);
   const [startLocation, setStartLocation] = useState(listOfPlacesToGo[0]);
@@ -76,10 +77,11 @@ export const RobotLoopForm = (props: robotLoopFormProps) => {
       <div className={classes.divForm}>
         <Input
           name="numLoops"
-          onChange={e => setNumLoops(parseInt(e.target.value))}
+          onChange={e => e.target.value && setNumLoops(parseInt(e.target.value))}
           placeholder="Number of loops"
           type="number"
           value={numLoops}
+          className={classes.input}
         />
         {numLoopsError && <p className={classes.error}>{numLoopsError}</p>}
       </div>
@@ -91,7 +93,6 @@ export const RobotLoopForm = (props: robotLoopFormProps) => {
           onChange={(e, value) => setStartLocation(value || '')}
           options={listOfPlacesToGo}
           renderInput={params => <TextField {...params} label="Pick a place" variant="outlined" />}
-          style={{ width: 200 }}
           value={!!startLocation ? startLocation : null}
         />
         {startLocationError && <p className={classes.error}>{startLocationError}</p>}
@@ -104,16 +105,14 @@ export const RobotLoopForm = (props: robotLoopFormProps) => {
           onChange={(e, value) => setFinishLocation(value || '')}
           options={listOfPlacesToGo}
           renderInput={params => <TextField {...params} label="Pick a place" variant="outlined" />}
-          style={{ width: 200 }}
           value={!!finishLocation ? finishLocation : null}
         />
         {finishLocationError && <p className={classes.error}>{finishLocationError}</p>}
       </div>
 
-      <div>
+      <div className={classes.buttonContainer}>
         <Button variant="contained" color="primary" type="submit">
-          {' '}
-          Request
+          {'Request'}
         </Button>
       </div>
     </form>
@@ -122,14 +121,21 @@ export const RobotLoopForm = (props: robotLoopFormProps) => {
 
 const useStyles = makeStyles(theme => ({
   form: {
-    paddingLeft: '2rem',
+    padding: '0.5rem',
     display: 'flex',
     flexDirection: 'column',
   },
   divForm: {
     padding: '0.2rem',
+    width: '100%',
   },
   error: {
     color: 'red',
+  },
+  input: {
+    width: '100%',
+  },
+  buttonContainer: {
+    alignSelf: 'center',
   },
 }));

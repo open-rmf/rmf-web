@@ -1,4 +1,3 @@
-import { RomiTopic } from '@osrf/romi-js-core-interfaces';
 import { SpotlightValue } from './spotlight-value';
 import { v4 as uuidv4 } from 'uuid';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
