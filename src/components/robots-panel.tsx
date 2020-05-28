@@ -19,19 +19,12 @@ import RobotItem from './robot-item';
     * visit this waypoint num_loops times and then stop here on the last visit.
    */
 export function requestLoop(
-  loopRequestPub: any,
+  loopRequestPub: RomiCore.Publisher<RomiCore.Loop> | null,
   robotName: string,
   numLoops: number,
   startLocationPoint: string,
   endLocationPoint: string,
 ) {
-  console.log({
-    finish_name: endLocationPoint,
-    num_loops: numLoops,
-    robot_type: robotName,
-    start_name: startLocationPoint,
-    task_id: uuidv4(),
-  });
   loopRequestPub?.publish({
     finish_name: endLocationPoint,
     num_loops: numLoops,

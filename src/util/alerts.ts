@@ -6,7 +6,6 @@ export const successMsg = (msg: string) => {
         text: !!msg ? `${msg}` : 'Successful Operation',
         icon: 'success',
         timer: 2000,
-        // button: false
     });
 };
 
@@ -15,6 +14,5 @@ export const errorMsg = (error: string) => {
         title: 'Ups',
         text: !!error ? `${error}` : 'An error has occurred',
         icon: 'error',
-        // dangerMode: true
     });
 };

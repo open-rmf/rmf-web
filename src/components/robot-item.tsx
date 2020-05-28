@@ -18,7 +18,12 @@ export interface RobotItemProps extends Omit<ExpansionPanelProps, 'children'> {
   fleetName: string;
   robot: Readonly<RomiCore.RobotState>;
   onRobotClick?(robot: RomiCore.RobotState): void;
-  requestLoop: any;
+  requestLoop(
+    fleetName: string,
+    numLoops: number,
+    startLocationPoint: string,
+    endLocationPoint: string,
+  ): void;
 }
 
 export const RobotItem = React.forwardRef(function(

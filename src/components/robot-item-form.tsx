@@ -1,4 +1,4 @@
-import { makeStyles, TextField, Button, Input } from '@material-ui/core';
+import { makeStyles, TextField, Button } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useState, useEffect } from 'react';
 import { successMsg } from '../util/alerts';
@@ -6,7 +6,12 @@ import fakePlaces from '../mock/data/places';
 
 interface robotLoopFormProps {
   fleetName: string;
-  requestLoop: any;
+  requestLoop(
+    fleetName: string,
+    numLoops: number,
+    startLocationPoint: string,
+    endLocationPoint: string,
+  ): void;
 }
 
 export const RobotLoopForm = (props: robotLoopFormProps) => {
@@ -75,7 +80,6 @@ export const RobotLoopForm = (props: robotLoopFormProps) => {
 
   return (
     <form className={classes.form} onSubmit={handleRequestLoop}>
-      {/* <h4>Loops </h4> */}
       <div className={classes.divForm}>
         <TextField
           name="numLoops"
@@ -91,7 +95,6 @@ export const RobotLoopForm = (props: robotLoopFormProps) => {
         {numLoopsError && <p className={classes.error}>{numLoopsError}</p>}
       </div>
 
-      {/* <h4>Start Location </h4> */}
       <div className={classes.divForm}>
         <Autocomplete
           getOptionLabel={option => option}
@@ -105,7 +108,6 @@ export const RobotLoopForm = (props: robotLoopFormProps) => {
         {startLocationError && <p className={classes.error}>{startLocationError}</p>}
       </div>
 
-      {/* <h4>Finish Location </h4> */}
       <div className={classes.divForm}>
         <Autocomplete
           getOptionLabel={option => option}

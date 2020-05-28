@@ -21,13 +21,6 @@ export default function DoorsPanel(props: DoorsPanelProps): JSX.Element {
   );
 
   function requestDoor(door: RomiCore.Door, mode: number): void {
-    console.log('Send door request', {
-      door_name: door.name,
-      requested_mode: { value: mode },
-      requester_id: transport!.name,
-      request_time: RomiCore.toRosTime(new Date()),
-    });
-
     doorRequestPub?.publish({
       door_name: door.name,
       requested_mode: { value: mode },

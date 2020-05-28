@@ -1,13 +1,4 @@
-import {
-  // Typography,
-  Tab,
-  Tabs,
-  Box,
-  withStyles,
-  Theme,
-  createStyles,
-  // TextField,
-} from '@material-ui/core';
+import { Tab, Tabs, Box, withStyles, Theme, createStyles } from '@material-ui/core';
 import React from 'react';
 
 interface StyledTabsProps {
@@ -83,10 +74,3 @@ export function TabPanel(props: TabPanelProps) {
     </div>
   );
 }
-
-// function a11yProps(index: any) {
-//   return {
-//     id: `scrollable-prevent-tab-${index}`,
-//     'aria-controls': `scrollable-prevent-tabpanel-${index}`,
-//   };
-// }
