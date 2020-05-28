@@ -5,7 +5,7 @@ systems:
     port: 50001
     cert: .rmf/certs/websocket_server.crt
     key: .rmf/certs/websocket_server.key
-    authentication: { policies: [ { secret: rmf, algo: HS256 } ] }
+    authentication: { policies: [{ secret: rmf, algo: HS256 }] }
 
   # ROS2 node
   ros2: { type: ros2 }
@@ -16,11 +16,12 @@ routes:
   ros2_service: { server: ros2, clients: client }
 
 topics:
-  door_states: { type: "rmf_door_msgs/DoorState", route: ros2_to_client }
-  door_requests: { type: "rmf_door_msgs/DoorRequest", route: client_to_ros2 }
-  lift_states: { type: "rmf_lift_msgs/LiftState", route: ros2_to_client }
-  lift_requests: { type: "rmf_lift_msgs/LiftRequest", route: client_to_ros2 }
-  fleet_states: { type: "rmf_fleet_msgs/FleetState", route: ros2_to_client }
+  door_states: { type: 'rmf_door_msgs/DoorState', route: ros2_to_client }
+  door_requests: { type: 'rmf_door_msgs/DoorRequest', route: client_to_ros2 }
+  lift_states: { type: 'rmf_lift_msgs/LiftState', route: ros2_to_client }
+  lift_requests: { type: 'rmf_lift_msgs/LiftRequest', route: client_to_ros2 }
+  fleet_states: { type: 'rmf_fleet_msgs/FleetState', route: ros2_to_client }
+  dispenser_states: { type: 'rmf_dispenser_msgs/DispenserState', route: ros2_to_client }
 
 services:
-  get_building_map: { type: "building_map_msgs/GetBuildingMap", route: ros2_service }
+  get_building_map: { type: 'building_map_msgs/GetBuildingMap', route: ros2_service }
