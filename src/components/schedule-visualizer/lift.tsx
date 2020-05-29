@@ -33,30 +33,19 @@ const getLiftStyle = (classes: any, currentMode: number | undefined, isInCurrent
   if (currentMode === MODE_EMERGENCY) return classes.emergency;
   if (currentMode === MODE_FIRE) return classes.fire;
   if (currentMode === MODE_OFFLINE) return classes.offLine;
-  if (currentMode === MODE_UNKNOWN) return classes.unknownlift;
   if (!isInCurrentFloor) return classes.liftMoving;
   if (isInCurrentFloor && isModeAGV) return classes.liftOnCurrentFloor;
   if (isInCurrentFloor && isModeHuman) return classes.humanMode;
+  if (isInCurrentFloor && currentMode === MODE_UNKNOWN) return classes.unknownlift;
 };
 
 // Gets the text to insert to the lift, the text depend on the current mode, motion state and the
 // current and destination floor of the lift.
-const getLiftModeText = (currentMode: number | undefined, currentFloor: string | undefined) => {
-  const {
-    MODE_AGV,
-    MODE_EMERGENCY,
-    MODE_FIRE,
-    MODE_HUMAN,
-    MODE_OFFLINE,
-    MODE_UNKNOWN,
-  } = RomiCore.LiftState;
-  if (!currentMode) return !!currentFloor ? `Floor: ${currentFloor}` : 'UNKNOWN';
+const getLiftModeText = (currentMode: number | undefined) => {
+  const { MODE_EMERGENCY, MODE_FIRE, MODE_OFFLINE } = RomiCore.LiftState;
   if (currentMode === MODE_FIRE) return 'FIRE!';
   if (currentMode === MODE_EMERGENCY) return 'EMERGENCY!';
   if (currentMode === MODE_OFFLINE) return 'OFFLINE';
-  if (currentMode === MODE_HUMAN) return 'HUMAN';
-  if (currentMode === MODE_AGV) return 'AGV';
-  if (currentMode === MODE_UNKNOWN) return !!currentFloor ? `Floor: ${currentFloor}` : 'UNKNOWN';
 };
 
 const getLiftMotionText = (
@@ -69,6 +58,7 @@ const getLiftMotionText = (
   if (motionState === MOTION_STOPPED) return !!currentFloor ? currentFloor : 'STOPPED';
   if (motionState === MOTION_UP || motionState === MOTION_DOWN)
     return `${currentFloor} → ${destinationFloor}`;
+  return 'Floor: ?';
 };
 
 /**
@@ -117,7 +107,7 @@ const Lift = React.forwardRef(function(
 
   const liftStyle = getLiftStyle(classes, currentMode, isInCurrentFloor);
   const liftMotionText = getLiftMotionText(liftState?.current_floor, destinationFloor, motionState);
-  const liftModeText = getLiftModeText(currentMode, liftState?.current_floor);
+  const liftModeText = getLiftModeText(currentMode);
   return (
     <>
       <g ref={ref} onClick={e => onClick && onClick(e, lift)}>
