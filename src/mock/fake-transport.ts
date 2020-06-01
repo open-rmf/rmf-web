@@ -62,8 +62,19 @@ export class FakeTransport extends RomiCore.TransportEvents implements RomiCore.
         break;
       }
     }
+
+    // TODO remove the skip validation when the type problem of available_floors is solved
+    if (topic !== RomiCore.liftStates && topic.topic === 'lift_states') {
+      const liftStates = fakeLiftStates();
+      setInterval(() => {
+        for (const state of Object.values(liftStates)) {
+          cb(state as Message);
+        }
+      }, 1000);
+    }
+
     return {
-      unsubscribe: () => {},
+      unsubscribe: () => { },
     };
   }
 
@@ -83,7 +94,7 @@ export class FakeTransport extends RomiCore.TransportEvents implements RomiCore.
     throw new Error('not implemented');
   }
 
-  destroy(): void {}
+  destroy(): void { }
 }
 
 export default FakeTransport;
