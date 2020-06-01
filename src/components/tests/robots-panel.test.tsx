@@ -2,9 +2,9 @@ import { ExpansionPanelDetails, ExpansionPanelSummary } from '@material-ui/core'
 import { createMount } from '@material-ui/core/test-utils';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
-import fakeFleets from '../mock/data/fleets';
-import RobotItem from './robot-item';
-import RobotsPanel from './robots-panel';
+import fakeFleets from '../../mock/data/fleets';
+import RobotItem from '../robot-item';
+import RobotsPanel from '../robots-panel';
 
 const mount = createMount();
 

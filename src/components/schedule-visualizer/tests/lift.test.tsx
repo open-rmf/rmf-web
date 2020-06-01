@@ -1,8 +1,8 @@
 import { createMount } from '@material-ui/core/test-utils';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import fakeLiftStates from '../../mock/data/lift-states';
-import getBuildingMap from '../../mock/data/building-map';
-import Lift from './lift';
+import fakeLiftStates from '../../../mock/data/lift-states';
+import getBuildingMap from '../../../mock/data/building-map';
+import Lift from '../lift';
 import React from 'react';
 
 const mount = createMount();

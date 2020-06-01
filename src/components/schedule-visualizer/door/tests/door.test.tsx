@@ -2,9 +2,9 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { createMount } from '@material-ui/core/test-utils';
 import { ReactWrapper } from 'enzyme';
 import React from 'react';
-import SingleHingeDoor from './door-single-hinge';
-import SingleSlideDoor from './door-single-slide';
-import DefaultDoor from './door-default';
+import SingleHingeDoor from '../door-single-hinge';
+import SingleSlideDoor from '../door-single-slide';
+import DefaultDoor from '../door-default';
 
 const mainDoor = {
   name: 'main_door',
