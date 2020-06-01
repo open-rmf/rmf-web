@@ -20,10 +20,10 @@ export const RobotLoopForm = (props: robotLoopFormProps) => {
 
   const [numLoops, setNumLoops] = useState(0);
   const [startLocation, setStartLocation] = useState(
-    listOfPlaces.length > 2 ? listOfPlaces[0] : '',
+    listOfPlaces.length >= 2 ? listOfPlaces[0] : '',
   );
   const [finishLocation, setFinishLocation] = useState(
-    listOfPlaces.length > 2 ? listOfPlaces[1] : '',
+    listOfPlaces.length >= 2 ? listOfPlaces[1] : '',
   );
 
   // Error states
@@ -33,8 +33,8 @@ export const RobotLoopForm = (props: robotLoopFormProps) => {
 
   const cleanUpForm = () => {
     setNumLoops(0);
-    setStartLocation(listOfPlaces.length > 2 ? listOfPlaces[0] : '');
-    setFinishLocation(listOfPlaces.length > 2 ? listOfPlaces[1] : '');
+    setStartLocation(listOfPlaces.length >= 2 ? listOfPlaces[0] : '');
+    setFinishLocation(listOfPlaces.length >= 2 ? listOfPlaces[1] : '');
     cleanUpError();
   };
 
@@ -111,7 +111,11 @@ export const RobotLoopForm = (props: robotLoopFormProps) => {
           )}
           value={!!startLocation ? startLocation : null}
         />
-        {startLocationError && <p className={classes.error}>{startLocationError}</p>}
+        {startLocationError && (
+          <p id="startLocationError" className={classes.error}>
+            {startLocationError}
+          </p>
+        )}
       </div>
 
       <div className={classes.divForm}>
@@ -124,7 +128,11 @@ export const RobotLoopForm = (props: robotLoopFormProps) => {
           )}
           value={!!finishLocation ? finishLocation : null}
         />
-        {finishLocationError && <p className={classes.error}>{finishLocationError}</p>}
+        {finishLocationError && (
+          <p id="finishLocationError" className={classes.error}>
+            {finishLocationError}
+          </p>
+        )}
       </div>
 
       <div className={classes.buttonContainer}>
