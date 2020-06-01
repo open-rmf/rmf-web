@@ -1,7 +1,7 @@
 import { createMount } from '@material-ui/core/test-utils';
 import React from 'react';
-import { UpArrow, DownArrow } from './arrow';
-import { Arrow } from './arrow';
+import { UpArrow, DownArrow } from '../arrow';
+import { Arrow } from '../arrow';
 
 const mount = createMount();
 

@@ -2,8 +2,9 @@ import { makeStyles } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 import Door from '../door/door';
-import { UpArrow, DownArrow } from '../arrow';
 import Lift from './lift';
+import { radiansToDegrees } from '../../../util/angle-calculation';
+import { UpArrow, DownArrow } from '../arrow';
 
 export interface LiftProps {
   currentFloor: string;
@@ -135,7 +136,7 @@ const LiftContainer = React.forwardRef(function(
             height: depth,
             rx: 0.1,
             ry: 0.1,
-            transform: `rotate(${ref_yaw},${x},${contextY})`,
+            transform: `rotate(${radiansToDegrees(ref_yaw)},${x},${contextY})`,
             style: liftStyle,
           }}
           liftMotionText={{

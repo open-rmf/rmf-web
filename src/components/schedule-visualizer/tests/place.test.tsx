@@ -1,7 +1,7 @@
 import { createMount } from '@material-ui/core/test-utils';
 import React from 'react';
-import getBuildingMap from '../../mock/data/building-map';
-import Place from './place';
+import getBuildingMap from '../../../mock/data/building-map';
+import Place from '../place';
 
 const mount = createMount();
 
