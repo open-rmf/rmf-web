@@ -33,10 +33,10 @@ const getLiftStyle = (classes: any, currentMode: number | undefined, isInCurrent
   if (currentMode === MODE_EMERGENCY) return classes.emergency;
   if (currentMode === MODE_FIRE) return classes.fire;
   if (currentMode === MODE_OFFLINE) return classes.offLine;
-  if (!isInCurrentFloor) return classes.liftMoving;
   if (isInCurrentFloor && isModeAGV) return classes.liftOnCurrentFloor;
   if (isInCurrentFloor && isModeHuman) return classes.humanMode;
-  if (isInCurrentFloor && currentMode === MODE_UNKNOWN) return classes.unknownlift;
+  if (isInCurrentFloor && currentMode === MODE_UNKNOWN) return classes.unknownLift;
+  if (!isInCurrentFloor) return classes.liftMoving;
 };
 
 // Gets the text to insert to the lift, the text depend on the current mode, motion state and the
@@ -168,7 +168,7 @@ const useStyles = makeStyles(() => ({
     fill: 'grey',
     opacity: '70%',
   },
-  unknownlift: {
+  unknownLift: {
     fill: '#3d3c3c',
     opacity: '80%',
   },
