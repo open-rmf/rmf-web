@@ -1,8 +1,7 @@
 import { makeStyles, TextField, Button } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { successMsg } from '../util/alerts';
-import fakePlaces from '../mock/data/places';
 
 interface robotLoopFormProps {
   fleetName: string;
@@ -12,35 +11,30 @@ interface robotLoopFormProps {
     startLocationPoint: string,
     endLocationPoint: string,
   ): void;
+  listOfPlaces: string[];
 }
 
 export const RobotLoopForm = (props: robotLoopFormProps) => {
-  const { requestLoop, fleetName } = props;
+  const { requestLoop, fleetName, listOfPlaces } = props;
   const classes = useStyles();
 
-  const [listOfPlacesToGo, setListOfPlacesToGo] = useState(['']);
-
   const [numLoops, setNumLoops] = useState(0);
-  const [startLocation, setStartLocation] = useState('');
-  const [finishLocation, setFinishLocation] = useState('');
+  const [startLocation, setStartLocation] = useState(
+    listOfPlaces.length > 2 ? listOfPlaces[0] : '',
+  );
+  const [finishLocation, setFinishLocation] = useState(
+    listOfPlaces.length > 2 ? listOfPlaces[1] : '',
+  );
+
   // Error states
   const [numLoopsError, setNumLoopsError] = useState('');
   const [startLocationError, setStartLocationError] = useState('');
   const [finishLocationError, setFinishLocationError] = useState('');
 
-  useEffect(() => {
-    const listOfPlaces = fakePlaces()[fleetName];
-    setListOfPlacesToGo(listOfPlaces);
-    !listOfPlacesToGo && console.error('List of places to go it`s empty');
-    setStartLocation(listOfPlaces[0]);
-    setFinishLocation(listOfPlaces[1]);
-    // eslint-disable-next-line
-  }, []);
-
   const cleanUpForm = () => {
     setNumLoops(0);
-    setStartLocation('');
-    setFinishLocation('');
+    setStartLocation(listOfPlaces.length > 2 ? listOfPlaces[0] : '');
+    setFinishLocation(listOfPlaces.length > 2 ? listOfPlaces[1] : '');
     cleanUpError();
   };
 
@@ -52,20 +46,26 @@ export const RobotLoopForm = (props: robotLoopFormProps) => {
 
   const handleRequestLoop = (event: any) => {
     event.preventDefault();
-    if (isformValid()) {
+    if (isFormValid()) {
       requestLoop(fleetName, numLoops, startLocation, finishLocation);
       successMsg('Success');
       cleanUpForm();
     }
   };
 
-  const isformValid = () => {
+  const isFormValid = () => {
     let isValid = true;
     cleanUpError();
     if (numLoops === 0 || numLoops < 0) {
       setNumLoopsError('Loops can only be > 0');
       isValid = false;
     }
+    if (startLocation === finishLocation) {
+      setStartLocationError('Start Location cannot be equal to finish Location');
+      setFinishLocationError('Start Location cannot be equal to finish Location');
+      isValid = false;
+    }
+
     if (!startLocation) {
       setStartLocationError('Location cannot be empty');
       isValid = false;
@@ -83,10 +83,12 @@ export const RobotLoopForm = (props: robotLoopFormProps) => {
       <div className={classes.divForm}>
         <TextField
           name="numLoops"
-          onChange={e => e.target.value && setNumLoops(parseInt(e.target.value))}
+          onChange={e => {
+            setNumLoops(!!e.target.value ? parseInt(e.target.value) : 0);
+          }}
           placeholder="Number of loops"
           type="number"
-          value={numLoops}
+          value={numLoops || ''}
           className={classes.input}
           label="Number of loops"
           variant="outlined"
@@ -99,7 +101,7 @@ export const RobotLoopForm = (props: robotLoopFormProps) => {
         <Autocomplete
           getOptionLabel={option => option}
           onChange={(e, value) => setStartLocation(value || '')}
-          options={listOfPlacesToGo}
+          options={listOfPlaces}
           renderInput={params => (
             <TextField {...params} label="Pick Start Location" variant="outlined" />
           )}
@@ -112,7 +114,7 @@ export const RobotLoopForm = (props: robotLoopFormProps) => {
         <Autocomplete
           getOptionLabel={option => option}
           onChange={(e, value) => setFinishLocation(value || '')}
-          options={listOfPlacesToGo}
+          options={listOfPlaces}
           renderInput={params => (
             <TextField {...params} label="Pick Finish Location" variant="outlined" />
           )}
@@ -141,7 +143,7 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
   },
   error: {
-    color: 'red',
+    color: theme.palette.error.main,
   },
   input: {
     width: '100%',

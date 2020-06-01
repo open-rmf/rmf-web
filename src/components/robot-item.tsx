@@ -6,13 +6,13 @@ import {
   makeStyles,
   Typography,
 } from '@material-ui/core';
-import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import React from 'react';
-
 import { AntTabs, AntTab, TabPanel } from './tab';
-import { RobotLoopForm } from './robot-item-form';
+import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import { RobotInformation } from './robot-item-information';
+import { RobotLoopForm } from './robot-item-form';
+import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import fakePlaces from '../mock/data/places';
+import React from 'react';
 
 export interface RobotItemProps extends Omit<ExpansionPanelProps, 'children'> {
   fleetName: string;
@@ -58,7 +58,11 @@ export const RobotItem = React.forwardRef(function(
           <RobotInformation robot={robot} />
         </TabPanel>
         <TabPanel value={value} index={1}>
-          <RobotLoopForm requestLoop={requestLoop} fleetName={fleetName} />
+          <RobotLoopForm
+            requestLoop={requestLoop}
+            fleetName={fleetName}
+            listOfPlaces={fakePlaces()[fleetName]}
+          />
         </TabPanel>
       </ExpansionPanelDetails>
     </ExpansionPanel>
