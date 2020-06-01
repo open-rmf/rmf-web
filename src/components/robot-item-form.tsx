@@ -94,7 +94,11 @@ export const RobotLoopForm = (props: robotLoopFormProps) => {
           variant="outlined"
           error={!!numLoopsError}
         />
-        {numLoopsError && <p className={classes.error}>{numLoopsError}</p>}
+        {numLoopsError && (
+          <p id="numLoopsError" className={classes.error}>
+            {numLoopsError}
+          </p>
+        )}
       </div>
 
       <div className={classes.divForm}>
