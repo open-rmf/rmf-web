@@ -36,7 +36,7 @@ export const RobotItem = React.forwardRef(function(
     setValue(newValue);
   };
   const classes = useStyles();
-
+  const listOfPlaces = fakePlaces()[fleetName];
   return (
     <ExpansionPanel ref={ref} {...otherProps}>
       <ExpansionPanelSummary
@@ -58,11 +58,13 @@ export const RobotItem = React.forwardRef(function(
           <RobotInformation robot={robot} />
         </TabPanel>
         <TabPanel value={value} index={1}>
-          <RobotLoopForm
-            requestLoop={requestLoop}
-            fleetName={fleetName}
-            listOfPlaces={fakePlaces()[fleetName]}
-          />
+          {!!listOfPlaces && (
+            <RobotLoopForm
+              requestLoop={requestLoop}
+              fleetName={fleetName}
+              listOfPlaces={listOfPlaces}
+            />
+          )}
         </TabPanel>
       </ExpansionPanelDetails>
     </ExpansionPanel>
