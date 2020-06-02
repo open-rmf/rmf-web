@@ -11,7 +11,8 @@ export default class LiftStateManager extends EventEmitter<Events> {
   }
 
   startSubscription(transport: RomiCore.Transport) {
-    transport.subscribe(RomiCore.liftStates, liftState => {
+    // TODO remove the skip validation when the type problem of available_floors is solved
+    transport.subscribe(RomiCore.skipValidation(RomiCore.liftStates), liftState => {
       this._liftStates[liftState.lift_name] = liftState;
       this.emit('updated');
     });

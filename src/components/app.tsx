@@ -155,8 +155,8 @@ export default function App(props: AppProps): JSX.Element {
           setTransport(undefined);
         });
         doorStateManager.startSubscription(x);
-        liftStateManager.startSubscription(x);
         dispenserStateManager.startSubscription(x);
+        liftStateManager.startSubscription(x);
         fleetManager.startSubscription(x);
 
         fleetManager.on('updated', () => setFleets(fleetManager.fleets()));
@@ -373,7 +373,7 @@ export default function App(props: AppProps): JSX.Element {
                 />
               </OmniPanelView>
               <OmniPanelView id={OmniPanelViewIndex.Robots}>
-                <RobotsPanel fleets={fleets} spotlight={robotSpotlight} />
+                <RobotsPanel transport={transport} fleets={fleets} spotlight={robotSpotlight} />
               </OmniPanelView>
               <OmniPanelView id={OmniPanelViewIndex.Places}>
                 {buildingMap && (
