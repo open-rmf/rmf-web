@@ -56,7 +56,7 @@ describe('Checks assignation of styles on different mode of the Lift', () => {
     return { lift, state };
   };
 
-  test('Check red color and _Fire_ text when the lift its on Fire mode', async () => {
+  test('Check orange color and _Fire_ text when the lift its on Fire mode', async () => {
     const { lift, state } = await loadLift();
     state.current_mode = RomiCore.LiftState.MODE_FIRE;
     const { wrapper, liftSVGRect } = buildWrapper(lift, state);
@@ -82,6 +82,15 @@ describe('Checks assignation of styles on different mode of the Lift', () => {
     expect(wrapper.find('#liftMode').text()).toEqual('OFFLINE');
     wrapper.unmount();
   });
+
+  test('Lift on Unknown mode', async () => {
+    const { lift, state } = await loadLift();
+    state.current_mode = RomiCore.LiftState.MODE_UNKNOWN;
+    const { wrapper, liftSVGRect } = buildWrapper(lift, state);
+    expect(liftSVGRect.hasClass(/(makeStyles)-(unknownLift)-(\d+)/)).toBe(true);
+    expect(wrapper.find('#liftMode').exists()).toBe(false);
+    wrapper.unmount();
+  });
 });
 
 describe('Checks assignation of styles on combination of motion states and mode of the Lift', () => {
@@ -99,8 +108,8 @@ describe('Checks assignation of styles on combination of motion states and mode 
     state.current_floor = 'L1';
     const { wrapper, liftSVGRect } = buildWrapper(lift, state);
     expect(liftSVGRect.hasClass(/(makeStyles)-(humanMode)-(\d+)/)).toBe(true);
-    expect(wrapper.find('#liftMotion').text()).toEqual('STOPPED');
-    expect(wrapper.find('#liftMode').text()).toEqual('HUMAN');
+    expect(wrapper.find('#liftMotion').text()).toEqual('L1');
+    expect(wrapper.find('#liftMode').exists()).toBe(false);
     wrapper.unmount();
   });
 
@@ -110,8 +119,8 @@ describe('Checks assignation of styles on combination of motion states and mode 
     state.current_floor = 'L1';
     const { wrapper, liftSVGRect } = buildWrapper(lift, state);
     expect(liftSVGRect.hasClass(/(makeStyles)-(liftOnCurrentFloor)-(\d+)/)).toBe(true);
-    expect(wrapper.find('#liftMotion').text()).toEqual('STOPPED');
-    expect(wrapper.find('#liftMode').text()).toEqual('AGV');
+    expect(wrapper.find('#liftMotion').text()).toEqual('L1');
+    expect(wrapper.find('#liftMode').exists()).toBe(false);
     wrapper.unmount();
   });
 
@@ -121,8 +130,9 @@ describe('Checks assignation of styles on combination of motion states and mode 
     state.destination_floor = 'L4';
     state.motion_state = RomiCore.LiftState.MOTION_UP;
     const { wrapper, liftSVGRect } = buildWrapper(lift, state);
-    expect(liftSVGRect.hasClass(/(makeStyles)-(liftOnAnotherFloor)-(\d+)/)).toBe(true);
+    expect(liftSVGRect.hasClass(/(makeStyles)-(liftMoving)-(\d+)/)).toBe(true);
     expect(wrapper.find('#liftMotion').text()).toEqual('L3 → L4');
+    expect(wrapper.find('#liftMode').exists()).toBe(false);
     wrapper.unmount();
   });
 
@@ -132,8 +142,34 @@ describe('Checks assignation of styles on combination of motion states and mode 
     state.destination_floor = 'L2';
     state.motion_state = RomiCore.LiftState.MOTION_DOWN;
     const { wrapper, liftSVGRect } = buildWrapper(lift, state);
-    expect(liftSVGRect.hasClass(/(makeStyles)-(liftOnAnotherFloor)-(\d+)/)).toBe(true);
+    expect(liftSVGRect.hasClass(/(makeStyles)-(liftMoving)-(\d+)/)).toBe(true);
     expect(wrapper.find('#liftMotion').text()).toEqual(`L4 → L2`);
+    expect(wrapper.find('#liftMode').exists()).toBe(false);
+    wrapper.unmount();
+  });
+
+  test('Lift its not on current floor and its mode is UNKNOWN', async () => {
+    const { lift, state } = await loadLift();
+    state.current_floor = 'L4';
+    state.destination_floor = 'L2';
+    state.current_mode = RomiCore.LiftState.MODE_HUMAN;
+    state.motion_state = RomiCore.LiftState.MOTION_DOWN;
+    const { wrapper, liftSVGRect } = buildWrapper(lift, state);
+    expect(liftSVGRect.hasClass(/(makeStyles)-(liftMoving)-(\d+)/)).toBe(true);
+    expect(wrapper.find('#liftMotion').text()).toEqual(`L4 → L2`);
+    expect(wrapper.find('#liftMode').exists()).toBe(false);
+    wrapper.unmount();
+  });
+
+  test('Lift its on current floor and its mode is UNKNOWN', async () => {
+    const { lift, state } = await loadLift();
+    state.current_floor = 'L1';
+    state.current_mode = RomiCore.LiftState.MODE_UNKNOWN;
+    state.motion_state = RomiCore.LiftState.MOTION_STOPPED;
+    const { wrapper, liftSVGRect } = buildWrapper(lift, state);
+    expect(liftSVGRect.hasClass(/(makeStyles)-(unknownLift)-(\d+)/)).toBe(true);
+    expect(wrapper.find('#liftMotion').text()).toEqual(`L1`);
+    expect(wrapper.find('#liftMode').exists()).toBe(false);
     wrapper.unmount();
   });
 });

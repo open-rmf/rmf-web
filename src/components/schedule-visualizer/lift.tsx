@@ -27,36 +27,25 @@ const getLiftStyle = (classes: any, currentMode: number | undefined, isInCurrent
     MODE_OFFLINE,
     MODE_UNKNOWN,
   } = RomiCore.LiftState;
-  const isOffLine = currentMode === MODE_OFFLINE || currentMode === MODE_UNKNOWN;
   const isModeAGV = currentMode === MODE_AGV;
   const isModeHuman = currentMode === MODE_HUMAN;
 
   if (currentMode === MODE_EMERGENCY) return classes.emergency;
   if (currentMode === MODE_FIRE) return classes.fire;
-  if (isOffLine) return classes.offLine;
-  if (!isInCurrentFloor) return classes.liftOnAnotherFloor;
+  if (currentMode === MODE_OFFLINE) return classes.offLine;
   if (isInCurrentFloor && isModeAGV) return classes.liftOnCurrentFloor;
   if (isInCurrentFloor && isModeHuman) return classes.humanMode;
+  if (isInCurrentFloor && currentMode === MODE_UNKNOWN) return classes.unknownLift;
+  if (!isInCurrentFloor) return classes.liftMoving;
 };
 
 // Gets the text to insert to the lift, the text depend on the current mode, motion state and the
 // current and destination floor of the lift.
 const getLiftModeText = (currentMode: number | undefined) => {
-  const {
-    MODE_AGV,
-    MODE_EMERGENCY,
-    MODE_FIRE,
-    MODE_HUMAN,
-    MODE_OFFLINE,
-    MODE_UNKNOWN,
-  } = RomiCore.LiftState;
-  if (!currentMode) return 'UNKNOWN';
+  const { MODE_EMERGENCY, MODE_FIRE, MODE_OFFLINE } = RomiCore.LiftState;
   if (currentMode === MODE_FIRE) return 'FIRE!';
   if (currentMode === MODE_EMERGENCY) return 'EMERGENCY!';
   if (currentMode === MODE_OFFLINE) return 'OFFLINE';
-  if (currentMode === MODE_HUMAN) return 'HUMAN';
-  if (currentMode === MODE_AGV) return 'AGV';
-  if (currentMode === MODE_UNKNOWN) return 'UNKNOWN';
 };
 
 const getLiftMotionText = (
@@ -66,9 +55,10 @@ const getLiftMotionText = (
 ) => {
   const { MOTION_DOWN, MOTION_UP, MOTION_STOPPED, MOTION_UNKNOWN } = RomiCore.LiftState;
   if (motionState === MOTION_UNKNOWN) return '?';
-  if (motionState === MOTION_STOPPED) return 'STOPPED';
+  if (motionState === MOTION_STOPPED) return !!currentFloor ? currentFloor : 'STOPPED';
   if (motionState === MOTION_UP || motionState === MOTION_DOWN)
     return `${currentFloor} → ${destinationFloor}`;
+  return 'Floor: ?';
 };
 
 /**
@@ -77,22 +67,16 @@ const getLiftMotionText = (
 const transformMiddleCoordsOfRectToSVGBeginPoint = (
   x: number,
   y: number,
-  width: number | undefined,
-  depth: number | undefined,
+  width: number,
+  depth: number,
 ) => {
-  // TODO: the width and height should be not undefined we addressed this
-  // https://github.com/osrf/romi-js-core-interfaces/issues/4
-  if (!width || !depth) throw new Error('Width and Height cannot be undefined');
   return { x: x - width / 2, y: y + depth / 2 };
 };
 
 /**
  * Get related Y coord starting from top to bottom.
  */
-const getRelatedYCoord = (topY: number, height: number | undefined, percentage: number) => {
-  // TODO: the height should be not undefined we addressed this
-  // https://github.com/osrf/romi-js-core-interfaces/issues/4
-  if (!height) throw new Error('Height cannot be undefined');
+const getRelatedYCoord = (topY: number, height: number, percentage: number) => {
   return topY + height * percentage;
 };
 
@@ -138,17 +122,17 @@ const Lift = React.forwardRef(function(
           transform={`rotate(${radiansToDegrees(ref_yaw)}, ${x},${contextY})`}
         />
         {liftMotionText && (
-          <text id="liftMotion" className={classes.liftText} x={x} y={contextY}>
-            {liftMotionText}
-          </text>
-        )}
-        {liftModeText && (
           <text
-            id="liftMode"
+            id="liftMotion"
             className={classes.liftText}
             x={x}
             y={getRelatedYCoord(contextTopVerticeY, depth, 0.25)}
           >
+            {liftMotionText}
+          </text>
+        )}
+        {liftModeText && (
+          <text id="liftMode" className={classes.liftText} x={x} y={contextY}>
             {liftModeText}
           </text>
         )}
@@ -180,8 +164,12 @@ const useStyles = makeStyles(() => ({
     fill: 'green',
     opacity: '70%',
   },
-  liftOnAnotherFloor: {
+  liftMoving: {
     fill: 'grey',
+    opacity: '70%',
+  },
+  unknownLift: {
+    fill: '#3d3c3c',
     opacity: '80%',
   },
   emergency: {
