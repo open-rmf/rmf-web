@@ -8,6 +8,13 @@ const useStyles = makeStyles(() => ({
     cursor: 'pointer',
     pointerEvents: 'auto',
   },
+  robotText: {
+    dominantBaseline: 'central',
+    textAnchor: 'middle',
+    fontSize: '0.18px',
+    fontWeight: 'bold',
+    fill: 'white',
+  },
 }));
 
 export interface RobotProps {
@@ -68,6 +75,14 @@ const Robot = React.forwardRef(function(
             stroke="black"
             strokeWidth="0.05"
           />
+          <text
+            id="robotName"
+            className={classes.robotText}
+            x={robot.location.x}
+            y={-robot.location.y}
+          >
+            {robot.name.substring(0, 8)}
+          </text>
         </React.Fragment>
       )}
     </g>
