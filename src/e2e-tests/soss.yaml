@@ -18,8 +18,10 @@ routes:
 topics:
   door_states: { type: 'rmf_door_msgs/DoorState', route: ros2_to_client }
   door_requests: { type: 'rmf_door_msgs/DoorRequest', route: client_to_ros2 }
+  adapter_door_requests: { type: 'rmf_door_msgs/DoorRequest', route: client_to_ros2 }
   lift_states: { type: 'rmf_lift_msgs/LiftState', route: ros2_to_client }
   lift_requests: { type: 'rmf_lift_msgs/LiftRequest', route: client_to_ros2 }
+  adapter_lift_requests: { type: 'rmf_door_msgs/LiftRequest', route: client_to_ros2 }
   fleet_states: { type: 'rmf_fleet_msgs/FleetState', route: ros2_to_client }
   dispenser_states: { type: 'rmf_dispenser_msgs/DispenserState', route: ros2_to_client }
   loop_requests: { type: 'rmf_task_msgs/Loop', route: client_to_ros2 }
