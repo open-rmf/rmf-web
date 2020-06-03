@@ -1,6 +1,5 @@
 import { makeStyles, TextField, Button } from '@material-ui/core';
 import { successMsg } from '../../util/alerts';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useState } from 'react';
 
