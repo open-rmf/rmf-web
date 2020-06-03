@@ -303,6 +303,10 @@ export default function App(props: AppProps): JSX.Element {
     setCurrentView(OmniPanelViewIndex.Dispensers);
   }
 
+  const doorsFromLifts = React.useMemo(() => {
+    return lifts.flatMap(x => x.doors);
+  }, [lifts]);
+
   return (
     <React.Fragment>
       <SettingsContext.Provider value={settings}>
@@ -360,7 +364,7 @@ export default function App(props: AppProps): JSX.Element {
                 <DoorsPanel
                   transport={transport}
                   doorStates={doorStates}
-                  doors={doors}
+                  doors={!!doorsFromLifts ? doors.concat(doorsFromLifts) : doors}
                   spotlight={doorSpotlight}
                 />
               </OmniPanelView>
