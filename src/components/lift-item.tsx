@@ -171,7 +171,7 @@ export const LiftItem = React.forwardRef(function(
           onClose={() => setLiftRequestMenuState(null)}
         >
           {liftRequestMenuState &&
-            lift.levels.map(floor => (
+            liftState?.available_floors.map(floor => (
               <MenuItem
                 key={floor}
                 onClick={() => {
