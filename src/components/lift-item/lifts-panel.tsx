@@ -15,7 +15,7 @@ interface LiftsPanelProps {
 export default function LiftsPanel(props: LiftsPanelProps): JSX.Element {
   const { transport, spotlight, onLiftRequest, onLiftClick } = props;
   const liftRequestPub = React.useMemo(
-    () => (transport ? transport.createPublisher(RomiCore.liftRequests) : null),
+    () => (transport ? transport.createPublisher(RomiCore.adapterLiftRequests) : null),
     [transport],
   );
   const liftRefs = React.useRef<Record<string, HTMLElement | null>>({});
