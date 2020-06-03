@@ -81,7 +81,7 @@ const Robot = React.forwardRef(function(
             x={robot.location.x}
             y={-robot.location.y}
           >
-            {robot.name}
+            {robot.name.substring(0, 8)}
           </text>
         </React.Fragment>
       )}
