@@ -2,10 +2,11 @@ import { makeStyles, TextField, Button } from '@material-ui/core';
 import { successMsg } from '../../util/alerts';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useState } from 'react';
+import { LiftRequestManager } from '../../lift-state-manager';
 
 interface LiftRequestFormProps {
-  requestTypeList: { key: string; value: number }[];
-  doorStateList: { key: string; value: number }[];
+  requestTypeList: string[];
+  doorStateList: string[];
   destinationList: string[];
   liftRequest(doorState: number, requestType: number, destination: string): void;
 }
@@ -13,6 +14,7 @@ interface LiftRequestFormProps {
 const LiftRequestForm = (props: LiftRequestFormProps) => {
   const { liftRequest, requestTypeList, doorStateList, destinationList } = props;
   const classes = useStyles();
+
   const [doorState, setDoorState] = useState(doorStateList[0]);
   const [requestType, setRequestType] = useState(requestTypeList[0]);
   const [destination, setDestination] = useState('');
@@ -49,10 +51,15 @@ const LiftRequestForm = (props: LiftRequestFormProps) => {
   const handleLiftRequest = (event: any) => {
     event.preventDefault();
     if (isFormValid()) {
-      liftRequest(doorState.value, requestType.value, destination);
-      liftRequest(1, 1, destination);
-      successMsg('Success');
-      cleanUpForm();
+      const liftDoor = LiftRequestManager.StringToDoorState(doorState);
+      const liftRequestType = LiftRequestManager.StringToLiftMode(requestType);
+      console.log(liftDoor);
+      console.log(liftRequestType);
+      if (liftDoor !== undefined && liftRequestType !== undefined) {
+        liftRequest(liftDoor, liftRequestType, destination);
+        successMsg('Success');
+        cleanUpForm();
+      }
     }
   };
 
@@ -77,7 +84,7 @@ const LiftRequestForm = (props: LiftRequestFormProps) => {
 
       <div className={classes.divForm}>
         <Autocomplete
-          getOptionLabel={option => option.key}
+          getOptionLabel={option => option}
           onChange={(e, value) => setDoorState(value || doorStateList[0])}
           options={doorStateList}
           renderInput={params => (
@@ -94,7 +101,7 @@ const LiftRequestForm = (props: LiftRequestFormProps) => {
 
       <div className={classes.divForm}>
         <Autocomplete
-          getOptionLabel={option => option.key}
+          getOptionLabel={option => option}
           onChange={(e, value) => setRequestType(value || requestTypeList[0])}
           options={requestTypeList}
           renderInput={params => (

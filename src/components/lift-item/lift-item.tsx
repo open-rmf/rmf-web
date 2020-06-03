@@ -84,8 +84,8 @@ export const LiftItem = React.forwardRef(function(
             {liftState?.available_floors && (
               <LiftRequestForm
                 liftRequest={handleRequest}
-                doorStateList={LiftRequestManager.getAllDoorModes()}
-                requestTypeList={LiftRequestManager.getLiftRequestModes()}
+                doorStateList={LiftRequestManager.getListOfDoorModes()}
+                requestTypeList={LiftRequestManager.getListOfLiftRequestModes()}
                 destinationList={liftState?.available_floors}
               />
             )}

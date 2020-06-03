@@ -65,15 +65,21 @@ export default class LiftStateManager extends EventEmitter<Events> {
 }
 
 export class LiftRequestManager {
+  static liftModes = [
+    RomiCore.LiftRequest.REQUEST_END_SESSION,
+    RomiCore.LiftRequest.REQUEST_AGV_MODE,
+    RomiCore.LiftRequest.REQUEST_HUMAN_MODE,
+  ];
+
+  static doorModes = [
+    RomiCore.LiftRequest.DOOR_CLOSED,
+    RomiCore.LiftRequest.DOOR_OPEN,
+  ]
+
 
   static getLiftRequestModes() {
-    const liftModes = [
-      RomiCore.LiftRequest.REQUEST_END_SESSION,
-      RomiCore.LiftRequest.REQUEST_AGV_MODE,
-      RomiCore.LiftRequest.REQUEST_HUMAN_MODE,
-    ]
     let listOfModes: Array<any> = [];
-    liftModes.forEach(element => {
+    this.liftModes.forEach(element => {
       const key = this.liftModeToString(element);
       const value = element;
       listOfModes.push({ key, value })
@@ -81,16 +87,29 @@ export class LiftRequestManager {
     return listOfModes
   }
 
-  static getAllDoorModes() {
-    const doorModes = [
-      RomiCore.LiftRequest.DOOR_CLOSED,
-      RomiCore.LiftRequest.DOOR_OPEN,
-    ]
+  static getListOfLiftRequestModes() {
     let listOfModes: Array<any> = [];
-    doorModes.forEach(element => {
+    this.liftModes.forEach(element => {
+      listOfModes.push(this.liftModeToString(element))
+    });
+    return listOfModes
+  }
+
+  static getAllDoorModes() {
+
+    let listOfModes: Array<any> = [];
+    this.doorModes.forEach(element => {
       const key = this.doorStateToString(element);
       const value = element;
       listOfModes.push({ key, value })
+    });
+    return listOfModes
+  }
+
+  static getListOfDoorModes() {
+    let listOfModes: Array<any> = [];
+    this.doorModes.forEach(element => {
+      listOfModes.push(this.doorStateToString(element))
     });
     return listOfModes
   }
@@ -116,6 +135,28 @@ export class LiftRequestManager {
         return 'Closed';
       default:
         return `Unknown (${doorState})`;
+    }
+  }
+
+  static StringToLiftMode(liftMode: string) {
+    switch (liftMode) {
+      case 'End Session':
+        return RomiCore.LiftRequest.REQUEST_END_SESSION;
+      case 'AVG':
+        return RomiCore.LiftRequest.REQUEST_AGV_MODE;
+      case 'Human':
+        return RomiCore.LiftRequest.REQUEST_HUMAN_MODE;
+      default:
+        return RomiCore.LiftRequest.REQUEST_END_SESSION;;
+    }
+  }
+
+  static StringToDoorState(doorState: string) {
+    switch (doorState) {
+      case 'Open':
+        return RomiCore.LiftState.DOOR_OPEN;
+      case 'Closed':
+        return RomiCore.LiftState.DOOR_CLOSED;
     }
   }
 }
