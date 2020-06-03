@@ -27,18 +27,10 @@ export default function LiftsPanel(props: LiftsPanelProps): JSX.Element {
     requestType: number,
     destination: string,
   ): void {
-    console.log({
-      lift_name: lift.name,
-      door_state: doorState, //RomiCore.LiftRequest.DOOR_OPEN,
-      request_type: requestType, //RomiCore.LiftRequest.REQUEST_AGV_MODE,
-      request_time: RomiCore.toRosTime(new Date()),
-      destination_floor: destination,
-      session_id: transport!.name,
-    });
     liftRequestPub?.publish({
       lift_name: lift.name,
-      door_state: doorState, //RomiCore.LiftRequest.DOOR_OPEN,
-      request_type: requestType, //RomiCore.LiftRequest.REQUEST_AGV_MODE,
+      door_state: doorState,
+      request_type: requestType,
       request_time: RomiCore.toRosTime(new Date()),
       destination_floor: destination,
       session_id: transport!.name,

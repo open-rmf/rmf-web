@@ -53,8 +53,6 @@ const LiftRequestForm = (props: LiftRequestFormProps) => {
     if (isFormValid()) {
       const liftDoor = LiftRequestManager.StringToDoorState(doorState);
       const liftRequestType = LiftRequestManager.StringToLiftMode(requestType);
-      console.log(liftDoor);
-      console.log(liftRequestType);
       if (liftDoor !== undefined && liftRequestType !== undefined) {
         liftRequest(liftDoor, liftRequestType, destination);
         successMsg('Success');
