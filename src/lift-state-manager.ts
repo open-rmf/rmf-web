@@ -35,7 +35,11 @@ export default class LiftStateManager extends EventEmitter<Events> {
     }
   }
 
-  static doorStateToString(doorState: number): string {
+  static doorStateToString(doorState?: number) {
+    if (!doorState) {
+      return 'Unknown';
+    }
+
     switch (doorState) {
       case RomiCore.LiftState.DOOR_OPEN:
         return 'Open';
@@ -99,7 +103,7 @@ export class LiftRequestManager {
 
     let listOfModes: Array<any> = [];
     this.doorModes.forEach(element => {
-      const key = this.doorStateToString(element);
+      const key = LiftStateManager.doorStateToString(element);
       const value = element;
       listOfModes.push({ key, value })
     });
@@ -109,7 +113,7 @@ export class LiftRequestManager {
   static getListOfDoorModes() {
     let listOfModes: Array<any> = [];
     this.doorModes.forEach(element => {
-      listOfModes.push(this.doorStateToString(element))
+      listOfModes.push(LiftStateManager.doorStateToString(element))
     });
     return listOfModes
   }
@@ -124,17 +128,6 @@ export class LiftRequestManager {
         return 'Human';
       default:
         return `Unknown (${liftMode})`;
-    }
-  }
-
-  static doorStateToString(doorState: number) {
-    switch (doorState) {
-      case RomiCore.LiftState.DOOR_OPEN:
-        return 'Open';
-      case RomiCore.LiftState.DOOR_CLOSED:
-        return 'Closed';
-      default:
-        return `Unknown (${doorState})`;
     }
   }
 

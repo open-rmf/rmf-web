@@ -10,6 +10,7 @@ export interface LiftProps {
   lift: RomiCore.Lift;
   liftState?: RomiCore.LiftState;
   onClick?(e: React.MouseEvent<SVGGElement>, lift: RomiCore.Lift): void;
+  onLiftDoorClick?(door: RomiCore.Door): void;
 }
 
 /**
@@ -84,7 +85,7 @@ const Lift = React.forwardRef(function(
   props: LiftProps,
   ref: React.Ref<SVGGElement>,
 ): React.ReactElement {
-  const { lift, onClick, liftState, currentFloor } = props;
+  const { lift, onClick, liftState, currentFloor, onLiftDoorClick } = props;
   const { width, depth, ref_x: x, ref_y: y, ref_yaw, doors } = lift;
   // The svg start drawing from the top left coordinate, and the backend sends us the middle X,Y so we need to transform that.
   const { x: topVerticeX, y: topVerticeY } = transformMiddleCoordsOfRectToSVGBeginPoint(
@@ -144,7 +145,12 @@ const Lift = React.forwardRef(function(
         <DownArrow x={x} y={contextY} size={0.03} padding={[0, 0.1]} />
       )}
       {doors.map(door => (
-        <Door key={`lift-door-${door.name}`} door={door} currentMode={doorState} />
+        <Door
+          key={`lift-door-${door.name}`}
+          door={door}
+          currentMode={doorState}
+          onClick={() => onLiftDoorClick && onLiftDoorClick(door)}
+        />
       ))}
     </>
   );

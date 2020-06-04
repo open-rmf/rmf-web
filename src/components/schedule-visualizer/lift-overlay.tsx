@@ -8,12 +8,18 @@ export interface LiftsOverlayProps extends SVGOverlayProps {
   currentFloor: string;
   lifts: readonly RomiCore.Lift[];
   onLiftClick?(lift: RomiCore.Lift): void;
+  onLiftDoorClick?(door: RomiCore.Door): void;
 }
 
 export default function LiftsOverlay(props: LiftsOverlayProps): React.ReactElement {
-  const { lifts, onLiftClick, currentFloor, ...otherProps } = props;
+  const { lifts, onLiftClick, currentFloor, onLiftDoorClick, ...otherProps } = props;
   const viewBox = viewBoxFromLeafletBounds(props.bounds);
   const liftsState = useContext(LiftStateContext);
+
+  const handleLiftDoorClick = (door: RomiCore.Door) => {
+    onLiftDoorClick && onLiftDoorClick(door);
+  };
+
   return (
     <>
       <SVGOverlay {...otherProps}>
@@ -23,6 +29,7 @@ export default function LiftsOverlay(props: LiftsOverlayProps): React.ReactEleme
               key={`lift-${lift.name}`}
               lift={lift}
               onClick={(_, lift) => onLiftClick && onLiftClick(lift)}
+              onLiftDoorClick={handleLiftDoorClick}
               liftState={liftsState && liftsState[lift.name]}
               currentFloor={currentFloor}
             />

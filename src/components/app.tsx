@@ -260,6 +260,12 @@ export default function App(props: AppProps): JSX.Element {
     setLiftSpotlight({ value: lift.name });
   }
 
+  function handleLiftDoorClick(door: RomiCore.Door): void {
+    setShowOmniPanel(true);
+    setCurrentView(OmniPanelViewIndex.Doors);
+    setDoorSpotlight({ value: door.name });
+  }
+
   function clearSpotlights() {
     setDoorSpotlight(undefined);
     setLiftSpotlight(undefined);
@@ -303,10 +309,6 @@ export default function App(props: AppProps): JSX.Element {
     setCurrentView(OmniPanelViewIndex.Dispensers);
   }
 
-  const doorsFromLifts = React.useMemo(() => {
-    return lifts.flatMap(x => x.doors);
-  }, [lifts]);
-
   return (
     <React.Fragment>
       <SettingsContext.Provider value={settings}>
@@ -334,6 +336,7 @@ export default function App(props: AppProps): JSX.Element {
                   trajManager={trajManager.current}
                   onDoorClick={handleDoorClick}
                   onLiftClick={handleLiftClick}
+                  onLiftDoorClick={handleLiftDoorClick}
                   onPlaceClick={handlePlaceClick}
                   onRobotClick={handleRobotClick}
                 />
@@ -364,7 +367,9 @@ export default function App(props: AppProps): JSX.Element {
                 <DoorsPanel
                   transport={transport}
                   doorStates={doorStates}
-                  doors={!!doorsFromLifts ? doors.concat(doorsFromLifts) : doors}
+                  doors={doors}
+                  lifts={lifts}
+                  liftStates={liftStates}
                   spotlight={doorSpotlight}
                 />
               </OmniPanelView>

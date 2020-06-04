@@ -1,47 +1,44 @@
 import {
-  Button,
-  ButtonGroup,
   Divider,
   ExpansionPanel,
   ExpansionPanelDetails,
   ExpansionPanelProps,
   ExpansionPanelSummary,
   Typography,
-  useTheme,
 } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
-import DoorStateManager from '../door-state-manager';
-import { doorItemStyles } from './doors-panel';
+import DoorStateManager from '../../door-state-manager';
+import LiftStateManager from '../../lift-state-manager';
+import { doorItemStyles } from '../doors-panel';
 
 export interface DoorItemProps extends Omit<ExpansionPanelProps, 'children'> {
   door: Readonly<RomiCore.Door>;
-  doorState?: Readonly<RomiCore.DoorState>;
+  liftState?: Readonly<RomiCore.LiftState>;
   enableControls?: boolean;
   onDoorClick?(door: RomiCore.Door): void;
   onOpenClick?(door: RomiCore.Door): void;
   onCloseClick?(door: RomiCore.Door): void;
 }
 
-export const DoorItem = React.forwardRef(function(
+export const LiftDoorItem = React.forwardRef(function(
   props: DoorItemProps,
   ref: React.Ref<HTMLElement>,
 ): React.ReactElement {
-  const { door, doorState, enableControls, onOpenClick, onCloseClick, ...otherProps } = props;
+  const { door, liftState, enableControls, onOpenClick, onCloseClick, ...otherProps } = props;
   const classes = doorItemStyles();
-  const theme = useTheme();
 
-  function doorModeLabelClasses(doorState?: RomiCore.DoorState): string {
-    if (!doorState) {
+  function doorModeLabelClasses(liftState?: RomiCore.LiftState): string {
+    if (!liftState) {
       return '';
     }
-    switch (doorState.current_mode.value) {
-      case RomiCore.DoorMode.MODE_OPEN:
+    switch (liftState.door_state) {
+      case RomiCore.LiftState.DOOR_OPEN:
         return `${classes.doorLabel} ${classes.doorLabelOpen}`;
-      case RomiCore.DoorMode.MODE_CLOSED:
+      case RomiCore.LiftState.DOOR_CLOSED:
         return `${classes.doorLabel} ${classes.doorLabelClosed}`;
-      case RomiCore.DoorMode.MODE_MOVING:
+      case RomiCore.LiftState.DOOR_MOVING:
         return `${classes.doorLabel} ${classes.doorLabelMoving}`;
       default:
         return '';
@@ -55,8 +52,8 @@ export const DoorItem = React.forwardRef(function(
         expandIcon={<ExpandMoreIcon />}
       >
         <Typography variant="h5">{door.name}</Typography>
-        <Typography className={doorModeLabelClasses(doorState)} variant="button">
-          {DoorStateManager.doorModeToString(doorState)}
+        <Typography className={doorModeLabelClasses(liftState)} variant="button">
+          {LiftStateManager.doorStateToString(liftState?.door_state)}
         </Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails className={classes.expansionDetail}>
@@ -85,13 +82,13 @@ export const DoorItem = React.forwardRef(function(
             ({door.v1_x.toFixed(3)}, {door.v1_y.toFixed(3)})
           </Typography>
         </div>
-        <ButtonGroup style={{ marginTop: theme.spacing(1) }} fullWidth disabled={!enableControls}>
+        {/* <ButtonGroup style={{ marginTop: theme.spacing(1) }} fullWidth disabled={!enableControls}>
           <Button onClick={() => onCloseClick && onCloseClick(door)}>Close</Button>
           <Button onClick={() => onOpenClick && onOpenClick(door)}>Open</Button>
-        </ButtonGroup>
+        </ButtonGroup> */}
       </ExpansionPanelDetails>
     </ExpansionPanel>
   );
 });
 
-export default DoorItem;
+export default LiftDoorItem;

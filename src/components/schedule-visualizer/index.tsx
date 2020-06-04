@@ -45,6 +45,7 @@ export interface ScheduleVisualizerProps {
   trajManager?: Readonly<RobotTrajectoryManager>;
   onDoorClick?(door: RomiCore.Door): void;
   onLiftClick?(lift: RomiCore.Lift): void;
+  onLiftDoorClick?(door: RomiCore.Door): void;
   onPlaceClick?(place: RomiCore.Place): void;
   onRobotClick?(robot: RomiCore.RobotState): void;
 }
@@ -305,6 +306,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
                 currentFloor={curLevelName}
                 lifts={props.buildingMap.lifts}
                 onLiftClick={props.onLiftClick}
+                onLiftDoorClick={props.onLiftDoorClick}
               />
             </Pane>
           )}
