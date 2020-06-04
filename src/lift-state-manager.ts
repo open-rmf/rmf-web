@@ -36,7 +36,8 @@ export default class LiftStateManager extends EventEmitter<Events> {
   }
 
   static doorStateToString(doorState?: number) {
-    if (!doorState) {
+    // Asking for undefined because if the number is 0 it will be false and the DOOR_CLOSED wouldn't be executed.
+    if (doorState === undefined) {
       return 'Unknown';
     }
 
@@ -80,11 +81,20 @@ export class LiftRequestManager {
     RomiCore.LiftRequest.DOOR_OPEN,
   ]
 
-
   static getLiftRequestModes() {
     let listOfModes: Array<any> = [];
     this.liftModes.forEach(element => {
       const key = this.liftModeToString(element);
+      const value = element;
+      listOfModes.push({ key, value })
+    });
+    return listOfModes
+  }
+
+  static getAllDoorModes() {
+    let listOfModes: Array<any> = [];
+    this.doorModes.forEach(element => {
+      const key = LiftStateManager.doorStateToString(element);
       const value = element;
       listOfModes.push({ key, value })
     });
@@ -99,21 +109,10 @@ export class LiftRequestManager {
     return listOfModes
   }
 
-  static getAllDoorModes() {
-
-    let listOfModes: Array<any> = [];
-    this.doorModes.forEach(element => {
-      const key = LiftStateManager.doorStateToString(element);
-      const value = element;
-      listOfModes.push({ key, value })
-    });
-    return listOfModes
-  }
-
   static getListOfDoorModes() {
     let listOfModes: Array<any> = [];
     this.doorModes.forEach(element => {
-      listOfModes.push(LiftStateManager.doorStateToString(element))
+      listOfModes.push(this.doorStateToString(element))
     });
     return listOfModes
   }
@@ -147,9 +146,20 @@ export class LiftRequestManager {
   static StringToDoorState(doorState: string) {
     switch (doorState) {
       case 'Open':
-        return RomiCore.LiftState.DOOR_OPEN;
+        return RomiCore.LiftRequest.DOOR_OPEN;
       case 'Closed':
-        return RomiCore.LiftState.DOOR_CLOSED;
+        return RomiCore.LiftRequest.DOOR_CLOSED;
+    }
+  }
+
+  static doorStateToString(doorState: number) {
+    switch (doorState) {
+      case RomiCore.LiftRequest.DOOR_OPEN:
+        return 'Open';
+      case RomiCore.LiftRequest.DOOR_CLOSED:
+        return 'Closed';
+      default:
+        return `Unknown (${doorState})`;
     }
   }
 }
