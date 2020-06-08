@@ -2,13 +2,13 @@ import { createMount } from '@material-ui/core/test-utils';
 import { ReactWrapper } from 'enzyme';
 import React from 'react';
 import ReactTestUtils from 'react-dom/test-utils';
-import appConfig from '../app-config';
-import Dashboard from './dashboard';
+import appConfig from '../../app-config';
+import Dashboard from '../dashboard';
 
 const mount = createMount();
 
 // react-leaflet doesn't work well in jsdom.
-jest.mock('./schedule-visualizer', () => () => null);
+jest.mock('./../schedule-visualizer', () => () => null);
 
 it('renders without crashing', async () => {
   URL.createObjectURL = jest.fn();
