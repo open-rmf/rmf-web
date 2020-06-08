@@ -2,14 +2,7 @@ import React from 'react';
 import { AppConfig } from '../app-config';
 import { DASHBOARD_ROUTE, LOGIN_ROUTE, REGISTER_ROUTE } from '../util/url';
 import Dashboard from './dashboard';
-import {
-  BrowserRouter,
-  Redirect,
-  Route,
-  RouteComponentProps,
-  Switch,
-  withRouter,
-} from 'react-router-dom';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import LoginForm from './login/loginForm';
 import RegisterForm from './login/registerForm';
 export interface AppProps {
