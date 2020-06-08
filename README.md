@@ -21,13 +21,7 @@ cd romi-dashboard
 npm install
 ```
 
-## Launching dev server
-
-The following environment variables need to be defined
-
-  * REACT_APP_SOSS_SERVER
-  * REACT_APP_SOSS_TOKEN
-  * REACT_APP_TRAJECTORY_SERVER
+## Launching
 
 Launch the web application using the commands below,
 
@@ -36,13 +30,17 @@ cd ~/romi-dashboard
 npm start
 ```
 
-or alternatively, if using the soss config from e2e-tests, you can launch it with
+or alternatively, if using a different soss or trajectory server, the follow env variables can be defined
+
+  * REACT_APP_SOSS_SERVER
+  * REACT_APP_SOSS_TOKEN
+  * REACT_APP_TRAJECTORY_SERVER
+
+and launched with
 
 ```bash
-npm run start:test
+npm run start:custom
 ```
-
-This will define the environment variables as required for the soss and trajectory servers.
 
 At this point, the dashboard should have been launched on the default browser of the machine, under `localhost:3000`.
 

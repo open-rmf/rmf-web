@@ -38,9 +38,9 @@
     "uuid": "^8.1.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "REACT_APP_SOSS_SERVER=wss://localhost:50001 REACT_APP_SOSS_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoicm9taS1kYXNoYm9hcmQiLCJpYXQiOjE1ODMyODYyMTV9.x9aNjcLujQPHchWEsbrRbvctmnGQtEzw-81X0aPIE-Y REACT_APP_TRAJECTORY_SERVER=ws://localhost:8006 react-scripts start",
     "start:mock": "REACT_APP_MOCK=1 react-scripts start",
-    "start:test": "REACT_APP_SOSS_SERVER=wss://localhost:50001 REACT_APP_SOSS_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoicm9taS1kYXNoYm9hcmQiLCJpYXQiOjE1ODMyODYyMTV9.x9aNjcLujQPHchWEsbrRbvctmnGQtEzw-81X0aPIE-Y REACT_APP_TRAJECTORY_SERVER=ws://localhost:8006 react-scripts start",
+    "start:custom": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --testPathIgnorePatterns integration-tests",
     "test:integration": "node src/integration-tests/launch.js test --testPathPattern integration-tests",
