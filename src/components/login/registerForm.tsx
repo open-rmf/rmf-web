@@ -13,7 +13,7 @@ const RegisterForm = function() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const [showRegisterFail, setshowRegisterFail] = useState(false);
+  const [showRegisterFail, setShowRegisterFail] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -38,7 +38,7 @@ const RegisterForm = function() {
   function isFormValid() {
     let isValid = true;
     if (password !== confirmPassword) {
-      setshowRegisterFail(true);
+      setShowRegisterFail(true);
       setErrorMessage('Passwords do not match');
       isValid = false;
     }
@@ -48,7 +48,7 @@ const RegisterForm = function() {
   function handleRegisterFail(err: string): void {
     setIsSubmitting(false);
     setErrorMessage(err);
-    setshowRegisterFail(true);
+    setShowRegisterFail(true);
   }
 
   function handleRegisterSuccess() {
@@ -145,9 +145,9 @@ const RegisterForm = function() {
         <Snackbar
           open={showRegisterFail}
           autoHideDuration={3000}
-          onClose={() => setshowRegisterFail(false)}
+          onClose={() => setShowRegisterFail(false)}
         >
-          <Alert onClose={() => setshowRegisterFail(false)} severity="error">
+          <Alert onClose={() => setShowRegisterFail(false)} severity="error">
             {errorMessage}
           </Alert>
         </Snackbar>
