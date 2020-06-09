@@ -1,41 +1,70 @@
 /**
  * WIP
  */
-import { Snackbar, TextField, Typography, Button } from '@material-ui/core';
-import React from 'react';
+import { Snackbar, TextField, Typography, Button, CircularProgress } from '@material-ui/core';
+import React, { useState, useEffect } from 'react';
 import { AuthService } from '../../auth-service';
 import authStyles from './auth-style';
 import { Redirect } from 'react-router-dom';
+import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 
 interface LoginProps {
   auth: AuthService;
 }
 
+function Alert(props: AlertProps) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+
 export default function Login(props: LoginProps): JSX.Element {
   const classes = authStyles();
-  const [showLoginFail, setShowLoginFail] = React.useState(false);
-  const [user, setUser] = React.useState('');
-  const [password, setPassword] = React.useState('');
-  const [errorMessage, setErrorMessage] = React.useState('');
+  const [showLoginFail, setShowLoginFail] = useState(false);
+  const [user, setUser] = useState('');
+  const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   // TODO: remove this after implementing the authentication service
   const [redirect, setRedirect] = React.useState(false);
 
+  useEffect(() => {
+    if (user.trim() && password.trim()) {
+      setIsButtonDisabled(false);
+    } else {
+      setIsButtonDisabled(true);
+    }
+  }, [user, password]);
+
+  function cleanForm() {
+    setUser('');
+    setPassword('');
+  }
+
   function handleLoginFail(err: string): void {
+    setIsSubmitting(false);
     setErrorMessage(err);
     setShowLoginFail(true);
-    //   this._snackBar.open(err, undefined,
-    //     { panelClass: 'login-failed-snackbar', duration: 3000 });
-    //  this.user = '';
-    //  this.password = '';
-    //  this.inputUserView.nativeElement.focus();
+    cleanForm();
+  }
+
+  function handleLoginSuccess() {
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setRedirect(true);
+    }, 1000);
   }
 
   function submit(event: React.FormEvent<HTMLFormElement>): void {
     event.preventDefault();
     console.log(user, password);
+    setIsSubmitting(true);
     // props.auth.login(user, password);
-    handleLoginFail('asd');
-    console.log('submit');
+    // TODO replace this logic with the a call to the authentication service
+    if (user === 'user' && password === 'password') {
+      handleLoginSuccess();
+    } else {
+      handleLoginFail('Incorrect username or password');
+    }
   }
 
   return (
@@ -44,34 +73,57 @@ export default function Login(props: LoginProps): JSX.Element {
       <div className={`${classes.flexColumnContainer} ${classes.loginContainer}`}>
         <h1 className={classes.loginTitle}>RoMi Dashboard</h1>
         <img src="assets/ros-health.png" alt="" className={classes.logo} />
-        <form className={`${classes.loginForm} ${classes.flexColumnContainer}`} onSubmit={submit}>
-          <TextField label="User" onChange={event => setUser(event.target.value)} />
-          <TextField label="Password" onChange={event => setPassword(event.target.value)} />
+
+        <form
+          className={`${classes.loginForm} ${classes.flexColumnContainer}`}
+          onSubmit={submit}
+          autoComplete="off"
+        >
+          <TextField
+            autoFocus
+            id="username"
+            label="Username"
+            onChange={event => setUser(event.target.value)}
+            value={user}
+            required
+          />
+          <TextField
+            id="password"
+            label="Password"
+            onChange={event => setPassword(event.target.value)}
+            required
+            value={password}
+            type="password"
+          />
 
           <div className={classes.buttonContainer}>
             <Button
-              variant="contained"
-              color="primary"
-              type="submit"
               className={classes.button}
-              onClick={() => setRedirect(true)}
+              color="primary"
+              disabled={isButtonDisabled}
+              type="submit"
+              variant="contained"
             >
               LOG IN
             </Button>
           </div>
+          {isSubmitting && <CircularProgress color="primary" />}
           <div className={classes.resetPassword}>Need to reset your password?</div>
         </form>
+
+        <Snackbar
+          open={showLoginFail}
+          autoHideDuration={3000}
+          onClose={() => setShowLoginFail(false)}
+        >
+          <Alert onClose={() => setShowLoginFail(false)} severity="error">
+            {errorMessage}
+          </Alert>
+        </Snackbar>
       </div>
       <div className={classes.termOfServices}>
         By creating an account you agree to the RoMi Terms of Service.
       </div>
-      <Snackbar
-        open={showLoginFail}
-        autoHideDuration={3000}
-        onClose={() => setShowLoginFail(false)}
-      >
-        <Typography>{errorMessage}</Typography>
-      </Snackbar>
     </div>
   );
 }
