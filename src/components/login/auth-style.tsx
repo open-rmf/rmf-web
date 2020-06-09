@@ -10,7 +10,7 @@ const authStyles = makeStyles(theme => ({
   fullPage: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#304060',
+    backgroundColor: '#44497a',
   },
   loginContainer: {
     borderStyle: 'none',
@@ -27,7 +27,7 @@ const authStyles = makeStyles(theme => ({
     justifyContent: 'center',
   },
   loginTitle: {
-    color: '#304060',
+    color: '#44497a',
     marginBottom: 10,
   },
   loginForm: {
@@ -51,7 +51,7 @@ const authStyles = makeStyles(theme => ({
   },
   button: {
     width: '100%',
-    backgroundColor: '#304060',
+    backgroundColor: '#44497a',
   },
   resetPassword: {
     alignSelf: 'center',
