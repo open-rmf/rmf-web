@@ -1,7 +1,7 @@
 /**
  * WIP
  */
-import { Snackbar, TextField, Typography, Button, CircularProgress } from '@material-ui/core';
+import { Snackbar, TextField, Button, CircularProgress } from '@material-ui/core';
 import React, { useState, useEffect } from 'react';
 import { AuthService } from '../../auth-service';
 import authStyles from './auth-style';
@@ -12,7 +12,7 @@ interface LoginProps {
   auth: AuthService;
 }
 
-function Alert(props: AlertProps) {
+export function Alert(props: AlertProps) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
@@ -70,12 +70,14 @@ export default function Login(props: LoginProps): JSX.Element {
   return (
     <div className={`${classes.flexColumnContainer} ${classes.fullPage}`}>
       {!!redirect && <Redirect to="/dashboard" />}
-      <div className={`${classes.flexColumnContainer} ${classes.loginContainer}`}>
-        <h1 className={classes.loginTitle}>RoMi Dashboard</h1>
+      <div
+        className={`${classes.flexColumnContainer} ${classes.authContainer} ${classes.loginContainer}`}
+      >
+        <h1 className={classes.authTitle}>RoMi Dashboard</h1>
         <img src="assets/ros-health.png" alt="" className={classes.logo} />
 
         <form
-          className={`${classes.loginForm} ${classes.flexColumnContainer}`}
+          className={`${classes.authForm} ${classes.flexColumnContainer}`}
           onSubmit={submit}
           autoComplete="off"
         >

@@ -1,61 +1,157 @@
-import React, { useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import Box from '@material-ui/core/Box';
-import { TextField, makeStyles, Button } from '@material-ui/core';
-
-interface defaultValuesInterface {
-  firstName: string;
-  lastName: string;
-  email: string;
-}
-
-const defaultValues = {
-  firstName: '',
-  lastName: '',
-  email: '',
-};
+import React, { useState, useEffect } from 'react';
+import { TextField, Button, CircularProgress, Snackbar } from '@material-ui/core';
+import authStyles from './auth-style';
+import { Redirect } from 'react-router-dom';
+import Alert from '@material-ui/lab/Alert';
 
 const RegisterForm = function() {
-  const { handleSubmit, register, reset, control } = useForm({ defaultValues });
-  const [data, setData] = useState<defaultValuesInterface | null>(null);
-  const classes = useStyle();
+  const classes = authStyles();
+
+  const [username, setUsername] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  const [showRegisterFail, setshowRegisterFail] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // TODO: remove this after implementing the authentication service
+  const [redirect, setRedirect] = React.useState(false);
+
+  useEffect(() => {
+    if (
+      username.trim() &&
+      password.trim() &&
+      firstName.trim() &&
+      lastName.trim() &&
+      confirmPassword.trim()
+    ) {
+      setIsButtonDisabled(false);
+    } else {
+      setIsButtonDisabled(true);
+    }
+  }, [username, password, firstName, lastName, confirmPassword]);
+
+  function isFormValid() {
+    let isValid = true;
+    if (password !== confirmPassword) {
+      setshowRegisterFail(true);
+      setErrorMessage('Passwords do not match');
+      isValid = false;
+    }
+    return isValid;
+  }
+
+  function handleRegisterFail(err: string): void {
+    setIsSubmitting(false);
+    setErrorMessage(err);
+    setshowRegisterFail(true);
+  }
+
+  function handleRegisterSuccess() {
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setRedirect(true);
+    }, 1000);
+  }
+
+  function submit(event: React.FormEvent<HTMLFormElement>): void {
+    event.preventDefault();
+    console.log(username, firstName, lastName, password, confirmPassword);
+
+    if (isFormValid()) {
+      // props.auth.register(username, firstName, lastName, password, confirmPassword);
+      // TODO replace this logic with the a call to the authentication service
+      if (username === 'user') {
+        setIsSubmitting(true);
+        handleRegisterSuccess();
+      } else {
+        // Replace with backend error message
+        handleRegisterFail('Has been an error creating your account');
+      }
+    }
+  }
+
   return (
-    <div className={classes.mainContainer}>
-      <Box boxShadow={3} className={classes.boxContainer}>
-        <div className={classes.logoContainer}>
-          <img src="assets/ros-health.png" alt="" className={classes.logo} />
-        </div>
-        <form onSubmit={handleSubmit(data => setData(data))} className={classes.form}>
-          <Controller
-            as={TextField}
-            name="email"
-            type="email"
-            label="Email Address"
-            // disabled={isSubmitting}
-            control={control}
+    <div className={`${classes.flexColumnContainer} ${classes.fullPage}`}>
+      {!!redirect && <Redirect to="/login" />}
+      <div
+        className={`${classes.flexColumnContainer} ${classes.authContainer} ${classes.registerContainer}`}
+      >
+        <h1 className={classes.authTitle}>RoMi Dashboard</h1>
+        <img src="assets/ros-health.png" alt="" className={classes.logo} />
+
+        <form
+          className={`${classes.authForm} ${classes.flexColumnContainer}`}
+          onSubmit={submit}
+          autoComplete="off"
+        >
+          <TextField
+            id="username"
+            label="Username"
+            onChange={event => setUsername(event.target.value)}
+            value={username}
+            required
           />
-          <Controller as={TextField} name="firstName" label="First Name" control={control} />
-          <Controller as={TextField} name="lastName" label="Last Name" control={control} />
-          <Controller
-            as={TextField}
-            name="password"
-            type="password"
+          <TextField
+            autoFocus
+            id="fisrtName"
+            label="First Name"
+            onChange={event => setFirstName(event.target.value)}
+            value={firstName}
+            required
+          />
+          <TextField
+            id="lastName"
+            label="Last Name"
+            onChange={event => setLastName(event.target.value)}
+            value={lastName}
+            required
+          />
+          <TextField
+            id="password"
             label="Password"
-            control={control}
+            onChange={event => setPassword(event.target.value)}
+            required
+            value={password}
+            type="password"
+          />
+          <TextField
+            id="confirmPassword"
+            label="Confirm Password"
+            onChange={event => setConfirmPassword(event.target.value)}
+            required
+            value={confirmPassword}
+            type="password"
           />
 
           <div className={classes.buttonContainer}>
             <Button
-              variant="contained"
+              className={classes.button}
               color="primary"
+              disabled={isButtonDisabled}
               type="submit"
-              className={classes.buttonContainer}
+              variant="contained"
             >
-              Register
+              REGISTER
             </Button>
           </div>
+          {isSubmitting && <CircularProgress color="primary" />}
         </form>
-      </Box>
+
+        <Snackbar
+          open={showRegisterFail}
+          autoHideDuration={3000}
+          onClose={() => setshowRegisterFail(false)}
+        >
+          <Alert onClose={() => setshowRegisterFail(false)} severity="error">
+            {errorMessage}
+          </Alert>
+        </Snackbar>
+      </div>
       <div className={classes.termOfServices}>
         By creating an account you agree to the RoMi Terms of Service.
       </div>
@@ -64,57 +160,3 @@ const RegisterForm = function() {
 };
 
 export default RegisterForm;
-
-const useStyle = makeStyles(() => ({
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  mainContainer: {
-    minWidth: 275,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '100%',
-    fontFamily: 'monospace',
-  },
-
-  boxContainer: {
-    minWidth: 275,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: '0rem 2.5rem 0rem 2.5rem',
-    borderRadius: 20,
-    height: '40%',
-  },
-
-  buttonContainer: {
-    marginTop: '0.5rem',
-    width: '100%',
-  },
-  button: {
-    width: '100%',
-  },
-  password: {},
-  termOfServices: {
-    alignSelf: 'center',
-    color: '#918e8e',
-    paddingTop: '0.5rem',
-  },
-  logo: {
-    height: '100%',
-  },
-  logoContainer: {
-    height: '10%',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingBottom: '1rem',
-  },
-}));
