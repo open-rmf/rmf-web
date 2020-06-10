@@ -59,6 +59,9 @@ export const LiftItem = React.forwardRef(function(
     setTabValue(newValue);
   };
 
+  const doorStates = React.useMemo(() => LiftRequestManager.getDoorModes(), []);
+  const requestTypes = React.useMemo(() => LiftRequestManager.getLiftRequestModes(), []);
+
   return (
     <ExpansionPanel ref={ref} {...otherProps}>
       <ExpansionPanelSummary
@@ -82,8 +85,8 @@ export const LiftItem = React.forwardRef(function(
           {lift.levels && (
             <LiftRequestForm
               liftRequest={handleRequest}
-              doorStateList={LiftRequestManager.getListOfDoorModes()}
-              requestTypeList={LiftRequestManager.getListOfLiftRequestModes()}
+              doorStates={doorStates}
+              requestTypes={requestTypes}
               destinationList={lift.levels}
             />
           )}

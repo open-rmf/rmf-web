@@ -1,21 +1,32 @@
+import { LiftRequestManager } from '../../lift-state-manager';
 import { makeStyles, TextField, Button } from '@material-ui/core';
+import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useState } from 'react';
-import { LiftRequestManager } from '../../lift-state-manager';
 
 interface LiftRequestFormProps {
-  requestTypeList: string[];
-  doorStateList: string[];
+  requestTypes: {
+    [key: string]: number;
+  };
+  doorStates: {
+    [key: string]: number;
+  };
   destinationList: string[];
   liftRequest(doorState: number, requestType: number, destination: string): void;
 }
 
 const LiftRequestForm = (props: LiftRequestFormProps) => {
-  const { liftRequest, requestTypeList, doorStateList, destinationList } = props;
+  const { liftRequest, requestTypes, doorStates, destinationList } = props;
   const classes = useStyles();
+  const doorStateList = React.useMemo(() => Object.keys(doorStates), [doorStates]);
+  const requestTypeList = React.useMemo(() => Object.keys(requestTypes), [requestTypes]);
 
-  const [doorState, setDoorState] = useState(doorStateList[0]);
-  const [requestType, setRequestType] = useState(requestTypeList[0]);
+  const [doorState, setDoorState] = useState(
+    LiftRequestManager.doorStateToString(RomiCore.LiftState.DOOR_OPEN),
+  );
+  const [requestType, setRequestType] = useState(
+    LiftRequestManager.requestModeToString(RomiCore.LiftRequest.REQUEST_AGV_MODE),
+  );
   const [destination, setDestination] = useState('');
 
   // Error states
@@ -24,8 +35,8 @@ const LiftRequestForm = (props: LiftRequestFormProps) => {
   const [destinationError, setDestinationError] = useState('');
 
   const cleanUpForm = () => {
-    setDoorState(doorStateList[0]);
-    setRequestType(requestTypeList[0]);
+    setDoorState(LiftRequestManager.doorStateToString(RomiCore.LiftState.DOOR_OPEN));
+    setRequestType(LiftRequestManager.requestModeToString(RomiCore.LiftRequest.REQUEST_AGV_MODE));
     setDestination('');
     cleanUpError();
   };
@@ -50,8 +61,8 @@ const LiftRequestForm = (props: LiftRequestFormProps) => {
   const handleLiftRequest = (event: any) => {
     event.preventDefault();
     if (isFormValid()) {
-      const liftDoor = LiftRequestManager.StringToDoorState(doorState);
-      const liftRequestType = LiftRequestManager.StringToLiftMode(requestType);
+      const liftDoor = doorStates[doorState];
+      const liftRequestType = requestTypes[requestType];
       if (liftDoor !== undefined && liftRequestType !== undefined) {
         liftRequest(liftDoor, liftRequestType, destination);
         cleanUpForm();
@@ -127,6 +138,7 @@ const useStyles = makeStyles(theme => ({
   form: {
     padding: '0.5rem',
     display: 'flex',
+    alignItems: 'center',
     flexDirection: 'column',
   },
   divForm: {
@@ -144,7 +156,6 @@ const useStyles = makeStyles(theme => ({
   },
   buttonContainer: {
     paddingTop: '0.5rem',
-    paddingLeft: '0.5rem',
     width: '100%',
   },
 }));
