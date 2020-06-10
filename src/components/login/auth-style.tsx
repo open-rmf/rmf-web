@@ -5,7 +5,6 @@ const authStyles = makeStyles(theme => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    fontFamily: 'monospace',
   },
   fullPage: {
     width: '100%',

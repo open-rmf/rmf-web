@@ -7,6 +7,7 @@ import { AuthService } from '../../auth-service';
 import authStyles from './auth-style';
 import { Redirect } from 'react-router-dom';
 import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
+import { Typography } from '@material-ui/core';
 
 interface LoginProps {
   auth: AuthService;
@@ -110,7 +111,9 @@ export default function Login(props: LoginProps): JSX.Element {
             </Button>
           </div>
           {isSubmitting && <CircularProgress color="primary" />}
-          <div className={classes.resetPassword}>Need to reset your password?</div>
+          <div className={classes.resetPassword}>
+            <Typography>Need to reset your password?</Typography>
+          </div>
         </form>
 
         <Snackbar
@@ -124,7 +127,7 @@ export default function Login(props: LoginProps): JSX.Element {
         </Snackbar>
       </div>
       <div className={classes.termOfServices}>
-        By creating an account you agree to the RoMi Terms of Service.
+        <Typography>By creating an account you agree to the RoMi Terms of Service.</Typography>
       </div>
     </div>
   );

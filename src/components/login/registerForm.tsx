@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, CircularProgress, Snackbar } from '@material-ui/core';
+import { TextField, Button, CircularProgress, Snackbar, Typography } from '@material-ui/core';
 import authStyles from './auth-style';
 import { Redirect } from 'react-router-dom';
 import Alert from '@material-ui/lab/Alert';
@@ -153,7 +153,7 @@ const RegisterForm = function() {
         </Snackbar>
       </div>
       <div className={classes.termOfServices}>
-        By creating an account you agree to the RoMi Terms of Service.
+        <Typography>By creating an account you agree to the RoMi Terms of Service. </Typography>
       </div>
     </div>
   );
