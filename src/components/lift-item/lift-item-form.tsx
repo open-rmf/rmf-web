@@ -136,7 +136,6 @@ export default LiftRequestForm;
 
 const useStyles = makeStyles(theme => ({
   form: {
-    padding: '0.5rem',
     display: 'flex',
     alignItems: 'center',
     flexDirection: 'column',
