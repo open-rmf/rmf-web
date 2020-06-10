@@ -5,6 +5,7 @@ const authStyles = makeStyles(theme => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   fullPage: {
     width: '100%',
@@ -12,13 +13,13 @@ const authStyles = makeStyles(theme => ({
     backgroundColor: '#44497a',
   },
   authContainer: {
+    flexDirection: 'column',
     borderStyle: 'none',
     borderRadius: 20,
     borderColor: 'black',
-    padding: '0px 50px 0 50px',
+    padding: '0px 70px 0 70px',
     width: 'fit-content',
     minWidth: 250,
-    marginTop: 'auto',
     backgroundColor: 'snow',
     boxShadow: theme.shadows[12],
     alignContent: 'center',
@@ -26,16 +27,16 @@ const authStyles = makeStyles(theme => ({
   },
   authTitle: {
     color: '#44497a',
-    marginBottom: 10,
+    marginTop: 0,
   },
   authForm: {
     marginTop: 10,
+    flexDirection: 'column',
   },
   buttonContainer: {
     border: '0',
     margin: '0.5rem',
     display: 'inline-flex',
-
     position: 'relative',
     minWidth: 0,
     flexDirection: 'column',
@@ -49,10 +50,10 @@ const authStyles = makeStyles(theme => ({
     backgroundColor: '#44497a',
   },
   termOfServices: {
+    display: 'inline-flex',
     alignSelf: 'center',
     color: '#918e8e',
     paddingTop: '0.5rem',
-    marginBottom: 'auto',
   },
   logo: {
     height: '10%',
@@ -60,12 +61,6 @@ const authStyles = makeStyles(theme => ({
   resetPassword: {
     alignSelf: 'center',
     color: '#918e8e',
-  },
-  loginContainer: {
-    height: '40%',
-  },
-  registerContainer: {
-    height: '50%',
   },
 }));
 

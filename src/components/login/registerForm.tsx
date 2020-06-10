@@ -78,9 +78,7 @@ const RegisterForm = function() {
   return (
     <div className={`${classes.flexColumnContainer} ${classes.fullPage}`}>
       {!!redirect && <Redirect to="/login" />}
-      <div
-        className={`${classes.flexColumnContainer} ${classes.authContainer} ${classes.registerContainer}`}
-      >
+      <div className={`${classes.flexColumnContainer} ${classes.authContainer}`}>
         <h1 className={classes.authTitle}>RoMi Dashboard</h1>
         <img src="assets/ros-health.png" alt="" className={classes.logo} />
 
