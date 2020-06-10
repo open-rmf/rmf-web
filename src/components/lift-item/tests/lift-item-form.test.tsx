@@ -14,8 +14,8 @@ const buildWrapper = () => {
   const wrapper = mount(
     <LiftRequestForm
       liftRequest={onClick}
-      doorStateList={LiftRequestManager.getAllDoorModes()}
-      requestTypeList={LiftRequestManager.getLiftRequestModes()}
+      doorStates={LiftRequestManager.getDoorModes()}
+      requestTypes={LiftRequestManager.getLiftRequestModes()}
       destinationList={['L1', 'L2']}
     />,
   );
@@ -27,14 +27,18 @@ describe('form Validation', () => {
     const wrapper = buildWrapper();
     expect(
       wrapper.findWhere(
-        x => x.name() === 'input' && x.props().value === LiftRequestManager.getAllDoorModes()[0],
+        x =>
+          x.name() === 'input' &&
+          x.props().value === LiftRequestManager.doorStateToString(RomiCore.LiftState.DOOR_OPEN),
       ),
     ).toBeTruthy;
 
     expect(
       wrapper.findWhere(
         x =>
-          x.name() === 'input' && x.props().value === LiftRequestManager.getLiftRequestModes()[0],
+          x.name() === 'input' &&
+          x.props().value ===
+            LiftRequestManager.requestModeToString(RomiCore.LiftRequest.REQUEST_AGV_MODE),
       ),
     ).toBeTruthy;
     wrapper.unmount();
