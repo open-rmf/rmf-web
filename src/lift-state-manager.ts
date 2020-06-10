@@ -64,6 +64,9 @@ export default class LiftStateManager extends EventEmitter<Events> {
   private _liftStates: Record<string, RomiCore.LiftState> = {};
 }
 
+export interface requestManagerModes {
+  [key: string]: number;
+}
 export class LiftRequestManager {
   static readonly liftRequestModes = [
     RomiCore.LiftRequest.REQUEST_END_SESSION,
@@ -76,7 +79,7 @@ export class LiftRequestManager {
     RomiCore.LiftRequest.DOOR_OPEN,
   ]
 
-  static getLiftRequestModes() {
+  static getLiftRequestModes(): requestManagerModes {
     let modes: any = {};
     this.liftRequestModes.forEach(element => {
       const key = this.requestModeToString(element);
@@ -85,7 +88,7 @@ export class LiftRequestManager {
     return modes
   }
 
-  static getDoorModes() {
+  static getDoorModes(): requestManagerModes {
     let modes: any = {};
     this.doorModes.forEach(element => {
       const key = this.doorStateToString(element);
@@ -94,7 +97,7 @@ export class LiftRequestManager {
     return modes
   }
 
-  static requestModeToString(requestMode: number) {
+  static requestModeToString(requestMode: number): string {
     switch (requestMode) {
       case RomiCore.LiftRequest.REQUEST_END_SESSION:
         return 'End Session';
@@ -107,7 +110,7 @@ export class LiftRequestManager {
     }
   }
 
-  static doorStateToString(doorState: number) {
+  static doorStateToString(doorState: number): string {
     switch (doorState) {
       case RomiCore.LiftState.DOOR_OPEN:
         return 'Open';

@@ -1,16 +1,12 @@
-import { LiftRequestManager } from '../../lift-state-manager';
+import { LiftRequestManager, requestManagerModes } from '../../lift-state-manager';
 import { makeStyles, TextField, Button } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useState } from 'react';
 
 interface LiftRequestFormProps {
-  requestTypes: {
-    [key: string]: number;
-  };
-  doorStates: {
-    [key: string]: number;
-  };
+  requestTypes: requestManagerModes;
+  doorStates: requestManagerModes;
   destinationList: string[];
   liftRequest(doorState: number, requestType: number, destination: string): void;
 }
