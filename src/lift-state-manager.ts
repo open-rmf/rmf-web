@@ -80,7 +80,7 @@ export class LiftRequestManager {
   ]
 
   static getLiftRequestModes(): requestManagerModes {
-    let modes: any = {};
+    let modes: requestManagerModes = {};
     this.liftRequestModes.forEach(element => {
       const key = this.requestModeToString(element);
       modes[key] = element
@@ -89,7 +89,7 @@ export class LiftRequestManager {
   }
 
   static getDoorModes(): requestManagerModes {
-    let modes: any = {};
+    let modes: requestManagerModes = {};
     this.doorModes.forEach(element => {
       const key = this.doorStateToString(element);
       modes[key] = element

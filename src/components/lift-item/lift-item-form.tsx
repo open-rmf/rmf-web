@@ -54,7 +54,7 @@ const LiftRequestForm = (props: LiftRequestFormProps) => {
     return isValid;
   };
 
-  const handleLiftRequest = (event: any) => {
+  const handleLiftRequest = (event: React.FormEvent) => {
     event.preventDefault();
     if (isFormValid()) {
       const liftDoor = doorStates[doorState];
