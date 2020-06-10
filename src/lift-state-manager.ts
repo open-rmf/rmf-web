@@ -65,17 +65,16 @@ export default class LiftStateManager extends EventEmitter<Events> {
 }
 
 export class LiftRequestManager {
-  static liftModes = [
+  static readonly liftModes = [
     RomiCore.LiftRequest.REQUEST_END_SESSION,
     RomiCore.LiftRequest.REQUEST_AGV_MODE,
     RomiCore.LiftRequest.REQUEST_HUMAN_MODE,
   ];
 
-  static doorModes = [
+  static readonly doorModes = [
     RomiCore.LiftRequest.DOOR_CLOSED,
     RomiCore.LiftRequest.DOOR_OPEN,
   ]
-
 
   static getLiftRequestModes() {
     let listOfModes: Array<any> = [];
@@ -96,7 +95,6 @@ export class LiftRequestManager {
   }
 
   static getAllDoorModes() {
-
     let listOfModes: Array<any> = [];
     this.doorModes.forEach(element => {
       const key = this.doorStateToString(element);
@@ -119,7 +117,7 @@ export class LiftRequestManager {
       case RomiCore.LiftRequest.REQUEST_END_SESSION:
         return 'End Session';
       case RomiCore.LiftRequest.REQUEST_AGV_MODE:
-        return 'AVG';
+        return 'AGV';
       case RomiCore.LiftRequest.REQUEST_HUMAN_MODE:
         return 'Human';
       default:
@@ -142,7 +140,7 @@ export class LiftRequestManager {
     switch (liftMode) {
       case 'End Session':
         return RomiCore.LiftRequest.REQUEST_END_SESSION;
-      case 'AVG':
+      case 'AGV':
         return RomiCore.LiftRequest.REQUEST_AGV_MODE;
       case 'Human':
         return RomiCore.LiftRequest.REQUEST_HUMAN_MODE;
@@ -160,4 +158,3 @@ export class LiftRequestManager {
     }
   }
 }
-

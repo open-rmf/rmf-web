@@ -8,7 +8,6 @@ import {
   ExpansionPanelProps,
   ExpansionPanelSummary,
   makeStyles,
-  PopoverPosition,
   Typography,
 } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
@@ -61,45 +60,38 @@ export const LiftItem = React.forwardRef(function(
   };
 
   return (
-    <React.Fragment>
-      <ExpansionPanel ref={ref} {...otherProps}>
-        <ExpansionPanelSummary
-          classes={{ content: classes.expansionSummaryContent }}
-          expandIcon={<ExpandMoreIcon />}
-        >
-          <Typography variant="h5">{lift.name}</Typography>
-          <Typography className={liftFloorLabel(liftState)} variant="button">
-            {liftState ? liftState.current_floor : 'Unknown'}
-          </Typography>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails className={classes.expansionDetail}>
-          <AntTabs value={tabValue} onChange={handleChange} aria-label="ant example">
-            <AntTab label="Info" />
-            <AntTab label="Request" />
-          </AntTabs>
-          <TabPanel value={tabValue} index={0}>
-            <LiftInformation lift={lift} liftState={liftState} />
-          </TabPanel>
-          <TabPanel value={tabValue} index={1}>
-            {liftState?.available_floors && (
-              <LiftRequestForm
-                liftRequest={handleRequest}
-                doorStateList={LiftRequestManager.getListOfDoorModes()}
-                requestTypeList={LiftRequestManager.getListOfLiftRequestModes()}
-                destinationList={liftState?.available_floors}
-              />
-            )}
-          </TabPanel>
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
-    </React.Fragment>
+    <ExpansionPanel ref={ref} {...otherProps}>
+      <ExpansionPanelSummary
+        classes={{ content: classes.expansionSummaryContent }}
+        expandIcon={<ExpandMoreIcon />}
+      >
+        <Typography variant="h5">{lift.name}</Typography>
+        <Typography className={liftFloorLabel(liftState)} variant="button">
+          {liftState ? liftState.current_floor : 'Unknown'}
+        </Typography>
+      </ExpansionPanelSummary>
+      <ExpansionPanelDetails className={classes.expansionDetail}>
+        <AntTabs value={tabValue} onChange={handleChange} aria-label="ant example">
+          <AntTab label="Info" />
+          <AntTab label="Request" />
+        </AntTabs>
+        <TabPanel value={tabValue} index={0}>
+          <LiftInformation lift={lift} liftState={liftState} />
+        </TabPanel>
+        <TabPanel value={tabValue} index={1}>
+          {lift.levels && (
+            <LiftRequestForm
+              liftRequest={handleRequest}
+              doorStateList={LiftRequestManager.getListOfDoorModes()}
+              requestTypeList={LiftRequestManager.getListOfLiftRequestModes()}
+              destinationList={lift.levels}
+            />
+          )}
+        </TabPanel>
+      </ExpansionPanelDetails>
+    </ExpansionPanel>
   );
 });
-
-interface LiftRequestMenuState {
-  lift: RomiCore.Lift;
-  anchor: PopoverPosition;
-}
 
 const useStyles = makeStyles(theme => {
   const liftFloorLabelBase: CSSProperties = {

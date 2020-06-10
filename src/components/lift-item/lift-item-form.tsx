@@ -1,5 +1,4 @@
 import { makeStyles, TextField, Button } from '@material-ui/core';
-import { successMsg } from '../../util/alerts';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useState } from 'react';
 import { LiftRequestManager } from '../../lift-state-manager';
@@ -55,7 +54,6 @@ const LiftRequestForm = (props: LiftRequestFormProps) => {
       const liftRequestType = LiftRequestManager.StringToLiftMode(requestType);
       if (liftDoor !== undefined && liftRequestType !== undefined) {
         liftRequest(liftDoor, liftRequestType, destination);
-        successMsg('Success');
         cleanUpForm();
       }
     }
