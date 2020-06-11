@@ -8,6 +8,7 @@ import authStyles from './auth-style';
 import { Redirect } from 'react-router-dom';
 import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 import { Typography } from '@material-ui/core';
+import { DASHBOARD_ROUTE } from '../../util/url';
 
 interface LoginProps {
   auth: AuthService;
@@ -70,7 +71,7 @@ export default function Login(props: LoginProps): JSX.Element {
 
   return (
     <div className={`${classes.flexColumnContainer} ${classes.fullPage}`}>
-      {!!redirect && <Redirect to="/dashboard" />}
+      {!!redirect && <Redirect to={DASHBOARD_ROUTE} />}
       <div className={`${classes.flexColumnContainer} ${classes.authContainer}`}>
         <h1 className={classes.authTitle}>RoMi Dashboard</h1>
         <img src="assets/ros-health.png" alt="" className={classes.logo} />
