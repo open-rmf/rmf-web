@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { DASHBOARD_ROUTE, LOGIN_ROUTE, REGISTER_ROUTE, DEFAULT_ROUTE } from '../util/url';
 import Dashboard from './dashboard';
-import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import RegisterForm from './login/registerForm';
 import Login from './login/login';
 import { UserContext } from '../app-contexts';
@@ -16,7 +16,6 @@ export default function App() {
   return (
     <UserContext.Provider value={user}>
       <BrowserRouter>
-        {/* {isEmpty(user) && <Redirect to={LOGIN_ROUTE} />} */}
         <Switch>
           <Route exact={true} path={LOGIN_ROUTE} component={Login} />
           <Route exact={true} path={REGISTER_ROUTE} component={RegisterForm} />
@@ -41,4 +40,3 @@ export default function App() {
     </UserContext.Provider>
   );
 }
-//            {/* {!isEmpty(user) && <Dashboard appConfig={appConfig}></Dashboard>} */}
