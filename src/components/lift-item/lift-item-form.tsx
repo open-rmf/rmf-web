@@ -135,6 +135,7 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     alignItems: 'center',
     flexDirection: 'column',
+    padding: '0.5rem',
   },
   divForm: {
     padding: '0.5rem',

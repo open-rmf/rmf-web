@@ -9,11 +9,13 @@ import {
   ExpansionPanelSummary,
   makeStyles,
   Typography,
+  Tab,
+  Tabs,
 } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React, { CSSProperties } from 'react';
-import { AntTabs, AntTab, TabPanel } from '../tab';
+import { TabPanel } from '../tab';
 import { LiftInformation } from './lift-item-information';
 import LiftRequestForm from './lift-item-form';
 import { LiftRequestManager } from '../../lift-state-manager';
@@ -74,10 +76,18 @@ export const LiftItem = React.forwardRef(function(
         </Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails className={classes.expansionDetail}>
-        <AntTabs value={tabValue} onChange={handleChange} aria-label="ant example">
-          <AntTab label="Info" />
-          <AntTab label="Request" />
-        </AntTabs>
+        <Tabs
+          value={tabValue}
+          onChange={handleChange}
+          indicatorColor="primary"
+          textColor="primary"
+          variant="scrollable"
+          scrollButtons="auto"
+          aria-label="scrollable auto tabs example"
+        >
+          <Tab label="Info" />
+          <Tab label="Request" />
+        </Tabs>
         <TabPanel value={tabValue} index={0}>
           <LiftInformation lift={lift} liftState={liftState} />
         </TabPanel>
