@@ -71,18 +71,20 @@ const LiftRequestForm = (props: LiftRequestFormProps) => {
       <div className={classes.divForm}>
         <Autocomplete
           getOptionLabel={option => option}
+          id="destination"
           onChange={(e, value) => setDestination(value || '')}
           options={destinationList}
           renderInput={params => (
-            <TextField {...params} label="Pick a Destination" variant="outlined" />
+            <TextField
+              {...params}
+              label="Pick a Destination"
+              variant="outlined"
+              error={!!destinationError}
+              helperText={destinationError}
+            />
           )}
           value={!!destination ? destination : null}
         />
-        {destinationError && (
-          <p id="destinationError" className={classes.error}>
-            {destinationError}
-          </p>
-        )}
       </div>
 
       <div className={classes.divForm}>
@@ -91,15 +93,16 @@ const LiftRequestForm = (props: LiftRequestFormProps) => {
           onChange={(e, value) => setDoorState(value || doorStateList[0])}
           options={doorStateList}
           renderInput={params => (
-            <TextField {...params} label="Pick a Door State" variant="outlined" />
+            <TextField
+              {...params}
+              label="Pick a Door State"
+              variant="outlined"
+              error={!!doorStateError}
+              helperText={doorStateError}
+            />
           )}
           value={!!doorState ? doorState : null}
         />
-        {doorStateError && (
-          <p id="doorStateError" className={classes.error}>
-            {doorStateError}
-          </p>
-        )}
       </div>
 
       <div className={classes.divForm}>
@@ -108,15 +111,16 @@ const LiftRequestForm = (props: LiftRequestFormProps) => {
           onChange={(e, value) => setRequestType(value || requestTypeList[0])}
           options={requestTypeList}
           renderInput={params => (
-            <TextField {...params} label="Pick Request Type" variant="outlined" />
+            <TextField
+              {...params}
+              label="Pick Request Type"
+              variant="outlined"
+              error={!!requestTypeError}
+              helperText={requestTypeError}
+            />
           )}
           value={!!requestType ? requestType : null}
         />
-        {requestTypeError && (
-          <p id="requestTypeError" className={classes.error}>
-            {requestTypeError}
-          </p>
-        )}
       </div>
 
       <div className={classes.buttonContainer}>

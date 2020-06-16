@@ -47,7 +47,12 @@ describe('form Validation', () => {
   test('Destination cannot be empty', async () => {
     const wrapper = buildWrapper();
     wrapper.find('form').simulate('submit');
-    expect(wrapper.find('#destinationError').html()).toContain('Destination cannot be empty');
+    expect(
+      wrapper
+        .find('#destination')
+        .find('p')
+        .html(),
+    ).toContain('Destination cannot be empty');
     wrapper.unmount();
   });
 });
