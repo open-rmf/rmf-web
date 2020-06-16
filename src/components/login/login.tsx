@@ -11,7 +11,8 @@ import { Typography } from '@material-ui/core';
 import { DASHBOARD_ROUTE } from '../../util/url';
 
 interface LoginProps {
-  auth: AuthService;
+  // TODO: auth should be strict when an authentication service is implemented.
+  auth?: AuthService;
 }
 
 export function Alert(props: AlertProps) {
@@ -75,7 +76,6 @@ export default function Login(props: LoginProps): JSX.Element {
       <div className={`${classes.flexColumnContainer} ${classes.authContainer}`}>
         <h1 className={classes.authTitle}>RoMi Dashboard</h1>
         <img src="assets/ros-health.png" alt="" className={classes.logo} />
-
         <form
           className={`${classes.authForm} ${classes.flexColumnContainer}`}
           onSubmit={submit}
@@ -97,7 +97,6 @@ export default function Login(props: LoginProps): JSX.Element {
             value={password}
             type="password"
           />
-
           <div className={classes.buttonContainer}>
             <Button
               className={classes.button}
@@ -114,7 +113,6 @@ export default function Login(props: LoginProps): JSX.Element {
             <Typography>Need to reset your password?</Typography>
           </div>
         </form>
-
         <Snackbar
           open={showLoginFail}
           autoHideDuration={3000}
