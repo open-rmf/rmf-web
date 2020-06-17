@@ -54,8 +54,8 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down(450)]: {
       position: 'absolute',
       width: "100%",
-      height: "25%",
-      top: '75%',
+      height: "35%",
+      top: '65%',
       backgroundColor: theme.palette.background.default,
       zIndex: 1024,
       borderTopLeftRadius: borderRadius,
