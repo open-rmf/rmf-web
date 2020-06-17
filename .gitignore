@@ -23,4 +23,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # e2e artifacts
-/src/e2e-tests/soss.yaml
+/e2e-test/soss.yaml
+/chromedriver.log
+/tests_output/
+/e2e-test/src/*.js

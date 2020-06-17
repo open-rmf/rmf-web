@@ -237,6 +237,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
 
   return (
     <LMap
+      id="schedule-visualizer"
       ref={mapRef}
       className={classes.map}
       attributionControl={false}
