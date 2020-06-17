@@ -8,6 +8,7 @@ import {
   makeStyles,
   Radio,
   RadioGroup,
+  useMediaQuery
 } from '@material-ui/core';
 import React from 'react';
 import { Settings, TrajectoryAnimation } from '../settings';
@@ -27,13 +28,15 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
     [],
   );
 
+  const drawerAnchor = useMediaQuery("(max-width: 450px)") ? "bottom" : "right";
+
   function handleTrajectoryAnimationChange(ev: React.ChangeEvent<HTMLInputElement>): void {
     const newSettings: Settings = { ...settings, trajectoryAnimation: Number(ev.target.value) };
     onSettingsChange && onSettingsChange(newSettings);
   }
 
   return (
-    <Drawer PaperProps={{ className: classes.drawer }} anchor="right" {...otherProps}>
+    <Drawer PaperProps={{ className: classes.drawer }} anchor={drawerAnchor} {...otherProps}>
       <FormControl component="fieldset">
         <FormLabel component="legend" className={classes.legendLabel}>
           Trajectory Animation
@@ -61,15 +64,33 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
 
 const useStyles = makeStyles(theme => ({
   drawer: {
-    width: 300,
+    [theme.breakpoints.up(450)]: {
+      width: 300
+    },
+    [theme.breakpoints.down(450)]: {
+      width: "100%"
+    }
   },
   legendLabel: {
-    fontSize: theme.typography.h6.fontSize,
-    padding: theme.spacing(1),
+    [theme.breakpoints.up(450)]: {
+      fontSize: theme.typography.h6.fontSize,
+      padding: theme.spacing(1),
+    },
+    [theme.breakpoints.down(450)]: {
+      fontSize: theme.typography.h6.fontSize,
+      padding: theme.spacing(1),
+      margin: "auto",
+    },
   },
   trajGroup: {
-    flexDirection: 'row',
-    paddingLeft: theme.spacing(2),
+    [theme.breakpoints.up(450)]: {
+      flexDirection: 'row',
+      paddingLeft: theme.spacing(2)
+    },
+    [theme.breakpoints.down(450)]: {
+      flexDirection: 'row',
+      paddingLeft: theme.spacing(12),
+    },
   },
   flexBasis: {
     flexBasis: '40%',
