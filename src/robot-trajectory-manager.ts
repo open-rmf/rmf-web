@@ -6,7 +6,7 @@ export type RawVelocity = [number, number, number];
 // RawPose2D received from server is in this format (x, y, theta)
 export type RawPose2D = [number, number, number];
 
-interface RawKnot {
+export interface RawKnot {
   t: number; // milliseconds
   v: RawVelocity;
   x: RawPose2D;
@@ -97,7 +97,7 @@ export class DefaultTrajectoryManager {
 
   private _ongoingRequest: Promise<MessageEvent> | null = null;
 
-  private constructor(private _webSocket: WebSocket) {}
+  private constructor(private _webSocket: WebSocket) { }
 
   private _listenOnce<K extends keyof WebSocketEventMap>(
     event: K,

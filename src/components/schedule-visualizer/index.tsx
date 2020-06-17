@@ -8,6 +8,7 @@ import {
   RobotTrajectoryManager,
   Trajectory,
   TrajectoryResponse,
+  RawKnot,
 } from '../../robot-trajectory-manager';
 import { AnimationSpeed, SettingsContext, TrajectoryAnimation } from '../../settings';
 import { toBlobUrl } from '../../util';
@@ -75,7 +76,6 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   ]);
 
   const [trajectories, setTrajectories] = React.useState<Record<string, TrajectoryResponse>>({});
-
   const initialBounds = React.useMemo<Readonly<L.LatLngBounds> | undefined>(() => {
     const initialLayer = mapFloorLayers[mapFloorLayerSort[0]];
     if (!initialLayer) {
@@ -221,10 +221,54 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     return resp ? resp.values : [];
   }
 
+  console.log(trajectories);
   function getConflicts(levelName: string): Conflict[] {
     const resp = trajectories[levelName];
     return resp ? resp.conflicts : [];
   }
+
+  function getConflictsPoints(levelName: string) {
+    const resp = trajectories[levelName];
+
+    function getSegmentsById(id: number) {
+      const trajectory = resp.values.find(element => element.id === id);
+      return trajectory?.segments;
+    }
+
+    function getPositionXY(segment: RawKnot) {
+      return { x: segment.x[0], y: segment.x[1] };
+    }
+
+    function getConflictLocation(positions: { x: number; y: number }[]) {
+      const seen = positions.filter(
+        (set => (position: any) =>
+          set.has(JSON.stringify(position)) || !set.add(JSON.stringify(position)))(new Set()),
+      );
+
+      let uniqueCoords: { x: number; y: number }[] = [];
+      for (let index = 0; index < seen.length; index++) {
+        const element = seen[index];
+        if (!uniqueCoords.some(e => JSON.stringify(e) === JSON.stringify(element))) {
+          uniqueCoords.push(element);
+        }
+      }
+      return uniqueCoords;
+    }
+
+    if (resp && resp.conflicts) {
+      let conflictSegmentsPositions: any = [];
+      resp.conflicts.forEach(trajectoryId => {
+        const segments = getSegmentsById(trajectoryId);
+        segments &&
+          segments.forEach(segment => {
+            conflictSegmentsPositions.push(getPositionXY(segment));
+          });
+      });
+      getConflictLocation(conflictSegmentsPositions);
+    }
+    return [];
+  }
+  curMapFloorLayer && getConflictsPoints(curMapFloorLayer.level.name);
 
   const sortedMapFloorLayers = mapFloorLayerSort.map(x => mapFloorLayers[x]);
   const ref = React.useRef<ImageOverlay>(null);

@@ -9,6 +9,7 @@ export interface RobotTrajectoryProps
     React.SVGAttributes<SVGPathElement> {
   trajectory: Trajectory;
   conflicts: Conflict[];
+  // conflictPoint:
   footprint: number;
 }
 
