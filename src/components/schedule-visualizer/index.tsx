@@ -13,7 +13,11 @@ import {
 import { AnimationSpeed, SettingsContext, TrajectoryAnimation } from '../../settings';
 import { toBlobUrl } from '../../util';
 import ColorManager from './colors';
-import RobotTrajectoriesOverlay, { RobotTrajectoryContext } from './robot-trajectories-overlay';
+import PlacesOverlay from './places-overlay';
+import RobotTrajectoriesOverlay, {
+  RobotTrajectoryContext,
+  TrajectoryCoords,
+} from './robot-trajectories-overlay';
 import RobotTrajectory from './robot-trajectory';
 import RobotsOverlay from './robots-overlay';
 import {
@@ -221,13 +225,12 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     return resp ? resp.values : [];
   }
 
-  console.log(trajectories);
   function getConflicts(levelName: string): Conflict[] {
     const resp = trajectories[levelName];
     return resp ? resp.conflicts : [];
   }
 
-  function getConflictsPoints(levelName: string) {
+  function getConflictsPoints(levelName: string): RawKnot[] {
     const resp = trajectories[levelName];
 
     function getSegmentsById(id: number) {
@@ -239,13 +242,13 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       return { x: segment.x[0], y: segment.x[1] };
     }
 
-    function getConflictLocation(positions: { x: number; y: number }[]) {
+    function getConflictCoords(positions: TrajectoryCoords[]) {
       const seen = positions.filter(
         (set => (position: any) =>
           set.has(JSON.stringify(position)) || !set.add(JSON.stringify(position)))(new Set()),
       );
 
-      let uniqueCoords: { x: number; y: number }[] = [];
+      let uniqueCoords: TrajectoryCoords[] = [];
       for (let index = 0; index < seen.length; index++) {
         const element = seen[index];
         if (!uniqueCoords.some(e => JSON.stringify(e) === JSON.stringify(element))) {
@@ -255,20 +258,39 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       return uniqueCoords;
     }
 
+    function getConflictSegments(conflictTrajectories: RawKnot[], positions: TrajectoryCoords[]) {
+      let conflictSegments: RawKnot[] = [];
+      for (let index = 0; index < conflictTrajectories.length; index++) {
+        const trajectory = conflictTrajectories[index];
+        for (let index = 0; index < positions.length; index++) {
+          const position = positions[index];
+          if (trajectory.x[0] === position.x && trajectory.x[1] === position.y) {
+            conflictSegments.push(trajectory);
+          }
+        }
+      }
+      return conflictSegments;
+    }
+
     if (resp && resp.conflicts) {
-      let conflictSegmentsPositions: any = [];
+      let conflictTrajectoryPositions: any = [];
+      let conflictTrajectories: RawKnot[] = [];
       resp.conflicts.forEach(trajectoryId => {
         const segments = getSegmentsById(trajectoryId);
         segments &&
           segments.forEach(segment => {
-            conflictSegmentsPositions.push(getPositionXY(segment));
+            conflictTrajectoryPositions.push(getPositionXY(segment));
+            conflictTrajectories.push(segment);
           });
       });
-      getConflictLocation(conflictSegmentsPositions);
+      // Get the conflicting coords from the segments
+      const conflictCoords = getConflictCoords(conflictTrajectoryPositions);
+      // filters segments with conflicts
+      const conflictPoints = getConflictSegments(conflictTrajectories, conflictCoords);
+      return conflictPoints;
     }
     return [];
   }
-  curMapFloorLayer && getConflictsPoints(curMapFloorLayer.level.name);
 
   const sortedMapFloorLayers = mapFloorLayerSort.map(x => mapFloorLayers[x]);
   const ref = React.useRef<ImageOverlay>(null);
@@ -313,6 +335,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
                   bounds={curMapFloorLayer.bounds}
                   trajs={getTrajectory(curMapFloorLayer.level.name)}
                   conflicts={getConflicts(curMapFloorLayer.level.name)}
+                  conflictsSegments={getConflictsPoints(curMapFloorLayer.level.name)}
                   colorManager={colorManager}
                 />
               </RobotTrajectoryContext.Provider>

@@ -1,6 +1,6 @@
 import * as L from 'leaflet';
 import React from 'react';
-import { Conflict, Trajectory } from '../../robot-trajectory-manager';
+import { Conflict, Trajectory, RawKnot } from '../../robot-trajectory-manager';
 import ColorManager from './colors';
 import RobotTrajectory, { RobotTrajectoryProps } from './robot-trajectory';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
@@ -9,12 +9,13 @@ export interface RobotTrajectoriesOverlayProps extends SVGOverlayProps {
   trajs: readonly Trajectory[];
   conflicts: Conflict[];
   colorManager: Readonly<ColorManager>;
+  conflictsSegments?: RawKnot[];
 }
 
 export default function RobotTrajectoriesOverlay(
   props: RobotTrajectoriesOverlayProps,
 ): React.ReactElement {
-  const { trajs, conflicts, colorManager, ...otherProps } = props;
+  const { trajs, conflicts, colorManager, conflictsSegments, ...otherProps } = props;
   const trajectoryContext = React.useContext(RobotTrajectoryContext);
 
   const bounds =
@@ -35,6 +36,7 @@ export default function RobotTrajectoriesOverlay(
             trajectory={traj}
             footprint={footprint}
             conflicts={conflicts}
+            conflictsSegments={conflictsSegments}
           />
         ))}
       </svg>
@@ -44,6 +46,11 @@ export default function RobotTrajectoriesOverlay(
 
 export interface RobotTrajectoryContext {
   Component: React.ComponentType<RobotTrajectoryProps>;
+}
+
+export interface TrajectoryCoords {
+  x: number;
+  y: number;
 }
 
 export const RobotTrajectoryContext = React.createContext<RobotTrajectoryContext>({
