@@ -1,9 +1,10 @@
 import { useTheme } from '@material-ui/core';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Conflict, rawKnotsToKnots, Trajectory, RawKnot } from '../../robot-trajectory-manager';
 import { bezierControlPoints, knotsToSegmentCoefficientsArray } from '../../util/cublic-spline';
 import { TrajectoryPath } from './trajectory-animations';
 import { TrajectoryCoords } from './robot-trajectories-overlay';
+import ColorManager from './colors';
 
 export interface RobotTrajectoryProps
   extends React.RefAttributes<SVGPathElement>,
@@ -12,15 +13,24 @@ export interface RobotTrajectoryProps
   conflicts: Conflict[];
   conflictsSegments?: RawKnot[];
   footprint: number;
+  colorManager: Readonly<ColorManager>;
 }
 
 export const RobotTrajectory = React.forwardRef(function(
   props: RobotTrajectoryProps,
   ref: React.Ref<SVGPathElement>,
 ): React.ReactElement {
-  const { trajectory, conflicts, footprint, conflictsSegments, ...otherProps } = props;
+  const {
+    trajectory,
+    conflicts,
+    footprint,
+    conflictsSegments,
+    colorManager,
+    ...otherProps
+  } = props;
   const theme = useTheme();
 
+  const [color, setColor] = useState(theme.palette.success.main);
   const pathD = React.useMemo(() => {
     const knots = rawKnotsToKnots(trajectory.segments);
     const coeff = knotsToSegmentCoefficientsArray(knots);
@@ -57,28 +67,15 @@ export const RobotTrajectory = React.forwardRef(function(
     }
   }, [conflictsSegments]);
 
-  const color = React.useMemo(
-    () =>
-      conflicts.includes(trajectory.id) ? theme.palette.error.main : theme.palette.success.main,
-    [trajectory, conflicts, theme],
-  );
+  // useEffect(() => {
+  //   async function settingColor() {
+  //     setColor(await colorManager.robotColor(trajectory.id.toString(), trajectory.id.toString()));
+  //   }
+  //   settingColor();
+  // }, [trajectory, colorManager]);
+
   return (
     <>
-      {pathConflict && (
-        <path
-          ref={ref}
-          d={pathConflict}
-          stroke={theme.palette.error.main}
-          opacity={0.8}
-          strokeWidth={footprint * 0.8}
-          strokeLinecap="round"
-          fill="none"
-          pathLength={1}
-          strokeDasharray={2}
-          strokeDashoffset={0}
-          {...otherProps}
-        />
-      )}
       <path
         data-component="RobotTrajectory"
         ref={ref}
@@ -93,6 +90,21 @@ export const RobotTrajectory = React.forwardRef(function(
         strokeDashoffset={0}
         {...otherProps}
       />
+      {pathConflict && (
+        <path
+          ref={ref}
+          d={pathConflict}
+          stroke={theme.palette.error.main}
+          opacity={0.8}
+          strokeWidth={footprint * 0.6}
+          strokeLinecap="round"
+          fill="none"
+          pathLength={1}
+          strokeDasharray={2}
+          strokeDashoffset={0}
+          {...otherProps}
+        />
+      )}
     </>
   );
 });

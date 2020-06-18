@@ -37,6 +37,7 @@ export default function RobotTrajectoriesOverlay(
             footprint={footprint}
             conflicts={conflicts}
             conflictsSegments={conflictsSegments}
+            colorManager={colorManager}
           />
         ))}
       </svg>
