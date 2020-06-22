@@ -22,8 +22,12 @@ async function killProcess(proc, signal) {
 }
 
 (async () => {
-  // TODO: headless mode for CI
-  const officeDemo = child_process.spawn('ros2', ['launch', 'demos', 'office.launch.xml']);
+  const headless = !!process.env.DASHBOARD_E2E_HEADLESS;
+  const officeDemoArgs = ['launch', 'demos', 'office.launch.xml'];
+  if (headless) {
+    officeDemoArgs.push('headless:=true');
+  }
+  const officeDemo = child_process.spawn('ros2', officeDemoArgs);
   const soss = child_process.spawn('soss', [`${__dirname}/soss.yaml`]);
   const visualizerServer = child_process.spawn('ros2', ['launch', 'visualizer', 'server.xml']);
   const serve = child_process.spawn('npx', ['serve', 'build']);
