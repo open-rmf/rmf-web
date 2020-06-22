@@ -61,7 +61,7 @@ const Door = React.forwardRef(function(
   };
 
   return (
-    <>
+    <g ref={ref} id={`svg-g-door-${door.name}`} name={door.name}>
       {doorType === DOOR_TYPE_SINGLE_SWING && (
         <SingleHingeDoor
           v1={v1}
@@ -99,7 +99,7 @@ const Door = React.forwardRef(function(
         />
       )}
       {doorType === DOOR_TYPE_UNDEFINED && <DefaultDoor v1={v1} v2={v2} onClick={handleClick} />}
-    </>
+    </g>
   );
 });
 
