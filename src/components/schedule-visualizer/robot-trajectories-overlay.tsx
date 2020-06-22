@@ -15,7 +15,7 @@ export interface RobotTrajectoriesOverlayProps extends SVGOverlayProps {
 export default function RobotTrajectoriesOverlay(
   props: RobotTrajectoriesOverlayProps,
 ): React.ReactElement {
-  const { trajs, conflicts, colorManager, conflictsSegments, ...otherProps } = props;
+  const { trajs, conflicts, conflictsSegments, ...otherProps } = props;
   const trajectoryContext = React.useContext(RobotTrajectoryContext);
 
   const bounds =
@@ -37,7 +37,6 @@ export default function RobotTrajectoriesOverlay(
             footprint={footprint}
             conflicts={conflicts}
             conflictsSegments={conflictsSegments}
-            colorManager={colorManager}
           />
         ))}
       </svg>

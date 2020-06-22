@@ -1,4 +1,5 @@
 import { Knot } from './util/cublic-spline';
+import { TrajectoryCoords } from './components/schedule-visualizer/robot-trajectories-overlay';
 
 // RawVelocity received from server is in this format (x, y, theta)
 export type RawVelocity = [number, number, number];
@@ -164,6 +165,49 @@ export function rawKnotsToKnots(rawKnots: RawKnot[]): Knot[] {
   }
 
   return knots;
+}
+
+export class TrajectorySegmentManager {
+  static getSegmentsById(segments: TrajectoryResponse, id: number): RawKnot[] | undefined {
+    const trajectory = segments.values.find(element => element.id === id);
+    return trajectory?.segments;
+  }
+
+  static getPositionXY(segment: RawKnot): TrajectoryCoords {
+    return { x: segment.x[0], y: segment.x[1] };
+  }
+
+  static getConflictCoords(positions: TrajectoryCoords[]): TrajectoryCoords[] {
+    const seen = positions.filter(
+      (set => (position: any) =>
+        set.has(JSON.stringify(position)) || !set.add(JSON.stringify(position)))(new Set()),
+    );
+
+    let uniqueCoords: TrajectoryCoords[] = [];
+    for (let index = 0; index < seen.length; index++) {
+      const element = seen[index];
+      if (!uniqueCoords.some(e => JSON.stringify(e) === JSON.stringify(element))) {
+        uniqueCoords.push(element);
+      }
+    }
+    return uniqueCoords;
+  }
+
+  static getConflictSegments(conflictTrajectories: RawKnot[], positions: TrajectoryCoords[]) {
+    let conflictSegments: RawKnot[] = [];
+    for (let index = 0; index < conflictTrajectories.length; index++) {
+      const trajectory = conflictTrajectories[index];
+      for (let index = 0; index < positions.length; index++) {
+        const position = positions[index];
+        if (trajectory.x[0] === position.x && trajectory.x[1] === position.y) {
+          conflictSegments.push(trajectory);
+
+        }
+      }
+      return conflictSegments;
+    }
+  }
+
 }
 
 type WebSocketSendParam0T = Parameters<WebSocket['send']>[0];

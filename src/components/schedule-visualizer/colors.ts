@@ -41,6 +41,19 @@ export default class ColorManager {
     return color ? color : null;
   }
 
+  /**
+   * Gets a light color for the path. This function shouldn't have a method to memoize because the id should never be equal. The hash is an async function that takes a while to give a response. Since our application should graph the path in real time, the hash was discarded and the path id was chosen to calculate its color. An attempt was made to get the colors with the hash by wrapping it in a useEffect but the update time was not fast enough.
+   * @param pathId : id of the path
+   */
+  static getPathColor(pathId: number) {
+    const pathRandomNumber = (pathId < 1000) ? pathId * 100 : pathId
+    const hue = pathRandomNumber % 360;
+    const satlum = pathRandomNumber % 2500;
+    const saturation = 50 + (satlum % 50);
+    const luminance = 25 + satlum / 50;
+    return `hsl(${hue}, ${saturation}%, ${luminance}%)`;
+  }
+
   private _robotColorCache: Record<string, string> = {};
 
   private _robotKey(name: string, model: string) {
