@@ -14,20 +14,32 @@ import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 
-export interface DoorItemProps extends Omit<ExpansionPanelProps, 'children'> {
+export interface DoorItemProps {
   door: Readonly<RomiCore.Door>;
   doorState?: Readonly<RomiCore.DoorState>;
   enableControls?: boolean;
   onDoorClick?(door: RomiCore.Door): void;
   onOpenClick?(door: RomiCore.Door): void;
   onCloseClick?(door: RomiCore.Door): void;
+
+  // props from ExpansionPanel
+  onClick: ExpansionPanelProps['onClick'];
+  expanded: ExpansionPanelProps['expanded'];
+  onChange: ExpansionPanelProps['onChange'];
 }
 
-export const DoorItem = React.forwardRef(function(
+export const DoorItem = React.forwardRef(function DoorItem(
   props: DoorItemProps,
   ref: React.Ref<HTMLElement>,
 ): React.ReactElement {
-  const { door, doorState, enableControls, onOpenClick, onCloseClick, ...otherProps } = props;
+  const {
+    door,
+    doorState,
+    enableControls,
+    onOpenClick,
+    onCloseClick,
+    ...expansionPanelProps
+  } = props;
   const classes = useStyles();
   const theme = useTheme();
 
@@ -48,7 +60,7 @@ export const DoorItem = React.forwardRef(function(
   }
 
   return (
-    <ExpansionPanel ref={ref} {...otherProps}>
+    <ExpansionPanel ref={ref} id="DoorItem" {...expansionPanelProps}>
       <ExpansionPanelSummary
         classes={{ content: classes.expansionSummaryContent }}
         expandIcon={<ExpandMoreIcon />}
