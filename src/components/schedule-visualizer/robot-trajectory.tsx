@@ -21,7 +21,6 @@ export const RobotTrajectory = React.forwardRef(function(
   const theme = useTheme();
 
   const [pathColor] = useState(ColorManager.getPathColor(trajectory.id));
-
   const pathD = React.useMemo(() => {
     const knots = rawKnotsToKnots(trajectory.segments);
     const coeff = knotsToSegmentCoefficientsArray(knots);

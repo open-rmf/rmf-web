@@ -25,12 +25,8 @@ export default class ColorManager {
     let color = this._robotColorCache[key];
     if (!color) {
       const modelHash = new Uint16Array(await _hash(model));
-      const hue = modelHash[0] % 360;
       const nameHash = new Uint16Array(await _hash(name));
-      const satlum = nameHash[0] % 2500;
-      const saturation = 50 + (satlum % 50);
-      const luminance = 25 + satlum / 50;
-      color = `hsl(${hue}, ${saturation}%, ${luminance}%)`;
+      color = ColorManager._getLightColor(modelHash[0], nameHash[0]);
       this._robotColorCache[key] = color;
     }
     return color;
@@ -46,9 +42,13 @@ export default class ColorManager {
    * @param pathId : id of the path
    */
   static getPathColor(pathId: number) {
-    const pathRandomNumber = (pathId < 1000) ? pathId * 100 : pathId
-    const hue = pathRandomNumber % 360;
-    const satlum = pathRandomNumber % 2500;
+    const pathRandomNumber = (pathId < 9999) ? pathId * 100 : pathId
+    return this._getLightColor(pathRandomNumber, pathRandomNumber);
+  }
+
+  private static _getLightColor(firstNumber: number, secondNumber: number) {
+    const hue = firstNumber % 360;
+    const satlum = secondNumber % 2500;
     const saturation = 50 + (satlum % 50);
     const luminance = 25 + satlum / 50;
     return `hsl(${hue}, ${saturation}%, ${luminance}%)`;
