@@ -26,6 +26,7 @@ import { SpotlightValue } from './spotlight-value';
 import { DoorStateContext } from './schedule-visualizer/doors-overlay';
 import { LiftStateContext } from './schedule-visualizer/lift-overlay';
 import appConfig from '../app-config';
+import LiftsPanel from './lift-item/lifts-panel';
 
 const borderRadius = 20;
 
