@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Alert, { AlertProps } from '@material-ui/lab/Alert';
 import { Snackbar } from '@material-ui/core';
 
-interface NotificationBarProps {
-  message: string;
+export interface NotificationBarProps {
+  message: string | undefined | null;
   type: AlertProps['severity']; // error | warning | info | success
   time?: string; // milliseconds
 }
@@ -13,7 +13,9 @@ const NotificationBar = (props: NotificationBarProps) => {
   const { message, type } = props;
 
   useEffect(() => {
-    setShowAlert(true);
+    if (!!message) {
+      setShowAlert(true);
+    }
   }, [message]);
 
   return (
@@ -26,3 +28,7 @@ const NotificationBar = (props: NotificationBarProps) => {
 };
 
 export default NotificationBar;
+
+export const NotificationBarContext = React.createContext<React.Dispatch<
+  React.SetStateAction<NotificationBarProps | null>
+> | null>(null);
