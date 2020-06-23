@@ -3,17 +3,15 @@ import React from 'react';
 import { Trajectory } from '../../robot-trajectory-manager';
 import { RobotTrajectoryProps } from './robot-trajectory';
 
-// Not Used
-// export interface TrajectoryAnimationProps extends React.SVGAttributes<SVGPathElement> {
-//   trajPath: TrajectoryPath;
-//   duration: number;
-// }
+export interface TrajectoryAnimationProps extends React.SVGAttributes<SVGPathElement> {
+  trajPath: TrajectoryPath;
+  duration: number;
+}
 
-// export interface TrajectoryPath {
-//   traj: Trajectory;
-//   d: string;
-//   segOffsets: number[];
-// }
+export interface TrajectoryPath {
+  d: string;
+  segOffsets: number[];
+}
 
 /**
  * Fills the trajectory as the robot moves through it.
