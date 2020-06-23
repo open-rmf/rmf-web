@@ -16,15 +16,14 @@ describe('door tests', () => {
     expect(doorItem.$('p*=Type')).toBeVisible();
   });
 
-  // TODO: fixed with feat/addLiftRequestForm, uncomment after merging
-  // it('clicking on open button opens the door', () => {
-  //   const doorItem = $(`#DoorItem*=${doorName}`);
+  it('clicking on open button opens the door', () => {
+    const doorItem = $(`#DoorItem*=${doorName}`);
 
-  //   expect(doorItem.$('span=CLOSED')).toBeVisible();
+    expect(doorItem.$('span=CLOSED')).toBeVisible();
 
-  //   const openButton = doorItem.$('button=Open');
-  //   openButton.click();
+    const openButton = doorItem.$('button=Open');
+    openButton.click();
 
-  //   expect(doorItem.$('span=OPEN')).toBeVisible();
-  // });
+    expect(doorItem.$('span=OPEN')).toBeVisible();
+  });
 });

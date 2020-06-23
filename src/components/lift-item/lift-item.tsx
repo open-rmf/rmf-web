@@ -1,7 +1,3 @@
-/**
- * TODO: Show indicator why lift controls are disabled.
- */
-
 import {
   ExpansionPanel,
   ExpansionPanelDetails,
