@@ -14,32 +14,20 @@ import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 
-export interface DoorItemProps {
+export interface DoorItemProps extends Omit<ExpansionPanelProps, 'children'> {
   door: Readonly<RomiCore.Door>;
   doorState?: Readonly<RomiCore.DoorState>;
   enableControls?: boolean;
   onDoorClick?(door: RomiCore.Door): void;
   onOpenClick?(door: RomiCore.Door): void;
   onCloseClick?(door: RomiCore.Door): void;
-
-  // props from ExpansionPanel
-  onClick: ExpansionPanelProps['onClick'];
-  expanded: ExpansionPanelProps['expanded'];
-  onChange: ExpansionPanelProps['onChange'];
 }
 
-export const DoorItem = React.forwardRef(function DoorItem(
+export const DoorItem = React.forwardRef(function(
   props: DoorItemProps,
   ref: React.Ref<HTMLElement>,
 ): React.ReactElement {
-  const {
-    door,
-    doorState,
-    enableControls,
-    onOpenClick,
-    onCloseClick,
-    ...expansionPanelProps
-  } = props;
+  const { door, doorState, enableControls, onOpenClick, onCloseClick, ...otherProps } = props;
   const classes = useStyles();
   const theme = useTheme();
 
@@ -60,17 +48,23 @@ export const DoorItem = React.forwardRef(function DoorItem(
   }
 
   return (
-    <ExpansionPanel ref={ref} id="DoorItem" {...expansionPanelProps}>
+    <ExpansionPanel
+      ref={ref}
+      data-component="DoorItem"
+      data-name={door.name}
+      data-state={doorModeToString(doorState)}
+      {...otherProps}
+    >
       <ExpansionPanelSummary
         classes={{ content: classes.expansionSummaryContent }}
         expandIcon={<ExpandMoreIcon />}
       >
         <Typography variant="h5">{door.name}</Typography>
-        <Typography className={doorModeLabelClasses(doorState)} variant="button">
+        <Typography data-role="state" className={doorModeLabelClasses(doorState)} variant="button">
           {doorModeToString(doorState)}
         </Typography>
       </ExpansionPanelSummary>
-      <ExpansionPanelDetails className={classes.expansionDetail}>
+      <ExpansionPanelDetails data-role="details" className={classes.expansionDetail}>
         <div className={classes.expansionDetailLine}>
           <Typography variant="body1">Type:</Typography>
           <Typography variant="body1">{doorTypeToString(door.door_type)}</Typography>

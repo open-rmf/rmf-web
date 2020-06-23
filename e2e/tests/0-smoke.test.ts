@@ -8,6 +8,6 @@ describe('smoke test', () => {
 
   it('can load', () => {
     browser.url('/');
-    expect($('#schedule-visualizer')).toBeVisible();
+    expect($('#ScheduleVisualizer')).toBeVisible();
   });
 });

@@ -237,7 +237,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
 
   return (
     <LMap
-      id="schedule-visualizer"
+      id="ScheduleVisualizer" // # data-* attrs are not set on the leaflet container
       ref={mapRef}
       className={classes.map}
       attributionControl={false}

@@ -60,6 +60,7 @@ export default function LiftsPanel(props: LiftsPanelProps): JSX.Element {
         return (
           <LiftItem
             key={lift.name}
+            id={`Liftitem-${lift.name}`}
             lift={lift}
             ref={ref => (liftRefs.current[lift.name] = ref)}
             liftState={liftState}

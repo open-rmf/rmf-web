@@ -23,7 +23,7 @@ export const RobotInformation = (props: robotInformationProps) => {
       <Divider />
       <div className={classes.expansionDetailLine}>
         <Typography variant="subtitle2">Position:</Typography>
-        <Typography variant="body1">
+        <Typography data-role="position" variant="body1">
           {`(${robot.location.x.toFixed(3)}, ${robot.location.y.toFixed(3)})`}
         </Typography>
       </div>
