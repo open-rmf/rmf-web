@@ -43,7 +43,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test --testPathIgnorePatterns integration-tests",
     "test:integration": "node src/integration-tests/launch.js test --testPathPattern integration-tests --watchAll=false",
-    "test:e2e": "node e2e/prepare.js && npm run build && wdio",
+    "test:e2e": "node e2e/prepare.js && wdio",
     "eject": "react-scripts eject",
     "deploy:demo": "REACT_APP_MOCK=1 npm run build && NODE_DEBUG=gh-pages gh-pages -d build -m \"$(git rev-parse HEAD)\""
   },
