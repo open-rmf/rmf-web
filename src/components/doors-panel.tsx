@@ -16,7 +16,7 @@ export default function DoorsPanel(props: DoorsPanelProps): JSX.Element {
   const doorRefs = React.useRef<Record<string, HTMLElement | null>>({});
   const [expanded, setExpanded] = React.useState<Record<string, boolean>>({});
   const doorRequestPub = React.useMemo(
-    () => (transport ? transport.createPublisher(RomiCore.doorRequests) : null),
+    () => (transport ? transport.createPublisher(RomiCore.adapterDoorRequests) : null),
     [transport],
   );
 

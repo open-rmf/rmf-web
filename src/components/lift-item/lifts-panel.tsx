@@ -1,7 +1,7 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 import { LiftItem } from './lift-item';
-import { SpotlightValue } from './spotlight-value';
+import { SpotlightValue } from '../spotlight-value';
 
 interface LiftsPanelProps {
   lifts: readonly RomiCore.Lift[];
@@ -15,17 +15,22 @@ interface LiftsPanelProps {
 export default function LiftsPanel(props: LiftsPanelProps): JSX.Element {
   const { transport, spotlight, onLiftRequest, onLiftClick } = props;
   const liftRequestPub = React.useMemo(
-    () => (transport ? transport.createPublisher(RomiCore.liftRequests) : null),
+    () => (transport ? transport.createPublisher(RomiCore.adapterLiftRequests) : null),
     [transport],
   );
   const liftRefs = React.useRef<Record<string, HTMLElement | null>>({});
   const [expanded, setExpanded] = React.useState<Readonly<Record<string, boolean>>>({});
 
-  function handleLiftRequest(lift: RomiCore.Lift, destination: string): void {
+  function handleLiftRequest(
+    lift: RomiCore.Lift,
+    doorState: number,
+    requestType: number,
+    destination: string,
+  ): void {
     liftRequestPub?.publish({
       lift_name: lift.name,
-      door_state: RomiCore.LiftRequest.DOOR_OPEN,
-      request_type: RomiCore.LiftRequest.REQUEST_AGV_MODE,
+      door_state: doorState,
+      request_type: requestType,
       request_time: RomiCore.toRosTime(new Date()),
       destination_floor: destination,
       session_id: transport!.name,
