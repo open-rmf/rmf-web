@@ -1,6 +1,6 @@
 import * as L from 'leaflet';
 import React, { useContext, useEffect } from 'react';
-import { Conflict, Trajectory, RawKnot, rawKnotsToKnots } from '../../robot-trajectory-manager';
+import { Conflict, Trajectory, RawKnot } from '../../robot-trajectory-manager';
 import ColorManager from './colors';
 import RobotTrajectory, { RobotTrajectoryProps } from './robot-trajectory';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
