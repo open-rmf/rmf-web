@@ -11,7 +11,7 @@ export interface RobotTrajectoriesOverlayProps extends SVGOverlayProps {
   trajs: readonly Trajectory[];
   conflicts: Conflict[];
   colorManager: Readonly<ColorManager>;
-  conflictsSegments?: RawKnot[];
+  conflictsSegments?: RawKnot[][];
 }
 
 export default function RobotTrajectoriesOverlay(
@@ -39,10 +39,8 @@ export default function RobotTrajectoriesOverlay(
         });
     }
   }, [conflicts, notificationDispatch]);
-
   return (
     <SVGOverlay {...otherProps}>
-      {console.log(trajs)}
       <svg viewBox={viewBox}>
         {trajs.map(traj => (
           <trajectoryContext.Component
@@ -50,12 +48,12 @@ export default function RobotTrajectoriesOverlay(
             trajectory={traj}
             footprint={footprint}
             conflicts={conflicts}
-            conflictsSegments={conflictsSegments}
           />
         ))}
-        {conflicts.length !== 0 && (
-          <RobotConflictTrajectory footprint={footprint} conflictsSegments={conflictsSegments} />
-        )}
+        {conflictsSegments?.length !== 0 &&
+          conflictsSegments?.map(segments => (
+            <RobotConflictTrajectory footprint={footprint} conflictsSegments={segments} />
+          ))}
       </svg>
     </SVGOverlay>
   );

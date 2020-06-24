@@ -176,16 +176,20 @@ export class TrajectorySegmentManager {
   static getPositionXY(segment: RawKnot): TrajectoryCoords {
     return { x: segment.x[0], y: segment.x[1] };
   }
-
-  static getConflictCoords(positions: TrajectoryCoords[]): TrajectoryCoords[] {
-    const seen = positions.filter(
+  /**
+   * Checks for duplicates on a list of type TrajectoryCoords[]. Returns the list of duplicated elements.
+   * @param positions list of element to to check for duplicates
+   */
+  static getRepeatedCoords(positions: TrajectoryCoords[]): TrajectoryCoords[] {
+    // Get duplicated coords
+    const seenCoords = positions.filter(
       (set => (position: any) =>
         set.has(JSON.stringify(position)) || !set.add(JSON.stringify(position)))(new Set()),
     );
-
+    // Return a unique list of duplicated coords.
     let uniqueCoords: TrajectoryCoords[] = [];
-    for (let index = 0; index < seen.length; index++) {
-      const element = seen[index];
+    for (let index = 0; index < seenCoords.length; index++) {
+      const element = seenCoords[index];
       if (!uniqueCoords.some(e => JSON.stringify(e) === JSON.stringify(element))) {
         uniqueCoords.push(element);
       }
@@ -193,19 +197,25 @@ export class TrajectorySegmentManager {
     return uniqueCoords;
   }
 
-  static getConflictSegments(conflictTrajectories: RawKnot[], positions: TrajectoryCoords[]) {
-    let conflictSegments: RawKnot[] = [];
-    for (let index = 0; index < conflictTrajectories.length; index++) {
-      const trajectory = conflictTrajectories[index];
-      for (let index = 0; index < positions.length; index++) {
-        const position = positions[index];
-        if (trajectory.x[0] === position.x && trajectory.x[1] === position.y) {
-          conflictSegments.push(trajectory);
-
+  static getConflictsInSetOfSegments(segments: RawKnot[], conflictPoints: TrajectoryCoords[]) {
+    let conflictSegments: RawKnot[] = []
+    for (let index = 0; index < segments.length; index++) {
+      const segment = segments[index];
+      for (let index = 0; index < conflictPoints.length; index++) {
+        const conflictPoint = conflictPoints[index];
+        if (segment.x[0] === conflictPoint.x && segment.x[1] === conflictPoint.y) {
+          conflictSegments.push(segment);
         }
       }
-      return conflictSegments;
     }
+    return conflictSegments;
+  }
+  static getConflictSegments(trajectoriesSegments: RawKnot[][], conflictPoints: TrajectoryCoords[]) {
+    let conflictSegments: RawKnot[][] = []
+    trajectoriesSegments.forEach(segments => {
+      conflictSegments.push(TrajectorySegmentManager.getConflictsInSetOfSegments(segments, conflictPoints));
+    });
+    return conflictSegments;
   }
 
 }
