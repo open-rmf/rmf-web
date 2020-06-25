@@ -36,6 +36,8 @@ export interface Trajectory {
   shape: string;
   dimensions: number;
   segments: RawKnot[];
+  robot_name: string;
+  fleet_name: string;
 }
 
 export interface TrajectoryResponse {
@@ -93,6 +95,11 @@ export class DefaultTrajectoryManager {
     const resp = JSON.parse(event.data);
     this._checkResponse(request, resp);
     return resp as TimeResponse;
+  }
+
+  static getRobotNameFromPathId(pathId: number, trajectories: readonly Trajectory[]) {
+    const traj = trajectories.find(trajectory => trajectory.id === pathId);
+    return traj?.robot_name;
   }
 
   private _ongoingRequest: Promise<MessageEvent> | null = null;

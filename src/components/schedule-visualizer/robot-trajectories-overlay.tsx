@@ -1,6 +1,11 @@
 import * as L from 'leaflet';
 import React, { useContext, useEffect } from 'react';
-import { Conflict, Trajectory, RawKnot } from '../../robot-trajectory-manager';
+import {
+  Conflict,
+  Trajectory,
+  RawKnot,
+  DefaultTrajectoryManager,
+} from '../../robot-trajectory-manager';
 import ColorManager from './colors';
 import RobotTrajectory, { RobotTrajectoryProps } from './robot-trajectory';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
@@ -29,15 +34,26 @@ export default function RobotTrajectoriesOverlay(
   // FIXME: hardcode for now, as the source of the footprint is expected to change.
   const footprint = 0.5;
 
+  function getConflictRobotsName() {
+    let robotNames: string[] = [];
+    conflicts.forEach(conflictId => {
+      const robotName = DefaultTrajectoryManager.getRobotNameFromPathId(conflictId, trajs);
+
+      robotName && robotNames.push(robotName);
+    });
+    return robotNames;
+  }
+
   useEffect(() => {
     if (conflicts.length !== 0) {
       notificationDispatch &&
         notificationDispatch({
-          message: `Conflict between paths ${conflicts}`,
+          message: `Trajectory conflict between ${getConflictRobotsName()}`,
           type: 'error',
         });
     }
   }, [conflicts, notificationDispatch]);
+
   return (
     <SVGOverlay {...otherProps}>
       <svg viewBox={viewBox}>

@@ -6,6 +6,8 @@
       {
         "dimensions": 0.3,
         "id": 1837,
+        "robot_name": "RobotA",
+        "fleet_name": "Fleet1",
         "segments": [
           {
             "t": 239324,
@@ -33,6 +35,8 @@
       {
         "dimensions": 0.3,
         "id": 1841,
+        "robot_name": "RobotB",
+        "fleet_name": "Fleet2",
         "segments": [
           {
             "t": 239324,
@@ -121,6 +125,8 @@
       {
         "dimensions": 0.3,
         "id": 1903,
+        "robot_name": "RobotB",
+        "fleet_name": "Fleet2",
         "segments": [
           {
             "t": 249436,
@@ -213,6 +219,8 @@
       {
         "dimensions": 0.3,
         "id": 1904,
+        "robot_name": "RobotA",
+        "fleet_name": "Fleet1",
         "segments": [
           {
             "t": 249436,
@@ -271,6 +279,8 @@
       {
         "dimensions": 0.3,
         "id": 1907,
+        "robot_name": "RobotB",
+        "fleet_name": "Fleet2",
         "segments": [
           {
             "t": 259858,
@@ -293,6 +303,8 @@
       {
         "dimensions": 0.3,
         "id": 1906,
+        "robot_name": "RobotA",
+        "fleet_name": "Fleet1",
         "segments": [
           {
             "t": 259858,
@@ -381,6 +393,8 @@
       {
         "dimensions": 0.3,
         "id": 1955,
+        "robot_name": "RobotB",
+        "fleet_name": "Fleet2",
         "segments": [
           {
             "t": 271788,
@@ -413,6 +427,8 @@
       {
         "dimensions": 0.3,
         "id": 1954,
+        "robot_name": "RobotA",
+        "fleet_name": "Fleet1",
         "segments": [
           {
             "t": 271788,
@@ -471,6 +487,8 @@
       {
         "dimensions": 0.3,
         "id": 1980,
+        "robot_name": "RobotB",
+        "fleet_name": "Fleet2",
         "segments": [
           {
             "t": 291521,
@@ -503,6 +521,8 @@
       {
         "dimensions": 0.3,
         "id": 1979,
+        "robot_name": "RobotA",
+        "fleet_name": "Fleet1",
         "segments": [
           {
             "t": 291521,
@@ -601,6 +621,8 @@
       {
         "dimensions": 0.3,
         "id": 1989,
+        "robot_name": "RobotB",
+        "fleet_name": "Fleet2",
         "segments": [
           {
             "t": 310351,
@@ -663,6 +685,8 @@
       {
         "dimensions": 0.3,
         "id": 1988,
+        "robot_name": "RobotA",
+        "fleet_name": "Fleet1",
         "segments": [
           {
             "t": 310351,
@@ -751,6 +775,8 @@
       {
         "dimensions": 0.3,
         "id": 1903,
+        "robot_name": "RobotB",
+        "fleet_name": "Fleet2",
         "segments": [
           {
             "t": 249436,
@@ -843,6 +869,8 @@
       {
         "dimensions": 0.3,
         "id": 1904,
+        "robot_name": "RobotA",
+        "fleet_name": "Fleet1",
         "segments": [
           {
             "t": 249436,
@@ -895,6 +923,8 @@
       {
         "dimensions": 0.3,
         "id": 1905,
+        "robot_name": "RobotC",
+        "fleet_name": "Fleet1",
         "segments": [
           {
             "t": 279837,
