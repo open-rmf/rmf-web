@@ -8,17 +8,12 @@ import {
   RobotTrajectoryManager,
   Trajectory,
   TrajectoryResponse,
-  RawKnot,
-  TrajectorySegmentManager,
 } from '../../robot-trajectory-manager';
 import { AnimationSpeed, SettingsContext, TrajectoryAnimation } from '../../settings';
 import { toBlobUrl } from '../../util';
 import ColorManager from './colors';
 import PlacesOverlay from './places-overlay';
-import RobotTrajectoriesOverlay, {
-  RobotTrajectoryContext,
-  TrajectoryCoords,
-} from './robot-trajectories-overlay';
+import RobotTrajectoriesOverlay, { RobotTrajectoryContext } from './robot-trajectories-overlay';
 import RobotTrajectory from './robot-trajectory';
 import RobotsOverlay from './robots-overlay';
 import {
@@ -231,38 +226,6 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     return resp ? resp.conflicts : [];
   }
 
-  function getConflictsPoints(levelName: string): RawKnot[][] {
-    const resp = trajectories[levelName];
-    if (resp && resp.conflicts) {
-      let conflictTrajectoryPositionsMerged: TrajectoryCoords[] = [];
-      let trajectoriesSegments: RawKnot[][] = [];
-      // Iterate for each conflicted trajectory id
-      resp.conflicts.forEach(trajectoryId => {
-        // Get the segments of the conflicted trajectory
-        const segments = TrajectorySegmentManager.getSegmentsById(resp, trajectoryId);
-        // Get the the position of each segment and combine all segments
-        if (segments) {
-          segments.forEach(segment => {
-            conflictTrajectoryPositionsMerged.push(TrajectorySegmentManager.getPositionXY(segment));
-          });
-          trajectoriesSegments.push(segments);
-        }
-      });
-
-      // Get the conflicting coords from the segments
-      const conflictCoords = TrajectorySegmentManager.getRepeatedCoords(
-        conflictTrajectoryPositionsMerged,
-      );
-      // filters segments with conflicts
-      const conflictTrajectoriesSegments = TrajectorySegmentManager.getConflictSegments(
-        trajectoriesSegments,
-        conflictCoords,
-      );
-      return conflictTrajectoriesSegments;
-    }
-    return [];
-  }
-
   const sortedMapFloorLayers = mapFloorLayerSort.map(x => mapFloorLayers[x]);
   const ref = React.useRef<ImageOverlay>(null);
 
@@ -306,7 +269,6 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
                   bounds={curMapFloorLayer.bounds}
                   trajs={getTrajectory(curMapFloorLayer.level.name)}
                   conflicts={getConflicts(curMapFloorLayer.level.name)}
-                  conflictsSegments={getConflictsPoints(curMapFloorLayer.level.name)}
                   colorManager={colorManager}
                 />
               </RobotTrajectoryContext.Provider>

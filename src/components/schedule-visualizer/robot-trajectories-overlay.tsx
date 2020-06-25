@@ -5,7 +5,6 @@ import ColorManager from './colors';
 import RobotTrajectory, { RobotTrajectoryProps } from './robot-trajectory';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 import { NotificationBarContext } from '../notification-bar';
-import RobotConflictTrajectory from './robot-conflict-trajectory';
 
 export interface RobotTrajectoriesOverlayProps extends SVGOverlayProps {
   trajs: readonly Trajectory[];
@@ -50,10 +49,6 @@ export default function RobotTrajectoriesOverlay(
             conflicts={conflicts}
           />
         ))}
-        {conflictsSegments?.length !== 0 &&
-          conflictsSegments?.map(segments => (
-            <RobotConflictTrajectory footprint={footprint} conflictsSegments={segments} />
-          ))}
       </svg>
     </SVGOverlay>
   );
@@ -61,11 +56,6 @@ export default function RobotTrajectoriesOverlay(
 
 export interface RobotTrajectoryContext {
   Component: React.ComponentType<RobotTrajectoryProps>;
-}
-
-export interface TrajectoryCoords {
-  x: number;
-  y: number;
 }
 
 export const RobotTrajectoryContext = React.createContext<RobotTrajectoryContext>({

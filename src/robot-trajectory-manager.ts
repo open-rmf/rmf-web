@@ -1,5 +1,4 @@
 import { Knot } from './util/cublic-spline';
-import { TrajectoryCoords } from './components/schedule-visualizer/robot-trajectories-overlay';
 
 // RawVelocity received from server is in this format (x, y, theta)
 export type RawVelocity = [number, number, number];
@@ -165,59 +164,6 @@ export function rawKnotsToKnots(rawKnots: RawKnot[]): Knot[] {
   }
 
   return knots;
-}
-
-export class TrajectorySegmentManager {
-  static getSegmentsById(segments: TrajectoryResponse, id: number): RawKnot[] | undefined {
-    const trajectory = segments.values.find(element => element.id === id);
-    return trajectory?.segments;
-  }
-
-  static getPositionXY(segment: RawKnot): TrajectoryCoords {
-    return { x: segment.x[0], y: segment.x[1] };
-  }
-  /**
-   * Checks for duplicates on a list of type TrajectoryCoords[]. Returns the list of duplicated elements.
-   * @param positions list of element to to check for duplicates
-   */
-  static getRepeatedCoords(positions: TrajectoryCoords[]): TrajectoryCoords[] {
-    // Get duplicated coords
-    const seenCoords = positions.filter(
-      (set => (position: any) =>
-        set.has(JSON.stringify(position)) || !set.add(JSON.stringify(position)))(new Set()),
-    );
-    // Return a unique list of duplicated coords.
-    let uniqueCoords: TrajectoryCoords[] = [];
-    for (let index = 0; index < seenCoords.length; index++) {
-      const element = seenCoords[index];
-      if (!uniqueCoords.some(e => JSON.stringify(e) === JSON.stringify(element))) {
-        uniqueCoords.push(element);
-      }
-    }
-    return uniqueCoords;
-  }
-
-  static getConflictsInSetOfSegments(segments: RawKnot[], conflictPoints: TrajectoryCoords[]) {
-    let conflictSegments: RawKnot[] = []
-    for (let index = 0; index < segments.length; index++) {
-      const segment = segments[index];
-      for (let index = 0; index < conflictPoints.length; index++) {
-        const conflictPoint = conflictPoints[index];
-        if (segment.x[0] === conflictPoint.x && segment.x[1] === conflictPoint.y) {
-          conflictSegments.push(segment);
-        }
-      }
-    }
-    return conflictSegments;
-  }
-  static getConflictSegments(trajectoriesSegments: RawKnot[][], conflictPoints: TrajectoryCoords[]) {
-    let conflictSegments: RawKnot[][] = []
-    trajectoriesSegments.forEach(segments => {
-      conflictSegments.push(TrajectorySegmentManager.getConflictsInSetOfSegments(segments, conflictPoints));
-    });
-    return conflictSegments;
-  }
-
 }
 
 type WebSocketSendParam0T = Parameters<WebSocket['send']>[0];
