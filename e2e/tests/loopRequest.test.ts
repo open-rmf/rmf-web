@@ -21,4 +21,8 @@ describe('loop request', () => {
     robotItem.$('button=Info').click();
     expect(robotItem.$('[data-role=position]')).not.toHaveText(position);
   });
+
+  it('renders robot trajectory', () => {
+    expect($('[data-component=RobotTrajectory]')).toBeVisible();
+  });
 });
