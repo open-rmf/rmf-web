@@ -12,13 +12,24 @@ export interface AppConfig {
 export let appConfig: AppConfig;
 
 if (!process.env.REACT_APP_MOCK && process.env.NODE_ENV !== 'test') {
-  // { user: 'romi-dashboard' } signed with HS256 + secret 'rmf'
-  // prettier-ignore
-  const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoicm9taS1kYXNoYm9hcmQiLCJpYXQiOjE1ODMyODYyMTV9.x9aNjcLujQPHchWEsbrRbvctmnGQtEzw-81X0aPIE-Y'
+  const sossNodeName = process.env.REACT_APP_SOSS_NODE_NAME || 'romi-dashboard';
+
+  const sossServer = process.env.REACT_APP_SOSS_SERVER;
+  if (!sossServer) {
+    throw new Error('REACT_APP_SOSS_SERVER env variable is needed but not defined');
+  }
+
+  // TODO: get token from some auth service
+  const token = process.env.REACT_APP_SOSS_TOKEN || '';
+
+  const trajServer = process.env.REACT_APP_TRAJECTORY_SERVER;
+  if (!trajServer) {
+    throw new Error('REACT_APP_TRAJECTORY_SERVER env variable is needed but not defined');
+  }
 
   appConfig = {
-    transportFactory: () => SossTransport.connect('romi-dashboard', 'wss://localhost:50001', token),
-    trajectoryManagerFactory: () => DefaultTrajectoryManager.create('ws://localhost:8006'),
+    transportFactory: () => SossTransport.connect(sossNodeName, sossServer, token),
+    trajectoryManagerFactory: () => DefaultTrajectoryManager.create(trajServer),
   };
 } else {
   appConfig = {
