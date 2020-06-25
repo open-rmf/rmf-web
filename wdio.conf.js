@@ -143,7 +143,7 @@ exports.config = {
     // See the full list at http://mochajs.org/
     mochaOpts: {
         // TypeScript setup
-        require: ['./e2e/env', 'ts-node/register'],
+        require: ['ts-node/register'],
         ui: 'bdd',
         timeout: 60000
     },

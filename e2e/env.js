@@ -1,1 +1,0 @@
-process.env.TS_NODE_PROJECT = `${__dirname}/tsconfig.json`;
