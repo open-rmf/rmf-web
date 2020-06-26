@@ -1,7 +1,3 @@
-/**
- * TODO: Show indicator why lift controls are disabled.
- */
-
 import {
   ExpansionPanel,
   ExpansionPanelDetails,
@@ -20,7 +16,8 @@ import { LiftInformation } from './lift-item-information';
 import LiftRequestForm from './lift-item-form';
 import { LiftRequestManager } from '../../lift-state-manager';
 
-export interface LiftItemProps extends Omit<ExpansionPanelProps, 'children'> {
+export interface LiftItemProps extends Omit<ExpansionPanelProps, 'children'>{
+  id?: string;
   lift: Readonly<RomiCore.Lift>;
   liftState?: Readonly<RomiCore.LiftState>;
   enableRequest?: boolean;
@@ -36,7 +33,7 @@ export const LiftItem = React.forwardRef(function(
   props: LiftItemProps,
   ref: React.Ref<HTMLElement>,
 ): React.ReactElement {
-  const { lift, liftState, enableRequest, onRequest, ...otherProps } = props;
+  const { id, lift, liftState, enableRequest, onRequest, ...otherProps } = props;
   const [tabValue, setTabValue] = React.useState(0);
   const classes = useStyles();
 
@@ -65,7 +62,7 @@ export const LiftItem = React.forwardRef(function(
   const requestTypes = React.useMemo(() => LiftRequestManager.getLiftRequestModes(), []);
 
   return (
-    <ExpansionPanel ref={ref} {...otherProps}>
+    <ExpansionPanel ref={ref} id={id} {...otherProps}>
       <ExpansionPanelSummary
         classes={{ content: classes.expansionSummaryContent }}
         expandIcon={<ExpandMoreIcon />}

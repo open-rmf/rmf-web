@@ -1,5 +1,5 @@
-import React from 'react';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import React from 'react';
 import DispenserItem from './dispenser-item';
 import { SpotlightValue } from './spotlight-value';
 
@@ -28,7 +28,7 @@ export default function DispenserPanel(props: DispenserPanelProps): JSX.Element 
     ref.scrollIntoView({ behavior: 'smooth' });
   }, [spotlight]);
 
-  const listItems = Object.keys(props.dispenserStates).map( (guid, index) => {
+  const listItems = Object.keys(props.dispenserStates).map(guid => {
     const state = props.dispenserStates[guid];
     return (
       <DispenserItem
@@ -43,11 +43,8 @@ export default function DispenserPanel(props: DispenserPanelProps): JSX.Element 
           }))
         }
       />
-    )
+    );
   });
 
-  return <React.Fragment>{listItems}</React.Fragment>
-
+  return <React.Fragment>{listItems}</React.Fragment>;
 }
-
-

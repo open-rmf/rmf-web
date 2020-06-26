@@ -21,6 +21,7 @@ export default function LiftsOverlay(props: LiftsOverlayProps): React.ReactEleme
           {lifts.map(lift => (
             <Lift
               key={`lift-${lift.name}`}
+              id={`Lift-${lift.name}`}
               lift={lift}
               onClick={(_, lift) => onLiftClick && onLiftClick(lift)}
               liftState={liftsState && liftsState[lift.name]}

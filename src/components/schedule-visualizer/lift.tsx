@@ -6,6 +6,7 @@ import { UpArrow, DownArrow } from './arrow';
 import { radiansToDegrees } from '../../util/angle-calculation';
 
 export interface LiftProps {
+  id?: string;
   currentFloor: string;
   lift: RomiCore.Lift;
   liftState?: RomiCore.LiftState;
@@ -84,7 +85,7 @@ const Lift = React.forwardRef(function(
   props: LiftProps,
   ref: React.Ref<SVGGElement>,
 ): React.ReactElement {
-  const { lift, onClick, liftState, currentFloor } = props;
+  const { id, lift, onClick, liftState, currentFloor } = props;
   const { width, depth, ref_x: x, ref_y: y, ref_yaw, doors } = lift;
   // The svg start drawing from the top left coordinate, and the backend sends us the middle X,Y so we need to transform that.
   const { x: topVerticeX, y: topVerticeY } = transformMiddleCoordsOfRectToSVGBeginPoint(
@@ -110,7 +111,7 @@ const Lift = React.forwardRef(function(
   const liftModeText = getLiftModeText(currentMode);
   return (
     <>
-      <g ref={ref} onClick={e => onClick && onClick(e, lift)}>
+      <g ref={ref} id={id} onClick={e => onClick && onClick(e, lift)}>
         <rect
           className={`${classes.liftMarker} ${classes.lift} ${liftStyle}`}
           width={width}

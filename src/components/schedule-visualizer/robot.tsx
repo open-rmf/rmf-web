@@ -34,14 +34,6 @@ const Robot = React.forwardRef(function(
     colorManager.robotColorFromCache(robot.name, robot.model),
   );
 
-  const nose = React.useMemo(
-    () => [
-      robot.location.x + Math.cos(robot.location.yaw) * footprint,
-      robot.location.y + Math.sin(robot.location.yaw) * footprint,
-    ],
-    [robot, footprint],
-  );
-
   React.useLayoutEffect(() => {
     if (robotColor) {
       return;
@@ -52,38 +44,39 @@ const Robot = React.forwardRef(function(
   }, [robot, robotColor, colorManager]);
 
   return (
-    <g ref={ref} onClick={e => onClick && onClick(e, robot)}>
+    <g
+      ref={ref}
+      data-component="Robot"
+      aria-label={robot.name}
+      onClick={e => onClick && onClick(e, robot)}
+    >
       {robotColor && (
-        <React.Fragment>
-          <filter id={`${robot.name}-shadow`} x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="0" stdDeviation={footprint * 0.15} floodColor="black" />
-          </filter>
-          <circle
-            className={classes.robotMarker}
-            onClick={e => onClick && onClick(e, robot)}
-            cx={robot.location.x}
-            cy={-robot.location.y}
-            r={footprint}
-            fill={robotColor}
-            filter={`url(#${robot.name}-shadow)`}
-          />
-          <line
-            x1={robot.location.x}
-            y1={-robot.location.y}
-            x2={nose[0]}
-            y2={-nose[1]}
-            stroke="black"
-            strokeWidth="0.05"
-          />
+        <>
+          <g
+            transform={`translate(${robot.location.x} ${-robot.location.y})
+            rotate(${-(robot.location.yaw * 180) / Math.PI})`}
+          >
+            <filter id={`${robot.name}-shadow`} x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="0" stdDeviation={footprint * 0.15} floodColor="black" />
+            </filter>
+            <circle
+              className={classes.robotMarker}
+              onClick={e => onClick && onClick(e, robot)}
+              r={footprint}
+              fill={robotColor}
+              filter={`url(#${robot.name}-shadow)`}
+            />
+            <line x2={footprint} stroke="black" strokeWidth="0.05" />
+          </g>
           <text
             id="robotName"
-            className={classes.robotText}
             x={robot.location.x}
             y={-robot.location.y}
+            className={classes.robotText}
           >
             {robot.name.substring(0, 8)}
           </text>
-        </React.Fragment>
+        </>
       )}
     </g>
   );

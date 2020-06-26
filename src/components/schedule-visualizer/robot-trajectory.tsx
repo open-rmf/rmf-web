@@ -44,6 +44,7 @@ export const RobotTrajectory = React.forwardRef(function(
 
   return (
     <path
+      data-component="RobotTrajectory"
       ref={ref}
       d={pathD}
       stroke={color}

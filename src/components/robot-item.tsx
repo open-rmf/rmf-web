@@ -38,7 +38,7 @@ export const RobotItem = React.forwardRef(function(
   const classes = useStyles();
   const listOfPlaces = fakePlaces()[fleetName];
   return (
-    <ExpansionPanel ref={ref} {...otherProps}>
+    <ExpansionPanel ref={ref} data-component="RobotItem" data-name={robot.name} {...otherProps}>
       <ExpansionPanelSummary
         classes={{ content: classes.expansionSummaryContent }}
         expandIcon={<ExpandMoreIcon />}
@@ -48,7 +48,7 @@ export const RobotItem = React.forwardRef(function(
           {robotModeToString(robot.mode)}
         </Typography>
       </ExpansionPanelSummary>
-      <ExpansionPanelDetails className={classes.expansionDetail}>
+      <ExpansionPanelDetails data-role="details" className={classes.expansionDetail}>
         <AntTabs value={value} onChange={handleChange} aria-label="ant example">
           <AntTab label="Info" />
           <AntTab label="Loop" />

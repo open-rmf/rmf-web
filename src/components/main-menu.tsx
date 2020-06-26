@@ -11,32 +11,32 @@ export interface MainMenuProps {
 
 export default function MainMenu(props: MainMenuProps): React.ReactElement {
   return (
-    <List>
-      <ListItem button={true} onClick={props.onDoorsClick}>
+    <List data-component="MainMenu">
+      <ListItem data-item="Doors" button={true} onClick={props.onDoorsClick}>
         <Typography variant="h5">Doors</Typography>
       </ListItem>
 
       <Divider />
 
-      <ListItem button={true} onClick={props.onLiftsClick}>
+      <ListItem data-item="Lifts" button={true} onClick={props.onLiftsClick}>
         <Typography variant="h5">Lifts</Typography>
       </ListItem>
 
       <Divider />
 
-      <ListItem button={true} onClick={props.onRobotsClick}>
+      <ListItem data-item="Robots" button={true} onClick={props.onRobotsClick}>
         <Typography variant="h5">Robots</Typography>
       </ListItem>
 
       <Divider />
 
-      <ListItem button={true} onClick={props.onPlacesClick}>
+      <ListItem data-item="Places" button={true} onClick={props.onPlacesClick}>
         <Typography variant="h5">Places</Typography>
       </ListItem>
 
       <Divider />
 
-      <ListItem button={true} onClick={props.onDispensersClick}>
+      <ListItem data-item="Dispensers" button={true} onClick={props.onDispensersClick}>
         <Typography variant="h5">Dispensers</Typography>
       </ListItem>
     </List>
