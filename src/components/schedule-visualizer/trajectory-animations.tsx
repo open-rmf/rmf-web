@@ -188,9 +188,6 @@ export function withOutlineAnimation(
 
     return (
       <g>
-        {/* <mask id={`${trajectory.id}-mask`} width={'120px'} height={'80%'}>
-          <rect x={0} y={0} width={'120%'} height={'120%'} fill={'white'} />
-        </mask> */}
         <TrajectoryComponent ref={pathRef} {...props} mask={`url(#${trajectory.id}-mask)`} />
       </g>
     );
