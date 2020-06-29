@@ -145,6 +145,7 @@ export function withOutlineAnimation(
 
       const mask = document.createElementNS('http://www.w3.org/2000/svg', 'mask');
       mask.setAttribute('id', `${trajectory.id}-mask`);
+      mask.setAttribute('width', '100');
       const maskRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
       maskRect.setAttribute('x', '0');
       maskRect.setAttribute('y', '0');
@@ -187,6 +188,9 @@ export function withOutlineAnimation(
 
     return (
       <g>
+        {/* <mask id={`${trajectory.id}-mask`} width={'120px'} height={'80%'}>
+          <rect x={0} y={0} width={'120%'} height={'120%'} fill={'white'} />
+        </mask> */}
         <TrajectoryComponent ref={pathRef} {...props} mask={`url(#${trajectory.id}-mask)`} />
       </g>
     );
