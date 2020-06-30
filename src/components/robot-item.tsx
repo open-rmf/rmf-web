@@ -11,6 +11,7 @@ import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import { RobotInformation } from './robot-item-information';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
+import { RobotDeliveryForm } from './robot-item-delivery-form';
 
 export interface RobotItemProps extends Omit<ExpansionPanelProps, 'children'> {
   fleetName: string;

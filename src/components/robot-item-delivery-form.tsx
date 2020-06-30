@@ -1,4 +1,4 @@
-import { makeStyles, TextField, Button } from '@material-ui/core';
+import { TextField, Button } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useState } from 'react';
@@ -9,29 +9,27 @@ interface robotDeliveryFormProps {
   requestDelivery(
     pickupPlaceName: string,
     pickupDispenser: string,
-    pickupBehaviour: RomiCore.Behavior,
     dropOffPlaceName: string,
     dropOffDispenser: string,
-    dropOffBehavior: RomiCore.Behavior,
+    pickupBehaviour?: RomiCore.Behavior,
+    dropOffBehavior?: RomiCore.Behavior,
   ): void;
   listOfPlaces: string[];
 }
 
 export const RobotDeliveryForm = (props: robotDeliveryFormProps) => {
-  const { requestDelivery, fleetName, listOfPlaces } = props;
+  const { requestDelivery, listOfPlaces } = props;
   const classes = robotFormStyle();
   // Pick up
   const [pickupPlaceName, setPickupPlaceName] = useState(
     listOfPlaces.length >= 2 ? listOfPlaces[0] : '',
   );
   const [pickupDispenser, setPickupDispenser] = useState('');
-  const [pickupBehaviour, setPickupBehaviour] = useState('');
   // Drop off
   const [dropOffPlaceName, setDropOffPlaceName] = useState(
     listOfPlaces.length >= 2 ? listOfPlaces[1] : '',
   );
   const [dropOffDispenser, setDropOffDispenser] = useState('');
-  const [dropOffBehavior, setDropOffBehavior] = useState('');
 
   // Error states
   const [pickupPlaceNameError, setPickupPlaceNameError] = useState('');
@@ -41,9 +39,7 @@ export const RobotDeliveryForm = (props: robotDeliveryFormProps) => {
     setPickupPlaceName(listOfPlaces.length >= 2 ? listOfPlaces[0] : '');
     setDropOffPlaceName(listOfPlaces.length >= 2 ? listOfPlaces[1] : '');
     setPickupDispenser('');
-    setPickupBehaviour('');
     setDropOffDispenser('');
-    setDropOffBehavior('');
     cleanUpError();
   };
 
@@ -55,14 +51,7 @@ export const RobotDeliveryForm = (props: robotDeliveryFormProps) => {
   const handlerequestDelivery = (event: any) => {
     event.preventDefault();
     if (isFormValid()) {
-      requestDelivery(
-        pickupPlaceName,
-        pickupDispenser,
-        pickupBehaviour,
-        dropOffPlaceName,
-        dropOffDispenser,
-        dropOffBehavior,
-      );
+      requestDelivery(pickupPlaceName, pickupDispenser, dropOffPlaceName, dropOffDispenser);
       cleanUpForm();
     }
   };
@@ -97,7 +86,13 @@ export const RobotDeliveryForm = (props: robotDeliveryFormProps) => {
           onChange={(e, value) => setPickupPlaceName(value || '')}
           options={listOfPlaces}
           renderInput={params => (
-            <TextField {...params} label="Pick Start Location" variant="outlined" />
+            <TextField
+              {...params}
+              label="Pick Start Location"
+              variant="outlined"
+              error={!!pickupPlaceNameError}
+              helperText={pickupPlaceNameError}
+            />
           )}
           value={!!pickupPlaceName ? pickupPlaceName : null}
         />
