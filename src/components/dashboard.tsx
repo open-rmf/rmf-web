@@ -109,7 +109,7 @@ const viewMap = makeViewMap();
 
 export default function Dashboard(): JSX.Element {
   const classes = useStyles();
-  const { transportFactory, trajectoryManagerFactory } = appConfig;
+  const [{ transportFactory, trajectoryManagerFactory }] = React.useState(appConfig);
   const [transport, setTransport] = React.useState<RomiCore.Transport | undefined>(undefined);
   const [buildingMap, setBuildingMap] = React.useState<RomiCore.BuildingMap | undefined>(undefined);
   const trajManager = React.useRef<RobotTrajectoryManager | undefined>(undefined);
