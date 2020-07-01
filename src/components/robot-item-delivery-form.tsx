@@ -1,7 +1,7 @@
 import { TextField, Button } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import React, { useState } from 'react';
+import React, { useState, Dispatch, SetStateAction } from 'react';
 import { robotFormStyle } from './robot-item-loop-form';
 
 interface robotDeliveryFormProps {
@@ -33,7 +33,9 @@ export const RobotDeliveryForm = (props: robotDeliveryFormProps) => {
 
   // Error states
   const [pickupPlaceNameError, setPickupPlaceNameError] = useState('');
+  const [pickupDispenserError, setPickupDispenserError] = useState('');
   const [dropOffPlaceNameError, setDropOffPlaceNameError] = useState('');
+  const [dropOffDispenserError, setDropOffDispenserError] = useState('');
 
   const cleanUpForm = () => {
     setPickupPlaceName(listOfPlaces.length >= 2 ? listOfPlaces[0] : '');
@@ -46,9 +48,11 @@ export const RobotDeliveryForm = (props: robotDeliveryFormProps) => {
   const cleanUpError = () => {
     setPickupPlaceNameError('');
     setDropOffPlaceNameError('');
+    setPickupDispenserError('');
+    setDropOffDispenserError('');
   };
 
-  const handlerequestDelivery = (event: any) => {
+  const handleDeliveryRequest = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
     if (isFormValid()) {
       requestDelivery(pickupPlaceName, pickupDispenser, dropOffPlaceName, dropOffDispenser);
@@ -66,20 +70,27 @@ export const RobotDeliveryForm = (props: robotDeliveryFormProps) => {
       isValid = false;
     }
 
-    if (!pickupPlaceName) {
-      setPickupPlaceNameError('Location cannot be empty');
+    if (pickupPlaceName === dropOffPlaceName) {
+      setPickupDispenserError('Pickup dispenser cannot be equal to Drop off dispenser');
+      setDropOffDispenserError('Drop off dispenser cannot be equal to Pickup dispenser');
       isValid = false;
     }
-    if (!dropOffPlaceName) {
-      setDropOffPlaceNameError('Location cannot be empty');
+
+    const setEmpty = (fieldSetter: Dispatch<SetStateAction<string>>): void => {
+      fieldSetter('Cannot be empty');
       isValid = false;
-    }
+    };
+
+    !pickupPlaceName && setEmpty(setPickupPlaceNameError);
+    !dropOffPlaceName && setEmpty(setDropOffPlaceNameError);
+    !pickupDispenser && setEmpty(setPickupDispenserError);
+    !dropOffDispenser && setEmpty(setDropOffDispenserError);
 
     return isValid;
   };
 
   return (
-    <form className={classes.form} onSubmit={handlerequestDelivery}>
+    <form className={classes.form} onSubmit={handleDeliveryRequest}>
       <div className={classes.divForm}>
         <Autocomplete
           getOptionLabel={option => option}
@@ -97,26 +108,22 @@ export const RobotDeliveryForm = (props: robotDeliveryFormProps) => {
           value={!!pickupPlaceName ? pickupPlaceName : null}
         />
       </div>
+
       <div className={classes.divForm}>
         <Autocomplete
           getOptionLabel={option => option}
-          onChange={(e, value) => setPickupPlaceName(value || '')}
+          onChange={(e, value) => setPickupDispenser(value || '')}
           options={listOfPlaces}
           renderInput={params => (
-            <TextField {...params} label="Pick up Dispenser" variant="outlined" />
+            <TextField
+              {...params}
+              label="Pickup Dispenser"
+              variant="outlined"
+              error={!!pickupDispenserError}
+              helperText={pickupDispenserError}
+            />
           )}
-          value={!!pickupPlaceName ? pickupPlaceName : null}
-        />
-      </div>
-      <div className={classes.divForm}>
-        <Autocomplete
-          getOptionLabel={option => option}
-          onChange={(e, value) => setPickupPlaceName(value || '')}
-          options={listOfPlaces}
-          renderInput={params => (
-            <TextField {...params} label="Pick Start Location" variant="outlined" />
-          )}
-          value={!!pickupPlaceName ? pickupPlaceName : null}
+          value={!!pickupDispenser ? pickupDispenser : null}
         />
       </div>
 
@@ -126,15 +133,34 @@ export const RobotDeliveryForm = (props: robotDeliveryFormProps) => {
           onChange={(e, value) => setDropOffPlaceName(value || '')}
           options={listOfPlaces}
           renderInput={params => (
-            <TextField {...params} label="Pick Finish Location" variant="outlined" />
+            <TextField
+              {...params}
+              label="Pick Drop Off Location"
+              variant="outlined"
+              error={!!dropOffPlaceNameError}
+              helperText={dropOffPlaceNameError}
+            />
           )}
           value={!!dropOffPlaceName ? dropOffPlaceName : null}
         />
-        {dropOffPlaceNameError && (
-          <p id="dropOffPlaceNameError" className={classes.error}>
-            {dropOffPlaceNameError}
-          </p>
-        )}
+      </div>
+
+      <div className={classes.divForm}>
+        <Autocomplete
+          getOptionLabel={option => option}
+          onChange={(e, value) => setDropOffDispenser(value || '')}
+          options={listOfPlaces}
+          renderInput={params => (
+            <TextField
+              {...params}
+              label="Pick Drop Off Dispenser"
+              variant="outlined"
+              error={!!dropOffDispenserError}
+              helperText={dropOffDispenserError}
+            />
+          )}
+          value={!!dropOffDispenser ? dropOffDispenser : null}
+        />
       </div>
 
       <div className={classes.buttonContainer}>
