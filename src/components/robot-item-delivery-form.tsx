@@ -1,8 +1,9 @@
 import { TextField, Button } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import React, { useState, Dispatch, SetStateAction } from 'react';
+import React, { useState, Dispatch, SetStateAction, useEffect } from 'react';
 import { robotFormStyle } from './robot-item-loop-form';
+import fakeDispensers from '../mock/data/dispensers';
 
 interface robotDeliveryFormProps {
   fleetName: string;
@@ -20,15 +21,16 @@ interface robotDeliveryFormProps {
 export const RobotDeliveryForm = (props: robotDeliveryFormProps) => {
   const { requestDelivery, listOfPlaces } = props;
   const classes = robotFormStyle();
-  // Pick up
+  // Places
   const [pickupPlaceName, setPickupPlaceName] = useState(
     listOfPlaces.length >= 2 ? listOfPlaces[0] : '',
   );
-  const [pickupDispenser, setPickupDispenser] = useState('');
-  // Drop off
   const [dropOffPlaceName, setDropOffPlaceName] = useState(
     listOfPlaces.length >= 2 ? listOfPlaces[1] : '',
   );
+
+  // Dispensers
+  const [pickupDispenser, setPickupDispenser] = useState('');
   const [dropOffDispenser, setDropOffDispenser] = useState('');
 
   // Error states
@@ -59,6 +61,30 @@ export const RobotDeliveryForm = (props: robotDeliveryFormProps) => {
       cleanUpForm();
     }
   };
+
+  const dispensersFromPickUpPlace = React.useMemo(() => {
+    const dispenser = !!pickupPlaceName ? fakeDispensers()[pickupPlaceName] : [];
+    return !!dispenser ? dispenser : [];
+  }, [pickupPlaceName]);
+
+  const dispensersFromDropOffPlace = React.useMemo(() => {
+    const dispenser = !!dropOffPlaceName ? fakeDispensers()[dropOffPlaceName] : [];
+    return !!dispenser ? dispenser : [];
+  }, [dropOffPlaceName]);
+
+  useEffect(() => {
+    setPickupDispenserError('');
+    !!dispensersFromPickUpPlace &&
+      dispensersFromPickUpPlace.length === 0 &&
+      setPickupDispenserError('There is no dispensers on this place. Pick another place');
+  }, [dispensersFromPickUpPlace]);
+
+  useEffect(() => {
+    setDropOffDispenserError('');
+    !!dispensersFromDropOffPlace &&
+      dispensersFromDropOffPlace.length === 0 &&
+      setDropOffDispenserError('There is no dispensers on this place. Pick another place');
+  }, [dispensersFromDropOffPlace]);
 
   const isFormValid = () => {
     let isValid = true;
@@ -113,7 +139,7 @@ export const RobotDeliveryForm = (props: robotDeliveryFormProps) => {
         <Autocomplete
           getOptionLabel={option => option}
           onChange={(e, value) => setPickupDispenser(value || '')}
-          options={listOfPlaces}
+          options={dispensersFromPickUpPlace}
           renderInput={params => (
             <TextField
               {...params}
@@ -149,7 +175,7 @@ export const RobotDeliveryForm = (props: robotDeliveryFormProps) => {
         <Autocomplete
           getOptionLabel={option => option}
           onChange={(e, value) => setDropOffDispenser(value || '')}
-          options={listOfPlaces}
+          options={dispensersFromDropOffPlace}
           renderInput={params => (
             <TextField
               {...params}
