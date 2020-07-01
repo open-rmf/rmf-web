@@ -1,12 +1,13 @@
+import { robotFormStyle } from './robot-item-loop-form';
 import { TextField, Button } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import React, { useState, Dispatch, SetStateAction, useEffect } from 'react';
-import { robotFormStyle } from './robot-item-loop-form';
 import fakeDispensers from '../mock/data/dispensers';
+import React, { useState, Dispatch, SetStateAction, useEffect } from 'react';
 
 interface robotDeliveryFormProps {
   fleetName: string;
+  robotName?: string;
   requestDelivery(
     pickupPlaceName: string,
     pickupDispenser: string,
@@ -19,7 +20,7 @@ interface robotDeliveryFormProps {
 }
 
 export const RobotDeliveryForm = (props: robotDeliveryFormProps) => {
-  const { requestDelivery, listOfPlaces } = props;
+  const { requestDelivery, listOfPlaces, robotName } = props;
   const classes = robotFormStyle();
   // Places
   const [pickupPlaceName, setPickupPlaceName] = useState(
@@ -122,6 +123,7 @@ export const RobotDeliveryForm = (props: robotDeliveryFormProps) => {
           getOptionLabel={option => option}
           onChange={(e, value) => setPickupPlaceName(value || '')}
           options={listOfPlaces}
+          id={`${robotName}-pickup-place`}
           renderInput={params => (
             <TextField
               {...params}
@@ -140,6 +142,7 @@ export const RobotDeliveryForm = (props: robotDeliveryFormProps) => {
           getOptionLabel={option => option}
           onChange={(e, value) => setPickupDispenser(value || '')}
           options={dispensersFromPickUpPlace}
+          id={`${robotName}-pickup-dispenser`}
           renderInput={params => (
             <TextField
               {...params}
@@ -158,6 +161,7 @@ export const RobotDeliveryForm = (props: robotDeliveryFormProps) => {
           getOptionLabel={option => option}
           onChange={(e, value) => setDropOffPlaceName(value || '')}
           options={listOfPlaces}
+          id={`${robotName}-dropoff-place`}
           renderInput={params => (
             <TextField
               {...params}
@@ -176,6 +180,7 @@ export const RobotDeliveryForm = (props: robotDeliveryFormProps) => {
           getOptionLabel={option => option}
           onChange={(e, value) => setDropOffDispenser(value || '')}
           options={dispensersFromDropOffPlace}
+          id={`${robotName}-dropoff-dispenser`}
           renderInput={params => (
             <TextField
               {...params}
