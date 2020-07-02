@@ -123,7 +123,7 @@ export const RobotDeliveryForm = (props: robotDeliveryFormProps) => {
           getOptionLabel={option => option}
           onChange={(e, value) => setPickupPlaceName(value || '')}
           options={listOfPlaces}
-          id={`${robotName}-pickup-place`}
+          id={`${robotName}PickupPlace`}
           renderInput={params => (
             <TextField
               {...params}
@@ -142,7 +142,7 @@ export const RobotDeliveryForm = (props: robotDeliveryFormProps) => {
           getOptionLabel={option => option}
           onChange={(e, value) => setPickupDispenser(value || '')}
           options={dispensersFromPickUpPlace}
-          id={`${robotName}-pickup-dispenser`}
+          id={`${robotName}PickupDispenser`}
           renderInput={params => (
             <TextField
               {...params}
@@ -161,7 +161,7 @@ export const RobotDeliveryForm = (props: robotDeliveryFormProps) => {
           getOptionLabel={option => option}
           onChange={(e, value) => setDropOffPlaceName(value || '')}
           options={listOfPlaces}
-          id={`${robotName}-dropoff-place`}
+          id={`${robotName}DropoffPlace`}
           renderInput={params => (
             <TextField
               {...params}
@@ -180,7 +180,7 @@ export const RobotDeliveryForm = (props: robotDeliveryFormProps) => {
           getOptionLabel={option => option}
           onChange={(e, value) => setDropOffDispenser(value || '')}
           options={dispensersFromDropOffPlace}
-          id={`${robotName}-dropoff-dispenser`}
+          id={`${robotName}DropoffDispenser`}
           renderInput={params => (
             <TextField
               {...params}

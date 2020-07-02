@@ -46,14 +46,14 @@ describe('Form validation', () => {
 
     expect(
       wrapper
-        .find(`#robot1-pickup-dispenser`)
+        .find(`#robot1PickupDispenser`)
         .find('input')
         .props().value,
     ).toBe('');
 
     expect(
       wrapper
-        .find(`#robot1-dropoff-dispenser`)
+        .find(`#robot1DropoffDispenser`)
         .find('input')
         .props().value,
     ).toBe('');
@@ -66,8 +66,8 @@ describe('Form validation', () => {
     wrapper.find('form').simulate('submit');
     expect(
       wrapper
-        .find(`#robot1-pickup-dispenser`)
-        .find('#robot1-pickup-dispenser-helper-text')
+        .find(`#robot1PickupDispenser`)
+        .find('#robot1PickupDispenser-helper-text')
         .first()
         .find('p')
         .props().children,
@@ -75,8 +75,8 @@ describe('Form validation', () => {
 
     expect(
       wrapper
-        .find(`#robot1-dropoff-dispenser`)
-        .find('#robot1-dropoff-dispenser-helper-text')
+        .find(`#robot1DropoffDispenser`)
+        .find('#robot1DropoffDispenser-helper-text')
         .first()
         .find('p')
         .props().children,
@@ -89,8 +89,8 @@ describe('Form validation', () => {
     wrapper.find('form').simulate('submit');
     expect(
       wrapper
-        .find('#robot1-dropoff-place')
-        .find('#robot1-dropoff-place-helper-text')
+        .find('#robot1DropoffPlace')
+        .find('#robot1DropoffPlace-helper-text')
         .first()
         .html(),
     ).toContain('Cannot be empty');
@@ -103,7 +103,34 @@ describe('Form validation', () => {
     wrapper.unmount();
   });
 
-  test('Start Location cannot be equal to finish Location', async () => {});
-  test('Initial values with places with dispensers ', () => {});
-  test('Error shows with places without dispensers ', () => {});
+  test('Initial values with places with dispensers ', () => {
+    const wrapper = buildWrapper(['hardware_2', 'pantry']);
+    expect(wrapper.find('#robot1PickupDispenser-helper-text').exists()).toBe(false);
+    expect(wrapper.find('#robot1DropoffDispenser-helper-text').exists()).toBe(false);
+    wrapper.unmount();
+  });
+
+  test('Error shows with places without dispensers ', () => {
+    const wrapper = buildWrapper(['place1', 'place2']);
+
+    expect(
+      wrapper
+        .find('#robot1PickupDispenser-helper-text')
+        .first()
+        .html(),
+    ).toContain('There is no dispensers on this place. Pick another place');
+
+    expect(
+      wrapper
+        .find('#robot1DropoffDispenser-helper-text')
+        .first()
+        .html(),
+    ).toContain('There is no dispensers on this place. Pick another place');
+
+    wrapper.unmount();
+  });
+});
+
+test('Start Location cannot be equal to finish Location', async () => {
+  const wrapper = buildWrapper();
 });
