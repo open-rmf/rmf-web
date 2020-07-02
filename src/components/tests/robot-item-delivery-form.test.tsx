@@ -131,6 +131,20 @@ describe('Form validation', () => {
   });
 });
 
-test('Start Location cannot be equal to finish Location', async () => {
-  const wrapper = buildWrapper();
+test('Start Location cannot be equal to finish Location', () => {
+  const wrapper = buildWrapper(['placeA', 'placeA', 'placeA']);
+  wrapper.find('form').simulate('submit');
+  expect(
+    wrapper
+      .find('#robot1PickupPlace-helper-text')
+      .first()
+      .html(),
+  ).toContain('Start Location cannot be equal to finish Location');
+  expect(
+    wrapper
+      .find('#robot1DropoffPlace-helper-text')
+      .first()
+      .html(),
+  ).toContain('Start Location cannot be equal to finish Location');
+  wrapper.unmount();
 });
