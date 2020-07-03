@@ -57,15 +57,19 @@ export function requestDelivery(
 ) {
   deliveryRequestPub?.publish({
     items: [{ type_guid: '1', quantity: 1, compartment_name: '1' }],
-    pickup_place_name: pickupPlaceName,
-    pickup_behavior: { name: 'behavior', parameters: [{ name: 'dropoff_behavior', value: '1' }] },
-    dropoff_place_name: dropOffPlaceName,
-    dropoff_behavior: { name: 'behavior', parameters: [{ name: 'dropoff_behavior', value: '1' }] },
+    pickup_behavior: {
+      name: 'pickup_behavior',
+      parameters: [{ name: 'pickup_behavior', value: '1' }],
+    },
+    dropoff_behavior: {
+      name: 'dropoff_behavior',
+      parameters: [{ name: 'dropoff_behavior', value: '1' }],
+    },
     // new format
-    // pickup_place_name: pickupPlaceName,
-    // pickup_dispenser: pickupDispenser,
-    // dropoff_place_name: dropOffPlaceName,
-    // dropoff_dispenser: dropOffDispenser,
+    pickup_place_name: pickupPlaceName,
+    dropoff_place_name: dropOffPlaceName,
+    pickup_dispenser: pickupDispenser,
+    dropoff_dispenser: dropOffDispenser,
     task_id: uuidv4(),
   });
 }
