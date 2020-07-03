@@ -127,10 +127,11 @@ export const RobotDeliveryForm = (props: robotDeliveryFormProps) => {
           renderInput={params => (
             <TextField
               {...params}
-              label="Pick Start Location"
-              variant="outlined"
               error={!!pickupPlaceNameError}
               helperText={pickupPlaceNameError}
+              label="Pick Start Location"
+              name="pickupPlace"
+              variant="outlined"
             />
           )}
           value={!!pickupPlaceName ? pickupPlaceName : null}
@@ -146,10 +147,11 @@ export const RobotDeliveryForm = (props: robotDeliveryFormProps) => {
           renderInput={params => (
             <TextField
               {...params}
-              label="Pickup Dispenser"
-              variant="outlined"
               error={!!pickupDispenserError}
               helperText={pickupDispenserError}
+              label="Pickup Dispenser"
+              name="pickupDispenser"
+              variant="outlined"
             />
           )}
           value={!!pickupDispenser ? pickupDispenser : null}
@@ -165,10 +167,11 @@ export const RobotDeliveryForm = (props: robotDeliveryFormProps) => {
           renderInput={params => (
             <TextField
               {...params}
-              label="Pick Drop Off Location"
-              variant="outlined"
               error={!!dropOffPlaceNameError}
               helperText={dropOffPlaceNameError}
+              label="Pick Drop Off Location"
+              name="dropoffPlace"
+              variant="outlined"
             />
           )}
           value={!!dropOffPlaceName ? dropOffPlaceName : null}
@@ -184,10 +187,11 @@ export const RobotDeliveryForm = (props: robotDeliveryFormProps) => {
           renderInput={params => (
             <TextField
               {...params}
-              label="Pick Drop Off Dispenser"
-              variant="outlined"
               error={!!dropOffDispenserError}
               helperText={dropOffDispenserError}
+              label="Pick Drop Off Dispenser"
+              name="dropoffDispenser"
+              variant="outlined"
             />
           )}
           value={!!dropOffDispenser ? dropOffDispenser : null}

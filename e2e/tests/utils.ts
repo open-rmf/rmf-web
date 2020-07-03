@@ -8,7 +8,7 @@ import { Element } from '@wdio/sync';
 export function overwriteClick() {
   browser.overwriteCommand(
     'click',
-    function(this: Element, origClick) {
+    function (this: Element, origClick) {
       let prevLocation = this.getLocation();
       this.waitUntil(() => {
         const newLocation = this.getLocation();
@@ -20,4 +20,13 @@ export function overwriteClick() {
     },
     true,
   );
+}
+
+export function removeTextFromAutocomplete(characterNum: number) {
+  const backspace = '\u0008';
+  let backspaces = ''
+  for (let index = 0; index < characterNum; index++) {
+    backspaces += backspace
+  }
+  return backspaces
 }
