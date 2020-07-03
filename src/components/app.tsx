@@ -12,6 +12,7 @@ import LiftStateManager from '../lift-state-manager';
 import { RobotTrajectoryManager } from '../robot-trajectory-manager';
 import { loadSettings, saveSettings, Settings, SettingsContext } from '../settings';
 import './app.css';
+import CommandsPanel from './commands-panel';
 import DispensersPanel from './dispensers-panel';
 import DoorsPanel from './doors-panel';
 import LiftsPanel from './lift-item/lifts-panel';
@@ -69,6 +70,7 @@ enum OmniPanelViewIndex {
   Robots,
   Places,
   Dispensers,
+  Commands,
 }
 
 class ViewMapNode {
@@ -90,6 +92,7 @@ function makeViewMap(): ViewMap {
   viewMap[OmniPanelViewIndex.Robots] = root.addChild(OmniPanelViewIndex.Robots);
   viewMap[OmniPanelViewIndex.Places] = root.addChild(OmniPanelViewIndex.Places);
   viewMap[OmniPanelViewIndex.Dispensers] = root.addChild(OmniPanelViewIndex.Dispensers);
+  viewMap[OmniPanelViewIndex.Commands] = root.addChild(OmniPanelViewIndex.Commands);
   return viewMap;
 }
 
@@ -133,6 +136,10 @@ export default function App(props: AppProps): JSX.Element {
     Readonly<Record<string, RomiCore.DispenserState>>
   >({});
   const [dispenserSpotlight, setDispenserSpotlight] = React.useState<
+    SpotlightValue<string> | undefined
+  >(undefined);
+
+  const [commandSpotlight, setCommandSpotlight] = React.useState<
     SpotlightValue<string> | undefined
   >(undefined);
 
@@ -265,6 +272,7 @@ export default function App(props: AppProps): JSX.Element {
     setLiftSpotlight(undefined);
     setRobotSpotlight(undefined);
     setDispenserSpotlight(undefined);
+    setCommandSpotlight(undefined);
   }
 
   function handleClose() {
@@ -301,6 +309,10 @@ export default function App(props: AppProps): JSX.Element {
 
   function handleMainMenuDispensersClick(): void {
     setCurrentView(OmniPanelViewIndex.Dispensers);
+  }
+
+  function handleMainMenuCommandsClick(): void {
+    setCurrentView(OmniPanelViewIndex.Commands);
   }
 
   return (
@@ -354,6 +366,7 @@ export default function App(props: AppProps): JSX.Element {
                   onRobotsClick={handleMainMenuRobotsClick}
                   onPlacesClick={handleMainMenuPlacesClick}
                   onDispensersClick={handleMainMenuDispensersClick}
+                  onCommandsClick={handleMainMenuCommandsClick}
                 />
               </OmniPanelView>
               <OmniPanelView id={OmniPanelViewIndex.Doors}>
@@ -382,6 +395,9 @@ export default function App(props: AppProps): JSX.Element {
               </OmniPanelView>
               <OmniPanelView id={OmniPanelViewIndex.Dispensers}>
                 <DispensersPanel dispenserStates={dispenserStates} spotlight={dispenserSpotlight} />
+              </OmniPanelView>
+              <OmniPanelView id={OmniPanelViewIndex.Commands}>
+                <CommandsPanel transport={transport} spotlight={commandSpotlight} />
               </OmniPanelView>
             </OmniPanel>
           </Fade>
