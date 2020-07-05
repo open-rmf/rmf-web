@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { successMsg } from '../util/alerts';
 
 interface robotLoopFormProps {
-  fleetName: string;
+  fleets: string[];
   requestLoop(
     fleetName: string,
     numLoops: number,
@@ -15,9 +15,10 @@ interface robotLoopFormProps {
 }
 
 export const RobotLoopForm = (props: robotLoopFormProps) => {
-  const { requestLoop, fleetName, listOfPlaces } = props;
+  const { requestLoop, fleets, listOfPlaces } = props;
   const classes = useStyles();
 
+  const [targetFleetName, setTargetFleetName] = useState(fleets.length >= 1 ? fleets[0] : '');
   const [numLoops, setNumLoops] = useState(0);
   const [startLocation, setStartLocation] = useState(
     listOfPlaces.length >= 2 ? listOfPlaces[0] : '',
@@ -27,11 +28,13 @@ export const RobotLoopForm = (props: robotLoopFormProps) => {
   );
 
   // Error states
+  const [targetFleetNameError, setTargetFleetNameError] = useState('');
   const [numLoopsError, setNumLoopsError] = useState('');
   const [startLocationError, setStartLocationError] = useState('');
   const [finishLocationError, setFinishLocationError] = useState('');
 
   const cleanUpForm = () => {
+    setTargetFleetName('');
     setNumLoops(0);
     setStartLocation(listOfPlaces.length >= 2 ? listOfPlaces[0] : '');
     setFinishLocation(listOfPlaces.length >= 2 ? listOfPlaces[1] : '');
@@ -39,6 +42,7 @@ export const RobotLoopForm = (props: robotLoopFormProps) => {
   };
 
   const cleanUpError = () => {
+    setTargetFleetNameError('');
     setNumLoopsError('');
     setStartLocationError('');
     setFinishLocationError('');
@@ -47,7 +51,7 @@ export const RobotLoopForm = (props: robotLoopFormProps) => {
   const handleRequestLoop = (event: any) => {
     event.preventDefault();
     if (isFormValid()) {
-      requestLoop(fleetName, numLoops, startLocation, finishLocation);
+      requestLoop(targetFleetName, numLoops, startLocation, finishLocation);
       successMsg('Success');
       cleanUpForm();
     }
@@ -56,6 +60,10 @@ export const RobotLoopForm = (props: robotLoopFormProps) => {
   const isFormValid = () => {
     let isValid = true;
     cleanUpError();
+    if (targetFleetName === '') {
+      setTargetFleetNameError('Fleet name cannot be empty');
+      isValid = false;
+    }
     if (numLoops === 0 || numLoops < 0) {
       setNumLoopsError('Loops can only be > 0');
       isValid = false;
@@ -80,6 +88,22 @@ export const RobotLoopForm = (props: robotLoopFormProps) => {
 
   return (
     <form className={classes.form} onSubmit={handleRequestLoop}>
+      <div className={classes.divForm}>
+        <Autocomplete
+          getOptionLabel={option => option}
+          onChange={(e, value) => setTargetFleetName(value || '')}
+          options={fleets}
+          renderInput={params => (
+            <TextField {...params} label="Choose Target Fleet" variant="outlined" />
+          )}
+          value={!!targetFleetName ? targetFleetName : null}
+        />
+        {targetFleetNameError && (
+          <p id="targetFleetNameError" className={classes.error}>
+            {targetFleetNameError}
+          </p>
+        )}
+      </div>
       <div className={classes.divForm}>
         <TextField
           name="numLoops"
