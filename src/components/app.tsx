@@ -386,7 +386,7 @@ export default function App(props: AppProps): JSX.Element {
                 />
               </OmniPanelView>
               <OmniPanelView id={OmniPanelViewIndex.Robots}>
-                <RobotsPanel transport={transport} fleets={fleets} spotlight={robotSpotlight} />
+                <RobotsPanel fleets={fleets} spotlight={robotSpotlight} />
               </OmniPanelView>
               <OmniPanelView id={OmniPanelViewIndex.Places}>
                 {buildingMap && (
