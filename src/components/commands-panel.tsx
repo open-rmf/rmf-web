@@ -4,7 +4,7 @@ import { RobotLoopForm } from './robot-item-form';
 import fakePlaces from '../mock/data/places';
 import { v4 as uuidv4 } from 'uuid';
 import { SpotlightValue } from './spotlight-value';
-import { Typography } from "@material-ui/core";
+import { Typography } from '@material-ui/core';
 
 export function requestLoop(
   loopRequestPub: RomiCore.Publisher<RomiCore.Loop> | null,
@@ -23,12 +23,13 @@ export function requestLoop(
 }
 
 export interface CommandsPanelProps {
+  fleets: readonly RomiCore.FleetState[];
   spotlight?: Readonly<SpotlightValue<string>>;
   transport?: Readonly<RomiCore.Transport>;
 }
 
 export default function CommandsPanel(props: CommandsPanelProps): React.ReactElement {
-  const { spotlight, transport } = props;
+  const { fleets, spotlight, transport } = props;
   const commandRefs = React.useRef<Record<string, HTMLElement | null>>({});
   const [expanded, setExpanded] = React.useState<Readonly<Record<string, boolean>>>({});
   const listOfPlaces = fakePlaces()['magni'];
@@ -65,11 +66,13 @@ export default function CommandsPanel(props: CommandsPanelProps): React.ReactEle
   return (
     <React.Fragment>
       <Typography variant="h6">Task Requests</Typography>
-      <RobotLoopForm
-        requestLoop={handleRequestLoop}
-        fleetName={'magni'}
-        listOfPlaces={listOfPlaces}
-      />
+      {fleets.flatMap(fleet => (
+        <RobotLoopForm
+          requestLoop={handleRequestLoop}
+          fleetName={fleet.name}
+          listOfPlaces={listOfPlaces}
+        />
+      ))}
     </React.Fragment>
   );
 }
