@@ -34,6 +34,7 @@ export default function CommandsPanel(props: CommandsPanelProps): React.ReactEle
   const [expanded, setExpanded] = React.useState<Readonly<Record<string, boolean>>>({});
   const listOfPlaces = fakePlaces()['magni'];
 
+  const fleetArray = fleets.flatMap(fleet => fleet.name);
   const loopRequestPub = React.useMemo(
     () => (transport ? transport.createPublisher(RomiCore.loopRequests) : null),
     [transport],
@@ -65,14 +66,12 @@ export default function CommandsPanel(props: CommandsPanelProps): React.ReactEle
 
   return (
     <React.Fragment>
-      <Typography variant="h6">Task Requests</Typography>
-      {fleets.flatMap(fleet => (
-        <RobotLoopForm
-          requestLoop={handleRequestLoop}
-          fleetName={fleet.name}
-          listOfPlaces={listOfPlaces}
-        />
-      ))}
+      <Typography variant="h6">Loop Requests</Typography>
+      <RobotLoopForm
+        requestLoop={handleRequestLoop}
+        fleets={fleetArray}
+        listOfPlaces={listOfPlaces}
+      />
     </React.Fragment>
   );
 }
