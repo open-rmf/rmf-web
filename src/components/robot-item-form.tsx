@@ -1,4 +1,4 @@
-import { makeStyles, TextField, Button } from '@material-ui/core';
+import { makeStyles, TextField, Typography, Button } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useState } from 'react';
 import { successMsg } from '../util/alerts';
@@ -88,6 +88,9 @@ export const RobotLoopForm = (props: robotLoopFormProps) => {
 
   return (
     <form className={classes.form} onSubmit={handleRequestLoop}>
+      <Typography variant="h6" className={classes.title}>
+        Loop Requests
+      </Typography>
       <div className={classes.divForm}>
         <Autocomplete
           getOptionLabel={option => option}
@@ -174,9 +177,14 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     flexDirection: 'column',
   },
+  title: {
+    margin: 'auto',
+    padding: '0.5rem',
+  },
   divForm: {
     padding: '0.5rem',
-    width: '100%',
+    width: '95%',
+    margin: 'auto',
   },
   error: {
     color: theme.palette.error.main,
@@ -185,7 +193,7 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
   },
   button: {
-    width: '100%',
+    width: '95%',
   },
   buttonContainer: {
     paddingTop: '0.5rem',

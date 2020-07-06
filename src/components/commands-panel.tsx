@@ -4,7 +4,6 @@ import { RobotLoopForm } from './robot-item-form';
 import fakePlaces from '../mock/data/places';
 import { v4 as uuidv4 } from 'uuid';
 import { SpotlightValue } from './spotlight-value';
-import { Typography } from '@material-ui/core';
 
 export function requestLoop(
   loopRequestPub: RomiCore.Publisher<RomiCore.Loop> | null,
@@ -66,7 +65,6 @@ export default function CommandsPanel(props: CommandsPanelProps): React.ReactEle
 
   return (
     <React.Fragment>
-      <Typography variant="h6">Loop Requests</Typography>
       <RobotLoopForm
         requestLoop={handleRequestLoop}
         fleets={fleetArray}
