@@ -35,7 +35,7 @@ const RegisterForm = function() {
     }
   }, [username, password, firstName, lastName, confirmPassword]);
 
-  function isFormValid() {
+  function isFormValid(): boolean {
     let isValid = true;
     if (password !== confirmPassword) {
       setShowRegisterFail(true);
@@ -51,7 +51,8 @@ const RegisterForm = function() {
     setShowRegisterFail(true);
   }
 
-  function handleRegisterSuccess() {
+  function handleRegisterSuccess(): void {
+    // TODO replace this with the register logic
     setTimeout(() => {
       setIsSubmitting(false);
       setRedirect(true);
@@ -60,7 +61,6 @@ const RegisterForm = function() {
 
   function submit(event: React.FormEvent<HTMLFormElement>): void {
     event.preventDefault();
-    console.log(username, firstName, lastName, password, confirmPassword);
 
     if (isFormValid()) {
       // props.auth.register(username, firstName, lastName, password, confirmPassword);

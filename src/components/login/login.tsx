@@ -15,7 +15,7 @@ interface LoginProps {
   auth?: AuthService;
 }
 
-export function Alert(props: AlertProps) {
+export function Alert(props: AlertProps): JSX.Element {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
@@ -38,7 +38,7 @@ export default function Login(props: LoginProps): JSX.Element {
     }
   }, [user, password]);
 
-  function cleanForm() {
+  function cleanForm(): void {
     setUser('');
     setPassword('');
   }
@@ -50,7 +50,7 @@ export default function Login(props: LoginProps): JSX.Element {
     cleanForm();
   }
 
-  function handleLoginSuccess() {
+  function handleLoginSuccess(): void {
     setTimeout(() => {
       setIsSubmitting(false);
       setRedirect(true);
@@ -59,7 +59,6 @@ export default function Login(props: LoginProps): JSX.Element {
 
   function submit(event: React.FormEvent<HTMLFormElement>): void {
     event.preventDefault();
-    console.log(user, password);
     setIsSubmitting(true);
     // props.auth.login(user, password);
     // TODO replace this logic with the a call to the authentication service
