@@ -22,7 +22,7 @@ export function overwriteClick() {
   );
 }
 
-export function removeTextFromAutocomplete(characterNum: number) {
+export function removeTextFromAutocomplete(characterNum: number): string {
   const backspace = '\u0008';
   let backspaces = ''
   for (let index = 0; index < characterNum; index++) {

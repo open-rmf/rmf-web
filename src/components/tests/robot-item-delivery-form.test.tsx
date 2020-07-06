@@ -66,7 +66,6 @@ describe('Form validation', () => {
     wrapper.find('form').simulate('submit');
     expect(
       wrapper
-        .find(`#robot1PickupDispenser`)
         .find('#robot1PickupDispenser-helper-text')
         .first()
         .find('p')
@@ -75,7 +74,6 @@ describe('Form validation', () => {
 
     expect(
       wrapper
-        .find(`#robot1DropoffDispenser`)
         .find('#robot1DropoffDispenser-helper-text')
         .first()
         .find('p')
@@ -89,7 +87,6 @@ describe('Form validation', () => {
     wrapper.find('form').simulate('submit');
     expect(
       wrapper
-        .find('#robot1DropoffPlace')
         .find('#robot1DropoffPlace-helper-text')
         .first()
         .html(),

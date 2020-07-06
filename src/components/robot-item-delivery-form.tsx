@@ -19,7 +19,7 @@ interface robotDeliveryFormProps {
   listOfPlaces: string[];
 }
 
-export const RobotDeliveryForm = (props: robotDeliveryFormProps) => {
+export const RobotDeliveryForm = (props: robotDeliveryFormProps): JSX.Element => {
   const { requestDelivery, listOfPlaces, robotName } = props;
   const classes = robotFormStyle();
   // Places
@@ -40,7 +40,7 @@ export const RobotDeliveryForm = (props: robotDeliveryFormProps) => {
   const [dropOffPlaceNameError, setDropOffPlaceNameError] = useState('');
   const [dropOffDispenserError, setDropOffDispenserError] = useState('');
 
-  const cleanUpForm = () => {
+  const cleanUpForm = (): void => {
     setPickupPlaceName(listOfPlaces.length >= 2 ? listOfPlaces[0] : '');
     setDropOffPlaceName(listOfPlaces.length >= 2 ? listOfPlaces[1] : '');
     setPickupDispenser('');
@@ -48,7 +48,7 @@ export const RobotDeliveryForm = (props: robotDeliveryFormProps) => {
     cleanUpError();
   };
 
-  const cleanUpError = () => {
+  const cleanUpError = (): void => {
     setPickupPlaceNameError('');
     setDropOffPlaceNameError('');
     setPickupDispenserError('');
@@ -87,7 +87,7 @@ export const RobotDeliveryForm = (props: robotDeliveryFormProps) => {
       setDropOffDispenserError('There is no dispensers on this place. Pick another place');
   }, [dispensersFromDropOffPlace]);
 
-  const isFormValid = () => {
+  const isFormValid = (): boolean => {
     let isValid = true;
     cleanUpError();
 
