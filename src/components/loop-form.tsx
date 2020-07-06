@@ -2,6 +2,7 @@ import { makeStyles, TextField, Typography, Button } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useState } from 'react';
 import { successMsg } from '../util/alerts';
+import fakePlaces from '../mock/data/places';
 
 interface LoopFormProps {
   fleets: string[];
@@ -11,14 +12,14 @@ interface LoopFormProps {
     startLocationPoint: string,
     endLocationPoint: string,
   ): void;
-  listOfPlaces: string[];
 }
 
 export const LoopForm = (props: LoopFormProps) => {
-  const { requestLoop, fleets, listOfPlaces } = props;
+  const { requestLoop, fleets } = props;
   const classes = useStyles();
 
   const [targetFleetName, setTargetFleetName] = useState(fleets.length >= 1 ? fleets[0] : '');
+  const [listOfPlaces, setPlaceNames] = useState(fakePlaces()[targetFleetName]);
   const [numLoops, setNumLoops] = useState(0);
   const [startLocation, setStartLocation] = useState(
     listOfPlaces.length >= 2 ? listOfPlaces[0] : '',
@@ -34,7 +35,8 @@ export const LoopForm = (props: LoopFormProps) => {
   const [finishLocationError, setFinishLocationError] = useState('');
 
   const cleanUpForm = () => {
-    setTargetFleetName('');
+    setTargetFleetName(fleets[0]);
+    setPlaceNames(fakePlaces()[targetFleetName]);
     setNumLoops(0);
     setStartLocation(listOfPlaces.length >= 2 ? listOfPlaces[0] : '');
     setFinishLocation(listOfPlaces.length >= 2 ? listOfPlaces[1] : '');
