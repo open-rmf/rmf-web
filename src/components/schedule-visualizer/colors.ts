@@ -38,15 +38,15 @@ export default class ColorManager {
   }
 
   /**
-   * Gets a light color for the path. This function shouldn't have a method to memoize because the id should never be equal. The hash is an async function that takes a while to give a response. Since our application should graph the path in real time, the hash was discarded and the path id was chosen to calculate its color. An attempt was made to get the colors with the hash by wrapping it in a useEffect but the update time was not fast enough.
+   * Gets a light color for the path. The hash is an async function that takes a while to give a response. Since our application should graph the path in real time, the hash was discarded and the path id was chosen to calculate its color. An attempt was made on robot-trajectory.tsx to get the colors with the hash by wrapping it in a useEffect but the update time was not fast enough.
    * @param pathId : id of the path
    */
-  static getPathColor(pathId: number) {
+  static getPathColor(pathId: number): string {
     const pathRandomNumber = (pathId < 9999) ? pathId * 100 : pathId
     return this._getLightColor(pathRandomNumber, pathRandomNumber);
   }
 
-  private static _getLightColor(firstNumber: number, secondNumber: number) {
+  private static _getLightColor(firstNumber: number, secondNumber: number): string {
     const hue = firstNumber % 360;
     const satlum = secondNumber % 2500;
     const saturation = 50 + (satlum % 50);

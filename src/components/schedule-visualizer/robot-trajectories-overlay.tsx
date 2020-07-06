@@ -1,11 +1,6 @@
 import * as L from 'leaflet';
 import React, { useContext, useEffect } from 'react';
-import {
-  Conflict,
-  Trajectory,
-  RawKnot,
-  DefaultTrajectoryManager,
-} from '../../robot-trajectory-manager';
+import { Conflict, Trajectory, DefaultTrajectoryManager } from '../../robot-trajectory-manager';
 import ColorManager from './colors';
 import RobotTrajectory, { RobotTrajectoryProps } from './robot-trajectory';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
@@ -15,13 +10,12 @@ export interface RobotTrajectoriesOverlayProps extends SVGOverlayProps {
   trajs: readonly Trajectory[];
   conflicts: Conflict[];
   colorManager: Readonly<ColorManager>;
-  conflictsSegments?: RawKnot[][];
 }
 
 export default function RobotTrajectoriesOverlay(
   props: RobotTrajectoriesOverlayProps,
 ): React.ReactElement {
-  const { trajs, conflicts, conflictsSegments, ...otherProps } = props;
+  const { trajs, conflicts, ...otherProps } = props;
   const trajectoryContext = useContext(RobotTrajectoryContext);
   const notificationDispatch = useContext(NotificationBarContext);
 
@@ -35,7 +29,7 @@ export default function RobotTrajectoriesOverlay(
   const footprint = 0.5;
 
   useEffect(() => {
-    function getConflictRobotsName() {
+    function getConflictRobotsName(): string[] {
       let robotNames: string[] = [];
       conflicts.forEach(conflictId => {
         const robotName = DefaultTrajectoryManager.getRobotNameFromPathId(conflictId, trajs);

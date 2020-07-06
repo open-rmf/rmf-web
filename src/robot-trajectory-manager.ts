@@ -97,7 +97,7 @@ export class DefaultTrajectoryManager {
     return resp as TimeResponse;
   }
 
-  static getRobotNameFromPathId(pathId: number, trajectories: readonly Trajectory[]) {
+  static getRobotNameFromPathId(pathId: number, trajectories: readonly Trajectory[]): string | undefined {
     const traj = trajectories.find(trajectory => trajectory.id === pathId);
     return traj?.robot_name;
   }
