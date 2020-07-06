@@ -8,7 +8,7 @@ import {
   makeStyles,
   Radio,
   RadioGroup,
-  useMediaQuery
+  useMediaQuery,
 } from '@material-ui/core';
 import React from 'react';
 import { Settings, TrajectoryAnimation } from '../settings';
@@ -28,7 +28,7 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
     [],
   );
 
-  const drawerAnchor = useMediaQuery("(max-width: 450px)") ? "bottom" : "right";
+  const drawerAnchor = useMediaQuery('(max-aspect-ratio: 8/10)') ? 'bottom' : 'right';
 
   function handleTrajectoryAnimationChange(ev: React.ChangeEvent<HTMLInputElement>): void {
     const newSettings: Settings = { ...settings, trajectoryAnimation: Number(ev.target.value) };
@@ -64,32 +64,31 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
 
 const useStyles = makeStyles(theme => ({
   drawer: {
-    [theme.breakpoints.up(450)]: {
-      width: 300
+    '@media (min-aspect-ratio: 8/10)': {
+      width: 300,
     },
-    [theme.breakpoints.down(450)]: {
-      width: "100%"
-    }
+    '@media (max-aspect-ratio: 8/10)': {
+      width: '100%',
+    },
   },
   legendLabel: {
-    [theme.breakpoints.up(450)]: {
+    '@media (min-aspect-ratio: 8/10)': {
       fontSize: theme.typography.h6.fontSize,
       padding: theme.spacing(1),
     },
-    [theme.breakpoints.down(450)]: {
+    '@media (max-aspect-ratio: 8/10)': {
       fontSize: theme.typography.h6.fontSize,
       padding: theme.spacing(1),
-      margin: "auto",
     },
   },
   trajGroup: {
-    [theme.breakpoints.up(450)]: {
+    '@media (min-aspect-ratio: 8/10)': {
       flexDirection: 'row',
-      paddingLeft: theme.spacing(2)
+      paddingLeft: theme.spacing(4),
     },
-    [theme.breakpoints.down(450)]: {
+    '@media (max-aspect-ratio: 8/10)': {
       flexDirection: 'row',
-      paddingLeft: theme.spacing(12),
+      paddingLeft: theme.spacing(8),
     },
   },
   flexBasis: {

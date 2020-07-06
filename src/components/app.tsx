@@ -39,7 +39,7 @@ const useStyles = makeStyles(theme => ({
     flexGrow: 1,
   },
   omniPanel: {
-    [theme.breakpoints.up(450)]: {
+    '@media (min-aspect-ratio: 8/10)': {
       position: 'fixed',
       width: 350,
       top: 80,
@@ -51,10 +51,10 @@ const useStyles = makeStyles(theme => ({
       borderTopRightRadius: borderRadius,
       boxShadow: theme.shadows[12],
     },
-    [theme.breakpoints.down(450)]: {
+    '@media (max-aspect-ratio: 8/10)': {
       position: 'absolute',
-      width: "100%",
-      height: "35%",
+      width: '100%',
+      height: '35%',
       top: '65%',
       backgroundColor: theme.palette.background.default,
       zIndex: 1024,
