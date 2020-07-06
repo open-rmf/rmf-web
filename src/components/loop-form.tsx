@@ -3,7 +3,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useState } from 'react';
 import { successMsg } from '../util/alerts';
 
-interface robotLoopFormProps {
+interface LoopFormProps {
   fleets: string[];
   requestLoop(
     fleetName: string,
@@ -14,7 +14,7 @@ interface robotLoopFormProps {
   listOfPlaces: string[];
 }
 
-export const RobotLoopForm = (props: robotLoopFormProps) => {
+export const LoopForm = (props: LoopFormProps) => {
   const { requestLoop, fleets, listOfPlaces } = props;
   const classes = useStyles();
 

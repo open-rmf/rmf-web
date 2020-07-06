@@ -1,5 +1,5 @@
 import { createMount } from '@material-ui/core/test-utils';
-import { RobotLoopForm } from '../robot-item-form';
+import { LoopForm } from '../loop-form';
 import fakePlaces from '../../mock/data/places';
 import React from 'react';
 
@@ -16,9 +16,9 @@ const buildWrapper = (listOfPlaces?: string[]) => {
   };
 
   const wrapper = mount(
-    <RobotLoopForm
+    <LoopForm
       requestLoop={onClick}
-      fleetName={'SuperFleet'}
+      fleets={['SuperFleet']}
       listOfPlaces={!!listOfPlaces ? listOfPlaces : fakePlaces()['SuperFleet']}
     />,
   );

@@ -1,6 +1,6 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
-import { RobotLoopForm } from './robot-item-form';
+import { LoopForm } from './loop-form';
 import fakePlaces from '../mock/data/places';
 import { v4 as uuidv4 } from 'uuid';
 import { SpotlightValue } from './spotlight-value';
@@ -65,7 +65,7 @@ export default function CommandsPanel(props: CommandsPanelProps): React.ReactEle
 
   return (
     <React.Fragment>
-      <RobotLoopForm
+      <LoopForm
         requestLoop={handleRequestLoop}
         fleets={fleetArray}
         listOfPlaces={listOfPlaces}
