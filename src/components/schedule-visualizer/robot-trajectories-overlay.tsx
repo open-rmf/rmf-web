@@ -42,7 +42,7 @@ export default function RobotTrajectoriesOverlay(
     if (conflicts.length !== 0) {
       notificationDispatch &&
         notificationDispatch({
-          message: `Trajectory conflict between ${getConflictRobotsName()}`,
+          message: `Robots with trajectory conflicts are: ${getConflictRobotsName()}`,
           type: 'error',
         });
     }
