@@ -15,7 +15,7 @@ export interface RobotTrajectoriesOverlayProps extends SVGOverlayProps {
 export default function RobotTrajectoriesOverlay(
   props: RobotTrajectoriesOverlayProps,
 ): React.ReactElement {
-  const { trajs, conflicts, ...otherProps } = props;
+  const { trajs, conflicts, colorManager, ...otherProps } = props;
   const trajectoryContext = useContext(RobotTrajectoryContext);
   const notificationDispatch = useContext(NotificationBarContext);
 
@@ -57,6 +57,7 @@ export default function RobotTrajectoriesOverlay(
             trajectory={traj}
             footprint={footprint}
             conflicts={conflicts}
+            colorManager={colorManager}
           />
         ))}
       </svg>

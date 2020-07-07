@@ -28,22 +28,14 @@ export default class ColorManager {
       const nameHash = new Uint16Array(await _hash(name));
       color = ColorManager._getLightColor(modelHash[0], nameHash[0]);
       this._robotColorCache[key] = color;
+      this._robotColorCache[name] = color;
     }
     return color;
   }
 
-  robotColorFromCache(name: string, model: string): string | null {
-    const color = this._robotColorCache[this._robotKey(name, model)];
+  robotColorFromCache(name: string, model?: string): string | null {
+    const color = !!model ? this._robotColorCache[this._robotKey(name, model)] : this._robotColorCache[name];
     return color ? color : null;
-  }
-
-  /**
-   * Gets a light color for the path. The hash is an async function that takes a while to give a response. Since our application should graph the path in real time, the hash was discarded and the path id was chosen to calculate its color. An attempt was made on robot-trajectory.tsx to get the colors with the hash by wrapping it in a useEffect but the update time was not fast enough.
-   * @param pathId : id of the path
-   */
-  static getPathColor(pathId: number): string {
-    const pathRandomNumber = (pathId < 9999) ? pathId * 100 : pathId
-    return this._getLightColor(pathRandomNumber, pathRandomNumber);
   }
 
   private static _getLightColor(firstNumber: number, secondNumber: number): string {
