@@ -21,15 +21,14 @@ export const RobotTrajectory = React.forwardRef(function(
   const { trajectory, conflicts, footprint, colorManager, ...otherProps } = props;
   const theme = useTheme();
 
-  const getRobotColor = () => {
-    const robotColor = colorManager?.robotColorFromCache(trajectory.robot_name);
-    return !!robotColor ? robotColor : theme.palette.success.main;
-  };
+  const pathColor = React.useMemo(() => {
+    const getRobotColor = () => {
+      const robotColor = colorManager?.robotColorFromCache(trajectory.robot_name);
+      return !!robotColor ? robotColor : theme.palette.success.main;
+    };
 
-  const pathColor = React.useMemo(
-    () => (conflicts.includes(trajectory.id) ? theme.palette.error.main : getRobotColor()),
-    [trajectory, conflicts, theme, colorManager],
-  );
+    return conflicts.includes(trajectory.id) ? theme.palette.error.main : getRobotColor();
+  }, [trajectory, conflicts, theme, colorManager]);
 
   const pathD = React.useMemo(() => {
     return trajectoryPath(trajectory.segments).d;
