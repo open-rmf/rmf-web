@@ -11,7 +11,7 @@ export interface RobotTrajectoryProps
   trajectory: Trajectory;
   conflicts: Conflict[];
   footprint: number;
-  colorManager: Readonly<ColorManager>;
+  colorManager?: Readonly<ColorManager>;
 }
 
 export const RobotTrajectory = React.forwardRef(function(
@@ -21,11 +21,13 @@ export const RobotTrajectory = React.forwardRef(function(
   const { trajectory, conflicts, footprint, colorManager, ...otherProps } = props;
   const theme = useTheme();
 
+  const getRobotColor = () => {
+    const robotColor = colorManager?.robotColorFromCache(trajectory.robot_name);
+    return !!robotColor ? robotColor : theme.palette.success.main;
+  };
+
   const pathColor = React.useMemo(
-    () =>
-      conflicts.includes(trajectory.id)
-        ? theme.palette.error.main
-        : colorManager.robotColorFromCache(trajectory.robot_name),
+    () => (conflicts.includes(trajectory.id) ? theme.palette.error.main : getRobotColor()),
     [trajectory, conflicts, theme, colorManager],
   );
 
