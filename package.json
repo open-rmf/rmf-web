@@ -31,18 +31,19 @@
     "react-leaflet": "^2.6.0",
     "react-leaflet-control": "^2.1.1",
     "react-scripts": "^3.4.0",
-    "selenium-webdriver": "^4.0.0-alpha.7",
+    "serve": "^11.3.2",
     "sweetalert2": "^9.13.1",
     "typeface-roboto": "0.0.75",
     "typescript": "3.7.2",
     "uuid": "^8.1.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "REACT_APP_SOSS_SERVER=wss://localhost:50001 REACT_APP_SOSS_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoicm9taS1kYXNoYm9hcmQiLCJpYXQiOjE1ODMyODYyMTV9.x9aNjcLujQPHchWEsbrRbvctmnGQtEzw-81X0aPIE-Y REACT_APP_TRAJECTORY_SERVER=ws://localhost:8006 react-scripts start",
     "start:mock": "REACT_APP_MOCK=1 react-scripts start",
+    "start:custom": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --testPathIgnorePatterns integration-tests",
-    "test:integration": "node src/integration-tests/launch.js test --testPathPattern integration-tests",
+    "test": "react-scripts test",
+    "test:e2e": ". e2e/env.sh && node e2e/prepare.js && npm run build && wdio",
     "eject": "react-scripts eject",
     "deploy:demo": "REACT_APP_MOCK=1 npm run build && NODE_DEBUG=gh-pages gh-pages -d build -m \"$(git rev-parse HEAD)\""
   },
@@ -62,6 +63,15 @@
     ]
   },
   "devDependencies": {
-    "gh-pages": "^2.2.0"
+    "@types/mocha": "^7.0.2",
+    "@wdio/cli": "^6.1.19",
+    "@wdio/local-runner": "^6.1.19",
+    "@wdio/mocha-framework": "^6.1.19",
+    "@wdio/spec-reporter": "^6.1.14",
+    "@wdio/sync": "^6.1.14",
+    "chromedriver": "^83.0.0",
+    "gh-pages": "^2.2.0",
+    "ts-node": "^8.10.2",
+    "wdio-chromedriver-service": "^6.0.3"
   }
 }

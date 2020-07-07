@@ -145,6 +145,7 @@ export function withOutlineAnimation(
 
       const mask = document.createElementNS('http://www.w3.org/2000/svg', 'mask');
       mask.setAttribute('id', `${trajectory.id}-mask`);
+      mask.setAttribute('width', '100');
       const maskRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
       maskRect.setAttribute('x', '0');
       maskRect.setAttribute('y', '0');

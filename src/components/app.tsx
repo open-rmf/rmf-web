@@ -14,7 +14,7 @@ import { loadSettings, saveSettings, Settings, SettingsContext } from '../settin
 import './app.css';
 import DispensersPanel from './dispensers-panel';
 import DoorsPanel from './doors-panel';
-import LiftsPanel from './lifts-panel';
+import LiftsPanel from './lift-item/lifts-panel';
 import LoadingScreen, { LoadingScreenProps } from './loading-screen';
 import MainMenu from './main-menu';
 import OmniPanel from './omni-panel';

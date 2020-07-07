@@ -48,17 +48,23 @@ export const DoorItem = React.forwardRef(function(
   }
 
   return (
-    <ExpansionPanel ref={ref} {...otherProps}>
+    <ExpansionPanel
+      ref={ref}
+      data-component="DoorItem"
+      data-name={door.name}
+      data-state={doorModeToString(doorState)}
+      {...otherProps}
+    >
       <ExpansionPanelSummary
         classes={{ content: classes.expansionSummaryContent }}
         expandIcon={<ExpandMoreIcon />}
       >
         <Typography variant="h5">{door.name}</Typography>
-        <Typography className={doorModeLabelClasses(doorState)} variant="button">
+        <Typography data-role="state" className={doorModeLabelClasses(doorState)} variant="button">
           {doorModeToString(doorState)}
         </Typography>
       </ExpansionPanelSummary>
-      <ExpansionPanelDetails className={classes.expansionDetail}>
+      <ExpansionPanelDetails data-role="details" className={classes.expansionDetail}>
         <div className={classes.expansionDetailLine}>
           <Typography variant="body1">Type:</Typography>
           <Typography variant="body1">{doorTypeToString(door.door_type)}</Typography>
