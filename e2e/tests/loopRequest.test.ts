@@ -11,15 +11,17 @@ describe('loop request', () => {
   before(() => browser.url('/'));
 
   it('rmf responds to loop request', () => {
+    $('[data-component=MainMenu] [data-item=Robots]').click();
+
     browser.addLocatorStrategy('findAllRobots', () => {
       return document.querySelectorAll('[data-component=RobotItem]');
     });
-    $('[data-component=MainMenu] [data-item=Robots]').click();
     const allRobotItems = browser.custom$$('findAllRobots', '[data-component=RobotItem]');
+
     let getRobotLocations = () => {
       let robotLocations = allRobotItems.map(robot => {
         robot.click();
-        return robot.getLocation();
+        return robot.$('[data-role=position]').getHTML();
       });
       return robotLocations;
     };
