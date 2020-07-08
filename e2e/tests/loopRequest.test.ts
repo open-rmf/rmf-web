@@ -11,18 +11,30 @@ describe('loop request', () => {
   before(() => browser.url('/'));
 
   it('rmf responds to loop request', () => {
+    browser.addLocatorStrategy('findAllRobots', () => {
+      return document.querySelectorAll('[data-component=RobotItem]');
+    });
     $('[data-component=MainMenu] [data-item=Robots]').click();
-    const robotItem = $('[data-component=RobotItem]');
-    robotItem.click();
-    const position = robotItem.$('[data-role=position]').getText();
-    robotItem.$('button=Loop').click();
-    robotItem.$('input[name=numLoops]').setValue(1);
-    robotItem.$('button=Request').click();
-    robotItem.$('button=Info').click();
-    expect(robotItem.$('[data-role=position]')).not.toHaveText(position);
-  });
+    const allRobotItems = browser.custom$$('findAllRobots', '[data-component=RobotItem]');
+    let getRobotLocations = () => {
+      let robotLocations = allRobotItems.map(robot => {
+        robot.click();
+        return robot.getLocation();
+      });
+      return robotLocations;
+    };
+    const currentRobotLocations = getRobotLocations();
 
-  it('renders robot trajectory', () => {
-    expect($('[data-component=RobotTrajectory]')).toBeVisible();
+    const backButton = $('[name="back-button"]');
+    backButton.click();
+    $('[data-component=MainMenu] [data-item=Commands]').click();
+    $('input[name=numLoops]').setValue(1);
+    $('button=Request').click();
+
+    backButton.click();
+    $('[data-component=MainMenu] [data-item=Robots]').click();
+    const newRobotLocations = getRobotLocations();
+
+    expect(newRobotLocations).not.toMatchObject(currentRobotLocations);
   });
 });
