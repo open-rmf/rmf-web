@@ -21,21 +21,18 @@ async function _hash(s: string): Promise<ArrayBuffer> {
 
 export default class ColorManager {
   async robotColor(name: string, model: string): Promise<string> {
-    const key = this._robotKey(name, model);
-    let color = this._robotColorCache[key];
+    let color = this._robotColorCache[name];
     if (!color) {
       const modelHash = new Uint16Array(await _hash(model));
       const nameHash = new Uint16Array(await _hash(name));
       color = ColorManager._getLightColor(modelHash[0], nameHash[0]);
-      this._robotColorCache[key] = color;
       this._robotColorCache[name] = color;
     }
     return color;
   }
 
-  robotColorFromCache(name: string, model?: string): string | null {
-    const color = !!model ? this._robotColorCache[this._robotKey(name, model)] : this._robotColorCache[name];
-    return color ? color : null;
+  robotColorFromCache(name: string): string | null {
+    return this._robotColorCache[name] ? this._robotColorCache[name] : null;
   }
 
   // Gets a light color different than red
@@ -53,7 +50,4 @@ export default class ColorManager {
 
   private _robotColorCache: Record<string, string> = {};
 
-  private _robotKey(name: string, model: string) {
-    return `${name}__${model}`;
-  }
 }
