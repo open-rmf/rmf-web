@@ -30,7 +30,6 @@ export interface CommandsPanelProps {
 export default function CommandsPanel(props: CommandsPanelProps): React.ReactElement {
   const { fleets, spotlight, transport } = props;
   const commandRefs = React.useRef<Record<string, HTMLElement | null>>({});
-  const [expanded, setExpanded] = React.useState<Readonly<Record<string, boolean>>>({});
   const listOfPlaces = fakePlaces()['magni'];
 
   const allFleets = fleets.flatMap(fleet => fleet.name);
@@ -56,10 +55,6 @@ export default function CommandsPanel(props: CommandsPanelProps): React.ReactEle
     if (!ref) {
       return;
     }
-    setExpanded(prev => ({
-      ...prev,
-      [spotlight.value]: true,
-    }));
     ref.scrollIntoView({ behavior: 'smooth' });
   }, [spotlight]);
 
