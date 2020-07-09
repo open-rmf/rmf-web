@@ -18,7 +18,7 @@ test('Render places correctly', () => {
       <PlacesOverlay bounds={bounds} places={places} onPlaceClick={handleClick} />
     </LMap>,
   );
-  expect(wrapper.find(Place).exists()).toBeTruthy;
+  expect(wrapper.find(Place).exists()).toBeTruthy();
   expect(wrapper.find(Place).length).toBe(officeMap.places.length);
 
   wrapper.unmount();

@@ -8,7 +8,6 @@ import DefaultDoor from '../door-default';
 import DoubleHingeDoor from '../door-double-hinge';
 import { DoorProps, getDoorStyle } from '../door';
 import DoubleSlideDoor from '../door-double-slide';
-import doorStyles from '../door-style';
 
 const mainDoor = {
   name: 'main_door',
@@ -23,7 +22,7 @@ const mainDoor = {
 
 const buildDoorWrapper = (
   Component: (props: DoorProps) => React.ReactElement,
-  mainDoor: RomiCore.Door,
+  door: RomiCore.Door,
   currentMode: number,
 ) => {
   return mount(
@@ -31,7 +30,7 @@ const buildDoorWrapper = (
       <Component
         v1={[mainDoor.v1_x, mainDoor.v1_y]}
         v2={[mainDoor.v2_x, mainDoor.v2_y]}
-        door={mainDoor}
+        door={door}
         currentMode={currentMode}
       />
     </svg>,
@@ -46,6 +45,34 @@ const getSingleDoorSVGLine = (wrapper: ReactWrapper) => {
     .at(0)
     .find('line')
     .at(0);
+};
+
+const checkOpenStyle = (
+  Component: (props: DoorProps) => React.ReactElement,
+  door: RomiCore.Door,
+  currentMode: number,
+) => {
+  const wrapper = buildDoorWrapper(Component, door, currentMode);
+  const singleDoorSVGLine = getSingleDoorSVGLine(wrapper);
+  return singleDoorSVGLine.hasClass(/(makeStyles)-(doorOpen)-(\d+)/);
+};
+const checkClosedStyle = (
+  Component: (props: DoorProps) => React.ReactElement,
+  door: RomiCore.Door,
+  currentMode: number,
+) => {
+  const wrapper = buildDoorWrapper(Component, door, currentMode);
+  const singleDoorSVGLine = getSingleDoorSVGLine(wrapper);
+  return singleDoorSVGLine.hasClass(/(makeStyles)-(doorClose)-(\d+)/);
+};
+const checkProcessStyle = (
+  Component: (props: DoorProps) => React.ReactElement,
+  door: RomiCore.Door,
+  currentMode: number,
+) => {
+  const wrapper = buildDoorWrapper(Component, door, currentMode);
+  const singleDoorSVGLine = getSingleDoorSVGLine(wrapper);
+  return singleDoorSVGLine.hasClass(/(makeStyles)-(doorProcess)-(\d+)/);
 };
 
 test('Trigger click event', async () => {
@@ -86,110 +113,28 @@ test('Get correct door style', () => {
   expect(moving).toEqual(doorStyle.doorProcess);
 });
 
-describe('Checks assignation of styles on different states of SingleHingeDoor', () => {
-  test('Style of SingleHingeDoor on Open', () => {
-    const wrapper = buildDoorWrapper(SingleHingeDoor, mainDoor, RomiCore.DoorMode.MODE_OPEN);
-    const singleDoorSVGLine = getSingleDoorSVGLine(wrapper);
-    expect(singleDoorSVGLine.hasClass(/(makeStyles)-(doorOpen)-(\d+)/)).toBe(true);
-    wrapper.unmount();
-  });
-
-  test('Style of SingleHingeDoor on Close', () => {
-    const wrapper = buildDoorWrapper(SingleHingeDoor, mainDoor, RomiCore.DoorMode.MODE_CLOSED);
-    const singleDoorSVGLine = getSingleDoorSVGLine(wrapper);
-    expect(singleDoorSVGLine.hasClass(/(makeStyles)-(doorClose)-(\d+)/)).toBe(true);
-    wrapper.unmount();
-  });
-
-  test('Style of SingleHingeDoor on Process', () => {
-    const wrapper = buildDoorWrapper(SingleHingeDoor, mainDoor, RomiCore.DoorMode.MODE_MOVING);
-    const singleDoorSVGLine = getSingleDoorSVGLine(wrapper);
-    expect(singleDoorSVGLine.hasClass(/(makeStyles)-(doorProcess)-(\d+)/)).toBe(true);
-    wrapper.unmount();
-  });
-});
-
 describe('Checks assignation of styles on different states', () => {
-  test('Style of SingleSlideDoor on Open', () => {
-    const wrapper = buildDoorWrapper(SingleSlideDoor, mainDoor, RomiCore.DoorMode.MODE_OPEN);
-    const singleDoorSVGLine = getSingleDoorSVGLine(wrapper);
-    expect(singleDoorSVGLine.hasClass(/(makeStyles)-(doorOpen)-(\d+)/)).toBe(true);
-    wrapper.unmount();
+  test('Style of SingleHingeDoor', () => {
+    expect(checkOpenStyle(SingleHingeDoor, mainDoor, RomiCore.DoorMode.MODE_OPEN)).toBe(true);
+    expect(checkClosedStyle(SingleHingeDoor, mainDoor, RomiCore.DoorMode.MODE_CLOSED)).toBe(true);
+    expect(checkProcessStyle(SingleHingeDoor, mainDoor, RomiCore.DoorMode.MODE_MOVING)).toBe(true);
   });
 
-  test('Style of SingleSlideDoor on Close', () => {
-    const wrapper = buildDoorWrapper(SingleSlideDoor, mainDoor, RomiCore.DoorMode.MODE_CLOSED);
-    const singleDoorSVGLine = getSingleDoorSVGLine(wrapper);
-    expect(singleDoorSVGLine.hasClass(/(makeStyles)-(doorClose)-(\d+)/)).toBe(true);
-    wrapper.unmount();
+  test('Style of SingleSlideDoor', () => {
+    expect(checkOpenStyle(SingleSlideDoor, mainDoor, RomiCore.DoorMode.MODE_OPEN)).toBe(true);
+    expect(checkClosedStyle(SingleSlideDoor, mainDoor, RomiCore.DoorMode.MODE_CLOSED)).toBe(true);
+    expect(checkProcessStyle(SingleSlideDoor, mainDoor, RomiCore.DoorMode.MODE_MOVING)).toBe(true);
   });
 
-  test('Style of SingleSlideDoor on Process', () => {
-    const wrapper = buildDoorWrapper(SingleSlideDoor, mainDoor, RomiCore.DoorMode.MODE_MOVING);
-    const singleDoorSVGLine = getSingleDoorSVGLine(wrapper);
-    expect(singleDoorSVGLine.hasClass(/(makeStyles)-(doorProcess)-(\d+)/)).toBe(true);
-    wrapper.unmount();
-  });
-});
-
-describe('Checks assignation of styles on DobleHingeDoors', () => {
-  const getSingleDoorSVGLine = (wrapper: ReactWrapper) => {
-    return wrapper
-      .find(DefaultDoor)
-      .at(0)
-      .find('line')
-      .at(0);
-  };
-
-  test('Style of DoubleHingeDoors on Open', () => {
-    const wrapper = buildDoorWrapper(DoubleHingeDoor, mainDoor, RomiCore.DoorMode.MODE_OPEN);
-    const singleDoorSVGLine = getSingleDoorSVGLine(wrapper);
-    expect(singleDoorSVGLine.hasClass(/(makeStyles)-(doorOpen)-(\d+)/)).toBe(true);
-    wrapper.unmount();
+  test('Style of DobleHingeDoors', () => {
+    expect(checkOpenStyle(DoubleHingeDoor, mainDoor, RomiCore.DoorMode.MODE_OPEN)).toBe(true);
+    expect(checkClosedStyle(DoubleHingeDoor, mainDoor, RomiCore.DoorMode.MODE_CLOSED)).toBe(true);
+    expect(checkProcessStyle(DoubleHingeDoor, mainDoor, RomiCore.DoorMode.MODE_MOVING)).toBe(true);
   });
 
-  test('Style of DoubleHingeDoors on Close', () => {
-    const wrapper = buildDoorWrapper(DoubleHingeDoor, mainDoor, RomiCore.DoorMode.MODE_CLOSED);
-    const singleDoorSVGLine = getSingleDoorSVGLine(wrapper);
-    expect(singleDoorSVGLine.hasClass(/(makeStyles)-(doorClose)-(\d+)/)).toBe(true);
-    wrapper.unmount();
-  });
-
-  test('Style of DoubleHingeDoors on Process', () => {
-    const wrapper = buildDoorWrapper(DoubleHingeDoor, mainDoor, RomiCore.DoorMode.MODE_MOVING);
-    const singleDoorSVGLine = getSingleDoorSVGLine(wrapper);
-    expect(singleDoorSVGLine.hasClass(/(makeStyles)-(doorProcess)-(\d+)/)).toBe(true);
-    wrapper.unmount();
-  });
-});
-
-describe('Checks assignation of styles on DoubleSlideDoor', () => {
-  const getSingleDoorSVGLine = (wrapper: ReactWrapper) => {
-    return wrapper
-      .find(DefaultDoor)
-      .at(0)
-      .find('line')
-      .at(0);
-  };
-
-  test('Style of DoubleSlideDoor on Open', () => {
-    const wrapper = buildDoorWrapper(DoubleSlideDoor, mainDoor, RomiCore.DoorMode.MODE_OPEN);
-    const singleDoorSVGLine = getSingleDoorSVGLine(wrapper);
-    expect(singleDoorSVGLine.hasClass(/(makeStyles)-(doorOpen)-(\d+)/)).toBe(true);
-    wrapper.unmount();
-  });
-
-  test('Style of DoubleSlideDoor on Close', () => {
-    const wrapper = buildDoorWrapper(DoubleSlideDoor, mainDoor, RomiCore.DoorMode.MODE_CLOSED);
-    const singleDoorSVGLine = getSingleDoorSVGLine(wrapper);
-    expect(singleDoorSVGLine.hasClass(/(makeStyles)-(doorClose)-(\d+)/)).toBe(true);
-    wrapper.unmount();
-  });
-
-  test('Style of DoubleSlideDoor on Process', () => {
-    const wrapper = buildDoorWrapper(DoubleSlideDoor, mainDoor, RomiCore.DoorMode.MODE_MOVING);
-    const singleDoorSVGLine = getSingleDoorSVGLine(wrapper);
-    expect(singleDoorSVGLine.hasClass(/(makeStyles)-(doorProcess)-(\d+)/)).toBe(true);
-    wrapper.unmount();
+  test('Style of DoubleSlideDoor', () => {
+    expect(checkOpenStyle(DoubleSlideDoor, mainDoor, RomiCore.DoorMode.MODE_OPEN)).toBe(true);
+    expect(checkClosedStyle(DoubleSlideDoor, mainDoor, RomiCore.DoorMode.MODE_CLOSED)).toBe(true);
+    expect(checkProcessStyle(DoubleSlideDoor, mainDoor, RomiCore.DoorMode.MODE_MOVING)).toBe(true);
   });
 });

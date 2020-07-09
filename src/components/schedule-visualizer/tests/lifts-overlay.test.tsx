@@ -19,7 +19,7 @@ test('Render lifts correctly', () => {
       <LiftsOverlay currentFloor={'L1'} bounds={bounds} lifts={lifts} onLiftClick={handleClick} />
     </LMap>,
   );
-  expect(wrapper.find(Lift).exists()).toBeTruthy;
+  expect(wrapper.find(Lift).exists()).toBeTruthy();
   expect(wrapper.find(Lift).length).toBe(officeMap.lifts.length);
   expect(wrapper.find(SingleSlideDoor).length).toBe(2);
 
