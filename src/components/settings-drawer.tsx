@@ -8,6 +8,7 @@ import {
   makeStyles,
   Radio,
   RadioGroup,
+  useMediaQuery,
 } from '@material-ui/core';
 import React from 'react';
 import { Settings, TrajectoryAnimation } from '../settings';
@@ -27,13 +28,15 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
     [],
   );
 
+  const drawerAnchor = useMediaQuery('(max-aspect-ratio: 8/10)') ? 'bottom' : 'right';
+
   function handleTrajectoryAnimationChange(ev: React.ChangeEvent<HTMLInputElement>): void {
     const newSettings: Settings = { ...settings, trajectoryAnimation: Number(ev.target.value) };
     onSettingsChange && onSettingsChange(newSettings);
   }
 
   return (
-    <Drawer PaperProps={{ className: classes.drawer }} anchor="right" {...otherProps}>
+    <Drawer PaperProps={{ className: classes.drawer }} anchor={drawerAnchor} {...otherProps}>
       <FormControl component="fieldset">
         <FormLabel component="legend" className={classes.legendLabel}>
           Trajectory Animation
@@ -61,15 +64,32 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
 
 const useStyles = makeStyles(theme => ({
   drawer: {
-    width: 300,
+    '@media (min-aspect-ratio: 8/10)': {
+      width: 300,
+    },
+    '@media (max-aspect-ratio: 8/10)': {
+      width: '100%',
+    },
   },
   legendLabel: {
-    fontSize: theme.typography.h6.fontSize,
-    padding: theme.spacing(1),
+    '@media (min-aspect-ratio: 8/10)': {
+      fontSize: theme.typography.h6.fontSize,
+      padding: theme.spacing(1),
+    },
+    '@media (max-aspect-ratio: 8/10)': {
+      fontSize: theme.typography.h6.fontSize,
+      padding: theme.spacing(1),
+    },
   },
   trajGroup: {
-    flexDirection: 'row',
-    paddingLeft: theme.spacing(2),
+    '@media (min-aspect-ratio: 8/10)': {
+      flexDirection: 'row',
+      paddingLeft: theme.spacing(4),
+    },
+    '@media (max-aspect-ratio: 8/10)': {
+      flexDirection: 'row',
+      paddingLeft: theme.spacing(8),
+    },
   },
   flexBasis: {
     flexBasis: '40%',
