@@ -1,0 +1,63 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Lift renders correctly 1`] = `
+<svg>
+  <g
+    onClick={[Function]}
+  >
+    <rect
+      className="makeStyles-liftMarker-191 makeStyles-lift-192 makeStyles-fire-197"
+      height={2.5}
+      rx="0.1"
+      ry="0.1"
+      transform="rotate(28.64788975654116, 7.1,2.8)"
+      width={2.5}
+      x={5.85}
+      y={1.5499999999999998}
+    />
+    <text
+      className="makeStyles-liftText-200"
+      id="liftMotion"
+      x={7.1}
+      y={2.175}
+    >
+      L1
+    </text>
+    <text
+      className="makeStyles-liftText-200"
+      id="liftMode"
+      x={7.1}
+      y={2.8}
+    >
+      FIRE!
+    </text>
+  </g>
+  <g
+    aria-label="lift1_front_door"
+    data-component="Door"
+  >
+    <g
+      onClick={[Function]}
+    >
+      <line
+        className="makeStyles-doorMarker-201 makeStyles-door-202 makeStyles-doorOpen-204"
+        x1={8.8}
+        x2={7.7}
+        y1={2.3}
+        y2={4.5}
+      />
+    </g>
+    <g
+      onClick={[Function]}
+    >
+      <line
+        className="makeStyles-doorMarker-201 makeStyles-door-202 makeStyles-doorTransparent-207"
+        x1={8.8}
+        x2={7.7}
+        y1={2.3}
+        y2={4.5}
+      />
+    </g>
+  </g>
+</svg>
+`;

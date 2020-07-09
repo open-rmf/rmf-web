@@ -1,6 +1,6 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { createMount } from '@material-ui/core/test-utils';
-import { ReactWrapper } from 'enzyme';
+import { ReactWrapper, shallow } from 'enzyme';
 import React from 'react';
 import SingleHingeDoor from '../door-single-hinge';
 import SingleSlideDoor from '../door-single-slide';
@@ -8,6 +8,9 @@ import DefaultDoor from '../door-default';
 import DoubleHingeDoor from '../door-double-hinge';
 import { DoorProps, getDoorStyle } from '../door';
 import DoubleSlideDoor from '../door-double-slide';
+import renderer from 'react-test-renderer';
+
+const mount = createMount();
 
 const mainDoor = {
   name: 'main_door',
@@ -20,12 +23,12 @@ const mainDoor = {
   motion_direction: 1,
 };
 
-const buildDoorWrapper = (
+const getDoorComponent = (
   Component: (props: DoorProps) => React.ReactElement,
   door: RomiCore.Door,
   currentMode: number,
-) => {
-  return mount(
+): JSX.Element => {
+  return (
     <svg>
       <Component
         v1={[mainDoor.v1_x, mainDoor.v1_y]}
@@ -33,11 +36,17 @@ const buildDoorWrapper = (
         door={door}
         currentMode={currentMode}
       />
-    </svg>,
+    </svg>
   );
 };
 
-const mount = createMount();
+const buildDoorWrapper = (
+  Component: (props: DoorProps) => React.ReactElement,
+  door: RomiCore.Door,
+  currentMode: number,
+) => {
+  return mount(getDoorComponent(Component, door, currentMode));
+};
 
 const getSingleDoorSVGLine = (wrapper: ReactWrapper) => {
   return wrapper
@@ -56,6 +65,7 @@ const checkOpenStyle = (
   const singleDoorSVGLine = getSingleDoorSVGLine(wrapper);
   return singleDoorSVGLine.hasClass(/(makeStyles)-(doorOpen)-(\d+)/);
 };
+
 const checkClosedStyle = (
   Component: (props: DoorProps) => React.ReactElement,
   door: RomiCore.Door,
@@ -65,6 +75,7 @@ const checkClosedStyle = (
   const singleDoorSVGLine = getSingleDoorSVGLine(wrapper);
   return singleDoorSVGLine.hasClass(/(makeStyles)-(doorClose)-(\d+)/);
 };
+
 const checkProcessStyle = (
   Component: (props: DoorProps) => React.ReactElement,
   door: RomiCore.Door,
@@ -111,6 +122,32 @@ test('Get correct door style', () => {
   expect(closed).toEqual(doorStyle.doorClose);
   const moving = getDoorStyle(doorStyle, RomiCore.DoorMode.MODE_MOVING);
   expect(moving).toEqual(doorStyle.doorProcess);
+});
+
+test('Doors renders correctly', () => {
+  expect(
+    renderer
+      .create(getDoorComponent(SingleSlideDoor, mainDoor, RomiCore.DoorMode.MODE_OPEN))
+      .toJSON(),
+  ).toMatchSnapshot();
+
+  expect(
+    renderer
+      .create(getDoorComponent(DoubleSlideDoor, mainDoor, RomiCore.DoorMode.MODE_OPEN))
+      .toJSON(),
+  ).toMatchSnapshot();
+
+  expect(
+    renderer
+      .create(getDoorComponent(SingleHingeDoor, mainDoor, RomiCore.DoorMode.MODE_OPEN))
+      .toJSON(),
+  ).toMatchSnapshot();
+
+  expect(
+    renderer
+      .create(getDoorComponent(DoubleHingeDoor, mainDoor, RomiCore.DoorMode.MODE_OPEN))
+      .toJSON(),
+  ).toMatchSnapshot();
 });
 
 describe('Checks assignation of styles on different states', () => {

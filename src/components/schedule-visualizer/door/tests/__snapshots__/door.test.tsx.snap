@@ -1,0 +1,153 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Doors renders correctly 1`] = `
+<svg>
+  <g
+    onClick={[Function]}
+  >
+    <line
+      className="makeStyles-doorMarker-8 makeStyles-door-9 makeStyles-doorOpen-11"
+      x1={8.2}
+      x2={7.85}
+      y1={5.5}
+      y2={6.2}
+    />
+  </g>
+  <g
+    onClick={[Function]}
+  >
+    <line
+      className="makeStyles-doorMarker-8 makeStyles-door-9 makeStyles-doorTransparent-14"
+      x1={8.2}
+      x2={7.85}
+      y1={5.5}
+      y2={6.2}
+    />
+  </g>
+</svg>
+`;
+
+exports[`Doors renders correctly 2`] = `
+<svg>
+  <g
+    onClick={[Function]}
+  >
+    <line
+      className="makeStyles-doorMarker-8 makeStyles-door-9 makeStyles-doorOpen-11"
+      x1={8.2}
+      x2={8.024999999999999}
+      y1={5.5}
+      y2={5.85}
+    />
+  </g>
+  <g
+    onClick={[Function]}
+  >
+    <line
+      className="makeStyles-doorMarker-8 makeStyles-door-9 makeStyles-doorTransparent-14"
+      x1={8.2}
+      x2={8.024999999999999}
+      y1={5.5}
+      y2={5.85}
+    />
+  </g>
+  <g
+    onClick={[Function]}
+  >
+    <line
+      className="makeStyles-doorMarker-8 makeStyles-door-9 makeStyles-doorOpen-11"
+      x1={8.024999999999999}
+      x2={7.85}
+      y1={5.85}
+      y2={6.2}
+    />
+  </g>
+  <g
+    onClick={[Function]}
+  >
+    <line
+      className="makeStyles-doorMarker-8 makeStyles-door-9 makeStyles-doorTransparent-14"
+      x1={8.024999999999999}
+      x2={7.85}
+      y1={5.85}
+      y2={6.2}
+    />
+  </g>
+</svg>
+`;
+
+exports[`Doors renders correctly 3`] = `
+<svg>
+  <g
+    onClick={[Function]}
+  >
+    <line
+      className="makeStyles-doorMarker-8 makeStyles-door-9 makeStyles-doorOpen-11"
+      x1={8.2}
+      x2={7.85}
+      y1={5.5}
+      y2={6.2}
+    />
+  </g>
+  <g
+    onClick={[Function]}
+  >
+    <line
+      className="makeStyles-doorMarker-8 makeStyles-door-9 makeStyles-doorTransparent-14"
+      x1={8.2}
+      x2={7.85}
+      y1={5.5}
+      y2={6.2}
+    />
+  </g>
+</svg>
+`;
+
+exports[`Doors renders correctly 4`] = `
+<svg>
+  <g
+    onClick={[Function]}
+  >
+    <line
+      className="makeStyles-doorMarker-8 makeStyles-door-9 makeStyles-doorOpen-11"
+      x1={8.2}
+      x2={8.024999999999999}
+      y1={5.5}
+      y2={5.85}
+    />
+  </g>
+  <g
+    onClick={[Function]}
+  >
+    <line
+      className="makeStyles-doorMarker-8 makeStyles-door-9 makeStyles-doorTransparent-14"
+      x1={8.2}
+      x2={8.024999999999999}
+      y1={5.5}
+      y2={5.85}
+    />
+  </g>
+  <g
+    onClick={[Function]}
+  >
+    <line
+      className="makeStyles-doorMarker-8 makeStyles-door-9 makeStyles-doorOpen-11"
+      x1={8.024999999999999}
+      x2={7.85}
+      y1={5.85}
+      y2={6.2}
+    />
+  </g>
+  <g
+    onClick={[Function]}
+  >
+    <line
+      className="makeStyles-doorMarker-8 makeStyles-door-9 makeStyles-doorTransparent-14"
+      x1={8.024999999999999}
+      x2={7.85}
+      y1={5.85}
+      y2={6.2}
+    />
+  </g>
+</svg>
+`;
