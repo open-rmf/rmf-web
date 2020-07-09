@@ -2,6 +2,7 @@ import { makeStyles, TextField, Typography, Button } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useState } from 'react';
 import { successMsg } from '../util/alerts';
+import fakePlaces from '../mock/data/places';
 
 interface LoopFormProps {
   fleets: string[];
@@ -11,20 +12,19 @@ interface LoopFormProps {
     startLocationPoint: string,
     endLocationPoint: string,
   ): void;
-  listOfPlaces: string[];
 }
 
 export const LoopForm = (props: LoopFormProps) => {
-  const { requestLoop, fleets, listOfPlaces } = props;
+  const { requestLoop, fleets } = props;
   const classes = useStyles();
 
   const [targetFleetName, setTargetFleetName] = useState(fleets.length >= 1 ? fleets[0] : '');
   const [numLoops, setNumLoops] = useState(0);
   const [startLocation, setStartLocation] = useState(
-    listOfPlaces.length >= 2 ? listOfPlaces[0] : '',
+    fakePlaces()[targetFleetName].length >= 2 ? fakePlaces()[targetFleetName][0] : '',
   );
   const [finishLocation, setFinishLocation] = useState(
-    listOfPlaces.length >= 2 ? listOfPlaces[1] : '',
+    fakePlaces()[targetFleetName].length >= 2 ? fakePlaces()[targetFleetName][1] : '',
   );
 
   // Error states
@@ -34,10 +34,14 @@ export const LoopForm = (props: LoopFormProps) => {
   const [finishLocationError, setFinishLocationError] = useState('');
 
   const cleanUpForm = () => {
-    setTargetFleetName('');
+    setTargetFleetName(fleets[0]);
     setNumLoops(0);
-    setStartLocation(listOfPlaces.length >= 2 ? listOfPlaces[0] : '');
-    setFinishLocation(listOfPlaces.length >= 2 ? listOfPlaces[1] : '');
+    setStartLocation(
+      fakePlaces()[targetFleetName].length >= 2 ? fakePlaces()[targetFleetName][0] : '',
+    );
+    setFinishLocation(
+      fakePlaces()[targetFleetName].length >= 2 ? fakePlaces()[targetFleetName][0] : '',
+    );
     cleanUpError();
   };
 
@@ -69,8 +73,8 @@ export const LoopForm = (props: LoopFormProps) => {
       isValid = false;
     }
     if (startLocation === finishLocation) {
-      setStartLocationError('Start Location cannot be equal to finish Location');
-      setFinishLocationError('Start Location cannot be equal to finish Location');
+      setStartLocationError('Start Location cannot be equal to Finish Location');
+      setFinishLocationError('Start Location cannot be equal to Finish Location');
       isValid = false;
     }
 
@@ -132,7 +136,7 @@ export const LoopForm = (props: LoopFormProps) => {
         <Autocomplete
           getOptionLabel={option => option}
           onChange={(e, value) => setStartLocation(value || '')}
-          options={listOfPlaces}
+          options={fakePlaces()[targetFleetName]}
           renderInput={params => (
             <TextField {...params} label="Pick Start Location" variant="outlined" />
           )}
@@ -149,7 +153,7 @@ export const LoopForm = (props: LoopFormProps) => {
         <Autocomplete
           getOptionLabel={option => option}
           onChange={(e, value) => setFinishLocation(value || '')}
-          options={listOfPlaces}
+          options={fakePlaces()[targetFleetName]}
           renderInput={params => (
             <TextField {...params} label="Pick Finish Location" variant="outlined" />
           )}

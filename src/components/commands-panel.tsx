@@ -1,7 +1,6 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 import { LoopForm } from './loop-form';
-import fakePlaces from '../mock/data/places';
 import { v4 as uuidv4 } from 'uuid';
 import { SpotlightValue } from './spotlight-value';
 
@@ -30,7 +29,6 @@ export interface CommandsPanelProps {
 export default function CommandsPanel(props: CommandsPanelProps): React.ReactElement {
   const { fleets, spotlight, transport } = props;
   const commandRefs = React.useRef<Record<string, HTMLElement | null>>({});
-  const listOfPlaces = fakePlaces()['magni'];
 
   const allFleets = fleets.flatMap(fleet => fleet.name);
   const loopRequestPub = React.useMemo(
@@ -60,7 +58,7 @@ export default function CommandsPanel(props: CommandsPanelProps): React.ReactEle
 
   return (
     <React.Fragment>
-      <LoopForm requestLoop={handleRequestLoop} fleets={allFleets} listOfPlaces={listOfPlaces} />
+      <LoopForm requestLoop={handleRequestLoop} fleets={allFleets} />
     </React.Fragment>
   );
 }
