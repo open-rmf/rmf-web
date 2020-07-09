@@ -16,9 +16,9 @@ describe('loop request', () => {
     browser.addLocatorStrategy('findAllRobots', () => {
       return document.querySelectorAll('[data-component=RobotItem]');
     });
-    const allRobotItems = browser.custom$$('findAllRobots', '[data-component=RobotItem]');
 
     let getRobotLocations = () => {
+      const allRobotItems = browser.custom$$('findAllRobots', '[data-component=RobotItem]');
       let robotLocations = allRobotItems.map(robot => {
         robot.click();
         return robot.$('[data-role=position]').getHTML();
