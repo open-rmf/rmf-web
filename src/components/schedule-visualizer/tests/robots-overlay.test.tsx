@@ -15,6 +15,9 @@ test('Render robots correctly', () => {
   const robots = fakeFleets()[0].robots;
   const bounds = new L.LatLngBounds([0, 25.7], [-14, 0]);
   const colorManager = new ColorManager();
+  // TextEncoder is not available in node
+  colorManager.robotColor = jest.fn(async () => 'black');
+  colorManager.robotColorFromCache = jest.fn(() => 'black');
   const wrapper = mount(
     <LMap>
       <RobotsOverlay
