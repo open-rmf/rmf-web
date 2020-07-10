@@ -45,7 +45,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "test:e2e": ". e2e/env.sh && node e2e/prepare.js && npm run build && wdio",
-    "test:e2e-dev": ". e2e/dev-env.sh && node e2e/prepare.js && wdio",
+    "test:e2e:dev": ". e2e/env.sh && export ROMI_DASHBOARD_PORT=3000 && node e2e/prepare.js && wdio",
     "eject": "react-scripts eject",
     "deploy:demo": "REACT_APP_MOCK=1 npm run build && NODE_DEBUG=gh-pages gh-pages -d build -m \"$(git rev-parse HEAD)\""
   },
