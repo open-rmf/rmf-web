@@ -152,10 +152,6 @@ export default function App(props: AppProps): JSX.Element {
     SpotlightValue<string> | undefined
   >(undefined);
 
-  const [commandSpotlight, setCommandSpotlight] = React.useState<
-    SpotlightValue<string> | undefined
-  >(undefined);
-
   const [showOmniPanel, setShowOmniPanel] = React.useState(true);
   const [currentView, setCurrentView] = React.useState(OmniPanelViewIndex.MainMenu);
   const [loading, setLoading] = React.useState<LoadingScreenProps | null>({
@@ -285,7 +281,6 @@ export default function App(props: AppProps): JSX.Element {
     setLiftSpotlight(undefined);
     setRobotSpotlight(undefined);
     setDispenserSpotlight(undefined);
-    setCommandSpotlight(undefined);
   }
 
   function handleClose() {
@@ -410,7 +405,7 @@ export default function App(props: AppProps): JSX.Element {
                 <DispensersPanel dispenserStates={dispenserStates} spotlight={dispenserSpotlight} />
               </OmniPanelView>
               <OmniPanelView id={OmniPanelViewIndex.Commands}>
-                <CommandsPanel transport={transport} spotlight={commandSpotlight} fleets={fleets} />
+                <CommandsPanel transport={transport} fleets={fleets} />
               </OmniPanelView>
             </OmniPanel>
           </Fade>
