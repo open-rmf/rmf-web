@@ -134,10 +134,6 @@ export default function App(props: AppProps): JSX.Element {
     undefined,
   );
 
-  const [placeSpotlight, setPlaceSpotlight] = React.useState<SpotlightValue<string> | undefined>(
-    undefined,
-  );
-
   const dispenserStateManager = React.useMemo(() => new DispenserStateManager(), []);
   const [dispenserStates, setDispenserStates] = React.useState<
     Readonly<Record<string, RomiCore.DispenserState>>
