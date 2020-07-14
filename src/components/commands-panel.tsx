@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 export function requestLoop(
   loopRequestPub: RomiCore.Publisher<RomiCore.Loop> | null,
-  robotName: string,
+  fleetName: string,
   numLoops: number,
   startLocationPoint: string,
   endLocationPoint: string,
@@ -13,7 +13,7 @@ export function requestLoop(
   loopRequestPub?.publish({
     finish_name: endLocationPoint,
     num_loops: numLoops,
-    robot_type: robotName,
+    robot_type: fleetName,
     start_name: startLocationPoint,
     task_id: uuidv4(),
   });
