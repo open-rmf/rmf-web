@@ -20,15 +20,27 @@ const buildWrapper = (fleetName: string) => {
 };
 
 describe('form Validation', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
   test('Initial Values', () => {
     const wrapper = buildWrapper('SuperFleet');
-    expect(wrapper.find('input[name="targetFleet"]').props().value != "");
+    expect(wrapper.find('input[name="targetFleet"]').props().value != '');
     expect(wrapper.find("input[type='number']").props().value).toEqual('');
     expect(wrapper.findWhere(x => x.name() === 'input' && x.props().value != '')).toBeTruthy();
     expect(wrapper.find('input[name="startLocation"]').props().value).not.toEqual(
       wrapper.find('input[name="finishLocation"]').props().value,
     );
     wrapper.unmount();
+  });
+
+  test('Successful Request', () => {
+    const spy = jest.spyOn(console, 'log');
+    const wrapper = buildWrapper('SuperFleet');
+    wrapper.find("input[type='number']").simulate('change', { target: { value: 1 } });
+    expect(wrapper.find("input[type='number']").props().value).toEqual(1);
+    wrapper.find('form').simulate('submit');
+    expect(spy).toBeCalled();
   });
 
   test('Number of loops cannot be empty', async () => {
