@@ -8,6 +8,7 @@ import { UserContext } from '../app-contexts';
 import { isEmpty } from 'lodash';
 import NotFoundPage from './page-not-found';
 import PrivateRoute from './privateRoute';
+import 'typeface-roboto';
 
 export default function App() {
   // TODO: replace with the data of the authentication service.

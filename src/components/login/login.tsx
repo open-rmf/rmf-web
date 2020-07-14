@@ -73,7 +73,9 @@ export default function Login(props: LoginProps): JSX.Element {
     <div className={`${classes.flexColumnContainer} ${classes.fullPage}`}>
       {!!redirect && <Redirect to={DASHBOARD_ROUTE} />}
       <div className={`${classes.flexColumnContainer} ${classes.authContainer}`}>
-        <h1 className={classes.authTitle}>RoMi Dashboard</h1>
+        <Typography variant="h4" className={classes.authTitle}>
+          RoMi Dashboard
+        </Typography>
         <img src="assets/ros-health.png" alt="" className={classes.logo} />
         <form
           className={`${classes.authForm} ${classes.flexColumnContainer}`}
@@ -121,9 +123,6 @@ export default function Login(props: LoginProps): JSX.Element {
             {errorMessage}
           </Alert>
         </Snackbar>
-      </div>
-      <div className={classes.termOfServices}>
-        <Typography>By creating an account you agree to the RoMi Terms of Service.</Typography>
       </div>
     </div>
   );

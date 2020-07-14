@@ -3,8 +3,6 @@ import { Dashboard as DashboardIcon, Settings as SettingsIcon } from '@material-
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import debug from 'debug';
 import React from 'react';
-import 'typeface-roboto';
-import { AppConfig } from '../app-config';
 import DispenserStateManager from '../dispenser-state-manager';
 import DoorStateManager from '../door-state-manager';
 import FleetManager from '../fleet-manager';
@@ -26,6 +24,7 @@ import { SpotlightValue } from './spotlight-value';
 import { DoorStateContext } from './schedule-visualizer/doors-overlay';
 import { LiftStateContext } from './schedule-visualizer/lift-overlay';
 import appConfig from '../app-config';
+import { AppConfig } from '../app-config';
 import LiftsPanel from './lift-item/lifts-panel';
 
 const borderRadius = 20;

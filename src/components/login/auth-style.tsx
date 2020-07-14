@@ -28,6 +28,7 @@ const authStyles = makeStyles(theme => ({
   authTitle: {
     color: '#44497a',
     marginTop: 0,
+    paddingBottom: '1rem',
   },
   authForm: {
     marginTop: 10,
