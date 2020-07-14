@@ -22,6 +22,7 @@ const buildWrapper = (fleetName: string) => {
 describe('form Validation', () => {
   test('Initial Values', () => {
     const wrapper = buildWrapper('SuperFleet');
+    expect(wrapper.find('input[name="targetFleet"]').props().value != "");
     expect(wrapper.find("input[type='number']").props().value).toEqual('');
     expect(wrapper.findWhere(x => x.name() === 'input' && x.props().value != '')).toBeTruthy();
     expect(wrapper.find('input[name="startLocation"]').props().value).not.toEqual(

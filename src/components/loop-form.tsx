@@ -107,6 +107,7 @@ export const LoopForm = (props: LoopFormProps) => {
               variant="outlined"
               error={!!targetFleetNameError}
               helperText={targetFleetNameError}
+              name="targetFleet"
             />
           )}
           value={!!targetFleetName ? targetFleetName : null}
@@ -141,6 +142,7 @@ export const LoopForm = (props: LoopFormProps) => {
               variant="outlined"
               error={!!startLocationError}
               helperText={startLocationError}
+              name="startLocation"
             />
           )}
           value={!!startLocation ? startLocation : null}
@@ -159,6 +161,7 @@ export const LoopForm = (props: LoopFormProps) => {
               variant="outlined"
               error={!!finishLocationError}
               helperText={finishLocationError}
+              name="finishLocation"
             />
           )}
           value={!!finishLocation ? finishLocation : null}
