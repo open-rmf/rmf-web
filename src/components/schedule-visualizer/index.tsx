@@ -12,7 +12,6 @@ import {
 import { AnimationSpeed, SettingsContext, TrajectoryAnimation } from '../../settings';
 import { toBlobUrl } from '../../util';
 import ColorManager from './colors';
-import PlacesOverlay from './places-overlay';
 import RobotTrajectoriesOverlay, { RobotTrajectoryContext } from './robot-trajectories-overlay';
 import RobotTrajectory from './robot-trajectory';
 import RobotsOverlay from './robots-overlay';
@@ -45,7 +44,6 @@ export interface ScheduleVisualizerProps {
   trajManager?: Readonly<RobotTrajectoryManager>;
   onDoorClick?(door: RomiCore.Door): void;
   onLiftClick?(lift: RomiCore.Lift): void;
-  onPlaceClick?(place: RomiCore.Place): void;
   onRobotClick?(robot: RomiCore.RobotState): void;
 }
 
@@ -262,17 +260,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
               <ImageOverlay bounds={floorLayer.bounds} url={floorLayer.imageUrl} ref={ref} />
             </LayersControl.BaseLayer>
           ))}
-        <LayersControl.Overlay name="Places" checked>
-          {curMapFloorLayer && (
-            <Pane>
-              <PlacesOverlay
-                bounds={curMapFloorLayer.bounds}
-                places={curMapFloorLayer.level.places}
-                onPlaceClick={props.onPlaceClick}
-              />
-            </Pane>
-          )}
-        </LayersControl.Overlay>
+
         <LayersControl.Overlay name="Robot Trajectories" checked>
           {curMapFloorLayer && (
             <Pane>
