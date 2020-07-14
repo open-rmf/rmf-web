@@ -23,45 +23,37 @@ describe('form Validation', () => {
   test('Initial Values', () => {
     const wrapper = buildWrapper('SuperFleet');
     expect(wrapper.find("input[type='number']").props().value).toEqual('');
-    expect(wrapper.findWhere(x => x.name() === 'input' && x.props().value === 'supplies'))
-      .toBeTruthy;
-    expect(
-      wrapper.findWhere(
-        x => x.name() === 'input' && x.props().value === fakePlaces()['SuperFleet'][0],
-      ),
-    ).toBeTruthy;
-
-    expect(
-      wrapper.findWhere(
-        x => x.name() === 'input' && x.props().value === fakePlaces()['SuperFleet'][1],
-      ),
-    ).toBeTruthy;
+    expect(wrapper.findWhere(x => x.name() === 'input' && x.props().value != '')).toBeTruthy();
+    expect(wrapper.find('input[name="startLocation"]').props().value).not.toEqual(
+      wrapper.find('input[name="finishLocation"]').props().value,
+    );
     wrapper.unmount();
   });
 
   test('Number of loops cannot be empty', async () => {
+    const spy = jest.spyOn(console, 'log');
     const wrapper = buildWrapper('SuperFleet');
     wrapper.find('form').simulate('submit');
-    expect(wrapper.find('#numLoopsError').html()).toContain('Loops can only be &gt; 0');
+    expect(spy).not.toBeCalled();
+    expect(wrapper.exists('.Mui-error')).toBeTruthy();
     wrapper.unmount();
   });
 
   test('Location cannot be empty', async () => {
+    const spy = jest.spyOn(console, 'log');
     const wrapper = buildWrapper('FleetA');
     wrapper.find('form').simulate('submit');
-    expect(wrapper.find('#startLocationError').html()).toContain('Location cannot be empty');
+    expect(spy).not.toBeCalled();
+    expect(wrapper.exists('.Mui-error')).toBeTruthy();
     wrapper.unmount();
   });
 
-  test('Start Location cannot be equal to finish Location', async () => {
+  test('Start Location cannot be equal to Finish Location', async () => {
+    const spy = jest.spyOn(console, 'log');
     const wrapper = buildWrapper('FleetB');
     wrapper.find('form').simulate('submit');
-    expect(wrapper.find('#startLocationError').html()).toContain(
-      'Start Location cannot be equal to Finish Location',
-    );
-    expect(wrapper.find('#finishLocationError').html()).toContain(
-      'Start Location cannot be equal to Finish Location',
-    );
+    expect(spy).not.toBeCalled();
+    expect(wrapper.exists('.Mui-error')).toBeTruthy();
     wrapper.unmount();
   });
 });

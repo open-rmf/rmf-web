@@ -101,15 +101,16 @@ export const LoopForm = (props: LoopFormProps) => {
           onChange={(e, value) => setTargetFleetName(value || '')}
           options={fleets}
           renderInput={params => (
-            <TextField {...params} label="Choose Target Fleet" variant="outlined" />
+            <TextField
+              {...params}
+              label="Choose Target Fleet"
+              variant="outlined"
+              error={!!targetFleetNameError}
+              helperText={targetFleetNameError}
+            />
           )}
           value={!!targetFleetName ? targetFleetName : null}
         />
-        {targetFleetNameError && (
-          <p id="targetFleetNameError" className={classes.error}>
-            {targetFleetNameError}
-          </p>
-        )}
       </div>
       <div className={classes.divForm}>
         <TextField
@@ -124,12 +125,8 @@ export const LoopForm = (props: LoopFormProps) => {
           label="Number of loops"
           variant="outlined"
           error={!!numLoopsError}
+          helperText={numLoopsError}
         />
-        {numLoopsError && (
-          <p id="numLoopsError" className={classes.error}>
-            {numLoopsError}
-          </p>
-        )}
       </div>
 
       <div className={classes.divForm}>
@@ -138,15 +135,16 @@ export const LoopForm = (props: LoopFormProps) => {
           onChange={(e, value) => setStartLocation(value || '')}
           options={fakePlaces()[targetFleetName]}
           renderInput={params => (
-            <TextField {...params} label="Pick Start Location" variant="outlined" />
+            <TextField
+              {...params}
+              label="Pick Start Location"
+              variant="outlined"
+              error={!!startLocationError}
+              helperText={startLocationError}
+            />
           )}
           value={!!startLocation ? startLocation : null}
         />
-        {startLocationError && (
-          <p id="startLocationError" className={classes.error}>
-            {startLocationError}
-          </p>
-        )}
       </div>
 
       <div className={classes.divForm}>
@@ -155,15 +153,16 @@ export const LoopForm = (props: LoopFormProps) => {
           onChange={(e, value) => setFinishLocation(value || '')}
           options={fakePlaces()[targetFleetName]}
           renderInput={params => (
-            <TextField {...params} label="Pick Finish Location" variant="outlined" />
+            <TextField
+              {...params}
+              label="Pick Finish Location"
+              variant="outlined"
+              error={!!finishLocationError}
+              helperText={finishLocationError}
+            />
           )}
           value={!!finishLocation ? finishLocation : null}
         />
-        {finishLocationError && (
-          <p id="finishLocationError" className={classes.error}>
-            {finishLocationError}
-          </p>
-        )}
       </div>
 
       <div className={classes.buttonContainer}>
