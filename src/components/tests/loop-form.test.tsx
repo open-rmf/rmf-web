@@ -1,6 +1,5 @@
 import { createMount } from '@material-ui/core/test-utils';
 import { LoopForm } from '../loop-form';
-import fakePlaces from '../../mock/data/places';
 import React from 'react';
 
 const mount = createMount();
