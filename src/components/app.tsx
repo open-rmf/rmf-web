@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { DASHBOARD_ROUTE, LOGIN_ROUTE, REGISTER_ROUTE, DEFAULT_ROUTE } from '../util/url';
+import { DASHBOARD_ROUTE, LOGIN_ROUTE, DEFAULT_ROUTE } from '../util/url';
 import Dashboard from './dashboard';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import RegisterForm from './login/registerForm';
 import Login from './login/login';
 import { UserContext } from '../app-contexts';
 import { isEmpty } from 'lodash';
@@ -19,7 +18,6 @@ export default function App() {
       <BrowserRouter>
         <Switch>
           <Route exact={true} path={LOGIN_ROUTE} component={Login} />
-          <Route exact={true} path={REGISTER_ROUTE} component={RegisterForm} />
           <PrivateRoute
             redirectToLogin={true}
             isAuthenticated={!isEmpty(user)}

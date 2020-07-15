@@ -50,12 +50,6 @@ const authStyles = makeStyles(theme => ({
     width: '100%',
     backgroundColor: '#44497a',
   },
-  termOfServices: {
-    display: 'inline-flex',
-    alignSelf: 'center',
-    color: '#918e8e',
-    paddingTop: '0.5rem',
-  },
   logo: {
     height: '10%',
   },
