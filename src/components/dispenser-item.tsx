@@ -8,12 +8,13 @@ import {
   Typography,
   List,
   ListItem,
-  ListItemText,
 } from '@material-ui/core';
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
+
+import DisableableTypography from './disableable-typography';
 
 export interface DispenserItemProps extends Omit<ExpansionPanelProps, 'children'> {
   dispenserState: Readonly<RomiCore.DispenserState>;
@@ -40,16 +41,24 @@ export const DispenserItem = React.forwardRef(function(
     }
   }
 
-  function dispenserRequestQueueId(): React.ReactElement{
+  function dispenserRequestQueueId(): JSX.Element {
+    if (dispenserState.request_guid_queue.length === 0) {
+      return (
+        <DisableableTypography disabled={true} variant="body1">
+          Unknown
+        </DisableableTypography>
+      )
+    } else {
     return (
-      <List className={classes.listRoot} dense={true}>
-        {dispenserState.request_guid_queue.map(id => (
-          <ListItem key={id}>
-            <ListItemText primary={id}></ListItemText>
-          </ListItem>
-        ))}
-      </List>
-    );
+        <List className={classes.listRoot} dense={true}>
+          {dispenserState.request_guid_queue.map(id => (
+            <ListItem key={id} className={classes.noPaddingTop}>
+              <Typography variant="body1">{id}</Typography>
+            </ListItem>
+          ))}
+        </List>
+      );
+    }
   }
 
   function dispenserModeToString(): string {
@@ -85,7 +94,7 @@ export const DispenserItem = React.forwardRef(function(
         <Divider />
         <div className={classes.expansionDetailLine}>
           <Typography variant="body1">Request Queue ID:</Typography>
-          {dispenserRequestQueueId()}
+          <Typography>{dispenserRequestQueueId()}</Typography>
         </div>
         <Divider />
         <div className={classes.expansionDetailLine}>
@@ -130,6 +139,11 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
     overflow: 'auto',
     maxHeight: 100,
+    paddingTop: 0
+  },
+
+  noPaddingTop: {
+    paddingTop: 0,
   },
 }));
 
