@@ -112,7 +112,6 @@ const useStyles = makeStyles(theme => {
 
     expansionDetail: {
       flexFlow: 'column',
-      padding: '0',
       overflowX: 'auto',
     },
 
@@ -120,10 +119,6 @@ const useStyles = makeStyles(theme => {
       display: 'inline-flex',
       justifyContent: 'space-between',
       padding: theme.spacing(0.5),
-    },
-
-    noPadding: {
-      padding: 0,
     },
 
     liftFloorLabelStopped: {
