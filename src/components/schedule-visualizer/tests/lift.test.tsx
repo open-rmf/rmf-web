@@ -4,7 +4,7 @@ import fakeLiftStates from '../../../mock/data/lift-states';
 import getBuildingMap from '../../../mock/data/building-map';
 import Lift from '../lift';
 import React from 'react';
-import renderer from 'react-test-renderer';
+import toJson from 'enzyme-to-json';
 
 const mount = createMount();
 
@@ -180,5 +180,6 @@ test('Lift renders correctly', async () => {
   state.current_floor = 'L1';
   state.current_mode = RomiCore.LiftState.MODE_FIRE;
   state.motion_state = RomiCore.LiftState.MOTION_STOPPED;
-  expect(renderer.create(getLiftComponent(lift, state)).toJSON()).toMatchSnapshot();
+  const { wrapper } = buildWrapper(lift, state);
+  expect(toJson(wrapper)).toMatchSnapshot();
 });

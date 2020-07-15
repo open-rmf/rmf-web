@@ -8,7 +8,7 @@ import DefaultDoor from '../door-default';
 import DoubleHingeDoor from '../door-double-hinge';
 import { DoorProps, getDoorStyle } from '../door';
 import DoubleSlideDoor from '../door-double-slide';
-import renderer from 'react-test-renderer';
+import toJson from 'enzyme-to-json';
 
 const mount = createMount();
 
@@ -126,27 +126,19 @@ test('Get correct door style', () => {
 
 test('Doors renders correctly', () => {
   expect(
-    renderer
-      .create(getDoorComponent(SingleSlideDoor, mainDoor, RomiCore.DoorMode.MODE_OPEN))
-      .toJSON(),
+    toJson(buildDoorWrapper(SingleSlideDoor, mainDoor, RomiCore.DoorMode.MODE_OPEN)),
   ).toMatchSnapshot();
 
   expect(
-    renderer
-      .create(getDoorComponent(DoubleSlideDoor, mainDoor, RomiCore.DoorMode.MODE_OPEN))
-      .toJSON(),
+    toJson(buildDoorWrapper(DoubleSlideDoor, mainDoor, RomiCore.DoorMode.MODE_OPEN)),
   ).toMatchSnapshot();
 
   expect(
-    renderer
-      .create(getDoorComponent(SingleHingeDoor, mainDoor, RomiCore.DoorMode.MODE_OPEN))
-      .toJSON(),
+    toJson(buildDoorWrapper(SingleHingeDoor, mainDoor, RomiCore.DoorMode.MODE_OPEN)),
   ).toMatchSnapshot();
 
   expect(
-    renderer
-      .create(getDoorComponent(DoubleHingeDoor, mainDoor, RomiCore.DoorMode.MODE_OPEN))
-      .toJSON(),
+    toJson(buildDoorWrapper(DoubleHingeDoor, mainDoor, RomiCore.DoorMode.MODE_OPEN)),
   ).toMatchSnapshot();
 });
 
