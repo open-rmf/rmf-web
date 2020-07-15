@@ -15,7 +15,7 @@ type Props = RouteProps & OwnProps;
  * @param redirectToLogin - redirects to login route if the user not authenticated.
  * @param isAuthenticated - true if the user isAuthenticated.
  */
-const PrivateRoute = (props: Props): JSX.Element => {
+const PrivateRoute = (props: Props): React.ReactElement => {
   const { component, isAuthenticated, redirectToLogin, ...rest } = props;
   const Component = component as React.ComponentClass<any>;
   const renderRoute = (props: any) => {

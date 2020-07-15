@@ -9,11 +9,11 @@ const buildWrapper = () => {
   return wrapper;
 };
 
-describe('form Validation', () => {
+describe('Form validation', () => {
   test('Sign in button is not available if user and password are empty ', () => {
     const wrapper = buildWrapper();
-    expect(wrapper.findWhere(x => x.name() === 'username' && x.props().value === '')).toBeTruthy;
-    expect(wrapper.findWhere(x => x.name() === 'password' && x.props().value === '')).toBeTruthy;
-    expect(wrapper.find('button').is('[disabled]')).toBeTruthy;
+    expect(wrapper.findWhere(x => x.name() === 'username' && x.props().value === '')).toBeTruthy();
+    expect(wrapper.findWhere(x => x.name() === 'password' && x.props().value === '')).toBeTruthy();
+    expect(wrapper.find('button').is('[disabled]')).toBeTruthy();
   });
 });

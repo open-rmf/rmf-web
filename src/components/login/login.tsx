@@ -15,11 +15,11 @@ interface LoginProps {
   auth?: AuthService;
 }
 
-export function Alert(props: AlertProps): JSX.Element {
+export function Alert(props: AlertProps): React.ReactElement {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
-export default function Login(props: LoginProps): JSX.Element {
+export default function Login(props: LoginProps): React.ReactElement {
   const classes = authStyles();
   const [showLoginFail, setShowLoginFail] = useState(false);
   const [user, setUser] = useState('');

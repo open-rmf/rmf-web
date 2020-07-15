@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { makeStyles, Typography } from '@material-ui/core';
 import { LOGIN_ROUTE } from '../util/url';
 
-const NotFoundPage = (): JSX.Element => {
+const NotFoundPage = (): React.ReactElement => {
   const classes = useStyles();
   console.warn('Photo by Aron Visuals on Unsplash');
   return (
@@ -39,7 +39,6 @@ const useStyles = makeStyles(() => ({
     color: 'white',
     fontWeight: 'bold',
   },
-
   author: {
     position: 'fixed',
     right: '5%',
