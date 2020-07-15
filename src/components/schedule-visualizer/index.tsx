@@ -12,7 +12,6 @@ import {
 import { AnimationSpeed, SettingsContext, TrajectoryAnimation } from '../../settings';
 import { toBlobUrl } from '../../util';
 import ColorManager from './colors';
-import PlacesOverlay from './places-overlay';
 import RobotTrajectoriesOverlay, { RobotTrajectoryContext } from './robot-trajectories-overlay';
 import RobotTrajectory from './robot-trajectory';
 import RobotsOverlay from './robots-overlay';
