@@ -12,7 +12,7 @@ const getLiftComponent = (
   lift: RomiCore.Lift,
   state: RomiCore.LiftState,
   currentFloor: string = 'L1',
-): JSX.Element => {
+): React.ReactElement => {
   return (
     <svg>
       <Lift currentFloor={currentFloor} lift={lift} liftState={state} />

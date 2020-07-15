@@ -1,6 +1,6 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { createMount } from '@material-ui/core/test-utils';
-import { ReactWrapper, shallow } from 'enzyme';
+import { ReactWrapper } from 'enzyme';
 import React from 'react';
 import SingleHingeDoor from '../door-single-hinge';
 import SingleSlideDoor from '../door-single-slide';
@@ -27,7 +27,7 @@ const getDoorComponent = (
   Component: (props: DoorProps) => React.ReactElement,
   door: RomiCore.Door,
   currentMode: number,
-): JSX.Element => {
+): React.ReactElement => {
   return (
     <svg>
       <Component
@@ -163,7 +163,7 @@ describe('Checks assignation of styles on different states', () => {
     expect(checkProcessStyle(SingleSlideDoor, mainDoor, RomiCore.DoorMode.MODE_MOVING)).toBe(true);
   });
 
-  test('Style of DobleHingeDoors', () => {
+  test('Style of DoubleHingeDoors', () => {
     expect(checkOpenStyle(DoubleHingeDoor, mainDoor, RomiCore.DoorMode.MODE_OPEN)).toBe(true);
     expect(checkClosedStyle(DoubleHingeDoor, mainDoor, RomiCore.DoorMode.MODE_CLOSED)).toBe(true);
     expect(checkProcessStyle(DoubleHingeDoor, mainDoor, RomiCore.DoorMode.MODE_MOVING)).toBe(true);

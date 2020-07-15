@@ -8,10 +8,6 @@ import Robot from '../robot';
 import fakeFleets from '../../../mock/data/fleets';
 
 test('Render robots correctly', () => {
-  let clicked = false;
-  const handleClick = () => {
-    clicked = true;
-  };
   const robots = fakeFleets()[0].robots;
   const bounds = new L.LatLngBounds([0, 25.7], [-14, 0]);
   const colorManager = new ColorManager();
@@ -20,12 +16,7 @@ test('Render robots correctly', () => {
   colorManager.robotColorFromCache = jest.fn(() => 'black');
   const wrapper = mount(
     <LMap>
-      <RobotsOverlay
-        bounds={bounds}
-        colorManager={colorManager}
-        robots={robots}
-        onRobotClick={handleClick}
-      />
+      <RobotsOverlay bounds={bounds} colorManager={colorManager} robots={robots} />
     </LMap>,
   );
   expect(wrapper.find(Robot).exists()).toBeTruthy();

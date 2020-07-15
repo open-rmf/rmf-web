@@ -8,15 +8,11 @@ import LiftsOverlay from '../lift-overlay';
 import Lift from '../lift';
 
 test('Render lifts correctly', () => {
-  let clicked = false;
-  const handleClick = () => {
-    clicked = true;
-  };
   const lifts = officeMap.lifts;
   const bounds = new L.LatLngBounds([0, 25.7], [-14, 0]);
   const wrapper = mount(
     <LMap>
-      <LiftsOverlay currentFloor={'L1'} bounds={bounds} lifts={lifts} onLiftClick={handleClick} />
+      <LiftsOverlay currentFloor={'L1'} bounds={bounds} lifts={lifts} />
     </LMap>,
   );
   expect(wrapper.find(Lift).exists()).toBeTruthy();
