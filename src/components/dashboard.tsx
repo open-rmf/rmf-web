@@ -24,8 +24,6 @@ import { SpotlightValue } from './spotlight-value';
 import { DoorStateContext } from './schedule-visualizer/doors-overlay';
 import { LiftStateContext } from './schedule-visualizer/lift-overlay';
 import appConfig from '../app-config';
-import { AppConfig } from '../app-config';
-import LiftsPanel from './lift-item/lifts-panel';
 
 const borderRadius = 20;
 
@@ -71,10 +69,6 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export interface AppProps {
-  appConfig: AppConfig;
-}
-
 enum OmniPanelViewIndex {
   MainMenu = 0,
   Doors,
@@ -106,7 +100,7 @@ function makeViewMap(): ViewMap {
 
 const viewMap = makeViewMap();
 
-export default function Dashboard(): JSX.Element {
+export default function Dashboard(): React.ReactElement {
   const classes = useStyles();
   const [{ transportFactory, trajectoryManagerFactory }] = React.useState(appConfig);
   const [transport, setTransport] = React.useState<RomiCore.Transport | undefined>(undefined);
@@ -242,12 +236,6 @@ export default function Dashboard(): JSX.Element {
     setDoors(buildingMap ? buildingMap.levels.flatMap(x => x.doors) : []);
     setLifts(buildingMap ? buildingMap.lifts : []);
   }, [buildingMap]);
-
-  function handleDoorClick(door: RomiCore.Door): void {
-    setShowOmniPanel(true);
-    setCurrentView(OmniPanelViewIndex.Doors);
-    setDoorSpotlight({ value: door.name });
-  }
 
   function handleDoorClick(door: RomiCore.Door): void {
     setShowOmniPanel(true);
