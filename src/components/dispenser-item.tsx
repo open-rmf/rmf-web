@@ -52,7 +52,7 @@ export const DispenserItem = React.forwardRef(function(
     return (
         <List className={classes.listRoot} dense={true}>
           {dispenserState.request_guid_queue.map(id => (
-            <ListItem key={id} className={classes.noPaddingTop}>
+            <ListItem key={id} className={classes.listItem}>
               <Typography variant="body1">{id}</Typography>
             </ListItem>
           ))}
@@ -94,7 +94,7 @@ export const DispenserItem = React.forwardRef(function(
         <Divider />
         <div className={classes.expansionDetailLine}>
           <Typography variant="body1">Request Queue ID:</Typography>
-          <Typography>{dispenserRequestQueueId()}</Typography>
+          {dispenserRequestQueueId()}
         </div>
         <Divider />
         <div className={classes.expansionDetailLine}>
@@ -139,11 +139,11 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
     overflow: 'auto',
     maxHeight: 100,
-    paddingTop: 0
+    padding: 0
   },
 
-  noPaddingTop: {
-    paddingTop: 0,
+  listItem: {
+    paddingTop: 0
   },
 }));
 

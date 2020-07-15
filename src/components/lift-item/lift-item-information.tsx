@@ -15,11 +15,11 @@ export const LiftInformation = (props: liftInformationProps) => {
 
   function renderList(values: string[]): JSX.Element {
     const items = values.map(val => (
-      <ListItem key={val} dense className={classes.noPadding}>
+      <ListItem key={val} dense className={classes.listItem}>
         <Typography variant="body1">{val}</Typography>
       </ListItem>
     ));
-    return <List>{items}</List>;
+    return <List className={classes.listRoot}>{items}</List>;
   }
 
   function renderAvailableFloors(liftState?: RomiCore.LiftState): JSX.Element {
@@ -101,7 +101,12 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(0.5),
   },
 
-  noPadding: {
-    padding: 0,
+  listRoot: {
+    position: 'relative',
+    padding: 0
+  },
+
+  listItem: {
+    padding: 0
   },
 }));
