@@ -9,7 +9,6 @@ import {
   makeStyles,
   Typography,
   useTheme,
-  Hidden,
 } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
