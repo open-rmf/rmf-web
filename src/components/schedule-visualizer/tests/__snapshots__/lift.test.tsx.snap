@@ -1,0 +1,202 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Lift renders correctly 1`] = `
+<svg>
+  <ForwardRef
+    currentFloor="L1"
+    lift={
+      Object {
+        "depth": 2.5,
+        "doors": Array [
+          Object {
+            "door_type": 1,
+            "motion_direction": 1,
+            "motion_range": 0,
+            "name": "lift1_front_door",
+            "v1_x": 8.8,
+            "v1_y": -2.3,
+            "v2_x": 7.7,
+            "v2_y": -4.5,
+          },
+        ],
+        "levels": Array [
+          "L1",
+          "L2",
+          "L3",
+        ],
+        "name": "Lift1",
+        "ref_x": 7.1,
+        "ref_y": -2.8,
+        "ref_yaw": 0.5,
+        "wall_graph": Object {
+          "edges": Array [],
+          "name": "wallgraph",
+          "params": Array [],
+          "vertices": Array [],
+        },
+        "width": 2.5,
+      }
+    }
+    liftState={
+      Object {
+        "available_floors": Array [
+          "L1",
+          "L2",
+          "L3",
+        ],
+        "available_modes": Uint8Array [
+          2,
+        ],
+        "current_floor": "L1",
+        "current_mode": 3,
+        "destination_floor": "L1",
+        "door_state": 2,
+        "lift_name": "Lift1",
+        "lift_time": Object {
+          "nanosec": 0,
+          "sec": 0,
+        },
+        "motion_state": 0,
+        "session_id": "",
+      }
+    }
+  >
+    <g
+      onClick={[Function]}
+    >
+      <rect
+        className="makeStyles-liftMarker-191 makeStyles-lift-192 makeStyles-fire-197"
+        height={2.5}
+        rx="0.1"
+        ry="0.1"
+        transform="rotate(28.64788975654116, 7.1,2.8)"
+        width={2.5}
+        x={5.85}
+        y={1.5499999999999998}
+      />
+      <text
+        className="makeStyles-liftText-200"
+        id="liftMotion"
+        x={7.1}
+        y={2.175}
+      >
+        L1
+      </text>
+      <text
+        className="makeStyles-liftText-200"
+        id="liftMode"
+        x={7.1}
+        y={2.8}
+      >
+        FIRE!
+      </text>
+    </g>
+    <ForwardRef
+      currentMode={2}
+      door={
+        Object {
+          "door_type": 1,
+          "motion_direction": 1,
+          "motion_range": 0,
+          "name": "lift1_front_door",
+          "v1_x": 8.8,
+          "v1_y": -2.3,
+          "v2_x": 7.7,
+          "v2_y": -4.5,
+        }
+      }
+      key="lift-door-lift1_front_door"
+    >
+      <g
+        aria-label="lift1_front_door"
+        data-component="Door"
+      >
+        <SingleSlideDoor
+          currentMode={2}
+          door={
+            Object {
+              "door_type": 1,
+              "motion_direction": 1,
+              "motion_range": 0,
+              "name": "lift1_front_door",
+              "v1_x": 8.8,
+              "v1_y": -2.3,
+              "v2_x": 7.7,
+              "v2_y": -4.5,
+            }
+          }
+          onClick={[Function]}
+          v1={
+            Array [
+              8.8,
+              -2.3,
+            ]
+          }
+          v2={
+            Array [
+              7.7,
+              -4.5,
+            ]
+          }
+        >
+          <DefaultDoor
+            style="makeStyles-doorOpen-204"
+            v1={
+              Array [
+                8.8,
+                2.3,
+              ]
+            }
+            v2={
+              Array [
+                7.7,
+                4.5,
+              ]
+            }
+          >
+            <g
+              onClick={[Function]}
+            >
+              <line
+                className="makeStyles-doorMarker-201 makeStyles-door-202 makeStyles-doorOpen-204"
+                x1={8.8}
+                x2={7.7}
+                y1={2.3}
+                y2={4.5}
+              />
+            </g>
+          </DefaultDoor>
+          <DefaultDoor
+            onClick={[Function]}
+            style="makeStyles-doorTransparent-207"
+            v1={
+              Array [
+                8.8,
+                2.3,
+              ]
+            }
+            v2={
+              Array [
+                7.7,
+                4.5,
+              ]
+            }
+          >
+            <g
+              onClick={[Function]}
+            >
+              <line
+                className="makeStyles-doorMarker-201 makeStyles-door-202 makeStyles-doorTransparent-207"
+                x1={8.8}
+                x2={7.7}
+                y1={2.3}
+                y2={4.5}
+              />
+            </g>
+          </DefaultDoor>
+        </SingleSlideDoor>
+      </g>
+    </ForwardRef>
+  </ForwardRef>
+</svg>
+`;

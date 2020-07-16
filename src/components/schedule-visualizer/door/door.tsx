@@ -25,7 +25,7 @@ export interface DoorProps extends Omit<DoorContainerProps, 'onClick'> {
   onClick?(e: React.MouseEvent<SVGGElement>): void;
 }
 
-export const getDoorStyle = (classes: any, currentMode: number | undefined) => {
+export const getDoorStyle = (classes: Record<string, string>, currentMode: number | undefined) => {
   const { MODE_OPEN, MODE_MOVING } = RomiCore.DoorMode;
 
   switch (currentMode) {
