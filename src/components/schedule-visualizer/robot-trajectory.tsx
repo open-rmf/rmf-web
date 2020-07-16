@@ -27,7 +27,7 @@ export const RobotTrajectory = React.forwardRef(function(
       return !!robotColor ? robotColor : theme.palette.success.main;
     };
 
-    return conflicts.includes(trajectory.id) ? theme.palette.error.main : getRobotColor();
+    return conflicts.flat().includes(trajectory.id) ? theme.palette.error.main : getRobotColor();
   }, [trajectory, conflicts, theme, colorManager]);
 
   const pathD = React.useMemo(() => {

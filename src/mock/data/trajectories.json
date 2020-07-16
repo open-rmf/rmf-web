@@ -119,7 +119,7 @@
     ]
   },
   {
-    "conflicts": [1904, 1903],
+    "conflicts": [[1904, 1903]],
     "response": "trajectory",
     "values": [
       {
@@ -273,7 +273,7 @@
     ]
   },
   {
-    "conflicts": [1907, 1906],
+    "conflicts": [[1907, 1906]],
     "response": "trajectory",
     "values": [
       {
@@ -481,7 +481,7 @@
     ]
   },
   {
-    "conflicts": [1980, 1979],
+    "conflicts": [[1980, 1979]],
     "response": "trajectory",
     "values": [
       {
@@ -615,7 +615,7 @@
     ]
   },
   {
-    "conflicts": [1989, 1988],
+    "conflicts": [[1989, 1988]],
     "response": "trajectory",
     "values": [
       {
@@ -769,7 +769,10 @@
     ]
   },
   {
-    "conflicts": [1904, 1903, 1905],
+    "conflicts": [
+      [1904, 1903],
+      [1903, 1905]
+    ],
     "response": "trajectory",
     "values": [
       {

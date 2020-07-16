@@ -29,20 +29,28 @@ export default function RobotTrajectoriesOverlay(
   const footprint = 0.5;
 
   useEffect(() => {
-    function getConflictRobotsName(): string[] {
+    function getConflictRobotsName(conflictPair: number[]): string[] {
       let robotNames: string[] = [];
-      conflicts.forEach(conflictId => {
+      conflictPair.forEach(conflictId => {
         const robotName = DefaultTrajectoryManager.getRobotNameFromPathId(conflictId, trajs);
 
         robotName && robotNames.push(robotName);
       });
       return robotNames;
     }
+    function getConflictRobotMessage(): string {
+      let message = '';
+      conflicts.forEach(conflictPair => {
+        const conflictingRobotNames = getConflictRobotsName(conflictPair);
+        message += `[${conflictingRobotNames}] `;
+      });
+      return message;
+    }
 
     if (conflicts.length !== 0) {
       notificationDispatch &&
         notificationDispatch({
-          message: `Robots with trajectory conflicts are: ${getConflictRobotsName()}`,
+          message: `Trajectory conflicts between: ${getConflictRobotMessage()}`,
           type: 'error',
         });
     }
