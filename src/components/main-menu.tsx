@@ -10,6 +10,7 @@ export interface MainMenuProps {
   onRobotsClick?(event: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
   onDispensersClick?(event: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
   onCommandsClick?(event: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
+  onNegotiationsClick?(event: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
 }
 
 export const MainMenu = React.memo((props: MainMenuProps) => {
@@ -43,6 +44,11 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
 
       <ListItem data-item="Commands" button={true} onClick={props.onCommandsClick}>
         <Typography variant="h5">Commands</Typography>
+
+      <Divider />
+
+      <ListItem data-item="Negotiations" button={true} onClick={props.onNegotiationsClick}>
+        <Typography variant="h5">Negotiations</Typography>
       </ListItem>
     </List>
   );
