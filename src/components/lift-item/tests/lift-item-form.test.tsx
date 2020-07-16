@@ -31,7 +31,7 @@ describe('form Validation', () => {
           x.name() === 'input' &&
           x.props().value === LiftRequestManager.doorStateToString(RomiCore.LiftState.DOOR_OPEN),
       ),
-    ).toBeTruthy;
+    ).toBeTruthy();
 
     expect(
       wrapper.findWhere(
@@ -40,7 +40,7 @@ describe('form Validation', () => {
           x.props().value ===
             LiftRequestManager.requestModeToString(RomiCore.LiftRequest.REQUEST_AGV_MODE),
       ),
-    ).toBeTruthy;
+    ).toBeTruthy();
     wrapper.unmount();
   });
 

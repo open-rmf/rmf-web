@@ -29,19 +29,20 @@ describe('form Validation', () => {
   test('Initial Values', () => {
     const wrapper = buildWrapper();
     expect(wrapper.find("input[type='number']").props().value).toEqual('');
-    expect(wrapper.findWhere(x => x.name() === 'input' && x.props().value === 'supplies'))
-      .toBeTruthy;
+    expect(
+      wrapper.findWhere(x => x.name() === 'input' && x.props().value === 'supplies'),
+    ).toBeTruthy();
     expect(
       wrapper.findWhere(
         x => x.name() === 'input' && x.props().value === fakePlaces()['SuperFleet'][0],
       ),
-    ).toBeTruthy;
+    ).toBeTruthy();
 
     expect(
       wrapper.findWhere(
         x => x.name() === 'input' && x.props().value === fakePlaces()['SuperFleet'][1],
       ),
-    ).toBeTruthy;
+    ).toBeTruthy();
     wrapper.unmount();
   });
 

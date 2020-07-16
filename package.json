@@ -79,6 +79,7 @@
     "@wdio/spec-reporter": "^6.1.14",
     "@wdio/sync": "^6.1.14",
     "chromedriver": "^83.0.0",
+    "enzyme-to-json": "^3.5.0",
     "gh-pages": "^2.2.0",
     "ts-node": "^8.10.2",
     "wdio-chromedriver-service": "^6.0.3"
