@@ -79,7 +79,7 @@ export const DispenserItem = React.forwardRef(function(
       <ExpansionPanelSummary
         classes={{ content: classes.expansionSummaryContent }}
         expandIcon={<ExpandMoreIcon />}>
-        <Typography variant="h5">{dispenserState.guid}</Typography>
+        <Typography variant="h5" className={classes.hideText}>{dispenserState.guid}</Typography>
         <Typography className={dispenserModeLabelClass()} variant='button'>
           {dispenserModeToString()}
         </Typography>
@@ -145,6 +145,13 @@ const useStyles = makeStyles(theme => ({
   listItem: {
     paddingTop: 0
   },
+
+  hideText: {
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    maxWidth: "10rem"
+  }
 }));
 
 const useDispenserModeLabelStyles = makeStyles(theme => {

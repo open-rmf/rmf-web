@@ -43,7 +43,7 @@ export const RobotItem = React.forwardRef(function(
         classes={{ content: classes.expansionSummaryContent }}
         expandIcon={<ExpandMoreIcon />}
       >
-        <Typography variant="h5">{robot.name}</Typography>
+        <Typography variant="h5" className={classes.hideText}>{robot.name}</Typography>
         <Typography className={classes.robotStatusLabel} variant="button">
           {robotModeToString(robot.mode)}
         </Typography>
@@ -99,6 +99,13 @@ const useStyles = makeStyles(theme => ({
     minWidth: '4rem',
     textAlign: 'center',
   },
+
+  hideText: {
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    maxWidth: "10rem"
+  }
 }));
 
 function robotModeToString(robotMode: RomiCore.RobotMode): string {

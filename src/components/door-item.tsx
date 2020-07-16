@@ -9,6 +9,7 @@ import {
   makeStyles,
   Typography,
   useTheme,
+  Hidden,
 } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
@@ -59,7 +60,7 @@ export const DoorItem = React.forwardRef(function(
         classes={{ content: classes.expansionSummaryContent }}
         expandIcon={<ExpandMoreIcon />}
       >
-        <Typography variant="h5">{door.name}</Typography>
+        <Typography variant="h5" className={classes.hideText}>{door.name}</Typography>
         <Typography data-role="state" className={doorModeLabelClasses(doorState)} variant="button">
           {doorModeToString(doorState)}
         </Typography>
@@ -133,6 +134,13 @@ const useStyles = makeStyles(theme => ({
   doorLabelMoving: {
     borderColor: theme.palette.warning.main,
   },
+
+  hideText: {
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    maxWidth: "10rem"
+  }
 }));
 
 function doorTypeToString(doorType: number): string {

@@ -65,7 +65,7 @@ export const LiftItem = React.forwardRef(function(
         classes={{ content: classes.expansionSummaryContent }}
         expandIcon={<ExpandMoreIcon />}
       >
-        <Typography variant="h5">{lift.name}</Typography>
+        <Typography variant="h5" className={classes.hideText}>{lift.name}</Typography>
         <Typography className={liftFloorLabel(liftState)} variant="button">
           {liftState ? liftState.current_floor : 'Unknown'}
         </Typography>
@@ -135,5 +135,12 @@ const useStyles = makeStyles(theme => {
       ...liftFloorLabelBase,
       borderStyle: 'none',
     },
+
+    hideText: {
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap",
+      maxWidth: "10rem"
+    }
   };
 });
