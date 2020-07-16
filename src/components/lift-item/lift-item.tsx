@@ -97,11 +97,13 @@ const useStyles = makeStyles(theme => {
   const liftFloorLabelBase: CSSProperties = {
     borderRadius: theme.shape.borderRadius,
     borderStyle: 'solid',
-
     border: 2,
     padding: 5,
     width: '4rem',
     textAlign: 'center',
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
   };
 
   return {
@@ -133,7 +135,7 @@ const useStyles = makeStyles(theme => {
 
     liftFloorLabelUnknown: {
       ...liftFloorLabelBase,
-      borderStyle: 'none',
+      borderColor: theme.palette.secondary.dark
     },
 
     hideText: {

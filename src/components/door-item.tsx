@@ -34,7 +34,7 @@ export const DoorItem = React.forwardRef(function(
 
   function doorModeLabelClasses(doorState?: RomiCore.DoorState): string {
     if (!doorState) {
-      return '';
+      return `${classes.doorLabel} ${classes.unknown}`;
     }
     switch (doorState.current_mode.value) {
       case RomiCore.DoorMode.MODE_OPEN:
@@ -121,6 +121,9 @@ const useStyles = makeStyles(theme => ({
     padding: 5,
     width: '4rem',
     textAlign: 'center',
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
   },
 
   doorLabelOpen: {
@@ -133,6 +136,10 @@ const useStyles = makeStyles(theme => ({
 
   doorLabelMoving: {
     borderColor: theme.palette.warning.main,
+  },
+
+  unknown: {
+    borderColor: theme.palette.secondary.dark,
   },
 
   hideText: {

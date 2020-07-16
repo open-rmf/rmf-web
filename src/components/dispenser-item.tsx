@@ -37,7 +37,7 @@ export const DispenserItem = React.forwardRef(function(
       case RomiCore.DispenserState.OFFLINE:
         return `${classes.dispenserLabel} ${dispenserModeLabelClasses.offline}`;
       default:
-        return '';
+        return `${classes.dispenserLabel} ${dispenserModeLabelClasses.unknown}`;
     }
   }
 
@@ -162,10 +162,14 @@ const useDispenserModeLabelStyles = makeStyles(theme => {
     padding: 5,
     width: '4rem',
     textAlign: 'center',
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
   };
   return {
     idle: {...base, borderColor: theme.palette.warning.main},
     busy: {...base, borderColor: theme.palette.success.main},
-    offline: {...base, borderColor: theme.palette.error.main}
+    offline: {...base, borderColor: theme.palette.error.main},
+    unknown: {...base, borderColor: theme.palette.secondary.dark}
   };
 });
