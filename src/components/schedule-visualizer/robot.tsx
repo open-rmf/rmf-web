@@ -48,13 +48,21 @@ const Robot = React.forwardRef(function(
   }, [robot, robotColor, colorManager]);
 
   return (
-    <g
-      ref={ref}
-      data-component="Robot"
-      aria-label={robot.name}
-      onClick={e => onClick && onClick(e, robot)}
-    >
-      {robotColor && (
+    <>
+      <image
+        href="https://mdn.mozillademos.org/files/6457/mdn_logo_only_color.png"
+        height="1"
+        width="1"
+        x={robot.location.x}
+        y={-robot.location.y}
+      />
+      <g
+        ref={ref}
+        data-component="Robot"
+        aria-label={robot.name}
+        onClick={e => onClick && onClick(e, robot)}
+      >
+        {/* {robotColor && (
         <>
           <g
             transform={`translate(${robot.location.x} ${-robot.location.y})
@@ -86,8 +94,9 @@ const Robot = React.forwardRef(function(
             {robot.name.substring(0, 8)}
           </text>
         </>
-      )}
-    </g>
+      )} */}
+      </g>
+    </>
   );
 });
 
