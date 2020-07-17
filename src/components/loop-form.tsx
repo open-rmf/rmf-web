@@ -115,6 +115,7 @@ export const LoopForm = (props: LoopFormProps) => {
       </div>
       <div className={classes.divForm}>
         <TextField
+          id="numLoops"
           name="numLoops"
           onChange={e => {
             setNumLoops(!!e.target.value ? parseInt(e.target.value) : 0);
@@ -135,6 +136,7 @@ export const LoopForm = (props: LoopFormProps) => {
           getOptionLabel={option => option}
           onChange={(e, value) => setStartLocation(value || '')}
           options={fakePlaces()[targetFleetName]}
+          id="startLocation"
           renderInput={params => (
             <TextField
               {...params}
@@ -154,6 +156,7 @@ export const LoopForm = (props: LoopFormProps) => {
           getOptionLabel={option => option}
           onChange={(e, value) => setFinishLocation(value || '')}
           options={fakePlaces()[targetFleetName]}
+          id="finishLocation"
           renderInput={params => (
             <TextField
               {...params}

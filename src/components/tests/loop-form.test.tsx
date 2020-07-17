@@ -47,7 +47,7 @@ describe('form Validation', () => {
     const wrapper = buildWrapper('SuperFleet', onClick);
     wrapper.find('form').simulate('submit');
     expect(isRequestButtonClicked).toBeFalsy();
-    expect(wrapper.exists('.Mui-error')).toBeTruthy();
+    expect(wrapper.exists('#numLoops-helper-text')).toBeTruthy();
     wrapper.unmount();
   });
 
@@ -55,7 +55,7 @@ describe('form Validation', () => {
     const wrapper = buildWrapper('FleetA', onClick);
     wrapper.find('form').simulate('submit');
     expect(isRequestButtonClicked).toBeFalsy();
-    expect(wrapper.exists('.Mui-error')).toBeTruthy();
+    expect(wrapper.exists('#startLocation-helper-text')).toBeTruthy();
     wrapper.unmount();
   });
 
@@ -63,7 +63,8 @@ describe('form Validation', () => {
     const wrapper = buildWrapper('FleetB', onClick);
     wrapper.find('form').simulate('submit');
     expect(isRequestButtonClicked).toBeFalsy();
-    expect(wrapper.exists('.Mui-error')).toBeTruthy();
+    expect(wrapper.exists('#startLocation-helper-text')).toBeTruthy();
+    expect(wrapper.exists('#finishLocation-helper-text')).toBeTruthy();
     wrapper.unmount();
   });
 });
