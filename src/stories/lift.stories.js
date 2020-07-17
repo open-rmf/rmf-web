@@ -82,6 +82,24 @@ const UNKOWNState = {
     motion_state: 3
 }
 
+const HUMANState = {
+    ... liftStates,
+    current_mode: 1,
+    current_floor: 'L3',
+    destination_floor: 'L1',
+    motion_state: 2
+}
+
+const OFFLINEState = {
+    ... liftStates,
+    current_mode: 4,
+}
+
+const EMERGENCYState = {
+    ... liftStates,
+    current_mode: 5
+}
+
 const renderInfoPanel = (mode, doorState, motionState) => {
     return (
         <div style={styles.modeInfoPanel}>
@@ -151,6 +169,54 @@ export const State_UNKNOWN = () => (
                     lift={lift}
                     currentFloor={UNKOWNState.current_floor}
                     liftState={UNKOWNState}
+                />
+            </svg>
+        </div>
+    </div>
+)
+
+export const State_HUMAN = () => (
+    <div style={styles.display}>
+        { renderInfoPanel('HUMAN', 'Closed', 'Down') }
+
+        <div>
+            <svg viewBox={'0 0 25.794363144785166 14.53525484725833'}>
+                <Lift 
+                    lift={lift}
+                    currentFloor={HUMANState.current_floor}
+                    liftState={HUMANState}
+                />
+            </svg>
+        </div>
+    </div>
+)
+
+export const State_OFFLINE = () => (
+    <div style={styles.display}>
+        { renderInfoPanel('OFFLINE', 'Closed', 'Stopped') }
+
+        <div>
+            <svg viewBox={'0 0 25.794363144785166 14.53525484725833'}>
+                <Lift 
+                    lift={lift}
+                    currentFloor={OFFLINEState.current_floor}
+                    liftState={OFFLINEState}
+                />
+            </svg>
+        </div>
+    </div>
+)
+
+export const State_EMERGENCY = () => (
+    <div style={styles.display}>
+        { renderInfoPanel('EMERGENCY', 'Closed', 'Stopped') }
+
+        <div>
+            <svg viewBox={'0 0 25.794363144785166 14.53525484725833'}>
+                <Lift 
+                    lift={lift}
+                    currentFloor={EMERGENCYState.current_floor}
+                    liftState={EMERGENCYState}
                 />
             </svg>
         </div>
