@@ -20,11 +20,12 @@ export const LoopForm = (props: LoopFormProps) => {
 
   const [targetFleetName, setTargetFleetName] = useState(fleetNames.length >= 1 ? fleetNames[0] : '');
   const [numLoops, setNumLoops] = useState(0);
+  const [listOfPlaces, setListOfPlaces] = useState(!!targetFleetName ? fakePlaces()[targetFleetName] : []);
   const [startLocation, setStartLocation] = useState(
-    fakePlaces()[targetFleetName].length >= 2 ? fakePlaces()[targetFleetName][0] : '',
+    listOfPlaces.length >= 2 ? listOfPlaces[0] : '',
   );
   const [finishLocation, setFinishLocation] = useState(
-    fakePlaces()[targetFleetName].length >= 2 ? fakePlaces()[targetFleetName][1] : '',
+    listOfPlaces.length >= 2 ? listOfPlaces[1] : '',
   );
 
   // Error states
@@ -36,11 +37,12 @@ export const LoopForm = (props: LoopFormProps) => {
   const cleanUpForm = () => {
     setTargetFleetName(targetFleetName);
     setNumLoops(0);
+    setListOfPlaces(fakePlaces()[targetFleetName]);
     setStartLocation(
-      fakePlaces()[targetFleetName].length >= 2 ? fakePlaces()[targetFleetName][0] : '',
+      listOfPlaces.length >= 2 ? listOfPlaces[0] : '',
     );
     setFinishLocation(
-      fakePlaces()[targetFleetName].length >= 2 ? fakePlaces()[targetFleetName][0] : '',
+      listOfPlaces.length >= 2 ? listOfPlaces[1] : '',
     );
     cleanUpError();
   };
@@ -135,7 +137,7 @@ export const LoopForm = (props: LoopFormProps) => {
         <Autocomplete
           getOptionLabel={option => option}
           onChange={(e, value) => setStartLocation(value || '')}
-          options={fakePlaces()[targetFleetName]}
+          options={listOfPlaces}
           id="startLocation"
           renderInput={params => (
             <TextField
@@ -155,7 +157,7 @@ export const LoopForm = (props: LoopFormProps) => {
         <Autocomplete
           getOptionLabel={option => option}
           onChange={(e, value) => setFinishLocation(value || '')}
-          options={fakePlaces()[targetFleetName]}
+          options={listOfPlaces}
           id="finishLocation"
           renderInput={params => (
             <TextField
