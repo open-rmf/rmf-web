@@ -14,7 +14,7 @@ const buildWrapper = (fleetName: string) => {
     console.log('test');
   };
 
-  const wrapper = mount(<LoopForm requestLoop={onClick} fleets={[fleetName]} />);
+  const wrapper = mount(<LoopForm requestLoop={onClick} fleetNames={[fleetName]} />);
   return wrapper;
 };
 

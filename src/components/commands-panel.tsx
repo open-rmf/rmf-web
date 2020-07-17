@@ -44,7 +44,7 @@ export default function CommandsPanel(props: CommandsPanelProps): React.ReactEle
 
   return (
     <React.Fragment>
-      <LoopForm requestLoop={handleRequestLoop} fleets={allFleets} />
+      <LoopForm requestLoop={handleRequestLoop} fleetNames={allFleets} />
     </React.Fragment>
   );
 }

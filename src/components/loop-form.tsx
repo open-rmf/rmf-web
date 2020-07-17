@@ -5,7 +5,7 @@ import { successMsg } from '../util/alerts';
 import fakePlaces from '../mock/data/places';
 
 interface LoopFormProps {
-  fleets: string[];
+  fleetNames: string[];
   requestLoop(
     fleetName: string,
     numLoops: number,
@@ -15,10 +15,10 @@ interface LoopFormProps {
 }
 
 export const LoopForm = (props: LoopFormProps) => {
-  const { requestLoop, fleets } = props;
+  const { requestLoop, fleetNames } = props;
   const classes = useStyles();
 
-  const [targetFleetName, setTargetFleetName] = useState(fleets.length >= 1 ? fleets[0] : '');
+  const [targetFleetName, setTargetFleetName] = useState(fleetNames.length >= 1 ? fleetNames[0] : '');
   const [numLoops, setNumLoops] = useState(0);
   const [startLocation, setStartLocation] = useState(
     fakePlaces()[targetFleetName].length >= 2 ? fakePlaces()[targetFleetName][0] : '',
@@ -34,7 +34,7 @@ export const LoopForm = (props: LoopFormProps) => {
   const [finishLocationError, setFinishLocationError] = useState('');
 
   const cleanUpForm = () => {
-    setTargetFleetName(fleets[0]);
+    setTargetFleetName(targetFleetName);
     setNumLoops(0);
     setStartLocation(
       fakePlaces()[targetFleetName].length >= 2 ? fakePlaces()[targetFleetName][0] : '',
@@ -99,7 +99,7 @@ export const LoopForm = (props: LoopFormProps) => {
         <Autocomplete
           getOptionLabel={option => option}
           onChange={(e, value) => setTargetFleetName(value || '')}
-          options={fleets}
+          options={fleetNames}
           renderInput={params => (
             <TextField
               {...params}
