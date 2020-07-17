@@ -4,26 +4,28 @@ import React from 'react';
 
 const mount = createMount();
 
-const buildWrapper = (fleetName: string) => {
-  const onClick = (
-    fleetName: string,
-    numLoops: number,
-    startLocationPoint: string,
-    endLocationPoint: string,
+let isRequestButtonClicked = false;
+const onClick = (
+  fleetName: string,
+  numLoops: number,
+  startLocationPoint: string,
+  endLocationPoint: string,
   ) => {
+    isRequestButtonClicked = true;
     console.log('test');
   };
 
+const buildWrapper = (fleetName: string, onClick: any ) => {
   const wrapper = mount(<LoopForm requestLoop={onClick} fleetNames={[fleetName]} />);
   return wrapper;
 };
 
 describe('form Validation', () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    isRequestButtonClicked = false;
   });
   test('Initial Values', () => {
-    const wrapper = buildWrapper('SuperFleet');
+    const wrapper = buildWrapper('SuperFleet', onClick);
     expect(wrapper.find('input[name="targetFleet"]').props().value != '');
     expect(wrapper.find("input[type='number']").props().value).toEqual('');
     expect(wrapper.findWhere(x => x.name() === 'input' && x.props().value != '')).toBeTruthy();
@@ -34,37 +36,33 @@ describe('form Validation', () => {
   });
 
   test('Successful Request', () => {
-    const spy = jest.spyOn(console, 'log');
-    const wrapper = buildWrapper('SuperFleet');
+    const wrapper = buildWrapper('SuperFleet', onClick);
     wrapper.find("input[type='number']").simulate('change', { target: { value: 1 } });
     expect(wrapper.find("input[type='number']").props().value).toEqual(1);
     wrapper.find('form').simulate('submit');
-    expect(spy).toBeCalled();
+    expect(isRequestButtonClicked).toBe(true);
   });
 
   test('Number of loops cannot be empty', async () => {
-    const spy = jest.spyOn(console, 'log');
-    const wrapper = buildWrapper('SuperFleet');
+    const wrapper = buildWrapper('SuperFleet', onClick);
     wrapper.find('form').simulate('submit');
-    expect(spy).not.toBeCalled();
+    expect(isRequestButtonClicked).toBeFalsy();
     expect(wrapper.exists('.Mui-error')).toBeTruthy();
     wrapper.unmount();
   });
 
   test('Location cannot be empty', async () => {
-    const spy = jest.spyOn(console, 'log');
-    const wrapper = buildWrapper('FleetA');
+    const wrapper = buildWrapper('FleetA', onClick);
     wrapper.find('form').simulate('submit');
-    expect(spy).not.toBeCalled();
+    expect(isRequestButtonClicked).toBeFalsy();
     expect(wrapper.exists('.Mui-error')).toBeTruthy();
     wrapper.unmount();
   });
 
   test('Start Location cannot be equal to Finish Location', async () => {
-    const spy = jest.spyOn(console, 'log');
-    const wrapper = buildWrapper('FleetB');
+    const wrapper = buildWrapper('FleetB', onClick);
     wrapper.find('form').simulate('submit');
-    expect(spy).not.toBeCalled();
+    expect(isRequestButtonClicked).toBeFalsy();
     expect(wrapper.exists('.Mui-error')).toBeTruthy();
     wrapper.unmount();
   });
