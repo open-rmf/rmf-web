@@ -2,16 +2,13 @@ import React from 'react';
 import { Divider, Typography } from '@material-ui/core';
 
 import Lift from '../components/schedule-visualizer/lift';
+import LiftComponent from './lift-component';
 
 export default { 
     title: 'Lift',
 };
 
 const styles = {
-    display: {
-        display: 'grid',
-        gridTemplateColumns: '1fr 3fr'
-    },
     modeInfoPanel: {
         padding: '2rem'
     },
@@ -52,6 +49,7 @@ const lift = {
 
 const liftStates = {
     available_floors: ["L1", "L2", "L3", "L4"],
+    available_modes: new Uint8Array(0),
     current_floor: "L1",
     current_mode: 0,
     destination_floor: "L1",
@@ -100,7 +98,7 @@ const EMERGENCYState = {
     current_mode: 5
 }
 
-const renderInfoPanel = (mode, doorState, motionState) => {
+const renderInfoPanel = (mode: string, doorState: string, motionState: string) => {
     return (
         <div style={styles.modeInfoPanel}>
             <Typography align="center" variant="h5">Configurations</Typography>
@@ -128,97 +126,55 @@ const renderInfoPanel = (mode, doorState, motionState) => {
 }
 
 export const State_AGV = () => (
-    <div style={styles.display}>
-        { renderInfoPanel('AGV', 'Open', 'Stopped') }
-
-        <div>
-            <svg viewBox={'0 0 25.794363144785166 14.53525484725833'}>
-                <Lift
-                    lift={lift}
-                    currentFloor={AGVState.current_floor}
-                    liftState={AGVState}
-                />
-            </svg>
-        </div>
-    </div>
+        <LiftComponent
+            renderInfoPanel={() => renderInfoPanel('AGV', 'Open', 'Stopped')}
+            lift={lift}
+            currentFloor={AGVState.current_floor}
+            liftState={AGVState}
+        />
 );
 
 export const State_FIRE = () => (
-    <div style={styles.display}>
-        { renderInfoPanel('FIRE', 'Closed', 'Up') }
-
-        <div>
-            <svg viewBox={'0 0 25.794363144785166 14.53525484725833'}>
-                <Lift
-                    lift={lift}
-                    currentFloor={FIREState.current_floor}
-                    liftState={FIREState}
-                />
-            </svg>
-        </div>
-    </div>
+    <LiftComponent
+        renderInfoPanel={() => renderInfoPanel('FIRE', 'Closed', 'Up')}
+        lift={lift}
+        currentFloor={FIREState.current_floor}
+        liftState={FIREState}
+    />
 )
 
 export const State_UNKNOWN = () => (
-    <div style={styles.display}>
-        { renderInfoPanel('UNKNOWN', 'Moving', 'Unknown') }
-
-        <div>
-            <svg viewBox={'0 0 25.794363144785166 14.53525484725833'}>
-                <Lift 
-                    lift={lift}
-                    currentFloor={UNKOWNState.current_floor}
-                    liftState={UNKOWNState}
-                />
-            </svg>
-        </div>
-    </div>
+    <LiftComponent
+        renderInfoPanel={() => renderInfoPanel('UNKNOWN', 'Moving', 'Unknown')}
+        lift={lift}
+        currentFloor={UNKOWNState.current_floor}
+        liftState={UNKOWNState}
+    />
 )
 
 export const State_HUMAN = () => (
-    <div style={styles.display}>
-        { renderInfoPanel('HUMAN', 'Closed', 'Down') }
-
-        <div>
-            <svg viewBox={'0 0 25.794363144785166 14.53525484725833'}>
-                <Lift 
-                    lift={lift}
-                    currentFloor={HUMANState.current_floor}
-                    liftState={HUMANState}
-                />
-            </svg>
-        </div>
-    </div>
+    <LiftComponent
+        renderInfoPanel={() => renderInfoPanel('HUMAN', 'Closed', 'Down')}
+        lift={lift}
+        currentFloor={HUMANState.current_floor}
+        liftState={HUMANState}
+    />
 )
 
 export const State_OFFLINE = () => (
-    <div style={styles.display}>
-        { renderInfoPanel('OFFLINE', 'Closed', 'Stopped') }
-
-        <div>
-            <svg viewBox={'0 0 25.794363144785166 14.53525484725833'}>
-                <Lift 
-                    lift={lift}
-                    currentFloor={OFFLINEState.current_floor}
-                    liftState={OFFLINEState}
-                />
-            </svg>
-        </div>
-    </div>
+    <LiftComponent
+        renderInfoPanel={() => renderInfoPanel('OFFLINE', 'Closed', 'Stopped')}
+        lift={lift}
+        currentFloor={OFFLINEState.current_floor}
+        liftState={OFFLINEState}
+    />
 )
 
 export const State_EMERGENCY = () => (
-    <div style={styles.display}>
-        { renderInfoPanel('EMERGENCY', 'Closed', 'Stopped') }
-
-        <div>
-            <svg viewBox={'0 0 25.794363144785166 14.53525484725833'}>
-                <Lift 
-                    lift={lift}
-                    currentFloor={EMERGENCYState.current_floor}
-                    liftState={EMERGENCYState}
-                />
-            </svg>
-        </div>
-    </div>
+    <LiftComponent
+        renderInfoPanel={() => renderInfoPanel('EMERGENCY', 'Closed', 'Stopped')}
+        lift={lift}
+        currentFloor={EMERGENCYState.current_floor}
+        liftState={EMERGENCYState}
+    />
 )
