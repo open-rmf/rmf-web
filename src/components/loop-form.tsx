@@ -1,9 +1,9 @@
-import { makeStyles, TextField, Typography, Button } from '@material-ui/core';
+import { makeStyles, TextField, Button, ExpansionPanel, ExpansionPanelSummary, Typography, ExpansionPanelDetails } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import React, { useState } from 'react';
 import { successMsg } from '../util/alerts';
 import fakePlaces from '../mock/data/places';
-
 interface LoopFormProps {
   fleetNames: string[];
   requestLoop(
@@ -93,108 +93,107 @@ export const LoopForm = (props: LoopFormProps) => {
   };
 
   return (
-    <form className={classes.form} onSubmit={handleRequestLoop}>
-      <Typography variant="h6" className={classes.title}>
-        Loop Requests
-      </Typography>
-      <div className={classes.divForm}>
-        <Autocomplete
-          getOptionLabel={option => option}
-          onChange={(e, value) => setTargetFleetName(value || '')}
-          options={fleetNames}
-          renderInput={params => (
-            <TextField
-              {...params}
-              label="Choose Target Fleet"
-              variant="outlined"
-              error={!!targetFleetNameError}
-              helperText={targetFleetNameError}
-              name="targetFleet"
+    <ExpansionPanel>
+      <ExpansionPanelSummary classes={{ content: classes.expansionSummaryContent }} expandIcon={<ExpandMoreIcon />}>
+        <Typography variant="h5">Loop Request</Typography>
+      </ExpansionPanelSummary>
+      <ExpansionPanelDetails className={classes.expansionDetail}>
+        <form className={classes.form} onSubmit={handleRequestLoop}>
+          <div className={classes.divForm}>
+            <Autocomplete
+              getOptionLabel={option => option}
+              onChange={(e, value) => setTargetFleetName(value || '')}
+              options={fleetNames}
+              renderInput={params => (
+                <TextField
+                  {...params}
+                  label="Choose Target Fleet"
+                  variant="outlined"
+                  error={!!targetFleetNameError}
+                  helperText={targetFleetNameError}
+                  name="targetFleet"
+                />
+              )}
+              value={!!targetFleetName ? targetFleetName : null}
             />
-          )}
-          value={!!targetFleetName ? targetFleetName : null}
-        />
-      </div>
-      <div className={classes.divForm}>
-        <TextField
-          id="numLoops"
-          name="numLoops"
-          onChange={e => {
-            setNumLoops(!!e.target.value ? parseInt(e.target.value) : 0);
-          }}
-          placeholder="Number of loops"
-          type="number"
-          value={numLoops || ''}
-          className={classes.input}
-          label="Number of loops"
-          variant="outlined"
-          error={!!numLoopsError}
-          helperText={numLoopsError}
-        />
-      </div>
-
-      <div className={classes.divForm}>
-        <Autocomplete
-          getOptionLabel={option => option}
-          onChange={(e, value) => setStartLocation(value || '')}
-          options={listOfPlaces}
-          id="startLocation"
-          renderInput={params => (
+          </div>
+          <div className={classes.divForm}>
             <TextField
-              {...params}
-              label="Pick Start Location"
+              id="numLoops"
+              name="numLoops"
+              onChange={e => {
+                setNumLoops(!!e.target.value ? parseInt(e.target.value) : 0);
+              }}
+              placeholder="Number of loops"
+              type="number"
+              value={numLoops || ''}
+              className={classes.input}
+              label="Number of loops"
               variant="outlined"
-              error={!!startLocationError}
-              helperText={startLocationError}
-              name="startLocation"
+              error={!!numLoopsError}
+              helperText={numLoopsError}
             />
-          )}
-          value={!!startLocation ? startLocation : null}
-        />
-      </div>
+          </div>
 
-      <div className={classes.divForm}>
-        <Autocomplete
-          getOptionLabel={option => option}
-          onChange={(e, value) => setFinishLocation(value || '')}
-          options={listOfPlaces}
-          id="finishLocation"
-          renderInput={params => (
-            <TextField
-              {...params}
-              label="Pick Finish Location"
-              variant="outlined"
-              error={!!finishLocationError}
-              helperText={finishLocationError}
-              name="finishLocation"
+          <div className={classes.divForm}>
+            <Autocomplete
+              getOptionLabel={option => option}
+              onChange={(e, value) => setStartLocation(value || '')}
+              options={listOfPlaces}
+              id="startLocation"
+              renderInput={params => (
+                <TextField
+                  {...params}
+                  label="Pick Start Location"
+                  variant="outlined"
+                  error={!!startLocationError}
+                  helperText={startLocationError}
+                  name="startLocation"
+                />
+              )}
+              value={!!startLocation ? startLocation : null}
             />
-          )}
-          value={!!finishLocation ? finishLocation : null}
-        />
-      </div>
+          </div>
 
-      <div className={classes.buttonContainer}>
-        <Button variant="contained" color="primary" type="submit" className={classes.button}>
-          {'Request'}
-        </Button>
-      </div>
-    </form>
+          <div className={classes.divForm}>
+            <Autocomplete
+              getOptionLabel={option => option}
+              onChange={(e, value) => setFinishLocation(value || '')}
+              options={listOfPlaces}
+              id="finishLocation"
+              renderInput={params => (
+                <TextField
+                  {...params}
+                  label="Pick Finish Location"
+                  variant="outlined"
+                  error={!!finishLocationError}
+                  helperText={finishLocationError}
+                  name="finishLocation"
+                />
+              )}
+              value={!!finishLocation ? finishLocation : null}
+            />
+          </div>
+
+          <div className={classes.buttonContainer}>
+            <Button variant="contained" color="primary" type="submit" className={classes.button}>
+              {'Request'}
+            </Button>
+          </div>
+        </form>
+      </ExpansionPanelDetails>
+    </ExpansionPanel>
   );
 };
 
 const useStyles = makeStyles(theme => ({
   form: {
-    padding: '0.5rem',
     display: 'flex',
     flexDirection: 'column',
   },
-  title: {
-    margin: 'auto',
-    padding: '0.5rem',
-  },
   divForm: {
     padding: '0.5rem',
-    width: '95%',
+    width: '100%',
     margin: 'auto',
   },
   error: {
@@ -204,11 +203,19 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
   },
   button: {
-    width: '95%',
+    width: '100%',
   },
   buttonContainer: {
     paddingTop: '0.5rem',
     paddingLeft: '0.5rem',
     width: '100%',
+  },
+  expansionSummaryContent: {
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+
+  expansionDetail: {
+    flexFlow: 'column',
   },
 }));
