@@ -1,5 +1,4 @@
 import React from 'react';
-import { Divider, Typography } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 
 import Lift from '../components/schedule-visualizer/lift';

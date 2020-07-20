@@ -1,7 +1,6 @@
 import React from 'react';
 import { Divider, Typography } from '@material-ui/core';
 
-import Lift from '../components/schedule-visualizer/lift';
 import LiftComponent from './lift-component';
 
 export default { 
