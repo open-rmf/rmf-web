@@ -1,7 +1,7 @@
 import { makeStyles } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import React from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import ColorManager from './colors';
 
 const useStyles = makeStyles(() => ({
@@ -15,6 +15,9 @@ const useStyles = makeStyles(() => ({
     fontSize: '0.18px',
     fontWeight: 'bold',
     fill: 'white',
+  },
+  robotImg: {
+    transformOrigin: 'center',
   },
 }));
 
@@ -35,6 +38,9 @@ const Robot = React.forwardRef(function(
   const [robotColor, setRobotColor] = React.useState<string | null>(() =>
     colorManager.robotColorFromCache(robot.name, robot.model),
   );
+  const [iconError, setIconError] = useState(false);
+  const [renderIcon, setRenderIcon] = useState(false);
+  const [renderDefaultIcon, setRenderDefaultIcon] = useState(false);
 
   const theme = useTheme();
 
@@ -47,23 +53,36 @@ const Robot = React.forwardRef(function(
     })();
   }, [robot, robotColor, colorManager]);
 
+  // The only image formats SVG software support are JPEG, PNG, and other SVG files.
+  const iconPath = useMemo(() => '/img/missingImg.jpg', []);
+
+  useEffect(() => {
+    setRenderIcon(!!iconPath && !iconError);
+    setRenderDefaultIcon(!iconPath || !!iconError);
+  }, [iconPath, iconError]);
+
   return (
     <>
-      <image
-        href="https://mdn.mozillademos.org/files/6457/mdn_logo_only_color.png"
-        height="1"
-        width="1"
-        x={robot.location.x}
-        y={-robot.location.y}
-      />
       <g
         ref={ref}
         data-component="Robot"
         aria-label={robot.name}
         onClick={e => onClick && onClick(e, robot)}
       >
-        {/* {robotColor && (
-        <>
+        {renderIcon && (
+          <g
+            transform={`translate(${robot.location.x} ${-robot.location.y}) 
+            rotate(${-(robot.location.yaw * 180) / Math.PI}, ${footprint}, ${footprint})`}
+          >
+            <image
+              href={iconPath}
+              height={footprint * 2}
+              width={footprint * 2}
+              onError={() => setIconError(true)}
+            />
+          </g>
+        )}
+        {renderDefaultIcon && !!robotColor && (
           <g
             transform={`translate(${robot.location.x} ${-robot.location.y})
             rotate(${-(robot.location.yaw * 180) / Math.PI})`}
@@ -85,16 +104,15 @@ const Robot = React.forwardRef(function(
             />
             <line x2={footprint} stroke={theme.palette.common.black} strokeWidth="0.05" />
           </g>
-          <text
-            id="robotName"
-            x={robot.location.x}
-            y={-robot.location.y}
-            className={classes.robotText}
-          >
-            {robot.name.substring(0, 8)}
-          </text>
-        </>
-      )} */}
+        )}
+        <text
+          id="robotName"
+          x={robot.location.x}
+          y={-robot.location.y}
+          className={classes.robotText}
+        >
+          {robot.name.substring(0, 8)}
+        </text>
       </g>
     </>
   );
