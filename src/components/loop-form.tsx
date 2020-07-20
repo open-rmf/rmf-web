@@ -37,7 +37,7 @@ export const LoopForm = (props: LoopFormProps) => {
   const cleanUpForm = () => {
     setTargetFleetName(targetFleetName);
     setNumLoops(0);
-    setListOfPlaces(fakePlaces()[targetFleetName]);
+    setListOfPlaces(!!targetFleetName ? fakePlaces()[targetFleetName] : []);
     setStartLocation(
       listOfPlaces.length >= 2 ? listOfPlaces[0] : '',
     );
