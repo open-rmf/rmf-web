@@ -105,6 +105,7 @@ const useStyles = makeStyles(theme => ({
 
   expansionDetail: {
     flexFlow: 'column',
+    padding: '0.8rem'
   },
 
   expansionDetailLine: {

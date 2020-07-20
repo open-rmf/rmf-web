@@ -49,7 +49,7 @@ export const RobotItem = React.forwardRef(function(
         </Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails data-role="details" className={classes.expansionDetail}>
-        <AntTabs value={value} onChange={handleChange} aria-label="ant example">
+        <AntTabs centered value={value} onChange={handleChange} aria-label="ant example">
           <AntTab label="Info" />
           <AntTab label="Loop" />
           <AntTab label="Delivery" />
@@ -82,6 +82,7 @@ const useStyles = makeStyles(theme => ({
   expansionDetail: {
     flexFlow: 'column',
     overflowX: 'auto',
+    padding: '0.8rem'
   },
 
   expansionDetailLine: {

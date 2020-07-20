@@ -71,7 +71,7 @@ export const LiftItem = React.forwardRef(function(
         </Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails className={classes.expansionDetail}>
-        <AntTabs value={tabValue} onChange={handleChange} aria-label="scrollable auto tabs example">
+        <AntTabs centered value={tabValue} onChange={handleChange} aria-label="scrollable auto tabs example">
           <AntTab label="Info" />
           <AntTab label="Request" />
         </AntTabs>
@@ -115,6 +115,7 @@ const useStyles = makeStyles(theme => {
     expansionDetail: {
       flexFlow: 'column',
       overflowX: 'auto',
+      padding: '0.8rem'
     },
 
     expansionDetailLine: {
