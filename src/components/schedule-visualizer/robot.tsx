@@ -42,7 +42,6 @@ const Robot = React.forwardRef(function(
     colorManager.robotColorFromCache(robot.name, robot.model),
   );
   const [iconError, setIconError] = useState(false);
-  const [renderIcon, setRenderIcon] = useState(false);
   const [renderDefaultIcon, setRenderDefaultIcon] = useState(false);
 
   const theme = useTheme();
@@ -57,9 +56,11 @@ const Robot = React.forwardRef(function(
   }, [robot, robotColor, colorManager]);
 
   // The only image formats SVG software support are JPEG, PNG, and other SVG files.
-  const iconPath = useMemo(() => IconManager.getRobotIcon(iconContext, robot.model), []);
+  const iconPath = useMemo(() => IconManager.getRobotIcon(iconContext, robot.model), [
+    iconContext,
+    robot,
+  ]);
   useEffect(() => {
-    setRenderIcon(!!iconPath && !iconError);
     setRenderDefaultIcon(!iconPath || !!iconError);
   }, [iconPath, iconError]);
 
