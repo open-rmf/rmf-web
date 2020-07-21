@@ -27,6 +27,7 @@ import { SpotlightValue } from './spotlight-value';
 import { DoorStateContext } from './schedule-visualizer/doors-overlay';
 import { LiftStateContext } from './schedule-visualizer/lift-overlay';
 import NotificationBar, { NotificationBarProps, NotificationBarContext } from './notification-bar';
+import { IconContext } from '../app-contexts';
 
 const borderRadius = 20;
 
@@ -111,7 +112,7 @@ const viewMap = makeViewMap();
 
 export default function App(props: AppProps): JSX.Element {
   const classes = useStyles();
-  const { transportFactory, trajectoryManagerFactory } = props.appConfig;
+  const { transportFactory, trajectoryManagerFactory, appIcons } = props.appConfig;
   const [transport, setTransport] = React.useState<RomiCore.Transport | undefined>(undefined);
   const [buildingMap, setBuildingMap] = React.useState<RomiCore.BuildingMap | undefined>(undefined);
   const trajManager = React.useRef<RobotTrajectoryManager | undefined>(undefined);
@@ -332,18 +333,20 @@ export default function App(props: AppProps): JSX.Element {
               </Toolbar>
             </AppBar>
             {buildingMap && (
-              <DoorStateContext.Provider value={doorStates}>
-                <LiftStateContext.Provider value={liftStates}>
-                  <ScheduleVisualizer
-                    buildingMap={buildingMap}
-                    fleets={fleets}
-                    trajManager={trajManager.current}
-                    onDoorClick={handleDoorClick}
-                    onLiftClick={handleLiftClick}
-                    onRobotClick={handleRobotClick}
-                  />
-                </LiftStateContext.Provider>
-              </DoorStateContext.Provider>
+              <IconContext.Provider value={appIcons}>
+                <DoorStateContext.Provider value={doorStates}>
+                  <LiftStateContext.Provider value={liftStates}>
+                    <ScheduleVisualizer
+                      buildingMap={buildingMap}
+                      fleets={fleets}
+                      trajManager={trajManager.current}
+                      onDoorClick={handleDoorClick}
+                      onLiftClick={handleLiftClick}
+                      onRobotClick={handleRobotClick}
+                    />
+                  </LiftStateContext.Provider>
+                </DoorStateContext.Provider>
+              </IconContext.Provider>
             )}
             <Fade in={showOmniPanel}>
               <OmniPanel

@@ -1,8 +1,10 @@
 import { makeStyles } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, useContext } from 'react';
 import ColorManager from './colors';
+import IconManager from '../../icons-manager';
+import { IconContext } from '../../app-contexts';
 
 const useStyles = makeStyles(() => ({
   robotMarker: {
@@ -33,6 +35,7 @@ const Robot = React.forwardRef(function(
   props: RobotProps,
   ref: React.Ref<SVGGElement>,
 ): React.ReactElement {
+  const iconContext = useContext(IconContext);
   const classes = useStyles();
   const { robot, footprint, colorManager, onClick, inConflict } = props;
   const [robotColor, setRobotColor] = React.useState<string | null>(() =>
@@ -54,8 +57,7 @@ const Robot = React.forwardRef(function(
   }, [robot, robotColor, colorManager]);
 
   // The only image formats SVG software support are JPEG, PNG, and other SVG files.
-  const iconPath = useMemo(() => '/img/missingImg.jpg', []);
-
+  const iconPath = useMemo(() => IconManager.getRobotIcon(iconContext, robot.model), []);
   useEffect(() => {
     setRenderIcon(!!iconPath && !iconError);
     setRenderDefaultIcon(!iconPath || !!iconError);
@@ -69,7 +71,7 @@ const Robot = React.forwardRef(function(
         aria-label={robot.name}
         onClick={e => onClick && onClick(e, robot)}
       >
-        {renderIcon && (
+        {!!iconPath && !iconError && (
           <g
             transform={`translate(${robot.location.x} ${-robot.location.y}) 
             rotate(${-(robot.location.yaw * 180) / Math.PI}, ${footprint}, ${footprint})`}
