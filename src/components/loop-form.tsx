@@ -1,7 +1,7 @@
 import { makeStyles, TextField, Button, ExpansionPanel, ExpansionPanelSummary, Typography, ExpansionPanelDetails } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { successMsg } from '../util/alerts';
 import fakePlaces from '../mock/data/places';
 interface LoopFormProps {
@@ -27,6 +27,15 @@ export const LoopForm = (props: LoopFormProps) => {
   const [finishLocation, setFinishLocation] = useState(
     listOfPlaces.length >= 2 ? listOfPlaces[1] : '',
   );
+
+  useEffect(() => {
+    setListOfPlaces(fakePlaces()[targetFleetName]);
+  }, [targetFleetName]);
+
+  useEffect(() => {
+    setStartLocation(listOfPlaces.length >= 2 ? listOfPlaces[0] : '');
+    setFinishLocation(listOfPlaces.length >= 2 ? listOfPlaces[1] : '');
+  }, [listOfPlaces]);
 
   // Error states
   const [targetFleetNameError, setTargetFleetNameError] = useState('');
