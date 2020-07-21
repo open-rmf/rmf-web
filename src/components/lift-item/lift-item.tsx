@@ -71,7 +71,7 @@ export const LiftItem = React.forwardRef(function(
         </Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails className={classes.expansionDetail}>
-        <AntTabs centered value={tabValue} onChange={handleChange} aria-label="scrollable auto tabs example">
+        <AntTabs variant="fullWidth" value={tabValue} onChange={handleChange} aria-label="scrollable auto tabs example">
           <AntTab label="Info" />
           <AntTab label="Request" />
         </AntTabs>

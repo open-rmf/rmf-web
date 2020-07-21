@@ -49,7 +49,7 @@ export const RobotItem = React.forwardRef(function(
         </Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails data-role="details" className={classes.expansionDetail}>
-        <AntTabs centered value={value} onChange={handleChange} aria-label="ant example">
+        <AntTabs variant="fullWidth" value={value} onChange={handleChange} aria-label="ant example">
           <AntTab label="Info" />
           <AntTab label="Loop" />
           <AntTab label="Delivery" />

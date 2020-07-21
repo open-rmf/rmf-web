@@ -24,7 +24,6 @@ export const AntTab = withStyles((theme: Theme) =>
       textTransform: 'none',
       minWidth: 72,
       fontWeight: theme.typography.fontWeightRegular,
-      marginRight: theme.spacing(4),
       fontFamily: [
         '-apple-system',
         'BlinkMacSystemFont',
