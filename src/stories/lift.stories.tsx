@@ -97,6 +97,17 @@ const EMERGENCYState = {
     current_mode: 5
 }
 
+const currMode = [
+    'Unknown',
+    'Human',
+    'AGV',
+    'Fire',
+    'Offline',
+    'Emergency'
+];
+
+const motionStates = ['Stopped', 'Moving', 'Up', 'Down', 'Unknown'];
+
 const renderInfoPanel = (mode: string, doorState: string, motionState: string) => {
     return (
         <div style={styles.modeInfoPanel}>
@@ -124,12 +135,62 @@ const renderInfoPanel = (mode: string, doorState: string, motionState: string) =
     );
 }
 
+const currentMode = (): JSX.Element => {
+    return (
+       <div style={styles.modeInfoPanel}>
+          <div>
+             <Typography align="center" variant="h5">Current Modes</Typography>
+          </div>
+ 
+          {
+             currMode.map((key, index) => {
+                return  (
+                   <React.Fragment>
+                      <div style={styles.modeInfoItem} key={key}>
+                            <Typography variant="body1">{index}</Typography>
+                            <Typography variant="body1">{key}</Typography>
+                      </div>
+                      <Divider />
+                   </React.Fragment>
+                );
+             })
+          }
+       </div>
+    );
+ }
+
+ const motionState = (): JSX.Element => {
+    return (
+       <div style={styles.modeInfoPanel}>
+          <div>
+             <Typography align="center" variant="h5">Motion States</Typography>
+          </div>
+ 
+          {
+             motionStates.map((key, index) => {
+                return  (
+                   <React.Fragment>
+                      <div style={styles.modeInfoItem} key={key}>
+                            <Typography variant="body1">{index}</Typography>
+                            <Typography variant="body1">{key}</Typography>
+                      </div>
+                      <Divider />
+                   </React.Fragment>
+                );
+             })
+          }
+       </div>
+    );
+ }
+
 export const State_AGV = () => (
         <LiftComponent
             renderInfoPanel={() => renderInfoPanel('AGV', 'Open', 'Stopped')}
             lift={lift}
             currentFloor={AGVState.current_floor}
             liftState={AGVState}
+            currentMode={() => currentMode()}
+            motionState={() => motionState()}
         />
 );
 
@@ -139,6 +200,8 @@ export const State_FIRE = () => (
         lift={lift}
         currentFloor={FIREState.current_floor}
         liftState={FIREState}
+        currentMode={() => currentMode()}
+        motionState={() => motionState()}
     />
 )
 
@@ -148,6 +211,8 @@ export const State_UNKNOWN = () => (
         lift={lift}
         currentFloor={UNKOWNState.current_floor}
         liftState={UNKOWNState}
+        currentMode={() => currentMode()}
+        motionState={() => motionState()}
     />
 )
 
@@ -157,6 +222,8 @@ export const State_HUMAN = () => (
         lift={lift}
         currentFloor={HUMANState.current_floor}
         liftState={HUMANState}
+        currentMode={() => currentMode()}
+        motionState={() => motionState()}
     />
 )
 
@@ -166,6 +233,8 @@ export const State_OFFLINE = () => (
         lift={lift}
         currentFloor={OFFLINEState.current_floor}
         liftState={OFFLINEState}
+        currentMode={() => currentMode()}
+        motionState={() => motionState()}
     />
 )
 
@@ -175,5 +244,7 @@ export const State_EMERGENCY = () => (
         lift={lift}
         currentFloor={EMERGENCYState.current_floor}
         liftState={EMERGENCYState}
+        currentMode={() => currentMode()}
+        motionState={() => motionState()}
     />
 )
