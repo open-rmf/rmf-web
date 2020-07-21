@@ -53,6 +53,7 @@ describe('form Validation', () => {
 
   test('Location cannot be empty', async () => {
     const wrapper = buildWrapper('FleetA', onClick);
+    wrapper.find("input[type='number']").simulate('change', { target: { value: 1 } });
     wrapper.find('form').simulate('submit');
     expect(isRequestButtonClicked).toBeFalsy();
     expect(wrapper.exists('#startLocation-helper-text')).toBeTruthy();
@@ -61,6 +62,7 @@ describe('form Validation', () => {
 
   test('Start Location cannot be equal to Finish Location', async () => {
     const wrapper = buildWrapper('FleetB', onClick);
+    wrapper.find("input[type='number']").simulate('change', { target: { value: 1 } });
     wrapper.find('form').simulate('submit');
     expect(isRequestButtonClicked).toBeFalsy();
     expect(wrapper.exists('#startLocation-helper-text')).toBeTruthy();
