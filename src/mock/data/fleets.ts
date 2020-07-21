@@ -29,7 +29,7 @@ function superFleet(): RomiCore.FleetState {
 export default function fakeFleets(): RomiCore.FleetState[] {
   return [
     {
-      name: 'FleetA',
+      name: 'Fleet1',
       robots: [
         {
           name: 'Robot1',
@@ -49,7 +49,7 @@ export default function fakeFleets(): RomiCore.FleetState[] {
       ],
     },
     {
-      name: 'FleetB',
+      name: 'Fleet2',
       robots: [
         {
           name: 'Robot2',
@@ -69,7 +69,7 @@ export default function fakeFleets(): RomiCore.FleetState[] {
       ],
     },
     {
-      name: 'Fleet1',
+      name: 'FleetA',
       robots: [
         {
           name: 'RobotA',
@@ -104,7 +104,7 @@ export default function fakeFleets(): RomiCore.FleetState[] {
       ],
     },
     {
-      name: 'Fleet2',
+      name: 'FleetB',
       robots: [
         {
           name: 'RobotC',

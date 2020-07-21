@@ -35,5 +35,7 @@ export default function fakePlaces(): Record<string, string[]> {
     //FleetA and FleetB are for testing purposes (loop-form.test.tsx)
     FleetA: ['', 'supplies'],
     FleetB: ['supplies', 'supplies'],
+    Fleet1: ['supplies', 'magni2_charger', 'coe', 'magni1_charger', 'hardware_2'],
+    Fleet2: ['station_1', 'lounge', 'cubicle_1', 'hardware_1', 'station_2'],
   };
 }
