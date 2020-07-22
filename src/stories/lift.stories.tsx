@@ -18,8 +18,13 @@ const styles = {
         padding: '0.5rem'
     },
     modeInfoLink: {
-        marginTop: '0.5rem'
-    }
+        marginTop: '0.5rem',
+        padding: '0.5rem'
+    },
+    aTag: {
+        textDecoration: 'none',
+        color: 'rgb(20, 116, 243)'
+    },
 };
 
 const lift = {
@@ -129,7 +134,7 @@ const renderInfoPanel = (mode: string, doorState: string, motionState: string): 
 
             <div style={styles.modeInfoLink}>
                 <Typography variant="body1">Click
-                    <a href="https://osrf.github.io/romi-js-core-interfaces/classes/liftstate.html"> here </a> 
+                    <a style={styles.aTag} href="https://osrf.github.io/romi-js-core-interfaces/classes/liftstate.html"> here </a> 
                     for more details of Lift states.
                 </Typography>
             </div>

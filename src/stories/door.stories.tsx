@@ -18,8 +18,13 @@ const styles = {
        padding: '0.5rem'
    },
    modeInfoLink: {
-      marginTop: '0.5rem'
-  }
+      marginTop: '0.5rem',
+      padding: '0.5rem'
+  },
+  aTag: {
+      textDecoration: 'none',
+      color: 'rgb(20, 116, 243)'
+  },
 };
  
 const door = {
@@ -72,10 +77,10 @@ const renderInfoPanel = (doorType: string, doorState: string): JSX.Element => {
 
            <div style={styles.modeInfoLink}>
                 <Typography variant="body1">Click
-                    <a href="https://osrf.github.io/romi-js-core-interfaces/classes/door.html#door_type"> here </a> 
+                    <a style={styles.aTag} href="https://osrf.github.io/romi-js-core-interfaces/classes/door.html#door_type"> here </a> 
                     for more details on Door types and
-                    <a href="https://osrf.github.io/romi-js-core-interfaces/classes/doormode.html"> here </a>
-                    for more details on Door modes
+                    <a style={styles.aTag} href="https://osrf.github.io/romi-js-core-interfaces/classes/doormode.html"> here </a>
+                    for more details on Door modes.
                 </Typography>
            </div>
        </div>

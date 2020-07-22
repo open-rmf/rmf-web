@@ -20,8 +20,13 @@ const styles = {
         padding: '0.5rem'
     },
     modeInfoLink: {
-       marginTop: '0.5rem'
-   }
+       marginTop: '0.5rem',
+       padding: '0.5rem'
+    },
+    aTag: {
+        textDecoration: 'none',
+        color: 'rgb(20, 116, 243)'
+    },
 };
 
  const robotState = {
@@ -63,10 +68,10 @@ const renderInfoPanel = (robotMode: string, footprint: number): JSX.Element => {
  
             <div style={styles.modeInfoLink}>
                  <Typography variant="body1">Click
-                     <a href="https://osrf.github.io/romi-js-core-interfaces/classes/robotmode.html"> here </a> 
+                     <a style={styles.aTag} href="https://osrf.github.io/romi-js-core-interfaces/classes/robotmode.html"> here </a> 
                      for more details on Robot Modes and
-                     <a href="https://osrf.github.io/romi-js-core-interfaces/classes/robotstate.html"> here </a>
-                     for more details on Robot States
+                     <a style={styles.aTag} href="https://osrf.github.io/romi-js-core-interfaces/classes/robotstate.html"> here </a>
+                     for more details on Robot States.
                  </Typography>
             </div>
         </div>
