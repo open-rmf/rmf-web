@@ -33,6 +33,7 @@ export default function App(): React.ReactElement {
         dispenserStateManager.startSubscription(x);
         liftStateManager.startSubscription(x);
         fleetManager.startSubscription(x);
+        negotiationStatusManager.startSubscription(x);
 
         fleetManager.on('updated', () => setFleets(fleetManager.fleets()));
         liftStateManager.on('updated', () => setLiftStates(liftStateManager.liftStates()));
@@ -40,6 +41,8 @@ export default function App(): React.ReactElement {
         dispenserStateManager.on('updated', () =>
           setDispenserStates(dispenserStateManager.dispenserStates()),
         );
+        negotiationStatusManager.on('updated', () => 
+          setNegotiationStatus(negotiationStatusManager.negotiationStatus()));
         setTransport(x);
       })
       .catch((e: CloseEvent) => {
