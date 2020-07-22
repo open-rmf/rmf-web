@@ -102,7 +102,7 @@ export const LoopForm = (props: LoopFormProps) => {
   };
 
   return (
-    <ExpansionPanel>
+    <ExpansionPanel data-component="LoopForm">
       <ExpansionPanelSummary classes={{ content: classes.expansionSummaryContent }} expandIcon={<ExpandMoreIcon />}>
         <Typography variant="h5">Loop Request</Typography>
       </ExpansionPanelSummary>

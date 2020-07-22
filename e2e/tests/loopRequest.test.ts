@@ -30,6 +30,7 @@ describe('loop request', () => {
     const backButton = $('[name="back-button"]');
     backButton.click();
     $('[data-component=MainMenu] [data-item=Commands]').click();
+    $('[data-component=LoopForm]').click()
     $('input[name=numLoops]').setValue(1);
     $('button=Request').click();
 
