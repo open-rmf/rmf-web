@@ -3,7 +3,6 @@ import { Conflict, rawKnotsToKnots, Trajectory, RawKnot } from '../../robot-traj
 import { bezierControlPoints, knotsToSegmentCoefficientsArray } from '../../util/cublic-spline';
 import { TrajectoryPath } from './trajectory-animations';
 import { useTheme } from '@material-ui/core';
-import ColorManager from './colors';
 
 export interface RobotTrajectoryProps
   extends React.RefAttributes<SVGPathElement>,
@@ -11,48 +10,42 @@ export interface RobotTrajectoryProps
   trajectory: Trajectory;
   conflicts: Conflict[];
   footprint: number;
-  colorManager?: Readonly<ColorManager>;
 }
 
 export const RobotTrajectory = React.forwardRef(function(
   props: RobotTrajectoryProps,
   ref: React.Ref<SVGPathElement>,
 ): React.ReactElement {
-  const { trajectory, conflicts, footprint, colorManager, ...otherProps } = props;
+  const { trajectory, conflicts, footprint, ...otherProps } = props;
   const theme = useTheme();
 
-  const pathColor = React.useMemo(() => {
-    const getRobotColor = () => {
-      const robotColor = colorManager?.robotColorFromCache(trajectory.robot_name);
-      return !!robotColor ? robotColor : theme.palette.success.main;
-    };
-
-    return conflicts.flat().includes(trajectory.id) ? theme.palette.error.main : getRobotColor();
-  }, [trajectory, conflicts, theme, colorManager]);
+  const color = React.useMemo(
+    () =>
+      conflicts.flat().includes(trajectory.id)
+        ? theme.palette.error.main
+        : theme.palette.success.main,
+    [trajectory, conflicts, theme],
+  );
 
   const pathD = React.useMemo(() => {
     return trajectoryPath(trajectory.segments).d;
   }, [trajectory]);
 
   return (
-    <>
-      {pathColor && (
-        <path
-          data-component="RobotTrajectory"
-          ref={ref}
-          d={pathD}
-          stroke={pathColor}
-          opacity={0.8}
-          strokeWidth={footprint * 0.8}
-          strokeLinecap="round"
-          fill={'none'}
-          pathLength={1}
-          strokeDasharray={2}
-          strokeDashoffset={0}
-          {...otherProps}
-        />
-      )}
-    </>
+    <path
+      data-component="RobotTrajectory"
+      ref={ref}
+      d={pathD}
+      stroke={color}
+      opacity={0.8}
+      strokeWidth={footprint * 0.8}
+      strokeLinecap="round"
+      fill={'none'}
+      pathLength={1}
+      strokeDasharray={2}
+      strokeDashoffset={0}
+      {...otherProps}
+    />
   );
 });
 
