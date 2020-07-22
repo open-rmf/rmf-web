@@ -33,6 +33,7 @@ export default function fakePlaces(): Record<string, string[]> {
     ],
     // Add here a new fleet with its places
     //FleetA and FleetB are for testing purposes (loop-form.test.tsx)
+
     FleetA: ['', 'supplies'],
     FleetB: ['supplies', 'supplies'],
     Fleet1: ['supplies', 'magni2_charger', 'coe', 'magni1_charger', 'hardware_2'],

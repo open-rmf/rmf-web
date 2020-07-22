@@ -223,7 +223,6 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-
   expansionDetail: {
     flexFlow: 'column',
   },
