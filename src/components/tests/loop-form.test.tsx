@@ -4,26 +4,33 @@ import React from 'react';
 
 const mount = createMount();
 
-let isRequestButtonClicked = false;
-const onClick = (
+type customFunction = (
   fleetName: string,
   numLoops: number,
   startLocationPoint: string,
   endLocationPoint: string,
-  ) => {
-    isRequestButtonClicked = true;
-    console.log('test');
-  };
+) => void;
 
-const buildWrapper = (fleetName: string, onClick: any ) => {
+const buildWrapper = (fleetName: string, onClick: customFunction) => {
   const wrapper = mount(<LoopForm requestLoop={onClick} fleetNames={[fleetName]} />);
   return wrapper;
 };
 
 describe('form Validation', () => {
-  afterEach(() => {
+  let isRequestButtonClicked = false;
+  const onClick = (
+    fleetName: string,
+    numLoops: number,
+    startLocationPoint: string,
+    endLocationPoint: string,
+  ) => {
+    isRequestButtonClicked = true;
+  };
+
+  beforeEach(() => {
     isRequestButtonClicked = false;
   });
+
   test('Initial Values', () => {
     const wrapper = buildWrapper('SuperFleet', onClick);
     expect(wrapper.find('input[name="targetFleet"]').props().value != '');
