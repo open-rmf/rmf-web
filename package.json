@@ -54,6 +54,16 @@
   "eslintConfig": {
     "extends": "react-app"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.+(js|jsx|json|css|md)": [
+      "prettier --write"
+    ]
+  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -81,6 +91,8 @@
     "chromedriver": "^83.0.0",
     "enzyme-to-json": "^3.5.0",
     "gh-pages": "^2.2.0",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.2.11",
     "ts-node": "^8.10.2",
     "wdio-chromedriver-service": "^6.0.3"
   }
