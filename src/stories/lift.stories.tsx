@@ -1,5 +1,6 @@
 import React from 'react';
 import { Divider, Typography } from '@material-ui/core';
+import * as RomiCore from '@osrf/romi-js-core-interfaces';
 
 import LiftComponent from './lift-component';
 
@@ -15,6 +16,9 @@ const styles = {
         display: 'flex',
         justifyContent: 'space-between',
         padding: '0.5rem'
+    },
+    modeInfoLink: {
+        marginTop: '0.5rem'
     }
 };
 
@@ -50,63 +54,52 @@ const liftStates = {
     available_floors: ["L1", "L2", "L3", "L4"],
     available_modes: new Uint8Array(0),
     current_floor: "L1",
-    current_mode: 0,
+    current_mode: RomiCore.LiftState.MODE_UNKNOWN,
     destination_floor: "L1",
-    door_state: 0,
+    door_state: RomiCore.LiftState.DOOR_CLOSED,
     lift_name: "Lift1",
     lift_time: {sec: 0, nanosec: 0},
-    motion_state: 0,
+    motion_state: RomiCore.LiftState.MOTION_STOPPED,
     session_id: "",
 }
 
 const AGVState = {
     ... liftStates,
-    current_mode: 2,
-    door_state: 2,
+    current_mode: RomiCore.LiftState.MODE_AGV,
+    door_state: RomiCore.LiftState.DOOR_OPEN,
 };
 
 const FIREState = {
     ... liftStates,
-    current_mode: 3,
+    current_mode: RomiCore.LiftState.MODE_FIRE,
     current_floor: 'L2',
     destination_floor: 'L4',
-    motion_state: 1
+    motion_state: RomiCore.LiftState.MOTION_UP
 };
 
 const UNKOWNState = {
     ... liftStates,
-    door_state: 1,
-    motion_state: 3
+    door_state: RomiCore.LiftState.DOOR_MOVING,
+    motion_state: RomiCore.LiftState.MOTION_UNKNOWN
 }
 
 const HUMANState = {
     ... liftStates,
-    current_mode: 1,
+    current_mode: RomiCore.LiftState.MODE_HUMAN,
     current_floor: 'L3',
     destination_floor: 'L1',
-    motion_state: 2
+    motion_state: RomiCore.LiftState.MOTION_DOWN
 }
 
 const OFFLINEState = {
     ... liftStates,
-    current_mode: 4,
+    current_mode: RomiCore.LiftState.MODE_OFFLINE,
 }
 
 const EMERGENCYState = {
     ... liftStates,
-    current_mode: 5
+    current_mode: RomiCore.LiftState.MODE_EMERGENCY
 }
-
-const currMode = [
-    'Unknown',
-    'Human',
-    'AGV',
-    'Fire',
-    'Offline',
-    'Emergency'
-];
-
-const motionStates = ['Stopped', 'Moving', 'Up', 'Down', 'Unknown'];
 
 const renderInfoPanel = (mode: string, doorState: string, motionState: string): JSX.Element => {
     return (
@@ -131,57 +124,18 @@ const renderInfoPanel = (mode: string, doorState: string, motionState: string): 
                 <Typography variant="body1">Motion State:</Typography>
                 <Typography variant="body1">{motionState}</Typography>
             </div>
+
+            <Divider />
+
+            <div style={styles.modeInfoLink}>
+                <Typography variant="body1">Click
+                    <a href="https://osrf.github.io/romi-js-core-interfaces/classes/liftstate.html"> here </a> 
+                    for more details of Lift states.
+                </Typography>
+            </div>
         </div>
     );
 }
-
-const currentMode = (): JSX.Element => {
-    return (
-       <div style={styles.modeInfoPanel}>
-          <div>
-             <Typography align="center" variant="h5">Current Modes</Typography>
-          </div>
- 
-          {
-             currMode.map((key, index) => {
-                return  (
-                   <React.Fragment>
-                      <div style={styles.modeInfoItem} key={key}>
-                            <Typography variant="body1">{index}</Typography>
-                            <Typography variant="body1">{key}</Typography>
-                      </div>
-                      <Divider />
-                   </React.Fragment>
-                );
-             })
-          }
-       </div>
-    );
- }
-
- const motionState = (): JSX.Element => {
-    return (
-       <div style={styles.modeInfoPanel}>
-          <div>
-             <Typography align="center" variant="h5">Motion States</Typography>
-          </div>
- 
-          {
-             motionStates.map((key, index) => {
-                return  (
-                   <React.Fragment>
-                      <div style={styles.modeInfoItem} key={key}>
-                            <Typography variant="body1">{index}</Typography>
-                            <Typography variant="body1">{key}</Typography>
-                      </div>
-                      <Divider />
-                   </React.Fragment>
-                );
-             })
-          }
-       </div>
-    );
- }
 
 export const State_AGV = () => (
         <LiftComponent
@@ -189,8 +143,6 @@ export const State_AGV = () => (
             lift={lift}
             currentFloor={AGVState.current_floor}
             liftState={AGVState}
-            currentMode={() => currentMode()}
-            motionState={() => motionState()}
         />
 );
 
@@ -200,8 +152,6 @@ export const State_FIRE = () => (
         lift={lift}
         currentFloor={FIREState.current_floor}
         liftState={FIREState}
-        currentMode={() => currentMode()}
-        motionState={() => motionState()}
     />
 )
 
@@ -211,8 +161,6 @@ export const State_UNKNOWN = () => (
         lift={lift}
         currentFloor={UNKOWNState.current_floor}
         liftState={UNKOWNState}
-        currentMode={() => currentMode()}
-        motionState={() => motionState()}
     />
 )
 
@@ -222,8 +170,6 @@ export const State_HUMAN = () => (
         lift={lift}
         currentFloor={HUMANState.current_floor}
         liftState={HUMANState}
-        currentMode={() => currentMode()}
-        motionState={() => motionState()}
     />
 )
 
@@ -233,8 +179,6 @@ export const State_OFFLINE = () => (
         lift={lift}
         currentFloor={OFFLINEState.current_floor}
         liftState={OFFLINEState}
-        currentMode={() => currentMode()}
-        motionState={() => motionState()}
     />
 )
 
@@ -244,7 +188,5 @@ export const State_EMERGENCY = () => (
         lift={lift}
         currentFloor={EMERGENCYState.current_floor}
         liftState={EMERGENCYState}
-        currentMode={() => currentMode()}
-        motionState={() => motionState()}
     />
 )

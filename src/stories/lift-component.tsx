@@ -8,31 +8,25 @@ export interface LiftComponentProps {
     lift: RomiCore.Lift;
     liftState: RomiCore.LiftState;
     renderInfoPanel(): JSX.Element;
-    currentMode(): JSX.Element;
-    motionState(): JSX.Element;
 }
 
 const styles = {
     display: {
         display: 'grid',
-        gridTemplateColumns: '1fr 1fr 1fr 2fr'
+        gridTemplateColumns: '1fr 3fr'
     }
 };
 
 export default function LiftComponent(props: LiftComponentProps): React.ReactElement {
 
-    const { currentFloor, lift, liftState, renderInfoPanel, currentMode, motionState } = props;
+    const { currentFloor, lift, liftState, renderInfoPanel } = props;
 
     return (
         <div style={styles.display}>
             { renderInfoPanel() }
 
-            { currentMode() }
-
-            { motionState() }
-
             <div>
-                <svg viewBox={'0 0 13 13'}>
+                <svg viewBox={'0 0 25 14'}>
                     <Lift
                         lift={lift}
                         currentFloor={currentFloor}

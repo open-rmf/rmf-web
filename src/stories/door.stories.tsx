@@ -1,5 +1,6 @@
 import React from 'react';
 import { Divider, Typography } from '@material-ui/core';
+import * as RomiCore from '@osrf/romi-js-core-interfaces';
  
 import DoorComponent from './door-component';
  
@@ -15,11 +16,14 @@ const styles = {
        display: 'flex',
        justifyContent: 'space-between',
        padding: '0.5rem'
-   }
+   },
+   modeInfoLink: {
+      marginTop: '0.5rem'
+  }
 };
  
 const door = {
-   door_type: 0,
+   door_type: RomiCore.Door.DOOR_TYPE_SINGLE_SLIDING,
    motion_direction: 1,
    motion_range: -1.571,
    name: "main_door",
@@ -31,7 +35,7 @@ const door = {
  
 const doorState = {
    current_mode: {
-       value: 0
+       value: RomiCore.DoorMode.MODE_CLOSED
    },
    door_name: 'main_door',
    door_time: {sec: 0, nanosec: 0}
@@ -39,25 +43,13 @@ const doorState = {
  
 const singleSlidingDoor = {
    ... door,
-   door_type: 1
+   door_type: RomiCore.Door.DOOR_TYPE_SINGLE_SLIDING
 }
  
 const doubleSldingDoor = {
    ... door,
-   door_type: 2
+   door_type: RomiCore.Door.DOOR_TYPE_DOUBLE_SLIDING
 }
-
-const doorTypeMap = [
-   'Undefined',
-   'Single Sliding Door',
-   'Double Sliding Door',
-   'Single Telescope Door',
-   'Double Telescope Door',
-   'Single Swing Door',
-   'Double Swing Door'
-];
-
-const doorModeMap = [ 'Close', 'Moving', 'Open' ];
 
 const renderInfoPanel = (doorType: string, doorState: string): JSX.Element => {
    return (
@@ -75,55 +67,18 @@ const renderInfoPanel = (doorType: string, doorState: string): JSX.Element => {
                <Typography variant="body1">Door Mode:</Typography>
                <Typography variant="body1">{doorState}</Typography>
            </div>
+
+           <Divider />
+
+           <div style={styles.modeInfoLink}>
+                <Typography variant="body1">Click
+                    <a href="https://osrf.github.io/romi-js-core-interfaces/classes/door.html#door_type"> here </a> 
+                    for more details on Door types and
+                    <a href="https://osrf.github.io/romi-js-core-interfaces/classes/doormode.html"> here </a>
+                    for more details on Door modes
+                </Typography>
+           </div>
        </div>
-   );
-}
-
-const availableDoorType = (): JSX.Element => {
-   return (
-      <div style={styles.modeInfoPanel}>
-         <div>
-            <Typography align="center" variant="h5">Available Door types</Typography>
-         </div>
-
-         {
-            doorTypeMap.map((key, index) => {
-               return  (
-                  <React.Fragment>
-                     <div style={styles.modeInfoItem} key={key}>
-                           <Typography variant="body1">{index}</Typography>
-                           <Typography variant="body1">{key}</Typography>
-                     </div>
-                     <Divider />
-                  </React.Fragment>
-               );
-            })
-         }
-      </div>
-   );
-}
-
-const doorMode = (): JSX.Element => {
-   return (
-      <div style={styles.modeInfoPanel}>
-         <div>
-            <Typography align="center" variant="h5">Available Door types</Typography>
-         </div>
-
-         {
-            doorModeMap.map((key, index) => {
-               return  (
-                  <React.Fragment>
-                     <div style={styles.modeInfoItem} key={key}>
-                           <Typography variant="body1">{index}</Typography>
-                           <Typography variant="body1">{key}</Typography>
-                     </div>
-                     <Divider />
-                  </React.Fragment>
-               );
-            })
-         }
-      </div>
    );
 }
  
@@ -131,10 +86,8 @@ export const SinglePanelDoors = () => (
     <DoorComponent
         door={singleSlidingDoor}
         doorState={doorState}
-        currentMode={0}
+        currentMode={RomiCore.DoorMode.MODE_CLOSED}
         renderInfoPanel={() =>  renderInfoPanel('Single Sliding Door', 'Close')}
-        availableDoorType={() => availableDoorType()}
-        doorMode={() => doorMode()}
     />
 );
  
@@ -142,10 +95,8 @@ export const DoublePanelDoors = () => (
     <DoorComponent
         door={doubleSldingDoor}
         doorState={doorState}
-        currentMode={0}
+        currentMode={RomiCore.DoorMode.MODE_CLOSED}
         renderInfoPanel={() =>  renderInfoPanel('Double Sliding Door', 'Close')}
-        availableDoorType={() => availableDoorType()}
-        doorMode={() => doorMode()}
     />
 )
  
@@ -153,10 +104,8 @@ export const MovingDoor = () => (
    <DoorComponent
       door={singleSlidingDoor}
       doorState={doorState}
-      currentMode={1}
+      currentMode={RomiCore.DoorMode.MODE_MOVING}
       renderInfoPanel={() =>  renderInfoPanel('Single Sliding Door', 'Moving')}
-      availableDoorType={() => availableDoorType()}
-      doorMode={() => doorMode()}
    />
 )
 
@@ -164,9 +113,7 @@ export const ClosingDoor = () => (
    <DoorComponent
       door={singleSlidingDoor}
       doorState={doorState}
-      currentMode={2}
+      currentMode={RomiCore.DoorMode.MODE_OPEN}
       renderInfoPanel={() =>  renderInfoPanel('Single Sliding Door', 'Open')}
-      availableDoorType={() => availableDoorType()}
-      doorMode={() => doorMode()}
    />
 )
