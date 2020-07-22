@@ -19,7 +19,7 @@ const styles = {
     }
 };
 
-export default function LiftComponent(props: LiftComponentProps): JSX.Element {
+export default function LiftComponent(props: LiftComponentProps): React.ReactElement {
 
     const { currentFloor, lift, liftState, renderInfoPanel, currentMode, motionState } = props;
 

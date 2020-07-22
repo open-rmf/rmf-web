@@ -108,7 +108,7 @@ const currMode = [
 
 const motionStates = ['Stopped', 'Moving', 'Up', 'Down', 'Unknown'];
 
-const renderInfoPanel = (mode: string, doorState: string, motionState: string) => {
+const renderInfoPanel = (mode: string, doorState: string, motionState: string): JSX.Element => {
     return (
         <div style={styles.modeInfoPanel}>
             <Typography align="center" variant="h5">Configurations</Typography>
