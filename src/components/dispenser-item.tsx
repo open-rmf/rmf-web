@@ -70,7 +70,7 @@ export const DispenserItem = React.forwardRef(function(
       case RomiCore.DispenserState.OFFLINE:
         return 'OFFLINE';
       default:
-        return 'UNKNOWN';
+        return 'N/A';
     }
   }
 
@@ -79,12 +79,17 @@ export const DispenserItem = React.forwardRef(function(
       <ExpansionPanelSummary
         classes={{ content: classes.expansionSummaryContent }}
         expandIcon={<ExpandMoreIcon />}>
-        <Typography variant="h5" className={classes.hideText}>{dispenserState.guid}</Typography>
+        <Typography variant="h6" className={classes.hideText}>{dispenserState.guid}</Typography>
         <Typography className={dispenserModeLabelClass()} variant='button'>
           {dispenserModeToString()}
         </Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails className={classes.expansionDetail}>
+        <div className={classes.expansionDetailLine}>
+          <Typography variant="body1">Name:</Typography>
+          <Typography variant="body1">{dispenserState.guid}</Typography>
+        </div>
+        <Divider />
         <div className={classes.expansionDetailLine}>
           <Typography variant="body1">No. Queued Requests:</Typography>
           <Typography variant="body1">
@@ -151,7 +156,7 @@ const useStyles = makeStyles(theme => ({
     overflow: "hidden",
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
-    maxWidth: "10rem"
+    maxWidth: "10rem",
   }
 }));
 
@@ -163,9 +168,6 @@ const useDispenserModeLabelStyles = makeStyles(theme => {
     padding: 5,
     width: '4rem',
     textAlign: 'center',
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    whiteSpace: "nowrap",
   };
   return {
     idle: {...base, borderColor: theme.palette.warning.main},

@@ -12,6 +12,11 @@ export const RobotInformation = (props: robotInformationProps) => {
   return (
     <>
       <div className={classes.expansionDetailLine}>
+        <Typography variant="body1">Name:</Typography>
+        <Typography variant="body1">{robot.name}</Typography>
+      </div>
+      <Divider />
+      <div className={classes.expansionDetailLine}>
         <Typography variant="body1">Model:</Typography>
         <Typography variant="body1">{robot.model}</Typography>
       </div>

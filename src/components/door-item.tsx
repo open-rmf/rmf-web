@@ -59,12 +59,17 @@ export const DoorItem = React.forwardRef(function(
         classes={{ content: classes.expansionSummaryContent }}
         expandIcon={<ExpandMoreIcon />}
       >
-        <Typography variant="h5" className={classes.hideText}>{door.name}</Typography>
+        <Typography variant="h6" className={classes.hideText}>{door.name}</Typography>
         <Typography data-role="state" className={doorModeLabelClasses(doorState)} variant="button">
           {doorModeToString(doorState)}
         </Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails data-role="details" className={classes.expansionDetail}>
+        <div className={classes.expansionDetailLine}>
+          <Typography variant="body1">Name:</Typography>
+          <Typography variant="body1">{door.name}</Typography>
+        </div>
+        <Divider />
         <div className={classes.expansionDetailLine}>
           <Typography variant="body1">Type:</Typography>
           <Typography variant="body1">{doorTypeToString(door.door_type)}</Typography>
@@ -121,9 +126,6 @@ const useStyles = makeStyles(theme => ({
     padding: 5,
     width: '4rem',
     textAlign: 'center',
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    whiteSpace: "nowrap",
   },
 
   doorLabelOpen: {
@@ -146,7 +148,7 @@ const useStyles = makeStyles(theme => ({
     overflow: "hidden",
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
-    maxWidth: "10rem"
+    maxWidth: "10rem",
   }
 }));
 
@@ -169,7 +171,7 @@ function doorTypeToString(doorType: number): string {
 
 function doorModeToString(doorState?: RomiCore.DoorState): string {
   if (!doorState) {
-    return 'UNKNOWN';
+    return 'N/A';
   }
   switch (doorState.current_mode.value) {
     case RomiCore.DoorMode.MODE_OPEN:
@@ -179,7 +181,7 @@ function doorModeToString(doorState?: RomiCore.DoorState): string {
     case RomiCore.DoorMode.MODE_MOVING:
       return 'MOVING';
     default:
-      return 'UNKNOWN';
+      return 'N/A';
   }
 }
 

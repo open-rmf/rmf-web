@@ -48,11 +48,17 @@ export const LiftInformation = (props: liftInformationProps) => {
   return (
     <>
       <div className={classes.expansionDetailLine}>
+        <Typography variant="body1">Name:</Typography>
+        <Typography variant="body1">{lift.name}</Typography>
+      </div>
+      <Divider />
+      <div className={classes.expansionDetailLine}>
         <Typography variant="body1">Location:</Typography>
         <Typography variant="body1">
           {`(${lift.ref_x.toFixed(3)}, ${lift.ref_y.toFixed(3)})`}
         </Typography>
       </div>
+      <Divider />
       <div className={classes.expansionDetailLine}>
         <Typography variant="body1">Destination Floor:</Typography>
         <DisableableTypography disabled={!liftState} variant="body1">

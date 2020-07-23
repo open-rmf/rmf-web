@@ -65,9 +65,9 @@ export const LiftItem = React.forwardRef(function(
         classes={{ content: classes.expansionSummaryContent }}
         expandIcon={<ExpandMoreIcon />}
       >
-        <Typography variant="h5" className={classes.hideText}>{lift.name}</Typography>
+        <Typography variant="h6" className={classes.hideText}>{lift.name}</Typography>
         <Typography className={liftFloorLabel(liftState)} variant="button">
-          {liftState ? liftState.current_floor : 'Unknown'}
+          {liftState ? liftState.current_floor : 'N/A'}
         </Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails className={classes.expansionDetail}>
@@ -101,9 +101,6 @@ const useStyles = makeStyles(theme => {
     padding: 5,
     width: '4rem',
     textAlign: 'center',
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    whiteSpace: "nowrap",
   };
 
   return {
@@ -143,7 +140,7 @@ const useStyles = makeStyles(theme => {
       overflow: "hidden",
       textOverflow: "ellipsis",
       whiteSpace: "nowrap",
-      maxWidth: "10rem"
+      maxWidth: "10rem",
     }
   };
 });
