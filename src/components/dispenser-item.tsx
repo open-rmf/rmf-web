@@ -41,7 +41,7 @@ export const DispenserItem = React.forwardRef(function(
     }
   }
 
-  function dispenserRequestQueueId(): JSX.Element {
+  function dispenserRequestQueueId(): React.ReactElement {
     if (dispenserState.request_guid_queue.length === 0) {
       return (
         <DisableableTypography disabled={true} variant="body1">
