@@ -1,6 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
+/rmf_demos_ws
 /node_modules
 /.pnp
 .pnp.js

@@ -48,7 +48,9 @@
     "eject": "react-scripts eject",
     "deploy:demo": "REACT_APP_MOCK=1 npm run build && NODE_DEBUG=gh-pages gh-pages -d build -m \"$(git rev-parse HEAD)\"",
     "storybook": "start-storybook -p 9009 -s public",
-    "build-storybook": "build-storybook -s public"
+    "build-storybook": "build-storybook -s public",
+    "build:colconws": "chmod u+x scripts/postinstall.sh && chmod u+x scripts/build-colconws.sh && scripts/postinstall.sh && scripts/build-colconws.sh",
+    "prebuild": "chmod u+x scripts/get-icons.sh && scripts/get-icons.sh"
   },
   "eslintConfig": {
     "extends": "react-app"
