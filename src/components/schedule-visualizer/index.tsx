@@ -23,6 +23,8 @@ import {
 } from './trajectory-animations';
 import DoorsOverlay from './doors-overlay';
 import LiftsOverlay from './lift-overlay';
+import { IconContext } from '../../app-contexts';
+import { IconContextType } from '../../icons-manager';
 
 const useStyles = makeStyles(() => ({
   map: {
@@ -43,6 +45,7 @@ export interface ScheduleVisualizerProps {
   buildingMap: Readonly<RomiCore.BuildingMap>;
   fleets: Readonly<RomiCore.FleetState[]>;
   trajManager?: Readonly<RobotTrajectoryManager>;
+  appIcons: IconContextType;
   onDoorClick?(door: RomiCore.Door): void;
   onLiftClick?(lift: RomiCore.Lift): void;
   onRobotClick?(robot: RomiCore.RobotState): void;
@@ -58,6 +61,7 @@ function calcMaxBounds(mapFloorLayers: readonly MapFloorLayer[]): L.LatLngBounds
 }
 
 export default function ScheduleVisualizer(props: ScheduleVisualizerProps): React.ReactElement {
+  const { appIcons } = props;
   const classes = useStyles();
   const mapRef = React.useRef<LMap>(null);
   const { current: mapElement } = mapRef;
@@ -278,24 +282,38 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       maxBounds={maxBounds}
       onbaselayerchange={handleBaseLayerChange}
     >
-      <AttributionControl position="bottomright" prefix="OSRC-SG" />
-      <LayersControl position="topleft">
-        {sortedMapFloorLayers.every(x => x) &&
-          sortedMapFloorLayers.map((floorLayer, i) => (
-            <LayersControl.BaseLayer
-              checked={i === 0}
-              name={floorLayer.level.name}
-              key={floorLayer.level.name}
-            >
-              <ImageOverlay bounds={floorLayer.bounds} url={floorLayer.imageUrl} ref={ref} />
-            </LayersControl.BaseLayer>
-          ))}
+      <IconContext.Provider value={appIcons}>
+        <AttributionControl position="bottomright" prefix="OSRC-SG" />
+        <LayersControl position="topleft">
+          {sortedMapFloorLayers.every(x => x) &&
+            sortedMapFloorLayers.map((floorLayer, i) => (
+              <LayersControl.BaseLayer
+                checked={i === 0}
+                name={floorLayer.level.name}
+                key={floorLayer.level.name}
+              >
+                <ImageOverlay bounds={floorLayer.bounds} url={floorLayer.imageUrl} ref={ref} />
+              </LayersControl.BaseLayer>
+            ))}
 
-        <LayersControl.Overlay name="Robot Trajectories" checked>
-          {curMapFloorLayer && (
-            <Pane>
-              <RobotTrajectoryContext.Provider value={{ Component: TrajectoryComponent }}>
-                <RobotTrajectoriesOverlay
+          <LayersControl.Overlay name="Robot Trajectories" checked>
+            {curMapFloorLayer && (
+              <Pane>
+                <RobotTrajectoryContext.Provider value={{ Component: TrajectoryComponent }}>
+                  <RobotTrajectoriesOverlay
+                    bounds={curMapFloorLayer.bounds}
+                    trajs={getTrajectory(curMapFloorLayer.level.name)}
+                    conflicts={getConflicts(curMapFloorLayer.level.name)}
+                    colorManager={colorManager}
+                  />
+                </RobotTrajectoryContext.Provider>
+              </Pane>
+            )}
+          </LayersControl.Overlay>
+          <LayersControl.Overlay name="Doors" checked>
+            {curMapFloorLayer && (
+              <Pane>
+                <DoorsOverlay
                   bounds={curMapFloorLayer.bounds}
                   trajs={curMapTrajectories}
                   conflicts={curMapConflicts}
@@ -343,6 +361,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
           )}
         </LayersControl.Overlay>
       </LayersControl>
+      </IconContext.Provider>
     </LMap>
   );
 }
