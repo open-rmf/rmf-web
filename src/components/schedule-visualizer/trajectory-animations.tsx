@@ -9,7 +9,6 @@ export interface TrajectoryAnimationProps extends React.SVGAttributes<SVGPathEle
 }
 
 export interface TrajectoryPath {
-  traj: Trajectory;
   d: string;
   segOffsets: number[];
 }
