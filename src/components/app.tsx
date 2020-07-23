@@ -25,6 +25,7 @@ import SettingsDrawer from './settings-drawer';
 import { SpotlightValue } from './spotlight-value';
 import { DoorStateContext } from './schedule-visualizer/doors-overlay';
 import { LiftStateContext } from './schedule-visualizer/lift-overlay';
+import NotificationBar, { NotificationBarProps, NotificationBarContext } from './notification-bar';
 
 const borderRadius = 20;
 
@@ -150,6 +151,11 @@ export default function App(props: AppProps): JSX.Element {
 
   const [showSettings, setShowSettings] = React.useState(false);
   const [settings, setSettings] = React.useState<Settings>(() => loadSettings());
+
+  const [
+    notificationBarMessage,
+    setNotificationBarMessage,
+  ] = React.useState<NotificationBarProps | null>(null);
 
   React.useEffect(() => {
     setLoading({ caption: 'Connecting to SOSS server...' });
@@ -302,88 +308,97 @@ export default function App(props: AppProps): JSX.Element {
   return (
     <React.Fragment>
       <SettingsContext.Provider value={settings}>
-        {loading && <LoadingScreen {...loading} />}
-        <div className={classes.container}>
-          <AppBar position="static">
-            <Toolbar>
-              <Typography variant="h6" className={classes.toolBarTitle}>
-                Dashboard
-              </Typography>
-              <IconButton color="inherit" onClick={() => setShowOmniPanel(!showOmniPanel)}>
-                <DashboardIcon />
-              </IconButton>
-              <IconButton color="inherit" onClick={() => setShowSettings(true)}>
-                <SettingsIcon />
-              </IconButton>
-            </Toolbar>
-          </AppBar>
-          {buildingMap && (
-            <DoorStateContext.Provider value={doorStates}>
-              <LiftStateContext.Provider value={liftStates}>
-                <ScheduleVisualizer
-                  buildingMap={buildingMap}
-                  fleets={fleets}
-                  trajManager={trajManager.current}
-                  onDoorClick={handleDoorClick}
-                  onLiftClick={handleLiftClick}
-                  onRobotClick={handleRobotClick}
-                />
-              </LiftStateContext.Provider>
-            </DoorStateContext.Provider>
-          )}
-          <Fade in={showOmniPanel}>
-            <OmniPanel
-              className={classes.omniPanel}
-              classes={{
-                backButton: classes.topLeftBorder,
-                closeButton: classes.topRightBorder,
+        <NotificationBarContext.Provider value={setNotificationBarMessage}>
+          {loading && <LoadingScreen {...loading} />}
+          <div className={classes.container}>
+            <AppBar position="static">
+              <Toolbar>
+                <Typography variant="h6" className={classes.toolBarTitle}>
+                  Dashboard
+                </Typography>
+                <IconButton color="inherit" onClick={() => setShowOmniPanel(!showOmniPanel)}>
+                  <DashboardIcon />
+                </IconButton>
+                <IconButton color="inherit" onClick={() => setShowSettings(true)}>
+                  <SettingsIcon />
+                </IconButton>
+              </Toolbar>
+            </AppBar>
+            {buildingMap && (
+              <DoorStateContext.Provider value={doorStates}>
+                <LiftStateContext.Provider value={liftStates}>
+                  <ScheduleVisualizer
+                    buildingMap={buildingMap}
+                    fleets={fleets}
+                    trajManager={trajManager.current}
+                    onDoorClick={handleDoorClick}
+                    onLiftClick={handleLiftClick}
+                    onRobotClick={handleRobotClick}
+                  />
+                </LiftStateContext.Provider>
+              </DoorStateContext.Provider>
+            )}
+            <Fade in={showOmniPanel}>
+              <OmniPanel
+                className={classes.omniPanel}
+                classes={{
+                  backButton: classes.topLeftBorder,
+                  closeButton: classes.topRightBorder,
+                }}
+                view={currentView}
+                onBack={handleBack}
+                onClose={handleClose}
+              >
+                <OmniPanelView id={OmniPanelViewIndex.MainMenu}>
+                  <MainMenu
+                    onDoorsClick={handleMainMenuDoorsClick}
+                    onLiftsClick={handleMainMenuLiftsClick}
+                    onRobotsClick={handleMainMenuRobotsClick}
+                    onDispensersClick={handleMainMenuDispensersClick}
+                  />
+                </OmniPanelView>
+                <OmniPanelView id={OmniPanelViewIndex.Doors}>
+                  <DoorsPanel
+                    transport={transport}
+                    doorStates={doorStates}
+                    doors={doors}
+                    spotlight={doorSpotlight}
+                  />
+                </OmniPanelView>
+                <OmniPanelView id={OmniPanelViewIndex.Lifts}>
+                  <LiftsPanel
+                    transport={transport}
+                    liftStates={liftStates}
+                    lifts={lifts}
+                    spotlight={liftSpotlight}
+                  />
+                </OmniPanelView>
+                <OmniPanelView id={OmniPanelViewIndex.Robots}>
+                  <RobotsPanel transport={transport} fleets={fleets} spotlight={robotSpotlight} />
+                </OmniPanelView>
+                <OmniPanelView id={OmniPanelViewIndex.Dispensers}>
+                  <DispensersPanel
+                    dispenserStates={dispenserStates}
+                    spotlight={dispenserSpotlight}
+                  />
+                </OmniPanelView>
+              </OmniPanel>
+            </Fade>
+            <SettingsDrawer
+              settings={settings}
+              open={showSettings}
+              onSettingsChange={newSettings => {
+                setSettings(newSettings);
+                saveSettings(newSettings);
               }}
-              view={currentView}
-              onBack={handleBack}
-              onClose={handleClose}
-            >
-              <OmniPanelView id={OmniPanelViewIndex.MainMenu}>
-                <MainMenu
-                  onDoorsClick={handleMainMenuDoorsClick}
-                  onLiftsClick={handleMainMenuLiftsClick}
-                  onRobotsClick={handleMainMenuRobotsClick}
-                  onDispensersClick={handleMainMenuDispensersClick}
-                />
-              </OmniPanelView>
-              <OmniPanelView id={OmniPanelViewIndex.Doors}>
-                <DoorsPanel
-                  transport={transport}
-                  doorStates={doorStates}
-                  doors={doors}
-                  spotlight={doorSpotlight}
-                />
-              </OmniPanelView>
-              <OmniPanelView id={OmniPanelViewIndex.Lifts}>
-                <LiftsPanel
-                  transport={transport}
-                  liftStates={liftStates}
-                  lifts={lifts}
-                  spotlight={liftSpotlight}
-                />
-              </OmniPanelView>
-              <OmniPanelView id={OmniPanelViewIndex.Robots}>
-                <RobotsPanel transport={transport} fleets={fleets} spotlight={robotSpotlight} />
-              </OmniPanelView>
-              <OmniPanelView id={OmniPanelViewIndex.Dispensers}>
-                <DispensersPanel dispenserStates={dispenserStates} spotlight={dispenserSpotlight} />
-              </OmniPanelView>
-            </OmniPanel>
-          </Fade>
-          <SettingsDrawer
-            settings={settings}
-            open={showSettings}
-            onSettingsChange={newSettings => {
-              setSettings(newSettings);
-              saveSettings(newSettings);
-            }}
-            onClose={() => setShowSettings(false)}
+              onClose={() => setShowSettings(false)}
+            />
+          </div>
+          <NotificationBar
+            message={notificationBarMessage?.message}
+            type={notificationBarMessage?.type}
           />
-        </div>
+        </NotificationBarContext.Provider>
       </SettingsContext.Provider>
     </React.Fragment>
   );
