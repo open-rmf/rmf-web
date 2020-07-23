@@ -1,4 +1,4 @@
-import { makeStyles, TextField, Button, ExpansionPanel, ExpansionPanelSummary, Typography, ExpansionPanelDetails } from '@material-ui/core';
+import { makeStyles, TextField, Button, Accordion, AccordionSummary, AccordionDetails, Typography } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import React, { useState, useEffect } from 'react';
@@ -102,11 +102,11 @@ export const LoopForm = (props: LoopFormProps) => {
   };
 
   return (
-    <ExpansionPanel data-component="LoopForm">
-      <ExpansionPanelSummary classes={{ content: classes.expansionSummaryContent }} expandIcon={<ExpandMoreIcon />}>
+    <Accordion data-component="LoopForm">
+      <AccordionSummary classes={{ content: classes.expansionSummaryContent }} expandIcon={<ExpandMoreIcon />}>
         <Typography variant="h5">Loop Request</Typography>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails className={classes.expansionDetail}>
+      </AccordionSummary>
+      <AccordionDetails className={classes.expansionDetail}>
         <form className={classes.form} onSubmit={handleRequestLoop}>
           <div className={classes.divForm}>
             <Autocomplete
@@ -190,8 +190,8 @@ export const LoopForm = (props: LoopFormProps) => {
             </Button>
           </div>
         </form>
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
+      </AccordionDetails>
+    </Accordion>
   );
 };
 
