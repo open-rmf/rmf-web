@@ -171,6 +171,6 @@ const useDispenserModeLabelStyles = makeStyles(theme => {
     idle: {...base, borderColor: theme.palette.warning.main},
     busy: {...base, borderColor: theme.palette.success.main},
     offline: {...base, borderColor: theme.palette.error.main},
-    unknown: {...base, borderColor: theme.palette.secondary.dark}
+    unknown: {...base, borderColor: '#cccccc'}
   };
 });

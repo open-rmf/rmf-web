@@ -136,7 +136,7 @@ const useStyles = makeStyles(theme => {
 
     liftFloorLabelUnknown: {
       ...liftFloorLabelBase,
-      borderColor: theme.palette.secondary.dark
+      borderColor: '#cccccc'
     },
 
     hideText: {

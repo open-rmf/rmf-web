@@ -139,7 +139,7 @@ const useStyles = makeStyles(theme => ({
   },
 
   unknown: {
-    borderColor: theme.palette.secondary.dark,
+    borderColor: '#cccccc',
   },
 
   hideText: {
