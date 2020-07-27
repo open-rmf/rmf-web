@@ -2,6 +2,7 @@
 
 # dependencies
 /rmf_demos_ws
+/public/assets/icons/
 /node_modules
 /.pnp
 .pnp.js

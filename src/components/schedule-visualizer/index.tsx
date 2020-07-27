@@ -45,7 +45,7 @@ export interface ScheduleVisualizerProps {
   buildingMap: Readonly<RomiCore.BuildingMap>;
   fleets: Readonly<RomiCore.FleetState[]>;
   trajManager?: Readonly<RobotTrajectoryManager>;
-  appIcons: IconContextType;
+  appIcons?: Readonly<IconContextType>;
   onDoorClick?(door: RomiCore.Door): void;
   onLiftClick?(lift: RomiCore.Lift): void;
   onRobotClick?(robot: RomiCore.RobotState): void;
@@ -282,7 +282,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       maxBounds={maxBounds}
       onbaselayerchange={handleBaseLayerChange}
     >
-      <IconContext.Provider value={appIcons}>
+      <IconContext.Provider value={!!appIcons ? appIcons : {}}>
         <AttributionControl position="bottomright" prefix="OSRC-SG" />
         <LayersControl position="topleft">
           {sortedMapFloorLayers.every(x => x) &&
