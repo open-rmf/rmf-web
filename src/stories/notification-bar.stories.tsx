@@ -1,6 +1,6 @@
 import React from 'react';
 
-import NotificationBarStory from './BaseComponents/notificationBar';
+import NotificationBarStory from './BaseComponents/notificationBar-component';
 
 export default {
     title: 'Notification Bar',
@@ -8,7 +8,7 @@ export default {
 
 
 export const Error = () => (
-         <NotificationBarStory message={'Error message'} type={"error"}/>
+    <NotificationBarStory message={'Error message'} type={"error"}/>
  )
 
 export const Warning = () => (

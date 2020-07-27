@@ -142,7 +142,7 @@ const renderInfoPanel = (mode: string, doorState: string, motionState: string): 
     );
 }
 
-export const State_AGV = () => (
+export const StateAGV = () => (
         <LiftComponent
             renderInfoPanel={() => renderInfoPanel('AGV', 'Open', 'Stopped')}
             lift={lift}
@@ -151,7 +151,7 @@ export const State_AGV = () => (
         />
 );
 
-export const State_FIRE = () => (
+export const StateFIRE = () => (
     <LiftComponent
         renderInfoPanel={() => renderInfoPanel('FIRE', 'Closed', 'Up')}
         lift={lift}
@@ -160,7 +160,7 @@ export const State_FIRE = () => (
     />
 )
 
-export const State_UNKNOWN = () => (
+export const StateUNKNOWN = () => (
     <LiftComponent
         renderInfoPanel={() => renderInfoPanel('UNKNOWN', 'Moving', 'Unknown')}
         lift={lift}
@@ -169,7 +169,7 @@ export const State_UNKNOWN = () => (
     />
 )
 
-export const State_HUMAN = () => (
+export const StateHUMAN = () => (
     <LiftComponent
         renderInfoPanel={() => renderInfoPanel('HUMAN', 'Closed', 'Down')}
         lift={lift}
