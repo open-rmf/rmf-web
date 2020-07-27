@@ -34,13 +34,13 @@ export const RobotItem = React.forwardRef(function(
         classes={{ content: classes.expansionSummaryContent }}
         expandIcon={<ExpandMoreIcon />}
       >
-        <Typography variant="h5">{robot.name}</Typography>
+        <Typography variant="h6" className={classes.hideText}>{robot.name}</Typography>
         <Typography className={classes.robotStatusLabel} variant="button">
           {robotModeToString(robot.mode)}
         </Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails data-role="details" className={classes.expansionDetail}>
-        <AntTabs value={value} onChange={handleChange} aria-label="ant example">
+        <AntTabs variant="fullWidth" value={value} onChange={handleChange} aria-label="ant example">
           <AntTab label="Info" />
           <AntTab label="Delivery" />
         </AntTabs>
@@ -62,8 +62,8 @@ const useStyles = makeStyles(theme => ({
 
   expansionDetail: {
     flexFlow: 'column',
-    padding: '0',
     overflowX: 'auto',
+    padding: 0
   },
 
   expansionDetailLine: {
@@ -81,6 +81,13 @@ const useStyles = makeStyles(theme => ({
     minWidth: '4rem',
     textAlign: 'center',
   },
+
+  hideText: {
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    maxWidth: "10rem",
+  }
 }));
 
 function robotModeToString(robotMode: RomiCore.RobotMode): string {

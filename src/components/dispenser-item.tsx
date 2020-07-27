@@ -8,12 +8,13 @@ import {
   Typography,
   List,
   ListItem,
-  ListItemText,
 } from '@material-ui/core';
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
+
+import DisableableTypography from './disableable-typography';
 
 export interface DispenserItemProps extends Omit<ExpansionPanelProps, 'children'> {
   dispenserState: Readonly<RomiCore.DispenserState>;
@@ -36,20 +37,28 @@ export const DispenserItem = React.forwardRef(function(
       case RomiCore.DispenserState.OFFLINE:
         return `${classes.dispenserLabel} ${dispenserModeLabelClasses.offline}`;
       default:
-        return '';
+        return `${classes.dispenserLabel} ${dispenserModeLabelClasses.unknown}`;
     }
   }
 
-  function dispenserRequestQueueId(): React.ReactElement{
+  function dispenserRequestQueueId(): React.ReactElement {
+    if (dispenserState.request_guid_queue.length === 0) {
+      return (
+        <DisableableTypography disabled={true} variant="body1">
+          Unknown
+        </DisableableTypography>
+      )
+    } else {
     return (
-      <List className={classes.listRoot} dense={true}>
-        {dispenserState.request_guid_queue.map(id => (
-          <ListItem key={id}>
-            <ListItemText primary={id}></ListItemText>
-          </ListItem>
-        ))}
-      </List>
-    );
+        <List className={classes.listRoot} dense={true}>
+          {dispenserState.request_guid_queue.map(id => (
+            <ListItem key={id} className={classes.listItem}>
+              <Typography variant="body1">{id}</Typography>
+            </ListItem>
+          ))}
+        </List>
+      );
+    }
   }
 
   function dispenserModeToString(): string {
@@ -61,7 +70,7 @@ export const DispenserItem = React.forwardRef(function(
       case RomiCore.DispenserState.OFFLINE:
         return 'OFFLINE';
       default:
-        return 'UNKNOWN';
+        return 'N/A';
     }
   }
 
@@ -70,12 +79,17 @@ export const DispenserItem = React.forwardRef(function(
       <ExpansionPanelSummary
         classes={{ content: classes.expansionSummaryContent }}
         expandIcon={<ExpandMoreIcon />}>
-        <Typography variant="h5">{dispenserState.guid}</Typography>
+        <Typography variant="h6" className={classes.hideText}>{dispenserState.guid}</Typography>
         <Typography className={dispenserModeLabelClass()} variant='button'>
           {dispenserModeToString()}
         </Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails className={classes.expansionDetail}>
+        <div className={classes.expansionDetailLine}>
+          <Typography variant="body1">Name:</Typography>
+          <Typography variant="body1">{dispenserState.guid}</Typography>
+        </div>
+        <Divider />
         <div className={classes.expansionDetailLine}>
           <Typography variant="body1">No. Queued Requests:</Typography>
           <Typography variant="body1">
@@ -109,6 +123,7 @@ const useStyles = makeStyles(theme => ({
 
   expansionDetail: {
     flexFlow: 'column',
+    padding: '8px',
   },
 
   expansionDetailLine: {
@@ -130,7 +145,19 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
     overflow: 'auto',
     maxHeight: 100,
+    padding: 0
   },
+
+  listItem: {
+    paddingTop: 0
+  },
+
+  hideText: {
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    maxWidth: "10rem",
+  }
 }));
 
 const useDispenserModeLabelStyles = makeStyles(theme => {
@@ -145,6 +172,7 @@ const useDispenserModeLabelStyles = makeStyles(theme => {
   return {
     idle: {...base, borderColor: theme.palette.warning.main},
     busy: {...base, borderColor: theme.palette.success.main},
-    offline: {...base, borderColor: theme.palette.error.main}
+    offline: {...base, borderColor: theme.palette.error.main},
+    unknown: {...base, borderColor: '#cccccc'}
   };
 });

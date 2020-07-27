@@ -1,8 +1,8 @@
-import { useTheme } from '@material-ui/core';
 import React from 'react';
-import { Conflict, rawKnotsToKnots, Trajectory } from '../../robot-trajectory-manager';
+import { Conflict, rawKnotsToKnots, Trajectory, RawKnot } from '../../robot-trajectory-manager';
 import { bezierControlPoints, knotsToSegmentCoefficientsArray } from '../../util/cublic-spline';
 import { TrajectoryPath } from './trajectory-animations';
+import { useTheme } from '@material-ui/core';
 
 export interface RobotTrajectoryProps
   extends React.RefAttributes<SVGPathElement>,
@@ -19,28 +19,17 @@ export const RobotTrajectory = React.forwardRef(function(
   const { trajectory, conflicts, footprint, ...otherProps } = props;
   const theme = useTheme();
 
-  const pathD = React.useMemo(() => {
-    const knots = rawKnotsToKnots(trajectory.segments);
-    const coeff = knotsToSegmentCoefficientsArray(knots);
-    const bezierSplines = coeff.map(bezierControlPoints);
-
-    let d = `M ${bezierSplines[0][0][0]} ${-bezierSplines[0][0][1]} C `;
-    bezierSplines.map(
-      bzCurves =>
-        (d +=
-          `${bzCurves[1][0]} ${-bzCurves[1][1]} ` +
-          `${bzCurves[2][0]} ${-bzCurves[2][1]} ` +
-          `${bzCurves[3][0]} ${-bzCurves[3][1]} `),
-    );
-
-    return d;
-  }, [trajectory]);
-
   const color = React.useMemo(
     () =>
-      conflicts.includes(trajectory.id) ? theme.palette.error.main : theme.palette.success.main,
+      conflicts.flat().includes(trajectory.id)
+        ? theme.palette.error.main
+        : theme.palette.success.main,
     [trajectory, conflicts, theme],
   );
+
+  const pathD = React.useMemo(() => {
+    return trajectoryPath(trajectory.segments).d;
+  }, [trajectory]);
 
   return (
     <path
@@ -51,7 +40,7 @@ export const RobotTrajectory = React.forwardRef(function(
       opacity={0.8}
       strokeWidth={footprint * 0.8}
       strokeLinecap="round"
-      fill="none"
+      fill={'none'}
       pathLength={1}
       strokeDasharray={2}
       strokeDashoffset={0}
@@ -62,8 +51,8 @@ export const RobotTrajectory = React.forwardRef(function(
 
 export default RobotTrajectory;
 
-export function trajectoryPath(trajectory: Trajectory): TrajectoryPath {
-  const knots = rawKnotsToKnots(trajectory.segments);
+export function trajectoryPath(trajectorySegments: RawKnot[]): TrajectoryPath {
+  const knots = rawKnotsToKnots(trajectorySegments);
   const coeff = knotsToSegmentCoefficientsArray(knots);
   const bezierSplines = coeff.map(bezierControlPoints);
 
@@ -80,7 +69,6 @@ export function trajectoryPath(trajectory: Trajectory): TrajectoryPath {
   );
 
   return {
-    traj: trajectory,
     d,
     segOffsets,
   };
