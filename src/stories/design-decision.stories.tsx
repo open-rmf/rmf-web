@@ -1,6 +1,6 @@
 import React from 'react';
-
 import { Divider,Typography } from '@material-ui/core';
+
 import ButtonColors from './BaseComponents/button-colors';
 
 export default {
