@@ -199,11 +199,11 @@ const useStyles = makeStyles(theme => ({
   form: {
     display: 'flex',
     flexDirection: 'column',
+    width: '100%',
   },
   divForm: {
     padding: '0.5rem',
     width: '100%',
-    margin: 'auto',
   },
   error: {
     color: theme.palette.error.main,
@@ -225,5 +225,6 @@ const useStyles = makeStyles(theme => ({
   },
   expansionDetail: {
     flexFlow: 'column',
+    paddingLeft: '0.1rem',
   },
 }));
