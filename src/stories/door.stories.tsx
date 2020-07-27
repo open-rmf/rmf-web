@@ -2,7 +2,7 @@ import React from 'react';
 import { Divider, Typography } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
  
-import DoorComponent from './door-component';
+import DoorComponent from './BaseComponents/door-component';
  
 export default {
    title: 'Door',

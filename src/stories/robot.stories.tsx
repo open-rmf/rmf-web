@@ -2,7 +2,7 @@ import React from 'react';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { Divider, Typography } from '@material-ui/core';
 
-import RobotComponent from './robot-component';
+import RobotComponent from './BaseComponents/robot-component';
 import ColorManager from '../components/schedule-visualizer/colors';
 
 

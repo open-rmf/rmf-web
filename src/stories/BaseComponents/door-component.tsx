@@ -1,7 +1,7 @@
 import React from 'react';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
  
-import Door from '../components/schedule-visualizer/door/door';
+import Door from '../../components/schedule-visualizer/door/door';
  
 export interface DoorComponentProps {
    door: RomiCore.Door;

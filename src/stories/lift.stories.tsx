@@ -2,7 +2,7 @@ import React from 'react';
 import { Divider, Typography } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 
-import LiftComponent from './lift-component';
+import LiftComponent from './BaseComponents/lift-component';
 
 export default { 
     title: 'Lift',

@@ -1,8 +1,8 @@
 import React from 'react';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 
-import Robot from '../components/schedule-visualizer/robot';
-import ColorManager from '../components/schedule-visualizer/colors';
+import Robot from '../../components/schedule-visualizer/robot';
+import ColorManager from '../../components/schedule-visualizer/colors';
 
 export interface RobotComponentProps {
     robot: RomiCore.RobotState;

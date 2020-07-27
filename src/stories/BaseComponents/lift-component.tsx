@@ -1,7 +1,7 @@
 import React from 'react';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 
-import Lift from '../components/schedule-visualizer/lift';
+import Lift from '../../components/schedule-visualizer/lift';
 
 export interface LiftComponentProps {
     currentFloor: string;
