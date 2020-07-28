@@ -2,19 +2,11 @@ import React from 'react';
 import { Divider,Typography } from '@material-ui/core';
 
 import ButtonColors from './BaseComponents/button-colors';
-import { Value } from '@material-ui/lab/useAutocomplete';
+import { styleTyping } from './BaseComponents/Utils'
 
 export default {
     title: 'Design Decisions',
  };
-
-export interface styleTyping {
-    root: React.CSSProperties;
-    example: React.CSSProperties;
-    ellipsis: React.CSSProperties;
-    explanation: React.CSSProperties;
-    panelButton: React.CSSProperties;
-}
 
 const styles: styleTyping = {
     root: {
