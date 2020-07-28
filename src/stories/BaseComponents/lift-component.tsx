@@ -2,6 +2,7 @@ import React from 'react';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 
 import Lift from '../../components/schedule-visualizer/lift';
+import { viewBoxCoords } from './Utils';
 
 export interface LiftComponentProps {
     currentFloor: string;
@@ -26,7 +27,7 @@ export default function LiftComponent(props: LiftComponentProps): React.ReactEle
             { renderInfoPanel() }
 
             <div>
-                <svg viewBox={'0 0 25 14'}>
+                <svg viewBox={viewBoxCoords}>
                     <Lift
                         lift={lift}
                         currentFloor={currentFloor}

@@ -2,6 +2,7 @@ import React from 'react';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
  
 import Door from '../../components/schedule-visualizer/door/door';
+import { viewBoxCoords } from './Utils';
  
 export interface DoorComponentProps {
    door: RomiCore.Door;
@@ -26,7 +27,7 @@ export default function DoorComponent(props: DoorComponentProps): React.ReactEle
         <div style={styles.display}>
             { renderInfoPanel() }
 
-            <svg viewBox={'0 0 25.794363144785166 14.53525484725833'}>
+            <svg viewBox={viewBoxCoords}>
                 <Door
                     door={door}
                     doorState={doorState}

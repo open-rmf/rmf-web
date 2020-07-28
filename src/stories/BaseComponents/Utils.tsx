@@ -1,0 +1,1 @@
+export const viewBoxCoords: string = '0 0 25.794363144785166 14.53525484725833';
