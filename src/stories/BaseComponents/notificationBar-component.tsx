@@ -1,14 +1,8 @@
 import React from 'react';
-import { AlertProps } from '@material-ui/lab/Alert';
 import { Divider,Typography } from '@material-ui/core';
 
 import NotificationBar from '../../components/notification-bar';
-
-export interface notificationBarProps {
-    message: string | undefined | null;
-    type: AlertProps['severity'];
-    time?: string;
-}
+import { NotificationBarProps } from '../../components/notification-bar';
 
 export interface styleTyping {
     root: React.CSSProperties;
@@ -26,7 +20,7 @@ const styles: styleTyping = {
     }
 }
 
-export default function NotificationBarStory(props: notificationBarProps) {
+export default function NotificationBarStory(props: NotificationBarProps) {
 
     const {message, type} = props;
 
@@ -39,7 +33,6 @@ export default function NotificationBarStory(props: notificationBarProps) {
                     of 3 seconds before it auto hides. It will display the message and the background 
                     color will be determined by the type that is passed in. To see the bar, you have to 
                     refresh the browser.
-
                 </Typography>
             </div>
             <Divider />
