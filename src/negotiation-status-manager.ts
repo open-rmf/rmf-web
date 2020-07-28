@@ -11,7 +11,7 @@ export default class NegotiationStatusManager extends EventEmitter<Events> {
   }
 
   startSubscription(transport: RomiCore.Transport) {
-    transport.subscribe(RomiCore.negotiationStatus, negotiationStatus => {
+    transport.subscribe(RomiCore.skipValidation(RomiCore.negotiationStatus), negotiationStatus => {
       this._negotiationStatus = negotiationStatus;
       this.emit('updated');
     });
