@@ -2,6 +2,7 @@ import React from 'react';
 import { Divider,Typography } from '@material-ui/core';
 
 import ButtonColors from './BaseComponents/button-colors';
+import { Value } from '@material-ui/lab/useAutocomplete';
 
 export default {
     title: 'Design Decisions',
@@ -102,6 +103,9 @@ const robotStateList = [
     'PAUSED',
     'WAITING',
 ];
+const doorStateMap: {[key: string]: React.CSSProperties} = { OPEN: doorOpen, MOVING: doorMoving, CLOSED: doorClosed };
+const dispenserStateMap: {[key: string]: React.CSSProperties} = { ONLINE: dispenserOnline, IDLE: dispenserIdle, OFFLINE: dispenserOffline };
+const liftStateMap: {[key: string]: React.CSSProperties} = { STOP: liftStop, MOVING: liftMoving };
   
 export const HandleLongName = () => (
     <div style={styles.root}>
@@ -143,12 +147,16 @@ export const DoorButtonColors = () => (
             <Typography variant="h6">Door State</Typography>
             <Typography variant="h6">Button color and representation</Typography>
         </div>
-        <Divider />
-        <ButtonColors state={'OPEN'} style={doorOpen} />
-        <Divider />
-        <ButtonColors state={'MOVING'} style={doorMoving} />
-        <Divider />
-        <ButtonColors state={'CLOSED'} style={doorClosed} />
+        {
+            Object.keys(doorStateMap).map((state, index) => {
+                return ( 
+                    <React.Fragment key={index}>
+                        <Divider />
+                        <ButtonColors state={state} style={doorStateMap[state]} />
+                    </React.Fragment>
+                )
+            })
+        }
     </div>
 )
 
@@ -158,12 +166,16 @@ export const DispenserButtonColors = () => (
             <Typography variant="h6">Dispenser State</Typography>
             <Typography variant="h6">Button color and representation</Typography>
         </div>
-        <Divider />
-        <ButtonColors state={'ONLINE'} style={dispenserOnline} />
-        <Divider />
-        <ButtonColors state={'IDLE'} style={dispenserIdle} />
-        <Divider />
-        <ButtonColors state={'OFFLINE'} style={dispenserOffline} />
+        {
+            Object.keys(dispenserStateMap).map((state, index) => {
+                return ( 
+                    <React.Fragment key={index}>
+                        <Divider />
+                        <ButtonColors state={state} style={dispenserStateMap[state]} />
+                    </React.Fragment>
+                )
+            })
+        }
     </div>
 )
 
@@ -173,10 +185,16 @@ export const LiftButtonColors = () => (
             <Typography variant="h6">Lift State</Typography>
             <Typography variant="h6">Button color and representation</Typography>
         </div>
-        <Divider />
-        <ButtonColors state={'STOP'} style={liftStop} />
-        <Divider />
-        <ButtonColors state={'MOVING'} style={liftMoving} />
+        {
+            Object.keys(liftStateMap).map((state, index) => {
+                return ( 
+                    <React.Fragment key={index}>
+                        <Divider />
+                        <ButtonColors state={state} style={liftStateMap[state]} />
+                    </React.Fragment>
+                )
+            })
+        }
     </div>
 )
 
