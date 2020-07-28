@@ -1,11 +1,10 @@
 export type IconContextType = Record<string, Record<string, string>>
-
+const axios = require('axios').default;
 export default class IconManager {
 
     static getIconsConfigurationFile = async (): Promise<IconContextType> => {
-        const response: any = await fetch('https://github.com/matiasbavera/romi-dashboard-icons/blob/master/icons.json');
-        console.log(response)
-        return response.json() as IconContextType;
+        const response = await axios.get('https://raw.githubusercontent.com/matiasbavera/romi-dashboard-icons/master/icons.json', { mode: 'no-cors' })
+        return response.data as IconContextType;
         // try {
         //     console.log(response)
         //     return <IconContextType>response.json();
@@ -15,7 +14,7 @@ export default class IconManager {
     }
 
     static getRobotIcon(icons: IconContextType, model: string): string | null {
-        return icons.robot ? IconManager.getIcon(icons.robot, model) : null;
+        return icons.robots ? `/assets/icons${IconManager.getIcon(icons.robots, model)}` : null;
     }
 
     private static getIcon(icons: Record<string, string>, key: string): string | null {
