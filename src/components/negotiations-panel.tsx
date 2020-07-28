@@ -50,13 +50,22 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
     */
   }, [spotlight]);
 
+  const getParticipantNameById = (negotiation : RomiCore.NegotiationStatus, id : number) => {
+    for (var i = 0; i <negotiation.participants.length; ++i)
+    {
+      if (negotiation.participants[i] === id)
+        return negotiation.participant_names[i];
+    }
+    return "Unknown";
+  };
+
   const classes = useStyles();
   const renderNegotiation = (negotiation : RomiCore.NegotiationStatus) => {
-    let conflict_label = "conflict: " + negotiation.conflict_version + " Participants: ";
-    for (var i = 0; i < negotiation.participants.length; ++i)
+    let conflict_label = "Conflict #" + negotiation.conflict_version + ", Participants: ";
+    for (var i = 0; i < negotiation.participant_names.length; ++i)
     {
-      conflict_label += negotiation.participants[i];
-      if (i != (negotiation.participants.length - 1))
+      conflict_label += negotiation.participant_names[i];
+      if (i !== (negotiation.participant_names.length - 1))
         conflict_label += ", ";
     }
 
@@ -65,13 +74,13 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
     // add rendering DOM for each table
     negotiation.tables.forEach(table => {
       // [main guy -> accounting for]
-      let label_text = ""
+      let label_text = "";
       if (table.sequence.length > 0)
       {
         label_text = "[";
         var last_idx = (table.sequence.length - 1);
         var initiator = table.sequence[last_idx];
-        label_text += initiator;
+        label_text += getParticipantNameById(negotiation, initiator);
 
         if (table.sequence.length > 1)
         {
@@ -79,8 +88,8 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
 
           for (var i = 0; i < last_idx; ++i)
           {
-            label_text += table.sequence[i];
-            if (i != (last_idx - 1))
+            label_text += getParticipantNameById(negotiation, table.sequence[i]);
+            if (i !== (last_idx - 1))
               label_text += ", ";
           }
         }
