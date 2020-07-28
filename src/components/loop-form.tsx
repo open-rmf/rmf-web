@@ -202,7 +202,8 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
   },
   divForm: {
-    padding: '0.5rem',
+    padding: '0.46rem',
+    paddingRight: '0.5rem',
     width: '100%',
   },
   error: {
