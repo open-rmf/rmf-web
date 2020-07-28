@@ -21,6 +21,9 @@ const useStyles = makeStyles(() => ({
   robotImg: {
     transformOrigin: 'center',
   },
+  robotImgContainer: {
+    pointerEvents: 'visible',
+  },
 }));
 
 export interface RobotProps {
@@ -74,8 +77,10 @@ const Robot = React.forwardRef(function(
       >
         {!!iconPath && !iconError && (
           <g
+            className={classes.robotImgContainer}
             transform={`translate(${robot.location.x} ${-robot.location.y}) 
             rotate(${-(robot.location.yaw * 180) / Math.PI}, ${footprint}, ${footprint})`}
+            onClick={e => onClick && onClick(e, robot)}
           >
             <image
               href={iconPath}
