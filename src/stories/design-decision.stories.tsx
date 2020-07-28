@@ -91,6 +91,17 @@ const robotStates: React.CSSProperties = {
     borderRadius: '4px',
     border: '2px solid #2196f3'
 }
+
+const robotStateList = [
+    'CHARGING',
+    'DOCKING',
+    'EMERGENCY',
+    'GOING HOME',
+    'IDLE',
+    'MOVING',
+    'PAUSED',
+    'WAITING',
+];
   
 export const HandleLongName = () => (
     <div style={styles.root}>
@@ -175,21 +186,15 @@ export const RobotButtonColors = () => (
             <Typography variant="h6">Robot State</Typography>
             <Typography variant="h6">Button color and representation</Typography>
         </div>
-        <Divider />
-        <ButtonColors state={'CHARGING'} style={robotStates} />
-        <Divider />
-        <ButtonColors state={'DOCKING'} style={robotStates} />
-        <Divider />
-        <ButtonColors state={'EMERGENCY'} style={robotStates} />
-        <Divider />
-        <ButtonColors state={'GOING HOME'} style={robotStates} />
-        <Divider />
-        <ButtonColors state={'IDLE'} style={robotStates} />
-        <Divider />
-        <ButtonColors state={'MOVING'} style={robotStates} />
-        <Divider />
-        <ButtonColors state={'PAUSED'} style={robotStates} />
-        <Divider />
-        <ButtonColors state={'WAITING'} style={robotStates} />
+        {
+            robotStateList.map((state, index) => {
+                return ( 
+                    <React.Fragment key={index}>
+                        <Divider />
+                        <ButtonColors state={state} style={robotStates} />
+                    </React.Fragment>
+                )
+            })
+        }
     </div>
 )
