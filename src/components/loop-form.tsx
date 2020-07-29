@@ -1,6 +1,5 @@
-import { makeStyles, TextField, Button, ExpansionPanel, ExpansionPanelSummary, Typography, ExpansionPanelDetails } from '@material-ui/core';
+import { makeStyles, TextField, Button } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import React, { useState, useEffect } from 'react';
 import { successMsg } from '../util/alerts';
 import fakePlaces from '../mock/data/places';
@@ -16,11 +15,15 @@ interface LoopFormProps {
 
 export const LoopForm = (props: LoopFormProps) => {
   const { requestLoop, fleetNames } = props;
-  const classes = useStyles();
+  const classes = loopFormStyles();
 
-  const [targetFleetName, setTargetFleetName] = useState(fleetNames.length >= 1 ? fleetNames[0] : '');
+  const [targetFleetName, setTargetFleetName] = useState(
+    fleetNames.length >= 1 ? fleetNames[0] : '',
+  );
   const [numLoops, setNumLoops] = useState(0);
-  const [listOfPlaces, setListOfPlaces] = useState(!!targetFleetName ? fakePlaces()[targetFleetName] : []);
+  const [listOfPlaces, setListOfPlaces] = useState(
+    !!targetFleetName ? fakePlaces()[targetFleetName] : [],
+  );
   const [startLocation, setStartLocation] = useState(
     listOfPlaces.length >= 2 ? listOfPlaces[0] : '',
   );
@@ -47,12 +50,8 @@ export const LoopForm = (props: LoopFormProps) => {
     setTargetFleetName(targetFleetName);
     setNumLoops(0);
     setListOfPlaces(!!targetFleetName ? fakePlaces()[targetFleetName] : []);
-    setStartLocation(
-      listOfPlaces.length >= 2 ? listOfPlaces[0] : '',
-    );
-    setFinishLocation(
-      listOfPlaces.length >= 2 ? listOfPlaces[1] : '',
-    );
+    setStartLocation(listOfPlaces.length >= 2 ? listOfPlaces[0] : '');
+    setFinishLocation(listOfPlaces.length >= 2 ? listOfPlaces[1] : '');
     cleanUpError();
   };
 
@@ -102,100 +101,93 @@ export const LoopForm = (props: LoopFormProps) => {
   };
 
   return (
-    <ExpansionPanel data-component="LoopForm">
-      <ExpansionPanelSummary classes={{ content: classes.expansionSummaryContent }} expandIcon={<ExpandMoreIcon />}>
-        <Typography variant="h5">Loop Request</Typography>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails className={classes.expansionDetail}>
-        <form className={classes.form} onSubmit={handleRequestLoop}>
-          <div className={classes.divForm}>
-            <Autocomplete
-              getOptionLabel={option => option}
-              onChange={(e, value) => setTargetFleetName(value || '')}
-              options={fleetNames}
-              renderInput={params => (
-                <TextField
-                  {...params}
-                  label="Choose Target Fleet"
-                  variant="outlined"
-                  error={!!targetFleetNameError}
-                  helperText={targetFleetNameError}
-                  name="targetFleet"
-                />
-              )}
-              value={!!targetFleetName ? targetFleetName : null}
-            />
-          </div>
-          <div className={classes.divForm}>
+    <form className={classes.form} onSubmit={handleRequestLoop}>
+      <div className={classes.divForm}>
+        <Autocomplete
+          getOptionLabel={option => option}
+          onChange={(e, value) => setTargetFleetName(value || '')}
+          options={fleetNames}
+          renderInput={params => (
             <TextField
-              id="numLoops"
-              name="numLoops"
-              onChange={e => {
-                setNumLoops(!!e.target.value ? parseInt(e.target.value) : 0);
-              }}
-              placeholder="Number of loops"
-              type="number"
-              value={numLoops || ''}
-              className={classes.input}
-              label="Number of loops"
+              {...params}
+              label="Choose Target Fleet"
               variant="outlined"
-              error={!!numLoopsError}
-              helperText={numLoopsError}
+              error={!!targetFleetNameError}
+              helperText={targetFleetNameError}
+              name="targetFleet"
             />
-          </div>
+          )}
+          value={!!targetFleetName ? targetFleetName : null}
+        />
+      </div>
+      <div className={classes.divForm}>
+        <TextField
+          id="numLoops"
+          name="numLoops"
+          onChange={e => {
+            setNumLoops(!!e.target.value ? parseInt(e.target.value) : 0);
+          }}
+          placeholder="Number of loops"
+          type="number"
+          value={numLoops || ''}
+          className={classes.input}
+          label="Number of loops"
+          variant="outlined"
+          error={!!numLoopsError}
+          helperText={numLoopsError}
+        />
+      </div>
 
-          <div className={classes.divForm}>
-            <Autocomplete
-              getOptionLabel={option => option}
-              onChange={(e, value) => setStartLocation(value || '')}
-              options={listOfPlaces}
-              id="startLocation"
-              renderInput={params => (
-                <TextField
-                  {...params}
-                  label="Pick Start Location"
-                  variant="outlined"
-                  error={!!startLocationError}
-                  helperText={startLocationError}
-                  name="startLocation"
-                />
-              )}
-              value={!!startLocation ? startLocation : null}
+      <div className={classes.divForm}>
+        <Autocomplete
+          getOptionLabel={option => option}
+          onChange={(e, value) => setStartLocation(value || '')}
+          options={listOfPlaces}
+          id="startLocation"
+          renderInput={params => (
+            <TextField
+              {...params}
+              label="Pick Start Location"
+              variant="outlined"
+              error={!!startLocationError}
+              helperText={startLocationError}
+              name="startLocation"
             />
-          </div>
+          )}
+          value={!!startLocation ? startLocation : null}
+        />
+      </div>
 
-          <div className={classes.divForm}>
-            <Autocomplete
-              getOptionLabel={option => option}
-              onChange={(e, value) => setFinishLocation(value || '')}
-              options={listOfPlaces}
-              id="finishLocation"
-              renderInput={params => (
-                <TextField
-                  {...params}
-                  label="Pick Finish Location"
-                  variant="outlined"
-                  error={!!finishLocationError}
-                  helperText={finishLocationError}
-                  name="finishLocation"
-                />
-              )}
-              value={!!finishLocation ? finishLocation : null}
+      <div className={classes.divForm}>
+        <Autocomplete
+          getOptionLabel={option => option}
+          onChange={(e, value) => setFinishLocation(value || '')}
+          options={listOfPlaces}
+          id="finishLocation"
+          renderInput={params => (
+            <TextField
+              {...params}
+              label="Pick Finish Location"
+              variant="outlined"
+              error={!!finishLocationError}
+              helperText={finishLocationError}
+              name="finishLocation"
             />
-          </div>
+          )}
+          value={!!finishLocation ? finishLocation : null}
+        />
+      </div>
 
-          <div className={classes.buttonContainer}>
-            <Button variant="contained" color="primary" type="submit" className={classes.button}>
-              {'Request'}
-            </Button>
-          </div>
-        </form>
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
+      <div className={classes.buttonContainer}>
+        <Button variant="contained" color="primary" type="submit" className={classes.button}>
+          {'Request'}
+        </Button>
+      </div>
+    </form>
   );
 };
 
-const useStyles = makeStyles(theme => ({
+export const loopFormStyles = makeStyles(theme => ({
   form: {
     display: 'flex',
     flexDirection: 'column',
@@ -219,13 +211,5 @@ const useStyles = makeStyles(theme => ({
     paddingTop: '0.5rem',
     paddingLeft: '0.5rem',
     width: '100%',
-  },
-  expansionSummaryContent: {
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  expansionDetail: {
-    flexFlow: 'column',
-    paddingLeft: '0.1rem',
   },
 }));

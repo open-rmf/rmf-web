@@ -1,13 +1,13 @@
-import { robotFormStyle } from './robot-item-loop-form';
 import { TextField, Button } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import fakeDispensers from '../mock/data/dispensers';
 import React, { useState, Dispatch, SetStateAction, useEffect } from 'react';
+import { loopFormStyles } from './loop-form';
+import fakePlaces from '../mock/data/places';
 
-interface robotDeliveryFormProps {
-  fleetName: string;
-  robotName?: string;
+interface DeliveryFormProps {
+  fleetNames: string[];
   requestDelivery(
     pickupPlaceName: string,
     pickupDispenser: string,
@@ -16,12 +16,24 @@ interface robotDeliveryFormProps {
     pickupBehaviour?: RomiCore.Behavior,
     dropOffBehavior?: RomiCore.Behavior,
   ): void;
-  listOfPlaces: string[];
 }
 
-export const RobotDeliveryForm = (props: robotDeliveryFormProps): JSX.Element => {
-  const { requestDelivery, listOfPlaces, robotName } = props;
-  const classes = robotFormStyle();
+export const RobotDeliveryForm = (props: DeliveryFormProps): React.ReactElement => {
+  const { requestDelivery, fleetNames } = props;
+  const classes = loopFormStyles();
+
+  const [targetFleetName, setTargetFleetName] = useState(
+    fleetNames.length >= 1 ? fleetNames[0] : '',
+  );
+
+  const [listOfPlaces, setListOfPlaces] = useState(
+    !!targetFleetName ? fakePlaces()[targetFleetName] : [],
+  );
+
+  useEffect(() => {
+    setListOfPlaces(fakePlaces()[targetFleetName]);
+  }, [targetFleetName]);
+
   // Places
   const [pickupPlaceName, setPickupPlaceName] = useState(
     listOfPlaces.length >= 2 ? listOfPlaces[0] : '',
@@ -35,6 +47,7 @@ export const RobotDeliveryForm = (props: robotDeliveryFormProps): JSX.Element =>
   const [dropOffDispenser, setDropOffDispenser] = useState('');
 
   // Error states
+  const [targetFleetNameError, setTargetFleetNameError] = useState('');
   const [pickupPlaceNameError, setPickupPlaceNameError] = useState('');
   const [pickupDispenserError, setPickupDispenserError] = useState('');
   const [dropOffPlaceNameError, setDropOffPlaceNameError] = useState('');
@@ -49,6 +62,7 @@ export const RobotDeliveryForm = (props: robotDeliveryFormProps): JSX.Element =>
   };
 
   const cleanUpError = (): void => {
+    setTargetFleetNameError('');
     setPickupPlaceNameError('');
     setDropOffPlaceNameError('');
     setPickupDispenserError('');
@@ -91,6 +105,11 @@ export const RobotDeliveryForm = (props: robotDeliveryFormProps): JSX.Element =>
     let isValid = true;
     cleanUpError();
 
+    if (targetFleetName === '') {
+      setTargetFleetNameError('Fleet name cannot be empty');
+      isValid = false;
+    }
+
     if (pickupPlaceName === dropOffPlaceName) {
       setPickupPlaceNameError('Start Location cannot be equal to finish Location');
       setDropOffPlaceNameError('Start Location cannot be equal to finish Location');
@@ -121,9 +140,29 @@ export const RobotDeliveryForm = (props: robotDeliveryFormProps): JSX.Element =>
       <div className={classes.divForm}>
         <Autocomplete
           getOptionLabel={option => option}
+          onChange={(e, value) => setTargetFleetName(value || '')}
+          options={fleetNames}
+          id={'deliveryFleet'}
+          renderInput={params => (
+            <TextField
+              {...params}
+              label="Choose Target Fleet"
+              variant="outlined"
+              error={!!targetFleetNameError}
+              helperText={targetFleetNameError}
+              name="targetFleet"
+            />
+          )}
+          value={!!targetFleetName ? targetFleetName : null}
+        />
+      </div>
+
+      <div className={classes.divForm}>
+        <Autocomplete
+          getOptionLabel={option => option}
           onChange={(e, value) => setPickupPlaceName(value || '')}
           options={listOfPlaces}
-          id={`${robotName}PickupPlace`}
+          id={'pickupPlace'}
           renderInput={params => (
             <TextField
               {...params}
@@ -143,7 +182,7 @@ export const RobotDeliveryForm = (props: robotDeliveryFormProps): JSX.Element =>
           getOptionLabel={option => option}
           onChange={(e, value) => setPickupDispenser(value || '')}
           options={dispensersFromPickUpPlace}
-          id={`${robotName}PickupDispenser`}
+          id={'pickupDispenser'}
           renderInput={params => (
             <TextField
               {...params}
@@ -163,7 +202,7 @@ export const RobotDeliveryForm = (props: robotDeliveryFormProps): JSX.Element =>
           getOptionLabel={option => option}
           onChange={(e, value) => setDropOffPlaceName(value || '')}
           options={listOfPlaces}
-          id={`${robotName}DropoffPlace`}
+          id="dropoffPlace"
           renderInput={params => (
             <TextField
               {...params}
@@ -183,7 +222,7 @@ export const RobotDeliveryForm = (props: robotDeliveryFormProps): JSX.Element =>
           getOptionLabel={option => option}
           onChange={(e, value) => setDropOffDispenser(value || '')}
           options={dispensersFromDropOffPlace}
-          id={`${robotName}DropoffDispenser`}
+          id="dropoffDispenser"
           renderInput={params => (
             <TextField
               {...params}

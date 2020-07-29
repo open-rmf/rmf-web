@@ -1,5 +1,5 @@
 import { createMount } from '@material-ui/core/test-utils';
-import { RobotDeliveryForm } from '../robot-item-delivery-form';
+import { RobotDeliveryForm } from '../delivery-form';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import fakePlaces from '../../mock/data/places';
 import React from 'react';
