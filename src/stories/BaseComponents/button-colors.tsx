@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography } from '@material-ui/core';
 
-export interface ButtonColorsProps {
+interface ButtonColorsProps {
     state: string;
     style: React.CSSProperties;
 }

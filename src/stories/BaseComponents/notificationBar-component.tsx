@@ -4,7 +4,7 @@ import { Divider,Typography } from '@material-ui/core';
 import NotificationBar from '../../components/notification-bar';
 import { NotificationBarProps } from '../../components/notification-bar';
 
-export interface styleTyping {
+interface styleTyping {
     root: React.CSSProperties;
     heading: React.CSSProperties;
 }

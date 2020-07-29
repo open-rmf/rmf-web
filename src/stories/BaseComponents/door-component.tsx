@@ -3,7 +3,7 @@ import React from 'react';
 import Door, { DoorContainerProps } from '../../components/schedule-visualizer/door/door';
 import { viewBoxCoords } from './Utils';
  
-export interface DoorComponentProps extends DoorContainerProps {
+interface DoorComponentProps extends DoorContainerProps {
    renderInfoPanel(): JSX.Element;
 }
 
