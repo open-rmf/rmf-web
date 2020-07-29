@@ -305,6 +305,8 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
                 robots={robotsInCurLevel}
                 colorManager={colorManager}
                 onRobotClick={props.onRobotClick}
+                trajs={getTrajectory(curMapFloorLayer.level.name)}
+                conflicts={getConflicts(curMapFloorLayer.level.name)}
               />
             </Pane>
           )}
