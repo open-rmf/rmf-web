@@ -10,7 +10,7 @@ const states: boolean[] = [false, true];
 const messages: string[] = ['', 'This is an error'];
 const labels: string[] = ['Correct Inputs', 'Wrong Inputs'];
 
-export const test = () => (
+export const AutoComplete = () => (
     <AutoCompleteComponent
         errorState={states}
         errorMessage={messages}
