@@ -11,3 +11,9 @@ export interface sampleStyleTyping {
         [key: string]: React.CSSProperties;
     }
 }
+
+export interface formProps {
+    errorState: boolean[];
+    errorMessage: string[];
+    labels: string[];
+}

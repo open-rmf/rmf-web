@@ -2,13 +2,7 @@ import React from 'react';
 import { TextField, Typography, Divider } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
-import { styleTyping } from './Utils';
-
-interface AutoCompleteProps {
-    errorState: boolean[];
-    errorMessage: string[];
-    labels: string[];
-}
+import { styleTyping, formProps } from './Utils';
 
 const styles: styleTyping = {
     root: {
@@ -23,7 +17,7 @@ const styles: styleTyping = {
     }
 }
 
-export default function AutoCompleteComponent(props: AutoCompleteProps) {
+export default function AutoCompleteComponent(props: formProps) {
 
     const { errorState, errorMessage, labels } = props;
 
