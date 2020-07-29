@@ -1,13 +1,9 @@
 import React from 'react';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
 
-import Lift from '../../components/schedule-visualizer/lift';
+import Lift, { LiftProps } from '../../components/schedule-visualizer/lift';
 import { viewBoxCoords } from './Utils';
 
-export interface LiftComponentProps {
-    currentFloor: string;
-    lift: RomiCore.Lift;
-    liftState: RomiCore.LiftState;
+interface LiftComponentProps extends LiftProps {
     renderInfoPanel(): JSX.Element;
 }
 

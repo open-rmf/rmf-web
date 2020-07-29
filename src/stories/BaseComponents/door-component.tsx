@@ -1,13 +1,9 @@
 import React from 'react';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
  
-import Door from '../../components/schedule-visualizer/door/door';
+import Door, { DoorContainerProps } from '../../components/schedule-visualizer/door/door';
 import { viewBoxCoords } from './Utils';
  
-export interface DoorComponentProps {
-   door: RomiCore.Door;
-   doorState: RomiCore.DoorState;
-   currentMode: number;
+export interface DoorComponentProps extends DoorContainerProps {
    renderInfoPanel(): JSX.Element;
 }
 

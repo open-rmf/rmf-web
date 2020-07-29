@@ -1,14 +1,9 @@
 import React from 'react';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
 
-import Robot from '../../components/schedule-visualizer/robot';
-import ColorManager from '../../components/schedule-visualizer/colors';
+import Robot, { RobotProps } from '../../components/schedule-visualizer/robot';
 import { viewBoxCoords } from './Utils';
 
-export interface RobotComponentProps {
-    robot: RomiCore.RobotState;
-    footprint: number;
-    colorManager: ColorManager;
+interface RobotComponentProps extends RobotProps {
     renderInfoPanel(): JSX.Element;
 }
 
