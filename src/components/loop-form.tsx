@@ -3,14 +3,10 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useState, useEffect } from 'react';
 import { successMsg } from '../util/alerts';
 import fakePlaces from '../mock/data/places';
+import { TLoopRequest } from './commands-panel';
 interface LoopFormProps {
   fleetNames: string[];
-  requestLoop(
-    fleetName: string,
-    numLoops: number,
-    startLocationPoint: string,
-    endLocationPoint: string,
-  ): void;
+  requestLoop: TLoopRequest;
 }
 
 export const LoopForm = (props: LoopFormProps) => {

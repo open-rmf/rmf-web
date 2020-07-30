@@ -22,6 +22,9 @@ export function overwriteClick() {
   );
 }
 
+/**
+ * Return a list of backspace characters. This is only used in case we want to delete characters from the Autocomplete material-ui component
+ */
 export function removeTextFromAutocomplete(characterNum: number): string {
   const backspace = '\u0008';
   let backspaces = ''
@@ -30,3 +33,15 @@ export function removeTextFromAutocomplete(characterNum: number): string {
   }
   return backspaces
 }
+
+/**
+ * Get the robot location
+ */
+export const getRobotLocations = (browser: WebdriverIO.BrowserObject) => {
+  const allRobotItems = browser.custom$$('findAllRobots', '[data-component=RobotItem]');
+  let robotLocations = allRobotItems.map(robot => {
+    robot.click();
+    return robot.$('[data-role=position]').getHTML();
+  });
+  return robotLocations;
+};

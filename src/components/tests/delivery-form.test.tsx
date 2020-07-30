@@ -30,18 +30,19 @@ describe('Form validation', () => {
   });
 
   test('Initial values', () => {
+    // Just places selected
     const wrapper = buildWrapper('SuperFleet', onClick);
     expect(
       wrapper.findWhere(
         x => x.name() === 'input' && x.props().value === fakePlaces()['SuperFleet'][0],
       ),
-    ).toBeTruthy;
+    ).toBeTruthy();
 
     expect(
       wrapper.findWhere(
         x => x.name() === 'input' && x.props().value === fakePlaces()['SuperFleet'][1],
       ),
-    ).toBeTruthy;
+    ).toBeTruthy();
 
     expect(
       wrapper
@@ -82,7 +83,7 @@ describe('Form validation', () => {
     wrapper.unmount();
   });
 
-  test('Place cannot be empty', async () => {
+  test('Places cannot be empty', () => {
     const wrapper = buildWrapper('FleetA', onClick);
     wrapper.find('form').simulate('submit');
     expect(
@@ -95,7 +96,7 @@ describe('Form validation', () => {
     wrapper.unmount();
   });
 
-  test('Initial values with places with dispensers ', () => {
+  test('Initial values with places and with dispensers ', () => {
     const wrapper = buildWrapper('TestFleet', onClick);
     expect(wrapper.find('#robot1PickupDispenser-helper-text').exists()).toBe(false);
     expect(wrapper.find('#robot1DropoffDispenser-helper-text').exists()).toBe(false);

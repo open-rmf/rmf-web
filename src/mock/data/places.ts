@@ -38,6 +38,7 @@ export default function fakePlaces(): Record<string, string[]> {
     FleetB: ['supplies', 'supplies'],
     Fleet1: ['supplies', 'magni2_charger', 'coe', 'magni1_charger', 'hardware_2'],
     Fleet2: ['station_1', 'lounge', 'cubicle_1', 'hardware_1', 'station_2'],
+    // These are the two places that has dispensers inside
     TestFleet: ['hardware_2', 'pantry']
   };
 }
