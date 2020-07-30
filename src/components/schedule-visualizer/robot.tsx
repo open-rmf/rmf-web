@@ -31,7 +31,7 @@ const Robot = React.forwardRef(function(
   const classes = useStyles();
   const { robot, footprint, colorManager, onClick } = props;
   const [robotColor, setRobotColor] = React.useState<string | null>(() =>
-    colorManager.robotColorFromCache(robot.name, robot.model),
+    colorManager.robotColorFromCache(robot.name),
   );
 
   React.useLayoutEffect(() => {
