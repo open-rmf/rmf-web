@@ -29,10 +29,10 @@ export const RobotDeliveryForm = (props: DeliveryFormProps): React.ReactElement 
 
   // Places
   const [pickupPlaceName, setPickupPlaceName] = useState(
-    listOfPlaces.length >= 2 ? listOfPlaces[0] : '',
+    !!listOfPlaces && listOfPlaces.length >= 2 ? listOfPlaces[0] : '',
   );
   const [dropOffPlaceName, setDropOffPlaceName] = useState(
-    listOfPlaces.length >= 2 ? listOfPlaces[1] : '',
+    !!listOfPlaces && listOfPlaces.length >= 2 ? listOfPlaces[1] : '',
   );
 
   // Dispensers
@@ -47,6 +47,7 @@ export const RobotDeliveryForm = (props: DeliveryFormProps): React.ReactElement 
   const [dropOffDispenserError, setDropOffDispenserError] = useState('');
 
   const cleanUpForm = (): void => {
+    setTargetFleetName(fleetNames.length >= 1 ? fleetNames[0] : '');
     setPickupPlaceName(listOfPlaces.length >= 2 ? listOfPlaces[0] : '');
     setDropOffPlaceName(listOfPlaces.length >= 2 ? listOfPlaces[1] : '');
     setPickupDispenser('');
@@ -133,7 +134,7 @@ export const RobotDeliveryForm = (props: DeliveryFormProps): React.ReactElement 
       <div className={classes.divForm}>
         <Autocomplete
           getOptionLabel={option => option}
-          onChange={(e, value) => setTargetFleetName(value || '')}
+          onChange={(e, value) => setTargetFleetName(value || fleetNames[0])}
           options={fleetNames}
           id={'deliveryFleet'}
           renderInput={params => (
