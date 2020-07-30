@@ -37,7 +37,7 @@ export function removeTextFromAutocomplete(characterNum: number): string {
 /**
  * Get the robot location
  */
-export const getRobotLocations = (browser: WebdriverIO.BrowserObject) => {
+export const getRobotLocations = (browser: WebdriverIO.BrowserObject): string[] => {
   const allRobotItems = browser.custom$$('findAllRobots', '[data-component=RobotItem]');
   let robotLocations = allRobotItems.map(robot => {
     robot.click();

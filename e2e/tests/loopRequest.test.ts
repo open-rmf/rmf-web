@@ -29,7 +29,7 @@ describe('loop request', () => {
 
     backButton.click();
     $('[data-component=MainMenu] [data-item=Robots]').click();
-    const newRobotLocations = getRobotLocations();
+    const newRobotLocations = getRobotLocations(browser);
 
     expect(newRobotLocations).not.toMatchObject(currentRobotLocations);
   });
