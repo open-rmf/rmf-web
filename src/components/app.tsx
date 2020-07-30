@@ -12,6 +12,7 @@ import LiftStateManager from '../lift-state-manager';
 import { RobotTrajectoryManager } from '../robot-trajectory-manager';
 import { loadSettings, saveSettings, Settings, SettingsContext } from '../settings';
 import './app.css';
+import CommandsPanel from './commands-panel';
 import DispensersPanel from './dispensers-panel';
 import DoorsPanel from './doors-panel';
 import LiftsPanel from './lift-item/lifts-panel';
@@ -81,6 +82,7 @@ enum OmniPanelViewIndex {
   Lifts,
   Robots,
   Dispensers,
+  Commands,
 }
 
 class ViewMapNode {
@@ -101,6 +103,7 @@ function makeViewMap(): ViewMap {
   viewMap[OmniPanelViewIndex.Lifts] = root.addChild(OmniPanelViewIndex.Lifts);
   viewMap[OmniPanelViewIndex.Robots] = root.addChild(OmniPanelViewIndex.Robots);
   viewMap[OmniPanelViewIndex.Dispensers] = root.addChild(OmniPanelViewIndex.Dispensers);
+  viewMap[OmniPanelViewIndex.Commands] = root.addChild(OmniPanelViewIndex.Commands);
   return viewMap;
 }
 
@@ -305,6 +308,10 @@ export default function App(props: AppProps): JSX.Element {
     setCurrentView(OmniPanelViewIndex.Dispensers);
   }
 
+  function handleMainMenuCommandsClick(): void {
+    setCurrentView(OmniPanelViewIndex.Commands);
+  }
+
   return (
     <React.Fragment>
       <SettingsContext.Provider value={settings}>
@@ -349,49 +356,50 @@ export default function App(props: AppProps): JSX.Element {
                 onBack={handleBack}
                 onClose={handleClose}
               >
-                <OmniPanelView id={OmniPanelViewIndex.MainMenu}>
-                  <MainMenu
-                    onDoorsClick={handleMainMenuDoorsClick}
-                    onLiftsClick={handleMainMenuLiftsClick}
-                    onRobotsClick={handleMainMenuRobotsClick}
-                    onDispensersClick={handleMainMenuDispensersClick}
-                  />
-                </OmniPanelView>
-                <OmniPanelView id={OmniPanelViewIndex.Doors}>
-                  <DoorsPanel
-                    transport={transport}
-                    doorStates={doorStates}
-                    doors={doors}
-                    spotlight={doorSpotlight}
-                  />
-                </OmniPanelView>
-                <OmniPanelView id={OmniPanelViewIndex.Lifts}>
-                  <LiftsPanel
-                    transport={transport}
-                    liftStates={liftStates}
-                    lifts={lifts}
-                    spotlight={liftSpotlight}
-                  />
-                </OmniPanelView>
-                <OmniPanelView id={OmniPanelViewIndex.Robots}>
-                  <RobotsPanel transport={transport} fleets={fleets} spotlight={robotSpotlight} />
-                </OmniPanelView>
-                <OmniPanelView id={OmniPanelViewIndex.Dispensers}>
-                  <DispensersPanel
-                    dispenserStates={dispenserStates}
-                    spotlight={dispenserSpotlight}
-                  />
-                </OmniPanelView>
-              </OmniPanel>
-            </Fade>
-            <SettingsDrawer
-              settings={settings}
-              open={showSettings}
-              onSettingsChange={newSettings => {
-                setSettings(newSettings);
-                saveSettings(newSettings);
-              }}
-              onClose={() => setShowSettings(false)}
+              <OmniPanelView id={OmniPanelViewIndex.MainMenu}>
+                <MainMenu
+                  onDoorsClick={handleMainMenuDoorsClick}
+                  onLiftsClick={handleMainMenuLiftsClick}
+                  onRobotsClick={handleMainMenuRobotsClick}
+                  onDispensersClick={handleMainMenuDispensersClick}
+                  onCommandsClick={handleMainMenuCommandsClick}
+                />
+              </OmniPanelView>
+              <OmniPanelView id={OmniPanelViewIndex.Doors}>
+                <DoorsPanel
+                  transport={transport}
+                  doorStates={doorStates}
+                  doors={doors}
+                  spotlight={doorSpotlight}
+                />
+              </OmniPanelView>
+              <OmniPanelView id={OmniPanelViewIndex.Lifts}>
+                <LiftsPanel
+                  transport={transport}
+                  liftStates={liftStates}
+                  lifts={lifts}
+                  spotlight={liftSpotlight}
+                />
+              </OmniPanelView>
+              <OmniPanelView id={OmniPanelViewIndex.Robots}>
+                <RobotsPanel fleets={fleets} spotlight={robotSpotlight} />
+              </OmniPanelView>
+              <OmniPanelView id={OmniPanelViewIndex.Dispensers}>
+                <DispensersPanel dispenserStates={dispenserStates} spotlight={dispenserSpotlight} />
+              </OmniPanelView>
+              <OmniPanelView id={OmniPanelViewIndex.Commands}>
+                <CommandsPanel transport={transport} fleets={fleets} />
+              </OmniPanelView>
+            </OmniPanel>
+          </Fade>
+          <SettingsDrawer
+            settings={settings}
+            open={showSettings}
+            onSettingsChange={newSettings => {
+              setSettings(newSettings);
+              saveSettings(newSettings);
+            }}
+            onClose={() => setShowSettings(false)}
             />
           </div>
           <NotificationBar

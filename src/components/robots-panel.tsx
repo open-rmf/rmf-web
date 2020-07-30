@@ -37,28 +37,13 @@ export function requestLoop(
 export interface RobotsPanelProps {
   fleets: readonly RomiCore.FleetState[];
   spotlight?: Readonly<SpotlightValue<string>>;
-  transport?: Readonly<RomiCore.Transport>;
   onRobotClick?(robot: RomiCore.RobotState): void;
 }
 
 export default function RobotsPanel(props: RobotsPanelProps): React.ReactElement {
-  const { fleets, spotlight, onRobotClick, transport } = props;
+  const { fleets, spotlight, onRobotClick } = props;
   const robotRefs = React.useRef<Record<string, HTMLElement | null>>({});
   const [expanded, setExpanded] = React.useState<Readonly<Record<string, boolean>>>({});
-
-  const loopRequestPub = React.useMemo(
-    () => (transport ? transport.createPublisher(RomiCore.loopRequests) : null),
-    [transport],
-  );
-
-  const handleRequestLoop = (
-    fleetName: string,
-    numLoops: number,
-    startLocationPoint: string,
-    endLocationPoint: string,
-  ) => {
-    requestLoop(loopRequestPub, fleetName, numLoops, startLocationPoint, endLocationPoint);
-  };
 
   React.useEffect(() => {
     if (!spotlight) {
@@ -82,7 +67,6 @@ export default function RobotsPanel(props: RobotsPanelProps): React.ReactElement
           <RobotItem
             key={robot.name}
             ref={ref => (robotRefs.current[robot.name] = ref)}
-            requestLoop={handleRequestLoop}
             fleetName={fleet.name}
             robot={robot}
             onClick={() => onRobotClick && onRobotClick(robot)}
