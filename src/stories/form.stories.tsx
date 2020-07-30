@@ -2,6 +2,7 @@ import React from 'react';
 
 import AutoCompleteComponent from './BaseComponents/autocomplete';
 import TextFieldComponent from './BaseComponents/textfield';
+import FormButtonComponent from './BaseComponents/form-button';
 
 export default { 
     title: 'Forms',
@@ -25,5 +26,9 @@ export const TextField = () => (
         errorMessage={Messages}
         labels={labels} 
     />
+)
+
+export const FormButton = () => (
+    <FormButtonComponent />
 )
 
