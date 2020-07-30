@@ -21,14 +21,6 @@ export const RobotTrajectory = React.forwardRef(function(
   const { trajectory, conflicts, footprint, colorManager, ...otherProps } = props;
   const theme = useTheme();
 
-  // const color = React.useMemo(
-  //   () =>
-  //     conflicts.flat().includes(trajectory.id)
-  //       ? theme.palette.error.main
-  //       : theme.palette.success.main,
-  //   [trajectory, conflicts, theme],
-  // );
-
   const pathColor = React.useMemo(() => {
     const getRobotColor = () => {
       const robotColor = colorManager?.robotColorFromCache(trajectory.robot_name);
@@ -42,20 +34,24 @@ export const RobotTrajectory = React.forwardRef(function(
   }, [trajectory]);
 
   return (
-    <path
-      data-component="RobotTrajectory"
-      ref={ref}
-      d={pathD}
-      stroke={pathColor}
-      opacity={0.8}
-      strokeWidth={footprint * 0.8}
-      strokeLinecap="round"
-      fill={'none'}
-      pathLength={1}
-      strokeDasharray={2}
-      strokeDashoffset={0}
-      {...otherProps}
-    />
+    <>
+      { pathColor && (
+        <path
+          data-component="RobotTrajectory"
+          ref={ref}
+          d={pathD}
+          stroke={pathColor}
+          opacity={0.8}
+          strokeWidth={footprint * 0.8}
+          strokeLinecap="round"
+          fill={'none'}
+          pathLength={1}
+          strokeDasharray={2}
+          strokeDashoffset={0}
+          {...otherProps}
+        />
+      )}
+    </>
   );
 });
 
