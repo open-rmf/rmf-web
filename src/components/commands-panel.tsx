@@ -40,7 +40,6 @@ export function requestLoop(
 }
 
 /**
-
 * The Delivery task is one where a robot is assigned to pick up an item at one location (pickup_place_name) and deliver it to another (dropoff_place_name). At each of these locations, there is an automation system called workcell/dispenser that loads and unload the item off the robot. 
 
  Currently only these fields are being used in Delivery msg.
@@ -50,6 +49,15 @@ export function requestLoop(
 * dropoff_place_name: Named waypoint where the robot drops off the item. A "dropoff_dispenser" workcell is located here.
 * dropoff_dispenser: Name of the workcell unloading item from the robot at dropoff_place_name.
 */
+export type TDeliveryRequest = (
+  pickupPlaceName: string,
+  pickupDispenser: string,
+  dropOffPlaceName: string,
+  dropOffDispenser: string,
+  pickupBehaviour?: RomiCore.Behavior,
+  dropOffBehavior?: RomiCore.Behavior,
+) => void;
+
 export function requestDelivery(
   deliveryRequestPub: RomiCore.Publisher<RomiCore.Delivery> | null,
   pickupPlaceName: string,

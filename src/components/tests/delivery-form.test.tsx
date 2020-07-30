@@ -3,10 +3,17 @@ import { RobotDeliveryForm } from '../delivery-form';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import fakePlaces from '../../mock/data/places';
 import React from 'react';
+import { TDeliveryRequest } from '../commands-panel';
 
 const mount = createMount();
 
-const buildWrapper = (listOfPlaces?: string[]) => {
+const buildWrapper = (fleetName: string, onClick: TDeliveryRequest) => {
+  const wrapper = mount(<RobotDeliveryForm requestDelivery={onClick} fleetNames={[fleetName]} />);
+  return wrapper;
+};
+
+describe('Form validation', () => {
+  let isRequestButtonClicked = false;
   const onClick = (
     pickupPlaceName: string,
     pickupDispenser: string,
@@ -15,23 +22,15 @@ const buildWrapper = (listOfPlaces?: string[]) => {
     pickupBehaviour?: RomiCore.Behavior,
     dropOffBehavior?: RomiCore.Behavior,
   ) => {
-    console.log('test');
+    isRequestButtonClicked = true;
   };
 
-  const wrapper = mount(
-    <RobotDeliveryForm
-      requestDelivery={onClick}
-      robotName={'robot1'}
-      fleetName={'SuperFleet'}
-      listOfPlaces={!!listOfPlaces ? listOfPlaces : fakePlaces()['SuperFleet']}
-    />,
-  );
-  return wrapper;
-};
+  beforeEach(() => {
+    isRequestButtonClicked = false;
+  });
 
-describe('Form validation', () => {
   test('Initial values', () => {
-    const wrapper = buildWrapper();
+    const wrapper = buildWrapper('SuperFleet', onClick);
     expect(
       wrapper.findWhere(
         x => x.name() === 'input' && x.props().value === fakePlaces()['SuperFleet'][0],
@@ -46,14 +45,14 @@ describe('Form validation', () => {
 
     expect(
       wrapper
-        .find(`#robot1PickupDispenser`)
+        .find(`#pickupDispenser`)
         .find('input')
         .props().value,
     ).toBe('');
 
     expect(
       wrapper
-        .find(`#robot1DropoffDispenser`)
+        .find(`#dropoffDispenser`)
         .find('input')
         .props().value,
     ).toBe('');
@@ -62,11 +61,11 @@ describe('Form validation', () => {
   });
 
   test('Dispensers cannot be empty', () => {
-    const wrapper = buildWrapper(['place1', 'place2']);
+    const wrapper = buildWrapper('FleetB', onClick);
     wrapper.find('form').simulate('submit');
     expect(
       wrapper
-        .find('#robot1PickupDispenser-helper-text')
+        .find('#pickupDispenser-helper-text')
         .first()
         .find('p')
         .props().children,
@@ -74,74 +73,68 @@ describe('Form validation', () => {
 
     expect(
       wrapper
-        .find('#robot1DropoffDispenser-helper-text')
+        .find('#dropoffDispenser-helper-text')
         .first()
         .find('p')
         .props().children,
     ).toEqual('Cannot be empty');
+    expect(isRequestButtonClicked).toBeFalsy();
     wrapper.unmount();
   });
 
   test('Place cannot be empty', async () => {
-    const wrapper = buildWrapper(['placeA']);
+    const wrapper = buildWrapper('FleetA', onClick);
     wrapper.find('form').simulate('submit');
     expect(
       wrapper
-        .find('#robot1DropoffPlace-helper-text')
+        .find('#pickupPlace-helper-text')
         .first()
         .html(),
     ).toContain('Cannot be empty');
-    wrapper.unmount();
-  });
-
-  test('Start place cannot be equal to finish place', async () => {
-    const wrapper = buildWrapper(['placeA', 'placeA', 'placeA']);
-    wrapper.find('form').simulate('submit');
+    expect(isRequestButtonClicked).toBeFalsy();
     wrapper.unmount();
   });
 
   test('Initial values with places with dispensers ', () => {
-    const wrapper = buildWrapper(['hardware_2', 'pantry']);
+    const wrapper = buildWrapper('TestFleet', onClick);
     expect(wrapper.find('#robot1PickupDispenser-helper-text').exists()).toBe(false);
     expect(wrapper.find('#robot1DropoffDispenser-helper-text').exists()).toBe(false);
     wrapper.unmount();
   });
 
   test('Error shows with places without dispensers ', () => {
-    const wrapper = buildWrapper(['place1', 'place2']);
-
+    const wrapper = buildWrapper('Fleet2', onClick);
     expect(
       wrapper
-        .find('#robot1PickupDispenser-helper-text')
+        .find('#pickupDispenser-helper-text')
         .first()
         .html(),
     ).toContain('There is no dispensers on this place. Pick another place');
-
     expect(
       wrapper
-        .find('#robot1DropoffDispenser-helper-text')
+        .find('#dropoffDispenser-helper-text')
         .first()
         .html(),
     ).toContain('There is no dispensers on this place. Pick another place');
-
     wrapper.unmount();
   });
-});
 
-test('Start Location cannot be equal to finish Location', () => {
-  const wrapper = buildWrapper(['placeA', 'placeA', 'placeA']);
-  wrapper.find('form').simulate('submit');
-  expect(
-    wrapper
-      .find('#robot1PickupPlace-helper-text')
-      .first()
-      .html(),
-  ).toContain('Start Location cannot be equal to finish Location');
-  expect(
-    wrapper
-      .find('#robot1DropoffPlace-helper-text')
-      .first()
-      .html(),
-  ).toContain('Start Location cannot be equal to finish Location');
-  wrapper.unmount();
+  test('Start place cannot be equal to finish place', () => {
+    const wrapper = buildWrapper('FleetB', onClick);
+    wrapper.find('form').simulate('submit');
+    expect(
+      wrapper
+        .find('#pickupPlace-helper-text')
+        .first()
+        .html(),
+    ).toContain('Start Location cannot be equal to finish Location');
+    expect(
+      wrapper
+        .find('#dropoffPlace-helper-text')
+        .first()
+        .html(),
+    ).toContain('Start Location cannot be equal to finish Location');
+    expect(isRequestButtonClicked).toBeFalsy();
+    wrapper.unmount();
+  });
 });

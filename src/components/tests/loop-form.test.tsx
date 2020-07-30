@@ -16,7 +16,7 @@ const buildWrapper = (fleetName: string, onClick: customFunction) => {
   return wrapper;
 };
 
-describe('form Validation', () => {
+describe('Form validation', () => {
   let isRequestButtonClicked = false;
   const onClick = (
     fleetName: string,

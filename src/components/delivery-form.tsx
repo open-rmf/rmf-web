@@ -1,21 +1,14 @@
 import { TextField, Button } from '@material-ui/core';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import fakeDispensers from '../mock/data/dispensers';
 import React, { useState, Dispatch, SetStateAction, useEffect } from 'react';
 import { loopFormStyles } from './loop-form';
 import fakePlaces from '../mock/data/places';
+import { TDeliveryRequest } from './commands-panel';
 
 interface DeliveryFormProps {
   fleetNames: string[];
-  requestDelivery(
-    pickupPlaceName: string,
-    pickupDispenser: string,
-    dropOffPlaceName: string,
-    dropOffDispenser: string,
-    pickupBehaviour?: RomiCore.Behavior,
-    dropOffBehavior?: RomiCore.Behavior,
-  ): void;
+  requestDelivery: TDeliveryRequest;
 }
 
 export const RobotDeliveryForm = (props: DeliveryFormProps): React.ReactElement => {
