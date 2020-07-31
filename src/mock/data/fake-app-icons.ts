@@ -1,6 +1,6 @@
-import { IconContextType } from "../../icons-manager";
+import { IconConfigurationsType } from "../../icons-manager";
 
-export default async function fakeAppIcons(): Promise<IconContextType> {
+export default async function fakeAppIcons(): Promise<IconConfigurationsType> {
     return {
         'robots': {
             'ModelA': '/robots/magni/magni.png',

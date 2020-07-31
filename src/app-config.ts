@@ -4,12 +4,12 @@ import FakeTrajectoryManager from './mock/fake-traj-manager';
 import { FakeTransport } from './mock/fake-transport';
 import { DefaultTrajectoryManager, RobotTrajectoryManager } from './robot-trajectory-manager';
 import fakeAppIcons from './mock/data/fake-app-icons';
-import IconManager from './icons-manager';
+import IconManager, { IconConfigurationsType } from './icons-manager';
 
 export interface AppConfig {
   transportFactory: () => Promise<RomiCore.Transport>;
   trajectoryManagerFactory?: () => Promise<RobotTrajectoryManager>;
-  appIcons: Promise<Record<string, Record<string, string>>>;
+  appIcons: Promise<IconConfigurationsType>;
 }
 
 export let appConfig: AppConfig;
