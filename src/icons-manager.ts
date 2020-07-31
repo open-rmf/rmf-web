@@ -3,14 +3,13 @@ const axios = require('axios').default;
 export default class IconManager {
 
     static getIconsConfigurationFile = async (): Promise<IconContextType> => {
-        const response = await axios.get('https://raw.githubusercontent.com/matiasbavera/romi-dashboard-icons/master/icons.json', { mode: 'no-cors' })
-        return response.data as IconContextType;
-        // try {
-        //     console.log(response)
-        //     return <IconContextType>response.json();
-        // } catch (error) {
-        //     console.error(error)
-        // }
+        try {
+            const response = await axios.get('/assets/icons/icons.json')
+            return response.data as IconContextType;
+        } catch (error) {
+            console.error(error)
+            return {}
+        }
     }
 
     static getRobotIcon(icons: IconContextType, model: string): string | null {
