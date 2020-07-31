@@ -6,7 +6,7 @@ import { UpArrow, DownArrow } from './arrow';
 import {
   radiansToDegrees,
   transformMiddleCoordsOfRectToSVGBeginPoint,
-} from '../../util/angle-calculation';
+} from '../../util/calculation-helpers';
 
 export interface LiftProps {
   id?: string;

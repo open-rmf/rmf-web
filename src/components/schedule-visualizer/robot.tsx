@@ -5,7 +5,7 @@ import ColorManager from './colors';
 import IconManager from '../../icons-manager';
 import { IconContext } from '../../app-contexts';
 import RobotDefaultIcon from './robot-default-icon';
-import { transformMiddleCoordsOfRectToSVGBeginPoint } from '../../util/angle-calculation';
+import RobotImageIcon from './robot-image-icon';
 
 const useStyles = makeStyles(() => ({
   robotText: {
@@ -14,12 +14,6 @@ const useStyles = makeStyles(() => ({
     fontSize: '0.18px',
     fontWeight: 'bold',
     fill: 'white',
-  },
-  robotImg: {
-    transformOrigin: 'center',
-  },
-  robotImgContainer: {
-    pointerEvents: 'visible',
   },
 }));
 
@@ -47,15 +41,6 @@ const Robot = React.forwardRef(function(
     [iconContext, robot],
   );
 
-  const [imgIconWidth, imgIconHeigth] = useMemo(() => [footprint * 2, footprint * 2], [footprint]);
-
-  const { x: topVerticeX, y: topVerticeY } = transformMiddleCoordsOfRectToSVGBeginPoint(
-    robot.location.x,
-    robot.location.y,
-    imgIconWidth,
-    imgIconHeigth,
-  );
-
   useEffect(() => {
     setRenderDefaultIcon(!iconPath || !!iconError);
   }, [iconPath, iconError]);
@@ -69,19 +54,13 @@ const Robot = React.forwardRef(function(
         onClick={e => onClick && onClick(e, robot)}
       >
         {!!iconPath && !iconError && (
-          <g
-            className={classes.robotImgContainer}
-            transform={`translate(${topVerticeX} ${-topVerticeY}) 
-            rotate(${-(robot.location.yaw * 180) / Math.PI}, ${footprint}, ${footprint})`}
-            onClick={e => onClick && onClick(e, robot)}
-          >
-            <image
-              href={iconPath}
-              height={imgIconHeigth}
-              width={imgIconWidth}
-              onError={() => setIconError(true)}
-            />
-          </g>
+          <RobotImageIcon
+            iconPath={iconPath}
+            robot={robot}
+            footprint={footprint}
+            dispatchIconError={setIconError}
+            onClick={onClick}
+          />
         )}
         {renderDefaultIcon && (
           <RobotDefaultIcon
