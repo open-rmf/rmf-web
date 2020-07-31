@@ -51,8 +51,7 @@
     "deploy:demo": "REACT_APP_MOCK=1 npm run build && NODE_DEBUG=gh-pages gh-pages -d build -m \"$(git rev-parse HEAD)\"",
     "setup": "node ./scripts/setup/setup.js && node ./scripts/setup/get-icons.js",
     "storybook": "start-storybook -p 9009 -s public",
-    "build-storybook": "build-storybook -s public",
-    "prebuild": "chmod u+x scripts/get-icons.sh && scripts/get-icons.sh"
+    "build-storybook": "build-storybook -s public"
   },
   "eslintConfig": {
     "extends": "react-app"
