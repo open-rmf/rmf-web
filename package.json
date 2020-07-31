@@ -18,6 +18,8 @@
     "@types/react-dom": "16.9.4",
     "@types/react-leaflet": "^2.5.0",
     "@types/uuid": "^8.0.0",
+    "axios": "^0.19.2",
+    "chalk": "^4.1.0",
     "clsx": "^1.1.0",
     "debug": "^4.1.1",
     "enzyme": "^3.11.0",
@@ -47,6 +49,7 @@
     "test:e2e:dev": ". e2e/env.sh && export ROMI_DASHBOARD_PORT=3000 && node e2e/prepare.js && wdio",
     "eject": "react-scripts eject",
     "deploy:demo": "REACT_APP_MOCK=1 npm run build && NODE_DEBUG=gh-pages gh-pages -d build -m \"$(git rev-parse HEAD)\"",
+    "setup": "node ./scripts/setup/setup.js && node ./scripts/setup/get-icons.js",
     "storybook": "start-storybook -p 9009 -s public",
     "build-storybook": "build-storybook -s public",
     "prebuild": "chmod u+x scripts/get-icons.sh && scripts/get-icons.sh"
