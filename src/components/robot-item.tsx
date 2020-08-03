@@ -12,6 +12,8 @@ import { RobotInformation } from './robot-item-information';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 
+import Labels from './labels';
+
 export interface RobotItemProps extends Omit<ExpansionPanelProps, 'children'> {
   fleetName: string;
   robot: Readonly<RomiCore.RobotState>;
@@ -34,10 +36,12 @@ export const RobotItem = React.forwardRef(function(
         classes={{ content: classes.expansionSummaryContent }}
         expandIcon={<ExpandMoreIcon />}
       >
-        <Typography variant="h6" className={classes.hideText}>{robot.name}</Typography>
-        <Typography className={classes.robotStatusLabel} variant="button">
-          {robotModeToString(robot.mode)}
-        </Typography>
+        <Labels
+          hideText={classes.hideText}
+          modalLabelClass={classes.robotStatusLabel}
+          name={robot.name}
+          modeText={robotModeToString(robot.mode)}
+        />
       </ExpansionPanelSummary>
       <ExpansionPanelDetails data-role="details" className={classes.expansionDetail}>
         <AntTabs variant="fullWidth" value={value} onChange={handleChange} aria-label="ant example">

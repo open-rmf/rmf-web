@@ -14,6 +14,8 @@ import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 
+import Labels from './labels';
+
 export interface DoorItemProps extends Omit<ExpansionPanelProps, 'children'> {
   door: Readonly<RomiCore.Door>;
   doorState?: Readonly<RomiCore.DoorState>;
@@ -59,10 +61,12 @@ export const DoorItem = React.forwardRef(function(
         classes={{ content: classes.expansionSummaryContent }}
         expandIcon={<ExpandMoreIcon />}
       >
-        <Typography variant="h6" className={classes.hideText}>{door.name}</Typography>
-        <Typography data-role="state" className={doorModeLabelClasses(doorState)} variant="button">
-          {doorModeToString(doorState)}
-        </Typography>
+        <Labels
+          hideText={classes.hideText}
+          modalLabelClass={doorModeLabelClasses(doorState)}
+          name={door.name}
+          modeText={doorModeToString(doorState)}
+        />
       </ExpansionPanelSummary>
       <ExpansionPanelDetails data-role="details" className={classes.expansionDetail}>
         <div className={classes.expansionDetailLine}>
