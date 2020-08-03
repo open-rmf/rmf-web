@@ -10,6 +10,7 @@ export interface RobotTrajectoriesOverlayProps extends SVGOverlayProps {
   trajs: readonly Trajectory[];
   conflicts: Conflict[];
   colorManager: Readonly<ColorManager>;
+  conflictRobotNames: string[];
 }
 
 export default function RobotTrajectoriesOverlay(
@@ -33,7 +34,6 @@ export default function RobotTrajectoriesOverlay(
       let robotNames: string[] = [];
       conflictPair.forEach(conflictId => {
         const robotName = DefaultTrajectoryManager.getRobotNameFromPathId(conflictId, trajs);
-
         robotName && robotNames.push(robotName);
       });
       return robotNames;
