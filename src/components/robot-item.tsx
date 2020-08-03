@@ -4,7 +4,6 @@ import {
   ExpansionPanelProps,
   ExpansionPanelSummary,
   makeStyles,
-  Typography,
 } from '@material-ui/core';
 import { AntTabs, AntTab, TabPanel } from './tab';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
