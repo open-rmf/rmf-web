@@ -42,13 +42,14 @@ export default function App(): React.ReactElement {
           setDispenserStates(dispenserStateManager.dispenserStates()),
         );
         negotiationStatusManager.on('updated', () => 
-          setNegotiationStatus(negotiationStatusManager.negotiationStatus()));
+          setNegotiationStatus(negotiationStatusManager.allConflicts()));
         setTransport(x);
       })
       .catch((e: CloseEvent) => {
         setLoading({ caption: `Unable to connect to SOSS server (${e.code})`, variant: 'error' });
       });
-  }, [transportFactory, doorStateManager, liftStateManager, dispenserStateManager, fleetManager]);
+  }, [transportFactory, doorStateManager, liftStateManager, dispenserStateManager, fleetManager, 
+    negotiationStatusManager]);
 
   React.useEffect(() => {
     if (!transport) {
