@@ -7,7 +7,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import TreeItem from '@material-ui/lab/TreeItem';
 import { SpotlightValue } from './spotlight-value';
-import { NegotiationStatusTable, negotiationStatus } from '@osrf/romi-js-core-interfaces';
+import { NegotiationStatus, negotiationStatus } from '@osrf/romi-js-core-interfaces';
 import * as NegotiationStatusManager from '../negotiation-status-manager';
 
 const useStyles = makeStyles({
@@ -53,13 +53,13 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
   
   const classes = useStyles();
 
-  let rejected_statuses = NegotiationStatusTable.STATUS_REJECTED | 
-        NegotiationStatusTable.STATUS_FORFEITED |
-        NegotiationStatusTable.STATUS_DEFUNCT;
+  let rejected_statuses = NegotiationStatus.STATUS_REJECTED | 
+        NegotiationStatus.STATUS_FORFEITED |
+        NegotiationStatus.STATUS_DEFUNCT;
 
   const addStatusText = (status : number) => {
     var status_text = "";
-    if (status & NegotiationStatusTable.STATUS_FINISHED)
+    if (status & NegotiationStatus.STATUS_FINISHED)
       status_text += "  [FINISHED]";
     else if (status & rejected_statuses)
       status_text += "  [FAILED]";
@@ -91,7 +91,7 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
     {
       // status handling and background
       let style = classes.ongoing;
-      if (status.status & NegotiationStatusTable.STATUS_FINISHED)
+      if (status.status & NegotiationStatus.STATUS_FINISHED)
         style = classes.finished;
       else if (status.status & rejected_statuses)
         style = classes.rejected;

@@ -1,6 +1,6 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import EventEmitter from 'eventemitter3';
-import { NegotiationStatusTable, negotiationStatusConclusion } from '@osrf/romi-js-core-interfaces';
+import { NegotiationStatus, negotiationStatusConclusion } from '@osrf/romi-js-core-interfaces';
 
 type Events = {
   updated: [];
@@ -52,9 +52,9 @@ export default class NegotiationStatusManager extends EventEmitter<Events> {
         for (var [participant_id, status] of Object.entries(conflict.participant_ids_to_status))
         {
           if (negotiationStatusConclusion.resolved)
-            status.status = NegotiationStatusTable.STATUS_FINISHED;
+            status.status = NegotiationStatus.STATUS_FINISHED;
           else
-            status.status = NegotiationStatusTable.STATUS_DEFUNCT;
+            status.status = NegotiationStatus.STATUS_DEFUNCT;
         }
       });
   }
