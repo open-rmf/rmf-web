@@ -6,35 +6,45 @@ import RobotsOverlay from '../robots-overlay';
 import ColorManager from '../colors';
 import Robot from '../robot';
 import fakeFleets from '../../../mock/data/fleets';
-import FakeTrajectoryManager from '../../../mock/fake-traj-manager';
 
-test('Render robots correctly', async () => {
-  const robots = fakeFleets()[0].robots;
-  const bounds = new L.LatLngBounds([0, 25.7], [-14, 0]);
-  const colorManager = new ColorManager();
-  // TextEncoder is not available in node
-  colorManager.robotColor = jest.fn(async () => 'black');
-  colorManager.robotColorFromCache = jest.fn(() => 'black');
+describe('Robots Overlay', () => {
+  test('Render robots correctly', async () => {
+    const robots = fakeFleets()[0].robots;
+    const bounds = new L.LatLngBounds([0, 25.7], [-14, 0]);
+    const colorManager = new ColorManager();
+    // TextEncoder is not available in node
+    colorManager.robotColor = jest.fn(async () => 'black');
+    colorManager.robotColorFromCache = jest.fn(() => 'black');
+    const conflictRobotNames: string[] = [];
 
-  const trajMgr = new FakeTrajectoryManager();
-  const trajectoryData = await trajMgr.latestTrajectory({
-    request: 'trajectory',
-    param: {
-      map_name: 'L1',
-      duration: 1000,
-      trim: true,
-    },
+    const wrapper = mount(
+      <LMap>
+        <RobotsOverlay bounds={bounds} colorManager={colorManager} robots={robots} conflictRobotNames={conflictRobotNames} />
+      </LMap>,
+    );
+
+    expect(wrapper.find(Robot).exists()).toBeTruthy();
+    expect(wrapper.find(Robot).length).toBe(robots.length);
+
+    wrapper.unmount();
   });
-  const trajectoryValue = trajectoryData.values;
-  const trajectoryConflict = trajectoryData.conflicts;
 
-  const wrapper = mount(
-    <LMap>
-      <RobotsOverlay bounds={bounds} colorManager={colorManager} robots={robots} trajs={trajectoryValue} conflicts={trajectoryConflict} />
-    </LMap>,
-  );
-  expect(wrapper.find(Robot).exists()).toBeTruthy();
-  expect(wrapper.find(Robot).length).toBe(robots.length);
+  test('Robot overlay increases in size when it is in trajectory conflict', async () => {
+    const robots = fakeFleets()[0].robots;
+    const bounds = new L.LatLngBounds([0, 25.7], [-14, 0]);
+    const colorManager = new ColorManager();
+    // TextEncoder is not available in node
+    colorManager.robotColor = jest.fn(async () => 'black');
+    colorManager.robotColorFromCache = jest.fn(() => 'black');
+    const conflictRobotNames = [fakeFleets()[0].robots[0].name];
 
-  wrapper.unmount();
+    const wrapper = mount(
+      <LMap>
+        <RobotsOverlay bounds={bounds} colorManager={colorManager} robots={robots} conflictRobotNames={conflictRobotNames} />
+      </LMap>,
+    );
+    expect(wrapper.containsMatchingElement(<circle r={0.75} />)).toBeTruthy();
+    wrapper.unmount();
+  })
+
 });
