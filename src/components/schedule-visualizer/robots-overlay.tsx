@@ -9,7 +9,7 @@ export interface RobotsOverlayProps extends SVGOverlayProps {
   robots: readonly RomiCore.RobotState[];
   colorManager: ColorManager;
   onRobotClick?(robot: RomiCore.RobotState): void;
-  conflictRobotNames: string[];
+  conflictRobotNames: string[][];
 }
 
 export default function RobotsOverlay(props: RobotsOverlayProps): React.ReactElement {
@@ -23,7 +23,7 @@ export default function RobotsOverlay(props: RobotsOverlayProps): React.ReactEle
 
   function getRobotFootprint(robotName: string): number {
     // FIXME: hardcode for now, footprint data not available.
-    return conflictRobotNames.includes(robotName) ? 0.75 : 0.5;
+    return conflictRobotNames.flat().includes(robotName) ? 0.75 : 0.5;
   }
 
   return (

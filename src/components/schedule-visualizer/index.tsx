@@ -76,7 +76,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   ]);
 
   const [trajectories, setTrajectories] = React.useState<Record<string, TrajectoryResponse>>({});
-  const [conflictRobotNames, setConflictRobotNames] = React.useState<string[]>(() => []);
+  const [conflictRobotNames, setConflictRobotNames] = React.useState<string[][]>(() => []);
   const [curMapTrajectories, setCurMapTrajectories] = React.useState<Trajectory[]>(() => []);
   const [curMapConflicts, setCurMapConflicts] = React.useState<Conflict[]>(() => []);
 
@@ -238,14 +238,16 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       return resp ? resp.conflicts : [];
     }
 
-    function getConflictRobotsName(conflicts: Conflict[], trajs: Trajectory[]): string[] {
-      let conflictRobotNames: string[] = [];
+    function getConflictRobotsName(conflicts: Conflict[], trajs: Trajectory[]): string[][] {
+      let conflictRobotNames: string[][] = [];
       if (conflicts.length !== 0) {
         conflicts.forEach(conflictPair => {
+          let robotNames: string[] = [];
           conflictPair.forEach(conflictId => {
             const robotName = DefaultTrajectoryManager.getRobotNameFromPathId(conflictId, trajs);
-            robotName && conflictRobotNames.push(robotName);
+            robotName && robotNames.push(robotName);
           });
+          robotNames && conflictRobotNames.push(robotNames);
         });
       }
       return conflictRobotNames;
@@ -294,6 +296,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
                   trajs={curMapTrajectories}
                   conflicts={curMapConflicts}
                   colorManager={colorManager}
+                  conflictRobotNames={conflictRobotNames}
                 />
               </RobotTrajectoryContext.Provider>
             </Pane>
