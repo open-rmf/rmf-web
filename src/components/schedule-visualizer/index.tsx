@@ -77,6 +77,8 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
 
   const [trajectories, setTrajectories] = React.useState<Record<string, TrajectoryResponse>>({});
   const [conflictRobotNames, setConflictRobotNames] = React.useState<string[]>(() => []);
+  const [curMapTrajectories, setCurMapTrajectories] = React.useState<Trajectory[]>(() => []);
+  const [curMapConflicts, setCurMapConflicts] = React.useState<Conflict[]>(() => []);
 
   const initialBounds = React.useMemo<Readonly<L.LatLngBounds> | undefined>(() => {
     const initialLayer = mapFloorLayers[mapFloorLayerSort[0]];
@@ -225,16 +227,6 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     ref.current.leafletElement.setZIndex(0);
   }
 
-  function getTrajectory(levelName: string): Trajectory[] {
-    const resp = trajectories[levelName];
-    return resp ? resp.values : [];
-  }
-
-  function getConflicts(levelName: string): Conflict[] {
-    const resp = trajectories[levelName];
-    return resp ? resp.conflicts : [];
-  }
-
   React.useEffect(() => {
     function getTrajectory(levelName: string): Trajectory[] {
       const resp = trajectories[levelName];
@@ -259,12 +251,11 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       return conflictRobotNames;
     }
     if (curMapFloorLayer) {
-      const trajs = getTrajectory(curMapFloorLayer.level.name);
-      const conflicts = getConflicts(curMapFloorLayer.level.name);
-      console.log(trajs, conflicts);
-      setConflictRobotNames(getConflictRobotsName(conflicts, trajs));
+      setCurMapTrajectories(getTrajectory(curMapFloorLayer.level.name));
+      setCurMapConflicts(getConflicts(curMapFloorLayer.level.name));
+      setConflictRobotNames(getConflictRobotsName(curMapConflicts, curMapTrajectories));
     }
-  }, [curMapFloorLayer, trajectories]);
+  }, [curMapFloorLayer, trajectories, curMapConflicts, curMapTrajectories]);
 
   return (
     <LMap
@@ -300,8 +291,8 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
               <RobotTrajectoryContext.Provider value={{ Component: TrajectoryComponent }}>
                 <RobotTrajectoriesOverlay
                   bounds={curMapFloorLayer.bounds}
-                  trajs={getTrajectory(curMapFloorLayer.level.name)}
-                  conflicts={getConflicts(curMapFloorLayer.level.name)}
+                  trajs={curMapTrajectories}
+                  conflicts={curMapConflicts}
                   colorManager={colorManager}
                 />
               </RobotTrajectoryContext.Provider>
