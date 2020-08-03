@@ -4,19 +4,16 @@ import React from 'react';
 import ColorManager from './colors';
 import Robot from './robot';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
-import { Conflict, DefaultTrajectoryManager, Trajectory } from '../../robot-trajectory-manager';
-
 
 export interface RobotsOverlayProps extends SVGOverlayProps {
   robots: readonly RomiCore.RobotState[];
   colorManager: ColorManager;
   onRobotClick?(robot: RomiCore.RobotState): void;
-  trajs: readonly Trajectory[];
-  conflicts: Conflict[];
+  conflictRobotNames: string[];
 }
 
 export default function RobotsOverlay(props: RobotsOverlayProps): React.ReactElement {
-  const { robots, colorManager, onRobotClick, trajs, conflicts, ...otherProps } = props;
+  const { robots, colorManager, onRobotClick, conflictRobotNames, ...otherProps } = props;
 
   const bounds =
     props.bounds instanceof L.LatLngBounds ? props.bounds : new L.LatLngBounds(props.bounds);
@@ -25,16 +22,8 @@ export default function RobotsOverlay(props: RobotsOverlayProps): React.ReactEle
   const viewBox = `0 0 ${width} ${height}`;
 
   function getRobotFootprint(robotName: string): number {
-    let conflictRobotNames: string[] = [];
-    if (conflicts.length !== 0) {
-      conflicts.forEach(conflictPair => {
-        conflictPair.forEach(conflictId => {
-          const robotName = DefaultTrajectoryManager.getRobotNameFromPathId(conflictId, trajs);
-          robotName && conflictRobotNames.push(robotName);
-        });
-      });
-    } 
-    return conflictRobotNames.includes(robotName) ? 0.75 : 0.5;  // FIXME: hardcode for now, footprint data not available.
+    // FIXME: hardcode for now, footprint data not available.
+    return conflictRobotNames.includes(robotName) ? 0.75 : 0.5;
   }
 
   return (

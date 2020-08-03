@@ -5,6 +5,7 @@ import React from 'react';
 import { AttributionControl, ImageOverlay, LayersControl, Map as LMap, Pane } from 'react-leaflet';
 import {
   Conflict,
+  DefaultTrajectoryManager,
   RobotTrajectoryManager,
   Trajectory,
   TrajectoryResponse,
@@ -75,6 +76,8 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   ]);
 
   const [trajectories, setTrajectories] = React.useState<Record<string, TrajectoryResponse>>({});
+  const [conflictRobotNames, setConflictRobotNames] = React.useState<string[]>(() => []);
+
   const initialBounds = React.useMemo<Readonly<L.LatLngBounds> | undefined>(() => {
     const initialLayer = mapFloorLayers[mapFloorLayerSort[0]];
     if (!initialLayer) {
@@ -215,6 +218,13 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     setCurLevelName(e.name);
   }
 
+  const sortedMapFloorLayers = mapFloorLayerSort.map(x => mapFloorLayers[x]);
+  const ref = React.useRef<ImageOverlay>(null);
+
+  if (ref.current) {
+    ref.current.leafletElement.setZIndex(0);
+  }
+
   function getTrajectory(levelName: string): Trajectory[] {
     const resp = trajectories[levelName];
     return resp ? resp.values : [];
@@ -225,12 +235,36 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     return resp ? resp.conflicts : [];
   }
 
-  const sortedMapFloorLayers = mapFloorLayerSort.map(x => mapFloorLayers[x]);
-  const ref = React.useRef<ImageOverlay>(null);
+  React.useEffect(() => {
+    function getTrajectory(levelName: string): Trajectory[] {
+      const resp = trajectories[levelName];
+      return resp ? resp.values : [];
+    }
 
-  if (ref.current) {
-    ref.current.leafletElement.setZIndex(0);
-  }
+    function getConflicts(levelName: string): Conflict[] {
+      const resp = trajectories[levelName];
+      return resp ? resp.conflicts : [];
+    }
+
+    function getConflictRobotsName(conflicts: Conflict[], trajs: Trajectory[]): string[] {
+      let conflictRobotNames: string[] = [];
+      if (conflicts.length !== 0) {
+        conflicts.forEach(conflictPair => {
+          conflictPair.forEach(conflictId => {
+            const robotName = DefaultTrajectoryManager.getRobotNameFromPathId(conflictId, trajs);
+            robotName && conflictRobotNames.push(robotName);
+          });
+        });
+      }
+      return conflictRobotNames;
+    }
+    if (curMapFloorLayer) {
+      const trajs = getTrajectory(curMapFloorLayer.level.name);
+      const conflicts = getConflicts(curMapFloorLayer.level.name);
+      console.log(trajs, conflicts);
+      setConflictRobotNames(getConflictRobotsName(conflicts, trajs));
+    }
+  }, [curMapFloorLayer, trajectories]);
 
   return (
     <LMap
@@ -305,8 +339,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
                 robots={robotsInCurLevel}
                 colorManager={colorManager}
                 onRobotClick={props.onRobotClick}
-                trajs={getTrajectory(curMapFloorLayer.level.name)}
-                conflicts={getConflicts(curMapFloorLayer.level.name)}
+                conflictRobotNames={conflictRobotNames}
               />
             </Pane>
           )}
