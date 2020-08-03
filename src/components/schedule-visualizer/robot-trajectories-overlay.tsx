@@ -1,6 +1,6 @@
 import * as L from 'leaflet';
 import React, { useContext, useEffect } from 'react';
-import { Conflict, Trajectory, DefaultTrajectoryManager } from '../../robot-trajectory-manager';
+import { Conflict, Trajectory } from '../../robot-trajectory-manager';
 import ColorManager from './colors';
 import RobotTrajectory, { RobotTrajectoryProps } from './robot-trajectory';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
@@ -10,13 +10,13 @@ export interface RobotTrajectoriesOverlayProps extends SVGOverlayProps {
   trajs: readonly Trajectory[];
   conflicts: Conflict[];
   colorManager: Readonly<ColorManager>;
-  conflictRobotNames: string[];
+  conflictRobotNames: string[][];
 }
 
 export default function RobotTrajectoriesOverlay(
   props: RobotTrajectoriesOverlayProps,
 ): React.ReactElement {
-  const { trajs, conflicts, colorManager, ...otherProps } = props;
+  const { trajs, conflicts, colorManager, conflictRobotNames, ...otherProps } = props;
   const trajectoryContext = useContext(RobotTrajectoryContext);
   const notificationDispatch = useContext(NotificationBarContext);
 
@@ -30,22 +30,12 @@ export default function RobotTrajectoriesOverlay(
   const footprint = 0.5;
 
   useEffect(() => {
-    function getConflictRobotsName(conflictPair: number[]): string[] {
-      let robotNames: string[] = [];
-      conflictPair.forEach(conflictId => {
-        const robotName = DefaultTrajectoryManager.getRobotNameFromPathId(conflictId, trajs);
-        robotName && robotNames.push(robotName);
-      });
-      return robotNames;
-    }
     function getConflictRobotMessage(): string {
       let message = '';
-      conflicts.forEach(conflictPair => {
-        const conflictingRobotNames = getConflictRobotsName(conflictPair);
-        message += `[${conflictingRobotNames}] `;
-      });
+      conflictRobotNames.forEach(conflictGroup => { message += `[${conflictGroup}] `; }
+      )
       return message;
-    }
+    };
 
     if (conflicts.length !== 0) {
       notificationDispatch &&
@@ -54,7 +44,7 @@ export default function RobotTrajectoriesOverlay(
           type: 'error',
         });
     }
-  }, [conflicts, notificationDispatch, trajs]);
+  }, [conflicts, notificationDispatch, conflictRobotNames]);
 
   return (
     <SVGOverlay {...otherProps}>
