@@ -15,7 +15,7 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 
 import DisableableTypography from './disableable-typography';
-import Labels from './labels';
+import OmniPanelStatusLabels from './omniPanelStatusLabels';
 
 export interface DispenserItemProps extends Omit<ExpansionPanelProps, 'children'> {
   dispenserState: Readonly<RomiCore.DispenserState>;
@@ -80,7 +80,7 @@ export const DispenserItem = React.forwardRef(function(
       <ExpansionPanelSummary
         classes={{ content: classes.expansionSummaryContent }}
         expandIcon={<ExpandMoreIcon />}>
-          <Labels
+          <OmniPanelStatusLabels
             hideText={classes.hideText}
             modalLabelClass={dispenserModeLabelClass()}
             name={dispenserState.guid}

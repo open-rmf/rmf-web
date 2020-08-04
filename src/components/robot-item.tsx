@@ -11,7 +11,7 @@ import { RobotInformation } from './robot-item-information';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 
-import Labels from './labels';
+import OmniPanelStatusLabels from './omniPanelStatusLabels';
 
 export interface RobotItemProps extends Omit<ExpansionPanelProps, 'children'> {
   fleetName: string;
@@ -35,7 +35,7 @@ export const RobotItem = React.forwardRef(function(
         classes={{ content: classes.expansionSummaryContent }}
         expandIcon={<ExpandMoreIcon />}
       >
-        <Labels
+        <OmniPanelStatusLabels
           hideText={classes.hideText}
           modalLabelClass={classes.robotStatusLabel}
           name={robot.name}

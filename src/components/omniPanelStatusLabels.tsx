@@ -1,6 +1,5 @@
 import React from 'react';
 import { Typography } from '@material-ui/core';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
 
 interface LabelProps {
   hideText: string;
@@ -9,7 +8,7 @@ interface LabelProps {
   name?: string;
 }
 
-export default function Labels(props: LabelProps) {
+export default function OmniPanelStatusLabels(props: LabelProps) {
 
   const { hideText, modalLabelClass, modeText, name } = props;
 

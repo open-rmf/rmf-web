@@ -12,7 +12,7 @@ import { AntTab, AntTabs, TabPanel } from '../tab';
 import { LiftInformation } from './lift-item-information';
 import LiftRequestForm from './lift-item-form';
 import { LiftRequestManager } from '../../lift-state-manager';
-import Labels from '../labels'
+import OmniPanelStatusLabels from '../omniPanelStatusLabels'
 
 export interface LiftItemProps extends Omit<ExpansionPanelProps, 'children'>{
   id?: string;
@@ -65,7 +65,7 @@ export const LiftItem = React.forwardRef(function(
         classes={{ content: classes.expansionSummaryContent }}
         expandIcon={<ExpandMoreIcon />}
       >
-        <Labels 
+        <OmniPanelStatusLabels 
           hideText={classes.hideText}
           modalLabelClass={liftFloorLabel(liftState)}
           name={lift.name}
