@@ -95,14 +95,6 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     calcMaxBounds(Object.values(mapFloorLayers)),
   );
 
-  // const robotsInCurLevel = React.useMemo(() => {
-  //   if (!curMapFloorLayer) {
-  //     return [];
-  //   }
-  //   return props.fleets.flatMap(x =>
-  //     x.robots.filter(r => r.location.level_name === curMapFloorLayer.level.name),
-  //   );
-  // }, [props.fleets, curMapFloorLayer]);
   const colorManager = React.useMemo(() => new ColorManager(), []);
 
   const settings = React.useContext(SettingsContext);
@@ -348,9 +340,9 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
             {curMapFloorLayer && (
               <Pane>
                 <RobotsOverlay
+                  currentFloorName={curLevelName}
                   bounds={curMapFloorLayer.bounds}
                   fleets={props.fleets}
-                  // robots={robotsInCurLevel}
                   colorManager={colorManager}
                   onRobotClick={props.onRobotClick}
                   conflictRobotNames={conflictRobotNames}

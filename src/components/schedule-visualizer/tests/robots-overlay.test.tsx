@@ -6,26 +6,30 @@ import RobotsOverlay from '../robots-overlay';
 import ColorManager from '../colors';
 import Robot from '../robot';
 import fakeFleets from '../../../mock/data/fleets';
+import getBuildingMap from '../../../mock/data/building-map';
 import { createMuiTheme } from '@material-ui/core';
 
-const robots = fakeFleets()[0].robots;
-const bounds = new L.LatLngBounds([0, 25.7], [-14, 0]);
-const colorManager = new ColorManager();
-// TextEncoder is not available in node
-colorManager.robotColor = jest.fn(async () => 'black');
-colorManager.robotColorFromCache = jest.fn(() => 'black');
-let conflictRobotNames: string[][] = [];
+describe('Robots Overlay', async () => {
+  const buildingMap = await getBuildingMap();
+  const fleets = fakeFleets();
+  const robots = fleets[0].robots;
+  const bounds = new L.LatLngBounds([0, 25.7], [-14, 0]);
+  const colorManager = new ColorManager();
+  // TextEncoder is not available in node
+  colorManager.robotColor = jest.fn(async () => 'black');
+  colorManager.robotColorFromCache = jest.fn(() => 'black');
+  let conflictRobotNames: string[][] = [];
 
-describe('Robots Overlay', () => {
   const theme = createMuiTheme();
   test('Render robots correctly', async () => {
     const wrapper = mount(
       <LMap>
         <RobotsOverlay
+          fleets={fleets}
           bounds={bounds}
           colorManager={colorManager}
-          robots={robots}
           conflictRobotNames={conflictRobotNames}
+          currentFloorName={buildingMap.levels[0].name}
         />
       </LMap>,
     );
@@ -41,10 +45,11 @@ describe('Robots Overlay', () => {
     const wrapper = mount(
       <LMap>
         <RobotsOverlay
+          fleets={fleets}
           bounds={bounds}
           colorManager={colorManager}
-          robots={robots}
           conflictRobotNames={conflictRobotNames}
+          currentFloorName={buildingMap.levels[0].name}
         />
       </LMap>,
     );
