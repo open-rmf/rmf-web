@@ -68,8 +68,8 @@ export const LiftItem = React.forwardRef(function(
         <Labels 
           hideText={classes.hideText}
           modalLabelClass={liftFloorLabel(liftState)}
-          liftName={lift.name}
-          liftState={liftState}
+          name={lift.name}
+          modeText={liftState ? liftState.current_floor : 'N/A'}
         />
       </ExpansionPanelSummary>
       <ExpansionPanelDetails className={classes.expansionDetail}>
