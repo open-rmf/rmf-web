@@ -64,21 +64,8 @@ describe('Form validation', () => {
   test('Dispensers cannot be empty', () => {
     const wrapper = buildWrapper('FleetB', onClick);
     wrapper.find('form').simulate('submit');
-    expect(
-      wrapper
-        .find('#pickupDispenser-helper-text')
-        .first()
-        .find('p')
-        .props().children,
-    ).toBe('Cannot be empty');
-
-    expect(
-      wrapper
-        .find('#dropoffDispenser-helper-text')
-        .first()
-        .find('p')
-        .props().children,
-    ).toEqual('Cannot be empty');
+    expect(wrapper.exists('#pickupDispenser-helper-text')).toBeTruthy();
+    expect(wrapper.exists('#dropoffDispenser-helper-text')).toBeTruthy();
     expect(isRequestButtonClicked).toBeFalsy();
     wrapper.unmount();
   });
@@ -86,12 +73,7 @@ describe('Form validation', () => {
   test('Places cannot be empty', () => {
     const wrapper = buildWrapper('FleetA', onClick);
     wrapper.find('form').simulate('submit');
-    expect(
-      wrapper
-        .find('#pickupPlace-helper-text')
-        .first()
-        .html(),
-    ).toContain('Cannot be empty');
+    expect(wrapper.exists('#pickupPlace-helper-text')).toBeTruthy();
     expect(isRequestButtonClicked).toBeFalsy();
     wrapper.unmount();
   });
@@ -105,36 +87,16 @@ describe('Form validation', () => {
 
   test('Error shows with places without dispensers ', () => {
     const wrapper = buildWrapper('Fleet2', onClick);
-    expect(
-      wrapper
-        .find('#pickupDispenser-helper-text')
-        .first()
-        .html(),
-    ).toContain('There is no dispensers on this place. Pick another place');
-    expect(
-      wrapper
-        .find('#dropoffDispenser-helper-text')
-        .first()
-        .html(),
-    ).toContain('There is no dispensers on this place. Pick another place');
+    expect(wrapper.exists('#pickupDispenser-helper-text')).toBeTruthy();
+    expect(wrapper.exists('#dropoffDispenser-helper-text')).toBeTruthy();
     wrapper.unmount();
   });
 
   test('Start place cannot be equal to finish place', () => {
     const wrapper = buildWrapper('FleetB', onClick);
     wrapper.find('form').simulate('submit');
-    expect(
-      wrapper
-        .find('#pickupPlace-helper-text')
-        .first()
-        .html(),
-    ).toContain('Start Location cannot be equal to finish Location');
-    expect(
-      wrapper
-        .find('#dropoffPlace-helper-text')
-        .first()
-        .html(),
-    ).toContain('Start Location cannot be equal to finish Location');
+    expect(wrapper.exists('#pickupPlace-helper-text')).toBeTruthy();
+    expect(wrapper.exists('#dropoffPlace-helper-text')).toBeTruthy();
     expect(isRequestButtonClicked).toBeFalsy();
     wrapper.unmount();
   });
