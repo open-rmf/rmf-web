@@ -2,7 +2,7 @@ import { makeStyles } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React, { useMemo, useState, useEffect, useContext } from 'react';
 import ColorManager from './colors';
-import IconManager from '../../icons-manager';
+import ResourceManager from '../../resource-manager';
 import { IconContext } from '../../app-contexts';
 import RobotDefaultIcon from './robot-default-icon';
 import RobotImageIcon from './robot-image-icon';
@@ -19,8 +19,9 @@ const useStyles = makeStyles(() => ({
 
 export interface RobotProps {
   robot: RomiCore.RobotState;
-  footprint: number;
   colorManager: ColorManager;
+  footprint: number;
+  fleetName: string;
   onClick?(e: React.MouseEvent<SVGGElement>, robot: RomiCore.RobotState): void;
   inConflict?: boolean;
 }
@@ -31,15 +32,15 @@ const Robot = React.forwardRef(function(
 ): React.ReactElement {
   const iconContext = useContext(IconContext);
   const classes = useStyles();
-  const { robot, footprint, colorManager, onClick } = props;
+  const { robot, footprint, colorManager, fleetName, onClick } = props;
   const [iconError, setIconError] = useState(false);
   const [renderDefaultIcon, setRenderDefaultIcon] = useState(false);
 
   // The only image formats SVG software support are JPEG, PNG, and other SVG files.
-  const iconPath = useMemo(
-    () => IconManager.getRobotIcon(iconContext, !!robot.model ? robot.model : robot.name),
-    [iconContext, robot],
-  );
+  const iconPath = useMemo(() => ResourceManager.getRobotIconPath(iconContext, fleetName), [
+    iconContext,
+    fleetName,
+  ]);
 
   useEffect(() => {
     setRenderDefaultIcon(!iconPath || !!iconError);

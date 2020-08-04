@@ -12,7 +12,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-type RobotImageIconProps = Omit<RobotProps, 'colorManager'> & {
+type RobotImageIconProps = Omit<RobotProps, 'colorManager' | 'fleetName'> & {
   iconPath: string;
   dispatchIconError: React.Dispatch<React.SetStateAction<boolean>>;
 };

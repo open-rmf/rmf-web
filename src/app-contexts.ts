@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { IconConfigurationsType } from "./icons-manager";
+import { ResourceConfigurationsType } from "./resource-manager";
 
 /* Declares the IconContext which contains the icons used on the app*/
-export const IconContext = createContext<IconConfigurationsType>({});
+export const IconContext = createContext<ResourceConfigurationsType>({});

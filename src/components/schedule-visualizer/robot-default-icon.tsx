@@ -9,8 +9,10 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+type RobotDefaultIconProps = Omit<RobotProps, 'fleetName'>;
+
 const RobotDefaultIcon = React.forwardRef(function(
-  props: RobotProps,
+  props: RobotDefaultIconProps,
   ref: React.Ref<SVGGElement>,
 ): React.ReactElement {
   const classes = useStyles();

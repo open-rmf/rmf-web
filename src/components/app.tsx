@@ -27,7 +27,7 @@ import { SpotlightValue } from './spotlight-value';
 import { DoorStateContext } from './schedule-visualizer/doors-overlay';
 import { LiftStateContext } from './schedule-visualizer/lift-overlay';
 import NotificationBar, { NotificationBarProps, NotificationBarContext } from './notification-bar';
-import { IconConfigurationsType } from '../icons-manager';
+import { ResourceConfigurationsType } from '../resource-manager';
 
 const borderRadius = 20;
 
@@ -116,7 +116,7 @@ export default function App(props: AppProps): JSX.Element {
   const [transport, setTransport] = React.useState<RomiCore.Transport | undefined>(undefined);
   const [buildingMap, setBuildingMap] = React.useState<RomiCore.BuildingMap | undefined>(undefined);
   const trajManager = React.useRef<RobotTrajectoryManager | undefined>(undefined);
-  const iconManager = React.useRef<IconConfigurationsType | undefined>(undefined);
+  const ResourceManager = React.useRef<ResourceConfigurationsType | undefined>(undefined);
 
   const doorStateManager = React.useMemo(() => new DoorStateManager(), []);
   const [doorStates, setDoorStates] = React.useState(() => doorStateManager.doorStates());
@@ -217,7 +217,7 @@ export default function App(props: AppProps): JSX.Element {
       return;
     }
     (async () => {
-      iconManager.current = await appIcons;
+      ResourceManager.current = await appIcons;
     })();
   }, [appIcons]);
 
@@ -349,7 +349,7 @@ export default function App(props: AppProps): JSX.Element {
                     buildingMap={buildingMap}
                     fleets={fleets}
                     trajManager={trajManager.current}
-                    appIcons={iconManager.current}
+                    appIcons={ResourceManager.current}
                     onDoorClick={handleDoorClick}
                     onLiftClick={handleLiftClick}
                     onRobotClick={handleRobotClick}

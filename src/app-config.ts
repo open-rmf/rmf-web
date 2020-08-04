@@ -4,12 +4,12 @@ import FakeTrajectoryManager from './mock/fake-traj-manager';
 import { FakeTransport } from './mock/fake-transport';
 import { DefaultTrajectoryManager, RobotTrajectoryManager } from './robot-trajectory-manager';
 import fakeAppIcons from './mock/data/fake-app-icons';
-import IconManager, { IconConfigurationsType } from './icons-manager';
+import ResourceManager, { ResourceConfigurationsType } from './resource-manager';
 
 export interface AppConfig {
   transportFactory: () => Promise<RomiCore.Transport>;
   trajectoryManagerFactory?: () => Promise<RobotTrajectoryManager>;
-  appIcons: Promise<IconConfigurationsType>;
+  appIcons: Promise<ResourceConfigurationsType>;
 }
 
 export let appConfig: AppConfig;
@@ -33,7 +33,7 @@ if (!process.env.REACT_APP_MOCK && process.env.NODE_ENV !== 'test') {
   appConfig = {
     transportFactory: () => SossTransport.connect(sossNodeName, sossServer, token),
     trajectoryManagerFactory: () => DefaultTrajectoryManager.create(trajServer),
-    appIcons: IconManager.getIconsConfigurationFile()
+    appIcons: ResourceManager.getResourceConfigurationFile()
   };
 } else {
   appConfig = {
