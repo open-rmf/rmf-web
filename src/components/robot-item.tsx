@@ -36,7 +36,7 @@ export const RobotItem = React.forwardRef(function(
         expandIcon={<ExpandMoreIcon />}
       >
         <OmniPanelStatusLabels
-          hideText={classes.hideText}
+          hideTextStyle={classes.hideText}
           modalLabelClass={classes.robotStatusLabel}
           name={robot.name}
           modeText={robotModeToString(robot.mode)}

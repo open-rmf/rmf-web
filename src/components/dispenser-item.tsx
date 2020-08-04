@@ -81,7 +81,7 @@ export const DispenserItem = React.forwardRef(function(
         classes={{ content: classes.expansionSummaryContent }}
         expandIcon={<ExpandMoreIcon />}>
           <OmniPanelStatusLabels
-            hideText={classes.hideText}
+            hideTextStyle={classes.hideText}
             modalLabelClass={dispenserModeLabelClass()}
             name={dispenserState.guid}
             modeText={dispenserModeToString()}

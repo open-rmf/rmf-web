@@ -62,7 +62,7 @@ export const DoorItem = React.forwardRef(function(
         expandIcon={<ExpandMoreIcon />}
       >
         <OmniPanelStatusLabels
-          hideText={classes.hideText}
+          hideTextStyle={classes.hideText}
           modalLabelClass={doorModeLabelClasses(doorState)}
           name={door.name}
           modeText={doorModeToString(doorState)}

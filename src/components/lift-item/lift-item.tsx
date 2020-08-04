@@ -66,7 +66,7 @@ export const LiftItem = React.forwardRef(function(
         expandIcon={<ExpandMoreIcon />}
       >
         <OmniPanelStatusLabels 
-          hideText={classes.hideText}
+          hideTextStyle={classes.hideText}
           modalLabelClass={liftFloorLabel(liftState)}
           name={lift.name}
           modeText={liftState ? liftState.current_floor : 'N/A'}
