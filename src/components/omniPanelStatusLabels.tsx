@@ -1,24 +1,32 @@
 import React from 'react';
-import { Typography } from '@material-ui/core';
+import { Typography, makeStyles } from '@material-ui/core';
 
 interface LabelProps {
-  hideTextStyle: string;
   modalLabelClass: string;
   modeText?: string;
   name?: string;
 }
 
-export default function OmniPanelStatusLabels(props: LabelProps) {
+const useStyles = makeStyles(theme => ({
+  hideText: {
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    maxWidth: "10rem",
+  }
+}));
 
-  const { hideTextStyle, modalLabelClass, modeText, name } = props;
+export default function OmniPanelStatusLabels(props: LabelProps) {
+  const classes = useStyles();
+  const { modalLabelClass, modeText, name } = props;
 
   return (
     <React.Fragment>
-      <Typography variant="h6" className={hideTextStyle}>
+      <Typography variant="h6" className={classes.hideText}>
         {name}
       </Typography>
-        <Typography className={modalLabelClass} variant='button'>
-          {modeText}
+      <Typography className={modalLabelClass} variant='button'>
+        {modeText}
       </Typography>
     </React.Fragment>
   )

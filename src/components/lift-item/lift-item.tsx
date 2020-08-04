@@ -66,7 +66,6 @@ export const LiftItem = React.forwardRef(function(
         expandIcon={<ExpandMoreIcon />}
       >
         <OmniPanelStatusLabels 
-          hideTextStyle={classes.hideText}
           modalLabelClass={liftFloorLabel(liftState)}
           name={lift.name}
           modeText={liftState ? liftState.current_floor : 'N/A'}
@@ -137,12 +136,5 @@ const useStyles = makeStyles(theme => {
       ...liftFloorLabelBase,
       borderColor: '#cccccc'
     },
-
-    hideText: {
-      overflow: "hidden",
-      textOverflow: "ellipsis",
-      whiteSpace: "nowrap",
-      maxWidth: "10rem",
-    }
   };
 });

@@ -62,7 +62,6 @@ export const DoorItem = React.forwardRef(function(
         expandIcon={<ExpandMoreIcon />}
       >
         <OmniPanelStatusLabels
-          hideTextStyle={classes.hideText}
           modalLabelClass={doorModeLabelClasses(doorState)}
           name={door.name}
           modeText={doorModeToString(doorState)}
@@ -147,13 +146,6 @@ const useStyles = makeStyles(theme => ({
   unknown: {
     borderColor: '#cccccc',
   },
-
-  hideText: {
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    whiteSpace: "nowrap",
-    maxWidth: "10rem",
-  }
 }));
 
 function doorTypeToString(doorType: number): string {

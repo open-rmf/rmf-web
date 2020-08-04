@@ -81,7 +81,6 @@ export const DispenserItem = React.forwardRef(function(
         classes={{ content: classes.expansionSummaryContent }}
         expandIcon={<ExpandMoreIcon />}>
           <OmniPanelStatusLabels
-            hideTextStyle={classes.hideText}
             modalLabelClass={dispenserModeLabelClass()}
             name={dispenserState.guid}
             modeText={dispenserModeToString()}
@@ -154,13 +153,6 @@ const useStyles = makeStyles(theme => ({
   listItem: {
     paddingTop: 0
   },
-
-  hideText: {
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    whiteSpace: "nowrap",
-    maxWidth: "10rem",
-  }
 }));
 
 const useDispenserModeLabelStyles = makeStyles(theme => {

@@ -36,7 +36,6 @@ export const RobotItem = React.forwardRef(function(
         expandIcon={<ExpandMoreIcon />}
       >
         <OmniPanelStatusLabels
-          hideTextStyle={classes.hideText}
           modalLabelClass={classes.robotStatusLabel}
           name={robot.name}
           modeText={robotModeToString(robot.mode)}
@@ -84,13 +83,6 @@ const useStyles = makeStyles(theme => ({
     minWidth: '4rem',
     textAlign: 'center',
   },
-
-  hideText: {
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    whiteSpace: "nowrap",
-    maxWidth: "10rem",
-  }
 }));
 
 function robotModeToString(robotMode: RomiCore.RobotMode): string {
