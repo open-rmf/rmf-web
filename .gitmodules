@@ -14,10 +14,6 @@
 	path = thirdparty/src/soss
 	url = https://github.com/osrf/soss.git
 
-[submodule "thirdparty/src/demo_soss_ros2"]
-	path = thirdparty/src/demo_soss_ros2
-	url = https://github.com/Yadunund/demo_soss_ros2.git
-
 [submodule "thirdparty/src/rmf_schedule_visualizer"]
 	path = thirdparty/src/rmf_schedule_visualizer
 	url = https://github.com/osrf/rmf_schedule_visualizer.git
