@@ -41,7 +41,7 @@ export default function NotificationBarStory(props: NotificationBarProps) {
           The notification bar contains 3 props: <b>message</b>, <b>type </b>
           and an optional <b>time</b>. The notification bar has a display duration 
           of 3 seconds before it auto hides. It will display the message and the background 
-          color will be determined by the type that is passed in. To see the bar, please press
+          color will be determined by the type that is passed in. To see the bar, click
           the button below.
         </Typography>
         <Grid container direction="row" spacing={1} alignItems="center" justify="center">
