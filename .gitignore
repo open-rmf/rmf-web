@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+/rmf_demos_ws
 /.pnp
 .pnp.js
 
@@ -24,3 +25,8 @@ yarn-error.log*
 
 # e2e artifacts
 /e2e/soss.yaml
+
+# colcon output
+/thirdparty/build/
+/thirdparty/install/
+/thirdparty/log/

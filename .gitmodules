@@ -1,0 +1,23 @@
+[submodule "thirdparty/src/rmf_demos"]
+	path = thirdparty/src/rmf_demos
+	url = https://github.com/osrf/rmf_demos.git
+    
+[submodule "thirdparty/src/rmf_core"]
+	path = thirdparty/src/rmf_core
+	url = https://github.com/osrf/rmf_core.git
+
+[submodule "thirdparty/src/traffic_editor"]
+	path = thirdparty/src/traffic_editor
+	url = https://github.com/osrf/traffic_editor.git
+
+[submodule "thirdparty/src/soss"]
+	path = thirdparty/src/soss
+	url = https://github.com/osrf/soss.git
+
+[submodule "thirdparty/src/demo_soss_ros2"]
+	path = thirdparty/src/demo_soss_ros2
+	url = https://github.com/Yadunund/demo_soss_ros2.git
+
+[submodule "thirdparty/src/rmf_schedule_visualizer"]
+	path = thirdparty/src/rmf_schedule_visualizer
+	url = https://github.com/osrf/rmf_schedule_visualizer.git

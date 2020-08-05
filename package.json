@@ -42,6 +42,8 @@
     "start:custom": "react-scripts start",
     "start:backend": ". e2e/env.sh && node e2e/prepare.js && ts-node e2e/startBackend.ts",
     "build": "react-scripts build",
+    "prepare": "git submodule update --init --depth 1",
+    "install:backend": "cd thirdparty && CXX=g++-8 colcon build --cmake-args -DCMAKE_BUILD_TYPE=RELEASE --packages-ignore soss-ros2-test",
     "test": "react-scripts test",
     "test:e2e": ". e2e/env.sh && node e2e/prepare.js && npm run build && wdio",
     "test:e2e:dev": ". e2e/env.sh && export ROMI_DASHBOARD_PORT=3000 && node e2e/prepare.js && wdio",
