@@ -1,5 +1,4 @@
 import React from 'react';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { actions } from '@storybook/addon-actions';
 
 import Robot, { RobotProps } from '../../components/schedule-visualizer/robot';
