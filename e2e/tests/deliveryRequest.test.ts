@@ -24,6 +24,7 @@ describe('Delivery request', () => {
     $('[data-component=MainMenu] [data-item=Commands]').click();
     const deliveryForm = $('[data-component=DeliveryForm]');
     deliveryForm.click();
+    $('input[name=pickupPlace]').waitForClickable();
     $('input[name=pickupPlace]').setValue(removeTextFromAutocomplete(10))
     $('input[name=pickupPlace]').setValue('pantry');
     $('.MuiAutocomplete-popper').click()
