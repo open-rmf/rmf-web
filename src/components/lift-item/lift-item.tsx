@@ -12,7 +12,7 @@ import { AntTab, AntTabs, TabPanel } from '../tab';
 import { LiftInformation } from './lift-item-information';
 import LiftRequestForm from './lift-item-form';
 import { LiftRequestManager } from '../../lift-state-manager';
-import OmniPanelStatusLabels from '../omniPanelStatusLabels'
+import OmniPanelStatusLabels from '../omni-panel-status-labels'
 
 export interface LiftItemProps extends Omit<ExpansionPanelProps, 'children'>{
   id?: string;

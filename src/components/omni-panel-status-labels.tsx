@@ -1,13 +1,13 @@
 import React from 'react';
 import { Typography, makeStyles } from '@material-ui/core';
 
-interface LabelProps {
+export interface LabelProps {
   modalLabelClass: string;
   modeText?: string;
   name?: string;
 }
 
-const useStyles = makeStyles(theme => ({
+export const useStyles = makeStyles(theme => ({
   hideText: {
     overflow: "hidden",
     textOverflow: "ellipsis",

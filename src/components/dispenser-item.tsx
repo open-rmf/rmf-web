@@ -15,7 +15,7 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 
 import DisableableTypography from './disableable-typography';
-import OmniPanelStatusLabels from './omniPanelStatusLabels';
+import OmniPanelStatusLabels from './omni-panel-status-labels';
 
 export interface DispenserItemProps extends Omit<ExpansionPanelProps, 'children'> {
   dispenserState: Readonly<RomiCore.DispenserState>;

@@ -14,7 +14,7 @@ import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 
-import OmniPanelStatusLabels from './omniPanelStatusLabels';
+import OmniPanelStatusLabels from './omni-panel-status-labels';
 
 export interface DoorItemProps extends Omit<ExpansionPanelProps, 'children'> {
   door: Readonly<RomiCore.Door>;
