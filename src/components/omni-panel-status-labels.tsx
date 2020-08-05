@@ -5,6 +5,7 @@ export interface LabelProps {
   modalLabelClass: string;
   modeText?: string;
   name?: string;
+  hideTextStyleOverride?: string;
 }
 
 export const useStyles = makeStyles(theme => ({
@@ -18,11 +19,11 @@ export const useStyles = makeStyles(theme => ({
 
 export default function OmniPanelStatusLabels(props: LabelProps) {
   const classes = useStyles();
-  const { modalLabelClass, modeText, name } = props;
+  const { modalLabelClass, modeText, name, hideTextStyleOverride } = props;
 
   return (
     <React.Fragment>
-      <Typography variant="h6" className={classes.hideText}>
+      <Typography variant="h6" className={hideTextStyleOverride ? hideTextStyleOverride : classes.hideText}>
         {name}
       </Typography>
       <Typography className={modalLabelClass} variant='button'>
