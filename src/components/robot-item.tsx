@@ -34,7 +34,9 @@ export const RobotItem = React.forwardRef(function(
         classes={{ content: classes.expansionSummaryContent }}
         expandIcon={<ExpandMoreIcon />}
       >
-        <Typography variant="h6" className={classes.hideText}>{robot.name}</Typography>
+        <Typography variant="h6" className={classes.hideText}>
+          {robot.name}
+        </Typography>
         <Typography className={classes.robotStatusLabel} variant="button">
           {robotModeToString(robot.mode)}
         </Typography>
@@ -63,7 +65,7 @@ const useStyles = makeStyles(theme => ({
   expansionDetail: {
     flexFlow: 'column',
     overflowX: 'auto',
-    padding: 0
+    padding: 0,
   },
 
   expansionDetailLine: {
@@ -83,11 +85,11 @@ const useStyles = makeStyles(theme => ({
   },
 
   hideText: {
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    whiteSpace: "nowrap",
-    maxWidth: "10rem",
-  }
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    maxWidth: '10rem',
+  },
 }));
 
 function robotModeToString(robotMode: RomiCore.RobotMode): string {
