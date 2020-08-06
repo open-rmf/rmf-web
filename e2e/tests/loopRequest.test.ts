@@ -1,5 +1,5 @@
 import { RmfLauncher } from '../rmf-launcher';
-import { overwriteClick } from './utils';
+import { overwriteClick, getRobotLocations } from './utils';
 
 describe('loop request', () => {
   const launcher = new RmfLauncher();
@@ -17,15 +17,7 @@ describe('loop request', () => {
       return document.querySelectorAll('[data-component=RobotItem]');
     });
 
-    let getRobotLocations = () => {
-      const allRobotItems = browser.custom$$('findAllRobots', '[data-component=RobotItem]');
-      let robotLocations = allRobotItems.map(robot => {
-        robot.click();
-        return robot.$('[data-role=position]').getHTML();
-      });
-      return robotLocations;
-    };
-    const currentRobotLocations = getRobotLocations();
+    const currentRobotLocations = getRobotLocations(browser);
 
     const backButton = $('[name="back-button"]');
     backButton.click();
@@ -37,7 +29,7 @@ describe('loop request', () => {
 
     backButton.click();
     $('[data-component=MainMenu] [data-item=Robots]').click();
-    const newRobotLocations = getRobotLocations();
+    const newRobotLocations = getRobotLocations(browser);
 
     expect(newRobotLocations).not.toMatchObject(currentRobotLocations);
   });

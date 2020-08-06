@@ -65,7 +65,7 @@ const useStyles = makeStyles(theme => ({
   expansionDetail: {
     flexFlow: 'column',
     overflowX: 'auto',
-    padding: 0
+    padding: 0,
   },
 
   expansionDetailLine: {
