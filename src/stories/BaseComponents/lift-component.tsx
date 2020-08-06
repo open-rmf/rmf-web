@@ -2,26 +2,25 @@ import React from 'react';
 import { actions } from '@storybook/addon-actions';
 
 import Lift, { LiftProps } from '../../components/schedule-visualizer/lift';
-import { viewBoxCoords } from './Utils';
+import { viewBoxCoords, StyleTyping } from './Utils';
 
 interface LiftComponentProps extends LiftProps {
   renderInfoPanel(): JSX.Element;
 }
 
-const styles = {
+const styles: StyleTyping = {
   display: {
     display: 'grid',
-    gridTemplateColumns: '1fr 3fr'
-  }
+    gridTemplateColumns: '1fr 3fr',
+  },
 };
 
 export default function LiftComponent(props: LiftComponentProps): React.ReactElement {
-
   const { currentFloor, lift, liftState, renderInfoPanel } = props;
 
   return (
     <div style={styles.display}>
-      { renderInfoPanel() }
+      {renderInfoPanel()}
 
       <div>
         <svg viewBox={viewBoxCoords}>
@@ -34,5 +33,5 @@ export default function LiftComponent(props: LiftComponentProps): React.ReactEle
         </svg>
       </div>
     </div>
-  )
+  );
 }
