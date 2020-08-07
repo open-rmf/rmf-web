@@ -4,7 +4,6 @@ import {
   ExpansionPanelProps,
   ExpansionPanelSummary,
   makeStyles,
-  Typography,
 } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
@@ -13,6 +12,7 @@ import { AntTab, AntTabs, TabPanel } from '../tab';
 import { LiftInformation } from './lift-item-information';
 import LiftRequestForm from './lift-item-form';
 import { LiftRequestManager } from '../../lift-state-manager';
+import OmniPanelStatusLabels from '../omni-panel-status-labels'
 
 export interface LiftItemProps extends Omit<ExpansionPanelProps, 'children'>{
   id?: string;
@@ -65,10 +65,11 @@ export const LiftItem = React.forwardRef(function(
         classes={{ content: classes.expansionSummaryContent }}
         expandIcon={<ExpandMoreIcon />}
       >
-        <Typography variant="h6" className={classes.hideText}>{lift.name}</Typography>
-        <Typography className={liftFloorLabel(liftState)} variant="button">
-          {liftState ? liftState.current_floor : 'N/A'}
-        </Typography>
+        <OmniPanelStatusLabels 
+          modalLabelClass={liftFloorLabel(liftState)}
+          name={lift.name}
+          modeText={liftState ? liftState.current_floor : 'N/A'}
+        />
       </ExpansionPanelSummary>
       <ExpansionPanelDetails className={classes.expansionDetail}>
         <AntTabs variant="fullWidth" value={tabValue} onChange={handleChange} aria-label="scrollable auto tabs example">
@@ -135,12 +136,5 @@ const useStyles = makeStyles(theme => {
       ...liftFloorLabelBase,
       borderColor: '#cccccc'
     },
-
-    hideText: {
-      overflow: "hidden",
-      textOverflow: "ellipsis",
-      whiteSpace: "nowrap",
-      maxWidth: "10rem",
-    }
   };
 });
