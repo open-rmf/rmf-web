@@ -4,6 +4,7 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 
 import DoorComponent from './BaseComponents/door-component';
 import { StyleTyping } from './BaseComponents/Utils';
+import { door, doorStates } from './BaseComponents/Utils';
 
 export default {
   title: 'Door',
@@ -28,24 +29,7 @@ const styles: StyleTyping = {
   },
 };
 
-const door = {
-  door_type: RomiCore.Door.DOOR_TYPE_SINGLE_SLIDING,
-  motion_direction: 1,
-  motion_range: -1.571,
-  name: 'main_door',
-  v1_x: 10.8,
-  v1_y: -2.3,
-  v2_x: 7.7,
-  v2_y: -5.5,
-};
-
-const doorState = {
-  current_mode: {
-    value: RomiCore.DoorMode.MODE_CLOSED,
-  },
-  door_name: 'main_door',
-  door_time: { sec: 0, nanosec: 0 },
-};
+const doorState = doorStates.main_door;
 
 const singleSlidingDoor = {
   ...door,

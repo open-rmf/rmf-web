@@ -2,7 +2,8 @@ import React from 'react';
 import { Divider, Typography } from '@material-ui/core';
 
 import ButtonColors from './BaseComponents/button-colors';
-import { StyleTyping } from './BaseComponents/Utils';
+import DoorButton from './BaseComponents/door-buttons';
+import { StyleTyping, doors, doorStates } from './BaseComponents/Utils';
 
 export default {
   title: 'Design Decisions',
@@ -36,21 +37,6 @@ const styles: StyleTyping = {
     textAlign: 'center',
     borderRadius: '4px',
   },
-};
-
-const doorOpen: React.CSSProperties = {
-  ...styles.panelButton,
-  border: '2px solid #4caf50',
-};
-
-const doorMoving: React.CSSProperties = {
-  ...styles.panelButton,
-  border: '2px solid #ff9800',
-};
-
-const doorClosed: React.CSSProperties = {
-  ...styles.panelButton,
-  border: '2px solid #f44336',
 };
 
 const dispenserOnline: React.CSSProperties = {
@@ -95,11 +81,7 @@ const robotStateList = [
   'PAUSED',
   'WAITING',
 ];
-const doorStateMap: { [key: string]: React.CSSProperties } = {
-  OPEN: doorOpen,
-  MOVING: doorMoving,
-  CLOSED: doorClosed,
-};
+
 const dispenserStateMap: { [key: string]: React.CSSProperties } = {
   ONLINE: dispenserOnline,
   IDLE: dispenserIdle,
@@ -152,14 +134,7 @@ export const DoorButtonColors = () => (
       <Typography variant="h6">Door State</Typography>
       <Typography variant="h6">Button color and representation</Typography>
     </div>
-    {Object.keys(doorStateMap).map((state, index) => {
-      return (
-        <React.Fragment key={index}>
-          <Divider />
-          <ButtonColors state={state} style={doorStateMap[state]} />
-        </React.Fragment>
-      );
-    })}
+    <DoorButton doors={doors} doorStates={doorStates} />
   </div>
 );
 
