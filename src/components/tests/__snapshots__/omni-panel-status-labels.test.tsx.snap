@@ -1,0 +1,216 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Component renders correctly 1`] = `
+<OmniPanelStatusLabels
+  modalLabelClass="mock-style"
+  modeText="State"
+  name="Robot"
+>
+  <WithStyles(ForwardRef(Typography))
+    className="makeStyles-hideText-1"
+    variant="h6"
+  >
+    <ForwardRef(Typography)
+      className="makeStyles-hideText-1"
+      classes={
+        Object {
+          "alignCenter": "MuiTypography-alignCenter",
+          "alignJustify": "MuiTypography-alignJustify",
+          "alignLeft": "MuiTypography-alignLeft",
+          "alignRight": "MuiTypography-alignRight",
+          "body1": "MuiTypography-body1",
+          "body2": "MuiTypography-body2",
+          "button": "MuiTypography-button",
+          "caption": "MuiTypography-caption",
+          "colorError": "MuiTypography-colorError",
+          "colorInherit": "MuiTypography-colorInherit",
+          "colorPrimary": "MuiTypography-colorPrimary",
+          "colorSecondary": "MuiTypography-colorSecondary",
+          "colorTextPrimary": "MuiTypography-colorTextPrimary",
+          "colorTextSecondary": "MuiTypography-colorTextSecondary",
+          "displayBlock": "MuiTypography-displayBlock",
+          "displayInline": "MuiTypography-displayInline",
+          "gutterBottom": "MuiTypography-gutterBottom",
+          "h1": "MuiTypography-h1",
+          "h2": "MuiTypography-h2",
+          "h3": "MuiTypography-h3",
+          "h4": "MuiTypography-h4",
+          "h5": "MuiTypography-h5",
+          "h6": "MuiTypography-h6",
+          "noWrap": "MuiTypography-noWrap",
+          "overline": "MuiTypography-overline",
+          "paragraph": "MuiTypography-paragraph",
+          "root": "MuiTypography-root",
+          "srOnly": "MuiTypography-srOnly",
+          "subtitle1": "MuiTypography-subtitle1",
+          "subtitle2": "MuiTypography-subtitle2",
+        }
+      }
+      variant="h6"
+    >
+      <h6
+        className="MuiTypography-root makeStyles-hideText-1 MuiTypography-h6"
+      >
+        Robot
+      </h6>
+    </ForwardRef(Typography)>
+  </WithStyles(ForwardRef(Typography))>
+  <WithStyles(ForwardRef(Typography))
+    className="mock-style"
+    variant="button"
+  >
+    <ForwardRef(Typography)
+      className="mock-style"
+      classes={
+        Object {
+          "alignCenter": "MuiTypography-alignCenter",
+          "alignJustify": "MuiTypography-alignJustify",
+          "alignLeft": "MuiTypography-alignLeft",
+          "alignRight": "MuiTypography-alignRight",
+          "body1": "MuiTypography-body1",
+          "body2": "MuiTypography-body2",
+          "button": "MuiTypography-button",
+          "caption": "MuiTypography-caption",
+          "colorError": "MuiTypography-colorError",
+          "colorInherit": "MuiTypography-colorInherit",
+          "colorPrimary": "MuiTypography-colorPrimary",
+          "colorSecondary": "MuiTypography-colorSecondary",
+          "colorTextPrimary": "MuiTypography-colorTextPrimary",
+          "colorTextSecondary": "MuiTypography-colorTextSecondary",
+          "displayBlock": "MuiTypography-displayBlock",
+          "displayInline": "MuiTypography-displayInline",
+          "gutterBottom": "MuiTypography-gutterBottom",
+          "h1": "MuiTypography-h1",
+          "h2": "MuiTypography-h2",
+          "h3": "MuiTypography-h3",
+          "h4": "MuiTypography-h4",
+          "h5": "MuiTypography-h5",
+          "h6": "MuiTypography-h6",
+          "noWrap": "MuiTypography-noWrap",
+          "overline": "MuiTypography-overline",
+          "paragraph": "MuiTypography-paragraph",
+          "root": "MuiTypography-root",
+          "srOnly": "MuiTypography-srOnly",
+          "subtitle1": "MuiTypography-subtitle1",
+          "subtitle2": "MuiTypography-subtitle2",
+        }
+      }
+      variant="button"
+    >
+      <span
+        className="MuiTypography-root mock-style MuiTypography-button"
+      >
+        State
+      </span>
+    </ForwardRef(Typography)>
+  </WithStyles(ForwardRef(Typography))>
+</OmniPanelStatusLabels>
+`;
+
+exports[`Component renders correctly 2`] = `
+<OmniPanelStatusLabels
+  hideTextStyleOverride="override-style"
+  modalLabelClass="mock-style"
+  modeText="State"
+  name="Robot"
+>
+  <WithStyles(ForwardRef(Typography))
+    className="override-style"
+    variant="h6"
+  >
+    <ForwardRef(Typography)
+      className="override-style"
+      classes={
+        Object {
+          "alignCenter": "MuiTypography-alignCenter",
+          "alignJustify": "MuiTypography-alignJustify",
+          "alignLeft": "MuiTypography-alignLeft",
+          "alignRight": "MuiTypography-alignRight",
+          "body1": "MuiTypography-body1",
+          "body2": "MuiTypography-body2",
+          "button": "MuiTypography-button",
+          "caption": "MuiTypography-caption",
+          "colorError": "MuiTypography-colorError",
+          "colorInherit": "MuiTypography-colorInherit",
+          "colorPrimary": "MuiTypography-colorPrimary",
+          "colorSecondary": "MuiTypography-colorSecondary",
+          "colorTextPrimary": "MuiTypography-colorTextPrimary",
+          "colorTextSecondary": "MuiTypography-colorTextSecondary",
+          "displayBlock": "MuiTypography-displayBlock",
+          "displayInline": "MuiTypography-displayInline",
+          "gutterBottom": "MuiTypography-gutterBottom",
+          "h1": "MuiTypography-h1",
+          "h2": "MuiTypography-h2",
+          "h3": "MuiTypography-h3",
+          "h4": "MuiTypography-h4",
+          "h5": "MuiTypography-h5",
+          "h6": "MuiTypography-h6",
+          "noWrap": "MuiTypography-noWrap",
+          "overline": "MuiTypography-overline",
+          "paragraph": "MuiTypography-paragraph",
+          "root": "MuiTypography-root",
+          "srOnly": "MuiTypography-srOnly",
+          "subtitle1": "MuiTypography-subtitle1",
+          "subtitle2": "MuiTypography-subtitle2",
+        }
+      }
+      variant="h6"
+    >
+      <h6
+        className="MuiTypography-root override-style MuiTypography-h6"
+      >
+        Robot
+      </h6>
+    </ForwardRef(Typography)>
+  </WithStyles(ForwardRef(Typography))>
+  <WithStyles(ForwardRef(Typography))
+    className="mock-style"
+    variant="button"
+  >
+    <ForwardRef(Typography)
+      className="mock-style"
+      classes={
+        Object {
+          "alignCenter": "MuiTypography-alignCenter",
+          "alignJustify": "MuiTypography-alignJustify",
+          "alignLeft": "MuiTypography-alignLeft",
+          "alignRight": "MuiTypography-alignRight",
+          "body1": "MuiTypography-body1",
+          "body2": "MuiTypography-body2",
+          "button": "MuiTypography-button",
+          "caption": "MuiTypography-caption",
+          "colorError": "MuiTypography-colorError",
+          "colorInherit": "MuiTypography-colorInherit",
+          "colorPrimary": "MuiTypography-colorPrimary",
+          "colorSecondary": "MuiTypography-colorSecondary",
+          "colorTextPrimary": "MuiTypography-colorTextPrimary",
+          "colorTextSecondary": "MuiTypography-colorTextSecondary",
+          "displayBlock": "MuiTypography-displayBlock",
+          "displayInline": "MuiTypography-displayInline",
+          "gutterBottom": "MuiTypography-gutterBottom",
+          "h1": "MuiTypography-h1",
+          "h2": "MuiTypography-h2",
+          "h3": "MuiTypography-h3",
+          "h4": "MuiTypography-h4",
+          "h5": "MuiTypography-h5",
+          "h6": "MuiTypography-h6",
+          "noWrap": "MuiTypography-noWrap",
+          "overline": "MuiTypography-overline",
+          "paragraph": "MuiTypography-paragraph",
+          "root": "MuiTypography-root",
+          "srOnly": "MuiTypography-srOnly",
+          "subtitle1": "MuiTypography-subtitle1",
+          "subtitle2": "MuiTypography-subtitle2",
+        }
+      }
+      variant="button"
+    >
+      <span
+        className="MuiTypography-root mock-style MuiTypography-button"
+      >
+        State
+      </span>
+    </ForwardRef(Typography)>
+  </WithStyles(ForwardRef(Typography))>
+</OmniPanelStatusLabels>
+`;
