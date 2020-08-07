@@ -6,23 +6,6 @@ import OmniPanelStatusLabels, { LabelProps } from '../omni-panel-status-labels';
 
 const mount = createMount();
 
-const getStatusLabelsComponent = (
-  Component: (props: LabelProps) => React.ReactElement,
-  modeText: string,
-  modalLabelClass: string,
-  name: string,
-  hideTextStyleOverride?: string,
-) => {
-  return (
-    <Component
-      modeText={modeText}
-      modalLabelClass={modalLabelClass}
-      name={name}
-      hideTextStyleOverride={hideTextStyleOverride}
-    />
-  );
-};
-
 const buildLabelsWrapper = (
   Component: (props: LabelProps) => React.ReactElement,
   modeText: string,
@@ -31,7 +14,12 @@ const buildLabelsWrapper = (
   hideTextStyleOverride?: string,
 ) => {
   return mount(
-    getStatusLabelsComponent(Component, modeText, modalLabelClass, name, hideTextStyleOverride),
+    <Component
+      modeText={modeText}
+      modalLabelClass={modalLabelClass}
+      name={name}
+      hideTextStyleOverride={hideTextStyleOverride}
+    />,
   );
 };
 
