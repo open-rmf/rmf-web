@@ -8,7 +8,7 @@ import { Element } from '@wdio/sync';
 export function overwriteClick() {
   browser.overwriteCommand(
     'click',
-    function(this: Element, origClick) {
+    function (this: Element, origClick) {
       let prevLocation = this.getLocation();
       this.waitUntil(() => {
         const newLocation = this.getLocation();
@@ -21,3 +21,27 @@ export function overwriteClick() {
     true,
   );
 }
+
+/**
+ * Return a list of backspace characters. This is only used in case we want to delete characters from the Autocomplete material-ui component
+ */
+export function removeTextFromAutocomplete(characterNum: number): string {
+  const backspace = '\u0008';
+  let backspaces = ''
+  for (let index = 0; index < characterNum; index++) {
+    backspaces += backspace
+  }
+  return backspaces
+}
+
+/**
+ * Get the robot location
+ */
+export const getRobotLocations = (browser: WebdriverIO.BrowserObject): string[] => {
+  const allRobotItems = browser.custom$$('findAllRobots', '[data-component=RobotItem]');
+  let robotLocations = allRobotItems.map(robot => {
+    robot.click();
+    return robot.$('[data-role=position]').getHTML();
+  });
+  return robotLocations;
+};

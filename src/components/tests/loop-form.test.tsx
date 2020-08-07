@@ -1,22 +1,16 @@
 import { createMount } from '@material-ui/core/test-utils';
 import { LoopForm } from '../loop-form';
 import React from 'react';
+import { TLoopRequest } from '../commands-panel';
 
 const mount = createMount();
 
-type customFunction = (
-  fleetName: string,
-  numLoops: number,
-  startLocationPoint: string,
-  endLocationPoint: string,
-) => void;
-
-const buildWrapper = (fleetName: string, onClick: customFunction) => {
+const buildWrapper = (fleetName: string, onClick: TLoopRequest) => {
   const wrapper = mount(<LoopForm requestLoop={onClick} fleetNames={[fleetName]} />);
   return wrapper;
 };
 
-describe('form Validation', () => {
+describe('Form validation', () => {
   let isRequestButtonClicked = false;
   const onClick = (
     fleetName: string,
