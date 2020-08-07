@@ -7,13 +7,12 @@
     "@material-ui/core": "^4.9.4",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.54",
-    "@osrf/romi-js-core-interfaces": "0.0.2-alpha.7",
-    "@osrf/romi-js-soss-transport": "0.0.2-alpha.4",
+    "@osrf/romi-js-core-interfaces": "^0.1.0",
+    "@osrf/romi-js-soss-transport": "^0.1.0",
     "@types/debug": "^4.1.5",
     "@types/enzyme-adapter-react-16": "^1.0.6",
     "@types/jest": "24.0.23",
     "@types/leaflet": "^1.5.5",
-    "@types/lodash": "^4.14.155",
     "@types/node": "12.12.14",
     "@types/react": "^16.9.23",
     "@types/react-dom": "16.9.4",
@@ -27,8 +26,6 @@
     "enzyme-adapter-react-16": "^1.15.2",
     "eventemitter3": "^4.0.0",
     "leaflet": "^1.6.0",
-    "lodash": "^4.17.15",
-    "prettier": "^1.19.1",
     "react": "^16.12.0",
     "react-async": "^10.0.0",
     "react-dom": "^16.12.0",
@@ -85,8 +82,22 @@
     "@wdio/spec-reporter": "^6.1.14",
     "@wdio/sync": "^6.1.14",
     "chromedriver": "^83.0.0",
+    "enzyme-to-json": "^3.5.0",
     "gh-pages": "^2.2.0",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.2.11",
+    "prettier": "^1.19.1",
     "ts-node": "^8.10.2",
     "wdio-chromedriver-service": "^6.0.3"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
+      "prettier --write"
+    ]
   }
 }

@@ -4,19 +4,28 @@ import fakeLiftStates from '../../../mock/data/lift-states';
 import getBuildingMap from '../../../mock/data/building-map';
 import Lift from '../lift';
 import React from 'react';
+import toJson from 'enzyme-to-json';
 
 const mount = createMount();
+
+const getLiftComponent = (
+  lift: RomiCore.Lift,
+  state: RomiCore.LiftState,
+  currentFloor: string = 'L1',
+): React.ReactElement => {
+  return (
+    <svg>
+      <Lift currentFloor={currentFloor} lift={lift} liftState={state} />
+    </svg>
+  );
+};
 
 const buildWrapper = (
   lift: RomiCore.Lift,
   state: RomiCore.LiftState,
   currentFloor: string = 'L1',
 ) => {
-  const wrapper = mount(
-    <svg>
-      <Lift currentFloor={currentFloor} lift={lift} liftState={state} />
-    </svg>,
-  );
+  const wrapper = mount(getLiftComponent(lift, state, currentFloor));
 
   const liftSVGRect = wrapper
     .find(Lift)
@@ -24,6 +33,14 @@ const buildWrapper = (
     .find('rect');
 
   return { wrapper, liftSVGRect };
+};
+
+const loadLift = async () => {
+  const buildingMap = await getBuildingMap();
+  const lifts = buildingMap.lifts;
+  const lift = lifts[0];
+  const state = fakeLiftStates()[lift.name];
+  return { lift, state };
 };
 
 it('Trigger click event', async () => {
@@ -48,14 +65,6 @@ it('Trigger click event', async () => {
 });
 
 describe('Checks assignation of styles on different mode of the Lift', () => {
-  const loadLift = async () => {
-    const buildingMap = await getBuildingMap();
-    const lifts = buildingMap.lifts;
-    const lift = lifts[0];
-    const state = fakeLiftStates()[lift.name];
-    return { lift, state };
-  };
-
   test('Check orange color and _Fire_ text when the lift its on Fire mode', async () => {
     const { lift, state } = await loadLift();
     state.current_mode = RomiCore.LiftState.MODE_FIRE;
@@ -94,14 +103,6 @@ describe('Checks assignation of styles on different mode of the Lift', () => {
 });
 
 describe('Checks assignation of styles on combination of motion states and mode of the Lift', () => {
-  const loadLift = async () => {
-    const buildingMap = await getBuildingMap();
-    const lifts = buildingMap.lifts;
-    const lift = lifts[0];
-    const state = fakeLiftStates()[lift.name];
-    return { lift, state };
-  };
-
   test('Lift its on current floor and its on Human mode', async () => {
     const { lift, state } = await loadLift();
     state.current_mode = RomiCore.LiftState.MODE_HUMAN;
@@ -172,4 +173,13 @@ describe('Checks assignation of styles on combination of motion states and mode 
     expect(wrapper.find('#liftMode').exists()).toBe(false);
     wrapper.unmount();
   });
+});
+
+test('Lift renders correctly', async () => {
+  const { lift, state } = await loadLift();
+  state.current_floor = 'L1';
+  state.current_mode = RomiCore.LiftState.MODE_FIRE;
+  state.motion_state = RomiCore.LiftState.MOTION_STOPPED;
+  const { wrapper } = buildWrapper(lift, state);
+  expect(toJson(wrapper)).toMatchSnapshot();
 });

@@ -32,6 +32,46 @@ export default function fakeFleets(): RomiCore.FleetState[] {
       name: 'Fleet1',
       robots: [
         {
+          name: 'Robot1',
+          model: 'Model1',
+          mode: { mode: RomiCore.RobotMode.MODE_EMERGENCY },
+          location: {
+            level_name: 'L2',
+            x: 4,
+            y: -12,
+            yaw: 0,
+            t: { sec: 0, nanosec: 0 },
+          },
+          battery_percent: 100,
+          path: [],
+          task_id: 'task1',
+        },
+      ],
+    },
+    {
+      name: 'Fleet2',
+      robots: [
+        {
+          name: 'Robot2',
+          model: 'Model2',
+          mode: { mode: RomiCore.RobotMode.MODE_EMERGENCY },
+          location: {
+            level_name: 'L2',
+            x: 4,
+            y: -12,
+            yaw: 0,
+            t: { sec: 0, nanosec: 0 },
+          },
+          battery_percent: 100,
+          path: [],
+          task_id: 'task2',
+        },
+      ],
+    },
+    {
+      name: 'FleetA',
+      robots: [
+        {
           name: 'RobotA',
           model: 'ModelA',
           mode: { mode: RomiCore.RobotMode.MODE_MOVING },
@@ -64,7 +104,7 @@ export default function fakeFleets(): RomiCore.FleetState[] {
       ],
     },
     {
-      name: 'Fleet2',
+      name: 'FleetB',
       robots: [
         {
           name: 'RobotC',

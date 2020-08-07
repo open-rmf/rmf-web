@@ -15,11 +15,11 @@ export const LiftInformation = (props: liftInformationProps) => {
 
   function renderList(values: string[]): JSX.Element {
     const items = values.map(val => (
-      <ListItem key={val} dense className={classes.noPadding}>
+      <ListItem key={val} dense className={classes.listItem}>
         <Typography variant="body1">{val}</Typography>
       </ListItem>
     ));
-    return <List>{items}</List>;
+    return <List className={classes.listRoot}>{items}</List>;
   }
 
   function renderAvailableFloors(liftState?: RomiCore.LiftState): JSX.Element {
@@ -48,11 +48,17 @@ export const LiftInformation = (props: liftInformationProps) => {
   return (
     <>
       <div className={classes.expansionDetailLine}>
+        <Typography variant="body1">Name:</Typography>
+        <Typography variant="body1">{lift.name}</Typography>
+      </div>
+      <Divider />
+      <div className={classes.expansionDetailLine}>
         <Typography variant="body1">Location:</Typography>
         <Typography variant="body1">
           {`(${lift.ref_x.toFixed(3)}, ${lift.ref_y.toFixed(3)})`}
         </Typography>
       </div>
+      <Divider />
       <div className={classes.expansionDetailLine}>
         <Typography variant="body1">Destination Floor:</Typography>
         <DisableableTypography disabled={!liftState} variant="body1">
@@ -101,7 +107,12 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(0.5),
   },
 
-  noPadding: {
+  listRoot: {
+    position: 'relative',
+    padding: 0,
+  },
+
+  listItem: {
     padding: 0,
   },
 }));

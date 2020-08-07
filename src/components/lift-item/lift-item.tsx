@@ -4,19 +4,17 @@ import {
   ExpansionPanelProps,
   ExpansionPanelSummary,
   makeStyles,
-  Typography,
-  Tab,
-  Tabs,
 } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React, { CSSProperties } from 'react';
-import { TabPanel } from '../tab';
+import { AntTab, AntTabs, TabPanel } from '../tab';
 import { LiftInformation } from './lift-item-information';
 import LiftRequestForm from './lift-item-form';
 import { LiftRequestManager } from '../../lift-state-manager';
+import OmniPanelStatusLabels from '../omni-panel-status-labels';
 
-export interface LiftItemProps extends Omit<ExpansionPanelProps, 'children'>{
+export interface LiftItemProps extends Omit<ExpansionPanelProps, 'children'> {
   id?: string;
   lift: Readonly<RomiCore.Lift>;
   liftState?: Readonly<RomiCore.LiftState>;
@@ -67,24 +65,22 @@ export const LiftItem = React.forwardRef(function(
         classes={{ content: classes.expansionSummaryContent }}
         expandIcon={<ExpandMoreIcon />}
       >
-        <Typography variant="h5">{lift.name}</Typography>
-        <Typography className={liftFloorLabel(liftState)} variant="button">
-          {liftState ? liftState.current_floor : 'Unknown'}
-        </Typography>
+        <OmniPanelStatusLabels
+          modalLabelClass={liftFloorLabel(liftState)}
+          name={lift.name}
+          modeText={liftState ? liftState.current_floor : 'N/A'}
+        />
       </ExpansionPanelSummary>
       <ExpansionPanelDetails className={classes.expansionDetail}>
-        <Tabs
+        <AntTabs
+          variant="fullWidth"
           value={tabValue}
           onChange={handleChange}
-          indicatorColor="primary"
-          textColor="primary"
-          variant="scrollable"
-          scrollButtons="auto"
           aria-label="scrollable auto tabs example"
         >
-          <Tab label="Info" />
-          <Tab label="Request" />
-        </Tabs>
+          <AntTab label="Info" />
+          <AntTab label="Request" />
+        </AntTabs>
         <TabPanel value={tabValue} index={0}>
           <LiftInformation lift={lift} liftState={liftState} />
         </TabPanel>
@@ -107,7 +103,6 @@ const useStyles = makeStyles(theme => {
   const liftFloorLabelBase: CSSProperties = {
     borderRadius: theme.shape.borderRadius,
     borderStyle: 'solid',
-
     border: 2,
     padding: 5,
     width: '4rem',
@@ -122,18 +117,14 @@ const useStyles = makeStyles(theme => {
 
     expansionDetail: {
       flexFlow: 'column',
-      padding: '0',
       overflowX: 'auto',
+      padding: 0,
     },
 
     expansionDetailLine: {
       display: 'inline-flex',
       justifyContent: 'space-between',
       padding: theme.spacing(0.5),
-    },
-
-    noPadding: {
-      padding: 0,
     },
 
     liftFloorLabelStopped: {
@@ -148,7 +139,7 @@ const useStyles = makeStyles(theme => {
 
     liftFloorLabelUnknown: {
       ...liftFloorLabelBase,
-      borderStyle: 'none',
+      borderColor: '#cccccc',
     },
   };
 });

@@ -6,7 +6,7 @@ export type RawVelocity = [number, number, number];
 // RawPose2D received from server is in this format (x, y, theta)
 export type RawPose2D = [number, number, number];
 
-interface RawKnot {
+export interface RawKnot {
   t: number; // milliseconds
   v: RawVelocity;
   x: RawPose2D;
@@ -36,6 +36,8 @@ export interface Trajectory {
   shape: string;
   dimensions: number;
   segments: RawKnot[];
+  robot_name: string;
+  fleet_name: string;
 }
 
 export interface TrajectoryResponse {
@@ -44,7 +46,7 @@ export interface TrajectoryResponse {
   conflicts: Conflict[];
 }
 
-export type Conflict = number;
+export type Conflict = number[];
 
 export interface RobotTrajectoryManager {
   serverTime(request: TimeRequest): Promise<TimeResponse>;
@@ -93,6 +95,14 @@ export class DefaultTrajectoryManager {
     const resp = JSON.parse(event.data);
     this._checkResponse(request, resp);
     return resp as TimeResponse;
+  }
+
+  static getRobotNameFromPathId(
+    pathId: number,
+    trajectories: readonly Trajectory[],
+  ): string | undefined {
+    const traj = trajectories.find(trajectory => trajectory.id === pathId);
+    return traj?.robot_name;
   }
 
   private _ongoingRequest: Promise<MessageEvent> | null = null;

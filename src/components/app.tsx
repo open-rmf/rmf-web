@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { DASHBOARD_ROUTE, LOGIN_ROUTE, DEFAULT_ROUTE } from '../util/url';
-import Dashboard from './dashboard';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import Login from './login/login';
+import 'typeface-roboto';
 import { UserContext } from '../app-contexts';
-import { isEmpty } from 'lodash';
+import { DASHBOARD_ROUTE, DEFAULT_ROUTE, LOGIN_ROUTE } from '../util/url';
+import Dashboard from './dashboard';
+import Login from './login/login';
 import NotFoundPage from './page-not-found';
 import PrivateRoute from './privateRoute';
-import 'typeface-roboto';
+import './app.css';
 
 export default function App() {
   // TODO: replace with the data of the authentication service.
@@ -20,14 +20,14 @@ export default function App() {
           <Route exact={true} path={LOGIN_ROUTE} component={Login} />
           <PrivateRoute
             redirectToLogin={true}
-            isAuthenticated={!isEmpty(user)}
+            isAuthenticated={!user}
             exact={true}
             component={Dashboard}
             path={DASHBOARD_ROUTE}
           />
           <PrivateRoute
             redirectToLogin={true}
-            isAuthenticated={!isEmpty(user)}
+            isAuthenticated={!user}
             exact={true}
             path={DEFAULT_ROUTE}
             component={Dashboard}

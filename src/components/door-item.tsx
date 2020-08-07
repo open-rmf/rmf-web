@@ -14,6 +14,8 @@ import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 
+import OmniPanelStatusLabels from './omni-panel-status-labels';
+
 export interface DoorItemProps extends Omit<ExpansionPanelProps, 'children'> {
   door: Readonly<RomiCore.Door>;
   doorState?: Readonly<RomiCore.DoorState>;
@@ -33,7 +35,7 @@ export const DoorItem = React.forwardRef(function(
 
   function doorModeLabelClasses(doorState?: RomiCore.DoorState): string {
     if (!doorState) {
-      return '';
+      return `${classes.doorLabel} ${classes.unknown}`;
     }
     switch (doorState.current_mode.value) {
       case RomiCore.DoorMode.MODE_OPEN:
@@ -59,12 +61,18 @@ export const DoorItem = React.forwardRef(function(
         classes={{ content: classes.expansionSummaryContent }}
         expandIcon={<ExpandMoreIcon />}
       >
-        <Typography variant="h5">{door.name}</Typography>
-        <Typography data-role="state" className={doorModeLabelClasses(doorState)} variant="button">
-          {doorModeToString(doorState)}
-        </Typography>
+        <OmniPanelStatusLabels
+          modalLabelClass={doorModeLabelClasses(doorState)}
+          name={door.name}
+          modeText={doorModeToString(doorState)}
+        />
       </ExpansionPanelSummary>
       <ExpansionPanelDetails data-role="details" className={classes.expansionDetail}>
+        <div className={classes.expansionDetailLine}>
+          <Typography variant="body1">Name:</Typography>
+          <Typography variant="body1">{door.name}</Typography>
+        </div>
+        <Divider />
         <div className={classes.expansionDetailLine}>
           <Typography variant="body1">Type:</Typography>
           <Typography variant="body1">{doorTypeToString(door.door_type)}</Typography>
@@ -105,6 +113,7 @@ const useStyles = makeStyles(theme => ({
 
   expansionDetail: {
     flexFlow: 'column',
+    padding: '8px',
   },
 
   expansionDetailLine: {
@@ -133,6 +142,10 @@ const useStyles = makeStyles(theme => ({
   doorLabelMoving: {
     borderColor: theme.palette.warning.main,
   },
+
+  unknown: {
+    borderColor: '#cccccc',
+  },
 }));
 
 function doorTypeToString(doorType: number): string {
@@ -154,7 +167,7 @@ function doorTypeToString(doorType: number): string {
 
 function doorModeToString(doorState?: RomiCore.DoorState): string {
   if (!doorState) {
-    return 'UNKNOWN';
+    return 'N/A';
   }
   switch (doorState.current_mode.value) {
     case RomiCore.DoorMode.MODE_OPEN:
@@ -164,7 +177,7 @@ function doorModeToString(doorState?: RomiCore.DoorState): string {
     case RomiCore.DoorMode.MODE_MOVING:
       return 'MOVING';
     default:
-      return 'UNKNOWN';
+      return 'N/A';
   }
 }
 

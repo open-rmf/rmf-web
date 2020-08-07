@@ -57,10 +57,20 @@ export const OmniPanel = React.forwardRef(function(
   return (
     <div {...otherProps} ref={ref} className={className}>
       <ButtonGroup className={props.classes?.navigation} variant="text" fullWidth>
-        <Button className={props.classes?.backButton} size="large" onClick={handleBackClick}>
+        <Button
+          className={props.classes?.backButton}
+          size="large"
+          onClick={handleBackClick}
+          name="back-button"
+        >
           <BackIcon />
         </Button>
-        <Button className={props.classes?.closeButton} size="large" onClick={handleCloseClick}>
+        <Button
+          className={props.classes?.closeButton}
+          size="large"
+          onClick={handleCloseClick}
+          name="close-button"
+        >
           <CloseIcon />
         </Button>
       </ButtonGroup>

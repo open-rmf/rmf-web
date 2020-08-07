@@ -1,24 +1,25 @@
 import { makeStyles, TextField, Button } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { successMsg } from '../util/alerts';
-
-interface robotLoopFormProps {
-  fleetName: string;
-  requestLoop(
-    fleetName: string,
-    numLoops: number,
-    startLocationPoint: string,
-    endLocationPoint: string,
-  ): void;
-  listOfPlaces: string[];
+import fakePlaces from '../mock/data/places';
+import { TLoopRequest } from './commands-panel';
+interface LoopFormProps {
+  fleetNames: string[];
+  requestLoop: TLoopRequest;
 }
 
-export const RobotLoopForm = (props: robotLoopFormProps) => {
-  const { requestLoop, fleetName, listOfPlaces } = props;
-  const classes = useStyles();
+export const LoopForm = (props: LoopFormProps) => {
+  const { requestLoop, fleetNames } = props;
+  const classes = loopFormStyles();
 
+  const [targetFleetName, setTargetFleetName] = useState(
+    fleetNames.length >= 1 ? fleetNames[0] : '',
+  );
   const [numLoops, setNumLoops] = useState(0);
+  const [listOfPlaces, setListOfPlaces] = useState(
+    !!targetFleetName ? fakePlaces()[targetFleetName] : [],
+  );
   const [startLocation, setStartLocation] = useState(
     listOfPlaces.length >= 2 ? listOfPlaces[0] : '',
   );
@@ -26,19 +27,32 @@ export const RobotLoopForm = (props: robotLoopFormProps) => {
     listOfPlaces.length >= 2 ? listOfPlaces[1] : '',
   );
 
+  useEffect(() => {
+    setListOfPlaces(fakePlaces()[targetFleetName]);
+  }, [targetFleetName]);
+
+  useEffect(() => {
+    setStartLocation(listOfPlaces.length >= 2 ? listOfPlaces[0] : '');
+    setFinishLocation(listOfPlaces.length >= 2 ? listOfPlaces[1] : '');
+  }, [listOfPlaces]);
+
   // Error states
+  const [targetFleetNameError, setTargetFleetNameError] = useState('');
   const [numLoopsError, setNumLoopsError] = useState('');
   const [startLocationError, setStartLocationError] = useState('');
   const [finishLocationError, setFinishLocationError] = useState('');
 
   const cleanUpForm = () => {
+    setTargetFleetName(targetFleetName);
     setNumLoops(0);
+    setListOfPlaces(!!targetFleetName ? fakePlaces()[targetFleetName] : []);
     setStartLocation(listOfPlaces.length >= 2 ? listOfPlaces[0] : '');
     setFinishLocation(listOfPlaces.length >= 2 ? listOfPlaces[1] : '');
     cleanUpError();
   };
 
   const cleanUpError = () => {
+    setTargetFleetNameError('');
     setNumLoopsError('');
     setStartLocationError('');
     setFinishLocationError('');
@@ -47,7 +61,7 @@ export const RobotLoopForm = (props: robotLoopFormProps) => {
   const handleRequestLoop = (event: any) => {
     event.preventDefault();
     if (isFormValid()) {
-      requestLoop(fleetName, numLoops, startLocation, finishLocation);
+      requestLoop(targetFleetName, numLoops, startLocation, finishLocation);
       successMsg('Success');
       cleanUpForm();
     }
@@ -56,13 +70,17 @@ export const RobotLoopForm = (props: robotLoopFormProps) => {
   const isFormValid = () => {
     let isValid = true;
     cleanUpError();
+    if (targetFleetName === '') {
+      setTargetFleetNameError('Fleet name cannot be empty');
+      isValid = false;
+    }
     if (numLoops === 0 || numLoops < 0) {
       setNumLoopsError('Loops can only be > 0');
       isValid = false;
     }
     if (startLocation === finishLocation) {
-      setStartLocationError('Start Location cannot be equal to finish Location');
-      setFinishLocationError('Start Location cannot be equal to finish Location');
+      setStartLocationError('Start Location cannot be equal to Finish Location');
+      setFinishLocationError('Start Location cannot be equal to Finish Location');
       isValid = false;
     }
 
@@ -81,7 +99,26 @@ export const RobotLoopForm = (props: robotLoopFormProps) => {
   return (
     <form className={classes.form} onSubmit={handleRequestLoop}>
       <div className={classes.divForm}>
+        <Autocomplete
+          getOptionLabel={option => option}
+          onChange={(e, value) => setTargetFleetName(value || '')}
+          options={fleetNames}
+          renderInput={params => (
+            <TextField
+              {...params}
+              label="Choose Target Fleet"
+              variant="outlined"
+              error={!!targetFleetNameError}
+              helperText={targetFleetNameError}
+              name="targetFleet"
+            />
+          )}
+          value={!!targetFleetName ? targetFleetName : null}
+        />
+      </div>
+      <div className={classes.divForm}>
         <TextField
+          id="numLoops"
           name="numLoops"
           onChange={e => {
             setNumLoops(!!e.target.value ? parseInt(e.target.value) : 0);
@@ -93,12 +130,8 @@ export const RobotLoopForm = (props: robotLoopFormProps) => {
           label="Number of loops"
           variant="outlined"
           error={!!numLoopsError}
+          helperText={numLoopsError}
         />
-        {numLoopsError && (
-          <p id="numLoopsError" className={classes.error}>
-            {numLoopsError}
-          </p>
-        )}
       </div>
 
       <div className={classes.divForm}>
@@ -106,16 +139,19 @@ export const RobotLoopForm = (props: robotLoopFormProps) => {
           getOptionLabel={option => option}
           onChange={(e, value) => setStartLocation(value || '')}
           options={listOfPlaces}
+          id="startLocation"
           renderInput={params => (
-            <TextField {...params} label="Pick Start Location" variant="outlined" />
+            <TextField
+              {...params}
+              label="Pick Start Location"
+              variant="outlined"
+              error={!!startLocationError}
+              helperText={startLocationError}
+              name="startLocation"
+            />
           )}
           value={!!startLocation ? startLocation : null}
         />
-        {startLocationError && (
-          <p id="startLocationError" className={classes.error}>
-            {startLocationError}
-          </p>
-        )}
       </div>
 
       <div className={classes.divForm}>
@@ -123,16 +159,19 @@ export const RobotLoopForm = (props: robotLoopFormProps) => {
           getOptionLabel={option => option}
           onChange={(e, value) => setFinishLocation(value || '')}
           options={listOfPlaces}
+          id="finishLocation"
           renderInput={params => (
-            <TextField {...params} label="Pick Finish Location" variant="outlined" />
+            <TextField
+              {...params}
+              label="Pick Finish Location"
+              variant="outlined"
+              error={!!finishLocationError}
+              helperText={finishLocationError}
+              name="finishLocation"
+            />
           )}
           value={!!finishLocation ? finishLocation : null}
         />
-        {finishLocationError && (
-          <p id="finishLocationError" className={classes.error}>
-            {finishLocationError}
-          </p>
-        )}
       </div>
 
       <div className={classes.buttonContainer}>
@@ -144,14 +183,15 @@ export const RobotLoopForm = (props: robotLoopFormProps) => {
   );
 };
 
-const useStyles = makeStyles(theme => ({
+export const loopFormStyles = makeStyles(theme => ({
   form: {
-    padding: '0.5rem',
     display: 'flex',
     flexDirection: 'column',
+    width: '100%',
   },
   divForm: {
-    padding: '0.5rem',
+    padding: '0.46rem',
+    paddingRight: '0.5rem',
     width: '100%',
   },
   error: {
