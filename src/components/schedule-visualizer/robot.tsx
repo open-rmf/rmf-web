@@ -14,6 +14,8 @@ const useStyles = makeStyles(() => ({
     fontSize: '0.18px',
     fontWeight: 'bold',
     fill: 'white',
+    /* 1 pixel black shadow to left, top, right and bottom */
+    textShadow: '-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black',
   },
 }));
 

@@ -45,7 +45,13 @@ const RobotImageIcon = React.forwardRef(function(
             href={iconPath}
             height={imgIconHeigth}
             width={imgIconWidth}
-            onError={() => dispatchIconError(true)}
+            onError={error => {
+              console.error(
+                'An error occurred while loading the image. Using the default image.',
+                error,
+              );
+              return dispatchIconError(true);
+            }}
           />
         </g>
       )}

@@ -5,7 +5,7 @@
 /node_modules
 /.pnp
 .pnp.js
-.assets.json
+.resources.json
 
 # testing
 /coverage
