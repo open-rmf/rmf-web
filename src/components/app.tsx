@@ -112,7 +112,7 @@ const viewMap = makeViewMap();
 
 export default function App(props: AppProps): JSX.Element {
   const classes = useStyles();
-  const { transportFactory, trajectoryManagerFactory, appIcons } = props.appConfig;
+  const { transportFactory, trajectoryManagerFactory, appResources } = props.appConfig;
   const [transport, setTransport] = React.useState<RomiCore.Transport | undefined>(undefined);
   const [buildingMap, setBuildingMap] = React.useState<RomiCore.BuildingMap | undefined>(undefined);
   const trajManager = React.useRef<RobotTrajectoryManager | undefined>(undefined);
@@ -213,13 +213,13 @@ export default function App(props: AppProps): JSX.Element {
   }, [trajectoryManagerFactory]);
 
   React.useEffect(() => {
-    if (!appIcons) {
+    if (!appResources) {
       return;
     }
     (async () => {
-      ResourceManager.current = await appIcons;
+      ResourceManager.current = await appResources;
     })();
-  }, [appIcons]);
+  }, [appResources]);
 
   React.useEffect(() => {
     if (currentView === OmniPanelViewIndex.Doors) {
@@ -349,7 +349,7 @@ export default function App(props: AppProps): JSX.Element {
                     buildingMap={buildingMap}
                     fleets={fleets}
                     trajManager={trajManager.current}
-                    appIcons={ResourceManager.current}
+                    appResources={ResourceManager.current}
                     onDoorClick={handleDoorClick}
                     onLiftClick={handleLiftClick}
                     onRobotClick={handleRobotClick}

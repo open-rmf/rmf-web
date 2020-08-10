@@ -23,7 +23,7 @@ import {
 } from './trajectory-animations';
 import DoorsOverlay from './doors-overlay';
 import LiftsOverlay from './lift-overlay';
-import { IconContext } from '../../app-contexts';
+import { ResourcesContext } from '../../app-contexts';
 import { ResourceConfigurationsType } from '../../resource-manager';
 
 const useStyles = makeStyles(() => ({
@@ -45,7 +45,7 @@ export interface ScheduleVisualizerProps {
   buildingMap: Readonly<RomiCore.BuildingMap>;
   fleets: Readonly<RomiCore.FleetState[]>;
   trajManager?: Readonly<RobotTrajectoryManager>;
-  appIcons?: Readonly<ResourceConfigurationsType>;
+  appResources?: Readonly<ResourceConfigurationsType>;
   onDoorClick?(door: RomiCore.Door): void;
   onLiftClick?(lift: RomiCore.Lift): void;
   onRobotClick?(robot: RomiCore.RobotState): void;
@@ -61,7 +61,7 @@ function calcMaxBounds(mapFloorLayers: readonly MapFloorLayer[]): L.LatLngBounds
 }
 
 export default function ScheduleVisualizer(props: ScheduleVisualizerProps): React.ReactElement {
-  const { appIcons } = props;
+  const { appResources } = props;
   const classes = useStyles();
   const mapRef = React.useRef<LMap>(null);
   const { current: mapElement } = mapRef;
@@ -273,7 +273,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       maxBounds={maxBounds}
       onbaselayerchange={handleBaseLayerChange}
     >
-      <IconContext.Provider value={!!appIcons ? appIcons : {}}>
+      <ResourcesContext.Provider value={!!appResources ? appResources : {}}>
         <AttributionControl position="bottomright" prefix="OSRC-SG" />
         <LayersControl position="topleft">
           {sortedMapFloorLayers.every(x => x) &&
@@ -351,7 +351,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
             )}
           </LayersControl.Overlay>
         </LayersControl>
-      </IconContext.Provider>
+      </ResourcesContext.Provider>
     </LMap>
   );
 }

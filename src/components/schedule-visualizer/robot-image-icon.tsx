@@ -23,6 +23,7 @@ const RobotImageIcon = React.forwardRef(function(
 ): React.ReactElement {
   const classes = useStyles();
   const { robot, footprint, iconPath, dispatchIconError, onClick } = props;
+  // Hardcoded delta of 2 to set the size of the robot. With the double size of the footprint, we achieved a similar size to the robot default svg icon.
   const [imgIconWidth, imgIconHeigth] = useMemo(() => [footprint * 2, footprint * 2], [footprint]);
 
   const { x: topVerticeX, y: topVerticeY } = transformMiddleCoordsOfRectToSVGBeginPoint(
