@@ -3,7 +3,7 @@ import { Divider, Typography } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 
 import LiftComponent from './BaseComponents/lift-component';
-import { StyleTyping } from './BaseComponents/Utils';
+import { StyleTyping, lift, liftStates } from './BaseComponents/Utils';
 
 export default {
   title: 'Lift',
@@ -28,55 +28,16 @@ const styles: StyleTyping = {
   },
 };
 
-const lift = {
-  depth: 2.5,
-  doors: [
-    {
-      door_type: 1,
-      motion_direction: 1,
-      motion_range: 0,
-      name: 'lift1_front_door',
-      v1_x: 8.8,
-      v1_y: -2.3,
-      v2_x: 7.7,
-      v2_y: -4.5,
-    },
-  ],
-  levels: ['L1', 'L2', 'L3', 'L4'],
-  name: 'Lift1',
-  ref_x: 7.1,
-  ref_y: -2.8,
-  ref_yaw: 0.5,
-  wall_graph: {
-    edges: [],
-    name: 'wallgraph',
-    params: [],
-    vertices: [],
-  },
-  width: 2.5,
-};
-
-const liftStates = {
-  available_floors: ['L1', 'L2', 'L3', 'L4'],
-  available_modes: new Uint8Array(0),
-  current_floor: 'L1',
-  current_mode: RomiCore.LiftState.MODE_UNKNOWN,
-  destination_floor: 'L1',
-  door_state: RomiCore.LiftState.DOOR_CLOSED,
-  lift_name: 'Lift1',
-  lift_time: { sec: 0, nanosec: 0 },
-  motion_state: RomiCore.LiftState.MOTION_STOPPED,
-  session_id: '',
-};
+const defaultLiftStates = liftStates.main_lift;
 
 const AGVState = {
-  ...liftStates,
+  ...defaultLiftStates,
   current_mode: RomiCore.LiftState.MODE_AGV,
   door_state: RomiCore.LiftState.DOOR_OPEN,
 };
 
 const FIREState = {
-  ...liftStates,
+  ...defaultLiftStates,
   current_mode: RomiCore.LiftState.MODE_FIRE,
   current_floor: 'L2',
   destination_floor: 'L4',
@@ -84,13 +45,13 @@ const FIREState = {
 };
 
 const UNKOWNState = {
-  ...liftStates,
+  ...defaultLiftStates,
   door_state: RomiCore.LiftState.DOOR_MOVING,
   motion_state: RomiCore.LiftState.MOTION_UNKNOWN,
 };
 
 const HUMANState = {
-  ...liftStates,
+  ...defaultLiftStates,
   current_mode: RomiCore.LiftState.MODE_HUMAN,
   current_floor: 'L3',
   destination_floor: 'L1',
@@ -98,12 +59,12 @@ const HUMANState = {
 };
 
 const OFFLINEState = {
-  ...liftStates,
+  ...defaultLiftStates,
   current_mode: RomiCore.LiftState.MODE_OFFLINE,
 };
 
 const EMERGENCYState = {
-  ...liftStates,
+  ...defaultLiftStates,
   current_mode: RomiCore.LiftState.MODE_EMERGENCY,
 };
 

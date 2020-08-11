@@ -1,10 +1,9 @@
 import React from 'react';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { Divider, Typography } from '@material-ui/core';
 
 import RobotComponent from './BaseComponents/robot-component';
 import ColorManager from '../components/schedule-visualizer/colors';
-import { StyleTyping } from './BaseComponents/Utils';
+import { StyleTyping, robotState } from './BaseComponents/Utils';
 
 export default {
   title: 'Robot',
@@ -27,22 +26,6 @@ const styles: StyleTyping = {
     textDecoration: 'none',
     color: 'rgb(20, 116, 243)',
   },
-};
-
-const robotState = {
-  battery_percent: 100,
-  location: {
-    level_name: 'L1',
-    t: { sec: 0, nanosec: 0 },
-    x: 8,
-    y: -4,
-    yaw: 0,
-  },
-  mode: { mode: RomiCore.RobotMode.MODE_IDLE },
-  model: '40_hours',
-  name: 'LingLing',
-  path: [],
-  task_id: 'taskA',
 };
 
 const colorManager = new ColorManager();
