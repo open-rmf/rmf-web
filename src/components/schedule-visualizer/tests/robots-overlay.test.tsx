@@ -7,19 +7,24 @@ import ColorManager from '../colors';
 import Robot from '../robot';
 import fakeFleets from '../../../mock/data/fleets';
 
+const robots = fakeFleets()[0].robots;
+const bounds = new L.LatLngBounds([0, 25.7], [-14, 0]);
+const colorManager = new ColorManager();
+// TextEncoder is not available in node
+colorManager.robotColor = jest.fn(async () => 'black');
+colorManager.robotColorFromCache = jest.fn(() => 'black');
+let conflictRobotNames: string[][] = [];
+
 describe('Robots Overlay', () => {
   test('Render robots correctly', async () => {
-    const robots = fakeFleets()[0].robots;
-    const bounds = new L.LatLngBounds([0, 25.7], [-14, 0]);
-    const colorManager = new ColorManager();
-    // TextEncoder is not available in node
-    colorManager.robotColor = jest.fn(async () => 'black');
-    colorManager.robotColorFromCache = jest.fn(() => 'black');
-    const conflictRobotNames: string[] = [];
-
     const wrapper = mount(
       <LMap>
-        <RobotsOverlay bounds={bounds} colorManager={colorManager} robots={robots} conflictRobotNames={conflictRobotNames} />
+        <RobotsOverlay
+          bounds={bounds}
+          colorManager={colorManager}
+          robots={robots}
+          conflictRobotNames={conflictRobotNames}
+        />
       </LMap>,
     );
 
@@ -29,22 +34,19 @@ describe('Robots Overlay', () => {
     wrapper.unmount();
   });
 
-  test('Robot overlay increases in size when it is in trajectory conflict', async () => {
-    const robots = fakeFleets()[0].robots;
-    const bounds = new L.LatLngBounds([0, 25.7], [-14, 0]);
-    const colorManager = new ColorManager();
-    // TextEncoder is not available in node
-    colorManager.robotColor = jest.fn(async () => 'black');
-    colorManager.robotColorFromCache = jest.fn(() => 'black');
-    const conflictRobotNames = [fakeFleets()[0].robots[0].name];
-
+  test('Red shadow appears when robots are in trajectory conflict', async () => {
+    conflictRobotNames = [[fakeFleets()[0].robots[0].name]];
     const wrapper = mount(
       <LMap>
-        <RobotsOverlay bounds={bounds} colorManager={colorManager} robots={robots} conflictRobotNames={conflictRobotNames} />
+        <RobotsOverlay
+          bounds={bounds}
+          colorManager={colorManager}
+          robots={robots}
+          conflictRobotNames={conflictRobotNames}
+        />
       </LMap>,
     );
-    expect(wrapper.containsMatchingElement(<circle r={0.75} />)).toBeTruthy();
+    expect(wrapper.containsMatchingElement(<feDropShadow floodColor={'red'} />)).toBeTruthy();
     wrapper.unmount();
-  })
-
+  });
 });
