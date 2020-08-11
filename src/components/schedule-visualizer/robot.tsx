@@ -35,18 +35,11 @@ const Robot = React.forwardRef(function(
   const resourcesContext = useContext(ResourcesContext);
   const classes = useStyles();
   const { robot, footprint, colorManager, fleetName, onClick } = props;
-  const [iconError, setIconError] = useState(false);
-  const [renderDefaultIcon, setRenderDefaultIcon] = useState(false);
-
   // The only image formats SVG software support are JPEG, PNG, and other SVG files.
-  const iconPath = useMemo(() => ResourceManager.getRobotIconPath(resourcesContext, fleetName), [
-    resourcesContext,
-    fleetName,
-  ]);
-
-  useEffect(() => {
-    setRenderDefaultIcon(!iconPath || !!iconError);
-  }, [iconPath, iconError]);
+  const [renderCustomIcon, setRenderCustomIcon] = useState({
+    path: ResourceManager.getRobotIconPath(resourcesContext, fleetName),
+    error: false,
+  });
 
   return (
     <>
@@ -56,16 +49,15 @@ const Robot = React.forwardRef(function(
         aria-label={robot.name}
         onClick={e => onClick && onClick(e, robot)}
       >
-        {!!iconPath && !iconError && (
+        {!!renderCustomIcon.path && !renderCustomIcon.error ? (
           <RobotImageIcon
-            iconPath={iconPath}
+            iconPath={renderCustomIcon.path}
             robot={robot}
             footprint={footprint}
-            dispatchIconError={setIconError}
+            dispatchIconError={setRenderCustomIcon}
             onClick={onClick}
           />
-        )}
-        {renderDefaultIcon && (
+        ) : (
           <RobotDefaultIcon
             robot={robot}
             footprint={footprint}

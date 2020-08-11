@@ -14,7 +14,12 @@ const useStyles = makeStyles(() => ({
 
 type RobotImageIconProps = Omit<RobotProps, 'colorManager' | 'fleetName'> & {
   iconPath: string;
-  dispatchIconError: React.Dispatch<React.SetStateAction<boolean>>;
+  dispatchIconError: React.Dispatch<
+    React.SetStateAction<{
+      path: string | null;
+      error: boolean;
+    }>
+  >;
 };
 
 const RobotImageIcon = React.forwardRef(function(
@@ -51,7 +56,9 @@ const RobotImageIcon = React.forwardRef(function(
                 'An error occurred while loading the image. Using the default image.',
                 error,
               );
-              return dispatchIconError(true);
+              return dispatchIconError(previousVal => {
+                return { ...previousVal, error: true };
+              });
             }}
           />
         </g>
