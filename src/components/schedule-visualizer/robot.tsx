@@ -22,6 +22,7 @@ export interface RobotProps {
   footprint: number;
   colorManager: ColorManager;
   onClick?(e: React.MouseEvent<SVGGElement>, robot: RomiCore.RobotState): void;
+  inConflict?: boolean;
 }
 
 const Robot = React.forwardRef(function(
@@ -29,7 +30,7 @@ const Robot = React.forwardRef(function(
   ref: React.Ref<SVGGElement>,
 ): React.ReactElement {
   const classes = useStyles();
-  const { robot, footprint, colorManager, onClick } = props;
+  const { robot, footprint, colorManager, onClick, inConflict } = props;
   const [robotColor, setRobotColor] = React.useState<string | null>(() =>
     colorManager.robotColorFromCache(robot.name, robot.model),
   );
@@ -57,7 +58,12 @@ const Robot = React.forwardRef(function(
             rotate(${-(robot.location.yaw * 180) / Math.PI})`}
           >
             <filter id={`${robot.name}-shadow`} x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow dx="0" dy="0" stdDeviation={footprint * 0.15} floodColor="black" />
+              <feDropShadow
+                dx="0"
+                dy="0"
+                stdDeviation={footprint * 0.15}
+                floodColor={inConflict ? 'red' : 'black'}
+              />
             </filter>
             <circle
               className={classes.robotMarker}
