@@ -1,6 +1,6 @@
 import { makeStyles } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import React, { useMemo, useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import ColorManager from './colors';
 import ResourceManager from '../../resource-manager';
 import { ResourcesContext } from '../../app-contexts';
