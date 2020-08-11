@@ -82,6 +82,14 @@ const Robot = React.forwardRef(function(
           >
             {robot.name.substring(0, 8)}
           </text>
+          {inConflict && (
+            <g
+              transform={`translate(${robot.location.x + 0.6} ${-robot.location.y - 0.5})
+            rotate(${-(robot.location.yaw * 180) / Math.PI})`}
+            >
+              <circle r={0.2} fill={'red'} fill-opacity={0.5} />
+            </g>
+          )}
         </>
       )}
     </g>
