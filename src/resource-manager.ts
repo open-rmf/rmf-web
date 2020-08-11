@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 // We set any here to be more flexible when receiving the configuration structure
 type SubResourceConfigurationsType =
   | string
@@ -5,7 +7,6 @@ type SubResourceConfigurationsType =
   | Record<string, Record<string, string | any>>
   | any;
 export type ResourceConfigurationsType = Record<string, SubResourceConfigurationsType>;
-const axios = require('axios').default;
 export default class ResourceManager {
   static getResourceConfigurationFile = async (): Promise<ResourceConfigurationsType> => {
     try {
