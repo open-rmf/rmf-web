@@ -253,6 +253,20 @@ export const componentDisplayStyle: StyleTyping = {
   },
 };
 
+export const defaultStyles: StyleTyping = {
+  root: {
+    margin: '0 auto',
+    width: '40%',
+  },
+  heading: {
+    padding: '0.5rem',
+  },
+  aTag: {
+    textDecoration: 'none',
+    color: 'rgb(20, 116, 243)',
+  },
+};
+
 export {
   door,
   doors,

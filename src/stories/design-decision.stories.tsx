@@ -13,6 +13,7 @@ import {
   liftStates,
   robotStates,
   dispenserStates,
+  defaultStyles,
 } from './BaseComponents/Utils';
 
 export default {
@@ -20,10 +21,7 @@ export default {
 };
 
 const styles: StyleTyping = {
-  root: {
-    margin: '0 auto',
-    width: '40%',
-  },
+  ...defaultStyles,
   example: {
     display: 'flex',
     justifyContent: 'space-between',

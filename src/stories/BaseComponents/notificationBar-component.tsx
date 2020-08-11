@@ -3,16 +3,10 @@ import { Divider, Typography, Button, Grid } from '@material-ui/core';
 
 import NotificationBar from '../../components/notification-bar';
 import { NotificationBarProps } from '../../components/notification-bar';
-import { StyleTyping } from './Utils';
+import { StyleTyping, defaultStyles } from './Utils';
 
 const styles: StyleTyping = {
-  root: {
-    margin: '0 auto',
-    width: '40%',
-  },
-  heading: {
-    padding: '0.5rem',
-  },
+  ...defaultStyles,
   button: {
     margin: '1rem auto',
   },

@@ -1,22 +1,12 @@
 import React from 'react';
 import { Button, Typography, Divider } from '@material-ui/core';
 
-import { StyleTyping } from './Utils';
+import { StyleTyping, defaultStyles } from './Utils';
 
 const styles: StyleTyping = {
-  root: {
-    margin: '0 auto',
-    width: '40%',
-  },
-  heading: {
-    padding: '0.5rem',
-  },
+  ...defaultStyles,
   button: {
     width: '100%',
-  },
-  aTag: {
-    textDecoration: 'none',
-    color: 'rgb(20, 116, 243)',
   },
   buttonWrapper: {
     padding: '1rem 0.5rem',

@@ -1,28 +1,18 @@
 import React from 'react';
 import { Divider, Typography } from '@material-ui/core';
 
-import { StyleTyping, SampleStyleTyping } from './BaseComponents/Utils';
+import { StyleTyping, SampleStyleTyping, defaultStyles } from './BaseComponents/Utils';
 
 export default {
   title: 'Color Palette',
 };
 
 const styles: StyleTyping = {
-  root: {
-    margin: '0 auto',
-    width: '40%',
-  },
-  heading: {
-    padding: '0.5rem',
-  },
+  ...defaultStyles,
   example: {
     display: 'flex',
     justifyContent: 'space-between',
     margin: '1rem 0',
-  },
-  aTag: {
-    textDecoration: 'none',
-    color: 'rgb(20, 116, 243)',
   },
 };
 

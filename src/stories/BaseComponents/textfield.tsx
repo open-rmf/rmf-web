@@ -1,16 +1,10 @@
 import React from 'react';
 import { TextField, Typography, Divider } from '@material-ui/core';
 
-import { StyleTyping, FormProps } from './Utils';
+import { StyleTyping, FormProps, defaultStyles } from './Utils';
 
 const styles: StyleTyping = {
-  root: {
-    margin: '0 auto',
-    width: '40%',
-  },
-  heading: {
-    padding: '0.5rem',
-  },
+  ...defaultStyles,
   textFieldWrapper: {
     padding: '1rem 0.5rem',
   },
