@@ -3,7 +3,7 @@ import React from 'react';
 import { LiftItem } from './lift-item';
 import { SpotlightValue } from '../spotlight-value';
 
-interface LiftsPanelProps {
+export interface LiftsPanelProps {
   lifts: readonly RomiCore.Lift[];
   liftStates: Readonly<Record<string, RomiCore.LiftState>>;
   transport?: Readonly<RomiCore.Transport>;
