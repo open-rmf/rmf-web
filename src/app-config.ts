@@ -3,7 +3,6 @@ import { SossTransport } from '@osrf/romi-js-soss-transport';
 import FakeTrajectoryManager from './mock/fake-traj-manager';
 import { FakeTransport } from './mock/fake-transport';
 import { DefaultTrajectoryManager, RobotTrajectoryManager } from './robot-trajectory-manager';
-import fakeAppResources from './mock/data/fake-app-resources';
 import ResourceManager, { ResourceConfigurationsType } from './resource-manager';
 
 export interface AppConfig {
@@ -39,7 +38,7 @@ if (!process.env.REACT_APP_MOCK && process.env.NODE_ENV !== 'test') {
   appConfig = {
     transportFactory: async () => new FakeTransport(),
     trajectoryManagerFactory: async () => new FakeTrajectoryManager(),
-    appResources: fakeAppResources(),
+    appResources: ResourceManager.getResourceConfigurationFile(),
   };
 }
 
