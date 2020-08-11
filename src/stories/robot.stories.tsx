@@ -3,59 +3,40 @@ import { Divider, Typography } from '@material-ui/core';
 
 import RobotComponent from './BaseComponents/robot-component';
 import ColorManager from '../components/schedule-visualizer/colors';
-import { StyleTyping, robotState } from './BaseComponents/Utils';
+import { robotState, componentDisplayStyle } from './BaseComponents/Utils';
 
 export default {
   title: 'Robot',
-};
-
-const styles: StyleTyping = {
-  modeInfoPanel: {
-    padding: '2rem',
-  },
-  modeInfoItem: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    padding: '0.5rem',
-  },
-  modeInfoLink: {
-    marginTop: '0.5rem',
-    padding: '0.5rem',
-  },
-  aTag: {
-    textDecoration: 'none',
-    color: 'rgb(20, 116, 243)',
-  },
 };
 
 const colorManager = new ColorManager();
 
 const renderInfoPanel = (robotMode: string, footprint: number): JSX.Element => {
   return (
-    <div style={styles.modeInfoPanel}>
+    <div style={componentDisplayStyle.modeInfoPanel}>
       <Typography align="center" variant="h5">
         Configurations
       </Typography>
 
-      <div style={styles.modeInfoItem}>
+      <div style={componentDisplayStyle.modeInfoItem}>
         <Typography variant="body1">Robot Mode:</Typography>
         <Typography variant="body1">{robotMode}</Typography>
       </div>
 
       <Divider />
 
-      <div style={styles.modeInfoItem}>
+      <div style={componentDisplayStyle.modeInfoItem}>
         <Typography variant="body1">footprint:</Typography>
         <Typography variant="body1">{footprint}</Typography>
       </div>
 
       <Divider />
 
-      <div style={styles.modeInfoLink}>
+      <div style={componentDisplayStyle.modeInfoLink}>
         <Typography variant="body1">
           Click
           <a
-            style={styles.aTag}
+            style={componentDisplayStyle.aTag}
             href="https://osrf.github.io/romi-js-core-interfaces/classes/robotmode.html"
           >
             {' '}
@@ -63,7 +44,7 @@ const renderInfoPanel = (robotMode: string, footprint: number): JSX.Element => {
           </a>
           for more details on Robot Modes and
           <a
-            style={styles.aTag}
+            style={componentDisplayStyle.aTag}
             href="https://osrf.github.io/romi-js-core-interfaces/classes/robotstate.html"
           >
             {' '}

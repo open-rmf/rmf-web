@@ -230,6 +230,29 @@ const robotStates: RomiCore.FleetState[] = [
 
 // end of Robot utils
 
+export const componentDisplayStyle: StyleTyping = {
+  display: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 3fr',
+  },
+  modeInfoPanel: {
+    padding: '2rem',
+  },
+  modeInfoItem: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    padding: '0.5rem',
+  },
+  modeInfoLink: {
+    marginTop: '0.5rem',
+    padding: '0.5rem',
+  },
+  aTag: {
+    textDecoration: 'none',
+    color: 'rgb(20, 116, 243)',
+  },
+};
+
 export {
   door,
   doors,

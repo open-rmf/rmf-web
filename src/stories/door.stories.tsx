@@ -3,30 +3,10 @@ import { Divider, Typography } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 
 import DoorComponent from './BaseComponents/door-component';
-import { StyleTyping } from './BaseComponents/Utils';
-import { door, doorStates } from './BaseComponents/Utils';
+import { door, doorStates, componentDisplayStyle } from './BaseComponents/Utils';
 
 export default {
   title: 'Door',
-};
-
-const styles: StyleTyping = {
-  modeInfoPanel: {
-    padding: '2rem',
-  },
-  modeInfoItem: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    padding: '0.5rem',
-  },
-  modeInfoLink: {
-    marginTop: '0.5rem',
-    padding: '0.5rem',
-  },
-  aTag: {
-    textDecoration: 'none',
-    color: 'rgb(20, 116, 243)',
-  },
 };
 
 const doorState = doorStates.main_door;
@@ -43,30 +23,30 @@ const doubleSldingDoor = {
 
 const renderInfoPanel = (doorType: string, doorState: string): JSX.Element => {
   return (
-    <div style={styles.modeInfoPanel}>
+    <div style={componentDisplayStyle.modeInfoPanel}>
       <Typography align="center" variant="h5">
         Configurations
       </Typography>
 
-      <div style={styles.modeInfoItem}>
+      <div style={componentDisplayStyle.modeInfoItem}>
         <Typography variant="body1">Door Type:</Typography>
         <Typography variant="body1">{doorType}</Typography>
       </div>
 
       <Divider />
 
-      <div style={styles.modeInfoItem}>
+      <div style={componentDisplayStyle.modeInfoItem}>
         <Typography variant="body1">Door Mode:</Typography>
         <Typography variant="body1">{doorState}</Typography>
       </div>
 
       <Divider />
 
-      <div style={styles.modeInfoLink}>
+      <div style={componentDisplayStyle.modeInfoLink}>
         <Typography variant="body1">
           Click
           <a
-            style={styles.aTag}
+            style={componentDisplayStyle.aTag}
             href="https://osrf.github.io/romi-js-core-interfaces/classes/door.html#door_type"
           >
             {' '}
@@ -74,7 +54,7 @@ const renderInfoPanel = (doorType: string, doorState: string): JSX.Element => {
           </a>
           for more details on Door types and
           <a
-            style={styles.aTag}
+            style={componentDisplayStyle.aTag}
             href="https://osrf.github.io/romi-js-core-interfaces/classes/doormode.html"
           >
             {' '}

@@ -3,30 +3,30 @@ import { Divider, Typography } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 
 import LiftComponent from './BaseComponents/lift-component';
-import { StyleTyping, lift, liftStates } from './BaseComponents/Utils';
+import { lift, liftStates, componentDisplayStyle } from './BaseComponents/Utils';
 
 export default {
   title: 'Lift',
 };
 
-const styles: StyleTyping = {
-  modeInfoPanel: {
-    padding: '2rem',
-  },
-  modeInfoItem: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    padding: '0.5rem',
-  },
-  modeInfoLink: {
-    marginTop: '0.5rem',
-    padding: '0.5rem',
-  },
-  aTag: {
-    textDecoration: 'none',
-    color: 'rgb(20, 116, 243)',
-  },
-};
+// const componentDisplayStyle: StyleTyping = {
+//   modeInfoPanel: {
+//     padding: '2rem',
+//   },
+//   modeInfoItem: {
+//     display: 'flex',
+//     justifyContent: 'space-between',
+//     padding: '0.5rem',
+//   },
+//   modeInfoLink: {
+//     marginTop: '0.5rem',
+//     padding: '0.5rem',
+//   },
+//   aTag: {
+//     textDecoration: 'none',
+//     color: 'rgb(20, 116, 243)',
+//   },
+// };
 
 const defaultLiftStates = liftStates.main_lift;
 
@@ -70,37 +70,37 @@ const EMERGENCYState = {
 
 const renderInfoPanel = (mode: string, doorState: string, motionState: string): JSX.Element => {
   return (
-    <div style={styles.modeInfoPanel}>
+    <div style={componentDisplayStyle.modeInfoPanel}>
       <Typography align="center" variant="h5">
         Configurations
       </Typography>
 
-      <div style={styles.modeInfoItem}>
+      <div style={componentDisplayStyle.modeInfoItem}>
         <Typography variant="body1">Mode:</Typography>
         <Typography variant="body1">{mode}</Typography>
       </div>
 
       <Divider />
 
-      <div style={styles.modeInfoItem}>
+      <div style={componentDisplayStyle.modeInfoItem}>
         <Typography variant="body1">Door State:</Typography>
         <Typography variant="body1">{doorState}</Typography>
       </div>
 
       <Divider />
 
-      <div style={styles.modeInfoItem}>
+      <div style={componentDisplayStyle.modeInfoItem}>
         <Typography variant="body1">Motion State:</Typography>
         <Typography variant="body1">{motionState}</Typography>
       </div>
 
       <Divider />
 
-      <div style={styles.modeInfoLink}>
+      <div style={componentDisplayStyle.modeInfoLink}>
         <Typography variant="body1">
           Click
           <a
-            style={styles.aTag}
+            style={componentDisplayStyle.aTag}
             href="https://osrf.github.io/romi-js-core-interfaces/classes/liftstate.html"
           >
             {' '}

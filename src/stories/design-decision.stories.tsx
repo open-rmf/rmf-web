@@ -1,9 +1,19 @@
 import React from 'react';
 import { Divider, Typography } from '@material-ui/core';
 
-import ButtonColors from './BaseComponents/button-colors';
 import DoorButton from './BaseComponents/door-buttons';
-import { StyleTyping, doors, doorStates } from './BaseComponents/Utils';
+import LiftButton from './BaseComponents/lift-buttons';
+import RobotButton from './BaseComponents/robot-buttons';
+import DispenserButton from './BaseComponents/dispenser-buttons';
+import {
+  StyleTyping,
+  doors,
+  doorStates,
+  lifts,
+  liftStates,
+  robotStates,
+  dispenserStates,
+} from './BaseComponents/Utils';
 
 export default {
   title: 'Design Decisions',
@@ -38,56 +48,6 @@ const styles: StyleTyping = {
     borderRadius: '4px',
   },
 };
-
-const dispenserOnline: React.CSSProperties = {
-  ...styles.panelButton,
-  border: '2px solid #4caf50',
-};
-
-const dispenserIdle: React.CSSProperties = {
-  ...styles.panelButton,
-  border: '2px solid #ff9800',
-};
-
-const dispenserOffline: React.CSSProperties = {
-  ...styles.panelButton,
-  border: '2px solid #f44336',
-};
-
-const liftStop: React.CSSProperties = {
-  ...styles.panelButton,
-  border: '2px solid #2196f3',
-};
-const liftMoving: React.CSSProperties = {
-  ...styles.panelButton,
-  border: '2px solid #ff9800',
-};
-
-const robotStates: React.CSSProperties = {
-  padding: 5,
-  minWidth: '4rem',
-  textAlign: 'center',
-  borderRadius: '4px',
-  border: '2px solid #2196f3',
-};
-
-const robotStateList = [
-  'CHARGING',
-  'DOCKING',
-  'EMERGENCY',
-  'GOING HOME',
-  'IDLE',
-  'MOVING',
-  'PAUSED',
-  'WAITING',
-];
-
-const dispenserStateMap: { [key: string]: React.CSSProperties } = {
-  ONLINE: dispenserOnline,
-  IDLE: dispenserIdle,
-  OFFLINE: dispenserOffline,
-};
-const liftStateMap: { [key: string]: React.CSSProperties } = { STOP: liftStop, MOVING: liftMoving };
 
 export const HandleLongName = () => (
   <div style={styles.root}>
@@ -144,14 +104,7 @@ export const DispenserButtonColors = () => (
       <Typography variant="h6">Dispenser State</Typography>
       <Typography variant="h6">Button color and representation</Typography>
     </div>
-    {Object.keys(dispenserStateMap).map((state, index) => {
-      return (
-        <React.Fragment key={index}>
-          <Divider />
-          <ButtonColors state={state} style={dispenserStateMap[state]} />
-        </React.Fragment>
-      );
-    })}
+    <DispenserButton dispenserStates={dispenserStates} />
   </div>
 );
 
@@ -161,14 +114,7 @@ export const LiftButtonColors = () => (
       <Typography variant="h6">Lift State</Typography>
       <Typography variant="h6">Button color and representation</Typography>
     </div>
-    {Object.keys(liftStateMap).map((state, index) => {
-      return (
-        <React.Fragment key={index}>
-          <Divider />
-          <ButtonColors state={state} style={liftStateMap[state]} />
-        </React.Fragment>
-      );
-    })}
+    <LiftButton lifts={lifts} liftStates={liftStates} />
   </div>
 );
 
@@ -178,13 +124,6 @@ export const RobotButtonColors = () => (
       <Typography variant="h6">Robot State</Typography>
       <Typography variant="h6">Button color and representation</Typography>
     </div>
-    {robotStateList.map((state, index) => {
-      return (
-        <React.Fragment key={index}>
-          <Divider />
-          <ButtonColors state={state} style={robotStates} />
-        </React.Fragment>
-      );
-    })}
+    <RobotButton fleets={robotStates} />
   </div>
 );
