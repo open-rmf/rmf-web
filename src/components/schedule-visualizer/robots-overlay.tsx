@@ -20,10 +20,11 @@ export default function RobotsOverlay(props: RobotsOverlayProps): React.ReactEle
   const width = bounds.getEast() - bounds.getWest();
   const height = bounds.getNorth() - bounds.getSouth();
   const viewBox = `0 0 ${width} ${height}`;
+  const footprint = 0.5;
 
-  function getRobotFootprint(robotName: string): number {
+  function inConflict(robotName: string): boolean {
     // FIXME: hardcode for now, footprint data not available.
-    return conflictRobotNames.flat().includes(robotName) ? 0.75 : 0.5;
+    return conflictRobotNames.flat().includes(robotName) ? true : false;
   }
 
   return (
@@ -34,9 +35,10 @@ export default function RobotsOverlay(props: RobotsOverlayProps): React.ReactEle
             <Robot
               key={robot.name}
               robot={robot}
-              footprint={getRobotFootprint(robot.name)}
+              footprint={footprint}
               colorManager={colorManager}
               onClick={(_, robot_) => onRobotClick && onRobotClick(robot_)}
+              inConflict={inConflict(robot.name)}
             />
           );
         })}
