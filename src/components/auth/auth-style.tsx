@@ -17,7 +17,7 @@ const authStyles = makeStyles(theme => ({
     borderStyle: 'none',
     borderRadius: 20,
     borderColor: 'black',
-    padding: '0px 70px 0 70px',
+    padding: '70px',
     width: 'fit-content',
     minWidth: 250,
     backgroundColor: 'snow',
@@ -27,8 +27,6 @@ const authStyles = makeStyles(theme => ({
   },
   authTitle: {
     color: '#44497a',
-    marginTop: 0,
-    paddingBottom: '1rem',
   },
   authForm: {
     marginTop: 10,
@@ -51,7 +49,8 @@ const authStyles = makeStyles(theme => ({
     backgroundColor: '#44497a',
   },
   logo: {
-    height: '10%',
+    width: 100,
+    margin: '25px 0px 50px 0px',
   },
   resetPassword: {
     alignSelf: 'center',

@@ -1,41 +1,36 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import 'typeface-roboto';
-import { UserContext } from '../app-contexts';
-import { DASHBOARD_ROUTE, DEFAULT_ROUTE, LOGIN_ROUTE } from '../util/url';
-import Dashboard from './dashboard';
-import Login from './login/login';
-import NotFoundPage from './page-not-found';
-import PrivateRoute from './privateRoute';
+import makeAppConfig, { AppConfig } from '../app-config';
+import { LOGIN_ROUTE } from '../util/url';
 import './app.css';
+import AuthContext from './auth/context';
+import Login from './auth/login';
+import PrivateRoute from './auth/private-route';
+import Dashboard from './dashboard';
+import NotFoundPage from './page-not-found';
 
 export default function App() {
-  // TODO: replace with the data of the authentication service.
-  // eslint-disable-next-line
-  const [user, setUser] = useState({ user: 'Admin' });
+  const [appConfig, setAppConfig] = React.useState<AppConfig | null>(null);
+  React.useEffect(() => {
+    (async () => {
+      setAppConfig(await makeAppConfig());
+    })();
+  }, []);
+
   return (
-    <UserContext.Provider value={user}>
-      <BrowserRouter>
-        <Switch>
-          <Route exact={true} path={LOGIN_ROUTE} component={Login} />
-          <PrivateRoute
-            redirectToLogin={true}
-            isAuthenticated={!user}
-            exact={true}
-            component={Dashboard}
-            path={DASHBOARD_ROUTE}
-          />
-          <PrivateRoute
-            redirectToLogin={true}
-            isAuthenticated={!user}
-            exact={true}
-            path={DEFAULT_ROUTE}
-            component={Dashboard}
-          />
-          {/* TODO: When the authentication logic is implemented this should be the default route  */}
-          <Route path="*" component={NotFoundPage} />
-        </Switch>
-      </BrowserRouter>
-    </UserContext.Provider>
+    appConfig && (
+      <AuthContext.Provider value={appConfig.authenticator}>
+        <BrowserRouter>
+          <Switch>
+            <Route exact={true} path={LOGIN_ROUTE} component={Login} />
+            <PrivateRoute exact={true} path={'/'}>
+              <Dashboard appConfig={appConfig} />
+            </PrivateRoute>
+            <Route component={NotFoundPage} />
+          </Switch>
+        </BrowserRouter>
+      </AuthContext.Provider>
+    )
   );
 }

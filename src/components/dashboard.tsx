@@ -1,5 +1,4 @@
-import { AppBar, Fade, IconButton, makeStyles, Toolbar, Typography } from '@material-ui/core';
-import { Dashboard as DashboardIcon, Settings as SettingsIcon } from '@material-ui/icons';
+import { Fade, makeStyles } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import debug from 'debug';
 import React from 'react';
@@ -11,6 +10,7 @@ import FleetManager from '../fleet-manager';
 import LiftStateManager from '../lift-state-manager';
 import { RobotTrajectoryManager } from '../robot-trajectory-manager';
 import { loadSettings, saveSettings, Settings, SettingsContext } from '../settings';
+import AppBar from './appbar';
 import CommandsPanel from './commands-panel';
 import DispensersPanel from './dispensers-panel';
 import DoorsPanel from './doors-panel';
@@ -46,7 +46,7 @@ const useStyles = makeStyles(theme => ({
       right: '1%',
       bottom: '2%',
       backgroundColor: theme.palette.background.default,
-      zIndex: 1024,
+      // zIndex: 1024,
       borderTopLeftRadius: borderRadius,
       borderTopRightRadius: borderRadius,
       boxShadow: theme.shadows[12],
@@ -57,7 +57,7 @@ const useStyles = makeStyles(theme => ({
       height: '35%',
       top: '65%',
       backgroundColor: theme.palette.background.default,
-      zIndex: 1024,
+      // zIndex: 1024,
       borderTopLeftRadius: borderRadius,
       borderTopRightRadius: borderRadius,
       boxShadow: theme.shadows[12],
@@ -108,7 +108,7 @@ function makeViewMap(): ViewMap {
 
 const viewMap = makeViewMap();
 
-export default function App(props: AppProps): JSX.Element {
+export default function App(props: AppProps): React.ReactElement {
   const classes = useStyles();
   const { transportFactory, trajectoryManagerFactory } = props.appConfig;
   const [transport, setTransport] = React.useState<RomiCore.Transport | undefined>(undefined);
@@ -315,22 +315,13 @@ export default function App(props: AppProps): JSX.Element {
     <React.Fragment>
       <SettingsContext.Provider value={settings}>
         <NotificationBarContext.Provider value={setNotificationBarMessage}>
-          {loading && <LoadingScreen {...loading} />}
           <div className={classes.container}>
-            <AppBar position="static">
-              <Toolbar>
-                <Typography variant="h6" className={classes.toolBarTitle}>
-                  Dashboard
-                </Typography>
-                <IconButton color="inherit" onClick={() => setShowOmniPanel(!showOmniPanel)}>
-                  <DashboardIcon />
-                </IconButton>
-                <IconButton color="inherit" onClick={() => setShowSettings(true)}>
-                  <SettingsIcon />
-                </IconButton>
-              </Toolbar>
-            </AppBar>
-            {buildingMap && (
+            <AppBar
+              toggleShowOmniPanel={() => setShowOmniPanel(!showOmniPanel)}
+              showSettings={setShowSettings}
+            />
+            {loading && <LoadingScreen {...loading} />}
+            {buildingMap && !loading && (
               <DoorStateContext.Provider value={doorStates}>
                 <LiftStateContext.Provider value={liftStates}>
                   <ScheduleVisualizer
@@ -341,59 +332,59 @@ export default function App(props: AppProps): JSX.Element {
                     onLiftClick={handleLiftClick}
                     onRobotClick={handleRobotClick}
                   />
+                  <Fade in={showOmniPanel}>
+                    <OmniPanel
+                      className={classes.omniPanel}
+                      classes={{
+                        backButton: classes.topLeftBorder,
+                        closeButton: classes.topRightBorder,
+                      }}
+                      view={currentView}
+                      onBack={handleBack}
+                      onClose={handleClose}
+                    >
+                      <OmniPanelView id={OmniPanelViewIndex.MainMenu}>
+                        <MainMenu
+                          onDoorsClick={handleMainMenuDoorsClick}
+                          onLiftsClick={handleMainMenuLiftsClick}
+                          onRobotsClick={handleMainMenuRobotsClick}
+                          onDispensersClick={handleMainMenuDispensersClick}
+                          onCommandsClick={handleMainMenuCommandsClick}
+                        />
+                      </OmniPanelView>
+                      <OmniPanelView id={OmniPanelViewIndex.Doors}>
+                        <DoorsPanel
+                          transport={transport}
+                          doorStates={doorStates}
+                          doors={doors}
+                          spotlight={doorSpotlight}
+                        />
+                      </OmniPanelView>
+                      <OmniPanelView id={OmniPanelViewIndex.Lifts}>
+                        <LiftsPanel
+                          transport={transport}
+                          liftStates={liftStates}
+                          lifts={lifts}
+                          spotlight={liftSpotlight}
+                        />
+                      </OmniPanelView>
+                      <OmniPanelView id={OmniPanelViewIndex.Robots}>
+                        <RobotsPanel fleets={fleets} spotlight={robotSpotlight} />
+                      </OmniPanelView>
+                      <OmniPanelView id={OmniPanelViewIndex.Dispensers}>
+                        <DispensersPanel
+                          dispenserStates={dispenserStates}
+                          spotlight={dispenserSpotlight}
+                        />
+                      </OmniPanelView>
+                      <OmniPanelView id={OmniPanelViewIndex.Commands}>
+                        <CommandsPanel transport={transport} fleets={fleets} />
+                      </OmniPanelView>
+                    </OmniPanel>
+                  </Fade>
                 </LiftStateContext.Provider>
               </DoorStateContext.Provider>
             )}
-            <Fade in={showOmniPanel}>
-              <OmniPanel
-                className={classes.omniPanel}
-                classes={{
-                  backButton: classes.topLeftBorder,
-                  closeButton: classes.topRightBorder,
-                }}
-                view={currentView}
-                onBack={handleBack}
-                onClose={handleClose}
-              >
-                <OmniPanelView id={OmniPanelViewIndex.MainMenu}>
-                  <MainMenu
-                    onDoorsClick={handleMainMenuDoorsClick}
-                    onLiftsClick={handleMainMenuLiftsClick}
-                    onRobotsClick={handleMainMenuRobotsClick}
-                    onDispensersClick={handleMainMenuDispensersClick}
-                    onCommandsClick={handleMainMenuCommandsClick}
-                  />
-                </OmniPanelView>
-                <OmniPanelView id={OmniPanelViewIndex.Doors}>
-                  <DoorsPanel
-                    transport={transport}
-                    doorStates={doorStates}
-                    doors={doors}
-                    spotlight={doorSpotlight}
-                  />
-                </OmniPanelView>
-                <OmniPanelView id={OmniPanelViewIndex.Lifts}>
-                  <LiftsPanel
-                    transport={transport}
-                    liftStates={liftStates}
-                    lifts={lifts}
-                    spotlight={liftSpotlight}
-                  />
-                </OmniPanelView>
-                <OmniPanelView id={OmniPanelViewIndex.Robots}>
-                  <RobotsPanel fleets={fleets} spotlight={robotSpotlight} />
-                </OmniPanelView>
-                <OmniPanelView id={OmniPanelViewIndex.Dispensers}>
-                  <DispensersPanel
-                    dispenserStates={dispenserStates}
-                    spotlight={dispenserSpotlight}
-                  />
-                </OmniPanelView>
-                <OmniPanelView id={OmniPanelViewIndex.Commands}>
-                  <CommandsPanel transport={transport} fleets={fleets} />
-                </OmniPanelView>
-              </OmniPanel>
-            </Fade>
             <SettingsDrawer
               settings={settings}
               open={showSettings}
