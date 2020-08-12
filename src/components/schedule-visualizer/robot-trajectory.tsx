@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Conflict, rawKnotsToKnots, Trajectory, RawKnot } from '../../robot-trajectory-manager';
 import { bezierControlPoints, knotsToSegmentCoefficientsArray } from '../../util/cublic-spline';
 import { TrajectoryPath } from './trajectory-animations';
 import { useTheme } from '@material-ui/core';
 import ColorManager from './colors';
+
+// @ts-ignore
+import stringify from 'virtual-dom-stringify';
+// @ts-ignore
+import patterns from 'svg-patterns';
 
 export interface RobotTrajectoryProps
   extends React.RefAttributes<SVGPathElement>,
@@ -11,7 +16,7 @@ export interface RobotTrajectoryProps
   trajectory: Trajectory;
   conflicts: Conflict[];
   footprint: number;
-  colorManager?: Readonly<ColorManager>
+  colorManager?: Readonly<ColorManager>;
 }
 
 export const RobotTrajectory = React.forwardRef(function(
@@ -19,15 +24,37 @@ export const RobotTrajectory = React.forwardRef(function(
   ref: React.Ref<SVGPathElement>,
 ): React.ReactElement {
   const { trajectory, conflicts, footprint, colorManager, ...otherProps } = props;
+  const [pattern, setPattern] = useState(
+    patterns.lines({
+      stroke: 'white', // any SVG-compatible color
+      background: '#343434', // any SVG-compatible color
+      orientations: [45],
+    }),
+  );
   const theme = useTheme();
+
+  function generatePattern(pathColor: string) {
+    return patterns.lines({
+      size: 0.8,
+      strokeWidth: 0.07,
+      stroke: 'black', // any SVG-compatible color
+      background: pathColor, // any SVG-compatible color
+      orientations: [45],
+    });
+  }
 
   const pathColor = React.useMemo(() => {
     const getRobotColor = () => {
       const robotColor = colorManager?.robotColorFromCache(trajectory.robot_name);
-      return !!robotColor? robotColor: theme.palette.success.main;
-    }
-    return conflicts.flat().includes(trajectory.id) ? theme.palette.error.main: getRobotColor()
-  }, [trajectory, conflicts, theme, colorManager])
+      return !!robotColor ? robotColor : theme.palette.success.main;
+    };
+    setPattern(
+      generatePattern(
+        conflicts.flat().includes(trajectory.id) ? theme.palette.error.main : getRobotColor(),
+      ),
+    );
+    return conflicts.flat().includes(trajectory.id) ? theme.palette.error.main : getRobotColor();
+  }, [trajectory, conflicts, theme, colorManager]);
 
   const pathD = React.useMemo(() => {
     return trajectoryPath(trajectory.segments).d;
@@ -35,12 +62,13 @@ export const RobotTrajectory = React.forwardRef(function(
 
   return (
     <>
-      { pathColor && (
+      <defs dangerouslySetInnerHTML={{ __html: stringify(pattern) }} />
+      {pathColor && (
         <path
           data-component="RobotTrajectory"
           ref={ref}
           d={pathD}
-          stroke={pathColor}
+          stroke={pattern.url()}
           opacity={0.8}
           strokeWidth={footprint * 0.8}
           strokeLinecap="round"
