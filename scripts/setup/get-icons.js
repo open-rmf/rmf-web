@@ -32,7 +32,7 @@ let data = JSON.parse(rawdata);
 if (data.hasOwnProperty('repoUrl')) {
   exec('[ -d "public/assets/icons/" ] && rm -rf public/assets/icons');
   exec('mkdir -p public/assets/icons');
-  // TODO remove --branch or add support
+  // TODO remove --branch when osrf/rmf_demos#109 is merged or add support for branches on prompt
   execSync(
     `git clone "${data.repoUrl}" --no-checkout  --depth=1 --single-branch --branch feat/createResourceFolder public/assets/icons/ -o repo`,
     {
@@ -56,10 +56,6 @@ if (data.hasOwnProperty('repoUrl')) {
     stdio: [0, 1, 2],
     cwd: path.resolve(__dirname, '../../public/assets/icons/'),
   });
-
-  // exec(`svn checkout ${data.url} public/assets/icons/`, (error, stdout, stderr) =>
-  //   callback(error, stdout, stderr),
-  // );
 } else if (data.hasOwnProperty('path')) {
   exec('[ -d "public/assets/icons/" ] && rm -rf public/assets/icons');
   exec('mkdir -p public/assets/icons');
