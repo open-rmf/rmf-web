@@ -33,27 +33,18 @@ export const RobotTrajectory = React.forwardRef(function(
   );
   const theme = useTheme();
 
-  function generatePattern(pathColor: string) {
-    return patterns.lines({
-      size: 0.8,
-      strokeWidth: 0.07,
-      stroke: 'black', // any SVG-compatible color
-      background: pathColor, // any SVG-compatible color
-      orientations: [45],
-    });
-  }
-
   const pathColor = React.useMemo(() => {
     const getRobotColor = () => {
       const robotColor = colorManager?.robotColorFromCache(trajectory.robot_name);
       return !!robotColor ? robotColor : theme.palette.success.main;
     };
-    setPattern(
-      generatePattern(
-        conflicts.flat().includes(trajectory.id) ? theme.palette.error.main : getRobotColor(),
-      ),
-    );
-    return conflicts.flat().includes(trajectory.id) ? theme.palette.error.main : getRobotColor();
+    const pathColorHolder = conflicts.flat().includes(trajectory.id)
+      ? theme.palette.error.main
+      : getRobotColor();
+
+    setPattern(patternHolder[trajectory.robot_name](pathColorHolder));
+
+    return pathColorHolder;
   }, [trajectory, conflicts, theme, colorManager]);
 
   const pathD = React.useMemo(() => {
@@ -107,3 +98,47 @@ export function trajectoryPath(trajectorySegments: RawKnot[]): TrajectoryPath {
     segOffsets,
   };
 }
+
+// temp pattern object
+
+function generatePattern(pathColor: string) {
+  return patterns.lines({
+    size: 0.8,
+    strokeWidth: 0.07,
+    stroke: 'black',
+    background: pathColor,
+    orientations: [45],
+  });
+}
+
+const patternHolder: { [key: string]: any } = {
+  RobotA: (pathColor: string) => {
+    return patterns.lines({
+      size: 0.8,
+      strokeWidth: 0.07,
+      stroke: 'black',
+      background: pathColor,
+      orientations: [45],
+    });
+  },
+  RobotB: (pathColor: string) => {
+    return patterns.rhombic({
+      size: 1.2, // size of the pattern
+      fill: 'black', // any SVG-compatible color
+      strokeWidth: 0.09,
+      stroke: 'black', // any SVG-compatible color
+      background: pathColor,
+    });
+  },
+  RobotC: (pathColor: string) => {
+    return patterns.circles({
+      size: 1.5, // size of the pattern
+      radius: 0.3,
+      complement: true,
+      fill: 'black', // any SVG-compatible color
+      strokeWidth: 0,
+      stroke: 'none', // any SVG-compatible color
+      background: pathColor, // any SVG-compatible color
+    });
+  },
+};
