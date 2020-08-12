@@ -101,16 +101,6 @@ export function trajectoryPath(trajectorySegments: RawKnot[]): TrajectoryPath {
 
 // temp pattern object
 
-function generatePattern(pathColor: string) {
-  return patterns.lines({
-    size: 0.8,
-    strokeWidth: 0.07,
-    stroke: 'black',
-    background: pathColor,
-    orientations: [45],
-  });
-}
-
 const patternHolder: { [key: string]: any } = {
   RobotA: (pathColor: string) => {
     return patterns.lines({
