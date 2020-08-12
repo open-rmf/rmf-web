@@ -122,9 +122,9 @@ const patternHolder: { [key: string]: any } = {
     });
   },
   RobotB: (pathColor: string) => {
-    return patterns.rhombic({
-      size: 1.2, // size of the pattern
-      fill: 'black', // any SVG-compatible color
+    return patterns.squares({
+      size: 1, // size of the pattern
+      fill: 'none', // any SVG-compatible color
       strokeWidth: 0.09,
       stroke: 'black', // any SVG-compatible color
       background: pathColor,
