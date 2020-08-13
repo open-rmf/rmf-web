@@ -9,7 +9,7 @@ const createConfigFile = () => {
   console.log(chalk`
 Hello! 👋
 
-{bold.red IMPORTANT} 🚨 You are about to configure where you are going to bring the icons for the Romi Dashboard project `);
+{bold.red IMPORTANT} 🚨 You are about to configure the source of the resources for the Romi Dashboard project `);
   console.log(chalk`
 You have two options:
 {cyan →} 1. {blue get} the assets from a remote GH source.
@@ -34,10 +34,16 @@ You have two options:
           ) || 'Not a valid URL',
       },
       {
-        name: 'FOLDER',
-        message: `Set FOLDER. Example: /rmf_dashboard_resources/office/`,
+        name: 'BRANCH',
+        message: `Set BRANCH. Example: master`,
         when: keys => !!keys['REPO'],
-        validate: input => /^(\/[^\/]+){0,20}\/?$/gm.test(input) || 'Not a valid PATH',
+        default: 'master',
+      },
+      {
+        name: 'FOLDER',
+        message: `Set FOLDER. Leave it empty to clone the whole project. Example: rmf_dashboard_resources/office/`,
+        when: keys => !!keys['BRANCH'],
+        default: '',
       },
       {
         name: 'COPY',
@@ -49,7 +55,7 @@ You have two options:
     .then(keys => {
       let information;
       if (keys.GET_OR_COPY === '1') {
-        information = { repoUrl: keys.REPO, folder: keys.FOLDER };
+        information = { repoUrl: keys.REPO, folder: keys.FOLDER, branch: keys.BRANCH };
       }
       if (keys.GET_OR_COPY === '2') {
         information = { path: keys.COPY };
@@ -70,7 +76,7 @@ You have two options:
 
 if (fileExists) {
   console.log(chalk`
-  {blue Hello! 👋 You already configured an icon source!
+  {blue Hello! 👋 You already configured a resource source!
   1. Continue and do nothing.
   2. Do you want to modify it? (You can also update the values manually on .resources.json) }`);
 
@@ -92,7 +98,6 @@ if (fileExists) {
             console.error(chalk`{red exec error: ${error}}`);
             return;
           }
-
           if (stderr) {
             console.error(`stderr: ${stderr}`);
             return;
