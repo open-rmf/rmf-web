@@ -22,7 +22,7 @@ npm install
 
 ```
 
-(Optional) Import external resources (like icons).
+(Optional) Import external resources.
 
 ```bash
 npm run setup
@@ -47,7 +47,7 @@ This folder obtained must contain at its root a JSON file calling `main.json`, w
 }
 ```
 
-Upon completion of the configuration, a file called .resources.json will be created, which will save the configuration from where to obtain the resources.
+Upon completion of the configuration, a file called .resources.json will be created automatically, which will save the configuration from where to obtain the resources.
 
 In case you want to modify the source of your resources. You can rerun the command:
 

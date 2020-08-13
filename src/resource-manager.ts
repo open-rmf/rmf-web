@@ -10,6 +10,7 @@ export type ResourceConfigurationsType = Record<string, SubResourceConfiguration
 export default class ResourceManager {
   static getResourceConfigurationFile = async (): Promise<ResourceConfigurationsType> => {
     try {
+      // Gets data served by the project itself
       const response = await axios.get('/assets/icons/main.json');
       return response.data as ResourceConfigurationsType;
     } catch (error) {
@@ -31,7 +32,7 @@ export default class ResourceManager {
     }
     const rootIconPath = '/assets/icons';
     const robotIcons = resources.robots[fleetName].icons;
-
+    // In case the fleet has different models
     if (!!robotModel && robotIcons.hasOwnProperty(robotModel)) {
       const iconPath = robotIcons[robotModel];
       return `${rootIconPath}${iconPath}`;
