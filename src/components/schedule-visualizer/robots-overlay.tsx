@@ -1,5 +1,4 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import * as L from 'leaflet';
 import React, { useMemo } from 'react';
 import ColorManager from './colors';
 import Robot from './robot';
