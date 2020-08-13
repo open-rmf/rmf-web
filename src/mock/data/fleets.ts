@@ -36,7 +36,7 @@ export default function fakeFleets(): RomiCore.FleetState[] {
           model: 'Model1',
           mode: { mode: RomiCore.RobotMode.MODE_EMERGENCY },
           location: {
-            level_name: 'L2',
+            level_name: 'L1',
             x: 4,
             y: -12,
             yaw: 0,
