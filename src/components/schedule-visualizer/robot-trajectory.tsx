@@ -35,7 +35,7 @@ export const RobotTrajectory = React.forwardRef(function(
   const theme = useTheme();
   const settings = React.useContext(SettingsContext);
   const trajDiameter = settings.trajectoryDiameter;
-  const trajColor = settings.trajectoryColor;
+
   function determineTrajDiameter(trajDiameter: TrajectoryDiameter): number {
     switch (trajDiameter) {
       case TrajectoryDiameter.Default:
@@ -67,14 +67,7 @@ export const RobotTrajectory = React.forwardRef(function(
         setPattern(patternHolder[trajectory.robot_name](pathColorHolder));
         return pathColorHolder;
     }
-    // const pathColorHolder = conflicts.flat().includes(trajectory.id)
-    //   ? theme.palette.error.main
-    //   : getRobotColor();
-
-    // setPattern(patternHolder[trajectory.robot_name](pathColorHolder));
-
-    // return pathColorHolder;
-  }, [trajectory, conflicts, theme, colorManager]);
+  }, [trajectory, conflicts, theme, colorManager, settings.trajectoryColor]);
 
   const pathD = React.useMemo(() => {
     return trajectoryPath(trajectory.segments).d;
