@@ -18,10 +18,17 @@ export enum TrajectoryDiameter {
   Robot,
 }
 
+export enum TrajectoryColor {
+  Shape,
+  Robot,
+  Plain,
+}
+
 export interface Settings {
   trajectoryAnimation: TrajectoryAnimation;
   trajectoryAnimationSpeed: AnimationSpeed;
   trajectoryDiameter: TrajectoryDiameter;
+  trajectoryColor: TrajectoryColor;
 }
 
 export function saveSettings(settings: Settings): void {
@@ -41,6 +48,7 @@ export function defaultSettings(): Settings {
     trajectoryAnimation: TrajectoryAnimation.Follow,
     trajectoryAnimationSpeed: AnimationSpeed.Normal,
     trajectoryDiameter: TrajectoryDiameter.Default,
+    trajectoryColor: TrajectoryColor.Plain,
   };
 }
 

@@ -4,7 +4,7 @@ import { bezierControlPoints, knotsToSegmentCoefficientsArray } from '../../util
 import { TrajectoryPath } from './trajectory-animations';
 import { useTheme } from '@material-ui/core';
 import ColorManager from './colors';
-import { SettingsContext, TrajectoryDiameter } from '../../settings';
+import { SettingsContext, TrajectoryDiameter, TrajectoryColor } from '../../settings';
 
 // @ts-ignore
 import stringify from 'virtual-dom-stringify';
@@ -35,6 +35,7 @@ export const RobotTrajectory = React.forwardRef(function(
   const theme = useTheme();
   const settings = React.useContext(SettingsContext);
   const trajDiameter = settings.trajectoryDiameter;
+  const trajColor = settings.trajectoryColor;
   function determineTrajDiameter(trajDiameter: TrajectoryDiameter): number {
     switch (trajDiameter) {
       case TrajectoryDiameter.Default:
@@ -49,13 +50,30 @@ export const RobotTrajectory = React.forwardRef(function(
       const robotColor = colorManager?.robotColorFromCache(trajectory.robot_name);
       return !!robotColor ? robotColor : theme.palette.success.main;
     };
-    const pathColorHolder = conflicts.flat().includes(trajectory.id)
-      ? theme.palette.error.main
-      : getRobotColor();
+    const robotColorHolder = getRobotColor();
+    switch (settings.trajectoryColor) {
+      case TrajectoryColor.Plain:
+        return conflicts.flat().includes(trajectory.id)
+          ? theme.palette.error.main
+          : theme.palette.success.main;
+      case TrajectoryColor.Robot:
+        return conflicts.flat().includes(trajectory.id)
+          ? theme.palette.error.main
+          : robotColorHolder;
+      case TrajectoryColor.Shape:
+        const pathColorHolder = conflicts.flat().includes(trajectory.id)
+          ? theme.palette.error.main
+          : getRobotColor();
+        setPattern(patternHolder[trajectory.robot_name](pathColorHolder));
+        return pathColorHolder;
+    }
+    // const pathColorHolder = conflicts.flat().includes(trajectory.id)
+    //   ? theme.palette.error.main
+    //   : getRobotColor();
 
-    setPattern(patternHolder[trajectory.robot_name](pathColorHolder));
+    // setPattern(patternHolder[trajectory.robot_name](pathColorHolder));
 
-    return pathColorHolder;
+    // return pathColorHolder;
   }, [trajectory, conflicts, theme, colorManager]);
 
   const pathD = React.useMemo(() => {
@@ -70,7 +88,7 @@ export const RobotTrajectory = React.forwardRef(function(
           data-component="RobotTrajectory"
           ref={ref}
           d={pathD}
-          stroke={pattern.url()}
+          stroke={settings.trajectoryColor === TrajectoryColor.Shape ? pattern.url() : pathColor}
           opacity={0.8}
           strokeWidth={determineTrajDiameter(trajDiameter)}
           strokeLinecap="round"

@@ -11,7 +11,7 @@ import {
   useMediaQuery,
 } from '@material-ui/core';
 import React from 'react';
-import { Settings, TrajectoryAnimation, TrajectoryDiameter } from '../settings';
+import { Settings, TrajectoryAnimation, TrajectoryDiameter, TrajectoryColor } from '../settings';
 
 export interface SettingsDrawerProps extends DrawerProps {
   settings: Readonly<Settings>;
@@ -21,7 +21,7 @@ export interface SettingsDrawerProps extends DrawerProps {
 export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactElement {
   const classes = useStyles();
   const { settings, onSettingsChange, ...otherProps } = props;
-  const { trajectoryAnimation, trajectoryDiameter } = settings;
+  const { trajectoryAnimation, trajectoryDiameter, trajectoryColor } = settings;
 
   const trajAnimsText = React.useMemo(
     () => Object.keys(TrajectoryAnimation).slice(Object.keys(TrajectoryAnimation).length * 0.5),
@@ -33,7 +33,12 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
     [],
   );
 
-  const drawerAnchor = useMediaQuery('(max-aspect-ratio: 8/10)') ? 'bottom' : 'right';
+  const trajColorText = React.useMemo(
+    () => Object.keys(TrajectoryColor).slice(Object.keys(TrajectoryColor).length * 0.5),
+    [],
+  );
+
+  const drawerAnchor = useMediaQuery('(max-aspect-ratio: 8/10') ? 'bottom' : 'right';
 
   function handleTrajectoryAnimationChange(ev: React.ChangeEvent<HTMLInputElement>): void {
     const newSettings: Settings = { ...settings, trajectoryAnimation: Number(ev.target.value) };
@@ -42,6 +47,11 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
 
   function handleTrajectoryDiameterChange(ev: React.ChangeEvent<HTMLInputElement>): void {
     const newSettings: Settings = { ...settings, trajectoryDiameter: Number(ev.target.value) };
+    onSettingsChange && onSettingsChange(newSettings);
+  }
+
+  function handleTrajectorColorChange(ev: React.ChangeEvent<HTMLInputElement>): void {
+    const newSettings: Settings = { ...settings, trajectoryColor: Number(ev.target.value) };
     onSettingsChange && onSettingsChange(newSettings);
   }
 
@@ -77,6 +87,25 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
           onChange={handleTrajectoryDiameterChange}
         >
           {trajDiameterText.map((text, i) => (
+            <FormControlLabel
+              key={i}
+              className={classes.flexBasis}
+              value={i}
+              control={<Radio />}
+              label={text}
+            />
+          ))}
+        </RadioGroup>
+        <FormLabel component="legend" className={classes.legendLabel}>
+          Trajectory Color
+        </FormLabel>
+        <Divider />
+        <RadioGroup
+          className={classes.trajGroup}
+          value={trajectoryColor}
+          onChange={handleTrajectorColorChange}
+        >
+          {trajColorText.map((text, i) => (
             <FormControlLabel
               key={i}
               className={classes.flexBasis}
