@@ -46,11 +46,26 @@ export interface TrajectoryResponse {
   conflicts: Conflict[];
 }
 
+export interface NegotiationTrajectoryRequest {
+  request: 'negotiation_trajectory';
+  param: {
+    conflict_version : number;
+    sequence : number[];
+  };
+}
+
+export interface NegotiationTrajectoryResponse {
+  response: 'negotiation_trajectory';
+  values: Trajectory[];
+}
+
 export type Conflict = number[];
 
 export interface RobotTrajectoryManager {
   serverTime(request: TimeRequest): Promise<TimeResponse>;
   latestTrajectory(request: TrajectoryRequest): Promise<TrajectoryResponse>;
+  negotiationTrajectory(request : NegotiationTrajectoryRequest): 
+    Promise<NegotiationTrajectoryResponse>;
 }
 
 interface Request {
@@ -97,10 +112,19 @@ export class DefaultTrajectoryManager {
     return resp as TimeResponse;
   }
 
-  static getRobotNameFromPathId(
-    pathId: number,
-    trajectories: readonly Trajectory[],
-  ): string | undefined {
+  async negotiationTrajectory(request : NegotiationTrajectoryRequest): 
+    Promise<NegotiationTrajectoryResponse> {
+    const event = await this._send(JSON.stringify(request));
+    const resp = JSON.parse(event.data);
+    this._checkResponse(request, resp);
+
+    if (resp.values === null) {
+      resp.values = [];
+    }
+    return resp as NegotiationTrajectoryResponse;
+  }
+
+  static getRobotNameFromPathId(pathId: number, trajectories: readonly Trajectory[]): string | undefined {
     const traj = trajectories.find(trajectory => trajectory.id === pathId);
     return traj?.robot_name;
   }
@@ -146,7 +170,7 @@ export class DefaultTrajectoryManager {
 
   private _checkResponse(request: Request, resp: Response): void {
     if (request.request !== resp.response) {
-      console.warn('received response for wrong request');
+      console.warn('received response for wrong request. Request: ' + request.request + 'Response: ' + resp.response);
       throw new Error('received response for wrong request');
     }
   }

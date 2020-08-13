@@ -44,6 +44,12 @@ export default class NegotiationStatusManager extends EventEmitter<Events> {
         var version = negotiationStatusConclusion.conflict_version.toString();
         var conflict = this._conflicts[version];
 
+        if (conflict === undefined)
+        {
+          console.warn('Undefined conflict version ' + version + ', ignoring...');
+          return;
+        }
+
         if (negotiationStatusConclusion.resolved)
           conflict.resolved = ResolveState.RESOLVED;
         else

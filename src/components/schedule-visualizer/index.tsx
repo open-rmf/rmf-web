@@ -11,6 +11,7 @@ import {
   RobotTrajectoryManager,
   Trajectory,
   TrajectoryResponse,
+  NegotiationTrajectoryResponse,
 } from '../../robot-trajectory-manager';
 import { AnimationSpeed, TrajectoryAnimation } from '../../settings';
 import { toBlobUrl } from '../../util';
@@ -50,6 +51,7 @@ export interface ScheduleVisualizerProps {
   fleets: Readonly<RomiCore.FleetState[]>;
   trajManager?: Readonly<RobotTrajectoryManager>;
   appResources?: Readonly<ResourceConfigurationsType>;
+  negotiationTrajStore : Readonly<Record<string, NegotiationTrajectoryResponse>>;
   onDoorClick?(door: RomiCore.Door): void;
   onLiftClick?(lift: RomiCore.Lift): void;
   onRobotClick?(fleet: string, robot: RomiCore.RobotState): void;
@@ -220,6 +222,16 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     setCurLevelName(e.name);
   }
 
+  function getTrajectory(levelName: string): Trajectory[] {
+    const resp = trajectories[levelName];
+    return resp ? resp.values : [];
+  }
+
+  function getConflicts(levelName: string): Conflict[] {
+    const resp = trajectories[levelName];
+    return resp ? resp.conflicts : [];
+  }
+
   const sortedMapFloorLayers = mapFloorLayerSort.map((x) => mapFloorLayers[x]);
   const ref = React.useRef<ImageOverlay>(null);
 
@@ -309,6 +321,22 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
               </Pane>
             )}
           </LayersControl.Overlay>
+
+          <LayersControl.Overlay name="Negotiation Trajectories" checked>
+          {curMapFloorLayer && props.negotiationTrajStore[curMapFloorLayer.level.name] && (
+            <Pane>
+              <RobotTrajectoryContext.Provider value={{ Component: TrajectoryComponent }}>
+                <RobotTrajectoriesOverlay
+                  bounds={curMapFloorLayer.bounds}
+                  trajs={props.negotiationTrajStore[curMapFloorLayer.level.name].values}
+                  conflicts={getConflicts(curMapFloorLayer.level.name)}
+                  colorManager={colorManager}
+                />
+              </RobotTrajectoryContext.Provider>
+            </Pane>
+          )}
+          </LayersControl.Overlay>
+
           <LayersControl.Overlay name="Doors" checked>
             {curMapFloorLayer && (
               <Pane>

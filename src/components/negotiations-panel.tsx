@@ -9,6 +9,13 @@ import TreeItem from '@material-ui/lab/TreeItem';
 import { SpotlightValue } from './spotlight-value';
 import { NegotiationStatus, negotiationStatus } from '@osrf/romi-js-core-interfaces';
 import * as NegotiationStatusManager from '../negotiation-status-manager';
+import {
+  RobotTrajectoryManager,
+  NegotiationTrajectoryRequest,
+  NegotiationTrajectoryResponse
+} from '../robot-trajectory-manager';
+import { throws } from 'assert';
+import { trajectoryPath } from './schedule-visualizer/robot-trajectory';
 
 const useStyles = makeStyles({
   root: {
@@ -27,9 +34,25 @@ const useStyles = makeStyles({
   }
 });
 
+interface Parameter
+{
+  conflict_version : number;
+  sequence : number[];
+};
+
+function toNumberArray(arr : Uint32Array) : number[] {
+  var ret : number[] = [];
+  arr.forEach(value => {
+    ret.push(value);
+  });
+  return ret;
+}
+
 export interface NegotiationsPanelProps {
   conflicts : Readonly<Record<string, NegotiationStatusManager.NegotiationConflict>>;
   spotlight?: Readonly<SpotlightValue<string>>;
+  trajManager?: Readonly<RobotTrajectoryManager>;
+  negotiationTrajStore : Record<string, NegotiationTrajectoryResponse>;
 }
 
 export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.Element {
@@ -51,6 +74,7 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
     */
   }, [spotlight]);
   
+  
   const classes = useStyles();
 
   let rejected_statuses = NegotiationStatus.STATUS_REJECTED | 
@@ -68,7 +92,8 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
     return status_text;
   };
 
-  var key_idx = 0;
+  var nodeid_to_parameters = new Map<string, Parameter>();
+
   const renderNegotiations = (version : string, conflict : NegotiationStatusManager.NegotiationConflict) => {
     let conflict_label = "Conflict #" + version + ", Participants: ";
     var i = 0;
@@ -123,26 +148,45 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
         label_text2 += "]";
         label_text2 += addStatusText(status.status);
 
-        var child_idx = key_idx + 1;
+        var nodeId = version + "." + participant_id + ".terminal"; //terminal node
+        var childId = version + "." + participant_id + ".base"; //base ID
         table_dom.push(
-          <TreeItem nodeId={key_idx.toString()} key={key_idx} classes={{label: style, selected: style}} label={label_text}>
-            <TreeItem nodeId={child_idx.toString()} key={child_idx} classes={{label: style, selected: style}} label={label_text2}/>
+          <TreeItem nodeId={nodeId} key={nodeId} classes={{label: style, selected: style}} label={label_text}>
+            <TreeItem nodeId={childId} key={childId} classes={{label: style, selected: style}} label={label_text2}/>
           </TreeItem>);
-        key_idx += 2;
+        
+        let terminal_params = {
+            conflict_version : parseInt(version),
+            sequence : toNumberArray(status.sequence)
+          };
+        nodeid_to_parameters.set(nodeId, terminal_params);
+
+        let base_params = {
+          conflict_version : parseInt(version),
+          sequence : [parseInt(participant_id)]
+        };
+        nodeid_to_parameters.set(childId, base_params);
       }
       else
       {
-        label_text += addStatusText(status.status);
         //single node
+        label_text += addStatusText(status.status);
+        var nodeId = version + "." + participant_id + ".base"; //base ID
         table_dom.push(
-          <TreeItem nodeId={key_idx.toString()} key={key_idx} classes={{label: style, selected: style}} label={label_text}/>
+          <TreeItem nodeId={nodeId} key={nodeId} classes={{label: style, selected: style}} label={label_text}/>
         );
-        key_idx += 1;
+
+        let base_params = {
+          conflict_version : parseInt(version),
+          sequence : [parseInt(participant_id)]
+        };
+        nodeid_to_parameters.set(nodeId, base_params);
       }
     }
     
+    var nodeIdBase = "conflict" + version;
     return (
-      <TreeItem nodeId={key_idx.toString()} key={key_idx} classes={{ label: conflict_style, selected: conflict_style }} label={conflict_label}>
+      <TreeItem nodeId={nodeIdBase} key={nodeIdBase} classes={{ label: conflict_style, selected: conflict_style }} label={conflict_label}>
         { table_dom }
       </TreeItem>
     );
@@ -155,16 +199,48 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
       const conflict = props.conflicts[version];
       let contents = renderNegotiations(version, conflict);
       negotiation_contents.push(contents);
-      key_idx += 1;
     });
   }
   else {
     console.log("prop negotationstatus empty");
   }
+  
+  // action callbacks
+  const handleSelect = (event: React.ChangeEvent<{}>, nodeIds: string) => {
+    //console.log("selected: " + nodeIds);
+
+    async function updateNegotiationTrajectory() {
+      if (!props.trajManager) {
+        return;
+      }
+
+      var traj_params = nodeid_to_parameters.get(nodeIds);
+      if (!traj_params) {
+        //Must have clicked a top level node
+        return;
+      }
+
+      const resp = await props.trajManager.negotiationTrajectory({ 
+        request: 'negotiation_trajectory',
+        param: traj_params
+      });
+      if (resp.values == undefined)
+        console.warn("values undefined!");
+
+      resp.values.forEach(value => {
+        console.log("id: " + value.id);
+      })
+      props.negotiationTrajStore["L1"] = resp;
+    };;
+
+    updateNegotiationTrajectory();
+    //interval = window.setInterval(updateNegotiationTrajectory, trajAnimDuration);
+  };
 
   return (
     <TreeView
       className={classes.root}
+      onNodeSelect={handleSelect}
       defaultCollapseIcon={<ExpandMoreIcon />}
       defaultExpanded={['root']}
       defaultExpandIcon={<ChevronRightIcon />}
