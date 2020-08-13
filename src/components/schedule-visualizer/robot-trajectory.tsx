@@ -4,6 +4,7 @@ import { bezierControlPoints, knotsToSegmentCoefficientsArray } from '../../util
 import { TrajectoryPath } from './trajectory-animations';
 import { useTheme } from '@material-ui/core';
 import ColorManager from './colors';
+import { SettingsContext, TrajectoryDiameter } from '../../settings';
 
 // @ts-ignore
 import stringify from 'virtual-dom-stringify';
@@ -32,6 +33,16 @@ export const RobotTrajectory = React.forwardRef(function(
     }),
   );
   const theme = useTheme();
+  const settings = React.useContext(SettingsContext);
+  const trajDiameter = settings.trajectoryDiameter;
+  function determineTrajDiameter(trajDiameter: TrajectoryDiameter): number {
+    switch (trajDiameter) {
+      case TrajectoryDiameter.Default:
+        return 0.4;
+      case TrajectoryDiameter.Robot:
+        return footprint;
+    }
+  }
 
   const pathColor = React.useMemo(() => {
     const getRobotColor = () => {
@@ -61,7 +72,7 @@ export const RobotTrajectory = React.forwardRef(function(
           d={pathD}
           stroke={pattern.url()}
           opacity={0.8}
-          strokeWidth={footprint * 0.8}
+          strokeWidth={determineTrajDiameter(trajDiameter)}
           strokeLinecap="round"
           fill={'none'}
           pathLength={1}

@@ -11,7 +11,7 @@ import {
   useMediaQuery,
 } from '@material-ui/core';
 import React from 'react';
-import { Settings, TrajectoryAnimation } from '../settings';
+import { Settings, TrajectoryAnimation, TrajectoryDiameter } from '../settings';
 
 export interface SettingsDrawerProps extends DrawerProps {
   settings: Readonly<Settings>;
@@ -21,10 +21,15 @@ export interface SettingsDrawerProps extends DrawerProps {
 export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactElement {
   const classes = useStyles();
   const { settings, onSettingsChange, ...otherProps } = props;
-  const { trajectoryAnimation } = settings;
+  const { trajectoryAnimation, trajectoryDiameter } = settings;
 
   const trajAnimsText = React.useMemo(
     () => Object.keys(TrajectoryAnimation).slice(Object.keys(TrajectoryAnimation).length * 0.5),
+    [],
+  );
+
+  const trajDiameterText = React.useMemo(
+    () => Object.keys(TrajectoryDiameter).slice(Object.keys(TrajectoryDiameter).length * 0.5),
     [],
   );
 
@@ -32,6 +37,11 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
 
   function handleTrajectoryAnimationChange(ev: React.ChangeEvent<HTMLInputElement>): void {
     const newSettings: Settings = { ...settings, trajectoryAnimation: Number(ev.target.value) };
+    onSettingsChange && onSettingsChange(newSettings);
+  }
+
+  function handleTrajectoryDiameterChange(ev: React.ChangeEvent<HTMLInputElement>): void {
+    const newSettings: Settings = { ...settings, trajectoryDiameter: Number(ev.target.value) };
     onSettingsChange && onSettingsChange(newSettings);
   }
 
@@ -48,6 +58,25 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
           onChange={handleTrajectoryAnimationChange}
         >
           {trajAnimsText.map((text, i) => (
+            <FormControlLabel
+              key={i}
+              className={classes.flexBasis}
+              value={i}
+              control={<Radio />}
+              label={text}
+            />
+          ))}
+        </RadioGroup>
+        <FormLabel component="legend" className={classes.legendLabel}>
+          Trajectory Diameter
+        </FormLabel>
+        <Divider />
+        <RadioGroup
+          className={classes.trajGroup}
+          value={trajectoryDiameter}
+          onChange={handleTrajectoryDiameterChange}
+        >
+          {trajDiameterText.map((text, i) => (
             <FormControlLabel
               key={i}
               className={classes.flexBasis}

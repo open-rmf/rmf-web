@@ -13,9 +13,15 @@ export enum AnimationSpeed {
   Fast,
 }
 
+export enum TrajectoryDiameter {
+  Default,
+  Robot,
+}
+
 export interface Settings {
   trajectoryAnimation: TrajectoryAnimation;
   trajectoryAnimationSpeed: AnimationSpeed;
+  trajectoryDiameter: TrajectoryDiameter;
 }
 
 export function saveSettings(settings: Settings): void {
@@ -34,6 +40,7 @@ export function defaultSettings(): Settings {
   return {
     trajectoryAnimation: TrajectoryAnimation.Follow,
     trajectoryAnimationSpeed: AnimationSpeed.Normal,
+    trajectoryDiameter: TrajectoryDiameter.Default,
   };
 }
 
