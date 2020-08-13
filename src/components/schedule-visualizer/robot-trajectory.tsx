@@ -102,7 +102,7 @@ export function trajectoryPath(trajectorySegments: RawKnot[]): TrajectoryPath {
 // temp pattern object
 
 const patternHolder: { [key: string]: any } = {
-  RobotA: (pathColor: string) => {
+  RobotC: (pathColor: string) => {
     return patterns.lines({
       size: 0.8,
       strokeWidth: 0.07,
@@ -113,16 +113,16 @@ const patternHolder: { [key: string]: any } = {
   },
   RobotB: (pathColor: string) => {
     return patterns.squares({
-      size: 1, // size of the pattern
-      fill: 'none', // any SVG-compatible color
-      strokeWidth: 0.09,
+      size: 0.7, // size of the pattern
+      fill: 'black', // any SVG-compatible color
+      // strokeWidth: 0.09,
       stroke: 'black', // any SVG-compatible color
       background: pathColor,
     });
   },
-  RobotC: (pathColor: string) => {
+  RobotA: (pathColor: string) => {
     return patterns.circles({
-      size: 1.5, // size of the pattern
+      size: 1, // size of the pattern
       radius: 0.3,
       complement: true,
       fill: 'black', // any SVG-compatible color
