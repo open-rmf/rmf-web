@@ -45,7 +45,7 @@ export const DoorItem = React.forwardRef(function(
       case RomiCore.DoorMode.MODE_MOVING:
         return `${classes.doorLabel} ${classes.doorLabelMoving}`;
       default:
-        return '';
+        return `${classes.doorLabel} ${classes.unknown}`;
     }
   }
 
@@ -113,7 +113,7 @@ const useStyles = makeStyles(theme => ({
 
   expansionDetail: {
     flexFlow: 'column',
-    padding: '8px'
+    padding: '8px',
   },
 
   expansionDetailLine: {
