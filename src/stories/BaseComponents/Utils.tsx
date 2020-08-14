@@ -7,12 +7,6 @@ export interface StyleTyping {
   [key: string]: React.CSSProperties;
 }
 
-export interface SampleStyleTyping {
-  colorSample: {
-    [key: string]: React.CSSProperties;
-  };
-}
-
 export interface FormProps {
   errorState: boolean[];
   errorMessage: string[];
@@ -277,6 +271,13 @@ export const defaultStyles: StyleTyping = {
   aTag: {
     textDecoration: 'none',
     color: 'rgb(20, 116, 243)',
+  },
+};
+
+// colors used outside material ui
+export const colorPalette: StyleTyping = {
+  unknown: {
+    backgroundColor: '#cccccc',
   },
 };
 

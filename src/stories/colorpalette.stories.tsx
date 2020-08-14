@@ -1,7 +1,8 @@
 import React from 'react';
 import { Divider, Typography } from '@material-ui/core';
 
-import { StyleTyping, SampleStyleTyping, defaultStyles } from './BaseComponents/Utils';
+import { StyleTyping, defaultStyles } from './BaseComponents/Utils';
+import Color from './BaseComponents/color';
 
 export default {
   title: 'Color Palette',
@@ -16,41 +17,19 @@ const styles: StyleTyping = {
   },
 };
 
-const sampleStyles: SampleStyleTyping = {
-  colorSample: {
-    unknown: {
-      backgroundColor: '#cccccc',
-      padding: '0.5rem',
-    },
-  },
-};
-
 export const colors = () => (
   <div style={styles.root}>
     <div style={styles.heading}>
       <Typography variant="body1">
         This section contains the palette of colors we use in our app for consistent design across
-        components and state representation.
-      </Typography>
-    </div>
-    <Divider />
-    <div style={styles.example}>
-      <Typography variant="body1">Unknown</Typography>
-      <div>
-        <Typography variant="body1">Color code: #cccccc</Typography>
-        <div style={sampleStyles.colorSample.unknown} />
-      </div>
-    </div>
-    <Divider />
-    <div style={styles.example}>
-      <Typography variant="body1">Material UI colors</Typography>
-      <Typography variant="body1">
-        Refer to{' '}
+        components and state representation. Refer to{' '}
         <a style={styles.aTag} href="https://material-ui.com/customization/palette/">
           here
         </a>{' '}
-        for other colors we use.
+        for other colors we use from <b>Material UI</b>.
       </Typography>
     </div>
+    <Divider />
+    <Color />
   </div>
 );
