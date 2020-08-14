@@ -61,7 +61,6 @@ const Robot = React.forwardRef(function(
             </filter>
             <circle
               className={classes.robotMarker}
-              onClick={e => onClick && onClick(e, robot)}
               r={footprint}
               fill={robotColor}
               filter={`url(#${robot.name}-shadow)`}
