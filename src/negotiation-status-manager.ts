@@ -62,7 +62,30 @@ export default class NegotiationStatusManager extends EventEmitter<Events> {
           else
             status.status = NegotiationStatus.STATUS_DEFUNCT;
         }
+        
+        this.removeOldConflicts();
       });
+  }
+
+  removeOldConflicts() {
+    var retain_count = 0; // increase this value for testing
+    var resolved : string[] = [];
+
+    for (var [version, status] of Object.entries(this._conflicts))
+    {
+      if (status.resolved & NegotiationStatus.STATUS_FINISHED)
+        resolved.push(version);
+    }
+    resolved.sort(); //ascending
+    
+    // pop from the front until you reach the desired retain count
+    while (resolved.length != 0 && resolved.length > retain_count)
+    {
+      var key = resolved[0];
+      console.log("removing resolved conflict: " + key);
+      delete this._conflicts[key];
+      resolved.splice(0, 1);
+    }
   }
 
   private _conflicts : Record<string, NegotiationConflict> = {};
