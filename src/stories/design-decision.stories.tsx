@@ -1,20 +1,7 @@
 import React from 'react';
 import { Divider, Typography } from '@material-ui/core';
 
-import DoorButton from './BaseComponents/door-buttons';
-import LiftButton from './BaseComponents/lift-buttons';
-import RobotButton from './BaseComponents/robot-buttons';
-import DispenserButton from './BaseComponents/dispenser-buttons';
-import {
-  StyleTyping,
-  doors,
-  doorStates,
-  lifts,
-  liftStates,
-  robotStates,
-  dispenserStates,
-  defaultStyles,
-} from './BaseComponents/Utils';
+import { StyleTyping, defaultStyles } from './BaseComponents/Utils';
 
 export default {
   title: 'Design Decisions',
@@ -83,45 +70,5 @@ export const HandleUnknown = () => (
         N/A
       </Typography>
     </div>
-  </div>
-);
-
-export const DoorButtonColors = () => (
-  <div style={styles.root}>
-    <div style={styles.example}>
-      <Typography variant="h6">Door State</Typography>
-      <Typography variant="h6">Button color and representation</Typography>
-    </div>
-    <DoorButton doors={doors} doorStates={doorStates} />
-  </div>
-);
-
-export const DispenserButtonColors = () => (
-  <div style={styles.root}>
-    <div style={styles.example}>
-      <Typography variant="h6">Dispenser State</Typography>
-      <Typography variant="h6">Button color and representation</Typography>
-    </div>
-    <DispenserButton dispenserStates={dispenserStates} />
-  </div>
-);
-
-export const LiftButtonColors = () => (
-  <div style={styles.root}>
-    <div style={styles.example}>
-      <Typography variant="h6">Lift State</Typography>
-      <Typography variant="h6">Button color and representation</Typography>
-    </div>
-    <LiftButton lifts={lifts} liftStates={liftStates} />
-  </div>
-);
-
-export const RobotButtonColors = () => (
-  <div style={styles.root}>
-    <div style={styles.example}>
-      <Typography variant="h6">Robot State</Typography>
-      <Typography variant="h6">Button color and representation</Typography>
-    </div>
-    <RobotButton fleets={robotStates} />
   </div>
 );

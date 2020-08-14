@@ -3,7 +3,15 @@ import { Divider, Typography } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 
 import DoorComponent from './BaseComponents/door-component';
-import { door, doorStates, componentDisplayStyle } from './BaseComponents/Utils';
+import DoorButton from './BaseComponents/door-panel';
+import {
+  door,
+  doors,
+  doorStates,
+  componentDisplayStyle,
+  defaultStyles,
+  StyleTyping,
+} from './BaseComponents/Utils';
 
 export default {
   title: 'Door',
@@ -19,6 +27,15 @@ const singleSlidingDoor = {
 const doubleSldingDoor = {
   ...door,
   door_type: RomiCore.Door.DOOR_TYPE_DOUBLE_SLIDING,
+};
+
+const styles: StyleTyping = {
+  ...defaultStyles,
+  example: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    margin: '1rem 0',
+  },
 };
 
 const renderInfoPanel = (doorType: string, doorState: string): JSX.Element => {
@@ -101,4 +118,14 @@ export const ClosingDoor = () => (
     currentMode={RomiCore.DoorMode.MODE_OPEN}
     renderInfoPanel={() => renderInfoPanel('Single Sliding Door', 'Open')}
   />
+);
+
+export const DoorPanel = () => (
+  <div style={styles.root}>
+    <div style={styles.example}>
+      <Typography variant="h6">Door State</Typography>
+      <Typography variant="h6">Button color and representation</Typography>
+    </div>
+    <DoorButton doors={doors} doorStates={doorStates} />
+  </div>
 );

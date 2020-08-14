@@ -3,30 +3,19 @@ import { Divider, Typography } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 
 import LiftComponent from './BaseComponents/lift-component';
-import { lift, liftStates, componentDisplayStyle } from './BaseComponents/Utils';
+import LiftButton from './BaseComponents/lift-panel';
+import {
+  lift,
+  lifts,
+  liftStates,
+  componentDisplayStyle,
+  defaultStyles,
+  StyleTyping,
+} from './BaseComponents/Utils';
 
 export default {
   title: 'Lift',
 };
-
-// const componentDisplayStyle: StyleTyping = {
-//   modeInfoPanel: {
-//     padding: '2rem',
-//   },
-//   modeInfoItem: {
-//     display: 'flex',
-//     justifyContent: 'space-between',
-//     padding: '0.5rem',
-//   },
-//   modeInfoLink: {
-//     marginTop: '0.5rem',
-//     padding: '0.5rem',
-//   },
-//   aTag: {
-//     textDecoration: 'none',
-//     color: 'rgb(20, 116, 243)',
-//   },
-// };
 
 const defaultLiftStates = liftStates.main_lift;
 
@@ -66,6 +55,15 @@ const OFFLINEState = {
 const EMERGENCYState = {
   ...defaultLiftStates,
   current_mode: RomiCore.LiftState.MODE_EMERGENCY,
+};
+
+const styles: StyleTyping = {
+  ...defaultStyles,
+  example: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    margin: '1rem 0',
+  },
 };
 
 const renderInfoPanel = (mode: string, doorState: string, motionState: string): JSX.Element => {
@@ -165,4 +163,14 @@ export const State_EMERGENCY = () => (
     currentFloor={EMERGENCYState.current_floor}
     liftState={EMERGENCYState}
   />
+);
+
+export const LiftPanel = () => (
+  <div style={styles.root}>
+    <div style={styles.example}>
+      <Typography variant="h6">Lift State</Typography>
+      <Typography variant="h6">Button color and representation</Typography>
+    </div>
+    <LiftButton lifts={lifts} liftStates={liftStates} />
+  </div>
 );

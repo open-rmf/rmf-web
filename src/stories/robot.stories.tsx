@@ -3,10 +3,26 @@ import { Divider, Typography } from '@material-ui/core';
 
 import RobotComponent from './BaseComponents/robot-component';
 import ColorManager from '../components/schedule-visualizer/colors';
-import { robotState, componentDisplayStyle } from './BaseComponents/Utils';
+import {
+  robotState,
+  robotStates,
+  componentDisplayStyle,
+  defaultStyles,
+  StyleTyping,
+} from './BaseComponents/Utils';
+import RobotButton from './BaseComponents/robot-panel';
 
 export default {
   title: 'Robot',
+};
+
+const styles: StyleTyping = {
+  ...defaultStyles,
+  example: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    margin: '1rem 0',
+  },
 };
 
 const colorManager = new ColorManager();
@@ -64,4 +80,14 @@ export const Robot = () => (
     colorManager={colorManager}
     renderInfoPanel={() => renderInfoPanel('Idle', 1)}
   />
+);
+
+export const RobotPanel = () => (
+  <div style={styles.root}>
+    <div style={styles.example}>
+      <Typography variant="h6">Robot State</Typography>
+      <Typography variant="h6">Button color and representation</Typography>
+    </div>
+    <RobotButton fleets={robotStates} />
+  </div>
 );
