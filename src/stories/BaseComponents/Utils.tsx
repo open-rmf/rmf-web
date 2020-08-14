@@ -41,6 +41,7 @@ const doors: RomiCore.Door[] = [
   { ...door },
   { ...door, name: 'second_door' },
   { ...door, name: 'third_door' },
+  { ...door, name: 'fourth_door' },
 ];
 
 const doorStateTemplate: RomiCore.DoorState = {
@@ -69,6 +70,13 @@ const doorStates: { [key: string]: RomiCore.DoorState } = {
     },
     door_name: 'third_door',
   },
+  fourth_door: {
+    ...doorStateTemplate,
+    current_mode: {
+      value: 3,
+    },
+    door_name: 'fourth_door',
+  },
 };
 
 // end of door utils
@@ -95,6 +103,11 @@ const dispenserStates: { [key: string]: RomiCore.DispenserState } = {
     ...dispenserStateTemplate,
     guid: 'third_dispenser',
     mode: RomiCore.DispenserState.OFFLINE,
+  },
+  fourth_dispenser: {
+    ...dispenserStateTemplate,
+    guid: 'fourth_dispenser',
+    mode: 3,
   },
 };
 
