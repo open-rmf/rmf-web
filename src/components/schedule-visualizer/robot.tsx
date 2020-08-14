@@ -1,4 +1,5 @@
 import { makeStyles } from '@material-ui/core';
+import { useTheme } from '@material-ui/core/styles';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 import ColorManager from './colors';
@@ -35,6 +36,8 @@ const Robot = React.forwardRef(function(
     colorManager.robotColorFromCache(robot.name, robot.model),
   );
 
+  const theme = useTheme();
+
   React.useLayoutEffect(() => {
     if (robotColor) {
       return;
@@ -62,7 +65,7 @@ const Robot = React.forwardRef(function(
                 dx="0"
                 dy="0"
                 stdDeviation={footprint * 0.15}
-                floodColor={inConflict ? 'red' : 'black'}
+                floodColor={inConflict ? theme.palette.error.main : theme.palette.common.black}
               />
             </filter>
             <circle
@@ -72,7 +75,7 @@ const Robot = React.forwardRef(function(
               fill={robotColor}
               filter={`url(#${robot.name}-shadow)`}
             />
-            <line x2={footprint} stroke="black" strokeWidth="0.05" />
+            <line x2={footprint} stroke={theme.palette.common.black} strokeWidth="0.05" />
           </g>
           <text
             id="robotName"

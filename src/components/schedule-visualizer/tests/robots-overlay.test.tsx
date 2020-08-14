@@ -46,7 +46,9 @@ describe('Robots Overlay', () => {
         />
       </LMap>,
     );
-    expect(wrapper.containsMatchingElement(<feDropShadow floodColor={'red'} />)).toBeTruthy();
+
+    expect(wrapper.containsMatchingElement(<feDropShadow floodColor="#f44336" />)).toBeTruthy();
+
     wrapper.unmount();
   });
 });
