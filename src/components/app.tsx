@@ -1,36 +1,44 @@
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import 'typeface-roboto';
-import makeAppConfig, { AppConfig } from '../app-config';
+import appConfig from '../app-config';
+import { UserContext } from '../app-contexts';
 import { LOGIN_ROUTE } from '../util/url';
 import './app.css';
-import AuthContext from './auth/context';
 import Login from './auth/login';
 import PrivateRoute from './auth/private-route';
+import { User } from './auth/user';
 import Dashboard from './dashboard';
 import NotFoundPage from './page-not-found';
 
-export default function App() {
-  const [appConfig, setAppConfig] = React.useState<AppConfig | null>(null);
+export default function App(): React.ReactElement {
+  const [authInitialized, setAuthInitialized] = React.useState(false);
+  const [user, setUser] = React.useState<User | null>(null);
+  const authenticator = appConfig.authenticator;
+
   React.useEffect(() => {
     (async () => {
-      setAppConfig(await makeAppConfig());
+      authenticator.on('userChanged', newUser => setUser(newUser));
+      await authenticator.init();
+      setAuthInitialized(true);
     })();
-  }, []);
+  }, [authenticator]);
 
-  return (
-    appConfig && (
-      <AuthContext.Provider value={appConfig.authenticator}>
-        <BrowserRouter>
-          <Switch>
-            <Route exact={true} path={LOGIN_ROUTE} component={Login} />
-            <PrivateRoute exact={true} path={'/'}>
-              <Dashboard appConfig={appConfig} />
-            </PrivateRoute>
-            <Route component={NotFoundPage} />
-          </Switch>
-        </BrowserRouter>
-      </AuthContext.Provider>
-    )
+  return authInitialized ? (
+    <UserContext.Provider value={user}>
+      <BrowserRouter>
+        <Switch>
+          <Route exact={true} path={LOGIN_ROUTE}>
+            <Login />
+          </Route>
+          <PrivateRoute exact={true} path={'/'}>
+            <Dashboard />
+          </PrivateRoute>
+          <Route component={NotFoundPage} />
+        </Switch>
+      </BrowserRouter>
+    </UserContext.Provider>
+  ) : (
+    <></>
   );
 }

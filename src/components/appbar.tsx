@@ -11,7 +11,8 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import SettingsIcon from '@material-ui/icons/Settings';
 import React from 'react';
-import AuthContext from './auth/context';
+import appConfig from '../app-config';
+import { UserContext } from '../app-contexts';
 
 export interface AppBarProps {
   toggleShowOmniPanel(): void;
@@ -20,16 +21,13 @@ export interface AppBarProps {
 
 export default function AppBar(props: AppBarProps): React.ReactElement {
   const { toggleShowOmniPanel, showSettings } = props;
-  const auth = React.useContext(AuthContext);
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const classes = useStyles();
+  const authenticator = appConfig.authenticator;
+  const user = React.useContext(UserContext);
 
-  function handleLogout(): void {
-    if (!auth) {
-      setAnchorEl(null);
-    } else {
-      auth.logout();
-    }
+  async function handleLogout(): Promise<void> {
+    await authenticator.logout();
   }
 
   return (
@@ -44,7 +42,7 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
         <IconButton color="inherit" onClick={() => showSettings(true)}>
           <SettingsIcon />
         </IconButton>
-        {auth && (
+        {user && (
           <>
             <IconButton color="inherit" onClick={event => setAnchorEl(event.currentTarget)}>
               <AccountCircleIcon />

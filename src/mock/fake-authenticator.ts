@@ -1,8 +1,15 @@
-import Authenticator from '../components/auth/authenticator';
+import EventEmitter from 'eventemitter3';
+import Authenticator, { AuthenticatorEventType } from '../components/auth/authenticator';
+import { User } from '../components/auth/user';
 
-export default class FakeAuthenticator implements Authenticator {
-  authenticated = true;
-  sossToken = '';
+export default class FakeAuthenticator extends EventEmitter<AuthenticatorEventType>
+  implements Authenticator {
+  readonly user: User = {
+    username: 'fakeUser',
+    sossToken: '',
+  };
+
+  async init(): Promise<void> {}
 
   login(): Promise<never> {
     throw new Error('Method not implemented.');

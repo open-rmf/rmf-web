@@ -3,7 +3,7 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import debug from 'debug';
 import React from 'react';
 import 'typeface-roboto';
-import { AppConfig } from '../app-config';
+import appConfig from '../app-config';
 import DispenserStateManager from '../dispenser-state-manager';
 import DoorStateManager from '../door-state-manager';
 import FleetManager from '../fleet-manager';
@@ -71,10 +71,6 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export interface AppProps {
-  appConfig: AppConfig;
-}
-
 enum OmniPanelViewIndex {
   MainMenu = 0,
   Doors,
@@ -108,9 +104,9 @@ function makeViewMap(): ViewMap {
 
 const viewMap = makeViewMap();
 
-export default function App(props: AppProps): React.ReactElement {
+export default function Dashboard(_props: {}): React.ReactElement {
+  const { transportFactory, trajectoryManagerFactory } = appConfig;
   const classes = useStyles();
-  const { transportFactory, trajectoryManagerFactory } = props.appConfig;
   const [transport, setTransport] = React.useState<RomiCore.Transport | undefined>(undefined);
   const [buildingMap, setBuildingMap] = React.useState<RomiCore.BuildingMap | undefined>(undefined);
   const trajManager = React.useRef<RobotTrajectoryManager | undefined>(undefined);

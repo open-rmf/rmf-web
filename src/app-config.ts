@@ -1,7 +1,6 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { SossTransport } from '@osrf/romi-js-soss-transport';
-import Authenticator from './components/auth/authenticator';
-import KeycloakAuthenticator from './components/auth/keycloak-authenticator';
+import Authenticator, { DefaultAuthenticator } from './components/auth/authenticator';
 import FakeAuthenticator from './mock/fake-authenticator';
 import FakeTrajectoryManager from './mock/fake-traj-manager';
 import { FakeTransport } from './mock/fake-transport';
@@ -13,7 +12,7 @@ export interface AppConfig {
   trajectoryManagerFactory: () => Promise<RobotTrajectoryManager>;
 }
 
-export default async function makeAppConfig(): Promise<AppConfig> {
+export const appConfig: AppConfig = (() => {
   if (!process.env.REACT_APP_MOCK && process.env.NODE_ENV !== 'test') {
     const sossNodeName = process.env.REACT_APP_SOSS_NODE_NAME || 'romi-dashboard';
 
@@ -27,26 +26,29 @@ export default async function makeAppConfig(): Promise<AppConfig> {
       throw new Error('REACT_APP_TRAJECTORY_SERVER env variable is needed but not defined');
     }
 
-    const authenticator: Authenticator = await (() => {
-      if (!process.env.REACT_APP_AUTH_URL) {
-        console.warn('using fake authenticator');
-        return new FakeAuthenticator();
-      }
-      const authUrl = process.env.REACT_APP_AUTH_URL || 'http://localhost:8080/auth';
-      return KeycloakAuthenticator.create({
-        clientId: 'romi-dashboard',
-        realm: 'master',
-        url: authUrl,
-      });
-    })();
+    const redirectUri = new URL(window.location.href);
+    redirectUri.pathname = '/login';
+    redirectUri.searchParams.append('response', '1');
+    const authUrl =
+      process.env.REACT_APP_AUTH_URL ||
+      'http://localhost:8080/auth/realms/master/.well-known/openid-configuration';
+    const authenticator = new DefaultAuthenticator({
+      authority: authUrl,
+      redirect_uri: redirectUri.href,
+      client_id: 'romi-dashboard',
+      response_type: 'code',
+    });
+
     if (process.env.REACT_APP_SOSS_TOKEN) {
       console.warn('using hardcoded soss token');
     }
-    const sossToken = process.env.REACT_APP_SOSS_TOKEN || authenticator.sossToken || '';
 
     return {
       authenticator,
-      transportFactory: () => SossTransport.connect(sossNodeName, sossServer, sossToken),
+      transportFactory: () => {
+        const sossToken = process.env.REACT_APP_SOSS_TOKEN || authenticator.sossToken || '';
+        return SossTransport.connect(sossNodeName, sossServer, sossToken);
+      },
       trajectoryManagerFactory: () => DefaultTrajectoryManager.create(trajServer),
     };
   } else {
@@ -56,4 +58,6 @@ export default async function makeAppConfig(): Promise<AppConfig> {
       trajectoryManagerFactory: async () => new FakeTrajectoryManager(),
     };
   }
-}
+})();
+
+export default appConfig;

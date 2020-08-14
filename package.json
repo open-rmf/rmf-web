@@ -24,9 +24,10 @@
     "debug": "^4.1.1",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.2",
-    "eventemitter3": "^4.0.0",
+    "eventemitter3": "^4.0.4",
     "keycloak-js": "^11.0.0",
     "leaflet": "^1.6.0",
+    "oidc-client": "^1.10.1",
     "react": "^16.12.0",
     "react-async": "^10.0.0",
     "react-dom": "^16.12.0",
@@ -42,7 +43,7 @@
     "uuid": "^8.1.0"
   },
   "scripts": {
-    "start": "REACT_APP_SOSS_SERVER=wss://localhost:50001 REACT_APP_SOSS_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoicm9taS1kYXNoYm9hcmQiLCJpYXQiOjE1ODMyODYyMTV9.x9aNjcLujQPHchWEsbrRbvctmnGQtEzw-81X0aPIE-Y REACT_APP_TRAJECTORY_SERVER=ws://localhost:8006 react-scripts start",
+    "start": "REACT_APP_SOSS_SERVER=wss://localhost:50001 REACT_APP_TRAJECTORY_SERVER=ws://localhost:8006 react-scripts start",
     "start:mock": "REACT_APP_MOCK=1 react-scripts start",
     "start:custom": "react-scripts start",
     "start:backend": ". e2e/env.sh && node e2e/prepare.js && ts-node e2e/startBackend.ts",

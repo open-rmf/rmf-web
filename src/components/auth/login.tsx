@@ -1,37 +1,39 @@
 import { Button, Typography } from '@material-ui/core';
 import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 import React from 'react';
-import authStyles from './auth-style';
-import AuthContext from './context';
 import { Redirect } from 'react-router';
+import appConfig from '../../app-config';
+import authStyles from './auth-style';
 
 export function Alert(props: AlertProps): React.ReactElement {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
-export default function Login(_props: {}): React.ReactElement {
+export interface LoginProps {}
+
+export default function Login(_props: LoginProps): React.ReactElement {
+  const authenticator = appConfig.authenticator;
   const classes = authStyles();
-  const auth = React.useContext(AuthContext);
-  const [loginSuccess, setLoginSuccess] = React.useState(false);
+  const [loginResponse, setLoginResponse] = React.useState(false);
 
   async function handleRmfLogin(_event: React.MouseEvent): Promise<void> {
     const redirectUri = new URL(window.location.href);
-    redirectUri.searchParams.append('success', '1');
-    auth?.login(redirectUri.href);
+    redirectUri.searchParams.append('response', '1');
+    authenticator.login();
   }
 
   React.useEffect(() => {
     (async () => {
       const query = new URLSearchParams(window.location.search);
-      const success = query.get('success');
+      const resp = query.get('response');
 
-      if (success === '1') {
-        setLoginSuccess(true);
+      if (resp === '1') {
+        setLoginResponse(true);
       }
     })();
-  }, [auth]);
+  }, [authenticator]);
 
-  return loginSuccess ? (
+  return loginResponse ? (
     <Redirect to="/" />
   ) : (
     <div className={`${classes.flexColumnContainer} ${classes.fullPage}`}>
