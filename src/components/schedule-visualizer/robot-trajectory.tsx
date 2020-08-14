@@ -60,6 +60,10 @@ export const RobotTrajectory = React.forwardRef(function(
         return conflicts.flat().includes(trajectory.id)
           ? theme.palette.error.main
           : robotColorHolder;
+      case TrajectoryColor.Green:
+        return conflicts.flat().includes(trajectory.id)
+          ? theme.palette.error.main
+          : colorManager?.pathColorFromCache(trajectory.robot_name);
       case TrajectoryColor.Shape:
         const pathColorHolder = conflicts.flat().includes(trajectory.id)
           ? theme.palette.error.main

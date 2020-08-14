@@ -26,15 +26,30 @@ export default class ColorManager {
     return color;
   }
 
+  async robotTrajectoryColor(name: string, model: string): Promise<string> {
+    let color = this._pathColorCache[name];
+    if (!color) {
+      const modelHash = new Uint16Array(await _hash(model));
+      const nameHash = new Uint16Array(await _hash(name));
+      color = ColorManager._gePathColor(modelHash[0], nameHash[0]);
+      this._pathColorCache[name] = color;
+    }
+    return color;
+  }
+
   robotColorFromCache(name: string): string | null {
     return this._robotColorCache[name] ? this._robotColorCache[name] : null;
   }
 
+  pathColorFromCache(name: string): string | null {
+    return this._pathColorCache[name] ? this._pathColorCache[name] : null;
+  }
+
   // Gets a light color different than red
   private static _getLightColor(firstNumber: number, secondNumber: number): string {
-    // Hue is a degree on the color wheel from 0 to 360. 0 is red, 120 is green, 240 is blue. 
+    // Hue is a degree on the color wheel from 0 to 360. 0 is red, 120 is green, 240 is blue.
     // Add 14 to get a color different than RED
-    const hue = 14 + firstNumber % 360;
+    const hue = 14 + (firstNumber % 360);
     const satlum = secondNumber % 2500;
     // Saturation is a percentage value; 0% means a shade of gray and 100% is the full color.
     const saturation = 50 + (satlum % 50);
@@ -43,6 +58,15 @@ export default class ColorManager {
     return `hsl(${hue}, ${saturation}%, ${luminance}%)`;
   }
 
-  private _robotColorCache: Record<string, string> = {};
+  private static _gePathColor(firstNumber: number, secondNumber: number): string {
+    // get a range between 90 - 150
+    const hue = 90 + (firstNumber % 61);
+    // get a range between 20 - 80
+    const luminance = 20 + (secondNumber % 61);
+    // saturation will stay constant
+    return `hsl(${hue}, 100%, ${luminance}%)`;
+  }
 
+  private _robotColorCache: Record<string, string> = {};
+  private _pathColorCache: Record<string, string> = {};
 }

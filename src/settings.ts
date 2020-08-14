@@ -22,6 +22,7 @@ export enum TrajectoryColor {
   Shape,
   Robot,
   Plain,
+  Green,
 }
 
 export interface Settings {
