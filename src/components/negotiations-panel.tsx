@@ -227,9 +227,6 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
       if (resp.values == undefined)
         console.warn("values undefined!");
 
-      resp.values.forEach(value => {
-        console.log("id: " + value.id);
-      })
       props.negotiationTrajStore["L1"] = resp;
     };;
 
