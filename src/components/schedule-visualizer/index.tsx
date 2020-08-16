@@ -255,9 +255,11 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     }
 
     if (curMapFloorLayer) {
-      setCurMapTrajectories(getTrajectory(curMapFloorLayer.level.name));
-      setCurMapConflicts(getConflicts(curMapFloorLayer.level.name));
-      setConflictRobotNames(getConflictRobotsName(curMapConflicts, curMapTrajectories));
+      const mapTrajectories = getTrajectory(curMapFloorLayer.level.name);
+      const mapConflicts = getConflicts(curMapFloorLayer.level.name);
+      setCurMapTrajectories(mapTrajectories);
+      setCurMapConflicts(mapConflicts);
+      setConflictRobotNames(getConflictRobotsName(mapConflicts, mapTrajectories));
     }
   }, [curMapFloorLayer, trajectories, curMapConflicts, curMapTrajectories]);
 
