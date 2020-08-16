@@ -6,6 +6,7 @@ import RobotsOverlay from '../robots-overlay';
 import ColorManager from '../colors';
 import Robot from '../robot';
 import fakeFleets from '../../../mock/data/fleets';
+import { createMuiTheme } from '@material-ui/core';
 
 const robots = fakeFleets()[0].robots;
 const bounds = new L.LatLngBounds([0, 25.7], [-14, 0]);
@@ -16,6 +17,13 @@ colorManager.robotColorFromCache = jest.fn(() => 'black');
 let conflictRobotNames: string[][] = [];
 
 describe('Robots Overlay', () => {
+  const theme = createMuiTheme({
+    palette: {
+      error: {
+        main: '#f44336',
+      },
+    },
+  });
   test('Render robots correctly', async () => {
     const wrapper = mount(
       <LMap>
@@ -47,7 +55,9 @@ describe('Robots Overlay', () => {
       </LMap>,
     );
 
-    expect(wrapper.containsMatchingElement(<feDropShadow floodColor="#f44336" />)).toBeTruthy();
+    expect(
+      wrapper.containsMatchingElement(<feDropShadow floodColor={theme.palette.error.main} />),
+    ).toBeTruthy();
 
     wrapper.unmount();
   });
