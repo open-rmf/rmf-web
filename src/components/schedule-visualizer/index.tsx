@@ -241,17 +241,19 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     function getConflictRobotsName(conflicts: Conflict[], trajs: Trajectory[]): string[][] {
       let conflictRobotNames: string[][] = [];
       if (conflicts.length !== 0) {
-        conflicts.forEach(conflictPair => {
-          let robotNames: string[] = [];
-          conflictPair.forEach(conflictId => {
-            const robotName = DefaultTrajectoryManager.getRobotNameFromPathId(conflictId, trajs);
-            robotName && robotNames.push(robotName);
-          });
-          robotNames && conflictRobotNames.push(robotNames);
-        });
+        return [];
       }
+      conflicts.forEach(conflictPair => {
+        let robotNames: string[] = [];
+        conflictPair.forEach(conflictId => {
+          const robotName = DefaultTrajectoryManager.getRobotNameFromPathId(conflictId, trajs);
+          robotName && robotNames.push(robotName);
+        });
+        robotNames && conflictRobotNames.push(robotNames);
+      });
       return conflictRobotNames;
     }
+
     if (curMapFloorLayer) {
       setCurMapTrajectories(getTrajectory(curMapFloorLayer.level.name));
       setCurMapConflicts(getConflicts(curMapFloorLayer.level.name));
