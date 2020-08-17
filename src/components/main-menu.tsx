@@ -44,7 +44,7 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
 
       <ListItem data-item="Commands" button={true} onClick={props.onCommandsClick}>
         <Typography variant="h5">Commands</Typography>
-
+      </ListItem>
       <Divider />
 
       <ListItem data-item="Negotiations" button={true} onClick={props.onNegotiationsClick}>
