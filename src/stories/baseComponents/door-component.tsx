@@ -2,7 +2,7 @@ import React from 'react';
 import { actions } from '@storybook/addon-actions';
 
 import Door, { DoorContainerProps } from '../../components/schedule-visualizer/door/door';
-import { viewBoxCoords, componentDisplayStyle } from './Utils';
+import { viewBoxCoords, componentDisplayStyle } from './utils';
 
 interface DoorComponentProps extends DoorContainerProps {
   renderInfoPanel(): JSX.Element;

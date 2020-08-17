@@ -1,8 +1,8 @@
 import React from 'react';
 import { Typography } from '@material-ui/core';
 
-import DispenserButton from './BaseComponents/dispenser-panel';
-import { dispenserStates, defaultStyles, StyleTyping } from './BaseComponents/Utils';
+import DispenserButton from './baseComponents/dispenser-panel';
+import { dispenserStates, defaultStyles, StyleTyping } from './baseComponents/utils';
 
 export default {
   title: 'Dispenser',

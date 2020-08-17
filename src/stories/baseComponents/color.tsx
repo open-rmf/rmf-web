@@ -1,7 +1,7 @@
 import React from 'react';
 import { Divider, Typography } from '@material-ui/core';
 
-import { colorPalette, defaultStyles, StyleTyping } from './Utils';
+import { colorPalette, defaultStyles, StyleTyping } from './utils';
 
 const styles: StyleTyping = {
   ...defaultStyles,

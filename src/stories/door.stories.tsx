@@ -2,8 +2,8 @@ import React from 'react';
 import { Divider, Typography } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 
-import DoorComponent from './BaseComponents/door-component';
-import DoorButton from './BaseComponents/door-panel';
+import DoorComponent from './baseComponents/door-component';
+import DoorButton from './baseComponents/door-panel';
 import {
   door,
   doors,
@@ -11,7 +11,7 @@ import {
   componentDisplayStyle,
   defaultStyles,
   StyleTyping,
-} from './BaseComponents/Utils';
+} from './baseComponents/utils';
 
 export default {
   title: 'Door',

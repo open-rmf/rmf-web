@@ -1,8 +1,8 @@
 import React from 'react';
 import { Divider, Typography } from '@material-ui/core';
 
-import { StyleTyping, defaultStyles, dispenserStates } from './BaseComponents/Utils';
-import DispenserButton from './BaseComponents/dispenser-panel';
+import { StyleTyping, defaultStyles, dispenserStates } from './baseComponents/utils';
+import DispenserButton from './baseComponents/dispenser-panel';
 
 export default {
   title: 'Design Decisions',

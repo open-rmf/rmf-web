@@ -1,6 +1,6 @@
 import React from 'react';
 
-import NotificationBarStory from './BaseComponents/notificationBar-component';
+import NotificationBarStory from './baseComponents/notificationBar-component';
 
 export default {
   title: 'Notification Bar',

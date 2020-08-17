@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Typography, Divider } from '@material-ui/core';
 
-import { StyleTyping, defaultStyles } from './Utils';
+import { StyleTyping, defaultStyles } from './utils';
 
 const styles: StyleTyping = {
   ...defaultStyles,

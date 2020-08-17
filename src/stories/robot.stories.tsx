@@ -1,7 +1,7 @@
 import React from 'react';
 import { Divider, Typography } from '@material-ui/core';
 
-import RobotComponent from './BaseComponents/robot-component';
+import RobotComponent from './baseComponents/robot-component';
 import ColorManager from '../components/schedule-visualizer/colors';
 import {
   robotState,
@@ -9,8 +9,8 @@ import {
   componentDisplayStyle,
   defaultStyles,
   StyleTyping,
-} from './BaseComponents/Utils';
-import RobotButton from './BaseComponents/robot-panel';
+} from './baseComponents/utils';
+import RobotButton from './baseComponents/robot-panel';
 
 export default {
   title: 'Robot',

@@ -3,7 +3,7 @@ import { Divider, Typography, Button, Grid } from '@material-ui/core';
 
 import NotificationBar from '../../components/notification-bar';
 import { NotificationBarProps } from '../../components/notification-bar';
-import { StyleTyping, defaultStyles } from './Utils';
+import { StyleTyping, defaultStyles } from './utils';
 
 const styles: StyleTyping = {
   ...defaultStyles,

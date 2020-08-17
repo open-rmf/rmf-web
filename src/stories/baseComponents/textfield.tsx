@@ -1,7 +1,7 @@
 import React from 'react';
 import { TextField, Typography, Divider } from '@material-ui/core';
 
-import { StyleTyping, FormProps, defaultStyles } from './Utils';
+import { StyleTyping, FormProps, defaultStyles } from './utils';
 
 const styles: StyleTyping = {
   ...defaultStyles,

@@ -2,7 +2,7 @@ import React from 'react';
 import { actions } from '@storybook/addon-actions';
 
 import Lift, { LiftProps } from '../../components/schedule-visualizer/lift';
-import { viewBoxCoords, componentDisplayStyle } from './Utils';
+import { viewBoxCoords, componentDisplayStyle } from './utils';
 
 interface LiftComponentProps extends LiftProps {
   renderInfoPanel(): JSX.Element;

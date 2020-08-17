@@ -2,7 +2,7 @@ import React from 'react';
 import { actions } from '@storybook/addon-actions';
 
 import Robot, { RobotProps } from '../../components/schedule-visualizer/robot';
-import { viewBoxCoords, componentDisplayStyle } from './Utils';
+import { viewBoxCoords, componentDisplayStyle } from './utils';
 
 interface RobotComponentProps extends RobotProps {
   renderInfoPanel(): JSX.Element;

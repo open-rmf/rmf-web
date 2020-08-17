@@ -1,8 +1,8 @@
 import React from 'react';
 
-import AutoCompleteComponent from './BaseComponents/autocomplete';
-import TextFieldComponent from './BaseComponents/textfield';
-import FormButtonComponent from './BaseComponents/form-button';
+import AutoCompleteComponent from './baseComponents/autocomplete';
+import TextFieldComponent from './baseComponents/textfield';
+import FormButtonComponent from './baseComponents/form-button';
 
 export default {
   title: 'Forms',

@@ -2,8 +2,8 @@ import React from 'react';
 import { Divider, Typography } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 
-import LiftComponent from './BaseComponents/lift-component';
-import LiftButton from './BaseComponents/lift-panel';
+import LiftComponent from './baseComponents/lift-component';
+import LiftButton from './baseComponents/lift-panel';
 import {
   lift,
   lifts,
@@ -11,7 +11,7 @@ import {
   componentDisplayStyle,
   defaultStyles,
   StyleTyping,
-} from './BaseComponents/Utils';
+} from './baseComponents/utils';
 
 export default {
   title: 'Lift',
