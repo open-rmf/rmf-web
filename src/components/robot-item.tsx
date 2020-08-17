@@ -5,7 +5,6 @@ import {
   ExpansionPanelSummary,
   makeStyles,
 } from '@material-ui/core';
-import { AntTabs, AntTab, TabPanel } from './tab';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import { RobotInformation } from './robot-item-information';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
@@ -24,10 +23,6 @@ export const RobotItem = React.forwardRef(function(
   ref: React.Ref<HTMLElement>,
 ): React.ReactElement {
   const { robot, onRobotClick, fleetName, ...otherProps } = props;
-  const [value, setValue] = React.useState(0);
-  const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
-    setValue(newValue);
-  };
   const classes = useStyles();
   return (
     <ExpansionPanel ref={ref} data-component="RobotItem" data-name={robot.name} {...otherProps}>
@@ -42,13 +37,7 @@ export const RobotItem = React.forwardRef(function(
         />
       </ExpansionPanelSummary>
       <ExpansionPanelDetails data-role="details" className={classes.expansionDetail}>
-        <AntTabs variant="fullWidth" value={value} onChange={handleChange} aria-label="ant example">
-          <AntTab label="Info" />
-          <AntTab label="Delivery" />
-        </AntTabs>
-        <TabPanel value={value} index={0}>
-          <RobotInformation robot={robot} />
-        </TabPanel>
+        <RobotInformation robot={robot} />
       </ExpansionPanelDetails>
     </ExpansionPanel>
   );
@@ -65,7 +54,6 @@ const useStyles = makeStyles(theme => ({
   expansionDetail: {
     flexFlow: 'column',
     overflowX: 'auto',
-    padding: 0,
   },
 
   expansionDetailLine: {
