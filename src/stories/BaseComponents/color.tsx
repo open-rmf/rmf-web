@@ -22,7 +22,7 @@ export default function Colors() {
             <div style={styles.example} key={index}>
               <Typography variant="body1">Unknown</Typography>
               <div>
-                <Typography variant="body1">Color code: #cccccc</Typography>
+                <Typography variant="body1">{`Color code: ${colorPalette[color].backgroundColor}`}</Typography>
                 <div style={{ ...colorPalette[color], padding: '0.5rem' }} />
               </div>
             </div>
