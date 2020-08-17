@@ -42,7 +42,7 @@ export default function Login(_props: LoginProps): React.ReactElement {
           RoMi Dashboard
         </Typography>
         <img src="assets/ros-health.png" alt="" className={classes.logo} />
-        <Button onClick={handleRmfLogin} variant="contained">
+        <Button id="login-button" onClick={handleRmfLogin} variant="contained">
           Login with RMF
         </Button>
       </div>

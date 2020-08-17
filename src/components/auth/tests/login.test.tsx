@@ -1,19 +1,25 @@
 import { createMount } from '@material-ui/core/test-utils';
+import { Router } from '@material-ui/icons';
 import React from 'react';
+import { Redirect } from 'react-router';
+import appConfig from '../../../app-config';
 import Login from '../login';
 
 const mount = createMount();
 
 const buildWrapper = () => {
-  const wrapper = mount(<Login />);
+  const wrapper = mount(
+    <Router>
+      <Login />
+    </Router>,
+  );
   return wrapper;
 };
 
 describe('Form validation', () => {
-  test('Sign in button is not available if user and password are empty ', () => {
+  test('redirects to dashboard when returning from oauth', async () => {
+    window.history.replaceState(window.history.state, '', appConfig.authRedirectUri);
     const wrapper = buildWrapper();
-    expect(wrapper.findWhere(x => x.name() === 'username' && x.props().value === '')).toBeTruthy();
-    expect(wrapper.findWhere(x => x.name() === 'password' && x.props().value === '')).toBeTruthy();
-    expect(wrapper.find('button').is('[disabled]')).toBeTruthy();
+    expect(wrapper.find(Redirect)).toBeTruthy();
   });
 });
