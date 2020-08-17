@@ -6,7 +6,6 @@ export default class FakeAuthenticator extends EventEmitter<AuthenticatorEventTy
   implements Authenticator {
   readonly user: User = {
     username: 'fakeUser',
-    sossToken: '',
   };
 
   async init(): Promise<void> {}

@@ -1,5 +1,6 @@
+import debug from 'debug';
 import EventEmitter from 'eventemitter3';
-import { UserManager } from 'oidc-client';
+import Keycloak_, { KeycloakInstance } from 'keycloak-js';
 import { User } from './user';
 
 export type AuthenticatorEventType = {
@@ -17,7 +18,6 @@ export default interface Authenticator extends EventEmitter<AuthenticatorEventTy
 
   /**
    * Note: This redirects to external login page so it will never return.
-   * @param redirectUri
    */
   login(): Promise<never>;
 
@@ -27,61 +27,84 @@ export default interface Authenticator extends EventEmitter<AuthenticatorEventTy
   logout(): Promise<void>;
 }
 
-type SettingsType<T = typeof UserManager> = T extends new (settings: infer U) => unknown
-  ? U
-  : never;
+type ConfigType<T = typeof Keycloak_> = T extends (config: infer U) => unknown ? U : never;
 
 export class DefaultAuthenticator extends EventEmitter<AuthenticatorEventType>
   implements Authenticator {
   get user(): User | undefined {
-    return this._user || undefined;
+    return this._user;
   }
 
   get sossToken(): string | undefined {
-    return this._sossToken;
+    return this._inst.idToken;
   }
 
-  constructor(settings: SettingsType) {
+  constructor(config: ConfigType, redirectUri?: string) {
     super();
-    this._userMgr = new UserManager(settings);
+    this._inst = Keycloak_(config);
+    this._redirectUri = redirectUri;
   }
 
   async init() {
-    const user = await (async () => {
-      try {
-        return await this._userMgr.signinRedirectCallback();
-      } catch (e) {
-        console.error(e);
-        return await this._userMgr.getUser();
-      }
-    })();
-    if (user) {
+    debug.log('initializing authenticator');
+
+    this._inst.onAuthSuccess = async () => {
+      await this._inst.loadUserProfile();
       this._user = {
-        username: user.profile.preferred_username || '',
-        sossToken: user.id_token,
+        username: this._inst.profile!.username!,
       };
-      this._sossToken = user.id_token;
-      console.log(this._sossToken);
+      debug.log('authenticated as', this._user.username);
       this.emit('userChanged', this._user);
-    }
+    };
+
+    this._inst.onAuthLogout = () => {
+      debug.log('logout');
+      this._user = undefined;
+      this.emit('userChanged', null);
+    };
+
+    const token = getLocalStorage('token');
+    const idToken = getLocalStorage('idToken');
+    const refreshToken = getLocalStorage('refreshToken');
+    await this._inst.init({ redirectUri: this._redirectUri, token, idToken, refreshToken });
+    try {
+      await this._inst.updateToken(30);
+      debug.log('token refreshed');
+    } catch {}
+    setOrClearLocalStorage('token', this._inst.token);
+    setOrClearLocalStorage('idToken', this._inst.idToken);
+    setOrClearLocalStorage('refreshToken', this._inst.refreshToken);
   }
 
   async login(): Promise<never> {
-    await this._userMgr.signinRedirect();
-    // oidc-client library does not immediately redirect, this timeout prevents the exception from
-    // triggering under normal circumstances.
-    await new Promise(res => setTimeout(res, 10000));
+    await this._inst.login();
     throw new Error('should not reach here');
   }
 
   async logout(): Promise<never> {
-    this._userMgr.removeUser();
-    this._userMgr.signoutRedirect();
-    await new Promise(res => setTimeout(res, 10000));
+    await this._inst.logout();
     throw new Error('should not reach here');
   }
 
-  private _userMgr: UserManager;
-  private _user: User | null = null;
-  private _sossToken?: string;
+  private _inst: KeycloakInstance;
+  private _redirectUri?: string;
+  private _user?: User;
+}
+
+/**
+ * Gets an item from localStorage, unlike `localStorage.getItem`, this returns undefined if item
+ * does not exists.
+ * @param key
+ */
+function getLocalStorage(key: string): string | undefined {
+  const item = localStorage.getItem(key);
+  return item ? item : undefined;
+}
+
+function setOrClearLocalStorage(key: string, value?: string): void {
+  if (value === undefined) {
+    localStorage.removeItem(key);
+  } else {
+    localStorage.setItem(key, value);
+  }
 }

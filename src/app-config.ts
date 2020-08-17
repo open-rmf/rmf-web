@@ -5,6 +5,7 @@ import FakeAuthenticator from './mock/fake-authenticator';
 import FakeTrajectoryManager from './mock/fake-traj-manager';
 import { FakeTransport } from './mock/fake-transport';
 import { DefaultTrajectoryManager, RobotTrajectoryManager } from './robot-trajectory-manager';
+import debug from 'debug';
 
 export interface AppConfig {
   authenticator: Authenticator;
@@ -29,15 +30,15 @@ export const appConfig: AppConfig = (() => {
     const redirectUri = new URL(window.location.href);
     redirectUri.pathname = '/login';
     redirectUri.searchParams.append('response', '1');
-    const authUrl =
-      process.env.REACT_APP_AUTH_URL ||
-      'http://localhost:8080/auth/realms/master/.well-known/openid-configuration';
-    const authenticator = new DefaultAuthenticator({
-      authority: authUrl,
-      redirect_uri: redirectUri.href,
-      client_id: 'romi-dashboard',
-      response_type: 'code',
-    });
+    const authUrl = process.env.REACT_APP_AUTH_URL || 'http://localhost:8080/auth';
+    const authenticator = new DefaultAuthenticator(
+      {
+        realm: 'master',
+        clientId: 'romi-dashboard',
+        url: authUrl,
+      },
+      redirectUri.href,
+    );
 
     if (process.env.REACT_APP_SOSS_TOKEN) {
       console.warn('using hardcoded soss token');
@@ -47,6 +48,7 @@ export const appConfig: AppConfig = (() => {
       authenticator,
       transportFactory: () => {
         const sossToken = process.env.REACT_APP_SOSS_TOKEN || authenticator.sossToken || '';
+        debug.log('authenticating to rmf with token', sossToken);
         return SossTransport.connect(sossNodeName, sossServer, sossToken);
       },
       trajectoryManagerFactory: () => DefaultTrajectoryManager.create(trajServer),
