@@ -21,7 +21,7 @@ const Waypoint = (props: WaypointProps): React.ReactElement => {
         fill={'#FFBF00'}
         filter={`url(#${waypoint.name}-shadow)`}
       />
-      <text id="wayportName" y={size * 2} className={classes.waypointText}>
+      <text id="wayportName" y={size * 2.5} className={classes.waypointText}>
         {waypoint.name}
       </text>
     </g>
@@ -38,7 +38,7 @@ const useStyles = makeStyles(() => ({
   waypointText: {
     dominantBaseline: 'central',
     textAnchor: 'middle',
-    fontSize: '0.18px',
+    fontSize: '0.25px',
     fontWeight: 'bold',
     fill: 'white',
     /* 1 pixel black shadow to left, top, right and bottom */
