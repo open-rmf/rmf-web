@@ -13,68 +13,163 @@ if (!fileExists) {
 const resourcesData = JSON.parse(fs.readFileSync('./.resources.json'));
 const iconFolder = 'public/assets/icons/';
 
-const callback = (error, stdout, stderr) => {
-  if (error) {
-    console.error(chalk`{red exec error: ${error}}`);
-    return;
-  }
-
-  if (stderr) {
-    console.error(`stderr: ${stderr}`);
-    return;
-  }
-
-  console.log(`stdout: ${stdout}`);
-  console.log(chalk`{green The icons have been successfully obtained. Check public/assets/icons/}`);
-};
-
-if (resourcesData.hasOwnProperty('repoUrl') || resourcesData.hasOwnProperty('path')) {
-  exec(`[ -d "${iconFolder}" ] && rm -rf ${iconFolder}`);
-  exec(`mkdir -p ${iconFolder}`);
+if (!resourcesData.hasOwnProperty('repoUrl') && !resourcesData.hasOwnProperty('path')) {
+  return;
 }
 
-if (resourcesData.hasOwnProperty('repoUrl')) {
-  if (!resourcesData.folder) {
+class IconManagerBase {
+  constructor(resourcesData, iconFolder, tempFolder) {
+    this.resourcesData = resourcesData;
+    this.iconFolder = iconFolder;
+    this.tempFolder = tempFolder;
+    this.rootPath = '../../';
+  }
+}
+
+class ISparseCheckoutGitV225 extends IconManagerBase {
+  constructor(resourcesData, iconFolder, tempFolder) {
+    super(resourcesData, iconFolder, tempFolder);
+  }
+
+  execute = () => {
     execSync(
-      `git clone "${resourcesData.repoUrl}" --depth=1 --single-branch --branch ${resourcesData.branch} ${iconFolder} -o repo`,
+      `git clone "${this.resourcesData.repoUrl}" --no-checkout  --depth=1 --single-branch --branch ${this.resourcesData.branch} ${this.tempFolder} -o repo`,
       {
-        stdio: [0, 1, 2], // we need this so node will print the command output
-        cwd: path.resolve(__dirname, '../../'), // path to where you want to save the file
+        stdio: [0, 1, 2],
+        cwd: path.resolve(__dirname, this.rootPath),
       },
     );
-    return;
-  }
-  const tempFolder = 'tmp';
 
-  exec(`[ -d "${tempFolder}" ] && rm -rf ${tempFolder}`);
-  exec(`mkdir -p ${tempFolder}`);
-
-  execSync(
-    `git clone "${resourcesData.repoUrl}" --no-checkout  --depth=1 --single-branch --branch ${resourcesData.branch} ${tempFolder} -o repo`,
-    {
-      stdio: [0, 1, 2],
-      cwd: path.resolve(__dirname, '../../'),
-    },
-  );
-
-  execSync(
-    `git sparse-checkout init --cone &&
-      git config core.sparseCheckout 1 &&
-      git sparse-checkout set ${resourcesData.folder} &&
-      git checkout`,
-    {
-      stdio: [0, 1, 2],
-      cwd: path.resolve(__dirname, `../../${tempFolder}`),
-    },
-  );
-  exec(`cp -r ${tempFolder}/${resourcesData.folder}/* ${iconFolder}`, {
-    stdio: [0, 1, 2],
-    cwd: path.resolve(__dirname, `../../`),
-  });
-
-  exec(`[ -d "${tempFolder}" ] && rm -rf ${tempFolder}`);
-} else if (resourcesData.hasOwnProperty('path')) {
-  exec(`cp -r ${resourcesData.path}* ${iconFolder}`, (error, stdout, stderr) =>
-    callback(error, stdout, stderr),
-  );
+    execSync(
+      `git sparse-checkout init --cone &&
+            git config core.sparseCheckout 1 &&
+            git sparse-checkout set ${this.resourcesData.folder} &&
+            git checkout`,
+      {
+        stdio: [0, 1, 2],
+        cwd: path.resolve(__dirname, `../../${this.tempFolder}`),
+      },
+    );
+  };
 }
+
+class ISparseCheckoutGitV217 extends IconManagerBase {
+  constructor(resourcesData, iconFolder, tempFolder) {
+    super(resourcesData, iconFolder, tempFolder);
+    this.tempFolderLocation = `../../${tempFolder}`;
+  }
+
+  execute = () => {
+    execSync(`git init && git remote add -f origin "${this.resourcesData.repoUrl}"`, {
+      stdio: [0, 1, 2],
+      cwd: path.resolve(__dirname, this.tempFolderLocation),
+    });
+    execSync(
+      `git config core.sparseCheckout true && echo ${this.resourcesData.folder} >> .git/info/sparse-checkout`,
+      {
+        stdio: [0, 1, 2],
+        cwd: path.resolve(__dirname, this.tempFolderLocation),
+      },
+    );
+    execSync(`git pull --depth=1 origin ${this.resourcesData.branch}`, {
+      stdio: [0, 1, 2],
+      cwd: path.resolve(__dirname, this.tempFolderLocation),
+    });
+  };
+}
+
+class IconManager extends IconManagerBase {
+  constructor(resourcesData, iconFolder, tempFolder) {
+    super(resourcesData, iconFolder, tempFolder);
+  }
+
+  getGitMinorVersion = rawGitVersion => {
+    const gitVersion = rawGitVersion.split(' ')[2];
+    const gitMinorVersion = gitVersion.split('.')[1];
+    return parseInt(gitMinorVersion);
+  };
+
+  cloneSpecificFolder = () => {
+    this.createTmpFolder();
+    exec(`git --version`, (error, stdout, stderr) => {
+      if (error) {
+        console.error(chalk`{red exec error: ${error}}`);
+        return;
+      }
+      const cloneImplementation =
+        this.getGitMinorVersion(stdout) < 25 ? ISparseCheckoutGitV217 : ISparseCheckoutGitV225;
+
+      new cloneImplementation(this.resourcesData, this.iconFolder, this.tempFolder).execute();
+      this.moveFromTmpFolderToIconFolder();
+      this.removeTmpFolder();
+    });
+  };
+
+  cloneRepo = () => {
+    execSync(
+      `git clone "${this.resourcesData.repoUrl}" --depth=1 --single-branch --branch ${this.resourcesData.branch} ${this.iconFolder} -o repo`,
+      {
+        stdio: [0, 1, 2], // we need this so node will print the command output
+        cwd: path.resolve(__dirname, this.rootPath), // path to where you want to save the file
+      },
+    );
+  };
+
+  removeTmpFolder = () => {
+    exec(`[ -d "${this.tempFolder}" ] && rm -rf ${this.tempFolder}`);
+  };
+
+  createTmpFolder = () => {
+    exec(`[ -d "${this.tempFolder}" ] && rm -rf ${this.tempFolder}`);
+    exec(`mkdir -p ${this.tempFolder}`);
+  };
+
+  moveFromTmpFolderToIconFolder = () => {
+    exec(`cp -r ${this.tempFolder}/${this.resourcesData.folder}/* ${this.iconFolder}`, {
+      stdio: [0, 1, 2],
+      cwd: path.resolve(__dirname, this.rootPath),
+    });
+  };
+
+  copyFromLocalDirectory = () => {
+    exec(`cp -r ${this.resourcesData.path}* ${this.iconFolder}`, (error, stdout, stderr) => {
+      if (error) {
+        console.error(chalk`{red exec error: ${error}}`);
+        return;
+      }
+
+      if (stderr) {
+        console.error(`stderr: ${stderr}`);
+        return;
+      }
+
+      console.log(`stdout: ${stdout}`);
+      console.log(
+        chalk`{green The icons have been successfully obtained. Check public/assets/icons/}`,
+      );
+    });
+  };
+}
+
+const getIcons = () => {
+  const tempFolder = 'tmp';
+  const iconManager = new IconManager(resourcesData, iconFolder, tempFolder);
+
+  if (resourcesData.hasOwnProperty('repoUrl') || resourcesData.hasOwnProperty('path')) {
+    exec(`[ -d "${iconFolder}" ] && rm -rf ${iconFolder}`);
+    exec(`mkdir -p ${iconFolder}`);
+  }
+
+  if (resourcesData.hasOwnProperty('repoUrl')) {
+    // If we don't want to clone a specific folder of the repo, it'll clone the whole repo
+    if (!resourcesData.folder) {
+      iconManager.cloneRepo();
+      return;
+    }
+    iconManager.cloneSpecificFolder();
+  } else {
+    iconManager.copyFromLocalDirectory();
+  }
+};
+
+getIcons();
