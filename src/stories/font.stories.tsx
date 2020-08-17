@@ -26,7 +26,7 @@ export default {
   title: 'Fonts',
 };
 
-export const Fonts = () => (
+export const fonts = () => (
   <div style={styles.root}>
     <div style={styles.heading}>
       <Typography variant="body1">

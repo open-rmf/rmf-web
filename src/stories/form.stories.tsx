@@ -12,12 +12,12 @@ const States: boolean[] = [false, true];
 const Messages: string[] = ['', 'This is an error'];
 const labels: string[] = ['Correct Inputs', 'Wrong Inputs'];
 
-export const AutoComplete = () => (
+export const autoComplete = () => (
   <AutoCompleteComponent errorState={States} errorMessage={Messages} labels={labels} />
 );
 
-export const TextField = () => (
+export const textField = () => (
   <TextFieldComponent errorState={States} errorMessage={Messages} labels={labels} />
 );
 
-export const FormButton = () => <FormButtonComponent />;
+export const formButton = () => <FormButtonComponent />;

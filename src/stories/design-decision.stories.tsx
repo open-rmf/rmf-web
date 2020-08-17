@@ -18,7 +18,7 @@ const styles: StyleTyping = {
 const longName = { second_dispenser: dispenserStates['second_dispenser'] };
 const unknownState = { fourth_dispenser: dispenserStates['fourth_dispenser'] };
 
-export const HandleLongName = () => (
+export const handleLongName = () => (
   <div style={styles.root}>
     <Typography style={styles.spacing} variant="body1">
       Since the names of the items have the potential to be longer than the container they are in,
@@ -32,7 +32,7 @@ export const HandleLongName = () => (
   </div>
 );
 
-export const HandleUnknown = () => (
+export const handleUnknown = () => (
   <div style={styles.root}>
     <Typography style={styles.spacing} variant="body1">
       Sometimes, device states might be returned as <b>Unknown</b> for various reasons. As{' '}

@@ -19,13 +19,13 @@ export default {
 
 const defaultLiftStates = liftStates.main_lift;
 
-const AGVState = {
+const agvState = {
   ...defaultLiftStates,
   current_mode: RomiCore.LiftState.MODE_AGV,
   door_state: RomiCore.LiftState.DOOR_OPEN,
 };
 
-const FIREState = {
+const fireState = {
   ...defaultLiftStates,
   current_mode: RomiCore.LiftState.MODE_FIRE,
   current_floor: 'L2',
@@ -33,13 +33,13 @@ const FIREState = {
   motion_state: RomiCore.LiftState.MOTION_UP,
 };
 
-const UNKOWNState = {
+const unknownState = {
   ...defaultLiftStates,
   door_state: RomiCore.LiftState.DOOR_MOVING,
   motion_state: RomiCore.LiftState.MOTION_UNKNOWN,
 };
 
-const HUMANState = {
+const humanState = {
   ...defaultLiftStates,
   current_mode: RomiCore.LiftState.MODE_HUMAN,
   current_floor: 'L3',
@@ -47,12 +47,12 @@ const HUMANState = {
   motion_state: RomiCore.LiftState.MOTION_DOWN,
 };
 
-const OFFLINEState = {
+const offlineState = {
   ...defaultLiftStates,
   current_mode: RomiCore.LiftState.MODE_OFFLINE,
 };
 
-const EMERGENCYState = {
+const emergencyState = {
   ...defaultLiftStates,
   current_mode: RomiCore.LiftState.MODE_EMERGENCY,
 };
@@ -111,61 +111,61 @@ const renderInfoPanel = (mode: string, doorState: string, motionState: string): 
   );
 };
 
-export const StateAGV = () => (
+export const stateAgv = () => (
   <LiftComponent
     renderInfoPanel={() => renderInfoPanel('AGV', 'Open', 'Stopped')}
     lift={lift}
-    currentFloor={AGVState.current_floor}
-    liftState={AGVState}
+    currentFloor={agvState.current_floor}
+    liftState={agvState}
   />
 );
 
-export const StateFIRE = () => (
+export const stateFire = () => (
   <LiftComponent
     renderInfoPanel={() => renderInfoPanel('FIRE', 'Closed', 'Up')}
     lift={lift}
-    currentFloor={FIREState.current_floor}
-    liftState={FIREState}
+    currentFloor={fireState.current_floor}
+    liftState={fireState}
   />
 );
 
-export const StateUNKNOWN = () => (
+export const stateUnknown = () => (
   <LiftComponent
     renderInfoPanel={() => renderInfoPanel('UNKNOWN', 'Moving', 'Unknown')}
     lift={lift}
-    currentFloor={UNKOWNState.current_floor}
-    liftState={UNKOWNState}
+    currentFloor={unknownState.current_floor}
+    liftState={unknownState}
   />
 );
 
-export const StateHUMAN = () => (
+export const stateHuman = () => (
   <LiftComponent
     renderInfoPanel={() => renderInfoPanel('HUMAN', 'Closed', 'Down')}
     lift={lift}
-    currentFloor={HUMANState.current_floor}
-    liftState={HUMANState}
+    currentFloor={humanState.current_floor}
+    liftState={humanState}
   />
 );
 
-export const State_OFFLINE = () => (
+export const stateOffline = () => (
   <LiftComponent
     renderInfoPanel={() => renderInfoPanel('OFFLINE', 'Closed', 'Stopped')}
     lift={lift}
-    currentFloor={OFFLINEState.current_floor}
-    liftState={OFFLINEState}
+    currentFloor={offlineState.current_floor}
+    liftState={offlineState}
   />
 );
 
-export const State_EMERGENCY = () => (
+export const stateEmergency = () => (
   <LiftComponent
     renderInfoPanel={() => renderInfoPanel('EMERGENCY', 'Closed', 'Stopped')}
     lift={lift}
-    currentFloor={EMERGENCYState.current_floor}
-    liftState={EMERGENCYState}
+    currentFloor={emergencyState.current_floor}
+    liftState={emergencyState}
   />
 );
 
-export const LiftPanel = () => (
+export const liftPanel = () => (
   <div style={styles.root}>
     <div style={styles.example}>
       <Typography variant="h6">Lift State</Typography>

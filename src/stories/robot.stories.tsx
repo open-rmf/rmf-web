@@ -73,7 +73,7 @@ const renderInfoPanel = (robotMode: string, footprint: number): JSX.Element => {
   );
 };
 
-export const Robot = () => (
+export const robot = () => (
   <RobotComponent
     robot={robotState}
     footprint={1}
@@ -82,7 +82,7 @@ export const Robot = () => (
   />
 );
 
-export const RobotPanel = () => (
+export const robotPanel = () => (
   <div style={styles.root}>
     <div style={styles.example}>
       <Typography variant="h6">Robot State</Typography>

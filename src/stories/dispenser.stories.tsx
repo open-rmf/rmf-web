@@ -17,7 +17,7 @@ const styles: StyleTyping = {
   },
 };
 
-export const DispenserPanel = () => (
+export const dispenserPanel = () => (
   <div style={styles.root}>
     <div style={styles.example}>
       <Typography variant="h6">Dispenser State</Typography>

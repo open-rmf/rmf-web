@@ -84,7 +84,7 @@ const renderInfoPanel = (doorType: string, doorState: string): JSX.Element => {
   );
 };
 
-export const SinglePanelDoors = () => (
+export const singlePanelDoors = () => (
   <DoorComponent
     door={singleSlidingDoor}
     doorState={doorState}
@@ -93,7 +93,7 @@ export const SinglePanelDoors = () => (
   />
 );
 
-export const DoublePanelDoors = () => (
+export const doublePanelDoors = () => (
   <DoorComponent
     door={doubleSldingDoor}
     doorState={doorState}
@@ -102,7 +102,7 @@ export const DoublePanelDoors = () => (
   />
 );
 
-export const MovingDoor = () => (
+export const movingDoor = () => (
   <DoorComponent
     door={singleSlidingDoor}
     doorState={doorState}
@@ -111,7 +111,7 @@ export const MovingDoor = () => (
   />
 );
 
-export const ClosingDoor = () => (
+export const closingDoor = () => (
   <DoorComponent
     door={singleSlidingDoor}
     doorState={doorState}
@@ -120,7 +120,7 @@ export const ClosingDoor = () => (
   />
 );
 
-export const DoorPanel = () => (
+export const doorPanel = () => (
   <div style={styles.root}>
     <div style={styles.example}>
       <Typography variant="h6">Door State</Typography>
