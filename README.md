@@ -39,13 +39,20 @@ This folder obtained must contain at its root a JSON file calling `main.json`, w
 ```json
 {
   "robots":
-    "magni": {
+    "magni" <fleet>: {
       "icons": {
-        "magni": "/robots/magni/magni.png"
+        "magni"<fleet>: "/robots/magni/magni.png",
+        "model1"<model>: "/robots/magni/model1.png"
       }
     }
 }
 ```
+
+Obs: the algorithm will check the robot's icons in this order:
+
+1. Icon exists for a model; if not exists
+2. Icon exists for a fleet; if not exists
+3. It will use a default icon.
 
 Upon completion of the configuration, a file called .resources.json will be created automatically, which will save the configuration from where to obtain the resources.
 
