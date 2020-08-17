@@ -39,7 +39,7 @@ exports[`Renders correctly 1`] = `
       <text
         className="makeStyles-waypointText-2"
         id="wayportName"
-        y={2}
+        y={2.5}
       >
         station_1
       </text>
