@@ -28,7 +28,9 @@ export const LoopForm = (props: LoopFormProps) => {
   );
 
   useEffect(() => {
-    setListOfPlaces(fakePlaces()[targetFleetName]);
+    fakePlaces()[targetFleetName]
+      ? setListOfPlaces(fakePlaces()[targetFleetName])
+      : setListOfPlaces([]);
   }, [targetFleetName]);
 
   useEffect(() => {
