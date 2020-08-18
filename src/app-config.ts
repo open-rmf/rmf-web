@@ -57,7 +57,7 @@ export const appConfig: AppConfig = (() => {
   } else {
     return {
       authenticator: new FakeAuthenticator(),
-      authRedirectUri: getRedirectUri(),
+      authRedirectUri: getRedirectUri().href,
       transportFactory: async () => new FakeTransport(),
       trajectoryManagerFactory: async () => new FakeTrajectoryManager(),
     };
