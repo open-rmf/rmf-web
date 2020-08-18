@@ -17,13 +17,7 @@ colorManager.robotColorFromCache = jest.fn(() => 'black');
 let conflictRobotNames: string[][] = [];
 
 describe('Robots Overlay', () => {
-  const theme = createMuiTheme({
-    palette: {
-      error: {
-        main: '#f44336',
-      },
-    },
-  });
+  const theme = createMuiTheme();
   test('Render robots correctly', async () => {
     const wrapper = mount(
       <LMap>
