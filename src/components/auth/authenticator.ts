@@ -49,9 +49,9 @@ export class DefaultAuthenticator extends EventEmitter<AuthenticatorEventType>
     debug.log('initializing authenticator');
 
     this._inst.onAuthSuccess = async () => {
-      await this._inst.loadUserProfile();
+      const profile = this._inst.profile || (await this._inst.loadUserProfile());
       this._user = {
-        username: this._inst.profile!.username!,
+        username: profile.username!,
       };
       debug.log('authenticated as', this._user.username);
       this.emit('userChanged', this._user);
@@ -67,9 +67,12 @@ export class DefaultAuthenticator extends EventEmitter<AuthenticatorEventType>
     const idToken = getLocalStorage('idToken');
     const refreshToken = getLocalStorage('refreshToken');
     await this._inst.init({ redirectUri: this._redirectUri, token, idToken, refreshToken });
+    if (this._inst.authenticated) {
+      await this._inst.loadUserProfile();
+    }
     try {
-      await this._inst.updateToken(30);
-      debug.log('token refreshed');
+      const refreshed = await this._inst.updateToken(30);
+      refreshed && debug.log('token refreshed');
     } catch {}
     setOrClearLocalStorage('token', this._inst.token);
     setOrClearLocalStorage('idToken', this._inst.idToken);
