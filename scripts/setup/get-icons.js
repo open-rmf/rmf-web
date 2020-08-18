@@ -26,7 +26,10 @@ class IconManagerBase {
   }
 }
 
-class ISparseCheckoutGitV225 extends IconManagerBase {
+/**
+ * Implementation for git sparse-checkout, on versions of git greater or equal to 2.25.
+ */
+class SparseCheckoutGitV225 extends IconManagerBase {
   constructor(resourcesData, iconFolder, tempFolder) {
     super(resourcesData, iconFolder, tempFolder);
   }
@@ -53,7 +56,10 @@ class ISparseCheckoutGitV225 extends IconManagerBase {
   };
 }
 
-class ISparseCheckoutGitV217 extends IconManagerBase {
+/**
+ * Implementation for git sparse-checkout, on versions of git lesser than 2.25.
+ */
+class SparseCheckoutGitV217 extends IconManagerBase {
   constructor(resourcesData, iconFolder, tempFolder) {
     super(resourcesData, iconFolder, tempFolder);
     this.tempFolderLocation = `../../${tempFolder}`;
@@ -97,7 +103,7 @@ class IconManager extends IconManagerBase {
         return;
       }
       const cloneImplementation =
-        this.getGitMinorVersion(stdout) < 25 ? ISparseCheckoutGitV217 : ISparseCheckoutGitV225;
+        this.getGitMinorVersion(stdout) < 25 ? SparseCheckoutGitV217 : SparseCheckoutGitV225;
 
       new cloneImplementation(this.resourcesData, this.iconFolder, this.tempFolder).execute();
       this.moveFromTmpFolderToIconFolder();
