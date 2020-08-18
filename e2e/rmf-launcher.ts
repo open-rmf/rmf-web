@@ -9,7 +9,7 @@ export class RmfLauncher {
       return;
     }
 
-    const headless = !!process.env.CI;
+    const headless = !process.env.ROMI_DASHBOARD_NO_HEADLESS;
     const officeDemoArgs = ['launch', 'demos', 'office.launch.xml'];
     if (headless) {
       officeDemoArgs.push('headless:=true');
