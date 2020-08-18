@@ -34,7 +34,7 @@ const Robot = React.forwardRef(function(
 ): React.ReactElement {
   const resourcesContext = useContext(ResourcesContext);
   const classes = useStyles();
-  const { robot, footprint, colorManager, fleetName, onClick } = props;
+  const { robot, footprint, colorManager, fleetName, inConflict, onClick } = props;
   // The only image formats SVG software support are JPEG, PNG, and other SVG files.
   const [renderCustomIcon, setRenderCustomIcon] = useState({
     path: ResourceManager.getRobotIconPath(resourcesContext, fleetName),
@@ -55,6 +55,7 @@ const Robot = React.forwardRef(function(
             robot={robot}
             footprint={footprint}
             dispatchIconError={setRenderCustomIcon}
+            inConflict={inConflict}
             onClick={onClick}
           />
         ) : (
@@ -63,6 +64,7 @@ const Robot = React.forwardRef(function(
             footprint={footprint}
             colorManager={colorManager}
             onClick={onClick}
+            inConflict={inConflict}
           ></RobotDefaultIcon>
         )}
         <text

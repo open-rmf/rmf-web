@@ -313,17 +313,6 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
               </Pane>
             )}
           </LayersControl.Overlay>
-          <LayersControl.Overlay name="Doors" checked>
-            {curMapFloorLayer && (
-              <Pane>
-                <DoorsOverlay
-                  bounds={curMapFloorLayer.bounds}
-                  doors={curMapFloorLayer.level.doors}
-                  onDoorClick={props.onDoorClick}
-                />
-              </Pane>
-            )}
-          </LayersControl.Overlay>
           <LayersControl.Overlay name="Lifts" checked>
             {curMapFloorLayer && (
               <Pane>

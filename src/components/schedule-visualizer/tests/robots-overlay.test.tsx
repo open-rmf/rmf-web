@@ -9,10 +9,8 @@ import fakeFleets from '../../../mock/data/fleets';
 import getBuildingMap from '../../../mock/data/building-map';
 import { createMuiTheme } from '@material-ui/core';
 
-describe('Robots Overlay', async () => {
-  const buildingMap = await getBuildingMap();
+describe('Robots Overlay', () => {
   const fleets = fakeFleets();
-  const robots = fleets[0].robots;
   const bounds = new L.LatLngBounds([0, 25.7], [-14, 0]);
   const colorManager = new ColorManager();
   // TextEncoder is not available in node
@@ -22,10 +20,13 @@ describe('Robots Overlay', async () => {
   const theme = createMuiTheme();
 
   test('Render robots correctly', async () => {
+    const buildingMap = await getBuildingMap();
+    const fleet = fakeFleets()[0];
+    const robots = fleet.robots;
     const wrapper = mount(
       <LMap>
         <RobotsOverlay
-          fleets={fleets}
+          fleets={[fleet]}
           bounds={bounds}
           colorManager={colorManager}
           conflictRobotNames={conflictRobotNames}
@@ -41,6 +42,7 @@ describe('Robots Overlay', async () => {
   });
 
   test('Red shadow appears when robots are in trajectory conflict', async () => {
+    const buildingMap = await getBuildingMap();
     conflictRobotNames = [[fakeFleets()[0].robots[0].name]];
     const wrapper = mount(
       <LMap>
