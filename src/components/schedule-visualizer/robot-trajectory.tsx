@@ -27,32 +27,38 @@ export const RobotTrajectory = React.forwardRef(function(
 
   function determineTrajDiameter(trajDiameter: TrajectoryDiameter): number {
     switch (trajDiameter) {
-      case TrajectoryDiameter.Default:
+      case TrajectoryDiameter.Fix_size:
         return 0.4;
-      case TrajectoryDiameter.Robot:
+      case TrajectoryDiameter.Robot_size:
         return footprint;
     }
   }
 
+  const trajectoryDiameter = determineTrajDiameter(trajDiameter);
   const pathColor = React.useMemo(() => {
     const getRobotColor = () => {
       const robotColor = colorManager?.robotColorFromCache(trajectory.robot_name);
       return !!robotColor ? robotColor : theme.palette.success.main;
     };
+    const getPathColor = () => {
+      const pathColor = colorManager?.pathColorFromCache(trajectory.robot_name);
+      return !!pathColor ? pathColor : theme.palette.success.main;
+    };
     const robotColorHolder = getRobotColor();
+    const pathColorHolder = getPathColor();
     switch (settings.trajectoryColor) {
-      case TrajectoryColor.Plain:
+      case TrajectoryColor.Default:
         return conflicts.flat().includes(trajectory.id)
           ? theme.palette.error.main
           : theme.palette.success.main;
-      case TrajectoryColor.Robot:
+      case TrajectoryColor.Robot_Color:
         return conflicts.flat().includes(trajectory.id)
           ? theme.palette.error.main
           : robotColorHolder;
-      case TrajectoryColor.Green:
+      case TrajectoryColor.Shades:
         return conflicts.flat().includes(trajectory.id)
           ? theme.palette.error.main
-          : colorManager?.pathColorFromCache(trajectory.robot_name);
+          : pathColorHolder;
     }
   }, [trajectory, conflicts, theme, colorManager, settings.trajectoryColor]);
 
@@ -69,7 +75,7 @@ export const RobotTrajectory = React.forwardRef(function(
           d={pathD}
           stroke={pathColor}
           opacity={0.8}
-          strokeWidth={determineTrajDiameter(trajDiameter)}
+          strokeWidth={trajectoryDiameter}
           strokeLinecap="round"
           fill={'none'}
           pathLength={1}
