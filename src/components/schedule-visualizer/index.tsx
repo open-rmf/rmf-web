@@ -235,7 +235,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
 
     function getConflictRobotsName(conflicts: Conflict[], trajs: Trajectory[]): string[][] {
       let conflictRobotNames: string[][] = [];
-      if (conflicts.length !== 0) {
+      if (conflicts.length === 0) {
         return [];
       }
       conflicts.forEach(conflictPair => {
