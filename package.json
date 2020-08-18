@@ -31,12 +31,10 @@
     "react-leaflet-control": "^2.1.1",
     "react-scripts": "^3.4.0",
     "serve": "^11.3.2",
-    "svg-patterns": "^2.0.0",
     "sweetalert2": "^9.13.1",
     "typeface-roboto": "0.0.75",
     "typescript": "3.7.2",
-    "uuid": "^8.1.0",
-    "vdom-to-html": "^2.3.1"
+    "uuid": "^8.1.0"
   },
   "scripts": {
     "start": "REACT_APP_SOSS_SERVER=wss://localhost:50001 REACT_APP_SOSS_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoicm9taS1kYXNoYm9hcmQiLCJpYXQiOjE1ODMyODYyMTV9.x9aNjcLujQPHchWEsbrRbvctmnGQtEzw-81X0aPIE-Y REACT_APP_TRAJECTORY_SERVER=ws://localhost:8006 react-scripts start",

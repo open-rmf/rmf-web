@@ -1,15 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Conflict, rawKnotsToKnots, Trajectory, RawKnot } from '../../robot-trajectory-manager';
 import { bezierControlPoints, knotsToSegmentCoefficientsArray } from '../../util/cublic-spline';
 import { TrajectoryPath } from './trajectory-animations';
 import { useTheme } from '@material-ui/core';
 import ColorManager from './colors';
 import { SettingsContext, TrajectoryDiameter, TrajectoryColor } from '../../settings';
-
-// @ts-ignore
-import stringify from 'virtual-dom-stringify';
-// @ts-ignore
-import patterns from 'svg-patterns';
 
 export interface RobotTrajectoryProps
   extends React.RefAttributes<SVGPathElement>,
@@ -25,13 +20,7 @@ export const RobotTrajectory = React.forwardRef(function(
   ref: React.Ref<SVGPathElement>,
 ): React.ReactElement {
   const { trajectory, conflicts, footprint, colorManager, ...otherProps } = props;
-  const [pattern, setPattern] = useState(
-    patterns.lines({
-      stroke: 'white', // any SVG-compatible color
-      background: '#343434', // any SVG-compatible color
-      orientations: [45],
-    }),
-  );
+
   const theme = useTheme();
   const settings = React.useContext(SettingsContext);
   const trajDiameter = settings.trajectoryDiameter;
@@ -64,12 +53,6 @@ export const RobotTrajectory = React.forwardRef(function(
         return conflicts.flat().includes(trajectory.id)
           ? theme.palette.error.main
           : colorManager?.pathColorFromCache(trajectory.robot_name);
-      case TrajectoryColor.Shape:
-        const pathColorHolder = conflicts.flat().includes(trajectory.id)
-          ? theme.palette.error.main
-          : getRobotColor();
-        setPattern(patternHolder[trajectory.robot_name](pathColorHolder));
-        return pathColorHolder;
     }
   }, [trajectory, conflicts, theme, colorManager, settings.trajectoryColor]);
 
@@ -79,13 +62,12 @@ export const RobotTrajectory = React.forwardRef(function(
 
   return (
     <>
-      <defs dangerouslySetInnerHTML={{ __html: stringify(pattern) }} />
       {pathColor && (
         <path
           data-component="RobotTrajectory"
           ref={ref}
           d={pathD}
-          stroke={settings.trajectoryColor === TrajectoryColor.Shape ? pattern.url() : pathColor}
+          stroke={pathColor}
           opacity={0.8}
           strokeWidth={determineTrajDiameter(trajDiameter)}
           strokeLinecap="round"
@@ -124,37 +106,3 @@ export function trajectoryPath(trajectorySegments: RawKnot[]): TrajectoryPath {
     segOffsets,
   };
 }
-
-// temp pattern object
-
-const patternHolder: { [key: string]: any } = {
-  RobotC: (pathColor: string) => {
-    return patterns.lines({
-      size: 0.8,
-      strokeWidth: 0.07,
-      stroke: 'black',
-      background: pathColor,
-      orientations: [45],
-    });
-  },
-  RobotB: (pathColor: string) => {
-    return patterns.squares({
-      size: 0.7, // size of the pattern
-      fill: 'black', // any SVG-compatible color
-      // strokeWidth: 0.09,
-      stroke: 'black', // any SVG-compatible color
-      background: pathColor,
-    });
-  },
-  RobotA: (pathColor: string) => {
-    return patterns.circles({
-      size: 1, // size of the pattern
-      radius: 0.3,
-      complement: true,
-      fill: 'black', // any SVG-compatible color
-      strokeWidth: 0,
-      stroke: 'none', // any SVG-compatible color
-      background: pathColor, // any SVG-compatible color
-    });
-  },
-};
