@@ -5,6 +5,10 @@ import * as ChildProcess from 'child_process';
  */
 export class RmfLauncher {
   async launch(): Promise<void> {
+    if (process.env.ROMI_DASHBOARD_NO_LAUNCH) {
+      return;
+    }
+
     if (this._launched) {
       return;
     }
@@ -17,9 +21,6 @@ export class RmfLauncher {
     this._officeDemo = ChildProcess.spawn('ros2', officeDemoArgs);
     this._soss = ChildProcess.spawn('soss', [`${__dirname}/soss.yaml`]);
     this._visualizerServer = ChildProcess.spawn('ros2', ['launch', 'visualizer', 'server.xml']);
-    this._serve = ChildProcess.spawn('npx', ['serve', 'build'], {
-      env: { ...process.env, BROWSER: 'none' },
-    });
     this._ros2Echo = ChildProcess.spawn('ros2', [
       'topic',
       'echo',
@@ -45,11 +46,14 @@ export class RmfLauncher {
   }
 
   async kill(): Promise<void> {
+    if (process.env.ROMI_DASHBOARD_NO_LAUNCH) {
+      return;
+    }
+
     await Promise.all([
       this._officeDemo && this._killProcess(this._officeDemo, 'SIGINT'), // doesn't clean up properly with SIGTERM
       this._soss && this._killProcess(this._soss),
       this._visualizerServer && this._killProcess(this._visualizerServer, 'SIGINT'), // doesn't clean up properly with SIGTERM
-      this._serve && this._killProcess(this._serve),
       this._ros2Echo && this._killProcess(this._ros2Echo),
     ]);
   }
@@ -58,7 +62,6 @@ export class RmfLauncher {
   private _officeDemo?: ChildProcess.ChildProcessWithoutNullStreams;
   private _soss?: ChildProcess.ChildProcessWithoutNullStreams;
   private _visualizerServer?: ChildProcess.ChildProcessWithoutNullStreams;
-  private _serve?: ChildProcess.ChildProcessWithoutNullStreams;
   private _ros2Echo?: ChildProcess.ChildProcessWithoutNullStreams;
 
   private async _killProcess(

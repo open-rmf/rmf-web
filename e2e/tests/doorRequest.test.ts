@@ -1,6 +1,6 @@
-import { RmfLauncher } from '../rmf-launcher';
-import { overwriteClick } from './utils';
 import { Element } from '@wdio/sync';
+import { RmfLauncher } from '../rmf-launcher';
+import { login, overwriteClick } from './utils';
 
 describe('door request', () => {
   let doorItem: Element;
@@ -11,6 +11,8 @@ describe('door request', () => {
 
   before(() => overwriteClick());
   before(() => browser.url('/'));
+
+  before(login);
 
   before(() => {
     $('[data-component=MainMenu] [data-item=Doors]').click();

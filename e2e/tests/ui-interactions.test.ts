@@ -1,5 +1,5 @@
 import { RmfLauncher } from '../rmf-launcher';
-import { overwriteClick } from './utils';
+import { login, overwriteClick } from './utils';
 
 describe('ui interactions', () => {
   const launcher = new RmfLauncher();
@@ -9,6 +9,8 @@ describe('ui interactions', () => {
 
   before(() => overwriteClick());
   before(() => browser.url('/'));
+
+  before(login);
 
   it('clicking a door on the map focuses it on the panel', () => {
     const door = $(`[data-component=Door]`);
@@ -24,6 +26,8 @@ describe('ui interactions', () => {
     const robotName = robot.getAttribute('aria-label');
     robot.click();
 
-    expect($(`[data-component=RobotItem][data-name=${robotName}] [data-role=details]`)).toBeVisible();
+    expect(
+      $(`[data-component=RobotItem][data-name=${robotName}] [data-role=details]`),
+    ).toBeVisible();
   });
 });

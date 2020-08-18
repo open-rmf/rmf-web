@@ -1,5 +1,5 @@
 import { RmfLauncher } from '../rmf-launcher';
-import { overwriteClick, removeTextFromAutocomplete, getRobotLocations } from './utils';
+import { getRobotLocations, login, overwriteClick, removeTextFromAutocomplete } from './utils';
 
 describe('Delivery request', () => {
   const launcher = new RmfLauncher();
@@ -9,6 +9,8 @@ describe('Delivery request', () => {
 
   before(() => overwriteClick());
   before(() => browser.url('/'));
+
+  before(login);
 
   it('rmf responds to delivery request', () => {
     $('[data-component=MainMenu] [data-item=Robots]').click();

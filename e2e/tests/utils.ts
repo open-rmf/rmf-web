@@ -45,3 +45,11 @@ export const getRobotLocations = (browser: WebdriverIO.BrowserObject): string[] 
   });
   return robotLocations;
 };
+
+export function login(): void {
+  browser.url('/login');
+  $('#login-button').click();
+  $('#username').setValue('admin');
+  $('#password').setValue('admin');
+  $('#kc-login').click();
+}
