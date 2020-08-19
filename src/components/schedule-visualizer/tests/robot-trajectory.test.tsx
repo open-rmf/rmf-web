@@ -2,17 +2,48 @@ import { createMount } from '@material-ui/core/test-utils';
 import React from 'react';
 
 import FakeTrajectoryManager from '../../../mock/fake-traj-manager';
-import RobotTrajectory from '../robot-trajectory';
+import RobotTrajectory, { RobotTrajectoryProps } from '../robot-trajectory';
 import { Trajectory, Conflict } from '../../../robot-trajectory-manager';
 import {
   SettingsContext,
   TrajectoryColor,
   TrajectoryDiameter,
   defaultSettings,
+  Settings,
 } from '../../../settings';
-import ColorManager from '../colors';
 
 const mount = createMount();
+
+const createWrapper = (
+  Component: React.ForwardRefExoticComponent<RobotTrajectoryProps>,
+  trajectory: Trajectory,
+  trajectoryConflict: Conflict[],
+  footprint: number,
+  color: string,
+  settings?: Settings,
+) => {
+  return mount(
+    <svg>
+      {settings ? (
+        <SettingsContext.Provider value={settings}>
+          <Component
+            trajectory={trajectory}
+            conflicts={trajectoryConflict}
+            footprint={footprint}
+            color={color}
+          />
+        </SettingsContext.Provider>
+      ) : (
+        <Component
+          trajectory={trajectory}
+          conflicts={trajectoryConflict}
+          footprint={footprint}
+          color={color}
+        />
+      )}
+    </svg>,
+  );
+};
 
 describe('Robot Trajectory', () => {
   let trajMgr;
@@ -22,7 +53,6 @@ describe('Robot Trajectory', () => {
   const themeColor = '#4caf50';
   const defaultErrorColor = '#f44336';
   const fixPathSize = 0.4;
-  const colorManager = new ColorManager();
 
   beforeEach(async () => {
     trajMgr = new FakeTrajectoryManager();
@@ -40,16 +70,8 @@ describe('Robot Trajectory', () => {
   });
 
   it('renders without crashing', () => {
-    const root = mount(
-      <svg>
-        <RobotTrajectory
-          trajectory={trajectoryValue}
-          conflicts={trajectoryConflict}
-          footprint={0.5}
-          color="black"
-        />
-      </svg>,
-    );
+    const root = createWrapper(RobotTrajectory, trajectoryValue, trajectoryConflict, 0.5, 'black');
+
     root.unmount();
   });
 
@@ -59,18 +81,15 @@ describe('Robot Trajectory', () => {
       trajectoryDiameter: TrajectoryDiameter.Fix_size,
       trajectoryColor: TrajectoryColor.Theme,
     };
-    const root = mount(
-      <svg>
-        <SettingsContext.Provider value={mockContext}>
-          <RobotTrajectory
-            trajectory={trajectoryValue}
-            conflicts={trajectoryConflict}
-            footprint={0.5}
-            color="black"
-          />
-        </SettingsContext.Provider>
-      </svg>,
+    const root = createWrapper(
+      RobotTrajectory,
+      trajectoryValue,
+      trajectoryConflict,
+      0.5,
+      'black',
+      mockContext,
     );
+
     const trajWidth = root.find('path').props().strokeWidth;
     const trajColor = root.find('path').props().stroke;
 
@@ -85,17 +104,13 @@ describe('Robot Trajectory', () => {
       ...defaultSettings(),
       trajectoryColor: TrajectoryColor.Shades,
     };
-    const root = mount(
-      <svg>
-        <SettingsContext.Provider value={mockContext}>
-          <RobotTrajectory
-            trajectory={trajectoryValue}
-            conflicts={trajectoryConflict}
-            footprint={0.5}
-            color="black"
-          />
-        </SettingsContext.Provider>
-      </svg>,
+    const root = createWrapper(
+      RobotTrajectory,
+      trajectoryValue,
+      trajectoryConflict,
+      0.5,
+      'black',
+      mockContext,
     );
     console.log(root.debug());
     root.unmount();
@@ -103,18 +118,11 @@ describe('Robot Trajectory', () => {
 
   it('should change path color to conflicting color', () => {
     const mockConflict = [[trajectoryValue.id]];
-    const root = mount(
-      <svg>
-        <RobotTrajectory
-          trajectory={trajectoryValue}
-          conflicts={mockConflict}
-          footprint={0.5}
-          color="black"
-        />
-      </svg>,
-    );
+    const root = createWrapper(RobotTrajectory, trajectoryValue, mockConflict, 0.5, 'black');
     const trajColor = root.find('path').props().stroke;
+
     expect(trajColor).toEqual(defaultErrorColor);
+
     root.unmount();
   });
 });
