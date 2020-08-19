@@ -27,6 +27,7 @@ import { SpotlightValue } from './spotlight-value';
 import { DoorStateContext } from './schedule-visualizer/doors-overlay';
 import { LiftStateContext } from './schedule-visualizer/lift-overlay';
 import NotificationBar, { NotificationBarProps, NotificationBarContext } from './notification-bar';
+import { ResourceConfigurationsType } from '../resource-manager';
 
 const borderRadius = 20;
 
@@ -111,10 +112,11 @@ const viewMap = makeViewMap();
 
 export default function App(props: AppProps): JSX.Element {
   const classes = useStyles();
-  const { transportFactory, trajectoryManagerFactory } = props.appConfig;
+  const { transportFactory, trajectoryManagerFactory, appResources } = props.appConfig;
   const [transport, setTransport] = React.useState<RomiCore.Transport | undefined>(undefined);
   const [buildingMap, setBuildingMap] = React.useState<RomiCore.BuildingMap | undefined>(undefined);
   const trajManager = React.useRef<RobotTrajectoryManager | undefined>(undefined);
+  const resourceManager = React.useRef<ResourceConfigurationsType | undefined>(undefined);
 
   const doorStateManager = React.useMemo(() => new DoorStateManager(), []);
   const [doorStates, setDoorStates] = React.useState(() => doorStateManager.doorStates());
@@ -209,6 +211,15 @@ export default function App(props: AppProps): JSX.Element {
       trajManager.current = await trajectoryManagerFactory();
     })();
   }, [trajectoryManagerFactory]);
+
+  React.useEffect(() => {
+    if (!appResources) {
+      return;
+    }
+    (async () => {
+      resourceManager.current = await appResources;
+    })();
+  }, [appResources]);
 
   React.useEffect(() => {
     if (currentView === OmniPanelViewIndex.Doors) {
@@ -338,6 +349,7 @@ export default function App(props: AppProps): JSX.Element {
                     buildingMap={buildingMap}
                     fleets={fleets}
                     trajManager={trajManager.current}
+                    appResources={resourceManager.current}
                     onDoorClick={handleDoorClick}
                     onLiftClick={handleLiftClick}
                     onRobotClick={handleRobotClick}
@@ -356,50 +368,53 @@ export default function App(props: AppProps): JSX.Element {
                 onBack={handleBack}
                 onClose={handleClose}
               >
-              <OmniPanelView id={OmniPanelViewIndex.MainMenu}>
-                <MainMenu
-                  onDoorsClick={handleMainMenuDoorsClick}
-                  onLiftsClick={handleMainMenuLiftsClick}
-                  onRobotsClick={handleMainMenuRobotsClick}
-                  onDispensersClick={handleMainMenuDispensersClick}
-                  onCommandsClick={handleMainMenuCommandsClick}
-                />
-              </OmniPanelView>
-              <OmniPanelView id={OmniPanelViewIndex.Doors}>
-                <DoorsPanel
-                  transport={transport}
-                  doorStates={doorStates}
-                  doors={doors}
-                  spotlight={doorSpotlight}
-                />
-              </OmniPanelView>
-              <OmniPanelView id={OmniPanelViewIndex.Lifts}>
-                <LiftsPanel
-                  transport={transport}
-                  liftStates={liftStates}
-                  lifts={lifts}
-                  spotlight={liftSpotlight}
-                />
-              </OmniPanelView>
-              <OmniPanelView id={OmniPanelViewIndex.Robots}>
-                <RobotsPanel fleets={fleets} spotlight={robotSpotlight} />
-              </OmniPanelView>
-              <OmniPanelView id={OmniPanelViewIndex.Dispensers}>
-                <DispensersPanel dispenserStates={dispenserStates} spotlight={dispenserSpotlight} />
-              </OmniPanelView>
-              <OmniPanelView id={OmniPanelViewIndex.Commands}>
-                <CommandsPanel transport={transport} fleets={fleets} />
-              </OmniPanelView>
-            </OmniPanel>
-          </Fade>
-          <SettingsDrawer
-            settings={settings}
-            open={showSettings}
-            onSettingsChange={newSettings => {
-              setSettings(newSettings);
-              saveSettings(newSettings);
-            }}
-            onClose={() => setShowSettings(false)}
+                <OmniPanelView id={OmniPanelViewIndex.MainMenu}>
+                  <MainMenu
+                    onDoorsClick={handleMainMenuDoorsClick}
+                    onLiftsClick={handleMainMenuLiftsClick}
+                    onRobotsClick={handleMainMenuRobotsClick}
+                    onDispensersClick={handleMainMenuDispensersClick}
+                    onCommandsClick={handleMainMenuCommandsClick}
+                  />
+                </OmniPanelView>
+                <OmniPanelView id={OmniPanelViewIndex.Doors}>
+                  <DoorsPanel
+                    transport={transport}
+                    doorStates={doorStates}
+                    doors={doors}
+                    spotlight={doorSpotlight}
+                  />
+                </OmniPanelView>
+                <OmniPanelView id={OmniPanelViewIndex.Lifts}>
+                  <LiftsPanel
+                    transport={transport}
+                    liftStates={liftStates}
+                    lifts={lifts}
+                    spotlight={liftSpotlight}
+                  />
+                </OmniPanelView>
+                <OmniPanelView id={OmniPanelViewIndex.Robots}>
+                  <RobotsPanel fleets={fleets} spotlight={robotSpotlight} />
+                </OmniPanelView>
+                <OmniPanelView id={OmniPanelViewIndex.Dispensers}>
+                  <DispensersPanel
+                    dispenserStates={dispenserStates}
+                    spotlight={dispenserSpotlight}
+                  />
+                </OmniPanelView>
+                <OmniPanelView id={OmniPanelViewIndex.Commands}>
+                  <CommandsPanel transport={transport} fleets={fleets} />
+                </OmniPanelView>
+              </OmniPanel>
+            </Fade>
+            <SettingsDrawer
+              settings={settings}
+              open={showSettings}
+              onSettingsChange={newSettings => {
+                setSettings(newSettings);
+                saveSettings(newSettings);
+              }}
+              onClose={() => setShowSettings(false)}
             />
           </div>
           <NotificationBar

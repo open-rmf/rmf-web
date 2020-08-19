@@ -3,7 +3,10 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 import Door from './door/door';
 import { UpArrow, DownArrow } from './arrow';
-import { radiansToDegrees } from '../../util/angle-calculation';
+import {
+  radiansToDegrees,
+  transformMiddleCoordsOfRectToSVGBeginPoint,
+} from '../../util/calculation-helpers';
 
 export interface LiftProps {
   id?: string;
@@ -60,18 +63,6 @@ const getLiftMotionText = (
   if (motionState === MOTION_UP || motionState === MOTION_DOWN)
     return `${currentFloor} → ${destinationFloor}`;
   return 'Floor: ?';
-};
-
-/**
- * Transform coords on the middle of a SVG's Rect to top left coords.
- */
-const transformMiddleCoordsOfRectToSVGBeginPoint = (
-  x: number,
-  y: number,
-  width: number,
-  depth: number,
-) => {
-  return { x: x - width / 2, y: y + depth / 2 };
 };
 
 /**

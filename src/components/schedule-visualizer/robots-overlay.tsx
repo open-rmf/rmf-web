@@ -1,36 +1,69 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import * as L from 'leaflet';
-import React from 'react';
+import React, { useMemo } from 'react';
 import ColorManager from './colors';
 import Robot from './robot';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
+import { viewBoxFromLeafletBounds } from '../../util/css-utils';
 
 export interface RobotsOverlayProps extends SVGOverlayProps {
-  robots: readonly RomiCore.RobotState[];
   colorManager: ColorManager;
+  fleets: readonly RomiCore.FleetState[];
   onRobotClick?(robot: RomiCore.RobotState): void;
+  conflictRobotNames: string[][];
+  currentFloorName: string;
 }
 
 export default function RobotsOverlay(props: RobotsOverlayProps): React.ReactElement {
-  const { robots, colorManager, onRobotClick, ...otherProps } = props;
+  const {
+    fleets,
+    colorManager,
+    onRobotClick,
+    conflictRobotNames,
+    currentFloorName,
+    ...otherProps
+  } = props;
+  const viewBox = viewBoxFromLeafletBounds(props.bounds);
+  const footprint = 0.5;
 
-  const bounds =
-    props.bounds instanceof L.LatLngBounds ? props.bounds : new L.LatLngBounds(props.bounds);
-  const width = bounds.getEast() - bounds.getWest();
-  const height = bounds.getNorth() - bounds.getSouth();
-  const viewBox = `0 0 ${width} ${height}`;
-  const footprint = 0.5; // FIXME: hardcode for now, footprint data not available.
+  function inConflict(robotName: string): boolean {
+    // FIXME: hardcode for now, footprint data not available.
+    return conflictRobotNames.flat().includes(robotName) ? true : false;
+  }
+
+  // Maps every robot to its fleet. Added the model too in case two robots has the same name on different fleets.
+  const fleetContainer = useMemo(() => {
+    let robotsFleet: Record<string, string> = {};
+    fleets.forEach(fleet => {
+      fleet.robots
+        .map(robot => [robot.name, robot.model])
+        .forEach((robotInfo: string[]) => {
+          const robotKey = `${robotInfo[0]}_${robotInfo[1]}`;
+          robotsFleet[robotKey] = fleet.name;
+        });
+    });
+    return robotsFleet;
+  }, [fleets]);
+
+  const robotsInCurLevel = React.useMemo(() => {
+    if (!currentFloorName) {
+      return [];
+    }
+    return fleets.flatMap(x => x.robots.filter(r => r.location.level_name === currentFloorName));
+  }, [fleets, currentFloorName]);
+
   return (
     <SVGOverlay {...otherProps}>
       <svg viewBox={viewBox}>
-        {robots.map(robot => {
+        {robotsInCurLevel.map(robot => {
           return (
             <Robot
               key={robot.name}
               robot={robot}
+              fleetName={fleetContainer[`${robot.name}_${robot.model}`]}
               footprint={footprint}
               colorManager={colorManager}
               onClick={(_, robot_) => onRobotClick && onRobotClick(robot_)}
+              inConflict={inConflict(robot.name)}
             />
           );
         })}
