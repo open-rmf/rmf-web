@@ -49,7 +49,7 @@
     "start:react:prod": "serve -s build",
     "start:mock": "REACT_APP_MOCK=1 react-scripts start",
     "start:rmf": "node e2e/prepare.js && ts-node e2e/startBackend.ts",
-    "start:auth": "docker-compose -f e2e/keycloak/docker-compose.yml up",
+    "start:auth": "scripts/start-auth.sh",
     "build": "react-scripts build",
     "build:e2e": ". e2e/env.sh && node e2e/prepare.js && npm run build",
     "build:storybook": "build-storybook -s public",
