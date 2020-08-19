@@ -9,7 +9,7 @@ interface RobotComponentProps extends RobotProps {
 }
 
 export default function RobotComponent(props: RobotComponentProps): React.ReactElement {
-  const { robot, footprint, colorManager, renderInfoPanel } = props;
+  const { robot, footprint, colorManager, renderInfoPanel, fleetName } = props;
 
   return (
     <div style={componentDisplayStyle.display}>
@@ -17,6 +17,7 @@ export default function RobotComponent(props: RobotComponentProps): React.ReactE
 
       <svg viewBox={viewBoxCoords}>
         <Robot
+          fleetName={fleetName}
           robot={robot}
           footprint={footprint}
           colorManager={colorManager}

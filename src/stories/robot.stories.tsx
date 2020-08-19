@@ -73,8 +73,9 @@ const renderInfoPanel = (robotMode: string, footprint: number): JSX.Element => {
   );
 };
 
-export const robot = () => (
+export const robotDefaultIcon = () => (
   <RobotComponent
+    fleetName={robotStates[0].name}
     robot={robotState}
     footprint={1}
     colorManager={colorManager}
