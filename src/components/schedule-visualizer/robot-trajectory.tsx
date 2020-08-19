@@ -21,6 +21,7 @@ export const RobotTrajectory = React.forwardRef(function(
 ): React.ReactElement {
   const { trajectory, conflicts, footprint, colorManager, ...otherProps } = props;
 
+  const isConflict = conflicts.flat().includes(trajectory.id);
   const theme = useTheme();
   const settings = React.useContext(SettingsContext);
   const trajDiameter = settings.trajectoryDiameter;
@@ -82,7 +83,18 @@ export const RobotTrajectory = React.forwardRef(function(
           strokeDasharray={2}
           strokeDashoffset={0}
           {...otherProps}
-        />
+        >
+          {isConflict && settings.trajectoryColor === TrajectoryColor.Robot_Color ? (
+            <animate
+              attributeName="stroke"
+              values={`${pathColor};transparent`}
+              begin={0}
+              dur={'1s'}
+              calcMode="paced"
+              repeatCount="indefinite"
+            />
+          ) : null}
+        </path>
       )}
     </>
   );

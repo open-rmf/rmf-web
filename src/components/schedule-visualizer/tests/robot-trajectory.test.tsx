@@ -112,7 +112,7 @@ describe('Robot Trajectory', () => {
       'black',
       mockContext,
     );
-    console.log(root.debug());
+    // console.log(root.debug());
     root.unmount();
   });
 
