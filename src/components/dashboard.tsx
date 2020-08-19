@@ -8,6 +8,7 @@ import DispenserStateManager from '../dispenser-state-manager';
 import DoorStateManager from '../door-state-manager';
 import FleetManager from '../fleet-manager';
 import LiftStateManager from '../lift-state-manager';
+import { ResourceConfigurationsType } from '../resource-manager';
 import { RobotTrajectoryManager } from '../robot-trajectory-manager';
 import { loadSettings, saveSettings, Settings, SettingsContext } from '../settings';
 import AppBar from './appbar';
@@ -112,6 +113,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const [transport, setTransport] = React.useState<RomiCore.Transport | undefined>(undefined);
   const [buildingMap, setBuildingMap] = React.useState<RomiCore.BuildingMap | undefined>(undefined);
   const trajManager = React.useRef<RobotTrajectoryManager | undefined>(undefined);
+  const resourceManager = React.useRef<ResourceConfigurationsType | undefined>(undefined);
 
   const doorStateManager = React.useMemo(() => new DoorStateManager(), []);
   const [doorStates, setDoorStates] = React.useState(() => doorStateManager.doorStates());
@@ -206,6 +208,15 @@ export default function Dashboard(_props: {}): React.ReactElement {
       trajManager.current = await trajectoryManagerFactory();
     })();
   }, [trajectoryManagerFactory]);
+
+  React.useEffect(() => {
+    if (!appResources) {
+      return;
+    }
+    (async () => {
+      resourceManager.current = await appResources;
+    })();
+  }, [appResources]);
 
   React.useEffect(() => {
     if (currentView === OmniPanelViewIndex.Doors) {
@@ -326,6 +337,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                     buildingMap={buildingMap}
                     fleets={fleets}
                     trajManager={trajManager.current}
+                    appResources={resourceManager.current}
                     onDoorClick={handleDoorClick}
                     onLiftClick={handleLiftClick}
                     onRobotClick={handleRobotClick}
