@@ -42,10 +42,6 @@ export const appConfig: AppConfig = (() => {
       redirectUri.href,
     );
 
-    if (process.env.REACT_APP_SOSS_TOKEN) {
-      console.warn('using hardcoded soss token');
-    }
-
     return {
       authenticator,
       authRedirectUri: redirectUri.href,
