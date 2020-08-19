@@ -23,6 +23,8 @@ import {
 } from './trajectory-animations';
 import DoorsOverlay from './doors-overlay';
 import LiftsOverlay from './lift-overlay';
+import { ResourcesContext } from '../../app-contexts';
+import { ResourceConfigurationsType } from '../../resource-manager';
 
 const useStyles = makeStyles(() => ({
   map: {
@@ -43,6 +45,7 @@ export interface ScheduleVisualizerProps {
   buildingMap: Readonly<RomiCore.BuildingMap>;
   fleets: Readonly<RomiCore.FleetState[]>;
   trajManager?: Readonly<RobotTrajectoryManager>;
+  appResources?: Readonly<ResourceConfigurationsType>;
   onDoorClick?(door: RomiCore.Door): void;
   onLiftClick?(lift: RomiCore.Lift): void;
   onRobotClick?(robot: RomiCore.RobotState): void;
@@ -58,6 +61,7 @@ function calcMaxBounds(mapFloorLayers: readonly MapFloorLayer[]): L.LatLngBounds
 }
 
 export default function ScheduleVisualizer(props: ScheduleVisualizerProps): React.ReactElement {
+  const { appResources } = props;
   const classes = useStyles();
   const mapRef = React.useRef<LMap>(null);
   const { current: mapElement } = mapRef;
@@ -90,15 +94,6 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   const [maxBounds, setMaxBounds] = React.useState<Readonly<L.LatLngBounds> | undefined>(() =>
     calcMaxBounds(Object.values(mapFloorLayers)),
   );
-
-  const robotsInCurLevel = React.useMemo(() => {
-    if (!curMapFloorLayer) {
-      return [];
-    }
-    return props.fleets.flatMap(x =>
-      x.robots.filter(r => r.location.level_name === curMapFloorLayer.level.name),
-    );
-  }, [props.fleets, curMapFloorLayer]);
 
   const colorManager = React.useMemo(() => new ColorManager(), []);
 
@@ -240,7 +235,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
 
     function getConflictRobotsName(conflicts: Conflict[], trajs: Trajectory[]): string[][] {
       let conflictRobotNames: string[][] = [];
-      if (conflicts.length !== 0) {
+      if (conflicts.length === 0) {
         return [];
       }
       conflicts.forEach(conflictPair => {
@@ -278,71 +273,74 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       maxBounds={maxBounds}
       onbaselayerchange={handleBaseLayerChange}
     >
-      <AttributionControl position="bottomright" prefix="OSRC-SG" />
-      <LayersControl position="topleft">
-        {sortedMapFloorLayers.every(x => x) &&
-          sortedMapFloorLayers.map((floorLayer, i) => (
-            <LayersControl.BaseLayer
-              checked={i === 0}
-              name={floorLayer.level.name}
-              key={floorLayer.level.name}
-            >
-              <ImageOverlay bounds={floorLayer.bounds} url={floorLayer.imageUrl} ref={ref} />
-            </LayersControl.BaseLayer>
-          ))}
+      <ResourcesContext.Provider value={!!appResources ? appResources : {}}>
+        <AttributionControl position="bottomright" prefix="OSRC-SG" />
+        <LayersControl position="topleft">
+          {sortedMapFloorLayers.every(x => x) &&
+            sortedMapFloorLayers.map((floorLayer, i) => (
+              <LayersControl.BaseLayer
+                checked={i === 0}
+                name={floorLayer.level.name}
+                key={floorLayer.level.name}
+              >
+                <ImageOverlay bounds={floorLayer.bounds} url={floorLayer.imageUrl} ref={ref} />
+              </LayersControl.BaseLayer>
+            ))}
 
-        <LayersControl.Overlay name="Robot Trajectories" checked>
-          {curMapFloorLayer && (
-            <Pane>
-              <RobotTrajectoryContext.Provider value={{ Component: TrajectoryComponent }}>
-                <RobotTrajectoriesOverlay
+          <LayersControl.Overlay name="Robot Trajectories" checked>
+            {curMapFloorLayer && (
+              <Pane>
+                <RobotTrajectoryContext.Provider value={{ Component: TrajectoryComponent }}>
+                  <RobotTrajectoriesOverlay
+                    bounds={curMapFloorLayer.bounds}
+                    trajs={curMapTrajectories}
+                    conflicts={curMapConflicts}
+                    colorManager={colorManager}
+                    conflictRobotNames={conflictRobotNames}
+                  />
+                </RobotTrajectoryContext.Provider>
+              </Pane>
+            )}
+          </LayersControl.Overlay>
+          <LayersControl.Overlay name="Doors" checked>
+            {curMapFloorLayer && (
+              <Pane>
+                <DoorsOverlay
                   bounds={curMapFloorLayer.bounds}
-                  trajs={curMapTrajectories}
-                  conflicts={curMapConflicts}
+                  doors={curMapFloorLayer.level.doors}
+                  onDoorClick={props.onDoorClick}
+                />
+              </Pane>
+            )}
+          </LayersControl.Overlay>
+          <LayersControl.Overlay name="Lifts" checked>
+            {curMapFloorLayer && (
+              <Pane>
+                <LiftsOverlay
+                  bounds={curMapFloorLayer.bounds}
+                  currentFloor={curLevelName}
+                  lifts={props.buildingMap.lifts}
+                  onLiftClick={props.onLiftClick}
+                />
+              </Pane>
+            )}
+          </LayersControl.Overlay>
+          <LayersControl.Overlay name="Robots" checked>
+            {curMapFloorLayer && (
+              <Pane>
+                <RobotsOverlay
+                  currentFloorName={curLevelName}
+                  bounds={curMapFloorLayer.bounds}
+                  fleets={props.fleets}
                   colorManager={colorManager}
+                  onRobotClick={props.onRobotClick}
                   conflictRobotNames={conflictRobotNames}
                 />
-              </RobotTrajectoryContext.Provider>
-            </Pane>
-          )}
-        </LayersControl.Overlay>
-        <LayersControl.Overlay name="Doors" checked>
-          {curMapFloorLayer && (
-            <Pane>
-              <DoorsOverlay
-                bounds={curMapFloorLayer.bounds}
-                doors={curMapFloorLayer.level.doors}
-                onDoorClick={props.onDoorClick}
-              />
-            </Pane>
-          )}
-        </LayersControl.Overlay>
-        <LayersControl.Overlay name="Lifts" checked>
-          {curMapFloorLayer && (
-            <Pane>
-              <LiftsOverlay
-                bounds={curMapFloorLayer.bounds}
-                currentFloor={curLevelName}
-                lifts={props.buildingMap.lifts}
-                onLiftClick={props.onLiftClick}
-              />
-            </Pane>
-          )}
-        </LayersControl.Overlay>
-        <LayersControl.Overlay name="Robots" checked>
-          {curMapFloorLayer && (
-            <Pane>
-              <RobotsOverlay
-                bounds={curMapFloorLayer.bounds}
-                robots={robotsInCurLevel}
-                colorManager={colorManager}
-                onRobotClick={props.onRobotClick}
-                conflictRobotNames={conflictRobotNames}
-              />
-            </Pane>
-          )}
-        </LayersControl.Overlay>
-      </LayersControl>
+              </Pane>
+            )}
+          </LayersControl.Overlay>
+        </LayersControl>
+      </ResourcesContext.Provider>
     </LMap>
   );
 }

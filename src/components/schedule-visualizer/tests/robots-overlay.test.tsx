@@ -6,26 +6,31 @@ import RobotsOverlay from '../robots-overlay';
 import ColorManager from '../colors';
 import Robot from '../robot';
 import fakeFleets from '../../../mock/data/fleets';
+import getBuildingMap from '../../../mock/data/building-map';
 import { createMuiTheme } from '@material-ui/core';
 
-const robots = fakeFleets()[0].robots;
-const bounds = new L.LatLngBounds([0, 25.7], [-14, 0]);
-const colorManager = new ColorManager();
-// TextEncoder is not available in node
-colorManager.robotColor = jest.fn(async () => 'black');
-colorManager.robotColorFromCache = jest.fn(() => 'black');
-let conflictRobotNames: string[][] = [];
-
 describe('Robots Overlay', () => {
+  const fleets = fakeFleets();
+  const bounds = new L.LatLngBounds([0, 25.7], [-14, 0]);
+  const colorManager = new ColorManager();
+  // TextEncoder is not available in node
+  colorManager.robotColor = jest.fn(async () => 'black');
+  colorManager.robotColorFromCache = jest.fn(() => 'black');
+  let conflictRobotNames: string[][] = [];
   const theme = createMuiTheme();
+
   test('Render robots correctly', async () => {
+    const buildingMap = await getBuildingMap();
+    const fleet = fakeFleets()[0];
+    const robots = fleet.robots;
     const wrapper = mount(
       <LMap>
         <RobotsOverlay
+          fleets={[fleet]}
           bounds={bounds}
           colorManager={colorManager}
-          robots={robots}
           conflictRobotNames={conflictRobotNames}
+          currentFloorName={buildingMap.levels[0].name}
         />
       </LMap>,
     );
@@ -37,14 +42,16 @@ describe('Robots Overlay', () => {
   });
 
   test('Red shadow appears when robots are in trajectory conflict', async () => {
+    const buildingMap = await getBuildingMap();
     conflictRobotNames = [[fakeFleets()[0].robots[0].name]];
     const wrapper = mount(
       <LMap>
         <RobotsOverlay
+          fleets={fleets}
           bounds={bounds}
           colorManager={colorManager}
-          robots={robots}
           conflictRobotNames={conflictRobotNames}
+          currentFloorName={buildingMap.levels[0].name}
         />
       </LMap>,
     );
