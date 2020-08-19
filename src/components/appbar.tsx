@@ -31,7 +31,7 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
   }
 
   return (
-    <MuiAppBar position="static">
+    <MuiAppBar id="appbar" position="static">
       <Toolbar>
         <Typography variant="h6" className={classes.toolbarTitle}>
           Dashboard
