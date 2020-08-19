@@ -48,7 +48,7 @@ export function defaultSettings(): Settings {
     trajectoryAnimation: TrajectoryAnimation.Follow,
     trajectoryAnimationSpeed: AnimationSpeed.Normal,
     trajectoryDiameter: TrajectoryDiameter.Robot_size,
-    trajectoryColor: TrajectoryColor.Default,
+    trajectoryColor: TrajectoryColor.Robot_Color,
   };
 }
 
