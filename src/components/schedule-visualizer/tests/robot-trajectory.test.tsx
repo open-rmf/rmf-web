@@ -10,6 +10,7 @@ import {
   TrajectoryDiameter,
   defaultSettings,
 } from '../../../settings';
+import ColorManager from '../colors';
 
 const mount = createMount();
 
@@ -18,9 +19,11 @@ describe('Robot Trajectory', () => {
   let trajectoryData;
   let trajectoryValue: Trajectory;
   let trajectoryConflict: Conflict[];
-  // const defaultPathColor = '#4caf50';
+  const themeColor = '#4caf50';
   const defaultErrorColor = '#f44336';
   const fixPathSize = 0.4;
+  const colorManager = new ColorManager();
+
   beforeEach(async () => {
     trajMgr = new FakeTrajectoryManager();
     trajectoryData = await trajMgr.latestTrajectory({
@@ -50,11 +53,11 @@ describe('Robot Trajectory', () => {
     root.unmount();
   });
 
-  it('should set width to fix value and color to robot color', () => {
+  it('should set width to fix value and color to theme color', () => {
     const mockContext = {
       ...defaultSettings(),
       trajectoryDiameter: TrajectoryDiameter.Fix_size,
-      trajectoryColor: TrajectoryColor.Robot_Color,
+      trajectoryColor: TrajectoryColor.Theme,
     };
     const root = mount(
       <svg>
@@ -69,7 +72,11 @@ describe('Robot Trajectory', () => {
       </svg>,
     );
     const trajWidth = root.find('path').props().strokeWidth;
+    const trajColor = root.find('path').props().stroke;
+
     expect(trajWidth).toEqual(fixPathSize);
+    expect(trajColor).toEqual(themeColor);
+
     root.unmount();
   });
 
@@ -90,7 +97,7 @@ describe('Robot Trajectory', () => {
         </SettingsContext.Provider>
       </svg>,
     );
-
+    console.log(root.debug());
     root.unmount();
   });
 

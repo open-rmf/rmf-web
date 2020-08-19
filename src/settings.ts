@@ -19,7 +19,7 @@ export enum TrajectoryDiameter {
 }
 
 export enum TrajectoryColor {
-  Default,
+  Theme,
   Robot_Color,
   Shades,
 }
