@@ -2,6 +2,7 @@ import { makeStyles } from '@material-ui/core';
 import React from 'react';
 import { Trajectory } from '../../robot-trajectory-manager';
 import { RobotTrajectoryProps } from './robot-trajectory';
+import anime from 'animejs';
 
 export interface TrajectoryAnimationProps extends React.SVGAttributes<SVGPathElement> {
   trajPath: TrajectoryPath;
@@ -41,18 +42,15 @@ export function withFillAnimation(
       pathAnim.setAttribute('path-length', '1');
       pathRef.current.parentElement?.appendChild(pathAnim);
 
-      pathAnim.animate(
-        offsets.map(offset => ({
-          offset: offset,
+      offsets.forEach(offset => {
+        anime({
+          targets: pathAnim,
           strokeDashoffset: 2 - offset,
-        })),
-        {
           duration: animationDuration(trajectory, animationScale),
           easing: 'linear',
-          fill: 'forwards',
-        },
-      );
-
+          loop: true,
+        });
+      });
       return () => pathAnim.remove();
     }, [trajectory, classes.anim, classes.highlight]);
 
