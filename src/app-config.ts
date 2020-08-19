@@ -1,6 +1,7 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { SossTransport } from '@osrf/romi-js-soss-transport';
 import debug from 'debug';
+import { KeycloakConfig } from 'keycloak-js';
 import Authenticator, { DefaultAuthenticator } from './components/auth/authenticator';
 import FakeAuthenticator from './mock/fake-authenticator';
 import FakeTrajectoryManager from './mock/fake-traj-manager';
@@ -32,15 +33,17 @@ export const appConfig: AppConfig = (() => {
     }
 
     const redirectUri = getRedirectUri();
-    const authUrl = process.env.REACT_APP_AUTH_URL || 'http://localhost:8080/auth';
-    const authenticator = new DefaultAuthenticator(
-      {
+    const authConfig: KeycloakConfig = (() => {
+      if (process.env.REACT_APP_AUTH_CONFIG) {
+        return JSON.parse(process.env.REACT_APP_AUTH_CONFIG) as KeycloakConfig;
+      }
+      return {
         realm: 'master',
         clientId: 'romi-dashboard',
-        url: authUrl,
-      },
-      redirectUri.href,
-    );
+        url: 'http://localhost:8080/auth',
+      };
+    })();
+    const authenticator = new DefaultAuthenticator(authConfig, redirectUri.href);
 
     return {
       authenticator,

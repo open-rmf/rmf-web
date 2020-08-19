@@ -27,7 +27,7 @@ export default interface Authenticator extends EventEmitter<AuthenticatorEventTy
   logout(): Promise<void>;
 }
 
-type ConfigType<T = typeof Keycloak_> = T extends (config: infer U) => unknown ? U : never;
+export type AuthConfig<T = typeof Keycloak_> = T extends (config: infer U) => unknown ? U : never;
 
 export class DefaultAuthenticator extends EventEmitter<AuthenticatorEventType>
   implements Authenticator {
@@ -39,7 +39,7 @@ export class DefaultAuthenticator extends EventEmitter<AuthenticatorEventType>
     return this._inst.idToken;
   }
 
-  constructor(config: ConfigType, redirectUri?: string) {
+  constructor(config: AuthConfig, redirectUri?: string) {
     super();
     this._inst = Keycloak_(config);
     this._redirectUri = redirectUri;
