@@ -1,4 +1,4 @@
-import { radiansToDegrees } from '../angle-calculation';
+import { radiansToDegrees } from '../calculation-helpers';
 
 test('Convert correctly radians to degrees', () => {
   expect(radiansToDegrees(1)).toBeCloseTo(57.295);

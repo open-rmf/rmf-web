@@ -5,14 +5,16 @@ import Authenticator, { DefaultAuthenticator } from './components/auth/authentic
 import FakeAuthenticator from './mock/fake-authenticator';
 import FakeTrajectoryManager from './mock/fake-traj-manager';
 import { FakeTransport } from './mock/fake-transport';
+import ResourceManager, { ResourceConfigurationsType } from './resource-manager';
 import { DefaultTrajectoryManager, RobotTrajectoryManager } from './robot-trajectory-manager';
 import { LOGIN_ROUTE } from './util/url';
 
 export interface AppConfig {
   authenticator: Authenticator;
   authRedirectUri: string;
+  appResources: Promise<ResourceConfigurationsType>;
   transportFactory: () => Promise<RomiCore.Transport>;
-  trajectoryManagerFactory: () => Promise<RobotTrajectoryManager>;
+  trajectoryManagerFactory?: () => Promise<RobotTrajectoryManager>;
 }
 
 export const appConfig: AppConfig = (() => {
@@ -47,6 +49,7 @@ export const appConfig: AppConfig = (() => {
     return {
       authenticator,
       authRedirectUri: redirectUri.href,
+      appResources: ResourceManager.getResourceConfigurationFile(),
       transportFactory: () => {
         const sossToken = process.env.REACT_APP_SOSS_TOKEN || authenticator.sossToken || '';
         debug.log('authenticating to rmf with token', sossToken);
@@ -58,6 +61,7 @@ export const appConfig: AppConfig = (() => {
     return {
       authenticator: new FakeAuthenticator(),
       authRedirectUri: getRedirectUri().href,
+      appResources: ResourceManager.getResourceConfigurationFile(),
       transportFactory: async () => new FakeTransport(),
       trajectoryManagerFactory: async () => new FakeTrajectoryManager(),
     };

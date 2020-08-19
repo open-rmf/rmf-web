@@ -6,21 +6,60 @@ import RobotsOverlay from '../robots-overlay';
 import ColorManager from '../colors';
 import Robot from '../robot';
 import fakeFleets from '../../../mock/data/fleets';
+import getBuildingMap from '../../../mock/data/building-map';
+import { createMuiTheme } from '@material-ui/core';
 
-test('Render robots correctly', () => {
-  const robots = fakeFleets()[0].robots;
+describe('Robots Overlay', () => {
+  const fleets = fakeFleets();
   const bounds = new L.LatLngBounds([0, 25.7], [-14, 0]);
   const colorManager = new ColorManager();
   // TextEncoder is not available in node
   colorManager.robotColor = jest.fn(async () => 'black');
   colorManager.robotColorFromCache = jest.fn(() => 'black');
-  const wrapper = mount(
-    <LMap>
-      <RobotsOverlay bounds={bounds} colorManager={colorManager} robots={robots} />
-    </LMap>,
-  );
-  expect(wrapper.find(Robot).exists()).toBeTruthy();
-  expect(wrapper.find(Robot).length).toBe(robots.length);
+  let conflictRobotNames: string[][] = [];
+  const theme = createMuiTheme();
 
-  wrapper.unmount();
+  test('Render robots correctly', async () => {
+    const buildingMap = await getBuildingMap();
+    const fleet = fakeFleets()[0];
+    const robots = fleet.robots;
+    const wrapper = mount(
+      <LMap>
+        <RobotsOverlay
+          fleets={[fleet]}
+          bounds={bounds}
+          colorManager={colorManager}
+          conflictRobotNames={conflictRobotNames}
+          currentFloorName={buildingMap.levels[0].name}
+        />
+      </LMap>,
+    );
+
+    expect(wrapper.find(Robot).exists()).toBeTruthy();
+    expect(wrapper.find(Robot).length).toBe(robots.length);
+
+    wrapper.unmount();
+  });
+
+  test('Red shadow appears when robots are in trajectory conflict', async () => {
+    const buildingMap = await getBuildingMap();
+    conflictRobotNames = [[fakeFleets()[0].robots[0].name]];
+    const wrapper = mount(
+      <LMap>
+        <RobotsOverlay
+          fleets={fleets}
+          bounds={bounds}
+          colorManager={colorManager}
+          conflictRobotNames={conflictRobotNames}
+          currentFloorName={buildingMap.levels[0].name}
+        />
+      </LMap>,
+    );
+
+    expect(
+      wrapper.containsMatchingElement(<feDropShadow floodColor={theme.palette.error.main} />),
+    ).toBeTruthy();
+
+    wrapper.unmount();
+  });
 });

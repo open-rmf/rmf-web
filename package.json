@@ -20,6 +20,8 @@
     "@types/react-router": "^5.1.7",
     "@types/react-router-dom": "^5.1.5",
     "@types/uuid": "^8.0.0",
+    "axios": "^0.19.2",
+    "chalk": "^4.1.0",
     "clsx": "^1.1.0",
     "debug": "^4.1.1",
     "enzyme": "^3.11.0",
@@ -57,7 +59,8 @@
     "test:e2e:dev": ". e2e/env.sh && ROMI_DASHBOARD_PORT=3000 ROMI_DASHBOARD_NO_LAUNCH=1 wdio",
     "eject": "react-scripts eject",
     "deploy:demo": "REACT_APP_MOCK=1 npm run build && NODE_DEBUG=gh-pages gh-pages -d build -m \"$(git rev-parse HEAD)\"",
-    "storybook": "start-storybook -p 9009 -s public"
+    "storybook": "start-storybook -p 9009 -s public",
+    "setup": "node ./scripts/setup/setup.js && node ./scripts/setup/get-icons.js"
   },
   "eslintConfig": {
     "extends": "react-app"

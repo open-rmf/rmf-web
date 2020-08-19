@@ -108,7 +108,7 @@ function makeViewMap(): ViewMap {
 const viewMap = makeViewMap();
 
 export default function Dashboard(_props: {}): React.ReactElement {
-  const { transportFactory, trajectoryManagerFactory } = appConfig;
+  const { appResources, transportFactory, trajectoryManagerFactory } = appConfig;
   const classes = useStyles();
   const [transport, setTransport] = React.useState<RomiCore.Transport | undefined>(undefined);
   const [buildingMap, setBuildingMap] = React.useState<RomiCore.BuildingMap | undefined>(undefined);
