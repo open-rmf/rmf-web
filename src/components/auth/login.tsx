@@ -11,7 +11,7 @@ export function Alert(props: AlertProps): React.ReactElement {
 
 export interface LoginProps {}
 
-export default function Login(_props: LoginProps): React.ReactElement {
+export default function Login(/* props: LoginProps */): React.ReactElement {
   const authenticator = appConfig.authenticator;
   const classes = authStyles();
   const [loginResponse, setLoginResponse] = React.useState(false);
