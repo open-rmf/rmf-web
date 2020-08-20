@@ -1,0 +1,17 @@
+version: "3"
+services:
+  trajectory-server:
+    image: rmf/rmf
+    command: ros2 launch visualizer server.xml
+    ports:
+      - 8006:8006
+  office-demo:
+    image: rmf/rmf
+    command: ros2 launch demos office.launch.xml headless:=true
+  soss:
+    build:
+      context: ../../e2e
+      dockerfile: ../docker/rmf/soss.Dockerfile
+    image: romi-dashboard/soss
+    command: soss /root/soss/soss.yaml
+    network_mode: host
