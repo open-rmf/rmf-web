@@ -74,7 +74,7 @@ _RoMi-dashboard_ gets its data source from the following rmf components:
 
 Refer to the respective projects for instruction on how to setup them up.
 
-You would also need [docker](https://www.docker.com/) for the authentication server.
+You would also need [docker](https://docs.docker.com/engine/install/ubuntu/) and [docker-compose](https://docs.docker.com/compose/install/) for the authentication server.
 
 The easiest way to launch a local server for development is with
 
