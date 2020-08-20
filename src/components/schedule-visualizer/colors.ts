@@ -37,6 +37,30 @@ export default class ColorManager {
     return color;
   }
 
+  async robotImageIconColor(path: string, name: string): Promise<string> {
+    let color = this._robotColorCache[name];
+    if (!color) {
+      const imgHolder = new Image(400, 400); // FIXME -> hardcoded dimensions
+      imgHolder.src = path;
+
+      await new Promise((resolve, reject) => {
+        imgHolder.onload = () => resolve();
+        imgHolder.onerror = err => reject(err);
+      });
+
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      context?.drawImage(imgHolder, 0, 0, imgHolder.width, imgHolder.height);
+      const data = context?.getImageData(100, 100, 1, 1).data; // FIXME -> need to find betterway to extract point on the image
+      if (data) {
+        color = `rbg(${data[0]}, ${data[1]}, ${data[2]})`;
+        this._robotColorCache[name] = color;
+      }
+    }
+    //FIXME -> returns in rbga format, need to convert to hsl
+    return color;
+  }
+
   robotColorFromCache(name: string): string | null {
     return this._robotColorCache[name] ? this._robotColorCache[name] : null;
   }
