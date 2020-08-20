@@ -1,5 +1,5 @@
 import { makeStyles, useTheme } from '@material-ui/core';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { transformMiddleCoordsOfRectToSVGBeginPoint } from '../../util/calculation-helpers';
 import { RobotProps } from './robot';
 
@@ -12,7 +12,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-type RobotImageIconProps = Omit<RobotProps, 'colorManager' | 'fleetName'> & {
+type RobotImageIconProps = Omit<RobotProps, 'fleetName'> & {
   iconPath: string;
   dispatchIconError: React.Dispatch<
     React.SetStateAction<{
@@ -27,12 +27,34 @@ const RobotImageIcon = React.forwardRef(function(
   ref: React.Ref<SVGGElement>,
 ): React.ReactElement {
   const classes = useStyles();
-  const { robot, footprint, iconPath, dispatchIconError, onClick, inConflict } = props;
+  const {
+    robot,
+    footprint,
+    iconPath,
+    dispatchIconError,
+    onClick,
+    inConflict,
+    colorManager,
+  } = props;
+
   const theme = useTheme();
   // The default icon uses footprint as the radius, so we * 2 here because the width/height
   // is in a square. With the double size of the footprint, we achieved a similar
   // size to the robot default svg icon.
   const [imgIconWidth, imgIconHeigth] = useMemo(() => [footprint * 2, footprint * 2], [footprint]);
+  const [robotColor, setRobotColor] = useState<string | null>(() =>
+    colorManager.robotColorFromCache(robot.name),
+  );
+
+  React.useLayoutEffect(() => {
+    if (robotColor) {
+      return;
+    }
+    (async () => {
+      // setRobotColor(await colorManager.robotColor(robot.name, robot.model));
+      await colorManager.robotTrajectoryColor(robot.name, robot.model);
+    })();
+  }, [robot, robotColor, colorManager]);
 
   const { x: topVerticeX, y: topVerticeY } = transformMiddleCoordsOfRectToSVGBeginPoint(
     robot.location.x,

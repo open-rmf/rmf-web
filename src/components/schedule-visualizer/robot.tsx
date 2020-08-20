@@ -57,6 +57,7 @@ const Robot = React.forwardRef(function(
             dispatchIconError={setRenderCustomIcon}
             inConflict={inConflict}
             onClick={onClick}
+            colorManager={colorManager}
           />
         ) : (
           <RobotDefaultIcon
