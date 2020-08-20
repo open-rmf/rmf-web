@@ -20,6 +20,19 @@ export default class ResourceManager {
     }
   };
 
+  static getAvailablePlacesPerFleet = (
+    resources: ResourceConfigurationsType,
+    fleetName: string,
+  ): string[] | null => {
+    if (!resources.robots || !resources.robots.hasOwnProperty(fleetName)) {
+      return null;
+    }
+    if (!resources.robots[fleetName].hasOwnProperty('places')) {
+      return null;
+    }
+    return resources.robots[fleetName].places;
+  };
+
   static getRobotIconPath(
     resources: ResourceConfigurationsType,
     fleetName: string,

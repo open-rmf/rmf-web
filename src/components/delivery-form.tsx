@@ -3,8 +3,8 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import fakeDispensers from '../mock/data/dispensers';
 import React, { useState, Dispatch, SetStateAction, useEffect } from 'react';
 import { loopFormStyles } from './loop-form';
-import fakePlaces from '../mock/data/places';
 import { TDeliveryRequest } from './commands-panel';
+import ResourceManager from '../resource-manager';
 
 interface DeliveryFormProps {
   fleetNames: string[];
@@ -20,11 +20,11 @@ export const RobotDeliveryForm = (props: DeliveryFormProps): React.ReactElement 
   );
 
   const [listOfPlaces, setListOfPlaces] = useState(
-    !!targetFleetName ? fakePlaces()[targetFleetName] : [],
+    !!targetFleetName ? ResourceManager.getAvailablePlacesPerFleet(targetFleetName) : [],
   );
 
   useEffect(() => {
-    setListOfPlaces(fakePlaces()[targetFleetName]);
+    setListOfPlaces(ResourceManager.getAvailablePlacesPerFleet(targetFleetName));
   }, [targetFleetName]);
 
   // Places

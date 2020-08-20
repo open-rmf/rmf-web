@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { successMsg } from '../util/alerts';
 import fakePlaces from '../mock/data/places';
 import { TLoopRequest } from './commands-panel';
+import ResourceManager from '../resource-manager';
 interface LoopFormProps {
   fleetNames: string[];
   requestLoop: TLoopRequest;
@@ -18,7 +19,7 @@ export const LoopForm = (props: LoopFormProps) => {
   );
   const [numLoops, setNumLoops] = useState(0);
   const [listOfPlaces, setListOfPlaces] = useState(
-    !!targetFleetName ? fakePlaces()[targetFleetName] : [],
+    !!targetFleetName ? ResourceManager.getAvailablePlacesPerFleet(targetFleetName) : [],
   );
   const [startLocation, setStartLocation] = useState(
     (listOfPlaces && listOfPlaces.length >= 2) ? listOfPlaces[0] : '',
@@ -28,8 +29,8 @@ export const LoopForm = (props: LoopFormProps) => {
   );
 
   useEffect(() => {
-    fakePlaces()[targetFleetName]
-      ? setListOfPlaces(fakePlaces()[targetFleetName])
+    ResourceManager.getAvailablePlacesPerFleet(targetFleetName)
+      ? setListOfPlaces(ResourceManager.getAvailablePlacesPerFleet(targetFleetName))
       : setListOfPlaces([]);
   }, [targetFleetName]);
 
@@ -47,7 +48,9 @@ export const LoopForm = (props: LoopFormProps) => {
   const cleanUpForm = () => {
     setTargetFleetName(targetFleetName);
     setNumLoops(0);
-    setListOfPlaces(!!targetFleetName ? fakePlaces()[targetFleetName] : []);
+    setListOfPlaces(
+      !!targetFleetName ? ResourceManager.getAvailablePlacesPerFleet(targetFleetName) : [],
+    );
     setStartLocation(listOfPlaces.length >= 2 ? listOfPlaces[0] : '');
     setFinishLocation(listOfPlaces.length >= 2 ? listOfPlaces[1] : '');
     cleanUpError();
