@@ -39,10 +39,10 @@ This folder obtained must contain at its root a JSON file calling `main.json`, w
 ```json
 {
   "robots":
-    "magni" <fleet>: {
+    "tinyRobot" <fleet>: {
       "icons": {
-        "magni"<fleet>: "/robots/magni/magni.png",
-        "model1"<model>: "/robots/magni/model1.png"
+        "tinyRobot"<fleet>: "/robots/tinyRobot/tinyRobot.png",
+        "model1"<model>: "/robots/tinyRobot/model1.png"
       }
     }
 }
