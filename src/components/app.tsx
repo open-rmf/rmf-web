@@ -20,6 +20,7 @@ export default function App(): React.ReactElement {
     (async () => {
       authenticator.on('userChanged', newUser => setUser(newUser));
       await authenticator.init();
+      setUser(authenticator.user || null);
       setAuthInitialized(true);
     })();
   }, [authenticator]);
