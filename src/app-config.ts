@@ -72,6 +72,7 @@ export default appConfig;
 function getRedirectUri(): URL {
   const redirectUri = new URL(window.location.href);
   redirectUri.pathname = LOGIN_ROUTE;
-  redirectUri.searchParams.append('response', '1');
+  redirectUri.searchParams.set('response', '1');
+  redirectUri.hash = '';
   return redirectUri;
 }

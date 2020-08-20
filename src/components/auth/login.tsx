@@ -17,17 +17,14 @@ export default function Login(/* props: LoginProps */): React.ReactElement {
   const [loginResponse, setLoginResponse] = React.useState(false);
 
   async function handleRmfLogin(_event: React.MouseEvent): Promise<void> {
-    const redirectUri = new URL(window.location.href);
-    redirectUri.searchParams.append('response', '1');
     authenticator.login();
   }
 
   React.useEffect(() => {
     (async () => {
-      const query = new URLSearchParams(window.location.search);
-      const resp = query.get('response');
-
-      if (resp === '1') {
+      // if the current url is a starts with the oauth redirect url, we know that we came back
+      // from an oauth response, in that case, redirect back to the default route.
+      if (window.location.href.startsWith(appConfig.authRedirectUri)) {
         setLoginResponse(true);
       }
     })();
