@@ -22,23 +22,6 @@ type RobotImageIconProps = Omit<RobotProps, 'fleetName'> & {
   >;
 };
 
-// const robotImageIconColor = async (path: string) => {
-//   const imgHolder = new Image(400, 400);
-//   imgHolder.src = path;
-
-//   await new Promise((resolve, reject) => {
-//     imgHolder.onload = () => resolve()
-//     imgHolder.onerror = err => reject(err)
-//   })
-
-//   const canvas = document.createElement('canvas');
-//   const context = canvas.getContext('2d')
-//   context?.drawImage(imgHolder, 0, 0, imgHolder.width, imgHolder.height);
-//   const data = context?.getImageData(100,100,1,1).data;
-//   // returns in rbga format
-//   return `rbga(${data?[0]: 0}, ${data?[1]: 0}, ${data?[2]: 0}, ${data?[3]: 0})`
-// }
-
 const RobotImageIcon = React.forwardRef(function(
   props: RobotImageIconProps,
   ref: React.Ref<SVGGElement>,
@@ -69,10 +52,9 @@ const RobotImageIcon = React.forwardRef(function(
     }
     (async () => {
       setRobotColor(await colorManager.robotImageIconColor(iconPath, robot.name));
-      // const test = colorManager.robotImageIconColor(iconPath);
       await colorManager.robotTrajectoryColor(robot.name, robot.model);
     })();
-  }, [robot, robotColor, colorManager]);
+  }, [robot, robotColor, colorManager, iconPath]);
 
   const { x: topVerticeX, y: topVerticeY } = transformMiddleCoordsOfRectToSVGBeginPoint(
     robot.location.x,
