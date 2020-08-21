@@ -91,6 +91,22 @@ user: admin
 password: admin
 ```
 
+### Docker Based Backend
+
+**Note**: This is still in the experimental stage.
+
+First build the docker images with
+
+```bash
+npm run build:docker
+```
+
+This will checkout and build all required RMF components, this may take some time, after it is all done, you should be able to start a development backend with
+
+```bash
+npm run start:docker
+```
+
 ### External Server
 
 Alternatively, if you want to connect to an existing rmf deployment, set the following environment variables:
