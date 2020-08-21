@@ -4,7 +4,6 @@ import Debug from 'debug';
 import * as L from 'leaflet';
 import React from 'react';
 import { AttributionControl, ImageOverlay, LayersControl, Map as LMap, Pane } from 'react-leaflet';
-import { ResourceConfigurationsType } from '../../resource-manager';
 import {
   Conflict,
   DefaultTrajectoryManager,
@@ -28,6 +27,7 @@ import {
   withOutlineAnimation,
 } from './trajectory-animations';
 import WaypointsOverlay from './waypoints-overlay';
+import ResourceManager, { ResourceConfigurationsType } from '../../resource-manager';
 
 const debug = Debug('ScheduleVisualizer');
 
@@ -284,7 +284,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       maxBounds={maxBounds}
       onbaselayerchange={handleBaseLayerChange}
     >
-      <ResourcesContext.Provider value={!!appResources ? appResources : {}}>
+      <ResourcesContext.Provider value={!!appResources ? new ResourceManager(appResources) : {}}>
         <AttributionControl position="bottomright" prefix="OSRC-SG" />
         <LayersControl position="topleft">
           {sortedMapFloorLayers.every((x) => x) &&

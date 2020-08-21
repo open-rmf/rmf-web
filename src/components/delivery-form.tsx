@@ -4,7 +4,8 @@ import fakeDispensers from '../mock/data/dispensers';
 import React, { useState, Dispatch, SetStateAction, useEffect } from 'react';
 import { loopFormStyles } from './loop-form';
 import { TDeliveryRequest } from './commands-panel';
-import ResourceManager from '../resource-manager';
+import { RobotResourceManager } from '../resource-manager';
+import { ResourcesContext } from '../app-contexts';
 
 interface DeliveryFormProps {
   fleetNames: string[];
@@ -14,17 +15,22 @@ interface DeliveryFormProps {
 export const RobotDeliveryForm = (props: DeliveryFormProps): React.ReactElement => {
   const { requestDelivery, fleetNames } = props;
   const classes = loopFormStyles();
+  const resourcesContext = React.useContext(ResourcesContext);
 
   const [targetFleetName, setTargetFleetName] = useState(
     fleetNames.length >= 1 ? fleetNames[0] : '',
   );
 
   const [listOfPlaces, setListOfPlaces] = useState(
-    !!targetFleetName ? ResourceManager.getAvailablePlacesPerFleet(targetFleetName) : [],
+    !!targetFleetName
+      ? RobotResourceManager.getAvailablePlacesPerFleet(resourcesContext.resources, targetFleetName)
+      : [],
   );
 
   useEffect(() => {
-    setListOfPlaces(ResourceManager.getAvailablePlacesPerFleet(targetFleetName));
+    setListOfPlaces(
+      RobotResourceManager.getAvailablePlacesPerFleet(resourcesContext.resources, targetFleetName),
+    );
   }, [targetFleetName]);
 
   // Places
@@ -48,8 +54,8 @@ export const RobotDeliveryForm = (props: DeliveryFormProps): React.ReactElement 
 
   const cleanUpForm = (): void => {
     setTargetFleetName(fleetNames.length >= 1 ? fleetNames[0] : '');
-    setPickupPlaceName(listOfPlaces.length >= 2 ? listOfPlaces[0] : '');
-    setDropOffPlaceName(listOfPlaces.length >= 2 ? listOfPlaces[1] : '');
+    setPickupPlaceName(listOfPlaces && listOfPlaces.length >= 2 ? listOfPlaces[0] : '');
+    setDropOffPlaceName(listOfPlaces && listOfPlaces.length >= 2 ? listOfPlaces[1] : '');
     setPickupDispenser('');
     setDropOffDispenser('');
     cleanUpError();
@@ -155,7 +161,7 @@ export const RobotDeliveryForm = (props: DeliveryFormProps): React.ReactElement 
         <Autocomplete
           getOptionLabel={option => option}
           onChange={(e, value) => setPickupPlaceName(value || '')}
-          options={listOfPlaces}
+          options={listOfPlaces ? listOfPlaces : []}
           id={'pickupPlace'}
           renderInput={params => (
             <TextField
@@ -195,7 +201,7 @@ export const RobotDeliveryForm = (props: DeliveryFormProps): React.ReactElement 
         <Autocomplete
           getOptionLabel={option => option}
           onChange={(e, value) => setDropOffPlaceName(value || '')}
-          options={listOfPlaces}
+          options={listOfPlaces ? listOfPlaces : []}
           id="dropoffPlace"
           renderInput={params => (
             <TextField

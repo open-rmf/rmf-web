@@ -2,8 +2,8 @@ import { makeStyles } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import React, { useContext, useState } from 'react';
-import ResourceManager from '../../resource-manager';
-import { ResourcesContext } from '../app-contexts';
+import { RobotResourceManager } from '../../resource-manager';
+import { ResourcesContext } from '../../app-contexts';
 import ColorManager from './colors';
 import RobotDefaultIcon from './robot-default-icon';
 import RobotImageIcon from './robot-image-icon';
@@ -43,11 +43,9 @@ const Robot = React.memo(
     const resourcesContext = useContext(ResourcesContext);
     const classes = useStyles();
     const { robot, footprint, colorManager, fleetName, inConflict, onClick } = props;
-    debug('render %s', robot.name);
-
     // The only image formats SVG software support are JPEG, PNG, and other SVG files.
     const [renderCustomIcon, setRenderCustomIcon] = useState({
-      path: ResourceManager.getRobotIconPath(resourcesContext, fleetName),
+      path: RobotResourceManager.getRobotIconPath(resourcesContext, fleetName),
       error: false,
     });
 
