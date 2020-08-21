@@ -62,17 +62,11 @@ export class DefaultAuthenticator extends EventEmitter<AuthenticatorEventType>
       this.emit('userChanged', null);
     };
 
-    const token = getLocalStorage('token');
-    const idToken = getLocalStorage('idToken');
-    const refreshToken = getLocalStorage('refreshToken');
-    await this._inst.init({ redirectUri: this._redirectUri, token, idToken, refreshToken });
+    await this._inst.init({ redirectUri: this._redirectUri });
     try {
       const refreshed = await this._inst.updateToken(30);
       refreshed && debug.log('token refreshed');
     } catch {}
-    setOrClearLocalStorage('token', this._inst.token);
-    setOrClearLocalStorage('idToken', this._inst.idToken);
-    setOrClearLocalStorage('refreshToken', this._inst.refreshToken);
 
     this._user = this._inst.idTokenParsed && {
       username: (this._inst.idTokenParsed as any).preferred_username,
@@ -92,22 +86,4 @@ export class DefaultAuthenticator extends EventEmitter<AuthenticatorEventType>
   private _inst: KeycloakInstance;
   private _redirectUri?: string;
   private _user?: User;
-}
-
-/**
- * Gets an item from localStorage, unlike `localStorage.getItem`, this returns undefined if item
- * does not exists.
- * @param key
- */
-function getLocalStorage(key: string): string | undefined {
-  const item = localStorage.getItem(key);
-  return item ? item : undefined;
-}
-
-function setOrClearLocalStorage(key: string, value?: string): void {
-  if (value === undefined) {
-    localStorage.removeItem(key);
-  } else {
-    localStorage.setItem(key, value);
-  }
 }

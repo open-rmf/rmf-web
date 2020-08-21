@@ -3,6 +3,7 @@ import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 import React from 'react';
 import { Redirect } from 'react-router';
 import appConfig from '../../app-config';
+import { UserContext } from '../../app-contexts';
 import authStyles from './auth-style';
 
 export function Alert(props: AlertProps): React.ReactElement {
@@ -13,24 +14,14 @@ export interface LoginProps {}
 
 export default function Login(/* props: LoginProps */): React.ReactElement {
   const authenticator = appConfig.authenticator;
+  const user = React.useContext(UserContext);
   const classes = authStyles();
-  const [loginResponse, setLoginResponse] = React.useState(false);
 
   async function handleRmfLogin(_event: React.MouseEvent): Promise<void> {
     authenticator.login();
   }
 
-  React.useEffect(() => {
-    (async () => {
-      // if the current url is a starts with the oauth redirect url, we know that we came back
-      // from an oauth response, in that case, redirect back to the default route.
-      if (window.location.href.startsWith(appConfig.authRedirectUri)) {
-        setLoginResponse(true);
-      }
-    })();
-  }, [authenticator]);
-
-  return loginResponse ? (
+  return user ? (
     <Redirect to="/" />
   ) : (
     <div className={`${classes.flexColumnContainer} ${classes.fullPage}`}>

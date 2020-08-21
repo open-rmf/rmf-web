@@ -8,11 +8,9 @@ import FakeTrajectoryManager from './mock/fake-traj-manager';
 import { FakeTransport } from './mock/fake-transport';
 import ResourceManager, { ResourceConfigurationsType } from './resource-manager';
 import { DefaultTrajectoryManager, RobotTrajectoryManager } from './robot-trajectory-manager';
-import { LOGIN_ROUTE } from './util/url';
 
 export interface AppConfig {
   authenticator: Authenticator;
-  authRedirectUri: string;
   appResources: Promise<ResourceConfigurationsType>;
   transportFactory: () => Promise<RomiCore.Transport>;
   trajectoryManagerFactory?: () => Promise<RobotTrajectoryManager>;
@@ -32,7 +30,6 @@ export const appConfig: AppConfig = (() => {
       throw new Error('REACT_APP_TRAJECTORY_SERVER env variable is needed but not defined');
     }
 
-    const redirectUri = getRedirectUri();
     const authConfig: KeycloakConfig = (() => {
       if (process.env.REACT_APP_AUTH_CONFIG) {
         return JSON.parse(process.env.REACT_APP_AUTH_CONFIG) as KeycloakConfig;
@@ -43,11 +40,10 @@ export const appConfig: AppConfig = (() => {
         url: 'http://localhost:8080/auth',
       };
     })();
-    const authenticator = new DefaultAuthenticator(authConfig, redirectUri.href);
+    const authenticator = new DefaultAuthenticator(authConfig);
 
     return {
       authenticator,
-      authRedirectUri: redirectUri.href,
       appResources: ResourceManager.getResourceConfigurationFile(),
       transportFactory: () => {
         const sossToken = process.env.REACT_APP_SOSS_TOKEN || authenticator.sossToken || '';
@@ -59,7 +55,6 @@ export const appConfig: AppConfig = (() => {
   } else {
     return {
       authenticator: new FakeAuthenticator(),
-      authRedirectUri: getRedirectUri().href,
       appResources: ResourceManager.getResourceConfigurationFile(),
       transportFactory: async () => new FakeTransport(),
       trajectoryManagerFactory: async () => new FakeTrajectoryManager(),
@@ -68,11 +63,3 @@ export const appConfig: AppConfig = (() => {
 })();
 
 export default appConfig;
-
-function getRedirectUri(): URL {
-  const redirectUri = new URL(window.location.href);
-  redirectUri.pathname = LOGIN_ROUTE;
-  redirectUri.searchParams.set('response', '1');
-  redirectUri.hash = '';
-  return redirectUri;
-}
