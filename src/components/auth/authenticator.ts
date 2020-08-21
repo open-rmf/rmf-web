@@ -62,7 +62,11 @@ export class DefaultAuthenticator extends EventEmitter<AuthenticatorEventType>
       this.emit('userChanged', null);
     };
 
-    await this._inst.init({ redirectUri: this._redirectUri });
+    await this._inst.init({
+      onLoad: 'check-sso',
+      silentCheckSsoRedirectUri: `${window.location.origin}/silent-check-sso.html`,
+      redirectUri: this._redirectUri,
+    });
     try {
       const refreshed = await this._inst.updateToken(30);
       refreshed && debug.log('token refreshed');
