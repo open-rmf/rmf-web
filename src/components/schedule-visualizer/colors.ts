@@ -40,7 +40,7 @@ export default class ColorManager {
   async robotImageIconColor(path: string, name: string): Promise<string> {
     let color = this._robotColorCache[name];
     if (!color) {
-      const imgHolder = new Image(400, 400); // FIXME -> hardcoded dimensions
+      const imgHolder = new Image(400, 400);
       imgHolder.src = path;
 
       await new Promise((resolve, reject) => {
@@ -51,9 +51,10 @@ export default class ColorManager {
       const canvas = document.createElement('canvas');
       const context = canvas.getContext('2d');
       context?.drawImage(imgHolder, 0, 0, imgHolder.width, imgHolder.height);
-      const data = context?.getImageData(100, 100, 1, 1).data; // FIXME -> need to find betterway to extract point on the image
+      // get the pixel color data from 5 x 5 (25) points
+      const data = context?.getImageData(100, 100, 5, 5).data;
       if (data) {
-        color = `rgb(${data[0]}, ${data[1]}, ${data[2]})`;
+        color = ColorManager._getAverageColor(data);
         this._robotColorCache[name] = color;
       }
     }
@@ -88,6 +89,20 @@ export default class ColorManager {
     const luminance = 20 + (secondNumber % 61);
     // saturation will stay constant
     return `hsl(${hue}, 100%, ${luminance}%)`;
+  }
+
+  private static _getAverageColor(data: Uint8ClampedArray): string {
+    let r = 0,
+      g = 0,
+      b = 0,
+      factor = Math.floor(data.length / 4);
+    for (let i = 0; i < data.length; i += 4) {
+      const rgbHolder = data.slice(i, i + 4);
+      r += rgbHolder[0];
+      g += rgbHolder[1];
+      b += rgbHolder[2];
+    }
+    return `rgb(${Math.floor(r / factor)}, ${g / factor}, ${b / factor})`;
   }
 
   private _robotColorCache: Record<string, string> = {};
