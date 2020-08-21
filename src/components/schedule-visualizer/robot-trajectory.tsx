@@ -70,16 +70,24 @@ export const RobotTrajectory = React.forwardRef(function(
 
   return (
     <>
-      {/* <filter id={`shadow`} x="-20%" y="-20%" width="140%" height="140%">
+      <filter
+        id={`shadow`}
+        x="-20%"
+        y="-20%"
+        width="140%"
+        height="140%"
+        filterUnits="userSpaceOnUse"
+      >
         <feDropShadow
           dx="0"
           dy="0"
-          stdDeviation={footprint * 0.15}
+          stdDeviation={footprint * 0.3}
           floodColor={theme.palette.error.main}
         />
-      </filter> */}
+      </filter>
       {pathColor && (
         <path
+          id="myPath"
           data-component="RobotTrajectory"
           ref={ref}
           d={pathD}
@@ -88,13 +96,13 @@ export const RobotTrajectory = React.forwardRef(function(
           strokeWidth={trajectoryDiameter}
           strokeLinecap="round"
           fill={'none'}
-          // filter={isConflict ? `url(#shadow)` : '' }
+          filter={isConflict ? `url(#shadow)` : ''}
           pathLength={1}
           strokeDasharray={2}
           strokeDashoffset={0}
           {...otherProps}
         >
-          {isConflict && settings.trajectoryColor === TrajectoryColor.Robot_Color ? (
+          {/* {isConflict && settings.trajectoryColor === TrajectoryColor.Robot_Color ? (
             <animate
               attributeName="stroke"
               values={`${pathColor};transparent`}
@@ -103,7 +111,7 @@ export const RobotTrajectory = React.forwardRef(function(
               calcMode="paced"
               repeatCount="indefinite"
             />
-          ) : null}
+          ) : null} */}
         </path>
       )}
     </>
