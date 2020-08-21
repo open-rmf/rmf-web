@@ -1,3 +1,5 @@
+import Vibrant from 'node-vibrant';
+
 export async function computeRobotColor(name: string, model: string): Promise<string> {
   const modelHash = new Uint16Array(await _hash(model));
   const hue = modelHash[0] % 360;
@@ -37,7 +39,32 @@ export default class ColorManager {
     return color;
   }
 
-  async robotImageIconColor(path: string, name: string): Promise<string> {
+  // async robotImageIconColor(path: string, name: string): Promise<string> {
+  //   let color = this._robotColorCache[name];
+  //   if (!color) {
+  //     const imgHolder = new Image(400, 400);
+  //     imgHolder.src = path;
+
+  //     await new Promise((resolve, reject) => {
+  //       imgHolder.onload = () => resolve();
+  //       imgHolder.onerror = err => reject(err);
+  //     });
+
+  //     const canvas = document.createElement('canvas');
+  //     const context = canvas.getContext('2d');
+  //     context?.drawImage(imgHolder, 0, 0, imgHolder.width, imgHolder.height);
+  //     // get the pixel color data from 5 x 5 (25) points
+  //     const data = context?.getImageData(100, 100, 5, 5).data;
+  //     if (data) {
+  //       color = ColorManager._getAverageColor(data);
+  //       this._robotColorCache[name] = color;
+  //     }
+  //   }
+  //   return color;
+  // }
+
+  // use vibrant package
+  async robotImageColor(path: string, name: string) {
     let color = this._robotColorCache[name];
     if (!color) {
       const imgHolder = new Image(400, 400);
@@ -47,18 +74,17 @@ export default class ColorManager {
         imgHolder.onload = () => resolve();
         imgHolder.onerror = err => reject(err);
       });
-
-      const canvas = document.createElement('canvas');
-      const context = canvas.getContext('2d');
-      context?.drawImage(imgHolder, 0, 0, imgHolder.width, imgHolder.height);
-      // get the pixel color data from 5 x 5 (25) points
-      const data = context?.getImageData(100, 100, 5, 5).data;
-      if (data) {
-        color = ColorManager._getAverageColor(data);
-        this._robotColorCache[name] = color;
-      }
+      return Vibrant.from(imgHolder)
+        .getSwatches()
+        .then(palette => {
+          const rgb = palette.Vibrant?.getRgb();
+          if (rgb) {
+            const colorHolder = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+            this._robotColorCache[name] = colorHolder;
+            return colorHolder;
+          }
+        });
     }
-    return color;
   }
 
   robotColorFromCache(name: string): string | null {
@@ -91,19 +117,19 @@ export default class ColorManager {
     return `hsl(${hue}, 100%, ${luminance}%)`;
   }
 
-  private static _getAverageColor(data: Uint8ClampedArray): string {
-    let r = 0,
-      g = 0,
-      b = 0,
-      factor = Math.floor(data.length / 4);
-    for (let i = 0; i < data.length; i += 4) {
-      const rgbHolder = data.slice(i, i + 4);
-      r += rgbHolder[0];
-      g += rgbHolder[1];
-      b += rgbHolder[2];
-    }
-    return `rgb(${Math.floor(r / factor)}, ${g / factor}, ${b / factor})`;
-  }
+  // private static _getAverageColor(data: Uint8ClampedArray): string {
+  //   let r = 0,
+  //     g = 0,
+  //     b = 0,
+  //     factor = Math.floor(data.length / 4);
+  //   for (let i = 0; i < data.length; i += 4) {
+  //     const rgbHolder = data.slice(i, i + 4);
+  //     r += rgbHolder[0];
+  //     g += rgbHolder[1];
+  //     b += rgbHolder[2];
+  //   }
+  //   return `rgb(${Math.floor(r / factor)}, ${g / factor}, ${b / factor})`;
+  // }
 
   private _robotColorCache: Record<string, string> = {};
   private _pathColorCache: Record<string, string> = {};

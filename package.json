@@ -26,6 +26,7 @@
     "enzyme-adapter-react-16": "^1.15.2",
     "eventemitter3": "^4.0.0",
     "leaflet": "^1.6.0",
+    "node-vibrant": "^3.1.5",
     "react": "^16.12.0",
     "react-async": "^10.0.0",
     "react-dom": "^16.12.0",

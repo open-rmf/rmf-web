@@ -51,11 +51,13 @@ const RobotImageIcon = React.forwardRef(function(
       return;
     }
     (async () => {
-      setRobotColor(await colorManager.robotImageIconColor(iconPath, robot.name));
+      // setRobotColor(await colorManager.robotImageIconColor(iconPath, robot.name));
+      await colorManager.robotImageColor(iconPath, robot.name).then(color => {
+        if (color) setRobotColor(color);
+      });
       await colorManager.robotTrajectoryColor(robot.name, robot.model);
     })();
   }, [robot, robotColor, colorManager, iconPath]);
-
   const { x: topVerticeX, y: topVerticeY } = transformMiddleCoordsOfRectToSVGBeginPoint(
     robot.location.x,
     robot.location.y,
