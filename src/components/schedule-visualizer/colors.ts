@@ -53,11 +53,10 @@ export default class ColorManager {
       context?.drawImage(imgHolder, 0, 0, imgHolder.width, imgHolder.height);
       const data = context?.getImageData(100, 100, 1, 1).data; // FIXME -> need to find betterway to extract point on the image
       if (data) {
-        color = `rbg(${data[0]}, ${data[1]}, ${data[2]})`;
+        color = `rgb(${data[0]}, ${data[1]}, ${data[2]})`;
         this._robotColorCache[name] = color;
       }
     }
-    //FIXME -> returns in rbga format, need to convert to hsl
     return color;
   }
 
