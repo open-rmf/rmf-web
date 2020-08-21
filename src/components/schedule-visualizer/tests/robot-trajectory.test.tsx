@@ -116,13 +116,13 @@ describe('Robot Trajectory', () => {
     root.unmount();
   });
 
-  it('should change path color to conflicting color', () => {
-    const mockConflict = [[trajectoryValue.id]];
-    const root = createWrapper(RobotTrajectory, trajectoryValue, mockConflict, 0.5, 'black');
-    const trajColor = root.find('path').props().stroke;
+  // it('should change path color to conflicting color', () => {
+  //   const mockConflict = [[trajectoryValue.id]];
+  //   const root = createWrapper(RobotTrajectory, trajectoryValue, mockConflict, 0.5, 'black');
+  //   const trajColor = root.find('path').props().stroke;
 
-    expect(trajColor).toEqual(defaultErrorColor);
+  //   expect(trajColor).toEqual(defaultErrorColor);
 
-    root.unmount();
-  });
+  //   root.unmount();
+  // });
 });
