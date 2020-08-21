@@ -53,6 +53,7 @@ export const RobotTrajectory = React.forwardRef(function(
           ? theme.palette.error.main
           : theme.palette.success.main;
       case TrajectoryColor.Robot_Color:
+        // return robotColorHolder;
         return conflicts.flat().includes(trajectory.id)
           ? theme.palette.error.main
           : robotColorHolder;
@@ -69,6 +70,14 @@ export const RobotTrajectory = React.forwardRef(function(
 
   return (
     <>
+      {/* <filter id={`shadow`} x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow
+          dx="0"
+          dy="0"
+          stdDeviation={footprint * 0.15}
+          floodColor={theme.palette.error.main}
+        />
+      </filter> */}
       {pathColor && (
         <path
           data-component="RobotTrajectory"
@@ -79,6 +88,7 @@ export const RobotTrajectory = React.forwardRef(function(
           strokeWidth={trajectoryDiameter}
           strokeLinecap="round"
           fill={'none'}
+          // filter={isConflict ? `url(#shadow)` : '' }
           pathLength={1}
           strokeDasharray={2}
           strokeDashoffset={0}
