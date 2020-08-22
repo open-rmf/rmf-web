@@ -10,8 +10,8 @@ services:
     command: ros2 launch demos office.launch.xml headless:=true
   soss:
     build:
-      context: ..
-      dockerfile: docker/soss.Dockerfile
+      context: ../e2e
+      dockerfile: ../docker/soss.Dockerfile
     image: romi-dashboard/soss
     ports:
       - 50001:50001
