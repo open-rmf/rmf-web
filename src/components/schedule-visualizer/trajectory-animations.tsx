@@ -165,17 +165,15 @@ export function withOutlineAnimation(
       highlight.classList.add(classes.highlight);
       parent.appendChild(highlight);
 
-      pathRef.current.animate(
-        offsets.map(offset => ({
-          offset: offset,
-          strokeDashoffset: 2 - offset,
-        })),
-        {
+      offsets.forEach(offset => {
+        anime({
+          targets: [pathRef.current, mask],
+          strokeDashoffset: [anime.setDashoffset, 2 - offset],
           duration: animationDuration(trajectory, animationScale),
           easing: 'linear',
-          fill: 'forwards',
-        },
-      );
+          loop: true,
+        });
+      });
 
       return () => {
         highlight.remove();
