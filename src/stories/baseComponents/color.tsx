@@ -1,7 +1,7 @@
 import React from 'react';
 import { Divider, Typography } from '@material-ui/core';
 
-import { colorPalette, defaultStyles, StyleTyping } from './utils';
+import { colorPaletteUtil, defaultStyles, StyleTyping } from './utils';
 
 const styles: StyleTyping = {
   ...defaultStyles,
@@ -16,14 +16,14 @@ const styles: StyleTyping = {
 export default function Colors() {
   return (
     <React.Fragment>
-      {Object.keys(colorPalette).map((color, index) => {
+      {Object.keys(colorPaletteUtil).map((color, index) => {
         return (
           <React.Fragment>
             <div style={styles.example} key={index}>
               <Typography variant="body1">Unknown</Typography>
               <div>
-                <Typography variant="body1">{`Color code: ${colorPalette[color].backgroundColor}`}</Typography>
-                <div style={{ ...colorPalette[color], padding: '0.5rem' }} />
+                <Typography variant="body1">{`Color code: ${colorPaletteUtil[color].backgroundColor}`}</Typography>
+                <div style={{ ...colorPaletteUtil[color], padding: '0.5rem' }} />
               </div>
             </div>
             <Divider />

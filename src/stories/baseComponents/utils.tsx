@@ -1,6 +1,8 @@
 import React from 'react';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 
+import { colorPalette } from '../../util/css-utils';
+
 export const viewBoxCoords: string = '0 0 25.794363144785166 14.53525484725833';
 
 export interface StyleTyping {
@@ -275,9 +277,9 @@ export const defaultStyles: StyleTyping = {
 };
 
 // colors used outside material ui
-export const colorPalette: StyleTyping = {
+export const colorPaletteUtil: StyleTyping = {
   unknown: {
-    backgroundColor: '#cccccc',
+    backgroundColor: colorPalette.unknown,
   },
 };
 

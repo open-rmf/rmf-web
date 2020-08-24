@@ -6,3 +6,8 @@ export function viewBoxFromLeafletBounds(bounds: L.LatLngBoundsExpression): stri
   const height = lbounds.getNorth() - lbounds.getSouth();
   return `0 0 ${width} ${height}`;
 }
+
+// colors used outside material ui
+export const colorPalette: { [key: string]: string } = {
+  unknown: '#cccccc',
+};
