@@ -10,9 +10,7 @@ export function Alert(props: AlertProps): React.ReactElement {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
-export interface LoginProps {}
-
-export default function Login(/* props: LoginProps */): React.ReactElement {
+export default function Login(): React.ReactElement {
   const authenticator = appConfig.authenticator;
   const user = React.useContext(UserContext);
   const classes = authStyles();
