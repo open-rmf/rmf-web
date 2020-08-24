@@ -10,5 +10,11 @@ if groups | grep -q '\bdocker\b' || [[ $(id -u) == 0 ]]; then
 else
   # execute command as root, we can't use sudo as we don't get an interactive tty. "pkexec" is the
   # gui alternative that prompts for a password in a popup.
-  exec pkexec "$@"
+
+  # pkexec always runs in the user's home directory so we need to change it back to the original
+  # directory. Can't use `cd` because it is a shell command instead of an executable, so we need to
+  # run the command under a subshell, we also can't use "$@" because the args would not be properly
+  # escaped. https://superuser.com/questions/403263/how-to-pass-bash-script-arguments-to-a-subshell
+  cmd="$(printf "${1+ %q}" "$@")"
+  exec pkexec bash -c "cd $(pwd) && $cmd"
 fi
