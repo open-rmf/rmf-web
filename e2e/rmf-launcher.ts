@@ -21,28 +21,12 @@ export class RmfLauncher {
     this._officeDemo = ChildProcess.spawn('ros2', officeDemoArgs);
     this._soss = ChildProcess.spawn('soss', [`${__dirname}/soss.yaml`]);
     this._visualizerServer = ChildProcess.spawn('ros2', ['launch', 'visualizer', 'server.xml']);
-    this._ros2Echo = ChildProcess.spawn('ros2', [
-      'topic',
-      'echo',
-      'fleet_states',
-      'rmf_fleet_msgs/msg/FleetState',
-    ]);
 
     process.once('beforeExit', async () => {
       await this.kill();
     });
 
-    // wait for the rmf to be ready
-    await new Promise(res => {
-      if (!this._ros2Echo) {
-        res();
-        return;
-      }
-      this._ros2Echo.stdout.once('data', () => {
-        res();
-      });
-    });
-    await this._killProcess(this._ros2Echo);
+    await rmfReady();
   }
 
   async kill(): Promise<void> {
@@ -54,7 +38,6 @@ export class RmfLauncher {
       this._officeDemo && this._killProcess(this._officeDemo, 'SIGINT'), // doesn't clean up properly with SIGTERM
       this._soss && this._killProcess(this._soss),
       this._visualizerServer && this._killProcess(this._visualizerServer, 'SIGINT'), // doesn't clean up properly with SIGTERM
-      this._ros2Echo && this._killProcess(this._ros2Echo),
     ]);
   }
 
@@ -62,7 +45,6 @@ export class RmfLauncher {
   private _officeDemo?: ChildProcess.ChildProcessWithoutNullStreams;
   private _soss?: ChildProcess.ChildProcessWithoutNullStreams;
   private _visualizerServer?: ChildProcess.ChildProcessWithoutNullStreams;
-  private _ros2Echo?: ChildProcess.ChildProcessWithoutNullStreams;
 
   private async _killProcess(
     proc: ChildProcess.ChildProcess,
@@ -74,4 +56,27 @@ export class RmfLauncher {
     proc.kill(signal);
     return new Promise(res => proc.once('exit', res));
   }
+}
+
+async function rmfReady(timeout: number = 30000): Promise<boolean> {
+  const ros2Echo = ChildProcess.spawn('ros2', [
+    'topic',
+    'echo',
+    'fleet_states',
+    'rmf_fleet_msgs/msg/FleetState',
+  ]);
+  if (!ros2Echo) {
+    return false;
+  }
+  process.once('beforeExit', () => ros2Echo && ros2Echo.kill());
+  return new Promise(res => {
+    const timer = setTimeout(() => {
+      ros2Echo && ros2Echo.kill();
+      res(false);
+    }, timeout);
+    ros2Echo.once('data', () => {
+      clearTimeout(timer);
+      res(true);
+    });
+  });
 }
