@@ -48,7 +48,7 @@
     "start:react": "react-scripts start",
     "start:react:prod": "serve -s build",
     "start:mock": "REACT_APP_MOCK=1 react-scripts start",
-    "start:rmf": "node e2e/prepare.js && ts-node e2e/startBackend.ts",
+    "start:rmf": "node e2e/prepare.js && ts-node -P e2e/tsconfig.json e2e/startBackend.ts",
     "start:auth": "scripts/start-auth.sh",
     "build": "react-scripts build",
     "build:e2e": ". e2e/env.sh && node e2e/prepare.js && npm run build",
