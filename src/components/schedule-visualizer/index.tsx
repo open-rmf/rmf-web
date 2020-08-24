@@ -331,6 +331,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
                   trajs={props.negotiationTrajStore[curMapFloorLayer.level.name].values}
                   conflicts={getConflicts(curMapFloorLayer.level.name)}
                   colorManager={colorManager}
+                  conflictRobotNames={conflictRobotNames}
                 />
               </RobotTrajectoryContext.Provider>
             </Pane>

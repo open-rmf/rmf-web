@@ -7,7 +7,6 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import TreeItem from '@material-ui/lab/TreeItem';
 import { SpotlightValue } from './spotlight-value';
-import { NegotiationStatus, negotiationStatus } from '@osrf/romi-js-core-interfaces';
 import * as NegotiationStatusManager from '../negotiation-status-manager';
 import {
   RobotTrajectoryManager,
@@ -27,6 +26,15 @@ const useStyles = makeStyles({
     backgroundColor: "lightgreen"
   },
   rejected: {
+    backgroundColor: "orange"
+  },
+  forfeited: {
+    backgroundColor: "orange"
+  },
+  defunct: {
+    backgroundColor: "red"
+  },
+  unresolved: {
     backgroundColor: "red"
   },
   ongoing: {
@@ -39,14 +47,6 @@ interface Parameter
   conflict_version : number;
   sequence : number[];
 };
-
-function toNumberArray(arr : Uint32Array) : number[] {
-  var ret : number[] = [];
-  arr.forEach(value => {
-    ret.push(value);
-  });
-  return ret;
-}
 
 export interface NegotiationsPanelProps {
   conflicts : Readonly<Record<string, NegotiationStatusManager.NegotiationConflict>>;
@@ -62,34 +62,39 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
     if (!spotlight) {
       return;
     }
-    /*const ref = dispenserRefs.current[spotlight.value];
-    if (!ref) {
-      return;
-    }
-    setExpanded(prev => ({
-      ...prev,
-      [spotlight.value]: true,
-    }));
-    ref.scrollIntoView({ behavior: 'smooth' });
-    */
+    // TODO: spotlight
   }, [spotlight]);
   
   
   const classes = useStyles();
 
-  let rejected_statuses = NegotiationStatus.STATUS_REJECTED | 
-        NegotiationStatus.STATUS_FORFEITED |
-        NegotiationStatus.STATUS_DEFUNCT;
-
-  const addStatusText = (status : number) => {
+  const determineStatusText = (status : NegotiationStatusManager.NegotiationStatus,
+    parent_resolved : NegotiationStatusManager.ResolveState) => {
     var status_text = "";
-    if (status & NegotiationStatus.STATUS_FINISHED)
+    if (status.forfeited)
+      status_text += "  [FORFEITED]";
+    else if (status.rejected)
+      status_text += "  [REJECTED]";
+    else if (status.defunct)
+      status_text += "  [DEFUNCT]";
+    else if (parent_resolved === NegotiationStatusManager.ResolveState.RESOLVED)
       status_text += "  [FINISHED]";
-    else if (status & rejected_statuses)
-      status_text += "  [FAILED]";
     else
       status_text += "  [ONGOING]";
     return status_text;
+  };
+  const determineStyle = (status : NegotiationStatusManager.NegotiationStatus, 
+    parent_resolved : NegotiationStatusManager.ResolveState) => {
+    var style = classes.ongoing;
+    if (status.forfeited)
+      style = classes.forfeited;
+    else if (status.rejected)
+      style = classes.rejected;
+    else if (status.defunct)
+      style = classes.defunct;
+    else if (parent_resolved === NegotiationStatusManager.ResolveState.RESOLVED)
+      style = classes.finished;
+    return style;
   };
 
   var nodeid_to_parameters = new Map<string, Parameter>();
@@ -108,69 +113,75 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
     let conflict_style = classes.ongoing;
     if (conflict.resolved === NegotiationStatusManager.ResolveState.RESOLVED)
       conflict_style = classes.finished;
-    else if (conflict.resolved === NegotiationStatusManager.ResolveState.NOT_RESOLVED)
-      conflict_style = classes.finished;
+    else if (conflict.resolved === NegotiationStatusManager.ResolveState.FAILED)
+      conflict_style = classes.unresolved;
 
     var table_dom : JSX.Element[] = [];
-    for (var [participant_id, status] of Object.entries(conflict.participant_ids_to_status))
+    for (var [participant_id, status_data] of Object.entries(conflict.participant_ids_to_status))
     {
       // status handling and background
-      let style = classes.ongoing;
-      if (status.status & NegotiationStatus.STATUS_FINISHED)
-        style = classes.finished;
-      else if (status.status & rejected_statuses)
-        style = classes.rejected;
-        
       var participant_name = conflict.participant_ids_to_names[participant_id];
         
       //add 1 or 2 rows of data depending on the sequence
-      let label_text = participant_name;
-      if (status.sequence.length > 1)
+      
+      if (status_data.has_terminal && status_data.terminal.sequence.length > 1)
       {
-        label_text += " -> [";
-        var last_idx = (status.sequence.length - 1);
+        var terminal_status = status_data.terminal;
+        
+        //set text and style for terminal node
+        let terminal_label_text = participant_name;
+        terminal_label_text += " -> [";
+        var last_idx = (terminal_status.sequence.length - 1);
         for (var i = 0; i < last_idx; ++i)
         {
-          var seq_id = status.sequence[i].toString();
+          var seq_id = terminal_status.sequence[i].toString();
           var seq_id_name = conflict.participant_ids_to_names[seq_id];
 
-          label_text += seq_id_name;
+          terminal_label_text += seq_id_name;
           if (i != (last_idx - 1))
-            label_text += ", ";
+          terminal_label_text += ", ";
         }
-        label_text += "]";
-        label_text += addStatusText(status.status);
-        
+        terminal_label_text += "]";
+        terminal_label_text += determineStatusText(terminal_status, conflict.resolved);
 
-        let label_text2 = "[";
-        var seq_id_name = conflict.participant_ids_to_names[status.sequence[last_idx]];
-        label_text2 += seq_id_name;
-        label_text2 += "]";
-        label_text2 += addStatusText(status.status);
+        var terminal_style = determineStyle(terminal_status, conflict.resolved);
 
-        var nodeId = version + "." + participant_id + ".terminal"; //terminal node
-        var childId = version + "." + participant_id + ".base"; //base ID
+        //set text and style for base node
+        var base_status = status_data.base;
+
+        let base_label_text = "[";
+        var seq_id_name = conflict.participant_ids_to_names[base_status.sequence[0]];
+        base_label_text += seq_id_name;
+        base_label_text += "]";
+        base_label_text += determineStatusText(base_status, conflict.resolved);
+
+        var base_style = determineStyle(base_status, conflict.resolved);
+
+        var terminalId = version + "." + participant_id + ".terminal"; //terminal node
+        var baseId = version + "." + participant_id + ".base"; //base ID
         table_dom.push(
-          <TreeItem nodeId={nodeId} key={nodeId} classes={{label: style, selected: style}} label={label_text}>
-            <TreeItem nodeId={childId} key={childId} classes={{label: style, selected: style}} label={label_text2}/>
+          <TreeItem nodeId={terminalId} key={terminalId} classes={{label: terminal_style, selected: terminal_style}} label={terminal_label_text}>
+            <TreeItem nodeId={baseId} key={baseId} classes={{label: base_style, selected: base_style}} label={base_label_text}/>
           </TreeItem>);
         
         let terminal_params = {
             conflict_version : parseInt(version),
-            sequence : toNumberArray(status.sequence)
+            sequence : terminal_status.sequence
           };
-        nodeid_to_parameters.set(nodeId, terminal_params);
+        nodeid_to_parameters.set(terminalId, terminal_params);
 
         let base_params = {
           conflict_version : parseInt(version),
-          sequence : [parseInt(participant_id)]
+          sequence : base_status.sequence
         };
-        nodeid_to_parameters.set(childId, base_params);
+        nodeid_to_parameters.set(baseId, base_params);
       }
       else
       {
         //single node
-        label_text += addStatusText(status.status);
+        var base_status = status_data.base;
+        var label_text = participant_name + determineStatusText(base_status, conflict.resolved);
+        var style = determineStyle(base_status, conflict.resolved);
         var nodeId = version + "." + participant_id + ".base"; //base ID
         table_dom.push(
           <TreeItem nodeId={nodeId} key={nodeId} classes={{label: style, selected: style}} label={label_text}/>
@@ -178,7 +189,7 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
 
         let base_params = {
           conflict_version : parseInt(version),
-          sequence : [parseInt(participant_id)]
+          sequence : base_status.sequence
         };
         nodeid_to_parameters.set(nodeId, base_params);
       }
@@ -228,7 +239,7 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
         console.warn("values undefined!");
 
       props.negotiationTrajStore["L1"] = resp;
-    };;
+    };
 
     updateNegotiationTrajectory();
     //interval = window.setInterval(updateNegotiationTrajectory, trajAnimDuration);
@@ -236,7 +247,7 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
 
   return (
     <TreeView
-      className={classes.root}
+      //className={classes.root}
       onNodeSelect={handleSelect}
       defaultCollapseIcon={<ExpandMoreIcon />}
       defaultExpanded={['root']}
