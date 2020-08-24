@@ -104,15 +104,15 @@ export const RobotTrajectory = React.forwardRef(function(
           {...otherProps}
         >
           {/* {isConflict && settings.trajectoryColor === TrajectoryColor.Robot_Color ? (
-            <animate
-              attributeName="stroke"
-              values={`${pathColor};transparent`}
-              begin={0}
-              dur={'1s'}
-              calcMode="paced"
-              repeatCount="indefinite"
-            />
-          ) : null} */}
+              <animate
+                attributeName="stroke"
+                values={`${pathColor};transparent`}
+                begin={0}
+                dur={'1s'}
+                calcMode="paced"
+                repeatCount="indefinite"
+              />
+            ) : null} */}
         </path>
       )}
     </>
