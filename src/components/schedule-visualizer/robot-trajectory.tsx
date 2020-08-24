@@ -81,8 +81,9 @@ export const RobotTrajectory = React.forwardRef(function(
         <feDropShadow
           dx="0"
           dy="0"
-          stdDeviation={footprint * 0.3}
-          floodColor={theme.palette.error.main}
+          stdDeviation={footprint * 0.4}
+          floodColor={theme.palette.secondary.main}
+          floodOpacity={1}
         />
       </filter>
       {pathColor && (
