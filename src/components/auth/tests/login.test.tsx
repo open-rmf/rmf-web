@@ -1,17 +1,26 @@
 import { createMount } from '@material-ui/core/test-utils';
-import { Router } from '@material-ui/icons';
 import React from 'react';
 import { Redirect } from 'react-router';
+import { BrowserRouter } from 'react-router-dom';
 import { UserContext } from '../../../app-contexts';
 import Login from '../login';
 
 const mount = createMount();
 
-describe('Form validation', () => {
-  test('redirects to dashboard when returning from oauth', async () => {
+describe('Login page', () => {
+  test('renders correctly', () => {
+    const component = mount(
+      <BrowserRouter>
+        <Login />
+      </BrowserRouter>,
+    );
+    expect(component.html()).toMatchSnapshot();
+  });
+
+  test('redirects to dashboard when user is authenticated', async () => {
     window.history.replaceState(window.history.state, '');
     const wrapper = mount(
-      <Router>
+      <BrowserRouter>
         <UserContext.Provider
           value={{
             username: 'test',
@@ -19,7 +28,7 @@ describe('Form validation', () => {
         >
           <Login />
         </UserContext.Provider>
-      </Router>,
+      </BrowserRouter>,
     );
     expect(wrapper.find(Redirect)).toBeTruthy();
   });
