@@ -27,7 +27,11 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
   const user = React.useContext(UserContext);
 
   async function handleLogout(): Promise<void> {
-    await authenticator.logout();
+    try {
+      await authenticator.logout();
+    } catch (e) {
+      console.error(`error logging out: ${e.message}`);
+    }
   }
 
   return (
