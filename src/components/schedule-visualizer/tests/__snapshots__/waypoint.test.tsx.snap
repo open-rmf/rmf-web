@@ -24,17 +24,20 @@ exports[`Renders correctly 1`] = `
         y="-20%"
       >
         <feDropShadow
-          dx="0"
-          dy="0"
+          dx={-0.1}
+          dy={-0.1}
           floodColor="black"
           stdDeviation={0.15}
         />
       </filter>
-      <circle
+      <rect
         className="makeStyles-waypointMarker-1"
         fill="#FFBF00"
         filter="url(#station_1-shadow)"
-        r={1}
+        height={2}
+        width={2}
+        x={-1}
+        y={-1}
       />
       <text
         className="makeStyles-waypointText-2"

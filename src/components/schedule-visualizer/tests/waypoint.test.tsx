@@ -20,7 +20,7 @@ it('Renders correctly', async () => {
 
   expect(
     wrapper
-      .find('circle')
+      .find('rect')
       .at(0)
       .exists(),
   ).toBeTruthy();

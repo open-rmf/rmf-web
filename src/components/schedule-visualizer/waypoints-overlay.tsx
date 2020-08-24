@@ -11,6 +11,7 @@ export interface WaypointsOverlayProps extends SVGOverlayProps {
 export default function WaypointsOverlay(props: WaypointsOverlayProps): React.ReactElement {
   const { currentLevel, ...otherProps } = props;
   const viewBox = viewBoxFromLeafletBounds(props.bounds);
+  // Set the size of the waypoint. At least for now we don't want for this to change. We left this here in case we want for this to change in the future.
   const size = 0.1;
   const waypoints = useMemo(() => {
     if (currentLevel.nav_graphs.length === 0) {

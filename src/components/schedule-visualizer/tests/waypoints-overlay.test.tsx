@@ -6,7 +6,7 @@ import Waypoint from '../waypoint';
 import WaypointsOverlay from '../waypoints-overlay';
 import getBuildingMap from '../../../mock/data/building-map';
 
-test('Render robots correctly', async () => {
+test('Render waypoints correctly', async () => {
   const bounds = new L.LatLngBounds([0, 25.7], [-14, 0]);
   const buildingMap = await getBuildingMap();
   const currentLevel = buildingMap.levels[0];

@@ -13,11 +13,19 @@ const Waypoint = (props: WaypointProps): React.ReactElement => {
   return (
     <g transform={`translate(${waypoint.x} ${-waypoint.y})`}>
       <filter id={`${waypoint.name}-shadow`} x="-20%" y="-20%" width="140%" height="140%">
-        <feDropShadow dx="0" dy="0" stdDeviation={size * 0.15} floodColor="black" />
+        <feDropShadow
+          dx={-size * 0.1}
+          dy={-size * 0.1}
+          stdDeviation={size * 0.15}
+          floodColor="black"
+        />
       </filter>
-      <circle
+      <rect
         className={classes.waypointMarker}
-        r={size}
+        x={-size}
+        y={-size}
+        width={size * 2}
+        height={size * 2}
         fill={'#FFBF00'}
         filter={`url(#${waypoint.name}-shadow)`}
       />
