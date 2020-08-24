@@ -1,9 +1,60 @@
 import * as ChildProcess from 'child_process';
 
-/**
- * Help to launch and kill all required RMF processes.
- */
 export class RmfLauncher {
+  constructor(launchMode?: LaunchMode) {
+    if (!launchMode) {
+      if (process.env.ROMI_DASHBOARD_DOCKER_LAUNCH) {
+        this._launchMode = LaunchMode.Docker;
+      } else if (process.env.ROMI_DASHBOARD_NO_LAUNCH) {
+        this._launchMode = LaunchMode.None;
+      } else {
+        this._launchMode = LaunchMode.Local;
+      }
+    } else {
+      this._launchMode = launchMode;
+    }
+
+    switch (this._launchMode) {
+      case LaunchMode.None:
+        this._launcher = new StubLauncher();
+        break;
+      case LaunchMode.Docker:
+        this._launcher = new DockerLauncher();
+        break;
+      case LaunchMode.Local:
+        this._launcher = new LocalLauncher();
+        break;
+    }
+  }
+
+  async launch(): Promise<void> {
+    return this._launcher.launch();
+  }
+
+  async kill(): Promise<void> {
+    return this._launcher.kill();
+  }
+
+  private _launchMode: LaunchMode;
+  private _launcher: Launcher;
+}
+
+enum LaunchMode {
+  None,
+  Local,
+  Docker,
+}
+
+interface Launcher {
+  launch(): Promise<void>;
+  kill(): Promise<void>;
+}
+
+/**
+ * Help to launch and kill all required RMF processes. Assumes required rmf components are installed
+ * and launches them locally.
+ */
+export class LocalLauncher {
   /**
    * Singleton instance of rmfLauncher, signal handlers are installed to cleanup processses spawned
    * by this instance.
@@ -170,4 +221,55 @@ async function rmfReady(timeout: number = 30000): Promise<boolean> {
       res(true);
     });
   });
+}
+
+/**
+ * Launches rmf components in docker containers.
+ */
+class DockerLauncher {
+  async launch(): Promise<void> {
+    if (this._proc) {
+      return;
+    }
+    this._proc = ChildProcess.spawn(
+      `${__dirname}/../scripts/dockert`,
+      [
+        'docker-compose',
+        '-f',
+        `${__dirname}/../docker/docker-compose.yml`,
+        'up',
+        'office-demo',
+        'trajectory-server',
+        'soss',
+      ],
+      { stdio: 'inherit' },
+    );
+    process.on('beforeExit', () => {
+      this.kill();
+    });
+  }
+
+  async kill(): Promise<void> {
+    if (!this._proc) {
+      return;
+    }
+    this._proc.kill();
+    return new Promise(res => {
+      if (!this._proc) {
+        return res();
+      }
+      this._proc.once('exit', res);
+    });
+  }
+
+  private _proc?: ChildProcess.ChildProcess;
+}
+
+/**
+ * Stub launcher that does not do anything, useful in dev cycle when you want to manage the rmf
+ * processes manually.
+ */
+class StubLauncher {
+  async launch(): Promise<void> {}
+  async kill(): Promise<void> {}
 }
