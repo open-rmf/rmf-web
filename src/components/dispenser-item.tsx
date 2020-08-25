@@ -16,14 +16,15 @@ import React from 'react';
 
 import DisableableTypography from './disableable-typography';
 import OmniPanelStatusLabels from './omni-panel-status-labels';
+import { colorPalette } from '../util/css-utils';
 
 export interface DispenserItemProps extends Omit<ExpansionPanelProps, 'children'> {
   dispenserState: Readonly<RomiCore.DispenserState>;
 }
 
 export const DispenserItem = React.forwardRef(function(
-    props: DispenserItemProps,
-    ref: React.Ref<HTMLElement>,
+  props: DispenserItemProps,
+  ref: React.Ref<HTMLElement>,
 ): React.ReactElement {
   const { dispenserState, ...otherProps } = props;
   const classes = useStyles();
@@ -48,9 +49,9 @@ export const DispenserItem = React.forwardRef(function(
         <DisableableTypography disabled={true} variant="body1">
           Unknown
         </DisableableTypography>
-      )
+      );
     } else {
-    return (
+      return (
         <List className={classes.listRoot} dense={true}>
           {dispenserState.request_guid_queue.map(id => (
             <ListItem key={id} className={classes.listItem}>
@@ -79,12 +80,13 @@ export const DispenserItem = React.forwardRef(function(
     <ExpansionPanel ref={ref} {...otherProps}>
       <ExpansionPanelSummary
         classes={{ content: classes.expansionSummaryContent }}
-        expandIcon={<ExpandMoreIcon />}>
-          <OmniPanelStatusLabels
-            modalLabelClass={dispenserModeLabelClass()}
-            name={dispenserState.guid}
-            modeText={dispenserModeToString()}
-          />
+        expandIcon={<ExpandMoreIcon />}
+      >
+        <OmniPanelStatusLabels
+          modalLabelClass={dispenserModeLabelClass()}
+          name={dispenserState.guid}
+          modeText={dispenserModeToString()}
+        />
       </ExpansionPanelSummary>
       <ExpansionPanelDetails className={classes.expansionDetail}>
         <div className={classes.expansionDetailLine}>
@@ -106,9 +108,7 @@ export const DispenserItem = React.forwardRef(function(
         <Divider />
         <div className={classes.expansionDetailLine}>
           <Typography variant="body1">Seconds Remaining:</Typography>
-          <Typography variant="body1">
-            {String(dispenserState.seconds_remaining)}
-          </Typography>
+          <Typography variant="body1">{String(dispenserState.seconds_remaining)}</Typography>
         </div>
       </ExpansionPanelDetails>
     </ExpansionPanel>
@@ -147,11 +147,11 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
     overflow: 'auto',
     maxHeight: 100,
-    padding: 0
+    padding: 0,
   },
 
   listItem: {
-    paddingTop: 0
+    paddingTop: 0,
   },
 }));
 
@@ -165,9 +165,9 @@ const useDispenserModeLabelStyles = makeStyles(theme => {
     textAlign: 'center',
   };
   return {
-    idle: {...base, borderColor: theme.palette.warning.main},
-    busy: {...base, borderColor: theme.palette.success.main},
-    offline: {...base, borderColor: theme.palette.error.main},
-    unknown: {...base, borderColor: '#cccccc'}
+    idle: { ...base, borderColor: theme.palette.warning.main },
+    busy: { ...base, borderColor: theme.palette.success.main },
+    offline: { ...base, borderColor: theme.palette.error.main },
+    unknown: { ...base, borderColor: colorPalette.unknown },
   };
 });
