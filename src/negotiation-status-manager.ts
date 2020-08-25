@@ -70,7 +70,7 @@ export default class NegotiationStatusManager extends EventEmitter<Events> {
     else
     {
       var seq : number[] = msg["sequence"];
-      if (seq.length == 1)
+      if (seq.length === 1)
         status = status_data.base;
       else
       {
@@ -97,7 +97,7 @@ export default class NegotiationStatusManager extends EventEmitter<Events> {
       return;
     }
 
-    if (msg["resolved"] == true)
+    if (msg["resolved"] === true)
       conflict.resolved = ResolveState.RESOLVED;
     else
       conflict.resolved = ResolveState.FAILED;
@@ -115,11 +115,11 @@ export default class NegotiationStatusManager extends EventEmitter<Events> {
       //only recv negotiation status messages
       this._backend_ws.onmessage = function (event) {
         var msg = JSON.parse(event.data);
-        if (msg["type"] == "negotiation_status")
+        if (msg["type"] === "negotiation_status")
         {
           negotiation_status_mgr.updateNegotiationStatus(msg);
         }
-        else if (msg["type"] == "negotiation_status_conclusion")
+        else if (msg["type"] === "negotiation_status_conclusion")
         {
           negotiation_status_mgr.concludeNegotiationStatus(msg);
         }
@@ -139,7 +139,7 @@ export default class NegotiationStatusManager extends EventEmitter<Events> {
     resolved.sort(); //ascending
     
     // pop from the front until you reach the desired retain count
-    while (resolved.length != 0 && resolved.length > retain_count)
+    while (resolved.length !== 0 && resolved.length > retain_count)
     {
       var key = resolved[0];
       console.log("removing resolved conflict: " + key);

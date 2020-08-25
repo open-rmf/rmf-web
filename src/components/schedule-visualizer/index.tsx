@@ -222,11 +222,6 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     setCurLevelName(e.name);
   }
 
-  function getTrajectory(levelName: string): Trajectory[] {
-    const resp = trajectories[levelName];
-    return resp ? resp.values : [];
-  }
-
   function getConflicts(levelName: string): Conflict[] {
     const resp = trajectories[levelName];
     return resp ? resp.conflicts : [];

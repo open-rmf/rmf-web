@@ -33,7 +33,7 @@ export default function App(): React.ReactElement {
         dispenserStateManager.startSubscription(x);
         liftStateManager.startSubscription(x);
         fleetManager.startSubscription(x);
-        negotiationStatusManager.startSubscription(x);
+        negotiationStatusManager.startSubscription();
 
         fleetManager.on('updated', () => setFleets(fleetManager.fleets()));
         liftStateManager.on('updated', () => setLiftStates(liftStateManager.liftStates()));
