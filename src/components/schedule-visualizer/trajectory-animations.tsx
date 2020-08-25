@@ -48,7 +48,7 @@ export function withFillAnimation(
           strokeDashoffset: 2 - offset,
           duration: animationDuration(trajectory, animationScale),
           easing: 'linear',
-          loop: true,
+          loop: false,
         });
       });
       return () => pathAnim.remove();
@@ -99,7 +99,7 @@ export function withFollowAnimation(
           strokeDashoffset: Math.max(2 - offset, strokeDash + 1),
           easing: 'linear',
           duration: animationDuration(trajectory, animationScale),
-          loop: true,
+          loop: false,
         });
       });
 
@@ -169,7 +169,7 @@ export function withOutlineAnimation(
           strokeDashoffset: [anime.setDashoffset, 2 - offset],
           duration: animationDuration(trajectory, animationScale),
           easing: 'linear',
-          loop: true,
+          loop: false,
         });
       });
 
