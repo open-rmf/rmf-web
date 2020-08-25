@@ -32,10 +32,11 @@ export default function RobotTrajectoriesOverlay(
   useEffect(() => {
     function getConflictRobotMessage(): string {
       let message = '';
-      conflictRobotNames.forEach(conflictGroup => { message += `[${conflictGroup}] `; }
-      )
+      conflictRobotNames.forEach(conflictGroup => {
+        message += `[${conflictGroup}] `;
+      });
       return message;
-    };
+    }
 
     if (conflicts.length !== 0) {
       notificationDispatch &&

@@ -12,9 +12,10 @@ import { AntTab, AntTabs, TabPanel } from '../tab';
 import { LiftInformation } from './lift-item-information';
 import LiftRequestForm from './lift-item-form';
 import { LiftRequestManager } from '../../lift-state-manager';
-import OmniPanelStatusLabels from '../omni-panel-status-labels'
+import OmniPanelStatusLabels from '../omni-panel-status-labels';
+import { colorPalette } from '../../util/css-utils';
 
-export interface LiftItemProps extends Omit<ExpansionPanelProps, 'children'>{
+export interface LiftItemProps extends Omit<ExpansionPanelProps, 'children'> {
   id?: string;
   lift: Readonly<RomiCore.Lift>;
   liftState?: Readonly<RomiCore.LiftState>;
@@ -65,14 +66,19 @@ export const LiftItem = React.forwardRef(function(
         classes={{ content: classes.expansionSummaryContent }}
         expandIcon={<ExpandMoreIcon />}
       >
-        <OmniPanelStatusLabels 
+        <OmniPanelStatusLabels
           modalLabelClass={liftFloorLabel(liftState)}
           name={lift.name}
           modeText={liftState ? liftState.current_floor : 'N/A'}
         />
       </ExpansionPanelSummary>
       <ExpansionPanelDetails className={classes.expansionDetail}>
-        <AntTabs variant="fullWidth" value={tabValue} onChange={handleChange} aria-label="scrollable auto tabs example">
+        <AntTabs
+          variant="fullWidth"
+          value={tabValue}
+          onChange={handleChange}
+          aria-label="scrollable auto tabs example"
+        >
           <AntTab label="Info" />
           <AntTab label="Request" />
         </AntTabs>
@@ -113,7 +119,7 @@ const useStyles = makeStyles(theme => {
     expansionDetail: {
       flexFlow: 'column',
       overflowX: 'auto',
-      padding: 0
+      padding: 0,
     },
 
     expansionDetailLine: {
@@ -134,7 +140,7 @@ const useStyles = makeStyles(theme => {
 
     liftFloorLabelUnknown: {
       ...liftFloorLabelBase,
-      borderColor: '#cccccc'
+      borderColor: colorPalette.unknown,
     },
   };
 });
