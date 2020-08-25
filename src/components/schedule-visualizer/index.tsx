@@ -50,7 +50,6 @@ export interface ScheduleVisualizerProps {
   buildingMap: Readonly<RomiCore.BuildingMap>;
   fleets: Readonly<RomiCore.FleetState[]>;
   trajManager?: Readonly<RobotTrajectoryManager>;
-  appResources?: Readonly<ResourceConfigurationsType>;
   negotiationTrajStore: Readonly<Record<string, NegotiationTrajectoryResponse>>;
   mapFloorLayerSorted: Readonly<string[]>;
   onDoorClick?(door: RomiCore.Door): void;
@@ -70,7 +69,7 @@ function calcMaxBounds(mapFloorLayers: readonly MapFloorLayer[]): L.LatLngBounds
 export default function ScheduleVisualizer(props: ScheduleVisualizerProps): React.ReactElement {
   debug('render');
 
-  const { appResources, negotiationTrajStore, mapFloorLayerSorted } = props;
+  const { negotiationTrajStore, mapFloorLayerSorted } = props;
   const classes = useStyles();
 
   const [mapFloorLayers, setMapFloorLayers] = React.useState<
@@ -354,39 +353,63 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
               <Pane>
                 <LiftsOverlay
                   bounds={curMapFloorLayer.bounds}
-                  currentFloor={curLevelName}
-                  lifts={props.buildingMap.lifts}
-                  onLiftClick={props.onLiftClick}
-                />
-              </Pane>
-            )}
-          </LayersControl.Overlay>
-          <LayersControl.Overlay name="Robots" checked>
-            {curMapFloorLayer && (
-              <Pane>
-                <RobotsOverlay
-                  currentFloorName={curLevelName}
-                  bounds={curMapFloorLayer.bounds}
-                  fleets={props.fleets}
+                  trajs={curMapTrajectories}
+                  conflicts={curMapConflicts}
                   colorManager={colorManager}
-                  onRobotClick={props.onRobotClick}
                   conflictRobotNames={conflictRobotNames}
                 />
-              </Pane>
-            )}
-          </LayersControl.Overlay>
-          <LayersControl.Overlay name="Waypoints" checked>
-            {curMapFloorLayer && (
-              <Pane>
-                <WaypointsOverlay
-                  bounds={curMapFloorLayer.bounds}
-                  currentLevel={curMapFloorLayer.level}
-                />
-              </Pane>
-            )}
-          </LayersControl.Overlay>
-        </LayersControl>
-      </ResourcesContext.Provider>
+              </RobotTrajectoryContext.Provider>
+            </Pane>
+          )}
+        </LayersControl.Overlay>
+        <LayersControl.Overlay name="Doors" checked>
+          {curMapFloorLayer && (
+            <Pane>
+              <DoorsOverlay
+                bounds={curMapFloorLayer.bounds}
+                doors={curMapFloorLayer.level.doors}
+                onDoorClick={props.onDoorClick}
+              />
+            </Pane>
+          )}
+        </LayersControl.Overlay>
+        <LayersControl.Overlay name="Lifts" checked>
+          {curMapFloorLayer && (
+            <Pane>
+              <LiftsOverlay
+                bounds={curMapFloorLayer.bounds}
+                currentFloor={curLevelName}
+                lifts={props.buildingMap.lifts}
+                onLiftClick={props.onLiftClick}
+              />
+            </Pane>
+          )}
+        </LayersControl.Overlay>
+        <LayersControl.Overlay name="Robots" checked>
+          {curMapFloorLayer && (
+            <Pane>
+              <RobotsOverlay
+                currentFloorName={curLevelName}
+                bounds={curMapFloorLayer.bounds}
+                fleets={props.fleets}
+                colorManager={colorManager}
+                onRobotClick={props.onRobotClick}
+                conflictRobotNames={conflictRobotNames}
+              />
+            </Pane>
+          )}
+        </LayersControl.Overlay>
+        <LayersControl.Overlay name="Waypoints" checked>
+          {curMapFloorLayer && (
+            <Pane>
+              <WaypointsOverlay
+                bounds={curMapFloorLayer.bounds}
+                currentLevel={curMapFloorLayer.level}
+              />
+            </Pane>
+          )}
+        </LayersControl.Overlay>
+      </LayersControl>
     </LMap>
   );
 }

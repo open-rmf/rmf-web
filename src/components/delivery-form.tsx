@@ -19,14 +19,13 @@ export const RobotDeliveryForm = (props: DeliveryFormProps): React.ReactElement 
   const [targetFleetName, setTargetFleetName] = useState(
     fleetNames.length >= 1 ? fleetNames[0] : '',
   );
-
   const [listOfPlaces, setListOfPlaces] = useState(
     !!targetFleetName ? resourcesContext.robots.getAvailablePlacesPerFleet(targetFleetName) : [],
   );
 
   useEffect(() => {
     setListOfPlaces(resourcesContext.robots.getAvailablePlacesPerFleet(targetFleetName));
-  }, [targetFleetName, resourcesContext]);
+  }, [targetFleetName, resourcesContext.robots]);
 
   // Places
   const [pickupPlaceName, setPickupPlaceName] = useState(
