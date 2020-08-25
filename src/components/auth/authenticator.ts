@@ -1,7 +1,9 @@
-import debug from 'debug';
+import Debug from 'debug';
 import EventEmitter from 'eventemitter3';
 import Keycloak_, { KeycloakInstance } from 'keycloak-js';
 import { User } from './user';
+
+const debug = Debug('authenticator');
 
 export type AuthenticatorEventType = {
   userChanged: [User | null];
@@ -46,18 +48,18 @@ export class DefaultAuthenticator extends EventEmitter<AuthenticatorEventType>
   }
 
   async init() {
-    debug.log('initializing authenticator');
+    debug('initializing authenticator');
 
     this._inst.onAuthSuccess = async () => {
       this._user = {
         username: (this._inst.idTokenParsed as any).preferred_username,
       };
-      debug.log('authenticated as', this._user.username);
+      debug('authenticated as', this._user.username);
       this.emit('userChanged', this._user);
     };
 
     this._inst.onAuthLogout = () => {
-      debug.log('logout');
+      debug('logout');
       this._user = undefined;
       this.emit('userChanged', null);
     };
@@ -69,7 +71,7 @@ export class DefaultAuthenticator extends EventEmitter<AuthenticatorEventType>
     });
     try {
       const refreshed = await this._inst.updateToken(30);
-      refreshed && debug.log('token refreshed');
+      refreshed && debug('token refreshed');
     } catch {}
 
     this._user = this._inst.idTokenParsed && {

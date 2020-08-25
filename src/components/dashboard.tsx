@@ -1,6 +1,6 @@
 import { Fade, makeStyles } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import debug from 'debug';
+import Debug from 'debug';
 import React from 'react';
 import 'typeface-roboto';
 import appConfig from '../app-config';
@@ -28,6 +28,7 @@ import { LiftStateContext } from './schedule-visualizer/lift-overlay';
 import SettingsDrawer from './settings-drawer';
 import { SpotlightValue } from './spotlight-value';
 
+const debug = Debug('dashboard');
 const borderRadius = 20;
 
 const useStyles = makeStyles(theme => ({
@@ -222,10 +223,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
     if (currentView === OmniPanelViewIndex.Doors) {
       const listener = () => setDoorStates(doorStateManager.doorStates());
       doorStateManager.on('updated', listener);
-      debug.log('started tracking door states');
+      debug('started tracking door states');
       return () => {
         doorStateManager.off('updated', listener);
-        debug.log('stopped tracking door states');
+        debug('stopped tracking door states');
       };
     }
   }, [currentView, doorStateManager]);
@@ -234,10 +235,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
     if (currentView === OmniPanelViewIndex.Lifts) {
       const listener = () => setLiftStates(liftStateManager.liftStates());
       liftStateManager.on('updated', listener);
-      debug.log('started tracking lift states');
+      debug('started tracking lift states');
       return () => {
         liftStateManager.off('updated', listener);
-        debug.log('stopped tracking lift states');
+        debug('stopped tracking lift states');
       };
     }
   }, [currentView, liftStateManager]);
@@ -246,10 +247,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
     if (currentView === OmniPanelViewIndex.Dispensers) {
       const listener = () => setDispenserStates(dispenserStateManager.dispenserStates());
       dispenserStateManager.on('updated', listener);
-      debug.log('started tracking dispenser states');
+      debug('started tracking dispenser states');
       return () => {
         dispenserStateManager.off('updated', listener);
-        debug.log('stopped tracking dispenser states');
+        debug('stopped tracking dispenser states');
       };
     }
   }, [currentView, dispenserStateManager]);

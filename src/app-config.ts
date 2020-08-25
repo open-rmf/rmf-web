@@ -1,6 +1,6 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { SossTransport } from '@osrf/romi-js-soss-transport';
-import debug from 'debug';
+import Debug from 'debug';
 import { KeycloakConfig } from 'keycloak-js';
 import Authenticator, { DefaultAuthenticator } from './components/auth/authenticator';
 import FakeAuthenticator from './mock/fake-authenticator';
@@ -47,7 +47,7 @@ export const appConfig: AppConfig = (() => {
       appResources: ResourceManager.getResourceConfigurationFile(),
       transportFactory: () => {
         const sossToken = process.env.REACT_APP_SOSS_TOKEN || authenticator.sossToken || '';
-        debug.log('authenticating to rmf with token', sossToken);
+        Debug('soss')('authenticating to rmf with token', sossToken);
         return SossTransport.connect(sossNodeName, sossServer, sossToken);
       },
       trajectoryManagerFactory: () => DefaultTrajectoryManager.create(trajServer),
