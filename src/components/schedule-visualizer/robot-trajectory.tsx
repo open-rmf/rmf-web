@@ -78,13 +78,24 @@ export const RobotTrajectory = React.forwardRef(function(
         height="140%"
         filterUnits="userSpaceOnUse"
       >
-        <feDropShadow
+        {/* <feDropShadow
           dx="0"
           dy="0"
           stdDeviation={footprint * 0.4}
           floodColor={theme.palette.secondary.main}
           floodOpacity={1}
+        /> */}
+        <feColorMatrix
+          type="matrix"
+          values="1 0 0 0 0 
+                                       0 1 0 0 0 
+                                       0 0 1 0 0 
+                                       0 0 0 100 0"
+          result="boostedInput"
         />
+
+        <feGaussianBlur stdDeviation={footprint * 0.4} />
+        <feComposite operator="out" in2="boostedInput" />
       </filter>
       {pathColor && (
         <path
@@ -97,24 +108,26 @@ export const RobotTrajectory = React.forwardRef(function(
           strokeWidth={trajectoryDiameter}
           strokeLinecap="round"
           fill={'none'}
-          filter={isConflict ? `url(#shadow)` : ''}
           pathLength={1}
           strokeDasharray={2}
           strokeDashoffset={0}
           {...otherProps}
-        >
-          {/* {isConflict && settings.trajectoryColor === TrajectoryColor.Robot_Color ? (
-              <animate
-                attributeName="stroke"
-                values={`${pathColor};transparent`}
-                begin={0}
-                dur={'1s'}
-                calcMode="paced"
-                repeatCount="indefinite"
-              />
-            ) : null} */}
-        </path>
+        />
       )}
+      {isConflict ? (
+        <path
+          id="errorPath"
+          data-component="RobotTrajectory"
+          d={pathD}
+          stroke={theme.palette.secondary.main}
+          strokeWidth={trajectoryDiameter}
+          strokeLinecap="round"
+          fill={'none'}
+          filter={isConflict ? `url(#shadow)` : ''}
+          pathLength={1}
+          opacity={1}
+        />
+      ) : null}
     </>
   );
 });
