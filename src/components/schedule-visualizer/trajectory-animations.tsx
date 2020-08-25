@@ -93,17 +93,15 @@ export function withFollowAnimation(
       pathAnim.setAttribute('stroke-dasharray', `${strokeDash} ${2 - strokeDash}`);
       pathRef.current.parentElement?.appendChild(pathAnim);
 
-      pathAnim.animate(
-        offsets.map(offset => ({
-          offset: offset,
+      offsets.forEach(offset => {
+        anime({
+          targets: [pathRef.current, pathAnim],
           strokeDashoffset: Math.max(2 - offset, strokeDash + 1),
-        })),
-        {
-          duration: animationDuration(trajectory, animationScale),
           easing: 'linear',
-          fill: 'forwards',
-        },
-      );
+          duration: animationDuration(trajectory, animationScale),
+          loop: true,
+        });
+      });
 
       return () => pathAnim.remove();
     }, [trajectory, classes.anim, classes.highlight]);
