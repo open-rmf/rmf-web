@@ -15,6 +15,7 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 
 import OmniPanelStatusLabels from './omni-panel-status-labels';
+import { colorPalette } from '../util/css-utils';
 
 export interface DoorItemProps extends Omit<ExpansionPanelProps, 'children'> {
   door: Readonly<RomiCore.Door>;
@@ -45,7 +46,7 @@ export const DoorItem = React.forwardRef(function(
       case RomiCore.DoorMode.MODE_MOVING:
         return `${classes.doorLabel} ${classes.doorLabelMoving}`;
       default:
-        return '';
+        return `${classes.doorLabel} ${classes.unknown}`;
     }
   }
 
@@ -144,7 +145,7 @@ const useStyles = makeStyles(theme => ({
   },
 
   unknown: {
-    borderColor: '#cccccc',
+    borderColor: colorPalette.unknown,
   },
 }));
 

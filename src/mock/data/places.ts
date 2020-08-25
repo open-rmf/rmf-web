@@ -3,11 +3,11 @@ export default function fakePlaces(): Record<string, string[]> {
    * nameOfFleet: [places, available, to, go]
    */
   return {
-    magni: [
+    tinyRobot: [
       'supplies',
-      'magni2_charger',
+      'tinyRobot2_charger',
       'coe',
-      'magni1_charger',
+      'tinyRobot1_charger',
       'hardware_2',
       'cubicle_2',
       'pantry',
@@ -19,9 +19,9 @@ export default function fakePlaces(): Record<string, string[]> {
     ],
     SuperFleet: [
       'supplies',
-      'magni2_charger',
+      'tinyRobot2_charger',
       'coe',
-      'magni1_charger',
+      'tinyRobot1_charger',
       'hardware_2',
       'cubicle_2',
       'pantry',
@@ -36,7 +36,7 @@ export default function fakePlaces(): Record<string, string[]> {
 
     FleetA: ['', 'supplies'],
     FleetB: ['supplies', 'supplies'],
-    Fleet1: ['supplies', 'magni2_charger', 'coe', 'magni1_charger', 'hardware_2'],
+    Fleet1: ['supplies', 'tinyRobot2_charger', 'coe', 'tinyRobot1_charger', 'hardware_2'],
     Fleet2: ['station_1', 'lounge', 'cubicle_1', 'hardware_1', 'station_2'],
     // These are the two places that has dispensers inside
     TestFleet: ['hardware_2', 'pantry'],

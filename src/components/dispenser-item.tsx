@@ -16,6 +16,7 @@ import React from 'react';
 
 import DisableableTypography from './disableable-typography';
 import OmniPanelStatusLabels from './omni-panel-status-labels';
+import { colorPalette } from '../util/css-utils';
 
 export interface DispenserItemProps extends Omit<ExpansionPanelProps, 'children'> {
   dispenserState: Readonly<RomiCore.DispenserState>;
@@ -167,6 +168,6 @@ const useDispenserModeLabelStyles = makeStyles(theme => {
     idle: { ...base, borderColor: theme.palette.warning.main },
     busy: { ...base, borderColor: theme.palette.success.main },
     offline: { ...base, borderColor: theme.palette.error.main },
-    unknown: { ...base, borderColor: '#cccccc' },
+    unknown: { ...base, borderColor: colorPalette.unknown },
   };
 });

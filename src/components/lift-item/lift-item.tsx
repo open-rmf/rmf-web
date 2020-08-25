@@ -13,6 +13,7 @@ import { LiftInformation } from './lift-item-information';
 import LiftRequestForm from './lift-item-form';
 import { LiftRequestManager } from '../../lift-state-manager';
 import OmniPanelStatusLabels from '../omni-panel-status-labels';
+import { colorPalette } from '../../util/css-utils';
 
 export interface LiftItemProps extends Omit<ExpansionPanelProps, 'children'> {
   id?: string;
@@ -139,7 +140,7 @@ const useStyles = makeStyles(theme => {
 
     liftFloorLabelUnknown: {
       ...liftFloorLabelBase,
-      borderColor: '#cccccc',
+      borderColor: colorPalette.unknown,
     },
   };
 });
