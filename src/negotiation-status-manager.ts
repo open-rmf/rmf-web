@@ -119,7 +119,7 @@ export default class NegotiationStatusManager extends EventEmitter<Events> {
         {
           negotiation_status_mgr.updateNegotiationStatus(msg);
         }
-        else if (msg["type"] === "negotiation_status_conclusion")
+        else if (msg["type"] === "negotiation_conclusion")
         {
           negotiation_status_mgr.concludeNegotiationStatus(msg);
         }
