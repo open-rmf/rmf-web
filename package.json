@@ -54,7 +54,7 @@
     "build:e2e": ". e2e/env.sh && node e2e/prepare.js && npm run build",
     "build:storybook": "build-storybook -s public",
     "test": "react-scripts test",
-    "test:e2e": ". e2e/env.sh && run-p -r start:auth start:react:e2e test:e2e:wdio",
+    "test:e2e": ". e2e/env.sh && npm run build:e2e && run-p -r start:auth start:react:e2e 'test:e2e:wdio -- {@}' --",
     "test:e2e:wdio": "ts-node -P e2e/tsconfig.json e2e/auth-ready.ts && wdio",
     "test:e2e:dev": ". e2e/env.sh && ROMI_DASHBOARD_PORT=3000 ROMI_DASHBOARD_NO_LAUNCH=1 wdio",
     "eject": "react-scripts eject",
