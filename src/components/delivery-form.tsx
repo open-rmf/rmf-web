@@ -4,7 +4,6 @@ import fakeDispensers from '../mock/data/dispensers';
 import React, { useState, Dispatch, SetStateAction, useEffect } from 'react';
 import { loopFormStyles } from './loop-form';
 import { TDeliveryRequest } from './commands-panel';
-import { RobotResourceManager } from '../resource-manager';
 import { ResourcesContext } from '../app-contexts';
 
 interface DeliveryFormProps {
@@ -22,16 +21,12 @@ export const RobotDeliveryForm = (props: DeliveryFormProps): React.ReactElement 
   );
 
   const [listOfPlaces, setListOfPlaces] = useState(
-    !!targetFleetName
-      ? RobotResourceManager.getAvailablePlacesPerFleet(resourcesContext.resources, targetFleetName)
-      : [],
+    !!targetFleetName ? resourcesContext.robots.getAvailablePlacesPerFleet(targetFleetName) : [],
   );
 
   useEffect(() => {
-    setListOfPlaces(
-      RobotResourceManager.getAvailablePlacesPerFleet(resourcesContext.resources, targetFleetName),
-    );
-  }, [targetFleetName]);
+    setListOfPlaces(resourcesContext.robots.getAvailablePlacesPerFleet(targetFleetName));
+  }, [targetFleetName, resourcesContext]);
 
   // Places
   const [pickupPlaceName, setPickupPlaceName] = useState(

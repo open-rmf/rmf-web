@@ -5,6 +5,7 @@ import React, { useContext, useState } from 'react';
 import { RobotResourceManager } from '../../resource-manager';
 import { ResourcesContext } from '../../app-contexts';
 import ColorManager from './colors';
+import { ResourcesContext } from '../../app-contexts';
 import RobotDefaultIcon from './robot-default-icon';
 import RobotImageIcon from './robot-image-icon';
 import SvgText from './svg-text';
@@ -45,7 +46,7 @@ const Robot = React.memo(
     const { robot, footprint, colorManager, fleetName, inConflict, onClick } = props;
     // The only image formats SVG software support are JPEG, PNG, and other SVG files.
     const [renderCustomIcon, setRenderCustomIcon] = useState({
-      path: RobotResourceManager.getRobotIconPath(resourcesContext, fleetName),
+      path: resourcesContext.robots.getRobotIconPath(fleetName),
       error: false,
     });
 

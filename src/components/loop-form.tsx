@@ -2,9 +2,7 @@ import { makeStyles, TextField, Button } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useState, useEffect } from 'react';
 import { successMsg } from '../util/alerts';
-import fakePlaces from '../mock/data/places';
 import { TLoopRequest } from './commands-panel';
-import { RobotResourceManager } from '../resource-manager';
 import { ResourcesContext } from '../app-contexts';
 interface LoopFormProps {
   fleetNames: string[];
@@ -21,9 +19,7 @@ export const LoopForm = (props: LoopFormProps) => {
   );
   const [numLoops, setNumLoops] = useState(0);
   const [listOfPlaces, setListOfPlaces] = useState(
-    !!targetFleetName
-      ? RobotResourceManager.getAvailablePlacesPerFleet(resourcesContext.resources, targetFleetName)
-      : [],
+    !!targetFleetName ? resourcesContext.robots.getAvailablePlacesPerFleet(targetFleetName) : [],
   );
   const [startLocation, setStartLocation] = useState(
     listOfPlaces && listOfPlaces.length >= 2 ? listOfPlaces[0] : '',
@@ -33,15 +29,10 @@ export const LoopForm = (props: LoopFormProps) => {
   );
 
   useEffect(() => {
-    RobotResourceManager.getAvailablePlacesPerFleet(resourcesContext.resources, targetFleetName)
-      ? setListOfPlaces(
-          RobotResourceManager.getAvailablePlacesPerFleet(
-            resourcesContext.resources,
-            targetFleetName,
-          ),
-        )
+    resourcesContext.robots.getAvailablePlacesPerFleet(targetFleetName)
+      ? setListOfPlaces(resourcesContext.robots.getAvailablePlacesPerFleet(targetFleetName))
       : setListOfPlaces([]);
-  }, [targetFleetName]);
+  }, [targetFleetName, resourcesContext]);
 
   useEffect(() => {
     if (listOfPlaces) {
@@ -60,12 +51,7 @@ export const LoopForm = (props: LoopFormProps) => {
     setTargetFleetName(targetFleetName);
     setNumLoops(0);
     setListOfPlaces(
-      !!targetFleetName
-        ? RobotResourceManager.getAvailablePlacesPerFleet(
-            resourcesContext.resources,
-            targetFleetName,
-          )
-        : [],
+      !!targetFleetName ? resourcesContext.robots.getAvailablePlacesPerFleet(targetFleetName) : [],
     );
     setStartLocation(listOfPlaces && listOfPlaces.length >= 2 ? listOfPlaces[0] : '');
     setFinishLocation(listOfPlaces && listOfPlaces.length >= 2 ? listOfPlaces[1] : '');
