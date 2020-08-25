@@ -69,11 +69,11 @@ export default function fakeFleets(): RomiCore.FleetState[] {
       ],
     },
     {
-      name: 'magni',
+      name: 'tinyRobot',
       robots: [
         {
-          name: 'magni1',
-          model: 'magni',
+          name: 'tinyRobot1',
+          model: 'tinyRobot',
           mode: { mode: RomiCore.RobotMode.MODE_MOVING },
           location: {
             level_name: 'L1',
@@ -87,8 +87,8 @@ export default function fakeFleets(): RomiCore.FleetState[] {
           task_id: 'taskA',
         },
         {
-          name: 'magni2',
-          model: 'magni',
+          name: 'tinyRobot2',
+          model: 'tinyRobot',
           mode: { mode: RomiCore.RobotMode.MODE_MOVING },
           location: {
             level_name: 'L1',
