@@ -38,14 +38,12 @@ export type ResourceConfigurationsType = Record<
 
 export default class ResourceManager {
   robots: RobotResourceManager;
-  dispensers: DispenserResourceManager | null;
+  dispensers: DispenserResourceManager;
   resources: ResourceConfigurationsType;
 
   constructor(resources: ResourceConfigurationsType) {
     this.robots = new RobotResourceManager(resources.robots);
-    this.dispensers = !!resources.dispensers
-      ? new DispenserResourceManager(resources.dispensers, this.robots)
-      : null;
+    this.dispensers = new DispenserResourceManager(resources.dispensers, this.robots);
     this.resources = resources;
   }
 
