@@ -1,31 +1,32 @@
 import { TextField, Button } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import fakeDispensers from '../mock/data/dispensers';
 import React, { useState, Dispatch, SetStateAction, useEffect } from 'react';
 import { loopFormStyles } from './loop-form';
 import { TDeliveryRequest } from './commands-panel';
-import { ResourcesContext } from '../app-contexts';
+import { RobotResourceManager } from '../resource-manager-robots';
+import { DispenserResourceManager } from '../resource-manager-dispensers';
 
 interface DeliveryFormProps {
   fleetNames: string[];
   requestDelivery: TDeliveryRequest;
+  robotHandler: RobotResourceManager;
+  dispenserHandler: DispenserResourceManager;
 }
 
 export const RobotDeliveryForm = (props: DeliveryFormProps): React.ReactElement => {
-  const { requestDelivery, fleetNames } = props;
+  const { requestDelivery, fleetNames, robotHandler, dispenserHandler } = props;
   const classes = loopFormStyles();
-  const resourcesContext = React.useContext(ResourcesContext);
 
   const [targetFleetName, setTargetFleetName] = useState(
     fleetNames.length >= 1 ? fleetNames[0] : '',
   );
   const [listOfPlaces, setListOfPlaces] = useState(
-    !!targetFleetName ? resourcesContext.robots.getAvailablePlacesPerFleet(targetFleetName) : [],
+    !!targetFleetName ? robotHandler.getAvailablePlacesPerFleet(targetFleetName) : [],
   );
 
   useEffect(() => {
-    setListOfPlaces(resourcesContext.robots.getAvailablePlacesPerFleet(targetFleetName));
-  }, [targetFleetName, resourcesContext.robots]);
+    setListOfPlaces(robotHandler.getAvailablePlacesPerFleet(targetFleetName));
+  }, [targetFleetName, robotHandler]);
 
   // Places
   const [pickupPlaceName, setPickupPlaceName] = useState(
@@ -72,14 +73,18 @@ export const RobotDeliveryForm = (props: DeliveryFormProps): React.ReactElement 
   };
 
   const dispensersFromPickUpPlace = React.useMemo(() => {
-    const dispenser = !!pickupPlaceName ? fakeDispensers()[pickupPlaceName] : [];
+    const dispenser = !!pickupPlaceName
+      ? dispenserHandler.getAvailableDispenserPerPlace(targetFleetName, pickupPlaceName)
+      : [];
     return !!dispenser ? dispenser : [];
-  }, [pickupPlaceName]);
+  }, [pickupPlaceName, dispenserHandler, targetFleetName]);
 
   const dispensersFromDropOffPlace = React.useMemo(() => {
-    const dispenser = !!dropOffPlaceName ? fakeDispensers()[dropOffPlaceName] : [];
+    const dispenser = !!dropOffPlaceName
+      ? dispenserHandler.getAvailableDispenserPerPlace(targetFleetName, dropOffPlaceName)
+      : [];
     return !!dispenser ? dispenser : [];
-  }, [dropOffPlaceName]);
+  }, [dropOffPlaceName, dispenserHandler, targetFleetName]);
 
   useEffect(() => {
     setPickupDispenserError('');

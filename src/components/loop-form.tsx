@@ -3,23 +3,23 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useState, useEffect } from 'react';
 import { successMsg } from '../util/alerts';
 import { TLoopRequest } from './commands-panel';
-import { ResourcesContext } from '../app-contexts';
+import { RobotResourceManager } from '../resource-manager-robots';
 interface LoopFormProps {
   fleetNames: string[];
   requestLoop: TLoopRequest;
+  robotHandler: RobotResourceManager;
 }
 
 export const LoopForm = (props: LoopFormProps) => {
-  const { requestLoop, fleetNames } = props;
+  const { requestLoop, fleetNames, robotHandler } = props;
   const classes = loopFormStyles();
-  const resourcesContext = React.useContext(ResourcesContext);
 
   const [targetFleetName, setTargetFleetName] = useState(
     fleetNames.length >= 1 ? fleetNames[0] : '',
   );
   const [numLoops, setNumLoops] = useState(0);
   const [listOfPlaces, setListOfPlaces] = useState(
-    !!targetFleetName ? resourcesContext.robots.getAvailablePlacesPerFleet(targetFleetName) : [],
+    !!targetFleetName ? robotHandler.getAvailablePlacesPerFleet(targetFleetName) : [],
   );
   const [startLocation, setStartLocation] = useState(
     listOfPlaces && listOfPlaces.length >= 2 ? listOfPlaces[0] : '',
@@ -29,10 +29,10 @@ export const LoopForm = (props: LoopFormProps) => {
   );
 
   useEffect(() => {
-    resourcesContext.robots.getAvailablePlacesPerFleet(targetFleetName)
-      ? setListOfPlaces(resourcesContext.robots.getAvailablePlacesPerFleet(targetFleetName))
+    robotHandler.getAvailablePlacesPerFleet(targetFleetName)
+      ? setListOfPlaces(robotHandler.getAvailablePlacesPerFleet(targetFleetName))
       : setListOfPlaces([]);
-  }, [targetFleetName, resourcesContext]);
+  }, [targetFleetName, robotHandler]);
 
   useEffect(() => {
     if (listOfPlaces) {
@@ -51,7 +51,7 @@ export const LoopForm = (props: LoopFormProps) => {
     setTargetFleetName(targetFleetName);
     setNumLoops(0);
     setListOfPlaces(
-      !!targetFleetName ? resourcesContext.robots.getAvailablePlacesPerFleet(targetFleetName) : [],
+      !!targetFleetName ? robotHandler.getAvailablePlacesPerFleet(targetFleetName) : [],
     );
     setStartLocation(listOfPlaces && listOfPlaces.length >= 2 ? listOfPlaces[0] : '');
     setFinishLocation(listOfPlaces && listOfPlaces.length >= 2 ? listOfPlaces[1] : '');

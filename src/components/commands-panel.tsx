@@ -12,8 +12,8 @@ import React from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { RobotDeliveryForm } from './delivery-form';
 import { LoopForm } from './loop-form';
-
 const debug = Debug('OmniPanel:CommandsPanel');
+import { ResourcesContext } from './app-contexts';
 
 export type TDeliveryRequest = (
   pickupPlaceName: string,
@@ -115,6 +115,8 @@ export const CommandsPanel = React.memo((props: CommandsPanelProps) => {
     [transport],
   );
 
+  const resourcesContext = React.useContext(ResourcesContext);
+
   const handleRequestLoop = (
     fleetName: string,
     numLoops: number,
@@ -153,7 +155,11 @@ export const CommandsPanel = React.memo((props: CommandsPanelProps) => {
           <Typography variant="h5">Loop Request</Typography>
         </AccordionSummary>
         <AccordionDetails className={classes.accordionDetail}>
-          <LoopForm requestLoop={handleRequestLoop} fleetNames={allFleets} />
+          <LoopForm
+            requestLoop={handleRequestLoop}
+            fleetNames={allFleets}
+            robotHandler={resourcesContext.robots}
+          />
         </AccordionDetails>
       </Accordion>
       <Accordion data-component="DeliveryForm">
@@ -164,7 +170,12 @@ export const CommandsPanel = React.memo((props: CommandsPanelProps) => {
           <Typography variant="h5">Delivery Request</Typography>
         </AccordionSummary>
         <AccordionDetails className={classes.accordionDetail}>
-          <RobotDeliveryForm requestDelivery={handleDeliveryRequest} fleetNames={allFleets} />
+          <RobotDeliveryForm
+            requestDelivery={handleDeliveryRequest}
+            fleetNames={allFleets}
+            robotHandler={resourcesContext.robots}
+            dispenserHandler={resourcesContext.dispensers}
+          />
         </AccordionDetails>
       </Accordion>
     </React.Fragment>
@@ -173,7 +184,7 @@ export const CommandsPanel = React.memo((props: CommandsPanelProps) => {
 
 export default CommandsPanel;
 
-export const useStyles = makeStyles((theme) => ({
+export const useStyles = makeStyles(theme => ({
   accordionSummaryContent: {
     alignItems: 'center',
     justifyContent: 'space-between',

@@ -12,11 +12,11 @@ export class RobotResourceManager {
     this.robots = robotResources;
   }
 
-  getAvailablePlacesPerFleet = (fleetName: string) => {
+  getAvailablePlacesPerFleet = (fleetName: string): string[] | null => {
     if (!this.fleetExists(fleetName) || !this.placesExists(fleetName)) {
       return null;
     }
-    return this.robots[fleetName].places;
+    return Object.keys(this.robots[fleetName].places);
   };
 
   getRobotIconPath = (fleetName: string, robotModel?: string | undefined): string | null => {
@@ -37,21 +37,21 @@ export class RobotResourceManager {
     }
   };
 
-  fleetExists = (fleetName: string) => {
+  fleetExists = (fleetName: string): boolean => {
     if (!this.robots.hasOwnProperty(fleetName)) {
       return false;
     }
     return true;
   };
 
-  placesExists = (fleetName: string) => {
+  placesExists = (fleetName: string): boolean => {
     if (!this.robots[fleetName].hasOwnProperty('places')) {
       return false;
     }
     return true;
   };
 
-  getDispensersPerFleet = (fleetName: string, placeName: string) => {
+  getDispensersPerFleet = (fleetName: string, placeName: string): string[] | null => {
     if (!this.fleetExists(fleetName) || !this.placesExists(fleetName)) {
       return null;
     }
