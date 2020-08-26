@@ -60,8 +60,7 @@
     "eject": "react-scripts eject",
     "deploy:demo": "REACT_APP_MOCK=1 npm run build && NODE_DEBUG=gh-pages gh-pages -d build -m \"$(git rev-parse HEAD)\"",
     "storybook": "start-storybook -p 9009 -s public",
-    "setup": "node ./scripts/setup/setup.js && node ./scripts/setup/get-icons.js",
-    "asd": "sleep 10"
+    "setup": "node ./scripts/setup/setup.js && node ./scripts/setup/get-icons.js"
   },
   "eslintConfig": {
     "extends": "react-app"
