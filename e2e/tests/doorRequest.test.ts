@@ -4,7 +4,7 @@ import { login, overwriteClick } from './utils';
 
 describe('door request', () => {
   let doorItem: Element;
-  const launcher = new RmfLauncher();
+  const launcher = RmfLauncher.instance;
 
   before(async () => await launcher.launch());
   after(async () => await launcher.kill());

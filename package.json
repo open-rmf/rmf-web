@@ -44,7 +44,7 @@
     "uuid": "^8.1.0"
   },
   "scripts": {
-    "start": ". e2e/env.sh && run-p -r start:auth start:rmf start:react",
+    "start": ". e2e/env.sh && concurrently -k 'npm:start:auth' 'npm:start:rmf' 'npm:start:react'",
     "start:react": "react-scripts start",
     "start:react:e2e": "serve -c ../e2e/serve.json build",
     "start:mock": "REACT_APP_MOCK=1 react-scripts start",
@@ -54,13 +54,14 @@
     "build:e2e": ". e2e/env.sh && node e2e/prepare.js && npm run build",
     "build:storybook": "build-storybook -s public",
     "test": "react-scripts test",
-    "test:e2e": ". e2e/env.sh && npm run build:e2e && run-p -r start:auth start:react:e2e 'test:e2e:wdio -- {@}' --",
+    "test:e2e": ". e2e/env.sh && node scripts/test-e2e.js",
     "test:e2e:wdio": "ts-node -P e2e/tsconfig.json e2e/auth-ready.ts && wdio",
     "test:e2e:dev": ". e2e/env.sh && ROMI_DASHBOARD_PORT=3000 ROMI_DASHBOARD_NO_LAUNCH=1 wdio",
     "eject": "react-scripts eject",
     "deploy:demo": "REACT_APP_MOCK=1 npm run build && NODE_DEBUG=gh-pages gh-pages -d build -m \"$(git rev-parse HEAD)\"",
     "storybook": "start-storybook -p 9009 -s public",
-    "setup": "node ./scripts/setup/setup.js && node ./scripts/setup/get-icons.js"
+    "setup": "node ./scripts/setup/setup.js && node ./scripts/setup/get-icons.js",
+    "asd": "sleep 10"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -90,11 +91,11 @@
     "@wdio/spec-reporter": "^6.1.14",
     "@wdio/sync": "^6.1.14",
     "chromedriver": "^83.0.0",
+    "concurrently": "^5.3.0",
     "enzyme-to-json": "^3.5.0",
     "gh-pages": "^2.2.0",
     "husky": "^4.2.5",
     "lint-staged": "^10.2.11",
-    "npm-run-all": "^4.1.5",
     "prettier": "^1.19.1",
     "ts-node": "^8.10.2",
     "wdio-chromedriver-service": "^6.0.3"

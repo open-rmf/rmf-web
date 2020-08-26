@@ -4,6 +4,35 @@ import * as ChildProcess from 'child_process';
  * Help to launch and kill all required RMF processes.
  */
 export class RmfLauncher {
+  /**
+   * Singleton instance of rmfLauncher, signal handlers are installed to cleanup processses spawned
+   * by this instance.
+   *
+   * Note: This installs `SIGINT` and `SIGTERM` handlers, these handlers may conflict with existing
+   * or future handlers. If there are other signal handlers installed, it is recommended to not use
+   * this, the instance is lazy created so no handlers will be installed if this is never called.
+   */
+  static get instance(): RmfLauncher {
+    if (!this._instance) {
+      this._instance = new RmfLauncher();
+      /**
+       * Make sure spawned processes are killed when the program exits.
+       */
+      const cleanUp = async () => {
+        await this._instance?.kill();
+        process.exit();
+      };
+
+      process.once('beforeExit', cleanUp);
+      process.once('exit', cleanUp);
+      process.once('SIGINT', cleanUp);
+      process.once('SIGTERM', cleanUp);
+    }
+    return this._instance;
+  }
+
+  private static _instance?: RmfLauncher;
+
   async launch(): Promise<void> {
     if (process.env.ROMI_DASHBOARD_NO_LAUNCH) {
       return;
@@ -47,6 +76,10 @@ export class RmfLauncher {
       this._soss && this._killProcess(this._soss),
       this._visualizerServer?.kill(),
     ]);
+    this._officeDemo = undefined;
+    this._soss = undefined;
+    this._visualizerServer = undefined;
+    this._launched = false;
   }
 
   private _launched = false;
