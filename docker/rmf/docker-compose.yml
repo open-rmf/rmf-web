@@ -1,12 +1,5 @@
 version: "3"
 services:
-  build:
-    build:
-      context: .
-      dockerfile: build.Dockerfile
-    image: rmf/build
   rmf:
     build: .
     image: rmf/rmf
-    depends_on:
-      - build
