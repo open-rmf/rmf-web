@@ -1,53 +1,54 @@
 import * as ChildProcess from 'child_process';
 
-export class RmfLauncher {
-  constructor(launchMode?: LaunchMode) {
-    if (!launchMode) {
-      if (process.env.ROMI_DASHBOARD_DOCKER_LAUNCH) {
-        this._launchMode = LaunchMode.Docker;
-      } else if (process.env.ROMI_DASHBOARD_NO_LAUNCH) {
-        this._launchMode = LaunchMode.None;
-      } else {
-        this._launchMode = LaunchMode.Local;
-      }
-    } else {
-      this._launchMode = launchMode;
-    }
-
-    switch (this._launchMode) {
-      case LaunchMode.None:
-        this._launcher = new StubLauncher();
-        break;
-      case LaunchMode.Docker:
-        this._launcher = new DockerLauncher();
-        break;
-      case LaunchMode.Local:
-        this._launcher = new LocalLauncher();
-        break;
-    }
-  }
-
-  async launch(): Promise<void> {
-    return this._launcher.launch();
-  }
-
-  async kill(): Promise<void> {
-    return this._launcher.kill();
-  }
-
-  private _launchMode: LaunchMode;
-  private _launcher: Launcher;
-}
-
 enum LaunchMode {
   None,
   Local,
+  LocalSingleton,
   Docker,
 }
 
 interface Launcher {
   launch(): Promise<void>;
   kill(): Promise<void>;
+}
+
+/**
+ * Creates a launcher based on the launch mode. If `launchMode` is undefined, the selected launch
+ * mode is based on the ROMI_DASHBOARD_LAUNCH_MODE environment variable, the values can be one of
+ *
+ *   * none
+ *   * docker
+ *   * local
+ *
+ * Defaults to `local`.
+ *
+ * If the value is `local`, a singleton instance is used and signal handlers are installed.
+ * @see LocalLauncher#instance
+ * @param launchMode
+ */
+export function makeLauncher(launchMode?: LaunchMode): Launcher {
+  if (!launchMode) {
+    if (process.env.ROMI_DASHBOARD_LAUNCH_MODE === 'docker') {
+      launchMode = LaunchMode.Docker;
+    } else if (process.env.ROMI_DASHBOARD_LAUNCH_MODE === 'none') {
+      launchMode = LaunchMode.None;
+    } else {
+      launchMode = LaunchMode.LocalSingleton;
+    }
+  }
+
+  switch (launchMode) {
+    case LaunchMode.None:
+      return new StubLauncher();
+    case LaunchMode.Docker:
+      return new DockerLauncher();
+    case LaunchMode.Local:
+      return new LocalLauncher();
+    case LaunchMode.LocalSingleton:
+      return LocalLauncher.instance;
+    default:
+      throw new Error('unknown launch mode');
+  }
 }
 
 /**
@@ -63,9 +64,9 @@ export class LocalLauncher {
    * or future handlers. If there are other signal handlers installed, it is recommended to not use
    * this, the instance is lazy created so no handlers will be installed if this is never called.
    */
-  static get instance(): RmfLauncher {
+  static get instance(): LocalLauncher {
     if (!this._instance) {
-      this._instance = new RmfLauncher();
+      this._instance = new LocalLauncher();
       /**
        * Make sure spawned processes are killed when the program exits.
        */
@@ -82,13 +83,9 @@ export class LocalLauncher {
     return this._instance;
   }
 
-  private static _instance?: RmfLauncher;
+  private static _instance?: LocalLauncher;
 
   async launch(): Promise<void> {
-    if (process.env.ROMI_DASHBOARD_NO_LAUNCH) {
-      return;
-    }
-
     if (this._launched) {
       return;
     }
@@ -115,10 +112,6 @@ export class LocalLauncher {
   }
 
   async kill(): Promise<void> {
-    if (process.env.ROMI_DASHBOARD_NO_LAUNCH) {
-      return;
-    }
-
     await Promise.all([
       this._officeDemo?.kill('SIGINT'),
       this._soss && this._killProcess(this._soss),
