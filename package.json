@@ -45,8 +45,7 @@
   },
   "scripts": {
     "start": ". e2e/env.sh && concurrently npm:start:auth npm:start:rmf npm:start:react",
-    "start:docker": ". e2e/env.sh && concurrently 'npm:start:docker:rmf' 'npm:start:react'",
-    "start:docker:rmf": "scripts/dockert docker-compose -f docker/docker-compose.yml up",
+    "start:docker": "ROMI_DASHBOARD_LAUNCH_MODE=docker npm run start",
     "start:auth": "scripts/dockert docker-compose -f docker/docker-compose.yml up auth",
     "start:react": "react-scripts start",
     "start:react:e2e": "serve -c ../e2e/serve.json build",

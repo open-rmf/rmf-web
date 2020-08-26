@@ -219,7 +219,7 @@ async function rmfReady(timeout: number = 30000): Promise<boolean> {
 /**
  * Launches rmf components in docker containers.
  */
-class DockerLauncher {
+export class DockerLauncher {
   async launch(): Promise<void> {
     if (this._proc) {
       return;
@@ -237,17 +237,7 @@ class DockerLauncher {
       ],
       { stdio: 'inherit' },
     );
-    process.on('beforeExit', () => {
-      this.kill();
-    });
-  }
-
-  async kill(): Promise<void> {
-    if (!this._proc) {
-      return;
-    }
-    this._proc.kill();
-    return new Promise(res => {
+    this._procExitPromise = new Promise(res => {
       if (!this._proc) {
         return res();
       }
@@ -255,14 +245,20 @@ class DockerLauncher {
     });
   }
 
+  async kill(): Promise<void> {
+    this._proc?.kill();
+    return this._procExitPromise;
+  }
+
   private _proc?: ChildProcess.ChildProcess;
+  private _procExitPromise?: Promise<void>;
 }
 
 /**
  * Stub launcher that does not do anything, useful in dev cycle when you want to manage the rmf
  * processes manually.
  */
-class StubLauncher {
+export class StubLauncher {
   async launch(): Promise<void> {}
   async kill(): Promise<void> {}
 }
