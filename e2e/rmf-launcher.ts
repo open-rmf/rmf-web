@@ -47,16 +47,13 @@ export class RmfLauncher {
     if (headless) {
       officeDemoArgs.push('headless:=true');
     }
-    this._officeDemo = new ManagedProcess('ros2', officeDemoArgs, { stdio: 'inherit' }, 'SIGINT');
+    this._officeDemo = new ManagedProcess('ros2', officeDemoArgs, { stdio: 'inherit' });
 
     this._soss = ChildProcess.spawn('soss', [`${__dirname}/soss.yaml`], { stdio: 'inherit' });
 
-    this._visualizerServer = new ManagedProcess(
-      'ros2',
-      ['launch', 'visualizer', 'server.xml'],
-      { stdio: 'inherit' },
-      'SIGINT',
-    );
+    this._visualizerServer = new ManagedProcess('ros2', ['launch', 'visualizer', 'server.xml'], {
+      stdio: 'inherit',
+    });
 
     const ready = await rmfReady();
     if (!ready) {
@@ -72,9 +69,9 @@ export class RmfLauncher {
     }
 
     await Promise.all([
-      this._officeDemo?.kill(),
+      this._officeDemo?.kill('SIGINT'),
       this._soss && this._killProcess(this._soss),
-      this._visualizerServer?.kill(),
+      this._visualizerServer?.kill('SIGINT'),
     ]);
     this._officeDemo = undefined;
     this._soss = undefined;
@@ -122,9 +119,7 @@ class ManagedProcess {
     command: string,
     args: string[],
     options?: Omit<ChildProcess.SpawnOptions, 'detached'>,
-    killSignal?: NodeJS.Signals,
   ) {
-    this._killSignal = killSignal;
     this._proc = ChildProcess.spawn(command, args, {
       ...options,
       detached: true,
@@ -138,30 +133,29 @@ class ManagedProcess {
   /**
    * Kill the child process and all their childrens.
    */
-  async kill(): Promise<void> {
+  async kill(signal?: NodeJS.Signals): Promise<void> {
     if (!this._procAlive) {
       return;
     }
 
     return new Promise(res => {
       this._proc.once('exit', res);
-      process.kill(-this._proc.pid, this._killSignal);
+      process.kill(-this._proc.pid, signal);
     });
   }
 
   private _proc: ChildProcess.ChildProcess;
   private _procAlive = false;
-  private _killSignal?: NodeJS.Signals;
 }
 
 async function rmfReady(timeout: number = 30000): Promise<boolean> {
-  const ros2Echo = new ManagedProcess('ros2', [
+  const ros2Echo = ChildProcess.spawn('ros2', [
     'topic',
     'echo',
     'fleet_states',
     'rmf_fleet_msgs/msg/FleetState',
   ]);
-  if (!ros2Echo.alive) {
+  if (!ros2Echo) {
     return false;
   }
 
@@ -170,7 +164,7 @@ async function rmfReady(timeout: number = 30000): Promise<boolean> {
       ros2Echo && ros2Echo.kill();
       res(false);
     }, timeout);
-    ros2Echo.proc.stdout!.once('data', () => {
+    ros2Echo.stdout.once('data', () => {
       ros2Echo.kill();
       clearTimeout(timer);
       res(true);

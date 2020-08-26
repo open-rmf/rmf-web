@@ -44,7 +44,7 @@
     "uuid": "^8.1.0"
   },
   "scripts": {
-    "start": ". e2e/env.sh && concurrently -k 'npm:start:auth' 'npm:start:rmf' 'npm:start:react'",
+    "start": ". e2e/env.sh && concurrently npm:start:auth npm:start:rmf npm:start:react",
     "start:react": "react-scripts start",
     "start:react:e2e": "serve -c ../e2e/serve.json build",
     "start:mock": "REACT_APP_MOCK=1 react-scripts start",
