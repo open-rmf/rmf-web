@@ -94,7 +94,7 @@ password: admin
 
 ### Docker Based Backend
 
-First, download the docker images, the images are hosted on github packages so you will need a github account to access it, refer to [this](https://docs.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-docker-for-use-with-github-packages) for instructions.
+First, download the docker images, the images are hosted on github packages so you will need a github account to access it, refer to [here](https://docs.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-docker-for-use-with-github-packages) for instructions.
 
 After you have the credentials set up, run this to download the images
 
@@ -112,7 +112,7 @@ The rmf image is built nightly, if you would like to test against the latest bui
 
 #### Building Docker Images Locally
 
-If you would like, you can also build the images locally, doing so in simple with
+If you would like, you can also build the images locally, doing so is simple with
 
 ```bash
 docker-compose -f <path-to-romi-dashboard>/docker/rmf/docker-compose.yml build --no-cache
