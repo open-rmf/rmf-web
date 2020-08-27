@@ -1,8 +1,8 @@
-import { RmfLauncher } from '../rmf-launcher';
+import { makeLauncher } from '../rmf-launcher';
 import { login, overwriteClick } from './utils';
 
 describe('ui interactions', () => {
-  const launcher = RmfLauncher.instance;
+  const launcher = makeLauncher();
 
   before(async () => await launcher.launch());
   after(async () => await launcher.kill());

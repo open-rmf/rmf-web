@@ -1,8 +1,8 @@
-import { RmfLauncher } from '../rmf-launcher';
+import { makeLauncher } from '../rmf-launcher';
 import { getRobotLocations, login, overwriteClick } from './utils';
 
 describe('loop request', () => {
-  const launcher = RmfLauncher.instance;
+  const launcher = makeLauncher();
 
   before(async () => await launcher.launch());
   after(async () => await launcher.kill());

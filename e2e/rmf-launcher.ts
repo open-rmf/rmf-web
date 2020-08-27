@@ -103,7 +103,7 @@ export class LocalLauncher {
       stdio: 'inherit',
     });
 
-    const ready = await rmfReady();
+    const ready = await this._rmfReady();
     if (!ready) {
       throw new Error('unable to detect rmf');
     }
@@ -138,6 +138,30 @@ export class LocalLauncher {
     return new Promise(res => {
       proc.once('exit', res);
       proc.kill(signal);
+    });
+  }
+
+  private async _rmfReady(timeout: number = 30000): Promise<boolean> {
+    const ros2Echo = ChildProcess.spawn('ros2', [
+      'topic',
+      'echo',
+      'fleet_states',
+      'rmf_fleet_msgs/msg/FleetState',
+    ]);
+    if (!ros2Echo) {
+      return false;
+    }
+
+    return new Promise(res => {
+      const timer = setTimeout(() => {
+        ros2Echo && ros2Echo.kill();
+        res(false);
+      }, timeout);
+      ros2Echo.stdout.once('data', () => {
+        ros2Echo.kill();
+        clearTimeout(timer);
+        res(true);
+      });
     });
   }
 }
@@ -192,42 +216,14 @@ class ManagedProcess {
   private _procAlive = false;
 }
 
-async function rmfReady(timeout: number = 30000): Promise<boolean> {
-  const ros2Echo = ChildProcess.spawn('ros2', [
-    'topic',
-    'echo',
-    'fleet_states',
-    'rmf_fleet_msgs/msg/FleetState',
-  ]);
-  if (!ros2Echo) {
-    return false;
-  }
-
-  return new Promise(res => {
-    const timer = setTimeout(() => {
-      ros2Echo && ros2Echo.kill();
-      res(false);
-    }, timeout);
-    ros2Echo.stdout.once('data', () => {
-      ros2Echo.kill();
-      clearTimeout(timer);
-      res(true);
-    });
-  });
-}
-
 /**
  * Launches rmf components in docker containers.
  */
 export class DockerLauncher {
   async launch(): Promise<void> {
-    if (this._proc) {
-      return;
-    }
-    this._proc = ChildProcess.spawn(
-      `${__dirname}/../scripts/dockert`,
+    ChildProcess.spawn(
+      'docker-compose',
       [
-        'docker-compose',
         '-f',
         `${__dirname}/../docker/docker-compose.yml`,
         'up',
@@ -237,21 +233,57 @@ export class DockerLauncher {
       ],
       { stdio: 'inherit' },
     );
-    this._procExitPromise = new Promise(res => {
-      if (!this._proc) {
-        return res();
-      }
-      this._proc.once('exit', res);
-    });
+
+    const ready = await this._rmfReady();
+    if (!ready) {
+      throw new Error('unable to detect rmf');
+    }
   }
 
   async kill(): Promise<void> {
-    this._proc?.kill();
-    return this._procExitPromise;
+    return new Promise(res => {
+      const proc = ChildProcess.spawn('docker-compose', [
+        '-f',
+        `${__dirname}/../docker/docker-compose.yml`,
+        'stop',
+        'office-demo',
+        'trajectory-server',
+        'soss',
+      ]);
+      proc.once('exit', res);
+    });
   }
 
-  private _proc?: ChildProcess.ChildProcess;
-  private _procExitPromise?: Promise<void>;
+  private async _rmfReady(timeout: number = 30000): Promise<boolean> {
+    return new Promise(res => {
+      const proc = ChildProcess.spawn(
+        `${__dirname}/../scripts/dockert`,
+        [
+          'docker-compose',
+          '-f',
+          `${__dirname}/../docker/docker-compose.yml`,
+          'up',
+          '--exit-code-from',
+          'probe-rmf',
+          'probe-rmf',
+        ],
+        { stdio: 'inherit' },
+      );
+      if (!proc) {
+        return res(false);
+      }
+
+      const timer = setTimeout(() => {
+        proc.kill();
+        res(false);
+      }, timeout);
+
+      proc.once('exit', code => {
+        clearTimeout(timer);
+        res(code === 0);
+      });
+    });
+  }
 }
 
 /**

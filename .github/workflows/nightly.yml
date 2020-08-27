@@ -1,0 +1,40 @@
+name: Nightly
+on:
+  schedule:
+    - cron: '0 18 * * *'
+jobs:
+  build-docker-images:
+    name: Push Docker image to GitHub Packages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Push to GitHub Packages
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          repository: ${{ github.repository }}/rmf
+          tags: nightly
+          path: docker/rmf
+  e2e-test:
+    name: End-to-End Test
+    needs: build-docker-images
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - name: Prepare
+        run: |
+          npm ci
+          docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
+          docker pull docker.pkg.github.com/osrf/romi-dashboard/rmf:nightly
+          docker pull quay.io/keycloak/keycloak:11.0.0
+      - name: e2e test
+        env:
+          CI: true
+        # retry the test twice if it fails
+        run: |
+          npm run test:e2e:docker || npm run test:e2e:docker || npm run test:e2e:docker
