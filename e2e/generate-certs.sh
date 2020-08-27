@@ -12,13 +12,13 @@ keycloak_cert=$certs_dir/keycloak.crt
 keycloak_pub=$certs_dir/keycloak.pub
 
 openssl genrsa -out $ca_key
-openssl req -out $ca_cert -nodes -key $ca_key -new -x509 -subj '/C=SG/ST=SG/O=UNSAFE-Testing' -days 3650
+openssl req -out $ca_cert -nodes -key $ca_key -new -x509 -subj '/O=UNSAFE-Testing' -days 3650
 
 openssl genrsa -out $soss_key
-openssl req -nodes -key $soss_key -new -subj '/C=SG/ST=SG/O=UNSAFE-Testing/CN=localhost' -days 3650 -reqexts v3_req | openssl x509 -req -CA $ca_cert -CAkey $ca_key -CAcreateserial -extfile /etc/ssl/openssl.cnf -extensions usr_cert -out $soss_cert
+openssl req -nodes -key $soss_key -new -config $certs_dir/openssl.cnf | openssl x509 -req -CA $ca_cert -CAkey $ca_key -CAcreateserial -extfile $certs_dir/openssl.cnf -extensions usr_cert -days 3650 -out $soss_cert
 
 openssl genrsa -out $keycloak_key
-openssl req -nodes -key $keycloak_key -new -subj '/C=SG/ST=SG/O=UNSAFE-Testing/CN=localhost' -days 3650 -reqexts v3_req | openssl x509 -req -CA $ca_cert -CAkey $ca_key -CAcreateserial -extfile /etc/ssl/openssl.cnf -extensions usr_cert -out $keycloak_cert
+openssl req -nodes -key $keycloak_key -new -config $certs_dir/openssl.cnf | openssl x509 -req -CA $ca_cert -CAkey $ca_key -CAcreateserial -extfile $certs_dir/openssl.cnf -extensions v3_req -days 3650 -out $keycloak_cert
 openssl x509 -in $keycloak_cert -pubkey -noout -out $keycloak_pub
 
 rm $certs_dir/ca.srl

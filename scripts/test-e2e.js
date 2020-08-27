@@ -9,6 +9,6 @@ const wdioArgs = process.argv
   .map(arg => `"${arg}"`)
   .join(' ');
 
-concurrently(['npm:start:auth', 'npm:start:react:e2e', `wdio ${wdioArgs}`], {
+concurrently(['npm:start:auth', 'npm:start:react:e2e', `npm:test:e2e:wdio -- ${wdioArgs}`], {
   killOthers: ['success', 'failure'],
 });
