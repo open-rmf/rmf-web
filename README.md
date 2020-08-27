@@ -94,19 +94,31 @@ password: admin
 
 ### Docker Based Backend
 
-**Note**: This is still in the experimental stage.
+First, download the docker images, the images are hosted on github packages so you will need a github account to access it, refer to [this](https://docs.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-docker-for-use-with-github-packages) for instructions.
 
-First build the docker images with
+After you have the credentials set up, run this to download the images
 
 ```bash
-npm run build:docker
+npm run sync:docker
 ```
 
-This will checkout and build all required RMF components, this may take some time, after it is all done, you should be able to start a development backend with
+Then start the backend servers with
 
 ```bash
 npm run start:docker
 ```
+
+The rmf image is built nightly, if you would like to test against the latest build, be sure to update the docker images regularly.
+
+#### Building Docker Images Locally
+
+If you would like, you can also build the images locally, doing so in simple with
+
+```bash
+docker-compose -f <path-to-romi-dashboard>/docker/rmf/docker-compose.yml build --no-cache
+```
+
+This will download and build all of rmf so it may take awhile.
 
 ### External Server
 

@@ -40,8 +40,7 @@ jobs:
         run: |
           npm ci
           docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
-          docker pull docker.pkg.github.com/osrf/romi-dashboard/rmf:nightly
-          docker pull quay.io/keycloak/keycloak:11.0.0
+          npm run sync:docker
       - name: e2e test
         env:
           CI: true
