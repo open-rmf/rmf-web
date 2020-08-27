@@ -222,8 +222,9 @@ class ManagedProcess {
 export class DockerLauncher {
   async launch(): Promise<void> {
     ChildProcess.spawn(
-      'docker-compose',
+      `${__dirname}/../scripts/dockert`,
       [
+        'docker-compose',
         '-f',
         `${__dirname}/../docker/docker-compose.yml`,
         'up',
@@ -242,7 +243,8 @@ export class DockerLauncher {
 
   async kill(): Promise<void> {
     return new Promise(res => {
-      const proc = ChildProcess.spawn('docker-compose', [
+      const proc = ChildProcess.spawn(`${__dirname}/../scripts/dockert`, [
+        'docker-compose',
         '-f',
         `${__dirname}/../docker/docker-compose.yml`,
         'stop',
