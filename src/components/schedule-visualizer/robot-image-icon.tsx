@@ -27,7 +27,7 @@ const RobotImageIcon = React.forwardRef(function(
   ref: React.Ref<SVGGElement>,
 ): React.ReactElement {
   const classes = useStyles();
-  const { robot, footprint, iconPath, dispatchIconError, onClick, inConflict } = props;
+  const { robot, footprint, iconPath, dispatchIconError, inConflict } = props;
   const theme = useTheme();
   // The default icon uses footprint as the radius, so we * 2 here because the width/height
   // is in a square. With the double size of the footprint, we achieved a similar
@@ -46,9 +46,8 @@ const RobotImageIcon = React.forwardRef(function(
       {!!iconPath && (
         <g
           className={classes.robotImgContainer}
-          transform={`translate(${topVerticeX} ${-topVerticeY}) 
+          transform={`translate(${topVerticeX} ${-topVerticeY})
             rotate(${-(robot.location.yaw * 180) / Math.PI}, ${footprint}, ${footprint})`}
-          onClick={e => onClick && onClick(e, robot)}
         >
           <filter id={`${robot.name}-shadow`} x="-20%" y="-20%" width="140%" height="140%">
             <feDropShadow
