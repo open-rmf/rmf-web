@@ -28,6 +28,7 @@ import { DoorStateContext } from './schedule-visualizer/doors-overlay';
 import { LiftStateContext } from './schedule-visualizer/lift-overlay';
 import NotificationBar, { NotificationBarProps, NotificationBarContext } from './notification-bar';
 import { ResourceConfigurationsType } from '../resource-manager';
+import Tour from 'reactour';
 
 const borderRadius = 20;
 
@@ -161,6 +162,32 @@ export default function App(props: AppProps): JSX.Element {
     notificationBarMessage,
     setNotificationBarMessage,
   ] = React.useState<NotificationBarProps | null>(null);
+
+  const [tourState, setTourState] = React.useState(true);
+
+  const tourSteps = [
+    { selector: '', content: 'Welcome to the RoMi dashboard!' },
+    {
+      selector: '[class="leaflet-control-zoom leaflet-bar leaflet-control"]',
+      content:
+        'Click on the zoom buttons to change the view of the floor plan. Alternatively, the scroll button on your mouse would work too!',
+    },
+    {
+      selector: '[class="leaflet-control-layers leaflet-control"]',
+      content:
+        'Use the floor plan button to switch between available levels and enabling / disabling the view of different components',
+    },
+    {
+      selector: '[data-tour="omnipanel-button"]',
+      content:
+        'The omnipanel button shows the different items available in the dashboard. Clicking each item would list different information about it!',
+    },
+    {
+      selector: '[class="leaflet-image-layer leaflet-zoom-animated"]',
+      content:
+        'Clicking individual components like doors, robots, lifts on the map will open up its corresponding information tab in the omnipanel.',
+    },
+  ];
 
   React.useEffect(() => {
     setLoading({ caption: 'Connecting to SOSS server...' });
@@ -335,7 +362,7 @@ export default function App(props: AppProps): JSX.Element {
                   Dashboard
                 </Typography>
                 <IconButton color="inherit" onClick={() => setShowOmniPanel(!showOmniPanel)}>
-                  <DashboardIcon />
+                  <DashboardIcon data-tour="omnipanel-button" />
                 </IconButton>
                 <IconButton color="inherit" onClick={() => setShowSettings(true)}>
                   <SettingsIcon />
@@ -421,6 +448,7 @@ export default function App(props: AppProps): JSX.Element {
             message={notificationBarMessage?.message}
             type={notificationBarMessage?.type}
           />
+          <Tour steps={tourSteps} isOpen={tourState} onRequestClose={() => setTourState(false)} />
         </NotificationBarContext.Provider>
       </SettingsContext.Provider>
     </React.Fragment>
