@@ -1,9 +1,9 @@
 import { makeStyles } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import React, { useState, useContext } from 'react';
-import ColorManager from './colors';
-import ResourceManager from '../../resource-manager';
+import React, { useContext, useState } from 'react';
 import { ResourcesContext } from '../../app-contexts';
+import ResourceManager from '../../resource-manager';
+import ColorManager from './colors';
 import RobotDefaultIcon from './robot-default-icon';
 import RobotImageIcon from './robot-image-icon';
 
@@ -30,8 +30,8 @@ export interface RobotProps {
   colorManager: ColorManager;
   footprint: number;
   fleetName: string;
-  onClick?(e: React.MouseEvent<SVGGElement>, robot: RomiCore.RobotState): void;
   inConflict?: boolean;
+  onClick?(e: React.MouseEvent<SVGGElement>, robot: RomiCore.RobotState): void;
 }
 
 const Robot = React.forwardRef(function(
@@ -46,15 +46,32 @@ const Robot = React.forwardRef(function(
     path: ResourceManager.getRobotIconPath(resourcesContext, fleetName),
     error: false,
   });
+  const textRef = React.useRef<SVGTextElement>(null);
+
+  React.useEffect(() => {
+    const text = textRef.current;
+    if (!text) {
+      return;
+    }
+    // svg text does not support auto ellipses, this workaround by testing the text length and
+    // truncate it bit by bit until it fits the icon. Its abit hacky but it shouldn't be too bad
+    // unless the robot name is mega long.
+    for (text.textContent = robot.name; text.getComputedTextLength() > footprint * 1.9; ) {
+      text.textContent = text.textContent!.slice(0, text.textContent!.length - 6) + '...';
+    }
+    console.log(textRef.current?.textContent, textRef.current?.getComputedTextLength());
+  }, [robot.name, footprint]);
 
   return (
     <>
       <g
         ref={ref}
         data-component="Robot"
-        className={classes.container}
+        className={`${classes.container}`}
         aria-label={robot.name}
         onClick={e => onClick && onClick(e, robot)}
+        transform={`translate(${robot.location.x} ${-robot.location.y})
+            rotate(${-(robot.location.yaw * 180) / Math.PI})`}
       >
         {!!renderCustomIcon.path && !renderCustomIcon.error ? (
           <RobotImageIcon
@@ -72,15 +89,14 @@ const Robot = React.forwardRef(function(
             inConflict={inConflict}
           ></RobotDefaultIcon>
         )}
-        <text
-          id="robotName"
-          x={robot.location.x}
-          y={-robot.location.y}
-          className={classes.robotText}
-        >
-          {robot.name.substring(0, 8)}
-        </text>
       </g>
+      <text
+        ref={textRef}
+        id="robotName"
+        x={robot.location.x}
+        y={-robot.location.y}
+        className={classes.robotText}
+      />
     </>
   );
 });

@@ -24,20 +24,10 @@ const RobotImageIcon = React.forwardRef(function(
   // size to the robot default svg icon.
   const [imgIconWidth, imgIconHeigth] = useMemo(() => [footprint * 2, footprint * 2], [footprint]);
 
-  const { x: topVerticeX, y: topVerticeY } = transformMiddleCoordsOfRectToSVGBeginPoint(
-    robot.location.x,
-    robot.location.y,
-    imgIconWidth,
-    imgIconHeigth,
-  );
-
   return (
     <>
       {!!iconPath && (
-        <g
-          transform={`translate(${topVerticeX} ${-topVerticeY})
-            rotate(${-(robot.location.yaw * 180) / Math.PI}, ${footprint}, ${footprint})`}
-        >
+        <g transform={`translate(${-footprint} ${-footprint})`}>
           <filter id={`${robot.name}-shadow`} x="-20%" y="-20%" width="140%" height="140%">
             <feDropShadow
               dx="0"

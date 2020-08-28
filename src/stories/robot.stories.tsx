@@ -11,6 +11,7 @@ import {
   StyleTyping,
 } from './baseComponents/utils';
 import RobotButton from './baseComponents/robot-panel';
+import RobotGallery from './baseComponents/robot-gallery';
 
 export default {
   title: 'Robot',
@@ -92,3 +93,5 @@ export const robotPanel = () => (
     <RobotButton fleets={robotStates} />
   </div>
 );
+
+export const gallery = () => <RobotGallery />;
