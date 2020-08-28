@@ -1,44 +1,37 @@
 import React from 'react';
 
-import { createSegments, startingTheta } from './baseComponents/utils-trajectory';
+import { createTrajectories } from './baseComponents/utils-trajectory';
 import Trajectory from './baseComponents/trajectory';
 import { mapBound } from './baseComponents/utils';
 import ColorManager from '../components/schedule-visualizer/colors';
+import { defaultSettings, TrajectoryColor, Settings } from '../settings';
 
 export default {
   title: 'Trajectory',
 };
 
-const traj = createSegments(
-  10,
-  -7,
-  startingTheta.vertical.value,
-  startingTheta.vertical.direction.down,
-);
-const tempTraj = {
-  dimensions: 0.3,
-  fleet_name: 'tinyRobot',
-  id: 1,
-  robot_name: 'tinyRobot1',
-  segments: traj,
-  shape: 'circle',
-};
+const themeTrajectoryObject = createTrajectories(false, 1);
 const colorManager = new ColorManager();
-const conflictingRobotNames = [[]];
 
 const descriptions = {
   themColor: 'This is a non-conflicting trajectory using material-ui theme color, success.main.',
+};
+
+const themeSettings: Settings = {
+  ...defaultSettings(),
+  trajectoryColor: TrajectoryColor.Theme,
 };
 
 export const themeColorTrajectory = () => (
   <div>
     <Trajectory
       bounds={mapBound}
-      conflicts={[]}
+      conflicts={themeTrajectoryObject.conflicts}
       colorManager={colorManager}
-      conflictRobotNames={conflictingRobotNames}
-      trajs={[tempTraj]}
+      conflictRobotNames={themeTrajectoryObject.conflictingRobotName}
+      trajs={themeTrajectoryObject.trajectories}
       description={descriptions.themColor}
+      currSettings={themeSettings}
     />
   </div>
 );

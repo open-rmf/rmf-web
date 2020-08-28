@@ -39,6 +39,8 @@ export const startingTheta = {
  *
  * 1) Generating number of waypoints on a straight path per turn
  * 2) Generating a number (0 or 1) to decide turning direction
+ * 3) Staring points for x and y
+ * 4) Starting configuration
  */
 const generateNumber = (min: number, max: number): number => {
   min = Math.ceil(min);
@@ -56,7 +58,7 @@ const determineVelocity = (theta: number, direction: string, velocity: number): 
   else return [-velocity, 0.0, 0.0];
 };
 
-// determine the index to retrieve velocity in RawVelocity
+/** determine the index to retrieve velocity in RawVelocity */
 const determineVelocityIndex = (direction: string): number => {
   switch (direction) {
     case 'up':
@@ -70,7 +72,7 @@ const determineVelocityIndex = (direction: string): number => {
   }
 };
 
-// turning direction, 0 = right and 1 = left
+/**  turning direction, 0 = right and 1 = left */
 const determineThetaVelocity = (direction: number, thetaVelocity: number): number => {
   return direction === 0 ? thetaVelocity : -thetaVelocity;
 };
@@ -86,7 +88,7 @@ const calculateTheta = (currTheta: number, thetaVelocity: number): number => {
   }
 };
 
-// determine the direction of the straight segment after making a turn
+/**  determine the direction of the straight segment after making a turn */
 const determineDirection = (currDir: string, thetaVelocity: number): string => {
   if (currDir === 'up' && thetaVelocity > 0) return 'right';
   else if (currDir === 'up' && thetaVelocity < 0) return 'left';
@@ -99,7 +101,7 @@ const determineDirection = (currDir: string, thetaVelocity: number): string => {
 };
 
 // 5 < startX < 20
-// -11 < startY < -1
+// -13 < startY < -9
 export const createSegments = (
   startX: number,
   startY: number,
@@ -107,6 +109,8 @@ export const createSegments = (
   direction: string,
 ): RawKnot[] => {
   // fix number for now
+
+  // Change the number of turning points
   let turningPoints = 2;
   let startTime = 2000;
   let velocity = 0.5;
@@ -173,4 +177,74 @@ export const createSegments = (
   }
   console.log(segment);
   return segment;
+};
+
+/**
+ * Create a bunch of trajectories
+ * numberOfTraj must be >= 1
+ */
+export const createTrajectories = (isConflict: boolean, numberOfTraj: number) => {
+  const trajHolder = [];
+  const conflictHolder = [];
+  const conflictingRobotNameHolder = [];
+
+  for (let i = 0; i < numberOfTraj; i++) {
+    let knotHolder: RawKnot[] = [];
+    const startX = generateNumber(5, 20);
+    const startY = generateNumber(-13, -9);
+    const startConfiguration = generateNumber(1, 4);
+
+    switch (startConfiguration) {
+      case 1:
+        knotHolder = createSegments(
+          startX,
+          startY,
+          startingTheta.horizontal.value,
+          startingTheta.horizontal.direction.right,
+        );
+        break;
+      case 2:
+        knotHolder = createSegments(
+          startX,
+          startY,
+          startingTheta.horizontal.value,
+          startingTheta.horizontal.direction.left,
+        );
+        break;
+      case 3:
+        knotHolder = createSegments(
+          startX,
+          startY,
+          startingTheta.vertical.value,
+          startingTheta.vertical.direction.up,
+        );
+        break;
+      case 4:
+        knotHolder = createSegments(
+          startX,
+          startY,
+          startingTheta.vertical.value,
+          startingTheta.vertical.direction.down,
+        );
+        break;
+    }
+    trajHolder.push({
+      dimensions: 0.3,
+      fleet_name: 'tinyRobot',
+      id: i,
+      robot_name: 'tinyRobot' + i.toString(),
+      segments: knotHolder,
+      shape: 'circle',
+    });
+
+    if (isConflict) {
+      conflictHolder.push(i);
+      conflictingRobotNameHolder.push('tinyRobot' + i.toString());
+    }
+  }
+  return {
+    conflicts: [conflictHolder],
+    trajectories: trajHolder,
+    conflictingRobotName: [conflictingRobotNameHolder],
+  };
 };

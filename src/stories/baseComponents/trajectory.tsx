@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { Map as LMap } from 'react-leaflet';
 import * as L from 'leaflet';
 import { makeStyles } from '@material-ui/core';
-import { Button, Typography, Grid } from '@material-ui/core';
+import { Button, Typography } from '@material-ui/core';
 
 import RobotTrajectory from '../../components/schedule-visualizer/robot-trajectory';
 import { mapBound, maxBound, componentDisplayStyle, StyleTyping } from './utils';
-import { SettingsContext, TrajectoryAnimation } from '../../settings';
+import { TrajectoryAnimation, Settings } from '../../settings';
 import RobotTrajectoriesOverlay, {
   RobotTrajectoryContext,
   RobotTrajectoriesOverlayProps,
@@ -19,6 +19,7 @@ import {
 
 interface TrajectoryStoryProps extends RobotTrajectoriesOverlayProps {
   description: string;
+  currSettings: Settings;
 }
 
 const useStyles = makeStyles(() => ({
@@ -41,8 +42,16 @@ const styles: StyleTyping = {
 
 export default function Trajectory(props: TrajectoryStoryProps) {
   const classes = useStyles();
-  const { conflicts, colorManager, bounds, conflictRobotNames, trajs, description } = props;
-  const settings = React.useContext(SettingsContext);
+  const {
+    conflicts,
+    colorManager,
+    bounds,
+    conflictRobotNames,
+    trajs,
+    description,
+    currSettings,
+  } = props;
+  const settings = React.useContext(React.createContext(currSettings));
   const mapRef = React.useRef<LMap>(null);
 
   const [drawAnimation, setDrawAnimation] = useState(false);
