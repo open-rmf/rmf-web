@@ -175,7 +175,6 @@ export const createSegments = (
 
     turningPoints -= 1;
   }
-  console.log(segment);
   return segment;
 };
 
