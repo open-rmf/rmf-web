@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { Map as LMap } from 'react-leaflet';
 import * as L from 'leaflet';
 import { makeStyles } from '@material-ui/core';
-import { Button } from '@material-ui/core';
+import { Button, Typography, Grid } from '@material-ui/core';
 
 import RobotTrajectory from '../../components/schedule-visualizer/robot-trajectory';
-import { mapBound, maxBound, componentDisplayStyle } from './utils';
+import { mapBound, maxBound, componentDisplayStyle, StyleTyping } from './utils';
 import { SettingsContext, TrajectoryAnimation } from '../../settings';
 import RobotTrajectoriesOverlay, {
   RobotTrajectoryContext,
@@ -17,6 +17,10 @@ import {
   withOutlineAnimation,
 } from '../../components/schedule-visualizer/trajectory-animations';
 
+interface TrajectoryStoryProps extends RobotTrajectoriesOverlayProps {
+  description: string;
+}
+
 const useStyles = makeStyles(() => ({
   map: {
     height: '100%',
@@ -26,9 +30,18 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export default function Trajectory(props: RobotTrajectoriesOverlayProps) {
+const styles: StyleTyping = {
+  placeHolderText: {
+    marginTop: '2rem',
+  },
+  button: {
+    margin: '1rem auto',
+  },
+};
+
+export default function Trajectory(props: TrajectoryStoryProps) {
   const classes = useStyles();
-  const { conflicts, colorManager, bounds, conflictRobotNames, trajs } = props;
+  const { conflicts, colorManager, bounds, conflictRobotNames, trajs, description } = props;
   const settings = React.useContext(SettingsContext);
   const mapRef = React.useRef<LMap>(null);
 
@@ -62,19 +75,21 @@ export default function Trajectory(props: RobotTrajectoriesOverlayProps) {
 
   return (
     <div style={componentDisplayStyle.display}>
-      <div>
+      <div style={componentDisplayStyle.modeInfoPanel}>
+        <Typography variant="body1">{description}</Typography>
         <Button
           onClick={handleShowPath}
           disabled={disableButton}
           variant="contained"
           color="primary"
+          style={styles.button}
         >
           Draw Path
         </Button>
       </div>
       {drawAnimation ? (
         <LMap
-          id="ScheduleVisualizer" // # data-* attrs are not set on the leaflet container
+          id="ScheduleVisualizer"
           ref={mapRef}
           bounds={mapBound}
           maxBounds={maxBound}
@@ -97,7 +112,11 @@ export default function Trajectory(props: RobotTrajectoriesOverlayProps) {
           </RobotTrajectoryContext.Provider>
         </LMap>
       ) : (
-        <div>Click on the button to draw path</div>
+        <div style={styles.placeHolderText}>
+          <Typography align="center" variant="h6">
+            Click on the button to draw path
+          </Typography>
+        </div>
       )}
     </div>
   );

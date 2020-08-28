@@ -26,7 +26,11 @@ const tempTraj = {
 const colorManager = new ColorManager();
 const conflictingRobotNames = [[]];
 
-export const test = () => (
+const descriptions = {
+  themColor: 'This is a non-conflicting trajectory using material-ui theme color, success.main.',
+};
+
+export const themeColorTrajectory = () => (
   <div>
     <Trajectory
       bounds={mapBound}
@@ -34,6 +38,7 @@ export const test = () => (
       colorManager={colorManager}
       conflictRobotNames={conflictingRobotNames}
       trajs={[tempTraj]}
+      description={descriptions.themColor}
     />
   </div>
 );
