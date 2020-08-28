@@ -21,6 +21,7 @@ const Waypoint = (props: WaypointProps): React.ReactElement => {
         />
       </filter>
       <rect
+        className={classes.waypointMarker}
         x={-size}
         y={-size}
         width={size * 2}
@@ -38,6 +39,9 @@ const Waypoint = (props: WaypointProps): React.ReactElement => {
 export default Waypoint;
 
 const useStyles = makeStyles(() => ({
+  waypointMarker: {
+    pointerEvents: 'none',
+  },
   waypointText: {
     dominantBaseline: 'central',
     textAnchor: 'middle',
