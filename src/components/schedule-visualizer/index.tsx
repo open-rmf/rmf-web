@@ -303,16 +303,6 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
               </Pane>
             )}
           </LayersControl.Overlay>
-          <LayersControl.Overlay name="Waypoints" checked>
-            {curMapFloorLayer && (
-              <Pane>
-                <WaypointsOverlay
-                  bounds={curMapFloorLayer.bounds}
-                  currentLevel={curMapFloorLayer.level}
-                />
-              </Pane>
-            )}
-          </LayersControl.Overlay>
           <LayersControl.Overlay name="Doors" checked>
             {curMapFloorLayer && (
               <Pane>
@@ -346,6 +336,16 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
                   colorManager={colorManager}
                   onRobotClick={props.onRobotClick}
                   conflictRobotNames={conflictRobotNames}
+                />
+              </Pane>
+            )}
+          </LayersControl.Overlay>
+          <LayersControl.Overlay name="Waypoints" checked>
+            {curMapFloorLayer && (
+              <Pane>
+                <WaypointsOverlay
+                  bounds={curMapFloorLayer.bounds}
+                  currentLevel={curMapFloorLayer.level}
                 />
               </Pane>
             )}
