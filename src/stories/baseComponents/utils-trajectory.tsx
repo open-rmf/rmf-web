@@ -1,11 +1,4 @@
-import {
-  TrajectoryResponse,
-  Trajectory,
-  RawKnot,
-  rawKnotsToKnots,
-  RawVelocity,
-} from '../../robot-trajectory-manager';
-import { bezierControlPoints, knotsToSegmentCoefficientsArray } from '../../util/cublic-spline';
+import { RawKnot, RawVelocity } from '../../robot-trajectory-manager';
 
 /***
  * Some documentation on the +ve and -ve signs and the directions that they represent

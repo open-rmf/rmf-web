@@ -2,7 +2,7 @@ import React from 'react';
 
 import { createSegments, startingTheta } from './baseComponents/utils-trajectory';
 import Trajectory from './baseComponents/trajectory';
-import { footprint, mapBound } from './baseComponents/utils';
+import { mapBound } from './baseComponents/utils';
 import ColorManager from '../components/schedule-visualizer/colors';
 
 export default {

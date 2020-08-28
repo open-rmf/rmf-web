@@ -1,22 +1,12 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { AttributionControl, ImageOverlay, LayersControl, Map as LMap, Pane } from 'react-leaflet';
+import React, { useState } from 'react';
+import { Map as LMap } from 'react-leaflet';
 import * as L from 'leaflet';
 import { makeStyles } from '@material-ui/core';
-import { Divider, Typography, Button, Grid } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 
-import RobotTrajectory, {
-  RobotTrajectoryProps,
-} from '../../components/schedule-visualizer/robot-trajectory';
-import { viewBoxCoords, mapBound, maxBound, componentDisplayStyle } from './utils';
-import {
-  SettingsContext,
-  TrajectoryColor,
-  TrajectoryDiameter,
-  defaultSettings,
-  Settings,
-  AnimationSpeed,
-  TrajectoryAnimation,
-} from '../../settings';
+import RobotTrajectory from '../../components/schedule-visualizer/robot-trajectory';
+import { mapBound, maxBound, componentDisplayStyle } from './utils';
+import { SettingsContext, TrajectoryAnimation } from '../../settings';
 import RobotTrajectoriesOverlay, {
   RobotTrajectoryContext,
   RobotTrajectoriesOverlayProps,
