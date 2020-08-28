@@ -52,11 +52,12 @@ export default function Trajectory(props: RobotTrajectoriesOverlayProps) {
     setTimeout(() => {
       setDrawAnimation(false);
       setDisableButton(false);
-    }, 3100);
+    }, 5000);
   };
+  const animDuration = 1000;
 
   const TrajectoryComponent = React.useMemo(() => {
-    const animationScale = 6000 / 2000;
+    const animationScale = 6000 / animDuration;
     switch (settings.trajectoryAnimation) {
       case TrajectoryAnimation.None:
         return RobotTrajectory;
@@ -67,7 +68,7 @@ export default function Trajectory(props: RobotTrajectoriesOverlayProps) {
       case TrajectoryAnimation.Outline:
         return withOutlineAnimation(RobotTrajectory, animationScale);
     }
-  }, [settings.trajectoryAnimation, 2000]);
+  }, [settings.trajectoryAnimation, animDuration]);
 
   return (
     <div style={componentDisplayStyle.display}>
