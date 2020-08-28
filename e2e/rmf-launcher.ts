@@ -103,7 +103,7 @@ export class RmfLauncher {
  * It spawns processes in their own process groups. The `kill` method will kill the process and
  * all its childrens.
  *
- * This is needed espacially for `ros2 launch` because newer versions of it no longer propagate
+ * This is needed especially for `ros2 launch` because newer versions of it no longer propagate
  * signals to its children. So killing `ros2 launch` will leave zombie processes.
  */
 class ManagedProcess {
