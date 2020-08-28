@@ -4,14 +4,9 @@
 
 FROM ros:eloquent AS builder
 
-# helpful packages for development
-RUN apt-get update && apt-get install -y curl wget ssh bash-completion
-
-# enable bash completion for root user
-RUN sed -i '/bash_completion/,+2s/#\(.*\)/\1/' /root/.bashrc
-
 # add gazebo/ignition repo
-RUN sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list' \
+RUN apt-get update && apt-get install -y curl wget \
+  && sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list' \
   && wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add - \
   && apt-get update
 
@@ -30,12 +25,16 @@ RUN mkdir src && cd src && \
 RUN rosdep update && rosdep install --from-paths src --ignore-src -yr
 
 # other dependencies
-# TODO: ros-eloquent-test-msgs could be included in rosdep, remove it when its fixed in soss.
-RUN apt-get update && apt-get install -y g++-8 libignition-common3-dev libignition-plugin-dev ros-eloquent-test-msgs
+RUN apt-get update && apt-get install -y g++-8 \
+  # needed by traffic editor
+  libignition-common3-dev libignition-plugin-dev \
+  # needed by soss
+  ros-eloquent-test-msgs \
+  && rm -rf /var/lib/apt/lists/*
 
 # build rmf
 ENV CXX=g++-8
-RUN /ros_entrypoint.sh colcon build --merge-install
+RUN /ros_entrypoint.sh colcon build --merge-install --cmake-args -DCMAKE_BUILD_TYPE=Release
 
 #----------
 # Stage 2
@@ -43,11 +42,15 @@ RUN /ros_entrypoint.sh colcon build --merge-install
 
 FROM builder
 
+WORKDIR /root
+
 # TODO: rosdep doesn't support installing only exec dependencies (https://github.com/ros-infrastructure/rosdep/pull/727)
 #   When the PR is merged, we can do a multi-stage build and include only whats needed at runtime.
 # FROM ros:eloquent
 # COPY --from=0 /root/rmf/install /opt/rmf
-RUN ln -s /root/rmf/install /opt/rmf
+# RUN rosdep ...
+COPY --from=builder /root/rmf/install /opt/rmf
+RUN rm -rf /root/rmf
 
 # TODO: these packages are missing in https://github.com/osrf/rmf_schedule_visualizer, remove these once its been fixed.
 RUN apt-get update && apt-get install -y ros-${ROS_DISTRO}-launch-xml && rm -rf /var/lib/apt/lists/*
