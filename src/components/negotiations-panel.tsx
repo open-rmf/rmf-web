@@ -1,5 +1,4 @@
 import React from 'react';
-//import DispenserItem from './dispenser-item';
 import { makeStyles } from '@material-ui/core/styles';
 import TreeView from '@material-ui/lab/TreeView';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -61,9 +60,9 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
     // TODO: spotlight
   }, [spotlight]);
   
-  /**  Utility conversion functions **/
   const classes = useStyles();
 
+  /**  Utility conversion functions **/
   const determineStatusText = (status : NegotiationStatusManager.NegotiationStatus,
     parent_resolved : NegotiationStatusManager.ResolveState) => {
     let status_text = "";
@@ -81,7 +80,7 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
   };
   const determineStyle = (status : NegotiationStatusManager.NegotiationStatus, 
     parent_resolved : NegotiationStatusManager.ResolveState) => {
-    var style = classes.ongoing;
+    let style = classes.ongoing;
     if (status.forfeited)
       style = classes.forfeited;
     else if (status.rejected)
@@ -94,13 +93,13 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
   };
 
   // keep track of parameters so we can send them as requests
-  var nodeid_to_parameters = new Map<string, Parameter>();
+  let nodeid_to_parameters = new Map<string, Parameter>();
 
   /** Render Negotiation panel contents **/
   const renderNegotiations = (version : string, conflict : NegotiationStatusManager.NegotiationConflict) => {
     let conflict_label = "Conflict #" + version + ", Participants: ";
-    var i = 0;
-    for (var name of Object.values(conflict.participant_ids_to_names))
+    let i = 0;
+    for (const name of Object.values(conflict.participant_ids_to_names))
     {
       conflict_label += name;
 
@@ -114,23 +113,23 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
     else if (conflict.resolved === NegotiationStatusManager.ResolveState.FAILED)
       conflict_style = classes.unresolved;
 
-    var table_dom : JSX.Element[] = [];
-    for (var [participant_id, status_data] of Object.entries(conflict.participant_ids_to_status))
+    let table_dom : JSX.Element[] = [];
+    for (const [participant_id, status_data] of Object.entries(conflict.participant_ids_to_status))
     {
       // status handling and background
-      var participant_name = conflict.participant_ids_to_names[participant_id];
+      const participant_name = conflict.participant_ids_to_names[participant_id];
         
       //add 1 or 2 rows of data depending on the sequence
       
       if (status_data.has_terminal && status_data.terminal.sequence.length > 1)
       {
-        var terminal_status = status_data.terminal;
+        const terminal_status = status_data.terminal;
         
         //set text and style for terminal node
         let terminal_label_text = participant_name;
         terminal_label_text += " -> [";
-        var last_idx = (terminal_status.sequence.length - 1);
-        for (var idx = 0; idx < last_idx; ++idx)
+        const last_idx = (terminal_status.sequence.length - 1);
+        for (let idx = 0; idx < last_idx; ++idx)
         {
           let seq_id = terminal_status.sequence[idx].toString();
           let seq_id_name = conflict.participant_ids_to_names[seq_id];
@@ -148,7 +147,7 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
         let base_status = status_data.base;
 
         let base_label_text = "[";
-        let seq_id_name = conflict.participant_ids_to_names[base_status.sequence[0]];
+        const seq_id_name = conflict.participant_ids_to_names[base_status.sequence[0]];
         base_label_text += seq_id_name;
         base_label_text += "]";
         base_label_text += determineStatusText(base_status, conflict.resolved);
@@ -215,7 +214,7 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
   }
   
   // action callbacks
-  const handleSelect = (event: React.ChangeEvent<{}>, nodeIds: string) => {
+  const handleSelect = (event: React.ChangeEvent<{}>, nodeIds: string) :void => {
     //console.log("selected: " + nodeIds);
 
     async function updateNegotiationTrajectory() {
@@ -223,7 +222,7 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
         return;
       }
 
-      var traj_params = nodeid_to_parameters.get(nodeIds);
+      const traj_params = nodeid_to_parameters.get(nodeIds);
       if (!traj_params) {
         //Must have clicked a top level node
         return;
@@ -244,7 +243,6 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
 
   return (
     <TreeView
-      //className={classes.root}
       onNodeSelect={handleSelect}
       defaultCollapseIcon={<ExpandMoreIcon />}
       defaultExpanded={['root']}
