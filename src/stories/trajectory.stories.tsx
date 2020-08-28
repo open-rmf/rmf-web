@@ -11,6 +11,7 @@ export default {
 };
 
 const themeTrajectoryObject = createTrajectories(false, 1);
+const conflictTrajectoryObject = createTrajectories(true, 2);
 const colorManager = new ColorManager();
 
 const descriptions = {
@@ -23,15 +24,25 @@ const themeSettings: Settings = {
 };
 
 export const themeColorTrajectory = () => (
-  <div>
-    <Trajectory
-      bounds={mapBound}
-      conflicts={themeTrajectoryObject.conflicts}
-      colorManager={colorManager}
-      conflictRobotNames={themeTrajectoryObject.conflictingRobotName}
-      trajs={themeTrajectoryObject.trajectories}
-      description={descriptions.themColor}
-      currSettings={themeSettings}
-    />
-  </div>
+  <Trajectory
+    bounds={mapBound}
+    conflicts={themeTrajectoryObject.conflicts}
+    colorManager={colorManager}
+    conflictRobotNames={themeTrajectoryObject.conflictingRobotName}
+    trajs={themeTrajectoryObject.trajectories}
+    description={descriptions.themColor}
+    currSettings={themeSettings}
+  />
+);
+
+export const conflictTrajectory = () => (
+  <Trajectory
+    bounds={mapBound}
+    conflicts={conflictTrajectoryObject.conflicts}
+    colorManager={colorManager}
+    conflictRobotNames={conflictTrajectoryObject.conflictingRobotName}
+    trajs={conflictTrajectoryObject.trajectories}
+    description={descriptions.themColor}
+    currSettings={defaultSettings()}
+  />
 );

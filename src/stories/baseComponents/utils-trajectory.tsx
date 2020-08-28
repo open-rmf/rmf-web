@@ -101,7 +101,7 @@ const determineDirection = (currDir: string, thetaVelocity: number): string => {
 };
 
 // 5 < startX < 20
-// -13 < startY < -9
+// -11 < startY < -7
 export const createSegments = (
   startX: number,
   startY: number,
@@ -191,7 +191,7 @@ export const createTrajectories = (isConflict: boolean, numberOfTraj: number) =>
   for (let i = 0; i < numberOfTraj; i++) {
     let knotHolder: RawKnot[] = [];
     const startX = generateNumber(5, 20);
-    const startY = generateNumber(-13, -9);
+    const startY = generateNumber(-11, -7);
     const startConfiguration = generateNumber(1, 4);
 
     switch (startConfiguration) {
