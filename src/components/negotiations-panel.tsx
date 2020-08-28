@@ -215,7 +215,6 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
   
   // action callbacks
   const handleSelect = (event: React.ChangeEvent<{}>, nodeIds: string) :void => {
-    //console.log("selected: " + nodeIds);
 
     async function updateNegotiationTrajectory() {
       if (!props.trajManager) {
