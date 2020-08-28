@@ -27,7 +27,7 @@ import {
   withOutlineAnimation,
 } from './trajectory-animations';
 import WaypointsOverlay from './waypoints-overlay';
-import ResourceManager, { ResourceConfigurationsType } from '../../resource-manager';
+import DispensersOverlay from './dispensers-overlay';
 
 const debug = Debug('ScheduleVisualizer');
 
@@ -405,6 +405,19 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
               <WaypointsOverlay
                 bounds={curMapFloorLayer.bounds}
                 currentLevel={curMapFloorLayer.level}
+              />
+            </Pane>
+          )}
+        </LayersControl.Overlay>
+        <LayersControl.Overlay name="Dispensers" checked>
+          {curMapFloorLayer && (
+            <Pane>
+              <DispensersOverlay
+                currentFloorName={curLevelName}
+                bounds={curMapFloorLayer.bounds}
+                colorManager={colorManager}
+                onRobotClick={props.onRobotClick}
+                conflictRobotNames={conflictRobotNames}
               />
             </Pane>
           )}
