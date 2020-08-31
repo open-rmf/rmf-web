@@ -21,6 +21,7 @@ const partialConflictfollowAnim = {
   ...multipleTrajs,
   conflicts: [[1, 2, 3, 4, 5, 6, 7, 8, 9, 19]],
 };
+const spam = createTrajectories(false, 150);
 
 const colorManager = new ColorManager();
 
@@ -32,6 +33,7 @@ const descriptions = {
   followAnimConflict: 'Follow animation with all trajectories conflicting',
   outlineAnim: 'Trajectory with outline animation',
   fillAnim: 'Trajectory with fill animation',
+  spam: 'Spam trajectories to test performance',
 };
 
 const themeSettings: Settings = {
@@ -130,5 +132,17 @@ export const fillAnimation = () => (
     trajs={multipleTrajs.trajectories}
     description={descriptions.fillAnim}
     currSettings={fillAnimSettings}
+  />
+);
+
+export const spamTrajectories = () => (
+  <Trajectory
+    bounds={mapBound}
+    conflicts={spam.conflicts}
+    colorManager={colorManager}
+    conflictRobotNames={spam.conflictingRobotName}
+    trajs={spam.trajectories}
+    description={descriptions.spam}
+    currSettings={defaultSettings()}
   />
 );
