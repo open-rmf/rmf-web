@@ -231,7 +231,7 @@ export default function App(props: AppProps): JSX.Element {
       },
     },
     {
-      selector: '[data-name="door button group"]',
+      selector: '[data-name="door-button-group"]',
       content:
         'Each door tab comes with buttons to simulate opening and closing of doors and the door state will be updated accordingly',
     },
