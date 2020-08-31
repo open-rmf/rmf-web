@@ -4,10 +4,15 @@ import L from 'leaflet';
 import { Map as LMap } from 'react-leaflet';
 import RobotsOverlay from '../robots-overlay';
 import ColorManager from '../colors';
-import Robot from '../robot';
+import Robot_, { RobotProps } from '../robot';
 import fakeFleets from '../../../mock/data/fleets';
 import getBuildingMap from '../../../mock/data/building-map';
 import { createMuiTheme } from '@material-ui/core';
+
+const Robot = (props: RobotProps) => (
+  // eslint-disable-next-line react/jsx-pascal-case
+  <Robot_ {...props} NameLabelComponent={jest.fn().mockReturnValue(null)} />
+);
 
 describe('Robots Overlay', () => {
   const fleets = fakeFleets();
@@ -31,6 +36,7 @@ describe('Robots Overlay', () => {
           colorManager={colorManager}
           conflictRobotNames={conflictRobotNames}
           currentFloorName={buildingMap.levels[0].name}
+          RobotComponent={Robot}
         />
       </LMap>,
     );
@@ -52,6 +58,7 @@ describe('Robots Overlay', () => {
           colorManager={colorManager}
           conflictRobotNames={conflictRobotNames}
           currentFloorName={buildingMap.levels[0].name}
+          RobotComponent={Robot}
         />
       </LMap>,
     );

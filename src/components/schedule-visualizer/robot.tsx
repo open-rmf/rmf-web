@@ -6,6 +6,7 @@ import ResourceManager from '../../resource-manager';
 import ColorManager from './colors';
 import RobotDefaultIcon from './robot-default-icon';
 import RobotImageIcon from './robot-image-icon';
+import SvgText, { SvgTextProps } from './svg-text';
 
 const useStyles = makeStyles(() => ({
   robotText: {
@@ -31,6 +32,7 @@ export interface RobotProps {
   footprint: number;
   fleetName: string;
   inConflict?: boolean;
+  NameLabelComponent?: React.ElementType<SvgTextProps>;
   onClick?(e: React.MouseEvent<SVGGElement>, robot: RomiCore.RobotState): void;
 }
 
@@ -40,27 +42,22 @@ const Robot = React.forwardRef(function(
 ): React.ReactElement {
   const resourcesContext = useContext(ResourcesContext);
   const classes = useStyles();
-  const { robot, footprint, colorManager, fleetName, inConflict, onClick } = props;
+  const {
+    robot,
+    footprint,
+    colorManager,
+    fleetName,
+    inConflict,
+    NameLabelComponent,
+    onClick,
+  } = props;
+  const Text = NameLabelComponent || SvgText;
+
   // The only image formats SVG software support are JPEG, PNG, and other SVG files.
   const [renderCustomIcon, setRenderCustomIcon] = useState({
     path: ResourceManager.getRobotIconPath(resourcesContext, fleetName),
     error: false,
   });
-  const textRef = React.useRef<SVGTextElement>(null);
-
-  React.useEffect(() => {
-    const text = textRef.current;
-    if (!text) {
-      return;
-    }
-    // svg text does not support auto ellipses, this workaround by testing the text length and
-    // truncate it bit by bit until it fits the icon. Its abit hacky but it shouldn't be too bad
-    // unless the robot name is mega long.
-    for (text.textContent = robot.name; text.getComputedTextLength() > footprint * 1.9; ) {
-      text.textContent = text.textContent!.slice(0, text.textContent!.length - 6) + '...';
-    }
-    console.log(textRef.current?.textContent, textRef.current?.getComputedTextLength());
-  }, [robot.name, footprint]);
 
   return (
     <>
@@ -90,11 +87,12 @@ const Robot = React.forwardRef(function(
           ></RobotDefaultIcon>
         )}
       </g>
-      <text
-        ref={textRef}
+      <Text
         id="robotName"
+        text={robot.name}
         x={robot.location.x}
         y={-robot.location.y}
+        targetWidth={footprint * 1.9}
         className={classes.robotText}
       />
     </>
