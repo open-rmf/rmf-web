@@ -16,7 +16,7 @@ const RobotDefaultIcon = React.forwardRef(function(
   ref: React.Ref<SVGGElement>,
 ): React.ReactElement {
   const classes = useStyles();
-  const { robot, footprint, colorManager, inConflict, onClick } = props;
+  const { robot, footprint, colorManager, inConflict } = props;
   const [robotColor, setRobotColor] = useState<string | null>(() =>
     colorManager.robotColorFromCache(robot.name, robot.model),
   );
@@ -47,7 +47,6 @@ const RobotDefaultIcon = React.forwardRef(function(
           </filter>
           <circle
             className={classes.robotMarker}
-            onClick={e => onClick && onClick(e, robot)}
             r={footprint}
             fill={robotColor}
             filter={`url(#${robot.name}-shadow)`}
