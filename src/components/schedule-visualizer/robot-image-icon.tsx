@@ -1,6 +1,5 @@
 import { useTheme } from '@material-ui/core';
 import React, { useMemo } from 'react';
-import { transformMiddleCoordsOfRectToSVGBeginPoint } from '../../util/calculation-helpers';
 import { RobotProps } from './robot';
 
 type RobotImageIconProps = Omit<RobotProps, 'colorManager' | 'fleetName'> & {
