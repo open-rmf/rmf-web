@@ -34,7 +34,11 @@ const RobotDefaultIcon = React.forwardRef(function(
               floodColor={inConflict ? theme.palette.error.main : theme.palette.common.black}
             />
           </filter>
-          <circle r={footprint} fill={robotColor} filter={`url(#${robot.name}-shadow)`} />
+          <circle
+            r={footprint}
+            fill={robotColor}
+            filter={`url(${encodeURI(`#${robot.name}-shadow`)}`}
+          />
           <line x2={footprint} stroke={theme.palette.common.black} strokeWidth="0.05" />
         </g>
       )}
