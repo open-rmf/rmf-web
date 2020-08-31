@@ -25,6 +25,7 @@ import DoorsOverlay from './doors-overlay';
 import LiftsOverlay from './lift-overlay';
 import { ResourcesContext } from '../../app-contexts';
 import { ResourceConfigurationsType } from '../../resource-manager';
+import WaypointsOverlay from './waypoints-overlay';
 
 const useStyles = makeStyles(() => ({
   map: {
@@ -335,6 +336,16 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
                   colorManager={colorManager}
                   onRobotClick={props.onRobotClick}
                   conflictRobotNames={conflictRobotNames}
+                />
+              </Pane>
+            )}
+          </LayersControl.Overlay>
+          <LayersControl.Overlay name="Waypoints" checked>
+            {curMapFloorLayer && (
+              <Pane>
+                <WaypointsOverlay
+                  bounds={curMapFloorLayer.bounds}
+                  currentLevel={curMapFloorLayer.level}
                 />
               </Pane>
             )}

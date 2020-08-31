@@ -1,0 +1,52 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Renders correctly 1`] = `
+<svg>
+  <Waypoint
+    size={1}
+    waypoint={
+      Object {
+        "name": "station_1",
+        "params": Array [],
+        "x": 11.651602745056152,
+        "y": -6.966331958770752,
+      }
+    }
+  >
+    <g
+      transform="translate(11.651602745056152 6.966331958770752)"
+    >
+      <filter
+        height="140%"
+        id="station_1-shadow"
+        width="140%"
+        x="-20%"
+        y="-20%"
+      >
+        <feDropShadow
+          dx={-0.1}
+          dy={-0.1}
+          floodColor="black"
+          stdDeviation={0.15}
+        />
+      </filter>
+      <rect
+        className="makeStyles-waypointMarker-1"
+        fill="#FFBF00"
+        filter="url(#station_1-shadow)"
+        height={2}
+        width={2}
+        x={-1}
+        y={-1}
+      />
+      <text
+        className="makeStyles-waypointText-2"
+        id="wayportName"
+        y={2.5}
+      >
+        station_1
+      </text>
+    </g>
+  </Waypoint>
+</svg>
+`;
