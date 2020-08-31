@@ -16,6 +16,12 @@ const useStyles = makeStyles(() => ({
     fill: 'white',
     /* 1 pixel black shadow to left, top, right and bottom */
     textShadow: '-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black',
+    pointerEvents: 'none',
+  },
+
+  container: {
+    pointerEvents: 'visible',
+    cursor: 'pointer',
   },
 }));
 
@@ -46,6 +52,7 @@ const Robot = React.forwardRef(function(
       <g
         ref={ref}
         data-component="Robot"
+        className={classes.container}
         aria-label={robot.name}
         onClick={e => onClick && onClick(e, robot)}
       >
