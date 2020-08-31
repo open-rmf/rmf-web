@@ -166,7 +166,13 @@ export default function App(props: AppProps): JSX.Element {
   const [tourState, setTourState] = React.useState(true);
 
   const tourSteps = [
-    { selector: '', content: 'Welcome to the RoMi dashboard!' },
+    {
+      selector: '',
+      content: 'Welcome to the RoMi dashboard!',
+      action: () => {
+        setShowOmniPanel(false);
+      },
+    },
     {
       selector: '[class="leaflet-control-zoom leaflet-bar leaflet-control"]',
       content:
@@ -178,14 +184,56 @@ export default function App(props: AppProps): JSX.Element {
         'Use the floor plan button to switch between available levels and enabling / disabling the view of different components',
     },
     {
-      selector: '[data-tour="omnipanel-button"]',
-      content:
-        'The omnipanel button shows the different items available in the dashboard. Clicking each item would list different information about it!',
-    },
-    {
       selector: '[class="leaflet-image-layer leaflet-zoom-animated"]',
       content:
         'Clicking individual components like doors, robots, lifts on the map will open up its corresponding information tab in the omnipanel.',
+      action: () => {
+        setShowOmniPanel(false);
+      },
+    },
+    {
+      selector: '[data-tour="omnipanel-button"]',
+      content:
+        'The omnipanel button shows the different panel options available in the dashboard. Clicking each item would list different information about it!',
+      action: () => {
+        setShowOmniPanel(true);
+        if (currentView !== 0) {
+          setCurrentView(OmniPanelViewIndex.MainMenu);
+        }
+      },
+    },
+    {
+      selector: '[data-component="MainMenu"]',
+      content: 'Each panel contains a list of the available items and their state',
+      action: () => {
+        if (!showOmniPanel) {
+          setShowOmniPanel(true);
+        }
+        if (currentView !== 0) {
+          setCurrentView(OmniPanelViewIndex.MainMenu);
+        }
+      },
+    },
+    {
+      selector: '',
+      content: 'Let us take a look into the doors panel',
+      action: () => {
+        setCurrentView(OmniPanelViewIndex.Doors);
+      },
+    },
+    {
+      selector: '[data-name="main_door"]',
+      content: 'Here is an example of what you will see when a door tab is expanded!',
+      action: () => {
+        if (!doorSpotlight) {
+          setDoorSpotlight({ value: 'main_door' });
+        }
+      },
+    },
+    {
+      selector: '[data-name="door button group"]',
+      content:
+        'Each door tab comes with buttons to simulate opening and closing of doors and the door state will be updated accordingly',
     },
   ];
 
