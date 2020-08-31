@@ -4,8 +4,9 @@ export default function fakeResources(): ResourceConfigurationsType {
   return {
     dispensers: {
       coke_ingestor: {
-        icons: { coke: '/robots/magni/magni.png' },
+        icons: { coke_ingestor: '/robots/magni/magni.png' },
         position: { x: 10, y: 5, z: 10 },
+        name: 'coke_ingestor',
       },
     },
     robots: {

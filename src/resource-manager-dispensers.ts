@@ -1,7 +1,16 @@
 import { RobotResourceManager } from './resource-manager-robots';
 
-interface ResourceDispenserConfigurationInterface {
+interface Location {
+  x: number;
+  y: number;
+  yaw: number;
+  level_name: string;
+}
+
+export interface ResourceDispenserConfigurationInterface {
   icons: Record<string, string>;
+  location: Location;
+  name: string;
 }
 
 export type ResourceDispenserConfigurationType = Record<
@@ -43,4 +52,12 @@ export class DispenserResourceManager {
     }
     return true;
   };
+
+  get all(): ResourceDispenserConfigurationType {
+    return this.dispensers;
+  }
+
+  get allValues(): ResourceDispenserConfigurationInterface[] {
+    return Object.values(this.dispensers);
+  }
 }

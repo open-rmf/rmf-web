@@ -1,34 +1,40 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import React, { useMemo } from 'react';
+import React from 'react';
 import ColorManager from './colors';
-import Robot from './robot';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 import { viewBoxFromLeafletBounds } from '../../util/css-utils';
+import { ResourcesContext } from '../../app-contexts';
+import Dispenser from './dispenser';
+import { ResourceDispenserConfigurationInterface } from '../../resource-manager-dispensers';
 
 export interface DispensersOverlayProps extends SVGOverlayProps {
   colorManager: ColorManager;
-  onDispenserClick?(robot: RomiCore.RobotState): void;
+  onDispenserClick?(): void;
   currentFloorName: string;
 }
 
 export default function DispensersOverlay(props: DispensersOverlayProps): React.ReactElement {
-  const { colorManager, currentFloorName, ...otherProps } = props;
+  const { colorManager, currentFloorName, onDispenserClick, ...otherProps } = props;
   const viewBox = viewBoxFromLeafletBounds(props.bounds);
   const footprint = 0.5;
-
+  const resourcesContext = React.useContext(ResourcesContext);
+  const dispenserInCurLevel = React.useMemo(() => {
+    return resourcesContext.dispensers.allValues.filter(
+      (d: ResourceDispenserConfigurationInterface) =>
+        d.location && d.location.level_name === currentFloorName,
+    );
+  }, []);
   return (
     <SVGOverlay {...otherProps}>
       <svg viewBox={viewBox}>
-        {robotsInCurLevel.map(robot => {
+        {dispenserInCurLevel.map((dispenser: ResourceDispenserConfigurationInterface) => {
           return (
-            <Robot
-              key={robot.name}
-              robot={robot}
-              fleetName={fleetContainer[`${robot.name}_${robot.model}`]}
+            <Dispenser
+              key={dispenser.name}
+              dispenser={dispenser}
               footprint={footprint}
               colorManager={colorManager}
-              onClick={(_, robot_) => onRobotClick && onRobotClick(robot_)}
-              inConflict={inConflict(robot.name)}
+              onClick={() => onDispenserClick && onDispenserClick()}
             />
           );
         })}

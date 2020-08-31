@@ -55,6 +55,7 @@ export interface ScheduleVisualizerProps {
   onDoorClick?(door: RomiCore.Door): void;
   onLiftClick?(lift: RomiCore.Lift): void;
   onRobotClick?(fleet: string, robot: RomiCore.RobotState): void;
+  onDispenserClick?(): void;
 }
 
 function calcMaxBounds(mapFloorLayers: readonly MapFloorLayer[]): L.LatLngBounds | undefined {
@@ -416,8 +417,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
                 currentFloorName={curLevelName}
                 bounds={curMapFloorLayer.bounds}
                 colorManager={colorManager}
-                onRobotClick={props.onRobotClick}
-                conflictRobotNames={conflictRobotNames}
+                onDispenserClick={props.onDispenserClick}
               />
             </Pane>
           )}

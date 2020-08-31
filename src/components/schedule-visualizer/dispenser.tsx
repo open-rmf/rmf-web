@@ -1,38 +1,48 @@
 import { makeStyles } from '@material-ui/core';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
-import Door from './door/door';
-import { UpArrow, DownArrow } from './arrow';
-import {
-  radiansToDegrees,
-  transformMiddleCoordsOfRectToSVGBeginPoint,
-} from '../../util/calculation-helpers';
+import { radiansToDegrees } from '../../util/calculation-helpers';
+import { ResourcesContext } from '../../app-contexts';
+import { ResourceDispenserConfigurationInterface } from '../../resource-manager-dispensers';
+import ColorManager from './colors';
 
 export interface DispenserProps {
   id?: string;
-  currentFloor: string;
-  position: RomiCore.Lift;
-  liftState?: RomiCore.LiftState;
-  onClick?(e: React.MouseEvent<SVGGElement>, lift: RomiCore.Lift): void;
+  colorManager: ColorManager;
+  dispenser: ResourceDispenserConfigurationInterface;
+  footprint: number;
+  onClick?(): void;
 }
 
 const Dispenser = React.forwardRef(function(
   props: DispenserProps,
   ref: React.Ref<SVGGElement>,
 ): React.ReactElement {
+  const { id, dispenser, footprint, onClick } = props;
+  const resourcesContext = React.useContext(ResourcesContext);
+  const classes = useStyles();
   return (
     <>
-      <g ref={ref} id={id} onClick={e => onClick && onClick(e, lift)}>
+      <g ref={ref} id={id} onClick={onClick}>
         <rect
-          className={`${classes.liftMarker} ${classes.lift} ${liftStyle}`}
-          width={width}
-          height={depth}
-          x={topVerticeX}
-          y={contextTopVerticeY}
+          className={`${classes.liftMarker}`}
+          width={footprint * 2}
+          height={footprint * 2}
+          x={dispenser.location.x}
+          y={dispenser.location.y}
           rx="0.1"
           ry="0.1"
-          transform={`rotate(${radiansToDegrees(ref_yaw)}, ${x},${contextY})`}
+          transform={`rotate(${radiansToDegrees(dispenser.location.yaw)}, ${dispenser.location.x},${
+            dispenser.location.y
+          })`}
         />
+        <text
+          id="robotName"
+          x={dispenser.location.x}
+          y={dispenser.location.y}
+          className={classes.dispenserText}
+        >
+          {dispenser.name.substring(0, 8)}
+        </text>
       </g>
     </>
   );
@@ -45,36 +55,14 @@ const useStyles = makeStyles(() => ({
     cursor: 'pointer',
     pointerEvents: 'auto',
   },
-  lift: {
-    strokeWidth: '0.2',
-  },
-  liftOnCurrentFloor: {
-    fill: 'green',
-    opacity: '70%',
-  },
-  liftMoving: {
-    fill: 'grey',
-    opacity: '70%',
-  },
-  unknownLift: {
-    fill: '#3d3c3c',
-    opacity: '80%',
-  },
-  emergency: {
-    fill: 'red',
-    opacity: '80%',
-  },
-  fire: {
-    fill: '#ff562a',
-    opacity: '80%',
-  },
-  offLine: {
-    fill: 'yellow',
-    opacity: '80%',
-  },
-  humanMode: {
-    fill: '#90dfef',
-    opacity: '80%',
+  dispenserText: {
+    dominantBaseline: 'central',
+    textAnchor: 'middle',
+    fontSize: '0.18px',
+    fontWeight: 'bold',
+    fill: 'white',
+    /* 1 pixel black shadow to left, top, right and bottom */
+    textShadow: '-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black',
   },
   liftText: {
     dominantBaseline: 'central',
