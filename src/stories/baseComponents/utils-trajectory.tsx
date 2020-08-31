@@ -16,7 +16,7 @@ import { RawKnot, RawVelocity } from '../../robot-trajectory-manager';
  * Direction of the velocity is handled in determineVelocity function
  */
 
-export const startingTheta = {
+const startingTheta = {
   vertical: {
     value: -1.5643726408832297,
     direction: {
@@ -102,7 +102,7 @@ const determineDirection = (currDir: string, thetaVelocity: number): string => {
 
 // 5 < startX < 20
 // -11 < startY < -7
-export const createSegments = (
+const createSegments = (
   startX: number,
   startY: number,
   startTheta: number,

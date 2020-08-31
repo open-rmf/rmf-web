@@ -17,7 +17,7 @@ import {
   withOutlineAnimation,
 } from '../../components/schedule-visualizer/trajectory-animations';
 
-interface TrajectoryStoryProps extends RobotTrajectoriesOverlayProps {
+export interface TrajectoryStoryProps extends RobotTrajectoriesOverlayProps {
   description: string;
   currSettings: Settings;
 }

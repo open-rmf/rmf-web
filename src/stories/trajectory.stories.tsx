@@ -1,24 +1,27 @@
 import React from 'react';
 
 import { createTrajectories } from './baseComponents/utils-trajectory';
+import {
+  defaultTraj,
+  conflictingTraj,
+  multipleTrajs,
+  multipleConflictingTraj,
+} from './baseComponents/utils-default-traj';
 import Trajectory from './baseComponents/trajectory';
 import { mapBound } from './baseComponents/utils';
 import ColorManager from '../components/schedule-visualizer/colors';
-import { defaultSettings, TrajectoryColor, Settings } from '../settings';
+import { defaultSettings, TrajectoryColor, TrajectoryAnimation, Settings } from '../settings';
 
 export default {
   title: 'Trajectory',
 };
 
-const themeTrajectoryObject = createTrajectories(false, 1);
-const conflictTrajectoryObject = createTrajectories(true, 2);
-
-const followAnim = createTrajectories(false, 20);
+// assign 10 trajectories to be conflicting
 const partialConflictfollowAnim = {
-  ...followAnim,
+  ...multipleTrajs,
   conflicts: [[1, 2, 3, 4, 5, 6, 7, 8, 9, 19]],
 };
-const conflictFollowAnim = createTrajectories(true, 20);
+// const conflictFollowAnim = createTrajectories(true, 20);
 
 const colorManager = new ColorManager();
 
@@ -31,13 +34,23 @@ const themeSettings: Settings = {
   trajectoryColor: TrajectoryColor.Theme,
 };
 
+const outlineAnimSettings: Settings = {
+  ...defaultSettings(),
+  trajectoryAnimation: TrajectoryAnimation.Outline,
+};
+
+const fillAnimSettings: Settings = {
+  ...defaultSettings(),
+  trajectoryAnimation: TrajectoryAnimation.Fill,
+};
+
 export const themeColorTrajectory = () => (
   <Trajectory
     bounds={mapBound}
-    conflicts={themeTrajectoryObject.conflicts}
+    conflicts={defaultTraj.conflicts}
     colorManager={colorManager}
-    conflictRobotNames={themeTrajectoryObject.conflictingRobotName}
-    trajs={themeTrajectoryObject.trajectories}
+    conflictRobotNames={defaultTraj.conflictingRobotName}
+    trajs={defaultTraj.trajectories}
     description={descriptions.themeColor}
     currSettings={themeSettings}
   />
@@ -46,10 +59,10 @@ export const themeColorTrajectory = () => (
 export const conflictTrajectory = () => (
   <Trajectory
     bounds={mapBound}
-    conflicts={conflictTrajectoryObject.conflicts}
+    conflicts={conflictingTraj.conflicts}
     colorManager={colorManager}
-    conflictRobotNames={conflictTrajectoryObject.conflictingRobotName}
-    trajs={conflictTrajectoryObject.trajectories}
+    conflictRobotNames={conflictingTraj.conflictingRobotName}
+    trajs={conflictingTraj.trajectories}
     description={descriptions.themeColor}
     currSettings={defaultSettings()}
   />
@@ -58,10 +71,10 @@ export const conflictTrajectory = () => (
 export const followAnimation = () => (
   <Trajectory
     bounds={mapBound}
-    conflicts={followAnim.conflicts}
+    conflicts={multipleTrajs.conflicts}
     colorManager={colorManager}
-    conflictRobotNames={followAnim.conflictingRobotName}
-    trajs={followAnim.trajectories}
+    conflictRobotNames={multipleTrajs.conflictingRobotName}
+    trajs={multipleTrajs.trajectories}
     description={descriptions.themeColor}
     currSettings={defaultSettings()}
   />
@@ -82,10 +95,10 @@ export const followAnimationMix = () => (
 export const followAnimationConflict = () => (
   <Trajectory
     bounds={mapBound}
-    conflicts={conflictFollowAnim.conflicts}
+    conflicts={multipleConflictingTraj.conflicts}
     colorManager={colorManager}
-    conflictRobotNames={conflictFollowAnim.conflictingRobotName}
-    trajs={conflictFollowAnim.trajectories}
+    conflictRobotNames={multipleConflictingTraj.conflictingRobotName}
+    trajs={multipleConflictingTraj.trajectories}
     description={descriptions.themeColor}
     currSettings={defaultSettings()}
   />
