@@ -85,7 +85,7 @@ export default function Trajectory(props: TrajectoryStoryProps) {
   return (
     <div style={componentDisplayStyle.display}>
       <div style={componentDisplayStyle.modeInfoPanel}>
-        <Typography variant="body1">{description}</Typography>
+        <Typography variant="h6">{description}</Typography>
         <Button
           onClick={handleShowPath}
           disabled={disableButton}
