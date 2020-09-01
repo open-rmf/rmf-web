@@ -17,11 +17,11 @@ export default {
 };
 
 // assign 10 trajectories to be conflicting
-const partialConflictfollowAnim = {
+const partialConflictTraj = {
   ...multipleTrajs,
   conflicts: [[1, 2, 3, 4, 5, 6, 7, 8, 9, 19]],
 };
-const spam = createTrajectories(false, 150);
+const spam = createTrajectories(true, 150);
 
 const colorManager = new ColorManager();
 
@@ -32,7 +32,11 @@ const descriptions = {
   followAnimMixConflict: 'Follow animation with some trajectories conflicting',
   followAnimConflict: 'Follow animation with all trajectories conflicting',
   outlineAnim: 'Trajectory with outline animation',
+  outlineAnimMixConflict: 'Outline animation with some trajectories conflicting',
+  outlineAnimConflict: 'Outline animation with all trajectories conflicting',
   fillAnim: 'Trajectory with fill animation',
+  fillAnimMixConflict: 'Fill animation with some trajectories conflicting',
+  fillAnimConflict: 'Fill animation with all trajectories conflicting',
   spam: 'Spam trajectories to test performance',
 };
 
@@ -90,10 +94,10 @@ export const followAnimation = () => (
 export const followAnimationMix = () => (
   <Trajectory
     bounds={mapBound}
-    conflicts={partialConflictfollowAnim.conflicts}
+    conflicts={partialConflictTraj.conflicts}
     colorManager={colorManager}
-    conflictRobotNames={partialConflictfollowAnim.conflictingRobotName}
-    trajs={partialConflictfollowAnim.trajectories}
+    conflictRobotNames={partialConflictTraj.conflictingRobotName}
+    trajs={partialConflictTraj.trajectories}
     description={descriptions.followAnimMixConflict}
     currSettings={defaultSettings()}
   />
@@ -123,6 +127,30 @@ export const outlineAnimation = () => (
   />
 );
 
+export const outlineAnimationMix = () => (
+  <Trajectory
+    bounds={mapBound}
+    conflicts={partialConflictTraj.conflicts}
+    colorManager={colorManager}
+    conflictRobotNames={partialConflictTraj.conflictingRobotName}
+    trajs={partialConflictTraj.trajectories}
+    description={descriptions.outlineAnimMixConflict}
+    currSettings={outlineAnimSettings}
+  />
+);
+
+export const outlineAnimationConflict = () => (
+  <Trajectory
+    bounds={mapBound}
+    conflicts={multipleConflictingTraj.conflicts}
+    colorManager={colorManager}
+    conflictRobotNames={multipleConflictingTraj.conflictingRobotName}
+    trajs={multipleConflictingTraj.trajectories}
+    description={descriptions.outlineAnimConflict}
+    currSettings={outlineAnimSettings}
+  />
+);
+
 export const fillAnimation = () => (
   <Trajectory
     bounds={mapBound}
@@ -131,6 +159,30 @@ export const fillAnimation = () => (
     conflictRobotNames={multipleTrajs.conflictingRobotName}
     trajs={multipleTrajs.trajectories}
     description={descriptions.fillAnim}
+    currSettings={fillAnimSettings}
+  />
+);
+
+export const fillAnimationMix = () => (
+  <Trajectory
+    bounds={mapBound}
+    conflicts={partialConflictTraj.conflicts}
+    colorManager={colorManager}
+    conflictRobotNames={partialConflictTraj.conflictingRobotName}
+    trajs={partialConflictTraj.trajectories}
+    description={descriptions.fillAnimMixConflict}
+    currSettings={fillAnimSettings}
+  />
+);
+
+export const fillAnimationConflict = () => (
+  <Trajectory
+    bounds={mapBound}
+    conflicts={multipleConflictingTraj.conflicts}
+    colorManager={colorManager}
+    conflictRobotNames={multipleConflictingTraj.conflictingRobotName}
+    trajs={multipleConflictingTraj.trajectories}
+    description={descriptions.fillAnimConflict}
     currSettings={fillAnimSettings}
   />
 );
