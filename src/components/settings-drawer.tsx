@@ -30,13 +30,22 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
 
   const drawerAnchor = useMediaQuery('(max-aspect-ratio: 8/10)') ? 'bottom' : 'right';
 
+  const modalProp = {
+    disableEnforceFocus: true,
+  };
+
   function handleTrajectoryAnimationChange(ev: React.ChangeEvent<HTMLInputElement>): void {
     const newSettings: Settings = { ...settings, trajectoryAnimation: Number(ev.target.value) };
     onSettingsChange && onSettingsChange(newSettings);
   }
 
   return (
-    <Drawer PaperProps={{ className: classes.drawer }} anchor={drawerAnchor} {...otherProps}>
+    <Drawer
+      PaperProps={{ className: classes.drawer }}
+      anchor={drawerAnchor}
+      ModalProps={modalProp}
+      {...otherProps}
+    >
       <FormControl component="fieldset">
         <FormLabel component="legend" className={classes.legendLabel}>
           Trajectory Animation
