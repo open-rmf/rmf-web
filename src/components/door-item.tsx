@@ -12,10 +12,12 @@ import {
 } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import Debug from 'debug';
 import React from 'react';
-
-import OmniPanelStatusLabels from './omni-panel-status-labels';
 import { colorPalette } from '../util/css-utils';
+import OmniPanelStatusLabels from './omni-panel-status-labels';
+
+const debug = Debug('DoorItem');
 
 export interface DoorItemProps extends Omit<ExpansionPanelProps, 'children'> {
   door: Readonly<RomiCore.Door>;
@@ -30,6 +32,8 @@ export const DoorItem = React.forwardRef(function(
   props: DoorItemProps,
   ref: React.Ref<HTMLElement>,
 ): React.ReactElement {
+  debug('render');
+
   const { door, doorState, enableControls, onOpenClick, onCloseClick, ...otherProps } = props;
   const classes = useStyles();
   const theme = useTheme();

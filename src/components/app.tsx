@@ -1,14 +1,16 @@
 import { AppBar, Fade, IconButton, makeStyles, Toolbar, Typography } from '@material-ui/core/';
 import { Dashboard as DashboardIcon, Settings as SettingsIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import debug from 'debug';
+import Debug from 'debug';
 import React from 'react';
 import 'typeface-roboto';
 import { AppConfig } from '../app-config';
+import { DoorStateContext } from '../app-contexts';
 import DispenserStateManager from '../dispenser-state-manager';
 import DoorStateManager from '../door-state-manager';
 import FleetManager from '../fleet-manager';
 import LiftStateManager from '../lift-state-manager';
+import { ResourceConfigurationsType } from '../resource-manager';
 import { RobotTrajectoryManager } from '../robot-trajectory-manager';
 import { loadSettings, saveSettings, Settings, SettingsContext } from '../settings';
 import './app.css';
@@ -18,17 +20,16 @@ import DoorsPanel from './doors-panel';
 import LiftsPanel from './lift-item/lifts-panel';
 import LoadingScreen, { LoadingScreenProps } from './loading-screen';
 import MainMenu from './main-menu';
+import NotificationBar, { NotificationBarContext, NotificationBarProps } from './notification-bar';
 import OmniPanel from './omni-panel';
 import OmniPanelView from './omni-panel-view';
 import RobotsPanel from './robots-panel';
 import ScheduleVisualizer from './schedule-visualizer';
+import { LiftStateContext } from './schedule-visualizer/lift-overlay';
 import SettingsDrawer from './settings-drawer';
 import { SpotlightValue } from './spotlight-value';
-import { DoorStateContext } from './schedule-visualizer/doors-overlay';
-import { LiftStateContext } from './schedule-visualizer/lift-overlay';
-import NotificationBar, { NotificationBarProps, NotificationBarContext } from './notification-bar';
-import { ResourceConfigurationsType } from '../resource-manager';
 
+const debug = Debug('log');
 const borderRadius = 20;
 
 const useStyles = makeStyles(theme => ({
@@ -222,25 +223,13 @@ export default function App(props: AppProps): JSX.Element {
   }, [appResources]);
 
   React.useEffect(() => {
-    if (currentView === OmniPanelViewIndex.Doors) {
-      const listener = () => setDoorStates(doorStateManager.doorStates());
-      doorStateManager.on('updated', listener);
-      debug.log('started tracking door states');
-      return () => {
-        doorStateManager.off('updated', listener);
-        debug.log('stopped tracking door states');
-      };
-    }
-  }, [currentView, doorStateManager]);
-
-  React.useEffect(() => {
     if (currentView === OmniPanelViewIndex.Lifts) {
       const listener = () => setLiftStates(liftStateManager.liftStates());
       liftStateManager.on('updated', listener);
-      debug.log('started tracking lift states');
+      debug('started tracking lift states');
       return () => {
         liftStateManager.off('updated', listener);
-        debug.log('stopped tracking lift states');
+        debug('stopped tracking lift states');
       };
     }
   }, [currentView, liftStateManager]);
@@ -249,10 +238,10 @@ export default function App(props: AppProps): JSX.Element {
     if (currentView === OmniPanelViewIndex.Dispensers) {
       const listener = () => setDispenserStates(dispenserStateManager.dispenserStates());
       dispenserStateManager.on('updated', listener);
-      debug.log('started tracking dispenser states');
+      debug('started tracking dispenser states');
       return () => {
         dispenserStateManager.off('updated', listener);
-        debug.log('stopped tracking dispenser states');
+        debug('stopped tracking dispenser states');
       };
     }
   }, [currentView, dispenserStateManager]);
@@ -302,7 +291,6 @@ export default function App(props: AppProps): JSX.Element {
   }
 
   function handleMainMenuDoorsClick(): void {
-    setDoorStates(doorStateManager.doorStates());
     setCurrentView(OmniPanelViewIndex.Doors);
   }
 
@@ -324,8 +312,8 @@ export default function App(props: AppProps): JSX.Element {
   }
 
   return (
-    <React.Fragment>
-      <SettingsContext.Provider value={settings}>
+    <SettingsContext.Provider value={settings}>
+      <DoorStateContext.Provider value={doorStates}>
         <NotificationBarContext.Provider value={setNotificationBarMessage}>
           {loading && <LoadingScreen {...loading} />}
           <div className={classes.container}>
@@ -343,19 +331,17 @@ export default function App(props: AppProps): JSX.Element {
               </Toolbar>
             </AppBar>
             {buildingMap && (
-              <DoorStateContext.Provider value={doorStates}>
-                <LiftStateContext.Provider value={liftStates}>
-                  <ScheduleVisualizer
-                    buildingMap={buildingMap}
-                    fleets={fleets}
-                    trajManager={trajManager.current}
-                    appResources={resourceManager.current}
-                    onDoorClick={handleDoorClick}
-                    onLiftClick={handleLiftClick}
-                    onRobotClick={handleRobotClick}
-                  />
-                </LiftStateContext.Provider>
-              </DoorStateContext.Provider>
+              <LiftStateContext.Provider value={liftStates}>
+                <ScheduleVisualizer
+                  buildingMap={buildingMap}
+                  fleets={fleets}
+                  trajManager={trajManager.current}
+                  appResources={resourceManager.current}
+                  onDoorClick={handleDoorClick}
+                  onLiftClick={handleLiftClick}
+                  onRobotClick={handleRobotClick}
+                />
+              </LiftStateContext.Provider>
             )}
             <Fade in={showOmniPanel}>
               <OmniPanel
@@ -380,8 +366,8 @@ export default function App(props: AppProps): JSX.Element {
                 <OmniPanelView id={OmniPanelViewIndex.Doors}>
                   <DoorsPanel
                     transport={transport}
-                    doorStates={doorStates}
                     doors={doors}
+                    doorStates={doorStates}
                     spotlight={doorSpotlight}
                   />
                 </OmniPanelView>
@@ -422,7 +408,7 @@ export default function App(props: AppProps): JSX.Element {
             type={notificationBarMessage?.type}
           />
         </NotificationBarContext.Provider>
-      </SettingsContext.Provider>
-    </React.Fragment>
+      </DoorStateContext.Provider>
+    </SettingsContext.Provider>
   );
 }

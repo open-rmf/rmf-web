@@ -4,11 +4,12 @@
  */
 
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import React, { createContext, useContext } from 'react';
+import React, { useContext } from 'react';
+import { DoorStateContext } from '../../app-contexts';
 import { viewBoxFromLeafletBounds } from '../../util/css-utils';
+import Door from './door/door';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 
-import Door from './door/door';
 export interface DoorsOverlayProps extends SVGOverlayProps {
   doors: readonly RomiCore.Door[];
   onDoorClick?(door: RomiCore.Door): void;
@@ -41,5 +42,3 @@ export default function DoorsOverlay(props: DoorsOverlayProps): React.ReactEleme
     </>
   );
 }
-
-export const DoorStateContext = createContext<Readonly<Record<string, RomiCore.DoorState>>>({});
