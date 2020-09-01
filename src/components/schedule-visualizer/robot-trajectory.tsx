@@ -49,18 +49,11 @@ export const RobotTrajectory = React.forwardRef(function(
     const pathColorHolder = getPathColor();
     switch (settings.trajectoryColor) {
       case TrajectoryColor.Theme:
-        return conflicts.flat().includes(trajectory.id)
-          ? theme.palette.error.main
-          : theme.palette.success.main;
+        return theme.palette.success.main;
       case TrajectoryColor.Robot_Color:
         return robotColorHolder;
-      // return conflicts.flat().includes(trajectory.id)
-      //   ? theme.palette.error.main
-      //   : robotColorHolder;
       case TrajectoryColor.Shades:
-        return conflicts.flat().includes(trajectory.id)
-          ? theme.palette.error.main
-          : pathColorHolder;
+        return pathColorHolder;
     }
   }, [trajectory, conflicts, theme, colorManager, settings.trajectoryColor]);
 

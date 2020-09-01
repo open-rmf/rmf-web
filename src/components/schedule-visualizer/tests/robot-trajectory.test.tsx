@@ -51,7 +51,6 @@ describe('Robot Trajectory', () => {
   let trajectoryValue: Trajectory;
   let trajectoryConflict: Conflict[];
   const themeColor = '#4caf50';
-  const defaultErrorColor = '#f44336';
   const fixPathSize = 0.4;
 
   beforeEach(async () => {
@@ -116,13 +115,13 @@ describe('Robot Trajectory', () => {
     root.unmount();
   });
 
-  // it('should change path color to conflicting color', () => {
-  //   const mockConflict = [[trajectoryValue.id]];
-  //   const root = createWrapper(RobotTrajectory, trajectoryValue, mockConflict, 0.5, 'black');
-  //   const trajColor = root.find('path').props().stroke;
+  it('should change path color to conflicting color', () => {
+    const mockConflict = [[trajectoryValue.id]];
+    const root = createWrapper(RobotTrajectory, trajectoryValue, mockConflict, 0.5, 'black');
+    const errorPath = root.find('path').find('#errorPath');
 
-  //   expect(trajColor).toEqual(defaultErrorColor);
+    expect(errorPath).toHaveLength(1);
 
-  //   root.unmount();
-  // });
+    root.unmount();
+  });
 });
