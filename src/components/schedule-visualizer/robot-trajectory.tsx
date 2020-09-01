@@ -55,7 +55,7 @@ export const RobotTrajectory = React.forwardRef(function(
       case TrajectoryColor.Shades:
         return pathColorHolder;
     }
-  }, [trajectory, conflicts, theme, colorManager, settings.trajectoryColor]);
+  }, [trajectory, theme, colorManager, settings.trajectoryColor]);
 
   const pathD = React.useMemo(() => {
     return trajectoryPath(trajectory.segments).d;
