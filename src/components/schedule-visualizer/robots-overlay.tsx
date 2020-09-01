@@ -24,7 +24,7 @@ export default function RobotsOverlay(props: RobotsOverlayProps): React.ReactEle
     RobotComponent,
     ...otherProps
   } = props;
-  const Robot = RobotComponent || Robot_;
+  const Robot = React.useMemo(() => RobotComponent || Robot_, [RobotComponent]);
   const viewBox = viewBoxFromLeafletBounds(props.bounds);
   const footprint = 0.5;
 

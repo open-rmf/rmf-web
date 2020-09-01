@@ -6,7 +6,7 @@ import ResourceManager from '../../resource-manager';
 import ColorManager from './colors';
 import RobotDefaultIcon from './robot-default-icon';
 import RobotImageIcon from './robot-image-icon';
-import SvgText, { SvgTextProps } from './svg-text';
+import SvgText from './svg-text';
 
 const useStyles = makeStyles(() => ({
   robotText: {
@@ -32,7 +32,6 @@ export interface RobotProps {
   footprint: number;
   fleetName: string;
   inConflict?: boolean;
-  NameLabelComponent?: React.ElementType<SvgTextProps>;
   onClick?(e: React.MouseEvent<SVGGElement>, robot: RomiCore.RobotState): void;
 }
 
@@ -42,17 +41,7 @@ const Robot = React.forwardRef(function(
 ): React.ReactElement {
   const resourcesContext = useContext(ResourcesContext);
   const classes = useStyles();
-  const {
-    robot,
-    footprint,
-    colorManager,
-    fleetName,
-    inConflict,
-    NameLabelComponent,
-    onClick,
-  } = props;
-  const Text = NameLabelComponent || SvgText;
-
+  const { robot, footprint, colorManager, fleetName, inConflict, onClick } = props;
   // The only image formats SVG software support are JPEG, PNG, and other SVG files.
   const [renderCustomIcon, setRenderCustomIcon] = useState({
     path: ResourceManager.getRobotIconPath(resourcesContext, fleetName),
@@ -87,7 +76,7 @@ const Robot = React.forwardRef(function(
           ></RobotDefaultIcon>
         )}
       </g>
-      <Text
+      <SvgText
         id="robotName"
         text={robot.name}
         x={robot.location.x}

@@ -79,17 +79,6 @@ const resources: ResourceConfigurationsType = {
   },
 };
 
-// const useStyles = makeStyles(() => ({
-//   spin: {
-//     animation: '$spin 2s linear infinite',
-//   },
-//   '@keyframes spin': {
-//     '100%': {
-//       transform: 'rotate(360deg);',
-//     },
-//   },
-// }));
-
 export default function RobotGallery(): React.ReactElement {
   return (
     <ResourcesContext.Provider value={resources}>

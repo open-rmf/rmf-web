@@ -23,7 +23,6 @@ it('fires click event', async () => {
         footprint={1}
         colorManager={colorManager}
         fleetName=""
-        NameLabelComponent={jest.fn().mockReturnValue(null)}
         onClick={() => (clicked = true)}
       />
     </svg>,
