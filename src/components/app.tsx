@@ -1,4 +1,12 @@
-import { AppBar, Fade, IconButton, makeStyles, Toolbar, Typography } from '@material-ui/core/';
+import {
+  AppBar,
+  Button,
+  Fade,
+  IconButton,
+  makeStyles,
+  Toolbar,
+  Typography,
+} from '@material-ui/core/';
 import { Dashboard as DashboardIcon, Settings as SettingsIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import debug from 'debug';
@@ -168,7 +176,11 @@ export default function App(props: AppProps): JSX.Element {
   const tourSteps = [
     {
       selector: '',
-      content: 'Welcome to the RoMi dashboard!',
+      content: () => (
+        <p>
+          Welcome to the <b>RoMi dashboard</b>!
+        </p>
+      ),
       action: () => {
         clearSpotlights();
         setShowOmniPanel(false);
@@ -176,8 +188,12 @@ export default function App(props: AppProps): JSX.Element {
     },
     {
       selector: '[class="leaflet-control-zoom leaflet-bar leaflet-control"]',
-      content:
-        'Click on the zoom buttons to change the view of the floor plan. Alternatively, the scroll button on your mouse would work too!',
+      content: () => (
+        <p>
+          Click on the <b>zoom buttons</b> to change the view of the floor plan. Alternatively, the
+          scroll button on your mouse would work too!
+        </p>
+      ),
       action: () => {
         clearSpotlights();
         setShowOmniPanel(false);
@@ -185,8 +201,12 @@ export default function App(props: AppProps): JSX.Element {
     },
     {
       selector: '[class="leaflet-control-layers leaflet-control"]',
-      content:
-        'Use the floor plan button to switch between available levels and enabling / disabling the view of different components',
+      content: () => (
+        <p>
+          Use the <b>floor plan button</b> to switch between available levels and enabling /
+          disabling the view of different components
+        </p>
+      ),
       action: () => {
         clearSpotlights();
         setShowOmniPanel(false);
@@ -194,8 +214,12 @@ export default function App(props: AppProps): JSX.Element {
     },
     {
       selector: '[class="leaflet-image-layer leaflet-zoom-animated"]',
-      content:
-        'Clicking individual components like doors, robots, lifts on the map will open up its corresponding information tab in the omnipanel.',
+      content: () => (
+        <p>
+          Clicking individual components like <b>doors, robots, lifts</b> on the map will open up
+          its corresponding information tab in the omnipanel.
+        </p>
+      ),
       action: () => {
         clearSpotlights();
         setShowOmniPanel(false);
@@ -203,8 +227,12 @@ export default function App(props: AppProps): JSX.Element {
     },
     {
       selector: '[data-name="omnipanel-button"]',
-      content:
-        'The omnipanel button shows the different panel options available in the dashboard. Clicking each item would list different information about it!',
+      content: () => (
+        <p>
+          The <b>omnipanel button</b> shows the different panel options available in the dashboard.
+          Clicking each item would list different information about it!
+        </p>
+      ),
       action: () => {
         clearSpotlights();
         setShowOmniPanel(true);
@@ -228,7 +256,7 @@ export default function App(props: AppProps): JSX.Element {
     },
     {
       selector: '',
-      content: 'Let us take a look into the doors panel',
+      content: 'Let us take a look into the Doors Panel',
       action: () => {
         clearSpotlights();
         setShowOmniPanel(true);
@@ -256,8 +284,12 @@ export default function App(props: AppProps): JSX.Element {
     },
     {
       selector: '[data-component="LoopForm"]',
-      content:
-        'An example is the loop request which can be iterated multiple times. RoMi will assign the most suitable robot to perform the task at the point of request.',
+      content: () => (
+        <p>
+          An example is the <b>loop request</b> which can be iterated multiple times. RoMi will
+          assign the most suitable robot to perform the task at the point of request.
+        </p>
+      ),
       action: () => {
         if (showSettings) {
           setShowSettings(false);
@@ -268,7 +300,11 @@ export default function App(props: AppProps): JSX.Element {
     },
     {
       selector: '',
-      content: 'The settings button opens up the drawer for different dashboard settings',
+      content: () => (
+        <p>
+          The <b>settings button</b> opens up the drawer for different dashboard settings
+        </p>
+      ),
       action: () => {
         setShowOmniPanel(false);
         setShowSettings(true);
@@ -276,7 +312,11 @@ export default function App(props: AppProps): JSX.Element {
     },
     {
       selector: '.MuiDrawer-paper',
-      content: 'Currently, Trajectory Animations patterns can be altered to the options available.',
+      content: () => (
+        <p>
+          Currently, <b>Trajectory Animations</b> patterns can be altered to the options available.
+        </p>
+      ),
       action: () => {
         if (!showSettings) {
           setShowSettings(true);
@@ -544,7 +584,12 @@ export default function App(props: AppProps): JSX.Element {
             message={notificationBarMessage?.message}
             type={notificationBarMessage?.type}
           />
-          <Tour steps={tourSteps} isOpen={tourState} onRequestClose={() => setTourState(false)} />
+          <Tour
+            steps={tourSteps}
+            isOpen={tourState}
+            onRequestClose={() => setTourState(false)}
+            lastStepNextButton={<Button>Start using RoMi!</Button>}
+          />
         </NotificationBarContext.Provider>
       </SettingsContext.Provider>
     </React.Fragment>
