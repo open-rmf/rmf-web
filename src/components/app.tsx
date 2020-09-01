@@ -192,7 +192,6 @@ export default function App(props: AppProps): JSX.Element {
         setShowOmniPanel(false);
       },
     },
-
     {
       selector: '[class="leaflet-image-layer leaflet-zoom-animated"]',
       content:
@@ -249,7 +248,7 @@ export default function App(props: AppProps): JSX.Element {
     {
       selector: '',
       content:
-        'The Commands Panel allows you to send different types of requests that will be handled by RMF',
+        'The Commands Panel allows you to send different types of requests that will be handled by RoMi',
       action: () => {
         clearSpotlights();
         setCurrentView(OmniPanelViewIndex.Commands);
@@ -268,12 +267,20 @@ export default function App(props: AppProps): JSX.Element {
       },
     },
     {
-      selector: '.MuiDrawer-paper',
-      content:
-        'Finally, Trajectory Animations can be customised to the settings available in the settings drawer.',
+      selector: '',
+      content: 'The settings button opens up the drawer for different dashboard settings',
       action: () => {
-        setShowSettings(true);
         setShowOmniPanel(false);
+        setShowSettings(true);
+      },
+    },
+    {
+      selector: '.MuiDrawer-paper',
+      content: 'Currently, Trajectory Animations patterns can be altered to the options available.',
+      action: () => {
+        if (!showSettings) {
+          setShowSettings(true);
+        }
       },
     },
   ];
