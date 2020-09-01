@@ -1,9 +1,9 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React, { useMemo } from 'react';
-import ColorManager from './colors';
-import Robot from './robot';
-import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 import { viewBoxFromLeafletBounds } from '../../util/css-utils';
+import ColorManager from './colors';
+import Robot_, { RobotProps } from './robot';
+import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 
 export interface RobotsOverlayProps extends SVGOverlayProps {
   colorManager: ColorManager;
@@ -11,6 +11,7 @@ export interface RobotsOverlayProps extends SVGOverlayProps {
   onRobotClick?(robot: RomiCore.RobotState): void;
   conflictRobotNames: string[][];
   currentFloorName: string;
+  RobotComponent?: React.ElementType<RobotProps>;
 }
 
 export default function RobotsOverlay(props: RobotsOverlayProps): React.ReactElement {
@@ -20,8 +21,10 @@ export default function RobotsOverlay(props: RobotsOverlayProps): React.ReactEle
     onRobotClick,
     conflictRobotNames,
     currentFloorName,
+    RobotComponent,
     ...otherProps
   } = props;
+  const Robot = React.useMemo(() => RobotComponent || Robot_, [RobotComponent]);
   const viewBox = viewBoxFromLeafletBounds(props.bounds);
   const footprint = 0.5;
 

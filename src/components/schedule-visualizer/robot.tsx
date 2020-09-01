@@ -1,11 +1,12 @@
 import { makeStyles } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import React, { useState, useContext } from 'react';
-import ColorManager from './colors';
-import ResourceManager from '../../resource-manager';
+import React, { useContext, useState } from 'react';
 import { ResourcesContext } from '../../app-contexts';
+import ResourceManager from '../../resource-manager';
+import ColorManager from './colors';
 import RobotDefaultIcon from './robot-default-icon';
 import RobotImageIcon from './robot-image-icon';
+import SvgText from './svg-text';
 
 const useStyles = makeStyles(() => ({
   robotText: {
@@ -30,8 +31,8 @@ export interface RobotProps {
   colorManager: ColorManager;
   footprint: number;
   fleetName: string;
-  onClick?(e: React.MouseEvent<SVGGElement>, robot: RomiCore.RobotState): void;
   inConflict?: boolean;
+  onClick?(e: React.MouseEvent<SVGGElement>, robot: RomiCore.RobotState): void;
 }
 
 const Robot = React.forwardRef(function(
@@ -52,9 +53,11 @@ const Robot = React.forwardRef(function(
       <g
         ref={ref}
         data-component="Robot"
-        className={classes.container}
+        className={`${classes.container}`}
         aria-label={robot.name}
         onClick={e => onClick && onClick(e, robot)}
+        transform={`translate(${robot.location.x} ${-robot.location.y})
+            rotate(${-(robot.location.yaw * 180) / Math.PI})`}
       >
         {!!renderCustomIcon.path && !renderCustomIcon.error ? (
           <RobotImageIcon
@@ -72,15 +75,15 @@ const Robot = React.forwardRef(function(
             inConflict={inConflict}
           ></RobotDefaultIcon>
         )}
-        <text
-          id="robotName"
-          x={robot.location.x}
-          y={-robot.location.y}
-          className={classes.robotText}
-        >
-          {robot.name.substring(0, 8)}
-        </text>
       </g>
+      <SvgText
+        id="robotName"
+        text={robot.name}
+        x={robot.location.x}
+        y={-robot.location.y}
+        targetWidth={footprint * 1.9}
+        className={classes.robotText}
+      />
     </>
   );
 });

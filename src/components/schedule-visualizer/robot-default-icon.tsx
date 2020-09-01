@@ -25,10 +25,7 @@ const RobotDefaultIcon = React.forwardRef(function(
   return (
     <>
       {!!robotColor && (
-        <g
-          transform={`translate(${robot.location.x} ${-robot.location.y})
-            rotate(${-(robot.location.yaw * 180) / Math.PI})`}
-        >
+        <g>
           <filter id={`${robot.name}-shadow`} x="-20%" y="-20%" width="140%" height="140%">
             <feDropShadow
               dx="0"
