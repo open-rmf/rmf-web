@@ -170,6 +170,7 @@ export default function App(props: AppProps): JSX.Element {
       selector: '',
       content: 'Welcome to the RoMi dashboard!',
       action: () => {
+        clearSpotlights();
         setShowOmniPanel(false);
       },
     },
@@ -177,25 +178,36 @@ export default function App(props: AppProps): JSX.Element {
       selector: '[class="leaflet-control-zoom leaflet-bar leaflet-control"]',
       content:
         'Click on the zoom buttons to change the view of the floor plan. Alternatively, the scroll button on your mouse would work too!',
+      action: () => {
+        clearSpotlights();
+        setShowOmniPanel(false);
+      },
     },
     {
       selector: '[class="leaflet-control-layers leaflet-control"]',
       content:
         'Use the floor plan button to switch between available levels and enabling / disabling the view of different components',
+      action: () => {
+        clearSpotlights();
+        setShowOmniPanel(false);
+      },
     },
+
     {
       selector: '[class="leaflet-image-layer leaflet-zoom-animated"]',
       content:
         'Clicking individual components like doors, robots, lifts on the map will open up its corresponding information tab in the omnipanel.',
       action: () => {
+        clearSpotlights();
         setShowOmniPanel(false);
       },
     },
     {
-      selector: '[data-tour="omnipanel-button"]',
+      selector: '[data-name="omnipanel-button"]',
       content:
         'The omnipanel button shows the different panel options available in the dashboard. Clicking each item would list different information about it!',
       action: () => {
+        clearSpotlights();
         setShowOmniPanel(true);
         if (currentView !== 0) {
           setCurrentView(OmniPanelViewIndex.MainMenu);
@@ -206,6 +218,7 @@ export default function App(props: AppProps): JSX.Element {
       selector: '[data-component="MainMenu"]',
       content: 'Each panel contains a list of the available items and their state',
       action: () => {
+        clearSpotlights();
         if (!showOmniPanel) {
           setShowOmniPanel(true);
         }
@@ -218,6 +231,8 @@ export default function App(props: AppProps): JSX.Element {
       selector: '',
       content: 'Let us take a look into the doors panel',
       action: () => {
+        clearSpotlights();
+        setShowOmniPanel(true);
         setCurrentView(OmniPanelViewIndex.Doors);
       },
     },
@@ -225,15 +240,41 @@ export default function App(props: AppProps): JSX.Element {
       selector: '[data-name="main_door"]',
       content: 'Here is an example of what you will see when a door tab is expanded!',
       action: () => {
+        setCurrentView(OmniPanelViewIndex.Doors);
         if (!doorSpotlight) {
           setDoorSpotlight({ value: 'main_door' });
         }
       },
     },
     {
-      selector: '[data-name="door-button-group"]',
+      selector: '',
       content:
-        'Each door tab comes with buttons to simulate opening and closing of doors and the door state will be updated accordingly',
+        'The Commands Panel allows you to send different types of requests that will be handled by RMF',
+      action: () => {
+        clearSpotlights();
+        setCurrentView(OmniPanelViewIndex.Commands);
+      },
+    },
+    {
+      selector: '[data-component="LoopForm"]',
+      content:
+        'An example is the loop request which can be iterated multiple times. RoMi will assign the most suitable robot to perform the task at the point of request.',
+      action: () => {
+        if (showSettings) {
+          setShowSettings(false);
+        }
+        setShowOmniPanel(true);
+        setCurrentView(OmniPanelViewIndex.Commands);
+      },
+    },
+    {
+      selector: '.MuiDrawer-paper',
+      content:
+        'Finally, Trajectory Animations can be customised to the settings available in the settings drawer.',
+      action: () => {
+        setShowSettings(true);
+        setShowOmniPanel(false);
+      },
     },
   ];
 
@@ -410,7 +451,7 @@ export default function App(props: AppProps): JSX.Element {
                   Dashboard
                 </Typography>
                 <IconButton color="inherit" onClick={() => setShowOmniPanel(!showOmniPanel)}>
-                  <DashboardIcon data-tour="omnipanel-button" />
+                  <DashboardIcon data-name="omnipanel-button" />
                 </IconButton>
                 <IconButton color="inherit" onClick={() => setShowSettings(true)}>
                   <SettingsIcon />
