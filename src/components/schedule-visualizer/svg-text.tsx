@@ -27,8 +27,7 @@ export default function SvgText(props: SvgTextProps): React.ReactElement {
     // truncate it bit by bit until it fits the icon. It's a bit hacky but it shouldn't be too bad
     // unless the robot name is mega long.
     for (textElem.textContent = text; textElem.getComputedTextLength() > targetWidth; ) {
-      textElem.textContent =
-        textElem.textContent!.slice(0, textElem.textContent!.length - 6) + '...';
+      textElem.textContent = textElem.textContent!.slice(0, textElem.textContent!.length - 6) + '…';
     }
   };
 
