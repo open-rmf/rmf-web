@@ -78,19 +78,12 @@ export const RobotTrajectory = React.forwardRef(function(
         height="140%"
         filterUnits="userSpaceOnUse"
       >
-        {/* <feDropShadow
-          dx="0"
-          dy="0"
-          stdDeviation={footprint * 0.4}
-          floodColor={theme.palette.secondary.main}
-          floodOpacity={1}
-        /> */}
         <feColorMatrix
           type="matrix"
           values="1 0 0 0 0 
                                        0 1 0 0 0 
                                        0 0 1 0 0 
-                                       0 0 0 100 0"
+                                       0 0 0 1 0"
           result="boostedInput"
         />
 
@@ -123,7 +116,7 @@ export const RobotTrajectory = React.forwardRef(function(
           strokeWidth={trajectoryDiameter}
           strokeLinecap="round"
           fill={'none'}
-          filter={isConflict ? `url(#shadow)` : ''}
+          filter={`url(#shadow)`}
           pathLength={1}
           opacity={1}
         />
