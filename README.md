@@ -1,8 +1,8 @@
 ## RoMi-dashboard
 
-<h1 align="center">Badges</h1>
+<h1>Badges</h1>
 
-<div align="center">
+<div>
 
 [![codecov](https://codecov.io/gh/osrf/romi-dashboard/branch/wip/graph/badge.svg)](https://codecov.io/gh/osrf/romi-dashboard)
 
