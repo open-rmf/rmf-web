@@ -74,9 +74,9 @@ export const RobotTrajectory = React.forwardRef(function(
         <feColorMatrix
           type="matrix"
           values="1 0 0 0 0 
-                                       0 1 0 0 0 
-                                       0 0 1 0 0 
-                                       0 0 0 1 0"
+                                      0 1 0 0 0 
+                                      0 0 1 0 0 
+                                      0 0 0 1 0"
           result="boostedInput"
         />
 
@@ -103,7 +103,6 @@ export const RobotTrajectory = React.forwardRef(function(
       {isConflict ? (
         <path
           id="errorPath"
-          data-component="RobotTrajectory"
           d={pathD}
           stroke={theme.palette.secondary.main}
           strokeWidth={trajectoryDiameter}

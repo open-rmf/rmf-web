@@ -21,7 +21,7 @@ const partialConflictTraj = {
   ...multipleTrajs,
   conflicts: [[1, 2, 3, 4, 5, 6, 7, 8, 9, 19]],
 };
-const spam = createTrajectories(true, 150);
+const spam = createTrajectories(true, 100);
 
 const colorManager = new ColorManager();
 
@@ -37,7 +37,7 @@ const descriptions = {
   fillAnim: 'Trajectory with fill animation',
   fillAnimMixConflict: 'Fill animation with some trajectories conflicting',
   fillAnimConflict: 'Fill animation with all trajectories conflicting',
-  spam: 'Spam trajectories to test performance',
+  spam: 'Spam trajectories to test performance (Currently 100 conflicting trajectories)',
 };
 
 const themeSettings: Settings = {
