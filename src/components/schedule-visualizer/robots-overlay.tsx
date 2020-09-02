@@ -8,7 +8,7 @@ import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 export interface RobotsOverlayProps extends SVGOverlayProps {
   colorManager: ColorManager;
   fleets: readonly RomiCore.FleetState[];
-  onRobotClick?(robot: RomiCore.RobotState): void;
+  onRobotClick?(fleet: string, robot: RomiCore.RobotState): void;
   conflictRobotNames: string[][];
   currentFloorName: string;
   RobotComponent?: React.ElementType<RobotProps>;
@@ -51,25 +51,28 @@ export default function RobotsOverlay(props: RobotsOverlayProps): React.ReactEle
     if (!currentFloorName) {
       return [];
     }
-    return fleets.flatMap(x => x.robots.filter(r => r.location.level_name === currentFloorName));
+    return fleets.flatMap(x => ({
+      fleet: x.name,
+      robots: x.robots.filter(r => r.location.level_name === currentFloorName),
+    }));
   }, [fleets, currentFloorName]);
 
   return (
     <SVGOverlay {...otherProps}>
       <svg viewBox={viewBox}>
-        {robotsInCurLevel.map(robot => {
-          return (
+        {robotsInCurLevel.map(({ fleet, robots }) =>
+          robots.map(robot => (
             <Robot
               key={robot.name}
               robot={robot}
               fleetName={fleetContainer[`${robot.name}_${robot.model}`]}
               footprint={footprint}
               colorManager={colorManager}
-              onClick={(_, robot_) => onRobotClick && onRobotClick(robot_)}
+              onClick={(_, robot_) => onRobotClick && onRobotClick(fleet, robot_)}
               inConflict={inConflict(robot.name)}
             />
-          );
-        })}
+          )),
+        )}
       </svg>
     </SVGOverlay>
   );

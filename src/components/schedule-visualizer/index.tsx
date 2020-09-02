@@ -49,7 +49,7 @@ export interface ScheduleVisualizerProps {
   appResources?: Readonly<ResourceConfigurationsType>;
   onDoorClick?(door: RomiCore.Door): void;
   onLiftClick?(lift: RomiCore.Lift): void;
-  onRobotClick?(robot: RomiCore.RobotState): void;
+  onRobotClick?(fleet: string, robot: RomiCore.RobotState): void;
 }
 
 function calcMaxBounds(mapFloorLayers: readonly MapFloorLayer[]): L.LatLngBounds | undefined {

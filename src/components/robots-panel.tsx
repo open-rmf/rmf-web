@@ -18,11 +18,12 @@ export const RobotsPanel = React.memo((props: RobotsPanelProps) => {
     if (!ref) {
       return;
     }
-    const guid = ref.getAttribute('data-guid');
-    if (!guid) {
+    const fleetName = ref.getAttribute('data-fleet');
+    const robotName = ref.getAttribute('data-name');
+    if (!fleetName || !robotName) {
       return;
     }
-    robotRefs.current[guid] = ref;
+    robotRefs.current[`${fleetName}-${robotName}`] = ref;
   }, []);
 
   const onChange = React.useCallback<Required<RobotItemProps>['onChange']>((event, newExpanded) => {
