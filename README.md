@@ -1,12 +1,6 @@
-## RoMi-dashboard
-
-<h1>Badges</h1>
-
-<div>
-
 [![codecov](https://codecov.io/gh/osrf/romi-dashboard/branch/wip/graph/badge.svg)](https://codecov.io/gh/osrf/romi-dashboard)
 
-</div>
+## RoMi-dashboard
 
 Hello! `romi-dashboard` is a web application that provides overall visualization and control over the RoMi-H system.
 

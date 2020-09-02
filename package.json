@@ -104,10 +104,10 @@
     "collectCoverageFrom": [
       "src/**/*.{js,jsx,ts,tsx}",
       "!<rootDir>/node_modules/",
-      "!<rootDir>/path/to/dir/",
       "!src/index.tsx",
       "!src/serviceWorker.ts",
-      "!**/stories/**"
+      "!**/stories/**",
+      "!**/mock/**"
     ]
   }
 }
