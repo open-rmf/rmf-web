@@ -59,8 +59,9 @@
     "test:e2e:dev": ". e2e/env.sh && ROMI_DASHBOARD_PORT=3000 ROMI_DASHBOARD_NO_LAUNCH=1 wdio",
     "eject": "react-scripts eject",
     "deploy:demo": "REACT_APP_MOCK=1 npm run build && NODE_DEBUG=gh-pages gh-pages -d build -m \"$(git rev-parse HEAD)\"",
-    "storybook": "start-storybook -p 9009 -s public",
-    "setup": "node ./scripts/setup/setup.js && node ./scripts/setup/get-icons.js"
+    "setup": "node ./scripts/setup/setup.js && node ./scripts/setup/get-icons.js",
+    "storybook": "start-storybook -p 9009 -s public -s src/stories/static",
+    "build-storybook": "build-storybook -s public -s src/stories/static"
   },
   "eslintConfig": {
     "extends": "react-app"

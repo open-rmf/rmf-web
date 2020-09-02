@@ -22,6 +22,7 @@ it('fires click event', async () => {
         robot={robot}
         footprint={1}
         colorManager={colorManager}
+        fleetName=""
         onClick={() => (clicked = true)}
       />
     </svg>,

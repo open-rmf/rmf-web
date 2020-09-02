@@ -37,7 +37,7 @@ export default async function buildingMap(): Promise<RomiCore.BuildingMap> {
         ],
         doors: officeMap.doors,
         places: officeMap.places,
-        nav_graphs: [],
+        nav_graphs: officeMap.nav_graphs,
         wall_graph: {
           name: 'wallgraph',
           vertices: [],
@@ -70,6 +70,6 @@ export default async function buildingMap(): Promise<RomiCore.BuildingMap> {
         },
       },
     ],
-    lifts: officeMap.lifts
+    lifts: officeMap.lifts,
   };
 }

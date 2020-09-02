@@ -1,13 +1,6 @@
-import { makeStyles, useTheme } from '@material-ui/core';
+import { useTheme } from '@material-ui/core';
 import React, { useState } from 'react';
 import { RobotProps } from './robot';
-
-const useStyles = makeStyles(() => ({
-  robotMarker: {
-    cursor: 'pointer',
-    pointerEvents: 'auto',
-  },
-}));
 
 type RobotDefaultIconProps = Omit<RobotProps, 'fleetName'>;
 
@@ -15,8 +8,7 @@ const RobotDefaultIcon = React.forwardRef(function(
   props: RobotDefaultIconProps,
   ref: React.Ref<SVGGElement>,
 ): React.ReactElement {
-  const classes = useStyles();
-  const { robot, footprint, colorManager, inConflict, onClick } = props;
+  const { robot, footprint, colorManager, inConflict } = props;
   const [robotColor, setRobotColor] = useState<string | null>(() =>
     colorManager.robotColorFromCache(robot.name, robot.model),
   );
@@ -33,10 +25,7 @@ const RobotDefaultIcon = React.forwardRef(function(
   return (
     <>
       {!!robotColor && (
-        <g
-          transform={`translate(${robot.location.x} ${-robot.location.y})
-            rotate(${-(robot.location.yaw * 180) / Math.PI})`}
-        >
+        <g>
           <filter id={`${robot.name}-shadow`} x="-20%" y="-20%" width="140%" height="140%">
             <feDropShadow
               dx="0"
@@ -46,11 +35,9 @@ const RobotDefaultIcon = React.forwardRef(function(
             />
           </filter>
           <circle
-            className={classes.robotMarker}
-            onClick={e => onClick && onClick(e, robot)}
             r={footprint}
             fill={robotColor}
-            filter={`url(#${robot.name}-shadow)`}
+            filter={`url(${encodeURI(`#${robot.name}-shadow`)}`}
           />
           <line x2={footprint} stroke={theme.palette.common.black} strokeWidth="0.05" />
         </g>

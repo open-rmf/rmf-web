@@ -52,6 +52,7 @@ describe('Robots Overlay', () => {
           colorManager={colorManager}
           conflictRobotNames={conflictRobotNames}
           currentFloorName={buildingMap.levels[0].name}
+          RobotComponent={Robot}
         />
       </LMap>,
     );
