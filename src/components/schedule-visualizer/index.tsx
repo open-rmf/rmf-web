@@ -3,6 +3,7 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import * as L from 'leaflet';
 import React from 'react';
 import { AttributionControl, ImageOverlay, LayersControl, Map as LMap, Pane } from 'react-leaflet';
+import { ResourceConfigurationsType } from '../../resource-manager';
 import {
   Conflict,
   DefaultTrajectoryManager,
@@ -10,9 +11,12 @@ import {
   Trajectory,
   TrajectoryResponse,
 } from '../../robot-trajectory-manager';
-import { AnimationSpeed, SettingsContext, TrajectoryAnimation } from '../../settings';
+import { AnimationSpeed, TrajectoryAnimation } from '../../settings';
 import { toBlobUrl } from '../../util';
+import { ResourcesContext, SettingsContext } from '../app-contexts';
 import ColorManager from './colors';
+import DoorsOverlay from './doors-overlay';
+import LiftsOverlay from './lift-overlay';
 import RobotTrajectoriesOverlay, { RobotTrajectoryContext } from './robot-trajectories-overlay';
 import RobotTrajectory from './robot-trajectory';
 import RobotsOverlay from './robots-overlay';
@@ -21,10 +25,6 @@ import {
   withFollowAnimation,
   withOutlineAnimation,
 } from './trajectory-animations';
-import DoorsOverlay from './doors-overlay';
-import LiftsOverlay from './lift-overlay';
-import { ResourcesContext } from '../../app-contexts';
-import { ResourceConfigurationsType } from '../../resource-manager';
 import WaypointsOverlay from './waypoints-overlay';
 
 const useStyles = makeStyles(() => ({

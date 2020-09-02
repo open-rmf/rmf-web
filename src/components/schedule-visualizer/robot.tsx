@@ -1,7 +1,7 @@
 import { makeStyles } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React, { useContext, useState } from 'react';
-import { ResourcesContext } from '../../app-contexts';
+import { ResourcesContext } from '../app-contexts';
 import ResourceManager from '../../resource-manager';
 import ColorManager from './colors';
 import RobotDefaultIcon from './robot-default-icon';

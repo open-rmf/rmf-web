@@ -1,8 +1,9 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import React, { createContext, useContext } from 'react';
+import React, { useContext } from 'react';
 import { viewBoxFromLeafletBounds } from '../../util/css-utils';
-import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
+import { LiftStateContext } from '../rmf-contexts';
 import Lift from './lift';
+import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 
 export interface LiftsOverlayProps extends SVGOverlayProps {
   currentFloor: string;
@@ -33,5 +34,3 @@ export default function LiftsOverlay(props: LiftsOverlayProps): React.ReactEleme
     </>
   );
 }
-
-export const LiftStateContext = createContext<Readonly<Record<string, RomiCore.LiftState>>>({});

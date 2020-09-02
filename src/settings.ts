@@ -1,5 +1,3 @@
-import React from 'react';
-
 export enum TrajectoryAnimation {
   None,
   Fill,
@@ -36,5 +34,3 @@ export function defaultSettings(): Settings {
     trajectoryAnimationSpeed: AnimationSpeed.Normal,
   };
 }
-
-export const SettingsContext = React.createContext(defaultSettings());

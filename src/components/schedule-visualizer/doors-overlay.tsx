@@ -5,8 +5,8 @@
 
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React, { useContext } from 'react';
-import { DoorStateContext } from '../../app-contexts';
 import { viewBoxFromLeafletBounds } from '../../util/css-utils';
+import { DoorStateContext } from '../rmf-contexts';
 import Door from './door/door';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 
