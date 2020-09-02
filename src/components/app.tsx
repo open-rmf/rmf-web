@@ -185,9 +185,7 @@ export default function App(props: AppProps): JSX.Element {
         </p>
       ),
       action: () => {
-        clearSpotlights();
-        setShowOmniPanel(false);
-        setShowSettings(false);
+        setTourDefault();
       },
     },
     {
@@ -199,9 +197,7 @@ export default function App(props: AppProps): JSX.Element {
         </p>
       ),
       action: () => {
-        clearSpotlights();
-        setShowOmniPanel(false);
-        setShowSettings(false);
+        setTourDefault();
       },
     },
     {
@@ -213,9 +209,7 @@ export default function App(props: AppProps): JSX.Element {
         </p>
       ),
       action: () => {
-        clearSpotlights();
-        setShowOmniPanel(false);
-        setShowSettings(false);
+        setTourDefault();
       },
     },
     {
@@ -227,11 +221,7 @@ export default function App(props: AppProps): JSX.Element {
         </p>
       ),
       action: () => {
-        clearSpotlights();
-        if (showSettings || showOmniPanel) {
-          setShowSettings(false);
-          setShowOmniPanel(false);
-        }
+        setTourDefault();
       },
     },
     {
@@ -243,46 +233,28 @@ export default function App(props: AppProps): JSX.Element {
         </p>
       ),
       action: () => {
-        clearSpotlights();
-        setShowSettings(false);
-        setShowOmniPanel(true);
-        if (currentView !== 0) {
-          setCurrentView(OmniPanelViewIndex.MainMenu);
-        }
+        setTourShowOmniPanel(OmniPanelViewIndex.MainMenu);
       },
     },
     {
       selector: '[data-component="MainMenu"]',
       content: 'Each panel contains a list of the available items and their state',
       action: () => {
-        clearSpotlights();
-        if (!showOmniPanel) {
-          setShowOmniPanel(true);
-        }
-        if (currentView !== 0) {
-          setCurrentView(OmniPanelViewIndex.MainMenu);
-        }
+        setTourShowOmniPanel(OmniPanelViewIndex.MainMenu);
       },
     },
     {
       selector: '',
       content: 'Let us take a look into the Doors Panel',
       action: () => {
-        clearSpotlights();
-        if (showSettings) {
-          setShowSettings(false);
-        }
-        setShowOmniPanel(true);
-        setCurrentView(OmniPanelViewIndex.Doors);
+        setTourShowOmniPanel(OmniPanelViewIndex.Doors);
       },
     },
     {
       selector: '[data-name="main_door"]',
       content: 'Here is an example of what you will see when a door tab is expanded!',
       action: () => {
-        if (showSettings) {
-          setShowSettings(false);
-        }
+        setShowSettings(false);
         setShowOmniPanel(true);
         setCurrentView(OmniPanelViewIndex.Doors);
         if (!doorSpotlight) {
@@ -295,9 +267,7 @@ export default function App(props: AppProps): JSX.Element {
       content:
         'The Commands Panel allows you to send different types of requests that will be handled by RoMi',
       action: () => {
-        clearSpotlights();
-        setShowOmniPanel(true);
-        setCurrentView(OmniPanelViewIndex.Commands);
+        setTourShowOmniPanel(OmniPanelViewIndex.Commands);
       },
     },
     {
@@ -309,11 +279,7 @@ export default function App(props: AppProps): JSX.Element {
         </p>
       ),
       action: () => {
-        if (showSettings) {
-          setShowSettings(false);
-        }
-        setShowOmniPanel(true);
-        setCurrentView(OmniPanelViewIndex.Commands);
+        setTourShowOmniPanel(OmniPanelViewIndex.Commands);
       },
     },
     {
@@ -324,8 +290,9 @@ export default function App(props: AppProps): JSX.Element {
         </p>
       ),
       action: () => {
-        setShowOmniPanel(false);
+        clearSpotlights();
         setShowSettings(true);
+        setShowOmniPanel(false);
       },
     },
     {
@@ -337,10 +304,9 @@ export default function App(props: AppProps): JSX.Element {
         </p>
       ),
       action: () => {
+        clearSpotlights();
         setShowOmniPanel(false);
-        if (!showSettings) {
-          setShowSettings(true);
-        }
+        setShowSettings(true);
       },
     },
   ];
@@ -504,6 +470,19 @@ export default function App(props: AppProps): JSX.Element {
 
   function handleMainMenuCommandsClick(): void {
     setCurrentView(OmniPanelViewIndex.Commands);
+  }
+
+  function setTourDefault(): void {
+    clearSpotlights();
+    setShowOmniPanel(false);
+    setShowSettings(false);
+  }
+
+  function setTourShowOmniPanel(view: OmniPanelViewIndex): void {
+    clearSpotlights();
+    setShowSettings(false);
+    setShowOmniPanel(true);
+    setCurrentView(view);
   }
 
   return (
