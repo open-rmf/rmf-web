@@ -39,7 +39,7 @@ export class FakeTransport extends RomiCore.TransportEvents implements RomiCore.
         const doorStates = this._doorStateFactory();
         timer = window.setInterval(() => {
           for (const state of Object.values(doorStates)) {
-            debug('publishing door state');
+            debug('publishing door state, %s', state.door_name);
             cb(state as Message);
           }
         }, 1000);
@@ -49,7 +49,7 @@ export class FakeTransport extends RomiCore.TransportEvents implements RomiCore.
         const liftStates = fakeLiftStates();
         timer = window.setInterval(() => {
           for (const state of Object.values(liftStates)) {
-            debug('publishing lift state');
+            debug('publishing lift state, %s', state.lift_name);
             cb(state as Message);
           }
         }, 1000);
@@ -59,6 +59,7 @@ export class FakeTransport extends RomiCore.TransportEvents implements RomiCore.
         const fleets = fakeFleets();
         timer = window.setInterval(() => {
           for (const fleet of fleets) {
+            debug('publishing fleet state, %s', fleet.name);
             cb(fleet as Message);
           }
         }, 1000);
@@ -68,21 +69,12 @@ export class FakeTransport extends RomiCore.TransportEvents implements RomiCore.
         const dispenserStates = fakeDispenserStates();
         timer = window.setInterval(() => {
           for (const state of Object.values(dispenserStates)) {
-            debug('publishing dispenser state');
+            debug('publishing dispenser state, %s', state.guid);
             cb(state as Message);
           }
         }, 1000);
         break;
       }
-    }
-
-    if (topic !== RomiCore.liftStates && topic.topic === 'lift_states') {
-      const liftStates = fakeLiftStates();
-      timer = window.setInterval(() => {
-        for (const state of Object.values(liftStates)) {
-          cb(state as Message);
-        }
-      }, 1000);
     }
 
     return {

@@ -6,11 +6,13 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
-import { RobotInformation } from './robot-item-information';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import Debug from 'debug';
 import React from 'react';
-
 import OmniPanelStatusLabels from './omni-panel-status-labels';
+import { RobotInformation } from './robot-item-information';
+
+const debug = Debug('RobotItem');
 
 export interface RobotItemProps extends Omit<ExpansionPanelProps, 'children'> {
   fleetName: string;
@@ -18,30 +20,35 @@ export interface RobotItemProps extends Omit<ExpansionPanelProps, 'children'> {
   onRobotClick?(robot: RomiCore.RobotState): void;
 }
 
-export const RobotItem = React.forwardRef(function(
-  props: RobotItemProps,
-  ref: React.Ref<HTMLElement>,
-): React.ReactElement {
-  const { robot, onRobotClick, fleetName, ...otherProps } = props;
-  const classes = useStyles();
-  return (
-    <ExpansionPanel ref={ref} data-component="RobotItem" data-name={robot.name} {...otherProps}>
-      <ExpansionPanelSummary
-        classes={{ content: classes.expansionSummaryContent }}
-        expandIcon={<ExpandMoreIcon />}
-      >
-        <OmniPanelStatusLabels
-          modalLabelClass={classes.robotStatusLabel}
-          name={robot.name}
-          modeText={robotModeToString(robot.mode)}
-        />
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails data-role="details" className={classes.expansionDetail}>
-        <RobotInformation robot={robot} />
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
-  );
-});
+export const RobotItem = React.memo(
+  React.forwardRef(function(
+    props: RobotItemProps,
+    ref: React.Ref<HTMLElement>,
+  ): React.ReactElement {
+    const { robot, onRobotClick, fleetName, ...otherProps } = props;
+    const classes = useStyles();
+
+    debug('render %s', robot.name);
+
+    return (
+      <ExpansionPanel ref={ref} data-component="RobotItem" data-name={robot.name} {...otherProps}>
+        <ExpansionPanelSummary
+          classes={{ content: classes.expansionSummaryContent }}
+          expandIcon={<ExpandMoreIcon />}
+        >
+          <OmniPanelStatusLabels
+            modalLabelClass={classes.robotStatusLabel}
+            name={robot.name}
+            modeText={robotModeToString(robot.mode)}
+          />
+        </ExpansionPanelSummary>
+        <ExpansionPanelDetails data-role="details" className={classes.expansionDetail}>
+          <RobotInformation robot={robot} />
+        </ExpansionPanelDetails>
+      </ExpansionPanel>
+    );
+  }),
+);
 
 export default RobotItem;
 
