@@ -45,6 +45,7 @@
     "start:backend": ". e2e/env.sh && node e2e/prepare.js && ts-node e2e/startBackend.ts",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "test:coverage": "npm run test -- --coverage --watchAll=false",
     "test:e2e": ". e2e/env.sh && node e2e/prepare.js && npm run build && wdio",
     "test:e2e:dev": ". e2e/env.sh && export ROMI_DASHBOARD_PORT=3000 && node e2e/prepare.js && wdio",
     "eject": "react-scripts eject",
@@ -97,6 +98,16 @@
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
       "prettier --write"
+    ]
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx,ts,tsx}",
+      "!<rootDir>/node_modules/",
+      "!<rootDir>/path/to/dir/",
+      "!src/index.tsx",
+      "!src/serviceWorker.ts",
+      "!**/stories/**"
     ]
   }
 }
