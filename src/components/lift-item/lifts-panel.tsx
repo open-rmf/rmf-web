@@ -1,10 +1,15 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import { LiftRequest } from '@osrf/romi-js-core-interfaces';
+import Debug from 'debug';
 import React from 'react';
-import { LiftItem } from './lift-item';
+import { makeCallbackArrayCallback } from '../../util/react-helpers';
 import { SpotlightValue } from '../spotlight-value';
+import { LiftItem, LiftItemProps } from './lift-item';
+
+const debug = Debug('LiftsPanel');
 
 export interface LiftsPanelProps {
-  lifts: readonly RomiCore.Lift[];
+  lifts: RomiCore.Lift[];
   liftStates: Readonly<Record<string, RomiCore.LiftState>>;
   transport?: Readonly<RomiCore.Transport>;
   spotlight?: Readonly<SpotlightValue<string>>;
@@ -12,37 +17,45 @@ export interface LiftsPanelProps {
   onLiftClick?(lift: RomiCore.Lift): void;
 }
 
-export default function LiftsPanel(props: LiftsPanelProps): JSX.Element {
-  const { transport, spotlight, onLiftRequest, onLiftClick } = props;
+function handleLiftRequest(
+  liftRequestPub: RomiCore.Publisher<LiftRequest>,
+  sessionId: string,
+  lift: RomiCore.Lift,
+  doorState: number,
+  requestType: number,
+  destination: string,
+): void {
+  liftRequestPub.publish({
+    lift_name: lift.name,
+    door_state: doorState,
+    request_type: requestType,
+    request_time: RomiCore.toRosTime(new Date()),
+    destination_floor: destination,
+    session_id: sessionId,
+  });
+}
+
+export const LiftsPanel = React.memo((props: LiftsPanelProps) => {
+  debug('render');
+
+  const { lifts, liftStates, transport, spotlight, onLiftRequest, onLiftClick } = props;
   const liftRequestPub = React.useMemo(
     () => (transport ? transport.createPublisher(RomiCore.adapterLiftRequests) : null),
     [transport],
   );
-  const liftRefs = React.useRef<Record<string, HTMLElement | null>>({});
   const [expanded, setExpanded] = React.useState<Readonly<Record<string, boolean>>>({});
 
-  function handleLiftRequest(
-    lift: RomiCore.Lift,
-    doorState: number,
-    requestType: number,
-    destination: string,
-  ): void {
-    liftRequestPub?.publish({
-      lift_name: lift.name,
-      door_state: doorState,
-      request_type: requestType,
-      request_time: RomiCore.toRosTime(new Date()),
-      destination_floor: destination,
-      session_id: transport!.name,
-    });
-    onLiftRequest && onLiftRequest(lift, destination);
-  }
+  const liftRefs = React.useMemo(() => {
+    const refs: Record<string, React.RefObject<HTMLElement>> = {};
+    lifts.map(lift => (refs[lift.name] = React.createRef()));
+    return refs;
+  }, [lifts]);
 
   React.useEffect(() => {
     if (!spotlight) {
       return;
     }
-    const ref = liftRefs.current[spotlight.value];
+    const ref = liftRefs[spotlight.value];
     if (!ref) {
       return;
     }
@@ -50,33 +63,70 @@ export default function LiftsPanel(props: LiftsPanelProps): JSX.Element {
       ...prev,
       [spotlight.value]: true,
     }));
-    ref.scrollIntoView({ behavior: 'smooth' });
-  }, [spotlight]);
+    ref.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [spotlight, liftRefs]);
+
+  const onChange = React.useMemo(
+    makeCallbackArrayCallback<Required<LiftItemProps>['onChange'], RomiCore.Lift>(
+      lifts,
+      (lift, _, newExpanded) =>
+        setExpanded(prev => ({
+          ...prev,
+          [lift.name]: newExpanded,
+        })),
+    ),
+    [lifts],
+  );
+
+  const onClick = React.useMemo(
+    makeCallbackArrayCallback<Required<LiftItemProps>['onClick'], RomiCore.Lift>(
+      lifts,
+      lift => onLiftClick && onLiftClick(lift),
+    ),
+    [lifts, onLiftClick],
+  );
+
+  const onRequest = React.useMemo(
+    makeCallbackArrayCallback<Required<LiftItemProps>['onRequest'], RomiCore.Lift>(
+      lifts,
+      (lift, _, doorState, requestType, destination) => {
+        liftRequestPub &&
+          transport &&
+          handleLiftRequest(
+            liftRequestPub,
+            transport.name,
+            lift,
+            doorState,
+            requestType,
+            destination,
+          );
+        onLiftRequest && onLiftRequest(lift, destination);
+      },
+    ),
+    [],
+  );
 
   return (
     <React.Fragment>
-      {props.lifts.map(lift => {
-        const liftState = props.liftStates[lift.name];
+      {lifts.map((lift, i) => {
+        const liftState = liftStates[lift.name];
         return (
           <LiftItem
             key={lift.name}
-            id={`Liftitem-${lift.name}`}
+            id={`LiftItem-${lift.name}`}
             lift={lift}
-            ref={ref => (liftRefs.current[lift.name] = ref)}
+            ref={liftRefs[lift.name]}
             liftState={liftState}
             enableRequest={Boolean(transport)}
-            onRequest={handleLiftRequest}
-            onClick={() => onLiftClick && onLiftClick(lift)}
+            onRequest={onRequest[i]}
+            onClick={onClick[i]}
             expanded={Boolean(expanded[lift.name])}
-            onChange={(_, newExpanded) =>
-              setExpanded(prev => ({
-                ...prev,
-                [lift.name]: newExpanded,
-              }))
-            }
+            onChange={onChange[i]}
           />
         );
       })}
     </React.Fragment>
   );
-}
+});
+
+export default LiftsPanel;

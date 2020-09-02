@@ -49,6 +49,7 @@ export class FakeTransport extends RomiCore.TransportEvents implements RomiCore.
         const liftStates = fakeLiftStates();
         timer = window.setInterval(() => {
           for (const state of Object.values(liftStates)) {
+            debug('publishing lift state');
             cb(state as Message);
           }
         }, 1000);

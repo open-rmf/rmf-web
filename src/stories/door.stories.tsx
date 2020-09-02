@@ -2,10 +2,8 @@ import { Divider, Typography } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 import DoorsPanel from '../components/doors-panel';
-import DoorStateManager from '../door-state-manager';
-import FakeTransport from '../mock/fake-transport';
 import DoorComponent from './baseComponents/door-component';
-// import DoorButton from './baseComponents/door-panel';
+
 import {
   componentDisplayStyle,
   defaultStyles,

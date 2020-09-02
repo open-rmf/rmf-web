@@ -14,6 +14,9 @@ import LiftRequestForm from './lift-item-form';
 import { LiftRequestManager } from '../../lift-state-manager';
 import OmniPanelStatusLabels from '../omni-panel-status-labels';
 import { colorPalette } from '../../util/css-utils';
+import Debug from 'debug';
+
+const debug = Debug('LiftItem');
 
 export interface LiftItemProps extends Omit<ExpansionPanelProps, 'children'> {
   id?: string;
@@ -28,77 +31,78 @@ export interface LiftItemProps extends Omit<ExpansionPanelProps, 'children'> {
   ): void;
 }
 
-export const LiftItem = React.forwardRef(function(
-  props: LiftItemProps,
-  ref: React.Ref<HTMLElement>,
-): React.ReactElement {
-  const { id, lift, liftState, enableRequest, onRequest, ...otherProps } = props;
-  const [tabValue, setTabValue] = React.useState(0);
-  const classes = useStyles();
+export const LiftItem = React.memo(
+  React.forwardRef(function(props: LiftItemProps, ref: React.Ref<HTMLElement>): React.ReactElement {
+    debug('render');
 
-  function liftFloorLabel(liftState?: RomiCore.LiftState): string {
-    if (!liftState) {
-      return classes.liftFloorLabelUnknown;
+    const { id, lift, liftState, enableRequest, onRequest, ...otherProps } = props;
+    const [tabValue, setTabValue] = React.useState(0);
+    const classes = useStyles();
+
+    function liftFloorLabel(liftState?: RomiCore.LiftState): string {
+      if (!liftState) {
+        return classes.liftFloorLabelUnknown;
+      }
+      switch (liftState.motion_state) {
+        case RomiCore.LiftState.MOTION_UP:
+        case RomiCore.LiftState.MOTION_DOWN:
+          return classes.liftFloorLabelMoving;
+        default:
+          return classes.liftFloorLabelStopped;
+      }
     }
-    switch (liftState.motion_state) {
-      case RomiCore.LiftState.MOTION_UP:
-      case RomiCore.LiftState.MOTION_DOWN:
-        return classes.liftFloorLabelMoving;
-      default:
-        return classes.liftFloorLabelStopped;
+
+    function handleRequest(doorState: number, requestType: number, destination: string): void {
+      !!onRequest && onRequest(lift, doorState, requestType, destination);
     }
-  }
 
-  function handleRequest(doorState: number, requestType: number, destination: string): void {
-    !!onRequest && onRequest(lift, doorState, requestType, destination);
-  }
+    const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+      setTabValue(newValue);
+    };
 
-  const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
-    setTabValue(newValue);
-  };
+    const doorStates = React.useMemo(() => LiftRequestManager.getDoorModes(), []);
+    const requestTypes = React.useMemo(() => LiftRequestManager.getLiftRequestModes(), []);
 
-  const doorStates = React.useMemo(() => LiftRequestManager.getDoorModes(), []);
-  const requestTypes = React.useMemo(() => LiftRequestManager.getLiftRequestModes(), []);
-
-  return (
-    <ExpansionPanel ref={ref} id={id} {...otherProps}>
-      <ExpansionPanelSummary
-        classes={{ content: classes.expansionSummaryContent }}
-        expandIcon={<ExpandMoreIcon />}
-      >
-        <OmniPanelStatusLabels
-          modalLabelClass={liftFloorLabel(liftState)}
-          name={lift.name}
-          modeText={liftState ? liftState.current_floor : 'N/A'}
-        />
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails className={classes.expansionDetail}>
-        <AntTabs
-          variant="fullWidth"
-          value={tabValue}
-          onChange={handleChange}
-          aria-label="scrollable auto tabs example"
+    return (
+      <ExpansionPanel ref={ref} id={id} {...otherProps}>
+        <ExpansionPanelSummary
+          classes={{ content: classes.expansionSummaryContent }}
+          expandIcon={<ExpandMoreIcon />}
         >
-          <AntTab label="Info" />
-          <AntTab label="Request" />
-        </AntTabs>
-        <TabPanel value={tabValue} index={0}>
-          <LiftInformation lift={lift} liftState={liftState} />
-        </TabPanel>
-        <TabPanel value={tabValue} index={1}>
-          {lift.levels && (
-            <LiftRequestForm
-              liftRequest={handleRequest}
-              doorStates={doorStates}
-              requestTypes={requestTypes}
-              destinationList={lift.levels}
-            />
-          )}
-        </TabPanel>
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
-  );
-});
+          <OmniPanelStatusLabels
+            modalLabelClass={liftFloorLabel(liftState)}
+            name={lift.name}
+            modeText={liftState ? liftState.current_floor : 'N/A'}
+          />
+        </ExpansionPanelSummary>
+        <ExpansionPanelDetails className={classes.expansionDetail}>
+          <AntTabs
+            variant="fullWidth"
+            value={tabValue}
+            onChange={handleChange}
+            aria-label="scrollable auto tabs example"
+          >
+            <AntTab label="Info" />
+            <AntTab label="Request" />
+          </AntTabs>
+          <TabPanel value={tabValue} index={0}>
+            <LiftInformation lift={lift} liftState={liftState} />
+          </TabPanel>
+          <TabPanel value={tabValue} index={1}>
+            {lift.levels && (
+              <LiftRequestForm
+                liftRequest={handleRequest}
+                doorStates={doorStates}
+                requestTypes={requestTypes}
+                destinationList={lift.levels}
+              />
+            )}
+          </TabPanel>
+        </ExpansionPanelDetails>
+      </ExpansionPanel>
+    );
+  }),
+);
 
 const useStyles = makeStyles(theme => {
   const liftFloorLabelBase: CSSProperties = {

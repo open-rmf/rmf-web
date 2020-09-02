@@ -34,16 +34,17 @@ export const DoorsPanel = React.memo((props: DoorsPanelProps) => {
   debug('render');
 
   const { doors, doorStates, transport, spotlight, onDoorClick } = props;
-  const doorRefs = React.useMemo(() => {
-    const refs: Record<string, React.RefObject<HTMLElement>> = {};
-    doors.map(door => (refs[door.name] = React.createRef()));
-    return refs;
-  }, [doors]);
   const [expanded, setExpanded] = React.useState<Record<string, boolean>>({});
   const doorRequestPub = React.useMemo(
     () => (transport ? transport.createPublisher(RomiCore.adapterDoorRequests) : null),
     [transport],
   );
+
+  const doorRefs = React.useMemo(() => {
+    const refs: Record<string, React.RefObject<HTMLElement>> = {};
+    doors.map(door => (refs[door.name] = React.createRef()));
+    return refs;
+  }, [doors]);
 
   const onChange = React.useMemo(
     makeCallbackArrayCallback<Required<DoorItemProps>['onChange'], RomiCore.Door>(

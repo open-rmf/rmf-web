@@ -11,11 +11,16 @@ export default class LiftStateManager extends EventEmitter<Events> {
   }
 
   startSubscription(transport: RomiCore.Transport) {
-    // TODO remove the skip validation when the type problem of available_floors is solved
-    transport.subscribe(RomiCore.skipValidation(RomiCore.liftStates), liftState => {
-      this._liftStates[liftState.lift_name] = liftState;
-      this.emit('updated');
-    });
+    this._subscriptions.push(
+      transport.subscribe(RomiCore.liftStates, liftState => {
+        this._liftStates[liftState.lift_name] = liftState;
+        this.emit('updated');
+      }),
+    );
+  }
+
+  stopAllSubscriptions(): void {
+    this._subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   static liftModeToString(liftMode: number): string {
@@ -62,6 +67,7 @@ export default class LiftStateManager extends EventEmitter<Events> {
   }
 
   private _liftStates: Record<string, RomiCore.LiftState> = {};
+  private _subscriptions: RomiCore.Subscription[] = [];
 }
 
 export interface requestManagerModes {
@@ -74,27 +80,24 @@ export class LiftRequestManager {
     RomiCore.LiftRequest.REQUEST_HUMAN_MODE,
   ];
 
-  static readonly doorModes = [
-    RomiCore.LiftRequest.DOOR_CLOSED,
-    RomiCore.LiftRequest.DOOR_OPEN,
-  ]
+  static readonly doorModes = [RomiCore.LiftRequest.DOOR_CLOSED, RomiCore.LiftRequest.DOOR_OPEN];
 
   static getLiftRequestModes(): requestManagerModes {
     let modes: requestManagerModes = {};
     this.liftRequestModes.forEach(element => {
       const key = this.requestModeToString(element);
-      modes[key] = element
+      modes[key] = element;
     });
-    return modes
+    return modes;
   }
 
   static getDoorModes(): requestManagerModes {
     let modes: requestManagerModes = {};
     this.doorModes.forEach(element => {
       const key = this.doorStateToString(element);
-      modes[key] = element
+      modes[key] = element;
     });
-    return modes
+    return modes;
   }
 
   static requestModeToString(requestMode: number): string {
