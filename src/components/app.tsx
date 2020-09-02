@@ -6,6 +6,7 @@ import {
   makeStyles,
   Toolbar,
   Typography,
+  Tooltip,
 } from '@material-ui/core/';
 import { Dashboard as DashboardIcon, Settings as SettingsIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
@@ -513,15 +514,21 @@ export default function App(props: AppProps): JSX.Element {
                 <Typography variant="h6" className={classes.toolBarTitle}>
                   Dashboard
                 </Typography>
-                <IconButton color="inherit" onClick={() => setShowOmniPanel(!showOmniPanel)}>
-                  <DashboardIcon data-name="omnipanel-button" />
-                </IconButton>
-                <IconButton color="inherit" onClick={() => setShowSettings(true)}>
-                  <SettingsIcon />
-                </IconButton>
-                <IconButton color="inherit" onClick={() => setTourState(true)}>
-                  <FontAwesomeIcon icon={faMapSigns} />
-                </IconButton>
+                <Tooltip title="OmniPanel">
+                  <IconButton color="inherit" onClick={() => setShowOmniPanel(!showOmniPanel)}>
+                    <DashboardIcon data-name="omnipanel-button" />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Settings">
+                  <IconButton color="inherit" onClick={() => setShowSettings(true)}>
+                    <SettingsIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Walkthrough Guide">
+                  <IconButton color="inherit" onClick={() => setTourState(true)}>
+                    <FontAwesomeIcon icon={faMapSigns} />
+                  </IconButton>
+                </Tooltip>
               </Toolbar>
             </AppBar>
             {buildingMap && (
