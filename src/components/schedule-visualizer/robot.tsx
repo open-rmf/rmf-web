@@ -41,12 +41,12 @@ export interface RobotProps {
 
 const Robot = React.memo(
   React.forwardRef(function (props: RobotProps, ref: React.Ref<SVGGElement>): React.ReactElement {
-    const resourcesContext = useContext(ResourcesContext);
+    const robotResourcesContext = useContext(ResourcesContext).robots;
     const classes = useStyles();
     const { robot, footprint, colorManager, fleetName, inConflict, onClick } = props;
     // The only image formats SVG software support are JPEG, PNG, and other SVG files.
     const [renderCustomIcon, setRenderCustomIcon] = useState({
-      path: resourcesContext.robots.getRobotIconPath(fleetName),
+      path: robotResourcesContext ? robotResourcesContext.getIconPath(fleetName) : null,
       error: false,
     });
 

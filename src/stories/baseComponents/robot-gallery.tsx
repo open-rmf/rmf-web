@@ -8,6 +8,17 @@ import ColorManager from '../../components/schedule-visualizer/colors';
 import Robot, { RobotProps } from '../../components/schedule-visualizer/robot';
 import { ResourceConfigurationsType } from '../../resource-manager';
 import { makeRobot } from '../../mock/utils';
+import ResourceManager from '../../resource-manager';
+
+const baseRobot: RomiCore.RobotState = {
+  name: '',
+  battery_percent: 100,
+  location: { level_name: '', x: 0, y: 0, t: { sec: 0, nanosec: 0 }, yaw: 0 },
+  mode: { mode: RomiCore.RobotMode.MODE_IDLE },
+  model: 'BaseModel',
+  path: [],
+  task_id: '',
+};
 
 const colorManager = new ColorManager();
 
@@ -43,15 +54,18 @@ const robots: Record<string, RobotProps> = {
   ),
 };
 
-const resources: ResourceConfigurationsType = {
+const resourcesData = {
   robots: {
     fleetWithIcon: {
       icons: {
         fleetWithIcon: '/fleetWithIcon.png',
       },
+      places: {},
     },
   },
 };
+
+const resources = new ResourceManager(resourcesData);
 
 export default function RobotGallery(): React.ReactElement {
   return (

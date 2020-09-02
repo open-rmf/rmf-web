@@ -7,16 +7,13 @@ interface Location {
   level_name: string;
 }
 
-export interface ResourceDispenserConfigurationInterface {
+export interface DispenserResource {
   icons: Record<string, string>;
   location: Location;
-  name: string;
+  guid?: string;
 }
 
-export type ResourceDispenserConfigurationType = Record<
-  string,
-  ResourceDispenserConfigurationInterface
->;
+export type ResourceDispenserConfigurationType = Record<string, DispenserResource>;
 
 export class DispenserResourceManager {
   dispensers: ResourceDispenserConfigurationType;
@@ -42,8 +39,9 @@ export class DispenserResourceManager {
       return null;
     }
     const rootIconPath = '/assets/icons';
-    const robotIcons = this.dispensers[dispenserName].icons[dispenserName];
-    return `${rootIconPath}${robotIcons}`;
+    const dispenserIcon = this.dispensers[dispenserName].icons[dispenserName];
+
+    return dispenserIcon ? `${rootIconPath}${dispenserIcon}` : null;
   };
 
   dispenserExists = (dispenserName: string) => {
@@ -57,7 +55,11 @@ export class DispenserResourceManager {
     return this.dispensers;
   }
 
-  get allValues(): ResourceDispenserConfigurationInterface[] {
-    return Object.values(this.dispensers);
+  get allValues(): Required<DispenserResource>[] {
+    let newDict = Object.assign({}, this.dispensers);
+    Object.keys(this.dispensers).forEach(key => {
+      newDict[key].guid = key;
+    });
+    return Object.values(newDict as Record<string, Required<DispenserResource>>);
   }
 }

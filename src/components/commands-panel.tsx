@@ -174,7 +174,6 @@ export const CommandsPanel = React.memo((props: CommandsPanelProps) => {
             requestDelivery={handleDeliveryRequest}
             fleetNames={allFleets}
             robotHandler={resourcesContext.robots}
-            dispenserHandler={resourcesContext.dispensers}
           />
         </AccordionDetails>
       </Accordion>

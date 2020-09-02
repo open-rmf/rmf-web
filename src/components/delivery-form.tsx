@@ -4,17 +4,15 @@ import React, { useState, Dispatch, SetStateAction, useEffect } from 'react';
 import { loopFormStyles } from './loop-form';
 import { TDeliveryRequest } from './commands-panel';
 import { RobotResourceManager } from '../resource-manager-robots';
-import { DispenserResourceManager } from '../resource-manager-dispensers';
 
 interface DeliveryFormProps {
   fleetNames: string[];
   requestDelivery: TDeliveryRequest;
   robotHandler: RobotResourceManager;
-  dispenserHandler: DispenserResourceManager;
 }
 
 export const RobotDeliveryForm = (props: DeliveryFormProps): React.ReactElement => {
-  const { requestDelivery, fleetNames, robotHandler, dispenserHandler } = props;
+  const { requestDelivery, fleetNames, robotHandler } = props;
   const classes = loopFormStyles();
 
   const [targetFleetName, setTargetFleetName] = useState(
@@ -74,17 +72,17 @@ export const RobotDeliveryForm = (props: DeliveryFormProps): React.ReactElement 
 
   const dispensersFromPickUpPlace = React.useMemo(() => {
     const dispenser = !!pickupPlaceName
-      ? dispenserHandler.getAvailableDispenserPerPlace(targetFleetName, pickupPlaceName)
+      ? robotHandler.getDispensersPerFleet(targetFleetName, pickupPlaceName)
       : [];
     return !!dispenser ? dispenser : [];
-  }, [pickupPlaceName, dispenserHandler, targetFleetName]);
+  }, [pickupPlaceName, robotHandler, targetFleetName]);
 
   const dispensersFromDropOffPlace = React.useMemo(() => {
     const dispenser = !!dropOffPlaceName
-      ? dispenserHandler.getAvailableDispenserPerPlace(targetFleetName, dropOffPlaceName)
+      ? robotHandler.getDispensersPerFleet(targetFleetName, dropOffPlaceName)
       : [];
     return !!dispenser ? dispenser : [];
-  }, [dropOffPlaceName, dispenserHandler, targetFleetName]);
+  }, [dropOffPlaceName, robotHandler, targetFleetName]);
 
   useEffect(() => {
     setPickupDispenserError('');

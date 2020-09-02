@@ -11,10 +11,10 @@ import { DefaultTrajectoryManager, RobotTrajectoryManager } from './robot-trajec
 
 export interface AppConfig {
   authenticator: Authenticator;
-  appResources: Promise<ResourceConfigurationsType>;
   transportFactory: () => Promise<RomiCore.Transport>;
   trajectoryManagerFactory?: () => Promise<RobotTrajectoryManager>;
   trajServerUrl: string;
+  appResources: Promise<Partial<ResourceConfigurationsType>>;
 }
 
 export const appConfig: AppConfig = (() => {

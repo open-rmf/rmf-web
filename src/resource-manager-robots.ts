@@ -1,14 +1,12 @@
-interface ResourceRobotConfigurationInterface {
-  icons: Record<string, string>;
-  places: Record<string, string[]>;
+export interface RobotResource {
+  icons: Record<string, string>; // Record<ModelName|FleetName, IconPath>
+  places: Record<string, string[]>; // Record<Places, Dispensers[]>
 }
 
-export type ResourceRobotConfigurationType = Record<string, ResourceRobotConfigurationInterface>;
-
 export class RobotResourceManager {
-  robots: ResourceRobotConfigurationType;
+  robots: Record<string, RobotResource>;
 
-  constructor(robotResources: ResourceRobotConfigurationType) {
+  constructor(robotResources: Record<string, RobotResource>) {
     this.robots = robotResources;
   }
 
@@ -19,7 +17,7 @@ export class RobotResourceManager {
     return Object.keys(this.robots[fleetName].places);
   };
 
-  getRobotIconPath = (fleetName: string, robotModel?: string | undefined): string | null => {
+  getIconPath = (fleetName: string, robotModel?: string | undefined): string | null => {
     if (!this.fleetExists(fleetName)) {
       return null;
     }
