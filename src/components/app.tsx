@@ -283,6 +283,7 @@ export default function App(props: AppProps): JSX.Element {
         if (showSettings) {
           setShowSettings(false);
         }
+        setShowOmniPanel(true);
         setCurrentView(OmniPanelViewIndex.Doors);
         if (!doorSpotlight) {
           setDoorSpotlight({ value: 'main_door' });
@@ -295,6 +296,7 @@ export default function App(props: AppProps): JSX.Element {
         'The Commands Panel allows you to send different types of requests that will be handled by RoMi',
       action: () => {
         clearSpotlights();
+        setShowOmniPanel(true);
         setCurrentView(OmniPanelViewIndex.Commands);
       },
     },
@@ -335,6 +337,7 @@ export default function App(props: AppProps): JSX.Element {
         </p>
       ),
       action: () => {
+        setShowOmniPanel(false);
         if (!showSettings) {
           setShowSettings(true);
         }
@@ -615,8 +618,10 @@ export default function App(props: AppProps): JSX.Element {
             isOpen={tourState}
             onRequestClose={() => {
               setTourState(false);
-              setShowOmniPanel(true);
+              clearSpotlights();
               setShowSettings(false);
+              setShowOmniPanel(true);
+              setCurrentView(OmniPanelViewIndex.MainMenu);
             }}
             lastStepNextButton={<Button>Start using RoMi!</Button>}
           />
