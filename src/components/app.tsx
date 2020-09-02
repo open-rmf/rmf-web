@@ -121,7 +121,7 @@ export default function App(props: AppProps): JSX.Element {
 
   const doorStateManager = React.useMemo(() => new DoorStateManager(), []);
   const [doorStates, setDoorStates] = React.useState(() => doorStateManager.doorStates());
-  const [doors, setDoors] = React.useState<readonly RomiCore.Door[]>([]);
+  const [doors, setDoors] = React.useState<RomiCore.Door[]>([]);
 
   const [doorSpotlight, setDoorSpotlight] = React.useState<SpotlightValue<string> | undefined>(
     undefined,

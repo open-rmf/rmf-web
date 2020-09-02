@@ -1,6 +1,7 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import React from 'react';
+import { makeCallbackArrayCallback } from '../util/react-helpers';
 import DoorItem_, { DoorItemProps } from './door-item';
 import { SpotlightValue } from './spotlight-value';
 
@@ -8,7 +9,7 @@ const debug = Debug('DoorsPanel');
 const DoorItem = React.memo(DoorItem_);
 
 export interface DoorsPanelProps {
-  doors: readonly RomiCore.Door[];
+  doors: RomiCore.Door[];
   doorStates: Readonly<Record<string, RomiCore.DoorState>>;
   transport?: Readonly<RomiCore.Transport>;
   spotlight?: Readonly<SpotlightValue<string>>;
@@ -44,48 +45,47 @@ export const DoorsPanel = React.memo((props: DoorsPanelProps) => {
     [transport],
   );
 
-  const onChange = React.useMemo(() => {
-    return doors.reduce<Record<string, DoorItemProps['onChange']>>((prev, door) => {
-      prev[door.name] = (_, newExpanded) => {
+  const onChange = React.useMemo(
+    makeCallbackArrayCallback<Required<DoorItemProps>['onChange'], RomiCore.Door>(
+      doors,
+      (door, _, newExpanded) =>
         setExpanded(prev => ({
           ...prev,
           [door.name]: newExpanded,
-        }));
-      };
-      return prev;
-    }, {});
-  }, [doors]);
+        })),
+    ),
+    [doors],
+  );
 
-  const onClick = React.useMemo(() => {
-    return doors.reduce<Record<string, DoorItemProps['onClick']>>((prev, door) => {
-      prev[door.name] = () => {
-        onDoorClick && onDoorClick(door);
-      };
-      return prev;
-    }, {});
-  }, [doors, onDoorClick]);
+  const onClick = React.useMemo(
+    makeCallbackArrayCallback<Required<DoorItemProps>['onClick'], RomiCore.Door>(
+      doors,
+      door => onDoorClick && onDoorClick(door),
+    ),
+    [doors, onDoorClick],
+  );
 
-  const onOpenClick = React.useMemo(() => {
-    return doors.reduce<Record<string, DoorItemProps['onOpenClick']>>((prev, door) => {
-      prev[door.name] = () => {
+  const onOpenClick = React.useMemo(
+    makeCallbackArrayCallback<Required<DoorItemProps>['onOpenClick'], RomiCore.Door>(
+      doors,
+      door =>
         doorRequestPub &&
-          transport &&
-          requestDoor(doorRequestPub, transport.name, door, RomiCore.DoorMode.MODE_OPEN);
-      };
-      return prev;
-    }, {});
-  }, [doors, doorRequestPub, transport]);
+        transport &&
+        requestDoor(doorRequestPub, transport.name, door, RomiCore.DoorMode.MODE_OPEN),
+    ),
+    [doors, onDoorClick],
+  );
 
-  const onCloseClick = React.useMemo(() => {
-    return doors.reduce<Record<string, DoorItemProps['onCloseClick']>>((prev, door) => {
-      prev[door.name] = () => {
+  const onCloseClick = React.useMemo(
+    makeCallbackArrayCallback<Required<DoorItemProps>['onCloseClick'], RomiCore.Door>(
+      doors,
+      door =>
         doorRequestPub &&
-          transport &&
-          requestDoor(doorRequestPub, transport.name, door, RomiCore.DoorMode.MODE_CLOSED);
-      };
-      return prev;
-    }, {});
-  }, [doors, doorRequestPub, transport]);
+        transport &&
+        requestDoor(doorRequestPub, transport.name, door, RomiCore.DoorMode.MODE_OPEN),
+    ),
+    [doors, onDoorClick],
+  );
 
   React.useEffect(() => {
     if (!spotlight) {
@@ -102,7 +102,7 @@ export const DoorsPanel = React.memo((props: DoorsPanelProps) => {
     ref.current?.scrollIntoView({ behavior: 'smooth' });
   }, [spotlight, doorRefs]);
 
-  const listItems = doors.map(door => {
+  const listItems = doors.map((door, i) => {
     const doorState = doorStates[door.name];
     return (
       <DoorItem
@@ -111,11 +111,11 @@ export const DoorsPanel = React.memo((props: DoorsPanelProps) => {
         door={door}
         doorState={doorState}
         enableControls={Boolean(transport)}
-        onOpenClick={onOpenClick[door.name]}
-        onCloseClick={onCloseClick[door.name]}
-        onClick={onClick[door.name]}
+        onOpenClick={onOpenClick[i]}
+        onCloseClick={onCloseClick[i]}
+        onClick={onClick[i]}
         expanded={Boolean(expanded[door.name])}
-        onChange={onChange[door.name]}
+        onChange={onChange[i]}
       />
     );
   });
