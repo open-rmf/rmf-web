@@ -29,6 +29,7 @@ describe('loop request', () => {
     $('input[name=numLoops]').setValue(1);
     $('button=Request').click();
 
+    backButton.waitForClickable();
     backButton.click();
     $('[data-component=MainMenu] [data-item=Robots]').click();
     const newRobotLocations = getRobotLocations(browser);
