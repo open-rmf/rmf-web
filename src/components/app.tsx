@@ -37,6 +37,8 @@ import { LiftStateContext } from './schedule-visualizer/lift-overlay';
 import NotificationBar, { NotificationBarProps, NotificationBarContext } from './notification-bar';
 import { ResourceConfigurationsType } from '../resource-manager';
 import Tour from 'reactour';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMapSigns } from '@fortawesome/free-solid-svg-icons';
 
 const borderRadius = 20;
 
@@ -184,6 +186,7 @@ export default function App(props: AppProps): JSX.Element {
       action: () => {
         clearSpotlights();
         setShowOmniPanel(false);
+        setShowSettings(false);
       },
     },
     {
@@ -197,6 +200,7 @@ export default function App(props: AppProps): JSX.Element {
       action: () => {
         clearSpotlights();
         setShowOmniPanel(false);
+        setShowSettings(false);
       },
     },
     {
@@ -210,6 +214,7 @@ export default function App(props: AppProps): JSX.Element {
       action: () => {
         clearSpotlights();
         setShowOmniPanel(false);
+        setShowSettings(false);
       },
     },
     {
@@ -222,7 +227,10 @@ export default function App(props: AppProps): JSX.Element {
       ),
       action: () => {
         clearSpotlights();
-        setShowOmniPanel(false);
+        if (showSettings || showOmniPanel) {
+          setShowSettings(false);
+          setShowOmniPanel(false);
+        }
       },
     },
     {
@@ -235,6 +243,7 @@ export default function App(props: AppProps): JSX.Element {
       ),
       action: () => {
         clearSpotlights();
+        setShowSettings(false);
         setShowOmniPanel(true);
         if (currentView !== 0) {
           setCurrentView(OmniPanelViewIndex.MainMenu);
@@ -259,6 +268,9 @@ export default function App(props: AppProps): JSX.Element {
       content: 'Let us take a look into the Doors Panel',
       action: () => {
         clearSpotlights();
+        if (showSettings) {
+          setShowSettings(false);
+        }
         setShowOmniPanel(true);
         setCurrentView(OmniPanelViewIndex.Doors);
       },
@@ -267,6 +279,9 @@ export default function App(props: AppProps): JSX.Element {
       selector: '[data-name="main_door"]',
       content: 'Here is an example of what you will see when a door tab is expanded!',
       action: () => {
+        if (showSettings) {
+          setShowSettings(false);
+        }
         setCurrentView(OmniPanelViewIndex.Doors);
         if (!doorSpotlight) {
           setDoorSpotlight({ value: 'main_door' });
@@ -314,7 +329,8 @@ export default function App(props: AppProps): JSX.Element {
       selector: '.MuiDrawer-paper',
       content: () => (
         <p>
-          Currently, <b>Trajectory Animations</b> patterns can be altered to the options available.
+          Finally, <b>Trajectory Animations</b> patterns can be altered to the options available.
+          Look out for new features ahead!
         </p>
       ),
       action: () => {
@@ -503,6 +519,9 @@ export default function App(props: AppProps): JSX.Element {
                 <IconButton color="inherit" onClick={() => setShowSettings(true)}>
                   <SettingsIcon />
                 </IconButton>
+                <IconButton color="inherit" onClick={() => setTourState(true)}>
+                  <FontAwesomeIcon icon={faMapSigns} />
+                </IconButton>
               </Toolbar>
             </AppBar>
             {buildingMap && (
@@ -587,7 +606,11 @@ export default function App(props: AppProps): JSX.Element {
           <Tour
             steps={tourSteps}
             isOpen={tourState}
-            onRequestClose={() => setTourState(false)}
+            onRequestClose={() => {
+              setTourState(false);
+              setShowOmniPanel(true);
+              setShowSettings(false);
+            }}
             lastStepNextButton={<Button>Start using RoMi!</Button>}
           />
         </NotificationBarContext.Provider>
