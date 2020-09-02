@@ -29,7 +29,7 @@ import { LiftStateContext } from './schedule-visualizer/lift-overlay';
 import SettingsDrawer from './settings-drawer';
 import { SpotlightValue } from './spotlight-value';
 
-const debug = Debug('log');
+const debug = Debug('App');
 const borderRadius = 20;
 
 const useStyles = makeStyles(theme => ({
@@ -112,6 +112,8 @@ function makeViewMap(): ViewMap {
 const viewMap = makeViewMap();
 
 export default function App(props: AppProps): JSX.Element {
+  debug('render');
+
   const classes = useStyles();
   const { transportFactory, trajectoryManagerFactory, appResources } = props.appConfig;
   const [transport, setTransport] = React.useState<RomiCore.Transport | undefined>(undefined);
@@ -178,6 +180,9 @@ export default function App(props: AppProps): JSX.Element {
         fleetManager.on('updated', () => setFleets(fleetManager.fleets()));
         liftStateManager.on('updated', () => setLiftStates(liftStateManager.liftStates()));
         doorStateManager.on('updated', () => setDoorStates(doorStateManager.doorStates()));
+        dispenserStateManager.on('updated', () =>
+          setDispenserStates(dispenserStateManager.dispenserStates()),
+        );
         setTransport(x);
       })
       .catch((e: CloseEvent) => {
@@ -219,18 +224,6 @@ export default function App(props: AppProps): JSX.Element {
       resourceManager.current = await appResources;
     })();
   }, [appResources]);
-
-  React.useEffect(() => {
-    if (currentView === OmniPanelViewIndex.Dispensers) {
-      const listener = () => setDispenserStates(dispenserStateManager.dispenserStates());
-      dispenserStateManager.on('updated', listener);
-      debug('started tracking dispenser states');
-      return () => {
-        dispenserStateManager.off('updated', listener);
-        debug('stopped tracking dispenser states');
-      };
-    }
-  }, [currentView, dispenserStateManager]);
 
   React.useEffect(() => {
     setDoors(buildingMap ? buildingMap.levels.flatMap(x => x.doors) : []);

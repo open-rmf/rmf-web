@@ -68,6 +68,7 @@ export class FakeTransport extends RomiCore.TransportEvents implements RomiCore.
         const dispenserStates = fakeDispenserStates();
         timer = window.setInterval(() => {
           for (const state of Object.values(dispenserStates)) {
+            debug('publishing dispenser state');
             cb(state as Message);
           }
         }, 1000);
