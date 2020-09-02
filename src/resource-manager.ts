@@ -1,12 +1,13 @@
 import axios from 'axios';
 
-// We set any here to be more flexible when receiving the configuration structure
-type SubResourceConfigurationsType =
-  | string
-  | Record<string, string | any>
-  | Record<string, Record<string, string | any>>
-  | any;
-export type ResourceConfigurationsType = Record<string, SubResourceConfigurationsType>;
+export interface RobotResource {
+  icons: Record<string, string>; // Record<ModelName|FleetName, IconPath>
+}
+
+export interface ResourceConfigurationsType {
+  robots?: Record<string, RobotResource>; // Record<FleetName, RobotResource>
+}
+
 export default class ResourceManager {
   static getResourceConfigurationFile = async (): Promise<ResourceConfigurationsType> => {
     try {

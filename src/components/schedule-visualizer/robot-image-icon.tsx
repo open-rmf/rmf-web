@@ -1,6 +1,5 @@
 import { useTheme } from '@material-ui/core';
 import React, { useMemo, useState } from 'react';
-import { transformMiddleCoordsOfRectToSVGBeginPoint } from '../../util/calculation-helpers';
 import { RobotProps } from './robot';
 
 type RobotImageIconProps = Omit<RobotProps, 'fleetName'> & {
@@ -39,20 +38,11 @@ const RobotImageIcon = React.forwardRef(function(
       await colorManager.robotTrajectoryColor(robot.name, robot.model);
     })();
   }, [robot, robotColor, colorManager, iconPath]);
-  const { x: topVerticeX, y: topVerticeY } = transformMiddleCoordsOfRectToSVGBeginPoint(
-    robot.location.x,
-    robot.location.y,
-    imgIconWidth,
-    imgIconHeigth,
-  );
 
   return (
     <>
       {!!iconPath && (
-        <g
-          transform={`translate(${topVerticeX} ${-topVerticeY})
-            rotate(${-(robot.location.yaw * 180) / Math.PI}, ${footprint}, ${footprint})`}
-        >
+        <g transform={`translate(${-footprint} ${-footprint})`}>
           <filter id={`${robot.name}-shadow`} x="-20%" y="-20%" width="140%" height="140%">
             <feDropShadow
               dx="0"
