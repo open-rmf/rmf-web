@@ -1,5 +1,6 @@
 import { makeStyles } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import Debug from 'debug';
 import * as L from 'leaflet';
 import React from 'react';
 import { AttributionControl, ImageOverlay, LayersControl, Map as LMap, Pane } from 'react-leaflet';
@@ -26,6 +27,8 @@ import {
   withOutlineAnimation,
 } from './trajectory-animations';
 import WaypointsOverlay from './waypoints-overlay';
+
+const debug = Debug('ScheduleVisualizer');
 
 const useStyles = makeStyles(() => ({
   map: {
@@ -62,6 +65,8 @@ function calcMaxBounds(mapFloorLayers: readonly MapFloorLayer[]): L.LatLngBounds
 }
 
 export default function ScheduleVisualizer(props: ScheduleVisualizerProps): React.ReactElement {
+  debug('render');
+
   const { appResources } = props;
   const classes = useStyles();
   const mapRef = React.useRef<LMap>(null);
@@ -178,7 +183,9 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       for (const p of promises) {
         await p;
       }
+      debug('set map floor layers');
       setMapFloorLayers(mapFloorLayers);
+      debug('set max bounds');
       setMaxBounds(calcMaxBounds(Object.values(mapFloorLayers)));
     })();
   }, [props.buildingMap, mapElement]);
@@ -200,6 +207,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
             trim: true,
           },
         });
+        debug('set trajectories');
         setTrajectories(prev => ({
           ...prev,
           [curMapFloorLayer.level.name]: resp,
@@ -213,6 +221,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   }, [props.trajManager, curMapFloorLayer, trajAnimDuration]);
 
   function handleBaseLayerChange(e: L.LayersControlEvent): void {
+    debug('set current level name');
     setCurLevelName(e.name);
   }
 
@@ -253,11 +262,14 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     if (curMapFloorLayer) {
       const mapTrajectories = getTrajectory(curMapFloorLayer.level.name);
       const mapConflicts = getConflicts(curMapFloorLayer.level.name);
+      debug('set current map trajectories');
       setCurMapTrajectories(mapTrajectories);
+      debug('set current map conflicts');
       setCurMapConflicts(mapConflicts);
+      debug('set conflicting robots');
       setConflictRobotNames(getConflictRobotsName(mapConflicts, mapTrajectories));
     }
-  }, [curMapFloorLayer, trajectories, curMapConflicts, curMapTrajectories]);
+  }, [curMapFloorLayer, trajectories]);
 
   return (
     <LMap
