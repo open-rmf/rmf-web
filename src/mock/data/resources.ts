@@ -13,13 +13,13 @@ export default function fakeResources(): ResourceConfigurationsType {
       },
     },
     robots: {
-      magni: {
-        icons: { magni: '/robots/magni/magni.png' },
+      tinyRobot: {
+        icons: { tinyRobot: '/robots/tinyRobot/tinyRobot.png' },
         places: {
           supplies: [],
-          magni2_charger: [],
+          tinyRobot2_charger: [],
           coe: [],
-          magni1_charger: [],
+          tinyRobot1_charger: [],
           hardware_2: ['coke_ingestor'],
           cubicle_2: [],
           pantry: ['coke_dispenser'],
@@ -30,7 +30,10 @@ export default function fakeResources(): ResourceConfigurationsType {
           station_2: [],
         },
       },
-      mir100: { icons: { mir100: '/robots/mir100/mir100.png' }, places: {} },
+      deliveryRobot: {
+        icons: { deliveryRobot: '/robots/deliveryRobot/deliveryRobot.png' },
+        places: {},
+      },
     },
   };
 }

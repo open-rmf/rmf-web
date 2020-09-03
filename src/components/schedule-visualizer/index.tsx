@@ -416,7 +416,6 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
               <DispensersOverlay
                 currentFloorName={curLevelName}
                 bounds={curMapFloorLayer.bounds}
-                colorManager={colorManager}
                 onDispenserClick={props.onDispenserClick}
               />
             </Pane>

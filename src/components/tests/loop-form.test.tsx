@@ -35,7 +35,7 @@ describe('Form validation', () => {
   });
 
   test('Initial Values', () => {
-    const wrapper = buildWrapper('SuperFleet', onClick, robotResourceManager);
+    const wrapper = buildWrapper('tinyRobot', onClick, robotResourceManager);
     expect(wrapper.find('input[name="targetFleet"]').props().value != '');
     expect(wrapper.find("input[type='number']").props().value).toEqual('');
     expect(wrapper.findWhere(x => x.name() === 'input' && x.props().value != '')).toBeTruthy();
@@ -46,7 +46,7 @@ describe('Form validation', () => {
   });
 
   test('Successful Request', () => {
-    const wrapper = buildWrapper('SuperFleet', onClick, robotResourceManager);
+    const wrapper = buildWrapper('tinyRobot', onClick, robotResourceManager);
     wrapper.find("input[type='number']").simulate('change', { target: { value: 1 } });
     expect(wrapper.find("input[type='number']").props().value).toEqual(1);
     wrapper.find('form').simulate('submit');
@@ -54,7 +54,7 @@ describe('Form validation', () => {
   });
 
   test('Number of loops cannot be empty', async () => {
-    const wrapper = buildWrapper('SuperFleet', onClick, robotResourceManager);
+    const wrapper = buildWrapper('tinyRobot', onClick, robotResourceManager);
     wrapper.find('form').simulate('submit');
     expect(isRequestButtonClicked).toBeFalsy();
     expect(wrapper.exists('#numLoops-helper-text')).toBeTruthy();

@@ -3,11 +3,9 @@ import React from 'react';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { ResourcesContext } from '../../app-contexts';
 import { DispenserResource } from '../../resource-manager-dispensers';
-import ColorManager from './colors';
 import SvgText from './svg-text';
 
 export interface DispenserProps {
-  colorManager: ColorManager;
   dispenser: Required<DispenserResource>;
   dispenserState?: RomiCore.DispenserState;
   footprint: number;

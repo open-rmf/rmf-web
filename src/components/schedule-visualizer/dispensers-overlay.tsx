@@ -1,6 +1,5 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
-import ColorManager from './colors';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 import { viewBoxFromLeafletBounds } from '../../util/css-utils';
 import { ResourcesContext, DispenserStateContext } from '../../app-contexts';
@@ -8,13 +7,12 @@ import Dispenser from './dispenser';
 import { DispenserResource } from '../../resource-manager-dispensers';
 
 export interface DispensersOverlayProps extends SVGOverlayProps {
-  colorManager: ColorManager;
   onDispenserClick?(dispenser: RomiCore.DispenserState): void;
   currentFloorName: string;
 }
 
 export default function DispensersOverlay(props: DispensersOverlayProps): React.ReactElement {
-  const { colorManager, currentFloorName, onDispenserClick, ...otherProps } = props;
+  const { currentFloorName, onDispenserClick, ...otherProps } = props;
   const viewBox = viewBoxFromLeafletBounds(props.bounds);
   const footprint = 0.4;
   const dispenserResourcesContext = React.useContext(ResourcesContext).dispensers;
@@ -41,7 +39,6 @@ export default function DispensersOverlay(props: DispensersOverlayProps): React.
               dispenser={dispenser}
               footprint={footprint}
               dispenserState={dispenserState[dispenser.guid]}
-              colorManager={colorManager}
               onClick={(_, dispenser) => onDispenserClick && onDispenserClick(dispenser)}
             />
           );
