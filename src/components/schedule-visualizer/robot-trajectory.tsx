@@ -109,6 +109,8 @@ export const RobotTrajectory = React.forwardRef(function(
           strokeLinecap="round"
           fill={'none'}
           filter={`url(#shadow)`}
+          strokeDasharray={2}
+          strokeDashoffset={0}
           pathLength={1}
           opacity={1}
         />
