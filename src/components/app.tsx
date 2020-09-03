@@ -241,11 +241,11 @@ export default function App(props: AppProps): JSX.Element {
     setDoorSpotlight({ value: door.name });
   }, []);
 
-  function handleRobotClick(fleet: string, robot: RomiCore.RobotState): void {
+  const handleRobotClick = React.useCallback((fleet: string, robot: RomiCore.RobotState) => {
     setShowOmniPanel(true);
     setCurrentView(OmniPanelViewIndex.Robots);
     setRobotSpotlight({ value: `${fleet}-${robot.name}` });
-  }
+  }, []);
 
   const handleLiftClick = React.useCallback((lift: RomiCore.Lift) => {
     setShowOmniPanel(true);

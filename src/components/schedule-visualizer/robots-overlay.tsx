@@ -1,9 +1,12 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import Debug from 'debug';
 import React, { useMemo } from 'react';
 import { viewBoxFromLeafletBounds } from '../../util/css-utils';
 import ColorManager from './colors';
 import Robot_, { RobotProps } from './robot';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
+
+const debug = Debug('ScheduleVisualizer:RobotsOverlay');
 
 export interface RobotsOverlayProps extends SVGOverlayProps {
   colorManager: ColorManager;
@@ -14,7 +17,9 @@ export interface RobotsOverlayProps extends SVGOverlayProps {
   RobotComponent?: React.ElementType<RobotProps>;
 }
 
-export default function RobotsOverlay(props: RobotsOverlayProps): React.ReactElement {
+export const RobotsOverlay = React.memo((props: RobotsOverlayProps) => {
+  debug('render');
+
   const {
     fleets,
     colorManager,
@@ -57,6 +62,11 @@ export default function RobotsOverlay(props: RobotsOverlayProps): React.ReactEle
     }));
   }, [fleets, currentFloorName]);
 
+  const handleRobotClick = React.useCallback<Required<RobotProps>['onClick']>(
+    (_, fleetName, robot) => onRobotClick && onRobotClick(fleetName, robot),
+    [onRobotClick],
+  );
+
   return (
     <SVGOverlay {...otherProps}>
       <svg viewBox={viewBox}>
@@ -68,7 +78,7 @@ export default function RobotsOverlay(props: RobotsOverlayProps): React.ReactEle
               fleetName={fleetContainer[`${robot.name}_${robot.model}`]}
               footprint={footprint}
               colorManager={colorManager}
-              onClick={(_, robot_) => onRobotClick && onRobotClick(fleet, robot_)}
+              onClick={handleRobotClick}
               inConflict={inConflict(robot.name)}
             />
           )),
@@ -76,4 +86,6 @@ export default function RobotsOverlay(props: RobotsOverlayProps): React.ReactEle
       </svg>
     </SVGOverlay>
   );
-}
+});
+
+export default RobotsOverlay;
