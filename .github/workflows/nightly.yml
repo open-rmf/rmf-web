@@ -22,6 +22,8 @@ jobs:
     name: Unit Test
     needs: build-docker-images
     runs-on: ubuntu-latest
+    env:
+      CI: true
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
@@ -35,8 +37,10 @@ jobs:
       - run: npm ci
       - run: npm run build # linter runs here
       - run: npm test
-        env:
-          CI: true
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
   e2e-test:
     name: End-to-End Test
     needs: build-docker-images
