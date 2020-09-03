@@ -108,9 +108,7 @@ const createSegments = (
   startTheta: number,
   direction: string,
 ): RawKnot[] => {
-  // fix number for now
-
-  // Change the number of turning points
+  // Change the number of turning points, start time and velocity here
   let turningPoints = 2;
   let startTime = 2000;
   let velocity = 0.5;

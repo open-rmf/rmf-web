@@ -93,7 +93,7 @@ export default function Trajectory(props: TrajectoryStoryProps) {
           color="primary"
           style={styles.button}
         >
-          Draw Path
+          Draw Trajectory
         </Button>
       </div>
       {drawAnimation ? (
@@ -123,7 +123,7 @@ export default function Trajectory(props: TrajectoryStoryProps) {
       ) : (
         <div style={styles.placeHolderText}>
           <Typography align="center" variant="h6">
-            Click on the button to draw path
+            Click on the button to view trajectory
           </Typography>
         </div>
       )}

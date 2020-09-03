@@ -21,12 +21,12 @@ const partialConflictTraj = {
   ...multipleTrajs,
   conflicts: [[1, 2, 3, 4, 5, 6, 7, 8, 9, 19]],
 };
-const spam = createTrajectories(true, 100);
+const spam = createTrajectories(true, 150);
 
 const colorManager = new ColorManager();
 
 const descriptions = {
-  themeColor: 'Trajectory with Material theme color',
+  normal: 'A normal trajectory',
   conflictingTraj: 'Conflicting trajectory',
   followAnim: 'Trajectory with follow animation',
   followAnimMixConflict: 'Follow animation with some trajectories conflicting',
@@ -55,14 +55,14 @@ const fillAnimSettings: Settings = {
   trajectoryAnimation: TrajectoryAnimation.Fill,
 };
 
-export const themeColorTrajectory = () => (
+export const trajectory = () => (
   <Trajectory
     bounds={mapBound}
     conflicts={defaultTraj.conflicts}
     colorManager={colorManager}
     conflictRobotNames={defaultTraj.conflictingRobotName}
     trajs={defaultTraj.trajectories}
-    description={descriptions.themeColor}
+    description={descriptions.normal}
     currSettings={themeSettings}
   />
 );
