@@ -1,14 +1,19 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import Debug from 'debug';
 import React, { useMemo } from 'react';
 import { viewBoxFromLeafletBounds } from '../../util/css-utils';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 import Waypoint from './waypoint';
 
+const debug = Debug('ScheduleVisualier:WaypointsOverlay');
+
 export interface WaypointsOverlayProps extends SVGOverlayProps {
   currentLevel: RomiCore.Level;
 }
 
-export default function WaypointsOverlay(props: WaypointsOverlayProps): React.ReactElement {
+export const WaypointsOverlay = React.memo((props: WaypointsOverlayProps) => {
+  debug('render');
+
   const { currentLevel, ...otherProps } = props;
   const viewBox = viewBoxFromLeafletBounds(props.bounds);
   // Set the size of the waypoint. At least for now we don't want for this to change. We left this here in case we want for this to change in the future.
@@ -30,4 +35,6 @@ export default function WaypointsOverlay(props: WaypointsOverlayProps): React.Re
       </svg>
     </SVGOverlay>
   );
-}
+});
+
+export default WaypointsOverlay;

@@ -1,14 +1,19 @@
 import { makeStyles } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import Debug from 'debug';
 import React from 'react';
+
+const debug = Debug('ScheduleVisualizer:Waypoint');
 
 export interface WaypointProps {
   waypoint: RomiCore.GraphNode;
   size: number;
 }
 
-const Waypoint = (props: WaypointProps): React.ReactElement => {
+const Waypoint = React.memo((props: WaypointProps) => {
   const { waypoint, size } = props;
+  debug('render %s', waypoint.name);
+
   const classes = useStyles();
   return (
     <g transform={`translate(${waypoint.x} ${-waypoint.y})`}>
@@ -34,7 +39,7 @@ const Waypoint = (props: WaypointProps): React.ReactElement => {
       </text>
     </g>
   );
-};
+});
 
 export default Waypoint;
 
