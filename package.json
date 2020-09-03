@@ -104,6 +104,7 @@
     "collectCoverageFrom": [
       "src/**/*.{js,jsx,ts,tsx}",
       "!<rootDir>/node_modules/",
+      "!<rootDir>/build/",
       "!src/index.tsx",
       "!src/serviceWorker.ts",
       "!**/stories/**",
