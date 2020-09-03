@@ -1,16 +1,19 @@
 import {
-  makeStyles,
   ExpansionPanel,
-  ExpansionPanelSummary,
-  Typography,
   ExpansionPanelDetails,
+  ExpansionPanelSummary,
+  makeStyles,
+  Typography,
 } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import Debug from 'debug';
 import React from 'react';
-import { LoopForm } from './loop-form';
 import { v4 as uuidv4 } from 'uuid';
 import { RobotDeliveryForm } from './delivery-form';
+import { LoopForm } from './loop-form';
+
+const debug = Debug('CommandsPanel');
 
 export type TDeliveryRequest = (
   pickupPlaceName: string,
@@ -56,7 +59,7 @@ export function requestLoop(
 }
 
 /**
-* The Delivery task is one where a robot is assigned to pick up an item at one location (pickup_place_name) and deliver it to another (dropoff_place_name). At each of these locations, there is an automation system called workcell/dispenser that loads and unload the item off the robot. 
+* The Delivery task is one where a robot is assigned to pick up an item at one location (pickup_place_name) and deliver it to another (dropoff_place_name). At each of these locations, there is an automation system called workcell/dispenser that loads and unload the item off the robot.
 
  Currently only these fields are being used in Delivery msg.
 * task_id: Unique id for the request.
@@ -94,14 +97,15 @@ export function requestDelivery(
 }
 
 export interface CommandsPanelProps {
-  fleets: readonly RomiCore.FleetState[];
+  allFleets: string[];
   transport?: Readonly<RomiCore.Transport>;
 }
 
-export default function CommandsPanel(props: CommandsPanelProps): React.ReactElement {
-  const { fleets, transport } = props;
+export const CommandsPanel = React.memo((props: CommandsPanelProps) => {
+  debug('render');
+
+  const { allFleets, transport } = props;
   const classes = useStyles();
-  const allFleets = fleets.flatMap(fleet => fleet.name);
   const loopRequestPub = React.useMemo(
     () => (transport ? transport.createPublisher(RomiCore.loopRequests) : null),
     [transport],
@@ -165,7 +169,9 @@ export default function CommandsPanel(props: CommandsPanelProps): React.ReactEle
       </ExpansionPanel>
     </React.Fragment>
   );
-}
+});
+
+export default CommandsPanel;
 
 export const useStyles = makeStyles(theme => ({
   expansionSummaryContent: {

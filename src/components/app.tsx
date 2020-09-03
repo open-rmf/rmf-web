@@ -137,9 +137,14 @@ export default function App(props: AppProps): JSX.Element {
 
   const fleetManager = React.useMemo(() => new FleetManager(), []);
   const [fleets, setFleets] = React.useState(fleetManager.fleets());
+  const fleetNames = React.useRef<string[]>([]);
   const [robotSpotlight, setRobotSpotlight] = React.useState<SpotlightValue<string> | undefined>(
     undefined,
   );
+  const newFleetNames = fleets.map(fleet => fleet.name);
+  if (newFleetNames.some(fleetName => !fleetNames.current.includes(fleetName))) {
+    fleetNames.current = newFleetNames;
+  }
 
   const dispenserStateManager = React.useMemo(() => new DispenserStateManager(), []);
   const [dispenserStates, setDispenserStates] = React.useState<
@@ -362,7 +367,7 @@ export default function App(props: AppProps): JSX.Element {
                 <DispensersPanel dispenserStates={dispenserStates} spotlight={dispenserSpotlight} />
               </OmniPanelView>
               <OmniPanelView id={OmniPanelViewIndex.Commands}>
-                <CommandsPanel transport={transport} fleets={fleets} />
+                <CommandsPanel transport={transport} allFleets={fleetNames.current} />
               </OmniPanelView>
             </OmniPanel>
           </Fade>

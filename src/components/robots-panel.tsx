@@ -1,7 +1,10 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import Debug from 'debug';
 import React from 'react';
 import RobotItem, { RobotItemProps } from './robot-item';
 import { SpotlightValue } from './spotlight-value';
+
+const debug = Debug('RobotsPanel');
 
 export interface RobotsPanelProps {
   fleets: readonly RomiCore.FleetState[];
@@ -10,6 +13,8 @@ export interface RobotsPanelProps {
 }
 
 export const RobotsPanel = React.memo((props: RobotsPanelProps) => {
+  debug('render');
+
   const { fleets, spotlight, onRobotClick } = props;
   const robotRefs = React.useRef<Record<string, HTMLElement | null>>({});
   const [expanded, setExpanded] = React.useState<Readonly<Record<string, boolean>>>({});
