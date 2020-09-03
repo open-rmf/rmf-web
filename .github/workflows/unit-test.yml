@@ -1,5 +1,9 @@
 name: Run unit tests
-on: pull_request
+on:
+  pull_request:
+  push:
+    branches:
+      - master
 
 jobs:
   test:
@@ -20,7 +24,7 @@ jobs:
       - run: npm run test:coverage
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
-        with: 
+        with:
           token: ${{ secrets.CODECOV_TOKEN }}
         env:
           CI: true
