@@ -10,7 +10,7 @@ import {
 import Trajectory from './baseComponents/trajectory';
 import { mapBound } from './baseComponents/utils';
 import ColorManager from '../components/schedule-visualizer/colors';
-import { defaultSettings, TrajectoryColor, TrajectoryAnimation, Settings } from '../settings';
+import { defaultSettings, TrajectoryAnimation, Settings } from '../settings';
 
 export default {
   title: 'Trajectory',
@@ -40,11 +40,6 @@ const descriptions = {
   spam: 'Spam trajectories to test performance (Currently 100 conflicting trajectories)',
 };
 
-const themeSettings: Settings = {
-  ...defaultSettings(),
-  trajectoryColor: TrajectoryColor.Theme,
-};
-
 const outlineAnimSettings: Settings = {
   ...defaultSettings(),
   trajectoryAnimation: TrajectoryAnimation.Outline,
@@ -63,7 +58,7 @@ export const trajectory = () => (
     conflictRobotNames={defaultTraj.conflictingRobotName}
     trajs={defaultTraj.trajectories}
     description={descriptions.normal}
-    currSettings={themeSettings}
+    currSettings={defaultSettings()}
   />
 );
 
