@@ -115,17 +115,18 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
         return 1000;
     }
   }, [settings]);
-  const TrajectoryComponent = React.useMemo(() => {
+
+  const RobotTrajContextValue = React.useMemo<RobotTrajectoryContext>(() => {
     const animationScale = trajLookahead / trajAnimDuration;
     switch (settings.trajectoryAnimation) {
       case TrajectoryAnimation.None:
-        return RobotTrajectory;
+        return { Component: RobotTrajectory };
       case TrajectoryAnimation.Fill:
-        return withFillAnimation(RobotTrajectory, animationScale);
+        return { Component: withFillAnimation(RobotTrajectory, animationScale) };
       case TrajectoryAnimation.Follow:
-        return withFollowAnimation(RobotTrajectory, animationScale);
+        return { Component: withFollowAnimation(RobotTrajectory, animationScale) };
       case TrajectoryAnimation.Outline:
-        return withOutlineAnimation(RobotTrajectory, animationScale);
+        return { Component: withOutlineAnimation(RobotTrajectory, animationScale) };
     }
   }, [settings.trajectoryAnimation, trajAnimDuration]);
 
@@ -303,7 +304,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
           <LayersControl.Overlay name="Robot Trajectories" checked>
             {curMapFloorLayer && (
               <Pane>
-                <RobotTrajectoryContext.Provider value={{ Component: TrajectoryComponent }}>
+                <RobotTrajectoryContext.Provider value={RobotTrajContextValue}>
                   <RobotTrajectoriesOverlay
                     bounds={curMapFloorLayer.bounds}
                     trajs={curMapTrajectories}
