@@ -1,4 +1,4 @@
-[![codecov](https://codecov.io/gh/osrf/romi-dashboard/branch/wip/graph/badge.svg)](https://codecov.io/gh/osrf/romi-dashboard)
+[![codecov](https://codecov.io/gh/osrf/romi-dashboard/branch/master/graph/badge.svg)](https://codecov.io/gh/osrf/romi-dashboard)
 
 ## RoMi-dashboard
 
