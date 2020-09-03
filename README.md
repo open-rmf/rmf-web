@@ -66,6 +66,12 @@ npm run setup
 
 ## Launching
 
+### Before Launching
+
+RoMi-dashboard connects to soss using https, if you are using the local or docker launch mode, you need to make sure that the browser does not reject the self-signed certed. The recommended way to do it is to tell the browser to skip the certificate verification for localhosts, if you are using chrome you can follow the instructions [here](https://community.spiceworks.com/how_to/154601-chrome-allow-localhost-site-even-without-https-certificate#:~:text=Step%201%3A%20Open%20Google%20Chrome,address%20bar%20in%20google%20chrome.&text=Set%20the%20option%20to%20enabled,to%20deal%20with%20https%20warnings.).
+
+Another way is to add the ca in found in `e2e/certs/ca.crt` to the trusted certificate authorities. **Doing this is NOT recommended because the CA private key is exposed publicly, this may open you up to MITM attacks by using the exposed key to forge fake certificate that your browser trusts.**
+
 ### Local Dev Server
 
 _RoMi-dashboard_ gets its data source from the following rmf components:
