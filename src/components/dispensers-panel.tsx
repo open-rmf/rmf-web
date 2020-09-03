@@ -4,7 +4,7 @@ import React from 'react';
 import DispenserItem, { DispenserItemProps } from './dispenser-item';
 import { SpotlightValue } from './spotlight-value';
 
-const debug = Debug('DispenserPanel');
+const debug = Debug('OmniPanel:DispenserPanel');
 
 export interface DispenserPanelProps {
   dispenserStates: Readonly<Record<string, RomiCore.DispenserState>>;

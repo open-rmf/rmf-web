@@ -6,7 +6,7 @@ import { makeCallbackArrayCallback } from '../../util/react-helpers';
 import { SpotlightValue } from '../spotlight-value';
 import { LiftItem, LiftItemProps } from './lift-item';
 
-const debug = Debug('LiftsPanel');
+const debug = Debug('OmniPanel:LiftsPanel');
 
 export interface LiftsPanelProps {
   lifts: RomiCore.Lift[];

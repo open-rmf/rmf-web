@@ -5,7 +5,7 @@ import { makeCallbackArrayCallback } from '../util/react-helpers';
 import DoorItem_, { DoorItemProps } from './door-item';
 import { SpotlightValue } from './spotlight-value';
 
-const debug = Debug('DoorsPanel');
+const debug = Debug('OmniPanel:DoorsPanel');
 const DoorItem = React.memo(DoorItem_);
 
 export interface DoorsPanelProps {

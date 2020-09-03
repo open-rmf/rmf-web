@@ -18,7 +18,7 @@ import { colorPalette } from '../util/css-utils';
 import DisableableTypography from './disableable-typography';
 import OmniPanelStatusLabels from './omni-panel-status-labels';
 
-const debug = Debug('DispenserItem');
+const debug = Debug('OmniPanel:DispenserItem');
 
 export interface DispenserItemProps extends Omit<ExpansionPanelProps, 'children'> {
   dispenserState: Readonly<RomiCore.DispenserState>;

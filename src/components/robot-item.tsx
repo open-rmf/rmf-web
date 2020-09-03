@@ -12,7 +12,7 @@ import React from 'react';
 import OmniPanelStatusLabels from './omni-panel-status-labels';
 import { RobotInformation } from './robot-item-information';
 
-const debug = Debug('RobotItem');
+const debug = Debug('OmniPanel:RobotItem');
 
 export interface RobotItemProps extends Omit<ExpansionPanelProps, 'children'> {
   fleetName: string;

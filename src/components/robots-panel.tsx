@@ -4,7 +4,7 @@ import React from 'react';
 import RobotItem, { RobotItemProps } from './robot-item';
 import { SpotlightValue } from './spotlight-value';
 
-const debug = Debug('RobotsPanel');
+const debug = Debug('OmniPanel:RobotsPanel');
 
 export interface RobotsPanelProps {
   fleets: readonly RomiCore.FleetState[];

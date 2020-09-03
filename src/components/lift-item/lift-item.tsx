@@ -16,7 +16,7 @@ import OmniPanelStatusLabels from '../omni-panel-status-labels';
 import { colorPalette } from '../../util/css-utils';
 import Debug from 'debug';
 
-const debug = Debug('LiftItem');
+const debug = Debug('OmniPanel:LiftItem');
 
 export interface LiftItemProps extends Omit<ExpansionPanelProps, 'children'> {
   id?: string;

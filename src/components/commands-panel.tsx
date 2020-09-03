@@ -13,7 +13,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { RobotDeliveryForm } from './delivery-form';
 import { LoopForm } from './loop-form';
 
-const debug = Debug('CommandsPanel');
+const debug = Debug('OmniPanel:CommandsPanel');
 
 export type TDeliveryRequest = (
   pickupPlaceName: string,

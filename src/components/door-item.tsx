@@ -17,7 +17,7 @@ import React from 'react';
 import { colorPalette } from '../util/css-utils';
 import OmniPanelStatusLabels from './omni-panel-status-labels';
 
-const debug = Debug('DoorItem');
+const debug = Debug('OmniPanel:DoorItem');
 
 export interface DoorItemProps extends Omit<ExpansionPanelProps, 'children'> {
   door: Readonly<RomiCore.Door>;
