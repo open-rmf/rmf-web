@@ -17,6 +17,10 @@ jobs:
           scope: # optional
       - run: npm ci
       - run: npm run build
-      - run: npm test
+      - run: npm run test:coverage
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with: 
+          token: ${{ secrets.CODECOV_TOKEN }}
         env:
           CI: true
