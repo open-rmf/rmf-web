@@ -260,40 +260,47 @@ export default function App(props: AppProps): JSX.Element {
     setDispenserSpotlight(undefined);
   }
 
-  function handleClose() {
+  const handleClose = React.useCallback(() => {
     clearSpotlights();
     setShowOmniPanel(false);
-  }
+  }, []);
 
-  function handleBack(index: number): void {
-    clearSpotlights();
-    const parent = viewMap[index].parent;
-    if (!parent) {
-      return handleClose();
-    }
-    setCurrentView(parent.value);
-  }
+  const handleBack = React.useCallback(
+    (index: number) => {
+      clearSpotlights();
+      const parent = viewMap[index].parent;
+      if (!parent) {
+        return handleClose();
+      }
+      setCurrentView(parent.value);
+    },
+    [handleClose],
+  );
 
-  function handleMainMenuDoorsClick(): void {
+  const handleMainMenuDoorsClick = React.useCallback(() => {
     setCurrentView(OmniPanelViewIndex.Doors);
-  }
+  }, []);
 
-  function handleMainMenuLiftsClick(): void {
-    setLiftStates(liftStateManager.liftStates());
+  const handleMainMenuLiftsClick = React.useCallback(() => {
     setCurrentView(OmniPanelViewIndex.Lifts);
-  }
+  }, []);
 
-  function handleMainMenuRobotsClick(): void {
+  const handleMainMenuRobotsClick = React.useCallback(() => {
     setCurrentView(OmniPanelViewIndex.Robots);
-  }
+  }, []);
 
-  function handleMainMenuDispensersClick(): void {
+  const handleMainMenuDispensersClick = React.useCallback(() => {
     setCurrentView(OmniPanelViewIndex.Dispensers);
-  }
+  }, []);
 
-  function handleMainMenuCommandsClick(): void {
+  const handleMainMenuCommandsClick = React.useCallback(() => {
     setCurrentView(OmniPanelViewIndex.Commands);
-  }
+  }, []);
+
+  const omniPanelClasses = React.useMemo(
+    () => ({ backButton: classes.topLeftBorder, closeButton: classes.topRightBorder }),
+    [classes.topLeftBorder, classes.topRightBorder],
+  );
 
   return (
     <AppContextProvider settings={settings} notificationDispatch={setNotificationBarMessage}>
@@ -327,10 +334,7 @@ export default function App(props: AppProps): JSX.Element {
           <Fade in={showOmniPanel}>
             <OmniPanel
               className={classes.omniPanel}
-              classes={{
-                backButton: classes.topLeftBorder,
-                closeButton: classes.topRightBorder,
-              }}
+              classes={omniPanelClasses}
               view={currentView}
               onBack={handleBack}
               onClose={handleClose}
