@@ -4,7 +4,12 @@ import { bezierControlPoints, knotsToSegmentCoefficientsArray } from '../../util
 import { TrajectoryPath } from './trajectory-animations';
 import { useTheme } from '@material-ui/core';
 import ColorManager from './colors';
-import { SettingsContext, TrajectoryDiameter, TrajectoryColor } from '../../settings';
+import {
+  SettingsContext,
+  TrajectoryDiameter,
+  TrajectoryColor,
+  TrajectoryAnimation,
+} from '../../settings';
 
 export interface RobotTrajectoryProps
   extends React.RefAttributes<SVGPathElement>,
@@ -63,7 +68,7 @@ export const RobotTrajectory = React.forwardRef(function(
 
   return (
     <>
-      <filter
+      {/* <filter
         id={`shadow`}
         x="-20%"
         y="-20%"
@@ -82,7 +87,23 @@ export const RobotTrajectory = React.forwardRef(function(
 
         <feGaussianBlur stdDeviation={footprint * 0.4} />
         <feComposite operator="out" in2="boostedInput" />
-      </filter>
+      </filter> */}
+      <mask width="100" id={`${trajectory.id}-mask`}>
+        <rect x={0} y={0} width={'100%'} height={'100%'} fill={'white'} />
+        <path
+          id="errorPath"
+          d={pathD}
+          stroke={'black'}
+          strokeWidth={trajectoryDiameter - 0.1}
+          strokeLinecap="round"
+          fill={'none'}
+          // filter={`url(#shadow)`}
+          strokeDasharray={2}
+          strokeDashoffset={0}
+          pathLength={1}
+          opacity={1}
+        />
+      </mask>
       {pathColor && (
         <path
           id="myPath"
@@ -91,7 +112,7 @@ export const RobotTrajectory = React.forwardRef(function(
           d={pathD}
           stroke={pathColor}
           opacity={0.8}
-          strokeWidth={trajectoryDiameter}
+          strokeWidth={isConflict ? trajectoryDiameter - 0.1 : trajectoryDiameter}
           strokeLinecap="round"
           fill={'none'}
           pathLength={1}
@@ -108,11 +129,12 @@ export const RobotTrajectory = React.forwardRef(function(
           strokeWidth={trajectoryDiameter}
           strokeLinecap="round"
           fill={'none'}
-          filter={`url(#shadow)`}
+          // filter={`url(#shadow)`}
           strokeDasharray={2}
           strokeDashoffset={0}
           pathLength={1}
           opacity={1}
+          mask={`url(#${trajectory.id}-mask)`}
         />
       ) : null}
     </>
