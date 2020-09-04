@@ -181,14 +181,12 @@ export default function App(props: AppProps): JSX.Element {
     {
       selector: '',
       content: () => (
-        <>
-          <Typography variant="h6">
-            Welcome to the <HighlightedWords color={'#fff'}>RoMi dashboard</HighlightedWords>!
-          </Typography>
-        </>
+        <Typography variant="h6">
+          Welcome to the <HighlightedWords color={'#fff'}>RoMi dashboard</HighlightedWords>!
+        </Typography>
       ),
       action: () => {
-        setTourDefault();
+        setTourSettingsAndOmniPanel(false, false);
       },
       style: {
         backgroundColor: '#2979ff',
@@ -199,15 +197,13 @@ export default function App(props: AppProps): JSX.Element {
     {
       selector: '[class="leaflet-control-zoom leaflet-bar leaflet-control"]',
       content: () => (
-        <>
-          <Typography variant="h6">
-            Click on the <HighlightedWords>zoom buttons</HighlightedWords> to change the view of the
-            floor plan. Alternatively, the scroll button on your mouse would work too!
-          </Typography>
-        </>
+        <Typography variant="h6">
+          Click on the <HighlightedWords>zoom buttons</HighlightedWords> to change the view of the
+          floor plan. Alternatively, the scroll button on your mouse would work too!
+        </Typography>
       ),
       action: () => {
-        setTourDefault();
+        setTourSettingsAndOmniPanel(false, false);
       },
       style: {
         backgroundColor: '#2979ff',
@@ -218,13 +214,13 @@ export default function App(props: AppProps): JSX.Element {
     {
       selector: '[class="leaflet-control-layers leaflet-control"]',
       content: () => (
-        <p>
-          Use the <b>floor plan button</b> to switch between available levels and enabling /
-          disabling the view of different components
-        </p>
+        <Typography variant="h6">
+          Use the <HighlightedWords>floor plan button</HighlightedWords> to switch between available
+          levels and enabling / disabling the view of different components
+        </Typography>
       ),
       action: () => {
-        setTourDefault();
+        setTourSettingsAndOmniPanel(false, false);
       },
       style: {
         backgroundColor: '#2979ff',
@@ -235,13 +231,14 @@ export default function App(props: AppProps): JSX.Element {
     {
       selector: '[class="leaflet-image-layer leaflet-zoom-animated"]',
       content: () => (
-        <p>
-          Clicking individual components like <b>doors, robots, lifts</b> on the map will open up
-          its corresponding information tab in the omnipanel.
-        </p>
+        <Typography variant="h6">
+          Clicking individual components like{' '}
+          <HighlightedWords>doors, robots, lifts</HighlightedWords> on the map will open up its
+          corresponding information tab in the omnipanel.
+        </Typography>
       ),
       action: () => {
-        setTourDefault();
+        setTourSettingsAndOmniPanel(false, false);
       },
       style: {
         backgroundColor: '#2979ff',
@@ -252,10 +249,11 @@ export default function App(props: AppProps): JSX.Element {
     {
       selector: '[data-name="omnipanel-button"]',
       content: () => (
-        <p>
-          The <b>omnipanel button</b> shows the different panel options available in the dashboard.
-          Clicking each item would list different information about it!
-        </p>
+        <Typography variant="h6">
+          The <HighlightedWords>omnipanel button</HighlightedWords> shows the different panel
+          options available in the dashboard. Clicking each item would list different information
+          about it!
+        </Typography>
       ),
       action: () => {
         setTourShowOmniPanel(OmniPanelViewIndex.MainMenu);
@@ -268,7 +266,11 @@ export default function App(props: AppProps): JSX.Element {
     },
     {
       selector: '[data-component="MainMenu"]',
-      content: 'Each panel contains a list of the available items and their state',
+      content: () => (
+        <Typography variant="h6">
+          Each panel contains a list of the available items and their state
+        </Typography>
+      ),
       action: () => {
         setTourShowOmniPanel(OmniPanelViewIndex.MainMenu);
       },
@@ -280,7 +282,7 @@ export default function App(props: AppProps): JSX.Element {
     },
     {
       selector: '',
-      content: 'Let us take a look into the Doors Panel',
+      content: () => <Typography variant="h6">Let us take a look into the Doors Panel</Typography>,
       action: () => {
         setTourShowOmniPanel(OmniPanelViewIndex.Doors);
       },
@@ -292,11 +294,13 @@ export default function App(props: AppProps): JSX.Element {
     },
     {
       selector: '[data-name="main_door"]',
-      content: 'Here is an example of what you will see when a door tab is expanded!',
+      content: () => (
+        <Typography variant="h6">
+          Here is an example of what you will see when a door tab is expanded!
+        </Typography>
+      ),
       action: () => {
-        setShowSettings(false);
-        setShowOmniPanel(true);
-        setCurrentView(OmniPanelViewIndex.Doors);
+        setTourShowOmniPanel(OmniPanelViewIndex.Doors);
         if (!doorSpotlight) {
           setDoorSpotlight({ value: 'main_door' });
         }
@@ -309,8 +313,12 @@ export default function App(props: AppProps): JSX.Element {
     },
     {
       selector: '',
-      content:
-        'The Commands Panel allows you to send different types of requests that will be handled by RoMi',
+      content: () => (
+        <Typography variant="h6">
+          The <HighlightedWords>Commands Panel</HighlightedWords> allows you to send different types
+          of requests that will be handled by RoMi
+        </Typography>
+      ),
       action: () => {
         setTourShowOmniPanel(OmniPanelViewIndex.Commands);
       },
@@ -323,10 +331,11 @@ export default function App(props: AppProps): JSX.Element {
     {
       selector: '[data-component="LoopForm"]',
       content: () => (
-        <p>
-          An example is the <b>loop request</b> which can be iterated multiple times. RoMi will
-          assign the most suitable robot to perform the task at the point of request.
-        </p>
+        <Typography variant="h6">
+          An example is the <HighlightedWords>loop request</HighlightedWords> which can be iterated
+          multiple times. RoMi will assign the most suitable robot to perform the task at the point
+          of request.
+        </Typography>
       ),
       action: () => {
         setTourShowOmniPanel(OmniPanelViewIndex.Commands);
@@ -340,14 +349,13 @@ export default function App(props: AppProps): JSX.Element {
     {
       selector: '',
       content: () => (
-        <p>
-          The <b>settings button</b> opens up the drawer for different dashboard settings
-        </p>
+        <Typography variant="h6">
+          The <HighlightedWords>settings button</HighlightedWords> opens up the drawer for different
+          dashboard settings
+        </Typography>
       ),
       action: () => {
-        clearSpotlights();
-        setShowSettings(true);
-        setShowOmniPanel(false);
+        setTourSettingsAndOmniPanel(true, false);
       },
       style: {
         backgroundColor: '#2979ff',
@@ -358,15 +366,13 @@ export default function App(props: AppProps): JSX.Element {
     {
       selector: '.MuiDrawer-paper',
       content: () => (
-        <p>
-          Finally, <b>Trajectory Animations</b> patterns can be altered to the options available.
-          Look out for new features ahead!
-        </p>
+        <Typography variant="h6">
+          Finally, <HighlightedWords>Trajectory Animations</HighlightedWords> can be changed using
+          the options available. Look out for new features ahead!
+        </Typography>
       ),
       action: () => {
-        clearSpotlights();
-        setShowOmniPanel(false);
-        setShowSettings(true);
+        setTourSettingsAndOmniPanel(false, true);
       },
       style: {
         backgroundColor: '#2979ff',
@@ -537,16 +543,17 @@ export default function App(props: AppProps): JSX.Element {
     setCurrentView(OmniPanelViewIndex.Commands);
   }
 
-  function setTourDefault(): void {
+  function setTourSettingsAndOmniPanel(
+    isSettingsVisible: boolean,
+    isOmniPanelVisible: boolean,
+  ): void {
     clearSpotlights();
-    setShowOmniPanel(false);
-    setShowSettings(false);
+    setShowSettings(isSettingsVisible);
+    setShowOmniPanel(isOmniPanelVisible);
   }
 
   function setTourShowOmniPanel(view: OmniPanelViewIndex): void {
-    clearSpotlights();
-    setShowSettings(false);
-    setShowOmniPanel(true);
+    setTourSettingsAndOmniPanel(false, true);
     setCurrentView(view);
   }
 
