@@ -40,7 +40,7 @@ import { ResourceConfigurationsType } from '../resource-manager';
 import Tour from 'reactour';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMapSigns } from '@fortawesome/free-solid-svg-icons';
-import { HighlightedWords } from './tour-step-overlay';
+import { HighlightedWords } from './tour-step-stylings';
 
 const borderRadius = 20;
 
