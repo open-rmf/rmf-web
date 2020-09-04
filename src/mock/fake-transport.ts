@@ -6,10 +6,17 @@ import fakeDoorStates from './data/door-states';
 import fakeFleets from './data/fleets';
 import fakeLiftStates from './data/lift-states';
 
-const debug = Debug('fake-transport');
+const debug = Debug('FakeTransport');
+
+export type DoorStateFactory = () => Record<string, RomiCore.DoorState>;
 
 export class FakeTransport extends RomiCore.TransportEvents implements RomiCore.Transport {
   name: string = 'fake';
+
+  constructor(doorStateFactory?: DoorStateFactory) {
+    super();
+    this._doorStateFactory = doorStateFactory || fakeDoorStates;
+  }
 
   createPublisher<Message extends unknown>(
     topic: RomiCore.RomiTopic<Message>,
@@ -25,12 +32,14 @@ export class FakeTransport extends RomiCore.TransportEvents implements RomiCore.
     cb: RomiCore.SubscriptionCb<Message>,
     options?: RomiCore.Options | undefined,
   ): RomiCore.Subscription {
-    debug('subscribe:', topic);
+    debug('subscribe %s', topic.topic);
+    let timer: number;
     switch (topic) {
       case RomiCore.doorStates: {
-        const doorStates = fakeDoorStates();
-        setInterval(() => {
+        const doorStates = this._doorStateFactory();
+        timer = window.setInterval(() => {
           for (const state of Object.values(doorStates)) {
+            debug('publishing door state, %s', state.door_name);
             cb(state as Message);
           }
         }, 1000);
@@ -38,8 +47,9 @@ export class FakeTransport extends RomiCore.TransportEvents implements RomiCore.
       }
       case RomiCore.liftStates: {
         const liftStates = fakeLiftStates();
-        setInterval(() => {
+        timer = window.setInterval(() => {
           for (const state of Object.values(liftStates)) {
+            debug('publishing lift state, %s', state.lift_name);
             cb(state as Message);
           }
         }, 1000);
@@ -47,8 +57,9 @@ export class FakeTransport extends RomiCore.TransportEvents implements RomiCore.
       }
       case RomiCore.fleetStates: {
         const fleets = fakeFleets();
-        setInterval(() => {
+        timer = window.setInterval(() => {
           for (const fleet of fleets) {
+            debug('publishing fleet state, %s', fleet.name);
             cb(fleet as Message);
           }
         }, 1000);
@@ -56,8 +67,9 @@ export class FakeTransport extends RomiCore.TransportEvents implements RomiCore.
       }
       case RomiCore.dispenserStates: {
         const dispenserStates = fakeDispenserStates();
-        setInterval(() => {
+        timer = window.setInterval(() => {
           for (const state of Object.values(dispenserStates)) {
+            debug('publishing dispenser state, %s', state.guid);
             cb(state as Message);
           }
         }, 1000);
@@ -65,18 +77,11 @@ export class FakeTransport extends RomiCore.TransportEvents implements RomiCore.
       }
     }
 
-    // TODO remove the skip validation when the type problem of available_floors is solved
-    if (topic !== RomiCore.liftStates && topic.topic === 'lift_states') {
-      const liftStates = fakeLiftStates();
-      setInterval(() => {
-        for (const state of Object.values(liftStates)) {
-          cb(state as Message);
-        }
-      }, 1000);
-    }
-
     return {
-      unsubscribe: () => {},
+      unsubscribe: () => {
+        clearInterval(timer);
+        debug('unsubscribed %s', topic.topic);
+      },
     };
   }
 
@@ -97,6 +102,8 @@ export class FakeTransport extends RomiCore.TransportEvents implements RomiCore.
   }
 
   destroy(): void {}
+
+  private _doorStateFactory: DoorStateFactory;
 }
 
 export default FakeTransport;

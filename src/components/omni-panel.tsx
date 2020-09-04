@@ -2,6 +2,7 @@ import { Button, ButtonGroup, makeStyles, Slide } from '@material-ui/core';
 import { Close as CloseIcon, KeyboardBackspace as BackIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
+import { isArray } from 'util';
 import { OmniPanelViewProps } from './omni-panel-view';
 
 const useStyles = makeStyles(() => ({
@@ -33,7 +34,7 @@ export interface OmniPanelProps extends React.HTMLAttributes<HTMLDivElement> {
   };
   onBack?: (current: number) => void;
   onClose?: () => void;
-  children?: React.ReactElement<OmniPanelViewProps>[];
+  children?: React.ReactElement<OmniPanelViewProps>[] | React.ReactElement<OmniPanelViewProps>;
 }
 
 export const OmniPanel = React.forwardRef(function(
@@ -53,6 +54,39 @@ export const OmniPanel = React.forwardRef(function(
   function handleCloseClick() {
     props.onClose && props.onClose();
   }
+
+  const renderChildren = () => {
+    if (!children) {
+      return null;
+    }
+    if (isArray(children)) {
+      return children.map(child => (
+        <Slide
+          key={child.props.id}
+          direction="left"
+          in={child.props.id === view}
+          mountOnEnter
+          unmountOnExit
+          appear={false}
+        >
+          <div className={classes.viewContainer2}>{child}</div>
+        </Slide>
+      ));
+    } else {
+      return (
+        <Slide
+          key={children.props.id}
+          direction="left"
+          in={children.props.id === view}
+          mountOnEnter
+          unmountOnExit
+          appear={false}
+        >
+          <div className={classes.viewContainer2}>{children}</div>
+        </Slide>
+      );
+    }
+  };
 
   return (
     <div {...otherProps} ref={ref} className={className}>
@@ -74,20 +108,7 @@ export const OmniPanel = React.forwardRef(function(
           <CloseIcon />
         </Button>
       </ButtonGroup>
-      <div className={classes.viewContainer}>
-        {props.children?.map(child => (
-          <Slide
-            key={child.props.id}
-            direction="left"
-            in={child.props.id === view}
-            mountOnEnter
-            unmountOnExit
-            appear={false}
-          >
-            <div className={classes.viewContainer2}>{child}</div>
-          </Slide>
-        ))}
-      </div>
+      <div className={classes.viewContainer}>{renderChildren()}</div>
     </div>
   );
 });

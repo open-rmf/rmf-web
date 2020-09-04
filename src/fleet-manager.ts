@@ -3,7 +3,7 @@ import EventEmitter from 'eventemitter3';
 
 type Events = {
   updated: [];
-}
+};
 
 export default class FleetManager extends EventEmitter<Events> {
   fleets(): RomiCore.FleetState[] {
@@ -11,11 +11,18 @@ export default class FleetManager extends EventEmitter<Events> {
   }
 
   startSubscription(transport: RomiCore.Transport) {
-    transport.subscribe(RomiCore.fleetStates, fleetState => {
-      this._fleets[fleetState.name] = fleetState;
-      this.emit('updated');
-    });
+    this._subscriptions.push(
+      transport.subscribe(RomiCore.fleetStates, fleetState => {
+        this._fleets[fleetState.name] = fleetState;
+        this.emit('updated');
+      }),
+    );
+  }
+
+  stopAllSubscriptions(): void {
+    this._subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   private _fleets: Record<string, RomiCore.FleetState> = {};
+  private _subscriptions: RomiCore.Subscription[] = [];
 }
