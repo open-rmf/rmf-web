@@ -669,10 +669,7 @@ export default function App(props: AppProps): JSX.Element {
             isOpen={tourState}
             onRequestClose={() => {
               setTourState(false);
-              clearSpotlights();
-              setShowSettings(false);
-              setShowOmniPanel(true);
-              setCurrentView(OmniPanelViewIndex.MainMenu);
+              setTourShowOmniPanel(OmniPanelViewIndex.MainMenu);
             }}
             badgeContent={(curr, tot) => `${curr} of ${tot}`}
             lastStepNextButton={<Button>Start using RoMi!</Button>}
