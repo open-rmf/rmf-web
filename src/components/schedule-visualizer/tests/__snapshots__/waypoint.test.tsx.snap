@@ -2,7 +2,7 @@
 
 exports[`Renders correctly 1`] = `
 <svg>
-  <Waypoint
+  <Memo()
     size={1}
     waypoint={
       Object {
@@ -47,6 +47,6 @@ exports[`Renders correctly 1`] = `
         station_1
       </text>
     </g>
-  </Waypoint>
+  </Memo()>
 </svg>
 `;

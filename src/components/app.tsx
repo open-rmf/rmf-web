@@ -1,7 +1,7 @@
 import { AppBar, Fade, IconButton, makeStyles, Toolbar, Typography } from '@material-ui/core/';
 import { Dashboard as DashboardIcon, Settings as SettingsIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import debug from 'debug';
+import Debug from 'debug';
 import React from 'react';
 import 'typeface-roboto';
 import { AppConfig } from '../app-config';
@@ -9,8 +9,10 @@ import DispenserStateManager from '../dispenser-state-manager';
 import DoorStateManager from '../door-state-manager';
 import FleetManager from '../fleet-manager';
 import LiftStateManager from '../lift-state-manager';
+import { ResourceConfigurationsType } from '../resource-manager';
 import { RobotTrajectoryManager } from '../robot-trajectory-manager';
-import { loadSettings, saveSettings, Settings, SettingsContext } from '../settings';
+import { loadSettings, saveSettings, Settings } from '../settings';
+import { AppContextProvider } from './app-contexts';
 import './app.css';
 import CommandsPanel from './commands-panel';
 import DispensersPanel from './dispensers-panel';
@@ -18,17 +20,16 @@ import DoorsPanel from './doors-panel';
 import LiftsPanel from './lift-item/lifts-panel';
 import LoadingScreen, { LoadingScreenProps } from './loading-screen';
 import MainMenu from './main-menu';
+import NotificationBar, { NotificationBarProps } from './notification-bar';
 import OmniPanel from './omni-panel';
 import OmniPanelView from './omni-panel-view';
+import { RmfContextProvider } from './rmf-contexts';
 import RobotsPanel from './robots-panel';
 import ScheduleVisualizer from './schedule-visualizer';
 import SettingsDrawer from './settings-drawer';
 import { SpotlightValue } from './spotlight-value';
-import { DoorStateContext } from './schedule-visualizer/doors-overlay';
-import { LiftStateContext } from './schedule-visualizer/lift-overlay';
-import NotificationBar, { NotificationBarProps, NotificationBarContext } from './notification-bar';
-import { ResourceConfigurationsType } from '../resource-manager';
 
+const debug = Debug('App');
 const borderRadius = 20;
 
 const useStyles = makeStyles(theme => ({
@@ -111,6 +112,8 @@ function makeViewMap(): ViewMap {
 const viewMap = makeViewMap();
 
 export default function App(props: AppProps): JSX.Element {
+  debug('render');
+
   const classes = useStyles();
   const { transportFactory, trajectoryManagerFactory, appResources } = props.appConfig;
   const [transport, setTransport] = React.useState<RomiCore.Transport | undefined>(undefined);
@@ -120,25 +123,28 @@ export default function App(props: AppProps): JSX.Element {
 
   const doorStateManager = React.useMemo(() => new DoorStateManager(), []);
   const [doorStates, setDoorStates] = React.useState(() => doorStateManager.doorStates());
-  const [doors, setDoors] = React.useState<readonly RomiCore.Door[]>([]);
-
+  const [doors, setDoors] = React.useState<RomiCore.Door[]>([]);
   const [doorSpotlight, setDoorSpotlight] = React.useState<SpotlightValue<string> | undefined>(
     undefined,
   );
 
   const liftStateManager = React.useMemo(() => new LiftStateManager(), []);
   const [liftStates, setLiftStates] = React.useState(() => liftStateManager.liftStates());
-
-  const [lifts, setLifts] = React.useState<readonly RomiCore.Lift[]>([]);
+  const [lifts, setLifts] = React.useState<RomiCore.Lift[]>([]);
   const [liftSpotlight, setLiftSpotlight] = React.useState<SpotlightValue<string> | undefined>(
     undefined,
   );
 
   const fleetManager = React.useMemo(() => new FleetManager(), []);
   const [fleets, setFleets] = React.useState(fleetManager.fleets());
+  const fleetNames = React.useRef<string[]>([]);
   const [robotSpotlight, setRobotSpotlight] = React.useState<SpotlightValue<string> | undefined>(
     undefined,
   );
+  const newFleetNames = fleets.map(fleet => fleet.name);
+  if (newFleetNames.some(fleetName => !fleetNames.current.includes(fleetName))) {
+    fleetNames.current = newFleetNames;
+  }
 
   const dispenserStateManager = React.useMemo(() => new DispenserStateManager(), []);
   const [dispenserStates, setDispenserStates] = React.useState<
@@ -179,6 +185,9 @@ export default function App(props: AppProps): JSX.Element {
         fleetManager.on('updated', () => setFleets(fleetManager.fleets()));
         liftStateManager.on('updated', () => setLiftStates(liftStateManager.liftStates()));
         doorStateManager.on('updated', () => setDoorStates(doorStateManager.doorStates()));
+        dispenserStateManager.on('updated', () =>
+          setDispenserStates(dispenserStateManager.dispenserStates()),
+        );
         setTransport(x);
       })
       .catch((e: CloseEvent) => {
@@ -222,63 +231,27 @@ export default function App(props: AppProps): JSX.Element {
   }, [appResources]);
 
   React.useEffect(() => {
-    if (currentView === OmniPanelViewIndex.Doors) {
-      const listener = () => setDoorStates(doorStateManager.doorStates());
-      doorStateManager.on('updated', listener);
-      debug.log('started tracking door states');
-      return () => {
-        doorStateManager.off('updated', listener);
-        debug.log('stopped tracking door states');
-      };
-    }
-  }, [currentView, doorStateManager]);
-
-  React.useEffect(() => {
-    if (currentView === OmniPanelViewIndex.Lifts) {
-      const listener = () => setLiftStates(liftStateManager.liftStates());
-      liftStateManager.on('updated', listener);
-      debug.log('started tracking lift states');
-      return () => {
-        liftStateManager.off('updated', listener);
-        debug.log('stopped tracking lift states');
-      };
-    }
-  }, [currentView, liftStateManager]);
-
-  React.useEffect(() => {
-    if (currentView === OmniPanelViewIndex.Dispensers) {
-      const listener = () => setDispenserStates(dispenserStateManager.dispenserStates());
-      dispenserStateManager.on('updated', listener);
-      debug.log('started tracking dispenser states');
-      return () => {
-        dispenserStateManager.off('updated', listener);
-        debug.log('stopped tracking dispenser states');
-      };
-    }
-  }, [currentView, dispenserStateManager]);
-
-  React.useEffect(() => {
     setDoors(buildingMap ? buildingMap.levels.flatMap(x => x.doors) : []);
     setLifts(buildingMap ? buildingMap.lifts : []);
   }, [buildingMap]);
 
-  function handleDoorClick(door: RomiCore.Door): void {
+  const handleDoorClick = React.useCallback((door: RomiCore.Door) => {
     setShowOmniPanel(true);
     setCurrentView(OmniPanelViewIndex.Doors);
     setDoorSpotlight({ value: door.name });
-  }
+  }, []);
 
-  function handleRobotClick(robot: RomiCore.RobotState): void {
+  const handleRobotClick = React.useCallback((fleet: string, robot: RomiCore.RobotState) => {
     setShowOmniPanel(true);
     setCurrentView(OmniPanelViewIndex.Robots);
-    setRobotSpotlight({ value: robot.name });
-  }
+    setRobotSpotlight({ value: `${fleet}-${robot.name}` });
+  }, []);
 
-  function handleLiftClick(lift: RomiCore.Lift): void {
+  const handleLiftClick = React.useCallback((lift: RomiCore.Lift) => {
     setShowOmniPanel(true);
     setCurrentView(OmniPanelViewIndex.Lifts);
     setLiftSpotlight({ value: lift.name });
-  }
+  }, []);
 
   function clearSpotlights() {
     setDoorSpotlight(undefined);
@@ -287,142 +260,136 @@ export default function App(props: AppProps): JSX.Element {
     setDispenserSpotlight(undefined);
   }
 
-  function handleClose() {
+  const handleClose = React.useCallback(() => {
     clearSpotlights();
     setShowOmniPanel(false);
-  }
+  }, []);
 
-  function handleBack(index: number): void {
-    clearSpotlights();
-    const parent = viewMap[index].parent;
-    if (!parent) {
-      return handleClose();
-    }
-    setCurrentView(parent.value);
-  }
+  const handleBack = React.useCallback(
+    (index: number) => {
+      clearSpotlights();
+      const parent = viewMap[index].parent;
+      if (!parent) {
+        return handleClose();
+      }
+      setCurrentView(parent.value);
+    },
+    [handleClose],
+  );
 
-  function handleMainMenuDoorsClick(): void {
-    setDoorStates(doorStateManager.doorStates());
+  const handleMainMenuDoorsClick = React.useCallback(() => {
     setCurrentView(OmniPanelViewIndex.Doors);
-  }
+  }, []);
 
-  function handleMainMenuLiftsClick(): void {
-    setLiftStates(liftStateManager.liftStates());
+  const handleMainMenuLiftsClick = React.useCallback(() => {
     setCurrentView(OmniPanelViewIndex.Lifts);
-  }
+  }, []);
 
-  function handleMainMenuRobotsClick(): void {
+  const handleMainMenuRobotsClick = React.useCallback(() => {
     setCurrentView(OmniPanelViewIndex.Robots);
-  }
+  }, []);
 
-  function handleMainMenuDispensersClick(): void {
+  const handleMainMenuDispensersClick = React.useCallback(() => {
     setCurrentView(OmniPanelViewIndex.Dispensers);
-  }
+  }, []);
 
-  function handleMainMenuCommandsClick(): void {
+  const handleMainMenuCommandsClick = React.useCallback(() => {
     setCurrentView(OmniPanelViewIndex.Commands);
-  }
+  }, []);
+
+  const omniPanelClasses = React.useMemo(
+    () => ({ backButton: classes.topLeftBorder, closeButton: classes.topRightBorder }),
+    [classes.topLeftBorder, classes.topRightBorder],
+  );
 
   return (
-    <React.Fragment>
-      <SettingsContext.Provider value={settings}>
-        <NotificationBarContext.Provider value={setNotificationBarMessage}>
-          {loading && <LoadingScreen {...loading} />}
-          <div className={classes.container}>
-            <AppBar position="static">
-              <Toolbar>
-                <Typography variant="h6" className={classes.toolBarTitle}>
-                  Dashboard
-                </Typography>
-                <IconButton color="inherit" onClick={() => setShowOmniPanel(!showOmniPanel)}>
-                  <DashboardIcon />
-                </IconButton>
-                <IconButton color="inherit" onClick={() => setShowSettings(true)}>
-                  <SettingsIcon />
-                </IconButton>
-              </Toolbar>
-            </AppBar>
-            {buildingMap && (
-              <DoorStateContext.Provider value={doorStates}>
-                <LiftStateContext.Provider value={liftStates}>
-                  <ScheduleVisualizer
-                    buildingMap={buildingMap}
-                    fleets={fleets}
-                    trajManager={trajManager.current}
-                    appResources={resourceManager.current}
-                    onDoorClick={handleDoorClick}
-                    onLiftClick={handleLiftClick}
-                    onRobotClick={handleRobotClick}
-                  />
-                </LiftStateContext.Provider>
-              </DoorStateContext.Provider>
-            )}
-            <Fade in={showOmniPanel}>
-              <OmniPanel
-                className={classes.omniPanel}
-                classes={{
-                  backButton: classes.topLeftBorder,
-                  closeButton: classes.topRightBorder,
-                }}
-                view={currentView}
-                onBack={handleBack}
-                onClose={handleClose}
-              >
-                <OmniPanelView id={OmniPanelViewIndex.MainMenu}>
-                  <MainMenu
-                    onDoorsClick={handleMainMenuDoorsClick}
-                    onLiftsClick={handleMainMenuLiftsClick}
-                    onRobotsClick={handleMainMenuRobotsClick}
-                    onDispensersClick={handleMainMenuDispensersClick}
-                    onCommandsClick={handleMainMenuCommandsClick}
-                  />
-                </OmniPanelView>
-                <OmniPanelView id={OmniPanelViewIndex.Doors}>
-                  <DoorsPanel
-                    transport={transport}
-                    doorStates={doorStates}
-                    doors={doors}
-                    spotlight={doorSpotlight}
-                  />
-                </OmniPanelView>
-                <OmniPanelView id={OmniPanelViewIndex.Lifts}>
-                  <LiftsPanel
-                    transport={transport}
-                    liftStates={liftStates}
-                    lifts={lifts}
-                    spotlight={liftSpotlight}
-                  />
-                </OmniPanelView>
-                <OmniPanelView id={OmniPanelViewIndex.Robots}>
-                  <RobotsPanel fleets={fleets} spotlight={robotSpotlight} />
-                </OmniPanelView>
-                <OmniPanelView id={OmniPanelViewIndex.Dispensers}>
-                  <DispensersPanel
-                    dispenserStates={dispenserStates}
-                    spotlight={dispenserSpotlight}
-                  />
-                </OmniPanelView>
-                <OmniPanelView id={OmniPanelViewIndex.Commands}>
-                  <CommandsPanel transport={transport} fleets={fleets} />
-                </OmniPanelView>
-              </OmniPanel>
-            </Fade>
-            <SettingsDrawer
-              settings={settings}
-              open={showSettings}
-              onSettingsChange={newSettings => {
-                setSettings(newSettings);
-                saveSettings(newSettings);
-              }}
-              onClose={() => setShowSettings(false)}
+    <AppContextProvider settings={settings} notificationDispatch={setNotificationBarMessage}>
+      <RmfContextProvider doorStates={doorStates} liftStates={liftStates}>
+        {loading && <LoadingScreen {...loading} />}
+        <div className={classes.container}>
+          <AppBar position="static">
+            <Toolbar>
+              <Typography variant="h6" className={classes.toolBarTitle}>
+                Dashboard
+              </Typography>
+              <IconButton color="inherit" onClick={() => setShowOmniPanel(!showOmniPanel)}>
+                <DashboardIcon />
+              </IconButton>
+              <IconButton color="inherit" onClick={() => setShowSettings(true)}>
+                <SettingsIcon />
+              </IconButton>
+            </Toolbar>
+          </AppBar>
+          {buildingMap && (
+            <ScheduleVisualizer
+              buildingMap={buildingMap}
+              fleets={fleets}
+              trajManager={trajManager.current}
+              appResources={resourceManager.current}
+              onDoorClick={handleDoorClick}
+              onLiftClick={handleLiftClick}
+              onRobotClick={handleRobotClick}
             />
-          </div>
-          <NotificationBar
-            message={notificationBarMessage?.message}
-            type={notificationBarMessage?.type}
+          )}
+          <Fade in={showOmniPanel}>
+            <OmniPanel
+              className={classes.omniPanel}
+              classes={omniPanelClasses}
+              view={currentView}
+              onBack={handleBack}
+              onClose={handleClose}
+            >
+              <OmniPanelView id={OmniPanelViewIndex.MainMenu}>
+                <MainMenu
+                  onDoorsClick={handleMainMenuDoorsClick}
+                  onLiftsClick={handleMainMenuLiftsClick}
+                  onRobotsClick={handleMainMenuRobotsClick}
+                  onDispensersClick={handleMainMenuDispensersClick}
+                  onCommandsClick={handleMainMenuCommandsClick}
+                />
+              </OmniPanelView>
+              <OmniPanelView id={OmniPanelViewIndex.Doors}>
+                <DoorsPanel
+                  transport={transport}
+                  doors={doors}
+                  doorStates={doorStates}
+                  spotlight={doorSpotlight}
+                />
+              </OmniPanelView>
+              <OmniPanelView id={OmniPanelViewIndex.Lifts}>
+                <LiftsPanel
+                  transport={transport}
+                  liftStates={liftStates}
+                  lifts={lifts}
+                  spotlight={liftSpotlight}
+                />
+              </OmniPanelView>
+              <OmniPanelView id={OmniPanelViewIndex.Robots}>
+                <RobotsPanel fleets={fleets} spotlight={robotSpotlight} />
+              </OmniPanelView>
+              <OmniPanelView id={OmniPanelViewIndex.Dispensers}>
+                <DispensersPanel dispenserStates={dispenserStates} spotlight={dispenserSpotlight} />
+              </OmniPanelView>
+              <OmniPanelView id={OmniPanelViewIndex.Commands}>
+                <CommandsPanel transport={transport} allFleets={fleetNames.current} />
+              </OmniPanelView>
+            </OmniPanel>
+          </Fade>
+          <SettingsDrawer
+            settings={settings}
+            open={showSettings}
+            onSettingsChange={newSettings => {
+              setSettings(newSettings);
+              saveSettings(newSettings);
+            }}
+            onClose={() => setShowSettings(false)}
           />
-        </NotificationBarContext.Provider>
-      </SettingsContext.Provider>
-    </React.Fragment>
+        </div>
+        <NotificationBar
+          message={notificationBarMessage?.message}
+          type={notificationBarMessage?.type}
+        />
+      </RmfContextProvider>
+    </AppContextProvider>
   );
 }

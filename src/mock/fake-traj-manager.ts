@@ -1,3 +1,4 @@
+import Debug from 'debug';
 import {
   RobotTrajectoryManager,
   TimeRequest,
@@ -7,14 +8,18 @@ import {
 } from '../robot-trajectory-manager';
 import trajectories from './data/trajectories.json';
 
+const debug = Debug('FakeTrajectoryManager');
+
 export default class FakeTrajectoryManager implements RobotTrajectoryManager {
   async latestTrajectory(request: TrajectoryRequest): Promise<TrajectoryResponse> {
+    debug('sending trajectory');
     if (request.param.map_name === 'L1') {
       const traj = trajectories[this.currentTraj++];
       this.currentTraj %= trajectories.length;
       // "deep clone" object
       return JSON.parse(JSON.stringify(traj)) as any;
     }
+
     return {
       response: 'trajectory',
       values: [],
