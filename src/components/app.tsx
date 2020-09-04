@@ -40,6 +40,7 @@ import { ResourceConfigurationsType } from '../resource-manager';
 import Tour from 'reactour';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMapSigns } from '@fortawesome/free-solid-svg-icons';
+import { HighlightedWords } from './tour-step-overlay';
 
 const borderRadius = 20;
 
@@ -180,24 +181,38 @@ export default function App(props: AppProps): JSX.Element {
     {
       selector: '',
       content: () => (
-        <p>
-          Welcome to the <b>RoMi dashboard</b>!
-        </p>
+        <>
+          <Typography variant="h6">
+            Welcome to the <HighlightedWords color={'#fff'}>RoMi dashboard</HighlightedWords>!
+          </Typography>
+        </>
       ),
       action: () => {
         setTourDefault();
+      },
+      style: {
+        backgroundColor: '#2979ff',
+        color: '#fefefe',
+        borderRadius: '5px',
       },
     },
     {
       selector: '[class="leaflet-control-zoom leaflet-bar leaflet-control"]',
       content: () => (
-        <p>
-          Click on the <b>zoom buttons</b> to change the view of the floor plan. Alternatively, the
-          scroll button on your mouse would work too!
-        </p>
+        <>
+          <Typography variant="h6">
+            Click on the <HighlightedWords>zoom buttons</HighlightedWords> to change the view of the
+            floor plan. Alternatively, the scroll button on your mouse would work too!
+          </Typography>
+        </>
       ),
       action: () => {
         setTourDefault();
+      },
+      style: {
+        backgroundColor: '#2979ff',
+        color: '#fefefe',
+        borderRadius: '5px',
       },
     },
     {
@@ -211,6 +226,11 @@ export default function App(props: AppProps): JSX.Element {
       action: () => {
         setTourDefault();
       },
+      style: {
+        backgroundColor: '#2979ff',
+        color: '#fefefe',
+        borderRadius: '5px',
+      },
     },
     {
       selector: '[class="leaflet-image-layer leaflet-zoom-animated"]',
@@ -222,6 +242,11 @@ export default function App(props: AppProps): JSX.Element {
       ),
       action: () => {
         setTourDefault();
+      },
+      style: {
+        backgroundColor: '#2979ff',
+        color: '#fefefe',
+        borderRadius: '5px',
       },
     },
     {
@@ -235,6 +260,11 @@ export default function App(props: AppProps): JSX.Element {
       action: () => {
         setTourShowOmniPanel(OmniPanelViewIndex.MainMenu);
       },
+      style: {
+        backgroundColor: '#2979ff',
+        color: '#fefefe',
+        borderRadius: '5px',
+      },
     },
     {
       selector: '[data-component="MainMenu"]',
@@ -242,12 +272,22 @@ export default function App(props: AppProps): JSX.Element {
       action: () => {
         setTourShowOmniPanel(OmniPanelViewIndex.MainMenu);
       },
+      style: {
+        backgroundColor: '#2979ff',
+        color: '#fefefe',
+        borderRadius: '5px',
+      },
     },
     {
       selector: '',
       content: 'Let us take a look into the Doors Panel',
       action: () => {
         setTourShowOmniPanel(OmniPanelViewIndex.Doors);
+      },
+      style: {
+        backgroundColor: '#2979ff',
+        color: '#fefefe',
+        borderRadius: '5px',
       },
     },
     {
@@ -261,6 +301,11 @@ export default function App(props: AppProps): JSX.Element {
           setDoorSpotlight({ value: 'main_door' });
         }
       },
+      style: {
+        backgroundColor: '#2979ff',
+        color: '#fefefe',
+        borderRadius: '5px',
+      },
     },
     {
       selector: '',
@@ -268,6 +313,11 @@ export default function App(props: AppProps): JSX.Element {
         'The Commands Panel allows you to send different types of requests that will be handled by RoMi',
       action: () => {
         setTourShowOmniPanel(OmniPanelViewIndex.Commands);
+      },
+      style: {
+        backgroundColor: '#2979ff',
+        color: '#fefefe',
+        borderRadius: '5px',
       },
     },
     {
@@ -280,6 +330,11 @@ export default function App(props: AppProps): JSX.Element {
       ),
       action: () => {
         setTourShowOmniPanel(OmniPanelViewIndex.Commands);
+      },
+      style: {
+        backgroundColor: '#2979ff',
+        color: '#fefefe',
+        borderRadius: '5px',
       },
     },
     {
@@ -294,6 +349,11 @@ export default function App(props: AppProps): JSX.Element {
         setShowSettings(true);
         setShowOmniPanel(false);
       },
+      style: {
+        backgroundColor: '#2979ff',
+        color: '#fefefe',
+        borderRadius: '5px',
+      },
     },
     {
       selector: '.MuiDrawer-paper',
@@ -307,6 +367,11 @@ export default function App(props: AppProps): JSX.Element {
         clearSpotlights();
         setShowOmniPanel(false);
         setShowSettings(true);
+      },
+      style: {
+        backgroundColor: '#2979ff',
+        color: '#fefefe',
+        borderRadius: '5px',
       },
     },
   ];
@@ -602,6 +667,7 @@ export default function App(props: AppProps): JSX.Element {
               setShowOmniPanel(true);
               setCurrentView(OmniPanelViewIndex.MainMenu);
             }}
+            badgeContent={(curr, tot) => `${curr} of ${tot}`}
             lastStepNextButton={<Button>Start using RoMi!</Button>}
           />
         </NotificationBarContext.Provider>
