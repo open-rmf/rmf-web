@@ -1,10 +1,13 @@
+import Debug from 'debug';
 import * as L from 'leaflet';
 import React, { useContext, useEffect } from 'react';
 import { Conflict, Trajectory } from '../../robot-trajectory-manager';
+import { NotificationBarContext } from '../notification-bar';
 import ColorManager from './colors';
 import RobotTrajectory, { RobotTrajectoryProps } from './robot-trajectory';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
-import { NotificationBarContext } from '../notification-bar';
+
+const debug = Debug('ScheduleVisualizer:RobotTrajectoriesOverlay');
 
 export interface RobotTrajectoriesOverlayProps extends SVGOverlayProps {
   trajs: readonly Trajectory[];
@@ -13,9 +16,9 @@ export interface RobotTrajectoriesOverlayProps extends SVGOverlayProps {
   conflictRobotNames: string[][];
 }
 
-export default function RobotTrajectoriesOverlay(
-  props: RobotTrajectoriesOverlayProps,
-): React.ReactElement {
+export const RobotTrajectoriesOverlay = React.memo((props: RobotTrajectoriesOverlayProps) => {
+  debug('render');
+
   const { trajs, conflicts, colorManager, conflictRobotNames, ...otherProps } = props;
   const trajectoryContext = useContext(RobotTrajectoryContext);
   const notificationDispatch = useContext(NotificationBarContext);
@@ -62,7 +65,9 @@ export default function RobotTrajectoriesOverlay(
       </svg>
     </SVGOverlay>
   );
-}
+});
+
+export default RobotTrajectoriesOverlay;
 
 export interface RobotTrajectoryContext {
   Component: React.ComponentType<RobotTrajectoryProps>;

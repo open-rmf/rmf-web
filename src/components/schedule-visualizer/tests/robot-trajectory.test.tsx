@@ -4,13 +4,8 @@ import React from 'react';
 import FakeTrajectoryManager from '../../../mock/fake-traj-manager';
 import RobotTrajectory, { RobotTrajectoryProps } from '../robot-trajectory';
 import { Trajectory, Conflict } from '../../../robot-trajectory-manager';
-import {
-  SettingsContext,
-  TrajectoryColor,
-  TrajectoryDiameter,
-  defaultSettings,
-  Settings,
-} from '../../../settings';
+import { TrajectoryColor, TrajectoryDiameter, defaultSettings, Settings } from '../../../settings';
+import { SettingsContext } from '../../app-contexts';
 
 const mount = createMount();
 

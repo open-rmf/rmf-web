@@ -14,7 +14,7 @@ beforeEach(() => {
 });
 
 it('renders loop form', () => {
-  const root = mount(<CommandsPanel fleets={fleets} />);
+  const root = mount(<CommandsPanel allFleets={fleets.map(fleet => fleet.name)} />);
   const formElements = root.find(LoopForm);
   expect(formElements.length).toBe(1);
   root.unmount();

@@ -3,7 +3,7 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
-import { ResourcesContext } from '../../app-contexts';
+import { ResourcesContext } from '../../components/app-contexts';
 import ColorManager from '../../components/schedule-visualizer/colors';
 import Robot, { RobotProps } from '../../components/schedule-visualizer/robot';
 import { ResourceConfigurationsType } from '../../resource-manager';

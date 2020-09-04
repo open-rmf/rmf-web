@@ -1,5 +1,3 @@
-import React from 'react';
-
 export enum TrajectoryAnimation {
   None,
   Fill,
@@ -51,5 +49,3 @@ export function defaultSettings(): Settings {
     trajectoryColor: TrajectoryColor.Robot_Color,
   };
 }
-
-export const SettingsContext = React.createContext(defaultSettings());

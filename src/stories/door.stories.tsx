@@ -1,15 +1,15 @@
-import React from 'react';
 import { Divider, Typography } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-
+import React from 'react';
+import DoorsPanel from '../components/doors-panel';
 import DoorComponent from './baseComponents/door-component';
-import DoorButton from './baseComponents/door-panel';
+
 import {
+  componentDisplayStyle,
+  defaultStyles,
   door,
   doors,
   doorStates,
-  componentDisplayStyle,
-  defaultStyles,
   StyleTyping,
 } from './baseComponents/utils';
 
@@ -126,6 +126,6 @@ export const doorPanel = () => (
       <Typography variant="h6">Door State</Typography>
       <Typography variant="h6">Button color and representation</Typography>
     </div>
-    <DoorButton doors={doors} doorStates={doorStates} />
+    <DoorsPanel doors={doors} doorStates={doorStates} />
   </div>
 );

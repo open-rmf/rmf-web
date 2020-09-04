@@ -4,116 +4,122 @@ import {
   ExpansionPanelDetails,
   ExpansionPanelProps,
   ExpansionPanelSummary,
-  makeStyles,
-  Typography,
   List,
   ListItem,
+  makeStyles,
+  Typography,
 } from '@material-ui/core';
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import Debug from 'debug';
 import React from 'react';
-
+import { colorPalette } from '../util/css-utils';
 import DisableableTypography from './disableable-typography';
 import OmniPanelStatusLabels from './omni-panel-status-labels';
-import { colorPalette } from '../util/css-utils';
+
+const debug = Debug('OmniPanel:DispenserItem');
 
 export interface DispenserItemProps extends Omit<ExpansionPanelProps, 'children'> {
   dispenserState: Readonly<RomiCore.DispenserState>;
 }
 
-export const DispenserItem = React.forwardRef(function(
-  props: DispenserItemProps,
-  ref: React.Ref<HTMLElement>,
-): React.ReactElement {
-  const { dispenserState, ...otherProps } = props;
-  const classes = useStyles();
-  const dispenserModeLabelClasses = useDispenserModeLabelStyles();
+export const DispenserItem = React.memo(
+  React.forwardRef(function(
+    props: DispenserItemProps,
+    ref: React.Ref<HTMLElement>,
+  ): React.ReactElement {
+    debug('render');
 
-  function dispenserModeLabelClass(): string {
-    switch (dispenserState.mode) {
-      case RomiCore.DispenserState.IDLE:
-        return `${classes.dispenserLabel} ${dispenserModeLabelClasses.idle}`;
-      case RomiCore.DispenserState.BUSY:
-        return `${classes.dispenserLabel} ${dispenserModeLabelClasses.busy}`;
-      case RomiCore.DispenserState.OFFLINE:
-        return `${classes.dispenserLabel} ${dispenserModeLabelClasses.offline}`;
-      default:
-        return `${classes.dispenserLabel} ${dispenserModeLabelClasses.unknown}`;
+    const { dispenserState, ...otherProps } = props;
+    const classes = useStyles();
+    const dispenserModeLabelClasses = useDispenserModeLabelStyles();
+
+    function dispenserModeLabelClass(): string {
+      switch (dispenserState.mode) {
+        case RomiCore.DispenserState.IDLE:
+          return `${classes.dispenserLabel} ${dispenserModeLabelClasses.idle}`;
+        case RomiCore.DispenserState.BUSY:
+          return `${classes.dispenserLabel} ${dispenserModeLabelClasses.busy}`;
+        case RomiCore.DispenserState.OFFLINE:
+          return `${classes.dispenserLabel} ${dispenserModeLabelClasses.offline}`;
+        default:
+          return `${classes.dispenserLabel} ${dispenserModeLabelClasses.unknown}`;
+      }
     }
-  }
 
-  function dispenserRequestQueueId(): React.ReactElement {
-    if (dispenserState.request_guid_queue.length === 0) {
-      return (
-        <DisableableTypography disabled={true} variant="body1">
-          Unknown
-        </DisableableTypography>
-      );
-    } else {
-      return (
-        <List className={classes.listRoot} dense={true}>
-          {dispenserState.request_guid_queue.map(id => (
-            <ListItem key={id} className={classes.listItem}>
-              <Typography variant="body1">{id}</Typography>
-            </ListItem>
-          ))}
-        </List>
-      );
+    function dispenserRequestQueueId(): React.ReactElement {
+      if (dispenserState.request_guid_queue.length === 0) {
+        return (
+          <DisableableTypography disabled={true} variant="body1">
+            Unknown
+          </DisableableTypography>
+        );
+      } else {
+        return (
+          <List className={classes.listRoot} dense={true}>
+            {dispenserState.request_guid_queue.map(id => (
+              <ListItem key={id} className={classes.listItem}>
+                <Typography variant="body1">{id}</Typography>
+              </ListItem>
+            ))}
+          </List>
+        );
+      }
     }
-  }
 
-  function dispenserModeToString(): string {
-    switch (dispenserState.mode) {
-      case RomiCore.DispenserState.IDLE:
-        return 'IDLE';
-      case RomiCore.DispenserState.BUSY:
-        return 'ONLINE';
-      case RomiCore.DispenserState.OFFLINE:
-        return 'OFFLINE';
-      default:
-        return 'N/A';
+    function dispenserModeToString(): string {
+      switch (dispenserState.mode) {
+        case RomiCore.DispenserState.IDLE:
+          return 'IDLE';
+        case RomiCore.DispenserState.BUSY:
+          return 'ONLINE';
+        case RomiCore.DispenserState.OFFLINE:
+          return 'OFFLINE';
+        default:
+          return 'N/A';
+      }
     }
-  }
 
-  return (
-    <ExpansionPanel ref={ref} {...otherProps}>
-      <ExpansionPanelSummary
-        classes={{ content: classes.expansionSummaryContent }}
-        expandIcon={<ExpandMoreIcon />}
-      >
-        <OmniPanelStatusLabels
-          modalLabelClass={dispenserModeLabelClass()}
-          name={dispenserState.guid}
-          modeText={dispenserModeToString()}
-        />
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails className={classes.expansionDetail}>
-        <div className={classes.expansionDetailLine}>
-          <Typography variant="body1">Name:</Typography>
-          <Typography variant="body1">{dispenserState.guid}</Typography>
-        </div>
-        <Divider />
-        <div className={classes.expansionDetailLine}>
-          <Typography variant="body1">No. Queued Requests:</Typography>
-          <Typography variant="body1">
-            {String(dispenserState.request_guid_queue.length)}
-          </Typography>
-        </div>
-        <Divider />
-        <div className={classes.expansionDetailLine}>
-          <Typography variant="body1">Request Queue ID:</Typography>
-          {dispenserRequestQueueId()}
-        </div>
-        <Divider />
-        <div className={classes.expansionDetailLine}>
-          <Typography variant="body1">Seconds Remaining:</Typography>
-          <Typography variant="body1">{String(dispenserState.seconds_remaining)}</Typography>
-        </div>
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
-  );
-});
+    return (
+      <ExpansionPanel ref={ref} {...otherProps}>
+        <ExpansionPanelSummary
+          classes={{ content: classes.expansionSummaryContent }}
+          expandIcon={<ExpandMoreIcon />}
+        >
+          <OmniPanelStatusLabels
+            modalLabelClass={dispenserModeLabelClass()}
+            name={dispenserState.guid}
+            modeText={dispenserModeToString()}
+          />
+        </ExpansionPanelSummary>
+        <ExpansionPanelDetails className={classes.expansionDetail}>
+          <div className={classes.expansionDetailLine}>
+            <Typography variant="body1">Name:</Typography>
+            <Typography variant="body1">{dispenserState.guid}</Typography>
+          </div>
+          <Divider />
+          <div className={classes.expansionDetailLine}>
+            <Typography variant="body1">No. Queued Requests:</Typography>
+            <Typography variant="body1">
+              {String(dispenserState.request_guid_queue.length)}
+            </Typography>
+          </div>
+          <Divider />
+          <div className={classes.expansionDetailLine}>
+            <Typography variant="body1">Request Queue ID:</Typography>
+            {dispenserRequestQueueId()}
+          </div>
+          <Divider />
+          <div className={classes.expansionDetailLine}>
+            <Typography variant="body1">Seconds Remaining:</Typography>
+            <Typography variant="body1">{String(dispenserState.seconds_remaining)}</Typography>
+          </div>
+        </ExpansionPanelDetails>
+      </ExpansionPanel>
+    );
+  }),
+);
 
 export default DispenserItem;
 

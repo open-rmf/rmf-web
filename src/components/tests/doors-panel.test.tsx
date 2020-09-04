@@ -23,7 +23,7 @@ beforeEach(async () => {
 
 it('renders doors', () => {
   const root = mount(<DoorsPanel doorStates={doorStates} doors={doors} />);
-  const doorElements = root.find(DoorItem);
+  const doorElements = root.find('[data-component="DoorItem"]').hostNodes();
   expect(doorElements.length).toBe(doors.length);
   root.unmount();
 });

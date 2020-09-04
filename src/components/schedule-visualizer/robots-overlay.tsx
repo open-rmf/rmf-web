@@ -1,20 +1,25 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import Debug from 'debug';
 import React, { useMemo } from 'react';
 import { viewBoxFromLeafletBounds } from '../../util/css-utils';
 import ColorManager from './colors';
 import Robot_, { RobotProps } from './robot';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 
+const debug = Debug('ScheduleVisualizer:RobotsOverlay');
+
 export interface RobotsOverlayProps extends SVGOverlayProps {
   colorManager: ColorManager;
   fleets: readonly RomiCore.FleetState[];
-  onRobotClick?(robot: RomiCore.RobotState): void;
+  onRobotClick?(fleet: string, robot: RomiCore.RobotState): void;
   conflictRobotNames: string[][];
   currentFloorName: string;
   RobotComponent?: React.ElementType<RobotProps>;
 }
 
-export default function RobotsOverlay(props: RobotsOverlayProps): React.ReactElement {
+export const RobotsOverlay = React.memo((props: RobotsOverlayProps) => {
+  debug('render');
+
   const {
     fleets,
     colorManager,
@@ -51,26 +56,36 @@ export default function RobotsOverlay(props: RobotsOverlayProps): React.ReactEle
     if (!currentFloorName) {
       return [];
     }
-    return fleets.flatMap(x => x.robots.filter(r => r.location.level_name === currentFloorName));
+    return fleets.flatMap(x => ({
+      fleet: x.name,
+      robots: x.robots.filter(r => r.location.level_name === currentFloorName),
+    }));
   }, [fleets, currentFloorName]);
+
+  const handleRobotClick = React.useCallback<Required<RobotProps>['onClick']>(
+    (_, fleetName, robot) => onRobotClick && onRobotClick(fleetName, robot),
+    [onRobotClick],
+  );
 
   return (
     <SVGOverlay {...otherProps}>
       <svg viewBox={viewBox}>
-        {robotsInCurLevel.map(robot => {
-          return (
+        {robotsInCurLevel.map(({ fleet, robots }) =>
+          robots.map(robot => (
             <Robot
               key={robot.name}
               robot={robot}
               fleetName={fleetContainer[`${robot.name}_${robot.model}`]}
               footprint={footprint}
               colorManager={colorManager}
-              onClick={(_, robot_) => onRobotClick && onRobotClick(robot_)}
+              onClick={handleRobotClick}
               inConflict={inConflict(robot.name)}
             />
-          );
-        })}
+          )),
+        )}
       </svg>
     </SVGOverlay>
   );
-}
+});
+
+export default RobotsOverlay;

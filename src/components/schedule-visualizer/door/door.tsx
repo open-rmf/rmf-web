@@ -1,10 +1,13 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import Debug from 'debug';
+import React from 'react';
 import DefaultDoor from './door-default';
 import DoubleHingeDoor from './door-double-hinge';
 import DoubleSlideDoor from './door-double-slide';
-import React from 'react';
 import SingleHingeDoor from './door-single-hinge';
 import SingleSlideDoor from './door-single-slide';
+
+const debug = Debug('ScheduleVisualizer:Door');
 
 /**
  * currentMode: Current mode of the door. E.g: 0 = DoorMode.CLOSE.
@@ -38,69 +41,73 @@ export const getDoorStyle = (classes: Record<string, string>, currentMode: numbe
   }
 };
 
-const Door = React.forwardRef(function(
-  props: DoorContainerProps,
-  ref: React.Ref<SVGGElement>,
-): React.ReactElement {
-  const { door, onClick, currentMode } = props;
-  const {
-    DOOR_TYPE_UNDEFINED,
-    DOOR_TYPE_SINGLE_SLIDING,
-    DOOR_TYPE_DOUBLE_SLIDING,
-    DOOR_TYPE_SINGLE_TELESCOPE,
-    DOOR_TYPE_DOUBLE_TELESCOPE,
-    DOOR_TYPE_SINGLE_SWING,
-    DOOR_TYPE_DOUBLE_SWING,
-  } = RomiCore.Door;
-  const { door_type: doorType } = door;
-  const v1 = [door.v1_x, door.v1_y];
-  const v2 = [door.v2_x, door.v2_y];
+const Door = React.memo(
+  React.forwardRef(function(
+    props: DoorContainerProps,
+    ref: React.Ref<SVGGElement>,
+  ): React.ReactElement {
+    const { door, onClick, currentMode } = props;
+    debug('render %s', door.name);
 
-  const handleClick = (event: React.MouseEvent<SVGGElement, MouseEvent>) => {
-    onClick && onClick(event, door);
-  };
+    const {
+      DOOR_TYPE_UNDEFINED,
+      DOOR_TYPE_SINGLE_SLIDING,
+      DOOR_TYPE_DOUBLE_SLIDING,
+      DOOR_TYPE_SINGLE_TELESCOPE,
+      DOOR_TYPE_DOUBLE_TELESCOPE,
+      DOOR_TYPE_SINGLE_SWING,
+      DOOR_TYPE_DOUBLE_SWING,
+    } = RomiCore.Door;
+    const { door_type: doorType } = door;
+    const v1 = [door.v1_x, door.v1_y];
+    const v2 = [door.v2_x, door.v2_y];
 
-  return (
-    <g ref={ref} data-component="Door" aria-label={door.name}>
-      {doorType === DOOR_TYPE_SINGLE_SWING && (
-        <SingleHingeDoor
-          v1={v1}
-          v2={v2}
-          door={door}
-          onClick={handleClick}
-          currentMode={currentMode}
-        />
-      )}
-      {doorType === DOOR_TYPE_DOUBLE_SWING && (
-        <DoubleHingeDoor
-          v1={v1}
-          v2={v2}
-          door={door}
-          onClick={handleClick}
-          currentMode={currentMode}
-        />
-      )}
-      {(doorType === DOOR_TYPE_SINGLE_SLIDING || doorType === DOOR_TYPE_SINGLE_TELESCOPE) && (
-        <SingleSlideDoor
-          v1={v1}
-          v2={v2}
-          door={door}
-          onClick={handleClick}
-          currentMode={currentMode}
-        />
-      )}
-      {(doorType === DOOR_TYPE_DOUBLE_SLIDING || doorType === DOOR_TYPE_DOUBLE_TELESCOPE) && (
-        <DoubleSlideDoor
-          v1={v1}
-          v2={v2}
-          door={door}
-          onClick={handleClick}
-          currentMode={currentMode}
-        />
-      )}
-      {doorType === DOOR_TYPE_UNDEFINED && <DefaultDoor v1={v1} v2={v2} onClick={handleClick} />}
-    </g>
-  );
-});
+    const handleClick = (event: React.MouseEvent<SVGGElement, MouseEvent>) => {
+      onClick && onClick(event, door);
+    };
+
+    return (
+      <g ref={ref} data-component="Door" aria-label={door.name}>
+        {doorType === DOOR_TYPE_SINGLE_SWING && (
+          <SingleHingeDoor
+            v1={v1}
+            v2={v2}
+            door={door}
+            onClick={handleClick}
+            currentMode={currentMode}
+          />
+        )}
+        {doorType === DOOR_TYPE_DOUBLE_SWING && (
+          <DoubleHingeDoor
+            v1={v1}
+            v2={v2}
+            door={door}
+            onClick={handleClick}
+            currentMode={currentMode}
+          />
+        )}
+        {(doorType === DOOR_TYPE_SINGLE_SLIDING || doorType === DOOR_TYPE_SINGLE_TELESCOPE) && (
+          <SingleSlideDoor
+            v1={v1}
+            v2={v2}
+            door={door}
+            onClick={handleClick}
+            currentMode={currentMode}
+          />
+        )}
+        {(doorType === DOOR_TYPE_DOUBLE_SLIDING || doorType === DOOR_TYPE_DOUBLE_TELESCOPE) && (
+          <DoubleSlideDoor
+            v1={v1}
+            v2={v2}
+            door={door}
+            onClick={handleClick}
+            currentMode={currentMode}
+          />
+        )}
+        {doorType === DOOR_TYPE_UNDEFINED && <DefaultDoor v1={v1} v2={v2} onClick={handleClick} />}
+      </g>
+    );
+  }),
+);
 
 export default Door;

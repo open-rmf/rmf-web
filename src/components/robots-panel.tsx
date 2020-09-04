@@ -1,7 +1,10 @@
-import { SpotlightValue } from './spotlight-value';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import Debug from 'debug';
 import React from 'react';
-import RobotItem from './robot-item';
+import RobotItem, { RobotItemProps } from './robot-item';
+import { SpotlightValue } from './spotlight-value';
+
+const debug = Debug('OmniPanel:RobotsPanel');
 
 export interface RobotsPanelProps {
   fleets: readonly RomiCore.FleetState[];
@@ -9,10 +12,57 @@ export interface RobotsPanelProps {
   onRobotClick?(robot: RomiCore.RobotState): void;
 }
 
-export default function RobotsPanel(props: RobotsPanelProps): React.ReactElement {
+export const RobotsPanel = React.memo((props: RobotsPanelProps) => {
+  debug('render');
+
   const { fleets, spotlight, onRobotClick } = props;
   const robotRefs = React.useRef<Record<string, HTMLElement | null>>({});
   const [expanded, setExpanded] = React.useState<Readonly<Record<string, boolean>>>({});
+
+  const storeRef = React.useCallback((ref: HTMLElement | null) => {
+    if (!ref) {
+      return;
+    }
+    const fleetName = ref.getAttribute('data-fleet');
+    const robotName = ref.getAttribute('data-name');
+    if (!fleetName || !robotName) {
+      return;
+    }
+    robotRefs.current[`${fleetName}-${robotName}`] = ref;
+  }, []);
+
+  const onChange = React.useCallback<Required<RobotItemProps>['onChange']>((event, newExpanded) => {
+    const fleetName = (event.currentTarget as HTMLElement).parentElement?.getAttribute(
+      'data-fleet',
+    );
+    const robotName = (event.currentTarget as HTMLElement).parentElement?.getAttribute('data-name');
+    if (!fleetName || !robotName) {
+      return;
+    }
+    setExpanded(prev => ({
+      ...prev,
+      [`${fleetName}-${robotName}`]: newExpanded,
+    }));
+  }, []);
+
+  const onClick = React.useRef<Required<RobotItemProps>['onClick']>(event => {
+    const fleetName = (event.currentTarget as HTMLElement).getAttribute('data-fleet');
+    const robotName = (event.currentTarget as HTMLElement).getAttribute('data-name');
+    if (!fleetName || !robotName) {
+      return;
+    }
+    const fleet = fleets.find(f => f.name === fleetName);
+    if (!fleet) {
+      return;
+    }
+    const robot = fleet.robots.find(r => r.name === robotName);
+    if (!robot) {
+      return;
+    }
+    onRobotClick && onRobotClick(robot);
+  });
+
+  const transitionProps = React.useMemo(() => ({ unmountOnExit: true }), []);
 
   React.useEffect(() => {
     if (!spotlight) {
@@ -34,22 +84,21 @@ export default function RobotsPanel(props: RobotsPanelProps): React.ReactElement
       {fleets.flatMap(fleet =>
         fleet.robots.map(robot => (
           <RobotItem
-            key={robot.name}
-            ref={ref => (robotRefs.current[robot.name] = ref)}
+            key={`${fleet.name}-${robot.name}`}
+            data-fleet={fleet.name}
+            data-name={robot.name}
+            ref={storeRef}
             fleetName={fleet.name}
             robot={robot}
-            onClick={() => onRobotClick && onRobotClick(robot)}
-            expanded={Boolean(expanded[robot.name])}
-            onChange={(_, newExpanded) =>
-              setExpanded(prev => ({
-                ...prev,
-                [robot.name]: newExpanded,
-              }))
-            }
-            TransitionProps={{ unmountOnExit: true }}
+            onClick={onClick.current}
+            expanded={Boolean(expanded[`${fleet.name}-${robot.name}`])}
+            onChange={onChange}
+            TransitionProps={transitionProps}
           />
         )),
       )}
     </React.Fragment>
   );
-}
+});
+
+export default RobotsPanel;

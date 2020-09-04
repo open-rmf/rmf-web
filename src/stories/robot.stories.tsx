@@ -10,8 +10,8 @@ import {
   defaultStyles,
   StyleTyping,
 } from './baseComponents/utils';
-import RobotButton from './baseComponents/robot-panel';
 import RobotGallery from './baseComponents/robot-gallery';
+import RobotsPanel from '../components/robots-panel';
 
 export default {
   title: 'Robot',
@@ -90,7 +90,7 @@ export const robotPanel = () => (
       <Typography variant="h6">Robot State</Typography>
       <Typography variant="h6">Button color and representation</Typography>
     </div>
-    <RobotButton fleets={robotStates} />
+    <RobotsPanel fleets={robotStates} />
   </div>
 );
 

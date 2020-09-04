@@ -11,11 +11,17 @@ export default class DispenserStateManager extends EventEmitter<Events> {
   }
 
   startSubscription(transport: RomiCore.Transport) {
-    transport.subscribe(RomiCore.dispenserStates, dispenserState => {
-      this._dispenserStates[dispenserState.guid] = dispenserState;
-      this.emit('updated');
-    });
+    this._subscriptions.push(
+      transport.subscribe(RomiCore.dispenserStates, dispenserState => {
+        this._dispenserStates[dispenserState.guid] = dispenserState;
+        this.emit('updated');
+      }),
+    );
+  }
+  stopAllSubscriptions(): void {
+    this._subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   private _dispenserStates: Record<string, RomiCore.DispenserState> = {};
+  private _subscriptions: RomiCore.Subscription[] = [];
 }
