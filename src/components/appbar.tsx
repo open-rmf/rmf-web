@@ -39,15 +39,19 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
         <Typography variant="h6" className={classes.toolbarTitle}>
           Dashboard
         </Typography>
-        <IconButton color="inherit" onClick={() => toggleShowOmniPanel()}>
+        <IconButton id="toggle-omnipanel-btn" color="inherit" onClick={() => toggleShowOmniPanel()}>
           <DashboardIcon />
         </IconButton>
-        <IconButton color="inherit" onClick={() => showSettings(true)}>
+        <IconButton id="show-settings-btn" color="inherit" onClick={() => showSettings(true)}>
           <SettingsIcon />
         </IconButton>
         {user && (
           <>
-            <IconButton color="inherit" onClick={event => setAnchorEl(event.currentTarget)}>
+            <IconButton
+              id="user-btn"
+              color="inherit"
+              onClick={event => setAnchorEl(event.currentTarget)}
+            >
               <AccountCircleIcon />
             </IconButton>
             <Menu
@@ -64,7 +68,9 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
               open={!!anchorEl}
               onClose={() => setAnchorEl(null)}
             >
-              <MenuItem onClick={handleLogout}>Logout</MenuItem>
+              <MenuItem id="logout-btn" onClick={handleLogout}>
+                Logout
+              </MenuItem>
             </Menu>
           </>
         )}
