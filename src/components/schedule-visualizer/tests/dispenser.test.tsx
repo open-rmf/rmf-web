@@ -5,24 +5,32 @@ import ResourceManager, { ResourceConfigurationsType } from '../../../resource-m
 import Dispenser from '../dispenser';
 import fakeDispenserStates from '../../../mock/data/dispenser-states';
 import { ResourcesContext } from '../../app-contexts';
+import toJson from 'enzyme-to-json';
+import { DispenserResourceManager } from '../../../resource-manager-dispensers';
 
 const mount = createMount();
 
 describe('Dispenser component', () => {
-  const resources = new ResourceManager(fakeResources() as Required<ResourceConfigurationsType>);
+  let dispenserHandler: DispenserResourceManager;
+
+  beforeEach(() => {
+    const dispenserResources = fakeResources().dispensers;
+    if (!dispenserResources || !Object.keys(dispenserResources).length) {
+      throw new Error('To execute this test you need to instantiate a dispenser');
+    }
+    dispenserHandler = new DispenserResourceManager(dispenserResources);
+  });
 
   test('Fires click event when it has a state', () => {
     let clicked = false;
-    if (!resources.dispensers) {
-      throw new Error('To execute this test you need to instantiate a dispenser');
-    }
+
     const dispenserStates = fakeDispenserStates();
-    const dispensers = resources.dispensers.allValues;
+    const dispensers = dispenserHandler.allValues;
     const root = mount(
       <svg>
         <Dispenser
           dispenser={dispensers[0]}
-          dispenserHandler={resources.dispensers}
+          dispenserHandler={dispenserHandler}
           footprint={0.5}
           onClick={() => (clicked = true)}
           dispenserState={dispenserStates[dispensers[0].guid]}
@@ -38,26 +46,32 @@ describe('Dispenser component', () => {
 
   test(`Don't Fire click event when it has no state`, () => {
     let clicked = false;
-    if (!resources.dispensers) {
-      throw new Error('To execute this test you need to instantiate a dispenser');
-    }
-    const dispensers = resources.dispensers.allValues;
+    const dispensers = dispenserHandler.allValues;
     const root = mount(
-      <ResourcesContext.Provider value={resources}>
-        <svg>
-          <Dispenser
-            dispenser={dispensers[0]}
-            footprint={0.5}
-            onClick={() => (clicked = true)}
-            dispenserHandler={resources.dispensers}
-          />
-        </svg>
-      </ResourcesContext.Provider>,
+      <svg>
+        <Dispenser
+          dispenser={dispensers[0]}
+          footprint={0.5}
+          onClick={() => (clicked = true)}
+          dispenserHandler={dispenserHandler}
+        />
+      </svg>,
     );
 
     root.find(Dispenser).simulate('click');
     expect(clicked).toBe(false);
 
     root.unmount();
+  });
+
+  test(`Renders correctly`, () => {
+    const dispensers = dispenserHandler.allValues;
+    const wrapper = mount(
+      <svg>
+        <Dispenser dispenser={dispensers[0]} footprint={0.5} dispenserHandler={dispenserHandler} />
+      </svg>,
+    );
+
+    expect(toJson(wrapper)).toMatchSnapshot();
   });
 });

@@ -1,0 +1,88 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Dispenser component Renders correctly 1`] = `
+<svg>
+  <ForwardRef
+    dispenser={
+      Object {
+        "guid": "coke_ingestor",
+        "icons": Object {
+          "coke_ingestor": "",
+        },
+        "location": Object {
+          "level_name": "L1",
+          "x": 20.95,
+          "y": -6.95,
+          "yaw": 0,
+        },
+      }
+    }
+    dispenserHandler={
+      DispenserResourceManager {
+        "dispenserExists": [Function],
+        "dispensers": Object {
+          "coke_dispenser": Object {
+            "guid": "coke_dispenser",
+            "icons": Object {
+              "coke_dispenser": "",
+            },
+            "location": Object {
+              "level_name": "L1",
+              "x": 16.85,
+              "y": -4.8,
+              "yaw": 0,
+            },
+          },
+          "coke_ingestor": Object {
+            "guid": "coke_ingestor",
+            "icons": Object {
+              "coke_ingestor": "",
+            },
+            "location": Object {
+              "level_name": "L1",
+              "x": 20.95,
+              "y": -6.95,
+              "yaw": 0,
+            },
+          },
+        },
+        "getIconPath": [Function],
+      }
+    }
+    footprint={0.5}
+  >
+    <g
+      className="makeStyles-container-6"
+      onClick={[Function]}
+      transform="translate(20.95 6.95)
+        rotate(0)"
+    >
+      <g
+        transform="translate(-0.5 -0.5)"
+      >
+        <image
+          height={1}
+          href="/assets/move_to_inbox_black_192x192.png"
+          onError={[Function]}
+          width={1}
+        />
+      </g>
+    </g>
+    <SvgText
+      className="makeStyles-dispenserText-5"
+      id="dispenserName"
+      targetWidth={1.1}
+      text="coke_ingestor"
+      x={20.95}
+      y={6.95}
+    >
+      <text
+        className="makeStyles-dispenserText-5"
+        id="dispenserName"
+        x={20.95}
+        y={6.95}
+      />
+    </SvgText>
+  </ForwardRef>
+</svg>
+`;

@@ -1,5 +1,8 @@
 import React from 'react';
-import ResourceManager, { ResourceConfigurationsType } from '../resource-manager';
+import ResourceManager, {
+  ResourceConfigurationsType,
+  resourceManagerFactory,
+} from '../resource-manager';
 import { defaultSettings, Settings } from '../settings';
 import { NotificationBarContext, NotificationBarProps } from './notification-bar';
 
@@ -19,13 +22,7 @@ export function AppContextProvider(props: AppContextProviderProps): React.ReactE
   return (
     <SettingsContext.Provider value={settings}>
       <NotificationBarContext.Provider value={notificationDispatch}>
-        <ResourcesContext.Provider
-          value={
-            !!resources?.robots
-              ? new ResourceManager(resources as ResourceConfigurationsType)
-              : ({} as ResourceManager)
-          }
-        >
+        <ResourcesContext.Provider value={resourceManagerFactory(resources)}>
           {children}
         </ResourcesContext.Provider>
       </NotificationBarContext.Provider>

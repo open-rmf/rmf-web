@@ -1,0 +1,17 @@
+import { resourceManagerFactory } from '../resource-manager';
+import fakeResources from '../mock/data/resources';
+
+describe('Correct instantiation', () => {
+  test('Instantiate robots and dispensers', () => {
+    const resources = resourceManagerFactory(fakeResources());
+    expect(!!resources.robots).toBe(true);
+    expect(!!resources.dispensers).toBe(true);
+  });
+
+  test(`Instantiate just robots`, () => {
+    const rawResources = { robots: fakeResources().robots, dispensers: {} };
+    const resources = resourceManagerFactory(rawResources);
+    expect(!!resources.robots).toBe(true);
+    expect(resources.dispensers).toBe(undefined);
+  });
+});
