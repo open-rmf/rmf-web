@@ -2,7 +2,6 @@ import { createMount } from '@material-ui/core/test-utils';
 import { ReactWrapper } from 'enzyme';
 import React from 'react';
 import ReactTestUtils from 'react-dom/test-utils';
-import appConfig from '../../app-config';
 import Dashboard from '../dashboard';
 
 const mount = createMount();
@@ -15,7 +14,7 @@ it('renders without crashing', async () => {
 
   let wrapper: ReactWrapper | undefined;
   await ReactTestUtils.act(async () => {
-    wrapper = mount(<Dashboard appConfig={appConfig} />);
+    wrapper = mount(<Dashboard />);
   });
   wrapper?.unmount();
 
