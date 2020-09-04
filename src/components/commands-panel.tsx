@@ -145,39 +145,48 @@ export const CommandsPanel = React.memo((props: CommandsPanelProps) => {
       dropOffBehavior,
     );
   };
-
+  // If we don't have a configuration file with robots and places we should not render the commands forms because we will not be able to execute those commands.
   return (
     <React.Fragment>
-      <Accordion data-component="LoopForm">
-        <AccordionSummary
-          classes={{ content: classes.accordionSummaryContent }}
-          expandIcon={<ExpandMoreIcon />}
-        >
-          <Typography variant="h5">Loop Request</Typography>
-        </AccordionSummary>
-        <AccordionDetails className={classes.accordionDetail}>
-          <LoopForm
-            requestLoop={handleRequestLoop}
-            fleetNames={allFleets}
-            robotHandler={resourcesContext.robots}
-          />
-        </AccordionDetails>
-      </Accordion>
-      <Accordion data-component="DeliveryForm">
-        <AccordionSummary
-          classes={{ content: classes.accordionSummaryContent }}
-          expandIcon={<ExpandMoreIcon />}
-        >
-          <Typography variant="h5">Delivery Request</Typography>
-        </AccordionSummary>
-        <AccordionDetails className={classes.accordionDetail}>
-          <RobotDeliveryForm
-            requestDelivery={handleDeliveryRequest}
-            fleetNames={allFleets}
-            robotHandler={resourcesContext.robots}
-          />
-        </AccordionDetails>
-      </Accordion>
+      {!!resourcesContext.robots ? (
+        <>
+          <ExpansionPanel data-component="LoopForm">
+            <ExpansionPanelSummary
+              classes={{ content: classes.expansionSummaryContent }}
+              expandIcon={<ExpandMoreIcon />}
+            >
+              <Typography variant="h5">Loop Request</Typography>
+            </ExpansionPanelSummary>
+            <ExpansionPanelDetails className={classes.expansionDetail}>
+              <LoopForm
+                requestLoop={handleRequestLoop}
+                fleetNames={allFleets}
+                robotHandler={resourcesContext.robots}
+              />
+            </ExpansionPanelDetails>
+          </ExpansionPanel>
+          <ExpansionPanel data-component="DeliveryForm">
+            <ExpansionPanelSummary
+              classes={{ content: classes.expansionSummaryContent }}
+              expandIcon={<ExpandMoreIcon />}
+            >
+              <Typography variant="h5">Delivery Request</Typography>
+            </ExpansionPanelSummary>
+            <ExpansionPanelDetails className={classes.expansionDetail}>
+              <RobotDeliveryForm
+                requestDelivery={handleDeliveryRequest}
+                fleetNames={allFleets}
+                robotHandler={resourcesContext.robots}
+              />
+            </ExpansionPanelDetails>
+          </ExpansionPanel>
+        </>
+      ) : (
+        <Typography className={classes.errorText}>
+          You do not have a configuration file loaded, therefore the commands cannot be executed. To
+          run the commands please add a configuration file.
+        </Typography>
+      )}
     </React.Fragment>
   );
 });
@@ -192,5 +201,9 @@ export const useStyles = makeStyles(theme => ({
   accordionDetail: {
     flexFlow: 'column',
     paddingLeft: '0.1rem',
+  },
+  errorText: {
+    padding: '1rem',
+    color: theme.palette.error.main,
   },
 }));

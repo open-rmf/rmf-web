@@ -17,6 +17,7 @@ export const LoopForm = (props: LoopFormProps) => {
   const [targetFleetName, setTargetFleetName] = useState(
     fleetNames.length >= 1 ? fleetNames[0] : '',
   );
+
   const [numLoops, setNumLoops] = useState(0);
   const [listOfPlaces, setListOfPlaces] = useState(
     !!targetFleetName ? robotHandler.getAvailablePlacesPerFleet(targetFleetName) : [],
@@ -27,7 +28,6 @@ export const LoopForm = (props: LoopFormProps) => {
   const [finishLocation, setFinishLocation] = useState(
     listOfPlaces && listOfPlaces.length >= 2 ? listOfPlaces[1] : '',
   );
-
   useEffect(() => {
     robotHandler.getAvailablePlacesPerFleet(targetFleetName)
       ? setListOfPlaces(robotHandler.getAvailablePlacesPerFleet(targetFleetName))
