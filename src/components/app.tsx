@@ -2,9 +2,9 @@ import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import 'typeface-roboto';
 import appConfig from '../app-config';
-import { UserContext } from '../app-contexts';
 import { LOGIN_ROUTE } from '../util/url';
 import './app.css';
+import { AuthenticatorContext, UserContext } from './auth/contexts';
 import Login from './auth/login';
 import PrivateRoute from './auth/private-route';
 import { User } from './auth/user';
@@ -26,19 +26,21 @@ export default function App(): React.ReactElement {
   }, [authenticator]);
 
   return authInitialized ? (
-    <UserContext.Provider value={user}>
-      <BrowserRouter>
-        <Switch>
-          <Route exact={true} path={LOGIN_ROUTE}>
-            <Login />
-          </Route>
-          <PrivateRoute exact={true} path={'/'}>
-            <Dashboard />
-          </PrivateRoute>
-          <Route component={NotFoundPage} />
-        </Switch>
-      </BrowserRouter>
-    </UserContext.Provider>
+    <AuthenticatorContext.Provider value={authenticator}>
+      <UserContext.Provider value={user}>
+        <BrowserRouter>
+          <Switch>
+            <Route exact={true} path={LOGIN_ROUTE}>
+              <Login />
+            </Route>
+            <PrivateRoute exact={true} path={'/'}>
+              <Dashboard />
+            </PrivateRoute>
+            <Route component={NotFoundPage} />
+          </Switch>
+        </BrowserRouter>
+      </UserContext.Provider>
+    </AuthenticatorContext.Provider>
   ) : (
     <></>
   );

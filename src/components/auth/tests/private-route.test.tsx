@@ -2,8 +2,8 @@ import { createMount } from '@material-ui/core/test-utils';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
 import { BrowserRouter, Router, Switch } from 'react-router-dom';
-import { UserContext } from '../../../app-contexts';
 import { LOGIN_ROUTE } from '../../../util/url';
+import { UserContext } from '../../auth/contexts';
 import Unauthorized from '../../error-pages/unauthorized';
 import PrivateRoute from '../private-route';
 

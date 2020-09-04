@@ -11,8 +11,7 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import SettingsIcon from '@material-ui/icons/Settings';
 import React from 'react';
-import appConfig from '../app-config';
-import { UserContext } from '../app-contexts';
+import { AuthenticatorContext, UserContext } from './auth/contexts';
 
 export interface AppBarProps {
   toggleShowOmniPanel(): void;
@@ -23,7 +22,7 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
   const { toggleShowOmniPanel, showSettings } = props;
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const classes = useStyles();
-  const authenticator = appConfig.authenticator;
+  const authenticator = React.useContext(AuthenticatorContext);
   const user = React.useContext(UserContext);
 
   async function handleLogout(): Promise<void> {

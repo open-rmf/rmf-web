@@ -1,8 +1,8 @@
 import Debug from 'debug';
 import React from 'react';
 import { Redirect, Route, RouteProps, useLocation } from 'react-router';
-import { UserContext } from '../../app-contexts';
 import { LOGIN_ROUTE } from '../../util/url';
+import { UserContext } from '../auth/contexts';
 import Unauthorized from '../error-pages/unauthorized';
 
 const debug = Debug('PrivateRoute');

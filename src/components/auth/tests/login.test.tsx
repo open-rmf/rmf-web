@@ -2,7 +2,8 @@ import { createMount } from '@material-ui/core/test-utils';
 import React from 'react';
 import { Redirect } from 'react-router';
 import { BrowserRouter } from 'react-router-dom';
-import { UserContext } from '../../../app-contexts';
+import FakeAuthenticator from '../../../mock/fake-authenticator';
+import { AuthenticatorContext, UserContext } from '../../auth/contexts';
 import Login from '../login';
 
 const mount = createMount();
@@ -17,7 +18,7 @@ describe('Login page', () => {
     expect(component.html()).toMatchSnapshot();
   });
 
-  test('redirects to dashboard when user is authenticated', async () => {
+  test('redirects to dashboard when user is authenticated', () => {
     window.history.replaceState(window.history.state, '');
     const wrapper = mount(
       <BrowserRouter>
@@ -31,5 +32,22 @@ describe('Login page', () => {
       </BrowserRouter>,
     );
     expect(wrapper.find(Redirect)).toBeTruthy();
+  });
+
+  test('performs login when login button is clicked', () => {
+    const authenticator = new FakeAuthenticator();
+    const spy = jest.spyOn(authenticator, 'login').mockImplementation(() => undefined as any);
+
+    const root = mount(
+      <BrowserRouter>
+        <AuthenticatorContext.Provider value={authenticator}>
+          <Login />
+        </AuthenticatorContext.Provider>
+      </BrowserRouter>,
+    );
+    const loginButton = root.find('button#login-button').first();
+    expect(loginButton).toBeTruthy();
+    loginButton.simulate('click');
+    expect(spy).toHaveBeenCalledTimes(1);
   });
 });

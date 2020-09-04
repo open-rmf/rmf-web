@@ -1,12 +1,11 @@
 import { Button, Typography } from '@material-ui/core';
 import React from 'react';
 import { Redirect } from 'react-router';
-import appConfig from '../../app-config';
-import { UserContext } from '../../app-contexts';
+import { AuthenticatorContext, UserContext } from '../auth/contexts';
 import authStyles from './auth-style';
 
 export default function Login(): React.ReactElement {
-  const authenticator = appConfig.authenticator;
+  const authenticator = React.useContext(AuthenticatorContext);
   const user = React.useContext(UserContext);
   const classes = authStyles();
 
