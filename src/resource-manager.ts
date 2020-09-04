@@ -13,8 +13,8 @@ export default class ResourceManager {
 
   constructor(resources: ResourceConfigurationsType) {
     this.robots = new RobotResourceManager(resources.robots);
-    if (resources.dispensers && this.robots) {
-      this.dispensers = new DispenserResourceManager(resources.dispensers, this.robots);
+    if (resources.dispensers) {
+      this.dispensers = new DispenserResourceManager(resources.dispensers);
     }
   }
 

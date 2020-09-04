@@ -19,16 +19,15 @@ describe('Dispenser component', () => {
     const dispenserStates = fakeDispenserStates();
     const dispensers = resources.dispensers.allValues;
     const root = mount(
-      <ResourcesContext.Provider value={resources}>
-        <svg>
-          <Dispenser
-            dispenser={dispensers[0]}
-            footprint={0.5}
-            onClick={() => (clicked = true)}
-            dispenserState={dispenserStates[dispensers[0].guid]}
-          />
-        </svg>
-      </ResourcesContext.Provider>,
+      <svg>
+        <Dispenser
+          dispenser={dispensers[0]}
+          dispenserHandler={resources.dispensers}
+          footprint={0.5}
+          onClick={() => (clicked = true)}
+          dispenserState={dispenserStates[dispensers[0].guid]}
+        />
+      </svg>,
     );
 
     root.find(Dispenser).simulate('click');
@@ -46,7 +45,12 @@ describe('Dispenser component', () => {
     const root = mount(
       <ResourcesContext.Provider value={resources}>
         <svg>
-          <Dispenser dispenser={dispensers[0]} footprint={0.5} onClick={() => (clicked = true)} />
+          <Dispenser
+            dispenser={dispensers[0]}
+            footprint={0.5}
+            onClick={() => (clicked = true)}
+            dispenserHandler={resources.dispensers}
+          />
         </svg>
       </ResourcesContext.Provider>,
     );

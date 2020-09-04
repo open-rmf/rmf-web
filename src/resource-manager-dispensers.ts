@@ -1,5 +1,3 @@
-import { RobotResourceManager } from './resource-manager-robots';
-
 interface Location {
   x: number;
   y: number;
@@ -17,19 +15,10 @@ export type ResourceDispenserConfigurationType = Record<string, DispenserResourc
 
 export class DispenserResourceManager {
   dispensers: ResourceDispenserConfigurationType;
-  robots: RobotResourceManager;
 
-  constructor(
-    dispenserResources: ResourceDispenserConfigurationType,
-    robotsInstance: RobotResourceManager,
-  ) {
+  constructor(dispenserResources: ResourceDispenserConfigurationType) {
     this.dispensers = dispenserResources;
-    this.robots = robotsInstance;
   }
-
-  getAvailableDispenserPerPlace = (fleetName: string, placeName: string) => {
-    return this.robots.getDispensersPerFleet(fleetName, placeName);
-  };
 
   getIconPath = (dispenserName: string): string | null => {
     if (!this.dispenserExists(dispenserName)) {

@@ -27,9 +27,9 @@ export default function fakeDispenserStates(): Record<string, RomiCore.Dispenser
       ],
       seconds_remaining: 420,
     },
-    Dispenser2: {
+    Dispenser1: {
       time: { sec: 0, nanosec: 0 },
-      guid: 'Dispenser2',
+      guid: 'Dispenser1',
       mode: 2,
       request_guid_queue: [],
       seconds_remaining: 0,

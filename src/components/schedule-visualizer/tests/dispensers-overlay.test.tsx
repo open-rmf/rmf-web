@@ -24,8 +24,8 @@ describe('Dispensers Overlay', () => {
     );
 
     expect(wrapper.find(Dispenser).exists()).toBeTruthy();
-    expect(wrapper.find(Dispenser).length).toBe(2);
-    // Object.keys(resources?.dispensers).length
+
+    expect(wrapper.find(Dispenser).length).toBe(resources.dispensers?.allValues?.length);
 
     wrapper.unmount();
   });
