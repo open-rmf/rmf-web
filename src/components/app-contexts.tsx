@@ -1,4 +1,3 @@
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 import ResourceManager, { ResourceConfigurationsType } from '../resource-manager';
 import { defaultSettings, Settings } from '../settings';
@@ -8,10 +7,6 @@ import { NotificationBarContext, NotificationBarProps } from './notification-bar
 export const ResourcesContext = React.createContext<ResourceManager>({} as ResourceManager);
 
 export const SettingsContext = React.createContext(defaultSettings());
-
-export const DispenserStateContext = React.createContext<
-  Readonly<Record<string, RomiCore.DispenserState>>
->({});
 
 export interface AppContextProviderProps extends React.PropsWithChildren<{}> {
   settings: Settings;

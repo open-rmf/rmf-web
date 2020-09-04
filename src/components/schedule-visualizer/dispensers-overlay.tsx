@@ -4,7 +4,8 @@ import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 import { viewBoxFromLeafletBounds } from '../../util/css-utils';
 import Dispenser from './dispenser';
 import { DispenserResource } from '../../resource-manager-dispensers';
-import { ResourcesContext, DispenserStateContext } from '../app-contexts';
+import { ResourcesContext } from '../app-contexts';
+import { DispenserStateContext } from '../rmf-contexts';
 
 export interface DispensersOverlayProps extends SVGOverlayProps {
   onDispenserClick?(dispenser: RomiCore.DispenserState): void;
@@ -16,7 +17,7 @@ export default function DispensersOverlay(props: DispensersOverlayProps): React.
   const viewBox = viewBoxFromLeafletBounds(props.bounds);
   const footprint = 0.4;
   const dispenserResourcesContext = React.useContext(ResourcesContext).dispensers;
-  const dispenserState = React.useContext(DispenserStateContext);
+  const dispenserStates = React.useContext(DispenserStateContext);
   /**
    * We choose to iterate the dispensers inside resources because we get the positions from the resources file and not from the dispenser's state. In case the dispenser doesn't have an entry in the resources file it will not appear in the map, but still will appear in the Omnipanel.
    */
@@ -28,7 +29,6 @@ export default function DispensersOverlay(props: DispensersOverlayProps): React.
       (d: DispenserResource) => d.location && d.location.level_name === currentFloorName,
     );
   }, [dispenserResourcesContext, currentFloorName]);
-
   return (
     <SVGOverlay {...otherProps}>
       <svg viewBox={viewBox}>
@@ -38,7 +38,7 @@ export default function DispensersOverlay(props: DispensersOverlayProps): React.
               key={dispenser.guid}
               dispenser={dispenser}
               footprint={footprint}
-              dispenserState={dispenserState[dispenser.guid]}
+              dispenserState={dispenserStates[dispenser.guid]}
               onClick={(_, dispenser) => onDispenserClick && onDispenserClick(dispenser)}
             />
           );
