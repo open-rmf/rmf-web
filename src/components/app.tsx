@@ -186,7 +186,7 @@ export default function App(props: AppProps): JSX.Element {
         </Typography>
       ),
       action: () => {
-        setTourSettingsAndOmniPanel(false, false);
+        setTourSettingsAndOmniPanel(false, false, true);
       },
       style: {
         backgroundColor: '#2979ff',
@@ -203,7 +203,7 @@ export default function App(props: AppProps): JSX.Element {
         </Typography>
       ),
       action: () => {
-        setTourSettingsAndOmniPanel(false, false);
+        setTourSettingsAndOmniPanel(false, false, true);
       },
       style: {
         backgroundColor: '#2979ff',
@@ -220,7 +220,7 @@ export default function App(props: AppProps): JSX.Element {
         </Typography>
       ),
       action: () => {
-        setTourSettingsAndOmniPanel(false, false);
+        setTourSettingsAndOmniPanel(false, false, true);
       },
       style: {
         backgroundColor: '#2979ff',
@@ -238,7 +238,7 @@ export default function App(props: AppProps): JSX.Element {
         </Typography>
       ),
       action: () => {
-        setTourSettingsAndOmniPanel(false, false);
+        setTourSettingsAndOmniPanel(false, false, true);
       },
       style: {
         backgroundColor: '#2979ff',
@@ -372,7 +372,7 @@ export default function App(props: AppProps): JSX.Element {
         </Typography>
       ),
       action: () => {
-        setTourSettingsAndOmniPanel(false, true);
+        setTourSettingsAndOmniPanel(true, false);
       },
       style: {
         backgroundColor: '#2979ff',
@@ -546,14 +546,17 @@ export default function App(props: AppProps): JSX.Element {
   function setTourSettingsAndOmniPanel(
     isSettingsVisible: boolean,
     isOmniPanelVisible: boolean,
+    clearSpotlight?: boolean,
   ): void {
-    clearSpotlights();
+    if (clearSpotlight) {
+      clearSpotlights();
+    }
     setShowSettings(isSettingsVisible);
     setShowOmniPanel(isOmniPanelVisible);
   }
 
   function setTourShowOmniPanel(view: OmniPanelViewIndex): void {
-    setTourSettingsAndOmniPanel(false, true);
+    setTourSettingsAndOmniPanel(false, true, false);
     setCurrentView(view);
   }
 
