@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { makeStyles, Typography } from '@material-ui/core';
-import { LOGIN_ROUTE } from '../util/url';
+import { LOGIN_ROUTE } from '../../util/url';
 
 const NotFoundPage = (): React.ReactElement => {
   const classes = useStyles();

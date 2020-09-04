@@ -1,14 +1,9 @@
 import { Button, Typography } from '@material-ui/core';
-import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 import React from 'react';
 import { Redirect } from 'react-router';
 import appConfig from '../../app-config';
 import { UserContext } from '../../app-contexts';
 import authStyles from './auth-style';
-
-export function Alert(props: AlertProps): React.ReactElement {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
 
 export default function Login(): React.ReactElement {
   const authenticator = appConfig.authenticator;

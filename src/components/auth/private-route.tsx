@@ -3,21 +3,20 @@ import React from 'react';
 import { Redirect, Route, RouteProps, useLocation } from 'react-router';
 import { UserContext } from '../../app-contexts';
 import { LOGIN_ROUTE } from '../../util/url';
-import Unauthorized from './unauthorized';
+import Unauthorized from '../error-pages/unauthorized';
 
-const debug = Debug('private-route');
+const debug = Debug('PrivateRoute');
 
-interface Props extends RouteProps {
+interface Props extends React.PropsWithChildren<RouteProps> {
   // if true, do not redirect to login url if not authenticated
-  noRedirect?: boolean;
-  children: React.ReactNode;
+  noRedirectToLogin?: boolean;
 }
 
 /**
  * This component validates if the user is authenticated before rendering component passed as a
  * prop.
  */
-const PrivateRoute = ({ noRedirect, children, ...rest }: Props): React.ReactElement => {
+const PrivateRoute = ({ noRedirectToLogin, children, ...rest }: Props): React.ReactElement => {
   const user = React.useContext(UserContext);
   const location = useLocation();
 
@@ -25,7 +24,7 @@ const PrivateRoute = ({ noRedirect, children, ...rest }: Props): React.ReactElem
     if (user) {
       return children;
     } else {
-      if (!noRedirect) {
+      if (!noRedirectToLogin) {
         debug('accessing private route while unauthenticated');
         debug('redirecting to login page');
         return <Redirect to={{ pathname: LOGIN_ROUTE, state: { from: location } }} />;

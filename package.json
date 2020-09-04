@@ -116,6 +116,9 @@
       "src/**/*.{js,jsx,ts,tsx}",
       "!src/index.tsx",
       "!src/serviceWorker.ts",
+      "!src/app-config.ts",
+      "!src/leaflet/**",
+      "!src/components/auth/authenticator.ts",
       "!**/stories/**",
       "!**/mock/**"
     ]

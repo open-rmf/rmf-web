@@ -9,7 +9,7 @@ import Login from './auth/login';
 import PrivateRoute from './auth/private-route';
 import { User } from './auth/user';
 import Dashboard from './dashboard';
-import NotFoundPage from './page-not-found';
+import NotFoundPage from './error-pages/page-not-found';
 
 export default function App(): React.ReactElement {
   const [authInitialized, setAuthInitialized] = React.useState(false);
