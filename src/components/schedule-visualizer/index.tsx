@@ -14,7 +14,7 @@ import {
 import { NegotiationTrajectoryResponse } from '../../negotiation-status-manager';
 import { AnimationSpeed, TrajectoryAnimation } from '../../settings';
 import { toBlobUrl } from '../../util';
-import { ResourcesContext, SettingsContext } from '../app-contexts';
+import { SettingsContext } from '../app-contexts';
 import ColorManager from './colors';
 import DoorsOverlay from './doors-overlay';
 import LiftsOverlay from './lift-overlay';

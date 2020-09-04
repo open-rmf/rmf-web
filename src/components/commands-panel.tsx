@@ -6,14 +6,15 @@ import {
   Typography,
 } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
+import { LoopForm } from './loop-form';
+import { RobotDeliveryForm } from './delivery-form';
+import { v4 as uuidv4 } from 'uuid';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import React from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import { RobotDeliveryForm } from './delivery-form';
-import { LoopForm } from './loop-form';
-const debug = Debug('OmniPanel:CommandsPanel');
 import { ResourcesContext } from './app-contexts';
+
+const debug = Debug('OmniPanel:CommandsPanel');
 
 export type TDeliveryRequest = (
   pickupPlaceName: string,

@@ -1,10 +1,10 @@
 import { createMount } from '@material-ui/core/test-utils';
 import React from 'react';
-import { ResourcesContext } from '../../../app-contexts';
 import fakeResources from '../../../mock/data/resources';
 import ResourceManager, { ResourceConfigurationsType } from '../../../resource-manager';
 import Dispenser from '../dispenser';
 import fakeDispenserStates from '../../../mock/data/dispenser-states';
+import { ResourcesContext } from '../../app-contexts';
 
 const mount = createMount();
 

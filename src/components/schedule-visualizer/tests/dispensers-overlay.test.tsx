@@ -1,12 +1,12 @@
 import { createMount } from '@material-ui/core/test-utils';
 import React from 'react';
-import { ResourcesContext } from '../../../app-contexts';
 import fakeResources from '../../../mock/data/resources';
 import ResourceManager from '../../../resource-manager';
 import DispensersOverlay from '../dispensers-overlay';
 import L from 'leaflet';
 import { Map as LMap } from 'react-leaflet';
 import Dispenser from '../dispenser';
+import { ResourcesContext } from '../../app-contexts';
 
 const mount = createMount();
 

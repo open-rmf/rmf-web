@@ -1,9 +1,9 @@
 import { makeStyles } from '@material-ui/core';
 import React from 'react';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import { ResourcesContext } from '../../app-contexts';
 import { DispenserResource } from '../../resource-manager-dispensers';
 import SvgText from './svg-text';
+import { ResourcesContext } from '../app-contexts';
 
 export interface DispenserProps {
   dispenser: Required<DispenserResource>;

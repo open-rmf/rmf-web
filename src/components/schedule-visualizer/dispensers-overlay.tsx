@@ -2,9 +2,9 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 import { viewBoxFromLeafletBounds } from '../../util/css-utils';
-import { ResourcesContext, DispenserStateContext } from '../../app-contexts';
 import Dispenser from './dispenser';
 import { DispenserResource } from '../../resource-manager-dispensers';
+import { ResourcesContext, DispenserStateContext } from '../app-contexts';
 
 export interface DispensersOverlayProps extends SVGOverlayProps {
   onDispenserClick?(dispenser: RomiCore.DispenserState): void;
