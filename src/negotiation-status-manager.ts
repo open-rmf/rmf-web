@@ -24,14 +24,14 @@ export class NegotiationStatus {
 };
 
 export class NegotiationStatusData {
-  has_terminal : boolean = false;
+  hasTerminal : boolean = false;
   base : NegotiationStatus = new NegotiationStatus();
   terminal : NegotiationStatus = new NegotiationStatus();
 }
 
 export class NegotiationConflict {
-  public participant_ids_to_names : Record<string, string> = {};
-  public participant_ids_to_status : Record<string, NegotiationStatusData> = {};
+  public participantIdsToNames : Record<string, string> = {};
+  public participantIdsToStatus : Record<string, NegotiationStatusData> = {};
   public resolved : ResolveState = ResolveState.UNKNOWN;
 };
 
@@ -50,21 +50,21 @@ export default class NegotiationStatusManager extends EventEmitter<Events> {
       conflict = new NegotiationConflict();
 
       const participant_id : number = msg["participant_id"]      
-      conflict.participant_ids_to_names[participant_id] = msg["participant_name"];
+      conflict.participantIdsToNames[participant_id] = msg["participant_name"];
 
       this._conflicts[conflict_version_str] = conflict;
     }
 
     const id : number = msg["participant_id"];
     const id_str = id.toString();
-    conflict.participant_ids_to_names[id_str] = msg["participant_name"];
+    conflict.participantIdsToNames[id_str] = msg["participant_name"];
 
-    let status_data = conflict.participant_ids_to_status[id_str];
+    let status_data = conflict.participantIdsToStatus[id_str];
     let status : NegotiationStatus;
     if (status_data === undefined)
     {
       status_data = new NegotiationStatusData();
-      conflict.participant_ids_to_status[id_str] = status_data;
+      conflict.participantIdsToStatus[id_str] = status_data;
       status = status_data.base; 
     }
     else
@@ -74,7 +74,7 @@ export default class NegotiationStatusManager extends EventEmitter<Events> {
         status = status_data.base;
       else
       {
-        status_data.has_terminal = true;
+        status_data.hasTerminal = true;
         status = status_data.terminal;
       }
     }

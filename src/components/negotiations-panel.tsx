@@ -96,120 +96,120 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
   };
 
   // keep track of parameters so we can send them as requests
-  let nodeid_to_parameters = new Map<string, Parameter>();
+  let nodeidToParameters = new Map<string, Parameter>();
 
   /** Render Negotiation panel contents **/
   const renderNegotiations = (version : string, conflict : NegotiationConflict) => {
-    let conflict_label = "Conflict #" + version + ", Participants: ";
+    let conflictLabel = "Conflict #" + version + ", Participants: ";
     let i = 0;
-    for (const name of Object.values(conflict.participant_ids_to_names))
+    for (const name of Object.values(conflict.participantIdsToNames))
     {
-      conflict_label += name;
+      conflictLabel += name;
 
-      if (i !== (Object.keys(conflict.participant_ids_to_names).length - 1))
-        conflict_label += ", ";
+      if (i !== (Object.keys(conflict.participantIdsToNames).length - 1))
+        conflictLabel += ", ";
       ++i;
     }
-    let conflict_style = classes.ongoing;
+    let conflictStyle = classes.ongoing;
     if (conflict.resolved === ResolveState.RESOLVED)
-      conflict_style = classes.finished;
+      conflictStyle = classes.finished;
     else if (conflict.resolved === ResolveState.FAILED)
-      conflict_style = classes.unresolved;
+      conflictStyle = classes.unresolved;
 
-    let table_dom : JSX.Element[] = [];
-    for (const [participant_id, status_data] of Object.entries(conflict.participant_ids_to_status))
+    let tableDom : JSX.Element[] = [];
+    for (const [participantId, statusData] of Object.entries(conflict.participantIdsToStatus))
     {
       // status handling and background
-      const participant_name = conflict.participant_ids_to_names[participant_id];
+      const participantName = conflict.participantIdsToNames[participantId];
         
       //add 1 or 2 rows of data depending on the sequence
       
-      if (status_data.has_terminal && status_data.terminal.sequence.length > 1)
+      if (statusData.hasTerminal && statusData.terminal.sequence.length > 1)
       {
-        const terminal_status = status_data.terminal;
+        const terminalStatus = statusData.terminal;
         
         //set text and style for terminal node
-        let terminal_label_text = participant_name;
-        terminal_label_text += " -> [";
-        const last_idx = (terminal_status.sequence.length - 1);
-        for (let idx = 0; idx < last_idx; ++idx)
+        let terminalLabelText = participantName;
+        terminalLabelText += " -> [";
+        const lastIdx = (terminalStatus.sequence.length - 1);
+        for (let idx = 0; idx < lastIdx; ++idx)
         {
-          let seq_id = terminal_status.sequence[idx].toString();
-          let seq_id_name = conflict.participant_ids_to_names[seq_id];
+          let sequenceId = terminalStatus.sequence[idx].toString();
+          let sequnceIdName = conflict.participantIdsToNames[sequenceId];
 
-          terminal_label_text += seq_id_name;
-          if (idx !== (last_idx - 1))
-            terminal_label_text += ", ";
+          terminalLabelText += sequnceIdName;
+          if (idx !== (lastIdx - 1))
+            terminalLabelText += ", ";
         }
-        terminal_label_text += "]";
-        terminal_label_text += determineStatusText(terminal_status, conflict.resolved);
+        terminalLabelText += "]";
+        terminalLabelText += determineStatusText(terminalStatus, conflict.resolved);
 
-        let terminal_style = determineStyle(terminal_status, conflict.resolved);
+        let terminalStyle = determineStyle(terminalStatus, conflict.resolved);
 
         //set text and style for base node
-        let base_status = status_data.base;
+        let baseStatus = statusData.base;
 
-        let base_label_text = "[";
-        const seq_id_name = conflict.participant_ids_to_names[base_status.sequence[0]];
-        base_label_text += seq_id_name;
-        base_label_text += "]";
-        base_label_text += determineStatusText(base_status, conflict.resolved);
+        let baseLabelText = "[";
+        const sequnceIdName = conflict.participantIdsToNames[baseStatus.sequence[0]];
+        baseLabelText += sequnceIdName;
+        baseLabelText += "]";
+        baseLabelText += determineStatusText(baseStatus, conflict.resolved);
 
-        let base_style = determineStyle(base_status, conflict.resolved);
+        let baseStyle = determineStyle(baseStatus, conflict.resolved);
 
-        let terminalId = version + "." + participant_id + ".terminal"; //terminal node
-        let baseId = version + "." + participant_id + ".base"; //base ID
-        table_dom.push(
-          <TreeItem nodeId={terminalId} key={terminalId} classes={{label: terminal_style, selected: terminal_style}} label={terminal_label_text}>
-            <TreeItem nodeId={baseId} key={baseId} classes={{label: base_style, selected: base_style}} label={base_label_text}/>
+        let terminalId = version + "." + participantId + ".terminal"; //terminal node
+        let baseId = version + "." + participantId + ".base"; //base ID
+        tableDom.push(
+          <TreeItem nodeId={terminalId} key={terminalId} classes={{label: terminalStyle, selected: terminalStyle}} label={terminalLabelText}>
+            <TreeItem nodeId={baseId} key={baseId} classes={{label: baseStyle, selected: baseStyle}} label={baseLabelText}/>
           </TreeItem>);
         
-        let terminal_params = {
+        let terminalParams = {
             conflict_version : parseInt(version),
-            sequence : terminal_status.sequence
+            sequence : terminalStatus.sequence
           };
-        nodeid_to_parameters.set(terminalId, terminal_params);
+        nodeidToParameters.set(terminalId, terminalParams);
 
-        let base_params = {
+        let baseParams = {
           conflict_version : parseInt(version),
-          sequence : base_status.sequence
+          sequence : baseStatus.sequence
         };
-        nodeid_to_parameters.set(baseId, base_params);
+        nodeidToParameters.set(baseId, baseParams);
       }
       else
       {
         //single node
-        let base_status = status_data.base;
-        let label_text = participant_name + determineStatusText(base_status, conflict.resolved);
-        let style = determineStyle(base_status, conflict.resolved);
-        let nodeId = version + "." + participant_id + ".base"; //base ID
-        table_dom.push(
-          <TreeItem nodeId={nodeId} key={nodeId} classes={{label: style, selected: style}} label={label_text}/>
+        let baseStatus = statusData.base;
+        let labelText = participantName + determineStatusText(baseStatus, conflict.resolved);
+        let style = determineStyle(baseStatus, conflict.resolved);
+        let nodeId = version + "." + participantId + ".base"; //base ID
+        tableDom.push(
+          <TreeItem nodeId={nodeId} key={nodeId} classes={{label: style, selected: style}} label={labelText}/>
         );
 
-        let base_params = {
+        let baseParams = {
           conflict_version : parseInt(version),
-          sequence : base_status.sequence
+          sequence : baseStatus.sequence
         };
-        nodeid_to_parameters.set(nodeId, base_params);
+        nodeidToParameters.set(nodeId, baseParams);
       }
     }
     
     let nodeIdBase = "conflict" + version;
     return (
-      <TreeItem nodeId={nodeIdBase} key={nodeIdBase} classes={{ label: conflict_style, selected: conflict_style }} label={conflict_label}>
-        { table_dom }
+      <TreeItem nodeId={nodeIdBase} key={nodeIdBase} classes={{ label: conflictStyle, selected: conflictStyle }} label={conflictLabel}>
+        { tableDom }
       </TreeItem>
     );
   };
 
-  let negotiation_contents : JSX.Element[] = [];
+  let negotiationContents : JSX.Element[] = [];
   if (conflicts) {
-    let reversed_conflicts = Object.keys(conflicts).reverse();
-    reversed_conflicts.forEach(version => {
+    let reversedConflicts = Object.keys(conflicts).reverse();
+    reversedConflicts.forEach(version => {
       const conflict = conflicts[version];
       let contents = renderNegotiations(version, conflict);
-      negotiation_contents.push(contents);
+      negotiationContents.push(contents);
     });
   }
   else {
@@ -224,15 +224,15 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
         return;
       }
 
-      const traj_params = nodeid_to_parameters.get(nodeIds);
-      if (!traj_params) {
+      const trajParams = nodeidToParameters.get(nodeIds);
+      if (!trajParams) {
         //Must have clicked a top level node
         return;
       }
 
       const resp = await trajManager.negotiationTrajectory({ 
         request: 'negotiation_trajectory',
-        param: traj_params
+        param: trajParams
       });
       if (resp.values === undefined)
         console.warn("values undefined!");
@@ -250,7 +250,7 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
       defaultExpanded={['root']}
       defaultExpandIcon={<ChevronRightIcon />}
     >
-      {negotiation_contents}
+      {negotiationContents}
     </TreeView>
   );
 }
