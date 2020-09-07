@@ -69,32 +69,30 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
 
   /**  Utility conversion functions **/
   const determineStatusText = (status : NegotiationStatus,
-    parent_resolved : ResolveState) => {
-    let status_text = "";
+    parent_resolved : ResolveState): string => {
     if (status.forfeited)
-      status_text += "  [FORFEITED]";
+      return "  [FORFEITED]";
     else if (status.rejected)
-      status_text += "  [REJECTED]";
+      return "  [REJECTED]";
     else if (status.defunct)
-      status_text += "  [DEFUNCT]";
+      return "  [DEFUNCT]";
     else if (parent_resolved === ResolveState.RESOLVED)
-      status_text += "  [FINISHED]";
+      return "  [FINISHED]";
     else
-      status_text += "  [ONGOING]";
-    return status_text;
+      return "  [ONGOING]";
   };
   const determineStyle = (status : NegotiationStatus, 
-    parent_resolved : ResolveState) => {
-    let style = classes.ongoing;
+    parent_resolved : ResolveState): string => {
     if (status.forfeited)
-      style = classes.forfeited;
+      return classes.forfeited;
     else if (status.rejected)
-      style = classes.rejected;
+      return classes.rejected;
     else if (status.defunct)
-      style = classes.defunct;
+      return classes.defunct;
     else if (parent_resolved === ResolveState.RESOLVED)
-      style = classes.finished;
-    return style;
+      return classes.finished;
+    else
+      return classes.ongoing;
   };
 
   // keep track of parameters so we can send them as requests
