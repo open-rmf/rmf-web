@@ -68,17 +68,17 @@ export default function Trajectory(props: TrajectoryStoryProps) {
   };
   const animDuration = 1000;
 
-  const TrajectoryComponent = React.useMemo(() => {
+  const TrajectoryComponent = React.useMemo<RobotTrajectoryContext>(() => {
     const animationScale = 6000 / animDuration;
     switch (settings.trajectoryAnimation) {
       case TrajectoryAnimation.None:
-        return RobotTrajectory;
+        return { Component: RobotTrajectory };
       case TrajectoryAnimation.Fill:
-        return withFillAnimation(RobotTrajectory, animationScale);
+        return { Component: withFillAnimation(RobotTrajectory, animationScale) };
       case TrajectoryAnimation.Follow:
-        return withFollowAnimation(RobotTrajectory, animationScale);
+        return { Component: withFollowAnimation(RobotTrajectory, animationScale) };
       case TrajectoryAnimation.Outline:
-        return withOutlineAnimation(RobotTrajectory, animationScale);
+        return { Component: withOutlineAnimation(RobotTrajectory, animationScale) };
     }
   }, [settings.trajectoryAnimation, animDuration]);
 
@@ -110,7 +110,7 @@ export default function Trajectory(props: TrajectoryStoryProps) {
           zoomDelta={0.5}
           zoomSnap={0.5}
         >
-          <RobotTrajectoryContext.Provider value={{ Component: TrajectoryComponent }}>
+          <RobotTrajectoryContext.Provider value={TrajectoryComponent}>
             <RobotTrajectoriesOverlay
               bounds={bounds}
               conflicts={conflicts}
