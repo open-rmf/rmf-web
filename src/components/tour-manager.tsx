@@ -1,5 +1,6 @@
 import React from 'react';
 import { Typography, createMuiTheme } from '@material-ui/core';
+import { OmniPanelViewIndex } from './app';
 import { SpotlightValue } from './spotlight-value';
 import { ReactourStep } from 'reactour';
 
@@ -20,24 +21,26 @@ type tourContent = {
   [primaryKey: string]: stepObject;
 };
 
-export const createTourSteps = (args: {
+interface createTourProps {
+  setTourShowOmniPanel: (view: OmniPanelViewIndex) => void;
   setTourSettingsAndOmniPanel: (
     isSettingsVisible: boolean,
     isOmniPanelVisible: boolean,
     clearSpotlight?: boolean | undefined,
   ) => void;
-  setTourShowOmniPanel: (view: typeof OmniPanelViewIndex) => void;
   OmniPanelViewIndex: any;
   doorSpotlight: SpotlightValue<string> | undefined;
   setDoorSpotlight: React.Dispatch<React.SetStateAction<SpotlightValue<string> | undefined>>;
-}) => {
+}
+
+export const createTourSteps = (props: createTourProps) => {
   const {
     setTourSettingsAndOmniPanel,
     setTourShowOmniPanel,
     OmniPanelViewIndex,
     doorSpotlight,
     setDoorSpotlight,
-  } = args;
+  } = props;
 
   const theme = createMuiTheme();
   const stepStyle: stepStyle = {
@@ -137,5 +140,5 @@ export const createTourSteps = (args: {
     });
   }
 
-  return tourSteps;
+  return { tourSteps, theme };
 };
