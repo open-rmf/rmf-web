@@ -5,7 +5,12 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import TreeItem from '@material-ui/lab/TreeItem';
 import { SpotlightValue } from './spotlight-value';
-import * as NegotiationStatusManager from '../negotiation-status-manager';
+import { 
+  NegotiationConflict,
+  NegotiationStatus,
+  ResolveState
+} from '../negotiation-status-manager';
+
 import {
   RobotTrajectoryManager,
   NegotiationTrajectoryResponse
@@ -44,7 +49,7 @@ interface Parameter
 };
 
 export interface NegotiationsPanelProps {
-  conflicts : Readonly<Record<string, NegotiationStatusManager.NegotiationConflict>>;
+  conflicts : Readonly<Record<string, NegotiationConflict>>;
   spotlight?: Readonly<SpotlightValue<string>>;
   trajManager?: Readonly<RobotTrajectoryManager>;
   negotiationTrajStore : Record<string, NegotiationTrajectoryResponse>;
@@ -63,8 +68,8 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
   const classes = useStyles();
 
   /**  Utility conversion functions **/
-  const determineStatusText = (status : NegotiationStatusManager.NegotiationStatus,
-    parent_resolved : NegotiationStatusManager.ResolveState) => {
+  const determineStatusText = (status : NegotiationStatus,
+    parent_resolved : ResolveState) => {
     let status_text = "";
     if (status.forfeited)
       status_text += "  [FORFEITED]";
@@ -72,14 +77,14 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
       status_text += "  [REJECTED]";
     else if (status.defunct)
       status_text += "  [DEFUNCT]";
-    else if (parent_resolved === NegotiationStatusManager.ResolveState.RESOLVED)
+    else if (parent_resolved === ResolveState.RESOLVED)
       status_text += "  [FINISHED]";
     else
       status_text += "  [ONGOING]";
     return status_text;
   };
-  const determineStyle = (status : NegotiationStatusManager.NegotiationStatus, 
-    parent_resolved : NegotiationStatusManager.ResolveState) => {
+  const determineStyle = (status : NegotiationStatus, 
+    parent_resolved : ResolveState) => {
     let style = classes.ongoing;
     if (status.forfeited)
       style = classes.forfeited;
@@ -87,7 +92,7 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
       style = classes.rejected;
     else if (status.defunct)
       style = classes.defunct;
-    else if (parent_resolved === NegotiationStatusManager.ResolveState.RESOLVED)
+    else if (parent_resolved === ResolveState.RESOLVED)
       style = classes.finished;
     return style;
   };
@@ -96,7 +101,7 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
   let nodeid_to_parameters = new Map<string, Parameter>();
 
   /** Render Negotiation panel contents **/
-  const renderNegotiations = (version : string, conflict : NegotiationStatusManager.NegotiationConflict) => {
+  const renderNegotiations = (version : string, conflict : NegotiationConflict) => {
     let conflict_label = "Conflict #" + version + ", Participants: ";
     let i = 0;
     for (const name of Object.values(conflict.participant_ids_to_names))
@@ -108,9 +113,9 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
       ++i;
     }
     let conflict_style = classes.ongoing;
-    if (conflict.resolved === NegotiationStatusManager.ResolveState.RESOLVED)
+    if (conflict.resolved === ResolveState.RESOLVED)
       conflict_style = classes.finished;
-    else if (conflict.resolved === NegotiationStatusManager.ResolveState.FAILED)
+    else if (conflict.resolved === ResolveState.FAILED)
       conflict_style = classes.unresolved;
 
     let table_dom : JSX.Element[] = [];
