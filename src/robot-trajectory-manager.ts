@@ -169,7 +169,7 @@ export class DefaultTrajectoryManager {
 
   private _checkResponse(request: Request, resp: Response): void {
     if (request.request !== resp.response) {
-      console.warn('received response for wrong request. Request: ' + request.request + 'Response: ' + resp.response);
+      console.warn(`received response for wrong request. Request: ${request.request} Response: ${resp.response}`);
       throw new Error('received response for wrong request');
     }
   }
