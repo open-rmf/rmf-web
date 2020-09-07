@@ -16,7 +16,7 @@ import {
   NegotiationTrajectoryResponse
 } from '../robot-trajectory-manager';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   root: {
     height: 240,
     flexGrow: 1,
@@ -26,21 +26,21 @@ const useStyles = makeStyles({
     backgroundColor: "lightgreen"
   },
   rejected: {
-    backgroundColor: "orange"
+    backgroundColor: theme.palette.warning.main
   },
   forfeited: {
-    backgroundColor: "orange"
+    backgroundColor: theme.palette.warning.main
   },
   defunct: {
-    backgroundColor: "red"
+    backgroundColor: theme.palette.error.main
   },
   unresolved: {
-    backgroundColor: "red"
+    backgroundColor: theme.palette.error.main
   },
   ongoing: {
     backgroundColor: "yellow"
   }
-});
+}));
 
 interface Parameter
 {
@@ -56,7 +56,7 @@ export interface NegotiationsPanelProps {
 }
 
 export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.Element {
-  const { spotlight } = props;
+  const { conflicts, spotlight, trajManager, negotiationTrajStore } = props;
 
   React.useEffect(() => {
     if (!spotlight) {
@@ -206,10 +206,10 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
   };
 
   let negotiation_contents : JSX.Element[] = [];
-  if (props.conflicts) {
-    let reversed_conflicts = Object.keys(props.conflicts).reverse();
+  if (conflicts) {
+    let reversed_conflicts = Object.keys(conflicts).reverse();
     reversed_conflicts.forEach(version => {
-      const conflict = props.conflicts[version];
+      const conflict = conflicts[version];
       let contents = renderNegotiations(version, conflict);
       negotiation_contents.push(contents);
     });
@@ -222,7 +222,7 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
   const handleSelect = (event: React.ChangeEvent<{}>, nodeIds: string) :void => {
 
     async function updateNegotiationTrajectory() {
-      if (!props.trajManager) {
+      if (!trajManager) {
         return;
       }
 
@@ -232,14 +232,14 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
         return;
       }
 
-      const resp = await props.trajManager.negotiationTrajectory({ 
+      const resp = await trajManager.negotiationTrajectory({ 
         request: 'negotiation_trajectory',
         param: traj_params
       });
       if (resp.values === undefined)
         console.warn("values undefined!");
 
-      props.negotiationTrajStore["L1"] = resp;
+      negotiationTrajStore["L1"] = resp;
     };
 
     updateNegotiationTrajectory();
