@@ -1,6 +1,24 @@
 import React from 'react';
-import { Typography } from '@material-ui/core';
+import { Typography, createMuiTheme } from '@material-ui/core';
 import { SpotlightValue } from './spotlight-value';
+import { ReactourStep } from 'reactour';
+
+type stepStyle = {
+  backgroundColor: string;
+  color: string;
+  borderRadius: string;
+};
+
+type stepObject = {
+  selector: string;
+  content: string;
+  action: () => void;
+  style?: stepStyle;
+};
+
+type tourContent = {
+  [primaryKey: string]: stepObject;
+};
 
 export const createTourSteps = (args: {
   setTourSettingsAndOmniPanel: (
@@ -21,208 +39,103 @@ export const createTourSteps = (args: {
     setDoorSpotlight,
   } = args;
 
-  return [
-    {
+  const theme = createMuiTheme();
+  const stepStyle: stepStyle = {
+    backgroundColor: theme.palette.primary.light,
+    color: theme.palette.info.contrastText,
+    borderRadius: '5px',
+  };
+
+  const createContent = (str: string): React.ReactNode => {
+    return <Typography variant="h6">{str}</Typography>;
+  };
+
+  const tourContent: tourContent = {
+    dashboard: {
       selector: '',
-      content: () => <Typography variant="h6">Welcome to the RoMi dashboard!</Typography>,
-      action: () => {
-        setTourSettingsAndOmniPanel(false, false, true);
-      },
-      style: {
-        backgroundColor: '#2979ff',
-        color: '#fefefe',
-        borderRadius: '5px',
-      },
+      content: 'Welcome to RoMi Dashboard',
+      action: () => setTourSettingsAndOmniPanel(false, false, true),
     },
-    {
+    zoomButtons: {
       selector: '[class="leaflet-control-zoom leaflet-bar leaflet-control"]',
-      content: () => (
-        <Typography variant="h6">
-          Click on the zoom buttons to change the view of the floor plan. Alternatively, the scroll
-          button on your mouse would work too!
-        </Typography>
-      ),
-      action: () => {
-        setTourSettingsAndOmniPanel(false, false, true);
-      },
-      style: {
-        backgroundColor: '#2979ff',
-        color: '#fefefe',
-        borderRadius: '5px',
-      },
+      content:
+        'Click on the zoom buttons to change the view of the floor plan. Alternatively, the scroll button on your mouse would work too!',
+      action: () => setTourSettingsAndOmniPanel(false, false, true),
     },
-    {
-      selector: '[class="leaflet-control-layers leaflet-control"]',
-      content: () => (
-        <Typography variant="h6">
-          Use the floor plan button to switch between available levels and enabling / disabling the
-          view of different components.
-        </Typography>
-      ),
-      action: () => {
-        setTourSettingsAndOmniPanel(false, false, true);
-      },
-      style: {
-        backgroundColor: '#2979ff',
-        color: '#fefefe',
-        borderRadius: '5px',
-      },
+    floorPlan: {
+      selector: '[class= "leaflet-control-layers leaflet-control"]',
+      content:
+        'Use the floor plan button to switch between available levels and enabling / disabling the view of different components.',
+      action: () => setTourSettingsAndOmniPanel(false, false, true),
     },
-    {
+    leaflet: {
       selector: '[class="leaflet-image-layer leaflet-zoom-animated"]',
-      content: () => (
-        <Typography variant="h6">
-          Clicking individual components like doors, robots, lifts on the map will open up its
-          corresponding information tab in the omnipanel.
-        </Typography>
-      ),
-      action: () => {
-        setTourSettingsAndOmniPanel(false, false, true);
-      },
-      style: {
-        backgroundColor: '#2979ff',
-        color: '#fefefe',
-        borderRadius: '5px',
-      },
+      content:
+        'Clicking individual components like doors, robots, lifts on the map will open up its corresponding information tab in the omnipanel.',
+      action: () => setTourSettingsAndOmniPanel(false, false, true),
     },
-    {
+    omnipanelButton: {
       selector: '[data-name="omnipanel-button"]',
-      content: () => (
-        <Typography variant="h6">
-          The Omnipanel Button shows the different panel options available in the dashboard.
-          Clicking each item would list different information about it!
-        </Typography>
-      ),
-      action: () => {
-        setTourShowOmniPanel(OmniPanelViewIndex.MainMenu);
-      },
-      style: {
-        backgroundColor: '#2979ff',
-        color: '#fefefe',
-        borderRadius: '5px',
-      },
+      content:
+        'The Omnipanel Button shows the different panel options available in the dashboard. Clicking each item would list different information about it!',
+      action: () => setTourShowOmniPanel(OmniPanelViewIndex.MainMenu),
     },
-    {
+    mainMenu: {
       selector: '[data-component="MainMenu"]',
-      content: () => (
-        <Typography variant="h6">
-          Each Panel contains a list of the available items and their corresponding states.
-        </Typography>
-      ),
-      action: () => {
-        setTourShowOmniPanel(OmniPanelViewIndex.MainMenu);
-      },
-      style: {
-        backgroundColor: '#2979ff',
-        color: '#fefefe',
-        borderRadius: '5px',
-      },
+      content: 'Each Panel contains a list of the available items and their corresponding states.',
+      action: () => setTourShowOmniPanel(OmniPanelViewIndex.MainMenu),
     },
-    {
+    doorsPanel: {
       selector: '',
-      content: () => (
-        <Typography variant="h6">
-          Let us take a look into the
-          <span role="img" aria-label="door emoji">
-            🚪
-          </span>
-          Doors Panel
-        </Typography>
-      ),
-      action: () => {
-        setTourShowOmniPanel(OmniPanelViewIndex.Doors);
-      },
-      style: {
-        backgroundColor: '#2979ff',
-        color: '#fefefe',
-        borderRadius: '5px',
-      },
+      content: 'Let us take a look into the🚪Doors Panel',
+      action: () => setTourShowOmniPanel(OmniPanelViewIndex.Doors),
     },
-    {
+    doorTab: {
       selector: '[data-name="main_door"]',
-      content: () => (
-        <Typography variant="h6">
-          Here is an example of what you will see when a door tab is expanded!
-        </Typography>
-      ),
+      content: 'Here is an example of what you will see when a door tab is expanded!',
       action: () => {
         setTourShowOmniPanel(OmniPanelViewIndex.Doors);
         if (!doorSpotlight) {
           setDoorSpotlight({ value: 'main_door' });
         }
       },
-      style: {
-        backgroundColor: '#2979ff',
-        color: '#fefefe',
-        borderRadius: '5px',
-      },
     },
-    {
+    commandsPanel: {
       selector: '',
-      content: () => (
-        <Typography variant="h6">
-          The Commands Panel allows you to send different types of requests that will be handled by
-          RoMi.
-        </Typography>
-      ),
-      action: () => {
-        setTourShowOmniPanel(OmniPanelViewIndex.Commands);
-      },
-      style: {
-        backgroundColor: '#2979ff',
-        color: '#fefefe',
-        borderRadius: '5px',
-      },
+      content:
+        'The Commands Panel allows you to send different types of requests that will be handled by RoMi.',
+      action: () => setTourShowOmniPanel(OmniPanelViewIndex.Commands),
     },
-    {
+    loopRequest: {
       selector: '[data-component="LoopForm"]',
-      content: () => (
-        <Typography variant="h6">
-          An example is the Loop Request which can be iterated multiple times. RoMi will assign the
-          most suitable robot to perform the task at the point of request.
-        </Typography>
-      ),
-      action: () => {
-        setTourShowOmniPanel(OmniPanelViewIndex.Commands);
-      },
-      style: {
-        backgroundColor: '#2979ff',
-        color: '#fefefe',
-        borderRadius: '5px',
-      },
+      content:
+        'An example is the Loop Request which can be iterated multiple times. RoMi will assign the most suitable robot to perform the task at the point of request.',
+      action: () => setTourShowOmniPanel(OmniPanelViewIndex.Commands),
     },
-    {
+    settingsButton: {
       selector: '',
-      content: () => (
-        <Typography variant="h6">
-          The Settings Button opens up the drawer for different dashboard settings
-        </Typography>
-      ),
-      action: () => {
-        setTourSettingsAndOmniPanel(true, false);
-      },
-      style: {
-        backgroundColor: '#2979ff',
-        color: '#fefefe',
-        borderRadius: '5px',
-      },
+      content: 'The Settings Button opens up the drawer for different dashboard settings',
+      action: () => setTourSettingsAndOmniPanel(true, false),
     },
-    {
+    trajAnim: {
       selector: '.MuiDrawer-paper',
-      content: () => (
-        <Typography variant="h6">
-          Finally, Trajectory Animations can be changed using the options available. Look out for
-          new features ahead!
-        </Typography>
-      ),
-      action: () => {
-        setTourSettingsAndOmniPanel(true, false);
-      },
-      style: {
-        backgroundColor: '#2979ff',
-        color: '#fefefe',
-        borderRadius: '5px',
-      },
+      content:
+        'Finally, Trajectory Animations can be changed using the options available. Look out for new features ahead!',
+      action: () => setTourSettingsAndOmniPanel(true, false),
     },
-  ];
+  };
+
+  const tourSteps: ReactourStep[] = [];
+
+  for (var key in tourContent) {
+    let content = createContent(tourContent[key].content);
+    tourSteps.push({
+      selector: tourContent[key].selector,
+      content: content,
+      action: tourContent[key].action,
+      style: stepStyle,
+    });
+  }
+
+  return tourSteps;
 };
