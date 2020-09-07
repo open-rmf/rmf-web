@@ -29,24 +29,10 @@ export class RobotResourceManager {
     // In case the fleet has different models
     if (!!robotModel && robotIcons.hasOwnProperty(robotModel)) {
       const iconPath = robotIcons[robotModel];
-      return `${rootIconPath}${iconPath}`;
+      return !!iconPath ? `${rootIconPath}${iconPath}` : null;
     } else {
-      return `${rootIconPath}${robotIcons[fleetName]}`;
+      return !!robotIcons[fleetName] ? `${rootIconPath}${robotIcons[fleetName]}` : null;
     }
-  };
-
-  fleetExists = (fleetName: string): boolean => {
-    if (!this.robots.hasOwnProperty(fleetName)) {
-      return false;
-    }
-    return true;
-  };
-
-  placesExists = (fleetName: string): boolean => {
-    if (!this.robots[fleetName].hasOwnProperty('places')) {
-      return false;
-    }
-    return true;
   };
 
   getDispensersPerFleet = (fleetName: string, placeName: string): string[] | null => {
@@ -57,5 +43,19 @@ export class RobotResourceManager {
       return null;
     }
     return this.robots[fleetName].places[placeName];
+  };
+
+  private fleetExists = (fleetName: string): boolean => {
+    if (!this.robots.hasOwnProperty(fleetName)) {
+      return false;
+    }
+    return true;
+  };
+
+  private placesExists = (fleetName: string): boolean => {
+    if (!this.robots[fleetName].hasOwnProperty('places')) {
+      return false;
+    }
+    return true;
   };
 }

@@ -33,13 +33,6 @@ export class DispenserResourceManager {
     return dispenserIcon ? `${rootIconPath}${dispenserIcon}` : null;
   };
 
-  dispenserExists = (dispenserName: string) => {
-    if (!this.dispensers.hasOwnProperty(dispenserName)) {
-      return false;
-    }
-    return true;
-  };
-
   get all(): ResourceDispenserConfigurationType {
     return this.dispensers;
   }
@@ -51,4 +44,11 @@ export class DispenserResourceManager {
     });
     return Object.values(newDict as Record<string, Required<DispenserResource>>);
   }
+
+  private dispenserExists = (dispenserName: string) => {
+    if (!this.dispensers.hasOwnProperty(dispenserName)) {
+      return false;
+    }
+    return true;
+  };
 }
