@@ -165,8 +165,8 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
               // const width = (svgElement.width.baseVal.value * scale) / IMAGE_SCALE;
 
               const bounds = new L.LatLngBounds(
-                [image.y_offset, image.x_offset],
-                [image.y_offset - height, image.x_offset + width],
+                [image.y_offset - height, image.x_offset],
+                [image.y_offset, image.x_offset + width],
               );
 
               mapFloorLayers[level.name] = {

@@ -4,7 +4,7 @@ export function viewBoxFromLeafletBounds(bounds: L.LatLngBoundsExpression): stri
   const lbounds = bounds instanceof L.LatLngBounds ? bounds : new L.LatLngBounds(bounds);
   const width = lbounds.getEast() - lbounds.getWest();
   const height = lbounds.getNorth() - lbounds.getSouth();
-  return `0 0 ${width} ${height}`;
+  return `${lbounds.getWest()} ${-lbounds.getNorth()} ${width} ${height}`;
 }
 
 // colors used outside material ui
