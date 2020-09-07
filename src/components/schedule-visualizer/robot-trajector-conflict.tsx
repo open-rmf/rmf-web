@@ -14,26 +14,6 @@ export default function RobotTrajectoryConflict(props: TrajectoryConflictProps) 
 
   return (
     <React.Fragment>
-      {/* <filter
-        id={`shadow`}
-        x="-20%"
-        y="-20%"
-        width="140%"
-        height="140%"
-        filterUnits="userSpaceOnUse"
-        >
-        <feColorMatrix
-          type="matrix"
-          values="1 0 0 0 0
-                                      0 1 0 0 0
-                                      0 0 1 0 0
-                                      0 0 0 1 0"
-          result="boostedInput"
-        />
-  
-        <feGaussianBlur stdDeviation={trajectoryDiameter * 0.4} />
-        <feComposite operator="out" in2="boostedInput" />
-      </filter> */}
       <mask width="100" id={`${trajectory.id}-mask`}>
         <rect x={0} y={0} width={'100%'} height={'100%'} fill={'white'} />
         <path
@@ -56,7 +36,6 @@ export default function RobotTrajectoryConflict(props: TrajectoryConflictProps) 
         strokeWidth={trajectoryDiameter}
         strokeLinecap="round"
         fill={'none'}
-        // filter={`url(#shadow)`}
         strokeDasharray={2}
         strokeDashoffset={0}
         pathLength={1}
