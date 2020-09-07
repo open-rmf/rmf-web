@@ -36,11 +36,9 @@ import { DoorStateContext } from './schedule-visualizer/doors-overlay';
 import { LiftStateContext } from './schedule-visualizer/lift-overlay';
 import NotificationBar, { NotificationBarProps, NotificationBarContext } from './notification-bar';
 import { ResourceConfigurationsType } from '../resource-manager';
-import Tour from 'reactour';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMapSigns } from '@fortawesome/free-solid-svg-icons';
-import { LastStepNextButton, NextButton, PrevButton } from './tour-step-stylings';
-import { createTourSteps } from './tour-manager';
+import DashboardTour from './tour';
 
 const borderRadius = 20;
 
@@ -90,7 +88,7 @@ export interface AppProps {
   appConfig: AppConfig;
 }
 
-enum OmniPanelViewIndex {
+export enum OmniPanelViewIndex {
   MainMenu = 0,
   Doors,
   Lifts,
@@ -176,16 +174,15 @@ export default function App(props: AppProps): JSX.Element {
   ] = React.useState<NotificationBarProps | null>(null);
 
   const [tourState, setTourState] = React.useState(true);
-
-  const tourFunctions = {
+  const tourProps = {
+    tourState,
+    setTourState,
     setTourSettingsAndOmniPanel,
     setTourShowOmniPanel,
     OmniPanelViewIndex,
     doorSpotlight,
     setDoorSpotlight,
   };
-
-  const TourSteps = createTourSteps(tourFunctions);
 
   React.useEffect(() => {
     setLoading({ caption: 'Connecting to SOSS server...' });
@@ -472,21 +469,7 @@ export default function App(props: AppProps): JSX.Element {
             message={notificationBarMessage?.message}
             type={notificationBarMessage?.type}
           />
-          <Tour
-            steps={TourSteps}
-            isOpen={tourState}
-            onRequestClose={() => {
-              setTourState(false);
-              setTourShowOmniPanel(OmniPanelViewIndex.MainMenu);
-            }}
-            badgeContent={(curr, tot) => `${curr} of ${tot}`}
-            accentColor={'darkblue'}
-            rounded={5}
-            showNavigationNumber={false}
-            nextButton={<NextButton />}
-            prevButton={<PrevButton />}
-            lastStepNextButton={<LastStepNextButton />}
-          />
+          <DashboardTour tourProps={tourProps} />
         </NotificationBarContext.Provider>
       </SettingsContext.Provider>
     </React.Fragment>
