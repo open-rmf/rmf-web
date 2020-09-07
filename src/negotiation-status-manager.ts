@@ -40,71 +40,6 @@ export default class NegotiationStatusManager extends EventEmitter<Events> {
     super();
   }
 
-  updateNegotiationStatus(msg : any) {
-    const conflict_version : number = msg["conflict_version"];
-    const conflict_version_str = conflict_version.toString()
-
-    let conflict = this._conflicts[conflict_version_str];
-    if (conflict === undefined)
-    {
-      conflict = new NegotiationConflict();
-
-      const participant_id : number = msg["participant_id"]      
-      conflict.participantIdsToNames[participant_id] = msg["participant_name"];
-
-      this._conflicts[conflict_version_str] = conflict;
-    }
-
-    const id : number = msg["participant_id"];
-    const id_str = id.toString();
-    conflict.participantIdsToNames[id_str] = msg["participant_name"];
-
-    let status_data = conflict.participantIdsToStatus[id_str];
-    let status : NegotiationStatus;
-    if (status_data === undefined)
-    {
-      status_data = new NegotiationStatusData();
-      conflict.participantIdsToStatus[id_str] = status_data;
-      status = status_data.base; 
-    }
-    else
-    {
-      const seq : number[] = msg["sequence"];
-      if (seq.length === 1)
-        status = status_data.base;
-      else
-      {
-        status_data.hasTerminal = true;
-        status = status_data.terminal;
-      }
-    }
-
-    status.defunct = msg["defunct"];
-    status.rejected = msg["rejected"];
-    status.forfeited = msg["forfeited"];
-    status.sequence = msg["sequence"];
-
-    this.emit('updated');
-  }
-
-  concludeNegotiationStatus(msg : any) {
-    const conflict_version : number = msg["conflict_version"];
-    const conflict = this._conflicts[conflict_version.toString()];
-
-    if (conflict === undefined)
-    {
-      console.warn('Undefined conflict version ' + conflict_version + ', ignoring...');
-      return;
-    }
-
-    if (msg["resolved"] === true)
-      conflict.resolved = ResolveState.RESOLVED;
-    else
-      conflict.resolved = ResolveState.FAILED;
-    
-    this.removeOldConflicts();
-  }
-
   allConflicts(): Record<number, NegotiationConflict> {
     return this._conflicts;
   }
@@ -116,11 +51,68 @@ export default class NegotiationStatusManager extends EventEmitter<Events> {
         const msg = JSON.parse(event.data);
         if (msg["type"] === "negotiation_status")
         {
-          this.updateNegotiationStatus(msg);
+          const conflict_version : number = msg["conflict_version"];
+          const conflict_version_str = conflict_version.toString()
+      
+          let conflict = this._conflicts[conflict_version_str];
+          if (conflict === undefined)
+          {
+            conflict = new NegotiationConflict();
+      
+            const participant_id : number = msg["participant_id"]      
+            conflict.participantIdsToNames[participant_id] = msg["participant_name"];
+      
+            this._conflicts[conflict_version_str] = conflict;
+          }
+      
+          const id : number = msg["participant_id"];
+          const id_str = id.toString();
+          conflict.participantIdsToNames[id_str] = msg["participant_name"];
+      
+          let status_data = conflict.participantIdsToStatus[id_str];
+          let status : NegotiationStatus;
+          if (status_data === undefined)
+          {
+            status_data = new NegotiationStatusData();
+            conflict.participantIdsToStatus[id_str] = status_data;
+            status = status_data.base; 
+          }
+          else
+          {
+            const seq : number[] = msg["sequence"];
+            if (seq.length === 1)
+              status = status_data.base;
+            else
+            {
+              status_data.hasTerminal = true;
+              status = status_data.terminal;
+            }
+          }
+      
+          status.defunct = msg["defunct"];
+          status.rejected = msg["rejected"];
+          status.forfeited = msg["forfeited"];
+          status.sequence = msg["sequence"];
+      
+          this.emit('updated');
         }
         else if (msg["type"] === "negotiation_conclusion")
         {
-          this.concludeNegotiationStatus(msg);
+          const conflict_version : number = msg["conflict_version"];
+          const conflict = this._conflicts[conflict_version.toString()];
+      
+          if (conflict === undefined)
+          {
+            console.warn('Undefined conflict version ' + conflict_version + ', ignoring...');
+            return;
+          }
+      
+          if (msg["resolved"] === true)
+            conflict.resolved = ResolveState.RESOLVED;
+          else
+            conflict.resolved = ResolveState.FAILED;
+          
+          this.removeOldConflicts();
         }
       };
     }
