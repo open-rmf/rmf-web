@@ -2,6 +2,7 @@ import { makeStyles } from '@material-ui/core';
 import React from 'react';
 import { Trajectory } from '../../robot-trajectory-manager';
 import { RobotTrajectoryProps } from './robot-trajectory';
+// import anime from 'animejs';
 
 export interface TrajectoryAnimationProps extends React.SVGAttributes<SVGPathElement> {
   trajPath: TrajectoryPath;
@@ -106,6 +107,17 @@ export function withFollowAnimation(
           fill: 'forwards',
         },
       );
+      // const keyFrames = offsets.map(offset => ({
+      //   offset: offset,
+      //   strokeDashoffset: Math.max(2 - offset, strokeDash + 1),
+      // }));
+      // anime({
+      //   targets: pathAnim,
+      //   keyframes: keyFrames,
+      //   easing: 'linear',
+      //   duration: animationDuration(trajectory, animationScale),
+      //   loop: false,
+      // })
 
       return () => pathAnim.remove();
     }, [trajectory, classes.anim, classes.highlight]);
@@ -131,7 +143,7 @@ export function withOutlineAnimation(
 ): React.ComponentType<RobotTrajectoryProps> {
   return props => {
     const classes = useOutlineStyles();
-    const { trajectory } = props;
+    const { trajectory, conflicts } = props;
     const pathRef = React.useRef<SVGPathElement>(null);
 
     React.useLayoutEffect(() => {
@@ -166,6 +178,10 @@ export function withOutlineAnimation(
       highlight.removeAttribute('mask');
       highlight.classList.add(classes.highlight);
       parent.appendChild(highlight);
+
+      if (conflicts.flat().includes(trajectory.id)) {
+        pathRef.current.classList.add(classes.conflict);
+      }
 
       pathRef.current.animate(
         offsets.map(offset => ({
@@ -220,13 +236,16 @@ const useFollowStyles = makeStyles(() => ({
   },
 }));
 
-const useOutlineStyles = makeStyles(() => ({
+const useOutlineStyles = makeStyles(theme => ({
   highlight: {
     opacity: 0.25,
   },
-
   maskPath: {
     stroke: 'black',
+    opacity: 1,
+  },
+  conflict: {
+    stroke: theme.palette.secondary.main,
     opacity: 1,
   },
 }));

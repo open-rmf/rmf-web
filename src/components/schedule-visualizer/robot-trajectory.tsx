@@ -5,7 +5,7 @@ import { Conflict, RawKnot, rawKnotsToKnots, Trajectory } from '../../robot-traj
 import { bezierControlPoints, knotsToSegmentCoefficientsArray } from '../../util/cublic-spline';
 import { TrajectoryPath } from './trajectory-animations';
 import ColorManager from './colors';
-import { TrajectoryDiameter, TrajectoryColor } from '../../settings';
+import { TrajectoryDiameter, TrajectoryColor, TrajectoryAnimation } from '../../settings';
 import { SettingsContext } from '../app-contexts';
 import RobotTrajectoryConflict from './robot-trajector-conflict';
 
@@ -32,6 +32,7 @@ export const RobotTrajectory = React.memo(
     const isConflict = conflicts.flat().includes(trajectory.id);
     const settings = React.useContext(SettingsContext);
     const trajDiameter = settings.trajectoryDiameter;
+    const isOutline = settings.trajectoryAnimation === TrajectoryAnimation.Outline;
 
     function determineTrajDiameter(trajDiameter: TrajectoryDiameter): number {
       switch (trajDiameter) {
@@ -79,7 +80,7 @@ export const RobotTrajectory = React.memo(
             d={pathD}
             stroke={color}
             opacity={0.8}
-            strokeWidth={isConflict ? trajectoryDiameter - 0.1 : trajectoryDiameter}
+            strokeWidth={isConflict && !isOutline ? trajectoryDiameter - 0.1 : trajectoryDiameter}
             strokeLinecap="round"
             fill={'none'}
             pathLength={1}
@@ -88,7 +89,7 @@ export const RobotTrajectory = React.memo(
             {...otherProps}
           />
         )}
-        {isConflict ? (
+        {isConflict && !isOutline ? (
           <RobotTrajectoryConflict
             pathD={pathD}
             trajectory={trajectory}
