@@ -83,7 +83,7 @@ export const DoorsPanel = React.memo((props: DoorsPanelProps) => {
       door =>
         doorRequestPub &&
         transport &&
-        requestDoor(doorRequestPub, transport.name, door, RomiCore.DoorMode.MODE_OPEN),
+        requestDoor(doorRequestPub, transport.name, door, RomiCore.DoorMode.MODE_CLOSED),
     ),
     [doors, onDoorClick],
   );
