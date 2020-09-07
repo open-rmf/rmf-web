@@ -110,18 +110,17 @@ export default class NegotiationStatusManager extends EventEmitter<Events> {
   }
 
   startSubscription() {
-    const negotiation_status_mgr = this;
     if (this._backend_ws) {
       //only recv negotiation status messages
-      this._backend_ws.onmessage = function (event) {
+      this._backend_ws.onmessage = (event) => {
         const msg = JSON.parse(event.data);
         if (msg["type"] === "negotiation_status")
         {
-          negotiation_status_mgr.updateNegotiationStatus(msg);
+          this.updateNegotiationStatus(msg);
         }
         else if (msg["type"] === "negotiation_conclusion")
         {
-          negotiation_status_mgr.concludeNegotiationStatus(msg);
+          this.concludeNegotiationStatus(msg);
         }
       };
     }
