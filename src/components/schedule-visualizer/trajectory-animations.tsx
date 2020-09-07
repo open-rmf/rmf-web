@@ -199,7 +199,7 @@ export function withOutlineAnimation(
         highlight.remove();
         mask.remove();
       };
-    }, [trajectory, classes.highlight, classes.maskPath]);
+    }, [trajectory, classes.highlight, classes.maskPath, classes.conflict, conflicts]);
 
     return (
       <g>
