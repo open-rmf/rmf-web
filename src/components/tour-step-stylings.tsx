@@ -1,21 +1,25 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Box, Button, Typography } from '@material-ui/core';
+import { Button, IconButton } from '@material-ui/core';
+import {
+  NavigateNext as NavigateNextIcon,
+  NavigateBefore as NavigateBeforeIcon,
+} from '@material-ui/icons';
 
-export const StyledDiv = styled(({ background, color, ...otherProps }) => <Box {...otherProps} />)`
-  background: ${props => props.background};
-  color: ${props => props.color};
-`;
+export const LastStepNextButton = styled(({ ...otherProps }) => (
+  <Button variant="contained" color="primary">
+    Start using RoMi
+  </Button>
+))``;
 
-export const StyledButton = styled(({ color, ...otherProps }) => (
-  <Button variant="contained" {...otherProps} />
-))`
-  color: ${props => props.color};
-`;
+export const NextButton = styled(({ ...otherProps }) => (
+  <IconButton {...otherProps}>
+    <NavigateNextIcon />
+  </IconButton>
+))``;
 
-export const HighlightedWords = styled(({ color, ...otherProps }) => (
-  <Typography variant={'h6'} display={'inline'} {...otherProps} />
-))`
-  color: ${props => props.color};
-  background-color: darkblue;
-`;
+export const PrevButton = styled(({ ...otherProps }) => (
+  <IconButton {...otherProps}>
+    <NavigateBeforeIcon />
+  </IconButton>
+))``;

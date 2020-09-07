@@ -40,7 +40,7 @@ import { ResourceConfigurationsType } from '../resource-manager';
 import Tour from 'reactour';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMapSigns } from '@fortawesome/free-solid-svg-icons';
-import { HighlightedWords } from './tour-step-stylings';
+import { LastStepNextButton, NextButton, PrevButton } from './tour-step-stylings';
 
 const borderRadius = 20;
 
@@ -180,11 +180,7 @@ export default function App(props: AppProps): JSX.Element {
   const tourSteps = [
     {
       selector: '',
-      content: () => (
-        <Typography variant="h6">
-          Welcome to the <HighlightedWords color={'#fff'}>RoMi dashboard</HighlightedWords>!
-        </Typography>
-      ),
+      content: () => <Typography variant="h6">Welcome to the RoMi dashboard!</Typography>,
       action: () => {
         setTourSettingsAndOmniPanel(false, false, true);
       },
@@ -198,8 +194,8 @@ export default function App(props: AppProps): JSX.Element {
       selector: '[class="leaflet-control-zoom leaflet-bar leaflet-control"]',
       content: () => (
         <Typography variant="h6">
-          Click on the <HighlightedWords>zoom buttons</HighlightedWords> to change the view of the
-          floor plan. Alternatively, the scroll button on your mouse would work too!
+          Click on the zoom buttons to change the view of the floor plan. Alternatively, the scroll
+          button on your mouse would work too!
         </Typography>
       ),
       action: () => {
@@ -215,8 +211,8 @@ export default function App(props: AppProps): JSX.Element {
       selector: '[class="leaflet-control-layers leaflet-control"]',
       content: () => (
         <Typography variant="h6">
-          Use the <HighlightedWords>floor plan button</HighlightedWords> to switch between available
-          levels and enabling / disabling the view of different components
+          Use the floor plan button to switch between available levels and enabling / disabling the
+          view of different components.
         </Typography>
       ),
       action: () => {
@@ -232,8 +228,7 @@ export default function App(props: AppProps): JSX.Element {
       selector: '[class="leaflet-image-layer leaflet-zoom-animated"]',
       content: () => (
         <Typography variant="h6">
-          Clicking individual components like{' '}
-          <HighlightedWords>doors, robots, lifts</HighlightedWords> on the map will open up its
+          Clicking individual components like doors, robots, lifts on the map will open up its
           corresponding information tab in the omnipanel.
         </Typography>
       ),
@@ -250,9 +245,8 @@ export default function App(props: AppProps): JSX.Element {
       selector: '[data-name="omnipanel-button"]',
       content: () => (
         <Typography variant="h6">
-          The <HighlightedWords>omnipanel button</HighlightedWords> shows the different panel
-          options available in the dashboard. Clicking each item would list different information
-          about it!
+          The Omnipanel Button shows the different panel options available in the dashboard.
+          Clicking each item would list different information about it!
         </Typography>
       ),
       action: () => {
@@ -268,7 +262,7 @@ export default function App(props: AppProps): JSX.Element {
       selector: '[data-component="MainMenu"]',
       content: () => (
         <Typography variant="h6">
-          Each panel contains a list of the available items and their state
+          Each Panel contains a list of the available items and their corresponding states.
         </Typography>
       ),
       action: () => {
@@ -282,7 +276,15 @@ export default function App(props: AppProps): JSX.Element {
     },
     {
       selector: '',
-      content: () => <Typography variant="h6">Let us take a look into the Doors Panel</Typography>,
+      content: () => (
+        <Typography variant="h6">
+          Let us take a look into the
+          <span role="img" aria-label="door emoji">
+            🚪
+          </span>
+          Doors Panel
+        </Typography>
+      ),
       action: () => {
         setTourShowOmniPanel(OmniPanelViewIndex.Doors);
       },
@@ -315,8 +317,8 @@ export default function App(props: AppProps): JSX.Element {
       selector: '',
       content: () => (
         <Typography variant="h6">
-          The <HighlightedWords>Commands Panel</HighlightedWords> allows you to send different types
-          of requests that will be handled by RoMi
+          The Commands Panel allows you to send different types of requests that will be handled by
+          RoMi
         </Typography>
       ),
       action: () => {
@@ -332,9 +334,8 @@ export default function App(props: AppProps): JSX.Element {
       selector: '[data-component="LoopForm"]',
       content: () => (
         <Typography variant="h6">
-          An example is the <HighlightedWords>loop request</HighlightedWords> which can be iterated
-          multiple times. RoMi will assign the most suitable robot to perform the task at the point
-          of request.
+          An example is the Loop Request which can be iterated multiple times. RoMi will assign the
+          most suitable robot to perform the task at the point of request.
         </Typography>
       ),
       action: () => {
@@ -350,8 +351,7 @@ export default function App(props: AppProps): JSX.Element {
       selector: '',
       content: () => (
         <Typography variant="h6">
-          The <HighlightedWords>settings button</HighlightedWords> opens up the drawer for different
-          dashboard settings
+          The Settings Button opens up the drawer for different dashboard settings
         </Typography>
       ),
       action: () => {
@@ -367,8 +367,8 @@ export default function App(props: AppProps): JSX.Element {
       selector: '.MuiDrawer-paper',
       content: () => (
         <Typography variant="h6">
-          Finally, <HighlightedWords>Trajectory Animations</HighlightedWords> can be changed using
-          the options available. Look out for new features ahead!
+          Finally, Trajectory Animations can be changed using the options available. Look out for
+          new features ahead!
         </Typography>
       ),
       action: () => {
@@ -675,7 +675,12 @@ export default function App(props: AppProps): JSX.Element {
               setTourShowOmniPanel(OmniPanelViewIndex.MainMenu);
             }}
             badgeContent={(curr, tot) => `${curr} of ${tot}`}
-            lastStepNextButton={<Button>Start using RoMi!</Button>}
+            accentColor={'darkblue'}
+            rounded={5}
+            showNavigationNumber={false}
+            nextButton={<NextButton />}
+            prevButton={<PrevButton />}
+            lastStepNextButton={<LastStepNextButton />}
           />
         </NotificationBarContext.Provider>
       </SettingsContext.Provider>
