@@ -26,19 +26,17 @@ const RobotDefaultIcon = React.forwardRef(function(
     <>
       {!!robotColor && (
         <g>
-          <filter id={`${robot.name}-shadow`} x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow
-              dx="0"
-              dy="0"
-              stdDeviation={footprint * 0.15}
-              floodColor={inConflict ? theme.palette.error.main : theme.palette.common.black}
-            />
-          </filter>
-          <circle
-            r={footprint}
-            fill={robotColor}
-            filter={`url(${encodeURI(`#${robot.name}-shadow`)}`}
-          />
+          <defs>
+            <radialGradient id="shadow">
+              <stop offset="80%" stop-color="#000000ff" />
+              <stop offset="85%" stop-color="#00000080" />
+              <stop offset="90%" stop-color="#00000040" />
+              <stop offset="95%" stop-color="#00000010" />
+              <stop offset="100%" stop-color="#00000000" />
+            </radialGradient>
+          </defs>
+          <circle r={footprint * 1.2} fill="url(#shadow)" />
+          <circle r={footprint} fill={robotColor} />
           <line x2={footprint} stroke={theme.palette.common.black} strokeWidth="0.05" />
         </g>
       )}
