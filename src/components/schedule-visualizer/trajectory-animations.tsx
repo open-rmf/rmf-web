@@ -2,7 +2,6 @@ import { makeStyles } from '@material-ui/core';
 import React from 'react';
 import { Trajectory } from '../../robot-trajectory-manager';
 import { RobotTrajectoryProps } from './robot-trajectory';
-// import anime from 'animejs';
 
 export interface TrajectoryAnimationProps extends React.SVGAttributes<SVGPathElement> {
   trajPath: TrajectoryPath;
