@@ -47,6 +47,9 @@ export default class NegotiationStatusManager extends EventEmitter<Events> {
 
   startSubscription() {
     if (this._backend_ws) {
+      this._backend_ws.send(
+        JSON.stringify({request: "negotiation_update_subscribe"}));
+
       //only recv negotiation status messages
       this._backend_ws.onmessage = (event) => {
         const msg = JSON.parse(event.data);
