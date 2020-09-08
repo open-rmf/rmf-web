@@ -7,8 +7,7 @@ FROM ros:eloquent AS builder
 # add gazebo/ignition repo
 RUN apt-get update && apt-get install -y curl wget \
   && sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list' \
-  && wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add - \
-  && apt-get update
+  && wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
 
 WORKDIR /root/rmf
 
@@ -21,7 +20,7 @@ RUN mkdir src && cd src && \
   git clone --depth 1 https://github.com/osrf/rmf-soss-ros2
 
 # install ros dependencies
-RUN rosdep update && rosdep install --from-paths src --ignore-src -yr
+RUN apt-get update && rosdep update && rosdep install --from-paths src --ignore-src -yr
 
 # other dependencies
 RUN apt-get update && apt-get install -y g++-8 \
