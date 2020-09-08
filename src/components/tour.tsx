@@ -83,6 +83,7 @@ export default function DashboardTour(props: DashboardTourProps): React.ReactEle
       nextButton={<NavigateNextIcon />}
       prevButton={<NavigateBeforeIcon />}
       lastStepNextButton={lastStepNextButton}
+      closeWithMask={false}
     />
   );
 }
