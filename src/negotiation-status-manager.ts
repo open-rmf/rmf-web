@@ -36,8 +36,9 @@ export class NegotiationConflict {
 };
 
 export default class NegotiationStatusManager extends EventEmitter<Events> {
-  constructor(private _backend_ws ?: WebSocket) {
+  constructor(url : string) {
     super();
+    this._backend_ws = new WebSocket(url);
   }
 
   allConflicts(): Record<number, NegotiationConflict> {
@@ -140,4 +141,5 @@ export default class NegotiationStatusManager extends EventEmitter<Events> {
   }
 
   private _conflicts : Record<string, NegotiationConflict> = {};
+  private _backend_ws ?: WebSocket;
 }
