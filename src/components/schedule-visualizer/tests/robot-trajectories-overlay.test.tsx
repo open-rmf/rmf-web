@@ -1,5 +1,6 @@
-import { createShallow } from '@material-ui/core/test-utils';
+import { createMount } from '@material-ui/core/test-utils';
 import React from 'react';
+import { Map as LMap } from 'react-leaflet';
 import RobotTrajectoriesOverlay, {
   RobotTrajectoriesOverlayProps,
 } from '../robot-trajectories-overlay';
@@ -8,7 +9,7 @@ import ColorManager from '../colors';
 import FakeTrajectoryManager from '../../../mock/fake-traj-manager';
 import { mapBound } from '../../../stories/baseComponents/utils';
 
-const mount = createShallow();
+const mount = createMount();
 
 const createWrapper = (
   Component: React.MemoExoticComponent<(props: RobotTrajectoriesOverlayProps) => JSX.Element>,
@@ -19,13 +20,15 @@ const createWrapper = (
   conflictRobotNames: string[][],
 ) => {
   return mount(
-    <Component
-      bounds={bounds}
-      conflicts={conflicts}
-      colorManager={colorManager}
-      trajs={trajs}
-      conflictRobotNames={conflictRobotNames}
-    />,
+    <LMap>
+      <Component
+        bounds={bounds}
+        conflicts={conflicts}
+        colorManager={colorManager}
+        trajs={trajs}
+        conflictRobotNames={conflictRobotNames}
+      />
+    </LMap>,
   );
 };
 
@@ -52,7 +55,7 @@ describe('RobotTrajectoriesOverlay', () => {
     trajectoryConflict = trajectoryData.conflicts;
   });
 
-  it('test', () => {
+  it('renders without crashing', () => {
     const wrapper = createWrapper(
       RobotTrajectoriesOverlay,
       mapBound,
@@ -61,6 +64,20 @@ describe('RobotTrajectoriesOverlay', () => {
       [trajectoryValue],
       [[]],
     );
+    wrapper.unmount();
+  });
+
+  it('should set notification dispatch when conflict is not empty', () => {
+    const trajectoryConflicted = [[1, 2]];
+    const wrapper = createWrapper(
+      RobotTrajectoriesOverlay,
+      mapBound,
+      trajectoryConflicted,
+      colorManager,
+      [trajectoryValue],
+      [[]],
+    );
+
     wrapper.unmount();
   });
 });
