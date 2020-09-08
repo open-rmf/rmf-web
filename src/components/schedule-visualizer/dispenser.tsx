@@ -25,6 +25,13 @@ const Dispenser = React.memo(
       path: dispenserHandler.getIconPath(dispenser.guid),
       error: false,
     });
+
+    const handleLoadImageError = (): void => {
+      setRenderCustomIcon(previousVal => {
+        return { ...previousVal, error: true };
+      });
+    };
+
     return (
       <>
         <g
@@ -41,7 +48,7 @@ const Dispenser = React.memo(
               height={footprint * 2}
               width={footprint * 2}
               footprint={footprint}
-              dispatchIconError={setRenderCustomIcon}
+              dispatchIconError={handleLoadImageError}
             />
           ) : (
             <DispenserDefaultIcon footprint={footprint} />

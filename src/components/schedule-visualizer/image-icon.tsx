@@ -5,12 +5,7 @@ interface ImageIconProps {
   height: number;
   width: number;
   footprint: number;
-  dispatchIconError: React.Dispatch<
-    React.SetStateAction<{
-      path: string | null;
-      error: boolean;
-    }>
-  >;
+  dispatchIconError?(): void;
 }
 
 const ImageIcon = React.memo(
@@ -26,9 +21,7 @@ const ImageIcon = React.memo(
               width={width}
               onError={error => {
                 console.error('An error occurred while loading the image.', error);
-                return dispatchIconError(previousVal => {
-                  return { ...previousVal, error: true };
-                });
+                return dispatchIconError && dispatchIconError();
               }}
             />
           </g>
