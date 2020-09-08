@@ -1,8 +1,8 @@
-import { RmfLauncher } from '../rmf-launcher';
+import { makeLauncher } from '../rmf-launcher';
 import { getRobotLocations, login, overwriteClick } from './utils';
 
 describe('loop request', () => {
-  const launcher = RmfLauncher.instance;
+  const launcher = makeLauncher();
 
   before(async () => await launcher.launch());
   after(async () => await launcher.kill());
@@ -29,6 +29,7 @@ describe('loop request', () => {
     $('input[name=numLoops]').setValue(1);
     $('button=Request').click();
 
+    backButton.waitForClickable();
     backButton.click();
     $('[data-component=MainMenu] [data-item=Robots]').click();
     const newRobotLocations = getRobotLocations(browser);

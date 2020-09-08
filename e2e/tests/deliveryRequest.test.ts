@@ -1,8 +1,8 @@
-import { RmfLauncher } from '../rmf-launcher';
+import { makeLauncher } from '../rmf-launcher';
 import { getRobotLocations, login, overwriteClick, removeTextFromAutocomplete } from './utils';
 
 describe('Delivery request', () => {
-  const launcher = RmfLauncher.instance;
+  const launcher = makeLauncher();
 
   before(async () => await launcher.launch());
   after(async () => await launcher.kill());

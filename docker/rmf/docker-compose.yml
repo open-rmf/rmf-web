@@ -1,0 +1,5 @@
+version: "3"
+services:
+  build:
+    build: .
+    image: docker.pkg.github.com/osrf/romi-dashboard/rmf

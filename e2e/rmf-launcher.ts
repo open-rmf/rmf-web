@@ -1,9 +1,61 @@
 import * as ChildProcess from 'child_process';
 
+enum LaunchMode {
+  None,
+  Local,
+  LocalSingleton,
+  Docker,
+}
+
+interface Launcher {
+  launch(): Promise<void>;
+  kill(): Promise<void>;
+}
+
 /**
- * Help to launch and kill all required RMF processes.
+ * Creates a launcher based on the launch mode. If `launchMode` is undefined, the selected launch
+ * mode is based on the ROMI_DASHBOARD_LAUNCH_MODE environment variable, the values can be one of
+ *
+ *   * none
+ *   * docker
+ *   * local
+ *
+ * Defaults to `local`.
+ *
+ * If the value is `local`, a singleton instance is used and signal handlers are installed.
+ * @see LocalLauncher#instance
+ * @param launchMode
  */
-export class RmfLauncher {
+export function makeLauncher(launchMode?: LaunchMode): Launcher {
+  if (!launchMode) {
+    if (process.env.ROMI_DASHBOARD_LAUNCH_MODE === 'docker') {
+      launchMode = LaunchMode.Docker;
+    } else if (process.env.ROMI_DASHBOARD_LAUNCH_MODE === 'none') {
+      launchMode = LaunchMode.None;
+    } else {
+      launchMode = LaunchMode.LocalSingleton;
+    }
+  }
+
+  switch (launchMode) {
+    case LaunchMode.None:
+      return new StubLauncher();
+    case LaunchMode.Docker:
+      return new DockerLauncher();
+    case LaunchMode.Local:
+      return new LocalLauncher();
+    case LaunchMode.LocalSingleton:
+      return LocalLauncher.instance;
+    default:
+      throw new Error('unknown launch mode');
+  }
+}
+
+/**
+ * Help to launch and kill all required RMF processes. Assumes required rmf components are installed
+ * and launches them locally.
+ */
+export class LocalLauncher {
   /**
    * Singleton instance of rmfLauncher, signal handlers are installed to cleanup processses spawned
    * by this instance.
@@ -12,9 +64,9 @@ export class RmfLauncher {
    * or future handlers. If there are other signal handlers installed, it is recommended to not use
    * this, the instance is lazy created so no handlers will be installed if this is never called.
    */
-  static get instance(): RmfLauncher {
+  static get instance(): LocalLauncher {
     if (!this._instance) {
-      this._instance = new RmfLauncher();
+      this._instance = new LocalLauncher();
       /**
        * Make sure spawned processes are killed when the program exits.
        */
@@ -31,13 +83,9 @@ export class RmfLauncher {
     return this._instance;
   }
 
-  private static _instance?: RmfLauncher;
+  private static _instance?: LocalLauncher;
 
   async launch(): Promise<void> {
-    if (process.env.ROMI_DASHBOARD_NO_LAUNCH) {
-      return;
-    }
-
     if (this._launched) {
       return;
     }
@@ -55,7 +103,7 @@ export class RmfLauncher {
       stdio: 'inherit',
     });
 
-    const ready = await rmfReady();
+    const ready = await this._rmfReady();
     if (!ready) {
       throw new Error('unable to detect rmf');
     }
@@ -64,10 +112,6 @@ export class RmfLauncher {
   }
 
   async kill(): Promise<void> {
-    if (process.env.ROMI_DASHBOARD_NO_LAUNCH) {
-      return;
-    }
-
     await Promise.all([
       this._officeDemo?.kill('SIGINT'),
       this._soss && this._killProcess(this._soss),
@@ -94,6 +138,30 @@ export class RmfLauncher {
     return new Promise(res => {
       proc.once('exit', res);
       proc.kill(signal);
+    });
+  }
+
+  private async _rmfReady(timeout: number = 30000): Promise<boolean> {
+    const ros2Echo = ChildProcess.spawn('ros2', [
+      'topic',
+      'echo',
+      'fleet_states',
+      'rmf_fleet_msgs/msg/FleetState',
+    ]);
+    if (!ros2Echo) {
+      return false;
+    }
+
+    return new Promise(res => {
+      const timer = setTimeout(() => {
+        ros2Echo && ros2Echo.kill();
+        res(false);
+      }, timeout);
+      ros2Echo.stdout.once('data', () => {
+        ros2Echo.kill();
+        clearTimeout(timer);
+        res(true);
+      });
     });
   }
 }
@@ -148,26 +216,83 @@ class ManagedProcess {
   private _procAlive = false;
 }
 
-async function rmfReady(timeout: number = 30000): Promise<boolean> {
-  const ros2Echo = ChildProcess.spawn('ros2', [
-    'topic',
-    'echo',
-    'fleet_states',
-    'rmf_fleet_msgs/msg/FleetState',
-  ]);
-  if (!ros2Echo) {
-    return false;
+/**
+ * Launches rmf components in docker containers.
+ */
+export class DockerLauncher {
+  async launch(): Promise<void> {
+    ChildProcess.spawn(
+      `${__dirname}/../scripts/dockert`,
+      [
+        'docker-compose',
+        '-f',
+        `${__dirname}/../docker/docker-compose.yml`,
+        'up',
+        'office-demo',
+        'trajectory-server',
+        'soss',
+      ],
+      { stdio: 'inherit' },
+    );
+
+    const ready = await this._rmfReady();
+    if (!ready) {
+      throw new Error('unable to detect rmf');
+    }
   }
 
-  return new Promise(res => {
-    const timer = setTimeout(() => {
-      ros2Echo && ros2Echo.kill();
-      res(false);
-    }, timeout);
-    ros2Echo.stdout.once('data', () => {
-      ros2Echo.kill();
-      clearTimeout(timer);
-      res(true);
+  async kill(): Promise<void> {
+    return new Promise(res => {
+      const proc = ChildProcess.spawn(`${__dirname}/../scripts/dockert`, [
+        'docker-compose',
+        '-f',
+        `${__dirname}/../docker/docker-compose.yml`,
+        'stop',
+        'office-demo',
+        'trajectory-server',
+        'soss',
+      ]);
+      proc.once('exit', res);
     });
-  });
+  }
+
+  private async _rmfReady(timeout: number = 30000): Promise<boolean> {
+    return new Promise(res => {
+      const proc = ChildProcess.spawn(
+        `${__dirname}/../scripts/dockert`,
+        [
+          'docker-compose',
+          '-f',
+          `${__dirname}/../docker/docker-compose.yml`,
+          'up',
+          '--exit-code-from',
+          'probe-rmf',
+          'probe-rmf',
+        ],
+        { stdio: 'inherit' },
+      );
+      if (!proc) {
+        return res(false);
+      }
+
+      const timer = setTimeout(() => {
+        proc.kill();
+        res(false);
+      }, timeout);
+
+      proc.once('exit', code => {
+        clearTimeout(timer);
+        res(code === 0);
+      });
+    });
+  }
+}
+
+/**
+ * Stub launcher that does not do anything, useful in dev cycle when you want to manage the rmf
+ * processes manually.
+ */
+export class StubLauncher {
+  async launch(): Promise<void> {}
+  async kill(): Promise<void> {}
 }

@@ -11,4 +11,8 @@ const wdioArgs = process.argv
 
 concurrently(['npm:start:auth', 'npm:start:react:e2e', `npm:test:e2e:wdio -- ${wdioArgs}`], {
   killOthers: ['success', 'failure'],
+  successCondition: 'first',
+}).catch(e => {
+  console.error(e);
+  process.exitCode = -1;
 });
