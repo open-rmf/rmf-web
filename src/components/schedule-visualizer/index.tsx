@@ -320,7 +320,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
           <LayersControl.Overlay name="Negotiation Trajectories" checked>
           {curMapFloorLayer && props.negotiationTrajStore[curMapFloorLayer.level.name] && (
             <Pane>
-              <RobotTrajectoryContext.Provider value={{ Component: TrajectoryComponent }}>
+              <RobotTrajectoryContext.Provider value={RobotTrajContextValue}>
                 <RobotTrajectoriesOverlay
                   bounds={curMapFloorLayer.bounds}
                   trajs={props.negotiationTrajStore[curMapFloorLayer.level.name].values}
