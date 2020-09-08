@@ -2,7 +2,7 @@
 
 ## RoMi-dashboard
 
-Hello! `romi-dashboard` is a web application that provides overall visualization and control over the RoMi-H system.
+Hello! `romi-dashboard` is a web application that provides overall visualization and control over the RoMi system.
 
 ## Setup
 
@@ -10,7 +10,7 @@ Install `npm` and `nodejs`,
 
 ```bash
 sudo apt update && sudo apt install curl
-curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -
+curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
 sudo apt install nodejs
 ```
 
@@ -18,13 +18,12 @@ Clone the repository and install the required packages,
 
 ```bash
 cd ~/.
-git clone ssh://git@github.com/osrf/romi-dashboard
+git clone https://github.com/osrf/romi-dashboard
 cd romi-dashboard
 npm install
-
 ```
 
-(Optional) Import external resources.
+### (Optional) Import external resources.
 
 ```bash
 npm run setup
@@ -66,39 +65,72 @@ npm run setup
 
 ## Launching
 
-Launch the web application using the commands below,
+### Local Dev Server
+
+_RoMi-dashboard_ gets its data source from the following rmf components:
+
+- [rmf schedule visualizer](https://github.com/osrf/rmf_schedule_visualizer)
+- [soss](https://github.com/osrf/soss)
+- [rmf-soss-ros2](https://github.com/osrf/rmf-soss-ros2)
+- [rmf_demos](https://github.com/osrf/rmf_demos)
+
+Refer to the respective projects for instruction on how to setup them up.
+
+You would also need [docker](https://docs.docker.com/engine/install/ubuntu/) and [docker-compose](https://docs.docker.com/compose/install/) for the authentication server.
+
+The easiest way to launch a local server for development is with
 
 ```bash
-cd ~/romi-dashboard
 npm start
 ```
 
-or alternatively, if using a different soss or trajectory server, the follow env variables can be defined
+This will start all the necessary backends, a browser window should open up pointing to the local dev server. When prompted with an user/password, use this:
 
-- REACT_APP_SOSS_SERVER
-- REACT_APP_SOSS_TOKEN
-- REACT_APP_TRAJECTORY_SERVER
-
-and launched with
-
-```bash
-npm run start:custom
+```
+user: admin
+password: admin
 ```
 
-At this point, the dashboard should have been launched on the default browser of the machine, under `localhost:3000`.
+### External Server
 
-For development, the page will reload if edits are made, while any lint errors will also appear on the console.
+Alternatively, if you want to connect to an existing rmf deployment, set the following environment variables:
+
+- _REACT_APP_SOSS_SERVER_: URL to the soss server.
+- _REACT_APP_TRAJECTORY_SERVER_: URL to the trajectory server.
+- _REACT_APP_AUTH_CONFIG_: A JSON object containing the following
+  - _realm_: The keycloak realm
+  - _clientId_: clientId
+  - _url_: URL to the keycloak server
+
+Then start the web server with
+
+```bash
+npm run start:react
+```
+
+### Mock Data
+
+If you are just working on the frontend, you can launch _RoMi-dashboard_ with a set of mock data, this does not require any rmf deployments, simply run
+
+```bash
+npm run start:mock
+```
+
+To bring up a web server using mock data.
+
+### Storybook
+
+Another way to work on the frontend without rmf is with [storybook](https://storybook.js.org/), simply run
+
+```bash
+npm run storybook
+```
+
+This is ideal if you are working on individual isolated components.
 
 ## Building for production
 
-**Note: Not fully supported yet as it is missing a way to obtain the soss token.**
-
-The following environment variables need to be defined
-
-- REACT_APP_SOSS_SERVER
-- REACT_APP_TRAJECTORY_SERVER
-
-build using the command
+Firstly, set up environment variables according to [this](#External-Server), you may also want to install a resource pack as described [here](#Optional-Import-external-resources.). Then build a production version of _RoMi-dashboard_ with
 
 ```bash
 npm run build

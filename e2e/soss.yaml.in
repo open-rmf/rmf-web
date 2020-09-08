@@ -3,9 +3,9 @@ systems:
   client:
     type: websocket_server
     port: 50001
-    cert: {{pwd}}/soss.crt
-    key: {{pwd}}/soss.key
-    authentication: { policies: [{ secret: rmf, algo: HS256 }] }
+    cert: {{pwd}}/certs/soss.crt
+    key: {{pwd}}/certs/soss.key
+    authentication: { pubkey: {{pwd}}/certs/keycloak.pub }
 
   # ROS2 node
   ros2: { type: ros2 }

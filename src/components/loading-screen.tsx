@@ -13,7 +13,9 @@ const useStyles = makeStyles(theme => ({
     flexFlow: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: theme.zIndex.drawer + 1,
+    zIndex: theme.zIndex.modal,
+    height: '100%',
+    position: 'static',
   },
   caption: {
     marginTop: theme.spacing(4),

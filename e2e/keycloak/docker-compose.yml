@@ -1,0 +1,7 @@
+version: '3'
+services:
+  keycloak:
+    build: .
+    image: romi-dashboard-e2e/keycloak
+    ports:
+      - 8080:8080

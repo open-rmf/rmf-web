@@ -1,14 +1,16 @@
 import { RmfLauncher } from '../rmf-launcher';
-import { overwriteClick, removeTextFromAutocomplete, getRobotLocations } from './utils';
+import { getRobotLocations, login, overwriteClick, removeTextFromAutocomplete } from './utils';
 
 describe('Delivery request', () => {
-  const launcher = new RmfLauncher();
+  const launcher = RmfLauncher.instance;
 
   before(async () => await launcher.launch());
   after(async () => await launcher.kill());
 
   before(() => overwriteClick());
   before(() => browser.url('/'));
+
+  before(login);
 
   it('rmf responds to delivery request', () => {
     $('[data-component=MainMenu] [data-item=Robots]').click();
@@ -25,19 +27,19 @@ describe('Delivery request', () => {
     const deliveryForm = $('[data-component=DeliveryForm]');
     deliveryForm.click();
     $('input[name=pickupPlace]').waitForClickable();
-    $('input[name=pickupPlace]').setValue(removeTextFromAutocomplete(10))
+    $('input[name=pickupPlace]').setValue(removeTextFromAutocomplete(10));
     $('input[name=pickupPlace]').setValue('pantry');
-    $('.MuiAutocomplete-popper').click()
+    $('.MuiAutocomplete-popper').click();
 
     $('input[name=pickupDispenser]').click();
-    $('.MuiAutocomplete-popper').click()
+    $('.MuiAutocomplete-popper').click();
 
     $('input[name=dropoffPlace]').setValue(removeTextFromAutocomplete(20));
     $('input[name=dropoffPlace]').setValue('hardware_2');
-    $('.MuiAutocomplete-popper').click()
+    $('.MuiAutocomplete-popper').click();
 
     $('input[name=dropoffDispenser]').click();
-    $('.MuiAutocomplete-popper').click()
+    $('.MuiAutocomplete-popper').click();
 
     deliveryForm.$('button=Request').click();
 

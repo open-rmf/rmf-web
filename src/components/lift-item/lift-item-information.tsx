@@ -109,10 +109,10 @@ const useStyles = makeStyles(theme => ({
 
   listRoot: {
     position: 'relative',
-    padding: 0
+    padding: 0,
   },
 
   listItem: {
-    padding: 0
+    padding: 0,
   },
 }));
