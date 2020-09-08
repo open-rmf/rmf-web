@@ -181,15 +181,3 @@ export const fillAnimationConflict = () => (
     currSettings={fillAnimSettings}
   />
 );
-
-export const spamTrajectories = () => (
-  <Trajectory
-    bounds={mapBound}
-    conflicts={spam.conflicts}
-    colorManager={colorManager}
-    conflictRobotNames={spam.conflictingRobotName}
-    trajs={spam.trajectories}
-    description={descriptions.spam}
-    currSettings={defaultSettings()}
-  />
-);
