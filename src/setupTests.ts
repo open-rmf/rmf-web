@@ -10,17 +10,7 @@ class MockEncoder {
     return jest.fn();
   }
 }
-class MockImage {
-  src = '';
-  onload() {
-    return jest.fn();
-  }
-  onerror() {
-    return jest.fn();
-  }
-}
 const mockCrypto = { subtle: { digest: () => jest.fn() } };
 
 globalAny.window.TextEncoder = MockEncoder;
 globalAny.window.crypto = mockCrypto;
-globalAny.window.Image = MockImage;
