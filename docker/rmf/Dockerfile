@@ -51,9 +51,6 @@ WORKDIR /root
 COPY --from=builder /root/rmf/install /opt/rmf
 RUN rm -rf /root/rmf
 
-# TODO: these packages are missing in https://github.com/osrf/rmf_schedule_visualizer, remove these once its been fixed.
-RUN apt-get update && apt-get install -y ros-${ROS_DISTRO}-launch-xml && rm -rf /var/lib/apt/lists/*
-
 ADD rmf_entrypoint.bash /
 ENTRYPOINT ["/rmf_entrypoint.bash"]
 CMD ["bash"]
