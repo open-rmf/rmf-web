@@ -353,7 +353,7 @@ export default function App(props: AppProps): JSX.Element {
               </Typography>
               <Tooltip title="OmniPanel">
                 <IconButton color="inherit" onClick={() => setShowOmniPanel(!showOmniPanel)}>
-                  <DashboardIcon />
+                  <DashboardIcon data-name="omnipanel-button" />
                 </IconButton>
               </Tooltip>
               <Tooltip title="Settings">

@@ -1,7 +1,11 @@
 import React from 'react';
+import { Typography, makeStyles } from '@material-ui/core';
+import {
+  NavigateNext as NavigateNextIcon,
+  NavigateBefore as NavigateBeforeIcon,
+} from '@material-ui/icons';
 import { SpotlightValue } from './spotlight-value';
 import Tour from 'reactour';
-import { LastStepNextButton, NextButton, PrevButton } from './tour-step-stylings';
 import { createTourSteps } from './tour-manager';
 import { OmniPanelViewIndex } from './app';
 
@@ -22,6 +26,23 @@ export interface DashboardTourProps {
 }
 
 export default function DashboardTour(props: DashboardTourProps): React.ReactElement {
+  const useStyles = makeStyles(theme => ({
+    contained: {
+      color: theme.palette.info.contrastText,
+      backgroundColor: theme.palette.primary.main,
+      borderRadius: '5px',
+      boxShadow: theme.shadows[2],
+      '&:hover': {
+        backgroundColor: theme.palette.grey.A100,
+        boxShadow: theme.shadows[4],
+        '@media (hover: none)': {
+          boxShadow: theme.shadows[2],
+          backgroundColor: theme.palette.grey[300],
+        },
+      },
+    },
+  }));
+  const classes = useStyles();
   const {
     tourProps: {
       tourState,
@@ -43,6 +64,10 @@ export default function DashboardTour(props: DashboardTourProps): React.ReactEle
   };
   const { tourSteps, theme } = createTourSteps(tourFunctions);
 
+  const lastStepNextButton = (
+    <Typography className={classes.contained}>Start using RoMi</Typography>
+  );
+
   return (
     <Tour
       steps={tourSteps}
@@ -55,9 +80,9 @@ export default function DashboardTour(props: DashboardTourProps): React.ReactEle
       accentColor={theme.palette.primary.main}
       rounded={5}
       showNavigationNumber={false}
-      nextButton={<NextButton />}
-      prevButton={<PrevButton />}
-      lastStepNextButton={<LastStepNextButton />}
+      nextButton={<NavigateNextIcon />}
+      prevButton={<NavigateBeforeIcon />}
+      lastStepNextButton={lastStepNextButton}
     />
   );
 }
