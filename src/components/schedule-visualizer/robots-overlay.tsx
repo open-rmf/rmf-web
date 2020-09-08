@@ -5,6 +5,7 @@ import { viewBoxFromLeafletBounds } from '../../util/css-utils';
 import ColorManager from './colors';
 import Robot_, { RobotProps } from './robot';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
+import { ResourcesContext } from '../app-contexts';
 
 const debug = Debug('ScheduleVisualizer:RobotsOverlay');
 
@@ -30,6 +31,7 @@ export const RobotsOverlay = React.memo((props: RobotsOverlayProps) => {
     ...otherProps
   } = props;
   const Robot = React.useMemo(() => RobotComponent || Robot_, [RobotComponent]);
+  const robotResourcesContext = React.useContext(ResourcesContext).robots;
   const viewBox = viewBoxFromLeafletBounds(props.bounds);
   const footprint = 0.5;
 
@@ -78,6 +80,7 @@ export const RobotsOverlay = React.memo((props: RobotsOverlayProps) => {
               fleetName={fleetContainer[`${robot.name}_${robot.model}`]}
               footprint={footprint}
               colorManager={colorManager}
+              robotHandler={robotResourcesContext}
               onClick={handleRobotClick}
               inConflict={inConflict(robot.name)}
             />

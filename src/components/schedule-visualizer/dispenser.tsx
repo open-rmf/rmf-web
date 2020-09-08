@@ -3,6 +3,8 @@ import React from 'react';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { DispenserResource, DispenserResourceManager } from '../../resource-manager-dispensers';
 import SvgText from './svg-text';
+import ImageIcon from './image-icon';
+import DispenserDefaultIcon from './dispenser-default-icon';
 
 export interface DispenserProps {
   dispenser: Required<DispenserResource>;
@@ -19,35 +21,31 @@ const Dispenser = React.memo(
   ): React.ReactElement {
     const { dispenser, footprint, dispenserState, dispenserHandler, onClick } = props;
     const classes = useStyles();
-    const defaultIconPath = '/assets/move_to_inbox_black_192x192.png';
-    const [iconPath, setIconPath] = React.useState(
-      !!dispenserHandler && dispenser.guid
-        ? dispenserHandler.getIconPath(dispenser.guid)
-        : defaultIconPath,
-    );
+    const [renderCustomIcon, setRenderCustomIcon] = React.useState({
+      path: dispenserHandler.getIconPath(dispenser.guid),
+      error: false,
+    });
     return (
       <>
         <g
           ref={ref}
+          data-component="Dispenser"
           className={`${classes.container}`}
           onClick={e => onClick && dispenserState && onClick(e, dispenserState)}
           transform={`translate(${dispenser.location.x} ${-dispenser.location.y})
         rotate(${-(dispenser.location.yaw * 180) / Math.PI})`}
         >
-          <g transform={`translate(${-footprint} ${-footprint})`}>
-            <image
-              href={!!iconPath ? iconPath : defaultIconPath}
+          {!!renderCustomIcon.path && !renderCustomIcon.error ? (
+            <ImageIcon
+              iconPath={renderCustomIcon.path}
               height={footprint * 2}
               width={footprint * 2}
-              onError={error => {
-                setIconPath(defaultIconPath);
-                console.error(
-                  'An error occurred while loading the image. Using the default image.',
-                  error,
-                );
-              }}
+              footprint={footprint}
+              dispatchIconError={setRenderCustomIcon}
             />
-          </g>
+          ) : (
+            <DispenserDefaultIcon footprint={footprint} />
+          )}
         </g>
         <SvgText
           id="dispenserName"
