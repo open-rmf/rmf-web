@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Renders correctly Has path inside 1`] = `
+exports[`Renders correctly 1`] = `
 <DispenserDefaultIcon
   footprint={0.5}
 >

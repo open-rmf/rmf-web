@@ -16,7 +16,7 @@ describe('Correct functionally of getIconPath', () => {
     expect(icon).toBeFalsy();
   });
 
-  test('Icon its empty', () => {
+  test('Icon path it`s empty', () => {
     resourceData.testDispenser = {
       icons: {
         testDispenser: '',

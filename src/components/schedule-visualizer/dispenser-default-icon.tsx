@@ -27,7 +27,7 @@ export default DispenserDefaultIcon;
 
 const useStyles = makeStyles(() => ({
   clickable: {
-    // I need to use any here to set this property to important. https://stackoverflow.com/questions/53151340/material-ui-and-typescript-how-to-use-important. I'm overriding the default property of Leaflet Path of visible:None.
+    // We need to use `any` here to set this property to important. https://stackoverflow.com/questions/53151340/material-ui-and-typescript-how-to-use-important. We are overriding the default property of Leaflet Path of visible:None.
     pointerEvents: 'visible !important' as any,
   },
 }));
