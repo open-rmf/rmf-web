@@ -1,8 +1,8 @@
 import React from 'react';
 import { Typography } from '@material-ui/core';
 
-import DispenserButton from './baseComponents/dispenser-panel';
 import { dispenserStates, defaultStyles, StyleTyping } from './baseComponents/utils';
+import DispenserPanel from '../components/dispensers-panel';
 
 export default {
   title: 'Dispenser',
@@ -23,6 +23,6 @@ export const dispenserPanel = () => (
       <Typography variant="h6">Dispenser State</Typography>
       <Typography variant="h6">Button color and representation</Typography>
     </div>
-    <DispenserButton dispenserStates={dispenserStates} />
+    <DispenserPanel dispenserStates={dispenserStates} />
   </div>
 );

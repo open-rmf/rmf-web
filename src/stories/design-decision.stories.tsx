@@ -1,8 +1,7 @@
-import React from 'react';
 import { Divider, Typography } from '@material-ui/core';
-
-import { StyleTyping, defaultStyles, dispenserStates } from './baseComponents/utils';
-import DispenserButton from './baseComponents/dispenser-panel';
+import React from 'react';
+import DispenserPanel from '../components/dispensers-panel';
+import { defaultStyles, dispenserStates, StyleTyping } from './baseComponents/utils';
 
 export default {
   title: 'Design Decisions',
@@ -27,7 +26,7 @@ export const handleLongName = () => (
     </Typography>
     <Divider />
     <div style={styles.spacing}>
-      <DispenserButton dispenserStates={longName} />
+      <DispenserPanel dispenserStates={longName} />
     </div>
   </div>
 );
@@ -43,7 +42,7 @@ export const handleUnknown = () => (
     </Typography>
     <Divider />
     <div style={styles.spacing}>
-      <DispenserButton dispenserStates={unknownState} />
+      <DispenserPanel dispenserStates={unknownState} />
     </div>
   </div>
 );

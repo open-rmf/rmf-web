@@ -11,11 +11,18 @@ export default class DoorStateManager extends EventEmitter<Events> {
   }
 
   startSubscription(transport: RomiCore.Transport) {
-    transport.subscribe(RomiCore.doorStates, doorState => {
-      this._doorStates[doorState.door_name] = doorState;
-      this.emit('updated');
-    });
+    this._subscriptions.push(
+      transport.subscribe(RomiCore.doorStates, doorState => {
+        this._doorStates[doorState.door_name] = doorState;
+        this.emit('updated');
+      }),
+    );
+  }
+
+  stopAllSubscriptions(): void {
+    this._subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   private _doorStates: Record<string, RomiCore.DoorState> = {};
+  private _subscriptions: RomiCore.Subscription[] = [];
 }

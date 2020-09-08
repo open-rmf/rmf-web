@@ -1,5 +1,8 @@
 import { Divider, List, ListItem, Typography } from '@material-ui/core';
 import React from 'react';
+import Debug from 'debug';
+
+const debug = Debug('MainMenu');
 
 export interface MainMenuProps {
   onDoorsClick?(event: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
@@ -9,7 +12,9 @@ export interface MainMenuProps {
   onCommandsClick?(event: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
 }
 
-export default function MainMenu(props: MainMenuProps): React.ReactElement {
+export const MainMenu = React.memo((props: MainMenuProps) => {
+  debug('render');
+
   return (
     <List data-component="MainMenu">
       <ListItem data-item="Doors" button={true} onClick={props.onDoorsClick}>
@@ -41,4 +46,6 @@ export default function MainMenu(props: MainMenuProps): React.ReactElement {
       </ListItem>
     </List>
   );
-}
+});
+
+export default MainMenu;

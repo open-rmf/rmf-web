@@ -1,8 +1,10 @@
 import { makeStyles } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import Debug from 'debug';
 import * as L from 'leaflet';
 import React from 'react';
 import { AttributionControl, ImageOverlay, LayersControl, Map as LMap, Pane } from 'react-leaflet';
+import { ResourceConfigurationsType } from '../../resource-manager';
 import {
   Conflict,
   DefaultTrajectoryManager,
@@ -10,9 +12,12 @@ import {
   Trajectory,
   TrajectoryResponse,
 } from '../../robot-trajectory-manager';
-import { AnimationSpeed, SettingsContext, TrajectoryAnimation } from '../../settings';
+import { AnimationSpeed, TrajectoryAnimation } from '../../settings';
 import { toBlobUrl } from '../../util';
+import { ResourcesContext, SettingsContext } from '../app-contexts';
 import ColorManager from './colors';
+import DoorsOverlay from './doors-overlay';
+import LiftsOverlay from './lift-overlay';
 import RobotTrajectoriesOverlay, { RobotTrajectoryContext } from './robot-trajectories-overlay';
 import RobotTrajectory from './robot-trajectory';
 import RobotsOverlay from './robots-overlay';
@@ -21,11 +26,9 @@ import {
   withFollowAnimation,
   withOutlineAnimation,
 } from './trajectory-animations';
-import DoorsOverlay from './doors-overlay';
-import LiftsOverlay from './lift-overlay';
-import { ResourcesContext } from '../../app-contexts';
-import { ResourceConfigurationsType } from '../../resource-manager';
 import WaypointsOverlay from './waypoints-overlay';
+
+const debug = Debug('ScheduleVisualizer');
 
 const useStyles = makeStyles(() => ({
   map: {
@@ -49,7 +52,7 @@ export interface ScheduleVisualizerProps {
   appResources?: Readonly<ResourceConfigurationsType>;
   onDoorClick?(door: RomiCore.Door): void;
   onLiftClick?(lift: RomiCore.Lift): void;
-  onRobotClick?(robot: RomiCore.RobotState): void;
+  onRobotClick?(fleet: string, robot: RomiCore.RobotState): void;
 }
 
 function calcMaxBounds(mapFloorLayers: readonly MapFloorLayer[]): L.LatLngBounds | undefined {
@@ -62,6 +65,8 @@ function calcMaxBounds(mapFloorLayers: readonly MapFloorLayer[]): L.LatLngBounds
 }
 
 export default function ScheduleVisualizer(props: ScheduleVisualizerProps): React.ReactElement {
+  debug('render');
+
   const { appResources } = props;
   const classes = useStyles();
   const mapRef = React.useRef<LMap>(null);
@@ -110,17 +115,18 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
         return 1000;
     }
   }, [settings]);
-  const TrajectoryComponent = React.useMemo(() => {
+
+  const RobotTrajContextValue = React.useMemo<RobotTrajectoryContext>(() => {
     const animationScale = trajLookahead / trajAnimDuration;
     switch (settings.trajectoryAnimation) {
       case TrajectoryAnimation.None:
-        return RobotTrajectory;
+        return { Component: RobotTrajectory };
       case TrajectoryAnimation.Fill:
-        return withFillAnimation(RobotTrajectory, animationScale);
+        return { Component: withFillAnimation(RobotTrajectory, animationScale) };
       case TrajectoryAnimation.Follow:
-        return withFollowAnimation(RobotTrajectory, animationScale);
+        return { Component: withFollowAnimation(RobotTrajectory, animationScale) };
       case TrajectoryAnimation.Outline:
-        return withOutlineAnimation(RobotTrajectory, animationScale);
+        return { Component: withOutlineAnimation(RobotTrajectory, animationScale) };
     }
   }, [settings.trajectoryAnimation, trajAnimDuration]);
 
@@ -178,7 +184,9 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       for (const p of promises) {
         await p;
       }
+      debug('set map floor layers');
       setMapFloorLayers(mapFloorLayers);
+      debug('set max bounds');
       setMaxBounds(calcMaxBounds(Object.values(mapFloorLayers)));
     })();
   }, [props.buildingMap, mapElement]);
@@ -200,6 +208,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
             trim: true,
           },
         });
+        debug('set trajectories');
         setTrajectories(prev => ({
           ...prev,
           [curMapFloorLayer.level.name]: resp,
@@ -213,6 +222,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   }, [props.trajManager, curMapFloorLayer, trajAnimDuration]);
 
   function handleBaseLayerChange(e: L.LayersControlEvent): void {
+    debug('set current level name');
     setCurLevelName(e.name);
   }
 
@@ -253,11 +263,14 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     if (curMapFloorLayer) {
       const mapTrajectories = getTrajectory(curMapFloorLayer.level.name);
       const mapConflicts = getConflicts(curMapFloorLayer.level.name);
+      debug('set current map trajectories');
       setCurMapTrajectories(mapTrajectories);
+      debug('set current map conflicts');
       setCurMapConflicts(mapConflicts);
+      debug('set conflicting robots');
       setConflictRobotNames(getConflictRobotsName(mapConflicts, mapTrajectories));
     }
-  }, [curMapFloorLayer, trajectories, curMapConflicts, curMapTrajectories]);
+  }, [curMapFloorLayer, trajectories]);
 
   return (
     <LMap
@@ -291,7 +304,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
           <LayersControl.Overlay name="Robot Trajectories" checked>
             {curMapFloorLayer && (
               <Pane>
-                <RobotTrajectoryContext.Provider value={{ Component: TrajectoryComponent }}>
+                <RobotTrajectoryContext.Provider value={RobotTrajContextValue}>
                   <RobotTrajectoriesOverlay
                     bounds={curMapFloorLayer.bounds}
                     trajs={curMapTrajectories}

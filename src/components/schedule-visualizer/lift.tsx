@@ -1,12 +1,15 @@
 import { makeStyles } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import Debug from 'debug';
 import React from 'react';
-import Door from './door/door';
-import { UpArrow, DownArrow } from './arrow';
 import {
   radiansToDegrees,
   transformMiddleCoordsOfRectToSVGBeginPoint,
 } from '../../util/calculation-helpers';
+import { DownArrow, UpArrow } from './arrow';
+import Door from './door/door';
+
+const debug = Debug('ScheduleVisualizer:Lift');
 
 export interface LiftProps {
   id?: string;
@@ -72,75 +75,80 @@ const getRelatedYCoord = (topY: number, height: number, percentage: number) => {
   return topY + height * percentage;
 };
 
-const Lift = React.forwardRef(function(
-  props: LiftProps,
-  ref: React.Ref<SVGGElement>,
-): React.ReactElement {
-  const { id, lift, onClick, liftState, currentFloor } = props;
-  const { width, depth, ref_x: x, ref_y: y, ref_yaw, doors } = lift;
-  // The svg start drawing from the top left coordinate, and the backend sends us the middle X,Y so we need to transform that.
-  const { x: topVerticeX, y: topVerticeY } = transformMiddleCoordsOfRectToSVGBeginPoint(
-    x,
-    y,
-    width,
-    depth,
-  );
-  // Since we are working with a plane with positive X and Negative Y we need to change the sign of the y.
-  const contextY = -y;
-  const contextTopVerticeY = -topVerticeY;
-  // Get properties from lift state
-  const currentMode = liftState?.current_mode;
-  const destinationFloor = liftState?.destination_floor;
-  const doorState = liftState?.door_state;
-  const isInCurrentFloor = liftState?.current_floor === currentFloor;
-  const motionState = liftState?.motion_state;
+const Lift = React.memo(
+  React.forwardRef(function(props: LiftProps, ref: React.Ref<SVGGElement>): React.ReactElement {
+    const { id, lift, onClick, liftState, currentFloor } = props;
+    debug('render %s', lift.name);
 
-  const classes = useStyles();
+    const { width, depth, ref_x: x, ref_y: y, ref_yaw, doors } = lift;
+    // The svg start drawing from the top left coordinate, and the backend sends us the middle X,Y so we need to transform that.
+    const { x: topVerticeX, y: topVerticeY } = transformMiddleCoordsOfRectToSVGBeginPoint(
+      x,
+      y,
+      width,
+      depth,
+    );
+    // Since we are working with a plane with positive X and Negative Y we need to change the sign of the y.
+    const contextY = -y;
+    const contextTopVerticeY = -topVerticeY;
+    // Get properties from lift state
+    const currentMode = liftState?.current_mode;
+    const destinationFloor = liftState?.destination_floor;
+    const doorState = liftState?.door_state;
+    const isInCurrentFloor = liftState?.current_floor === currentFloor;
+    const motionState = liftState?.motion_state;
 
-  const liftStyle = getLiftStyle(classes, currentMode, isInCurrentFloor);
-  const liftMotionText = getLiftMotionText(liftState?.current_floor, destinationFloor, motionState);
-  const liftModeText = getLiftModeText(currentMode);
-  return (
-    <>
-      <g ref={ref} id={id} onClick={e => onClick && onClick(e, lift)}>
-        <rect
-          className={`${classes.liftMarker} ${classes.lift} ${liftStyle}`}
-          width={width}
-          height={depth}
-          x={topVerticeX}
-          y={contextTopVerticeY}
-          rx="0.1"
-          ry="0.1"
-          transform={`rotate(${radiansToDegrees(ref_yaw)}, ${x},${contextY})`}
-        />
-        {liftMotionText && (
-          <text
-            id="liftMotion"
-            className={classes.liftText}
-            x={x}
-            y={getRelatedYCoord(contextTopVerticeY, depth, 0.25)}
-          >
-            {liftMotionText}
-          </text>
+    const classes = useStyles();
+
+    const liftStyle = getLiftStyle(classes, currentMode, isInCurrentFloor);
+    const liftMotionText = getLiftMotionText(
+      liftState?.current_floor,
+      destinationFloor,
+      motionState,
+    );
+    const liftModeText = getLiftModeText(currentMode);
+    return (
+      <>
+        <g ref={ref} id={id} onClick={e => onClick && onClick(e, lift)}>
+          <rect
+            className={`${classes.liftMarker} ${classes.lift} ${liftStyle}`}
+            width={width}
+            height={depth}
+            x={topVerticeX}
+            y={contextTopVerticeY}
+            rx="0.1"
+            ry="0.1"
+            transform={`rotate(${radiansToDegrees(ref_yaw)}, ${x},${contextY})`}
+          />
+          {liftMotionText && (
+            <text
+              id="liftMotion"
+              className={classes.liftText}
+              x={x}
+              y={getRelatedYCoord(contextTopVerticeY, depth, 0.25)}
+            >
+              {liftMotionText}
+            </text>
+          )}
+          {liftModeText && (
+            <text id="liftMode" className={classes.liftText} x={x} y={contextY}>
+              {liftModeText}
+            </text>
+          )}
+        </g>
+        {motionState === RomiCore.LiftState.MOTION_UP && (
+          <UpArrow x={x} y={contextY} size={0.03} padding={[0, 0.1]} />
         )}
-        {liftModeText && (
-          <text id="liftMode" className={classes.liftText} x={x} y={contextY}>
-            {liftModeText}
-          </text>
+        {motionState === RomiCore.LiftState.MOTION_DOWN && (
+          <DownArrow x={x} y={contextY} size={0.03} padding={[0, 0.1]} />
         )}
-      </g>
-      {motionState === RomiCore.LiftState.MOTION_UP && (
-        <UpArrow x={x} y={contextY} size={0.03} padding={[0, 0.1]} />
-      )}
-      {motionState === RomiCore.LiftState.MOTION_DOWN && (
-        <DownArrow x={x} y={contextY} size={0.03} padding={[0, 0.1]} />
-      )}
-      {doors.map(door => (
-        <Door key={`lift-door-${door.name}`} door={door} currentMode={doorState} />
-      ))}
-    </>
-  );
-});
+        {doors.map(door => (
+          <Door key={`lift-door-${door.name}`} door={door} currentMode={doorState} />
+        ))}
+      </>
+    );
+  }),
+);
 
 export default Lift;
 

@@ -1,15 +1,14 @@
-import React from 'react';
 import { Divider, Typography } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-
+import React from 'react';
+import LiftsPanel from '../components/lift-item/lifts-panel';
 import LiftComponent from './baseComponents/lift-component';
-import LiftButton from './baseComponents/lift-panel';
 import {
+  componentDisplayStyle,
+  defaultStyles,
   lift,
   lifts,
   liftStates,
-  componentDisplayStyle,
-  defaultStyles,
   StyleTyping,
 } from './baseComponents/utils';
 
@@ -171,6 +170,6 @@ export const liftPanel = () => (
       <Typography variant="h6">Lift State</Typography>
       <Typography variant="h6">Button color and representation</Typography>
     </div>
-    <LiftButton lifts={lifts} liftStates={liftStates} />
+    <LiftsPanel lifts={lifts} liftStates={liftStates} />
   </div>
 );
