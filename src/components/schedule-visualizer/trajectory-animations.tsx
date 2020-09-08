@@ -107,17 +107,6 @@ export function withFollowAnimation(
           fill: 'forwards',
         },
       );
-      // const keyFrames = offsets.map(offset => ({
-      //   offset: offset,
-      //   strokeDashoffset: Math.max(2 - offset, strokeDash + 1),
-      // }));
-      // anime({
-      //   targets: pathAnim,
-      //   keyframes: keyFrames,
-      //   easing: 'linear',
-      //   duration: animationDuration(trajectory, animationScale),
-      //   loop: false,
-      // })
 
       return () => pathAnim.remove();
     }, [trajectory, classes.anim, classes.highlight]);
