@@ -122,6 +122,8 @@ If you would like, you can also build the images locally, doing so is simple wit
 
 ```bash
 docker-compose -f <path-to-romi-dashboard>/docker/rmf/docker-compose.yml build --no-cache
+# run this to use the newly built image for the npm scripts
+docker tag docker.pkg.github.com/osrf/romi-dashboard/rmf:latest docker.pkg.github.com/osrf/romi-dashboard/rmf:nightly
 ```
 
 This will download and build all of rmf so it may take awhile.
