@@ -16,8 +16,7 @@ RUN mkdir src && cd src && \
   git clone --depth 1 https://github.com/osrf/rmf_core && \
   git clone --depth 1 https://github.com/osrf/traffic_editor && \
   git clone --depth 1 https://github.com/osrf/rmf_schedule_visualizer && \
-  # TODO: use master branch when this is merged https://github.com/osrf/soss/pull/42
-  git clone --depth 1 -b feat/pubkey https://github.com/osrf/soss && \
+  git clone --depth 1 https://github.com/osrf/soss && \
   git clone --depth 1 https://github.com/osrf/rmf_demos && \
   git clone --depth 1 https://github.com/osrf/rmf-soss-ros2
 
