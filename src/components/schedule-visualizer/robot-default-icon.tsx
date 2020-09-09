@@ -14,13 +14,13 @@ function makeGradientShadow(
 ): React.FunctionComponent<SVGProps<SVGRadialGradientElement>> {
   return (props: SVGProps<SVGRadialGradientElement>) => (
     <radialGradient {...props}>
-      <stop offset="70%" stop-color={`${color}ff`} />
-      <stop offset="75%" stop-color={`${color}80`} />
-      <stop offset="80%" stop-color={`${color}60`} />
-      <stop offset="85%" stop-color={`${color}30`} />
-      <stop offset="90%" stop-color={`${color}18`} />
-      <stop offset="95%" stop-color={`${color}08`} />
-      <stop offset="100%" stop-color={`${color}00`} />
+      <stop offset="70%" stopColor={`${color}ff`} />
+      <stop offset="75%" stopColor={`${color}80`} />
+      <stop offset="80%" stopColor={`${color}60`} />
+      <stop offset="85%" stopColor={`${color}30`} />
+      <stop offset="90%" stopColor={`${color}18`} />
+      <stop offset="95%" stopColor={`${color}08`} />
+      <stop offset="100%" stopColor={`${color}00`} />
     </radialGradient>
   );
 }
@@ -64,6 +64,7 @@ const RobotDefaultIcon = React.forwardRef(function(
             <ShadowConflict id={conflictShadowId} />
           </defs>
           <circle
+            id="shadow"
             r={footprint * 1.3}
             fill={inConflict ? `url(#${conflictShadowId})` : `url(#${shadowId})`}
           />

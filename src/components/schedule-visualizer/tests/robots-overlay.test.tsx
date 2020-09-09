@@ -57,9 +57,7 @@ describe('Robots Overlay', () => {
       </LMap>,
     );
 
-    expect(
-      wrapper.containsMatchingElement(<feDropShadow floodColor={theme.palette.error.main} />),
-    ).toBeTruthy();
+    expect(wrapper.find('circle#shadow[fill*="conflict"]').length).toBeTruthy();
 
     wrapper.unmount();
   });
