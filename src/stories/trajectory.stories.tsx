@@ -1,6 +1,5 @@
 import React from 'react';
 
-import { createTrajectories } from './baseComponents/utils-trajectory';
 import {
   defaultTraj,
   conflictingTraj,
@@ -21,7 +20,6 @@ const partialConflictTraj = {
   ...multipleTrajs,
   conflicts: [[1, 2, 3, 4, 5, 6, 7, 8, 9, 19]],
 };
-const spam = createTrajectories(true, 100);
 
 const colorManager = new ColorManager();
 
