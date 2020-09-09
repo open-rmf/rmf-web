@@ -27,24 +27,16 @@ const RobotImageIcon = React.forwardRef(function(
     <>
       {!!iconPath && (
         <g>
-          <circle r={footprint * 1.3} fill="url(#shadow-gradient2)" />
+          <defs>
+            <radialGradient id="RobotImageIcon-shadow">
+              <stop offset="0%" stop-color="#00000080" />
+              <stop offset="70%" stop-color="#00000040" />
+              <stop offset="90%" stop-color="#00000010" />
+              <stop offset="100%" stop-color="#00000000" />
+            </radialGradient>
+          </defs>
+          <circle r={footprint * 1.3} fill="url(#RobotImageIcon-shadow)" />
           <g transform={`translate(${-footprint} ${-footprint})`}>
-            <filter id={`${robot.name}-shadow`} x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow
-                dx="0"
-                dy="0"
-                stdDeviation={footprint * 0.15}
-                floodColor={inConflict ? theme.palette.error.main : theme.palette.common.black}
-              />
-            </filter>
-            <defs>
-              <radialGradient id="shadow-gradient2">
-                <stop offset="0%" stop-color="#00000080" />
-                <stop offset="70%" stop-color="#00000040" />
-                <stop offset="90%" stop-color="#00000010" />
-                <stop offset="100%" stop-color="#00000000" />
-              </radialGradient>
-            </defs>
             <image
               href={iconPath}
               height={imgIconHeigth}

@@ -5,7 +5,6 @@ import React from 'react';
 import { Map as LMap } from 'react-leaflet';
 import ColorManager from '../../components/schedule-visualizer/colors';
 import RobotsOverlay from '../../components/schedule-visualizer/robots-overlay';
-import { TmpShadowContext } from '../../components/schedule-visualizer/robot-default-icon';
 
 function createRobots(count: number): RomiCore.RobotState[] {
   return [...Array(count)].map((_, i) => ({
@@ -38,10 +37,9 @@ export default function RobotBenchmark(): React.ReactElement {
     ],
     [robots],
   );
-  const [shadowImpl, setShadowImpl] = React.useState<'gradient' | 'filter'>('gradient');
 
   return (
-    <TmpShadowContext.Provider value={shadowImpl}>
+    <>
       <div style={{ display: 'flex' }}>
         <div style={{ display: 'flex', width: 200, alignItems: 'center' }}>
           <label htmlFor="numRobots">Number of Robots: </label>
@@ -56,18 +54,6 @@ export default function RobotBenchmark(): React.ReactElement {
               num && setRobots(createRobots(num));
             }}
           />
-        </div>
-        <div style={{ display: 'flex', width: 200, alignItems: 'center' }}>
-          <label htmlFor="shadowImpl">Shadow: </label>
-          <select
-            id="shadowImpl"
-            style={{ marginLeft: 4 }}
-            value={shadowImpl}
-            onChange={e => setShadowImpl(e.currentTarget.value as any)}
-          >
-            <option value="gradient">gradient</option>
-            <option value="filter">filter</option>
-          </select>
         </div>
       </div>
       <LMap
@@ -88,6 +74,6 @@ export default function RobotBenchmark(): React.ReactElement {
           fleets={fleets}
         />
       </LMap>
-    </TmpShadowContext.Provider>
+    </>
   );
 }
