@@ -66,18 +66,4 @@ describe('RobotTrajectoriesOverlay', () => {
     );
     wrapper.unmount();
   });
-
-  it('should set notification dispatch when conflict is not empty', () => {
-    const trajectoryConflicted = [[1, 2]];
-    const wrapper = createWrapper(
-      RobotTrajectoriesOverlay,
-      mapBound,
-      trajectoryConflicted,
-      colorManager,
-      [trajectoryValue],
-      [[]],
-    );
-
-    wrapper.unmount();
-  });
 });

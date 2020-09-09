@@ -1,10 +1,9 @@
-const globalAny: any = global;
-
 import Enzyme from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 
 Enzyme.configure({ adapter: new Adapter() });
 
+const globalAny: any = global;
 class MockEncoder {
   encode() {
     return jest.fn();
