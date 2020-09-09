@@ -38,7 +38,7 @@ export class NegotiationConflict {
 export default class NegotiationStatusManager extends EventEmitter<Events> {
   constructor(url : string) {
     super();
-    this._backend_ws = new WebSocket(url);
+    this._backendWs = new WebSocket(url);
   }
 
   allConflicts(): Record<number, NegotiationConflict> {
@@ -46,50 +46,50 @@ export default class NegotiationStatusManager extends EventEmitter<Events> {
   }
 
   startSubscription() {
-    if (this._backend_ws) {
-      this._backend_ws.send(
+    if (this._backendWs) {
+      this._backendWs.send(
         JSON.stringify({request: "negotiation_update_subscribe"}));
 
       //only recv negotiation status messages
-      this._backend_ws.onmessage = (event) => {
+      this._backendWs.onmessage = (event) => {
         const msg = JSON.parse(event.data);
         if (msg["type"] === "negotiation_status")
         {
-          const conflict_version : number = msg["conflict_version"];
-          const conflict_version_str = conflict_version.toString()
+          const conflictVersion : number = msg["conflictVersion"];
+          const conflictVersionStr = conflictVersion.toString()
       
-          let conflict = this._conflicts[conflict_version_str];
+          let conflict = this._conflicts[conflictVersionStr];
           if (conflict === undefined)
           {
             conflict = new NegotiationConflict();
       
-            const participant_id : number = msg["participant_id"]      
-            conflict.participantIdsToNames[participant_id] = msg["participant_name"];
+            const participantId : number = msg["participant_id"]      
+            conflict.participantIdsToNames[participantId] = msg["participant_name"];
       
-            this._conflicts[conflict_version_str] = conflict;
+            this._conflicts[conflictVersionStr] = conflict;
           }
       
           const id : number = msg["participant_id"];
-          const id_str = id.toString();
-          conflict.participantIdsToNames[id_str] = msg["participant_name"];
+          const idStr = id.toString();
+          conflict.participantIdsToNames[idStr] = msg["participant_name"];
       
-          let status_data = conflict.participantIdsToStatus[id_str];
+          let statusData = conflict.participantIdsToStatus[idStr];
           let status : NegotiationStatus;
-          if (status_data === undefined)
+          if (statusData === undefined)
           {
-            status_data = new NegotiationStatusData();
-            conflict.participantIdsToStatus[id_str] = status_data;
-            status = status_data.base; 
+            statusData = new NegotiationStatusData();
+            conflict.participantIdsToStatus[idStr] = statusData;
+            status = statusData.base; 
           }
           else
           {
             const seq : number[] = msg["sequence"];
             if (seq.length === 1)
-              status = status_data.base;
+              status = statusData.base;
             else
             {
-              status_data.hasTerminal = true;
-              status = status_data.terminal;
+              statusData.hasTerminal = true;
+              status = statusData.terminal;
             }
           }
       
@@ -102,12 +102,12 @@ export default class NegotiationStatusManager extends EventEmitter<Events> {
         }
         else if (msg["type"] === "negotiation_conclusion")
         {
-          const conflict_version : number = msg["conflict_version"];
-          const conflict = this._conflicts[conflict_version.toString()];
+          const conflictVersion : number = msg["conflictVersion"];
+          const conflict = this._conflicts[conflictVersion.toString()];
       
           if (conflict === undefined)
           {
-            console.warn('Undefined conflict version ' + conflict_version + ', ignoring...');
+            console.warn('Undefined conflict version ' + conflictVersion + ', ignoring...');
             return;
           }
       
@@ -144,5 +144,5 @@ export default class NegotiationStatusManager extends EventEmitter<Events> {
   }
 
   private _conflicts : Record<string, NegotiationConflict> = {};
-  private _backend_ws ?: WebSocket;
+  private _backendWs ?: WebSocket;
 }
