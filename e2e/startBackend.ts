@@ -1,4 +1,3 @@
-import { RmfLauncher } from './rmf-launcher';
+import { makeLauncher } from './rmf-launcher';
 
-const launcher = new RmfLauncher();
-launcher.launch()
+makeLauncher().launch();

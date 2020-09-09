@@ -8,7 +8,7 @@ import { Element } from '@wdio/sync';
 export function overwriteClick() {
   browser.overwriteCommand(
     'click',
-    function (this: Element, origClick) {
+    function(this: Element, origClick) {
       let prevLocation = this.getLocation();
       this.waitUntil(() => {
         const newLocation = this.getLocation();
@@ -27,11 +27,11 @@ export function overwriteClick() {
  */
 export function removeTextFromAutocomplete(characterNum: number): string {
   const backspace = '\u0008';
-  let backspaces = ''
+  let backspaces = '';
   for (let index = 0; index < characterNum; index++) {
-    backspaces += backspace
+    backspaces += backspace;
   }
-  return backspaces
+  return backspaces;
 }
 
 /**
@@ -45,3 +45,11 @@ export const getRobotLocations = (browser: WebdriverIO.BrowserObject): string[] 
   });
   return robotLocations;
 };
+
+export function login(): void {
+  browser.url('/login');
+  $('#login-button').click();
+  $('#username').setValue('admin');
+  $('#password').setValue('admin');
+  $('#kc-login').click();
+}

@@ -10,11 +10,11 @@ export interface LabelProps {
 
 export const useStyles = makeStyles(theme => ({
   hideText: {
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    whiteSpace: "nowrap",
-    maxWidth: "10rem",
-  }
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    maxWidth: '10rem',
+  },
 }));
 
 export default function OmniPanelStatusLabels(props: LabelProps) {
@@ -23,12 +23,15 @@ export default function OmniPanelStatusLabels(props: LabelProps) {
 
   return (
     <React.Fragment>
-      <Typography variant="h6" className={hideTextStyleOverride ? hideTextStyleOverride : classes.hideText}>
+      <Typography
+        variant="h6"
+        className={hideTextStyleOverride ? hideTextStyleOverride : classes.hideText}
+      >
         {name}
       </Typography>
-      <Typography className={modalLabelClass} variant='button'>
+      <Typography className={modalLabelClass} variant="button">
         {modeText}
       </Typography>
     </React.Fragment>
-  )
+  );
 }
