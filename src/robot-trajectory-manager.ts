@@ -97,14 +97,17 @@ export class DefaultTrajectoryManager {
     return resp as TimeResponse;
   }
 
-  static getRobotNameFromPathId(pathId: number, trajectories: readonly Trajectory[]): string | undefined {
+  static getRobotNameFromPathId(
+    pathId: number,
+    trajectories: readonly Trajectory[],
+  ): string | undefined {
     const traj = trajectories.find(trajectory => trajectory.id === pathId);
     return traj?.robot_name;
   }
 
   private _ongoingRequest: Promise<MessageEvent> | null = null;
 
-  private constructor(private _webSocket: WebSocket) { }
+  private constructor(private _webSocket: WebSocket) {}
 
   private _listenOnce<K extends keyof WebSocketEventMap>(
     event: K,
