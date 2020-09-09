@@ -12,6 +12,10 @@ type RobotImageIconProps = Omit<RobotProps, 'fleetName'> & {
   >;
 };
 
+/**
+ *
+ * @param color MUST be in hex notation without alpha channel. e.g. #123456
+ */
 function makeGradientShadow(
   color: string,
 ): React.FunctionComponent<SVGProps<SVGRadialGradientElement>> {
