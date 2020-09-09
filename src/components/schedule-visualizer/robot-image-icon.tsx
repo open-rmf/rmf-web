@@ -69,7 +69,6 @@ const RobotImageIcon = React.forwardRef(function(
               href={iconPath}
               height={imgIconHeigth}
               width={imgIconWidth}
-              // filter={`url(#${robot.name}-shadow)`}
               onError={error => {
                 console.error(
                   'An error occurred while loading the image. Using the default image.',

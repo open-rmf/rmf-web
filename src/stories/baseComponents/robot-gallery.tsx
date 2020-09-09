@@ -7,76 +7,40 @@ import { ResourcesContext } from '../../components/app-contexts';
 import ColorManager from '../../components/schedule-visualizer/colors';
 import Robot, { RobotProps } from '../../components/schedule-visualizer/robot';
 import { ResourceConfigurationsType } from '../../resource-manager';
-
-const baseRobot: RomiCore.RobotState = {
-  name: '',
-  battery_percent: 100,
-  location: { level_name: '', x: 0, y: 0, t: { sec: 0, nanosec: 0 }, yaw: 0 },
-  mode: { mode: RomiCore.RobotMode.MODE_IDLE },
-  model: 'BaseModel',
-  path: [],
-  task_id: '',
-};
+import { makeRobot } from '../../mock/utils';
 
 const colorManager = new ColorManager();
 
-const baseRobotProps: RobotProps = {
-  robot: baseRobot,
-  colorManager: colorManager,
-  fleetName: '',
-  footprint: 1,
-  inConflict: false,
-};
+function makeRobotProps(
+  robot: Partial<RomiCore.RobotState>,
+  props?: Partial<Omit<RobotProps, 'robot'>>,
+): RobotProps {
+  props = props || {};
+  return {
+    robot: makeRobot(robot),
+    colorManager: props.colorManager || colorManager,
+    fleetName: props.fleetName || 'testFleet',
+    footprint: props.footprint || 1,
+    inConflict: props.inConflict,
+    onClick: props.onClick,
+  };
+}
 
 const robots: Record<string, RobotProps> = {
-  Basic: {
-    ...baseRobotProps,
-    robot: {
-      ...baseRobot,
-      name: 'BasicRobot',
-    },
-  },
-  'Really Really Loooonnnnnggggg Name': {
-    ...baseRobotProps,
-    robot: {
-      ...baseRobot,
-      name: 'I have a really really loooonnnnnggggg name',
-    },
-  },
-  'In Conflict': {
-    ...baseRobotProps,
-    robot: {
-      ...baseRobot,
-      name: 'ConflictingRobot',
-    },
-    inConflict: true,
-  },
-  'Name With Space': {
-    ...baseRobotProps,
-    robot: {
-      ...baseRobot,
-      name: 'I have spaces',
-    },
-  },
-  'With Icon': {
-    ...baseRobotProps,
-    robot: {
-      ...baseRobot,
-      name: 'RobotWithIcon',
-      model: 'fleetWithIcon',
-    },
-    fleetName: 'fleetWithIcon',
-  },
-  'With Icon, In Conflict': {
-    ...baseRobotProps,
-    robot: {
-      ...baseRobot,
-      name: 'RobotWithIcon',
-      model: 'fleetWithIcon',
-    },
-    fleetName: 'fleetWithIcon',
-    inConflict: true,
-  },
+  Basic: makeRobotProps({ name: 'BasicRobot' }),
+  'Really Really Loooonnnnnggggg Name': makeRobotProps({
+    name: 'I have a really really loooonnnnnggggg name',
+  }),
+  'In Conflict': makeRobotProps({ name: 'ConflictingRobot' }, { inConflict: true }),
+  'Name With Space': makeRobotProps({ name: 'I have spaces' }),
+  'With Icon': makeRobotProps(
+    { name: 'RobotWithIcon', model: 'fleetWithIcon' },
+    { fleetName: 'fleetWithIcon' },
+  ),
+  'With Icon, In Conflict': makeRobotProps(
+    { name: 'RobotWithIcon', model: 'fleetWithIcon' },
+    { fleetName: 'fleetWithIcon', inConflict: true },
+  ),
 };
 
 const resources: ResourceConfigurationsType = {
