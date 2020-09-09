@@ -8,8 +8,12 @@ import DispenserStateManager from '../dispenser-state-manager';
 import DoorStateManager from '../door-state-manager';
 import FleetManager from '../fleet-manager';
 import LiftStateManager from '../lift-state-manager';
+import NegotiationStatusManager from '../negotiation-status-manager';
 import { ResourceConfigurationsType } from '../resource-manager';
-import { RobotTrajectoryManager } from '../robot-trajectory-manager';
+import { 
+  RobotTrajectoryManager, 
+  NegotiationTrajectoryResponse 
+} from '../robot-trajectory-manager';
 import { loadSettings, saveSettings, Settings } from '../settings';
 import { AppContextProvider } from './app-contexts';
 import AppBar from './appbar';
@@ -82,6 +86,7 @@ enum OmniPanelViewIndex {
   Robots,
   Dispensers,
   Commands,
+  Negotiations,
 }
 
 class ViewMapNode {
@@ -103,6 +108,7 @@ function makeViewMap(): ViewMap {
   viewMap[OmniPanelViewIndex.Robots] = root.addChild(OmniPanelViewIndex.Robots);
   viewMap[OmniPanelViewIndex.Dispensers] = root.addChild(OmniPanelViewIndex.Dispensers);
   viewMap[OmniPanelViewIndex.Commands] = root.addChild(OmniPanelViewIndex.Commands);
+  viewMap[OmniPanelViewIndex.Negotiations] = root.addChild(OmniPanelViewIndex.Negotiations);
   return viewMap;
 }
 
@@ -111,7 +117,7 @@ const viewMap = makeViewMap();
 export default function Dashboard(_props: {}): React.ReactElement {
   debug('render');
 
-  const { appResources, transportFactory, trajectoryManagerFactory } = appConfig;
+  const { appResources, transportFactory, trajectoryManagerFactory, trajServerUrl } = appConfig;
   const classes = useStyles();
   const [transport, setTransport] = React.useState<RomiCore.Transport | undefined>(undefined);
   const [buildingMap, setBuildingMap] = React.useState<RomiCore.BuildingMap | undefined>(undefined);
@@ -151,6 +157,15 @@ export default function Dashboard(_props: {}): React.ReactElement {
     SpotlightValue<string> | undefined
   >(undefined);
 
+  const negotiationStatusManager = React.useMemo(() => new NegotiationStatusManager(trajServerUrl), [trajServerUrl]);
+  const [negotiationSpotlight, setNegotiationSpotlight] = React.useState<
+    SpotlightValue<string> | undefined
+  >(undefined);
+  const [negotiationStatus, setNegotiationStatus] = React.useState
+    (negotiationStatusManager.allConflicts());
+  const [negotiationTrajStore] = React.useState
+    <Record<string, NegotiationTrajectoryResponse>>({});
+
   const [showOmniPanel, setShowOmniPanel] = React.useState(true);
   const [currentView, setCurrentView] = React.useState(OmniPanelViewIndex.MainMenu);
   const [loading, setLoading] = React.useState<LoadingScreenProps | null>({
@@ -185,12 +200,15 @@ export default function Dashboard(_props: {}): React.ReactElement {
         dispenserStateManager.on('updated', () =>
           setDispenserStates(dispenserStateManager.dispenserStates()),
         );
+        negotiationStatusManager.on('updated', () => 
+          setNegotiationStatus(negotiationStatusManager.allConflicts()));
         setTransport(x);
       })
       .catch((e: CloseEvent) => {
         setLoading({ caption: `Unable to connect to SOSS server (${e.code})`, variant: 'error' });
       });
-  }, [transportFactory, doorStateManager, liftStateManager, dispenserStateManager, fleetManager]);
+  }, [transportFactory, doorStateManager, liftStateManager, dispenserStateManager, fleetManager,
+    negotiationStatusManager]);
 
   React.useEffect(() => {
     if (!transport) {
@@ -314,6 +332,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
               fleets={fleets}
               trajManager={trajManager.current}
               appResources={resourceManager.current}
+              negotiationTrajStore={negotiationTrajStore}
               onDoorClick={handleDoorClick}
               onLiftClick={handleLiftClick}
               onRobotClick={handleRobotClick}

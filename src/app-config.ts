@@ -8,14 +8,13 @@ import FakeTrajectoryManager from './mock/fake-traj-manager';
 import { FakeTransport } from './mock/fake-transport';
 import ResourceManager, { ResourceConfigurationsType } from './resource-manager';
 import { DefaultTrajectoryManager, RobotTrajectoryManager } from './robot-trajectory-manager';
-import ResourceManager, { ResourceConfigurationsType } from './resource-manager';
 
 export interface AppConfig {
   authenticator: Authenticator;
   appResources: Promise<ResourceConfigurationsType>;
   transportFactory: () => Promise<RomiCore.Transport>;
   trajectoryManagerFactory?: () => Promise<RobotTrajectoryManager>;
-  trajectoryWebSocket ?: WebSocket;
+  trajServerUrl : string;
 }
 
 export const appConfig: AppConfig = (() => {
@@ -44,11 +43,6 @@ export const appConfig: AppConfig = (() => {
     })();
     const authenticator = new DefaultAuthenticator(authConfig);
 
-		const trajServer = process.env.REACT_APP_TRAJECTORY_SERVER;
-		if (!trajServer) {
-		  throw new Error('REACT_APP_TRAJECTORY_SERVER env variable is needed but not defined');
-		}
-
     return {
       authenticator,
       appResources: ResourceManager.getResourceConfigurationFile(),
@@ -58,7 +52,7 @@ export const appConfig: AppConfig = (() => {
         return SossTransport.connect(sossNodeName, sossServer, sossToken);
       },
       trajectoryManagerFactory: () => DefaultTrajectoryManager.create(trajServer),
-      trajectoryWebSocket : trajServer,
+      trajServerUrl : trajServer,
     };
   } else {
     return {
@@ -66,7 +60,7 @@ export const appConfig: AppConfig = (() => {
       appResources: ResourceManager.getResourceConfigurationFile(),
       transportFactory: async () => new FakeTransport(),
       trajectoryManagerFactory: async () => new FakeTrajectoryManager(),
-      trajectoryWebSocket : undefined
+      trajServerUrl : ""
     };
   }
 })();
