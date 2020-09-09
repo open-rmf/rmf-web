@@ -1,7 +1,3 @@
-import { AppBar, Fade, IconButton, makeStyles, Toolbar, Typography } from '@material-ui/core/';
-import { Dashboard as DashboardIcon, Settings as SettingsIcon } from '@material-ui/icons';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import Debug from 'debug';
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import 'typeface-roboto';
