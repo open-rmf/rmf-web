@@ -55,7 +55,7 @@ export default class NegotiationStatusManager extends EventEmitter<Events> {
         const msg = JSON.parse(event.data);
         if (msg["type"] === "negotiation_status")
         {
-          const conflictVersion : number = msg["conflictVersion"];
+          const conflictVersion : number = msg["conflict_version"];
           const conflictVersionStr = conflictVersion.toString()
       
           let conflict = this._conflicts[conflictVersionStr];
@@ -102,7 +102,7 @@ export default class NegotiationStatusManager extends EventEmitter<Events> {
         }
         else if (msg["type"] === "negotiation_conclusion")
         {
-          const conflictVersion : number = msg["conflictVersion"];
+          const conflictVersion : number = msg["conflict_version"];
           const conflict = this._conflicts[conflictVersion.toString()];
       
           if (conflict === undefined)
