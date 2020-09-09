@@ -16,6 +16,7 @@ import {
   withFollowAnimation,
   withOutlineAnimation,
 } from '../../components/schedule-visualizer/trajectory-animations';
+import { SettingsContext } from '../../components/app-contexts';
 
 export interface TrajectoryStoryProps extends RobotTrajectoriesOverlayProps {
   description: string;
@@ -97,29 +98,31 @@ export default function Trajectory(props: TrajectoryStoryProps) {
         </Button>
       </div>
       {drawAnimation ? (
-        <LMap
-          id="ScheduleVisualizer"
-          ref={mapRef}
-          bounds={mapBound}
-          maxBounds={maxBound}
-          className={classes.map}
-          attributionControl={false}
-          crs={L.CRS.Simple}
-          minZoom={4}
-          maxZoom={8}
-          zoomDelta={0.5}
-          zoomSnap={0.5}
-        >
-          <RobotTrajectoryContext.Provider value={TrajectoryComponent}>
-            <RobotTrajectoriesOverlay
-              bounds={bounds}
-              conflicts={conflicts}
-              colorManager={colorManager}
-              trajs={trajs}
-              conflictRobotNames={conflictRobotNames}
-            />
-          </RobotTrajectoryContext.Provider>
-        </LMap>
+        <SettingsContext.Provider value={currSettings}>
+          <LMap
+            id="ScheduleVisualizer"
+            ref={mapRef}
+            bounds={mapBound}
+            maxBounds={maxBound}
+            className={classes.map}
+            attributionControl={false}
+            crs={L.CRS.Simple}
+            minZoom={4}
+            maxZoom={8}
+            zoomDelta={0.5}
+            zoomSnap={0.5}
+          >
+            <RobotTrajectoryContext.Provider value={TrajectoryComponent}>
+              <RobotTrajectoriesOverlay
+                bounds={bounds}
+                conflicts={conflicts}
+                colorManager={colorManager}
+                trajs={trajs}
+                conflictRobotNames={conflictRobotNames}
+              />
+            </RobotTrajectoryContext.Provider>
+          </LMap>
+        </SettingsContext.Provider>
       ) : (
         <div style={styles.placeHolderText}>
           <Typography align="center" variant="h6">
