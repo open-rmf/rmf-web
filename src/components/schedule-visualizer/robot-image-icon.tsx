@@ -1,8 +1,8 @@
-import { useTheme } from '@material-ui/core';
-import React, { useMemo } from 'react';
+import React, { SVGProps, useMemo } from 'react';
+import { uniqueId } from '../../util/css-utils';
 import { RobotProps } from './robot';
 
-type RobotImageIconProps = Omit<RobotProps, 'colorManager' | 'fleetName'> & {
+type RobotImageIconProps = Omit<RobotProps, 'fleetName'> & {
   iconPath: string;
   dispatchIconError: React.Dispatch<
     React.SetStateAction<{
@@ -12,30 +12,53 @@ type RobotImageIconProps = Omit<RobotProps, 'colorManager' | 'fleetName'> & {
   >;
 };
 
+function makeGradientShadow(
+  color: string,
+): React.FunctionComponent<SVGProps<SVGRadialGradientElement>> {
+  return (props: SVGProps<SVGRadialGradientElement>) => (
+    <radialGradient {...props}>
+      <stop offset="0%" stop-color={`${color}80`} />
+      <stop offset="70%" stop-color={`${color}40`} />
+      <stop offset="90%" stop-color={`${color}10`} />
+      <stop offset="100%" stop-color={`${color}00`} />
+    </radialGradient>
+  );
+}
+
 const RobotImageIcon = React.forwardRef(function(
   props: RobotImageIconProps,
   ref: React.Ref<SVGGElement>,
 ): React.ReactElement {
-  const { robot, footprint, iconPath, dispatchIconError, inConflict } = props;
-  const theme = useTheme();
+  const { footprint, iconPath, dispatchIconError, inConflict, colorManager } = props;
+
   // The default icon uses footprint as the radius, so we * 2 here because the width/height
   // is in a square. With the double size of the footprint, we achieved a similar
   // size to the robot default svg icon.
   const [imgIconWidth, imgIconHeigth] = useMemo(() => [footprint * 2, footprint * 2], [footprint]);
+
+  const componentId = React.useMemo(uniqueId, []);
+  const shadowId = React.useMemo(() => `RobotImageIcon-${componentId}-shadow`, [componentId]);
+  const conflictShadowId = React.useMemo(() => `RobotImageIcon-${componentId}-shadow-conflict`, [
+    componentId,
+  ]);
+
+  const Shadow = React.useMemo(() => makeGradientShadow('#000000'), []);
+  const ShadowConflict = React.useMemo(() => makeGradientShadow(colorManager.conflictHighlight), [
+    colorManager.conflictHighlight,
+  ]);
 
   return (
     <>
       {!!iconPath && (
         <g>
           <defs>
-            <radialGradient id="RobotImageIcon-shadow">
-              <stop offset="0%" stop-color="#00000080" />
-              <stop offset="70%" stop-color="#00000040" />
-              <stop offset="90%" stop-color="#00000010" />
-              <stop offset="100%" stop-color="#00000000" />
-            </radialGradient>
+            <Shadow id={shadowId} />
+            <ShadowConflict id={conflictShadowId} />
           </defs>
-          <circle r={footprint * 1.3} fill="url(#RobotImageIcon-shadow)" />
+          <circle
+            r={footprint * 1.3}
+            fill={inConflict ? `url(#${conflictShadowId})` : `url(#${shadowId})`}
+          />
           <g transform={`translate(${-footprint} ${-footprint})`}>
             <image
               href={iconPath}

@@ -67,6 +67,16 @@ const robots: Record<string, RobotProps> = {
     },
     fleetName: 'fleetWithIcon',
   },
+  'With Icon, In Conflict': {
+    ...baseRobotProps,
+    robot: {
+      ...baseRobot,
+      name: 'RobotWithIcon',
+      model: 'fleetWithIcon',
+    },
+    fleetName: 'fleetWithIcon',
+    inConflict: true,
+  },
 };
 
 const resources: ResourceConfigurationsType = {

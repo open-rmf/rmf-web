@@ -69,6 +69,7 @@ const Robot = React.memo(
               footprint={footprint}
               dispatchIconError={setRenderCustomIcon}
               inConflict={inConflict}
+              colorManager={colorManager}
             />
           ) : (
             <RobotDefaultIcon

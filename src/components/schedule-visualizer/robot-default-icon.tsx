@@ -1,8 +1,25 @@
 import { useTheme } from '@material-ui/core';
-import React, { useState } from 'react';
+import React, { SVGProps, useState } from 'react';
+import { uniqueId } from '../../util/css-utils';
 import { RobotProps } from './robot';
 
 type RobotDefaultIconProps = Omit<RobotProps, 'fleetName'>;
+
+function makeGradientShadow(
+  color: string,
+): React.FunctionComponent<SVGProps<SVGRadialGradientElement>> {
+  return (props: SVGProps<SVGRadialGradientElement>) => (
+    <radialGradient {...props}>
+      <stop offset="70%" stop-color={`${color}ff`} />
+      <stop offset="75%" stop-color={`${color}80`} />
+      <stop offset="80%" stop-color={`${color}60`} />
+      <stop offset="85%" stop-color={`${color}30`} />
+      <stop offset="90%" stop-color={`${color}18`} />
+      <stop offset="95%" stop-color={`${color}08`} />
+      <stop offset="100%" stop-color={`${color}00`} />
+    </radialGradient>
+  );
+}
 
 const RobotDefaultIcon = React.forwardRef(function(
   props: RobotDefaultIconProps,
@@ -13,6 +30,17 @@ const RobotDefaultIcon = React.forwardRef(function(
     colorManager.robotColorFromCache(robot.name, robot.model),
   );
   const theme = useTheme();
+
+  const componentId = React.useMemo(uniqueId, []);
+  const shadowId = React.useMemo(() => `RobotDefaultIcon-${componentId}-shadow`, [componentId]);
+  const conflictShadowId = React.useMemo(() => `RobotDefaultIcon-${componentId}-shadow-conflict`, [
+    componentId,
+  ]);
+
+  const Shadow = React.useMemo(() => makeGradientShadow('#000000'), []);
+  const ShadowConflict = React.useMemo(() => makeGradientShadow(colorManager.conflictHighlight), [
+    colorManager.conflictHighlight,
+  ]);
 
   React.useLayoutEffect(() => {
     if (robotColor) {
@@ -28,17 +56,13 @@ const RobotDefaultIcon = React.forwardRef(function(
       {!!robotColor && (
         <g>
           <defs>
-            <radialGradient id="RobotDefaultIcon-shadow">
-              <stop offset="70%" stop-color="#000000ff" />
-              <stop offset="75%" stop-color="#00000080" />
-              <stop offset="80%" stop-color="#00000060" />
-              <stop offset="85%" stop-color="#00000030" />
-              <stop offset="90%" stop-color="#00000018" />
-              <stop offset="95%" stop-color="#00000008" />
-              <stop offset="100%" stop-color="#00000000" />
-            </radialGradient>
+            <Shadow id={shadowId} />
+            <ShadowConflict id={conflictShadowId} />
           </defs>
-          <circle r={footprint * 1.3} fill="url(#RobotDefaultIcon-shadow)" />
+          <circle
+            r={footprint * 1.3}
+            fill={inConflict ? `url(#${conflictShadowId})` : `url(#${shadowId})`}
+          />
           <circle r={footprint} fill={robotColor} />
           <line x2={footprint} stroke={theme.palette.common.black} strokeWidth="0.05" />
         </g>
