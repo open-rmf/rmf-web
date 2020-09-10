@@ -18,39 +18,46 @@ export default class ColorManager {
     return color;
   }
 
-  async robotTrajectoryColor(name: string, model: string): Promise<string> {
-    let color = this._pathColorCache[name];
+  async robotPrimaryColor(
+    name: string,
+    model: string,
+    image?: string,
+  ): Promise<string | undefined> {
+    let color: string;
+    color = this._pathColorCache[name];
+
+    // set different shades of green for path color
     if (!color) {
       const modelHash = new Uint16Array(await _hash(model));
       const nameHash = new Uint16Array(await _hash(name));
       color = ColorManager._gePathColor(modelHash[0], nameHash[0]);
       this._pathColorCache[name] = color;
+
+      // if image path is provided, proceed to extract colors from image
+      if (image) {
+        color = this._robotColorCache[name];
+        if (!color) {
+          const imgHolder = new Image();
+          imgHolder.src = image;
+
+          await new Promise((resolve, reject) => {
+            imgHolder.onload = () => resolve();
+            imgHolder.onerror = err => reject(err);
+          });
+          return Vibrant.from(imgHolder)
+            .getSwatches()
+            .then(palette => {
+              const rgb = palette.Vibrant?.getRgb();
+              if (rgb) {
+                const colorHolder = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+                this._robotColorCache[name] = colorHolder;
+                return colorHolder;
+              }
+            });
+        }
+      }
     }
     return color;
-  }
-
-  // use vibrant package
-  async robotImageColor(path: string, name: string) {
-    let color = this._robotColorCache[name];
-    if (!color) {
-      const imgHolder = new Image();
-      imgHolder.src = path;
-
-      await new Promise((resolve, reject) => {
-        imgHolder.onload = () => resolve();
-        imgHolder.onerror = err => reject(err);
-      });
-      return Vibrant.from(imgHolder)
-        .getSwatches()
-        .then(palette => {
-          const rgb = palette.Vibrant?.getRgb();
-          if (rgb) {
-            const colorHolder = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
-            this._robotColorCache[name] = colorHolder;
-            return colorHolder;
-          }
-        });
-    }
   }
 
   robotColorFromCache(name: string): string | null {
@@ -75,7 +82,7 @@ export default class ColorManager {
   }
 
   private static _gePathColor(firstNumber: number, secondNumber: number): string {
-    // get a range between 90 - 150
+    // get a range between 90 - 150 for a shade of green
     const hue = 90 + (firstNumber % 61);
     // get a range between 20 - 80
     const luminance = 20 + (secondNumber % 61);

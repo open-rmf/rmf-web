@@ -32,10 +32,9 @@ const RobotImageIcon = React.forwardRef(function(
       return;
     }
     (async () => {
-      await colorManager.robotImageColor(iconPath, robot.name).then(color => {
+      await colorManager.robotPrimaryColor(robot.name, robot.model, iconPath).then(color => {
         if (color) setRobotColor(color);
       });
-      await colorManager.robotTrajectoryColor(robot.name, robot.model);
     })();
   }, [robot, robotColor, colorManager, iconPath]);
 
