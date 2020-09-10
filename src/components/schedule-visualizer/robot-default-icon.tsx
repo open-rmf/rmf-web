@@ -19,7 +19,7 @@ const RobotDefaultIcon = React.forwardRef(function(
       setRobotColor(await colorManager.robotColor(fleetName, robot.name, robot.model));
       await colorManager.robotPrimaryColor(fleetName, robot.name, robot.model);
     })();
-  }, [robot, robotColor, colorManager]);
+  }, [robot, robotColor, colorManager, fleetName]);
 
   return (
     <>
