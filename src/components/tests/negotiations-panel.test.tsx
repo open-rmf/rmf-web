@@ -22,7 +22,7 @@ beforeEach(() => {
           base: { 
             sequence: [1],
             defunct: false,
-            rejected: false,
+            rejected: true,
             forfeited: false 
           },
           terminal: { 
@@ -38,9 +38,14 @@ beforeEach(() => {
             sequence: [2],
             defunct: false,
             rejected: false,
-            forfeited: false 
+            forfeited: true 
           },
-          terminal: new NegotiationStatus()
+          terminal: {
+            sequence: [1, 2],
+            defunct: true,
+            rejected: false,
+            forfeited: false 
+          }
         },
       },
       resolved: ResolveState.RESOLVED
