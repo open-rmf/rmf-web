@@ -5,6 +5,7 @@ describe('Color manager', () => {
   const mockRobot = {
     name: 'robot',
     model: 'A',
+    fleetName: 'fleet',
   };
 
   beforeEach(() => {
@@ -12,21 +13,40 @@ describe('Color manager', () => {
   });
 
   it('should store and return a color when robotColor is called', async () => {
-    const colorPromise = await colorManager.robotColor(mockRobot.name, mockRobot.model);
-    expect(colorPromise).toEqual(colorManager.robotColorFromCache(mockRobot.name));
+    const colorPromise = await colorManager.robotColor(
+      mockRobot.fleetName,
+      mockRobot.name,
+      mockRobot.model,
+    );
+    expect(colorPromise).toEqual(
+      colorManager.robotColorFromCache(mockRobot.fleetName, mockRobot.name),
+    );
   });
 
-  it('should store and return a color when robotTrajectoryColor is called', async () => {
-    const colorPromise = await colorManager.robotTrajectoryColor(mockRobot.name, mockRobot.model);
-    expect(colorPromise).toEqual(colorManager.pathColorFromCache(mockRobot.name));
+  it('should store and return a color in pathColorCache when robotPrimary Color is called without image path', async () => {
+    const colorPromise = await colorManager.robotPrimaryColor(
+      mockRobot.fleetName,
+      mockRobot.name,
+      mockRobot.model,
+    );
+    expect(colorPromise).toEqual(
+      colorManager.pathColorFromCache(mockRobot.fleetName, mockRobot.name),
+    );
   });
 
-  it('should return a promise when robotImageColor is called', done => {
+  it('should return a promise and store color in robotColorCache when robotPrimaryColor is called with image path', done => {
     const mockLink = 'link.com';
 
     setImmediate(() => {
-      const colorPromise = colorManager.robotImageColor(mockLink, mockRobot.name);
-      expect(colorPromise).resolves.toEqual(colorManager.robotColorFromCache(mockRobot.name));
+      const colorPromise = colorManager.robotPrimaryColor(
+        mockRobot.fleetName,
+        mockRobot.name,
+        mockRobot.model,
+        mockLink,
+      );
+      expect(colorPromise).resolves.toEqual(
+        colorManager.robotColorFromCache(mockRobot.fleetName, mockRobot.name),
+      );
       done();
     });
   });
