@@ -5,16 +5,13 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import TreeItem from '@material-ui/lab/TreeItem';
 import { SpotlightValue } from './spotlight-value';
-import { 
+import {
   NegotiationConflict,
   NegotiationStatus,
-  ResolveState
+  ResolveState,
 } from '../negotiation-status-manager';
 
-import {
-  RobotTrajectoryManager,
-  NegotiationTrajectoryResponse
-} from '../robot-trajectory-manager';
+import { RobotTrajectoryManager, NegotiationTrajectoryResponse } from '../robot-trajectory-manager';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -23,36 +20,35 @@ const useStyles = makeStyles(theme => ({
     maxWidth: 400,
   },
   finished: {
-    backgroundColor: "lightgreen"
+    backgroundColor: 'lightgreen',
   },
   rejected: {
-    backgroundColor: theme.palette.warning.main
+    backgroundColor: theme.palette.warning.main,
   },
   forfeited: {
-    backgroundColor: theme.palette.warning.main
+    backgroundColor: theme.palette.warning.main,
   },
   defunct: {
-    backgroundColor: theme.palette.error.main
+    backgroundColor: theme.palette.error.main,
   },
   unresolved: {
-    backgroundColor: theme.palette.error.main
+    backgroundColor: theme.palette.error.main,
   },
   ongoing: {
-    backgroundColor: "yellow"
-  }
+    backgroundColor: 'yellow',
+  },
 }));
 
-interface Parameter
-{
-  conflict_version : number;
-  sequence : number[];
-};
+interface Parameter {
+  conflict_version: number;
+  sequence: number[];
+}
 
 export interface NegotiationsPanelProps {
-  conflicts : Readonly<Record<string, NegotiationConflict>>;
+  conflicts: Readonly<Record<string, NegotiationConflict>>;
   spotlight?: Readonly<SpotlightValue<string>>;
   trajManager?: Readonly<RobotTrajectoryManager>;
-  negotiationTrajStore : Record<string, NegotiationTrajectoryResponse>;
+  negotiationTrajStore: Record<string, NegotiationTrajectoryResponse>;
 }
 
 export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.Element {
@@ -64,84 +60,67 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
     }
     // TODO: spotlight
   }, [spotlight]);
-  
+
   const classes = useStyles();
 
   /**  Utility conversion functions **/
-  const determineStatusText = (status : NegotiationStatus,
-    parent_resolved : ResolveState): string => {
-    if (status.forfeited)
-      return "  [FORFEITED]";
-    else if (status.rejected)
-      return "  [REJECTED]";
-    else if (status.defunct)
-      return "  [DEFUNCT]";
-    else if (parent_resolved === ResolveState.RESOLVED)
-      return "  [FINISHED]";
-    else
-      return "  [ONGOING]";
+  const determineStatusText = (
+    status: NegotiationStatus,
+    parent_resolved: ResolveState,
+  ): string => {
+    if (status.forfeited) return '  [FORFEITED]';
+    else if (status.rejected) return '  [REJECTED]';
+    else if (status.defunct) return '  [DEFUNCT]';
+    else if (parent_resolved === ResolveState.RESOLVED) return '  [FINISHED]';
+    else return '  [ONGOING]';
   };
-  const determineStyle = (status : NegotiationStatus, 
-    parent_resolved : ResolveState): string => {
-    if (status.forfeited)
-      return classes.forfeited;
-    else if (status.rejected)
-      return classes.rejected;
-    else if (status.defunct)
-      return classes.defunct;
-    else if (parent_resolved === ResolveState.RESOLVED)
-      return classes.finished;
-    else
-      return classes.ongoing;
+  const determineStyle = (status: NegotiationStatus, parent_resolved: ResolveState): string => {
+    if (status.forfeited) return classes.forfeited;
+    else if (status.rejected) return classes.rejected;
+    else if (status.defunct) return classes.defunct;
+    else if (parent_resolved === ResolveState.RESOLVED) return classes.finished;
+    else return classes.ongoing;
   };
 
   // keep track of parameters so we can send them as requests
   let nodeidToParameters = new Map<string, Parameter>();
 
   /** Render Negotiation panel contents **/
-  const renderNegotiations = (version : string, conflict : NegotiationConflict) => {
-    let conflictLabel = "Conflict #" + version + ", Participants: ";
+  const renderNegotiations = (version: string, conflict: NegotiationConflict) => {
+    let conflictLabel = 'Conflict #' + version + ', Participants: ';
     let i = 0;
-    for (const name of Object.values(conflict.participantIdsToNames))
-    {
+    for (const name of Object.values(conflict.participantIdsToNames)) {
       conflictLabel += name;
 
-      if (i !== (Object.keys(conflict.participantIdsToNames).length - 1))
-        conflictLabel += ", ";
+      if (i !== Object.keys(conflict.participantIdsToNames).length - 1) conflictLabel += ', ';
       ++i;
     }
     let conflictStyle = classes.ongoing;
-    if (conflict.resolved === ResolveState.RESOLVED)
-      conflictStyle = classes.finished;
-    else if (conflict.resolved === ResolveState.FAILED)
-      conflictStyle = classes.unresolved;
+    if (conflict.resolved === ResolveState.RESOLVED) conflictStyle = classes.finished;
+    else if (conflict.resolved === ResolveState.FAILED) conflictStyle = classes.unresolved;
 
-    let tableDom : JSX.Element[] = [];
-    for (const [participantId, statusData] of Object.entries(conflict.participantIdsToStatus))
-    {
+    let tableDom: JSX.Element[] = [];
+    for (const [participantId, statusData] of Object.entries(conflict.participantIdsToStatus)) {
       // status handling and background
       const participantName = conflict.participantIdsToNames[participantId];
-        
-      //add 1 or 2 rows of data depending on the sequence
-      
-      if (statusData.hasTerminal && statusData.terminal.sequence.length > 1)
-      {
+
+      // add 1 or 2 rows of data depending on the sequence
+
+      if (statusData.hasTerminal && statusData.terminal.sequence.length > 1) {
         const terminalStatus = statusData.terminal;
-        
+
         //set text and style for terminal node
         let terminalLabelText = participantName;
-        terminalLabelText += " -> [";
-        const lastIdx = (terminalStatus.sequence.length - 1);
-        for (let idx = 0; idx < lastIdx; ++idx)
-        {
+        terminalLabelText += ' -> [';
+        const lastIdx = terminalStatus.sequence.length - 1;
+        for (let idx = 0; idx < lastIdx; ++idx) {
           let sequenceId = terminalStatus.sequence[idx].toString();
           let sequenceIdName = conflict.participantIdsToNames[sequenceId];
 
           terminalLabelText += sequenceIdName;
-          if (idx !== (lastIdx - 1))
-            terminalLabelText += ", ";
+          if (idx !== lastIdx - 1) terminalLabelText += ', ';
         }
-        terminalLabelText += "]";
+        terminalLabelText += ']';
         terminalLabelText += determineStatusText(terminalStatus, conflict.resolved);
 
         let terminalStyle = determineStyle(terminalStatus, conflict.resolved);
@@ -149,61 +128,80 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
         //set text and style for base node
         let baseStatus = statusData.base;
 
-        let baseLabelText = "[";
+        let baseLabelText = '[';
         const sequenceIdName = conflict.participantIdsToNames[baseStatus.sequence[0]];
         baseLabelText += sequenceIdName;
-        baseLabelText += "]";
+        baseLabelText += ']';
         baseLabelText += determineStatusText(baseStatus, conflict.resolved);
 
         let baseStyle = determineStyle(baseStatus, conflict.resolved);
 
-        let terminalId = version + "." + participantId + ".terminal"; //terminal node
-        let baseId = version + "." + participantId + ".base"; //base ID
+        let terminalId = version + '.' + participantId + '.terminal'; //terminal node
+        let baseId = version + '.' + participantId + '.base'; //base ID
         tableDom.push(
-          <TreeItem nodeId={terminalId} key={terminalId} classes={{label: terminalStyle, selected: terminalStyle}} label={terminalLabelText}>
-            <TreeItem nodeId={baseId} key={baseId} classes={{label: baseStyle, selected: baseStyle}} label={baseLabelText}/>
-          </TreeItem>);
-        
+          <TreeItem
+            nodeId={terminalId}
+            key={terminalId}
+            classes={{ label: terminalStyle, selected: terminalStyle }}
+            label={terminalLabelText}
+          >
+            <TreeItem
+              nodeId={baseId}
+              key={baseId}
+              classes={{ label: baseStyle, selected: baseStyle }}
+              label={baseLabelText}
+            />
+          </TreeItem>,
+        );
+
         let terminalParams = {
-            conflict_version : parseInt(version),
-            sequence : terminalStatus.sequence
-          };
+          conflict_version: parseInt(version),
+          sequence: terminalStatus.sequence,
+        };
         nodeidToParameters.set(terminalId, terminalParams);
 
         let baseParams = {
-          conflict_version : parseInt(version),
-          sequence : baseStatus.sequence
+          conflict_version: parseInt(version),
+          sequence: baseStatus.sequence,
         };
         nodeidToParameters.set(baseId, baseParams);
-      }
-      else
-      {
+      } else {
         //single node
         let baseStatus = statusData.base;
         let labelText = participantName + determineStatusText(baseStatus, conflict.resolved);
         let style = determineStyle(baseStatus, conflict.resolved);
-        let nodeId = version + "." + participantId + ".base"; //base ID
+        let nodeId = version + '.' + participantId + '.base'; //base ID
         tableDom.push(
-          <TreeItem nodeId={nodeId} key={nodeId} classes={{label: style, selected: style}} label={labelText}/>
+          <TreeItem
+            nodeId={nodeId}
+            key={nodeId}
+            classes={{ label: style, selected: style }}
+            label={labelText}
+          />,
         );
 
         let baseParams = {
-          conflict_version : parseInt(version),
-          sequence : baseStatus.sequence
+          conflict_version: parseInt(version),
+          sequence: baseStatus.sequence,
         };
         nodeidToParameters.set(nodeId, baseParams);
       }
     }
-    
-    let nodeIdBase = "conflict" + version;
+
+    let nodeIdBase = 'conflict' + version;
     return (
-      <TreeItem nodeId={nodeIdBase} key={nodeIdBase} classes={{ label: conflictStyle, selected: conflictStyle }} label={conflictLabel}>
-        { tableDom }
+      <TreeItem
+        nodeId={nodeIdBase}
+        key={nodeIdBase}
+        classes={{ label: conflictStyle, selected: conflictStyle }}
+        label={conflictLabel}
+      >
+        {tableDom}
       </TreeItem>
     );
   };
 
-  let negotiationContents : JSX.Element[] = [];
+  let negotiationContents: JSX.Element[] = [];
   if (conflicts) {
     let reversedConflicts = Object.keys(conflicts).reverse();
     reversedConflicts.forEach(version => {
@@ -211,14 +209,12 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
       let contents = renderNegotiations(version, conflict);
       negotiationContents.push(contents);
     });
+  } else {
+    console.log('prop negotationstatus empty');
   }
-  else {
-    console.log("prop negotationstatus empty");
-  }
-  
-  // action callbacks
-  const handleSelect = (event: React.ChangeEvent<{}>, nodeIds: string) :void => {
 
+  // action callbacks
+  const handleSelect = (event: React.ChangeEvent<{}>, nodeIds: string): void => {
     async function updateNegotiationTrajectory() {
       if (!trajManager) {
         return;
@@ -230,15 +226,14 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
         return;
       }
 
-      const resp = await trajManager.negotiationTrajectory({ 
+      const resp = await trajManager.negotiationTrajectory({
         request: 'negotiation_trajectory',
-        param: trajParams
+        param: trajParams,
       });
-      if (resp.values === undefined)
-        console.warn("values undefined!");
+      if (resp.values === undefined) console.warn('values undefined!');
 
-      negotiationTrajStore["L1"] = resp;
-    };
+      negotiationTrajStore['L1'] = resp;
+    }
 
     updateNegotiationTrajectory();
   };

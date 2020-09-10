@@ -49,8 +49,8 @@ export interface TrajectoryResponse {
 export interface NegotiationTrajectoryRequest {
   request: 'negotiation_trajectory';
   param: {
-    conflict_version : number;
-    sequence : number[];
+    conflict_version: number;
+    sequence: number[];
   };
 }
 
@@ -64,8 +64,9 @@ export type Conflict = number[];
 export interface RobotTrajectoryManager {
   serverTime(request: TimeRequest): Promise<TimeResponse>;
   latestTrajectory(request: TrajectoryRequest): Promise<TrajectoryResponse>;
-  negotiationTrajectory(request : NegotiationTrajectoryRequest): 
-    Promise<NegotiationTrajectoryResponse>;
+  negotiationTrajectory(
+    request: NegotiationTrajectoryRequest,
+  ): Promise<NegotiationTrajectoryResponse>;
 }
 
 interface Request {
@@ -112,8 +113,9 @@ export class DefaultTrajectoryManager {
     return resp as TimeResponse;
   }
 
-  async negotiationTrajectory(request : NegotiationTrajectoryRequest): 
-    Promise<NegotiationTrajectoryResponse> {
+  async negotiationTrajectory(
+    request: NegotiationTrajectoryRequest,
+  ): Promise<NegotiationTrajectoryResponse> {
     const event = await this._send(JSON.stringify(request));
     const resp = JSON.parse(event.data);
     this._checkResponse(request, resp);
@@ -124,7 +126,10 @@ export class DefaultTrajectoryManager {
     return resp as NegotiationTrajectoryResponse;
   }
 
-  static getRobotNameFromPathId(pathId: number, trajectories: readonly Trajectory[]): string | undefined {
+  static getRobotNameFromPathId(
+    pathId: number,
+    trajectories: readonly Trajectory[],
+  ): string | undefined {
     const traj = trajectories.find(trajectory => trajectory.id === pathId);
     return traj?.robot_name;
   }
@@ -170,7 +175,9 @@ export class DefaultTrajectoryManager {
 
   private _checkResponse(request: Request, resp: Response): void {
     if (request.request !== resp.response) {
-      console.warn(`received response for wrong request. Request: ${request.request} Response: ${resp.response}`);
+      console.warn(
+        `received response for wrong request. Request: ${request.request} Response: ${resp.response}`,
+      );
       throw new Error('received response for wrong request');
     }
   }

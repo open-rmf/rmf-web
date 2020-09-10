@@ -10,10 +10,7 @@ import FleetManager from '../fleet-manager';
 import LiftStateManager from '../lift-state-manager';
 import NegotiationStatusManager from '../negotiation-status-manager';
 import { ResourceConfigurationsType } from '../resource-manager';
-import { 
-  RobotTrajectoryManager, 
-  NegotiationTrajectoryResponse 
-} from '../robot-trajectory-manager';
+import { RobotTrajectoryManager, NegotiationTrajectoryResponse } from '../robot-trajectory-manager';
 import { loadSettings, saveSettings, Settings } from '../settings';
 import { AppContextProvider } from './app-contexts';
 import AppBar from './appbar';
@@ -158,14 +155,19 @@ export default function Dashboard(_props: {}): React.ReactElement {
     SpotlightValue<string> | undefined
   >(undefined);
 
-  const negotiationStatusManager = React.useMemo(() => new NegotiationStatusManager(trajServerUrl), [trajServerUrl]);
+  const negotiationStatusManager = React.useMemo(
+    () => new NegotiationStatusManager(trajServerUrl),
+    [trajServerUrl],
+  );
   const [negotiationSpotlight, setNegotiationSpotlight] = React.useState<
     SpotlightValue<string> | undefined
   >(undefined);
-  const [negotiationStatus, setNegotiationStatus] = React.useState
-    (negotiationStatusManager.allConflicts());
-  const [negotiationTrajStore, setNegotiationTrajStore] = React.useState
-    <Record<string, NegotiationTrajectoryResponse>>({});
+  const [negotiationStatus, setNegotiationStatus] = React.useState(
+    negotiationStatusManager.allConflicts(),
+  );
+  const [negotiationTrajStore, setNegotiationTrajStore] = React.useState<
+    Record<string, NegotiationTrajectoryResponse>
+  >({});
 
   const [showOmniPanel, setShowOmniPanel] = React.useState(true);
   const [currentView, setCurrentView] = React.useState(OmniPanelViewIndex.MainMenu);
@@ -202,15 +204,22 @@ export default function Dashboard(_props: {}): React.ReactElement {
         dispenserStateManager.on('updated', () =>
           setDispenserStates(dispenserStateManager.dispenserStates()),
         );
-        negotiationStatusManager.on('updated', () => 
-          setNegotiationStatus(negotiationStatusManager.allConflicts()));
+        negotiationStatusManager.on('updated', () =>
+          setNegotiationStatus(negotiationStatusManager.allConflicts()),
+        );
         setTransport(x);
       })
       .catch((e: CloseEvent) => {
         setLoading({ caption: `Unable to connect to SOSS server (${e.code})`, variant: 'error' });
       });
-  }, [transportFactory, doorStateManager, liftStateManager, dispenserStateManager, fleetManager,
-    negotiationStatusManager]);
+  }, [
+    transportFactory,
+    doorStateManager,
+    liftStateManager,
+    dispenserStateManager,
+    fleetManager,
+    negotiationStatusManager,
+  ]);
 
   React.useEffect(() => {
     if (!transport) {
@@ -290,8 +299,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
       const parent = viewMap[index].parent;
       if (!parent) {
         return handleClose();
-      }
-      else {
+      } else {
         setNegotiationTrajStore({});
       }
       setCurrentView(parent.value);
@@ -394,8 +402,11 @@ export default function Dashboard(_props: {}): React.ReactElement {
               </OmniPanelView>
               <OmniPanelView id={OmniPanelViewIndex.Negotiations}>
                 <NegotiationsPanel
-                  conflicts={negotiationStatus} spotlight={negotiationSpotlight}
-                  trajManager={trajManager.current} negotiationTrajStore={negotiationTrajStore} />
+                  conflicts={negotiationStatus}
+                  spotlight={negotiationSpotlight}
+                  trajManager={trajManager.current}
+                  negotiationTrajStore={negotiationTrajStore}
+                />
               </OmniPanelView>
             </OmniPanel>
           </Fade>
