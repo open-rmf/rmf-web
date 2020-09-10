@@ -48,7 +48,7 @@ export interface NegotiationsPanelProps {
   conflicts: Readonly<Record<string, NegotiationConflict>>;
   spotlight?: Readonly<SpotlightValue<string>>;
   trajManager?: Readonly<RobotTrajectoryManager>;
-  negotiationTrajStore: Record<string, NegotiationTrajectoryResponse>;
+  negotiationTrajStore?: Record<string, NegotiationTrajectoryResponse>;
 }
 
 export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.Element {
@@ -216,13 +216,13 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
   // action callbacks
   const handleSelect = (event: React.ChangeEvent<{}>, nodeIds: string): void => {
     async function updateNegotiationTrajectory() {
-      if (!trajManager) {
+      if (!trajManager || !negotiationTrajStore) {
         return;
       }
 
       const trajParams = nodeidToParameters.get(nodeIds);
       if (!trajParams) {
-        //Must have clicked a top level node
+        // Must have clicked a top level node
         return;
       }
 
