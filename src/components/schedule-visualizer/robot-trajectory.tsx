@@ -80,7 +80,7 @@ export const RobotTrajectory = React.memo(
       <>
         {color && (
           <path
-            id="myPath"
+            id="robotTrajectoryPath"
             data-component="RobotTrajectory"
             ref={ref}
             d={pathD}
