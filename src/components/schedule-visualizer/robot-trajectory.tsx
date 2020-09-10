@@ -7,7 +7,7 @@ import { TrajectoryPath } from './trajectory-animations';
 import ColorManager from './colors';
 import { TrajectoryDiameter, TrajectoryColor, TrajectoryAnimation } from '../../settings';
 import { SettingsContext } from '../app-contexts';
-import RobotTrajectoryConflict from './robot-trajector-conflict';
+import RobotTrajectoryConflict from './robot-trajectory-conflict';
 
 const debug = Debug('ScheduleVisualizer:RobotTrajectory');
 
