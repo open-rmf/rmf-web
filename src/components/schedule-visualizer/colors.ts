@@ -33,7 +33,7 @@ export default class ColorManager {
   async robotImageColor(path: string, name: string) {
     let color = this._robotColorCache[name];
     if (!color) {
-      const imgHolder = new Image(400, 400);
+      const imgHolder = new Image();
       imgHolder.src = path;
 
       await new Promise((resolve, reject) => {
