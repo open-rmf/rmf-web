@@ -3,7 +3,7 @@ import React from 'react';
 import { createMuiTheme } from '@material-ui/core';
 
 import FakeTrajectoryManager from '../../../mock/fake-traj-manager';
-import RobotTrajectory, { RobotTrajectoryProps } from '../robot-trajectory';
+import RobotTrajectory, { RobotTrajectoryProps, fixTrajectoryDiameter } from '../robot-trajectory';
 import { Trajectory, Conflict } from '../../../robot-trajectory-manager';
 import { TrajectoryColor, TrajectoryDiameter, defaultSettings, Settings } from '../../../settings';
 import { SettingsContext } from '../../app-contexts';
@@ -47,7 +47,6 @@ describe('Robot Trajectory', () => {
   let trajectoryData;
   let trajectoryValue: Trajectory;
   let trajectoryConflict: Conflict[];
-  const fixPathSize = 0.4;
   const theme = createMuiTheme();
   const themeColor = theme.palette.success.main;
 
@@ -96,7 +95,7 @@ describe('Robot Trajectory', () => {
       .find('#robotTrajectoryPath')
       .props().stroke;
 
-    expect(trajWidth).toEqual(fixPathSize);
+    expect(trajWidth).toEqual(fixTrajectoryDiameter);
     expect(trajColor).toEqual(themeColor);
 
     root.unmount();

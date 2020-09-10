@@ -19,6 +19,7 @@ export interface RobotTrajectoryProps
   footprint: number;
   colorManager?: Readonly<ColorManager>;
 }
+export const fixTrajectoryDiameter = 0.4;
 
 export const RobotTrajectory = React.memo(
   React.forwardRef(function(
@@ -37,7 +38,7 @@ export const RobotTrajectory = React.memo(
     function determineTrajDiameter(trajDiameter: TrajectoryDiameter): number {
       switch (trajDiameter) {
         case TrajectoryDiameter.FixSize:
-          return 0.4;
+          return fixTrajectoryDiameter;
         case TrajectoryDiameter.RobotSize:
           return footprint;
       }
