@@ -44,7 +44,7 @@ export default class NegotiationStatusManager extends EventEmitter<Events> {
     return this._conflicts;
   }
 
-  startSubscription() {
+  startSubscription(): void {
     if (!this._backendWs) {
       console.warn('backend websocket not available');
       return;
@@ -109,7 +109,7 @@ export default class NegotiationStatusManager extends EventEmitter<Events> {
     };
   }
 
-  removeOldConflicts() {
+  removeOldConflicts(): void {
     const retainCount = 50;
     let resolved: string[] = [];
 
