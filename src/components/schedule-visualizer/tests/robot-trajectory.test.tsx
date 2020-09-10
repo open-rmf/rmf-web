@@ -101,24 +101,7 @@ describe('Robot Trajectory', () => {
     root.unmount();
   });
 
-  it('should set color to a certain shade of green', () => {
-    const mockContext = {
-      ...defaultSettings(),
-      trajectoryColor: TrajectoryColor.Shades,
-    };
-    const root = createWrapper(
-      RobotTrajectory,
-      trajectoryValue,
-      trajectoryConflict,
-      0.5,
-      'black',
-      mockContext,
-    );
-
-    root.unmount();
-  });
-
-  it('should change path color to conflicting color', () => {
+  it('should render conflicting path component when trajectories are conflicted', () => {
     const mockConflict = [[trajectoryValue.id]];
     const root = createWrapper(RobotTrajectory, trajectoryValue, mockConflict, 0.5, 'black');
     const errorPath = root.find('path').find('#errorPath');
