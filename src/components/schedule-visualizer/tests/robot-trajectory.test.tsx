@@ -1,5 +1,6 @@
 import { createMount } from '@material-ui/core/test-utils';
 import React from 'react';
+import { createMuiTheme } from '@material-ui/core';
 
 import FakeTrajectoryManager from '../../../mock/fake-traj-manager';
 import RobotTrajectory, { RobotTrajectoryProps } from '../robot-trajectory';
@@ -46,8 +47,9 @@ describe('Robot Trajectory', () => {
   let trajectoryData;
   let trajectoryValue: Trajectory;
   let trajectoryConflict: Conflict[];
-  const themeColor = '#4caf50';
   const fixPathSize = 0.4;
+  const theme = createMuiTheme();
+  const themeColor = theme.palette.success.main;
 
   beforeEach(async () => {
     trajMgr = new FakeTrajectoryManager();
