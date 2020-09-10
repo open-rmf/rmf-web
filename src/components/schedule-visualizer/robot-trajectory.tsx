@@ -36,9 +36,9 @@ export const RobotTrajectory = React.memo(
 
     function determineTrajDiameter(trajDiameter: TrajectoryDiameter): number {
       switch (trajDiameter) {
-        case TrajectoryDiameter.Fix_size:
+        case TrajectoryDiameter.FixSize:
           return 0.4;
-        case TrajectoryDiameter.Robot_size:
+        case TrajectoryDiameter.RobotSize:
           return footprint;
       }
     }
@@ -65,7 +65,7 @@ export const RobotTrajectory = React.memo(
       switch (settings.trajectoryColor) {
         case TrajectoryColor.Theme:
           return theme.palette.success.main;
-        case TrajectoryColor.Robot_Color:
+        case TrajectoryColor.RobotColor:
           return robotColorHolder;
         case TrajectoryColor.Shades:
           return pathColorHolder;

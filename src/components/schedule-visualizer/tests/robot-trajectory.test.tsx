@@ -72,7 +72,7 @@ describe('Robot Trajectory', () => {
   it('should set width to fix value and color to theme color', () => {
     const mockContext = {
       ...defaultSettings(),
-      trajectoryDiameter: TrajectoryDiameter.Fix_size,
+      trajectoryDiameter: TrajectoryDiameter.FixSize,
       trajectoryColor: TrajectoryColor.Theme,
     };
     const root = createWrapper(
