@@ -7,35 +7,38 @@ async function _hash(s: string): Promise<ArrayBuffer> {
 }
 
 export default class ColorManager {
-  async robotColor(name: string, model: string): Promise<string> {
-    let color = this._robotColorCache[name];
+  async robotColor(fleet: string, name: string, model: string): Promise<string> {
+    const key = this._robotKey(name, fleet);
+    let color = this._robotColorCache[key];
     if (!color) {
       const modelHash = new Uint16Array(await _hash(model));
       const nameHash = new Uint16Array(await _hash(name));
       color = ColorManager._getLightColor(modelHash[0], nameHash[0]);
-      this._robotColorCache[name] = color;
+      this._robotColorCache[key] = color;
     }
     return color;
   }
 
   async robotPrimaryColor(
+    fleet: string,
     name: string,
     model: string,
     image?: string,
   ): Promise<string | undefined> {
     let color: string;
-    color = this._pathColorCache[name];
+    const key = this._robotKey(name, fleet);
+    color = this._pathColorCache[key];
 
     // set different shades of green for path color
     if (!color) {
       const modelHash = new Uint16Array(await _hash(model));
       const nameHash = new Uint16Array(await _hash(name));
       color = ColorManager._gePathColor(modelHash[0], nameHash[0]);
-      this._pathColorCache[name] = color;
+      this._pathColorCache[key] = color;
 
       // if image path is provided, proceed to extract colors from image
       if (image) {
-        color = this._robotColorCache[name];
+        color = this._robotColorCache[key];
         if (!color) {
           const imgHolder = new Image();
           imgHolder.src = image;
@@ -50,7 +53,7 @@ export default class ColorManager {
               const rgb = palette.Vibrant?.getRgb();
               if (rgb) {
                 const colorHolder = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
-                this._robotColorCache[name] = colorHolder;
+                this._robotColorCache[key] = colorHolder;
                 return colorHolder;
               }
             });
@@ -60,12 +63,14 @@ export default class ColorManager {
     return color;
   }
 
-  robotColorFromCache(name: string): string | null {
-    return this._robotColorCache[name] ? this._robotColorCache[name] : null;
+  robotColorFromCache(fleet: string, name: string): string | null {
+    const key = this._robotKey(name, fleet);
+    return this._robotColorCache[key] ? this._robotColorCache[key] : null;
   }
 
-  pathColorFromCache(name: string): string | null {
-    return this._pathColorCache[name] ? this._pathColorCache[name] : null;
+  pathColorFromCache(fleet: string, name: string): string | null {
+    const key = this._robotKey(name, fleet);
+    return this._pathColorCache[key] ? this._pathColorCache[key] : null;
   }
 
   // Gets a light color different than red
@@ -92,4 +97,8 @@ export default class ColorManager {
 
   private _robotColorCache: Record<string, string> = {};
   private _pathColorCache: Record<string, string> = {};
+
+  private _robotKey(name: string, fleet: string) {
+    return `${name}__${fleet}`;
+  }
 }

@@ -47,11 +47,17 @@ export const RobotTrajectory = React.memo(
 
     const color = React.useMemo(() => {
       const getRobotColor = () => {
-        const robotColor = colorManager?.robotColorFromCache(trajectory.robot_name);
+        const robotColor = colorManager?.robotColorFromCache(
+          trajectory.fleet_name,
+          trajectory.robot_name,
+        );
         return !!robotColor ? robotColor : theme.palette.success.main;
       };
       const getPathColor = () => {
-        const pathColor = colorManager?.pathColorFromCache(trajectory.robot_name);
+        const pathColor = colorManager?.pathColorFromCache(
+          trajectory.fleet_name,
+          trajectory.robot_name,
+        );
         return !!pathColor ? pathColor : theme.palette.success.main;
       };
       const robotColorHolder = getRobotColor();

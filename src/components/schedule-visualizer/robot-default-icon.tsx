@@ -2,15 +2,13 @@ import { useTheme } from '@material-ui/core';
 import React, { useState } from 'react';
 import { RobotProps } from './robot';
 
-type RobotDefaultIconProps = Omit<RobotProps, 'fleetName'>;
-
 const RobotDefaultIcon = React.forwardRef(function(
-  props: RobotDefaultIconProps,
+  props: RobotProps,
   ref: React.Ref<SVGGElement>,
 ): React.ReactElement {
-  const { robot, footprint, colorManager, inConflict } = props;
+  const { robot, footprint, colorManager, inConflict, fleetName } = props;
   const [robotColor, setRobotColor] = useState<string | null>(() =>
-    colorManager.robotColorFromCache(robot.name),
+    colorManager.robotColorFromCache(fleetName, robot.name),
   );
   const theme = useTheme();
   React.useLayoutEffect(() => {
@@ -18,8 +16,8 @@ const RobotDefaultIcon = React.forwardRef(function(
       return;
     }
     (async () => {
-      setRobotColor(await colorManager.robotColor(robot.name, robot.model));
-      await colorManager.robotPrimaryColor(robot.name, robot.model);
+      setRobotColor(await colorManager.robotColor(fleetName, robot.name, robot.model));
+      await colorManager.robotPrimaryColor(fleetName, robot.name, robot.model);
     })();
   }, [robot, robotColor, colorManager]);
 
