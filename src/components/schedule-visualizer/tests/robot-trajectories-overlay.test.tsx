@@ -8,6 +8,7 @@ import { Conflict, Trajectory } from '../../../robot-trajectory-manager';
 import ColorManager from '../colors';
 import FakeTrajectoryManager from '../../../mock/fake-traj-manager';
 import { mapBound } from '../../../stories/baseComponents/utils';
+import toJson from 'enzyme-to-json';
 
 const mount = createMount();
 
@@ -64,6 +65,7 @@ describe('RobotTrajectoriesOverlay', () => {
       [trajectoryValue],
       [[]],
     );
+    expect(toJson(wrapper)).toMatchSnapshot();
     wrapper.unmount();
   });
 });

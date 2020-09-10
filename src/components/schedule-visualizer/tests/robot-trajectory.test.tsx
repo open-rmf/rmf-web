@@ -6,6 +6,7 @@ import RobotTrajectory, { RobotTrajectoryProps } from '../robot-trajectory';
 import { Trajectory, Conflict } from '../../../robot-trajectory-manager';
 import { TrajectoryColor, TrajectoryDiameter, defaultSettings, Settings } from '../../../settings';
 import { SettingsContext } from '../../app-contexts';
+import toJson from 'enzyme-to-json';
 
 const mount = createMount();
 
@@ -65,7 +66,7 @@ describe('Robot Trajectory', () => {
 
   it('renders without crashing', () => {
     const root = createWrapper(RobotTrajectory, trajectoryValue, trajectoryConflict, 0.5, 'black');
-
+    expect(toJson(root)).toMatchSnapshot();
     root.unmount();
   });
 
