@@ -135,9 +135,9 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
         for (let idx = 0; idx < lastIdx; ++idx)
         {
           let sequenceId = terminalStatus.sequence[idx].toString();
-          let sequnceIdName = conflict.participantIdsToNames[sequenceId];
+          let sequenceIdName = conflict.participantIdsToNames[sequenceId];
 
-          terminalLabelText += sequnceIdName;
+          terminalLabelText += sequenceIdName;
           if (idx !== (lastIdx - 1))
             terminalLabelText += ", ";
         }
@@ -150,8 +150,8 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
         let baseStatus = statusData.base;
 
         let baseLabelText = "[";
-        const sequnceIdName = conflict.participantIdsToNames[baseStatus.sequence[0]];
-        baseLabelText += sequnceIdName;
+        const sequenceIdName = conflict.participantIdsToNames[baseStatus.sequence[0]];
+        baseLabelText += sequenceIdName;
         baseLabelText += "]";
         baseLabelText += determineStatusText(baseStatus, conflict.resolved);
 
