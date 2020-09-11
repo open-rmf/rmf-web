@@ -4,7 +4,6 @@ enum LaunchMode {
   None,
   Local,
   LocalSingleton,
-  Docker,
 }
 
 interface Launcher {
@@ -17,7 +16,6 @@ interface Launcher {
  * mode is based on the ROMI_DASHBOARD_LAUNCH_MODE environment variable, the values can be one of
  *
  *   * none
- *   * docker
  *   * local
  *
  * Defaults to `local`.
@@ -28,9 +26,7 @@ interface Launcher {
  */
 export function makeLauncher(launchMode?: LaunchMode): Launcher {
   if (!launchMode) {
-    if (process.env.ROMI_DASHBOARD_LAUNCH_MODE === 'docker') {
-      launchMode = LaunchMode.Docker;
-    } else if (process.env.ROMI_DASHBOARD_LAUNCH_MODE === 'none') {
+    if (process.env.ROMI_DASHBOARD_LAUNCH_MODE === 'none') {
       launchMode = LaunchMode.None;
     } else {
       launchMode = LaunchMode.LocalSingleton;
@@ -40,8 +36,6 @@ export function makeLauncher(launchMode?: LaunchMode): Launcher {
   switch (launchMode) {
     case LaunchMode.None:
       return new StubLauncher();
-    case LaunchMode.Docker:
-      return new DockerLauncher();
     case LaunchMode.Local:
       return new LocalLauncher();
     case LaunchMode.LocalSingleton:
@@ -214,78 +208,6 @@ class ManagedProcess {
 
   private _proc: ChildProcess.ChildProcess;
   private _procAlive = false;
-}
-
-/**
- * Launches rmf components in docker containers.
- */
-export class DockerLauncher {
-  async launch(): Promise<void> {
-    ChildProcess.spawn(
-      `${__dirname}/../scripts/dockert`,
-      [
-        'docker-compose',
-        '-f',
-        `${__dirname}/../docker/docker-compose.yml`,
-        'up',
-        'office-demo',
-        'trajectory-server',
-        'soss',
-      ],
-      { stdio: 'inherit' },
-    );
-
-    const ready = await this._rmfReady();
-    if (!ready) {
-      throw new Error('unable to detect rmf');
-    }
-  }
-
-  async kill(): Promise<void> {
-    return new Promise(res => {
-      const proc = ChildProcess.spawn(`${__dirname}/../scripts/dockert`, [
-        'docker-compose',
-        '-f',
-        `${__dirname}/../docker/docker-compose.yml`,
-        'stop',
-        'office-demo',
-        'trajectory-server',
-        'soss',
-      ]);
-      proc.once('exit', res);
-    });
-  }
-
-  private async _rmfReady(timeout: number = 30000): Promise<boolean> {
-    return new Promise(res => {
-      const proc = ChildProcess.spawn(
-        `${__dirname}/../scripts/dockert`,
-        [
-          'docker-compose',
-          '-f',
-          `${__dirname}/../docker/docker-compose.yml`,
-          'up',
-          '--exit-code-from',
-          'probe-rmf',
-          'probe-rmf',
-        ],
-        { stdio: 'inherit' },
-      );
-      if (!proc) {
-        return res(false);
-      }
-
-      const timer = setTimeout(() => {
-        proc.kill();
-        res(false);
-      }, timeout);
-
-      proc.once('exit', code => {
-        clearTimeout(timer);
-        res(code === 0);
-      });
-    });
-  }
 }
 
 /**
