@@ -4,9 +4,7 @@ import {
   TimeRequest,
   TimeResponse,
   TrajectoryRequest,
-  TrajectoryResponse,
-  NegotiationTrajectoryRequest,
-  NegotiationTrajectoryResponse,
+  TrajectoryResponse
 } from '../robot-trajectory-manager';
 import trajectories from './data/trajectories.json';
 
@@ -32,11 +30,6 @@ export default class FakeTrajectoryManager implements RobotTrajectoryManager {
   serverTime(request: TimeRequest): Promise<TimeResponse> {
     throw new Error('Method not implemented.');
   }
-
-  negotiationTrajectory(request : NegotiationTrajectoryRequest): 
-    Promise<NegotiationTrajectoryResponse> {
-      throw new Error('Method not implemented.');
-    }
 
   private currentTraj = 0;
 }

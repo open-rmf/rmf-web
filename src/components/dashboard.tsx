@@ -8,9 +8,9 @@ import DispenserStateManager from '../dispenser-state-manager';
 import DoorStateManager from '../door-state-manager';
 import FleetManager from '../fleet-manager';
 import LiftStateManager from '../lift-state-manager';
-import NegotiationStatusManager from '../negotiation-status-manager';
+import { NegotiationStatusManager, NegotiationTrajectoryResponse } from '../negotiation-status-manager';
 import { ResourceConfigurationsType } from '../resource-manager';
-import { RobotTrajectoryManager, NegotiationTrajectoryResponse } from '../robot-trajectory-manager';
+import { RobotTrajectoryManager } from '../robot-trajectory-manager';
 import { loadSettings, saveSettings, Settings } from '../settings';
 import { AppContextProvider } from './app-contexts';
 import AppBar from './appbar';
@@ -404,7 +404,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                 <NegotiationsPanel
                   conflicts={negotiationStatus}
                   spotlight={negotiationSpotlight}
-                  trajManager={trajManager.current}
+                  negotiationStatusManager={negotiationStatusManager}
                   negotiationTrajStore={negotiationTrajStore}
                 />
               </OmniPanelView>

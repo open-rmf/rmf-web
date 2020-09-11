@@ -11,8 +11,10 @@ import {
   RobotTrajectoryManager,
   Trajectory,
   TrajectoryResponse,
-  NegotiationTrajectoryResponse,
 } from '../../robot-trajectory-manager';
+import {
+  NegotiationTrajectoryResponse
+} from '../../negotiation-status-manager';
 import { AnimationSpeed, TrajectoryAnimation } from '../../settings';
 import { toBlobUrl } from '../../util';
 import { ResourcesContext, SettingsContext } from '../app-contexts';

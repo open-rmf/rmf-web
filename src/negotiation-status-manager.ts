@@ -1,4 +1,5 @@
 import EventEmitter from 'eventemitter3';
+import { Trajectory } from './robot-trajectory-manager'
 
 type Events = {
   updated: [];
@@ -34,7 +35,20 @@ export class NegotiationConflict {
   public resolved: ResolveState = ResolveState.UNKNOWN;
 }
 
-export default class NegotiationStatusManager extends EventEmitter<Events> {
+export interface NegotiationTrajectoryRequest {
+  request: 'negotiation_trajectory';
+  param: {
+    conflict_version: number;
+    sequence: number[];
+  };
+}
+
+export interface NegotiationTrajectoryResponse {
+  response: 'negotiation_trajectory';
+  values: Trajectory[];
+}
+
+export class NegotiationStatusManager extends EventEmitter<Events> {
   constructor(url: string) {
     super();
     if (url) this._backendWs = new WebSocket(url);
@@ -127,6 +141,57 @@ export default class NegotiationStatusManager extends EventEmitter<Events> {
     }
   }
 
+  async negotiationTrajectory(
+    request: NegotiationTrajectoryRequest,
+  ): Promise<NegotiationTrajectoryResponse> {
+    const event = await this._send(JSON.stringify(request));
+    const resp = JSON.parse(event.data);
+
+    if (resp.values === null) {
+      resp.values = [];
+    }
+    return resp as NegotiationTrajectoryResponse;
+  }
+
+  // TODO: temporary function until we unite the 2 websockets
+  private async _send(payload: WebSocketSendParam0T): Promise<MessageEvent> {
+    if (!this._backendWs)
+      throw Error('Null _backendWs');
+    // response should come in the order that requests are sent, this should allow multiple messages
+    // in-flight while processing the responses in the order they are sent.
+    this._backendWs.send(payload);
+    // waits for the earlier response to be processed.
+    if (this._ongoingRequest) {
+      await this._ongoingRequest;
+    }
+
+    this._ongoingRequest = new Promise(res => {
+      this._listenOnce('message', e => {
+        this._ongoingRequest = null;
+        res(e);
+      });
+    });
+    return this._ongoingRequest;
+  }
+
+  private _listenOnce<K extends keyof WebSocketEventMap>(
+    event: K,
+    listener: (e: WebSocketEventMap[K]) => unknown,
+  ): void {
+    if (!this._backendWs)
+      return;
+
+    this._backendWs.addEventListener(event, e => {
+      if (!this._backendWs)
+        return;
+      this._backendWs.removeEventListener(event, listener);
+      listener(e);
+    });
+  }
+
   private _conflicts: Record<string, NegotiationConflict> = {};
   private _backendWs?: WebSocket;
+  private _ongoingRequest: Promise<MessageEvent> | null = null;
 }
+
+type WebSocketSendParam0T = Parameters<WebSocket['send']>[0];

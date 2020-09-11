@@ -46,27 +46,11 @@ export interface TrajectoryResponse {
   conflicts: Conflict[];
 }
 
-export interface NegotiationTrajectoryRequest {
-  request: 'negotiation_trajectory';
-  param: {
-    conflict_version: number;
-    sequence: number[];
-  };
-}
-
-export interface NegotiationTrajectoryResponse {
-  response: 'negotiation_trajectory';
-  values: Trajectory[];
-}
-
 export type Conflict = number[];
 
 export interface RobotTrajectoryManager {
   serverTime(request: TimeRequest): Promise<TimeResponse>;
   latestTrajectory(request: TrajectoryRequest): Promise<TrajectoryResponse>;
-  negotiationTrajectory(
-    request: NegotiationTrajectoryRequest,
-  ): Promise<NegotiationTrajectoryResponse>;
 }
 
 interface Request {
@@ -111,19 +95,6 @@ export class DefaultTrajectoryManager {
     const resp = JSON.parse(event.data);
     this._checkResponse(request, resp);
     return resp as TimeResponse;
-  }
-
-  async negotiationTrajectory(
-    request: NegotiationTrajectoryRequest,
-  ): Promise<NegotiationTrajectoryResponse> {
-    const event = await this._send(JSON.stringify(request));
-    const resp = JSON.parse(event.data);
-    this._checkResponse(request, resp);
-
-    if (resp.values === null) {
-      resp.values = [];
-    }
-    return resp as NegotiationTrajectoryResponse;
   }
 
   static getRobotNameFromPathId(

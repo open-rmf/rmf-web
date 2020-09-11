@@ -11,7 +11,7 @@ import {
   ResolveState,
 } from '../negotiation-status-manager';
 
-import { RobotTrajectoryManager, NegotiationTrajectoryResponse } from '../robot-trajectory-manager';
+import { NegotiationStatusManager, NegotiationTrajectoryResponse } from '../negotiation-status-manager';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -47,12 +47,12 @@ interface Parameter {
 export interface NegotiationsPanelProps {
   conflicts: Readonly<Record<string, NegotiationConflict>>;
   spotlight?: Readonly<SpotlightValue<string>>;
-  trajManager?: Readonly<RobotTrajectoryManager>;
+  negotiationStatusManager?: Readonly<NegotiationStatusManager>;
   negotiationTrajStore?: Record<string, NegotiationTrajectoryResponse>;
 }
 
 export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.Element {
-  const { conflicts, spotlight, trajManager, negotiationTrajStore } = props;
+  const { conflicts, spotlight, negotiationStatusManager, negotiationTrajStore } = props;
 
   React.useEffect(() => {
     if (!spotlight) {
@@ -216,7 +216,7 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
   // action callbacks
   const handleSelect = (event: React.ChangeEvent<{}>, nodeIds: string): void => {
     async function updateNegotiationTrajectory() {
-      if (!trajManager || !negotiationTrajStore) {
+      if (!negotiationStatusManager || !negotiationTrajStore) {
         return;
       }
 
@@ -226,11 +226,15 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
         return;
       }
 
-      const resp = await trajManager.negotiationTrajectory({
+      const resp = await negotiationStatusManager.negotiationTrajectory({
         request: 'negotiation_trajectory',
         param: trajParams,
       });
       if (resp.values === undefined) console.warn('values undefined!');
+      if (resp.response !== 'negotiation_trajectory') {
+        console.warn('wrong response, ignoring!');
+        return;
+      }
 
       negotiationTrajStore['L1'] = resp;
     }
