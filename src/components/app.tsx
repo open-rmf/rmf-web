@@ -358,7 +358,7 @@ export default function App(props: AppProps): JSX.Element {
               </Tooltip>
               <Tooltip title="Settings">
                 <IconButton color="inherit" onClick={() => setShowSettings(true)}>
-                  <SettingsIcon />
+                  <SettingsIcon data-name="settings-button" />
                 </IconButton>
               </Tooltip>
               <Tooltip title="Guide">
@@ -386,6 +386,7 @@ export default function App(props: AppProps): JSX.Element {
               view={currentView}
               onBack={handleBack}
               onClose={handleClose}
+              data-component="OmniPanel"
             >
               <OmniPanelView id={OmniPanelViewIndex.MainMenu}>
                 <MainMenu
