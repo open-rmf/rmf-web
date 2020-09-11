@@ -3,6 +3,7 @@ import { Map as LMap } from 'react-leaflet';
 import * as L from 'leaflet';
 import { makeStyles } from '@material-ui/core';
 import { Button, Typography } from '@material-ui/core';
+import 'leaflet/dist/leaflet.css';
 
 import RobotTrajectory from '../../components/schedule-visualizer/robot-trajectory';
 import { mapBound, maxBound, componentDisplayStyle, StyleTyping } from './utils';

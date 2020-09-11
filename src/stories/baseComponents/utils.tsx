@@ -6,7 +6,7 @@ import { colorPalette } from '../../util/css-utils';
 
 export const viewBoxCoords: string = '0 0 25.794363144785166 14.53525484725833';
 export const footprint: number = 0.5;
-export const mapBound = new L.LatLngBounds([0, 25.794363144785166], [-14.53525484725833, 0]);
+export const mapBound = new L.LatLngBounds([0, 25.794363144785166], [-17.53525484725833, 0]);
 export const maxBound = new L.LatLngBounds(
   [12.84386068880558, 338.5063539594412],
   [-77.06316413283348, -56.417725659906864],

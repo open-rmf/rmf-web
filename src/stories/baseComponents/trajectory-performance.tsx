@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import 'leaflet/dist/leaflet.css';
 
 import Trajectory from './trajectory';
 import { createTrajectories } from '../baseComponents/utils-trajectory';
