@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Push to GitHub Packages
+      - name: Push rmf image to GitHub Packages
         uses: docker/build-push-action@v1
         with:
           username: ${{ github.actor }}
@@ -18,6 +18,15 @@ jobs:
           repository: ${{ github.repository }}/rmf
           tags: nightly
           path: docker/rmf
+      - name: Push e2e image to GitHub Packages
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          repository: ${{ github.repository }}/e2e
+          tags: latest
+          dockerfile: docker/e2e.Dockerfile
   unit-test:
     name: Unit Test
     needs: build-docker-images
