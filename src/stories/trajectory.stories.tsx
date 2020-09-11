@@ -35,7 +35,6 @@ const descriptions = {
   fillAnim: 'Trajectory with fill animation',
   fillAnimMixConflict: 'Fill animation with some trajectories conflicting',
   fillAnimConflict: 'Fill animation with all trajectories conflicting',
-  spam: 'Spam trajectories to test performance (Currently 100 conflicting trajectories)',
 };
 
 const outlineAnimSettings: Settings = {
