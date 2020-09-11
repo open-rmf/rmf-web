@@ -4,6 +4,11 @@
  *
  * Clone the repo and follow the instructions on the README.md file to generate
  * the trajectories.
+ *
+ * You can then copy paste the trajectories into this file.
+ *
+ * Lastly, make sure to annotate all generate trajectories with the
+ * "GeneratedTrajProps" interface to make it work.
  */
 
 import { Conflict, Trajectory } from '../../robot-trajectory-manager';
