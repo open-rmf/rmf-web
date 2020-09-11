@@ -1,5 +1,6 @@
 import { createMount } from '@material-ui/core/test-utils';
 import React from 'react';
+import * as L from 'leaflet';
 import { Map as LMap } from 'react-leaflet';
 import RobotTrajectoriesOverlay, {
   RobotTrajectoriesOverlayProps,
@@ -7,10 +8,10 @@ import RobotTrajectoriesOverlay, {
 import { Conflict, Trajectory } from '../../../robot-trajectory-manager';
 import ColorManager from '../colors';
 import FakeTrajectoryManager from '../../../mock/fake-traj-manager';
-import { mapBound } from '../../../stories/baseComponents/utils';
 import toJson from 'enzyme-to-json';
 
 const mount = createMount();
+const mapBound = new L.LatLngBounds([0, 25.794363144785166], [-17.53525484725833, 0]);
 
 const createWrapper = (
   Component: React.MemoExoticComponent<(props: RobotTrajectoriesOverlayProps) => JSX.Element>,
