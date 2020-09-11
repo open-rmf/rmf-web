@@ -1,7 +1,6 @@
 import React from 'react';
 import { createMount } from '@material-ui/core/test-utils';
 import toJson from 'enzyme-to-json';
-import { Radio, RadioGroup } from '@material-ui/core';
 
 import SettingsDrawer from '../settings-drawer';
 import {
