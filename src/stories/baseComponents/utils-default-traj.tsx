@@ -1,3 +1,11 @@
+/***
+ * The trajectories in this file are generated from
+ * this script @https://github.com/ChawinTan/RomiH-Trajectory-Generator
+ *
+ * Clone the repo and follow the instructions on the README.md file to generate
+ * the trajectories.
+ */
+
 import { Conflict, Trajectory } from '../../robot-trajectory-manager';
 
 interface GeneratedTrajProps {
