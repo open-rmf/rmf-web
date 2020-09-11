@@ -46,7 +46,7 @@
   "scripts": {
     "start": ". e2e/env.sh && concurrently npm:start:auth npm:start:rmf npm:start:react",
     "start:docker": "ROMI_DASHBOARD_LAUNCH_MODE=docker npm run start --",
-    "start:auth": "scripts/dockert docker-compose -f docker/docker-compose.yml up auth",
+    "start:auth": ". e2e/env.sh && scripts/dockert docker-compose -f docker/docker-compose.yml up auth",
     "start:react": "react-scripts start",
     "start:react:e2e": "serve -c ../e2e/serve.json build",
     "start:mock": "REACT_APP_MOCK=1 react-scripts start",
@@ -57,7 +57,7 @@
     "test": "react-scripts test",
     "test:coverage": "npm run test -- --coverage --watchAll=false",
     "test:e2e": ". e2e/env.sh && node scripts/test-e2e.js",
-    "test:e2e:docker": "ROMI_DASHBOARD_LAUNCH_MODE=docker npm run test:e2e --",
+    "test:e2e:docker": ". e2e/env.sh && scripts/dockert docker-compose -f docker/docker-compose.yml up e2e",
     "test:e2e:wdio": "ts-node -P e2e/tsconfig.json e2e/auth-ready.ts && wdio",
     "test:e2e:dev": ". e2e/env.sh && ROMI_DASHBOARD_PORT=3000 ROMI_DASHBOARD_LAUNCH_MODE=none wdio",
     "sync:docker": "docker pull docker.pkg.github.com/osrf/romi-dashboard/rmf:nightly && docker pull quay.io/keycloak/keycloak:11.0.0",
