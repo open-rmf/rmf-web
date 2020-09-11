@@ -124,6 +124,9 @@
       "!src/components/auth/authenticator.ts",
       "!**/stories/**",
       "!**/mock/**"
+    ],
+    "snapshotSerializers": [
+      "enzyme-to-json/serializer"
     ]
   }
 }
