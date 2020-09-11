@@ -28,7 +28,7 @@ describe('Settings Drawer', () => {
         <SettingsDrawer settings={settings} onSettingsChange={onSettingsChange} open={true} />
       </SettingsContext.Provider>,
     );
-    expect(toJson(wrapper)).toMatchSnapshot();
+    wrapper.unmount();
   });
 
   it('should call onSettingsChange function when handleTrajectoryAnimationChange is called', () => {
