@@ -67,6 +67,7 @@ it('renders negotiations correctly', () => {
       mapFloorLayerSorted={undefined}
       negotiationStatusManager={undefined}
       negotiationTrajStore={undefined}
+      negotiationStatusUpdateTS={0}
     />,
   );
 
