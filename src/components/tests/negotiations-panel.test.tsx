@@ -2,7 +2,7 @@ import { createMount } from '@material-ui/core/test-utils';
 import React from 'react';
 import TreeView from '@material-ui/lab/TreeView';
 import TreeItem from '@material-ui/lab/TreeItem';
-import { NegotiationConflict, NegotiationStatus, ResolveState } from '../../negotiation-status-manager';
+import { NegotiationConflict, ResolveState } from '../../negotiation-status-manager';
 import NegotiationsPanel from '../negotiations-panel';
 
 const mount = createMount();
@@ -65,6 +65,8 @@ it('renders negotiations', () => {
   
   const treeItem = root.find(TreeItem);
   expect(treeItem).toBeDefined();
+
+  expect(root.html()).toMatchSnapshot();
 
   root.unmount();
 });
