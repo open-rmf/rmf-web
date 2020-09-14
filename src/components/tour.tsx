@@ -8,7 +8,7 @@ export interface DashboardTourProps {
   tourProps: {
     tourState: boolean;
     setTourState: React.Dispatch<React.SetStateAction<boolean>>;
-    OmniPanelViewIndex: any;
+    OmniPanelViewIndex: typeof OmniPanelViewIndex;
     setTourShowOmniPanel: (view: OmniPanelViewIndex) => void;
     setTourSettingsAndOmniPanel: (
       isSettingsVisible: boolean,
@@ -20,45 +20,49 @@ export interface DashboardTourProps {
   };
 }
 
-export default function DashboardTour(props: DashboardTourProps): React.ReactElement {
-  const {
-    tourProps: {
-      tourState,
+export const DashboardTour = React.memo(
+  (props: DashboardTourProps): React.ReactElement => {
+    const {
+      tourProps: {
+        tourState,
+        setTourState,
+        setTourSettingsAndOmniPanel,
+        setTourShowOmniPanel,
+        OmniPanelViewIndex,
+        doorSpotlight,
+        setDoorSpotlight,
+      },
+    } = props;
+
+    const tourFunctions = {
       setTourState,
-      setTourSettingsAndOmniPanel,
       setTourShowOmniPanel,
+      setTourSettingsAndOmniPanel,
       OmniPanelViewIndex,
       doorSpotlight,
       setDoorSpotlight,
-    },
-  } = props;
+    };
+    const { tourSteps, theme } = createTourSteps(tourFunctions);
 
-  const tourFunctions = {
-    setTourState,
-    setTourShowOmniPanel,
-    setTourSettingsAndOmniPanel,
-    OmniPanelViewIndex,
-    doorSpotlight,
-    setDoorSpotlight,
-  };
-  const { tourSteps, theme } = createTourSteps(tourFunctions);
+    return (
+      <Tour
+        steps={tourSteps}
+        isOpen={tourState}
+        onRequestClose={() => {
+          setTourState(false);
+          setTourShowOmniPanel(OmniPanelViewIndex.MainMenu);
+        }}
+        badgeContent={(curr, tot) => `${curr} of ${tot}`}
+        accentColor={theme.palette.primary.main}
+        rounded={5}
+        showNavigationNumber={false}
+        showNavigation={false}
+        showButtons={false}
+        closeWithMask={false}
+        startAt={0}
+      />
+    );
+  },
+);
 
-  return (
-    <Tour
-      steps={tourSteps}
-      isOpen={tourState}
-      onRequestClose={() => {
-        setTourState(false);
-        setTourShowOmniPanel(OmniPanelViewIndex.MainMenu);
-      }}
-      badgeContent={(curr, tot) => `${curr} of ${tot}`}
-      accentColor={theme.palette.primary.main}
-      rounded={5}
-      showNavigationNumber={false}
-      showNavigation={false}
-      showButtons={false}
-      closeWithMask={false}
-      startAt={0}
-    />
-  );
-}
+export default DashboardTour;
