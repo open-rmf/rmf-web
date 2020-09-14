@@ -15,7 +15,7 @@ export interface DispenserProps {
 }
 
 const Dispenser = React.memo(
-  React.forwardRef(function(
+  React.forwardRef(function (
     props: DispenserProps,
     ref: React.Ref<SVGGElement>,
   ): React.ReactElement {
@@ -27,7 +27,7 @@ const Dispenser = React.memo(
     });
 
     const handleLoadImageError = (): void => {
-      setRenderCustomIcon(previousVal => {
+      setRenderCustomIcon((previousVal) => {
         return { ...previousVal, error: true };
       });
     };
@@ -37,8 +37,10 @@ const Dispenser = React.memo(
         <g
           ref={ref}
           data-component="Dispenser"
+          data-name={dispenser.guid}
+          data-state={dispenserState ? 'true' : 'false'}
           className={`${classes.container}`}
-          onClick={e => onClick && dispenserState && onClick(e, dispenserState)}
+          onClick={(e) => onClick && dispenserState && onClick(e, dispenserState)}
           transform={`translate(${dispenser.location.x} ${-dispenser.location.y})
         rotate(${-(dispenser.location.yaw * 180) / Math.PI})`}
         >
