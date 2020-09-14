@@ -88,6 +88,8 @@ export const createTourSteps = (props: createTourProps) => {
       )}
       {lastStep && (
         <Button
+          variant="contained"
+          color="primary"
           onClick={() => {
             if (actionBefore) {
               actionBefore();
