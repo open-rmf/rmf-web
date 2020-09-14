@@ -150,36 +150,36 @@ export const CommandsPanel = React.memo((props: CommandsPanelProps) => {
     <React.Fragment>
       {!!resourcesContext.robots ? (
         <>
-          <ExpansionPanel data-component="LoopForm">
-            <ExpansionPanelSummary
-              classes={{ content: classes.expansionSummaryContent }}
+          <Accordion data-component="LoopForm">
+            <AccordionSummary
+              classes={{ content: classes.accordionSummaryContent }}
               expandIcon={<ExpandMoreIcon />}
             >
               <Typography variant="h5">Loop Request</Typography>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails className={classes.expansionDetail}>
+            </AccordionSummary>
+            <AccordionDetails className={classes.accordionDetail}>
               <LoopForm
                 requestLoop={handleRequestLoop}
                 fleetNames={allFleets}
                 robotHandler={resourcesContext.robots}
               />
-            </ExpansionPanelDetails>
-          </ExpansionPanel>
-          <ExpansionPanel data-component="DeliveryForm">
-            <ExpansionPanelSummary
-              classes={{ content: classes.expansionSummaryContent }}
+            </AccordionDetails>
+          </Accordion>
+          <Accordion data-component="DeliveryForm">
+            <AccordionSummary
+              classes={{ content: classes.accordionSummaryContent }}
               expandIcon={<ExpandMoreIcon />}
             >
               <Typography variant="h5">Delivery Request</Typography>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails className={classes.expansionDetail}>
+            </AccordionSummary>
+            <AccordionDetails className={classes.accordionDetail}>
               <RobotDeliveryForm
                 requestDelivery={handleDeliveryRequest}
                 fleetNames={allFleets}
                 robotHandler={resourcesContext.robots}
               />
-            </ExpansionPanelDetails>
-          </ExpansionPanel>
+            </AccordionDetails>
+          </Accordion>
         </>
       ) : (
         <Typography className={classes.errorText}>
@@ -193,7 +193,7 @@ export const CommandsPanel = React.memo((props: CommandsPanelProps) => {
 
 export default CommandsPanel;
 
-export const useStyles = makeStyles(theme => ({
+export const useStyles = makeStyles((theme) => ({
   accordionSummaryContent: {
     alignItems: 'center',
     justifyContent: 'space-between',
