@@ -1,5 +1,4 @@
 import React, { SVGProps, useMemo, useState } from 'react';
-import { useTheme } from '@material-ui/core';
 import { uniqueId } from '../../util/css-utils';
 import { RobotProps } from './robot';
 
@@ -44,7 +43,6 @@ const RobotImageIcon = React.forwardRef(function(
     fleetName,
   } = props;
 
-  const theme = useTheme();
   // The default icon uses footprint as the radius, so we * 2 here because the width/height
   // is in a square. With the double size of the footprint, we achieved a similar
   // size to the robot default svg icon.
