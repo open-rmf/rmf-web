@@ -7,7 +7,7 @@ import {
 } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import React, { CSSProperties } from 'react';
+import React from 'react';
 import { AntTab, AntTabs, TabPanel } from '../tab';
 import { LiftInformation } from './lift-item-information';
 import LiftRequestForm from './lift-item-form';
@@ -15,6 +15,7 @@ import { LiftRequestManager } from '../../lift-state-manager';
 import OmniPanelStatusLabels from '../omni-panel-status-labels';
 import { colorPalette } from '../../util/css-utils';
 import Debug from 'debug';
+import { CSSProperties } from '@material-ui/core/styles/withStyles';
 
 const debug = Debug('OmniPanel:LiftItem');
 
@@ -32,7 +33,10 @@ export interface LiftItemProps extends Omit<AccordionProps, 'children'> {
 }
 
 export const LiftItem = React.memo(
-  React.forwardRef(function(props: LiftItemProps, ref: React.Ref<HTMLElement>): React.ReactElement {
+  React.forwardRef(function (
+    props: LiftItemProps,
+    ref: React.Ref<HTMLElement>,
+  ): React.ReactElement {
     debug('render');
 
     const { id, lift, liftState, enableRequest, onRequest, ...otherProps } = props;
@@ -104,7 +108,7 @@ export const LiftItem = React.memo(
   }),
 );
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   const liftFloorLabelBase: CSSProperties = {
     borderRadius: theme.shape.borderRadius,
     borderStyle: 'solid',
