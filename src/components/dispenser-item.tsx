@@ -25,7 +25,7 @@ export interface DispenserItemProps extends Omit<AccordionProps, 'children'> {
 }
 
 export const DispenserItem = React.memo(
-  React.forwardRef(function(
+  React.forwardRef(function (
     props: DispenserItemProps,
     ref: React.Ref<HTMLElement>,
   ): React.ReactElement {
@@ -58,7 +58,7 @@ export const DispenserItem = React.memo(
       } else {
         return (
           <List className={classes.listRoot} dense={true}>
-            {dispenserState.request_guid_queue.map(id => (
+            {dispenserState.request_guid_queue.map((id) => (
               <ListItem key={id} className={classes.listItem}>
                 <Typography variant="body1">{id}</Typography>
               </ListItem>
@@ -84,7 +84,7 @@ export const DispenserItem = React.memo(
     return (
       <Accordion ref={ref} {...otherProps}>
         <AccordionSummary
-          classes={{ content: classes.expansionSummaryContent }}
+          classes={{ content: classes.accordionSummaryContent }}
           expandIcon={<ExpandMoreIcon />}
         >
           <OmniPanelStatusLabels
@@ -93,25 +93,25 @@ export const DispenserItem = React.memo(
             modeText={dispenserModeToString()}
           />
         </AccordionSummary>
-        <AccordionDetails className={classes.expansionDetail}>
-          <div className={classes.expansionDetailLine}>
+        <AccordionDetails className={classes.accordionDetail}>
+          <div className={classes.accordionDetailLine}>
             <Typography variant="body1">Name:</Typography>
             <Typography variant="body1">{dispenserState.guid}</Typography>
           </div>
           <Divider />
-          <div className={classes.expansionDetailLine}>
+          <div className={classes.accordionDetailLine}>
             <Typography variant="body1">No. Queued Requests:</Typography>
             <Typography variant="body1">
               {String(dispenserState.request_guid_queue.length)}
             </Typography>
           </div>
           <Divider />
-          <div className={classes.expansionDetailLine}>
+          <div className={classes.accordionDetailLine}>
             <Typography variant="body1">Request Queue ID:</Typography>
             {dispenserRequestQueueId()}
           </div>
           <Divider />
-          <div className={classes.expansionDetailLine}>
+          <div className={classes.accordionDetailLine}>
             <Typography variant="body1">Seconds Remaining:</Typography>
             <Typography variant="body1">{String(dispenserState.seconds_remaining)}</Typography>
           </div>
@@ -123,18 +123,18 @@ export const DispenserItem = React.memo(
 
 export default DispenserItem;
 
-const useStyles = makeStyles(theme => ({
-  expansionSummaryContent: {
+const useStyles = makeStyles((theme) => ({
+  accordionSummaryContent: {
     alignItems: 'center',
     justifyContent: 'space-between',
   },
 
-  expansionDetail: {
+  accordionDetail: {
     flexFlow: 'column',
     padding: '8px',
   },
 
-  expansionDetailLine: {
+  accordionDetailLine: {
     display: 'inline-flex',
     justifyContent: 'space-between',
     padding: theme.spacing(0.5),
@@ -161,7 +161,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const useDispenserModeLabelStyles = makeStyles(theme => {
+const useDispenserModeLabelStyles = makeStyles((theme) => {
   const base: CSSProperties = {
     borderRadius: theme.shape.borderRadius,
     borderStyle: 'solid',

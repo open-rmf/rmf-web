@@ -13,7 +13,7 @@ let robots: RomiCore.RobotState[];
 
 beforeEach(() => {
   fleets = fakeFleets();
-  robots = fleets.flatMap(x => x.robots);
+  robots = fleets.flatMap((x) => x.robots);
 });
 
 it('renders robots', () => {
@@ -27,7 +27,7 @@ it('umount on exit', () => {
   const root = mount(<RobotsPanel fleets={fleets} />);
   const robotElement = root.find(RobotItem).at(0);
 
-  // expansion details should be unmounted at the start
+  // accordion details should be unmounted at the start
   expect(robotElement.find(AccordionDetails).length).toBe(0);
 
   robotElement.find(AccordionSummary).simulate('click');

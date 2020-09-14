@@ -28,7 +28,7 @@ export interface DoorItemProps extends Omit<AccordionProps, 'children'> {
   onCloseClick?(door: RomiCore.Door): void;
 }
 
-export const DoorItem = React.forwardRef(function(
+export const DoorItem = React.forwardRef(function (
   props: DoorItemProps,
   ref: React.Ref<HTMLElement>,
 ): React.ReactElement {
@@ -63,7 +63,7 @@ export const DoorItem = React.forwardRef(function(
       {...otherProps}
     >
       <AccordionSummary
-        classes={{ content: classes.expansionSummaryContent }}
+        classes={{ content: classes.accordionSummaryContent }}
         expandIcon={<ExpandMoreIcon />}
       >
         <OmniPanelStatusLabels
@@ -72,28 +72,28 @@ export const DoorItem = React.forwardRef(function(
           modeText={doorModeToString(doorState)}
         />
       </AccordionSummary>
-      <AccordionDetails data-role="details" className={classes.expansionDetail}>
-        <div className={classes.expansionDetailLine}>
+      <AccordionDetails data-role="details" className={classes.accordionDetail}>
+        <div className={classes.accordionDetailLine}>
           <Typography variant="body1">Name:</Typography>
           <Typography variant="body1">{door.name}</Typography>
         </div>
         <Divider />
-        <div className={classes.expansionDetailLine}>
+        <div className={classes.accordionDetailLine}>
           <Typography variant="body1">Type:</Typography>
           <Typography variant="body1">{doorTypeToString(door.door_type)}</Typography>
         </div>
         <Divider />
-        <div className={classes.expansionDetailLine}>
+        <div className={classes.accordionDetailLine}>
           <Typography variant="body1">Motion Direction:</Typography>
           <Typography variant="body1">{motionDirectionToString(door.motion_direction)}</Typography>
         </div>
         <Divider />
-        <div className={classes.expansionDetailLine}>
+        <div className={classes.accordionDetailLine}>
           <Typography variant="body1">Motion Range:</Typography>
           <Typography variant="body1">{door.motion_range}</Typography>
         </div>
         <Divider />
-        <div className={classes.expansionDetailLine}>
+        <div className={classes.accordionDetailLine}>
           <Typography variant="body1">Location:</Typography>
           <Typography variant="body1">
             ({door.v1_x.toFixed(3)}, {door.v1_y.toFixed(3)})
@@ -110,18 +110,18 @@ export const DoorItem = React.forwardRef(function(
 
 export default DoorItem;
 
-const useStyles = makeStyles(theme => ({
-  expansionSummaryContent: {
+const useStyles = makeStyles((theme) => ({
+  accordionSummaryContent: {
     alignItems: 'center',
     justifyContent: 'space-between',
   },
 
-  expansionDetail: {
+  accordionDetail: {
     flexFlow: 'column',
     padding: '8px',
   },
 
-  expansionDetailLine: {
+  accordionDetailLine: {
     display: 'inline-flex',
     justifyContent: 'space-between',
     padding: theme.spacing(0.5),

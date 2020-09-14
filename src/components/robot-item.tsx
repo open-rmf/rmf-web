@@ -21,7 +21,7 @@ export interface RobotItemProps extends Omit<AccordionProps, 'children'> {
 }
 
 export const RobotItem = React.memo(
-  React.forwardRef(function(
+  React.forwardRef(function (
     props: RobotItemProps,
     ref: React.Ref<HTMLElement>,
   ): React.ReactElement {
@@ -33,7 +33,7 @@ export const RobotItem = React.memo(
     return (
       <Accordion ref={ref} data-component="RobotItem" data-name={robot.name} {...otherProps}>
         <AccordionSummary
-          classes={{ content: classes.expansionSummaryContent }}
+          classes={{ content: classes.accordionSummaryContent }}
           expandIcon={<ExpandMoreIcon />}
         >
           <OmniPanelStatusLabels
@@ -42,7 +42,7 @@ export const RobotItem = React.memo(
             modeText={robotModeToString(robot.mode)}
           />
         </AccordionSummary>
-        <AccordionDetails data-role="details" className={classes.expansionDetail}>
+        <AccordionDetails data-role="details" className={classes.accordionDetail}>
           <RobotInformation robot={robot} />
         </AccordionDetails>
       </Accordion>
@@ -52,18 +52,18 @@ export const RobotItem = React.memo(
 
 export default RobotItem;
 
-const useStyles = makeStyles(theme => ({
-  expansionSummaryContent: {
+const useStyles = makeStyles((theme) => ({
+  accordionSummaryContent: {
     alignItems: 'center',
     justifyContent: 'space-between',
   },
 
-  expansionDetail: {
+  accordionDetail: {
     flexFlow: 'column',
     overflowX: 'auto',
   },
 
-  expansionDetailLine: {
+  accordionDetailLine: {
     display: 'inline-flex',
     justifyContent: 'space-between',
     padding: theme.spacing(0.5),

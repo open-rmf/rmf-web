@@ -70,7 +70,7 @@ export const LiftItem = React.memo(
     return (
       <Accordion ref={ref} id={id} {...otherProps}>
         <AccordionSummary
-          classes={{ content: classes.expansionSummaryContent }}
+          classes={{ content: classes.accordionSummaryContent }}
           expandIcon={<ExpandMoreIcon />}
         >
           <OmniPanelStatusLabels
@@ -79,7 +79,7 @@ export const LiftItem = React.memo(
             modeText={liftState ? liftState.current_floor : 'N/A'}
           />
         </AccordionSummary>
-        <AccordionDetails className={classes.expansionDetail}>
+        <AccordionDetails className={classes.accordionDetail}>
           <AntTabs
             variant="fullWidth"
             value={tabValue}
@@ -119,18 +119,18 @@ const useStyles = makeStyles((theme) => {
   };
 
   return {
-    expansionSummaryContent: {
+    accordionSummaryContent: {
       alignItems: 'center',
       justifyContent: 'space-between',
     },
 
-    expansionDetail: {
+    accordionDetail: {
       flexFlow: 'column',
       overflowX: 'auto',
       padding: 0,
     },
 
-    expansionDetailLine: {
+    accordionDetailLine: {
       display: 'inline-flex',
       justifyContent: 'space-between',
       padding: theme.spacing(0.5),

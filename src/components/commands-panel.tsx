@@ -147,23 +147,23 @@ export const CommandsPanel = React.memo((props: CommandsPanelProps) => {
     <React.Fragment>
       <Accordion data-component="LoopForm">
         <AccordionSummary
-          classes={{ content: classes.expansionSummaryContent }}
+          classes={{ content: classes.accordionSummaryContent }}
           expandIcon={<ExpandMoreIcon />}
         >
           <Typography variant="h5">Loop Request</Typography>
         </AccordionSummary>
-        <AccordionDetails className={classes.expansionDetail}>
+        <AccordionDetails className={classes.accordionDetail}>
           <LoopForm requestLoop={handleRequestLoop} fleetNames={allFleets} />
         </AccordionDetails>
       </Accordion>
       <Accordion data-component="DeliveryForm">
         <AccordionSummary
-          classes={{ content: classes.expansionSummaryContent }}
+          classes={{ content: classes.accordionSummaryContent }}
           expandIcon={<ExpandMoreIcon />}
         >
           <Typography variant="h5">Delivery Request</Typography>
         </AccordionSummary>
-        <AccordionDetails className={classes.expansionDetail}>
+        <AccordionDetails className={classes.accordionDetail}>
           <RobotDeliveryForm requestDelivery={handleDeliveryRequest} fleetNames={allFleets} />
         </AccordionDetails>
       </Accordion>
@@ -173,12 +173,12 @@ export const CommandsPanel = React.memo((props: CommandsPanelProps) => {
 
 export default CommandsPanel;
 
-export const useStyles = makeStyles(theme => ({
-  expansionSummaryContent: {
+export const useStyles = makeStyles((theme) => ({
+  accordionSummaryContent: {
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  expansionDetail: {
+  accordionDetail: {
     flexFlow: 'column',
     paddingLeft: '0.1rem',
   },
