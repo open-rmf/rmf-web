@@ -12,7 +12,7 @@ exports[`RobotImageIcon renders correctly 1`] = `
         "robotColorFromCache": [MockFunction] {
           "calls": Array [
             Array [
-              undefined,
+              "testFleet",
               "",
             ],
           ],
@@ -26,6 +26,7 @@ exports[`RobotImageIcon renders correctly 1`] = `
       }
     }
     dispatchIconError={[MockFunction]}
+    fleetName="testFleet"
     footprint={1}
     iconPath="testIcon"
     robot={
