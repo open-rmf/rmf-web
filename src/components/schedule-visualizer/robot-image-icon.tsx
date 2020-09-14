@@ -60,9 +60,19 @@ const RobotImageIcon = React.forwardRef(function(
         .robotPrimaryColor(fleetName, robot.name, robot.model, iconPath)
         .then(color => {
           if (color) setRobotColor(color);
+          else {
+            dispatchIconError(previousVal => {
+              return { ...previousVal, error: true };
+            });
+          }
+        })
+        .catch(err => {
+          dispatchIconError(previousVal => {
+            return { ...previousVal, error: true };
+          });
         });
     })();
-  }, [robot, robotColor, colorManager, iconPath, fleetName]);
+  }, [robot, robotColor, colorManager, iconPath, fleetName, dispatchIconError]);
 
   const componentId = React.useMemo(uniqueId, []);
   const shadowId = React.useMemo(() => `RobotImageIcon-${componentId}-shadow`, [componentId]);

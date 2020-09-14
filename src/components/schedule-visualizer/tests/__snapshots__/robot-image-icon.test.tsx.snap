@@ -5,10 +5,24 @@ exports[`RobotImageIcon renders correctly 1`] = `
   <ForwardRef
     colorManager={
       ColorManager {
+        "_pathColorCache": Object {},
         "_robotColorCache": Object {},
         "conflictHighlight": "#f44336",
         "robotColor": [MockFunction],
-        "robotColorFromCache": [MockFunction],
+        "robotColorFromCache": [MockFunction] {
+          "calls": Array [
+            Array [
+              undefined,
+              "",
+            ],
+          ],
+          "results": Array [
+            Object {
+              "type": "return",
+              "value": "black",
+            },
+          ],
+        },
       }
     }
     dispatchIconError={[MockFunction]}
