@@ -71,7 +71,7 @@ function calcMaxBounds(mapFloorLayers: readonly MapFloorLayer[]): L.LatLngBounds
 export default function ScheduleVisualizer(props: ScheduleVisualizerProps): React.ReactElement {
   debug('render');
 
-  const { appResources } = props;
+  const { appResources, negotiationTrajStore } = props;
   const classes = useStyles();
 
   const [mapFloorLayers, setMapFloorLayers] = React.useState<
@@ -320,19 +320,20 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
           </LayersControl.Overlay>
 
           <LayersControl.Overlay name="Negotiation Trajectories" checked>
-          {curMapFloorLayer && props.negotiationTrajStore[curMapFloorLayer.level.name] && (
-            <Pane>
-              <RobotTrajectoryContext.Provider value={RobotTrajContextValue}>
-                <RobotTrajectoriesOverlay
-                  bounds={curMapFloorLayer.bounds}
-                  trajs={props.negotiationTrajStore[curMapFloorLayer.level.name].values}
-                  conflicts={getConflicts(curMapFloorLayer.level.name)}
-                  colorManager={colorManager}
-                  conflictRobotNames={conflictRobotNames}
-                />
-              </RobotTrajectoryContext.Provider>
-            </Pane>
-          )}
+            {curMapFloorLayer && (
+              <Pane>
+                <RobotTrajectoryContext.Provider value={RobotTrajContextValue}>
+                  <RobotTrajectoriesOverlay
+                    bounds={curMapFloorLayer.bounds}
+                    trajs={negotiationTrajStore[curMapFloorLayer.level.name] && 
+                      (props.negotiationTrajStore[curMapFloorLayer.level.name].values)}
+                    conflicts={getConflicts(curMapFloorLayer.level.name)}
+                    colorManager={colorManager}
+                    conflictRobotNames={conflictRobotNames}
+                  />
+                </RobotTrajectoryContext.Provider>
+              </Pane>
+            )}
           </LayersControl.Overlay>
 
           <LayersControl.Overlay name="Doors" checked>

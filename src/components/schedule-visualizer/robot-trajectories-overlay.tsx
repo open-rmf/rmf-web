@@ -10,7 +10,7 @@ import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 const debug = Debug('ScheduleVisualizer:RobotTrajectoriesOverlay');
 
 export interface RobotTrajectoriesOverlayProps extends SVGOverlayProps {
-  trajs: readonly Trajectory[];
+  trajs?: readonly Trajectory[];
   conflicts: Conflict[];
   colorManager: Readonly<ColorManager>;
   conflictRobotNames: string[][];
@@ -53,7 +53,7 @@ export const RobotTrajectoriesOverlay = React.memo((props: RobotTrajectoriesOver
   return (
     <SVGOverlay {...otherProps}>
       <svg viewBox={viewBox}>
-        {trajs.map((traj) => (
+        {trajs?.map((traj) => (
           <trajectoryContext.Component
             key={traj.id}
             trajectory={traj}
