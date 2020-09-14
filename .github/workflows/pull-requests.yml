@@ -1,4 +1,4 @@
-name: Run unit tests
+name: Pull Requests
 on:
   pull_request:
   push:
@@ -6,9 +6,11 @@ on:
       - master
 
 jobs:
-  test:
-    name: Test
+  unit-test:
+    name: Unit Test
     runs-on: ubuntu-latest
+    env:
+      CI: true
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
@@ -20,11 +22,28 @@ jobs:
           # Optional scope for authenticating against scoped registries
           scope: # optional
       - run: npm ci
-      - run: npm run build
+      - run: npm run build # linter runs here
       - run: npm run test:coverage
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+  e2e-test:
+    name: End-to-End Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - name: Prepare
+        run: |
+          npm ci
+          docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
+          npm run sync:docker
+      - name: e2e test
         env:
           CI: true
+        # retry the test twice if it fails
+        run: |
+          npm run test:e2e:docker || npm run test:e2e:docker || npm run test:e2e:docker

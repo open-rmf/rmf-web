@@ -1,17 +1,17 @@
-import React from 'react';
 import { Divider, Typography } from '@material-ui/core';
-
-import RobotComponent from './baseComponents/robot-component';
+import React from 'react';
+import RobotsPanel from '../components/robots-panel';
 import ColorManager from '../components/schedule-visualizer/colors';
+import RobotBenchmark from './baseComponents/robot-benchmark';
+import RobotComponent from './baseComponents/robot-component';
+import RobotGallery from './baseComponents/robot-gallery';
 import {
-  robotState,
-  robotStates,
   componentDisplayStyle,
   defaultStyles,
+  robotState,
+  robotStates,
   StyleTyping,
 } from './baseComponents/utils';
-import RobotGallery from './baseComponents/robot-gallery';
-import RobotsPanel from '../components/robots-panel';
 
 export default {
   title: 'Robot',
@@ -95,3 +95,5 @@ export const robotPanel = () => (
 );
 
 export const gallery = () => <RobotGallery />;
+
+export const benchmark = () => <RobotBenchmark />;

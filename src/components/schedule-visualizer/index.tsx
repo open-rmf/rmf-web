@@ -69,8 +69,6 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
 
   const { appResources } = props;
   const classes = useStyles();
-  const mapRef = React.useRef<LMap>(null);
-  const { current: mapElement } = mapRef;
 
   const [mapFloorLayers, setMapFloorLayers] = React.useState<
     Readonly<Record<string, MapFloorLayer>>
@@ -131,10 +129,6 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   }, [settings.trajectoryAnimation, trajAnimDuration]);
 
   React.useEffect(() => {
-    if (!mapElement) {
-      return;
-    }
-
     // We need the image to be loaded to know the bounds, but the image cannot be loaded without a
     // bounds, it is possible to use a temporary bounds but that would cause the viewport to move
     // when we replace the temporary bounds. A solution is to load the image in a temporary HTML
@@ -165,8 +159,8 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
               // const width = (svgElement.width.baseVal.value * scale) / IMAGE_SCALE;
 
               const bounds = new L.LatLngBounds(
-                [image.y_offset, image.x_offset],
-                [image.y_offset - height, image.x_offset + width],
+                [image.y_offset - height, image.x_offset],
+                [image.y_offset, image.x_offset + width],
               );
 
               mapFloorLayers[level.name] = {
@@ -189,7 +183,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       debug('set max bounds');
       setMaxBounds(calcMaxBounds(Object.values(mapFloorLayers)));
     })();
-  }, [props.buildingMap, mapElement]);
+  }, [props.buildingMap]);
 
   React.useEffect(() => {
     let interval: number;
@@ -275,7 +269,6 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   return (
     <LMap
       id="ScheduleVisualizer" // # data-* attrs are not set on the leaflet container
-      ref={mapRef}
       className={classes.map}
       attributionControl={false}
       crs={L.CRS.Simple}

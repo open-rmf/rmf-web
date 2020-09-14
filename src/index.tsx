@@ -1,14 +1,13 @@
 import 'leaflet/dist/leaflet.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import appConfig from './app-config';
 import App from './components/app';
 import { extendControlPositions } from './leaflet/control-positions';
 import * as serviceWorker from './serviceWorker';
 
 extendControlPositions();
 
-ReactDOM.render(<App appConfig={appConfig} />, document.getElementById('root'));
+ReactDOM.render(<App />, document.getElementById('root'));
 
 // NOTE: There is no point to have the app work offline as all the data must come from rmf/romi and
 // cannot be cached.
