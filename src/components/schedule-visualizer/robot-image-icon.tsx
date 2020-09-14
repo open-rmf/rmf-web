@@ -66,7 +66,7 @@ const RobotImageIcon = React.forwardRef(function(
             });
           }
         })
-        .catch(err => {
+        .catch(() => {
           dispatchIconError(previousVal => {
             return { ...previousVal, error: true };
           });
