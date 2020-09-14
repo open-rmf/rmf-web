@@ -57,7 +57,7 @@ it('renders negotiations', () => {
   const root = mount(<NegotiationsPanel 
     conflicts={negotiationStatuses}
     spotlight={undefined}
-    trajManager={undefined}
+    negotiationStatusManager={undefined}
     negotiationTrajStore={undefined} />);
 
   const treeView = root.find(TreeView);
