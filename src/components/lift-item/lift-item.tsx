@@ -1,8 +1,8 @@
 import {
-  ExpansionPanel,
-  ExpansionPanelDetails,
-  ExpansionPanelProps,
-  ExpansionPanelSummary,
+  Accordion,
+  AccordionDetails,
+  AccordionProps,
+  AccordionSummary,
   makeStyles,
 } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
@@ -18,7 +18,7 @@ import Debug from 'debug';
 
 const debug = Debug('OmniPanel:LiftItem');
 
-export interface LiftItemProps extends Omit<ExpansionPanelProps, 'children'> {
+export interface LiftItemProps extends Omit<AccordionProps, 'children'> {
   id?: string;
   lift: Readonly<RomiCore.Lift>;
   liftState?: Readonly<RomiCore.LiftState>;
@@ -64,8 +64,8 @@ export const LiftItem = React.memo(
     const requestTypes = React.useMemo(() => LiftRequestManager.getLiftRequestModes(), []);
 
     return (
-      <ExpansionPanel ref={ref} id={id} {...otherProps}>
-        <ExpansionPanelSummary
+      <Accordion ref={ref} id={id} {...otherProps}>
+        <AccordionSummary
           classes={{ content: classes.expansionSummaryContent }}
           expandIcon={<ExpandMoreIcon />}
         >
@@ -74,8 +74,8 @@ export const LiftItem = React.memo(
             name={lift.name}
             modeText={liftState ? liftState.current_floor : 'N/A'}
           />
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails className={classes.expansionDetail}>
+        </AccordionSummary>
+        <AccordionDetails className={classes.expansionDetail}>
           <AntTabs
             variant="fullWidth"
             value={tabValue}
@@ -98,8 +98,8 @@ export const LiftItem = React.memo(
               />
             )}
           </TabPanel>
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
+        </AccordionDetails>
+      </Accordion>
     );
   }),
 );

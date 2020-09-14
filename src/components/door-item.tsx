@@ -2,10 +2,10 @@ import {
   Button,
   ButtonGroup,
   Divider,
-  ExpansionPanel,
-  ExpansionPanelDetails,
-  ExpansionPanelProps,
-  ExpansionPanelSummary,
+  Accordion,
+  AccordionDetails,
+  AccordionProps,
+  AccordionSummary,
   makeStyles,
   Typography,
   useTheme,
@@ -19,7 +19,7 @@ import OmniPanelStatusLabels from './omni-panel-status-labels';
 
 const debug = Debug('OmniPanel:DoorItem');
 
-export interface DoorItemProps extends Omit<ExpansionPanelProps, 'children'> {
+export interface DoorItemProps extends Omit<AccordionProps, 'children'> {
   door: Readonly<RomiCore.Door>;
   doorState?: Readonly<RomiCore.DoorState>;
   enableControls?: boolean;
@@ -55,14 +55,14 @@ export const DoorItem = React.forwardRef(function(
   }
 
   return (
-    <ExpansionPanel
+    <Accordion
       ref={ref}
       data-component="DoorItem"
       data-name={door.name}
       data-state={doorModeToString(doorState)}
       {...otherProps}
     >
-      <ExpansionPanelSummary
+      <AccordionSummary
         classes={{ content: classes.expansionSummaryContent }}
         expandIcon={<ExpandMoreIcon />}
       >
@@ -71,8 +71,8 @@ export const DoorItem = React.forwardRef(function(
           name={door.name}
           modeText={doorModeToString(doorState)}
         />
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails data-role="details" className={classes.expansionDetail}>
+      </AccordionSummary>
+      <AccordionDetails data-role="details" className={classes.expansionDetail}>
         <div className={classes.expansionDetailLine}>
           <Typography variant="body1">Name:</Typography>
           <Typography variant="body1">{door.name}</Typography>
@@ -103,8 +103,8 @@ export const DoorItem = React.forwardRef(function(
           <Button onClick={() => onCloseClick && onCloseClick(door)}>Close</Button>
           <Button onClick={() => onOpenClick && onOpenClick(door)}>Open</Button>
         </ButtonGroup>
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
+      </AccordionDetails>
+    </Accordion>
   );
 });
 

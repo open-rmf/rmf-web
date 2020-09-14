@@ -1,7 +1,7 @@
 import {
-  ExpansionPanel,
-  ExpansionPanelDetails,
-  ExpansionPanelSummary,
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   makeStyles,
   Typography,
 } from '@material-ui/core';
@@ -145,28 +145,28 @@ export const CommandsPanel = React.memo((props: CommandsPanelProps) => {
 
   return (
     <React.Fragment>
-      <ExpansionPanel data-component="LoopForm">
-        <ExpansionPanelSummary
+      <Accordion data-component="LoopForm">
+        <AccordionSummary
           classes={{ content: classes.expansionSummaryContent }}
           expandIcon={<ExpandMoreIcon />}
         >
           <Typography variant="h5">Loop Request</Typography>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails className={classes.expansionDetail}>
+        </AccordionSummary>
+        <AccordionDetails className={classes.expansionDetail}>
           <LoopForm requestLoop={handleRequestLoop} fleetNames={allFleets} />
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
-      <ExpansionPanel data-component="DeliveryForm">
-        <ExpansionPanelSummary
+        </AccordionDetails>
+      </Accordion>
+      <Accordion data-component="DeliveryForm">
+        <AccordionSummary
           classes={{ content: classes.expansionSummaryContent }}
           expandIcon={<ExpandMoreIcon />}
         >
           <Typography variant="h5">Delivery Request</Typography>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails className={classes.expansionDetail}>
+        </AccordionSummary>
+        <AccordionDetails className={classes.expansionDetail}>
           <RobotDeliveryForm requestDelivery={handleDeliveryRequest} fleetNames={allFleets} />
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
+        </AccordionDetails>
+      </Accordion>
     </React.Fragment>
   );
 });

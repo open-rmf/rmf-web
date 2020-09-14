@@ -1,8 +1,8 @@
 import {
-  ExpansionPanel,
-  ExpansionPanelDetails,
-  ExpansionPanelProps,
-  ExpansionPanelSummary,
+  Accordion,
+  AccordionDetails,
+  AccordionProps,
+  AccordionSummary,
   makeStyles,
 } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
@@ -14,7 +14,7 @@ import { RobotInformation } from './robot-item-information';
 
 const debug = Debug('OmniPanel:RobotItem');
 
-export interface RobotItemProps extends Omit<ExpansionPanelProps, 'children'> {
+export interface RobotItemProps extends Omit<AccordionProps, 'children'> {
   fleetName: string;
   robot: Readonly<RomiCore.RobotState>;
   onRobotClick?(robot: RomiCore.RobotState): void;
@@ -31,8 +31,8 @@ export const RobotItem = React.memo(
     debug('render %s', robot.name);
 
     return (
-      <ExpansionPanel ref={ref} data-component="RobotItem" data-name={robot.name} {...otherProps}>
-        <ExpansionPanelSummary
+      <Accordion ref={ref} data-component="RobotItem" data-name={robot.name} {...otherProps}>
+        <AccordionSummary
           classes={{ content: classes.expansionSummaryContent }}
           expandIcon={<ExpandMoreIcon />}
         >
@@ -41,11 +41,11 @@ export const RobotItem = React.memo(
             name={robot.name}
             modeText={robotModeToString(robot.mode)}
           />
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails data-role="details" className={classes.expansionDetail}>
+        </AccordionSummary>
+        <AccordionDetails data-role="details" className={classes.expansionDetail}>
           <RobotInformation robot={robot} />
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
+        </AccordionDetails>
+      </Accordion>
     );
   }),
 );

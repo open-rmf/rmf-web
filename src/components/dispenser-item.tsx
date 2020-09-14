@@ -1,9 +1,9 @@
 import {
   Divider,
-  ExpansionPanel,
-  ExpansionPanelDetails,
-  ExpansionPanelProps,
-  ExpansionPanelSummary,
+  Accordion,
+  AccordionDetails,
+  AccordionProps,
+  AccordionSummary,
   List,
   ListItem,
   makeStyles,
@@ -20,7 +20,7 @@ import OmniPanelStatusLabels from './omni-panel-status-labels';
 
 const debug = Debug('OmniPanel:DispenserItem');
 
-export interface DispenserItemProps extends Omit<ExpansionPanelProps, 'children'> {
+export interface DispenserItemProps extends Omit<AccordionProps, 'children'> {
   dispenserState: Readonly<RomiCore.DispenserState>;
 }
 
@@ -82,8 +82,8 @@ export const DispenserItem = React.memo(
     }
 
     return (
-      <ExpansionPanel ref={ref} {...otherProps}>
-        <ExpansionPanelSummary
+      <Accordion ref={ref} {...otherProps}>
+        <AccordionSummary
           classes={{ content: classes.expansionSummaryContent }}
           expandIcon={<ExpandMoreIcon />}
         >
@@ -92,8 +92,8 @@ export const DispenserItem = React.memo(
             name={dispenserState.guid}
             modeText={dispenserModeToString()}
           />
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails className={classes.expansionDetail}>
+        </AccordionSummary>
+        <AccordionDetails className={classes.expansionDetail}>
           <div className={classes.expansionDetailLine}>
             <Typography variant="body1">Name:</Typography>
             <Typography variant="body1">{dispenserState.guid}</Typography>
@@ -115,8 +115,8 @@ export const DispenserItem = React.memo(
             <Typography variant="body1">Seconds Remaining:</Typography>
             <Typography variant="body1">{String(dispenserState.seconds_remaining)}</Typography>
           </div>
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
+        </AccordionDetails>
+      </Accordion>
     );
   }),
 );
