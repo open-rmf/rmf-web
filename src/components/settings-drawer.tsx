@@ -28,15 +28,29 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
     [],
   );
 
-  const trajDiameterText = React.useMemo(
-    () => Object.keys(TrajectoryDiameter).slice(Object.keys(TrajectoryDiameter).length * 0.5),
-    [],
-  );
+  const trajDiameterText = React.useMemo(() => {
+    const keys = Object.keys(TrajectoryDiameter).slice(
+      Object.keys(TrajectoryDiameter).length * 0.5,
+    );
+    return keys.map(key => {
+      let text = '';
+      key.split(/(?=[A-Z])/).forEach(k => {
+        text += k + ' ';
+      });
+      return text.trim();
+    });
+  }, []);
 
-  const trajColorText = React.useMemo(
-    () => Object.keys(TrajectoryColor).slice(Object.keys(TrajectoryColor).length * 0.5),
-    [],
-  );
+  const trajColorText = React.useMemo(() => {
+    const keys = Object.keys(TrajectoryColor).slice(Object.keys(TrajectoryColor).length * 0.5);
+    return keys.map(key => {
+      let text = '';
+      key.split(/(?=[A-Z])/).forEach(k => {
+        text += k + ' ';
+      });
+      return text.trim();
+    });
+  }, []);
 
   const drawerAnchor = useMediaQuery('(max-aspect-ratio: 8/10') ? 'bottom' : 'right';
 
