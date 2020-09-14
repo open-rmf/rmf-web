@@ -20,6 +20,7 @@ exports[`RobotTrajectoriesOverlay renders without crashing 1`] = `
         ColorManager {
           "_pathColorCache": Object {},
           "_robotColorCache": Object {},
+          "conflictHighlight": "#f44336",
         }
       }
       conflictRobotNames={
@@ -445,6 +446,7 @@ exports[`RobotTrajectoriesOverlay renders without crashing 1`] = `
                                 ColorManager {
                                   "_pathColorCache": Object {},
                                   "_robotColorCache": Object {},
+                                  "conflictHighlight": "#f44336",
                                 }
                               }
                               conflicts={Array []}
@@ -1135,6 +1137,7 @@ exports[`RobotTrajectoriesOverlay renders without crashing 1`] = `
                             ColorManager {
                               "_pathColorCache": Object {},
                               "_robotColorCache": Object {},
+                              "conflictHighlight": "#f44336",
                             }
                           }
                           conflicts={Array []}
@@ -1950,6 +1953,7 @@ exports[`RobotTrajectoriesOverlay renders without crashing 1`] = `
                                 ColorManager {
                                   "_pathColorCache": Object {},
                                   "_robotColorCache": Object {},
+                                  "conflictHighlight": "#f44336",
                                 }
                               }
                               conflicts={Array []}
@@ -2640,6 +2644,7 @@ exports[`RobotTrajectoriesOverlay renders without crashing 1`] = `
                             ColorManager {
                               "_pathColorCache": Object {},
                               "_robotColorCache": Object {},
+                              "conflictHighlight": "#f44336",
                             }
                           }
                           conflicts={Array []}
@@ -3167,6 +3172,7 @@ exports[`RobotTrajectoriesOverlay renders without crashing 1`] = `
                   ColorManager {
                     "_pathColorCache": Object {},
                     "_robotColorCache": Object {},
+                    "conflictHighlight": "#f44336",
                   }
                 }
                 conflicts={Array []}
