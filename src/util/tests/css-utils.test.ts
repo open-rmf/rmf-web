@@ -8,5 +8,5 @@ test('Correct calculus of bounds', () => {
     [-58, -25.7],
     [0, 0],
   ]);
-  expect(bounds2).toBe('0 0 25.7 58');
+  expect(bounds2).toBe('-25.7 0 25.7 58');
 });

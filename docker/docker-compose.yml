@@ -1,21 +1,5 @@
-version: "3"
+version: '3'
 services:
-  trajectory-server:
-    image: docker.pkg.github.com/osrf/romi-dashboard/rmf:nightly
-    command: ros2 launch visualizer server.xml
-    ports:
-      - 8006:8006
-  office-demo:
-
-    image: docker.pkg.github.com/osrf/romi-dashboard/rmf:nightly
-    command: ros2 launch demos office.launch.xml headless:=true
-  soss:
-    image: docker.pkg.github.com/osrf/romi-dashboard/rmf:nightly
-    command: soss /root/romi-dashboard/e2e/soss.yaml
-    volumes:
-      - ../e2e:/root/romi-dashboard/e2e
-    ports:
-      - 50001:50001
   auth:
     build:
       context: .
@@ -23,6 +7,29 @@ services:
     image: romi-dashboard/auth
     ports:
       - 8080:8080
-  probe-rmf:
-    image: docker.pkg.github.com/osrf/romi-dashboard/rmf:nightly
-    command: bash -c 'while [ ! $$(ros2 node list | grep rmf_traffic) ]; do sleep 1; done;'
+  e2e:
+    build:
+      context: ..
+      dockerfile: docker/e2e.Dockerfile
+    image: docker.pkg.github.com/osrf/romi-dashboard/e2e
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ..:/root/romi-dashboard
+    working_dir: /root/romi-dashboard
+    environment:
+      CI: 1
+      CHROME_BIN: /chrome-no-sandbox
+    ipc: host
+    network_mode: host
+    privileged: true
+    command: npm run test:e2e
+  dev:
+    image: docker.pkg.github.com/osrf/romi-dashboard/e2e
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ..:/root/romi-dashboard
+    working_dir: /root/romi-dashboard
+    ipc: host
+    network_mode: host
+    privileged: true
+    command: bash -c 'BROWSER=none npm start'

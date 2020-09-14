@@ -1,5 +1,6 @@
+import React, { SVGProps, useMemo, useState } from 'react';
 import { useTheme } from '@material-ui/core';
-import React, { useMemo, useState } from 'react';
+import { uniqueId } from '../../util/css-utils';
 import { RobotProps } from './robot';
 
 type RobotImageIconProps = RobotProps & {
@@ -11,6 +12,23 @@ type RobotImageIconProps = RobotProps & {
     }>
   >;
 };
+
+/**
+ *
+ * @param color MUST be in hex notation without alpha channel. e.g. #123456
+ */
+function makeGradientShadow(
+  color: string,
+): React.FunctionComponent<SVGProps<SVGRadialGradientElement>> {
+  return (props: SVGProps<SVGRadialGradientElement>) => (
+    <radialGradient {...props}>
+      <stop offset="0%" stopColor={`${color}80`} />
+      <stop offset="70%" stopColor={`${color}40`} />
+      <stop offset="90%" stopColor={`${color}10`} />
+      <stop offset="100%" stopColor={`${color}00`} />
+    </radialGradient>
+  );
+}
 
 const RobotImageIcon = React.forwardRef(function(
   props: RobotImageIconProps,
@@ -48,33 +66,46 @@ const RobotImageIcon = React.forwardRef(function(
     })();
   }, [robot, robotColor, colorManager, iconPath, fleetName]);
 
+  const componentId = React.useMemo(uniqueId, []);
+  const shadowId = React.useMemo(() => `RobotImageIcon-${componentId}-shadow`, [componentId]);
+  const conflictShadowId = React.useMemo(() => `RobotImageIcon-${componentId}-shadow-conflict`, [
+    componentId,
+  ]);
+
+  const Shadow = React.useMemo(() => makeGradientShadow('#000000'), []);
+  const ShadowConflict = React.useMemo(() => makeGradientShadow(colorManager.conflictHighlight), [
+    colorManager.conflictHighlight,
+  ]);
+
   return (
     <>
       {!!iconPath && (
-        <g transform={`translate(${-footprint} ${-footprint})`}>
-          <filter id={`${robot.name}-shadow`} x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow
-              dx="0"
-              dy="0"
-              stdDeviation={footprint * 0.15}
-              floodColor={inConflict ? theme.palette.error.main : theme.palette.common.black}
-            />
-          </filter>
-          <image
-            href={iconPath}
-            height={imgIconHeigth}
-            width={imgIconWidth}
-            filter={`url(#${robot.name}-shadow)`}
-            onError={error => {
-              console.error(
-                'An error occurred while loading the image. Using the default image.',
-                error,
-              );
-              return dispatchIconError(previousVal => {
-                return { ...previousVal, error: true };
-              });
-            }}
+        <g>
+          <defs>
+            <Shadow id={shadowId} />
+            <ShadowConflict id={conflictShadowId} />
+          </defs>
+          <circle
+            id="shadow"
+            r={footprint * 1.3}
+            fill={inConflict ? `url(#${conflictShadowId})` : `url(#${shadowId})`}
           />
+          <g transform={`translate(${-footprint} ${-footprint})`}>
+            <image
+              href={iconPath}
+              height={imgIconHeigth}
+              width={imgIconWidth}
+              onError={error => {
+                console.error(
+                  'An error occurred while loading the image. Using the default image.',
+                  error,
+                );
+                return dispatchIconError(previousVal => {
+                  return { ...previousVal, error: true };
+                });
+              }}
+            />
+          </g>
         </g>
       )}
     </>

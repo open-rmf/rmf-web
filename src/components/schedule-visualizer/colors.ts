@@ -7,6 +7,8 @@ async function _hash(s: string): Promise<ArrayBuffer> {
 }
 
 export default class ColorManager {
+  readonly conflictHighlight = '#f44336';
+
   async robotColor(fleet: string, name: string, model: string): Promise<string> {
     const key = this._robotKey(name, fleet);
     let color = this._robotColorCache[key];

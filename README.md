@@ -100,6 +100,8 @@ password: admin
 
 ### Docker Based Backend
 
+If you have problem setting up rmf and soss, you can make use of the docker image used by the e2e tests to run the backend in docker.
+
 First, download the docker images, the images are hosted on github packages so you will need a github account to access it, refer to [here](https://docs.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-docker-for-use-with-github-packages) for instructions.
 
 After you have the credentials set up, run this to download the images
@@ -108,11 +110,13 @@ After you have the credentials set up, run this to download the images
 npm run sync:docker
 ```
 
-Then start the backend servers with
+Then run this to start the dev services
 
 ```bash
 npm run start:docker
 ```
+
+This will start all the services in a docker container, the react web app will be hosted at `localhost:3000`.
 
 The rmf image is built nightly, if you would like to test against the latest build, be sure to update the docker images regularly.
 
@@ -121,9 +125,12 @@ The rmf image is built nightly, if you would like to test against the latest bui
 If you would like, you can also build the images locally, doing so is simple with
 
 ```bash
+# build rmf image
 docker-compose -f <path-to-romi-dashboard>/docker/rmf/docker-compose.yml build --no-cache
-# run this to use the newly built image for the npm scripts
+# tag it as nightly
 docker tag docker.pkg.github.com/osrf/romi-dashboard/rmf:latest docker.pkg.github.com/osrf/romi-dashboard/rmf:nightly
+# build e2e image
+docker-compose -f <path-to-romi-dashboard>/docker/docker-compose.yml build --no-cache e2e
 ```
 
 This will download and build all of rmf so it may take awhile.
