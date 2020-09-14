@@ -11,6 +11,7 @@ import {
   NegotiationStatus,
   ResolveState,
 } from '../negotiation-status-manager';
+import Debug from 'debug';
 
 import {
   NegotiationStatusManager,
@@ -55,9 +56,12 @@ export interface NegotiationsPanelProps {
   mapFloorLayerSorted?: Readonly<string[]>;
   negotiationStatusManager?: Readonly<NegotiationStatusManager>;
   negotiationTrajStore?: Record<string, NegotiationTrajectoryResponse>;
+  negotiationStatusUpdateTS: number; // used to trigger rerenders
 }
 
-export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.Element {
+
+export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
+  debug('negotiation status panel render');
   const {
     conflicts,
     spotlight,

@@ -180,6 +180,8 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const [negotiationTrajStore, setNegotiationTrajStore] = React.useState<
     Record<string, NegotiationTrajectoryResponse>
   >({});
+  const statusUpdateTS = React.useRef<number>();
+  statusUpdateTS.current = negotiationStatusManager.getLastUpdateTS();
 
   const [showOmniPanel, setShowOmniPanel] = React.useState(true);
   const [currentView, setCurrentView] = React.useState(OmniPanelViewIndex.MainMenu);
@@ -243,7 +245,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     const request = new RomiCore.GetBuildingMap_Request();
     transport
       .call(RomiCore.getBuildingMap, request)
-      .then((result) => {
+      .then(result => {
         setBuildingMap(result.building_map);
         setLoading(null);
       })
@@ -271,7 +273,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   }, [appResources]);
 
   React.useEffect(() => {
-    setDoors(buildingMap ? buildingMap.levels.flatMap((x) => x.doors) : []);
+    setDoors(buildingMap ? buildingMap.levels.flatMap(x => x.doors) : []);
     setLifts(buildingMap ? buildingMap.lifts : []);
   }, [buildingMap]);
 
@@ -458,6 +460,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                     mapFloorLayerSorted={mapFloorLayerSorted}
                     negotiationStatusManager={negotiationStatusManager}
                     negotiationTrajStore={negotiationTrajStore}
+                    negotiationStatusUpdateTS={statusUpdateTS.current}
                   />
                 </OmniPanelView>
               </OmniPanel>
