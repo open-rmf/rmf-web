@@ -58,7 +58,9 @@ const determineVelocity = (theta: number, direction: string, velocity: number): 
   else return [-velocity, 0.0, 0.0];
 };
 
-/** determine the index to retrieve velocity in RawVelocity */
+/**
+ * determine the index to retrieve velocity in RawVelocity
+ */
 const determineVelocityIndex = (direction: string): number => {
   switch (direction) {
     case 'up':
@@ -72,12 +74,16 @@ const determineVelocityIndex = (direction: string): number => {
   }
 };
 
-/**  turning direction, 0 = right and 1 = left */
+/**
+ * turning direction, 0 = right and 1 = left
+ */
 const determineThetaVelocity = (direction: number, thetaVelocity: number): number => {
   return direction === 0 ? thetaVelocity : -thetaVelocity;
 };
 
-/** Calculate next theta */
+/**
+ * Calculate next theta
+ */
 const calculateTheta = (currTheta: number, thetaVelocity: number): number => {
   if (currTheta + thetaVelocity > Math.PI) {
     return -Math.PI + (currTheta + thetaVelocity - Math.PI);
@@ -88,7 +94,9 @@ const calculateTheta = (currTheta: number, thetaVelocity: number): number => {
   }
 };
 
-/**  determine the direction of the straight segment after making a turn */
+/**
+ * determine the direction of the straight segment after making a turn
+ */
 const determineDirection = (currDir: string, thetaVelocity: number): string => {
   if (currDir === 'up' && thetaVelocity > 0) return 'right';
   else if (currDir === 'up' && thetaVelocity < 0) return 'left';
@@ -100,8 +108,10 @@ const determineDirection = (currDir: string, thetaVelocity: number): string => {
   else return 'down';
 };
 
-// 5 < startX < 20
-// -11 < startY < -7
+/**
+ * 5 < startX < 20
+ * -11 < startY < -7
+ */
 const createSegments = (
   startX: number,
   startY: number,
