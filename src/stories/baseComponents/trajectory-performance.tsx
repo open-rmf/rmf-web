@@ -27,12 +27,12 @@ export default function TrajectoryPerformance() {
   const description =
     'You can test the performance of the trajectory animations by adjusting the number of trajectories and if they are conflicting in the input fields above.';
 
-  const handleNumberOfTrajChange = (e: any) => {
-    setNumberOfTraj(e.target.value);
-    setTrajectories(createTrajectories(isConflict, e.target.value));
+  const handleNumberOfTrajChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNumberOfTraj(Number(e.target.value));
+    setTrajectories(createTrajectories(isConflict, Number(e.target.value)));
   };
 
-  const handleIsConflictChange = (e: any) => {
+  const handleIsConflictChange = (e: React.ChangeEvent<{ value: unknown }>) => {
     e.target.value === 'true' ? setIsConflict(true) : setIsConflict(false);
     setTrajectories(createTrajectories(e.target.value === 'true' ? true : false, numberOfTraj));
   };
