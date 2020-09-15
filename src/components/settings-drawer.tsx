@@ -32,6 +32,7 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
     const keys = Object.keys(TrajectoryDiameter).slice(
       Object.keys(TrajectoryDiameter).length * 0.5,
     );
+    // split the keys in PascalCase and a spacing in between
     return keys.map(key => {
       let text = '';
       key.split(/(?=[A-Z])/).forEach(k => {
@@ -43,6 +44,7 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
 
   const trajColorText = React.useMemo(() => {
     const keys = Object.keys(TrajectoryColor).slice(Object.keys(TrajectoryColor).length * 0.5);
+    // split the keys in PascalCase and a spacing in between
     return keys.map(key => {
       let text = '';
       key.split(/(?=[A-Z])/).forEach(k => {
