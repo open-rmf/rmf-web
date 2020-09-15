@@ -4,7 +4,7 @@ import {
   NavigateNext as NavigateNextIcon,
   NavigateBefore as NavigateBeforeIcon,
 } from '@material-ui/icons';
-import { OmniPanelViewIndex } from './app';
+import { OmniPanelViewIndex } from './dashboard';
 import { SpotlightValue } from './spotlight-value';
 import { ReactourStep } from 'reactour';
 
@@ -154,7 +154,7 @@ export const createTourSteps = (props: createTourProps) => {
       action: () => setTourSettingsAndOmniPanel(false, false, true),
     },
     omnipanelButton: {
-      selector: '[data-name="omnipanel-button"]',
+      selector: '[id="toggle-omnipanel-btn"]',
       content: ({ goTo, step }) => (
         <Box>
           <Typography variant="h6">
@@ -235,7 +235,7 @@ export const createTourSteps = (props: createTourProps) => {
       action: () => setTourShowOmniPanel(OmniPanelViewIndex.Commands),
     },
     settingsButton: {
-      selector: '[data-name= "settings-button"]',
+      selector: '[id="show-settings-btn"]',
       content: ({ goTo, step }) => (
         <Box>
           <Typography variant="h6">

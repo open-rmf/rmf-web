@@ -27,6 +27,7 @@ import RobotsPanel from './robots-panel';
 import ScheduleVisualizer from './schedule-visualizer';
 import SettingsDrawer from './settings-drawer';
 import { SpotlightValue } from './spotlight-value';
+import DashboardTour from './tour';
 
 const debug = Debug('App');
 const borderRadius = 20;
@@ -75,7 +76,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-enum OmniPanelViewIndex {
+export enum OmniPanelViewIndex {
   MainMenu = 0,
   Doors,
   Lifts,
@@ -164,6 +165,8 @@ export default function Dashboard(_props: {}): React.ReactElement {
     notificationBarMessage,
     setNotificationBarMessage,
   ] = React.useState<NotificationBarProps | null>(null);
+
+  const [tourState, setTourState] = React.useState(true);
 
   React.useEffect(() => {
     setLoading({ caption: 'Connecting to SOSS server...' });
@@ -299,6 +302,33 @@ export default function Dashboard(_props: {}): React.ReactElement {
     [classes.topLeftBorder, classes.topRightBorder],
   );
 
+  const setTourSettingsAndOmniPanel = (
+    isSettingsVisible: boolean,
+    isOmniPanelVisible: boolean,
+    clearSpotlight?: boolean,
+  ): void => {
+    if (clearSpotlight) {
+      clearSpotlights();
+    }
+    setShowSettings(isSettingsVisible);
+    setShowOmniPanel(isOmniPanelVisible);
+  };
+
+  const setTourShowOmniPanel = (view: OmniPanelViewIndex): void => {
+    setTourSettingsAndOmniPanel(false, true, false);
+    setCurrentView(view);
+  };
+
+  const tourProps = {
+    tourState,
+    setTourState,
+    setTourSettingsAndOmniPanel,
+    setTourShowOmniPanel,
+    OmniPanelViewIndex,
+    doorSpotlight,
+    setDoorSpotlight,
+  };
+
   return (
     <AppContextProvider settings={settings} notificationDispatch={setNotificationBarMessage}>
       <RmfContextProvider doorStates={doorStates} liftStates={liftStates}>
@@ -377,6 +407,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
           message={notificationBarMessage?.message}
           type={notificationBarMessage?.type}
         />
+        <DashboardTour tourProps={tourProps} />
       </RmfContextProvider>
     </AppContextProvider>
   );
