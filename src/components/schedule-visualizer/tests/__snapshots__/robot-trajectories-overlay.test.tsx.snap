@@ -408,7 +408,9 @@ exports[`RobotTrajectoriesOverlay renders without crashing 1`] = `
                         "_initHooksCalled": true,
                         "_leaflet_id": 23,
                         "_mapToAdd": [Circular],
-                        "_url": <svg>
+                        "_url": <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
                           <svg
                             viewBox="0 0 25.794363144785166 17.53525484725833"
                           >
@@ -1099,7 +1101,9 @@ exports[`RobotTrajectoriesOverlay renders without crashing 1`] = `
                     "_initHooksCalled": true,
                     "_leaflet_id": 23,
                     "_mapToAdd": [Circular],
-                    "_url": <svg>
+                    "_url": <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
                       <svg
                         viewBox="0 0 25.794363144785166 17.53525484725833"
                       >
@@ -1915,7 +1919,9 @@ exports[`RobotTrajectoriesOverlay renders without crashing 1`] = `
                         "_initHooksCalled": true,
                         "_leaflet_id": 23,
                         "_mapToAdd": [Circular],
-                        "_url": <svg>
+                        "_url": <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
                           <svg
                             viewBox="0 0 25.794363144785166 17.53525484725833"
                           >
@@ -2606,7 +2612,9 @@ exports[`RobotTrajectoriesOverlay renders without crashing 1`] = `
                     "_initHooksCalled": true,
                     "_leaflet_id": 23,
                     "_mapToAdd": [Circular],
-                    "_url": <svg>
+                    "_url": <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
                       <svg
                         viewBox="0 0 25.794363144785166 17.53525484725833"
                       >
@@ -3143,7 +3151,9 @@ exports[`RobotTrajectoriesOverlay renders without crashing 1`] = `
         >
           <Portal
             containerInfo={
-              <svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+              >
                 <svg
                   viewBox="0 0 25.794363144785166 17.53525484725833"
                 >
