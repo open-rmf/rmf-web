@@ -336,6 +336,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
           <AppBar
             toggleShowOmniPanel={() => setShowOmniPanel(!showOmniPanel)}
             showSettings={setShowSettings}
+            showTour={setTourState}
           />
           {loading && <LoadingScreen {...loading} />}
           {buildingMap && (
