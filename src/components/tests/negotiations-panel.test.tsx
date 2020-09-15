@@ -57,6 +57,7 @@ it('renders negotiations', () => {
   const root = mount(<NegotiationsPanel 
     conflicts={negotiationStatuses}
     spotlight={undefined}
+    mapFloorLayerSorted={undefined}
     negotiationStatusManager={undefined}
     negotiationTrajStore={undefined} />);
 
