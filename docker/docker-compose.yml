@@ -19,6 +19,7 @@ services:
     environment:
       CI: 1
       CHROME_BIN: /chrome-no-sandbox
+      RMF_PACKAGES: /opt/rmf/share/
     ipc: host
     network_mode: host
     privileged: true
