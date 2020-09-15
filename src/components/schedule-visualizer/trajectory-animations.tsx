@@ -157,7 +157,7 @@ export function withOutlineAnimation(
       maskPath.classList.add(classes.maskPath);
       const pathStrokeWidth = pathRef.current.getAttribute('stroke-width');
       if (pathStrokeWidth) {
-        maskPath.setAttribute('stroke-width', (parseFloat(pathStrokeWidth) - 0.1).toString());
+        maskPath.setAttribute('stroke-width', (parseFloat(pathStrokeWidth) * 0.8).toString());
       }
       mask.appendChild(maskPath);
       parent.appendChild(mask);

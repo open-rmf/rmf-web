@@ -20,7 +20,7 @@ export default function RobotTrajectoryConflict(props: TrajectoryConflictProps) 
           id="maskPath"
           d={pathD}
           stroke={'black'}
-          strokeWidth={trajectoryDiameter - 0.1}
+          strokeWidth={trajectoryDiameter * 0.8}
           strokeLinecap="round"
           fill={'none'}
           strokeDasharray={2}
