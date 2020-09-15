@@ -19,7 +19,7 @@ const ImageIcon = React.memo(
               href={iconPath}
               height={height}
               width={width}
-              onError={error => {
+              onError={(error) => {
                 console.error('An error occurred while loading the image.', error);
                 return dispatchIconError && dispatchIconError();
               }}

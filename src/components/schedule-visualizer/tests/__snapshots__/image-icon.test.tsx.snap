@@ -1,21 +1,23 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Renders correctly 1`] = `
-<Memo()
-  footprint={0.5}
-  height={1}
-  iconPath="test"
-  width={1}
->
-  <g
-    transform="translate(-0.5 -0.5)"
+<svg>
+  <Memo()
+    footprint={0.5}
+    height={1}
+    iconPath="test"
+    width={1}
   >
-    <image
-      height={1}
-      href="test"
-      onError={[Function]}
-      width={1}
-    />
-  </g>
-</Memo()>
+    <g
+      transform="translate(-0.5 -0.5)"
+    >
+      <image
+        height={1}
+        href="test"
+        onError={[Function]}
+        width={1}
+      />
+    </g>
+  </Memo()>
+</svg>
 `;

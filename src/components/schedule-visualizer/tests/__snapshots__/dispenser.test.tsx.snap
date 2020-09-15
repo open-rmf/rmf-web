@@ -54,6 +54,8 @@ exports[`Dispenser component Renders correctly 1`] = `
     <g
       className="makeStyles-container-8"
       data-component="Dispenser"
+      data-name="coke_ingestor"
+      data-state="false"
       onClick={[Function]}
       transform="translate(20.95 6.95)
         rotate(0)"
