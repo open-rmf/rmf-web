@@ -4,13 +4,19 @@ const fs = require('fs');
 const chalk = require('chalk');
 const path = require('path');
 
-const fileExists = fs.existsSync('./.resources.json');
+let file = './.resources.json';
+if (process.env.RESOURCE_FILE) {
+  file = process.env.RESOURCE_FILE;
+}
+
+const fileExists = fs.existsSync(file);
 if (!fileExists) {
-  console.log('File ./.resources.json not exists');
+  console.log(`Configuration file ${file} not exists`);
   return;
 }
 
-const resourcesData = JSON.parse(fs.readFileSync('./.resources.json'));
+const resourcesData = JSON.parse(fs.readFileSync(file));
+
 const iconFolder = 'public/assets/icons/';
 
 if (!resourcesData.hasOwnProperty('repoUrl') && !resourcesData.hasOwnProperty('path')) {
@@ -89,7 +95,7 @@ class IconManager extends IconManagerBase {
     super(resourcesData, iconFolder, tempFolder);
   }
 
-  getGitMinorVersion = rawGitVersion => {
+  getGitMinorVersion = (rawGitVersion) => {
     const gitVersion = rawGitVersion.split(' ')[2];
     const gitMinorVersion = gitVersion.split('.')[1];
     return parseInt(gitMinorVersion);
