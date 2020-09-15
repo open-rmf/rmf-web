@@ -42,7 +42,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-interface MapFloorLayer {
+export interface MapFloorLayer {
   level: RomiCore.Level;
   imageUrl: string;
   bounds: L.LatLngBounds;
@@ -54,6 +54,7 @@ export interface ScheduleVisualizerProps {
   trajManager?: Readonly<RobotTrajectoryManager>;
   appResources?: Readonly<ResourceConfigurationsType>;
   negotiationTrajStore : Readonly<Record<string, NegotiationTrajectoryResponse>>;
+  mapFloorLayerSorted : Readonly<string[]>;
   onDoorClick?(door: RomiCore.Door): void;
   onLiftClick?(lift: RomiCore.Lift): void;
   onRobotClick?(fleet: string, robot: RomiCore.RobotState): void;
@@ -71,17 +72,13 @@ function calcMaxBounds(mapFloorLayers: readonly MapFloorLayer[]): L.LatLngBounds
 export default function ScheduleVisualizer(props: ScheduleVisualizerProps): React.ReactElement {
   debug('render');
 
-  const { appResources, negotiationTrajStore } = props;
+  const { appResources, negotiationTrajStore, mapFloorLayerSorted } = props;
   const classes = useStyles();
 
   const [mapFloorLayers, setMapFloorLayers] = React.useState<
     Readonly<Record<string, MapFloorLayer>>
   >({});
-  const mapFloorLayerSort = React.useMemo<string[]>(
-    () => props.buildingMap.levels.sort((a, b) => a.elevation - b.elevation).map((x) => x.name),
-    [props.buildingMap],
-  );
-  const [curLevelName, setCurLevelName] = React.useState(() => mapFloorLayerSort[0]);
+  const [curLevelName, setCurLevelName] = React.useState(() => mapFloorLayerSorted[0]);
   const curMapFloorLayer = React.useMemo(() => mapFloorLayers[curLevelName], [
     curLevelName,
     mapFloorLayers,
@@ -93,12 +90,12 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   const [curMapConflicts, setCurMapConflicts] = React.useState<Conflict[]>(() => []);
 
   const initialBounds = React.useMemo<Readonly<L.LatLngBounds> | undefined>(() => {
-    const initialLayer = mapFloorLayers[mapFloorLayerSort[0]];
+    const initialLayer = mapFloorLayers[mapFloorLayerSorted[0]];
     if (!initialLayer) {
       return undefined;
     }
     return initialLayer.bounds;
-  }, [mapFloorLayers, mapFloorLayerSort]);
+  }, [mapFloorLayers, mapFloorLayerSorted]);
   const [maxBounds, setMaxBounds] = React.useState<Readonly<L.LatLngBounds> | undefined>(() =>
     calcMaxBounds(Object.values(mapFloorLayers)),
   );
@@ -229,7 +226,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     return resp ? resp.conflicts : [];
   }
 
-  const sortedMapFloorLayers = mapFloorLayerSort.map((x) => mapFloorLayers[x]);
+  const sortedMapFloorLayers = mapFloorLayerSorted.map((x) => mapFloorLayers[x]);
   const ref = React.useRef<ImageOverlay>(null);
 
   if (ref.current) {

@@ -122,6 +122,11 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const trajManager = React.useRef<RobotTrajectoryManager | undefined>(undefined);
   const resourceManager = React.useRef<ResourceConfigurationsType | undefined>(undefined);
 
+  const mapFloorLayerSorted = React.useMemo<string[] | undefined>(
+    () => buildingMap?.levels.sort((a, b) => a.elevation - b.elevation).map(x => x.name),
+    [buildingMap],
+  );
+
   const doorStateManager = React.useMemo(() => new DoorStateManager(), []);
   const [doorStates, setDoorStates] = React.useState(() => doorStateManager.doorStates());
   const [doors, setDoors] = React.useState<RomiCore.Door[]>([]);
@@ -345,9 +350,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
             showSettings={setShowSettings}
           />
           {loading && <LoadingScreen {...loading} />}
-          {buildingMap && (
+          {buildingMap && mapFloorLayerSorted && (
             <ScheduleVisualizer
               buildingMap={buildingMap}
+              mapFloorLayerSorted={mapFloorLayerSorted}
               fleets={fleets}
               trajManager={trajManager.current}
               appResources={resourceManager.current}
@@ -404,6 +410,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                 <NegotiationsPanel
                   conflicts={negotiationStatus}
                   spotlight={negotiationSpotlight}
+                  mapFloorLayerSorted={mapFloorLayerSorted}
                   negotiationStatusManager={negotiationStatusManager}
                   negotiationTrajStore={negotiationTrajStore}
                 />

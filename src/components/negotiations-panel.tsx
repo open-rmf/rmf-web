@@ -40,6 +40,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 interface Parameter {
+  map_name: string;
   conflict_version: number;
   sequence: number[];
 }
@@ -47,12 +48,13 @@ interface Parameter {
 export interface NegotiationsPanelProps {
   conflicts: Readonly<Record<string, NegotiationConflict>>;
   spotlight?: Readonly<SpotlightValue<string>>;
+  mapFloorLayerSorted?: Readonly<string[]>;
   negotiationStatusManager?: Readonly<NegotiationStatusManager>;
   negotiationTrajStore?: Record<string, NegotiationTrajectoryResponse>;
 }
 
 export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.Element {
-  const { conflicts, spotlight, negotiationStatusManager, negotiationTrajStore } = props;
+  const { conflicts, spotlight, mapFloorLayerSorted, negotiationStatusManager, negotiationTrajStore } = props;
 
   React.useEffect(() => {
     if (!spotlight) {
@@ -60,6 +62,10 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
     }
     // TODO: spotlight
   }, [spotlight]);
+
+  let curLevelName = "";
+  if (mapFloorLayerSorted)
+    curLevelName = mapFloorLayerSorted[0];
 
   const classes = useStyles();
 
@@ -155,12 +161,14 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
         );
 
         let terminalParams = {
+          map_name: curLevelName,
           conflict_version: parseInt(version),
           sequence: terminalStatus.sequence,
         };
         nodeidToParameters.set(terminalId, terminalParams);
 
         let baseParams = {
+          map_name: curLevelName,
           conflict_version: parseInt(version),
           sequence: baseStatus.sequence,
         };
@@ -181,6 +189,7 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
         );
 
         let baseParams = {
+          map_name: curLevelName,
           conflict_version: parseInt(version),
           sequence: baseStatus.sequence,
         };
@@ -235,8 +244,8 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
         console.warn('wrong response, ignoring!');
         return;
       }
-
-      negotiationTrajStore['L1'] = resp;
+      
+      negotiationTrajStore[trajParams.map_name] = resp;
     }
 
     updateNegotiationTrajectory();
