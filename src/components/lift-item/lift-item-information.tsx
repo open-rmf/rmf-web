@@ -14,7 +14,7 @@ export const LiftInformation = (props: liftInformationProps) => {
   const classes = useStyles();
 
   function renderList(values: string[]): JSX.Element {
-    const items = values.map(val => (
+    const items = values.map((val) => (
       <ListItem key={val} dense className={classes.listItem}>
         <Typography variant="body1">{val}</Typography>
       </ListItem>
@@ -47,50 +47,50 @@ export const LiftInformation = (props: liftInformationProps) => {
 
   return (
     <>
-      <div className={classes.expansionDetailLine}>
+      <div className={classes.accordionDetailLine}>
         <Typography variant="body1">Name:</Typography>
         <Typography variant="body1">{lift.name}</Typography>
       </div>
       <Divider />
-      <div className={classes.expansionDetailLine}>
+      <div className={classes.accordionDetailLine}>
         <Typography variant="body1">Location:</Typography>
         <Typography variant="body1">
           {`(${lift.ref_x.toFixed(3)}, ${lift.ref_y.toFixed(3)})`}
         </Typography>
       </div>
       <Divider />
-      <div className={classes.expansionDetailLine}>
+      <div className={classes.accordionDetailLine}>
         <Typography variant="body1">Destination Floor:</Typography>
         <DisableableTypography disabled={!liftState} variant="body1">
           {liftState ? liftState.destination_floor : 'Unknown'}
         </DisableableTypography>
       </div>
       <Divider />
-      <div className={classes.expansionDetailLine}>
+      <div className={classes.accordionDetailLine}>
         <Typography variant="body1">Available Floors:</Typography>
         {renderAvailableFloors(liftState)}
       </div>
       <Divider />
-      <div className={classes.expansionDetailLine}>
+      <div className={classes.accordionDetailLine}>
         <Typography variant="body1">Current Mode:</Typography>
         <DisableableTypography disabled={!liftState} variant="body1">
           {liftState ? LiftStateManager.liftModeToString(liftState.current_mode) : 'Unknown'}
         </DisableableTypography>
       </div>
       <Divider />
-      <div className={classes.expansionDetailLine}>
+      <div className={classes.accordionDetailLine}>
         <Typography variant="body1">Available Modes:</Typography>
         {renderAvailableModes(liftState)}
       </div>
       <Divider />
-      <div className={classes.expansionDetailLine}>
+      <div className={classes.accordionDetailLine}>
         <Typography variant="body1">Door State:</Typography>
         <DisableableTypography disabled={!liftState} variant="body1">
           {liftState ? LiftStateManager.doorStateToString(liftState.door_state) : 'Unknown'}
         </DisableableTypography>
       </div>
       <Divider />
-      <div className={classes.expansionDetailLine}>
+      <div className={classes.accordionDetailLine}>
         <Typography variant="body1">Motion State:</Typography>
         <DisableableTypography disabled={!liftState} variant="body1">
           {liftState ? LiftStateManager.motionStateToString(liftState.motion_state) : 'Unknown'}
@@ -100,8 +100,8 @@ export const LiftInformation = (props: liftInformationProps) => {
   );
 };
 
-const useStyles = makeStyles(theme => ({
-  expansionDetailLine: {
+const useStyles = makeStyles((theme) => ({
+  accordionDetailLine: {
     display: 'flex',
     justifyContent: 'space-between',
     padding: theme.spacing(0.5),
