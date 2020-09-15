@@ -146,12 +146,14 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
         let baseId = version + '.' + participantId + '.base'; //base ID
         tableDom.push(
           <TreeItem
+            data-component="TreeItem"
             nodeId={terminalId}
             key={terminalId}
             classes={{ label: terminalStyle, selected: terminalStyle }}
             label={terminalLabelText}
           >
             <TreeItem
+              data-component="TreeItem"
               nodeId={baseId}
               key={baseId}
               classes={{ label: baseStyle, selected: baseStyle }}
@@ -181,6 +183,7 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
         let nodeId = version + '.' + participantId + '.base'; //base ID
         tableDom.push(
           <TreeItem
+            data-component="TreeItem"
             nodeId={nodeId}
             key={nodeId}
             classes={{ label: style, selected: style }}
@@ -200,6 +203,7 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
     let nodeIdBase = 'conflict' + version;
     return (
       <TreeItem
+        data-component="TreeItem"
         nodeId={nodeIdBase}
         key={nodeIdBase}
         classes={{ label: conflictStyle, selected: conflictStyle }}

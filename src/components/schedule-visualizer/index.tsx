@@ -316,7 +316,8 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
             )}
           </LayersControl.Overlay>
 
-          <LayersControl.Overlay name="Negotiation Trajectories" checked>
+          <LayersControl.Overlay name="Negotiation Trajectories" 
+            data-component="NegotiationTrajCheckbox" checked>
             {curMapFloorLayer && (
               <Pane>
                 <RobotTrajectoryContext.Provider value={RobotTrajContextValue}>
