@@ -46,6 +46,7 @@ describe('Settings Drawer', () => {
       </SettingsContext.Provider>,
     );
 
+    // Accessing the 'outline' animation @ the fourth input field
     wrapper
       .find('input')
       .at(3)
@@ -69,6 +70,7 @@ describe('Settings Drawer', () => {
       </SettingsContext.Provider>,
     );
 
+    // Accessing the 'FixSize' animation @ the fifth input field
     wrapper
       .find('input')
       .at(4)
@@ -92,6 +94,7 @@ describe('Settings Drawer', () => {
       </SettingsContext.Provider>,
     );
 
+    // Accessing the 'Theme' animation @ the seventh input field
     wrapper
       .find('input')
       .at(6)
