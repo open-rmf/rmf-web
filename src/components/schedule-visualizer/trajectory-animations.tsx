@@ -148,8 +148,8 @@ export function withOutlineAnimation(
       const maskRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
       maskRect.setAttribute('x', '0');
       maskRect.setAttribute('y', '0');
-      maskRect.setAttribute('width', '100%');
-      maskRect.setAttribute('height', '100%');
+      maskRect.setAttribute('width', '100');
+      maskRect.setAttribute('height', '100');
       maskRect.setAttribute('fill', 'white');
       mask.appendChild(maskRect);
 

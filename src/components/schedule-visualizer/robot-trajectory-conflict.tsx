@@ -14,8 +14,8 @@ export default function RobotTrajectoryConflict(props: TrajectoryConflictProps) 
 
   return (
     <React.Fragment>
-      <mask width="100%" id={`${trajectory.id}-mask`}>
-        <rect x={0} y={0} width={'100%'} height={'100%'} fill={'white'} />
+      <mask width="100" id={`${trajectory.id}-mask`}>
+        <rect x={0} y={0} width={'100'} height={'100'} fill={'white'} />
         <path
           id="maskPath"
           d={pathD}
