@@ -1,11 +1,6 @@
 import { makeLauncher } from '../rmf-launcher';
 import { login, overwriteClick, removeTextFromAutocomplete } from './utils';
 
-import { createMount } from '@material-ui/core/test-utils';
-import React from 'react';
-import { Redirect } from 'react-router';
-import { BrowserRouter } from 'react-router-dom';
-
 describe('Loop request for negotiations', () => {
   const launcher = makeLauncher();
 
@@ -61,7 +56,6 @@ describe('Loop request for negotiations', () => {
 
     browser.waitUntil(
       () => $('[data-component=TreeItem]').isDisplayed() === true,
-      //() => browser.getElementText('*=Conflict') !== undefined,
       {
         timeout: 60000,
         timeoutMsg: 'expected TreeItem to be not null!'
@@ -80,11 +74,11 @@ describe('Loop request for negotiations', () => {
 
   // Disabled till we find out a way to locate that floor icon
   // Also figure out a way for a non-rejected negotiation status click
-  /*
+  
   it('renders negotiation trajectory', () => {
-    $('[data-component=viewOptions]').moveTo();
+    //$('[data-component=viewOptions]').moveTo();
     $('[data-component=NegotiationTrajCheckbox]').click();
     expect($('[data-component=RobotTrajectory]')).toBeVisible();
   });
-  */
+  
 });

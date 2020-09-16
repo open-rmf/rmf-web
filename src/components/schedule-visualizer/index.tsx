@@ -323,9 +323,9 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
                 <RobotTrajectoryContext.Provider value={RobotTrajContextValue}>
                   <RobotTrajectoriesOverlay
                     bounds={curMapFloorLayer.bounds}
-                    trajs={negotiationTrajStore[curMapFloorLayer.level.name] && 
-                      (props.negotiationTrajStore[curMapFloorLayer.level.name].values)}
-                    conflicts={getConflicts(curMapFloorLayer.level.name)}
+                    trajs={negotiationTrajStore[curLevelName] && 
+                      (props.negotiationTrajStore[curLevelName].values)}
+                    conflicts={getConflicts(curLevelName)}
                     colorManager={colorManager}
                     conflictRobotNames={conflictRobotNames}
                   />

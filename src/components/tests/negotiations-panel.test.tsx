@@ -4,6 +4,7 @@ import TreeView from '@material-ui/lab/TreeView';
 import TreeItem from '@material-ui/lab/TreeItem';
 import { NegotiationConflict, ResolveState } from '../../negotiation-status-manager';
 import NegotiationsPanel from '../negotiations-panel';
+import toJson from 'enzyme-to-json';
 
 const mount = createMount();
 
@@ -67,7 +68,7 @@ it('renders negotiations', () => {
   const treeItem = root.find(TreeItem);
   expect(treeItem).toBeDefined();
 
-  expect(root.html()).toMatchSnapshot();
+  expect(toJson(root)).toMatchSnapshot();
 
   root.unmount();
 });
