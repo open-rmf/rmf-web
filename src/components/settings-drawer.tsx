@@ -1,4 +1,5 @@
 import {
+  IconButton,
   Divider,
   Drawer,
   DrawerProps,
@@ -11,6 +12,7 @@ import {
   useMediaQuery,
 } from '@material-ui/core';
 import React from 'react';
+import CloseIcon from '@material-ui/icons/Close';
 import { Settings, TrajectoryAnimation } from '../settings';
 
 export interface SettingsDrawerProps extends DrawerProps {
@@ -35,8 +37,15 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
     onSettingsChange && onSettingsChange(newSettings);
   }
 
+  function handleCloseSettingsDrawer() {
+    console.log('closing ....');
+  }
+
   return (
     <Drawer PaperProps={{ className: classes.drawer }} anchor={drawerAnchor} {...otherProps}>
+      <IconButton className={classes.button} onClick={handleCloseSettingsDrawer}>
+        <CloseIcon />
+      </IconButton>
       <FormControl component="fieldset">
         <FormLabel component="legend" className={classes.legendLabel}>
           Trajectory Animation
@@ -62,7 +71,7 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
   );
 }
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   drawer: {
     '@media (min-aspect-ratio: 8/10)': {
       width: 300,
@@ -93,5 +102,9 @@ const useStyles = makeStyles(theme => ({
   },
   flexBasis: {
     flexBasis: '40%',
+  },
+  button: {
+    width: '3rem',
+    marginLeft: 'auto',
   },
 }));
