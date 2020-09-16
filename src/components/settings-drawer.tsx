@@ -28,31 +28,16 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
     [],
   );
 
-  const trajDiameterText = React.useMemo(() => {
-    const keys = Object.keys(TrajectoryDiameter).slice(
-      Object.keys(TrajectoryDiameter).length * 0.5,
-    );
-    // split the keys in PascalCase and a spacing in between
-    return keys.map((key) => {
-      let text = '';
-      key.split(/(?=[A-Z])/).forEach((k) => {
-        text += k + ' ';
-      });
-      return text.trim();
-    });
-  }, []);
+  const trajDiameterText: { [key: string]: string } = {
+    [TrajectoryDiameter.FixSize.toString()]: 'Fix Size',
+    [TrajectoryDiameter.RobotSize.toString()]: 'Robot Size',
+  };
 
-  const trajColorText = React.useMemo(() => {
-    const keys = Object.keys(TrajectoryColor).slice(Object.keys(TrajectoryColor).length * 0.5);
-    // split the keys in PascalCase and a spacing in between
-    return keys.map((key) => {
-      let text = '';
-      key.split(/(?=[A-Z])/).forEach((k) => {
-        text += k + ' ';
-      });
-      return text.trim();
-    });
-  }, []);
+  const trajColorText: { [key: string]: string } = {
+    [TrajectoryColor.Theme.toString()]: 'Theme',
+    [TrajectoryColor.RobotColor.toString()]: 'Robot Color',
+    [TrajectoryColor.Shades.toString()]: 'Shades',
+  };
 
   const drawerAnchor = useMediaQuery('(max-aspect-ratio: 8/10') ? 'bottom' : 'right';
 
@@ -103,14 +88,14 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
           value={trajectoryDiameter}
           onChange={handleTrajectoryDiameterChange}
         >
-          {trajDiameterText.map((text, i) => (
+          {Object.keys(trajDiameterText).map((key, i) => (
             <FormControlLabel
               key={i}
               className={classes.flexBasis}
               value={i}
               control={<Radio />}
-              label={text}
-              name={text}
+              label={trajDiameterText[key]}
+              name={trajDiameterText[key]}
             />
           ))}
         </RadioGroup>
@@ -123,14 +108,14 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
           value={trajectoryColor}
           onChange={handleTrajectorColorChange}
         >
-          {trajColorText.map((text, i) => (
+          {Object.keys(trajColorText).map((key, i) => (
             <FormControlLabel
               key={i}
               className={classes.flexBasis}
               value={i}
               control={<Radio />}
-              label={text}
-              name={text}
+              label={trajColorText[key]}
+              name={trajColorText[key]}
             />
           ))}
         </RadioGroup>
