@@ -40,7 +40,7 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
 
   return (
     <Drawer PaperProps={{ className: classes.drawer }} anchor={drawerAnchor} {...otherProps}>
-      <IconButton className={classes.button} onClick={() => handleCloseButton()}>
+      <IconButton className={classes.button} onClick={() => handleCloseButton(false)}>
         <CloseIcon />
       </IconButton>
       <FormControl component="fieldset">

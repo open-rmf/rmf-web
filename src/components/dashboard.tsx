@@ -371,7 +371,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
               saveSettings(newSettings);
             }}
             onClose={() => setShowSettings(false)}
-            handleCloseButton={() => setShowSettings(false)}
+            handleCloseButton={setShowSettings}
           />
         </div>
         <NotificationBar
