@@ -1,5 +1,4 @@
-import { Fade, makeStyles, IconButton } from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
+import { Fade, makeStyles } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import React from 'react';
@@ -364,23 +363,16 @@ export default function Dashboard(_props: {}): React.ReactElement {
               </OmniPanelView>
             </OmniPanel>
           </Fade>
-          {showSettings ? (
-            <div>
-              <IconButton>
-                <CloseIcon style={{ zIndex: 1000 }} />
-              </IconButton>
-              <SettingsDrawer
-                settings={settings}
-                open={showSettings}
-                onSettingsChange={(newSettings) => {
-                  setSettings(newSettings);
-                  saveSettings(newSettings);
-                }}
-                onClose={() => setShowSettings(false)}
-                handleClose={() => setShowSettings(false)}
-              />
-            </div>
-          ) : null}
+          <SettingsDrawer
+            settings={settings}
+            open={showSettings}
+            onSettingsChange={(newSettings) => {
+              setSettings(newSettings);
+              saveSettings(newSettings);
+            }}
+            onClose={() => setShowSettings(false)}
+            handleClose={() => setShowSettings(false)}
+          />
         </div>
         <NotificationBar
           message={notificationBarMessage?.message}
