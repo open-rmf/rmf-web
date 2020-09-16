@@ -75,10 +75,10 @@ describe('Loop request for negotiations', () => {
   // Disabled till we find out a way to locate that floor icon
   // Also figure out a way for a non-rejected negotiation status click
   
-  it('renders negotiation trajectory', () => {
-    //$('[data-component=viewOptions]').moveTo();
-    $('[data-component=NegotiationTrajCheckbox]').click();
-    expect($('[data-component=RobotTrajectory]')).toBeVisible();
-  });
+  // it('renders negotiation trajectory', () => {
+  //   //$('[data-component=viewOptions]').moveTo();
+  //   $('[data-component=NegotiationTrajCheckbox]').click();
+  //   expect($('[data-component=RobotTrajectory]')).toBeVisible();
+  // });
   
 });
