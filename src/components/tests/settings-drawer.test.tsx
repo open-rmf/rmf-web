@@ -1,5 +1,6 @@
 import React from 'react';
 import { createMount } from '@material-ui/core/test-utils';
+import toJson from 'enzyme-to-json';
 
 import SettingsDrawer from '../settings-drawer';
 import {
@@ -27,6 +28,7 @@ describe('Settings Drawer', () => {
         <SettingsDrawer settings={settings} onSettingsChange={onSettingsChange} open={true} />
       </SettingsContext.Provider>,
     );
+    expect(toJson(wrapper)).toMatchSnapshot();
     wrapper.unmount();
   });
 
@@ -40,17 +42,14 @@ describe('Settings Drawer', () => {
       <SettingsContext.Provider value={newSettings}>
         <SettingsDrawer
           settings={settings}
-          onSettingsChange={newSettings => onSettingsChange(newSettings)}
+          onSettingsChange={(newSettings) => onSettingsChange(newSettings)}
           open={true}
         />
       </SettingsContext.Provider>,
     );
 
     // Accessing the 'outline' animation @ the fourth input field
-    wrapper
-      .find('input')
-      .at(3)
-      .simulate('change', mockEvent);
+    wrapper.find('input').find({ name: 'Outline' }).simulate('change', mockEvent);
     expect(onSettingsChange).toHaveBeenCalledTimes(1);
   });
 
@@ -64,17 +63,14 @@ describe('Settings Drawer', () => {
       <SettingsContext.Provider value={newSettings}>
         <SettingsDrawer
           settings={settings}
-          onSettingsChange={newSettings => onSettingsChange(newSettings)}
+          onSettingsChange={(newSettings) => onSettingsChange(newSettings)}
           open={true}
         />
       </SettingsContext.Provider>,
     );
 
     // Accessing the 'FixSize' animation @ the fifth input field
-    wrapper
-      .find('input')
-      .at(4)
-      .simulate('change', mockEvent);
+    wrapper.find('input').find({ name: 'Fix Size' }).simulate('change', mockEvent);
     expect(onSettingsChange).toHaveBeenCalledTimes(1);
   });
 
@@ -88,17 +84,14 @@ describe('Settings Drawer', () => {
       <SettingsContext.Provider value={newSettings}>
         <SettingsDrawer
           settings={settings}
-          onSettingsChange={newSettings => onSettingsChange(newSettings)}
+          onSettingsChange={(newSettings) => onSettingsChange(newSettings)}
           open={true}
         />
       </SettingsContext.Provider>,
     );
 
     // Accessing the 'Theme' animation @ the seventh input field
-    wrapper
-      .find('input')
-      .at(6)
-      .simulate('change', mockEvent);
+    wrapper.find('input').find({ name: 'Theme' }).simulate('change', mockEvent);
     expect(onSettingsChange).toHaveBeenCalledTimes(1);
   });
 });

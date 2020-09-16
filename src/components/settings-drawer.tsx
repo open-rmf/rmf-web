@@ -33,9 +33,9 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
       Object.keys(TrajectoryDiameter).length * 0.5,
     );
     // split the keys in PascalCase and a spacing in between
-    return keys.map(key => {
+    return keys.map((key) => {
       let text = '';
-      key.split(/(?=[A-Z])/).forEach(k => {
+      key.split(/(?=[A-Z])/).forEach((k) => {
         text += k + ' ';
       });
       return text.trim();
@@ -45,9 +45,9 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
   const trajColorText = React.useMemo(() => {
     const keys = Object.keys(TrajectoryColor).slice(Object.keys(TrajectoryColor).length * 0.5);
     // split the keys in PascalCase and a spacing in between
-    return keys.map(key => {
+    return keys.map((key) => {
       let text = '';
-      key.split(/(?=[A-Z])/).forEach(k => {
+      key.split(/(?=[A-Z])/).forEach((k) => {
         text += k + ' ';
       });
       return text.trim();
@@ -90,6 +90,7 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
               value={i}
               control={<Radio />}
               label={text}
+              name={text}
             />
           ))}
         </RadioGroup>
@@ -109,6 +110,7 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
               value={i}
               control={<Radio />}
               label={text}
+              name={text}
             />
           ))}
         </RadioGroup>
@@ -128,6 +130,7 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
               value={i}
               control={<Radio />}
               label={text}
+              name={text}
             />
           ))}
         </RadioGroup>
@@ -136,7 +139,7 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
   );
 }
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   drawer: {
     '@media (min-aspect-ratio: 8/10)': {
       width: 300,
