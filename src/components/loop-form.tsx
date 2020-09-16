@@ -21,10 +21,10 @@ export const LoopForm = (props: LoopFormProps) => {
     !!targetFleetName ? fakePlaces()[targetFleetName] : [],
   );
   const [startLocation, setStartLocation] = useState(
-    listOfPlaces.length >= 2 ? listOfPlaces[0] : '',
+    (listOfPlaces && listOfPlaces.length >= 2) ? listOfPlaces[0] : '',
   );
   const [finishLocation, setFinishLocation] = useState(
-    listOfPlaces.length >= 2 ? listOfPlaces[1] : '',
+    (listOfPlaces && listOfPlaces.length >= 2) ? listOfPlaces[1] : '',
   );
 
   useEffect(() => {
