@@ -18,11 +18,12 @@ import { Settings, TrajectoryAnimation } from '../settings';
 export interface SettingsDrawerProps extends DrawerProps {
   settings: Readonly<Settings>;
   onSettingsChange(settings: Settings): void;
+  handleClose: Function;
 }
 
 export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactElement {
   const classes = useStyles();
-  const { settings, onSettingsChange, ...otherProps } = props;
+  const { settings, onSettingsChange, handleClose, ...otherProps } = props;
   const { trajectoryAnimation } = settings;
 
   const trajAnimsText = React.useMemo(
@@ -37,13 +38,9 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
     onSettingsChange && onSettingsChange(newSettings);
   }
 
-  function handleCloseSettingsDrawer() {
-    console.log('closing ....');
-  }
-
   return (
     <Drawer PaperProps={{ className: classes.drawer }} anchor={drawerAnchor} {...otherProps}>
-      <IconButton className={classes.button} onClick={handleCloseSettingsDrawer}>
+      <IconButton className={classes.button} onClick={() => handleClose()}>
         <CloseIcon />
       </IconButton>
       <FormControl component="fieldset">

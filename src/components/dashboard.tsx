@@ -1,4 +1,5 @@
-import { Fade, makeStyles } from '@material-ui/core';
+import { Fade, makeStyles, IconButton } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import React from 'react';
@@ -31,7 +32,7 @@ import { SpotlightValue } from './spotlight-value';
 const debug = Debug('App');
 const borderRadius = 20;
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   container: {
     display: 'flex',
     flexFlow: 'column',
@@ -138,8 +139,8 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const [robotSpotlight, setRobotSpotlight] = React.useState<SpotlightValue<string> | undefined>(
     undefined,
   );
-  const newFleetNames = fleets.map(fleet => fleet.name);
-  if (newFleetNames.some(fleetName => !fleetNames.current.includes(fleetName))) {
+  const newFleetNames = fleets.map((fleet) => fleet.name);
+  if (newFleetNames.some((fleetName) => !fleetNames.current.includes(fleetName))) {
     fleetNames.current = newFleetNames;
   }
 
@@ -168,7 +169,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   React.useEffect(() => {
     setLoading({ caption: 'Connecting to SOSS server...' });
     transportFactory()
-      .then(x => {
+      .then((x) => {
         x.on('error', console.error);
         x.once('close', () => {
           setLoading({ caption: 'Lost connection to SOSS', variant: 'error' });
@@ -200,7 +201,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     const request = new RomiCore.GetBuildingMap_Request();
     transport
       .call(RomiCore.getBuildingMap, request)
-      .then(result => {
+      .then((result) => {
         setBuildingMap(result.building_map);
         setLoading(null);
       })
@@ -228,7 +229,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   }, [appResources]);
 
   React.useEffect(() => {
-    setDoors(buildingMap ? buildingMap.levels.flatMap(x => x.doors) : []);
+    setDoors(buildingMap ? buildingMap.levels.flatMap((x) => x.doors) : []);
     setLifts(buildingMap ? buildingMap.lifts : []);
   }, [buildingMap]);
 
@@ -363,15 +364,23 @@ export default function Dashboard(_props: {}): React.ReactElement {
               </OmniPanelView>
             </OmniPanel>
           </Fade>
-          <SettingsDrawer
-            settings={settings}
-            open={showSettings}
-            onSettingsChange={newSettings => {
-              setSettings(newSettings);
-              saveSettings(newSettings);
-            }}
-            onClose={() => setShowSettings(false)}
-          />
+          {showSettings ? (
+            <div>
+              <IconButton>
+                <CloseIcon style={{ zIndex: 1000 }} />
+              </IconButton>
+              <SettingsDrawer
+                settings={settings}
+                open={showSettings}
+                onSettingsChange={(newSettings) => {
+                  setSettings(newSettings);
+                  saveSettings(newSettings);
+                }}
+                onClose={() => setShowSettings(false)}
+                handleClose={() => setShowSettings(false)}
+              />
+            </div>
+          ) : null}
         </div>
         <NotificationBar
           message={notificationBarMessage?.message}
