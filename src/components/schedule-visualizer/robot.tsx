@@ -70,6 +70,7 @@ const Robot = React.memo(
               dispatchIconError={setRenderCustomIcon}
               inConflict={inConflict}
               colorManager={colorManager}
+              fleetName={fleetName}
             />
           ) : (
             <RobotDefaultIcon
@@ -77,6 +78,7 @@ const Robot = React.memo(
               footprint={footprint}
               colorManager={colorManager}
               inConflict={inConflict}
+              fleetName={fleetName}
             ></RobotDefaultIcon>
           )}
         </g>

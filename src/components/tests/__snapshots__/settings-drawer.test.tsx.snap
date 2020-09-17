@@ -1,0 +1,129 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Settings Drawer should render correctly 1`] = `
+<WithStyles(ForwardRef(Drawer))
+  PaperProps={
+    Object {
+      "className": "makeStyles-drawer-1",
+    }
+  }
+  anchor="right"
+  open={true}
+>
+  <WithStyles(ForwardRef(FormControl))
+    component="fieldset"
+  >
+    <WithStyles(ForwardRef(FormLabel))
+      className="makeStyles-legendLabel-2"
+      component="legend"
+    >
+      Trajectory Animation
+    </WithStyles(ForwardRef(FormLabel))>
+    <WithStyles(ForwardRef(Divider)) />
+    <ForwardRef(RadioGroup)
+      className="makeStyles-trajGroup-3"
+      onChange={[Function]}
+      value={2}
+    >
+      <WithStyles(ForwardRef(FormControlLabel))
+        className="makeStyles-flexBasis-4"
+        control={<ForwardRef(WithStyles) />}
+        key="0"
+        label="None"
+        name="None"
+        value={0}
+      />
+      <WithStyles(ForwardRef(FormControlLabel))
+        className="makeStyles-flexBasis-4"
+        control={<ForwardRef(WithStyles) />}
+        key="1"
+        label="Fill"
+        name="Fill"
+        value={1}
+      />
+      <WithStyles(ForwardRef(FormControlLabel))
+        className="makeStyles-flexBasis-4"
+        control={<ForwardRef(WithStyles) />}
+        key="2"
+        label="Follow"
+        name="Follow"
+        value={2}
+      />
+      <WithStyles(ForwardRef(FormControlLabel))
+        className="makeStyles-flexBasis-4"
+        control={<ForwardRef(WithStyles) />}
+        key="3"
+        label="Outline"
+        name="Outline"
+        value={3}
+      />
+    </ForwardRef(RadioGroup)>
+    <WithStyles(ForwardRef(FormLabel))
+      className="makeStyles-legendLabel-2"
+      component="legend"
+    >
+      Trajectory Diameter
+    </WithStyles(ForwardRef(FormLabel))>
+    <WithStyles(ForwardRef(Divider)) />
+    <ForwardRef(RadioGroup)
+      className="makeStyles-trajGroup-3"
+      onChange={[Function]}
+      value={1}
+    >
+      <WithStyles(ForwardRef(FormControlLabel))
+        className="makeStyles-flexBasis-4"
+        control={<ForwardRef(WithStyles) />}
+        key="0"
+        label="Fix Size"
+        name="Fix Size"
+        value={0}
+      />
+      <WithStyles(ForwardRef(FormControlLabel))
+        className="makeStyles-flexBasis-4"
+        control={<ForwardRef(WithStyles) />}
+        key="1"
+        label="Robot Size"
+        name="Robot Size"
+        value={1}
+      />
+    </ForwardRef(RadioGroup)>
+    <WithStyles(ForwardRef(FormLabel))
+      className="makeStyles-legendLabel-2"
+      component="legend"
+    >
+      Trajectory Color
+    </WithStyles(ForwardRef(FormLabel))>
+    <WithStyles(ForwardRef(Divider)) />
+    <ForwardRef(RadioGroup)
+      className="makeStyles-trajGroup-3"
+      onChange={[Function]}
+      value={1}
+    >
+      <WithStyles(ForwardRef(FormControlLabel))
+        className="makeStyles-flexBasis-4"
+        control={<ForwardRef(WithStyles) />}
+        key="0"
+        label="Theme"
+        name="Theme"
+        value={0}
+      />
+      <WithStyles(ForwardRef(FormControlLabel))
+        className="makeStyles-flexBasis-4"
+        control={<ForwardRef(WithStyles) />}
+        key="1"
+        label="Robot Color"
+        name="Robot Color"
+        value={1}
+      />
+      <WithStyles(ForwardRef(FormControlLabel))
+        className="makeStyles-flexBasis-4"
+        control={<ForwardRef(WithStyles) />}
+        key="2"
+        label="Shades"
+        name="Shades"
+        value={2}
+      />
+    </ForwardRef(RadioGroup)>
+  </WithStyles(ForwardRef(FormControl))>
+</WithStyles(ForwardRef(Drawer))>
+`;

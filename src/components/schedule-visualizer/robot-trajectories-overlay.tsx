@@ -59,6 +59,7 @@ export const RobotTrajectoriesOverlay = React.memo((props: RobotTrajectoriesOver
             trajectory={traj}
             footprint={footprint}
             conflicts={conflicts}
+            colorManager={colorManager}
           />
         ))}
       </svg>

@@ -131,7 +131,7 @@ export function withOutlineAnimation(
 ): React.ComponentType<RobotTrajectoryProps> {
   return props => {
     const classes = useOutlineStyles();
-    const { trajectory } = props;
+    const { trajectory, conflicts } = props;
     const pathRef = React.useRef<SVGPathElement>(null);
 
     React.useLayoutEffect(() => {
@@ -148,8 +148,8 @@ export function withOutlineAnimation(
       const maskRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
       maskRect.setAttribute('x', '0');
       maskRect.setAttribute('y', '0');
-      maskRect.setAttribute('width', '100%');
-      maskRect.setAttribute('height', '100%');
+      maskRect.setAttribute('width', '100');
+      maskRect.setAttribute('height', '100');
       maskRect.setAttribute('fill', 'white');
       mask.appendChild(maskRect);
 
@@ -157,7 +157,7 @@ export function withOutlineAnimation(
       maskPath.classList.add(classes.maskPath);
       const pathStrokeWidth = pathRef.current.getAttribute('stroke-width');
       if (pathStrokeWidth) {
-        maskPath.setAttribute('stroke-width', (parseFloat(pathStrokeWidth) - 0.1).toString());
+        maskPath.setAttribute('stroke-width', (parseFloat(pathStrokeWidth) * 0.8).toString());
       }
       mask.appendChild(maskPath);
       parent.appendChild(mask);
@@ -166,6 +166,10 @@ export function withOutlineAnimation(
       highlight.removeAttribute('mask');
       highlight.classList.add(classes.highlight);
       parent.appendChild(highlight);
+
+      if (conflicts.flat().includes(trajectory.id)) {
+        pathRef.current.classList.add(classes.conflict);
+      }
 
       pathRef.current.animate(
         offsets.map(offset => ({
@@ -183,7 +187,7 @@ export function withOutlineAnimation(
         highlight.remove();
         mask.remove();
       };
-    }, [trajectory, classes.highlight, classes.maskPath]);
+    }, [trajectory, classes.highlight, classes.maskPath, classes.conflict, conflicts]);
 
     return (
       <g>
@@ -220,13 +224,16 @@ const useFollowStyles = makeStyles(() => ({
   },
 }));
 
-const useOutlineStyles = makeStyles(() => ({
+const useOutlineStyles = makeStyles(theme => ({
   highlight: {
     opacity: 0.25,
   },
-
   maskPath: {
     stroke: 'black',
+    opacity: 1,
+  },
+  conflict: {
+    stroke: theme.palette.secondary.main,
     opacity: 1,
   },
 }));
