@@ -1,4 +1,5 @@
 import React from 'react';
+import { Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import TreeView from '@material-ui/lab/TreeView';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -256,6 +257,7 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
   };
 
   return (
+    <Typography variant="body1" component={'span'} >
     <TreeView
       onNodeSelect={handleSelect}
       defaultCollapseIcon={<ExpandMoreIcon />}
@@ -264,5 +266,6 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
     >
       {negotiationContents}
     </TreeView>
+    </Typography>
   );
 }
