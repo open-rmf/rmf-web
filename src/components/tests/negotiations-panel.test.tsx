@@ -54,7 +54,7 @@ beforeEach(() => {
   }
 });
 
-it('renders negotiations', () => {
+it('renders negotiations correctly', () => {
   const root = mount(<NegotiationsPanel 
     conflicts={negotiationStatuses}
     spotlight={undefined}
@@ -67,6 +67,16 @@ it('renders negotiations', () => {
   
   const treeItem = root.find(TreeItem);
   expect(treeItem).toBeDefined();
+  
+  const label = treeItem.prop("label");
+  expect(label).toBeDefined();
+  expect(label).toContain("Conflict");
+  
+  const classes = treeItem.prop("classes");
+  expect(classes).toBeDefined();
+  expect(classes?.label?.includes("finished"));
+
+  treeItem.simulate('click');
 
   expect(toJson(root)).toMatchSnapshot();
 

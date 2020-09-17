@@ -258,14 +258,14 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
 
   return (
     <Typography variant="body1" component={'span'} >
-    <TreeView
-      onNodeSelect={handleSelect}
-      defaultCollapseIcon={<ExpandMoreIcon />}
-      defaultExpanded={['root']}
-      defaultExpandIcon={<ChevronRightIcon />}
-    >
-      {negotiationContents}
-    </TreeView>
+      <TreeView
+        onNodeSelect={handleSelect}
+        defaultCollapseIcon={<ExpandMoreIcon />}
+        defaultExpanded={['root']}
+        defaultExpandIcon={<ChevronRightIcon />}
+      >
+        {negotiationContents}
+      </TreeView>
     </Typography>
   );
 }
