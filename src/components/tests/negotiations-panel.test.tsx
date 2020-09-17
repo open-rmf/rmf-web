@@ -1,4 +1,4 @@
-import { createMount } from '@material-ui/core/test-utils';
+import { createMount, createShallow } from '@material-ui/core/test-utils';
 import React from 'react';
 import TreeView from '@material-ui/lab/TreeView';
 import TreeItem from '@material-ui/lab/TreeItem';
@@ -7,6 +7,7 @@ import NegotiationsPanel from '../negotiations-panel';
 import toJson from 'enzyme-to-json';
 
 const mount = createMount();
+const shallow = createShallow();
 
 let negotiationStatuses : Record<number, NegotiationConflict>;
 
@@ -55,7 +56,7 @@ beforeEach(() => {
 });
 
 it('renders negotiations correctly', () => {
-  const root = mount(<NegotiationsPanel 
+  const root = shallow(<NegotiationsPanel 
     conflicts={negotiationStatuses}
     spotlight={undefined}
     mapFloorLayerSorted={undefined}
@@ -67,17 +68,48 @@ it('renders negotiations correctly', () => {
   
   const treeItem = root.find(TreeItem);
   expect(treeItem).toBeDefined();
+  expect(treeItem).toHaveLength(4);
   
-  const label = treeItem.prop("label");
-  expect(label).toBeDefined();
-  expect(label).toContain("Conflict");
+  {
+    const label = treeItem.at(0).prop("label");
+    expect(label).toBeDefined();
+    expect(label).toContain("Conflict");
+    
+    const classes = treeItem.at(0).prop("classes");
+    expect(classes).toBeDefined();
+    expect(classes?.label?.includes("finished"));
+  }
   
-  const classes = treeItem.prop("classes");
-  expect(classes).toBeDefined();
-  expect(classes?.label?.includes("finished"));
+  {
+    const label = treeItem.at(1).prop("label");
+    expect(label).toBeDefined();
+    expect(label).toContain("[FINISHED]");
 
-  treeItem.simulate('click');
+    const classes = treeItem.at(1).prop("classes");
+    expect(classes).toBeDefined();
+    expect(classes?.label?.includes("finished"));
+  }
 
+  {
+    const label = treeItem.at(2).prop("label");
+    expect(label).toBeDefined();
+    expect(label).toContain("[REJECTED]");
+
+    const classes = treeItem.at(2).prop("classes");
+    expect(classes).toBeDefined();
+    expect(classes?.label?.includes("rejected"));
+  }
+  
+  {
+    const label = treeItem.at(3).prop("label");
+    expect(label).toBeDefined();
+    expect(label).toContain("[FORFEITED]");
+
+    const classes = treeItem.at(3).prop("classes");
+    expect(classes).toBeDefined();
+    expect(classes?.label?.includes("forfeited"));
+  }
+  
   expect(toJson(root)).toMatchSnapshot();
 
   root.unmount();
