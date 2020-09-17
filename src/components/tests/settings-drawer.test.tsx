@@ -1,6 +1,7 @@
 import React from 'react';
 import { createMount } from '@material-ui/core/test-utils';
 import toJson from 'enzyme-to-json';
+import { shallow } from 'enzyme';
 
 import SettingsDrawer from '../settings-drawer';
 import {
@@ -23,12 +24,12 @@ describe('Settings Drawer', () => {
   });
 
   it('should render correctly', () => {
-    const wrapper = mount(
+    const wrapper = shallow(
       <SettingsContext.Provider value={settings}>
         <SettingsDrawer settings={settings} onSettingsChange={onSettingsChange} open={true} />
       </SettingsContext.Provider>,
     );
-    expect(toJson(wrapper)).toMatchSnapshot();
+    expect(toJson(wrapper.dive())).toMatchSnapshot();
     wrapper.unmount();
   });
 
