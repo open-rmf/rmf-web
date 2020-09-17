@@ -2,10 +2,10 @@ import {
   Button,
   ButtonGroup,
   Divider,
-  ExpansionPanel,
-  ExpansionPanelDetails,
-  ExpansionPanelProps,
-  ExpansionPanelSummary,
+  Accordion,
+  AccordionDetails,
+  AccordionProps,
+  AccordionSummary,
   makeStyles,
   Typography,
   useTheme,
@@ -19,7 +19,7 @@ import OmniPanelStatusLabels from './omni-panel-status-labels';
 
 const debug = Debug('OmniPanel:DoorItem');
 
-export interface DoorItemProps extends Omit<ExpansionPanelProps, 'children'> {
+export interface DoorItemProps extends Omit<AccordionProps, 'children'> {
   door: Readonly<RomiCore.Door>;
   doorState?: Readonly<RomiCore.DoorState>;
   enableControls?: boolean;
@@ -28,7 +28,7 @@ export interface DoorItemProps extends Omit<ExpansionPanelProps, 'children'> {
   onCloseClick?(door: RomiCore.Door): void;
 }
 
-export const DoorItem = React.forwardRef(function(
+export const DoorItem = React.forwardRef(function (
   props: DoorItemProps,
   ref: React.Ref<HTMLElement>,
 ): React.ReactElement {
@@ -55,15 +55,15 @@ export const DoorItem = React.forwardRef(function(
   }
 
   return (
-    <ExpansionPanel
+    <Accordion
       ref={ref}
       data-component="DoorItem"
       data-name={door.name}
       data-state={doorModeToString(doorState)}
       {...otherProps}
     >
-      <ExpansionPanelSummary
-        classes={{ content: classes.expansionSummaryContent }}
+      <AccordionSummary
+        classes={{ content: classes.accordionSummaryContent }}
         expandIcon={<ExpandMoreIcon />}
       >
         <OmniPanelStatusLabels
@@ -71,29 +71,29 @@ export const DoorItem = React.forwardRef(function(
           name={door.name}
           modeText={doorModeToString(doorState)}
         />
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails data-role="details" className={classes.expansionDetail}>
-        <div className={classes.expansionDetailLine}>
+      </AccordionSummary>
+      <AccordionDetails data-role="details" className={classes.accordionDetail}>
+        <div className={classes.accordionDetailLine}>
           <Typography variant="body1">Name:</Typography>
           <Typography variant="body1">{door.name}</Typography>
         </div>
         <Divider />
-        <div className={classes.expansionDetailLine}>
+        <div className={classes.accordionDetailLine}>
           <Typography variant="body1">Type:</Typography>
           <Typography variant="body1">{doorTypeToString(door.door_type)}</Typography>
         </div>
         <Divider />
-        <div className={classes.expansionDetailLine}>
+        <div className={classes.accordionDetailLine}>
           <Typography variant="body1">Motion Direction:</Typography>
           <Typography variant="body1">{motionDirectionToString(door.motion_direction)}</Typography>
         </div>
         <Divider />
-        <div className={classes.expansionDetailLine}>
+        <div className={classes.accordionDetailLine}>
           <Typography variant="body1">Motion Range:</Typography>
           <Typography variant="body1">{door.motion_range}</Typography>
         </div>
         <Divider />
-        <div className={classes.expansionDetailLine}>
+        <div className={classes.accordionDetailLine}>
           <Typography variant="body1">Location:</Typography>
           <Typography variant="body1">
             ({door.v1_x.toFixed(3)}, {door.v1_y.toFixed(3)})
@@ -108,25 +108,25 @@ export const DoorItem = React.forwardRef(function(
           <Button onClick={() => onCloseClick && onCloseClick(door)}>Close</Button>
           <Button onClick={() => onOpenClick && onOpenClick(door)}>Open</Button>
         </ButtonGroup>
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
+      </AccordionDetails>
+    </Accordion>
   );
 });
 
 export default DoorItem;
 
-const useStyles = makeStyles(theme => ({
-  expansionSummaryContent: {
+const useStyles = makeStyles((theme) => ({
+  accordionSummaryContent: {
     alignItems: 'center',
     justifyContent: 'space-between',
   },
 
-  expansionDetail: {
+  accordionDetail: {
     flexFlow: 'column',
     padding: '8px',
   },
 
-  expansionDetailLine: {
+  accordionDetailLine: {
     display: 'inline-flex',
     justifyContent: 'space-between',
     padding: theme.spacing(0.5),

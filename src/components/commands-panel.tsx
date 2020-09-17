@@ -1,7 +1,7 @@
 import {
-  ExpansionPanel,
-  ExpansionPanelDetails,
-  ExpansionPanelSummary,
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   makeStyles,
   Typography,
 } from '@material-ui/core';
@@ -145,40 +145,40 @@ export const CommandsPanel = React.memo((props: CommandsPanelProps) => {
 
   return (
     <React.Fragment>
-      <ExpansionPanel data-component="LoopForm">
-        <ExpansionPanelSummary
-          classes={{ content: classes.expansionSummaryContent }}
+      <Accordion data-component="LoopForm">
+        <AccordionSummary
+          classes={{ content: classes.accordionSummaryContent }}
           expandIcon={<ExpandMoreIcon />}
         >
           <Typography variant="h5">Loop Request</Typography>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails className={classes.expansionDetail}>
+        </AccordionSummary>
+        <AccordionDetails className={classes.accordionDetail}>
           <LoopForm requestLoop={handleRequestLoop} fleetNames={allFleets} />
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
-      <ExpansionPanel data-component="DeliveryForm">
-        <ExpansionPanelSummary
-          classes={{ content: classes.expansionSummaryContent }}
+        </AccordionDetails>
+      </Accordion>
+      <Accordion data-component="DeliveryForm">
+        <AccordionSummary
+          classes={{ content: classes.accordionSummaryContent }}
           expandIcon={<ExpandMoreIcon />}
         >
           <Typography variant="h5">Delivery Request</Typography>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails className={classes.expansionDetail}>
+        </AccordionSummary>
+        <AccordionDetails className={classes.accordionDetail}>
           <RobotDeliveryForm requestDelivery={handleDeliveryRequest} fleetNames={allFleets} />
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
+        </AccordionDetails>
+      </Accordion>
     </React.Fragment>
   );
 });
 
 export default CommandsPanel;
 
-export const useStyles = makeStyles(theme => ({
-  expansionSummaryContent: {
+export const useStyles = makeStyles((theme) => ({
+  accordionSummaryContent: {
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  expansionDetail: {
+  accordionDetail: {
     flexFlow: 'column',
     paddingLeft: '0.1rem',
   },

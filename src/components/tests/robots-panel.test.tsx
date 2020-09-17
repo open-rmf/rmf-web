@@ -1,4 +1,4 @@
-import { ExpansionPanelDetails, ExpansionPanelSummary } from '@material-ui/core';
+import { AccordionDetails, AccordionSummary } from '@material-ui/core';
 import { createMount } from '@material-ui/core/test-utils';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
@@ -13,7 +13,7 @@ let robots: RomiCore.RobotState[];
 
 beforeEach(() => {
   fleets = fakeFleets();
-  robots = fleets.flatMap(x => x.robots);
+  robots = fleets.flatMap((x) => x.robots);
 });
 
 it('renders robots', () => {
@@ -27,13 +27,13 @@ it('umount on exit', () => {
   const root = mount(<RobotsPanel fleets={fleets} />);
   const robotElement = root.find(RobotItem).at(0);
 
-  // expansion details should be unmounted at the start
-  expect(robotElement.find(ExpansionPanelDetails).length).toBe(0);
+  // accordion details should be unmounted at the start
+  expect(robotElement.find(AccordionDetails).length).toBe(0);
 
-  robotElement.find(ExpansionPanelSummary).simulate('click');
+  robotElement.find(AccordionSummary).simulate('click');
 
   // now the details should be mounted
-  expect(robotElement.update().find(ExpansionPanelDetails).length).toBe(1);
+  expect(robotElement.update().find(AccordionDetails).length).toBe(1);
 
   root.unmount();
 });

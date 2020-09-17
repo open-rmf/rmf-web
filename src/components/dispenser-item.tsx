@@ -1,9 +1,9 @@
 import {
   Divider,
-  ExpansionPanel,
-  ExpansionPanelDetails,
-  ExpansionPanelProps,
-  ExpansionPanelSummary,
+  Accordion,
+  AccordionDetails,
+  AccordionProps,
+  AccordionSummary,
   List,
   ListItem,
   makeStyles,
@@ -20,12 +20,12 @@ import OmniPanelStatusLabels from './omni-panel-status-labels';
 
 const debug = Debug('OmniPanel:DispenserItem');
 
-export interface DispenserItemProps extends Omit<ExpansionPanelProps, 'children'> {
+export interface DispenserItemProps extends Omit<AccordionProps, 'children'> {
   dispenserState: Readonly<RomiCore.DispenserState>;
 }
 
 export const DispenserItem = React.memo(
-  React.forwardRef(function(
+  React.forwardRef(function (
     props: DispenserItemProps,
     ref: React.Ref<HTMLElement>,
   ): React.ReactElement {
@@ -58,7 +58,7 @@ export const DispenserItem = React.memo(
       } else {
         return (
           <List className={classes.listRoot} dense={true}>
-            {dispenserState.request_guid_queue.map(id => (
+            {dispenserState.request_guid_queue.map((id) => (
               <ListItem key={id} className={classes.listItem}>
                 <Typography variant="body1">{id}</Typography>
               </ListItem>
@@ -82,9 +82,9 @@ export const DispenserItem = React.memo(
     }
 
     return (
-      <ExpansionPanel ref={ref} {...otherProps}>
-        <ExpansionPanelSummary
-          classes={{ content: classes.expansionSummaryContent }}
+      <Accordion ref={ref} {...otherProps}>
+        <AccordionSummary
+          classes={{ content: classes.accordionSummaryContent }}
           expandIcon={<ExpandMoreIcon />}
         >
           <OmniPanelStatusLabels
@@ -92,49 +92,49 @@ export const DispenserItem = React.memo(
             name={dispenserState.guid}
             modeText={dispenserModeToString()}
           />
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails className={classes.expansionDetail}>
-          <div className={classes.expansionDetailLine}>
+        </AccordionSummary>
+        <AccordionDetails className={classes.accordionDetail}>
+          <div className={classes.accordionDetailLine}>
             <Typography variant="body1">Name:</Typography>
             <Typography variant="body1">{dispenserState.guid}</Typography>
           </div>
           <Divider />
-          <div className={classes.expansionDetailLine}>
+          <div className={classes.accordionDetailLine}>
             <Typography variant="body1">No. Queued Requests:</Typography>
             <Typography variant="body1">
               {String(dispenserState.request_guid_queue.length)}
             </Typography>
           </div>
           <Divider />
-          <div className={classes.expansionDetailLine}>
+          <div className={classes.accordionDetailLine}>
             <Typography variant="body1">Request Queue ID:</Typography>
             {dispenserRequestQueueId()}
           </div>
           <Divider />
-          <div className={classes.expansionDetailLine}>
+          <div className={classes.accordionDetailLine}>
             <Typography variant="body1">Seconds Remaining:</Typography>
             <Typography variant="body1">{String(dispenserState.seconds_remaining)}</Typography>
           </div>
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
+        </AccordionDetails>
+      </Accordion>
     );
   }),
 );
 
 export default DispenserItem;
 
-const useStyles = makeStyles(theme => ({
-  expansionSummaryContent: {
+const useStyles = makeStyles((theme) => ({
+  accordionSummaryContent: {
     alignItems: 'center',
     justifyContent: 'space-between',
   },
 
-  expansionDetail: {
+  accordionDetail: {
     flexFlow: 'column',
     padding: '8px',
   },
 
-  expansionDetailLine: {
+  accordionDetailLine: {
     display: 'inline-flex',
     justifyContent: 'space-between',
     padding: theme.spacing(0.5),
@@ -161,7 +161,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const useDispenserModeLabelStyles = makeStyles(theme => {
+const useDispenserModeLabelStyles = makeStyles((theme) => {
   const base: CSSProperties = {
     borderRadius: theme.shape.borderRadius,
     borderStyle: 'solid',
