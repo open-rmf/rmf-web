@@ -21,7 +21,7 @@ it('renders without crashing', async () => {
   (URL.createObjectURL as jest.Mock).mockReset();
 });
 
-it('triggers sets showSettings boolean to true', async () => {
+it('triggers sets omniPanel boolean to false', async () => {
   let wrapper: ReactWrapper | undefined;
 
   await ReactTestUtils.act(async () => {
