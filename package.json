@@ -59,6 +59,7 @@
     "@types/react-leaflet": "^2.5.2",
     "@types/react-router": "^5.1.7",
     "@types/react-router-dom": "^5.1.5",
+    "@types/reactour": "^1.17.1",
     "@types/uuid": "^8.3.0",
     "axios": "^0.20.0",
     "chalk": "^4.1.0",
