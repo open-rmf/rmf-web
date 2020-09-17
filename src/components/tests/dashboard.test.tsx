@@ -20,3 +20,13 @@ it('renders without crashing', async () => {
 
   (URL.createObjectURL as jest.Mock).mockReset();
 });
+
+it('triggers sets showSettings boolean to true', async () => {
+  let wrapper: ReactWrapper | undefined;
+
+  await ReactTestUtils.act(async () => {
+    wrapper = mount(<Dashboard />);
+  });
+  wrapper?.find('button').find('#toggle-omnipanel-btn').simulate('click');
+  expect(wrapper?.find('Transition').at(1).prop('appear')).toEqual(false);
+});
