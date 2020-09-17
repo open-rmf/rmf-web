@@ -80,17 +80,19 @@ const useStyles = makeStyles((theme) => ({
   legendLabel: {
     '@media (min-aspect-ratio: 8/10)': {
       fontSize: theme.typography.h6.fontSize,
-      padding: theme.spacing(1),
+      paddingBottom: theme.spacing(1),
+      margin: '0 auto',
     },
     '@media (max-aspect-ratio: 8/10)': {
       fontSize: theme.typography.h6.fontSize,
       padding: theme.spacing(1),
+      margin: '0 auto',
     },
   },
   trajGroup: {
     '@media (min-aspect-ratio: 8/10)': {
       flexDirection: 'row',
-      paddingLeft: theme.spacing(4),
+      paddingLeft: theme.spacing(8),
     },
     '@media (max-aspect-ratio: 8/10)': {
       flexDirection: 'row',
