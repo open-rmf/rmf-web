@@ -8,7 +8,10 @@ import DispenserStateManager from '../dispenser-state-manager';
 import DoorStateManager from '../door-state-manager';
 import FleetManager from '../fleet-manager';
 import LiftStateManager from '../lift-state-manager';
-import { NegotiationStatusManager, NegotiationTrajectoryResponse } from '../negotiation-status-manager';
+import {
+  NegotiationStatusManager,
+  NegotiationTrajectoryResponse,
+} from '../negotiation-status-manager';
 import { ResourceConfigurationsType } from '../resource-manager';
 import { RobotTrajectoryManager } from '../robot-trajectory-manager';
 import { loadSettings, saveSettings, Settings } from '../settings';
@@ -29,11 +32,13 @@ import RobotsPanel from './robots-panel';
 import ScheduleVisualizer from './schedule-visualizer';
 import SettingsDrawer from './settings-drawer';
 import { SpotlightValue } from './spotlight-value';
+import { GlobalHotKeys } from 'react-hotkeys';
+import { buildHotKeys } from '../hotkeys';
 
 const debug = Debug('App');
 const borderRadius = 20;
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   container: {
     display: 'flex',
     flexFlow: 'column',
@@ -123,7 +128,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const resourceManager = React.useRef<ResourceConfigurationsType | undefined>(undefined);
 
   const mapFloorLayerSorted = React.useMemo<string[] | undefined>(
-    () => buildingMap?.levels.sort((a, b) => a.elevation - b.elevation).map(x => x.name),
+    () => buildingMap?.levels.sort((a, b) => a.elevation - b.elevation).map((x) => x.name),
     [buildingMap],
   );
 
@@ -147,8 +152,8 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const [robotSpotlight, setRobotSpotlight] = React.useState<SpotlightValue<string> | undefined>(
     undefined,
   );
-  const newFleetNames = fleets.map(fleet => fleet.name);
-  if (newFleetNames.some(fleetName => !fleetNames.current.includes(fleetName))) {
+  const newFleetNames = fleets.map((fleet) => fleet.name);
+  if (newFleetNames.some((fleetName) => !fleetNames.current.includes(fleetName))) {
     fleetNames.current = newFleetNames;
   }
 
@@ -191,7 +196,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   React.useEffect(() => {
     setLoading({ caption: 'Connecting to SOSS server...' });
     transportFactory()
-      .then(x => {
+      .then((x) => {
         x.on('error', console.error);
         x.once('close', () => {
           setLoading({ caption: 'Lost connection to SOSS', variant: 'error' });
@@ -234,7 +239,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     const request = new RomiCore.GetBuildingMap_Request();
     transport
       .call(RomiCore.getBuildingMap, request)
-      .then(result => {
+      .then((result) => {
         setBuildingMap(result.building_map);
         setLoading(null);
       })
@@ -262,7 +267,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   }, [appResources]);
 
   React.useEffect(() => {
-    setDoors(buildingMap ? buildingMap.levels.flatMap(x => x.doors) : []);
+    setDoors(buildingMap ? buildingMap.levels.flatMap((x) => x.doors) : []);
     setLifts(buildingMap ? buildingMap.lifts : []);
   }, [buildingMap]);
 
@@ -341,97 +346,115 @@ export default function Dashboard(_props: {}): React.ReactElement {
     [classes.topLeftBorder, classes.topRightBorder],
   );
 
+  const hotKeysValue = buildHotKeys({
+    openCommands: handleMainMenuCommandsClick,
+    openRobots: handleMainMenuRobotsClick,
+    openDoors: handleMainMenuDoorsClick,
+    openDispensers: handleMainMenuDispensersClick,
+    openLifts: handleMainMenuLiftsClick,
+    openSettings: () => setShowSettings(!showSettings),
+    openOnmiPanel: () => setShowOmniPanel(!showOmniPanel),
+  });
+
   return (
-    <AppContextProvider settings={settings} notificationDispatch={setNotificationBarMessage}>
-      <RmfContextProvider doorStates={doorStates} liftStates={liftStates}>
-        <div className={classes.container}>
-          <AppBar
-            toggleShowOmniPanel={() => setShowOmniPanel(!showOmniPanel)}
-            showSettings={setShowSettings}
-          />
-          {loading && <LoadingScreen {...loading} />}
-          {buildingMap && mapFloorLayerSorted && (
-            <ScheduleVisualizer
-              buildingMap={buildingMap}
-              mapFloorLayerSorted={mapFloorLayerSorted}
-              fleets={fleets}
-              trajManager={trajManager.current}
-              appResources={resourceManager.current}
-              negotiationTrajStore={negotiationTrajStore}
-              onDoorClick={handleDoorClick}
-              onLiftClick={handleLiftClick}
-              onRobotClick={handleRobotClick}
+    <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
+      <AppContextProvider settings={settings} notificationDispatch={setNotificationBarMessage}>
+        <RmfContextProvider doorStates={doorStates} liftStates={liftStates}>
+          <div className={classes.container}>
+            <AppBar
+              toggleShowOmniPanel={() => setShowOmniPanel(!showOmniPanel)}
+              showSettings={setShowSettings}
             />
-          )}
-          <Fade in={showOmniPanel}>
-            <OmniPanel
-              className={classes.omniPanel}
-              classes={omniPanelClasses}
-              view={currentView}
-              onBack={handleBack}
-              onClose={handleClose}
-            >
-              <OmniPanelView id={OmniPanelViewIndex.MainMenu}>
-                <MainMenu
-                  onDoorsClick={handleMainMenuDoorsClick}
-                  onLiftsClick={handleMainMenuLiftsClick}
-                  onRobotsClick={handleMainMenuRobotsClick}
-                  onDispensersClick={handleMainMenuDispensersClick}
-                  onCommandsClick={handleMainMenuCommandsClick}
-                  onNegotiationsClick={handleMainMenuNegotiationsClick}
-                />
-              </OmniPanelView>
-              <OmniPanelView id={OmniPanelViewIndex.Doors}>
-                <DoorsPanel
-                  transport={transport}
-                  doors={doors}
-                  doorStates={doorStates}
-                  spotlight={doorSpotlight}
-                />
-              </OmniPanelView>
-              <OmniPanelView id={OmniPanelViewIndex.Lifts}>
-                <LiftsPanel
-                  transport={transport}
-                  liftStates={liftStates}
-                  lifts={lifts}
-                  spotlight={liftSpotlight}
-                />
-              </OmniPanelView>
-              <OmniPanelView id={OmniPanelViewIndex.Robots}>
-                <RobotsPanel fleets={fleets} spotlight={robotSpotlight} />
-              </OmniPanelView>
-              <OmniPanelView id={OmniPanelViewIndex.Dispensers}>
-                <DispensersPanel dispenserStates={dispenserStates} spotlight={dispenserSpotlight} />
-              </OmniPanelView>
-              <OmniPanelView id={OmniPanelViewIndex.Commands}>
-                <CommandsPanel transport={transport} allFleets={fleetNames.current} />
-              </OmniPanelView>
-              <OmniPanelView id={OmniPanelViewIndex.Negotiations}>
-                <NegotiationsPanel
-                  conflicts={negotiationStatus}
-                  spotlight={negotiationSpotlight}
-                  mapFloorLayerSorted={mapFloorLayerSorted}
-                  negotiationStatusManager={negotiationStatusManager}
-                  negotiationTrajStore={negotiationTrajStore}
-                />
-              </OmniPanelView>
-            </OmniPanel>
-          </Fade>
-          <SettingsDrawer
-            settings={settings}
-            open={showSettings}
-            onSettingsChange={newSettings => {
-              setSettings(newSettings);
-              saveSettings(newSettings);
-            }}
-            onClose={() => setShowSettings(false)}
+            {loading && <LoadingScreen {...loading} />}
+            {buildingMap && (
+              <ScheduleVisualizer
+                buildingMap={buildingMap}
+                mapFloorLayerSorted={mapFloorLayerSorted}
+                fleets={fleets}
+                trajManager={trajManager.current}
+                negotiationTrajStore={negotiationTrajStore}
+                appResources={resourceManager.current}
+                onDoorClick={handleDoorClick}
+                onLiftClick={handleLiftClick}
+                onRobotClick={handleRobotClick}
+              />
+            )}
+
+            <Fade in={showOmniPanel}>
+              <OmniPanel
+                className={classes.omniPanel}
+                classes={omniPanelClasses}
+                view={currentView}
+                onBack={handleBack}
+                onClose={handleClose}
+              >
+                <OmniPanelView id={OmniPanelViewIndex.MainMenu}>
+                  <MainMenu
+                    onDoorsClick={handleMainMenuDoorsClick}
+                    onLiftsClick={handleMainMenuLiftsClick}
+                    onRobotsClick={handleMainMenuRobotsClick}
+                    onDispensersClick={handleMainMenuDispensersClick}
+                    onCommandsClick={handleMainMenuCommandsClick}
+                    onNegotiationsClick={handleMainMenuNegotiationsClick}
+                  />
+                </OmniPanelView>
+                <OmniPanelView id={OmniPanelViewIndex.Doors}>
+                  <DoorsPanel
+                    transport={transport}
+                    doors={doors}
+                    doorStates={doorStates}
+                    spotlight={doorSpotlight}
+                  />
+                </OmniPanelView>
+                <OmniPanelView id={OmniPanelViewIndex.Lifts}>
+                  <LiftsPanel
+                    transport={transport}
+                    liftStates={liftStates}
+                    lifts={lifts}
+                    spotlight={liftSpotlight}
+                  />
+                </OmniPanelView>
+                <OmniPanelView id={OmniPanelViewIndex.Robots}>
+                  <RobotsPanel fleets={fleets} spotlight={robotSpotlight} />
+                </OmniPanelView>
+                <OmniPanelView id={OmniPanelViewIndex.Dispensers}>
+                  <DispensersPanel
+                    dispenserStates={dispenserStates}
+                    spotlight={dispenserSpotlight}
+                  />
+                </OmniPanelView>
+                <OmniPanelView id={OmniPanelViewIndex.Commands}>
+                  <CommandsPanel transport={transport} allFleets={fleetNames.current} />
+                </OmniPanelView>
+                <OmniPanelView id={OmniPanelViewIndex.Negotiations}>
+                  <NegotiationsPanel
+                    conflicts={negotiationStatus}
+                    spotlight={negotiationSpotlight}
+                    mapFloorLayerSorted={mapFloorLayerSorted}
+                    negotiationStatusManager={negotiationStatusManager}
+                    negotiationTrajStore={negotiationTrajStore}
+                  />
+                </OmniPanelView>
+              </OmniPanel>
+            </Fade>
+
+            <SettingsDrawer
+              settings={settings}
+              open={showSettings}
+              onSettingsChange={(newSettings) => {
+                setSettings(newSettings);
+                saveSettings(newSettings);
+              }}
+              onClose={() => setShowSettings(false)}
+            />
+          </div>
+
+          <NotificationBar
+            message={notificationBarMessage?.message}
+            type={notificationBarMessage?.type}
           />
-        </div>
-        <NotificationBar
-          message={notificationBarMessage?.message}
-          type={notificationBarMessage?.type}
-        />
-      </RmfContextProvider>
-    </AppContextProvider>
+        </RmfContextProvider>
+      </AppContextProvider>
+    </GlobalHotKeys>
   );
 }
