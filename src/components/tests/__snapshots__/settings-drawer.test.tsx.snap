@@ -10,6 +10,12 @@ exports[`Settings Drawer should render correctly 1`] = `
   anchor="right"
   open={true}
 >
+  <WithStyles(ForwardRef(IconButton))
+    className="makeStyles-button-5"
+    onClick={[Function]}
+  >
+    <CloseIcon />
+  </WithStyles(ForwardRef(IconButton))>
   <WithStyles(ForwardRef(FormControl))
     component="fieldset"
   >
