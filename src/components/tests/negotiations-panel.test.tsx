@@ -109,7 +109,18 @@ it('renders negotiations correctly', () => {
     expect(classes).toBeDefined();
     expect(classes?.label?.includes("forfeited"));
   }
-  
+
+  root.unmount();
+});
+
+it('matches snapshot', () => {
+  const root = mount(<NegotiationsPanel 
+    conflicts={negotiationStatuses}
+    spotlight={undefined}
+    mapFloorLayerSorted={undefined}
+    negotiationStatusManager={undefined}
+    negotiationTrajStore={undefined} />);
+
   expect(toJson(root)).toMatchSnapshot();
 
   root.unmount();

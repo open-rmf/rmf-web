@@ -63,11 +63,11 @@ describe('Loop request for negotiations', () => {
     );
     console.log('done');
     
-    var treeItem = $('[data-component=TreeItem]');
+    const treeItem = $('[data-component=TreeItem]');
     expect(treeItem).toBeVisible();
     treeItem.click();
     
-    var subTreeItem = treeItem.$('[data-component=TreeItem]');
+    const subTreeItem = treeItem.$('[data-component=TreeItem]');
     expect(subTreeItem).toBeVisible();
     subTreeItem.click();
   });
