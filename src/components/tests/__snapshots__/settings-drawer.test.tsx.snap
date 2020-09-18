@@ -29,6 +29,7 @@ exports[`Settings Drawer should render correctly 1`] = `
     >
       <WithStyles(ForwardRef(IconButton))
         className="makeStyles-button-6"
+        id="closeDrawerButton"
         onClick={[Function]}
       >
         <CloseIcon />

@@ -68,7 +68,11 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
           <Typography variant="h6">Settings</Typography>
         </Grid>
         <Grid item>
-          <IconButton className={classes.button} onClick={() => handleCloseButton(false)}>
+          <IconButton
+            id="closeDrawerButton"
+            className={classes.button}
+            onClick={() => handleCloseButton(false)}
+          >
             <CloseIcon />
           </IconButton>
         </Grid>
