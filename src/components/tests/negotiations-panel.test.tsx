@@ -2,7 +2,7 @@ import { createMount, createShallow } from '@material-ui/core/test-utils';
 import React from 'react';
 import TreeView from '@material-ui/lab/TreeView';
 import TreeItem from '@material-ui/lab/TreeItem';
-import { NegotiationConflict, ResolveState } from '../../negotiation-status-manager';
+import { NegotiationStatusManager, NegotiationConflict, ResolveState } from '../../negotiation-status-manager';
 import NegotiationsPanel from '../negotiations-panel';
 import toJson from 'enzyme-to-json';
 
@@ -126,4 +126,16 @@ it('matches snapshot', () => {
   expect(toJson(root)).toMatchSnapshot();
 
   root.unmount();
+});
+
+it ('tests negotiation status manager', () => {
+  let negotiationStatusManager : NegotiationStatusManager;
+  negotiationStatusManager = new NegotiationStatusManager("");
+
+  let conflicts = negotiationStatusManager.allConflicts();
+  expect(conflicts).toBeDefined();
+
+  negotiationStatusManager.removeOldConflicts();
+  let conflicts2 = negotiationStatusManager.allConflicts();
+  expect(conflicts2).toBeDefined();
 });
