@@ -270,7 +270,6 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
             response: 'negotiation_trajectory',
             values: []
            };
-        console.log(traj.map_name);
         negotiationTrajStore[traj.map_name].values.push(traj);
       });
     }
