@@ -10,6 +10,8 @@ import {
   Radio,
   RadioGroup,
   useMediaQuery,
+  Typography,
+  Grid,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import React from 'react';
@@ -61,9 +63,16 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
 
   return (
     <Drawer PaperProps={{ className: classes.drawer }} anchor={drawerAnchor} {...otherProps}>
-      <IconButton className={classes.button} onClick={() => handleCloseButton(false)}>
-        <CloseIcon />
-      </IconButton>
+      <Grid container alignItems="center">
+        <Grid item className={classes.heading}>
+          <Typography variant="h6">Settings</Typography>
+        </Grid>
+        <Grid item>
+          <IconButton className={classes.button} onClick={() => handleCloseButton(false)}>
+            <CloseIcon />
+          </IconButton>
+        </Grid>
+      </Grid>
       <FormControl component="fieldset">
         <FormLabel component="legend" className={classes.legendLabel}>
           Trajectory Animation
@@ -164,8 +173,10 @@ const useStyles = makeStyles((theme) => ({
   flexBasis: {
     flexBasis: '40%',
   },
+  heading: {
+    margin: '0 auto 0 calc(50% - 3rem)',
+  },
   button: {
     width: '3rem',
-    marginLeft: 'auto',
   },
 }));
