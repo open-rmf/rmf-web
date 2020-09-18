@@ -10,12 +10,31 @@ exports[`Settings Drawer should render correctly 1`] = `
   anchor="right"
   open={true}
 >
-  <WithStyles(ForwardRef(IconButton))
-    className="makeStyles-button-5"
-    onClick={[Function]}
+  <WithStyles(ForwardRef(Grid))
+    alignItems="center"
+    container={true}
   >
-    <CloseIcon />
-  </WithStyles(ForwardRef(IconButton))>
+    <WithStyles(ForwardRef(Grid))
+      className="makeStyles-heading-5"
+      item={true}
+    >
+      <WithStyles(ForwardRef(Typography))
+        variant="h6"
+      >
+        Settings
+      </WithStyles(ForwardRef(Typography))>
+    </WithStyles(ForwardRef(Grid))>
+    <WithStyles(ForwardRef(Grid))
+      item={true}
+    >
+      <WithStyles(ForwardRef(IconButton))
+        className="makeStyles-button-6"
+        onClick={[Function]}
+      >
+        <CloseIcon />
+      </WithStyles(ForwardRef(IconButton))>
+    </WithStyles(ForwardRef(Grid))>
+  </WithStyles(ForwardRef(Grid))>
   <WithStyles(ForwardRef(FormControl))
     component="fieldset"
   >
