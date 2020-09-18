@@ -35,7 +35,7 @@ export const RobotTrajectoriesOverlay = React.memo((props: RobotTrajectoriesOver
   useEffect(() => {
     function getConflictRobotMessage(): string {
       let message = '';
-      conflictRobotNames.forEach(conflictGroup => {
+      conflictRobotNames.forEach((conflictGroup) => {
         message += `[${conflictGroup}] `;
       });
       return message;
@@ -53,12 +53,13 @@ export const RobotTrajectoriesOverlay = React.memo((props: RobotTrajectoriesOver
   return (
     <SVGOverlay {...otherProps}>
       <svg viewBox={viewBox}>
-        {trajs.map(traj => (
+        {trajs.map((traj) => (
           <trajectoryContext.Component
             key={traj.id}
             trajectory={traj}
             footprint={footprint}
             conflicts={conflicts}
+            colorManager={colorManager}
           />
         ))}
       </svg>

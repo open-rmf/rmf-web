@@ -11,6 +11,7 @@ describe('RobotImageIcon', () => {
   colorManager.robotColorFromCache = jest.fn(() => 'black');
 
   const iconPath = 'testIcon';
+  const fleetName = 'testFleet';
 
   test('renders correctly', async () => {
     const root = mount(
@@ -21,6 +22,7 @@ describe('RobotImageIcon', () => {
           colorManager={colorManager}
           dispatchIconError={jest.fn()}
           iconPath={iconPath}
+          fleetName={fleetName}
         />
       </svg>,
     );
@@ -37,6 +39,7 @@ describe('RobotImageIcon', () => {
           dispatchIconError={jest.fn()}
           iconPath={iconPath}
           inConflict={true}
+          fleetName={fleetName}
         />
       </svg>,
     );

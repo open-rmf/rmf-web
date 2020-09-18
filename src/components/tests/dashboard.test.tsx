@@ -3,6 +3,8 @@ import { ReactWrapper } from 'enzyme';
 import React from 'react';
 import ReactTestUtils from 'react-dom/test-utils';
 import Dashboard from '../dashboard';
+import { SettingsContext } from '../app-contexts';
+import { defaultSettings, TrajectoryAnimation, Settings } from '../../settings';
 
 const mount = createMount();
 

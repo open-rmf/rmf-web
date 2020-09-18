@@ -1,8 +1,8 @@
-import React, { SVGProps, useMemo } from 'react';
+import React, { SVGProps, useMemo, useState } from 'react';
 import { uniqueId } from '../../util/css-utils';
 import { RobotProps } from './robot';
 
-type RobotImageIconProps = Omit<RobotProps, 'fleetName'> & {
+type RobotImageIconProps = RobotProps & {
   iconPath: string;
   dispatchIconError: React.Dispatch<
     React.SetStateAction<{
@@ -29,16 +29,50 @@ function makeGradientShadow(
   );
 }
 
-const RobotImageIcon = React.forwardRef(function(
+const RobotImageIcon = React.forwardRef(function (
   props: RobotImageIconProps,
   ref: React.Ref<SVGGElement>,
 ): React.ReactElement {
-  const { footprint, iconPath, dispatchIconError, inConflict, colorManager } = props;
+  const {
+    robot,
+    footprint,
+    iconPath,
+    dispatchIconError,
+    inConflict,
+    colorManager,
+    fleetName,
+  } = props;
 
   // The default icon uses footprint as the radius, so we * 2 here because the width/height
   // is in a square. With the double size of the footprint, we achieved a similar
   // size to the robot default svg icon.
   const [imgIconWidth, imgIconHeigth] = useMemo(() => [footprint * 2, footprint * 2], [footprint]);
+  const [robotColor, setRobotColor] = useState<string | null>(() =>
+    colorManager.robotColorFromCache(fleetName, robot.name),
+  );
+
+  React.useLayoutEffect(() => {
+    if (robotColor) {
+      return;
+    }
+    (async () => {
+      await colorManager
+        .robotPrimaryColor(fleetName, robot.name, robot.model, iconPath)
+        .then((color) => {
+          if (color) setRobotColor(color);
+          else {
+            dispatchIconError((previousVal) => {
+              return { ...previousVal, error: true };
+            });
+          }
+        })
+        .catch(() => {
+          dispatchIconError((previousVal) => {
+            return { ...previousVal, error: true };
+          });
+        });
+    })();
+  }, [robot, robotColor, colorManager, iconPath, fleetName, dispatchIconError]);
 
   const componentId = React.useMemo(uniqueId, []);
   const shadowId = React.useMemo(() => `RobotImageIcon-${componentId}-shadow`, [componentId]);
@@ -69,12 +103,12 @@ const RobotImageIcon = React.forwardRef(function(
               href={iconPath}
               height={imgIconHeigth}
               width={imgIconWidth}
-              onError={error => {
+              onError={(error) => {
                 console.error(
                   'An error occurred while loading the image. Using the default image.',
                   error,
                 );
-                return dispatchIconError(previousVal => {
+                return dispatchIconError((previousVal) => {
                   return { ...previousVal, error: true };
                 });
               }}

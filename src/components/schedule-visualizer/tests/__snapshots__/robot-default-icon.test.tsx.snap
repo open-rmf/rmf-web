@@ -5,14 +5,15 @@ exports[`RobotDefaultIcon renders correctly 1`] = `
   <ForwardRef
     colorManager={
       ColorManager {
+        "_pathColorCache": Object {},
         "_robotColorCache": Object {},
         "conflictHighlight": "#f44336",
         "robotColor": [MockFunction],
         "robotColorFromCache": [MockFunction] {
           "calls": Array [
             Array [
+              "testFleet",
               "",
-              "BaseModel",
             ],
           ],
           "results": Array [
@@ -24,6 +25,7 @@ exports[`RobotDefaultIcon renders correctly 1`] = `
         },
       }
     }
+    fleetName="testFleet"
     footprint={1}
     robot={
       Object {

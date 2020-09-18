@@ -10,10 +10,17 @@ describe('RobotDefaultIcon', () => {
   colorManager.robotColor = jest.fn(async () => 'black');
   colorManager.robotColorFromCache = jest.fn(() => 'black');
 
+  const fleetName = 'testFleet';
+
   test('renders correctly', async () => {
     const root = mount(
       <svg>
-        <RobotDefaultIcon robot={makeRobot()} footprint={1} colorManager={colorManager} />
+        <RobotDefaultIcon
+          robot={makeRobot()}
+          footprint={1}
+          colorManager={colorManager}
+          fleetName={fleetName}
+        />
       </svg>,
     );
     expect(root).toMatchSnapshot();
@@ -27,6 +34,7 @@ describe('RobotDefaultIcon', () => {
           footprint={1}
           colorManager={colorManager}
           inConflict={true}
+          fleetName={fleetName}
         />
       </svg>,
     );
