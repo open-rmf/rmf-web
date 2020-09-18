@@ -22,6 +22,7 @@ describe('Settings Drawer', () => {
 
   beforeEach(() => {
     onSettingsChange = jest.fn();
+    handleCloseButton = jest.fn();
   });
 
   it('should render correctly', () => {
@@ -103,5 +104,20 @@ describe('Settings Drawer', () => {
     // Accessing the 'Theme' animation @ the seventh input field
     wrapper.find('input').find({ name: 'Theme' }).simulate('change', mockEvent);
     expect(onSettingsChange).toHaveBeenCalledTimes(1);
+  });
+
+  it('should call handleCloseButton function when closeIcon button is clicked', () => {
+    const wrapper = mount(
+      <SettingsContext.Provider value={settings}>
+        <SettingsDrawer
+          settings={settings}
+          onSettingsChange={(newSettings) => onSettingsChange(newSettings)}
+          open={true}
+          handleCloseButton={handleCloseButton}
+        />
+      </SettingsContext.Provider>,
+    );
+    wrapper.find('#closeDrawerButton').find('button').simulate('click');
+    expect(handleCloseButton).toHaveBeenCalledTimes(1);
   });
 });
