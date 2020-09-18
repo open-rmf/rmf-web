@@ -36,6 +36,7 @@ it('sets showOmniPanel boolean to false', async () => {
 
 it('should open settings drawer when settings icon is clicked and update state via onSettingsChange when radio button is clicked', async () => {
   let wrapper: ReactWrapper | undefined;
+
   await ReactTestUtils.act(async () => {
     wrapper = mount(
       <SettingsContext.Provider value={defaultSettings()}>
@@ -43,6 +44,7 @@ it('should open settings drawer when settings icon is clicked and update state v
       </SettingsContext.Provider>,
     );
   });
+
   wrapper?.find('button').find('#show-settings-btn').simulate('click');
   wrapper?.find('input').find({ name: 'Theme' }).simulate('change');
   expect(wrapper?.find('input').find({ name: 'Theme' }).prop('checked')).toEqual(true);
