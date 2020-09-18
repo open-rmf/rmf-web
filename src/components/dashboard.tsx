@@ -34,6 +34,7 @@ import SettingsDrawer from './settings-drawer';
 import { SpotlightValue } from './spotlight-value';
 import { GlobalHotKeys } from 'react-hotkeys';
 import { buildHotKeys } from '../hotkeys';
+import HotKeysDrawer from './hotkeys-drawer';
 
 const debug = Debug('App');
 const borderRadius = 20;
@@ -187,6 +188,8 @@ export default function Dashboard(_props: {}): React.ReactElement {
 
   const [showSettings, setShowSettings] = React.useState(false);
   const [settings, setSettings] = React.useState<Settings>(() => loadSettings());
+
+  const [showHotKeys, setShowHotKeys] = React.useState(false);
 
   const [
     notificationBarMessage,
@@ -354,6 +357,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     openLifts: handleMainMenuLiftsClick,
     openSettings: () => setShowSettings(!showSettings),
     openOnmiPanel: () => setShowOmniPanel(!showOmniPanel),
+    openHotKeys: () => setShowHotKeys(!showHotKeys),
   });
 
   return (
@@ -364,6 +368,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
             <AppBar
               toggleShowOmniPanel={() => setShowOmniPanel(!showOmniPanel)}
               showSettings={setShowSettings}
+              showHotKeys={setShowHotKeys}
             />
             {loading && <LoadingScreen {...loading} />}
             {buildingMap && (
@@ -447,6 +452,8 @@ export default function Dashboard(_props: {}): React.ReactElement {
               }}
               onClose={() => setShowSettings(false)}
             />
+
+            <HotKeysDrawer open={showHotKeys} onClose={() => setShowSettings(false)} />
           </div>
 
           <NotificationBar
