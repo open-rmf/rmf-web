@@ -38,6 +38,7 @@ export interface Trajectory {
   segments: RawKnot[];
   robot_name: string;
   fleet_name: string;
+  map_name: string;
 }
 
 export interface TrajectoryResponse {
