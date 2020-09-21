@@ -2,6 +2,11 @@
 
 exports[`Settings Drawer should render correctly 1`] = `
 <WithStyles(ForwardRef(Drawer))
+  ModalProps={
+    Object {
+      "disableEnforceFocus": true,
+    }
+  }
   PaperProps={
     Object {
       "className": "makeStyles-drawer-1",
