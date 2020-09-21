@@ -110,8 +110,6 @@ it('renders negotiations correctly', () => {
     expect(classes?.label?.includes("forfeited"));
   }
 
-  treeItem.at(1).simulate('click');
-
   root.unmount();
 });
 
