@@ -48,7 +48,7 @@ export default function RobotBenchmark(): React.ReactElement {
             type="number"
             style={{ width: '3em', marginLeft: 4 }}
             value={numRobots}
-            onChange={e => {
+            onChange={(e) => {
               const num = parseInt(e.currentTarget.value);
               setNumRobots(num);
               num && setRobots(createRobots(num));
