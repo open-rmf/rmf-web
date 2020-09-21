@@ -168,6 +168,7 @@ const useStyles = makeStyles((theme) => ({
     '@media (min-aspect-ratio: 8/10)': {
       flexDirection: 'row',
       paddingLeft: theme.spacing(8),
+      margin: '1rem 0',
     },
     '@media (max-aspect-ratio: 8/10)': {
       flexDirection: 'row',
