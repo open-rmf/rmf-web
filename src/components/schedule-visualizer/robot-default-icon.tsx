@@ -1,44 +1,73 @@
 import { useTheme } from '@material-ui/core';
-import React, { useState } from 'react';
+import React, { SVGProps, useState } from 'react';
+import { uniqueId } from '../../util/css-utils';
 import { RobotProps } from './robot';
 
-type RobotDefaultIconProps = Omit<RobotProps, 'fleetName'>;
+/**
+ *
+ * @param color MUST be in hex notation without alpha channel. e.g. #123456
+ */
+function makeGradientShadow(
+  color: string,
+): React.FunctionComponent<SVGProps<SVGRadialGradientElement>> {
+  return (props: SVGProps<SVGRadialGradientElement>) => (
+    <radialGradient {...props}>
+      <stop offset="70%" stopColor={`${color}ff`} />
+      <stop offset="75%" stopColor={`${color}80`} />
+      <stop offset="80%" stopColor={`${color}60`} />
+      <stop offset="85%" stopColor={`${color}30`} />
+      <stop offset="90%" stopColor={`${color}18`} />
+      <stop offset="95%" stopColor={`${color}08`} />
+      <stop offset="100%" stopColor={`${color}00`} />
+    </radialGradient>
+  );
+}
 
-const RobotDefaultIcon = React.forwardRef(function(
-  props: RobotDefaultIconProps,
+const RobotDefaultIcon = React.forwardRef(function (
+  props: RobotProps,
   ref: React.Ref<SVGGElement>,
 ): React.ReactElement {
-  const { robot, footprint, colorManager, inConflict } = props;
+  const { robot, footprint, colorManager, inConflict, fleetName } = props;
   const [robotColor, setRobotColor] = useState<string | null>(() =>
-    colorManager.robotColorFromCache(robot.name, robot.model),
+    colorManager.robotColorFromCache(fleetName, robot.name),
   );
   const theme = useTheme();
+
+  const componentId = React.useMemo(uniqueId, []);
+  const shadowId = React.useMemo(() => `RobotDefaultIcon-${componentId}-shadow`, [componentId]);
+  const conflictShadowId = React.useMemo(() => `RobotDefaultIcon-${componentId}-shadow-conflict`, [
+    componentId,
+  ]);
+
+  const Shadow = React.useMemo(() => makeGradientShadow('#000000'), []);
+  const ShadowConflict = React.useMemo(() => makeGradientShadow(colorManager.conflictHighlight), [
+    colorManager.conflictHighlight,
+  ]);
+
   React.useLayoutEffect(() => {
     if (robotColor) {
       return;
     }
     (async () => {
-      setRobotColor(await colorManager.robotColor(robot.name, robot.model));
+      setRobotColor(await colorManager.robotColor(fleetName, robot.name, robot.model));
+      await colorManager.robotPrimaryColor(fleetName, robot.name, robot.model);
     })();
-  }, [robot, robotColor, colorManager]);
+  }, [robot, robotColor, colorManager, fleetName]);
 
   return (
     <>
       {!!robotColor && (
         <g>
-          <filter id={`${robot.name}-shadow`} x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow
-              dx="0"
-              dy="0"
-              stdDeviation={footprint * 0.15}
-              floodColor={inConflict ? theme.palette.error.main : theme.palette.common.black}
-            />
-          </filter>
+          <defs>
+            <Shadow id={shadowId} />
+            <ShadowConflict id={conflictShadowId} />
+          </defs>
           <circle
-            r={footprint}
-            fill={robotColor}
-            filter={`url(${encodeURI(`#${robot.name}-shadow`)}`}
+            id="shadow"
+            r={footprint * 1.3}
+            fill={inConflict ? `url(#${conflictShadowId})` : `url(#${shadowId})`}
           />
+          <circle r={footprint} fill={robotColor} />
           <line x2={footprint} stroke={theme.palette.common.black} strokeWidth="0.05" />
         </g>
       )}

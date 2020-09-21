@@ -24,7 +24,7 @@ export function withFillAnimation(
   TrajectoryComponent: React.ComponentType<RobotTrajectoryProps>,
   animationScale: number,
 ): React.ComponentType<RobotTrajectoryProps> {
-  return props => {
+  return (props) => {
     const classes = useFillStyles();
     const { trajectory } = props;
     const pathRef = React.useRef<SVGPathElement>(null);
@@ -42,7 +42,7 @@ export function withFillAnimation(
       pathRef.current.parentElement?.appendChild(pathAnim);
 
       pathAnim.animate(
-        offsets.map(offset => ({
+        offsets.map((offset) => ({
           offset: offset,
           strokeDashoffset: 2 - offset,
         })),
@@ -75,7 +75,7 @@ export function withFollowAnimation(
   TrajectoryComponent: React.ComponentType<RobotTrajectoryProps>,
   animationScale: number,
 ): React.ComponentType<RobotTrajectoryProps> {
-  return props => {
+  return (props) => {
     const classes = useFollowStyles();
     const { trajectory } = props;
     const pathRef = React.useRef<SVGPathElement>(null);
@@ -96,7 +96,7 @@ export function withFollowAnimation(
       pathRef.current.parentElement?.appendChild(pathAnim);
 
       pathAnim.animate(
-        offsets.map(offset => ({
+        offsets.map((offset) => ({
           offset: offset,
           strokeDashoffset: Math.max(2 - offset, strokeDash + 1),
         })),
@@ -129,9 +129,9 @@ export function withOutlineAnimation(
   TrajectoryComponent: React.ComponentType<RobotTrajectoryProps>,
   animationScale: number,
 ): React.ComponentType<RobotTrajectoryProps> {
-  return props => {
+  return (props) => {
     const classes = useOutlineStyles();
-    const { trajectory } = props;
+    const { trajectory, conflicts } = props;
     const pathRef = React.useRef<SVGPathElement>(null);
 
     React.useLayoutEffect(() => {
@@ -148,8 +148,8 @@ export function withOutlineAnimation(
       const maskRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
       maskRect.setAttribute('x', '0');
       maskRect.setAttribute('y', '0');
-      maskRect.setAttribute('width', '100%');
-      maskRect.setAttribute('height', '100%');
+      maskRect.setAttribute('width', '100');
+      maskRect.setAttribute('height', '100');
       maskRect.setAttribute('fill', 'white');
       mask.appendChild(maskRect);
 
@@ -157,7 +157,7 @@ export function withOutlineAnimation(
       maskPath.classList.add(classes.maskPath);
       const pathStrokeWidth = pathRef.current.getAttribute('stroke-width');
       if (pathStrokeWidth) {
-        maskPath.setAttribute('stroke-width', (parseFloat(pathStrokeWidth) - 0.1).toString());
+        maskPath.setAttribute('stroke-width', (parseFloat(pathStrokeWidth) * 0.8).toString());
       }
       mask.appendChild(maskPath);
       parent.appendChild(mask);
@@ -167,8 +167,12 @@ export function withOutlineAnimation(
       highlight.classList.add(classes.highlight);
       parent.appendChild(highlight);
 
+      if (conflicts.flat().includes(trajectory.id)) {
+        pathRef.current.classList.add(classes.conflict);
+      }
+
       pathRef.current.animate(
-        offsets.map(offset => ({
+        offsets.map((offset) => ({
           offset: offset,
           strokeDashoffset: 2 - offset,
         })),
@@ -183,7 +187,7 @@ export function withOutlineAnimation(
         highlight.remove();
         mask.remove();
       };
-    }, [trajectory, classes.highlight, classes.maskPath]);
+    }, [trajectory, classes.highlight, classes.maskPath, classes.conflict, conflicts]);
 
     return (
       <g>
@@ -196,7 +200,7 @@ export function withOutlineAnimation(
 function keyframeOffsets(traj: Trajectory): number[] {
   const { segments } = traj;
   const totalDuration = segments[segments.length - 1].t - segments[0].t;
-  return traj.segments.map(seg => (seg.t - segments[0].t) / totalDuration);
+  return traj.segments.map((seg) => (seg.t - segments[0].t) / totalDuration);
 }
 
 const useFillStyles = makeStyles(() => ({
@@ -220,13 +224,16 @@ const useFollowStyles = makeStyles(() => ({
   },
 }));
 
-const useOutlineStyles = makeStyles(() => ({
+const useOutlineStyles = makeStyles((theme) => ({
   highlight: {
     opacity: 0.25,
   },
-
   maskPath: {
     stroke: 'black',
+    opacity: 1,
+  },
+  conflict: {
+    stroke: theme.palette.secondary.main,
     opacity: 1,
   },
 }));

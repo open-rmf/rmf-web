@@ -61,6 +61,7 @@ exports.config = {
       acceptInsecureCerts: true,
 
       'goog:chromeOptions': {
+        binary: process.env.CHROME_BIN || undefined,
         // to run chrome headless the following flags are required
         // (see https://developers.google.com/web/updates/2017/04/headless-chrome)
         args: [...headlessArgs, '--window-size=1366,768'],

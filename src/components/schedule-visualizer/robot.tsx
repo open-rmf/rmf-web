@@ -39,7 +39,7 @@ export interface RobotProps {
 }
 
 const Robot = React.memo(
-  React.forwardRef(function(props: RobotProps, ref: React.Ref<SVGGElement>): React.ReactElement {
+  React.forwardRef(function (props: RobotProps, ref: React.Ref<SVGGElement>): React.ReactElement {
     const resourcesContext = useContext(ResourcesContext);
     const classes = useStyles();
     const { robot, footprint, colorManager, fleetName, inConflict, onClick } = props;
@@ -58,7 +58,7 @@ const Robot = React.memo(
           data-component="Robot"
           className={`${classes.container}`}
           aria-label={robot.name}
-          onClick={e => onClick && onClick(e, fleetName, robot)}
+          onClick={(e) => onClick && onClick(e, fleetName, robot)}
           transform={`translate(${robot.location.x} ${-robot.location.y})
             rotate(${-(robot.location.yaw * 180) / Math.PI})`}
         >
@@ -69,6 +69,8 @@ const Robot = React.memo(
               footprint={footprint}
               dispatchIconError={setRenderCustomIcon}
               inConflict={inConflict}
+              colorManager={colorManager}
+              fleetName={fleetName}
             />
           ) : (
             <RobotDefaultIcon
@@ -76,6 +78,7 @@ const Robot = React.memo(
               footprint={footprint}
               colorManager={colorManager}
               inConflict={inConflict}
+              fleetName={fleetName}
             ></RobotDefaultIcon>
           )}
         </g>

@@ -60,7 +60,7 @@ function calcMaxBounds(mapFloorLayers: readonly MapFloorLayer[]): L.LatLngBounds
     return undefined;
   }
   const bounds = new L.LatLngBounds([0, 0], [0, 0]);
-  Object.values(mapFloorLayers).forEach(x => bounds.extend(x.bounds));
+  Object.values(mapFloorLayers).forEach((x) => bounds.extend(x.bounds));
   return bounds.pad(0.2);
 }
 
@@ -74,7 +74,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     Readonly<Record<string, MapFloorLayer>>
   >({});
   const mapFloorLayerSort = React.useMemo<string[]>(
-    () => props.buildingMap.levels.sort((a, b) => a.elevation - b.elevation).map(x => x.name),
+    () => props.buildingMap.levels.sort((a, b) => a.elevation - b.elevation).map((x) => x.name),
     [props.buildingMap],
   );
   const [curLevelName, setCurLevelName] = React.useState(() => mapFloorLayerSort[0]);
@@ -144,7 +144,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
         }
 
         promises.push(
-          new Promise(res => {
+          new Promise((res) => {
             const imageElement = new Image();
             const imageUrl = toBlobUrl(image.data);
             imageElement.src = imageUrl;
@@ -159,8 +159,8 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
               // const width = (svgElement.width.baseVal.value * scale) / IMAGE_SCALE;
 
               const bounds = new L.LatLngBounds(
-                [image.y_offset, image.x_offset],
-                [image.y_offset - height, image.x_offset + width],
+                [image.y_offset - height, image.x_offset],
+                [image.y_offset, image.x_offset + width],
               );
 
               mapFloorLayers[level.name] = {
@@ -203,7 +203,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
           },
         });
         debug('set trajectories');
-        setTrajectories(prev => ({
+        setTrajectories((prev) => ({
           ...prev,
           [curMapFloorLayer.level.name]: resp,
         }));
@@ -220,7 +220,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     setCurLevelName(e.name);
   }
 
-  const sortedMapFloorLayers = mapFloorLayerSort.map(x => mapFloorLayers[x]);
+  const sortedMapFloorLayers = mapFloorLayerSort.map((x) => mapFloorLayers[x]);
   const ref = React.useRef<ImageOverlay>(null);
 
   if (ref.current) {
@@ -243,9 +243,9 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       if (conflicts.length === 0) {
         return [];
       }
-      conflicts.forEach(conflictPair => {
+      conflicts.forEach((conflictPair) => {
         let robotNames: string[] = [];
-        conflictPair.forEach(conflictId => {
+        conflictPair.forEach((conflictId) => {
           const robotName = DefaultTrajectoryManager.getRobotNameFromPathId(conflictId, trajs);
           robotName && robotNames.push(robotName);
         });
@@ -283,7 +283,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       <ResourcesContext.Provider value={!!appResources ? appResources : {}}>
         <AttributionControl position="bottomright" prefix="OSRC-SG" />
         <LayersControl position="topleft">
-          {sortedMapFloorLayers.every(x => x) &&
+          {sortedMapFloorLayers.every((x) => x) &&
             sortedMapFloorLayers.map((floorLayer, i) => (
               <LayersControl.BaseLayer
                 checked={i === 0}

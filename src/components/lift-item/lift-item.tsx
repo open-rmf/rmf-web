@@ -1,13 +1,13 @@
 import {
-  ExpansionPanel,
-  ExpansionPanelDetails,
-  ExpansionPanelProps,
-  ExpansionPanelSummary,
+  Accordion,
+  AccordionDetails,
+  AccordionProps,
+  AccordionSummary,
   makeStyles,
 } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import React, { CSSProperties } from 'react';
+import React from 'react';
 import { AntTab, AntTabs, TabPanel } from '../tab';
 import { LiftInformation } from './lift-item-information';
 import LiftRequestForm from './lift-item-form';
@@ -15,10 +15,11 @@ import { LiftRequestManager } from '../../lift-state-manager';
 import OmniPanelStatusLabels from '../omni-panel-status-labels';
 import { colorPalette } from '../../util/css-utils';
 import Debug from 'debug';
+import { CSSProperties } from '@material-ui/core/styles/withStyles';
 
 const debug = Debug('OmniPanel:LiftItem');
 
-export interface LiftItemProps extends Omit<ExpansionPanelProps, 'children'> {
+export interface LiftItemProps extends Omit<AccordionProps, 'children'> {
   id?: string;
   lift: Readonly<RomiCore.Lift>;
   liftState?: Readonly<RomiCore.LiftState>;
@@ -32,7 +33,10 @@ export interface LiftItemProps extends Omit<ExpansionPanelProps, 'children'> {
 }
 
 export const LiftItem = React.memo(
-  React.forwardRef(function(props: LiftItemProps, ref: React.Ref<HTMLElement>): React.ReactElement {
+  React.forwardRef(function (
+    props: LiftItemProps,
+    ref: React.Ref<HTMLElement>,
+  ): React.ReactElement {
     debug('render');
 
     const { id, lift, liftState, enableRequest, onRequest, ...otherProps } = props;
@@ -64,9 +68,9 @@ export const LiftItem = React.memo(
     const requestTypes = React.useMemo(() => LiftRequestManager.getLiftRequestModes(), []);
 
     return (
-      <ExpansionPanel ref={ref} id={id} {...otherProps}>
-        <ExpansionPanelSummary
-          classes={{ content: classes.expansionSummaryContent }}
+      <Accordion ref={ref} id={id} {...otherProps}>
+        <AccordionSummary
+          classes={{ content: classes.accordionSummaryContent }}
           expandIcon={<ExpandMoreIcon />}
         >
           <OmniPanelStatusLabels
@@ -74,8 +78,8 @@ export const LiftItem = React.memo(
             name={lift.name}
             modeText={liftState ? liftState.current_floor : 'N/A'}
           />
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails className={classes.expansionDetail}>
+        </AccordionSummary>
+        <AccordionDetails className={classes.accordionDetail}>
           <AntTabs
             variant="fullWidth"
             value={tabValue}
@@ -98,13 +102,13 @@ export const LiftItem = React.memo(
               />
             )}
           </TabPanel>
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
+        </AccordionDetails>
+      </Accordion>
     );
   }),
 );
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   const liftFloorLabelBase: CSSProperties = {
     borderRadius: theme.shape.borderRadius,
     borderStyle: 'solid',
@@ -115,18 +119,18 @@ const useStyles = makeStyles(theme => {
   };
 
   return {
-    expansionSummaryContent: {
+    accordionSummaryContent: {
       alignItems: 'center',
       justifyContent: 'space-between',
     },
 
-    expansionDetail: {
+    accordionDetail: {
       flexFlow: 'column',
       overflowX: 'auto',
       padding: 0,
     },
 
-    expansionDetailLine: {
+    accordionDetailLine: {
       display: 'inline-flex',
       justifyContent: 'space-between',
       padding: theme.spacing(0.5),

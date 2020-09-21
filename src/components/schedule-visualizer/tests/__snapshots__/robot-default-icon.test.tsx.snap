@@ -1,0 +1,145 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`RobotDefaultIcon renders correctly 1`] = `
+<svg>
+  <ForwardRef
+    colorManager={
+      ColorManager {
+        "_pathColorCache": Object {},
+        "_robotColorCache": Object {},
+        "conflictHighlight": "#f44336",
+        "robotColor": [MockFunction],
+        "robotColorFromCache": [MockFunction] {
+          "calls": Array [
+            Array [
+              "testFleet",
+              "",
+            ],
+          ],
+          "results": Array [
+            Object {
+              "type": "return",
+              "value": "black",
+            },
+          ],
+        },
+      }
+    }
+    fleetName="testFleet"
+    footprint={1}
+    robot={
+      Object {
+        "battery_percent": 100,
+        "location": Object {
+          "level_name": "",
+          "t": Object {
+            "nanosec": 0,
+            "sec": 0,
+          },
+          "x": 0,
+          "y": 0,
+          "yaw": 0,
+        },
+        "mode": Object {
+          "mode": 0,
+        },
+        "model": "BaseModel",
+        "name": "",
+        "path": Array [],
+        "task_id": "",
+      }
+    }
+  >
+    <g>
+      <defs>
+        <Component
+          id="RobotDefaultIcon-0-shadow"
+        >
+          <radialGradient
+            id="RobotDefaultIcon-0-shadow"
+          >
+            <stop
+              offset="70%"
+              stopColor="#000000ff"
+            />
+            <stop
+              offset="75%"
+              stopColor="#00000080"
+            />
+            <stop
+              offset="80%"
+              stopColor="#00000060"
+            />
+            <stop
+              offset="85%"
+              stopColor="#00000030"
+            />
+            <stop
+              offset="90%"
+              stopColor="#00000018"
+            />
+            <stop
+              offset="95%"
+              stopColor="#00000008"
+            />
+            <stop
+              offset="100%"
+              stopColor="#00000000"
+            />
+          </radialGradient>
+        </Component>
+        <Component
+          id="RobotDefaultIcon-0-shadow-conflict"
+        >
+          <radialGradient
+            id="RobotDefaultIcon-0-shadow-conflict"
+          >
+            <stop
+              offset="70%"
+              stopColor="#f44336ff"
+            />
+            <stop
+              offset="75%"
+              stopColor="#f4433680"
+            />
+            <stop
+              offset="80%"
+              stopColor="#f4433660"
+            />
+            <stop
+              offset="85%"
+              stopColor="#f4433630"
+            />
+            <stop
+              offset="90%"
+              stopColor="#f4433618"
+            />
+            <stop
+              offset="95%"
+              stopColor="#f4433608"
+            />
+            <stop
+              offset="100%"
+              stopColor="#f4433600"
+            />
+          </radialGradient>
+        </Component>
+      </defs>
+      <circle
+        fill="url(#RobotDefaultIcon-0-shadow)"
+        id="shadow"
+        r={1.3}
+      />
+      <circle
+        fill="black"
+        r={1}
+      />
+      <line
+        stroke="#000"
+        strokeWidth="0.05"
+        x2={1}
+      />
+    </g>
+  </ForwardRef>
+</svg>
+`;
