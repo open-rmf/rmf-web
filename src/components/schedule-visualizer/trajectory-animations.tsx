@@ -24,7 +24,7 @@ export function withFillAnimation(
   TrajectoryComponent: React.ComponentType<RobotTrajectoryProps>,
   animationScale: number,
 ): React.ComponentType<RobotTrajectoryProps> {
-  return props => {
+  return (props) => {
     const classes = useFillStyles();
     const { trajectory } = props;
     const pathRef = React.useRef<SVGPathElement>(null);
@@ -42,7 +42,7 @@ export function withFillAnimation(
       pathRef.current.parentElement?.appendChild(pathAnim);
 
       pathAnim.animate(
-        offsets.map(offset => ({
+        offsets.map((offset) => ({
           offset: offset,
           strokeDashoffset: 2 - offset,
         })),
@@ -75,7 +75,7 @@ export function withFollowAnimation(
   TrajectoryComponent: React.ComponentType<RobotTrajectoryProps>,
   animationScale: number,
 ): React.ComponentType<RobotTrajectoryProps> {
-  return props => {
+  return (props) => {
     const classes = useFollowStyles();
     const { trajectory } = props;
     const pathRef = React.useRef<SVGPathElement>(null);
@@ -96,7 +96,7 @@ export function withFollowAnimation(
       pathRef.current.parentElement?.appendChild(pathAnim);
 
       pathAnim.animate(
-        offsets.map(offset => ({
+        offsets.map((offset) => ({
           offset: offset,
           strokeDashoffset: Math.max(2 - offset, strokeDash + 1),
         })),
@@ -129,7 +129,7 @@ export function withOutlineAnimation(
   TrajectoryComponent: React.ComponentType<RobotTrajectoryProps>,
   animationScale: number,
 ): React.ComponentType<RobotTrajectoryProps> {
-  return props => {
+  return (props) => {
     const classes = useOutlineStyles();
     const { trajectory, conflicts } = props;
     const pathRef = React.useRef<SVGPathElement>(null);
@@ -172,7 +172,7 @@ export function withOutlineAnimation(
       }
 
       pathRef.current.animate(
-        offsets.map(offset => ({
+        offsets.map((offset) => ({
           offset: offset,
           strokeDashoffset: 2 - offset,
         })),
@@ -200,7 +200,7 @@ export function withOutlineAnimation(
 function keyframeOffsets(traj: Trajectory): number[] {
   const { segments } = traj;
   const totalDuration = segments[segments.length - 1].t - segments[0].t;
-  return traj.segments.map(seg => (seg.t - segments[0].t) / totalDuration);
+  return traj.segments.map((seg) => (seg.t - segments[0].t) / totalDuration);
 }
 
 const useFillStyles = makeStyles(() => ({
@@ -224,7 +224,7 @@ const useFollowStyles = makeStyles(() => ({
   },
 }));
 
-const useOutlineStyles = makeStyles(theme => ({
+const useOutlineStyles = makeStyles((theme) => ({
   highlight: {
     opacity: 0.25,
   },

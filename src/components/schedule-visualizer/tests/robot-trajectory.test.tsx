@@ -86,14 +86,8 @@ describe('Robot Trajectory', () => {
       mockContext,
     );
 
-    const trajWidth = root
-      .find('path')
-      .find('#robotTrajectoryPath')
-      .props().strokeWidth;
-    const trajColor = root
-      .find('path')
-      .find('#robotTrajectoryPath')
-      .props().stroke;
+    const trajWidth = root.find('path').find('#robotTrajectoryPath').props().strokeWidth;
+    const trajColor = root.find('path').find('#robotTrajectoryPath').props().stroke;
 
     expect(trajWidth).toEqual(fixTrajectoryDiameter);
     expect(trajColor).toEqual(themeColor);

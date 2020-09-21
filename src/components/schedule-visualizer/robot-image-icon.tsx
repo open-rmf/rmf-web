@@ -29,7 +29,7 @@ function makeGradientShadow(
   );
 }
 
-const RobotImageIcon = React.forwardRef(function(
+const RobotImageIcon = React.forwardRef(function (
   props: RobotImageIconProps,
   ref: React.Ref<SVGGElement>,
 ): React.ReactElement {
@@ -58,16 +58,16 @@ const RobotImageIcon = React.forwardRef(function(
     (async () => {
       await colorManager
         .robotPrimaryColor(fleetName, robot.name, robot.model, iconPath)
-        .then(color => {
+        .then((color) => {
           if (color) setRobotColor(color);
           else {
-            dispatchIconError(previousVal => {
+            dispatchIconError((previousVal) => {
               return { ...previousVal, error: true };
             });
           }
         })
         .catch(() => {
-          dispatchIconError(previousVal => {
+          dispatchIconError((previousVal) => {
             return { ...previousVal, error: true };
           });
         });
@@ -103,12 +103,12 @@ const RobotImageIcon = React.forwardRef(function(
               href={iconPath}
               height={imgIconHeigth}
               width={imgIconWidth}
-              onError={error => {
+              onError={(error) => {
                 console.error(
                   'An error occurred while loading the image. Using the default image.',
                   error,
                 );
-                return dispatchIconError(previousVal => {
+                return dispatchIconError((previousVal) => {
                   return { ...previousVal, error: true };
                 });
               }}

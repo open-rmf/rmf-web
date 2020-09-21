@@ -23,7 +23,7 @@ function makeGradientShadow(
   );
 }
 
-const RobotDefaultIcon = React.forwardRef(function(
+const RobotDefaultIcon = React.forwardRef(function (
   props: RobotProps,
   ref: React.Ref<SVGGElement>,
 ): React.ReactElement {

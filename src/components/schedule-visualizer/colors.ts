@@ -47,11 +47,11 @@ export default class ColorManager {
 
           await new Promise((resolve, reject) => {
             imgHolder.onload = () => resolve();
-            imgHolder.onerror = err => reject(err);
+            imgHolder.onerror = (err) => reject(err);
           });
           return Vibrant.from(imgHolder)
             .getSwatches()
-            .then(palette => {
+            .then((palette) => {
               const rgb = palette.Vibrant?.getRgb();
               if (rgb) {
                 const colorHolder = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;

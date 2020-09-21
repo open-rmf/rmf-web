@@ -57,7 +57,7 @@ export default function RobotGallery(): React.ReactElement {
   return (
     <ResourcesContext.Provider value={resources}>
       <Grid container spacing={2}>
-        {Object.keys(robots).map(k => (
+        {Object.keys(robots).map((k) => (
           <Grid item key={k}>
             <Paper>
               <Grid container direction="column" alignItems="center">

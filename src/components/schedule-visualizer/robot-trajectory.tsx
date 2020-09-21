@@ -22,7 +22,7 @@ export interface RobotTrajectoryProps
 export const fixTrajectoryDiameter = 0.4;
 
 export const RobotTrajectory = React.memo(
-  React.forwardRef(function(
+  React.forwardRef(function (
     props: RobotTrajectoryProps,
     ref: React.Ref<SVGPathElement>,
   ): React.ReactElement {
@@ -116,11 +116,11 @@ export function trajectoryPath(trajectorySegments: RawKnot[]): TrajectoryPath {
   const bezierSplines = coeff.map(bezierControlPoints);
 
   const totalDuration = knots[knots.length - 1].time - knots[0].time;
-  const segOffsets = knots.map(k => (k.time - knots[0].time) / totalDuration);
+  const segOffsets = knots.map((k) => (k.time - knots[0].time) / totalDuration);
 
   let d = `M ${bezierSplines[0][0][0]} ${-bezierSplines[0][0][1]} C `;
   bezierSplines.map(
-    bzCurves =>
+    (bzCurves) =>
       (d +=
         `${bzCurves[1][0]} ${-bzCurves[1][1]} ` +
         `${bzCurves[2][0]} ${-bzCurves[2][1]} ` +

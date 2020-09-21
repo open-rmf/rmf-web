@@ -34,7 +34,7 @@ describe('Color manager', () => {
     );
   });
 
-  it('should return a promise and store color in robotColorCache when robotPrimaryColor is called with image path', done => {
+  it('should return a promise and store color in robotColorCache when robotPrimaryColor is called with image path', (done) => {
     const mockLink = 'link.com';
 
     setImmediate(() => {
