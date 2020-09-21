@@ -1,13 +1,13 @@
 import { HotKeysEnabledProps, KeyMap, KeySequence } from 'react-hotkeys';
 export interface hotKeysProps {
   openCommands: () => void;
-  openRobots: () => void;
-  openDoors: () => void;
   openDispensers: () => void;
-  openLifts: () => void;
-  openSettings: () => void;
-  openOnmiPanel: () => void;
+  openDoors: () => void;
   openHotKeys: () => void;
+  openLifts: () => void;
+  openOnmiPanel: () => void;
+  openRobots: () => void;
+  openSettings: () => void;
 }
 
 export const keyMap: KeyMap = {
@@ -15,26 +15,48 @@ export const keyMap: KeyMap = {
     name: 'Open Commands',
     sequences: [{ sequence: 'shift+c', action: 'keypress' }],
   } as KeySequence,
-  OPEN_ROBOTS: 'shift+r',
-  OPEN_DOORS: 'shift+d',
-  OPEN_DISPENSERS: 'shift+i',
-  OPEN_LIFTS: 'shift+l',
-  OPEN_SETTINGS: 'shift+s',
-  OPEN_OMNIPANEL: 'shift+o',
-  OPEN_HOTKEYS: 'shift+H',
+
+  OPEN_DISPENSERS: {
+    name: 'Open Dispensers',
+    sequences: [{ sequence: 'shift+i', action: 'keypress' }],
+  } as KeySequence,
+  OPEN_DOORS: {
+    name: 'Open Doors',
+    sequences: [{ sequence: 'shift+d', action: 'keypress' }],
+  } as KeySequence,
+  OPEN_HOTKEYS: {
+    name: 'Open Hotkeys',
+    sequences: [{ sequence: 'shift+h', action: 'keypress' }],
+  } as KeySequence,
+  OPEN_LIFTS: {
+    name: 'Open Lifts',
+    sequences: [{ sequence: 'shift+l', action: 'keypress' }],
+  } as KeySequence,
+  OPEN_OMNIPANEL: {
+    name: 'Open Omnipanel',
+    sequences: [{ sequence: 'shift+o', action: 'keypress' }],
+  } as KeySequence,
+  OPEN_ROBOTS: {
+    name: 'Open Robots',
+    sequences: [{ sequence: 'shift+r', action: 'keypress' }],
+  } as KeySequence,
+  OPEN_SETTINGS: {
+    name: 'Open Settings',
+    sequences: [{ sequence: 'shift+s', action: 'keypress' }],
+  } as KeySequence,
 };
 
 export const buildHotKeys = (props: hotKeysProps): HotKeysEnabledProps => {
   // Keep the same name as the KeyMap
   const handlers = {
     OPEN_COMMANDS: props.openCommands,
-    OPEN_ROBOTS: props.openRobots,
-    OPEN_DOORS: props.openDoors,
     OPEN_DISPENSERS: props.openDispensers,
-    OPEN_LIFTS: props.openLifts,
-    OPEN_SETTINGS: props.openSettings,
-    OPEN_OMNIPANEL: props.openOnmiPanel,
+    OPEN_DOORS: props.openDoors,
     OPEN_HOTKEYS: props.openHotKeys,
+    OPEN_LIFTS: props.openLifts,
+    OPEN_OMNIPANEL: props.openOnmiPanel,
+    OPEN_ROBOTS: props.openRobots,
+    OPEN_SETTINGS: props.openSettings,
   };
 
   return { keyMap, handlers };

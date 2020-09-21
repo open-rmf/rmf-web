@@ -350,14 +350,30 @@ export default function Dashboard(_props: {}): React.ReactElement {
   );
 
   const hotKeysValue = buildHotKeys({
-    openCommands: handleMainMenuCommandsClick,
-    openRobots: handleMainMenuRobotsClick,
-    openDoors: handleMainMenuDoorsClick,
-    openDispensers: handleMainMenuDispensersClick,
-    openLifts: handleMainMenuLiftsClick,
-    openSettings: () => setShowSettings(!showSettings),
-    openOnmiPanel: () => setShowOmniPanel(!showOmniPanel),
-    openHotKeys: () => setShowHotKeys(!showHotKeys),
+    openCommands: () => {
+      setShowOmniPanel(true);
+      handleMainMenuCommandsClick();
+    },
+    openRobots: () => {
+      setShowOmniPanel(true);
+      handleMainMenuRobotsClick();
+    },
+    openDoors: () => {
+      setShowOmniPanel(true);
+      handleMainMenuDoorsClick();
+    },
+    openDispensers: () => {
+      setShowOmniPanel(true);
+      handleMainMenuDispensersClick();
+    },
+    openLifts: () => {
+      setShowOmniPanel(true);
+      handleMainMenuLiftsClick();
+    },
+
+    openSettings: () => setShowSettings((prev) => !prev),
+    openOnmiPanel: () => setShowOmniPanel((prev) => !prev),
+    openHotKeys: () => setShowHotKeys((prev) => !prev),
   });
 
   return (
@@ -453,7 +469,11 @@ export default function Dashboard(_props: {}): React.ReactElement {
               onClose={() => setShowSettings(false)}
             />
 
-            <HotKeysDrawer open={showHotKeys} onClose={() => setShowSettings(false)} />
+            <HotKeysDrawer
+              open={showHotKeys}
+              handleCloseButton={() => setShowHotKeys(false)}
+              onClose={() => setShowHotKeys(false)}
+            />
           </div>
 
           <NotificationBar
