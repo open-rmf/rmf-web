@@ -3,6 +3,7 @@ export interface hotKeysProps {
   openCommands: () => void;
   openDispensers: () => void;
   openDoors: () => void;
+  openHelpPanel: () => void;
   openHotKeys: () => void;
   openLifts: () => void;
   openOnmiPanel: () => void;
@@ -24,9 +25,13 @@ export const keyMap: KeyMap = {
     name: 'Open Doors',
     sequences: [{ sequence: 'shift+d', action: 'keypress' }],
   } as KeySequence,
+  OPEN_HELP_PANEL: {
+    name: 'Open Help',
+    sequences: [{ sequence: 'shift+h', action: 'keypress' }],
+  } as KeySequence,
   OPEN_HOTKEYS: {
     name: 'Open Hotkeys',
-    sequences: [{ sequence: 'shift+h', action: 'keypress' }],
+    sequences: [{ sequence: 'shift+?', action: 'keypress' }],
   } as KeySequence,
   OPEN_LIFTS: {
     name: 'Open Lifts',
@@ -52,6 +57,7 @@ export const buildHotKeys = (props: hotKeysProps): HotKeysEnabledProps => {
     OPEN_COMMANDS: props.openCommands,
     OPEN_DISPENSERS: props.openDispensers,
     OPEN_DOORS: props.openDoors,
+    OPEN_HELP_PANEL: props.openHelpPanel,
     OPEN_HOTKEYS: props.openHotKeys,
     OPEN_LIFTS: props.openLifts,
     OPEN_OMNIPANEL: props.openOnmiPanel,

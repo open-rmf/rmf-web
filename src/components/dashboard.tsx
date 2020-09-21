@@ -34,7 +34,9 @@ import SettingsDrawer from './settings-drawer';
 import { SpotlightValue } from './spotlight-value';
 import { GlobalHotKeys } from 'react-hotkeys';
 import { buildHotKeys } from '../hotkeys';
-import HotKeysDrawer from './hotkeys-drawer';
+import HotKeysDrawer from './help-drawer/hotkeys-dialog';
+import HelpDrawer from './help-drawer/help-drawer';
+import HotKeysDialog from './help-drawer/hotkeys-dialog';
 
 const debug = Debug('App');
 const borderRadius = 20;
@@ -189,7 +191,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const [showSettings, setShowSettings] = React.useState(false);
   const [settings, setSettings] = React.useState<Settings>(() => loadSettings());
 
-  const [showHotKeys, setShowHotKeys] = React.useState(false);
+  const [showHelp, setShowHelp] = React.useState(false);
 
   const [
     notificationBarMessage,
@@ -349,6 +351,8 @@ export default function Dashboard(_props: {}): React.ReactElement {
     [classes.topLeftBorder, classes.topRightBorder],
   );
 
+  const [showHotkeyDialog, setShowHotkeyDialog] = React.useState(false);
+
   const hotKeysValue = buildHotKeys({
     openCommands: () => {
       setShowOmniPanel(true);
@@ -373,7 +377,8 @@ export default function Dashboard(_props: {}): React.ReactElement {
 
     openSettings: () => setShowSettings((prev) => !prev),
     openOnmiPanel: () => setShowOmniPanel((prev) => !prev),
-    openHotKeys: () => setShowHotKeys((prev) => !prev),
+    openHelpPanel: () => setShowHelp((prev) => !prev),
+    openHotKeys: () => setShowHotkeyDialog((prev) => !prev),
   });
 
   return (
@@ -384,7 +389,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
             <AppBar
               toggleShowOmniPanel={() => setShowOmniPanel(!showOmniPanel)}
               showSettings={setShowSettings}
-              showHotKeys={setShowHotKeys}
+              showHelp={setShowHelp}
             />
             {loading && <LoadingScreen {...loading} />}
             {buildingMap && (
@@ -469,13 +474,16 @@ export default function Dashboard(_props: {}): React.ReactElement {
               onClose={() => setShowSettings(false)}
             />
 
-            <HotKeysDrawer
-              open={showHotKeys}
-              handleCloseButton={() => setShowHotKeys(false)}
-              onClose={() => setShowHotKeys(false)}
+            <HelpDrawer
+              open={showHelp}
+              handleCloseButton={() => setShowHelp(false)}
+              onClose={() => setShowHelp(false)}
+              setShowHotkeyDialog={() => setShowHotkeyDialog(true)}
             />
           </div>
-
+          {showHotkeyDialog && (
+            <HotKeysDialog open={showHotkeyDialog} handleClose={() => setShowHotkeyDialog(false)} />
+          )}
           <NotificationBar
             message={notificationBarMessage?.message}
             type={notificationBarMessage?.type}
