@@ -519,6 +519,7 @@ exports[`RobotTrajectoriesOverlay renders without crashing 1`] = `
                             />
                           </svg>,
                           "leaflet": [Circular],
+                          "overridePathColor": undefined,
                         },
                       },
                       "fn": [Function],
@@ -1212,6 +1213,7 @@ exports[`RobotTrajectoriesOverlay renders without crashing 1`] = `
                         />
                       </svg>,
                       "leaflet": [Circular],
+                      "overridePathColor": undefined,
                     },
                   },
                 },
@@ -2030,6 +2032,7 @@ exports[`RobotTrajectoriesOverlay renders without crashing 1`] = `
                             />
                           </svg>,
                           "leaflet": [Circular],
+                          "overridePathColor": undefined,
                         },
                       },
                       "fn": [Function],
@@ -2723,6 +2726,7 @@ exports[`RobotTrajectoriesOverlay renders without crashing 1`] = `
                         />
                       </svg>,
                       "leaflet": [Circular],
+                      "overridePathColor": undefined,
                     },
                   },
                 },
