@@ -61,22 +61,31 @@ export const createTourSteps = (props: createTourProps) => {
   const NavButtons = (
     goTo: Function,
     step: number,
-    actionBefore?: () => void,
+    handleNextClick?: () => void,
+    handleBackClick?: () => void,
     lastStep?: boolean,
   ): React.ReactNode => (
     <Box>
       {step > 1 && (
-        <IconButton onClick={() => goTo(step - 2)} id="tour-back-btn">
+        <IconButton
+          onClick={() => {
+            if (handleBackClick) {
+              handleBackClick();
+            }
+            goTo(step - 2);
+          }}
+          id="tour-back-btn"
+        >
           <NavigateBeforeIcon className={classes.navigation} />
         </IconButton>
       )}
       {!lastStep && (
         <IconButton
           onClick={() => {
-            if (actionBefore) {
-              actionBefore();
+            if (handleNextClick) {
+              handleNextClick();
             }
-            setTimeout(() => goTo(step), 50);
+            setTimeout(() => goTo(step), 5);
           }}
           id="tour-next-btn"
         >
@@ -88,8 +97,8 @@ export const createTourSteps = (props: createTourProps) => {
           variant="contained"
           color="primary"
           onClick={() => {
-            if (actionBefore) {
-              actionBefore();
+            if (handleNextClick) {
+              handleNextClick();
             }
             setTourState(false);
           }}
@@ -173,7 +182,6 @@ export const createTourSteps = (props: createTourProps) => {
           {NavButtons(goTo, step)}
         </Box>
       ),
-      action: () => setTourShowOmniPanel(OmniPanelViewIndex.MainMenu),
     },
     doorsPanel: {
       selector: '[data-item="Doors"]',
@@ -194,7 +202,6 @@ export const createTourSteps = (props: createTourProps) => {
           })}
         </Box>
       ),
-      action: () => setTourShowOmniPanel(OmniPanelViewIndex.MainMenu),
     },
     doorTab: {
       selector: '[data-name="main_door"]',
@@ -203,17 +210,18 @@ export const createTourSteps = (props: createTourProps) => {
           <Typography variant="h6">
             Here is an example of what you will see when a door tab is expanded
           </Typography>
-          {NavButtons(goTo, step, () => {
-            setTourShowOmniPanel(OmniPanelViewIndex.MainMenu);
-          })}
+          {NavButtons(
+            goTo,
+            step,
+            () => {
+              setTourShowOmniPanel(OmniPanelViewIndex.MainMenu);
+            },
+            () => {
+              setTourShowOmniPanel(OmniPanelViewIndex.MainMenu);
+            },
+          )}
         </Box>
       ),
-      action: () => {
-        setTourShowOmniPanel(OmniPanelViewIndex.Doors);
-        if (!doorSpotlight) {
-          setDoorSpotlight({ value: 'main_door' });
-        }
-      },
     },
     commandsPanel: {
       selector: '[data-item= "Commands"]',
@@ -223,12 +231,18 @@ export const createTourSteps = (props: createTourProps) => {
             The Commands Panel allows you to send different types of requests that will be handled
             by RoMi.
           </Typography>
-          {NavButtons(goTo, step, () => {
-            setTourShowOmniPanel(OmniPanelViewIndex.Commands);
-          })}
+          {NavButtons(
+            goTo,
+            step,
+            () => {
+              setTourShowOmniPanel(OmniPanelViewIndex.Commands);
+            },
+            () => {
+              setTourShowOmniPanel(OmniPanelViewIndex.Doors);
+            },
+          )}
         </Box>
       ),
-      action: () => setTourShowOmniPanel(OmniPanelViewIndex.MainMenu),
     },
     loopRequest: {
       selector: '[data-component="LoopForm"]',
@@ -238,12 +252,18 @@ export const createTourSteps = (props: createTourProps) => {
             An example is the Loop Request which can be iterated multiple times. RoMi will assign
             the most suitable robot to perform the task at the point of request.
           </Typography>
-          {NavButtons(goTo, step, () => {
-            setTourSettingsAndOmniPanel(false, false);
-          })}
+          {NavButtons(
+            goTo,
+            step,
+            () => {
+              setTourSettingsAndOmniPanel(false, false);
+            },
+            () => {
+              setTourShowOmniPanel(OmniPanelViewIndex.MainMenu);
+            },
+          )}
         </Box>
       ),
-      action: () => setTourShowOmniPanel(OmniPanelViewIndex.Commands),
     },
     settingsButton: {
       selector: '[id="show-settings-btn"]',
@@ -252,9 +272,14 @@ export const createTourSteps = (props: createTourProps) => {
           <Typography variant="h6">
             The Settings Button opens up the drawer for different dashboard settings.
           </Typography>
-          {NavButtons(goTo, step, () => {
-            setTourSettingsAndOmniPanel(true, false, true);
-          })}
+          {NavButtons(
+            goTo,
+            step,
+            () => {
+              setTourSettingsAndOmniPanel(true, false, true);
+            },
+            () => setTourShowOmniPanel(OmniPanelViewIndex.Commands),
+          )}
         </Box>
       ),
     },
@@ -272,6 +297,9 @@ export const createTourSteps = (props: createTourProps) => {
             () => {
               setTourSettingsAndOmniPanel(false, true, true);
               setTourShowOmniPanel(OmniPanelViewIndex.MainMenu);
+            },
+            () => {
+              setTourSettingsAndOmniPanel(false, true, true);
             },
             true,
           )}
