@@ -6,9 +6,6 @@ import RobotImageIcon from '../robot-image-icon';
 
 describe('RobotImageIcon', () => {
   const colorManager = new ColorManager();
-  // TextEncoder is not available in node
-  colorManager.robotColor = jest.fn(async () => 'black');
-  colorManager.robotColorFromCache = jest.fn(() => 'black');
 
   const iconPath = 'testIcon';
   const fleetName = 'testFleet';

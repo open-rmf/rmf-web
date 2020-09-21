@@ -1,18 +1,15 @@
-import { mount } from 'enzyme';
+import { mount, ReactWrapper } from 'enzyme';
 import React from 'react';
 import { makeRobot } from '../../../mock/utils';
 import ColorManager from '../colors';
 import RobotDefaultIcon from '../robot-default-icon';
+import { act } from 'react-dom/test-utils';
 
 describe('RobotDefaultIcon', () => {
   const colorManager = new ColorManager();
-  // TextEncoder is not available in node
-  colorManager.robotColor = jest.fn(async () => 'black');
-  colorManager.robotColorFromCache = jest.fn(() => 'black');
-
   const fleetName = 'testFleet';
 
-  test('renders correctly', async () => {
+  test('renders correctly', () => {
     const root = mount(
       <svg>
         <RobotDefaultIcon
@@ -26,7 +23,7 @@ describe('RobotDefaultIcon', () => {
     expect(root).toMatchSnapshot();
   });
 
-  test('red shadow appears for conflicting robots', async () => {
+  test('red shadow appears for conflicting robots', () => {
     const root = mount(
       <svg>
         <RobotDefaultIcon
