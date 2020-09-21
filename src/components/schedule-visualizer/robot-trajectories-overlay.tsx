@@ -14,6 +14,7 @@ export interface RobotTrajectoriesOverlayProps extends SVGOverlayProps {
   conflicts: Conflict[];
   colorManager: Readonly<ColorManager>;
   conflictRobotNames: string[][];
+  overridePathColor?: string;
 }
 
 export const RobotTrajectoriesOverlay = React.memo((props: RobotTrajectoriesOverlayProps) => {
@@ -60,6 +61,7 @@ export const RobotTrajectoriesOverlay = React.memo((props: RobotTrajectoriesOver
             footprint={footprint}
             conflicts={conflicts}
             colorManager={colorManager}
+            overridePathColor={otherProps.overridePathColor}
           />
         ))}
       </svg>

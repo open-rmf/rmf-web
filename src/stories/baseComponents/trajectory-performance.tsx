@@ -58,6 +58,7 @@ export default function TrajectoryPerformance() {
           colorManager={colorManager}
           conflicts={trajectories.conflicts}
           conflictRobotNames={trajectories.conflictingRobotName}
+          overridePathColor={undefined}
           trajs={trajectories.trajectories}
           description={description}
           currSettings={defaultSettings()}

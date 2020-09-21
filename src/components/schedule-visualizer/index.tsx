@@ -310,6 +310,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
                     conflicts={curMapConflicts}
                     colorManager={colorManager}
                     conflictRobotNames={conflictRobotNames}
+                    overridePathColor={undefined}
                   />
                 </RobotTrajectoryContext.Provider>
               </Pane>
@@ -328,6 +329,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
                     conflicts={getConflicts(curLevelName)}
                     colorManager={colorManager}
                     conflictRobotNames={conflictRobotNames}
+                    overridePathColor={"orange"}
                   />
                 </RobotTrajectoryContext.Provider>
               </Pane>
