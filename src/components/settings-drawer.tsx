@@ -20,7 +20,7 @@ import { Settings, TrajectoryAnimation, TrajectoryDiameter, TrajectoryColor } fr
 export interface SettingsDrawerProps extends DrawerProps {
   settings: Readonly<Settings>;
   onSettingsChange(settings: Settings): void;
-  handleCloseButton: Function;
+  handleCloseButton: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactElement {
