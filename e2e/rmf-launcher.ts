@@ -129,7 +129,7 @@ export class LocalLauncher {
     if (proc.killed) {
       return Promise.resolve();
     }
-    return new Promise(res => {
+    return new Promise((res) => {
       proc.once('exit', res);
       proc.kill(signal);
     });
@@ -146,7 +146,7 @@ export class LocalLauncher {
       return false;
     }
 
-    return new Promise(res => {
+    return new Promise((res) => {
       const timer = setTimeout(() => {
         ros2Echo && ros2Echo.kill();
         res(false);
@@ -200,7 +200,7 @@ class ManagedProcess {
       return;
     }
 
-    return new Promise(res => {
+    return new Promise((res) => {
       this._proc.once('exit', res);
       process.kill(-this._proc.pid, signal);
     });

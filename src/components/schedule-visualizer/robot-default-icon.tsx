@@ -3,8 +3,6 @@ import React, { SVGProps, useState } from 'react';
 import { uniqueId } from '../../util/css-utils';
 import { RobotProps } from './robot';
 
-type RobotDefaultIconProps = Omit<RobotProps, 'fleetName'>;
-
 /**
  *
  * @param color MUST be in hex notation without alpha channel. e.g. #123456
@@ -25,13 +23,13 @@ function makeGradientShadow(
   );
 }
 
-const RobotDefaultIcon = React.forwardRef(function(
-  props: RobotDefaultIconProps,
+const RobotDefaultIcon = React.forwardRef(function (
+  props: RobotProps,
   ref: React.Ref<SVGGElement>,
 ): React.ReactElement {
-  const { robot, footprint, colorManager, inConflict } = props;
+  const { robot, footprint, colorManager, inConflict, fleetName } = props;
   const [robotColor, setRobotColor] = useState<string | null>(() =>
-    colorManager.robotColorFromCache(robot.name, robot.model),
+    colorManager.robotColorFromCache(fleetName, robot.name),
   );
   const theme = useTheme();
 
@@ -51,9 +49,10 @@ const RobotDefaultIcon = React.forwardRef(function(
       return;
     }
     (async () => {
-      setRobotColor(await colorManager.robotColor(robot.name, robot.model));
+      setRobotColor(await colorManager.robotColor(fleetName, robot.name, robot.model));
+      await colorManager.robotPrimaryColor(fleetName, robot.name, robot.model);
     })();
-  }, [robot, robotColor, colorManager]);
+  }, [robot, robotColor, colorManager, fleetName]);
 
   return (
     <>
