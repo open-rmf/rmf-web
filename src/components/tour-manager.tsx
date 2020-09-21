@@ -76,7 +76,7 @@ export const createTourSteps = (props: createTourProps) => {
             if (actionBefore) {
               actionBefore();
             }
-            goTo(step);
+            setTimeout(() => goTo(step), 50);
           }}
           id="tour-next-btn"
         >
@@ -253,19 +253,18 @@ export const createTourSteps = (props: createTourProps) => {
             The Settings Button opens up the drawer for different dashboard settings.
           </Typography>
           {NavButtons(goTo, step, () => {
-            setTourSettingsAndOmniPanel(true, false);
+            setTourSettingsAndOmniPanel(true, false, true);
           })}
         </Box>
       ),
-      action: () => setTourSettingsAndOmniPanel(false, true),
     },
     trajAnim: {
       selector: '.MuiDrawer-paper',
       content: ({ goTo, step }) => (
         <Box>
           <Typography variant="h6">
-            Finally, Trajectory Animations can be changed using the options available. Look out for
-            new features ahead!
+            Finally, Trajectory configurations can be changed using the options available. Look out
+            for new features ahead!
           </Typography>
           {NavButtons(
             goTo,
@@ -278,9 +277,6 @@ export const createTourSteps = (props: createTourProps) => {
           )}
         </Box>
       ),
-      action: () => {
-        setTourSettingsAndOmniPanel(true, false);
-      },
     },
   };
 
