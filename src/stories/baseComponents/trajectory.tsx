@@ -120,7 +120,6 @@ export default function Trajectory(props: TrajectoryStoryProps) {
                 colorManager={colorManager}
                 trajs={trajs}
                 conflictRobotNames={conflictRobotNames}
-                overridePathColor={undefined}
               />
             </RobotTrajectoryContext.Provider>
           </LMap>

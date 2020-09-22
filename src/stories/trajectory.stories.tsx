@@ -56,7 +56,6 @@ export const trajectory = () => (
     trajs={defaultTraj.trajectories}
     description={descriptions.normal}
     currSettings={defaultSettings()}
-    overridePathColor={undefined}
   />
 );
 
@@ -69,7 +68,6 @@ export const conflictTrajectory = () => (
     trajs={conflictingTraj.trajectories}
     description={descriptions.conflictingTraj}
     currSettings={defaultSettings()}
-    overridePathColor={undefined}
   />
 );
 
@@ -82,7 +80,6 @@ export const followAnimation = () => (
     trajs={multipleTrajs.trajectories}
     description={descriptions.followAnim}
     currSettings={defaultSettings()}
-    overridePathColor={undefined}
   />
 );
 
@@ -95,7 +92,6 @@ export const followAnimationMix = () => (
     trajs={partialConflictTraj.trajectories}
     description={descriptions.followAnimMixConflict}
     currSettings={defaultSettings()}
-    overridePathColor={undefined}
   />
 );
 
@@ -108,7 +104,6 @@ export const followAnimationConflict = () => (
     trajs={multipleConflictingTraj.trajectories}
     description={descriptions.followAnimConflict}
     currSettings={defaultSettings()}
-    overridePathColor={undefined}
   />
 );
 
@@ -121,7 +116,6 @@ export const outlineAnimation = () => (
     trajs={multipleTrajs.trajectories}
     description={descriptions.outlineAnim}
     currSettings={outlineAnimSettings}
-    overridePathColor={undefined}
   />
 );
 
@@ -134,7 +128,6 @@ export const outlineAnimationMix = () => (
     trajs={partialConflictTraj.trajectories}
     description={descriptions.outlineAnimMixConflict}
     currSettings={outlineAnimSettings}
-    overridePathColor={undefined}
   />
 );
 
@@ -147,7 +140,6 @@ export const outlineAnimationConflict = () => (
     trajs={multipleConflictingTraj.trajectories}
     description={descriptions.outlineAnimConflict}
     currSettings={outlineAnimSettings}
-    overridePathColor={undefined}
   />
 );
 
@@ -160,7 +152,6 @@ export const fillAnimation = () => (
     trajs={multipleTrajs.trajectories}
     description={descriptions.fillAnim}
     currSettings={fillAnimSettings}
-    overridePathColor={undefined}
   />
 );
 
@@ -173,7 +164,6 @@ export const fillAnimationMix = () => (
     trajs={partialConflictTraj.trajectories}
     description={descriptions.fillAnimMixConflict}
     currSettings={fillAnimSettings}
-    overridePathColor={undefined}
   />
 );
 
@@ -186,6 +176,5 @@ export const fillAnimationConflict = () => (
     trajs={multipleConflictingTraj.trajectories}
     description={descriptions.fillAnimConflict}
     currSettings={fillAnimSettings}
-    overridePathColor={undefined}
   />
 );

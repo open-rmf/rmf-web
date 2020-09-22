@@ -56,8 +56,6 @@ export const RobotTrajectory = React.memo(
         return !!robotColor ? robotColor : theme.palette.success.main;
       };
       const getPathColor = () => {
-        if (overridePathColor)
-          return overridePathColor;
         const pathColor = colorManager?.pathColorFromCache(
           trajectory.fleet_name,
           trajectory.robot_name,
@@ -65,7 +63,9 @@ export const RobotTrajectory = React.memo(
         return !!pathColor ? pathColor : theme.palette.success.main;
       };
       const robotColorHolder = getRobotColor();
-      const pathColorHolder = getPathColor();
+      let pathColorHolder = getPathColor();
+      if (overridePathColor)
+        return overridePathColor;
       switch (settings.trajectoryColor) {
         case TrajectoryColor.Theme:
           return theme.palette.success.main;
