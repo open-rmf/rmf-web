@@ -65,7 +65,7 @@ interface Response {
 
 export class DefaultTrajectoryManager {
   static async create(url: string): Promise<DefaultTrajectoryManager> {
-    const ws = new WebSocket(url);
+    let ws = new WebSocket(url);
     await new Promise((res, rej) => {
       ws.addEventListener('open', function listener() {
         ws.removeEventListener('open', listener);
@@ -146,7 +146,9 @@ export class DefaultTrajectoryManager {
 
   private _checkResponse(request: Request, resp: Response): void {
     if (request.request !== resp.response) {
-      console.warn('received response for wrong request');
+      console.warn(
+        `received response for wrong request. Request: ${request.request} Response: ${resp.response}`,
+      );
       throw new Error('received response for wrong request');
     }
   }

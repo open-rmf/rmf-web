@@ -8,6 +8,7 @@ import DispenserStateManager from '../dispenser-state-manager';
 import DoorStateManager from '../door-state-manager';
 import FleetManager from '../fleet-manager';
 import LiftStateManager from '../lift-state-manager';
+import { NegotiationStatusManager, NegotiationTrajectoryResponse } from '../negotiation-status-manager';
 import { ResourceConfigurationsType } from '../resource-manager';
 import { RobotTrajectoryManager } from '../robot-trajectory-manager';
 import { loadSettings, saveSettings, Settings } from '../settings';
@@ -17,6 +18,7 @@ import CommandsPanel from './commands-panel';
 import DispensersPanel from './dispensers-panel';
 import DoorsPanel from './doors-panel';
 import LiftsPanel from './lift-item/lifts-panel';
+import NegotiationsPanel from './negotiations-panel';
 import LoadingScreen, { LoadingScreenProps } from './loading-screen';
 import MainMenu from './main-menu';
 import NotificationBar, { NotificationBarProps } from './notification-bar';
@@ -82,6 +84,7 @@ enum OmniPanelViewIndex {
   Robots,
   Dispensers,
   Commands,
+  Negotiations,
 }
 
 class ViewMapNode {
@@ -103,6 +106,7 @@ function makeViewMap(): ViewMap {
   viewMap[OmniPanelViewIndex.Robots] = root.addChild(OmniPanelViewIndex.Robots);
   viewMap[OmniPanelViewIndex.Dispensers] = root.addChild(OmniPanelViewIndex.Dispensers);
   viewMap[OmniPanelViewIndex.Commands] = root.addChild(OmniPanelViewIndex.Commands);
+  viewMap[OmniPanelViewIndex.Negotiations] = root.addChild(OmniPanelViewIndex.Negotiations);
   return viewMap;
 }
 
@@ -111,12 +115,17 @@ const viewMap = makeViewMap();
 export default function Dashboard(_props: {}): React.ReactElement {
   debug('render');
 
-  const { appResources, transportFactory, trajectoryManagerFactory } = appConfig;
+  const { appResources, transportFactory, trajectoryManagerFactory, trajServerUrl } = appConfig;
   const classes = useStyles();
   const [transport, setTransport] = React.useState<RomiCore.Transport | undefined>(undefined);
   const [buildingMap, setBuildingMap] = React.useState<RomiCore.BuildingMap | undefined>(undefined);
   const trajManager = React.useRef<RobotTrajectoryManager | undefined>(undefined);
   const resourceManager = React.useRef<ResourceConfigurationsType | undefined>(undefined);
+
+  const mapFloorLayerSorted = React.useMemo<string[] | undefined>(
+    () => buildingMap?.levels.sort((a, b) => a.elevation - b.elevation).map(x => x.name),
+    [buildingMap],
+  );
 
   const doorStateManager = React.useMemo(() => new DoorStateManager(), []);
   const [doorStates, setDoorStates] = React.useState(() => doorStateManager.doorStates());
@@ -151,6 +160,20 @@ export default function Dashboard(_props: {}): React.ReactElement {
     SpotlightValue<string> | undefined
   >(undefined);
 
+  const negotiationStatusManager = React.useMemo(
+    () => new NegotiationStatusManager(trajServerUrl),
+    [trajServerUrl],
+  );
+  const [negotiationSpotlight, setNegotiationSpotlight] = React.useState<
+    SpotlightValue<string> | undefined
+  >(undefined);
+  const [negotiationStatus, setNegotiationStatus] = React.useState(
+    negotiationStatusManager.allConflicts(),
+  );
+  const [negotiationTrajStore, setNegotiationTrajStore] = React.useState<
+    Record<string, NegotiationTrajectoryResponse>
+  >({});
+
   const [showOmniPanel, setShowOmniPanel] = React.useState(true);
   const [currentView, setCurrentView] = React.useState(OmniPanelViewIndex.MainMenu);
   const [loading, setLoading] = React.useState<LoadingScreenProps | null>({
@@ -178,6 +201,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
         dispenserStateManager.startSubscription(x);
         liftStateManager.startSubscription(x);
         fleetManager.startSubscription(x);
+        negotiationStatusManager.startSubscription();
 
         fleetManager.on('updated', () => setFleets(fleetManager.fleets()));
         liftStateManager.on('updated', () => setLiftStates(liftStateManager.liftStates()));
@@ -185,12 +209,22 @@ export default function Dashboard(_props: {}): React.ReactElement {
         dispenserStateManager.on('updated', () =>
           setDispenserStates(dispenserStateManager.dispenserStates()),
         );
+        negotiationStatusManager.on('updated', () =>
+          setNegotiationStatus(negotiationStatusManager.allConflicts()),
+        );
         setTransport(x);
       })
       .catch((e: CloseEvent) => {
         setLoading({ caption: `Unable to connect to SOSS server (${e.code})`, variant: 'error' });
       });
-  }, [transportFactory, doorStateManager, liftStateManager, dispenserStateManager, fleetManager]);
+  }, [
+    transportFactory,
+    doorStateManager,
+    liftStateManager,
+    dispenserStateManager,
+    fleetManager,
+    negotiationStatusManager,
+  ]);
 
   React.useEffect(() => {
     if (!transport) {
@@ -255,10 +289,12 @@ export default function Dashboard(_props: {}): React.ReactElement {
     setLiftSpotlight(undefined);
     setRobotSpotlight(undefined);
     setDispenserSpotlight(undefined);
+    setNegotiationSpotlight(undefined);
   }
 
   const handleClose = React.useCallback(() => {
     clearSpotlights();
+    setNegotiationTrajStore({});
     setShowOmniPanel(false);
   }, []);
 
@@ -268,6 +304,8 @@ export default function Dashboard(_props: {}): React.ReactElement {
       const parent = viewMap[index].parent;
       if (!parent) {
         return handleClose();
+      } else {
+        setNegotiationTrajStore({});
       }
       setCurrentView(parent.value);
     },
@@ -294,6 +332,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
     setCurrentView(OmniPanelViewIndex.Commands);
   }, []);
 
+  const handleMainMenuNegotiationsClick = React.useCallback(() => {
+    setCurrentView(OmniPanelViewIndex.Negotiations);
+  }, []);
+
   const omniPanelClasses = React.useMemo(
     () => ({ backButton: classes.topLeftBorder, closeButton: classes.topRightBorder }),
     [classes.topLeftBorder, classes.topRightBorder],
@@ -308,12 +350,14 @@ export default function Dashboard(_props: {}): React.ReactElement {
             showSettings={setShowSettings}
           />
           {loading && <LoadingScreen {...loading} />}
-          {buildingMap && (
+          {buildingMap && mapFloorLayerSorted && (
             <ScheduleVisualizer
               buildingMap={buildingMap}
+              mapFloorLayerSorted={mapFloorLayerSorted}
               fleets={fleets}
               trajManager={trajManager.current}
               appResources={resourceManager.current}
+              negotiationTrajStore={negotiationTrajStore}
               onDoorClick={handleDoorClick}
               onLiftClick={handleLiftClick}
               onRobotClick={handleRobotClick}
@@ -334,6 +378,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                   onRobotsClick={handleMainMenuRobotsClick}
                   onDispensersClick={handleMainMenuDispensersClick}
                   onCommandsClick={handleMainMenuCommandsClick}
+                  onNegotiationsClick={handleMainMenuNegotiationsClick}
                 />
               </OmniPanelView>
               <OmniPanelView id={OmniPanelViewIndex.Doors}>
@@ -360,6 +405,15 @@ export default function Dashboard(_props: {}): React.ReactElement {
               </OmniPanelView>
               <OmniPanelView id={OmniPanelViewIndex.Commands}>
                 <CommandsPanel transport={transport} allFleets={fleetNames.current} />
+              </OmniPanelView>
+              <OmniPanelView id={OmniPanelViewIndex.Negotiations}>
+                <NegotiationsPanel
+                  conflicts={negotiationStatus}
+                  spotlight={negotiationSpotlight}
+                  mapFloorLayerSorted={mapFloorLayerSorted}
+                  negotiationStatusManager={negotiationStatusManager}
+                  negotiationTrajStore={negotiationTrajStore}
+                />
               </OmniPanelView>
             </OmniPanel>
           </Fade>

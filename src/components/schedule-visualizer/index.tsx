@@ -12,6 +12,9 @@ import {
   Trajectory,
   TrajectoryResponse,
 } from '../../robot-trajectory-manager';
+import {
+  NegotiationTrajectoryResponse
+} from '../../negotiation-status-manager';
 import { AnimationSpeed, TrajectoryAnimation } from '../../settings';
 import { toBlobUrl } from '../../util';
 import { ResourcesContext, SettingsContext } from '../app-contexts';
@@ -39,7 +42,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-interface MapFloorLayer {
+export interface MapFloorLayer {
   level: RomiCore.Level;
   imageUrl: string;
   bounds: L.LatLngBounds;
@@ -50,6 +53,8 @@ export interface ScheduleVisualizerProps {
   fleets: Readonly<RomiCore.FleetState[]>;
   trajManager?: Readonly<RobotTrajectoryManager>;
   appResources?: Readonly<ResourceConfigurationsType>;
+  negotiationTrajStore : Readonly<Record<string, NegotiationTrajectoryResponse>>;
+  mapFloorLayerSorted : Readonly<string[]>;
   onDoorClick?(door: RomiCore.Door): void;
   onLiftClick?(lift: RomiCore.Lift): void;
   onRobotClick?(fleet: string, robot: RomiCore.RobotState): void;
@@ -67,17 +72,13 @@ function calcMaxBounds(mapFloorLayers: readonly MapFloorLayer[]): L.LatLngBounds
 export default function ScheduleVisualizer(props: ScheduleVisualizerProps): React.ReactElement {
   debug('render');
 
-  const { appResources } = props;
+  const { appResources, negotiationTrajStore, mapFloorLayerSorted } = props;
   const classes = useStyles();
 
   const [mapFloorLayers, setMapFloorLayers] = React.useState<
     Readonly<Record<string, MapFloorLayer>>
   >({});
-  const mapFloorLayerSort = React.useMemo<string[]>(
-    () => props.buildingMap.levels.sort((a, b) => a.elevation - b.elevation).map((x) => x.name),
-    [props.buildingMap],
-  );
-  const [curLevelName, setCurLevelName] = React.useState(() => mapFloorLayerSort[0]);
+  const [curLevelName, setCurLevelName] = React.useState(() => mapFloorLayerSorted[0]);
   const curMapFloorLayer = React.useMemo(() => mapFloorLayers[curLevelName], [
     curLevelName,
     mapFloorLayers,
@@ -89,12 +90,12 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   const [curMapConflicts, setCurMapConflicts] = React.useState<Conflict[]>(() => []);
 
   const initialBounds = React.useMemo<Readonly<L.LatLngBounds> | undefined>(() => {
-    const initialLayer = mapFloorLayers[mapFloorLayerSort[0]];
+    const initialLayer = mapFloorLayers[mapFloorLayerSorted[0]];
     if (!initialLayer) {
       return undefined;
     }
     return initialLayer.bounds;
-  }, [mapFloorLayers, mapFloorLayerSort]);
+  }, [mapFloorLayers, mapFloorLayerSorted]);
   const [maxBounds, setMaxBounds] = React.useState<Readonly<L.LatLngBounds> | undefined>(() =>
     calcMaxBounds(Object.values(mapFloorLayers)),
   );
@@ -220,7 +221,12 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     setCurLevelName(e.name);
   }
 
-  const sortedMapFloorLayers = mapFloorLayerSort.map((x) => mapFloorLayers[x]);
+  function getConflicts(levelName: string): Conflict[] {
+    const resp = trajectories[levelName];
+    return resp ? resp.conflicts : [];
+  }
+
+  const sortedMapFloorLayers = mapFloorLayerSorted.map((x) => mapFloorLayers[x]);
   const ref = React.useRef<ImageOverlay>(null);
 
   if (ref.current) {
@@ -309,6 +315,26 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
               </Pane>
             )}
           </LayersControl.Overlay>
+
+          <LayersControl.Overlay name="Negotiation Trajectories" 
+            data-component="NegotiationTrajCheckbox" checked>
+            {curMapFloorLayer && (
+              <Pane>
+                <RobotTrajectoryContext.Provider value={RobotTrajContextValue}>
+                  <RobotTrajectoriesOverlay
+                    bounds={curMapFloorLayer.bounds}
+                    trajs={negotiationTrajStore[curLevelName] && 
+                      (props.negotiationTrajStore[curLevelName].values)}
+                    conflicts={getConflicts(curLevelName)}
+                    colorManager={colorManager}
+                    conflictRobotNames={conflictRobotNames}
+                    overridePathColor={"orange"}
+                  />
+                </RobotTrajectoryContext.Provider>
+              </Pane>
+            )}
+          </LayersControl.Overlay>
+
           <LayersControl.Overlay name="Doors" checked>
             {curMapFloorLayer && (
               <Pane>
