@@ -3,7 +3,14 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import * as L from 'leaflet';
 import React from 'react';
-import { AttributionControl, ImageOverlay, LayersControl, Map as LMap, Pane } from 'react-leaflet';
+import {
+  AttributionControl,
+  ImageOverlay,
+  LayersControl,
+  Map as LMap,
+  Pane,
+  LeafletContext,
+} from 'react-leaflet';
 import { ResourceConfigurationsType } from '../../resource-manager';
 import {
   Conflict,
@@ -87,17 +94,20 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   const [conflictRobotNames, setConflictRobotNames] = React.useState<string[][]>(() => []);
   const [curMapTrajectories, setCurMapTrajectories] = React.useState<Trajectory[]>(() => []);
   const [curMapConflicts, setCurMapConflicts] = React.useState<Conflict[]>(() => []);
+  const [zoom, setZoom] = React.useState(5);
 
   const initialBounds = React.useMemo<Readonly<L.LatLngBounds> | undefined>(() => {
     const initialLayer = mapFloorLayers[mapFloorLayerSort[0]];
     if (!initialLayer) {
       return undefined;
     }
+
     return initialLayer.bounds;
   }, [mapFloorLayers, mapFloorLayerSort]);
   const [maxBounds, setMaxBounds] = React.useState<Readonly<L.LatLngBounds> | undefined>(() =>
     calcMaxBounds(Object.values(mapFloorLayers)),
   );
+  const [initialBound, setInitialBound] = React.useState(initialBounds);
 
   const colorManager = React.useMemo(() => new ColorManager(), []);
 
@@ -215,13 +225,20 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     return () => clearInterval(interval);
   }, [props.trajManager, curMapFloorLayer, trajAnimDuration]);
 
-  function handleBaseLayerChange(e: L.LayersControlEvent): void {
+  function handleBaseLayerChange(e: any): void {
     debug('set current level name');
     setCurLevelName(e.name);
+    setInitialBound(e.layer.options.bounds);
+    if (e.layer.options.bounds._northEast.lng > 200) {
+      setZoom(2);
+    } else {
+      setZoom(5);
+    }
   }
 
   const sortedMapFloorLayers = mapFloorLayerSort.map((x) => mapFloorLayers[x]);
   const ref = React.useRef<ImageOverlay>(null);
+  const mapRef = React.useRef<LMap>(null);
 
   if (ref.current) {
     ref.current.leafletElement.setZIndex(0);
@@ -272,13 +289,15 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       className={classes.map}
       attributionControl={false}
       crs={L.CRS.Simple}
-      minZoom={4}
+      zoom={zoom}
+      minZoom={2}
       maxZoom={8}
       zoomDelta={0.5}
       zoomSnap={0.5}
-      bounds={initialBounds}
+      bounds={initialBound ? initialBound : initialBounds}
       maxBounds={maxBounds}
       onbaselayerchange={handleBaseLayerChange}
+      ref={mapRef}
     >
       <ResourcesContext.Provider value={!!appResources ? appResources : {}}>
         <AttributionControl position="bottomright" prefix="OSRC-SG" />
