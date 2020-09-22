@@ -7,5 +7,6 @@ declare namespace NodeJS {
     readonly REACT_APP_SOSS_SERVER?: string;
     readonly REACT_APP_TRAJECTORY_SERVER?: string;
     readonly REACT_APP_AUTH_CONFIG?: string;
+    readonly REACT_APP_API_SERVER?: string;
   }
 }

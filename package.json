@@ -46,6 +46,7 @@
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.56",
+    "@msgpack/msgpack": "^2.1.0",
     "@osrf/romi-js-core-interfaces": "^0.1.1",
     "@osrf/romi-js-soss-transport": "^0.1.0",
     "@types/debug": "^4.1.5",
@@ -80,6 +81,7 @@
     "uuid": "^8.3.0"
   },
   "devDependencies": {
+    "@osrf/romi-js-api-server": "file:../romi-js-api-server",
     "@storybook/addon-actions": "^6.0.21",
     "@storybook/addon-links": "^6.0.21",
     "@storybook/addons": "^6.0.21",
@@ -100,6 +102,7 @@
     "husky": "^4.3.0",
     "lint-staged": "^10.3.0",
     "prettier": "^2.1.1",
+    "romi-js-api-server": "file:../romi-js-api-server",
     "serve": "^11.3.2",
     "ts-node": "^9.0.0",
     "typescript": "^3.9.7",
@@ -119,6 +122,7 @@
     "collectCoverageFrom": [
       "src/**/*.{js,jsx,ts,tsx}",
       "!src/index.tsx",
+      "!src/ros2-transport.ts",
       "!src/serviceWorker.ts",
       "!src/app-config.ts",
       "!src/leaflet/**",
