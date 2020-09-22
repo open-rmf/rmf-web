@@ -1,9 +1,8 @@
-import { mount, ReactWrapper } from 'enzyme';
+import { mount } from 'enzyme';
 import React from 'react';
 import { makeRobot } from '../../../mock/utils';
 import ColorManager from '../colors';
 import RobotDefaultIcon from '../robot-default-icon';
-import { act } from 'react-dom/test-utils';
 
 describe('RobotDefaultIcon', () => {
   const colorManager = new ColorManager();
