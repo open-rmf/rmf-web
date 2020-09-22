@@ -391,7 +391,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
               showHelp={setShowHelp}
             />
             {loading && <LoadingScreen {...loading} />}
-            {buildingMap && (
+            {buildingMap && mapFloorLayerSorted && (
               <ScheduleVisualizer
                 buildingMap={buildingMap}
                 mapFloorLayerSorted={mapFloorLayerSorted}
