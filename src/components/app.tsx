@@ -18,7 +18,7 @@ export default function App(): React.ReactElement {
 
   React.useEffect(() => {
     (async () => {
-      authenticator.on('userChanged', newUser => setUser(newUser));
+      authenticator.on('userChanged', (newUser) => setUser(newUser));
       await authenticator.init();
       setUser(authenticator.user || null);
       setAuthInitialized(true);

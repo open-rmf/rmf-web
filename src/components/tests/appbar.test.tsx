@@ -19,7 +19,7 @@ describe('AppBar', () => {
     const root = mount(
       <AppBar toggleShowOmniPanel={toggleShowOmniPanel} showSettings={showSettings} />,
     );
-    expect(root.html()).toMatchSnapshot();
+    expect(root).toMatchSnapshot();
   });
 
   test('toggles show omnipanel when dashboard button is clicked', () => {
