@@ -16,7 +16,6 @@ export const keyMap: KeyMap = {
     name: 'Open Commands',
     sequences: [{ sequence: 'shift+c', action: 'keypress' }],
   } as KeySequence,
-
   OPEN_DISPENSERS: {
     name: 'Open Dispensers',
     sequences: [{ sequence: 'shift+i', action: 'keypress' }],

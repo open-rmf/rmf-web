@@ -8,12 +8,10 @@ import {
   IconButton,
 } from '@material-ui/core';
 import React from 'react';
-import HotKeysDrawer from './hotkeys-dialog';
 import DrawerHeader from './help-drawer-header';
 import MenuBookIcon from '@material-ui/icons/MenuBook';
 import DirectionsIcon from '@material-ui/icons/Directions';
 import BugReportIcon from '@material-ui/icons/BugReport';
-import HotKeysDialog from './hotkeys-dialog';
 
 export interface HotKeysDrawerProps extends DrawerProps {
   handleCloseButton(): void;
@@ -88,11 +86,5 @@ const useStyles = makeStyles((theme) => ({
     '@media (max-aspect-ratio: 8/10)': {
       width: '100%',
     },
-  },
-  heading: {
-    margin: '0 auto 0 calc(50% - 3rem)',
-  },
-  button: {
-    width: '3rem',
   },
 }));

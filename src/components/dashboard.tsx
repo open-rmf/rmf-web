@@ -30,13 +30,12 @@ import OmniPanelView from './omni-panel-view';
 import { RmfContextProvider } from './rmf-contexts';
 import RobotsPanel from './robots-panel';
 import ScheduleVisualizer from './schedule-visualizer';
-import SettingsDrawer from './settings-drawer';
+import SettingsDrawer from './drawers/settings-drawer';
 import { SpotlightValue } from './spotlight-value';
-import { GlobalHotKeys } from 'react-hotkeys';
 import { buildHotKeys } from '../hotkeys';
-import HotKeysDrawer from './help-drawer/hotkeys-dialog';
-import HelpDrawer from './help-drawer/help-drawer';
-import HotKeysDialog from './help-drawer/hotkeys-dialog';
+import HelpDrawer from './drawers/help-drawer';
+import HotKeysDialog from './drawers/hotkeys-dialog';
+import { GlobalHotKeys } from 'react-hotkeys';
 
 const debug = Debug('App');
 const borderRadius = 20;

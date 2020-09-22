@@ -1,15 +1,6 @@
-import {
-  Divider,
-  Drawer,
-  DrawerProps,
-  makeStyles,
-  useMediaQuery,
-  Grid,
-  Typography,
-  IconButton,
-} from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
+import { Divider, makeStyles, Grid, Typography, IconButton } from '@material-ui/core';
 import { KeyboardBackspace as BackIcon } from '@material-ui/icons';
+import CloseIcon from '@material-ui/icons/Close';
 import React from 'react';
 
 interface DrawerHeaderProps {
@@ -56,25 +47,6 @@ const DrawerHeader = (props: DrawerHeaderProps) => {
 export default DrawerHeader;
 
 const useStyles = makeStyles((theme) => ({
-  detailLine: {
-    display: 'inline-flex',
-    justifyContent: 'space-between',
-    padding: theme.spacing(0.5),
-    width: '100%',
-  },
-  detail: {
-    display: 'flex',
-    flexFlow: 'column',
-    padding: '1rem',
-  },
-  drawer: {
-    '@media (min-aspect-ratio: 8/10)': {
-      width: 300,
-    },
-    '@media (max-aspect-ratio: 8/10)': {
-      width: '100%',
-    },
-  },
   heading: {
     margin: '0 auto 0 calc(50% - 3rem)',
   },
