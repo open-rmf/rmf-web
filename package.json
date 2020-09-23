@@ -5,6 +5,7 @@
   "homepage": ".",
   "scripts": {
     "start": ". e2e/env.sh && concurrently npm:start:auth npm:start:rmf npm:start:react",
+    "start:react-auth": ". e2e/env.sh && concurrently npm:start:auth npm:start:react",
     "start:docker": ". e2e/env.sh && scripts/dockert docker-compose -f docker/docker-compose.yml up dev",
     "start:auth": ". e2e/env.sh && scripts/dockert docker-compose -f docker/docker-compose.yml up auth",
     "start:react": ". e2e/env.sh && react-scripts start",
@@ -74,6 +75,7 @@
     "react": "^16.12.0",
     "react-async": "^10.0.0",
     "react-dom": "^16.12.0",
+    "react-hotkeys": "^2.0.0",
     "react-leaflet": "^2.7.0",
     "react-leaflet-control": "^2.1.1",
     "react-router": "^5.2.0",

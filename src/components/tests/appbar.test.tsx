@@ -25,7 +25,7 @@ describe('AppBar', () => {
         showTour={showTour}
       />,
     );
-    expect(root.html()).toMatchSnapshot();
+    expect(root).toMatchSnapshot();
   });
 
   test('toggles show omnipanel when dashboard button is clicked', () => {

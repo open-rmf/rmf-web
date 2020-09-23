@@ -18,6 +18,7 @@ export interface RobotTrajectoryProps
   conflicts: Conflict[];
   footprint: number;
   colorManager?: Readonly<ColorManager>;
+  overridePathColor?: string;
 }
 export const fixTrajectoryDiameter = 0.4;
 
@@ -28,7 +29,14 @@ export const RobotTrajectory = React.memo(
   ): React.ReactElement {
     debug('render');
 
-    const { trajectory, conflicts, footprint, colorManager, ...otherProps } = props;
+    const {
+      trajectory,
+      conflicts,
+      footprint,
+      colorManager,
+      overridePathColor,
+      ...otherProps
+    } = props;
     const theme = useTheme();
     const isConflict = conflicts.flat().includes(trajectory.id);
     const settings = React.useContext(SettingsContext);
@@ -62,7 +70,8 @@ export const RobotTrajectory = React.memo(
         return !!pathColor ? pathColor : theme.palette.success.main;
       };
       const robotColorHolder = getRobotColor();
-      const pathColorHolder = getPathColor();
+      let pathColorHolder = getPathColor();
+      if (overridePathColor) return overridePathColor;
       switch (settings.trajectoryColor) {
         case TrajectoryColor.Theme:
           return theme.palette.success.main;
@@ -71,7 +80,7 @@ export const RobotTrajectory = React.memo(
         case TrajectoryColor.Shades:
           return pathColorHolder;
       }
-    }, [trajectory, theme, colorManager, settings.trajectoryColor]);
+    }, [trajectory, theme, colorManager, settings.trajectoryColor, overridePathColor]);
 
     const pathD = React.useMemo(() => {
       return trajectoryPath(trajectory.segments).d;
