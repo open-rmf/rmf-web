@@ -11,7 +11,7 @@ import {
   useMediaQuery,
 } from '@material-ui/core';
 import React from 'react';
-import { Settings, TrajectoryAnimation, TrajectoryDiameter, TrajectoryColor } from '../settings';
+import { Settings, TrajectoryAnimation, TrajectoryDiameter, TrajectoryColor } from '../../settings';
 
 export interface SettingsDrawerProps extends DrawerProps {
   settings: Readonly<Settings>;

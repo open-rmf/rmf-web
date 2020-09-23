@@ -20,6 +20,7 @@ const createWrapper = (
   colorManager: ColorManager,
   trajs: Trajectory[],
   conflictRobotNames: string[][],
+  overridePathColor?: string
 ) => {
   return mount(
     <LMap>
@@ -29,6 +30,7 @@ const createWrapper = (
         colorManager={colorManager}
         trajs={trajs}
         conflictRobotNames={conflictRobotNames}
+        overridePathColor={overridePathColor}
       />
     </LMap>,
   );
@@ -65,6 +67,7 @@ describe('RobotTrajectoriesOverlay', () => {
       colorManager,
       [trajectoryValue],
       [[]],
+      undefined
     );
     expect(toJson(wrapper)).toMatchSnapshot();
     wrapper.unmount();

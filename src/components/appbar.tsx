@@ -12,14 +12,16 @@ import DashboardIcon from '@material-ui/icons/Dashboard';
 import SettingsIcon from '@material-ui/icons/Settings';
 import React from 'react';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
+import HelpIcon from '@material-ui/icons/Help';
 
 export interface AppBarProps {
   toggleShowOmniPanel(): void;
   showSettings(show: boolean): void;
+  showHelp(show: boolean): void;
 }
 
 export default function AppBar(props: AppBarProps): React.ReactElement {
-  const { toggleShowOmniPanel, showSettings } = props;
+  const { toggleShowOmniPanel, showSettings, showHelp } = props;
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const classes = useStyles();
   const authenticator = React.useContext(AuthenticatorContext);
@@ -39,9 +41,11 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
         <Typography variant="h6" className={classes.toolbarTitle}>
           Dashboard
         </Typography>
+
         <IconButton id="toggle-omnipanel-btn" color="inherit" onClick={() => toggleShowOmniPanel()}>
           <DashboardIcon />
         </IconButton>
+
         <IconButton id="show-settings-btn" color="inherit" onClick={() => showSettings(true)}>
           <SettingsIcon />
         </IconButton>
@@ -50,7 +54,7 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
             <IconButton
               id="user-btn"
               color="inherit"
-              onClick={event => setAnchorEl(event.currentTarget)}
+              onClick={(event) => setAnchorEl(event.currentTarget)}
             >
               <AccountCircleIcon />
             </IconButton>
@@ -74,12 +78,15 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
             </Menu>
           </>
         )}
+        <IconButton id="show-help-btn" color="inherit" onClick={() => showHelp(true)}>
+          <HelpIcon />
+        </IconButton>
       </Toolbar>
     </MuiAppBar>
   );
 }
 
-const useStyles = makeStyles(_theme => ({
+const useStyles = makeStyles((_theme) => ({
   toolbarTitle: {
     flexGrow: 1,
   },
