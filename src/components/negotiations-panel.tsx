@@ -280,4 +280,6 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
       </TreeView>
     </Typography>
   );
-}
+});
+
+export default NegotiationsPanel;
