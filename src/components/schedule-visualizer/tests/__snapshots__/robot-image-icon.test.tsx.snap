@@ -8,6 +8,21 @@ exports[`RobotImageIcon renders correctly 1`] = `
         "_pathColorCache": Object {},
         "_robotColorCache": Object {},
         "conflictHighlight": "#f44336",
+        "robotColor": [MockFunction],
+        "robotColorFromCache": [MockFunction] {
+          "calls": Array [
+            Array [
+              "testFleet",
+              "",
+            ],
+          ],
+          "results": Array [
+            Object {
+              "type": "return",
+              "value": "black",
+            },
+          ],
+        },
       }
     }
     dispatchIconError={[MockFunction]}
