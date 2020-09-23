@@ -19,9 +19,7 @@ import {
   Trajectory,
   TrajectoryResponse,
 } from '../../robot-trajectory-manager';
-import {
-  NegotiationTrajectoryResponse
-} from '../../negotiation-status-manager';
+import { NegotiationTrajectoryResponse } from '../../negotiation-status-manager';
 import { AnimationSpeed, TrajectoryAnimation } from '../../settings';
 import { toBlobUrl } from '../../util';
 import { ResourcesContext, SettingsContext } from '../app-contexts';
@@ -60,8 +58,8 @@ export interface ScheduleVisualizerProps {
   fleets: Readonly<RomiCore.FleetState[]>;
   trajManager?: Readonly<RobotTrajectoryManager>;
   appResources?: Readonly<ResourceConfigurationsType>;
-  negotiationTrajStore : Readonly<Record<string, NegotiationTrajectoryResponse>>;
-  mapFloorLayerSorted : Readonly<string[]>;
+  negotiationTrajStore: Readonly<Record<string, NegotiationTrajectoryResponse>>;
+  mapFloorLayerSorted: Readonly<string[]>;
   onDoorClick?(door: RomiCore.Door): void;
   onLiftClick?(lift: RomiCore.Lift): void;
   onRobotClick?(fleet: string, robot: RomiCore.RobotState): void;
@@ -95,7 +93,6 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   const [conflictRobotNames, setConflictRobotNames] = React.useState<string[][]>(() => []);
   const [curMapTrajectories, setCurMapTrajectories] = React.useState<Trajectory[]>(() => []);
   const [curMapConflicts, setCurMapConflicts] = React.useState<Conflict[]>(() => []);
-  const [zoom, setZoom] = React.useState(5);
 
   const initialBounds = React.useMemo<Readonly<L.LatLngBounds> | undefined>(() => {
     const initialLayer = mapFloorLayers[mapFloorLayerSorted[0]];
@@ -229,12 +226,12 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   function handleBaseLayerChange(e: any): void {
     debug('set current level name');
     setCurLevelName(e.name);
-    setInitialBound(e.layer.options.bounds);
     if (e.layer.options.bounds._northEast.lng > 200) {
-      setZoom(2);
+      mapRef.current?.leafletElement.setMinZoom(2);
     } else {
-      setZoom(5);
+      mapRef.current?.leafletElement.setMinZoom(4);
     }
+    setInitialBound(e.layer.options.bounds);
   }
 
   function getConflicts(levelName: string): Conflict[] {
@@ -295,8 +292,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       className={classes.map}
       attributionControl={false}
       crs={L.CRS.Simple}
-      zoom={zoom}
-      minZoom={2}
+      minZoom={4}
       maxZoom={8}
       zoomDelta={0.5}
       zoomSnap={0.5}
@@ -335,19 +331,24 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
             )}
           </LayersControl.Overlay>
 
-          <LayersControl.Overlay name="Negotiation Trajectories" 
-            data-component="NegotiationTrajCheckbox" checked>
+          <LayersControl.Overlay
+            name="Negotiation Trajectories"
+            data-component="NegotiationTrajCheckbox"
+            checked
+          >
             {curMapFloorLayer && (
               <Pane>
                 <RobotTrajectoryContext.Provider value={RobotTrajContextValue}>
                   <RobotTrajectoriesOverlay
                     bounds={curMapFloorLayer.bounds}
-                    trajs={negotiationTrajStore[curLevelName] && 
-                      (props.negotiationTrajStore[curLevelName].values)}
+                    trajs={
+                      negotiationTrajStore[curLevelName] &&
+                      props.negotiationTrajStore[curLevelName].values
+                    }
                     conflicts={getConflicts(curLevelName)}
                     colorManager={colorManager}
                     conflictRobotNames={conflictRobotNames}
-                    overridePathColor={"orange"}
+                    overridePathColor={'orange'}
                   />
                 </RobotTrajectoryContext.Provider>
               </Pane>
