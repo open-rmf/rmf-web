@@ -5,7 +5,7 @@ import Debug from 'debug';
 const debug = Debug('ApiClient');
 
 export default class ApiClient {
-  static async connect(url: string): Promise<ApiClient> {
+  static async connect(url: string, token: string): Promise<ApiClient> {
     const socket = new WebSocket(url);
     socket.binaryType = 'arraybuffer';
     await new Promise((res, reject) => {
@@ -13,7 +13,8 @@ export default class ApiClient {
         reject(ev);
       };
       socket.addEventListener('close', closeListener);
-      socket.addEventListener('open', (ev) => {
+      socket.addEventListener('open', () => socket.send(token));
+      socket.addEventListener('message', (ev) => {
         socket.removeEventListener('close', closeListener);
         res(ev);
       });
