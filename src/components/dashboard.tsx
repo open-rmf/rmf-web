@@ -370,7 +370,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     setCurrentView(view);
   };
 
-  const tourComplete = sessionStorage.getItem('tourComplete');
+  const tourComplete = localStorage.getItem('tourComplete');
   React.useEffect(() => {
     if (tourComplete === 'true') {
       setTourState(false);
