@@ -245,7 +245,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     const request = new RomiCore.GetBuildingMap_Request();
     transport
       .call(RomiCore.getBuildingMap, request)
-      .then(result => {
+      .then((result) => {
         setBuildingMap(result.building_map);
         setLoading(null);
       })
@@ -273,7 +273,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   }, [appResources]);
 
   React.useEffect(() => {
-    setDoors(buildingMap ? buildingMap.levels.flatMap(x => x.doors) : []);
+    setDoors(buildingMap ? buildingMap.levels.flatMap((x) => x.doors) : []);
     setLifts(buildingMap ? buildingMap.lifts : []);
   }, [buildingMap]);
 
