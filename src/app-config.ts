@@ -42,11 +42,11 @@ export const appConfig: AppConfig = (() => {
     const apiServer = process.env.REACT_APP_API_SERVER;
     let apiClientPromise: Promise<ApiClient> | undefined;
     const getApiClientPromise = () => {
-      if (!authenticator.sossToken) {
+      if (!authenticator.token) {
         throw new Error('no authentication token available');
       }
       if (!apiClientPromise) {
-        apiClientPromise = ApiClient.connect(apiServer, authenticator.sossToken);
+        apiClientPromise = ApiClient.connect(apiServer, authenticator.token);
       }
       return apiClientPromise;
     };

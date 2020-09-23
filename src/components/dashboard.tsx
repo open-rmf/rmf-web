@@ -184,7 +184,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const [showOmniPanel, setShowOmniPanel] = React.useState(true);
   const [currentView, setCurrentView] = React.useState(OmniPanelViewIndex.MainMenu);
   const [loading, setLoading] = React.useState<LoadingScreenProps | null>({
-    caption: 'Connecting to SOSS...',
+    caption: 'Connecting to api server...',
   });
 
   const [showSettings, setShowSettings] = React.useState(false);
@@ -198,12 +198,12 @@ export default function Dashboard(_props: {}): React.ReactElement {
   ] = React.useState<NotificationBarProps | null>(null);
 
   React.useEffect(() => {
-    setLoading({ caption: 'Connecting to SOSS server...' });
+    setLoading({ caption: 'Connecting to api server...' });
     transportFactory()
       .then((x) => {
         x.on('error', console.error);
         x.once('close', () => {
-          setLoading({ caption: 'Lost connection to SOSS', variant: 'error' });
+          setLoading({ caption: 'Lost connection to api server', variant: 'error' });
           setTransport(undefined);
         });
         doorStateManager.startSubscription(x);
@@ -224,7 +224,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
         setTransport(x);
       })
       .catch((e: CloseEvent) => {
-        setLoading({ caption: `Unable to connect to SOSS server (${e.code})`, variant: 'error' });
+        setLoading({ caption: `Unable to connect to api server (${e.code})`, variant: 'error' });
       });
   }, [
     transportFactory,

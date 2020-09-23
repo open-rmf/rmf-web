@@ -11,7 +11,7 @@ export type AuthenticatorEventType = {
 
 export default interface Authenticator extends EventEmitter<AuthenticatorEventType> {
   readonly user?: User;
-  readonly sossToken?: string;
+  readonly token?: string;
 
   /**
    * It is required to call this before using any of the authenticator functions.
@@ -31,13 +31,14 @@ export default interface Authenticator extends EventEmitter<AuthenticatorEventTy
 
 export type AuthConfig<T = typeof Keycloak_> = T extends (config: infer U) => unknown ? U : never;
 
-export class DefaultAuthenticator extends EventEmitter<AuthenticatorEventType>
+export class DefaultAuthenticator
+  extends EventEmitter<AuthenticatorEventType>
   implements Authenticator {
   get user(): User | undefined {
     return this._user;
   }
 
-  get sossToken(): string | undefined {
+  get token(): string | undefined {
     return this._inst.idToken;
   }
 
