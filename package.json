@@ -83,7 +83,7 @@
     "uuid": "^8.3.0"
   },
   "devDependencies": {
-    "@osrf/romi-js-api-server": "file:../romi-js-api-server",
+    "@osrf/romi-js-api-server": "git://github.com/osrf/romi-js-api-server.git#master",
     "@storybook/addon-actions": "^6.0.21",
     "@storybook/addon-links": "^6.0.21",
     "@storybook/addons": "^6.0.21",
