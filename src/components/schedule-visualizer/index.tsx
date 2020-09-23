@@ -3,14 +3,7 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import * as L from 'leaflet';
 import React from 'react';
-import {
-  AttributionControl,
-  ImageOverlay,
-  LayersControl,
-  Map as LMap,
-  Pane,
-  LeafletContext,
-} from 'react-leaflet';
+import { AttributionControl, ImageOverlay, LayersControl, Map as LMap, Pane } from 'react-leaflet';
 import { ResourceConfigurationsType } from '../../resource-manager';
 import {
   Conflict,
@@ -223,15 +216,15 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     return () => clearInterval(interval);
   }, [props.trajManager, curMapFloorLayer, trajAnimDuration]);
 
-  function handleBaseLayerChange(e: any): void {
+  function handleBaseLayerChange(e: L.LayersControlEvent): void {
     debug('set current level name');
     setCurLevelName(e.name);
-    if (e.layer.options.bounds._northEast.lng > 200) {
+    if (mapFloorLayers[e.name].bounds.getNorthEast().lng > 200) {
       mapRef.current?.leafletElement.setMinZoom(2);
     } else {
       mapRef.current?.leafletElement.setMinZoom(4);
     }
-    setInitialBound(e.layer.options.bounds);
+    setInitialBound(mapFloorLayers[e.name].bounds);
   }
 
   function getConflicts(levelName: string): Conflict[] {
