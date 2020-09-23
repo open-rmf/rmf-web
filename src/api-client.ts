@@ -8,7 +8,16 @@ export default class ApiClient {
   static async connect(url: string): Promise<ApiClient> {
     const socket = new WebSocket(url);
     socket.binaryType = 'arraybuffer';
-    await new Promise((res) => socket.addEventListener('open', res));
+    await new Promise((res, reject) => {
+      const closeListener = (ev: CloseEvent) => {
+        reject(ev);
+      };
+      socket.addEventListener('close', closeListener);
+      socket.addEventListener('open', (ev) => {
+        socket.removeEventListener('close', closeListener);
+        res(ev);
+      });
+    });
     return new ApiClient(socket);
   }
 

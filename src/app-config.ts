@@ -40,14 +40,20 @@ export const appConfig: AppConfig = (() => {
       throw new Error('REACT_APP_API_SERVER env variable is needed but not defined');
     }
     const apiServer = process.env.REACT_APP_API_SERVER;
-    const apiClientPromise = ApiClient.connect(apiServer);
+    let apiClientPromise: Promise<ApiClient> | undefined;
+    const getApiClientPromise = () => {
+      if (!apiClientPromise) {
+        apiClientPromise = ApiClient.connect(apiServer);
+      }
+      return apiClientPromise;
+    };
 
     return {
       authenticator,
       appResources: ResourceManager.getResourceConfigurationFile(),
       trajectoryManagerFactory: () => DefaultTrajectoryManager.create(trajServer),
       transportFactory: async () => {
-        const apiClient = await apiClientPromise;
+        const apiClient = await getApiClientPromise();
         return new Ros2Transport(apiClient);
       },
       trajServerUrl: trajServer,
