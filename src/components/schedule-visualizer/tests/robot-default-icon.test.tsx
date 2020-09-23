@@ -6,9 +6,13 @@ import RobotDefaultIcon from '../robot-default-icon';
 
 describe('RobotDefaultIcon', () => {
   const colorManager = new ColorManager();
+  // TextEncoder is not available in node
+  colorManager.robotColor = jest.fn(async () => 'black');
+  colorManager.robotColorFromCache = jest.fn(() => 'black');
+
   const fleetName = 'testFleet';
 
-  test('renders correctly', () => {
+  test('renders correctly', async () => {
     const root = mount(
       <svg>
         <RobotDefaultIcon
@@ -22,7 +26,7 @@ describe('RobotDefaultIcon', () => {
     expect(root).toMatchSnapshot();
   });
 
-  test('red shadow appears for conflicting robots', () => {
+  test('red shadow appears for conflicting robots', async () => {
     const root = mount(
       <svg>
         <RobotDefaultIcon
