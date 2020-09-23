@@ -1,5 +1,0 @@
-name: unit test
-description: unit test
-runs:
-  using: docker
-  image: Dockerfile
