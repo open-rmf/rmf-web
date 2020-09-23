@@ -49,6 +49,7 @@ export const DashboardTour = React.memo(
         steps={tourSteps}
         isOpen={tourState}
         onRequestClose={() => {
+          sessionStorage.setItem('tourComplete', 'true');
           setTourState(false);
           setTourShowOmniPanel(OmniPanelViewIndex.MainMenu);
         }}

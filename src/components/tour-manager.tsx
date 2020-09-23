@@ -100,6 +100,7 @@ export const createTourSteps = (props: createTourProps) => {
             if (handleNextClick) {
               handleNextClick();
             }
+            sessionStorage.setItem('tourComplete', 'true');
             setTourState(false);
           }}
           id="tour-last-step-btn"

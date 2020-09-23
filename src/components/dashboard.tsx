@@ -198,7 +198,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     setNotificationBarMessage,
   ] = React.useState<NotificationBarProps | null>(null);
 
-  const [tourState, setTourState] = React.useState(true);
+  const [tourState, setTourState] = React.useState(false);
 
   React.useEffect(() => {
     setLoading({ caption: 'Connecting to SOSS server...' });
@@ -369,6 +369,15 @@ export default function Dashboard(_props: {}): React.ReactElement {
     setTourSettingsAndOmniPanel(false, true, false);
     setCurrentView(view);
   };
+
+  const tourComplete = sessionStorage.getItem('tourComplete');
+  React.useEffect(() => {
+    if (tourComplete === 'true') {
+      setTourState(false);
+    } else {
+      setTourState(true);
+    }
+  }, [tourComplete, setTourState]);
 
   const tourProps = {
     tourState,
