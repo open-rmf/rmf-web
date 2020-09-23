@@ -12,9 +12,7 @@ import {
   Trajectory,
   TrajectoryResponse,
 } from '../../robot-trajectory-manager';
-import {
-  NegotiationTrajectoryResponse
-} from '../../negotiation-status-manager';
+import { NegotiationTrajectoryResponse } from '../../negotiation-status-manager';
 import { AnimationSpeed, TrajectoryAnimation } from '../../settings';
 import { toBlobUrl } from '../../util';
 import { ResourcesContext, SettingsContext } from '../app-contexts';
@@ -53,8 +51,8 @@ export interface ScheduleVisualizerProps {
   fleets: Readonly<RomiCore.FleetState[]>;
   trajManager?: Readonly<RobotTrajectoryManager>;
   appResources?: Readonly<ResourceConfigurationsType>;
-  negotiationTrajStore : Readonly<Record<string, NegotiationTrajectoryResponse>>;
-  mapFloorLayerSorted : Readonly<string[]>;
+  negotiationTrajStore: Readonly<Record<string, NegotiationTrajectoryResponse>>;
+  mapFloorLayerSorted: Readonly<string[]>;
   onDoorClick?(door: RomiCore.Door): void;
   onLiftClick?(lift: RomiCore.Lift): void;
   onRobotClick?(fleet: string, robot: RomiCore.RobotState): void;
@@ -316,19 +314,24 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
             )}
           </LayersControl.Overlay>
 
-          <LayersControl.Overlay name="Negotiation Trajectories" 
-            data-component="NegotiationTrajCheckbox" checked>
+          <LayersControl.Overlay
+            name="Negotiation Trajectories"
+            data-component="NegotiationTrajCheckbox"
+            checked
+          >
             {curMapFloorLayer && (
               <Pane>
                 <RobotTrajectoryContext.Provider value={RobotTrajContextValue}>
                   <RobotTrajectoriesOverlay
                     bounds={curMapFloorLayer.bounds}
-                    trajs={negotiationTrajStore[curLevelName] && 
-                      (props.negotiationTrajStore[curLevelName].values)}
+                    trajs={
+                      negotiationTrajStore[curLevelName] &&
+                      props.negotiationTrajStore[curLevelName].values
+                    }
                     conflicts={getConflicts(curLevelName)}
                     colorManager={colorManager}
                     conflictRobotNames={conflictRobotNames}
-                    overridePathColor={"orange"}
+                    overridePathColor={'orange'}
                   />
                 </RobotTrajectoryContext.Provider>
               </Pane>

@@ -1,5 +1,5 @@
 import EventEmitter from 'eventemitter3';
-import { Trajectory } from './robot-trajectory-manager'
+import { Trajectory } from './robot-trajectory-manager';
 
 type Events = {
   updated: [];
@@ -65,7 +65,7 @@ export class NegotiationStatusManager extends EventEmitter<Events> {
     }
     this._backendWs.send(JSON.stringify({ request: 'negotiation_update_subscribe' }));
 
-    this._backendWs.onmessage = event => {
+    this._backendWs.onmessage = (event) => {
       const msg = JSON.parse(event.data);
       if (msg['type'] === 'negotiation_status') {
         const conflictVersion: number = msg['conflict_version'];
@@ -155,8 +155,7 @@ export class NegotiationStatusManager extends EventEmitter<Events> {
 
   // TODO: temporary function until we unite the 2 websockets
   private async _send(payload: WebSocketSendParam0T): Promise<MessageEvent> {
-    if (!this._backendWs)
-      throw Error('Null _backendWs');
+    if (!this._backendWs) throw Error('Null _backendWs');
     // response should come in the order that requests are sent, this should allow multiple messages
     // in-flight while processing the responses in the order they are sent.
     this._backendWs.send(payload);
@@ -165,8 +164,8 @@ export class NegotiationStatusManager extends EventEmitter<Events> {
       await this._ongoingRequest;
     }
 
-    this._ongoingRequest = new Promise(res => {
-      this._listenOnce('message', e => {
+    this._ongoingRequest = new Promise((res) => {
+      this._listenOnce('message', (e) => {
         this._ongoingRequest = null;
         res(e);
       });
@@ -178,12 +177,10 @@ export class NegotiationStatusManager extends EventEmitter<Events> {
     event: K,
     listener: (e: WebSocketEventMap[K]) => unknown,
   ): void {
-    if (!this._backendWs)
-      return;
+    if (!this._backendWs) return;
 
-    this._backendWs.addEventListener(event, e => {
-      if (!this._backendWs)
-        return;
+    this._backendWs.addEventListener(event, (e) => {
+      if (!this._backendWs) return;
       this._backendWs.removeEventListener(event, listener);
       listener(e);
     });
