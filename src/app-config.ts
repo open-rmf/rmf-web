@@ -14,6 +14,7 @@ export interface AppConfig {
   appResources: Promise<ResourceConfigurationsType>;
   transportFactory: () => Promise<RomiCore.Transport>;
   trajectoryManagerFactory?: () => Promise<RobotTrajectoryManager>;
+  trajServerUrl: string;
 }
 
 export const appConfig: AppConfig = (() => {
@@ -49,6 +50,7 @@ export const appConfig: AppConfig = (() => {
         const apiClient = await apiClientPromise;
         return new Ros2Transport(apiClient);
       },
+      trajServerUrl: trajServer,
     };
   } else {
     return {
@@ -56,6 +58,7 @@ export const appConfig: AppConfig = (() => {
       appResources: ResourceManager.getResourceConfigurationFile(),
       transportFactory: async () => new FakeTransport(),
       trajectoryManagerFactory: async () => new FakeTrajectoryManager(),
+      trajServerUrl: '',
     };
   }
 })();
