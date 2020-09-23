@@ -127,8 +127,6 @@ If you would like, you can also build the images locally, doing so is simple wit
 ```bash
 # build rmf image
 docker-compose -f <path-to-romi-dashboard>/docker/rmf/docker-compose.yml build --no-cache
-# tag it as nightly
-docker tag docker.pkg.github.com/osrf/romi-dashboard/rmf:latest docker.pkg.github.com/osrf/romi-dashboard/rmf:nightly
 # build e2e image
 docker-compose -f <path-to-romi-dashboard>/docker/docker-compose.yml build --no-cache e2e
 ```

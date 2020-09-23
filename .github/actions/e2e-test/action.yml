@@ -1,0 +1,5 @@
+name: e2e test
+description: e2e test
+runs:
+  using: docker
+  image: Dockerfile
