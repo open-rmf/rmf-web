@@ -1,0 +1,70 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Renders correctly 1`] = `
+<WithStyles(ForwardRef(Drawer))
+  PaperProps={
+    Object {
+      "className": "makeStyles-drawer-3",
+    }
+  }
+  anchor="right"
+>
+  <DrawerHeader
+    handleCloseButton={[Function]}
+    title="Help"
+  />
+  <div
+    className="makeStyles-detail-2"
+  >
+    <div
+      className="makeStyles-detailLine-1"
+    >
+      <WithStyles(ForwardRef(IconButton))
+        color="inherit"
+        id="show-manual-btn"
+      >
+        <MenuBookIcon />
+      </WithStyles(ForwardRef(IconButton))>
+      <WithStyles(ForwardRef(Typography))
+        variant="h5"
+      >
+         Tutorial 
+      </WithStyles(ForwardRef(Typography))>
+    </div>
+    <WithStyles(ForwardRef(Divider)) />
+    <div
+      className="makeStyles-detailLine-1"
+      onClick={[Function]}
+    >
+      <WithStyles(ForwardRef(IconButton))
+        color="inherit"
+        id="show-hotkeys-btn"
+      >
+        <DirectionsIcon />
+      </WithStyles(ForwardRef(IconButton))>
+      <WithStyles(ForwardRef(Typography))
+        variant="h5"
+      >
+         Hotkeys 
+      </WithStyles(ForwardRef(Typography))>
+    </div>
+    <WithStyles(ForwardRef(Divider)) />
+    <div
+      className="makeStyles-detailLine-1"
+    >
+      <WithStyles(ForwardRef(IconButton))
+        color="inherit"
+        id="show-hotkeys-btn"
+      >
+        <BugReportIcon />
+      </WithStyles(ForwardRef(IconButton))>
+      <WithStyles(ForwardRef(Typography))
+        variant="h5"
+      >
+         Report an error 
+      </WithStyles(ForwardRef(Typography))>
+    </div>
+    <WithStyles(ForwardRef(Divider)) />
+  </div>
+</WithStyles(ForwardRef(Drawer))>
+`;

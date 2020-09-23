@@ -3,7 +3,6 @@ import { createMount } from '@material-ui/core/test-utils';
 import toJson from 'enzyme-to-json';
 import { shallow } from 'enzyme';
 
-import SettingsDrawer from '../settings-drawer';
 import {
   loadSettings,
   TrajectoryAnimation,
@@ -12,6 +11,7 @@ import {
   TrajectoryColor,
 } from '../../settings';
 import { SettingsContext } from '../app-contexts';
+import SettingsDrawer from '../drawers/settings-drawer';
 
 const mount = createMount();
 

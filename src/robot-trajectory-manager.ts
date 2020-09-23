@@ -65,7 +65,7 @@ interface Response {
 
 export class DefaultTrajectoryManager {
   static async create(url: string): Promise<DefaultTrajectoryManager> {
-    const ws = new WebSocket(url);
+    let ws = new WebSocket(url);
     await new Promise((res, rej) => {
       ws.addEventListener('open', function listener() {
         ws.removeEventListener('open', listener);
@@ -101,7 +101,7 @@ export class DefaultTrajectoryManager {
     pathId: number,
     trajectories: readonly Trajectory[],
   ): string | undefined {
-    const traj = trajectories.find(trajectory => trajectory.id === pathId);
+    const traj = trajectories.find((trajectory) => trajectory.id === pathId);
     return traj?.robot_name;
   }
 
@@ -113,7 +113,7 @@ export class DefaultTrajectoryManager {
     event: K,
     listener: (e: WebSocketEventMap[K]) => unknown,
   ): void {
-    this._webSocket.addEventListener(event, e => {
+    this._webSocket.addEventListener(event, (e) => {
       this._webSocket.removeEventListener(event, listener);
       listener(e);
     });
@@ -135,8 +135,8 @@ export class DefaultTrajectoryManager {
       await this._ongoingRequest;
     }
 
-    this._ongoingRequest = new Promise(res => {
-      this._listenOnce('message', e => {
+    this._ongoingRequest = new Promise((res) => {
+      this._listenOnce('message', (e) => {
         this._ongoingRequest = null;
         res(e);
       });
@@ -146,7 +146,9 @@ export class DefaultTrajectoryManager {
 
   private _checkResponse(request: Request, resp: Response): void {
     if (request.request !== resp.response) {
-      console.warn('received response for wrong request');
+      console.warn(
+        `received response for wrong request. Request: ${request.request} Response: ${resp.response}`,
+      );
       throw new Error('received response for wrong request');
     }
   }

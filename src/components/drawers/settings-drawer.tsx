@@ -15,7 +15,7 @@ import {
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import React from 'react';
-import { Settings, TrajectoryAnimation, TrajectoryDiameter, TrajectoryColor } from '../settings';
+import { Settings, TrajectoryAnimation, TrajectoryDiameter, TrajectoryColor } from '../../settings';
 
 export interface SettingsDrawerProps extends DrawerProps {
   settings: Readonly<Settings>;
