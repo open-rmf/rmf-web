@@ -1,8 +1,8 @@
-import { createMount } from '@material-ui/core/test-utils';
+import { createMount, createShallow } from '@material-ui/core/test-utils';
 import React from 'react';
 import DashboardTour from '../tour/tour';
 import { SpotlightValue } from '../spotlight-value';
-import { ReactWrapper } from 'enzyme';
+import { ReactWrapper, ShallowWrapper } from 'enzyme';
 import { OmniPanelViewIndex } from '../dashboard';
 import { tourText } from '../tour/tour-data';
 
@@ -11,6 +11,7 @@ suppress warnings of not being able to find elements from leaflet*/
 jest.spyOn(console, 'warn').mockImplementation(() => {});
 
 const mount = createMount();
+const shallow = createShallow();
 
 describe('Dashboard Tour', () => {
   const tourState: boolean = true;
@@ -21,6 +22,7 @@ describe('Dashboard Tour', () => {
   const setDoorSpotlight: jest.Mock = jest.fn();
 
   let root: ReactWrapper;
+  let tour: ShallowWrapper;
   let expectedText: string;
   let stepText: string;
   let nextBtn: ReactWrapper;
@@ -36,6 +38,7 @@ describe('Dashboard Tour', () => {
       setDoorSpotlight,
     };
     root = mount(<DashboardTour tourProps={tourProps} />);
+    tour = shallow(<DashboardTour tourProps={tourProps} />);
     nextBtn = root.find('#tour-next-btn').first();
   });
 
@@ -46,7 +49,7 @@ describe('Dashboard Tour', () => {
   const wait = (delay = 0) => new Promise((resolve) => setTimeout(resolve, delay));
 
   it('renders without crashing', () => {
-    expect(root.html()).toMatchSnapshot();
+    expect(tour).toMatchSnapshot();
   });
 
   it('renders first welcome step (1/12)', () => {
