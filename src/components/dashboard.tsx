@@ -428,7 +428,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
               toggleShowOmniPanel={() => setShowOmniPanel(!showOmniPanel)}
               showSettings={setShowSettings}
               showHelp={setShowHelp}
-              showTour={setTourState}
             />
             {loading && <LoadingScreen {...loading} />}
             {buildingMap && mapFloorLayerSorted && (
@@ -518,6 +517,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
               handleCloseButton={() => setShowHelp(false)}
               onClose={() => setShowHelp(false)}
               setShowHotkeyDialog={() => setShowHotkeyDialog(true)}
+              showTour={() => {
+                setTourState(true);
+                setShowHelp(false);
+              }}
             />
           </div>
           {showHotkeyDialog && (

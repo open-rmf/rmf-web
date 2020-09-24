@@ -58,6 +58,7 @@ export const DashboardTour = React.memo(
         rounded={5}
         showNavigationNumber={false}
         showNavigation={false}
+        disableKeyboardNavigation={['right', 'left']}
         showButtons={false}
         closeWithMask={false}
         startAt={0}

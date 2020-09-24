@@ -29,6 +29,12 @@ exports[`Dashboard Tour renders without crashing 1`] = `
   closeWithMask={false}
   disableFocusLock={false}
   disableInteraction={false}
+  disableKeyboardNavigation={
+    Array [
+      "right",
+      "left",
+    ]
+  }
   isOpen={true}
   maskSpace={10}
   onRequestClose={[Function]}
