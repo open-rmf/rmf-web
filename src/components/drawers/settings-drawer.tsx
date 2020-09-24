@@ -1,4 +1,5 @@
 import {
+  IconButton,
   Divider,
   Drawer,
   DrawerProps,
@@ -9,18 +10,22 @@ import {
   Radio,
   RadioGroup,
   useMediaQuery,
+  Typography,
+  Grid,
 } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
 import React from 'react';
 import { Settings, TrajectoryAnimation, TrajectoryDiameter, TrajectoryColor } from '../../settings';
 
 export interface SettingsDrawerProps extends DrawerProps {
   settings: Readonly<Settings>;
   onSettingsChange(settings: Settings): void;
+  handleCloseButton: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactElement {
   const classes = useStyles();
-  const { settings, onSettingsChange, ...otherProps } = props;
+  const { settings, onSettingsChange, handleCloseButton, ...otherProps } = props;
   const { trajectoryAnimation, trajectoryDiameter, trajectoryColor } = settings;
 
   const trajAnimsText = React.useMemo(
@@ -58,6 +63,20 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
 
   return (
     <Drawer PaperProps={{ className: classes.drawer }} anchor={drawerAnchor} {...otherProps}>
+      <Grid container alignItems="center">
+        <Grid item className={classes.heading}>
+          <Typography variant="h6">Settings</Typography>
+        </Grid>
+        <Grid item>
+          <IconButton
+            id="closeDrawerButton"
+            className={classes.button}
+            onClick={() => handleCloseButton(false)}
+          >
+            <CloseIcon />
+          </IconButton>
+        </Grid>
+      </Grid>
       <FormControl component="fieldset">
         <FormLabel component="legend" className={classes.legendLabel}>
           Trajectory Animation
@@ -136,17 +155,20 @@ const useStyles = makeStyles((theme) => ({
   legendLabel: {
     '@media (min-aspect-ratio: 8/10)': {
       fontSize: theme.typography.h6.fontSize,
-      padding: theme.spacing(1),
+      paddingBottom: theme.spacing(1),
+      textAlign: 'center',
     },
     '@media (max-aspect-ratio: 8/10)': {
       fontSize: theme.typography.h6.fontSize,
       padding: theme.spacing(1),
+      textAlign: 'center',
     },
   },
   trajGroup: {
     '@media (min-aspect-ratio: 8/10)': {
       flexDirection: 'row',
-      paddingLeft: theme.spacing(4),
+      paddingLeft: theme.spacing(8),
+      margin: '1rem 0',
     },
     '@media (max-aspect-ratio: 8/10)': {
       flexDirection: 'row',
@@ -155,5 +177,11 @@ const useStyles = makeStyles((theme) => ({
   },
   flexBasis: {
     flexBasis: '40%',
+  },
+  heading: {
+    margin: '0 auto 0 calc(50% - 3rem)',
+  },
+  button: {
+    width: '3rem',
   },
 }));
