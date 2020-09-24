@@ -122,6 +122,7 @@
     "collectCoverageFrom": [
       "src/**/*.{js,jsx,ts,tsx}",
       "!src/index.tsx",
+      "!src/api-client.ts",
       "!src/ros2-transport.ts",
       "!src/serviceWorker.ts",
       "!src/app-config.ts",
