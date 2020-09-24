@@ -98,7 +98,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   const [maxBounds, setMaxBounds] = React.useState<Readonly<L.LatLngBounds> | undefined>(() =>
     calcMaxBounds(Object.values(mapFloorLayers)),
   );
-  const [initialBound, setInitialBound] = React.useState(initialBounds);
+  const [bound, setBound] = React.useState(initialBounds);
 
   const colorManager = React.useMemo(() => new ColorManager(), []);
 
@@ -224,7 +224,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     } else {
       mapRef.current?.leafletElement.setMinZoom(4);
     }
-    setInitialBound(mapFloorLayers[e.name].bounds);
+    setBound(mapFloorLayers[e.name].bounds);
   }
 
   function getConflicts(levelName: string): Conflict[] {
@@ -289,7 +289,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       maxZoom={8}
       zoomDelta={0.5}
       zoomSnap={0.5}
-      bounds={initialBound ? initialBound : initialBounds}
+      bounds={bound ? bound : initialBounds}
       maxBounds={maxBounds}
       onbaselayerchange={handleBaseLayerChange}
       ref={mapRef}
