@@ -29,7 +29,14 @@ export const RobotTrajectory = React.memo(
   ): React.ReactElement {
     debug('render');
 
-    const { trajectory, conflicts, footprint, colorManager, overridePathColor, ...otherProps } = props;
+    const {
+      trajectory,
+      conflicts,
+      footprint,
+      colorManager,
+      overridePathColor,
+      ...otherProps
+    } = props;
     const theme = useTheme();
     const isConflict = conflicts.flat().includes(trajectory.id);
     const settings = React.useContext(SettingsContext);
@@ -64,8 +71,7 @@ export const RobotTrajectory = React.memo(
       };
       const robotColorHolder = getRobotColor();
       let pathColorHolder = getPathColor();
-      if (overridePathColor)
-        return overridePathColor;
+      if (overridePathColor) return overridePathColor;
       switch (settings.trajectoryColor) {
         case TrajectoryColor.Theme:
           return theme.palette.success.main;

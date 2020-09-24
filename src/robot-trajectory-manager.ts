@@ -101,7 +101,7 @@ export class DefaultTrajectoryManager {
     pathId: number,
     trajectories: readonly Trajectory[],
   ): string | undefined {
-    const traj = trajectories.find(trajectory => trajectory.id === pathId);
+    const traj = trajectories.find((trajectory) => trajectory.id === pathId);
     return traj?.robot_name;
   }
 
@@ -113,7 +113,7 @@ export class DefaultTrajectoryManager {
     event: K,
     listener: (e: WebSocketEventMap[K]) => unknown,
   ): void {
-    this._webSocket.addEventListener(event, e => {
+    this._webSocket.addEventListener(event, (e) => {
       this._webSocket.removeEventListener(event, listener);
       listener(e);
     });
@@ -135,8 +135,8 @@ export class DefaultTrajectoryManager {
       await this._ongoingRequest;
     }
 
-    this._ongoingRequest = new Promise(res => {
-      this._listenOnce('message', e => {
+    this._ongoingRequest = new Promise((res) => {
+      this._listenOnce('message', (e) => {
         this._ongoingRequest = null;
         res(e);
       });

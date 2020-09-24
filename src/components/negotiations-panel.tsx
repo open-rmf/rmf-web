@@ -10,11 +10,14 @@ import {
   NegotiationConflict,
   NegotiationStatus,
   ResolveState,
+  NegotiationStatusManager,
+  NegotiationTrajectoryResponse,
 } from '../negotiation-status-manager';
+import Debug from 'debug';
 
-import { NegotiationStatusManager, NegotiationTrajectoryResponse } from '../negotiation-status-manager';
+const debug = Debug('OmniPanel:NegotiationsPanel');
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     height: 240,
     flexGrow: 1,
@@ -52,10 +55,19 @@ export interface NegotiationsPanelProps {
   mapFloorLayerSorted?: Readonly<string[]>;
   negotiationStatusManager?: Readonly<NegotiationStatusManager>;
   negotiationTrajStore?: Record<string, NegotiationTrajectoryResponse>;
+  negotiationStatusUpdateTS: number; // used to trigger rerenders
 }
 
-export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.Element {
-  const { conflicts, spotlight, mapFloorLayerSorted, negotiationStatusManager, negotiationTrajStore } = props;
+
+export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
+  debug('negotiation status panel render');
+  const {
+    conflicts,
+    spotlight,
+    mapFloorLayerSorted,
+    negotiationStatusManager,
+    negotiationTrajStore,
+  } = props;
 
   React.useEffect(() => {
     if (!spotlight) {
@@ -64,9 +76,8 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
     // TODO: spotlight
   }, [spotlight]);
 
-  let curLevelName = "";
-  if (mapFloorLayerSorted)
-    curLevelName = mapFloorLayerSorted[0];
+  let curLevelName = '';
+  if (mapFloorLayerSorted) curLevelName = mapFloorLayerSorted[0];
 
   const classes = useStyles();
 
@@ -218,7 +229,7 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
   let negotiationContents: JSX.Element[] = [];
   if (conflicts) {
     let reversedConflicts = Object.keys(conflicts).reverse();
-    reversedConflicts.forEach(version => {
+    reversedConflicts.forEach((version) => {
       const conflict = conflicts[version];
       let contents = renderNegotiations(version, conflict);
       negotiationContents.push(contents);
@@ -249,7 +260,7 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
         console.warn('wrong response, ignoring!');
         return;
       }
-      
+
       negotiationTrajStore[trajParams.map_name] = resp;
     }
 
@@ -257,7 +268,7 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
   };
 
   return (
-    <Typography variant="body1" component={'span'} >
+    <Typography variant="body1" component={'span'}>
       <TreeView
         onNodeSelect={handleSelect}
         defaultCollapseIcon={<ExpandMoreIcon />}
@@ -268,4 +279,6 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
       </TreeView>
     </Typography>
   );
-}
+});
+
+export default NegotiationsPanel;

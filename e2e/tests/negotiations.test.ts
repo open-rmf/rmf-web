@@ -12,15 +12,14 @@ describe('Loop request for negotiations', () => {
 
   before(login);
 
-
   it('renders negotiation trajectory', () => {
-    browser.setTimeout({ 'script': 120000 })
-    
+    browser.setTimeout({ script: 120000 });
+
     $('[data-component=MainMenu] [data-item=Commands]').click();
 
     const loopForm = $('[data-component=LoopForm]');
     loopForm.click();
-    
+
     $('input[name=startLocation]').waitForClickable();
     $('input[name=startLocation]').setValue(removeTextFromAutocomplete(10));
     $('input[name=startLocation]').setValue('pantry');
@@ -51,22 +50,19 @@ describe('Loop request for negotiations', () => {
 
     const backButton = $('[name="back-button"]');
     backButton.click();
-    
+
     $('[data-component=MainMenu] [data-item=Negotiations]').click();
 
-    browser.waitUntil(
-      () => $('[data-component=TreeItem]').isDisplayed() === true,
-      {
-        timeout: 60000,
-        timeoutMsg: 'expected TreeItem to be not null!'
-      }
-    );
+    browser.waitUntil(() => $('[data-component=TreeItem]').isDisplayed() === true, {
+      timeout: 60000,
+      timeoutMsg: 'expected TreeItem to be not null!',
+    });
     console.log('done');
-    
+
     const treeItem = $('[data-component=TreeItem]');
     expect(treeItem).toBeVisible();
     treeItem.click();
-    
+
     const subTreeItem = treeItem.$('[data-component=TreeItem]');
     expect(subTreeItem).toBeVisible();
     subTreeItem.click();
@@ -74,11 +70,10 @@ describe('Loop request for negotiations', () => {
 
   // Disabled till we find out a way to locate that floor icon
   // Also figure out a way for a non-rejected negotiation status click
-  
+
   // it('renders negotiation trajectory', () => {
   //   //$('[data-component=viewOptions]').moveTo();
   //   $('[data-component=NegotiationTrajCheckbox]').click();
   //   expect($('[data-component=RobotTrajectory]')).toBeVisible();
   // });
-  
 });

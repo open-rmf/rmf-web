@@ -4,7 +4,7 @@ import {
   TimeRequest,
   TimeResponse,
   TrajectoryRequest,
-  TrajectoryResponse
+  TrajectoryResponse,
 } from '../robot-trajectory-manager';
 import trajectories from './data/trajectories.json';
 

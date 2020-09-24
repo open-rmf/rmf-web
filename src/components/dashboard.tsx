@@ -180,6 +180,8 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const [negotiationTrajStore, setNegotiationTrajStore] = React.useState<
     Record<string, NegotiationTrajectoryResponse>
   >({});
+  const statusUpdateTS = React.useRef<number>();
+  statusUpdateTS.current = negotiationStatusManager.getLastUpdateTS();
 
   const [showOmniPanel, setShowOmniPanel] = React.useState(true);
   const [currentView, setCurrentView] = React.useState(OmniPanelViewIndex.MainMenu);
@@ -458,6 +460,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                     mapFloorLayerSorted={mapFloorLayerSorted}
                     negotiationStatusManager={negotiationStatusManager}
                     negotiationTrajStore={negotiationTrajStore}
+                    negotiationStatusUpdateTS={statusUpdateTS.current}
                   />
                 </OmniPanelView>
               </OmniPanel>
@@ -471,6 +474,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                 saveSettings(newSettings);
               }}
               onClose={() => setShowSettings(false)}
+              handleCloseButton={setShowSettings}
             />
 
             <HelpDrawer
