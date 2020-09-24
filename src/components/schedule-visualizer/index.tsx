@@ -216,14 +216,20 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     return () => clearInterval(interval);
   }, [props.trajManager, curMapFloorLayer, trajAnimDuration]);
 
+  function determineMinZoom(width: number): number {
+    const baseWidth = 50;
+    const baseZoom = 4;
+    const widthToBaseRatio = width / baseWidth;
+    const power = Math.log(widthToBaseRatio) / Math.log(2);
+    return Math.round(baseZoom - power) < 0 ? 0 : Math.round(baseZoom - power);
+  }
+
   function handleBaseLayerChange(e: L.LayersControlEvent): void {
     debug('set current level name');
     setCurLevelName(e.name);
-    if (mapFloorLayers[e.name].bounds.getNorthEast().lng > 200) {
-      mapRef.current?.leafletElement.setMinZoom(2);
-    } else {
-      mapRef.current?.leafletElement.setMinZoom(4);
-    }
+    const calculatedMinZoom = determineMinZoom(mapFloorLayers[e.name].bounds.getNorthEast().lng);
+    mapRef.current?.leafletElement.setMinZoom(calculatedMinZoom);
+    mapRef.current?.leafletElement.setMaxZoom(calculatedMinZoom + 4);
     setBound(mapFloorLayers[e.name].bounds);
   }
 
