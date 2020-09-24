@@ -10,12 +10,12 @@ import {
   NegotiationConflict,
   NegotiationStatus,
   ResolveState,
-} from '../negotiation-status-manager';
-
-import {
   NegotiationStatusManager,
   NegotiationTrajectoryResponse,
 } from '../negotiation-status-manager';
+import Debug from 'debug';
+
+const debug = Debug('OmniPanel:NegotiationsPanel');
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -55,9 +55,12 @@ export interface NegotiationsPanelProps {
   mapFloorLayerSorted?: Readonly<string[]>;
   negotiationStatusManager?: Readonly<NegotiationStatusManager>;
   negotiationTrajStore?: Record<string, NegotiationTrajectoryResponse>;
+  negotiationStatusUpdateTS: number; // used to trigger rerenders
 }
 
-export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.Element {
+
+export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
+  debug('negotiation status panel render');
   const {
     conflicts,
     spotlight,
@@ -276,4 +279,6 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
       </TreeView>
     </Typography>
   );
-}
+});
+
+export default NegotiationsPanel;
