@@ -4,7 +4,7 @@ import DashboardTour from '../tour/tour';
 import { SpotlightValue } from '../spotlight-value';
 import { ReactWrapper } from 'enzyme';
 import { OmniPanelViewIndex } from '../dashboard';
-import { tourText } from '../tour/tour-text';
+import { tourText } from '../tour/tour-data';
 
 /*react-leaflet does not work well on jsdom,
 suppress warnings of not being able to find elements from leaflet*/

@@ -1,23 +1,10 @@
 import React from 'react';
-import { Box, Button, createMuiTheme, Typography, IconButton, makeStyles } from '@material-ui/core';
-import {
-  NavigateNext as NavigateNextIcon,
-  NavigateBefore as NavigateBeforeIcon,
-} from '@material-ui/icons';
+import { Box, Typography, createMuiTheme } from '@material-ui/core';
 import { OmniPanelViewIndex } from '../dashboard';
 import { SpotlightValue } from '../spotlight-value';
 import { ReactourStep } from 'reactour';
-
-type stepStyle = {
-  backgroundColor: string;
-  color: string;
-  borderRadius: string;
-};
-
-type tourContent = {
-  [primaryKey: string]: ReactourStep;
-};
-
+import { tourText, stepDetails, stepStyling } from './tour-data';
+import { NavButtons } from './tour-navigation-control';
 interface createTourProps {
   setTourState: React.Dispatch<React.SetStateAction<boolean>>;
   setTourShowOmniPanel: (view: OmniPanelViewIndex) => void;
@@ -42,82 +29,19 @@ export const createTourSteps = (props: createTourProps) => {
   } = props;
 
   const theme = createMuiTheme();
-  const stepStyle: stepStyle = {
+  const stepStyle: stepStyling = {
     backgroundColor: theme.palette.primary.light,
     color: theme.palette.info.contrastText,
     borderRadius: '5px',
   };
 
-  function iconStyles() {
-    return {
-      navigation: {
-        color: theme.palette.info.contrastText,
-      },
-    };
-  }
-
-  const classes = makeStyles(iconStyles)();
-
-  const NavButtons = (
-    goTo: Function,
-    step: number,
-    handleNextClick?: () => void,
-    handleBackClick?: () => void,
-    lastStep?: boolean,
-  ): React.ReactNode => (
-    <Box>
-      {step > 1 && (
-        <IconButton
-          onClick={() => {
-            if (handleBackClick) {
-              handleBackClick();
-            }
-            goTo(step - 2);
-          }}
-          id="tour-back-btn"
-        >
-          <NavigateBeforeIcon className={classes.navigation} />
-        </IconButton>
-      )}
-      {!lastStep && (
-        <IconButton
-          onClick={() => {
-            if (handleNextClick) {
-              handleNextClick();
-            }
-            setTimeout(() => goTo(step), 5);
-          }}
-          id="tour-next-btn"
-        >
-          <NavigateNextIcon className={classes.navigation} />
-        </IconButton>
-      )}
-      {lastStep && (
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => {
-            if (handleNextClick) {
-              handleNextClick();
-            }
-            localStorage.setItem('tourComplete', 'true');
-            setTourState(false);
-          }}
-          id="tour-last-step-btn"
-        >
-          Start Using Romi
-        </Button>
-      )}
-    </Box>
-  );
-
-  const tourContent: tourContent = {
+  const tourContent: stepDetails = {
     dashboard: {
       selector: '',
       content: ({ goTo, step }) => (
         <Box>
-          <Typography variant="h6">Welcome to the RoMi dashboard</Typography>
-          {NavButtons(goTo, step)}
+          <Typography variant="h6">{tourText.step1Welcome}</Typography>
+          <NavButtons goTo={goTo} step={step} />
         </Box>
       ),
       action: () => setTourSettingsAndOmniPanel(false, false, true),
@@ -126,11 +50,8 @@ export const createTourSteps = (props: createTourProps) => {
       selector: '[class="leaflet-control-zoom leaflet-bar leaflet-control"]',
       content: ({ goTo, step }) => (
         <Box>
-          <Typography variant="h6">
-            Click on the zoom buttons to change the view of the floor plan. Alternatively, the
-            scroll button on your mouse would work too!
-          </Typography>
-          {NavButtons(goTo, step)}
+          <Typography variant="h6">{tourText.step2Zoom}</Typography>
+          <NavButtons goTo={goTo} step={step} />
         </Box>
       ),
       action: () => setTourSettingsAndOmniPanel(false, false, true),
@@ -139,11 +60,8 @@ export const createTourSteps = (props: createTourProps) => {
       selector: '[class= "leaflet-control-layers leaflet-control"]',
       content: ({ goTo, step }) => (
         <Box>
-          <Typography variant="h6">
-            Use the floor plan button to switch between available levels and enabling / disabling
-            the view of different components.
-          </Typography>
-          {NavButtons(goTo, step)}
+          <Typography variant="h6">{tourText.step3Floorplan}</Typography>
+          <NavButtons goTo={goTo} step={step} />
         </Box>
       ),
       action: () => setTourSettingsAndOmniPanel(false, false, true),
@@ -152,11 +70,8 @@ export const createTourSteps = (props: createTourProps) => {
       selector: '[class="leaflet-image-layer leaflet-zoom-animated"]',
       content: ({ goTo, step }) => (
         <Box>
-          <Typography variant="h6">
-            Clicking individual components like doors, robots, lifts on the map will open up its
-            corresponding information tab in the omnipanel.
-          </Typography>
-          {NavButtons(goTo, step)}
+          <Typography variant="h6">{tourText.step4Leaflet}</Typography>
+          <NavButtons goTo={goTo} step={step} />
         </Box>
       ),
       action: () => setTourSettingsAndOmniPanel(false, false, true),
@@ -165,11 +80,12 @@ export const createTourSteps = (props: createTourProps) => {
       selector: '[id="toggle-omnipanel-btn"]',
       content: ({ goTo, step }) => (
         <Box>
-          <Typography variant="h6">
-            The Omnipanel Button shows the different panel options available in the dashboard.
-            Clicking each item would list different information about it!
-          </Typography>
-          {NavButtons(goTo, step, () => setTourShowOmniPanel(OmniPanelViewIndex.MainMenu))}
+          <Typography variant="h6">{tourText.step5Omnipanel}</Typography>
+          <NavButtons
+            goTo={goTo}
+            step={step}
+            handleNextClick={() => setTourShowOmniPanel(OmniPanelViewIndex.MainMenu)}
+          />
         </Box>
       ),
     },
@@ -177,10 +93,8 @@ export const createTourSteps = (props: createTourProps) => {
       selector: '[data-component="MainMenu"]',
       content: ({ goTo, step }) => (
         <Box>
-          <Typography variant="h6">
-            Each Panel contains a list of the available items and their corresponding states.
-          </Typography>
-          {NavButtons(goTo, step)}
+          <Typography variant="h6">{tourText.step6MainMenu}</Typography>
+          <NavButtons goTo={goTo} step={step} />
         </Box>
       ),
     },
@@ -188,19 +102,17 @@ export const createTourSteps = (props: createTourProps) => {
       selector: '[data-item="Doors"]',
       content: ({ goTo, step }) => (
         <Box>
-          <Typography variant="h6">
-            Let us take a look into the
-            <span role="img" aria-label="door emoji">
-              🚪
-            </span>
-            Doors Panel.
-          </Typography>
-          {NavButtons(goTo, step, () => {
-            setTourShowOmniPanel(OmniPanelViewIndex.Doors);
-            if (!doorSpotlight) {
-              setDoorSpotlight({ value: 'main_door' });
-            }
-          })}
+          <Typography variant="h6">{tourText.step7DoorPanel}</Typography>
+          <NavButtons
+            goTo={goTo}
+            step={step}
+            handleNextClick={() => {
+              setTourShowOmniPanel(OmniPanelViewIndex.Doors);
+              if (!doorSpotlight) {
+                setDoorSpotlight({ value: 'main_door' });
+              }
+            }}
+          />
         </Box>
       ),
     },
@@ -208,19 +120,17 @@ export const createTourSteps = (props: createTourProps) => {
       selector: '[data-name="main_door"]',
       content: ({ goTo, step }) => (
         <Box>
-          <Typography variant="h6">
-            Here is an example of what you will see when a door tab is expanded
-          </Typography>
-          {NavButtons(
-            goTo,
-            step,
-            () => {
+          <Typography variant="h6">{tourText.step8DoorTab}</Typography>
+          <NavButtons
+            goTo={goTo}
+            step={step}
+            handleNextClick={() => {
               setTourShowOmniPanel(OmniPanelViewIndex.MainMenu);
-            },
-            () => {
+            }}
+            handleBackClick={() => {
               setTourShowOmniPanel(OmniPanelViewIndex.MainMenu);
-            },
-          )}
+            }}
+          />
         </Box>
       ),
     },
@@ -228,20 +138,17 @@ export const createTourSteps = (props: createTourProps) => {
       selector: '[data-item= "Commands"]',
       content: ({ goTo, step }) => (
         <Box>
-          <Typography variant="h6">
-            The Commands Panel allows you to send different types of requests that will be handled
-            by RoMi.
-          </Typography>
-          {NavButtons(
-            goTo,
-            step,
-            () => {
+          <Typography variant="h6">{tourText.step9CommandsPanel}</Typography>
+          <NavButtons
+            goTo={goTo}
+            step={step}
+            handleNextClick={() => {
               setTourShowOmniPanel(OmniPanelViewIndex.Commands);
-            },
-            () => {
+            }}
+            handleBackClick={() => {
               setTourShowOmniPanel(OmniPanelViewIndex.Doors);
-            },
-          )}
+            }}
+          />
         </Box>
       ),
     },
@@ -249,20 +156,17 @@ export const createTourSteps = (props: createTourProps) => {
       selector: '[data-component="LoopForm"]',
       content: ({ goTo, step }) => (
         <Box>
-          <Typography variant="h6">
-            An example is the Loop Request which can be iterated multiple times. RoMi will assign
-            the most suitable robot to perform the task at the point of request.
-          </Typography>
-          {NavButtons(
-            goTo,
-            step,
-            () => {
+          <Typography variant="h6">{tourText.step10LoopRequest}</Typography>
+          <NavButtons
+            goTo={goTo}
+            step={step}
+            handleNextClick={() => {
               setTourSettingsAndOmniPanel(false, false);
-            },
-            () => {
+            }}
+            handleBackClick={() => {
               setTourShowOmniPanel(OmniPanelViewIndex.MainMenu);
-            },
-          )}
+            }}
+          />
         </Box>
       ),
     },
@@ -270,17 +174,15 @@ export const createTourSteps = (props: createTourProps) => {
       selector: '[id="show-settings-btn"]',
       content: ({ goTo, step }) => (
         <Box>
-          <Typography variant="h6">
-            The Settings Button opens up the drawer for different dashboard settings.
-          </Typography>
-          {NavButtons(
-            goTo,
-            step,
-            () => {
+          <Typography variant="h6">{tourText.step11Settings}</Typography>
+          <NavButtons
+            goTo={goTo}
+            step={step}
+            handleNextClick={() => {
               setTourSettingsAndOmniPanel(true, false, true);
-            },
-            () => setTourShowOmniPanel(OmniPanelViewIndex.Commands),
-          )}
+            }}
+            handleBackClick={() => setTourShowOmniPanel(OmniPanelViewIndex.Commands)}
+          />
         </Box>
       ),
     },
@@ -288,22 +190,20 @@ export const createTourSteps = (props: createTourProps) => {
       selector: '.MuiDrawer-paper',
       content: ({ goTo, step }) => (
         <Box>
-          <Typography variant="h6">
-            Finally, Trajectory configurations can be changed using the options available. Look out
-            for new features ahead!
-          </Typography>
-          {NavButtons(
-            goTo,
-            step,
-            () => {
+          <Typography variant="h6">{tourText.step12TrajAnims}</Typography>
+          <NavButtons
+            goTo={goTo}
+            step={step}
+            handleNextClick={() => {
               setTourSettingsAndOmniPanel(false, true, true);
               setTourShowOmniPanel(OmniPanelViewIndex.MainMenu);
-            },
-            () => {
+              setTourState(false);
+            }}
+            handleBackClick={() => {
               setTourSettingsAndOmniPanel(false, true, true);
-            },
-            true,
-          )}
+            }}
+            lastStep={true}
+          />
         </Box>
       ),
     },
