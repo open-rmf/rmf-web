@@ -217,6 +217,9 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   }, [props.trajManager, curMapFloorLayer, trajAnimDuration]);
 
   function determineMinZoom(width: number): number {
+    // Right now baseWidth and baseZoom are set to 50 and 4
+    // We might need to change this in future if a range of
+    // values is given
     const baseWidth = 50;
     const baseZoom = 4;
     const widthToBaseRatio = width / baseWidth;
