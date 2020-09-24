@@ -10,8 +10,6 @@ import {
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import SettingsIcon from '@material-ui/icons/Settings';
-import { faMapSigns } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
 import HelpIcon from '@material-ui/icons/Help';
@@ -20,11 +18,10 @@ export interface AppBarProps {
   toggleShowOmniPanel(): void;
   showSettings(show: boolean): void;
   showHelp(show: boolean): void;
-  showTour(show: boolean): void;
 }
 
 export default function AppBar(props: AppBarProps): React.ReactElement {
-  const { toggleShowOmniPanel, showSettings, showHelp, showTour } = props;
+  const { toggleShowOmniPanel, showSettings, showHelp } = props;
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const classes = useStyles();
   const authenticator = React.useContext(AuthenticatorContext);
@@ -51,9 +48,6 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
 
         <IconButton id="show-settings-btn" color="inherit" onClick={() => showSettings(true)}>
           <SettingsIcon />
-        </IconButton>
-        <IconButton id="show-tour-btn" color="inherit" onClick={() => showTour(true)}>
-          <FontAwesomeIcon icon={faMapSigns} />
         </IconButton>
         {user && (
           <>
