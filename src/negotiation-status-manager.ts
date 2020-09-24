@@ -58,6 +58,10 @@ export class NegotiationStatusManager extends EventEmitter<Events> {
     return this._conflicts;
   }
 
+  getLastUpdateTS(): number {
+    return this._statusUpdateLastTS;
+  }
+
   startSubscription(): void {
     if (!this._backendWs) {
       console.warn('backend websocket not available');
@@ -68,6 +72,8 @@ export class NegotiationStatusManager extends EventEmitter<Events> {
     this._backendWs.onmessage = (event) => {
       const msg = JSON.parse(event.data);
       if (msg['type'] === 'negotiation_status') {
+        this._statusUpdateLastTS = Date.now();
+
         const conflictVersion: number = msg['conflict_version'];
         const conflictVersionStr = conflictVersion.toString();
 
@@ -107,6 +113,8 @@ export class NegotiationStatusManager extends EventEmitter<Events> {
 
         this.emit('updated');
       } else if (msg['type'] === 'negotiation_conclusion') {
+        this._statusUpdateLastTS = Date.now();
+
         const conflictVersion: number = msg['conflict_version'];
         const conflict = this._conflicts[conflictVersion.toString()];
 
@@ -189,6 +197,7 @@ export class NegotiationStatusManager extends EventEmitter<Events> {
   private _conflicts: Record<string, NegotiationConflict> = {};
   private _backendWs?: WebSocket;
   private _ongoingRequest: Promise<MessageEvent> | null = null;
+  private _statusUpdateLastTS: number = -1;
 }
 
 type WebSocketSendParam0T = Parameters<WebSocket['send']>[0];

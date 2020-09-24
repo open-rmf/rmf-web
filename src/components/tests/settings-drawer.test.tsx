@@ -18,15 +18,22 @@ const mount = createMount();
 describe('Settings Drawer', () => {
   let settings = loadSettings();
   let onSettingsChange: jest.Mock;
+  let handleCloseButton: jest.Mock;
 
   beforeEach(() => {
     onSettingsChange = jest.fn();
+    handleCloseButton = jest.fn();
   });
 
   it('should render correctly', () => {
     const wrapper = shallow(
       <SettingsContext.Provider value={settings}>
-        <SettingsDrawer settings={settings} onSettingsChange={onSettingsChange} open={true} />
+        <SettingsDrawer
+          handleCloseButton={handleCloseButton}
+          settings={settings}
+          onSettingsChange={onSettingsChange}
+          open={true}
+        />
       </SettingsContext.Provider>,
     );
     expect(toJson(wrapper.dive())).toMatchSnapshot();
@@ -45,6 +52,7 @@ describe('Settings Drawer', () => {
           settings={settings}
           onSettingsChange={(newSettings) => onSettingsChange(newSettings)}
           open={true}
+          handleCloseButton={handleCloseButton}
         />
       </SettingsContext.Provider>,
     );
@@ -66,6 +74,7 @@ describe('Settings Drawer', () => {
           settings={settings}
           onSettingsChange={(newSettings) => onSettingsChange(newSettings)}
           open={true}
+          handleCloseButton={handleCloseButton}
         />
       </SettingsContext.Provider>,
     );
@@ -87,6 +96,7 @@ describe('Settings Drawer', () => {
           settings={settings}
           onSettingsChange={(newSettings) => onSettingsChange(newSettings)}
           open={true}
+          handleCloseButton={handleCloseButton}
         />
       </SettingsContext.Provider>,
     );
@@ -94,5 +104,20 @@ describe('Settings Drawer', () => {
     // Accessing the 'Theme' animation @ the seventh input field
     wrapper.find('input').find({ name: 'Theme' }).simulate('change', mockEvent);
     expect(onSettingsChange).toHaveBeenCalledTimes(1);
+  });
+
+  it('should call handleCloseButton function when closeIcon button is clicked', () => {
+    const wrapper = mount(
+      <SettingsContext.Provider value={settings}>
+        <SettingsDrawer
+          settings={settings}
+          onSettingsChange={(newSettings) => onSettingsChange(newSettings)}
+          open={true}
+          handleCloseButton={handleCloseButton}
+        />
+      </SettingsContext.Provider>,
+    );
+    wrapper.find('#closeDrawerButton').find('button').simulate('click');
+    expect(handleCloseButton).toHaveBeenCalledTimes(1);
   });
 });
