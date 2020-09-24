@@ -1,14 +1,12 @@
-import { createMount } from '@material-ui/core/test-utils';
 import React from 'react';
 import ScheduleVisualizer from '../index';
 import toJson from 'enzyme-to-json';
-
-const mount = createMount();
+import { shallow } from 'enzyme';
 
 it('renders without crashing', async () => {
   URL.createObjectURL = jest.fn();
 
-  const wrapper = await mount(
+  const wrapper = await shallow(
     <ScheduleVisualizer
       negotiationTrajStore={{}}
       fleets={[]}
