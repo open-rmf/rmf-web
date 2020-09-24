@@ -165,7 +165,7 @@ describe('Dashboard Tour', () => {
   it('renders loop request step (10/12)', async () => {
     expectedText = tourText.step10LoopRequest;
 
-    for (let i = 1; i < 9; i++) {
+    for (let i = 1; i < 10; i++) {
       nextBtn.simulate('click');
       await wait(5);
     }
@@ -199,5 +199,16 @@ describe('Dashboard Tour', () => {
 
     expect(stepText.includes(expectedText));
     expect(root.html()).toMatchSnapshot();
+  });
+
+  it('closes the tour when last step button is clicked', async () => {
+    for (let i = 1; i < 13; i++) {
+      nextBtn.simulate('click');
+      await wait(5);
+    }
+
+    root.find('#tour-last-step-btn').first().simulate('click');
+
+    expect(setTourState).toHaveBeenCalledTimes(1);
   });
 });
