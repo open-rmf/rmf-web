@@ -32,7 +32,7 @@ import RobotsPanel from './robots-panel';
 import ScheduleVisualizer from './schedule-visualizer';
 import SettingsDrawer from './drawers/settings-drawer';
 import { SpotlightValue } from './spotlight-value';
-import DashboardTour from './tour';
+import DashboardTour from './tour/tour';
 import { buildHotKeys } from '../hotkeys';
 import HelpDrawer from './drawers/help-drawer';
 import HotKeysDialog from './drawers/hotkeys-dialog';

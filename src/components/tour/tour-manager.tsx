@@ -4,8 +4,8 @@ import {
   NavigateNext as NavigateNextIcon,
   NavigateBefore as NavigateBeforeIcon,
 } from '@material-ui/icons';
-import { OmniPanelViewIndex } from './dashboard';
-import { SpotlightValue } from './spotlight-value';
+import { OmniPanelViewIndex } from '../dashboard';
+import { SpotlightValue } from '../spotlight-value';
 import { ReactourStep } from 'reactour';
 
 type stepStyle = {

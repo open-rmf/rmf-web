@@ -1,8 +1,8 @@
 import React from 'react';
-import { SpotlightValue } from './spotlight-value';
+import { SpotlightValue } from '../spotlight-value';
 import Tour from 'reactour';
 import { createTourSteps } from './tour-manager';
-import { OmniPanelViewIndex } from './dashboard';
+import { OmniPanelViewIndex } from '../dashboard';
 
 export interface DashboardTourProps {
   tourProps: {
