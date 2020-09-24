@@ -54,6 +54,12 @@ describe('AppBar', () => {
     expect(showSettings).toHaveBeenCalledTimes(1);
   });
 
+  test('show help when help button is clicked', () => {
+    const root = buildWrapper(toggleShowOmniPanel, showSettings, showHelp, showTour);
+    root.find('button#show-help-btn').simulate('click');
+    expect(showHelp).toHaveBeenCalledTimes(1);
+  });
+
   test('show tour when tour button is clicked', () => {
     const root = buildWrapper(toggleShowOmniPanel, showSettings, showHelp, showTour);
     root.find('button#show-tour-btn').simulate('click');
