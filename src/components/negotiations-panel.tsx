@@ -10,13 +10,12 @@ import {
   NegotiationConflict,
   NegotiationStatus,
   ResolveState,
-} from '../negotiation-status-manager';
-import Debug from 'debug';
-
-import {
   NegotiationStatusManager,
   NegotiationTrajectoryResponse,
 } from '../negotiation-status-manager';
+import Debug from 'debug';
+
+const debug = Debug('OmniPanel:NegotiationsPanel');
 
 const useStyles = makeStyles((theme) => ({
   root: {
