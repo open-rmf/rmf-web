@@ -1,4 +1,5 @@
 import { createMount } from '@material-ui/core/test-utils';
+import { ReactWrapper } from 'enzyme';
 import React from 'react';
 import FakeAuthenticator from '../../mock/fake-authenticator';
 import AppBar from '../appbar';
@@ -6,60 +7,55 @@ import { AuthenticatorContext, UserContext } from '../auth/contexts';
 
 const mount = createMount();
 
+const buildWrapper = (
+  toggleShowOmniPanel: () => void,
+  showSettings: () => void,
+  showHelp: () => void,
+  showTour: () => void,
+) => {
+  const root = mount(
+    <AppBar
+      toggleShowOmniPanel={toggleShowOmniPanel}
+      showSettings={showSettings}
+      showHelp={showHelp}
+      showTour={showTour}
+    />,
+  );
+  return root;
+};
+
 describe('AppBar', () => {
   let toggleShowOmniPanel: jest.Mock;
   let showSettings: jest.Mock;
+  let showHelp: jest.Mock;
   let showTour: jest.Mock;
 
   beforeEach(() => {
     toggleShowOmniPanel = jest.fn();
     showSettings = jest.fn();
+    showHelp = jest.fn();
     showTour = jest.fn();
   });
 
   test('renders correctly', () => {
-    const root = mount(
-      <AppBar
-        toggleShowOmniPanel={toggleShowOmniPanel}
-        showSettings={showSettings}
-        showTour={showTour}
-      />,
-    );
+    const root = buildWrapper(toggleShowOmniPanel, showSettings, showHelp, showTour);
     expect(root).toMatchSnapshot();
   });
 
   test('toggles show omnipanel when dashboard button is clicked', () => {
-    const root = mount(
-      <AppBar
-        toggleShowOmniPanel={toggleShowOmniPanel}
-        showSettings={showSettings}
-        showTour={showTour}
-      />,
-    );
+    const root = buildWrapper(toggleShowOmniPanel, showSettings, showHelp, showTour);
     root.find('button#toggle-omnipanel-btn').simulate('click');
     expect(toggleShowOmniPanel).toHaveBeenCalledTimes(1);
   });
 
   test('show settings when settings button is clicked', () => {
-    const root = mount(
-      <AppBar
-        toggleShowOmniPanel={toggleShowOmniPanel}
-        showSettings={showSettings}
-        showTour={showTour}
-      />,
-    );
+    const root = buildWrapper(toggleShowOmniPanel, showSettings, showHelp, showTour);
     root.find('button#show-settings-btn').simulate('click');
     expect(showSettings).toHaveBeenCalledTimes(1);
   });
 
   test('show tour when tour button is clicked', () => {
-    const root = mount(
-      <AppBar
-        toggleShowOmniPanel={toggleShowOmniPanel}
-        showSettings={showSettings}
-        showTour={showTour}
-      />,
-    );
+    const root = buildWrapper(toggleShowOmniPanel, showSettings, showHelp, showTour);
     root.find('button#show-tour-btn').simulate('click');
     expect(showTour).toHaveBeenCalledTimes(1);
   });
@@ -70,6 +66,7 @@ describe('AppBar', () => {
         <AppBar
           toggleShowOmniPanel={toggleShowOmniPanel}
           showSettings={showSettings}
+          showHelp={showHelp}
           showTour={showTour}
         />
       </UserContext.Provider>,
@@ -87,6 +84,7 @@ describe('AppBar', () => {
           <AppBar
             toggleShowOmniPanel={toggleShowOmniPanel}
             showSettings={showSettings}
+            showHelp={showHelp}
             showTour={showTour}
           />
         </UserContext.Provider>

@@ -2,6 +2,7 @@
 
 exports[`AppBar renders correctly 1`] = `
 <AppBar
+  showHelp={[MockFunction]}
   showSettings={[MockFunction]}
   showTour={[MockFunction]}
   toggleShowOmniPanel={[MockFunction]}
