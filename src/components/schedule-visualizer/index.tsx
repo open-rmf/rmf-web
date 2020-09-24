@@ -221,7 +221,8 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     const baseZoom = 4;
     const widthToBaseRatio = width / baseWidth;
     const power = Math.log(widthToBaseRatio) / Math.log(2);
-    return Math.round(baseZoom - power) < 0 ? 0 : Math.round(baseZoom - power);
+    // since we set zoomDelta and snap to 0.5, we can give min zoom a greater precision to a delta of 0.5
+    return baseZoom - power - ((baseZoom - power) % 0.5);
   }
 
   function handleBaseLayerChange(e: L.LayersControlEvent): void {
