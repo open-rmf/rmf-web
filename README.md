@@ -7,13 +7,24 @@ Hello! `romi-dashboard` is a web application that provides overall visualization
 
 ## Setup
 
-Install `npm` and `nodejs`,
+### Prerequisites
 
-```bash
-sudo apt update && sudo apt install curl
-curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
-sudo apt install nodejs
-```
+Required:
+
+- nodejs >= 12
+- docker
+- docker-compose
+- [rmf_core](https://github.com/osrf/rmf_core)
+- [traffic_editor](https://github.com/osrf/traffic_editor)
+
+Optional:
+
+- [rmf schedule visualizer](https://github.com/osrf/rmf_schedule_visualizer) (required when launching dev server locally)
+- [rmf_demos](https://github.com/osrf/rmf_demos) (required when launching dev server locally)
+
+Refer to the various repository for instructions to set them up.
+
+### Building
 
 Clone the repository and install the required packages,
 
