@@ -26,10 +26,9 @@ Refer to the various repository for instructions to set them up.
 
 ### Building
 
-Clone the repository and install the required packages,
+First, make sure `rmf_core` and `traffic_editor` is installed, if they are built using colcon, make sure the colcon workspace is sourced, then clone the repository and install the required packages,
 
 ```bash
-cd ~/.
 git clone https://github.com/osrf/romi-dashboard
 cd romi-dashboard
 npm install
