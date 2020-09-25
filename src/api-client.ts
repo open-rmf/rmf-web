@@ -4,6 +4,12 @@ import Debug from 'debug';
 
 const debug = Debug('ApiClient');
 
+interface RpcRequestWithId<T> extends RpcRequest<T> {
+  id: NonNullable<RpcRequest['id']>;
+}
+
+type RpcRequestWithoutId<T> = Omit<RpcRequest<T>, 'id'>;
+
 export default class ApiClient {
   static async connect(url: string, token: string): Promise<ApiClient> {
     const socket = new WebSocket(url);
@@ -30,13 +36,11 @@ export default class ApiClient {
     const request = this._buildRpcRequest(method, params);
     debug(`sending rpc request for "${request.method}", with id "${request.id}"`);
     this.socket.send(msgpack.encode(request));
-    if (request.id !== undefined && request.id !== null) {
-      this._ongoingRequests[request.id] = responseCallback as any;
-    }
+    this._ongoingRequests[request.id] = responseCallback as any;
   }
 
   rpcNotify<Param = unknown>(method: string, params: Param): void {
-    const request = this._buildRpcRequest(method, params, true);
+    const request = this._buildRpcNotify(method, params);
     debug(`sending rpc notify for "${request.method}"`);
     this.socket.send(msgpack.encode(request));
   }
@@ -48,24 +52,28 @@ export default class ApiClient {
     socket.addEventListener('message', (ev) => this._onMessage(ev.data));
   }
 
-  private _buildRpcRequest<T>(method: string, params: T, isNotify = false): RpcRequest<T> {
-    const request: RpcRequest<T> = {
+  private _buildRpcRequest<T>(method: string, params: T): RpcRequestWithId<T> {
+    return {
+      version: '0',
+      method,
+      params,
+      id: this._idCounter++,
+    };
+  }
+
+  private _buildRpcNotify<T>(method: string, params: T): RpcRequestWithoutId<T> {
+    return {
       version: '0',
       method,
       params,
     };
-    // undefined gets serialized as null by msgpack, to make id not in the payload, we have to make
-    // the object to not have the field at all.
-    if (!isNotify) {
-      request.id = this._idCounter++;
-    }
-    return request;
   }
 
   private _onMessage(data: any): void {
     const resp = msgpack.decode(data) as RpcResponse;
     if (resp.error) {
-      console.error(resp.error.message);
+      // TODO: error callback
+      console.error(resp.error);
       return;
     }
     debug(`receive rpc response for id "${resp.id}"`);
