@@ -1,7 +1,7 @@
 const concurrently = require('concurrently');
 const { execSync } = require('child_process');
 
-execSync('npm run build:e2e', { stdio: 'inherit' });
+// execSync('npm run build:e2e', { stdio: 'inherit' });
 
 // wrap in double quotes to support args with spaces
 const wdioArgs = process.argv
