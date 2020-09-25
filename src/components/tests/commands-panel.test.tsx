@@ -22,7 +22,7 @@ it('Renders loop and delivery form', () => {
   const resources = new ResourceManager(fakeResources());
   const root = mount(
     <ResourcesContext.Provider value={resources}>
-      <CommandsPanel allFleets={fleets.map(fleet => fleet.name)} />
+      <CommandsPanel allFleets={fleets.map((fleet) => fleet.name)} />
     </ResourcesContext.Provider>,
   );
 
@@ -33,7 +33,7 @@ it('Renders loop and delivery form', () => {
 });
 
 it('Renders error on render without context', () => {
-  const root = mount(<CommandsPanel allFleets={fleets.map(fleet => fleet.name)} />);
-  expect(root.find(Typography).exists()).toBeTruthy();
+  const root = mount(<CommandsPanel allFleets={fleets.map((fleet) => fleet.name)} />);
+  expect(root.find('#no-config-file-error-msg').exists()).toBeTruthy();
   root.unmount();
 });

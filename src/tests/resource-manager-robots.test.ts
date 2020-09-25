@@ -1,7 +1,7 @@
 import { RobotResourceManager, RobotResource } from '../resource-manager-robots';
 import fakeResources from '../mock/data/resources';
 
-describe('Correct functionally of getAvailablePlacesPerFleet', () => {
+describe('The correct operation of the getAvailablePlacesPerFleet method of the RobotResourceManager class', () => {
   let manager: RobotResourceManager;
   let resourceData: Record<string, RobotResource>;
 
@@ -10,25 +10,25 @@ describe('Correct functionally of getAvailablePlacesPerFleet', () => {
     manager = new RobotResourceManager(resourceData);
   });
 
-  test('FleetName does not exists', () => {
+  test('Returns falsy when FleetName does not exist', () => {
     const places = manager.getAvailablePlacesPerFleet('Not exists');
     expect(places).toBeFalsy();
   });
 
-  test('FleetName exists with places', () => {
+  test('Correct assignation of places, when a fleet has places defined', () => {
     const fleetName = Object.keys(resourceData)[0]; // tinyRobot
     const places = manager.getAvailablePlacesPerFleet(fleetName) as String[];
     expect(Object.keys(places).length).toEqual(Object.keys(resourceData[fleetName].places).length);
   });
 
-  test('FleetName exists without places', () => {
+  test('Returns false when a fleet has no spaces defined', () => {
     const fleetName = Object.keys(resourceData)[1]; // deliveryRobot
     const places = manager.getAvailablePlacesPerFleet(fleetName) as String[];
     expect(Object.keys(places).length).toBeFalsy();
   });
 });
 
-describe('Correct functionally of getIconPath', () => {
+describe('The correct operation of the getIconPath method of the RobotResourceManager class', () => {
   let manager: RobotResourceManager;
   let resourceData: Record<string, RobotResource>;
 
@@ -37,12 +37,12 @@ describe('Correct functionally of getIconPath', () => {
     manager = new RobotResourceManager(resourceData);
   });
 
-  test('FleetName does not exists', () => {
+  test('Returns falsy when fleetName does not exists', () => {
     const icon = manager.getIconPath('Not exists');
     expect(icon).toBeFalsy();
   });
 
-  test('Icon its empty', () => {
+  test('Returns falsy if the icon path it`s empty', () => {
     resourceData.testFleet = {
       icons: {
         testFleet: '',
@@ -53,7 +53,7 @@ describe('Correct functionally of getIconPath', () => {
     expect(icon).toBeFalsy();
   });
 
-  test('Pick model over fleetName', () => {
+  test('Returns fleet model even if fleetName is also defined', () => {
     resourceData.testFleet = {
       icons: {
         testFleet: '/fleet',
@@ -65,14 +65,14 @@ describe('Correct functionally of getIconPath', () => {
     expect(icon).toEqual('/assets/icons/model');
   });
 
-  test('It has an icon', () => {
+  test('Returns trusty if the icon path exists', () => {
     const fleetName = Object.keys(resourceData)[0]; // tinyRobot
     const icon = manager.getIconPath(fleetName);
     expect(icon).toBeTruthy();
   });
 });
 
-describe('Correct functionally of getDispensersPerFleet', () => {
+describe('The correct operation of the getDispensersPerFleet method of the RobotResourceManager class', () => {
   let manager: RobotResourceManager;
   let resourceData: Record<string, RobotResource>;
 
@@ -81,24 +81,24 @@ describe('Correct functionally of getDispensersPerFleet', () => {
     manager = new RobotResourceManager(resourceData);
   });
 
-  test('Place exists but FleetName does not', () => {
+  test('Returns falsy when place exists but FleetName does not', () => {
     const dispenser = manager.getDispensersPerFleet('Not exists', 'supplies');
     expect(dispenser).toBeFalsy();
   });
 
-  test('FleetName exists but Place does not', () => {
+  test('Return falsy when FleetName exists but Place does not', () => {
     const fleetName = Object.keys(resourceData)[0]; // tinyRobot
     const dispenser = manager.getDispensersPerFleet(fleetName, 'Not exists');
     expect(dispenser).toBeFalsy();
   });
 
-  test('Place has no dispenser', () => {
+  test('Returns 0 if a place has no dispenser', () => {
     const fleetName = Object.keys(resourceData)[0]; // tinyRobot
     const dispensers = manager.getDispensersPerFleet(fleetName, 'supplies');
     expect(dispensers?.length).toBe(0);
   });
 
-  test('Place has dispenser', () => {
+  test('Returns the list of dispensers of a place', () => {
     const fleetName = Object.keys(resourceData)[0]; // tinyRobot
     const dispensers = manager.getDispensersPerFleet(fleetName, 'pantry');
     expect(dispensers?.length).toBe(resourceData[fleetName].places.pantry.length);

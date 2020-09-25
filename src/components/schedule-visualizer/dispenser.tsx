@@ -26,11 +26,11 @@ const Dispenser = React.memo(
       error: false,
     });
 
-    const handleLoadImageError = (): void => {
+    const handleLoadImageError = React.useCallback(() => {
       setRenderCustomIcon((previousVal) => {
         return { ...previousVal, error: true };
       });
-    };
+    }, []);
 
     return (
       <>

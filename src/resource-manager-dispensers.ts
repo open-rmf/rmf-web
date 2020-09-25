@@ -11,12 +11,10 @@ export interface DispenserResource {
   guid?: string;
 }
 
-export type ResourceDispenserConfigurationType = Record<string, DispenserResource>;
-
 export class DispenserResourceManager {
-  dispensers: ResourceDispenserConfigurationType;
+  dispensers: Record<string, DispenserResource>;
 
-  constructor(dispenserResources: ResourceDispenserConfigurationType) {
+  constructor(dispenserResources: Record<string, DispenserResource>) {
     this.dispensers = dispenserResources;
   }
 
@@ -33,13 +31,13 @@ export class DispenserResourceManager {
     return dispenserIcon ? `${rootIconPath}${dispenserIcon}` : null;
   };
 
-  get all(): ResourceDispenserConfigurationType {
+  get all(): Record<string, DispenserResource> {
     return this.dispensers;
   }
 
   get allValues(): Required<DispenserResource>[] {
     let newDict = Object.assign({}, this.dispensers);
-    Object.keys(this.dispensers).forEach(key => {
+    Object.keys(this.dispensers).forEach((key) => {
       newDict[key].guid = key;
     });
     return Object.values(newDict as Record<string, Required<DispenserResource>>);

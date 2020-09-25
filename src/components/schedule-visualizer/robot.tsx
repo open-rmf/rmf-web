@@ -49,6 +49,12 @@ const Robot = React.memo(
       error: false,
     });
 
+    const handleLoadImageError = React.useCallback(() => {
+      setRenderCustomIcon((previousVal) => {
+        return { ...previousVal, error: true };
+      });
+    }, []);
+
     return (
       <>
         <g
@@ -65,7 +71,7 @@ const Robot = React.memo(
               iconPath={renderCustomIcon.path}
               robot={robot}
               footprint={footprint}
-              dispatchIconError={setRenderCustomIcon}
+              dispatchIconError={handleLoadImageError}
               inConflict={inConflict}
               colorManager={colorManager}
               fleetName={fleetName}

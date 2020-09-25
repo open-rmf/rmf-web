@@ -148,7 +148,7 @@ export const CommandsPanel = React.memo((props: CommandsPanelProps) => {
   // If we don't have a configuration file with robots and places we should not render the commands forms because we will not be able to execute those commands.
   return (
     <React.Fragment>
-      {!!resourcesContext.robots ? (
+      {!!resourcesContext?.robots ? (
         <>
           <Accordion data-component="LoopForm">
             <AccordionSummary
@@ -182,9 +182,8 @@ export const CommandsPanel = React.memo((props: CommandsPanelProps) => {
           </Accordion>
         </>
       ) : (
-        <Typography className={classes.errorText}>
-          You do not have a configuration file loaded, therefore the commands cannot be executed. To
-          run the commands please add a configuration file.
+        <Typography id={'no-config-file-error-msg'} className={classes.errorText}>
+          There was an error while loading the commands panel (unable to load resources metadata).
         </Typography>
       )}
     </React.Fragment>

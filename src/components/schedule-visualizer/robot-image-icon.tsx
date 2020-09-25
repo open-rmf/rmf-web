@@ -1,15 +1,11 @@
 import React, { SVGProps, useMemo, useState } from 'react';
 import { uniqueId } from '../../util/css-utils';
+import ImageIcon from './image-icon';
 import { RobotProps } from './robot';
 
 type RobotImageIconProps = RobotProps & {
   iconPath: string;
-  dispatchIconError: React.Dispatch<
-    React.SetStateAction<{
-      path: string | null;
-      error: boolean;
-    }>
-  >;
+  dispatchIconError?(): void;
 };
 
 /**
@@ -98,22 +94,13 @@ const RobotImageIcon = React.forwardRef(function (
             r={footprint * 1.3}
             fill={inConflict ? `url(#${conflictShadowId})` : `url(#${shadowId})`}
           />
-          <g transform={`translate(${-footprint} ${-footprint})`}>
-            <image
-              href={iconPath}
-              height={imgIconHeigth}
-              width={imgIconWidth}
-              onError={(error) => {
-                console.error(
-                  'An error occurred while loading the image. Using the default image.',
-                  error,
-                );
-                return dispatchIconError((previousVal) => {
-                  return { ...previousVal, error: true };
-                });
-              }}
-            />
-          </g>
+          <ImageIcon
+            iconPath={iconPath}
+            height={imgIconHeigth}
+            width={imgIconWidth}
+            footprint={footprint}
+            dispatchIconError={dispatchIconError}
+          />
         </g>
       )}
     </>

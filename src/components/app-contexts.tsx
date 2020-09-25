@@ -7,7 +7,7 @@ import { defaultSettings, Settings } from '../settings';
 import { NotificationBarContext, NotificationBarProps } from './notification-bar';
 
 /* Declares the ResourcesContext which contains the resources used on the app*/
-export const ResourcesContext = React.createContext<ResourceManager>({} as ResourceManager);
+export const ResourcesContext = React.createContext<ResourceManager | null>(null);
 
 export const SettingsContext = React.createContext(defaultSettings());
 

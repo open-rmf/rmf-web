@@ -1,8 +1,7 @@
-import { RobotResourceManager, RobotResource } from '../resource-manager-robots';
 import fakeResources from '../mock/data/resources';
 import { DispenserResource, DispenserResourceManager } from '../resource-manager-dispensers';
 
-describe('Correct functionally of getIconPath', () => {
+describe('The correct operation of the getIconPath method of the DispenserResourceManager class', () => {
   let manager: DispenserResourceManager;
   let resourceData: Record<string, DispenserResource>;
 
@@ -11,12 +10,12 @@ describe('Correct functionally of getIconPath', () => {
     manager = new DispenserResourceManager(resourceData);
   });
 
-  test('dispenserName does not exists', () => {
+  test('Returns falsy when dispenserName does not exist', () => {
     const icon = manager.getIconPath('Not exists');
     expect(icon).toBeFalsy();
   });
 
-  test('Icon path it`s empty', () => {
+  test('Returns falsy if the icon path it`s empty', () => {
     resourceData.testDispenser = {
       icons: {
         testDispenser: '',
@@ -27,7 +26,7 @@ describe('Correct functionally of getIconPath', () => {
     expect(icon).toBeFalsy();
   });
 
-  test('It has an icon', () => {
+  test('Returns trusty if the icon path exists', () => {
     const dispenserName = Object.keys(resourceData)[0]; // coke_ingestor
     resourceData[dispenserName].icons[dispenserName] = '/dispenser';
     const icon = manager.getIconPath(dispenserName);
@@ -35,14 +34,14 @@ describe('Correct functionally of getIconPath', () => {
   });
 });
 
-describe('Correct functionally of getters', () => {
-  test('get all dispensers', () => {
+describe('The correct operation of the getters of the DispenserResourceManager class', () => {
+  test('Gets all dispensers with the `all` getter', () => {
     const resourceData = fakeResources().dispensers as Record<string, DispenserResource>;
     const manager = new DispenserResourceManager(resourceData);
     expect(manager.all).toEqual(fakeResources().dispensers);
   });
 
-  test('Convert dict to an array of dicts', () => {
+  test('Conversion of a dispensers` dictionary to an array of dictionaries', () => {
     const manager = new DispenserResourceManager({
       testDispenser: {
         icons: {

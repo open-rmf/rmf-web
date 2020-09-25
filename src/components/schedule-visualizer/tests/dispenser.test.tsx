@@ -45,6 +45,14 @@ describe('Dispenser component', () => {
   });
 
   test(`Don't Fire click event when it has no state`, () => {
+    /**
+     * We may want to add dispensers to the resource file, but we may not have a way to
+     * know the status of that dispenser or the status may not be sent by the backend
+     * because it is a new dispenser not yet registered. This means that if the dispenser
+     * icon will be shown on the map but it will not have a status in the omnipanel.
+     * Therefore, if a click is pressed on the dispenser, it will set an undefined state
+     * in the omnipanel.
+     */
     let clicked = false;
     const dispensers = dispenserHandler.allValues;
     const root = mount(
