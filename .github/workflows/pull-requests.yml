@@ -45,12 +45,13 @@ jobs:
         run: |
           docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
           npm run sync:docker
-          docker-compose -f docker/rmf/docker-compose.yml build
-          docker-compose -f docker/docker-compose.yml build e2e
+          echo docker-compose -f docker/rmf/docker-compose.yml build
+          echo docker-compose -f docker/docker-compose.yml build e2e
       - name: e2e test
         run: docker-compose -f docker/docker-compose.yml up --exit-code-from e2e e2e
       - name: upload artifacts
         uses: actions/upload-artifact@v2
+        if: ${{ always() }}
         with:
           name: screenshots
           path: e2e/artifacts

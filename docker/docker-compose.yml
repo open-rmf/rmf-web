@@ -11,7 +11,7 @@ services:
     build:
       context: ..
       dockerfile: docker/e2e.Dockerfile
-    image: docker.pkg.github.com/osrf/romi-dashboard/e2e
+    image: docker.pkg.github.com/osrf/romi-dashboard/e2e:test
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ..:/root/romi-dashboard
