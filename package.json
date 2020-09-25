@@ -21,7 +21,7 @@
     "test:e2e": ". e2e/env.sh && node scripts/test-e2e.js",
     "test:e2e:wdio": "ts-node -P e2e/tsconfig.json e2e/auth-ready.ts && wdio",
     "test:e2e:dev": ". e2e/env.sh && ROMI_DASHBOARD_PORT=3000 ROMI_DASHBOARD_LAUNCH_MODE=none wdio",
-    "sync:docker": "docker pull docker.pkg.github.com/osrf/romi-dashboard/e2e && docker pull quay.io/keycloak/keycloak:11.0.0",
+    "sync:docker": "docker pull docker.pkg.github.com/osrf/romi-dashboard/e2e:test && docker pull quay.io/keycloak/keycloak:11.0.0",
     "eject": "react-scripts eject",
     "deploy:demo": "REACT_APP_MOCK=1 npm run build && NODE_DEBUG=gh-pages gh-pages -d build -m \"$(git rev-parse HEAD)\"",
     "setup": "node ./scripts/setup/setup.js && node ./scripts/setup/get-icons.js",
