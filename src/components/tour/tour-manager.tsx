@@ -39,7 +39,7 @@ export const createTourSteps = (props: createTourProps) => {
     dashboard: {
       selector: '',
       content: ({ goTo, step }) => (
-        <Box>
+        <Box id="stepNode">
           <Typography variant="h6">{tourText.step1Welcome}</Typography>
           <NavButtons goTo={goTo} step={step} />
         </Box>
@@ -49,7 +49,7 @@ export const createTourSteps = (props: createTourProps) => {
     zoomButtons: {
       selector: '[class="leaflet-control-zoom leaflet-bar leaflet-control"]',
       content: ({ goTo, step }) => (
-        <Box>
+        <Box id="stepNode">
           <Typography variant="h6">{tourText.step2Zoom}</Typography>
           <NavButtons goTo={goTo} step={step} />
         </Box>
@@ -59,7 +59,7 @@ export const createTourSteps = (props: createTourProps) => {
     floorPlan: {
       selector: '[class= "leaflet-control-layers leaflet-control"]',
       content: ({ goTo, step }) => (
-        <Box>
+        <Box id="stepNode">
           <Typography variant="h6">{tourText.step3Floorplan}</Typography>
           <NavButtons goTo={goTo} step={step} />
         </Box>
@@ -69,7 +69,7 @@ export const createTourSteps = (props: createTourProps) => {
     leaflet: {
       selector: '[class="leaflet-image-layer leaflet-zoom-animated"]',
       content: ({ goTo, step }) => (
-        <Box>
+        <Box id="stepNode">
           <Typography variant="h6">{tourText.step4Leaflet}</Typography>
           <NavButtons goTo={goTo} step={step} />
         </Box>
@@ -79,7 +79,7 @@ export const createTourSteps = (props: createTourProps) => {
     omnipanelButton: {
       selector: '[id="toggle-omnipanel-btn"]',
       content: ({ goTo, step }) => (
-        <Box>
+        <Box id="stepNode">
           <Typography variant="h6">{tourText.step5Omnipanel}</Typography>
           <NavButtons
             goTo={goTo}
@@ -92,7 +92,7 @@ export const createTourSteps = (props: createTourProps) => {
     mainMenu: {
       selector: '[data-component="MainMenu"]',
       content: ({ goTo, step }) => (
-        <Box>
+        <Box id="stepNode">
           <Typography variant="h6">{tourText.step6MainMenu}</Typography>
           <NavButtons goTo={goTo} step={step} />
         </Box>
@@ -101,7 +101,7 @@ export const createTourSteps = (props: createTourProps) => {
     doorsPanel: {
       selector: '[data-item="Doors"]',
       content: ({ goTo, step }) => (
-        <Box>
+        <Box id="stepNode">
           <Typography variant="h6">{tourText.step7DoorPanel}</Typography>
           <NavButtons
             goTo={goTo}
@@ -119,7 +119,7 @@ export const createTourSteps = (props: createTourProps) => {
     doorTab: {
       selector: '[data-name="main_door"]',
       content: ({ goTo, step }) => (
-        <Box>
+        <Box id="stepNode">
           <Typography variant="h6">{tourText.step8DoorTab}</Typography>
           <NavButtons
             goTo={goTo}
@@ -137,7 +137,7 @@ export const createTourSteps = (props: createTourProps) => {
     commandsPanel: {
       selector: '[data-item= "Commands"]',
       content: ({ goTo, step }) => (
-        <Box>
+        <Box id="stepNode">
           <Typography variant="h6">{tourText.step9CommandsPanel}</Typography>
           <NavButtons
             goTo={goTo}
@@ -155,7 +155,7 @@ export const createTourSteps = (props: createTourProps) => {
     loopRequest: {
       selector: '[data-component="LoopForm"]',
       content: ({ goTo, step }) => (
-        <Box>
+        <Box id="stepNode">
           <Typography variant="h6">{tourText.step10LoopRequest}</Typography>
           <NavButtons
             goTo={goTo}
@@ -173,7 +173,7 @@ export const createTourSteps = (props: createTourProps) => {
     settingsButton: {
       selector: '[id="show-settings-btn"]',
       content: ({ goTo, step }) => (
-        <Box>
+        <Box id="stepNode">
           <Typography variant="h6">{tourText.step11Settings}</Typography>
           <NavButtons
             goTo={goTo}
@@ -189,7 +189,7 @@ export const createTourSteps = (props: createTourProps) => {
     trajAnim: {
       selector: '.MuiDrawer-paper',
       content: ({ goTo, step }) => (
-        <Box>
+        <Box id="stepNode">
           <Typography variant="h6">{tourText.step12TrajAnims}</Typography>
           <NavButtons
             goTo={goTo}
