@@ -3,6 +3,7 @@ import { SossTransport } from '@osrf/romi-js-soss-transport';
 import Debug from 'debug';
 import { KeycloakConfig } from 'keycloak-js';
 import Authenticator, { DefaultAuthenticator } from './components/auth/authenticator';
+import fakeResources from './mock/data/resources';
 import FakeAuthenticator from './mock/fake-authenticator';
 import FakeTrajectoryManager from './mock/fake-traj-manager';
 import { FakeTransport } from './mock/fake-transport';
@@ -57,7 +58,7 @@ export const appConfig: AppConfig = (() => {
   } else {
     return {
       authenticator: new FakeAuthenticator(),
-      appResources: ResourceManager.getResourceConfigurationFile(),
+      appResources: (async () => fakeResources() as Partial<ResourceConfigurationsType>)(),
       transportFactory: async () => new FakeTransport(),
       trajectoryManagerFactory: async () => new FakeTrajectoryManager(),
       trajServerUrl: '',
