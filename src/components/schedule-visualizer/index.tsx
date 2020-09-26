@@ -384,18 +384,18 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
             </Pane>
           )}
         </LayersControl.Overlay>
+        <LayersControl.Overlay name="Dispensers" checked>
+          {curMapFloorLayer && (
+            <Pane>
+              <DispensersOverlay
+                currentFloorName={curLevelName}
+                bounds={curMapFloorLayer.bounds}
+                onDispenserClick={props.onDispenserClick}
+              />
+            </Pane>
+          )}
+        </LayersControl.Overlay>
       </LayersControl>
-      <LayersControl.Overlay name="Dispensers" checked>
-        {curMapFloorLayer && (
-          <Pane>
-            <DispensersOverlay
-              currentFloorName={curLevelName}
-              bounds={curMapFloorLayer.bounds}
-              onDispenserClick={props.onDispenserClick}
-            />
-          </Pane>
-        )}
-      </LayersControl.Overlay>
     </LMap>
   );
 }
