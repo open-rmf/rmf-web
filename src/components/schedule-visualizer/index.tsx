@@ -284,75 +284,24 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       maxBounds={maxBounds}
       onbaselayerchange={handleBaseLayerChange}
     >
-      <ResourcesContext.Provider value={!!appResources ? new ResourceManager(appResources) : {}}>
-        <AttributionControl position="bottomright" prefix="OSRC-SG" />
-        <LayersControl position="topleft">
-          {sortedMapFloorLayers.every((x) => x) &&
-            sortedMapFloorLayers.map((floorLayer, i) => (
-              <LayersControl.BaseLayer
-                checked={i === 0}
-                name={floorLayer.level.name}
-                key={floorLayer.level.name}
-              >
-                <ImageOverlay bounds={floorLayer.bounds} url={floorLayer.imageUrl} ref={ref} />
-              </LayersControl.BaseLayer>
-            ))}
+      <AttributionControl position="bottomright" prefix="OSRC-SG" />
+      <LayersControl position="topleft">
+        {sortedMapFloorLayers.every((x) => x) &&
+          sortedMapFloorLayers.map((floorLayer, i) => (
+            <LayersControl.BaseLayer
+              checked={i === 0}
+              name={floorLayer.level.name}
+              key={floorLayer.level.name}
+            >
+              <ImageOverlay bounds={floorLayer.bounds} url={floorLayer.imageUrl} ref={ref} />
+            </LayersControl.BaseLayer>
+          ))}
 
-          <LayersControl.Overlay name="Robot Trajectories" checked>
-            {curMapFloorLayer && (
-              <Pane>
-                <RobotTrajectoryContext.Provider value={RobotTrajContextValue}>
-                  <RobotTrajectoriesOverlay
-                    bounds={curMapFloorLayer.bounds}
-                    trajs={curMapTrajectories}
-                    conflicts={curMapConflicts}
-                    colorManager={colorManager}
-                    conflictRobotNames={conflictRobotNames}
-                  />
-                </RobotTrajectoryContext.Provider>
-              </Pane>
-            )}
-          </LayersControl.Overlay>
-
-          <LayersControl.Overlay
-            name="Negotiation Trajectories"
-            data-component="NegotiationTrajCheckbox"
-            checked
-          >
-            {curMapFloorLayer && (
-              <Pane>
-                <RobotTrajectoryContext.Provider value={RobotTrajContextValue}>
-                  <RobotTrajectoriesOverlay
-                    bounds={curMapFloorLayer.bounds}
-                    trajs={
-                      negotiationTrajStore[curLevelName] &&
-                      props.negotiationTrajStore[curLevelName].values
-                    }
-                    conflicts={getConflicts(curLevelName)}
-                    colorManager={colorManager}
-                    conflictRobotNames={conflictRobotNames}
-                    overridePathColor={'orange'}
-                  />
-                </RobotTrajectoryContext.Provider>
-              </Pane>
-            )}
-          </LayersControl.Overlay>
-
-          <LayersControl.Overlay name="Doors" checked>
-            {curMapFloorLayer && (
-              <Pane>
-                <DoorsOverlay
-                  bounds={curMapFloorLayer.bounds}
-                  doors={curMapFloorLayer.level.doors}
-                  onDoorClick={props.onDoorClick}
-                />
-              </Pane>
-            )}
-          </LayersControl.Overlay>
-          <LayersControl.Overlay name="Lifts" checked>
-            {curMapFloorLayer && (
-              <Pane>
-                <LiftsOverlay
+        <LayersControl.Overlay name="Robot Trajectories" checked>
+          {curMapFloorLayer && (
+            <Pane>
+              <RobotTrajectoryContext.Provider value={RobotTrajContextValue}>
+                <RobotTrajectoriesOverlay
                   bounds={curMapFloorLayer.bounds}
                   trajs={curMapTrajectories}
                   conflicts={curMapConflicts}
@@ -363,6 +312,31 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
             </Pane>
           )}
         </LayersControl.Overlay>
+
+        <LayersControl.Overlay
+          name="Negotiation Trajectories"
+          data-component="NegotiationTrajCheckbox"
+          checked
+        >
+          {curMapFloorLayer && (
+            <Pane>
+              <RobotTrajectoryContext.Provider value={RobotTrajContextValue}>
+                <RobotTrajectoriesOverlay
+                  bounds={curMapFloorLayer.bounds}
+                  trajs={
+                    negotiationTrajStore[curLevelName] &&
+                    props.negotiationTrajStore[curLevelName].values
+                  }
+                  conflicts={getConflicts(curLevelName)}
+                  colorManager={colorManager}
+                  conflictRobotNames={conflictRobotNames}
+                  overridePathColor={'orange'}
+                />
+              </RobotTrajectoryContext.Provider>
+            </Pane>
+          )}
+        </LayersControl.Overlay>
+
         <LayersControl.Overlay name="Doors" checked>
           {curMapFloorLayer && (
             <Pane>
@@ -410,18 +384,18 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
             </Pane>
           )}
         </LayersControl.Overlay>
-        <LayersControl.Overlay name="Dispensers" checked>
-          {curMapFloorLayer && (
-            <Pane>
-              <DispensersOverlay
-                currentFloorName={curLevelName}
-                bounds={curMapFloorLayer.bounds}
-                onDispenserClick={props.onDispenserClick}
-              />
-            </Pane>
-          )}
-        </LayersControl.Overlay>
       </LayersControl>
+      <LayersControl.Overlay name="Dispensers" checked>
+        {curMapFloorLayer && (
+          <Pane>
+            <DispensersOverlay
+              currentFloorName={curLevelName}
+              bounds={curMapFloorLayer.bounds}
+              onDispenserClick={props.onDispenserClick}
+            />
+          </Pane>
+        )}
+      </LayersControl.Overlay>
     </LMap>
   );
 }

@@ -57,15 +57,11 @@ const RobotImageIcon = React.forwardRef(function (
         .then((color) => {
           if (color) setRobotColor(color);
           else {
-            dispatchIconError((previousVal) => {
-              return { ...previousVal, error: true };
-            });
+            dispatchIconError && dispatchIconError();
           }
         })
         .catch(() => {
-          dispatchIconError((previousVal) => {
-            return { ...previousVal, error: true };
-          });
+          dispatchIconError && dispatchIconError();
         });
     })();
   }, [robot, robotColor, colorManager, iconPath, fleetName, dispatchIconError]);
