@@ -38,7 +38,9 @@ describe('The correct operation of the getters of the DispenserResourceManager c
   test('Gets all dispensers with the `all` getter', () => {
     const resourceData = fakeResources().dispensers as Record<string, DispenserResource>;
     const manager = new DispenserResourceManager(resourceData);
-    expect(manager.all).toEqual(fakeResources().dispensers);
+    const dispensers = fakeResources().dispensers;
+    const keysOfDispensers = dispensers && Object.keys(dispensers);
+    expect(Object.keys(manager.all)).toEqual(keysOfDispensers);
   });
 
   test('Conversion of a dispensers` dictionary to an array of dictionaries', () => {

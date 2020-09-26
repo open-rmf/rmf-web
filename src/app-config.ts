@@ -7,7 +7,7 @@ import fakeResources from './mock/data/resources';
 import FakeAuthenticator from './mock/fake-authenticator';
 import FakeTrajectoryManager from './mock/fake-traj-manager';
 import { FakeTransport } from './mock/fake-transport';
-import ResourceManager, { ResourceConfigurationsType } from './resource-manager';
+import ResourceManager from './resource-manager';
 import { DefaultTrajectoryManager, RobotTrajectoryManager } from './robot-trajectory-manager';
 
 export interface AppConfig {
@@ -15,7 +15,7 @@ export interface AppConfig {
   transportFactory: () => Promise<RomiCore.Transport>;
   trajectoryManagerFactory?: () => Promise<RobotTrajectoryManager>;
   trajServerUrl: string;
-  appResources: Promise<Partial<ResourceConfigurationsType>>;
+  appResources: Promise<ResourceManager | undefined>;
 }
 
 export const appConfig: AppConfig = (() => {
@@ -58,7 +58,7 @@ export const appConfig: AppConfig = (() => {
   } else {
     return {
       authenticator: new FakeAuthenticator(),
-      appResources: (async () => fakeResources() as Partial<ResourceConfigurationsType>)(),
+      appResources: (async () => ResourceManager.resourceManagerFactory(fakeResources()))(),
       transportFactory: async () => new FakeTransport(),
       trajectoryManagerFactory: async () => new FakeTrajectoryManager(),
       trajServerUrl: '',

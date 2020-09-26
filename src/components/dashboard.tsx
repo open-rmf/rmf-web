@@ -12,7 +12,7 @@ import {
   NegotiationStatusManager,
   NegotiationTrajectoryResponse,
 } from '../negotiation-status-manager';
-import { ResourceConfigurationsType } from '../resource-manager';
+import ResourceManager from '../resource-manager';
 import { RobotTrajectoryManager } from '../robot-trajectory-manager';
 import { loadSettings, saveSettings, Settings } from '../settings';
 import { AppContextProvider } from './app-contexts';
@@ -127,7 +127,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const [transport, setTransport] = React.useState<RomiCore.Transport | undefined>(undefined);
   const [buildingMap, setBuildingMap] = React.useState<RomiCore.BuildingMap | undefined>(undefined);
   const trajManager = React.useRef<RobotTrajectoryManager | undefined>(undefined);
-  const resourceManager = React.useRef<Partial<ResourceConfigurationsType> | undefined>(undefined);
+  const resourceManager = React.useRef<ResourceManager | undefined>(undefined);
 
   const mapFloorLayerSorted = React.useMemo<string[] | undefined>(
     () => buildingMap?.levels.sort((a, b) => a.elevation - b.elevation).map((x) => x.name),
@@ -393,7 +393,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
       <AppContextProvider
         settings={settings}
         notificationDispatch={setNotificationBarMessage}
-        resources={resourceManager.current}
+        resourceManager={resourceManager.current}
       >
         <RmfContextProvider
           doorStates={doorStates}
@@ -414,7 +414,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
                 fleets={fleets}
                 trajManager={trajManager.current}
                 negotiationTrajStore={negotiationTrajStore}
-                appResources={resourceManager.current}
                 onDoorClick={handleDoorClick}
                 onLiftClick={handleLiftClick}
                 onRobotClick={handleRobotClick}

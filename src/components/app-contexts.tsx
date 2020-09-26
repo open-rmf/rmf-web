@@ -1,30 +1,25 @@
 import React from 'react';
-import ResourceManager, {
-  ResourceConfigurationsType,
-  resourceManagerFactory,
-} from '../resource-manager';
+import ResourceManager from '../resource-manager';
 import { defaultSettings, Settings } from '../settings';
 import { NotificationBarContext, NotificationBarProps } from './notification-bar';
 
 /* Declares the ResourcesContext which contains the resources used on the app*/
-export const ResourcesContext = React.createContext<ResourceManager | null>(null);
+export const ResourcesContext = React.createContext<ResourceManager | undefined>(undefined);
 
 export const SettingsContext = React.createContext(defaultSettings());
 
 export interface AppContextProviderProps extends React.PropsWithChildren<{}> {
   settings: Settings;
-  resources?: Partial<ResourceConfigurationsType>;
+  resourceManager?: ResourceManager;
   notificationDispatch: React.Dispatch<React.SetStateAction<NotificationBarProps | null>>;
 }
 
 export function AppContextProvider(props: AppContextProviderProps): React.ReactElement {
-  const { settings, notificationDispatch, resources, children } = props;
+  const { settings, notificationDispatch, resourceManager, children } = props;
   return (
     <SettingsContext.Provider value={settings}>
       <NotificationBarContext.Provider value={notificationDispatch}>
-        <ResourcesContext.Provider value={resourceManagerFactory(resources)}>
-          {children}
-        </ResourcesContext.Provider>
+        <ResourcesContext.Provider value={resourceManager}>{children}</ResourcesContext.Provider>
       </NotificationBarContext.Provider>
     </SettingsContext.Provider>
   );

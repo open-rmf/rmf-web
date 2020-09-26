@@ -5,17 +5,20 @@ interface Location {
   level_name: string;
 }
 
-export interface DispenserResource {
+export interface RawDispenserResource {
   icons: Record<string, string>;
   location: Location;
-  guid?: string;
+}
+
+export interface DispenserResource extends RawDispenserResource {
+  guid: string;
 }
 
 export class DispenserResourceManager {
   dispensers: Record<string, DispenserResource>;
 
-  constructor(dispenserResources: Record<string, DispenserResource>) {
-    this.dispensers = dispenserResources;
+  constructor(dispenserResources: Record<string, RawDispenserResource>) {
+    this.dispensers = this.assignGuidToDispensers(dispenserResources);
   }
 
   getIconPath = (dispenserName: string): string | null => {
@@ -35,12 +38,18 @@ export class DispenserResourceManager {
     return this.dispensers;
   }
 
-  get allValues(): Required<DispenserResource>[] {
-    let newDict = Object.assign({}, this.dispensers);
-    Object.keys(this.dispensers).forEach((key) => {
+  get allValues(): DispenserResource[] {
+    return Object.values(this.dispensers);
+  }
+
+  private assignGuidToDispensers(
+    dispensers: Record<string, RawDispenserResource>,
+  ): Record<string, DispenserResource> {
+    let newDict: any = Object.assign({}, dispensers);
+    Object.keys(dispensers).forEach((key) => {
       newDict[key].guid = key;
     });
-    return Object.values(newDict as Record<string, Required<DispenserResource>>);
+    return newDict as Record<string, DispenserResource>;
   }
 
   private dispenserExists = (dispenserName: string) => {

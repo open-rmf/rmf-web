@@ -36,7 +36,7 @@ export const DispensersOverlay = React.memo(
       <SVGOverlay {...otherProps}>
         <svg viewBox={viewBox}>
           {dispenserResourcesContext &&
-            dispenserInCurLevel.map((dispenser: Required<DispenserResource>) => {
+            dispenserInCurLevel.map((dispenser: DispenserResource) => {
               return (
                 <Dispenser
                   key={dispenser.guid}

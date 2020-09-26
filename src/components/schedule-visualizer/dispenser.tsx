@@ -7,7 +7,7 @@ import ImageIcon from './image-icon';
 import DispenserDefaultIcon from './dispenser-default-icon';
 
 export interface DispenserProps {
-  dispenser: Required<DispenserResource>;
+  dispenser: DispenserResource;
   dispenserHandler: DispenserResourceManager;
   dispenserState?: RomiCore.DispenserState;
   footprint: number;
