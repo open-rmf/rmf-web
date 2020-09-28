@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`renders without crashing 1`] = `
+exports[`renders well with the appropriate data 1`] = `
 <Map
   attributionControl={false}
   className="makeStyles-map-1"
