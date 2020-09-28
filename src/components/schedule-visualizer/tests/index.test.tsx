@@ -19,7 +19,7 @@ const mockBuildingMap = {
   lifts: [],
 };
 
-it('renders without crashing', () => {
+it('renders well with the appropriate data', () => {
   URL.createObjectURL = jest.fn();
 
   const wrapper = shallow(
