@@ -58,7 +58,7 @@ export interface NegotiationsPanelProps {
   negotiationStatusUpdateTS: number; // used to trigger rerenders
 }
 
-export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.Element {
+export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
   debug('negotiation status panel render');
   const {
     conflicts,
@@ -289,4 +289,6 @@ export default function NegotiationsPanel(props: NegotiationsPanelProps): JSX.El
       </TreeView>
     </Typography>
   );
-}
+});
+
+export default NegotiationsPanel;
