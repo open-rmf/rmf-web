@@ -28,13 +28,13 @@ export default function HotKeysDialog(props: HotKeysDialogProps): React.ReactEle
           {Object.values(keyMap).map((hotkey) => {
             return (
               hotkey.name && (
-                <>
-                  <div key={hotkey.name} className={classes.detailLine}>
+                <React.Fragment key={hotkey.name}>
+                  <div className={classes.detailLine}>
                     <Typography variant="body1">{hotkey.name}:</Typography>
                     <Typography variant="body1">{hotkey.sequences[0].sequence}</Typography>
                   </div>
                   <Divider />
-                </>
+                </React.Fragment>
               )
             );
           })}
