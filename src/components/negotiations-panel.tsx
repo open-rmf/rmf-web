@@ -58,7 +58,6 @@ export interface NegotiationsPanelProps {
   negotiationStatusUpdateTS: number; // used to trigger rerenders
 }
 
-
 export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
   debug('negotiation status panel render');
   const {
@@ -229,7 +228,7 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
   let negotiationContents: JSX.Element[] = [];
   if (conflicts) {
     let reversedConflicts = Object.keys(conflicts).reverse();
-    reversedConflicts.forEach((version) => {
+    reversedConflicts.forEach(version => {
       const conflict = conflicts[version];
       let contents = renderNegotiations(version, conflict);
       negotiationContents.push(contents);
@@ -260,8 +259,19 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
         console.warn('wrong response, ignoring!');
         return;
       }
-
-      negotiationTrajStore[trajParams.map_name] = resp;
+      
+      // reset and add new trajectories
+      for (let resp of Object.values(negotiationTrajStore)) {
+        resp.values = [];
+      }
+      resp.values.forEach(traj => {
+        if (negotiationTrajStore[traj.map_name] === undefined)
+          negotiationTrajStore[traj.map_name] = { 
+            response: 'negotiation_trajectory',
+            values: []
+           };
+        negotiationTrajStore[traj.map_name].values.push(traj);
+      });
     }
 
     updateNegotiationTrajectory();
