@@ -1,13 +1,12 @@
 import { makeStyles } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
-import React, { useContext, useState } from 'react';
-import ResourceManager from '../../resource-manager';
-import { ResourcesContext } from '../app-contexts';
+import React, { useState } from 'react';
 import ColorManager from './colors';
 import RobotDefaultIcon from './robot-default-icon';
 import RobotImageIcon from './robot-image-icon';
 import SvgText from './svg-text';
+import { RobotResourceManager } from '../../resource-manager-robots';
 
 const debug = Debug('ScheduleVisualizer:Robot');
 
@@ -34,22 +33,27 @@ export interface RobotProps {
   colorManager: ColorManager;
   footprint: number;
   fleetName: string;
+  robotHandler?: RobotResourceManager;
   inConflict?: boolean;
   onClick?(e: React.MouseEvent<SVGGElement>, fleetName: string, robot: RomiCore.RobotState): void;
 }
 
 const Robot = React.memo(
   React.forwardRef(function (props: RobotProps, ref: React.Ref<SVGGElement>): React.ReactElement {
-    const resourcesContext = useContext(ResourcesContext);
     const classes = useStyles();
-    const { robot, footprint, colorManager, fleetName, inConflict, onClick } = props;
+    const { robot, footprint, colorManager, fleetName, inConflict, robotHandler, onClick } = props;
     debug('render %s', robot.name);
-
     // The only image formats SVG software support are JPEG, PNG, and other SVG files.
     const [renderCustomIcon, setRenderCustomIcon] = useState({
-      path: ResourceManager.getRobotIconPath(resourcesContext, fleetName),
+      path: robotHandler ? robotHandler.getIconPath(fleetName) : null,
       error: false,
     });
+
+    const handleLoadImageError = React.useCallback(() => {
+      setRenderCustomIcon((previousVal) => {
+        return { ...previousVal, error: true };
+      });
+    }, []);
 
     return (
       <>
@@ -67,7 +71,7 @@ const Robot = React.memo(
               iconPath={renderCustomIcon.path}
               robot={robot}
               footprint={footprint}
-              dispatchIconError={setRenderCustomIcon}
+              dispatchIconError={handleLoadImageError}
               inConflict={inConflict}
               colorManager={colorManager}
               fleetName={fleetName}

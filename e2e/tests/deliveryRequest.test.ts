@@ -27,14 +27,17 @@ describe('Delivery request', () => {
     const deliveryForm = $('[data-component=DeliveryForm]');
     deliveryForm.click();
     $('input[name=pickupPlace]').waitForClickable();
-    $('input[name=pickupPlace]').setValue(removeTextFromAutocomplete(10));
+    $('input[name=pickupPlace]').setValue(removeTextFromAutocomplete(20));
+    $('input[name=pickupPlace]').waitForClickable();
     $('input[name=pickupPlace]').setValue('pantry');
     $('.MuiAutocomplete-popper').click();
 
     $('input[name=pickupDispenser]').click();
     $('.MuiAutocomplete-popper').click();
 
+    $('input[name=dropoffPlace]').waitForClickable();
     $('input[name=dropoffPlace]').setValue(removeTextFromAutocomplete(20));
+    $('input[name=dropoffPlace]').waitForClickable();
     $('input[name=dropoffPlace]').setValue('hardware_2');
     $('.MuiAutocomplete-popper').click();
 

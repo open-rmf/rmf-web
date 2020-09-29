@@ -4,7 +4,6 @@ import Debug from 'debug';
 import * as L from 'leaflet';
 import React from 'react';
 import { AttributionControl, ImageOverlay, LayersControl, Map as LMap, Pane } from 'react-leaflet';
-import { ResourceConfigurationsType } from '../../resource-manager';
 import {
   Conflict,
   DefaultTrajectoryManager,
@@ -15,7 +14,7 @@ import {
 import { NegotiationTrajectoryResponse } from '../../negotiation-status-manager';
 import { AnimationSpeed, TrajectoryAnimation } from '../../settings';
 import { toBlobUrl } from '../../util';
-import { ResourcesContext, SettingsContext } from '../app-contexts';
+import { SettingsContext } from '../app-contexts';
 import ColorManager from './colors';
 import DoorsOverlay from './doors-overlay';
 import LiftsOverlay from './lift-overlay';
@@ -28,6 +27,7 @@ import {
   withOutlineAnimation,
 } from './trajectory-animations';
 import WaypointsOverlay from './waypoints-overlay';
+import DispensersOverlay from './dispensers-overlay';
 
 const debug = Debug('ScheduleVisualizer');
 
@@ -50,12 +50,12 @@ export interface ScheduleVisualizerProps {
   buildingMap: Readonly<RomiCore.BuildingMap>;
   fleets: Readonly<RomiCore.FleetState[]>;
   trajManager?: Readonly<RobotTrajectoryManager>;
-  appResources?: Readonly<ResourceConfigurationsType>;
   negotiationTrajStore: Readonly<Record<string, NegotiationTrajectoryResponse>>;
   mapFloorLayerSorted: Readonly<string[]>;
   onDoorClick?(door: RomiCore.Door): void;
   onLiftClick?(lift: RomiCore.Lift): void;
   onRobotClick?(fleet: string, robot: RomiCore.RobotState): void;
+  onDispenserClick?(dispenser: RomiCore.DispenserState): void;
 }
 
 function calcMaxBounds(mapFloorLayers: readonly MapFloorLayer[]): L.LatLngBounds | undefined {
@@ -70,7 +70,7 @@ function calcMaxBounds(mapFloorLayers: readonly MapFloorLayer[]): L.LatLngBounds
 export default function ScheduleVisualizer(props: ScheduleVisualizerProps): React.ReactElement {
   debug('render');
 
-  const { appResources, negotiationTrajStore, mapFloorLayerSorted } = props;
+  const { negotiationTrajStore, mapFloorLayerSorted } = props;
   const classes = useStyles();
 
   const [mapFloorLayers, setMapFloorLayers] = React.useState<
@@ -284,109 +284,118 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       maxBounds={maxBounds}
       onbaselayerchange={handleBaseLayerChange}
     >
-      <ResourcesContext.Provider value={!!appResources ? appResources : {}}>
-        <AttributionControl position="bottomright" prefix="OSRC-SG" />
-        <LayersControl position="topleft">
-          {sortedMapFloorLayers.every((x) => x) &&
-            sortedMapFloorLayers.map((floorLayer, i) => (
-              <LayersControl.BaseLayer
-                checked={i === 0}
-                name={floorLayer.level.name}
-                key={floorLayer.level.name}
-              >
-                <ImageOverlay bounds={floorLayer.bounds} url={floorLayer.imageUrl} ref={ref} />
-              </LayersControl.BaseLayer>
-            ))}
+      <AttributionControl position="bottomright" prefix="OSRC-SG" />
+      <LayersControl position="topleft">
+        {sortedMapFloorLayers.every((x) => x) &&
+          sortedMapFloorLayers.map((floorLayer, i) => (
+            <LayersControl.BaseLayer
+              checked={i === 0}
+              name={floorLayer.level.name}
+              key={floorLayer.level.name}
+            >
+              <ImageOverlay bounds={floorLayer.bounds} url={floorLayer.imageUrl} ref={ref} />
+            </LayersControl.BaseLayer>
+          ))}
 
-          <LayersControl.Overlay name="Robot Trajectories" checked>
-            {curMapFloorLayer && (
-              <Pane>
-                <RobotTrajectoryContext.Provider value={RobotTrajContextValue}>
-                  <RobotTrajectoriesOverlay
-                    bounds={curMapFloorLayer.bounds}
-                    trajs={curMapTrajectories}
-                    conflicts={curMapConflicts}
-                    colorManager={colorManager}
-                    conflictRobotNames={conflictRobotNames}
-                  />
-                </RobotTrajectoryContext.Provider>
-              </Pane>
-            )}
-          </LayersControl.Overlay>
-
-          <LayersControl.Overlay
-            name="Negotiation Trajectories"
-            data-component="NegotiationTrajCheckbox"
-            checked
-          >
-            {curMapFloorLayer && (
-              <Pane>
-                <RobotTrajectoryContext.Provider value={RobotTrajContextValue}>
-                  <RobotTrajectoriesOverlay
-                    bounds={curMapFloorLayer.bounds}
-                    trajs={
-                      negotiationTrajStore[curLevelName] &&
-                      props.negotiationTrajStore[curLevelName].values
-                    }
-                    conflicts={getConflicts(curLevelName)}
-                    colorManager={colorManager}
-                    conflictRobotNames={conflictRobotNames}
-                    overridePathColor={'orange'}
-                  />
-                </RobotTrajectoryContext.Provider>
-              </Pane>
-            )}
-          </LayersControl.Overlay>
-
-          <LayersControl.Overlay name="Doors" checked>
-            {curMapFloorLayer && (
-              <Pane>
-                <DoorsOverlay
+        <LayersControl.Overlay name="Robot Trajectories" checked>
+          {curMapFloorLayer && (
+            <Pane>
+              <RobotTrajectoryContext.Provider value={RobotTrajContextValue}>
+                <RobotTrajectoriesOverlay
                   bounds={curMapFloorLayer.bounds}
-                  doors={curMapFloorLayer.level.doors}
-                  onDoorClick={props.onDoorClick}
-                />
-              </Pane>
-            )}
-          </LayersControl.Overlay>
-          <LayersControl.Overlay name="Lifts" checked>
-            {curMapFloorLayer && (
-              <Pane>
-                <LiftsOverlay
-                  bounds={curMapFloorLayer.bounds}
-                  currentFloor={curLevelName}
-                  lifts={props.buildingMap.lifts}
-                  onLiftClick={props.onLiftClick}
-                />
-              </Pane>
-            )}
-          </LayersControl.Overlay>
-          <LayersControl.Overlay name="Robots" checked>
-            {curMapFloorLayer && (
-              <Pane>
-                <RobotsOverlay
-                  currentFloorName={curLevelName}
-                  bounds={curMapFloorLayer.bounds}
-                  fleets={props.fleets}
+                  trajs={curMapTrajectories}
+                  conflicts={curMapConflicts}
                   colorManager={colorManager}
-                  onRobotClick={props.onRobotClick}
                   conflictRobotNames={conflictRobotNames}
                 />
-              </Pane>
-            )}
-          </LayersControl.Overlay>
-          <LayersControl.Overlay name="Waypoints" checked>
-            {curMapFloorLayer && (
-              <Pane>
-                <WaypointsOverlay
+              </RobotTrajectoryContext.Provider>
+            </Pane>
+          )}
+        </LayersControl.Overlay>
+
+        <LayersControl.Overlay
+          name="Negotiation Trajectories"
+          data-component="NegotiationTrajCheckbox"
+          checked
+        >
+          {curMapFloorLayer && (
+            <Pane>
+              <RobotTrajectoryContext.Provider value={RobotTrajContextValue}>
+                <RobotTrajectoriesOverlay
                   bounds={curMapFloorLayer.bounds}
-                  currentLevel={curMapFloorLayer.level}
+                  trajs={
+                    negotiationTrajStore[curLevelName] &&
+                    props.negotiationTrajStore[curLevelName].values
+                  }
+                  conflicts={getConflicts(curLevelName)}
+                  colorManager={colorManager}
+                  conflictRobotNames={conflictRobotNames}
+                  overridePathColor={'orange'}
                 />
-              </Pane>
-            )}
-          </LayersControl.Overlay>
-        </LayersControl>
-      </ResourcesContext.Provider>
+              </RobotTrajectoryContext.Provider>
+            </Pane>
+          )}
+        </LayersControl.Overlay>
+
+        <LayersControl.Overlay name="Doors" checked>
+          {curMapFloorLayer && (
+            <Pane>
+              <DoorsOverlay
+                bounds={curMapFloorLayer.bounds}
+                doors={curMapFloorLayer.level.doors}
+                onDoorClick={props.onDoorClick}
+              />
+            </Pane>
+          )}
+        </LayersControl.Overlay>
+        <LayersControl.Overlay name="Lifts" checked>
+          {curMapFloorLayer && (
+            <Pane>
+              <LiftsOverlay
+                bounds={curMapFloorLayer.bounds}
+                currentFloor={curLevelName}
+                lifts={props.buildingMap.lifts}
+                onLiftClick={props.onLiftClick}
+              />
+            </Pane>
+          )}
+        </LayersControl.Overlay>
+        <LayersControl.Overlay name="Robots" checked>
+          {curMapFloorLayer && (
+            <Pane>
+              <RobotsOverlay
+                currentFloorName={curLevelName}
+                bounds={curMapFloorLayer.bounds}
+                fleets={props.fleets}
+                colorManager={colorManager}
+                onRobotClick={props.onRobotClick}
+                conflictRobotNames={conflictRobotNames}
+              />
+            </Pane>
+          )}
+        </LayersControl.Overlay>
+        <LayersControl.Overlay name="Waypoints" checked>
+          {curMapFloorLayer && (
+            <Pane>
+              <WaypointsOverlay
+                bounds={curMapFloorLayer.bounds}
+                currentLevel={curMapFloorLayer.level}
+              />
+            </Pane>
+          )}
+        </LayersControl.Overlay>
+        <LayersControl.Overlay name="Dispensers" checked>
+          {curMapFloorLayer && (
+            <Pane>
+              <DispensersOverlay
+                currentFloorName={curLevelName}
+                bounds={curMapFloorLayer.bounds}
+                onDispenserClick={props.onDispenserClick}
+              />
+            </Pane>
+          )}
+        </LayersControl.Overlay>
+      </LayersControl>
     </LMap>
   );
 }
