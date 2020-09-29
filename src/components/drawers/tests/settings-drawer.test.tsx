@@ -9,9 +9,9 @@ import {
   Settings,
   TrajectoryDiameter,
   TrajectoryColor,
-} from '../../settings';
-import { SettingsContext } from '../app-contexts';
-import SettingsDrawer from '../drawers/settings-drawer';
+} from '../../../settings';
+import { SettingsContext } from '../../app-contexts';
+import SettingsDrawer from '../../drawers/settings-drawer';
 
 const mount = createMount();
 
