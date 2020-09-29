@@ -64,10 +64,7 @@ jobs:
     name: Api Server Test
     runs-on: ubuntu-latest
     container:
-      image: docker.pkg.github.com/osrf/romi-dashboard/e2e:foxy
-      credentials:
-        username: ${{ github.repository_owner }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+      image: ros:foxy
     defaults:
       run:
         shell: bash
@@ -78,6 +75,6 @@ jobs:
         with:
           node-version: 12
       - name: build
-        run: . /opt/rmf/setup.bash && npm ci
+        run: . /opt/ros/foxy/setup.bash && npm ci --unsafe-perm
       - name: test
         run: npm test
