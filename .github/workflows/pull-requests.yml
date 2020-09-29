@@ -29,6 +29,8 @@ jobs:
           registry-url: # optional
           # Optional scope for authenticating against scoped registries
           scope: # optional
+      - name: set npm config
+        run: npm config set unsafe-perm=true
       - name: lerna bootstrap
         run: . /opt/rmf/setup.bash && npm ci --unsafe-perm && npx lerna bootstrap
         working-directory: .
@@ -79,7 +81,9 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 12
+      - name: set npm config
+        run: npm config set unsafe-perm=true
       - name: build
-        run: . /opt/ros/foxy/setup.bash && npm config set unsafe-perm=true && npm ci && npm run build
+        run: . /opt/ros/foxy/setup.bash && npm ci && npm run build
       - name: test
         run: . /opt/ros/foxy/setup.bash && npm test
