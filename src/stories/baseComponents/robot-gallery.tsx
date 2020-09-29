@@ -6,8 +6,8 @@ import React from 'react';
 import { ResourcesContext } from '../../components/app-contexts';
 import ColorManager from '../../components/schedule-visualizer/colors';
 import Robot, { RobotProps } from '../../components/schedule-visualizer/robot';
-import { ResourceConfigurationsType } from '../../resource-manager';
 import { makeRobot } from '../../mock/utils';
+import ResourceManager from '../../resource-manager';
 
 const colorManager = new ColorManager();
 
@@ -43,15 +43,18 @@ const robots: Record<string, RobotProps> = {
   ),
 };
 
-const resources: ResourceConfigurationsType = {
+const resourcesData = {
   robots: {
     fleetWithIcon: {
       icons: {
         fleetWithIcon: '/fleetWithIcon.png',
       },
+      places: {},
     },
   },
 };
+
+const resources = new ResourceManager(resourcesData);
 
 export default function RobotGallery(): React.ReactElement {
   return (

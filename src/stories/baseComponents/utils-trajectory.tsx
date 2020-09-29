@@ -242,6 +242,7 @@ export const createTrajectories = (isConflict: boolean, numberOfTraj: number) =>
       robot_name: 'tinyRobot' + i.toString(),
       segments: knotHolder,
       shape: 'circle',
+      map_name: 'L1'
     });
 
     if (isConflict) {

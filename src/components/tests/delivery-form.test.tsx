@@ -4,16 +4,30 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import fakePlaces from '../../mock/data/places';
 import React from 'react';
 import { TDeliveryRequest } from '../commands-panel';
+import ResourceManager from '../../resource-manager';
+import fakeResources from '../../mock/data/resources';
 
 const mount = createMount();
 
-const buildWrapper = (fleetName: string, onClick: TDeliveryRequest) => {
-  const wrapper = mount(<RobotDeliveryForm requestDelivery={onClick} fleetNames={[fleetName]} />);
+const buildWrapper = (
+  fleetName: string,
+  onClick: TDeliveryRequest,
+  resourceManager: ResourceManager,
+) => {
+  const wrapper = mount(
+    <RobotDeliveryForm
+      requestDelivery={onClick}
+      fleetNames={[fleetName]}
+      robotHandler={resourceManager.robots}
+      dispenserHandler={resourceManager.dispensers}
+    />,
+  );
   return wrapper;
 };
 
 describe('Form validation', () => {
   let isRequestButtonClicked = false;
+  const resourceManager = new ResourceManager(fakeResources());
   const onClick = (
     pickupPlaceName: string,
     pickupDispenser: string,
@@ -31,7 +45,7 @@ describe('Form validation', () => {
 
   test('Initial values', () => {
     // Just places selected
-    const wrapper = buildWrapper('SuperFleet', onClick);
+    const wrapper = buildWrapper('SuperFleet', onClick, resourceManager);
     expect(
       wrapper.findWhere(
         x => x.name() === 'input' && x.props().value === fakePlaces()['SuperFleet'][0],
@@ -62,7 +76,7 @@ describe('Form validation', () => {
   });
 
   test('Dispensers cannot be empty', () => {
-    const wrapper = buildWrapper('FleetB', onClick);
+    const wrapper = buildWrapper('FleetB', onClick, resourceManager);
     wrapper.find('form').simulate('submit');
     expect(wrapper.exists('#pickupDispenser-helper-text')).toBeTruthy();
     expect(wrapper.exists('#dropoffDispenser-helper-text')).toBeTruthy();
@@ -71,7 +85,7 @@ describe('Form validation', () => {
   });
 
   test('Places cannot be empty', () => {
-    const wrapper = buildWrapper('FleetA', onClick);
+    const wrapper = buildWrapper('FleetA', onClick, resourceManager);
     wrapper.find('form').simulate('submit');
     expect(wrapper.exists('#pickupPlace-helper-text')).toBeTruthy();
     expect(isRequestButtonClicked).toBeFalsy();
@@ -79,21 +93,21 @@ describe('Form validation', () => {
   });
 
   test('Initial values with places and with dispensers ', () => {
-    const wrapper = buildWrapper('TestFleet', onClick);
+    const wrapper = buildWrapper('TestFleet', onClick, resourceManager);
     expect(wrapper.find('#robot1PickupDispenser-helper-text').exists()).toBe(false);
     expect(wrapper.find('#robot1DropoffDispenser-helper-text').exists()).toBe(false);
     wrapper.unmount();
   });
 
   test('Error shows with places without dispensers ', () => {
-    const wrapper = buildWrapper('Fleet2', onClick);
+    const wrapper = buildWrapper('Fleet2', onClick, resourceManager);
     expect(wrapper.exists('#pickupDispenser-helper-text')).toBeTruthy();
     expect(wrapper.exists('#dropoffDispenser-helper-text')).toBeTruthy();
     wrapper.unmount();
   });
 
   test('Start place cannot be equal to finish place', () => {
-    const wrapper = buildWrapper('FleetB', onClick);
+    const wrapper = buildWrapper('FleetB', onClick, resourceManager);
     wrapper.find('form').simulate('submit');
     expect(wrapper.exists('#pickupPlace-helper-text')).toBeTruthy();
     expect(wrapper.exists('#dropoffPlace-helper-text')).toBeTruthy();

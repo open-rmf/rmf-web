@@ -2,40 +2,43 @@ import { makeStyles, TextField, Button } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useState, useEffect } from 'react';
 import { successMsg } from '../util/alerts';
-import fakePlaces from '../mock/data/places';
 import { TLoopRequest } from './commands-panel';
+import { RobotResourceManager } from '../resource-manager-robots';
 interface LoopFormProps {
   fleetNames: string[];
   requestLoop: TLoopRequest;
+  robotHandler: RobotResourceManager;
 }
 
 export const LoopForm = (props: LoopFormProps) => {
-  const { requestLoop, fleetNames } = props;
+  const { requestLoop, fleetNames, robotHandler } = props;
   const classes = loopFormStyles();
 
   const [targetFleetName, setTargetFleetName] = useState(
     fleetNames.length >= 1 ? fleetNames[0] : '',
   );
+
   const [numLoops, setNumLoops] = useState(0);
   const [listOfPlaces, setListOfPlaces] = useState(
-    !!targetFleetName ? fakePlaces()[targetFleetName] : [],
+    !!targetFleetName ? robotHandler.getAvailablePlacesPerFleet(targetFleetName) : [],
   );
   const [startLocation, setStartLocation] = useState(
-    listOfPlaces.length >= 2 ? listOfPlaces[0] : '',
+    listOfPlaces && listOfPlaces.length >= 2 ? listOfPlaces[0] : '',
   );
   const [finishLocation, setFinishLocation] = useState(
-    listOfPlaces.length >= 2 ? listOfPlaces[1] : '',
+    listOfPlaces && listOfPlaces.length >= 2 ? listOfPlaces[1] : '',
   );
-
   useEffect(() => {
-    fakePlaces()[targetFleetName]
-      ? setListOfPlaces(fakePlaces()[targetFleetName])
+    robotHandler.getAvailablePlacesPerFleet(targetFleetName)
+      ? setListOfPlaces(robotHandler.getAvailablePlacesPerFleet(targetFleetName))
       : setListOfPlaces([]);
-  }, [targetFleetName]);
+  }, [targetFleetName, robotHandler]);
 
   useEffect(() => {
-    setStartLocation(listOfPlaces.length >= 2 ? listOfPlaces[0] : '');
-    setFinishLocation(listOfPlaces.length >= 2 ? listOfPlaces[1] : '');
+    if (listOfPlaces) {
+      setStartLocation(listOfPlaces.length >= 2 ? listOfPlaces[0] : '');
+      setFinishLocation(listOfPlaces.length >= 2 ? listOfPlaces[1] : '');
+    }
   }, [listOfPlaces]);
 
   // Error states
@@ -47,9 +50,11 @@ export const LoopForm = (props: LoopFormProps) => {
   const cleanUpForm = () => {
     setTargetFleetName(targetFleetName);
     setNumLoops(0);
-    setListOfPlaces(!!targetFleetName ? fakePlaces()[targetFleetName] : []);
-    setStartLocation(listOfPlaces.length >= 2 ? listOfPlaces[0] : '');
-    setFinishLocation(listOfPlaces.length >= 2 ? listOfPlaces[1] : '');
+    setListOfPlaces(
+      !!targetFleetName ? robotHandler.getAvailablePlacesPerFleet(targetFleetName) : [],
+    );
+    setStartLocation(listOfPlaces && listOfPlaces.length >= 2 ? listOfPlaces[0] : '');
+    setFinishLocation(listOfPlaces && listOfPlaces.length >= 2 ? listOfPlaces[1] : '');
     cleanUpError();
   };
 
@@ -102,10 +107,10 @@ export const LoopForm = (props: LoopFormProps) => {
     <form className={classes.form} onSubmit={handleRequestLoop}>
       <div className={classes.divForm}>
         <Autocomplete
-          getOptionLabel={option => option}
+          getOptionLabel={(option) => option}
           onChange={(e, value) => setTargetFleetName(value || '')}
           options={fleetNames}
-          renderInput={params => (
+          renderInput={(params) => (
             <TextField
               {...params}
               label="Choose Target Fleet"
@@ -122,7 +127,7 @@ export const LoopForm = (props: LoopFormProps) => {
         <TextField
           id="numLoops"
           name="numLoops"
-          onChange={e => {
+          onChange={(e) => {
             setNumLoops(!!e.target.value ? parseInt(e.target.value) : 0);
           }}
           placeholder="Number of loops"
@@ -138,11 +143,11 @@ export const LoopForm = (props: LoopFormProps) => {
 
       <div className={classes.divForm}>
         <Autocomplete
-          getOptionLabel={option => option}
+          getOptionLabel={(option) => option}
           onChange={(e, value) => setStartLocation(value || '')}
-          options={listOfPlaces}
+          options={listOfPlaces ? listOfPlaces : []}
           id="startLocation"
-          renderInput={params => (
+          renderInput={(params) => (
             <TextField
               {...params}
               label="Pick Start Location"
@@ -158,11 +163,11 @@ export const LoopForm = (props: LoopFormProps) => {
 
       <div className={classes.divForm}>
         <Autocomplete
-          getOptionLabel={option => option}
+          getOptionLabel={(option) => option}
           onChange={(e, value) => setFinishLocation(value || '')}
-          options={listOfPlaces}
+          options={listOfPlaces ? listOfPlaces : []}
           id="finishLocation"
-          renderInput={params => (
+          renderInput={(params) => (
             <TextField
               {...params}
               label="Pick Finish Location"
@@ -185,7 +190,7 @@ export const LoopForm = (props: LoopFormProps) => {
   );
 };
 
-export const loopFormStyles = makeStyles(theme => ({
+export const loopFormStyles = makeStyles((theme) => ({
   form: {
     display: 'flex',
     flexDirection: 'column',

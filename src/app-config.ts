@@ -2,19 +2,20 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { KeycloakConfig } from 'keycloak-js';
 import ApiClient from './api-client';
 import Authenticator, { DefaultAuthenticator } from './components/auth/authenticator';
+import fakeResources from './mock/data/resources';
 import FakeAuthenticator from './mock/fake-authenticator';
 import FakeTrajectoryManager from './mock/fake-traj-manager';
 import { FakeTransport } from './mock/fake-transport';
-import ResourceManager, { ResourceConfigurationsType } from './resource-manager';
+import ResourceManager from './resource-manager';
 import { DefaultTrajectoryManager, RobotTrajectoryManager } from './robot-trajectory-manager';
 import Ros2Transport from './ros2-transport';
 
 export interface AppConfig {
   authenticator: Authenticator;
-  appResources: Promise<ResourceConfigurationsType>;
   transportFactory: () => Promise<RomiCore.Transport>;
   trajectoryManagerFactory?: () => Promise<RobotTrajectoryManager>;
   trajServerUrl: string;
+  appResources: Promise<ResourceManager | undefined>;
 }
 
 export const appConfig: AppConfig = (() => {
@@ -64,7 +65,7 @@ export const appConfig: AppConfig = (() => {
   } else {
     return {
       authenticator: new FakeAuthenticator(),
-      appResources: ResourceManager.getResourceConfigurationFile(),
+      appResources: (async () => ResourceManager.resourceManagerFactory(fakeResources()))(),
       transportFactory: async () => new FakeTransport(),
       trajectoryManagerFactory: async () => new FakeTrajectoryManager(),
       trajServerUrl: '',
