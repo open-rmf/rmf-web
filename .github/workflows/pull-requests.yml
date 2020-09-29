@@ -61,7 +61,7 @@ jobs:
         run: npm config set unsafe-perm=true
         working-directory: .
       - name: e2e test
-        run: . /opt/rmf/setup.bash && npm run test:e2e
+        run: . /opt/rmf/setup.bash && npm ci && npm run test:e2e
       - name: upload artifacts
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
