@@ -35,6 +35,7 @@ exports[`RobotTrajectoriesOverlay renders without crashing 1`] = `
             "dimensions": 0.3,
             "fleet_name": "tinyRobot",
             "id": 1837,
+            "map_name": "L1",
             "robot_name": "tinyRobot1",
             "segments": Array [
               Object {
@@ -458,6 +459,7 @@ exports[`RobotTrajectoriesOverlay renders without crashing 1`] = `
                                   "dimensions": 0.3,
                                   "fleet_name": "tinyRobot",
                                   "id": 1837,
+                                  "map_name": "L1",
                                   "robot_name": "tinyRobot1",
                                   "segments": Array [
                                     Object {
@@ -1152,6 +1154,7 @@ exports[`RobotTrajectoriesOverlay renders without crashing 1`] = `
                               "dimensions": 0.3,
                               "fleet_name": "tinyRobot",
                               "id": 1837,
+                              "map_name": "L1",
                               "robot_name": "tinyRobot1",
                               "segments": Array [
                                 Object {
@@ -1971,6 +1974,7 @@ exports[`RobotTrajectoriesOverlay renders without crashing 1`] = `
                                   "dimensions": 0.3,
                                   "fleet_name": "tinyRobot",
                                   "id": 1837,
+                                  "map_name": "L1",
                                   "robot_name": "tinyRobot1",
                                   "segments": Array [
                                     Object {
@@ -2665,6 +2669,7 @@ exports[`RobotTrajectoriesOverlay renders without crashing 1`] = `
                               "dimensions": 0.3,
                               "fleet_name": "tinyRobot",
                               "id": 1837,
+                              "map_name": "L1",
                               "robot_name": "tinyRobot1",
                               "segments": Array [
                                 Object {
@@ -3197,6 +3202,7 @@ exports[`RobotTrajectoriesOverlay renders without crashing 1`] = `
                     "dimensions": 0.3,
                     "fleet_name": "tinyRobot",
                     "id": 1837,
+                    "map_name": "L1",
                     "robot_name": "tinyRobot1",
                     "segments": Array [
                       Object {

@@ -29,7 +29,7 @@ export default function HotKeysDialog(props: HotKeysDialogProps): React.ReactEle
             return (
               hotkey.name && (
                 <React.Fragment key={hotkey.name}>
-                  <div className={classes.detailLine}>
+                  <div detail-type={'hotkeyDetail'} className={classes.detailLine}>
                     <Typography variant="body1">{hotkey.name}:</Typography>
                     <Typography variant="body1">{hotkey.sequences[0].sequence}</Typography>
                   </div>

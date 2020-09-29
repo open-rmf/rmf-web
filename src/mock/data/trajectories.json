@@ -8,6 +8,7 @@
         "id": 1837,
         "robot_name": "tinyRobot1",
         "fleet_name": "tinyRobot",
+        "map_name": "L1",
         "segments": [
           {
             "t": 239324,
@@ -37,6 +38,7 @@
         "id": 1841,
         "robot_name": "tinyRobot2",
         "fleet_name": "tinyRobot",
+        "map_name": "L1",
         "segments": [
           {
             "t": 239324,
@@ -127,6 +129,7 @@
         "id": 1903,
         "robot_name": "tinyRobot2",
         "fleet_name": "tinyRobot",
+        "map_name": "L1",
         "segments": [
           {
             "t": 249436,
@@ -221,6 +224,7 @@
         "id": 1904,
         "robot_name": "tinyRobot1",
         "fleet_name": "tinyRobot",
+        "map_name": "L1",
         "segments": [
           {
             "t": 249436,
@@ -281,6 +285,7 @@
         "id": 1907,
         "robot_name": "tinyRobot2",
         "fleet_name": "tinyRobot",
+        "map_name": "L1",
         "segments": [
           {
             "t": 259858,
@@ -305,6 +310,7 @@
         "id": 1906,
         "robot_name": "tinyRobot1",
         "fleet_name": "tinyRobot",
+        "map_name": "L1",
         "segments": [
           {
             "t": 259858,
@@ -395,6 +401,7 @@
         "id": 1955,
         "robot_name": "tinyRobot2",
         "fleet_name": "tinyRobot",
+        "map_name": "L1",
         "segments": [
           {
             "t": 271788,
@@ -429,6 +436,7 @@
         "id": 1954,
         "robot_name": "tinyRobot1",
         "fleet_name": "tinyRobot",
+        "map_name": "L1",
         "segments": [
           {
             "t": 271788,
@@ -489,6 +497,7 @@
         "id": 1980,
         "robot_name": "tinyRobot2",
         "fleet_name": "tinyRobot",
+        "map_name": "L1",
         "segments": [
           {
             "t": 291521,
@@ -523,6 +532,7 @@
         "id": 1979,
         "robot_name": "tinyRobot1",
         "fleet_name": "tinyRobot",
+        "map_name": "L1",
         "segments": [
           {
             "t": 291521,
@@ -623,6 +633,7 @@
         "id": 1989,
         "robot_name": "tinyRobot2",
         "fleet_name": "tinyRobot",
+        "map_name": "L1",
         "segments": [
           {
             "t": 310351,
@@ -687,6 +698,7 @@
         "id": 1988,
         "robot_name": "tinyRobot1",
         "fleet_name": "tinyRobot",
+        "map_name": "L1",
         "segments": [
           {
             "t": 310351,
@@ -780,6 +792,7 @@
         "id": 1903,
         "robot_name": "tinyRobot2",
         "fleet_name": "tinyRobot",
+        "map_name": "L1",
         "segments": [
           {
             "t": 249436,
@@ -874,6 +887,7 @@
         "id": 1904,
         "robot_name": "tinyRobot1",
         "fleet_name": "tinyRobot",
+        "map_name": "L1",
         "segments": [
           {
             "t": 249436,
@@ -928,6 +942,7 @@
         "id": 1905,
         "robot_name": "RobotC",
         "fleet_name": "FleetB",
+        "map_name": "L1",
         "segments": [
           {
             "t": 279837,
