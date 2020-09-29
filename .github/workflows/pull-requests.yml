@@ -7,8 +7,8 @@ on:
 env:
   CI: true
 jobs:
-  unit-test:
-    name: Unit Test
+  dashboard-unit-test:
+    name: Dashboard Unit Test
     runs-on: ubuntu-latest
     container:
       image: docker.pkg.github.com/osrf/romi-dashboard/e2e:foxy
@@ -40,8 +40,8 @@ jobs:
         uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-  # e2e-test:
-  #   name: End-to-End Test
+  # dashboard-e2e-test:
+  #   name: Dashboard End-to-End Test
   #   runs-on: ubuntu-latest
   #   defaults:
   #     run:
@@ -65,3 +65,21 @@ jobs:
   #       with:
   #         name: screenshots
   #         path: e2e/artifacts
+  api-server-test:
+    name: Api Server Test
+    runs-on: ubuntu-latest
+    container:
+      image: ros:foxy
+    defaults:
+      run:
+        shell: bash
+        working-directory: packages/api-server
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - name: build
+        run: . /opt/ros/foxy/setup.bash && npm config set unsafe-perm=true && npm ci && npm run build
+      - name: test
+        run: . /opt/ros/foxy/setup.bash && npm test
