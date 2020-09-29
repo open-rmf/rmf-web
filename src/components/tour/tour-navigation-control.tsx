@@ -29,9 +29,7 @@ export const NavButtons = React.memo((props: NavButtonProps) => {
       {step > 1 && (
         <IconButton
           onClick={() => {
-            if (handleBackClick) {
-              handleBackClick();
-            }
+            handleBackClick && handleBackClick();
             goTo(step - 2);
           }}
           id="tour-back-btn"
@@ -42,9 +40,7 @@ export const NavButtons = React.memo((props: NavButtonProps) => {
       {!lastStep && (
         <IconButton
           onClick={() => {
-            if (handleNextClick) {
-              handleNextClick();
-            }
+            handleNextClick && handleNextClick();
             setTimeout(() => goTo(step), 5);
           }}
           id="tour-next-btn"
@@ -57,9 +53,7 @@ export const NavButtons = React.memo((props: NavButtonProps) => {
           variant="contained"
           color="primary"
           onClick={() => {
-            if (handleNextClick) {
-              handleNextClick();
-            }
+            handleNextClick && handleNextClick();
             localStorage.setItem('tourComplete', 'true');
           }}
           id="tour-last-step-btn"

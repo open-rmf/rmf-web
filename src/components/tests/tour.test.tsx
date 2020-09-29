@@ -16,8 +16,11 @@ const shallow = createShallow();
 describe('Dashboard Tour', () => {
   const tourState: boolean = true;
   const setTourState: jest.Mock = jest.fn();
-  const setTourShowOmniPanel: jest.Mock = jest.fn();
-  const setTourSettingsAndOmniPanel: jest.Mock = jest.fn();
+  const setShowSettings: jest.Mock = jest.fn();
+  const setShowOmniPanel: jest.Mock = jest.fn();
+  const setShowHelp: jest.Mock = jest.fn();
+  const clearSpotlights: jest.Mock = jest.fn();
+  const setCurrentView: jest.Mock = jest.fn();
   const doorSpotlight: SpotlightValue<string> = { value: 'main_door' };
   const setDoorSpotlight: jest.Mock = jest.fn();
 
@@ -31,9 +34,11 @@ describe('Dashboard Tour', () => {
     const tourProps = {
       tourState,
       setTourState,
-      setTourShowOmniPanel,
-      setTourSettingsAndOmniPanel,
-      OmniPanelViewIndex,
+      setShowSettings,
+      setShowOmniPanel,
+      setShowHelp,
+      clearSpotlights,
+      setCurrentView,
       doorSpotlight,
       setDoorSpotlight,
     };
@@ -52,7 +57,7 @@ describe('Dashboard Tour', () => {
     expect(tour).toMatchSnapshot();
   });
 
-  it('renders first welcome step (1/12)', () => {
+  it('renders first welcome step', () => {
     expectedText = tourText.step1Welcome;
     stepText = root.find('.reactour__helper--is-open').hostNodes().text();
 
@@ -60,7 +65,7 @@ describe('Dashboard Tour', () => {
     expect(root).toMatchSnapshot();
   });
 
-  it('renders zoom button step (2/12)', async () => {
+  it('renders zoom button step', async () => {
     expectedText = tourText.step2Zoom;
     nextBtn.simulate('click');
     await wait(5);
@@ -71,7 +76,7 @@ describe('Dashboard Tour', () => {
     expect(root).toMatchSnapshot();
   });
 
-  it('renders floor plan button step (3/12)', async () => {
+  it('renders floor plan button step', async () => {
     expectedText = tourText.step3Floorplan;
 
     for (let i = 1; i < 3; i++) {
@@ -84,7 +89,7 @@ describe('Dashboard Tour', () => {
     expect(root).toMatchSnapshot();
   });
 
-  it('renders leaflet step (4/12)', async () => {
+  it('renders leaflet step', async () => {
     expectedText = tourText.step4Leaflet;
 
     for (let i = 1; i < 4; i++) {
@@ -97,7 +102,7 @@ describe('Dashboard Tour', () => {
     expect(root).toMatchSnapshot();
   });
 
-  it('renders omnipanel button step (5/12)', async () => {
+  it('renders omnipanel button step', async () => {
     expectedText = tourText.step5Omnipanel;
 
     for (let i = 1; i < 5; i++) {
@@ -110,7 +115,7 @@ describe('Dashboard Tour', () => {
     expect(root).toMatchSnapshot();
   });
 
-  it('renders main menu step (6/12)', async () => {
+  it('renders main menu step', async () => {
     expectedText = tourText.step6MainMenu;
 
     for (let i = 1; i < 6; i++) {
@@ -123,7 +128,7 @@ describe('Dashboard Tour', () => {
     expect(root).toMatchSnapshot();
   });
 
-  it('renders door panel step (7/12)', async () => {
+  it('renders door panel step', async () => {
     expectedText = tourText.step7DoorPanel;
 
     for (let i = 1; i < 7; i++) {
@@ -136,7 +141,7 @@ describe('Dashboard Tour', () => {
     expect(root).toMatchSnapshot();
   });
 
-  it('renders door tab step (8/12)', async () => {
+  it('renders door tab step', async () => {
     expectedText = tourText.step8DoorTab;
 
     for (let i = 1; i < 8; i++) {
@@ -149,7 +154,7 @@ describe('Dashboard Tour', () => {
     expect(root).toMatchSnapshot();
   });
 
-  it('renders commands panel step (9/12)', async () => {
+  it('renders commands panel step', async () => {
     expectedText = tourText.step9CommandsPanel;
 
     for (let i = 1; i < 9; i++) {
@@ -162,7 +167,7 @@ describe('Dashboard Tour', () => {
     expect(root).toMatchSnapshot();
   });
 
-  it('renders loop request step (10/12)', async () => {
+  it('renders loop request step', async () => {
     expectedText = tourText.step10LoopRequest;
 
     for (let i = 1; i < 10; i++) {
@@ -175,7 +180,7 @@ describe('Dashboard Tour', () => {
     expect(root).toMatchSnapshot();
   });
 
-  it('renders settings button step (11/12)', async () => {
+  it('renders settings button step', async () => {
     expectedText = tourText.step11Settings;
 
     for (let i = 1; i < 11; i++) {
@@ -188,7 +193,7 @@ describe('Dashboard Tour', () => {
     expect(root).toMatchSnapshot();
   });
 
-  it('renders traj anims step (12/12)', async () => {
+  it('renders traj anims step', async () => {
     expectedText = tourText.step12TrajAnims;
 
     for (let i = 1; i < 12; i++) {
@@ -201,8 +206,34 @@ describe('Dashboard Tour', () => {
     expect(root).toMatchSnapshot();
   });
 
-  it('closes the tour when last step button is clicked', async () => {
+  it('renders help button step', async () => {
+    expectedText = tourText.step13HelpButton;
+
     for (let i = 1; i < 13; i++) {
+      nextBtn.simulate('click');
+      await wait(5);
+    }
+    stepText = root.find('.reactour__helper--is-open').hostNodes().text();
+
+    expect(stepText.includes(expectedText));
+    expect(root).toMatchSnapshot();
+  });
+
+  it('renders help drawer step', async () => {
+    expectedText = tourText.step14HelpDrawer;
+
+    for (let i = 1; i < 14; i++) {
+      nextBtn.simulate('click');
+      await wait(5);
+    }
+    stepText = root.find('.reactour__helper--is-open').hostNodes().text();
+
+    expect(stepText.includes(expectedText));
+    expect(root).toMatchSnapshot();
+  });
+
+  it('closes the tour when last step button is clicked', async () => {
+    for (let i = 1; i < 15; i++) {
       nextBtn.simulate('click');
       await wait(5);
     }

@@ -20,6 +20,7 @@ exports[`Renders correctly 1`] = `
   />
   <div
     className="makeStyles-detail-2"
+    id="help-drawer-options"
   >
     <div
       className="makeStyles-detailLine-1"

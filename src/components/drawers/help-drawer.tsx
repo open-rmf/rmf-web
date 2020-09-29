@@ -35,7 +35,7 @@ export default function HelpDrawer(props: HotKeysDrawerProps): React.ReactElemen
       {...otherProps}
     >
       <DrawerHeader handleCloseButton={handleCloseButton} title={'Help'} />
-      <div className={classes.detail}>
+      <div className={classes.detail} id="help-drawer-options">
         <div className={classes.detailLine} onClick={() => showTour()}>
           <IconButton id="show-manual-btn" color="inherit">
             <MenuBookIcon />

@@ -142,7 +142,7 @@ export const createTourSteps = (props: createTourProps) => {
             step={step}
             handleNextClick={() => {
               showSettingsOmniPanelHelpClearSpotlight(false, true, false, false);
-              setCurrentView(OmniPanelViewIndex.Doors);
+              setCurrentView(OmniPanelViewIndex.MainMenu);
             }}
             handleBackClick={() => {
               showSettingsOmniPanelHelpClearSpotlight(false, true, false, false);
@@ -224,6 +224,45 @@ export const createTourSteps = (props: createTourProps) => {
             handleBackClick={() =>
               showSettingsOmniPanelHelpClearSpotlight(false, false, false, true)
             }
+          />
+        </Box>
+      ),
+    },
+    helpButton: {
+      selector: '[id="show-help-btn"]',
+      content: ({ goTo, step }) => (
+        <Box id="stepNode">
+          <Typography variant="h6">{tourText.step13HelpButton}</Typography>
+          <NavButtons
+            goTo={goTo}
+            step={step}
+            handleNextClick={() =>
+              showSettingsOmniPanelHelpClearSpotlight(false, false, true, true)
+            }
+            handleBackClick={() =>
+              showSettingsOmniPanelHelpClearSpotlight(true, false, false, true)
+            }
+          />
+        </Box>
+      ),
+    },
+    helpDrawer: {
+      selector: '[id="help-drawer-options"]',
+      content: ({ goTo, step }) => (
+        <Box id="stepNode">
+          <Typography variant="h6">{tourText.step14HelpDrawer}</Typography>
+          <NavButtons
+            goTo={goTo}
+            step={step}
+            handleNextClick={() => {
+              showSettingsOmniPanelHelpClearSpotlight(false, true, false, false);
+              setCurrentView(OmniPanelViewIndex.MainMenu);
+              setTourState(false);
+            }}
+            handleBackClick={() =>
+              showSettingsOmniPanelHelpClearSpotlight(false, false, false, true)
+            }
+            lastStep={true}
           />
         </Box>
       ),
