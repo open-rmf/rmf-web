@@ -48,29 +48,19 @@ describe('Form validation', () => {
     const wrapper = buildWrapper('SuperFleet', onClick, resourceManager);
     expect(
       wrapper.findWhere(
-        x => x.name() === 'input' && x.props().value === fakePlaces()['SuperFleet'][0],
+        (x) => x.name() === 'input' && x.props().value === fakePlaces()['SuperFleet'][0],
       ),
     ).toBeTruthy();
 
     expect(
       wrapper.findWhere(
-        x => x.name() === 'input' && x.props().value === fakePlaces()['SuperFleet'][1],
+        (x) => x.name() === 'input' && x.props().value === fakePlaces()['SuperFleet'][1],
       ),
     ).toBeTruthy();
 
-    expect(
-      wrapper
-        .find(`#pickupDispenser`)
-        .find('input')
-        .props().value,
-    ).toBe('');
+    expect(wrapper.find(`#pickupDispenser`).find('input').props().value).toBe('');
 
-    expect(
-      wrapper
-        .find(`#dropoffDispenser`)
-        .find('input')
-        .props().value,
-    ).toBe('');
+    expect(wrapper.find(`#dropoffDispenser`).find('input').props().value).toBe('');
 
     wrapper.unmount();
   });
