@@ -12,7 +12,7 @@
     "start:react:e2e": "serve -c ../e2e/serve.json build",
     "start:mock": "REACT_APP_MOCK=1 react-scripts start",
     "start:rmf": "ts-node -P e2e/tsconfig.json e2e/startBackend.ts",
-    "start:api": "romi-js-api-server --port 50002 --trajectoryServerUrl ws://localhost:8006 --publicKey e2e/certs/keycloak.pub",
+    "start:api": "api-server --port 50002 --trajectoryServerUrl ws://localhost:8006 --publicKey e2e/certs/keycloak.pub",
     "build": "react-scripts build",
     "build:e2e": ". e2e/env.sh && npm run build",
     "build:storybook": "build-storybook -s public",

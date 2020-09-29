@@ -4,13 +4,15 @@ on:
   push:
     branches:
       - master
-
+env:
+  CI: true
 jobs:
   unit-test:
     name: Unit Test
     runs-on: ubuntu-latest
-    env:
-      CI: true
+    defaults:
+      run:
+        working-directory: packages/dashboard
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
@@ -36,6 +38,9 @@ jobs:
   e2e-test:
     name: End-to-End Test
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/dashboard
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
@@ -55,3 +60,18 @@ jobs:
         with:
           name: screenshots
           path: e2e/artifacts
+  api-server-test:
+    name: Api Server Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/api-server
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - name: prepare
+        run: npm ci
+      - name: test
+        run: npm test
