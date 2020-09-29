@@ -77,4 +77,4 @@ jobs:
       - name: build
         run: . /opt/ros/foxy/setup.bash && npm ci --unsafe-perm
       - name: test
-        run: npm test
+        run: . /opt/ros/foxy/setup.bash && npm test
