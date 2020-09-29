@@ -1,4 +1,4 @@
-name: Pull Requests
+name: Dashboard Pull Requests
 on:
   pull_request:
   push:
@@ -35,7 +35,7 @@ jobs:
       - name: build
         run: . /opt/rmf/setup.bash && npm run build
       - name: unit test
-        run: npm run test:coverage
+        run: . /opt/rmf/setup.bash && npm run test:coverage
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
@@ -65,21 +65,3 @@ jobs:
   #       with:
   #         name: screenshots
   #         path: e2e/artifacts
-  api-server-test:
-    name: Api Server Test
-    runs-on: ubuntu-latest
-    container:
-      image: ros:foxy
-    defaults:
-      run:
-        shell: bash
-        working-directory: packages/api-server
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 12
-      - name: build
-        run: . /opt/ros/foxy/setup.bash && npm ci --unsafe-perm && npm run build
-      - name: test
-        run: . /opt/ros/foxy/setup.bash && npm test
