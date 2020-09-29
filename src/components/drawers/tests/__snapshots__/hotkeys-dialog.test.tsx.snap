@@ -1,0 +1,53 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Hotkeys Dialog Component renders correctly 1`] = `
+<WithStyles(ForwardRef(Dialog))
+  aria-labelledby="customized-dialog-title"
+  fullWidth={true}
+  maxWidth="sm"
+  onClose={[Function]}
+  open={true}
+>
+  <WithStyles(Component)
+    id="customized-dialog-title"
+    onClose={[Function]}
+  >
+    Hotkeys
+  </WithStyles(Component)>
+  <WithStyles(WithStyles(ForwardRef(DialogContent)))
+    dividers={true}
+  >
+    <div
+      className="makeStyles-detail-2"
+    >
+      <div
+        className="makeStyles-detailLine-1"
+        detail-type="hotkeyDetail"
+        key="Open Commands"
+      >
+        <WithStyles(ForwardRef(Typography))
+          variant="body1"
+        >
+          Open Commands
+          :
+        </WithStyles(ForwardRef(Typography))>
+        <WithStyles(ForwardRef(Typography))
+          variant="body1"
+        >
+          shift+c
+        </WithStyles(ForwardRef(Typography))>
+      </div>
+      <WithStyles(ForwardRef(Divider)) />
+    </div>
+  </WithStyles(WithStyles(ForwardRef(DialogContent)))>
+  <WithStyles(WithStyles(ForwardRef(DialogActions)))>
+    <WithStyles(ForwardRef(Button))
+      autoFocus={true}
+      color="primary"
+      onClick={[Function]}
+    >
+      Ok
+    </WithStyles(ForwardRef(Button))>
+  </WithStyles(WithStyles(ForwardRef(DialogActions)))>
+</WithStyles(ForwardRef(Dialog))>
+`;

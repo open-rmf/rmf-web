@@ -27,6 +27,7 @@ export const defaultTraj: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 0,
       robot_name: 'tinyRobot0',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -218,6 +219,7 @@ export const conflictingTraj: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 0,
       robot_name: 'tinyRobot0',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -404,6 +406,7 @@ export const multipleTrajs: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 0,
       robot_name: 'tinyRobot0',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -598,6 +601,7 @@ export const multipleTrajs: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 1,
       robot_name: 'tinyRobot1',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -782,6 +786,7 @@ export const multipleTrajs: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 2,
       robot_name: 'tinyRobot2',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -971,6 +976,7 @@ export const multipleTrajs: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 3,
       robot_name: 'tinyRobot3',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -1165,6 +1171,7 @@ export const multipleTrajs: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 4,
       robot_name: 'tinyRobot4',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -1354,6 +1361,7 @@ export const multipleTrajs: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 5,
       robot_name: 'tinyRobot5',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -1543,6 +1551,7 @@ export const multipleTrajs: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 6,
       robot_name: 'tinyRobot6',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -1737,6 +1746,7 @@ export const multipleTrajs: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 7,
       robot_name: 'tinyRobot7',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -1921,6 +1931,7 @@ export const multipleTrajs: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 8,
       robot_name: 'tinyRobot8',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -2115,6 +2126,7 @@ export const multipleTrajs: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 9,
       robot_name: 'tinyRobot9',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -2309,6 +2321,7 @@ export const multipleTrajs: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 10,
       robot_name: 'tinyRobot10',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -2498,6 +2511,7 @@ export const multipleTrajs: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 11,
       robot_name: 'tinyRobot11',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -2687,6 +2701,7 @@ export const multipleTrajs: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 12,
       robot_name: 'tinyRobot12',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -2881,6 +2896,7 @@ export const multipleTrajs: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 13,
       robot_name: 'tinyRobot13',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -3075,6 +3091,7 @@ export const multipleTrajs: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 14,
       robot_name: 'tinyRobot14',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -3264,6 +3281,7 @@ export const multipleTrajs: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 15,
       robot_name: 'tinyRobot15',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -3453,6 +3471,7 @@ export const multipleTrajs: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 16,
       robot_name: 'tinyRobot16',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -3647,6 +3666,7 @@ export const multipleTrajs: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 17,
       robot_name: 'tinyRobot17',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -3841,6 +3861,7 @@ export const multipleTrajs: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 18,
       robot_name: 'tinyRobot18',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -4030,6 +4051,7 @@ export const multipleTrajs: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 19,
       robot_name: 'tinyRobot19',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -4216,6 +4238,7 @@ export const multipleConflictingTraj: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 0,
       robot_name: 'tinyRobot0',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -4400,6 +4423,7 @@ export const multipleConflictingTraj: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 1,
       robot_name: 'tinyRobot1',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -4569,6 +4593,7 @@ export const multipleConflictingTraj: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 2,
       robot_name: 'tinyRobot2',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -4758,6 +4783,7 @@ export const multipleConflictingTraj: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 3,
       robot_name: 'tinyRobot3',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -4952,6 +4978,7 @@ export const multipleConflictingTraj: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 4,
       robot_name: 'tinyRobot4',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -5141,6 +5168,7 @@ export const multipleConflictingTraj: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 5,
       robot_name: 'tinyRobot5',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -5335,6 +5363,7 @@ export const multipleConflictingTraj: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 6,
       robot_name: 'tinyRobot6',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -5519,6 +5548,7 @@ export const multipleConflictingTraj: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 7,
       robot_name: 'tinyRobot7',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -5698,6 +5728,7 @@ export const multipleConflictingTraj: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 8,
       robot_name: 'tinyRobot8',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -5877,6 +5908,7 @@ export const multipleConflictingTraj: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 9,
       robot_name: 'tinyRobot9',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -6056,6 +6088,7 @@ export const multipleConflictingTraj: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 10,
       robot_name: 'tinyRobot10',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -6230,6 +6263,7 @@ export const multipleConflictingTraj: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 11,
       robot_name: 'tinyRobot11',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -6419,6 +6453,7 @@ export const multipleConflictingTraj: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 12,
       robot_name: 'tinyRobot12',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -6618,6 +6653,7 @@ export const multipleConflictingTraj: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 13,
       robot_name: 'tinyRobot13',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -6797,6 +6833,7 @@ export const multipleConflictingTraj: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 14,
       robot_name: 'tinyRobot14',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -6976,6 +7013,7 @@ export const multipleConflictingTraj: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 15,
       robot_name: 'tinyRobot15',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -7170,6 +7208,7 @@ export const multipleConflictingTraj: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 16,
       robot_name: 'tinyRobot16',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -7349,6 +7388,7 @@ export const multipleConflictingTraj: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 17,
       robot_name: 'tinyRobot17',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -7533,6 +7573,7 @@ export const multipleConflictingTraj: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 18,
       robot_name: 'tinyRobot18',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,
@@ -7707,6 +7748,7 @@ export const multipleConflictingTraj: GeneratedTrajProps = {
       fleet_name: 'tinyRobot',
       id: 19,
       robot_name: 'tinyRobot19',
+      map_name: 'L1',
       segments: [
         {
           t: 2000,

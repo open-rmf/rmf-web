@@ -27,7 +27,6 @@ it('fires click event', async () => {
       />
     </svg>,
   );
-
   root
     .find(Robot)
     .at(0)

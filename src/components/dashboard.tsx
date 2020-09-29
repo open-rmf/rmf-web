@@ -12,7 +12,7 @@ import {
   NegotiationStatusManager,
   NegotiationTrajectoryResponse,
 } from '../negotiation-status-manager';
-import { ResourceConfigurationsType } from '../resource-manager';
+import ResourceManager from '../resource-manager';
 import { RobotTrajectoryManager } from '../robot-trajectory-manager';
 import { loadSettings, saveSettings, Settings } from '../settings';
 import { AppContextProvider } from './app-contexts';
@@ -127,7 +127,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const [transport, setTransport] = React.useState<RomiCore.Transport | undefined>(undefined);
   const [buildingMap, setBuildingMap] = React.useState<RomiCore.BuildingMap | undefined>(undefined);
   const trajManager = React.useRef<RobotTrajectoryManager | undefined>(undefined);
-  const resourceManager = React.useRef<ResourceConfigurationsType | undefined>(undefined);
+  const resourceManager = React.useRef<ResourceManager | undefined>(undefined);
 
   const mapFloorLayerSorted = React.useMemo<string[] | undefined>(
     () => buildingMap?.levels.sort((a, b) => a.elevation - b.elevation).map((x) => x.name),
@@ -162,7 +162,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const dispenserStateManager = React.useMemo(() => new DispenserStateManager(), []);
   const [dispenserStates, setDispenserStates] = React.useState<
     Readonly<Record<string, RomiCore.DispenserState>>
-  >({});
+  >(() => dispenserStateManager.dispenserStates());
   const [dispenserSpotlight, setDispenserSpotlight] = React.useState<
     SpotlightValue<string> | undefined
   >(undefined);
@@ -295,6 +295,12 @@ export default function Dashboard(_props: {}): React.ReactElement {
     setLiftSpotlight({ value: lift.name });
   }, []);
 
+  function handleDispenserClick(dispenser: RomiCore.DispenserState): void {
+    setShowOmniPanel(true);
+    setCurrentView(OmniPanelViewIndex.Dispensers);
+    setDispenserSpotlight({ value: dispenser.guid });
+  }
+
   function clearSpotlights() {
     setDoorSpotlight(undefined);
     setLiftSpotlight(undefined);
@@ -384,8 +390,16 @@ export default function Dashboard(_props: {}): React.ReactElement {
 
   return (
     <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
-      <AppContextProvider settings={settings} notificationDispatch={setNotificationBarMessage}>
-        <RmfContextProvider doorStates={doorStates} liftStates={liftStates}>
+      <AppContextProvider
+        settings={settings}
+        notificationDispatch={setNotificationBarMessage}
+        resourceManager={resourceManager.current}
+      >
+        <RmfContextProvider
+          doorStates={doorStates}
+          liftStates={liftStates}
+          dispenserStates={dispenserStates}
+        >
           <div className={classes.container}>
             <AppBar
               toggleShowOmniPanel={() => setShowOmniPanel(!showOmniPanel)}
@@ -400,10 +414,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
                 fleets={fleets}
                 trajManager={trajManager.current}
                 negotiationTrajStore={negotiationTrajStore}
-                appResources={resourceManager.current}
                 onDoorClick={handleDoorClick}
                 onLiftClick={handleLiftClick}
                 onRobotClick={handleRobotClick}
+                onDispenserClick={handleDispenserClick}
               />
             )}
 

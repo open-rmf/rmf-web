@@ -5,6 +5,7 @@ import { viewBoxFromLeafletBounds } from '../../util/css-utils';
 import ColorManager from './colors';
 import Robot_, { RobotProps } from './robot';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
+import { ResourcesContext } from '../app-contexts';
 
 const debug = Debug('ScheduleVisualizer:RobotsOverlay');
 
@@ -30,6 +31,7 @@ export const RobotsOverlay = React.memo((props: RobotsOverlayProps) => {
     ...otherProps
   } = props;
   const Robot = React.useMemo(() => RobotComponent || Robot_, [RobotComponent]);
+  const robotResourcesContext = React.useContext(ResourcesContext)?.robots;
   const viewBox = viewBoxFromLeafletBounds(props.bounds);
   const footprint = 0.5;
 
@@ -41,9 +43,9 @@ export const RobotsOverlay = React.memo((props: RobotsOverlayProps) => {
   // Maps every robot to its fleet. Added the model too in case two robots has the same name on different fleets.
   const fleetContainer = useMemo(() => {
     let robotsFleet: Record<string, string> = {};
-    fleets.forEach(fleet => {
+    fleets.forEach((fleet) => {
       fleet.robots
-        .map(robot => [robot.name, robot.model])
+        .map((robot) => [robot.name, robot.model])
         .forEach((robotInfo: string[]) => {
           const robotKey = `${robotInfo[0]}_${robotInfo[1]}`;
           robotsFleet[robotKey] = fleet.name;
@@ -56,9 +58,9 @@ export const RobotsOverlay = React.memo((props: RobotsOverlayProps) => {
     if (!currentFloorName) {
       return [];
     }
-    return fleets.flatMap(x => ({
+    return fleets.flatMap((x) => ({
       fleet: x.name,
-      robots: x.robots.filter(r => r.location.level_name === currentFloorName),
+      robots: x.robots.filter((r) => r.location.level_name === currentFloorName),
     }));
   }, [fleets, currentFloorName]);
 
@@ -71,13 +73,14 @@ export const RobotsOverlay = React.memo((props: RobotsOverlayProps) => {
     <SVGOverlay {...otherProps}>
       <svg viewBox={viewBox}>
         {robotsInCurLevel.map(({ fleet, robots }) =>
-          robots.map(robot => (
+          robots.map((robot) => (
             <Robot
               key={robot.name}
               robot={robot}
               fleetName={fleetContainer[`${robot.name}_${robot.model}`]}
               footprint={footprint}
               colorManager={colorManager}
+              robotHandler={robotResourcesContext}
               onClick={handleRobotClick}
               inConflict={inConflict(robot.name)}
             />
