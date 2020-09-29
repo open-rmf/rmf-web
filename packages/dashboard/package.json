@@ -101,23 +101,10 @@
     "concurrently": "^5.3.0",
     "enzyme-to-json": "^3.5.0",
     "gh-pages": "^3.1.0",
-    "husky": "^4.3.0",
-    "lint-staged": "^10.3.0",
-    "prettier": "^2.1.1",
     "serve": "^11.3.2",
     "ts-node": "^9.0.0",
     "typescript": "^3.9.7",
     "wdio-chromedriver-service": "^6.0.4"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
-      "prettier --write"
-    ]
   },
   "jest": {
     "collectCoverageFrom": [
