@@ -4,6 +4,7 @@
   "private": true,
   "homepage": ".",
   "scripts": {
+    "preinstall": "node ../../scripts/install.js api-server",
     "start": ". e2e/env.sh && concurrently npm:start:api npm:start:auth npm:start:rmf npm:start:react",
     "start:react-auth": ". e2e/env.sh && concurrently npm:start:auth npm:start:react",
     "start:docker": ". e2e/env.sh && scripts/dockert docker-compose -f docker/docker-compose.yml up dev",

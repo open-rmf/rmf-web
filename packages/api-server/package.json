@@ -4,6 +4,7 @@
   "description": "web + data server for romi-dashboard",
   "main": "src/index.js",
   "scripts": {
+    "preinstall": "node ../../scripts/install.js",
     "start": "ts-node index.ts",
     "build": "tsc --build",
     "clean": "tsc --build --clean",
