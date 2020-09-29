@@ -29,8 +29,11 @@ jobs:
           registry-url: # optional
           # Optional scope for authenticating against scoped registries
           scope: # optional
+      - name: lerna bootstrap
+        run: . /opt/rmf/setup.bash && npm ci --unsafe-perm && npx lerna bootstrap
+        working-directory: .
       - name: build
-        run: . /opt/rmf/setup.bash && npm ci --unsafe-perm && npm run build
+        run: . /opt/rmf/setup.bash && npm run build
       - name: unit test
         run: npm run test:coverage
       - name: Upload coverage to Codecov
