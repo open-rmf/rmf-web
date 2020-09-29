@@ -1,5 +1,5 @@
 /node_modules/
 
 # typescript output
-**/*.js
+src/**/*.js
 **/*.d.ts
