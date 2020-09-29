@@ -70,6 +70,7 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
     defaults:
       run:
+        shell: bash
         working-directory: packages/api-server
     steps:
       - uses: actions/checkout@v2
@@ -77,6 +78,6 @@ jobs:
         with:
           node-version: 12
       - name: build
-        run: npm ci
+        run: . /opt/rmf/setup.bash && npm ci
       - name: test
         run: npm test
