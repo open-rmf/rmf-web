@@ -8,13 +8,11 @@ export interface DashboardTourProps {
   tourProps: {
     tourState: boolean;
     setTourState: React.Dispatch<React.SetStateAction<boolean>>;
-    OmniPanelViewIndex: typeof OmniPanelViewIndex;
-    setTourShowOmniPanel: (view: OmniPanelViewIndex) => void;
-    setTourSettingsAndOmniPanel: (
-      isSettingsVisible: boolean,
-      isOmniPanelVisible: boolean,
-      clearSpotlight?: boolean | undefined,
-    ) => void;
+    setShowSettings: React.Dispatch<React.SetStateAction<boolean>>;
+    setShowOmniPanel: React.Dispatch<React.SetStateAction<boolean>>;
+    setShowHelp: React.Dispatch<React.SetStateAction<boolean>>;
+    clearSpotlights: () => void;
+    setCurrentView: React.Dispatch<React.SetStateAction<OmniPanelViewIndex>>;
     doorSpotlight: SpotlightValue<string> | undefined;
     setDoorSpotlight: React.Dispatch<React.SetStateAction<SpotlightValue<string> | undefined>>;
   };
@@ -26,9 +24,11 @@ export const DashboardTour = React.memo(
       tourProps: {
         tourState,
         setTourState,
-        setTourSettingsAndOmniPanel,
-        setTourShowOmniPanel,
-        OmniPanelViewIndex,
+        setShowSettings,
+        setShowOmniPanel,
+        setShowHelp,
+        clearSpotlights,
+        setCurrentView,
         doorSpotlight,
         setDoorSpotlight,
       },
@@ -36,9 +36,11 @@ export const DashboardTour = React.memo(
 
     const tourFunctions = {
       setTourState,
-      setTourShowOmniPanel,
-      setTourSettingsAndOmniPanel,
-      OmniPanelViewIndex,
+      setShowSettings,
+      setShowOmniPanel,
+      setShowHelp,
+      clearSpotlights,
+      setCurrentView,
       doorSpotlight,
       setDoorSpotlight,
     };
@@ -51,7 +53,10 @@ export const DashboardTour = React.memo(
         onRequestClose={() => {
           localStorage.setItem('tourComplete', 'true');
           setTourState(false);
-          setTourShowOmniPanel(OmniPanelViewIndex.MainMenu);
+          setShowSettings(false);
+          setShowHelp(false);
+          setShowOmniPanel(true);
+          setCurrentView(OmniPanelViewIndex.MainMenu);
         }}
         badgeContent={(curr, tot) => `${curr} of ${tot}`}
         accentColor={theme.palette.primary.main}

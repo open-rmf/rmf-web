@@ -7,13 +7,11 @@ import { tourText, stepDetails, stepStyling } from './tour-data';
 import { NavButtons } from './tour-navigation-control';
 interface createTourProps {
   setTourState: React.Dispatch<React.SetStateAction<boolean>>;
-  setTourShowOmniPanel: (view: OmniPanelViewIndex) => void;
-  setTourSettingsAndOmniPanel: (
-    isSettingsVisible: boolean,
-    isOmniPanelVisible: boolean,
-    clearSpotlight?: boolean | undefined,
-  ) => void;
-  OmniPanelViewIndex: typeof OmniPanelViewIndex;
+  setShowSettings: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowOmniPanel: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowHelp: React.Dispatch<React.SetStateAction<boolean>>;
+  clearSpotlights: () => void;
+  setCurrentView: React.Dispatch<React.SetStateAction<OmniPanelViewIndex>>;
   doorSpotlight: SpotlightValue<string> | undefined;
   setDoorSpotlight: React.Dispatch<React.SetStateAction<SpotlightValue<string> | undefined>>;
 }
@@ -21,12 +19,26 @@ interface createTourProps {
 export const createTourSteps = (props: createTourProps) => {
   const {
     setTourState,
-    setTourSettingsAndOmniPanel,
-    setTourShowOmniPanel,
-    OmniPanelViewIndex,
+    setShowSettings,
+    setShowOmniPanel,
+    setShowHelp,
+    clearSpotlights,
+    setCurrentView,
     doorSpotlight,
     setDoorSpotlight,
   } = props;
+
+  const showSettingsOmniPanelHelpClearSpotlight = (
+    isSettingsVisible: boolean,
+    isOmniPanelVisible: boolean,
+    isHelpVisible: boolean,
+    clearSpotlight: boolean,
+  ): void => {
+    setShowSettings(isSettingsVisible);
+    setShowOmniPanel(isOmniPanelVisible);
+    setShowHelp(isHelpVisible);
+    clearSpotlight && clearSpotlights();
+  };
 
   const theme = createMuiTheme();
   const stepStyle: stepStyling = {
@@ -44,7 +56,7 @@ export const createTourSteps = (props: createTourProps) => {
           <NavButtons goTo={goTo} step={step} />
         </Box>
       ),
-      action: () => setTourSettingsAndOmniPanel(false, false, true),
+      action: () => showSettingsOmniPanelHelpClearSpotlight(false, false, false, true),
     },
     zoomButtons: {
       selector: '[class="leaflet-control-zoom leaflet-bar leaflet-control"]',
@@ -54,7 +66,7 @@ export const createTourSteps = (props: createTourProps) => {
           <NavButtons goTo={goTo} step={step} />
         </Box>
       ),
-      action: () => setTourSettingsAndOmniPanel(false, false, true),
+      action: () => showSettingsOmniPanelHelpClearSpotlight(false, false, false, true),
     },
     floorPlan: {
       selector: '[class= "leaflet-control-layers leaflet-control"]',
@@ -64,7 +76,7 @@ export const createTourSteps = (props: createTourProps) => {
           <NavButtons goTo={goTo} step={step} />
         </Box>
       ),
-      action: () => setTourSettingsAndOmniPanel(false, false, true),
+      action: () => showSettingsOmniPanelHelpClearSpotlight(false, false, false, true),
     },
     leaflet: {
       selector: '[class="leaflet-image-layer leaflet-zoom-animated"]',
@@ -74,7 +86,7 @@ export const createTourSteps = (props: createTourProps) => {
           <NavButtons goTo={goTo} step={step} />
         </Box>
       ),
-      action: () => setTourSettingsAndOmniPanel(false, false, true),
+      action: () => showSettingsOmniPanelHelpClearSpotlight(false, false, false, true),
     },
     omnipanelButton: {
       selector: '[id="toggle-omnipanel-btn"]',
@@ -84,7 +96,10 @@ export const createTourSteps = (props: createTourProps) => {
           <NavButtons
             goTo={goTo}
             step={step}
-            handleNextClick={() => setTourShowOmniPanel(OmniPanelViewIndex.MainMenu)}
+            handleNextClick={() => {
+              showSettingsOmniPanelHelpClearSpotlight(false, true, false, false);
+              setCurrentView(OmniPanelViewIndex.MainMenu);
+            }}
           />
         </Box>
       ),
@@ -107,7 +122,8 @@ export const createTourSteps = (props: createTourProps) => {
             goTo={goTo}
             step={step}
             handleNextClick={() => {
-              setTourShowOmniPanel(OmniPanelViewIndex.Doors);
+              showSettingsOmniPanelHelpClearSpotlight(false, true, false, false);
+              setCurrentView(OmniPanelViewIndex.Doors);
               if (!doorSpotlight) {
                 setDoorSpotlight({ value: 'main_door' });
               }
@@ -125,10 +141,12 @@ export const createTourSteps = (props: createTourProps) => {
             goTo={goTo}
             step={step}
             handleNextClick={() => {
-              setTourShowOmniPanel(OmniPanelViewIndex.MainMenu);
+              showSettingsOmniPanelHelpClearSpotlight(false, true, false, false);
+              setCurrentView(OmniPanelViewIndex.Doors);
             }}
             handleBackClick={() => {
-              setTourShowOmniPanel(OmniPanelViewIndex.MainMenu);
+              showSettingsOmniPanelHelpClearSpotlight(false, true, false, false);
+              setCurrentView(OmniPanelViewIndex.MainMenu);
             }}
           />
         </Box>
@@ -143,10 +161,12 @@ export const createTourSteps = (props: createTourProps) => {
             goTo={goTo}
             step={step}
             handleNextClick={() => {
-              setTourShowOmniPanel(OmniPanelViewIndex.Commands);
+              showSettingsOmniPanelHelpClearSpotlight(false, true, false, false);
+              setCurrentView(OmniPanelViewIndex.Commands);
             }}
             handleBackClick={() => {
-              setTourShowOmniPanel(OmniPanelViewIndex.Doors);
+              showSettingsOmniPanelHelpClearSpotlight(false, true, false, false);
+              setCurrentView(OmniPanelViewIndex.Doors);
             }}
           />
         </Box>
@@ -161,10 +181,11 @@ export const createTourSteps = (props: createTourProps) => {
             goTo={goTo}
             step={step}
             handleNextClick={() => {
-              setTourSettingsAndOmniPanel(false, false);
+              showSettingsOmniPanelHelpClearSpotlight(false, false, false, false);
             }}
             handleBackClick={() => {
-              setTourShowOmniPanel(OmniPanelViewIndex.MainMenu);
+              showSettingsOmniPanelHelpClearSpotlight(false, true, false, false);
+              setCurrentView(OmniPanelViewIndex.MainMenu);
             }}
           />
         </Box>
@@ -178,10 +199,13 @@ export const createTourSteps = (props: createTourProps) => {
           <NavButtons
             goTo={goTo}
             step={step}
-            handleNextClick={() => {
-              setTourSettingsAndOmniPanel(true, false, true);
+            handleNextClick={() =>
+              showSettingsOmniPanelHelpClearSpotlight(true, false, false, false)
+            }
+            handleBackClick={() => {
+              showSettingsOmniPanelHelpClearSpotlight(false, true, false, false);
+              setCurrentView(OmniPanelViewIndex.Commands);
             }}
-            handleBackClick={() => setTourShowOmniPanel(OmniPanelViewIndex.Commands)}
           />
         </Box>
       ),
@@ -194,15 +218,12 @@ export const createTourSteps = (props: createTourProps) => {
           <NavButtons
             goTo={goTo}
             step={step}
-            handleNextClick={() => {
-              setTourSettingsAndOmniPanel(false, true, true);
-              setTourShowOmniPanel(OmniPanelViewIndex.MainMenu);
-              setTourState(false);
-            }}
-            handleBackClick={() => {
-              setTourSettingsAndOmniPanel(false, true, true);
-            }}
-            lastStep={true}
+            handleNextClick={() =>
+              showSettingsOmniPanelHelpClearSpotlight(false, false, false, true)
+            }
+            handleBackClick={() =>
+              showSettingsOmniPanelHelpClearSpotlight(false, false, false, true)
+            }
           />
         </Box>
       ),
@@ -211,7 +232,7 @@ export const createTourSteps = (props: createTourProps) => {
 
   const tourSteps: ReactourStep[] = [];
 
-  for (var key in tourContent) {
+  for (let key in tourContent) {
     tourSteps.push({
       selector: tourContent[key].selector,
       content: tourContent[key].content,

@@ -361,23 +361,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
     [classes.topLeftBorder, classes.topRightBorder],
   );
 
-  const setTourSettingsAndOmniPanel = (
-    isSettingsVisible: boolean,
-    isOmniPanelVisible: boolean,
-    clearSpotlight?: boolean,
-  ): void => {
-    if (clearSpotlight) {
-      clearSpotlights();
-    }
-    setShowSettings(isSettingsVisible);
-    setShowOmniPanel(isOmniPanelVisible);
-  };
-
-  const setTourShowOmniPanel = (view: OmniPanelViewIndex): void => {
-    setTourSettingsAndOmniPanel(false, true, false);
-    setCurrentView(view);
-  };
-
   const tourComplete = localStorage.getItem('tourComplete');
   React.useEffect(() => {
     if (tourComplete === 'true') {
@@ -390,9 +373,11 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const tourProps = {
     tourState,
     setTourState,
-    setTourSettingsAndOmniPanel,
-    setTourShowOmniPanel,
-    OmniPanelViewIndex,
+    setShowSettings,
+    setShowOmniPanel,
+    setShowHelp,
+    clearSpotlights,
+    setCurrentView,
     doorSpotlight,
     setDoorSpotlight,
   };
