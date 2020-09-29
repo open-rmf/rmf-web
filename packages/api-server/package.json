@@ -1,5 +1,5 @@
 {
-  "name": "@osrf/romi-js-api-server",
+  "name": "api-server",
   "version": "0.0.1",
   "description": "web + data server for romi-dashboard",
   "main": "index.js",
@@ -8,6 +8,7 @@
     "build": "tsc --build",
     "clean": "tsc --build --clean",
     "prepack": "npm ci && npm run clean && npm run build",
+    "prepare": "npm run build",
     "test": "jest"
   },
   "author": "koonpeng@openrobotics.org",
@@ -38,7 +39,7 @@
     "typescript": "^4.0.2"
   },
   "bin": {
-    "romi-js-api-server": "src/index.js"
+    "api-server": "src/index.js"
   },
   "files": [
     "src/**/*.js",

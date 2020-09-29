@@ -83,7 +83,6 @@
     "uuid": "^8.3.0"
   },
   "devDependencies": {
-    "@osrf/romi-js-api-server": "git://github.com/osrf/romi-js-api-server.git#master",
     "@storybook/addon-actions": "^6.0.21",
     "@storybook/addon-links": "^6.0.21",
     "@storybook/addons": "^6.0.21",
@@ -97,6 +96,7 @@
     "@wdio/mocha-framework": "^6.4.7",
     "@wdio/spec-reporter": "^6.4.7",
     "@wdio/sync": "^6.4.7",
+    "api-server": "file:../api-server",
     "chromedriver": "^85.0.1",
     "concurrently": "^5.3.0",
     "enzyme-to-json": "^3.5.0",
