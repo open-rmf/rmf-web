@@ -8,7 +8,7 @@ import {
   IconButton,
 } from '@material-ui/core';
 import React from 'react';
-import DrawerHeader from './help-drawer-header';
+import DrawerHeader from './drawer-header';
 import MenuBookIcon from '@material-ui/icons/MenuBook';
 import DirectionsIcon from '@material-ui/icons/Directions';
 import BugReportIcon from '@material-ui/icons/BugReport';

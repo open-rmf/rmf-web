@@ -21,6 +21,17 @@ describe('ui interactions', () => {
     expect($(`[data-component=DoorItem][data-name=${doorName}] [data-role=details]`)).toBeVisible();
   });
 
+  it('clicking a dispenser on the map focuses it on the panel', () => {
+    const dispenser = $('[data-component=Dispenser][data-state=true]');
+    const dispenserName = dispenser.getAttribute('data-name');
+    console.log(dispenserName);
+    dispenser.click();
+
+    expect(
+      $(`[data-component=DispenserItem][data-name=${dispenserName}] [data-role=details]`),
+    ).toBeVisible();
+  });
+
   it('clicking a robot on the map focuses it on the panel', () => {
     const robot = $('[data-component=Robot]');
     const robotName = robot.getAttribute('aria-label');

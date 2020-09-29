@@ -1,44 +1,56 @@
 import axios from 'axios';
-
-export interface RobotResource {
-  icons: Record<string, string>; // Record<ModelName|FleetName, IconPath>
-}
+import { RobotResourceManager, RobotResource } from './resource-manager-robots';
+import { DispenserResourceManager, RawDispenserResource } from './resource-manager-dispensers';
 
 export interface ResourceConfigurationsType {
-  robots?: Record<string, RobotResource>; // Record<FleetName, RobotResource>
+  robots: Record<string, RobotResource>; // Record<FleetName, RobotResource>
+  dispensers?: Record<string, RawDispenserResource>; // Record<DispenserName, DispenserResource>
+}
+
+interface ResourceManagersProps extends ResourceConfigurationsType {
+  robots: Record<string, RobotResource>;
 }
 
 export default class ResourceManager {
-  static getResourceConfigurationFile = async (): Promise<ResourceConfigurationsType> => {
+  robots: RobotResourceManager;
+  dispensers: DispenserResourceManager | undefined;
+
+  static getResourceConfigurationFile = async (): Promise<ResourceManager | undefined> => {
     try {
       // Gets data served by the project itself
       const response = await axios.get('/assets/icons/main.json');
-      return response.data as ResourceConfigurationsType;
+      const resources = response.data as ResourceConfigurationsType;
+      return ResourceManager.resourceManagerFactory(resources);
     } catch (error) {
       console.error(error);
-      return {};
+      return undefined;
     }
   };
 
-  static getRobotIconPath(
-    resources: ResourceConfigurationsType,
-    fleetName: string,
-    robotModel?: string | undefined,
-  ): string | null {
-    if (!resources.robots || !resources.robots.hasOwnProperty(fleetName)) {
-      return null;
+  static resourceManagerFactory = (
+    resources: ResourceConfigurationsType | undefined,
+  ): ResourceManager => {
+    if (!resources) {
+      return {} as ResourceManager;
     }
-    if (!resources.robots[fleetName].hasOwnProperty('icons')) {
-      return null;
+
+    if (resources.robots && !Object.keys(resources.robots).length) {
+      return {} as ResourceManager;
     }
-    const rootIconPath = '/assets/icons';
-    const robotIcons = resources.robots[fleetName].icons;
-    // In case the fleet has different models
-    if (!!robotModel && robotIcons.hasOwnProperty(robotModel)) {
-      const iconPath = robotIcons[robotModel];
-      return `${rootIconPath}${iconPath}`;
-    } else {
-      return `${rootIconPath}${robotIcons[fleetName]}`;
+
+    if (resources?.dispensers && !Object.keys(resources.dispensers).length) {
+      const data = Object.assign({}, resources);
+      delete data['dispensers'];
+      return new ResourceManager(data as ResourceManagersProps);
+    }
+
+    return new ResourceManager(resources as ResourceManagersProps);
+  };
+
+  constructor(resources: ResourceManagersProps) {
+    this.robots = new RobotResourceManager(resources.robots);
+    if (resources.dispensers) {
+      this.dispensers = new DispenserResourceManager(resources.dispensers);
     }
   }
 }

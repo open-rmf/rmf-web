@@ -6,12 +6,13 @@ import {
   Typography,
 } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
+import { LoopForm } from './loop-form';
+import { RobotDeliveryForm } from './delivery-form';
+import { v4 as uuidv4 } from 'uuid';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import React from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import { RobotDeliveryForm } from './delivery-form';
-import { LoopForm } from './loop-form';
+import { ResourcesContext } from './app-contexts';
 
 const debug = Debug('OmniPanel:CommandsPanel');
 
@@ -115,6 +116,8 @@ export const CommandsPanel = React.memo((props: CommandsPanelProps) => {
     [transport],
   );
 
+  const resourcesContext = React.useContext(ResourcesContext);
+
   const handleRequestLoop = (
     fleetName: string,
     numLoops: number,
@@ -142,31 +145,47 @@ export const CommandsPanel = React.memo((props: CommandsPanelProps) => {
       dropOffBehavior,
     );
   };
-
+  // If we don't have a configuration file with robots and places we should not render the commands forms because we will not be able to execute those commands.
   return (
     <React.Fragment>
-      <Accordion data-component="LoopForm">
-        <AccordionSummary
-          classes={{ content: classes.accordionSummaryContent }}
-          expandIcon={<ExpandMoreIcon />}
-        >
-          <Typography variant="h5">Loop Request</Typography>
-        </AccordionSummary>
-        <AccordionDetails className={classes.accordionDetail}>
-          <LoopForm requestLoop={handleRequestLoop} fleetNames={allFleets} />
-        </AccordionDetails>
-      </Accordion>
-      <Accordion data-component="DeliveryForm">
-        <AccordionSummary
-          classes={{ content: classes.accordionSummaryContent }}
-          expandIcon={<ExpandMoreIcon />}
-        >
-          <Typography variant="h5">Delivery Request</Typography>
-        </AccordionSummary>
-        <AccordionDetails className={classes.accordionDetail}>
-          <RobotDeliveryForm requestDelivery={handleDeliveryRequest} fleetNames={allFleets} />
-        </AccordionDetails>
-      </Accordion>
+      {!!resourcesContext?.robots ? (
+        <>
+          <Accordion data-component="LoopForm">
+            <AccordionSummary
+              classes={{ content: classes.accordionSummaryContent }}
+              expandIcon={<ExpandMoreIcon />}
+            >
+              <Typography variant="h5">Loop Request</Typography>
+            </AccordionSummary>
+            <AccordionDetails className={classes.accordionDetail}>
+              <LoopForm
+                requestLoop={handleRequestLoop}
+                fleetNames={allFleets}
+                robotHandler={resourcesContext.robots}
+              />
+            </AccordionDetails>
+          </Accordion>
+          <Accordion data-component="DeliveryForm">
+            <AccordionSummary
+              classes={{ content: classes.accordionSummaryContent }}
+              expandIcon={<ExpandMoreIcon />}
+            >
+              <Typography variant="h5">Delivery Request</Typography>
+            </AccordionSummary>
+            <AccordionDetails className={classes.accordionDetail}>
+              <RobotDeliveryForm
+                requestDelivery={handleDeliveryRequest}
+                fleetNames={allFleets}
+                robotHandler={resourcesContext.robots}
+              />
+            </AccordionDetails>
+          </Accordion>
+        </>
+      ) : (
+        <Typography id={'no-config-file-error-msg'} className={classes.errorText}>
+          There was an error while loading the commands panel (unable to load resources metadata).
+        </Typography>
+      )}
     </React.Fragment>
   );
 });
@@ -181,5 +200,9 @@ export const useStyles = makeStyles((theme) => ({
   accordionDetail: {
     flexFlow: 'column',
     paddingLeft: '0.1rem',
+  },
+  errorText: {
+    padding: '1rem',
+    color: theme.palette.error.main,
   },
 }));

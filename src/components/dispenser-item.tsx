@@ -82,7 +82,12 @@ export const DispenserItem = React.memo(
     }
 
     return (
-      <Accordion ref={ref} {...otherProps}>
+      <Accordion
+        ref={ref}
+        data-component="DispenserItem"
+        data-name={dispenserState.guid}
+        {...otherProps}
+      >
         <AccordionSummary
           classes={{ content: classes.accordionSummaryContent }}
           expandIcon={<ExpandMoreIcon />}
@@ -93,7 +98,7 @@ export const DispenserItem = React.memo(
             modeText={dispenserModeToString()}
           />
         </AccordionSummary>
-        <AccordionDetails className={classes.accordionDetail}>
+        <AccordionDetails data-role="details" className={classes.accordionDetail}>
           <div className={classes.accordionDetailLine}>
             <Typography variant="body1">Name:</Typography>
             <Typography variant="body1">{dispenserState.guid}</Typography>
