@@ -1,4 +1,4 @@
-name: Dashboard Pull Requests
+name: Pull Requests
 on:
   pull_request:
   push:
