@@ -1,7 +1,13 @@
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 
 const headlessArgs = process.env.CI ? ['--headless', '--disable-gpu'] : [];
+const chromeArgs = [...headlessArgs];
+if (os.userInfo().uid === 0) {
+  chromeArgs.push('--no-sandbox');
+}
+
 const port = process.env.ROMI_DASHBOARD_PORT;
 exports.config = {
   //
@@ -67,7 +73,7 @@ exports.config = {
         binary: process.env.CHROME_BIN || undefined,
         // to run chrome headless the following flags are required
         // (see https://developers.google.com/web/updates/2017/04/headless-chrome)
-        args: [...headlessArgs, '--window-size=1366,768'],
+        args: [...chromeArgs, '--window-size=1366,768'],
       },
     },
   ],
