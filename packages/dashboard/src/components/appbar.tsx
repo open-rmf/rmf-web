@@ -14,7 +14,7 @@ import React from 'react';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
 import HelpIcon from '@material-ui/icons/Help';
 import NotificationsActiveIcon from '@material-ui/icons/NotificationsActive';
-import { verificationAlert } from '../util/alerts';
+import { Alerts } from '../util/alerts';
 
 export interface AppBarProps {
   toggleShowOmniPanel(): void;
@@ -38,7 +38,7 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
   }
 
   const handleAlarm = (): void => {
-    verificationAlert({
+    Alerts.verification({
       confirmCallback: () => console.log('accepted'),
       body: `You're about to fire an alarm! The robots will head to their nearest holding points. Once you accept this there is no turning back.`,
     });

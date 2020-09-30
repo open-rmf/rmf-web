@@ -1,7 +1,7 @@
 import { makeStyles, TextField, Button } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useState, useEffect } from 'react';
-import { successMsg } from '../util/alerts';
+import { Alerts } from '../util/alerts';
 import { TLoopRequest } from './commands-panel';
 import { RobotResourceManager } from '../resource-manager-robots';
 interface LoopFormProps {
@@ -69,7 +69,7 @@ export const LoopForm = (props: LoopFormProps) => {
     event.preventDefault();
     if (isFormValid()) {
       requestLoop(targetFleetName, numLoops, startLocation, finishLocation);
-      successMsg('Success');
+      Alerts.success('Success');
       cleanUpForm();
     }
   };
