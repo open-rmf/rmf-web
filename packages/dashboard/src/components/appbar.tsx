@@ -13,6 +13,8 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import React from 'react';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
 import HelpIcon from '@material-ui/icons/Help';
+import NotificationsActiveIcon from '@material-ui/icons/NotificationsActive';
+import { verificationAlert } from '../util/alerts';
 
 export interface AppBarProps {
   toggleShowOmniPanel(): void;
@@ -35,6 +37,13 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
     }
   }
 
+  const handleAlarm = (): void => {
+    verificationAlert({
+      confirmCallback: () => console.log('accepted'),
+      body: `You're about to fire an alarm! The robots will head to their nearest holding points. Once you accept this there is no turning back.`,
+    });
+  };
+
   return (
     <MuiAppBar id="appbar" position="static">
       <Toolbar>
@@ -51,6 +60,9 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
         </IconButton>
         {user && (
           <>
+            <IconButton id="alarm-btn" color="secondary" onClick={handleAlarm}>
+              <NotificationsActiveIcon />
+            </IconButton>
             <IconButton
               id="user-btn"
               color="inherit"
