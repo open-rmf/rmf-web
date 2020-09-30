@@ -136,11 +136,11 @@ export const RobotDeliveryForm = (props: DeliveryFormProps): React.ReactElement 
     <form className={classes.form} onSubmit={handleDeliveryRequest}>
       <div className={classes.divForm}>
         <Autocomplete
-          getOptionLabel={option => option}
+          getOptionLabel={(option) => option}
           onChange={(e, value) => setTargetFleetName(value || fleetNames[0])}
           options={fleetNames}
           id={'deliveryFleet'}
-          renderInput={params => (
+          renderInput={(params) => (
             <TextField
               {...params}
               label="Choose Target Fleet"
@@ -156,11 +156,11 @@ export const RobotDeliveryForm = (props: DeliveryFormProps): React.ReactElement 
 
       <div className={classes.divForm}>
         <Autocomplete
-          getOptionLabel={option => option}
+          getOptionLabel={(option) => option}
           onChange={(e, value) => setPickupPlaceName(value || '')}
           options={listOfPlaces ? listOfPlaces : []}
           id={'pickupPlace'}
-          renderInput={params => (
+          renderInput={(params) => (
             <TextField
               {...params}
               error={!!pickupPlaceNameError}
@@ -176,11 +176,11 @@ export const RobotDeliveryForm = (props: DeliveryFormProps): React.ReactElement 
 
       <div className={classes.divForm}>
         <Autocomplete
-          getOptionLabel={option => option}
+          getOptionLabel={(option) => option}
           onChange={(e, value) => setPickupDispenser(value || '')}
           options={dispensersFromPickUpPlace}
           id={'pickupDispenser'}
-          renderInput={params => (
+          renderInput={(params) => (
             <TextField
               {...params}
               error={!!pickupDispenserError}
@@ -196,11 +196,11 @@ export const RobotDeliveryForm = (props: DeliveryFormProps): React.ReactElement 
 
       <div className={classes.divForm}>
         <Autocomplete
-          getOptionLabel={option => option}
+          getOptionLabel={(option) => option}
           onChange={(e, value) => setDropOffPlaceName(value || '')}
           options={listOfPlaces ? listOfPlaces : []}
           id="dropoffPlace"
-          renderInput={params => (
+          renderInput={(params) => (
             <TextField
               {...params}
               error={!!dropOffPlaceNameError}
@@ -216,11 +216,11 @@ export const RobotDeliveryForm = (props: DeliveryFormProps): React.ReactElement 
 
       <div className={classes.divForm}>
         <Autocomplete
-          getOptionLabel={option => option}
+          getOptionLabel={(option) => option}
           onChange={(e, value) => setDropOffDispenser(value || '')}
           options={dispensersFromDropOffPlace}
           id="dropoffDispenser"
-          renderInput={params => (
+          renderInput={(params) => (
             <TextField
               {...params}
               error={!!dropOffDispenserError}
