@@ -1,5 +1,5 @@
 import React from 'react';
-import { createMount, createShallow } from '@material-ui/core/test-utils';
+import { createShallow } from '@material-ui/core/test-utils';
 import HelpDrawer from '../help-drawer';
 
 const mount = createShallow();

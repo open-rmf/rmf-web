@@ -23,7 +23,6 @@ exports[`Hotkeys Dialog Component renders correctly 1`] = `
       <div
         className="makeStyles-detailLine-1"
         detail-type="hotkeyDetail"
-        key="Open Commands"
       >
         <WithStyles(ForwardRef(Typography))
           variant="body1"

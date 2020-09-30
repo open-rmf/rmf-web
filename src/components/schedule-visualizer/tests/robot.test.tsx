@@ -27,10 +27,7 @@ it('fires click event', async () => {
       />
     </svg>,
   );
-  root
-    .find(Robot)
-    .at(0)
-    .simulate('click');
+  root.find(Robot).at(0).simulate('click');
   expect(clicked).toBe(true);
 
   root.unmount();
