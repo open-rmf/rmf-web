@@ -49,7 +49,7 @@ jobs:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
       options:
-        net: host
+        - net: host
     defaults:
       run:
         shell: bash
