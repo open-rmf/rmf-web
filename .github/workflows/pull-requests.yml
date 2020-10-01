@@ -10,11 +10,6 @@ jobs:
   dashboard-unit-test:
     name: Dashboard Unit Test
     runs-on: ubuntu-latest
-    container:
-      image: docker.pkg.github.com/osrf/romi-dashboard/e2e:foxy
-      credentials:
-        username: ${{ github.repository_owner }}
-        password: ${{ secrets.GITHUB_TOKEN }}
     defaults:
       run:
         shell: bash
@@ -29,13 +24,14 @@ jobs:
           registry-url: # optional
           # Optional scope for authenticating against scoped registries
           scope: # optional
-      - name: set npm config
-        run: npm config set unsafe-perm=true
-        working-directory: .
-      - name: build
-        run: . /opt/rmf/setup.bash && npm ci && npm run build
+      - name: prepare
+        run: |
+          docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
+          npm run sync:docker
+          docker-compose -f docker/rmf/docker-compose.yml build
+          docker-compose -f docker/docker-compose.yml build e2e
       - name: unit test
-        run: . /opt/rmf/setup.bash && npm run test:coverage
+        run: docker-compose -f docker/docker-compose.yml up --exit-code-from unit-test unit-test
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
@@ -43,11 +39,6 @@ jobs:
   e2e-test:
     name: End-to-End Test
     runs-on: ubuntu-latest
-    container:
-      image: docker.pkg.github.com/osrf/romi-dashboard/e2e:foxy
-      credentials:
-        username: ${{ github.repository_owner }}
-        password: ${{ secrets.GITHUB_TOKEN }}
     defaults:
       run:
         shell: bash
@@ -57,11 +48,14 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 12
-      - name: set npm config
-        run: npm config set unsafe-perm=true
-        working-directory: .
+      - name: prepare
+        run: |
+          docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
+          npm run sync:docker
+          docker-compose -f docker/rmf/docker-compose.yml build
+          docker-compose -f docker/docker-compose.yml build e2e
       - name: e2e test
-        run: . /opt/rmf/setup.bash && npm ci && npm run test:e2e
+        run: docker-compose -f docker/docker-compose.yml up --exit-code-from e2e e2e
       - name: upload artifacts
         uses: actions/upload-artifact@v2
         if: ${{ always() }}

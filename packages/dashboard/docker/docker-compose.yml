@@ -14,29 +14,28 @@ services:
     image: docker.pkg.github.com/osrf/romi-dashboard/e2e
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ..:/root/romi-dashboard
-    working_dir: /root/romi-dashboard
+      - ../../..:/root/romi-dashboard
+    working_dir: /root/romi-dashboard/packages/dashboard
     environment:
       CI: 1
       CHROME_BIN: /chrome-no-sandbox
     ipc: host
     network_mode: host
     privileged: true
-    # need owner to be root for git ls-remote to work for some reason
-    command: bash -c 'rm -rf node_modules && mkdir node_modules && chgrp root node_modules && npm ci --unsafe-perm && (npm run test:e2e || npm run test:e2e || npm run test:e2e)'
+    command: bash -c 'npm ci --unsafe-perm && (npm run test:e2e || npm run test:e2e || npm run test:e2e)'
   unit-test:
     image: docker.pkg.github.com/osrf/romi-dashboard/e2e
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ..:/root/romi-dashboard
-    working_dir: /root/romi-dashboard
+      - ../../..:/root/romi-dashboard
+    working_dir: /root/romi-dashboard/packages/dashboard
     environment:
       CI: 1
     ipc: host
     network_mode: host
     privileged: true
     # need owner to be root for git ls-remote to work for some reason
-    command: bash -c 'rm -rf node_modules && mkdir node_modules && chgrp root node_modules && npm ci --unsafe-perm && npm run test:coverage'
+    command: bash -c 'npm ci --unsafe-perm && npm run test:coverage'
   dev:
     image: docker.pkg.github.com/osrf/romi-dashboard/e2e
     volumes:
