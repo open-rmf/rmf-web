@@ -6,7 +6,11 @@ const mount = createShallow();
 
 test('Renders correctly', () => {
   const root = mount(
-    <HelpDrawer handleCloseButton={() => jest.fn()} setShowHotkeyDialog={() => jest.fn()} />,
+    <HelpDrawer
+      handleCloseButton={() => jest.fn()}
+      setShowHotkeyDialog={() => jest.fn()}
+      showTour={() => jest.fn()}
+    />,
   );
   expect(root).toMatchSnapshot();
 });
