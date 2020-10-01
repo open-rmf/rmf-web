@@ -25,44 +25,41 @@ describe('Dashboard Tour', () => {
   const setDoorSpotlight: jest.Mock = jest.fn();
 
   let root: ReactWrapper;
-  let tour: ShallowWrapper;
   let expectedText: string;
   let stepText: string;
   let nextBtn: ReactWrapper;
+  const tourProps = {
+    tourState,
+    setTourState,
+    setShowSettings,
+    setShowOmniPanel,
+    setShowHelp,
+    clearSpotlights,
+    setCurrentView,
+    doorSpotlight,
+    setDoorSpotlight,
+  };
+  const wait = (delay = 0) => new Promise((resolve) => setTimeout(resolve, delay));
 
   beforeEach(() => {
-    const tourProps = {
-      tourState,
-      setTourState,
-      setShowSettings,
-      setShowOmniPanel,
-      setShowHelp,
-      clearSpotlights,
-      setCurrentView,
-      doorSpotlight,
-      setDoorSpotlight,
-    };
     root = mount(<DashboardTour tourProps={tourProps} />);
-    tour = shallow(<DashboardTour tourProps={tourProps} />);
-    nextBtn = root.find('#tour-next-btn').first();
+    nextBtn = root.find('[data-testid="next-btn"]').first();
   });
 
   afterEach(() => {
     root?.unmount();
   });
 
-  const wait = (delay = 0) => new Promise((resolve) => setTimeout(resolve, delay));
-
   it('renders without crashing', () => {
+    const tour = shallow(<DashboardTour tourProps={tourProps} />);
     expect(tour).toMatchSnapshot();
   });
 
   it('renders first welcome step', () => {
     expectedText = tourText.step1Welcome;
-    stepText = root.find('.reactour__helper--is-open').hostNodes().text();
+    stepText = root.find('[data-testid="stepBox"]').first().text();
 
     expect(stepText.includes(expectedText));
-    expect(root).toMatchSnapshot();
   });
 
   it('renders zoom button step', async () => {
@@ -70,10 +67,9 @@ describe('Dashboard Tour', () => {
     nextBtn.simulate('click');
     await wait(5);
 
-    stepText = root.find('.reactour__helper--is-open').hostNodes().text();
+    stepText = root.find('[data-testid="stepBox"]').first().text();
 
     expect(stepText.includes(expectedText));
-    expect(root).toMatchSnapshot();
   });
 
   it('renders floor plan button step', async () => {
@@ -83,10 +79,9 @@ describe('Dashboard Tour', () => {
       nextBtn.simulate('click');
       await wait(5);
     }
-    stepText = root.find('.reactour__helper--is-open').hostNodes().text();
+    stepText = root.find('[data-testid="stepBox"]').first().text();
 
     expect(stepText.includes(expectedText));
-    expect(root).toMatchSnapshot();
   });
 
   it('renders leaflet step', async () => {
@@ -96,10 +91,9 @@ describe('Dashboard Tour', () => {
       nextBtn.simulate('click');
       await wait(5);
     }
-    stepText = root.find('.reactour__helper--is-open').hostNodes().text();
+    stepText = root.find('[data-testid="stepBox"]').first().text();
 
     expect(stepText.includes(expectedText));
-    expect(root).toMatchSnapshot();
   });
 
   it('renders omnipanel button step', async () => {
@@ -109,10 +103,9 @@ describe('Dashboard Tour', () => {
       nextBtn.simulate('click');
       await wait(5);
     }
-    stepText = root.find('.reactour__helper--is-open').hostNodes().text();
+    stepText = root.find('[data-testid="stepBox"]').first().text();
 
     expect(stepText.includes(expectedText));
-    expect(root).toMatchSnapshot();
   });
 
   it('renders main menu step', async () => {
@@ -122,10 +115,9 @@ describe('Dashboard Tour', () => {
       nextBtn.simulate('click');
       await wait(5);
     }
-    stepText = root.find('.reactour__helper--is-open').hostNodes().text();
+    stepText = root.find('[data-testid="stepBox"]').first().text();
 
     expect(stepText.includes(expectedText));
-    expect(root).toMatchSnapshot();
   });
 
   it('renders door panel step', async () => {
@@ -135,10 +127,9 @@ describe('Dashboard Tour', () => {
       nextBtn.simulate('click');
       await wait(5);
     }
-    stepText = root.find('.reactour__helper--is-open').hostNodes().text();
+    stepText = root.find('[data-testid="stepBox"]').first().text();
 
     expect(stepText.includes(expectedText));
-    expect(root).toMatchSnapshot();
   });
 
   it('renders door tab step', async () => {
@@ -148,10 +139,9 @@ describe('Dashboard Tour', () => {
       nextBtn.simulate('click');
       await wait(5);
     }
-    stepText = root.find('.reactour__helper--is-open').hostNodes().text();
+    stepText = root.find('[data-testid="stepBox"]').first().text();
 
     expect(stepText.includes(expectedText));
-    expect(root).toMatchSnapshot();
   });
 
   it('renders commands panel step', async () => {
@@ -161,10 +151,9 @@ describe('Dashboard Tour', () => {
       nextBtn.simulate('click');
       await wait(5);
     }
-    stepText = root.find('.reactour__helper--is-open').hostNodes().text();
+    stepText = root.find('[data-testid="stepBox"]').first().text();
 
     expect(stepText.includes(expectedText));
-    expect(root).toMatchSnapshot();
   });
 
   it('renders loop request step', async () => {
@@ -174,10 +163,9 @@ describe('Dashboard Tour', () => {
       nextBtn.simulate('click');
       await wait(5);
     }
-    stepText = root.find('.reactour__helper--is-open').hostNodes().text();
+    stepText = root.find('[data-testid="stepBox"]').first().text();
 
     expect(stepText.includes(expectedText));
-    expect(root).toMatchSnapshot();
   });
 
   it('renders settings button step', async () => {
@@ -187,10 +175,9 @@ describe('Dashboard Tour', () => {
       nextBtn.simulate('click');
       await wait(5);
     }
-    stepText = root.find('.reactour__helper--is-open').hostNodes().text();
+    stepText = root.find('[data-testid="stepBox"]').first().text();
 
     expect(stepText.includes(expectedText));
-    expect(root).toMatchSnapshot();
   });
 
   it('renders traj anims step', async () => {
@@ -200,10 +187,9 @@ describe('Dashboard Tour', () => {
       nextBtn.simulate('click');
       await wait(5);
     }
-    stepText = root.find('.reactour__helper--is-open').hostNodes().text();
+    stepText = root.find('[data-testid="stepBox"]').first().text();
 
     expect(stepText.includes(expectedText));
-    expect(root).toMatchSnapshot();
   });
 
   it('renders help button step', async () => {
@@ -213,10 +199,9 @@ describe('Dashboard Tour', () => {
       nextBtn.simulate('click');
       await wait(5);
     }
-    stepText = root.find('.reactour__helper--is-open').hostNodes().text();
+    stepText = root.find('[data-testid="stepBox"]').first().text();
 
     expect(stepText.includes(expectedText));
-    expect(root).toMatchSnapshot();
   });
 
   it('renders help drawer step', async () => {
@@ -226,10 +211,9 @@ describe('Dashboard Tour', () => {
       nextBtn.simulate('click');
       await wait(5);
     }
-    stepText = root.find('.reactour__helper--is-open').hostNodes().text();
+    stepText = root.find('[data-testid="stepBox"]').first().text();
 
     expect(stepText.includes(expectedText));
-    expect(root).toMatchSnapshot();
   });
 
   it('closes the tour when last step button is clicked', async () => {
@@ -238,7 +222,7 @@ describe('Dashboard Tour', () => {
       await wait(5);
     }
 
-    root.find('#tour-last-step-btn').first().simulate('click');
+    root.find('[data-testid="last-step-btn"]').first().simulate('click');
 
     expect(setTourState).toHaveBeenCalledTimes(1);
   });

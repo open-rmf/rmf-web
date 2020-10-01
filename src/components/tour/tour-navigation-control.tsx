@@ -33,6 +33,7 @@ export const NavButtons = React.memo((props: NavButtonProps) => {
             goTo(step - 2);
           }}
           id="tour-back-btn"
+          data-testid="back-btn"
         >
           <NavigateBeforeIcon className={classes.navigation} />
         </IconButton>
@@ -44,6 +45,7 @@ export const NavButtons = React.memo((props: NavButtonProps) => {
             setTimeout(() => goTo(step), 5);
           }}
           id="tour-next-btn"
+          data-testid="next-btn"
         >
           <NavigateNextIcon className={classes.navigation} />
         </IconButton>
@@ -57,6 +59,7 @@ export const NavButtons = React.memo((props: NavButtonProps) => {
             localStorage.setItem('tourComplete', 'true');
           }}
           id="tour-last-step-btn"
+          data-testid="last-step-btn"
         >
           Start Using Romi
         </Button>
