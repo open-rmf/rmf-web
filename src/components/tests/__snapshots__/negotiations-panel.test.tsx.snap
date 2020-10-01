@@ -55,6 +55,7 @@ exports[`matches snapshot 1`] = `
       },
     }
   }
+  negotiationStatusUpdateTS={0}
 >
   <WithStyles(ForwardRef(Typography))
     component="span"

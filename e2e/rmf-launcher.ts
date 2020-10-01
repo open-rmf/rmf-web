@@ -91,8 +91,6 @@ export class LocalLauncher {
     }
     this._officeDemo = new ManagedProcess('ros2', officeDemoArgs, { stdio: 'inherit' });
 
-    this._soss = ChildProcess.spawn('soss', [`${__dirname}/soss.yaml`], { stdio: 'inherit' });
-
     this._visualizerServer = new ManagedProcess('ros2', ['launch', 'visualizer', 'server.xml'], {
       stdio: 'inherit',
     });
@@ -106,20 +104,14 @@ export class LocalLauncher {
   }
 
   async kill(): Promise<void> {
-    await Promise.all([
-      this._officeDemo?.kill('SIGINT'),
-      this._soss && this._killProcess(this._soss),
-      this._visualizerServer?.kill('SIGINT'),
-    ]);
+    await Promise.all([this._officeDemo?.kill('SIGINT'), this._visualizerServer?.kill('SIGINT')]);
     this._officeDemo = undefined;
-    this._soss = undefined;
     this._visualizerServer = undefined;
     this._launched = false;
   }
 
   private _launched = false;
   private _officeDemo?: ManagedProcess;
-  private _soss?: ChildProcess.ChildProcess;
   private _visualizerServer?: ManagedProcess;
 
   private async _killProcess(
@@ -161,7 +153,7 @@ export class LocalLauncher {
 }
 
 /**
- * A wrapper around soss process that helps manages spawned process and their subprocesses' life.
+ * A wrapper around child process that helps manages spawned process and their subprocesses' life.
  * It spawns processes in their own process groups. The `kill` method will kill the process and
  * all its childrens.
  *

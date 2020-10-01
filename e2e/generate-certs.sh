@@ -5,17 +5,12 @@ mkdir -p $certs_dir
 
 ca_key=$certs_dir/ca.key
 ca_cert=$certs_dir/ca.crt
-soss_key=$certs_dir/soss.key
-soss_cert=$certs_dir/soss.crt
 keycloak_key=$certs_dir/keycloak.key
 keycloak_cert=$certs_dir/keycloak.crt
 keycloak_pub=$certs_dir/keycloak.pub
 
 openssl genrsa -out $ca_key
 openssl req -out $ca_cert -nodes -key $ca_key -new -x509 -subj '/O=UNSAFE-Testing' -days 3650
-
-openssl genrsa -out $soss_key
-openssl req -nodes -key $soss_key -new -config $certs_dir/openssl.cnf | openssl x509 -req -CA $ca_cert -CAkey $ca_key -CAcreateserial -extfile $certs_dir/openssl.cnf -extensions usr_cert -days 3650 -out $soss_cert
 
 openssl genrsa -out $keycloak_key
 openssl req -nodes -key $keycloak_key -new -config $certs_dir/openssl.cnf | openssl x509 -req -CA $ca_cert -CAkey $ca_key -CAcreateserial -extfile $certs_dir/openssl.cnf -extensions v3_req -days 3650 -out $keycloak_cert
