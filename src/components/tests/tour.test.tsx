@@ -2,8 +2,7 @@ import { createMount, createShallow } from '@material-ui/core/test-utils';
 import React from 'react';
 import DashboardTour from '../tour/tour';
 import { SpotlightValue } from '../spotlight-value';
-import { ReactWrapper, ShallowWrapper } from 'enzyme';
-import { OmniPanelViewIndex } from '../dashboard';
+import { ReactWrapper } from 'enzyme';
 import { tourText } from '../tour/tour-data';
 
 /*react-leaflet does not work well on jsdom,
