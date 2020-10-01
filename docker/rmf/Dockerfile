@@ -2,7 +2,7 @@
 # Stage 1 - build
 #-----------------
 
-FROM ros:eloquent AS builder
+FROM ros:foxy AS builder
 
 # add gazebo/ignition repo
 RUN apt-get update && apt-get install -y curl wget \
@@ -11,27 +11,22 @@ RUN apt-get update && apt-get install -y curl wget \
 
 WORKDIR /root/rmf
 
-RUN mkdir src && cd src && \
-  git clone --depth 1 https://github.com/osrf/rmf_core && \
-  git clone --depth 1 https://github.com/osrf/traffic_editor && \
-  git clone --depth 1 https://github.com/osrf/rmf_schedule_visualizer && \
-  git clone --depth 1 https://github.com/osrf/soss && \
-  git clone --depth 1 https://github.com/osrf/rmf_demos && \
-  git clone --depth 1 https://github.com/osrf/rmf-soss-ros2
+RUN mkdir src && cd src \
+  && git clone --depth 1 https://github.com/osrf/rmf_core \
+  && git clone --depth 1 https://github.com/osrf/traffic_editor \
+  && git clone --depth 1 https://github.com/osrf/rmf_schedule_visualizer \
+  && git clone --depth 1 https://github.com/osrf/rmf_demos
 
 # install ros dependencies
 RUN apt-get update && rosdep update && rosdep install --from-paths src --ignore-src -yr
 
 # other dependencies
-RUN apt-get update && apt-get install -y g++-8 \
+RUN apt-get update && apt-get install -y \
   # needed by traffic editor
   libignition-common3-dev libignition-plugin-dev \
-  # needed by soss
-  ros-eloquent-test-msgs \
   && rm -rf /var/lib/apt/lists/*
 
 # build rmf
-ENV CXX=g++-8
 RUN /ros_entrypoint.sh colcon build --merge-install --cmake-args -DCMAKE_BUILD_TYPE=Release
 
 #----------
@@ -44,7 +39,7 @@ WORKDIR /root
 
 # TODO: rosdep doesn't support installing only exec dependencies (https://github.com/ros-infrastructure/rosdep/pull/727)
 #   When the PR is merged, we can do a multi-stage build and include only whats needed at runtime.
-# FROM ros:eloquent
+# FROM ros:foxy
 # COPY --from=0 /root/rmf/install /opt/rmf
 # RUN rosdep ...
 COPY --from=builder /root/rmf/install /opt/rmf

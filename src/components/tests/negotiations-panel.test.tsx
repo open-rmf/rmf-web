@@ -129,6 +129,7 @@ it('matches snapshot', () => {
       mapFloorLayerSorted={undefined}
       negotiationStatusManager={undefined}
       negotiationTrajStore={undefined}
+      negotiationStatusUpdateTS={0}
     />,
   );
 

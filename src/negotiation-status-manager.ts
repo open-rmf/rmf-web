@@ -114,7 +114,7 @@ export class NegotiationStatusManager extends EventEmitter<Events> {
         this.emit('updated');
       } else if (msg['type'] === 'negotiation_conclusion') {
         this._statusUpdateLastTS = Date.now();
-        
+
         const conflictVersion: number = msg['conflict_version'];
         const conflict = this._conflicts[conflictVersion.toString()];
 
@@ -197,7 +197,7 @@ export class NegotiationStatusManager extends EventEmitter<Events> {
   private _conflicts: Record<string, NegotiationConflict> = {};
   private _backendWs?: WebSocket;
   private _ongoingRequest: Promise<MessageEvent> | null = null;
-  private _statusUpdateLastTS : number = -1;
+  private _statusUpdateLastTS: number = -1;
 }
 
 type WebSocketSendParam0T = Parameters<WebSocket['send']>[0];

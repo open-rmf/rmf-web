@@ -1,4 +1,4 @@
-![Nightly](https://github.com/osrf/romi-dashboard/workflows/Nightly/badge.svg)
+[![Nightly](https://github.com/osrf/romi-dashboard/workflows/Nightly/badge.svg)](https://github.com/osrf/romi-dashboard/actions?query=workflow%3ANightly)
 [![codecov](https://codecov.io/gh/osrf/romi-dashboard/branch/master/graph/badge.svg)](https://codecov.io/gh/osrf/romi-dashboard)
 
 ## RoMi-dashboard
@@ -7,18 +7,28 @@ Hello! `romi-dashboard` is a web application that provides overall visualization
 
 ## Setup
 
-Install `npm` and `nodejs`,
+### Prerequisites
+
+Required:
+
+- nodejs >= 12
+- docker
+- docker-compose
+- [rmf_core](https://github.com/osrf/rmf_core)
+- [traffic_editor](https://github.com/osrf/traffic_editor)
+
+Optional:
+
+- [rmf schedule visualizer](https://github.com/osrf/rmf_schedule_visualizer) (required when launching dev server locally)
+- [rmf_demos](https://github.com/osrf/rmf_demos) (required when launching dev server locally)
+
+Refer to the various repository for instructions to set them up.
+
+### Building
+
+First, make sure `rmf_core` and `traffic_editor` is installed, if they are built using colcon, make sure the colcon workspace is sourced, then clone the repository and install the required packages,
 
 ```bash
-sudo apt update && sudo apt install curl
-curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
-sudo apt install nodejs
-```
-
-Clone the repository and install the required packages,
-
-```bash
-cd ~/.
 git clone https://github.com/osrf/romi-dashboard
 cd romi-dashboard
 npm install
@@ -66,19 +76,11 @@ npm run setup
 
 ## Launching
 
-### Before Launching
-
-RoMi-dashboard connects to soss using https, if you are using the local or docker launch mode, you need to make sure that the browser does not reject the self-signed certed. The recommended way to do it is to tell the browser to skip the certificate verification for localhosts, if you are using chrome you can follow the instructions [here](https://community.spiceworks.com/how_to/154601-chrome-allow-localhost-site-even-without-https-certificate#:~:text=Step%201%3A%20Open%20Google%20Chrome,address%20bar%20in%20google%20chrome.&text=Set%20the%20option%20to%20enabled,to%20deal%20with%20https%20warnings.).
-
-Another way is to add the ca found in `e2e/certs/ca.crt` to the trusted certificate authorities. **Doing this is NOT recommended because the CA private key is exposed publicly, this may open you up to MITM attacks by using the exposed key to forge fake certificate that your browser trusts.**
-
 ### Local Dev Server
 
 _RoMi-dashboard_ gets its data source from the following rmf components:
 
 - [rmf schedule visualizer](https://github.com/osrf/rmf_schedule_visualizer)
-- [soss](https://github.com/osrf/soss)
-- [rmf-soss-ros2](https://github.com/osrf/rmf-soss-ros2)
 - [rmf_demos](https://github.com/osrf/rmf_demos)
 
 Refer to the respective projects for instruction on how to setup them up.
@@ -100,7 +102,7 @@ password: admin
 
 ### Docker Based Backend
 
-If you have problem setting up rmf and soss, you can make use of the docker image used by the e2e tests to run the backend in docker.
+If you have problem setting up rmf, you can make use of the docker image used by the e2e tests to run the backend in docker.
 
 First, download the docker images, the images are hosted on github packages so you will need a github account to access it, refer to [here](https://docs.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-docker-for-use-with-github-packages) for instructions.
 
@@ -127,8 +129,6 @@ If you would like, you can also build the images locally, doing so is simple wit
 ```bash
 # build rmf image
 docker-compose -f <path-to-romi-dashboard>/docker/rmf/docker-compose.yml build --no-cache
-# tag it as nightly
-docker tag docker.pkg.github.com/osrf/romi-dashboard/rmf:latest docker.pkg.github.com/osrf/romi-dashboard/rmf:nightly
 # build e2e image
 docker-compose -f <path-to-romi-dashboard>/docker/docker-compose.yml build --no-cache e2e
 ```
@@ -139,8 +139,8 @@ This will download and build all of rmf so it may take awhile.
 
 Alternatively, if you want to connect to an existing rmf deployment, set the following environment variables:
 
-- _REACT_APP_SOSS_SERVER_: URL to the soss server.
 - _REACT_APP_TRAJECTORY_SERVER_: URL to the trajectory server.
+- _REACT_APP_API_SERVER_: URL to the api server.
 - _REACT_APP_AUTH_CONFIG_: A JSON object containing the following
   - _realm_: The keycloak realm
   - _clientId_: clientId
