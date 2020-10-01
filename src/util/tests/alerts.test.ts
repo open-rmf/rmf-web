@@ -4,9 +4,8 @@ import { Alerts } from '../alerts';
 const theme = createMuiTheme();
 
 describe('Verification Alert', () => {
-  test('Correct generation of default params values', async () => {
-    const verification = Alerts.verification({});
-    console.log(verification);
+  test('Correct generation of default params values', () => {
+    const verification = Alerts.getVerificationParams({});
     expect(verification).toEqual({
       title: 'Are you sure you want to continue?',
       text: 'Once you accept this there is no turning back.',
@@ -20,21 +19,20 @@ describe('Verification Alert', () => {
     });
   });
 
-  test('Correct generation of custom params values', async () => {
+  test('Correct generation of custom params values', () => {
     const title = 'test';
     const text = 'test';
     const icon = 'error';
     const confirmButtonText = 'test';
     const cancelButtonText = 'test';
 
-    const verification = Alerts.verification({
+    const verification = Alerts.getVerificationParams({
       title: title,
       body: text,
       icon: icon,
       confirmButtonText: confirmButtonText,
       cancelButtonText: cancelButtonText,
     });
-    console.log(verification);
     expect(verification).toEqual({
       title: title,
       text: text,
@@ -49,36 +47,37 @@ describe('Verification Alert', () => {
   });
 });
 
-// describe('Success Alert', () => {
-//   test('Correct generation of default params values', async () => {
-//     // MySwal.fire('hue');
-//     // console.log(MySwal)
-//     const hue = verificationAlert({});
-//     console.log(hue);
+describe('Success Alert', () => {
+  test('Correct generation of default params values', () => {
+    const success = Alerts.getSuccessMsg();
+    expect(success).toEqual({
+      title: 'Done!',
+      text: 'Successful Operation',
+      icon: 'success',
+      timer: 2000,
+      heightAuto: false,
+    });
+  });
 
-//   });
+  test('Correct generation of custom params values', () => {
+    const success = Alerts.getSuccessMsg('test');
+    expect(success.text).toBe('test');
+  });
+});
 
-//   test('Correct generation of custom params values', async () => {
-//     // MySwal.fire('hue');
-//     // console.log(MySwal)
-//     const hue = verificationAlert({});
-//     console.log(hue);
-//   });
-// })
+describe('Error Alert', () => {
+  test('Correct generation of default params values', () => {
+    const error = Alerts.getErrorMsg();
+    expect(error).toEqual({
+      title: 'Ups',
+      text: 'An error has occurred',
+      icon: 'error',
+      heightAuto: false,
+    });
+  });
 
-// describe('Error Alter', () => {
-//   test('Correct generation of default params values', async () => {
-//     // MySwal.fire('hue');
-//     // console.log(MySwal)
-//     const hue = verificationAlert({});
-//     console.log(hue);
-
-//   });
-
-//   test('Correct generation of custom params values', async () => {
-//     // MySwal.fire('hue');
-//     // console.log(MySwal)
-//     const hue = verificationAlert({});
-//     console.log(hue);
-//   });
-// })
+  test('Correct generation of custom params values', () => {
+    const error = Alerts.getErrorMsg('test');
+    expect(error.text).toBe('test');
+  });
+});
