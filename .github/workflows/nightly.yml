@@ -43,9 +43,14 @@ jobs:
           registry-url: # optional
           # Optional scope for authenticating against scoped registries
           scope: # optional
-      - run: npm ci
-      - run: npm run build # linter runs here
-      - run: npm run test:coverage
+      - name: prepare
+        run: |
+          docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
+          npm run sync:docker
+          docker-compose -f docker/rmf/docker-compose.yml build
+          docker-compose -f docker/docker-compose.yml build e2e
+      - name: unit test
+        run: docker-compose -f docker/docker-compose.yml up --exit-code-from unit-test unit-test
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
@@ -59,14 +64,11 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 12
-      - name: Prepare
+      - name: prepare
         run: |
-          npm ci
           docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
           npm run sync:docker
+          docker-compose -f docker/rmf/docker-compose.yml build
+          docker-compose -f docker/docker-compose.yml build e2e
       - name: e2e test
-        env:
-          CI: true
-        # retry the test twice if it fails
-        run: |
-          npm run test:e2e:docker || npm run test:e2e:docker || npm run test:e2e:docker
+        run: docker-compose -f docker/docker-compose.yml up --exit-code-from e2e e2e

@@ -1,3 +1,6 @@
+const path = require('path');
+const fs = require('fs');
+
 const headlessArgs = process.env.CI ? ['--headless', '--disable-gpu'] : [];
 const port = process.env.ROMI_DASHBOARD_PORT;
 exports.config = {
@@ -221,8 +224,12 @@ exports.config = {
   /**
    * Function to be executed after a test (in Mocha/Jasmine).
    */
-  // afterTest: function(test, context, { error, result, duration, passed, retries }) {
-  // },
+  afterTest: function (test, context, { error, result, duration, passed, retries }) {
+    const testPath = path.relative('e2e/tests', test.file);
+    const artifactDir = `e2e/artifacts/${testPath}/${test.title}`;
+    fs.mkdirSync(artifactDir, { recursive: true });
+    browser.saveScreenshot(`${artifactDir}/end.png`);
+  },
 
   /**
    * Hook that gets executed after the suite has ended

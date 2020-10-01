@@ -92,7 +92,7 @@ export function requestDelivery(
     pickup_place_name: pickupPlaceName,
     dropoff_place_name: dropOffPlaceName,
     pickup_dispenser: pickupDispenser,
-    dropoff_dispenser: dropOffDispenser,
+    dropoff_ingestor: dropOffDispenser,
     task_id: uuidv4(),
   });
 }
