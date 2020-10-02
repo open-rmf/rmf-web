@@ -27,7 +27,7 @@ exports.config = {
   // NPM script (see https://docs.npmjs.com/cli/run-script) then the current working
   // directory is where your package.json resides, so `wdio` will be called from there.
   //
-  specs: ['e2e/tests/**/*.test.ts'],
+  specs: ['tests/**/*.test.ts'],
   // Patterns to exclude.
   exclude: [
     // 'path/to/excluded/files'
@@ -231,8 +231,8 @@ exports.config = {
    * Function to be executed after a test (in Mocha/Jasmine).
    */
   afterTest: function (test, context, { error, result, duration, passed, retries }) {
-    const testPath = path.relative('e2e/tests', test.file);
-    const artifactDir = `e2e/artifacts/${testPath}/${test.title}`;
+    const testPath = path.relative('tests', test.file);
+    const artifactDir = `artifacts/${testPath}/${test.title}`;
     fs.mkdirSync(artifactDir, { recursive: true });
     browser.saveScreenshot(`${artifactDir}/end.png`);
   },

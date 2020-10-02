@@ -1,13 +1,21 @@
 const { execSync } = require('child_process');
 
 const installCmd = process.env.npm_config_refer === 'ci' ? 'npm ci' : 'npm install';
-if (!process.env.__installScript) {
+// avoid name clash
+const installed = process.env.__aspidfr__installed
+  ? new Set(process.env.__aspidfr__installed.split(';'))
+  : new Set();
+if (!installed.has('root')) {
   execSync(installCmd, { cwd: `${__dirname}/..`, stdio: 'inherit' });
+  installed.add('root');
 }
 process.argv.slice(2).forEach((package) => {
-  execSync(installCmd, {
-    cwd: `${__dirname}/../packages/${package}`,
-    stdio: 'inherit',
-    env: { ...process.env, __installScript: true },
-  });
+  if (!installed.has(package)) {
+    execSync(installCmd, {
+      cwd: `${__dirname}/../packages/${package}`,
+      stdio: 'inherit',
+      env: { ...process.env, __installScript: true },
+    });
+    installed.add(package);
+  }
 });

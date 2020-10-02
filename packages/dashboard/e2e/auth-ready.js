@@ -1,19 +1,19 @@
-import * as http from 'http';
+const http = require('http');
 
 /**
  * Waits for the authentication server to be ready.
  * @param timeout Max amount of time (in milliseconds) to wait for
  */
-async function authReady(timeout: number = 30000): Promise<boolean> {
-  return new Promise(res => {
-    let req: http.ClientRequest | undefined;
+async function authReady(timeout = 30000) {
+  return new Promise((res) => {
+    let req;
     const timer = setTimeout(() => {
-      req?.abort();
+      req && req.abort();
       clearTimeout(timer);
       clearTimeout(retryTimer);
       res(false);
     }, timeout);
-    let retryTimer: NodeJS.Timeout;
+    let retryTimer;
     const waitAuthReady = () => {
       req = http.request('http://localhost:8080/auth/', () => {
         clearTimeout(timer);
