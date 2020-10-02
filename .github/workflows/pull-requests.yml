@@ -28,8 +28,6 @@ jobs:
         run: |
           docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
           npm run sync:docker
-          docker-compose -f docker/rmf/docker-compose.yml build
-          docker-compose -f docker/docker-compose.yml build e2e
       - name: unit test
         run: docker-compose -f docker/docker-compose.yml up --exit-code-from unit-test unit-test
       - name: Upload coverage to Codecov
@@ -52,8 +50,6 @@ jobs:
         run: |
           docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
           npm run sync:docker
-          docker-compose -f docker/rmf/docker-compose.yml build
-          docker-compose -f docker/docker-compose.yml build e2e
       - name: e2e test
         run: docker-compose -f docker/docker-compose.yml up --exit-code-from e2e e2e
       - name: upload artifacts
