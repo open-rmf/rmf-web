@@ -70,6 +70,16 @@ function calcMaxBounds(mapFloorLayers: readonly MapFloorLayer[]): L.LatLngBounds
 export default function ScheduleVisualizer(props: ScheduleVisualizerProps): React.ReactElement {
   debug('render');
 
+  window.addEventListener('resize', () => {
+    console.log('I am resizing .....');
+    const documentWidth = document.documentElement.clientWidth;
+    const documentHeight = document.documentElement.clientHeight;
+    const mapWidth = document.getElementsByClassName('leaflet-image-layer')[0].clientWidth;
+    const mapHeight = document.getElementsByClassName('leaflet-image-layer')[0].clientHeight;
+    // console.log(mapWidth);
+    // console.log(mapHeight)
+  });
+
   const { negotiationTrajStore, mapFloorLayerSorted } = props;
   const classes = useStyles();
 
