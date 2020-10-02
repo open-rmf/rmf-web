@@ -14,7 +14,12 @@ process.argv.slice(2).forEach((package) => {
     execSync(installCmd, {
       cwd: `${__dirname}/../packages/${package}`,
       stdio: 'inherit',
-      env: { ...process.env, __installScript: true },
+      env: {
+        ...process.env,
+        __aspidfr__installed: Array.from(installed.values())
+          .reduce((s, pkg) => (s += `;${pkg}`), '')
+          .slice(1),
+      },
     });
     installed.add(package);
   }
