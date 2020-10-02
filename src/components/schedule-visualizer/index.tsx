@@ -305,7 +305,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       className={classes.map}
       attributionControl={false}
       crs={L.CRS.Simple}
-      minZoom={4}
+      minZoom={0}
       maxZoom={8}
       zoomDelta={0.5}
       zoomSnap={0.5}
