@@ -226,34 +226,9 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     return () => clearInterval(interval);
   }, [props.trajManager, curMapFloorLayer, trajAnimDuration]);
 
-  function determineMinZoom(width: number, height: number): number {
-    if (Math.abs(width) >= Math.abs(height)) {
-      // Right now baseWidth and baseZoom are set to 50 and 4
-      // We might need to change this in future if a range of
-      // values is given
-      const baseWidth = 50;
-      const baseZoom = 4;
-      const widthToBaseRatio = width / baseWidth;
-      const power = Math.log(widthToBaseRatio) / Math.log(2);
-      // since we set zoomDelta and snap to 0.5, we can give min zoom a greater precision to a delta of 0.5
-      return baseZoom - power - ((baseZoom - power) % 0.5);
-    } else {
-      const baseHeight = 40;
-      const baseZoom = 4;
-      const heightToBaseRatio = Math.abs(height) / baseHeight;
-      const power = Math.log(heightToBaseRatio) / Math.log(2);
-      return baseZoom - power - ((baseZoom - power) % 0.5);
-    }
-  }
-
   function handleBaseLayerChange(e: L.LayersControlEvent): void {
     debug('set current level name');
     setCurLevelName(e.name);
-    const width = mapFloorLayers[e.name].bounds.getNorthEast().lng;
-    const height = mapFloorLayers[e.name].bounds.getSouthWest().lat;
-    const calculatedMinZoom = determineMinZoom(width, height);
-    mapRef.current?.leafletElement.setMinZoom(calculatedMinZoom);
-    mapRef.current?.leafletElement.setMaxZoom(calculatedMinZoom + 4);
     const mapWidth = document.getElementsByClassName('leaflet-image-layer')[0].clientWidth;
     const mapHeight = document.getElementsByClassName('leaflet-image-layer')[0].clientHeight;
     setMapDimensions({ width: mapWidth, height: mapHeight });

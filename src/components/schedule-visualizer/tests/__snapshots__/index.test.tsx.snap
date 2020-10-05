@@ -41,8 +41,9 @@ exports[`renders well with the appropriate data 1`] = `
   }
   id="ScheduleVisualizer"
   maxZoom={8}
-  minZoom={4}
+  minZoom={0}
   onbaselayerchange={[Function]}
+  onresize={[Function]}
   zoomDelta={0.5}
   zoomSnap={0.5}
 >
