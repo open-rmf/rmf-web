@@ -8,7 +8,7 @@ export interface Options {
   secretOrPublicKey: string;
 }
 
-export default function auhthenticator(options: Options): WebSocketMiddleware {
+export default function authenticator(options: Options): WebSocketMiddleware {
   const secretOrPublicKey = (() => {
     if (options.type === 'publicKey') {
       return fs.readFileSync(options.secretOrPublicKey);

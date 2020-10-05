@@ -1,6 +1,6 @@
 import * as jwt from 'jsonwebtoken';
 import WebSocket from 'ws';
-import auhthenticator from '../authenticator';
+import authenticator from '../authenticator';
 import WebSocketConnect, { WebSocketMiddleware } from '../websocket-connect';
 
 describe('Authenticator', () => {
@@ -12,7 +12,7 @@ describe('Authenticator', () => {
     server = new WebSocket.Server({ port: 0 });
     address = server.address() as WebSocket.AddressInfo;
     app = new WebSocketConnect(server);
-    app.use(auhthenticator({ type: 'secret', secretOrPublicKey: 'test' }));
+    app.use(authenticator({ type: 'secret', secretOrPublicKey: 'test' }));
   });
 
   afterEach(() => {
