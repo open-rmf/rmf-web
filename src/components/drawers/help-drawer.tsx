@@ -16,18 +16,27 @@ import BugReportIcon from '@material-ui/icons/BugReport';
 export interface HotKeysDrawerProps extends DrawerProps {
   handleCloseButton(): void;
   setShowHotkeyDialog(): void;
+  showTour(): void;
 }
 
 export default function HelpDrawer(props: HotKeysDrawerProps): React.ReactElement {
-  const { handleCloseButton, setShowHotkeyDialog, ...otherProps } = props;
+  const { handleCloseButton, setShowHotkeyDialog, showTour, ...otherProps } = props;
   const classes = useStyles();
   const drawerAnchor = useMediaQuery('(max-aspect-ratio: 8/10)') ? 'bottom' : 'right';
+  const modalProp = {
+    disableEnforceFocus: true,
+  };
 
   return (
-    <Drawer PaperProps={{ className: classes.drawer }} anchor={drawerAnchor} {...otherProps}>
+    <Drawer
+      PaperProps={{ className: classes.drawer }}
+      anchor={drawerAnchor}
+      ModalProps={modalProp}
+      {...otherProps}
+    >
       <DrawerHeader handleCloseButton={handleCloseButton} title={'Help'} />
-      <div className={classes.detail}>
-        <div className={classes.detailLine}>
+      <div className={classes.detail} id="help-drawer-options">
+        <div className={classes.detailLine} onClick={() => showTour()}>
           <IconButton id="show-manual-btn" color="inherit">
             <MenuBookIcon />
           </IconButton>
