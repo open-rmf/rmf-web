@@ -58,6 +58,12 @@ export interface ScheduleVisualizerProps {
   onDispenserClick?(dispenser: RomiCore.DispenserState): void;
 }
 
+export interface MapResizeProps {
+  [key: string]: number | undefined;
+  mapWidth: number;
+  mapHeight: number;
+}
+
 function calcMaxBounds(mapFloorLayers: readonly MapFloorLayer[]): L.LatLngBounds | undefined {
   if (!mapFloorLayers.length) {
     return undefined;
@@ -69,17 +75,6 @@ function calcMaxBounds(mapFloorLayers: readonly MapFloorLayer[]): L.LatLngBounds
 
 export default function ScheduleVisualizer(props: ScheduleVisualizerProps): React.ReactElement {
   debug('render');
-
-  window.addEventListener('resize', () => {
-    console.log('I am resizing .....');
-    const documentWidth = document.documentElement.clientWidth;
-    const documentHeight = document.documentElement.clientHeight;
-    const mapWidth = document.getElementsByClassName('leaflet-image-layer')[0].clientWidth;
-    const mapHeight = document.getElementsByClassName('leaflet-image-layer')[0].clientHeight;
-    // console.log(mapWidth);
-    // console.log(mapHeight)
-  });
-
   const { negotiationTrajStore, mapFloorLayerSorted } = props;
   const classes = useStyles();
 
@@ -96,6 +91,11 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   const [conflictRobotNames, setConflictRobotNames] = React.useState<string[][]>(() => []);
   const [curMapTrajectories, setCurMapTrajectories] = React.useState<Trajectory[]>(() => []);
   const [curMapConflicts, setCurMapConflicts] = React.useState<Conflict[]>(() => []);
+  const [mapDimensions, setMapDimensions] = React.useState({ width: 0, height: 0 });
+  const [documentDimensions, setDocumentDimensions] = React.useState({
+    width: document.documentElement.clientWidth,
+    height: document.documentElement.clientHeight,
+  });
 
   const initialBounds = React.useMemo<Readonly<L.LatLngBounds> | undefined>(() => {
     const initialLayer = mapFloorLayers[mapFloorLayerSorted[0]];
@@ -254,7 +254,50 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     const calculatedMinZoom = determineMinZoom(width, height);
     mapRef.current?.leafletElement.setMinZoom(calculatedMinZoom);
     mapRef.current?.leafletElement.setMaxZoom(calculatedMinZoom + 4);
+    const mapWidth = document.getElementsByClassName('leaflet-image-layer')[0].clientWidth;
+    const mapHeight = document.getElementsByClassName('leaflet-image-layer')[0].clientHeight;
+    setMapDimensions({ width: mapWidth, height: mapHeight });
     setBound(mapFloorLayers[e.name].bounds);
+  }
+
+  function mapZoomOut({ currZoom, minZoom, maxZoom, mapWidth, mapHeight }: MapResizeProps) {
+    mapRef.current?.leafletElement.setZoom(currZoom ? currZoom - 0.5 : 0);
+    mapRef.current?.leafletElement.setMinZoom(minZoom ? minZoom - 0.5 : 0);
+    mapRef.current?.leafletElement.setMaxZoom(maxZoom ? maxZoom - 0.5 : 8);
+    setMapDimensions({ width: mapWidth / 2 ** 0.5, height: mapHeight / 2 ** 0.5 });
+  }
+
+  function mapZoomIn({ currZoom, minZoom, maxZoom, mapWidth, mapHeight }: MapResizeProps) {
+    mapRef.current?.leafletElement.setZoom(currZoom ? currZoom + 0.5 : 0);
+    mapRef.current?.leafletElement.setMinZoom(minZoom ? minZoom + 0.5 : 0);
+    mapRef.current?.leafletElement.setMaxZoom(maxZoom ? maxZoom + 0.5 : 8);
+    setMapDimensions({ width: mapWidth * 2 ** 0.5, height: mapHeight * 2 ** 0.5 });
+  }
+
+  function handleResize() {
+    const documentWidth = document.documentElement.clientWidth;
+    const documentHeight = document.documentElement.clientHeight;
+    const mapWidth = mapDimensions.width;
+    const mapHeight = mapDimensions.height;
+    const currZoom = mapRef.current?.leafletElement.getZoom();
+    const minZoom = mapRef.current?.leafletElement.getMinZoom();
+    const maxZoom = mapRef.current?.leafletElement.getMaxZoom();
+    if (documentHeight < mapHeight && documentWidth === documentDimensions.width) {
+      mapZoomOut({ currZoom, minZoom, maxZoom, mapWidth, mapHeight });
+    } else if (
+      documentHeight > mapHeight * 2 ** 0.5 &&
+      documentWidth === documentDimensions.width
+    ) {
+      mapZoomIn({ currZoom, minZoom, maxZoom, mapWidth, mapHeight });
+    } else if (documentWidth < mapWidth && documentHeight === documentDimensions.height) {
+      mapZoomOut({ currZoom, minZoom, maxZoom, mapWidth, mapHeight });
+    } else if (
+      documentWidth > mapWidth * 2 ** 0.5 &&
+      documentHeight === documentDimensions.height
+    ) {
+      mapZoomIn({ currZoom, minZoom, maxZoom, mapWidth, mapHeight });
+    }
+    setDocumentDimensions({ width: documentWidth, height: documentHeight });
   }
 
   function getConflicts(levelName: string): Conflict[] {
@@ -322,6 +365,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       bounds={bound ? bound : initialBounds}
       maxBounds={maxBounds}
       onbaselayerchange={handleBaseLayerChange}
+      onresize={handleResize}
       ref={mapRef}
     >
       <AttributionControl position="bottomright" prefix="OSRC-SG" />
