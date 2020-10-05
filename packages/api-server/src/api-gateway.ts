@@ -99,6 +99,20 @@ export default class ApiGateway {
       }
 
       const handlerRet = await handler(req.params, sender);
+      /**
+       * handler is "req -> resp" if it only has 1 argument, else it is a "stream" with messages
+       * sent in chunks.
+       *
+       * "req -> resp" handler:
+       *   * if it returns void (undefined), we send back "null" as the resp, because "result" is
+       *     required on success.
+       *   * if it returns any other value, send that as the result.
+       * "stream" handler:
+       *   * if it returns void (undefined), don't send anything back. The handler will take care
+       *     of sending the result in chunks.
+       *   * if it returns a value, send that as the result, but always set the "more" flag, the
+       *     handler should take care of sending the rest of the chunks.
+       */
       if (handlerRet === undefined) {
         if (this._rpcHandlers[req.method].length === 1) {
           sender.end(null);
