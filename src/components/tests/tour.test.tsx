@@ -55,14 +55,14 @@ describe('Dashboard Tour', () => {
   });
 
   it('renders first welcome step', () => {
-    expectedText = tourText.step1Welcome;
+    expectedText = tourText.Welcome.text;
     stepText = root.find('[data-testid="stepBox"]').first().text();
 
     expect(stepText.includes(expectedText));
   });
 
   it('renders zoom button step', async () => {
-    expectedText = tourText.step2Zoom;
+    expectedText = tourText.Zoom.text;
     nextBtn.simulate('click');
     await wait(5);
 
@@ -72,9 +72,9 @@ describe('Dashboard Tour', () => {
   });
 
   it('renders floor plan button step', async () => {
-    expectedText = tourText.step3Floorplan;
+    expectedText = tourText.Floorplan.text;
 
-    for (let i = 1; i < 3; i++) {
+    for (let i = 1; i < tourText.Floorplan.id; i++) {
       nextBtn.simulate('click');
       await wait(5);
     }
@@ -84,9 +84,9 @@ describe('Dashboard Tour', () => {
   });
 
   it('renders leaflet step', async () => {
-    expectedText = tourText.step4Leaflet;
+    expectedText = tourText.Leaflet.text;
 
-    for (let i = 1; i < 4; i++) {
+    for (let i = 1; i < tourText.Leaflet.id; i++) {
       nextBtn.simulate('click');
       await wait(5);
     }
@@ -96,9 +96,9 @@ describe('Dashboard Tour', () => {
   });
 
   it('renders omnipanel button step', async () => {
-    expectedText = tourText.step5Omnipanel;
+    expectedText = tourText.Omnipanel.text;
 
-    for (let i = 1; i < 5; i++) {
+    for (let i = 1; i < tourText.Omnipanel.id; i++) {
       nextBtn.simulate('click');
       await wait(5);
     }
@@ -108,9 +108,9 @@ describe('Dashboard Tour', () => {
   });
 
   it('renders main menu step', async () => {
-    expectedText = tourText.step6MainMenu;
+    expectedText = tourText.MainMenu.text;
 
-    for (let i = 1; i < 6; i++) {
+    for (let i = 1; i < tourText.MainMenu.id; i++) {
       nextBtn.simulate('click');
       await wait(5);
     }
@@ -120,9 +120,9 @@ describe('Dashboard Tour', () => {
   });
 
   it('renders door panel step', async () => {
-    expectedText = tourText.step7DoorPanel;
+    expectedText = tourText.DoorPanel.text;
 
-    for (let i = 1; i < 7; i++) {
+    for (let i = 1; i < tourText.DoorPanel.id; i++) {
       nextBtn.simulate('click');
       await wait(5);
     }
@@ -132,9 +132,9 @@ describe('Dashboard Tour', () => {
   });
 
   it('renders door tab step', async () => {
-    expectedText = tourText.step8DoorTab;
+    expectedText = tourText.DoorTab.text;
 
-    for (let i = 1; i < 8; i++) {
+    for (let i = 1; i < tourText.DoorTab.id; i++) {
       nextBtn.simulate('click');
       await wait(5);
     }
@@ -144,9 +144,9 @@ describe('Dashboard Tour', () => {
   });
 
   it('renders commands panel step', async () => {
-    expectedText = tourText.step9CommandsPanel;
+    expectedText = tourText.CommandsPanel.text;
 
-    for (let i = 1; i < 9; i++) {
+    for (let i = 1; i < tourText.CommandsPanel.id; i++) {
       nextBtn.simulate('click');
       await wait(5);
     }
@@ -156,9 +156,9 @@ describe('Dashboard Tour', () => {
   });
 
   it('renders loop request step', async () => {
-    expectedText = tourText.step10LoopRequest;
+    expectedText = tourText.LoopRequest.text;
 
-    for (let i = 1; i < 10; i++) {
+    for (let i = 1; i < tourText.LoopRequest.id; i++) {
       nextBtn.simulate('click');
       await wait(5);
     }
@@ -168,9 +168,9 @@ describe('Dashboard Tour', () => {
   });
 
   it('renders settings button step', async () => {
-    expectedText = tourText.step11Settings;
+    expectedText = tourText.Settings.text;
 
-    for (let i = 1; i < 11; i++) {
+    for (let i = 1; i < tourText.Settings.id; i++) {
       nextBtn.simulate('click');
       await wait(5);
     }
@@ -180,9 +180,9 @@ describe('Dashboard Tour', () => {
   });
 
   it('renders traj anims step', async () => {
-    expectedText = tourText.step12TrajAnims;
+    expectedText = tourText.TrajAnims.text;
 
-    for (let i = 1; i < 12; i++) {
+    for (let i = 1; i < tourText.TrajAnims.id; i++) {
       nextBtn.simulate('click');
       await wait(5);
     }
@@ -192,9 +192,9 @@ describe('Dashboard Tour', () => {
   });
 
   it('renders help button step', async () => {
-    expectedText = tourText.step13HelpButton;
+    expectedText = tourText.HelpButton.text;
 
-    for (let i = 1; i < 13; i++) {
+    for (let i = 1; i < tourText.HelpButton.id; i++) {
       nextBtn.simulate('click');
       await wait(5);
     }
@@ -204,9 +204,9 @@ describe('Dashboard Tour', () => {
   });
 
   it('renders help drawer step', async () => {
-    expectedText = tourText.step14HelpDrawer;
+    expectedText = tourText.HelpDrawer.text;
 
-    for (let i = 1; i < 14; i++) {
+    for (let i = 1; i < tourText.HelpDrawer.id; i++) {
       nextBtn.simulate('click');
       await wait(5);
     }
@@ -216,7 +216,7 @@ describe('Dashboard Tour', () => {
   });
 
   it('closes the tour when last step button is clicked', async () => {
-    for (let i = 1; i < 15; i++) {
+    for (let i = 0; i < tourText.HelpDrawer.id; i++) {
       nextBtn.simulate('click');
       await wait(5);
     }

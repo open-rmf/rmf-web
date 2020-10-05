@@ -3,7 +3,7 @@ import { RobotResourceManager, RobotResource } from './resource-manager-robots';
 import { DispenserResourceManager, RawDispenserResource } from './resource-manager-dispensers';
 
 export interface ResourceConfigurationsType {
-  robots: Record<string, RobotResource>; // Record<FleetName, RobotResource>
+  robots?: Record<string, RobotResource>; // Record<FleetName, RobotResource>
   dispensers?: Record<string, RawDispenserResource>; // Record<DispenserName, DispenserResource>
 }
 

@@ -53,7 +53,7 @@ export const createTourSteps = (props: createTourProps) => {
       content: ({ goTo, step }) => (
         <Box data-testid="stepBox">
           <Typography variant="h6" data-testid="step1">
-            {tourText.step1Welcome}
+            {tourText.Welcome.text}
           </Typography>
           <NavButtons goTo={goTo} step={step} />
         </Box>
@@ -65,7 +65,7 @@ export const createTourSteps = (props: createTourProps) => {
       content: ({ goTo, step }) => (
         <Box data-testid="stepBox">
           <Typography variant="h6" data-testid="step2">
-            {tourText.step2Zoom}
+            {tourText.Zoom.text}
           </Typography>
           <NavButtons goTo={goTo} step={step} />
         </Box>
@@ -77,7 +77,7 @@ export const createTourSteps = (props: createTourProps) => {
       content: ({ goTo, step }) => (
         <Box data-testid="stepBox">
           <Typography variant="h6" data-testid="step3">
-            {tourText.step3Floorplan}
+            {tourText.Floorplan.text}
           </Typography>
           <NavButtons goTo={goTo} step={step} />
         </Box>
@@ -89,7 +89,7 @@ export const createTourSteps = (props: createTourProps) => {
       content: ({ goTo, step }) => (
         <Box data-testid="stepBox">
           <Typography variant="h6" data-testid="step4">
-            {tourText.step4Leaflet}
+            {tourText.Leaflet.text}
           </Typography>
           <NavButtons goTo={goTo} step={step} />
         </Box>
@@ -101,7 +101,7 @@ export const createTourSteps = (props: createTourProps) => {
       content: ({ goTo, step }) => (
         <Box data-testid="stepBox">
           <Typography variant="h6" data-testid="step5">
-            {tourText.step5Omnipanel}
+            {tourText.Omnipanel.text}
           </Typography>
           <NavButtons
             goTo={goTo}
@@ -119,7 +119,7 @@ export const createTourSteps = (props: createTourProps) => {
       content: ({ goTo, step }) => (
         <Box data-testid="stepBox">
           <Typography variant="h6" data-testid="step6">
-            {tourText.step6MainMenu}
+            {tourText.MainMenu.text}
           </Typography>
           <NavButtons goTo={goTo} step={step} />
         </Box>
@@ -130,7 +130,7 @@ export const createTourSteps = (props: createTourProps) => {
       content: ({ goTo, step }) => (
         <Box data-testid="stepBox">
           <Typography variant="h6" data-testid="step7">
-            {tourText.step7DoorPanel}
+            {tourText.DoorPanel.text}
           </Typography>
           <NavButtons
             goTo={goTo}
@@ -151,7 +151,7 @@ export const createTourSteps = (props: createTourProps) => {
       content: ({ goTo, step }) => (
         <Box data-testid="stepBox">
           <Typography variant="h6" data-testid="step8">
-            {tourText.step8DoorTab}
+            {tourText.DoorTab.text}
           </Typography>
           <NavButtons
             goTo={goTo}
@@ -173,7 +173,7 @@ export const createTourSteps = (props: createTourProps) => {
       content: ({ goTo, step }) => (
         <Box data-testid="stepBox">
           <Typography variant="h6" data-testid="step9">
-            {tourText.step9CommandsPanel}
+            {tourText.CommandsPanel.text}
           </Typography>
           <NavButtons
             goTo={goTo}
@@ -195,7 +195,7 @@ export const createTourSteps = (props: createTourProps) => {
       content: ({ goTo, step }) => (
         <Box data-testid="stepBox">
           <Typography variant="h6" data-testid="step10">
-            {tourText.step10LoopRequest}
+            {tourText.LoopRequest.text}
           </Typography>
           <NavButtons
             goTo={goTo}
@@ -216,7 +216,7 @@ export const createTourSteps = (props: createTourProps) => {
       content: ({ goTo, step }) => (
         <Box data-testid="stepBox">
           <Typography variant="h6" data-testid="step11">
-            {tourText.step11Settings}
+            {tourText.Settings.text}
           </Typography>
           <NavButtons
             goTo={goTo}
@@ -237,7 +237,7 @@ export const createTourSteps = (props: createTourProps) => {
       content: ({ goTo, step }) => (
         <Box data-testid="stepBox">
           <Typography variant="h6" data-testid="step12">
-            {tourText.step12TrajAnims}
+            {tourText.TrajAnims.text}
           </Typography>
           <NavButtons
             goTo={goTo}
@@ -257,7 +257,7 @@ export const createTourSteps = (props: createTourProps) => {
       content: ({ goTo, step }) => (
         <Box data-testid="stepBox">
           <Typography variant="h6" data-testid="step13">
-            {tourText.step13HelpButton}
+            {tourText.HelpButton.text}
           </Typography>
           <NavButtons
             goTo={goTo}
@@ -277,7 +277,7 @@ export const createTourSteps = (props: createTourProps) => {
       content: ({ goTo, step }) => (
         <Box data-testid="stepBox">
           <Typography variant="h6" data-testid="step14">
-            {tourText.step14HelpDrawer}
+            {tourText.HelpDrawer.text}
           </Typography>
           <NavButtons
             goTo={goTo}
