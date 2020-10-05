@@ -41,7 +41,7 @@ describe('Authenticator', () => {
     });
   });
 
-  test.only('reject binary payload', (done) => {
+  test('reject binary payload', (done) => {
     const client = new WebSocket(`ws://localhost:${address.port}`);
     // Should close connection on bad token
     client.once('close', () => done());
