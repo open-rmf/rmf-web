@@ -31,4 +31,22 @@ describe('Authenticator', () => {
       client.send('test');
     });
   }, 100);
+
+  test('reject invalid oauth token', (done) => {
+    const client = new WebSocket(`ws://localhost:${address.port}`);
+    // Should close connection on bad token
+    client.once('close', () => done());
+    client.on('open', () => {
+      client.send('bad token');
+    });
+  });
+
+  test.only('reject binary payload', (done) => {
+    const client = new WebSocket(`ws://localhost:${address.port}`);
+    // Should close connection on bad token
+    client.once('close', () => done());
+    client.on('open', () => {
+      client.send(Buffer.from([1, 2, 3]));
+    });
+  });
 });
