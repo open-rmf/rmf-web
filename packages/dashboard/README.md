@@ -30,7 +30,7 @@ First, make sure `rmf_core` and `traffic_editor` is installed, if they are built
 
 ```bash
 git clone https://github.com/osrf/romi-dashboard
-cd romi-dashboard
+cd romi-dashboard/packages/dashboard
 npm install
 ```
 
@@ -128,9 +128,9 @@ If you would like, you can also build the images locally, doing so is simple wit
 
 ```bash
 # build rmf image
-docker-compose -f <path-to-romi-dashboard>/docker/rmf/docker-compose.yml build --no-cache
+docker-compose -f <path-to-romi-dashboard>/packages/dashboard/docker/rmf/docker-compose.yml build --no-cache
 # build e2e image
-docker-compose -f <path-to-romi-dashboard>/docker/docker-compose.yml build --no-cache e2e
+docker-compose -f <path-to-romi-dashboard>/packages/dashboard/docker/docker-compose.yml build --no-cache e2e
 ```
 
 This will download and build all of rmf so it may take awhile.
