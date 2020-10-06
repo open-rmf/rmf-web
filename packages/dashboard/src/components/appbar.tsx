@@ -7,6 +7,7 @@ import {
   Toolbar,
   Typography,
 } from '@material-ui/core';
+import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import SettingsIcon from '@material-ui/icons/Settings';
@@ -20,15 +21,32 @@ export interface AppBarProps {
   toggleShowOmniPanel(): void;
   showSettings(show: boolean): void;
   showHelp(show: boolean): void;
+  transport?: Readonly<RomiCore.Transport>;
+}
+
+class Emergency {
+  static readonly typeName = 'std_msgs/Bool';
+  static fromObject(obj: any): Emergency {
+    return new Emergency(true);
+  }
+  constructor(public data: boolean) {}
 }
 
 export default function AppBar(props: AppBarProps): React.ReactElement {
-  const { toggleShowOmniPanel, showSettings, showHelp } = props;
+  const { toggleShowOmniPanel, showSettings, showHelp, transport } = props;
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const classes = useStyles();
   const authenticator = React.useContext(AuthenticatorContext);
   const user = React.useContext(UserContext);
   const [alarm, setAlarm] = React.useState(false);
+
+  const emergency: RomiCore.RomiTopic<Emergency> = {
+    validate: (msg) => Emergency.fromObject(msg),
+    type: Emergency.typeName,
+    topic: 'fire_alarm_trigger',
+  };
+
+  const EmergencyAlarmRequestPub = transport && transport.createPublisher(emergency);
 
   async function handleLogout(): Promise<void> {
     try {
@@ -39,6 +57,10 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
   }
 
   const handleAlarm = (): void => {
+    EmergencyAlarmRequestPub?.publish({
+      data: true,
+    });
+
     if (alarm) {
       Alerts.verification({
         confirmCallback: () => setAlarm(false),

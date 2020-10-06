@@ -429,6 +429,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
               toggleShowOmniPanel={() => setShowOmniPanel(!showOmniPanel)}
               showSettings={setShowSettings}
               showHelp={setShowHelp}
+              transport={transport}
             />
             {loading && <LoadingScreen {...loading} />}
             {buildingMap && mapFloorLayerSorted && (
