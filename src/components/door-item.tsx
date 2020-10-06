@@ -99,7 +99,12 @@ export const DoorItem = React.forwardRef(function (
             ({door.v1_x.toFixed(3)}, {door.v1_y.toFixed(3)})
           </Typography>
         </div>
-        <ButtonGroup style={{ marginTop: theme.spacing(1) }} fullWidth disabled={!enableControls}>
+        <ButtonGroup
+          style={{ marginTop: theme.spacing(1) }}
+          fullWidth
+          disabled={!enableControls}
+          data-name={'door-button-group'}
+        >
           <Button onClick={() => onCloseClick && onCloseClick(door)}>Close</Button>
           <Button onClick={() => onOpenClick && onOpenClick(door)}>Open</Button>
         </ButtonGroup>

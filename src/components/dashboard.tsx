@@ -32,6 +32,7 @@ import RobotsPanel from './robots-panel';
 import ScheduleVisualizer from './schedule-visualizer';
 import SettingsDrawer from './drawers/settings-drawer';
 import { SpotlightValue } from './spotlight-value';
+import DashboardTour from './tour/tour';
 import { buildHotKeys } from '../hotkeys';
 import HelpDrawer from './drawers/help-drawer';
 import HotKeysDialog from './drawers/hotkeys-dialog';
@@ -84,7 +85,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-enum OmniPanelViewIndex {
+export enum OmniPanelViewIndex {
   MainMenu = 0,
   Doors,
   Lifts,
@@ -198,6 +199,8 @@ export default function Dashboard(_props: {}): React.ReactElement {
     notificationBarMessage,
     setNotificationBarMessage,
   ] = React.useState<NotificationBarProps | null>(null);
+
+  const [tourState, setTourState] = React.useState(false);
 
   React.useEffect(() => {
     setLoading({ caption: 'Connecting to api server...' });
@@ -358,6 +361,27 @@ export default function Dashboard(_props: {}): React.ReactElement {
     [classes.topLeftBorder, classes.topRightBorder],
   );
 
+  const tourComplete = localStorage.getItem('tourComplete');
+  React.useEffect(() => {
+    if (tourComplete === 'true') {
+      setTourState(false);
+    } else {
+      setTourState(true);
+    }
+  }, [tourComplete, setTourState]);
+
+  const tourProps = {
+    tourState,
+    setTourState,
+    setShowSettings,
+    setShowOmniPanel,
+    setShowHelp,
+    clearSpotlights,
+    setCurrentView,
+    doorSpotlight,
+    setDoorSpotlight,
+  };
+
   const [showHotkeyDialog, setShowHotkeyDialog] = React.useState(false);
 
   const hotKeysValue = buildHotKeys({
@@ -496,6 +520,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
               handleCloseButton={() => setShowHelp(false)}
               onClose={() => setShowHelp(false)}
               setShowHotkeyDialog={() => setShowHotkeyDialog(true)}
+              showTour={() => {
+                setTourState(true);
+                setShowHelp(false);
+              }}
             />
           </div>
           {showHotkeyDialog && (
@@ -505,6 +533,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
             message={notificationBarMessage?.message}
             type={notificationBarMessage?.type}
           />
+          <DashboardTour tourProps={tourProps} />
         </RmfContextProvider>
       </AppContextProvider>
     </GlobalHotKeys>

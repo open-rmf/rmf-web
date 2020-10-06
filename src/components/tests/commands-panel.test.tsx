@@ -8,7 +8,6 @@ import ResourceManager from '../../resource-manager';
 import fakeResources from '../../mock/data/resources';
 import { RobotDeliveryForm } from '../delivery-form';
 import { ResourcesContext } from '../app-contexts';
-import { Typography } from '@material-ui/core';
 
 const mount = createMount();
 
