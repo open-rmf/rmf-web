@@ -4,13 +4,16 @@ on:
   push:
     branches:
       - master
-
+env:
+  CI: true
 jobs:
-  unit-test:
-    name: Unit Test
+  dashboard-unit-test:
+    name: Dashboard Unit Test
     runs-on: ubuntu-latest
-    env:
-      CI: true
+    defaults:
+      run:
+        shell: bash
+        working-directory: packages/dashboard
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
@@ -34,6 +37,10 @@ jobs:
   e2e-test:
     name: End-to-End Test
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: packages/dashboard
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
@@ -51,3 +58,23 @@ jobs:
         with:
           name: screenshots
           path: e2e/artifacts
+  api-server-test:
+    name: Api Server Test
+    runs-on: ubuntu-latest
+    container:
+      image: ros:foxy
+    defaults:
+      run:
+        shell: bash
+        working-directory: packages/api-server
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - name: set npm config
+        run: npm config set unsafe-perm=true
+      - name: build
+        run: . /opt/ros/foxy/setup.bash && npm ci && npm run build
+      - name: test
+        run: . /opt/ros/foxy/setup.bash && npm test

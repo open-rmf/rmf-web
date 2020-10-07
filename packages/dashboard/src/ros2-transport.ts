@@ -8,7 +8,7 @@ import type {
   SubscribeParams,
   SubscribeResult,
   UnsubscribeParams,
-} from '@osrf/romi-js-api-server/src/plugins/ros2';
+} from 'api-server/src/plugins/ros2';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { TransportEvents } from '@osrf/romi-js-core-interfaces';
 import ApiClient from './api-client';
