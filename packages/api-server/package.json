@@ -1,0 +1,49 @@
+{
+  "name": "api-server",
+  "version": "0.0.1",
+  "description": "web + data server for romi-dashboard",
+  "main": "src/index.js",
+  "scripts": {
+    "preinstall": "node ../../scripts/install.js",
+    "start": "ts-node index.ts",
+    "build": "tsc --build",
+    "clean": "tsc --build --clean",
+    "prepack": "npm ci && npm run clean && npm run build",
+    "prepare": "npm run build",
+    "test": "jest"
+  },
+  "author": "koonpeng@openrobotics.org",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/osrf/romi-dashboard",
+    "directory": "packages/api-server"
+  },
+  "dependencies": {
+    "@msgpack/msgpack": "^2.0.0",
+    "@osrf/romi-js-core-interfaces": "^0.1.3",
+    "@osrf/romi-js-rclnodejs-transport": "^0.1.2",
+    "@types/jsonwebtoken": "^8.5.0",
+    "@types/ws": "^7.2.6",
+    "fast-deep-equal": "^3.1.3",
+    "jsonwebtoken": "^8.5.1",
+    "rclnodejs": "git://github.com/RobotWebTools/rclnodejs.git#532edb660fdc826e96373dbd3f2847d4321db741",
+    "winston": "^3.3.3",
+    "ws": "^7.3.1",
+    "yargs": "^16.0.3"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.14",
+    "jest": "^26.5.0",
+    "ts-jest": "^26.4.1",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.0.2"
+  },
+  "bin": {
+    "api-server": "src/index.js"
+  },
+  "files": [
+    "src/**/*.js",
+    "src/**/*.d.ts"
+  ]
+}

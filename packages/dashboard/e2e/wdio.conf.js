@@ -1,7 +1,13 @@
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 
 const headlessArgs = process.env.CI ? ['--headless', '--disable-gpu'] : [];
+const chromeArgs = [...headlessArgs];
+if (os.userInfo().uid === 0) {
+  chromeArgs.push('--no-sandbox');
+}
+
 const port = process.env.ROMI_DASHBOARD_PORT;
 exports.config = {
   //
@@ -21,7 +27,7 @@ exports.config = {
   // NPM script (see https://docs.npmjs.com/cli/run-script) then the current working
   // directory is where your package.json resides, so `wdio` will be called from there.
   //
-  specs: ['e2e/tests/**/*.test.ts'],
+  specs: ['tests/**/*.test.ts'],
   // Patterns to exclude.
   exclude: [
     // 'path/to/excluded/files'
@@ -67,7 +73,7 @@ exports.config = {
         binary: process.env.CHROME_BIN || undefined,
         // to run chrome headless the following flags are required
         // (see https://developers.google.com/web/updates/2017/04/headless-chrome)
-        args: [...headlessArgs, '--window-size=1366,768'],
+        args: [...chromeArgs, '--window-size=1366,768'],
       },
     },
   ],
@@ -189,8 +195,10 @@ exports.config = {
    * @param {Array.<Object>} capabilities list of capabilities details
    * @param {Array.<String>} specs List of spec file paths that are to be run
    */
-  // before: function (capabilities, specs) {
-  // },
+  before: function (capabilities, specs) {
+    browser.url('/');
+    browser.execute(() => localStorage.setItem('tourComplete', 'true'));
+  },
   /**
    * Runs before a WebdriverIO command gets executed.
    * @param {String} commandName hook command name
@@ -225,8 +233,8 @@ exports.config = {
    * Function to be executed after a test (in Mocha/Jasmine).
    */
   afterTest: function (test, context, { error, result, duration, passed, retries }) {
-    const testPath = path.relative('e2e/tests', test.file);
-    const artifactDir = `e2e/artifacts/${testPath}/${test.title}`;
+    const testPath = path.relative('tests', test.file);
+    const artifactDir = `artifacts/${testPath}/${test.title}`;
     fs.mkdirSync(artifactDir, { recursive: true });
     browser.saveScreenshot(`${artifactDir}/end.png`);
   },

@@ -1,9 +1,9 @@
 const concurrently = require('concurrently');
 const { execSync } = require('child_process');
 
-execSync('node ./scripts/setup/get-icons.js');
+execSync('cd .. && node ./scripts/setup/get-icons.js', { stdio: 'inherit' });
 
-execSync('npm run build:e2e', { stdio: 'inherit' });
+execSync('npm run build', { stdio: 'inherit' });
 
 // wrap in double quotes to support args with spaces
 const wdioArgs = process.argv
@@ -12,7 +12,12 @@ const wdioArgs = process.argv
   .join(' ');
 
 concurrently(
-  ['npm:start:api', 'npm:start:auth', 'npm:start:react:e2e', `npm:test:e2e:wdio -- ${wdioArgs}`],
+  [
+    'cd .. && npm run start:api',
+    'cd .. && npm run start:auth',
+    'npm:start:react',
+    `node auth-ready.js && wdio ${wdioArgs}`,
+  ],
   {
     killOthers: ['success', 'failure'],
     successCondition: 'first',

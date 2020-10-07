@@ -1,5 +1,5 @@
 import * as msgpack from '@msgpack/msgpack';
-import { RpcRequest, RpcResponse } from '@osrf/romi-js-api-server/src/api-gateway';
+import { RpcRequest, RpcResponse } from 'api-server/src/api-gateway';
 import Debug from 'debug';
 
 const debug = Debug('ApiClient');

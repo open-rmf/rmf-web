@@ -26,13 +26,15 @@ jobs:
           registry: docker.pkg.github.com
           repository: ${{ github.repository }}/e2e
           tags: latest
-          dockerfile: docker/e2e.Dockerfile
-  unit-test:
-    name: Unit Test
+          dockerfile: packages/dashboard/docker/e2e.Dockerfile
+  dashboard-unit-test:
+    name: Dashboard Unit Test
     needs: build-docker-images
     runs-on: ubuntu-latest
-    env:
-      CI: true
+    defaults:
+      run:
+        shell: bash
+        working-directory: packages/dashboard
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
@@ -57,6 +59,10 @@ jobs:
     name: End-to-End Test
     needs: build-docker-images
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: packages/dashboard
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
@@ -68,3 +74,29 @@ jobs:
           npm run sync:docker
       - name: e2e test
         run: docker-compose -f docker/docker-compose.yml up --exit-code-from e2e e2e
+      - name: upload artifacts
+        uses: actions/upload-artifact@v2
+        if: ${{ always() }}
+        with:
+          name: screenshots
+          path: e2e/artifacts
+  api-server-test:
+    name: Api Server Test
+    runs-on: ubuntu-latest
+    container:
+      image: ros:foxy
+    defaults:
+      run:
+        shell: bash
+        working-directory: packages/api-server
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - name: set npm config
+        run: npm config set unsafe-perm=true
+      - name: build
+        run: . /opt/ros/foxy/setup.bash && npm ci && npm run build
+      - name: test
+        run: . /opt/ros/foxy/setup.bash && npm test
