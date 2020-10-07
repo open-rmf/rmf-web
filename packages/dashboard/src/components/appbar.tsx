@@ -25,9 +25,10 @@ export interface AppBarProps {
 }
 
 class Emergency {
-  static readonly typeName = 'std_msgs/Bool';
+  static readonly typeName = 'std_msgs/msg/Bool';
   static fromObject(obj: any): Emergency {
-    return new Emergency(true);
+    if (typeof obj.data !== 'boolean') throw Error('data must be of type boolean');
+    return new Emergency(obj.data);
   }
   constructor(public data: boolean) {}
 }
@@ -46,7 +47,10 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
     topic: 'fire_alarm_trigger',
   };
 
-  const EmergencyAlarmRequestPub = transport && transport.createPublisher(emergency);
+  const emergencyAlarmRequestPub = React.useMemo(
+    () => (transport ? transport.createPublisher(emergency) : null),
+    [transport, emergency],
+  );
 
   async function handleLogout(): Promise<void> {
     try {
@@ -57,18 +61,24 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
   }
 
   const handleAlarm = (): void => {
-    EmergencyAlarmRequestPub?.publish({
-      data: true,
-    });
-
     if (alarm) {
       Alerts.verification({
-        confirmCallback: () => setAlarm(false),
+        confirmCallback: () => {
+          setAlarm(false);
+          emergencyAlarmRequestPub?.publish({
+            data: false,
+          });
+        },
         body: `You're about to turn off the alarm! The robots will resume their tasks.`,
       });
     } else {
       Alerts.verification({
-        confirmCallback: () => setAlarm(true),
+        confirmCallback: () => {
+          setAlarm(true);
+          emergencyAlarmRequestPub?.publish({
+            data: true,
+          });
+        },
         body: `You're about to fire an alarm! The robots will head to their nearest holding points. Once you accept this there is no turning back.`,
       });
     }
