@@ -6,17 +6,11 @@ fixes #
 
 ## Self-checks
 
-### Frontend
-
 - [ ] I'm familiar with and follow this [ Typescript guideline](https://basarat.gitbook.io/typescript/styleguide)
-- [ ] I added tests for new components
+- [ ] I added unit-tests for new components
 - [ ] I tried testing edge cases
-
-### Backend connection
-
-- [ ] I'm familiar with and follow this [ Typescript guideline](https://basarat.gitbook.io/typescript/styleguide)
-- [ ] I separated the connection logic in a specific file
-- [ ] I tested the behavior with an e2e test
+- [ ] I tested the behavior of the components that interact with the backend, with an e2e test
+- [ ] I separated the connection logic (publisher/subscriber managers) in a specific file
 
 ## Discussion
 
