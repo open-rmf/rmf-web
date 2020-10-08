@@ -9,13 +9,3 @@ exports[`Emergency Alarm behavior Renders correctly 1`] = `
   <NotificationsActiveIcon />
 </WithStyles(ForwardRef(IconButton))>
 `;
-
-exports[`Renders correctly 1`] = `
-<WithStyles(ForwardRef(IconButton))
-  color="secondary"
-  id="alarm-btn"
-  onClick={[Function]}
->
-  <NotificationsActiveIcon />
-</WithStyles(ForwardRef(IconButton))>
-`;
