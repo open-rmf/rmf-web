@@ -1,34 +1,65 @@
 import { makeStyles } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import ButtonGroup from '@material-ui/core/ButtonGroup';
 import Slide from '@material-ui/core/Slide';
+import CloseIcon from '@material-ui/icons/Close';
+import HomeIcon from '@material-ui/icons/Home';
+import BackIcon from '@material-ui/icons/KeyboardBackspace';
 import React, { ReactElement } from 'react';
 import { OmniPanelViewProps } from './omni-panel-view';
 
 const useStyles = makeStyles(() => ({
-  container: {
-    position: 'relative',
-    overflow: 'hidden',
+  mainContainer: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    flexFlow: 'column',
+    borderRadius: 'inherit',
   },
   viewContainer: {
     width: '100%',
     height: '100%',
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  viewContainer2: {
     position: 'absolute',
+  },
+  navigationButton: {
+    borderRadius: 'inherit',
   },
 }));
 
 export interface OmniPanelProps extends React.HTMLAttributes<HTMLDivElement> {
   view: number | string;
   children: React.ReactElement<OmniPanelViewProps>[] | React.ReactElement<OmniPanelViewProps>;
+  variant?: 'backHome' | 'backHomeClose';
   timeout?: number;
   mountOnEnter?: boolean;
   unmountOnExit?: boolean;
+  onBack?: React.MouseEventHandler<HTMLButtonElement>;
+  onHome?: React.MouseEventHandler<HTMLButtonElement>;
+  onClose?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
 export const OmniPanel = React.forwardRef(function (
   props: OmniPanelProps,
   ref: React.Ref<HTMLDivElement>,
 ) {
-  const { view, className, timeout, mountOnEnter, unmountOnExit, children, ...otherProps } = props;
-  const classes = useStyles();
+  const {
+    view,
+    children,
+    variant,
+    timeout,
+    mountOnEnter,
+    unmountOnExit,
+    onBack,
+    onHome,
+    onClose,
+    className,
+    ...otherProps
+  } = props;
+  const classes_ = useStyles();
 
   const renderView = (child: ReactElement<OmniPanelViewProps>) => (
     <Slide
@@ -40,12 +71,44 @@ export const OmniPanel = React.forwardRef(function (
       mountOnEnter={mountOnEnter}
       unmountOnExit={unmountOnExit}
     >
-      <div className={classes.viewContainer}>{child}</div>
+      <div className={classes_.viewContainer2}>{child}</div>
     </Slide>
   );
   return (
-    <div ref={ref} className={`${classes.container} ${className}`} {...otherProps}>
-      {Array.isArray(children) ? children.map(renderView) : renderView(children)}
+    <div ref={ref} {...otherProps}>
+      <div className={classes_.mainContainer}>
+        <ButtonGroup className={classes_.navigationButton} variant="text" fullWidth>
+          <Button
+            className={classes_.navigationButton}
+            size="large"
+            onClick={onBack}
+            id="back-button"
+          >
+            <BackIcon />
+          </Button>
+          <Button
+            className={classes_.navigationButton}
+            size="large"
+            onClick={onHome}
+            id="home-button"
+          >
+            <HomeIcon />
+          </Button>
+          {variant === 'backHomeClose' && (
+            <Button
+              className={classes_.navigationButton}
+              size="large"
+              onClick={onClose}
+              id="close-button"
+            >
+              <CloseIcon />
+            </Button>
+          )}
+        </ButtonGroup>
+        <div className={classes_.viewContainer}>
+          {Array.isArray(children) ? children.map(renderView) : renderView(children)}
+        </div>
+      </div>
     </div>
   );
 });

@@ -1,1 +1,1 @@
-export * from './lib/omni-panel';
+export * from './omni-panel';
