@@ -37,6 +37,7 @@ import { buildHotKeys } from '../hotkeys';
 import HelpDrawer from './drawers/help-drawer';
 import HotKeysDialog from './drawers/hotkeys-dialog';
 import { GlobalHotKeys } from 'react-hotkeys';
+import EmergencyManager from '../emergency-manager';
 
 const debug = Debug('App');
 const borderRadius = 20;
@@ -151,6 +152,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
 
   const fleetManager = React.useMemo(() => new FleetManager(), []);
   const [fleets, setFleets] = React.useState(fleetManager.fleets());
+
   const fleetNames = React.useRef<string[]>([]);
   const [robotSpotlight, setRobotSpotlight] = React.useState<SpotlightValue<string> | undefined>(
     undefined,
@@ -202,6 +204,9 @@ export default function Dashboard(_props: {}): React.ReactElement {
 
   const [tourState, setTourState] = React.useState(false);
 
+  const emergencyManager = React.useMemo(() => new EmergencyManager(), []);
+  const [emergencyAlarm, setEmergencyAlarm] = React.useState(emergencyManager.alarm());
+  console.log(emergencyAlarm);
   React.useEffect(() => {
     setLoading({ caption: 'Connecting to api server...' });
     transportFactory()
@@ -216,6 +221,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
         liftStateManager.startSubscription(x);
         fleetManager.startSubscription(x);
         negotiationStatusManager.startSubscription();
+        emergencyManager.startSubscription(x);
 
         fleetManager.on('updated', () => setFleets(fleetManager.fleets()));
         liftStateManager.on('updated', () => setLiftStates(liftStateManager.liftStates()));
@@ -226,6 +232,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
         negotiationStatusManager.on('updated', () =>
           setNegotiationStatus(negotiationStatusManager.allConflicts()),
         );
+        emergencyManager.on('updated', () => setEmergencyAlarm(emergencyManager.alarm()));
         setTransport(x);
       })
       .catch((e: CloseEvent) => {
@@ -237,6 +244,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     liftStateManager,
     dispenserStateManager,
     fleetManager,
+    emergencyManager,
     negotiationStatusManager,
   ]);
 
@@ -430,6 +438,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
               showSettings={setShowSettings}
               showHelp={setShowHelp}
               transport={transport}
+              alarmState={emergencyAlarm}
             />
             {loading && <LoadingScreen {...loading} />}
             {buildingMap && mapFloorLayerSorted && (

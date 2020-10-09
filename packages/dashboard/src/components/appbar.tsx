@@ -22,15 +22,17 @@ export interface AppBarProps {
   showSettings(show: boolean): void;
   showHelp(show: boolean): void;
   transport?: Readonly<RomiCore.Transport>;
+  alarmState: boolean | null;
 }
 
 export default function AppBar(props: AppBarProps): React.ReactElement {
-  const { toggleShowOmniPanel, showSettings, showHelp, transport } = props;
+  const { toggleShowOmniPanel, showSettings, showHelp, transport, alarmState } = props;
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const classes = useStyles();
   const authenticator = React.useContext(AuthenticatorContext);
   const user = React.useContext(UserContext);
 
+  // TODO: replace customMsgs.emergency with RomiCore.EmergencyAlarm
   const emergencyAlarmRequestPub = React.useMemo(
     () => (transport ? transport.createPublisher(customMsgs.emergency) : null),
     [transport],
@@ -61,6 +63,7 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
         {user && (
           <>
             <EmergencyAlarm
+              isActive={alarmState}
               onTurnOn={() => emergencyAlarmRequestPub?.publish({ data: true })}
               onTurnOff={() => emergencyAlarmRequestPub?.publish({ data: false })}
             />

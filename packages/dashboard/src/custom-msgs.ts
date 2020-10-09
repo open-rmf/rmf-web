@@ -1,5 +1,7 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 
+// TODO: delete this file when https://github.com/osrf/romi-js-core-interfaces/pull/18 is merged
+
 class Emergency {
   static readonly typeName = 'std_msgs/msg/Bool';
   static fromObject(obj: any): Emergency {

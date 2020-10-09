@@ -6,17 +6,16 @@ import NotificationsActiveIcon from '@material-ui/icons/NotificationsActive';
 interface EmergencyAlarmProps {
   onTurnOn?: () => void;
   onTurnOff?: () => void;
+  isActive: boolean | null;
 }
 
 export const EmergencyAlarm = React.memo((props: EmergencyAlarmProps) => {
-  const { onTurnOn, onTurnOff } = props;
-  const [alarm, setAlarm] = React.useState(false);
+  const { onTurnOn, onTurnOff, isActive } = props;
 
   const handleAlarm = (): void => {
-    if (alarm) {
+    if (isActive) {
       Alerts.verification({
         confirmCallback: () => {
-          setAlarm(false);
           onTurnOff && onTurnOff();
         },
         body: `You're about to turn off the alarm! The robots will resume their tasks.`,
@@ -24,7 +23,6 @@ export const EmergencyAlarm = React.memo((props: EmergencyAlarmProps) => {
     } else {
       Alerts.verification({
         confirmCallback: () => {
-          setAlarm(true);
           onTurnOn && onTurnOn();
         },
         body: `You're about to fire an alarm! The robots will head to their nearest holding points. Once you accept this there is no turning back.`,
@@ -33,7 +31,7 @@ export const EmergencyAlarm = React.memo((props: EmergencyAlarmProps) => {
   };
 
   return (
-    <IconButton id="alarm-btn" color={alarm ? 'secondary' : 'inherit'} onClick={handleAlarm}>
+    <IconButton id="alarm-btn" color={isActive ? 'secondary' : 'inherit'} onClick={handleAlarm}>
       <NotificationsActiveIcon />
     </IconButton>
   );
