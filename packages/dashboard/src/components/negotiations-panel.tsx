@@ -1,6 +1,5 @@
 import React from 'react';
-import { Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Typography, makeStyles } from '@material-ui/core';
 import TreeView from '@material-ui/lab/TreeView';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
@@ -13,15 +12,14 @@ import {
   NegotiationStatusManager,
   NegotiationTrajectoryResponse,
 } from '../negotiation-status-manager';
+import { colorPalette } from '../util/css-utils';
 import Debug from 'debug';
 
 const debug = Debug('OmniPanel:NegotiationsPanel');
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: 240,
-    flexGrow: 1,
-    maxWidth: 400,
+    padding: '1rem',
   },
   finished: {
     backgroundColor: 'lightgreen',
@@ -40,6 +38,17 @@ const useStyles = makeStyles((theme) => ({
   },
   ongoing: {
     backgroundColor: 'yellow',
+  },
+  treeChildren: {
+    margin: '0.8rem 0',
+  },
+  labelContent: {
+    padding: '0.5rem',
+    borderRadius: '0.5rem',
+    boxShadow: '0 0 25px 0 rgb(72, 94, 116, 0.3)',
+  },
+  expanded: {
+    borderLeft: `0.1rem solid ${colorPalette.unknown}`,
   },
 }));
 
@@ -139,8 +148,9 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
         }
         terminalLabelText += ']';
         terminalLabelText += determineStatusText(terminalStatus, conflict.resolved);
-
-        let terminalStyle = determineStyle(terminalStatus, conflict.resolved);
+        let terminalStyle = `${determineStyle(terminalStatus, conflict.resolved)} ${
+          classes.labelContent
+        }`;
 
         //set text and style for base node
         let baseStatus = statusData.base;
@@ -150,27 +160,32 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
         baseLabelText += sequenceIdName;
         baseLabelText += ']';
         baseLabelText += determineStatusText(baseStatus, conflict.resolved);
-
-        let baseStyle = determineStyle(baseStatus, conflict.resolved);
+        let baseStyle = `${determineStyle(baseStatus, conflict.resolved)} ${classes.labelContent}`;
 
         let terminalId = version + '.' + participantId + '.terminal'; //terminal node
         let baseId = version + '.' + participantId + '.base'; //base ID
         tableDom.push(
-          <TreeItem
-            data-component="TreeItem"
-            nodeId={terminalId}
-            key={terminalId}
-            classes={{ label: terminalStyle, selected: terminalStyle }}
-            label={terminalLabelText}
-          >
+          <React.Fragment>
             <TreeItem
               data-component="TreeItem"
-              nodeId={baseId}
-              key={baseId}
-              classes={{ label: baseStyle, selected: baseStyle }}
-              label={baseLabelText}
-            />
-          </TreeItem>,
+              nodeId={terminalId}
+              key={terminalId}
+              classes={{
+                label: terminalStyle,
+                expanded: classes.expanded,
+                root: classes.treeChildren,
+              }}
+              label={terminalLabelText}
+            >
+              <TreeItem
+                data-component="TreeItem"
+                nodeId={baseId}
+                key={baseId}
+                classes={{ label: baseStyle, root: classes.treeChildren }}
+                label={baseLabelText}
+              />
+            </TreeItem>
+          </React.Fragment>,
         );
 
         let terminalParams = {
@@ -190,16 +205,19 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
         //single node
         let baseStatus = statusData.base;
         let labelText = participantName + determineStatusText(baseStatus, conflict.resolved);
-        let style = determineStyle(baseStatus, conflict.resolved);
+        let style = `${determineStyle(baseStatus, conflict.resolved)} ${classes.labelContent}`;
         let nodeId = version + '.' + participantId + '.base'; //base ID
+
         tableDom.push(
-          <TreeItem
-            data-component="TreeItem"
-            nodeId={nodeId}
-            key={nodeId}
-            classes={{ label: style, selected: style }}
-            label={labelText}
-          />,
+          <React.Fragment>
+            <TreeItem
+              data-component="TreeItem"
+              nodeId={nodeId}
+              key={nodeId}
+              classes={{ label: style, root: classes.treeChildren }}
+              label={labelText}
+            />
+          </React.Fragment>,
         );
 
         let baseParams = {
@@ -211,13 +229,14 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
       }
     }
 
+    conflictStyle = `${conflictStyle} ${classes.labelContent}`;
     let nodeIdBase = 'conflict' + version;
     return (
       <TreeItem
         data-component="TreeItem"
         nodeId={nodeIdBase}
         key={nodeIdBase}
-        classes={{ label: conflictStyle, selected: conflictStyle }}
+        classes={{ label: conflictStyle, expanded: classes.expanded, root: classes.treeChildren }}
         label={conflictLabel}
       >
         {tableDom}
@@ -280,6 +299,7 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
   return (
     <Typography variant="body1" component={'span'}>
       <TreeView
+        className={classes.root}
         onNodeSelect={handleSelect}
         defaultCollapseIcon={<ExpandMoreIcon />}
         defaultExpanded={['root']}
