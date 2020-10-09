@@ -6,23 +6,23 @@ export interface StackNavigatorProps {
 }
 
 export default class StackNavigator {
+  stack: (number | string)[];
+
   constructor(home: number | string) {
-    this._stack = [home];
+    this.stack = [home];
   }
 
   push(viewId: number): void {
-    this._stack.push(viewId);
+    this.stack.push(viewId);
   }
 
   pop(): number | string {
-    this._stack.length > 1 && this._stack.pop();
-    return this._stack[this._stack.length - 1];
+    this.stack.length > 1 && this.stack.pop();
+    return this.stack[this.stack.length - 1];
   }
 
   reset(): number | string {
-    this._stack = [this._stack[0]];
-    return this._stack[0];
+    this.stack = [this.stack[0]];
+    return this.stack[0];
   }
-
-  private _stack: (number | string)[];
 }

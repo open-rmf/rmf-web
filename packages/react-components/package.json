@@ -5,10 +5,11 @@
   "main": "index.js",
   "scripts": {
     "start": "start-storybook -p 6006",
-    "build": "npx tsc --build",
+    "build": "tsc --build",
     "build:storybook": "build-storybook",
-    "clean": "npx tsc --build --clean",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "clean": "tsc --build --clean",
+    "test": "jest",
+    "test:coverage": "jest --coverage"
   },
   "author": "koonpeng@openrobotics.org",
   "license": "Apache-2.0",
@@ -22,12 +23,17 @@
     "@storybook/addon-essentials": "^6.0.26",
     "@storybook/addon-links": "^6.0.26",
     "@storybook/react": "^6.0.26",
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.0.4",
+    "@types/jest": "^26.0.14",
     "babel-loader": "^8.1.0",
+    "jest": "^26.5.2",
     "react": "^16.13.1",
     "react-is": "^16.13.1",
+    "ts-jest": "^26.4.1",
     "typescript": "^4.0.3"
   },
   "files": [
-    "!stories/"
+    "lib/"
   ]
 }
