@@ -5,8 +5,18 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
 
+type DataValueTypePrimitive = number | string;
+type DataValueTypeArray = DataValueTypePrimitive[];
+type DataValueType = DataValueTypePrimitive | DataValueTypeArray;
+
+export interface SimpleInfoData<T extends DataValueType = DataValueType> {
+  name: string;
+  value: T;
+  className?: T extends DataValueTypeArray ? string | string[] : string;
+}
+
 export interface SimpleInfo {
-  data: Record<string, number | string | number[] | string[]>;
+  data: SimpleInfoData[];
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -21,35 +31,42 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const SimpleInfo = (props: SimpleInfo) => {
+export const SimpleInfo = (props: SimpleInfo): JSX.Element => {
   const { data } = props;
   const classes = useStyles();
 
-  const renderPrimitive = (name: string, value: string | number) => (
+  const renderPrimitive = ({ name, value, className }: SimpleInfoData<DataValueTypePrimitive>) => (
     <div className={classes.item}>
       <Typography variant="body1">{`${name}:`}</Typography>
-      <Typography variant="body1">{value}</Typography>
+      <Typography variant="body1" className={className}>
+        {value}
+      </Typography>
     </div>
   );
 
-  const renderArray = (name: string, values: any[]) => (
+  const renderArray = ({ name, value, className }: SimpleInfoData<DataValueTypeArray>) => (
     <div className={classes.item}>
       <Typography variant="body1">{`${name}:`}</Typography>
       <List dense>
-        {values.map((value, i) => (
+        {value.map((item, i) => (
           <ListItem key={i}>
-            <Typography variant="body1">{value}</Typography>
+            <Typography
+              variant="body1"
+              className={Array.isArray(className) ? className[i] : className}
+            >
+              {item}
+            </Typography>
           </ListItem>
         ))}
       </List>
     </div>
   );
 
-  const renderLine = (name: string, value: any) => {
-    switch (typeof value) {
+  const renderLine = (data: SimpleInfoData) => {
+    switch (typeof data.value) {
       case 'object':
-        if (Array.isArray(value)) {
-          return renderArray(name, value);
+        if (Array.isArray(data.value)) {
+          return renderArray(data as SimpleInfoData<DataValueTypeArray>);
         } else {
           throw Error('nested object is not supported');
         }
@@ -58,15 +75,15 @@ export const SimpleInfo = (props: SimpleInfo) => {
       case 'symbol':
         break;
       default:
-        return renderPrimitive(name, value);
+        return renderPrimitive(data as SimpleInfoData<DataValueTypePrimitive>);
     }
   };
 
   return (
     <div className={classes.container}>
-      {Object.entries(data).map(([key, value]) => (
+      {data.map((item) => (
         <>
-          {renderLine(key, value)}
+          {renderLine(item)}
           <Divider />
         </>
       ))}

@@ -1,55 +1,30 @@
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionProps,
-  AccordionSummary,
-  Button,
-  ButtonGroup,
-  makeStyles,
-  useTheme,
-} from '@material-ui/core';
-import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
+import { makeStyles } from '@material-ui/core';
+import Accordion, { AccordionProps } from '@material-ui/core/Accordion';
+import Button from '@material-ui/core/Button';
+import ButtonGroup from '@material-ui/core/ButtonGroup';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import React from 'react';
-import SimpleInfo from '../simple-info';
-import StatusLabel from '../status-label';
+import ItemAccordionDetails from '../item-accordion-details';
+import ItemAccordionSummary from '../item-accordion-summary';
+import SimpleInfo, { SimpleInfoData } from '../simple-info';
 
 const debug = Debug('Doors:DoorItem');
 
 const useStyles = makeStyles((theme) => ({
-  accordionSummaryContent: {
-    alignItems: 'center',
-    justifyContent: 'space-between',
+  controlButtonGroup: {
+    marginTop: theme.spacing(1),
   },
-
-  accordionDetail: {
-    flexFlow: 'column',
-    padding: theme.spacing(1),
-  },
-
-  doorLabel: {
-    borderRadius: theme.shape.borderRadius,
-    borderStyle: 'solid',
-    border: 2,
-    padding: 5,
-    width: '4rem',
-    textAlign: 'center',
-  },
-
   doorLabelOpen: {
     borderColor: theme.palette.success.main,
   },
-
   doorLabelClosed: {
     borderColor: theme.palette.error.main,
   },
-
   doorLabelMoving: {
     borderColor: theme.palette.warning.main,
   },
-
-  unknown: {
+  doorLabelUnknown: {
     borderColor: '#cccccc',
   },
 }));
@@ -105,13 +80,13 @@ interface DoorInfoProps {
 const DoorInfo = (props: DoorInfoProps) => {
   const { door } = props;
 
-  const data = {
-    Name: door.name,
-    Type: doorTypeToString(door.door_type),
-    'Motion Direction': motionDirectionToString(door.motion_direction),
-    'Motion Range': door.motion_range,
-    Location: `(${door.v1_x.toFixed(3)}, ${door.v1_y.toFixed(3)})`,
-  };
+  const data = [
+    { name: 'Name', value: door.name },
+    { name: 'Type', value: doorTypeToString(door.door_type) },
+    { name: 'Motion Direction', value: motionDirectionToString(door.motion_direction) },
+    { name: 'Motion Range', value: door.motion_range },
+    { name: 'Location', value: `(${door.v1_x.toFixed(3)}, ${door.v1_y.toFixed(3)})` },
+  ] as SimpleInfoData[];
 
   return <SimpleInfo data={data} />;
 };
@@ -123,62 +98,65 @@ export interface DoorItemProps extends Omit<AccordionProps, 'children'> {
   onDoorClose?(door: RomiCore.Door): void;
 }
 
-export const DoorItem = React.memo(
-  React.forwardRef((props: DoorItemProps, ref: React.Ref<HTMLElement>) => {
-    const { door, doorState, onDoorOpen, onDoorClose, ...otherProps } = props;
-    debug(`render ${door.name}`);
+export const DoorItem = React.memo((props: DoorItemProps, ref: React.Ref<HTMLElement>) => {
+  const { door, doorState, onDoorOpen, onDoorClose, ...otherProps } = props;
+  debug(`render ${door.name}`);
+  const classes = useStyles();
 
-    const classes = useStyles();
-    const theme = useTheme();
-
-    const doorModeLabelClasses = (doorState?: RomiCore.DoorState): string => {
+  const doorModeLabelClasses = React.useCallback(
+    (doorState?: RomiCore.DoorState): string => {
       if (!doorState) {
-        return `${classes.doorLabel} ${classes.unknown}`;
+        return `${classes.doorLabelUnknown}`;
       }
       switch (doorState.current_mode.value) {
         case RomiCore.DoorMode.MODE_OPEN:
-          return `${classes.doorLabel} ${classes.doorLabelOpen}`;
+          return `${classes.doorLabelOpen}`;
         case RomiCore.DoorMode.MODE_CLOSED:
-          return `${classes.doorLabel} ${classes.doorLabelClosed}`;
+          return `${classes.doorLabelClosed}`;
         case RomiCore.DoorMode.MODE_MOVING:
-          return `${classes.doorLabel} ${classes.doorLabelMoving}`;
+          return `${classes.doorLabelMoving}`;
         default:
-          return `${classes.doorLabel} ${classes.unknown}`;
+          return `${classes.doorLabelUnknown}`;
       }
-    };
+    },
+    [classes],
+  );
 
-    return (
-      <Accordion
-        ref={ref}
-        data-component="DoorItem"
-        data-name={door.name}
-        data-state={doorModeToString(doorState)}
-        {...otherProps}
-      >
-        <AccordionSummary
-          classes={{ content: classes.accordionSummaryContent }}
-          expandIcon={<ExpandMoreIcon />}
-        >
-          <StatusLabel
-            modalLabelClass={doorModeLabelClasses(doorState)}
-            name={door.name}
-            modeText={doorModeToString(doorState)}
-          />
-        </AccordionSummary>
-        <AccordionDetails data-role="details" className={classes.accordionDetail}>
-          <DoorInfo door={door} />
-          <ButtonGroup style={{ marginTop: theme.spacing(1) }} fullWidth>
-            <Button disabled={!onDoorOpen} onClick={() => onDoorOpen!(door)}>
-              Close
-            </Button>
-            <Button disabled={!onDoorClose} onClick={() => onDoorClose!(door)}>
-              Open
-            </Button>
-          </ButtonGroup>
-        </AccordionDetails>
-      </Accordion>
-    );
-  }),
-);
+  const handleCloseClick = React.useCallback(() => onDoorClose && onDoorClose(door), [
+    door,
+    onDoorClose,
+  ]);
+  const handleOpenClick = React.useCallback(() => onDoorOpen && onDoorOpen(door), [
+    door,
+    onDoorOpen,
+  ]);
+
+  return (
+    <Accordion
+      ref={ref}
+      data-component="DoorItem"
+      data-name={door.name}
+      data-state={doorModeToString(doorState)}
+      {...otherProps}
+    >
+      <ItemAccordionSummary
+        title={door.name}
+        status={doorModeToString(doorState)}
+        classes={{ status: doorModeLabelClasses(doorState) }}
+      />
+      <ItemAccordionDetails data-role="details">
+        <DoorInfo door={door} />
+        <ButtonGroup className={classes.controlButtonGroup} fullWidth>
+          <Button disabled={!onDoorOpen} onClick={handleOpenClick}>
+            Close
+          </Button>
+          <Button disabled={!onDoorClose} onClick={handleCloseClick}>
+            Open
+          </Button>
+        </ButtonGroup>
+      </ItemAccordionDetails>
+    </Accordion>
+  );
+});
 
 export default DoorItem;

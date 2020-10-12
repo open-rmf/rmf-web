@@ -42,10 +42,7 @@ export interface OmniPanelProps extends React.HTMLAttributes<HTMLDivElement> {
   onClose?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
-export const OmniPanel = React.forwardRef(function (
-  props: OmniPanelProps,
-  ref: React.Ref<HTMLDivElement>,
-) {
+export const OmniPanel = (props: OmniPanelProps): JSX.Element => {
   const {
     view,
     children,
@@ -56,7 +53,6 @@ export const OmniPanel = React.forwardRef(function (
     onBack,
     onHome,
     onClose,
-    className,
     ...otherProps
   } = props;
   const classes_ = useStyles();
@@ -75,7 +71,7 @@ export const OmniPanel = React.forwardRef(function (
     </Slide>
   );
   return (
-    <div ref={ref} {...otherProps}>
+    <div {...otherProps}>
       <div className={classes_.mainContainer}>
         <ButtonGroup className={classes_.navigationButton} variant="text" fullWidth>
           <Button
@@ -111,6 +107,6 @@ export const OmniPanel = React.forwardRef(function (
       </div>
     </div>
   );
-});
+};
 
 export default OmniPanel;
