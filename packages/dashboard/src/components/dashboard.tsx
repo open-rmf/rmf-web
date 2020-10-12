@@ -206,7 +206,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
 
   const emergencyManager = React.useMemo(() => new EmergencyManager(), []);
   const [emergencyAlarm, setEmergencyAlarm] = React.useState(emergencyManager.alarm());
-  console.log(emergencyAlarm);
   React.useEffect(() => {
     setLoading({ caption: 'Connecting to api server...' });
     transportFactory()

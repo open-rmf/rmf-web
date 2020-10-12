@@ -11,26 +11,20 @@ describe('Emergency Alarm behavior', () => {
 
   afterEach(() => {
     root.unmount();
-    jest.clearAllMocks();
   });
 
   test('Renders correctly', () => {
-    root = shallow(<EmergencyAlarm></EmergencyAlarm>);
+    root = shallow(<EmergencyAlarm isActive={null}></EmergencyAlarm>);
     expect(root).toMatchSnapshot();
   });
 
   test('Alarm shows a inherit color Icon when is deactivated', () => {
-    root = mount(<EmergencyAlarm></EmergencyAlarm>);
+    root = mount(<EmergencyAlarm isActive={null}></EmergencyAlarm>);
     expect(root.find(IconButton).prop('color')).toBe('inherit');
   });
 
   test('Alarm shows a red icon when is activated', () => {
-    const stateSetter = jest.fn();
-    jest
-      .spyOn(React, 'useState')
-      //Simulate that mode state value was set to 'true'
-      .mockImplementation((stateValue: boolean) => [(stateValue = true), stateSetter]);
-    root = mount(<EmergencyAlarm></EmergencyAlarm>);
+    root = mount(<EmergencyAlarm isActive={true}></EmergencyAlarm>);
     expect(root.find(IconButton).prop('color')).toBe('secondary');
   });
 });
