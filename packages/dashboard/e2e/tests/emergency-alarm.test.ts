@@ -1,11 +1,5 @@
 import { makeLauncher } from '../rmf-launcher';
-import {
-  getRobotLocations,
-  login,
-  overwriteClick,
-  removeTextFromAutocomplete,
-  requestLoop,
-} from './utils';
+import { getRobotLocations, login, overwriteClick, requestLoop } from './utils';
 
 describe('Emergency Alarm', () => {
   const launcher = makeLauncher();
@@ -20,10 +14,12 @@ describe('Emergency Alarm', () => {
 
   const openAlarmModal = () => {
     const alarmButton = $('[id="alarm-btn"]');
+    alarmButton.waitForClickable();
     alarmButton.click();
   };
   const confirmAction = () => {
     const confirmButton = $('.swal2-confirm');
+    confirmButton.waitForClickable();
     confirmButton.click();
   };
 
@@ -35,6 +31,7 @@ describe('Emergency Alarm', () => {
     });
     const currentRobotLocations = getRobotLocations(browser);
     const backButton = $('[name="back-button"]');
+    backButton.waitForClickable();
     backButton.click();
 
     requestLoop('pantry', 'cubicle_1');
