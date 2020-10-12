@@ -46,7 +46,7 @@ describe('Emergency Alarm', () => {
     confirmAction();
 
     // time for the robot to go to a holding point
-    browser.pause(10000);
+    browser.pause(15000);
 
     // check robot position after alarm activation
     backButton.waitForClickable();
@@ -67,7 +67,7 @@ describe('Emergency Alarm', () => {
     confirmAction();
 
     // Wait for the robot to move again
-    browser.pause(5000);
+    browser.pause(8000);
     const robotLocationAfterDeactivateAlarm = getRobotLocations(browser);
     expect(robotLocationAfterActivatedAlarm).not.toMatchObject(robotLocationAfterDeactivateAlarm);
   });
