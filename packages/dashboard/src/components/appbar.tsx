@@ -14,7 +14,6 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import React from 'react';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
 import HelpIcon from '@material-ui/icons/Help';
-import * as customMsgs from '../custom-msgs';
 import { EmergencyAlarm } from './emergency-alarm';
 
 export interface AppBarProps {
@@ -34,7 +33,7 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
 
   // TODO: replace customMsgs.emergency with RomiCore.EmergencyAlarm
   const emergencyAlarmRequestPub = React.useMemo(
-    () => (transport ? transport.createPublisher(customMsgs.emergency) : null),
+    () => (transport ? transport.createPublisher(RomiCore.emergency) : null),
     [transport],
   );
 

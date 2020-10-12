@@ -1,6 +1,5 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import EventEmitter from 'eventemitter3';
-import { emergency } from './custom-msgs';
 
 type Events = {
   updated: [];
@@ -13,7 +12,7 @@ export default class EmergencyManager extends EventEmitter<Events> {
 
   startSubscription(transport: RomiCore.Transport) {
     this._subscriptions.push(
-      transport.subscribe(emergency, (state) => {
+      transport.subscribe(RomiCore.emergency, (state) => {
         this._alarmState = state.data;
         this.emit('updated');
       }),
