@@ -54,7 +54,7 @@ export function login(): void {
   $('#kc-login').click();
 }
 
-export const requestLoop = (pointA: string, pointB: string) => {
+export const requestLoop = (pointA: string, pointB: string, loopNumber: number = 1) => {
   $('[data-component=MainMenu] [data-item=Commands]').click();
 
   const loopForm = $('[data-component=LoopForm]');
@@ -71,6 +71,6 @@ export const requestLoop = (pointA: string, pointB: string) => {
   $('.MuiAutocomplete-popper').click();
 
   $('input[name=numLoops]').waitForClickable();
-  $('input[name=numLoops]').setValue(1);
+  $('input[name=numLoops]').setValue(loopNumber);
   loopForm.$('button=Request').click();
 };

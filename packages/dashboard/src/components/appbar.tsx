@@ -31,7 +31,6 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
   const authenticator = React.useContext(AuthenticatorContext);
   const user = React.useContext(UserContext);
 
-  // TODO: replace customMsgs.emergency with RomiCore.EmergencyAlarm
   const emergencyAlarmRequestPub = React.useMemo(
     () => (transport ? transport.createPublisher(RomiCore.emergency) : null),
     [transport],

@@ -28,7 +28,7 @@ describe('Emergency Alarm', () => {
   };
 
   it('When the alarm is activated robots go and stay on holding points, when the alarm is deactivated the robot move again ', () => {
-    // Save robot values
+    // save robot values
     $('[data-component=MainMenu] [data-item=Robots]').click();
     browser.addLocatorStrategy('findAllRobots', () => {
       return document.querySelectorAll('[data-component=RobotItem]');
@@ -38,18 +38,22 @@ describe('Emergency Alarm', () => {
     backButton.click();
 
     requestLoop('pantry', 'cubicle_1');
-    // Wait for the robot to move
+    // wait for the robot to move
     browser.pause(5000);
-    // Activate Alarm
+
+    // activate Alarm
     openAlarmModal();
     confirmAction();
+
     // time for the robot to go to a holding point
     browser.pause(10000);
-    // check robot position
+
+    // check robot position after alarm activation
     backButton.waitForClickable();
     backButton.click();
     $('[data-component=MainMenu] [data-item=Robots]').click();
     const newRobotLocations = getRobotLocations(browser);
+
     // check that the robot actually moved
     expect(newRobotLocations).not.toMatchObject(currentRobotLocations);
 
@@ -61,6 +65,7 @@ describe('Emergency Alarm', () => {
     // Deactivate Alarm
     openAlarmModal();
     confirmAction();
+
     // Wait for the robot to move again
     browser.pause(5000);
     const robotLocationAfterDeactivateAlarm = getRobotLocations(browser);
