@@ -165,27 +165,25 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
         let terminalId = version + '.' + participantId + '.terminal'; //terminal node
         let baseId = version + '.' + participantId + '.base'; //base ID
         tableDom.push(
-          <React.Fragment>
+          <TreeItem
+            data-component="TreeItem"
+            nodeId={terminalId}
+            key={terminalId}
+            classes={{
+              label: terminalStyle,
+              expanded: classes.expanded,
+              root: classes.treeChildren,
+            }}
+            label={terminalLabelText}
+          >
             <TreeItem
               data-component="TreeItem"
-              nodeId={terminalId}
-              key={terminalId}
-              classes={{
-                label: terminalStyle,
-                expanded: classes.expanded,
-                root: classes.treeChildren,
-              }}
-              label={terminalLabelText}
-            >
-              <TreeItem
-                data-component="TreeItem"
-                nodeId={baseId}
-                key={baseId}
-                classes={{ label: baseStyle, root: classes.treeChildren }}
-                label={baseLabelText}
-              />
-            </TreeItem>
-          </React.Fragment>,
+              nodeId={baseId}
+              key={baseId}
+              classes={{ label: baseStyle, root: classes.treeChildren }}
+              label={baseLabelText}
+            />
+          </TreeItem>,
         );
 
         let terminalParams = {
@@ -209,15 +207,13 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
         let nodeId = version + '.' + participantId + '.base'; //base ID
 
         tableDom.push(
-          <React.Fragment>
-            <TreeItem
-              data-component="TreeItem"
-              nodeId={nodeId}
-              key={nodeId}
-              classes={{ label: style, root: classes.treeChildren }}
-              label={labelText}
-            />
-          </React.Fragment>,
+          <TreeItem
+            data-component="TreeItem"
+            nodeId={nodeId}
+            key={nodeId}
+            classes={{ label: style, root: classes.treeChildren }}
+            label={labelText}
+          />,
         );
 
         let baseParams = {
@@ -258,6 +254,7 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
 
   // action callbacks
   const handleSelect = (event: React.ChangeEvent<{}>, nodeIds: string): void => {
+    console.log('I click on handle select');
     async function updateNegotiationTrajectory() {
       if (!negotiationStatusManager || !negotiationTrajStore) {
         return;
