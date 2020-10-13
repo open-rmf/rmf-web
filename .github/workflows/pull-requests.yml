@@ -1,34 +1,12 @@
 name: Pull Requests
 on:
-  pull_request:
+  # pull_request:
   push:
     branches:
       - master
+env:
+  CI: true
 jobs:
-  build-docker-images:
-    name: Push Docker image to GitHub Packages
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Push rmf image to GitHub Packages
-        uses: docker/build-push-action@v1
-        with:
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-          registry: docker.pkg.github.com
-          repository: ${{ github.repository }}/rmf
-          tags: nightly
-          path: packages/dashboard/docker/rmf
-      - name: Push e2e image to GitHub Packages
-        uses: docker/build-push-action@v1
-        with:
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-          registry: docker.pkg.github.com
-          repository: ${{ github.repository }}/e2e
-          tags: latest
-          dockerfile: packages/dashboard/docker/e2e.Dockerfile
-          
   dashboard-unit-test:
     name: Dashboard Unit Test
     runs-on: ubuntu-latest
