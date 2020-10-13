@@ -10,15 +10,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      # - name: Push rmf image to GitHub Packages
-      #   uses: docker/build-push-action@v1
-      #   with:
-      #     username: ${{ github.actor }}
-      #     password: ${{ secrets.GITHUB_TOKEN }}
-      #     registry: docker.pkg.github.com
-      #     repository: ${{ github.repository }}/rmf
-      #     tags: nightly
-      #     path: packages/dashboard/docker/rmf
+      - name: Push rmf image to GitHub Packages
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          repository: ${{ github.repository }}/rmf
+          tags: nightly
+          path: packages/dashboard/docker/rmf
       - name: Push e2e image to GitHub Packages
         uses: docker/build-push-action@v1
         with:
@@ -27,78 +27,77 @@ jobs:
           registry: docker.pkg.github.com
           repository: ${{ github.repository }}/e2e
           tags: latest
-          path: packages/dashboard
-          dockerfile: docker/e2e.Dockerfile
-  # dashboard-unit-test:
-  #   name: Dashboard Unit Test
-  #   needs: build-docker-images
-  #   runs-on: ubuntu-latest
-  #   defaults:
-  #     run:
-  #       shell: bash
-  #       working-directory: packages/dashboard
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: actions/setup-node@v1
-  #       with:
-  #         # Version Spec of the version to use.  Examples: 10.x, 10.15.1, >=10.15.0, lts
-  #         node-version: 12.x # optional, default is 10.x
-  #         # Optional registry to set up for auth. Will set the registry in a project level .npmrc and .yarnrc file, and set up auth to read in from env.NODE_AUTH_TOKEN
-  #         registry-url: # optional
-  #         # Optional scope for authenticating against scoped registries
-  #         scope: # optional
-  #     - name: prepare
-  #       run: |
-  #         docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
-  #         npm run sync:docker
-  #     - name: unit test
-  #       run: docker-compose -f docker/docker-compose.yml up --exit-code-from unit-test unit-test
-  #     - name: Upload coverage to Codecov
-  #       uses: codecov/codecov-action@v1
-  #       with:
-  #         token: ${{ secrets.CODECOV_TOKEN }}
-  # e2e-test:
-  #   name: End-to-End Test
-  #   needs: build-docker-images
-  #   runs-on: ubuntu-latest
-  #   defaults:
-  #     run:
-  #       shell: bash
-  #       working-directory: packages/dashboard
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: actions/setup-node@v1
-  #       with:
-  #         node-version: 12
-  #     - name: prepare
-  #       run: |
-  #         docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
-  #         npm run sync:docker
-  #     - name: e2e test
-  #       run: docker-compose -f docker/docker-compose.yml up --exit-code-from e2e e2e
-  #     - name: upload artifacts
-  #       uses: actions/upload-artifact@v2
-  #       if: ${{ always() }}
-  #       with:
-  #         name: screenshots
-  #         path: e2e/artifacts
-  # api-server-test:
-  #   name: Api Server Test
-  #   runs-on: ubuntu-latest
-  #   container:
-  #     image: ros:foxy
-  #   defaults:
-  #     run:
-  #       shell: bash
-  #       working-directory: packages/api-server
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: actions/setup-node@v1
-  #       with:
-  #         node-version: 12
-  #     - name: set npm config
-  #       run: npm config set unsafe-perm=true
-  #     - name: build
-  #       run: . /opt/ros/foxy/setup.bash && npm ci && npm run build
-  #     - name: test
-  #       run: . /opt/ros/foxy/setup.bash && npm test
+          dockerfile: packages/dashboard/docker/e2e.Dockerfile
+  dashboard-unit-test:
+    name: Dashboard Unit Test
+    needs: build-docker-images
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: packages/dashboard
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          # Version Spec of the version to use.  Examples: 10.x, 10.15.1, >=10.15.0, lts
+          node-version: 12.x # optional, default is 10.x
+          # Optional registry to set up for auth. Will set the registry in a project level .npmrc and .yarnrc file, and set up auth to read in from env.NODE_AUTH_TOKEN
+          registry-url: # optional
+          # Optional scope for authenticating against scoped registries
+          scope: # optional
+      - name: prepare
+        run: |
+          docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
+          npm run sync:docker
+      - name: unit test
+        run: docker-compose -f docker/docker-compose.yml up --exit-code-from unit-test unit-test
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+  e2e-test:
+    name: End-to-End Test
+    needs: build-docker-images
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: packages/dashboard
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - name: prepare
+        run: |
+          docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
+          npm run sync:docker
+      - name: e2e test
+        run: docker-compose -f docker/docker-compose.yml up --exit-code-from e2e e2e
+      - name: upload artifacts
+        uses: actions/upload-artifact@v2
+        if: ${{ always() }}
+        with:
+          name: screenshots
+          path: e2e/artifacts
+  api-server-test:
+    name: Api Server Test
+    runs-on: ubuntu-latest
+    container:
+      image: ros:foxy
+    defaults:
+      run:
+        shell: bash
+        working-directory: packages/api-server
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - name: set npm config
+        run: npm config set unsafe-perm=true
+      - name: build
+        run: . /opt/ros/foxy/setup.bash && npm ci && npm run build
+      - name: test
+        run: . /opt/ros/foxy/setup.bash && npm test
