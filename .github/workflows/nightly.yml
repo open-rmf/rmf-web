@@ -1,5 +1,6 @@
 name: Nightly
 on:
+  pull_request:
   schedule:
     # 2am SGT
     - cron: '0 18 * * *'
@@ -9,15 +10,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Push rmf image to GitHub Packages
-        uses: docker/build-push-action@v1
-        with:
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-          registry: docker.pkg.github.com
-          repository: ${{ github.repository }}/rmf
-          tags: nightly
-          path: packages/dashboard/docker/rmf
+      # - name: Push rmf image to GitHub Packages
+      #   uses: docker/build-push-action@v1
+      #   with:
+      #     username: ${{ github.actor }}
+      #     password: ${{ secrets.GITHUB_TOKEN }}
+      #     registry: docker.pkg.github.com
+      #     repository: ${{ github.repository }}/rmf
+      #     tags: nightly
+      #     path: packages/dashboard/docker/rmf
       - name: Push e2e image to GitHub Packages
         uses: docker/build-push-action@v1
         with:
