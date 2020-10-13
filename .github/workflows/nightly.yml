@@ -27,7 +27,8 @@ jobs:
           registry: docker.pkg.github.com
           repository: ${{ github.repository }}/e2e
           tags: latest
-          dockerfile: packages/dashboard/docker/e2e.Dockerfile
+          path: packages/dashboard
+          dockerfile: docker/e2e.Dockerfile
   # dashboard-unit-test:
   #   name: Dashboard Unit Test
   #   needs: build-docker-images
