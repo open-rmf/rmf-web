@@ -17,7 +17,7 @@ jobs:
           registry: docker.pkg.github.com
           repository: ${{ github.repository }}/rmf
           tags: nightly
-          path: docker/rmf
+          path: packages/dashboard/docker/rmf
       - name: Push e2e image to GitHub Packages
         uses: docker/build-push-action@v1
         with:
