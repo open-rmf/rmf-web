@@ -44,6 +44,9 @@ const useStyles = makeStyles((theme) => ({
   treeChildren: {
     margin: '0.8rem 0',
   },
+  treeContents: {
+    margin: '0.5rem 0',
+  },
   labelContent: {
     padding: '0.5rem',
     borderRadius: '0.5rem',
@@ -174,7 +177,7 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
             classes={{
               label: terminalStyle,
               expanded: classes.expanded,
-              root: classes.treeChildren,
+              root: classes.treeContents,
             }}
             label={terminalLabelText}
           >
@@ -182,7 +185,7 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
               data-component="TreeItem"
               nodeId={baseId}
               key={baseId}
-              classes={{ label: baseStyle, root: classes.treeChildren }}
+              classes={{ label: baseStyle, root: classes.treeContents }}
               label={baseLabelText}
             />
           </TreeItem>,
@@ -213,7 +216,7 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
             data-component="TreeItem"
             nodeId={nodeId}
             key={nodeId}
-            classes={{ label: style, root: classes.treeChildren }}
+            classes={{ label: style, root: classes.treeContents }}
             label={labelText}
           />,
         );
