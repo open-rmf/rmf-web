@@ -1,9 +1,11 @@
 import React from 'react';
-import { Typography, makeStyles } from '@material-ui/core';
+import { Typography, makeStyles, Button, ButtonGroup } from '@material-ui/core';
 import TreeView from '@material-ui/lab/TreeView';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import TreeItem from '@material-ui/lab/TreeItem';
+import ClearAllIcon from '@material-ui/icons/ClearAll';
+import RestoreIcon from '@material-ui/icons/Restore';
 import { SpotlightValue } from './spotlight-value';
 import {
   NegotiationConflict,
@@ -254,7 +256,6 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
 
   // action callbacks
   const handleSelect = (event: React.ChangeEvent<{}>, nodeIds: string): void => {
-    console.log('I click on handle select');
     async function updateNegotiationTrajectory() {
       if (!negotiationStatusManager || !negotiationTrajStore) {
         return;
@@ -295,6 +296,18 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
 
   return (
     <Typography variant="body1" component={'span'}>
+      <div style={{ padding: '0.5rem 1rem' }}>
+        <ButtonGroup fullWidth>
+          <Button>
+            <ClearAllIcon />
+            Clear All
+          </Button>
+          <Button>
+            <RestoreIcon />
+            Reset
+          </Button>
+        </ButtonGroup>
+      </div>
       <TreeView
         className={classes.root}
         onNodeSelect={handleSelect}
