@@ -79,6 +79,10 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
     negotiationTrajStore,
   } = props;
 
+  const [negotiationContents, setNegotiationContents] = React.useState<{
+    [key: string]: JSX.Element;
+  }>({});
+
   React.useEffect(() => {
     if (!spotlight) {
       return;
@@ -242,13 +246,18 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
     );
   };
 
-  let negotiationContents: JSX.Element[] = [];
   if (conflicts) {
-    let reversedConflicts = Object.keys(conflicts).reverse();
-    reversedConflicts.forEach((version) => {
+    const conflictIds = localStorage.getItem('conflictIds');
+    let parsedConflictIds: string[];
+    if (conflictIds) {
+      parsedConflictIds = conflictIds.split(',');
+    }
+    Object.keys(conflicts).forEach((version) => {
       const conflict = conflicts[version];
       let contents = renderNegotiations(version, conflict);
-      negotiationContents.push(contents);
+      if (!parsedConflictIds.includes(version)) {
+        negotiationContents[version] = contents;
+      }
     });
   } else {
     console.log('prop negotationstatus empty');
@@ -294,11 +303,17 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
     updateNegotiationTrajectory();
   };
 
+  const handleClearAllCurrNegotiations = () => {
+    console.log('clearning content .......');
+    localStorage.setItem('conflictIds', Object.keys(conflicts).toString());
+    setNegotiationContents({});
+  };
+
   return (
     <Typography variant="body1" component={'span'}>
       <div style={{ padding: '0.5rem 1rem' }}>
         <ButtonGroup fullWidth>
-          <Button>
+          <Button onClick={handleClearAllCurrNegotiations}>
             <ClearAllIcon />
             Clear All
           </Button>
@@ -315,7 +330,11 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
         defaultExpanded={['root']}
         defaultExpandIcon={<ChevronRightIcon />}
       >
-        {negotiationContents}
+        {Object.keys(negotiationContents)
+          .reverse()
+          .map((key) => {
+            return negotiationContents[key];
+          })}
       </TreeView>
     </Typography>
   );
