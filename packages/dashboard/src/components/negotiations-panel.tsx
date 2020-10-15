@@ -3,6 +3,7 @@ import { Typography, makeStyles, Button, ButtonGroup } from '@material-ui/core';
 import TreeView from '@material-ui/lab/TreeView';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import RestoreFromTrashIcon from '@material-ui/icons/RestoreFromTrash';
 import TreeItem from '@material-ui/lab/TreeItem';
 import ClearAllIcon from '@material-ui/icons/ClearAll';
 import RestoreIcon from '@material-ui/icons/Restore';
@@ -246,19 +247,30 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
     );
   };
 
+  const updateNegotiationContents = (
+    conflicts: Readonly<Record<string, NegotiationConflict>>,
+    parsedConflictIds?: string[],
+  ) => {
+    Object.keys(conflicts).forEach((version) => {
+      const conflict = conflicts[version];
+      let contents = renderNegotiations(version, conflict);
+      if (parsedConflictIds && !parsedConflictIds.includes(version)) {
+        negotiationContents[version] = contents;
+      } else if (!parsedConflictIds) {
+        negotiationContents[version] = contents;
+      }
+    });
+  };
+
   if (conflicts) {
     const conflictIds = localStorage.getItem('conflictIds');
     let parsedConflictIds: string[];
     if (conflictIds) {
       parsedConflictIds = conflictIds.split(',');
+      updateNegotiationContents(conflicts, parsedConflictIds);
+    } else {
+      updateNegotiationContents(conflicts);
     }
-    Object.keys(conflicts).forEach((version) => {
-      const conflict = conflicts[version];
-      let contents = renderNegotiations(version, conflict);
-      if (!parsedConflictIds.includes(version)) {
-        negotiationContents[version] = contents;
-      }
-    });
   } else {
     console.log('prop negotationstatus empty');
   }
@@ -308,17 +320,26 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
     setNegotiationContents({});
   };
 
+  const handleRestoreNegotiations = () => {
+    localStorage.setItem('conflictIds', '');
+    setNegotiationContents({});
+  };
+
   return (
     <Typography variant="body1" component={'span'}>
       <div style={{ padding: '0.5rem 1rem' }}>
         <ButtonGroup fullWidth>
           <Button onClick={handleClearAllCurrNegotiations}>
             <ClearAllIcon />
-            Clear All
+            Clear
           </Button>
           <Button>
             <RestoreIcon />
             Reset
+          </Button>
+          <Button onClick={handleRestoreNegotiations}>
+            <RestoreFromTrashIcon />
+            Restore
           </Button>
         </ButtonGroup>
       </div>
