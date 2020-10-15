@@ -499,6 +499,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                     negotiationStatusManager={negotiationStatusManager}
                     negotiationTrajStore={negotiationTrajStore}
                     negotiationStatusUpdateTS={statusUpdateTS.current}
+                    setNegotiationTrajStore={setNegotiationTrajStore}
                   />
                 </OmniPanelView>
               </OmniPanel>
