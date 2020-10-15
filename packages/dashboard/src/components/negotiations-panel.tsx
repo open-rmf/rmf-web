@@ -304,7 +304,6 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
   };
 
   const handleClearAllCurrNegotiations = () => {
-    console.log('clearning content .......');
     localStorage.setItem('conflictIds', Object.keys(conflicts).toString());
     setNegotiationContents({});
   };
