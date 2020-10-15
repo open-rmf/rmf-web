@@ -327,6 +327,7 @@ exports[`matches snapshot 1`] = `
                   disabled={false}
                   fullWidth={true}
                   key=".1"
+                  onClick={[Function]}
                   size="medium"
                   variant="outlined"
                 >
@@ -371,6 +372,7 @@ exports[`matches snapshot 1`] = `
                     disableRipple={false}
                     disabled={false}
                     fullWidth={true}
+                    onClick={[Function]}
                     size="medium"
                     variant="outlined"
                   >
@@ -381,6 +383,7 @@ exports[`matches snapshot 1`] = `
                       disabled={false}
                       focusRipple={true}
                       focusVisibleClassName="Mui-focusVisible"
+                      onClick={[Function]}
                       type="button"
                     >
                       <ForwardRef(ButtonBase)
@@ -397,12 +400,14 @@ exports[`matches snapshot 1`] = `
                         disabled={false}
                         focusRipple={true}
                         focusVisibleClassName="Mui-focusVisible"
+                        onClick={[Function]}
                         type="button"
                       >
                         <button
                           className="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButtonGroup-grouped MuiButtonGroup-groupedHorizontal MuiButtonGroup-groupedOutlined MuiButtonGroup-groupedOutlinedHorizontal MuiButtonGroup-groupedOutlined MuiButton-fullWidth"
                           disabled={false}
                           onBlur={[Function]}
+                          onClick={[Function]}
                           onDragLeave={[Function]}
                           onFocus={[Function]}
                           onKeyDown={[Function]}
