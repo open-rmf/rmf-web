@@ -178,6 +178,25 @@ it('should call setNegotiationTrajStore callback when reset-button is clicked', 
   root.unmount();
 });
 
+it('should reset conflictIds to empty value when restore-button is clicked', () => {
+  localStorage.setItem('conflictIds', Object.keys(negotiationStatuses).toString());
+  const root = mount(
+    <NegotiationsPanel
+      conflicts={negotiationStatuses}
+      spotlight={undefined}
+      mapFloorLayerSorted={undefined}
+      negotiationStatusManager={undefined}
+      negotiationTrajStore={undefined}
+      negotiationStatusUpdateTS={0}
+      setNegotiationTrajStore={setNegotiationTrajStore}
+    />,
+  );
+  root.find('button#restore-button').simulate('click');
+
+  expect(localStorage.getItem('conflictIds')).toEqual('');
+  root.unmount();
+});
+
 it('tests negotiation status manager', () => {
   let negotiationStatusManager: NegotiationStatusManager;
   negotiationStatusManager = new NegotiationStatusManager('');
