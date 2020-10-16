@@ -692,6 +692,7 @@ exports[`matches snapshot 1`] = `
           expanded={Array []}
           onNodeSelect={[Function]}
           onNodeToggle={[Function]}
+          selected=""
         >
           <ForwardRef(TreeView)
             className="makeStyles-root-1"
@@ -710,6 +711,7 @@ exports[`matches snapshot 1`] = `
             expanded={Array []}
             onNodeSelect={[Function]}
             onNodeToggle={[Function]}
+            selected=""
           >
             <ul
               aria-multiselectable={false}
