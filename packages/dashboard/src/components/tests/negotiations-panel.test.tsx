@@ -179,6 +179,7 @@ it('should call setNegotiationTrajStore callback when reset-button is clicked', 
 });
 
 it('should reset conflictIds to empty value when restore-button is clicked', () => {
+  // initialize conflictIds store to have a value
   localStorage.setItem('conflictIds', Object.keys(negotiationStatuses).toString());
   const root = mount(
     <NegotiationsPanel
@@ -195,6 +196,23 @@ it('should reset conflictIds to empty value when restore-button is clicked', () 
 
   expect(localStorage.getItem('conflictIds')).toEqual('');
   root.unmount();
+});
+
+it('should set disabled to true on buttons when empty conflicts is provided', () => {
+  const root = mount(
+    <NegotiationsPanel
+      conflicts={{}}
+      spotlight={undefined}
+      mapFloorLayerSorted={undefined}
+      negotiationStatusManager={undefined}
+      negotiationTrajStore={undefined}
+      negotiationStatusUpdateTS={0}
+      setNegotiationTrajStore={setNegotiationTrajStore}
+    />,
+  );
+  expect(root.find('button#clear-button').props().disabled).toEqual(true);
+  expect(root.find('button#reset-button').props().disabled).toEqual(true);
+  expect(root.find('button#restore-button').props().disabled).toEqual(true);
 });
 
 it('tests negotiation status manager', () => {
