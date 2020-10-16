@@ -142,6 +142,24 @@ it('matches snapshot', () => {
   root.unmount();
 });
 
+it('should call setNegotiationTrajStore callback when reset-button is clicked', () => {
+  const root = mount(
+    <NegotiationsPanel
+      conflicts={negotiationStatuses}
+      spotlight={undefined}
+      mapFloorLayerSorted={undefined}
+      negotiationStatusManager={undefined}
+      negotiationTrajStore={undefined}
+      negotiationStatusUpdateTS={0}
+      setNegotiationTrajStore={setNegotiationTrajStore}
+    />,
+  );
+  root.find('button#reset-button').simulate('click');
+
+  expect(setNegotiationTrajStore).toHaveBeenCalled();
+  root.unmount();
+});
+
 it('tests negotiation status manager', () => {
   let negotiationStatusManager: NegotiationStatusManager;
   negotiationStatusManager = new NegotiationStatusManager('');
