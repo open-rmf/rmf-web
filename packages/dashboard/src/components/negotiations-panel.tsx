@@ -87,6 +87,7 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
   const [negotiationContents, setNegotiationContents] = React.useState<{
     [key: string]: JSX.Element;
   }>({});
+  const [expanded, setExpanded] = React.useState<string[]>([]);
 
   React.useEffect(() => {
     if (!spotlight) {
@@ -324,12 +325,17 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
   };
 
   const handleResetNegotiations = () => {
+    setExpanded([]);
     setNegotiationTrajStore({});
   };
 
   const handleRestoreNegotiations = () => {
     localStorage.setItem('conflictIds', '');
     setNegotiationContents({});
+  };
+
+  const handleNodeToggle = (event: React.ChangeEvent<{}>, nodeIds: string[]) => {
+    setExpanded(nodeIds);
   };
 
   return (
@@ -365,9 +371,11 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
       <TreeView
         className={classes.root}
         onNodeSelect={handleSelect}
+        onNodeToggle={handleNodeToggle}
         defaultCollapseIcon={<ExpandMoreIcon />}
         defaultExpanded={['root']}
         defaultExpandIcon={<ChevronRightIcon />}
+        expanded={expanded}
       >
         {Object.keys(negotiationContents)
           .reverse()
