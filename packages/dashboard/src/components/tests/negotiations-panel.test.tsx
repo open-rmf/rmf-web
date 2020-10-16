@@ -14,8 +14,10 @@ const mount = createMount();
 const shallow = createShallow();
 
 let negotiationStatuses: Record<number, NegotiationConflict>;
+let setNegotiationTrajStore: jest.Mock<any, any>;
 
 beforeEach(() => {
+  setNegotiationTrajStore = jest.fn();
   negotiationStatuses = {
     0: {
       participantIdsToNames: {
@@ -68,6 +70,7 @@ it('renders negotiations correctly', () => {
       negotiationStatusManager={undefined}
       negotiationTrajStore={undefined}
       negotiationStatusUpdateTS={0}
+      setNegotiationTrajStore={setNegotiationTrajStore}
     />,
   );
 
@@ -130,6 +133,7 @@ it('matches snapshot', () => {
       negotiationStatusManager={undefined}
       negotiationTrajStore={undefined}
       negotiationStatusUpdateTS={0}
+      setNegotiationTrajStore={setNegotiationTrajStore}
     />,
   );
 
