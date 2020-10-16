@@ -142,6 +142,24 @@ it('matches snapshot', () => {
   root.unmount();
 });
 
+it('should set conflictIds to localStorage when clear-button is clicked', () => {
+  const root = mount(
+    <NegotiationsPanel
+      conflicts={negotiationStatuses}
+      spotlight={undefined}
+      mapFloorLayerSorted={undefined}
+      negotiationStatusManager={undefined}
+      negotiationTrajStore={undefined}
+      negotiationStatusUpdateTS={0}
+      setNegotiationTrajStore={setNegotiationTrajStore}
+    />,
+  );
+  root.find('button#clear-button').simulate('click');
+
+  expect(localStorage.getItem('conflictIds')).toEqual(Object.keys(negotiationStatuses)[0]);
+  root.unmount();
+});
+
 it('should call setNegotiationTrajStore callback when reset-button is clicked', () => {
   const root = mount(
     <NegotiationsPanel
