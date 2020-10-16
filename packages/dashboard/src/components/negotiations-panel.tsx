@@ -88,6 +88,7 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
     [key: string]: JSX.Element;
   }>({});
   const [expanded, setExpanded] = React.useState<string[]>([]);
+  const [selected, setSelected] = React.useState<string>('');
 
   React.useEffect(() => {
     if (!spotlight) {
@@ -317,6 +318,7 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
     }
 
     updateNegotiationTrajectory();
+    setSelected(nodeIds);
   };
 
   const handleClearAllCurrNegotiations = () => {
@@ -326,6 +328,7 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
 
   const handleResetNegotiations = () => {
     setExpanded([]);
+    setSelected('');
     setNegotiationTrajStore({});
   };
 
@@ -376,6 +379,7 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
         defaultExpanded={['root']}
         defaultExpandIcon={<ChevronRightIcon />}
         expanded={expanded}
+        selected={selected}
       >
         {Object.keys(negotiationContents)
           .reverse()
