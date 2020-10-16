@@ -87,7 +87,6 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
   const [negotiationContents, setNegotiationContents] = React.useState<{
     [key: string]: JSX.Element;
   }>({});
-  // const [nodeId, setNodeId] = React.useState<string>('');
 
   React.useEffect(() => {
     if (!spotlight) {
@@ -288,8 +287,6 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
       }
 
       const trajParams = nodeidToParameters.get(nodeIds);
-      console.log(nodeIds);
-      // setNodeId(nodeIds);
       if (!trajParams) {
         // Must have clicked a top level node
         return;
@@ -304,12 +301,10 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
         console.warn('wrong response, ignoring!');
         return;
       }
-      console.log(negotiationTrajStore);
       // reset and add new trajectories
       for (let resp of Object.values(negotiationTrajStore)) {
         resp.values = [];
       }
-      console.log(negotiationTrajStore);
       resp.values.forEach((traj) => {
         if (negotiationTrajStore[traj.map_name] === undefined)
           negotiationTrajStore[traj.map_name] = {
@@ -317,7 +312,6 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
             values: [],
           };
         negotiationTrajStore[traj.map_name].values.push(traj);
-        console.log(negotiationTrajStore);
       });
     }
 
