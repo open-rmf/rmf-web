@@ -420,7 +420,14 @@ export default function Dashboard(_props: {}): React.ReactElement {
   });
 
   const emergencyAlarmRequestPub = React.useMemo(
-    () => (transport ? transport.createPublisher(RomiCore.emergency) : null),
+    () =>
+      transport
+        ? transport.createPublisher(RomiCore.emergency, {
+            qos: {
+              historyPolicy: RomiCore.HistoryPolicy.KeepLast,
+            },
+          })
+        : null,
     [transport],
   );
 

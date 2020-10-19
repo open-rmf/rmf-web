@@ -12,10 +12,19 @@ export default class EmergencyManager extends EventEmitter<Events> {
 
   startSubscription(transport: RomiCore.Transport) {
     this._subscriptions.push(
-      transport.subscribe(RomiCore.emergency, (state) => {
-        this._alarmState = state.data;
-        this.emit('updated');
-      }),
+      transport.subscribe(
+        RomiCore.emergency,
+        (state) => {
+          console.log(state);
+          this._alarmState = state.data;
+          this.emit('updated');
+        },
+        {
+          qos: {
+            historyPolicy: RomiCore.HistoryPolicy.KeepLast,
+          },
+        },
+      ),
     );
   }
 

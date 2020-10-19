@@ -29,7 +29,7 @@ export class Alerts {
    */
   static verification = (props: VerificationAlertProps) => {
     const { confirmCallback, cancelCallback } = props;
-    const verificationParams = Alerts.getVerificationOption(props);
+    const verificationParams = Alerts.getVerificationOptions(props);
     Swal.fire(verificationParams).then((modalState) => {
       if (modalState.isConfirmed) {
         !!confirmCallback && confirmCallback();
