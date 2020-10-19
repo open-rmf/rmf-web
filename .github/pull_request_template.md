@@ -1,6 +1,6 @@
 ## What's new
 
-fixes #
+fixes # [related issue, if exist]
 
 [Describe your changes]
 
