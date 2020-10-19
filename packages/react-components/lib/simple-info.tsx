@@ -82,10 +82,10 @@ export const SimpleInfo = (props: SimpleInfo): JSX.Element => {
   return (
     <div className={classes.container}>
       {data.map((item) => (
-        <>
+        <React.Fragment key={item.name}>
           {renderLine(item)}
           <Divider />
-        </>
+        </React.Fragment>
       ))}
     </div>
   );

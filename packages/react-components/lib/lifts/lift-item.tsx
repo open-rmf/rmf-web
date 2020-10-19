@@ -50,24 +50,24 @@ const LiftInfo = (props: LiftInfoProps) => {
     {
       name: 'Current Mode',
       value: liftState ? liftModeToString(liftState.current_mode) : 'Unknown',
-      className: !liftState && classes.disabledText,
+      className: !liftState ? classes.disabledText : undefined,
     },
     {
       name: 'Available Modes',
       value: liftState
         ? Array.from(liftState.available_modes).map((mode) => liftModeToString(mode))
         : 'Unknown',
-      className: !liftState && classes.disabledText,
+      className: !liftState ? classes.disabledText : undefined,
     },
     {
       name: 'Door State',
       value: liftState ? doorStateToString(liftState.door_state) : 'Unknown',
-      className: !liftState && classes.disabledText,
+      className: !liftState ? classes.disabledText : undefined,
     },
     {
       name: 'Motion State',
       value: liftState ? motionStateToString(liftState.motion_state) : 'Unknown',
-      className: !liftState && classes.disabledText,
+      className: !liftState ? classes.disabledText : undefined,
     },
   ] as SimpleInfoData[];
 
@@ -100,8 +100,10 @@ export const LiftItem = React.memo((props: LiftItemProps) => {
         case RomiCore.LiftState.MOTION_UP:
         case RomiCore.LiftState.MOTION_DOWN:
           return classes.liftFloorLabelMoving;
-        default:
+        case RomiCore.LiftState.MOTION_STOPPED:
           return classes.liftFloorLabelStopped;
+        default:
+          return classes.liftFloorLabelUnknown;
       }
     },
     [classes],

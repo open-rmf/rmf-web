@@ -1,0 +1,2549 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders [type='double sliding', state='undefined'] correctly 1`] = `
+<div>
+  <div
+    class="MuiPaper-root MuiAccordion-root MuiAccordion-rounded MuiPaper-elevation1 MuiPaper-rounded"
+  >
+    <div
+      aria-disabled="false"
+      aria-expanded="false"
+      class="MuiButtonBase-root MuiAccordionSummary-root"
+      role="button"
+      tabindex="0"
+    >
+      <div
+        class="MuiAccordionSummary-content makeStyles-content-28"
+      >
+        <h6
+          class="MuiTypography-root makeStyles-hideText-29 MuiTypography-h6"
+        >
+          test
+        </h6>
+        <span
+          class="MuiTypography-root makeStyles-status-30 makeStyles-doorLabelUnknown-27 MuiTypography-button"
+        >
+          N/A
+        </span>
+      </div>
+      <div
+        aria-disabled="false"
+        aria-hidden="true"
+        class="MuiButtonBase-root MuiIconButton-root MuiAccordionSummary-expandIcon MuiIconButton-edgeEnd"
+      >
+        <span
+          class="MuiIconButton-label"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"
+            />
+          </svg>
+        </span>
+        <span
+          class="MuiTouchRipple-root"
+        />
+      </div>
+    </div>
+    <div
+      class="MuiCollapse-container MuiCollapse-hidden"
+      style="min-height: 0px;"
+    >
+      <div
+        class="MuiCollapse-wrapper"
+      >
+        <div
+          class="MuiCollapse-wrapperInner"
+        >
+          <div
+            role="region"
+          >
+            <div
+              class="MuiAccordionDetails-root makeStyles-details-31"
+              data-role="details"
+            >
+              <div
+                class="makeStyles-container-32"
+              >
+                <div
+                  class="makeStyles-item-33"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Name:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    test
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-33"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Type:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Double Sliding
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-33"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Motion Direction:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Clockwise
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-33"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Motion Range:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    1.5707963267948966
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-33"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Location:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    (0.000, 0.000)
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+              </div>
+              <div
+                class="MuiButtonGroup-root makeStyles-controlButtonGroup-23 MuiButtonGroup-fullWidth"
+                role="group"
+              >
+                <button
+                  class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButtonGroup-grouped MuiButtonGroup-groupedHorizontal MuiButtonGroup-groupedOutlined MuiButtonGroup-groupedOutlinedHorizontal MuiButtonGroup-groupedOutlined Mui-disabled MuiButton-fullWidth Mui-disabled"
+                  data-testid="open"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
+                >
+                  <span
+                    class="MuiButton-label"
+                  >
+                    Close
+                  </span>
+                </button>
+                <button
+                  class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButtonGroup-grouped MuiButtonGroup-groupedHorizontal MuiButtonGroup-groupedOutlined MuiButtonGroup-groupedOutlinedHorizontal MuiButtonGroup-groupedOutlined Mui-disabled MuiButton-fullWidth Mui-disabled"
+                  data-testid="close"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
+                >
+                  <span
+                    class="MuiButton-label"
+                  >
+                    Open
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`renders [type='double swing', state='undefined'] correctly 1`] = `
+<div>
+  <div
+    class="MuiPaper-root MuiAccordion-root MuiAccordion-rounded MuiPaper-elevation1 MuiPaper-rounded"
+  >
+    <div
+      aria-disabled="false"
+      aria-expanded="false"
+      class="MuiButtonBase-root MuiAccordionSummary-root"
+      role="button"
+      tabindex="0"
+    >
+      <div
+        class="MuiAccordionSummary-content makeStyles-content-72"
+      >
+        <h6
+          class="MuiTypography-root makeStyles-hideText-73 MuiTypography-h6"
+        >
+          test
+        </h6>
+        <span
+          class="MuiTypography-root makeStyles-status-74 makeStyles-doorLabelUnknown-71 MuiTypography-button"
+        >
+          N/A
+        </span>
+      </div>
+      <div
+        aria-disabled="false"
+        aria-hidden="true"
+        class="MuiButtonBase-root MuiIconButton-root MuiAccordionSummary-expandIcon MuiIconButton-edgeEnd"
+      >
+        <span
+          class="MuiIconButton-label"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"
+            />
+          </svg>
+        </span>
+        <span
+          class="MuiTouchRipple-root"
+        />
+      </div>
+    </div>
+    <div
+      class="MuiCollapse-container MuiCollapse-hidden"
+      style="min-height: 0px;"
+    >
+      <div
+        class="MuiCollapse-wrapper"
+      >
+        <div
+          class="MuiCollapse-wrapperInner"
+        >
+          <div
+            role="region"
+          >
+            <div
+              class="MuiAccordionDetails-root makeStyles-details-75"
+              data-role="details"
+            >
+              <div
+                class="makeStyles-container-76"
+              >
+                <div
+                  class="makeStyles-item-77"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Name:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    test
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-77"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Type:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Double Swing
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-77"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Motion Direction:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Clockwise
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-77"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Motion Range:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    1.5707963267948966
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-77"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Location:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    (0.000, 0.000)
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+              </div>
+              <div
+                class="MuiButtonGroup-root makeStyles-controlButtonGroup-67 MuiButtonGroup-fullWidth"
+                role="group"
+              >
+                <button
+                  class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButtonGroup-grouped MuiButtonGroup-groupedHorizontal MuiButtonGroup-groupedOutlined MuiButtonGroup-groupedOutlinedHorizontal MuiButtonGroup-groupedOutlined Mui-disabled MuiButton-fullWidth Mui-disabled"
+                  data-testid="open"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
+                >
+                  <span
+                    class="MuiButton-label"
+                  >
+                    Close
+                  </span>
+                </button>
+                <button
+                  class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButtonGroup-grouped MuiButtonGroup-groupedHorizontal MuiButtonGroup-groupedOutlined MuiButtonGroup-groupedOutlinedHorizontal MuiButtonGroup-groupedOutlined Mui-disabled MuiButton-fullWidth Mui-disabled"
+                  data-testid="close"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
+                >
+                  <span
+                    class="MuiButton-label"
+                  >
+                    Open
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`renders [type='double telescope', state='undefined'] correctly 1`] = `
+<div>
+  <div
+    class="MuiPaper-root MuiAccordion-root MuiAccordion-rounded MuiPaper-elevation1 MuiPaper-rounded"
+  >
+    <div
+      aria-disabled="false"
+      aria-expanded="false"
+      class="MuiButtonBase-root MuiAccordionSummary-root"
+      role="button"
+      tabindex="0"
+    >
+      <div
+        class="MuiAccordionSummary-content makeStyles-content-50"
+      >
+        <h6
+          class="MuiTypography-root makeStyles-hideText-51 MuiTypography-h6"
+        >
+          test
+        </h6>
+        <span
+          class="MuiTypography-root makeStyles-status-52 makeStyles-doorLabelUnknown-49 MuiTypography-button"
+        >
+          N/A
+        </span>
+      </div>
+      <div
+        aria-disabled="false"
+        aria-hidden="true"
+        class="MuiButtonBase-root MuiIconButton-root MuiAccordionSummary-expandIcon MuiIconButton-edgeEnd"
+      >
+        <span
+          class="MuiIconButton-label"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"
+            />
+          </svg>
+        </span>
+        <span
+          class="MuiTouchRipple-root"
+        />
+      </div>
+    </div>
+    <div
+      class="MuiCollapse-container MuiCollapse-hidden"
+      style="min-height: 0px;"
+    >
+      <div
+        class="MuiCollapse-wrapper"
+      >
+        <div
+          class="MuiCollapse-wrapperInner"
+        >
+          <div
+            role="region"
+          >
+            <div
+              class="MuiAccordionDetails-root makeStyles-details-53"
+              data-role="details"
+            >
+              <div
+                class="makeStyles-container-54"
+              >
+                <div
+                  class="makeStyles-item-55"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Name:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    test
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-55"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Type:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Double Telescope
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-55"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Motion Direction:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Clockwise
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-55"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Motion Range:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    1.5707963267948966
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-55"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Location:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    (0.000, 0.000)
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+              </div>
+              <div
+                class="MuiButtonGroup-root makeStyles-controlButtonGroup-45 MuiButtonGroup-fullWidth"
+                role="group"
+              >
+                <button
+                  class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButtonGroup-grouped MuiButtonGroup-groupedHorizontal MuiButtonGroup-groupedOutlined MuiButtonGroup-groupedOutlinedHorizontal MuiButtonGroup-groupedOutlined Mui-disabled MuiButton-fullWidth Mui-disabled"
+                  data-testid="open"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
+                >
+                  <span
+                    class="MuiButton-label"
+                  >
+                    Close
+                  </span>
+                </button>
+                <button
+                  class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButtonGroup-grouped MuiButtonGroup-groupedHorizontal MuiButtonGroup-groupedOutlined MuiButtonGroup-groupedOutlinedHorizontal MuiButtonGroup-groupedOutlined Mui-disabled MuiButton-fullWidth Mui-disabled"
+                  data-testid="close"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
+                >
+                  <span
+                    class="MuiButton-label"
+                  >
+                    Open
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`renders [type='single sliding', state='closed'] correctly 1`] = `
+<div>
+  <div
+    class="MuiPaper-root MuiAccordion-root MuiAccordion-rounded MuiPaper-elevation1 MuiPaper-rounded"
+  >
+    <div
+      aria-disabled="false"
+      aria-expanded="false"
+      class="MuiButtonBase-root MuiAccordionSummary-root"
+      role="button"
+      tabindex="0"
+    >
+      <div
+        class="MuiAccordionSummary-content makeStyles-content-116"
+      >
+        <h6
+          class="MuiTypography-root makeStyles-hideText-117 MuiTypography-h6"
+        >
+          test
+        </h6>
+        <span
+          class="MuiTypography-root makeStyles-status-118 makeStyles-doorLabelClosed-113 MuiTypography-button"
+        >
+          CLOSED
+        </span>
+      </div>
+      <div
+        aria-disabled="false"
+        aria-hidden="true"
+        class="MuiButtonBase-root MuiIconButton-root MuiAccordionSummary-expandIcon MuiIconButton-edgeEnd"
+      >
+        <span
+          class="MuiIconButton-label"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"
+            />
+          </svg>
+        </span>
+        <span
+          class="MuiTouchRipple-root"
+        />
+      </div>
+    </div>
+    <div
+      class="MuiCollapse-container MuiCollapse-hidden"
+      style="min-height: 0px;"
+    >
+      <div
+        class="MuiCollapse-wrapper"
+      >
+        <div
+          class="MuiCollapse-wrapperInner"
+        >
+          <div
+            role="region"
+          >
+            <div
+              class="MuiAccordionDetails-root makeStyles-details-119"
+              data-role="details"
+            >
+              <div
+                class="makeStyles-container-120"
+              >
+                <div
+                  class="makeStyles-item-121"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Name:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    test
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-121"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Type:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Sliding
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-121"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Motion Direction:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Clockwise
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-121"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Motion Range:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    1.5707963267948966
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-121"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Location:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    (0.000, 0.000)
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+              </div>
+              <div
+                class="MuiButtonGroup-root makeStyles-controlButtonGroup-111 MuiButtonGroup-fullWidth"
+                role="group"
+              >
+                <button
+                  class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButtonGroup-grouped MuiButtonGroup-groupedHorizontal MuiButtonGroup-groupedOutlined MuiButtonGroup-groupedOutlinedHorizontal MuiButtonGroup-groupedOutlined Mui-disabled MuiButton-fullWidth Mui-disabled"
+                  data-testid="open"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
+                >
+                  <span
+                    class="MuiButton-label"
+                  >
+                    Close
+                  </span>
+                </button>
+                <button
+                  class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButtonGroup-grouped MuiButtonGroup-groupedHorizontal MuiButtonGroup-groupedOutlined MuiButtonGroup-groupedOutlinedHorizontal MuiButtonGroup-groupedOutlined Mui-disabled MuiButton-fullWidth Mui-disabled"
+                  data-testid="close"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
+                >
+                  <span
+                    class="MuiButton-label"
+                  >
+                    Open
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`renders [type='single sliding', state='moving'] correctly 1`] = `
+<div>
+  <div
+    class="MuiPaper-root MuiAccordion-root MuiAccordion-rounded MuiPaper-elevation1 MuiPaper-rounded"
+  >
+    <div
+      aria-disabled="false"
+      aria-expanded="false"
+      class="MuiButtonBase-root MuiAccordionSummary-root"
+      role="button"
+      tabindex="0"
+    >
+      <div
+        class="MuiAccordionSummary-content makeStyles-content-127"
+      >
+        <h6
+          class="MuiTypography-root makeStyles-hideText-128 MuiTypography-h6"
+        >
+          test
+        </h6>
+        <span
+          class="MuiTypography-root makeStyles-status-129 makeStyles-doorLabelMoving-125 MuiTypography-button"
+        >
+          MOVING
+        </span>
+      </div>
+      <div
+        aria-disabled="false"
+        aria-hidden="true"
+        class="MuiButtonBase-root MuiIconButton-root MuiAccordionSummary-expandIcon MuiIconButton-edgeEnd"
+      >
+        <span
+          class="MuiIconButton-label"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"
+            />
+          </svg>
+        </span>
+        <span
+          class="MuiTouchRipple-root"
+        />
+      </div>
+    </div>
+    <div
+      class="MuiCollapse-container MuiCollapse-hidden"
+      style="min-height: 0px;"
+    >
+      <div
+        class="MuiCollapse-wrapper"
+      >
+        <div
+          class="MuiCollapse-wrapperInner"
+        >
+          <div
+            role="region"
+          >
+            <div
+              class="MuiAccordionDetails-root makeStyles-details-130"
+              data-role="details"
+            >
+              <div
+                class="makeStyles-container-131"
+              >
+                <div
+                  class="makeStyles-item-132"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Name:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    test
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-132"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Type:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Sliding
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-132"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Motion Direction:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Clockwise
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-132"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Motion Range:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    1.5707963267948966
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-132"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Location:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    (0.000, 0.000)
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+              </div>
+              <div
+                class="MuiButtonGroup-root makeStyles-controlButtonGroup-122 MuiButtonGroup-fullWidth"
+                role="group"
+              >
+                <button
+                  class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButtonGroup-grouped MuiButtonGroup-groupedHorizontal MuiButtonGroup-groupedOutlined MuiButtonGroup-groupedOutlinedHorizontal MuiButtonGroup-groupedOutlined Mui-disabled MuiButton-fullWidth Mui-disabled"
+                  data-testid="open"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
+                >
+                  <span
+                    class="MuiButton-label"
+                  >
+                    Close
+                  </span>
+                </button>
+                <button
+                  class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButtonGroup-grouped MuiButtonGroup-groupedHorizontal MuiButtonGroup-groupedOutlined MuiButtonGroup-groupedOutlinedHorizontal MuiButtonGroup-groupedOutlined Mui-disabled MuiButton-fullWidth Mui-disabled"
+                  data-testid="close"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
+                >
+                  <span
+                    class="MuiButton-label"
+                  >
+                    Open
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`renders [type='single sliding', state='open'] correctly 1`] = `
+<div>
+  <div
+    class="MuiPaper-root MuiAccordion-root MuiAccordion-rounded MuiPaper-elevation1 MuiPaper-rounded"
+  >
+    <div
+      aria-disabled="false"
+      aria-expanded="false"
+      class="MuiButtonBase-root MuiAccordionSummary-root"
+      role="button"
+      tabindex="0"
+    >
+      <div
+        class="MuiAccordionSummary-content makeStyles-content-105"
+      >
+        <h6
+          class="MuiTypography-root makeStyles-hideText-106 MuiTypography-h6"
+        >
+          test
+        </h6>
+        <span
+          class="MuiTypography-root makeStyles-status-107 makeStyles-doorLabelOpen-101 MuiTypography-button"
+        >
+          OPEN
+        </span>
+      </div>
+      <div
+        aria-disabled="false"
+        aria-hidden="true"
+        class="MuiButtonBase-root MuiIconButton-root MuiAccordionSummary-expandIcon MuiIconButton-edgeEnd"
+      >
+        <span
+          class="MuiIconButton-label"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"
+            />
+          </svg>
+        </span>
+        <span
+          class="MuiTouchRipple-root"
+        />
+      </div>
+    </div>
+    <div
+      class="MuiCollapse-container MuiCollapse-hidden"
+      style="min-height: 0px;"
+    >
+      <div
+        class="MuiCollapse-wrapper"
+      >
+        <div
+          class="MuiCollapse-wrapperInner"
+        >
+          <div
+            role="region"
+          >
+            <div
+              class="MuiAccordionDetails-root makeStyles-details-108"
+              data-role="details"
+            >
+              <div
+                class="makeStyles-container-109"
+              >
+                <div
+                  class="makeStyles-item-110"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Name:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    test
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-110"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Type:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Sliding
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-110"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Motion Direction:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Clockwise
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-110"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Motion Range:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    1.5707963267948966
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-110"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Location:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    (0.000, 0.000)
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+              </div>
+              <div
+                class="MuiButtonGroup-root makeStyles-controlButtonGroup-100 MuiButtonGroup-fullWidth"
+                role="group"
+              >
+                <button
+                  class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButtonGroup-grouped MuiButtonGroup-groupedHorizontal MuiButtonGroup-groupedOutlined MuiButtonGroup-groupedOutlinedHorizontal MuiButtonGroup-groupedOutlined Mui-disabled MuiButton-fullWidth Mui-disabled"
+                  data-testid="open"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
+                >
+                  <span
+                    class="MuiButton-label"
+                  >
+                    Close
+                  </span>
+                </button>
+                <button
+                  class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButtonGroup-grouped MuiButtonGroup-groupedHorizontal MuiButtonGroup-groupedOutlined MuiButtonGroup-groupedOutlinedHorizontal MuiButtonGroup-groupedOutlined Mui-disabled MuiButton-fullWidth Mui-disabled"
+                  data-testid="close"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
+                >
+                  <span
+                    class="MuiButton-label"
+                  >
+                    Open
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`renders [type='single sliding', state='undefined'] correctly 1`] = `
+<div>
+  <div
+    class="MuiPaper-root MuiAccordion-root MuiAccordion-rounded MuiPaper-elevation1 MuiPaper-rounded"
+  >
+    <div
+      aria-disabled="false"
+      aria-expanded="false"
+      class="MuiButtonBase-root MuiAccordionSummary-root"
+      role="button"
+      tabindex="0"
+    >
+      <div
+        class="MuiAccordionSummary-content makeStyles-content-17"
+      >
+        <h6
+          class="MuiTypography-root makeStyles-hideText-18 MuiTypography-h6"
+        >
+          test
+        </h6>
+        <span
+          class="MuiTypography-root makeStyles-status-19 makeStyles-doorLabelUnknown-16 MuiTypography-button"
+        >
+          N/A
+        </span>
+      </div>
+      <div
+        aria-disabled="false"
+        aria-hidden="true"
+        class="MuiButtonBase-root MuiIconButton-root MuiAccordionSummary-expandIcon MuiIconButton-edgeEnd"
+      >
+        <span
+          class="MuiIconButton-label"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"
+            />
+          </svg>
+        </span>
+        <span
+          class="MuiTouchRipple-root"
+        />
+      </div>
+    </div>
+    <div
+      class="MuiCollapse-container MuiCollapse-hidden"
+      style="min-height: 0px;"
+    >
+      <div
+        class="MuiCollapse-wrapper"
+      >
+        <div
+          class="MuiCollapse-wrapperInner"
+        >
+          <div
+            role="region"
+          >
+            <div
+              class="MuiAccordionDetails-root makeStyles-details-20"
+              data-role="details"
+            >
+              <div
+                class="makeStyles-container-21"
+              >
+                <div
+                  class="makeStyles-item-22"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Name:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    test
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-22"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Type:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Sliding
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-22"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Motion Direction:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Clockwise
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-22"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Motion Range:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    1.5707963267948966
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-22"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Location:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    (0.000, 0.000)
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+              </div>
+              <div
+                class="MuiButtonGroup-root makeStyles-controlButtonGroup-12 MuiButtonGroup-fullWidth"
+                role="group"
+              >
+                <button
+                  class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButtonGroup-grouped MuiButtonGroup-groupedHorizontal MuiButtonGroup-groupedOutlined MuiButtonGroup-groupedOutlinedHorizontal MuiButtonGroup-groupedOutlined Mui-disabled MuiButton-fullWidth Mui-disabled"
+                  data-testid="open"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
+                >
+                  <span
+                    class="MuiButton-label"
+                  >
+                    Close
+                  </span>
+                </button>
+                <button
+                  class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButtonGroup-grouped MuiButtonGroup-groupedHorizontal MuiButtonGroup-groupedOutlined MuiButtonGroup-groupedOutlinedHorizontal MuiButtonGroup-groupedOutlined Mui-disabled MuiButton-fullWidth Mui-disabled"
+                  data-testid="close"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
+                >
+                  <span
+                    class="MuiButton-label"
+                  >
+                    Open
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`renders [type='single sliding', state='unknown'] correctly 1`] = `
+<div>
+  <div
+    class="MuiPaper-root MuiAccordion-root MuiAccordion-rounded MuiPaper-elevation1 MuiPaper-rounded"
+  >
+    <div
+      aria-disabled="false"
+      aria-expanded="false"
+      class="MuiButtonBase-root MuiAccordionSummary-root"
+      role="button"
+      tabindex="0"
+    >
+      <div
+        class="MuiAccordionSummary-content makeStyles-content-138"
+      >
+        <h6
+          class="MuiTypography-root makeStyles-hideText-139 MuiTypography-h6"
+        >
+          test
+        </h6>
+        <span
+          class="MuiTypography-root makeStyles-status-140 makeStyles-doorLabelUnknown-137 MuiTypography-button"
+        >
+          N/A
+        </span>
+      </div>
+      <div
+        aria-disabled="false"
+        aria-hidden="true"
+        class="MuiButtonBase-root MuiIconButton-root MuiAccordionSummary-expandIcon MuiIconButton-edgeEnd"
+      >
+        <span
+          class="MuiIconButton-label"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"
+            />
+          </svg>
+        </span>
+        <span
+          class="MuiTouchRipple-root"
+        />
+      </div>
+    </div>
+    <div
+      class="MuiCollapse-container MuiCollapse-hidden"
+      style="min-height: 0px;"
+    >
+      <div
+        class="MuiCollapse-wrapper"
+      >
+        <div
+          class="MuiCollapse-wrapperInner"
+        >
+          <div
+            role="region"
+          >
+            <div
+              class="MuiAccordionDetails-root makeStyles-details-141"
+              data-role="details"
+            >
+              <div
+                class="makeStyles-container-142"
+              >
+                <div
+                  class="makeStyles-item-143"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Name:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    test
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-143"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Type:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Sliding
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-143"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Motion Direction:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Clockwise
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-143"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Motion Range:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    1.5707963267948966
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-143"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Location:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    (0.000, 0.000)
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+              </div>
+              <div
+                class="MuiButtonGroup-root makeStyles-controlButtonGroup-133 MuiButtonGroup-fullWidth"
+                role="group"
+              >
+                <button
+                  class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButtonGroup-grouped MuiButtonGroup-groupedHorizontal MuiButtonGroup-groupedOutlined MuiButtonGroup-groupedOutlinedHorizontal MuiButtonGroup-groupedOutlined Mui-disabled MuiButton-fullWidth Mui-disabled"
+                  data-testid="open"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
+                >
+                  <span
+                    class="MuiButton-label"
+                  >
+                    Close
+                  </span>
+                </button>
+                <button
+                  class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButtonGroup-grouped MuiButtonGroup-groupedHorizontal MuiButtonGroup-groupedOutlined MuiButtonGroup-groupedOutlinedHorizontal MuiButtonGroup-groupedOutlined Mui-disabled MuiButton-fullWidth Mui-disabled"
+                  data-testid="close"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
+                >
+                  <span
+                    class="MuiButton-label"
+                  >
+                    Open
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`renders [type='single sliding; anti clockwise', state='undefined'] correctly 1`] = `
+<div>
+  <div
+    class="MuiPaper-root MuiAccordion-root MuiAccordion-rounded MuiPaper-elevation1 MuiPaper-rounded"
+  >
+    <div
+      aria-disabled="false"
+      aria-expanded="false"
+      class="MuiButtonBase-root MuiAccordionSummary-root"
+      role="button"
+      tabindex="0"
+    >
+      <div
+        class="MuiAccordionSummary-content makeStyles-content-83"
+      >
+        <h6
+          class="MuiTypography-root makeStyles-hideText-84 MuiTypography-h6"
+        >
+          test
+        </h6>
+        <span
+          class="MuiTypography-root makeStyles-status-85 makeStyles-doorLabelUnknown-82 MuiTypography-button"
+        >
+          N/A
+        </span>
+      </div>
+      <div
+        aria-disabled="false"
+        aria-hidden="true"
+        class="MuiButtonBase-root MuiIconButton-root MuiAccordionSummary-expandIcon MuiIconButton-edgeEnd"
+      >
+        <span
+          class="MuiIconButton-label"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"
+            />
+          </svg>
+        </span>
+        <span
+          class="MuiTouchRipple-root"
+        />
+      </div>
+    </div>
+    <div
+      class="MuiCollapse-container MuiCollapse-hidden"
+      style="min-height: 0px;"
+    >
+      <div
+        class="MuiCollapse-wrapper"
+      >
+        <div
+          class="MuiCollapse-wrapperInner"
+        >
+          <div
+            role="region"
+          >
+            <div
+              class="MuiAccordionDetails-root makeStyles-details-86"
+              data-role="details"
+            >
+              <div
+                class="makeStyles-container-87"
+              >
+                <div
+                  class="makeStyles-item-88"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Name:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    test
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-88"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Type:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Sliding
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-88"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Motion Direction:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Anti-Clockwise
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-88"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Motion Range:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    1.5707963267948966
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-88"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Location:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    (0.000, 0.000)
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+              </div>
+              <div
+                class="MuiButtonGroup-root makeStyles-controlButtonGroup-78 MuiButtonGroup-fullWidth"
+                role="group"
+              >
+                <button
+                  class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButtonGroup-grouped MuiButtonGroup-groupedHorizontal MuiButtonGroup-groupedOutlined MuiButtonGroup-groupedOutlinedHorizontal MuiButtonGroup-groupedOutlined Mui-disabled MuiButton-fullWidth Mui-disabled"
+                  data-testid="open"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
+                >
+                  <span
+                    class="MuiButton-label"
+                  >
+                    Close
+                  </span>
+                </button>
+                <button
+                  class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButtonGroup-grouped MuiButtonGroup-groupedHorizontal MuiButtonGroup-groupedOutlined MuiButtonGroup-groupedOutlinedHorizontal MuiButtonGroup-groupedOutlined Mui-disabled MuiButton-fullWidth Mui-disabled"
+                  data-testid="close"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
+                >
+                  <span
+                    class="MuiButton-label"
+                  >
+                    Open
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`renders [type='single sliding; unknown motion', state='undefined'] correctly 1`] = `
+<div>
+  <div
+    class="MuiPaper-root MuiAccordion-root MuiAccordion-rounded MuiPaper-elevation1 MuiPaper-rounded"
+  >
+    <div
+      aria-disabled="false"
+      aria-expanded="false"
+      class="MuiButtonBase-root MuiAccordionSummary-root"
+      role="button"
+      tabindex="0"
+    >
+      <div
+        class="MuiAccordionSummary-content makeStyles-content-94"
+      >
+        <h6
+          class="MuiTypography-root makeStyles-hideText-95 MuiTypography-h6"
+        >
+          test
+        </h6>
+        <span
+          class="MuiTypography-root makeStyles-status-96 makeStyles-doorLabelUnknown-93 MuiTypography-button"
+        >
+          N/A
+        </span>
+      </div>
+      <div
+        aria-disabled="false"
+        aria-hidden="true"
+        class="MuiButtonBase-root MuiIconButton-root MuiAccordionSummary-expandIcon MuiIconButton-edgeEnd"
+      >
+        <span
+          class="MuiIconButton-label"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"
+            />
+          </svg>
+        </span>
+        <span
+          class="MuiTouchRipple-root"
+        />
+      </div>
+    </div>
+    <div
+      class="MuiCollapse-container MuiCollapse-hidden"
+      style="min-height: 0px;"
+    >
+      <div
+        class="MuiCollapse-wrapper"
+      >
+        <div
+          class="MuiCollapse-wrapperInner"
+        >
+          <div
+            role="region"
+          >
+            <div
+              class="MuiAccordionDetails-root makeStyles-details-97"
+              data-role="details"
+            >
+              <div
+                class="makeStyles-container-98"
+              >
+                <div
+                  class="makeStyles-item-99"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Name:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    test
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-99"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Type:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Sliding
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-99"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Motion Direction:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Unknown (2)
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-99"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Motion Range:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    1.5707963267948966
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-99"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Location:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    (0.000, 0.000)
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+              </div>
+              <div
+                class="MuiButtonGroup-root makeStyles-controlButtonGroup-89 MuiButtonGroup-fullWidth"
+                role="group"
+              >
+                <button
+                  class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButtonGroup-grouped MuiButtonGroup-groupedHorizontal MuiButtonGroup-groupedOutlined MuiButtonGroup-groupedOutlinedHorizontal MuiButtonGroup-groupedOutlined Mui-disabled MuiButton-fullWidth Mui-disabled"
+                  data-testid="open"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
+                >
+                  <span
+                    class="MuiButton-label"
+                  >
+                    Close
+                  </span>
+                </button>
+                <button
+                  class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButtonGroup-grouped MuiButtonGroup-groupedHorizontal MuiButtonGroup-groupedOutlined MuiButtonGroup-groupedOutlinedHorizontal MuiButtonGroup-groupedOutlined Mui-disabled MuiButton-fullWidth Mui-disabled"
+                  data-testid="close"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
+                >
+                  <span
+                    class="MuiButton-label"
+                  >
+                    Open
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`renders [type='single swing', state='undefined'] correctly 1`] = `
+<div>
+  <div
+    class="MuiPaper-root MuiAccordion-root MuiAccordion-rounded MuiPaper-elevation1 MuiPaper-rounded"
+  >
+    <div
+      aria-disabled="false"
+      aria-expanded="false"
+      class="MuiButtonBase-root MuiAccordionSummary-root"
+      role="button"
+      tabindex="0"
+    >
+      <div
+        class="MuiAccordionSummary-content makeStyles-content-61"
+      >
+        <h6
+          class="MuiTypography-root makeStyles-hideText-62 MuiTypography-h6"
+        >
+          test
+        </h6>
+        <span
+          class="MuiTypography-root makeStyles-status-63 makeStyles-doorLabelUnknown-60 MuiTypography-button"
+        >
+          N/A
+        </span>
+      </div>
+      <div
+        aria-disabled="false"
+        aria-hidden="true"
+        class="MuiButtonBase-root MuiIconButton-root MuiAccordionSummary-expandIcon MuiIconButton-edgeEnd"
+      >
+        <span
+          class="MuiIconButton-label"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"
+            />
+          </svg>
+        </span>
+        <span
+          class="MuiTouchRipple-root"
+        />
+      </div>
+    </div>
+    <div
+      class="MuiCollapse-container MuiCollapse-hidden"
+      style="min-height: 0px;"
+    >
+      <div
+        class="MuiCollapse-wrapper"
+      >
+        <div
+          class="MuiCollapse-wrapperInner"
+        >
+          <div
+            role="region"
+          >
+            <div
+              class="MuiAccordionDetails-root makeStyles-details-64"
+              data-role="details"
+            >
+              <div
+                class="makeStyles-container-65"
+              >
+                <div
+                  class="makeStyles-item-66"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Name:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    test
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-66"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Type:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Unknown (5)
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-66"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Motion Direction:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Clockwise
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-66"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Motion Range:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    1.5707963267948966
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-66"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Location:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    (0.000, 0.000)
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+              </div>
+              <div
+                class="MuiButtonGroup-root makeStyles-controlButtonGroup-56 MuiButtonGroup-fullWidth"
+                role="group"
+              >
+                <button
+                  class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButtonGroup-grouped MuiButtonGroup-groupedHorizontal MuiButtonGroup-groupedOutlined MuiButtonGroup-groupedOutlinedHorizontal MuiButtonGroup-groupedOutlined Mui-disabled MuiButton-fullWidth Mui-disabled"
+                  data-testid="open"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
+                >
+                  <span
+                    class="MuiButton-label"
+                  >
+                    Close
+                  </span>
+                </button>
+                <button
+                  class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButtonGroup-grouped MuiButtonGroup-groupedHorizontal MuiButtonGroup-groupedOutlined MuiButtonGroup-groupedOutlinedHorizontal MuiButtonGroup-groupedOutlined Mui-disabled MuiButton-fullWidth Mui-disabled"
+                  data-testid="close"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
+                >
+                  <span
+                    class="MuiButton-label"
+                  >
+                    Open
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`renders [type='single telescope', state='undefined'] correctly 1`] = `
+<div>
+  <div
+    class="MuiPaper-root MuiAccordion-root MuiAccordion-rounded MuiPaper-elevation1 MuiPaper-rounded"
+  >
+    <div
+      aria-disabled="false"
+      aria-expanded="false"
+      class="MuiButtonBase-root MuiAccordionSummary-root"
+      role="button"
+      tabindex="0"
+    >
+      <div
+        class="MuiAccordionSummary-content makeStyles-content-39"
+      >
+        <h6
+          class="MuiTypography-root makeStyles-hideText-40 MuiTypography-h6"
+        >
+          test
+        </h6>
+        <span
+          class="MuiTypography-root makeStyles-status-41 makeStyles-doorLabelUnknown-38 MuiTypography-button"
+        >
+          N/A
+        </span>
+      </div>
+      <div
+        aria-disabled="false"
+        aria-hidden="true"
+        class="MuiButtonBase-root MuiIconButton-root MuiAccordionSummary-expandIcon MuiIconButton-edgeEnd"
+      >
+        <span
+          class="MuiIconButton-label"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"
+            />
+          </svg>
+        </span>
+        <span
+          class="MuiTouchRipple-root"
+        />
+      </div>
+    </div>
+    <div
+      class="MuiCollapse-container MuiCollapse-hidden"
+      style="min-height: 0px;"
+    >
+      <div
+        class="MuiCollapse-wrapper"
+      >
+        <div
+          class="MuiCollapse-wrapperInner"
+        >
+          <div
+            role="region"
+          >
+            <div
+              class="MuiAccordionDetails-root makeStyles-details-42"
+              data-role="details"
+            >
+              <div
+                class="makeStyles-container-43"
+              >
+                <div
+                  class="makeStyles-item-44"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Name:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    test
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-44"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Type:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Telescope
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-44"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Motion Direction:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Clockwise
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-44"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Motion Range:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    1.5707963267948966
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-44"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Location:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    (0.000, 0.000)
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+              </div>
+              <div
+                class="MuiButtonGroup-root makeStyles-controlButtonGroup-34 MuiButtonGroup-fullWidth"
+                role="group"
+              >
+                <button
+                  class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButtonGroup-grouped MuiButtonGroup-groupedHorizontal MuiButtonGroup-groupedOutlined MuiButtonGroup-groupedOutlinedHorizontal MuiButtonGroup-groupedOutlined Mui-disabled MuiButton-fullWidth Mui-disabled"
+                  data-testid="open"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
+                >
+                  <span
+                    class="MuiButton-label"
+                  >
+                    Close
+                  </span>
+                </button>
+                <button
+                  class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButtonGroup-grouped MuiButtonGroup-groupedHorizontal MuiButtonGroup-groupedOutlined MuiButtonGroup-groupedOutlinedHorizontal MuiButtonGroup-groupedOutlined Mui-disabled MuiButton-fullWidth Mui-disabled"
+                  data-testid="close"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
+                >
+                  <span
+                    class="MuiButton-label"
+                  >
+                    Open
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`renders [type='undefined', state='undefined'] correctly 1`] = `
+<div>
+  <div
+    class="MuiPaper-root MuiAccordion-root MuiAccordion-rounded MuiPaper-elevation1 MuiPaper-rounded"
+  >
+    <div
+      aria-disabled="false"
+      aria-expanded="false"
+      class="MuiButtonBase-root MuiAccordionSummary-root"
+      role="button"
+      tabindex="0"
+    >
+      <div
+        class="MuiAccordionSummary-content makeStyles-content-6"
+      >
+        <h6
+          class="MuiTypography-root makeStyles-hideText-7 MuiTypography-h6"
+        >
+          test
+        </h6>
+        <span
+          class="MuiTypography-root makeStyles-status-8 makeStyles-doorLabelUnknown-5 MuiTypography-button"
+        >
+          N/A
+        </span>
+      </div>
+      <div
+        aria-disabled="false"
+        aria-hidden="true"
+        class="MuiButtonBase-root MuiIconButton-root MuiAccordionSummary-expandIcon MuiIconButton-edgeEnd"
+      >
+        <span
+          class="MuiIconButton-label"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"
+            />
+          </svg>
+        </span>
+        <span
+          class="MuiTouchRipple-root"
+        />
+      </div>
+    </div>
+    <div
+      class="MuiCollapse-container MuiCollapse-hidden"
+      style="min-height: 0px;"
+    >
+      <div
+        class="MuiCollapse-wrapper"
+      >
+        <div
+          class="MuiCollapse-wrapperInner"
+        >
+          <div
+            role="region"
+          >
+            <div
+              class="MuiAccordionDetails-root makeStyles-details-9"
+              data-role="details"
+            >
+              <div
+                class="makeStyles-container-10"
+              >
+                <div
+                  class="makeStyles-item-11"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Name:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    test
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-11"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Type:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Unknown (0)
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-11"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Motion Direction:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Clockwise
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-11"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Motion Range:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    1.5707963267948966
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="makeStyles-item-11"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    Location:
+                  </p>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                  >
+                    (0.000, 0.000)
+                  </p>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+              </div>
+              <div
+                class="MuiButtonGroup-root makeStyles-controlButtonGroup-1 MuiButtonGroup-fullWidth"
+                role="group"
+              >
+                <button
+                  class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButtonGroup-grouped MuiButtonGroup-groupedHorizontal MuiButtonGroup-groupedOutlined MuiButtonGroup-groupedOutlinedHorizontal MuiButtonGroup-groupedOutlined Mui-disabled MuiButton-fullWidth Mui-disabled"
+                  data-testid="open"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
+                >
+                  <span
+                    class="MuiButton-label"
+                  >
+                    Close
+                  </span>
+                </button>
+                <button
+                  class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButtonGroup-grouped MuiButtonGroup-groupedHorizontal MuiButtonGroup-groupedOutlined MuiButtonGroup-groupedOutlinedHorizontal MuiButtonGroup-groupedOutlined Mui-disabled MuiButton-fullWidth Mui-disabled"
+                  data-testid="close"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
+                >
+                  <span
+                    class="MuiButton-label"
+                  >
+                    Open
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

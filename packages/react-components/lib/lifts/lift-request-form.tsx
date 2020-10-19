@@ -50,7 +50,7 @@ export const LiftRequestForm = (props: LiftRequestFormProps): JSX.Element => {
 
   const [doorState, setDoorState] = React.useState(availableDoorStates[0]);
   const [requestType, setRequestType] = React.useState(availableRequestTypes[0]);
-  const [destination, setDestination] = React.useState('');
+  const [destination, setDestination] = React.useState(lift.levels[0]);
 
   // Error states
   const [doorStateError, setDoorStateError] = React.useState('');
@@ -60,7 +60,7 @@ export const LiftRequestForm = (props: LiftRequestFormProps): JSX.Element => {
   const cleanUpForm = () => {
     setDoorState(availableDoorStates[0]);
     setRequestType(availableRequestTypes[0]);
-    setDestination('');
+    setDestination(lift.levels[0]);
     cleanUpError();
   };
 
@@ -90,13 +90,12 @@ export const LiftRequestForm = (props: LiftRequestFormProps): JSX.Element => {
   };
 
   return (
-    <form className={classes.form} onSubmit={handleLiftRequest}>
+    <form className={classes.form} onSubmit={handleLiftRequest} data-testid="request-form">
       <div className={classes.divForm}>
         <Autocomplete
           getOptionLabel={(option) => option}
-          id="destination"
           onChange={(_, value) => setDestination(value || '')}
-          options={lift.levels}
+          options={['', ...lift.levels]}
           renderInput={(params) => (
             <TextField
               {...params}
@@ -107,6 +106,8 @@ export const LiftRequestForm = (props: LiftRequestFormProps): JSX.Element => {
             />
           )}
           value={destination}
+          data-testid="destination"
+          data-error={destinationError || undefined}
         />
       </div>
 
@@ -125,6 +126,7 @@ export const LiftRequestForm = (props: LiftRequestFormProps): JSX.Element => {
             />
           )}
           value={doorState}
+          data-testid="door-state"
         />
       </div>
 
@@ -143,6 +145,7 @@ export const LiftRequestForm = (props: LiftRequestFormProps): JSX.Element => {
             />
           )}
           value={requestType}
+          data-testid="request-type"
         />
       </div>
 

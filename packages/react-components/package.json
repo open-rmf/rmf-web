@@ -8,7 +8,7 @@
     "build": "tsc --build",
     "build:storybook": "build-storybook",
     "clean": "tsc --build --clean",
-    "test": "jest",
+    "test": "jest --watchAll",
     "test:coverage": "jest --coverage"
   },
   "author": "koonpeng@openrobotics.org",

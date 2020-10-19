@@ -98,65 +98,61 @@ export interface DoorItemProps extends Omit<AccordionProps, 'children'> {
   onDoorClose?(door: RomiCore.Door): void;
 }
 
-export const DoorItem = React.memo((props: DoorItemProps, ref: React.Ref<HTMLElement>) => {
-  const { door, doorState, onDoorOpen, onDoorClose, ...otherProps } = props;
-  debug(`render ${door.name}`);
-  const classes = useStyles();
+export const DoorItem = React.memo(
+  React.forwardRef((props: DoorItemProps, ref: React.Ref<HTMLElement>) => {
+    const { door, doorState, onDoorOpen, onDoorClose, ...otherProps } = props;
+    debug(`render ${door.name}`);
+    const classes = useStyles();
 
-  const doorModeLabelClasses = React.useCallback(
-    (doorState?: RomiCore.DoorState): string => {
-      if (!doorState) {
-        return `${classes.doorLabelUnknown}`;
-      }
-      switch (doorState.current_mode.value) {
-        case RomiCore.DoorMode.MODE_OPEN:
-          return `${classes.doorLabelOpen}`;
-        case RomiCore.DoorMode.MODE_CLOSED:
-          return `${classes.doorLabelClosed}`;
-        case RomiCore.DoorMode.MODE_MOVING:
-          return `${classes.doorLabelMoving}`;
-        default:
+    const doorModeLabelClasses = React.useCallback(
+      (doorState?: RomiCore.DoorState): string => {
+        if (!doorState) {
           return `${classes.doorLabelUnknown}`;
-      }
-    },
-    [classes],
-  );
+        }
+        switch (doorState.current_mode.value) {
+          case RomiCore.DoorMode.MODE_OPEN:
+            return `${classes.doorLabelOpen}`;
+          case RomiCore.DoorMode.MODE_CLOSED:
+            return `${classes.doorLabelClosed}`;
+          case RomiCore.DoorMode.MODE_MOVING:
+            return `${classes.doorLabelMoving}`;
+          default:
+            return `${classes.doorLabelUnknown}`;
+        }
+      },
+      [classes],
+    );
 
-  const handleCloseClick = React.useCallback(() => onDoorClose && onDoorClose(door), [
-    door,
-    onDoorClose,
-  ]);
-  const handleOpenClick = React.useCallback(() => onDoorOpen && onDoorOpen(door), [
-    door,
-    onDoorOpen,
-  ]);
+    const handleCloseClick = React.useCallback(() => onDoorClose && onDoorClose(door), [
+      door,
+      onDoorClose,
+    ]);
+    const handleOpenClick = React.useCallback(() => onDoorOpen && onDoorOpen(door), [
+      door,
+      onDoorOpen,
+    ]);
 
-  return (
-    <Accordion
-      ref={ref}
-      data-component="DoorItem"
-      data-name={door.name}
-      data-state={doorModeToString(doorState)}
-      {...otherProps}
-    >
-      <ItemAccordionSummary
-        title={door.name}
-        status={doorModeToString(doorState)}
-        classes={{ status: doorModeLabelClasses(doorState) }}
-      />
-      <ItemAccordionDetails data-role="details">
-        <DoorInfo door={door} />
-        <ButtonGroup className={classes.controlButtonGroup} fullWidth>
-          <Button disabled={!onDoorOpen} onClick={handleOpenClick}>
-            Close
-          </Button>
-          <Button disabled={!onDoorClose} onClick={handleCloseClick}>
-            Open
-          </Button>
-        </ButtonGroup>
-      </ItemAccordionDetails>
-    </Accordion>
-  );
-});
+    return (
+      <Accordion ref={ref} {...otherProps}>
+        <ItemAccordionSummary
+          title={door.name}
+          status={doorModeToString(doorState)}
+          classes={{ status: doorModeLabelClasses(doorState) }}
+        />
+        <ItemAccordionDetails data-role="details">
+          <DoorInfo door={door} />
+          <ButtonGroup className={classes.controlButtonGroup} fullWidth>
+            <Button disabled={!onDoorOpen} onClick={handleOpenClick} data-testid="open">
+              Close
+            </Button>
+            <Button disabled={!onDoorClose} onClick={handleCloseClick} data-testid="close">
+              Open
+            </Button>
+          </ButtonGroup>
+        </ItemAccordionDetails>
+      </Accordion>
+    );
+  }),
+);
 
 export default DoorItem;
