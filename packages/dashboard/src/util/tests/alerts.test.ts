@@ -5,18 +5,8 @@ const theme = createMuiTheme();
 
 describe('Verification Alert', () => {
   test('Correct generation of default params values', () => {
-    const verification = Alerts.getVerificationParams({});
-    expect(verification).toEqual({
-      title: 'Are you sure you want to continue?',
-      text: 'Once you accept this there is no turning back.',
-      icon: 'warning',
-      cancelButtonColor: theme.palette.primary.main,
-      confirmButtonColor: theme.palette.error.main,
-      showCancelButton: true,
-      heightAuto: false,
-      confirmButtonText: `Yes, I'm sure.`,
-      cancelButtonText: 'No',
-    });
+    const verification = Alerts.getVerificationOptions({});
+    expect(verification).toMatchSnapshot();
   });
 
   test('Correct generation of custom params values', () => {
@@ -26,30 +16,20 @@ describe('Verification Alert', () => {
     const confirmButtonText = 'test';
     const cancelButtonText = 'test';
 
-    const verification = Alerts.getVerificationParams({
+    const verification = Alerts.getVerificationOptions({
       title: title,
       body: text,
       icon: icon,
       confirmButtonText: confirmButtonText,
       cancelButtonText: cancelButtonText,
     });
-    expect(verification).toEqual({
-      title: title,
-      text: text,
-      icon: icon,
-      cancelButtonColor: theme.palette.primary.main,
-      confirmButtonColor: theme.palette.error.main,
-      showCancelButton: true,
-      heightAuto: false,
-      confirmButtonText: confirmButtonText,
-      cancelButtonText: confirmButtonText,
-    });
+    expect(verification).toMatchSnapshot();
   });
 });
 
 describe('Success Alert', () => {
   test('Correct generation of default params values', () => {
-    const success = Alerts.getSuccessMsg();
+    const success = Alerts.getSuccessOptions();
     expect(success).toEqual({
       title: 'Done!',
       text: 'Successful Operation',
@@ -60,14 +40,14 @@ describe('Success Alert', () => {
   });
 
   test('Correct generation of custom params values', () => {
-    const success = Alerts.getSuccessMsg('test');
+    const success = Alerts.getSuccessOptions('test');
     expect(success.text).toBe('test');
   });
 });
 
 describe('Error Alert', () => {
   test('Correct generation of default params values', () => {
-    const error = Alerts.getErrorMsg();
+    const error = Alerts.getErrorOptions();
     expect(error).toEqual({
       title: 'Ups',
       text: 'An error has occurred',
@@ -77,7 +57,7 @@ describe('Error Alert', () => {
   });
 
   test('Correct generation of custom params values', () => {
-    const error = Alerts.getErrorMsg('test');
+    const error = Alerts.getErrorOptions('test');
     expect(error.text).toBe('test');
   });
 });

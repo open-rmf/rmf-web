@@ -15,12 +15,12 @@ export interface VerificationAlertProps {
 
 export class Alerts {
   static success = (message?: string) => {
-    const swalParams = Alerts.getSuccessMsg(message);
+    const swalParams = Alerts.getSuccessOptions(message);
     return Swal.fire(swalParams);
   };
 
   static error = (message?: string) => {
-    const swalParams = Alerts.getErrorMsg(message);
+    const swalParams = Alerts.getErrorOptions(message);
     return Swal.fire(swalParams);
   };
 
@@ -29,7 +29,7 @@ export class Alerts {
    */
   static verification = (props: VerificationAlertProps) => {
     const { confirmCallback, cancelCallback } = props;
-    const verificationParams = Alerts.getVerificationParams(props);
+    const verificationParams = Alerts.getVerificationOption(props);
     Swal.fire(verificationParams).then((modalState) => {
       if (modalState.isConfirmed) {
         !!confirmCallback && confirmCallback();
@@ -39,7 +39,7 @@ export class Alerts {
     });
   };
 
-  static getSuccessMsg = (message?: string): SweetAlertOptions => {
+  static getSuccessOptions = (message?: string): SweetAlertOptions => {
     return {
       title: 'Done!',
       text: !!message ? `${message}` : 'Successful Operation',
@@ -49,7 +49,7 @@ export class Alerts {
     };
   };
 
-  static getErrorMsg = (message?: string): SweetAlertOptions => {
+  static getErrorOptions = (message?: string): SweetAlertOptions => {
     return {
       title: 'Ups',
       text: !!message ? `${message}` : 'An error has occurred',
@@ -58,7 +58,7 @@ export class Alerts {
     };
   };
 
-  static getVerificationParams = (props: VerificationAlertProps): SweetAlertOptions => {
+  static getVerificationOptions = (props: VerificationAlertProps): SweetAlertOptions => {
     const { title, body, icon, confirmButtonText, cancelButtonText } = props;
     const alertTitle = title || 'Are you sure you want to continue?';
     const alertText = body || 'Once you accept this there is no turning back.';

@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Verification Alert Correct generation of custom params values 1`] = `
+Object {
+  "cancelButtonColor": "#3f51b5",
+  "cancelButtonText": "test",
+  "confirmButtonColor": "#f44336",
+  "confirmButtonText": "test",
+  "heightAuto": false,
+  "icon": "error",
+  "showCancelButton": true,
+  "text": "test",
+  "title": "test",
+}
+`;
+
+exports[`Verification Alert Correct generation of default params values 1`] = `
+Object {
+  "cancelButtonColor": "#3f51b5",
+  "cancelButtonText": "No",
+  "confirmButtonColor": "#f44336",
+  "confirmButtonText": "Yes, I'm sure.",
+  "heightAuto": false,
+  "icon": "warning",
+  "showCancelButton": true,
+  "text": "Once you accept this there is no turning back.",
+  "title": "Are you sure you want to continue?",
+}
+`;
