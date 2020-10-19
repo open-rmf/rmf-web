@@ -3,7 +3,7 @@ import Swal, { SweetAlertIcon, SweetAlertOptions } from 'sweetalert2';
 
 const theme = createMuiTheme();
 
-interface VerificationAlertProps {
+export interface VerificationAlertProps {
   title?: string;
   body?: string;
   icon?: SweetAlertIcon;

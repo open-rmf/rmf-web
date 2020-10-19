@@ -41,7 +41,7 @@ describe('Emergency Alarm', () => {
     // activate Alarm
     openAlarmModal();
     confirmAction();
-
+    // TODO: when we have robot tasks working we should just check if the current task is correct instead of the robot location.
     // time for the robot to go to a holding point
     browser.pause(15000);
 

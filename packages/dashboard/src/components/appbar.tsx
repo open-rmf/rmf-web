@@ -7,7 +7,6 @@ import {
   Toolbar,
   Typography,
 } from '@material-ui/core';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import SettingsIcon from '@material-ui/icons/Settings';
@@ -20,21 +19,16 @@ export interface AppBarProps {
   toggleShowOmniPanel(): void;
   showSettings(show: boolean): void;
   showHelp(show: boolean): void;
-  transport?: Readonly<RomiCore.Transport>;
+  requestEmergencyAlarm(value: boolean): void;
   alarmState: boolean | null;
 }
 
 export default function AppBar(props: AppBarProps): React.ReactElement {
-  const { toggleShowOmniPanel, showSettings, showHelp, transport, alarmState } = props;
+  const { toggleShowOmniPanel, showSettings, showHelp, alarmState, requestEmergencyAlarm } = props;
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const classes = useStyles();
   const authenticator = React.useContext(AuthenticatorContext);
   const user = React.useContext(UserContext);
-
-  const emergencyAlarmRequestPub = React.useMemo(
-    () => (transport ? transport.createPublisher(RomiCore.emergency) : null),
-    [transport],
-  );
 
   async function handleLogout(): Promise<void> {
     try {
@@ -62,8 +56,8 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
           <>
             <EmergencyAlarm
               isActive={alarmState}
-              onTurnOn={() => emergencyAlarmRequestPub?.publish({ data: true })}
-              onTurnOff={() => emergencyAlarmRequestPub?.publish({ data: false })}
+              onTurnOn={() => requestEmergencyAlarm(true)}
+              onTurnOff={() => requestEmergencyAlarm(false)}
             />
 
             <IconButton
