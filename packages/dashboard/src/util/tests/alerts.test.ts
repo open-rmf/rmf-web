@@ -10,18 +10,12 @@ describe('Verification Alert', () => {
   });
 
   test('Correct generation of custom params values', () => {
-    const title = 'test';
-    const text = 'test';
-    const icon = 'error';
-    const confirmButtonText = 'test';
-    const cancelButtonText = 'test';
-
     const verification = Alerts.getVerificationOptions({
-      title: title,
-      body: text,
-      icon: icon,
-      confirmButtonText: confirmButtonText,
-      cancelButtonText: cancelButtonText,
+      title: 'test',
+      body: 'test',
+      icon: 'error',
+      confirmButtonText: 'test',
+      cancelButtonText: 'test',
     });
     expect(verification).toMatchSnapshot();
   });
@@ -30,13 +24,7 @@ describe('Verification Alert', () => {
 describe('Success Alert', () => {
   test('Correct generation of default params values', () => {
     const success = Alerts.getSuccessOptions();
-    expect(success).toEqual({
-      title: 'Done!',
-      text: 'Successful Operation',
-      icon: 'success',
-      timer: 2000,
-      heightAuto: false,
-    });
+    expect(success).toMatchSnapshot();
   });
 
   test('Correct generation of custom params values', () => {
@@ -48,12 +36,7 @@ describe('Success Alert', () => {
 describe('Error Alert', () => {
   test('Correct generation of default params values', () => {
     const error = Alerts.getErrorOptions();
-    expect(error).toEqual({
-      title: 'Ups',
-      text: 'An error has occurred',
-      icon: 'error',
-      heightAuto: false,
-    });
+    expect(error).toMatchSnapshot();
   });
 
   test('Correct generation of custom params values', () => {
