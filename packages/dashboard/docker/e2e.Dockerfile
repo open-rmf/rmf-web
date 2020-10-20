@@ -6,4 +6,4 @@ RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add
   && apt-get install -y nodejs google-chrome-stable docker.io docker-compose \
   && rm -rf /var/lib/apt/lists/*
 
-ADD docker/chrome-no-sandbox /
+ADD packages/dashboard/docker/chrome-no-sandbox /
