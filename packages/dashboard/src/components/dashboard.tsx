@@ -37,6 +37,7 @@ import { buildHotKeys } from '../hotkeys';
 import HelpDrawer from './drawers/help-drawer';
 import HotKeysDialog from './drawers/hotkeys-dialog';
 import { GlobalHotKeys } from 'react-hotkeys';
+import TourMap from './tour/tour-map';
 
 const debug = Debug('App');
 const borderRadius = 20;
@@ -431,7 +432,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
               showHelp={setShowHelp}
             />
             {loading && <LoadingScreen {...loading} />}
-            {buildingMap && mapFloorLayerSorted && (
+            {buildingMap && mapFloorLayerSorted && !tourState && (
               <ScheduleVisualizer
                 buildingMap={buildingMap}
                 mapFloorLayerSorted={mapFloorLayerSorted}
@@ -444,7 +445,13 @@ export default function Dashboard(_props: {}): React.ReactElement {
                 onDispenserClick={handleDispenserClick}
               />
             )}
-
+            {buildingMap && mapFloorLayerSorted && tourState && (
+              <TourMap
+                buildingMap={buildingMap}
+                mapFloorLayerSorted={mapFloorLayerSorted}
+                fleets={fleets}
+              />
+            )}
             <Fade in={showOmniPanel}>
               <OmniPanel
                 className={classes.omniPanel}
