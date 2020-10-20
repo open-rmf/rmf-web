@@ -156,7 +156,7 @@ it('should set conflictIds to localStorage when clear-button is clicked', () => 
   );
   root.find('button#clear-button').simulate('click');
 
-  expect(localStorage.getItem('conflictIds')).toEqual(Object.keys(negotiationStatuses)[0]);
+  expect(root.find('li').length).toEqual(0);
   root.unmount();
 });
 
@@ -179,8 +179,6 @@ it('should call setNegotiationTrajStore callback when reset-button is clicked', 
 });
 
 it('should reset conflictIds to empty value when restore-button is clicked', () => {
-  // initialize conflictIds store to have a value
-  localStorage.setItem('conflictIds', Object.keys(negotiationStatuses).toString());
   const root = mount(
     <NegotiationsPanel
       conflicts={negotiationStatuses}
@@ -194,7 +192,7 @@ it('should reset conflictIds to empty value when restore-button is clicked', () 
   );
   root.find('button#restore-button').simulate('click');
 
-  expect(localStorage.getItem('conflictIds')).toEqual('');
+  expect(root.find('li').length).toEqual(1);
   root.unmount();
 });
 
