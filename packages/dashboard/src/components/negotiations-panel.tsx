@@ -92,6 +92,7 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
   }>({});
   const [expanded, setExpanded] = React.useState<string[]>([]);
   const [selected, setSelected] = React.useState<string>('');
+  const [conflictIds, setConflictIds] = React.useState<string[]>([]);
 
   React.useEffect(() => {
     if (!spotlight) {
@@ -272,12 +273,8 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
   };
 
   if (conflicts) {
-    // TODO: Use other means of storage when we get our data from backend sources
-    const conflictIds = localStorage.getItem('conflictIds');
-    let parsedConflictIds: string[];
-    if (conflictIds) {
-      parsedConflictIds = conflictIds.split(',');
-      updateNegotiationContents(conflicts, parsedConflictIds);
+    if (conflictIds.length > 0) {
+      updateNegotiationContents(conflicts, conflictIds);
     } else {
       updateNegotiationContents(conflicts);
     }
@@ -326,7 +323,7 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
   };
 
   const handleClearAllCurrNegotiations = () => {
-    localStorage.setItem('conflictIds', Object.keys(conflicts).toString());
+    setConflictIds(Object.keys(conflicts));
     setNegotiationContents({});
   };
 
@@ -337,7 +334,7 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
   };
 
   const handleRestoreNegotiations = () => {
-    localStorage.setItem('conflictIds', '');
+    setConflictIds([]);
     setNegotiationContents({});
   };
 
