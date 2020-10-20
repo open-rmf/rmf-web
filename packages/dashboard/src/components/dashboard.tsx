@@ -557,6 +557,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
           {showHotkeyDialog && (
             <HotKeysDialog open={showHotkeyDialog} handleClose={() => setShowHotkeyDialog(false)} />
           )}
+
           <NotificationBar
             message={notificationBarMessage?.message}
             type={notificationBarMessage?.type}

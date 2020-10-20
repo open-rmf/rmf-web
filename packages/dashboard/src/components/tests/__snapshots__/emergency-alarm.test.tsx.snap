@@ -1,11 +1,20 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Emergency Alarm behavior Renders correctly 1`] = `
-<WithStyles(ForwardRef(IconButton))
-  color="inherit"
-  id="alarm-btn"
-  onClick={[Function]}
->
-  <NotificationsActiveIcon />
-</WithStyles(ForwardRef(IconButton))>
+<Fragment>
+  <ConfirmAlertDialog
+    close={[Function]}
+    confirmCallback={[Function]}
+    content="You're about to fire an alarm! The robots will head to their nearest holding points. Once you accept this there is no turning back."
+    open={false}
+    showIcon={true}
+  />
+  <WithStyles(ForwardRef(IconButton))
+    color="inherit"
+    id="alarm-btn"
+    onClick={[Function]}
+  >
+    <NotificationsActiveIcon />
+  </WithStyles(ForwardRef(IconButton))>
+</Fragment>
 `;

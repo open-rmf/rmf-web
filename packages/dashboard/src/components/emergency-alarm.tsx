@@ -1,7 +1,7 @@
 import { IconButton } from '@material-ui/core';
 import React from 'react';
-import { Alerts } from '../util/alerts';
 import NotificationsActiveIcon from '@material-ui/icons/NotificationsActive';
+import { ConfirmAlertDialog } from './confirm-alert-dialog';
 
 interface EmergencyAlarmProps {
   onTurnOn?: () => void;
@@ -11,28 +11,40 @@ interface EmergencyAlarmProps {
 
 export const EmergencyAlarm = React.memo((props: EmergencyAlarmProps) => {
   const { onTurnOn, onTurnOff, isActive } = props;
-
-  const handleAlarm = (): void => {
-    if (isActive) {
-      Alerts.verification({
-        confirmCallback: () => {
-          onTurnOff && onTurnOff();
-        },
-        body: `You're about to turn off the alarm! The robots will resume their tasks.`,
-      });
-    } else {
-      Alerts.verification({
-        confirmCallback: () => {
-          onTurnOn && onTurnOn();
-        },
-        body: `You're about to fire an alarm! The robots will head to their nearest holding points. Once you accept this there is no turning back.`,
-      });
-    }
+  const [openConfirmationDialog, setOpenConfirmationDialog] = React.useState(false);
+  const handleEmergencyAlarmClick = () => {
+    setOpenConfirmationDialog(true);
   };
 
+  const closeDialog = React.useCallback(() => setOpenConfirmationDialog(false), []);
+
   return (
-    <IconButton id="alarm-btn" color={isActive ? 'secondary' : 'inherit'} onClick={handleAlarm}>
-      <NotificationsActiveIcon />
-    </IconButton>
+    <>
+      {isActive ? (
+        <ConfirmAlertDialog
+          open={openConfirmationDialog}
+          close={closeDialog}
+          content={`You're about to turn off the alarm! The robots will resume their tasks.`}
+          confirmCallback={() => onTurnOff && onTurnOff()}
+          showIcon={true}
+        />
+      ) : (
+        <ConfirmAlertDialog
+          open={openConfirmationDialog}
+          close={closeDialog}
+          content={`You're about to fire an alarm! The robots will head to their nearest holding points. Once you accept this there is no turning back.`}
+          confirmCallback={() => onTurnOn && onTurnOn()}
+          showIcon={true}
+        />
+      )}
+
+      <IconButton
+        id="alarm-btn"
+        color={isActive ? 'secondary' : 'inherit'}
+        onClick={handleEmergencyAlarmClick}
+      >
+        <NotificationsActiveIcon />
+      </IconButton>
+    </>
   );
 });

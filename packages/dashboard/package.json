@@ -81,7 +81,6 @@
     "react-scripts": "^3.4.3",
     "reactour": "^1.18.0",
     "styled-components": "^4.4.1",
-    "sweetalert2": "^10.0.2",
     "typeface-roboto": "0.0.75",
     "uuid": "^8.3.0"
   },
