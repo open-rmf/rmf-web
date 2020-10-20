@@ -269,6 +269,7 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
   };
 
   if (conflicts) {
+    // TODO: Use other means of storage when we get our data from backend sources
     const conflictIds = localStorage.getItem('conflictIds');
     let parsedConflictIds: string[];
     if (conflictIds) {
