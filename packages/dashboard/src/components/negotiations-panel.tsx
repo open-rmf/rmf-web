@@ -347,20 +347,20 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
       <div style={{ padding: '0.5rem 1rem' }}>
         <ButtonGroup fullWidth>
           <Button
-            id="clear-button"
-            disabled={conflicts && Object.keys(conflicts).length === 0}
-            onClick={handleClearAllCurrNegotiations}
-          >
-            <ClearAllIcon />
-            Clear
-          </Button>
-          <Button
             id="reset-button"
             disabled={conflicts && Object.keys(conflicts).length === 0}
             onClick={handleResetNegotiations}
           >
             <RestoreIcon />
             Reset
+          </Button>
+          <Button
+            id="clear-button"
+            disabled={conflicts && Object.keys(conflicts).length === 0}
+            onClick={handleClearAllCurrNegotiations}
+          >
+            <ClearAllIcon />
+            Clear
           </Button>
           <Button
             id="restore-button"
