@@ -142,7 +142,7 @@ it('matches snapshot', () => {
   root.unmount();
 });
 
-it('should set conflictIds to localStorage when clear-button is clicked', () => {
+it('should empty all current negotiations when clear button is clicked', () => {
   const root = mount(
     <NegotiationsPanel
       conflicts={negotiationStatuses}
@@ -178,7 +178,7 @@ it('should call setNegotiationTrajStore callback when reset-button is clicked', 
   root.unmount();
 });
 
-it('should reset conflictIds to empty value when restore-button is clicked', () => {
+it('should render all negotiations when restore button is clicked', () => {
   const root = mount(
     <NegotiationsPanel
       conflicts={negotiationStatuses}
@@ -190,6 +190,8 @@ it('should reset conflictIds to empty value when restore-button is clicked', () 
       setNegotiationTrajStore={setNegotiationTrajStore}
     />,
   );
+  // clear all trajectories first to ensure empty array
+  root.find('button#clear-button').simulate('click');
   root.find('button#restore-button').simulate('click');
 
   expect(root.find('li').length).toEqual(1);
