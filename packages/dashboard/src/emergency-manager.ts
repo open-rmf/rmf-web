@@ -7,6 +7,7 @@ type Events = {
 
 export default class EmergencyManager extends EventEmitter<Events> {
   alarm(): boolean | null {
+    console.log('subscribed alarm state', this._alarmState);
     return this._alarmState;
   }
 
@@ -15,13 +16,14 @@ export default class EmergencyManager extends EventEmitter<Events> {
       transport.subscribe(
         RomiCore.emergency,
         (state) => {
-          console.log(state);
           this._alarmState = state.data;
           this.emit('updated');
         },
         {
           qos: {
             historyPolicy: RomiCore.HistoryPolicy.KeepLast,
+            reliabilityPolicy: RomiCore.ReliabilityPolicy.Reliable,
+            durabilityPolicy: RomiCore.DurabilityPolicy.TransientLocal,
           },
         },
       ),

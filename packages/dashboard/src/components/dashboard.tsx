@@ -425,6 +425,8 @@ export default function Dashboard(_props: {}): React.ReactElement {
         ? transport.createPublisher(RomiCore.emergency, {
             qos: {
               historyPolicy: RomiCore.HistoryPolicy.KeepLast,
+              reliabilityPolicy: RomiCore.ReliabilityPolicy.Reliable,
+              durabilityPolicy: RomiCore.DurabilityPolicy.TransientLocal,
             },
           })
         : null,
