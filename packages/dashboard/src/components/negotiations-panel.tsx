@@ -53,6 +53,9 @@ const useStyles = makeStyles((theme) => ({
   expanded: {
     borderLeft: `0.1rem solid ${colorPalette.unknown}`,
   },
+  buttonGroupDiv: {
+    padding: '0.5rem 1rem',
+  },
 }));
 
 interface Parameter {
@@ -344,7 +347,7 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
 
   return (
     <Typography variant="body1" component={'span'}>
-      <div style={{ padding: '0.5rem 1rem' }}>
+      <div className={classes.buttonGroupDiv}>
         <ButtonGroup fullWidth>
           <Button
             id="reset-button"
