@@ -9,7 +9,7 @@ import ItemAccordionDetails from '../item-accordion-details';
 import ItemAccordionSummary from '../item-accordion-summary';
 import SimpleInfo, { SimpleInfoData } from '../simple-info';
 
-const debug = Debug('Doors:DoorItem');
+const debug = Debug('Doors:DoorAccordion');
 
 const useStyles = makeStyles((theme) => ({
   controlButtonGroup: {
@@ -91,15 +91,15 @@ const DoorInfo = (props: DoorInfoProps) => {
   return <SimpleInfo data={data} />;
 };
 
-export interface DoorItemProps extends Omit<AccordionProps, 'children'> {
+export interface DoorAccordionProps extends Omit<AccordionProps, 'children'> {
   door: RomiCore.Door;
   doorState?: RomiCore.DoorState;
   onDoorOpen?(door: RomiCore.Door): void;
   onDoorClose?(door: RomiCore.Door): void;
 }
 
-export const DoorItem = React.memo(
-  React.forwardRef((props: DoorItemProps, ref: React.Ref<HTMLElement>) => {
+export const DoorAccordion = React.memo(
+  React.forwardRef((props: DoorAccordionProps, ref: React.Ref<HTMLElement>) => {
     const { door, doorState, onDoorOpen, onDoorClose, ...otherProps } = props;
     debug(`render ${door.name}`);
     const classes = useStyles();
@@ -155,4 +155,4 @@ export const DoorItem = React.memo(
   }),
 );
 
-export default DoorItem;
+export default DoorAccordion;

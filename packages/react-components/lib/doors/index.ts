@@ -1,1 +1,1 @@
-export * from './door-item';
+export * from './door-accordion';

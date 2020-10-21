@@ -16,7 +16,7 @@ import {
   requestModes,
 } from './lift-utils';
 
-const debug = Debug('Lifts:LiftItem');
+const debug = Debug('Lifts:Accordion');
 
 interface LiftInfoProps {
   lift: RomiCore.Lift;
@@ -74,7 +74,7 @@ const LiftInfo = (props: LiftInfoProps) => {
   return <SimpleInfo data={data} />;
 };
 
-export interface LiftItemProps extends Omit<AccordionProps, 'children'> {
+export interface LiftAccordionProps extends Omit<AccordionProps, 'children'> {
   lift: RomiCore.Lift;
   liftState?: RomiCore.LiftState;
   onRequest?(
@@ -85,7 +85,7 @@ export interface LiftItemProps extends Omit<AccordionProps, 'children'> {
   ): void;
 }
 
-export const LiftItem = React.memo((props: LiftItemProps) => {
+export const LiftAccordion = React.memo((props: LiftAccordionProps) => {
   const { lift, liftState, onRequest, ...otherProps } = props;
   debug(`render ${lift.name}`);
   const [tabValue, setTabValue] = React.useState(0);
@@ -146,4 +146,4 @@ export const LiftItem = React.memo((props: LiftItemProps) => {
   );
 });
 
-export default LiftItem;
+export default LiftAccordion;

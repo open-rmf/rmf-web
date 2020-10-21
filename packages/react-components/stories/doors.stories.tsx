@@ -1,11 +1,11 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
-import { DoorItem } from '..';
+import { DoorAccordion } from '../lib';
 
 export default {
   title: 'Doors',
-  component: DoorItem,
+  component: DoorAccordion,
   parameters: { actions: { argTypesRegex: '^on.*' } },
 } as Meta;
 
@@ -74,7 +74,7 @@ export const DoorsPanel: Story = (args) => {
   return (
     <>
       {doors.map((door) => (
-        <DoorItem key={door.name} door={door} doorState={doorStates[door.name]} {...args} />
+        <DoorAccordion key={door.name} door={door} doorState={doorStates[door.name]} {...args} />
       ))}
     </>
   );

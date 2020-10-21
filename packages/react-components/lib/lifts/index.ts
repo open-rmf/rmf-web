@@ -1,2 +1,2 @@
-export * from './lift-item';
+export * from './lift-accordion';
 export * from './lift-request-form';

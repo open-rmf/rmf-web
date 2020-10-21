@@ -1,11 +1,11 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
-import { LiftItem } from '..';
+import { LiftAccordion } from '../lib';
 
 export default {
   title: 'Lifts',
-  component: LiftItem,
+  component: LiftAccordion,
   parameters: { actions: { argTypesRegex: '^on.*' } },
 } as Meta;
 
@@ -113,7 +113,7 @@ export const LiftsPanel: Story = (args) => {
   return (
     <>
       {lifts.map((lift) => (
-        <LiftItem key={lift.name} lift={lift} liftState={liftStates[lift.name]} {...args} />
+        <LiftAccordion key={lift.name} lift={lift} liftState={liftStates[lift.name]} {...args} />
       ))}
     </>
   );
