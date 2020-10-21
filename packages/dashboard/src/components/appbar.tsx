@@ -19,12 +19,11 @@ export interface AppBarProps {
   toggleShowOmniPanel(): void;
   showSettings(show: boolean): void;
   showHelp(show: boolean): void;
-  requestEmergencyAlarm(value: boolean): void;
   alarmState: boolean | null;
 }
 
 export default function AppBar(props: AppBarProps): React.ReactElement {
-  const { toggleShowOmniPanel, showSettings, showHelp, alarmState, requestEmergencyAlarm } = props;
+  const { toggleShowOmniPanel, showSettings, showHelp, alarmState } = props;
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const classes = useStyles();
   const authenticator = React.useContext(AuthenticatorContext);
@@ -54,11 +53,7 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
         </IconButton>
         {user && (
           <>
-            <EmergencyAlarm
-              isActive={alarmState}
-              onTurnOn={() => requestEmergencyAlarm(true)}
-              onTurnOff={() => requestEmergencyAlarm(false)}
-            />
+            <EmergencyAlarm isActive={alarmState} />
 
             <IconButton
               id="user-btn"

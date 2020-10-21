@@ -7,7 +7,6 @@ type Events = {
 
 export default class EmergencyManager extends EventEmitter<Events> {
   alarm(): boolean | null {
-    console.log('subscribed alarm state', this._alarmState);
     return this._alarmState;
   }
 

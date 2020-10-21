@@ -419,27 +419,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
     openHotKeys: () => setShowHotkeyDialog((prev) => !prev),
   });
 
-  const emergencyAlarmRequestPub = React.useMemo(
-    () =>
-      transport
-        ? transport.createPublisher(RomiCore.emergency, {
-            qos: {
-              historyPolicy: RomiCore.HistoryPolicy.KeepLast,
-              reliabilityPolicy: RomiCore.ReliabilityPolicy.Reliable,
-              durabilityPolicy: RomiCore.DurabilityPolicy.TransientLocal,
-            },
-          })
-        : null,
-    [transport],
-  );
-
-  const requestEmergencyAlarm = React.useCallback(
-    (value: boolean) => {
-      emergencyAlarmRequestPub?.publish({ data: value });
-    },
-    [emergencyAlarmRequestPub],
-  );
-
   return (
     <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
       <AppContextProvider
@@ -457,7 +436,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
               toggleShowOmniPanel={() => setShowOmniPanel(!showOmniPanel)}
               showSettings={setShowSettings}
               showHelp={setShowHelp}
-              requestEmergencyAlarm={requestEmergencyAlarm}
               alarmState={emergencyAlarm}
             />
             {loading && <LoadingScreen {...loading} />}
