@@ -86,10 +86,10 @@ export const ConfirmAlertDialog = (props: ConfirmAlertDialogProps) => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCancelButton} color="primary">
+          <Button onClick={handleCancelButton} color="primary" id="alert-dialog-cancel-button">
             {cancelButtonText || 'No'}
           </Button>
-          <Button onClick={handleConfirmButton} color="secondary">
+          <Button onClick={handleConfirmButton} color="secondary" id="alert-dialog-confirm-button">
             {confirmButtonText || `Yes, I'm sure.`}
           </Button>
         </DialogActions>

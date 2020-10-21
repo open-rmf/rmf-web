@@ -448,6 +448,7 @@ exports[`Verification Alert Correct generation of custom params values 1`] = `
                         >
                           <button
                             class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary"
+                            id="alert-dialog-cancel-button"
                             tabindex="0"
                             type="button"
                           >
@@ -462,6 +463,7 @@ exports[`Verification Alert Correct generation of custom params values 1`] = `
                           </button>
                           <button
                             class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textSecondary"
+                            id="alert-dialog-confirm-button"
                             tabindex="0"
                             type="button"
                           >
@@ -658,6 +660,7 @@ exports[`Verification Alert Correct generation of custom params values 1`] = `
                                 >
                                   <button
                                     class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary"
+                                    id="alert-dialog-cancel-button"
                                     tabindex="0"
                                     type="button"
                                   >
@@ -672,6 +675,7 @@ exports[`Verification Alert Correct generation of custom params values 1`] = `
                                   </button>
                                   <button
                                     class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textSecondary"
+                                    id="alert-dialog-confirm-button"
                                     tabindex="0"
                                     type="button"
                                   >
@@ -939,6 +943,7 @@ exports[`Verification Alert Correct generation of custom params values 1`] = `
                                     >
                                       <WithStyles(ForwardRef(Button))
                                         color="primary"
+                                        id="alert-dialog-cancel-button"
                                         onClick={[Function]}
                                       >
                                         <ForwardRef(Button)
@@ -976,6 +981,7 @@ exports[`Verification Alert Correct generation of custom params values 1`] = `
                                             }
                                           }
                                           color="primary"
+                                          id="alert-dialog-cancel-button"
                                           onClick={[Function]}
                                         >
                                           <WithStyles(ForwardRef(ButtonBase))
@@ -984,6 +990,7 @@ exports[`Verification Alert Correct generation of custom params values 1`] = `
                                             disabled={false}
                                             focusRipple={true}
                                             focusVisibleClassName="Mui-focusVisible"
+                                            id="alert-dialog-cancel-button"
                                             onClick={[Function]}
                                             type="button"
                                           >
@@ -1000,12 +1007,14 @@ exports[`Verification Alert Correct generation of custom params values 1`] = `
                                               disabled={false}
                                               focusRipple={true}
                                               focusVisibleClassName="Mui-focusVisible"
+                                              id="alert-dialog-cancel-button"
                                               onClick={[Function]}
                                               type="button"
                                             >
                                               <button
                                                 className="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary"
                                                 disabled={false}
+                                                id="alert-dialog-cancel-button"
                                                 onBlur={[Function]}
                                                 onClick={[Function]}
                                                 onDragLeave={[Function]}
@@ -1061,6 +1070,7 @@ exports[`Verification Alert Correct generation of custom params values 1`] = `
                                       </WithStyles(ForwardRef(Button))>
                                       <WithStyles(ForwardRef(Button))
                                         color="secondary"
+                                        id="alert-dialog-confirm-button"
                                         onClick={[Function]}
                                       >
                                         <ForwardRef(Button)
@@ -1098,6 +1108,7 @@ exports[`Verification Alert Correct generation of custom params values 1`] = `
                                             }
                                           }
                                           color="secondary"
+                                          id="alert-dialog-confirm-button"
                                           onClick={[Function]}
                                         >
                                           <WithStyles(ForwardRef(ButtonBase))
@@ -1106,6 +1117,7 @@ exports[`Verification Alert Correct generation of custom params values 1`] = `
                                             disabled={false}
                                             focusRipple={true}
                                             focusVisibleClassName="Mui-focusVisible"
+                                            id="alert-dialog-confirm-button"
                                             onClick={[Function]}
                                             type="button"
                                           >
@@ -1122,12 +1134,14 @@ exports[`Verification Alert Correct generation of custom params values 1`] = `
                                               disabled={false}
                                               focusRipple={true}
                                               focusVisibleClassName="Mui-focusVisible"
+                                              id="alert-dialog-confirm-button"
                                               onClick={[Function]}
                                               type="button"
                                             >
                                               <button
                                                 className="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textSecondary"
                                                 disabled={false}
+                                                id="alert-dialog-confirm-button"
                                                 onBlur={[Function]}
                                                 onClick={[Function]}
                                                 onDragLeave={[Function]}
@@ -1648,6 +1662,7 @@ exports[`Verification Alert Correct generation of default params values 1`] = `
                         >
                           <button
                             class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary"
+                            id="alert-dialog-cancel-button"
                             tabindex="0"
                             type="button"
                           >
@@ -1662,6 +1677,7 @@ exports[`Verification Alert Correct generation of default params values 1`] = `
                           </button>
                           <button
                             class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textSecondary"
+                            id="alert-dialog-confirm-button"
                             tabindex="0"
                             type="button"
                           >
@@ -1858,6 +1874,7 @@ exports[`Verification Alert Correct generation of default params values 1`] = `
                                 >
                                   <button
                                     class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary"
+                                    id="alert-dialog-cancel-button"
                                     tabindex="0"
                                     type="button"
                                   >
@@ -1872,6 +1889,7 @@ exports[`Verification Alert Correct generation of default params values 1`] = `
                                   </button>
                                   <button
                                     class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textSecondary"
+                                    id="alert-dialog-confirm-button"
                                     tabindex="0"
                                     type="button"
                                   >
@@ -2139,6 +2157,7 @@ exports[`Verification Alert Correct generation of default params values 1`] = `
                                     >
                                       <WithStyles(ForwardRef(Button))
                                         color="primary"
+                                        id="alert-dialog-cancel-button"
                                         onClick={[Function]}
                                       >
                                         <ForwardRef(Button)
@@ -2176,6 +2195,7 @@ exports[`Verification Alert Correct generation of default params values 1`] = `
                                             }
                                           }
                                           color="primary"
+                                          id="alert-dialog-cancel-button"
                                           onClick={[Function]}
                                         >
                                           <WithStyles(ForwardRef(ButtonBase))
@@ -2184,6 +2204,7 @@ exports[`Verification Alert Correct generation of default params values 1`] = `
                                             disabled={false}
                                             focusRipple={true}
                                             focusVisibleClassName="Mui-focusVisible"
+                                            id="alert-dialog-cancel-button"
                                             onClick={[Function]}
                                             type="button"
                                           >
@@ -2200,12 +2221,14 @@ exports[`Verification Alert Correct generation of default params values 1`] = `
                                               disabled={false}
                                               focusRipple={true}
                                               focusVisibleClassName="Mui-focusVisible"
+                                              id="alert-dialog-cancel-button"
                                               onClick={[Function]}
                                               type="button"
                                             >
                                               <button
                                                 className="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary"
                                                 disabled={false}
+                                                id="alert-dialog-cancel-button"
                                                 onBlur={[Function]}
                                                 onClick={[Function]}
                                                 onDragLeave={[Function]}
@@ -2261,6 +2284,7 @@ exports[`Verification Alert Correct generation of default params values 1`] = `
                                       </WithStyles(ForwardRef(Button))>
                                       <WithStyles(ForwardRef(Button))
                                         color="secondary"
+                                        id="alert-dialog-confirm-button"
                                         onClick={[Function]}
                                       >
                                         <ForwardRef(Button)
@@ -2298,6 +2322,7 @@ exports[`Verification Alert Correct generation of default params values 1`] = `
                                             }
                                           }
                                           color="secondary"
+                                          id="alert-dialog-confirm-button"
                                           onClick={[Function]}
                                         >
                                           <WithStyles(ForwardRef(ButtonBase))
@@ -2306,6 +2331,7 @@ exports[`Verification Alert Correct generation of default params values 1`] = `
                                             disabled={false}
                                             focusRipple={true}
                                             focusVisibleClassName="Mui-focusVisible"
+                                            id="alert-dialog-confirm-button"
                                             onClick={[Function]}
                                             type="button"
                                           >
@@ -2322,12 +2348,14 @@ exports[`Verification Alert Correct generation of default params values 1`] = `
                                               disabled={false}
                                               focusRipple={true}
                                               focusVisibleClassName="Mui-focusVisible"
+                                              id="alert-dialog-confirm-button"
                                               onClick={[Function]}
                                               type="button"
                                             >
                                               <button
                                                 className="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textSecondary"
                                                 disabled={false}
+                                                id="alert-dialog-confirm-button"
                                                 onBlur={[Function]}
                                                 onClick={[Function]}
                                                 onDragLeave={[Function]}
