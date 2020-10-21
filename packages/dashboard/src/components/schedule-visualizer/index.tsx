@@ -69,7 +69,6 @@ function calcMaxBounds(mapFloorLayers: readonly MapFloorLayer[]): L.LatLngBounds
 
 export default function ScheduleVisualizer(props: ScheduleVisualizerProps): React.ReactElement {
   debug('render');
-
   const { negotiationTrajStore, mapFloorLayerSorted } = props;
   const classes = useStyles();
 
@@ -92,11 +91,13 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     if (!initialLayer) {
       return undefined;
     }
+
     return initialLayer.bounds;
   }, [mapFloorLayers, mapFloorLayerSorted]);
   const [maxBounds, setMaxBounds] = React.useState<Readonly<L.LatLngBounds> | undefined>(() =>
     calcMaxBounds(Object.values(mapFloorLayers)),
   );
+  const [bound, setBound] = React.useState(initialBounds);
 
   const colorManager = React.useMemo(() => new ColorManager(), []);
 
@@ -217,6 +218,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   function handleBaseLayerChange(e: L.LayersControlEvent): void {
     debug('set current level name');
     setCurLevelName(e.name);
+    setBound(mapFloorLayers[e.name].bounds);
   }
 
   function getConflicts(levelName: string): Conflict[] {
@@ -226,6 +228,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
 
   const sortedMapFloorLayers = mapFloorLayerSorted.map((x) => mapFloorLayers[x]);
   const ref = React.useRef<ImageOverlay>(null);
+  const mapRef = React.useRef<LMap>(null);
 
   if (ref.current) {
     ref.current.leafletElement.setZIndex(0);
@@ -276,13 +279,14 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       className={classes.map}
       attributionControl={false}
       crs={L.CRS.Simple}
-      minZoom={4}
+      minZoom={0}
       maxZoom={8}
       zoomDelta={0.5}
       zoomSnap={0.5}
-      bounds={initialBounds}
+      bounds={bound ? bound : initialBounds}
       maxBounds={maxBounds}
       onbaselayerchange={handleBaseLayerChange}
+      ref={mapRef}
     >
       <AttributionControl position="bottomright" prefix="OSRC-SG" />
       <LayersControl position="topleft">
