@@ -21,7 +21,7 @@ export default function SimpleOmniPanel(): JSX.Element {
       onBack={() => setView(stack.pop())}
       onHome={() => setView(stack.reset())}
     >
-      <OmniPanelView id={0}>
+      <OmniPanelView viewId={0}>
         <Button variant="outlined" onClick={() => (stack.push(1), setView(1))}>
           Panel A
         </Button>
@@ -32,17 +32,17 @@ export default function SimpleOmniPanel(): JSX.Element {
           Panel C
         </Button>
       </OmniPanelView>
-      <OmniPanelView id={1}>
+      <OmniPanelView viewId={1}>
         <Button variant="outlined" onClick={() => setView(stack.pop())}>
           Back
         </Button>
       </OmniPanelView>
-      <OmniPanelView id={2}>
+      <OmniPanelView viewId={2}>
         <Button variant="outlined" onClick={() => setView(stack.pop())}>
           Back
         </Button>
       </OmniPanelView>
-      <OmniPanelView id={3}>
+      <OmniPanelView viewId={3}>
         <Button variant="outlined" onClick={() => setView(stack.pop())}>
           Back
         </Button>

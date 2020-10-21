@@ -26,10 +26,6 @@ beforeEach(() => {
   );
 });
 
-test('renders correctly', () => {
-  expect(root.container).toMatchSnapshot();
-});
-
 test('resets form after submitting', () => {
   const initialDestinationHtml = root.getByTestId('destination').outerHTML;
   const initialDoorStateHtml = root.getByTestId('door-state').outerHTML;

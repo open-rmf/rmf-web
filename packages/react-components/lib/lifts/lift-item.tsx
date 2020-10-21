@@ -124,12 +124,7 @@ export const LiftItem = React.memo((props: LiftItemProps) => {
         classes={{ status: liftFloorLabelClass(liftState) }}
       />
       <ItemAccordionDetails>
-        <AntTabs
-          variant="fullWidth"
-          value={tabValue}
-          onChange={handleTabChange}
-          aria-label="scrollable auto tabs example"
-        >
+        <AntTabs variant="fullWidth" value={tabValue} onChange={handleTabChange}>
           <AntTab label="Info" />
           <AntTab label="Request" />
         </AntTabs>

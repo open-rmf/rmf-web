@@ -59,9 +59,9 @@ export const OmniPanel = (props: OmniPanelProps): JSX.Element => {
 
   const renderView = (child: ReactElement<OmniPanelViewProps>) => (
     <Slide
-      key={child.props.id}
+      key={child.props.viewId}
       direction="left"
-      in={view === child.props.id}
+      in={view === child.props.viewId}
       appear={false}
       timeout={timeout}
       mountOnEnter={mountOnEnter}
@@ -78,7 +78,7 @@ export const OmniPanel = (props: OmniPanelProps): JSX.Element => {
             className={classes_.navigationButton}
             size="large"
             onClick={onBack}
-            id="back-button"
+            data-testid="back-button"
           >
             <BackIcon />
           </Button>
@@ -86,7 +86,7 @@ export const OmniPanel = (props: OmniPanelProps): JSX.Element => {
             className={classes_.navigationButton}
             size="large"
             onClick={onHome}
-            id="home-button"
+            data-testid="home-button"
           >
             <HomeIcon />
           </Button>
@@ -95,7 +95,7 @@ export const OmniPanel = (props: OmniPanelProps): JSX.Element => {
               className={classes_.navigationButton}
               size="large"
               onClick={onClose}
-              id="close-button"
+              data-testid="close-button"
             >
               <CloseIcon />
             </Button>
