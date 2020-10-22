@@ -27,4 +27,12 @@ module.exports = {
     'react/display-name': 'off',
     'react/prop-types': 'off',
   },
+  overrides: [
+    {
+      files: '*.test.ts[x]',
+      rules: {
+        '@typescript-eslint/no-non-null-assertion': 'off',
+      },
+    },
+  ],
 };
