@@ -6,17 +6,6 @@ import { joinClasses } from '../css-utils';
 
 const debug = Debug('Doors:DoorMarker');
 
-/**
- * door: Door information provided by the map.
- * doorState: Current state of the door.
- * onClick: Action to trigger on click.
- */
-export interface DoorMarkerProps {
-  door: RomiCore.Door;
-  doorState?: RomiCore.DoorState;
-  onClick?(ev: React.MouseEvent<SVGGElement>): void;
-}
-
 const useDoorStyles = makeStyles({
   marker: {
     cursor: 'pointer',
@@ -86,35 +75,7 @@ const BaseDoor = (props: BaseDoorProps) => {
   );
 };
 
-interface DummyDoorProps {
-  v1: [number, number];
-  v2: [number, number];
-  onClick?(ev: React.MouseEvent<SVGGElement>): void;
-}
-
-/**
- * Because we are using stroke-dash in some of the classes, it makes it such that only
- * the rendered line will be considered for click detection. To workaround it, we use
- * a transparent door on top of the marker, this dummy door will be used to allow the
- * full door to be clickable.
- */
-const DummyDoor = (props: DummyDoorProps) => {
-  const { v1, v2, onClick } = props;
-  const classes = useDoorStyles();
-
-  return (
-    <g>
-      <line
-        className={joinClasses(classes.base, classes.transparent, classes.marker)}
-        x1={v1[0]}
-        y1={v1[1]}
-        x2={v2[0]}
-        y2={v2[1]}
-        onClick={onClick}
-      />
-    </g>
-  );
-};
+type DoorMarkerImplProps = Omit<DoorMarkerProps, 'onClick'>;
 
 /*
  * Single swing doors:
@@ -124,14 +85,13 @@ const DummyDoor = (props: DummyDoorProps) => {
  *  - there are two possible motions: clockwise and anti-clockwise
  *  - selected by the motion_direction parameter, which is +1 or -1
  */
-const SingleSwingDoor = (props: DoorMarkerProps) => {
-  const { door, doorState, onClick } = props;
+const SingleSwingDoor = (props: DoorMarkerImplProps) => {
+  const { door, doorState } = props;
   const doorStyle = useDoorStyle(doorState);
 
   return (
     <>
       <BaseDoor v1={[door.v1_x, door.v1_y]} v2={[door.v2_x, door.v2_y]} className={doorStyle} />
-      <DummyDoor v1={[door.v1_x, door.v1_y]} v2={[door.v2_x, door.v2_y]} onClick={onClick} />
     </>
   );
 };
@@ -149,8 +109,8 @@ const SingleSlidingDoor = SingleSwingDoor;
  * - motion range = door swing ranges in DEGREES (assume symmetric)
  * - same motion-direction selection as single hinge
  */
-const DoubleSwingDoor = (props: DoorMarkerProps) => {
-  const { door, doorState, onClick } = props;
+const DoubleSwingDoor = (props: DoorMarkerImplProps) => {
+  const { door, doorState } = props;
   const [hingeX1, hingeY1, hingeX2, hingeY2] = [door.v1_x, door.v1_y, door.v2_x, door.v2_y];
   const [extendX1, extendY1] = [
     hingeX1 + (door.v2_x - door.v1_x) / 2,
@@ -161,7 +121,6 @@ const DoubleSwingDoor = (props: DoorMarkerProps) => {
     <>
       <BaseDoor v1={[hingeX1, hingeY1]} v2={[extendX1, extendY1]} className={doorStyle} />
       <BaseDoor v1={[extendX1, extendY1]} v2={[hingeX2, hingeY2]} className={doorStyle} />
-      <DummyDoor v1={[hingeX1, hingeY1]} v2={[hingeX2, hingeY2]} onClick={onClick} />
     </>
   );
 };
@@ -173,28 +132,45 @@ const DoubleSwingDoor = (props: DoorMarkerProps) => {
  */
 const DoubleSlidingDoor = DoubleSwingDoor;
 
+/**
+ * door: Door information provided by the map.
+ * doorState: Current state of the door.
+ * onClick: Action to trigger on click.
+ */
+export interface DoorMarkerProps extends React.SVGProps<SVGGElement> {
+  door: RomiCore.Door;
+  doorState?: RomiCore.DoorState;
+  onClick?(ev: React.MouseEvent<SVGGElement>): void;
+}
+
 export const DoorMarker = React.memo(
   React.forwardRef((props: DoorMarkerProps, ref: React.Ref<SVGGElement>) => {
-    const { door, doorState, onClick } = props;
+    const { door, doorState, onClick, className, ...otherProps } = props;
     debug(`render ${door.name}`);
+    const classes = useDoorStyles();
 
     const renderDoor = () => {
       switch (door.door_type) {
         case RomiCore.Door.DOOR_TYPE_SINGLE_SWING:
-          return <SingleSwingDoor door={door} doorState={doorState} onClick={onClick} />;
+          return <SingleSwingDoor door={door} doorState={doorState} />;
         case RomiCore.Door.DOOR_TYPE_SINGLE_SLIDING:
-          return <SingleSlidingDoor door={door} doorState={doorState} onClick={onClick} />;
+          return <SingleSlidingDoor door={door} doorState={doorState} />;
         case RomiCore.Door.DOOR_TYPE_DOUBLE_SWING:
-          return <DoubleSwingDoor door={door} doorState={doorState} onClick={onClick} />;
+          return <DoubleSwingDoor door={door} doorState={doorState} />;
         case RomiCore.Door.DOOR_TYPE_DOUBLE_SLIDING:
-          return <DoubleSlidingDoor door={door} doorState={doorState} onClick={onClick} />;
+          return <DoubleSlidingDoor door={door} doorState={doorState} />;
         default:
           return null;
       }
     };
 
     return (
-      <g ref={ref} aria-label={door.name}>
+      <g
+        ref={ref}
+        className={joinClasses(classes.marker, className)}
+        onClick={onClick}
+        {...otherProps}
+      >
         {renderDoor()}
       </g>
     );
