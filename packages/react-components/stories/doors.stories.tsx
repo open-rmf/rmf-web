@@ -4,7 +4,7 @@ import React from 'react';
 import { DoorAccordion } from '../lib';
 
 export default {
-  title: 'Doors',
+  title: 'Door Accordion',
   component: DoorAccordion,
   parameters: { actions: { argTypesRegex: '^on.*' } },
 } as Meta;

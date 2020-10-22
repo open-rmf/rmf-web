@@ -4,7 +4,7 @@ import React from 'react';
 import { LiftAccordion } from '../lib';
 
 export default {
-  title: 'Lifts',
+  title: 'Lift Accordion',
   component: LiftAccordion,
   parameters: { actions: { argTypesRegex: '^on.*' } },
 } as Meta;

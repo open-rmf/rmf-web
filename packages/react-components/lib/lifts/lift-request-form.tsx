@@ -6,18 +6,6 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 import { requestDoorModeToString, requestModeToString } from './lift-utils';
 
-export interface LiftRequestFormProps {
-  lift: RomiCore.Lift;
-  availableRequestTypes: number[];
-  availableDoorModes: number[];
-  onRequest?(
-    lift: RomiCore.Lift,
-    doorState: number,
-    requestType: number,
-    destination: string,
-  ): void;
-}
-
 const useStyles = makeStyles((theme) => ({
   form: {
     display: 'flex',
@@ -44,11 +32,23 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+export interface LiftRequestFormProps {
+  lift: RomiCore.Lift;
+  availableRequestTypes: number[];
+  availableDoorModes: number[];
+  doLiftRequest?(
+    lift: RomiCore.Lift,
+    doorState: number,
+    requestType: number,
+    destination: string,
+  ): void;
+}
+
 export const LiftRequestForm = (props: LiftRequestFormProps): JSX.Element => {
-  const { lift, availableRequestTypes, availableDoorModes: availableDoorStates, onRequest } = props;
+  const { lift, availableRequestTypes, availableDoorModes, doLiftRequest } = props;
   const classes = useStyles();
 
-  const [doorState, setDoorState] = React.useState(availableDoorStates[0]);
+  const [doorState, setDoorState] = React.useState(availableDoorModes[0]);
   const [requestType, setRequestType] = React.useState(availableRequestTypes[0]);
   const [destination, setDestination] = React.useState(lift.levels[0]);
 
@@ -58,7 +58,7 @@ export const LiftRequestForm = (props: LiftRequestFormProps): JSX.Element => {
   const [destinationError, setDestinationError] = React.useState('');
 
   const cleanUpForm = () => {
-    setDoorState(availableDoorStates[0]);
+    setDoorState(availableDoorModes[0]);
     setRequestType(availableRequestTypes[0]);
     setDestination(lift.levels[0]);
     cleanUpError();
@@ -84,7 +84,7 @@ export const LiftRequestForm = (props: LiftRequestFormProps): JSX.Element => {
   const handleLiftRequest = (event: React.FormEvent) => {
     event.preventDefault();
     if (isFormValid()) {
-      onRequest && onRequest(lift, doorState, requestType, destination);
+      doLiftRequest && doLiftRequest(lift, doorState, requestType, destination);
       cleanUpForm();
     }
   };
@@ -115,7 +115,7 @@ export const LiftRequestForm = (props: LiftRequestFormProps): JSX.Element => {
         <Autocomplete
           getOptionLabel={(option) => requestDoorModeToString(option)}
           onChange={(_, value) => setDoorState(value as number)}
-          options={availableDoorStates}
+          options={availableDoorModes}
           renderInput={(params) => (
             <TextField
               {...params}

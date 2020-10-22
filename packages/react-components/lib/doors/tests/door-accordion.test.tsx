@@ -19,14 +19,14 @@ function makeDoor(door?: Partial<RomiCore.Door>): RomiCore.Door {
 
 test('triggers onDoorOpen callback when button is clicked', () => {
   const handleDoorOpen = jest.fn();
-  const root = render(<DoorAccordion door={makeDoor()} onDoorOpen={handleDoorOpen} />);
+  const root = render(<DoorAccordion door={makeDoor()} doOpenDoor={handleDoorOpen} />);
   fireEvent.click(root.getByTestId('open'));
   expect(handleDoorOpen).toBeCalled();
 });
 
 test('triggers onDoorClose callback when button is clicked', () => {
   const handleDoorClose = jest.fn();
-  const root = render(<DoorAccordion door={makeDoor()} onDoorClose={handleDoorClose} />);
+  const root = render(<DoorAccordion door={makeDoor()} doCloseDoor={handleDoorClose} />);
   fireEvent.click(root.getByTestId('close'));
   expect(handleDoorClose).toBeCalled();
 });
