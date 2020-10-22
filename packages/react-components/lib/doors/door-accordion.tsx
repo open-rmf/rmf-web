@@ -139,7 +139,7 @@ export const DoorAccordion = React.memo(
           status={doorModeToString(doorState)}
           classes={{ status: doorModeLabelClasses(doorState) }}
         />
-        <ItemAccordionDetails data-role="details">
+        <ItemAccordionDetails>
           <DoorInfo door={door} />
           <ButtonGroup className={classes.controlButtonGroup} fullWidth>
             <Button disabled={!onDoorOpen} onClick={handleOpenClick} data-testid="open">

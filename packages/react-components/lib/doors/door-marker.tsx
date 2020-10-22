@@ -177,7 +177,6 @@ export const DoorMarker = React.memo(
     const { door, doorState, className, ...otherProps } = props;
     debug(`render ${door.name}`);
     const classes = useDoorStyles();
-    console.log(otherProps.onClick);
 
     const renderDoor = () => {
       switch (door.door_type) {
