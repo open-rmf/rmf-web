@@ -1,8 +1,8 @@
 import { render } from '@testing-library/react';
 import React from 'react';
-import { LiftItem } from '..';
+import { LiftAccordion } from '..';
 import { makeLift } from './test-utils';
 
 test(`smoke test`, () => {
-  render(<LiftItem lift={makeLift()} />);
+  render(<LiftAccordion lift={makeLift()} />);
 });
