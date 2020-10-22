@@ -71,7 +71,7 @@ export interface RobotAccordionProps extends Omit<AccordionProps, 'children'> {
 export const RobotAccordion = React.memo(
   React.forwardRef((props: RobotAccordionProps, ref: React.Ref<HTMLElement>) => {
     const { fleetName, robot, ...otherProps } = props;
-    debug('render %s', robot.name);
+    debug(`render ${robot.name}`);
     const classes = useStyles();
 
     return (

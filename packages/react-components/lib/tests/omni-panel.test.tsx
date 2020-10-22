@@ -1,4 +1,5 @@
-import { fireEvent, render } from '@testing-library/react';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { OmniPanel, OmniPanelView } from '..';
 import { OmniPanelProps } from '../omni-panel';
@@ -14,21 +15,21 @@ function TestPanel(props: Omit<OmniPanelProps, 'view' | 'children'>) {
 test('triggers onBack callback', () => {
   const handler = jest.fn();
   const root = render(<TestPanel onBack={handler} />);
-  fireEvent.click(root.getByTestId('back-button'));
+  userEvent.click(root.getByTestId('back-button'));
   expect(handler).toHaveBeenCalled();
 });
 
 test('triggers onHome callback', () => {
   const handler = jest.fn();
   const root = render(<TestPanel onHome={handler} />);
-  fireEvent.click(root.getByTestId('home-button'));
+  userEvent.click(root.getByTestId('home-button'));
   expect(handler).toHaveBeenCalled();
 });
 
 test('triggers onClose callback', () => {
   const handler = jest.fn();
   const root = render(<TestPanel variant="backHomeClose" onClose={handler} />);
-  fireEvent.click(root.getByTestId('close-button'));
+  userEvent.click(root.getByTestId('close-button'));
   expect(handler).toHaveBeenCalled();
 });
 

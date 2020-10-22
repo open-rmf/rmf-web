@@ -19,6 +19,6 @@ const baseRobot: RomiCore.RobotState = {
   path: [],
 };
 
-export const Basic: Story = (args) => {
-  return <RobotAccordion fleetName="test_fleet" robot={baseRobot} {...args} />;
-};
+export const Basic: Story = (args) => (
+  <RobotAccordion fleetName="test_fleet" robot={baseRobot} {...args} />
+);

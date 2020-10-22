@@ -24,9 +24,6 @@ interface LiftInfoProps {
 }
 
 const useStyles = makeStyles((theme) => ({
-  disabledText: {
-    color: theme.palette.action.disabled,
-  },
   liftFloorLabelStopped: {
     borderColor: theme.palette.info.main,
   },
@@ -40,7 +37,6 @@ const useStyles = makeStyles((theme) => ({
 
 const LiftInfo = (props: LiftInfoProps) => {
   const { lift, liftState } = props;
-  const classes = useStyles();
 
   const data = [
     { name: 'Name', value: lift.name },
@@ -50,24 +46,24 @@ const LiftInfo = (props: LiftInfoProps) => {
     {
       name: 'Current Mode',
       value: liftState ? liftModeToString(liftState.current_mode) : 'Unknown',
-      className: !liftState ? classes.disabledText : undefined,
+      disabled: !!liftState,
     },
     {
       name: 'Available Modes',
       value: liftState
         ? Array.from(liftState.available_modes).map((mode) => liftModeToString(mode))
         : 'Unknown',
-      className: !liftState ? classes.disabledText : undefined,
+      disabled: !!liftState,
     },
     {
       name: 'Door State',
       value: liftState ? doorStateToString(liftState.door_state) : 'Unknown',
-      className: !liftState ? classes.disabledText : undefined,
+      disabled: !!liftState,
     },
     {
       name: 'Motion State',
       value: liftState ? motionStateToString(liftState.motion_state) : 'Unknown',
-      className: !liftState ? classes.disabledText : undefined,
+      disabled: !!liftState,
     },
   ] as SimpleInfoData[];
 
@@ -85,65 +81,67 @@ export interface LiftAccordionProps extends Omit<AccordionProps, 'children'> {
   ): void;
 }
 
-export const LiftAccordion = React.memo((props: LiftAccordionProps) => {
-  const { lift, liftState, doLiftRequest, ...otherProps } = props;
-  debug(`render ${lift.name}`);
-  const [tabValue, setTabValue] = React.useState(0);
-  const classes = useStyles();
+export const LiftAccordion = React.memo(
+  React.forwardRef((props: LiftAccordionProps, ref: React.Ref<HTMLElement>) => {
+    const { lift, liftState, doLiftRequest, ...otherProps } = props;
+    debug(`render ${lift.name}`);
+    const [tabValue, setTabValue] = React.useState(0);
+    const classes = useStyles();
 
-  const liftFloorLabelClass = React.useCallback(
-    (liftState?: RomiCore.LiftState): string => {
-      if (!liftState) {
-        return classes.liftFloorLabelUnknown;
-      }
-      switch (liftState.motion_state) {
-        case RomiCore.LiftState.MOTION_UP:
-        case RomiCore.LiftState.MOTION_DOWN:
-          return classes.liftFloorLabelMoving;
-        case RomiCore.LiftState.MOTION_STOPPED:
-          return classes.liftFloorLabelStopped;
-        default:
+    const liftFloorLabelClass = React.useCallback(
+      (liftState?: RomiCore.LiftState): string => {
+        if (!liftState) {
           return classes.liftFloorLabelUnknown;
-      }
-    },
-    [classes],
-  );
+        }
+        switch (liftState.motion_state) {
+          case RomiCore.LiftState.MOTION_UP:
+          case RomiCore.LiftState.MOTION_DOWN:
+            return classes.liftFloorLabelMoving;
+          case RomiCore.LiftState.MOTION_STOPPED:
+            return classes.liftFloorLabelStopped;
+          default:
+            return classes.liftFloorLabelUnknown;
+        }
+      },
+      [classes],
+    );
 
-  const handleTabChange = React.useCallback(
-    (_event: React.ChangeEvent<unknown>, newValue: number) => {
-      setTabValue(newValue);
-    },
-    [],
-  );
+    const handleTabChange = React.useCallback(
+      (_event: React.ChangeEvent<unknown>, newValue: number) => {
+        setTabValue(newValue);
+      },
+      [],
+    );
 
-  return (
-    <Accordion {...otherProps}>
-      <ItemAccordionSummary
-        title={lift.name}
-        status={liftState ? liftState.current_floor : 'N/A'}
-        classes={{ status: liftFloorLabelClass(liftState) }}
-      />
-      <ItemAccordionDetails>
-        <AntTabs variant="fullWidth" value={tabValue} onChange={handleTabChange}>
-          <AntTab label="Info" />
-          <AntTab label="Request" />
-        </AntTabs>
-        <TabPanel value={tabValue} index={0}>
-          <LiftInfo lift={lift} liftState={liftState} />
-        </TabPanel>
-        <TabPanel value={tabValue} index={1}>
-          {lift.levels && (
-            <LiftRequestForm
-              lift={lift}
-              availableDoorModes={requestDoorModes}
-              availableRequestTypes={requestModes}
-              doLiftRequest={doLiftRequest}
-            />
-          )}
-        </TabPanel>
-      </ItemAccordionDetails>
-    </Accordion>
-  );
-});
+    return (
+      <Accordion ref={ref} {...otherProps}>
+        <ItemAccordionSummary
+          title={lift.name}
+          status={liftState ? liftState.current_floor : 'N/A'}
+          classes={{ status: liftFloorLabelClass(liftState) }}
+        />
+        <ItemAccordionDetails>
+          <AntTabs variant="fullWidth" value={tabValue} onChange={handleTabChange}>
+            <AntTab label="Info" />
+            <AntTab label="Request" />
+          </AntTabs>
+          <TabPanel value={tabValue} index={0}>
+            <LiftInfo lift={lift} liftState={liftState} />
+          </TabPanel>
+          <TabPanel value={tabValue} index={1}>
+            {lift.levels && (
+              <LiftRequestForm
+                lift={lift}
+                availableDoorModes={requestDoorModes}
+                availableRequestTypes={requestModes}
+                doLiftRequest={doLiftRequest}
+              />
+            )}
+          </TabPanel>
+        </ItemAccordionDetails>
+      </Accordion>
+    );
+  }),
+);
 
 export default LiftAccordion;

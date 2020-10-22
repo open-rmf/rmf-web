@@ -1,3 +1,4 @@
+export * from './dispensers';
 export * from './doors';
 export * from './lifts';
 export * from './omni-panel';

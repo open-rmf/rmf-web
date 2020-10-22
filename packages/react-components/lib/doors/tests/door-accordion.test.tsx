@@ -1,5 +1,6 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import { fireEvent, render } from '@testing-library/react';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { DoorAccordion } from '..';
 
@@ -20,13 +21,13 @@ function makeDoor(door?: Partial<RomiCore.Door>): RomiCore.Door {
 test('triggers onDoorOpen callback when button is clicked', () => {
   const handleDoorOpen = jest.fn();
   const root = render(<DoorAccordion door={makeDoor()} doOpenDoor={handleDoorOpen} />);
-  fireEvent.click(root.getByTestId('open'));
+  userEvent.click(root.getByTestId('open'));
   expect(handleDoorOpen).toBeCalled();
 });
 
 test('triggers onDoorClose callback when button is clicked', () => {
   const handleDoorClose = jest.fn();
   const root = render(<DoorAccordion door={makeDoor()} doCloseDoor={handleDoorClose} />);
-  fireEvent.click(root.getByTestId('close'));
+  userEvent.click(root.getByTestId('close'));
   expect(handleDoorClose).toBeCalled();
 });
