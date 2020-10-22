@@ -2,10 +2,12 @@ import React from 'react';
 import { SpotlightValue } from './spotlight-value';
 import Debug from 'debug';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import { Button, Divider, makeStyles, Typography } from '@material-ui/core';
-import TaskManager from '../managers/task-manager';
-
-const debug = Debug('OmniPanel:NegotiationsPanel');
+import { makeStyles } from '@material-ui/core';
+import { TreeView } from '@material-ui/lab';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import { TaskSummaryPanelItem } from './task-summary-panel-item';
+const debug = Debug('OmniPanel:TaskSummaryPanel');
 
 export interface TaskSummaryPanelProps {
   allTasks: RomiCore.TaskSummary[];
@@ -26,80 +28,38 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryPanelProps) => {
     // TODO: spotlight
   }, [spotlight]);
 
-  const listItems = allTasks.map((task) => {
-    console.log(task);
-    const statusDetails = TaskManager.formatStatus(task.status);
-    const stateLabel = TaskManager.getStateLabel(task.state);
-    return (
-      <div key={task.task_id}>
-        <div className={classes.accordionDetailLine}>
-          <Typography variant="body1">TaskId: </Typography>
-          <Typography variant="body1" noWrap>
-            {task.task_id}
-          </Typography>
-        </div>
-        <Divider />
+  const [expanded, setExpanded] = React.useState<string[]>([]);
+  const [selected, setSelected] = React.useState<string[]>([]);
 
-        <div className={classes.accordionDetailLine}>
-          <Typography variant="body1">State:</Typography>
-          <Typography variant="body1">{stateLabel}</Typography>
-        </div>
-        <Divider />
+  const handleToggle = (event: React.ChangeEvent<{}>, nodeIds: string[]) => {
+    setExpanded(nodeIds);
+  };
 
-        <div className={classes.accordionDetailLine}>
-          <Typography variant="body1">Status:</Typography>
-          <div>
-            {statusDetails.map((detail) => {
-              return (
-                <>
-                  <Typography variant="body1"> {detail}</Typography>
-                  <Divider />
-                </>
-              );
-            })}
-          </div>
-        </div>
-        <Divider />
+  const handleSelect = (event: React.ChangeEvent<{}>, nodeIds: string[]) => {
+    setSelected(nodeIds);
+  };
 
-        <div className={classes.accordionDetailLine}>
-          <Typography variant="body1">Submission Time:</Typography>
-          <Typography variant="body1">{task.submission_time.sec}</Typography>
-        </div>
-        <Divider />
-
-        <div className={classes.accordionDetailLine}>
-          <Typography variant="body1">Start time:</Typography>
-          <Typography variant="body1">{task.start_time.sec}</Typography>
-        </div>
-        <Divider />
-
-        <div className={classes.accordionDetailLine}>
-          <Typography variant="body1">End Time:</Typography>
-          <Typography variant="body1">{task.end_time.sec}</Typography>
-        </div>
-        <div className={classes.buttonWrapper}>
-          <Button className={classes.button} variant="contained" color="primary">
-            {'Pause'}
-          </Button>
-        </div>
-      </div>
-    );
-  });
-
-  return <>{listItems}</>;
+  return (
+    <TreeView
+      className={classes.root}
+      onNodeSelect={handleSelect}
+      onNodeToggle={handleToggle}
+      defaultCollapseIcon={<ExpandMoreIcon />}
+      defaultExpanded={['root']}
+      defaultExpandIcon={<ChevronRightIcon />}
+      expanded={expanded}
+      selected={selected}
+    >
+      {allTasks.map((task) => (
+        <TaskSummaryPanelItem task={task} />
+      ))}
+    </TreeView>
+  );
 });
 
 const useStyles = makeStyles((theme) => ({
-  accordionDetailLine: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    padding: theme.spacing(0.5),
-  },
-  button: {
-    width: '100%',
-  },
-  buttonWrapper: {
-    padding: '1rem 0.5rem',
+  root: {
+    padding: '1rem',
   },
 }));
 
