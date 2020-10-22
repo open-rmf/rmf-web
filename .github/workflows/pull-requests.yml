@@ -52,9 +52,9 @@ jobs:
         with:
           node-version: 12
       - name: prepare
-        run:  #|
-          #docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
-          npm run sync:docker
+        # run: |
+          # docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
+          # npm run sync:docker
       - name: e2e test
         run: npm run test:e2e
         # docker-compose -f docker/docker-compose.yml up --exit-code-from e2e e2e
