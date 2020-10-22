@@ -51,7 +51,7 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 12
-      - name: prepare
+      # - name: prepare
         # run: |
           # docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
           # npm run sync:docker
