@@ -75,6 +75,34 @@ const BaseDoor = (props: BaseDoorProps) => {
   );
 };
 
+interface DummyDoorProps {
+  v1: [number, number];
+  v2: [number, number];
+}
+
+/**
+ * Because we are using stroke-dash in some of the classes, it makes it such that only
+ * the rendered line will be considered for click detection. To workaround it, we use
+ * a transparent door on top of the marker, this dummy door will be used to allow the
+ * full door to be clickable.
+ */
+const DummyDoor = (props: DummyDoorProps) => {
+  const { v1, v2 } = props;
+  const classes = useDoorStyles();
+
+  return (
+    <g>
+      <line
+        className={joinClasses(classes.base, classes.transparent)}
+        x1={v1[0]}
+        y1={v1[1]}
+        x2={v2[0]}
+        y2={v2[1]}
+      />
+    </g>
+  );
+};
+
 type DoorMarkerImplProps = Omit<DoorMarkerProps, 'onClick'>;
 
 /*
@@ -92,6 +120,7 @@ const SingleSwingDoor = (props: DoorMarkerImplProps) => {
   return (
     <>
       <BaseDoor v1={[door.v1_x, door.v1_y]} v2={[door.v2_x, door.v2_y]} className={doorStyle} />
+      <DummyDoor v1={[door.v1_x, door.v1_y]} v2={[door.v2_x, door.v2_y]} />
     </>
   );
 };
@@ -121,6 +150,7 @@ const DoubleSwingDoor = (props: DoorMarkerImplProps) => {
     <>
       <BaseDoor v1={[hingeX1, hingeY1]} v2={[extendX1, extendY1]} className={doorStyle} />
       <BaseDoor v1={[extendX1, extendY1]} v2={[hingeX2, hingeY2]} className={doorStyle} />
+      <DummyDoor v1={[hingeX1, hingeY1]} v2={[extendX1, extendY1]} />
     </>
   );
 };
@@ -140,14 +170,14 @@ const DoubleSlidingDoor = DoubleSwingDoor;
 export interface DoorMarkerProps extends React.SVGProps<SVGGElement> {
   door: RomiCore.Door;
   doorState?: RomiCore.DoorState;
-  onClick?(ev: React.MouseEvent<SVGGElement>): void;
 }
 
 export const DoorMarker = React.memo(
   React.forwardRef((props: DoorMarkerProps, ref: React.Ref<SVGGElement>) => {
-    const { door, doorState, onClick, className, ...otherProps } = props;
+    const { door, doorState, className, ...otherProps } = props;
     debug(`render ${door.name}`);
     const classes = useDoorStyles();
+    console.log(otherProps.onClick);
 
     const renderDoor = () => {
       switch (door.door_type) {
@@ -165,12 +195,7 @@ export const DoorMarker = React.memo(
     };
 
     return (
-      <g
-        ref={ref}
-        className={joinClasses(classes.marker, className)}
-        onClick={onClick}
-        {...otherProps}
-      >
+      <g ref={ref} className={joinClasses(classes.marker, className)} {...otherProps}>
         {renderDoor()}
       </g>
     );

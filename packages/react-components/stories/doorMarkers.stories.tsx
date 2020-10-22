@@ -6,7 +6,7 @@ import { DoorMarker } from '../lib';
 export default {
   title: 'Door Markers',
   component: DoorMarker,
-  parameters: { actions: { argTypesRegex: '^on.*' } },
+  argTypes: { onClick: { action: 'clicked' } },
 } as Meta;
 
 const baseDoor: RomiCore.Door = {
