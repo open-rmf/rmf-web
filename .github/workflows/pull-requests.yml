@@ -41,7 +41,7 @@ jobs:
       image: docker.pkg.github.com/osrf/romi-dashboard/e2e
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock
-        - '..:/root/romi-dashboard'
+        - root/romi-dashboard
       credentials: 
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
