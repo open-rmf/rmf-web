@@ -2,15 +2,9 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { LoopRequestForm } from '..';
+import { availablePlaces, fleets } from './test-data';
 
 describe('Form validation', () => {
-  const fleets = ['fleetA', 'fleetB'];
-
-  const availablePlaces = {
-    fleetA: ['placeA', 'placeB'],
-    fleetB: ['placeB', 'placeC'],
-  };
-
   let doLoopRequest: ReturnType<typeof jest.fn>;
   let root: ReturnType<typeof renderForm>;
 

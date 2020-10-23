@@ -1,35 +1,9 @@
-import { Button, makeStyles, TextField } from '@material-ui/core';
+import { Button, TextField } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import React from 'react';
+import { useFormStyles } from './form-styles';
 
-export const useStyles = makeStyles((theme) => ({
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    width: '100%',
-  },
-  divForm: {
-    padding: '0.46rem',
-    paddingRight: '0.5rem',
-    width: '100%',
-  },
-  error: {
-    color: theme.palette.error.main,
-  },
-  input: {
-    width: '100%',
-  },
-  button: {
-    width: '100%',
-  },
-  buttonContainer: {
-    paddingTop: '0.5rem',
-    paddingLeft: '0.5rem',
-    width: '100%',
-  },
-}));
-
-export type LoopRequest = (
+export type DoLoopRequest = (
   fleetName: string,
   numLoops: number,
   startLocationPoint: string,
@@ -38,13 +12,13 @@ export type LoopRequest = (
 
 export interface LoopRequestFormProps {
   fleetNames: string[];
-  availablePlaces: Record<string, string[]>;
-  doLoopRequest?: LoopRequest;
+  availablePlaces(fleet: string): string[];
+  doLoopRequest?: DoLoopRequest;
 }
 
 export const LoopRequestForm = (props: LoopRequestFormProps): JSX.Element => {
   const { fleetNames, availablePlaces, doLoopRequest } = props;
-  const classes = useStyles();
+  const classes = useFormStyles();
 
   const [targetFleetName, setTargetFleetName] = React.useState(
     fleetNames.length >= 1 ? fleetNames[0] : '',
@@ -52,7 +26,7 @@ export const LoopRequestForm = (props: LoopRequestFormProps): JSX.Element => {
 
   const [numLoops, setNumLoops] = React.useState(0);
   const [listOfPlaces, setListOfPlaces] = React.useState(
-    targetFleetName ? availablePlaces[targetFleetName] : [],
+    targetFleetName ? availablePlaces(targetFleetName) : [],
   );
   const [startLocation, setStartLocation] = React.useState(
     listOfPlaces && listOfPlaces.length >= 2 ? listOfPlaces[0] : '',
@@ -62,7 +36,7 @@ export const LoopRequestForm = (props: LoopRequestFormProps): JSX.Element => {
   );
 
   React.useEffect(() => {
-    setListOfPlaces(availablePlaces[targetFleetName] || []);
+    setListOfPlaces(availablePlaces(targetFleetName) || []);
   }, [targetFleetName, availablePlaces]);
 
   React.useEffect(() => {
@@ -81,7 +55,7 @@ export const LoopRequestForm = (props: LoopRequestFormProps): JSX.Element => {
   const cleanUpForm = () => {
     setTargetFleetName(targetFleetName);
     setNumLoops(0);
-    setListOfPlaces(targetFleetName ? availablePlaces[targetFleetName] : []);
+    setListOfPlaces(targetFleetName ? availablePlaces(targetFleetName) : []);
     setStartLocation(listOfPlaces && listOfPlaces.length >= 2 ? listOfPlaces[0] : '');
     setFinishLocation(listOfPlaces && listOfPlaces.length >= 2 ? listOfPlaces[1] : '');
     cleanUpError();
