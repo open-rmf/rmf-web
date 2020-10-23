@@ -53,10 +53,11 @@ jobs:
         with:
           node-version: 12
       - name: prepare
+        # chmod +x /root/romi-dashboard/packages/dashboard/e2e/install/setup.bash
         run: |
           docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
           npm run sync:docker
-          sudo . /root/romi-dashboard/packages/dashboard/e2e/install/setup.bash
+          sudo /root/romi-dashboard/packages/dashboard/e2e/install/setup.bash
       - name: e2e test
         run:  npm run test:e2e
       - name: upload artifacts
