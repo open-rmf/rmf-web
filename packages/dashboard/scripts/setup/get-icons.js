@@ -102,6 +102,8 @@ class IconManager extends IconManagerBase {
   };
 
   cloneSpecificFolder = () => {
+    // Safeguard in case the tmp is not deleted and already have a remote defined
+    this.removeTmpFolder();
     this.createTmpFolder();
     exec(`git --version`, (error, stdout, stderr) => {
       if (error) {
