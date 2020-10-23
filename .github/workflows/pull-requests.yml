@@ -57,7 +57,7 @@ jobs:
         run: |
           docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
           npm run sync:docker
-          chmod +x . /root/rmf_entrypoint.bash
+          . /rmf_entrypoint.bash
       - name: e2e test
         run:  npm run test:e2e
       - name: upload artifacts
