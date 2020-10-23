@@ -94,13 +94,13 @@ const DoorInfo = (props: DoorInfoProps) => {
 export interface DoorAccordionProps extends Omit<AccordionProps, 'children'> {
   door: RomiCore.Door;
   doorState?: RomiCore.DoorState;
-  doOpenDoor?(door: RomiCore.Door): void;
-  doCloseDoor?(door: RomiCore.Door): void;
+  onCloseClick?(ev: React.MouseEvent): void;
+  onOpenClick?(ev: React.MouseEvent): void;
 }
 
 export const DoorAccordion = React.memo(
   React.forwardRef((props: DoorAccordionProps, ref: React.Ref<HTMLElement>) => {
-    const { door, doorState, doOpenDoor, doCloseDoor, ...otherProps } = props;
+    const { door, doorState, onCloseClick, onOpenClick, ...otherProps } = props;
     debug(`render ${door.name}`);
     const classes = useStyles();
 
@@ -123,15 +123,6 @@ export const DoorAccordion = React.memo(
       [classes],
     );
 
-    const handleCloseClick = React.useCallback(() => doCloseDoor && doCloseDoor(door), [
-      door,
-      doCloseDoor,
-    ]);
-    const handleOpenClick = React.useCallback(() => doOpenDoor && doOpenDoor(door), [
-      door,
-      doOpenDoor,
-    ]);
-
     return (
       <Accordion ref={ref} {...otherProps}>
         <ItemAccordionSummary
@@ -142,10 +133,10 @@ export const DoorAccordion = React.memo(
         <ItemAccordionDetails>
           <DoorInfo door={door} />
           <ButtonGroup className={classes.controlButtonGroup} fullWidth>
-            <Button disabled={!doOpenDoor} onClick={handleOpenClick} data-testid="open">
+            <Button disabled={!onCloseClick} onClick={onCloseClick}>
               Close
             </Button>
-            <Button disabled={!doCloseDoor} onClick={handleCloseClick} data-testid="close">
+            <Button disabled={!onOpenClick} onClick={onOpenClick}>
               Open
             </Button>
           </ButtonGroup>

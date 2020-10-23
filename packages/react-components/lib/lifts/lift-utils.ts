@@ -44,9 +44,9 @@ export function motionStateToString(motionState: number): string {
 }
 
 export const requestModes = [
-  RomiCore.LiftRequest.REQUEST_END_SESSION,
   RomiCore.LiftRequest.REQUEST_AGV_MODE,
   RomiCore.LiftRequest.REQUEST_HUMAN_MODE,
+  RomiCore.LiftRequest.REQUEST_END_SESSION,
 ];
 
 export const requestModeStrings: Record<number, string> = {

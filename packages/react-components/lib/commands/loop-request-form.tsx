@@ -142,6 +142,7 @@ export const LoopRequestForm = (props: LoopRequestFormProps): JSX.Element => {
             <TextField
               {...params}
               label="Choose Target Fleet"
+              placeholder="Choose Target Fleet"
               variant="outlined"
               error={!!targetFleetNameError}
               helperText={targetFleetNameError}
@@ -149,12 +150,10 @@ export const LoopRequestForm = (props: LoopRequestFormProps): JSX.Element => {
             />
           )}
           value={targetFleetName ? targetFleetName : null}
-          data-testid="targetFleet"
         />
       </div>
       <div className={classes.divForm}>
         <TextField
-          data-testid="numLoops"
           name="numLoops"
           onChange={(e) => {
             setNumLoops(e.target.value ? parseInt(e.target.value) : 0);
@@ -175,11 +174,11 @@ export const LoopRequestForm = (props: LoopRequestFormProps): JSX.Element => {
           getOptionLabel={(option) => option}
           onChange={(_, value) => setStartLocation(value || '')}
           options={listOfPlaces ? listOfPlaces : []}
-          data-testid="startLocation"
           renderInput={(params) => (
             <TextField
               {...params}
               label="Pick Start Location"
+              placeholder="Pick Start Location"
               variant="outlined"
               error={!!startLocationError}
               helperText={startLocationError}
@@ -195,11 +194,11 @@ export const LoopRequestForm = (props: LoopRequestFormProps): JSX.Element => {
           getOptionLabel={(option) => option}
           onChange={(_, value) => setFinishLocation(value || '')}
           options={listOfPlaces ? listOfPlaces : []}
-          data-testid="finishLocation"
           renderInput={(params) => (
             <TextField
               {...params}
               label="Pick Finish Location"
+              placeholder="Pick Finish Location"
               variant="outlined"
               error={!!finishLocationError}
               helperText={finishLocationError}

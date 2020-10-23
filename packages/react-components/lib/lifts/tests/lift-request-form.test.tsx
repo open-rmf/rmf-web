@@ -1,4 +1,5 @@
-import { fireEvent, render } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { LiftRequestForm } from '..';
 import { requestDoorModes, requestModes } from '../lift-utils';
@@ -27,26 +28,22 @@ beforeEach(() => {
 });
 
 test('resets form after submitting', () => {
-  const initialDestinationHtml = root.getByTestId('destination').outerHTML;
-  const initialDoorStateHtml = root.getByTestId('door-state').outerHTML;
-  const initialRequestTypeHtml = root.getByTestId('request-type').outerHTML;
+  userEvent.click(root.getByPlaceholderText('Pick a Destination'));
+  userEvent.click(within(screen.getByRole('listbox')).getByText('L2'));
+  userEvent.click(root.getByPlaceholderText('Pick a Door State'));
+  userEvent.click(within(screen.getByRole('listbox')).getByText('Closed'));
+  userEvent.click(root.getByPlaceholderText('Pick Request Type'));
+  userEvent.click(within(screen.getByRole('listbox')).getByText('Human'));
 
-  fireEvent.submit(root.getByTestId('request-form'));
+  userEvent.click(root.getByText('Request'));
 
-  expect(root.getByTestId('destination').outerHTML).toBe(initialDestinationHtml);
-  expect(root.getByTestId('door-state').outerHTML).toBe(initialDoorStateHtml);
-  expect(root.getByTestId('request-type').outerHTML).toBe(initialRequestTypeHtml);
+  expect(root.getByPlaceholderText('Pick a Destination').getAttribute('value')).toBe('L1');
+  expect(root.getByPlaceholderText('Pick a Door State').getAttribute('value')).toBe('Open');
+  expect(root.getByPlaceholderText('Pick Request Type').getAttribute('value')).toBe('AGV');
 });
 
 test('destination is required', () => {
-  const autocomplete = root.getByTestId('destination');
-  const input = autocomplete.querySelector('input');
-  if (!input) {
-    fail('destination value element not found');
-  }
-  fireEvent.change(input, {
-    target: { value: '' },
-  });
-  fireEvent.submit(root.getByTestId('request-form'));
-  expect(root.container.querySelectorAll('[data-error]')).toHaveLength(1);
+  userEvent.type(root.getByPlaceholderText('Pick a Destination'), '{selectall}{backspace}');
+  userEvent.click(root.getByText('Request'));
+  expect(root.container.querySelector('.MuiFormHelperText-root.Mui-error')).toBeTruthy();
 });

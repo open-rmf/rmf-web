@@ -5,7 +5,7 @@ export function makeLift(lift?: Partial<RomiCore.Lift>): RomiCore.Lift {
     name: 'test',
     depth: 0,
     doors: [],
-    levels: ['test'],
+    levels: ['L1', 'L2'],
     ref_x: 0,
     ref_y: 0,
     ref_yaw: 0,

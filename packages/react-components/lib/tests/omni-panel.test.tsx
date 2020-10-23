@@ -15,21 +15,21 @@ function TestPanel(props: Omit<OmniPanelProps, 'view' | 'children'>) {
 test('triggers onBack callback', () => {
   const handler = jest.fn();
   const root = render(<TestPanel onBack={handler} />);
-  userEvent.click(root.getByTestId('back-button'));
+  userEvent.click(root.getByLabelText('Back'));
   expect(handler).toHaveBeenCalled();
 });
 
 test('triggers onHome callback', () => {
   const handler = jest.fn();
   const root = render(<TestPanel onHome={handler} />);
-  userEvent.click(root.getByTestId('home-button'));
+  userEvent.click(root.getByLabelText('Home'));
   expect(handler).toHaveBeenCalled();
 });
 
 test('triggers onClose callback', () => {
   const handler = jest.fn();
   const root = render(<TestPanel variant="backHomeClose" onClose={handler} />);
-  userEvent.click(root.getByTestId('close-button'));
+  userEvent.click(root.getByLabelText('Close'));
   expect(handler).toHaveBeenCalled();
 });
 

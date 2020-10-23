@@ -90,7 +90,7 @@ export const LiftRequestForm = (props: LiftRequestFormProps): JSX.Element => {
   };
 
   return (
-    <form className={classes.form} onSubmit={handleLiftRequest} data-testid="request-form">
+    <form className={classes.form} onSubmit={handleLiftRequest}>
       <div className={classes.divForm}>
         <Autocomplete
           getOptionLabel={(option) => option}
@@ -100,14 +100,13 @@ export const LiftRequestForm = (props: LiftRequestFormProps): JSX.Element => {
             <TextField
               {...params}
               label="Pick a Destination"
+              placeholder="Pick a Destination"
               variant="outlined"
               error={!!destinationError}
               helperText={destinationError}
             />
           )}
           value={destination}
-          data-testid="destination"
-          data-error={destinationError || undefined}
         />
       </div>
 
@@ -120,13 +119,13 @@ export const LiftRequestForm = (props: LiftRequestFormProps): JSX.Element => {
             <TextField
               {...params}
               label="Pick a Door State"
+              placeholder="Pick a Door State"
               variant="outlined"
               error={!!doorStateError}
               helperText={doorStateError}
             />
           )}
           value={doorState}
-          data-testid="door-state"
         />
       </div>
 
@@ -139,19 +138,19 @@ export const LiftRequestForm = (props: LiftRequestFormProps): JSX.Element => {
             <TextField
               {...params}
               label="Pick Request Type"
+              placeholder="Pick Request Type"
               variant="outlined"
               error={!!requestTypeError}
               helperText={requestTypeError}
             />
           )}
           value={requestType}
-          data-testid="request-type"
         />
       </div>
 
       <div className={classes.buttonContainer}>
         <Button variant="contained" color="primary" type="submit" className={classes.button}>
-          {'Request'}
+          Request
         </Button>
       </div>
     </form>

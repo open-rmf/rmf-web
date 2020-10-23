@@ -1,6 +1,4 @@
-import { makeStyles } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import ButtonGroup from '@material-ui/core/ButtonGroup';
+import { Divider, IconButton, makeStyles } from '@material-ui/core';
 import Slide from '@material-ui/core/Slide';
 import CloseIcon from '@material-ui/icons/Close';
 import HomeIcon from '@material-ui/icons/Home';
@@ -27,6 +25,10 @@ const useStyles = makeStyles(() => ({
   },
   navigationButton: {
     borderRadius: 'inherit',
+    flexGrow: 1,
+  },
+  navigationButtonContainer: {
+    display: 'flex',
   },
 }));
 
@@ -73,34 +75,20 @@ export const OmniPanel = (props: OmniPanelProps): JSX.Element => {
   return (
     <div {...otherProps}>
       <div className={classes_.mainContainer}>
-        <ButtonGroup className={classes_.navigationButton} variant="text" fullWidth>
-          <Button
-            className={classes_.navigationButton}
-            size="large"
-            onClick={onBack}
-            data-testid="back-button"
-          >
+        <div className={classes_.navigationButtonContainer}>
+          <IconButton className={classes_.navigationButton} onClick={onBack} aria-label="Back">
             <BackIcon />
-          </Button>
-          <Button
-            className={classes_.navigationButton}
-            size="large"
-            onClick={onHome}
-            data-testid="home-button"
-          >
+          </IconButton>
+          <Divider orientation="vertical" />
+          <IconButton className={classes_.navigationButton} onClick={onHome} aria-label="Home">
             <HomeIcon />
-          </Button>
+          </IconButton>
           {variant === 'backHomeClose' && (
-            <Button
-              className={classes_.navigationButton}
-              size="large"
-              onClick={onClose}
-              data-testid="close-button"
-            >
+            <IconButton className={classes_.navigationButton} onClick={onClose} aria-label="Close">
               <CloseIcon />
-            </Button>
+            </IconButton>
           )}
-        </ButtonGroup>
+        </div>
         <div className={classes_.viewContainer}>
           {Array.isArray(children) ? children.map(renderView) : renderView(children)}
         </div>
