@@ -2,4 +2,11 @@ coverage:
   status:
     project: false
     patch: false
-    
+flags:
+  dashboard:
+    paths:
+      - packages/dashboard
+    api-server:
+      - packages/api-server
+    react-components:
+      - packages/react-components
