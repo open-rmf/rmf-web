@@ -57,7 +57,7 @@ jobs:
         run: |
           docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
           npm run sync:docker
-          source /root/romi-dashboard/packages/dashboard/e2e/install/setup.bash
+          chmod +x ./root/romi-dashboard/packages/dashboard/e2e/install/setup.bash
       - name: e2e test
         run:  npm run test:e2e
       - name: upload artifacts
