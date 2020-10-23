@@ -132,6 +132,13 @@ const SingleSwingDoor = (props: DoorMarkerImplProps) => {
  */
 const SingleSlidingDoor = SingleSwingDoor;
 
+/*
+ * single/double telescoping doors:
+ *   * common in elevators; same parameters as sliding doors; they just
+ *     open/close faster and take up less space inside the wall.
+ */
+const SingleTelescopeDoor = SingleSwingDoor;
+
 /**
  * Double hinge doors:
  * - hinges are located at both (v1_x, v1_y) and (v2_x, v2_y)
@@ -162,6 +169,13 @@ const DoubleSwingDoor = (props: DoorMarkerImplProps) => {
  */
 const DoubleSlidingDoor = DoubleSwingDoor;
 
+/*
+ * single/double telescoping doors:
+ *   * common in elevators; same parameters as sliding doors; they just
+ *     open/close faster and take up less space inside the wall.
+ */
+const DoubleTelescopeDoor = DoubleSwingDoor;
+
 /**
  * door: Door information provided by the map.
  * doorState: Current state of the door.
@@ -184,10 +198,14 @@ export const DoorMarker = React.memo(
           return <SingleSwingDoor door={door} doorState={doorState} />;
         case RomiCore.Door.DOOR_TYPE_SINGLE_SLIDING:
           return <SingleSlidingDoor door={door} doorState={doorState} />;
+        case RomiCore.Door.DOOR_TYPE_SINGLE_TELESCOPE:
+          return <SingleTelescopeDoor door={door} doorState={doorState} />;
         case RomiCore.Door.DOOR_TYPE_DOUBLE_SWING:
           return <DoubleSwingDoor door={door} doorState={doorState} />;
         case RomiCore.Door.DOOR_TYPE_DOUBLE_SLIDING:
           return <DoubleSlidingDoor door={door} doorState={doorState} />;
+        case RomiCore.Door.DOOR_TYPE_DOUBLE_TELESCOPE:
+          return <DoubleTelescopeDoor door={door} doorState={doorState} />;
         default:
           return null;
       }

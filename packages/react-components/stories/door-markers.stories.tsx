@@ -2,64 +2,13 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { DoorMarker } from '../lib';
+import { makeDoor, makeDoorState } from '../lib/doors/tests/test-utils';
 
 export default {
   title: 'Door Markers',
   component: DoorMarker,
   argTypes: { onClick: { action: 'clicked' } },
 } as Meta;
-
-const baseDoor: RomiCore.Door = {
-  name: 'test',
-  v1_x: 0,
-  v1_y: 0,
-  v2_x: 1,
-  v2_y: 1,
-  door_type: RomiCore.Door.DOOR_TYPE_SINGLE_SWING,
-  motion_range: -1.571,
-  motion_direction: 1,
-};
-
-const singleSwingDoor: RomiCore.Door = {
-  ...baseDoor,
-  door_type: RomiCore.Door.DOOR_TYPE_SINGLE_SWING,
-};
-
-const singleSlidingDoor: RomiCore.Door = {
-  ...baseDoor,
-  door_type: RomiCore.Door.DOOR_TYPE_SINGLE_SLIDING,
-};
-
-const doubleSwingDoor: RomiCore.Door = {
-  ...baseDoor,
-  door_type: RomiCore.Door.DOOR_TYPE_DOUBLE_SWING,
-};
-
-const doubleSlidingDoor: RomiCore.Door = {
-  ...baseDoor,
-  door_type: RomiCore.Door.DOOR_TYPE_DOUBLE_SLIDING,
-};
-
-const baseState: RomiCore.DoorState = {
-  door_name: 'test',
-  current_mode: { value: RomiCore.DoorMode.MODE_OPEN },
-  door_time: { sec: 0, nanosec: 0 },
-};
-
-const openState: RomiCore.DoorState = {
-  ...baseState,
-  current_mode: { value: RomiCore.DoorMode.MODE_OPEN },
-};
-
-const movingState: RomiCore.DoorState = {
-  ...baseState,
-  current_mode: { value: RomiCore.DoorMode.MODE_MOVING },
-};
-
-const closedState: RomiCore.DoorState = {
-  ...baseState,
-  current_mode: { value: RomiCore.DoorMode.MODE_CLOSED },
-};
 
 function makeStory(door: RomiCore.Door, doorState?: RomiCore.DoorState): Story {
   return (args) => (
@@ -69,11 +18,33 @@ function makeStory(door: RomiCore.Door, doorState?: RomiCore.DoorState): Story {
   );
 }
 
-export const SingleSwing = makeStory(singleSwingDoor);
-export const SingleSliding = makeStory(singleSlidingDoor);
-export const DoubleSwing = makeStory(doubleSwingDoor);
-export const DoubleSliding = makeStory(doubleSlidingDoor);
+export const SingleSwing = makeStory(makeDoor({ door_type: RomiCore.Door.DOOR_TYPE_SINGLE_SWING }));
+export const SingleSliding = makeStory(
+  makeDoor({ door_type: RomiCore.Door.DOOR_TYPE_SINGLE_SLIDING }),
+);
+export const SingleTelescope = makeStory(
+  makeDoor({ door_type: RomiCore.Door.DOOR_TYPE_SINGLE_TELESCOPE }),
+);
+export const DoubleSwing = makeStory(makeDoor({ door_type: RomiCore.Door.DOOR_TYPE_DOUBLE_SWING }));
+export const DoubleSliding = makeStory(
+  makeDoor({ door_type: RomiCore.Door.DOOR_TYPE_DOUBLE_SLIDING }),
+);
+export const DoubleTelescope = makeStory(
+  makeDoor({ door_type: RomiCore.Door.DOOR_TYPE_DOUBLE_TELESCOPE }),
+);
 
-export const Opened = makeStory(baseDoor, openState);
-export const Moving = makeStory(baseDoor, movingState);
-export const Closed = makeStory(baseDoor, closedState);
+export const SingleSwingOpened = makeStory(
+  makeDoor(),
+  makeDoorState({ current_mode: { value: RomiCore.DoorMode.MODE_OPEN } }),
+);
+SingleSwingOpened.storyName = 'Single Swing (Opened)';
+export const SingleSwingMoving = makeStory(
+  makeDoor(),
+  makeDoorState({ current_mode: { value: RomiCore.DoorMode.MODE_MOVING } }),
+);
+SingleSwingMoving.storyName = 'Single Swing (Moving)';
+export const SingleSwingClosed = makeStory(
+  makeDoor(),
+  makeDoorState({ current_mode: { value: RomiCore.DoorMode.MODE_CLOSED } }),
+);
+SingleSwingClosed.storyName = 'Single Swing (Closed)';

@@ -38,9 +38,11 @@ function doorTypeToString(doorType: number): string {
     case RomiCore.Door.DOOR_TYPE_DOUBLE_TELESCOPE:
       return 'Double Telescope';
     case RomiCore.Door.DOOR_TYPE_SINGLE_SLIDING:
-      return 'Sliding';
+      return 'Single Sliding';
+    case RomiCore.Door.DOOR_TYPE_SINGLE_SWING:
+      return 'Single Swing';
     case RomiCore.Door.DOOR_TYPE_SINGLE_TELESCOPE:
-      return 'Telescope';
+      return 'Single Telescope';
     default:
       return `Unknown (${doorType})`;
   }
@@ -84,7 +86,7 @@ const DoorInfo = (props: DoorInfoProps) => {
     { name: 'Name', value: door.name },
     { name: 'Type', value: doorTypeToString(door.door_type) },
     { name: 'Motion Direction', value: motionDirectionToString(door.motion_direction) },
-    { name: 'Motion Range', value: door.motion_range },
+    { name: 'Motion Range', value: door.motion_range.toFixed(3) },
     { name: 'Location', value: `(${door.v1_x.toFixed(3)}, ${door.v1_y.toFixed(3)})` },
   ] as SimpleInfoData[];
 
