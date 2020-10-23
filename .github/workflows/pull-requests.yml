@@ -37,6 +37,12 @@ jobs:
   e2e-test:
     name: End-to-End Test
     runs-on: ubuntu-latest
+    services:
+      dashboard:
+        image: docker.pkg.github.com/osrf/romi-dashboard/e2e
+        credentials:
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
     defaults:
       run:
         shell: bash
@@ -52,7 +58,6 @@ jobs:
           npm run sync:docker
       - name: e2e test
         run: npm run test:e2e
-        # docker-compose -f docker/docker-compose.yml up --exit-code-from e2e e2e
       - name: upload artifacts
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
