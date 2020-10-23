@@ -56,8 +56,12 @@ jobs:
         run: |
           docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
           npm run sync:docker
+      - name: source foxy
+        run: . /opt/ros/foxy/setup.bash
+      # - name: source rmf
+      #   run: . /
       - name: e2e test
-        run:  source ~/install/setup.bash && npm run test:e2e
+        run:  npm run test:e2e
       - name: upload artifacts
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
