@@ -78,3 +78,19 @@ jobs:
         run: . /opt/ros/foxy/setup.bash && npm ci && npm run build
       - name: test
         run: . /opt/ros/foxy/setup.bash && npm test
+  react-component-test:
+    name: React Component Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: packages/react-components
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - name: set npm config
+        run: npm config set unsafe-perm=true
+      - name: test
+        run: npm ci && npm run test:coverage
