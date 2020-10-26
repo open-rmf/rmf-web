@@ -56,7 +56,7 @@ jobs:
           docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
           npm run sync:docker
       - name: install node modules
-        run: . /opt/ros/foxy/setup.bash && . /opt/rmf/setup.bash && bash -c 'npm ci'
+        run: . /opt/ros/foxy/setup.bash && . /opt/rmf/setup.bash && bash -c 'npm ci --unsafe-perm'
       - name: e2e test
         run:  npm run test:e2e
       - name: upload artifacts
