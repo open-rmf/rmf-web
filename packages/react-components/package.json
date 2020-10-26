@@ -4,9 +4,9 @@
   "description": "",
   "main": "lib/index.js",
   "scripts": {
-    "start": "start-storybook -p 6006",
+    "start": "start-storybook -p 6006 -s stories",
     "build": "tsc --build",
-    "build:storybook": "build-storybook",
+    "build:storybook": "build-storybook -s stories",
     "clean": "tsc --build --clean",
     "test": "jest --watchAll",
     "test:coverage": "jest --coverage"
@@ -37,6 +37,7 @@
     "eslint": "^7.11.0",
     "eslint-plugin-react": "^7.21.4",
     "eslint-plugin-react-hooks": "^4.1.2",
+    "fontsource-roboto": "^3.0.3",
     "jest": "^26.5.2",
     "react": "^16.13.1",
     "react-is": "^16.13.1",

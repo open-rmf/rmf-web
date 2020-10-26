@@ -1,3 +1,4 @@
+export * from './auth';
 export * from './commands';
 export * from './dispensers';
 export * from './doors';
