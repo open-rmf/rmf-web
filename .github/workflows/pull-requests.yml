@@ -42,10 +42,6 @@ jobs:
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
-      volumes:
-        - /var/run/docker.sock:/var/run/docker.sock
-        - /root/romi-dashboard:/root/romi-dashboard
-        - /root/romi-dashboard/packages/dashboard/e2e:/root/romi-dashboard/packages/dashboard/e2e
     defaults:
       run:
         shell: bash
@@ -59,6 +55,8 @@ jobs:
         run: |
           docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
           npm run sync:docker
+      - name: install node modules
+        run: npm ci
       - name: e2e test
         run:  . /opt/ros/foxy/setup.bash && . /opt/rmf/setup.bash && npm run test:e2e
       - name: upload artifacts
