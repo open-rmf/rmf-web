@@ -8,7 +8,7 @@ import { Element } from '@wdio/sync';
 export function overwriteClick() {
   browser.overwriteCommand(
     'click',
-    function(this: Element, origClick) {
+    function (this: Element, origClick) {
       let prevLocation = this.getLocation();
       this.waitUntil(() => {
         const newLocation = this.getLocation();
@@ -39,7 +39,7 @@ export function removeTextFromAutocomplete(characterNum: number): string {
  */
 export const getRobotLocations = (browser: WebdriverIO.BrowserObject): string[] => {
   const allRobotItems = browser.custom$$('findAllRobots', '[data-component=RobotItem]');
-  let robotLocations = allRobotItems.map(robot => {
+  let robotLocations = allRobotItems.map((robot) => {
     robot.click();
     return robot.$('[data-role=position]').getHTML();
   });
@@ -53,3 +53,49 @@ export function login(): void {
   $('#password').setValue('admin');
   $('#kc-login').click();
 }
+
+/**
+ * Open loop form
+ * Make sure that the OmniPanel is visible and in the root to run this.
+ */
+export const openRequestForm = () => {
+  $('[data-component=MainMenu] [data-item=Commands]').click();
+
+  const loopForm = $('[data-component=LoopForm]');
+  loopForm.click();
+};
+
+interface E2eRequestLoopProps {
+  pointA: string;
+  pointB: string;
+  loopNumber?: number;
+  charsToRemoveFromPointA?: number;
+  charsToRemoveFromPointB?: number;
+}
+
+/**
+ * Request a loop task to the robots.
+ * Make sure that the OmniPanel is visible and it placed on the loop form.
+ */
+export const requestLoop = (props: E2eRequestLoopProps): void => {
+  const { pointA, pointB, loopNumber, charsToRemoveFromPointA, charsToRemoveFromPointB } = props;
+  const loopForm = $('[data-component=LoopForm]');
+
+  $('input[name=startLocation]').waitForClickable();
+  $('input[name=startLocation]').setValue(
+    removeTextFromAutocomplete(charsToRemoveFromPointA || 10),
+  );
+  $('input[name=startLocation]').setValue(pointA);
+  $('.MuiAutocomplete-popper').click();
+
+  $('input[name=finishLocation]').waitForClickable();
+  $('input[name=finishLocation]').setValue(
+    removeTextFromAutocomplete(charsToRemoveFromPointB || 20),
+  );
+  $('input[name=finishLocation]').setValue(pointB);
+  $('.MuiAutocomplete-popper').click();
+
+  $('input[name=numLoops]').waitForClickable();
+  $('input[name=numLoops]').setValue(loopNumber || 1);
+  loopForm.$('button=Request').click();
+};
