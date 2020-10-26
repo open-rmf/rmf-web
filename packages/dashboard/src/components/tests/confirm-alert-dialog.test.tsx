@@ -1,16 +1,16 @@
-import { mount } from 'enzyme';
+import { mount, shallow } from 'enzyme';
 import React from 'react';
 import { ConfirmAlertDialog } from '../confirm-alert-dialog';
 
 describe('Verification Alert', () => {
   test('Correct generation of default params values', () => {
-    const root = mount(<ConfirmAlertDialog open={true}></ConfirmAlertDialog>);
+    const root = shallow(<ConfirmAlertDialog open={true}></ConfirmAlertDialog>);
     expect(root).toMatchSnapshot();
     root.unmount();
   });
 
   test('Correct render with custom params values', () => {
-    const root = mount(
+    const root = shallow(
       <ConfirmAlertDialog
         open={true}
         title={'test'}
