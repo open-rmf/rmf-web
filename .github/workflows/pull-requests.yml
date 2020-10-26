@@ -57,8 +57,9 @@ jobs:
           npm run sync:docker
       - name: e2e test
         run: |
-          . /opt/ros/foxy/setup.bash && . /opt/rmf/setup.bash && bash
+          . /opt/ros/foxy/setup.bash && . /opt/rmf/setup.bash
           bash -c 'npm ci --unsafe-perm'
+          cd e2e && 'npm ci --unsafe-perm'
           npm run test:e2e
       - name: upload artifacts
         uses: actions/upload-artifact@v2
