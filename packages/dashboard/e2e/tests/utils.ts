@@ -56,7 +56,7 @@ export function login(): void {
 
 /**
  * Open loop form
- * Make sure that the OmniPanel is visible and in the root to run this.
+ * Obs: Make sure that the OmniPanel is visible and in the root to run this.
  */
 export const openRequestForm = () => {
   $('[data-component=MainMenu] [data-item=Commands]').click();
@@ -75,7 +75,7 @@ interface E2eRequestLoopProps {
 
 /**
  * Request a loop task to the robots.
- * Make sure that the OmniPanel is visible and it placed on the loop form.
+ * Obs: Make sure that the OmniPanel is visible and it's placed on the loop form.
  */
 export const requestLoop = (props: E2eRequestLoopProps): void => {
   const { pointA, pointB, loopNumber, charsToRemoveFromPointA, charsToRemoveFromPointB } = props;
