@@ -15,6 +15,7 @@ concurrently(
   [
     'cd .. && npm run start:api',
     'cd .. && npm run start:auth',
+    'docker run -itd --network=${{ job.container.network }} romidashboarde2e_auth_1',
     'npm:start:react',
     `node auth-ready.js && wdio ${wdioArgs}`,
   ],
