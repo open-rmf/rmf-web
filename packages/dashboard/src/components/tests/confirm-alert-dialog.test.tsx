@@ -9,7 +9,7 @@ describe('Verification Alert', () => {
     root.unmount();
   });
 
-  test('Correct generation of custom params values', () => {
+  test('Correct render with custom params values', () => {
     const root = mount(
       <ConfirmAlertDialog
         open={true}

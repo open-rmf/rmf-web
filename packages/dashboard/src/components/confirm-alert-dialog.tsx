@@ -30,7 +30,6 @@ export interface ConfirmAlertDialogProps extends DialogProps {
 /**
  * Modal to warn a user about something related to an action.
  */
-
 export const ConfirmAlertDialog = React.forwardRef(function (
   props: ConfirmAlertDialogProps,
   ref: React.Ref<HTMLElement>,

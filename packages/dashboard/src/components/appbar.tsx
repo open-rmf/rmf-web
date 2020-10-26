@@ -24,7 +24,7 @@ export interface AppBarProps {
 }
 
 export default function AppBar(props: AppBarProps): React.ReactElement {
-  const { toggleShowOmniPanel, showSettings, showHelp, alarmState } = props;
+  const { toggleShowOmniPanel, showSettings, showHelp } = props;
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const classes = useStyles();
   const authenticator = React.useContext(AuthenticatorContext);

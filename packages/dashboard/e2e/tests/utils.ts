@@ -53,24 +53,3 @@ export function login(): void {
   $('#password').setValue('admin');
   $('#kc-login').click();
 }
-
-export const requestLoop = (pointA: string, pointB: string, loopNumber: number = 1) => {
-  $('[data-component=MainMenu] [data-item=Commands]').click();
-
-  const loopForm = $('[data-component=LoopForm]');
-  loopForm.click();
-
-  $('input[name=startLocation]').waitForClickable();
-  $('input[name=startLocation]').setValue(removeTextFromAutocomplete(10));
-  $('input[name=startLocation]').setValue(pointA);
-  $('.MuiAutocomplete-popper').click();
-
-  $('input[name=finishLocation]').waitForClickable();
-  $('input[name=finishLocation]').setValue(removeTextFromAutocomplete(20));
-  $('input[name=finishLocation]').setValue(pointB);
-  $('.MuiAutocomplete-popper').click();
-
-  $('input[name=numLoops]').waitForClickable();
-  $('input[name=numLoops]').setValue(loopNumber);
-  loopForm.$('button=Request').click();
-};
