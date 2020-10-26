@@ -1,10 +1,12 @@
 import React from 'react';
-import { Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Typography, makeStyles, Button, ButtonGroup } from '@material-ui/core';
 import TreeView from '@material-ui/lab/TreeView';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import RestoreFromTrashIcon from '@material-ui/icons/RestoreFromTrash';
 import TreeItem from '@material-ui/lab/TreeItem';
+import ClearAllIcon from '@material-ui/icons/ClearAll';
+import RestoreIcon from '@material-ui/icons/Restore';
 import { SpotlightValue } from './spotlight-value';
 import {
   NegotiationConflict,
@@ -13,15 +15,14 @@ import {
   NegotiationStatusManager,
   NegotiationTrajectoryResponse,
 } from '../negotiation-status-manager';
+import { colorPalette } from '../util/css-utils';
 import Debug from 'debug';
 
 const debug = Debug('OmniPanel:NegotiationsPanel');
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: 240,
-    flexGrow: 1,
-    maxWidth: 400,
+    padding: '1rem',
   },
   finished: {
     backgroundColor: 'lightgreen',
@@ -41,6 +42,20 @@ const useStyles = makeStyles((theme) => ({
   ongoing: {
     backgroundColor: 'yellow',
   },
+  treeChildren: {
+    margin: '0.5rem 0',
+  },
+  labelContent: {
+    padding: '0.5rem',
+    borderRadius: '0.5rem',
+    boxShadow: '0 0 25px 0 rgb(72, 94, 116, 0.3)',
+  },
+  expanded: {
+    borderLeft: `0.1rem solid ${colorPalette.unknown}`,
+  },
+  buttonGroupDiv: {
+    padding: '0.5rem 1rem',
+  },
 }));
 
 interface Parameter {
@@ -56,6 +71,9 @@ export interface NegotiationsPanelProps {
   negotiationStatusManager?: Readonly<NegotiationStatusManager>;
   negotiationTrajStore?: Record<string, NegotiationTrajectoryResponse>;
   negotiationStatusUpdateTS: number; // used to trigger rerenders
+  setNegotiationTrajStore: React.Dispatch<
+    React.SetStateAction<Record<string, NegotiationTrajectoryResponse>>
+  >;
 }
 
 export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
@@ -66,7 +84,15 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
     mapFloorLayerSorted,
     negotiationStatusManager,
     negotiationTrajStore,
+    setNegotiationTrajStore,
   } = props;
+
+  const [negotiationContents, setNegotiationContents] = React.useState<{
+    [key: string]: JSX.Element;
+  }>({});
+  const [expanded, setExpanded] = React.useState<string[]>([]);
+  const [selected, setSelected] = React.useState<string>('');
+  const [conflictIds, setConflictIds] = React.useState<string[]>([]);
 
   React.useEffect(() => {
     if (!spotlight) {
@@ -139,8 +165,9 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
         }
         terminalLabelText += ']';
         terminalLabelText += determineStatusText(terminalStatus, conflict.resolved);
-
-        let terminalStyle = determineStyle(terminalStatus, conflict.resolved);
+        let terminalStyle = `${determineStyle(terminalStatus, conflict.resolved)} ${
+          classes.labelContent
+        }`;
 
         //set text and style for base node
         let baseStatus = statusData.base;
@@ -150,8 +177,7 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
         baseLabelText += sequenceIdName;
         baseLabelText += ']';
         baseLabelText += determineStatusText(baseStatus, conflict.resolved);
-
-        let baseStyle = determineStyle(baseStatus, conflict.resolved);
+        let baseStyle = `${determineStyle(baseStatus, conflict.resolved)} ${classes.labelContent}`;
 
         let terminalId = version + '.' + participantId + '.terminal'; //terminal node
         let baseId = version + '.' + participantId + '.base'; //base ID
@@ -160,14 +186,18 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
             data-component="TreeItem"
             nodeId={terminalId}
             key={terminalId}
-            classes={{ label: terminalStyle, selected: terminalStyle }}
+            classes={{
+              label: terminalStyle,
+              expanded: classes.expanded,
+              root: classes.treeChildren,
+            }}
             label={terminalLabelText}
           >
             <TreeItem
               data-component="TreeItem"
               nodeId={baseId}
               key={baseId}
-              classes={{ label: baseStyle, selected: baseStyle }}
+              classes={{ label: baseStyle, root: classes.treeChildren }}
               label={baseLabelText}
             />
           </TreeItem>,
@@ -190,14 +220,15 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
         //single node
         let baseStatus = statusData.base;
         let labelText = participantName + determineStatusText(baseStatus, conflict.resolved);
-        let style = determineStyle(baseStatus, conflict.resolved);
+        let style = `${determineStyle(baseStatus, conflict.resolved)} ${classes.labelContent}`;
         let nodeId = version + '.' + participantId + '.base'; //base ID
+
         tableDom.push(
           <TreeItem
             data-component="TreeItem"
             nodeId={nodeId}
             key={nodeId}
-            classes={{ label: style, selected: style }}
+            classes={{ label: style, root: classes.treeChildren }}
             label={labelText}
           />,
         );
@@ -211,13 +242,14 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
       }
     }
 
+    conflictStyle = `${conflictStyle} ${classes.labelContent}`;
     let nodeIdBase = 'conflict' + version;
     return (
       <TreeItem
         data-component="TreeItem"
         nodeId={nodeIdBase}
         key={nodeIdBase}
-        classes={{ label: conflictStyle, selected: conflictStyle }}
+        classes={{ label: conflictStyle, expanded: classes.expanded, root: classes.treeChildren }}
         label={conflictLabel}
       >
         {tableDom}
@@ -225,14 +257,27 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
     );
   };
 
-  let negotiationContents: JSX.Element[] = [];
-  if (conflicts) {
-    let reversedConflicts = Object.keys(conflicts).reverse();
-    reversedConflicts.forEach((version) => {
+  const updateNegotiationContents = (
+    conflicts: Readonly<Record<string, NegotiationConflict>>,
+    parsedConflictIds?: string[],
+  ) => {
+    Object.keys(conflicts).forEach((version) => {
       const conflict = conflicts[version];
       let contents = renderNegotiations(version, conflict);
-      negotiationContents.push(contents);
+      if (parsedConflictIds && !parsedConflictIds.includes(version)) {
+        negotiationContents[version] = contents;
+      } else if (!parsedConflictIds) {
+        negotiationContents[version] = contents;
+      }
     });
+  };
+
+  if (conflicts) {
+    if (conflictIds.length > 0) {
+      updateNegotiationContents(conflicts, conflictIds);
+    } else {
+      updateNegotiationContents(conflicts);
+    }
   } else {
     console.log('prop negotationstatus empty');
   }
@@ -259,7 +304,6 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
         console.warn('wrong response, ignoring!');
         return;
       }
-
       // reset and add new trajectories
       for (let resp of Object.values(negotiationTrajStore)) {
         resp.values = [];
@@ -275,17 +319,74 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
     }
 
     updateNegotiationTrajectory();
+    setSelected(nodeIds);
+  };
+
+  const handleClearAllCurrNegotiations = () => {
+    setConflictIds(Object.keys(conflicts));
+    setNegotiationContents({});
+  };
+
+  const handleResetNegotiations = () => {
+    setExpanded([]);
+    setSelected('');
+    setNegotiationTrajStore({});
+  };
+
+  const handleRestoreNegotiations = () => {
+    setConflictIds([]);
+    setNegotiationContents({});
+  };
+
+  const handleNodeToggle = (event: React.ChangeEvent<{}>, nodeIds: string[]) => {
+    setExpanded(nodeIds);
   };
 
   return (
     <Typography variant="body1" component={'span'}>
+      <div className={classes.buttonGroupDiv}>
+        <ButtonGroup fullWidth>
+          <Button
+            id="reset-button"
+            disabled={conflicts && Object.keys(conflicts).length === 0}
+            onClick={handleResetNegotiations}
+          >
+            <RestoreIcon />
+            Reset
+          </Button>
+          <Button
+            id="clear-button"
+            disabled={conflicts && Object.keys(conflicts).length === 0}
+            onClick={handleClearAllCurrNegotiations}
+          >
+            <ClearAllIcon />
+            Clear
+          </Button>
+          <Button
+            id="restore-button"
+            disabled={conflicts && Object.keys(conflicts).length === 0}
+            onClick={handleRestoreNegotiations}
+          >
+            <RestoreFromTrashIcon />
+            Restore
+          </Button>
+        </ButtonGroup>
+      </div>
       <TreeView
+        className={classes.root}
         onNodeSelect={handleSelect}
+        onNodeToggle={handleNodeToggle}
         defaultCollapseIcon={<ExpandMoreIcon />}
         defaultExpanded={['root']}
         defaultExpandIcon={<ChevronRightIcon />}
+        expanded={expanded}
+        selected={selected}
       >
-        {negotiationContents}
+        {Object.keys(negotiationContents)
+          .reverse()
+          .map((key) => {
+            return negotiationContents[key];
+          })}
       </TreeView>
     </Typography>
   );

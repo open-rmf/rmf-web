@@ -14,8 +14,10 @@ const mount = createMount();
 const shallow = createShallow();
 
 let negotiationStatuses: Record<number, NegotiationConflict>;
+let setNegotiationTrajStore: jest.Mock<any, any>;
 
 beforeEach(() => {
+  setNegotiationTrajStore = jest.fn();
   negotiationStatuses = {
     0: {
       participantIdsToNames: {
@@ -68,6 +70,7 @@ it('renders negotiations correctly', () => {
       negotiationStatusManager={undefined}
       negotiationTrajStore={undefined}
       negotiationStatusUpdateTS={0}
+      setNegotiationTrajStore={setNegotiationTrajStore}
     />,
   );
 
@@ -130,12 +133,86 @@ it('matches snapshot', () => {
       negotiationStatusManager={undefined}
       negotiationTrajStore={undefined}
       negotiationStatusUpdateTS={0}
+      setNegotiationTrajStore={setNegotiationTrajStore}
     />,
   );
 
   expect(toJson(root)).toMatchSnapshot();
 
   root.unmount();
+});
+
+it('should empty all current negotiations when clear button is clicked', () => {
+  const root = mount(
+    <NegotiationsPanel
+      conflicts={negotiationStatuses}
+      spotlight={undefined}
+      mapFloorLayerSorted={undefined}
+      negotiationStatusManager={undefined}
+      negotiationTrajStore={undefined}
+      negotiationStatusUpdateTS={0}
+      setNegotiationTrajStore={setNegotiationTrajStore}
+    />,
+  );
+  root.find('button#clear-button').simulate('click');
+
+  expect(root.find('li').length).toEqual(0);
+  root.unmount();
+});
+
+it('should call setNegotiationTrajStore callback when reset-button is clicked', () => {
+  const root = mount(
+    <NegotiationsPanel
+      conflicts={negotiationStatuses}
+      spotlight={undefined}
+      mapFloorLayerSorted={undefined}
+      negotiationStatusManager={undefined}
+      negotiationTrajStore={undefined}
+      negotiationStatusUpdateTS={0}
+      setNegotiationTrajStore={setNegotiationTrajStore}
+    />,
+  );
+  root.find('button#reset-button').simulate('click');
+
+  expect(setNegotiationTrajStore).toHaveBeenCalled();
+  root.unmount();
+});
+
+it('should render all negotiations when restore button is clicked', () => {
+  const root = mount(
+    <NegotiationsPanel
+      conflicts={negotiationStatuses}
+      spotlight={undefined}
+      mapFloorLayerSorted={undefined}
+      negotiationStatusManager={undefined}
+      negotiationTrajStore={undefined}
+      negotiationStatusUpdateTS={0}
+      setNegotiationTrajStore={setNegotiationTrajStore}
+    />,
+  );
+  // clear all trajectories first to ensure empty array
+  root.find('button#clear-button').simulate('click');
+  root.find('button#restore-button').simulate('click');
+
+  expect(root.find('li').length).toEqual(1);
+  root.unmount();
+});
+
+it('should set disabled to true on buttons when empty conflicts is provided', () => {
+  const root = mount(
+    <NegotiationsPanel
+      conflicts={{}}
+      spotlight={undefined}
+      mapFloorLayerSorted={undefined}
+      negotiationStatusManager={undefined}
+      negotiationTrajStore={undefined}
+      negotiationStatusUpdateTS={0}
+      setNegotiationTrajStore={setNegotiationTrajStore}
+    />,
+  );
+  expect(root.find('button#clear-button').props().disabled).toEqual(true);
+  expect(root.find('button#reset-button').props().disabled).toEqual(true);
+  expect(root.find('button#restore-button').props().disabled).toEqual(true);
 });
 
 it('tests negotiation status manager', () => {
