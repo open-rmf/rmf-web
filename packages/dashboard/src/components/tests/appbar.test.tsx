@@ -1,10 +1,8 @@
 import { createMount } from '@material-ui/core/test-utils';
-import NotificationsActiveIcon from '@material-ui/icons/NotificationsActive';
 import React from 'react';
 import FakeAuthenticator from '../../mock/fake-authenticator';
 import AppBar from '../appbar';
 import { AuthenticatorContext, UserContext } from '../auth/contexts';
-import { EmergencyAlarm } from '../emergency-alarm';
 
 const mount = createMount();
 
@@ -38,21 +36,6 @@ describe('AppBar', () => {
   test('renders correctly', () => {
     const root = buildWrapper(toggleShowOmniPanel, showSettings, showHelp);
     expect(root).toMatchSnapshot();
-  });
-
-  test('Alarm Icon is displayed when the alarm is activated activated', () => {
-    const root = mount(
-      <UserContext.Provider value={{ username: 'test' }}>
-        <AppBar
-          toggleShowOmniPanel={toggleShowOmniPanel}
-          showSettings={showSettings}
-          showHelp={showHelp}
-          alarmState={true}
-        />
-      </UserContext.Provider>,
-    );
-    expect(root.find(EmergencyAlarm).find(NotificationsActiveIcon).exists()).toBeTruthy();
-    root.unmount();
   });
 
   test('toggles show omnipanel when dashboard button is clicked', () => {

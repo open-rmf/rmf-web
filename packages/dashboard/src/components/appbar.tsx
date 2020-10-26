@@ -13,13 +13,14 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import React from 'react';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
 import HelpIcon from '@material-ui/icons/Help';
-import { EmergencyAlarm } from './emergency-alarm';
 
 export interface AppBarProps {
   toggleShowOmniPanel(): void;
   showSettings(show: boolean): void;
   showHelp(show: boolean): void;
-  alarmState: boolean | null;
+  // TODO: change the alarm status to required when we have an alarm
+  // service working properly in the backend
+  alarmState?: boolean | null;
 }
 
 export default function AppBar(props: AppBarProps): React.ReactElement {
@@ -53,8 +54,6 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
         </IconButton>
         {user && (
           <>
-            <EmergencyAlarm isActive={alarmState} />
-
             <IconButton
               id="user-btn"
               color="inherit"

@@ -1,9 +1,6 @@
-import { createMuiTheme } from '@material-ui/core';
 import { mount } from 'enzyme';
 import React from 'react';
 import { ConfirmAlertDialog } from '../confirm-alert-dialog';
-
-const theme = createMuiTheme();
 
 describe('Verification Alert', () => {
   test('Correct generation of default params values', () => {
@@ -33,7 +30,6 @@ describe('Verification Alert', () => {
 
   test('Cancel callback is executed', () => {
     const cancelCallback = jest.fn();
-
     const root = mount(
       <ConfirmAlertDialog
         open={true}
@@ -50,9 +46,9 @@ describe('Verification Alert', () => {
     expect(cancelCallback).toHaveBeenCalledTimes(1);
     root.unmount();
   });
+
   test('Confirm callback is executed', () => {
     const confirmCallback = jest.fn();
-
     const root = mount(
       <ConfirmAlertDialog
         open={true}
@@ -69,6 +65,7 @@ describe('Verification Alert', () => {
     expect(confirmCallback).toHaveBeenCalledTimes(1);
     root.unmount();
   });
+
   test('Modal is closed', () => {
     let open = true;
     const closeModal = () => {
