@@ -1,6 +1,6 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
+import Dialog, { DialogProps } from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
@@ -17,9 +17,7 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export interface ConfirmAlertDialogProps {
-  open: boolean; // controls when the modal should open
-  close: () => void; // close the modal
+export interface ConfirmAlertDialogProps extends DialogProps {
   title?: string;
   content?: string;
   showIcon?: boolean;
@@ -32,10 +30,13 @@ export interface ConfirmAlertDialogProps {
 /**
  * Modal to warn a user about something related to an action.
  */
-export const ConfirmAlertDialog = (props: ConfirmAlertDialogProps) => {
+
+export const ConfirmAlertDialog = React.forwardRef(function (
+  props: ConfirmAlertDialogProps,
+  ref: React.Ref<HTMLElement>,
+): React.ReactElement {
   const {
     open,
-    close,
     title,
     content,
     showIcon,
@@ -43,26 +44,25 @@ export const ConfirmAlertDialog = (props: ConfirmAlertDialogProps) => {
     cancelButtonText,
     confirmCallback,
     cancelCallback,
+    keepMounted,
   } = props;
 
   const handleCancelButton = () => {
     cancelCallback && cancelCallback();
-    close();
   };
 
   const handleConfirmButton = () => {
     confirmCallback && confirmCallback();
-    close();
   };
   const classes = useStyles();
 
   return (
     <div>
       <Dialog
+        ref={ref}
         open={open}
         TransitionComponent={Transition}
-        keepMounted
-        onClose={close}
+        keepMounted={keepMounted}
         aria-labelledby="alert-dialog-slide-title"
         aria-describedby="alert-dialog-slide-description"
       >
@@ -96,7 +96,7 @@ export const ConfirmAlertDialog = (props: ConfirmAlertDialogProps) => {
       </Dialog>
     </div>
   );
-};
+});
 
 const useStyles = makeStyles(() => ({
   icon: {

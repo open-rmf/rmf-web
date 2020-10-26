@@ -1,10 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Verification Alert Correct generation of custom params values 1`] = `
-<ConfirmAlertDialog
+<ForwardRef
   cancelButtonText="test"
   cancelCallback={[Function]}
-  close={[Function]}
   confirmButtonText="test"
   confirmCallback={[Function]}
   content="test"
@@ -21,8 +20,6 @@ exports[`Verification Alert Correct generation of custom params values 1`] = `
       }
       aria-describedby="alert-dialog-slide-description"
       aria-labelledby="alert-dialog-slide-title"
-      keepMounted={true}
-      onClose={[Function]}
       open={true}
     >
       <ForwardRef(Dialog)
@@ -53,8 +50,6 @@ exports[`Verification Alert Correct generation of custom params values 1`] = `
             "scrollPaper": "MuiDialog-scrollPaper",
           }
         }
-        keepMounted={true}
-        onClose={[Function]}
         open={true}
       >
         <ForwardRef(Modal)
@@ -385,8 +380,6 @@ exports[`Verification Alert Correct generation of custom params values 1`] = `
           closeAfterTransition={true}
           disableBackdropClick={false}
           disableEscapeKeyDown={false}
-          keepMounted={true}
-          onClose={[Function]}
           open={true}
         >
           <ForwardRef(Portal)
@@ -1217,12 +1210,11 @@ exports[`Verification Alert Correct generation of custom params values 1`] = `
       </ForwardRef(Dialog)>
     </WithStyles(ForwardRef(Dialog))>
   </div>
-</ConfirmAlertDialog>
+</ForwardRef>
 `;
 
 exports[`Verification Alert Correct generation of default params values 1`] = `
-<ConfirmAlertDialog
-  close={[Function]}
+<ForwardRef
   open={true}
 >
   <div>
@@ -1235,8 +1227,6 @@ exports[`Verification Alert Correct generation of default params values 1`] = `
       }
       aria-describedby="alert-dialog-slide-description"
       aria-labelledby="alert-dialog-slide-title"
-      keepMounted={true}
-      onClose={[Function]}
       open={true}
     >
       <ForwardRef(Dialog)
@@ -1267,8 +1257,6 @@ exports[`Verification Alert Correct generation of default params values 1`] = `
             "scrollPaper": "MuiDialog-scrollPaper",
           }
         }
-        keepMounted={true}
-        onClose={[Function]}
         open={true}
       >
         <ForwardRef(Modal)
@@ -1599,8 +1587,6 @@ exports[`Verification Alert Correct generation of default params values 1`] = `
           closeAfterTransition={true}
           disableBackdropClick={false}
           disableEscapeKeyDown={false}
-          keepMounted={true}
-          onClose={[Function]}
           open={true}
         >
           <ForwardRef(Portal)
@@ -2431,5 +2417,5 @@ exports[`Verification Alert Correct generation of default params values 1`] = `
       </ForwardRef(Dialog)>
     </WithStyles(ForwardRef(Dialog))>
   </div>
-</ConfirmAlertDialog>
+</ForwardRef>
 `;

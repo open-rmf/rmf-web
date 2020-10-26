@@ -4,9 +4,7 @@ import { ConfirmAlertDialog } from '../confirm-alert-dialog';
 
 describe('Verification Alert', () => {
   test('Correct generation of default params values', () => {
-    const root = mount(
-      <ConfirmAlertDialog open={true} close={() => jest.mock}></ConfirmAlertDialog>,
-    );
+    const root = mount(<ConfirmAlertDialog open={true}></ConfirmAlertDialog>);
     expect(root).toMatchSnapshot();
     root.unmount();
   });
@@ -21,7 +19,6 @@ describe('Verification Alert', () => {
         cancelButtonText={'test'}
         cancelCallback={() => jest.mock}
         confirmCallback={() => jest.mock}
-        close={() => jest.mock}
       ></ConfirmAlertDialog>,
     );
     expect(root).toMatchSnapshot();
@@ -39,7 +36,6 @@ describe('Verification Alert', () => {
         cancelButtonText={'test'}
         cancelCallback={cancelCallback}
         confirmCallback={() => jest.mock}
-        close={() => jest.mock}
       ></ConfirmAlertDialog>,
     );
     root.find('#alert-dialog-cancel-button').first().simulate('click');
@@ -58,7 +54,6 @@ describe('Verification Alert', () => {
         cancelButtonText={'test'}
         cancelCallback={() => jest.mock}
         confirmCallback={confirmCallback}
-        close={() => jest.mock}
       ></ConfirmAlertDialog>,
     );
     root.find('#alert-dialog-confirm-button').first().simulate('click');
@@ -79,8 +74,7 @@ describe('Verification Alert', () => {
         confirmButtonText={'test'}
         cancelButtonText={'test'}
         cancelCallback={() => jest.mock}
-        confirmCallback={() => jest.mock}
-        close={closeModal}
+        confirmCallback={closeModal}
       ></ConfirmAlertDialog>,
     );
     root.find('#alert-dialog-confirm-button').first().simulate('click');
