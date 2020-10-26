@@ -8,8 +8,8 @@
     "build": "tsc --build",
     "build:storybook": "build-storybook -s stories",
     "clean": "tsc --build --clean",
-    "test": "jest --watchAll",
-    "test:coverage": "jest --coverage"
+    "test": "jest --watch",
+    "test:coverage": "jest --ci --coverage"
   },
   "author": "koonpeng@openrobotics.org",
   "license": "Apache-2.0",
