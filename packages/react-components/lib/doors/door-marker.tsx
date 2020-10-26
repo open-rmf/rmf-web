@@ -137,7 +137,7 @@ const SingleSlidingDoor = SingleSwingDoor;
  *   * common in elevators; same parameters as sliding doors; they just
  *     open/close faster and take up less space inside the wall.
  */
-const SingleTelescopeDoor = SingleSwingDoor;
+const SingleTelescopeDoor = SingleSlidingDoor;
 
 /**
  * Double hinge doors:
@@ -174,7 +174,7 @@ const DoubleSlidingDoor = DoubleSwingDoor;
  *   * common in elevators; same parameters as sliding doors; they just
  *     open/close faster and take up less space inside the wall.
  */
-const DoubleTelescopeDoor = DoubleSwingDoor;
+const DoubleTelescopeDoor = DoubleSlidingDoor;
 
 /**
  * door: Door information provided by the map.
