@@ -2,6 +2,7 @@ export * from './auth';
 export * from './commands';
 export * from './dispensers';
 export * from './doors';
+export * from './geometry-utils';
 export * from './lifts';
 export * from './omni-panel';
 export * from './omni-panel-view';

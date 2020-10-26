@@ -13,7 +13,7 @@ export default {
 function makeStory(door: RomiCore.Door, doorState?: RomiCore.DoorState): Story {
   return (args) => (
     <svg viewBox="-2 -2 4 4" width={400} height={400}>
-      <DoorMarker door={door} doorState={doorState} {...args} />
+      <DoorMarker door={door} doorMode={doorState?.current_mode || undefined} {...args} />
     </svg>
   );
 }

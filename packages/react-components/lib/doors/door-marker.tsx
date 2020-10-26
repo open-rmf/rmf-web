@@ -33,14 +33,14 @@ const useDoorStyles = makeStyles({
   },
 });
 
-function useDoorStyle(doorState?: RomiCore.DoorState): string {
+function useDoorStyle(doorMode?: RomiCore.DoorMode): string {
   const classes = useDoorStyles();
 
-  if (!doorState) {
+  if (!doorMode) {
     return classes.unknown;
   }
 
-  switch (doorState.current_mode.value) {
+  switch (doorMode.value) {
     case RomiCore.DoorMode.MODE_OPEN:
       return classes.open;
     case RomiCore.DoorMode.MODE_MOVING:
@@ -67,9 +67,9 @@ const BaseDoor = (props: BaseDoorProps) => {
       <line
         className={joinClasses(classes.base, className)}
         x1={v1[0]}
-        y1={v1[1]}
+        y1={-v1[1]} // rmf y grows up while svg y grows down
         x2={v2[0]}
-        y2={v2[1]}
+        y2={-v2[1]} // rmf y grows up while svg y grows down
       />
     </g>
   );
@@ -114,8 +114,8 @@ type DoorMarkerImplProps = Omit<DoorMarkerProps, 'onClick'>;
  *  - selected by the motion_direction parameter, which is +1 or -1
  */
 const SingleSwingDoor = (props: DoorMarkerImplProps) => {
-  const { door, doorState } = props;
-  const doorStyle = useDoorStyle(doorState);
+  const { door, doorMode } = props;
+  const doorStyle = useDoorStyle(doorMode);
 
   return (
     <>
@@ -146,13 +146,13 @@ const SingleTelescopeDoor = SingleSlidingDoor;
  * - same motion-direction selection as single hinge
  */
 const DoubleSwingDoor = (props: DoorMarkerImplProps) => {
-  const { door, doorState } = props;
+  const { door, doorMode } = props;
   const [hingeX1, hingeY1, hingeX2, hingeY2] = [door.v1_x, door.v1_y, door.v2_x, door.v2_y];
   const [extendX1, extendY1] = [
     hingeX1 + (door.v2_x - door.v1_x) / 2,
     hingeY1 + (door.v2_y - door.v1_y) / 2,
   ];
-  const doorStyle = useDoorStyle(doorState);
+  const doorStyle = useDoorStyle(doorMode);
   return (
     <>
       <BaseDoor v1={[hingeX1, hingeY1]} v2={[extendX1, extendY1]} className={doorStyle} />
@@ -183,36 +183,40 @@ const DoubleTelescopeDoor = DoubleSlidingDoor;
  */
 export interface DoorMarkerProps extends React.SVGProps<SVGGElement> {
   door: RomiCore.Door;
-  doorState?: RomiCore.DoorState;
+  doorMode?: RomiCore.DoorMode;
 }
 
 export const DoorMarker = React.memo(
   React.forwardRef((props: DoorMarkerProps, ref: React.Ref<SVGGElement>) => {
-    const { door, doorState, className, ...otherProps } = props;
+    const { door, doorMode, className, ...otherProps } = props;
     debug(`render ${door.name}`);
     const classes = useDoorStyles();
 
     const renderDoor = () => {
       switch (door.door_type) {
         case RomiCore.Door.DOOR_TYPE_SINGLE_SWING:
-          return <SingleSwingDoor door={door} doorState={doorState} />;
+          return <SingleSwingDoor door={door} doorMode={doorMode} />;
         case RomiCore.Door.DOOR_TYPE_SINGLE_SLIDING:
-          return <SingleSlidingDoor door={door} doorState={doorState} />;
+          return <SingleSlidingDoor door={door} doorMode={doorMode} />;
         case RomiCore.Door.DOOR_TYPE_SINGLE_TELESCOPE:
-          return <SingleTelescopeDoor door={door} doorState={doorState} />;
+          return <SingleTelescopeDoor door={door} doorMode={doorMode} />;
         case RomiCore.Door.DOOR_TYPE_DOUBLE_SWING:
-          return <DoubleSwingDoor door={door} doorState={doorState} />;
+          return <DoubleSwingDoor door={door} doorMode={doorMode} />;
         case RomiCore.Door.DOOR_TYPE_DOUBLE_SLIDING:
-          return <DoubleSlidingDoor door={door} doorState={doorState} />;
+          return <DoubleSlidingDoor door={door} doorMode={doorMode} />;
         case RomiCore.Door.DOOR_TYPE_DOUBLE_TELESCOPE:
-          return <DoubleTelescopeDoor door={door} doorState={doorState} />;
+          return <DoubleTelescopeDoor door={door} doorMode={doorMode} />;
         default:
           return null;
       }
     };
 
     return (
-      <g ref={ref} className={joinClasses(classes.marker, className)} {...otherProps}>
+      <g
+        ref={ref}
+        className={joinClasses(props.onClick ? classes.marker : undefined, className)}
+        {...otherProps}
+      >
         {renderDoor()}
       </g>
     );
