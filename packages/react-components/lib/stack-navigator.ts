@@ -5,7 +5,7 @@ export interface StackNavigatorProps {
   onClose(): void;
 }
 
-export default class StackNavigator {
+export class StackNavigator {
   stack: (number | string)[];
 
   constructor(home: number | string) {
@@ -26,3 +26,5 @@ export default class StackNavigator {
     return this.stack[0];
   }
 }
+
+export default StackNavigator;
