@@ -2,7 +2,7 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { DoorMarker } from '../lib';
-import { makeDoor, makeDoorState } from '../lib/doors/tests/test-utils';
+import { makeDoor, makeDoorState } from '../tests/doors/test-utils';
 
 export default {
   title: 'Door Markers',

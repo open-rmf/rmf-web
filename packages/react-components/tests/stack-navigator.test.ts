@@ -1,4 +1,4 @@
-import StackNavigator from '../stack-navigator';
+import { StackNavigator } from '../lib';
 
 let stack: StackNavigator;
 

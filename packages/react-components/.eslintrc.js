@@ -29,7 +29,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: '*.test.ts[x]',
+      files: 'tests/**',
       rules: {
         '@typescript-eslint/no-non-null-assertion': 'off',
       },

@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { DoorAccordion } from '..';
+import { DoorAccordion } from '../../lib';
 import { makeDoor } from './test-utils';
 
 test('triggers doOpenDoor callback when button is clicked', () => {

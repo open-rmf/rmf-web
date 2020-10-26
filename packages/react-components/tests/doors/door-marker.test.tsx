@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { DoorMarker } from '..';
+import { DoorMarker } from '../../lib';
 import { makeDoor } from './test-utils';
 
 test('triggers onClick callback when button is clicked', () => {

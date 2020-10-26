@@ -1,8 +1,8 @@
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { OmniPanel, OmniPanelView } from '..';
-import { OmniPanelProps } from '../omni-panel';
+import { OmniPanel, OmniPanelView } from '../lib';
+import { OmniPanelProps } from '../lib/omni-panel';
 
 function TestPanel(props: Omit<OmniPanelProps, 'view' | 'children'>) {
   return (

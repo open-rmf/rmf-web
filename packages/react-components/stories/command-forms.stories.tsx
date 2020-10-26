@@ -1,7 +1,7 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { DeliveryRequestForm, LoopRequestForm } from '../lib';
-import { availableDispensers, availablePlaces, fleets } from '../lib/commands/tests/test-data';
+import { availableDispensers, availablePlaces, fleets } from '../tests/commands/test-data';
 
 export default {
   title: 'Command Forms',

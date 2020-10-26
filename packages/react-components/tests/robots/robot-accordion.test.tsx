@@ -1,7 +1,7 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { render } from '@testing-library/react';
 import React from 'react';
-import { RobotAccordion } from '..';
+import { RobotAccordion } from '../../lib';
 
 const robot: RomiCore.RobotState = {
   name: 'test',

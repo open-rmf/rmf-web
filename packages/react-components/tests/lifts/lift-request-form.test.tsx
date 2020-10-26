@@ -1,8 +1,8 @@
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { LiftRequestForm } from '..';
-import { requestDoorModes, requestModes } from '../lift-utils';
+import { LiftRequestForm } from '../../lib';
+import { requestDoorModes, requestModes } from '../../lib/lifts/lift-utils';
 import { makeLift } from './test-utils';
 
 function renderLiftRequestForm() {

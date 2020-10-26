@@ -1,7 +1,7 @@
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { LoopRequestForm } from '..';
+import { LoopRequestForm } from '../../lib';
 import { availablePlaces, fleets } from './test-data';
 
 describe('Form validation', () => {

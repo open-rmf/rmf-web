@@ -1,7 +1,7 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { render } from '@testing-library/react';
 import React from 'react';
-import { DispenserAccordion } from '..';
+import { DispenserAccordion } from '../../lib';
 
 const baseDispenser: RomiCore.DispenserState = {
   guid: 'test',
