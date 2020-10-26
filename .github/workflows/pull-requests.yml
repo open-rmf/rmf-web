@@ -45,6 +45,7 @@ jobs:
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock
         - /root/romi-dashboard:/root/romi-dashboard
+        - /root/romi-dashboard/packages/dashboard/e2e:/root/romi-dashboard/packages/dashboard/e2e
     defaults:
       run:
         shell: bash
