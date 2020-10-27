@@ -72,7 +72,7 @@ class SparseCheckoutGitV217 extends IconManagerBase {
   }
 
   execute = () => {
-    execSync(`git init && git remote add -f origin "${this.resourcesData.repoUrl}"`, {
+    execSync(`git init && git remote add -f resources "${this.resourcesData.repoUrl}"`, {
       stdio: [0, 1, 2],
       cwd: path.resolve(__dirname, this.tempFolderLocation),
     });
@@ -83,7 +83,7 @@ class SparseCheckoutGitV217 extends IconManagerBase {
         cwd: path.resolve(__dirname, this.tempFolderLocation),
       },
     );
-    execSync(`git pull --depth=1 origin ${this.resourcesData.branch}`, {
+    execSync(`git pull --depth=1 resources ${this.resourcesData.branch}`, {
       stdio: [0, 1, 2],
       cwd: path.resolve(__dirname, this.tempFolderLocation),
     });
@@ -102,6 +102,8 @@ class IconManager extends IconManagerBase {
   };
 
   cloneSpecificFolder = () => {
+    // Safeguard in case the tmp is not deleted and already have a remote defined
+    this.removeTmpFolder();
     this.createTmpFolder();
     exec(`git --version`, (error, stdout, stderr) => {
       if (error) {
