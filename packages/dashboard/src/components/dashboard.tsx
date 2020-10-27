@@ -379,18 +379,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
     }
   }, [dashboardTooltips, setTooltips]);
 
-  const tourProps = {
-    tourState,
-    setTourState,
-    setShowSettings,
-    setShowOmniPanel,
-    setShowHelp,
-    clearSpotlights,
-    setCurrentView,
-    doorSpotlight,
-    setDoorSpotlight,
-  };
-
   const [showHotkeyDialog, setShowHotkeyDialog] = React.useState(false);
 
   const hotKeysValue = buildHotKeys({
