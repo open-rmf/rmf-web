@@ -51,7 +51,7 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryPanelProps) => {
       selected={selected}
     >
       {allTasks.map((task) => (
-        <TaskSummaryPanelItem task={task} />
+        <TaskSummaryPanelItem task={task} key={task.task_id} />
       ))}
     </TreeView>
   );

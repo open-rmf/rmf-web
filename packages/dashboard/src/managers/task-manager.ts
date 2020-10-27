@@ -5,16 +5,8 @@ type Events = {
   updated: [];
 };
 
-export enum TaskState {
-  STATE_QUEUED = 0,
-  STATE_ACTIVE,
-  STATE_COMPLETED,
-  STATE_FAILED,
-}
-
 export default class TaskManager extends EventEmitter<Events> {
   tasks(): RomiCore.TaskSummary[] {
-    console.log(this._tasks);
     return Array.from(Object.values(this._tasks));
   }
 
@@ -31,24 +23,24 @@ export default class TaskManager extends EventEmitter<Events> {
     this._subscriptions.forEach((sub) => sub.unsubscribe());
   }
 
+  static getActorFromStatus(status: string) {
+    // Gets the name of the robot if it has any
+    return status.match(/\[[A-Za-z]([a-zA-Z0-9\/]){3,}\]+/gi);
+  }
+
   static formatStatus(status: string) {
-    const statusSplited = status.split('|');
-    const action = statusSplited[0];
-    const remainingPhases1 = statusSplited[1];
-    const remainingPhases2 = statusSplited[2];
-    const statusLabel = statusSplited[0].split(':')[0];
-    return { action, remainingPhases1, remainingPhases2, statusLabel };
+    return status.split('|');
   }
 
   static getStateLabel(state: number): string {
     switch (state) {
-      case TaskState.STATE_QUEUED:
+      case RomiCore.TaskSummary.STATE_QUEUED:
         return 'QUEUED';
-      case TaskState.STATE_ACTIVE:
+      case RomiCore.TaskSummary.STATE_ACTIVE:
         return 'ACTIVE';
-      case TaskState.STATE_COMPLETED:
+      case RomiCore.TaskSummary.STATE_COMPLETED:
         return 'COMPLETED';
-      case TaskState.STATE_FAILED:
+      case RomiCore.TaskSummary.STATE_FAILED:
         return 'FAILED';
       default:
         return 'UNKNOWN';
