@@ -45,7 +45,7 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
             Dashboard
           </Typography>
 
-          <Tooltip title="view all available panel options" arrow>
+          <Tooltip title="view all available panel options" arrow id="omnipanel-tooltip">
             <IconButton
               id="toggle-omnipanel-btn"
               color="inherit"
@@ -55,7 +55,7 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
             </IconButton>
           </Tooltip>
 
-          <Tooltip title="define dashboard settings" arrow>
+          <Tooltip title="define dashboard trajectory settings" arrow id="setting-tooltip">
             <IconButton id="show-settings-btn" color="inherit" onClick={() => showSettings(true)}>
               <SettingsIcon />
             </IconButton>
@@ -89,7 +89,7 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
               </Menu>
             </>
           )}
-          <Tooltip title="help tools and resources" arrow>
+          <Tooltip title="help tools and resources" arrow id="help-tooltip">
             <IconButton id="show-help-btn" color="inherit" onClick={() => showHelp(true)}>
               <HelpIcon />
             </IconButton>
