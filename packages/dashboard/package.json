@@ -8,7 +8,7 @@
     "start": ". e2e/env.sh && concurrently npm:start:api npm:start:auth npm:start:rmf npm:start:react",
     "start:react-auth": ". e2e/env.sh && concurrently npm:start:auth npm:start:react",
     "start:docker": ". e2e/env.sh && scripts/dockert docker-compose -f docker/docker-compose.yml up dev",
-    "start:auth": ". e2e/env.sh && docker run -itd --network=${{ job.container.network }} romi-dashboard/auth && scripts/dockert docker-compose -f docker/docker-compose.yml up auth",
+    "start:auth": ". e2e/env.sh && scripts/dockert docker-compose -fd docker/docker-compose.yml up auth && docker network connect ${{ job.container.network }} \"$(docker ps -q --filter ancestor=romi-dashboard/auth)\"",
     "start:react": ". e2e/env.sh && react-scripts start",
     "start:mock": "REACT_APP_MOCK=1 react-scripts start",
     "start:rmf": "ts-node -P e2e/tsconfig.json e2e/startBackend.ts",
