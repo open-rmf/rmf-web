@@ -32,12 +32,10 @@ import RobotsPanel from './robots-panel';
 import ScheduleVisualizer from './schedule-visualizer';
 import SettingsDrawer from './drawers/settings-drawer';
 import { SpotlightValue } from './spotlight-value';
-import DashboardTour from './tour/tour';
 import { buildHotKeys } from '../hotkeys';
 import HelpDrawer from './drawers/help-drawer';
 import HotKeysDialog from './drawers/hotkeys-dialog';
 import { GlobalHotKeys } from 'react-hotkeys';
-import TourMap from './tour/tour-map';
 
 const debug = Debug('App');
 const borderRadius = 20;
@@ -202,6 +200,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   ] = React.useState<NotificationBarProps | null>(null);
 
   const [tourState, setTourState] = React.useState(false);
+  const [tooltipState, setTooltips] = React.useState(true);
 
   React.useEffect(() => {
     setLoading({ caption: 'Connecting to api server...' });
@@ -371,6 +370,15 @@ export default function Dashboard(_props: {}): React.ReactElement {
     }
   }, [tourComplete, setTourState]);
 
+  const dashboardTooltips = localStorage.getItem('dashboardTooltips');
+  React.useEffect(() => {
+    if (dashboardTooltips === 'true') {
+      setTooltips(true);
+    } else {
+      setTooltips(false);
+    }
+  }, [dashboardTooltips, setTooltips]);
+
   const tourProps = {
     tourState,
     setTourState,
@@ -430,6 +438,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
               toggleShowOmniPanel={() => setShowOmniPanel(!showOmniPanel)}
               showSettings={setShowSettings}
               showHelp={setShowHelp}
+              tooltips={tooltipState}
             />
             {loading && <LoadingScreen {...loading} />}
             {buildingMap && mapFloorLayerSorted && !tourState && (
@@ -443,13 +452,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
                 onLiftClick={handleLiftClick}
                 onRobotClick={handleRobotClick}
                 onDispenserClick={handleDispenserClick}
-              />
-            )}
-            {buildingMap && mapFloorLayerSorted && tourState && (
-              <TourMap
-                buildingMap={buildingMap}
-                mapFloorLayerSorted={mapFloorLayerSorted}
-                fleets={fleets}
               />
             )}
             <Fade in={showOmniPanel}>
@@ -532,6 +534,8 @@ export default function Dashboard(_props: {}): React.ReactElement {
                 setTourState(true);
                 setShowHelp(false);
               }}
+              tooltipState={tooltipState}
+              setTooltips={setTooltips}
             />
           </div>
           {showHotkeyDialog && (
@@ -541,7 +545,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
             message={notificationBarMessage?.message}
             type={notificationBarMessage?.type}
           />
-          <DashboardTour tourProps={tourProps} />
         </RmfContextProvider>
       </AppContextProvider>
     </GlobalHotKeys>

@@ -1,4 +1,5 @@
 import {
+  Checkbox,
   Drawer,
   DrawerProps,
   makeStyles,
@@ -9,18 +10,36 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import DrawerHeader from './drawer-header';
-import MenuBookIcon from '@material-ui/icons/MenuBook';
 import DirectionsIcon from '@material-ui/icons/Directions';
 import BugReportIcon from '@material-ui/icons/BugReport';
+//import MenuBookIcon from '@material-ui/icons/MenuBook';
+
+/* TODO: Add tutorial environment */
+/* <div className={classes.detailLine} onClick={() => showTour()}>
+  <IconButton id="show-manual-btn" color="inherit">
+    <MenuBookIcon />
+  </IconButton>
+  <Typography variant="h5"> Tutorial </Typography>
+</div>
+<Divider /> */
 
 export interface HotKeysDrawerProps extends DrawerProps {
   handleCloseButton(): void;
   setShowHotkeyDialog(): void;
   showTour(): void;
+  tooltipState: boolean;
+  setTooltips: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function HelpDrawer(props: HotKeysDrawerProps): React.ReactElement {
-  const { handleCloseButton, setShowHotkeyDialog, showTour, ...otherProps } = props;
+  const {
+    handleCloseButton,
+    setShowHotkeyDialog,
+    showTour,
+    tooltipState,
+    setTooltips,
+    ...otherProps
+  } = props;
   const classes = useStyles();
   const drawerAnchor = useMediaQuery('(max-aspect-ratio: 8/10)') ? 'bottom' : 'right';
   const modalProp = {
@@ -36,14 +55,6 @@ export default function HelpDrawer(props: HotKeysDrawerProps): React.ReactElemen
     >
       <DrawerHeader handleCloseButton={handleCloseButton} title={'Help'} />
       <div className={classes.detail} id="help-drawer-options">
-        <div className={classes.detailLine} onClick={() => showTour()}>
-          <IconButton id="show-manual-btn" color="inherit">
-            <MenuBookIcon />
-          </IconButton>
-          <Typography variant="h5"> Tutorial </Typography>
-        </div>
-        <Divider />
-
         <div
           className={classes.detailLine}
           onClick={() => {
@@ -63,6 +74,22 @@ export default function HelpDrawer(props: HotKeysDrawerProps): React.ReactElemen
             <BugReportIcon />
           </IconButton>
           <Typography variant="h5"> Report an error </Typography>
+        </div>
+        <Divider />
+
+        <div className={classes.detailLine}>
+          <Checkbox
+            style={{ padding: '0 5px 0 2px' }}
+            checked={tooltipState}
+            size="small"
+            color="primary"
+            inputProps={{ 'aria-label': 'tooltip checkbox' }}
+            onChange={(event) => {
+              setTooltips(event.target.checked);
+              localStorage.setItem('dashboardTooltips', event.target.checked.toString());
+            }}
+          />
+          <Typography variant="h5"> Toggle tooltips </Typography>
         </div>
         <Divider />
       </div>

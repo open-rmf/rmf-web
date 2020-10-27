@@ -5,6 +5,7 @@ import {
   Menu,
   MenuItem,
   Toolbar,
+  Tooltip,
   Typography,
 } from '@material-ui/core';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
@@ -18,10 +19,11 @@ export interface AppBarProps {
   toggleShowOmniPanel(): void;
   showSettings(show: boolean): void;
   showHelp(show: boolean): void;
+  tooltips: boolean;
 }
 
 export default function AppBar(props: AppBarProps): React.ReactElement {
-  const { toggleShowOmniPanel, showSettings, showHelp } = props;
+  const { toggleShowOmniPanel, showSettings, showHelp, tooltips } = props;
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const classes = useStyles();
   const authenticator = React.useContext(AuthenticatorContext);
@@ -37,51 +39,114 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
 
   return (
     <MuiAppBar id="appbar" position="static">
-      <Toolbar>
-        <Typography variant="h6" className={classes.toolbarTitle}>
-          Dashboard
-        </Typography>
+      {tooltips && (
+        <Toolbar>
+          <Typography variant="h6" className={classes.toolbarTitle}>
+            Dashboard
+          </Typography>
 
-        <IconButton id="toggle-omnipanel-btn" color="inherit" onClick={() => toggleShowOmniPanel()}>
-          <DashboardIcon />
-        </IconButton>
-
-        <IconButton id="show-settings-btn" color="inherit" onClick={() => showSettings(true)}>
-          <SettingsIcon />
-        </IconButton>
-        {user && (
-          <>
+          <Tooltip title="view all available panel options" arrow>
             <IconButton
-              id="user-btn"
+              id="toggle-omnipanel-btn"
               color="inherit"
-              onClick={(event) => setAnchorEl(event.currentTarget)}
+              onClick={() => toggleShowOmniPanel()}
             >
-              <AccountCircleIcon />
+              <DashboardIcon />
             </IconButton>
-            <Menu
-              anchorEl={anchorEl}
-              getContentAnchorEl={null}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'right',
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={!!anchorEl}
-              onClose={() => setAnchorEl(null)}
-            >
-              <MenuItem id="logout-btn" onClick={handleLogout}>
-                Logout
-              </MenuItem>
-            </Menu>
-          </>
-        )}
-        <IconButton id="show-help-btn" color="inherit" onClick={() => showHelp(true)}>
-          <HelpIcon />
-        </IconButton>
-      </Toolbar>
+          </Tooltip>
+
+          <Tooltip title="define dashboard settings" arrow>
+            <IconButton id="show-settings-btn" color="inherit" onClick={() => showSettings(true)}>
+              <SettingsIcon />
+            </IconButton>
+          </Tooltip>
+          {user && (
+            <>
+              <IconButton
+                id="user-btn"
+                color="inherit"
+                onClick={(event) => setAnchorEl(event.currentTarget)}
+              >
+                <AccountCircleIcon />
+              </IconButton>
+              <Menu
+                anchorEl={anchorEl}
+                getContentAnchorEl={null}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={!!anchorEl}
+                onClose={() => setAnchorEl(null)}
+              >
+                <MenuItem id="logout-btn" onClick={handleLogout}>
+                  Logout
+                </MenuItem>
+              </Menu>
+            </>
+          )}
+          <Tooltip title="help tools and resources" arrow>
+            <IconButton id="show-help-btn" color="inherit" onClick={() => showHelp(true)}>
+              <HelpIcon />
+            </IconButton>
+          </Tooltip>
+        </Toolbar>
+      )}
+      {!tooltips && (
+        <Toolbar>
+          <Typography variant="h6" className={classes.toolbarTitle}>
+            Dashboard
+          </Typography>
+
+          <IconButton
+            id="toggle-omnipanel-btn"
+            color="inherit"
+            onClick={() => toggleShowOmniPanel()}
+          >
+            <DashboardIcon />
+          </IconButton>
+
+          <IconButton id="show-settings-btn" color="inherit" onClick={() => showSettings(true)}>
+            <SettingsIcon />
+          </IconButton>
+          {user && (
+            <>
+              <IconButton
+                id="user-btn"
+                color="inherit"
+                onClick={(event) => setAnchorEl(event.currentTarget)}
+              >
+                <AccountCircleIcon />
+              </IconButton>
+              <Menu
+                anchorEl={anchorEl}
+                getContentAnchorEl={null}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={!!anchorEl}
+                onClose={() => setAnchorEl(null)}
+              >
+                <MenuItem id="logout-btn" onClick={handleLogout}>
+                  Logout
+                </MenuItem>
+              </Menu>
+            </>
+          )}
+          <IconButton id="show-help-btn" color="inherit" onClick={() => showHelp(true)}>
+            <HelpIcon />
+          </IconButton>
+        </Toolbar>
+      )}
     </MuiAppBar>
   );
 }
