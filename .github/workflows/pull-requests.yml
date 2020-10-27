@@ -42,6 +42,8 @@ jobs:
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
+    env:
+      NETWORK: ${{ job.container.network }}
     defaults:
       run:
         shell: bash
@@ -57,6 +59,7 @@ jobs:
           npm run sync:docker
       - name: e2e test
         run: |
+          echo $NETWORK
           . /opt/ros/foxy/setup.bash && . /opt/rmf/setup.bash
           bash -c 'npm ci --unsafe-perm'
           cd e2e && bash -c 'npm ci --unsafe-perm'
