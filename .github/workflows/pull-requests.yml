@@ -42,6 +42,7 @@ jobs:
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
+      options: -- network auth_e2e
     defaults:
       run:
         shell: bash
