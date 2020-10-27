@@ -163,7 +163,7 @@ export const LiftMarker = React.memo(
      * dimensionals of the lift.
      */
     const renderStatusText = () => {
-      // FIXME: take into account rotation
+      // QN: do we need to take into account rotation?
       const textScale = Math.min(width, depth); // keep aspect ratio
       return liftState ? (
         <text className={classes.text} x={ref_x} y={contextY} transform={`scale(${textScale})`}>
