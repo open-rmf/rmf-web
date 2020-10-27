@@ -95,9 +95,9 @@ const DummyDoor = (props: DummyDoorProps) => {
       <line
         className={joinClasses(classes.base, classes.transparent)}
         x1={v1[0]}
-        y1={v1[1]}
+        y1={-v1[1]} // rmf y grows up while svg y grows down
         x2={v2[0]}
-        y2={v2[1]}
+        y2={-v2[1]} // rmf y grows up while svg y grows down
       />
     </g>
   );
