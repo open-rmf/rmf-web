@@ -56,9 +56,9 @@ jobs:
           docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
           npm run sync:docker
           export NETWORK=${{ job.container.network }}
-          echo $NETWORK
       - name: e2e test
         run: |
+          echo $NETWORK
           . /opt/ros/foxy/setup.bash && . /opt/rmf/setup.bash
           bash -c 'npm ci --unsafe-perm'
           cd e2e && bash -c 'npm ci --unsafe-perm'
