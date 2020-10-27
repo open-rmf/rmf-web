@@ -1,4 +1,5 @@
 export * from './auth';
+export * from './color-manager';
 export * from './commands';
 export * from './dispensers';
 export * from './doors';

@@ -17,10 +17,9 @@ function makeRobotProps(
   props = props || {};
   return {
     robot: makeRobot(robot),
-    fleetName: props.fleetName || 'testFleet',
-    footprint: props.footprint || 1,
-    inConflict: props.inConflict,
-    onClick: props.onClick,
+    fleetName: 'testFleet',
+    footprint: 1,
+    ...props,
   };
 }
 
@@ -29,7 +28,7 @@ const robots: Record<string, RobotMarkerProps> = {
   'Really Really Loooonnnnnggggg Name': makeRobotProps({
     name: 'I have a really really loooonnnnnggggg name',
   }),
-  'In Conflict': makeRobotProps({ name: 'ConflictingRobot' }, { inConflict: true }),
+  'In Conflict': makeRobotProps({ name: 'ConflictingRobot' }, { variant: 'inConflict' }),
   'Name With Space': makeRobotProps({ name: 'I have spaces' }),
   'With Icon': makeRobotProps(
     { name: 'RobotWithIcon', model: 'fleetWithIcon' },
@@ -37,11 +36,11 @@ const robots: Record<string, RobotMarkerProps> = {
   ),
   'With Icon, In Conflict': makeRobotProps(
     { name: 'RobotWithIcon', model: 'fleetWithIcon' },
-    { fleetName: 'fleetWithIcon', iconPath: '/resources/tinyRobot.png', inConflict: true },
+    { fleetName: 'fleetWithIcon', iconPath: '/resources/tinyRobot.png', variant: 'inConflict' },
   ),
 };
 
-export const RobotGallery: Story = (args) => {
+export const Gallery: Story = (args) => {
   return (
     <Grid container spacing={2}>
       {Object.keys(robots).map((k) => (

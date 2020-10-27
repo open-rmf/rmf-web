@@ -25,7 +25,7 @@ function makeGradientShadow(
 }
 
 export const DefaultMarker = (props: RobotMarkerProps): JSX.Element | null => {
-  const { robot, footprint, inConflict, fleetName } = props;
+  const { robot, footprint, fleetName, variant = 'normal' } = props;
   const colorManager = React.useContext(ColorContext);
   const [robotColor, setRobotColor] = React.useState<string | null>(() =>
     colorManager.robotColorFromCache(fleetName, robot.name),
@@ -48,7 +48,7 @@ export const DefaultMarker = (props: RobotMarkerProps): JSX.Element | null => {
       return;
     }
     (async () => {
-      setRobotColor(await colorManager.robotColor(fleetName, robot.name, robot.model));
+      setRobotColor(await colorManager.robotPrimaryColor(fleetName, robot.name, robot.model));
       await colorManager.robotPrimaryColor(fleetName, robot.name, robot.model);
     })();
   }, [robot, robotColor, colorManager, fleetName]);
@@ -62,7 +62,7 @@ export const DefaultMarker = (props: RobotMarkerProps): JSX.Element | null => {
       <circle
         id="shadow"
         r={footprint * 1.3}
-        fill={inConflict ? `url(#${conflictShadowId})` : `url(#${shadowId})`}
+        fill={variant === 'inConflict' ? `url(#${conflictShadowId})` : `url(#${shadowId})`}
       />
       <circle r={footprint} fill={robotColor} />
       <line x2={footprint} stroke={theme.palette.common.black} strokeWidth="0.05" />

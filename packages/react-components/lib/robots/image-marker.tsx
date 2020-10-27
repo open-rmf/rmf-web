@@ -26,7 +26,7 @@ export interface ImageMarkerProps extends RobotMarkerProps {
 }
 
 export const ImageMarker = (props: ImageMarkerProps): JSX.Element | null => {
-  const { iconPath, footprint, inConflict, onError } = props;
+  const { iconPath, footprint, variant, onError } = props;
 
   // The default icon uses footprint as the radius, so we * 2 here because the width/height
   // is in a square. With the double size of the footprint, we achieved a similar
@@ -55,7 +55,7 @@ export const ImageMarker = (props: ImageMarkerProps): JSX.Element | null => {
       </defs>
       <circle
         r={footprint * 1.3}
-        fill={inConflict ? `url(#${conflictShadowId})` : `url(#${shadowId})`}
+        fill={variant === 'inConflict' ? `url(#${conflictShadowId})` : `url(#${shadowId})`}
       />
       <image
         href={iconPath}
