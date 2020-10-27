@@ -88,56 +88,21 @@ const useMarkerStyles = makeStyles({
   },
 });
 
-/**
- * Gets the style to apply to the lift, the styles depend on the current mode of the lift.
- * @param currentMode current mode of the elevator
- * @param isInCurrentFloor if the lift is in the current floor return true.
- */
-function useMarkerStyle(isInCurrentFloor: boolean, liftState?: RomiCore.LiftState): string {
-  const classes = useMarkerStyles();
-  if (!liftState) {
-    return classes.unknown;
-  }
-
-  switch (liftState.current_mode) {
-    case RomiCore.LiftState.MODE_EMERGENCY:
-      return classes.emergency;
-    case RomiCore.LiftState.MODE_FIRE:
-      return classes.fire;
-    case RomiCore.LiftState.MODE_OFFLINE:
-      return classes.offLine;
-  }
-
-  if (!isInCurrentFloor) {
-    return classes.moving;
-  }
-
-  switch (liftState.current_mode) {
-    case RomiCore.LiftState.MODE_AGV:
-      return classes.onCurrentFloor;
-    case RomiCore.LiftState.MODE_HUMAN:
-      return classes.human;
-    default:
-      return classes.unknown;
-  }
-}
-
 function toDoorMode(liftState: RomiCore.LiftState): RomiCore.DoorMode {
   // LiftState uses its own enum definition of door state/mode which is separated from DoorMode.
   // But their definitions are equal so we can skip conversion.
   return { value: liftState.door_state };
 }
 
-export interface LiftMarkerProps {
-  isInCurrentFloor: boolean;
+export interface LiftMarkerProps extends React.SVGProps<SVGGElement> {
   lift: RomiCore.Lift;
   liftState?: RomiCore.LiftState;
-  onClick?(e: React.MouseEvent<SVGGElement>): void;
+  variant?: keyof ReturnType<typeof useMarkerStyles>;
 }
 
 export const LiftMarker = React.memo(
   React.forwardRef(function (props: LiftMarkerProps, ref: React.Ref<SVGGElement>): JSX.Element {
-    const { isInCurrentFloor, lift, liftState, onClick } = props;
+    const { lift, liftState, variant, className, ...otherProps } = props;
     debug(`render ${lift.name}`);
 
     const { width, depth, ref_x, ref_y, ref_yaw, doors } = lift;
@@ -155,8 +120,8 @@ export const LiftMarker = React.memo(
     const doorMode = liftState ? toDoorMode(liftState) : undefined;
 
     const classes = useStyles();
-
-    const liftStyle = useMarkerStyle(isInCurrentFloor, liftState);
+    const markerClasses = useMarkerStyles();
+    const markerClass = variant ? markerClasses[variant] : markerClasses.onCurrentFloor;
 
     /**
      * In order to keep consistent spacing, we render at a "unit box" scale it according to the
@@ -193,11 +158,11 @@ export const LiftMarker = React.memo(
       <g>
         <g
           ref={ref}
-          onClick={onClick}
-          className={joinClasses(onClick ? classes.marker : undefined)}
+          className={joinClasses(props.onClick ? classes.marker : undefined, className)}
+          {...otherProps}
         >
           <rect
-            className={`${classes.lift} ${liftStyle}`}
+            className={`${classes.lift} ${markerClass}`}
             width={width}
             height={depth}
             x={topVerticeX}

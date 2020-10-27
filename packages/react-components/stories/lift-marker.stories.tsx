@@ -1,7 +1,7 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
-import { LiftMarker } from '../lib';
+import { LiftMarker, LiftMarkerProps } from '../lib';
 import { makeLift, makeLiftState } from '../tests/lifts/test-utils';
 
 export default {
@@ -12,18 +12,18 @@ export default {
 function makeStory(
   lift: RomiCore.Lift,
   liftState?: RomiCore.LiftState,
-  isInCurrentFloor = true,
+  variant?: LiftMarkerProps['variant'],
 ): Story {
   return (args) => (
     <svg viewBox="-2 -2 4 4" width={400} height={400}>
-      <LiftMarker lift={lift} liftState={liftState} isInCurrentFloor={isInCurrentFloor} {...args} />
+      <LiftMarker lift={lift} liftState={liftState} variant={variant} {...args} />
     </svg>
   );
 }
 
 export const Basic = makeStory(makeLift(), makeLiftState());
 
-export const UnknownState = makeStory(makeLift());
+export const UnknownState = makeStory(makeLift(), undefined, 'unknown');
 
 export const Rotated = makeStory(
   makeLift({
