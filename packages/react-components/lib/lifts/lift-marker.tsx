@@ -164,7 +164,7 @@ export const LiftMarker = React.memo(
      */
     const renderStatusText = () => {
       // FIXME: take into account rotation
-      const textScale = Math.max(width, depth); // keep aspect ratio
+      const textScale = Math.min(width, depth); // keep aspect ratio
       return liftState ? (
         <text className={classes.text} x={ref_x} y={contextY} transform={`scale(${textScale})`}>
           <tspan x="0" dy="-1.8em">

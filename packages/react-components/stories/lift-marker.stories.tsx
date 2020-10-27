@@ -44,18 +44,17 @@ export const Rotated = makeStory(
   makeLiftState(),
 );
 
-// FIXME: Broken
 export const LongLongLift = makeStory(
   makeLift({
-    width: 2,
-    depth: 1,
+    width: 4,
+    depth: 2,
     doors: [
       {
         name: 'door',
         door_type: RomiCore.Door.DOOR_TYPE_DOUBLE_TELESCOPE,
         motion_direction: 1,
         motion_range: Math.PI / 2,
-        v1_x: -1,
+        v1_x: -2,
         v1_y: -1,
         v2_x: 2,
         v2_y: -1,
