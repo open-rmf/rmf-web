@@ -9,3 +9,4 @@ export * from './omni-panel-view';
 export * from './robots';
 export * from './simple-info';
 export * from './stack-navigator';
+export * from './svg-text';
