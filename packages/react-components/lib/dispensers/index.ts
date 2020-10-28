@@ -1,0 +1,1 @@
+export * from './dispenser-accordion';
