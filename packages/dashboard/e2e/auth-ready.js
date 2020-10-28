@@ -16,18 +16,21 @@ async function authReady(timeout = 30000) {
     let retryTimer;
     const waitAuthReady = () => {
       req = http.request('http://localhost:8080/auth/', () => {
-        clearTimeout(timer);
-        clearTimeout(retryTimer);
         console.log(
           '-------------------------------- connecting success ------------------------------',
         );
-        execSync('echo $IMAGE');
+        execSync('echo $IMAGE', { stdio: 'inherit' });
         execSync(
           "export NETWORK=$(docker inspect $IMAGE --format='{{range $k,$v := .NetworkSettings.Networks }} {{$k}} {{end}}')",
+          { stdio: 'inherit' },
         );
-        execSync('echo $NETWORk');
+        execSync('echo $NETWORk', { stdio: 'inherit' });
         console.log('------------------- end ----------------------------');
-        execSync('echo ---------------------------- just testing -----------------------');
+        execSync('echo ---------------------------- just testing -----------------------', {
+          stdio: 'inherit',
+        });
+        clearTimeout(timer);
+        clearTimeout(retryTimer);
         res(true);
       });
       req.once('error', () => {
