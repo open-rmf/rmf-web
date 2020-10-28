@@ -14,34 +14,34 @@ it('Matches snapshot', () => {
   root.unmount();
 });
 
-describe('Components gets correct label on specifics states', () => {
+describe('Components gets the correct label on specifics states', () => {
   let task: RomiCore.TaskSummary;
   beforeEach(() => {
     task = Object.values(fakeTaskSummary())[0];
   });
 
-  test('Correct ACTIVE label', () => {
+  test('Shows ACTIVE label', () => {
     task.state = RomiCore.TaskSummary.STATE_ACTIVE;
     const root = mount(<TaskSummaryPanelItem task={task} />);
     expect(root.html()).toContain('ACTIVE');
     root.unmount();
   });
 
-  test('Correct QUEUE label', () => {
+  test('Shows QUEUE label', () => {
     task.state = RomiCore.TaskSummary.STATE_QUEUED;
     const root = mount(<TaskSummaryPanelItem task={task} />);
     expect(root.html()).toContain('QUEUE');
     root.unmount();
   });
 
-  test('Correct COMPLETED label', () => {
+  test('Shows COMPLETED label', () => {
     task.state = RomiCore.TaskSummary.STATE_COMPLETED;
     const root = mount(<TaskSummaryPanelItem task={task} />);
     expect(root.html()).toContain('COMPLETED');
     root.unmount();
   });
 
-  test('Correct FAILED label', () => {
+  test('Shows FAILED label', () => {
     task.state = RomiCore.TaskSummary.STATE_FAILED;
     const root = mount(<TaskSummaryPanelItem task={task} />);
     expect(root.html()).toContain('FAILED');

@@ -117,7 +117,6 @@ const useStyles = makeStyles((theme) => ({
   root: {
     padding: '1rem',
   },
-
   accordionDetailLine: {
     display: 'flex',
     justifyContent: 'space-between',

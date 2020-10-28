@@ -1,956 +1,131 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Matches snapshot 1`] = `
-<Memo()
-  allTasks={
+<WithStyles(ForwardRef(TreeView))
+  className="makeStyles-root-1"
+  defaultCollapseIcon={<UNDEFINED />}
+  defaultExpandIcon={<UNDEFINED />}
+  defaultExpanded={
     Array [
-      Object {
-        "end_time": Object {
-          "nanosec": 0,
-          "sec": 0,
-        },
-        "start_time": Object {
-          "nanosec": 0,
-          "sec": 0,
-        },
-        "state": 1,
-        "status": "Moving [tinyRobot/tinyRobot1]: ( 9.81228 -6.98942 -3.12904) -> ( 6.26403 -3.51569  1.16864) | Remaining phases: 1 | Remaining phases: 6",
-        "submission_time": Object {
-          "nanosec": 0,
-          "sec": 0,
-        },
-        "task_id": "af8faee9-84ca-41ea-8bb6-8493cc9f824c",
-      },
-      Object {
-        "end_time": Object {
-          "nanosec": 0,
-          "sec": 0,
-        },
-        "start_time": Object {
-          "nanosec": 0,
-          "sec": 0,
-        },
-        "state": 1,
-        "status": "Moving [tinyRobot/tinyRobot2]: ( 9.81228 -6.98942 -3.12904) -> ( 6.26403 -3.51569  1.16864) | Remaining phases: 1 | Remaining phases: 6",
-        "submission_time": Object {
-          "nanosec": 0,
-          "sec": 0,
-        },
-        "task_id": "am8faee9-84ca-41ea-8bb6-8493cc9f8249",
-      },
+      "root",
     ]
   }
+  expanded={Array []}
+  onNodeSelect={[Function]}
+  onNodeToggle={[Function]}
+  selected={Array []}
 >
-  <WithStyles(ForwardRef(TreeView))
-    className="makeStyles-root-1"
-    defaultCollapseIcon={<UNDEFINED />}
-    defaultExpandIcon={<UNDEFINED />}
-    defaultExpanded={
-      Array [
-        "root",
-      ]
+  <WithStyles(ForwardRef(TreeItem))
+    classes={
+      Object {
+        "expanded": "makeStyles-expanded-5",
+        "label": "makeStyles-active-8 makeStyles-labelContent-4",
+        "root": "makeStyles-treeChildren-3",
+      }
     }
-    expanded={Array []}
-    onNodeSelect={[Function]}
-    onNodeToggle={[Function]}
-    selected={Array []}
+    data-component="TreeItem"
+    key="af8faee9-84ca-41ea-8bb6-8493cc9f824c"
+    label={
+      <React.Fragment>
+        <ForwardRef(WithStyles)
+          noWrap={true}
+          variant="body1"
+        >
+          <ForwardRef(WithStyles)
+            onClick={[Function]}
+          >
+            <UNDEFINED />
+          </ForwardRef(WithStyles)>
+          af8faee9-84ca-41ea-8bb6-8493cc9f824c
+        </ForwardRef(WithStyles)>
+        <ForwardRef(WithStyles)
+          className="makeStyles-taskActor-10"
+          variant="body1"
+        >
+          [tinyRobot/tinyRobot1]
+        </ForwardRef(WithStyles)>
+      </React.Fragment>
+    }
+    nodeId="af8faee9-84ca-41ea-8bb6-8493cc9f824c"
   >
-    <ForwardRef(TreeView)
-      className="makeStyles-root-1"
-      classes={
+    <TaskSummaryPanelItem
+      key="af8faee9-84ca-41ea-8bb6-8493cc9f824c"
+      task={
         Object {
-          "root": "MuiTreeView-root",
+          "end_time": Object {
+            "nanosec": 0,
+            "sec": 0,
+          },
+          "start_time": Object {
+            "nanosec": 0,
+            "sec": 0,
+          },
+          "state": 1,
+          "status": "Moving [tinyRobot/tinyRobot1]: ( 9.81228 -6.98942 -3.12904) -> ( 6.26403 -3.51569  1.16864) | Remaining phases: 1 | Remaining phases: 6",
+          "submission_time": Object {
+            "nanosec": 0,
+            "sec": 0,
+          },
+          "task_id": "af8faee9-84ca-41ea-8bb6-8493cc9f824c",
         }
       }
-      defaultCollapseIcon={<UNDEFINED />}
-      defaultExpandIcon={<UNDEFINED />}
-      defaultExpanded={
-        Array [
-          "root",
-        ]
+    />
+  </WithStyles(ForwardRef(TreeItem))>
+  <WithStyles(ForwardRef(TreeItem))
+    classes={
+      Object {
+        "expanded": "makeStyles-expanded-5",
+        "label": "makeStyles-active-8 makeStyles-labelContent-4",
+        "root": "makeStyles-treeChildren-3",
       }
-      expanded={Array []}
-      onNodeSelect={[Function]}
-      onNodeToggle={[Function]}
-      selected={Array []}
-    >
-      <ul
-        aria-multiselectable={false}
-        className="MuiTreeView-root makeStyles-root-1"
-        role="tree"
-      >
-        <WithStyles(ForwardRef(TreeItem))
-          classes={
-            Object {
-              "expanded": "makeStyles-expanded-5",
-              "label": "makeStyles-active-8 makeStyles-labelContent-4",
-              "root": "makeStyles-treeChildren-3",
-            }
-          }
-          data-component="TreeItem"
-          key="af8faee9-84ca-41ea-8bb6-8493cc9f824c"
-          label={
-            <React.Fragment>
-              <ForwardRef(WithStyles)
-                noWrap={true}
-                variant="body1"
-              >
-                <ForwardRef(WithStyles)
-                  onClick={[Function]}
-                >
-                  <UNDEFINED />
-                </ForwardRef(WithStyles)>
-                af8faee9-84ca-41ea-8bb6-8493cc9f824c
-              </ForwardRef(WithStyles)>
-              <ForwardRef(WithStyles)
-                className="makeStyles-taskActor-10"
-                variant="body1"
-              >
-                [tinyRobot/tinyRobot1]
-              </ForwardRef(WithStyles)>
-            </React.Fragment>
-          }
-          nodeId="af8faee9-84ca-41ea-8bb6-8493cc9f824c"
+    }
+    data-component="TreeItem"
+    key="am8faee9-84ca-41ea-8bb6-8493cc9f8249"
+    label={
+      <React.Fragment>
+        <ForwardRef(WithStyles)
+          noWrap={true}
+          variant="body1"
         >
-          <ForwardRef(TreeItem)
-            classes={
-              Object {
-                "content": "MuiTreeItem-content",
-                "expanded": "Mui-expanded makeStyles-expanded-5",
-                "group": "MuiTreeItem-group",
-                "iconContainer": "MuiTreeItem-iconContainer",
-                "label": "MuiTreeItem-label makeStyles-active-8 makeStyles-labelContent-4",
-                "root": "MuiTreeItem-root makeStyles-treeChildren-3",
-                "selected": "Mui-selected",
-              }
-            }
-            data-component="TreeItem"
-            label={
-              <React.Fragment>
-                <ForwardRef(WithStyles)
-                  noWrap={true}
-                  variant="body1"
-                >
-                  <ForwardRef(WithStyles)
-                    onClick={[Function]}
-                  >
-                    <UNDEFINED />
-                  </ForwardRef(WithStyles)>
-                  af8faee9-84ca-41ea-8bb6-8493cc9f824c
-                </ForwardRef(WithStyles)>
-                <ForwardRef(WithStyles)
-                  className="makeStyles-taskActor-10"
-                  variant="body1"
-                >
-                  [tinyRobot/tinyRobot1]
-                </ForwardRef(WithStyles)>
-              </React.Fragment>
-            }
-            nodeId="af8faee9-84ca-41ea-8bb6-8493cc9f824c"
+          <ForwardRef(WithStyles)
+            onClick={[Function]}
           >
-            <li
-              aria-expanded={false}
-              className="MuiTreeItem-root makeStyles-treeChildren-3"
-              data-component="TreeItem"
-              onFocus={[Function]}
-              onKeyDown={[Function]}
-              role="treeitem"
-              tabIndex={0}
-            >
-              <div
-                className="MuiTreeItem-content"
-                onClick={[Function]}
-                onMouseDown={[Function]}
-              >
-                <div
-                  className="MuiTreeItem-iconContainer"
-                >
-                  <ForwardRef>
-                    <WithStyles(ForwardRef(SvgIcon))>
-                      <ForwardRef(SvgIcon)
-                        classes={
-                          Object {
-                            "colorAction": "MuiSvgIcon-colorAction",
-                            "colorDisabled": "MuiSvgIcon-colorDisabled",
-                            "colorError": "MuiSvgIcon-colorError",
-                            "colorPrimary": "MuiSvgIcon-colorPrimary",
-                            "colorSecondary": "MuiSvgIcon-colorSecondary",
-                            "fontSizeInherit": "MuiSvgIcon-fontSizeInherit",
-                            "fontSizeLarge": "MuiSvgIcon-fontSizeLarge",
-                            "fontSizeSmall": "MuiSvgIcon-fontSizeSmall",
-                            "root": "MuiSvgIcon-root",
-                          }
-                        }
-                      >
-                        <svg
-                          aria-hidden={true}
-                          className="MuiSvgIcon-root"
-                          focusable="false"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"
-                          />
-                        </svg>
-                      </ForwardRef(SvgIcon)>
-                    </WithStyles(ForwardRef(SvgIcon))>
-                  </ForwardRef>
-                </div>
-                <WithStyles(ForwardRef(Typography))
-                  className="MuiTreeItem-label makeStyles-active-8 makeStyles-labelContent-4"
-                  component="div"
-                >
-                  <ForwardRef(Typography)
-                    className="MuiTreeItem-label makeStyles-active-8 makeStyles-labelContent-4"
-                    classes={
-                      Object {
-                        "alignCenter": "MuiTypography-alignCenter",
-                        "alignJustify": "MuiTypography-alignJustify",
-                        "alignLeft": "MuiTypography-alignLeft",
-                        "alignRight": "MuiTypography-alignRight",
-                        "body1": "MuiTypography-body1",
-                        "body2": "MuiTypography-body2",
-                        "button": "MuiTypography-button",
-                        "caption": "MuiTypography-caption",
-                        "colorError": "MuiTypography-colorError",
-                        "colorInherit": "MuiTypography-colorInherit",
-                        "colorPrimary": "MuiTypography-colorPrimary",
-                        "colorSecondary": "MuiTypography-colorSecondary",
-                        "colorTextPrimary": "MuiTypography-colorTextPrimary",
-                        "colorTextSecondary": "MuiTypography-colorTextSecondary",
-                        "displayBlock": "MuiTypography-displayBlock",
-                        "displayInline": "MuiTypography-displayInline",
-                        "gutterBottom": "MuiTypography-gutterBottom",
-                        "h1": "MuiTypography-h1",
-                        "h2": "MuiTypography-h2",
-                        "h3": "MuiTypography-h3",
-                        "h4": "MuiTypography-h4",
-                        "h5": "MuiTypography-h5",
-                        "h6": "MuiTypography-h6",
-                        "noWrap": "MuiTypography-noWrap",
-                        "overline": "MuiTypography-overline",
-                        "paragraph": "MuiTypography-paragraph",
-                        "root": "MuiTypography-root",
-                        "srOnly": "MuiTypography-srOnly",
-                        "subtitle1": "MuiTypography-subtitle1",
-                        "subtitle2": "MuiTypography-subtitle2",
-                      }
-                    }
-                    component="div"
-                  >
-                    <div
-                      className="MuiTypography-root MuiTreeItem-label makeStyles-active-8 makeStyles-labelContent-4 MuiTypography-body1"
-                    >
-                      <WithStyles(ForwardRef(Typography))
-                        noWrap={true}
-                        variant="body1"
-                      >
-                        <ForwardRef(Typography)
-                          classes={
-                            Object {
-                              "alignCenter": "MuiTypography-alignCenter",
-                              "alignJustify": "MuiTypography-alignJustify",
-                              "alignLeft": "MuiTypography-alignLeft",
-                              "alignRight": "MuiTypography-alignRight",
-                              "body1": "MuiTypography-body1",
-                              "body2": "MuiTypography-body2",
-                              "button": "MuiTypography-button",
-                              "caption": "MuiTypography-caption",
-                              "colorError": "MuiTypography-colorError",
-                              "colorInherit": "MuiTypography-colorInherit",
-                              "colorPrimary": "MuiTypography-colorPrimary",
-                              "colorSecondary": "MuiTypography-colorSecondary",
-                              "colorTextPrimary": "MuiTypography-colorTextPrimary",
-                              "colorTextSecondary": "MuiTypography-colorTextSecondary",
-                              "displayBlock": "MuiTypography-displayBlock",
-                              "displayInline": "MuiTypography-displayInline",
-                              "gutterBottom": "MuiTypography-gutterBottom",
-                              "h1": "MuiTypography-h1",
-                              "h2": "MuiTypography-h2",
-                              "h3": "MuiTypography-h3",
-                              "h4": "MuiTypography-h4",
-                              "h5": "MuiTypography-h5",
-                              "h6": "MuiTypography-h6",
-                              "noWrap": "MuiTypography-noWrap",
-                              "overline": "MuiTypography-overline",
-                              "paragraph": "MuiTypography-paragraph",
-                              "root": "MuiTypography-root",
-                              "srOnly": "MuiTypography-srOnly",
-                              "subtitle1": "MuiTypography-subtitle1",
-                              "subtitle2": "MuiTypography-subtitle2",
-                            }
-                          }
-                          noWrap={true}
-                          variant="body1"
-                        >
-                          <p
-                            className="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap"
-                          >
-                            <WithStyles(ForwardRef(IconButton))
-                              onClick={[Function]}
-                            >
-                              <ForwardRef(IconButton)
-                                classes={
-                                  Object {
-                                    "colorInherit": "MuiIconButton-colorInherit",
-                                    "colorPrimary": "MuiIconButton-colorPrimary",
-                                    "colorSecondary": "MuiIconButton-colorSecondary",
-                                    "disabled": "Mui-disabled",
-                                    "edgeEnd": "MuiIconButton-edgeEnd",
-                                    "edgeStart": "MuiIconButton-edgeStart",
-                                    "label": "MuiIconButton-label",
-                                    "root": "MuiIconButton-root",
-                                    "sizeSmall": "MuiIconButton-sizeSmall",
-                                  }
-                                }
-                                onClick={[Function]}
-                              >
-                                <WithStyles(ForwardRef(ButtonBase))
-                                  centerRipple={true}
-                                  className="MuiIconButton-root"
-                                  disabled={false}
-                                  focusRipple={true}
-                                  onClick={[Function]}
-                                >
-                                  <ForwardRef(ButtonBase)
-                                    centerRipple={true}
-                                    className="MuiIconButton-root"
-                                    classes={
-                                      Object {
-                                        "disabled": "Mui-disabled",
-                                        "focusVisible": "Mui-focusVisible",
-                                        "root": "MuiButtonBase-root",
-                                      }
-                                    }
-                                    disabled={false}
-                                    focusRipple={true}
-                                    onClick={[Function]}
-                                  >
-                                    <button
-                                      className="MuiButtonBase-root MuiIconButton-root"
-                                      disabled={false}
-                                      onBlur={[Function]}
-                                      onClick={[Function]}
-                                      onDragLeave={[Function]}
-                                      onFocus={[Function]}
-                                      onKeyDown={[Function]}
-                                      onKeyUp={[Function]}
-                                      onMouseDown={[Function]}
-                                      onMouseLeave={[Function]}
-                                      onMouseUp={[Function]}
-                                      onTouchEnd={[Function]}
-                                      onTouchMove={[Function]}
-                                      onTouchStart={[Function]}
-                                      tabIndex={0}
-                                      type="button"
-                                    >
-                                      <span
-                                        className="MuiIconButton-label"
-                                      >
-                                        <ForwardRef>
-                                          <WithStyles(ForwardRef(SvgIcon))>
-                                            <ForwardRef(SvgIcon)
-                                              classes={
-                                                Object {
-                                                  "colorAction": "MuiSvgIcon-colorAction",
-                                                  "colorDisabled": "MuiSvgIcon-colorDisabled",
-                                                  "colorError": "MuiSvgIcon-colorError",
-                                                  "colorPrimary": "MuiSvgIcon-colorPrimary",
-                                                  "colorSecondary": "MuiSvgIcon-colorSecondary",
-                                                  "fontSizeInherit": "MuiSvgIcon-fontSizeInherit",
-                                                  "fontSizeLarge": "MuiSvgIcon-fontSizeLarge",
-                                                  "fontSizeSmall": "MuiSvgIcon-fontSizeSmall",
-                                                  "root": "MuiSvgIcon-root",
-                                                }
-                                              }
-                                            >
-                                              <svg
-                                                aria-hidden={true}
-                                                className="MuiSvgIcon-root"
-                                                focusable="false"
-                                                viewBox="0 0 24 24"
-                                              >
-                                                <path
-                                                  d="M24 4C12.95 4 4 12.95 4 24s8.95 20 20 20 20-8.95 20-20S35.05 4 24 4zm-4 29V15l12 9-12 9z"
-                                                  transform="scale(0.5, 0.5)"
-                                                />
-                                              </svg>
-                                            </ForwardRef(SvgIcon)>
-                                          </WithStyles(ForwardRef(SvgIcon))>
-                                        </ForwardRef>
-                                      </span>
-                                      <WithStyles(memo)
-                                        center={true}
-                                      >
-                                        <ForwardRef(TouchRipple)
-                                          center={true}
-                                          classes={
-                                            Object {
-                                              "child": "MuiTouchRipple-child",
-                                              "childLeaving": "MuiTouchRipple-childLeaving",
-                                              "childPulsate": "MuiTouchRipple-childPulsate",
-                                              "ripple": "MuiTouchRipple-ripple",
-                                              "ripplePulsate": "MuiTouchRipple-ripplePulsate",
-                                              "rippleVisible": "MuiTouchRipple-rippleVisible",
-                                              "root": "MuiTouchRipple-root",
-                                            }
-                                          }
-                                        >
-                                          <span
-                                            className="MuiTouchRipple-root"
-                                          >
-                                            <TransitionGroup
-                                              childFactory={[Function]}
-                                              component={null}
-                                              exit={true}
-                                            />
-                                          </span>
-                                        </ForwardRef(TouchRipple)>
-                                      </WithStyles(memo)>
-                                    </button>
-                                  </ForwardRef(ButtonBase)>
-                                </WithStyles(ForwardRef(ButtonBase))>
-                              </ForwardRef(IconButton)>
-                            </WithStyles(ForwardRef(IconButton))>
-                            af8faee9-84ca-41ea-8bb6-8493cc9f824c
-                          </p>
-                        </ForwardRef(Typography)>
-                      </WithStyles(ForwardRef(Typography))>
-                      <WithStyles(ForwardRef(Typography))
-                        className="makeStyles-taskActor-10"
-                        variant="body1"
-                      >
-                        <ForwardRef(Typography)
-                          className="makeStyles-taskActor-10"
-                          classes={
-                            Object {
-                              "alignCenter": "MuiTypography-alignCenter",
-                              "alignJustify": "MuiTypography-alignJustify",
-                              "alignLeft": "MuiTypography-alignLeft",
-                              "alignRight": "MuiTypography-alignRight",
-                              "body1": "MuiTypography-body1",
-                              "body2": "MuiTypography-body2",
-                              "button": "MuiTypography-button",
-                              "caption": "MuiTypography-caption",
-                              "colorError": "MuiTypography-colorError",
-                              "colorInherit": "MuiTypography-colorInherit",
-                              "colorPrimary": "MuiTypography-colorPrimary",
-                              "colorSecondary": "MuiTypography-colorSecondary",
-                              "colorTextPrimary": "MuiTypography-colorTextPrimary",
-                              "colorTextSecondary": "MuiTypography-colorTextSecondary",
-                              "displayBlock": "MuiTypography-displayBlock",
-                              "displayInline": "MuiTypography-displayInline",
-                              "gutterBottom": "MuiTypography-gutterBottom",
-                              "h1": "MuiTypography-h1",
-                              "h2": "MuiTypography-h2",
-                              "h3": "MuiTypography-h3",
-                              "h4": "MuiTypography-h4",
-                              "h5": "MuiTypography-h5",
-                              "h6": "MuiTypography-h6",
-                              "noWrap": "MuiTypography-noWrap",
-                              "overline": "MuiTypography-overline",
-                              "paragraph": "MuiTypography-paragraph",
-                              "root": "MuiTypography-root",
-                              "srOnly": "MuiTypography-srOnly",
-                              "subtitle1": "MuiTypography-subtitle1",
-                              "subtitle2": "MuiTypography-subtitle2",
-                            }
-                          }
-                          variant="body1"
-                        >
-                          <p
-                            className="MuiTypography-root makeStyles-taskActor-10 MuiTypography-body1"
-                          >
-                            [tinyRobot/tinyRobot1]
-                          </p>
-                        </ForwardRef(Typography)>
-                      </WithStyles(ForwardRef(Typography))>
-                    </div>
-                  </ForwardRef(Typography)>
-                </WithStyles(ForwardRef(Typography))>
-              </div>
-              <WithStyles(ForwardRef(Collapse))
-                className="MuiTreeItem-group"
-                component="ul"
-                in={false}
-                role="group"
-                unmountOnExit={true}
-              >
-                <ForwardRef(Collapse)
-                  className="MuiTreeItem-group"
-                  classes={
-                    Object {
-                      "container": "MuiCollapse-container",
-                      "entered": "MuiCollapse-entered",
-                      "hidden": "MuiCollapse-hidden",
-                      "wrapper": "MuiCollapse-wrapper",
-                      "wrapperInner": "MuiCollapse-wrapperInner",
-                    }
-                  }
-                  component="ul"
-                  in={false}
-                  role="group"
-                  unmountOnExit={true}
-                >
-                  <Transition
-                    addEndListener={[Function]}
-                    appear={false}
-                    enter={true}
-                    exit={true}
-                    in={false}
-                    mountOnEnter={false}
-                    onEnter={[Function]}
-                    onEntered={[Function]}
-                    onEntering={[Function]}
-                    onExit={[Function]}
-                    onExited={[Function]}
-                    onExiting={[Function]}
-                    role="group"
-                    timeout={300}
-                    unmountOnExit={true}
-                  />
-                </ForwardRef(Collapse)>
-              </WithStyles(ForwardRef(Collapse))>
-            </li>
-          </ForwardRef(TreeItem)>
-        </WithStyles(ForwardRef(TreeItem))>
-        <WithStyles(ForwardRef(TreeItem))
-          classes={
-            Object {
-              "expanded": "makeStyles-expanded-5",
-              "label": "makeStyles-active-8 makeStyles-labelContent-4",
-              "root": "makeStyles-treeChildren-3",
-            }
-          }
-          data-component="TreeItem"
-          key="am8faee9-84ca-41ea-8bb6-8493cc9f8249"
-          label={
-            <React.Fragment>
-              <ForwardRef(WithStyles)
-                noWrap={true}
-                variant="body1"
-              >
-                <ForwardRef(WithStyles)
-                  onClick={[Function]}
-                >
-                  <UNDEFINED />
-                </ForwardRef(WithStyles)>
-                am8faee9-84ca-41ea-8bb6-8493cc9f8249
-              </ForwardRef(WithStyles)>
-              <ForwardRef(WithStyles)
-                className="makeStyles-taskActor-10"
-                variant="body1"
-              >
-                [tinyRobot/tinyRobot2]
-              </ForwardRef(WithStyles)>
-            </React.Fragment>
-          }
-          nodeId="am8faee9-84ca-41ea-8bb6-8493cc9f8249"
+            <UNDEFINED />
+          </ForwardRef(WithStyles)>
+          am8faee9-84ca-41ea-8bb6-8493cc9f8249
+        </ForwardRef(WithStyles)>
+        <ForwardRef(WithStyles)
+          className="makeStyles-taskActor-10"
+          variant="body1"
         >
-          <ForwardRef(TreeItem)
-            classes={
-              Object {
-                "content": "MuiTreeItem-content",
-                "expanded": "Mui-expanded makeStyles-expanded-5",
-                "group": "MuiTreeItem-group",
-                "iconContainer": "MuiTreeItem-iconContainer",
-                "label": "MuiTreeItem-label makeStyles-active-8 makeStyles-labelContent-4",
-                "root": "MuiTreeItem-root makeStyles-treeChildren-3",
-                "selected": "Mui-selected",
-              }
-            }
-            data-component="TreeItem"
-            label={
-              <React.Fragment>
-                <ForwardRef(WithStyles)
-                  noWrap={true}
-                  variant="body1"
-                >
-                  <ForwardRef(WithStyles)
-                    onClick={[Function]}
-                  >
-                    <UNDEFINED />
-                  </ForwardRef(WithStyles)>
-                  am8faee9-84ca-41ea-8bb6-8493cc9f8249
-                </ForwardRef(WithStyles)>
-                <ForwardRef(WithStyles)
-                  className="makeStyles-taskActor-10"
-                  variant="body1"
-                >
-                  [tinyRobot/tinyRobot2]
-                </ForwardRef(WithStyles)>
-              </React.Fragment>
-            }
-            nodeId="am8faee9-84ca-41ea-8bb6-8493cc9f8249"
-          >
-            <li
-              aria-expanded={false}
-              className="MuiTreeItem-root makeStyles-treeChildren-3"
-              data-component="TreeItem"
-              onFocus={[Function]}
-              onKeyDown={[Function]}
-              role="treeitem"
-              tabIndex={-1}
-            >
-              <div
-                className="MuiTreeItem-content"
-                onClick={[Function]}
-                onMouseDown={[Function]}
-              >
-                <div
-                  className="MuiTreeItem-iconContainer"
-                >
-                  <ForwardRef>
-                    <WithStyles(ForwardRef(SvgIcon))>
-                      <ForwardRef(SvgIcon)
-                        classes={
-                          Object {
-                            "colorAction": "MuiSvgIcon-colorAction",
-                            "colorDisabled": "MuiSvgIcon-colorDisabled",
-                            "colorError": "MuiSvgIcon-colorError",
-                            "colorPrimary": "MuiSvgIcon-colorPrimary",
-                            "colorSecondary": "MuiSvgIcon-colorSecondary",
-                            "fontSizeInherit": "MuiSvgIcon-fontSizeInherit",
-                            "fontSizeLarge": "MuiSvgIcon-fontSizeLarge",
-                            "fontSizeSmall": "MuiSvgIcon-fontSizeSmall",
-                            "root": "MuiSvgIcon-root",
-                          }
-                        }
-                      >
-                        <svg
-                          aria-hidden={true}
-                          className="MuiSvgIcon-root"
-                          focusable="false"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"
-                          />
-                        </svg>
-                      </ForwardRef(SvgIcon)>
-                    </WithStyles(ForwardRef(SvgIcon))>
-                  </ForwardRef>
-                </div>
-                <WithStyles(ForwardRef(Typography))
-                  className="MuiTreeItem-label makeStyles-active-8 makeStyles-labelContent-4"
-                  component="div"
-                >
-                  <ForwardRef(Typography)
-                    className="MuiTreeItem-label makeStyles-active-8 makeStyles-labelContent-4"
-                    classes={
-                      Object {
-                        "alignCenter": "MuiTypography-alignCenter",
-                        "alignJustify": "MuiTypography-alignJustify",
-                        "alignLeft": "MuiTypography-alignLeft",
-                        "alignRight": "MuiTypography-alignRight",
-                        "body1": "MuiTypography-body1",
-                        "body2": "MuiTypography-body2",
-                        "button": "MuiTypography-button",
-                        "caption": "MuiTypography-caption",
-                        "colorError": "MuiTypography-colorError",
-                        "colorInherit": "MuiTypography-colorInherit",
-                        "colorPrimary": "MuiTypography-colorPrimary",
-                        "colorSecondary": "MuiTypography-colorSecondary",
-                        "colorTextPrimary": "MuiTypography-colorTextPrimary",
-                        "colorTextSecondary": "MuiTypography-colorTextSecondary",
-                        "displayBlock": "MuiTypography-displayBlock",
-                        "displayInline": "MuiTypography-displayInline",
-                        "gutterBottom": "MuiTypography-gutterBottom",
-                        "h1": "MuiTypography-h1",
-                        "h2": "MuiTypography-h2",
-                        "h3": "MuiTypography-h3",
-                        "h4": "MuiTypography-h4",
-                        "h5": "MuiTypography-h5",
-                        "h6": "MuiTypography-h6",
-                        "noWrap": "MuiTypography-noWrap",
-                        "overline": "MuiTypography-overline",
-                        "paragraph": "MuiTypography-paragraph",
-                        "root": "MuiTypography-root",
-                        "srOnly": "MuiTypography-srOnly",
-                        "subtitle1": "MuiTypography-subtitle1",
-                        "subtitle2": "MuiTypography-subtitle2",
-                      }
-                    }
-                    component="div"
-                  >
-                    <div
-                      className="MuiTypography-root MuiTreeItem-label makeStyles-active-8 makeStyles-labelContent-4 MuiTypography-body1"
-                    >
-                      <WithStyles(ForwardRef(Typography))
-                        noWrap={true}
-                        variant="body1"
-                      >
-                        <ForwardRef(Typography)
-                          classes={
-                            Object {
-                              "alignCenter": "MuiTypography-alignCenter",
-                              "alignJustify": "MuiTypography-alignJustify",
-                              "alignLeft": "MuiTypography-alignLeft",
-                              "alignRight": "MuiTypography-alignRight",
-                              "body1": "MuiTypography-body1",
-                              "body2": "MuiTypography-body2",
-                              "button": "MuiTypography-button",
-                              "caption": "MuiTypography-caption",
-                              "colorError": "MuiTypography-colorError",
-                              "colorInherit": "MuiTypography-colorInherit",
-                              "colorPrimary": "MuiTypography-colorPrimary",
-                              "colorSecondary": "MuiTypography-colorSecondary",
-                              "colorTextPrimary": "MuiTypography-colorTextPrimary",
-                              "colorTextSecondary": "MuiTypography-colorTextSecondary",
-                              "displayBlock": "MuiTypography-displayBlock",
-                              "displayInline": "MuiTypography-displayInline",
-                              "gutterBottom": "MuiTypography-gutterBottom",
-                              "h1": "MuiTypography-h1",
-                              "h2": "MuiTypography-h2",
-                              "h3": "MuiTypography-h3",
-                              "h4": "MuiTypography-h4",
-                              "h5": "MuiTypography-h5",
-                              "h6": "MuiTypography-h6",
-                              "noWrap": "MuiTypography-noWrap",
-                              "overline": "MuiTypography-overline",
-                              "paragraph": "MuiTypography-paragraph",
-                              "root": "MuiTypography-root",
-                              "srOnly": "MuiTypography-srOnly",
-                              "subtitle1": "MuiTypography-subtitle1",
-                              "subtitle2": "MuiTypography-subtitle2",
-                            }
-                          }
-                          noWrap={true}
-                          variant="body1"
-                        >
-                          <p
-                            className="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap"
-                          >
-                            <WithStyles(ForwardRef(IconButton))
-                              onClick={[Function]}
-                            >
-                              <ForwardRef(IconButton)
-                                classes={
-                                  Object {
-                                    "colorInherit": "MuiIconButton-colorInherit",
-                                    "colorPrimary": "MuiIconButton-colorPrimary",
-                                    "colorSecondary": "MuiIconButton-colorSecondary",
-                                    "disabled": "Mui-disabled",
-                                    "edgeEnd": "MuiIconButton-edgeEnd",
-                                    "edgeStart": "MuiIconButton-edgeStart",
-                                    "label": "MuiIconButton-label",
-                                    "root": "MuiIconButton-root",
-                                    "sizeSmall": "MuiIconButton-sizeSmall",
-                                  }
-                                }
-                                onClick={[Function]}
-                              >
-                                <WithStyles(ForwardRef(ButtonBase))
-                                  centerRipple={true}
-                                  className="MuiIconButton-root"
-                                  disabled={false}
-                                  focusRipple={true}
-                                  onClick={[Function]}
-                                >
-                                  <ForwardRef(ButtonBase)
-                                    centerRipple={true}
-                                    className="MuiIconButton-root"
-                                    classes={
-                                      Object {
-                                        "disabled": "Mui-disabled",
-                                        "focusVisible": "Mui-focusVisible",
-                                        "root": "MuiButtonBase-root",
-                                      }
-                                    }
-                                    disabled={false}
-                                    focusRipple={true}
-                                    onClick={[Function]}
-                                  >
-                                    <button
-                                      className="MuiButtonBase-root MuiIconButton-root"
-                                      disabled={false}
-                                      onBlur={[Function]}
-                                      onClick={[Function]}
-                                      onDragLeave={[Function]}
-                                      onFocus={[Function]}
-                                      onKeyDown={[Function]}
-                                      onKeyUp={[Function]}
-                                      onMouseDown={[Function]}
-                                      onMouseLeave={[Function]}
-                                      onMouseUp={[Function]}
-                                      onTouchEnd={[Function]}
-                                      onTouchMove={[Function]}
-                                      onTouchStart={[Function]}
-                                      tabIndex={0}
-                                      type="button"
-                                    >
-                                      <span
-                                        className="MuiIconButton-label"
-                                      >
-                                        <ForwardRef>
-                                          <WithStyles(ForwardRef(SvgIcon))>
-                                            <ForwardRef(SvgIcon)
-                                              classes={
-                                                Object {
-                                                  "colorAction": "MuiSvgIcon-colorAction",
-                                                  "colorDisabled": "MuiSvgIcon-colorDisabled",
-                                                  "colorError": "MuiSvgIcon-colorError",
-                                                  "colorPrimary": "MuiSvgIcon-colorPrimary",
-                                                  "colorSecondary": "MuiSvgIcon-colorSecondary",
-                                                  "fontSizeInherit": "MuiSvgIcon-fontSizeInherit",
-                                                  "fontSizeLarge": "MuiSvgIcon-fontSizeLarge",
-                                                  "fontSizeSmall": "MuiSvgIcon-fontSizeSmall",
-                                                  "root": "MuiSvgIcon-root",
-                                                }
-                                              }
-                                            >
-                                              <svg
-                                                aria-hidden={true}
-                                                className="MuiSvgIcon-root"
-                                                focusable="false"
-                                                viewBox="0 0 24 24"
-                                              >
-                                                <path
-                                                  d="M24 4C12.95 4 4 12.95 4 24s8.95 20 20 20 20-8.95 20-20S35.05 4 24 4zm-4 29V15l12 9-12 9z"
-                                                  transform="scale(0.5, 0.5)"
-                                                />
-                                              </svg>
-                                            </ForwardRef(SvgIcon)>
-                                          </WithStyles(ForwardRef(SvgIcon))>
-                                        </ForwardRef>
-                                      </span>
-                                      <WithStyles(memo)
-                                        center={true}
-                                      >
-                                        <ForwardRef(TouchRipple)
-                                          center={true}
-                                          classes={
-                                            Object {
-                                              "child": "MuiTouchRipple-child",
-                                              "childLeaving": "MuiTouchRipple-childLeaving",
-                                              "childPulsate": "MuiTouchRipple-childPulsate",
-                                              "ripple": "MuiTouchRipple-ripple",
-                                              "ripplePulsate": "MuiTouchRipple-ripplePulsate",
-                                              "rippleVisible": "MuiTouchRipple-rippleVisible",
-                                              "root": "MuiTouchRipple-root",
-                                            }
-                                          }
-                                        >
-                                          <span
-                                            className="MuiTouchRipple-root"
-                                          >
-                                            <TransitionGroup
-                                              childFactory={[Function]}
-                                              component={null}
-                                              exit={true}
-                                            />
-                                          </span>
-                                        </ForwardRef(TouchRipple)>
-                                      </WithStyles(memo)>
-                                    </button>
-                                  </ForwardRef(ButtonBase)>
-                                </WithStyles(ForwardRef(ButtonBase))>
-                              </ForwardRef(IconButton)>
-                            </WithStyles(ForwardRef(IconButton))>
-                            am8faee9-84ca-41ea-8bb6-8493cc9f8249
-                          </p>
-                        </ForwardRef(Typography)>
-                      </WithStyles(ForwardRef(Typography))>
-                      <WithStyles(ForwardRef(Typography))
-                        className="makeStyles-taskActor-10"
-                        variant="body1"
-                      >
-                        <ForwardRef(Typography)
-                          className="makeStyles-taskActor-10"
-                          classes={
-                            Object {
-                              "alignCenter": "MuiTypography-alignCenter",
-                              "alignJustify": "MuiTypography-alignJustify",
-                              "alignLeft": "MuiTypography-alignLeft",
-                              "alignRight": "MuiTypography-alignRight",
-                              "body1": "MuiTypography-body1",
-                              "body2": "MuiTypography-body2",
-                              "button": "MuiTypography-button",
-                              "caption": "MuiTypography-caption",
-                              "colorError": "MuiTypography-colorError",
-                              "colorInherit": "MuiTypography-colorInherit",
-                              "colorPrimary": "MuiTypography-colorPrimary",
-                              "colorSecondary": "MuiTypography-colorSecondary",
-                              "colorTextPrimary": "MuiTypography-colorTextPrimary",
-                              "colorTextSecondary": "MuiTypography-colorTextSecondary",
-                              "displayBlock": "MuiTypography-displayBlock",
-                              "displayInline": "MuiTypography-displayInline",
-                              "gutterBottom": "MuiTypography-gutterBottom",
-                              "h1": "MuiTypography-h1",
-                              "h2": "MuiTypography-h2",
-                              "h3": "MuiTypography-h3",
-                              "h4": "MuiTypography-h4",
-                              "h5": "MuiTypography-h5",
-                              "h6": "MuiTypography-h6",
-                              "noWrap": "MuiTypography-noWrap",
-                              "overline": "MuiTypography-overline",
-                              "paragraph": "MuiTypography-paragraph",
-                              "root": "MuiTypography-root",
-                              "srOnly": "MuiTypography-srOnly",
-                              "subtitle1": "MuiTypography-subtitle1",
-                              "subtitle2": "MuiTypography-subtitle2",
-                            }
-                          }
-                          variant="body1"
-                        >
-                          <p
-                            className="MuiTypography-root makeStyles-taskActor-10 MuiTypography-body1"
-                          >
-                            [tinyRobot/tinyRobot2]
-                          </p>
-                        </ForwardRef(Typography)>
-                      </WithStyles(ForwardRef(Typography))>
-                    </div>
-                  </ForwardRef(Typography)>
-                </WithStyles(ForwardRef(Typography))>
-              </div>
-              <WithStyles(ForwardRef(Collapse))
-                className="MuiTreeItem-group"
-                component="ul"
-                in={false}
-                role="group"
-                unmountOnExit={true}
-              >
-                <ForwardRef(Collapse)
-                  className="MuiTreeItem-group"
-                  classes={
-                    Object {
-                      "container": "MuiCollapse-container",
-                      "entered": "MuiCollapse-entered",
-                      "hidden": "MuiCollapse-hidden",
-                      "wrapper": "MuiCollapse-wrapper",
-                      "wrapperInner": "MuiCollapse-wrapperInner",
-                    }
-                  }
-                  component="ul"
-                  in={false}
-                  role="group"
-                  unmountOnExit={true}
-                >
-                  <Transition
-                    addEndListener={[Function]}
-                    appear={false}
-                    enter={true}
-                    exit={true}
-                    in={false}
-                    mountOnEnter={false}
-                    onEnter={[Function]}
-                    onEntered={[Function]}
-                    onEntering={[Function]}
-                    onExit={[Function]}
-                    onExited={[Function]}
-                    onExiting={[Function]}
-                    role="group"
-                    timeout={300}
-                    unmountOnExit={true}
-                  />
-                </ForwardRef(Collapse)>
-              </WithStyles(ForwardRef(Collapse))>
-            </li>
-          </ForwardRef(TreeItem)>
-        </WithStyles(ForwardRef(TreeItem))>
-      </ul>
-    </ForwardRef(TreeView)>
-  </WithStyles(ForwardRef(TreeView))>
-</Memo()>
+          [tinyRobot/tinyRobot2]
+        </ForwardRef(WithStyles)>
+      </React.Fragment>
+    }
+    nodeId="am8faee9-84ca-41ea-8bb6-8493cc9f8249"
+  >
+    <TaskSummaryPanelItem
+      key="am8faee9-84ca-41ea-8bb6-8493cc9f8249"
+      task={
+        Object {
+          "end_time": Object {
+            "nanosec": 0,
+            "sec": 0,
+          },
+          "start_time": Object {
+            "nanosec": 0,
+            "sec": 0,
+          },
+          "state": 1,
+          "status": "Moving [tinyRobot/tinyRobot2]: ( 9.81228 -6.98942 -3.12904) -> ( 6.26403 -3.51569  1.16864) | Remaining phases: 1 | Remaining phases: 6",
+          "submission_time": Object {
+            "nanosec": 0,
+            "sec": 0,
+          },
+          "task_id": "am8faee9-84ca-41ea-8bb6-8493cc9f8249",
+        }
+      }
+    />
+  </WithStyles(ForwardRef(TreeItem))>
+</WithStyles(ForwardRef(TreeView))>
 `;
