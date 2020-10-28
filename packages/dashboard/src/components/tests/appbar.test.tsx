@@ -18,6 +18,7 @@ const buildWrapper = (
       showSettings={showSettings}
       showHelp={showHelp}
       tooltips={tooltips}
+      alarmState={null}
     />,
   );
   return root;
@@ -82,6 +83,7 @@ describe('AppBar', () => {
           showSettings={showSettings}
           showHelp={showHelp}
           tooltips={tooltips}
+          alarmState={null}
         />
       </UserContext.Provider>,
     );
@@ -100,6 +102,7 @@ describe('AppBar', () => {
             showSettings={showSettings}
             showHelp={showHelp}
             tooltips={tooltips}
+            alarmState={null}
           />
         </UserContext.Provider>
       </AuthenticatorContext.Provider>,

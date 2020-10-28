@@ -1,5 +1,11 @@
 import { makeLauncher } from '../rmf-launcher';
-import { login, overwriteClick, removeTextFromAutocomplete } from './utils';
+import {
+  login,
+  openRequestForm,
+  overwriteClick,
+  removeTextFromAutocomplete,
+  requestLoop,
+} from './utils';
 
 describe('Loop request for negotiations', () => {
   const launcher = makeLauncher();
@@ -14,39 +20,15 @@ describe('Loop request for negotiations', () => {
 
   it('renders negotiation trajectory', () => {
     browser.setTimeout({ script: 120000 });
-
-    $('[data-component=MainMenu] [data-item=Commands]').click();
-
-    const loopForm = $('[data-component=LoopForm]');
-    loopForm.click();
-
-    $('input[name=startLocation]').waitForClickable();
-    $('input[name=startLocation]').setValue(removeTextFromAutocomplete(10));
-    $('input[name=startLocation]').setValue('pantry');
-    $('.MuiAutocomplete-popper').click();
-
-    $('input[name=finishLocation]').waitForClickable();
-    $('input[name=finishLocation]').setValue(removeTextFromAutocomplete(20));
-    $('input[name=finishLocation]').setValue('cubicle_1');
-    $('.MuiAutocomplete-popper').click();
-
-    $('input[name=numLoops]').waitForClickable();
-    $('input[name=numLoops]').setValue(1);
-    loopForm.$('button=Request').click();
-
-    $('input[name=startLocation]').waitForClickable();
-    $('input[name=startLocation]').setValue(removeTextFromAutocomplete(10));
-    $('input[name=startLocation]').setValue('pantry');
-    $('.MuiAutocomplete-popper').click();
-
-    $('input[name=finishLocation]').waitForClickable();
-    $('input[name=finishLocation]').setValue(removeTextFromAutocomplete(20));
-    $('input[name=finishLocation]').setValue('cubicle_2');
-    $('.MuiAutocomplete-popper').click();
-
-    $('input[name=numLoops]').waitForClickable();
-    $('input[name=numLoops]').setValue(1);
-    loopForm.$('button=Request').click();
+    openRequestForm();
+    requestLoop({
+      pointA: 'pantry',
+      pointB: 'cubicle_1',
+    });
+    requestLoop({
+      pointA: 'pantry',
+      pointB: 'cubicle_2',
+    });
 
     const backButton = $('[name="back-button"]');
     backButton.click();
