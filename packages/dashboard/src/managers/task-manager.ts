@@ -25,6 +25,7 @@ export default class TaskManager extends EventEmitter<Events> {
 
   static getActorFromStatus(status: string) {
     // Gets the name of the robot if it has any
+    // eslint-disable-next-line
     return status.match(/\[[A-Za-z]([a-zA-Z0-9\/]){3,}\]+/gi);
   }
 

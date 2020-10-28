@@ -555,7 +555,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                   />
                 </OmniPanelView>
                 <OmniPanelView id={OmniPanelViewIndex.Tasks}>
-                  <TaskSummaryPanel transport={transport} allTasks={tasks} />
+                  <TaskSummaryPanel allTasks={tasks} />
                 </OmniPanelView>
               </OmniPanel>
             </Fade>
