@@ -4,9 +4,7 @@ const { execSync } = require('child_process');
 execSync('cd .. && node ./scripts/setup/get-icons.js', { stdio: 'inherit' });
 
 execSync('npm run build', { stdio: 'inherit' });
-console.log(
-  'starting concurrently ....................................................................',
-);
+
 // wrap in double quotes to support args with spaces
 const wdioArgs = process.argv
   .slice(2)

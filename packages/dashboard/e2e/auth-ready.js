@@ -4,11 +4,8 @@ const { execSync } = require('child_process');
  * Waits for the authentication server to be ready.
  * @param timeout Max amount of time (in milliseconds) to wait for
  */
-execSync('echo Hello_world__________________________________________', {
-  stdio: 'inherit',
-});
-console.log('can i see what is logged out ?????????????');
-async function authReady(timeout = 30000) {
+async function authReady(timeout = 300000) {
+  console.log('........ auth Ready ..................');
   return new Promise((res) => {
     let req;
     const timer = setTimeout(() => {
@@ -19,20 +16,17 @@ async function authReady(timeout = 30000) {
     }, timeout);
     let retryTimer;
     const waitAuthReady = () => {
+      console.log('............... trying waitAuthReady ...................');
       req = http.request('http://localhost:8080/auth/', () => {
         console.log(
           '-------------------------------- connecting success ------------------------------',
         );
-        execSync('echo $IMAGE', { stdio: 'inherit' });
-        execSync(
-          "export NETWORK=$(docker inspect $IMAGE --format='{{range $k,$v := .NetworkSettings.Networks }} {{$k}} {{end}}')",
+        let network = execSync(
+          "docker inspect $IMAGE --format='{{range $k,$v := .NetworkSettings.Networks }} {{$k}} {{end}}'",
           { stdio: 'inherit' },
         );
-        execSync('echo $NETWORk', { stdio: 'inherit' });
-        console.log('------------------- end ----------------------------');
-        execSync('echo ---------------------------- just testing -----------------------', {
-          stdio: 'inherit',
-        });
+        process.env.NETWORK = network;
+        execSync('echo $NETWORK', { stdio: 'inherit' });
         clearTimeout(timer);
         clearTimeout(retryTimer);
         res(true);
