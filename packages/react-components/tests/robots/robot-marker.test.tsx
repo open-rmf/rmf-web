@@ -1,4 +1,4 @@
-import { act, render as render_ } from '@testing-library/react';
+import { act, render as render_, RenderResult } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { ColorContext, ColorManager, RobotMarker } from '../../lib';
@@ -12,7 +12,7 @@ beforeEach(() => {
   colorManager.robotPrimaryColor = jest.fn(async () => 'black');
 });
 
-async function render(Component: JSX.Element) {
+async function render(Component: JSX.Element): Promise<RenderResult> {
   const renderImpl = () => {
     return render_(
       <ColorContext.Provider value={colorManager}>
@@ -21,15 +21,16 @@ async function render(Component: JSX.Element) {
     );
   };
 
-  let root: ReturnType<typeof renderImpl> | undefined = undefined;
+  let root: ReturnType<typeof renderImpl>;
   await act(async () => {
-    root = renderImpl();
+    root = render_(
+      <ColorContext.Provider value={colorManager}>
+        <svg>{Component}</svg>
+      </ColorContext.Provider>,
+    );
   });
 
-  if (!root) {
-    throw new Error('render fail for unknown reason');
-  }
-  return root;
+  return root!;
 }
 
 test('trigger onClick event', async () => {
