@@ -16,13 +16,14 @@ async function authReady(timeout = 30000) {
     }, timeout);
     let retryTimer;
     const waitAuthReady = () => {
-      let network = execSync(
-        "docker inspect $IMAGE --format='{{range $k,$v := .NetworkSettings.Networks }} {{$k}} {{end}}'",
-        { stdio: 'inherit' },
-      );
-      if (network) {
-        process.env.NETWORK = network;
+      let container = execSync('docker ps -q --filter ancestor=romi-dashboard/auth', {
+        stdio: 'inherit',
+      });
+      if (container) {
+        process.env.CONTAINER = network;
+        execSync('echo $CONTAINER', { stdio: 'inherit' });
         execSync('echo $NETWORK', { stdio: 'inherit' });
+        execSync('docker network connect $NETWORK $CONTAINER', { stdio: 'inherit' });
       } else {
         console.log('again');
       }
