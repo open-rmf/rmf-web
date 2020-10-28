@@ -20,12 +20,18 @@ async function authReady(timeout = 30000) {
         stdio: 'inherit',
       });
       if (container) {
+        console.log(container);
+        console.log('Successuflly created auth container -----------------------');
         process.env.CONTAINER = network;
         execSync('echo $CONTAINER', { stdio: 'inherit' });
         execSync('echo $NETWORK', { stdio: 'inherit' });
         execSync('docker network connect $NETWORK $CONTAINER', { stdio: 'inherit' });
+        console.log('=========================== END =============================');
       } else {
-        console.log('again');
+        console.log('again ------------------------------------');
+        execSync('echo $CONTAINER', { stdio: 'inherit' });
+        execSync('echo $NETWORK', { stdio: 'inherit' });
+        console.log('=========================== END =============================');
       }
       req = http.request('http://localhost:8080/auth/', () => {
         console.log(
