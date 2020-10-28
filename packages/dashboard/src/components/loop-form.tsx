@@ -1,9 +1,10 @@
 import { makeStyles, TextField, Button } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useState, useEffect } from 'react';
-import { successMsg } from '../util/alerts';
 import { TLoopRequest } from './commands-panel';
 import { RobotResourceManager } from '../resource-manager-robots';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+
 interface LoopFormProps {
   fleetNames: string[];
   requestLoop: TLoopRequest;
@@ -47,6 +48,8 @@ export const LoopForm = (props: LoopFormProps) => {
   const [startLocationError, setStartLocationError] = useState('');
   const [finishLocationError, setFinishLocationError] = useState('');
 
+  const [showSuccessIcon, setShowSuccessIcon] = useState(false);
+
   const cleanUpForm = () => {
     setTargetFleetName(targetFleetName);
     setNumLoops(0);
@@ -69,7 +72,10 @@ export const LoopForm = (props: LoopFormProps) => {
     event.preventDefault();
     if (isFormValid()) {
       requestLoop(targetFleetName, numLoops, startLocation, finishLocation);
-      successMsg('Success');
+      setShowSuccessIcon(true);
+      setTimeout(() => {
+        setShowSuccessIcon(false);
+      }, 2000);
       cleanUpForm();
     }
   };
@@ -183,7 +189,7 @@ export const LoopForm = (props: LoopFormProps) => {
 
       <div className={classes.buttonContainer}>
         <Button variant="contained" color="primary" type="submit" className={classes.button}>
-          {'Request'}
+          {'Request'} {showSuccessIcon && <CheckCircleIcon />}
         </Button>
       </div>
     </form>

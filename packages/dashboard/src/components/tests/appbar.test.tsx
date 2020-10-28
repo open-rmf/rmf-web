@@ -16,6 +16,7 @@ const buildWrapper = (
       toggleShowOmniPanel={toggleShowOmniPanel}
       showSettings={showSettings}
       showHelp={showHelp}
+      alarmState={null}
     />,
   );
   return root;
@@ -62,6 +63,7 @@ describe('AppBar', () => {
           toggleShowOmniPanel={toggleShowOmniPanel}
           showSettings={showSettings}
           showHelp={showHelp}
+          alarmState={null}
         />
       </UserContext.Provider>,
     );
@@ -79,6 +81,7 @@ describe('AppBar', () => {
             toggleShowOmniPanel={toggleShowOmniPanel}
             showSettings={showSettings}
             showHelp={showHelp}
+            alarmState={null}
           />
         </UserContext.Provider>
       </AuthenticatorContext.Provider>,

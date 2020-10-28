@@ -49,7 +49,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.56",
     "@msgpack/msgpack": "^2.1.0",
-    "@osrf/romi-js-core-interfaces": "^0.1.2",
+    "@osrf/romi-js-core-interfaces": "^0.1.4",
     "@types/debug": "^4.1.5",
     "@types/enzyme-adapter-react-16": "^1.0.6",
     "@types/leaflet": "^1.5.17",
@@ -81,7 +81,6 @@
     "react-scripts": "^3.4.3",
     "reactour": "^1.18.0",
     "styled-components": "^4.4.1",
-    "sweetalert2": "^10.0.2",
     "typeface-roboto": "0.0.75",
     "uuid": "^8.3.0"
   },
