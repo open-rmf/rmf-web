@@ -8,7 +8,7 @@ import { Element } from '@wdio/sync';
 export function overwriteClick() {
   browser.overwriteCommand(
     'click',
-    function(this: Element, origClick) {
+    function (this: Element, origClick) {
       let prevLocation = this.getLocation();
       this.waitUntil(() => {
         const newLocation = this.getLocation();
@@ -39,7 +39,7 @@ export function removeTextFromAutocomplete(characterNum: number): string {
  */
 export const getRobotLocations = (browser: WebdriverIO.BrowserObject): string[] => {
   const allRobotItems = browser.custom$$('findAllRobots', '[data-component=RobotItem]');
-  let robotLocations = allRobotItems.map(robot => {
+  let robotLocations = allRobotItems.map((robot) => {
     robot.click();
     return robot.$('[data-role=position]').getHTML();
   });
