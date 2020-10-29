@@ -10,6 +10,7 @@ import { TaskSummaryPanelItem } from './task-summary-panel-item';
 import PlayCircleFilledWhiteIcon from '@material-ui/icons/PlayCircleFilledWhite';
 import TaskManager from '../managers/task-manager';
 import { colorPalette } from '../util/css-utils';
+import { TreeButtonGroup } from './tree-button-group';
 
 const debug = Debug('OmniPanel:TaskSummaryPanel');
 
@@ -31,15 +32,44 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryPanelProps) => {
     // TODO: spotlight
   }, [spotlight]);
 
+  const [taskContents, setTaskContents] = React.useState<{
+    [key: string]: JSX.Element;
+  }>({});
   const [expanded, setExpanded] = React.useState<string[]>([]);
-  const [selected, setSelected] = React.useState<string[]>([]);
+  const [selected, setSelected] = React.useState<string>('');
+  const [savedTasksContent, setSavedTasksContent] = React.useState<{
+    [key: string]: JSX.Element;
+  }>({});
 
   const handleToggle = (event: React.ChangeEvent<{}>, nodeIds: string[]) => {
     setExpanded(nodeIds);
   };
 
-  const handleSelect = (event: React.ChangeEvent<{}>, nodeIds: string[]) => {
+  const handleSelect = (event: React.ChangeEvent<{}>, nodeIds: string) => {
     setSelected(nodeIds);
+  };
+
+  const handleResetTasks = () => {
+    setExpanded([]);
+    setSelected('');
+  };
+
+  const handleClearAllCurrTasks = () => {
+    setSavedTasksContent(taskContents);
+    setTaskContents({});
+  };
+
+  const handleRestoreTasks = () => {
+    // Assigning another reference
+    let taskContentsTemp = Object.assign({}, taskContents);
+    Object.keys(savedTasksContent).forEach((element) => {
+      console.log(!(element in taskContents));
+      if (!(element in taskContents)) {
+        taskContentsTemp[element] = savedTasksContent[element];
+      }
+    });
+    setTaskContents(taskContentsTemp);
+    setSavedTasksContent({}); // setTaskContents({});
   };
 
   const determineStyle = (state: number): string => {
@@ -67,18 +97,10 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryPanelProps) => {
     );
   };
 
-  return (
-    <TreeView
-      className={classes.root}
-      onNodeSelect={handleSelect}
-      onNodeToggle={handleToggle}
-      defaultCollapseIcon={<ExpandMoreIcon />}
-      defaultExpanded={['root']}
-      defaultExpandIcon={<ChevronRightIcon />}
-      expanded={expanded}
-      selected={selected}
-    >
-      {allTasks.map((task) => (
+  // Set it like useCallback because is used inside a hook
+  const renderTaskTreeItem = React.useCallback(
+    (task: RomiCore.TaskSummary) => {
+      return (
         <TreeItem
           data-component="TreeItem"
           nodeId={task.task_id}
@@ -108,8 +130,48 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryPanelProps) => {
         >
           <TaskSummaryPanelItem task={task} key={task.task_id} />
         </TreeItem>
-      ))}
-    </TreeView>
+      );
+    },
+    [classes],
+  );
+
+  // Update Task list content
+  React.useEffect(() => {
+    if (allTasks.length === 0) return;
+    let taskContentsTemp = Object.assign({}, taskContents);
+    allTasks.forEach((task) => {
+      taskContentsTemp[task.task_id] = renderTaskTreeItem(task);
+    });
+    setTaskContents(taskContentsTemp);
+  }, [allTasks]);
+
+  return (
+    <Typography variant="body1" component={'span'}>
+      <div className={classes.buttonGroupDiv}>
+        <TreeButtonGroup
+          disableReset={allTasks.length === 0}
+          disableClear={allTasks.length === 0}
+          disableRestore={allTasks.length === 0}
+          handlResetClick={handleResetTasks}
+          handleRestoreClick={handleRestoreTasks}
+          handleClearClick={handleClearAllCurrTasks}
+        />
+      </div>
+      <TreeView
+        className={classes.root}
+        onNodeSelect={handleSelect}
+        onNodeToggle={handleToggle}
+        defaultCollapseIcon={<ExpandMoreIcon />}
+        defaultExpanded={['root']}
+        defaultExpandIcon={<ChevronRightIcon />}
+        expanded={expanded}
+        selected={selected}
+      >
+        {Object.keys(taskContents)
+          .reverse()
+          .map((key) => taskContents[key])}
+      </TreeView>
+    </Typography>
   );
 });
 
@@ -137,7 +199,7 @@ const useStyles = makeStyles((theme) => ({
     borderLeft: `0.1rem solid ${colorPalette.unknown}`,
   },
   completed: {
-    backgroundColor: theme.palette.success.dark,
+    backgroundColor: '#4E5453',
   },
   queued: {
     backgroundColor: theme.palette.warning.main,
@@ -150,6 +212,9 @@ const useStyles = makeStyles((theme) => ({
   },
   taskActor: {
     alignSelf: 'center',
+  },
+  buttonGroupDiv: {
+    padding: '0.5rem 1rem',
   },
 }));
 
