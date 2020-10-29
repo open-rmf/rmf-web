@@ -38,6 +38,9 @@ async function authReady(timeout = 30000) {
             stdio: 'inherit',
           });
         }
+        execSync('docker network disconnect romidashboarde2e_default $CONTAINER', {
+          stdio: 'inherit',
+        });
         console.log('=========================== END =============================');
       } else {
         console.log('again ------------------------------------');
