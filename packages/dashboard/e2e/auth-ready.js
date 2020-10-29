@@ -23,7 +23,7 @@ async function authReady(timeout = 30000) {
         process.env.CONTAINER = container;
         execSync('echo $CONTAINER', { stdio: 'inherit' });
         execSync('echo $NETWORK', { stdio: 'inherit' });
-        execSync('docker network connect $NETWORK $CONTAINER', { stdio: 'inherit' });
+        // execSync('docker network connect $NETWORK $CONTAINER', { stdio: 'inherit' });
         console.log('=========================== END =============================');
       } else {
         console.log('again ------------------------------------');
