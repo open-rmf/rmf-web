@@ -146,11 +146,13 @@ exports[`AppBar renders correctly 1`] = `
                   </WithStyles(ForwardRef(Typography))>
                   <WithStyles(ForwardRef(Tooltip))
                     arrow={true}
+                    className="makeStyles-tooltipWidth-3"
                     id="omnipanel-tooltip"
                     title="view all available panel options"
                   >
                     <ForwardRef(Tooltip)
                       arrow={true}
+                      className="makeStyles-tooltipWidth-3"
                       classes={
                         Object {
                           "arrow": "MuiTooltip-arrow",
@@ -171,7 +173,7 @@ exports[`AppBar renders correctly 1`] = `
                     >
                       <WithStyles(ForwardRef(IconButton))
                         aria-describedby={null}
-                        className=""
+                        className="makeStyles-tooltipWidth-3"
                         color="inherit"
                         id="toggle-omnipanel-btn"
                         onBlur={[Function]}
@@ -185,7 +187,7 @@ exports[`AppBar renders correctly 1`] = `
                       >
                         <ForwardRef(IconButton)
                           aria-describedby={null}
-                          className=""
+                          className="makeStyles-tooltipWidth-3"
                           classes={
                             Object {
                               "colorInherit": "MuiIconButton-colorInherit",
@@ -213,7 +215,7 @@ exports[`AppBar renders correctly 1`] = `
                           <WithStyles(ForwardRef(ButtonBase))
                             aria-describedby={null}
                             centerRipple={true}
-                            className="MuiIconButton-root MuiIconButton-colorInherit"
+                            className="MuiIconButton-root makeStyles-tooltipWidth-3 MuiIconButton-colorInherit"
                             disabled={false}
                             focusRipple={true}
                             id="toggle-omnipanel-btn"
@@ -229,7 +231,7 @@ exports[`AppBar renders correctly 1`] = `
                             <ForwardRef(ButtonBase)
                               aria-describedby={null}
                               centerRipple={true}
-                              className="MuiIconButton-root MuiIconButton-colorInherit"
+                              className="MuiIconButton-root makeStyles-tooltipWidth-3 MuiIconButton-colorInherit"
                               classes={
                                 Object {
                                   "disabled": "Mui-disabled",
@@ -251,7 +253,7 @@ exports[`AppBar renders correctly 1`] = `
                             >
                               <button
                                 aria-describedby={null}
-                                className="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorInherit"
+                                className="MuiButtonBase-root MuiIconButton-root makeStyles-tooltipWidth-3 MuiIconButton-colorInherit"
                                 disabled={false}
                                 id="toggle-omnipanel-btn"
                                 onBlur={[Function]}
@@ -341,7 +343,7 @@ exports[`AppBar renders correctly 1`] = `
                       <ForwardRef(Popper)
                         anchorEl={
                           <button
-                            class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorInherit"
+                            class="MuiButtonBase-root MuiIconButton-root makeStyles-tooltipWidth-3 MuiIconButton-colorInherit"
                             id="toggle-omnipanel-btn"
                             tabindex="0"
                             title="view all available panel options"
@@ -386,11 +388,13 @@ exports[`AppBar renders correctly 1`] = `
                   </WithStyles(ForwardRef(Tooltip))>
                   <WithStyles(ForwardRef(Tooltip))
                     arrow={true}
+                    className="makeStyles-tooltipWidth-3"
                     id="setting-tooltip"
                     title="define dashboard trajectory settings"
                   >
                     <ForwardRef(Tooltip)
                       arrow={true}
+                      className="makeStyles-tooltipWidth-3"
                       classes={
                         Object {
                           "arrow": "MuiTooltip-arrow",
@@ -411,7 +415,7 @@ exports[`AppBar renders correctly 1`] = `
                     >
                       <WithStyles(ForwardRef(IconButton))
                         aria-describedby={null}
-                        className=""
+                        className="makeStyles-tooltipWidth-3"
                         color="inherit"
                         id="show-settings-btn"
                         onBlur={[Function]}
@@ -425,7 +429,7 @@ exports[`AppBar renders correctly 1`] = `
                       >
                         <ForwardRef(IconButton)
                           aria-describedby={null}
-                          className=""
+                          className="makeStyles-tooltipWidth-3"
                           classes={
                             Object {
                               "colorInherit": "MuiIconButton-colorInherit",
@@ -453,7 +457,7 @@ exports[`AppBar renders correctly 1`] = `
                           <WithStyles(ForwardRef(ButtonBase))
                             aria-describedby={null}
                             centerRipple={true}
-                            className="MuiIconButton-root MuiIconButton-colorInherit"
+                            className="MuiIconButton-root makeStyles-tooltipWidth-3 MuiIconButton-colorInherit"
                             disabled={false}
                             focusRipple={true}
                             id="show-settings-btn"
@@ -469,7 +473,7 @@ exports[`AppBar renders correctly 1`] = `
                             <ForwardRef(ButtonBase)
                               aria-describedby={null}
                               centerRipple={true}
-                              className="MuiIconButton-root MuiIconButton-colorInherit"
+                              className="MuiIconButton-root makeStyles-tooltipWidth-3 MuiIconButton-colorInherit"
                               classes={
                                 Object {
                                   "disabled": "Mui-disabled",
@@ -491,7 +495,7 @@ exports[`AppBar renders correctly 1`] = `
                             >
                               <button
                                 aria-describedby={null}
-                                className="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorInherit"
+                                className="MuiButtonBase-root MuiIconButton-root makeStyles-tooltipWidth-3 MuiIconButton-colorInherit"
                                 disabled={false}
                                 id="show-settings-btn"
                                 onBlur={[Function]}
@@ -582,7 +586,7 @@ exports[`AppBar renders correctly 1`] = `
                       <ForwardRef(Popper)
                         anchorEl={
                           <button
-                            class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorInherit"
+                            class="MuiButtonBase-root MuiIconButton-root makeStyles-tooltipWidth-3 MuiIconButton-colorInherit"
                             id="show-settings-btn"
                             tabindex="0"
                             title="define dashboard trajectory settings"
@@ -628,11 +632,13 @@ exports[`AppBar renders correctly 1`] = `
                   </WithStyles(ForwardRef(Tooltip))>
                   <WithStyles(ForwardRef(Tooltip))
                     arrow={true}
+                    className="makeStyles-tooltipWidth-3"
                     id="help-tooltip"
                     title="help tools and resources"
                   >
                     <ForwardRef(Tooltip)
                       arrow={true}
+                      className="makeStyles-tooltipWidth-3"
                       classes={
                         Object {
                           "arrow": "MuiTooltip-arrow",
@@ -653,7 +659,7 @@ exports[`AppBar renders correctly 1`] = `
                     >
                       <WithStyles(ForwardRef(IconButton))
                         aria-describedby={null}
-                        className=""
+                        className="makeStyles-tooltipWidth-3"
                         color="inherit"
                         id="show-help-btn"
                         onBlur={[Function]}
@@ -667,7 +673,7 @@ exports[`AppBar renders correctly 1`] = `
                       >
                         <ForwardRef(IconButton)
                           aria-describedby={null}
-                          className=""
+                          className="makeStyles-tooltipWidth-3"
                           classes={
                             Object {
                               "colorInherit": "MuiIconButton-colorInherit",
@@ -695,7 +701,7 @@ exports[`AppBar renders correctly 1`] = `
                           <WithStyles(ForwardRef(ButtonBase))
                             aria-describedby={null}
                             centerRipple={true}
-                            className="MuiIconButton-root MuiIconButton-colorInherit"
+                            className="MuiIconButton-root makeStyles-tooltipWidth-3 MuiIconButton-colorInherit"
                             disabled={false}
                             focusRipple={true}
                             id="show-help-btn"
@@ -711,7 +717,7 @@ exports[`AppBar renders correctly 1`] = `
                             <ForwardRef(ButtonBase)
                               aria-describedby={null}
                               centerRipple={true}
-                              className="MuiIconButton-root MuiIconButton-colorInherit"
+                              className="MuiIconButton-root makeStyles-tooltipWidth-3 MuiIconButton-colorInherit"
                               classes={
                                 Object {
                                   "disabled": "Mui-disabled",
@@ -733,7 +739,7 @@ exports[`AppBar renders correctly 1`] = `
                             >
                               <button
                                 aria-describedby={null}
-                                className="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorInherit"
+                                className="MuiButtonBase-root MuiIconButton-root makeStyles-tooltipWidth-3 MuiIconButton-colorInherit"
                                 disabled={false}
                                 id="show-help-btn"
                                 onBlur={[Function]}
@@ -823,7 +829,7 @@ exports[`AppBar renders correctly 1`] = `
                       <ForwardRef(Popper)
                         anchorEl={
                           <button
-                            class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorInherit"
+                            class="MuiButtonBase-root MuiIconButton-root makeStyles-tooltipWidth-3 MuiIconButton-colorInherit"
                             id="show-help-btn"
                             tabindex="0"
                             title="help tools and resources"
