@@ -29,7 +29,7 @@ async function authReady(timeout = 30000) {
         execSync('docker ps --filter network=$NETWORK', { stdio: 'inherit' });
 
         let isConnected = execSync(
-          'docker ps --filter network=$NETWORK --filter ancestor=romi-dashboard/auth',
+          'docker ps -q --filter network=$NETWORK --filter ancestor=romi-dashboard/auth',
         ).toString();
         console.log('i am isConnected >>>>> ' + isConnected);
         if (!isConnected) {
