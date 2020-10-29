@@ -22,7 +22,9 @@ async function authReady(timeout = 30000) {
         console.log('Successuflly created auth container -----------------------');
         process.env.CONTAINER = container;
         execSync('echo $CONTAINER', { stdio: 'inherit' });
-        execSync('docker network connect romidashboarde2e $CONTAINER', { stdio: 'inherit' });
+        execSync('docker network connect romidashboarde2e_default $CONTAINER', {
+          stdio: 'inherit',
+        });
         console.log('=========================== END =============================');
       } else {
         console.log('again ------------------------------------');
