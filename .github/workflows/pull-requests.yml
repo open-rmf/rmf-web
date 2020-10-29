@@ -59,8 +59,6 @@ jobs:
         run: |
           export NETWORK=${{ job.container.network }}
           echo $NETWORK
-          export CONTAINER=$(docker ps -q --filter ancestor=docker.pkg.github.com/osrf/romi-dashboard/e2e)
-          echo $CONTAINER
           . /opt/ros/foxy/setup.bash && . /opt/rmf/setup.bash
           bash -c 'npm ci --unsafe-perm'
           cd e2e && bash -c 'npm ci --unsafe-perm'
