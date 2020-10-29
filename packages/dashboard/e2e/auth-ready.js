@@ -20,18 +20,14 @@ async function authReady(timeout = 30000) {
       console.log('This is the container =====>>>> ' + container);
       if (container) {
         console.log('Successuflly created auth container -----------------------');
-        execSync('docker ps --filter network=romidashboarde2e_default', { stdio: 'inherit' });
-        console.log('======================= github network ======================');
-        execSync('docker ps --filter network=$NETWORK', { stdio: 'inherit' });
         process.env.CONTAINER = container;
         execSync('echo $CONTAINER', { stdio: 'inherit' });
-        execSync('echo $NETWORK', { stdio: 'inherit' });
-        // execSync('docker network connect $NETWORK $CONTAINER', { stdio: 'inherit' });
+        execSync('docker network connect romidashboarde2e $CONTAINER', { stdio: 'inherit' });
         console.log('=========================== END =============================');
       } else {
         console.log('again ------------------------------------');
         execSync('echo $CONTAINER', { stdio: 'inherit' });
-        execSync('echo $NETWORK', { stdio: 'inherit' });
+        // execSync('echo $NETWORK', { stdio: 'inherit' });
         console.log('=========================== END =============================');
       }
       req = http.request('http://localhost:8080/auth/', () => {

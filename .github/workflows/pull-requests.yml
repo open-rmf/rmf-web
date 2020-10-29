@@ -37,12 +37,11 @@ jobs:
   e2e-test:
     name: End-to-End Test
     runs-on: ubuntu-latest
-    services:
-      dashboard:
-        image: docker.pkg.github.com/osrf/romi-dashboard/e2e
-        credentials:
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+    container:
+      image: docker.pkg.github.com/osrf/romi-dashboard/e2e
+      credentials:
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     defaults:
       run:
         shell: bash
@@ -58,8 +57,8 @@ jobs:
           npm run sync:docker
       - name: e2e test
         run: |
-          export NETWORK=${{ job.container.network }}
-          echo $NETWORK
+          export CONTAINER=$(docker ps -q --filter ancestor=romi-dashboard/auth)
+          echo $CONTAINER
           . /opt/ros/foxy/setup.bash && . /opt/rmf/setup.bash
           bash -c 'npm ci --unsafe-perm'
           cd e2e && bash -c 'npm ci --unsafe-perm'
