@@ -21,7 +21,11 @@ async function authReady(timeout = 30000) {
       if (container) {
         console.log('Successuflly created auth container -----------------------');
         // process.env.CONTAINER = container;
-        execSync('echo $CONTAINER', { stdio: 'inherit' });
+        console.log('romi dashboard network >>>>>>>>>>>>>>>>>>>>>>>');
+        execSync('docker ps --filter network=romidashboarde2e_default', { stdio: 'inherit' });
+        console.log('github network >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+        execSync('docker ps --filter network=$NETWORK', { stdio: 'inherit' });
+        // execSync('echo $CONTAINER', { stdio: 'inherit' });
         execSync('docker network connect romidashboarde2e_default $CONTAINER', {
           stdio: 'inherit',
         });
