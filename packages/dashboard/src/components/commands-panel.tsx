@@ -3,9 +3,10 @@ import {
   AccordionDetails,
   AccordionSummary,
   makeStyles,
+  Tooltip,
   Typography,
 } from '@material-ui/core';
-import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
+import { ExpandMore as ExpandMoreIcon, Info as InfoIcon } from '@material-ui/icons';
 import { LoopForm } from './loop-form';
 import { RobotDeliveryForm } from './delivery-form';
 import { v4 as uuidv4 } from 'uuid';
@@ -156,6 +157,13 @@ export const CommandsPanel = React.memo((props: CommandsPanelProps) => {
               expandIcon={<ExpandMoreIcon />}
             >
               <Typography variant="h5">Loop Request</Typography>
+              <Tooltip
+                title="send a request for target fleet to perform tasks repeatedly"
+                arrow
+                id="looprequest-tooltip"
+              >
+                <InfoIcon />
+              </Tooltip>
             </AccordionSummary>
             <AccordionDetails className={classes.accordionDetail}>
               <LoopForm
@@ -171,6 +179,13 @@ export const CommandsPanel = React.memo((props: CommandsPanelProps) => {
               expandIcon={<ExpandMoreIcon />}
             >
               <Typography variant="h5">Delivery Request</Typography>
+              <Tooltip
+                title="send a request to perform a delivery between dispensers"
+                arrow
+                id="deliveryrequest-tooltip"
+              >
+                <InfoIcon />
+              </Tooltip>
             </AccordionSummary>
             <AccordionDetails className={classes.accordionDetail}>
               <RobotDeliveryForm

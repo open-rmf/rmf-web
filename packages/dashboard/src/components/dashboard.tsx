@@ -459,6 +459,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                     onDispensersClick={handleMainMenuDispensersClick}
                     onCommandsClick={handleMainMenuCommandsClick}
                     onNegotiationsClick={handleMainMenuNegotiationsClick}
+                    tooltips={tooltipState}
                   />
                 </OmniPanelView>
                 <OmniPanelView id={OmniPanelViewIndex.Doors}>

@@ -48,7 +48,12 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
             Dashboard
           </Typography>
 
-          <Tooltip title="view all available panel options" arrow id="omnipanel-tooltip">
+          <Tooltip
+            title="view all available panel options"
+            arrow
+            id="omnipanel-tooltip"
+            className={classes.tooltipWidth}
+          >
             <IconButton
               id="toggle-omnipanel-btn"
               color="inherit"
@@ -58,7 +63,12 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
             </IconButton>
           </Tooltip>
 
-          <Tooltip title="define dashboard trajectory settings" arrow id="setting-tooltip">
+          <Tooltip
+            title="define dashboard trajectory settings"
+            arrow
+            id="setting-tooltip"
+            className={classes.tooltipWidth}
+          >
             <IconButton id="show-settings-btn" color="inherit" onClick={() => showSettings(true)}>
               <SettingsIcon />
             </IconButton>
@@ -92,7 +102,12 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
               </Menu>
             </>
           )}
-          <Tooltip title="help tools and resources" arrow id="help-tooltip">
+          <Tooltip
+            title="help tools and resources"
+            arrow
+            id="help-tooltip"
+            className={classes.tooltipWidth}
+          >
             <IconButton id="show-help-btn" color="inherit" onClick={() => showHelp(true)}>
               <HelpIcon />
             </IconButton>
@@ -160,5 +175,8 @@ const useStyles = makeStyles((_theme) => ({
   },
   avatar: {
     cursor: 'pointer',
+  },
+  tooltipWidth: {
+    maxWidth: 200,
   },
 }));
