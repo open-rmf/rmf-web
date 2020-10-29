@@ -7,7 +7,6 @@ import { makeDoor, makeDoorState } from '../tests/doors/test-utils';
 export default {
   title: 'Door Markers',
   component: DoorMarker,
-  argTypes: { onClick: { action: 'clicked' } },
 } as Meta;
 
 function makeStory(door: RomiCore.Door, doorState?: RomiCore.DoorState): Story {

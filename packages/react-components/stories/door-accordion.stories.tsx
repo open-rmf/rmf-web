@@ -6,7 +6,6 @@ import { DoorAccordion } from '../lib';
 export default {
   title: 'Door Accordion',
   component: DoorAccordion,
-  parameters: { actions: { argTypesRegex: '^on.*' } },
 } as Meta;
 
 const doors = [
@@ -71,6 +70,7 @@ const doorStates = {
 };
 
 export const DoorsPanel: Story = (args) => {
+  console.log(args);
   return (
     <>
       {doors.map((door) => (

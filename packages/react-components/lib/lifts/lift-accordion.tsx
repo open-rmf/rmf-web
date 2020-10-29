@@ -73,7 +73,8 @@ const LiftInfo = (props: LiftInfoProps) => {
 export interface LiftAccordionProps extends Omit<AccordionProps, 'children'> {
   lift: RomiCore.Lift;
   liftState?: RomiCore.LiftState;
-  doLiftRequest?(
+  onRequestSubmit?(
+    event: React.FormEvent,
     lift: RomiCore.Lift,
     doorState: number,
     requestType: number,
@@ -83,7 +84,7 @@ export interface LiftAccordionProps extends Omit<AccordionProps, 'children'> {
 
 export const LiftAccordion = React.memo(
   React.forwardRef((props: LiftAccordionProps, ref: React.Ref<HTMLElement>) => {
-    const { lift, liftState, doLiftRequest, ...otherProps } = props;
+    const { lift, liftState, onRequestSubmit, ...otherProps } = props;
     debug(`render ${lift.name}`);
     const [tabValue, setTabValue] = React.useState(0);
     const classes = useStyles();
@@ -134,7 +135,7 @@ export const LiftAccordion = React.memo(
                 lift={lift}
                 availableDoorModes={requestDoorModes}
                 availableRequestTypes={requestModes}
-                doLiftRequest={doLiftRequest}
+                onRequestSubmit={onRequestSubmit}
               />
             )}
           </TabPanel>
