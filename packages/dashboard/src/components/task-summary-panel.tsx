@@ -57,7 +57,7 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryPanelProps) => {
     }
   };
 
-  const renderActor = (taskStatus: string) => {
+  const renderActor = (taskStatus: string): React.ReactElement | undefined => {
     const actor = TaskManager.getActorFromStatus(taskStatus);
     if (!actor) return;
     return (

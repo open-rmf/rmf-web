@@ -9,64 +9,69 @@ interface TaskSummaryPanelItemProps {
   task: RomiCore.TaskSummary;
 }
 
-export const TaskSummaryPanelItem = (props: TaskSummaryPanelItemProps) => {
-  debug('render');
-  const { task } = props;
-  const classes = useStyles();
+export const TaskSummaryPanelItem = React.memo(
+  React.forwardRef(function (
+    props: TaskSummaryPanelItemProps,
+    ref: React.Ref<HTMLElement>,
+  ): React.ReactElement {
+    debug('render');
+    const { task } = props;
+    const classes = useStyles();
 
-  const statusDetails = TaskManager.formatStatus(task.status);
-  const stateLabel = TaskManager.getStateLabel(task.state);
+    const statusDetails = TaskManager.formatStatus(task.status);
+    const stateLabel = TaskManager.getStateLabel(task.state);
 
-  return (
-    <>
-      <div className={classes.accordionDetailLine}>
-        <Typography variant="body1">TaskId: </Typography>
-        <Typography variant="body1" noWrap>
-          {task.task_id}
-        </Typography>
-      </div>
-      <Divider />
-
-      <div className={classes.accordionDetailLine}>
-        <Typography variant="body1">State:</Typography>
-        <Typography variant="body1">{stateLabel}</Typography>
-      </div>
-      <Divider />
-
-      <div className={classes.accordionDetailLine}>
-        <Typography variant="body1">Status:</Typography>
-        <div>
-          {statusDetails.map((detail: string) => {
-            return (
-              <Typography variant="body1" key={detail}>
-                {' '}
-                {detail}
-              </Typography>
-            );
-          })}
+    return (
+      <>
+        <div className={classes.accordionDetailLine}>
+          <Typography variant="body1">TaskId: </Typography>
+          <Typography variant="body1" noWrap>
+            {task.task_id}
+          </Typography>
         </div>
-      </div>
-      <Divider />
+        <Divider />
 
-      <div className={classes.accordionDetailLine}>
-        <Typography variant="body1">Submission Time:</Typography>
-        <Typography variant="body1">{task.submission_time.sec}</Typography>
-      </div>
-      <Divider />
+        <div className={classes.accordionDetailLine}>
+          <Typography variant="body1">State:</Typography>
+          <Typography variant="body1">{stateLabel}</Typography>
+        </div>
+        <Divider />
 
-      <div className={classes.accordionDetailLine}>
-        <Typography variant="body1">Start time:</Typography>
-        <Typography variant="body1">{task.start_time.sec}</Typography>
-      </div>
-      <Divider />
+        <div className={classes.accordionDetailLine}>
+          <Typography variant="body1">Status:</Typography>
+          <div>
+            {statusDetails.map((detail: string) => {
+              return (
+                <Typography variant="body1" key={detail}>
+                  {' '}
+                  {detail}
+                </Typography>
+              );
+            })}
+          </div>
+        </div>
+        <Divider />
 
-      <div className={classes.accordionDetailLine}>
-        <Typography variant="body1">End Time:</Typography>
-        <Typography variant="body1">{task.end_time.sec}</Typography>
-      </div>
-    </>
-  );
-};
+        <div className={classes.accordionDetailLine}>
+          <Typography variant="body1">Submission Time:</Typography>
+          <Typography variant="body1">{task.submission_time.sec}</Typography>
+        </div>
+        <Divider />
+
+        <div className={classes.accordionDetailLine}>
+          <Typography variant="body1">Start time:</Typography>
+          <Typography variant="body1">{task.start_time.sec}</Typography>
+        </div>
+        <Divider />
+
+        <div className={classes.accordionDetailLine}>
+          <Typography variant="body1">End Time:</Typography>
+          <Typography variant="body1">{task.end_time.sec}</Typography>
+        </div>
+      </>
+    );
+  }),
+);
 
 const useStyles = makeStyles((theme) => ({
   accordionDetailLine: {
