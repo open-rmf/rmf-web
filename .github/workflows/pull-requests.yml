@@ -39,10 +39,10 @@ jobs:
     runs-on: ubuntu-latest
     services:
       dashboard:
-      image: docker.pkg.github.com/osrf/romi-dashboard/e2e
-        credentials:
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+        image: docker.pkg.github.com/osrf/romi-dashboard/e2e
+          credentials:
+            username: ${{ github.repository_owner }}
+            password: ${{ secrets.GITHUB_TOKEN }}
     defaults:
       run:
         shell: bash
