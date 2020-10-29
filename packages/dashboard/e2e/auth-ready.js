@@ -23,18 +23,6 @@ async function authReady(timeout = 30000) {
         process.env.CONTAINER = container;
         execSync('echo $CONTAINER', { stdio: 'inherit' });
         execSync('echo $NETWORK', { stdio: 'inherit' });
-        execSync(
-          "docker inspect docker.pkg.github.com/osrf/romi-dashboard/e2e --format='{{range $k,$v := .NetworkSettings.Networks }} {{$k}} {{end}}'",
-          {
-            stdio: 'inherit',
-          },
-        );
-        execSync(
-          "docker inspect romi-dashboard/auth --format='{{range $k,$v := .NetworkSettings.Networks }} {{$k}} {{end}}'",
-          {
-            stdio: 'inherit',
-          },
-        );
         // execSync('docker network connect $NETWORK $CONTAINER', { stdio: 'inherit' });
         console.log('=========================== END =============================');
       } else {
@@ -51,7 +39,8 @@ async function authReady(timeout = 30000) {
         clearTimeout(retryTimer);
         res(true);
       });
-      req.once('error', () => {
+      req.once('error', (err) => {
+        console.log(err);
         retryTimer = setTimeout(waitAuthReady, 1000);
       });
       req.end();
