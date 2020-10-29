@@ -17,6 +17,7 @@ async function authReady(timeout = 30000) {
     let retryTimer;
     const waitAuthReady = () => {
       let container = execSync('docker ps -q --filter ancestor=romi-dashboard/auth').toString();
+      execSync('docker ps', { stdio: 'inherit' });
       console.log('This is the container =====>>>> ' + container);
       if (container) {
         console.log('Successuflly created auth container -----------------------');
