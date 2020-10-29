@@ -37,11 +37,12 @@ jobs:
   e2e-test:
     name: End-to-End Test
     runs-on: ubuntu-latest
-    container:
+    services:
+      dashboard:
       image: docker.pkg.github.com/osrf/romi-dashboard/e2e
-      credentials:
-        username: ${{ github.repository_owner }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        credentials:
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
     defaults:
       run:
         shell: bash
