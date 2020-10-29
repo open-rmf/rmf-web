@@ -17,14 +17,25 @@ async function authReady(timeout = 30000) {
     let retryTimer;
     const waitAuthReady = () => {
       let container = execSync('docker ps -q --filter ancestor=romi-dashboard/auth').toString();
-      execSync('docker ps', { stdio: 'inherit' });
       console.log('This is the container =====>>>> ' + container);
       if (container) {
         console.log('Successuflly created auth container -----------------------');
         process.env.CONTAINER = container;
         execSync('echo $CONTAINER', { stdio: 'inherit' });
         execSync('echo $NETWORK', { stdio: 'inherit' });
-        execSync('docker network connect $NETWORK $CONTAINER', { stdio: 'inherit' });
+        execSync(
+          "docker inspect docker.pkg.github.com/osrf/romi-dashboard/e2e --format='{{range $k,$v := .NetworkSettings.Networks }} {{$k}} {{end}}'",
+          {
+            stdio: 'inherit',
+          },
+        );
+        execSync(
+          "docker inspect romi-dashboard/auth --format='{{range $k,$v := .NetworkSettings.Networks }} {{$k}} {{end}}'",
+          {
+            stdio: 'inherit',
+          },
+        );
+        // execSync('docker network connect $NETWORK $CONTAINER', { stdio: 'inherit' });
         console.log('=========================== END =============================');
       } else {
         console.log('again ------------------------------------');
