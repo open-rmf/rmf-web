@@ -19,7 +19,7 @@ export interface AppBarProps {
   toggleShowOmniPanel(): void;
   showSettings(show: boolean): void;
   showHelp(show: boolean): void;
-  tooltips: boolean;
+  tooltips?: boolean;
   // TODO: change the alarm status to required when we have an alarm
   // service working properly in the backend
   alarmState?: boolean | null;

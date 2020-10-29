@@ -11,7 +11,7 @@ export interface MainMenuProps {
   onDispensersClick?(event: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
   onCommandsClick?(event: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
   onNegotiationsClick?(event: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
-  tooltips: boolean;
+  tooltips?: boolean;
 }
 
 export const MainMenu = React.memo((props: MainMenuProps) => {
