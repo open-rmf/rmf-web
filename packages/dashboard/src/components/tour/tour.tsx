@@ -1,8 +1,7 @@
 import React from 'react';
-import { SpotlightValue } from '../spotlight-value';
 import Tour from 'reactour';
-import { createTourSteps } from './tour-manager';
 import { OmniPanelViewIndex } from '../dashboard';
+import { createTourSteps } from './tour-manager';
 
 export interface DashboardTourProps {
   tourProps: {
@@ -13,8 +12,7 @@ export interface DashboardTourProps {
     setShowHelp: React.Dispatch<React.SetStateAction<boolean>>;
     clearSpotlights: () => void;
     setCurrentView: React.Dispatch<React.SetStateAction<OmniPanelViewIndex>>;
-    doorSpotlight: SpotlightValue<string> | undefined;
-    setDoorSpotlight: React.Dispatch<React.SetStateAction<SpotlightValue<string> | undefined>>;
+    doorSpotlight?: () => void;
   };
 }
 
@@ -30,7 +28,6 @@ export const DashboardTour = React.memo(
         clearSpotlights,
         setCurrentView,
         doorSpotlight,
-        setDoorSpotlight,
       },
     } = props;
 
@@ -42,7 +39,6 @@ export const DashboardTour = React.memo(
       clearSpotlights,
       setCurrentView,
       doorSpotlight,
-      setDoorSpotlight,
     };
     const { tourSteps, theme } = createTourSteps(tourFunctions);
 

@@ -1,5 +1,5 @@
 import { AccordionProps } from '@material-ui/core';
-import React from 'react';
+import React, { MutableRefObject } from 'react';
 
 type ManagedProps = 'onChange' | 'expanded';
 
@@ -24,7 +24,7 @@ type OptionalChildren<T extends React.PropsWithChildren<unknown>> = Omit<T, 'chi
  * This overrides the `onChange` and `expanded` props so those are removed from the public interface.
  * @param BaseAccordion
  */
-export function makeSpotlightAccordion<P extends OptionalChildren<AccordionProps>>(
+export function withSpotlight<P extends OptionalChildren<AccordionProps>>(
   BaseAccordion: React.ComponentType<P>,
 ): React.ForwardRefExoticComponent<
   React.PropsWithoutRef<SpotlightAccordionProps<P>> & React.RefAttributes<SpotlightHandle>
@@ -43,9 +43,53 @@ export function makeSpotlightAccordion<P extends OptionalChildren<AccordionProps
     });
 
     return (
-      <BaseAccordion ref={ref} expanded={expanded} {...(props as P)}>
+      <BaseAccordion
+        expanded={expanded}
+        onChange={(_, newExpanded) => setExpanded(newExpanded)}
+        {...(props as P)}
+      >
         {props.children}
       </BaseAccordion>
     );
   });
+}
+
+export interface SpotlightRef {
+  ref: React.RefCallback<SpotlightHandle>;
+  spotlight: () => void;
+}
+
+/**
+ * Allows a spotlight to be called even when the component is not mounted. The spotlight will be
+ * deferred until the component is mounted.
+ */
+export function createSpotlightRef(): SpotlightRef {
+  const ref: MutableRefObject<SpotlightHandle | null> = {
+    current: null,
+  };
+  const spotlightDefer: MutableRefObject<boolean> = {
+    current: false,
+  };
+
+  const doSpotlight = () => {
+    if (ref.current) {
+      ref.current.spotlight();
+    } else {
+      spotlightDefer.current = true;
+    }
+  };
+
+  const refCb: React.RefCallback<SpotlightHandle> = (newRef) => {
+    if (spotlightDefer.current) {
+      newRef?.spotlight();
+      spotlightDefer.current = false;
+    }
+    ref.current = newRef;
+  };
+
+  return { ref: refCb, spotlight: doSpotlight };
+}
+
+export function useSpotlightRef(): React.Ref<SpotlightRef> {
+  return React.useRef(createSpotlightRef());
 }

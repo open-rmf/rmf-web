@@ -1,10 +1,10 @@
+import { Box, createMuiTheme, Typography } from '@material-ui/core';
 import React from 'react';
-import { Box, Typography, createMuiTheme } from '@material-ui/core';
-import { OmniPanelViewIndex } from '../dashboard';
-import { SpotlightValue } from '../spotlight-value';
 import { ReactourStep } from 'reactour';
-import { tourText, stepDetails, stepStyling } from './tour-data';
+import { OmniPanelViewIndex } from '../dashboard';
+import { stepDetails, stepStyling, tourText } from './tour-data';
 import { NavButtons } from './tour-navigation-control';
+
 interface createTourProps {
   setTourState: React.Dispatch<React.SetStateAction<boolean>>;
   setShowSettings: React.Dispatch<React.SetStateAction<boolean>>;
@@ -12,8 +12,7 @@ interface createTourProps {
   setShowHelp: React.Dispatch<React.SetStateAction<boolean>>;
   clearSpotlights: () => void;
   setCurrentView: React.Dispatch<React.SetStateAction<OmniPanelViewIndex>>;
-  doorSpotlight: SpotlightValue<string> | undefined;
-  setDoorSpotlight: React.Dispatch<React.SetStateAction<SpotlightValue<string> | undefined>>;
+  doorSpotlight?: () => void;
 }
 
 export const createTourSteps = (props: createTourProps) => {
@@ -25,7 +24,6 @@ export const createTourSteps = (props: createTourProps) => {
     clearSpotlights,
     setCurrentView,
     doorSpotlight,
-    setDoorSpotlight,
   } = props;
 
   const showSettingsOmniPanelHelpClearSpotlight = (
@@ -138,9 +136,7 @@ export const createTourSteps = (props: createTourProps) => {
             handleNextClick={() => {
               showSettingsOmniPanelHelpClearSpotlight(false, true, false, false);
               setCurrentView(OmniPanelViewIndex.Doors);
-              if (!doorSpotlight) {
-                setDoorSpotlight({ value: 'main_door' });
-              }
+              doorSpotlight && doorSpotlight();
             }}
           />
         </Box>
