@@ -8,8 +8,8 @@ import {
 interface NavButtonProps {
   goTo: Function;
   step: number;
-  handleNextClick?: () => void;
-  handleBackClick?: () => void;
+  handleNextClick?: () => void | Promise<void>;
+  handleBackClick?: () => void | Promise<void>;
   lastStep?: boolean;
 }
 
@@ -28,8 +28,8 @@ export const NavButtons = React.memo((props: NavButtonProps) => {
     <Box>
       {step > 1 && (
         <IconButton
-          onClick={() => {
-            handleBackClick && handleBackClick();
+          onClick={async () => {
+            handleBackClick && (await handleBackClick());
             goTo(step - 2);
           }}
           id="tour-back-btn"
@@ -40,9 +40,9 @@ export const NavButtons = React.memo((props: NavButtonProps) => {
       )}
       {!lastStep && (
         <IconButton
-          onClick={() => {
-            handleNextClick && handleNextClick();
-            setTimeout(() => goTo(step), 5);
+          onClick={async () => {
+            handleNextClick && (await handleNextClick());
+            goTo(step);
           }}
           id="tour-next-btn"
           data-testid="next-btn"
@@ -54,8 +54,8 @@ export const NavButtons = React.memo((props: NavButtonProps) => {
         <Button
           variant="contained"
           color="primary"
-          onClick={() => {
-            handleNextClick && handleNextClick();
+          onClick={async () => {
+            handleNextClick && (await handleNextClick());
             localStorage.setItem('tourComplete', 'true');
           }}
           id="tour-last-step-btn"

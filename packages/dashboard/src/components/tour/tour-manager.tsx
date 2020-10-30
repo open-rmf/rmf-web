@@ -5,6 +5,26 @@ import { OmniPanelViewIndex } from '../dashboard';
 import { stepDetails, stepStyling, tourText } from './tour-data';
 import { NavButtons } from './tour-navigation-control';
 
+async function waitForAnimation(selector: string): Promise<void> {
+  // wait for elem to be rendered
+  const el = await new Promise<Element>((res) => {
+    const timer = setInterval(() => {
+      const el = document.querySelector(selector);
+      if (!el) {
+        return;
+      }
+      clearInterval(timer);
+      res(el);
+    }, 10);
+  });
+
+  await Promise.all(el.getAnimations().map((anim) => anim.finished));
+
+  // for some reason reactour doesn't capture the whole element immediate after the
+  // animation is finished.
+  await new Promise((res) => setTimeout(res, 100));
+}
+
 interface createTourProps {
   setTourState: React.Dispatch<React.SetStateAction<boolean>>;
   setShowSettings: React.Dispatch<React.SetStateAction<boolean>>;
@@ -133,10 +153,11 @@ export const createTourSteps = (props: createTourProps) => {
           <NavButtons
             goTo={goTo}
             step={step}
-            handleNextClick={() => {
+            handleNextClick={async () => {
               showSettingsOmniPanelHelpClearSpotlight(false, true, false, false);
               setCurrentView(OmniPanelViewIndex.Doors);
               doorSpotlight && doorSpotlight();
+              await new Promise((res) => setTimeout(res, 300));
             }}
           />
         </Box>
@@ -152,20 +173,22 @@ export const createTourSteps = (props: createTourProps) => {
           <NavButtons
             goTo={goTo}
             step={step}
-            handleNextClick={() => {
+            handleNextClick={async () => {
               showSettingsOmniPanelHelpClearSpotlight(false, true, false, false);
               setCurrentView(OmniPanelViewIndex.MainMenu);
+              await new Promise((res) => setTimeout(res, 300));
             }}
-            handleBackClick={() => {
+            handleBackClick={async () => {
               showSettingsOmniPanelHelpClearSpotlight(false, true, false, false);
               setCurrentView(OmniPanelViewIndex.MainMenu);
+              await new Promise((res) => setTimeout(res, 300));
             }}
           />
         </Box>
       ),
     },
     commandsPanel: {
-      selector: '[data-item= "Commands"]',
+      selector: '[data-item="Commands"]',
       content: ({ goTo, step }) => (
         <Box data-testid="stepBox">
           <Typography variant="h6" data-testid="step9">
@@ -174,13 +197,15 @@ export const createTourSteps = (props: createTourProps) => {
           <NavButtons
             goTo={goTo}
             step={step}
-            handleNextClick={() => {
+            handleNextClick={async () => {
               showSettingsOmniPanelHelpClearSpotlight(false, true, false, false);
               setCurrentView(OmniPanelViewIndex.Commands);
+              await new Promise((res) => setTimeout(res, 300));
             }}
-            handleBackClick={() => {
+            handleBackClick={async () => {
               showSettingsOmniPanelHelpClearSpotlight(false, true, false, false);
               setCurrentView(OmniPanelViewIndex.Doors);
+              await new Promise((res) => setTimeout(res, 300));
             }}
           />
         </Box>
@@ -196,12 +221,13 @@ export const createTourSteps = (props: createTourProps) => {
           <NavButtons
             goTo={goTo}
             step={step}
-            handleNextClick={() => {
-              showSettingsOmniPanelHelpClearSpotlight(false, false, false, false);
-            }}
-            handleBackClick={() => {
+            handleNextClick={() =>
+              showSettingsOmniPanelHelpClearSpotlight(false, false, false, false)
+            }
+            handleBackClick={async () => {
               showSettingsOmniPanelHelpClearSpotlight(false, true, false, false);
               setCurrentView(OmniPanelViewIndex.MainMenu);
+              await new Promise((res) => setTimeout(res, 300));
             }}
           />
         </Box>
@@ -217,9 +243,10 @@ export const createTourSteps = (props: createTourProps) => {
           <NavButtons
             goTo={goTo}
             step={step}
-            handleNextClick={() =>
-              showSettingsOmniPanelHelpClearSpotlight(true, false, false, false)
-            }
+            handleNextClick={async () => {
+              showSettingsOmniPanelHelpClearSpotlight(true, false, false, false);
+              await new Promise((res) => setTimeout(res, 300));
+            }}
             handleBackClick={() => {
               showSettingsOmniPanelHelpClearSpotlight(false, true, false, false);
               setCurrentView(OmniPanelViewIndex.Commands);
@@ -241,9 +268,10 @@ export const createTourSteps = (props: createTourProps) => {
             handleNextClick={() =>
               showSettingsOmniPanelHelpClearSpotlight(false, false, false, true)
             }
-            handleBackClick={() =>
-              showSettingsOmniPanelHelpClearSpotlight(false, false, false, true)
-            }
+            handleBackClick={async () => {
+              showSettingsOmniPanelHelpClearSpotlight(false, false, false, true);
+              await new Promise((res) => setTimeout(res, 300));
+            }}
           />
         </Box>
       ),
@@ -258,9 +286,10 @@ export const createTourSteps = (props: createTourProps) => {
           <NavButtons
             goTo={goTo}
             step={step}
-            handleNextClick={() =>
-              showSettingsOmniPanelHelpClearSpotlight(false, false, true, true)
-            }
+            handleNextClick={async () => {
+              showSettingsOmniPanelHelpClearSpotlight(false, false, true, true);
+              await new Promise((res) => setTimeout(res, 300));
+            }}
             handleBackClick={() =>
               showSettingsOmniPanelHelpClearSpotlight(true, false, false, true)
             }
