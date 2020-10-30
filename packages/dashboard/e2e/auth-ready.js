@@ -35,12 +35,12 @@ async function authReady(timeout = 30000) {
 
         if (!isConnected) {
           console.log('I am inside isConnected!!! >>>>> ' + isConnected);
-          execSync('docker network connect --ip 127.0.0.1 $NETWORK $CONTAINER', {
+          execSync('docker network connect $NETWORK $CONTAINER', {
             stdio: 'inherit',
           });
-          // execSync('docker network disconnect romidashboarde2e_default $CONTAINER', {
-          //   stdio: 'inherit',
-          // });
+          execSync('docker network disconnect romidashboarde2e_default $CONTAINER', {
+            stdio: 'inherit',
+          });
         }
 
         console.log('=========================== END =============================');
