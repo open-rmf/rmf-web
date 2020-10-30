@@ -5,6 +5,7 @@ import { OmniPanelViewIndex } from '../dashboard';
 import { stepDetails, stepStyling, tourText } from './tour-data';
 import { NavButtons } from './tour-navigation-control';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function waitForAnimation(selector: string): Promise<void> {
   // wait for elem to be rendered
   const el = await new Promise<Element>((res) => {

@@ -146,6 +146,22 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const doorStateManager = React.useMemo(() => new DoorStateManager(), []);
   const [doorStates, setDoorStates] = React.useState(() => doorStateManager.doorStates());
   const [doors, setDoors] = React.useState<RomiCore.Door[]>([]);
+  const doorAccordionRefs = React.useMemo(
+    () =>
+      doors.reduce<Record<string, SpotlightRef>>((prev, door) => {
+        prev[door.name] = createSpotlightRef();
+        return prev;
+      }, {}),
+    [doors],
+  );
+  const handleDoorMarkerClick = React.useCallback(
+    (door: RomiCore.Door) => {
+      setShowOmniPanel(true);
+      setCurrentView(OmniPanelViewIndex.Doors);
+      doorAccordionRefs[door.name].spotlight();
+    },
+    [doorAccordionRefs],
+  );
 
   const liftStateManager = React.useMemo(() => new LiftStateManager(), []);
   const [liftStates, setLiftStates] = React.useState(() => liftStateManager.liftStates());
@@ -285,24 +301,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
     setDoors(buildingMap ? buildingMap.levels.flatMap((x) => x.doors) : []);
     setLifts(buildingMap ? buildingMap.lifts : []);
   }, [buildingMap]);
-
-  const doorAccordionRefs = React.useMemo(
-    () =>
-      doors.reduce<Record<string, SpotlightRef>>((prev, door) => {
-        prev[door.name] = createSpotlightRef();
-        return prev;
-      }, {}),
-    [doors],
-  );
-
-  const handleDoorMarkerClick = React.useCallback(
-    (door: RomiCore.Door) => {
-      setShowOmniPanel(true);
-      setCurrentView(OmniPanelViewIndex.Doors);
-      doorAccordionRefs[door.name].spotlight();
-    },
-    [doorAccordionRefs],
-  );
 
   const doorRequestPub = React.useMemo(() => transport?.createPublisher(adapterDoorRequests), [
     transport,
