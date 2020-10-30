@@ -57,8 +57,6 @@ jobs:
           npm run sync:docker
       - name: e2e test
         run: |
-          export CONTAINER=$(docker ps -q --filter ancestor=docker.pkg.github.com/osrf/romi-dashboard/e2e)
-          echo $CONTAINER
           export NETWORK=${{ job.container.network }}
           . /opt/ros/foxy/setup.bash && . /opt/rmf/setup.bash
           bash -c 'npm ci --unsafe-perm'

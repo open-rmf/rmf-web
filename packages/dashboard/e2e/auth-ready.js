@@ -21,25 +21,28 @@ async function authReady(timeout = 30000) {
       if (container) {
         console.log('Successuflly created auth container -----------------------');
 
-        // process.env.CONTAINER = container;
+        process.env.CONTAINER = container;
 
         console.log('romi dashboard network >>>>>>>>>>>>>>>>>>>>>>>');
         execSync('docker ps --filter network=romidashboarde2e_default', { stdio: 'inherit' });
 
         let isConnected = execSync(
-          'docker ps -q --filter network=romidashboarde2e_default --filter ancestor=docker.pkg.github.com/osrf/romi-dashboard/e2e',
+          'docker ps -q --filter network=$NETWORK --filter ancestor=romi-dashboard/auth',
         ).toString();
         console.log('i am isConnected >>>>> ' + isConnected);
 
         if (!isConnected) {
           console.log('I am inside isConnected!!! >>>>> ' + isConnected);
-          execSync('docker network connect romidashboarde2e_default $CONTAINER', {
+          execSync('docker network connect $NETWORK $CONTAINER', {
             stdio: 'inherit',
           });
+          let otherContainer = execSync(
+            'docker ps -q --filter ancestor=docker.pkg.github.com/osrf/romi-dashboard/e2e',
+          ).toString();
           // execSync('docker network disconnect romidashboarde2e_default $CONTAINER', {
           //   stdio: 'inherit',
           // });
-          execSync(`docker exec $CONTAINER ping ${container} -c2`, {
+          execSync(`docker exec ${otherContainer} ping $CONTAINER -c2`, {
             stdio: 'inherit',
           });
         }
