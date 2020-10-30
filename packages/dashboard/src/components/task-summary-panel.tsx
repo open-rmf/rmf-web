@@ -11,6 +11,7 @@ import PlayCircleFilledWhiteIcon from '@material-ui/icons/PlayCircleFilledWhite'
 import TaskManager from '../managers/task-manager';
 import { colorPalette } from '../util/css-utils';
 import { TreeButtonGroup } from './tree-button-group';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
 
 const debug = Debug('OmniPanel:TaskSummaryPanel');
 
@@ -37,7 +38,9 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryPanelProps) => {
   }>({});
   const [expanded, setExpanded] = React.useState<string[]>([]);
   const [selected, setSelected] = React.useState<string>('');
-  const [savedTasksContent, setSavedTasksContent] = React.useState<{
+
+  // We need to persist across the renders
+  const savedTasksContent = React.useRef<{
     [key: string]: JSX.Element;
   }>({});
 
@@ -55,21 +58,20 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryPanelProps) => {
   };
 
   const handleClearAllCurrTasks = () => {
-    setSavedTasksContent(taskContents);
+    savedTasksContent.current = taskContents;
     setTaskContents({});
   };
 
   const handleRestoreTasks = () => {
     // Assigning another reference
     let taskContentsTemp = Object.assign({}, taskContents);
-    Object.keys(savedTasksContent).forEach((element) => {
-      console.log(!(element in taskContents));
+    Object.keys(savedTasksContent.current).forEach((element) => {
       if (!(element in taskContents)) {
-        taskContentsTemp[element] = savedTasksContent[element];
+        taskContentsTemp[element] = savedTasksContent.current[element];
       }
     });
     setTaskContents(taskContentsTemp);
-    setSavedTasksContent({}); // setTaskContents({});
+    savedTasksContent.current = {};
   };
 
   const determineStyle = (state: number): string => {
@@ -87,19 +89,19 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryPanelProps) => {
     }
   };
 
-  const renderActor = (taskStatus: string): React.ReactElement | undefined => {
-    const actor = TaskManager.getActorFromStatus(taskStatus);
-    if (!actor) return;
-    return (
-      <Typography variant="body1" className={classes.taskActor}>
-        {actor}
-      </Typography>
-    );
-  };
+  // Update Task list content
+  React.useEffect(() => {
+    const renderActor = (taskStatus: string): React.ReactElement | undefined => {
+      const actor = TaskManager.getActorFromStatus(taskStatus);
+      if (!actor) return;
+      return (
+        <Typography variant="body1" className={classes.taskActor}>
+          {actor}
+        </Typography>
+      );
+    };
 
-  // Set it like useCallback because is used inside a hook
-  const renderTaskTreeItem = React.useCallback(
-    (task: RomiCore.TaskSummary) => {
+    const renderTaskTreeItem = (task: RomiCore.TaskSummary) => {
       return (
         <TreeItem
           data-component="TreeItem"
@@ -131,18 +133,16 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryPanelProps) => {
           <TaskSummaryPanelItem task={task} key={task.task_id} />
         </TreeItem>
       );
-    },
-    [classes],
-  );
+    };
 
-  // Update Task list content
-  React.useEffect(() => {
     if (allTasks.length === 0) return;
     let taskContentsTemp = Object.assign({}, taskContents);
     allTasks.forEach((task) => {
       taskContentsTemp[task.task_id] = renderTaskTreeItem(task);
     });
     setTaskContents(taskContentsTemp);
+    // Ignoring dependency taskContents, it'll enter in a infinite loop
+    // eslint-disable-next-line
   }, [allTasks]);
 
   return (
@@ -175,7 +175,7 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryPanelProps) => {
   );
 });
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   root: {
     padding: '1rem',
   },
