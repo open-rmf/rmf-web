@@ -36,13 +36,10 @@ async function authReady(timeout = 30000) {
           execSync('docker network connect $NETWORK $CONTAINER', {
             stdio: 'inherit',
           });
-          let otherContainer = execSync(
-            'docker ps -q --filter ancestor=docker.pkg.github.com/osrf/romi-dashboard/e2e',
-          ).toString();
           // execSync('docker network disconnect romidashboarde2e_default $CONTAINER', {
           //   stdio: 'inherit',
           // });
-          execSync(`docker exec ${otherContainer} ping $CONTAINER -c2`, {
+          execSync(`docker exec $OTHERCONTAINER ping $CONTAINER -c2`, {
             stdio: 'inherit',
           });
         }
