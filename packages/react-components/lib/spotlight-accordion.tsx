@@ -80,6 +80,7 @@ export function createSpotlightRef(): SpotlightRef {
   };
 
   const refCb: React.RefCallback<SpotlightHandle> = (newRef) => {
+    console.log(spotlightDefer);
     if (spotlightDefer.current) {
       newRef?.spotlight();
       spotlightDefer.current = false;
@@ -90,6 +91,6 @@ export function createSpotlightRef(): SpotlightRef {
   return { ref: refCb, spotlight: doSpotlight };
 }
 
-export function useSpotlightRef(): React.Ref<SpotlightRef> {
+export function useSpotlightRef(): React.MutableRefObject<SpotlightRef> {
   return React.useRef(createSpotlightRef());
 }
