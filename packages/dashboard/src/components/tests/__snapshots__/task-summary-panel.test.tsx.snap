@@ -1,131 +1,35 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Matches snapshot 1`] = `
-<WithStyles(ForwardRef(TreeView))
-  className="makeStyles-root-1"
-  defaultCollapseIcon={<UNDEFINED />}
-  defaultExpandIcon={<UNDEFINED />}
-  defaultExpanded={
-    Array [
-      "root",
-    ]
-  }
-  expanded={Array []}
-  onNodeSelect={[Function]}
-  onNodeToggle={[Function]}
-  selected={Array []}
+exports[`Renders correctly Matches snapshot 1`] = `
+<WithStyles(ForwardRef(Typography))
+  component="span"
+  variant="body1"
 >
-  <WithStyles(ForwardRef(TreeItem))
-    classes={
-      Object {
-        "expanded": "makeStyles-expanded-5",
-        "label": "makeStyles-active-8 makeStyles-labelContent-4",
-        "root": "makeStyles-treeChildren-3",
-      }
-    }
-    data-component="TreeItem"
-    key="af8faee9-84ca-41ea-8bb6-8493cc9f824c"
-    label={
-      <React.Fragment>
-        <ForwardRef(WithStyles)
-          noWrap={true}
-          variant="body1"
-        >
-          <ForwardRef(WithStyles)
-            onClick={[Function]}
-          >
-            <UNDEFINED />
-          </ForwardRef(WithStyles)>
-          af8faee9-84ca-41ea-8bb6-8493cc9f824c
-        </ForwardRef(WithStyles)>
-        <ForwardRef(WithStyles)
-          className="makeStyles-taskActor-10"
-          variant="body1"
-        >
-          [tinyRobot/tinyRobot1]
-        </ForwardRef(WithStyles)>
-      </React.Fragment>
-    }
-    nodeId="af8faee9-84ca-41ea-8bb6-8493cc9f824c"
+  <div
+    className="makeStyles-buttonGroupDiv-11"
   >
-    <TaskSummaryPanelItem
-      key="af8faee9-84ca-41ea-8bb6-8493cc9f824c"
-      task={
-        Object {
-          "end_time": Object {
-            "nanosec": 0,
-            "sec": 0,
-          },
-          "start_time": Object {
-            "nanosec": 0,
-            "sec": 0,
-          },
-          "state": 1,
-          "status": "Moving [tinyRobot/tinyRobot1]: ( 9.81228 -6.98942 -3.12904) -> ( 6.26403 -3.51569  1.16864) | Remaining phases: 1 | Remaining phases: 6",
-          "submission_time": Object {
-            "nanosec": 0,
-            "sec": 0,
-          },
-          "task_id": "af8faee9-84ca-41ea-8bb6-8493cc9f824c",
-        }
-      }
+    <TreeButtonGroup
+      disableClear={false}
+      disableReset={false}
+      disableRestore={false}
+      handleClearClick={[Function]}
+      handleResetClick={[Function]}
+      handleRestoreClick={[Function]}
     />
-  </WithStyles(ForwardRef(TreeItem))>
-  <WithStyles(ForwardRef(TreeItem))
-    classes={
-      Object {
-        "expanded": "makeStyles-expanded-5",
-        "label": "makeStyles-active-8 makeStyles-labelContent-4",
-        "root": "makeStyles-treeChildren-3",
-      }
+  </div>
+  <WithStyles(ForwardRef(TreeView))
+    className="makeStyles-root-1"
+    defaultCollapseIcon={<UNDEFINED />}
+    defaultExpandIcon={<UNDEFINED />}
+    defaultExpanded={
+      Array [
+        "root",
+      ]
     }
-    data-component="TreeItem"
-    key="am8faee9-84ca-41ea-8bb6-8493cc9f8249"
-    label={
-      <React.Fragment>
-        <ForwardRef(WithStyles)
-          noWrap={true}
-          variant="body1"
-        >
-          <ForwardRef(WithStyles)
-            onClick={[Function]}
-          >
-            <UNDEFINED />
-          </ForwardRef(WithStyles)>
-          am8faee9-84ca-41ea-8bb6-8493cc9f8249
-        </ForwardRef(WithStyles)>
-        <ForwardRef(WithStyles)
-          className="makeStyles-taskActor-10"
-          variant="body1"
-        >
-          [tinyRobot/tinyRobot2]
-        </ForwardRef(WithStyles)>
-      </React.Fragment>
-    }
-    nodeId="am8faee9-84ca-41ea-8bb6-8493cc9f8249"
-  >
-    <TaskSummaryPanelItem
-      key="am8faee9-84ca-41ea-8bb6-8493cc9f8249"
-      task={
-        Object {
-          "end_time": Object {
-            "nanosec": 0,
-            "sec": 0,
-          },
-          "start_time": Object {
-            "nanosec": 0,
-            "sec": 0,
-          },
-          "state": 1,
-          "status": "Moving [tinyRobot/tinyRobot2]: ( 9.81228 -6.98942 -3.12904) -> ( 6.26403 -3.51569  1.16864) | Remaining phases: 1 | Remaining phases: 6",
-          "submission_time": Object {
-            "nanosec": 0,
-            "sec": 0,
-          },
-          "task_id": "am8faee9-84ca-41ea-8bb6-8493cc9f8249",
-        }
-      }
-    />
-  </WithStyles(ForwardRef(TreeItem))>
-</WithStyles(ForwardRef(TreeView))>
+    expanded={Array []}
+    onNodeSelect={[Function]}
+    onNodeToggle={[Function]}
+    selected=""
+  />
+</WithStyles(ForwardRef(Typography))>
 `;

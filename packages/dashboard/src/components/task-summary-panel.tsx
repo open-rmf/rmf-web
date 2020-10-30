@@ -152,7 +152,7 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryPanelProps) => {
           disableReset={allTasks.length === 0}
           disableClear={allTasks.length === 0}
           disableRestore={allTasks.length === 0}
-          handlResetClick={handleResetTasks}
+          handleResetClick={handleResetTasks}
           handleRestoreClick={handleRestoreTasks}
           handleClearClick={handleClearAllCurrTasks}
         />

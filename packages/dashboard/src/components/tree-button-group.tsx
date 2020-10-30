@@ -5,31 +5,32 @@ import RestoreFromTrashIcon from '@material-ui/icons/RestoreFromTrash';
 import React from 'react';
 
 export interface TreeButtonGroupProps {
-  disableReset: boolean;
-  disableClear: boolean;
-  disableRestore: boolean;
-  handlResetClick?: () => void;
+  disableReset?: boolean;
+  disableClear?: boolean;
+  disableRestore?: boolean;
+  handleResetClick?: () => void;
   handleClearClick?: () => void;
   handleRestoreClick?: () => void;
+  fullWidth: boolean;
 }
 
-// className={classes.buttonGroupDiv}
 export const TreeButtonGroup = (props: TreeButtonGroupProps) => {
   const {
     disableReset,
     disableClear,
     disableRestore,
-    handlResetClick,
+    handleResetClick,
     handleClearClick,
     handleRestoreClick,
+    fullWidth = true,
   } = props;
   return (
     <div>
-      <ButtonGroup fullWidth>
+      <ButtonGroup fullWidth={fullWidth}>
         <Button
           id="reset-button"
           disabled={disableReset}
-          onClick={() => handlResetClick && handlResetClick()}
+          onClick={() => handleResetClick && handleResetClick()}
         >
           <RestoreIcon />
           Reset
