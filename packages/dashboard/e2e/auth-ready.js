@@ -4,7 +4,7 @@ const { execSync } = require('child_process');
  * Waits for the authentication server to be ready.
  * @param timeout Max amount of time (in milliseconds) to wait for
  */
-async function authReady(timeout = 30000) {
+async function authReady(timeout = 35000) {
   console.log('........ auth Ready ..................');
   return new Promise((res) => {
     let req;
@@ -17,7 +17,7 @@ async function authReady(timeout = 30000) {
     let retryTimer;
     const waitAuthReady = () => {
       let container = execSync('docker ps -q --filter ancestor=romi-dashboard/auth').toString();
-      console.log('This is the container =====>>>> ' + container);
+
       if (container) {
         console.log('Successuflly created auth container -----------------------');
 
@@ -32,15 +32,17 @@ async function authReady(timeout = 30000) {
           'docker ps -q --filter network=$NETWORK --filter ancestor=romi-dashboard/auth',
         ).toString();
         console.log('i am isConnected >>>>> ' + isConnected);
+
         if (!isConnected) {
           console.log('I am inside isConnected!!! >>>>> ' + isConnected);
           execSync('docker network connect $NETWORK $CONTAINER', {
             stdio: 'inherit',
           });
+          execSync('docker network disconnect romidashboarde2e_default $CONTAINER', {
+            stdio: 'inherit',
+          });
         }
-        execSync('docker network disconnect romidashboarde2e_default $CONTAINER', {
-          stdio: 'inherit',
-        });
+
         console.log('=========================== END =============================');
       } else {
         console.log('again ------------------------------------');
