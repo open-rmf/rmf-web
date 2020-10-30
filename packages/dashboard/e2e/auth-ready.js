@@ -51,7 +51,7 @@ async function authReady(timeout = 30000) {
             stdio: 'inherit',
           });
 
-          execSync('docker exec -ti $OTHERCONTAINER ping $CONTAINER', {
+          execSync('docker exec $OTHERCONTAINER ping $CONTAINER', {
             stdio: 'inherit',
           });
         }
