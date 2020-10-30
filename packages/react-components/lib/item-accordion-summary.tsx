@@ -44,7 +44,11 @@ export const ItemAccordionSummary = (props: ItemAccordionSummaryProps): JSX.Elem
       <Typography variant="h6" className={joinClasses(classes_.hideText, classes?.title)}>
         {title}
       </Typography>
-      <Typography className={joinClasses(classes_.status, classes?.status)} variant="button">
+      <Typography
+        className={joinClasses(classes_.status, classes?.status)}
+        variant="button"
+        role="status"
+      >
         {status}
       </Typography>
     </AccordionSummary>
