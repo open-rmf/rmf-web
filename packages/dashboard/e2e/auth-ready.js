@@ -28,27 +28,29 @@ async function authReady(timeout = 30000) {
         ).toString();
         console.log('i am isConnected >>>>> ' + isConnected);
 
-        // execSync("docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $CONTAINER");
+        console.log('auth container ip');
+        execSync(
+          "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $CONTAINER",
+          { stdio: 'inherit' },
+        );
+        console.log('Github container ip');
+        execSync(
+          "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $OTHERCONTAINER",
+          { stdio: 'inherit' },
+        );
 
         let dashboardIp = execSync(
           "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $OTHERCONTAINER",
-        );
+        ).toString();
+        process.env.IP = dashboardIp;
 
         if (!isConnected) {
           console.log('I am inside isConnected!!! >>>>> ' + isConnected);
-          execSync('docker network create my_network', {
-            stdio: 'inherit',
-          });
+
           execSync('docker network disconnect romidashboarde2e_default $CONTAINER', {
             stdio: 'inherit',
           });
-          execSync(`docker network connect --ip ${dashboardIp} my_network $CONTAINER`, {
-            stdio: 'inherit',
-          });
-          execSync('docker network connect my_network $OTHERCONTAINER', {
-            stdio: 'inherit',
-          });
-          execSync('docker network disconnect $NETWORK $OTHERCONTAINER', {
+          execSync('docker network connect --ip $IP $NETWORK $CONTAINER', {
             stdio: 'inherit',
           });
         }
