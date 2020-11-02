@@ -208,10 +208,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     setTooltips(!showTooltips);
   };
 
-  const tooltipsValue = React.useMemo(() => ({ showTooltips, toggleTooltips }), [
-    showTooltips,
-    toggleTooltips,
-  ]);
+  const tooltipsValue = React.useMemo(() => ({ showTooltips, toggleTooltips }), [showTooltips]);
 
   React.useEffect(() => {
     setLoading({ caption: 'Connecting to api server...' });
@@ -469,7 +466,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
                       onDispensersClick={handleMainMenuDispensersClick}
                       onCommandsClick={handleMainMenuCommandsClick}
                       onNegotiationsClick={handleMainMenuNegotiationsClick}
-                      tooltips={showTooltips}
                     />
                   </OmniPanelView>
                   <OmniPanelView id={OmniPanelViewIndex.Doors}>

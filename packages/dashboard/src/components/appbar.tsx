@@ -5,7 +5,6 @@ import {
   Menu,
   MenuItem,
   Toolbar,
-  Tooltip,
   Typography,
 } from '@material-ui/core';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
@@ -15,6 +14,7 @@ import React from 'react';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
 import HelpIcon from '@material-ui/icons/Help';
 import { TooltipContext } from './ui-contexts';
+import DashboardTooltip from './tooltips';
 
 export interface AppBarProps {
   toggleShowOmniPanel(): void;
@@ -41,14 +41,16 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
     }
   }
 
-  const customTooltips = () => {
-    return (
-      <>
-        <Tooltip
+  return (
+    <MuiAppBar id="appbar" position="static">
+      <Toolbar>
+        <Typography variant="h6" className={classes.toolbarTitle}>
+          Dashboard
+        </Typography>
+        <DashboardTooltip
           title="view all available panel options"
-          arrow
           id="omnipanel-tooltip"
-          className={classes.tooltipWidth}
+          enabled={showTooltips}
         >
           <IconButton
             id="toggle-omnipanel-btn"
@@ -57,18 +59,16 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
           >
             <DashboardIcon />
           </IconButton>
-        </Tooltip>
-
-        <Tooltip
+        </DashboardTooltip>
+        <DashboardTooltip
           title="define dashboard trajectory settings"
-          arrow
           id="setting-tooltip"
-          className={classes.tooltipWidth}
+          enabled={showTooltips}
         >
           <IconButton id="show-settings-btn" color="inherit" onClick={() => showSettings(true)}>
             <SettingsIcon />
           </IconButton>
-        </Tooltip>
+        </DashboardTooltip>
         {user && (
           <>
             <IconButton
@@ -98,74 +98,11 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
             </Menu>
           </>
         )}
-        <Tooltip
-          title="help tools and resources"
-          arrow
-          id="help-tooltip"
-          className={classes.tooltipWidth}
-        >
+        <DashboardTooltip title="help tools and resources" id="help-tooltip" enabled={showTooltips}>
           <IconButton id="show-help-btn" color="inherit" onClick={() => showHelp(true)}>
             <HelpIcon />
           </IconButton>
-        </Tooltip>
-      </>
-    );
-  };
-
-  const noTooltips = () => {
-    return (
-      <>
-        <IconButton id="toggle-omnipanel-btn" color="inherit" onClick={() => toggleShowOmniPanel()}>
-          <DashboardIcon />
-        </IconButton>
-
-        <IconButton id="show-settings-btn" color="inherit" onClick={() => showSettings(true)}>
-          <SettingsIcon />
-        </IconButton>
-        {user && (
-          <>
-            <IconButton
-              id="user-btn"
-              color="inherit"
-              onClick={(event) => setAnchorEl(event.currentTarget)}
-            >
-              <AccountCircleIcon />
-            </IconButton>
-            <Menu
-              anchorEl={anchorEl}
-              getContentAnchorEl={null}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'right',
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={!!anchorEl}
-              onClose={() => setAnchorEl(null)}
-            >
-              <MenuItem id="logout-btn" onClick={handleLogout}>
-                Logout
-              </MenuItem>
-            </Menu>
-          </>
-        )}
-        <IconButton id="show-help-btn" color="inherit" onClick={() => showHelp(true)}>
-          <HelpIcon />
-        </IconButton>
-      </>
-    );
-  };
-
-  return (
-    <MuiAppBar id="appbar" position="static">
-      <Toolbar>
-        <Typography variant="h6" className={classes.toolbarTitle}>
-          Dashboard
-        </Typography>
-        {showTooltips && customTooltips()}
-        {!showTooltips && noTooltips()}
+        </DashboardTooltip>
       </Toolbar>
     </MuiAppBar>
   );
@@ -177,8 +114,5 @@ const useStyles = makeStyles((_theme) => ({
   },
   avatar: {
     cursor: 'pointer',
-  },
-  tooltipWidth: {
-    maxWidth: 200,
   },
 }));

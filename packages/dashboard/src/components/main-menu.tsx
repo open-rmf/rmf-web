@@ -1,6 +1,8 @@
-import { Divider, List, ListItem, makeStyles, Tooltip, Typography } from '@material-ui/core';
+import { Divider, List, ListItem, Typography } from '@material-ui/core';
 import React from 'react';
 import Debug from 'debug';
+import DashboardTooltip from './tooltips';
+import { TooltipContext } from './ui-contexts';
 
 const debug = Debug('MainMenu');
 
@@ -11,13 +13,11 @@ export interface MainMenuProps {
   onDispensersClick?(event: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
   onCommandsClick?(event: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
   onNegotiationsClick?(event: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
-  tooltips?: boolean;
 }
 
 export const MainMenu = React.memo((props: MainMenuProps) => {
-  const { tooltips } = props;
+  const { showTooltips } = React.useContext(TooltipContext);
   debug('render');
-  const classes = useStyles();
 
   return (
     <List data-component="MainMenu">
@@ -41,53 +41,28 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
       </ListItem>
       <Divider />
 
-      {!tooltips && (
-        <>
-          <ListItem data-item="Commands" button={true} onClick={props.onCommandsClick}>
-            <Typography variant="h5">Commands</Typography>
-          </ListItem>
-          <Divider />
+      <ListItem data-item="Commands" button={true} onClick={props.onCommandsClick}>
+        <DashboardTooltip
+          title="this panel shows the commands that a user can request and RoMi will allocate the most suitable robot for the task"
+          id="commands-tooltip"
+          enabled={showTooltips}
+        >
+          <Typography variant="h5">Commands</Typography>
+        </DashboardTooltip>
+      </ListItem>
+      <Divider />
 
-          <ListItem data-item="Negotiations" button={true} onClick={props.onNegotiationsClick}>
-            <Typography variant="h5">Negotiations</Typography>
-          </ListItem>
-        </>
-      )}
-
-      {tooltips && (
-        <>
-          <ListItem data-item="Commands" button={true} onClick={props.onCommandsClick}>
-            <Tooltip
-              title="this panel shows the commands that a user can request and RoMi will allocate the most suitable robot for the task"
-              arrow
-              id="commands-tooltip"
-              className={classes.tooltipWidth}
-            >
-              <Typography variant="h5">Commands</Typography>
-            </Tooltip>
-          </ListItem>
-          <Divider />
-
-          <ListItem data-item="Negotiations" button={true} onClick={props.onNegotiationsClick}>
-            <Tooltip
-              title="this panel shows the negotiations between robots when there are conflicts in trajectories"
-              arrow
-              id="negotiations-tooltip"
-              className={classes.tooltipWidth}
-            >
-              <Typography variant="h5">Negotiations</Typography>
-            </Tooltip>
-          </ListItem>
-        </>
-      )}
+      <ListItem data-item="Negotiations" button={true} onClick={props.onNegotiationsClick}>
+        <DashboardTooltip
+          title="this panel shows the negotiations between robots when there are conflicts in trajectories"
+          id="negotiations-tooltip"
+          enabled={showTooltips}
+        >
+          <Typography variant="h5">Negotiations</Typography>
+        </DashboardTooltip>
+      </ListItem>
     </List>
   );
 });
-
-const useStyles = makeStyles((theme) => ({
-  tooltipWidth: {
-    maxWidth: 200,
-  },
-}));
 
 export default MainMenu;
