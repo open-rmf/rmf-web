@@ -1,16 +1,8 @@
 import { Divider, Typography } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
-import LiftsPanel from '../components/lift-item/lifts-panel';
 import LiftComponent from './baseComponents/lift-component';
-import {
-  componentDisplayStyle,
-  defaultStyles,
-  lift,
-  lifts,
-  liftStates,
-  StyleTyping,
-} from './baseComponents/utils';
+import { componentDisplayStyle, lift, liftStates } from './baseComponents/utils';
 
 export default {
   title: 'Lift',
@@ -54,15 +46,6 @@ const offlineState = {
 const emergencyState = {
   ...defaultLiftStates,
   current_mode: RomiCore.LiftState.MODE_EMERGENCY,
-};
-
-const styles: StyleTyping = {
-  ...defaultStyles,
-  example: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    margin: '1rem 0',
-  },
 };
 
 const renderInfoPanel = (mode: string, doorState: string, motionState: string): JSX.Element => {
@@ -162,14 +145,4 @@ export const stateEmergency = () => (
     currentFloor={emergencyState.current_floor}
     liftState={emergencyState}
   />
-);
-
-export const liftPanel = () => (
-  <div style={styles.root}>
-    <div style={styles.example}>
-      <Typography variant="h6">Lift State</Typography>
-      <Typography variant="h6">Button color and representation</Typography>
-    </div>
-    <LiftsPanel lifts={lifts} liftStates={liftStates} />
-  </div>
 );

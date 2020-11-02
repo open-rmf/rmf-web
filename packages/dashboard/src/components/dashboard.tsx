@@ -1,11 +1,13 @@
 import { Fade, makeStyles } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import { adapterDoorRequests } from '@osrf/romi-js-core-interfaces';
+import { adapterDoorRequests, adapterLiftRequests, toRosTime } from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import React from 'react';
 import {
   createSpotlightRef,
   DoorAccordion as DoorAccordion_,
+  LiftAccordion as LiftAccordion_,
+  LiftAccordionProps,
   SpotlightRef,
   withSpotlight,
 } from 'react-components';
@@ -31,7 +33,6 @@ import DispensersPanel from './dispensers-panel';
 import HelpDrawer from './drawers/help-drawer';
 import HotKeysDialog from './drawers/hotkeys-dialog';
 import SettingsDrawer from './drawers/settings-drawer';
-import LiftsPanel from './lift-item/lifts-panel';
 import LoadingScreen, { LoadingScreenProps } from './loading-screen';
 import MainMenu from './main-menu';
 import NegotiationsPanel from './negotiations-panel';
@@ -47,6 +48,7 @@ import TaskManager from '../managers/task-manager';
 
 const debug = Debug('App');
 const DoorAccordion = withSpotlight(DoorAccordion_);
+const LiftAccordion = withSpotlight(LiftAccordion_);
 
 const borderRadius = 20;
 
@@ -132,6 +134,16 @@ function makeViewMap(): ViewMap {
 
 const viewMap = makeViewMap();
 
+function makeSpotlightRefs<
+  T extends Record<any, any>,
+  U extends { [K in keyof T]: T[K] extends string ? K : never }[keyof T]
+>(from: T[], key: U): Record<string, SpotlightRef> {
+  return from.reduce<Record<string, SpotlightRef>>((record, item) => {
+    record[item[key]] = createSpotlightRef();
+    return record;
+  }, {});
+}
+
 export default function Dashboard(_props: {}): React.ReactElement {
   debug('render');
 
@@ -150,14 +162,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const doorStateManager = React.useMemo(() => new DoorStateManager(), []);
   const [doorStates, setDoorStates] = React.useState(() => doorStateManager.doorStates());
   const [doors, setDoors] = React.useState<RomiCore.Door[]>([]);
-  const doorAccordionRefs = React.useMemo(
-    () =>
-      doors.reduce<Record<string, SpotlightRef>>((prev, door) => {
-        prev[door.name] = createSpotlightRef();
-        return prev;
-      }, {}),
-    [doors],
-  );
+  const doorAccordionRefs = React.useMemo(() => makeSpotlightRefs(doors, 'name'), [doors]);
   const handleDoorMarkerClick = React.useCallback(
     (door: RomiCore.Door) => {
       setShowOmniPanel(true);
@@ -170,8 +175,14 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const liftStateManager = React.useMemo(() => new LiftStateManager(), []);
   const [liftStates, setLiftStates] = React.useState(() => liftStateManager.liftStates());
   const [lifts, setLifts] = React.useState<RomiCore.Lift[]>([]);
-  const [liftSpotlight, setLiftSpotlight] = React.useState<SpotlightValue<string> | undefined>(
-    undefined,
+  const liftAccordionRefs = React.useMemo(() => makeSpotlightRefs(lifts, 'name'), [lifts]);
+  const handleLiftMarkerClick = React.useCallback(
+    (lift: RomiCore.Lift) => {
+      setShowOmniPanel(true);
+      setCurrentView(OmniPanelViewIndex.Lifts);
+      liftAccordionRefs[lift.name].spotlight();
+    },
+    [liftAccordionRefs],
   );
 
   const fleetManager = React.useMemo(() => new FleetManager(), []);
@@ -325,7 +336,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const doorRequestPub = React.useMemo(() => transport?.createPublisher(adapterDoorRequests), [
     transport,
   ]);
-
   const handleOnDoorControlClick = React.useCallback(
     (_ev, door: RomiCore.Door, mode: number) =>
       doorRequestPub?.publish({
@@ -337,16 +347,28 @@ export default function Dashboard(_props: {}): React.ReactElement {
     [doorRequestPub],
   );
 
+  const liftRequestPub = React.useMemo(() => transport?.createPublisher(adapterLiftRequests), [
+    transport,
+  ]);
+  const handleLiftRequestSubmit = React.useCallback<
+    Required<LiftAccordionProps>['onRequestSubmit']
+  >(
+    (_ev, lift, doorState, requestType, destination) =>
+      liftRequestPub?.publish({
+        lift_name: lift.name,
+        destination_floor: destination,
+        door_state: doorState,
+        request_type: requestType,
+        request_time: toRosTime(new Date()),
+        session_id: 'dashboard',
+      }),
+    [liftRequestPub],
+  );
+
   const handleRobotClick = React.useCallback((fleet: string, robot: RomiCore.RobotState) => {
     setShowOmniPanel(true);
     setCurrentView(OmniPanelViewIndex.Robots);
     setRobotSpotlight({ value: `${fleet}-${robot.name}` });
-  }, []);
-
-  const handleLiftClick = React.useCallback((lift: RomiCore.Lift) => {
-    setShowOmniPanel(true);
-    setCurrentView(OmniPanelViewIndex.Lifts);
-    setLiftSpotlight({ value: lift.name });
   }, []);
 
   function handleDispenserClick(dispenser: RomiCore.DispenserState): void {
@@ -356,7 +378,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
   }
 
   function clearSpotlights() {
-    setLiftSpotlight(undefined);
     setRobotSpotlight(undefined);
     setDispenserSpotlight(undefined);
     setNegotiationSpotlight(undefined);
@@ -482,7 +503,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                 trajManager={trajManager.current}
                 negotiationTrajStore={negotiationTrajStore}
                 onDoorClick={handleDoorMarkerClick}
-                onLiftClick={handleLiftClick}
+                onLiftClick={handleLiftMarkerClick}
                 onRobotClick={handleRobotClick}
                 onDispenserClick={handleDispenserClick}
               />
@@ -519,12 +540,15 @@ export default function Dashboard(_props: {}): React.ReactElement {
                   ))}
                 </OmniPanelView>
                 <OmniPanelView id={OmniPanelViewIndex.Lifts}>
-                  <LiftsPanel
-                    transport={transport}
-                    liftStates={liftStates}
-                    lifts={lifts}
-                    spotlight={liftSpotlight}
-                  />
+                  {lifts.map((lift) => (
+                    <LiftAccordion
+                      key={lift.name}
+                      ref={liftAccordionRefs[lift.name].ref}
+                      lift={lift}
+                      liftState={liftStates[lift.name]}
+                      onRequestSubmit={handleLiftRequestSubmit}
+                    />
+                  ))}
                 </OmniPanelView>
                 <OmniPanelView id={OmniPanelViewIndex.Robots}>
                   <RobotsPanel fleets={fleets} spotlight={robotSpotlight} />
