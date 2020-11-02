@@ -13,3 +13,4 @@ export * from './spotlight-accordion';
 export * from './stack-navigator';
 export * from './svg-text';
 export * from './tooltip';
+export * from './utils';
