@@ -24,7 +24,7 @@ async function authReady(timeout = 30000) {
         process.env.CONTAINER = container;
 
         let isConnected = execSync(
-          'docker ps -q --filter network=my_network --filter ancestor=romi-dashboard/auth',
+          'docker ps -q --filter network=$NETWORK --filter ancestor=romi-dashboard/auth',
         ).toString();
         console.log('i am isConnected >>>>> ' + isConnected);
 
@@ -39,14 +39,14 @@ async function authReady(timeout = 30000) {
           { stdio: 'inherit' },
         );
 
-        let dashboardIp = execSync(
-          "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $OTHERCONTAINER",
-        ).toString();
-        process.env.IP = dashboardIp;
+        // let dashboardIp = execSync(
+        //   "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $OTHERCONTAINER",
+        // ).toString();
+        // process.env.IP = dashboardIp;
 
         if (!isConnected) {
           console.log('I am inside isConnected!!! >>>>> ' + isConnected);
-          execSync('docker network connect --link $OTHERCONTAINER $NETWORK $CONTAINER', {
+          execSync('docker network connect --link $CONTAINER $NETWORK $OTHERCONTAINER', {
             stdio: 'inherit',
           });
 
