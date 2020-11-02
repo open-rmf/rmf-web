@@ -70,7 +70,6 @@ const doorStates = {
 };
 
 export const DoorsPanel: Story = (args) => {
-  console.log(args);
   return (
     <>
       {doors.map((door) => (

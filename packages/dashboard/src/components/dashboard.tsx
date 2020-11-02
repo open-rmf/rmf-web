@@ -306,7 +306,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     transport,
   ]);
 
-  const handleOnDoorContolClick = React.useCallback(
+  const handleOnDoorControlClick = React.useCallback(
     (_ev, door: RomiCore.Door, mode: number) =>
       doorRequestPub?.publish({
         door_name: door.name,
@@ -502,7 +502,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                       ref={doorAccordionRefs[door.name].ref}
                       door={door}
                       doorState={doorStates[door.name]}
-                      onDoorControlClick={handleOnDoorContolClick}
+                      onDoorControlClick={handleOnDoorControlClick}
                       data-name={door.name}
                     />
                   ))}
