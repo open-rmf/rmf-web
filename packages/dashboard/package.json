@@ -67,7 +67,6 @@
     "node-vibrant": "^3.1.5",
     "react-async": "^10.0.0",
     "react-components": "file:../react-components",
-    "react-dom": "^16.12.0",
     "react-hotkeys": "^2.0.0",
     "react-leaflet": "^2.7.0",
     "react-leaflet-control": "^2.1.1",
