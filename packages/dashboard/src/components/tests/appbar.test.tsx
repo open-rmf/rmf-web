@@ -51,12 +51,12 @@ describe('AppBar', () => {
   });
 
   test('renders correctly', () => {
-    const root = buildWrapper(toggleShowOmniPanel, showSettings, showHelp);
+    const root = shallowWrapper(toggleShowOmniPanel, showSettings, showHelp);
     expect(root).toMatchSnapshot();
   });
 
   test('renders tooltips when it is enabled', () => {
-    const root = shallowWrapper(toggleShowOmniPanel, showSettings, showHelp);
+    const root = buildWrapper(toggleShowOmniPanel, showSettings, showHelp);
     expect(root.find('#omnipanel-tooltip').exists()).toBeTruthy();
     expect(root.find('#setting-tooltip').exists()).toBeTruthy();
     expect(root.find('#help-tooltip').exists()).toBeTruthy();
