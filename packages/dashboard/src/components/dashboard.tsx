@@ -204,11 +204,14 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const [tourState, setTourState] = React.useState(false);
   const [showTooltips, setTooltips] = React.useState(true);
 
-  const toggleTooltips = () => {
+  const toggleTooltips = React.useCallback(() => {
     setTooltips(!showTooltips);
-  };
+  }, [showTooltips]);
 
-  const tooltipsValue = React.useMemo(() => ({ showTooltips, toggleTooltips }), [showTooltips]);
+  const tooltipsValue = React.useMemo(() => ({ showTooltips, toggleTooltips }), [
+    showTooltips,
+    toggleTooltips,
+  ]);
 
   React.useEffect(() => {
     setLoading({ caption: 'Connecting to api server...' });

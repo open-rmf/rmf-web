@@ -1,4 +1,4 @@
-import { createMount } from '@material-ui/core/test-utils';
+import { createMount, createShallow } from '@material-ui/core/test-utils';
 import React from 'react';
 import FakeAuthenticator from '../../mock/fake-authenticator';
 import AppBar from '../appbar';
@@ -12,6 +12,23 @@ const buildWrapper = (
   showHelp: () => void,
 ) => {
   const root = mount(
+    <AppBar
+      toggleShowOmniPanel={toggleShowOmniPanel}
+      showSettings={showSettings}
+      showHelp={showHelp}
+      alarmState={null}
+    />,
+  );
+  return root;
+};
+
+const shallow = createShallow();
+const shallowWrapper = (
+  toggleShowOmniPanel: () => void,
+  showSettings: () => void,
+  showHelp: () => void,
+) => {
+  const root = shallow(
     <AppBar
       toggleShowOmniPanel={toggleShowOmniPanel}
       showSettings={showSettings}
@@ -39,17 +56,10 @@ describe('AppBar', () => {
   });
 
   test('renders tooltips when it is enabled', () => {
-    const root = buildWrapper(toggleShowOmniPanel, showSettings, showHelp);
+    const root = shallowWrapper(toggleShowOmniPanel, showSettings, showHelp);
     expect(root.find('#omnipanel-tooltip').exists()).toBeTruthy();
     expect(root.find('#setting-tooltip').exists()).toBeTruthy();
     expect(root.find('#help-tooltip').exists()).toBeTruthy();
-  });
-
-  test('does not render tooltips when disabled', () => {
-    const root = buildWrapper(toggleShowOmniPanel, showSettings, showHelp);
-    expect(root.find('#omnipanel-tooltip').exists()).toBeFalsy();
-    expect(root.find('#setting-tooltip').exists()).toBeFalsy();
-    expect(root.find('#help-tooltip').exists()).toBeFalsy();
   });
 
   test('toggles show omnipanel when dashboard button is clicked', () => {
