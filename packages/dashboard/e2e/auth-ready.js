@@ -18,48 +18,51 @@ async function authReady(timeout = 30000) {
     const waitAuthReady = () => {
       // let container = execSync('docker ps -q --filter ancestor=romi-dashboard/auth').toString();
       console.log('trying to connect ........................');
-      // if (container) {
-      //   console.log('Successuflly created auth container -----------------------');
+      if (container) {
+        console.log('Successuflly created auth container -----------------------');
 
-      //   process.env.CONTAINER = container;
+        process.env.CONTAINER = container;
 
-      //   let isConnected = execSync(
-      //     'docker ps -q --filter network=test-net --filter ancestor=romi-dashboard/auth',
-      //   ).toString();
-      //   console.log('i am isConnected >>>>> ' + isConnected);
+        let isConnected = execSync(
+          'docker ps -q --filter network=test-net --filter ancestor=romi-dashboard/auth',
+        ).toString();
+        console.log('i am isConnected >>>>> ' + isConnected);
 
-      console.log('auth container ip');
-      execSync(
-        "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $CONTAINER",
-        { stdio: 'inherit' },
-      );
-      console.log('Github container ip');
-      execSync(
-        "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $OTHERCONTAINER",
-        { stdio: 'inherit' },
-      );
+        console.log('auth container ip');
+        execSync(
+          "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $CONTAINER",
+          { stdio: 'inherit' },
+        );
+        console.log('Github container ip');
+        execSync(
+          "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $OTHERCONTAINER",
+          { stdio: 'inherit' },
+        );
 
-      //   if (!isConnected) {
-      //     console.log('I am inside isConnected!!! >>>>> ' + isConnected);
+        if (!isConnected) {
+          console.log('I am inside isConnected!!! >>>>> ' + isConnected);
 
-      //     execSync('docker network create --subnet 172.20.0.0/16 test-net', {
-      //       stdio: 'inherit',
-      //     });
-      //     // execSync('docker network connect --link $CONTAINER $NETWORK $OTHERCONTAINER', {
-      //     //   stdio: 'inherit',
-      //     // });
+          execSync('docker network create --subnet 173.20.0.0/16 test-net', {
+            stdio: 'inherit',
+          });
+          // execSync('docker network connect --link $CONTAINER $NETWORK $OTHERCONTAINER', {
+          //   stdio: 'inherit',
+          // });
 
-      //     execSync('docker network connect --ip $IP $NETWORK $CONTAINER', {
-      //       stdio: 'inherit',
-      //     });
-      //   }
+          execSync('docker network connect --ip 173.20.0.100 test-net $CONTAINER', {
+            stdio: 'inherit',
+          });
+          execSync('docker network connect --ip 173.20.0.100 test-net $OTHERCONTAINER', {
+            stdio: 'inherit',
+          });
+        }
 
-      //   //   console.log('=========================== END =============================');
-      // } else {
-      //   console.log('again ------------------------------------');
-      //   execSync('echo $CONTAINER', { stdio: 'inherit' });
-      //   console.log('=========================== END =============================');
-      // }
+        //   console.log('=========================== END =============================');
+      } else {
+        console.log('again ------------------------------------');
+        execSync('echo $CONTAINER', { stdio: 'inherit' });
+        console.log('=========================== END =============================');
+      }
       req = http.request('http://localhost:8080/auth/', () => {
         console.log(
           '-------------------------------- connecting success ------------------------------',
