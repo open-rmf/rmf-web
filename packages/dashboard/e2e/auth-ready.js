@@ -16,8 +16,8 @@ async function authReady(timeout = 30000) {
     }, timeout);
     let retryTimer;
     const waitAuthReady = () => {
-      // let container = execSync('docker ps -q --filter ancestor=romi-dashboard/auth').toString();
-      console.log('trying to connect ........................');
+      let container = execSync('docker ps -q --filter ancestor=romi-dashboard/auth').toString();
+
       if (container) {
         console.log('Successuflly created auth container -----------------------');
 
@@ -45,9 +45,6 @@ async function authReady(timeout = 30000) {
           execSync('docker network create --subnet 173.20.0.0/16 test-net', {
             stdio: 'inherit',
           });
-          // execSync('docker network connect --link $CONTAINER $NETWORK $OTHERCONTAINER', {
-          //   stdio: 'inherit',
-          // });
 
           execSync('docker network connect --ip 173.20.0.100 test-net $CONTAINER', {
             stdio: 'inherit',
