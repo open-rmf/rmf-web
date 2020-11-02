@@ -10,8 +10,6 @@ test('Renders correctly', () => {
       handleCloseButton={() => jest.fn()}
       setShowHotkeyDialog={() => jest.fn()}
       showTour={() => jest.fn()}
-      tooltipState={true}
-      setTooltips={() => jest.fn()}
     />,
   );
   expect(root).toMatchSnapshot();

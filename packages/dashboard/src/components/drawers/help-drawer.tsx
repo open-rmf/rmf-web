@@ -12,39 +12,22 @@ import React from 'react';
 import DrawerHeader from './drawer-header';
 import DirectionsIcon from '@material-ui/icons/Directions';
 import BugReportIcon from '@material-ui/icons/BugReport';
-//import MenuBookIcon from '@material-ui/icons/MenuBook';
-
-/* TODO: Add tutorial environment */
-/* <div className={classes.detailLine} onClick={() => showTour()}>
-  <IconButton id="show-manual-btn" color="inherit">
-    <MenuBookIcon />
-  </IconButton>
-  <Typography variant="h5"> Tutorial </Typography>
-</div>
-<Divider /> */
+import { TooltipContext } from '../ui-contexts';
 
 export interface HotKeysDrawerProps extends DrawerProps {
   handleCloseButton(): void;
   setShowHotkeyDialog(): void;
   showTour(): void;
-  tooltipState: boolean;
-  setTooltips: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function HelpDrawer(props: HotKeysDrawerProps): React.ReactElement {
-  const {
-    handleCloseButton,
-    setShowHotkeyDialog,
-    showTour,
-    tooltipState,
-    setTooltips,
-    ...otherProps
-  } = props;
+  const { handleCloseButton, setShowHotkeyDialog, showTour, ...otherProps } = props;
   const classes = useStyles();
   const drawerAnchor = useMediaQuery('(max-aspect-ratio: 8/10)') ? 'bottom' : 'right';
   const modalProp = {
     disableEnforceFocus: true,
   };
+  const { showTooltips, toggleTooltips } = React.useContext(TooltipContext);
 
   return (
     <Drawer
@@ -80,12 +63,12 @@ export default function HelpDrawer(props: HotKeysDrawerProps): React.ReactElemen
         <div className={classes.detailLine}>
           <Checkbox
             style={{ padding: '0 5px 0 2px' }}
-            checked={tooltipState}
+            checked={showTooltips}
             size="small"
             color="primary"
             inputProps={{ 'aria-label': 'tooltip checkbox' }}
             onChange={(event) => {
-              setTooltips(event.target.checked);
+              toggleTooltips();
               localStorage.setItem('dashboardTooltips', event.target.checked.toString());
             }}
           />
