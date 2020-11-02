@@ -128,6 +128,41 @@ function makeViewMap(): ViewMap {
 
 const viewMap = makeViewMap();
 
+const DOOR_STATE = 'doorStates';
+const DOORS = 'doors';
+const DOOR_SPOTLIGHT = 'doorSpotlight';
+
+type ActionFormat<T, K> = {
+  type: T;
+  payload?: K;
+};
+
+type Action =
+  | { type: 'doorStates'; payload: Record<string, RomiCore.DoorState> }
+  | { type: 'doors'; payload: RomiCore.Door[] }
+  // | { type: 'doorSpotlight'; payload: SpotlightValue<string> | undefined }
+  | ActionFormat<'doorSpotlight', SpotlightValue<string> | undefined>;
+
+type State = {
+  doorStates: Record<string, RomiCore.DoorState>;
+  doors: RomiCore.Door[];
+  doorSpotlight: SpotlightValue<string> | undefined;
+};
+
+const reducer = (state: State, action: Action): State => {
+  switch (action.type) {
+    case DOOR_STATE:
+      return { ...state, doorStates: action.payload };
+    case DOORS:
+      return { ...state, doors: action.payload };
+    case DOOR_SPOTLIGHT:
+      return { ...state, doorSpotlight: action.payload };
+
+    default:
+      throw new Error('Unexpected action');
+  }
+};
+
 export default function Dashboard(_props: {}): React.ReactElement {
   debug('render');
 
@@ -144,6 +179,14 @@ export default function Dashboard(_props: {}): React.ReactElement {
   );
 
   const doorStateManager = React.useMemo(() => new DoorStateManager(), []);
+
+  const initialValues: State = {
+    doorStates: doorStateManager.doorStates(),
+    doors: [],
+    doorSpotlight: undefined,
+  };
+  const [state, dispatch] = React.useReducer(reducer, initialValues);
+
   const [doorStates, setDoorStates] = React.useState(() => doorStateManager.doorStates());
   const [doors, setDoors] = React.useState<RomiCore.Door[]>([]);
   const doorAccordionRefs = React.useMemo(
