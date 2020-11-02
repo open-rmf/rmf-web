@@ -44,7 +44,7 @@ async function authReady(timeout = 30000) {
           execSync('ifconfig', {
             stdio: 'inherit',
           });
-          execSync('docker network create --subnet 127.0.0.1/16 --ip-range 127.0.0.1/1 test-net', {
+          execSync('docker network create --subnet 127.0.0.0/16 --ip-range 127.0.0.2/2 test-net', {
             stdio: 'inherit',
           });
 
