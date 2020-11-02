@@ -41,8 +41,7 @@ async function authReady(timeout = 30000) {
 
         if (!isConnected) {
           console.log('I am inside isConnected!!! >>>>> ' + isConnected);
-
-          execSync('docker network create --subnet 127.0.0.1/16 test-net', {
+          execSync('docker network create --subnet 127.0.0.1/16 --ip-range 127.0.0.1/1 test-net', {
             stdio: 'inherit',
           });
 
