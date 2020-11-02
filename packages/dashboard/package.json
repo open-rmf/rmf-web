@@ -61,8 +61,6 @@
     "chalk": "^4.1.0",
     "clsx": "^1.1.1",
     "debug": "^4.1.1",
-    "enzyme": "^3.11.0",
-    "enzyme-adapter-react-16": "^1.15.4",
     "eventemitter3": "^4.0.7",
     "keycloak-js": "^11.0.2",
     "leaflet": "^1.7.1",
