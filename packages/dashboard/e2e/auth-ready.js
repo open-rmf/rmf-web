@@ -44,6 +44,11 @@ async function authReady(timeout = 40000) {
         console.log('<<<< container in github network >>>>');
         execSync('docker network inspect $NETWORK', { stdio: 'inherit' });
 
+        authIpAddress = execSync(
+          "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $CONTAINER",
+        ).toString();
+        console.log('auth ip address >>>>>>> ' + authIpAddress);
+
         if (!isConnected) {
           console.log('I am inside isConnected!!! >>>>> ' + isConnected);
 
@@ -58,11 +63,6 @@ async function authReady(timeout = 40000) {
         execSync('echo $CONTAINER', { stdio: 'inherit' });
         console.log('=========================== END =============================');
       }
-
-      authIpAddress = execSync(
-        "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $CONTAINER",
-      ).toString();
-      console.log('auth ip address >>>>>>> ' + authIpAddress);
 
       req = http.request(`http://${authIpAddress ? authIpAddress : 'localhost'}:8080/auth/`, () => {
         console.log(
