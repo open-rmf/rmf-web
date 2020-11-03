@@ -32,7 +32,7 @@ export interface RobotMarkerProps extends Omit<React.SVGAttributes<SVGGElement>,
   fleetName: string;
   iconPath?: string;
   variant?: 'normal' | 'inConflict';
-  onClick?(event: React.MouseEvent, robot: RomiCore.RobotState): void;
+  onClick?(event: React.MouseEvent, fleet: string, robot: RomiCore.RobotState): void;
 }
 
 /**
@@ -55,7 +55,7 @@ export const RobotMarker = React.memo(
           aria-label={robot.name}
           transform={`translate(${robot.location.x} ${-robot.location.y})
             rotate(${-(robot.location.yaw * 180) / Math.PI})`}
-          onClick={(ev) => onClick && onClick(ev, robot)}
+          onClick={(ev) => onClick && onClick(ev, fleetName, robot)}
           {...otherProps}
         >
           {useImageMarker && iconPath ? (
