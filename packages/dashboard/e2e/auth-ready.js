@@ -4,7 +4,7 @@ const { execSync } = require('child_process');
  * Waits for the authentication server to be ready.
  * @param timeout Max amount of time (in milliseconds) to wait for
  */
-async function authReady(timeout = 30000) {
+async function authReady(timeout = 40000) {
   console.log('........ auth Ready ..................');
   return new Promise((res) => {
     let req;
@@ -17,9 +17,12 @@ async function authReady(timeout = 30000) {
     let retryTimer;
     const waitAuthReady = () => {
       let container = execSync('docker ps -q --filter ancestor=romi-dashboard/auth').toString();
-
+      let authIpAddress;
+      console.log(
+        '========================== waiting waiting waiting ----- waiting ==========================',
+      );
       if (container) {
-        console.log('Successuflly created auth container -----------------------');
+        console.log('Successuflly created auth container ----------------------- ' + container);
 
         process.env.CONTAINER = container;
 
@@ -44,25 +47,30 @@ async function authReady(timeout = 30000) {
           execSync('ifconfig', {
             stdio: 'inherit',
           });
-          execSync('docker network create --subnet 127.0.0.0/16 --ip-range 127.0.0.2/2 test-net', {
+          execSync('docker network create test-net', {
             stdio: 'inherit',
           });
 
-          execSync('docker network connect --ip 127.0.0.1 test-net $CONTAINER', {
+          execSync('docker network connect test-net $CONTAINER', {
             stdio: 'inherit',
           });
           execSync('docker network connect test-net $OTHERCONTAINER', {
             stdio: 'inherit',
           });
+
+          authIpAddress = execSync(
+            "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $CONTAINER",
+          ).toString();
+          console.log('auth ip address >>>>>>> ' + authIpAddress);
         }
 
-        //   console.log('=========================== END =============================');
+        console.log('=========================== END =============================');
       } else {
         console.log('again ------------------------------------');
         execSync('echo $CONTAINER', { stdio: 'inherit' });
         console.log('=========================== END =============================');
       }
-      req = http.request('http://localhost:8080/auth/', () => {
+      req = http.request(`http://${authIpAddress ? authIpAddress : 'localhost'}:8080/auth/`, () => {
         console.log(
           '-------------------------------- connecting success ------------------------------',
         );
