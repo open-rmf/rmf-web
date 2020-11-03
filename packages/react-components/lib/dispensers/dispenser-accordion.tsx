@@ -46,7 +46,6 @@ const useStyles = makeStyles((theme) => ({
   statusLabelIdle: { borderColor: theme.palette.warning.main },
   statusLabelBusy: { borderColor: theme.palette.success.main },
   statusLabelOffline: { borderColor: theme.palette.error.main },
-  statusLabelUnknown: { borderColor: '#cccccc' },
 }));
 
 export interface DispenserAccordionProps extends Omit<AccordionProps, 'children'> {
@@ -59,7 +58,7 @@ export const DispenserAccordion = React.memo(
     debug(`render ${dispenserState.guid}`);
     const classes = useStyles();
 
-    const statusLabelClass = () => {
+    const getStatusLabelClass = () => {
       switch (dispenserState.mode) {
         case RomiCore.DispenserState.IDLE:
           return classes.statusLabelIdle;
@@ -68,16 +67,21 @@ export const DispenserAccordion = React.memo(
         case RomiCore.DispenserState.OFFLINE:
           return classes.statusLabelOffline;
         default:
-          return classes.statusLabelUnknown;
+          return null;
       }
     };
+
+    const statusLabelClass = getStatusLabelClass();
 
     return (
       <Accordion ref={ref} {...otherProps}>
         <ItemAccordionSummary
           title={dispenserState.guid}
-          status={dispenserModeToString(dispenserState.mode)}
-          classes={{ status: statusLabelClass() }}
+          statusProps={{
+            className: statusLabelClass ? statusLabelClass : undefined,
+            text: dispenserModeToString(dispenserState.mode),
+            variant: statusLabelClass ? 'normal' : 'unknown',
+          }}
         />
         <ItemAccordionDetails>
           <DispenserInfo dispenser={dispenserState} />

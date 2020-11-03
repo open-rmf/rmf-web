@@ -24,9 +24,6 @@ const useStyles = makeStyles((theme) => ({
   doorLabelMoving: {
     borderColor: theme.palette.warning.main,
   },
-  doorLabelUnknown: {
-    borderColor: '#cccccc',
-  },
 }));
 
 function doorTypeToString(doorType: number): string {
@@ -106,9 +103,9 @@ export const DoorAccordion = React.memo(
     const classes = useStyles();
 
     const doorModeLabelClasses = React.useCallback(
-      (doorState?: RomiCore.DoorState): string => {
+      (doorState?: RomiCore.DoorState): string | null => {
         if (!doorState) {
-          return `${classes.doorLabelUnknown}`;
+          return null;
         }
         switch (doorState.current_mode.value) {
           case RomiCore.DoorMode.MODE_OPEN:
@@ -118,18 +115,23 @@ export const DoorAccordion = React.memo(
           case RomiCore.DoorMode.MODE_MOVING:
             return `${classes.doorLabelMoving}`;
           default:
-            return `${classes.doorLabelUnknown}`;
+            return null;
         }
       },
       [classes],
     );
 
+    const doorStatusClass = doorModeLabelClasses(doorState);
+
     return (
       <Accordion ref={ref} {...otherProps}>
         <ItemAccordionSummary
           title={door.name}
-          status={doorModeToString(doorState)}
-          classes={{ status: doorModeLabelClasses(doorState) }}
+          statusProps={{
+            className: doorStatusClass ? doorStatusClass : undefined,
+            text: doorModeToString(doorState),
+            variant: doorState ? 'normal' : 'unknown',
+          }}
         />
         <ItemAccordionDetails>
           <DoorInfo door={door} />

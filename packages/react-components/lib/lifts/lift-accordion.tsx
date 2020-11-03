@@ -30,9 +30,6 @@ const useStyles = makeStyles((theme) => ({
   liftFloorLabelMoving: {
     borderColor: theme.palette.warning.main,
   },
-  liftFloorLabelUnknown: {
-    borderColor: '#cccccc',
-  },
 }));
 
 const LiftInfo = (props: LiftInfoProps) => {
@@ -90,9 +87,9 @@ export const LiftAccordion = React.memo(
     const classes = useStyles();
 
     const liftFloorLabelClass = React.useCallback(
-      (liftState?: RomiCore.LiftState): string => {
+      (liftState?: RomiCore.LiftState): string | null => {
         if (!liftState) {
-          return classes.liftFloorLabelUnknown;
+          return null;
         }
         switch (liftState.motion_state) {
           case RomiCore.LiftState.MOTION_UP:
@@ -101,7 +98,7 @@ export const LiftAccordion = React.memo(
           case RomiCore.LiftState.MOTION_STOPPED:
             return classes.liftFloorLabelStopped;
           default:
-            return classes.liftFloorLabelUnknown;
+            return null;
         }
       },
       [classes],
@@ -114,12 +111,17 @@ export const LiftAccordion = React.memo(
       [],
     );
 
+    const liftStatusClass = liftFloorLabelClass(liftState);
+
     return (
       <Accordion ref={ref} {...otherProps}>
         <ItemAccordionSummary
           title={lift.name}
-          status={liftState ? liftState.current_floor : 'N/A'}
-          classes={{ status: liftFloorLabelClass(liftState) }}
+          statusProps={{
+            className: liftStatusClass ? liftStatusClass : undefined,
+            text: liftState?.current_floor,
+            variant: liftState ? 'normal' : 'unknown',
+          }}
         />
         <ItemAccordionDetails>
           <AntTabs variant="fullWidth" value={tabValue} onChange={handleTabChange}>

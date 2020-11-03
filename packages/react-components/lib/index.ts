@@ -11,6 +11,7 @@ export * from './robots';
 export * from './simple-info';
 export * from './spotlight-accordion';
 export * from './stack-navigator';
+export * from './status-label';
 export * from './svg-text';
 export * from './tooltip';
 export * from './utils';

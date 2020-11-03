@@ -78,8 +78,10 @@ export const RobotAccordion = React.memo(
       <Accordion ref={ref} {...otherProps}>
         <ItemAccordionSummary
           title={robot.name}
-          status={robotModeToString(robot.mode)}
-          classes={{ status: classes.robotStatusLabel }}
+          statusProps={{
+            className: classes.robotStatusLabel,
+            text: robotModeToString(robot.mode),
+          }}
         />
         <ItemAccordionDetails>
           <RobotInfo fleetName={fleetName} robot={robot} />
