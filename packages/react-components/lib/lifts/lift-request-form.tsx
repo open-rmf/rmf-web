@@ -36,7 +36,8 @@ export interface LiftRequestFormProps {
   lift: RomiCore.Lift;
   availableRequestTypes: number[];
   availableDoorModes: number[];
-  doLiftRequest?(
+  onRequestSubmit?(
+    event: React.FormEvent,
     lift: RomiCore.Lift,
     doorState: number,
     requestType: number,
@@ -45,7 +46,7 @@ export interface LiftRequestFormProps {
 }
 
 export const LiftRequestForm = (props: LiftRequestFormProps): JSX.Element => {
-  const { lift, availableRequestTypes, availableDoorModes, doLiftRequest } = props;
+  const { lift, availableRequestTypes, availableDoorModes, onRequestSubmit } = props;
   const classes = useStyles();
 
   const [doorState, setDoorState] = React.useState(availableDoorModes[0]);
@@ -84,7 +85,7 @@ export const LiftRequestForm = (props: LiftRequestFormProps): JSX.Element => {
   const handleLiftRequest = (event: React.FormEvent) => {
     event.preventDefault();
     if (isFormValid()) {
-      doLiftRequest && doLiftRequest(lift, doorState, requestType, destination);
+      onRequestSubmit && onRequestSubmit(event, lift, doorState, requestType, destination);
       cleanUpForm();
     }
   };

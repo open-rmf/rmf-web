@@ -26,12 +26,13 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export interface RobotMarkerProps extends React.SVGAttributes<SVGGElement> {
+export interface RobotMarkerProps extends Omit<React.SVGAttributes<SVGGElement>, 'onClick'> {
   robot: RomiCore.RobotState;
   footprint: number;
   fleetName: string;
   iconPath?: string;
   variant?: 'normal' | 'inConflict';
+  onClick?(event: React.MouseEvent, robot: RomiCore.RobotState): void;
 }
 
 /**
@@ -41,7 +42,7 @@ export const RobotMarker = React.memo(
   React.forwardRef((props: RobotMarkerProps, ref: React.Ref<SVGGElement>) => {
     // some props are not used but have to be declared to correctly set `otherProps`
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { robot, footprint, fleetName, iconPath, variant, ...otherProps } = props;
+    const { robot, footprint, fleetName, iconPath, variant, onClick, ...otherProps } = props;
     debug(`render ${robot.name}`);
     const [useImageMarker, setUseImageMarker] = React.useState(!!iconPath);
     const classes = useStyles();
@@ -54,6 +55,7 @@ export const RobotMarker = React.memo(
           aria-label={robot.name}
           transform={`translate(${robot.location.x} ${-robot.location.y})
             rotate(${-(robot.location.yaw * 180) / Math.PI})`}
+          onClick={(ev) => onClick && onClick(ev, robot)}
           {...otherProps}
         >
           {useImageMarker && iconPath ? (

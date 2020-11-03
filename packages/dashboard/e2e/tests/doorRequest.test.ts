@@ -3,7 +3,7 @@ import { makeLauncher } from '../rmf-launcher';
 import { login, overwriteClick } from './utils';
 
 describe('door request', () => {
-  let doorItem: Element;
+  let doorAccordion: Element;
   const launcher = makeLauncher();
 
   before(async () => await launcher.launch());
@@ -16,23 +16,17 @@ describe('door request', () => {
 
   before(() => {
     $('[data-component=MainMenu] [data-item=Doors]').click();
-    doorItem = $('[data-component=DoorItem]');
-    doorItem.click();
+    doorAccordion = $('.MuiAccordion-root*=main_door');
+    doorAccordion.click();
   });
 
   it('clicking on open button opens the door', () => {
-    expect(doorItem).toHaveAttr('data-state', 'CLOSED');
-
-    doorItem.$('button=Open').click();
-
-    expect(doorItem).toHaveAttr('data-state', 'OPEN');
+    doorAccordion.$('button=Open').click();
+    expect(doorAccordion.$('[role=status]')).toHaveText('OPEN');
   });
 
   it('clicking on close button closes the door', () => {
-    expect(doorItem).toHaveAttr('data-state', 'OPEN');
-
-    doorItem.$('button=Close').click();
-
-    expect(doorItem).toHaveAttr('data-state', 'CLOSED');
+    doorAccordion.$('button=Close').click();
+    expect(doorAccordion.$('[role=status]')).toHaveText('CLOSED');
   });
 });

@@ -4,7 +4,9 @@
   "description": "",
   "main": "lib/index.js",
   "scripts": {
-    "start": "start-storybook -p 6006 -s stories",
+    "preinstall": "node ../../scripts/install.js",
+    "start": "node ../../node_modules/.bin/start-storybook -p 6006 -s stories",
+    "prepare": "npm run build",
     "build": "tsc --build",
     "build:storybook": "build-storybook -s stories",
     "clean": "tsc --build --clean",
@@ -14,19 +16,11 @@
   "author": "koonpeng@openrobotics.org",
   "license": "Apache-2.0",
   "dependencies": {
-    "@material-ui/core": "^4.11.0",
-    "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "^4.0.0-alpha.56",
     "@osrf/romi-js-core-interfaces": "^0.1.4",
     "debug": "^4.2.0",
-    "node-vibrant": "^3.2.1-alpha.1"
+    "node-vibrant": "^3.1.6"
   },
   "devDependencies": {
-    "@babel/core": "^7.11.6",
-    "@storybook/addon-actions": "^6.0.26",
-    "@storybook/addon-essentials": "^6.0.26",
-    "@storybook/addon-links": "^6.0.26",
-    "@storybook/react": "^6.0.26",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.0.4",
     "@testing-library/user-event": "^12.1.9",
@@ -34,18 +28,18 @@
     "@types/jest": "^26.0.14",
     "@typescript-eslint/eslint-plugin": "^4.4.0",
     "@typescript-eslint/parser": "^4.4.0",
-    "babel-loader": "^8.1.0",
     "eslint": "^7.11.0",
     "eslint-plugin-react": "^7.21.4",
     "eslint-plugin-react-hooks": "^4.1.2",
     "fontsource-roboto": "^3.0.3",
     "jest": "^26.5.2",
-    "react": "^16.13.1",
-    "react-is": "^16.13.1",
     "ts-jest": "^26.4.1",
     "typescript": "^4.0.3"
   },
   "peerDependencies": {
+    "@material-ui/core": "^4.11.0",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.56",
     "react": "^16.13.1"
   },
   "files": [

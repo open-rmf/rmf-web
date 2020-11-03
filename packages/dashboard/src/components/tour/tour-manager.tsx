@@ -1,10 +1,31 @@
+import { Box, createMuiTheme, Typography } from '@material-ui/core';
 import React from 'react';
-import { Box, Typography, createMuiTheme } from '@material-ui/core';
-import { OmniPanelViewIndex } from '../dashboard';
-import { SpotlightValue } from '../spotlight-value';
 import { ReactourStep } from 'reactour';
-import { tourText, stepDetails, stepStyling } from './tour-data';
+import { OmniPanelViewIndex } from '../dashboard';
+import { stepDetails, stepStyling, tourText } from './tour-data';
 import { NavButtons } from './tour-navigation-control';
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function waitForAnimation(selector: string): Promise<void> {
+  // wait for elem to be rendered
+  const el = await new Promise<Element>((res) => {
+    const timer = setInterval(() => {
+      const el = document.querySelector(selector);
+      if (!el) {
+        return;
+      }
+      clearInterval(timer);
+      res(el);
+    }, 10);
+  });
+
+  await Promise.all(el.getAnimations().map((anim) => anim.finished));
+
+  // for some reason reactour doesn't capture the whole element immediate after the
+  // animation is finished.
+  await new Promise((res) => setTimeout(res, 100));
+}
+
 interface createTourProps {
   setTourState: React.Dispatch<React.SetStateAction<boolean>>;
   setShowSettings: React.Dispatch<React.SetStateAction<boolean>>;
@@ -12,8 +33,7 @@ interface createTourProps {
   setShowHelp: React.Dispatch<React.SetStateAction<boolean>>;
   clearSpotlights: () => void;
   setCurrentView: React.Dispatch<React.SetStateAction<OmniPanelViewIndex>>;
-  doorSpotlight: SpotlightValue<string> | undefined;
-  setDoorSpotlight: React.Dispatch<React.SetStateAction<SpotlightValue<string> | undefined>>;
+  doorSpotlight?: () => void;
 }
 
 export const createTourSteps = (props: createTourProps) => {
@@ -25,7 +45,6 @@ export const createTourSteps = (props: createTourProps) => {
     clearSpotlights,
     setCurrentView,
     doorSpotlight,
-    setDoorSpotlight,
   } = props;
 
   const showSettingsOmniPanelHelpClearSpotlight = (
@@ -138,9 +157,7 @@ export const createTourSteps = (props: createTourProps) => {
             handleNextClick={() => {
               showSettingsOmniPanelHelpClearSpotlight(false, true, false, false);
               setCurrentView(OmniPanelViewIndex.Doors);
-              if (!doorSpotlight) {
-                setDoorSpotlight({ value: 'main_door' });
-              }
+              doorSpotlight && doorSpotlight();
             }}
           />
         </Box>
@@ -169,7 +186,7 @@ export const createTourSteps = (props: createTourProps) => {
       ),
     },
     commandsPanel: {
-      selector: '[data-item= "Commands"]',
+      selector: '[data-item="Commands"]',
       content: ({ goTo, step }) => (
         <Box data-testid="stepBox">
           <Typography variant="h6" data-testid="step9">
@@ -200,9 +217,9 @@ export const createTourSteps = (props: createTourProps) => {
           <NavButtons
             goTo={goTo}
             step={step}
-            handleNextClick={() => {
-              showSettingsOmniPanelHelpClearSpotlight(false, false, false, false);
-            }}
+            handleNextClick={() =>
+              showSettingsOmniPanelHelpClearSpotlight(false, false, false, false)
+            }
             handleBackClick={() => {
               showSettingsOmniPanelHelpClearSpotlight(false, true, false, false);
               setCurrentView(OmniPanelViewIndex.MainMenu);
@@ -245,9 +262,9 @@ export const createTourSteps = (props: createTourProps) => {
             handleNextClick={() =>
               showSettingsOmniPanelHelpClearSpotlight(false, false, false, true)
             }
-            handleBackClick={() =>
-              showSettingsOmniPanelHelpClearSpotlight(false, false, false, true)
-            }
+            handleBackClick={() => {
+              showSettingsOmniPanelHelpClearSpotlight(false, false, false, true);
+            }}
           />
         </Box>
       ),
@@ -262,9 +279,9 @@ export const createTourSteps = (props: createTourProps) => {
           <NavButtons
             goTo={goTo}
             step={step}
-            handleNextClick={() =>
-              showSettingsOmniPanelHelpClearSpotlight(false, false, true, true)
-            }
+            handleNextClick={() => {
+              showSettingsOmniPanelHelpClearSpotlight(false, false, true, true);
+            }}
             handleBackClick={() =>
               showSettingsOmniPanelHelpClearSpotlight(true, false, false, true)
             }
