@@ -1,8 +1,7 @@
 import { createMount, createShallow } from '@material-ui/core/test-utils';
+import { ReactWrapper } from 'enzyme';
 import React from 'react';
 import DashboardTour from '../tour/tour';
-import { SpotlightValue } from '../spotlight-value';
-import { ReactWrapper } from 'enzyme';
 import { tourText } from '../tour/tour-data';
 
 /*react-leaflet does not work well on jsdom,
@@ -20,8 +19,7 @@ describe('Dashboard Tour', () => {
   const setShowHelp: jest.Mock = jest.fn();
   const clearSpotlights: jest.Mock = jest.fn();
   const setCurrentView: jest.Mock = jest.fn();
-  const doorSpotlight: SpotlightValue<string> = { value: 'main_door' };
-  const setDoorSpotlight: jest.Mock = jest.fn();
+  const doorSpotlight: jest.Mock = jest.fn();
 
   let root: ReactWrapper;
   let expectedText: string;
@@ -36,7 +34,6 @@ describe('Dashboard Tour', () => {
     clearSpotlights,
     setCurrentView,
     doorSpotlight,
-    setDoorSpotlight,
   };
   const wait = (delay = 0) => new Promise((resolve) => setTimeout(resolve, delay));
 
@@ -63,6 +60,7 @@ describe('Dashboard Tour', () => {
 
   it('renders zoom button step', async () => {
     expectedText = tourText.Zoom.text;
+
     nextBtn.simulate('click');
     await wait(5);
 
@@ -78,6 +76,7 @@ describe('Dashboard Tour', () => {
       nextBtn.simulate('click');
       await wait(5);
     }
+
     stepText = root.find('[data-testid="stepBox"]').first().text();
 
     expect(stepText.includes(expectedText));
@@ -90,6 +89,7 @@ describe('Dashboard Tour', () => {
       nextBtn.simulate('click');
       await wait(5);
     }
+
     stepText = root.find('[data-testid="stepBox"]').first().text();
 
     expect(stepText.includes(expectedText));
@@ -102,6 +102,7 @@ describe('Dashboard Tour', () => {
       nextBtn.simulate('click');
       await wait(5);
     }
+
     stepText = root.find('[data-testid="stepBox"]').first().text();
 
     expect(stepText.includes(expectedText));
@@ -114,6 +115,7 @@ describe('Dashboard Tour', () => {
       nextBtn.simulate('click');
       await wait(5);
     }
+
     stepText = root.find('[data-testid="stepBox"]').first().text();
 
     expect(stepText.includes(expectedText));
@@ -126,6 +128,7 @@ describe('Dashboard Tour', () => {
       nextBtn.simulate('click');
       await wait(5);
     }
+
     stepText = root.find('[data-testid="stepBox"]').first().text();
 
     expect(stepText.includes(expectedText));
@@ -138,6 +141,7 @@ describe('Dashboard Tour', () => {
       nextBtn.simulate('click');
       await wait(5);
     }
+
     stepText = root.find('[data-testid="stepBox"]').first().text();
 
     expect(stepText.includes(expectedText));
@@ -150,6 +154,7 @@ describe('Dashboard Tour', () => {
       nextBtn.simulate('click');
       await wait(5);
     }
+
     stepText = root.find('[data-testid="stepBox"]').first().text();
 
     expect(stepText.includes(expectedText));
@@ -162,6 +167,7 @@ describe('Dashboard Tour', () => {
       nextBtn.simulate('click');
       await wait(5);
     }
+
     stepText = root.find('[data-testid="stepBox"]').first().text();
 
     expect(stepText.includes(expectedText));
@@ -174,6 +180,7 @@ describe('Dashboard Tour', () => {
       nextBtn.simulate('click');
       await wait(5);
     }
+
     stepText = root.find('[data-testid="stepBox"]').first().text();
 
     expect(stepText.includes(expectedText));
@@ -186,6 +193,7 @@ describe('Dashboard Tour', () => {
       nextBtn.simulate('click');
       await wait(5);
     }
+
     stepText = root.find('[data-testid="stepBox"]').first().text();
 
     expect(stepText.includes(expectedText));
@@ -198,6 +206,7 @@ describe('Dashboard Tour', () => {
       nextBtn.simulate('click');
       await wait(5);
     }
+
     stepText = root.find('[data-testid="stepBox"]').first().text();
 
     expect(stepText.includes(expectedText));
@@ -210,6 +219,7 @@ describe('Dashboard Tour', () => {
       nextBtn.simulate('click');
       await wait(5);
     }
+
     stepText = root.find('[data-testid="stepBox"]').first().text();
 
     expect(stepText.includes(expectedText));

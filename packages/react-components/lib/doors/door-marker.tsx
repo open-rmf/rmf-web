@@ -181,14 +181,15 @@ const DoubleTelescopeDoor = DoubleSlidingDoor;
  * doorState: Current state of the door.
  * onClick: Action to trigger on click.
  */
-export interface DoorMarkerProps extends React.SVGProps<SVGGElement> {
+export interface DoorMarkerProps extends Omit<React.SVGProps<SVGGElement>, 'onClick'> {
   door: RomiCore.Door;
   doorMode?: RomiCore.DoorMode;
+  onClick?(event: React.MouseEvent, door: RomiCore.Door): void;
 }
 
 export const DoorMarker = React.memo(
   React.forwardRef((props: DoorMarkerProps, ref: React.Ref<SVGGElement>) => {
-    const { door, doorMode, className, ...otherProps } = props;
+    const { door, doorMode, onClick, className, ...otherProps } = props;
     debug(`render ${door.name}`);
     const classes = useDoorStyles();
 
@@ -214,7 +215,8 @@ export const DoorMarker = React.memo(
     return (
       <g
         ref={ref}
-        className={joinClasses(props.onClick ? classes.marker : undefined, className)}
+        className={joinClasses(onClick ? classes.marker : undefined, className)}
+        onClick={(ev) => onClick && onClick(ev, door)}
         {...otherProps}
       >
         {renderDoor()}

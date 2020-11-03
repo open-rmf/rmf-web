@@ -1,19 +1,28 @@
+import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { DoorAccordion } from '../../lib';
 import { makeDoor } from './test-utils';
 
-test('triggers doOpenDoor callback when button is clicked', () => {
-  const handleDoorOpen = jest.fn();
-  const root = render(<DoorAccordion door={makeDoor()} onOpenClick={handleDoorOpen} />);
+test('triggers door control dispatch when open door button is clicked', () => {
+  const handler = jest.fn();
+  const root = render(<DoorAccordion door={makeDoor()} onDoorControlClick={handler} />);
   userEvent.click(root.getByText('Open'));
-  expect(handleDoorOpen).toBeCalled();
+  expect(handler).toHaveBeenCalledWith(
+    expect.anything(),
+    expect.anything(),
+    RomiCore.DoorMode.MODE_OPEN,
+  );
 });
 
-test('triggers doCloseDoor callback when button is clicked', () => {
-  const handleDoorClose = jest.fn();
-  const root = render(<DoorAccordion door={makeDoor()} onCloseClick={handleDoorClose} />);
+test('triggers door control dispatch when close door button is clicked', () => {
+  const handler = jest.fn();
+  const root = render(<DoorAccordion door={makeDoor()} onDoorControlClick={handler} />);
   userEvent.click(root.getByText('Close'));
-  expect(handleDoorClose).toBeCalled();
+  expect(handler).toHaveBeenCalledWith(
+    expect.anything(),
+    expect.anything(),
+    RomiCore.DoorMode.MODE_CLOSED,
+  );
 });

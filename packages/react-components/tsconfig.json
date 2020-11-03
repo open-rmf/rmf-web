@@ -15,5 +15,8 @@
     "isolatedModules": true,
     "jsx": "react"
   },
-  "include": ["lib/"]
+  "include": ["lib/"],
+  "ts-node": {
+    "preferTsExts": true
+  }
 }
