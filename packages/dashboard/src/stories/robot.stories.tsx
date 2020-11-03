@@ -1,6 +1,5 @@
 import { Divider, Typography } from '@material-ui/core';
 import React from 'react';
-import RobotsPanel from '../components/robots-panel';
 import ColorManager from '../components/schedule-visualizer/colors';
 import RobotBenchmark from './baseComponents/robot-benchmark';
 import RobotComponent from './baseComponents/robot-component';
@@ -82,16 +81,6 @@ export const robotDefaultIcon = () => (
     colorManager={colorManager}
     renderInfoPanel={() => renderInfoPanel('Idle', 1)}
   />
-);
-
-export const robotPanel = () => (
-  <div style={styles.root}>
-    <div style={styles.example}>
-      <Typography variant="h6">Robot State</Typography>
-      <Typography variant="h6">Button color and representation</Typography>
-    </div>
-    <RobotsPanel fleets={robotStates} />
-  </div>
 );
 
 export const gallery = () => <RobotGallery />;

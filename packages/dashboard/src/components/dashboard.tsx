@@ -10,6 +10,7 @@ import {
   DoorAccordion as DoorAccordion_,
   LiftAccordion as LiftAccordion_,
   LiftAccordionProps,
+  RobotAccordion as RobotAccordion_,
   SpotlightRef,
   withSpotlight,
 } from 'react-components';
@@ -41,7 +42,6 @@ import NotificationBar, { NotificationBarProps } from './notification-bar';
 import OmniPanel from './omni-panel';
 import OmniPanelView from './omni-panel-view';
 import { RmfContextProvider } from './rmf-contexts';
-import RobotsPanel from './robots-panel';
 import ScheduleVisualizer from './schedule-visualizer';
 import { SpotlightValue } from './spotlight-value';
 import { TaskSummaryPanel } from './task-summary-panel';
@@ -51,6 +51,7 @@ const debug = Debug('App');
 const DispenserAccordion = withSpotlight(DispenserAccordion_);
 const DoorAccordion = withSpotlight(DoorAccordion_);
 const LiftAccordion = withSpotlight(LiftAccordion_);
+const RobotAccordion = withSpotlight(RobotAccordion_);
 
 const borderRadius = 20;
 
@@ -136,6 +137,10 @@ function makeViewMap(): ViewMap {
 
 const viewMap = makeViewMap();
 
+function robotKey(fleet: string, robot: RomiCore.RobotState): string {
+  return `${fleet}-${robot}`;
+}
+
 export default function Dashboard(_props: {}): React.ReactElement {
   debug('render');
 
@@ -190,15 +195,17 @@ export default function Dashboard(_props: {}): React.ReactElement {
 
   const fleetManager = React.useMemo(() => new FleetManager(), []);
   const [fleets, setFleets] = React.useState(fleetManager.fleets());
-
   const fleetNames = React.useRef<string[]>([]);
-  const [robotSpotlight, setRobotSpotlight] = React.useState<SpotlightValue<string> | undefined>(
-    undefined,
-  );
   const newFleetNames = fleets.map((fleet) => fleet.name);
   if (newFleetNames.some((fleetName) => !fleetNames.current.includes(fleetName))) {
     fleetNames.current = newFleetNames;
   }
+  const robotAccordionRefs = React.useMemo(() => defaultDict(createSpotlightRef), []);
+  const handleRobotMarkerClick = (fleet: string, robot: RomiCore.RobotState) => {
+    setShowOmniPanel(true);
+    setCurrentView(OmniPanelViewIndex.Robots);
+    robotAccordionRefs[robotKey(fleet, robot)].spotlight();
+  };
 
   const negotiationStatusManager = React.useMemo(
     () => new NegotiationStatusManager(trajServerUrl),
@@ -357,14 +364,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     [liftRequestPub],
   );
 
-  const handleRobotClick = React.useCallback((fleet: string, robot: RomiCore.RobotState) => {
-    setShowOmniPanel(true);
-    setCurrentView(OmniPanelViewIndex.Robots);
-    setRobotSpotlight({ value: `${fleet}-${robot.name}` });
-  }, []);
-
   function clearSpotlights() {
-    setRobotSpotlight(undefined);
     setNegotiationSpotlight(undefined);
   }
 
@@ -489,7 +489,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                 negotiationTrajStore={negotiationTrajStore}
                 onDoorClick={handleDoorMarkerClick}
                 onLiftClick={handleLiftMarkerClick}
-                onRobotClick={handleRobotClick}
+                onRobotClick={handleRobotMarkerClick}
                 onDispenserClick={handleDispenserMarkerClick}
               />
             )}
@@ -536,7 +536,16 @@ export default function Dashboard(_props: {}): React.ReactElement {
                   ))}
                 </OmniPanelView>
                 <OmniPanelView id={OmniPanelViewIndex.Robots}>
-                  <RobotsPanel fleets={fleets} spotlight={robotSpotlight} />
+                  {fleets.flatMap((fleet) =>
+                    fleet.robots.map((robot) => (
+                      <RobotAccordion
+                        key={robotKey(fleet.name, robot)}
+                        ref={robotAccordionRefs[robotKey(fleet.name, robot)].ref}
+                        robot={robot}
+                        fleetName={fleet.name}
+                      />
+                    )),
+                  )}
                 </OmniPanelView>
                 <OmniPanelView id={OmniPanelViewIndex.Dispensers}>
                   {Object.values(dispenserStates).map((dispenser) => (
