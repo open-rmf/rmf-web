@@ -32,12 +32,6 @@ async function authReady(timeout = 30000) {
           'docker ps -q --filter network=$NETWORK --filter ancestor=romi-dashboard/auth',
         ).toString();
 
-        githubIpAddress = execSync(
-          "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $OTHERCONTAINER",
-        ).toString();
-        console.log(githubIpAddress);
-        process.env.GITHUB_IP_ADDRESS = githubIpAddress;
-
         authIpAddress = execSync(
           "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $CONTAINER",
         ).toString();

@@ -9,7 +9,6 @@ if (os.userInfo().uid === 0) {
 }
 
 const port = process.env.ROMI_DASHBOARD_PORT;
-const ciIpAddress = process.env.GITHUB_IP_ADDRESS;
 exports.config = {
   //
   // ====================
@@ -74,7 +73,7 @@ exports.config = {
         binary: process.env.CHROME_BIN || undefined,
         // to run chrome headless the following flags are required
         // (see https://developers.google.com/web/updates/2017/04/headless-chrome)
-        args: [...chromeArgs, '--window-size=1366,768', '--whitelisted-ip'],
+        args: [...chromeArgs, '--window-size=1920,1080', '--whitelisted-ip'],
       },
     },
   ],
