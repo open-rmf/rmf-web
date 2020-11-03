@@ -74,7 +74,7 @@ exports.config = {
         binary: process.env.CHROME_BIN || undefined,
         // to run chrome headless the following flags are required
         // (see https://developers.google.com/web/updates/2017/04/headless-chrome)
-        args: [...chromeArgs, '--window-size=1366,768'],
+        args: [...chromeArgs, '--window-size=1366,768', '--whitelisted-ip'],
       },
     },
   ],
@@ -111,7 +111,7 @@ exports.config = {
   // with `/`, the base url gets prepended, not including the path portion of your baseUrl.
   // If your `url` parameter starts without a scheme or `/` (like `some/path`), the base url
   // gets prepended directly.
-  baseUrl: `http://${ciIpAddress ? ciIpAddress : 'localhost'}:` + port,
+  baseUrl: 'http://localhost:' + port,
   //
   // Default timeout for all waitFor* commands.
   waitforTimeout: 10000,
