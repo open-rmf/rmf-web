@@ -34,7 +34,7 @@ async function authReady(timeout = 30000) {
 
         githubIpAddress = execSync(
           "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $OTHERCONTAINER",
-        );
+        ).toString();
         console.log(githubIpAddress);
         process.env.GITHUB_IP_ADDRESS = githubIpAddress;
 

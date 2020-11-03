@@ -85,7 +85,7 @@ exports.config = {
   // Define all options that are relevant for the WebdriverIO instance here
   //
   // Level of logging verbosity: trace | debug | info | warn | error | silent
-  logLevel: 'debug',
+  logLevel: 'trace',
   //
   // Set specific log levels per logger
   // loggers:
@@ -97,8 +97,10 @@ exports.config = {
   // - @wdio/cli, @wdio/config, @wdio/sync, @wdio/utils
   // Level of logging verbosity: trace | debug | info | warn | error | silent
   logLevels: {
-    webdriver: 'debug',
-    '@wdio/applitools-service': 'info',
+    webdriver: 'trace',
+    webdriverio: 'debug',
+    '@wdio/applitools-service': 'debug',
+    '@wdio/browserstack-service': 'debug',
   },
   //
   // If you only want to run your tests until a specific amount of tests have failed use
