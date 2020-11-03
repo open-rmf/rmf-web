@@ -20,228 +20,234 @@ export interface DeliveryRequestFormProps {
   doDeliveryRequest?: DoDeliveryRequest;
 }
 
-export const DeliveryRequestForm = (props: DeliveryRequestFormProps): JSX.Element => {
-  const { fleetNames, availableDispensers, availablePlaces, doDeliveryRequest } = props;
-  const classes = useFormStyles();
+export const DeliveryRequestForm = React.memo(
+  React.forwardRef(
+    (props: DeliveryRequestFormProps, ref: React.Ref<HTMLFormElement>): JSX.Element => {
+      const { fleetNames, availableDispensers, availablePlaces, doDeliveryRequest } = props;
+      const classes = useFormStyles();
 
-  const [targetFleetName, setTargetFleetName] = React.useState(
-    fleetNames.length >= 1 ? fleetNames[0] : '',
-  );
-  const [listOfPlaces, setListOfPlaces] = React.useState(
-    targetFleetName ? availablePlaces(targetFleetName) : [],
-  );
+      const [targetFleetName, setTargetFleetName] = React.useState(
+        fleetNames.length >= 1 ? fleetNames[0] : '',
+      );
+      const [listOfPlaces, setListOfPlaces] = React.useState(
+        targetFleetName ? availablePlaces(targetFleetName) : [],
+      );
 
-  React.useEffect(() => {
-    setListOfPlaces(availablePlaces(targetFleetName));
-  }, [targetFleetName, availablePlaces]);
+      React.useEffect(() => {
+        setListOfPlaces(availablePlaces(targetFleetName));
+      }, [targetFleetName, availablePlaces]);
 
-  // Places
-  const [pickupPlaceName, setPickupPlaceName] = React.useState(
-    !!listOfPlaces && listOfPlaces.length >= 2 ? listOfPlaces[0] : '',
-  );
-  const [dropOffPlaceName, setDropOffPlaceName] = React.useState(
-    !!listOfPlaces && listOfPlaces.length >= 2 ? listOfPlaces[1] : '',
-  );
+      // Places
+      const [pickupPlaceName, setPickupPlaceName] = React.useState(
+        !!listOfPlaces && listOfPlaces.length >= 2 ? listOfPlaces[0] : '',
+      );
+      const [dropOffPlaceName, setDropOffPlaceName] = React.useState(
+        !!listOfPlaces && listOfPlaces.length >= 2 ? listOfPlaces[1] : '',
+      );
 
-  // Dispensers
-  const [pickupDispenser, setPickupDispenser] = React.useState('');
-  const [dropOffDispenser, setDropOffDispenser] = React.useState('');
+      // Dispensers
+      const [pickupDispenser, setPickupDispenser] = React.useState('');
+      const [dropOffDispenser, setDropOffDispenser] = React.useState('');
 
-  // Error states
-  const [targetFleetNameError, setTargetFleetNameError] = React.useState('');
-  const [pickupPlaceNameError, setPickupPlaceNameError] = React.useState('');
-  const [pickupDispenserError, setPickupDispenserError] = React.useState('');
-  const [dropOffPlaceNameError, setDropOffPlaceNameError] = React.useState('');
-  const [dropOffDispenserError, setDropOffDispenserError] = React.useState('');
+      // Error states
+      const [targetFleetNameError, setTargetFleetNameError] = React.useState('');
+      const [pickupPlaceNameError, setPickupPlaceNameError] = React.useState('');
+      const [pickupDispenserError, setPickupDispenserError] = React.useState('');
+      const [dropOffPlaceNameError, setDropOffPlaceNameError] = React.useState('');
+      const [dropOffDispenserError, setDropOffDispenserError] = React.useState('');
 
-  const cleanUpForm = (): void => {
-    setTargetFleetName(fleetNames.length >= 1 ? fleetNames[0] : '');
-    setPickupPlaceName(listOfPlaces && listOfPlaces.length >= 2 ? listOfPlaces[0] : '');
-    setDropOffPlaceName(listOfPlaces && listOfPlaces.length >= 2 ? listOfPlaces[1] : '');
-    setPickupDispenser('');
-    setDropOffDispenser('');
-    cleanUpError();
-  };
+      const cleanUpForm = (): void => {
+        setTargetFleetName(fleetNames.length >= 1 ? fleetNames[0] : '');
+        setPickupPlaceName(listOfPlaces && listOfPlaces.length >= 2 ? listOfPlaces[0] : '');
+        setDropOffPlaceName(listOfPlaces && listOfPlaces.length >= 2 ? listOfPlaces[1] : '');
+        setPickupDispenser('');
+        setDropOffDispenser('');
+        cleanUpError();
+      };
 
-  const cleanUpError = (): void => {
-    setTargetFleetNameError('');
-    setPickupPlaceNameError('');
-    setDropOffPlaceNameError('');
-    setPickupDispenserError('');
-    setDropOffDispenserError('');
-  };
+      const cleanUpError = (): void => {
+        setTargetFleetNameError('');
+        setPickupPlaceNameError('');
+        setDropOffPlaceNameError('');
+        setPickupDispenserError('');
+        setDropOffDispenserError('');
+      };
 
-  const handleSubmit = (ev: React.FormEvent): void => {
-    ev.preventDefault();
-    if (isFormValid()) {
-      doDeliveryRequest &&
-        doDeliveryRequest(pickupPlaceName, pickupDispenser, dropOffPlaceName, dropOffDispenser);
-      cleanUpForm();
-    }
-  };
+      const handleSubmit = (ev: React.FormEvent): void => {
+        ev.preventDefault();
+        if (isFormValid()) {
+          doDeliveryRequest &&
+            doDeliveryRequest(pickupPlaceName, pickupDispenser, dropOffPlaceName, dropOffDispenser);
+          cleanUpForm();
+        }
+      };
 
-  const dispensersFromPickUpPlace = React.useMemo(() => {
-    const dispenser = pickupPlaceName ? availableDispensers(targetFleetName, pickupPlaceName) : [];
-    return dispenser ? dispenser : [];
-  }, [pickupPlaceName, targetFleetName, availableDispensers]);
+      const dispensersFromPickUpPlace = React.useMemo(() => {
+        const dispenser = pickupPlaceName
+          ? availableDispensers(targetFleetName, pickupPlaceName)
+          : [];
+        return dispenser ? dispenser : [];
+      }, [pickupPlaceName, targetFleetName, availableDispensers]);
 
-  const dispensersFromDropOffPlace = React.useMemo(() => {
-    const dispenser = dropOffPlaceName
-      ? availableDispensers(targetFleetName, dropOffPlaceName)
-      : [];
-    return dispenser ? dispenser : [];
-  }, [dropOffPlaceName, targetFleetName, availableDispensers]);
+      const dispensersFromDropOffPlace = React.useMemo(() => {
+        const dispenser = dropOffPlaceName
+          ? availableDispensers(targetFleetName, dropOffPlaceName)
+          : [];
+        return dispenser ? dispenser : [];
+      }, [dropOffPlaceName, targetFleetName, availableDispensers]);
 
-  React.useEffect(() => {
-    setPickupDispenserError('');
-    !!dispensersFromPickUpPlace &&
-      dispensersFromPickUpPlace.length === 0 &&
-      setPickupDispenserError('There is no dispensers on this place. Pick another place');
-  }, [dispensersFromPickUpPlace]);
+      React.useEffect(() => {
+        setPickupDispenserError('');
+        !!dispensersFromPickUpPlace &&
+          dispensersFromPickUpPlace.length === 0 &&
+          setPickupDispenserError('There is no dispensers on this place. Pick another place');
+      }, [dispensersFromPickUpPlace]);
 
-  React.useEffect(() => {
-    setDropOffDispenserError('');
-    !!dispensersFromDropOffPlace &&
-      dispensersFromDropOffPlace.length === 0 &&
-      setDropOffDispenserError('There is no dispensers on this place. Pick another place');
-  }, [dispensersFromDropOffPlace]);
+      React.useEffect(() => {
+        setDropOffDispenserError('');
+        !!dispensersFromDropOffPlace &&
+          dispensersFromDropOffPlace.length === 0 &&
+          setDropOffDispenserError('There is no dispensers on this place. Pick another place');
+      }, [dispensersFromDropOffPlace]);
 
-  const isFormValid = (): boolean => {
-    let isValid = true;
-    cleanUpError();
+      const isFormValid = (): boolean => {
+        let isValid = true;
+        cleanUpError();
 
-    if (targetFleetName === '') {
-      setTargetFleetNameError('Fleet name cannot be empty');
-      isValid = false;
-    }
+        if (targetFleetName === '') {
+          setTargetFleetNameError('Fleet name cannot be empty');
+          isValid = false;
+        }
 
-    if (pickupPlaceName === dropOffPlaceName) {
-      setPickupPlaceNameError('Start Location cannot be equal to finish Location');
-      setDropOffPlaceNameError('Start Location cannot be equal to finish Location');
-      isValid = false;
-    }
+        if (pickupPlaceName === dropOffPlaceName) {
+          setPickupPlaceNameError('Start Location cannot be equal to finish Location');
+          setDropOffPlaceNameError('Start Location cannot be equal to finish Location');
+          isValid = false;
+        }
 
-    if (pickupPlaceName === dropOffPlaceName) {
-      setPickupDispenserError('Pickup dispenser cannot be equal to Drop off dispenser');
-      setDropOffDispenserError('Drop off dispenser cannot be equal to Pickup dispenser');
-      isValid = false;
-    }
+        if (pickupPlaceName === dropOffPlaceName) {
+          setPickupDispenserError('Pickup dispenser cannot be equal to Drop off dispenser');
+          setDropOffDispenserError('Drop off dispenser cannot be equal to Pickup dispenser');
+          isValid = false;
+        }
 
-    const setEmpty = (fieldSetter: React.Dispatch<React.SetStateAction<string>>): void => {
-      fieldSetter('Cannot be empty');
-      isValid = false;
-    };
+        const setEmpty = (fieldSetter: React.Dispatch<React.SetStateAction<string>>): void => {
+          fieldSetter('Cannot be empty');
+          isValid = false;
+        };
 
-    !pickupPlaceName && setEmpty(setPickupPlaceNameError);
-    !dropOffPlaceName && setEmpty(setDropOffPlaceNameError);
-    !pickupDispenser && setEmpty(setPickupDispenserError);
-    !dropOffDispenser && setEmpty(setDropOffDispenserError);
+        !pickupPlaceName && setEmpty(setPickupPlaceNameError);
+        !dropOffPlaceName && setEmpty(setDropOffPlaceNameError);
+        !pickupDispenser && setEmpty(setPickupDispenserError);
+        !dropOffDispenser && setEmpty(setDropOffDispenserError);
 
-    return isValid;
-  };
+        return isValid;
+      };
 
-  return (
-    <form className={classes.form} onSubmit={handleSubmit}>
-      <div className={classes.divForm}>
-        <Autocomplete
-          getOptionLabel={(option) => option}
-          onChange={(_, value) => setTargetFleetName(value || fleetNames[0])}
-          options={fleetNames}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Choose Target Fleet"
-              placeholder="Choose Target Fleet"
-              variant="outlined"
-              error={!!targetFleetNameError}
-              helperText={targetFleetNameError}
+      return (
+        <form ref={ref} className={classes.form} onSubmit={handleSubmit}>
+          <div className={classes.divForm}>
+            <Autocomplete
+              getOptionLabel={(option) => option}
+              onChange={(_, value) => setTargetFleetName(value || fleetNames[0])}
+              options={fleetNames}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Choose Target Fleet"
+                  placeholder="Choose Target Fleet"
+                  variant="outlined"
+                  error={!!targetFleetNameError}
+                  helperText={targetFleetNameError}
+                />
+              )}
+              value={targetFleetName ? targetFleetName : null}
             />
-          )}
-          value={targetFleetName ? targetFleetName : null}
-        />
-      </div>
+          </div>
 
-      <div className={classes.divForm}>
-        <Autocomplete
-          getOptionLabel={(option) => option}
-          onChange={(_, value) => setPickupPlaceName(value || '')}
-          options={listOfPlaces ? listOfPlaces : []}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              error={!!pickupPlaceNameError}
-              helperText={pickupPlaceNameError}
-              label="Pick Start Location"
-              placeholder="Pick Start Location"
-              variant="outlined"
+          <div className={classes.divForm}>
+            <Autocomplete
+              getOptionLabel={(option) => option}
+              onChange={(_, value) => setPickupPlaceName(value || '')}
+              options={listOfPlaces ? listOfPlaces : []}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  error={!!pickupPlaceNameError}
+                  helperText={pickupPlaceNameError}
+                  label="Pick Start Location"
+                  placeholder="Pick Start Location"
+                  variant="outlined"
+                />
+              )}
+              value={pickupPlaceName ? pickupPlaceName : null}
             />
-          )}
-          value={pickupPlaceName ? pickupPlaceName : null}
-        />
-      </div>
+          </div>
 
-      <div className={classes.divForm}>
-        <Autocomplete
-          getOptionLabel={(option) => option}
-          onChange={(_, value) => setPickupDispenser(value || '')}
-          options={dispensersFromPickUpPlace}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              error={!!pickupDispenserError}
-              helperText={pickupDispenserError}
-              label="Pickup Dispenser"
-              placeholder="Pickup Dispenser"
-              variant="outlined"
+          <div className={classes.divForm}>
+            <Autocomplete
+              getOptionLabel={(option) => option}
+              onChange={(_, value) => setPickupDispenser(value || '')}
+              options={dispensersFromPickUpPlace}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  error={!!pickupDispenserError}
+                  helperText={pickupDispenserError}
+                  label="Pickup Dispenser"
+                  placeholder="Pickup Dispenser"
+                  variant="outlined"
+                />
+              )}
+              value={pickupDispenser ? pickupDispenser : null}
             />
-          )}
-          value={pickupDispenser ? pickupDispenser : null}
-        />
-      </div>
+          </div>
 
-      <div className={classes.divForm}>
-        <Autocomplete
-          getOptionLabel={(option) => option}
-          onChange={(_, value) => setDropOffPlaceName(value || '')}
-          options={listOfPlaces ? listOfPlaces : []}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              error={!!dropOffPlaceNameError}
-              helperText={dropOffPlaceNameError}
-              label="Pick Drop Off Location"
-              placeholder="Pick Drop Off Location"
-              variant="outlined"
+          <div className={classes.divForm}>
+            <Autocomplete
+              getOptionLabel={(option) => option}
+              onChange={(_, value) => setDropOffPlaceName(value || '')}
+              options={listOfPlaces ? listOfPlaces : []}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  error={!!dropOffPlaceNameError}
+                  helperText={dropOffPlaceNameError}
+                  label="Pick Drop Off Location"
+                  placeholder="Pick Drop Off Location"
+                  variant="outlined"
+                />
+              )}
+              value={dropOffPlaceName ? dropOffPlaceName : null}
             />
-          )}
-          value={dropOffPlaceName ? dropOffPlaceName : null}
-        />
-      </div>
+          </div>
 
-      <div className={classes.divForm}>
-        <Autocomplete
-          getOptionLabel={(option) => option}
-          onChange={(_, value) => setDropOffDispenser(value || '')}
-          options={dispensersFromDropOffPlace}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              error={!!dropOffDispenserError}
-              helperText={dropOffDispenserError}
-              label="Pick Drop Off Dispenser"
-              placeholder="Pick Drop Off Dispenser"
-              variant="outlined"
+          <div className={classes.divForm}>
+            <Autocomplete
+              getOptionLabel={(option) => option}
+              onChange={(_, value) => setDropOffDispenser(value || '')}
+              options={dispensersFromDropOffPlace}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  error={!!dropOffDispenserError}
+                  helperText={dropOffDispenserError}
+                  label="Pick Drop Off Dispenser"
+                  placeholder="Pick Drop Off Dispenser"
+                  variant="outlined"
+                />
+              )}
+              value={dropOffDispenser ? dropOffDispenser : null}
             />
-          )}
-          value={dropOffDispenser ? dropOffDispenser : null}
-        />
-      </div>
+          </div>
 
-      <div className={classes.buttonContainer}>
-        <Button variant="contained" color="primary" type="submit" className={classes.button}>
-          Request
-        </Button>
-      </div>
-    </form>
-  );
-};
+          <div className={classes.buttonContainer}>
+            <Button variant="contained" color="primary" type="submit" className={classes.button}>
+              Request
+            </Button>
+          </div>
+        </form>
+      );
+    },
+  ),
+);
