@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import DashboardTooltip from '../tooltip';
 import { IconButton } from '@material-ui/core';
 import { Settings as SettingsIcon } from '@material-ui/icons';
-import { createMount, createShallow } from '@material-ui/core/test-utils';
 
 describe('Dashboard Tooltip', () => {
   it('renders without crashing', () => {

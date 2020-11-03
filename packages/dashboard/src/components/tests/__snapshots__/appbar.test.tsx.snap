@@ -15,7 +15,7 @@ exports[`AppBar renders correctly 1`] = `
     <DashboardTooltip
       enabled={true}
       id="omnipanel-tooltip"
-      title="view all available panel options"
+      title="View all available panel options"
     >
       <WithStyles(ForwardRef(IconButton))
         color="inherit"
@@ -28,7 +28,7 @@ exports[`AppBar renders correctly 1`] = `
     <DashboardTooltip
       enabled={true}
       id="setting-tooltip"
-      title="define dashboard trajectory settings"
+      title="Define dashboard trajectory settings"
     >
       <WithStyles(ForwardRef(IconButton))
         color="inherit"
@@ -41,7 +41,7 @@ exports[`AppBar renders correctly 1`] = `
     <DashboardTooltip
       enabled={true}
       id="help-tooltip"
-      title="help tools and resources"
+      title="Help tools and resources"
     >
       <WithStyles(ForwardRef(IconButton))
         color="inherit"

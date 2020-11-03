@@ -9,7 +9,7 @@ export const ResourcesContext = React.createContext<ResourceManager | undefined>
 export const SettingsContext = React.createContext(defaultSettings());
 
 export const TooltipContext = React.createContext({
-  showTooltips: false,
+  showTooltips: true,
   toggleTooltips: () => {},
 });
 
