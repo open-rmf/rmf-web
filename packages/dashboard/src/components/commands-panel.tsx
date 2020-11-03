@@ -158,7 +158,7 @@ export const CommandsPanel = React.memo((props: CommandsPanelProps) => {
             >
               <Typography variant="h5">Loop Request</Typography>
               <Tooltip
-                title="send a request for target fleet to perform tasks repeatedly"
+                title="Submit a request for a target fleet to travel the same path as many times as directed"
                 arrow
                 id="looprequest-tooltip"
               >
@@ -180,7 +180,7 @@ export const CommandsPanel = React.memo((props: CommandsPanelProps) => {
             >
               <Typography variant="h5">Delivery Request</Typography>
               <Tooltip
-                title="send a request to perform a delivery between dispensers"
+                title="Submit a request for a target fleet to perform a delivery between dispensers"
                 arrow
                 id="deliveryrequest-tooltip"
               >

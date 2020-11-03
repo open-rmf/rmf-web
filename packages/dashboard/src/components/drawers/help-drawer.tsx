@@ -12,7 +12,7 @@ import React from 'react';
 import DrawerHeader from './drawer-header';
 import DirectionsIcon from '@material-ui/icons/Directions';
 import BugReportIcon from '@material-ui/icons/BugReport';
-import { TooltipContext } from '../ui-contexts';
+import { TooltipContext } from '../app-contexts';
 
 export interface HotKeysDrawerProps extends DrawerProps {
   handleCloseButton(): void;

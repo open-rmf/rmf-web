@@ -1,8 +1,8 @@
 import { Divider, List, ListItem, Typography } from '@material-ui/core';
 import React from 'react';
 import Debug from 'debug';
-import DashboardTooltip from './tooltips';
-import { TooltipContext } from './ui-contexts';
+import DashboardTooltip from './tooltip';
+import { TooltipContext } from './app-contexts';
 
 const debug = Debug('MainMenu');
 
@@ -43,7 +43,7 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
 
       <ListItem data-item="Commands" button={true} onClick={props.onCommandsClick}>
         <DashboardTooltip
-          title="this panel shows the commands that a user can request and RoMi will allocate the most suitable robot for the task"
+          title="This panel shows the commands that a user can request and RoMi will allocate the most suitable robot for the task"
           id="commands-tooltip"
           enabled={showTooltips}
         >
@@ -54,7 +54,7 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
 
       <ListItem data-item="Negotiations" button={true} onClick={props.onNegotiationsClick}>
         <DashboardTooltip
-          title="this panel shows the negotiations between robots when there are conflicts in trajectories"
+          title="This panel shows the negotiations between robots when there are conflicts in trajectories"
           id="negotiations-tooltip"
           enabled={showTooltips}
         >

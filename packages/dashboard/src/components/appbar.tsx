@@ -13,8 +13,8 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import React from 'react';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
 import HelpIcon from '@material-ui/icons/Help';
-import { TooltipContext } from './ui-contexts';
-import DashboardTooltip from './tooltips';
+import { TooltipContext } from './app-contexts';
+import DashboardTooltip from './tooltip';
 
 export interface AppBarProps {
   toggleShowOmniPanel(): void;
@@ -48,7 +48,7 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
           Dashboard
         </Typography>
         <DashboardTooltip
-          title="view all available panel options"
+          title="View all available panel options"
           id="omnipanel-tooltip"
           enabled={showTooltips}
         >
@@ -61,7 +61,7 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
           </IconButton>
         </DashboardTooltip>
         <DashboardTooltip
-          title="define dashboard trajectory settings"
+          title="Define dashboard trajectory settings"
           id="setting-tooltip"
           enabled={showTooltips}
         >
@@ -98,7 +98,7 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
             </Menu>
           </>
         )}
-        <DashboardTooltip title="help tools and resources" id="help-tooltip" enabled={showTooltips}>
+        <DashboardTooltip title="Help tools and resources" id="help-tooltip" enabled={showTooltips}>
           <IconButton id="show-help-btn" color="inherit" onClick={() => showHelp(true)}>
             <HelpIcon />
           </IconButton>

@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import DashboardTooltip from '../tooltips';
+import DashboardTooltip from '../tooltip';
 import { IconButton } from '@material-ui/core';
 import { Settings as SettingsIcon } from '@material-ui/icons';
 
@@ -16,3 +16,5 @@ it('renders without crashing', () => {
   );
   ReactDOM.unmountComponentAtNode(div);
 });
+
+//add snapshot and enabled={false} test
