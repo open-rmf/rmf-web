@@ -1,29 +1,26 @@
-export interface StackNavigatorProps {
-  variant?: 'backHome' | 'backHomeClose';
-  onBack(): void;
-  onHome(): void;
-  onClose(): void;
-}
+export class StackNavigator<KeyType extends string | number> {
+  stack: KeyType[];
 
-export class StackNavigator {
-  stack: (number | string)[];
-
-  constructor(home: number | string) {
+  constructor(home: KeyType) {
     this.stack = [home];
   }
 
-  push(viewId: number): void {
+  push(viewId: KeyType): void {
     this.stack.push(viewId);
   }
 
-  pop(): number | string {
+  pop(): KeyType {
     this.stack.length > 1 && this.stack.pop();
     return this.stack[this.stack.length - 1];
   }
 
-  reset(): number | string {
+  reset(): KeyType {
     this.stack = [this.stack[0]];
     return this.stack[0];
+  }
+
+  top(): KeyType {
+    return this.stack[this.stack.length - 1];
   }
 }
 

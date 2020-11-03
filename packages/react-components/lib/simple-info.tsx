@@ -46,7 +46,7 @@ export const SimpleInfo = (props: SimpleInfo): JSX.Element => {
     className,
     disabled,
   }: SimpleInfoData<DataValueTypePrimitive>) => (
-    <div className={classes.item}>
+    <>
       <Typography variant="body1">{`${name}:`}</Typography>
       <Typography
         variant="body1"
@@ -54,7 +54,7 @@ export const SimpleInfo = (props: SimpleInfo): JSX.Element => {
       >
         {value}
       </Typography>
-    </div>
+    </>
   );
 
   const renderArray = ({
@@ -63,7 +63,7 @@ export const SimpleInfo = (props: SimpleInfo): JSX.Element => {
     className,
     disabled,
   }: SimpleInfoData<DataValueTypeArray>) => (
-    <div className={classes.item}>
+    <>
       <Typography variant="body1">{`${name}:`}</Typography>
       <List dense>
         {value.map((item, i) => (
@@ -80,7 +80,7 @@ export const SimpleInfo = (props: SimpleInfo): JSX.Element => {
           </ListItem>
         ))}
       </List>
-    </div>
+    </>
   );
 
   const renderLine = (data: SimpleInfoData) => {
@@ -101,12 +101,14 @@ export const SimpleInfo = (props: SimpleInfo): JSX.Element => {
   };
 
   return (
-    <div className={classes.container}>
+    <div className={classes.container} role="list">
       {data.map((item) => (
-        <React.Fragment key={item.name}>
-          {renderLine(item)}
+        <>
+          <div key={item.name} className={classes.item} role="listitem">
+            {renderLine(item)}
+          </div>
           <Divider />
-        </React.Fragment>
+        </>
       ))}
     </div>
   );

@@ -38,10 +38,17 @@ export function removeTextFromAutocomplete(characterNum: number): string {
  * Get the robot location
  */
 export const getRobotLocations = (browser: WebdriverIO.BrowserObject): string[] => {
-  const allRobotItems = browser.custom$$('findAllRobots', '[data-component=RobotItem]');
+  const allRobotItems = browser.$$('[data-component=RobotAccordion]');
   let robotLocations = allRobotItems.map((robot) => {
     robot.click();
-    return robot.$('[data-role=position]').getHTML();
+    const getLocations = () => {
+      const items = robot.$$('[role=listitem]');
+      items[items.length - 1].scrollIntoView();
+      return items.filter((el) => el.getText().startsWith('Location'));
+    };
+    browser.waitUntil(() => getLocations().length > 0);
+    const location = getLocations()[0];
+    return location.getText();
   });
   return robotLocations;
 };
