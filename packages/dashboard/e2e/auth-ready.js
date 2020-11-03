@@ -18,9 +18,11 @@ async function authReady(timeout = 30000) {
     const waitAuthReady = () => {
       let container = execSync('docker ps -q --filter ancestor=romi-dashboard/auth').toString();
       let authIpAddress;
+      let githubIpAddress;
       console.log(
         '========================== waiting waiting waiting ----- waiting ==========================',
       );
+
       if (container) {
         console.log('Successuflly created auth container ----------------------- ' + container);
 
@@ -29,20 +31,12 @@ async function authReady(timeout = 30000) {
         let isConnected = execSync(
           'docker ps -q --filter network=$NETWORK --filter ancestor=romi-dashboard/auth',
         ).toString();
-        console.log('i am isConnected >>>>> ' + isConnected);
 
-        console.log('auth container ip');
-        execSync(
-          "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $CONTAINER",
-          { stdio: 'inherit' },
-        );
-        console.log('Github container ip');
-        execSync(
+        githubIpAddress = execSync(
           "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $OTHERCONTAINER",
-          { stdio: 'inherit' },
         );
-        console.log('<<<< container in github network >>>>');
-        execSync('docker network inspect $NETWORK', { stdio: 'inherit' });
+        console.log(githubIpAddress);
+        process.env.GITHUB_IP_ADDRESS = githubIpAddress;
 
         authIpAddress = execSync(
           "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $CONTAINER",
@@ -64,7 +58,6 @@ async function authReady(timeout = 30000) {
         console.log('=========================== END =============================');
       } else {
         console.log('again ------------------------------------');
-        execSync('echo $CONTAINER', { stdio: 'inherit' });
         console.log('=========================== END =============================');
       }
 

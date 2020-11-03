@@ -9,6 +9,7 @@ if (os.userInfo().uid === 0) {
 }
 
 const port = process.env.ROMI_DASHBOARD_PORT;
+const ciIpAddress = process.env.GITHUB_IP_ADDRESS;
 exports.config = {
   //
   // ====================
@@ -108,7 +109,7 @@ exports.config = {
   // with `/`, the base url gets prepended, not including the path portion of your baseUrl.
   // If your `url` parameter starts without a scheme or `/` (like `some/path`), the base url
   // gets prepended directly.
-  baseUrl: 'http://localhost:' + port,
+  baseUrl: `http://${ciIpAddress ? ciIpAddress : 'localhost'}:` + port,
   //
   // Default timeout for all waitFor* commands.
   waitforTimeout: 10000,
