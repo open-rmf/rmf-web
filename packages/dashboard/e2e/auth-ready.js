@@ -27,7 +27,7 @@ async function authReady(timeout = 40000) {
         process.env.CONTAINER = container;
 
         let isConnected = execSync(
-          'docker ps -q --filter network=test-net --filter ancestor=romi-dashboard/auth',
+          'docker ps -q --filter network=$NETWORK --filter ancestor=romi-dashboard/auth',
         ).toString();
         console.log('i am isConnected >>>>> ' + isConnected);
 
@@ -41,27 +41,15 @@ async function authReady(timeout = 40000) {
           "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $OTHERCONTAINER",
           { stdio: 'inherit' },
         );
+        console.log('<<<< container in github network >>>>');
+        execSync('docker network inspect $NETWORK', { stdio: 'inherit' });
 
         if (!isConnected) {
           console.log('I am inside isConnected!!! >>>>> ' + isConnected);
-          execSync('ifconfig', {
-            stdio: 'inherit',
-          });
-          execSync('docker network create test-net', {
-            stdio: 'inherit',
-          });
 
-          execSync('docker network connect test-net $CONTAINER', {
+          execSync('docker network connect $NETWORK $CONTAINER', {
             stdio: 'inherit',
           });
-          execSync('docker network connect test-net $OTHERCONTAINER', {
-            stdio: 'inherit',
-          });
-
-          authIpAddress = execSync(
-            "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $CONTAINER",
-          ).toString();
-          console.log('auth ip address >>>>>>> ' + authIpAddress);
         }
 
         console.log('=========================== END =============================');
@@ -70,6 +58,12 @@ async function authReady(timeout = 40000) {
         execSync('echo $CONTAINER', { stdio: 'inherit' });
         console.log('=========================== END =============================');
       }
+
+      authIpAddress = execSync(
+        "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $CONTAINER",
+      ).toString();
+      console.log('auth ip address >>>>>>> ' + authIpAddress);
+
       req = http.request(`http://${authIpAddress ? authIpAddress : 'localhost'}:8080/auth/`, () => {
         console.log(
           '-------------------------------- connecting success ------------------------------',
