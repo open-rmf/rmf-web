@@ -109,7 +109,7 @@ exports[`Dashboard Tour renders without crashing 1`] = `
       Object {
         "action": undefined,
         "content": [Function],
-        "selector": "[data-item= \\"Commands\\"]",
+        "selector": "[data-item=\\"Commands\\"]",
         "style": Object {
           "backgroundColor": "#7986cb",
           "borderRadius": "5px",
@@ -168,6 +168,7 @@ exports[`Dashboard Tour renders without crashing 1`] = `
       },
     ]
   }
+  update="0"
   updateDelay={1}
 />
 `;

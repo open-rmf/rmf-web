@@ -6,7 +6,6 @@ import { LiftAccordion } from '../lib';
 export default {
   title: 'Lift Accordion',
   component: LiftAccordion,
-  argTypes: { doLiftRequest: { action: 'doLiftRequest' } },
 } as Meta;
 
 const lifts = [

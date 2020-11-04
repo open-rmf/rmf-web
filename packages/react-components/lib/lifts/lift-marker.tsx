@@ -94,15 +94,16 @@ function toDoorMode(liftState: RomiCore.LiftState): RomiCore.DoorMode {
   return { value: liftState.door_state };
 }
 
-export interface LiftMarkerProps extends React.SVGProps<SVGGElement> {
+export interface LiftMarkerProps extends Omit<React.SVGProps<SVGGElement>, 'onClick'> {
   lift: RomiCore.Lift;
   liftState?: RomiCore.LiftState;
   variant?: keyof ReturnType<typeof useMarkerStyles>;
+  onClick?(event: React.MouseEvent, lift: RomiCore.Lift): void;
 }
 
 export const LiftMarker = React.memo(
   React.forwardRef(function (props: LiftMarkerProps, ref: React.Ref<SVGGElement>): JSX.Element {
-    const { lift, liftState, variant, className, ...otherProps } = props;
+    const { lift, liftState, variant, onClick, className, ...otherProps } = props;
     debug(`render ${lift.name}`);
 
     const { width, depth, ref_x, ref_y, ref_yaw, doors } = lift;
@@ -158,7 +159,8 @@ export const LiftMarker = React.memo(
       <g>
         <g
           ref={ref}
-          className={joinClasses(props.onClick ? classes.marker : undefined, className)}
+          className={joinClasses(onClick ? classes.marker : undefined, className)}
+          onClick={(ev) => onClick && onClick(ev, lift)}
           {...otherProps}
         >
           <rect

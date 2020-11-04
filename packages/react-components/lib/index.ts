@@ -9,5 +9,6 @@ export * from './omni-panel';
 export * from './omni-panel-view';
 export * from './robots';
 export * from './simple-info';
+export * from './spotlight-accordion';
 export * from './stack-navigator';
 export * from './svg-text';
