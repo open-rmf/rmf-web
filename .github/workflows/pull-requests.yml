@@ -44,10 +44,11 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock
-        - /root/romi-dashboard
+        - /root/romi-dashboard:/root/romi-dashboard
       env:
         CI: 1
         CHROME_BIN: /chrome-no-sandbox
+      options: --ipc "host"
     defaults:
       run:
         shell: bash
