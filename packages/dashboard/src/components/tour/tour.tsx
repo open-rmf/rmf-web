@@ -1,17 +1,14 @@
 import React from 'react';
 import Tour from 'reactour';
 import { OmniPanelViewIndex } from '../dashboard';
+import { MainMenuActionType, MainMenuState } from '../reducers/main-menu-reducer';
 import { createTourSteps } from './tour-manager';
 
 export interface DashboardTourProps {
   tourProps: {
-    tourState: boolean;
-    setTourState: React.Dispatch<React.SetStateAction<boolean>>;
-    setShowSettings: React.Dispatch<React.SetStateAction<boolean>>;
-    setShowOmniPanel: React.Dispatch<React.SetStateAction<boolean>>;
-    setShowHelp: React.Dispatch<React.SetStateAction<boolean>>;
+    dispatchMenu: any;
+    stateMenu: MainMenuState;
     clearSpotlights: () => void;
-    setCurrentView: React.Dispatch<React.SetStateAction<OmniPanelViewIndex>>;
     doorSpotlight?: () => void;
   };
 }
@@ -19,25 +16,12 @@ export interface DashboardTourProps {
 export const DashboardTour = React.memo(
   (props: DashboardTourProps): React.ReactElement => {
     const {
-      tourProps: {
-        tourState,
-        setTourState,
-        setShowSettings,
-        setShowOmniPanel,
-        setShowHelp,
-        clearSpotlights,
-        setCurrentView,
-        doorSpotlight,
-      },
+      tourProps: { dispatchMenu, stateMenu, clearSpotlights, doorSpotlight },
     } = props;
 
     const tourFunctions = {
-      setTourState,
-      setShowSettings,
-      setShowOmniPanel,
-      setShowHelp,
+      dispatchMenu,
       clearSpotlights,
-      setCurrentView,
       doorSpotlight,
     };
     const { tourSteps, theme } = createTourSteps(tourFunctions);
@@ -62,14 +46,17 @@ export const DashboardTour = React.memo(
     return (
       <Tour
         steps={tourSteps}
-        isOpen={tourState}
+        isOpen={stateMenu.tourState}
         onRequestClose={() => {
           localStorage.setItem('tourComplete', 'true');
-          setTourState(false);
-          setShowSettings(false);
-          setShowHelp(false);
-          setShowOmniPanel(true);
-          setCurrentView(OmniPanelViewIndex.MainMenu);
+          dispatchMenu({ type: MainMenuActionType.TOUR_STATE, payload: false });
+          dispatchMenu({ type: MainMenuActionType.SHOW_SETTINGS, payload: false });
+          dispatchMenu({ type: MainMenuActionType.SHOW_HELP, payload: false });
+          dispatchMenu({ type: MainMenuActionType.SHOW_OMNIPANEL, payload: true });
+          dispatchMenu({
+            type: MainMenuActionType.CURRENT_VIEW,
+            payload: OmniPanelViewIndex.MainMenu,
+          });
         }}
         badgeContent={(curr, tot) => `${curr} of ${tot}`}
         accentColor={theme.palette.primary.main}

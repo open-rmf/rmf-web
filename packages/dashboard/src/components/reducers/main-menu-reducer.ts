@@ -1,19 +1,20 @@
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { Settings } from '../../settings';
 import { LoadingScreenProps } from '../loading-screen';
 
-type ActionFormat<T, K> = {
+type ActionFormat<T, K = undefined> = {
   type: T;
   payload: K;
 };
 
 export enum MainMenuActionType {
   SHOW_OMNIPANEL = 'showOmniPanel',
+  TOGGLE_OMNIPANEL = 'toggleOmnipanel',
   CURRENT_VIEW = 'currentView',
   LOADING = 'loading',
   SHOW_SETTINGS = 'showSettings',
   SETTINGS = 'settings',
   SHOW_HELP = 'showHelp',
+  TOUR_STATE = 'tourState',
 }
 
 type Action =
@@ -22,7 +23,9 @@ type Action =
   | ActionFormat<'loading', LoadingScreenProps | null>
   | ActionFormat<'showSettings', boolean>
   | ActionFormat<'settings', Settings>
-  | ActionFormat<'showHelp', boolean>;
+  | ActionFormat<'showHelp', boolean>
+  | ActionFormat<'toggleOmnipanel'>
+  | ActionFormat<'tourState', boolean>;
 
 export type MainMenuState = {
   [MainMenuActionType.SHOW_OMNIPANEL]: boolean;
@@ -31,31 +34,32 @@ export type MainMenuState = {
   [MainMenuActionType.SHOW_SETTINGS]: boolean;
   [MainMenuActionType.SETTINGS]: Settings;
   [MainMenuActionType.SHOW_HELP]: boolean;
+  [MainMenuActionType.TOUR_STATE]: boolean;
 };
 
 export const mainMenuReducer = (state: MainMenuState, action: Action): MainMenuState => {
-  if (!(action.type in Object.keys(MainMenuActionType))) {
-    throw new Error('Unexpected action');
+  // get the list of Enums values
+  switch (action.type) {
+    case MainMenuActionType.SHOW_OMNIPANEL:
+      return { ...state, [MainMenuActionType.SHOW_OMNIPANEL]: action.payload };
+    case MainMenuActionType.TOGGLE_OMNIPANEL:
+      return { ...state, showOmniPanel: !state.showOmniPanel };
+    case MainMenuActionType.CURRENT_VIEW:
+      return { ...state, [MainMenuActionType.CURRENT_VIEW]: action.payload };
+    case MainMenuActionType.LOADING:
+      return { ...state, [MainMenuActionType.LOADING]: action.payload };
+    case MainMenuActionType.SHOW_SETTINGS:
+      return { ...state, [MainMenuActionType.SHOW_SETTINGS]: action.payload };
+    case MainMenuActionType.SETTINGS:
+      return { ...state, [MainMenuActionType.SETTINGS]: action.payload };
+    case MainMenuActionType.SHOW_HELP:
+      return { ...state, [MainMenuActionType.SHOW_HELP]: action.payload };
+    case MainMenuActionType.TOUR_STATE:
+      return { ...state, tourState: action.payload };
+    default:
+      console.error('Unexpected action');
+      return state;
   }
-  return { ...state, [action.type]: action.payload };
-  // if (action.type)
-  //   // get the list of Enums values
-  //   switch (action.type) {
-  //     case MainMenuActionType.SHOW_OMNIPANEL:
-  //       return { ...state, [MainMenuActionType.SHOW_OMNIPANEL]: action.payload };
-  //     case MainMenuActionType.CURRENT_VIEW:
-  //       return { ...state, currentView: action.payload };
-  //     case MainMenuActionType.LOADING:
-  //       return { ...state, loading: action.payload };
-  //     case MainMenuActionType.SHOW_SETTINGS:
-  //       return { ...state, showSettings: action.payload };
-  //     case MainMenuActionType.SETTINGS:
-  //       return { ...state, settings: action.payload };
-  //     case MainMenuActionType.SHOW_HELP:
-  //       return { ...state, showHelp: action.payload };
-  //     default:
-  //       throw new Error('Unexpected action');
-  //   }
 };
 
 // const [showOmniPanel, setShowOmniPanel] = React.useState(true);

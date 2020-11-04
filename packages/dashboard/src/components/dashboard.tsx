@@ -23,7 +23,7 @@ import {
 } from '../negotiation-status-manager';
 import ResourceManager from '../resource-manager';
 import { RobotTrajectoryManager } from '../robot-trajectory-manager';
-import { loadSettings, saveSettings, Settings } from '../settings';
+import { loadSettings, saveSettings } from '../settings';
 import { AppContextProvider } from './app-contexts';
 import AppBar from './appbar';
 import CommandsPanel from './commands-panel';
@@ -32,12 +32,17 @@ import HelpDrawer from './drawers/help-drawer';
 import HotKeysDialog from './drawers/hotkeys-dialog';
 import SettingsDrawer from './drawers/settings-drawer';
 import LiftsPanel from './lift-item/lifts-panel';
-import LoadingScreen, { LoadingScreenProps } from './loading-screen';
+import LoadingScreen from './loading-screen';
 import MainMenu from './main-menu';
 import NegotiationsPanel from './negotiations-panel';
 import NotificationBar, { NotificationBarProps } from './notification-bar';
 import OmniPanel from './omni-panel';
 import OmniPanelView from './omni-panel-view';
+import {
+  DashboardActionType,
+  dashboardReducer,
+  DashboardState,
+} from './reducers/dashboard-reducers';
 import { MainMenuActionType, mainMenuReducer, MainMenuState } from './reducers/main-menu-reducer';
 import { RmfContextProvider } from './rmf-contexts';
 import RobotsPanel from './robots-panel';
@@ -129,46 +134,6 @@ function makeViewMap(): ViewMap {
 
 const viewMap = makeViewMap();
 
-type ActionFormat<T, K> = {
-  type: T;
-  payload: K;
-};
-
-enum ActionType {
-  DOOR_STATE = 'doorStates',
-  DOORS = 'doors',
-  LIFTS = 'lifts',
-  LIFT_STATE = 'liftStates',
-}
-
-type Action =
-  | ActionFormat<'doorStates', Record<string, RomiCore.DoorState>>
-  | ActionFormat<'doors', RomiCore.Door[]>
-  | ActionFormat<'liftStates', Record<string, RomiCore.LiftState>>
-  | ActionFormat<'lifts', RomiCore.Lift[]>;
-
-type State = {
-  doorStates: Record<string, RomiCore.DoorState>;
-  doors: RomiCore.Door[];
-  liftStates: Record<string, RomiCore.LiftState>;
-  lifts: RomiCore.Lift[];
-};
-
-const reducer = (state: State, action: Action): State => {
-  switch (action.type) {
-    case ActionType.DOOR_STATE:
-      return { ...state, doorStates: action.payload };
-    case ActionType.DOORS:
-      return { ...state, doors: action.payload };
-    case ActionType.LIFT_STATE:
-      return { ...state, liftStates: action.payload };
-    case ActionType.LIFTS:
-      return { ...state, lifts: action.payload };
-    default:
-      throw new Error('Unexpected action');
-  }
-};
-
 export default function Dashboard(_props: {}): React.ReactElement {
   debug('render');
 
@@ -187,13 +152,13 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const doorStateManager = React.useMemo(() => new DoorStateManager(), []);
   const liftStateManager = React.useMemo(() => new LiftStateManager(), []);
 
-  const initialValues: State = {
+  const initialValues: DashboardState = {
     doorStates: doorStateManager.doorStates(),
     doors: [],
     liftStates: liftStateManager.liftStates(),
     lifts: [],
   };
-  const [state, dispatch] = React.useReducer(reducer, initialValues);
+  const [state, dispatch] = React.useReducer(dashboardReducer, initialValues);
 
   const mainMenuInitialValues: MainMenuState = {
     showOmniPanel: true,
@@ -204,8 +169,9 @@ export default function Dashboard(_props: {}): React.ReactElement {
     showSettings: false,
     settings: loadSettings(),
     showHelp: false,
+    tourState: false,
   };
-  const [menuState, dispatchMenu] = React.useReducer(mainMenuReducer, mainMenuInitialValues);
+  const [stateMenu, dispatchMenu] = React.useReducer(mainMenuReducer, mainMenuInitialValues);
 
   const doorAccordionRefs = React.useMemo(
     () =>
@@ -280,7 +246,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     setNotificationBarMessage,
   ] = React.useState<NotificationBarProps | null>(null);
 
-  const [tourState, setTourState] = React.useState(false);
+  // const [tourState, setTourState] = React.useState(false);
 
   React.useEffect(() => {
     dispatchMenu({
@@ -305,10 +271,16 @@ export default function Dashboard(_props: {}): React.ReactElement {
 
         fleetManager.on('updated', () => setFleets(fleetManager.fleets()));
         liftStateManager.on('updated', () =>
-          dispatch({ type: ActionType.LIFT_STATE, payload: liftStateManager.liftStates() }),
+          dispatch({
+            type: DashboardActionType.LIFT_STATE,
+            payload: liftStateManager.liftStates(),
+          }),
         );
         doorStateManager.on('updated', () =>
-          dispatch({ type: ActionType.DOOR_STATE, payload: doorStateManager.doorStates() }),
+          dispatch({
+            type: DashboardActionType.DOOR_STATE,
+            payload: doorStateManager.doorStates(),
+          }),
         );
         dispenserStateManager.on('updated', () =>
           setDispenserStates(dispenserStateManager.dispenserStates()),
@@ -440,7 +412,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const handleClose = React.useCallback(() => {
     clearSpotlights();
     setNegotiationTrajStore({});
-    dispatchMenu({ type: MainMenuActionType.SHOW_OMNIPANEL, payload: true });
+    dispatchMenu({ type: MainMenuActionType.SHOW_OMNIPANEL, payload: false });
   }, []);
 
   const handleBack = React.useCallback(
@@ -468,25 +440,21 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const tourComplete = localStorage.getItem('tourComplete');
   React.useEffect(() => {
     if (tourComplete === 'true') {
-      setTourState(false);
+      dispatchMenu({ type: MainMenuActionType.TOUR_STATE, payload: false });
     } else {
-      setTourState(true);
+      dispatchMenu({ type: MainMenuActionType.TOUR_STATE, payload: true });
     }
-  }, [tourComplete, setTourState]);
+  }, [tourComplete]);
 
-  // const tourProps = React.useMemo<DashboardTourProps['tourProps']>(() => {
-  //   const doorAccordionRef = Object.values(doorAccordionRefs)[0] as SpotlightRef | undefined;
-  //   return {
-  //     tourState,
-  //     setTourState,
-  //     setShowSettings,
-  //     setShowOmniPanel,
-  //     setShowHelp,
-  //     clearSpotlights,
-  //     setCurrentView,
-  //     doorSpotlight: doorAccordionRef?.spotlight,
-  //   };
-  // }, [doorAccordionRefs, tourState]);
+  const tourProps = React.useMemo<DashboardTourProps['tourProps']>(() => {
+    const doorAccordionRef = Object.values(doorAccordionRefs)[0] as SpotlightRef | undefined;
+    return {
+      dispatchMenu,
+      stateMenu,
+      clearSpotlights,
+      doorSpotlight: doorAccordionRef?.spotlight,
+    };
+  }, [doorAccordionRefs, stateMenu.tourState]);
 
   const [showHotkeyDialog, setShowHotkeyDialog] = React.useState(false);
 
@@ -495,7 +463,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   return (
     <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
       <AppContextProvider
-        settings={menuState.settings}
+        settings={stateMenu.settings}
         notificationDispatch={setNotificationBarMessage}
         resourceManager={resourceManager.current}
       >
@@ -505,12 +473,8 @@ export default function Dashboard(_props: {}): React.ReactElement {
           dispenserStates={dispenserStates}
         >
           <div className={classes.container}>
-            <AppBar
-              toggleShowOmniPanel={() => setShowOmniPanel(!showOmniPanel)}
-              showSettings={setShowSettings}
-              showHelp={setShowHelp}
-            />
-            {menuState.loading && <LoadingScreen {...menuState.loading} />}
+            <AppBar mainMenuStateHandler={dispatchMenu} />
+            {stateMenu.loading && <LoadingScreen {...stateMenu.loading} />}
             {buildingMap && mapFloorLayerSorted && (
               <ScheduleVisualizer
                 buildingMap={buildingMap}
@@ -525,11 +489,11 @@ export default function Dashboard(_props: {}): React.ReactElement {
               />
             )}
 
-            <Fade in={menuState.showOmniPanel}>
+            <Fade in={stateMenu.showOmniPanel}>
               <OmniPanel
                 className={classes.omniPanel}
                 classes={omniPanelClasses}
-                view={menuState.currentView}
+                view={stateMenu.currentView}
                 onBack={handleBack}
                 onClose={handleClose}
               >
@@ -583,24 +547,30 @@ export default function Dashboard(_props: {}): React.ReactElement {
             </Fade>
 
             <SettingsDrawer
-              settings={menuState.settings}
-              open={menuState.showSettings}
+              settings={stateMenu.settings}
+              open={stateMenu.showSettings}
               onSettingsChange={(newSettings) => {
-                setSettings(newSettings);
+                dispatchMenu({ type: MainMenuActionType.SETTINGS, payload: newSettings });
                 saveSettings(newSettings);
               }}
-              onClose={() => setShowSettings(false)}
-              handleCloseButton={setShowSettings}
+              onClose={() =>
+                dispatchMenu({ type: MainMenuActionType.SHOW_SETTINGS, payload: false })
+              }
+              handleCloseButton={() =>
+                dispatchMenu({ type: MainMenuActionType.SHOW_SETTINGS, payload: false })
+              }
             />
 
             <HelpDrawer
-              open={menuState.showHelp}
-              handleCloseButton={() => setShowHelp(false)}
-              onClose={() => setShowHelp(false)}
+              open={stateMenu.showHelp}
+              handleCloseButton={() =>
+                dispatchMenu({ type: MainMenuActionType.SHOW_HELP, payload: false })
+              }
+              onClose={() => dispatchMenu({ type: MainMenuActionType.SHOW_HELP, payload: false })}
               setShowHotkeyDialog={() => setShowHotkeyDialog(true)}
               showTour={() => {
-                setTourState(true);
-                setShowHelp(false);
+                dispatchMenu({ type: MainMenuActionType.TOUR_STATE, payload: true });
+                dispatchMenu({ type: MainMenuActionType.SHOW_HELP, payload: false });
               }}
             />
           </div>
@@ -612,7 +582,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
             message={notificationBarMessage?.message}
             type={notificationBarMessage?.type}
           />
-          {/* <DashboardTour tourProps={tourProps} /> */}
+          <DashboardTour tourProps={tourProps} />
         </RmfContextProvider>
       </AppContextProvider>
     </GlobalHotKeys>

@@ -2,6 +2,7 @@ import { Box, createMuiTheme, Typography } from '@material-ui/core';
 import React from 'react';
 import { ReactourStep } from 'reactour';
 import { OmniPanelViewIndex } from '../dashboard';
+import { MainMenuActionType } from '../reducers/main-menu-reducer';
 import { stepDetails, stepStyling, tourText } from './tour-data';
 import { NavButtons } from './tour-navigation-control';
 
@@ -27,25 +28,13 @@ async function waitForAnimation(selector: string): Promise<void> {
 }
 
 interface createTourProps {
-  setTourState: React.Dispatch<React.SetStateAction<boolean>>;
-  setShowSettings: React.Dispatch<React.SetStateAction<boolean>>;
-  setShowOmniPanel: React.Dispatch<React.SetStateAction<boolean>>;
-  setShowHelp: React.Dispatch<React.SetStateAction<boolean>>;
+  dispatchMenu: any;
   clearSpotlights: () => void;
-  setCurrentView: React.Dispatch<React.SetStateAction<OmniPanelViewIndex>>;
   doorSpotlight?: () => void;
 }
 
 export const createTourSteps = (props: createTourProps) => {
-  const {
-    setTourState,
-    setShowSettings,
-    setShowOmniPanel,
-    setShowHelp,
-    clearSpotlights,
-    setCurrentView,
-    doorSpotlight,
-  } = props;
+  const { dispatchMenu, clearSpotlights, doorSpotlight } = props;
 
   const showSettingsOmniPanelHelpClearSpotlight = (
     isSettingsVisible: boolean,
@@ -53,9 +42,9 @@ export const createTourSteps = (props: createTourProps) => {
     isHelpVisible: boolean,
     clearSpotlight: boolean,
   ): void => {
-    setShowSettings(isSettingsVisible);
-    setShowOmniPanel(isOmniPanelVisible);
-    setShowHelp(isHelpVisible);
+    dispatchMenu({ type: MainMenuActionType.SHOW_SETTINGS, payload: isSettingsVisible });
+    dispatchMenu({ type: MainMenuActionType.SHOW_OMNIPANEL, payload: isOmniPanelVisible });
+    dispatchMenu({ type: MainMenuActionType.SHOW_HELP, payload: isHelpVisible });
     clearSpotlight && clearSpotlights();
   };
 
@@ -127,7 +116,10 @@ export const createTourSteps = (props: createTourProps) => {
             step={step}
             handleNextClick={() => {
               showSettingsOmniPanelHelpClearSpotlight(false, true, false, false);
-              setCurrentView(OmniPanelViewIndex.MainMenu);
+              dispatchMenu({
+                type: MainMenuActionType.CURRENT_VIEW,
+                payload: OmniPanelViewIndex.MainMenu,
+              });
             }}
           />
         </Box>
@@ -156,7 +148,10 @@ export const createTourSteps = (props: createTourProps) => {
             step={step}
             handleNextClick={() => {
               showSettingsOmniPanelHelpClearSpotlight(false, true, false, false);
-              setCurrentView(OmniPanelViewIndex.Doors);
+              dispatchMenu({
+                type: MainMenuActionType.CURRENT_VIEW,
+                payload: OmniPanelViewIndex.Doors,
+              });
               doorSpotlight && doorSpotlight();
             }}
           />
@@ -175,11 +170,17 @@ export const createTourSteps = (props: createTourProps) => {
             step={step}
             handleNextClick={() => {
               showSettingsOmniPanelHelpClearSpotlight(false, true, false, false);
-              setCurrentView(OmniPanelViewIndex.MainMenu);
+              dispatchMenu({
+                type: MainMenuActionType.CURRENT_VIEW,
+                payload: OmniPanelViewIndex.MainMenu,
+              });
             }}
             handleBackClick={() => {
               showSettingsOmniPanelHelpClearSpotlight(false, true, false, false);
-              setCurrentView(OmniPanelViewIndex.MainMenu);
+              dispatchMenu({
+                type: MainMenuActionType.CURRENT_VIEW,
+                payload: OmniPanelViewIndex.MainMenu,
+              });
             }}
           />
         </Box>
@@ -197,11 +198,17 @@ export const createTourSteps = (props: createTourProps) => {
             step={step}
             handleNextClick={() => {
               showSettingsOmniPanelHelpClearSpotlight(false, true, false, false);
-              setCurrentView(OmniPanelViewIndex.Commands);
+              dispatchMenu({
+                type: MainMenuActionType.CURRENT_VIEW,
+                payload: OmniPanelViewIndex.Commands,
+              });
             }}
             handleBackClick={() => {
               showSettingsOmniPanelHelpClearSpotlight(false, true, false, false);
-              setCurrentView(OmniPanelViewIndex.Doors);
+              dispatchMenu({
+                type: MainMenuActionType.CURRENT_VIEW,
+                payload: OmniPanelViewIndex.Doors,
+              });
             }}
           />
         </Box>
@@ -222,7 +229,10 @@ export const createTourSteps = (props: createTourProps) => {
             }
             handleBackClick={() => {
               showSettingsOmniPanelHelpClearSpotlight(false, true, false, false);
-              setCurrentView(OmniPanelViewIndex.MainMenu);
+              dispatchMenu({
+                type: MainMenuActionType.CURRENT_VIEW,
+                payload: OmniPanelViewIndex.MainMenu,
+              });
             }}
           />
         </Box>
@@ -243,7 +253,10 @@ export const createTourSteps = (props: createTourProps) => {
             }
             handleBackClick={() => {
               showSettingsOmniPanelHelpClearSpotlight(false, true, false, false);
-              setCurrentView(OmniPanelViewIndex.Commands);
+              dispatchMenu({
+                type: MainMenuActionType.CURRENT_VIEW,
+                payload: OmniPanelViewIndex.Commands,
+              });
             }}
           />
         </Box>
@@ -301,8 +314,14 @@ export const createTourSteps = (props: createTourProps) => {
             step={step}
             handleNextClick={() => {
               showSettingsOmniPanelHelpClearSpotlight(false, true, false, false);
-              setCurrentView(OmniPanelViewIndex.MainMenu);
-              setTourState(false);
+              dispatchMenu({
+                type: MainMenuActionType.CURRENT_VIEW,
+                payload: OmniPanelViewIndex.MainMenu,
+              });
+              dispatchMenu({
+                type: MainMenuActionType.TOUR_STATE,
+                payload: false,
+              });
             }}
             handleBackClick={() =>
               showSettingsOmniPanelHelpClearSpotlight(false, false, false, true)

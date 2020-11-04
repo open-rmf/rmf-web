@@ -13,22 +13,25 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import React from 'react';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
 import HelpIcon from '@material-ui/icons/Help';
+import { MainMenuActionType } from './reducers/main-menu-reducer';
 
 export interface AppBarProps {
-  toggleShowOmniPanel(): void;
-  showSettings(show: boolean): void;
-  showHelp(show: boolean): void;
+  mainMenuStateHandler: any;
   // TODO: change the alarm status to required when we have an alarm
   // service working properly in the backend
   alarmState?: boolean | null;
 }
 
 export default function AppBar(props: AppBarProps): React.ReactElement {
-  const { toggleShowOmniPanel, showSettings, showHelp } = props;
+  const { mainMenuStateHandler } = props;
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const classes = useStyles();
   const authenticator = React.useContext(AuthenticatorContext);
   const user = React.useContext(UserContext);
+
+  // toggleShowOmniPanel={() => setShowOmniPanel(!showOmniPanel)}
+  // showSettings={setShowSettings}
+  // showHelp={setShowHelp}
 
   async function handleLogout(): Promise<void> {
     try {
@@ -45,11 +48,25 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
           Dashboard
         </Typography>
 
-        <IconButton id="toggle-omnipanel-btn" color="inherit" onClick={() => toggleShowOmniPanel()}>
+        <IconButton
+          id="toggle-omnipanel-btn"
+          color="inherit"
+          onClick={() =>
+            mainMenuStateHandler({
+              type: MainMenuActionType.TOGGLE_OMNIPANEL,
+            })
+          }
+        >
           <DashboardIcon />
         </IconButton>
 
-        <IconButton id="show-settings-btn" color="inherit" onClick={() => showSettings(true)}>
+        <IconButton
+          id="show-settings-btn"
+          color="inherit"
+          onClick={() =>
+            mainMenuStateHandler({ type: MainMenuActionType.SHOW_SETTINGS, payload: true })
+          }
+        >
           <SettingsIcon />
         </IconButton>
         {user && (
@@ -81,7 +98,13 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
             </Menu>
           </>
         )}
-        <IconButton id="show-help-btn" color="inherit" onClick={() => showHelp(true)}>
+        <IconButton
+          id="show-help-btn"
+          color="inherit"
+          onClick={() =>
+            mainMenuStateHandler({ type: MainMenuActionType.SHOW_HELP, payload: true })
+          }
+        >
           <HelpIcon />
         </IconButton>
       </Toolbar>
