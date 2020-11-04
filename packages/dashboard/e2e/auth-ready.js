@@ -18,9 +18,9 @@ async function authReady(timeout = 30000) {
     const waitAuthReady = () => {
       let container = execSync('docker ps -q --filter ancestor=romi-dashboard/auth').toString();
       let authIpAddress;
-      console.log(
-        '========================== waiting waiting waiting ----- waiting ==========================',
-      );
+      // console.log(
+      //   '========================== waiting waiting waiting ----- waiting ==========================',
+      // );
 
       if (container) {
         console.log('Successuflly created auth container ----------------------- ' + container);
@@ -34,7 +34,10 @@ async function authReady(timeout = 30000) {
         authIpAddress = execSync(
           "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $CONTAINER",
         ).toString();
-        console.log('auth ip address >>>>>>> ' + authIpAddress);
+        if (!process.env.AUTH_IP) {
+          process.env.AUTH_IP = authIpAddress;
+          console.log('auth ip address >>>>>>> ' + authIpAddress);
+        }
 
         if (!isConnected) {
           console.log('I am inside isConnected!!! >>>>> ' + isConnected);
@@ -63,7 +66,7 @@ async function authReady(timeout = 30000) {
         res(true);
       });
       req.once('error', (err) => {
-        console.log(err);
+        console.log('http connection to auth error: ' + err);
         retryTimer = setTimeout(waitAuthReady, 1000);
       });
       req.end();
