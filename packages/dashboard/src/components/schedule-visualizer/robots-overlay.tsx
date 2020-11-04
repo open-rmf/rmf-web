@@ -4,13 +4,11 @@ import React, { useMemo } from 'react';
 import { RobotMarker, RobotMarkerProps } from 'react-components';
 import { viewBoxFromLeafletBounds } from '../../util/css-utils';
 import { ResourcesContext } from '../app-contexts';
-import ColorManager from './colors';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 
 const debug = Debug('ScheduleVisualizer:RobotsOverlay');
 
 export interface RobotsOverlayProps extends SVGOverlayProps {
-  colorManager: ColorManager;
   fleets: readonly RomiCore.FleetState[];
   onRobotClick?(fleet: string, robot: RomiCore.RobotState): void;
   conflictRobotNames: string[][];
@@ -20,14 +18,7 @@ export interface RobotsOverlayProps extends SVGOverlayProps {
 export const RobotsOverlay = React.memo((props: RobotsOverlayProps) => {
   debug('render');
 
-  const {
-    fleets,
-    colorManager,
-    onRobotClick,
-    conflictRobotNames,
-    currentFloorName,
-    ...otherProps
-  } = props;
+  const { fleets, onRobotClick, conflictRobotNames, currentFloorName, ...otherProps } = props;
   const robotResourcesContext = React.useContext(ResourcesContext)?.robots;
   const viewBox = viewBoxFromLeafletBounds(props.bounds);
   const footprint = 0.5;

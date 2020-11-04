@@ -26,22 +26,20 @@ export const DoorsOverlay = React.memo((props: DoorsOverlayProps) => {
   );
 
   return (
-    <>
-      <SVGOverlay {...otherProps}>
-        <svg viewBox={viewBox}>
-          {doors.map((door) => (
-            <DoorMarker
-              key={door.name}
-              onClick={handleDoorClick}
-              door={door}
-              doorMode={doorsState && doorsState[door.name] && doorsState[door.name].current_mode}
-              aria-label={door.name}
-              data-component="DoorMarker"
-            />
-          ))}
-        </svg>
-      </SVGOverlay>
-    </>
+    <SVGOverlay {...otherProps}>
+      <svg viewBox={viewBox}>
+        {doors.map((door) => (
+          <DoorMarker
+            key={door.name}
+            onClick={handleDoorClick}
+            door={door}
+            doorMode={doorsState && doorsState[door.name] && doorsState[door.name].current_mode}
+            aria-label={door.name}
+            data-component="DoorMarker"
+          />
+        ))}
+      </svg>
+    </SVGOverlay>
   );
 });
 
