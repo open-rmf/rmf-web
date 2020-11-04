@@ -17,7 +17,7 @@ describe('loop request', () => {
 
     const currentRobotLocations = getRobotLocations(browser);
 
-    const backButton = $('[name="back-button"]');
+    const backButton = $('[aria-label="Back"]');
     backButton.click();
     $('[data-component=MainMenu] [data-item=Commands]').click();
     $('[data-component=LoopForm]').click();

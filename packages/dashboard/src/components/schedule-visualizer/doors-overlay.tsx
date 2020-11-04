@@ -1,9 +1,9 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import React, { useContext } from 'react';
+import { DoorMarker, DoorMarkerProps } from 'react-components';
 import { viewBoxFromLeafletBounds } from '../../util/css-utils';
 import { DoorStateContext } from '../rmf-contexts';
-import Door, { DoorContainerProps } from './door/door';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 
 const debug = Debug('ScheduleVisualizer:DoorsOverlay');
@@ -20,12 +20,7 @@ export const DoorsOverlay = React.memo((props: DoorsOverlayProps) => {
   const viewBox = viewBoxFromLeafletBounds(props.bounds);
   const doorsState = useContext(DoorStateContext);
 
-  const getCurrentDoorMode = (doorName: string) => {
-    const currentDoor = doorsState && doorsState[doorName];
-    return currentDoor && currentDoor.current_mode.value;
-  };
-
-  const handleDoorClick = React.useCallback<Required<DoorContainerProps>['onClick']>(
+  const handleDoorClick = React.useCallback<Required<DoorMarkerProps>['onClick']>(
     (_, door) => onDoorClick && onDoorClick(door),
     [onDoorClick],
   );
@@ -34,13 +29,14 @@ export const DoorsOverlay = React.memo((props: DoorsOverlayProps) => {
     <>
       <SVGOverlay {...otherProps}>
         <svg viewBox={viewBox}>
-          {doors.map(door => (
-            <Door
-              key={`building-door-${door.name}`}
-              door={door}
+          {doors.map((door) => (
+            <DoorMarker
+              key={door.name}
               onClick={handleDoorClick}
-              doorState={doorsState && doorsState[door.name]}
-              currentMode={getCurrentDoorMode(door.name)}
+              door={door}
+              doorMode={doorsState && doorsState[door.name] && doorsState[door.name].current_mode}
+              aria-label={door.name}
+              data-component="DoorMarker"
             />
           ))}
         </svg>

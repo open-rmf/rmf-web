@@ -1,11 +1,5 @@
 import { makeLauncher } from '../rmf-launcher';
-import {
-  login,
-  openRequestForm,
-  overwriteClick,
-  removeTextFromAutocomplete,
-  requestLoop,
-} from './utils';
+import { login, openRequestForm, overwriteClick, requestLoop } from './utils';
 
 describe('Loop request for negotiations', () => {
   const launcher = makeLauncher();
@@ -30,7 +24,7 @@ describe('Loop request for negotiations', () => {
       pointB: 'cubicle_2',
     });
 
-    const backButton = $('[name="back-button"]');
+    const backButton = $('[aria-label="Back"]');
     backButton.click();
 
     $('[data-component=MainMenu] [data-item=Negotiations]').click();

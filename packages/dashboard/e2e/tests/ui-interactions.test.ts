@@ -13,12 +13,12 @@ describe('ui interactions', () => {
   before(login);
 
   it('clicking a door on the map focuses it on the panel', () => {
-    const door = $(`[data-component=Door]`);
+    const door = $(`[data-component=DoorMarker]`);
     const doorName = door.getAttribute('aria-label');
     door.waitForClickable();
     door.click();
 
-    expect($(`[data-component=DoorItem][data-name=${doorName}] [data-role=details]`)).toBeVisible();
+    expect($(`.MuiAccordion-root*=${doorName}`).$('.MuiAccordionDetails-root')).toBeVisible();
   });
 
   it('clicking a dispenser on the map focuses it on the panel', () => {
@@ -33,12 +33,10 @@ describe('ui interactions', () => {
   });
 
   it('clicking a robot on the map focuses it on the panel', () => {
-    const robot = $('[data-component=Robot]');
+    const robot = $('[data-component=RobotMarker]');
     const robotName = robot.getAttribute('aria-label');
     robot.click();
 
-    expect(
-      $(`[data-component=RobotItem][data-name=${robotName}] [data-role=details]`),
-    ).toBeVisible();
+    expect($(`.MuiAccordion-root*=${robotName}`).$('.MuiAccordionDetails-root')).toBeVisible();
   });
 });

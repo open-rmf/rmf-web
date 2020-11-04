@@ -1,9 +1,9 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import React, { useContext } from 'react';
+import { LiftMarker, LiftMarkerProps } from 'react-components';
 import { viewBoxFromLeafletBounds } from '../../util/css-utils';
 import { LiftStateContext } from '../rmf-contexts';
-import Lift, { LiftProps } from './lift';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 
 const debug = Debug('ScheduleVisualizer:LiftsOverlay');
@@ -21,7 +21,7 @@ export const LiftsOverlay = React.memo((props: LiftsOverlayProps) => {
   const viewBox = viewBoxFromLeafletBounds(props.bounds);
   const liftsState = useContext(LiftStateContext);
 
-  const handleLiftClick = React.useCallback<Required<LiftProps>['onClick']>(
+  const handleLiftClick = React.useCallback<Required<LiftMarkerProps>['onClick']>(
     (_, lift) => onLiftClick && onLiftClick(lift),
     [onLiftClick],
   );
@@ -30,14 +30,13 @@ export const LiftsOverlay = React.memo((props: LiftsOverlayProps) => {
     <>
       <SVGOverlay {...otherProps}>
         <svg viewBox={viewBox}>
-          {lifts.map(lift => (
-            <Lift
+          {lifts.map((lift) => (
+            <LiftMarker
               key={lift.name}
               id={`Lift-${lift.name}`}
               lift={lift}
               onClick={handleLiftClick}
               liftState={liftsState && liftsState[lift.name]}
-              currentFloor={currentFloor}
             />
           ))}
         </svg>
