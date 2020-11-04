@@ -29,10 +29,6 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
   const authenticator = React.useContext(AuthenticatorContext);
   const user = React.useContext(UserContext);
 
-  // toggleShowOmniPanel={() => setShowOmniPanel(!showOmniPanel)}
-  // showSettings={setShowSettings}
-  // showHelp={setShowHelp}
-
   async function handleLogout(): Promise<void> {
     try {
       await authenticator.logout();

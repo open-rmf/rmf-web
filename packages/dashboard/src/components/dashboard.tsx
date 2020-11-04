@@ -161,14 +161,15 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const [state, dispatch] = React.useReducer(dashboardReducer, initialValues);
 
   const mainMenuInitialValues: MainMenuState = {
-    showOmniPanel: true,
     currentView: OmniPanelViewIndex.MainMenu,
     loading: {
       caption: 'Connecting to api server...',
     },
-    showSettings: false,
     settings: loadSettings(),
     showHelp: false,
+    showHotkeysDialog: false,
+    showOmniPanel: true,
+    showSettings: false,
     tourState: false,
   };
   const [stateMenu, dispatchMenu] = React.useReducer(mainMenuReducer, mainMenuInitialValues);
@@ -230,23 +231,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const statusUpdateTS = React.useRef<number>();
   statusUpdateTS.current = negotiationStatusManager.getLastUpdateTS();
 
-  // const [showOmniPanel, setShowOmniPanel] = React.useState(true);
-  // const [currentView, setCurrentView] = React.useState(OmniPanelViewIndex.MainMenu);
-  // const [loading, setLoading] = React.useState<LoadingScreenProps | null>({
-  //   caption: 'Connecting to api server...',
-  // });
-
-  // const [showSettings, setShowSettings] = React.useState(false);
-  // const [settings, setSettings] = React.useState<Settings>(() => loadSettings());
-
-  // const [showHelp, setShowHelp] = React.useState(false);
-
   const [
     notificationBarMessage,
     setNotificationBarMessage,
   ] = React.useState<NotificationBarProps | null>(null);
-
-  // const [tourState, setTourState] = React.useState(false);
 
   React.useEffect(() => {
     dispatchMenu({
@@ -456,9 +444,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     };
   }, [doorAccordionRefs, stateMenu.tourState]);
 
-  const [showHotkeyDialog, setShowHotkeyDialog] = React.useState(false);
-
-  const hotKeysValue = buildHotKeys({ menuStateHandler: dispatchMenu });
+  const hotKeysValue = buildHotKeys({ dispatchMenu: dispatchMenu });
 
   return (
     <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
@@ -567,15 +553,28 @@ export default function Dashboard(_props: {}): React.ReactElement {
                 dispatchMenu({ type: MainMenuActionType.SHOW_HELP, payload: false })
               }
               onClose={() => dispatchMenu({ type: MainMenuActionType.SHOW_HELP, payload: false })}
-              setShowHotkeyDialog={() => setShowHotkeyDialog(true)}
+              setShowHotkeyDialog={() =>
+                dispatchMenu({
+                  type: MainMenuActionType.SHOW_HOTKEYS_DIALOG,
+                  payload: true,
+                })
+              }
               showTour={() => {
                 dispatchMenu({ type: MainMenuActionType.TOUR_STATE, payload: true });
                 dispatchMenu({ type: MainMenuActionType.SHOW_HELP, payload: false });
               }}
             />
           </div>
-          {showHotkeyDialog && (
-            <HotKeysDialog open={showHotkeyDialog} handleClose={() => setShowHotkeyDialog(false)} />
+          {stateMenu.showHotkeysDialog && (
+            <HotKeysDialog
+              open={stateMenu.showHotkeysDialog}
+              handleClose={() =>
+                dispatchMenu({
+                  type: MainMenuActionType.SHOW_HOTKEYS_DIALOG,
+                  payload: false,
+                })
+              }
+            />
           )}
 
           <NotificationBar
