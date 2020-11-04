@@ -48,7 +48,7 @@ jobs:
       env:
         CI: 1
         CHROME_BIN: /chrome-no-sandbox
-      options: --ipc "host" --privileged "true"
+      options: --ipc host
     defaults: 
       run:
         shell: bash
