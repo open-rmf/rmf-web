@@ -122,7 +122,6 @@ export const LoopRequestForm = React.memo(
                   variant="outlined"
                   error={!!targetFleetNameError}
                   helperText={targetFleetNameError}
-                  name="targetFleet"
                 />
               )}
               value={targetFleetName ? targetFleetName : null}
@@ -130,7 +129,6 @@ export const LoopRequestForm = React.memo(
           </div>
           <div className={classes.divForm}>
             <TextField
-              name="numLoops"
               onChange={(e) => {
                 setNumLoops(e.target.value ? parseInt(e.target.value) : 0);
               }}
@@ -158,7 +156,6 @@ export const LoopRequestForm = React.memo(
                   variant="outlined"
                   error={!!startLocationError}
                   helperText={startLocationError}
-                  name="startLocation"
                 />
               )}
               value={startLocation ? startLocation : null}
@@ -178,7 +175,6 @@ export const LoopRequestForm = React.memo(
                   variant="outlined"
                   error={!!finishLocationError}
                   helperText={finishLocationError}
-                  name="finishLocation"
                 />
               )}
               value={finishLocation ? finishLocation : null}
