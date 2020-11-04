@@ -7,6 +7,9 @@ const chromeArgs = [...headlessArgs];
 if (os.userInfo().uid === 0) {
   chromeArgs.push('--no-sandbox');
 }
+console.log(os.userInfo().uid);
+console.log('chromeArgs =============>>>>>>>>: ' + chromeArgs.toString());
+console.log('CI variable value >>>>>>>>>>>>>>>>>>>>>>>>: ' + process.env.CI);
 const port = process.env.ROMI_DASHBOARD_PORT;
 exports.config = {
   //
@@ -83,7 +86,7 @@ exports.config = {
   // Define all options that are relevant for the WebdriverIO instance here
   //
   // Level of logging verbosity: trace | debug | info | warn | error | silent
-  logLevel: 'trace',
+  logLevel: 'info',
   //
   // Set specific log levels per logger
   // loggers:
@@ -96,10 +99,7 @@ exports.config = {
   // Level of logging verbosity: trace | debug | info | warn | error | silent
   logLevels: {
     webdriver: 'trace',
-    webdriverio: 'debug',
-    '@wdio/mocha-framework': 'debug',
-    '@wdio/cli': 'debug',
-    '@wdio/config': 'debug',
+    webdriverio: 'trace',
   },
   //
   // If you only want to run your tests until a specific amount of tests have failed use
