@@ -20,10 +20,12 @@ describe('loop request', () => {
     const backButton = $('[aria-label="Back"]');
     backButton.click();
     $('[data-component=MainMenu] [data-item=Commands]').click();
-    $('[data-component=LoopForm]').click();
-    $('input[name=numLoops]').waitForClickable();
-    $('input[name=numLoops]').setValue(1);
-    const requestButton = $('button=Request');
+    const loopRequestForm = $('[data-component=LoopRequestForm]');
+    loopRequestForm.click();
+    const numLoopsInput = loopRequestForm.$('input[placeholder="Number of loops"]');
+    numLoopsInput.waitForClickable();
+    numLoopsInput.setValue(1);
+    const requestButton = loopRequestForm.$('button=Request');
     requestButton.scrollIntoView();
     requestButton.click();
 

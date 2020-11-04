@@ -20,24 +20,27 @@ describe('Delivery request', () => {
     const backButton = $('[aria-label="Back"]');
     backButton.click();
     $('[data-component=MainMenu] [data-item=Commands]').click();
-    const deliveryForm = $('[data-component=DeliveryForm]');
+    const deliveryForm = $('[data-component=DeliveryRequestForm]');
     deliveryForm.click();
-    $('input[name=pickupPlace]').waitForClickable();
-    $('input[name=pickupPlace]').setValue(removeTextFromAutocomplete(20));
-    $('input[name=pickupPlace]').waitForClickable();
-    $('input[name=pickupPlace]').setValue('pantry');
+    const pickupPlaceInput = deliveryForm.$('input[placeholder="Pick Start Location"]');
+    console.log(pickupPlaceInput.getHTML());
+    pickupPlaceInput.waitForClickable();
+    pickupPlaceInput.setValue(removeTextFromAutocomplete(20));
+    pickupPlaceInput.waitForClickable();
+    pickupPlaceInput.setValue('pantry');
     $('.MuiAutocomplete-popper').click();
 
-    $('input[name=pickupDispenser]').click();
+    deliveryForm.$('input[placeholder="Pickup Dispenser"]').click();
     $('.MuiAutocomplete-popper').click();
 
-    $('input[name=dropoffPlace]').waitForClickable();
-    $('input[name=dropoffPlace]').setValue(removeTextFromAutocomplete(20));
-    $('input[name=dropoffPlace]').waitForClickable();
-    $('input[name=dropoffPlace]').setValue('hardware_2');
+    const dropoffPlaceInput = deliveryForm.$('input[placeholder="Pick Drop Off Location"]');
+    dropoffPlaceInput.waitForClickable();
+    dropoffPlaceInput.setValue(removeTextFromAutocomplete(20));
+    dropoffPlaceInput.waitForClickable();
+    dropoffPlaceInput.setValue('hardware_2');
     $('.MuiAutocomplete-popper').click();
 
-    $('input[name=dropoffDispenser]').click();
+    deliveryForm.$('input[placeholder="Pick Drop Off Dispenser"]').click();
     $('.MuiAutocomplete-popper').click();
 
     const requestButton = deliveryForm.$('button=Request');
