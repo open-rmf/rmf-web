@@ -55,7 +55,6 @@ async function authReady(timeout = 30000) {
       }
 
       req = http.request(`http://${authIpAddress ? authIpAddress : 'localhost'}:8080/auth/`, () => {
-        console.log('CI variable value >>>>>>>>>>>>>>>>>>>>>>>>: ' + process.env.CI);
         console.log(
           '-------------------------------- connecting success ------------------------------',
         );

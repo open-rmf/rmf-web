@@ -7,7 +7,9 @@ const chromeArgs = [...headlessArgs];
 if (os.userInfo().uid === 0) {
   chromeArgs.push('--no-sandbox');
 }
-
+console.log(os.userInfo().uid);
+console.log('chromeArgs =============>>>>>>>>: ' + chromeArgs.toString());
+console.log('CI variable value >>>>>>>>>>>>>>>>>>>>>>>>: ' + process.env.CI);
 const port = process.env.ROMI_DASHBOARD_PORT;
 exports.config = {
   //
