@@ -4,7 +4,7 @@ const { execSync } = require('child_process');
  * Waits for the authentication server to be ready.
  * @param timeout Max amount of time (in milliseconds) to wait for
  */
-async function authReady(timeout = 30000) {
+async function authReady(timeout = 60000) {
   console.log('........ auth Ready ..................');
   return new Promise((res) => {
     let req;
@@ -18,9 +18,7 @@ async function authReady(timeout = 30000) {
     const waitAuthReady = () => {
       let container = execSync('docker ps -q --filter ancestor=romi-dashboard/auth').toString();
       let authIpAddress;
-      // console.log(
-      //   '========================== waiting waiting waiting ----- waiting ==========================',
-      // );
+      console.log('========================== waiting waiting waiting ==========================');
 
       if (container) {
         console.log('Successuflly created auth container ----------------------- ' + container);
@@ -42,13 +40,13 @@ async function authReady(timeout = 30000) {
         if (!isConnected) {
           console.log('I am inside isConnected!!! >>>>> ' + isConnected);
 
-          // execSync('docker network connect $NETWORK $CONTAINER', {
-          //   stdio: 'inherit',
-          // });
+          execSync('docker network connect $NETWORK $CONTAINER', {
+            stdio: 'inherit',
+          });
 
-          // execSync('docker network disconnect romidashboarde2e_default $CONTAINER', {
-          //   stdio: 'inherit',
-          // });
+          execSync('docker network disconnect romidashboarde2e_default $CONTAINER', {
+            stdio: 'inherit',
+          });
         }
 
         console.log('=========================== END =============================');
@@ -61,7 +59,8 @@ async function authReady(timeout = 30000) {
         `http://${process.env.AUTH_IP ? process.env.AUTH_IP : 'localhost'}:8080/auth/`,
         () => {
           console.log(
-            '-------------------------------- connecting success ------------------------------',
+            '-------------------------------- connecting success ------------------------------' +
+              process.env.AUTH_IP,
           );
           clearTimeout(timer);
           clearTimeout(retryTimer);
@@ -69,8 +68,8 @@ async function authReady(timeout = 30000) {
         },
       );
       req.once('error', (err) => {
-        console.log('http connection to auth error: ' + err);
-        retryTimer = setTimeout(waitAuthReady, 1000);
+        console.log(err);
+        retryTimer = setTimeout(waitAuthReady, 40000);
       });
       req.end();
     };
