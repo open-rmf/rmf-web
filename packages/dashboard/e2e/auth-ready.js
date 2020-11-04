@@ -46,9 +46,9 @@ async function authReady(timeout = 30000) {
             stdio: 'inherit',
           });
 
-          execSync('docker network disconnect romidashboarde2e_default $CONTAINER', {
-            stdio: 'inherit',
-          });
+          // execSync('docker network disconnect romidashboarde2e_default $CONTAINER', {
+          //   stdio: 'inherit',
+          // });
         }
 
         console.log('=========================== END =============================');
@@ -57,14 +57,17 @@ async function authReady(timeout = 30000) {
         console.log('=========================== END =============================');
       }
 
-      req = http.request(`http://${authIpAddress ? authIpAddress : 'localhost'}:8080/auth/`, () => {
-        console.log(
-          '-------------------------------- connecting success ------------------------------',
-        );
-        clearTimeout(timer);
-        clearTimeout(retryTimer);
-        res(true);
-      });
+      req = http.request(
+        `http://${process.env.AUTH_IP ? process.env.AUTH_IP : 'localhost'}:8080/auth/`,
+        () => {
+          console.log(
+            '-------------------------------- connecting success ------------------------------',
+          );
+          clearTimeout(timer);
+          clearTimeout(retryTimer);
+          res(true);
+        },
+      );
       req.once('error', (err) => {
         console.log('http connection to auth error: ' + err);
         retryTimer = setTimeout(waitAuthReady, 1000);
