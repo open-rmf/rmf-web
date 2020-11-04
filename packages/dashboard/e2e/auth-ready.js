@@ -18,7 +18,6 @@ async function authReady(timeout = 30000) {
     const waitAuthReady = () => {
       let container = execSync('docker ps -q --filter ancestor=romi-dashboard/auth').toString();
       let authIpAddress;
-      let githubIpAddress;
       console.log(
         '========================== waiting waiting waiting ----- waiting ==========================',
       );
@@ -48,7 +47,7 @@ async function authReady(timeout = 30000) {
             stdio: 'inherit',
           });
         }
-        execSync('netstat -pna', { stdio: 'inherit' });
+
         console.log('=========================== END =============================');
       } else {
         console.log('again ------------------------------------');
@@ -56,6 +55,7 @@ async function authReady(timeout = 30000) {
       }
 
       req = http.request(`http://${authIpAddress ? authIpAddress : 'localhost'}:8080/auth/`, () => {
+        console.log('CI variable value >>>>>>>>>>>>>>>>>>>>>>>>: ' + process.env.CI);
         console.log(
           '-------------------------------- connecting success ------------------------------',
         );

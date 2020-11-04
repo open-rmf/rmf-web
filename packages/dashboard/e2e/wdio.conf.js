@@ -17,7 +17,7 @@ exports.config = {
   //
   // WebdriverIO allows it to run your tests in arbitrary locations (e.g. locally or
   // on a remote machine).
-  // runner: 'local',
+  runner: 'local',
   //
   // ==================
   // Specify Test Files
@@ -73,7 +73,7 @@ exports.config = {
         binary: process.env.CHROME_BIN || undefined,
         // to run chrome headless the following flags are required
         // (see https://developers.google.com/web/updates/2017/04/headless-chrome)
-        args: [...chromeArgs, '--window-size=1366,768', '--whitelisted-ip'],
+        args: [...chromeArgs, '--window-size=1366,768'],
       },
     },
   ],
@@ -98,8 +98,7 @@ exports.config = {
   logLevels: {
     webdriver: 'trace',
     webdriverio: 'debug',
-    '@wdio/applitools-service': 'debug',
-    '@wdio/browserstack-service': 'debug',
+    '@wdio/mocha-framework': 'debug',
   },
   //
   // If you only want to run your tests until a specific amount of tests have failed use
