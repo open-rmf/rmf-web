@@ -103,12 +103,12 @@ export const SimpleInfo = (props: SimpleInfo): JSX.Element => {
   return (
     <div className={classes.container} role="list">
       {data.map((item) => (
-        <>
-          <div key={item.name} className={classes.item} role="listitem">
+        <React.Fragment key={item.name}>
+          <div className={classes.item} role="listitem">
             {renderLine(item)}
           </div>
           <Divider />
-        </>
+        </React.Fragment>
       ))}
     </div>
   );
