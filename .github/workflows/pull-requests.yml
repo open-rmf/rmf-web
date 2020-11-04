@@ -48,8 +48,8 @@ jobs:
       env:
         CI: 1
         CHROME_BIN: /chrome-no-sandbox
-      options: --ipc "host"
-    defaults:
+      options: --ipc host --privileged true
+    defaults: 
       run:
         shell: bash
         working-directory: packages/dashboard
