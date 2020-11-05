@@ -52,29 +52,22 @@ async function authReady(timeout = 60000) {
           //   stdio: 'inherit',
           // });
         }
+
+        console.log('=========================== END =============================');
+      } else {
+        console.log('again ------------------------------------');
+        console.log('=========================== END =============================');
       }
 
-      //   console.log('=========================== END =============================');
-      // } else {
-      //   console.log('again ------------------------------------');
-      //   console.log('=========================== END =============================');
-      // }
-
-      req = http.request(
-        `http://${process.env.AUTH_IP ? process.env.AUTH_IP : 'localhost'}:8080/auth/`,
-        (mess) => {
-          mess.on('close', () => {
-            console.log('why did it close?????????');
-          });
-          console.log(
-            '-------------------------------- connecting success ------------------------------' +
-              process.env.AUTH_IP,
-          );
-          clearTimeout(timer);
-          clearTimeout(retryTimer);
-          res(true);
-        },
-      );
+      req = http.request(`http://${'localhost'}:8080/auth/`, () => {
+        console.log(
+          '-------------------------------- connecting success ------------------------------' +
+            process.env.AUTH_IP,
+        );
+        clearTimeout(timer);
+        clearTimeout(retryTimer);
+        res(true);
+      });
       req.once('error', (err) => {
         console.log(err);
         retryTimer = setTimeout(waitAuthReady, 5000);
