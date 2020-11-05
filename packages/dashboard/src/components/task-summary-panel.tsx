@@ -7,6 +7,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { TaskSummaryPanelItem } from './task-summary-panel-item';
 import PlayCircleFilledWhiteIcon from '@material-ui/icons/PlayCircleFilledWhite';
+import PauseCircleFilledIcon from '@material-ui/icons/PauseCircleFilled';
 import { colorPalette } from '../util/css-utils';
 import { TreeButtonGroup } from './tree-button-group';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
@@ -63,14 +64,19 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryPanelProps) => {
   };
 
   const handleRestoreTasks = () => {
-    // Assigning another reference
-    let taskContentsTemp = Object.assign({}, taskContents);
-    Object.keys(savedTasksContent.current).forEach((element) => {
-      if (!(element in taskContents)) {
-        taskContentsTemp[element] = savedTasksContent.current[element];
-      }
+    setTaskContents((currentContent) => {
+      // Assigning another reference.
+      let taskContentsTemp = Object.assign({}, currentContent);
+      // We cannot assign directly the stored values to `currentContent` because it is updating
+      // the taskContents too, so when we set the taskContent new value with `setTaskContents`
+      // it'll no re-render because it'll not detect any changes.
+      Object.keys(savedTasksContent.current).forEach((element) => {
+        if (!(element in currentContent)) {
+          taskContentsTemp[element] = savedTasksContent.current[element];
+        }
+      });
+      return taskContentsTemp;
     });
-    setTaskContents(taskContentsTemp);
     savedTasksContent.current = {};
   };
 
@@ -115,15 +121,28 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryPanelProps) => {
           label={
             <>
               <Typography variant="body1" noWrap>
-                <IconButton
-                  // TODO: replace onClick with the pause plans logic.
-                  onClick={(e) => {
-                    e.preventDefault();
-                    console.log('Not implemented');
-                  }}
-                >
-                  <PlayCircleFilledWhiteIcon />
-                </IconButton>
+                {task.state === RomiCore.TaskSummary.STATE_ACTIVE && (
+                  <IconButton
+                    // TODO: replace onClick with the pause plans logic.
+                    onClick={(e) => {
+                      e.preventDefault();
+                      console.log('Not implemented');
+                    }}
+                  >
+                    <PlayCircleFilledWhiteIcon />
+                  </IconButton>
+                )}
+                {task.state === RomiCore.TaskSummary.STATE_QUEUED && (
+                  <IconButton
+                    // TODO: replace onClick with the pause plans logic.
+                    onClick={(e) => {
+                      e.preventDefault();
+                      console.log('Not implemented');
+                    }}
+                  >
+                    <PauseCircleFilledIcon />
+                  </IconButton>
+                )}
                 {task.task_id}
               </Typography>
               {renderActor(task.status)}
@@ -136,11 +155,19 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryPanelProps) => {
     };
 
     if (allTasks.length === 0) return;
-    let taskContentsTemp = Object.assign({}, taskContents);
-    allTasks.forEach((task) => {
-      taskContentsTemp[task.task_id] = renderTaskTreeItem(task);
+
+    setTaskContents((currentContent) => {
+      // Assigning another reference.
+      let taskContentsTemp = Object.assign({}, currentContent);
+      // We cannot assign directly the stored values to `currentContent` because it is updating
+      // the taskContents too, so when we set the taskContent new value with `setTaskContents`
+      // it'll no re-render because it'll not detect any changes.
+      allTasks.forEach((task) => {
+        taskContentsTemp[task.task_id] = renderTaskTreeItem(task);
+      });
+      return taskContentsTemp;
     });
-    setTaskContents(taskContentsTemp);
+
     // Ignoring dependency taskContents, it'll enter in a infinite loop
     // eslint-disable-next-line
   }, [allTasks]);
