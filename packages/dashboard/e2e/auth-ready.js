@@ -32,12 +32,9 @@ async function authReady(timeout = 60000) {
         authIpAddress = execSync(
           "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $CONTAINER",
         ).toString();
-        if (!process.env.AUTH_IP) {
-          process.env.AUTH_IP = authIpAddress;
-          console.log(
-            'auth ip address >>>>>>> ' + authIpAddress + ' ' + typeof process.env.AUTH_IP,
-          );
-        }
+        process.env.AUTH_IP = authIpAddress;
+
+        console.log('auth ip address >>>>>>> ' + authIpAddress + ' ' + typeof process.env.AUTH_IP);
 
         if (!isConnected) {
           console.log('I am inside isConnected!!! >>>>> ' + isConnected);
@@ -48,9 +45,9 @@ async function authReady(timeout = 60000) {
           execSync('docker network connect test-net $OTHERCONTAINER', {
             stdio: 'inherit',
           });
-          // execSync('docker network disconnect romidashboarde2e_default $CONTAINER', {
-          //   stdio: 'inherit',
-          // });
+          execSync('docker network disconnect romidashboarde2e_default $CONTAINER', {
+            stdio: 'inherit',
+          });
         }
 
         console.log('=========================== END =============================');
@@ -59,18 +56,21 @@ async function authReady(timeout = 60000) {
         console.log('=========================== END =============================');
       }
 
-      req = http.request(`http://${'localhost'}:8080/auth/`, () => {
-        console.log(
-          '-------------------------------- connecting success ------------------------------' +
-            process.env.AUTH_IP,
-        );
-        clearTimeout(timer);
-        clearTimeout(retryTimer);
-        res(true);
-      });
+      req = http.request(
+        `http://${process.env.AUTH_IP ? process.env.AUTH_IP : 'localhost'}:8080/auth/`,
+        () => {
+          console.log(
+            '-------------------------------- connecting success ------------------------------' +
+              process.env.AUTH_IP,
+          );
+          clearTimeout(timer);
+          clearTimeout(retryTimer);
+          res(true);
+        },
+      );
       req.once('error', (err) => {
         console.log(err);
-        retryTimer = setTimeout(waitAuthReady, 5000);
+        retryTimer = setTimeout(waitAuthReady, 20000);
       });
       req.end();
     };
