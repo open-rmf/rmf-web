@@ -25,28 +25,33 @@ async function authReady(timeout = 60000) {
 
         process.env.CONTAINER = container;
 
-        //   let isConnected = execSync(
-        //     'docker ps -q --filter network=$NETWORK --filter ancestor=romi-dashboard/auth',
-        //   ).toString();
+        let isConnected = execSync(
+          'docker ps -q --filter network=test-net --filter ancestor=romi-dashboard/auth',
+        ).toString();
 
         authIpAddress = execSync(
           "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $CONTAINER",
         ).toString();
         if (!process.env.AUTH_IP) {
           process.env.AUTH_IP = authIpAddress;
-          console.log('auth ip address >>>>>>> ' + authIpAddress);
+          console.log(
+            'auth ip address >>>>>>> ' + authIpAddress + ' ' + typeof process.env.AUTH_IP,
+          );
         }
 
-        //   if (!isConnected) {
-        //     console.log('I am inside isConnected!!! >>>>> ' + isConnected);
-
-        //     execSync('docker network connect $NETWORK $CONTAINER', {
-        //       stdio: 'inherit',
-        //     });
-
-        //     execSync('docker network disconnect romidashboarde2e_default $CONTAINER', {
-        //       stdio: 'inherit',
-        //     });
+        if (!isConnected) {
+          console.log('I am inside isConnected!!! >>>>> ' + isConnected);
+          execSync('docker network create test-net', { stdio: 'inherit' });
+          execSync('docker network connect test-net $CONTAINER', {
+            stdio: 'inherit',
+          });
+          execSync('docker network connect test-net $OTHERCONTAINER', {
+            stdio: 'inherit',
+          });
+          // execSync('docker network disconnect romidashboarde2e_default $CONTAINER', {
+          //   stdio: 'inherit',
+          // });
+        }
       }
 
       //   console.log('=========================== END =============================');
@@ -58,7 +63,9 @@ async function authReady(timeout = 60000) {
       req = http.request(
         `http://${process.env.AUTH_IP ? process.env.AUTH_IP : 'localhost'}:8080/auth/`,
         (mess) => {
-          // console.log('Incoming message: ' + mess.);
+          mess.on('close', () => {
+            console.log('why did it close?????????');
+          });
           console.log(
             '-------------------------------- connecting success ------------------------------' +
               process.env.AUTH_IP,
