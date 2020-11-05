@@ -9,7 +9,7 @@ export default {
 
 const SimpleOmniPanel = (): JSX.Element => {
   const [view, setView] = React.useState<number | string>(0);
-  const stack = React.useMemo(() => new StackNavigator(0), []);
+  const stack = React.useMemo(() => new StackNavigator<number>(0), []);
 
   return (
     <OmniPanel
