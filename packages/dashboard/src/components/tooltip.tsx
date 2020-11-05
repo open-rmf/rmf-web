@@ -15,7 +15,7 @@ export default function DashboardTooltip(props: TooltipProps): React.ReactElemen
   return (
     <div>
       {enabled && (
-        <Tooltip title={title} arrow id={id} className={classes.tooltipWidth}>
+        <Tooltip title={title} arrow id={id} className={classes.tooltipWidth} data-testid="tooltip">
           {props.children}
         </Tooltip>
       )}

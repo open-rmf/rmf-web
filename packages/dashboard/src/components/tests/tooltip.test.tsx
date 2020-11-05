@@ -1,35 +1,48 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import DashboardTooltip from '../tooltip';
-import { IconButton } from '@material-ui/core';
-import { Settings as SettingsIcon } from '@material-ui/icons';
+import { Typography } from '@material-ui/core';
+import { createShallow } from '@material-ui/core/test-utils';
+import { render, screen, fireEvent } from '@testing-library/react';
+
+const mount = createShallow();
+
+const buildWrapper = (title: string, id: string, enabled: boolean) => {
+  const root = mount(
+    <DashboardTooltip title={title} id={id} enabled={enabled}>
+      <Typography variant="h5">Tooltip is enabled</Typography>
+    </DashboardTooltip>,
+  );
+  return root;
+};
 
 describe('Dashboard Tooltip', () => {
   it('renders without crashing', () => {
-    const div = document.createElement('div');
-    ReactDOM.render(
-      <DashboardTooltip title="test" id="test-tooltip" enabled={true}>
-        <IconButton>
-          <SettingsIcon />
-        </IconButton>
-      </DashboardTooltip>,
-      div,
-    );
-    expect(div).toMatchSnapshot();
-    ReactDOM.unmountComponentAtNode(div);
+    const root = buildWrapper('test', 'test-tooltip', true);
+    expect(root).toMatchSnapshot();
+    root.unmount();
   });
 
-  it('does not render tooltips when disabled', () => {
-    const div = document.createElement('div');
-    ReactDOM.render(
-      <DashboardTooltip title="test" id="test-tooltip" enabled={false}>
-        <IconButton>
-          <SettingsIcon />
-        </IconButton>
+  it('renders the tooltips when enabled', () => {
+    render(
+      <DashboardTooltip title="test" id="test-tooltip" enabled={true}>
+        <Typography variant="h5">Tooltip is enabled</Typography>
       </DashboardTooltip>,
-      div,
     );
-    expect(div).toMatchSnapshot();
-    ReactDOM.unmountComponentAtNode(div);
+
+    fireEvent.mouseEnter(screen.getByRole('heading'));
+
+    expect(screen.getByTestId('tooltip')).toBeDefined();
+  });
+
+  it('does not render the tooltips when disabled', () => {
+    render(
+      <DashboardTooltip title="test" id="test-tooltip" enabled={false}>
+        <Typography variant="h5">Tooltip is disabled</Typography>
+      </DashboardTooltip>,
+    );
+
+    fireEvent.mouseEnter(screen.getByRole('heading'));
+
+    expect(screen.queryByTestId('tooltip')).toBeNull();
   });
 });
