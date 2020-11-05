@@ -48,6 +48,7 @@ export const getRobotLocations = (browser: WebdriverIO.BrowserObject): string[] 
 
 export function login(): void {
   browser.url('/login');
+  console.log(browser);
   $('#login-button').click();
   $('#username').setValue('admin');
   $('#password').setValue('admin');

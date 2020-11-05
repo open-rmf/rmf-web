@@ -94,10 +94,10 @@ exports.config = {
   // - @wdio/sumologic-reporter
   // - @wdio/cli, @wdio/config, @wdio/sync, @wdio/utils
   // Level of logging verbosity: trace | debug | info | warn | error | silent
-  logLevels: {
-    webdriver: 'trace',
-    webdriverio: 'trace',
-  },
+  // logLevels: {
+  //   webdriver: 'trace',
+  //   webdriverio: 'trace',
+  // },
   //
   // If you only want to run your tests until a specific amount of tests have failed use
   // bail (default is 0 - don't bail, run all tests).
@@ -232,6 +232,9 @@ exports.config = {
    * Function to be executed after a test (in Mocha/Jasmine).
    */
   afterTest: function (test, context, { error, result, duration, passed, retries }) {
+    console.log(context);
+    console.log(error);
+    console.log(result);
     const testPath = path.relative('tests', test.file);
     const artifactDir = `artifacts/${testPath}/${test.title}`;
     fs.mkdirSync(artifactDir, { recursive: true });
