@@ -3,6 +3,7 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import React from 'react';
 import { SvgText } from '..';
+import { fromRmfCoords, fromRmfYaw } from '../geometry-utils';
 import { DefaultMarker } from './default-marker';
 import { ImageMarker } from './image-marker';
 
@@ -20,8 +21,8 @@ const useStyles = makeStyles(() => ({
     pointerEvents: 'none',
     userSelect: 'none',
   },
-  container: {
-    pointerEvents: 'visible',
+  clickable: {
+    pointerEvents: 'auto',
     cursor: 'pointer',
   },
 }));
@@ -31,6 +32,13 @@ export interface RobotMarkerProps extends Omit<React.SVGAttributes<SVGGElement>,
   footprint: number;
   fleetName: string;
   iconPath?: string;
+  /**
+   * Whether the component should perform a translate transform to put it inline with the position
+   * in RMF.
+   *
+   * default: true
+   */
+  translate?: boolean;
   variant?: 'normal' | 'inConflict';
   onClick?(event: React.MouseEvent, fleet: string, robot: RomiCore.RobotState): void;
 }
@@ -41,36 +49,41 @@ export interface RobotMarkerProps extends Omit<React.SVGAttributes<SVGGElement>,
 export const RobotMarker = React.memo(
   React.forwardRef((props: RobotMarkerProps, ref: React.Ref<SVGGElement>) => {
     // some props are not used but have to be declared to correctly set `otherProps`
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { robot, footprint, fleetName, iconPath, variant, onClick, ...otherProps } = props;
+    const {
+      robot,
+      footprint,
+      fleetName,
+      iconPath,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      variant,
+      translate = true,
+      onClick,
+      ...otherProps
+    } = props;
     debug(`render ${robot.name}`);
     const [useImageMarker, setUseImageMarker] = React.useState(!!iconPath);
     const classes = useStyles();
+    const pos = fromRmfCoords([robot.location.x, robot.location.y]);
+    const yaw = fromRmfYaw(robot.location.yaw);
+
+    const translateTransform = translate ? `translate(${pos[0]} ${pos[1]})` : undefined;
 
     return (
-      <g>
-        <g
-          ref={ref}
-          className={classes.container}
-          aria-label={robot.name}
-          transform={`translate(${robot.location.x} ${-robot.location.y})
-            rotate(${-(robot.location.yaw * 180) / Math.PI})`}
-          onClick={(ev) => onClick && onClick(ev, fleetName, robot)}
-          {...otherProps}
-        >
-          {useImageMarker && iconPath ? (
-            <ImageMarker {...props} iconPath={iconPath} onError={() => setUseImageMarker(false)} />
-          ) : (
-            <DefaultMarker {...props} />
-          )}
+      <g ref={ref} onClick={(ev) => onClick && onClick(ev, fleetName, robot)} {...otherProps}>
+        <g transform={translateTransform}>
+          <g className={classes.clickable} aria-label={robot.name} transform={`rotate(${yaw})`}>
+            {useImageMarker && iconPath ? (
+              <ImageMarker
+                {...props}
+                iconPath={iconPath}
+                onError={() => setUseImageMarker(false)}
+              />
+            ) : (
+              <DefaultMarker {...props} />
+            )}
+            <SvgText text={robot.name} targetWidth={footprint * 1.9} className={classes.text} />
+          </g>
         </g>
-        <SvgText
-          text={robot.name}
-          x={robot.location.x}
-          y={-robot.location.y}
-          targetWidth={footprint * 1.9}
-          className={classes.text}
-        />
       </g>
     );
   }),

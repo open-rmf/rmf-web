@@ -3,8 +3,7 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import React from 'react';
 import { DoorMarker } from '..';
-import { joinClasses } from '../css-utils';
-import { radiansToDegrees, transformMiddleCoordsOfRectToSVGBeginPoint } from '../geometry-utils';
+import { fromRmfCoords, radiansToDegrees } from '../geometry-utils';
 
 const debug = Debug('Lifts:LiftMarker');
 
@@ -97,26 +96,25 @@ function toDoorMode(liftState: RomiCore.LiftState): RomiCore.DoorMode {
 export interface LiftMarkerProps extends Omit<React.SVGProps<SVGGElement>, 'onClick'> {
   lift: RomiCore.Lift;
   liftState?: RomiCore.LiftState;
+  /**
+   * Whether the component should perform a translate transform to put it inline with the position
+   * in RMF.
+   *
+   * default: true
+   */
+  translate?: boolean;
   variant?: keyof ReturnType<typeof useMarkerStyles>;
   onClick?(event: React.MouseEvent, lift: RomiCore.Lift): void;
 }
 
 export const LiftMarker = React.memo(
   React.forwardRef(function (props: LiftMarkerProps, ref: React.Ref<SVGGElement>): JSX.Element {
-    const { lift, liftState, variant, onClick, className, ...otherProps } = props;
+    const { lift, liftState, variant, translate = true, onClick, ...otherProps } = props;
     debug(`render ${lift.name}`);
 
     const { width, depth, ref_x, ref_y, ref_yaw, doors } = lift;
-    // The svg start drawing from the top left coordinate, and the backend sends us the middle X,Y so we need to transform that.
-    const [topVerticeX, topVerticeY] = transformMiddleCoordsOfRectToSVGBeginPoint(
-      ref_x,
-      ref_y,
-      width,
-      depth,
-    );
     // Since we are working with a plane with positive X and Negative Y we need to change the sign of the y.
-    const contextY = -ref_y;
-    const contextTopVerticeY = -topVerticeY;
+    const pos = fromRmfCoords([ref_x, ref_y]);
     // Get properties from lift state
     const doorMode = liftState ? toDoorMode(liftState) : undefined;
 
@@ -132,7 +130,7 @@ export const LiftMarker = React.memo(
       // QN: do we need to take into account rotation?
       const textScale = Math.min(width, depth); // keep aspect ratio
       return liftState ? (
-        <text className={classes.text} x={ref_x} y={contextY} transform={`scale(${textScale})`}>
+        <text className={classes.text} transform={`scale(${textScale})`}>
           <tspan x="0" dy="-1.8em">
             {liftState?.current_floor}
           </tspan>
@@ -144,7 +142,7 @@ export const LiftMarker = React.memo(
           </tspan>
         </text>
       ) : (
-        <text className={classes.text} x={ref_x} y={contextY} transform={`scale(${textScale})`}>
+        <text className={classes.text} transform={`scale(${textScale})`}>
           <tspan x="0" dy="-0.5em">
             Unknown
           </tspan>
@@ -156,29 +154,32 @@ export const LiftMarker = React.memo(
     };
 
     return (
-      <g>
-        <g
-          ref={ref}
-          className={joinClasses(onClick ? classes.marker : undefined, className)}
-          onClick={(ev) => onClick && onClick(ev, lift)}
-          {...otherProps}
-        >
-          <rect
-            className={`${classes.lift} ${markerClass}`}
-            width={width}
-            height={depth}
-            x={topVerticeX}
-            y={contextTopVerticeY}
-            rx="0.1"
-            ry="0.1"
-            transform={`rotate(${radiansToDegrees(ref_yaw)}, ${ref_x},${contextY})`}
-          />
-          {renderStatusText()}
-        </g>
-        <g>
-          {doors.map((door, i) => (
-            <DoorMarker key={i} door={door} doorMode={doorMode} />
-          ))}
+      <g
+        ref={ref}
+        className={onClick ? classes.marker : undefined}
+        onClick={(ev) => onClick && onClick(ev, lift)}
+        {...otherProps}
+      >
+        {/* it is easier to render it translate, and reverse the translation here */}
+        <g transform={!translate ? `translate(${-pos[0]} ${-pos[1]})` : undefined}>
+          <g transform={`translate(${pos[0]} ${pos[1]})`}>
+            <rect
+              className={`${classes.lift} ${markerClass}`}
+              width={width}
+              height={depth}
+              x={-width / 2}
+              y={-depth / 2}
+              rx="0.1"
+              ry="0.1"
+              transform={`rotate(${radiansToDegrees(ref_yaw)}, ${pos[0]},${pos[1]})`}
+            />
+            {renderStatusText()}
+          </g>
+          <g>
+            {doors.map((door, i) => (
+              <DoorMarker key={i} door={door} doorMode={doorMode} translate={true} />
+            ))}
+          </g>
         </g>
       </g>
     );

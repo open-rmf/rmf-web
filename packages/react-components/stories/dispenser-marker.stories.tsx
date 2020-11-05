@@ -10,12 +10,12 @@ export default {
 
 export const Basic: Story = (args) => (
   <svg viewBox="-1 -1 2 2" width={400} height={400}>
-    <DispenserMarker guid="test" {...args} />
+    <DispenserMarker guid="test" location={[0, 0]} {...args} />
   </svg>
 );
 
 export const Image: Story = (args) => (
   <svg viewBox="-1 -1 2 2" width={400} height={400}>
-    <DispenserMarker guid="test" iconPath="/resources/ros-health.png" {...args} />
+    <DispenserMarker guid="test" location={[0, 0]} iconPath="/resources/ros-health.png" {...args} />
   </svg>
 );

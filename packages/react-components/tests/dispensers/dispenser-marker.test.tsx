@@ -7,7 +7,7 @@ test('triggers onClick callback when button is clicked', () => {
   const handler = jest.fn();
   const root = render(
     <svg>
-      <DispenserMarker guid="test" onClick={handler} data-testid="marker" />
+      <DispenserMarker guid="test" location={[0, 0]} onClick={handler} data-testid="marker" />
     </svg>,
   );
   userEvent.click(root.getByTestId('marker'));
@@ -17,7 +17,7 @@ test('triggers onClick callback when button is clicked', () => {
 test('smoke test - marker with image icon', () => {
   render(
     <svg>
-      <DispenserMarker guid="test" iconPath="/resources/ros-health.png" />
+      <DispenserMarker guid="test" location={[0, 0]} iconPath="/resources/ros-health.png" />
     </svg>,
   );
 });

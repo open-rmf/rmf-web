@@ -3,6 +3,7 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import React from 'react';
 import { joinClasses } from '../css-utils';
+import { fromRmfCoords } from '../geometry-utils';
 
 const debug = Debug('Doors:DoorMarker');
 
@@ -52,24 +53,49 @@ function useDoorStyle(doorMode?: RomiCore.DoorMode): string {
   }
 }
 
+function getDoorCenter(door: RomiCore.Door): [number, number] {
+  const v1 = [door.v1_x, door.v1_y];
+  const v2 = [door.v2_x, door.v2_y];
+  switch (door.door_type) {
+    case RomiCore.Door.DOOR_TYPE_SINGLE_SLIDING:
+    case RomiCore.Door.DOOR_TYPE_SINGLE_SWING:
+    case RomiCore.Door.DOOR_TYPE_SINGLE_TELESCOPE:
+    case RomiCore.Door.DOOR_TYPE_DOUBLE_SLIDING:
+    case RomiCore.Door.DOOR_TYPE_DOUBLE_SWING:
+    case RomiCore.Door.DOOR_TYPE_DOUBLE_TELESCOPE:
+      return [(v1[0] + v2[0]) / 2, (v2[1] + v1[1]) / 2];
+    default:
+      throw new Error('unknown door type');
+  }
+}
+
 interface BaseDoorProps {
+  /**
+   * Start of the door in RMF coordinates
+   */
   v1: [number, number];
+  /**
+   * End of the door in RMF coordinates
+   */
   v2: [number, number];
   className?: string;
 }
 
 const BaseDoor = (props: BaseDoorProps) => {
-  const { v1, v2, className } = props;
+  const { v1: v1_, v2: v2_, className } = props;
   const classes = useDoorStyles();
+
+  const v1 = fromRmfCoords(v1_);
+  const v2 = fromRmfCoords(v2_);
 
   return (
     <g>
       <line
         className={joinClasses(classes.base, className)}
         x1={v1[0]}
-        y1={-v1[1]} // rmf y grows up while svg y grows down
+        y1={v1[1]}
         x2={v2[0]}
-        y2={-v2[1]} // rmf y grows up while svg y grows down
+        y2={v2[1]}
       />
     </g>
   );
@@ -184,12 +210,19 @@ const DoubleTelescopeDoor = DoubleSlidingDoor;
 export interface DoorMarkerProps extends Omit<React.SVGProps<SVGGElement>, 'onClick'> {
   door: RomiCore.Door;
   doorMode?: RomiCore.DoorMode;
+  /**
+   * Whether the component should perform a translate transform to put it inline with the position
+   * in RMF.
+   *
+   * default: true
+   */
+  translate?: boolean;
   onClick?(event: React.MouseEvent, door: RomiCore.Door): void;
 }
 
 export const DoorMarker = React.memo(
   React.forwardRef((props: DoorMarkerProps, ref: React.Ref<SVGGElement>) => {
-    const { door, doorMode, onClick, className, ...otherProps } = props;
+    const { door, doorMode, translate = true, onClick, ...otherProps } = props;
     debug(`render ${door.name}`);
     const classes = useDoorStyles();
 
@@ -212,14 +245,16 @@ export const DoorMarker = React.memo(
       }
     };
 
+    const center = getDoorCenter(door);
+
     return (
-      <g
-        ref={ref}
-        className={joinClasses(onClick ? classes.marker : undefined, className)}
-        onClick={(ev) => onClick && onClick(ev, door)}
-        {...otherProps}
-      >
-        {renderDoor()}
+      <g ref={ref} onClick={(ev) => onClick && onClick(ev, door)} {...otherProps}>
+        <g
+          className={onClick ? classes.marker : undefined}
+          transform={!translate ? `translate(${-center[0]} ${center[1]})` : undefined}
+        >
+          {renderDoor()}
+        </g>
       </g>
     );
   }),
