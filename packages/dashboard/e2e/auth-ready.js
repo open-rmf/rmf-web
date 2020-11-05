@@ -69,7 +69,7 @@ async function authReady(timeout = 60000) {
       );
       req.once('error', (err) => {
         console.log(err);
-        retryTimer = setTimeout(waitAuthReady, 20000);
+        retryTimer = setTimeout(waitAuthReady, 10000);
       });
       req.end();
     };
