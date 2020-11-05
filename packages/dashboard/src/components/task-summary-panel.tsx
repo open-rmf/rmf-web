@@ -1,5 +1,4 @@
 import React from 'react';
-import { SpotlightValue } from './spotlight-value';
 import Debug from 'debug';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { IconButton, makeStyles, Typography } from '@material-ui/core';
@@ -8,30 +7,31 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { TaskSummaryPanelItem } from './task-summary-panel-item';
 import PlayCircleFilledWhiteIcon from '@material-ui/icons/PlayCircleFilledWhite';
-import TaskManager from '../managers/task-manager';
 import { colorPalette } from '../util/css-utils';
 import { TreeButtonGroup } from './tree-button-group';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 
 const debug = Debug('OmniPanel:TaskSummaryPanel');
 
+// TODO: this is a hacky solution to get the actor from the task status,
+// this should be changed when then backend sends an actor on the
+// taskSummary message (we should use the actor provided by the message).
+// https://github.com/osrf/rmf_core/issues/205
+export const getActorFromStatus = (status: string) => {
+  // Gets the name of the robot if it has any
+  // eslint-disable-next-line
+  return status.match(/\[[A-Za-z]([a-zA-Z0-9\/]){3,}\]+/gi);
+};
+
 export interface TaskSummaryPanelProps {
   allTasks: RomiCore.TaskSummary[];
-  spotlight?: Readonly<SpotlightValue<string>>;
 }
 
 export const TaskSummaryPanel = React.memo((props: TaskSummaryPanelProps) => {
   debug('task summary status panel render');
 
-  const { allTasks, spotlight } = props;
+  const { allTasks } = props;
   const classes = useStyles();
-
-  React.useEffect(() => {
-    if (!spotlight) {
-      return;
-    }
-    // TODO: spotlight
-  }, [spotlight]);
 
   const [taskContents, setTaskContents] = React.useState<{
     [key: string]: JSX.Element;
@@ -92,7 +92,7 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryPanelProps) => {
   // Update Task list content
   React.useEffect(() => {
     const renderActor = (taskStatus: string): React.ReactElement | undefined => {
-      const actor = TaskManager.getActorFromStatus(taskStatus);
+      const actor = getActorFromStatus(taskStatus);
       if (!actor) return;
       return (
         <Typography variant="body1" className={classes.taskActor}>

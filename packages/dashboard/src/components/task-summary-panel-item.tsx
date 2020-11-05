@@ -2,9 +2,26 @@ import React from 'react';
 import Debug from 'debug';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { Divider, makeStyles, Typography } from '@material-ui/core';
-import TaskManager from '../managers/task-manager';
 const debug = Debug('OmniPanel:TaskSummary');
 
+export const formatStatus = (status: string) => {
+  return status.split('|');
+};
+
+export const getStateLabel = (state: number): string => {
+  switch (state) {
+    case RomiCore.TaskSummary.STATE_QUEUED:
+      return 'QUEUED';
+    case RomiCore.TaskSummary.STATE_ACTIVE:
+      return 'ACTIVE';
+    case RomiCore.TaskSummary.STATE_COMPLETED:
+      return 'COMPLETED';
+    case RomiCore.TaskSummary.STATE_FAILED:
+      return 'FAILED';
+    default:
+      return 'UNKNOWN';
+  }
+};
 interface TaskSummaryPanelItemProps {
   task: RomiCore.TaskSummary;
 }
@@ -18,8 +35,8 @@ export const TaskSummaryPanelItem = React.memo(
     const { task } = props;
     const classes = useStyles();
 
-    const statusDetails = TaskManager.formatStatus(task.status);
-    const stateLabel = TaskManager.getStateLabel(task.state);
+    const statusDetails = formatStatus(task.status);
+    const stateLabel = getStateLabel(task.state);
 
     return (
       <>

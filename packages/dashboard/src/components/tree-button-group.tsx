@@ -11,7 +11,7 @@ export interface TreeButtonGroupProps {
   handleResetClick?: () => void;
   handleClearClick?: () => void;
   handleRestoreClick?: () => void;
-  fullWidth: boolean;
+  fullWidth?: boolean;
 }
 
 export const TreeButtonGroup = (props: TreeButtonGroupProps) => {

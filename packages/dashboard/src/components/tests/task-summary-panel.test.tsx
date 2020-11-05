@@ -2,7 +2,7 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 import TreeView from '@material-ui/lab/TreeView';
 import TreeItem from '@material-ui/lab/TreeItem';
-import TaskSummaryPanel from '../task-summary-panel';
+import TaskSummaryPanel, { getActorFromStatus } from '../task-summary-panel';
 import fakeTaskSummary from '../../mock/data/task-summary';
 import { createMount } from '@material-ui/core/test-utils';
 import { shallow } from 'enzyme';
@@ -109,4 +109,10 @@ describe('Components gets the correct style on specifics states', () => {
     expect(root.find(TreeItem).html()).toContain('makeStyles-failed');
     root.unmount();
   });
+});
+
+test('Get name of the actor from status', () => {
+  const rawStatus = 'Finding a plan for [tinyRobot/tinyRobot1] to go to [23] | Remaining phases: 6';
+  const actor = getActorFromStatus(rawStatus);
+  expect(actor).toEqual(['[tinyRobot/tinyRobot1]']);
 });
