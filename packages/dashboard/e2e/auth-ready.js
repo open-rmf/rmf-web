@@ -4,7 +4,7 @@ const { execSync } = require('child_process');
  * Waits for the authentication server to be ready.
  * @param timeout Max amount of time (in milliseconds) to wait for
  */
-async function authReady(timeout = 60000) {
+async function authReady(timeout = 80000) {
   console.log('........ auth Ready ..................');
   return new Promise((res) => {
     let req;
@@ -42,9 +42,9 @@ async function authReady(timeout = 60000) {
           execSync('docker network connect test-net $CONTAINER', {
             stdio: 'inherit',
           });
-          // execSync('docker network connect test-net $OTHERCONTAINER', {
-          //   stdio: 'inherit',
-          // });
+          execSync('docker network connect test-net $OTHERCONTAINER', {
+            stdio: 'inherit',
+          });
           execSync('docker network disconnect romidashboarde2e_default $CONTAINER', {
             stdio: 'inherit',
           });
