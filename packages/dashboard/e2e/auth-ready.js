@@ -26,7 +26,7 @@ async function authReady(timeout = 80000) {
         process.env.CONTAINER = container;
 
         let isConnected = execSync(
-          'docker ps -q --filter network=test-net --filter ancestor=romi-dashboard/auth',
+          'docker ps -q --filter network=$NETWORK --filter ancestor=romi-dashboard/auth',
         ).toString();
 
         authIpAddress = execSync(
@@ -38,13 +38,10 @@ async function authReady(timeout = 80000) {
 
         if (!isConnected) {
           console.log('I am inside isConnected!!! >>>>> ' + isConnected);
-          execSync('docker network create test-net', { stdio: 'inherit' });
-          execSync('docker network connect test-net $CONTAINER', {
+          execSync('docker network connect $NETWORK $CONTAINER', {
             stdio: 'inherit',
           });
-          execSync('docker network connect test-net $OTHERCONTAINER', {
-            stdio: 'inherit',
-          });
+
           execSync('docker network disconnect romidashboarde2e_default $CONTAINER', {
             stdio: 'inherit',
           });
@@ -63,6 +60,7 @@ async function authReady(timeout = 80000) {
             '-------------------------------- connecting success ------------------------------' +
               process.env.AUTH_IP,
           );
+          execSync('docker network inspect $NETWORK', { stdio: 'inherit' });
           clearTimeout(timer);
           clearTimeout(retryTimer);
           res(true);
