@@ -232,9 +232,6 @@ exports.config = {
    * Function to be executed after a test (in Mocha/Jasmine).
    */
   afterTest: function (test, context, { error, result, duration, passed, retries }) {
-    console.log(context);
-    console.log(error);
-    console.log(result);
     const testPath = path.relative('tests', test.file);
     const artifactDir = `artifacts/${testPath}/${test.title}`;
     fs.mkdirSync(artifactDir, { recursive: true });
