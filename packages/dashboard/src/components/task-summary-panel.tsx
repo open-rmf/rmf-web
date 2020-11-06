@@ -59,22 +59,26 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryPanelProps) => {
   };
 
   const handleClearAllCurrTasks = () => {
-    savedTasksContent.current = taskContents;
+    savedTasksContent.current = Object.assign({}, taskContents);
     setTaskContents({});
   };
 
   const handleRestoreTasks = () => {
+    // Adding this because the test interpreter cannot find the reference to `savedTasksContent current`
+    // inside the setTaskContents
+    const storedTasks = savedTasksContent.current;
     setTaskContents((currentContent) => {
       // Assigning another reference.
       let taskContentsTemp = Object.assign({}, currentContent);
       // We cannot assign directly the stored values to `currentContent` because it is updating
       // the taskContents too, so when we set the taskContent new value with `setTaskContents`
       // it'll no re-render because it'll not detect any changes.
-      Object.keys(savedTasksContent.current).forEach((element) => {
+      Object.keys(storedTasks).forEach((element) => {
         if (!(element in currentContent)) {
-          taskContentsTemp[element] = savedTasksContent.current[element];
+          taskContentsTemp[element] = storedTasks[element];
         }
       });
+      console.log(taskContentsTemp);
       return taskContentsTemp;
     });
     savedTasksContent.current = {};
