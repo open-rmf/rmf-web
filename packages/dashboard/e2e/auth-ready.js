@@ -45,9 +45,6 @@ async function authReady(timeout = 80000) {
           execSync('docker network disconnect romidashboarde2e_default $CONTAINER', {
             stdio: 'inherit',
           });
-          execSync('docker run -it docker.pkg.github.com/osrf/romi-dashboard/e2e', {
-            stdio: 'inherit',
-          });
         }
 
         console.log('=========================== END =============================');
@@ -64,6 +61,7 @@ async function authReady(timeout = 80000) {
               process.env.AUTH_IP,
           );
           execSync('docker network inspect $NETWORK', { stdio: 'inherit' });
+          execSync('lsof -t -i tcp', { stdio: 'inherit' });
           clearTimeout(timer);
           clearTimeout(retryTimer);
           res(true);
