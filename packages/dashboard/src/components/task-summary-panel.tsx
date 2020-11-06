@@ -58,7 +58,8 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryPanelProps) => {
     setSelected('');
   };
 
-  // TODO: we need to synchronize this with a proper backend when it's ready. Now the completed // /// task will be flushed on a browser refresh because they are being saved in memory.
+  // TODO: we need to synchronize this with a proper backend when it's ready. Now the completed
+  // task will be flushed on a browser refresh because they are being saved in memory.
   const handleClearAllCurrTasks = () => {
     savedTasksContent.current = Object.assign({}, taskContents);
     setTaskContents({});
@@ -70,7 +71,7 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryPanelProps) => {
     const storedTasks = savedTasksContent.current;
     setTaskContents((currentContent) => {
       // Assigning another reference.
-      let newTaskContents = Object.assign({}, currentContent);
+      const newTaskContents = Object.assign({}, currentContent);
       // We cannot assign directly the stored values to `currentContent` because it is updating
       // the taskContents too, so when we set the taskContent new value with `setTaskContents`
       // it'll no re-render because it'll not detect any changes.
@@ -155,7 +156,7 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryPanelProps) => {
 
     setTaskContents((currentContent) => {
       // Assigning another reference.
-      let newTaskContents = Object.assign({}, currentContent);
+      const newTaskContents = Object.assign({}, currentContent);
       // We cannot assign directly the stored values to `currentContent` because it is updating
       // the taskContents too, so when we set the taskContent new value with `setTaskContents`
       // it'll no re-render because it'll not detect any changes.
