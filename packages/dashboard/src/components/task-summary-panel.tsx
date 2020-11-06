@@ -220,17 +220,22 @@ const useStyles = makeStyles((theme: Theme) => ({
   expanded: {
     borderLeft: `0.1rem solid ${colorPalette.unknown}`,
   },
+  /**
+   * The idea is to maintain the same itemTree color depending on the task state even on selected.
+   * There are two styles API provided by the material-ui Tree library: `selected` and `label`.
+   * On a item select the library creates a class called `selected` that has precedence over the classes we could add using the API. So to override the background color of the `selected` class * We added `!important` to our custom styles that manage background color of the item tree.
+   */
   completed: {
-    backgroundColor: '#4E5453',
+    backgroundColor: '#4E5453 !important',
   },
   queued: {
-    backgroundColor: theme.palette.warning.main,
+    backgroundColor: theme.palette.warning.main + '!important',
   },
   active: {
-    backgroundColor: theme.palette.success.light,
+    backgroundColor: theme.palette.success.light + '!important',
   },
   failed: {
-    backgroundColor: theme.palette.error.main,
+    backgroundColor: theme.palette.error.main + '!important',
   },
   taskActor: {
     alignSelf: 'center',
