@@ -58,6 +58,7 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryPanelProps) => {
     setSelected('');
   };
 
+  // TODO: we need to synchronize this with a proper backend when it's ready. Now the completed // /// task will be flushed on a browser refresh because they are being saved in memory.
   const handleClearAllCurrTasks = () => {
     savedTasksContent.current = Object.assign({}, taskContents);
     setTaskContents({});
@@ -69,35 +70,38 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryPanelProps) => {
     const storedTasks = savedTasksContent.current;
     setTaskContents((currentContent) => {
       // Assigning another reference.
-      let taskContentsTemp = Object.assign({}, currentContent);
+      let newTaskContents = Object.assign({}, currentContent);
       // We cannot assign directly the stored values to `currentContent` because it is updating
       // the taskContents too, so when we set the taskContent new value with `setTaskContents`
       // it'll no re-render because it'll not detect any changes.
       Object.keys(storedTasks).forEach((element) => {
         if (!(element in currentContent)) {
-          taskContentsTemp[element] = storedTasks[element];
+          newTaskContents[element] = storedTasks[element];
         }
       });
-      console.log(taskContentsTemp);
-      return taskContentsTemp;
+      return newTaskContents;
     });
     savedTasksContent.current = {};
   };
 
-  const determineStyle = (state: number): string => {
-    switch (state) {
-      case RomiCore.TaskSummary.STATE_QUEUED:
-        return classes.queued;
-      case RomiCore.TaskSummary.STATE_ACTIVE:
-        return classes.active;
-      case RomiCore.TaskSummary.STATE_COMPLETED:
-        return classes.completed;
-      case RomiCore.TaskSummary.STATE_FAILED:
-        return classes.failed;
-      default:
-        return 'UNKNOWN';
-    }
-  };
+  // Added a useCallback here because this function is been used inside the useEffect.
+  const determineStyle = React.useCallback(
+    (state: number): string => {
+      switch (state) {
+        case RomiCore.TaskSummary.STATE_QUEUED:
+          return classes.queued;
+        case RomiCore.TaskSummary.STATE_ACTIVE:
+          return classes.active;
+        case RomiCore.TaskSummary.STATE_COMPLETED:
+          return classes.completed;
+        case RomiCore.TaskSummary.STATE_FAILED:
+          return classes.failed;
+        default:
+          return 'UNKNOWN';
+      }
+    },
+    [classes],
+  );
 
   // Update Task list content
   React.useEffect(() => {
@@ -126,24 +130,13 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryPanelProps) => {
             <>
               <Typography variant="body1" noWrap>
                 {task.state === RomiCore.TaskSummary.STATE_ACTIVE && (
-                  <IconButton
-                    // TODO: replace onClick with the pause plans logic.
-                    onClick={(e) => {
-                      e.preventDefault();
-                      console.log('Not implemented');
-                    }}
-                  >
+                  // TODO: add onClick with e.preventDefault() and with the pause plans logic.
+                  <IconButton disabled>
                     <PlayCircleFilledWhiteIcon />
                   </IconButton>
                 )}
                 {task.state === RomiCore.TaskSummary.STATE_QUEUED && (
-                  <IconButton
-                    // TODO: replace onClick with the pause plans logic.
-                    onClick={(e) => {
-                      e.preventDefault();
-                      console.log('Not implemented');
-                    }}
-                  >
+                  <IconButton disabled>
                     <PauseCircleFilledIcon />
                   </IconButton>
                 )}
@@ -162,19 +155,16 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryPanelProps) => {
 
     setTaskContents((currentContent) => {
       // Assigning another reference.
-      let taskContentsTemp = Object.assign({}, currentContent);
+      let newTaskContents = Object.assign({}, currentContent);
       // We cannot assign directly the stored values to `currentContent` because it is updating
       // the taskContents too, so when we set the taskContent new value with `setTaskContents`
       // it'll no re-render because it'll not detect any changes.
       allTasks.forEach((task) => {
-        taskContentsTemp[task.task_id] = renderTaskTreeItem(task);
+        newTaskContents[task.task_id] = renderTaskTreeItem(task);
       });
-      return taskContentsTemp;
+      return newTaskContents;
     });
-
-    // Ignoring dependency taskContents, it'll enter in a infinite loop
-    // eslint-disable-next-line
-  }, [allTasks]);
+  }, [allTasks, classes, determineStyle]);
 
   return (
     <Typography variant="body1" component={'span'}>
