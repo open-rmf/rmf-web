@@ -6,7 +6,7 @@ services:
       dockerfile: auth.Dockerfile
     image: romi-dashboard/auth
     ports:
-      - 8080:8080
+      - 0.0.0.0:8080:8080
   e2e:
     build:
       context: ..

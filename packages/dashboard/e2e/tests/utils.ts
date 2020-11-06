@@ -47,6 +47,7 @@ export const getRobotLocations = (browser: WebdriverIO.BrowserObject): string[] 
 };
 
 export function login(): void {
+  browser.getPageSource();
   browser.url('/login');
   console.log('Browser url ----->>>>>>: ' + new URL(browser.getUrl()).pathname);
   console.log('<<<<<<<<<<<<<<<<<< start finding button tag >>>>>>>>>>>>>>>>>>>>>>>');
