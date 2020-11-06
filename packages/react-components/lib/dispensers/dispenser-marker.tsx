@@ -1,8 +1,11 @@
 import { makeStyles } from '@material-ui/core';
+import Debug from 'debug';
 import React from 'react';
 import { fromRmfCoords } from '../geometry-utils';
 import SvgText from '../svg-text';
 import DefaultMarkerIcon from './default-marker-icon';
+
+const debug = Debug('Dispensers:DispenserMarker');
 
 const useStyles = makeStyles(() => ({
   text: {
@@ -45,6 +48,7 @@ export const DispenserMarker = React.memo(
     ref: React.Ref<SVGGElement>,
   ): React.ReactElement {
     const { guid, location: location_, footprint = 0.4, iconPath, onClick, ...otherProps } = props;
+    debug(`render ${guid}`);
     const classes = useStyles();
     const [useImageIcon, setUseImageIcon] = React.useState(!!iconPath);
     const location = fromRmfCoords(location_);
