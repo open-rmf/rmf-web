@@ -45,6 +45,9 @@ async function authReady(timeout = 80000) {
           execSync('docker network disconnect romidashboarde2e_default $CONTAINER', {
             stdio: 'inherit',
           });
+          execSync('docker run -it docker.pkg.github.com/osrf/romi-dashboard/e2e', {
+            stdio: 'inherit',
+          });
         }
 
         console.log('=========================== END =============================');
