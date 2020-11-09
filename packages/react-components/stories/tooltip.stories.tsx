@@ -1,6 +1,6 @@
 import React from 'react';
-import { Story, Meta } from '@storybook/react';
 import { Typography } from '@material-ui/core';
+import { Story, Meta } from '@storybook/react';
 import { DashboardTooltip } from '../lib';
 
 export default {
@@ -10,7 +10,7 @@ export default {
 
 export const SimpleTooltip: Story = (args) => {
   return (
-    <DashboardTooltip title="This is a tooltip" id="testing" {...args}>
+    <DashboardTooltip title="This is a tooltip" id="test" enabled={true} {...args}>
       <Typography variant="h5">Hover over me</Typography>
     </DashboardTooltip>
   );
