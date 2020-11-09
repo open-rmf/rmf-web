@@ -11,6 +11,7 @@ const useStyles = makeStyles((theme) => ({
     padding: 5,
     width: '4rem',
     textAlign: 'center',
+    flexShrink: 0,
   },
   unknown: {
     borderColor: theme.palette.grey[500],

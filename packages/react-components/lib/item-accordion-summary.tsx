@@ -18,12 +18,12 @@ const useStyles = makeStyles({
   content: {
     alignItems: 'center',
     justifyContent: 'space-between',
+    overflow: 'hidden',
   },
   hideText: {
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
-    maxWidth: '10rem',
   },
 });
 

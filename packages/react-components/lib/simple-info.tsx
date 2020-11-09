@@ -34,6 +34,9 @@ const useStyles = makeStyles((theme) => ({
   disabled: {
     color: theme.palette.action.disabled,
   },
+  header: {
+    marginRight: theme.spacing(4),
+  },
 }));
 
 export const SimpleInfo = (props: SimpleInfo): JSX.Element => {
@@ -47,7 +50,7 @@ export const SimpleInfo = (props: SimpleInfo): JSX.Element => {
     disabled,
   }: SimpleInfoData<DataValueTypePrimitive>) => (
     <>
-      <Typography variant="body1">{`${name}:`}</Typography>
+      <Typography className={classes.header} variant="body1">{`${name}:`}</Typography>
       <Typography
         variant="body1"
         className={joinClasses(disabled ? classes.disabled : undefined, className)}
@@ -64,7 +67,7 @@ export const SimpleInfo = (props: SimpleInfo): JSX.Element => {
     disabled,
   }: SimpleInfoData<DataValueTypeArray>) => (
     <>
-      <Typography variant="body1">{`${name}:`}</Typography>
+      <Typography className={classes.header} variant="body1">{`${name}:`}</Typography>
       <List dense>
         {value.map((item, i) => (
           <ListItem key={i}>
