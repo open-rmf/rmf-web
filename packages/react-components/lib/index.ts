@@ -16,5 +16,6 @@ export * from './stack-navigator';
 export * from './status-label';
 export * from './svg-text';
 export * from './tooltip';
+export * from './tree-button-group';
 export * from './utils';
 export * from './waypoints';
