@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
-
+console.log('github ip >>>>>>>>>>>>> : ' + process.env.GITHUB_IP);
 const headlessArgs = process.env.CI ? ['--headless', '--disable-gpu'] : [];
 const chromeArgs = [...headlessArgs];
 if (os.userInfo().uid === 0) {
@@ -107,7 +107,7 @@ exports.config = {
   // with `/`, the base url gets prepended, not including the path portion of your baseUrl.
   // If your `url` parameter starts without a scheme or `/` (like `some/path`), the base url
   // gets prepended directly.
-  baseUrl: `http://${process.env.GITHUB_IP ? GITHUB_IP : 'localhost'}:` + port,
+  baseUrl: `http://${process.env.GITHUB_IP ? process.env.GITHUB_IP : 'localhost'}:` + port,
   //
   // Default timeout for all waitFor* commands.
   waitforTimeout: 10000,
