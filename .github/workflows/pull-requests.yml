@@ -61,15 +61,15 @@ jobs:
           npm run sync:docker
       - name: e2e test
         run: |
-          docker network create --opt com.docker.network.bridge.default_bridge=true --opt com.docker.network.bridge.enable_icc=true --opt com.docker.network.bridge.enable_ip_masquerade=true --opt com.docker.network.bridge.host_binding_ipv4=0.0.0.0 --opt com.docker.network.bridge.name=docker0 --opt com.docker.network.driver.mtu=1500 test-net
           export OTHERCONTAINER=$(docker ps -q --filter ancestor=docker.pkg.github.com/osrf/romi-dashboard/e2e)
           export NETWORK=${{ job.container.network }}
-          docker network disconnect $NETWORK $OTHERCONTAINER
-          export GITHUB_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $OTHERCONTAINER)
           . /opt/ros/foxy/setup.bash && . /opt/rmf/setup.bash
           bash -c 'npm ci --unsafe-perm'
           cd e2e && bash -c 'npm ci --unsafe-perm'
           cd ../ && bash -c 'npm run test:e2e'
+          docker network create --opt com.docker.network.bridge.default_bridge=true --opt com.docker.network.bridge.enable_icc=true --opt com.docker.network.bridge.enable_ip_masquerade=true --opt com.docker.network.bridge.host_binding_ipv4=0.0.0.0 --opt com.docker.network.bridge.name=docker0 --opt com.docker.network.driver.mtu=1500 test-net
+          docker network disconnect $NETWORK $OTHERCONTAINER
+          export GITHUB_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $OTHERCONTAINER)
       - name: upload artifacts
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
