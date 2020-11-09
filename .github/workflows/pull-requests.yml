@@ -45,7 +45,7 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
       env:
         CHROME_BIN: /chrome-no-sandbox
-      options: --ipc=host --privileged
+      options: --ipc host --privileged
     defaults: 
       run:
         shell: bash
