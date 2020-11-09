@@ -61,7 +61,6 @@ async function authReady(timeout = 80000) {
               process.env.AUTH_IP,
           );
           execSync('docker network inspect $NETWORK', { stdio: 'inherit' });
-          execSync('docker volume ls', { stdio: 'inherit' });
           clearTimeout(timer);
           clearTimeout(retryTimer);
           res(true);
