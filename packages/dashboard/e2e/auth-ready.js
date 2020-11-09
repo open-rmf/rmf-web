@@ -75,17 +75,20 @@ async function authReady(timeout = 80000) {
         console.log('=========================== END =============================');
       }
 
-      req = http.request(`http://${'localhost'}:8080/auth/`, () => {
-        console.log(
-          '-------------------------------- connecting success ------------------------------' +
-            process.env.AUTH_IP,
-        );
-        execSync('docker network inspect $NETWORK', { stdio: 'inherit' });
-        execSync('docker network inspect test-net', { stdio: 'inherit' });
-        clearTimeout(timer);
-        clearTimeout(retryTimer);
-        res(true);
-      });
+      req = http.request(
+        `http://${process.env.AUTH_IP ? process.env.AUTH_IP : 'localhost'}:8080/auth/`,
+        () => {
+          console.log(
+            '-------------------------------- connecting success ------------------------------' +
+              process.env.AUTH_IP,
+          );
+          execSync('docker network inspect $NETWORK', { stdio: 'inherit' });
+          execSync('docker network inspect test-net', { stdio: 'inherit' });
+          clearTimeout(timer);
+          clearTimeout(retryTimer);
+          res(true);
+        },
+      );
       req.once('error', (err) => {
         console.log(err);
         retryTimer = setTimeout(waitAuthReady, 20000);
