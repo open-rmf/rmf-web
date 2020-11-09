@@ -14,7 +14,7 @@ import React from 'react';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
 import HelpIcon from '@material-ui/icons/Help';
 import { TooltipContext } from './app-contexts';
-import DashboardTooltip from './tooltip';
+import DashboardTooltip from 'react-components/lib/tooltip';
 
 export interface AppBarProps {
   toggleShowOmniPanel(): void;

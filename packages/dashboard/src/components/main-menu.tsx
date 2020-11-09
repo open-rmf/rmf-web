@@ -1,7 +1,7 @@
 import { Divider, List, ListItem, Typography } from '@material-ui/core';
 import React from 'react';
 import Debug from 'debug';
-import DashboardTooltip from './tooltip';
+import DashboardTooltip from 'react-components/lib/tooltip';
 import { TooltipContext } from './app-contexts';
 
 const debug = Debug('MainMenu');
