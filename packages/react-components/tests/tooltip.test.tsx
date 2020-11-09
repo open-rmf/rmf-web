@@ -15,6 +15,7 @@ describe('Dashboard Tooltip', () => {
 
     expect(screen.getByTestId('test-tooltip')).toBeTruthy();
   });
+
   it('does not render the tooltip when disabled', () => {
     render(
       <DashboardTooltip title="test" id="test" enabled={false}>
