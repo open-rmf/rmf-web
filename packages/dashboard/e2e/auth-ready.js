@@ -39,14 +39,7 @@ async function authReady(timeout = 80000) {
         if (!isConnected) {
           console.log('I am inside isConnected!!! >>>>> ' + isConnected);
           execSync(
-            `docker network create 
-          --opt com.docker.network.bridge.default_bridge=true 
-          --opt com.docker.network.bridge.enable_icc=true 
-          --opt com.docker.network.bridge.enable_ip_masquerade=true 
-          --opt com.docker.network.bridge.host_binding_ipv4=0.0.0.0  
-          --opt com.docker.network.bridge.name=docker0
-          --opt com.docker.network.driver.mtu=1500 
-          test-net`,
+            `docker network create --opt com.docker.network.bridge.default_bridge=true --opt com.docker.network.bridge.enable_icc=true --opt com.docker.network.bridge.enable_ip_masquerade=true --opt com.docker.network.bridge.host_binding_ipv4=0.0.0.0 --opt com.docker.network.bridge.name=docker0 --opt com.docker.network.driver.mtu=1500 test-net`,
             {
               stdio: 'inherit',
             },
