@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
-console.log('github ip address ----->>>>>: ' + process.env.GITHUB_IP);
+
 const headlessArgs = process.env.CI ? ['--headless', '--disable-gpu'] : [];
 const chromeArgs = [...headlessArgs];
 if (os.userInfo().uid === 0) {

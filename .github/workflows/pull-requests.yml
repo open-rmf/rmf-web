@@ -43,9 +43,6 @@ jobs:
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
-      volumes:
-        - /var/run/docker.sock:/var/run/docker.sock
-        - /root/romi-dashboard:/root/romi-dashboard
       env:
         CHROME_BIN: /chrome-no-sandbox
       options: --ipc=host --privileged
@@ -63,6 +60,7 @@ jobs:
           docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
           npm run sync:docker
       - name: e2e test
+        uses: ianwalter/puppeteer@master
         run: |
           export OTHERCONTAINER=$(docker ps -q --filter ancestor=docker.pkg.github.com/osrf/romi-dashboard/e2e)
           export GITHUB_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $OTHERCONTAINER)
