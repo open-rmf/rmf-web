@@ -5,12 +5,18 @@ import { IconButton, makeStyles, Typography } from '@material-ui/core';
 import { TreeItem, TreeView } from '@material-ui/lab';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { TaskSummaryPanelItem } from './task-summary-panel-item';
 import PlayCircleFilledWhiteIcon from '@material-ui/icons/PlayCircleFilledWhite';
 import PauseCircleFilledIcon from '@material-ui/icons/PauseCircleFilled';
 import { colorPalette } from '../util/css-utils';
 import { TreeButtonGroup } from './tree-button-group';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
+
+import {
+  SimpleInfo,
+  // DoorAccordion as DoorAccordion_,
+  SimpleInfoData,
+} from 'react-components';
+// import SimpleInfo, { SimpleInfoData } from '../simple-info';
 
 const debug = Debug('OmniPanel:TaskSummaryPanel');
 
@@ -22,6 +28,45 @@ export const getActorFromStatus = (status: string) => {
   // Gets the name of the robot if it has any
   // eslint-disable-next-line
   return status.match(/\[[A-Za-z]([a-zA-Z0-9\/]){3,}\]+/gi);
+};
+
+export const formatStatus = (status: string) => {
+  return status.split('|');
+};
+
+export const getStateLabel = (state: number): string => {
+  switch (state) {
+    case RomiCore.TaskSummary.STATE_QUEUED:
+      return 'QUEUED';
+    case RomiCore.TaskSummary.STATE_ACTIVE:
+      return 'ACTIVE';
+    case RomiCore.TaskSummary.STATE_COMPLETED:
+      return 'COMPLETED';
+    case RomiCore.TaskSummary.STATE_FAILED:
+      return 'FAILED';
+    default:
+      return 'UNKNOWN';
+  }
+};
+
+interface TaskSummaryPanelInfoProps {
+  task: RomiCore.TaskSummary;
+}
+
+export const TaskSummaryPanelInfo = (props: TaskSummaryPanelInfoProps) => {
+  const { task } = props;
+  const statusDetails = formatStatus(task.status);
+  const stateLabel = getStateLabel(task.state);
+  const data = [
+    { name: 'TaskId', value: task.task_id, wrap: false },
+    { name: 'State', value: stateLabel },
+    { name: 'Status', value: statusDetails },
+    { name: 'Submission Time', value: task.submission_time.sec },
+    { name: 'Start time', value: task.start_time.sec },
+    { name: 'End Time', value: task.end_time.sec },
+  ] as SimpleInfoData[];
+
+  return <SimpleInfo data={data} />;
 };
 
 export interface TaskSummaryPanelProps {
@@ -147,7 +192,7 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryPanelProps) => {
             </>
           }
         >
-          <TaskSummaryPanelItem task={task} key={task.task_id} />
+          <TaskSummaryPanelInfo task={task} key={task.task_id} />
         </TreeItem>
       );
     };

@@ -14,6 +14,7 @@ export interface SimpleInfoData<T extends DataValueType = DataValueType> {
   value: T;
   className?: T extends DataValueTypeArray ? string | string[] : string;
   disabled?: boolean;
+  wrap?: boolean;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -68,12 +69,14 @@ export const SimpleInfo = (props: SimpleInfoProps): JSX.Element => {
     value,
     className,
     disabled,
+    wrap,
   }: SimpleInfoData<DataValueTypePrimitive>) => (
     <>
       <Typography className={classes.displayName} variant="body1">
         {name}
       </Typography>
       <Typography
+        noWrap={!wrap}
         variant="body1"
         className={joinClasses(classes.value, disabled ? classes.disabled : undefined, className)}
       >

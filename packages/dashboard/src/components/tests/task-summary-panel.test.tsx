@@ -2,7 +2,7 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 import TreeView from '@material-ui/lab/TreeView';
 import TreeItem from '@material-ui/lab/TreeItem';
-import TaskSummaryPanel, { getActorFromStatus } from '../task-summary-panel';
+import TaskSummaryPanel, { getActorFromStatus, TaskSummaryPanelInfo } from '../task-summary-panel';
 import fakeTaskSummary from '../../mock/data/task-summary';
 import { createMount } from '@material-ui/core/test-utils';
 import { shallow } from 'enzyme';
@@ -115,4 +115,39 @@ test('Get name of the actor from status', () => {
   const rawStatus = 'Finding a plan for [tinyRobot/tinyRobot1] to go to [23] | Remaining phases: 6';
   const actor = getActorFromStatus(rawStatus);
   expect(actor).toEqual(['[tinyRobot/tinyRobot1]']);
+});
+
+describe('Components gets the correct label on specifics states', () => {
+  let task: RomiCore.TaskSummary;
+  beforeEach(() => {
+    task = Object.values(fakeTaskSummary())[0];
+  });
+
+  test('Shows ACTIVE label', () => {
+    task.state = RomiCore.TaskSummary.STATE_ACTIVE;
+    const root = mount(<TaskSummaryPanelInfo task={task} />);
+    expect(root.html()).toContain('ACTIVE');
+    root.unmount();
+  });
+
+  test('Shows QUEUE label', () => {
+    task.state = RomiCore.TaskSummary.STATE_QUEUED;
+    const root = mount(<TaskSummaryPanelInfo task={task} />);
+    expect(root.html()).toContain('QUEUE');
+    root.unmount();
+  });
+
+  test('Shows COMPLETED label', () => {
+    task.state = RomiCore.TaskSummary.STATE_COMPLETED;
+    const root = mount(<TaskSummaryPanelInfo task={task} />);
+    expect(root.html()).toContain('COMPLETED');
+    root.unmount();
+  });
+
+  test('Shows FAILED label', () => {
+    task.state = RomiCore.TaskSummary.STATE_FAILED;
+    const root = mount(<TaskSummaryPanelInfo task={task} />);
+    expect(root.html()).toContain('FAILED');
+    root.unmount();
+  });
 });
