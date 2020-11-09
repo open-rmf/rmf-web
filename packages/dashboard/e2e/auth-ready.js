@@ -42,6 +42,10 @@ async function authReady(timeout = 80000) {
             stdio: 'inherit',
           });
 
+          execSync('docker network create test-net', {
+            stdio: 'inherit',
+          });
+
           execSync('docker network disconnect romidashboarde2e_default $CONTAINER', {
             stdio: 'inherit',
           });
@@ -61,6 +65,7 @@ async function authReady(timeout = 80000) {
               process.env.AUTH_IP,
           );
           execSync('docker network inspect $NETWORK', { stdio: 'inherit' });
+          execSync('docker network inspect test-net', { stdio: 'inherit' });
           clearTimeout(timer);
           clearTimeout(retryTimer);
           res(true);
