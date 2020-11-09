@@ -11,6 +11,7 @@ export interface MainMenuProps {
   onDispensersClick?(event: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
   onCommandsClick?(event: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
   onNegotiationsClick?(event: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
+  onTasksClick?(event: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
 }
 
 export const MainMenu = React.memo((props: MainMenuProps) => {
@@ -50,6 +51,12 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
       <ListItem data-item="Negotiations" button={true} onClick={props.onNegotiationsClick}>
         <Typography variant="h5">Negotiations</Typography>
       </ListItem>
+      <Divider />
+
+      <ListItem data-item="Plans" button={true} onClick={props.onTasksClick}>
+        <Typography variant="h5">Plans</Typography>
+      </ListItem>
+      <Divider />
     </List>
   );
 });
