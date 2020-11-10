@@ -6,7 +6,7 @@ import React from 'react';
 import { AntTab, AntTabs, TabPanel } from '../ant-tab';
 import ItemAccordionDetails from '../item-accordion-details';
 import ItemAccordionSummary from '../item-accordion-summary';
-import SimpleInfo, { SimpleInfoData } from '../simple-info';
+import { SimpleInfo, SimpleInfoData } from '../simple-info';
 import LiftRequestForm from './lift-request-form';
 import {
   doorStateToString,
@@ -43,24 +43,24 @@ const LiftInfo = (props: LiftInfoProps) => {
     {
       name: 'Current Mode',
       value: liftState ? liftModeToString(liftState.current_mode) : 'Unknown',
-      disabled: !!liftState,
+      disabled: !liftState,
     },
     {
       name: 'Available Modes',
       value: liftState
         ? Array.from(liftState.available_modes).map((mode) => liftModeToString(mode))
         : 'Unknown',
-      disabled: !!liftState,
+      disabled: !liftState,
     },
     {
       name: 'Door State',
       value: liftState ? doorStateToString(liftState.door_state) : 'Unknown',
-      disabled: !!liftState,
+      disabled: !liftState,
     },
     {
       name: 'Motion State',
       value: liftState ? motionStateToString(liftState.motion_state) : 'Unknown',
-      disabled: !!liftState,
+      disabled: !liftState,
     },
   ] as SimpleInfoData[];
 

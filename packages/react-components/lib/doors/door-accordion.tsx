@@ -7,7 +7,7 @@ import Debug from 'debug';
 import React from 'react';
 import ItemAccordionDetails from '../item-accordion-details';
 import ItemAccordionSummary from '../item-accordion-summary';
-import SimpleInfo, { SimpleInfoData } from '../simple-info';
+import { SimpleInfo, SimpleInfoData } from '../simple-info';
 
 const debug = Debug('Doors:DoorAccordion');
 

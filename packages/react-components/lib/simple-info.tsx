@@ -1,7 +1,6 @@
-import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { joinClasses } from './css-utils';
@@ -17,29 +16,46 @@ export interface SimpleInfoData<T extends DataValueType = DataValueType> {
   disabled?: boolean;
 }
 
-export interface SimpleInfo {
+export interface SimpleInfoProps {
   data: SimpleInfoData[];
 }
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    display: 'flex',
-    flexFlow: 'column',
+    display: 'table',
+    borderCollapse: 'collapse',
+    width: '100%',
   },
-  item: {
-    display: 'inline-flex',
-    justifyContent: 'space-between',
-    padding: theme.spacing(0.5),
+  tableRow: {
+    display: 'table-row',
+  },
+  displayName: {
+    display: 'table-cell',
+    borderBottom: '1px solid',
+    borderBottomColor: theme.palette.divider,
+    background: theme.palette.action.hover,
+    padding: '0 2em 0 0.5em',
+    width: '30%',
+  },
+  value: {
+    display: 'table-cell',
+    textAlign: 'end',
+    borderBottom: '1px solid',
+    borderBottomColor: theme.palette.divider,
+    padding: '0 0.5em 0 0',
+  },
+  arrayListItem: {
+    justifyContent: 'flex-end',
+  },
+  arrayItemValue: {
+    textAlign: 'end',
   },
   disabled: {
     color: theme.palette.action.disabled,
   },
-  header: {
-    marginRight: theme.spacing(4),
-  },
 }));
 
-export const SimpleInfo = (props: SimpleInfo): JSX.Element => {
+export const SimpleInfo = (props: SimpleInfoProps): JSX.Element => {
   const { data } = props;
   const classes = useStyles();
 
@@ -50,10 +66,12 @@ export const SimpleInfo = (props: SimpleInfo): JSX.Element => {
     disabled,
   }: SimpleInfoData<DataValueTypePrimitive>) => (
     <>
-      <Typography className={classes.header} variant="body1">{`${name}:`}</Typography>
+      <Typography className={classes.displayName} variant="body1">
+        {name}
+      </Typography>
       <Typography
         variant="body1"
-        className={joinClasses(disabled ? classes.disabled : undefined, className)}
+        className={joinClasses(classes.value, disabled ? classes.disabled : undefined, className)}
       >
         {value}
       </Typography>
@@ -67,13 +85,16 @@ export const SimpleInfo = (props: SimpleInfo): JSX.Element => {
     disabled,
   }: SimpleInfoData<DataValueTypeArray>) => (
     <>
-      <Typography className={classes.header} variant="body1">{`${name}:`}</Typography>
-      <List dense>
+      <Typography className={classes.displayName} variant="body1">
+        {name}
+      </Typography>
+      <List className={classes.value} dense>
         {value.map((item, i) => (
-          <ListItem key={i}>
+          <ListItem key={i} className={classes.arrayListItem}>
             <Typography
               variant="body1"
               className={joinClasses(
+                classes.arrayItemValue,
                 disabled ? classes.disabled : undefined,
                 Array.isArray(className) ? className[i] : className,
               )}
@@ -104,17 +125,16 @@ export const SimpleInfo = (props: SimpleInfo): JSX.Element => {
   };
 
   return (
-    <div className={classes.container} role="list">
+    <div className={classes.container} role="table">
       {data.map((item) => (
         <React.Fragment key={item.name}>
-          <div className={classes.item} role="listitem">
+          <div className={classes.tableRow} role="row">
             {renderLine(item)}
           </div>
-          <Divider />
         </React.Fragment>
       ))}
     </div>
   );
 };
 
-export default SimpleInfo;
+export default SimpleInfoProps;

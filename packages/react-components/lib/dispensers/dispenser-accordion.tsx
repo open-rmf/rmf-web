@@ -4,7 +4,7 @@ import Debug from 'debug';
 import React from 'react';
 import ItemAccordionDetails from '../item-accordion-details';
 import ItemAccordionSummary from '../item-accordion-summary';
-import SimpleInfo from '../simple-info';
+import { SimpleInfo } from '../simple-info';
 
 const debug = Debug('Dispensers:DispenserAccordion');
 
