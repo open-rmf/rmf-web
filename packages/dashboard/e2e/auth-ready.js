@@ -45,9 +45,9 @@ async function authReady(timeout = 80000) {
             stdio: 'inherit',
           });
           // execSync('docker network connect test-net docker_e2e_1', {stdio: 'inherit'})
-          execSync('docker network connect test-net $OTHERCONTAINER', {
-            stdio: 'inherit',
-          });
+          // execSync('docker network connect test-net $OTHERCONTAINER', {
+          //   stdio: 'inherit',
+          // });
           execSync('docker network disconnect romidashboarde2e_default $CONTAINER', {
             stdio: 'inherit',
           });
