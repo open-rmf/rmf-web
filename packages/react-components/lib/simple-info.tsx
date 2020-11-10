@@ -14,7 +14,7 @@ export interface SimpleInfoData<T extends DataValueType = DataValueType> {
   value: T;
   className?: T extends DataValueTypeArray ? string | string[] : string;
   disabled?: boolean;
-  wrap?: boolean;
+  wrap?: boolean; // wrap the context of the text
 }
 
 const useStyles = makeStyles((theme) => ({
