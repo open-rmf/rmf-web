@@ -58,7 +58,9 @@ export interface ScheduleVisualizerProps {
   onDispenserClick?(dispenser: RomiCore.DispenserState): void;
 }
 
-function calcMaxBounds(mapFloorLayers: readonly MapFloorLayer[]): L.LatLngBounds | undefined {
+export function calcMaxBounds(
+  mapFloorLayers: readonly MapFloorLayer[],
+): L.LatLngBounds | undefined {
   if (!mapFloorLayers.length) {
     return undefined;
   }

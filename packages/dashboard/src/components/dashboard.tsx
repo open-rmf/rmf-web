@@ -231,6 +231,16 @@ export default function Dashboard(_props: {}): React.ReactElement {
   ] = React.useState<NotificationBarProps | null>(null);
 
   const [tourState, setTourState] = React.useState(false);
+  const [showTooltips, setTooltips] = React.useState(true);
+
+  const toggleTooltips = React.useCallback(() => {
+    setTooltips(!showTooltips);
+  }, [showTooltips]);
+
+  const tooltipsValue = React.useMemo(() => ({ showTooltips, toggleTooltips }), [
+    showTooltips,
+    toggleTooltips,
+  ]);
 
   React.useEffect(() => {
     setLoading({ caption: 'Connecting to api server...' });
@@ -465,6 +475,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
         settings={settings}
         notificationDispatch={setNotificationBarMessage}
         resourceManager={resourceManager.current}
+        tooltips={tooltipsValue}
       >
         <RmfContextProvider
           doorStates={doorStates}
@@ -478,7 +489,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
               showHelp={setShowHelp}
             />
             {loading && <LoadingScreen {...loading} />}
-            {buildingMap && mapFloorLayerSorted && (
+            {buildingMap && mapFloorLayerSorted && !tourState && (
               <ScheduleVisualizer
                 buildingMap={buildingMap}
                 mapFloorLayerSorted={mapFloorLayerSorted}
@@ -491,7 +502,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
                 onDispenserClick={handleDispenserClick}
               />
             )}
-
             <Fade in={showOmniPanel}>
               <OmniPanel
                 className={classes.omniPanel}
@@ -590,7 +600,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
             message={notificationBarMessage?.message}
             type={notificationBarMessage?.type}
           />
-          <DashboardTour tourProps={tourProps} />
         </RmfContextProvider>
       </AppContextProvider>
     </GlobalHotKeys>

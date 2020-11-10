@@ -1,4 +1,4 @@
-import { createMount } from '@material-ui/core/test-utils';
+import { createMount, createShallow } from '@material-ui/core/test-utils';
 import React from 'react';
 import FakeAuthenticator from '../../mock/fake-authenticator';
 import AppBar from '../appbar';
@@ -22,6 +22,23 @@ const buildWrapper = (
   return root;
 };
 
+const shallow = createShallow();
+const shallowWrapper = (
+  toggleShowOmniPanel: () => void,
+  showSettings: () => void,
+  showHelp: () => void,
+) => {
+  const root = shallow(
+    <AppBar
+      toggleShowOmniPanel={toggleShowOmniPanel}
+      showSettings={showSettings}
+      showHelp={showHelp}
+      alarmState={null}
+    />,
+  );
+  return root;
+};
+
 describe('AppBar', () => {
   let toggleShowOmniPanel: jest.Mock;
   let showSettings: jest.Mock;
@@ -34,8 +51,15 @@ describe('AppBar', () => {
   });
 
   test('renders correctly', () => {
-    const root = buildWrapper(toggleShowOmniPanel, showSettings, showHelp);
+    const root = shallowWrapper(toggleShowOmniPanel, showSettings, showHelp);
     expect(root).toMatchSnapshot();
+  });
+
+  test('renders tooltips when it is enabled', () => {
+    const root = buildWrapper(toggleShowOmniPanel, showSettings, showHelp);
+    expect(root.find('#omnipanel-tooltip').exists()).toBeTruthy();
+    expect(root.find('#setting-tooltip').exists()).toBeTruthy();
+    expect(root.find('#help-tooltip').exists()).toBeTruthy();
   });
 
   test('toggles show omnipanel when dashboard button is clicked', () => {
