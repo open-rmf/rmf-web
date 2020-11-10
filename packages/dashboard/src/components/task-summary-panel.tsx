@@ -9,13 +9,7 @@ import PlayCircleFilledWhiteIcon from '@material-ui/icons/PlayCircleFilledWhite'
 import PauseCircleFilledIcon from '@material-ui/icons/PauseCircleFilled';
 import { colorPalette } from '../util/css-utils';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
-
-import {
-  SimpleInfo,
-  // DoorAccordion as DoorAccordion_,
-  SimpleInfoData,
-} from 'react-components';
-// import SimpleInfo, { SimpleInfoData } from '../simple-info';
+import { SimpleInfo, SimpleInfoData, TreeButtonGroup } from 'react-components';
 
 const debug = Debug('OmniPanel:TaskSummaryPanel');
 
