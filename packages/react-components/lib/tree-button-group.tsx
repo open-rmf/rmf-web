@@ -55,3 +55,5 @@ export const TreeButtonGroup = (props: TreeButtonGroupProps) => {
     </div>
   );
 };
+
+export default TreeButtonGroup;

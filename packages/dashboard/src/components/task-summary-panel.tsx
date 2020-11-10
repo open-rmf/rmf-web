@@ -8,7 +8,6 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import PlayCircleFilledWhiteIcon from '@material-ui/icons/PlayCircleFilledWhite';
 import PauseCircleFilledIcon from '@material-ui/icons/PauseCircleFilled';
 import { colorPalette } from '../util/css-utils';
-import { TreeButtonGroup } from './tree-button-group';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 
 import {
