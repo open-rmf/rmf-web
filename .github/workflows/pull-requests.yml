@@ -45,7 +45,7 @@ jobs:
         credentials:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      options: --ipc=host --privileged
+     # options: --ipc=host --privileged
     defaults: 
       run:
         shell: bash
