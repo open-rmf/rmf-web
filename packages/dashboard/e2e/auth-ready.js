@@ -19,7 +19,7 @@ async function authReady(timeout = 80000) {
       let container = execSync('docker ps -q --filter ancestor=romi-dashboard/auth').toString();
       let authIpAddress;
       console.log('========================== waiting waiting waiting ==========================');
-
+      console.log(process.env.CONTAINER_DETAILS.toString());
       if (container) {
         console.log('Successuflly created auth container ----------------------- ' + container);
 
@@ -41,9 +41,9 @@ async function authReady(timeout = 80000) {
           execSync('docker network connect test-net $CONTAINER', {
             stdio: 'inherit',
           });
-          execSync('docker network connect test-net $OTHERCONTAINER', {
-            stdio: 'inherit',
-          });
+          // execSync('docker network connect test-net $OTHERCONTAINER', {
+          //   stdio: 'inherit',
+          // });
           execSync('docker network disconnect romidashboarde2e_default $CONTAINER', {
             stdio: 'inherit',
           });
