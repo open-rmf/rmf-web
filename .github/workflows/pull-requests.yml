@@ -6,7 +6,6 @@ on:
       - master
 env:
   CI: true
-  CHROME_BIN: /chrome-no-sandbox
 jobs:
   dashboard-unit-test:
     name: Dashboard Unit Test
@@ -39,13 +38,14 @@ jobs:
   e2e-test:
     name: End-to-End Test
     runs-on: ubuntu-latest
-    services:
-      romidashboard:
-        image: docker.pkg.github.com/osrf/romi-dashboard/e2e
-        credentials:
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-     # options: --ipc=host --privileged
+    container:
+      image: docker.pkg.github.com/osrf/romi-dashboard/e2e
+      credentials:
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+      env:
+        CHROME_BIN: /chrome-no-sandbox
+      options: --ipc=host --privileged
     defaults: 
       run:
         shell: bash
@@ -59,19 +59,18 @@ jobs:
         run: |
           docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
           npm run sync:docker
-          docker network inspect ${{ job.services.romidashboard.network }}
-        #export OTHERCONTAINER=$(docker ps -q --filter ancestor=docker.pkg.github.com/osrf/romi-dashboard/e2e)
-        #export NETWORK=${{ job.container.network }}
-        #docker network create --opt com.docker.network.bridge.default_bridge=true --opt com.docker.network.bridge.enable_icc=true --opt com.docker.network.bridge.enable_ip_masquerade=true --opt com.docker.network.bridge.host_binding_ipv4=0.0.0.0 --opt com.docker.network.bridge.name=docker0 --opt com.docker.network.driver.mtu=1500 test-net
-        #docker network connect test-net $OTHERCONTAINER
-        #docker network disconnect $NETWORK $OTHERCONTAINER
+          export OTHERCONTAINER=$(docker ps -q --filter ancestor=docker.pkg.github.com/osrf/romi-dashboard/e2e)
+          export NETWORK=${{ job.container.network }}
+          docker network create --opt com.docker.network.bridge.default_bridge=true --opt com.docker.network.bridge.enable_icc=true --opt com.docker.network.bridge.enable_ip_masquerade=true --opt com.docker.network.bridge.host_binding_ipv4=0.0.0.0 --opt com.docker.network.bridge.name=docker0 --opt com.docker.network.driver.mtu=1500 test-net
+          docker network connect test-net $OTHERCONTAINER
+          docker network disconnect $NETWORK $OTHERCONTAINER
       - name: e2e test
         run: |
+          echo ${{ job.container }}
           export OTHERCONTAINER=$(docker ps -q --filter ancestor=docker.pkg.github.com/osrf/romi-dashboard/e2e)
-          export NETWORK=${{ job.services.romidashboard.network }}
+          export NETWORK=${{ job.container.network }}
           . /opt/ros/foxy/setup.bash && . /opt/rmf/setup.bash
           export GITHUB_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $OTHERCONTAINER)
-          echo
           bash -c 'npm ci --unsafe-perm'
           cd e2e && bash -c 'npm ci --unsafe-perm'
           cd ../ && bash -c 'npm run test:e2e'
