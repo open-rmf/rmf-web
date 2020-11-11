@@ -18,7 +18,11 @@ export interface TrajectoryMarkerProps {
   /**
    * default: false
    */
-  loopAnimations?: boolean;
+  animationLoop?: boolean;
+  /**
+   * default: 1
+   */
+  animationScale?: number;
 }
 
 export const TrajectoryMarker = React.memo(
@@ -28,7 +32,8 @@ export const TrajectoryMarker = React.memo(
       conflict,
       color,
       variant = 'follow',
-      loopAnimations = false,
+      animationLoop = false,
+      animationScale = 1,
       ...otherProps
     } = props;
     debug(`render ${trajectory.id}`);
@@ -59,7 +64,8 @@ export const TrajectoryMarker = React.memo(
           color={color}
           footprint={footprint}
           conflict={conflict}
-          loop={loopAnimations}
+          animationLoop={animationLoop}
+          animationScale={animationScale}
         />
       </g>
     );

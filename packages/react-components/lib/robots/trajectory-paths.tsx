@@ -59,7 +59,7 @@ export interface TrajectoryPathProps {
   /**
    * default: false
    */
-  loop?: boolean;
+  animationLoop?: boolean;
 }
 
 export const NoAnimationPath = (props: TrajectoryPathProps): JSX.Element => {
@@ -80,7 +80,15 @@ export const NoAnimationPath = (props: TrajectoryPathProps): JSX.Element => {
 };
 
 export const FollowAnimationPath = (props: TrajectoryPathProps): JSX.Element => {
-  const { trajectory, d, color, conflict, footprint, animationScale = 1, loop = false } = props;
+  const {
+    trajectory,
+    d,
+    color,
+    conflict,
+    footprint,
+    animationScale = 1,
+    animationLoop = false,
+  } = props;
   const pathRef = React.useRef<SVGPathElement>(null);
 
   React.useLayoutEffect(() => {
@@ -105,14 +113,14 @@ export const FollowAnimationPath = (props: TrajectoryPathProps): JSX.Element => 
         duration: animationDuration(trajectory, animationScale),
         easing: 'linear',
         fill: 'forwards',
-        iterations: loop ? Infinity : 1,
+        iterations: animationLoop ? Infinity : 1,
       },
     );
 
     return () => {
       pathAnim.getAnimations().forEach((anim) => anim.cancel());
     };
-  }, [animationScale, loop, trajectory]);
+  }, [animationScale, animationLoop, trajectory]);
 
   return (
     <>
@@ -142,7 +150,15 @@ export const FollowAnimationPath = (props: TrajectoryPathProps): JSX.Element => 
 };
 
 export const FillAnimationPath = (props: TrajectoryPathProps): JSX.Element => {
-  const { trajectory, d, color, conflict, footprint, animationScale = 1, loop = false } = props;
+  const {
+    trajectory,
+    d,
+    color,
+    conflict,
+    footprint,
+    animationScale = 1,
+    animationLoop = false,
+  } = props;
   const pathRef = React.useRef<SVGPathElement>(null);
 
   React.useLayoutEffect(() => {
@@ -162,14 +178,14 @@ export const FillAnimationPath = (props: TrajectoryPathProps): JSX.Element => {
         duration: animationDuration(trajectory, animationScale),
         easing: 'linear',
         fill: 'forwards',
-        iterations: loop ? Infinity : 1,
+        iterations: animationLoop ? Infinity : 1,
       },
     );
 
     return () => {
       pathAnim.getAnimations().forEach((anim) => anim.cancel());
     };
-  }, [trajectory, animationScale, loop]);
+  }, [trajectory, animationScale, animationLoop]);
 
   return (
     <>
