@@ -9,7 +9,7 @@ import PlayCircleFilledWhiteIcon from '@material-ui/icons/PlayCircleFilledWhite'
 import PauseCircleFilledIcon from '@material-ui/icons/PauseCircleFilled';
 import { colorPalette } from '../util/css-utils';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import { SimpleInfo, SimpleInfoData, TreeButtonGroup } from 'react-components';
+import { SimpleInfo, SimpleInfoData, SnapshotControlButtonGroup } from 'react-components';
 
 const debug = Debug('OmniPanel:TaskSummaryPanel');
 
@@ -208,7 +208,7 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryPanelProps) => {
   return (
     <Typography variant="body1" component={'span'}>
       <div className={classes.buttonGroupDiv}>
-        <TreeButtonGroup
+        <SnapshotControlButtonGroup
           disableReset={allTasks.length === 0}
           disableClear={allTasks.length === 0}
           disableRestore={allTasks.length === 0}

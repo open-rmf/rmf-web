@@ -4,7 +4,7 @@ import RestoreIcon from '@material-ui/icons/Restore';
 import RestoreFromTrashIcon from '@material-ui/icons/RestoreFromTrash';
 import React from 'react';
 
-export interface TreeButtonGroupProps {
+export interface SnapshotControlButtonGroupProps {
   disableReset?: boolean;
   disableClear?: boolean;
   disableRestore?: boolean;
@@ -14,7 +14,7 @@ export interface TreeButtonGroupProps {
   fullWidth?: boolean;
 }
 
-export const TreeButtonGroup = (props: TreeButtonGroupProps): JSX.Element => {
+export const SnapshotControlButtonGroup = (props: SnapshotControlButtonGroupProps): JSX.Element => {
   const {
     disableReset,
     disableClear,
@@ -56,4 +56,4 @@ export const TreeButtonGroup = (props: TreeButtonGroupProps): JSX.Element => {
   );
 };
 
-export default TreeButtonGroup;
+export default SnapshotControlButtonGroup;

@@ -1,11 +1,11 @@
 import React from 'react';
-import { TreeButtonGroup } from '../lib';
+import { SnapshotControlButtonGroup } from '../lib';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 test('It disabled buttons', () => {
   const root = render(
-    <TreeButtonGroup disableClear={true} disableReset={true} disableRestore={true} />,
+    <SnapshotControlButtonGroup disableClear={true} disableReset={true} disableRestore={true} />,
   );
   expect(
     root.container.querySelector('button#clear-button')?.hasAttribute('disabled'),
@@ -23,7 +23,7 @@ test('It executes callbacks correctly', () => {
   const handleClearClick = jest.fn();
   const handleRestoreClick = jest.fn();
   const root = render(
-    <TreeButtonGroup
+    <SnapshotControlButtonGroup
       handleResetClick={handleResetClick}
       handleClearClick={handleClearClick}
       handleRestoreClick={handleRestoreClick}

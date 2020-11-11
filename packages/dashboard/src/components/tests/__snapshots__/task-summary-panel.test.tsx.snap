@@ -8,7 +8,7 @@ exports[`Renders correctly Matches snapshot 1`] = `
   <div
     className="makeStyles-buttonGroupDiv-11"
   >
-    <TreeButtonGroup
+    <SnapshotControlButtonGroup
       disableClear={false}
       disableReset={false}
       disableRestore={false}
