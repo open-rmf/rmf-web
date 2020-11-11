@@ -10,22 +10,9 @@ export enum AnimationSpeed {
   Fast,
 }
 
-export enum TrajectoryDiameter {
-  FixSize,
-  RobotSize,
-}
-
-export enum TrajectoryColor {
-  Theme,
-  RobotColor,
-  Shades,
-}
-
 export interface Settings {
   trajectoryAnimation: TrajectoryAnimation;
   trajectoryAnimationSpeed: AnimationSpeed;
-  trajectoryDiameter: TrajectoryDiameter;
-  trajectoryColor: TrajectoryColor;
 }
 
 export function saveSettings(settings: Settings): void {
@@ -44,7 +31,5 @@ export function defaultSettings(): Settings {
   return {
     trajectoryAnimation: TrajectoryAnimation.Follow,
     trajectoryAnimationSpeed: AnimationSpeed.Normal,
-    trajectoryDiameter: TrajectoryDiameter.RobotSize,
-    trajectoryColor: TrajectoryColor.RobotColor,
   };
 }

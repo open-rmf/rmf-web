@@ -80,14 +80,6 @@ exports[`Settings Drawer should render correctly 1`] = `
         name="Follow"
         value={2}
       />
-      <WithStyles(ForwardRef(FormControlLabel))
-        className="makeStyles-flexBasis-4"
-        control={<ForwardRef(WithStyles) />}
-        key="3"
-        label="Outline"
-        name="Outline"
-        value={3}
-      />
     </ForwardRef(RadioGroup)>
     <WithStyles(ForwardRef(FormLabel))
       className="makeStyles-legendLabel-2"
@@ -96,28 +88,6 @@ exports[`Settings Drawer should render correctly 1`] = `
       Trajectory Diameter
     </WithStyles(ForwardRef(FormLabel))>
     <WithStyles(ForwardRef(Divider)) />
-    <ForwardRef(RadioGroup)
-      className="makeStyles-trajGroup-3"
-      onChange={[Function]}
-      value={1}
-    >
-      <WithStyles(ForwardRef(FormControlLabel))
-        className="makeStyles-flexBasis-4"
-        control={<ForwardRef(WithStyles) />}
-        key="0"
-        label="Fix Size"
-        name="Fix Size"
-        value={0}
-      />
-      <WithStyles(ForwardRef(FormControlLabel))
-        className="makeStyles-flexBasis-4"
-        control={<ForwardRef(WithStyles) />}
-        key="1"
-        label="Robot Size"
-        name="Robot Size"
-        value={1}
-      />
-    </ForwardRef(RadioGroup)>
     <WithStyles(ForwardRef(FormLabel))
       className="makeStyles-legendLabel-2"
       component="legend"
@@ -125,36 +95,6 @@ exports[`Settings Drawer should render correctly 1`] = `
       Trajectory Color
     </WithStyles(ForwardRef(FormLabel))>
     <WithStyles(ForwardRef(Divider)) />
-    <ForwardRef(RadioGroup)
-      className="makeStyles-trajGroup-3"
-      onChange={[Function]}
-      value={1}
-    >
-      <WithStyles(ForwardRef(FormControlLabel))
-        className="makeStyles-flexBasis-4"
-        control={<ForwardRef(WithStyles) />}
-        key="0"
-        label="Theme"
-        name="Theme"
-        value={0}
-      />
-      <WithStyles(ForwardRef(FormControlLabel))
-        className="makeStyles-flexBasis-4"
-        control={<ForwardRef(WithStyles) />}
-        key="1"
-        label="Robot Color"
-        name="Robot Color"
-        value={1}
-      />
-      <WithStyles(ForwardRef(FormControlLabel))
-        className="makeStyles-flexBasis-4"
-        control={<ForwardRef(WithStyles) />}
-        key="2"
-        label="Shades"
-        name="Shades"
-        value={2}
-      />
-    </ForwardRef(RadioGroup)>
   </WithStyles(ForwardRef(FormControl))>
 </WithStyles(ForwardRef(Drawer))>
 `;
