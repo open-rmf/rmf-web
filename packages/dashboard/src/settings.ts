@@ -2,7 +2,6 @@ export enum TrajectoryAnimation {
   None,
   Fill,
   Follow,
-  Outline,
 }
 
 export enum AnimationSpeed {

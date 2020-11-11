@@ -9,6 +9,8 @@ import { act } from 'react-dom/test-utils';
 import { Map as LMap } from 'react-leaflet';
 import FakeTrajectoryManager from '../../../mock/fake-traj-manager';
 import { Conflict, Trajectory } from '../../../robot-trajectory-manager';
+import { defaultSettings, TrajectoryAnimation } from '../../../settings';
+import { SettingsContext } from '../../app-contexts';
 import RobotTrajectoriesOverlay from '../robot-trajectories-overlay';
 
 const mount = createMount();
@@ -41,17 +43,22 @@ const createWrapper = async (
   robots: Record<string, RomiCore.RobotState>,
   trajs: Trajectory[],
 ) => {
+  const settings = defaultSettings();
+  // animations use apis not supported in jsdom
+  settings.trajectoryAnimation = TrajectoryAnimation.None;
   let wrapper: ReactWrapper;
   await act(
     async () =>
       (wrapper = mount(
         <LMap>
-          <RobotTrajectoriesOverlay
-            bounds={bounds}
-            robots={robots}
-            trajectories={trajs}
-            conflicts={conflicts}
-          />
+          <SettingsContext.Provider value={settings}>
+            <RobotTrajectoriesOverlay
+              bounds={bounds}
+              robots={robots}
+              trajectories={trajs}
+              conflicts={conflicts}
+            />
+          </SettingsContext.Provider>
         </LMap>,
       )),
   );

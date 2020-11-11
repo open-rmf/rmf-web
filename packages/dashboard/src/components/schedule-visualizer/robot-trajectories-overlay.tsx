@@ -4,6 +4,8 @@ import * as L from 'leaflet';
 import React from 'react';
 import { ColorContext, robotHash, TrajectoryMarker, TrajectoryMarkerProps } from 'react-components';
 import { Conflict, Trajectory } from '../../robot-trajectory-manager';
+import { TrajectoryAnimation } from '../../settings';
+import { SettingsContext } from '../app-contexts';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 
 const debug = Debug('ScheduleVisualizer:RobotTrajectoriesOverlay');
@@ -18,7 +20,6 @@ export interface RobotTrajectoriesOverlayProps extends SVGOverlayProps {
   trajectories: Trajectory[];
   conflicts: Conflict[];
   animationScale?: number;
-  variant?: TrajectoryMarkerProps['variant'];
 }
 
 /**
@@ -27,14 +28,7 @@ export interface RobotTrajectoriesOverlayProps extends SVGOverlayProps {
 export const RobotTrajectoriesOverlay = React.memo((props: RobotTrajectoriesOverlayProps) => {
   debug('render');
 
-  const {
-    robots,
-    trajectories,
-    conflicts,
-    animationScale = 60000 / 1800,
-    variant = 'plain',
-    ...otherProps
-  } = props;
+  const { robots, trajectories, conflicts, animationScale = 60000 / 1800, ...otherProps } = props;
   const colorManager = React.useContext(ColorContext);
   const [colors, setColors] = React.useState<Record<number, string>>({});
 
@@ -68,6 +62,20 @@ export const RobotTrajectoriesOverlay = React.memo((props: RobotTrajectoriesOver
     })();
   }, [trajectories, colorManager, robots]);
 
+  const settings = React.useContext(SettingsContext);
+  const trajectoryVariant = ((): TrajectoryMarkerProps['variant'] => {
+    switch (settings.trajectoryAnimation) {
+      case TrajectoryAnimation.Fill:
+        return 'fill';
+      case TrajectoryAnimation.Follow:
+        return 'follow';
+      case TrajectoryAnimation.None:
+        return 'plain';
+      default:
+        return 'plain';
+    }
+  })();
+
   return (
     <SVGOverlay {...otherProps}>
       <svg viewBox={viewBox}>
@@ -80,7 +88,7 @@ export const RobotTrajectoriesOverlay = React.memo((props: RobotTrajectoriesOver
                 color={colors[traj.id]}
                 conflict={conflictsFlat.includes(traj.id)}
                 animationScale={animationScale}
-                variant={variant}
+                variant={trajectoryVariant}
               />
             ),
         )}
