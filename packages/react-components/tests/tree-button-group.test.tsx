@@ -1,6 +1,7 @@
 import React from 'react';
 import { TreeButtonGroup } from '../lib';
-import { render, fireEvent } from '@testing-library/react';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 test('It disabled buttons', () => {
   const root = render(
@@ -29,15 +30,9 @@ test('It executes callbacks correctly', () => {
     />,
   );
 
-  const clearButton = root.container.querySelector('button#clear-button');
-  const resetButton = root.container.querySelector('button#reset-button');
-  const restoreButton = root.container.querySelector('button#restore-button');
-
-  // FireEvent should not receive null
-  clearButton && fireEvent.click(clearButton);
-  resetButton && fireEvent.click(resetButton);
-  restoreButton && fireEvent.click(restoreButton);
-
+  userEvent.click(root.getByText('Clear'));
+  userEvent.click(root.getByText('Reset'));
+  userEvent.click(root.getByText('Restore'));
   expect(handleResetClick).toHaveBeenCalledTimes(1);
   expect(handleClearClick).toHaveBeenCalledTimes(1);
   expect(handleRestoreClick).toHaveBeenCalledTimes(1);

@@ -14,7 +14,7 @@ export interface TreeButtonGroupProps {
   fullWidth?: boolean;
 }
 
-export const TreeButtonGroup = (props: TreeButtonGroupProps) => {
+export const TreeButtonGroup = (props: TreeButtonGroupProps): JSX.Element => {
   const {
     disableReset,
     disableClear,
