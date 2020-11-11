@@ -72,7 +72,7 @@ exports.config = {
         binary: process.env.CHROME_BIN || undefined,
         // to run chrome headless the following flags are required
         // (see https://developers.google.com/web/updates/2017/04/headless-chrome)
-        args: [...chromeArgs, '--window-size=1366,768'],
+        args: [...chromeArgs, '--window-size=1920,1080', '--disable-web-security'],
       },
     },
   ],
@@ -83,7 +83,7 @@ exports.config = {
   // Define all options that are relevant for the WebdriverIO instance here
   //
   // Level of logging verbosity: trace | debug | info | warn | error | silent
-  logLevel: 'debug',
+  logLevel: 'trace',
   //
   // Set specific log levels per logger
   // loggers:
@@ -127,7 +127,7 @@ exports.config = {
     [
       'chromedriver',
       {
-        args: ['--whitelisted-ips='],
+        args: ['--whitelisted-ips=', '--enable-javascript'],
       },
     ],
   ],
