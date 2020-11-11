@@ -96,8 +96,6 @@ export const FollowAnimationPath = (props: TrajectoryPathProps): JSX.Element => 
       return;
     }
 
-    console.log(pathRef.current);
-
     const offsets = keyframeOffsets(trajectory);
     const pathAnim = pathRef.current;
     const strokeWidth = Number(pathAnim.getAttribute('stroke-width') || 1);

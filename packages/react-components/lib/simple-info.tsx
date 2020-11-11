@@ -33,6 +33,8 @@ const useStyles = makeStyles((theme) => ({
     display: 'table-cell',
     borderBottom: '1px solid',
     borderBottomColor: theme.palette.divider,
+    borderTop: '1px solid',
+    borderTopColor: theme.palette.divider,
     background: theme.palette.action.hover,
     padding: '0 2em 0 0.5em',
     width: '30%',
@@ -42,6 +44,8 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'end',
     borderBottom: '1px solid',
     borderBottomColor: theme.palette.divider,
+    borderTop: '1px solid',
+    borderTopColor: theme.palette.divider,
     padding: '0 0.5em 0 0',
   },
   arrayListItem: {
