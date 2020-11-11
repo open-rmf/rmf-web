@@ -25,6 +25,7 @@ import DoorStateManager from '../door-state-manager';
 import FleetManager from '../fleet-manager';
 import { buildHotKeys } from '../hotkeys';
 import LiftStateManager from '../lift-state-manager';
+import TaskManager from '../managers/task-manager';
 import {
   NegotiationStatusManager,
   NegotiationTrajectoryResponse,
@@ -43,10 +44,10 @@ import MainMenu from './main-menu';
 import NegotiationsPanel from './negotiations-panel';
 import NotificationBar, { NotificationBarProps } from './notification-bar';
 import { RmfContextProvider } from './rmf-contexts';
-import ScheduleVisualizer from './schedule-visualizer';
+import ScheduleVisualizer, { ScheduleVisualizerProps } from './schedule-visualizer';
 import { SpotlightValue } from './spotlight-value';
 import { TaskSummaryPanel } from './task-summary-panel';
-import TaskManager from '../managers/task-manager';
+import { DashboardTour, DashboardTourProps } from './tour/tour';
 
 const debug = Debug('App');
 const DispenserAccordion = withSpotlight(DispenserAccordion_);
@@ -191,11 +192,13 @@ export default function Dashboard(_props: {}): React.ReactElement {
     Readonly<Record<string, RomiCore.DispenserState>>
   >(() => dispenserStateManager.dispenserStates());
   const dispenserAccordionRefs = React.useMemo(() => defaultDict(createSpotlightRef), []);
-  const handleDispenserMarkerClick = React.useCallback(
-    (dispenser: RomiCore.DispenserState) => {
+  const handleDispenserMarkerClick = React.useCallback<
+    Required<ScheduleVisualizerProps>['onDispenserClick']
+  >(
+    (_, guid) => {
       setShowOmniPanel(true);
       pushOmniPanelView(OmniPanelViewIndex.Dispensers);
-      dispenserAccordionRefs[dispenser.guid].spotlight();
+      dispenserAccordionRefs[guid].spotlight();
     },
     [dispenserAccordionRefs, pushOmniPanelView],
   );

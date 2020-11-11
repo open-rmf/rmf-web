@@ -1,39 +1,61 @@
 import { createMount } from '@material-ui/core/test-utils';
-import React from 'react';
-import * as L from 'leaflet';
-import { Map as LMap } from 'react-leaflet';
-import RobotTrajectoriesOverlay, {
-  RobotTrajectoriesOverlayProps,
-} from '../robot-trajectories-overlay';
-import { Conflict, Trajectory } from '../../../robot-trajectory-manager';
-import ColorManager from '../colors';
-import FakeTrajectoryManager from '../../../mock/fake-traj-manager';
+import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import { ReactWrapper } from 'enzyme';
 import toJson from 'enzyme-to-json';
+import * as L from 'leaflet';
+import React from 'react';
+import { robotHash } from 'react-components';
+import { act } from 'react-dom/test-utils';
+import { Map as LMap } from 'react-leaflet';
+import FakeTrajectoryManager from '../../../mock/fake-traj-manager';
+import { Conflict, Trajectory } from '../../../robot-trajectory-manager';
+import RobotTrajectoriesOverlay from '../robot-trajectories-overlay';
 
 const mount = createMount();
 const mapBound = new L.LatLngBounds([0, 25.794363144785166], [-17.53525484725833, 0]);
 
-const createWrapper = (
-  Component: React.MemoExoticComponent<(props: RobotTrajectoriesOverlayProps) => JSX.Element>,
+const robots: Record<string, RomiCore.RobotState> = {
+  [robotHash('tinyRobot1', 'tinyRobot')]: {
+    name: 'tinyRobot1',
+    battery_percent: 100,
+    location: { level_name: 'L1', x: 0, y: 0, yaw: 0, t: { sec: 0, nanosec: 0 } },
+    mode: { mode: RomiCore.RobotMode.MODE_IDLE },
+    model: 'tinyRobot',
+    path: [],
+    task_id: '',
+  },
+  [robotHash('tinyRobot2', 'tinyRobot')]: {
+    name: 'tinyRobot2',
+    battery_percent: 100,
+    location: { level_name: 'L1', x: 0, y: 0, yaw: 0, t: { sec: 0, nanosec: 0 } },
+    mode: { mode: RomiCore.RobotMode.MODE_IDLE },
+    model: 'tinyRobot',
+    path: [],
+    task_id: '',
+  },
+};
+
+const createWrapper = async (
   bounds: L.LatLngBoundsExpression,
   conflicts: Conflict[],
-  colorManager: ColorManager,
+  robots: Record<string, RomiCore.RobotState>,
   trajs: Trajectory[],
-  conflictRobotNames: string[][],
-  overridePathColor?: string,
 ) => {
-  return mount(
-    <LMap>
-      <Component
-        bounds={bounds}
-        conflicts={conflicts}
-        colorManager={colorManager}
-        trajs={trajs}
-        conflictRobotNames={conflictRobotNames}
-        overridePathColor={overridePathColor}
-      />
-    </LMap>,
+  let wrapper: ReactWrapper;
+  await act(
+    async () =>
+      (wrapper = mount(
+        <LMap>
+          <RobotTrajectoriesOverlay
+            bounds={bounds}
+            robots={robots}
+            trajectories={trajs}
+            conflicts={conflicts}
+          />
+        </LMap>,
+      )),
   );
+  return wrapper!;
 };
 
 describe('RobotTrajectoriesOverlay', () => {
@@ -41,10 +63,8 @@ describe('RobotTrajectoriesOverlay', () => {
   let trajectoryData;
   let trajectoryValue: Trajectory;
   let trajectoryConflict: Conflict[];
-  let colorManager: ColorManager;
 
   beforeEach(async () => {
-    colorManager = new ColorManager();
     trajMgr = new FakeTrajectoryManager();
     trajectoryData = await trajMgr.latestTrajectory({
       request: 'trajectory',
@@ -59,16 +79,8 @@ describe('RobotTrajectoriesOverlay', () => {
     trajectoryConflict = trajectoryData.conflicts;
   });
 
-  it('renders without crashing', () => {
-    const wrapper = createWrapper(
-      RobotTrajectoriesOverlay,
-      mapBound,
-      trajectoryConflict,
-      colorManager,
-      [trajectoryValue],
-      [[]],
-      undefined,
-    );
+  it('renders without crashing', async () => {
+    const wrapper = await createWrapper(mapBound, trajectoryConflict, robots, [trajectoryValue]);
     expect(toJson(wrapper)).toMatchSnapshot();
     wrapper.unmount();
   });

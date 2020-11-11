@@ -1,23 +1,22 @@
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
-import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
-import { viewBoxFromLeafletBounds } from '../../util/css-utils';
-import Dispenser from './dispenser';
+import { DispenserMarker } from 'react-components';
 import { DispenserResource } from '../../resource-manager-dispensers';
+import { viewBoxFromLeafletBounds } from '../../util/css-utils';
 import { ResourcesContext } from '../app-contexts';
-import { DispenserStateContext } from '../rmf-contexts';
+import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 
 export interface DispensersOverlayProps extends SVGOverlayProps {
-  onDispenserClick?(dispenser: RomiCore.DispenserState): void;
   currentFloorName: string;
+  onDispenserClick?(event: React.MouseEvent, guid: string): void;
 }
+
 export const DispensersOverlay = React.memo(
   (props: DispensersOverlayProps): React.ReactElement => {
     const { currentFloorName, onDispenserClick, ...otherProps } = props;
     const viewBox = viewBoxFromLeafletBounds(props.bounds);
     const footprint = 0.4;
     const dispenserResourcesContext = React.useContext(ResourcesContext)?.dispensers;
-    const dispenserStates = React.useContext(DispenserStateContext);
+
     /**
      * We choose to iterate the dispensers inside resources because we get the positions
      * from the resources file and not from the dispenser's state. In case the dispenser
@@ -32,19 +31,20 @@ export const DispensersOverlay = React.memo(
         (d: DispenserResource) => d.location && d.location.level_name === currentFloorName,
       );
     }, [dispenserResourcesContext, currentFloorName]);
+
     return (
       <SVGOverlay {...otherProps}>
         <svg viewBox={viewBox}>
           {dispenserResourcesContext &&
             dispenserInCurLevel.map((dispenser: DispenserResource) => {
               return (
-                <Dispenser
+                <DispenserMarker
                   key={dispenser.guid}
-                  dispenser={dispenser}
-                  dispenserHandler={dispenserResourcesContext}
+                  guid={dispenser.guid}
+                  location={[dispenser.location.x, dispenser.location.y]}
+                  iconPath={dispenserResourcesContext.getIconPath(dispenser.guid) || undefined}
                   footprint={footprint}
-                  dispenserState={dispenserStates[dispenser.guid]}
-                  onClick={(_, dispenser) => onDispenserClick && onDispenserClick(dispenser)}
+                  onClick={onDispenserClick}
                 />
               );
             })}

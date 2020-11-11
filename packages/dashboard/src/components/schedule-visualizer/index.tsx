@@ -51,7 +51,7 @@ export interface ScheduleVisualizerProps {
   onDoorClick?(door: RomiCore.Door): void;
   onLiftClick?(lift: RomiCore.Lift): void;
   onRobotClick?(fleet: string, robot: RomiCore.RobotState): void;
-  onDispenserClick?(dispenser: RomiCore.DispenserState): void;
+  onDispenserClick?(event: React.MouseEvent, guid: string): void;
 }
 
 export function calcMaxBounds(
