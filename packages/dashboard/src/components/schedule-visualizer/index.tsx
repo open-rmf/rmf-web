@@ -3,7 +3,7 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import * as L from 'leaflet';
 import React from 'react';
-import { robotHash } from 'react-components';
+import { ColorContext, robotHash } from 'react-components';
 import { AttributionControl, ImageOverlay, LayersControl, Map as LMap, Pane } from 'react-leaflet';
 import { NegotiationTrajectoryResponse } from '../../negotiation-status-manager';
 import {
@@ -16,9 +16,11 @@ import {
 import { AnimationSpeed } from '../../settings';
 import { toBlobUrl } from '../../util';
 import { SettingsContext } from '../app-contexts';
+import { NotificationBarContext } from '../notification-bar';
 import DispensersOverlay from './dispensers-overlay';
 import DoorsOverlay from './doors-overlay';
 import LiftsOverlay from './lift-overlay';
+import { NegotiationColors } from './negotiation-colors';
 import RobotTrajectoriesOverlay from './robot-trajectories-overlay';
 import RobotsOverlay from './robots-overlay';
 import WaypointsOverlay from './waypoints-overlay';
@@ -66,6 +68,8 @@ export function calcMaxBounds(
 export default function ScheduleVisualizer(props: ScheduleVisualizerProps): React.ReactElement {
   debug('render');
   const { negotiationTrajStore, mapFloorLayerSorted } = props;
+  const negotiationColors = React.useMemo(() => new NegotiationColors(), []);
+
   const classes = useStyles();
 
   const [mapFloorLayers, setMapFloorLayers] = React.useState<
@@ -206,6 +210,28 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     return () => clearInterval(interval);
   }, [props.trajManager, curMapFloorLayer, trajAnimDuration]);
 
+  // Show notification when a conflict happens.
+  const notificationDispatch = React.useContext(NotificationBarContext);
+  React.useEffect(() => {
+    function getConflictRobotMessage(): string {
+      let message = '';
+      conflictRobotNames.forEach((conflictGroup) => {
+        message += `[${conflictGroup}] `;
+      });
+      return message;
+    }
+
+    const allConflicts = Object.values(trajectories).flatMap((traj) => traj.conflicts);
+
+    if (allConflicts.length !== 0) {
+      notificationDispatch &&
+        notificationDispatch({
+          message: `Trajectory conflicts between: ${getConflictRobotMessage()}`,
+          type: 'error',
+        });
+    }
+  }, [trajectories, notificationDispatch, conflictRobotNames]);
+
   function handleBaseLayerChange(e: L.LayersControlEvent): void {
     debug('set current level name');
     setCurLevelName(e.name);
@@ -312,18 +338,18 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
         >
           {curMapFloorLayer && (
             <Pane>
-              <RobotTrajectoriesOverlay
-                bounds={curMapFloorLayer.bounds}
-                robots={robots}
-                trajectories={
-                  negotiationTrajStore[curLevelName]
-                    ? props.negotiationTrajStore[curLevelName].values
-                    : []
-                }
-                conflicts={getConflicts(curLevelName)}
-                // TODO: Set ColorContext to override path color
-                // overridePathColor={'orange'}
-              />
+              <ColorContext.Provider value={negotiationColors}>
+                <RobotTrajectoriesOverlay
+                  bounds={curMapFloorLayer.bounds}
+                  robots={robots}
+                  trajectories={
+                    negotiationTrajStore[curLevelName]
+                      ? props.negotiationTrajStore[curLevelName].values
+                      : []
+                  }
+                  conflicts={getConflicts(curLevelName)}
+                />
+              </ColorContext.Provider>
             </Pane>
           )}
         </LayersControl.Overlay>

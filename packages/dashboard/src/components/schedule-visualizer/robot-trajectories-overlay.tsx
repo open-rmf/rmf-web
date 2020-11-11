@@ -39,11 +39,6 @@ export const RobotTrajectoriesOverlay = React.memo((props: RobotTrajectoriesOver
   const viewBox = `0 0 ${width} ${height}`;
 
   React.useEffect(() => {
-    // prevent recursive renders as we set colors in the effect.
-    if (Object.keys(colors).length === trajectories.length) {
-      return;
-    }
-
     (async () => {
       const newColors: Record<string, string> = {};
       await Promise.all(
@@ -63,26 +58,7 @@ export const RobotTrajectoriesOverlay = React.memo((props: RobotTrajectoriesOver
       );
       setColors(newColors);
     })();
-  });
-
-  // TODO: move this to SchedulerVisualizer
-  // React.useEffect(() => {
-  //   function getConflictRobotMessage(): string {
-  //     let message = '';
-  //     conflictRobotNames.forEach((conflictGroup) => {
-  //       message += `[${conflictGroup}] `;
-  //     });
-  //     return message;
-  //   }
-
-  //   if (conflicts.length !== 0) {
-  //     notificationDispatch &&
-  //       notificationDispatch({
-  //         message: `Trajectory conflicts between: ${getConflictRobotMessage()}`,
-  //         type: 'error',
-  //       });
-  //   }
-  // }, [conflicts, notificationDispatch, conflictRobotNames]);
+  }, [trajectories, colorManager, robots]);
 
   return (
     <SVGOverlay {...otherProps}>
