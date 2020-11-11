@@ -52,7 +52,7 @@ jobs:
           docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
           npm run sync:docker
           docker image ls
-          docker run --network=host -v romi-dashboard:/root/romi-dashboard -v /var/run/docker.sock:/var/run/docker.sock -- privileged docker.pkg.github.com/osrf/romi-dashboard/e2e
+          docker run --network=host -v romi-dashboard:/root/romi-dashboard -v /var/run/docker.sock:/var/run/docker.sock --privileged docker.pkg.github.com/osrf/romi-dashboard/e2e
           docker container ls
       - name: e2e test
         run: |
