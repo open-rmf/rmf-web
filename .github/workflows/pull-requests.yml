@@ -38,6 +38,17 @@ jobs:
   e2e-test:
     name: End-to-End Test
     runs-on: ubuntu-latest
+     container:
+     image: docker.pkg.github.com/osrf/romi-dashboard/e2e
+     credentials:
+       username: ${{ github.repository_owner }}
+       password: ${{ secrets.GITHUB_TOKEN }}
+     volumes:
+       - /var/run/docker.sock:/var/run/docker.sock
+       - romi-dashboard:/root/romi-dashboard
+     env:
+       CHROME_BIN: /chrome-no-sandbox
+     options: --ipc=host --privileged
     defaults: 
       run:
         shell: bash
@@ -51,19 +62,10 @@ jobs:
         run: |
           docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
           npm run sync:docker
+          docker network ls
+          cd ../../../../ && ls
       - name: e2e test
         run: |
-          export OTHERCONTAINER=$(docker create --workdir /__w/romi-dashboard/romi-dashboard --network host --ipc host --privileged -e CHROME_BIN=/chrome-no-sandbox -e HOME=/github/home -e GITHUB_ACTIONS=true -e CI=true -v romi-dashboard:/root/romi-dashboard -v /var/run/docker.sock:/var/run/docker.sock -v /home/runner/work:/__w -v /home/runner/runners/2.274.1/externals:/__e:ro -v /home/runner/work/_temp:/__w/_temp -v /home/runner/work/_actions:/__w/_actions -v /opt/hostedtoolcache:/__t -v /home/runner/work/_temp/_github_home:/github/home -v /home/runner/work/_temp/_github_workflow:/github/workflow --entrypoint tail docker.pkg.github.com/osrf/romi-dashboard/e2e -f /dev/null)
-          echo $OTHERCONTAINER
-          docker start $OTHERCONTAINER
-          docker container ls
-          docker network ls
-          ls
-          echo change directory
-          cd ../../../../ && ls
-          docker cp $OTHERCONTAINER:. /dashboard
-          cd dashboard
-          ls
           . /opt/ros/foxy/setup.bash && . /opt/rmf/setup.bash
           bash -c 'npm ci --unsafe-perm'
           cd e2e && bash -c 'npm ci --unsafe-perm'

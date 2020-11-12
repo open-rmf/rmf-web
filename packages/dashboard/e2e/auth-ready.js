@@ -17,41 +17,41 @@ async function authReady(timeout = 80000) {
     let retryTimer;
     const waitAuthReady = () => {
       let container = execSync('docker ps -q --filter ancestor=romi-dashboard/auth').toString();
-      // let authIpAddress;
-      // console.log('========================== waiting waiting waiting ==========================');
+      let authIpAddress;
+      console.log('========================== waiting waiting waiting ==========================');
 
       if (container) {
         console.log('Successuflly created auth container ----------------------- ' + container);
 
-        // process.env.CONTAINER = container;
+        process.env.CONTAINER = container;
 
-        // let isConnected = execSync(
-        //   'docker ps -q --filter network=test-net --filter ancestor=romi-dashboard/auth',
-        // ).toString();
+        let isConnected = execSync(
+          'docker ps -q --filter network=test-net --filter ancestor=romi-dashboard/auth',
+        ).toString();
 
-        // authIpAddress = execSync(
-        //   "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $CONTAINER",
-        // ).toString();
-        // process.env.AUTH_IP = authIpAddress;
+        authIpAddress = execSync(
+          "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $CONTAINER",
+        ).toString();
+        process.env.AUTH_IP = authIpAddress;
 
-        // console.log('auth ip address >>>>>>> ' + authIpAddress + ' ' + typeof process.env.AUTH_IP);
+        console.log('auth ip address >>>>>>> ' + authIpAddress + ' ' + typeof process.env.AUTH_IP);
 
-        // if (!isConnected) {
-        //   console.log('I am inside isConnected!!! >>>>> ' + isConnected);
-        //   execSync('docker network create test-net', {
-        //     stdio: 'inherit',
-        //   });
-        //   execSync('docker network connect test-net $CONTAINER', {
-        //     stdio: 'inherit',
-        //   });
-        //   execSync('docker network connect test-net docker_e2e_1', {stdio: 'inherit'})
-        //   // execSync('docker network connect test-net $OTHERCONTAINER', {
-        //   //   stdio: 'inherit',
-        //   // });
-        //   execSync('docker network disconnect romidashboarde2e_default $CONTAINER', {
-        //     stdio: 'inherit',
-        //   });
-        // }
+        if (!isConnected) {
+          console.log('I am inside isConnected!!! >>>>> ' + isConnected);
+          execSync('docker network create test-net', {
+            stdio: 'inherit',
+          });
+          execSync('docker network connect test-net $CONTAINER', {
+            stdio: 'inherit',
+          });
+          // execSync('docker network connect test-net docker_e2e_1', {stdio: 'inherit'})
+          execSync('docker network connect test-net $OTHERCONTAINER', {
+            stdio: 'inherit',
+          });
+          execSync('docker network disconnect romidashboarde2e_default $CONTAINER', {
+            stdio: 'inherit',
+          });
+        }
 
         console.log('=========================== END =============================');
       } else {
@@ -59,7 +59,7 @@ async function authReady(timeout = 80000) {
         console.log('=========================== END =============================');
       }
 
-      req = http.request(`http://localhost:8080/auth/`, () => {
+      req = http.request(`http://${authIpAddress ? authIpAddress : 'localhost'}:8080/auth/`, () => {
         console.log(
           '-------------------------------- connecting success ------------------------------' +
             process.env.AUTH_IP,
