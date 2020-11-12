@@ -1,11 +1,11 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
-import { fromRmfYaw, RobotMarker, toRmfYaw } from '../lib';
-import { makeRobot } from '../tests/robots/test-utils';
+import { RobotMarker } from '../../lib';
+import { makeRobot } from '../../tests/robots/test-utils';
 
 export default {
-  title: 'Benchmarks',
+  title: 'Benchmarks/Robots',
   argTypes: {
     count: {
       name: 'Count',
