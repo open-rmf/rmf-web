@@ -212,9 +212,10 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryPanelProps) => {
           disableReset={allTasks.length === 0}
           disableClear={allTasks.length === 0}
           disableRestore={allTasks.length === 0}
-          handleResetClick={handleResetTasks}
-          handleRestoreClick={handleRestoreTasks}
-          handleClearClick={handleClearAllCurrTasks}
+          onResetClick={handleResetTasks}
+          onRestoreClick={handleRestoreTasks}
+          onClearClick={handleClearAllCurrTasks}
+          showSave={false}
         />
       </div>
       <TreeView
