@@ -1,6 +1,6 @@
 import { Button, TextField } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 import { useFormStyles } from './form-styles';
 
 export type DoLoopRequest = (
@@ -36,11 +36,7 @@ export const LoopRequestForm = React.forwardRef(
       listOfPlaces && listOfPlaces.length >= 2 ? listOfPlaces[1] : '',
     );
 
-    React.useEffect(() => {
-      setListOfPlaces(availablePlaces(targetFleetName) || []);
-    }, [targetFleetName, availablePlaces]);
-
-    React.useEffect(() => {
+    React.useLayoutEffect(() => {
       if (listOfPlaces) {
         setStartLocation(listOfPlaces.length >= 2 ? listOfPlaces[0] : '');
         setFinishLocation(listOfPlaces.length >= 2 ? listOfPlaces[1] : '');
@@ -98,6 +94,25 @@ export const LoopRequestForm = React.forwardRef(
       return isValid;
     };
 
+    const handleTargetFleetNameChange = (_: ChangeEvent<unknown>, value: string | null) => {
+      const newFleetName = value || fleetNames[0];
+      const newPlaces = availablePlaces(newFleetName) || [];
+      setListOfPlaces(newPlaces);
+      setStartLocation((cur) => {
+        if (newPlaces.includes(cur)) {
+          return cur;
+        }
+        return newPlaces.length >= 2 ? newPlaces[0] : '';
+      });
+      setFinishLocation((cur) => {
+        if (newPlaces.includes(cur)) {
+          return cur;
+        }
+        return newPlaces.length >= 2 ? newPlaces[1] : '';
+      });
+      setTargetFleetName(newFleetName);
+    };
+
     const handleSubmit = (ev: React.FormEvent) => {
       ev.preventDefault();
       if (isFormValid()) {
@@ -111,7 +126,7 @@ export const LoopRequestForm = React.forwardRef(
         <div className={classes.divForm}>
           <Autocomplete
             getOptionLabel={(option) => option}
-            onChange={(_, value) => setTargetFleetName(value || '')}
+            onChange={handleTargetFleetNameChange}
             options={fleetNames}
             renderInput={(params) => (
               <TextField

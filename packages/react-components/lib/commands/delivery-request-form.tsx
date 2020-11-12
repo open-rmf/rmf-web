@@ -1,7 +1,7 @@
 import { Button, TextField } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 import { useFormStyles } from './form-styles';
 
 export type DoDeliveryRequest = (
@@ -31,10 +31,6 @@ export const DeliveryRequestForm = React.forwardRef(
     const [listOfPlaces, setListOfPlaces] = React.useState(
       targetFleetName ? availablePlaces(targetFleetName) : [],
     );
-
-    React.useEffect(() => {
-      setListOfPlaces(availablePlaces(targetFleetName));
-    }, [targetFleetName, availablePlaces]);
 
     // Places
     const [pickupPlaceName, setPickupPlaceName] = React.useState(
@@ -143,12 +139,43 @@ export const DeliveryRequestForm = React.forwardRef(
       return isValid;
     };
 
+    const handleTargetFleetNameChange = (_: ChangeEvent<unknown>, value: string | null) => {
+      const newFleetName = value || fleetNames[0];
+      const newPlaces = availablePlaces(newFleetName);
+      setPickupPlaceName((cur) => {
+        if (newPlaces.includes(cur)) {
+          return cur;
+        }
+        return newPlaces.length >= 2 ? newPlaces[0] : '';
+      });
+      setPickupDispenser('');
+      setDropOffPlaceName((cur) => {
+        if (newPlaces.includes(cur)) {
+          return cur;
+        }
+        return newPlaces.length >= 2 ? newPlaces[1] : '';
+      });
+      setDropOffDispenser('');
+      setListOfPlaces(availablePlaces(newFleetName));
+      setTargetFleetName(newFleetName);
+    };
+
+    const handlePickupPlaceNameChange = (_: ChangeEvent<unknown>, value: string | null) => {
+      setPickupPlaceName(value || '');
+      setPickupDispenser('');
+    };
+
+    const handleDropOoffPlaceNameChange = (_: ChangeEvent<unknown>, value: string | null) => {
+      setDropOffPlaceName(value || '');
+      setDropOffDispenser('');
+    };
+
     return (
       <form ref={ref} className={classes.form} onSubmit={handleSubmit}>
         <div className={classes.divForm}>
           <Autocomplete
             getOptionLabel={(option) => option}
-            onChange={(_, value) => setTargetFleetName(value || fleetNames[0])}
+            onChange={handleTargetFleetNameChange}
             options={fleetNames}
             renderInput={(params) => (
               <TextField
@@ -167,7 +194,7 @@ export const DeliveryRequestForm = React.forwardRef(
         <div className={classes.divForm}>
           <Autocomplete
             getOptionLabel={(option) => option}
-            onChange={(_, value) => setPickupPlaceName(value || '')}
+            onChange={handlePickupPlaceNameChange}
             options={listOfPlaces ? listOfPlaces : []}
             renderInput={(params) => (
               <TextField
@@ -205,7 +232,7 @@ export const DeliveryRequestForm = React.forwardRef(
         <div className={classes.divForm}>
           <Autocomplete
             getOptionLabel={(option) => option}
-            onChange={(_, value) => setDropOffPlaceName(value || '')}
+            onChange={handleDropOoffPlaceNameChange}
             options={listOfPlaces ? listOfPlaces : []}
             renderInput={(params) => (
               <TextField
