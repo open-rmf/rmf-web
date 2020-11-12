@@ -51,13 +51,13 @@ jobs:
         run: |
           docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
           npm run sync:docker
-          docker image ls
-          docker run --network=host -v romi-dashboard:/root/romi-dashboard -v /var/run/docker.sock:/var/run/docker.sock --privileged docker.pkg.github.com/osrf/romi-dashboard/e2e
+          docker create --workdir /__w/romi-dashboard/romi-dashboard --network host --ipc host --privileged -e CHROME_BIN=/chrome-no-sandbox -e HOME=/github/home -e GITHUB_ACTIONS=true -e CI=true -v romi-dashboard:/root/romi-dashboard -v /var/run/docker.sock:/var/run/docker.sock -v /home/runner/work:/__w -v /home/runner/runners/2.274.1/externals:/__e:ro -v /home/runner/work/_temp:/__w/_temp -v /home/runner/work/_actions:/__w/_actions -v /opt/hostedtoolcache:/__t -v /home/runner/work/_temp/_github_home:/github/home -v /home/runner/work/_temp/_github_workflow:/github/workflow --entrypoint tail docker.pkg.github.com/osrf/romi-dashboard/e2e -f /dev/null
+          export OTHERCONTAINER=$(docker ps -q --filter ancestor=docker.pkg.github.com/osrf/romi-dashboard/e2e)
+          docker start $OTHERCONTAINER
           docker container ls
       - name: e2e test
         run: |
           . /opt/ros/foxy/setup.bash && . /opt/rmf/setup.bash
-          export GITHUB_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $OTHERCONTAINER)
           bash -c 'npm ci --unsafe-perm'
           cd e2e && bash -c 'npm ci --unsafe-perm'
           cd ../ && bash -c 'npm run test:e2e'
