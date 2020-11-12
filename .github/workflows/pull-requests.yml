@@ -56,8 +56,10 @@ jobs:
           /usr/bin/docker start $OTHERCONTAINER
           /usr/bin/docker container ls
           /usr/bin/docker inspect --format "{{range .Config.Env}}{{println .}}{{end}}" $OTHERCONTAINER
+          ls
       - name: e2e test
         run: |
+          ls
           . /opt/ros/foxy/setup.bash && . /opt/rmf/setup.bash
           bash -c 'npm ci --unsafe-perm'
           cd e2e && bash -c 'npm ci --unsafe-perm'
