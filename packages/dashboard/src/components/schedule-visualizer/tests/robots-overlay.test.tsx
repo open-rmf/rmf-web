@@ -1,12 +1,11 @@
 import { mount, ReactWrapper } from 'enzyme';
 import L from 'leaflet';
 import React from 'react';
-import { RobotMarker } from 'react-components';
+import { ColorManager, RobotMarker } from 'react-components';
 import { act } from 'react-dom/test-utils';
 import { Map as LMap } from 'react-leaflet';
 import getBuildingMap from '../../../mock/data/building-map';
 import fakeFleets from '../../../mock/data/fleets';
-import ColorManager from '../colors';
 import RobotsOverlay from '../robots-overlay';
 
 describe('Robots Overlay', () => {
