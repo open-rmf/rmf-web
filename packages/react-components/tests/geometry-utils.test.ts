@@ -32,10 +32,10 @@ test('toRmfCoords', () => {
 
 test('fromRmfYaw', () => {
   const result = fromRmfYaw(Math.PI / 4);
-  expect(result).toBe(-45);
+  expect(result).toBeCloseTo(-Math.PI / 4);
 });
 
 test('toRmfYaw', () => {
-  const result = toRmfYaw(45);
+  const result = toRmfYaw(Math.PI / 4);
   expect(result).toBeCloseTo(-Math.PI / 4);
 });

@@ -31,19 +31,19 @@ export function fromRmfCoords(pos: [number, number]): [number, number] {
 }
 
 /**
- * Converts a SVG rotation (in degrees) to RMF yaw (in radians)
+ * Converts a SVG rotation (in radians) to RMF yaw (in radians)
  * @param yaw
  */
-export function toRmfYaw(deg: number): number {
-  return -((deg / 180) * Math.PI);
+export function toRmfYaw(yaw: number): number {
+  return -yaw;
 }
 
 /**
- * Converts a RMF yaw angle (in radians) to svg (in degrees)
+ * Converts a RMF yaw angle (in radians) to svg (in radians)
  * @param yaw
  */
 export function fromRmfYaw(yaw: number): number {
-  return -((yaw / Math.PI) * 180);
+  return -yaw;
 }
 
 export interface Pose2D {

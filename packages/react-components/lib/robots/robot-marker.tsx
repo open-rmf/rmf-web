@@ -46,8 +46,8 @@ export interface RobotMarkerProps extends Omit<React.SVGAttributes<SVGGElement>,
 /**
  * Contexts: ColorContext
  */
-export const RobotMarker = React.memo(
-  React.forwardRef((props: RobotMarkerProps, ref: React.Ref<SVGGElement>) => {
+export const RobotMarker = React.forwardRef(
+  (props: RobotMarkerProps, ref: React.Ref<SVGGElement>) => {
     // some props are not used but have to be declared to correctly set `otherProps`
     const {
       robot,
@@ -64,7 +64,7 @@ export const RobotMarker = React.memo(
     const [useImageMarker, setUseImageMarker] = React.useState(!!iconPath);
     const classes = useStyles();
     const pos = fromRmfCoords([robot.location.x, robot.location.y]);
-    const yaw = fromRmfYaw(robot.location.yaw);
+    const yaw = (fromRmfYaw(robot.location.yaw) / Math.PI) * 180;
 
     const translateTransform = translate ? `translate(${pos[0]} ${pos[1]})` : undefined;
 
@@ -81,12 +81,12 @@ export const RobotMarker = React.memo(
             ) : (
               <DefaultMarker {...props} />
             )}
-            <SvgText text={robot.name} targetWidth={footprint * 1.9} className={classes.text} />
           </g>
+          <SvgText text={robot.name} targetWidth={footprint * 1.9} className={classes.text} />
         </g>
       </g>
     );
-  }),
+  },
 );
 
 export default RobotMarker;
