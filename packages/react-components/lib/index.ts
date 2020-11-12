@@ -12,3 +12,4 @@ export * from './simple-info';
 export * from './spotlight-accordion';
 export * from './stack-navigator';
 export * from './svg-text';
+export * from './tooltip';

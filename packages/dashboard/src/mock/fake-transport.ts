@@ -5,6 +5,7 @@ import fakeDispenserStates from './data/dispenser-states';
 import fakeDoorStates from './data/door-states';
 import fakeFleets from './data/fleets';
 import fakeLiftStates from './data/lift-states';
+import fakeTaskSummary from './data/task-summary';
 
 const debug = Debug('FakeTransport');
 
@@ -71,6 +72,17 @@ export class FakeTransport extends RomiCore.TransportEvents implements RomiCore.
           for (const state of Object.values(dispenserStates)) {
             debug('publishing dispenser state, %s', state.guid);
             cb(state as Message);
+          }
+        }, 1000);
+        break;
+      }
+
+      case RomiCore.taskSummaries: {
+        const taskSummaries = fakeTaskSummary();
+        timer = window.setInterval(() => {
+          for (const task of Object.values(taskSummaries)) {
+            debug('publishing task, %s', task.task_id);
+            cb(task as Message);
           }
         }, 1000);
         break;

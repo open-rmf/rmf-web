@@ -34,7 +34,7 @@ class Ament {
   _getAmentPrefixPath() {
     const amentPath = process.env.AMENT_PREFIX_PATH;
     if (!amentPath) {
-      throw new Error('Cannot found AMENT_PREFIX_PATH');
+      throw new Error('Cannot find AMENT_PREFIX_PATH');
     }
     return process.env.AMENT_PREFIX_PATH;
   }

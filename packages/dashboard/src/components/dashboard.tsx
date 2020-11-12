@@ -43,6 +43,8 @@ import RobotsPanel from './robots-panel';
 import ScheduleVisualizer from './schedule-visualizer';
 import { SpotlightValue } from './spotlight-value';
 import { DashboardTour, DashboardTourProps } from './tour/tour';
+import { TaskSummaryPanel } from './task-summary-panel';
+import TaskManager from '../managers/task-manager';
 
 const debug = Debug('App');
 const DoorAccordion = withSpotlight(DoorAccordion_);
@@ -101,6 +103,7 @@ export enum OmniPanelViewIndex {
   Dispensers,
   Commands,
   Negotiations,
+  Tasks,
 }
 
 class ViewMapNode {
@@ -123,6 +126,8 @@ function makeViewMap(): ViewMap {
   viewMap[OmniPanelViewIndex.Dispensers] = root.addChild(OmniPanelViewIndex.Dispensers);
   viewMap[OmniPanelViewIndex.Commands] = root.addChild(OmniPanelViewIndex.Commands);
   viewMap[OmniPanelViewIndex.Negotiations] = root.addChild(OmniPanelViewIndex.Negotiations);
+  viewMap[OmniPanelViewIndex.Tasks] = root.addChild(OmniPanelViewIndex.Tasks);
+
   return viewMap;
 }
 
@@ -182,6 +187,9 @@ export default function Dashboard(_props: {}): React.ReactElement {
     fleetNames.current = newFleetNames;
   }
 
+  const taskManager = React.useMemo(() => new TaskManager(), []);
+  const [tasks, setTasks] = React.useState(taskManager.tasks());
+
   const dispenserStateManager = React.useMemo(() => new DispenserStateManager(), []);
   const [dispenserStates, setDispenserStates] = React.useState<
     Readonly<Record<string, RomiCore.DispenserState>>
@@ -223,6 +231,16 @@ export default function Dashboard(_props: {}): React.ReactElement {
   ] = React.useState<NotificationBarProps | null>(null);
 
   const [tourState, setTourState] = React.useState(false);
+  const [showTooltips, setTooltips] = React.useState(true);
+
+  const toggleTooltips = React.useCallback(() => {
+    setTooltips(!showTooltips);
+  }, [showTooltips]);
+
+  const tooltipsValue = React.useMemo(() => ({ showTooltips, toggleTooltips }), [
+    showTooltips,
+    toggleTooltips,
+  ]);
 
   React.useEffect(() => {
     setLoading({ caption: 'Connecting to api server...' });
@@ -238,6 +256,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
         liftStateManager.startSubscription(x);
         fleetManager.startSubscription(x);
         negotiationStatusManager.startSubscription();
+        taskManager.startSubscription(x);
 
         fleetManager.on('updated', () => setFleets(fleetManager.fleets()));
         liftStateManager.on('updated', () => setLiftStates(liftStateManager.liftStates()));
@@ -248,6 +267,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
         negotiationStatusManager.on('updated', () =>
           setNegotiationStatus(negotiationStatusManager.allConflicts()),
         );
+        taskManager.on('updated', () => setTasks(taskManager.tasks()));
         setTransport(x);
       })
       .catch((e: CloseEvent) => {
@@ -260,6 +280,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     dispenserStateManager,
     fleetManager,
     negotiationStatusManager,
+    taskManager,
   ]);
 
   React.useEffect(() => {
@@ -386,6 +407,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
     setCurrentView(OmniPanelViewIndex.Negotiations);
   }, []);
 
+  const handleMainMenuTasksClick = React.useCallback(() => {
+    setCurrentView(OmniPanelViewIndex.Tasks);
+  }, []);
+
   const omniPanelClasses = React.useMemo(
     () => ({ backButton: classes.topLeftBorder, closeButton: classes.topRightBorder }),
     [classes.topLeftBorder, classes.topRightBorder],
@@ -450,6 +475,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
         settings={settings}
         notificationDispatch={setNotificationBarMessage}
         resourceManager={resourceManager.current}
+        tooltips={tooltipsValue}
       >
         <RmfContextProvider
           doorStates={doorStates}
@@ -463,7 +489,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
               showHelp={setShowHelp}
             />
             {loading && <LoadingScreen {...loading} />}
-            {buildingMap && mapFloorLayerSorted && (
+            {buildingMap && mapFloorLayerSorted && !tourState && (
               <ScheduleVisualizer
                 buildingMap={buildingMap}
                 mapFloorLayerSorted={mapFloorLayerSorted}
@@ -476,7 +502,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
                 onDispenserClick={handleDispenserClick}
               />
             )}
-
             <Fade in={showOmniPanel}>
               <OmniPanel
                 className={classes.omniPanel}
@@ -493,6 +518,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                     onDispensersClick={handleMainMenuDispensersClick}
                     onCommandsClick={handleMainMenuCommandsClick}
                     onNegotiationsClick={handleMainMenuNegotiationsClick}
+                    onTasksClick={handleMainMenuTasksClick}
                   />
                 </OmniPanelView>
                 <OmniPanelView id={OmniPanelViewIndex.Doors}>
@@ -538,6 +564,9 @@ export default function Dashboard(_props: {}): React.ReactElement {
                     setNegotiationTrajStore={setNegotiationTrajStore}
                   />
                 </OmniPanelView>
+                <OmniPanelView id={OmniPanelViewIndex.Tasks}>
+                  <TaskSummaryPanel allTasks={tasks} />
+                </OmniPanelView>
               </OmniPanel>
             </Fade>
 
@@ -571,7 +600,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
             message={notificationBarMessage?.message}
             type={notificationBarMessage?.type}
           />
-          <DashboardTour tourProps={tourProps} />
         </RmfContextProvider>
       </AppContextProvider>
     </GlobalHotKeys>

@@ -1,0 +1,114 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Matches snapshot 1`] = `
+<Fragment>
+  <div
+    className="makeStyles-accordionDetailLine-1"
+  >
+    <WithStyles(ForwardRef(Typography))
+      variant="body1"
+    >
+      TaskId: 
+    </WithStyles(ForwardRef(Typography))>
+    <WithStyles(ForwardRef(Typography))
+      noWrap={true}
+      variant="body1"
+    >
+      af8faee9-84ca-41ea-8bb6-8493cc9f824c
+    </WithStyles(ForwardRef(Typography))>
+  </div>
+  <WithStyles(ForwardRef(Divider)) />
+  <div
+    className="makeStyles-accordionDetailLine-1"
+  >
+    <WithStyles(ForwardRef(Typography))
+      variant="body1"
+    >
+      State:
+    </WithStyles(ForwardRef(Typography))>
+    <WithStyles(ForwardRef(Typography))
+      variant="body1"
+    >
+      ACTIVE
+    </WithStyles(ForwardRef(Typography))>
+  </div>
+  <WithStyles(ForwardRef(Divider)) />
+  <div
+    className="makeStyles-accordionDetailLine-1"
+  >
+    <WithStyles(ForwardRef(Typography))
+      variant="body1"
+    >
+      Status:
+    </WithStyles(ForwardRef(Typography))>
+    <div>
+      <WithStyles(ForwardRef(Typography))
+        key="Moving [tinyRobot/tinyRobot1]: ( 9.81228 -6.98942 -3.12904) -> ( 6.26403 -3.51569  1.16864) "
+        variant="body1"
+      >
+         
+        Moving [tinyRobot/tinyRobot1]: ( 9.81228 -6.98942 -3.12904) -&gt; ( 6.26403 -3.51569  1.16864) 
+      </WithStyles(ForwardRef(Typography))>
+      <WithStyles(ForwardRef(Typography))
+        key=" Remaining phases: 1 "
+        variant="body1"
+      >
+         
+         Remaining phases: 1 
+      </WithStyles(ForwardRef(Typography))>
+      <WithStyles(ForwardRef(Typography))
+        key=" Remaining phases: 6"
+        variant="body1"
+      >
+         
+         Remaining phases: 6
+      </WithStyles(ForwardRef(Typography))>
+    </div>
+  </div>
+  <WithStyles(ForwardRef(Divider)) />
+  <div
+    className="makeStyles-accordionDetailLine-1"
+  >
+    <WithStyles(ForwardRef(Typography))
+      variant="body1"
+    >
+      Submission Time:
+    </WithStyles(ForwardRef(Typography))>
+    <WithStyles(ForwardRef(Typography))
+      variant="body1"
+    >
+      0
+    </WithStyles(ForwardRef(Typography))>
+  </div>
+  <WithStyles(ForwardRef(Divider)) />
+  <div
+    className="makeStyles-accordionDetailLine-1"
+  >
+    <WithStyles(ForwardRef(Typography))
+      variant="body1"
+    >
+      Start time:
+    </WithStyles(ForwardRef(Typography))>
+    <WithStyles(ForwardRef(Typography))
+      variant="body1"
+    >
+      0
+    </WithStyles(ForwardRef(Typography))>
+  </div>
+  <WithStyles(ForwardRef(Divider)) />
+  <div
+    className="makeStyles-accordionDetailLine-1"
+  >
+    <WithStyles(ForwardRef(Typography))
+      variant="body1"
+    >
+      End Time:
+    </WithStyles(ForwardRef(Typography))>
+    <WithStyles(ForwardRef(Typography))
+      variant="body1"
+    >
+      0
+    </WithStyles(ForwardRef(Typography))>
+  </div>
+</Fragment>
+`;
