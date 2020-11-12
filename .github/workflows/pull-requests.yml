@@ -63,7 +63,8 @@ jobs:
           docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
           npm run sync:docker
           docker network ls
-          cd ../../../../ && ls
+          export OTHERCONTAINER=$(docker ps -q --filter ancestor=docker.pkg.github.com/osrf/romi-dashboard/e2e)
+          docker network connect host $OTHERCONTAINER
       - name: e2e test
         run: |
           . /opt/ros/foxy/setup.bash && . /opt/rmf/setup.bash

@@ -38,19 +38,19 @@ async function authReady(timeout = 80000) {
 
         if (!isConnected) {
           console.log('I am inside isConnected!!! >>>>> ' + isConnected);
-          execSync('docker network create test-net', {
-            stdio: 'inherit',
-          });
-          execSync('docker network connect test-net $CONTAINER', {
-            stdio: 'inherit',
-          });
+          // execSync('docker network create test-net', {
+          //   stdio: 'inherit',
+          // });
+          // execSync('docker network connect test-net $CONTAINER', {
+          //   stdio: 'inherit',
+          // });
           // execSync('docker network connect test-net docker_e2e_1', {stdio: 'inherit'})
-          execSync('docker network connect test-net $OTHERCONTAINER', {
-            stdio: 'inherit',
-          });
-          execSync('docker network disconnect romidashboarde2e_default $CONTAINER', {
-            stdio: 'inherit',
-          });
+          // execSync('docker network connect test-net $OTHERCONTAINER', {
+          //   stdio: 'inherit',
+          // });
+          // execSync('docker network disconnect romidashboarde2e_default $CONTAINER', {
+          //   stdio: 'inherit',
+          // });
         }
 
         console.log('=========================== END =============================');
