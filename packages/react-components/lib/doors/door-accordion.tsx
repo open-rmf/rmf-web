@@ -96,8 +96,8 @@ export interface DoorAccordionProps extends Omit<AccordionProps, 'children'> {
   onDoorControlClick?(event: React.MouseEvent, door: RomiCore.Door, mode: number): void;
 }
 
-export const DoorAccordion = React.memo(
-  React.forwardRef((props: DoorAccordionProps, ref: React.Ref<HTMLElement>) => {
+export const DoorAccordion = React.forwardRef(
+  (props: DoorAccordionProps, ref: React.Ref<HTMLElement>) => {
     const { door, doorState, onDoorControlClick, ...otherProps } = props;
     debug(`render ${door.name}`);
     const classes = useStyles();
@@ -148,7 +148,7 @@ export const DoorAccordion = React.memo(
         </ItemAccordionDetails>
       </Accordion>
     );
-  }),
+  },
 );
 
 export default DoorAccordion;

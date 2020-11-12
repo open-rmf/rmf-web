@@ -24,3 +24,5 @@ export const LoginPage = (props: LoginCardProps): JSX.Element => {
     </div>
   );
 };
+
+export default LoginPage;

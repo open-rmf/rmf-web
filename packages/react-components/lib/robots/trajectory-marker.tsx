@@ -25,8 +25,8 @@ export interface TrajectoryMarkerProps {
   animationScale?: number;
 }
 
-export const TrajectoryMarker = React.memo(
-  React.forwardRef((props: TrajectoryMarkerProps, ref: React.Ref<SVGGElement>) => {
+export const TrajectoryMarker = React.forwardRef(
+  (props: TrajectoryMarkerProps, ref: React.Ref<SVGGElement>) => {
     const {
       trajectory,
       conflict,
@@ -69,7 +69,7 @@ export const TrajectoryMarker = React.memo(
         />
       </g>
     );
-  }),
+  },
 );
 
 export default TrajectoryMarker;

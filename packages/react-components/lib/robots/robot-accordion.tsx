@@ -68,8 +68,8 @@ export interface RobotAccordionProps extends Omit<AccordionProps, 'children'> {
   robot: RomiCore.RobotState;
 }
 
-export const RobotAccordion = React.memo(
-  React.forwardRef((props: RobotAccordionProps, ref: React.Ref<HTMLElement>) => {
+export const RobotAccordion = React.forwardRef(
+  (props: RobotAccordionProps, ref: React.Ref<HTMLElement>) => {
     const { fleetName, robot, ...otherProps } = props;
     debug(`render ${robot.name}`);
     const classes = useStyles();
@@ -88,7 +88,7 @@ export const RobotAccordion = React.memo(
         </ItemAccordionDetails>
       </Accordion>
     );
-  }),
+  },
 );
 
 export default RobotAccordion;

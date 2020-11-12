@@ -79,8 +79,8 @@ export interface LiftAccordionProps extends Omit<AccordionProps, 'children'> {
   ): void;
 }
 
-export const LiftAccordion = React.memo(
-  React.forwardRef((props: LiftAccordionProps, ref: React.Ref<HTMLElement>) => {
+export const LiftAccordion = React.forwardRef(
+  (props: LiftAccordionProps, ref: React.Ref<HTMLElement>) => {
     const { lift, liftState, onRequestSubmit, ...otherProps } = props;
     debug(`render ${lift.name}`);
     const [tabValue, setTabValue] = React.useState(0);
@@ -144,7 +144,7 @@ export const LiftAccordion = React.memo(
         </ItemAccordionDetails>
       </Accordion>
     );
-  }),
+  },
 );
 
 export default LiftAccordion;

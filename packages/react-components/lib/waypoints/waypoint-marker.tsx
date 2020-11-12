@@ -37,8 +37,8 @@ export interface WaypointMarkerProps extends React.SVGProps<SVGGElement> {
   translate?: boolean;
 }
 
-export const WaypointMarker = React.memo(
-  React.forwardRef((props: WaypointMarkerProps, ref: React.Ref<SVGGElement>) => {
+export const WaypointMarker = React.forwardRef(
+  (props: WaypointMarkerProps, ref: React.Ref<SVGGElement>) => {
     const { waypoint, size = 0.1, translate = true, ...otherProps } = props;
     debug(`render ${waypoint.name}`);
     const pos = fromRmfCoords([waypoint.x, waypoint.y]);
@@ -76,5 +76,5 @@ export const WaypointMarker = React.memo(
         </g>
       </g>
     );
-  }),
+  },
 );

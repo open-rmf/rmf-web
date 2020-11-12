@@ -52,8 +52,8 @@ export interface DispenserAccordionProps extends Omit<AccordionProps, 'children'
   dispenserState: RomiCore.DispenserState;
 }
 
-export const DispenserAccordion = React.memo(
-  React.forwardRef((props: DispenserAccordionProps, ref: React.Ref<HTMLElement>) => {
+export const DispenserAccordion = React.forwardRef(
+  (props: DispenserAccordionProps, ref: React.Ref<HTMLElement>) => {
     const { dispenserState, ...otherProps } = props;
     debug(`render ${dispenserState.guid}`);
     const classes = useStyles();
@@ -88,7 +88,7 @@ export const DispenserAccordion = React.memo(
         </ItemAccordionDetails>
       </Accordion>
     );
-  }),
+  },
 );
 
 export default DispenserAccordion;

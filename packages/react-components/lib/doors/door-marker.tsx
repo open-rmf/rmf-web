@@ -220,8 +220,8 @@ export interface DoorMarkerProps extends Omit<React.SVGProps<SVGGElement>, 'onCl
   onClick?(event: React.MouseEvent, door: RomiCore.Door): void;
 }
 
-export const DoorMarker = React.memo(
-  React.forwardRef((props: DoorMarkerProps, ref: React.Ref<SVGGElement>) => {
+export const DoorMarker = React.forwardRef(
+  (props: DoorMarkerProps, ref: React.Ref<SVGGElement>) => {
     const { door, doorMode, translate = true, onClick, ...otherProps } = props;
     debug(`render ${door.name}`);
     const classes = useDoorStyles();
@@ -257,7 +257,7 @@ export const DoorMarker = React.memo(
         </g>
       </g>
     );
-  }),
+  },
 );
 
 export default DoorMarker;

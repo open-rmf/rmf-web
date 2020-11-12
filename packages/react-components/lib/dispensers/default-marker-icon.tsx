@@ -1,7 +1,7 @@
 import { useTheme } from '@material-ui/core';
 import React from 'react';
 
-const DispenserDefaultIcon = (props: { footprint: number }): React.ReactElement => {
+const DispenserDefaultIcon = (props: { footprint: number }): JSX.Element => {
   const { footprint } = props;
   const theme = useTheme();
   return (
