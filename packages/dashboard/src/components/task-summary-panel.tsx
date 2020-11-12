@@ -148,7 +148,7 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryPanelProps) => {
       const actor = getActorFromStatus(taskStatus);
       if (!actor) return;
       return (
-        <Typography variant="body1" className={classes.taskActor}>
+        <Typography variant="body1" id="task-actor" className={classes.taskActor}>
           {actor}
         </Typography>
       );
