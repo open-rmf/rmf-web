@@ -38,21 +38,9 @@ jobs:
   e2e-test:
     name: End-to-End Test
     runs-on: ubuntu-latest
-    container:
-     image: docker.pkg.github.com/osrf/romi-dashboard/e2e
-     credentials:
-       username: ${{ github.repository_owner }}
-       password: ${{ secrets.GITHUB_TOKEN }}
-     volumes:
-       - /var/run/docker.sock:/var/run/docker.sock
-       - romi-dashboard:/root/romi-dashboard
-     env:
-       CHROME_BIN: /chrome-no-sandbox
-     options: --network host --ipc host --privileged
     defaults: 
       run:
         shell: bash
-        working-directory: packages/dashboard
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
@@ -66,7 +54,8 @@ jobs:
           echo $OTHERCONTAINER
           /usr/bin/docker start $OTHERCONTAINER
           /usr/bin/docker container ls
-          /usr/bin/docker inspect --format "{{range .Config.Env}}{{println .}}{{end}}" $OTHERCONTAINER
+          /usr/bin/docker cp $OTHERCONTAINER:. dashboard/
+          cd dashboard/root && ls
       - name: e2e test
         run: |
           . /opt/ros/foxy/setup.bash && . /opt/rmf/setup.bash
