@@ -26,7 +26,7 @@ async function authReady(timeout = 80000) {
         process.env.CONTAINER = container;
 
         let isConnected = execSync(
-          'docker ps -q --filter network=test-net --filter ancestor=romi-dashboard/auth',
+          'docker ps -q --filter network=$NETWORK --filter ancestor=romi-dashboard/auth',
         ).toString();
 
         authIpAddress = execSync(
