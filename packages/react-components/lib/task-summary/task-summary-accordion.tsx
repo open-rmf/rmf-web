@@ -10,7 +10,6 @@ import PauseCircleFilledIcon from '@material-ui/icons/PauseCircleFilled';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import SimpleInfo, { SimpleInfoData } from '../simple-info';
 import { formatStatus, getActorFromStatus, getStateLabel } from './task-summary-utils';
-import { SnapshotControlButtonGroup } from '..';
 
 const debug = Debug('OmniPanel:TaskSummaryAccordion');
 
@@ -35,25 +34,17 @@ export const TaskSummaryAccordionInfo = (props: TaskSummaryAccordionInfoProps) =
 };
 
 export interface TaskSummaryAccordionProps {
-  allTasks: RomiCore.TaskSummary[];
+  tasks: RomiCore.TaskSummary[];
 }
 
 export const TaskSummaryAccordion = React.memo((props: TaskSummaryAccordionProps) => {
   debug('task summary status panel render');
 
-  const { allTasks } = props;
+  const { tasks } = props;
   const classes = useStyles();
 
-  const [taskContents, setTaskContents] = React.useState<{
-    [key: string]: JSX.Element;
-  }>({});
   const [expanded, setExpanded] = React.useState<string[]>([]);
   const [selected, setSelected] = React.useState<string>('');
-
-  // We need to persist across the renders
-  const savedTasksContent = React.useRef<{
-    [key: string]: JSX.Element;
-  }>({});
 
   const handleToggle = (event: React.ChangeEvent<{}>, nodeIds: string[]) => {
     setExpanded(nodeIds);
@@ -61,38 +52,6 @@ export const TaskSummaryAccordion = React.memo((props: TaskSummaryAccordionProps
 
   const handleSelect = (event: React.ChangeEvent<{}>, nodeIds: string) => {
     setSelected(nodeIds);
-  };
-
-  const handleResetTasks = () => {
-    setExpanded([]);
-    setSelected('');
-  };
-
-  // TODO: we need to synchronize this with a proper backend when it's ready. Now the completed
-  // task will be flushed on a browser refresh because they are being saved in memory.
-  const handleClearAllCurrTasks = () => {
-    savedTasksContent.current = Object.assign({}, taskContents);
-    setTaskContents({});
-  };
-
-  const handleRestoreTasks = () => {
-    // Adding this because the test interpreter cannot find the reference to `savedTasksContent current`
-    // inside the setTaskContents
-    const storedTasks = savedTasksContent.current;
-    setTaskContents((currentContent) => {
-      // Assigning another reference.
-      const newTaskContents = Object.assign({}, currentContent);
-      // We cannot assign directly the stored values to `currentContent` because it is updating
-      // the taskContents too, so when we set the taskContent new value with `setTaskContents`
-      // it'll no re-render because it'll not detect any changes.
-      Object.keys(storedTasks).forEach((element) => {
-        if (!(element in currentContent)) {
-          newTaskContents[element] = storedTasks[element];
-        }
-      });
-      return newTaskContents;
-    });
-    savedTasksContent.current = {};
   };
 
   // Added a useCallback here because this function is been used inside the useEffect.
@@ -114,97 +73,65 @@ export const TaskSummaryAccordion = React.memo((props: TaskSummaryAccordionProps
     [classes],
   );
 
-  // Update Task list content
-  React.useEffect(() => {
-    const renderActor = (taskStatus: string): React.ReactElement | undefined => {
-      const actor = getActorFromStatus(taskStatus);
-      if (!actor) return;
-      return (
-        <Typography variant="body1" id="task-actor" className={classes.taskActor}>
-          {actor}
-        </Typography>
-      );
-    };
+  const renderActor = (taskStatus: string): React.ReactElement | undefined => {
+    const actor = getActorFromStatus(taskStatus);
+    if (!actor) return;
+    return (
+      <Typography variant="body1" id="task-actor" className={classes.taskActor}>
+        {actor}
+      </Typography>
+    );
+  };
 
-    const renderTaskTreeItem = (task: RomiCore.TaskSummary) => {
-      return (
-        <TreeItem
-          data-component="TreeItem"
-          nodeId={task.task_id}
-          key={task.task_id}
-          classes={{
-            label: `${determineStyle(task.state)} ${classes.labelContent}`,
-            root: classes.treeChildren,
-            expanded: classes.expanded,
-          }}
-          label={
-            <>
-              <Typography variant="body1" noWrap>
-                {task.state === RomiCore.TaskSummary.STATE_ACTIVE && (
-                  // TODO: add onClick with e.preventDefault() and with the pause plans logic.
-                  <IconButton disabled>
-                    <PlayCircleFilledWhiteIcon />
-                  </IconButton>
-                )}
-                {task.state === RomiCore.TaskSummary.STATE_QUEUED && (
-                  <IconButton disabled>
-                    <PauseCircleFilledIcon />
-                  </IconButton>
-                )}
-                {task.task_id}
-              </Typography>
-              {renderActor(task.status)}
-            </>
-          }
-        >
-          <TaskSummaryAccordionInfo task={task} key={task.task_id} />
-        </TreeItem>
-      );
-    };
-
-    if (allTasks.length === 0) return;
-
-    setTaskContents((currentContent) => {
-      // Assigning another reference.
-      const newTaskContents = Object.assign({}, currentContent);
-      // We cannot assign directly the stored values to `currentContent` because it is updating
-      // the taskContents too, so when we set the taskContent new value with `setTaskContents`
-      // it'll no re-render because it'll not detect any changes.
-      allTasks.forEach((task) => {
-        newTaskContents[task.task_id] = renderTaskTreeItem(task);
-      });
-      return newTaskContents;
-    });
-  }, [allTasks, classes, determineStyle]);
+  const renderTaskTreeItem = (task: RomiCore.TaskSummary) => {
+    return (
+      <TreeItem
+        data-component="TreeItem"
+        nodeId={task.task_id}
+        key={task.task_id}
+        classes={{
+          label: `${determineStyle(task.state)} ${classes.labelContent}`,
+          root: classes.treeChildren,
+          expanded: classes.expanded,
+        }}
+        label={
+          <>
+            <Typography variant="body1" noWrap>
+              {task.state === RomiCore.TaskSummary.STATE_ACTIVE && (
+                // TODO: add onClick with e.preventDefault() and with the pause plans logic.
+                <IconButton disabled>
+                  <PlayCircleFilledWhiteIcon />
+                </IconButton>
+              )}
+              {task.state === RomiCore.TaskSummary.STATE_QUEUED && (
+                <IconButton disabled>
+                  <PauseCircleFilledIcon />
+                </IconButton>
+              )}
+              {task.task_id}
+            </Typography>
+            {renderActor(task.status)}
+          </>
+        }
+      >
+        <TaskSummaryAccordionInfo task={task} key={task.task_id} />
+      </TreeItem>
+    );
+  };
 
   return (
-    <Typography variant="body1" component={'span'}>
-      <div className={classes.buttonGroupDiv}>
-        <SnapshotControlButtonGroup
-          disableReset={allTasks.length === 0}
-          disableClear={allTasks.length === 0}
-          disableRestore={allTasks.length === 0}
-          onResetClick={handleResetTasks}
-          onRestoreClick={handleRestoreTasks}
-          onClearClick={handleClearAllCurrTasks}
-          showSave={false}
-        />
-      </div>
-      <TreeView
-        className={classes.root}
-        onNodeSelect={handleSelect}
-        onNodeToggle={handleToggle}
-        defaultCollapseIcon={<ExpandMoreIcon />}
-        defaultExpanded={['root']}
-        defaultExpandIcon={<ChevronRightIcon />}
-        expanded={expanded}
-        selected={selected}
-      >
-        {Object.keys(taskContents)
-          .reverse()
-          .map((key) => taskContents[key])}
-      </TreeView>
-    </Typography>
+    <TreeView
+      className={classes.root}
+      onNodeSelect={handleSelect}
+      onNodeToggle={handleToggle}
+      defaultCollapseIcon={<ExpandMoreIcon />}
+      defaultExpanded={['root']}
+      defaultExpandIcon={<ChevronRightIcon />}
+      expanded={expanded}
+      selected={selected}
+    >
+      {tasks.reverse().map((task) => renderTaskTreeItem(task))}
+    </TreeView>
   );
 });
 
@@ -252,9 +179,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   taskActor: {
     alignSelf: 'center',
-  },
-  buttonGroupDiv: {
-    padding: '0.5rem 1rem',
   },
 }));
 

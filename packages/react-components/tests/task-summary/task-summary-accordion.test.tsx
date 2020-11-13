@@ -1,7 +1,6 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 import { render } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { TaskSummaryAccordion, TaskSummaryAccordionInfo } from '../../lib';
 import { getActorFromStatus } from '../../lib/task-summary/task-summary-utils';
 
@@ -29,7 +28,7 @@ const taskSummary = {
 describe('Renders correctly', () => {
   test('Renders tree items', () => {
     const tasks = Object.values(taskSummary);
-    const root = render(<TaskSummaryAccordion allTasks={tasks} />);
+    const root = render(<TaskSummaryAccordion tasks={tasks} />);
     tasks.forEach((task) => {
       expect(root.getByText(task.task_id).textContent).toBe(task.task_id);
     });
@@ -37,7 +36,7 @@ describe('Renders correctly', () => {
 
   test('Show description below the id if the task has an actor', () => {
     const task = Object.values(taskSummary)[0];
-    const root = render(<TaskSummaryAccordion allTasks={[task]} />);
+    const root = render(<TaskSummaryAccordion tasks={[task]} />);
     const actor = getActorFromStatus(task.status);
     if (!actor) throw new Error('An actor is required to run this test');
     const classes = root.getByText(actor[0]).className;
@@ -47,56 +46,8 @@ describe('Renders correctly', () => {
   test('Does not show description below the id if the task has an actor', () => {
     const task = Object.values(taskSummary)[0];
     task.status = 'Finished';
-    const root = render(<TaskSummaryAccordion allTasks={[task]} />);
+    const root = render(<TaskSummaryAccordion tasks={[task]} />);
     expect(root.container.querySelector('[id=task-actor]')).toBeFalsy();
-  });
-});
-
-describe('Button Bar working correctly', () => {
-  test('should set disabled to true on buttons when empty tasks is provided', () => {
-    const root = render(<TaskSummaryAccordion allTasks={[]} />);
-    expect(
-      root.container.querySelector('button#clear-button')?.hasAttribute('disabled'),
-    ).toBeTruthy();
-    expect(
-      root.container.querySelector('button#reset-button')?.hasAttribute('disabled'),
-    ).toBeTruthy();
-    expect(
-      root.container.querySelector('button#restore-button')?.hasAttribute('disabled'),
-    ).toBeTruthy();
-  });
-
-  test('should set disabled to false on buttons when tasks are provided', () => {
-    const tasks = Object.values(taskSummary);
-    const root = render(<TaskSummaryAccordion allTasks={tasks} />);
-    expect(
-      root.container.querySelector('button#clear-button')?.hasAttribute('disabled'),
-    ).toBeFalsy();
-    expect(
-      root.container.querySelector('button#reset-button')?.hasAttribute('disabled'),
-    ).toBeFalsy();
-    expect(
-      root.container.querySelector('button#restore-button')?.hasAttribute('disabled'),
-    ).toBeFalsy();
-  });
-
-  test('should empty all current tasks when clear button is clicked', () => {
-    const tasks = Object.values(taskSummary);
-    const root = render(<TaskSummaryAccordion allTasks={tasks} />);
-    userEvent.click(root.getByText('Clear'));
-    expect(root.container.querySelector('li')).toBeFalsy();
-  });
-
-  test('should render all tasks when restore button is clicked', () => {
-    const tasks = Object.values(taskSummary);
-    const root = render(<TaskSummaryAccordion allTasks={tasks} />);
-    // clear all tasks first to ensure empty array
-    userEvent.click(root.getByText('Clear'));
-    expect(root.container.querySelector('li')).toBeFalsy();
-    userEvent.click(root.getByText('Restore'));
-    tasks.forEach((task) => {
-      expect(root.getByText(task.task_id).textContent).toBe(task.task_id);
-    });
   });
 });
 
@@ -108,25 +59,25 @@ describe('Components gets the correct style on specifics states', () => {
 
   test('active style is applied ', () => {
     task.state = RomiCore.TaskSummary.STATE_ACTIVE;
-    const root = render(<TaskSummaryAccordion allTasks={[task]} />);
+    const root = render(<TaskSummaryAccordion tasks={[task]} />);
     expect(root.getByText(task.task_id).parentElement?.className).toContain('makeStyles-active');
   });
 
   test('queue style is applied', () => {
     task.state = RomiCore.TaskSummary.STATE_QUEUED;
-    const root = render(<TaskSummaryAccordion allTasks={[task]} />);
+    const root = render(<TaskSummaryAccordion tasks={[task]} />);
     expect(root.getByText(task.task_id).parentElement?.className).toContain('makeStyles-queued');
   });
 
   test('completed style is applied', () => {
     task.state = RomiCore.TaskSummary.STATE_COMPLETED;
-    const root = render(<TaskSummaryAccordion allTasks={[task]} />);
+    const root = render(<TaskSummaryAccordion tasks={[task]} />);
     expect(root.getByText(task.task_id).parentElement?.className).toContain('makeStyles-completed');
   });
 
   test('failed style is applied', () => {
     task.state = RomiCore.TaskSummary.STATE_FAILED;
-    const root = render(<TaskSummaryAccordion allTasks={[task]} />);
+    const root = render(<TaskSummaryAccordion tasks={[task]} />);
     expect(root.getByText(task.task_id).parentElement?.className).toContain('makeStyles-failed');
   });
 });
