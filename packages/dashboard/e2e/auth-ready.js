@@ -30,12 +30,13 @@ async function authReady(timeout = 80000) {
 
         if (!isConnected) {
           console.log('I am inside isConnected!!! >>>>> ' + isConnected);
-          execSync('docker network create --subnet=172.20.0.0/16 test-net', {
+          execSync('docker network create --subnet=172.16.0.0/16 test-net', {
             stdio: 'inherit',
           });
-          execSync('docker network connect --ip=172.20.0.2 test-net $CONTAINER', {
+          execSync('docker network connect --ip=172.16.0.2 test-net $CONTAINER', {
             stdio: 'inherit',
           });
+          // execSync('docker network connect test-net docker_e2e_1', { stdio: 'inherit' })
           execSync('docker network connect test-net $OTHERCONTAINER', { stdio: 'inherit' });
           execSync('docker network disconnect romidashboarde2e_default $CONTAINER', {
             stdio: 'inherit',
@@ -46,9 +47,7 @@ async function authReady(timeout = 80000) {
 
           authIpAddress = execSync(
             "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $CONTAINER",
-          )
-            .toString()
-            .trim();
+          ).toString();
           process.env.AUTH_IP = authIpAddress;
           console.log(
             'auth ip address >>>>>>> ' + authIpAddress + ' ' + typeof process.env.AUTH_IP,
@@ -65,10 +64,8 @@ async function authReady(timeout = 80000) {
         console.log(
           '-------------------------------- connecting success ------------------------------' +
             process.env.AUTH_IP,
-          +' ',
-          +process.env.REACT_APP_AUTH_CONFIG,
         );
-        execSync('docker network inspect $NETWORK', { stdio: 'inherit' });
+        execSync('docker network inspect test-net', { stdio: 'inherit' });
         clearTimeout(timer);
         clearTimeout(retryTimer);
         res(true);
