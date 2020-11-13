@@ -7,46 +7,18 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import PlayCircleFilledWhiteIcon from '@material-ui/icons/PlayCircleFilledWhite';
 import PauseCircleFilledIcon from '@material-ui/icons/PauseCircleFilled';
-import { colorPalette } from '../util/css-utils';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import { SimpleInfo, SimpleInfoData, SnapshotControlButtonGroup } from 'react-components';
+import SimpleInfo, { SimpleInfoData } from '../simple-info';
+import { formatStatus, getActorFromStatus, getStateLabel } from './task-summary-utils';
+import { SnapshotControlButtonGroup } from '..';
 
-const debug = Debug('OmniPanel:TaskSummaryPanel');
+const debug = Debug('OmniPanel:TaskSummaryAccordion');
 
-// TODO: this is a hacky solution to get the actor from the task status,
-// this should be changed when then backend sends an actor on the
-// taskSummary message (we should use the actor provided by the message).
-// https://github.com/osrf/rmf_core/issues/205
-export const getActorFromStatus = (status: string) => {
-  // Gets the name of the robot if it has any
-  // eslint-disable-next-line
-  return status.match(/\[[A-Za-z]([a-zA-Z0-9\/]){3,}\]+/gi);
-};
-
-export const formatStatus = (status: string) => {
-  return status.split('|');
-};
-
-export const getStateLabel = (state: number): string => {
-  switch (state) {
-    case RomiCore.TaskSummary.STATE_QUEUED:
-      return 'QUEUED';
-    case RomiCore.TaskSummary.STATE_ACTIVE:
-      return 'ACTIVE';
-    case RomiCore.TaskSummary.STATE_COMPLETED:
-      return 'COMPLETED';
-    case RomiCore.TaskSummary.STATE_FAILED:
-      return 'FAILED';
-    default:
-      return 'UNKNOWN';
-  }
-};
-
-interface TaskSummaryPanelInfoProps {
+interface TaskSummaryAccordionInfoProps {
   task: RomiCore.TaskSummary;
 }
 
-export const TaskSummaryPanelInfo = (props: TaskSummaryPanelInfoProps) => {
+export const TaskSummaryAccordionInfo = (props: TaskSummaryAccordionInfoProps) => {
   const { task } = props;
   const statusDetails = formatStatus(task.status);
   const stateLabel = getStateLabel(task.state);
@@ -62,11 +34,11 @@ export const TaskSummaryPanelInfo = (props: TaskSummaryPanelInfoProps) => {
   return <SimpleInfo data={data} />;
 };
 
-export interface TaskSummaryPanelProps {
+export interface TaskSummaryAccordionProps {
   allTasks: RomiCore.TaskSummary[];
 }
 
-export const TaskSummaryPanel = React.memo((props: TaskSummaryPanelProps) => {
+export const TaskSummaryAccordion = React.memo((props: TaskSummaryAccordionProps) => {
   debug('task summary status panel render');
 
   const { allTasks } = props;
@@ -185,7 +157,7 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryPanelProps) => {
             </>
           }
         >
-          <TaskSummaryPanelInfo task={task} key={task.task_id} />
+          <TaskSummaryAccordionInfo task={task} key={task.task_id} />
         </TreeItem>
       );
     };
@@ -257,7 +229,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     flexDirection: 'column',
   },
   expanded: {
-    borderLeft: `0.1rem solid ${colorPalette.unknown}`,
+    borderLeft: `0.1rem solid #cccccc`,
   },
   /**
    * The idea is to maintain the same itemTree color depending on the task state even on selected.
@@ -286,4 +258,4 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export default TaskSummaryPanel;
+export default TaskSummaryAccordion;

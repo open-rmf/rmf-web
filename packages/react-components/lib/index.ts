@@ -16,6 +16,7 @@ export * from './spotlight-accordion';
 export * from './stack-navigator';
 export * from './status-label';
 export * from './svg-text';
+export * from './task-summary';
 export * from './tooltip';
 export * from './utils';
 export * from './waypoints';
