@@ -5,3 +5,4 @@ export REACT_APP_TRAJECTORY_SERVER=${REACT_APP_TRAJECTORY_SERVER:-ws://localhost
 export REACT_APP_API_SERVER=${REACT_APP_API_SERVER:-ws://localhost:50002}
 export ROMI_DASHBOARD_PORT=${ROMI_DASHBOARD_PORT:-5000}
 export COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-romidashboarde2e}
+export REACT_APP_AUTH_CONFIG=${REACT_APP_AUTH_CONFIG:-'{realm:master, clientId:romi-dashboard, url: http://172.20.0.2:8080/auth}'}
