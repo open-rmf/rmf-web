@@ -41,16 +41,16 @@ async function authReady(timeout = 80000) {
           // execSync('docker network create test-net', {
           //   stdio: 'inherit',
           // });
-          // execSync('docker network connect test-net $CONTAINER', {
-          //   stdio: 'inherit',
-          // });
+          execSync('docker network connect $NETWORK $CONTAINER', {
+            stdio: 'inherit',
+          });
           // execSync('docker network connect test-net docker_e2e_1', {stdio: 'inherit'})
           // execSync('docker network connect test-net $OTHERCONTAINER', {
           //   stdio: 'inherit',
           // });
-          // execSync('docker network disconnect romidashboarde2e_default $CONTAINER', {
-          //   stdio: 'inherit',
-          // });
+          execSync('docker network disconnect romidashboarde2e_default $CONTAINER', {
+            stdio: 'inherit',
+          });
         }
 
         console.log('=========================== END =============================');
@@ -64,8 +64,7 @@ async function authReady(timeout = 80000) {
           '-------------------------------- connecting success ------------------------------' +
             process.env.AUTH_IP,
         );
-        // execSync('docker network inspect $NETWORK', { stdio: 'inherit' });
-        // execSync('docker network inspect test-net', { stdio: 'inherit' });
+        execSync('docker network inspect $NETWORK', { stdio: 'inherit' });
         clearTimeout(timer);
         clearTimeout(retryTimer);
         res(true);
