@@ -41,6 +41,7 @@ export const TaskSummaryAccordion = React.memo((props: TaskSummaryAccordionProps
   debug('task summary status panel render');
 
   const { tasks } = props;
+
   const classes = useStyles();
 
   const [expanded, setExpanded] = React.useState<string[]>([]);
@@ -118,7 +119,6 @@ export const TaskSummaryAccordion = React.memo((props: TaskSummaryAccordionProps
       </TreeItem>
     );
   };
-
   return (
     <TreeView
       className={classes.root}
@@ -130,7 +130,7 @@ export const TaskSummaryAccordion = React.memo((props: TaskSummaryAccordionProps
       expanded={expanded}
       selected={selected}
     >
-      {tasks.reverse().map((task) => renderTaskTreeItem(task))}
+      {tasks.map((task) => renderTaskTreeItem(task))}
     </TreeView>
   );
 });

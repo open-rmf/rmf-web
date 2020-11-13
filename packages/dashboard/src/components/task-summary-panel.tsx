@@ -6,6 +6,22 @@ import { SnapshotControlButtonGroup, TaskSummaryAccordion } from 'react-componen
 
 const debug = Debug('OmniPanel:TaskSummaryAccordion');
 
+function mergeContent(
+  currentContent: any,
+  storedContent: any,
+  replaceCurrentContent: boolean = true,
+) {
+  const newContents = Object.assign({}, currentContent);
+  Object.keys(storedContent).forEach((element) => {
+    if (replaceCurrentContent) newContents[element] = storedContent[element];
+    else {
+      // If the element is already on the currentContent do not replace it
+      if (!(element in currentContent)) newContents[element] = storedContent[element];
+    }
+  });
+  return newContents;
+}
+
 export interface TaskSummaryAccordionProps {
   tasks: RomiCore.TaskSummary[];
 }
@@ -27,51 +43,29 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryAccordionProps) =>
 
   // TODO: we need to synchronize this with a proper backend when it's ready. Now the completed
   // task will be flushed on a browser refresh because they are being saved in memory.
-  const handleClearAllCurrTasks = () => {
+  const handleClearAllCurrTasks = React.useCallback(() => {
     savedTasksContent.current = Object.assign({}, taskContents);
     setTaskContents({});
-  };
+  }, [taskContents]);
 
-  const handleRestoreTasks = () => {
-    // Adding this because the test interpreter cannot find the reference to `savedTasksContent current`
-    // inside the setTaskContents
-    const storedTasks = savedTasksContent.current;
-    setTaskContents((currentContent) => {
-      // Assigning another reference.
-      const newTaskContents = Object.assign({}, currentContent);
-      // We cannot assign directly the stored values to `currentContent` because it is updating
-      // the taskContents too, so when we set the taskContent new value with `setTaskContents`
-      // it'll no re-render because it'll not detect any changes.
-      Object.keys(storedTasks).forEach((element) => {
-        if (!(element in currentContent)) {
-          newTaskContents[element] = storedTasks[element];
-        }
-      });
-      return newTaskContents;
-    });
+  const handleRestoreTasks = React.useCallback(() => {
+    setTaskContents((currentContent) =>
+      mergeContent(currentContent, savedTasksContent.current, false),
+    );
     savedTasksContent.current = {};
-  };
+  }, []);
 
   // Update Task list content
   React.useEffect(() => {
     if (tasks.length === 0) return;
+    setTaskContents((currentContent) => mergeContent(currentContent, tasks));
+  }, [tasks]);
 
-    setTaskContents((currentContent) => {
-      // Assigning another reference.
-      const newTaskContents = Object.assign({}, currentContent);
-      // We cannot assign directly the stored values to `currentContent` because it is updating
-      // the taskContents too, so when we set the taskContent new value with `setTaskContents`
-      // it'll no re-render because it'll not detect any changes.
-      tasks.forEach((task) => {
-        newTaskContents[task.task_id] = task;
-      });
-      return newTaskContents;
-    });
-  }, [tasks, classes]);
-
-  const taskContents2: RomiCore.TaskSummary[] = React.useMemo(() => {
+  //TODO: Order by state. Put first the Active -> Queue -> Failed -> Finished
+  const currentTaskContents: RomiCore.TaskSummary[] = React.useMemo(() => {
     return Object.values(taskContents);
   }, [taskContents]);
+  console.log(JSON.stringify(currentTaskContents));
 
   return (
     <Typography variant="body1" component={'span'}>
@@ -85,7 +79,7 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryAccordionProps) =>
           showReset={false}
         />
       </div>
-      <TaskSummaryAccordion tasks={taskContents2} />
+      <TaskSummaryAccordion tasks={currentTaskContents} />
     </Typography>
   );
 });
