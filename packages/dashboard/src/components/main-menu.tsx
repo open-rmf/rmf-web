@@ -6,11 +6,12 @@ import { TooltipContext } from './app-contexts';
 
 const debug = Debug('MainMenu');
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   root: {
     padding: 0,
+    backgroundColor: theme.palette.background.paper,
   },
-});
+}));
 
 export interface MainMenuProps {
   onDoorsClick?(event: React.MouseEvent<HTMLDivElement, MouseEvent>): void;

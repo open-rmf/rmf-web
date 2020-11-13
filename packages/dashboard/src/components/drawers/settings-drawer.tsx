@@ -86,13 +86,6 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
             />
           ))}
         </RadioGroup>
-        <FormLabel component="legend" className={classes.legendLabel}>
-          Trajectory Diameter
-        </FormLabel>
-        <Divider />
-        <FormLabel component="legend" className={classes.legendLabel}>
-          Trajectory Color
-        </FormLabel>
         <Divider />
       </FormControl>
     </Drawer>
