@@ -22,14 +22,11 @@ describe('ui interactions', () => {
   });
 
   it('clicking a dispenser on the map focuses it on the panel', () => {
-    const dispenser = $('[data-component=Dispenser][data-state=true]');
-    const dispenserName = dispenser.getAttribute('data-name');
-    console.log(dispenserName);
+    const dispenser = $('[data-component=DispenserMarker]');
+    const guid = dispenser.getAttribute('aria-label');
     dispenser.click();
 
-    expect(
-      $(`[data-component=DispenserItem][data-name=${dispenserName}] [data-role=details]`),
-    ).toBeVisible();
+    expect($(`.MuiAccordion-root*=${guid}`).$('.MuiAccordionDetails-root')).toBeVisible();
   });
 
   it('clicking a robot on the map focuses it on the panel', () => {

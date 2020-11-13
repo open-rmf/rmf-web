@@ -45,6 +45,8 @@ export const DispensersOverlay = React.memo(
                   iconPath={dispenserResourcesContext.getIconPath(dispenser.guid) || undefined}
                   footprint={footprint}
                   onClick={onDispenserClick}
+                  aria-label={dispenser.guid}
+                  data-component="DispenserMarker"
                 />
               );
             })}

@@ -55,6 +55,6 @@ describe('Delivery request', () => {
   });
 
   it('renders robot trajectory', () => {
-    expect($('[data-component=RobotTrajectory]')).toBeVisible();
+    expect($('[data-component=TrajectoryMarker]')).toBeVisible();
   });
 });

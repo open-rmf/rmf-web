@@ -541,6 +541,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                       key={dispenser.guid}
                       ref={dispenserAccordionRefs[dispenser.guid].ref}
                       dispenserState={dispenser}
+                      data-component="DispenserAccordion"
                     />
                   ))}
                 </OmniPanelView>

@@ -87,6 +87,7 @@ export const RobotTrajectoriesOverlay = React.memo((props: RobotTrajectoriesOver
                 conflict={conflictsFlat.includes(traj.id)}
                 animationScale={animationScale}
                 variant={trajectoryVariant}
+                data-component="TrajectoryMarker"
               />
             ),
         )}

@@ -42,7 +42,7 @@ export const getRobotLocations = (browser: WebdriverIO.BrowserObject): string[] 
   let robotLocations = allRobotItems.map((robot) => {
     robot.click();
     const getLocations = () => {
-      const items = robot.$$('[role=listitem]');
+      const items = robot.$$('[role=row]');
       items[items.length - 1].scrollIntoView();
       return items.filter((el) => el.getText().startsWith('Location'));
     };
@@ -68,7 +68,7 @@ export function login(): void {
 export const openRequestForm = () => {
   $('[data-component=MainMenu] [data-item=Commands]').click();
 
-  const loopForm = $('[data-component=LoopForm]');
+  const loopForm = $('[data-component=LoopRequestForm]');
   loopForm.click();
 };
 
@@ -86,23 +86,23 @@ interface E2eRequestLoopProps {
  */
 export const requestLoop = (props: E2eRequestLoopProps): void => {
   const { pointA, pointB, loopNumber, charsToRemoveFromPointA, charsToRemoveFromPointB } = props;
-  const loopForm = $('[data-component=LoopForm]');
+  const loopForm = $('[data-component=LoopRequestForm]');
 
-  $('input[name=startLocation]').waitForClickable();
-  $('input[name=startLocation]').setValue(
+  $('input[placeholder="Pick Start Location"]').waitForClickable();
+  $('input[placeholder="Pick Start Location"]').setValue(
     removeTextFromAutocomplete(charsToRemoveFromPointA || 10),
   );
-  $('input[name=startLocation]').setValue(pointA);
+  $('input[placeholder="Pick Start Location"]').setValue(pointA);
   $('.MuiAutocomplete-popper').click();
 
-  $('input[name=finishLocation]').waitForClickable();
-  $('input[name=finishLocation]').setValue(
+  $('input[placeholder="Pick Finish Location"]').waitForClickable();
+  $('input[placeholder="Pick Finish Location"]').setValue(
     removeTextFromAutocomplete(charsToRemoveFromPointB || 20),
   );
-  $('input[name=finishLocation]').setValue(pointB);
+  $('input[placeholder="Pick Finish Location"]').setValue(pointB);
   $('.MuiAutocomplete-popper').click();
 
-  $('input[name=numLoops]').waitForClickable();
-  $('input[name=numLoops]').setValue(loopNumber || 1);
+  $('input[placeholder="Number of loops"]').waitForClickable();
+  $('input[placeholder="Number of loops"]').setValue(loopNumber || 1);
   loopForm.$('button=Request').click();
 };
