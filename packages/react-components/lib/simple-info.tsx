@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
     borderTop: '1px solid',
     borderTopColor: theme.palette.divider,
     background: theme.palette.action.hover,
-    padding: theme.spacing(0.5, 1),
+    padding: theme.spacing(0.25, 2),
     width: '30%',
   },
   value: {
@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
     borderBottomColor: theme.palette.divider,
     borderTop: '1px solid',
     borderTopColor: theme.palette.divider,
-    padding: theme.spacing(0.5, 1),
+    padding: theme.spacing(0.25, 2),
   },
   arrayListItem: {
     justifyContent: 'flex-end',
