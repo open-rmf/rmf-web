@@ -1,18 +1,10 @@
 export enum TrajectoryAnimation {
   None,
-  Fill,
   Follow,
-}
-
-export enum AnimationSpeed {
-  Slow,
-  Normal,
-  Fast,
 }
 
 export interface Settings {
   trajectoryAnimation: TrajectoryAnimation;
-  trajectoryAnimationSpeed: AnimationSpeed;
 }
 
 export function saveSettings(settings: Settings): void {
@@ -30,6 +22,5 @@ export function loadSettings(): Settings {
 export function defaultSettings(): Settings {
   return {
     trajectoryAnimation: TrajectoryAnimation.Follow,
-    trajectoryAnimationSpeed: AnimationSpeed.Normal,
   };
 }

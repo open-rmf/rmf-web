@@ -65,8 +65,6 @@ export const RobotTrajectoriesOverlay = React.memo((props: RobotTrajectoriesOver
   const settings = React.useContext(SettingsContext);
   const trajectoryVariant = ((): TrajectoryMarkerProps['variant'] => {
     switch (settings.trajectoryAnimation) {
-      case TrajectoryAnimation.Fill:
-        return 'fill';
       case TrajectoryAnimation.Follow:
         return 'follow';
       case TrajectoryAnimation.None:

@@ -13,9 +13,7 @@ import {
   Trajectory,
   TrajectoryResponse,
 } from '../../robot-trajectory-manager';
-import { AnimationSpeed } from '../../settings';
 import { toBlobUrl } from '../../util';
-import { SettingsContext } from '../app-contexts';
 import { NotificationBarContext } from '../notification-bar';
 import DispensersOverlay from './dispensers-overlay';
 import DoorsOverlay from './doors-overlay';
@@ -110,18 +108,8 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     [props.fleets],
   );
 
-  const settings = React.useContext(SettingsContext);
   const trajLookahead = 60000; // 1 min
-  const trajAnimDuration = React.useMemo(() => {
-    switch (settings.trajectoryAnimationSpeed) {
-      case AnimationSpeed.Slow:
-        return 4000;
-      case AnimationSpeed.Normal:
-        return 2000;
-      case AnimationSpeed.Fast:
-        return 1000;
-    }
-  }, [settings]);
+  const trajAnimDuration = 2000;
 
   React.useEffect(() => {
     // We need the image to be loaded to know the bounds, but the image cannot be loaded without a
