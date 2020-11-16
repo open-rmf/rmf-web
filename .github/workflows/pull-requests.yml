@@ -65,7 +65,6 @@ jobs:
           . /opt/ros/foxy/setup.bash && . /opt/rmf/setup.bash
           bash -c 'npm ci --unsafe-perm'
           cd e2e && bash -c 'npm ci --unsafe-perm'
-          export GITHUB=true
           cd ../ && bash -c 'npm run test:e2e'
       - name: upload artifacts
         uses: actions/upload-artifact@v2
