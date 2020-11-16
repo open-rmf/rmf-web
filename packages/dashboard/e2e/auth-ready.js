@@ -32,13 +32,15 @@ async function authReady(timeout = 80000) {
         ).toString();
 
         if (!isConnected) {
-          console.log('I am inside isConnected!!! >>>>> ' + isConnected);
+          // find and set default auth network id
           let defaultAuthNetwork = execSync(
             "docker inspect $AUTH_CONTAINER -f '{{range.NetworkSettings.Networks }}{{.NetworkID}}{{end}}'",
           ).toString();
-          console.log('defaultAuthNetwork: ----------->: ' + defaultAuthNetwork);
           process.env.DEFAULT_AUTH_NETWORK = defaultAuthNetwork;
 
+          // create common network with 17.16.xx.x subnet and connect the auth and dashboard container
+          // We need to specify a subnet to assign an ip address later
+          // use a 17.16 range ip as it is private, like localhost but is not blocked by github's environment
           execSync(`docker network create --subnet=${commonNetworkSubnet} ${commonNetwork}`, {
             stdio: 'inherit',
           });
@@ -48,10 +50,11 @@ async function authReady(timeout = 80000) {
               stdio: 'inherit',
             },
           );
-
           execSync(`docker network connect ${commonNetwork} $ROMIDASHBOARD_CONTAINER`, {
             stdio: 'inherit',
           });
+
+          // disconnect from old network to prevent concatenation of 2 different network ip later on
           execSync(`docker network disconnect $DEFAULT_AUTH_NETWORK $AUTH_CONTAINER`, {
             stdio: 'inherit',
           });
@@ -59,27 +62,12 @@ async function authReady(timeout = 80000) {
             stdio: 'inherit',
           });
 
-          authIpAddress = execSync(
-            "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $AUTH_CONTAINER",
-          ).toString();
-          process.env.AUTH_IP = authIpAddress;
-          console.log(
-            'auth ip address >>>>>>> ' + authIpAddress + ' ' + typeof process.env.AUTH_IP,
-          );
+          // assign of auth container ip
+          authIpAddress = authContainerIp;
         }
-
-        console.log('=========================== END =============================');
-      } else {
-        console.log('again ------------------------------------');
-        console.log('=========================== END =============================');
       }
 
       req = http.request(`http://${authIpAddress ? authIpAddress : 'localhost'}:8080/auth/`, () => {
-        console.log(
-          '-------------------------------- connecting success ------------------------------' +
-            process.env.AUTH_IP,
-        );
-        execSync(`docker network inspect ${commonNetwork}`, { stdio: 'inherit' });
         clearTimeout(timer);
         clearTimeout(retryTimer);
         res(true);
