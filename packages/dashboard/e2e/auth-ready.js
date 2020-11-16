@@ -77,8 +77,7 @@ async function authReady(timeout = 80000) {
         clearTimeout(retryTimer);
         res(true);
       });
-      req.once('error', (err) => {
-        console.log(err);
+      req.once('error', () => {
         retryTimer = setTimeout(waitAuthReady, 20000);
       });
       req.end();

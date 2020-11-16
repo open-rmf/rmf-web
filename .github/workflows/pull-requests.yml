@@ -96,7 +96,7 @@ jobs:
         run: . /opt/ros/foxy/setup.bash && npm ci && npm run build
       - name: test
         run: . /opt/ros/foxy/setup.bash && npm test
-react-component-test:
+  react-component-test:
     name: React Component Test
     runs-on: ubuntu-latest
     defaults:
