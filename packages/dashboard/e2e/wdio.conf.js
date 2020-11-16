@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
+
 const headlessArgs = process.env.CI ? ['--headless', '--disable-gpu'] : [];
 const chromeArgs = [...headlessArgs];
 if (os.userInfo().uid === 0) {
@@ -71,7 +72,7 @@ exports.config = {
         binary: process.env.CHROME_BIN || undefined,
         // to run chrome headless the following flags are required
         // (see https://developers.google.com/web/updates/2017/04/headless-chrome)
-        args: [...chromeArgs, '--window-size=1920,1080', '--disable-web-security'],
+        args: [...chromeArgs, '--window-size=1366,768'],
       },
     },
   ],
@@ -82,7 +83,7 @@ exports.config = {
   // Define all options that are relevant for the WebdriverIO instance here
   //
   // Level of logging verbosity: trace | debug | info | warn | error | silent
-  logLevel: 'trace',
+  logLevel: 'warn',
   //
   // Set specific log levels per logger
   // loggers:
@@ -93,10 +94,10 @@ exports.config = {
   // - @wdio/sumologic-reporter
   // - @wdio/cli, @wdio/config, @wdio/sync, @wdio/utils
   // Level of logging verbosity: trace | debug | info | warn | error | silent
-  logLevels: {
-    webdriver: 'trace',
-    webdriverio: 'trace',
-  },
+  // logLevels: {	  logLevels: {
+  //     webdriver: 'info',	    webdriver: 'trace',
+  //     '@wdio/applitools-service': 'info'	    webdriverio: 'trace',
+  // },
   //
   // If you only want to run your tests until a specific amount of tests have failed use
   // bail (default is 0 - don't bail, run all tests).
