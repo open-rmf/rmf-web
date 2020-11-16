@@ -2,27 +2,17 @@ import React from 'react';
 import Debug from 'debug';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { makeStyles, Typography } from '@material-ui/core';
-import { SnapshotControlButtonGroup, TaskSummaryAccordion } from 'react-components';
-import { sortTasksByState } from 'react-components/lib/task-summary/task-summary-utils';
+import {
+  SnapshotControlButtonGroup,
+  snapshotReducer,
+  SnapshotState,
+  SnapshotStateType,
+  TaskSummaryAccordion,
+  SnapshotActionType,
+  sortTasksByState,
+} from 'react-components';
 
-const debug = Debug('OmniPanel:TaskSummaryAccordion');
-
-// TODO: Redux state with actions
-function mergeContent(
-  currentContent: any,
-  storedContent: any,
-  replaceCurrentContent: boolean = true,
-) {
-  const newContents = Object.assign({}, currentContent);
-  Object.keys(storedContent).forEach((element) => {
-    if (replaceCurrentContent) newContents[element] = storedContent[element];
-    else {
-      // If the element is already on the currentContent do not replace it
-      if (!(element in currentContent)) newContents[element] = storedContent[element];
-    }
-  });
-  return newContents;
-}
+const debug = Debug('OmniPanel:TaskSummaryPanel');
 
 export interface TaskSummaryAccordionProps {
   tasks: RomiCore.TaskSummary[];
@@ -34,40 +24,38 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryAccordionProps) =>
   const { tasks } = props;
   const classes = useStyles();
 
-  const [taskContents, setTaskContents] = React.useState<{
-    [key: string]: RomiCore.TaskSummary;
-  }>({});
-
   // We need to persist across the renders
   const savedTasksContent = React.useRef<{
     [key: string]: RomiCore.TaskSummary;
   }>({});
 
+  const initialValues: SnapshotState = {
+    [SnapshotStateType.CONTENT]: {} as {
+      [key: string]: RomiCore.TaskSummary;
+    },
+  };
+  const [stateSnapshot, dispatchSnapshot] = React.useReducer(snapshotReducer, initialValues);
+
   // TODO: we need to synchronize this with a proper backend when it's ready. Now the completed
   // task will be flushed on a browser refresh because they are being saved in memory.
   const handleClearAllCurrTasks = React.useCallback(() => {
-    savedTasksContent.current = Object.assign({}, taskContents);
-    setTaskContents({});
-  }, [taskContents]);
+    dispatchSnapshot({ type: SnapshotActionType.CLEAR, payload: savedTasksContent.current });
+  }, []);
 
   const handleRestoreTasks = React.useCallback(() => {
-    setTaskContents((currentContent) =>
-      mergeContent(currentContent, savedTasksContent.current, false),
-    );
-    savedTasksContent.current = {};
+    dispatchSnapshot({ type: SnapshotActionType.RESTORE, payload: savedTasksContent.current });
   }, []);
 
   // Update Task list content
   React.useEffect(() => {
     if (tasks.length === 0) return;
-    setTaskContents((currentContent) => mergeContent(currentContent, tasks));
+    dispatchSnapshot({ type: SnapshotActionType.ADD_CONTENT, payload: tasks });
   }, [tasks]);
 
-  //TODO: Order by state. Put first the Active -> Queue -> Failed -> Finished
+  // Order by state. Put first the Active -> Queue -> Failed -> Finished
   const currentTaskContents: RomiCore.TaskSummary[] = React.useMemo(() => {
-    return sortTasksByState(taskContents);
-  }, [taskContents]);
-  console.log(JSON.stringify(currentTaskContents));
+    return sortTasksByState(stateSnapshot[SnapshotStateType.CONTENT]);
+  }, [stateSnapshot[SnapshotStateType.CONTENT]]);
 
   return (
     <Typography variant="body1" component={'span'}>

@@ -16,6 +16,8 @@ export * from './spotlight-accordion';
 export * from './stack-navigator';
 export * from './status-label';
 export * from './svg-text';
+export * from './snapshot-control-button-group';
+export * from './snapshot-control-button-group-reducer';
 export * from './task-summary';
 export * from './tooltip';
 export * from './utils';
