@@ -23,7 +23,6 @@ async function authReady(timeout = 80000) {
 
       // check if we are in github CI environment
       if (process.env.CI) {
-        console.log(' ----------------------- I am in CI ----------------------');
         // check if auth container has already been initialized
         let authContainer = execSync(
           'docker ps -q --filter ancestor=romi-dashboard/auth',
@@ -71,8 +70,6 @@ async function authReady(timeout = 80000) {
             authIpAddress = authContainerIp;
           }
         }
-      } else {
-        console.log('Not in ci :(:(:(:(:(:(:(:(:(:(');
       }
 
       req = http.request(`http://${authIpAddress ? authIpAddress : 'localhost'}:8080/auth/`, () => {
