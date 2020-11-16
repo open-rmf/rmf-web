@@ -30,43 +30,44 @@ export const getStateLabel = (state: number): string => {
 };
 
 /**
- * Sorts the tasks by state so what is active in the moment is always
- * at the top.
+ * Sorts tasks by state so what is active is always at the top of the list.
  */
 export const sortTasksByState = (
   tasks: Record<string, RomiCore.TaskSummary>,
 ): RomiCore.TaskSummary[] => {
-  let completed: RomiCore.TaskSummary[] = [];
-  let failed: RomiCore.TaskSummary[] = [];
-  let active: RomiCore.TaskSummary[] = [];
-  let queued: RomiCore.TaskSummary[] = [];
-  let unknown: RomiCore.TaskSummary[] = [];
+  let stateTasks = {
+    completed: [] as RomiCore.TaskSummary[],
+    failed: [] as RomiCore.TaskSummary[],
+    active: [] as RomiCore.TaskSummary[],
+    queued: [] as RomiCore.TaskSummary[],
+    unknown: [] as RomiCore.TaskSummary[],
+  };
 
   Object.keys(tasks).forEach((key) => {
     switch (tasks[key].state) {
       case RomiCore.TaskSummary.STATE_QUEUED:
-        queued.push(tasks[key]);
+        stateTasks.queued.push(tasks[key]);
         break;
       case RomiCore.TaskSummary.STATE_ACTIVE:
-        active.push(tasks[key]);
+        stateTasks.active.push(tasks[key]);
         break;
       case RomiCore.TaskSummary.STATE_COMPLETED:
-        completed.push(tasks[key]);
+        stateTasks.completed.push(tasks[key]);
         break;
       case RomiCore.TaskSummary.STATE_FAILED:
-        failed.push(tasks[key]);
+        stateTasks.failed.push(tasks[key]);
         break;
       default:
-        unknown.push(tasks[key]);
+        stateTasks.unknown.push(tasks[key]);
         break;
     }
   });
   let sortedTasks: RomiCore.TaskSummary[] = [];
-  sortedTasks.push(...active);
-  sortedTasks.push(...queued);
-  sortedTasks.push(...failed);
-  sortedTasks.push(...completed);
-  sortedTasks.push(...unknown);
+  sortedTasks.push(...stateTasks.active);
+  sortedTasks.push(...stateTasks.queued);
+  sortedTasks.push(...stateTasks.failed);
+  sortedTasks.push(...stateTasks.completed);
+  sortedTasks.push(...stateTasks.unknown);
 
   return sortedTasks;
 };

@@ -47,7 +47,7 @@ describe('Renders correctly', () => {
     expect(classes).toContain('makeStyles-taskActor');
   });
 
-  test('Does not show description below the id if the task has an actor', () => {
+  test('Does not show description below the id if the task has no actor', () => {
     task.status = 'Finished';
     const root = render(<TaskSummaryAccordion tasks={[task]} />);
     expect(root.container.querySelector('[id=task-actor]')).toBeFalsy();
@@ -124,7 +124,6 @@ test('Get name of the actor from status', () => {
 
 test('Sorts task array correctly', () => {
   const tasks = sortTasksByState(taskSummary);
-  console.log(tasks);
   expect(tasks[0].state).toBe(RomiCore.TaskSummary.STATE_ACTIVE);
   expect(tasks[1].state).toBe(RomiCore.TaskSummary.STATE_QUEUED);
 });

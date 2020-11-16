@@ -39,11 +39,8 @@ export interface TaskSummaryAccordionProps {
 
 export const TaskSummaryAccordion = React.memo((props: TaskSummaryAccordionProps) => {
   debug('task summary status panel render');
-
   const { tasks } = props;
-
   const classes = useStyles();
-
   const [expanded, setExpanded] = React.useState<string[]>([]);
   const [selected, setSelected] = React.useState<string>('');
 
@@ -56,23 +53,20 @@ export const TaskSummaryAccordion = React.memo((props: TaskSummaryAccordionProps
   };
 
   // Added a useCallback here because this function is been used inside the useEffect.
-  const determineStyle = React.useCallback(
-    (state: number): string => {
-      switch (state) {
-        case RomiCore.TaskSummary.STATE_QUEUED:
-          return classes.queued;
-        case RomiCore.TaskSummary.STATE_ACTIVE:
-          return classes.active;
-        case RomiCore.TaskSummary.STATE_COMPLETED:
-          return classes.completed;
-        case RomiCore.TaskSummary.STATE_FAILED:
-          return classes.failed;
-        default:
-          return 'UNKNOWN';
-      }
-    },
-    [classes],
-  );
+  const determineStyle = (state: number): string => {
+    switch (state) {
+      case RomiCore.TaskSummary.STATE_QUEUED:
+        return classes.queued;
+      case RomiCore.TaskSummary.STATE_ACTIVE:
+        return classes.active;
+      case RomiCore.TaskSummary.STATE_COMPLETED:
+        return classes.completed;
+      case RomiCore.TaskSummary.STATE_FAILED:
+        return classes.failed;
+      default:
+        return 'UNKNOWN';
+    }
+  };
 
   const renderActor = (taskStatus: string): React.ReactElement | undefined => {
     const actor = getActorFromStatus(taskStatus);
@@ -119,6 +113,7 @@ export const TaskSummaryAccordion = React.memo((props: TaskSummaryAccordionProps
       </TreeItem>
     );
   };
+
   return (
     <TreeView
       className={classes.root}
