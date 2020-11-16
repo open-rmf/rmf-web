@@ -26,7 +26,7 @@ export const appConfig: AppConfig = (() => {
     }
 
     const authConfig: KeycloakConfig = (() => {
-      if (process.env.REACT_APP_AUTH_CONFIG && process.env.CI) {
+      if (process.env.REACT_APP_AUTH_CONFIG && process.env.GITHUB) {
         return JSON.parse(process.env.REACT_APP_AUTH_CONFIG) as KeycloakConfig;
       }
       return {

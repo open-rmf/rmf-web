@@ -63,7 +63,6 @@ jobs:
           npm run sync:docker
       - name: e2e test
         run: |
-          echo ---------- CI status $CI -----------
           export ROMIDASHBOARD_CONTAINER=$(docker ps -q --filter ancestor=docker.pkg.github.com/osrf/romi-dashboard/e2e)
           export GITHUB_NETWORK=${{ job.container.network }}
           . /opt/ros/foxy/setup.bash && . /opt/rmf/setup.bash
