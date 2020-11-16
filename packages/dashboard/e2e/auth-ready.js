@@ -16,37 +16,44 @@ async function authReady(timeout = 80000) {
     }, timeout);
     let retryTimer;
     const waitAuthReady = () => {
-      let container = execSync('docker ps -q --filter ancestor=romi-dashboard/auth').toString();
+      let authContainer = execSync('docker ps -q --filter ancestor=romi-dashboard/auth').toString();
       let authIpAddress;
+      const commonNetwork = 'auth_dashboard_network';
       console.log('========================== waiting waiting waiting ==========================');
 
-      if (container) {
-        console.log('Successuflly created auth container ----------------------- ' + container);
-        process.env.CONTAINER = container;
+      if (authContainer) {
+        console.log('Successuflly created auth container ----------------------- ' + authContainer);
+        process.env.AUTH_CONTAINER = authContainer;
 
         let isConnected = execSync(
-          'docker ps -q --filter network=test-net --filter ancestor=romi-dashboard/auth',
+          `docker ps -q --filter network=${commonNetwork} --filter ancestor=romi-dashboard/auth`,
         ).toString();
 
         if (!isConnected) {
           console.log('I am inside isConnected!!! >>>>> ' + isConnected);
-          execSync('docker network create --subnet=172.16.0.0/16 test-net', {
+          let defaultAuthNetwork = execSync(
+            "docker inspect $AUTH_CONTAINER -f '{{range.NetworkSettings.Networks }}{{.NetworkID}}{{end}}'",
+          ).toString();
+
+          execSync(`docker network create --subnet=172.16.0.0/16 ${commonNetwork}`, {
             stdio: 'inherit',
           });
-          execSync('docker network connect --ip=172.16.0.2 test-net $CONTAINER', {
+          execSync(`docker network connect --ip=172.16.0.2 ${commonNetwork} $AUTH_CONTAINER`, {
             stdio: 'inherit',
           });
-          // execSync('docker network connect test-net docker_e2e_1', { stdio: 'inherit' })
-          execSync('docker network connect test-net $OTHERCONTAINER', { stdio: 'inherit' });
-          execSync('docker network disconnect romidashboarde2e_default $CONTAINER', {
+
+          execSync(`docker network connect ${commonNetwork} $ROMIDASHBOARD_CONTAINER`, {
             stdio: 'inherit',
           });
-          execSync('docker network disconnect $NETWORK $OTHERCONTAINER', {
+          execSync(`docker network disconnect ${defaultAuthNetwork} $AUTH_CONTAINER`, {
+            stdio: 'inherit',
+          });
+          execSync('docker network disconnect $GITHUB_NETWORK $ROMIDASHBOARD_CONTAINER', {
             stdio: 'inherit',
           });
 
           authIpAddress = execSync(
-            "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $CONTAINER",
+            "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $AUTH_CONTAINER",
           ).toString();
           process.env.AUTH_IP = authIpAddress;
           console.log(
@@ -65,7 +72,7 @@ async function authReady(timeout = 80000) {
           '-------------------------------- connecting success ------------------------------' +
             process.env.AUTH_IP,
         );
-        execSync('docker network inspect test-net', { stdio: 'inherit' });
+        execSync(`docker network inspect ${commonNetwork}`, { stdio: 'inherit' });
         clearTimeout(timer);
         clearTimeout(retryTimer);
         res(true);
