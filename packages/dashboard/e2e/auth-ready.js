@@ -5,7 +5,6 @@ const { execSync, exec } = require('child_process');
  * @param timeout Max amount of time (in milliseconds) to wait for
  */
 async function authReady(timeout = 80000) {
-  console.log('........ auth Ready ..................');
   return new Promise((res) => {
     let req;
     const timer = setTimeout(() => {
@@ -16,15 +15,18 @@ async function authReady(timeout = 80000) {
     }, timeout);
     let retryTimer;
     const waitAuthReady = () => {
-      let authContainer = execSync('docker ps -q --filter ancestor=romi-dashboard/auth').toString();
+      // initialize network and container related variables.
       let authIpAddress;
       const commonNetwork = 'auth_dashboard_network';
-      console.log('========================== waiting waiting waiting ==========================');
+      const commonNetworkSubnet = '172.16.0.0/16';
+      const authContainerIp = '172.16.0.2';
 
+      // check if auth container has already been initialized
+      let authContainer = execSync('docker ps -q --filter ancestor=romi-dashboard/auth').toString();
       if (authContainer) {
-        console.log('Successuflly created auth container ----------------------- ' + authContainer);
         process.env.AUTH_CONTAINER = authContainer;
 
+        // check if auth container is already connected to custom network to prevent running the same operation if it has
         let isConnected = execSync(
           `docker ps -q --filter network=${commonNetwork} --filter ancestor=romi-dashboard/auth`,
         ).toString();
@@ -34,18 +36,23 @@ async function authReady(timeout = 80000) {
           let defaultAuthNetwork = execSync(
             "docker inspect $AUTH_CONTAINER -f '{{range.NetworkSettings.Networks }}{{.NetworkID}}{{end}}'",
           ).toString();
+          console.log('defaultAuthNetwork: ----------->: ' + defaultAuthNetwork);
+          process.env.DEFAULT_AUTH_NETWORK = defaultAuthNetwork;
 
-          execSync(`docker network create --subnet=172.16.0.0/16 ${commonNetwork}`, {
+          execSync(`docker network create --subnet=${commonNetworkSubnet} ${commonNetwork}`, {
             stdio: 'inherit',
           });
-          execSync(`docker network connect --ip=172.16.0.2 ${commonNetwork} $AUTH_CONTAINER`, {
-            stdio: 'inherit',
-          });
+          execSync(
+            `docker network connect --ip=${authContainerIp} ${commonNetwork} $AUTH_CONTAINER`,
+            {
+              stdio: 'inherit',
+            },
+          );
 
           execSync(`docker network connect ${commonNetwork} $ROMIDASHBOARD_CONTAINER`, {
             stdio: 'inherit',
           });
-          execSync(`docker network disconnect ${defaultAuthNetwork} $AUTH_CONTAINER`, {
+          execSync(`docker network disconnect $DEFAULT_AUTH_NETWORK $AUTH_CONTAINER`, {
             stdio: 'inherit',
           });
           execSync('docker network disconnect $GITHUB_NETWORK $ROMIDASHBOARD_CONTAINER', {
