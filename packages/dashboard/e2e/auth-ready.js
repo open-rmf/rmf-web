@@ -69,8 +69,6 @@ async function authReady(timeout = 80000) {
 
             // assign of auth container ip
             authIpAddress = authContainerIp;
-            // set env GITHUB to true in CI
-            process.env.GITHUB = true;
           }
         }
       } else {
