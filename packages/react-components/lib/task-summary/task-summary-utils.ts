@@ -28,3 +28,45 @@ export const getStateLabel = (state: number): string => {
       return 'UNKNOWN';
   }
 };
+
+/**
+ * Sorts the tasks by state so what is active in the moment is always
+ * at the top.
+ */
+export const sortTasksByState = (
+  tasks: Record<string, RomiCore.TaskSummary>,
+): RomiCore.TaskSummary[] => {
+  let completed: RomiCore.TaskSummary[] = [];
+  let failed: RomiCore.TaskSummary[] = [];
+  let active: RomiCore.TaskSummary[] = [];
+  let queued: RomiCore.TaskSummary[] = [];
+  let unknown: RomiCore.TaskSummary[] = [];
+
+  Object.keys(tasks).forEach((key) => {
+    switch (tasks[key].state) {
+      case RomiCore.TaskSummary.STATE_QUEUED:
+        queued.push(tasks[key]);
+        break;
+      case RomiCore.TaskSummary.STATE_ACTIVE:
+        active.push(tasks[key]);
+        break;
+      case RomiCore.TaskSummary.STATE_COMPLETED:
+        completed.push(tasks[key]);
+        break;
+      case RomiCore.TaskSummary.STATE_FAILED:
+        failed.push(tasks[key]);
+        break;
+      default:
+        unknown.push(tasks[key]);
+        break;
+    }
+  });
+  let sortedTasks: RomiCore.TaskSummary[] = [];
+  sortedTasks.push(...active);
+  sortedTasks.push(...queued);
+  sortedTasks.push(...failed);
+  sortedTasks.push(...completed);
+  sortedTasks.push(...unknown);
+
+  return sortedTasks;
+};

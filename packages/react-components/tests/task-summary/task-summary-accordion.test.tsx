@@ -2,7 +2,7 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 import { render } from '@testing-library/react';
 import { TaskSummaryAccordion, TaskSummaryAccordionInfo } from '../../lib';
-import { getActorFromStatus } from '../../lib/task-summary/task-summary-utils';
+import { getActorFromStatus, sortTasksByState } from '../../lib/task-summary/task-summary-utils';
 
 const taskSummary = {
   'af8faee9-84ca-41ea-8bb6-8493cc9f824c': {
@@ -26,6 +26,11 @@ const taskSummary = {
 };
 
 describe('Renders correctly', () => {
+  let task: RomiCore.TaskSummary;
+  beforeEach(() => {
+    task = Object.assign({}, Object.values(taskSummary)[0]);
+  });
+
   test('Renders tree items', () => {
     const tasks = Object.values(taskSummary);
     const root = render(<TaskSummaryAccordion tasks={tasks} />);
@@ -35,7 +40,6 @@ describe('Renders correctly', () => {
   });
 
   test('Show description below the id if the task has an actor', () => {
-    const task = Object.values(taskSummary)[0];
     const root = render(<TaskSummaryAccordion tasks={[task]} />);
     const actor = getActorFromStatus(task.status);
     if (!actor) throw new Error('An actor is required to run this test');
@@ -44,7 +48,6 @@ describe('Renders correctly', () => {
   });
 
   test('Does not show description below the id if the task has an actor', () => {
-    const task = Object.values(taskSummary)[0];
     task.status = 'Finished';
     const root = render(<TaskSummaryAccordion tasks={[task]} />);
     expect(root.container.querySelector('[id=task-actor]')).toBeFalsy();
@@ -54,7 +57,7 @@ describe('Renders correctly', () => {
 describe('Components gets the correct style on specifics states', () => {
   let task: RomiCore.TaskSummary;
   beforeEach(() => {
-    task = Object.values(taskSummary)[0];
+    task = Object.assign({}, Object.values(taskSummary)[0]);
   });
 
   test('active style is applied ', () => {
@@ -85,7 +88,7 @@ describe('Components gets the correct style on specifics states', () => {
 describe('Components gets the correct label on specifics states', () => {
   let task: RomiCore.TaskSummary;
   beforeEach(() => {
-    task = Object.values(taskSummary)[0];
+    task = Object.assign({}, Object.values(taskSummary)[0]);
   });
 
   test('Shows ACTIVE label', () => {
@@ -117,4 +120,11 @@ test('Get name of the actor from status', () => {
   const rawStatus = 'Finding a plan for [tinyRobot/tinyRobot1] to go to [23] | Remaining phases: 6';
   const actor = getActorFromStatus(rawStatus);
   expect(actor).toEqual(['[tinyRobot/tinyRobot1]']);
+});
+
+test('Sorts task array correctly', () => {
+  const tasks = sortTasksByState(taskSummary);
+  console.log(tasks);
+  expect(tasks[0].state).toBe(RomiCore.TaskSummary.STATE_ACTIVE);
+  expect(tasks[1].state).toBe(RomiCore.TaskSummary.STATE_QUEUED);
 });

@@ -3,9 +3,11 @@ import Debug from 'debug';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { makeStyles, Typography } from '@material-ui/core';
 import { SnapshotControlButtonGroup, TaskSummaryAccordion } from 'react-components';
+import { sortTasksByState } from 'react-components/lib/task-summary/task-summary-utils';
 
 const debug = Debug('OmniPanel:TaskSummaryAccordion');
 
+// TODO: Redux state with actions
 function mergeContent(
   currentContent: any,
   storedContent: any,
@@ -63,7 +65,7 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryAccordionProps) =>
 
   //TODO: Order by state. Put first the Active -> Queue -> Failed -> Finished
   const currentTaskContents: RomiCore.TaskSummary[] = React.useMemo(() => {
-    return Object.values(taskContents);
+    return sortTasksByState(taskContents);
   }, [taskContents]);
   console.log(JSON.stringify(currentTaskContents));
 
