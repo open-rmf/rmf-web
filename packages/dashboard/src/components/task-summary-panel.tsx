@@ -55,7 +55,7 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryAccordionProps) =>
   // Order by state. Put first the Active -> Queue -> Failed -> Finished
   const currentTaskContents: RomiCore.TaskSummary[] = React.useMemo(() => {
     return sortTasksByState(stateSnapshot[SnapshotStateType.CONTENT]);
-  }, [stateSnapshot[SnapshotStateType.CONTENT]]);
+  }, [stateSnapshot]);
 
   return (
     <Typography variant="body1" component={'span'}>
