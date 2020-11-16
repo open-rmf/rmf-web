@@ -42,9 +42,9 @@ async function authReady(timeout = 80000) {
             ).toString();
             process.env.DEFAULT_AUTH_NETWORK = defaultAuthNetwork;
 
-            // create common network with 17.16.xx.x subnet and connect the auth and dashboard container
+            // create common network with 172.16.xx.x subnet and connect the auth and dashboard container
             // We need to specify a subnet to assign an ip address later
-            // use a 17.16 range ip as it is private, like localhost but is not blocked by github's environment
+            // use a 172.16 range ip as it is private, like localhost but is not blocked by github's environment
             execSync(`docker network create --subnet=${commonNetworkSubnet} ${commonNetwork}`, {
               stdio: 'inherit',
             });
