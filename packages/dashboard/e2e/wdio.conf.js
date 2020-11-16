@@ -94,9 +94,9 @@ exports.config = {
   // - @wdio/sumologic-reporter
   // - @wdio/cli, @wdio/config, @wdio/sync, @wdio/utils
   // Level of logging verbosity: trace | debug | info | warn | error | silent
-  // logLevels: {	  logLevels: {
-  //     webdriver: 'info',	    webdriver: 'trace',
-  //     '@wdio/applitools-service': 'info'	    webdriverio: 'trace',
+  // logLevels: {
+  //      webdriver: 'info',
+  //      '@wdio/applitools-service': 'info'
   // },
   //
   // If you only want to run your tests until a specific amount of tests have failed use
