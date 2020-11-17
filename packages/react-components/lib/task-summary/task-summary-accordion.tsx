@@ -11,7 +11,7 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import SimpleInfo, { SimpleInfoData } from '../simple-info';
 import { formatStatus, getActorFromStatus, getStateLabel } from './task-summary-utils';
 
-const debug = Debug('OmniPanel:TaskSummaryAccordion');
+const debug = Debug('Tasks:TaskSummaryAccordion');
 
 interface TaskSummaryAccordionInfoProps {
   task: RomiCore.TaskSummary;
