@@ -25,7 +25,7 @@ export type SnapshotState = {
 function mergeContent(
   currentContent: any,
   storedContent: any,
-  replaceCurrentContent: boolean = true,
+  replaceCurrentContent = true,
 ) {
   const newContents = Object.assign({}, currentContent);
   Object.keys(storedContent).forEach((element) => {
