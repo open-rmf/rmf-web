@@ -10,15 +10,15 @@ export interface SnapshotControlButtonGroupProps extends React.HTMLAttributes<HT
   disableClear?: boolean;
   disableRestore?: boolean;
   disableSave?: boolean;
-  showReset?: boolean;
-  showClear?: boolean;
-  showRestore?: boolean;
-  showSave?: boolean;
+  showReset?: boolean; // default value = true
+  showClear?: boolean; // default value = true
+  showRestore?: boolean; // default value = true
+  showSave?: boolean; // default value = true
   onResetClick?: () => void;
   onClearClick?: () => void;
   onRestoreClick?: () => void;
   onSaveClick?: () => void;
-  fullWidth?: boolean;
+  fullWidth?: boolean; // default value = true
 }
 
 export const SnapshotControlButtonGroup = React.forwardRef(function (

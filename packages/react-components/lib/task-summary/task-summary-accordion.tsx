@@ -52,7 +52,6 @@ export const TaskSummaryAccordion = React.memo((props: TaskSummaryAccordionProps
     setSelected(nodeIds);
   };
 
-  // Added a useCallback here because this function is been used inside the useEffect.
   const determineStyle = (state: number): string => {
     switch (state) {
       case RomiCore.TaskSummary.STATE_QUEUED:
@@ -68,9 +67,9 @@ export const TaskSummaryAccordion = React.memo((props: TaskSummaryAccordionProps
     }
   };
 
-  const renderActor = (taskStatus: string): React.ReactElement | undefined => {
+  const renderActor = (taskStatus: string): React.ReactElement | null => {
     const actor = getActorFromStatus(taskStatus);
-    if (!actor) return;
+    if (!actor) return null;
     return (
       <Typography variant="body1" id="task-actor" className={classes.taskActor}>
         {actor}

@@ -1,4 +1,4 @@
-export type ActionFormat<T, K = undefined> = {
+export type SnapshotActionFormat<T, K = undefined> = {
   type: T;
   payload: K;
 };
@@ -14,9 +14,9 @@ export enum SnapshotStateType {
 }
 
 export type SnapshotAction =
-  | ActionFormat<'addContent', any>
-  | ActionFormat<'clear', any>
-  | ActionFormat<'restore', any>;
+  | SnapshotActionFormat<'addContent', any>
+  | SnapshotActionFormat<'clear', any>
+  | SnapshotActionFormat<'restore', any>;
 
 export type SnapshotState = {
   [SnapshotStateType.CONTENT]: any;

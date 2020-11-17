@@ -4,35 +4,38 @@ import { render } from '@testing-library/react';
 import { TaskSummaryAccordion, TaskSummaryAccordionInfo } from '../../lib';
 import { getActorFromStatus, sortTasksByState } from '../../lib/task-summary/task-summary-utils';
 
-const taskSummary = {
-  'af8faee9-84ca-41ea-8bb6-8493cc9f824c': {
-    end_time: { sec: 0, nanosec: 0 },
-    start_time: { sec: 0, nanosec: 0 },
-    state: 1,
-    status:
-      'Moving [tinyRobot/tinyRobot1]: ( 9.81228 -6.98942 -3.12904) -> ( 6.26403 -3.51569  1.16864) | Remaining phases: 1 | Remaining phases: 6',
-    submission_time: { sec: 0, nanosec: 0 },
-    task_id: 'af8faee9-84ca-41ea-8bb6-8493cc9f824c',
-  },
-  'am8faee9-84ca-41ea-8bb6-8493cc9f8249': {
-    end_time: { sec: 0, nanosec: 0 },
-    start_time: { sec: 0, nanosec: 0 },
-    state: 0,
-    status:
-      'Moving [tinyRobot/tinyRobot2]: ( 9.81228 -6.98942 -3.12904) -> ( 6.26403 -3.51569  1.16864) | Remaining phases: 1 | Remaining phases: 6',
-    submission_time: { sec: 0, nanosec: 0 },
-    task_id: 'am8faee9-84ca-41ea-8bb6-8493cc9f8249',
-  },
-};
+function getTaskObject(): Record<string, RomiCore.TaskSummary> {
+  // Returns a task object with a new memory allocation
+  return {
+    'af8faee9-84ca-41ea-8bb6-8493cc9f824c': {
+      end_time: { sec: 0, nanosec: 0 },
+      start_time: { sec: 0, nanosec: 0 },
+      state: 1,
+      status:
+        'Moving [tinyRobot/tinyRobot1]: ( 9.81228 -6.98942 -3.12904) -> ( 6.26403 -3.51569  1.16864) | Remaining phases: 1 | Remaining phases: 6',
+      submission_time: { sec: 0, nanosec: 0 },
+      task_id: 'af8faee9-84ca-41ea-8bb6-8493cc9f824c',
+    },
+    'am8faee9-84ca-41ea-8bb6-8493cc9f8249': {
+      end_time: { sec: 0, nanosec: 0 },
+      start_time: { sec: 0, nanosec: 0 },
+      state: 0,
+      status:
+        'Moving [tinyRobot/tinyRobot2]: ( 9.81228 -6.98942 -3.12904) -> ( 6.26403 -3.51569  1.16864) | Remaining phases: 1 | Remaining phases: 6',
+      submission_time: { sec: 0, nanosec: 0 },
+      task_id: 'am8faee9-84ca-41ea-8bb6-8493cc9f8249',
+    },
+  };
+}
 
 describe('Renders correctly', () => {
   let task: RomiCore.TaskSummary;
   beforeEach(() => {
-    task = Object.assign({}, Object.values(taskSummary)[0]);
+    task = Object.values(getTaskObject())[0];
   });
 
   test('Renders tree items', () => {
-    const tasks = Object.values(taskSummary);
+    const tasks = Object.values(getTaskObject());
     const root = render(<TaskSummaryAccordion tasks={tasks} />);
     tasks.forEach((task) => {
       expect(root.getByText(task.task_id).textContent).toBe(task.task_id);
@@ -57,7 +60,7 @@ describe('Renders correctly', () => {
 describe('Components gets the correct style on specifics states', () => {
   let task: RomiCore.TaskSummary;
   beforeEach(() => {
-    task = Object.assign({}, Object.values(taskSummary)[0]);
+    task = Object.values(getTaskObject())[0];
   });
 
   test('active style is applied ', () => {
@@ -88,7 +91,7 @@ describe('Components gets the correct style on specifics states', () => {
 describe('Components gets the correct label on specifics states', () => {
   let task: RomiCore.TaskSummary;
   beforeEach(() => {
-    task = Object.assign({}, Object.values(taskSummary)[0]);
+    task = Object.values(getTaskObject())[0];
   });
 
   test('Shows ACTIVE label', () => {
@@ -123,7 +126,7 @@ test('Get name of the actor from status', () => {
 });
 
 test('Sorts task array correctly', () => {
-  const tasks = sortTasksByState(taskSummary);
+  const tasks = sortTasksByState(getTaskObject());
   expect(tasks[0].state).toBe(RomiCore.TaskSummary.STATE_ACTIVE);
   expect(tasks[1].state).toBe(RomiCore.TaskSummary.STATE_QUEUED);
 });
