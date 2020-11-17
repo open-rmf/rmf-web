@@ -42,7 +42,7 @@ import { RmfContextProvider } from './rmf-contexts';
 import RobotsPanel from './robots-panel';
 import ScheduleVisualizer from './schedule-visualizer';
 import { SpotlightValue } from './spotlight-value';
-// import { DashboardTour, DashboardTourProps } from './tour/tour';
+import { DashboardTour, DashboardTourProps } from './tour/tour';
 import { TaskSummaryPanel } from './task-summary-panel';
 import TaskManager from '../managers/task-manager';
 
@@ -425,19 +425,19 @@ export default function Dashboard(_props: {}): React.ReactElement {
     }
   }, [tourComplete, setTourState]);
 
-  // const tourProps = React.useMemo<DashboardTourProps['tourProps']>(() => {
-  //   const doorAccordionRef = Object.values(doorAccordionRefs)[0] as SpotlightRef | undefined;
-  //   return {
-  //     tourState,
-  //     setTourState,
-  //     setShowSettings,
-  //     setShowOmniPanel,
-  //     setShowHelp,
-  //     clearSpotlights,
-  //     setCurrentView,
-  //     doorSpotlight: doorAccordionRef?.spotlight,
-  //   };
-  // }, [doorAccordionRefs, tourState]);
+  const tourProps = React.useMemo<DashboardTourProps['tourProps']>(() => {
+    const doorAccordionRef = Object.values(doorAccordionRefs)[0] as SpotlightRef | undefined;
+    return {
+      tourState,
+      setTourState,
+      setShowSettings,
+      setShowOmniPanel,
+      setShowHelp,
+      clearSpotlights,
+      setCurrentView,
+      doorSpotlight: doorAccordionRef?.spotlight,
+    };
+  }, [doorAccordionRefs, tourState]);
 
   const [showHotkeyDialog, setShowHotkeyDialog] = React.useState(false);
 
