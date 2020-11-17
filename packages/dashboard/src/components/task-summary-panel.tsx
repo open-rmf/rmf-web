@@ -30,7 +30,7 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryAccordionProps) =>
   }>({});
 
   const initialValues: SnapshotState = {
-    [SnapshotStateType.CONTENT]: {} as {
+    [SnapshotStateType.Content]: {} as {
       [key: string]: RomiCore.TaskSummary;
     },
   };
@@ -39,22 +39,22 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryAccordionProps) =>
   // TODO: we need to synchronize this with a proper backend when it's ready. Now the completed
   // task will be flushed on a browser refresh because they are being saved in memory.
   const handleClearAllCurrTasks = React.useCallback(() => {
-    dispatchSnapshot({ type: SnapshotActionType.CLEAR, payload: savedTasksContent.current });
+    dispatchSnapshot({ type: SnapshotActionType.Clear, payload: savedTasksContent.current });
   }, []);
 
   const handleRestoreTasks = React.useCallback(() => {
-    dispatchSnapshot({ type: SnapshotActionType.RESTORE, payload: savedTasksContent.current });
+    dispatchSnapshot({ type: SnapshotActionType.Restore, payload: savedTasksContent.current });
   }, []);
 
   // Update Task list content
   React.useEffect(() => {
     if (tasks.length === 0) return;
-    dispatchSnapshot({ type: SnapshotActionType.ADD_CONTENT, payload: tasks });
+    dispatchSnapshot({ type: SnapshotActionType.AddContent, payload: tasks });
   }, [tasks]);
 
   // Order by state. Put first the Active -> Queue -> Failed -> Finished
   const currentTaskContents: RomiCore.TaskSummary[] = React.useMemo(() => {
-    return sortTasksByState(stateSnapshot[SnapshotStateType.CONTENT]);
+    return sortTasksByState(stateSnapshot[SnapshotStateType.Content]);
   }, [stateSnapshot]);
 
   return (

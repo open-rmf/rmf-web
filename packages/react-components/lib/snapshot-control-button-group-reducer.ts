@@ -4,13 +4,13 @@ export type SnapshotActionFormat<T, K = undefined> = {
 };
 
 export enum SnapshotActionType {
-  ADD_CONTENT = 'addContent',
-  CLEAR = 'clear',
-  RESTORE = 'restore',
+  AddContent = 'addContent',
+  Clear = 'clear',
+  Restore = 'restore',
 }
 
 export enum SnapshotStateType {
-  CONTENT = 'content',
+  Content = 'content',
 }
 
 export type SnapshotAction =
@@ -19,7 +19,7 @@ export type SnapshotAction =
   | SnapshotActionFormat<'restore', any>;
 
 export type SnapshotState = {
-  [SnapshotStateType.CONTENT]: any;
+  [SnapshotStateType.Content]: any;
 };
 
 function mergeContent(
@@ -40,16 +40,16 @@ function mergeContent(
 
 export const snapshotReducer = (state: SnapshotState, action: SnapshotAction): SnapshotState => {
   switch (action.type) {
-    case SnapshotActionType.CLEAR:
-      action.payload.stored = Object.assign({}, state[SnapshotStateType.CONTENT]);
-      return { ...state, [SnapshotStateType.CONTENT]: {} };
-    case SnapshotActionType.RESTORE:
+    case SnapshotActionType.Clear:
+      action.payload.stored = Object.assign({}, state[SnapshotStateType.Content]);
+      return { ...state, [SnapshotStateType.Content]: {} };
+    case SnapshotActionType.Restore:
       const mergedContent = mergeContent(state.content, action.payload.stored, false);
-      const newState = { ...state, [SnapshotStateType.CONTENT]: mergedContent };
+      const newState = { ...state, [SnapshotStateType.Content]: mergedContent };
       action.payload.stored = {};
       return newState;
-    case SnapshotActionType.ADD_CONTENT:
-      return { ...state, [SnapshotStateType.CONTENT]: mergeContent(state.content, action.payload) };
+    case SnapshotActionType.AddContent:
+      return { ...state, [SnapshotStateType.Content]: mergeContent(state.content, action.payload) };
     default:
       console.error('Unexpected action');
       return state;
