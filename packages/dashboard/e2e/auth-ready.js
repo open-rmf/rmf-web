@@ -44,13 +44,7 @@ async function authReady(timeout = 80000) {
       }
       authIpAddress = process.env.AUTH_GATEWAY_IP;
       req = http.request(`http://${authIpAddress ? authIpAddress : 'localhost'}:8080/auth/`, () => {
-        console.log(
-          '--------------------------- connecting success ---------------------------: ' +
-            process.env.AUTH_GATEWAY_IP,
-        );
-        console.log(process.env.REACT_APP_AUTH_CONFIG);
-        execSync('docker network inspect auth_network', { stdio: 'inherit' });
-        execSync('docker network inspect $AUTH_CONTAINER', { stdio: 'inherit' });
+        execSync('docker container inspect $AUTH_CONTAINER', { stdio: 'inherit' });
         clearTimeout(timer);
         clearTimeout(retryTimer);
         res(true);
