@@ -8,7 +8,7 @@ import {
   SnapshotStateType,
   SnapshotActionType,
   TaskSummaryAccordion,
-  sortTasksByState,
+  sortTasks,
 } from 'react-components';
 
 const debug = Debug('OmniPanel:TaskSummaryPanel');
@@ -57,9 +57,9 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryAccordionProps) =>
     dispatchSnapshot({ type: SnapshotActionType.AddContent, payload: taskSummaryObject });
   }, [tasks, tasksExists]);
 
-  // Order by state. Put first the Active -> Queue -> Failed -> Finished
+  // Order by state and submission time. Order: Active -> Queue -> Failed -> Finished
   const currentTaskContents: RomiCore.TaskSummary[] = React.useMemo(() => {
-    return sortTasksByState(stateSnapshot[SnapshotStateType.Content] as TaskSummaryType);
+    return sortTasks(stateSnapshot[SnapshotStateType.Content] as TaskSummaryType);
   }, [stateSnapshot]);
 
   return (

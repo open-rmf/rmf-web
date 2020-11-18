@@ -2,7 +2,11 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 import { render } from '@testing-library/react';
 import { TaskSummaryAccordion, TaskSummaryAccordionInfo } from '../../lib';
-import { getActorFromStatus, sortTasksByState } from '../../lib/task-summary/task-summary-utils';
+import {
+  getActorFromStatus,
+  sortTasks,
+  sortTasksBySubmissionTime,
+} from '../../lib/task-summary/task-summary-utils';
 
 function getTaskObject(): Record<string, RomiCore.TaskSummary> {
   // Returns a task object with a new memory allocation
@@ -13,7 +17,7 @@ function getTaskObject(): Record<string, RomiCore.TaskSummary> {
       state: 1,
       status:
         'Moving [tinyRobot/tinyRobot1]: ( 9.81228 -6.98942 -3.12904) -> ( 6.26403 -3.51569  1.16864) | Remaining phases: 1 | Remaining phases: 6',
-      submission_time: { sec: 0, nanosec: 0 },
+      submission_time: { sec: 0, nanosec: 1519129853500 },
       task_id: 'af8faee9-84ca-41ea-8bb6-8493cc9f824c',
     },
     'am8faee9-84ca-41ea-8bb6-8493cc9f8249': {
@@ -22,7 +26,7 @@ function getTaskObject(): Record<string, RomiCore.TaskSummary> {
       state: 0,
       status:
         'Moving [tinyRobot/tinyRobot2]: ( 9.81228 -6.98942 -3.12904) -> ( 6.26403 -3.51569  1.16864) | Remaining phases: 1 | Remaining phases: 6',
-      submission_time: { sec: 0, nanosec: 0 },
+      submission_time: { sec: 0, nanosec: 1519129858900 },
       task_id: 'am8faee9-84ca-41ea-8bb6-8493cc9f8249',
     },
   };
@@ -126,7 +130,14 @@ test('Get name of the actor from status', () => {
 });
 
 test('Sorts task array correctly', () => {
-  const tasks = sortTasksByState(getTaskObject());
+  const tasks = sortTasks(getTaskObject());
   expect(tasks[0].state).toBe(RomiCore.TaskSummary.STATE_ACTIVE);
   expect(tasks[1].state).toBe(RomiCore.TaskSummary.STATE_QUEUED);
+});
+
+test('Sorts task by submission time correctly', () => {
+  const tasks = Object.values(getTaskObject());
+  const sortedTasks = sortTasksBySubmissionTime(tasks);
+  expect(sortedTasks[0].submission_time.nanosec).toBe(1519129858900);
+  expect(sortedTasks[1].submission_time.nanosec).toBe(1519129853500);
 });
