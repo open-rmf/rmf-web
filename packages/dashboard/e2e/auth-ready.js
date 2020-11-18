@@ -1,5 +1,5 @@
 const http = require('http');
-const { execSync, exec } = require('child_process');
+const { execSync } = require('child_process');
 /**
  * Waits for the authentication server to be ready.
  * @param timeout Max amount of time (in milliseconds) to wait for
@@ -16,7 +16,7 @@ async function authReady(timeout = 80000) {
     let retryTimer;
     const waitAuthReady = () => {
       // initialize network and container related variables.
-      let authIpAddress;
+      const authIpAddress = process.env.AUTH_GATEWAY_IP;
 
       // check if we are in github CI environment
       if (process.env.CI) {
@@ -42,7 +42,6 @@ async function authReady(timeout = 80000) {
           }
         }
       }
-      authIpAddress = process.env.AUTH_GATEWAY_IP;
       req = http.request(`http://${authIpAddress ? authIpAddress : 'localhost'}:8080/auth/`, () => {
         clearTimeout(timer);
         clearTimeout(retryTimer);

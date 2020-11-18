@@ -7,6 +7,7 @@ const chromeArgs = [...headlessArgs];
 if (os.userInfo().uid === 0) {
   chromeArgs.push('--no-sandbox');
 }
+
 const port = process.env.ROMI_DASHBOARD_PORT;
 exports.config = {
   //
