@@ -44,7 +44,6 @@ async function authReady(timeout = 80000) {
       }
       authIpAddress = process.env.AUTH_GATEWAY_IP;
       req = http.request(`http://${authIpAddress ? authIpAddress : 'localhost'}:8080/auth/`, () => {
-        execSync('docker container inspect $AUTH_CONTAINER', { stdio: 'inherit' });
         clearTimeout(timer);
         clearTimeout(retryTimer);
         res(true);
