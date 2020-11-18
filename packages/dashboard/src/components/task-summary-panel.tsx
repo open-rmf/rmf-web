@@ -15,7 +15,7 @@ const debug = Debug('OmniPanel:TaskSummaryPanel');
 
 type TaskSummaryType = Record<string, RomiCore.TaskSummary>;
 export interface TaskSummaryAccordionProps {
-  tasks: TaskSummaryType;
+  tasks: RomiCore.TaskSummary[];
 }
 
 export const TaskSummaryPanel = React.memo((props: TaskSummaryAccordionProps) => {
@@ -44,13 +44,17 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryAccordionProps) =>
   }, []);
 
   const tasksExists = React.useMemo(() => {
-    return Object.keys(tasks).length !== 0;
+    return tasks.length !== 0;
   }, [tasks]);
 
   // Update Task list content
   React.useEffect(() => {
     if (!tasksExists) return;
-    dispatchSnapshot({ type: SnapshotActionType.AddContent, payload: tasks });
+    let taskSummaryObject: TaskSummaryType = {};
+    tasks.forEach((task) => {
+      taskSummaryObject[task.task_id] = task;
+    });
+    dispatchSnapshot({ type: SnapshotActionType.AddContent, payload: taskSummaryObject });
   }, [tasks, tasksExists]);
 
   // Order by state. Put first the Active -> Queue -> Failed -> Finished
