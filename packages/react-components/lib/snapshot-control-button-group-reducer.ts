@@ -13,45 +13,53 @@ export enum SnapshotStateType {
   Content = 'content',
 }
 
-export type SnapshotAction =
-  | SnapshotActionFormat<'addContent', any>
-  | SnapshotActionFormat<'clear', any>
-  | SnapshotActionFormat<'restore', any>;
+export type SnapshotAction<T> =
+  | SnapshotActionFormat<'addContent', T>
+  | SnapshotActionFormat<'clear', React.MutableRefObject<T>>
+  | SnapshotActionFormat<'restore', React.MutableRefObject<T>>;
 
-export type SnapshotState = {
-  [SnapshotStateType.Content]: any;
+export type SnapshotState<T> = {
+  [SnapshotStateType.Content]: T;
 };
 
-function mergeContent(
-  currentContent: any,
-  storedContent: any,
+function mergeContent<T extends Record<string, unknown>>(
+  currentContent: T,
+  storedContent: T,
   replaceCurrentContent = true,
-) {
-  const newContents = Object.assign({}, currentContent);
-  Object.keys(storedContent).forEach((element) => {
+): T {
+  // In general, the constraint Record<string, XXX> doesn't actually ensure that an argument has a
+  // string index signature, it merely ensures that the properties of the argument are assignable
+  // to type XXX. So, in the example above you could effectively pass any object and the function
+  //could write to any property without any checks. https://github.com/microsoft/TypeScript/issues/31661
+  const newContents = Object.assign({}, currentContent) as Record<string, unknown>;
+  Object.keys(storedContent).forEach((element: string) => {
     if (replaceCurrentContent) newContents[element] = storedContent[element];
     else {
       // If the element is already on the currentContent do not replace it
       if (!(element in currentContent)) newContents[element] = storedContent[element];
     }
   });
-  return newContents;
+  return newContents as T;
 }
 
-export const snapshotReducer = (state: SnapshotState, action: SnapshotAction): SnapshotState => {
+export function snapshotReducer<T extends Record<string, unknown>>(
+  state: SnapshotState<T>,
+  action: SnapshotAction<T>,
+): SnapshotState<T> {
   switch (action.type) {
     case SnapshotActionType.Clear:
-      action.payload.stored = Object.assign({}, state[SnapshotStateType.Content]);
-      return { ...state, [SnapshotStateType.Content]: {} };
+      action.payload.current = Object.assign({}, state[SnapshotStateType.Content]);
+      return { ...state, [SnapshotStateType.Content]: {} as T };
     case SnapshotActionType.Restore:
-      const mergedContent = mergeContent(state.content, action.payload.stored, false);
+      const mergedContent = mergeContent(state.content, action.payload.current, false);
       const newState = { ...state, [SnapshotStateType.Content]: mergedContent };
-      action.payload.stored = {};
-      return newState;
+      action.payload.current = {} as T;
+      return newState as SnapshotState<T>;
+
     case SnapshotActionType.AddContent:
       return { ...state, [SnapshotStateType.Content]: mergeContent(state.content, action.payload) };
     default:
-      console.error('Unexpected action');
+      console.error('Unexpected action on the snapshot reducer', action);
       return state;
   }
-};
+}

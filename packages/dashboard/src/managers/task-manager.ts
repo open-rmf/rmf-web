@@ -10,6 +10,10 @@ export default class TaskManager extends EventEmitter<Events> {
     return Array.from(Object.values(this._tasks));
   }
 
+  public get taskSummary(): Record<string, RomiCore.TaskSummary> {
+    return this._tasks;
+  }
+
   startSubscription(transport: RomiCore.Transport) {
     this._subscriptions.push(
       transport.subscribe(RomiCore.taskSummaries, (taskSummary) => {

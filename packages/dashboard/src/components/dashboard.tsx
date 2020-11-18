@@ -222,7 +222,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   );
 
   const taskManager = React.useMemo(() => new TaskManager(), []);
-  const [tasks, setTasks] = React.useState(taskManager.tasks());
+  const [tasks, setTasks] = React.useState(taskManager.taskSummary);
 
   const negotiationStatusManager = React.useMemo(
     () => new NegotiationStatusManager(trajServerUrl),
@@ -291,7 +291,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
         negotiationStatusManager.on('updated', () =>
           setNegotiationStatus(negotiationStatusManager.allConflicts()),
         );
-        taskManager.on('updated', () => setTasks(taskManager.tasks()));
+        taskManager.on('updated', () => setTasks(taskManager.taskSummary));
         setTransport(x);
       })
       .catch((e: CloseEvent) => {
