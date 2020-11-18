@@ -60,8 +60,6 @@ jobs:
           npm run sync:docker
       - name: e2e test
         run: |
-          export ROMIDASHBOARD_CONTAINER=$(docker ps -q --filter ancestor=docker.pkg.github.com/osrf/romi-dashboard/e2e)
-          export GITHUB_NETWORK=${{ job.container.network }}
           . /opt/rmf/setup.bash
           bash -c 'cd e2e && npm ci --unsafe-perm && npm test'
       - name: upload artifacts
