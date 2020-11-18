@@ -34,7 +34,7 @@ async function authReady(timeout = 80000) {
           // check if auth container is already connected to custom network
           // to prevent running the same operations if it has already been connected to custom network
           const isConnected = execSync(
-            `docker ps -q --filter network=${commonNetwork} --filter ancestor=romi-dashboard/auth`,
+            `docker ps -q --filter network=auth_network --filter ancestor=romi-dashboard/auth`,
           ).toString();
 
           if (!isConnected) {
