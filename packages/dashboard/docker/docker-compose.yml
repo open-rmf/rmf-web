@@ -34,4 +34,3 @@ services:
     command: bash -c 'BROWSER=none npm start'
 networks:
   auth_network:
-    external: true
