@@ -1,6 +1,7 @@
 const concurrently = require('concurrently');
 const { execSync } = require('child_process');
 
+// create external network for auth container
 execSync('docker network create auth_network', { stdio: 'inherit' });
 const defaultAuthGatewayIp = execSync(
   "docker network inspect -f '{{range .IPAM.Config}}{{.Gateway}}{{end}}' auth_network",
@@ -8,18 +9,17 @@ const defaultAuthGatewayIp = execSync(
   .toString()
   .trim();
 process.env.AUTH_GATEWAY_IP = defaultAuthGatewayIp;
-if (process.env.CI) {
-  const authConfig = {
-    realm: 'master',
-    clientId: 'romi-dashboard',
-    url: `http://${defaultAuthGatewayIp}:8080/auth`,
-  };
-  process.env.REACT_APP_AUTH_CONFIG = JSON.stringify(authConfig);
-}
-console.log('gateway ip address: ' + process.env.AUTH_GATEWAY_IP);
+
+// set REACT_APP_CONFIG
+const authConfig = {
+  realm: 'master',
+  clientId: 'romi-dashboard',
+  url: `http://${defaultAuthGatewayIp}:8080/auth`,
+};
+process.env.REACT_APP_AUTH_CONFIG = JSON.stringify(authConfig);
 
 execSync('cd .. && node ./scripts/setup/get-icons.js', { stdio: 'inherit' });
-console.log(process.env.REACT_APP_AUTH_CONFIG);
+
 execSync('npm run build', { stdio: 'inherit' });
 // wrap in double quotes to support args with spaces
 const wdioArgs = process.argv

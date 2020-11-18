@@ -17,9 +17,6 @@ async function authReady(timeout = 80000) {
     const waitAuthReady = () => {
       // initialize network and container related variables.
       let authIpAddress;
-      // const commonNetwork = 'auth_dashboard_network';
-      // const commonNetworkSubnet = '172.16.0.0/16';
-      // const authContainerIp = '172.16.0.2';
 
       // check if we are in github CI environment
       if (process.env.CI) {
@@ -36,39 +33,12 @@ async function authReady(timeout = 80000) {
           ).toString();
 
           if (!isConnected) {
-            // find and set default auth network id
-            // const defaultAuthNetwork = execSync(
-            //   "docker inspect $AUTH_CONTAINER -f '{{range.NetworkSettings.Networks }}{{.NetworkID}}{{end}}'",
-            // ).toString();
-            // process.env.DEFAULT_AUTH_NETWORK = defaultAuthNetwork;
-
-            // create common network with 172.16.0.0/16 subnet and connect the auth and dashboard container
-            // We need to specify a subnet to assign an ip address later
-            // use an ip in the 172.16.0.0/16 range as it is private, like localhost but is not blocked by github's environment
-            // and eliminates the need for ssl
-            // execSync(`docker network create --subnet=${commonNetworkSubnet} ${commonNetwork}`, {
-            //   stdio: 'inherit',
-            // });
-            // execSync(
-            //   `docker network connect --ip=${authContainerIp} ${commonNetwork} $AUTH_CONTAINER`,
-            //   {
-            //     stdio: 'inherit',
-            //   },
-            // );
             execSync(`docker network connect auth_network $ROMIDASHBOARD_CONTAINER`, {
               stdio: 'inherit',
             });
-
-            // disconnect from old network to prevent concatenation of 2 different network ip later on
-            // execSync(`docker network disconnect $DEFAULT_AUTH_NETWORK $AUTH_CONTAINER`, {
-            //   stdio: 'inherit',
-            // });
             execSync('docker network disconnect $GITHUB_NETWORK $ROMIDASHBOARD_CONTAINER', {
               stdio: 'inherit',
             });
-
-            // assign of auth container ip
-            // authIpAddress = authContainerIp;
           }
         }
       }
@@ -80,6 +50,7 @@ async function authReady(timeout = 80000) {
         );
         console.log(process.env.REACT_APP_AUTH_CONFIG);
         execSync('docker network inspect auth_network', { stdio: 'inherit' });
+        execSync('docker network inspect $AUTH_CONTAINER', { stdio: 'inherit' });
         clearTimeout(timer);
         clearTimeout(retryTimer);
         res(true);
