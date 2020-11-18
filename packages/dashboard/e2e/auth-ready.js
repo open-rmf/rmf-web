@@ -24,7 +24,7 @@ async function authReady(timeout = 80000) {
       // check if we are in github CI environment
       if (process.env.CI) {
         // check if auth container has already been initialized
-        let authContainer = execSync(
+        const authContainer = execSync(
           'docker ps -q --filter ancestor=romi-dashboard/auth',
         ).toString();
         if (authContainer) {
@@ -32,13 +32,13 @@ async function authReady(timeout = 80000) {
 
           // check if auth container is already connected to custom network
           // to prevent running the same operations if it has already been connected to custom network
-          let isConnected = execSync(
+          const isConnected = execSync(
             `docker ps -q --filter network=${commonNetwork} --filter ancestor=romi-dashboard/auth`,
           ).toString();
 
           if (!isConnected) {
             // find and set default auth network id
-            let defaultAuthNetwork = execSync(
+            const defaultAuthNetwork = execSync(
               "docker inspect $AUTH_CONTAINER -f '{{range.NetworkSettings.Networks }}{{.NetworkID}}{{end}}'",
             ).toString();
             process.env.DEFAULT_AUTH_NETWORK = defaultAuthNetwork;
