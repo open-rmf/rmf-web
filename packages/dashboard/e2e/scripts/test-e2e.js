@@ -4,10 +4,17 @@ const { execSync } = require('child_process');
 execSync('docker network create auth_network', { stdio: 'inherit' });
 const defaultAuthGatewayIp = execSync(
   "docker network inspect -f '{{range .IPAM.Config}}{{.Gateway}}{{end}}' auth_network",
-).toString();
+)
+  .toString()
+  .trim();
 process.env.AUTH_GATEWAY_IP = defaultAuthGatewayIp;
 if (process.env.CI) {
-  process.env.REACT_APP_AUTH_CONFIG = `{"realm":"master", "clientId":"romi-dashboard", "url":"http://${defaultAuthGatewayIp}:8080/auth"}`;
+  const authConfig = {
+    realm: 'master',
+    clientId: 'romi-dashboard',
+    url: `http://${defaultAuthGatewayIp}:8080/auth`,
+  };
+  process.env.REACT_APP_AUTH_CONFIG = JSON.stringify(authConfig);
 }
 console.log('gateway ip address: ' + process.env.AUTH_GATEWAY_IP);
 

@@ -28,9 +28,7 @@ async function authReady(timeout = 80000) {
           'docker ps -q --filter ancestor=romi-dashboard/auth',
         ).toString();
         if (authContainer) {
-          execSync('docker network inspect auth_network', { stdio: 'inherit' });
           process.env.AUTH_CONTAINER = authContainer;
-          execSync('docker inspect $AUTH_CONTAINER', { stdio: 'inherit' });
           // check if auth container is already connected to custom network
           // to prevent running the same operations if it has already been connected to custom network
           const isConnected = execSync(
@@ -81,6 +79,7 @@ async function authReady(timeout = 80000) {
             process.env.AUTH_GATEWAY_IP,
         );
         console.log(process.env.REACT_APP_AUTH_CONFIG);
+        execSync('docker network inspect auth_network', { stdio: 'inherit' });
         clearTimeout(timer);
         clearTimeout(retryTimer);
         res(true);
