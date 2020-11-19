@@ -1,5 +1,4 @@
 const http = require('http');
-const { execSync } = require('child_process');
 /**
  * Waits for the authentication server to be ready.
  * @param timeout Max amount of time (in milliseconds) to wait for
