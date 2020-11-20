@@ -2,13 +2,19 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import * as L from 'leaflet';
 import React from 'react';
-import { ColorContext, robotHash, TrajectoryMarker, TrajectoryMarkerProps } from 'react-components';
+import {
+  ColorContext,
+  robotHash,
+  TrajectoryMarker as TrajectoryMarker_,
+  TrajectoryMarkerProps,
+} from 'react-components';
 import { Conflict, Trajectory } from '../../robot-trajectory-manager';
 import { TrajectoryAnimation } from '../../settings';
 import { SettingsContext } from '../app-contexts';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 
 const debug = Debug('ScheduleVisualizer:RobotTrajectoriesOverlay');
+const TrajectoryMarker = React.memo(TrajectoryMarker_);
 
 export interface RobotTrajectoriesOverlayProps extends SVGOverlayProps {
   /**
@@ -25,7 +31,7 @@ export interface RobotTrajectoriesOverlayProps extends SVGOverlayProps {
 /**
  * Contexts: ColorContext
  */
-export const RobotTrajectoriesOverlay = React.memo((props: RobotTrajectoriesOverlayProps) => {
+export const RobotTrajectoriesOverlay = (props: RobotTrajectoriesOverlayProps) => {
   debug('render');
 
   const { robots, trajectories, conflicts, animationScale = 60000 / 1800, ...otherProps } = props;
@@ -94,6 +100,6 @@ export const RobotTrajectoriesOverlay = React.memo((props: RobotTrajectoriesOver
       </svg>
     </SVGOverlay>
   );
-});
+};
 
 export default RobotTrajectoriesOverlay;

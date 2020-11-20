@@ -1,17 +1,18 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import React, { useMemo } from 'react';
-import { WaypointMarker } from 'react-components';
+import { WaypointMarker as WaypointMarker_ } from 'react-components';
 import { viewBoxFromLeafletBounds } from '../../util/css-utils';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 
 const debug = Debug('ScheduleVisualier:WaypointsOverlay');
+const WaypointMarker = React.memo(WaypointMarker_);
 
 export interface WaypointsOverlayProps extends SVGOverlayProps {
   currentLevel: RomiCore.Level;
 }
 
-export const WaypointsOverlay = React.memo((props: WaypointsOverlayProps) => {
+export const WaypointsOverlay = (props: WaypointsOverlayProps) => {
   debug('render');
 
   const { currentLevel, ...otherProps } = props;
@@ -37,6 +38,6 @@ export const WaypointsOverlay = React.memo((props: WaypointsOverlayProps) => {
       </svg>
     </SVGOverlay>
   );
-});
+};
 
 export default WaypointsOverlay;

@@ -1,12 +1,13 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import React, { useMemo } from 'react';
-import { RobotMarker, RobotMarkerProps } from 'react-components';
+import { RobotMarker as RobotMarker_, RobotMarkerProps } from 'react-components';
 import { viewBoxFromLeafletBounds } from '../../util/css-utils';
 import { ResourcesContext } from '../app-contexts';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 
 const debug = Debug('ScheduleVisualizer:RobotsOverlay');
+const RobotMarker = React.memo(RobotMarker_);
 
 export interface RobotsOverlayProps extends SVGOverlayProps {
   fleets: readonly RomiCore.FleetState[];
@@ -15,7 +16,7 @@ export interface RobotsOverlayProps extends SVGOverlayProps {
   currentFloorName: string;
 }
 
-export const RobotsOverlay = React.memo((props: RobotsOverlayProps) => {
+export const RobotsOverlay = (props: RobotsOverlayProps) => {
   debug('render');
 
   const { fleets, onRobotClick, conflictRobotNames, currentFloorName, ...otherProps } = props;
@@ -85,6 +86,6 @@ export const RobotsOverlay = React.memo((props: RobotsOverlayProps) => {
       </svg>
     </SVGOverlay>
   );
-});
+};
 
 export default RobotsOverlay;

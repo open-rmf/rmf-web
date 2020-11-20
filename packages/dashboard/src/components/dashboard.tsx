@@ -50,10 +50,10 @@ import { TaskSummaryPanel } from './task-summary-panel';
 import { DashboardTour, DashboardTourProps } from './tour/tour';
 
 const debug = Debug('App');
-const DispenserAccordion = withSpotlight(DispenserAccordion_);
-const DoorAccordion = withSpotlight(DoorAccordion_);
-const LiftAccordion = withSpotlight(LiftAccordion_);
-const RobotAccordion = withSpotlight(RobotAccordion_);
+const DispenserAccordion = React.memo(withSpotlight(DispenserAccordion_));
+const DoorAccordion = React.memo(withSpotlight(DoorAccordion_));
+const LiftAccordion = React.memo(withSpotlight(LiftAccordion_));
+const RobotAccordion = React.memo(withSpotlight(RobotAccordion_));
 
 const borderRadius = 20;
 

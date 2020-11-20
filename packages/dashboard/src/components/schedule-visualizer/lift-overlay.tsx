@@ -1,12 +1,13 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import React, { useContext } from 'react';
-import { LiftMarker, LiftMarkerProps } from 'react-components';
+import { LiftMarker as LiftMarker_, LiftMarkerProps } from 'react-components';
 import { viewBoxFromLeafletBounds } from '../../util/css-utils';
 import { LiftStateContext } from '../rmf-contexts';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 
 const debug = Debug('ScheduleVisualizer:LiftsOverlay');
+const LiftMarker = React.memo(LiftMarker_);
 
 export interface LiftsOverlayProps extends SVGOverlayProps {
   currentFloor: string;
@@ -14,7 +15,7 @@ export interface LiftsOverlayProps extends SVGOverlayProps {
   onLiftClick?(lift: RomiCore.Lift): void;
 }
 
-export const LiftsOverlay = React.memo((props: LiftsOverlayProps) => {
+export const LiftsOverlay = (props: LiftsOverlayProps) => {
   debug('render');
 
   const { lifts, onLiftClick, currentFloor, ...otherProps } = props;
@@ -43,6 +44,6 @@ export const LiftsOverlay = React.memo((props: LiftsOverlayProps) => {
       </SVGOverlay>
     </>
   );
-});
+};
 
 export default LiftsOverlay;
