@@ -45,5 +45,5 @@ SimpleData.args = {
 };
 
 export const Array: Story = (args) => {
-  return <SimpleInfo data={[{ name: 'strings', value: ['hello', 'world'] }]} {...args} />;
+  return <SimpleInfo infoData={[{ name: 'strings', value: ['hello', 'world'] }]} {...args} />;
 };

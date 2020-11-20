@@ -87,7 +87,7 @@ const DoorInfo = (props: DoorInfoProps) => {
     { name: 'Location', value: `(${door.v1_x.toFixed(3)}, ${door.v1_y.toFixed(3)})` },
   ] as SimpleInfoData[];
 
-  return <SimpleInfo data={data} />;
+  return <SimpleInfo infoData={data} />;
 };
 
 export interface DoorAccordionProps extends Omit<AccordionProps, 'children'> {

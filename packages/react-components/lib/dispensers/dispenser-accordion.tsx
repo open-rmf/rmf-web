@@ -26,7 +26,7 @@ const DispenserInfo = (props: DispenserInfoProps) => {
     { name: 'Seconds Remaining', value: dispenser.seconds_remaining },
   ];
 
-  return <SimpleInfo data={data} />;
+  return <SimpleInfo infoData={data} />;
 };
 
 function dispenserModeToString(mode: number): string {

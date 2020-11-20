@@ -60,7 +60,7 @@ const RobotInfo = (props: RobotInfoProps) => {
     { name: 'Battery', value: robot.battery_percent.toFixed(0) },
   ];
 
-  return <SimpleInfo data={data} />;
+  return <SimpleInfo infoData={data} />;
 };
 
 export interface RobotAccordionProps extends Omit<AccordionProps, 'children'> {

@@ -16,10 +16,6 @@ export interface SimpleInfoData<T extends DataValueType = DataValueType> {
   disabled?: boolean;
 }
 
-export interface SimpleInfoProps {
-  data: SimpleInfoData[];
-}
-
 const useStyles = makeStyles((theme) => ({
   container: {
     display: 'table',
@@ -59,8 +55,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+export interface SimpleInfoProps extends React.HTMLProps<HTMLDivElement> {
+  infoData: SimpleInfoData[];
+}
+
 export const SimpleInfo = (props: SimpleInfoProps): JSX.Element => {
-  const { data } = props;
+  const { infoData, ...otherProps } = props;
   const classes = useStyles();
 
   const renderPrimitive = ({
@@ -129,14 +129,16 @@ export const SimpleInfo = (props: SimpleInfoProps): JSX.Element => {
   };
 
   return (
-    <div className={classes.container} role="table">
-      {data.map((item) => (
-        <React.Fragment key={item.name}>
-          <div className={classes.tableRow} role="row">
-            {renderLine(item)}
-          </div>
-        </React.Fragment>
-      ))}
+    <div {...otherProps}>
+      <div className={classes.container} role="table">
+        {infoData.map((item) => (
+          <React.Fragment key={item.name}>
+            <div className={classes.tableRow} role="row">
+              {renderLine(item)}
+            </div>
+          </React.Fragment>
+        ))}
+      </div>
     </div>
   );
 };

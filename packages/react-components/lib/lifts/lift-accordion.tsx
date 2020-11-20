@@ -18,11 +18,6 @@ import {
 
 const debug = Debug('Lifts:Accordion');
 
-interface LiftInfoProps {
-  lift: RomiCore.Lift;
-  liftState?: RomiCore.LiftState;
-}
-
 const useStyles = makeStyles((theme) => ({
   liftFloorLabelStopped: {
     borderColor: theme.palette.info.main,
@@ -30,10 +25,18 @@ const useStyles = makeStyles((theme) => ({
   liftFloorLabelMoving: {
     borderColor: theme.palette.warning.main,
   },
+  noPadding: {
+    padding: 0,
+  },
 }));
 
-const LiftInfo = (props: LiftInfoProps) => {
-  const { lift, liftState } = props;
+export interface LiftInfoProps extends React.HTMLProps<HTMLDivElement> {
+  lift: RomiCore.Lift;
+  liftState?: RomiCore.LiftState;
+}
+
+export const LiftInfo = (props: LiftInfoProps): JSX.Element => {
+  const { lift, liftState, ...otherProps } = props;
 
   const data = [
     { name: 'Name', value: lift.name },
@@ -64,7 +67,7 @@ const LiftInfo = (props: LiftInfoProps) => {
     },
   ] as SimpleInfoData[];
 
-  return <SimpleInfo data={data} />;
+  return <SimpleInfo infoData={data} {...otherProps} />;
 };
 
 export interface LiftAccordionProps extends Omit<AccordionProps, 'children'> {
@@ -128,8 +131,8 @@ export const LiftAccordion = React.forwardRef(
             <AntTab label="Info" />
             <AntTab label="Request" />
           </AntTabs>
-          <TabPanel value={tabValue} index={0}>
-            <LiftInfo lift={lift} liftState={liftState} />
+          <TabPanel value={tabValue} index={0} fullWidth>
+            <LiftInfo className={classes.noPadding} lift={lift} liftState={liftState} />
           </TabPanel>
           <TabPanel value={tabValue} index={1}>
             {lift.levels && (
