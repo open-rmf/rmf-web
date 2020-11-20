@@ -14,6 +14,7 @@ export interface DispenserPanelProps {
 
 export const DispenserPanel = React.memo((props: DispenserPanelProps) => {
   debug('render');
+
   const { dispenserStates, spotlight } = props;
   const dispenserRefs = React.useRef<Record<string, HTMLElement | null>>({});
   const [expanded, setExpanded] = React.useState<Record<string, boolean>>({});
@@ -38,7 +39,7 @@ export const DispenserPanel = React.memo((props: DispenserPanelProps) => {
       updateDispenserStates[dispenser] = dispenserStates[dispenser];
     }
   });
-  console.log(updateDispenserStates);
+
   const storeRef = React.useCallback((ref: HTMLElement | null) => {
     if (!ref) {
       return;
