@@ -24,3 +24,13 @@ Broadly speaking, there are 3 major parts of the system:
 - auth_network, a known network where the Auth container is reachable 
 
 Requests from the romidashboard to the auth container would be routed to the gateway ip address of `auth_network`. Docker would then perform a NAT to route the requests to the auth container and vice versa.
+
+The dashboard would need to be compiled with the gateway ip address of the `auth_network`. This is done by retrieving the ip address the moment the network is created and then have it set in the `url` paramenter of the `REACT_APP_AUTH_CONFIG` env variable.
+```
+const authConfig = {
+  realm: 'master',
+  clientId: 'romi-dashboard',
+  url: `http://${defaultAuthGatewayIp ? defaultAuthGatewayIp : 'localhost'}:8080/auth`,
+};
+process.env.REACT_APP_AUTH_CONFIG = JSON.stringify(authConfig);
+```
