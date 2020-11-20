@@ -2,7 +2,7 @@ import { makeStyles } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import React from 'react';
-import { DoorMarker } from '..';
+import { DoorMarker, fromRmfYaw } from '..';
 import { fromRmfCoords, radiansToDegrees } from '../geometry-utils';
 
 const debug = Debug('Lifts:LiftMarker');
@@ -115,7 +115,6 @@ export const LiftMarker = React.forwardRef(function (
   debug(`render ${lift.name}`);
 
   const { width, depth, ref_x, ref_y, ref_yaw, doors } = lift;
-  // Since we are working with a plane with positive X and Negative Y we need to change the sign of the y.
   const pos = fromRmfCoords([ref_x, ref_y]);
   // Get properties from lift state
   const doorMode = liftState ? toDoorMode(liftState) : undefined;
@@ -173,7 +172,7 @@ export const LiftMarker = React.forwardRef(function (
             y={-depth / 2}
             rx="0.1"
             ry="0.1"
-            transform={`rotate(${radiansToDegrees(ref_yaw)}, ${pos[0]},${pos[1]})`}
+            transform={`rotate(${radiansToDegrees(fromRmfYaw(ref_yaw))})`}
           />
           {renderStatusText()}
         </g>
