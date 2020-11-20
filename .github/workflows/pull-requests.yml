@@ -93,8 +93,10 @@ jobs:
           node-version: 12
       - name: set npm config
         run: npm config set unsafe-perm=true
+      - name: build
+        run: npm ci && npm run build
       - name: test
-        run: npm ci && npm run test:coverage
+        run: npm run test:coverage
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:

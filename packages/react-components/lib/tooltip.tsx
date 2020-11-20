@@ -1,4 +1,4 @@
-import { makeStyles, Tooltip, Typography } from '@material-ui/core';
+import { makeStyles, Tooltip } from '@material-ui/core';
 import React from 'react';
 
 export interface TooltipProps {
@@ -8,11 +8,11 @@ export interface TooltipProps {
   children: JSX.Element;
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles({
   tooltipWidth: {
     maxWidth: 200,
   },
-}));
+});
 
 export const DashboardTooltip = (props: TooltipProps): JSX.Element => {
   const { title, id, enabled } = props;
