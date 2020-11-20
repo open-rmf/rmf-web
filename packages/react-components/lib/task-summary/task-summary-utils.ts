@@ -4,13 +4,13 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 // this should be changed when then backend sends an actor on the
 // taskSummary message (we should use the actor provided by the message).
 // https://github.com/osrf/rmf_core/issues/205
-export const getActorFromStatus = (status: string) => {
+export const getActorFromStatus = (status: string): RegExpMatchArray | null => {
   // Gets the name of the robot if it has any
   // eslint-disable-next-line
   return status.match(/\[[A-Za-z]([a-zA-Z0-9\/]){3,}\]+/gi);
 };
 
-export const formatStatus = (status: string) => {
+export const formatStatus = (status: string): string[] => {
   return status.split('|');
 };
 
@@ -43,7 +43,7 @@ export const separateTasksByState = (
   tasks: Record<string, RomiCore.TaskSummary>,
   states: string[],
 ): Record<string, RomiCore.TaskSummary[]> => {
-  let stateTasks: Record<string, RomiCore.TaskSummary[]> = {};
+  const stateTasks: Record<string, RomiCore.TaskSummary[]> = {};
   states.forEach((state) => {
     stateTasks[state] = [];
   });
@@ -77,7 +77,7 @@ export const sortTasks = (tasks: Record<string, RomiCore.TaskSummary>): RomiCore
   const states = ['completed', 'failed', 'active', 'queued', 'unknown'];
 
   const stateTasks = separateTasksByState(tasks, states);
-  let sortedTasks: RomiCore.TaskSummary[] = [];
+  const sortedTasks: RomiCore.TaskSummary[] = [];
 
   states.forEach((state) => {
     sortedTasks.push(...sortTasksBySubmissionTime(stateTasks[state]));

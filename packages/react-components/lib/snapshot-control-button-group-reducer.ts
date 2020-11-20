@@ -19,7 +19,7 @@ export type SnapshotAction<T> =
   | SnapshotActionFormat<'restore', React.MutableRefObject<T>>;
 
 export type SnapshotState<T> = {
-  [SnapshotStateType.Content]: T;
+  content: T;
 };
 
 function mergeContent<T extends Record<string, unknown>>(
@@ -46,18 +46,23 @@ export function snapshotReducer<T extends Record<string, unknown>>(
   state: SnapshotState<T>,
   action: SnapshotAction<T>,
 ): SnapshotState<T> {
+  const restoreContent = (state: SnapshotState<T>, action: SnapshotAction<T>): SnapshotState<T> => {
+    const newState = {
+      ...state,
+      content: mergeContent(state.content, action.payload.current as T, false),
+    };
+    action.payload.current = {} as T;
+    return newState as SnapshotState<T>;
+  };
+
   switch (action.type) {
     case SnapshotActionType.Clear:
-      action.payload.current = Object.assign({}, state[SnapshotStateType.Content]);
-      return { ...state, [SnapshotStateType.Content]: {} as T };
+      action.payload.current = Object.assign({}, state.content);
+      return { ...state, content: {} as T };
     case SnapshotActionType.Restore:
-      const mergedContent = mergeContent(state.content, action.payload.current, false);
-      const newState = { ...state, [SnapshotStateType.Content]: mergedContent };
-      action.payload.current = {} as T;
-      return newState as SnapshotState<T>;
-
+      return restoreContent(state, action);
     case SnapshotActionType.AddContent:
-      return { ...state, [SnapshotStateType.Content]: mergeContent(state.content, action.payload) };
+      return { ...state, content: mergeContent(state.content, action.payload) };
     default:
       console.error('Unexpected action on the snapshot reducer', action);
       return state;

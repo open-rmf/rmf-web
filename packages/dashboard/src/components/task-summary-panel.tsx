@@ -5,7 +5,6 @@ import { makeStyles, Typography } from '@material-ui/core';
 import {
   SnapshotControlButtonGroup,
   snapshotReducer,
-  SnapshotStateType,
   SnapshotActionType,
   TaskSummaryAccordion,
   sortTasks,
@@ -28,7 +27,7 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryAccordionProps) =>
   const savedTasksContent = React.useRef<TaskSummaryType>({});
 
   const initialValues = {
-    [SnapshotStateType.Content]: {},
+    content: {},
   };
 
   const [stateSnapshot, dispatchSnapshot] = React.useReducer(snapshotReducer, initialValues);
@@ -59,7 +58,7 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryAccordionProps) =>
 
   // Order by state and submission time. Order: Active -> Queue -> Failed -> Finished
   const currentTaskContents: RomiCore.TaskSummary[] = React.useMemo(() => {
-    return sortTasks(stateSnapshot[SnapshotStateType.Content] as TaskSummaryType);
+    return sortTasks(stateSnapshot.content as TaskSummaryType);
   }, [stateSnapshot]);
 
   return (

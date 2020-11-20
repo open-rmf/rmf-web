@@ -17,7 +17,7 @@ interface TaskSummaryAccordionInfoProps {
   task: RomiCore.TaskSummary;
 }
 
-export const TaskSummaryAccordionInfo = (props: TaskSummaryAccordionInfoProps) => {
+export const TaskSummaryAccordionInfo = (props: TaskSummaryAccordionInfoProps): JSX.Element => {
   const { task } = props;
   const statusDetails = formatStatus(task.status);
   const stateLabel = getStateLabel(task.state);
@@ -44,11 +44,11 @@ export const TaskSummaryAccordion = React.memo((props: TaskSummaryAccordionProps
   const [expanded, setExpanded] = React.useState<string[]>([]);
   const [selected, setSelected] = React.useState<string>('');
 
-  const handleToggle = (event: React.ChangeEvent<{}>, nodeIds: string[]) => {
+  const handleToggle = (event: React.ChangeEvent<HTMLElement>, nodeIds: string[]) => {
     setExpanded(nodeIds);
   };
 
-  const handleSelect = (event: React.ChangeEvent<{}>, nodeIds: string) => {
+  const handleSelect = (event: React.ChangeEvent<HTMLElement>, nodeIds: string) => {
     setSelected(nodeIds);
   };
 
