@@ -44,11 +44,11 @@ export const TaskSummaryAccordion = React.memo((props: TaskSummaryAccordionProps
   const [expanded, setExpanded] = React.useState<string[]>([]);
   const [selected, setSelected] = React.useState<string>('');
 
-  const handleToggle = (event: React.ChangeEvent<HTMLElement>, nodeIds: string[]) => {
+  const handleToggle = (event: React.ChangeEvent<Record<string, unknown>>, nodeIds: string[]) => {
     setExpanded(nodeIds);
   };
 
-  const handleSelect = (event: React.ChangeEvent<HTMLElement>, nodeIds: string) => {
+  const handleSelect = (event: React.ChangeEvent<Record<string, unknown>>, nodeIds: string) => {
     setSelected(nodeIds);
   };
 
