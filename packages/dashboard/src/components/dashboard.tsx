@@ -131,6 +131,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     () => new StackNavigator<OmniPanelViewIndex>(OmniPanelViewIndex.MainMenu),
     [],
   );
+
   const pushOmniPanelView = React.useCallback(
     (view: OmniPanelViewIndex) => {
       stackNavigator.push(view);
@@ -145,6 +146,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     stackNavigator.reset();
     setShowOmniPanel(false);
   }, [stackNavigator]);
+
   const handleOmniPanelBack = React.useCallback(() => {
     clearSpotlights();
     if (stackNavigator.stack.length === 1) {
@@ -154,6 +156,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     }
     setCurrentView(stackNavigator.pop());
   }, [stackNavigator, handleOmniPanelClose]);
+
   const handleOmniPanelHome = React.useCallback(() => {
     clearSpotlights();
     setNegotiationTrajStore({});

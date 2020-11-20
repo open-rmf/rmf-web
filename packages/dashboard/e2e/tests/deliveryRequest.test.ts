@@ -23,7 +23,6 @@ describe('Delivery request', () => {
     const deliveryForm = $('[data-component=DeliveryRequestForm]');
     deliveryForm.click();
     const pickupPlaceInput = deliveryForm.$('input[placeholder="Pick Start Location"]');
-    console.log(pickupPlaceInput.getHTML());
     pickupPlaceInput.waitForClickable();
     pickupPlaceInput.setValue(removeTextFromAutocomplete(20));
     pickupPlaceInput.waitForClickable();

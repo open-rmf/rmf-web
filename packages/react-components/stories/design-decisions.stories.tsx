@@ -8,9 +8,6 @@ export default {
   title: 'Design Decisions',
 };
 
-// const longName = { second_dispenser: dispenserStates['second_dispenser'] };
-// const unknownState = { fourth_dispenser: dispenserStates['fourth_dispenser'] };
-
 const styles: Record<string, React.CSSProperties> = {
   root: {
     margin: '0 auto',
