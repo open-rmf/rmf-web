@@ -9,10 +9,6 @@ export enum SnapshotActionType {
   Restore = 'restore',
 }
 
-export enum SnapshotStateType {
-  Content = 'content',
-}
-
 export type SnapshotAction<T> =
   | SnapshotActionFormat<'addContent', T>
   | SnapshotActionFormat<'clear', React.MutableRefObject<T>>
