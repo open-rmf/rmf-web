@@ -1,3 +1,5 @@
+import React from 'react';
+
 export type SnapshotActionFormat<T, K = undefined> = {
   type: T;
   payload: K;
@@ -63,4 +65,19 @@ export function snapshotReducer<T extends Record<string, unknown>>(
       console.error('Unexpected action on the snapshot reducer', action);
       return state;
   }
+}
+
+interface useSnapshotReducerType<T> {
+  stateSnapshot: SnapshotState<Record<string, T>>;
+  dispatchSnapshot: React.Dispatch<SnapshotAction<Record<string, T>>>;
+}
+
+export function useSnapshotReducer<T>(
+  initialValues: SnapshotState<Record<string, T>>,
+): useSnapshotReducerType<T> {
+  const [stateSnapshot, dispatchSnapshot] = React.useReducer(snapshotReducer, initialValues);
+  return {
+    stateSnapshot: stateSnapshot as SnapshotState<Record<string, T>>,
+    dispatchSnapshot: dispatchSnapshot as React.Dispatch<SnapshotAction<Record<string, T>>>,
+  };
 }

@@ -4,10 +4,11 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { makeStyles, Typography } from '@material-ui/core';
 import {
   SnapshotControlButtonGroup,
-  snapshotReducer,
   SnapshotActionType,
   TaskSummaryAccordion,
   sortTasks,
+  SnapshotState,
+  useSnapshotReducer,
 } from 'react-components';
 
 const debug = Debug('OmniPanel:TaskSummaryPanel');
@@ -26,11 +27,13 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryAccordionProps) =>
   // We need to persist across the renders
   const savedTasksContent = React.useRef<TaskSummaryType>({});
 
-  const initialValues = {
+  const initialValues: SnapshotState<TaskSummaryType> = {
     content: {},
   };
 
-  const [stateSnapshot, dispatchSnapshot] = React.useReducer(snapshotReducer, initialValues);
+  const { stateSnapshot, dispatchSnapshot } = useSnapshotReducer<RomiCore.TaskSummary>(
+    initialValues,
+  );
 
   // TODO: we need to synchronize this with a proper backend when it's ready. Now the completed
   // task will be flushed on a browser refresh because they are being saved in memory.
@@ -58,7 +61,7 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryAccordionProps) =>
 
   // Order by state and submission time. Order: Active -> Queue -> Failed -> Finished
   const currentTaskContents: RomiCore.TaskSummary[] = React.useMemo(() => {
-    return sortTasks(stateSnapshot.content as TaskSummaryType);
+    return sortTasks(stateSnapshot.content);
   }, [stateSnapshot]);
 
   return (
