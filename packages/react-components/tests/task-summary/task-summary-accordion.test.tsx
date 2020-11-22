@@ -11,23 +11,32 @@ import {
 function getTaskObject(): Record<string, RomiCore.TaskSummary> {
   // Returns a task object with a new memory allocation
   return {
-    'af8faee9-84ca-41ea-8bb6-8493cc9f824c': {
+    task1: {
       end_time: { sec: 0, nanosec: 0 },
       start_time: { sec: 0, nanosec: 0 },
       state: 1,
       status:
         'Moving [tinyRobot/tinyRobot1]: ( 9.81228 -6.98942 -3.12904) -> ( 6.26403 -3.51569  1.16864) | Remaining phases: 1 | Remaining phases: 6',
-      submission_time: { sec: 0, nanosec: 1519129853500 },
-      task_id: 'af8faee9-84ca-41ea-8bb6-8493cc9f824c',
+      submission_time: { sec: 0, nanosec: 500 },
+      task_id: 'task1',
     },
-    'am8faee9-84ca-41ea-8bb6-8493cc9f8249': {
+    task2: {
+      end_time: { sec: 0, nanosec: 0 },
+      start_time: { sec: 0, nanosec: 0 },
+      state: 1,
+      status:
+        'Moving [tinyRobot/tinyRobot2]: ( 9.81228 -6.98942 -3.12904) -> ( 6.26403 -3.51569  1.16864) | Remaining phases: 1 | Remaining phases: 6',
+      submission_time: { sec: 0, nanosec: 1000 },
+      task_id: 'task2',
+    },
+    task3: {
       end_time: { sec: 0, nanosec: 0 },
       start_time: { sec: 0, nanosec: 0 },
       state: 0,
       status:
-        'Moving [tinyRobot/tinyRobot2]: ( 9.81228 -6.98942 -3.12904) -> ( 6.26403 -3.51569  1.16864) | Remaining phases: 1 | Remaining phases: 6',
-      submission_time: { sec: 0, nanosec: 1519129858900 },
-      task_id: 'am8faee9-84ca-41ea-8bb6-8493cc9f8249',
+        'Moving [tinyRobot/tinyRobot3]: ( 9.81228 -6.98942 -3.12904) -> ( 6.26403 -3.51569  1.16864) | Remaining phases: 1 | Remaining phases: 6',
+      submission_time: { sec: 0, nanosec: 1500 },
+      task_id: 'task3',
     },
   };
 }
@@ -67,25 +76,25 @@ describe('Components gets the correct style on specifics states', () => {
     task = Object.values(getTaskObject())[0];
   });
 
-  test('active style is applied ', () => {
+  test('Active style is applied ', () => {
     task.state = RomiCore.TaskSummary.STATE_ACTIVE;
     const root = render(<TaskSummaryAccordion tasks={[task]} />);
     expect(root.getByText(task.task_id).parentElement?.className).toContain('makeStyles-active');
   });
 
-  test('queue style is applied', () => {
+  test('Queue style is applied', () => {
     task.state = RomiCore.TaskSummary.STATE_QUEUED;
     const root = render(<TaskSummaryAccordion tasks={[task]} />);
     expect(root.getByText(task.task_id).parentElement?.className).toContain('makeStyles-queued');
   });
 
-  test('completed style is applied', () => {
+  test('Completed style is applied', () => {
     task.state = RomiCore.TaskSummary.STATE_COMPLETED;
     const root = render(<TaskSummaryAccordion tasks={[task]} />);
     expect(root.getByText(task.task_id).parentElement?.className).toContain('makeStyles-completed');
   });
 
-  test('failed style is applied', () => {
+  test('Failed style is applied', () => {
     task.state = RomiCore.TaskSummary.STATE_FAILED;
     const root = render(<TaskSummaryAccordion tasks={[task]} />);
     expect(root.getByText(task.task_id).parentElement?.className).toContain('makeStyles-failed');
@@ -123,21 +132,51 @@ describe('Components gets the correct label on specifics states', () => {
   });
 });
 
+describe('Sort Tasks', () => {
+  test('Sorts a task list by state correctly', () => {
+    const tasks = getTaskObject();
+    tasks['test1'] = {
+      end_time: { sec: 0, nanosec: 0 },
+      start_time: { sec: 0, nanosec: 0 },
+      state: 2,
+      status: 'test1',
+      submission_time: { sec: 0, nanosec: 0 },
+      task_id: 'test1',
+    };
+    tasks['test2'] = {
+      end_time: { sec: 0, nanosec: 0 },
+      start_time: { sec: 0, nanosec: 0 },
+      state: 3,
+      status: 'test2',
+      submission_time: { sec: 0, nanosec: 0 },
+      task_id: 'test2',
+    };
+    const sortedTasks = sortTasks(tasks);
+    expect(sortedTasks[0].state).toBe(RomiCore.TaskSummary.STATE_ACTIVE);
+    expect(sortedTasks[1].state).toBe(RomiCore.TaskSummary.STATE_ACTIVE);
+    expect(sortedTasks[2].state).toBe(RomiCore.TaskSummary.STATE_QUEUED);
+    expect(sortedTasks[3].state).toBe(RomiCore.TaskSummary.STATE_FAILED);
+    expect(sortedTasks[4].state).toBe(RomiCore.TaskSummary.STATE_COMPLETED);
+  });
+
+  test('Sorts a task list by submission time correctly', () => {
+    const tasks = Object.values(getTaskObject());
+    const sortedTasks = sortTasksBySubmissionTime(tasks);
+    expect(sortedTasks[0].submission_time.nanosec).toBe(1500);
+    expect(sortedTasks[1].submission_time.nanosec).toBe(1000);
+    expect(sortedTasks[2].submission_time.nanosec).toBe(500);
+  });
+
+  test('Sorts a task list by state and submission time correctly', () => {
+    const sortedTasks = sortTasks(getTaskObject());
+    expect(sortedTasks[0].task_id).toBe('task2');
+    expect(sortedTasks[1].task_id).toBe('task1');
+    expect(sortedTasks[2].task_id).toBe('task3');
+  });
+});
+
 test('Get name of the actor from status', () => {
   const rawStatus = 'Finding a plan for [tinyRobot/tinyRobot1] to go to [23] | Remaining phases: 6';
   const actor = getActorFromStatus(rawStatus);
   expect(actor).toEqual(['[tinyRobot/tinyRobot1]']);
-});
-
-test('Sorts task array correctly', () => {
-  const tasks = sortTasks(getTaskObject());
-  expect(tasks[0].state).toBe(RomiCore.TaskSummary.STATE_ACTIVE);
-  expect(tasks[1].state).toBe(RomiCore.TaskSummary.STATE_QUEUED);
-});
-
-test('Sorts task by submission time correctly', () => {
-  const tasks = Object.values(getTaskObject());
-  const sortedTasks = sortTasksBySubmissionTime(tasks);
-  expect(sortedTasks[0].submission_time.nanosec).toBe(1519129858900);
-  expect(sortedTasks[1].submission_time.nanosec).toBe(1519129853500);
 });
