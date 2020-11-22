@@ -37,7 +37,7 @@ export const sortTasksBySubmissionTime = (
 };
 
 /**
- * Classify and stores each task by its state.
+ * Classifies and stores each task by its state.
  */
 export const separateTasksByState = (
   tasks: Record<string, RomiCore.TaskSummary>,
@@ -71,7 +71,7 @@ export const separateTasksByState = (
 };
 
 /**
- * Sorts tasks by state and by submission time, so what is active is always at the top of the list.
+ * Sort tasks by state and by submission time, so what is active is always at the top of the list.
  */
 export const sortTasks = (tasks: Record<string, RomiCore.TaskSummary>): RomiCore.TaskSummary[] => {
   const states = ['active', 'queued', 'failed', 'completed', 'unknown'];

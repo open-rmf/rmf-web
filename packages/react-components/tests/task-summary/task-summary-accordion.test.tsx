@@ -175,7 +175,7 @@ describe('Sort Tasks', () => {
   });
 });
 
-test('Get name of the actor from status', () => {
+test('Gets the name of the actor from the status', () => {
   const rawStatus = 'Finding a plan for [tinyRobot/tinyRobot1] to go to [23] | Remaining phases: 6';
   const actor = getActorFromStatus(rawStatus);
   expect(actor).toEqual(['[tinyRobot/tinyRobot1]']);
