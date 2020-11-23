@@ -4,6 +4,9 @@ import React from 'react';
 import fakeDispenserStates from '../../mock/data/dispenser-states';
 import DispenserItem from '../dispenser-item';
 import DispenserPanel from '../dispensers-panel';
+import { ResourcesContext } from '../app-contexts';
+import fakeResources from '../../mock/data/resources';
+import ResourceManager from '../../resource-manager';
 
 const mount = createMount();
 
@@ -14,8 +17,16 @@ beforeEach(() => {
 });
 
 it('renders dispensers', () => {
-  const root = mount(<DispenserPanel dispenserStates={dispenserStates} />);
+  const resources = new ResourceManager(fakeResources());
+  const root = mount(
+    <ResourcesContext.Provider value={resources}>
+      <DispenserPanel dispenserStates={dispenserStates} />
+    </ResourcesContext.Provider>,
+  );
   const dispenserElements = root.find(DispenserItem);
-  expect(dispenserElements.length).toBe(Object.keys(dispenserStates).length);
+  const dispenersInResource: number = resources.dispensers
+    ? Object.keys(resources.dispensers.dispensers).length
+    : 0;
+  expect(dispenserElements.length).toBe(dispenersInResource);
   root.unmount();
 });
