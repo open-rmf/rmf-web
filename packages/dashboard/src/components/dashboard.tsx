@@ -42,6 +42,7 @@ import LoadingScreen, { LoadingScreenProps } from './loading-screen';
 import MainMenu from './main-menu';
 import NegotiationsPanel from './negotiations-panel';
 import NotificationBar, { NotificationBarProps } from './notification-bar';
+import { MainMenuActionType, mainMenuReducer, MainMenuState } from './reducers/main-menu-reducer';
 import { RmfContextProvider } from './rmf-contexts';
 import ScheduleVisualizer, { ScheduleVisualizerProps } from './schedule-visualizer';
 import { SpotlightValue } from './spotlight-value';
@@ -117,6 +118,20 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const [buildingMap, setBuildingMap] = React.useState<RomiCore.BuildingMap | undefined>(undefined);
   const trajManager = React.useRef<RobotTrajectoryManager | undefined>(undefined);
   const resourceManager = React.useRef<ResourceManager | undefined>(undefined);
+
+  const mainMenuInitialValues: MainMenuState = {
+    currentView: OmniPanelViewIndex.MainMenu,
+    loading: {
+      caption: 'Connecting to api server...',
+    },
+    settings: loadSettings(),
+    showHelp: false,
+    showHotkeysDialog: false,
+    showOmniPanel: true,
+    showSettings: false,
+    tourState: false,
+  };
+  const [stateMenu, dispatchMenu] = React.useReducer(mainMenuReducer, mainMenuInitialValues);
 
   const mapFloorLayerSorted = React.useMemo<string[] | undefined>(
     () => buildingMap?.levels.sort((a, b) => a.elevation - b.elevation).map((x) => x.name),
@@ -424,35 +439,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     }
   }, [tourComplete, setTourState]);
 
-  const [showHotkeyDialog, setShowHotkeyDialog] = React.useState(false);
-
-  const hotKeysValue = buildHotKeys({
-    openCommands: () => {
-      setShowOmniPanel(true);
-      handleMainMenuCommandsClick();
-    },
-    openRobots: () => {
-      setShowOmniPanel(true);
-      handleMainMenuRobotsClick();
-    },
-    openDoors: () => {
-      setShowOmniPanel(true);
-      handleMainMenuDoorsClick();
-    },
-    openDispensers: () => {
-      setShowOmniPanel(true);
-      handleMainMenuDispensersClick();
-    },
-    openLifts: () => {
-      setShowOmniPanel(true);
-      handleMainMenuLiftsClick();
-    },
-
-    openSettings: () => setShowSettings((prev) => !prev),
-    openOnmiPanel: () => setShowOmniPanel((prev) => !prev),
-    openHelpPanel: () => setShowHelp((prev) => !prev),
-    openHotKeys: () => setShowHotkeyDialog((prev) => !prev),
-  });
+  const hotKeysValue = buildHotKeys({ dispatchMenu: dispatchMenu });
 
   return (
     <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
@@ -597,15 +584,28 @@ export default function Dashboard(_props: {}): React.ReactElement {
               open={showHelp}
               handleCloseButton={() => setShowHelp(false)}
               onClose={() => setShowHelp(false)}
-              setShowHotkeyDialog={() => setShowHotkeyDialog(true)}
+              setShowHotkeyDialog={() =>
+                dispatchMenu({
+                  type: MainMenuActionType.ShowHotkeysDialog,
+                  payload: true,
+                })
+              }
               showTour={() => {
                 setTourState(true);
                 setShowHelp(false);
               }}
             />
           </div>
-          {showHotkeyDialog && (
-            <HotKeysDialog open={showHotkeyDialog} handleClose={() => setShowHotkeyDialog(false)} />
+          {stateMenu.showHotkeysDialog && (
+            <HotKeysDialog
+              open={stateMenu.showHotkeysDialog}
+              handleClose={() =>
+                dispatchMenu({
+                  type: MainMenuActionType.ShowHotkeysDialog,
+                  payload: false,
+                })
+              }
+            />
           )}
 
           <NotificationBar

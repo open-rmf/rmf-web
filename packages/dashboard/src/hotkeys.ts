@@ -1,14 +1,8 @@
 import { HotKeysEnabledProps, KeyMap, KeySequence } from 'react-hotkeys';
+import { OmniPanelViewIndex } from './components/dashboard';
+import { MainMenuAction, MainMenuActionType } from './components/reducers/main-menu-reducer';
 export interface hotKeysProps {
-  openCommands: () => void;
-  openDispensers: () => void;
-  openDoors: () => void;
-  openHelpPanel: () => void;
-  openHotKeys: () => void;
-  openLifts: () => void;
-  openOnmiPanel: () => void;
-  openRobots: () => void;
-  openSettings: () => void;
+  dispatchMenu: React.Dispatch<MainMenuAction>;
 }
 
 export const keyMap: KeyMap = {
@@ -51,17 +45,78 @@ export const keyMap: KeyMap = {
 };
 
 export const buildHotKeys = (props: hotKeysProps): HotKeysEnabledProps => {
+  const { dispatchMenu } = props;
+  const openCommands = () => {
+    dispatchMenu({ type: MainMenuActionType.ShowOmniPanel, payload: true });
+    dispatchMenu({
+      type: MainMenuActionType.CurrentView,
+      payload: OmniPanelViewIndex.Commands,
+    });
+  };
+
+  const openDispensers = () => {
+    dispatchMenu({ type: MainMenuActionType.ShowOmniPanel, payload: true });
+    dispatchMenu({
+      type: MainMenuActionType.CurrentView,
+      payload: OmniPanelViewIndex.Dispensers,
+    });
+  };
+
+  const openDoors = () => {
+    dispatchMenu({ type: MainMenuActionType.ShowOmniPanel, payload: true });
+    dispatchMenu({
+      type: MainMenuActionType.CurrentView,
+      payload: OmniPanelViewIndex.Doors,
+    });
+  };
+
+  const openLifts = () => {
+    dispatchMenu({ type: MainMenuActionType.ShowOmniPanel, payload: true });
+    dispatchMenu({
+      type: MainMenuActionType.CurrentView,
+      payload: OmniPanelViewIndex.Lifts,
+    });
+  };
+
+  const openRobots = () => {
+    dispatchMenu({ type: MainMenuActionType.ShowOmniPanel, payload: true });
+    dispatchMenu({
+      type: MainMenuActionType.CurrentView,
+      payload: OmniPanelViewIndex.Robots,
+    });
+  };
+
+  const openOnmiPanel = () =>
+    dispatchMenu({
+      type: MainMenuActionType.ToggleOmnipanel,
+    });
+
+  const openSettings = () =>
+    dispatchMenu({
+      type: MainMenuActionType.ToggleSettings,
+    });
+
+  const openHelpPanel = () =>
+    dispatchMenu({
+      type: MainMenuActionType.ToggleHelp,
+    });
+
+  const openHotKeys = () =>
+    dispatchMenu({
+      type: MainMenuActionType.ToggleHotkeys,
+    });
+
   // Keep the same name as the KeyMap
   const handlers = {
-    OPEN_COMMANDS: props.openCommands,
-    OPEN_DISPENSERS: props.openDispensers,
-    OPEN_DOORS: props.openDoors,
-    OPEN_HELP_PANEL: props.openHelpPanel,
-    OPEN_HOTKEYS: props.openHotKeys,
-    OPEN_LIFTS: props.openLifts,
-    OPEN_OMNIPANEL: props.openOnmiPanel,
-    OPEN_ROBOTS: props.openRobots,
-    OPEN_SETTINGS: props.openSettings,
+    OPEN_COMMANDS: openCommands,
+    OPEN_DISPENSERS: openDispensers,
+    OPEN_DOORS: openDoors,
+    OPEN_HELP_PANEL: openHelpPanel,
+    OPEN_HOTKEYS: openHotKeys,
+    OPEN_LIFTS: openLifts,
+    OPEN_OMNIPANEL: openOnmiPanel,
+    OPEN_ROBOTS: openRobots,
+    OPEN_SETTINGS: openSettings,
   };
 
   return { keyMap, handlers };
