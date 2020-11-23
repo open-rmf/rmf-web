@@ -1,4 +1,4 @@
-import { ResourceConfigurationsType, ResourceManagersProps } from '../../resource-manager';
+import { ResourceManagersProps } from '../../resource-manager';
 
 export default function fakeResources(): ResourceManagersProps {
   return {
