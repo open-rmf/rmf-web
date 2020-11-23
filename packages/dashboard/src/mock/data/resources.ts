@@ -1,6 +1,6 @@
-import { ResourceConfigurationsType } from '../../resource-manager';
+import { ResourceConfigurationsType, ResourceManagersProps } from '../../resource-manager';
 
-export default function fakeResources(): ResourceConfigurationsType {
+export default function fakeResources(): ResourceManagersProps {
   return {
     dispensers: {
       coke_ingestor: {
