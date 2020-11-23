@@ -45,6 +45,18 @@ exports[`Dispenser component Renders correctly 1`] = `
               "yaw": 0,
             },
           },
+          "new_dispenser": Object {
+            "guid": "new_dispenser",
+            "icons": Object {
+              "new_dispenser": "",
+            },
+            "location": Object {
+              "level_name": "L1",
+              "x": 16.85,
+              "y": -4.8,
+              "yaw": 0,
+            },
+          },
         },
         "getIconPath": [Function],
       }

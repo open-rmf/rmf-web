@@ -11,6 +11,10 @@ export default function fakeResources(): ResourceManagersProps {
         icons: { coke_dispenser: '' },
         location: { x: 16.85, y: -4.8, yaw: 0, level_name: 'L1' },
       },
+      new_dispenser: {
+        icons: { new_dispenser: '' },
+        location: { x: 16.85, y: -4.8, yaw: 0, level_name: 'L1' },
+      },
     },
     robots: {
       tinyRobot: {
