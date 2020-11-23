@@ -136,7 +136,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
     [buildingMap],
   );
 
-  const [currentView, setCurrentView] = React.useState(OmniPanelViewIndex.MainMenu);
   const stackNavigator = React.useMemo(
     () => new StackNavigator<OmniPanelViewIndex>(OmniPanelViewIndex.MainMenu),
     [],
@@ -145,7 +144,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const pushOmniPanelView = React.useCallback(
     (view: OmniPanelViewIndex) => {
       stackNavigator.push(view);
-      setCurrentView(view);
+      dispatchMenu({ type: MainMenuActionType.CurrentView, payload: view });
     },
     [stackNavigator],
   );
@@ -164,14 +163,14 @@ export default function Dashboard(_props: {}): React.ReactElement {
     } else {
       setNegotiationTrajStore({});
     }
-    setCurrentView(stackNavigator.pop());
+    dispatchMenu({ type: MainMenuActionType.CurrentView, payload: stackNavigator.pop() });
   }, [stackNavigator, handleOmniPanelClose]);
 
   const handleOmniPanelHome = React.useCallback(() => {
     clearSpotlights();
     setNegotiationTrajStore({});
     stackNavigator.reset();
-    setCurrentView(stackNavigator.top());
+    dispatchMenu({ type: MainMenuActionType.CurrentView, payload: stackNavigator.top() });
   }, [stackNavigator]);
 
   const doorStateManager = React.useMemo(() => new DoorStateManager(), []);
@@ -465,7 +464,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
             <Fade in={stateMenu.showOmniPanel}>
               <OmniPanel
                 className={classes.omniPanel}
-                view={currentView}
+                view={stateMenu.currentView}
                 variant="backHomeClose"
                 onBack={handleOmniPanelBack}
                 onHome={handleOmniPanelHome}
