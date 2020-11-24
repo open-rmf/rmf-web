@@ -29,7 +29,7 @@ export const SimpleData: Story = ({
 }) => {
   return (
     <SimpleInfo
-      data={[
+      infoData={[
         { name: stringDisplayName, value: stringValue },
         { name: numberDisplayName, value: numberValue },
       ]}
