@@ -37,9 +37,9 @@ describe('Settings Drawer', () => {
   it('should call onSettingsChange function when handleTrajectoryAnimationChange is called', () => {
     const newSettings: Settings = {
       ...settings,
-      trajectoryAnimation: TrajectoryAnimation.Fill,
+      trajectoryAnimation: TrajectoryAnimation.None,
     };
-    const mockEvent = { target: { value: TrajectoryAnimation.Fill } };
+    const mockEvent = { target: { value: TrajectoryAnimation.None } };
     const wrapper = mount(
       <SettingsContext.Provider value={newSettings}>
         <SettingsDrawer
@@ -52,7 +52,7 @@ describe('Settings Drawer', () => {
     );
 
     // Accessing the 'fill' animation @ the fourth input field
-    wrapper.find('input').find({ name: 'Fill' }).simulate('change', mockEvent);
+    wrapper.find('input').find({ name: 'None' }).simulate('change', mockEvent);
     expect(onSettingsChange).toHaveBeenCalledTimes(1);
   });
 

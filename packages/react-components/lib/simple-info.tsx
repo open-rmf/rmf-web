@@ -1,6 +1,6 @@
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { joinClasses } from './css-utils';

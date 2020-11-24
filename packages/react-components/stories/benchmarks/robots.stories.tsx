@@ -27,7 +27,7 @@ interface AnimationState {
 }
 
 export const RobotMarkers: Story<RobotMarkerArgs> = ({ count, ...args }) => {
-  const [triggerRender, setTriggerRender] = React.useState(0);
+  const setTriggerRender = React.useState(0);
 
   const animationStates = React.useMemo(() => {
     const states: AnimationState[] = [];
@@ -89,13 +89,13 @@ export const RobotMarkers: Story<RobotMarkerArgs> = ({ count, ...args }) => {
 
       prevUpdate = t;
 
-      setTriggerRender((prev) => prev + 1);
+      setTriggerRender[1]((prev) => prev + 1);
       window.requestAnimationFrame(updateState);
     };
     window.requestAnimationFrame(updateState);
 
     return () => (stop = true);
-  }, [count, animationStates]);
+  }, [count, animationStates, setTriggerRender]);
 
   return (
     <svg viewBox="0 0 20 20" style={{ width: '100%', height: '100%', position: 'absolute' }}>

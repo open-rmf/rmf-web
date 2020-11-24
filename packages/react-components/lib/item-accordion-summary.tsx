@@ -1,4 +1,4 @@
-import { Divider, makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';

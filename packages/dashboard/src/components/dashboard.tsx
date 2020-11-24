@@ -13,7 +13,6 @@ import {
   OmniPanel,
   OmniPanelView,
   RobotAccordion as RobotAccordion_,
-  SpotlightRef,
   StackNavigator,
   withSpotlight,
 } from 'react-components';
@@ -47,7 +46,6 @@ import { RmfContextProvider } from './rmf-contexts';
 import ScheduleVisualizer, { ScheduleVisualizerProps } from './schedule-visualizer';
 import { SpotlightValue } from './spotlight-value';
 import { TaskSummaryPanel } from './task-summary-panel';
-import { DashboardTour, DashboardTourProps } from './tour/tour';
 
 const debug = Debug('App');
 const DispenserAccordion = React.memo(withSpotlight(DispenserAccordion_));
@@ -222,6 +220,9 @@ export default function Dashboard(_props: {}): React.ReactElement {
     },
     [robotAccordionRefs, pushOmniPanelView],
   );
+
+  const taskManager = React.useMemo(() => new TaskManager(), []);
+  const [tasks, setTasks] = React.useState(taskManager.tasks());
 
   const negotiationStatusManager = React.useMemo(
     () => new NegotiationStatusManager(trajServerUrl),
@@ -562,7 +563,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                     setNegotiationTrajStore={setNegotiationTrajStore}
                   />
                 </OmniPanelView>
-                <OmniPanelView id={OmniPanelViewIndex.Tasks}>
+                <OmniPanelView viewId={OmniPanelViewIndex.Tasks}>
                   <TaskSummaryPanel allTasks={tasks} />
                 </OmniPanelView>
               </OmniPanel>

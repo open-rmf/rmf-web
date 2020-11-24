@@ -372,7 +372,6 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
                 currentFloorName={curLevelName}
                 bounds={curMapFloorLayer.bounds}
                 fleets={props.fleets}
-                colorManager={colorManager}
                 onRobotClick={props.onRobotClick}
                 conflictRobotNames={conflictRobotNames}
               />

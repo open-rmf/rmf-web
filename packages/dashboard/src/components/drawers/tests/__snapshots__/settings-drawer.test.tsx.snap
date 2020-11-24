@@ -54,7 +54,7 @@ exports[`Settings Drawer should render correctly 1`] = `
     <ForwardRef(RadioGroup)
       className="makeStyles-trajGroup-3"
       onChange={[Function]}
-      value={2}
+      value={1}
     >
       <WithStyles(ForwardRef(FormControlLabel))
         className="makeStyles-flexBasis-4"
@@ -68,32 +68,11 @@ exports[`Settings Drawer should render correctly 1`] = `
         className="makeStyles-flexBasis-4"
         control={<ForwardRef(WithStyles) />}
         key="1"
-        label="Fill"
-        name="Fill"
-        value={1}
-      />
-      <WithStyles(ForwardRef(FormControlLabel))
-        className="makeStyles-flexBasis-4"
-        control={<ForwardRef(WithStyles) />}
-        key="2"
         label="Follow"
         name="Follow"
-        value={2}
+        value={1}
       />
     </ForwardRef(RadioGroup)>
-    <WithStyles(ForwardRef(FormLabel))
-      className="makeStyles-legendLabel-2"
-      component="legend"
-    >
-      Trajectory Diameter
-    </WithStyles(ForwardRef(FormLabel))>
-    <WithStyles(ForwardRef(Divider)) />
-    <WithStyles(ForwardRef(FormLabel))
-      className="makeStyles-legendLabel-2"
-      component="legend"
-    >
-      Trajectory Color
-    </WithStyles(ForwardRef(FormLabel))>
     <WithStyles(ForwardRef(Divider)) />
   </WithStyles(ForwardRef(FormControl))>
 </WithStyles(ForwardRef(Drawer))>
