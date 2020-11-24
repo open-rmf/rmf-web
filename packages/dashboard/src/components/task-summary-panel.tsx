@@ -39,11 +39,11 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryAccordionProps) =>
   // task will be flushed on a browser refresh because they are being saved in memory.
   const handleClearAllCurrTasks = React.useCallback(() => {
     dispatchSnapshot({ type: SnapshotActionType.Clear, payload: savedTasksContent });
-  }, []);
+  }, [dispatchSnapshot]);
 
   const handleRestoreTasks = React.useCallback(() => {
     dispatchSnapshot({ type: SnapshotActionType.Restore, payload: savedTasksContent });
-  }, []);
+  }, [dispatchSnapshot]);
 
   const tasksExists = React.useMemo(() => {
     return tasks.length !== 0;
@@ -57,7 +57,7 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryAccordionProps) =>
       taskSummaryObject[task.task_id] = task;
     });
     dispatchSnapshot({ type: SnapshotActionType.AddContent, payload: taskSummaryObject });
-  }, [tasks, tasksExists]);
+  }, [tasks, tasksExists, dispatchSnapshot]);
 
   // Order by state and submission time. Order: Active -> Queue -> Failed -> Finished
   const currentTaskContents: RomiCore.TaskSummary[] = React.useMemo(() => {

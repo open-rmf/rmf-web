@@ -8,7 +8,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import PlayCircleFilledWhiteIcon from '@material-ui/icons/PlayCircleFilledWhite';
 import PauseCircleFilledIcon from '@material-ui/icons/PauseCircleFilled';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import SimpleInfo, { SimpleInfoData } from '../simple-info';
+import { SimpleInfo, SimpleInfoData } from '../simple-info';
 import { formatStatus, getActorFromStatus, getStateLabel } from './task-summary-utils';
 
 const debug = Debug('Tasks:TaskSummaryAccordion');
@@ -30,7 +30,7 @@ export const TaskSummaryAccordionInfo = (props: TaskSummaryAccordionInfoProps): 
     { name: 'End Time', value: task.end_time.sec },
   ] as SimpleInfoData[];
 
-  return <SimpleInfo data={data} />;
+  return <SimpleInfo infoData={data} />;
 };
 
 export interface TaskSummaryAccordionProps {
