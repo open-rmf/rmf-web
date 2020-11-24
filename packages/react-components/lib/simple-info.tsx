@@ -1,4 +1,3 @@
-import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import { makeStyles } from '@material-ui/core/styles';
@@ -17,27 +16,51 @@ export interface SimpleInfoData<T extends DataValueType = DataValueType> {
   disabled?: boolean;
 }
 
-export interface SimpleInfo {
-  data: SimpleInfoData[];
-}
-
 const useStyles = makeStyles((theme) => ({
   container: {
-    display: 'flex',
-    flexFlow: 'column',
+    display: 'table',
+    borderCollapse: 'collapse',
+    width: '100%',
   },
-  item: {
-    display: 'inline-flex',
-    justifyContent: 'space-between',
-    padding: theme.spacing(0.5),
+  tableRow: {
+    display: 'table-row',
+  },
+  displayName: {
+    display: 'table-cell',
+    borderBottom: '1px solid',
+    borderBottomColor: theme.palette.divider,
+    borderTop: '1px solid',
+    borderTopColor: theme.palette.divider,
+    background: theme.palette.action.hover,
+    padding: theme.spacing(0.25, 2),
+    width: '30%',
+  },
+  value: {
+    display: 'table-cell',
+    textAlign: 'end',
+    borderBottom: '1px solid',
+    borderBottomColor: theme.palette.divider,
+    borderTop: '1px solid',
+    borderTopColor: theme.palette.divider,
+    padding: theme.spacing(0.25, 2),
+  },
+  arrayListItem: {
+    justifyContent: 'flex-end',
+  },
+  arrayItemValue: {
+    textAlign: 'end',
   },
   disabled: {
     color: theme.palette.action.disabled,
   },
 }));
 
-export const SimpleInfo = (props: SimpleInfo): JSX.Element => {
-  const { data } = props;
+export interface SimpleInfoProps extends React.HTMLProps<HTMLDivElement> {
+  infoData: SimpleInfoData[];
+}
+
+export const SimpleInfo = (props: SimpleInfoProps): JSX.Element => {
+  const { infoData, ...otherProps } = props;
   const classes = useStyles();
 
   const renderPrimitive = ({
@@ -46,15 +69,17 @@ export const SimpleInfo = (props: SimpleInfo): JSX.Element => {
     className,
     disabled,
   }: SimpleInfoData<DataValueTypePrimitive>) => (
-    <div className={classes.item}>
-      <Typography variant="body1">{`${name}:`}</Typography>
+    <>
+      <Typography className={classes.displayName} variant="body1">
+        {name}
+      </Typography>
       <Typography
         variant="body1"
-        className={joinClasses(disabled ? classes.disabled : undefined, className)}
+        className={joinClasses(classes.value, disabled ? classes.disabled : undefined, className)}
       >
         {value}
       </Typography>
-    </div>
+    </>
   );
 
   const renderArray = ({
@@ -63,14 +88,17 @@ export const SimpleInfo = (props: SimpleInfo): JSX.Element => {
     className,
     disabled,
   }: SimpleInfoData<DataValueTypeArray>) => (
-    <div className={classes.item}>
-      <Typography variant="body1">{`${name}:`}</Typography>
-      <List dense>
+    <>
+      <Typography className={classes.displayName} variant="body1">
+        {name}
+      </Typography>
+      <List className={classes.value} dense>
         {value.map((item, i) => (
-          <ListItem key={i}>
+          <ListItem key={i} className={classes.arrayListItem}>
             <Typography
               variant="body1"
               className={joinClasses(
+                classes.arrayItemValue,
                 disabled ? classes.disabled : undefined,
                 Array.isArray(className) ? className[i] : className,
               )}
@@ -80,7 +108,7 @@ export const SimpleInfo = (props: SimpleInfo): JSX.Element => {
           </ListItem>
         ))}
       </List>
-    </div>
+    </>
   );
 
   const renderLine = (data: SimpleInfoData) => {
@@ -101,15 +129,18 @@ export const SimpleInfo = (props: SimpleInfo): JSX.Element => {
   };
 
   return (
-    <div className={classes.container}>
-      {data.map((item) => (
-        <React.Fragment key={item.name}>
-          {renderLine(item)}
-          <Divider />
-        </React.Fragment>
-      ))}
+    <div {...otherProps}>
+      <div className={classes.container} role="table">
+        {infoData.map((item) => (
+          <React.Fragment key={item.name}>
+            <div className={classes.tableRow} role="row">
+              {renderLine(item)}
+            </div>
+          </React.Fragment>
+        ))}
+      </div>
     </div>
   );
 };
 
-export default SimpleInfo;
+export default SimpleInfoProps;

@@ -4,7 +4,7 @@ import Debug from 'debug';
 import React from 'react';
 import ItemAccordionDetails from '../item-accordion-details';
 import ItemAccordionSummary from '../item-accordion-summary';
-import SimpleInfo from '../simple-info';
+import { SimpleInfo } from '../simple-info';
 
 const debug = Debug('Robots:RobotAccordion');
 
@@ -60,7 +60,7 @@ const RobotInfo = (props: RobotInfoProps) => {
     { name: 'Battery', value: robot.battery_percent.toFixed(0) },
   ];
 
-  return <SimpleInfo data={data} />;
+  return <SimpleInfo infoData={data} />;
 };
 
 export interface RobotAccordionProps extends Omit<AccordionProps, 'children'> {
@@ -68,8 +68,8 @@ export interface RobotAccordionProps extends Omit<AccordionProps, 'children'> {
   robot: RomiCore.RobotState;
 }
 
-export const RobotAccordion = React.memo(
-  React.forwardRef((props: RobotAccordionProps, ref: React.Ref<HTMLElement>) => {
+export const RobotAccordion = React.forwardRef(
+  (props: RobotAccordionProps, ref: React.Ref<HTMLElement>) => {
     const { fleetName, robot, ...otherProps } = props;
     debug(`render ${robot.name}`);
     const classes = useStyles();
@@ -78,15 +78,17 @@ export const RobotAccordion = React.memo(
       <Accordion ref={ref} {...otherProps}>
         <ItemAccordionSummary
           title={robot.name}
-          status={robotModeToString(robot.mode)}
-          classes={{ status: classes.robotStatusLabel }}
+          statusProps={{
+            className: classes.robotStatusLabel,
+            text: robotModeToString(robot.mode),
+          }}
         />
         <ItemAccordionDetails>
           <RobotInfo fleetName={fleetName} robot={robot} />
         </ItemAccordionDetails>
       </Accordion>
     );
-  }),
+  },
 );
 
 export default RobotAccordion;

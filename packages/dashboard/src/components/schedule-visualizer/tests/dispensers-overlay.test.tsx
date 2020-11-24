@@ -1,12 +1,12 @@
 import { createMount } from '@material-ui/core/test-utils';
+import L from 'leaflet';
 import React from 'react';
+import { DispenserMarker } from 'react-components';
+import { Map as LMap } from 'react-leaflet';
 import fakeResources from '../../../mock/data/resources';
 import ResourceManager from '../../../resource-manager';
-import DispensersOverlay from '../dispensers-overlay';
-import L from 'leaflet';
-import { Map as LMap } from 'react-leaflet';
-import Dispenser from '../dispenser';
 import { ResourcesContext } from '../../app-contexts';
+import DispensersOverlay from '../dispensers-overlay';
 
 const mount = createMount();
 
@@ -23,9 +23,9 @@ describe('Dispensers Overlay', () => {
       </ResourcesContext.Provider>,
     );
 
-    expect(wrapper.find(Dispenser).exists()).toBeTruthy();
+    expect(wrapper.find(DispenserMarker).exists()).toBeTruthy();
 
-    expect(wrapper.find(Dispenser).length).toBe(resources.dispensers?.allValues?.length);
+    expect(wrapper.find(DispenserMarker).length).toBe(resources.dispensers?.allValues?.length);
 
     wrapper.unmount();
   });

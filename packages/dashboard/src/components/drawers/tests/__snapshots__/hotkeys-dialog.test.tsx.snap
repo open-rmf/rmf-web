@@ -8,20 +8,31 @@ exports[`Hotkeys Dialog Component renders correctly 1`] = `
   onClose={[Function]}
   open={true}
 >
-  <WithStyles(Component)
+  <WithStyles(ForwardRef(DialogTitle))
     id="customized-dialog-title"
-    onClose={[Function]}
   >
-    Hotkeys
-  </WithStyles(Component)>
-  <WithStyles(WithStyles(ForwardRef(DialogContent)))
+    <WithStyles(ForwardRef(Typography))
+      variant="h6"
+    >
+      Hotkeys
+    </WithStyles(ForwardRef(Typography))>
+    <WithStyles(ForwardRef(IconButton))
+      aria-label="close"
+      className="makeStyles-closeButton-1"
+      onClick={[Function]}
+    >
+      <CloseIcon />
+    </WithStyles(ForwardRef(IconButton))>
+  </WithStyles(ForwardRef(DialogTitle))>
+  <WithStyles(ForwardRef(DialogContent))
+    className="makeStyles-dialogContent-2"
     dividers={true}
   >
     <div
-      className="makeStyles-detail-2"
+      className="makeStyles-detail-5"
     >
       <div
-        className="makeStyles-detailLine-1"
+        className="makeStyles-detailLine-4"
         detail-type="hotkeyDetail"
       >
         <WithStyles(ForwardRef(Typography))
@@ -38,15 +49,17 @@ exports[`Hotkeys Dialog Component renders correctly 1`] = `
       </div>
       <WithStyles(ForwardRef(Divider)) />
     </div>
-  </WithStyles(WithStyles(ForwardRef(DialogContent)))>
-  <WithStyles(WithStyles(ForwardRef(DialogActions)))>
+  </WithStyles(ForwardRef(DialogContent))>
+  <WithStyles(ForwardRef(DialogActions))
+    className="makeStyles-dialogActions-3"
+  >
     <WithStyles(ForwardRef(Button))
       autoFocus={true}
       color="primary"
       onClick={[Function]}
     >
-      Ok
+      OK
     </WithStyles(ForwardRef(Button))>
-  </WithStyles(WithStyles(ForwardRef(DialogActions)))>
+  </WithStyles(ForwardRef(DialogActions))>
 </WithStyles(ForwardRef(Dialog))>
 `;

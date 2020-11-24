@@ -63,3 +63,30 @@ export const LongLongLift = makeStory(
   }),
   makeLiftState(),
 );
+
+export const NoTranslate: Story = (args) => (
+  <svg viewBox="-2 -2 4 4" width={400} height={400}>
+    <LiftMarker
+      lift={makeLift({
+        ref_x: 10,
+        ref_y: 10,
+        width: 2,
+        depth: 2,
+        doors: [
+          {
+            name: 'door',
+            door_type: RomiCore.Door.DOOR_TYPE_DOUBLE_TELESCOPE,
+            motion_direction: 1,
+            motion_range: Math.PI / 2,
+            v1_x: 9,
+            v1_y: 9,
+            v2_x: 11,
+            v2_y: 9,
+          },
+        ],
+      })}
+      translate={false}
+      {...args}
+    />
+  </svg>
+);

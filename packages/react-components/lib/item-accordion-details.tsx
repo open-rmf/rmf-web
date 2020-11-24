@@ -3,12 +3,12 @@ import AccordionDetails, { AccordionDetailsProps } from '@material-ui/core/Accor
 import React from 'react';
 import { joinClasses } from './css-utils';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles({
   details: {
     flexFlow: 'column',
-    padding: theme.spacing(1),
+    padding: 0,
   },
-}));
+});
 
 export type ItemAccordionDetailsProps = AccordionDetailsProps;
 

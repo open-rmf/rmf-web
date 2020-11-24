@@ -47,3 +47,13 @@ export const SingleSwingClosed = makeStory(
   makeDoorState({ current_mode: { value: RomiCore.DoorMode.MODE_CLOSED } }),
 );
 SingleSwingClosed.storyName = 'Single Swing (Closed)';
+
+// Door would be outside the viewbox if it is translated to RMF coords.
+export const NoTranslate: Story = (args) => {
+  const door = makeDoor({ v1_x: 10, v1_y: 10, v2_x: 11, v2_y: 11 });
+  return (
+    <svg viewBox="-2 -2 4 4" width={400} height={400}>
+      <DoorMarker door={door} translate={false} {...args} />
+    </svg>
+  );
+};

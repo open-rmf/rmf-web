@@ -48,14 +48,20 @@ export const AntTab = withStyles((theme: Theme) =>
   }),
 )((props: StyledTabProps) => <Tab disableRipple {...props} />);
 
-interface TabPanelProps {
+export interface TabPanelProps {
   children?: React.ReactNode;
   index: unknown;
   value: unknown;
+
+  /**
+   * If true, do not add padding.
+   * default: false
+   */
+  fullWidth?: boolean;
 }
 
 export function TabPanel(props: TabPanelProps): JSX.Element {
-  const { children, value, index, ...other } = props;
+  const { children, value, index, fullWidth = false, ...other } = props;
 
   return (
     <div
@@ -65,7 +71,7 @@ export function TabPanel(props: TabPanelProps): JSX.Element {
       aria-labelledby={`scrollable-prevent-tab-${index}`}
       {...other}
     >
-      {value === index && <Box p={1}>{children}</Box>}
+      {value === index && fullWidth ? children : <Box p={1}>{children}</Box>}
     </div>
   );
 }

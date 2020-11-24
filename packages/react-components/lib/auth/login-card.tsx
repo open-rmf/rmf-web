@@ -1,4 +1,4 @@
-import { Button, makeStyles, Typography } from '@material-ui/core';
+import { makeStyles, Typography } from '@material-ui/core';
 import React from 'react';
 
 const useStyles = makeStyles((theme) => ({
@@ -25,25 +25,26 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export interface LoginCardProps {
+  title: string;
   logo: string;
-  onLoginClick?(ev: React.MouseEvent): void;
+  children?: React.ReactNode;
 }
 
-export const LoginCard = (props: LoginCardProps): JSX.Element => {
-  const { logo, onLoginClick } = props;
-  const classes = useStyles();
+export const LoginCard = React.forwardRef(
+  (props: LoginCardProps, ref: React.Ref<HTMLDivElement>): JSX.Element => {
+    const { title, logo, children } = props;
+    const classes = useStyles();
 
-  return (
-    <div className={classes.container}>
-      <Typography variant="h4" className={classes.title}>
-        RoMi Dashboard
-      </Typography>
-      <img src={logo} alt="" className={classes.logo} />
-      <Button onClick={onLoginClick} variant="contained">
-        Login with RMF
-      </Button>
-    </div>
-  );
-};
+    return (
+      <div ref={ref} className={classes.container}>
+        <Typography variant="h4" className={classes.title}>
+          {title}
+        </Typography>
+        <img src={logo} alt="" className={classes.logo} />
+        {children}
+      </div>
+    );
+  },
+);
 
 export default LoginCard;

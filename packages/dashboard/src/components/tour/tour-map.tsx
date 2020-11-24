@@ -1,18 +1,16 @@
 import { makeStyles } from '@material-ui/core';
-import * as L from 'leaflet';
-import Debug from 'debug';
-import React from 'react';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import { AttributionControl, Map as LMap, LayersControl, ImageOverlay, Pane } from 'react-leaflet';
-import { MapFloorLayer } from '../schedule-visualizer/index';
+import Debug from 'debug';
+import * as L from 'leaflet';
+import React from 'react';
+import { AttributionControl, ImageOverlay, LayersControl, Map as LMap, Pane } from 'react-leaflet';
 import { toBlobUrl } from '../../util';
-import { calcMaxBounds } from '../schedule-visualizer/index';
+import DispensersOverlay from '../schedule-visualizer/dispensers-overlay';
 import DoorsOverlay from '../schedule-visualizer/doors-overlay';
+import { calcMaxBounds, MapFloorLayer } from '../schedule-visualizer/index';
 import LiftsOverlay from '../schedule-visualizer/lift-overlay';
 import RobotsOverlay from '../schedule-visualizer/robots-overlay';
-import ColorManager from '../schedule-visualizer/colors';
 import WaypointsOverlay from '../schedule-visualizer/waypoints-overlay';
-import DispensersOverlay from '../schedule-visualizer/dispensers-overlay';
 
 const debug = Debug('TourMap');
 
@@ -66,7 +64,6 @@ export default function TourMap(props: TourMapProps): React.ReactElement {
     curLevelName,
     mapFloorLayers,
   ]);
-  const colorManager = React.useMemo(() => new ColorManager(), []);
   const conflictRobotNames: string[][] = [];
 
   React.useEffect(() => {
@@ -184,7 +181,6 @@ export default function TourMap(props: TourMapProps): React.ReactElement {
                 currentFloorName={curLevelName}
                 bounds={curMapFloorLayer.bounds}
                 fleets={props.fleets}
-                colorManager={colorManager}
                 conflictRobotNames={conflictRobotNames}
               />
             </Pane>

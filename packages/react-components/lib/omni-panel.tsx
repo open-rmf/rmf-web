@@ -6,7 +6,7 @@ import BackIcon from '@material-ui/icons/KeyboardBackspace';
 import React, { ReactElement } from 'react';
 import { OmniPanelViewProps } from './omni-panel-view';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   mainContainer: {
     width: '100%',
     height: '100%',
@@ -21,18 +21,21 @@ const useStyles = makeStyles(() => ({
     overflow: 'hidden',
   },
   viewContainer2: {
+    width: '100%',
+    height: '100%',
     position: 'absolute',
   },
   navigationButton: {
     borderRadius: 'inherit',
     flexGrow: 1,
+    color: theme.palette.text.primary,
   },
   navigationButtonContainer: {
     display: 'flex',
   },
 }));
 
-export interface OmniPanelProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface OmniPanelProps extends React.HTMLProps<HTMLDivElement> {
   view: number | string;
   children: React.ReactElement<OmniPanelViewProps>[] | React.ReactElement<OmniPanelViewProps>;
   variant?: 'backHome' | 'backHomeClose';
@@ -51,7 +54,7 @@ export const OmniPanel = (props: OmniPanelProps): JSX.Element => {
     variant,
     timeout,
     mountOnEnter,
-    unmountOnExit,
+    unmountOnExit = true,
     onBack,
     onHome,
     onClose,
@@ -84,11 +87,19 @@ export const OmniPanel = (props: OmniPanelProps): JSX.Element => {
             <HomeIcon />
           </IconButton>
           {variant === 'backHomeClose' && (
-            <IconButton className={classes_.navigationButton} onClick={onClose} aria-label="Close">
-              <CloseIcon />
-            </IconButton>
+            <>
+              <Divider orientation="vertical" />
+              <IconButton
+                className={classes_.navigationButton}
+                onClick={onClose}
+                aria-label="Close"
+              >
+                <CloseIcon />
+              </IconButton>
+            </>
           )}
         </div>
+        <Divider />
         <div className={classes_.viewContainer}>
           {Array.isArray(children) ? children.map(renderView) : renderView(children)}
         </div>

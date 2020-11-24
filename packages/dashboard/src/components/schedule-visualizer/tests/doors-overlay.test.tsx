@@ -2,10 +2,9 @@ import { Map as LMap } from 'react-leaflet';
 import { mount } from 'enzyme';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import DoorsOverlay from '../doors-overlay';
-import DoubleSlideDoor from '../door/door-double-slide';
 import L from 'leaflet';
 import React from 'react';
-import SingleSlideDoor from '../door/door-single-slide';
+import { DoorMarker } from 'react-components';
 
 const doors = [
   {
@@ -34,13 +33,16 @@ test('Render doors correctly', () => {
   const testDoors = doors;
   const bounds = new L.LatLngBounds([0, 25.7], [-14, 0]);
   const wrapper = mount(
-    <LMap>
+    <LMap
+      bounds={[
+        [0, 0],
+        [1, 1],
+      ]}
+    >
       <DoorsOverlay bounds={bounds} doors={testDoors} />
     </LMap>,
   );
-  // 1 normal single sliding + 2 Door slides of the double sliding
-  expect(wrapper.find(SingleSlideDoor).length).toBe(3);
-  expect(wrapper.find(DoubleSlideDoor).exists()).toBeTruthy();
+  expect(wrapper.find(DoorMarker).length).toBe(2);
 
   wrapper.unmount();
 });
