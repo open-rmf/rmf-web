@@ -15,17 +15,18 @@ import { AuthenticatorContext, UserContext } from './auth/contexts';
 import HelpIcon from '@material-ui/icons/Help';
 import { TooltipContext } from './app-contexts';
 import DashboardTooltip from 'react-components/lib/tooltip';
-import { MainMenuAction, MainMenuActionType } from './reducers/main-menu-reducer';
+import { ReducerMainMenuProps } from './reducers/main-menu-reducer';
 
 export interface AppBarProps {
-  dispatchMenu: React.Dispatch<MainMenuAction>;
+  reducerMainMenu: ReducerMainMenuProps;
   // TODO: change the alarm status to required when we have an alarm
   // service working properly in the backend
   alarmState?: boolean | null;
 }
 
 export default function AppBar(props: AppBarProps): React.ReactElement {
-  const { dispatchMenu } = props;
+  const { reducerMainMenu } = props;
+  const { toggleOmnipanel, setShowHelp, setShowSettings } = reducerMainMenu;
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const classes = useStyles();
   const authenticator = React.useContext(AuthenticatorContext);
@@ -51,15 +52,7 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
           id="omnipanel-tooltip"
           enabled={showTooltips}
         >
-          <IconButton
-            id="toggle-omnipanel-btn"
-            color="inherit"
-            onClick={() =>
-              dispatchMenu({
-                type: MainMenuActionType.ToggleOmnipanel,
-              })
-            }
-          >
+          <IconButton id="toggle-omnipanel-btn" color="inherit" onClick={() => toggleOmnipanel()}>
             <DashboardIcon />
           </IconButton>
         </DashboardTooltip>
@@ -69,11 +62,7 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
           id="setting-tooltip"
           enabled={showTooltips}
         >
-          <IconButton
-            id="show-settings-btn"
-            color="inherit"
-            onClick={() => dispatchMenu({ type: MainMenuActionType.ShowSettings, payload: true })}
-          >
+          <IconButton id="show-settings-btn" color="inherit" onClick={() => setShowSettings(true)}>
             <SettingsIcon />
           </IconButton>
         </DashboardTooltip>
@@ -107,11 +96,7 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
           </>
         )}
         <DashboardTooltip title="Help tools and resources" id="help-tooltip" enabled={showTooltips}>
-          <IconButton
-            id="show-help-btn"
-            color="inherit"
-            onClick={() => dispatchMenu({ type: MainMenuActionType.ShowHelp, payload: true })}
-          >
+          <IconButton id="show-help-btn" color="inherit" onClick={() => setShowHelp(true)}>
             <HelpIcon />
           </IconButton>
         </DashboardTooltip>

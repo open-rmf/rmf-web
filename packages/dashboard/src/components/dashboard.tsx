@@ -40,7 +40,7 @@ import LoadingScreen, { LoadingScreenProps } from './loading-screen';
 import MainMenu from './main-menu';
 import NegotiationsPanel from './negotiations-panel';
 import NotificationBar, { NotificationBarProps } from './notification-bar';
-import { MainMenuActionType, mainMenuReducer, MainMenuState } from './reducers/main-menu-reducer';
+import { MainMenuState, useMainMenu } from './reducers/main-menu-reducer';
 import { RmfContextProvider } from './rmf-contexts';
 import ScheduleVisualizer, { ScheduleVisualizerProps } from './schedule-visualizer';
 import { SpotlightValue } from './spotlight-value';
@@ -129,7 +129,14 @@ export default function Dashboard(_props: {}): React.ReactElement {
     showSettings: false,
     tourState: false,
   };
-  const [stateMenu, dispatchMenu] = React.useReducer(mainMenuReducer, mainMenuInitialValues);
+  const reducerMainMenu = useMainMenu(mainMenuInitialValues);
+  const {
+    currentView,
+    settings,
+    showOmniPanel,
+    setCurrentView,
+    setShowOmniPanel,
+  } = reducerMainMenu;
 
   const mapFloorLayerSorted = React.useMemo<string[] | undefined>(
     () => buildingMap?.levels.sort((a, b) => a.elevation - b.elevation).map((x) => x.name),
@@ -144,17 +151,17 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const pushOmniPanelView = React.useCallback(
     (view: OmniPanelViewIndex) => {
       stackNavigator.push(view);
-      dispatchMenu({ type: MainMenuActionType.CurrentView, payload: view });
+      setCurrentView(view);
     },
-    [stackNavigator],
+    [stackNavigator, setCurrentView],
   );
 
   const handleOmniPanelClose = React.useCallback(() => {
     clearSpotlights();
     setNegotiationTrajStore({});
     stackNavigator.reset();
-    dispatchMenu({ type: MainMenuActionType.ShowOmniPanel, payload: false });
-  }, [stackNavigator]);
+    setShowOmniPanel(false);
+  }, [stackNavigator, setShowOmniPanel]);
 
   const handleOmniPanelBack = React.useCallback(() => {
     clearSpotlights();
@@ -163,15 +170,15 @@ export default function Dashboard(_props: {}): React.ReactElement {
     } else {
       setNegotiationTrajStore({});
     }
-    dispatchMenu({ type: MainMenuActionType.CurrentView, payload: stackNavigator.pop() });
-  }, [stackNavigator, handleOmniPanelClose]);
+    setCurrentView(stackNavigator.pop());
+  }, [stackNavigator, handleOmniPanelClose, setCurrentView]);
 
   const handleOmniPanelHome = React.useCallback(() => {
     clearSpotlights();
     setNegotiationTrajStore({});
     stackNavigator.reset();
-    dispatchMenu({ type: MainMenuActionType.CurrentView, payload: stackNavigator.top() });
-  }, [stackNavigator]);
+    setCurrentView(stackNavigator.top());
+  }, [stackNavigator, setCurrentView]);
 
   const doorStateManager = React.useMemo(() => new DoorStateManager(), []);
   const [doorStates, setDoorStates] = React.useState(() => doorStateManager.doorStates());
@@ -179,11 +186,11 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const doorAccordionRefs = React.useMemo(() => defaultDict(createSpotlightRef), []);
   const handleDoorMarkerClick = React.useCallback(
     (door: RomiCore.Door) => {
-      dispatchMenu({ type: MainMenuActionType.ShowOmniPanel, payload: true });
+      setShowOmniPanel(true);
       pushOmniPanelView(OmniPanelViewIndex.Doors);
       doorAccordionRefs[door.name].spotlight();
     },
-    [doorAccordionRefs, pushOmniPanelView],
+    [doorAccordionRefs, pushOmniPanelView, setShowOmniPanel],
   );
 
   const liftStateManager = React.useMemo(() => new LiftStateManager(), []);
@@ -192,11 +199,11 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const liftAccordionRefs = React.useMemo(() => defaultDict(createSpotlightRef), []);
   const handleLiftMarkerClick = React.useCallback(
     (lift: RomiCore.Lift) => {
-      dispatchMenu({ type: MainMenuActionType.ShowOmniPanel, payload: true });
+      setShowOmniPanel(true);
       pushOmniPanelView(OmniPanelViewIndex.Lifts);
       liftAccordionRefs[lift.name].spotlight();
     },
-    [liftAccordionRefs, pushOmniPanelView],
+    [liftAccordionRefs, pushOmniPanelView, setShowOmniPanel],
   );
 
   const dispenserStateManager = React.useMemo(() => new DispenserStateManager(), []);
@@ -208,11 +215,11 @@ export default function Dashboard(_props: {}): React.ReactElement {
     Required<ScheduleVisualizerProps>['onDispenserClick']
   >(
     (_, guid) => {
-      dispatchMenu({ type: MainMenuActionType.ShowOmniPanel, payload: true });
+      setShowOmniPanel(true);
       pushOmniPanelView(OmniPanelViewIndex.Dispensers);
       dispenserAccordionRefs[guid].spotlight();
     },
-    [dispenserAccordionRefs, pushOmniPanelView],
+    [dispenserAccordionRefs, pushOmniPanelView, setShowOmniPanel],
   );
   let dispensers: string[] | undefined;
   if (resourceManager.current && resourceManager.current.dispensers) {
@@ -229,11 +236,11 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const robotAccordionRefs = React.useMemo(() => defaultDict(createSpotlightRef), []);
   const handleRobotMarkerClick = React.useCallback(
     (fleet: string, robot: RomiCore.RobotState) => {
-      dispatchMenu({ type: MainMenuActionType.ShowOmniPanel, payload: true });
+      setShowOmniPanel(true);
       pushOmniPanelView(OmniPanelViewIndex.Robots);
       robotAccordionRefs[robotKey(fleet, robot)].spotlight();
     },
-    [robotAccordionRefs, pushOmniPanelView],
+    [robotAccordionRefs, pushOmniPanelView, setShowOmniPanel],
   );
 
   const taskManager = React.useMemo(() => new TaskManager(), []);
@@ -430,12 +437,12 @@ export default function Dashboard(_props: {}): React.ReactElement {
     }
   }, [tourComplete, setTourState]);
 
-  const hotKeysValue = buildHotKeys({ dispatchMenu: dispatchMenu });
+  const hotKeysValue = buildHotKeys({ reducerMainMenu: reducerMainMenu });
 
   return (
     <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
       <AppContextProvider
-        settings={stateMenu.settings}
+        settings={settings}
         notificationDispatch={setNotificationBarMessage}
         resourceManager={resourceManager.current}
         tooltips={tooltipsValue}
@@ -446,7 +453,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
           dispenserStates={dispenserStates}
         >
           <div className={classes.container}>
-            <AppBar dispatchMenu={dispatchMenu} />
+            <AppBar reducerMainMenu={reducerMainMenu} />
             {loading && <LoadingScreen {...loading} />}
             {buildingMap && mapFloorLayerSorted && !tourState && (
               <ScheduleVisualizer
@@ -461,10 +468,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
                 onDispenserClick={handleDispenserMarkerClick}
               />
             )}
-            <Fade in={stateMenu.showOmniPanel}>
+            <Fade in={showOmniPanel}>
               <OmniPanel
                 className={classes.omniPanel}
-                view={stateMenu.currentView}
+                view={currentView}
                 variant="backHomeClose"
                 onBack={handleOmniPanelBack}
                 onHome={handleOmniPanelHome}
@@ -555,7 +562,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                 </OmniPanelView>
               </OmniPanel>
             </Fade>
-            <DashboardDrawers stateMenu={stateMenu} dispatchMenu={dispatchMenu}></DashboardDrawers>
+            <DashboardDrawers reducerMainMenu={reducerMainMenu}></DashboardDrawers>
           </div>
 
           <NotificationBar

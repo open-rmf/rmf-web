@@ -3,58 +3,51 @@ import { saveSettings } from '../settings';
 import HelpDrawer from './drawers/help-drawer';
 import HotKeysDialog from './drawers/hotkeys-dialog';
 import SettingsDrawer from './drawers/settings-drawer';
-import { MainMenuAction, MainMenuActionType, MainMenuState } from './reducers/main-menu-reducer';
+import { ReducerMainMenuProps } from './reducers/main-menu-reducer';
 
 interface DashboardDrawersProps {
-  stateMenu: MainMenuState;
-  dispatchMenu: React.Dispatch<MainMenuAction>;
+  reducerMainMenu: ReducerMainMenuProps;
 }
 
 export const DashboardDrawers = (props: DashboardDrawersProps): JSX.Element => {
-  const { stateMenu, dispatchMenu } = props;
+  const { reducerMainMenu } = props;
+  const {
+    settings,
+    showSettings,
+    showHelp,
+    showHotkeysDialog,
+    setShowSettings,
+    setSettings,
+    setShowHelp,
+    setShowHotkeysDialog,
+    setTourState,
+  } = reducerMainMenu;
   return (
     <>
       <SettingsDrawer
-        settings={stateMenu.settings}
-        open={stateMenu.showSettings}
+        settings={settings}
+        open={showSettings}
         onSettingsChange={(newSettings) => {
-          dispatchMenu({ type: MainMenuActionType.Settings, payload: newSettings });
+          setSettings(newSettings);
           saveSettings(newSettings);
         }}
-        onClose={() => dispatchMenu({ type: MainMenuActionType.ShowSettings, payload: false })}
-        handleCloseButton={() =>
-          dispatchMenu({ type: MainMenuActionType.ShowSettings, payload: false })
-        }
+        onClose={() => setShowSettings(false)}
+        handleCloseButton={() => setShowSettings(false)}
       />
 
       <HelpDrawer
-        open={stateMenu.showHelp}
-        handleCloseButton={() =>
-          dispatchMenu({ type: MainMenuActionType.ShowHelp, payload: false })
-        }
-        onClose={() => dispatchMenu({ type: MainMenuActionType.ShowHelp, payload: false })}
-        setShowHotkeyDialog={() =>
-          dispatchMenu({
-            type: MainMenuActionType.ShowHotkeysDialog,
-            payload: true,
-          })
-        }
+        open={showHelp}
+        handleCloseButton={() => setShowHelp(false)}
+        onClose={() => setShowHelp(false)}
+        setShowHotkeyDialog={() => setShowHotkeysDialog(true)}
         showTour={() => {
-          dispatchMenu({ type: MainMenuActionType.TourState, payload: true });
-          dispatchMenu({ type: MainMenuActionType.ShowHelp, payload: false });
+          setTourState(true);
+          setShowHelp(false);
         }}
       />
 
-      {stateMenu.showHotkeysDialog && (
-        <HotKeysDialog
-          open={stateMenu.showHotkeysDialog}
-          handleClose={() =>
-            dispatchMenu({
-              type: MainMenuActionType.ShowHotkeysDialog,
-              payload: false,
-            })
-          }
-        />
+      {showHotkeysDialog && (
+        <HotKeysDialog open={showHotkeysDialog} handleClose={() => setShowHotkeysDialog(false)} />
       )}
     </>
   );

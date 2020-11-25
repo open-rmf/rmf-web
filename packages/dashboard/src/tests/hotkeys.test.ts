@@ -1,17 +1,23 @@
+import { renderHook } from '@testing-library/react-hooks';
+import { useMainMenu } from '../components/reducers/main-menu-reducer';
 import { buildHotKeys, keyMap } from '../hotkeys';
+import { loadSettings } from '../settings';
 
 test('Build hotkeys on the correct format', () => {
-  const hotkeys = buildHotKeys({
-    openCommands: () => jest.fn(),
-    openDispensers: () => jest.fn(),
-    openDoors: () => jest.fn(),
-    openHelpPanel: () => jest.fn(),
-    openHotKeys: () => jest.fn(),
-    openLifts: () => jest.fn(),
-    openOnmiPanel: () => jest.fn(),
-    openRobots: () => jest.fn(),
-    openSettings: () => jest.fn(),
-  });
+  const mainMenuInitialValues = {
+    currentView: 1,
+    loading: {
+      caption: 'Connecting to api server...',
+    },
+    settings: loadSettings(),
+    showHelp: false,
+    showHotkeysDialog: false,
+    showOmniPanel: true,
+    showSettings: false,
+    tourState: false,
+  };
+  const { result } = renderHook(() => useMainMenu(mainMenuInitialValues));
+  const hotkeys = buildHotKeys({ reducerMainMenu: result.current });
 
   const { keyMap: hotKeyMap } = hotkeys;
 
