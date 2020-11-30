@@ -2,7 +2,7 @@ const concurrently = require('concurrently');
 const { execSync } = require('child_process');
 
 // create external network for auth container
-execSync('docker network create romi_dashboard_e2e_auth_network', { stdio: 'inherit' });
+execSync('docker network create romi_dashboard_e2e_network', { stdio: 'inherit' });
 const defaultAuthGatewayIp = execSync(
   "docker network inspect -f '{{range .IPAM.Config}}{{.Gateway}}{{end}}' auth_network",
 )
