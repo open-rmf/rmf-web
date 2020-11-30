@@ -61,7 +61,7 @@ jobs:
       - name: e2e test
         run: |
           . /opt/rmf/setup.bash
-          bash -c 'cd e2e && npm ci --unsafe-perm && npm test'
+          bash -c 'cd e2e && npm ci --unsafe-perm && (npm test || npm test || npm test)'
       - name: upload artifacts
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
