@@ -6,7 +6,7 @@ services:
       dockerfile: auth.Dockerfile
     image: romi-dashboard/auth
     networks:
-      - auth_network
+      - romi_dashboard_e2e_auth_network
     ports:
       - 8080:8080
   unit-test:
@@ -33,4 +33,4 @@ services:
     privileged: true
     command: bash -c 'BROWSER=none npm start'
 networks:
-  auth_network:
+  romi_dashboard_e2e_auth_network:
