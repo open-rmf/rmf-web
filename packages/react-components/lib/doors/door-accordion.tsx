@@ -7,7 +7,7 @@ import Debug from 'debug';
 import React from 'react';
 import ItemAccordionDetails from '../item-accordion-details';
 import ItemAccordionSummary from '../item-accordion-summary';
-import SimpleInfo, { SimpleInfoData } from '../simple-info';
+import { SimpleInfo, SimpleInfoData } from '../simple-info';
 
 const debug = Debug('Doors:DoorAccordion');
 
@@ -23,9 +23,6 @@ const useStyles = makeStyles((theme) => ({
   },
   doorLabelMoving: {
     borderColor: theme.palette.warning.main,
-  },
-  doorLabelUnknown: {
-    borderColor: '#cccccc',
   },
 }));
 
@@ -90,7 +87,7 @@ const DoorInfo = (props: DoorInfoProps) => {
     { name: 'Location', value: `(${door.v1_x.toFixed(3)}, ${door.v1_y.toFixed(3)})` },
   ] as SimpleInfoData[];
 
-  return <SimpleInfo data={data} />;
+  return <SimpleInfo infoData={data} />;
 };
 
 export interface DoorAccordionProps extends Omit<AccordionProps, 'children'> {
@@ -99,16 +96,16 @@ export interface DoorAccordionProps extends Omit<AccordionProps, 'children'> {
   onDoorControlClick?(event: React.MouseEvent, door: RomiCore.Door, mode: number): void;
 }
 
-export const DoorAccordion = React.memo(
-  React.forwardRef((props: DoorAccordionProps, ref: React.Ref<HTMLElement>) => {
+export const DoorAccordion = React.forwardRef(
+  (props: DoorAccordionProps, ref: React.Ref<HTMLElement>) => {
     const { door, doorState, onDoorControlClick, ...otherProps } = props;
     debug(`render ${door.name}`);
     const classes = useStyles();
 
     const doorModeLabelClasses = React.useCallback(
-      (doorState?: RomiCore.DoorState): string => {
+      (doorState?: RomiCore.DoorState): string | null => {
         if (!doorState) {
-          return `${classes.doorLabelUnknown}`;
+          return null;
         }
         switch (doorState.current_mode.value) {
           case RomiCore.DoorMode.MODE_OPEN:
@@ -118,18 +115,23 @@ export const DoorAccordion = React.memo(
           case RomiCore.DoorMode.MODE_MOVING:
             return `${classes.doorLabelMoving}`;
           default:
-            return `${classes.doorLabelUnknown}`;
+            return null;
         }
       },
       [classes],
     );
 
+    const doorStatusClass = doorModeLabelClasses(doorState);
+
     return (
       <Accordion ref={ref} {...otherProps}>
         <ItemAccordionSummary
           title={door.name}
-          status={doorModeToString(doorState)}
-          classes={{ status: doorModeLabelClasses(doorState) }}
+          statusProps={{
+            className: doorStatusClass ? doorStatusClass : undefined,
+            text: doorModeToString(doorState),
+            variant: doorState ? 'normal' : 'unknown',
+          }}
         />
         <ItemAccordionDetails>
           <DoorInfo door={door} />
@@ -146,7 +148,7 @@ export const DoorAccordion = React.memo(
         </ItemAccordionDetails>
       </Accordion>
     );
-  }),
+  },
 );
 
 export default DoorAccordion;

@@ -1,21 +1,49 @@
+import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { SimpleInfo } from '../lib';
 
 export default {
   title: 'Simple Info',
-};
+  argTypes: {
+    stringDisplayName: {
+      name: 'String Display Name',
+    },
+    stringValue: {
+      name: 'String Value',
+    },
+    numberDisplayName: {
+      name: 'Number Display Name',
+    },
+    numberValue: {
+      name: 'Number Value',
+    },
+  },
+} as Meta;
 
-export function SimpleData(): JSX.Element {
+export const SimpleData: Story = ({
+  stringDisplayName,
+  stringValue,
+  numberDisplayName,
+  numberValue,
+  ...args
+}) => {
   return (
     <SimpleInfo
-      data={[
-        { name: 'string', value: 'value' },
-        { name: 'number', value: 0 },
+      infoData={[
+        { name: stringDisplayName, value: stringValue },
+        { name: numberDisplayName, value: numberValue },
       ]}
+      {...args}
     />
   );
-}
+};
+SimpleData.args = {
+  stringDisplayName: 'string',
+  stringValue: 'value',
+  numberDisplayName: 'number',
+  numberValue: 0,
+};
 
-export function Array(): JSX.Element {
-  return <SimpleInfo data={[{ name: 'strings', value: ['hello', 'world'] }]} />;
-}
+export const Array: Story = (args) => {
+  return <SimpleInfo infoData={[{ name: 'strings', value: ['hello', 'world'] }]} {...args} />;
+};

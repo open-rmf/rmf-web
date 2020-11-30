@@ -3,7 +3,9 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import * as L from 'leaflet';
 import React from 'react';
+import { ColorContext, robotHash } from 'react-components';
 import { AttributionControl, ImageOverlay, LayersControl, Map as LMap, Pane } from 'react-leaflet';
+import { NegotiationTrajectoryResponse } from '../../negotiation-status-manager';
 import {
   Conflict,
   DefaultTrajectoryManager,
@@ -11,23 +13,15 @@ import {
   Trajectory,
   TrajectoryResponse,
 } from '../../robot-trajectory-manager';
-import { NegotiationTrajectoryResponse } from '../../negotiation-status-manager';
-import { AnimationSpeed, TrajectoryAnimation } from '../../settings';
 import { toBlobUrl } from '../../util';
-import { SettingsContext } from '../app-contexts';
-import ColorManager from './colors';
+import { NotificationBarContext } from '../notification-bar';
+import DispensersOverlay from './dispensers-overlay';
 import DoorsOverlay from './doors-overlay';
 import LiftsOverlay from './lift-overlay';
-import RobotTrajectoriesOverlay, { RobotTrajectoryContext } from './robot-trajectories-overlay';
-import RobotTrajectory from './robot-trajectory';
+import { NegotiationColors } from './negotiation-colors';
+import RobotTrajectoriesOverlay from './robot-trajectories-overlay';
 import RobotsOverlay from './robots-overlay';
-import {
-  withFillAnimation,
-  withFollowAnimation,
-  withOutlineAnimation,
-} from './trajectory-animations';
 import WaypointsOverlay from './waypoints-overlay';
-import DispensersOverlay from './dispensers-overlay';
 
 const debug = Debug('ScheduleVisualizer');
 
@@ -55,7 +49,7 @@ export interface ScheduleVisualizerProps {
   onDoorClick?(door: RomiCore.Door): void;
   onLiftClick?(lift: RomiCore.Lift): void;
   onRobotClick?(fleet: string, robot: RomiCore.RobotState): void;
-  onDispenserClick?(dispenser: RomiCore.DispenserState): void;
+  onDispenserClick?(event: React.MouseEvent, guid: string): void;
 }
 
 export function calcMaxBounds(
@@ -72,6 +66,8 @@ export function calcMaxBounds(
 export default function ScheduleVisualizer(props: ScheduleVisualizerProps): React.ReactElement {
   debug('render');
   const { negotiationTrajStore, mapFloorLayerSorted } = props;
+  const negotiationColors = React.useMemo(() => new NegotiationColors(), []);
+
   const classes = useStyles();
 
   const [mapFloorLayers, setMapFloorLayers] = React.useState<
@@ -101,34 +97,19 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   );
   const [bound, setBound] = React.useState(initialBounds);
 
-  const colorManager = React.useMemo(() => new ColorManager(), []);
+  const robots = React.useMemo(
+    () =>
+      props.fleets.reduce<Record<string, RomiCore.RobotState>>((prev, fleet) => {
+        fleet.robots.forEach((robot) => {
+          prev[robotHash(robot.name, fleet.name)] = robot;
+        });
+        return prev;
+      }, {}),
+    [props.fleets],
+  );
 
-  const settings = React.useContext(SettingsContext);
   const trajLookahead = 60000; // 1 min
-  const trajAnimDuration = React.useMemo(() => {
-    switch (settings.trajectoryAnimationSpeed) {
-      case AnimationSpeed.Slow:
-        return 4000;
-      case AnimationSpeed.Normal:
-        return 2000;
-      case AnimationSpeed.Fast:
-        return 1000;
-    }
-  }, [settings]);
-
-  const RobotTrajContextValue = React.useMemo<RobotTrajectoryContext>(() => {
-    const animationScale = trajLookahead / trajAnimDuration;
-    switch (settings.trajectoryAnimation) {
-      case TrajectoryAnimation.None:
-        return { Component: RobotTrajectory };
-      case TrajectoryAnimation.Fill:
-        return { Component: withFillAnimation(RobotTrajectory, animationScale) };
-      case TrajectoryAnimation.Follow:
-        return { Component: withFollowAnimation(RobotTrajectory, animationScale) };
-      case TrajectoryAnimation.Outline:
-        return { Component: withOutlineAnimation(RobotTrajectory, animationScale) };
-    }
-  }, [settings.trajectoryAnimation, trajAnimDuration]);
+  const trajAnimDuration = 2000;
 
   React.useEffect(() => {
     // We need the image to be loaded to know the bounds, but the image cannot be loaded without a
@@ -216,6 +197,28 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     })();
     return () => clearInterval(interval);
   }, [props.trajManager, curMapFloorLayer, trajAnimDuration]);
+
+  // Show notification when a conflict happens.
+  const notificationDispatch = React.useContext(NotificationBarContext);
+  React.useEffect(() => {
+    function getConflictRobotMessage(): string {
+      let message = '';
+      conflictRobotNames.forEach((conflictGroup) => {
+        message += `[${conflictGroup}] `;
+      });
+      return message;
+    }
+
+    const allConflicts = Object.values(trajectories).flatMap((traj) => traj.conflicts);
+
+    if (allConflicts.length !== 0) {
+      notificationDispatch &&
+        notificationDispatch({
+          message: `Trajectory conflicts between: ${getConflictRobotMessage()}`,
+          type: 'error',
+        });
+    }
+  }, [trajectories, notificationDispatch, conflictRobotNames]);
 
   function handleBaseLayerChange(e: L.LayersControlEvent): void {
     debug('set current level name');
@@ -306,15 +309,12 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
         <LayersControl.Overlay name="Robot Trajectories" checked>
           {curMapFloorLayer && (
             <Pane>
-              <RobotTrajectoryContext.Provider value={RobotTrajContextValue}>
-                <RobotTrajectoriesOverlay
-                  bounds={curMapFloorLayer.bounds}
-                  trajs={curMapTrajectories}
-                  conflicts={curMapConflicts}
-                  colorManager={colorManager}
-                  conflictRobotNames={conflictRobotNames}
-                />
-              </RobotTrajectoryContext.Provider>
+              <RobotTrajectoriesOverlay
+                bounds={curMapFloorLayer.bounds}
+                robots={robots}
+                trajectories={curMapTrajectories}
+                conflicts={curMapConflicts}
+              />
             </Pane>
           )}
         </LayersControl.Overlay>
@@ -326,19 +326,18 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
         >
           {curMapFloorLayer && (
             <Pane>
-              <RobotTrajectoryContext.Provider value={RobotTrajContextValue}>
+              <ColorContext.Provider value={negotiationColors}>
                 <RobotTrajectoriesOverlay
                   bounds={curMapFloorLayer.bounds}
-                  trajs={
-                    negotiationTrajStore[curLevelName] &&
-                    props.negotiationTrajStore[curLevelName].values
+                  robots={robots}
+                  trajectories={
+                    negotiationTrajStore[curLevelName]
+                      ? props.negotiationTrajStore[curLevelName].values
+                      : []
                   }
                   conflicts={getConflicts(curLevelName)}
-                  colorManager={colorManager}
-                  conflictRobotNames={conflictRobotNames}
-                  overridePathColor={'orange'}
                 />
-              </RobotTrajectoryContext.Provider>
+              </ColorContext.Provider>
             </Pane>
           )}
         </LayersControl.Overlay>
@@ -373,7 +372,6 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
                 currentFloorName={curLevelName}
                 bounds={curMapFloorLayer.bounds}
                 fleets={props.fleets}
-                colorManager={colorManager}
                 onRobotClick={props.onRobotClick}
                 conflictRobotNames={conflictRobotNames}
               />

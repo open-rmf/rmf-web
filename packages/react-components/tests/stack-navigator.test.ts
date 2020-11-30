@@ -1,6 +1,6 @@
 import { StackNavigator } from '../lib';
 
-let stack: StackNavigator;
+let stack: StackNavigator<number>;
 
 beforeEach(() => {
   stack = new StackNavigator(0);

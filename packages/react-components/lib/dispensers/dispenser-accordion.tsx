@@ -4,7 +4,7 @@ import Debug from 'debug';
 import React from 'react';
 import ItemAccordionDetails from '../item-accordion-details';
 import ItemAccordionSummary from '../item-accordion-summary';
-import SimpleInfo from '../simple-info';
+import { SimpleInfo } from '../simple-info';
 
 const debug = Debug('Dispensers:DispenserAccordion');
 
@@ -26,7 +26,7 @@ const DispenserInfo = (props: DispenserInfoProps) => {
     { name: 'Seconds Remaining', value: dispenser.seconds_remaining },
   ];
 
-  return <SimpleInfo data={data} />;
+  return <SimpleInfo infoData={data} />;
 };
 
 function dispenserModeToString(mode: number): string {
@@ -46,20 +46,19 @@ const useStyles = makeStyles((theme) => ({
   statusLabelIdle: { borderColor: theme.palette.warning.main },
   statusLabelBusy: { borderColor: theme.palette.success.main },
   statusLabelOffline: { borderColor: theme.palette.error.main },
-  statusLabelUnknown: { borderColor: '#cccccc' },
 }));
 
 export interface DispenserAccordionProps extends Omit<AccordionProps, 'children'> {
   dispenserState: RomiCore.DispenserState;
 }
 
-export const DispenserAccordion = React.memo(
-  React.forwardRef((props: DispenserAccordionProps, ref: React.Ref<HTMLElement>) => {
+export const DispenserAccordion = React.forwardRef(
+  (props: DispenserAccordionProps, ref: React.Ref<HTMLElement>) => {
     const { dispenserState, ...otherProps } = props;
     debug(`render ${dispenserState.guid}`);
     const classes = useStyles();
 
-    const statusLabelClass = () => {
+    const getStatusLabelClass = () => {
       switch (dispenserState.mode) {
         case RomiCore.DispenserState.IDLE:
           return classes.statusLabelIdle;
@@ -68,23 +67,28 @@ export const DispenserAccordion = React.memo(
         case RomiCore.DispenserState.OFFLINE:
           return classes.statusLabelOffline;
         default:
-          return classes.statusLabelUnknown;
+          return null;
       }
     };
+
+    const statusLabelClass = getStatusLabelClass();
 
     return (
       <Accordion ref={ref} {...otherProps}>
         <ItemAccordionSummary
           title={dispenserState.guid}
-          status={dispenserModeToString(dispenserState.mode)}
-          classes={{ status: statusLabelClass() }}
+          statusProps={{
+            className: statusLabelClass ? statusLabelClass : undefined,
+            text: dispenserModeToString(dispenserState.mode),
+            variant: statusLabelClass ? 'normal' : 'unknown',
+          }}
         />
         <ItemAccordionDetails>
           <DispenserInfo dispenser={dispenserState} />
         </ItemAccordionDetails>
       </Accordion>
     );
-  }),
+  },
 );
 
 export default DispenserAccordion;

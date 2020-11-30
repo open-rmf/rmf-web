@@ -7,5 +7,9 @@ export default {
   component: LoginCard_,
 } as Meta;
 
-export const LoginCard: Story = (args) => <LoginCard_ logo="/resources/ros-health.png" {...args} />;
-export const LoginPage: Story = (args) => <LoginPage_ logo="/resources/ros-health.png" {...args} />;
+export const LoginCard: Story = (args) => (
+  <LoginCard_ title="Title" logo="/resources/ros-health.png" {...args} />
+);
+export const LoginPage: Story = (args) => (
+  <LoginPage_ title="Title" logo="/resources/ros-health.png" {...args} />
+);

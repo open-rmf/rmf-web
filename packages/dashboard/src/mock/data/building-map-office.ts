@@ -59,7 +59,7 @@ const lifts = [
     levels: ['L1', 'L2', 'L3'],
     ref_x: 7.1,
     ref_y: -2.8,
-    ref_yaw: 0.5,
+    ref_yaw: -0.5,
     width: 2.5,
     depth: 2.5,
     wall_graph: {

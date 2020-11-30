@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { RobotResourceManager, RobotResource } from './resource-manager-robots';
 import { DispenserResourceManager, RawDispenserResource } from './resource-manager-dispensers';
+import { RobotResource, RobotResourceManager } from './resource-manager-robots';
 
 export interface ResourceConfigurationsType {
   robots?: Record<string, RobotResource>; // Record<FleetName, RobotResource>
@@ -48,7 +48,7 @@ export default class ResourceManager {
   };
 
   constructor(resources: ResourceManagersProps) {
-    this.robots = new RobotResourceManager(resources.robots);
+    this.robots = new RobotResourceManager(resources.robots || {});
     if (resources.dispensers) {
       this.dispensers = new DispenserResourceManager(resources.dispensers);
     }
