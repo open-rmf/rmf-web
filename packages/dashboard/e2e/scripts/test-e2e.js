@@ -1,14 +1,16 @@
 const concurrently = require('concurrently');
 const { execSync } = require('child_process');
 
-// create external network for auth container
-execSync('docker network create romi_dashboard_e2e_network', { stdio: 'inherit' });
-const defaultAuthGatewayIp = execSync(
-  "docker network inspect -f '{{range .IPAM.Config}}{{.Gateway}}{{end}}' romi_dashboard_e2e_network",
-)
-  .toString()
-  .trim();
-process.env.AUTH_GATEWAY_IP = defaultAuthGatewayIp;
+if (execSync('docker network ls').toString().includes('romi_dashboard_e2e_network')) {
+  // create external network for auth container
+  execSync('docker network create romi_dashboard_e2e_network', { stdio: 'inherit' });
+  const defaultAuthGatewayIp = execSync(
+    "docker network inspect -f '{{range .IPAM.Config}}{{.Gateway}}{{end}}' romi_dashboard_e2e_network",
+  )
+    .toString()
+    .trim();
+  process.env.AUTH_GATEWAY_IP = defaultAuthGatewayIp;
+}
 
 // set REACT_APP_CONFIG
 const authConfig = {
