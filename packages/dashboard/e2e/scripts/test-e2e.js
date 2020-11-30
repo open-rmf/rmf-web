@@ -4,7 +4,7 @@ const { execSync } = require('child_process');
 // create external network for auth container
 execSync('docker network create romi_dashboard_e2e_network', { stdio: 'inherit' });
 const defaultAuthGatewayIp = execSync(
-  "docker network inspect -f '{{range .IPAM.Config}}{{.Gateway}}{{end}}' auth_network",
+  "docker network inspect -f '{{range .IPAM.Config}}{{.Gateway}}{{end}}' romi_dashboard_e2e_network",
 )
   .toString()
   .trim();
