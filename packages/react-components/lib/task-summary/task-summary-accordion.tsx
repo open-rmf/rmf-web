@@ -21,16 +21,24 @@ export const TaskSummaryAccordionInfo = (props: TaskSummaryAccordionInfoProps): 
   const { task } = props;
   const statusDetails = formatStatus(task.status);
   const stateLabel = getStateLabel(task.state);
+  const classes = useStylesAccordionItems();
   const data = [
-    { name: 'TaskId', value: task.task_id, wrap: false },
+    { name: 'TaskId', value: task.task_id, wrap: true },
     { name: 'State', value: stateLabel },
-    { name: 'Status', value: statusDetails },
-    { name: 'Submission Time', value: task.submission_time.sec },
+    {
+      name: 'Status',
+      value: statusDetails,
+      className: {
+        overrideValue: classes.overrideValue,
+        overrideArrayItemValue: classes.overrideArrayItemValue,
+      },
+    },
+    { name: 'Subm. Time', value: task.submission_time.sec },
     { name: 'Start time', value: task.start_time.sec },
     { name: 'End Time', value: task.end_time.sec },
   ] as SimpleInfoData[];
 
-  return <SimpleInfo infoData={data} />;
+  return <SimpleInfo infoData={data} overrideStyle={{ container: classes.overrideContainer }} />;
 };
 
 export interface TaskSummaryAccordionProps {
@@ -173,6 +181,25 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   taskActor: {
     alignSelf: 'center',
+  },
+}));
+
+const useStylesAccordionItems = makeStyles((theme: Theme) => ({
+  overrideArrayItemValue: {
+    textAlign: 'center',
+  },
+  overrideContainer: {
+    borderCollapse: 'collapse',
+    width: '100%',
+    overflowX: 'auto',
+  },
+  overrideValue: {
+    display: 'table-cell',
+    textAlign: 'end',
+    borderBottom: '1px solid',
+    borderBottomColor: theme.palette.divider,
+    borderTop: '1px solid',
+    borderTopColor: theme.palette.divider,
   },
 }));
 

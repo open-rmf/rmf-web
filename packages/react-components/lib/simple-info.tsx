@@ -9,12 +9,27 @@ type DataValueTypePrimitive = number | string;
 type DataValueTypeArray = DataValueTypePrimitive[];
 type DataValueType = DataValueTypePrimitive | DataValueTypeArray;
 
+/**
+ * @param name label of the row
+ * @param value value of the row
+ * @param className add and override styles
+ * @param className.value adds and style to the value
+ * @param className.overrideValue overrides the style of the value.
+ * @param className.overrideArrayItemValue overrides the style of the value
+ * in case the value is an array
+ * @param disabled adds the disabled style
+ * @param wrap wraps the context of the text
+ */
 export interface SimpleInfoData<T extends DataValueType = DataValueType> {
   name: string;
   value: T;
-  className?: T extends DataValueTypeArray ? string | string[] : string;
+  className?: {
+    value?: T extends DataValueTypeArray ? string | string[] : string;
+    overrideValue?: string;
+    overrideArrayItemValue?: string;
+  };
   disabled?: boolean;
-  wrap?: boolean; // wrap the context of the text
+  wrap?: boolean;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -22,6 +37,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'table',
     borderCollapse: 'collapse',
     width: '100%',
+    overflowX: 'auto',
   },
   tableRow: {
     display: 'table-row',
@@ -58,10 +74,14 @@ const useStyles = makeStyles((theme) => ({
 
 export interface SimpleInfoProps extends React.HTMLProps<HTMLDivElement> {
   infoData: SimpleInfoData[];
+  overrideStyle?: {
+    container?: string;
+    tableRow?: string;
+  };
 }
 
 export const SimpleInfo = (props: SimpleInfoProps): JSX.Element => {
-  const { infoData, ...otherProps } = props;
+  const { infoData, overrideStyle, ...otherProps } = props;
   const classes = useStyles();
 
   const renderPrimitive = ({
@@ -78,7 +98,11 @@ export const SimpleInfo = (props: SimpleInfoProps): JSX.Element => {
       <Typography
         noWrap={!wrap}
         variant="body1"
-        className={joinClasses(classes.value, disabled ? classes.disabled : undefined, className)}
+        className={joinClasses(
+          className?.overrideValue ? className?.overrideValue : classes.value,
+          disabled ? classes.disabled : undefined,
+          className?.value,
+        )}
       >
         {value}
       </Typography>
@@ -90,29 +114,35 @@ export const SimpleInfo = (props: SimpleInfoProps): JSX.Element => {
     value,
     className,
     disabled,
-  }: SimpleInfoData<DataValueTypeArray>) => (
-    <>
-      <Typography className={classes.displayName} variant="body1">
-        {name}
-      </Typography>
-      <List className={classes.value} dense>
-        {value.map((item, i) => (
-          <ListItem key={i} className={classes.arrayListItem}>
-            <Typography
-              variant="body1"
-              className={joinClasses(
-                classes.arrayItemValue,
-                disabled ? classes.disabled : undefined,
-                Array.isArray(className) ? className[i] : className,
-              )}
-            >
-              {item}
-            </Typography>
-          </ListItem>
-        ))}
-      </List>
-    </>
-  );
+  }: SimpleInfoData<DataValueTypeArray>) => {
+    const arrayItemValueStyle = className?.overrideArrayItemValue
+      ? className?.overrideArrayItemValue
+      : classes.arrayItemValue;
+    const valueStyle = className?.overrideValue ? className?.overrideValue : classes.value;
+    return (
+      <>
+        <Typography className={classes.displayName} variant="body1">
+          {name}
+        </Typography>
+        <List className={valueStyle} dense>
+          {value.map((item, i) => (
+            <ListItem key={i} className={classes.arrayListItem}>
+              <Typography
+                variant="body1"
+                className={joinClasses(
+                  arrayItemValueStyle,
+                  disabled ? classes.disabled : undefined,
+                  Array.isArray(className?.value) ? className?.value[i] : className?.value,
+                )}
+              >
+                {item}
+              </Typography>
+            </ListItem>
+          ))}
+        </List>
+      </>
+    );
+  };
 
   const renderLine = (data: SimpleInfoData) => {
     switch (typeof data.value) {
@@ -133,10 +163,16 @@ export const SimpleInfo = (props: SimpleInfoProps): JSX.Element => {
 
   return (
     <div {...otherProps}>
-      <div className={classes.container} role="table">
+      <div
+        className={overrideStyle?.container ? overrideStyle?.container : classes.container}
+        role="table"
+      >
         {infoData.map((item) => (
           <React.Fragment key={item.name}>
-            <div className={classes.tableRow} role="row">
+            <div
+              className={overrideStyle?.tableRow ? overrideStyle?.tableRow : classes.tableRow}
+              role="row"
+            >
               {renderLine(item)}
             </div>
           </React.Fragment>
