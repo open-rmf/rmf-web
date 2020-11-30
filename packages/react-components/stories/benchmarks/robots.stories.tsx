@@ -27,7 +27,7 @@ interface AnimationState {
 }
 
 export const RobotMarkers: Story<RobotMarkerArgs> = ({ count, ...args }) => {
-  const setTriggerRender = React.useState(0);
+  const setTriggerRender = React.useState(0)[1];
 
   const animationStates = React.useMemo(() => {
     const states: AnimationState[] = [];
@@ -89,7 +89,7 @@ export const RobotMarkers: Story<RobotMarkerArgs> = ({ count, ...args }) => {
 
       prevUpdate = t;
 
-      setTriggerRender[1]((prev) => prev + 1);
+      setTriggerRender((prev) => prev + 1);
       window.requestAnimationFrame(updateState);
     };
     window.requestAnimationFrame(updateState);
