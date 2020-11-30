@@ -88,7 +88,7 @@ export const TaskSummaryAccordion = React.memo((props: TaskSummaryAccordionProps
   const renderTaskTreeItem = (task: RomiCore.TaskSummary) => {
     return (
       <TreeItem
-        data-component="TreeItem"
+        role={'treeitem'}
         nodeId={task.task_id}
         key={task.task_id}
         classes={{
