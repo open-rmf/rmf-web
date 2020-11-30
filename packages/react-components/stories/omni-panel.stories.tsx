@@ -40,6 +40,16 @@ const SimpleOmniPanel = (): JSX.Element => {
             Panel C
           </Button>
         </div>
+        <div>
+          <Button variant="outlined" onClick={() => (stack.push(4), setView(4))}>
+            Panel D
+          </Button>
+        </div>
+        <div>
+          <Button variant="outlined" onClick={() => (stack.push(5), setView(5))}>
+            Panel E
+          </Button>
+        </div>
       </OmniPanelView>
       <OmniPanelView viewId={1}>
         <Button variant="outlined" onClick={() => setView(stack.pop())}>
@@ -52,6 +62,16 @@ const SimpleOmniPanel = (): JSX.Element => {
         </Button>
       </OmniPanelView>
       <OmniPanelView viewId={3}>
+        <Button variant="outlined" onClick={() => setView(stack.pop())}>
+          Back
+        </Button>
+      </OmniPanelView>
+      <OmniPanelView viewId={4}>
+        <Button variant="outlined" onClick={() => setView(stack.pop())}>
+          Back
+        </Button>
+      </OmniPanelView>
+      <OmniPanelView viewId={5}>
         <Button variant="outlined" onClick={() => setView(stack.pop())}>
           Back
         </Button>
