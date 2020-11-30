@@ -9,13 +9,13 @@ This is to document the flow and interaction of the e2e services in the github e
 
 Below is a diagram representing the flow of commands when running `npm run test:e2e`
 
-![Flow of commands diagram](documentation-utils/e2e-E2e-start-process.png)
+![Flow of commands diagram](docs/resources/e2e-E2e-start-process.png)
 
 ## Container and network interactions
 
 Below is a diagram of how the containers and networks interact when up and running
 
-![Containers and network interaction diagram](documentation-utils/e2e-Container-networks.png)
+![Containers and network interaction diagram](docs/resources/e2e-Container-networks.png)
 
 Broadly speaking, there are 3 major parts of the system:
 
