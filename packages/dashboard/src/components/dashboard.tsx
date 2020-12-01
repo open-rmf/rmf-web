@@ -557,7 +557,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                             dispenserStates[dispenser] ? dispenserStates[dispenser] : null
                           }
                           data-component="DispenserAccordion"
-                          dispensers={dispenser}
+                          dispenser={dispenser}
                         />
                       ))
                     : null}
