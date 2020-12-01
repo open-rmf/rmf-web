@@ -203,11 +203,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
     },
     [dispenserAccordionRefs, pushOmniPanelView],
   );
-  const dispensers = React.useMemo(() => {
-    if (resourceManager.current?.dispensers) {
-      return Object.keys(resourceManager.current?.dispensers.dispensers);
-    }
-  }, [resourceManager.current]);
+  let dispensers: string[] | undefined;
+  if (resourceManager.current && resourceManager.current.dispensers) {
+    dispensers = Object.keys(resourceManager.current.dispensers.dispensers);
+  }
 
   const fleetManager = React.useMemo(() => new FleetManager(), []);
   const [fleets, setFleets] = React.useState(fleetManager.fleets());
@@ -545,15 +544,23 @@ export default function Dashboard(_props: {}): React.ReactElement {
                   )}
                 </OmniPanelView>
                 <OmniPanelView viewId={OmniPanelViewIndex.Dispensers}>
-                  {Object.values(dispenserStates).map((dispenser) => (
-                    <DispenserAccordion
-                      key={dispenser.guid}
-                      ref={dispenserAccordionRefs[dispenser.guid].ref}
-                      dispenserState={dispenser}
-                      data-component="DispenserAccordion"
-                      dispensers={dispensers}
-                    />
-                  ))}
+                  {dispensers
+                    ? dispensers.map((dispenser) => (
+                        <DispenserAccordion
+                          key={dispenser}
+                          ref={
+                            dispenserStates[dispenser]
+                              ? dispenserAccordionRefs[dispenserStates[dispenser].guid].ref
+                              : null
+                          }
+                          dispenserState={
+                            dispenserStates[dispenser] ? dispenserStates[dispenser] : null
+                          }
+                          data-component="DispenserAccordion"
+                          dispensers={dispenser}
+                        />
+                      ))
+                    : null}
                 </OmniPanelView>
                 <OmniPanelView viewId={OmniPanelViewIndex.Commands}>
                   <CommandsPanel transport={transport} allFleets={fleetNames.current} />

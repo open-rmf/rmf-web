@@ -1,4 +1,5 @@
-import { Accordion, AccordionProps, makeStyles } from '@material-ui/core';
+import { Accordion, AccordionProps, makeStyles, Divider } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import React from 'react';
@@ -46,22 +47,24 @@ const useStyles = makeStyles((theme) => ({
   statusLabelIdle: { borderColor: theme.palette.warning.main },
   statusLabelBusy: { borderColor: theme.palette.success.main },
   statusLabelOffline: { borderColor: theme.palette.error.main },
+  unknownStateDesc: {
+    padding: '0.5rem 0',
+  },
 }));
 
 export interface DispenserAccordionProps extends Omit<AccordionProps, 'children'> {
-  dispenserState: RomiCore.DispenserState;
-  dispensers: string[] | undefined;
+  dispenserState: RomiCore.DispenserState | null;
+  dispensers: string;
 }
 
 export const DispenserAccordion = React.forwardRef(
   (props: DispenserAccordionProps, ref: React.Ref<HTMLElement>) => {
     const { dispenserState, dispensers, ...otherProps } = props;
-    console.log(props);
-    debug(`render ${dispenserState.guid}`);
+    debug(`render ${dispenserState?.guid}`);
     const classes = useStyles();
 
     const getStatusLabelClass = () => {
-      switch (dispenserState.mode) {
+      switch (dispenserState?.mode) {
         case RomiCore.DispenserState.IDLE:
           return classes.statusLabelIdle;
         case RomiCore.DispenserState.BUSY:
@@ -78,16 +81,25 @@ export const DispenserAccordion = React.forwardRef(
     return (
       <Accordion ref={ref} {...otherProps}>
         <ItemAccordionSummary
-          title={dispenserState.guid}
+          title={dispenserState ? dispenserState.guid : dispensers}
           statusProps={{
             className: statusLabelClass ? statusLabelClass : undefined,
-            text: dispenserModeToString(dispenserState.mode),
+            text: dispenserState ? dispenserModeToString(dispenserState.mode) : 'UNKNOWN',
             variant: statusLabelClass ? 'normal' : 'unknown',
           }}
         />
-        <ItemAccordionDetails>
-          <DispenserInfo dispenser={dispenserState} />
-        </ItemAccordionDetails>
+        {dispenserState ? (
+          <ItemAccordionDetails>
+            <DispenserInfo dispenser={dispenserState} />
+          </ItemAccordionDetails>
+        ) : (
+          <React.Fragment>
+            <Divider />
+            <Typography className={classes.unknownStateDesc} align="center" variant="body1">
+              State of dispenser is unknown
+            </Typography>
+          </React.Fragment>
+        )}
       </Accordion>
     );
   },
