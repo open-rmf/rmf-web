@@ -1,60 +1,81 @@
-import { act, renderHook } from '@testing-library/react-hooks';
-import React from 'react';
-import { loadSettings } from '../../../settings';
-import {
-  MainMenuAction,
-  MainMenuActionType,
-  mainMenuReducer,
-  MainMenuState,
-  useMainMenu,
-} from '../main-menu-reducer';
-
-const mainMenuInitialValues: MainMenuState = {
-  currentView: 1,
-  loading: {
-    caption: 'Connecting to api server...',
-  },
-  settings: loadSettings(),
-  showHelp: false,
-  showHotkeysDialog: false,
-  showOmniPanel: true,
-  showSettings: false,
-  tourState: false,
-};
-
-const getReducer = () => {
-  const { result } = renderHook(() => useMainMenu(mainMenuInitialValues));
-  return result.current;
-};
+import { act, HookResult, renderHook } from '@testing-library/react-hooks';
+import { mainMenuInitialValues } from '../main-menu-reducer-initial-values';
+import { ReducerMainMenuProps, useMainMenu } from '../main-menu-reducer';
 
 describe('Main Menu reducer update states correctly', () => {
-  let state: MainMenuState, dispatch: React.Dispatch<MainMenuAction>;
-  // beforeEach(() => {
-  //   const { result } = renderHook(() => React.useReducer(mainMenuReducer, mainMenuInitialValues));
+  let result: HookResult<ReducerMainMenuProps>;
+  beforeEach(() => {
+    const hookResult = renderHook(() => useMainMenu(mainMenuInitialValues));
+    result = hookResult.result;
+  });
 
-  // });
+  test('Update current view correctly', async () => {
+    act(() => {
+      result.current.setCurrentView(2);
+    });
+    expect(result.current.currentView).toBe(2);
+  });
 
-  // test('Update current view', () => {
-  //   [state, dispatch] = getReducer();
-  //   act(() => {
-  //     dispatch({ type: MainMenuActionType.CurrentView, payload: 2 });
-  //   });
-  //   expect(state.currentView).toBe(2);
-  // });
-
-  test('Update showHelp state', async () => {
-    // const { result, waitForNextUpdate } = renderHook(() =>
-    //   React.useReducer(mainMenuReducer, mainMenuInitialValues),
-    // );
-    const { result } = renderHook(() => useMainMenu(mainMenuInitialValues));
-    // const reducer = getReducer();
-    console.log(result.current.showHelp);
+  test('Update showHelp state correctly', async () => {
     act(() => {
       result.current.setShowHelp(true);
-      // reducer.setShowHelp(true);
     });
-    console.log(result.current.showHelp);
-
     expect(result.current.showHelp).toBe(true);
+  });
+
+  test('Update showHotkeysDialog correctly', async () => {
+    act(() => {
+      result.current.setShowHotkeysDialog(true);
+    });
+    expect(result.current.showHotkeysDialog).toBe(true);
+  });
+
+  test('Update showOmniPanel correctly', async () => {
+    act(() => {
+      result.current.setShowOmniPanel(false);
+    });
+    expect(result.current.showOmniPanel).toBe(false);
+  });
+
+  test('Update showSettings correctly', async () => {
+    act(() => {
+      result.current.setShowSettings(true);
+    });
+    expect(result.current.showSettings).toBe(true);
+  });
+
+  test('Update tourState correctly', async () => {
+    act(() => {
+      result.current.setTourState(true);
+    });
+    expect(result.current.tourState).toBe(true);
+  });
+
+  test('Toggle showHelp correctly', async () => {
+    act(() => {
+      result.current.toggleHelp();
+    });
+    expect(result.current.showHelp).toBe(true);
+  });
+
+  test('Toggle ToggleHotkeys correctly', async () => {
+    act(() => {
+      result.current.toggleHotkeys();
+    });
+    expect(result.current.showHotkeysDialog).toBe(true);
+  });
+
+  test('Toggle ShowOmniPanel correctly', async () => {
+    act(() => {
+      result.current.toggleOmnipanel();
+    });
+    expect(result.current.showOmniPanel).toBe(false);
+  });
+
+  test('Toggle ShowSettings correctly', async () => {
+    act(() => {
+      result.current.toggleSettings();
+    });
+    expect(result.current.showSettings).toBe(true);
   });
 });
