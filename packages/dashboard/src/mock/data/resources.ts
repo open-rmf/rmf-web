@@ -1,6 +1,6 @@
-import { ResourceManagersProps } from '../../resource-manager';
+import { ResourceConfigurationsType } from '../../resource-manager';
 
-export default function fakeResources(): ResourceManagersProps {
+export default function fakeResources(): ResourceConfigurationsType {
   return {
     dispensers: {
       coke_ingestor: {
@@ -9,10 +9,6 @@ export default function fakeResources(): ResourceManagersProps {
       },
       coke_dispenser: {
         icons: { coke_dispenser: '' },
-        location: { x: 16.85, y: -4.8, yaw: 0, level_name: 'L1' },
-      },
-      new_dispenser: {
-        icons: { new_dispenser: '' },
         location: { x: 16.85, y: -4.8, yaw: 0, level_name: 'L1' },
       },
     },

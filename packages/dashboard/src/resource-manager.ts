@@ -7,8 +7,8 @@ export interface ResourceConfigurationsType {
   dispensers?: Record<string, RawDispenserResource>; // Record<DispenserName, DispenserResource>
 }
 
-export interface ResourceManagersProps extends ResourceConfigurationsType {
-  robots: Record<string, RobotResource>;
+interface ResourceManagersProps extends ResourceConfigurationsType {
+  robots?: Record<string, RobotResource>;
 }
 
 export default class ResourceManager {
