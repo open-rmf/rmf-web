@@ -83,7 +83,6 @@
     "uuid": "^8.3.0"
   },
   "devDependencies": {
-    "@testing-library/react-hooks": "^3.4.2",
     "@types/jest": "^26.0.13",
     "@types/react-dom": "^16.9.8",
     "ros2-bridge": "file:../ros2-bridge",
