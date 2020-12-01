@@ -203,6 +203,11 @@ export default function Dashboard(_props: {}): React.ReactElement {
     },
     [dispenserAccordionRefs, pushOmniPanelView],
   );
+  const dispensers = React.useMemo(() => {
+    if (resourceManager.current?.dispensers) {
+      return Object.keys(resourceManager.current?.dispensers.dispensers);
+    }
+  }, [resourceManager.current]);
 
   const fleetManager = React.useMemo(() => new FleetManager(), []);
   const [fleets, setFleets] = React.useState(fleetManager.fleets());
@@ -546,6 +551,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                       ref={dispenserAccordionRefs[dispenser.guid].ref}
                       dispenserState={dispenser}
                       data-component="DispenserAccordion"
+                      dispensers={dispensers}
                     />
                   ))}
                 </OmniPanelView>

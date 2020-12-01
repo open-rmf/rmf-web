@@ -50,11 +50,13 @@ const useStyles = makeStyles((theme) => ({
 
 export interface DispenserAccordionProps extends Omit<AccordionProps, 'children'> {
   dispenserState: RomiCore.DispenserState;
+  dispensers: string[] | undefined;
 }
 
 export const DispenserAccordion = React.forwardRef(
   (props: DispenserAccordionProps, ref: React.Ref<HTMLElement>) => {
-    const { dispenserState, ...otherProps } = props;
+    const { dispenserState, dispensers, ...otherProps } = props;
+    console.log(props);
     debug(`render ${dispenserState.guid}`);
     const classes = useStyles();
 
