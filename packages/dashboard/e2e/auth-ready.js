@@ -1,5 +1,4 @@
 const http = require('http');
-
 /**
  * Waits for the authentication server to be ready.
  * @param timeout Max amount of time (in milliseconds) to wait for
@@ -15,7 +14,8 @@ async function authReady(timeout = 30000) {
     }, timeout);
     let retryTimer;
     const waitAuthReady = () => {
-      req = http.request('http://localhost:8080/auth/', () => {
+      const authIpAddress = process.env.AUTH_GATEWAY_IP;
+      req = http.request(`http://${authIpAddress ? authIpAddress : 'localhost'}:8080/auth/`, () => {
         clearTimeout(timer);
         clearTimeout(retryTimer);
         res(true);
