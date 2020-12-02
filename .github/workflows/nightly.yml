@@ -59,6 +59,13 @@ jobs:
     name: End-to-End Test
     needs: build-docker-images
     runs-on: ubuntu-latest
+    container:
+      image: docker.pkg.github.com/osrf/romi-dashboard/e2e
+      credentials:
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+      env:
+        CHROME_BIN: /chrome-no-sandbox
     defaults:
       run:
         shell: bash
@@ -73,7 +80,9 @@ jobs:
           docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
           npm run sync:docker
       - name: e2e test
-        run: docker-compose -f docker/docker-compose.yml up --exit-code-from e2e e2e
+        run: |
+          . /opt/rmf/setup.bash
+          bash -c 'cd e2e && npm ci --unsafe-perm && (npm test || npm test || npm test)'
       - name: upload artifacts
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
