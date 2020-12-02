@@ -1,10 +1,17 @@
-import { Divider, List, ListItem, Typography } from '@material-ui/core';
+import { Divider, List, ListItem, makeStyles, Typography } from '@material-ui/core';
 import React from 'react';
 import Debug from 'debug';
 import DashboardTooltip from 'react-components/lib/tooltip';
 import { TooltipContext } from './app-contexts';
 
 const debug = Debug('MainMenu');
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    padding: 0,
+    backgroundColor: theme.palette.background.paper,
+  },
+}));
 
 export interface MainMenuProps {
   onDoorsClick?(event: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
@@ -19,9 +26,10 @@ export interface MainMenuProps {
 export const MainMenu = React.memo((props: MainMenuProps) => {
   const { showTooltips } = React.useContext(TooltipContext);
   debug('render');
+  const classes = useStyles();
 
   return (
-    <List data-component="MainMenu">
+    <List className={classes.root} data-component="MainMenu">
       <ListItem data-item="Doors" button={true} onClick={props.onDoorsClick}>
         <Typography variant="h5">Doors</Typography>
       </ListItem>

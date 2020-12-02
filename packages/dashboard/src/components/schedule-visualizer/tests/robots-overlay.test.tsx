@@ -1,40 +1,51 @@
-import { mount } from 'enzyme';
+import { mount, ReactWrapper } from 'enzyme';
 import L from 'leaflet';
 import React from 'react';
+import { ColorManager, RobotMarker } from 'react-components';
+import { act } from 'react-dom/test-utils';
 import { Map as LMap } from 'react-leaflet';
 import getBuildingMap from '../../../mock/data/building-map';
 import fakeFleets from '../../../mock/data/fleets';
-import ColorManager from '../colors';
-import Robot from '../robot';
 import RobotsOverlay from '../robots-overlay';
 
 describe('Robots Overlay', () => {
+  let colorManager: ColorManager;
+
+  beforeEach(() => {
+    // TextEncoder is not available in node
+    colorManager = new ColorManager();
+    colorManager.robotPrimaryColor = jest.fn(async () => 'black');
+  });
+
   const bounds = new L.LatLngBounds([0, 25.7], [-14, 0]);
-  const colorManager = new ColorManager();
-  // TextEncoder is not available in node
-  colorManager.robotColor = jest.fn(async () => 'black');
-  colorManager.robotColorFromCache = jest.fn(() => 'black');
   let conflictRobotNames: string[][] = [];
 
   test('Render robots correctly', async () => {
     const buildingMap = await getBuildingMap();
     const fleet = fakeFleets()[0];
     const robots = fleet.robots;
-    const wrapper = mount(
-      <LMap>
-        <RobotsOverlay
-          fleets={[fleet]}
-          bounds={bounds}
-          colorManager={colorManager}
-          conflictRobotNames={conflictRobotNames}
-          currentFloorName={buildingMap.levels[0].name}
-        />
-      </LMap>,
-    );
+    let wrapper: ReactWrapper;
+    await act(async () => {
+      wrapper = mount(
+        <LMap
+          bounds={[
+            [0, 0],
+            [1, 1],
+          ]}
+        >
+          <RobotsOverlay
+            fleets={[fleet]}
+            bounds={bounds}
+            conflictRobotNames={conflictRobotNames}
+            currentFloorName={buildingMap.levels[0].name}
+          />
+        </LMap>,
+      );
+    });
+    wrapper!.update();
 
-    expect(wrapper.find(Robot).exists()).toBeTruthy();
-    expect(wrapper.find(Robot).length).toBe(robots.length);
+    expect(wrapper!.find(RobotMarker).length).toBe(robots.length);
 
-    wrapper.unmount();
+    wrapper!.unmount();
   });
 });

@@ -15,19 +15,19 @@ describe('loop request', () => {
   it('rmf responds to loop request', () => {
     $('[data-component=MainMenu] [data-item=Robots]').click();
 
-    browser.addLocatorStrategy('findAllRobots', () => {
-      return document.querySelectorAll('[data-component=RobotItem]');
-    });
-
     const currentRobotLocations = getRobotLocations(browser);
 
-    const backButton = $('[name="back-button"]');
+    const backButton = $('[aria-label="Back"]');
     backButton.click();
     $('[data-component=MainMenu] [data-item=Commands]').click();
-    $('[data-component=LoopForm]').click();
-    $('input[name=numLoops]').waitForClickable();
-    $('input[name=numLoops]').setValue(1);
-    $('button=Request').click();
+    const loopRequestForm = $('[data-component=LoopRequestForm]');
+    loopRequestForm.click();
+    const numLoopsInput = loopRequestForm.$('input[placeholder="Number of loops"]');
+    numLoopsInput.waitForClickable();
+    numLoopsInput.setValue(1);
+    const requestButton = loopRequestForm.$('button=Request');
+    requestButton.scrollIntoView();
+    requestButton.click();
 
     backButton.waitForClickable();
     backButton.click();

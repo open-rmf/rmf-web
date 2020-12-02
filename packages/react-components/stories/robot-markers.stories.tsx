@@ -62,3 +62,19 @@ export const Gallery: Story = (args) => {
     </Grid>
   );
 };
+
+export const NoTranslate: Story = (args) => {
+  return (
+    <svg viewBox="-2 -2 4 4" width={400} height={400}>
+      <RobotMarker
+        robot={makeRobot({
+          location: { level_name: 'test', x: 10, y: 10, yaw: 0, t: { sec: 0, nanosec: 0 } },
+        })}
+        fleetName="test_fleet"
+        footprint={1}
+        translate={false}
+        {...args}
+      />
+    </svg>
+  );
+};

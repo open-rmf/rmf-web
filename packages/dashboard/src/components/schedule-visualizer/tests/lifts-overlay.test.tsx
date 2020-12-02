@@ -1,11 +1,10 @@
-import React from 'react';
 import { mount } from 'enzyme';
-import officeMap from '../../../mock/data/building-map-office';
 import L from 'leaflet';
+import React from 'react';
+import { LiftMarker } from 'react-components';
 import { Map as LMap } from 'react-leaflet';
-import SingleSlideDoor from '../door/door-single-slide';
+import officeMap from '../../../mock/data/building-map-office';
 import LiftsOverlay from '../lift-overlay';
-import Lift from '../lift';
 
 test('Render lifts correctly', () => {
   const lifts = officeMap.lifts;
@@ -15,9 +14,7 @@ test('Render lifts correctly', () => {
       <LiftsOverlay currentFloor={'L1'} bounds={bounds} lifts={lifts} />
     </LMap>,
   );
-  expect(wrapper.find(Lift).exists()).toBeTruthy();
-  expect(wrapper.find(Lift).length).toBe(officeMap.lifts.length);
-  expect(wrapper.find(SingleSlideDoor).length).toBe(2);
+  expect(wrapper.find(LiftMarker).length).toBe(officeMap.lifts.length);
 
   wrapper.unmount();
 });

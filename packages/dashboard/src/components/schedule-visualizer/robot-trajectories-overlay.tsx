@@ -1,28 +1,44 @@
+import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import * as L from 'leaflet';
-import React, { useContext, useEffect } from 'react';
+import React from 'react';
+import {
+  ColorContext,
+  robotHash,
+  TrajectoryMarker as TrajectoryMarker_,
+  TrajectoryMarkerProps,
+} from 'react-components';
 import { Conflict, Trajectory } from '../../robot-trajectory-manager';
-import { NotificationBarContext } from '../notification-bar';
-import ColorManager from './colors';
-import RobotTrajectory, { RobotTrajectoryProps } from './robot-trajectory';
+import { TrajectoryAnimation } from '../../settings';
+import { SettingsContext } from '../app-contexts';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 
 const debug = Debug('ScheduleVisualizer:RobotTrajectoriesOverlay');
+const TrajectoryMarker = React.memo(TrajectoryMarker_);
 
 export interface RobotTrajectoriesOverlayProps extends SVGOverlayProps {
-  trajs?: readonly Trajectory[];
+  /**
+   * Must be a record of hashes with key from `robotHash` function.
+   *
+   * Remarks: `Trajectory` is missing robot model so we need to join it with the robot data.
+   */
+  robots: Record<string, RomiCore.RobotState>;
+  trajectories: Trajectory[];
   conflicts: Conflict[];
-  colorManager: Readonly<ColorManager>;
-  conflictRobotNames: string[][];
-  overridePathColor?: string;
+  animationScale?: number;
 }
 
-export const RobotTrajectoriesOverlay = React.memo((props: RobotTrajectoriesOverlayProps) => {
+/**
+ * Contexts: ColorContext
+ */
+export const RobotTrajectoriesOverlay = (props: RobotTrajectoriesOverlayProps) => {
   debug('render');
 
-  const { trajs, conflicts, colorManager, conflictRobotNames, ...otherProps } = props;
-  const trajectoryContext = useContext(RobotTrajectoryContext);
-  const notificationDispatch = useContext(NotificationBarContext);
+  const { robots, trajectories, conflicts, animationScale = 60000 / 1800, ...otherProps } = props;
+  const colorManager = React.useContext(ColorContext);
+  const [colors, setColors] = React.useState<Record<number, string>>({});
+
+  const conflictsFlat = React.useMemo(() => conflicts.flat(), [conflicts]);
 
   const bounds =
     props.bounds instanceof L.LatLngBounds ? props.bounds : new L.LatLngBounds(props.bounds);
@@ -30,51 +46,60 @@ export const RobotTrajectoriesOverlay = React.memo((props: RobotTrajectoriesOver
   const height = bounds.getNorth() - bounds.getSouth();
   const viewBox = `0 0 ${width} ${height}`;
 
-  // FIXME: hardcode for now, as the source of the footprint is expected to change.
-  const footprint = 0.5;
+  React.useEffect(() => {
+    (async () => {
+      const newColors: Record<string, string> = {};
+      await Promise.all(
+        trajectories.map(async (traj) => {
+          const key = robotHash(traj.robot_name, traj.fleet_name);
+          const robot = robots[key];
+          if (!robot) {
+            console.error(`trajectory "${traj.id}" belongs to unknown robot`);
+            return;
+          }
+          newColors[traj.id] = await colorManager.robotPrimaryColor(
+            traj.fleet_name,
+            robot.name,
+            robot.model,
+          );
+        }),
+      );
+      setColors(newColors);
+    })();
+  }, [trajectories, colorManager, robots]);
 
-  useEffect(() => {
-    function getConflictRobotMessage(): string {
-      let message = '';
-      conflictRobotNames.forEach((conflictGroup) => {
-        message += `[${conflictGroup}] `;
-      });
-      return message;
+  const settings = React.useContext(SettingsContext);
+  const trajectoryVariant = ((): TrajectoryMarkerProps['variant'] => {
+    switch (settings.trajectoryAnimation) {
+      case TrajectoryAnimation.Follow:
+        return 'follow';
+      case TrajectoryAnimation.None:
+        return 'plain';
+      default:
+        return 'plain';
     }
-
-    if (conflicts.length !== 0) {
-      notificationDispatch &&
-        notificationDispatch({
-          message: `Trajectory conflicts between: ${getConflictRobotMessage()}`,
-          type: 'error',
-        });
-    }
-  }, [conflicts, notificationDispatch, conflictRobotNames]);
+  })();
 
   return (
     <SVGOverlay {...otherProps}>
       <svg viewBox={viewBox}>
-        {trajs?.map((traj) => (
-          <trajectoryContext.Component
-            key={traj.id}
-            trajectory={traj}
-            footprint={footprint}
-            conflicts={conflicts}
-            colorManager={colorManager}
-            overridePathColor={otherProps.overridePathColor}
-          />
-        ))}
+        {trajectories.map(
+          (traj) =>
+            colors[traj.id] && (
+              <TrajectoryMarker
+                key={traj.id}
+                trajectory={traj}
+                color={colors[traj.id]}
+                conflict={conflictsFlat.includes(traj.id)}
+                animationScale={animationScale}
+                variant={trajectoryVariant}
+                data-component="TrajectoryMarker"
+              />
+            ),
+        )}
       </svg>
     </SVGOverlay>
   );
-});
+};
 
 export default RobotTrajectoriesOverlay;
-
-export interface RobotTrajectoryContext {
-  Component: React.ComponentType<RobotTrajectoryProps>;
-}
-
-export const RobotTrajectoryContext = React.createContext<RobotTrajectoryContext>({
-  Component: RobotTrajectory,
-});
