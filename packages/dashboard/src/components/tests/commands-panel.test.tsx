@@ -1,13 +1,12 @@
 import { createMount } from '@material-ui/core/test-utils';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
+import { DeliveryRequestForm, LoopRequestForm } from 'react-components';
 import fakeFleets from '../../mock/data/fleets';
-import CommandsPanel from '../commands-panel';
-import { LoopForm } from '../loop-form';
-import ResourceManager from '../../resource-manager';
 import fakeResources from '../../mock/data/resources';
-import { RobotDeliveryForm } from '../delivery-form';
+import ResourceManager from '../../resource-manager';
 import { ResourcesContext } from '../app-contexts';
+import CommandsPanel from '../commands-panel';
 
 const mount = createMount();
 
@@ -25,8 +24,8 @@ it('Renders loop and delivery form', () => {
     </ResourcesContext.Provider>,
   );
 
-  expect(root.find(LoopForm).length).toBe(1);
-  expect(root.find(RobotDeliveryForm).length).toBe(1);
+  expect(root.find(LoopRequestForm).length).toBe(1);
+  expect(root.find(DeliveryRequestForm).length).toBe(1);
 
   root.unmount();
 });

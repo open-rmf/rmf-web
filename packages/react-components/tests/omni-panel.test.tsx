@@ -46,5 +46,6 @@ test('only render current view', () => {
   );
 
   expect(window.getComputedStyle(root.getByTestId('0')).visibility).toBe('visible');
-  expect(window.getComputedStyle(root.getByTestId('1')).visibility).toBe('hidden');
+  // unmount when not in view
+  expect(root.queryByTestId('1')).toBeFalsy();
 });

@@ -1,5 +1,6 @@
 import Vibrant from 'node-vibrant';
 import React from 'react';
+import { robotHash } from './robots';
 
 async function _hash(s: string): Promise<ArrayBuffer> {
   const encoder = new TextEncoder();
@@ -16,7 +17,7 @@ export class ColorManager {
     model: string,
     image?: string | HTMLImageElement | Buffer,
   ): Promise<string> {
-    const key = this._robotKey(name, fleet);
+    const key = robotHash(name, fleet);
     if (this._robotColorCache[key]) {
       return this._robotColorCache[key];
     }
@@ -40,7 +41,7 @@ export class ColorManager {
   }
 
   robotColorFromCache(fleet: string, name: string): string | null {
-    const key = this._robotKey(name, fleet);
+    const key = robotHash(name, fleet);
     return this._robotColorCache[key] ? this._robotColorCache[key] : null;
   }
 
@@ -64,10 +65,6 @@ export class ColorManager {
   }
 
   private _robotColorCache: Record<string, string> = {};
-
-  private _robotKey(name: string, fleet: string) {
-    return `${name}__${fleet}`;
-  }
 }
 
 export default ColorManager;

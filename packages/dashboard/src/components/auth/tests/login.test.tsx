@@ -15,7 +15,7 @@ describe('Login page', () => {
         <Login />
       </BrowserRouter>,
     );
-    expect(component.html()).toMatchSnapshot();
+    expect(component).toMatchSnapshot();
   });
 
   test('redirects to dashboard when user is authenticated', () => {
