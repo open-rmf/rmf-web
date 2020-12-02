@@ -1,14 +1,98 @@
-import { renderHook } from '@testing-library/react-hooks';
 import { mainMenuInitialValues } from '../components/reducers/main-menu-reducer-initial-values';
-import { useMainMenu } from '../components/reducers/main-menu-reducer';
+import { ReducerMainMenuProps, useMainMenu } from '../components/reducers/main-menu-reducer';
 import { buildHotKeys, keyMap } from '../hotkeys';
+import { HotKeysEnabledProps } from 'react-hotkeys';
+import { act, HookResult, renderHook } from '@testing-library/react-hooks';
+import { OmniPanelViewIndex } from '../components/dashboard';
 
 test('Build hotkeys on the correct format', () => {
   const { result } = renderHook(() => useMainMenu(mainMenuInitialValues));
   const hotkeys = buildHotKeys({ reducerMainMenu: result.current });
+  if (!hotkeys.keyMap) throw new Error('An error has occurred building the hotkeys formats');
+  expect(Object.keys(hotkeys.keyMap)).toEqual(Object.keys(keyMap));
+});
 
-  const { keyMap: hotKeyMap } = hotkeys;
+describe('Update states correctly', () => {
+  let hotkeys: HotKeysEnabledProps;
+  let result: HookResult<ReducerMainMenuProps>;
 
-  if (!hotKeyMap) throw new Error('An error has occurred building the hotkeys formats');
-  expect(Object.keys(hotKeyMap)).toEqual(Object.keys(keyMap));
+  beforeEach(() => {
+    const hookResult = renderHook(() => useMainMenu(mainMenuInitialValues));
+    result = hookResult.result;
+    hotkeys = buildHotKeys({ reducerMainMenu: result.current });
+  });
+
+  test('Set commands as current view', () => {
+    act(() => {
+      hotkeys.handlers?.OPEN_COMMANDS();
+    });
+    expect(result.current.currentView).toBe(OmniPanelViewIndex.Commands);
+  });
+
+  test('Set dispensers as current view', () => {
+    act(() => {
+      hotkeys.handlers?.OPEN_DISPENSERS();
+    });
+    expect(result.current.currentView).toBe(OmniPanelViewIndex.Dispensers);
+  });
+
+  test('Set doors as current view', () => {
+    act(() => {
+      hotkeys.handlers?.OPEN_DOORS();
+    });
+    expect(result.current.currentView).toBe(OmniPanelViewIndex.Doors);
+  });
+
+  test('Set lifts current view correctly', () => {
+    act(() => {
+      hotkeys.handlers?.OPEN_LIFTS();
+    });
+    expect(result.current.currentView).toBe(OmniPanelViewIndex.Lifts);
+  });
+
+  test('Set robots current view correctly', () => {
+    act(() => {
+      hotkeys.handlers?.OPEN_ROBOTS();
+    });
+    expect(result.current.currentView).toBe(OmniPanelViewIndex.Robots);
+  });
+
+  test('Toggle Help Panel correctly', () => {
+    act(() => {
+      hotkeys.handlers?.OPEN_HELP_PANEL();
+    });
+
+    expect(result.current.showHelp).toBe(true);
+
+    act(() => {
+      hotkeys.handlers?.OPEN_HELP_PANEL();
+    });
+    expect(result.current.showHelp).toBe(false);
+  });
+
+  test('Toggle Omni Panel correctly', () => {
+    act(() => {
+      hotkeys.handlers?.OPEN_OMNIPANEL();
+    });
+
+    expect(result.current.showOmniPanel).toBe(false);
+
+    act(() => {
+      hotkeys.handlers?.OPEN_OMNIPANEL();
+    });
+    expect(result.current.showOmniPanel).toBe(true);
+  });
+
+  test('Toggle Setting correctly', () => {
+    act(() => {
+      hotkeys.handlers?.OPEN_SETTINGS();
+    });
+
+    expect(result.current.showSettings).toBe(true);
+
+    act(() => {
+      hotkeys.handlers?.OPEN_SETTINGS();
+    });
+    expect(result.current.showSettings).toBe(false);
+  });
 });

@@ -54,6 +54,7 @@ export const buildHotKeys = (props: hotKeysProps): HotKeysEnabledProps => {
     toggleSettings,
     toggleHelp,
   } = reducerMainMenu;
+
   const openCommands = () => {
     setShowOmniPanel(true);
     setCurrentView(OmniPanelViewIndex.Commands);
