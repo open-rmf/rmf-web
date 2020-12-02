@@ -94,7 +94,7 @@ export interface ReducerMainMenuProps extends MainMenuState {
   setTourState: (payload: boolean) => void;
 }
 
-export const useMainMenu = (initialValue: MainMenuState): ReducerMainMenuProps => {
+export const useMainMenuReducer = (initialValue: MainMenuState): ReducerMainMenuProps => {
   const [state, dispatch] = React.useReducer(mainMenuReducer, initialValue);
   const {
     currentView,

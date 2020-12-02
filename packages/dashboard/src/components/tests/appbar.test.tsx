@@ -8,7 +8,7 @@ import userEvent from '@testing-library/user-event';
 import FakeAuthenticator from '../../mock/fake-authenticator';
 import AppBar from '../appbar';
 import { AuthenticatorContext, UserContext } from '../auth/contexts';
-import { ReducerMainMenuProps, useMainMenu } from '../reducers/main-menu-reducer';
+import { ReducerMainMenuProps, useMainMenuReducer } from '../reducers/main-menu-reducer';
 import { mainMenuInitialValues } from '../reducers/main-menu-reducer-initial-values';
 
 const mount = createMount();
@@ -27,7 +27,7 @@ describe('AppBar', () => {
   let result: HookResult<ReducerMainMenuProps>;
 
   beforeEach(() => {
-    const hookResult = renderHook(() => useMainMenu(mainMenuInitialValues));
+    const hookResult = renderHook(() => useMainMenuReducer(mainMenuInitialValues));
     result = hookResult.result;
   });
 

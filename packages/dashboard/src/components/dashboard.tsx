@@ -31,7 +31,6 @@ import {
 } from '../negotiation-status-manager';
 import ResourceManager from '../resource-manager';
 import { RobotTrajectoryManager } from '../robot-trajectory-manager';
-import { loadSettings } from '../settings';
 import { AppContextProvider } from './app-contexts';
 import AppBar from './appbar';
 import CommandsPanel from './commands-panel';
@@ -40,7 +39,8 @@ import LoadingScreen, { LoadingScreenProps } from './loading-screen';
 import MainMenu from './main-menu';
 import NegotiationsPanel from './negotiations-panel';
 import NotificationBar, { NotificationBarProps } from './notification-bar';
-import { MainMenuState, useMainMenu } from './reducers/main-menu-reducer';
+import { useMainMenuReducer } from './reducers/main-menu-reducer';
+import { mainMenuInitialValues } from './reducers/main-menu-reducer-initial-values';
 import { RmfContextProvider } from './rmf-contexts';
 import ScheduleVisualizer, { ScheduleVisualizerProps } from './schedule-visualizer';
 import { SpotlightValue } from './spotlight-value';
@@ -117,19 +117,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const trajManager = React.useRef<RobotTrajectoryManager | undefined>(undefined);
   const resourceManager = React.useRef<ResourceManager | undefined>(undefined);
 
-  const mainMenuInitialValues: MainMenuState = {
-    currentView: OmniPanelViewIndex.MainMenu,
-    loading: {
-      caption: 'Connecting to api server...',
-    },
-    settings: loadSettings(),
-    showHelp: false,
-    showHotkeysDialog: false,
-    showOmniPanel: true,
-    showSettings: false,
-    tourState: false,
-  };
-  const reducerMainMenu = useMainMenu(mainMenuInitialValues);
+  const reducerMainMenu = useMainMenuReducer(mainMenuInitialValues);
   const {
     currentView,
     settings,

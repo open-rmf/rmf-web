@@ -1,11 +1,11 @@
 import { act, HookResult, renderHook } from '@testing-library/react-hooks';
 import { mainMenuInitialValues } from '../main-menu-reducer-initial-values';
-import { ReducerMainMenuProps, useMainMenu } from '../main-menu-reducer';
+import { ReducerMainMenuProps, useMainMenuReducer } from '../main-menu-reducer';
 
 describe('Main Menu reducer update states correctly', () => {
   let result: HookResult<ReducerMainMenuProps>;
   beforeEach(() => {
-    const hookResult = renderHook(() => useMainMenu(mainMenuInitialValues));
+    const hookResult = renderHook(() => useMainMenuReducer(mainMenuInitialValues));
     result = hookResult.result;
   });
 

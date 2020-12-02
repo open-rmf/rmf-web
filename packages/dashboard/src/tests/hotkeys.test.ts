@@ -1,12 +1,12 @@
 import { mainMenuInitialValues } from '../components/reducers/main-menu-reducer-initial-values';
-import { ReducerMainMenuProps, useMainMenu } from '../components/reducers/main-menu-reducer';
+import { ReducerMainMenuProps, useMainMenuReducer } from '../components/reducers/main-menu-reducer';
 import { buildHotKeys, keyMap } from '../hotkeys';
 import { HotKeysEnabledProps } from 'react-hotkeys';
 import { act, HookResult, renderHook } from '@testing-library/react-hooks';
 import { OmniPanelViewIndex } from '../components/dashboard';
 
 test('Build hotkeys on the correct format', () => {
-  const { result } = renderHook(() => useMainMenu(mainMenuInitialValues));
+  const { result } = renderHook(() => useMainMenuReducer(mainMenuInitialValues));
   const hotkeys = buildHotKeys({ reducerMainMenu: result.current });
   if (!hotkeys.keyMap) throw new Error('An error has occurred building the hotkeys formats');
   expect(Object.keys(hotkeys.keyMap)).toEqual(Object.keys(keyMap));
@@ -17,7 +17,7 @@ describe('Update states correctly', () => {
   let result: HookResult<ReducerMainMenuProps>;
 
   beforeEach(() => {
-    const hookResult = renderHook(() => useMainMenu(mainMenuInitialValues));
+    const hookResult = renderHook(() => useMainMenuReducer(mainMenuInitialValues));
     result = hookResult.result;
     hotkeys = buildHotKeys({ reducerMainMenu: result.current });
   });
