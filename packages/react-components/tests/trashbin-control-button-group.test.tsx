@@ -1,11 +1,11 @@
 import React from 'react';
-import { SnapshotControlButtonGroup } from '../lib';
+import { TrashBinControlButtonGroup } from '../lib';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 test('It disabled buttons', () => {
   const root = render(
-    <SnapshotControlButtonGroup
+    <TrashBinControlButtonGroup
       disableClear={true}
       disableReset={true}
       disableRestore={true}
@@ -31,7 +31,7 @@ test('It executes callbacks correctly', () => {
   const onSaveClick = jest.fn();
 
   const root = render(
-    <SnapshotControlButtonGroup
+    <TrashBinControlButtonGroup
       onResetClick={onResetClick}
       onClearClick={onClearClick}
       onRestoreClick={onRestoreClick}
@@ -52,7 +52,7 @@ test('It executes callbacks correctly', () => {
 
 test('It hides buttons', () => {
   const root = render(
-    <SnapshotControlButtonGroup
+    <TrashBinControlButtonGroup
       showReset={false}
       showRestore={false}
       showSave={false}

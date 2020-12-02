@@ -19,7 +19,7 @@ describe('Loop request for task summary', () => {
       pointA: 'pantry',
       pointB: 'cubicle_1',
     });
-    const backButton = $('[name="back-button"]');
+    const backButton = $('[aria-label="Back"]');
     backButton.click();
 
     $('[data-component=MainMenu] [data-item=Plans]').click();

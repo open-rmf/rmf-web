@@ -5,7 +5,7 @@ import RestoreFromTrashIcon from '@material-ui/icons/RestoreFromTrash';
 import SaveIcon from '@material-ui/icons/Save';
 import React from 'react';
 
-export interface SnapshotControlButtonGroupProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface TrashBinControlButtonGroupProps extends React.HTMLAttributes<HTMLDivElement> {
   disableReset?: boolean;
   disableClear?: boolean;
   disableRestore?: boolean;
@@ -36,8 +36,8 @@ export interface SnapshotControlButtonGroupProps extends React.HTMLAttributes<HT
  * @param onSaveClick handle the click event on the save button.
  * @param fullWidth set property full width. Default value `true`.
  */
-export const SnapshotControlButtonGroup = React.forwardRef(function (
-  props: SnapshotControlButtonGroupProps,
+export const TrashBinControlButtonGroup = React.forwardRef(function (
+  props: TrashBinControlButtonGroupProps,
   ref: React.Ref<HTMLDivElement>,
 ): React.ReactElement {
   const {
@@ -105,4 +105,4 @@ export const SnapshotControlButtonGroup = React.forwardRef(function (
   );
 });
 
-export default SnapshotControlButtonGroup;
+export default TrashBinControlButtonGroup;
