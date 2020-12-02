@@ -7,7 +7,7 @@ exports[`AppBar renders correctly 1`] = `
 >
   <WithStyles(ForwardRef(Toolbar))>
     <WithStyles(ForwardRef(Typography))
-      className="makeStyles-toolbarTitle-10"
+      className="makeStyles-toolbarTitle-1"
       variant="h6"
     >
       Dashboard

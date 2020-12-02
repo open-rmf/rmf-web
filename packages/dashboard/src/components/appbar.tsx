@@ -70,6 +70,7 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
           <>
             <IconButton
               id="user-btn"
+              aria-label={'user-btn'}
               color="inherit"
               onClick={(event) => setAnchorEl(event.currentTarget)}
             >
