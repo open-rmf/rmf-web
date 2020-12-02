@@ -1,6 +1,8 @@
+export * from './alert-dialog';
 export * from './auth';
 export * from './color-manager';
 export * from './commands';
+export * from './confirmation-alert-dialog';
 export * from './dispensers';
 export * from './doors';
 export * from './geometry-utils';
@@ -11,5 +13,8 @@ export * from './robots';
 export * from './simple-info';
 export * from './spotlight-accordion';
 export * from './stack-navigator';
+export * from './status-label';
 export * from './svg-text';
 export * from './tooltip';
+export * from './utils';
+export * from './waypoints';

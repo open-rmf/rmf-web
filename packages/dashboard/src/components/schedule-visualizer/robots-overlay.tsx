@@ -1,42 +1,30 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import React, { useMemo } from 'react';
+import { RobotMarker as RobotMarker_, RobotMarkerProps } from 'react-components';
 import { viewBoxFromLeafletBounds } from '../../util/css-utils';
-import ColorManager from './colors';
-import Robot_, { RobotProps } from './robot';
-import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 import { ResourcesContext } from '../app-contexts';
+import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 
 const debug = Debug('ScheduleVisualizer:RobotsOverlay');
+const RobotMarker = React.memo(RobotMarker_);
 
 export interface RobotsOverlayProps extends SVGOverlayProps {
-  colorManager: ColorManager;
   fleets: readonly RomiCore.FleetState[];
   onRobotClick?(fleet: string, robot: RomiCore.RobotState): void;
   conflictRobotNames: string[][];
   currentFloorName: string;
-  RobotComponent?: React.ElementType<RobotProps>;
 }
 
-export const RobotsOverlay = React.memo((props: RobotsOverlayProps) => {
+export const RobotsOverlay = (props: RobotsOverlayProps) => {
   debug('render');
 
-  const {
-    fleets,
-    colorManager,
-    onRobotClick,
-    conflictRobotNames,
-    currentFloorName,
-    RobotComponent,
-    ...otherProps
-  } = props;
-  const Robot = React.useMemo(() => RobotComponent || Robot_, [RobotComponent]);
+  const { fleets, onRobotClick, conflictRobotNames, currentFloorName, ...otherProps } = props;
   const robotResourcesContext = React.useContext(ResourcesContext)?.robots;
   const viewBox = viewBoxFromLeafletBounds(props.bounds);
   const footprint = 0.5;
 
   function inConflict(robotName: string): boolean {
-    // FIXME: hardcode for now, footprint data not available.
     return conflictRobotNames.flat().includes(robotName) ? true : false;
   }
 
@@ -64,9 +52,17 @@ export const RobotsOverlay = React.memo((props: RobotsOverlayProps) => {
     }));
   }, [fleets, currentFloorName]);
 
-  const handleRobotClick = React.useCallback<Required<RobotProps>['onClick']>(
+  const handleRobotClick = React.useCallback<Required<RobotMarkerProps>['onClick']>(
     (_, fleetName, robot) => onRobotClick && onRobotClick(fleetName, robot),
     [onRobotClick],
+  );
+
+  const getIconPath = React.useCallback(
+    (fleet: string, robot: RomiCore.RobotState) => {
+      const icon = robotResourcesContext?.getIconPath(fleet, robot.model);
+      return icon ? icon : undefined;
+    },
+    [robotResourcesContext],
   );
 
   return (
@@ -74,21 +70,22 @@ export const RobotsOverlay = React.memo((props: RobotsOverlayProps) => {
       <svg viewBox={viewBox}>
         {robotsInCurLevel.map(({ fleet, robots }) =>
           robots.map((robot) => (
-            <Robot
+            <RobotMarker
               key={robot.name}
               robot={robot}
               fleetName={fleetContainer[`${robot.name}_${robot.model}`]}
               footprint={footprint}
-              colorManager={colorManager}
-              robotHandler={robotResourcesContext}
+              variant={inConflict(robot.name) ? 'inConflict' : 'normal'}
+              iconPath={getIconPath(fleet, robot)}
               onClick={handleRobotClick}
-              inConflict={inConflict(robot.name)}
+              aria-label={robot.name}
+              data-component="RobotMarker"
             />
           )),
         )}
       </svg>
     </SVGOverlay>
   );
-});
+};
 
 export default RobotsOverlay;

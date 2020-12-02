@@ -1,12 +1,19 @@
 import { Fade, makeStyles } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import { adapterDoorRequests } from '@osrf/romi-js-core-interfaces';
+import { adapterDoorRequests, adapterLiftRequests, toRosTime } from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import React from 'react';
 import {
   createSpotlightRef,
+  defaultDict,
+  DispenserAccordion as DispenserAccordion_,
   DoorAccordion as DoorAccordion_,
-  SpotlightRef,
+  LiftAccordion as LiftAccordion_,
+  LiftAccordionProps,
+  OmniPanel,
+  OmniPanelView,
+  RobotAccordion as RobotAccordion_,
+  StackNavigator,
   withSpotlight,
 } from 'react-components';
 import { GlobalHotKeys } from 'react-hotkeys';
@@ -17,6 +24,7 @@ import DoorStateManager from '../door-state-manager';
 import FleetManager from '../fleet-manager';
 import { buildHotKeys } from '../hotkeys';
 import LiftStateManager from '../lift-state-manager';
+import TaskManager from '../managers/task-manager';
 import {
   NegotiationStatusManager,
   NegotiationTrajectoryResponse,
@@ -27,26 +35,23 @@ import { loadSettings, saveSettings, Settings } from '../settings';
 import { AppContextProvider } from './app-contexts';
 import AppBar from './appbar';
 import CommandsPanel from './commands-panel';
-import DispensersPanel from './dispensers-panel';
 import HelpDrawer from './drawers/help-drawer';
 import HotKeysDialog from './drawers/hotkeys-dialog';
 import SettingsDrawer from './drawers/settings-drawer';
-import LiftsPanel from './lift-item/lifts-panel';
 import LoadingScreen, { LoadingScreenProps } from './loading-screen';
 import MainMenu from './main-menu';
 import NegotiationsPanel from './negotiations-panel';
 import NotificationBar, { NotificationBarProps } from './notification-bar';
-import OmniPanel from './omni-panel';
-import OmniPanelView from './omni-panel-view';
 import { RmfContextProvider } from './rmf-contexts';
-import RobotsPanel from './robots-panel';
-import ScheduleVisualizer from './schedule-visualizer';
+import ScheduleVisualizer, { ScheduleVisualizerProps } from './schedule-visualizer';
 import { SpotlightValue } from './spotlight-value';
 import { TaskSummaryPanel } from './task-summary-panel';
-import TaskManager from '../managers/task-manager';
 
 const debug = Debug('App');
-const DoorAccordion = withSpotlight(DoorAccordion_);
+const DispenserAccordion = React.memo(withSpotlight(DispenserAccordion_));
+const DoorAccordion = React.memo(withSpotlight(DoorAccordion_));
+const LiftAccordion = React.memo(withSpotlight(LiftAccordion_));
+const RobotAccordion = React.memo(withSpotlight(RobotAccordion_));
 
 const borderRadius = 20;
 
@@ -86,12 +91,6 @@ const useStyles = makeStyles((theme) => ({
       boxShadow: theme.shadows[12],
     },
   },
-  topLeftBorder: {
-    borderTopLeftRadius: borderRadius,
-  },
-  topRightBorder: {
-    borderTopRightRadius: borderRadius,
-  },
 }));
 
 export enum OmniPanelViewIndex {
@@ -105,32 +104,9 @@ export enum OmniPanelViewIndex {
   Tasks,
 }
 
-class ViewMapNode {
-  constructor(public value: OmniPanelViewIndex, public parent?: ViewMapNode) {}
-
-  addChild(view: OmniPanelViewIndex): ViewMapNode {
-    return new ViewMapNode(view, this);
-  }
+function robotKey(fleet: string, robot: RomiCore.RobotState): string {
+  return `${fleet}-${robot.name}`;
 }
-
-type ViewMap = { [key: number]: ViewMapNode };
-
-function makeViewMap(): ViewMap {
-  const viewMap: ViewMap = {};
-  const root = new ViewMapNode(OmniPanelViewIndex.MainMenu);
-  viewMap[OmniPanelViewIndex.MainMenu] = root;
-  viewMap[OmniPanelViewIndex.Doors] = root.addChild(OmniPanelViewIndex.Doors);
-  viewMap[OmniPanelViewIndex.Lifts] = root.addChild(OmniPanelViewIndex.Lifts);
-  viewMap[OmniPanelViewIndex.Robots] = root.addChild(OmniPanelViewIndex.Robots);
-  viewMap[OmniPanelViewIndex.Dispensers] = root.addChild(OmniPanelViewIndex.Dispensers);
-  viewMap[OmniPanelViewIndex.Commands] = root.addChild(OmniPanelViewIndex.Commands);
-  viewMap[OmniPanelViewIndex.Negotiations] = root.addChild(OmniPanelViewIndex.Negotiations);
-  viewMap[OmniPanelViewIndex.Tasks] = root.addChild(OmniPanelViewIndex.Tasks);
-
-  return viewMap;
-}
-
-const viewMap = makeViewMap();
 
 export default function Dashboard(_props: {}): React.ReactElement {
   debug('render');
@@ -147,55 +123,106 @@ export default function Dashboard(_props: {}): React.ReactElement {
     [buildingMap],
   );
 
+  const [showOmniPanel, setShowOmniPanel] = React.useState(true);
+  const [currentView, setCurrentView] = React.useState(OmniPanelViewIndex.MainMenu);
+  const stackNavigator = React.useMemo(
+    () => new StackNavigator<OmniPanelViewIndex>(OmniPanelViewIndex.MainMenu),
+    [],
+  );
+
+  const pushOmniPanelView = React.useCallback(
+    (view: OmniPanelViewIndex) => {
+      stackNavigator.push(view);
+      setCurrentView(view);
+    },
+    [stackNavigator],
+  );
+
+  const handleOmniPanelClose = React.useCallback(() => {
+    clearSpotlights();
+    setNegotiationTrajStore({});
+    stackNavigator.reset();
+    setShowOmniPanel(false);
+  }, [stackNavigator]);
+
+  const handleOmniPanelBack = React.useCallback(() => {
+    clearSpotlights();
+    if (stackNavigator.stack.length === 1) {
+      return handleOmniPanelClose();
+    } else {
+      setNegotiationTrajStore({});
+    }
+    setCurrentView(stackNavigator.pop());
+  }, [stackNavigator, handleOmniPanelClose]);
+
+  const handleOmniPanelHome = React.useCallback(() => {
+    clearSpotlights();
+    setNegotiationTrajStore({});
+    stackNavigator.reset();
+    setCurrentView(stackNavigator.top());
+  }, [stackNavigator]);
+
   const doorStateManager = React.useMemo(() => new DoorStateManager(), []);
   const [doorStates, setDoorStates] = React.useState(() => doorStateManager.doorStates());
   const [doors, setDoors] = React.useState<RomiCore.Door[]>([]);
-  const doorAccordionRefs = React.useMemo(
-    () =>
-      doors.reduce<Record<string, SpotlightRef>>((prev, door) => {
-        prev[door.name] = createSpotlightRef();
-        return prev;
-      }, {}),
-    [doors],
-  );
+  const doorAccordionRefs = React.useMemo(() => defaultDict(createSpotlightRef), []);
   const handleDoorMarkerClick = React.useCallback(
     (door: RomiCore.Door) => {
       setShowOmniPanel(true);
-      setCurrentView(OmniPanelViewIndex.Doors);
+      pushOmniPanelView(OmniPanelViewIndex.Doors);
       doorAccordionRefs[door.name].spotlight();
     },
-    [doorAccordionRefs],
+    [doorAccordionRefs, pushOmniPanelView],
   );
 
   const liftStateManager = React.useMemo(() => new LiftStateManager(), []);
   const [liftStates, setLiftStates] = React.useState(() => liftStateManager.liftStates());
   const [lifts, setLifts] = React.useState<RomiCore.Lift[]>([]);
-  const [liftSpotlight, setLiftSpotlight] = React.useState<SpotlightValue<string> | undefined>(
-    undefined,
+  const liftAccordionRefs = React.useMemo(() => defaultDict(createSpotlightRef), []);
+  const handleLiftMarkerClick = React.useCallback(
+    (lift: RomiCore.Lift) => {
+      setShowOmniPanel(true);
+      pushOmniPanelView(OmniPanelViewIndex.Lifts);
+      liftAccordionRefs[lift.name].spotlight();
+    },
+    [liftAccordionRefs, pushOmniPanelView],
   );
-
-  const fleetManager = React.useMemo(() => new FleetManager(), []);
-  const [fleets, setFleets] = React.useState(fleetManager.fleets());
-
-  const fleetNames = React.useRef<string[]>([]);
-  const [robotSpotlight, setRobotSpotlight] = React.useState<SpotlightValue<string> | undefined>(
-    undefined,
-  );
-  const newFleetNames = fleets.map((fleet) => fleet.name);
-  if (newFleetNames.some((fleetName) => !fleetNames.current.includes(fleetName))) {
-    fleetNames.current = newFleetNames;
-  }
-
-  const taskManager = React.useMemo(() => new TaskManager(), []);
-  const [tasks, setTasks] = React.useState(taskManager.tasks());
 
   const dispenserStateManager = React.useMemo(() => new DispenserStateManager(), []);
   const [dispenserStates, setDispenserStates] = React.useState<
     Readonly<Record<string, RomiCore.DispenserState>>
   >(() => dispenserStateManager.dispenserStates());
-  const [dispenserSpotlight, setDispenserSpotlight] = React.useState<
-    SpotlightValue<string> | undefined
-  >(undefined);
+  const dispenserAccordionRefs = React.useMemo(() => defaultDict(createSpotlightRef), []);
+  const handleDispenserMarkerClick = React.useCallback<
+    Required<ScheduleVisualizerProps>['onDispenserClick']
+  >(
+    (_, guid) => {
+      setShowOmniPanel(true);
+      pushOmniPanelView(OmniPanelViewIndex.Dispensers);
+      dispenserAccordionRefs[guid].spotlight();
+    },
+    [dispenserAccordionRefs, pushOmniPanelView],
+  );
+
+  const fleetManager = React.useMemo(() => new FleetManager(), []);
+  const [fleets, setFleets] = React.useState(fleetManager.fleets());
+  const fleetNames = React.useRef<string[]>([]);
+  const newFleetNames = fleets.map((fleet) => fleet.name);
+  if (newFleetNames.some((fleetName) => !fleetNames.current.includes(fleetName))) {
+    fleetNames.current = newFleetNames;
+  }
+  const robotAccordionRefs = React.useMemo(() => defaultDict(createSpotlightRef), []);
+  const handleRobotMarkerClick = React.useCallback(
+    (fleet: string, robot: RomiCore.RobotState) => {
+      setShowOmniPanel(true);
+      pushOmniPanelView(OmniPanelViewIndex.Robots);
+      robotAccordionRefs[robotKey(fleet, robot)].spotlight();
+    },
+    [robotAccordionRefs, pushOmniPanelView],
+  );
+
+  const taskManager = React.useMemo(() => new TaskManager(), []);
+  const [tasks, setTasks] = React.useState(taskManager.tasks());
 
   const negotiationStatusManager = React.useMemo(
     () => new NegotiationStatusManager(trajServerUrl),
@@ -213,8 +240,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const statusUpdateTS = React.useRef<number>();
   statusUpdateTS.current = negotiationStatusManager.getLastUpdateTS();
 
-  const [showOmniPanel, setShowOmniPanel] = React.useState(true);
-  const [currentView, setCurrentView] = React.useState(OmniPanelViewIndex.MainMenu);
   const [loading, setLoading] = React.useState<LoadingScreenProps | null>({
     caption: 'Connecting to api server...',
   });
@@ -325,7 +350,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const doorRequestPub = React.useMemo(() => transport?.createPublisher(adapterDoorRequests), [
     transport,
   ]);
-
   const handleOnDoorControlClick = React.useCallback(
     (_ev, door: RomiCore.Door, mode: number) =>
       doorRequestPub?.publish({
@@ -337,83 +361,55 @@ export default function Dashboard(_props: {}): React.ReactElement {
     [doorRequestPub],
   );
 
-  const handleRobotClick = React.useCallback((fleet: string, robot: RomiCore.RobotState) => {
-    setShowOmniPanel(true);
-    setCurrentView(OmniPanelViewIndex.Robots);
-    setRobotSpotlight({ value: `${fleet}-${robot.name}` });
-  }, []);
-
-  const handleLiftClick = React.useCallback((lift: RomiCore.Lift) => {
-    setShowOmniPanel(true);
-    setCurrentView(OmniPanelViewIndex.Lifts);
-    setLiftSpotlight({ value: lift.name });
-  }, []);
-
-  function handleDispenserClick(dispenser: RomiCore.DispenserState): void {
-    setShowOmniPanel(true);
-    setCurrentView(OmniPanelViewIndex.Dispensers);
-    setDispenserSpotlight({ value: dispenser.guid });
-  }
+  const liftRequestPub = React.useMemo(() => transport?.createPublisher(adapterLiftRequests), [
+    transport,
+  ]);
+  const handleLiftRequestSubmit = React.useCallback<
+    Required<LiftAccordionProps>['onRequestSubmit']
+  >(
+    (_ev, lift, doorState, requestType, destination) =>
+      liftRequestPub?.publish({
+        lift_name: lift.name,
+        destination_floor: destination,
+        door_state: doorState,
+        request_type: requestType,
+        request_time: toRosTime(new Date()),
+        session_id: 'dashboard',
+      }),
+    [liftRequestPub],
+  );
 
   function clearSpotlights() {
-    setLiftSpotlight(undefined);
-    setRobotSpotlight(undefined);
-    setDispenserSpotlight(undefined);
     setNegotiationSpotlight(undefined);
   }
 
-  const handleClose = React.useCallback(() => {
-    clearSpotlights();
-    setNegotiationTrajStore({});
-    setShowOmniPanel(false);
-  }, []);
-
-  const handleBack = React.useCallback(
-    (index: number) => {
-      clearSpotlights();
-      const parent = viewMap[index].parent;
-      if (!parent) {
-        return handleClose();
-      } else {
-        setNegotiationTrajStore({});
-      }
-      setCurrentView(parent.value);
-    },
-    [handleClose],
-  );
-
   const handleMainMenuDoorsClick = React.useCallback(() => {
-    setCurrentView(OmniPanelViewIndex.Doors);
-  }, []);
+    pushOmniPanelView(OmniPanelViewIndex.Doors);
+  }, [pushOmniPanelView]);
 
   const handleMainMenuLiftsClick = React.useCallback(() => {
-    setCurrentView(OmniPanelViewIndex.Lifts);
-  }, []);
+    pushOmniPanelView(OmniPanelViewIndex.Lifts);
+  }, [pushOmniPanelView]);
 
   const handleMainMenuRobotsClick = React.useCallback(() => {
-    setCurrentView(OmniPanelViewIndex.Robots);
-  }, []);
+    pushOmniPanelView(OmniPanelViewIndex.Robots);
+  }, [pushOmniPanelView]);
 
   const handleMainMenuDispensersClick = React.useCallback(() => {
-    setCurrentView(OmniPanelViewIndex.Dispensers);
-  }, []);
+    pushOmniPanelView(OmniPanelViewIndex.Dispensers);
+  }, [pushOmniPanelView]);
 
   const handleMainMenuCommandsClick = React.useCallback(() => {
-    setCurrentView(OmniPanelViewIndex.Commands);
-  }, []);
+    pushOmniPanelView(OmniPanelViewIndex.Commands);
+  }, [pushOmniPanelView]);
 
   const handleMainMenuNegotiationsClick = React.useCallback(() => {
-    setCurrentView(OmniPanelViewIndex.Negotiations);
-  }, []);
+    pushOmniPanelView(OmniPanelViewIndex.Negotiations);
+  }, [pushOmniPanelView]);
 
   const handleMainMenuTasksClick = React.useCallback(() => {
-    setCurrentView(OmniPanelViewIndex.Tasks);
-  }, []);
-
-  const omniPanelClasses = React.useMemo(
-    () => ({ backButton: classes.topLeftBorder, closeButton: classes.topRightBorder }),
-    [classes.topLeftBorder, classes.topRightBorder],
-  );
+    pushOmniPanelView(OmniPanelViewIndex.Tasks);
+  }, [pushOmniPanelView]);
 
   const tourComplete = localStorage.getItem('tourComplete');
   React.useEffect(() => {
@@ -482,20 +478,21 @@ export default function Dashboard(_props: {}): React.ReactElement {
                 trajManager={trajManager.current}
                 negotiationTrajStore={negotiationTrajStore}
                 onDoorClick={handleDoorMarkerClick}
-                onLiftClick={handleLiftClick}
-                onRobotClick={handleRobotClick}
-                onDispenserClick={handleDispenserClick}
+                onLiftClick={handleLiftMarkerClick}
+                onRobotClick={handleRobotMarkerClick}
+                onDispenserClick={handleDispenserMarkerClick}
               />
             )}
             <Fade in={showOmniPanel}>
               <OmniPanel
                 className={classes.omniPanel}
-                classes={omniPanelClasses}
                 view={currentView}
-                onBack={handleBack}
-                onClose={handleClose}
+                variant="backHomeClose"
+                onBack={handleOmniPanelBack}
+                onHome={handleOmniPanelHome}
+                onClose={handleOmniPanelClose}
               >
-                <OmniPanelView id={OmniPanelViewIndex.MainMenu}>
+                <OmniPanelView viewId={OmniPanelViewIndex.MainMenu}>
                   <MainMenu
                     onDoorsClick={handleMainMenuDoorsClick}
                     onLiftsClick={handleMainMenuLiftsClick}
@@ -506,7 +503,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                     onTasksClick={handleMainMenuTasksClick}
                   />
                 </OmniPanelView>
-                <OmniPanelView id={OmniPanelViewIndex.Doors}>
+                <OmniPanelView viewId={OmniPanelViewIndex.Doors}>
                   {doors.map((door) => (
                     <DoorAccordion
                       key={door.name}
@@ -518,27 +515,44 @@ export default function Dashboard(_props: {}): React.ReactElement {
                     />
                   ))}
                 </OmniPanelView>
-                <OmniPanelView id={OmniPanelViewIndex.Lifts}>
-                  <LiftsPanel
-                    transport={transport}
-                    liftStates={liftStates}
-                    lifts={lifts}
-                    spotlight={liftSpotlight}
-                  />
+                <OmniPanelView viewId={OmniPanelViewIndex.Lifts}>
+                  {lifts.map((lift) => (
+                    <LiftAccordion
+                      key={lift.name}
+                      ref={liftAccordionRefs[lift.name].ref}
+                      lift={lift}
+                      liftState={liftStates[lift.name]}
+                      onRequestSubmit={handleLiftRequestSubmit}
+                    />
+                  ))}
                 </OmniPanelView>
-                <OmniPanelView id={OmniPanelViewIndex.Robots}>
-                  <RobotsPanel fleets={fleets} spotlight={robotSpotlight} />
+                <OmniPanelView viewId={OmniPanelViewIndex.Robots}>
+                  {fleets.flatMap((fleet) =>
+                    fleet.robots.map((robot) => (
+                      <RobotAccordion
+                        key={robotKey(fleet.name, robot)}
+                        ref={robotAccordionRefs[robotKey(fleet.name, robot)].ref}
+                        robot={robot}
+                        fleetName={fleet.name}
+                        data-component="RobotAccordion"
+                      />
+                    )),
+                  )}
                 </OmniPanelView>
-                <OmniPanelView id={OmniPanelViewIndex.Dispensers}>
-                  <DispensersPanel
-                    dispenserStates={dispenserStates}
-                    spotlight={dispenserSpotlight}
-                  />
+                <OmniPanelView viewId={OmniPanelViewIndex.Dispensers}>
+                  {Object.values(dispenserStates).map((dispenser) => (
+                    <DispenserAccordion
+                      key={dispenser.guid}
+                      ref={dispenserAccordionRefs[dispenser.guid].ref}
+                      dispenserState={dispenser}
+                      data-component="DispenserAccordion"
+                    />
+                  ))}
                 </OmniPanelView>
-                <OmniPanelView id={OmniPanelViewIndex.Commands}>
+                <OmniPanelView viewId={OmniPanelViewIndex.Commands}>
                   <CommandsPanel transport={transport} allFleets={fleetNames.current} />
                 </OmniPanelView>
-                <OmniPanelView id={OmniPanelViewIndex.Negotiations}>
+                <OmniPanelView viewId={OmniPanelViewIndex.Negotiations}>
                   <NegotiationsPanel
                     conflicts={negotiationStatus}
                     spotlight={negotiationSpotlight}
@@ -549,7 +563,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                     setNegotiationTrajStore={setNegotiationTrajStore}
                   />
                 </OmniPanelView>
-                <OmniPanelView id={OmniPanelViewIndex.Tasks}>
+                <OmniPanelView viewId={OmniPanelViewIndex.Tasks}>
                   <TaskSummaryPanel allTasks={tasks} />
                 </OmniPanelView>
               </OmniPanel>

@@ -1,7 +1,17 @@
-import { Divider, makeStyles, Typography, Dialog, Button } from '@material-ui/core';
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  IconButton,
+  makeStyles,
+  Typography,
+} from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
 import React from 'react';
 import { getApplicationKeyMap } from 'react-hotkeys';
-import { DialogTitle, DialogContent, DialogActions } from '../dialog';
 
 export interface HotKeysDialogProps {
   handleClose(): void;
@@ -20,10 +30,13 @@ export default function HotKeysDialog(props: HotKeysDialogProps): React.ReactEle
       fullWidth={true}
       maxWidth={'sm'}
     >
-      <DialogTitle id="customized-dialog-title" onClose={handleClose}>
-        Hotkeys
+      <DialogTitle id="customized-dialog-title">
+        <Typography variant="h6">Hotkeys</Typography>
+        <IconButton aria-label="close" className={classes.closeButton} onClick={handleClose}>
+          <CloseIcon />
+        </IconButton>
       </DialogTitle>
-      <DialogContent dividers>
+      <DialogContent className={classes.dialogContent} dividers>
         <div className={classes.detail}>
           {Object.values(keyMap).map((hotkey) => {
             return (
@@ -40,9 +53,9 @@ export default function HotKeysDialog(props: HotKeysDialogProps): React.ReactEle
           })}
         </div>
       </DialogContent>
-      <DialogActions>
+      <DialogActions className={classes.dialogActions}>
         <Button autoFocus onClick={handleClose} color="primary">
-          Ok
+          OK
         </Button>
       </DialogActions>
     </Dialog>
@@ -50,6 +63,19 @@ export default function HotKeysDialog(props: HotKeysDialogProps): React.ReactEle
 }
 
 const useStyles = makeStyles((theme) => ({
+  closeButton: {
+    position: 'absolute',
+    right: theme.spacing(1),
+    top: theme.spacing(1),
+    color: theme.palette.grey[500],
+  },
+  dialogContent: {
+    padding: theme.spacing(2),
+  },
+  dialogActions: {
+    margin: 0,
+    padding: theme.spacing(1),
+  },
   detailLine: {
     display: 'inline-flex',
     justifyContent: 'space-between',
