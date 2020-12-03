@@ -103,7 +103,7 @@ jobs:
       - name: set npm config
         run: npm config set unsafe-perm=true
       - name: build
-        run: npm ci && npm run build
+        run: npm ci && npm run build:storybook && npm run build
       - name: test
         run: npm run test:coverage
       - name: Upload coverage to Codecov

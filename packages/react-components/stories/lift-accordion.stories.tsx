@@ -81,7 +81,7 @@ const lifts = [
   },
 ];
 
-const liftStates = {
+const liftStates: Record<string, RomiCore.LiftState> = {
   Lift1: {
     lift_name: 'Lift1',
     available_floors: ['L1', 'L2', 'L3'],
