@@ -13,7 +13,7 @@
     "clean": "tsc --build --clean",
     "test": "jest --watch",
     "test:coverage": "jest --ci --coverage",
-    "lint": "eslint --ext js,jsx,ts,tsx, lib stories tests"
+    "lint": "eslint --ext ts,tsx, lib stories tests"
   },
   "author": "koonpeng@openrobotics.org",
   "license": "Apache-2.0",
