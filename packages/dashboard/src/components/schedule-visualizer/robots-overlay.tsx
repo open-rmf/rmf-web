@@ -10,16 +10,16 @@ const debug = Debug('ScheduleVisualizer:RobotsOverlay');
 const RobotMarker = React.memo(RobotMarker_);
 
 export interface RobotsOverlayProps extends SVGOverlayProps {
-  fleets: readonly RomiCore.FleetState[];
   onRobotClick?(fleet: string, robot: RomiCore.RobotState): void;
   conflictRobotNames: string[][];
   currentFloorName: string;
+  cachedFleets: RomiCore.FleetState[];
 }
 
 export const RobotsOverlay = (props: RobotsOverlayProps) => {
   debug('render');
 
-  const { fleets, onRobotClick, conflictRobotNames, currentFloorName, ...otherProps } = props;
+  const { onRobotClick, conflictRobotNames, currentFloorName, cachedFleets, ...otherProps } = props;
   const robotResourcesContext = React.useContext(ResourcesContext)?.robots;
   const viewBox = viewBoxFromLeafletBounds(props.bounds);
   const footprint = 0.5;
@@ -31,7 +31,7 @@ export const RobotsOverlay = (props: RobotsOverlayProps) => {
   // Maps every robot to its fleet. Added the model too in case two robots has the same name on different fleets.
   const fleetContainer = useMemo(() => {
     let robotsFleet: Record<string, string> = {};
-    fleets.forEach((fleet) => {
+    cachedFleets.forEach((fleet) => {
       fleet.robots
         .map((robot) => [robot.name, robot.model])
         .forEach((robotInfo: string[]) => {
@@ -40,17 +40,17 @@ export const RobotsOverlay = (props: RobotsOverlayProps) => {
         });
     });
     return robotsFleet;
-  }, [fleets]);
+  }, [cachedFleets]);
 
   const robotsInCurLevel = React.useMemo(() => {
     if (!currentFloorName) {
       return [];
     }
-    return fleets.flatMap((x) => ({
+    return cachedFleets.flatMap((x) => ({
       fleet: x.name,
       robots: x.robots.filter((r) => r.location.level_name === currentFloorName),
     }));
-  }, [fleets, currentFloorName]);
+  }, [cachedFleets, currentFloorName]);
 
   const handleRobotClick = React.useCallback<Required<RobotMarkerProps>['onClick']>(
     (_, fleetName, robot) => onRobotClick && onRobotClick(fleetName, robot),

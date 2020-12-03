@@ -206,6 +206,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
 
   const fleetManager = React.useMemo(() => new FleetManager(), []);
   const [fleets, setFleets] = React.useState(fleetManager.fleets());
+  const [cachedFleets, setCachedFleets] = React.useState(fleetManager.cachedFleets());
   const fleetNames = React.useRef<string[]>([]);
   const newFleetNames = fleets.map((fleet) => fleet.name);
   if (newFleetNames.some((fleetName) => !fleetNames.current.includes(fleetName))) {
@@ -282,7 +283,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
         negotiationStatusManager.startSubscription();
         taskManager.startSubscription(x);
 
-        fleetManager.on('updated', () => setFleets(fleetManager.fleets()));
+        fleetManager.on('updated', () => {
+          setFleets(fleetManager.fleets());
+          setCachedFleets(fleetManager.cachedFleets());
+        });
         liftStateManager.on('updated', () => setLiftStates(liftStateManager.liftStates()));
         doorStateManager.on('updated', () => setDoorStates(doorStateManager.doorStates()));
         dispenserStateManager.on('updated', () =>
@@ -475,6 +479,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                 buildingMap={buildingMap}
                 mapFloorLayerSorted={mapFloorLayerSorted}
                 fleets={fleets}
+                cachedFleets={cachedFleets}
                 trajManager={trajManager.current}
                 negotiationTrajStore={negotiationTrajStore}
                 onDoorClick={handleDoorMarkerClick}
