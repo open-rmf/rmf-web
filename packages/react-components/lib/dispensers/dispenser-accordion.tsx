@@ -49,6 +49,8 @@ const useStyles = makeStyles((theme) => ({
   statusLabelOffline: { borderColor: theme.palette.error.main },
 }));
 
+// for valid dispenser states,
+// a precondition must dispenser === dispenserState.guid
 export interface DispenserAccordionProps extends Omit<AccordionProps, 'children'> {
   dispenserState: RomiCore.DispenserState | null;
   dispenser: string;
@@ -57,7 +59,7 @@ export interface DispenserAccordionProps extends Omit<AccordionProps, 'children'
 export const DispenserAccordion = React.forwardRef(
   (props: DispenserAccordionProps, ref: React.Ref<HTMLElement>) => {
     const { dispenserState, dispenser, ...otherProps } = props;
-    debug(`render ${dispenserState?.guid}`);
+    debug(`render ${dispenser}`);
     const classes = useStyles();
 
     const getStatusLabelClass = () => {

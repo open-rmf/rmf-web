@@ -18,5 +18,5 @@ const baseDispenser: RomiCore.DispenserState = {
 };
 
 export const Basic: Story = (args) => (
-  <DispenserAccordion dispenserState={baseDispenser} {...args} />
+  <DispenserAccordion dispenser={'dispenser'} dispenserState={baseDispenser} {...args} />
 );

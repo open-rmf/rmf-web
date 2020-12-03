@@ -30,6 +30,7 @@ export const handleLongName: Story = (args) => (
         dispenserState={makeDispenserState({
           guid: 'dispenser with a really long name',
         })}
+        dispenser={'dispenser'}
         {...args}
       />
     </div>
