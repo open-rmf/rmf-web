@@ -22,7 +22,7 @@ export default {
 
 const trajectory = makeTrajectory();
 
-export const Basic: Story<TrajectoryMarkerProps> = (args) => {
+export const Basic: Story<Omit<TrajectoryMarkerProps, 'trajectory'>> = (args) => {
   return (
     <svg viewBox="-2 -2 16 16" width={400} height={400}>
       <TrajectoryMarker trajectory={trajectory} {...args} />
@@ -31,6 +31,6 @@ export const Basic: Story<TrajectoryMarkerProps> = (args) => {
 };
 Basic.args = {
   color: 'green',
-  loopAnimations: true,
+  animationLoop: true,
   variant: 'follow',
 };

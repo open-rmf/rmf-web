@@ -5,15 +5,15 @@
   "main": "lib/index.js",
   "scripts": {
     "preinstall": "node ../../scripts/install.js",
-    "start": "node ../../node_modules/.bin/start-storybook -p 6006 -s stories",
+    "start": "../../node_modules/.bin/start-storybook -p 6006 -s stories",
     "prepare": "npm run build",
     "build": "npm run lint && tsc --build",
     "build:watch": "tsc --build --watch",
-    "build:storybook": "build-storybook -s stories",
+    "build:storybook": "tsc --build stories && ../../node_modules/.bin/build-storybook -s stories",
     "clean": "tsc --build --clean",
     "test": "jest --watch",
     "test:coverage": "jest --ci --coverage",
-    "lint": "eslint --ext ts,tsx, lib stories tests"
+    "lint": "eslint --ext js,jsx,ts,tsx, lib stories tests"
   },
   "author": "koonpeng@openrobotics.org",
   "license": "Apache-2.0",

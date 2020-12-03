@@ -87,7 +87,7 @@ const doors = [
   },
 ];
 
-const doorStates = {
+const doorStates: Record<string, RomiCore.DoorState> = {
   coe_door: {
     door_name: 'coe_door',
     current_mode: { value: RomiCore.DoorMode.MODE_OPEN },
