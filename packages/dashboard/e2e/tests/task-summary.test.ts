@@ -19,17 +19,17 @@ describe('Loop request for task summary', () => {
       pointA: 'pantry',
       pointB: 'cubicle_1',
     });
-    const backButton = $('[name="back-button"]');
+    const backButton = $('[aria-label="Back"]');
     backButton.click();
 
     $('[data-component=MainMenu] [data-item=Plans]').click();
 
-    browser.waitUntil(() => $('[data-component=TreeItem]').isDisplayed() === true, {
+    browser.waitUntil(() => $('[role="treeitem"]').isDisplayed() === true, {
       timeout: 60000,
       timeoutMsg: 'expected TreeItem to be not null!',
     });
 
-    const treeItem = $('[data-component=TreeItem]');
+    const treeItem = $('[role="treeitem"]');
     expect(treeItem).toBeVisible();
     treeItem.click();
   });

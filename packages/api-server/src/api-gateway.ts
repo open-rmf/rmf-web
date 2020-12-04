@@ -90,7 +90,7 @@ export default class ApiGateway {
     try {
       const handler = this._rpcHandlers[req.method];
       if (!handler) {
-        logger.warn(`no handler for method "${req.method}`);
+        logger.warn(`no handler for method "${req.method}"`);
         sender.error({
           code: 1,
           message: 'no such method',

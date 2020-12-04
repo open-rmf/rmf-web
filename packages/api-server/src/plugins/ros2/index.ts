@@ -72,7 +72,10 @@ interface SubscriptionRecord {
 }
 
 export async function onLoad(config: ConfigType, api: ApiGateway): Promise<void> {
-  const transport = await RclnodejsTransport.create(config.ros2NodeName);
+  const rosArgs = process.env['RCLNODEJS_ROS_ARGS']
+    ? JSON.parse(process.env['RCLNODEJS_ROS_ARGS'])
+    : undefined;
+  const transport = await RclnodejsTransport.create(config.ros2NodeName, rosArgs);
   const plugin = new Ros2Plugin(transport, api.getLogger('ros2'));
   api.registerHandler('ros2Subscribe', (params, send) => plugin.subscribe(params, send));
   api.registerHandler('ros2Unsubscribe', (params) => plugin.unsubscribe(params));

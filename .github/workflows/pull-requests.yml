@@ -38,7 +38,14 @@ jobs:
   e2e-test:
     name: End-to-End Test
     runs-on: ubuntu-latest
-    defaults:
+    container:
+      image: docker.pkg.github.com/osrf/romi-dashboard/e2e
+      credentials:
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+      env:
+        CHROME_BIN: /chrome-no-sandbox
+    defaults: 
       run:
         shell: bash
         working-directory: packages/dashboard
@@ -52,7 +59,9 @@ jobs:
           docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
           npm run sync:docker
       - name: e2e test
-        run: docker-compose -f docker/docker-compose.yml up --exit-code-from e2e e2e
+        run: |
+          . /opt/rmf/setup.bash
+          bash -c 'cd e2e && npm ci --unsafe-perm && (npm test || npm test || npm test)'
       - name: upload artifacts
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
@@ -94,7 +103,7 @@ jobs:
       - name: set npm config
         run: npm config set unsafe-perm=true
       - name: build
-        run: npm ci && npm run build
+        run: npm ci && npm run build:storybook && npm run build
       - name: test
         run: npm run test:coverage
       - name: Upload coverage to Codecov
@@ -102,3 +111,4 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: react-components
+          
