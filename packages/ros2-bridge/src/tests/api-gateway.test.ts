@@ -24,7 +24,7 @@ function makeRpcRequest(method: string, params?: any, id?: string | number | nul
 let app: WebSocketConnect;
 let server: WebSocket.Server;
 let url: string;
-let api: RpcMiddleware;
+let rpc: RpcMiddleware;
 
 beforeEach(async () => {
   server = new WebSocket.Server({ host: 'localhost', port: 0 });
@@ -32,8 +32,8 @@ beforeEach(async () => {
   const port = (server.address() as WebSocket.AddressInfo).port;
   url = `ws://localhost:${port}`;
   app = new WebSocketConnect(server);
-  api = new RpcMiddleware();
-  app.use(api.middleware);
+  rpc = new RpcMiddleware();
+  app.use(rpc.middleware);
 });
 
 afterEach(() => {
@@ -41,7 +41,7 @@ afterEach(() => {
 });
 
 test('primitive request params', (done) => {
-  api.registerHandler('test', (params: string) => {
+  rpc.registerHandler('test', (params: string) => {
     expect(params).toBe('hello');
     return 'world';
   });
@@ -61,7 +61,7 @@ test('primitive request params', (done) => {
 });
 
 test('object request params', (done) => {
-  api.registerHandler('test', (params: { data: string }) => {
+  rpc.registerHandler('test', (params: { data: string }) => {
     expect(params.data).toBe('hello');
     return { data: 'world' };
   });
@@ -81,7 +81,7 @@ test('object request params', (done) => {
 });
 
 test('request using string id results in a response with string id', (done) => {
-  api.registerHandler('test', echo);
+  rpc.registerHandler('test', echo);
 
   const client = new WebSocket(url);
   client.on('message', (data: Buffer) => {
@@ -95,7 +95,7 @@ test('request using string id results in a response with string id', (done) => {
 
 [undefined, null].forEach((id) => {
   test(`request with ${id} does not return any results`, (done) => {
-    api.registerHandler('test', echo);
+    rpc.registerHandler('test', echo);
 
     const client = new WebSocket(url);
     client.on('message', () => {
@@ -108,7 +108,7 @@ test('request using string id results in a response with string id', (done) => {
 });
 
 test('rpc error', (done) => {
-  api.registerHandler('test', () => {
+  rpc.registerHandler('test', () => {
     throw new Error('test error');
   });
 
@@ -125,7 +125,7 @@ test('rpc error', (done) => {
 
 test('async rpc streaming responses', (done) => {
   let even = 0;
-  api.registerHandler('testEven', (_, sender) => {
+  rpc.registerHandler('testEven', (_, sender) => {
     const t = setInterval(() => {
       if (even >= 10) {
         clearInterval(t);
@@ -138,7 +138,7 @@ test('async rpc streaming responses', (done) => {
   });
 
   let odd = 1;
-  api.registerHandler('testOdd', (_, sender) => {
+  rpc.registerHandler('testOdd', (_, sender) => {
     const t = setInterval(() => {
       if (odd >= 9) {
         clearInterval(t);

@@ -241,7 +241,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   statusUpdateTS.current = negotiationStatusManager.getLastUpdateTS();
 
   const [loading, setLoading] = React.useState<LoadingScreenProps | null>({
-    caption: 'Connecting to api server...',
+    caption: 'Connecting to server...',
   });
 
   const [showSettings, setShowSettings] = React.useState(false);
@@ -267,12 +267,12 @@ export default function Dashboard(_props: {}): React.ReactElement {
   ]);
 
   React.useEffect(() => {
-    setLoading({ caption: 'Connecting to api server...' });
+    setLoading({ caption: 'Connecting to server...' });
     transportFactory()
       .then((x) => {
         x.on('error', console.error);
         x.once('close', () => {
-          setLoading({ caption: 'Lost connection to api server', variant: 'error' });
+          setLoading({ caption: 'Lost connection to server', variant: 'error' });
           setTransport(undefined);
         });
         doorStateManager.startSubscription(x);
@@ -295,7 +295,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
         setTransport(x);
       })
       .catch((e: CloseEvent) => {
-        setLoading({ caption: `Unable to connect to api server (${e.code})`, variant: 'error' });
+        setLoading({ caption: `Unable to connect to server (${e.code})`, variant: 'error' });
       });
   }, [
     transportFactory,

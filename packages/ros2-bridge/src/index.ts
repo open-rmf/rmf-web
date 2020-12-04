@@ -12,7 +12,7 @@ import WebSocketConnect from './websocket-connect';
 
 export interface Plugin {
   options(yargs: yargs.Argv): void;
-  onLoad(config: unknown, api: RpcMiddleware): Promise<void>;
+  onLoad(config: unknown, rpc: RpcMiddleware): Promise<void>;
 }
 
 async function loadPlugins(): Promise<Record<string, Plugin>> {
@@ -106,16 +106,16 @@ async function main() {
     logger.warn('neither "secret" or "publicKey" is set, authentication is disabled');
   }
 
-  const api = new RpcMiddleware();
+  const rpc = new RpcMiddleware();
   for (let [module, plugin] of Object.entries(plugins)) {
     try {
-      await plugin.onLoad(config, api);
+      await plugin.onLoad(config, rpc);
       logger.info(`loaded plugin "${module}"`);
     } catch (e) {
       logger.error(`failed to load plugin "${module}": ${e}`);
     }
   }
-  app.use(api.middleware);
+  app.use(rpc.middleware);
 
   server.listen(config.port, config.host);
 }

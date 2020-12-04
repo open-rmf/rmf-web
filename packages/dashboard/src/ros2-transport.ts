@@ -1,3 +1,5 @@
+import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import { TransportEvents } from '@osrf/romi-js-core-interfaces';
 import type {
   CreatePublisherParams,
   MessageResult,
@@ -8,14 +10,12 @@ import type {
   SubscribeParams,
   SubscribeResult,
   UnsubscribeParams,
-} from 'api-server/src/plugins/ros2';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import { TransportEvents } from '@osrf/romi-js-core-interfaces';
-import ApiClient from './api-client';
+} from 'ros2-bridge/src/plugins/ros2';
+import RpcClient from './rpc-client';
 
 export default class Ros2Transport extends TransportEvents implements RomiCore.Transport {
   readonly name = 'romi_dashboard';
-  constructor(public api: ApiClient) {
+  constructor(public api: RpcClient) {
     super();
   }
 
