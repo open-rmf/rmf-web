@@ -3,7 +3,7 @@ import { RomiService, RomiTopic } from '@osrf/romi-js-core-interfaces';
 import RclnodejsTransport from '@osrf/romi-js-rclnodejs-transport';
 import deepEqual from 'fast-deep-equal';
 import { Argv } from 'yargs';
-import ApiGateway, { Logger, Sender } from '../../api-gateway';
+import ApiGateway, { Logger, Sender } from '../../rpc-middleware';
 
 export function options(yargs: Argv) {
   return yargs.option('ros2NodeName', {

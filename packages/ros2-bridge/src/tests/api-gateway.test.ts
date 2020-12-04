@@ -1,6 +1,6 @@
 import * as msgpack from '@msgpack/msgpack';
 import WebSocket from 'ws';
-import ApiGateway, { RpcRequest, RpcResponse } from '../api-gateway';
+import RpcMiddleware, { RpcRequest, RpcResponse } from '../rpc-middleware';
 import WebSocketConnect from '../websocket-connect';
 
 function echo(params: any) {
@@ -24,7 +24,7 @@ function makeRpcRequest(method: string, params?: any, id?: string | number | nul
 let app: WebSocketConnect;
 let server: WebSocket.Server;
 let url: string;
-let api: ApiGateway;
+let api: RpcMiddleware;
 
 beforeEach(async () => {
   server = new WebSocket.Server({ host: 'localhost', port: 0 });
@@ -32,7 +32,7 @@ beforeEach(async () => {
   const port = (server.address() as WebSocket.AddressInfo).port;
   url = `ws://localhost:${port}`;
   app = new WebSocketConnect(server);
-  api = new ApiGateway();
+  api = new RpcMiddleware();
   app.use(api.middleware);
 });
 

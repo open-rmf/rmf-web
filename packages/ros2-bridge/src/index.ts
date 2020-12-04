@@ -5,14 +5,14 @@ import * as http from 'http';
 import * as https from 'https';
 import WebSocket from 'ws';
 import yargs from 'yargs';
-import ApiGateway from './api-gateway';
+import RpcMiddleware from './rpc-middleware';
 import authenticator from './authenticator';
 import logger from './logger';
 import WebSocketConnect from './websocket-connect';
 
 export interface Plugin {
   options(yargs: yargs.Argv): void;
-  onLoad(config: unknown, api: ApiGateway): Promise<void>;
+  onLoad(config: unknown, api: RpcMiddleware): Promise<void>;
 }
 
 async function loadPlugins(): Promise<Record<string, Plugin>> {
@@ -106,7 +106,7 @@ async function main() {
     logger.warn('neither "secret" or "publicKey" is set, authentication is disabled');
   }
 
-  const api = new ApiGateway();
+  const api = new RpcMiddleware();
   for (let [module, plugin] of Object.entries(plugins)) {
     try {
       await plugin.onLoad(config, api);

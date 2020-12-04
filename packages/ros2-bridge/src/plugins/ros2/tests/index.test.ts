@@ -3,7 +3,7 @@ import RclnodejsTransport from '@osrf/romi-js-rclnodejs-transport';
 import * as events from 'events';
 import winston from 'winston';
 import Ros2Plugin, { MessageResult, Ros2Service, Ros2Topic } from '..';
-import { Sender } from '../../../api-gateway';
+import { Sender } from '../../../rpc-middleware';
 
 type TestMessage = { data: string };
 type TestServiceRequest = { data: boolean };
