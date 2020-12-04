@@ -2,10 +2,14 @@ import React from 'react';
 import { Settings } from '../../settings';
 import { LoadingScreenProps } from '../loading-screen';
 
-type MainMenuActionFormat<T, K = undefined> = {
-  type: T;
-  payload: K;
-};
+type MainMenuActionFormat<T, K = void> = K extends void
+  ? {
+      type: T;
+    }
+  : {
+      type: T;
+      payload: K;
+    };
 
 export enum MainMenuActionType {
   CurrentView = 'currentView',
@@ -22,20 +26,6 @@ export enum MainMenuActionType {
   TourState = 'tourState',
 }
 
-export type MainMenuAction =
-  | MainMenuActionFormat<'currentView', number>
-  | MainMenuActionFormat<'loading', LoadingScreenProps | null>
-  | MainMenuActionFormat<'settings', Settings>
-  | MainMenuActionFormat<'showHelp', boolean>
-  | MainMenuActionFormat<'showHotkeysDialog', boolean>
-  | MainMenuActionFormat<'showOmniPanel', boolean>
-  | MainMenuActionFormat<'showSettings', boolean>
-  | MainMenuActionFormat<'toggleHelp'>
-  | Partial<MainMenuActionFormat<'toggleHotkeys'>>
-  | Partial<MainMenuActionFormat<'toggleOmnipanel'>>
-  | Partial<MainMenuActionFormat<'toggleSettings'>>
-  | MainMenuActionFormat<'tourState', boolean>;
-
 export type MainMenuState = {
   [MainMenuActionType.CurrentView]: number;
   [MainMenuActionType.Loading]: LoadingScreenProps | null;
@@ -46,6 +36,20 @@ export type MainMenuState = {
   [MainMenuActionType.ShowSettings]: boolean;
   [MainMenuActionType.TourState]: boolean;
 };
+
+export type MainMenuAction =
+  | MainMenuActionFormat<'currentView', MainMenuState['currentView']>
+  | MainMenuActionFormat<'loading', MainMenuState['loading']>
+  | MainMenuActionFormat<'settings', MainMenuState['settings']>
+  | MainMenuActionFormat<'showHelp', MainMenuState['showHelp']>
+  | MainMenuActionFormat<'showHotkeysDialog', MainMenuState['showHotkeysDialog']>
+  | MainMenuActionFormat<'showOmniPanel', MainMenuState['showOmniPanel']>
+  | MainMenuActionFormat<'showSettings', MainMenuState['showSettings']>
+  | MainMenuActionFormat<'toggleHelp'>
+  | Partial<MainMenuActionFormat<'toggleHotkeys'>>
+  | Partial<MainMenuActionFormat<'toggleOmnipanel'>>
+  | Partial<MainMenuActionFormat<'toggleSettings'>>
+  | MainMenuActionFormat<'tourState', MainMenuState['tourState']>;
 
 export const mainMenuReducer = (state: MainMenuState, action: MainMenuAction): MainMenuState => {
   switch (action.type) {
@@ -80,18 +84,18 @@ export const mainMenuReducer = (state: MainMenuState, action: MainMenuAction): M
 };
 
 export interface ReducerMainMenuProps extends MainMenuState {
-  setCurrentView: (payload: number) => void;
-  setLoading: (payload: LoadingScreenProps | null) => void;
-  setSettings: (payload: Settings) => void;
-  setShowHelp: (payload: boolean) => void;
-  setShowHotkeysDialog: (payload: boolean) => void;
-  setShowOmniPanel: (payload: boolean) => void;
-  setShowSettings: (payload: boolean) => void;
+  setCurrentView: (payload: MainMenuState['currentView']) => void;
+  setLoading: (payload: MainMenuState['loading']) => void;
+  setSettings: (payload: MainMenuState['settings']) => void;
+  setShowHelp: (payload: MainMenuState['showHelp']) => void;
+  setShowHotkeysDialog: (payload: MainMenuState['showHotkeysDialog']) => void;
+  setShowOmniPanel: (payload: MainMenuState['showOmniPanel']) => void;
+  setShowSettings: (payload: MainMenuState['showSettings']) => void;
   toggleHelp: () => void;
   toggleHotkeys: () => void;
   toggleOmnipanel: () => void;
   toggleSettings: () => void;
-  setTourState: (payload: boolean) => void;
+  setTourState: (payload: MainMenuState['tourState']) => void;
 }
 
 export const useMainMenuReducer = (initialValue: MainMenuState): ReducerMainMenuProps => {
@@ -115,25 +119,21 @@ export const useMainMenuReducer = (initialValue: MainMenuState): ReducerMainMenu
     showOmniPanel,
     showSettings,
     tourState,
-    setCurrentView: (payload: number) =>
+    setCurrentView: (payload) =>
       dispatch({ type: MainMenuActionType.CurrentView, payload: payload }),
-    setLoading: (payload: LoadingScreenProps | null) =>
-      dispatch({ type: MainMenuActionType.Loading, payload: payload }),
-    setSettings: (payload: Settings) =>
-      dispatch({ type: MainMenuActionType.Settings, payload: payload }),
-    setShowHelp: (payload: boolean) =>
-      dispatch({ type: MainMenuActionType.ShowHelp, payload: payload }),
-    setShowHotkeysDialog: (payload: boolean) =>
+    setLoading: (payload) => dispatch({ type: MainMenuActionType.Loading, payload: payload }),
+    setSettings: (payload) => dispatch({ type: MainMenuActionType.Settings, payload: payload }),
+    setShowHelp: (payload) => dispatch({ type: MainMenuActionType.ShowHelp, payload: payload }),
+    setShowHotkeysDialog: (payload) =>
       dispatch({ type: MainMenuActionType.ShowHotkeysDialog, payload: payload }),
-    setShowOmniPanel: (payload: boolean) =>
+    setShowOmniPanel: (payload) =>
       dispatch({ type: MainMenuActionType.ShowOmniPanel, payload: payload }),
-    setShowSettings: (payload: boolean) =>
+    setShowSettings: (payload) =>
       dispatch({ type: MainMenuActionType.ShowSettings, payload: payload }),
     toggleHelp: () => dispatch({ type: MainMenuActionType.ToggleHelp }),
     toggleHotkeys: () => dispatch({ type: MainMenuActionType.ToggleHotkeys }),
     toggleOmnipanel: () => dispatch({ type: MainMenuActionType.ToggleOmnipanel }),
     toggleSettings: () => dispatch({ type: MainMenuActionType.ToggleSettings }),
-    setTourState: (payload: boolean) =>
-      dispatch({ type: MainMenuActionType.TourState, payload: payload }),
+    setTourState: (payload) => dispatch({ type: MainMenuActionType.TourState, payload: payload }),
   };
 };
