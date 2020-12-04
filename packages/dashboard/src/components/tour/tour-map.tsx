@@ -26,7 +26,7 @@ const useStyles = makeStyles(() => ({
 export interface TourMapProps {
   buildingMap: Readonly<RomiCore.BuildingMap>;
   mapFloorLayerSorted: Readonly<string[]>;
-  cachedFleets: RomiCore.FleetState[];
+  cachedFleets: Record<string, RomiCore.RobotState[]>;
 }
 
 export default function TourMap(props: TourMapProps): React.ReactElement {

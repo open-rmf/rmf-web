@@ -10,8 +10,8 @@ export default class FleetManager extends EventEmitter<Events> {
     return Array.from(Object.values(this._fleets));
   }
 
-  cachedFleets(): RomiCore.FleetState[] {
-    return [...this._fleetCache];
+  cachedFleets(): Record<string, RomiCore.RobotState[]> {
+    return { ...this._fleetCache };
   }
 
   startSubscription(transport: RomiCore.Transport) {
@@ -47,33 +47,23 @@ export default class FleetManager extends EventEmitter<Events> {
     this._subscriptions.forEach((sub) => sub.unsubscribe());
   }
 
-  private _updateCache(fleetState: RomiCore.FleetState): void {
-    if (
-      this._fleetCache.length === 0 ||
-      !this._fleetCache.some((fleet) => fleet.name === fleetState.name)
-    ) {
-      this._fleetCache.push(fleetState);
-    } else if (this._fleetCache.some((fleet) => fleet.name === fleetState.name)) {
-      this._fleetCache.forEach((fleet) => {
-        if (fleet.name === fleetState.name) {
-          this._addNewRobots(fleetState.robots, fleet.robots);
+  private _updateCache(fleetState: RomiCore.FleetState) {
+    if (!this._fleetCache[fleetState.name]) {
+      this._fleetCache[fleetState.name] = fleetState.robots;
+      console.log('here 1111');
+    } else {
+      fleetState.robots.forEach((robot) => {
+        if (
+          !this._fleetCache[fleetState.name].some((cacheRobot) => cacheRobot.name === robot.name)
+        ) {
+          console.log('here 222');
+          this._fleetCache[fleetState.name].push(robot);
         }
       });
     }
   }
 
-  private _addNewRobots(
-    fleetStateRobots: RomiCore.RobotState[],
-    cacheRobots: RomiCore.RobotState[],
-  ): void {
-    fleetStateRobots.forEach((fleetRobot) => {
-      if (!cacheRobots.some((robot) => robot.name === fleetRobot.name)) {
-        cacheRobots.push(fleetRobot);
-      }
-    });
-  }
-
   private _fleets: Record<string, RomiCore.FleetState> = {};
   private _subscriptions: RomiCore.Subscription[] = [];
-  private _fleetCache: RomiCore.FleetState[] = [];
+  private _fleetCache: Record<string, RomiCore.RobotState[]> = {};
 }

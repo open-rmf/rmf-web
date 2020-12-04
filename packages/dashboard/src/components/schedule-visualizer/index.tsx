@@ -43,7 +43,7 @@ export interface MapFloorLayer {
 export interface ScheduleVisualizerProps {
   buildingMap: Readonly<RomiCore.BuildingMap>;
   fleets: Readonly<RomiCore.FleetState[]>;
-  cachedFleets: RomiCore.FleetState[];
+  cachedFleets: Record<string, RomiCore.RobotState[]>;
   trajManager?: Readonly<RobotTrajectoryManager>;
   negotiationTrajStore: Readonly<Record<string, NegotiationTrajectoryResponse>>;
   mapFloorLayerSorted: Readonly<string[]>;

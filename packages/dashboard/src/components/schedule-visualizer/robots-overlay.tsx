@@ -13,7 +13,7 @@ export interface RobotsOverlayProps extends SVGOverlayProps {
   onRobotClick?(fleet: string, robot: RomiCore.RobotState): void;
   conflictRobotNames: string[][];
   currentFloorName: string;
-  cachedFleets: RomiCore.FleetState[];
+  cachedFleets: Record<string, RomiCore.RobotState[]>;
 }
 
 export const RobotsOverlay = (props: RobotsOverlayProps) => {
@@ -31,12 +31,12 @@ export const RobotsOverlay = (props: RobotsOverlayProps) => {
   // Maps every robot to its fleet. Added the model too in case two robots has the same name on different fleets.
   const fleetContainer = useMemo(() => {
     let robotsFleet: Record<string, string> = {};
-    cachedFleets.forEach((fleet) => {
-      fleet.robots
+    Object.keys(cachedFleets).forEach((fleet) => {
+      cachedFleets[fleet]
         .map((robot) => [robot.name, robot.model])
         .forEach((robotInfo: string[]) => {
           const robotKey = `${robotInfo[0]}_${robotInfo[1]}`;
-          robotsFleet[robotKey] = fleet.name;
+          robotsFleet[robotKey] = fleet;
         });
     });
     return robotsFleet;
@@ -46,9 +46,9 @@ export const RobotsOverlay = (props: RobotsOverlayProps) => {
     if (!currentFloorName) {
       return [];
     }
-    return cachedFleets.flatMap((x) => ({
-      fleet: x.name,
-      robots: x.robots.filter((r) => r.location.level_name === currentFloorName),
+    return Object.keys(cachedFleets).map((x) => ({
+      fleet: x,
+      robots: cachedFleets[x].filter((r) => r.location.level_name === currentFloorName),
     }));
   }, [cachedFleets, currentFloorName]);
 
