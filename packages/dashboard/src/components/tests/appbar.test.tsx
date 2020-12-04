@@ -1,10 +1,7 @@
-import { createMount } from '@material-ui/core/test-utils';
 import { act, HookResult, renderHook } from '@testing-library/react-hooks';
-import { shallow } from 'enzyme';
 import React from 'react';
 import { render, RenderResult } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-
 import FakeAuthenticator from '../../mock/fake-authenticator';
 import AppBar from '../appbar';
 import { AuthenticatorContext, UserContext } from '../auth/contexts';
@@ -24,12 +21,6 @@ describe('AppBar', () => {
     const hookResult = renderHook(() => useMainMenuReducer(mainMenuInitialValues));
     result = hookResult.result;
     root = render(<AppBar reducerMainMenu={result.current} alarmState={null} />);
-  });
-
-  // Should we keep the snapshot test?
-  test('renders correctly', () => {
-    const shallowRoot = shallow(<AppBar reducerMainMenu={result.current} alarmState={null} />);
-    expect(shallowRoot).toMatchSnapshot();
   });
 
   test('toggles hides omnipanel when dashboard button is clicked', () => {
@@ -94,8 +85,6 @@ describe('AppBar', () => {
     );
     userEvent.click(root.getByLabelText('user-btn'));
     userEvent.click(root.getByText('Logout'));
-    // root.find('button#user-btn').simulate('click');
-    // root.find('li#logout-btn').simulate('click');
     expect(spy).toHaveBeenCalledTimes(1);
   });
 });
