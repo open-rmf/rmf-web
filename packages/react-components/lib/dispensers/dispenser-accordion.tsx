@@ -1,11 +1,11 @@
-import { Accordion, AccordionProps, makeStyles } from '@material-ui/core';
+import { Accordion, AccordionProps, makeStyles, Divider } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import React from 'react';
 import ItemAccordionDetails from '../item-accordion-details';
 import ItemAccordionSummary from '../item-accordion-summary';
 import { SimpleInfo } from '../simple-info';
-import ItemUnknownState from '../item-unknown-state';
 
 const debug = Debug('Dispensers:DispenserAccordion');
 
@@ -47,11 +47,15 @@ const useStyles = makeStyles((theme) => ({
   statusLabelIdle: { borderColor: theme.palette.warning.main },
   statusLabelBusy: { borderColor: theme.palette.success.main },
   statusLabelOffline: { borderColor: theme.palette.error.main },
+  typography: {
+    padding: '0.5rem 0',
+  },
 }));
 
-// for valid dispenser states,
-// a precondition must dispenser === dispenserState.guid
 export interface DispenserAccordionProps extends Omit<AccordionProps, 'children'> {
+  /**
+   * Pre-condition: `dispenser === dispenserState.guid`
+   */
   dispenserState: RomiCore.DispenserState | null;
   dispenser: string;
 }
@@ -92,7 +96,12 @@ export const DispenserAccordion = React.forwardRef(
             <DispenserInfo dispenser={dispenserState} />
           </ItemAccordionDetails>
         ) : (
-          <ItemUnknownState unknownItem={dispenser} />
+          <React.Fragment>
+            <Divider />
+            <Typography className={classes.typography} align="center" variant="body1">
+              State of {dispenser} is unknown
+            </Typography>
+          </React.Fragment>
         )}
       </Accordion>
     );

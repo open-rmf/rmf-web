@@ -8,6 +8,7 @@ export default {
   title: 'Design Decisions',
 };
 
+const statelessDispenserGuid = 'stateless dispenser';
 const styles: Record<string, React.CSSProperties> = {
   root: {
     margin: '0 auto',
@@ -47,5 +48,19 @@ export const handleUnknown: Story = () => (
     </Typography>
     <Divider style={{ margin: '1rem 0' }} />
     <StatusLabel variant="unknown" />
+  </div>
+);
+
+export const ItemsWithUnknownState: Story = (args) => (
+  <div>
+    <Typography variant="body1">
+      There are situations where the state of a component (for example, dispenser or robots) is not
+      known due to them being disconnected from RMF or other reasons. We would display a message to
+      show users that the current state of the item is unknown.
+    </Typography>
+    <Divider style={{ margin: '1rem 0' }} />
+    <div style={{ ...styles.spacing, width: 400 }}>
+      <DispenserAccordion dispenser={statelessDispenserGuid} dispenserState={null} {...args} />
+    </div>
   </div>
 );
