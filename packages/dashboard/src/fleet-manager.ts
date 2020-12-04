@@ -6,8 +6,8 @@ type Events = {
 };
 
 export default class FleetManager extends EventEmitter<Events> {
-  fleets(): RomiCore.FleetState[] {
-    return Array.from(Object.values(this._fleets));
+  fleets(): Record<string, RomiCore.RobotState[]> {
+    return { ...this._fleets };
   }
 
   cachedFleets(): Record<string, RomiCore.RobotState[]> {
@@ -37,7 +37,7 @@ export default class FleetManager extends EventEmitter<Events> {
             task_id: '',
           },
         ];
-        this._fleets[fleetState.name] = fleetState;
+        this._fleets[fleetState.name] = fleetState.robots;
         this.emit('updated');
       }),
     );
@@ -63,7 +63,7 @@ export default class FleetManager extends EventEmitter<Events> {
     }
   }
 
-  private _fleets: Record<string, RomiCore.FleetState> = {};
+  private _fleets: Record<string, RomiCore.RobotState[]> = {};
   private _subscriptions: RomiCore.Subscription[] = [];
   private _fleetCache: Record<string, RomiCore.RobotState[]> = {};
 }

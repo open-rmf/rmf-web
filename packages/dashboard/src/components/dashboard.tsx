@@ -208,7 +208,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const [fleets, setFleets] = React.useState(fleetManager.fleets());
   const [cachedFleets, setCachedFleets] = React.useState(fleetManager.cachedFleets());
   const fleetNames = React.useRef<string[]>([]);
-  const newFleetNames = fleets.map((fleet) => fleet.name);
+  const newFleetNames = Object.keys(fleets).map((fleet) => fleet);
   if (newFleetNames.some((fleetName) => !fleetNames.current.includes(fleetName))) {
     fleetNames.current = newFleetNames;
   }
@@ -454,6 +454,23 @@ export default function Dashboard(_props: {}): React.ReactElement {
     openHotKeys: () => setShowHotkeyDialog((prev) => !prev),
   });
 
+  // const determineRobotState = (robots: RomiCore.RobotState[], robotsCache: RomiCore.RobotState[], fleet: string)  => {
+  //   robotsCache.map(cacheRobot => {
+  //     if (!robots.some(robot => robot.name === cacheRobot.name)) {
+  //       return (
+  //         <RobotAccordion
+  //           key={robotKey(fleet, cacheRobot)}
+  //           ref={robotAccordionRefs[robotKey(fleet, cacheRobot)].ref}
+  //           robot={null}
+  //           robotName={cacheRobot.name}
+  //           fleetName={null}
+  //           data-component="RobotAccordion"
+  //         />
+  //       )
+  //     }
+  //   })
+  // }
+
   return (
     <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
       <AppContextProvider
@@ -532,16 +549,36 @@ export default function Dashboard(_props: {}): React.ReactElement {
                   ))}
                 </OmniPanelView>
                 <OmniPanelView viewId={OmniPanelViewIndex.Robots}>
-                  {fleets.flatMap((fleet) =>
-                    fleet.robots.map((robot) => (
-                      <RobotAccordion
-                        key={robotKey(fleet.name, robot)}
-                        ref={robotAccordionRefs[robotKey(fleet.name, robot)].ref}
-                        robot={robot}
-                        fleetName={fleet.name}
-                        data-component="RobotAccordion"
-                      />
-                    )),
+                  {Object.keys(cachedFleets).map((fleet) =>
+                    fleets[fleet]
+                      ? cachedFleets[fleet].map((robot) => (
+                          <RobotAccordion
+                            key={robotKey(fleet, robot)}
+                            ref={robotAccordionRefs[robotKey(fleet, robot)].ref}
+                            robot={
+                              !fleets[fleet].some((fleetRobot) => fleetRobot.name === robot.name)
+                                ? null
+                                : robot
+                            }
+                            robotName={robot.name}
+                            fleetName={
+                              !fleets[fleet].some((fleetRobot) => fleetRobot.name === robot.name)
+                                ? null
+                                : fleet
+                            }
+                            data-component="RobotAccordion"
+                          />
+                        ))
+                      : cachedFleets[fleet].map((robot) => (
+                          <RobotAccordion
+                            key={robotKey(fleet, robot)}
+                            ref={robotAccordionRefs[robotKey(fleet, robot)].ref}
+                            robot={null}
+                            robotName={robot.name}
+                            fleetName={null}
+                            data-component="RobotAccordion"
+                          />
+                        )),
                   )}
                 </OmniPanelView>
                 <OmniPanelView viewId={OmniPanelViewIndex.Dispensers}>

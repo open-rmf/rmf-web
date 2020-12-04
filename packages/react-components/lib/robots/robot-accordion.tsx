@@ -1,4 +1,4 @@
-import { Accordion, AccordionProps, makeStyles } from '@material-ui/core';
+import { Accordion, AccordionProps, makeStyles, Divider, Typography } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import React from 'react';
@@ -11,6 +11,9 @@ const debug = Debug('Robots:RobotAccordion');
 const useStyles = makeStyles((theme) => ({
   robotStatusLabel: {
     borderColor: theme.palette.info.main,
+  },
+  typography: {
+    padding: '0.5rem 0',
   },
 }));
 
@@ -64,28 +67,39 @@ const RobotInfo = (props: RobotInfoProps) => {
 };
 
 export interface RobotAccordionProps extends Omit<AccordionProps, 'children'> {
-  fleetName: string;
-  robot: RomiCore.RobotState;
+  fleetName: string | null;
+  robot: RomiCore.RobotState | null;
+  robotName: string;
 }
 
 export const RobotAccordion = React.forwardRef(
   (props: RobotAccordionProps, ref: React.Ref<HTMLElement>) => {
-    const { fleetName, robot, ...otherProps } = props;
-    debug(`render ${robot.name}`);
+    const { fleetName, robot, robotName, ...otherProps } = props;
+    debug(`render ${robot}`);
     const classes = useStyles();
 
     return (
       <Accordion ref={ref} {...otherProps}>
         <ItemAccordionSummary
-          title={robot.name}
+          title={robot ? robot.name : robotName}
           statusProps={{
             className: classes.robotStatusLabel,
-            text: robotModeToString(robot.mode),
+            text: robot ? robotModeToString(robot.mode) : 'UNKNOWN',
+            variant: robot ? 'normal' : 'unknown',
           }}
         />
-        <ItemAccordionDetails>
-          <RobotInfo fleetName={fleetName} robot={robot} />
-        </ItemAccordionDetails>
+        {robot && fleetName ? (
+          <ItemAccordionDetails>
+            <RobotInfo fleetName={fleetName} robot={robot} />
+          </ItemAccordionDetails>
+        ) : (
+          <React.Fragment>
+            <Divider />
+            <Typography className={classes.typography} align="center" variant="body1">
+              The state of {robotName} robot is unknown
+            </Typography>
+          </React.Fragment>
+        )}
       </Accordion>
     );
   },
