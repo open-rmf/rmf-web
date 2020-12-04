@@ -27,7 +27,7 @@
     "@types/ws": "^7.2.6",
     "fast-deep-equal": "^3.1.3",
     "jsonwebtoken": "^8.5.1",
-    "rclnodejs": "git://github.com/RobotWebTools/rclnodejs.git#532edb660fdc826e96373dbd3f2847d4321db741",
+    "rclnodejs": "^0.17.0",
     "winston": "^3.3.3",
     "ws": "^7.3.1",
     "yargs": "^16.0.3"
