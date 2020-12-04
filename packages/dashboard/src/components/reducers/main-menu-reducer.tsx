@@ -30,7 +30,7 @@ export type MainMenuAction =
   | MainMenuActionFormat<'showHotkeysDialog', boolean>
   | MainMenuActionFormat<'showOmniPanel', boolean>
   | MainMenuActionFormat<'showSettings', boolean>
-  | Partial<MainMenuActionFormat<'toggleHelp'>>
+  | MainMenuActionFormat<'toggleHelp'>
   | Partial<MainMenuActionFormat<'toggleHotkeys'>>
   | Partial<MainMenuActionFormat<'toggleOmnipanel'>>
   | Partial<MainMenuActionFormat<'toggleSettings'>>
