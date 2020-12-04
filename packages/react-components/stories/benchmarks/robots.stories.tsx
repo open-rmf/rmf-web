@@ -94,7 +94,9 @@ export const RobotMarkers: Story<RobotMarkerArgs> = ({ count, ...args }) => {
     };
     window.requestAnimationFrame(updateState);
 
-    return () => (stop = true);
+    return () => {
+      stop = true;
+    };
   }, [count, animationStates, setTriggerRender]);
 
   return (

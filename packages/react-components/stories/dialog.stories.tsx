@@ -46,7 +46,9 @@ function OpenDialogButton<P extends Pick<AlertDialogProps, ManagedProps>>(props:
         onPositiveClick={() => setOpen(false)}
         onNegativeClick={() => setOpen(false)}
         onCloseClick={withCloseButton ? () => setOpen(false) : undefined}
-        {...(componentProps as P)}
+        // couldn't figure out how to make typescript correctly infer componentProps
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        {...(componentProps as any)}
       />
     </div>
   );

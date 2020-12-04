@@ -45,7 +45,7 @@ import NotificationBar, { NotificationBarProps } from './notification-bar';
 import { RmfContextProvider } from './rmf-contexts';
 import ScheduleVisualizer, { ScheduleVisualizerProps } from './schedule-visualizer';
 import { SpotlightValue } from './spotlight-value';
-import { TaskSummaryPanel } from './task-summary-panel';
+import TaskSummaryPanel from './task-summary-panel';
 
 const debug = Debug('App');
 const DispenserAccordion = React.memo(withSpotlight(DispenserAccordion_));
@@ -569,7 +569,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                   />
                 </OmniPanelView>
                 <OmniPanelView viewId={OmniPanelViewIndex.Tasks}>
-                  <TaskSummaryPanel allTasks={tasks} />
+                  <TaskSummaryPanel tasks={tasks} />
                 </OmniPanelView>
               </OmniPanel>
             </Fade>
