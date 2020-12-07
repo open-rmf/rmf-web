@@ -42,7 +42,8 @@ export interface MapFloorLayer {
 
 export interface ScheduleVisualizerProps {
   buildingMap: Readonly<RomiCore.BuildingMap>;
-  fleets: Readonly<RomiCore.FleetState[]>;
+  fleets: Record<string, RomiCore.RobotState[]>;
+  cachedRobots: Record<string, RomiCore.RobotState[]>;
   trajManager?: Readonly<RobotTrajectoryManager>;
   negotiationTrajStore: Readonly<Record<string, NegotiationTrajectoryResponse>>;
   mapFloorLayerSorted: Readonly<string[]>;
@@ -99,9 +100,9 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
 
   const robots = React.useMemo(
     () =>
-      props.fleets.reduce<Record<string, RomiCore.RobotState>>((prev, fleet) => {
-        fleet.robots.forEach((robot) => {
-          prev[robotHash(robot.name, fleet.name)] = robot;
+      Object.keys(props.fleets).reduce<Record<string, RomiCore.RobotState>>((prev, fleet) => {
+        props.fleets[fleet].forEach((robot) => {
+          prev[robotHash(robot.name, fleet)] = robot;
         });
         return prev;
       }, {}),
@@ -371,7 +372,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
               <RobotsOverlay
                 currentFloorName={curLevelName}
                 bounds={curMapFloorLayer.bounds}
-                fleets={props.fleets}
+                cachedRobots={props.cachedRobots}
                 onRobotClick={props.onRobotClick}
                 conflictRobotNames={conflictRobotNames}
               />

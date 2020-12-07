@@ -7,6 +7,7 @@ import { Map as LMap } from 'react-leaflet';
 import getBuildingMap from '../../../mock/data/building-map';
 import fakeFleets from '../../../mock/data/fleets';
 import RobotsOverlay from '../robots-overlay';
+import * as Romicore from '@osrf/romi-js-core-interfaces';
 
 describe('Robots Overlay', () => {
   let colorManager: ColorManager;
@@ -23,6 +24,8 @@ describe('Robots Overlay', () => {
   test('Render robots correctly', async () => {
     const buildingMap = await getBuildingMap();
     const fleet = fakeFleets()[0];
+    const cacheRobot: Record<string, Romicore.RobotState[]> = {};
+    cacheRobot[fleet.name] = fleet.robots;
     const robots = fleet.robots;
     let wrapper: ReactWrapper;
     await act(async () => {
@@ -34,7 +37,7 @@ describe('Robots Overlay', () => {
           ]}
         >
           <RobotsOverlay
-            fleets={[fleet]}
+            cachedRobots={cacheRobot}
             bounds={bounds}
             conflictRobotNames={conflictRobotNames}
             currentFloorName={buildingMap.levels[0].name}

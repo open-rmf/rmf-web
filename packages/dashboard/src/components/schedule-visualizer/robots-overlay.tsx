@@ -10,16 +10,16 @@ const debug = Debug('ScheduleVisualizer:RobotsOverlay');
 const RobotMarker = React.memo(RobotMarker_);
 
 export interface RobotsOverlayProps extends SVGOverlayProps {
-  fleets: readonly RomiCore.FleetState[];
   onRobotClick?(fleet: string, robot: RomiCore.RobotState): void;
   conflictRobotNames: string[][];
   currentFloorName: string;
+  cachedRobots: Record<string, RomiCore.RobotState[]>;
 }
 
 export const RobotsOverlay = (props: RobotsOverlayProps) => {
   debug('render');
 
-  const { fleets, onRobotClick, conflictRobotNames, currentFloorName, ...otherProps } = props;
+  const { onRobotClick, conflictRobotNames, currentFloorName, cachedRobots, ...otherProps } = props;
   const robotResourcesContext = React.useContext(ResourcesContext)?.robots;
   const viewBox = viewBoxFromLeafletBounds(props.bounds);
   const footprint = 0.5;
@@ -31,26 +31,26 @@ export const RobotsOverlay = (props: RobotsOverlayProps) => {
   // Maps every robot to its fleet. Added the model too in case two robots has the same name on different fleets.
   const fleetContainer = useMemo(() => {
     let robotsFleet: Record<string, string> = {};
-    fleets.forEach((fleet) => {
-      fleet.robots
+    Object.keys(cachedRobots).forEach((fleet) => {
+      cachedRobots[fleet]
         .map((robot) => [robot.name, robot.model])
         .forEach((robotInfo: string[]) => {
           const robotKey = `${robotInfo[0]}_${robotInfo[1]}`;
-          robotsFleet[robotKey] = fleet.name;
+          robotsFleet[robotKey] = fleet;
         });
     });
     return robotsFleet;
-  }, [fleets]);
+  }, [cachedRobots]);
 
   const robotsInCurLevel = React.useMemo(() => {
     if (!currentFloorName) {
       return [];
     }
-    return fleets.flatMap((x) => ({
-      fleet: x.name,
-      robots: x.robots.filter((r) => r.location.level_name === currentFloorName),
+    return Object.keys(cachedRobots).map((x) => ({
+      fleet: x,
+      robots: cachedRobots[x].filter((r) => r.location.level_name === currentFloorName),
     }));
-  }, [fleets, currentFloorName]);
+  }, [cachedRobots, currentFloorName]);
 
   const handleRobotClick = React.useCallback<Required<RobotMarkerProps>['onClick']>(
     (_, fleetName, robot) => onRobotClick && onRobotClick(fleetName, robot),

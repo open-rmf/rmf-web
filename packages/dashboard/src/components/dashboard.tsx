@@ -206,8 +206,9 @@ export default function Dashboard(_props: {}): React.ReactElement {
 
   const fleetManager = React.useMemo(() => new FleetManager(), []);
   const [fleets, setFleets] = React.useState(fleetManager.fleets());
+  const [cachedRobots, setCachedRobots] = React.useState(fleetManager.cachedFleets());
   const fleetNames = React.useRef<string[]>([]);
-  const newFleetNames = fleets.map((fleet) => fleet.name);
+  const newFleetNames = Object.keys(fleets).map((fleet) => fleet);
   if (newFleetNames.some((fleetName) => !fleetNames.current.includes(fleetName))) {
     fleetNames.current = newFleetNames;
   }
@@ -282,7 +283,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
         negotiationStatusManager.startSubscription();
         taskManager.startSubscription(x);
 
-        fleetManager.on('updated', () => setFleets(fleetManager.fleets()));
+        fleetManager.on('updated', () => {
+          setFleets(fleetManager.fleets());
+          setCachedRobots(fleetManager.cachedFleets());
+        });
         liftStateManager.on('updated', () => setLiftStates(liftStateManager.liftStates()));
         doorStateManager.on('updated', () => setDoorStates(doorStateManager.doorStates()));
         dispenserStateManager.on('updated', () =>
@@ -475,6 +479,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                 buildingMap={buildingMap}
                 mapFloorLayerSorted={mapFloorLayerSorted}
                 fleets={fleets}
+                cachedRobots={cachedRobots}
                 trajManager={trajManager.current}
                 negotiationTrajStore={negotiationTrajStore}
                 onDoorClick={handleDoorMarkerClick}
@@ -527,13 +532,14 @@ export default function Dashboard(_props: {}): React.ReactElement {
                   ))}
                 </OmniPanelView>
                 <OmniPanelView viewId={OmniPanelViewIndex.Robots}>
-                  {fleets.flatMap((fleet) =>
-                    fleet.robots.map((robot) => (
+                  {Object.keys(cachedRobots).map((fleet) =>
+                    cachedRobots[fleet].map((robot) => (
                       <RobotAccordion
-                        key={robotKey(fleet.name, robot)}
-                        ref={robotAccordionRefs[robotKey(fleet.name, robot)].ref}
-                        robot={robot}
-                        fleetName={fleet.name}
+                        key={robotKey(fleet, robot)}
+                        ref={robotAccordionRefs[robotKey(fleet, robot)].ref}
+                        robot={!fleets[fleet].some((f) => f.name === robot.name) ? null : robot}
+                        robotName={robot.name}
+                        fleetName={!fleets[fleet].some((f) => f.name === robot.name) ? null : fleet}
                         data-component="RobotAccordion"
                       />
                     )),

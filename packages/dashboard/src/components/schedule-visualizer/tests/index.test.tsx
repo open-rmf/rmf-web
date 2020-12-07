@@ -25,7 +25,8 @@ it('renders well with the appropriate data', () => {
   const wrapper = shallow(
     <ScheduleVisualizer
       negotiationTrajStore={{}}
-      fleets={[]}
+      fleets={{}}
+      cachedRobots={{}}
       mapFloorLayerSorted={['name']}
       buildingMap={mockBuildingMap}
     />,

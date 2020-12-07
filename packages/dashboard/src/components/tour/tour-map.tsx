@@ -25,7 +25,7 @@ const useStyles = makeStyles(() => ({
 
 export interface TourMapProps {
   buildingMap: Readonly<RomiCore.BuildingMap>;
-  fleets: Readonly<RomiCore.FleetState[]>;
+  cachedRobots: Record<string, RomiCore.RobotState[]>;
   mapFloorLayerSorted: Readonly<string[]>;
 }
 
@@ -180,7 +180,7 @@ export default function TourMap(props: TourMapProps): React.ReactElement {
               <RobotsOverlay
                 currentFloorName={curLevelName}
                 bounds={curMapFloorLayer.bounds}
-                fleets={props.fleets}
+                cachedRobots={props.cachedRobots}
                 conflictRobotNames={conflictRobotNames}
               />
             </Pane>

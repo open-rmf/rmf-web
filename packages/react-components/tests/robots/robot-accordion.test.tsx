@@ -4,5 +4,5 @@ import { RobotAccordion } from '../../lib';
 import { makeRobot } from './test-utils';
 
 test('smoke test', () => {
-  render(<RobotAccordion fleetName="test_fleet" robot={makeRobot()} />);
+  render(<RobotAccordion robotName={'robot'} fleetName="test_fleet" robot={makeRobot()} />);
 });
