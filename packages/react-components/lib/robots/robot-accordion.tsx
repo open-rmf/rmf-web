@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
     borderColor: theme.palette.info.main,
   },
   typography: {
-    padding: '0.5rem 0',
+    padding: '1rem',
   },
 }));
 
@@ -95,8 +95,9 @@ export const RobotAccordion = React.forwardRef(
         ) : (
           <React.Fragment>
             <Divider />
-            <Typography className={classes.typography} align="center" variant="body1">
-              The state of {robotName} robot is unknown
+            <Typography className={classes.typography} variant="body1">
+              The state of <b>{robotName}</b> robot is unknown. Please check if <b>{robotName} </b>
+              is working properly.
             </Typography>
           </React.Fragment>
         )}

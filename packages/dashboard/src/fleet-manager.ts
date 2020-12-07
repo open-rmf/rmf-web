@@ -17,6 +17,30 @@ export default class FleetManager extends EventEmitter<Events> {
   startSubscription(transport: RomiCore.Transport) {
     this._subscriptions.push(
       transport.subscribe(RomiCore.fleetStates, (fleetState) => {
+        this.counter += 1;
+
+        // remember to remove after testing
+        if (this.counter < 20 || this.counter > 40) {
+          fleetState = { name: 'tinyRobot', robots: [] };
+          //   fleetState.robots = [
+          //     {
+          //       battery_percent: 0,
+          //       location: {
+          //         t: { sec: 0, nanosec: 0 },
+          //         x: 11.553829193115234,
+          //         y: -11.316267013549805,
+          //         yaw: -1.6157349348068237,
+          //         level_name: 'L1',
+          //       },
+          //       mode: { mode: 2 },
+          //       model: '',
+          //       name: 'tinyRobot1',
+          //       path: [],
+          //       task_id: '',
+          //     },
+          //   ];
+        }
+
         this._fleets[fleetState.name] = fleetState.robots;
         this.updateCache(fleetState);
         this.emit('updated');
