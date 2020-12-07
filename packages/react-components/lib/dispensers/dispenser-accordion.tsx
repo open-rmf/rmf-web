@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
   statusLabelBusy: { borderColor: theme.palette.success.main },
   statusLabelOffline: { borderColor: theme.palette.error.main },
   typography: {
-    padding: '0.5rem 0',
+    padding: '1rem',
   },
 }));
 
@@ -98,8 +98,10 @@ export const DispenserAccordion = React.forwardRef(
         ) : (
           <React.Fragment>
             <Divider />
-            <Typography className={classes.typography} align="center" variant="body1">
-              State of {dispenser} is unknown
+            <Typography className={classes.typography} variant="body1">
+              The state of <b>{dispenser}</b> dispenser is unknown. Please check if{' '}
+              <b>{dispenser} </b>
+              is working properly.
             </Typography>
           </React.Fragment>
         )}
