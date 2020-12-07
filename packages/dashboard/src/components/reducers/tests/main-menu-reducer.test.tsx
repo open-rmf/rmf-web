@@ -1,5 +1,5 @@
 import { act, HookResult, renderHook } from '@testing-library/react-hooks';
-import { mainMenuInitialValues } from '../main-menu-reducer-initial-values';
+import { mainMenuInitialValues } from '../../dashboard';
 import { ReducerMainMenuProps, useMainMenuReducer } from '../main-menu-reducer';
 
 describe('Main Menu reducer update states correctly', () => {

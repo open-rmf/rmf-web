@@ -1,5 +1,7 @@
 import React from 'react';
+import { StackNavigator } from 'react-components';
 import { Settings } from '../../settings';
+import { OmniPanelViewIndex } from '../dashboard';
 import { LoadingScreenProps } from '../loading-screen';
 
 type MainMenuActionFormat<T, K = void> = K extends void
@@ -19,6 +21,9 @@ export enum MainMenuActionType {
   ShowHotkeysDialog = 'showHotkeysDialog',
   ShowOmniPanel = 'showOmniPanel',
   ShowSettings = 'showSettings',
+  PopView = 'popView',
+  PushView = 'pushView',
+  ResetView = 'resetView',
   ToggleHelp = 'toggleHelp',
   ToggleHotkeys = 'toggleHotkeys',
   ToggleOmnipanel = 'toggleOmnipanel',
@@ -34,6 +39,7 @@ export type MainMenuState = {
   [MainMenuActionType.ShowHotkeysDialog]: boolean;
   [MainMenuActionType.ShowOmniPanel]: boolean;
   [MainMenuActionType.ShowSettings]: boolean;
+  stackNavigator: StackNavigator<OmniPanelViewIndex>;
   [MainMenuActionType.TourState]: boolean;
 };
 
@@ -45,6 +51,9 @@ export type MainMenuAction =
   | MainMenuActionFormat<'showHotkeysDialog', MainMenuState['showHotkeysDialog']>
   | MainMenuActionFormat<'showOmniPanel', MainMenuState['showOmniPanel']>
   | MainMenuActionFormat<'showSettings', MainMenuState['showSettings']>
+  | MainMenuActionFormat<'popView'>
+  | MainMenuActionFormat<'pushView', MainMenuState['currentView']>
+  | MainMenuActionFormat<'resetView'>
   | MainMenuActionFormat<'toggleHelp'>
   | Partial<MainMenuActionFormat<'toggleHotkeys'>>
   | Partial<MainMenuActionFormat<'toggleOmnipanel'>>
@@ -67,6 +76,14 @@ export const mainMenuReducer = (state: MainMenuState, action: MainMenuAction): M
       return { ...state, [MainMenuActionType.ShowHotkeysDialog]: action.payload };
     case MainMenuActionType.ShowHelp:
       return { ...state, [MainMenuActionType.ShowHelp]: action.payload };
+    case MainMenuActionType.PopView:
+      return { ...state, [MainMenuActionType.CurrentView]: state.stackNavigator.pop() };
+    case MainMenuActionType.PushView:
+      state.stackNavigator.push(action.payload);
+      return { ...state, [MainMenuActionType.CurrentView]: action.payload };
+    case MainMenuActionType.ResetView:
+      state.stackNavigator.reset();
+      return state;
     case MainMenuActionType.ToggleOmnipanel:
       return { ...state, showOmniPanel: !state.showOmniPanel };
     case MainMenuActionType.ToggleSettings:
@@ -84,6 +101,9 @@ export const mainMenuReducer = (state: MainMenuState, action: MainMenuAction): M
 };
 
 export interface ReducerMainMenuProps extends MainMenuState {
+  popView: () => void;
+  pushView: (payload: MainMenuState['currentView']) => void;
+  resetView: () => void;
   setCurrentView: (payload: MainMenuState['currentView']) => void;
   setLoading: (payload: MainMenuState['loading']) => void;
   setSettings: (payload: MainMenuState['settings']) => void;
@@ -108,6 +128,7 @@ export const useMainMenuReducer = (initialValue: MainMenuState): ReducerMainMenu
     showHotkeysDialog,
     showOmniPanel,
     showSettings,
+    stackNavigator,
     tourState,
   } = state;
   return {
@@ -118,7 +139,11 @@ export const useMainMenuReducer = (initialValue: MainMenuState): ReducerMainMenu
     showHotkeysDialog,
     showOmniPanel,
     showSettings,
+    stackNavigator,
     tourState,
+    popView: () => dispatch({ type: MainMenuActionType.PopView }),
+    pushView: (payload) => dispatch({ type: MainMenuActionType.PushView, payload: payload }),
+    resetView: () => dispatch({ type: MainMenuActionType.ResetView }),
     setCurrentView: (payload) =>
       dispatch({ type: MainMenuActionType.CurrentView, payload: payload }),
     setLoading: (payload) => dispatch({ type: MainMenuActionType.Loading, payload: payload }),
@@ -130,10 +155,10 @@ export const useMainMenuReducer = (initialValue: MainMenuState): ReducerMainMenu
       dispatch({ type: MainMenuActionType.ShowOmniPanel, payload: payload }),
     setShowSettings: (payload) =>
       dispatch({ type: MainMenuActionType.ShowSettings, payload: payload }),
+    setTourState: (payload) => dispatch({ type: MainMenuActionType.TourState, payload: payload }),
     toggleHelp: () => dispatch({ type: MainMenuActionType.ToggleHelp }),
     toggleHotkeys: () => dispatch({ type: MainMenuActionType.ToggleHotkeys }),
     toggleOmnipanel: () => dispatch({ type: MainMenuActionType.ToggleOmnipanel }),
     toggleSettings: () => dispatch({ type: MainMenuActionType.ToggleSettings }),
-    setTourState: (payload) => dispatch({ type: MainMenuActionType.TourState, payload: payload }),
   };
 };

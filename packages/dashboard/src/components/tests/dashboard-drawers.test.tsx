@@ -1,9 +1,9 @@
 import { render, RenderResult } from '@testing-library/react';
 import { act, HookResult, renderHook } from '@testing-library/react-hooks';
 import React from 'react';
+import { mainMenuInitialValues } from '../dashboard';
 import { DashboardDrawers } from '../dashboard-drawers';
 import { ReducerMainMenuProps, useMainMenuReducer } from '../reducers/main-menu-reducer';
-import { mainMenuInitialValues } from '../reducers/main-menu-reducer-initial-values';
 
 describe('Dashboard-drawers', () => {
   let result: HookResult<ReducerMainMenuProps>;

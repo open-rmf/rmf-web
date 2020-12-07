@@ -1,9 +1,8 @@
-import { mainMenuInitialValues } from '../components/reducers/main-menu-reducer-initial-values';
 import { ReducerMainMenuProps, useMainMenuReducer } from '../components/reducers/main-menu-reducer';
 import { buildHotKeys, keyMap } from '../hotkeys';
 import { HotKeysEnabledProps } from 'react-hotkeys';
 import { act, HookResult, renderHook } from '@testing-library/react-hooks';
-import { OmniPanelViewIndex } from '../components/dashboard';
+import { mainMenuInitialValues, OmniPanelViewIndex } from '../components/dashboard';
 
 test('Build hotkeys on the correct format', () => {
   const { result } = renderHook(() => useMainMenuReducer(mainMenuInitialValues));

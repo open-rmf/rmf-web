@@ -6,7 +6,7 @@ import FakeAuthenticator from '../../mock/fake-authenticator';
 import AppBar from '../appbar';
 import { AuthenticatorContext, UserContext } from '../auth/contexts';
 import { ReducerMainMenuProps, useMainMenuReducer } from '../reducers/main-menu-reducer';
-import { mainMenuInitialValues } from '../reducers/main-menu-reducer-initial-values';
+import { mainMenuInitialValues } from '../dashboard';
 
 describe('AppBar', () => {
   /**
