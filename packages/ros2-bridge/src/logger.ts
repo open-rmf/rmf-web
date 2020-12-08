@@ -3,8 +3,7 @@ import * as winston from 'winston';
 interface CustomLogger extends winston.Logger {
   child: (metadata: { tag: unknown }) => CustomLogger;
 }
-
-export { CustomLogger as Logger };
+export type Logger = CustomLogger;
 
 export const logger: CustomLogger = winston.createLogger({
   format: winston.format.combine(
