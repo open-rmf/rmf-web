@@ -89,15 +89,15 @@ jobs:
         with:
           name: screenshots
           path: e2e/artifacts
-  api-server-test:
-    name: Api Server Test
+  ros2-bridge-test:
+    name: Ros2 Bridge Test
     runs-on: ubuntu-latest
     container:
       image: ros:foxy
     defaults:
       run:
         shell: bash
-        working-directory: packages/api-server
+        working-directory: packages/ros2-bridge
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1

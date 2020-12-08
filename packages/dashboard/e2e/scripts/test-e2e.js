@@ -33,7 +33,7 @@ const wdioArgs = process.argv
 
 concurrently(
   [
-    'cd .. && npm run start:api',
+    'cd .. && npm run start:ros2-bridge',
     'cd .. && npm run start:auth',
     'npm:start:react',
     `node auth-ready.js && wdio ${wdioArgs}`,

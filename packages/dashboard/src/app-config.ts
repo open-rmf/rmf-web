@@ -1,6 +1,5 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { KeycloakConfig } from 'keycloak-js';
-import ApiClient from './api-client';
 import Authenticator, { DefaultAuthenticator } from './components/auth/authenticator';
 import fakeResources from './mock/data/resources';
 import FakeAuthenticator from './mock/fake-authenticator';
@@ -9,6 +8,7 @@ import { FakeTransport } from './mock/fake-transport';
 import ResourceManager from './resource-manager';
 import { DefaultTrajectoryManager, RobotTrajectoryManager } from './robot-trajectory-manager';
 import Ros2Transport from './ros2-transport';
+import RpcClient from './rpc-client';
 
 export interface AppConfig {
   authenticator: Authenticator;
@@ -37,19 +37,19 @@ export const appConfig: AppConfig = (() => {
     })();
     const authenticator = new DefaultAuthenticator(authConfig);
 
-    if (!process.env.REACT_APP_API_SERVER) {
-      throw new Error('REACT_APP_API_SERVER env variable is needed but not defined');
+    if (!process.env.REACT_APP_ROS2_BRIDGE_SERVER) {
+      throw new Error('REACT_APP_ROS2_BRIDGE_SERVER env variable is needed but not defined');
     }
-    const apiServer = process.env.REACT_APP_API_SERVER;
-    let apiClientPromise: Promise<ApiClient> | undefined;
-    const getApiClientPromise = () => {
+    const ros2BridgeServer = process.env.REACT_APP_ROS2_BRIDGE_SERVER;
+    let ros2BridgeClientPromise: Promise<RpcClient> | undefined;
+    const getRos2BridgeClientPromise = () => {
       if (!authenticator.token) {
         throw new Error('no authentication token available');
       }
-      if (!apiClientPromise) {
-        apiClientPromise = ApiClient.connect(apiServer, authenticator.token);
+      if (!ros2BridgeClientPromise) {
+        ros2BridgeClientPromise = RpcClient.connect(ros2BridgeServer, authenticator.token);
       }
-      return apiClientPromise;
+      return ros2BridgeClientPromise;
     };
 
     return {
@@ -57,8 +57,8 @@ export const appConfig: AppConfig = (() => {
       appResources: ResourceManager.getResourceConfigurationFile(),
       trajectoryManagerFactory: () => DefaultTrajectoryManager.create(trajServer),
       transportFactory: async () => {
-        const apiClient = await getApiClientPromise();
-        return new Ros2Transport(apiClient);
+        const ros2BridgeClient = await getRos2BridgeClientPromise();
+        return new Ros2Transport(ros2BridgeClient);
       },
       trajServerUrl: trajServer,
     };
