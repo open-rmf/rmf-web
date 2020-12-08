@@ -1,4 +1,4 @@
-import { Fade, makeStyles } from '@material-ui/core';
+import { Fade, makeStyles, Divider, Typography } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { adapterDoorRequests, adapterLiftRequests, toRosTime } from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
@@ -63,6 +63,9 @@ const useStyles = makeStyles((theme) => ({
   },
   toolBarTitle: {
     flexGrow: 1,
+  },
+  noCacheDisplay: {
+    padding: '1rem',
   },
   omniPanel: {
     '@media (min-aspect-ratio: 8/10)': {
@@ -547,7 +550,13 @@ export default function Dashboard(_props: {}): React.ReactElement {
                         />
                       ))
                     ) : (
-                      <div key={fleet}>No signal from {fleet} fleet</div>
+                      // only displayed when there is no robots returned from any fleet at the start
+                      <React.Fragment key={fleet}>
+                        <Typography className={classes.noCacheDisplay} variant="body1" key={fleet}>
+                          No signal from <b>{fleet}</b> fleet
+                        </Typography>
+                        <Divider />
+                      </React.Fragment>
                     ),
                   )}
                 </OmniPanelView>

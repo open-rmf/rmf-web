@@ -67,6 +67,9 @@ const RobotInfo = (props: RobotInfoProps) => {
 };
 
 export interface RobotAccordionProps extends Omit<AccordionProps, 'children'> {
+  /**
+   * Pre-condition: `robotName === robot.name`
+   */
   fleetName: string | null;
   robot: RomiCore.RobotState | null;
   robotName: string;
