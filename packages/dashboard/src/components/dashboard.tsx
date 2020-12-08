@@ -533,16 +533,22 @@ export default function Dashboard(_props: {}): React.ReactElement {
                 </OmniPanelView>
                 <OmniPanelView viewId={OmniPanelViewIndex.Robots}>
                   {Object.keys(cachedRobots).map((fleet) =>
-                    cachedRobots[fleet].map((robot) => (
-                      <RobotAccordion
-                        key={robotKey(fleet, robot)}
-                        ref={robotAccordionRefs[robotKey(fleet, robot)].ref}
-                        robot={!fleets[fleet].some((f) => f.name === robot.name) ? null : robot}
-                        robotName={robot.name}
-                        fleetName={!fleets[fleet].some((f) => f.name === robot.name) ? null : fleet}
-                        data-component="RobotAccordion"
-                      />
-                    )),
+                    cachedRobots[fleet].length > 0 ? (
+                      cachedRobots[fleet].map((robot) => (
+                        <RobotAccordion
+                          key={robotKey(fleet, robot)}
+                          ref={robotAccordionRefs[robotKey(fleet, robot)].ref}
+                          robot={fleets[fleet].some((f) => f.name === robot.name) ? robot : null}
+                          robotName={robot.name}
+                          fleetName={
+                            fleets[fleet].some((f) => f.name === robot.name) ? fleet : null
+                          }
+                          data-component="RobotAccordion"
+                        />
+                      ))
+                    ) : (
+                      <div key={fleet}>No signal from {fleet} fleet</div>
+                    ),
                   )}
                 </OmniPanelView>
                 <OmniPanelView viewId={OmniPanelViewIndex.Dispensers}>
