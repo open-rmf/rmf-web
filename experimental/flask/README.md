@@ -1,5 +1,19 @@
-# Flask Experiments
+# setup
 
-Buckle your seat belt.
+Let's create a virtual environment named `venv` for all this Python magic:
+```
+sudo apt install python3-venv
+python3 -m venv venv
+```
 
-Here is a starting point to show that Flask and ROS 2 can get along: [codebot/flask\_rclpy](https://github.com/codebot/flask_rclpy)
+Now let's activate the Python virtual environment so we can install all sorts of things into it without breaking our system:
+```
+. venv/bin/activate
+pip install flask python-dotenv
+```
+
+Now run the flask+rclpy demo program in the venv, assuming you still have a shell with the venv activated in it:
+```
+. /opt/ros/foxy/setup.bash
+./run.sh
+```
