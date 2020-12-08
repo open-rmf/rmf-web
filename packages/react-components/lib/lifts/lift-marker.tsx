@@ -56,7 +56,7 @@ const useStyles = makeStyles({
   },
 });
 
-const useMarkerStyles = makeStyles({
+export const useLiftMarkerStyles = makeStyles({
   onCurrentFloor: {
     fill: 'green',
     opacity: '70%',
@@ -103,7 +103,7 @@ export interface LiftMarkerProps extends Omit<React.SVGProps<SVGGElement>, 'onCl
    * default: true
    */
   translate?: boolean;
-  variant?: keyof ReturnType<typeof useMarkerStyles>;
+  variant?: keyof ReturnType<typeof useLiftMarkerStyles>;
   onClick?(event: React.MouseEvent, lift: RomiCore.Lift): void;
 }
 
@@ -120,7 +120,7 @@ export const LiftMarker = React.forwardRef(function (
   const doorMode = liftState ? toDoorMode(liftState) : undefined;
 
   const classes = useStyles();
-  const markerClasses = useMarkerStyles();
+  const markerClasses = useLiftMarkerStyles();
   const markerClass = variant ? markerClasses[variant] : markerClasses.onCurrentFloor;
 
   /**

@@ -1,13 +1,36 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import React, { useContext } from 'react';
-import { LiftMarker as LiftMarker_, LiftMarkerProps } from 'react-components';
+import { LiftMarker as LiftMarker_, LiftMarkerProps, useLiftMarkerStyles } from 'react-components';
 import { viewBoxFromLeafletBounds } from '../../util/css-utils';
 import { LiftStateContext } from '../rmf-contexts';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 
 const debug = Debug('ScheduleVisualizer:LiftsOverlay');
 const LiftMarker = React.memo(LiftMarker_);
+
+const getLiftModeVariant = (
+  currentFloor: string,
+  liftState?: RomiCore.LiftState,
+): keyof ReturnType<typeof useLiftMarkerStyles> | undefined => {
+  if (!liftState) return 'unknown';
+
+  const liftMode = liftState.current_mode;
+
+  if (liftMode === RomiCore.LiftState.MODE_FIRE) return 'fire';
+  if (liftMode === RomiCore.LiftState.MODE_EMERGENCY) return 'emergency';
+  if (liftMode === RomiCore.LiftState.MODE_OFFLINE) return 'offLine';
+  if (liftState.current_floor === currentFloor) {
+    if (liftMode === RomiCore.LiftState.MODE_HUMAN) return 'human';
+    if (liftMode === RomiCore.LiftState.MODE_AGV) return 'onCurrentFloor';
+  } else {
+    if (liftMode === RomiCore.LiftState.MODE_HUMAN) return 'moving';
+    if (liftMode === RomiCore.LiftState.MODE_AGV) return 'moving';
+  }
+  if (liftMode === RomiCore.LiftState.MODE_UNKNOWN) return 'unknown';
+
+  return 'unknown';
+};
 
 export interface LiftsOverlayProps extends SVGOverlayProps {
   currentFloor: string;
@@ -38,6 +61,7 @@ export const LiftsOverlay = (props: LiftsOverlayProps) => {
               lift={lift}
               onClick={handleLiftClick}
               liftState={liftsState && liftsState[lift.name]}
+              variant={liftsState && getLiftModeVariant(currentFloor, liftsState[lift.name])}
             />
           ))}
         </svg>
