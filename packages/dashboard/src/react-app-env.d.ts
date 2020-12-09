@@ -5,6 +5,6 @@ declare namespace NodeJS {
     readonly REACT_APP_MOCK?: boolean;
     readonly REACT_APP_TRAJECTORY_SERVER?: string;
     readonly REACT_APP_AUTH_CONFIG?: string;
-    readonly REACT_APP_API_SERVER?: string;
+    readonly REACT_APP_ROS2_BRIDGE_SERVER?: string;
   }
 }

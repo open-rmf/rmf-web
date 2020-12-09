@@ -1,10 +1,10 @@
 import * as msgpack from '@msgpack/msgpack';
 import * as assert from 'assert';
 import WebSocket from 'ws';
-import logger, { CustomLogger } from './logger';
+import logger, { Logger } from './logger';
 import { WebSocketMiddleware } from './websocket-connect';
 
-export { CustomLogger as Logger };
+export { Logger };
 
 export interface RpcRequest<T = unknown> {
   version: string;
@@ -38,7 +38,7 @@ export type RpcHandler<Param = any, Result = unknown> = (
   sender: Sender<Result>,
 ) => Promise<Result | void> | Result | void;
 
-export default class ApiGateway {
+export default class RpcMiddleware {
   middleware: WebSocketMiddleware = (socket, data, next) => {
     this._onMessage(socket, data, next);
   };
@@ -48,7 +48,7 @@ export default class ApiGateway {
     logger.info(`registered handler for "${method}"`);
   }
 
-  getLogger(name: string): CustomLogger {
+  getLogger(name: string): Logger {
     return logger.child({ tag: name });
   }
 

@@ -140,7 +140,7 @@ This will download and build all of rmf so it may take awhile.
 Alternatively, if you want to connect to an existing rmf deployment, set the following environment variables:
 
 - _REACT_APP_TRAJECTORY_SERVER_: URL to the trajectory server.
-- _REACT_APP_API_SERVER_: URL to the api server.
+- _REACT_APP_ROS2_BRIDGE_SERVER_: URL to the ros2 bridge server.
 - _REACT_APP_AUTH_CONFIG_: A JSON object containing the following
   - _realm_: The keycloak realm
   - _clientId_: clientId

@@ -3,7 +3,7 @@ import { RomiService, RomiTopic } from '@osrf/romi-js-core-interfaces';
 import RclnodejsTransport from '@osrf/romi-js-rclnodejs-transport';
 import deepEqual from 'fast-deep-equal';
 import { Argv } from 'yargs';
-import ApiGateway, { Logger, Sender } from '../../api-gateway';
+import RpcMiddleware, { Logger, Sender } from '../../rpc-middleware';
 
 export function options(yargs: Argv) {
   return yargs.option('ros2NodeName', {
@@ -71,19 +71,19 @@ interface SubscriptionRecord {
   callbacks: Record<number, (msg: unknown) => void>;
 }
 
-export async function onLoad(config: ConfigType, api: ApiGateway): Promise<void> {
+export async function onLoad(config: ConfigType, rpc: RpcMiddleware): Promise<void> {
   const rosArgs = process.env['RCLNODEJS_ROS_ARGS']
     ? JSON.parse(process.env['RCLNODEJS_ROS_ARGS'])
     : undefined;
   const transport = await RclnodejsTransport.create(config.ros2NodeName, rosArgs);
-  const plugin = new Ros2Plugin(transport, api.getLogger('ros2'));
-  api.registerHandler('ros2Subscribe', (params, send) => plugin.subscribe(params, send));
-  api.registerHandler('ros2Unsubscribe', (params) => plugin.unsubscribe(params));
-  api.registerHandler('ros2CreatePublisher', (params, send) =>
+  const plugin = new Ros2Plugin(transport, rpc.getLogger('ros2'));
+  rpc.registerHandler('ros2Subscribe', (params, send) => plugin.subscribe(params, send));
+  rpc.registerHandler('ros2Unsubscribe', (params) => plugin.unsubscribe(params));
+  rpc.registerHandler('ros2CreatePublisher', (params, send) =>
     plugin.createPublisher(params, send),
   );
-  api.registerHandler('ros2Publish', (params) => plugin.publish(params));
-  api.registerHandler('ros2ServiceCall', (params) => plugin.serviceCall(params));
+  rpc.registerHandler('ros2Publish', (params) => plugin.publish(params));
+  rpc.registerHandler('ros2ServiceCall', (params) => plugin.serviceCall(params));
 }
 
 export default class Ros2Plugin {
