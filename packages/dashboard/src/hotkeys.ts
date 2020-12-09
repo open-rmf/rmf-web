@@ -1,8 +1,8 @@
 import { HotKeysEnabledProps, KeyMap, KeySequence } from 'react-hotkeys';
 import { OmniPanelViewIndex } from './components/dashboard';
-import { ReducerMainMenuProps } from './components/reducers/main-menu-reducer';
+import { ReducerMainMenuDispatch } from './components/reducers/main-menu-reducer';
 export interface hotKeysProps {
-  reducerMainMenu: ReducerMainMenuProps;
+  dispatch: ReducerMainMenuDispatch;
 }
 
 export const keyMap: KeyMap = {
@@ -45,7 +45,6 @@ export const keyMap: KeyMap = {
 };
 
 export const buildHotKeys = (props: hotKeysProps): HotKeysEnabledProps => {
-  const { reducerMainMenu } = props;
   const {
     setCurrentView,
     setShowOmniPanel,
@@ -53,7 +52,7 @@ export const buildHotKeys = (props: hotKeysProps): HotKeysEnabledProps => {
     toggleOmnipanel,
     toggleSettings,
     toggleHelp,
-  } = reducerMainMenu;
+  } = props.dispatch;
 
   const openCommands = () => {
     setShowOmniPanel(true);

@@ -131,18 +131,20 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const trajManager = React.useRef<RobotTrajectoryManager | undefined>(undefined);
   const resourceManager = React.useRef<ResourceManager | undefined>(undefined);
 
-  const reducerMainMenu = useMainMenuReducer(mainMenuInitialValues);
+  const { state: _state, dispatch: _dispatch } = useMainMenuReducer(mainMenuInitialValues);
+  const state = React.useMemo(() => _state, [_state]);
   const {
     currentView,
     settings,
     showOmniPanel,
     stackNavigator,
-    setCurrentView,
-    setShowOmniPanel,
-    resetView,
-    popView,
-    pushView,
-  } = reducerMainMenu;
+    showSettings,
+    showHelp,
+    showHotkeysDialog,
+  } = state;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const dispatch = React.useMemo(() => _dispatch, []);
+  const { setCurrentView, setShowOmniPanel, resetView, popView, pushView } = dispatch;
 
   const mapFloorLayerSorted = React.useMemo<string[] | undefined>(
     () => buildingMap?.levels.sort((a, b) => a.elevation - b.elevation).map((x) => x.name),
@@ -402,7 +404,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     }
   }, [tourComplete, setTourState]);
 
-  const hotKeysValue = buildHotKeys({ reducerMainMenu: reducerMainMenu });
+  const hotKeysValue = React.useMemo(() => buildHotKeys({ dispatch: dispatch }), [dispatch]);
 
   return (
     <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
@@ -418,7 +420,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
           dispenserStates={dispenserStates}
         >
           <div className={classes.container}>
-            <AppBar reducerMainMenu={reducerMainMenu} />
+            <AppBar dispatch={dispatch} />
             {loading && <LoadingScreen {...loading} />}
             {buildingMap && mapFloorLayerSorted && !tourState && (
               <ScheduleVisualizer
@@ -519,7 +521,13 @@ export default function Dashboard(_props: {}): React.ReactElement {
                 </OmniPanelView>
               </OmniPanel>
             </Fade>
-            <DashboardDrawers reducerMainMenu={reducerMainMenu}></DashboardDrawers>
+            <DashboardDrawers
+              settings={settings}
+              showSettings={showSettings}
+              showHelp={showHelp}
+              showHotkeysDialog={showHotkeysDialog}
+              dispatch={dispatch}
+            ></DashboardDrawers>
           </div>
 
           <NotificationBar

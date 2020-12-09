@@ -100,7 +100,7 @@ export const mainMenuReducer = (state: MainMenuState, action: MainMenuAction): M
   }
 };
 
-export interface ReducerMainMenuProps extends MainMenuState {
+export interface ReducerMainMenuDispatch {
   popView: () => void;
   pushView: (payload: MainMenuState['currentView']) => void;
   resetView: () => void;
@@ -117,48 +117,35 @@ export interface ReducerMainMenuProps extends MainMenuState {
   toggleSettings: () => void;
   setTourState: (payload: MainMenuState['tourState']) => void;
 }
+export interface ReducerMainMenuProps {
+  state: MainMenuState;
+  dispatch: ReducerMainMenuDispatch;
+}
 
 export const useMainMenuReducer = (initialValue: MainMenuState): ReducerMainMenuProps => {
   const [state, dispatch] = React.useReducer(mainMenuReducer, initialValue);
-  const {
-    currentView,
-    loading,
-    settings,
-    showHelp,
-    showHotkeysDialog,
-    showOmniPanel,
-    showSettings,
-    stackNavigator,
-    tourState,
-  } = state;
   return {
-    currentView,
-    loading,
-    settings,
-    showHelp,
-    showHotkeysDialog,
-    showOmniPanel,
-    showSettings,
-    stackNavigator,
-    tourState,
-    popView: () => dispatch({ type: MainMenuActionType.PopView }),
-    pushView: (payload) => dispatch({ type: MainMenuActionType.PushView, payload: payload }),
-    resetView: () => dispatch({ type: MainMenuActionType.ResetView }),
-    setCurrentView: (payload) =>
-      dispatch({ type: MainMenuActionType.CurrentView, payload: payload }),
-    setLoading: (payload) => dispatch({ type: MainMenuActionType.Loading, payload: payload }),
-    setSettings: (payload) => dispatch({ type: MainMenuActionType.Settings, payload: payload }),
-    setShowHelp: (payload) => dispatch({ type: MainMenuActionType.ShowHelp, payload: payload }),
-    setShowHotkeysDialog: (payload) =>
-      dispatch({ type: MainMenuActionType.ShowHotkeysDialog, payload: payload }),
-    setShowOmniPanel: (payload) =>
-      dispatch({ type: MainMenuActionType.ShowOmniPanel, payload: payload }),
-    setShowSettings: (payload) =>
-      dispatch({ type: MainMenuActionType.ShowSettings, payload: payload }),
-    setTourState: (payload) => dispatch({ type: MainMenuActionType.TourState, payload: payload }),
-    toggleHelp: () => dispatch({ type: MainMenuActionType.ToggleHelp }),
-    toggleHotkeys: () => dispatch({ type: MainMenuActionType.ToggleHotkeys }),
-    toggleOmnipanel: () => dispatch({ type: MainMenuActionType.ToggleOmnipanel }),
-    toggleSettings: () => dispatch({ type: MainMenuActionType.ToggleSettings }),
+    state: state,
+    dispatch: {
+      popView: () => dispatch({ type: MainMenuActionType.PopView }),
+      pushView: (payload) => dispatch({ type: MainMenuActionType.PushView, payload: payload }),
+      resetView: () => dispatch({ type: MainMenuActionType.ResetView }),
+      setCurrentView: (payload) =>
+        dispatch({ type: MainMenuActionType.CurrentView, payload: payload }),
+      setLoading: (payload) => dispatch({ type: MainMenuActionType.Loading, payload: payload }),
+      setSettings: (payload) => dispatch({ type: MainMenuActionType.Settings, payload: payload }),
+      setShowHelp: (payload) => dispatch({ type: MainMenuActionType.ShowHelp, payload: payload }),
+      setShowHotkeysDialog: (payload) =>
+        dispatch({ type: MainMenuActionType.ShowHotkeysDialog, payload: payload }),
+      setShowOmniPanel: (payload) =>
+        dispatch({ type: MainMenuActionType.ShowOmniPanel, payload: payload }),
+      setShowSettings: (payload) =>
+        dispatch({ type: MainMenuActionType.ShowSettings, payload: payload }),
+      setTourState: (payload) => dispatch({ type: MainMenuActionType.TourState, payload: payload }),
+      toggleHelp: () => dispatch({ type: MainMenuActionType.ToggleHelp }),
+      toggleHotkeys: () => dispatch({ type: MainMenuActionType.ToggleHotkeys }),
+      toggleOmnipanel: () => dispatch({ type: MainMenuActionType.ToggleOmnipanel }),
+      toggleSettings: () => dispatch({ type: MainMenuActionType.ToggleSettings }),
+    },
   };
 };
