@@ -1,8 +1,8 @@
 import * as msgpack from '@msgpack/msgpack';
-import { RpcRequest, RpcResponse } from 'api-server/src/api-gateway';
 import Debug from 'debug';
+import type { RpcRequest, RpcResponse } from 'ros2-bridge/src/rpc-middleware';
 
-const debug = Debug('ApiClient');
+const debug = Debug('RpcClient');
 
 interface RpcRequestWithId<T> extends RpcRequest<T> {
   id: NonNullable<RpcRequest['id']>;
@@ -10,8 +10,8 @@ interface RpcRequestWithId<T> extends RpcRequest<T> {
 
 type RpcRequestWithoutId<T> = Omit<RpcRequest<T>, 'id'>;
 
-export default class ApiClient {
-  static async connect(url: string, token: string): Promise<ApiClient> {
+export default class RpcClient {
+  static async connect(url: string, token: string): Promise<RpcClient> {
     const socket = new WebSocket(url);
     socket.binaryType = 'arraybuffer';
     await new Promise((res, reject) => {
@@ -25,7 +25,7 @@ export default class ApiClient {
         res(ev);
       });
     });
-    return new ApiClient(socket);
+    return new RpcClient(socket);
   }
 
   rpcRequest<Result = unknown, Param = unknown>(
