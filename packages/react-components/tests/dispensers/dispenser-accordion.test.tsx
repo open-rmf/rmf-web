@@ -4,5 +4,5 @@ import { DispenserAccordion } from '../../lib';
 import { makeDispenserState } from './test-utils';
 
 test('smoke test', () => {
-  render(<DispenserAccordion dispenserState={makeDispenserState()} />);
+  render(<DispenserAccordion dispenser={'dispenser'} dispenserState={makeDispenserState()} />);
 });
