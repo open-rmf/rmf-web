@@ -10,7 +10,7 @@ services:
     ports:
       - 8080:8080
   unit-test:
-    image: docker.pkg.github.com/osrf/romi-dashboard/e2e
+    image: docker.pkg.github.com/osrf/rmf-web/e2e
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ../../..:/root/romi-dashboard
@@ -23,7 +23,7 @@ services:
     # need owner to be root for git ls-remote to work for some reason
     command: bash -c 'npm ci --unsafe-perm && npm run test:coverage'
   dev:
-    image: docker.pkg.github.com/osrf/romi-dashboard/e2e
+    image: docker.pkg.github.com/osrf/rmf-web/e2e
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ../../..:/root/romi-dashboard

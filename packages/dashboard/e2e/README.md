@@ -19,7 +19,7 @@ Below is a diagram of how the containers and networks interact when up and runni
 
 Broadly speaking, there are 3 major parts of the system:
 
-- Romidashboard container, built from the `docker.pkg.github.com/osrf/romi-dashboard/e2e` image with the RMF backend compiled into it. It holds the ROS2 bridge server and the React dashboard. Sourcing of RMF is required before running the tests and it can be sourced from `. /opt/rmf/setup.bash`
+- Romidashboard container, built from the `docker.pkg.github.com/osrf/rmf-web/e2e` image with the RMF backend compiled into it. It holds the ROS2 bridge server and the React dashboard. Sourcing of RMF is required before running the tests and it can be sourced from `. /opt/rmf/setup.bash`
 - Auth container
 - auth_network, a known network where the Auth container is reachable 
 
