@@ -55,9 +55,9 @@ export type MainMenuAction =
   | MainMenuActionFormat<'pushView', MainMenuState['currentView']>
   | MainMenuActionFormat<'resetView'>
   | MainMenuActionFormat<'toggleHelp'>
-  | Partial<MainMenuActionFormat<'toggleHotkeys'>>
-  | Partial<MainMenuActionFormat<'toggleOmnipanel'>>
-  | Partial<MainMenuActionFormat<'toggleSettings'>>
+  | MainMenuActionFormat<'toggleHotkeys'>
+  | MainMenuActionFormat<'toggleOmnipanel'>
+  | MainMenuActionFormat<'toggleSettings'>
   | MainMenuActionFormat<'tourState', MainMenuState['tourState']>;
 
 export const mainMenuReducer = (state: MainMenuState, action: MainMenuAction): MainMenuState => {
