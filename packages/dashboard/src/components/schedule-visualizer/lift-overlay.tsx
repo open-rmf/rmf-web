@@ -9,25 +9,23 @@ import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 const debug = Debug('ScheduleVisualizer:LiftsOverlay');
 const LiftMarker = React.memo(LiftMarker_);
 
-const getLiftModeVariant = (
+export const getLiftModeVariant = (
   currentFloor: string,
-  liftState?: RomiCore.LiftState,
+  liftStateMode?: number,
+  liftStateFloor?: string,
 ): keyof ReturnType<typeof useLiftMarkerStyles> | undefined => {
-  if (!liftState) return 'unknown';
-
-  const liftMode = liftState.current_mode;
-
-  if (liftMode === RomiCore.LiftState.MODE_FIRE) return 'fire';
-  if (liftMode === RomiCore.LiftState.MODE_EMERGENCY) return 'emergency';
-  if (liftMode === RomiCore.LiftState.MODE_OFFLINE) return 'offLine';
-  if (liftState.current_floor === currentFloor) {
-    if (liftMode === RomiCore.LiftState.MODE_HUMAN) return 'human';
-    if (liftMode === RomiCore.LiftState.MODE_AGV) return 'onCurrentFloor';
+  if (!liftStateMode && !liftStateFloor) return 'unknown';
+  if (liftStateMode === RomiCore.LiftState.MODE_FIRE) return 'fire';
+  if (liftStateMode === RomiCore.LiftState.MODE_EMERGENCY) return 'emergency';
+  if (liftStateMode === RomiCore.LiftState.MODE_OFFLINE) return 'offLine';
+  if (liftStateFloor === currentFloor) {
+    if (liftStateMode === RomiCore.LiftState.MODE_HUMAN) return 'human';
+    if (liftStateMode === RomiCore.LiftState.MODE_AGV) return 'onCurrentFloor';
   } else {
-    if (liftMode === RomiCore.LiftState.MODE_HUMAN) return 'moving';
-    if (liftMode === RomiCore.LiftState.MODE_AGV) return 'moving';
+    if (liftStateMode === RomiCore.LiftState.MODE_HUMAN) return 'moving';
+    if (liftStateMode === RomiCore.LiftState.MODE_AGV) return 'moving';
   }
-  if (liftMode === RomiCore.LiftState.MODE_UNKNOWN) return 'unknown';
+  if (liftStateMode === RomiCore.LiftState.MODE_UNKNOWN) return 'unknown';
 
   return 'unknown';
 };
@@ -61,7 +59,14 @@ export const LiftsOverlay = (props: LiftsOverlayProps) => {
               lift={lift}
               onClick={handleLiftClick}
               liftState={liftsState && liftsState[lift.name]}
-              variant={liftsState && getLiftModeVariant(currentFloor, liftsState[lift.name])}
+              variant={
+                liftsState &&
+                getLiftModeVariant(
+                  currentFloor,
+                  liftsState[lift.name]?.current_mode,
+                  liftsState[lift.name]?.current_floor,
+                )
+              }
             />
           ))}
         </svg>
