@@ -4,14 +4,14 @@ import { HotKeysEnabledProps } from 'react-hotkeys';
 import { act, HookResult, renderHook } from '@testing-library/react-hooks';
 import { mainMenuInitialValues, OmniPanelViewIndex } from '../components/dashboard';
 
-test('Build hotkeys on the correct format', () => {
+test('build hotkeys on the correct format', () => {
   const { result } = renderHook(() => useMainMenuReducer(mainMenuInitialValues));
   const hotkeys = buildHotKeys({ reducerMainMenuDispatch: result.current.dispatch });
   if (!hotkeys.keyMap) throw new Error('An error has occurred building the hotkeys formats');
   expect(Object.keys(hotkeys.keyMap)).toEqual(Object.keys(keyMap));
 });
 
-describe('Update states correctly', () => {
+describe('update states correctly', () => {
   let hotkeys: HotKeysEnabledProps;
   let result: HookResult<ReducerMainMenuProps>;
 
@@ -21,42 +21,42 @@ describe('Update states correctly', () => {
     hotkeys = buildHotKeys({ reducerMainMenuDispatch: result.current.dispatch });
   });
 
-  test('Set commands as current view', () => {
+  test('set commands as current view', () => {
     act(() => {
       hotkeys.handlers?.OPEN_COMMANDS();
     });
     expect(result.current.state.currentView).toBe(OmniPanelViewIndex.Commands);
   });
 
-  test('Set dispensers as current view', () => {
+  test('set dispensers as current view', () => {
     act(() => {
       hotkeys.handlers?.OPEN_DISPENSERS();
     });
     expect(result.current.state.currentView).toBe(OmniPanelViewIndex.Dispensers);
   });
 
-  test('Set doors as current view', () => {
+  test('set doors as current view', () => {
     act(() => {
       hotkeys.handlers?.OPEN_DOORS();
     });
     expect(result.current.state.currentView).toBe(OmniPanelViewIndex.Doors);
   });
 
-  test('Set lifts current view correctly', () => {
+  test('set lifts current view correctly', () => {
     act(() => {
       hotkeys.handlers?.OPEN_LIFTS();
     });
     expect(result.current.state.currentView).toBe(OmniPanelViewIndex.Lifts);
   });
 
-  test('Set robots current view correctly', () => {
+  test('set robots current view correctly', () => {
     act(() => {
       hotkeys.handlers?.OPEN_ROBOTS();
     });
     expect(result.current.state.currentView).toBe(OmniPanelViewIndex.Robots);
   });
 
-  test('Toggle Help Panel correctly', () => {
+  test('toggles Help Panel correctly', () => {
     act(() => {
       hotkeys.handlers?.OPEN_HELP_PANEL();
     });
@@ -69,7 +69,7 @@ describe('Update states correctly', () => {
     expect(result.current.state.showHelp).toBe(false);
   });
 
-  test('Toggle Omni Panel correctly', () => {
+  test('toggles Omni Panel correctly', () => {
     act(() => {
       hotkeys.handlers?.OPEN_OMNIPANEL();
     });
@@ -82,7 +82,7 @@ describe('Update states correctly', () => {
     expect(result.current.state.showOmniPanel).toBe(true);
   });
 
-  test('Toggle Setting correctly', () => {
+  test('toggles Setting Panel correctly', () => {
     act(() => {
       hotkeys.handlers?.OPEN_SETTINGS();
     });

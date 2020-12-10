@@ -5,7 +5,7 @@ import { mainMenuInitialValues } from '../dashboard';
 import { DashboardDrawers } from '../dashboard-drawers';
 import { ReducerMainMenuProps, useMainMenuReducer } from '../reducers/main-menu-reducer';
 
-describe('Dashboard-drawers', () => {
+describe('dashboard-drawers', () => {
   let result: HookResult<ReducerMainMenuProps>;
   let root: RenderResult;
 
@@ -14,7 +14,7 @@ describe('Dashboard-drawers', () => {
     result = hookResult.result;
   });
 
-  test('Setting drawer is shown', () => {
+  test('setting`s drawer is shown', () => {
     act(() => {
       result.current.dispatch.setShowSettings(true);
     });
@@ -31,7 +31,7 @@ describe('Dashboard-drawers', () => {
     expect(root.getByText('Settings')).toBeTruthy();
   });
 
-  test('Help drawer is shown', () => {
+  test('help`s drawer is shown', () => {
     act(() => {
       result.current.dispatch.setShowHelp(true);
     });
@@ -48,7 +48,7 @@ describe('Dashboard-drawers', () => {
     expect(root.getByText('Help')).toBeTruthy();
   });
 
-  test('Hotkeys drawer is shown', () => {
+  test('hotkeys` drawer is shown', () => {
     act(() => {
       result.current.dispatch.setShowHotkeysDialog(true);
     });

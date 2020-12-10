@@ -23,7 +23,7 @@ describe('AppBar', () => {
     root = render(<AppBar reducerMainMenuDispatch={result.current.dispatch} alarmState={null} />);
   });
 
-  test('toggles hides omnipanel when dashboard button is clicked', () => {
+  test('hides omnipanel when dashboard button is clicked', () => {
     act(() => {
       const elements = root.getAllByTestId('omnipanel-tooltip-tooltip');
       for (let element in elements) {
@@ -43,7 +43,7 @@ describe('AppBar', () => {
     expect(result.current.state.showSettings).toBe(true);
   });
 
-  test('show help when help button is clicked', () => {
+  test('shows help when help button is clicked', () => {
     act(() => {
       const elements = root.getAllByTestId('help-tooltip-tooltip');
       for (let element in elements) {

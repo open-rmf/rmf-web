@@ -2,84 +2,77 @@ import { act, HookResult, renderHook } from '@testing-library/react-hooks';
 import { mainMenuInitialValues } from '../../dashboard';
 import { ReducerMainMenuProps, useMainMenuReducer } from '../main-menu-reducer';
 
-describe('Main Menu reducer update states correctly', () => {
+describe('main menu reducer update states correctly', () => {
   let result: HookResult<ReducerMainMenuProps>;
   beforeEach(() => {
     const hookResult = renderHook(() => useMainMenuReducer(mainMenuInitialValues));
     result = hookResult.result;
   });
 
-  test('Update current view correctly', async () => {
+  test('updates current view correctly', async () => {
     act(() => {
       result.current.dispatch.setCurrentView(2);
     });
     expect(result.current.state.currentView).toBe(2);
   });
 
-  test('Update showHelp state correctly', async () => {
+  test('updates showHelp state correctly', async () => {
     act(() => {
       result.current.dispatch.setShowHelp(true);
     });
     expect(result.current.state.showHelp).toBe(true);
   });
 
-  test('Update showHotkeysDialog correctly', async () => {
+  test('updates showHotkeysDialog correctly', async () => {
     act(() => {
       result.current.dispatch.setShowHotkeysDialog(true);
     });
     expect(result.current.state.showHotkeysDialog).toBe(true);
   });
 
-  test('Update showOmniPanel correctly', async () => {
+  test('updates showOmniPanel correctly', async () => {
     act(() => {
       result.current.dispatch.setShowOmniPanel(false);
     });
     expect(result.current.state.showOmniPanel).toBe(false);
   });
 
-  test('Update showSettings correctly', async () => {
+  test('updates showSettings correctly', async () => {
     act(() => {
       result.current.dispatch.setShowSettings(true);
     });
     expect(result.current.state.showSettings).toBe(true);
   });
 
-  test('Update tourState correctly', async () => {
+  test('updates tourState correctly', async () => {
     act(() => {
       result.current.dispatch.setTourState(true);
     });
     expect(result.current.state.tourState).toBe(true);
   });
 
-  test('Toggle showHelp correctly', async () => {
+  test('toggles showHelp correctly', async () => {
     act(() => {
       result.current.dispatch.toggleHelp();
     });
     expect(result.current.state.showHelp).toBe(true);
   });
 
-  test('Toggle ToggleHotkeys correctly', async () => {
+  test('toggles toggleHotkeys correctly', async () => {
     act(() => {
       result.current.dispatch.toggleHotkeys();
     });
     expect(result.current.state.showHotkeysDialog).toBe(true);
   });
 
-  test('Toggle ShowOmniPanel correctly', async () => {
+  test('toggles showOmniPanel correctly', async () => {
     act(() => {
       result.current.dispatch.toggleOmnipanel();
     });
     expect(result.current.state.showOmniPanel).toBe(false);
   });
 
-  test('Toggle ShowSettings correctly', async () => {
-    act(() => {
-      result.current.dispatch.toggleSettings();
-    });
-    expect(result.current.state.showSettings).toBe(true);
-  });
-
-  test('Toggle ShowSettings correctly', async () => {
+  test('toggles showSettings correctly', async () => {
     act(() => {
       result.current.dispatch.toggleSettings();
     });
