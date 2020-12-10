@@ -20,7 +20,7 @@ describe('AppBar', () => {
   beforeEach(() => {
     const hookResult = renderHook(() => useMainMenuReducer(mainMenuInitialValues));
     result = hookResult.result;
-    root = render(<AppBar reducerMainMenu={result.current} alarmState={null} />);
+    root = render(<AppBar dispatch={result.current.dispatch} alarmState={null} />);
   });
 
   test('toggles hides omnipanel when dashboard button is clicked', () => {
@@ -30,7 +30,7 @@ describe('AppBar', () => {
         userEvent.click(elements[element]);
       }
     });
-    expect(result.current.showOmniPanel).toBe(false);
+    expect(result.current.state.showOmniPanel).toBe(false);
   });
 
   test('show settings when settings button is clicked', () => {
@@ -40,7 +40,7 @@ describe('AppBar', () => {
         userEvent.click(elements[element]);
       }
     });
-    expect(result.current.showSettings).toBe(true);
+    expect(result.current.state.showSettings).toBe(true);
   });
 
   test('show help when help button is clicked', () => {
@@ -50,7 +50,7 @@ describe('AppBar', () => {
         userEvent.click(elements[element]);
       }
     });
-    expect(result.current.showHelp).toBe(true);
+    expect(result.current.state.showHelp).toBe(true);
   });
 
   test('renders tooltips when it is enabled', async () => {
@@ -67,7 +67,7 @@ describe('AppBar', () => {
   test('user button is shown when there is an authenticated user', () => {
     const root = render(
       <UserContext.Provider value={{ username: 'test' }}>
-        <AppBar reducerMainMenu={result.current} alarmState={null} />
+        <AppBar dispatch={result.current.dispatch} alarmState={null} />
       </UserContext.Provider>,
     );
     expect(root.getByLabelText('user-btn')).toBeTruthy();
@@ -79,7 +79,7 @@ describe('AppBar', () => {
     const root = render(
       <AuthenticatorContext.Provider value={authenticator}>
         <UserContext.Provider value={{ username: 'test' }}>
-          <AppBar reducerMainMenu={result.current} alarmState={null} />
+          <AppBar dispatch={result.current.dispatch} alarmState={null} />
         </UserContext.Provider>
       </AuthenticatorContext.Provider>,
     );

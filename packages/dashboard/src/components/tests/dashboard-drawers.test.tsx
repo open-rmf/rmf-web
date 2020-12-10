@@ -16,25 +16,52 @@ describe('Dashboard-drawers', () => {
 
   test('Setting drawer is shown', () => {
     act(() => {
-      result.current.setShowSettings(true);
+      result.current.dispatch.setShowSettings(true);
     });
-    root = render(<DashboardDrawers reducerMainMenu={result.current} />);
+    const state = result.current.state;
+    root = render(
+      <DashboardDrawers
+        settings={state.settings}
+        showSettings={state.showSettings}
+        showHelp={state.showHelp}
+        showHotkeysDialog={state.showHotkeysDialog}
+        dispatch={result.current.dispatch}
+      />,
+    );
     expect(root.getByText('Settings')).toBeTruthy();
   });
 
   test('Help drawer is shown', () => {
     act(() => {
-      result.current.setShowHelp(true);
+      result.current.dispatch.setShowHelp(true);
     });
-    root = render(<DashboardDrawers reducerMainMenu={result.current} />);
+    const state = result.current.state;
+    root = render(
+      <DashboardDrawers
+        settings={state.settings}
+        showSettings={state.showSettings}
+        showHelp={state.showHelp}
+        showHotkeysDialog={state.showHotkeysDialog}
+        dispatch={result.current.dispatch}
+      />,
+    );
     expect(root.getByText('Help')).toBeTruthy();
   });
 
   test('Hotkeys drawer is shown', () => {
     act(() => {
-      result.current.setShowHotkeysDialog(true);
+      result.current.dispatch.setShowHotkeysDialog(true);
     });
-    root = render(<DashboardDrawers reducerMainMenu={result.current} />);
+    const state = result.current.state;
+    root = render(
+      <DashboardDrawers
+        settings={state.settings}
+        showSettings={state.showSettings}
+        showHelp={state.showHelp}
+        showHotkeysDialog={state.showHotkeysDialog}
+        dispatch={result.current.dispatch}
+      />,
+    );
     expect(root.getByText('Hotkeys')).toBeTruthy();
   });
 });
