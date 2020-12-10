@@ -131,8 +131,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const trajManager = React.useRef<RobotTrajectoryManager | undefined>(undefined);
   const resourceManager = React.useRef<ResourceManager | undefined>(undefined);
 
-  const { state: _state, dispatch: _dispatch } = useMainMenuReducer(mainMenuInitialValues);
-  const state = React.useMemo(() => _state, [_state]);
+  const { state: _mainMenuState, dispatch: _mainMenuDispatch } = useMainMenuReducer(
+    mainMenuInitialValues,
+  );
+  const mainMenuState = React.useMemo(() => _mainMenuState, [_mainMenuState]);
   const {
     currentView,
     settings,
@@ -141,10 +143,11 @@ export default function Dashboard(_props: {}): React.ReactElement {
     showSettings,
     showHelp,
     showHotkeysDialog,
-  } = state;
+  } = mainMenuState;
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const dispatch = React.useMemo(() => _dispatch, []);
-  const { setCurrentView, setShowOmniPanel, resetView, popView, pushView } = dispatch;
+  const mainMenuDispatch = React.useMemo(() => _mainMenuDispatch, []);
+  const { setCurrentView, setShowOmniPanel, resetView, popView, pushView } = mainMenuDispatch;
 
   const mapFloorLayerSorted = React.useMemo<string[] | undefined>(
     () => buildingMap?.levels.sort((a, b) => a.elevation - b.elevation).map((x) => x.name),
@@ -404,7 +407,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
     }
   }, [tourComplete, setTourState]);
 
-  const hotKeysValue = React.useMemo(() => buildHotKeys({ dispatch: dispatch }), [dispatch]);
+  const hotKeysValue = React.useMemo(
+    () => buildHotKeys({ reducerMainMenuDispatch: mainMenuDispatch }),
+    [mainMenuDispatch],
+  );
 
   return (
     <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
@@ -420,7 +426,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
           dispenserStates={dispenserStates}
         >
           <div className={classes.container}>
-            <AppBar dispatch={dispatch} />
+            <AppBar reducerMainMenuDispatch={mainMenuDispatch} />
             {loading && <LoadingScreen {...loading} />}
             {buildingMap && mapFloorLayerSorted && !tourState && (
               <ScheduleVisualizer
@@ -526,7 +532,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
               showSettings={showSettings}
               showHelp={showHelp}
               showHotkeysDialog={showHotkeysDialog}
-              dispatch={dispatch}
+              reducerMainMenuDispatch={mainMenuDispatch}
             ></DashboardDrawers>
           </div>
 

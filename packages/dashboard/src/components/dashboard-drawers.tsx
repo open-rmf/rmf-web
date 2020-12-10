@@ -6,7 +6,7 @@ import SettingsDrawer from './drawers/settings-drawer';
 import { ReducerMainMenuDispatch } from './reducers/main-menu-reducer';
 
 interface DashboardDrawersProps {
-  dispatch: ReducerMainMenuDispatch;
+  reducerMainMenuDispatch: ReducerMainMenuDispatch;
   settings: Settings;
   showSettings: boolean;
   showHelp: boolean;
@@ -15,14 +15,14 @@ interface DashboardDrawersProps {
 
 export const DashboardDrawers = React.memo(
   (props: DashboardDrawersProps): JSX.Element => {
-    const { settings, showSettings, showHelp, showHotkeysDialog, dispatch } = props;
+    const { settings, showSettings, showHelp, showHotkeysDialog, reducerMainMenuDispatch } = props;
     const {
       setShowSettings,
       setSettings,
       setShowHelp,
       setShowHotkeysDialog,
       setTourState,
-    } = dispatch;
+    } = reducerMainMenuDispatch;
     return (
       <>
         <SettingsDrawer

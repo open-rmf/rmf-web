@@ -25,7 +25,7 @@ describe('Dashboard-drawers', () => {
         showSettings={state.showSettings}
         showHelp={state.showHelp}
         showHotkeysDialog={state.showHotkeysDialog}
-        dispatch={result.current.dispatch}
+        reducerMainMenuDispatch={result.current.dispatch}
       />,
     );
     expect(root.getByText('Settings')).toBeTruthy();
@@ -42,7 +42,7 @@ describe('Dashboard-drawers', () => {
         showSettings={state.showSettings}
         showHelp={state.showHelp}
         showHotkeysDialog={state.showHotkeysDialog}
-        dispatch={result.current.dispatch}
+        reducerMainMenuDispatch={result.current.dispatch}
       />,
     );
     expect(root.getByText('Help')).toBeTruthy();
@@ -59,7 +59,7 @@ describe('Dashboard-drawers', () => {
         showSettings={state.showSettings}
         showHelp={state.showHelp}
         showHotkeysDialog={state.showHotkeysDialog}
-        dispatch={result.current.dispatch}
+        reducerMainMenuDispatch={result.current.dispatch}
       />,
     );
     expect(root.getByText('Hotkeys')).toBeTruthy();

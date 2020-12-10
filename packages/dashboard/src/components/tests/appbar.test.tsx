@@ -20,7 +20,7 @@ describe('AppBar', () => {
   beforeEach(() => {
     const hookResult = renderHook(() => useMainMenuReducer(mainMenuInitialValues));
     result = hookResult.result;
-    root = render(<AppBar dispatch={result.current.dispatch} alarmState={null} />);
+    root = render(<AppBar reducerMainMenuDispatch={result.current.dispatch} alarmState={null} />);
   });
 
   test('toggles hides omnipanel when dashboard button is clicked', () => {
@@ -67,7 +67,7 @@ describe('AppBar', () => {
   test('user button is shown when there is an authenticated user', () => {
     const root = render(
       <UserContext.Provider value={{ username: 'test' }}>
-        <AppBar dispatch={result.current.dispatch} alarmState={null} />
+        <AppBar reducerMainMenuDispatch={result.current.dispatch} alarmState={null} />
       </UserContext.Provider>,
     );
     expect(root.getByLabelText('user-btn')).toBeTruthy();
@@ -79,7 +79,7 @@ describe('AppBar', () => {
     const root = render(
       <AuthenticatorContext.Provider value={authenticator}>
         <UserContext.Provider value={{ username: 'test' }}>
-          <AppBar dispatch={result.current.dispatch} alarmState={null} />
+          <AppBar reducerMainMenuDispatch={result.current.dispatch} alarmState={null} />
         </UserContext.Provider>
       </AuthenticatorContext.Provider>,
     );

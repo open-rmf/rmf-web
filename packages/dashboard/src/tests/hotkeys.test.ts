@@ -6,7 +6,7 @@ import { mainMenuInitialValues, OmniPanelViewIndex } from '../components/dashboa
 
 test('Build hotkeys on the correct format', () => {
   const { result } = renderHook(() => useMainMenuReducer(mainMenuInitialValues));
-  const hotkeys = buildHotKeys({ dispatch: result.current.dispatch });
+  const hotkeys = buildHotKeys({ reducerMainMenuDispatch: result.current.dispatch });
   if (!hotkeys.keyMap) throw new Error('An error has occurred building the hotkeys formats');
   expect(Object.keys(hotkeys.keyMap)).toEqual(Object.keys(keyMap));
 });
@@ -18,7 +18,7 @@ describe('Update states correctly', () => {
   beforeEach(() => {
     const hookResult = renderHook(() => useMainMenuReducer(mainMenuInitialValues));
     result = hookResult.result;
-    hotkeys = buildHotKeys({ dispatch: result.current.dispatch });
+    hotkeys = buildHotKeys({ reducerMainMenuDispatch: result.current.dispatch });
   });
 
   test('Set commands as current view', () => {

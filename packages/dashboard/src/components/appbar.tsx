@@ -18,7 +18,7 @@ import DashboardTooltip from 'react-components/lib/tooltip';
 import { ReducerMainMenuDispatch } from './reducers/main-menu-reducer';
 
 export interface AppBarProps {
-  dispatch: ReducerMainMenuDispatch;
+  reducerMainMenuDispatch: ReducerMainMenuDispatch;
   // TODO: change the alarm status to required when we have an alarm
   // service working properly in the backend
   alarmState?: boolean | null;
@@ -26,7 +26,7 @@ export interface AppBarProps {
 
 export const AppBar = React.memo(
   (props: AppBarProps): React.ReactElement => {
-    const { toggleOmnipanel, setShowHelp, setShowSettings } = props.dispatch;
+    const { toggleOmnipanel, setShowHelp, setShowSettings } = props.reducerMainMenuDispatch;
 
     const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
     const classes = useStyles();
