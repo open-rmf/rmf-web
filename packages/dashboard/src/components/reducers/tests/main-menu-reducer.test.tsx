@@ -9,77 +9,77 @@ describe('main menu reducer update states correctly', () => {
     result = hookResult.result;
   });
 
-  test('updates current view correctly', async () => {
+  test('updates current view correctly', () => {
     act(() => {
       result.current.dispatch.setCurrentView(2);
     });
     expect(result.current.state.currentView).toBe(2);
   });
 
-  test('updates showHelp state correctly', async () => {
+  test('updates showHelp state correctly', () => {
     act(() => {
       result.current.dispatch.setShowHelp(true);
     });
     expect(result.current.state.showHelp).toBe(true);
   });
 
-  test('updates showHotkeysDialog correctly', async () => {
+  test('updates showHotkeysDialog correctly', () => {
     act(() => {
       result.current.dispatch.setShowHotkeysDialog(true);
     });
     expect(result.current.state.showHotkeysDialog).toBe(true);
   });
 
-  test('updates showOmniPanel correctly', async () => {
+  test('updates showOmniPanel correctly', () => {
     act(() => {
       result.current.dispatch.setShowOmniPanel(false);
     });
     expect(result.current.state.showOmniPanel).toBe(false);
   });
 
-  test('updates showSettings correctly', async () => {
+  test('updates showSettings correctly', () => {
     act(() => {
       result.current.dispatch.setShowSettings(true);
     });
     expect(result.current.state.showSettings).toBe(true);
   });
 
-  test('updates tourState correctly', async () => {
+  test('updates tourState correctly', () => {
     act(() => {
       result.current.dispatch.setTourState(true);
     });
     expect(result.current.state.tourState).toBe(true);
   });
 
-  test('toggles showHelp correctly', async () => {
+  test('toggles showHelp correctly', () => {
     act(() => {
       result.current.dispatch.toggleHelp();
     });
     expect(result.current.state.showHelp).toBe(true);
   });
 
-  test('toggles toggleHotkeys correctly', async () => {
+  test('toggles toggleHotkeys correctly', () => {
     act(() => {
       result.current.dispatch.toggleHotkeys();
     });
     expect(result.current.state.showHotkeysDialog).toBe(true);
   });
 
-  test('toggles showOmniPanel correctly', async () => {
+  test('toggles showOmniPanel correctly', () => {
     act(() => {
       result.current.dispatch.toggleOmnipanel();
     });
     expect(result.current.state.showOmniPanel).toBe(false);
   });
 
-  test('toggles showSettings correctly', async () => {
+  test('toggles showSettings correctly', () => {
     act(() => {
       result.current.dispatch.toggleSettings();
     });
     expect(result.current.state.showSettings).toBe(true);
   });
 
-  test('`pushView` updates stackNavigator and currentView correctly', async () => {
+  test('`pushView` updates stackNavigator and currentView correctly', () => {
     act(() => {
       result.current.dispatch.pushView(3);
     });
@@ -87,7 +87,7 @@ describe('main menu reducer update states correctly', () => {
     expect(result.current.state.stackNavigator.top()).toBe(3);
   });
 
-  test('`popView` pops elements from stackNavigator', async () => {
+  test('`popView` pops elements from stackNavigator', () => {
     act(() => {
       result.current.dispatch.pushView(3);
       result.current.dispatch.pushView(4);
@@ -96,7 +96,7 @@ describe('main menu reducer update states correctly', () => {
     expect(result.current.state.stackNavigator.top()).toBe(3);
   });
 
-  test('`resetView` resets elements from stackNavigator', async () => {
+  test('`resetView` resets elements from stackNavigator', () => {
     act(() => {
       result.current.dispatch.pushView(3);
       result.current.dispatch.pushView(4);
