@@ -124,8 +124,8 @@ export interface ReducerMainMenuProps {
 
 export const useMainMenuReducer = (initialValue: MainMenuState): ReducerMainMenuProps => {
   const [_state, _dispatch] = React.useReducer(mainMenuReducer, initialValue);
-  // Adding a useMemo here because React identifies that state and dispatch prop is always
-  // changing, which causes a performance issue.
+  // We add a useMemo here because React identifies that the state and dispatch props are always
+  // changing, which causes a huge performance issue.
   const state = React.useMemo(() => _state, [_state]);
   const dispatch: ReducerMainMenuDispatch = React.useMemo(() => {
     return {
