@@ -123,29 +123,36 @@ export interface ReducerMainMenuProps {
 }
 
 export const useMainMenuReducer = (initialValue: MainMenuState): ReducerMainMenuProps => {
-  const [state, dispatch] = React.useReducer(mainMenuReducer, initialValue);
-  return {
-    state: state,
-    dispatch: {
-      popView: () => dispatch({ type: MainMenuActionType.PopView }),
-      pushView: (payload) => dispatch({ type: MainMenuActionType.PushView, payload: payload }),
-      resetView: () => dispatch({ type: MainMenuActionType.ResetView }),
+  const [_state, _dispatch] = React.useReducer(mainMenuReducer, initialValue);
+  // Adding a useMemo here because React identifies that state and dispatch prop is always
+  // changing, which causes a performance issue.
+  const state = React.useMemo(() => _state, [_state]);
+  const dispatch: ReducerMainMenuDispatch = React.useMemo(() => {
+    return {
+      popView: () => _dispatch({ type: MainMenuActionType.PopView }),
+      pushView: (payload) => _dispatch({ type: MainMenuActionType.PushView, payload: payload }),
+      resetView: () => _dispatch({ type: MainMenuActionType.ResetView }),
       setCurrentView: (payload) =>
-        dispatch({ type: MainMenuActionType.CurrentView, payload: payload }),
-      setLoading: (payload) => dispatch({ type: MainMenuActionType.Loading, payload: payload }),
-      setSettings: (payload) => dispatch({ type: MainMenuActionType.Settings, payload: payload }),
-      setShowHelp: (payload) => dispatch({ type: MainMenuActionType.ShowHelp, payload: payload }),
+        _dispatch({ type: MainMenuActionType.CurrentView, payload: payload }),
+      setLoading: (payload) => _dispatch({ type: MainMenuActionType.Loading, payload: payload }),
+      setSettings: (payload) => _dispatch({ type: MainMenuActionType.Settings, payload: payload }),
+      setShowHelp: (payload) => _dispatch({ type: MainMenuActionType.ShowHelp, payload: payload }),
       setShowHotkeysDialog: (payload) =>
-        dispatch({ type: MainMenuActionType.ShowHotkeysDialog, payload: payload }),
+        _dispatch({ type: MainMenuActionType.ShowHotkeysDialog, payload: payload }),
       setShowOmniPanel: (payload) =>
-        dispatch({ type: MainMenuActionType.ShowOmniPanel, payload: payload }),
+        _dispatch({ type: MainMenuActionType.ShowOmniPanel, payload: payload }),
       setShowSettings: (payload) =>
-        dispatch({ type: MainMenuActionType.ShowSettings, payload: payload }),
-      setTourState: (payload) => dispatch({ type: MainMenuActionType.TourState, payload: payload }),
-      toggleHelp: () => dispatch({ type: MainMenuActionType.ToggleHelp }),
-      toggleHotkeys: () => dispatch({ type: MainMenuActionType.ToggleHotkeys }),
-      toggleOmnipanel: () => dispatch({ type: MainMenuActionType.ToggleOmnipanel }),
-      toggleSettings: () => dispatch({ type: MainMenuActionType.ToggleSettings }),
-    },
+        _dispatch({ type: MainMenuActionType.ShowSettings, payload: payload }),
+      setTourState: (payload) =>
+        _dispatch({ type: MainMenuActionType.TourState, payload: payload }),
+      toggleHelp: () => _dispatch({ type: MainMenuActionType.ToggleHelp }),
+      toggleHotkeys: () => _dispatch({ type: MainMenuActionType.ToggleHotkeys }),
+      toggleOmnipanel: () => _dispatch({ type: MainMenuActionType.ToggleOmnipanel }),
+      toggleSettings: () => _dispatch({ type: MainMenuActionType.ToggleSettings }),
+    } as ReducerMainMenuDispatch;
+  }, []);
+  return {
+    state,
+    dispatch,
   };
 };

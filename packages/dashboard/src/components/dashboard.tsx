@@ -131,10 +131,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const trajManager = React.useRef<RobotTrajectoryManager | undefined>(undefined);
   const resourceManager = React.useRef<ResourceManager | undefined>(undefined);
 
-  const { state: _mainMenuState, dispatch: _mainMenuDispatch } = useMainMenuReducer(
+  const { state: mainMenuState, dispatch: mainMenuDispatch } = useMainMenuReducer(
     mainMenuInitialValues,
   );
-  const mainMenuState = React.useMemo(() => _mainMenuState, [_mainMenuState]);
+
   const {
     currentView,
     settings,
@@ -145,8 +145,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
     showHotkeysDialog,
   } = mainMenuState;
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const mainMenuDispatch = React.useMemo(() => _mainMenuDispatch, []);
   const { setCurrentView, setShowOmniPanel, resetView, popView, pushView } = mainMenuDispatch;
 
   const mapFloorLayerSorted = React.useMemo<string[] | undefined>(
