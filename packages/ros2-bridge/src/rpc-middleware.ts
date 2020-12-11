@@ -1,10 +1,10 @@
 import * as msgpack from '@msgpack/msgpack';
 import * as assert from 'assert';
 import WebSocket from 'ws';
-import logger, { Logger } from './logger';
+import logger, { Logger as _Logger } from './logger';
 import { WebSocketMiddleware } from './websocket-connect';
 
-export { Logger };
+export type Logger = _Logger;
 
 export interface RpcRequest<T = unknown> {
   version: string;
@@ -60,7 +60,9 @@ export default class RpcMiddleware {
     next: () => void,
   ): Promise<void> {
     assert.ok(data instanceof Buffer);
-    const req = msgpack.decode(data) as RpcRequest;
+    // Casting data as a Buffer because if not we got an error that says: 'string' is not
+    // assignable to type 'ArrayBuffer | ArrayLike <number> '
+    const req = msgpack.decode(data as Buffer) as RpcRequest;
     assert.strictEqual('0', req.version);
 
     const buildResponse = (response: Partial<RpcResponse>) => {

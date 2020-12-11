@@ -678,8 +678,8 @@ exports[`matches snapshot 1`] = `
         </div>
         <WithStyles(ForwardRef(TreeView))
           className="makeStyles-root-1"
-          defaultCollapseIcon={<UNDEFINED />}
-          defaultExpandIcon={<UNDEFINED />}
+          defaultCollapseIcon={<Memo(ExpandMoreIcon) />}
+          defaultExpandIcon={<Memo(ChevronRightIcon) />}
           defaultExpanded={
             Array [
               "root",
@@ -697,8 +697,8 @@ exports[`matches snapshot 1`] = `
                 "root": "MuiTreeView-root",
               }
             }
-            defaultCollapseIcon={<UNDEFINED />}
-            defaultExpandIcon={<UNDEFINED />}
+            defaultCollapseIcon={<Memo(ExpandMoreIcon) />}
+            defaultExpandIcon={<Memo(ChevronRightIcon) />}
             defaultExpanded={
               Array [
                 "root",
