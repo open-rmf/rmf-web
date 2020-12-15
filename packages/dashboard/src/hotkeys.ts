@@ -1,14 +1,8 @@
 import { HotKeysEnabledProps, KeyMap, KeySequence } from 'react-hotkeys';
+import { OmniPanelViewIndex } from './components/dashboard';
+import { ReducerMainMenuDispatch } from './components/reducers/main-menu-reducer';
 export interface hotKeysProps {
-  openCommands: () => void;
-  openDispensers: () => void;
-  openDoors: () => void;
-  openHelpPanel: () => void;
-  openHotKeys: () => void;
-  openLifts: () => void;
-  openOnmiPanel: () => void;
-  openRobots: () => void;
-  openSettings: () => void;
+  reducerMainMenuDispatch: ReducerMainMenuDispatch;
 }
 
 export const keyMap: KeyMap = {
@@ -51,17 +45,51 @@ export const keyMap: KeyMap = {
 };
 
 export const buildHotKeys = (props: hotKeysProps): HotKeysEnabledProps => {
+  const {
+    setCurrentView,
+    setShowOmniPanel,
+    toggleHotkeys,
+    toggleOmnipanel,
+    toggleSettings,
+    toggleHelp,
+  } = props.reducerMainMenuDispatch;
+
+  const openCommands = () => {
+    setShowOmniPanel(true);
+    setCurrentView(OmniPanelViewIndex.Commands);
+  };
+
+  const openDispensers = () => {
+    setShowOmniPanel(true);
+    setCurrentView(OmniPanelViewIndex.Dispensers);
+  };
+
+  const openDoors = () => {
+    setShowOmniPanel(true);
+    setCurrentView(OmniPanelViewIndex.Doors);
+  };
+
+  const openLifts = () => {
+    setShowOmniPanel(true);
+    setCurrentView(OmniPanelViewIndex.Lifts);
+  };
+
+  const openRobots = () => {
+    setShowOmniPanel(true);
+    setCurrentView(OmniPanelViewIndex.Robots);
+  };
+
   // Keep the same name as the KeyMap
   const handlers = {
-    OPEN_COMMANDS: props.openCommands,
-    OPEN_DISPENSERS: props.openDispensers,
-    OPEN_DOORS: props.openDoors,
-    OPEN_HELP_PANEL: props.openHelpPanel,
-    OPEN_HOTKEYS: props.openHotKeys,
-    OPEN_LIFTS: props.openLifts,
-    OPEN_OMNIPANEL: props.openOnmiPanel,
-    OPEN_ROBOTS: props.openRobots,
-    OPEN_SETTINGS: props.openSettings,
+    OPEN_COMMANDS: openCommands,
+    OPEN_DISPENSERS: openDispensers,
+    OPEN_DOORS: openDoors,
+    OPEN_HELP_PANEL: () => toggleHelp(),
+    OPEN_HOTKEYS: () => toggleHotkeys(),
+    OPEN_LIFTS: openLifts,
+    OPEN_OMNIPANEL: () => toggleOmnipanel(),
+    OPEN_ROBOTS: openRobots,
+    OPEN_SETTINGS: () => toggleSettings(),
   };
 
   return { keyMap, handlers };

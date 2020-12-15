@@ -1,117 +1,90 @@
-import { createMount, createShallow } from '@material-ui/core/test-utils';
+import { act, HookResult, renderHook } from '@testing-library/react-hooks';
 import React from 'react';
+import { render, RenderResult } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import FakeAuthenticator from '../../mock/fake-authenticator';
 import AppBar from '../appbar';
 import { AuthenticatorContext, UserContext } from '../auth/contexts';
-
-const mount = createMount();
-
-const buildWrapper = (
-  toggleShowOmniPanel: () => void,
-  showSettings: () => void,
-  showHelp: () => void,
-) => {
-  const root = mount(
-    <AppBar
-      toggleShowOmniPanel={toggleShowOmniPanel}
-      showSettings={showSettings}
-      showHelp={showHelp}
-      alarmState={null}
-    />,
-  );
-  return root;
-};
-
-const shallow = createShallow();
-const shallowWrapper = (
-  toggleShowOmniPanel: () => void,
-  showSettings: () => void,
-  showHelp: () => void,
-) => {
-  const root = shallow(
-    <AppBar
-      toggleShowOmniPanel={toggleShowOmniPanel}
-      showSettings={showSettings}
-      showHelp={showHelp}
-      alarmState={null}
-    />,
-  );
-  return root;
-};
+import { ReducerMainMenuProps, useMainMenuReducer } from '../reducers/main-menu-reducer';
+import { mainMenuInitialValues } from '../dashboard';
 
 describe('AppBar', () => {
-  let toggleShowOmniPanel: jest.Mock;
-  let showSettings: jest.Mock;
-  let showHelp: jest.Mock;
+  /**
+   * Since we do not have visual elements to test in this component (change of button color, etc).
+   * We test the correct change of state through events. Because it is a unit test we cannot test
+   * the connection with other components here (e.g. omnipanel).
+   */
+  let result: HookResult<ReducerMainMenuProps>;
+  let root: RenderResult;
 
   beforeEach(() => {
-    toggleShowOmniPanel = jest.fn();
-    showSettings = jest.fn();
-    showHelp = jest.fn();
+    const hookResult = renderHook(() => useMainMenuReducer(mainMenuInitialValues));
+    result = hookResult.result;
+    root = render(<AppBar reducerMainMenuDispatch={result.current.dispatch} alarmState={null} />);
   });
 
-  test('renders correctly', () => {
-    const root = shallowWrapper(toggleShowOmniPanel, showSettings, showHelp);
-    expect(root).toMatchSnapshot();
-  });
-
-  test('renders tooltips when it is enabled', () => {
-    const root = buildWrapper(toggleShowOmniPanel, showSettings, showHelp);
-    expect(root.find('#omnipanel-tooltip').exists()).toBeTruthy();
-    expect(root.find('#setting-tooltip').exists()).toBeTruthy();
-    expect(root.find('#help-tooltip').exists()).toBeTruthy();
-  });
-
-  test('toggles show omnipanel when dashboard button is clicked', () => {
-    const root = buildWrapper(toggleShowOmniPanel, showSettings, showHelp);
-    root.find('button#toggle-omnipanel-btn').simulate('click');
-    expect(toggleShowOmniPanel).toHaveBeenCalledTimes(1);
+  test('hides omnipanel when dashboard button is clicked', () => {
+    act(() => {
+      const elements = root.getAllByTestId('omnipanel-tooltip-tooltip');
+      for (let element in elements) {
+        userEvent.click(elements[element]);
+      }
+    });
+    expect(result.current.state.showOmniPanel).toBe(false);
   });
 
   test('show settings when settings button is clicked', () => {
-    const root = buildWrapper(toggleShowOmniPanel, showSettings, showHelp);
-    root.find('button#show-settings-btn').simulate('click');
-    expect(showSettings).toHaveBeenCalledTimes(1);
+    act(() => {
+      const elements = root.getAllByTestId('setting-tooltip-tooltip');
+      for (let element in elements) {
+        userEvent.click(elements[element]);
+      }
+    });
+    expect(result.current.state.showSettings).toBe(true);
   });
 
-  test('show help when help button is clicked', () => {
-    const root = buildWrapper(toggleShowOmniPanel, showSettings, showHelp);
-    root.find('button#show-help-btn').simulate('click');
-    expect(showHelp).toHaveBeenCalledTimes(1);
+  test('shows help when help button is clicked', () => {
+    act(() => {
+      const elements = root.getAllByTestId('help-tooltip-tooltip');
+      for (let element in elements) {
+        userEvent.click(elements[element]);
+      }
+    });
+    expect(result.current.state.showHelp).toBe(true);
+  });
+
+  test('renders tooltips when it is enabled', async () => {
+    userEvent.hover(root.getByTestId('help-tooltip-tooltip'));
+    expect(await root.findByText('Help tools and resources')).toBeTruthy();
+
+    userEvent.hover(root.getByTestId('omnipanel-tooltip-tooltip'));
+    expect(await root.findByText('View all available panel options')).toBeTruthy();
+
+    userEvent.hover(root.getByTestId('setting-tooltip-tooltip'));
+    expect(await root.findByText('Define dashboard trajectory settings')).toBeTruthy();
   });
 
   test('user button is shown when there is an authenticated user', () => {
-    const root = mount(
+    const root = render(
       <UserContext.Provider value={{ username: 'test' }}>
-        <AppBar
-          toggleShowOmniPanel={toggleShowOmniPanel}
-          showSettings={showSettings}
-          showHelp={showHelp}
-          alarmState={null}
-        />
+        <AppBar reducerMainMenuDispatch={result.current.dispatch} alarmState={null} />
       </UserContext.Provider>,
     );
-    expect(root.find('#user-btn').length > 0).toBeTruthy();
+    expect(root.getByLabelText('user-btn')).toBeTruthy();
   });
 
   test('logout is triggered when logout button is clicked', () => {
     const authenticator = new FakeAuthenticator();
     const spy = jest.spyOn(authenticator, 'logout').mockImplementation(() => undefined as any);
-
-    const root = mount(
+    const root = render(
       <AuthenticatorContext.Provider value={authenticator}>
         <UserContext.Provider value={{ username: 'test' }}>
-          <AppBar
-            toggleShowOmniPanel={toggleShowOmniPanel}
-            showSettings={showSettings}
-            showHelp={showHelp}
-            alarmState={null}
-          />
+          <AppBar reducerMainMenuDispatch={result.current.dispatch} alarmState={null} />
         </UserContext.Provider>
       </AuthenticatorContext.Provider>,
     );
-    root.find('button#user-btn').simulate('click');
-    root.find('li#logout-btn').simulate('click');
+    userEvent.click(root.getByLabelText('user-btn'));
+    userEvent.click(root.getByText('Logout'));
     expect(spy).toHaveBeenCalledTimes(1);
   });
 });

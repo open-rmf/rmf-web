@@ -31,17 +31,16 @@ import {
 } from '../negotiation-status-manager';
 import ResourceManager from '../resource-manager';
 import { RobotTrajectoryManager } from '../robot-trajectory-manager';
-import { loadSettings, saveSettings, Settings } from '../settings';
+import { loadSettings } from '../settings';
 import { AppContextProvider } from './app-contexts';
 import AppBar from './appbar';
 import CommandsPanel from './commands-panel';
-import HelpDrawer from './drawers/help-drawer';
-import HotKeysDialog from './drawers/hotkeys-dialog';
-import SettingsDrawer from './drawers/settings-drawer';
+import { DashboardDrawers } from './dashboard-drawers';
 import LoadingScreen, { LoadingScreenProps } from './loading-screen';
 import MainMenu from './main-menu';
 import NegotiationsPanel from './negotiations-panel';
 import NotificationBar, { NotificationBarProps } from './notification-bar';
+import { MainMenuState, useMainMenuReducer } from './reducers/main-menu-reducer';
 import { RmfContextProvider } from './rmf-contexts';
 import ScheduleVisualizer, { ScheduleVisualizerProps } from './schedule-visualizer';
 import { SpotlightValue } from './spotlight-value';
@@ -54,6 +53,31 @@ const LiftAccordion = React.memo(withSpotlight(LiftAccordion_));
 const RobotAccordion = React.memo(withSpotlight(RobotAccordion_));
 
 const borderRadius = 20;
+
+export enum OmniPanelViewIndex {
+  MainMenu = 0,
+  Doors,
+  Lifts,
+  Robots,
+  Dispensers,
+  Commands,
+  Negotiations,
+  Tasks,
+}
+
+export const mainMenuInitialValues: MainMenuState = {
+  currentView: 1,
+  loading: {
+    caption: 'Connecting to api server...',
+  },
+  settings: loadSettings(),
+  showHelp: false,
+  showHotkeysDialog: false,
+  showOmniPanel: true,
+  showSettings: false,
+  stackNavigator: new StackNavigator<OmniPanelViewIndex>(OmniPanelViewIndex.MainMenu),
+  tourState: false,
+};
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -93,17 +117,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export enum OmniPanelViewIndex {
-  MainMenu = 0,
-  Doors,
-  Lifts,
-  Robots,
-  Dispensers,
-  Commands,
-  Negotiations,
-  Tasks,
-}
-
 function robotKey(fleet: string, robot: RomiCore.RobotState): string {
   return `${fleet}-${robot.name}`;
 }
@@ -118,32 +131,33 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const trajManager = React.useRef<RobotTrajectoryManager | undefined>(undefined);
   const resourceManager = React.useRef<ResourceManager | undefined>(undefined);
 
+  const { state: mainMenuState, dispatch: mainMenuDispatch } = useMainMenuReducer(
+    mainMenuInitialValues,
+  );
+
+  const {
+    currentView,
+    settings,
+    showOmniPanel,
+    stackNavigator,
+    showSettings,
+    showHelp,
+    showHotkeysDialog,
+  } = mainMenuState;
+
+  const { setCurrentView, setShowOmniPanel, resetView, popView, pushView } = mainMenuDispatch;
+
   const mapFloorLayerSorted = React.useMemo<string[] | undefined>(
     () => buildingMap?.levels.sort((a, b) => a.elevation - b.elevation).map((x) => x.name),
     [buildingMap],
   );
 
-  const [showOmniPanel, setShowOmniPanel] = React.useState(true);
-  const [currentView, setCurrentView] = React.useState(OmniPanelViewIndex.MainMenu);
-  const stackNavigator = React.useMemo(
-    () => new StackNavigator<OmniPanelViewIndex>(OmniPanelViewIndex.MainMenu),
-    [],
-  );
-
-  const pushOmniPanelView = React.useCallback(
-    (view: OmniPanelViewIndex) => {
-      stackNavigator.push(view);
-      setCurrentView(view);
-    },
-    [stackNavigator],
-  );
-
   const handleOmniPanelClose = React.useCallback(() => {
     clearSpotlights();
     setNegotiationTrajStore({});
-    stackNavigator.reset();
+    resetView();
     setShowOmniPanel(false);
-  }, [stackNavigator]);
+  }, [resetView, setShowOmniPanel]);
 
   const handleOmniPanelBack = React.useCallback(() => {
     clearSpotlights();
@@ -152,15 +166,15 @@ export default function Dashboard(_props: {}): React.ReactElement {
     } else {
       setNegotiationTrajStore({});
     }
-    setCurrentView(stackNavigator.pop());
-  }, [stackNavigator, handleOmniPanelClose]);
+    popView();
+  }, [stackNavigator, handleOmniPanelClose, popView]);
 
   const handleOmniPanelHome = React.useCallback(() => {
     clearSpotlights();
     setNegotiationTrajStore({});
-    stackNavigator.reset();
+    resetView();
     setCurrentView(stackNavigator.top());
-  }, [stackNavigator]);
+  }, [resetView, setCurrentView, stackNavigator]);
 
   const doorStateManager = React.useMemo(() => new DoorStateManager(), []);
   const [doorStates, setDoorStates] = React.useState(() => doorStateManager.doorStates());
@@ -169,10 +183,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const handleDoorMarkerClick = React.useCallback(
     (door: RomiCore.Door) => {
       setShowOmniPanel(true);
-      pushOmniPanelView(OmniPanelViewIndex.Doors);
+      pushView(OmniPanelViewIndex.Doors);
       doorAccordionRefs[door.name].spotlight();
     },
-    [doorAccordionRefs, pushOmniPanelView],
+    [doorAccordionRefs, pushView, setShowOmniPanel],
   );
 
   const liftStateManager = React.useMemo(() => new LiftStateManager(), []);
@@ -182,10 +196,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const handleLiftMarkerClick = React.useCallback(
     (lift: RomiCore.Lift) => {
       setShowOmniPanel(true);
-      pushOmniPanelView(OmniPanelViewIndex.Lifts);
+      pushView(OmniPanelViewIndex.Lifts);
       liftAccordionRefs[lift.name].spotlight();
     },
-    [liftAccordionRefs, pushOmniPanelView],
+    [liftAccordionRefs, pushView, setShowOmniPanel],
   );
 
   const dispenserStateManager = React.useMemo(() => new DispenserStateManager(), []);
@@ -198,10 +212,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
   >(
     (_, guid) => {
       setShowOmniPanel(true);
-      pushOmniPanelView(OmniPanelViewIndex.Dispensers);
+      pushView(OmniPanelViewIndex.Dispensers);
       dispenserAccordionRefs[guid].spotlight();
     },
-    [dispenserAccordionRefs, pushOmniPanelView],
+    [dispenserAccordionRefs, pushView, setShowOmniPanel],
   );
   let dispensers: string[] | undefined;
   if (resourceManager.current && resourceManager.current.dispensers) {
@@ -219,10 +233,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const handleRobotMarkerClick = React.useCallback(
     (fleet: string, robot: RomiCore.RobotState) => {
       setShowOmniPanel(true);
-      pushOmniPanelView(OmniPanelViewIndex.Robots);
+      pushView(OmniPanelViewIndex.Robots);
       robotAccordionRefs[robotKey(fleet, robot)].spotlight();
     },
-    [robotAccordionRefs, pushOmniPanelView],
+    [robotAccordionRefs, pushView, setShowOmniPanel],
   );
 
   const taskManager = React.useMemo(() => new TaskManager(), []);
@@ -247,11 +261,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const [loading, setLoading] = React.useState<LoadingScreenProps | null>({
     caption: 'Connecting to server...',
   });
-
-  const [showSettings, setShowSettings] = React.useState(false);
-  const [settings, setSettings] = React.useState<Settings>(() => loadSettings());
-
-  const [showHelp, setShowHelp] = React.useState(false);
 
   const [
     notificationBarMessage,
@@ -387,34 +396,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
     setNegotiationSpotlight(undefined);
   }
 
-  const handleMainMenuDoorsClick = React.useCallback(() => {
-    pushOmniPanelView(OmniPanelViewIndex.Doors);
-  }, [pushOmniPanelView]);
-
-  const handleMainMenuLiftsClick = React.useCallback(() => {
-    pushOmniPanelView(OmniPanelViewIndex.Lifts);
-  }, [pushOmniPanelView]);
-
-  const handleMainMenuRobotsClick = React.useCallback(() => {
-    pushOmniPanelView(OmniPanelViewIndex.Robots);
-  }, [pushOmniPanelView]);
-
-  const handleMainMenuDispensersClick = React.useCallback(() => {
-    pushOmniPanelView(OmniPanelViewIndex.Dispensers);
-  }, [pushOmniPanelView]);
-
-  const handleMainMenuCommandsClick = React.useCallback(() => {
-    pushOmniPanelView(OmniPanelViewIndex.Commands);
-  }, [pushOmniPanelView]);
-
-  const handleMainMenuNegotiationsClick = React.useCallback(() => {
-    pushOmniPanelView(OmniPanelViewIndex.Negotiations);
-  }, [pushOmniPanelView]);
-
-  const handleMainMenuTasksClick = React.useCallback(() => {
-    pushOmniPanelView(OmniPanelViewIndex.Tasks);
-  }, [pushOmniPanelView]);
-
   const tourComplete = localStorage.getItem('tourComplete');
   React.useEffect(() => {
     if (tourComplete === 'true') {
@@ -424,35 +405,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
     }
   }, [tourComplete, setTourState]);
 
-  const [showHotkeyDialog, setShowHotkeyDialog] = React.useState(false);
-
-  const hotKeysValue = buildHotKeys({
-    openCommands: () => {
-      setShowOmniPanel(true);
-      handleMainMenuCommandsClick();
-    },
-    openRobots: () => {
-      setShowOmniPanel(true);
-      handleMainMenuRobotsClick();
-    },
-    openDoors: () => {
-      setShowOmniPanel(true);
-      handleMainMenuDoorsClick();
-    },
-    openDispensers: () => {
-      setShowOmniPanel(true);
-      handleMainMenuDispensersClick();
-    },
-    openLifts: () => {
-      setShowOmniPanel(true);
-      handleMainMenuLiftsClick();
-    },
-
-    openSettings: () => setShowSettings((prev) => !prev),
-    openOnmiPanel: () => setShowOmniPanel((prev) => !prev),
-    openHelpPanel: () => setShowHelp((prev) => !prev),
-    openHotKeys: () => setShowHotkeyDialog((prev) => !prev),
-  });
+  const hotKeysValue = React.useMemo(
+    () => buildHotKeys({ reducerMainMenuDispatch: mainMenuDispatch }),
+    [mainMenuDispatch],
+  );
 
   return (
     <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
@@ -468,11 +424,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
           dispenserStates={dispenserStates}
         >
           <div className={classes.container}>
-            <AppBar
-              toggleShowOmniPanel={() => setShowOmniPanel(!showOmniPanel)}
-              showSettings={setShowSettings}
-              showHelp={setShowHelp}
-            />
+            <AppBar reducerMainMenuDispatch={mainMenuDispatch} />
             {loading && <LoadingScreen {...loading} />}
             {buildingMap && mapFloorLayerSorted && !tourState && (
               <ScheduleVisualizer
@@ -497,15 +449,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                 onClose={handleOmniPanelClose}
               >
                 <OmniPanelView viewId={OmniPanelViewIndex.MainMenu}>
-                  <MainMenu
-                    onDoorsClick={handleMainMenuDoorsClick}
-                    onLiftsClick={handleMainMenuLiftsClick}
-                    onRobotsClick={handleMainMenuRobotsClick}
-                    onDispensersClick={handleMainMenuDispensersClick}
-                    onCommandsClick={handleMainMenuCommandsClick}
-                    onNegotiationsClick={handleMainMenuNegotiationsClick}
-                    onTasksClick={handleMainMenuTasksClick}
-                  />
+                  <MainMenu pushView={pushView} />
                 </OmniPanelView>
                 <OmniPanelView viewId={OmniPanelViewIndex.Doors}>
                   {doors.map((door) => (
@@ -581,32 +525,14 @@ export default function Dashboard(_props: {}): React.ReactElement {
                 </OmniPanelView>
               </OmniPanel>
             </Fade>
-
-            <SettingsDrawer
+            <DashboardDrawers
               settings={settings}
-              open={showSettings}
-              onSettingsChange={(newSettings) => {
-                setSettings(newSettings);
-                saveSettings(newSettings);
-              }}
-              onClose={() => setShowSettings(false)}
-              handleCloseButton={setShowSettings}
-            />
-
-            <HelpDrawer
-              open={showHelp}
-              handleCloseButton={() => setShowHelp(false)}
-              onClose={() => setShowHelp(false)}
-              setShowHotkeyDialog={() => setShowHotkeyDialog(true)}
-              showTour={() => {
-                setTourState(true);
-                setShowHelp(false);
-              }}
-            />
+              showSettings={showSettings}
+              showHelp={showHelp}
+              showHotkeysDialog={showHotkeysDialog}
+              reducerMainMenuDispatch={mainMenuDispatch}
+            ></DashboardDrawers>
           </div>
-          {showHotkeyDialog && (
-            <HotKeysDialog open={showHotkeyDialog} handleClose={() => setShowHotkeyDialog(false)} />
-          )}
 
           <NotificationBar
             message={notificationBarMessage?.message}
