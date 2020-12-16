@@ -44,13 +44,6 @@ describe('main menu reducer update states correctly', () => {
     expect(result.current.state.showSettings).toBe(true);
   });
 
-  test('updates tourState correctly', () => {
-    act(() => {
-      result.current.dispatch.setTourState(true);
-    });
-    expect(result.current.state.tourState).toBe(true);
-  });
-
   test('toggles showHelp correctly', () => {
     act(() => {
       result.current.dispatch.toggleHelp();
