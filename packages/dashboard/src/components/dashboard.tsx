@@ -76,7 +76,6 @@ export const mainMenuInitialValues: MainMenuState = {
   showOmniPanel: true,
   showSettings: false,
   stackNavigator: new StackNavigator<OmniPanelViewIndex>(OmniPanelViewIndex.MainMenu),
-  tourState: false,
 };
 
 const useStyles = makeStyles((theme) => ({
