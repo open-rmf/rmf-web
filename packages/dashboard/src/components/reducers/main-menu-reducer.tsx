@@ -40,7 +40,6 @@ export type MainMenuState = {
   [MainMenuActionType.ShowOmniPanel]: boolean;
   [MainMenuActionType.ShowSettings]: boolean;
   stackNavigator: StackNavigator<OmniPanelViewIndex>;
-  [MainMenuActionType.TourState]: boolean;
 };
 
 export type MainMenuAction =
@@ -57,8 +56,7 @@ export type MainMenuAction =
   | MainMenuActionFormat<'toggleHelp'>
   | MainMenuActionFormat<'toggleHotkeys'>
   | MainMenuActionFormat<'toggleOmnipanel'>
-  | MainMenuActionFormat<'toggleSettings'>
-  | MainMenuActionFormat<'tourState', MainMenuState['tourState']>;
+  | MainMenuActionFormat<'toggleSettings'>;
 
 export const mainMenuReducer = (state: MainMenuState, action: MainMenuAction): MainMenuState => {
   switch (action.type) {
@@ -92,8 +90,6 @@ export const mainMenuReducer = (state: MainMenuState, action: MainMenuAction): M
       return { ...state, showHelp: !state.showHelp };
     case MainMenuActionType.ToggleHotkeys:
       return { ...state, showHotkeysDialog: !state.showHotkeysDialog };
-    case MainMenuActionType.TourState:
-      return { ...state, tourState: action.payload };
     default:
       console.error('Unexpected action');
       return state;
@@ -115,7 +111,6 @@ export interface ReducerMainMenuDispatch {
   toggleHotkeys: () => void;
   toggleOmnipanel: () => void;
   toggleSettings: () => void;
-  setTourState: (payload: MainMenuState['tourState']) => void;
 }
 export interface ReducerMainMenuProps {
   state: MainMenuState;
@@ -143,8 +138,6 @@ export const useMainMenuReducer = (initialValue: MainMenuState): ReducerMainMenu
         _dispatch({ type: MainMenuActionType.ShowOmniPanel, payload: payload }),
       setShowSettings: (payload) =>
         _dispatch({ type: MainMenuActionType.ShowSettings, payload: payload }),
-      setTourState: (payload) =>
-        _dispatch({ type: MainMenuActionType.TourState, payload: payload }),
       toggleHelp: () => _dispatch({ type: MainMenuActionType.ToggleHelp }),
       toggleHotkeys: () => _dispatch({ type: MainMenuActionType.ToggleHotkeys }),
       toggleOmnipanel: () => _dispatch({ type: MainMenuActionType.ToggleOmnipanel }),

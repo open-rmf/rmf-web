@@ -76,7 +76,6 @@ export const mainMenuInitialValues: MainMenuState = {
   showOmniPanel: true,
   showSettings: false,
   stackNavigator: new StackNavigator<OmniPanelViewIndex>(OmniPanelViewIndex.MainMenu),
-  tourState: false,
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -267,7 +266,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
     setNotificationBarMessage,
   ] = React.useState<NotificationBarProps | null>(null);
 
-  const [tourState, setTourState] = React.useState(false);
   const [showTooltips, setTooltips] = React.useState(true);
 
   const toggleTooltips = React.useCallback(() => {
@@ -396,15 +394,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
     setNegotiationSpotlight(undefined);
   }
 
-  const tourComplete = localStorage.getItem('tourComplete');
-  React.useEffect(() => {
-    if (tourComplete === 'true') {
-      setTourState(false);
-    } else {
-      setTourState(true);
-    }
-  }, [tourComplete, setTourState]);
-
   const hotKeysValue = React.useMemo(
     () => buildHotKeys({ reducerMainMenuDispatch: mainMenuDispatch }),
     [mainMenuDispatch],
@@ -426,7 +415,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
           <div className={classes.container}>
             <AppBar reducerMainMenuDispatch={mainMenuDispatch} />
             {loading && <LoadingScreen {...loading} />}
-            {buildingMap && mapFloorLayerSorted && !tourState && (
+            {buildingMap && mapFloorLayerSorted && (
               <ScheduleVisualizer
                 buildingMap={buildingMap}
                 mapFloorLayerSorted={mapFloorLayerSorted}

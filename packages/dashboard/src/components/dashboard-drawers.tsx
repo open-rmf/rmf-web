@@ -21,7 +21,6 @@ export const DashboardDrawers = React.memo(
       setSettings,
       setShowHelp,
       setShowHotkeysDialog,
-      setTourState,
     } = reducerMainMenuDispatch;
     return (
       <>
@@ -42,7 +41,6 @@ export const DashboardDrawers = React.memo(
           onClose={() => setShowHelp(false)}
           setShowHotkeyDialog={() => setShowHotkeysDialog(true)}
           showTour={() => {
-            setTourState(true);
             setShowHelp(false);
           }}
         />
