@@ -10,6 +10,8 @@ Now let's activate the Python virtual environment so we can install all sorts of
 ```
 . venv/bin/activate
 pip install flask python-dotenv
+pip install wheel
+pip install python-keycloak
 ```
 
 Now run the flask+rclpy demo program in the venv, assuming you still have a shell with the venv activated in it:
