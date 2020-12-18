@@ -105,10 +105,10 @@ jobs:
       - name: build
         run: npm ci && npm run build:storybook && npm run build
       - name: test
-        run: npm run test:coverage
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          flags: react-components
+        run: npm run test:karma
+      # - name: Upload coverage to Codecov
+      #   uses: codecov/codecov-action@v1
+      #   with:
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     flags: react-components
           

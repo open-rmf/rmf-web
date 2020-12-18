@@ -3,7 +3,7 @@ import { TrashBinControlButtonGroup } from '../lib';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-test('It disabled buttons', () => {
+it('It disabled buttons', () => {
   const root = render(
     <TrashBinControlButtonGroup
       disableClear={true}
@@ -24,18 +24,25 @@ test('It disabled buttons', () => {
   expect(root.container.querySelector('button#save-button')?.hasAttribute('disabled')).toBeTruthy();
 });
 
-test('It executes callbacks correctly', () => {
-  const onResetClick = jest.fn();
-  const onClearClick = jest.fn();
-  const onRestoreClick = jest.fn();
-  const onSaveClick = jest.fn();
+it('It executes callbacks correctly', () => {
+  const handler = {
+    onResetClick: () => {},
+    onClearClick: () => {},
+    onRestoreClick: () => {},
+    onSaveClick: () => {},
+  };
+
+  spyOn(handler, 'onResetClick');
+  spyOn(handler, 'onClearClick');
+  spyOn(handler, 'onRestoreClick');
+  spyOn(handler, 'onSaveClick');
 
   const root = render(
     <TrashBinControlButtonGroup
-      onResetClick={onResetClick}
-      onClearClick={onClearClick}
-      onRestoreClick={onRestoreClick}
-      onSaveClick={onSaveClick}
+      onResetClick={handler.onResetClick}
+      onClearClick={handler.onClearClick}
+      onRestoreClick={handler.onRestoreClick}
+      onSaveClick={handler.onSaveClick}
     />,
   );
 
@@ -44,13 +51,13 @@ test('It executes callbacks correctly', () => {
   userEvent.click(root.getByText('Restore'));
   userEvent.click(root.getByText('Save'));
 
-  expect(onResetClick).toHaveBeenCalledTimes(1);
-  expect(onClearClick).toHaveBeenCalledTimes(1);
-  expect(onRestoreClick).toHaveBeenCalledTimes(1);
-  expect(onSaveClick).toHaveBeenCalledTimes(1);
+  expect(handler.onResetClick).toHaveBeenCalledTimes(1);
+  expect(handler.onClearClick).toHaveBeenCalledTimes(1);
+  expect(handler.onRestoreClick).toHaveBeenCalledTimes(1);
+  expect(handler.onSaveClick).toHaveBeenCalledTimes(1);
 });
 
-test('It hides buttons', () => {
+it('It hides buttons', () => {
   const root = render(
     <TrashBinControlButtonGroup
       showReset={false}

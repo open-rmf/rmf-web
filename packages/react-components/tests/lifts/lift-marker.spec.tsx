@@ -13,7 +13,7 @@ import { makeLift, makeLiftState } from './test-utils';
   'onCurrentFloor',
   'unknown',
 ] as LiftMarkerProps['variant'][]).forEach((variant) => {
-  test(`smoke test - ${variant}`, () => {
+  it(`smoke test - ${variant}`, () => {
     render(
       <svg>
         <LiftMarker lift={makeLift()} liftState={makeLiftState()} variant={variant} />
@@ -22,18 +22,22 @@ import { makeLift, makeLiftState } from './test-utils';
   });
 });
 
-test('trigger onClick event', () => {
-  const handler = jest.fn();
+it('trigger onClick event', () => {
+  const handler = {
+    onClick: () => {},
+  };
+
+  spyOn(handler, 'onClick');
   const root = render(
     <svg>
       <LiftMarker
         lift={makeLift()}
         liftState={makeLiftState()}
-        onClick={handler}
+        onClick={handler.onClick}
         data-testid="marker"
       />
     </svg>,
   );
   userEvent.click(root.getByTestId('marker'));
-  expect(handler).toHaveBeenCalled();
+  expect(handler.onClick).toHaveBeenCalled();
 });
