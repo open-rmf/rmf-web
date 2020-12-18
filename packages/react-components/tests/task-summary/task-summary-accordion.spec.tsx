@@ -47,7 +47,7 @@ describe('Renders correctly', () => {
     task = Object.values(getTaskObject())[0];
   });
 
-  test('Renders tree items', () => {
+  it('Renders tree items', () => {
     const tasks = Object.values(getTaskObject());
     const root = render(<TaskSummaryAccordion tasks={tasks} />);
     tasks.forEach((task) => {
@@ -55,15 +55,15 @@ describe('Renders correctly', () => {
     });
   });
 
-  test('Show description below the id if the task has an actor', () => {
+  it('Show description below the id if the task has an actor', () => {
     const root = render(<TaskSummaryAccordion tasks={[task]} />);
     const actor = getActorFromStatus(task.status);
-    if (!actor) throw new Error('An actor is required to run this test');
+    if (!actor) throw new Error('An actor is required to run this it');
     const classes = root.getByText(actor[0]).className;
     expect(classes).toContain('makeStyles-taskActor');
   });
 
-  test('Does not show description below the id if the task has no actor', () => {
+  it('Does not show description below the id if the task has no actor', () => {
     task.status = 'Finished';
     const root = render(<TaskSummaryAccordion tasks={[task]} />);
     expect(root.container.querySelector('[id=task-actor]')).toBeFalsy();
@@ -76,25 +76,25 @@ describe('Components gets the correct style on specifics states', () => {
     task = Object.values(getTaskObject())[0];
   });
 
-  test('Active style is applied ', () => {
+  it('Active style is applied ', () => {
     task.state = RomiCore.TaskSummary.STATE_ACTIVE;
     const root = render(<TaskSummaryAccordion tasks={[task]} />);
     expect(root.getByText(task.task_id).parentElement?.className).toContain('makeStyles-active');
   });
 
-  test('Queue style is applied', () => {
+  it('Queue style is applied', () => {
     task.state = RomiCore.TaskSummary.STATE_QUEUED;
     const root = render(<TaskSummaryAccordion tasks={[task]} />);
     expect(root.getByText(task.task_id).parentElement?.className).toContain('makeStyles-queued');
   });
 
-  test('Completed style is applied', () => {
+  it('Completed style is applied', () => {
     task.state = RomiCore.TaskSummary.STATE_COMPLETED;
     const root = render(<TaskSummaryAccordion tasks={[task]} />);
     expect(root.getByText(task.task_id).parentElement?.className).toContain('makeStyles-completed');
   });
 
-  test('Failed style is applied', () => {
+  it('Failed style is applied', () => {
     task.state = RomiCore.TaskSummary.STATE_FAILED;
     const root = render(<TaskSummaryAccordion tasks={[task]} />);
     expect(root.getByText(task.task_id).parentElement?.className).toContain('makeStyles-failed');
@@ -107,25 +107,25 @@ describe('Components gets the correct label on specifics states', () => {
     task = Object.values(getTaskObject())[0];
   });
 
-  test('Shows ACTIVE label', () => {
+  it('Shows ACTIVE label', () => {
     task.state = RomiCore.TaskSummary.STATE_ACTIVE;
     const root = render(<TaskSummaryAccordionInfo task={task} />);
     expect(root.getByText('ACTIVE')).toBeTruthy();
   });
 
-  test('Shows QUEUE label', () => {
+  it('Shows QUEUE label', () => {
     task.state = RomiCore.TaskSummary.STATE_QUEUED;
     const root = render(<TaskSummaryAccordionInfo task={task} />);
     expect(root.getByText('QUEUED')).toBeTruthy();
   });
 
-  test('Shows COMPLETED label', () => {
+  it('Shows COMPLETED label', () => {
     task.state = RomiCore.TaskSummary.STATE_COMPLETED;
     const root = render(<TaskSummaryAccordionInfo task={task} />);
     expect(root.getByText('COMPLETED')).toBeTruthy();
   });
 
-  test('Shows FAILED label', () => {
+  it('Shows FAILED label', () => {
     task.state = RomiCore.TaskSummary.STATE_FAILED;
     const root = render(<TaskSummaryAccordionInfo task={task} />);
     expect(root.getByText('FAILED')).toBeTruthy();
@@ -133,7 +133,7 @@ describe('Components gets the correct label on specifics states', () => {
 });
 
 describe('Sort Tasks', () => {
-  test('Sorts a task list by state correctly', () => {
+  it('Sorts a task list by state correctly', () => {
     const tasks = getTaskObject();
     tasks['test1'] = {
       end_time: { sec: 0, nanosec: 0 },
@@ -159,7 +159,7 @@ describe('Sort Tasks', () => {
     expect(sortedTasks[4].state).toBe(RomiCore.TaskSummary.STATE_COMPLETED);
   });
 
-  test('Sorts a task list by submission time correctly', () => {
+  it('Sorts a task list by submission time correctly', () => {
     const tasks = Object.values(getTaskObject());
     const sortedTasks = sortTasksBySubmissionTime(tasks);
     expect(sortedTasks[0].submission_time.nanosec).toBe(1500);
@@ -167,7 +167,7 @@ describe('Sort Tasks', () => {
     expect(sortedTasks[2].submission_time.nanosec).toBe(500);
   });
 
-  test('Sorts a task list by state and submission time correctly', () => {
+  it('Sorts a task list by state and submission time correctly', () => {
     const sortedTasks = sortTasks(getTaskObject());
     expect(sortedTasks[0].task_id).toBe('task2');
     expect(sortedTasks[1].task_id).toBe('task1');
@@ -175,7 +175,7 @@ describe('Sort Tasks', () => {
   });
 });
 
-test('Gets the name of the actor from the status', () => {
+it('Gets the name of the actor from the status', () => {
   const rawStatus = 'Finding a plan for [tinyRobot/tinyRobot1] to go to [23] | Remaining phases: 6';
   const actor = getActorFromStatus(rawStatus);
   expect(actor).toEqual(['[tinyRobot/tinyRobot1]']);
