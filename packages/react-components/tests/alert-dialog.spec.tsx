@@ -2,12 +2,10 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { AlertDialog } from '../lib';
+import { mockOnClick } from './test-utils';
 
 it('triggers onPositiveClick', () => {
-  const handler = {
-    onClick: () => {},
-  };
-
+  const handler = mockOnClick();
   spyOn(handler, 'onClick');
   const root = render(
     <AlertDialog open={true} title="test" variant="warn" onPositiveClick={handler.onClick} />,
@@ -28,10 +26,7 @@ it('negative button is shown only when negativeText is provided', () => {
 });
 
 it('triggers onNegativeClick', () => {
-  const handler = {
-    onClick: () => {},
-  };
-
+  const handler = mockOnClick();
   spyOn(handler, 'onClick');
   const root = render(
     <AlertDialog
@@ -48,7 +43,7 @@ it('triggers onNegativeClick', () => {
 
 it('has close button when onCloseClick is provided', () => {
   const root = render(
-    <AlertDialog open={true} title="test" variant="warn" onCloseClick={(e) => {}} />,
+    <AlertDialog open={true} title="test" variant="warn" onCloseClick={mockOnClick().onClick} />,
   );
   expect(root.getByLabelText('close')).toBeTruthy();
 });

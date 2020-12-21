@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { OmniPanel, OmniPanelView } from '../lib';
 import { OmniPanelProps } from '../lib/omni-panel';
+import { mockOnClick } from './test-utils';
 
 function TestPanel(props: Omit<OmniPanelProps, 'view' | 'children'>) {
   return (
@@ -17,9 +18,7 @@ describe('OmniPanel component', () => {
 
   beforeEach(() => {
     // TextEncoder is not available in node
-    handler = {
-      onClick: () => {},
-    };
+    handler = mockOnClick();
     spyOn(handler, 'onClick');
   });
 

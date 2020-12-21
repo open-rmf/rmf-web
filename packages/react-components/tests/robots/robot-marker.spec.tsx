@@ -12,7 +12,7 @@ describe('robot-markers', () => {
     // TextEncoder is not available in node
     colorManager = new ColorManager();
     handler = {
-      onClick: () => {},
+      onClick: () => console.log('mock'),
       robotColor: async () => 'black',
     };
 

@@ -2,16 +2,15 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { DeliveryRequestForm } from '../../lib';
+import { buildMockObject } from '../test-utils';
 import { availableDispensers, availablePlaces, fleets } from './test-data';
 
 describe('Form validation', () => {
-  let handler: { doDeliveryRequest: () => void };
+  let handler: Record<string, () => void>;
   let root: ReturnType<typeof renderForm>;
 
   function renderForm() {
-    handler = {
-      doDeliveryRequest: function doDeliveryRequest() {},
-    };
+    handler = buildMockObject(['doDeliveryRequest']);
     spyOn(handler, 'doDeliveryRequest');
 
     return render(

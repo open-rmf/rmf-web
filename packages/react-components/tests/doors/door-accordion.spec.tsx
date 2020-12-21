@@ -6,10 +6,10 @@ import { DoorAccordion } from '../../lib';
 import { makeDoor } from './test-utils';
 
 describe('Door-accordion', () => {
-  let handler: { onClick: () => void };
+  let handler: { onClick: (a: unknown, b: unknown, c: number) => void };
   let root: any;
   beforeEach(() => {
-    handler = { onClick: () => {} };
+    handler = { onClick: (a: unknown, b: unknown, c: number) => console.log('mock') };
     spyOn(handler, 'onClick');
     root = render(<DoorAccordion door={makeDoor()} onDoorControlClick={handler.onClick} />);
   });
