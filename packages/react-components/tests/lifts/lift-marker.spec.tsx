@@ -2,6 +2,7 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { LiftMarker, LiftMarkerProps } from '../../lib';
+import { mockOnClick } from '../test-utils';
 import { makeLift, makeLiftState } from './test-utils';
 
 ([
@@ -23,10 +24,7 @@ import { makeLift, makeLiftState } from './test-utils';
 });
 
 it('trigger onClick event', () => {
-  const handler = {
-    onClick: () => {},
-  };
-
+  const handler = mockOnClick();
   spyOn(handler, 'onClick');
   const root = render(
     <svg>

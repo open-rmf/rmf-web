@@ -16,7 +16,11 @@ module.exports = (options) => {
   return {
     entry: helpers.root() + '/lib/index.ts',
     // output: 'bundle.js',
+    output: {
+      filename: 'bundle.js',
+    },
     mode: ENV,
+
     /**
      * Source map for Karma from the help of karma-sourcemap-loader &  karma-webpack
      */
@@ -89,6 +93,14 @@ module.exports = (options) => {
         {
           test: /\.css$/,
           use: ['style-loader', 'css-loader'],
+        },
+
+        {
+          enforce: 'post',
+          test: /\.(js|tsx)$/,
+          loader: 'istanbul-instrumenter-loader',
+          include: helpers.root('lib'),
+          exclude: [/\.(e2e|spec|d|stories)\.ts$/, /node_modules/],
         },
       ],
     },

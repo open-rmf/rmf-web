@@ -2,6 +2,7 @@ import React from 'react';
 import { TrashBinControlButtonGroup } from '../lib';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { buildMockObject } from './test-utils';
 
 it('It disabled buttons', () => {
   const root = render(
@@ -25,12 +26,12 @@ it('It disabled buttons', () => {
 });
 
 it('It executes callbacks correctly', () => {
-  const handler = {
-    onResetClick: () => {},
-    onClearClick: () => {},
-    onRestoreClick: () => {},
-    onSaveClick: () => {},
-  };
+  const handler = buildMockObject([
+    'onResetClick',
+    'onClearClick',
+    'onRestoreClick',
+    'onSaveClick',
+  ]);
 
   spyOn(handler, 'onResetClick');
   spyOn(handler, 'onClearClick');

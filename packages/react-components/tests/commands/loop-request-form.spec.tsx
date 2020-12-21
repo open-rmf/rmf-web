@@ -2,17 +2,15 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { LoopRequestForm } from '../../lib';
+import { buildMockObject } from '../test-utils';
 import { availablePlaces, fleets } from './test-data';
 
 describe('Form validation', () => {
-  let handler: { doLoopRequest: () => void };
+  let handler: Record<string, () => void>;
   let root: ReturnType<typeof renderForm>;
 
   function renderForm() {
-    handler = {
-      doLoopRequest: function doLoopRequest() {},
-    };
-
+    handler = buildMockObject(['doLoopRequest']);
     spyOn(handler, 'doLoopRequest');
 
     return render(
