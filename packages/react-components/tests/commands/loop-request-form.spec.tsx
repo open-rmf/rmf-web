@@ -6,7 +6,7 @@ import { buildMockObject } from '../test-utils';
 import { availablePlaces, fleets } from './test-data';
 
 describe('Form validation', () => {
-  let handler: Record<string, () => void>;
+  let handler: ReturnType<typeof buildMockObject>;
   let root: ReturnType<typeof renderForm>;
 
   function renderForm() {

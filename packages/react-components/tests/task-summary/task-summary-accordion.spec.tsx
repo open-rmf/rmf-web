@@ -58,7 +58,7 @@ describe('Renders correctly', () => {
   it('Show description below the id if the task has an actor', () => {
     const root = render(<TaskSummaryAccordion tasks={[task]} />);
     const actor = getActorFromStatus(task.status);
-    if (!actor) throw new Error('An actor is required to run this it');
+    if (!actor) throw new Error('An actor is required to run this test');
     const classes = root.getByText(actor[0]).className;
     expect(classes).toContain('makeStyles-taskActor');
   });
