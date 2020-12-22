@@ -22,7 +22,6 @@ const ENV = (process.env.ENV = process.env.NODE_ENV = 'development');
 module.exports = (options) => {
   return {
     entry: root() + '/lib/index.ts',
-    // output: 'bundle.js',
     output: {
       filename: 'bundle.js',
     },
