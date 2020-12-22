@@ -28,8 +28,6 @@ jobs:
         run: |
           docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
           npm run sync:docker
-      - name: Setup kernel for Karma tests, increase watchers
-        run: echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
       - name: unit test
         run: docker-compose -f docker/docker-compose.yml up --exit-code-from unit-test unit-test
       - name: Upload coverage to Codecov
@@ -106,11 +104,13 @@ jobs:
         run: npm config set unsafe-perm=true
       - name: build
         run: npm ci && npm run build:storybook && npm run build
+      - name: Setup kernel for Karma tests, increase watchers
+        run: echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
       - name: test
         run: npm run test:karma
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          flags: react-components
+      # - name: Upload coverage to Codecov
+      #   uses: codecov/codecov-action@v1
+      #   with:
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     flags: react-components
           
