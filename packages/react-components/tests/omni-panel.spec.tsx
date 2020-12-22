@@ -14,7 +14,7 @@ function TestPanel(props: Omit<OmniPanelProps, 'view' | 'children'>) {
 }
 
 describe('OmniPanel component', () => {
-  let handler: { onClick: () => void };
+  let handler: ReturnType<typeof mockOnClick>;
 
   beforeEach(() => {
     // TextEncoder is not available in node

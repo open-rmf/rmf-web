@@ -53,9 +53,10 @@ export const TaskSummaryAccordion = React.memo((props: TaskSummaryAccordionProps
   const [selected, setSelected] = React.useState<string>('');
 
   /**
-   * Here exists a type conflict, the linter told us to use Record<string, unknown> but on build time
-   * we get this error:
-   * Type '(event: React.ChangeEvent<Record<string, unknown>>, nodeIds: string) => void' is not assignable to type '((event: ChangeEvent<{}>, nodeIds: string) => void) | ((event: ChangeEvent<{}>, nodeIds: string[]) => void) | undefined'.
+   * Here exists a type conflict, the linter told us to use Record<string, unknown> if we use `{}` as
+   * it's on the type definition, but on build time we get this error:
+   * Type '(event: React.ChangeEvent<Record<string, unknown>>, nodeIds: string) => void' is not
+   * assignable to type '((event: ChangeEvent<{}>, nodeIds: string) => void) | ((event: ChangeEvent<{}>, nodeIds: string[]) => void) | undefined'.
    */
   const handleToggle = (event: React.ChangeEvent<unknown>, nodeIds: string[]) => {
     setExpanded(nodeIds);
