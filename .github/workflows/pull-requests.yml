@@ -28,6 +28,8 @@ jobs:
         run: |
           docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
           npm run sync:docker
+      - name: Setup kernel for Karma tests, increase watchers
+        run: echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
       - name: unit test
         run: docker-compose -f docker/docker-compose.yml up --exit-code-from unit-test unit-test
       - name: Upload coverage to Codecov
@@ -35,9 +37,6 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: dashboard
-      - uses: actions/checkout@v1
-      - name: Setup kernel for Karma tests, increase watchers
-        run: echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
   e2e-test:
     name: End-to-End Test
     runs-on: ubuntu-latest
