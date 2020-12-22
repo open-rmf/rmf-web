@@ -27,11 +27,9 @@ module.exports = (config) => {
     webpack: testWebpackConfig,
 
     coverageReporter: {
-      reporters: [
-        // {type: 'html', dir:'coverage/'},
-        { type: 'text' },
-        { type: 'text-summary' },
-      ],
+      dir: 'coverage',
+      subdir: '.',
+      reporters: [{ type: 'text' }, { type: 'text-summary' }, { type: 'lcovonly' }],
     },
 
     // Webpack please don't spam the console when running in karma!

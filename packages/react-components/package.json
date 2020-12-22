@@ -21,7 +21,7 @@
   "dependencies": {
     "@osrf/romi-js-core-interfaces": "^0.1.4",
     "debug": "^4.2.0",
-    "istanbul-instrumenter-loader": "^0.2.0",
+    "istanbul-instrumenter-loader": "^3.0.1",
     "node-vibrant": "^3.1.6"
   },
   "devDependencies": {
@@ -47,7 +47,7 @@
     "jest": "^26.5.2",
     "karma": "^5.2.3",
     "karma-chrome-launcher": "^3.1.0",
-    "karma-coverage": "^1.1.2",
+    "karma-coverage": "^2.0.3",
     "karma-jasmine": "^4.0.1",
     "karma-remap-istanbul": "^0.6.0",
     "karma-sourcemap-loader": "^0.3.8",
