@@ -7,87 +7,87 @@ on:
 env:
   CI: true
 jobs:
-  dashboard-unit-test:
-    name: Dashboard Unit Test
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: packages/dashboard
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          # Version Spec of the version to use.  Examples: 10.x, 10.15.1, >=10.15.0, lts
-          node-version: 12.x # optional, default is 10.x
-          # Optional registry to set up for auth. Will set the registry in a project level .npmrc and .yarnrc file, and set up auth to read in from env.NODE_AUTH_TOKEN
-          registry-url: # optional
-          # Optional scope for authenticating against scoped registries
-          scope: # optional
-      - name: prepare
-        run: |
-          docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
-          npm run sync:docker
-      - name: unit test
-        run: docker-compose -f docker/docker-compose.yml up --exit-code-from unit-test unit-test
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          flags: dashboard
-  e2e-test:
-    name: End-to-End Test
-    runs-on: ubuntu-latest
-    container:
-      image: docker.pkg.github.com/osrf/rmf-web/e2e
-      credentials:
-        username: ${{ github.repository_owner }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-      env:
-        CHROME_BIN: /chrome-no-sandbox
-    defaults: 
-      run:
-        shell: bash
-        working-directory: packages/dashboard
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 12
-      - name: prepare
-        run: |
-          docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
-          npm run sync:docker
-      - name: e2e test
-        run: |
-          . /opt/rmf/setup.bash
-          bash -c 'cd e2e && npm ci --unsafe-perm && (npm test || npm test || npm test)'
-      - name: upload artifacts
-        uses: actions/upload-artifact@v2
-        if: ${{ always() }}
-        with:
-          name: screenshots
-          path: e2e/artifacts
-  ros2-bridge-test:
-    name: Ros2 Bridge Test
-    runs-on: ubuntu-latest
-    container:
-      image: ros:foxy
-    defaults:
-      run:
-        shell: bash
-        working-directory: packages/ros2-bridge
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 12
-      - name: set npm config
-        run: npm config set unsafe-perm=true
-      - name: build
-        run: . /opt/ros/foxy/setup.bash && npm ci && npm run build
-      - name: test
-        run: . /opt/ros/foxy/setup.bash && npm test
+  # dashboard-unit-test:
+  #   name: Dashboard Unit Test
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       shell: bash
+  #       working-directory: packages/dashboard
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-node@v1
+  #       with:
+  #         # Version Spec of the version to use.  Examples: 10.x, 10.15.1, >=10.15.0, lts
+  #         node-version: 12.x # optional, default is 10.x
+  #         # Optional registry to set up for auth. Will set the registry in a project level .npmrc and .yarnrc file, and set up auth to read in from env.NODE_AUTH_TOKEN
+  #         registry-url: # optional
+  #         # Optional scope for authenticating against scoped registries
+  #         scope: # optional
+  #     - name: prepare
+  #       run: |
+  #         docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
+  #         npm run sync:docker
+  #     - name: unit test
+  #       run: docker-compose -f docker/docker-compose.yml up --exit-code-from unit-test unit-test
+  #     - name: Upload coverage to Codecov
+  #       uses: codecov/codecov-action@v1
+  #       with:
+  #         token: ${{ secrets.CODECOV_TOKEN }}
+  #         flags: dashboard
+  # e2e-test:
+  #   name: End-to-End Test
+  #   runs-on: ubuntu-latest
+  #   container:
+  #     image: docker.pkg.github.com/osrf/rmf-web/e2e
+  #     credentials:
+  #       username: ${{ github.repository_owner }}
+  #       password: ${{ secrets.GITHUB_TOKEN }}
+  #     env:
+  #       CHROME_BIN: /chrome-no-sandbox
+  #   defaults: 
+  #     run:
+  #       shell: bash
+  #       working-directory: packages/dashboard
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-node@v1
+  #       with:
+  #         node-version: 12
+  #     - name: prepare
+  #       run: |
+  #         docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
+  #         npm run sync:docker
+  #     - name: e2e test
+  #       run: |
+  #         . /opt/rmf/setup.bash
+  #         bash -c 'cd e2e && npm ci --unsafe-perm && (npm test || npm test || npm test)'
+  #     - name: upload artifacts
+  #       uses: actions/upload-artifact@v2
+  #       if: ${{ always() }}
+  #       with:
+  #         name: screenshots
+  #         path: e2e/artifacts
+  # ros2-bridge-test:
+  #   name: Ros2 Bridge Test
+  #   runs-on: ubuntu-latest
+  #   container:
+  #     image: ros:foxy
+  #   defaults:
+  #     run:
+  #       shell: bash
+  #       working-directory: packages/ros2-bridge
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-node@v1
+  #       with:
+  #         node-version: 12
+  #     - name: set npm config
+  #       run: npm config set unsafe-perm=true
+  #     - name: build
+  #       run: . /opt/ros/foxy/setup.bash && npm ci && npm run build
+  #     - name: test
+  #       run: . /opt/ros/foxy/setup.bash && npm test
   react-component-test:
     name: React Component Test
     runs-on: ubuntu-latest
@@ -111,7 +111,8 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
-          file: coverage/lcov.info
+          file: ./coverage/lcov.info
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: react-components
+          
           
