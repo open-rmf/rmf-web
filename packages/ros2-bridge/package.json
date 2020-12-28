@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "preinstall": "node ../../scripts/install.js",
-    "start": "ts-node index.ts",
+    "start": "ts-node src/index.ts",
     "build": "tsc --build",
     "clean": "tsc --build --clean",
     "prepack": "npm ci && npm run clean && npm run build",

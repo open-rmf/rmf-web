@@ -117,6 +117,7 @@ async function main() {
   }
   app.use(rpc.middleware);
 
+  process.on('SIGINT', () => server.close());
   server.listen(config.port, config.host);
 }
 
