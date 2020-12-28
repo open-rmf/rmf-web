@@ -66,7 +66,7 @@ export enum OmniPanelViewIndex {
 }
 
 export const mainMenuInitialValues: MainMenuState = {
-  currentView: 1,
+  currentView: 0,
   loading: {
     caption: 'Connecting to api server...',
   },
