@@ -20,6 +20,7 @@ export default function authenticator(options: Options): WebSocketMiddleware {
   return (socket: WebSocket & { authorized?: boolean }, data, next) => {
     if (socket.authorized) {
       next();
+      return;
     }
 
     if (typeof data !== 'string') {
