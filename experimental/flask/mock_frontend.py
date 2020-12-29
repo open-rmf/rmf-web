@@ -7,11 +7,14 @@ keycloak_openid = KeycloakOpenID(
     realm_name='master'
 )
 
-token = keycloak_openid.token('admin', 'admin')
+token = keycloak_openid.token('viewer', 'viewer')
 user_id = keycloak_openid.userinfo(token['access_token'])['sub']
 user_name = keycloak_openid.userinfo(token['access_token'])['preferred_username']
 print(f'user ID: {user_id}')
 print(f'user name: {user_name}')
+print(f'token: {token}')
+access_token = keycloak_openid.userinfo(token['access_token'])
+print(f"token['access_token']: {access_token}")
 
 #import requests
 # todo: stuff the token into the request headers
