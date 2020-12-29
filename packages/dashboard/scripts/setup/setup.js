@@ -21,37 +21,38 @@ You have two options:
       {
         name: 'GET_OR_COPY',
         message: chalk`{blue What option are you going to choose?}`,
-        validate: input => /^[1-2-]$/.test(input) || 'Invalid option',
+        validate: (input) => /^[1-2-]$/.test(input) || 'Invalid option',
       },
       {
         name: 'REPO',
         message: `Set REPO. Example: https://github.com/osrf/rmf_demos.git`,
-        when: keys => keys['GET_OR_COPY'] === '1',
-        validate: input =>
+        when: (keys) => keys['GET_OR_COPY'] === '1',
+        validate: (input) =>
           /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/.test(
             input,
           ) || 'Not a valid URL',
       },
+      // TODO: change to "main" when rmf completes the switch
       {
         name: 'BRANCH',
         message: `Set BRANCH. Example: master`,
-        when: keys => !!keys['REPO'],
+        when: (keys) => !!keys['REPO'],
         default: 'master',
       },
       {
         name: 'FOLDER',
         message: `Set FOLDER. Leave it empty to clone the whole project. Example: rmf_dashboard_resources/office/`,
-        when: keys => !!keys['BRANCH'],
+        when: (keys) => !!keys['BRANCH'],
         default: '',
       },
       {
         name: 'COPY',
         message: 'Set absolute PATH',
-        when: keys => keys['GET_OR_COPY'] === '2',
-        validate: input => /^(\/[^\/]+){0,20}\/?$/gm.test(input) || 'Not a valid PATH',
+        when: (keys) => keys['GET_OR_COPY'] === '2',
+        validate: (input) => /^(\/[^\/]+){0,20}\/?$/gm.test(input) || 'Not a valid PATH',
       },
     ])
-    .then(keys => {
+    .then((keys) => {
       let information;
       if (keys.GET_OR_COPY === '1') {
         information = { repoUrl: keys.REPO, folder: keys.FOLDER, branch: keys.BRANCH };
@@ -59,7 +60,7 @@ You have two options:
       if (keys.GET_OR_COPY === '2') {
         information = { path: keys.COPY };
       }
-      fs.writeFile('.resources.json', JSON.stringify(information), function(err) {
+      fs.writeFile('.resources.json', JSON.stringify(information), function (err) {
         if (err) {
           exec('mv .bak-resources.json .resources.json');
           throw err;
@@ -70,7 +71,7 @@ You have two options:
         } catch (error) {}
       });
     })
-    .catch(error => console.error(error));
+    .catch((error) => console.error(error));
 };
 
 if (fileExists) {
@@ -83,10 +84,10 @@ if (fileExists) {
     .prompt({
       name: 'QUIT_OR_MODIFY',
       message: chalk`{blue What option are you going to choose?}`,
-      validate: input => /^[1-2-]$/.test(input) || 'Invalid option',
+      validate: (input) => /^[1-2-]$/.test(input) || 'Invalid option',
       default: 1,
     })
-    .then(keys => {
+    .then((keys) => {
       if (keys.QUIT_OR_MODIFY === '1') {
         return;
       }
@@ -105,7 +106,7 @@ if (fileExists) {
         });
       }
     })
-    .catch(error => console.error(error));
+    .catch((error) => console.error(error));
 }
 
 if (!fileExists) {

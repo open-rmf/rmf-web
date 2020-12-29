@@ -1,5 +1,5 @@
 [![Nightly](https://github.com/osrf/romi-dashboard/workflows/Nightly/badge.svg)](https://github.com/osrf/romi-dashboard/actions?query=workflow%3ANightly)
-[![codecov](https://codecov.io/gh/osrf/rmf-web/branch/master/graph/badge.svg)](https://codecov.io/gh/osrf/rmf-web)
+[![codecov](https://codecov.io/gh/osrf/rmf-web/branch/main/graph/badge.svg)](https://codecov.io/gh/osrf/rmf-web)
 
 ## RoMi-dashboard
 
