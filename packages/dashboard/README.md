@@ -1,6 +1,3 @@
-[![Nightly](https://github.com/osrf/romi-dashboard/workflows/Nightly/badge.svg)](https://github.com/osrf/romi-dashboard/actions?query=workflow%3ANightly)
-[![codecov](https://codecov.io/gh/osrf/rmf-web/branch/main/graph/badge.svg)](https://codecov.io/gh/osrf/rmf-web)
-
 ## RoMi-dashboard
 
 Hello! `romi-dashboard` is a web application that provides overall visualization and control over the RoMi system.

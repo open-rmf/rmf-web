@@ -1,3 +1,6 @@
+[![Nightly](https://github.com/osrf/rmf-web/workflows/Nightly/badge.svg)](https://github.com/osrf/rmf-web/actions?query=workflow%3ANightly)
+[![codecov](https://codecov.io/gh/osrf/rmf-web/branch/main/graph/badge.svg)](https://codecov.io/gh/osrf/rmf-web)
+
 # Installation
 
 On Ubuntu 20.04, we need to install Docker, NVM, and node:
