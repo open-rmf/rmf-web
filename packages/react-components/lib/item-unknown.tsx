@@ -10,7 +10,7 @@ interface Location {
 
 export interface ItemUnknownProps {
   name: string;
-  location?: Location;
+  location: Location | undefined;
   errorMsg?: string;
 }
 
