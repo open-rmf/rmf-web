@@ -1,16 +1,23 @@
-import { Accordion, AccordionProps, makeStyles, Divider } from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
+import { Accordion, AccordionProps, makeStyles } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import React from 'react';
 import ItemAccordionDetails from '../item-accordion-details';
 import ItemAccordionSummary from '../item-accordion-summary';
+import { ItemUnknown } from '../item-unknown';
 import { SimpleInfo } from '../simple-info';
 
 const debug = Debug('Dispensers:DispenserAccordion');
 
 interface DispenserInfoProps {
   dispenser: RomiCore.DispenserState;
+}
+
+interface Location {
+  x: number;
+  y: number;
+  yaw: number;
+  level_name: string;
 }
 
 const DispenserInfo = (props: DispenserInfoProps) => {
@@ -58,11 +65,12 @@ export interface DispenserAccordionProps extends Omit<AccordionProps, 'children'
    */
   dispenserState: RomiCore.DispenserState | null;
   dispenser: string;
+  location?: Location;
 }
 
 export const DispenserAccordion = React.forwardRef(
   (props: DispenserAccordionProps, ref: React.Ref<HTMLElement>) => {
-    const { dispenserState, dispenser, ...otherProps } = props;
+    const { dispenserState, dispenser, location, ...otherProps } = props;
     debug(`render ${dispenser}`);
     const classes = useStyles();
 
@@ -96,14 +104,15 @@ export const DispenserAccordion = React.forwardRef(
             <DispenserInfo dispenser={dispenserState} />
           </ItemAccordionDetails>
         ) : (
-          <React.Fragment>
-            <Divider />
-            <Typography className={classes.typography} variant="body1">
-              The state of <b>{dispenser}</b> dispenser is unknown. Please check if{' '}
-              <b>{dispenser} </b>
-              is working properly.
-            </Typography>
-          </React.Fragment>
+          <ItemAccordionDetails>
+            <ItemUnknown
+              name={dispenser}
+              location={location}
+              errorMsg={
+                'Dispenser is not sending states. Proceed to the location above to check if it is working properly.'
+              }
+            />
+          </ItemAccordionDetails>
         )}
       </Accordion>
     );

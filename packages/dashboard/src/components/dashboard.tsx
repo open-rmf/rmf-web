@@ -45,6 +45,7 @@ import { RmfContextProvider } from './rmf-contexts';
 import ScheduleVisualizer, { ScheduleVisualizerProps } from './schedule-visualizer';
 import { SpotlightValue } from './spotlight-value';
 import TaskSummaryPanel from './task-summary-panel';
+import { DispenserResource } from '../resource-manager-dispensers';
 
 const debug = Debug('App');
 const DispenserAccordion = React.memo(withSpotlight(DispenserAccordion_));
@@ -216,9 +217,9 @@ export default function Dashboard(_props: {}): React.ReactElement {
     },
     [dispenserAccordionRefs, pushView, setShowOmniPanel],
   );
-  let dispensers: string[] | undefined;
+  let dispensers: Record<string, DispenserResource> | undefined;
   if (resourceManager.current && resourceManager.current.dispensers) {
-    dispensers = Object.keys(resourceManager.current.dispensers.dispensers);
+    dispensers = resourceManager.current.dispensers.dispensers;
   }
 
   const fleetManager = React.useMemo(() => new FleetManager(), []);
@@ -478,7 +479,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                 </OmniPanelView>
                 <OmniPanelView viewId={OmniPanelViewIndex.Dispensers}>
                   {dispensers
-                    ? dispensers.map((dispenser) => (
+                    ? Object.keys(dispensers).map((dispenser) => (
                         <DispenserAccordion
                           key={dispenser}
                           ref={
@@ -491,6 +492,13 @@ export default function Dashboard(_props: {}): React.ReactElement {
                           }
                           data-component="DispenserAccordion"
                           dispenser={dispenser}
+                          location={
+                            dispenserStates[dispenser]
+                              ? undefined
+                              : dispensers
+                              ? dispensers[dispenser].location
+                              : undefined
+                          }
                         />
                       ))
                     : null}

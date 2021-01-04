@@ -38,6 +38,7 @@ const useStyles = makeStyles((theme) => ({
     borderCollapse: 'collapse',
     width: '100%',
     overflowX: 'auto',
+    tableLayout: 'fixed',
   },
   tableRow: {
     display: 'table-row',
@@ -89,14 +90,12 @@ export const SimpleInfo = (props: SimpleInfoProps): JSX.Element => {
     value,
     className,
     disabled,
-    wrap,
   }: SimpleInfoData<DataValueTypePrimitive>) => (
     <>
       <Typography className={classes.displayName} variant="body1">
         {name}
       </Typography>
       <Typography
-        noWrap={!wrap}
         variant="body1"
         className={joinClasses(
           className?.overrideValue ? className?.overrideValue : classes.value,
