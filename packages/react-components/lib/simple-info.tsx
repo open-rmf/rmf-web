@@ -38,7 +38,6 @@ const useStyles = makeStyles((theme) => ({
     borderCollapse: 'collapse',
     width: '100%',
     overflowX: 'auto',
-    tableLayout: 'fixed',
   },
   tableRow: {
     display: 'table-row',

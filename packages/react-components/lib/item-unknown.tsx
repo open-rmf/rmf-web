@@ -14,7 +14,7 @@ export interface ItemUnknownProps {
   errorMsg?: string;
 }
 
-export const ItemUnknown = (props: ItemUnknownProps) => {
+export const ItemUnknown = (props: ItemUnknownProps): JSX.Element => {
   const { name, location, errorMsg } = props;
 
   const data = [
