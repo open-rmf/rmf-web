@@ -50,10 +50,6 @@ jobs:
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
-      env:
-        CHROME_BIN: /chrome-no-sandbox
-      volumes:
-        - /dev/shm:/dev/shm
       options: --privileged --ipc=host
     defaults: 
       run:

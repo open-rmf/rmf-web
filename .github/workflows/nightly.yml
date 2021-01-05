@@ -73,8 +73,7 @@ jobs:
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
-      env:
-        CHROME_BIN: /chrome-no-sandbox
+      options: --privileged --ipc=host
     defaults:
       run:
         shell: bash
