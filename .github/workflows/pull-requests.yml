@@ -77,7 +77,7 @@ jobs:
       - name: e2e test
         run: |
           . /opt/rmf/setup.bash
-          cd e2e && (npm test:e2e || npm test:e2e || npm test:e2e)
+          cd e2e && (npm test || npm test || npm test)
       - name: upload artifacts
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
