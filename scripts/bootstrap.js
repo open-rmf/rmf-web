@@ -29,19 +29,10 @@ const scope = process.argv.length > 2 ? process.argv.slice(2) : allPackages;
 const verb = process.env['CI'] ? 'ci' : 'install';
 const targets = new Set(['.']);
 scope.forEach((pkg) => {
-  const cwd = `${__dirname}/../${pkg}`;
   if (deps[pkg]) {
     deps[pkg].forEach((p) => targets.add(p));
   }
-  try {
-    fs.accessSync(`${cwd}/node_modules`);
-  } catch (e) {
-    if (e.code === 'ENOENT') {
-      child_process.spawnSync('npm', [verb], { stdio: 'inherit', cwd });
-    } else {
-      throw e;
-    }
-  }
+  targets.add(pkg);
 });
 targets.forEach((pkg) => {
   const cwd = `${__dirname}/../${pkg}`;
