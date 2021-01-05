@@ -29,6 +29,7 @@ jobs:
           . /opt/rmf/setup.bash
           npm config set unsafe-perm
           npm run bootstrap packages/dashboard
+        working-directory: .
       - name: unit test
         run: . /opt/rmf/setup.bash && npm test
       - name: Upload coverage to Codecov
@@ -69,7 +70,7 @@ jobs:
       - name: e2e test
         run: |
           . /opt/rmf/setup.bash
-          npm test:e2e || npm test:e2e || npm test:e2e
+          cd e2e && (npm test:e2e || npm test:e2e || npm test:e2e)
       - name: upload artifacts
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
@@ -99,10 +100,7 @@ jobs:
       - name: build
         run: . /opt/ros/foxy/setup.bash && npm run build
       - name: test
-        run: |
-          . /opt/ros/foxy/setup.bash
-          cd packages/ros2-bridge
-          npm test
+        run: . /opt/ros/foxy/setup.bash && npm test
   react-component-test:
     name: React Component Test
     runs-on: ubuntu-latest
