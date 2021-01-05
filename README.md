@@ -23,7 +23,7 @@ Install rmf
 ```bash
 curl -sL http://rmf.servehttp.com/repos.key | sudo apt-key add -
 echo 'deb [arch=amd64] http://rmf.servehttp.com/ubuntu/main focal main' | sudo tee /etc/apt/sources.list.d/rmf.list
-sudo apt-get update && sudo apt-get install '^ros-foxy-rmf-.*'
+sudo apt update && sudo apt install '^ros-foxy-rmf-.*'
 ```
 
 ### Others
