@@ -13,7 +13,6 @@
     "start:rmf": "ts-node -P e2e/tsconfig.json e2e/startBackend.ts",
     "start:ros2-bridge": "ros2-bridge --port 50002 --trajectoryServerUrl ws://localhost:8006 --publicKey e2e/certs/keycloak.pub",
     "build": "react-scripts build",
-    "build:storybook": "build-storybook -s public",
     "test": "react-scripts test",
     "test:coverage": "npm run test -- --coverage --watchAll=false",
     "test:e2e": "cd e2e && npm test",
@@ -23,7 +22,7 @@
     "deploy:demo": "REACT_APP_MOCK=1 npm run build && NODE_DEBUG=gh-pages gh-pages -d build -m \"$(git rev-parse HEAD)\"",
     "setup": "node ./scripts/setup/setup.js && node ./scripts/setup/get-icons.js",
     "storybook": "start-storybook -p 9009 -s public -s src/stories/static",
-    "build-storybook": "build-storybook -s public -s src/stories/static"
+    "build:storybook": "build-storybook -s public -s src/stories/static"
   },
   "eslintConfig": {
     "extends": "react-app"
