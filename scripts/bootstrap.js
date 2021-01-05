@@ -40,7 +40,10 @@ targets.forEach((pkg) => {
     fs.accessSync(`${cwd}/node_modules`);
   } catch (e) {
     if (e.code === 'ENOENT') {
-      child_process.spawnSync('npm', [verb], { stdio: 'inherit', cwd });
+      const result = child_process.spawnSync('npm', [verb], { stdio: 'inherit', cwd });
+      if (result.status !== 0) {
+        process.exit(result.status);
+      }
     } else {
       throw e;
     }
