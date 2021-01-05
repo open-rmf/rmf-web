@@ -71,7 +71,7 @@ jobs:
           docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
           cd packages/dashboard
           npm run sync:docker
-          cd packages/e2e
+          cd e2e
           npm ci
         working-directory: .
       - name: e2e test
