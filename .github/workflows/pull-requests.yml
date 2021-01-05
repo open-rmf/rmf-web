@@ -15,8 +15,6 @@ jobs:
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
-      env:
-        CHROME_BIN: /chrome-no-sandbox
     defaults:
       run:
         shell: bash
@@ -35,7 +33,7 @@ jobs:
         run: |
           . /opt/rmf/setup.bash
           npm config set unsafe-perm
-          npm run bootstrap packages/dashboard
+          npm run bootstrap -- packages/dashboard
         working-directory: .
       - name: unit test
         run: . /opt/rmf/setup.bash && npm test
@@ -70,7 +68,7 @@ jobs:
         run: |
           . /opt/rmf/setup.bash
           npm config set unsafe-perm
-          npm run bootstrap packages/dashboard
+          npm run bootstrap -- packages/dashboard
           docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
           cd packages/dashboard
           npm run sync:docker
@@ -105,7 +103,7 @@ jobs:
         run: |
           . /opt/ros/foxy/setup.bash
           npm config set unsafe-perm
-          npm run bootstrap packages/ros2-bridge
+          npm run bootstrap -- packages/ros2-bridge
         working-directory: .
       - name: build
         run: . /opt/ros/foxy/setup.bash && npm run build
@@ -126,7 +124,7 @@ jobs:
       - name: bootstrap
         run: |
           npm config set unsafe-perm
-          npm run bootstrap packages/react-components
+          npm run bootstrap -- packages/react-components
         working-directory: .
       - name: build
         run: npm run build:storybook && npm run build
