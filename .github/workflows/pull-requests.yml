@@ -54,6 +54,8 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
       env:
         CHROME_BIN: /chrome-no-sandbox
+      volumes:
+        - /dev/shm:/dev/shm
     defaults: 
       run:
         shell: bash
