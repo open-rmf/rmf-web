@@ -61,7 +61,9 @@ jobs:
       - name: e2e test
         run: |
           . /opt/rmf/setup.bash
-          bash -c 'cd e2e && npm ci --unsafe-perm && (npm test || npm test || npm test)'
+          npm config set unsafe-perm
+          lerna bootstrap --include-dependencies --scope='{root,romi-dashboard}'
+          cd e2e && npm ci && (npm test || npm test || npm test)
       - name: upload artifacts
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
@@ -85,7 +87,10 @@ jobs:
       - name: set npm config
         run: npm config set unsafe-perm=true
       - name: build
-        run: . /opt/ros/foxy/setup.bash && npm ci && npm run build
+        run: |
+          . /opt/ros/foxy/setup.bash
+          lerna bootstrap --include-dependencies --scope='{root,romi-dashboard}'
+          npm run build
       - name: test
         run: . /opt/ros/foxy/setup.bash && npm test
   react-component-test:
