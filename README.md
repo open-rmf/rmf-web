@@ -53,6 +53,7 @@ Before running the commands, make sure that rmf is sourced.
 cd packages/dashboard
 npm start
 ```
+When presented with a login screen, use `user=admin, password=admin`
 
 ## Troubleshooting
 First thing to try is to build rmf from source, the dashboard currently does not guarantee support for different versions of rmf. Refer to each of the rmf repos for instruction to build them.
