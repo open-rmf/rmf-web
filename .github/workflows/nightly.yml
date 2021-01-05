@@ -31,6 +31,13 @@ jobs:
     name: Dashboard Unit Test
     needs: build-docker-images
     runs-on: ubuntu-latest
+    container:
+      image: docker.pkg.github.com/osrf/rmf-web/e2e
+      credentials:
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+      env:
+        CHROME_BIN: /chrome-no-sandbox
     defaults:
       run:
         shell: bash
