@@ -26,10 +26,11 @@ jobs:
           scope: # optional
       - name: bootstrap
         run: |
+          . /opt/rmf/setup.bash
           npm config set unsafe-perm
-          npm run bootstrap
+          npm run bootstrap packages/dashboard
       - name: unit test
-        run: npm test
+        run: . /opt/rmf/setup.bash && npm test
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
@@ -58,7 +59,7 @@ jobs:
         run: |
           . /opt/rmf/setup.bash
           npm config set unsafe-perm
-          npm run bootstrap
+          npm run bootstrap packages/dashboard
           docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
           cd packages/dashboard
           npm run sync:docker
@@ -91,8 +92,9 @@ jobs:
           node-version: 12
       - name: bootstrap
         run: |
+          . /opt/ros/foxy/setup.bash
           npm config set unsafe-perm
-          npm run bootstrap
+          npm run bootstrap packages/ros2-bridge
         working-directory: .
       - name: build
         run: . /opt/ros/foxy/setup.bash && npm run build
@@ -116,7 +118,7 @@ jobs:
       - name: bootstrap
         run: |
           npm config set unsafe-perm
-          npm run bootstrap
+          npm run bootstrap packages/react-components
         working-directory: .
       - name: build
         run: npm run build:storybook && npm run build

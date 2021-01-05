@@ -1,5 +1,6 @@
 /**
  * Simple script that runs npm install or ci depending on the CI flag for each package if the node_modules dir does not exist.
+ * Usage: bootstrap.js [package]...
  *
  * The previous implementation chains npm install/ci with the "preinstall" script, this is bad for
  * several reasons.
@@ -12,11 +13,37 @@
 const child_process = require('child_process');
 const fs = require('fs');
 
-// Install order matters, a package's dependencies needs to be installed before itself.
-const packages = ['.', 'packages/ros2-bridge', 'packages/react-components', 'packages/dashboard'];
+// hardcoded for now
+const deps = {
+  'packages/dashboard': ['packages/ros2-bridge', 'packages/react-components'],
+};
+
+const allPackages = [
+  '.',
+  'packages/ros2-bridge',
+  'packages/react-components',
+  'packages/dashboard',
+];
+const scope = process.argv.length > 2 ? process.argv.slice(2) : allPackages;
 
 const verb = process.env['CI'] ? 'ci' : 'install';
-packages.forEach((pkg) => {
+const targets = new Set(['.']);
+scope.forEach((pkg) => {
+  const cwd = `${__dirname}/../${pkg}`;
+  if (deps[pkg]) {
+    deps[pkg].forEach((p) => targets.add(p));
+  }
+  try {
+    fs.accessSync(`${cwd}/node_modules`);
+  } catch (e) {
+    if (e.code === 'ENOENT') {
+      child_process.spawnSync('npm', [verb], { stdio: 'inherit', cwd });
+    } else {
+      throw e;
+    }
+  }
+});
+targets.forEach((pkg) => {
   const cwd = `${__dirname}/../${pkg}`;
   try {
     fs.accessSync(`${cwd}/node_modules`);
