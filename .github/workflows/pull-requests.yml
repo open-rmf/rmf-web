@@ -24,12 +24,12 @@ jobs:
           registry-url: # optional
           # Optional scope for authenticating against scoped registries
           scope: # optional
-      - name: prepare
+      - name: bootstrap
         run: |
-          docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
-          npm run sync:docker
+          npm config set unsafe-perm
+          npm run bootstrap
       - name: unit test
-        run: docker-compose -f docker/docker-compose.yml up --exit-code-from unit-test unit-test
+        run: npm test
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
@@ -54,16 +54,19 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 12
-      - name: prepare
-        run: |
-          docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
-          npm run sync:docker
-      - name: e2e test
+      - name: bootstrap
         run: |
           . /opt/rmf/setup.bash
           npm config set unsafe-perm
-          lerna bootstrap --include-dependencies --scope='{root,romi-dashboard}'
-          cd e2e && npm ci && (npm test || npm test || npm test)
+          npm run bootstrap
+          docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
+          cd packages/dashboard
+          npm run sync:docker
+        working-directory: .
+      - name: e2e test
+        run: |
+          . /opt/rmf/setup.bash
+          npm test:e2e || npm test:e2e || npm test:e2e
       - name: upload artifacts
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
@@ -84,15 +87,18 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 12
-      - name: set npm config
-        run: npm config set unsafe-perm=true
+      - name: bootstrap
+        run: |
+          npm config set unsafe-perm
+          npm run bootstrap
+        working-directory: .
       - name: build
+        run: . /opt/ros/foxy/setup.bash && npm run build
+      - name: test
         run: |
           . /opt/ros/foxy/setup.bash
-          lerna bootstrap --include-dependencies --scope='{root,romi-dashboard}'
-          npm run build
-      - name: test
-        run: . /opt/ros/foxy/setup.bash && npm test
+          cd packages/ros2-bridge
+          npm test
   react-component-test:
     name: React Component Test
     runs-on: ubuntu-latest
@@ -105,10 +111,13 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 12
-      - name: set npm config
-        run: npm config set unsafe-perm=true
+      - name: bootstrap
+        run: |
+          npm config set unsafe-perm
+          npm run bootstrap
+        working-directory: .
       - name: build
-        run: npm ci && npm run build:storybook && npm run build
+        run: npm run build:storybook && npm run build
       - name: test
         run: npm run test:coverage
       - name: Upload coverage to Codecov
