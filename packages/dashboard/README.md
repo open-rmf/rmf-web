@@ -4,31 +4,22 @@ Hello! `romi-dashboard` is a web application that provides overall visualization
 
 ## Setup
 
-### Prerequisites
+Prerequisites:
 
-Required:
-
-- nodejs >= 12
-- docker
-- docker-compose
-- [rmf_core](https://github.com/osrf/rmf_core)
-- [traffic_editor](https://github.com/osrf/traffic_editor)
-
-Optional:
-
-- [rmf schedule visualizer](https://github.com/osrf/rmf_schedule_visualizer) (required when launching dev server locally)
-- [rmf_demos](https://github.com/osrf/rmf_demos) (required when launching dev server locally)
+* nodejs == v12
+* docker
+* docker-compose
+* [rmf_core](https://github.com/osrf/rmf_core)
+* [traffic_editor](https://github.com/osrf/traffic_editor)
+* [rmf_schedule_visualizer](https://github.com/osrf/rmf_schedule_visualizer)
+* [rmf_demos](https://github.com/osrf/rmf_demos)
 
 Refer to the various repository for instructions to set them up.
 
-### Building
-
-First, make sure `rmf_core` and `traffic_editor` is installed, if they are built using colcon, make sure the colcon workspace is sourced, then clone the repository and install the required packages,
-
 ```bash
-git clone https://github.com/osrf/romi-dashboard
-cd romi-dashboard/packages/dashboard
-npm install
+git clone https://github.com/osrf/rmf-web
+cd rmf-web
+npm run bootstrap
 ```
 
 ### (Optional) Import external resources.
@@ -75,17 +66,6 @@ npm run setup
 
 ### Local Dev Server
 
-_RoMi-dashboard_ gets its data source from the following rmf components:
-
-- [rmf schedule visualizer](https://github.com/osrf/rmf_schedule_visualizer)
-- [rmf_demos](https://github.com/osrf/rmf_demos)
-
-Refer to the respective projects for instruction on how to setup them up.
-
-You would also need [docker](https://docs.docker.com/engine/install/ubuntu/) and [docker-compose](https://docs.docker.com/compose/install/) for the authentication server.
-
-The easiest way to launch a local server for development is with
-
 ```bash
 npm start
 ```
@@ -97,7 +77,51 @@ user: admin
 password: admin
 ```
 
-### Docker Based Backend
+### External Server
+
+Alternatively, if you want to connect to an existing rmf deployment, set the following environment variables:
+
+* _REACT_APP_BASE_PATH_: Base path that the app is hosted. Defaults to '/'.
+* _REACT_APP_TRAJECTORY_SERVER_: **Required** URL to the trajectory server.
+* _REACT_APP_ROS2_BRIDGE_SERVER_: **Required** URL to the ros2 bridge server.
+* _REACT_APP_AUTH_CONFIG_: **Required** A JSON object containing the following
+  * _realm_: The keycloak realm
+  * _clientId_: clientId
+  * _url_: URL to the keycloak server
+
+Then start the web server with
+
+```bash
+npm run start:react
+```
+
+### Storybook
+
+**Many of the components are reused from `react-components`, you may want to run storybook on `react-components` instead.**
+
+Another way to work on the frontend without rmf is with [storybook](https://storybook.js.org/), simply run
+
+```bash
+npm run storybook
+```
+
+This is ideal if you are working on individual isolated components.
+
+### Mock Data **(not recommended)**
+
+**This does not emulated robots, tasks, trajectories, deliveries, charging etc, running the dashboard with mock data is no longer a good "preview" of the actual dashboard.**
+
+If you are just working on the frontend, you can launch _RoMi-dashboard_ with a set of mock data, this does not require any rmf deployments, simply run
+
+```bash
+npm run start:mock
+```
+
+To bring up a web server using mock data.
+
+### Docker Based Backend **(not recommended)**
+
+**This will cause the dashboard to be ran as root, side effects include tainting file ownership and permissions, breaking npm commands etc. If an isolated environment is required, it is recommended to instead use a VM or move the whole dev environment into docker (note that you would have to handle gpu, x11/wayland, nested docker, permissions, persistent storage etc support yourself, only do this if you understand what you are doing)**
 
 If you have problem setting up rmf, you can make use of the docker image used by the e2e tests to run the backend in docker.
 
@@ -131,44 +155,6 @@ docker-compose -f <path-to-romi-dashboard>/packages/dashboard/docker/docker-comp
 ```
 
 This will download and build all of rmf so it may take awhile.
-
-### External Server
-
-Alternatively, if you want to connect to an existing rmf deployment, set the following environment variables:
-
-- _REACT_APP_BASE_PATH_: Base path that the app is hosted. Defaults to '/'.
-- _REACT_APP_TRAJECTORY_SERVER_: **Required** URL to the trajectory server.
-- _REACT_APP_ROS2_BRIDGE_SERVER_: **Required** URL to the ros2 bridge server.
-- _REACT_APP_AUTH_CONFIG_: **Required** A JSON object containing the following
-  - _realm_: The keycloak realm
-  - _clientId_: clientId
-  - _url_: URL to the keycloak server
-
-Then start the web server with
-
-```bash
-npm run start:react
-```
-
-### Mock Data
-
-If you are just working on the frontend, you can launch _RoMi-dashboard_ with a set of mock data, this does not require any rmf deployments, simply run
-
-```bash
-npm run start:mock
-```
-
-To bring up a web server using mock data.
-
-### Storybook
-
-Another way to work on the frontend without rmf is with [storybook](https://storybook.js.org/), simply run
-
-```bash
-npm run storybook
-```
-
-This is ideal if you are working on individual isolated components.
 
 ## Building for production
 

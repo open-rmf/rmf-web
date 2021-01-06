@@ -36,7 +36,7 @@ concurrently(
     'cd .. && npm run start:ros2-bridge',
     'cd .. && npm run start:auth',
     'npm:start:react',
-    `node auth-ready.js && wdio ${wdioArgs}`,
+    `node scripts/auth-ready.js && wdio ${wdioArgs}`,
   ],
   {
     killOthers: ['success', 'failure'],

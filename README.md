@@ -1,46 +1,67 @@
 [![Nightly](https://github.com/osrf/rmf-web/workflows/Nightly/badge.svg)](https://github.com/osrf/rmf-web/actions?query=workflow%3ANightly)
 [![codecov](https://codecov.io/gh/osrf/rmf-web/branch/main/graph/badge.svg)](https://codecov.io/gh/osrf/rmf-web)
 
-# Installation
-
-On Ubuntu 20.04, we need to install Docker, NVM, and node:
-
-### Install Docker
-
-```
-sudo apt update
-sudo apt install apt-transport-https gnupg-agent
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
-sudo apt-get install docker-ce docker-ce-cli containerd.io
-sudo curl -L "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
-sudo usermod -aG docker $USER
-```
-Unfortunately, it seems that on Ubuntu 20.04 you have to reboot the machine for the new group membership to be fully reloaded. Maybe some smaller steps are possible, but a reboot definitely works (logout/login didn't work for me, but maybe logout/login followed by restarting the docker service?). Just reboot :)
-
-### Install NVM and Node
-
-```
-sudo apt install git
-git clone https://github.com/nvm-sh/nvm.git $HOME/.nvm -b v0.37.2
-. ~/.nvm/nvm.sh
-nvm install 12.20.0
-# build rmf_core and traffic_editor into a colcon workspace in ~/rmf
-# TODO: copy those here for reference
-. ~/rmf/install/setup.bash
-cd ~/rmf/src/rmf-web/packages/dashboard
-npm install
-```
-
 # Running the Dashboard
 
+## Prerequisites
+
+### Ubuntu 20.04
+
+Install docker and docker-compose
+```bash
+sudo apt update && sudo apt install docker.io docker-compose
 ```
-source ~/.nvm/nvm.sh
-source ~/rmf/install/setup.bash
-cd ~/rmf/src/rmf-web/packages/dashboard
+
+Install nodejs
+```bash
+sudo apt update && sudo apt install curl
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash
+nvm install 12
+```
+
+Install rmf
+```bash
+sudo apt update && sudo apt install curl gnupg2 lsb-release
+curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
+sudo sh -c 'echo "deb [arch=$(dpkg --print-architecture)] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" > /etc/apt/sources.list.d/ros2-latest.list'
+sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
+wget https://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
+curl -sL http://rmf.servehttp.com/repos.key | sudo apt-key add -
+echo 'deb [arch=amd64] http://rmf.servehttp.com/ubuntu/main focal main' | sudo tee /etc/apt/sources.list.d/rmf.list
+sudo apt update && sudo apt install '^ros-foxy-rmf-.*'
+```
+
+### Others
+
+Refer to the following documentations:
+
+* [docker](https://docs.docker.com/engine/install/ubuntu/)
+* [docker-compose](https://docs.docker.com/compose/install/)
+* [nodejs](https://nodejs.org/en/download/package-manager/)
+  * alternative: [nvm](https://github.com/nvm-sh/nvm)
+* [rmf_core](https://github.com/osrf/rmf_core)
+* [traffic_editor](https://github.com/osrf/traffic_editor)
+* [rmf schedule visualizer](https://github.com/osrf/rmf_schedule_visualizer)
+* [rmf_demos](https://github.com/osrf/rmf_demos)
+
+## Bootstrap
+Before running the commands, make sure that rmf is sourced.
+```bash
+git clone https://github.com/osrf/rmf-web
+cd rmf-web
+npm run bootstrap
+```
+
+## Launching
+Before running the commands, make sure that rmf is sourced.
+```bash
+cd packages/dashboard
 npm start
 ```
+When presented with a login screen, use `user=admin password=admin`
+
+## Troubleshooting
+First thing to try is to build rmf from source, the dashboard currently does not guarantee support for different versions of rmf. Refer to each of the rmf repos for instruction to build them.
 
 # Further documentation
 

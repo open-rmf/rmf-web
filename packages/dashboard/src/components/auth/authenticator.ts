@@ -68,7 +68,7 @@ export class DefaultAuthenticator
 
     await this._inst.init({
       onLoad: 'check-sso',
-      silentCheckSsoRedirectUri: `${BASE_PATH}/silent-check-sso.html`,
+      silentCheckSsoRedirectUri: `${window.location.origin}${BASE_PATH}/silent-check-sso.html`,
       redirectUri: this._redirectUri,
     });
     try {
