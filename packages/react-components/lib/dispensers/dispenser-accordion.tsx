@@ -106,10 +106,10 @@ export const DispenserAccordion = React.forwardRef(
         ) : (
           <ItemAccordionDetails>
             <ItemUnknown
-              name={dispenser}
+              fields={[{ name: 'Item', value: dispenser }]}
               location={location}
               errorMsg={
-                'Dispenser is not sending states. Proceed to the location stated above to check if it is working properly.'
+                'Dispenser is not sending states. Proceed to the location stated to check if it is working properly.'
               }
             />
           </ItemAccordionDetails>
