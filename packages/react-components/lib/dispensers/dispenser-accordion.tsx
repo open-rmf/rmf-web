@@ -57,13 +57,13 @@ export interface DispenserAccordionProps extends Omit<AccordionProps, 'children'
    * Pre-condition: `dispenser === dispenserState.guid`
    */
   dispenserState: RomiCore.DispenserState | null;
-  dispenserName: string;
+  dispenser: string;
 }
 
 export const DispenserAccordion = React.forwardRef(
   (props: DispenserAccordionProps, ref: React.Ref<HTMLElement>) => {
-    const { dispenserState, dispenserName, ...otherProps } = props;
-    debug(`render ${dispenserName}`);
+    const { dispenserState, dispenser, ...otherProps } = props;
+    debug(`render ${dispenser}`);
     const classes = useStyles();
 
     function usePrevDispenserState(dispenserState: RomiCore.DispenserState | null) {
@@ -95,7 +95,7 @@ export const DispenserAccordion = React.forwardRef(
     return (
       <Accordion ref={ref} {...otherProps}>
         <ItemAccordionSummary
-          title={dispenserState ? dispenserState.guid : dispenserName}
+          title={dispenserState ? dispenserState.guid : dispenser}
           statusProps={{
             className: statusLabelClass ? statusLabelClass : undefined,
             text: dispenserState ? dispenserModeToString(dispenserState.mode) : 'UNKNOWN',
