@@ -1,6 +1,5 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core';
-import { SimpleInfo, SimpleInfoData } from './simple-info';
 import ErrorIcon from '@material-ui/icons/Error';
 import { Typography, Grid } from '@material-ui/core';
 
@@ -11,39 +10,23 @@ const useStyles = makeStyles((theme) => ({
   errorMsg: {
     margin: '0 0.5rem',
   },
+  errorDisabled: {
+    pointerEvents: 'none',
+    filter: 'blur(.25rem)',
+  },
 }));
 
-interface Location {
-  x: number;
-  y: number;
-  yaw: number;
-  level_name: string;
-}
-
-type FieldsKeys = 'name' | 'value';
-type DataValueTypePrimitive = number | string;
-type DataValueTypeArray = DataValueTypePrimitive[];
-type DataValueType = DataValueTypePrimitive | DataValueTypeArray;
-
 export interface ItemUnknownProps {
-  // fields object require both key values in FieldKeys
-  fields: { [key in FieldsKeys]: DataValueType }[];
-  location?: Location;
   errorMsg?: string;
+  showError: boolean;
+  children: JSX.Element | null;
 }
 
 export const ItemUnknown = (props: ItemUnknownProps): JSX.Element => {
   const classes = useStyles();
-  const { fields, location, errorMsg } = props;
+  const { errorMsg, showError, children } = props;
 
-  if (location) {
-    fields.push({
-      name: 'Location',
-      value: `${location.level_name} (${location.x.toFixed(3)}, ${location.y.toFixed(3)})`,
-    });
-  }
-  const data = fields as SimpleInfoData[];
-  return (
+  return showError ? (
     <React.Fragment>
       <Grid container direction="row" justify="center" alignItems="center" spacing={2}>
         <Grid item>
@@ -58,7 +41,9 @@ export const ItemUnknown = (props: ItemUnknownProps): JSX.Element => {
       <Typography className={classes.errorMsg} color="error" variant="body1" align="center">
         {errorMsg ? errorMsg : 'Unknown error'}
       </Typography>
-      <SimpleInfo infoData={data} />
+      <div className={classes.errorDisabled}>{children}</div>
     </React.Fragment>
+  ) : (
+    <React.Fragment>{children}</React.Fragment>
   );
 };

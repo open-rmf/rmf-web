@@ -1,7 +1,7 @@
 import { Accordion, AccordionProps, makeStyles } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import ItemAccordionDetails from '../item-accordion-details';
 import ItemAccordionSummary from '../item-accordion-summary';
 import { ItemUnknown } from '../item-unknown';
@@ -11,13 +11,6 @@ const debug = Debug('Dispensers:DispenserAccordion');
 
 interface DispenserInfoProps {
   dispenser: RomiCore.DispenserState;
-}
-
-interface Location {
-  x: number;
-  y: number;
-  yaw: number;
-  level_name: string;
 }
 
 const DispenserInfo = (props: DispenserInfoProps) => {
@@ -64,15 +57,25 @@ export interface DispenserAccordionProps extends Omit<AccordionProps, 'children'
    * Pre-condition: `dispenser === dispenserState.guid`
    */
   dispenserState: RomiCore.DispenserState | null;
-  dispenser: string;
-  location?: Location;
+  dispenserName: string;
 }
 
 export const DispenserAccordion = React.forwardRef(
   (props: DispenserAccordionProps, ref: React.Ref<HTMLElement>) => {
-    const { dispenserState, dispenser, location, ...otherProps } = props;
-    debug(`render ${dispenser}`);
+    const { dispenserState, dispenserName, ...otherProps } = props;
+    debug(`render ${dispenserName}`);
     const classes = useStyles();
+
+    function usePrevDispenserState(dispenserState: RomiCore.DispenserState | null) {
+      const ref = useRef<RomiCore.DispenserState | null>(null);
+      useEffect(() => {
+        if (dispenserState) {
+          ref.current = dispenserState;
+        }
+      });
+      return ref.current;
+    }
+    const previousState = usePrevDispenserState(dispenserState);
 
     const getStatusLabelClass = () => {
       switch (dispenserState?.mode) {
@@ -92,28 +95,25 @@ export const DispenserAccordion = React.forwardRef(
     return (
       <Accordion ref={ref} {...otherProps}>
         <ItemAccordionSummary
-          title={dispenserState ? dispenserState.guid : dispenser}
+          title={dispenserState ? dispenserState.guid : dispenserName}
           statusProps={{
             className: statusLabelClass ? statusLabelClass : undefined,
             text: dispenserState ? dispenserModeToString(dispenserState.mode) : 'UNKNOWN',
             variant: statusLabelClass ? 'normal' : 'unknown',
           }}
         />
-        {dispenserState ? (
-          <ItemAccordionDetails>
-            <DispenserInfo dispenser={dispenserState} />
-          </ItemAccordionDetails>
-        ) : (
-          <ItemAccordionDetails>
-            <ItemUnknown
-              fields={[{ name: 'Item', value: dispenser }]}
-              location={location}
-              errorMsg={
-                'Dispenser is not sending states. Proceed to the location stated to check if it is working properly.'
-              }
-            />
-          </ItemAccordionDetails>
-        )}
+        <ItemAccordionDetails>
+          <ItemUnknown
+            errorMsg={'Dispenser is not sending states. Please check if it is working properly.'}
+            showError={!dispenserState}
+          >
+            {dispenserState ? (
+              <DispenserInfo dispenser={dispenserState} />
+            ) : previousState ? (
+              <DispenserInfo dispenser={previousState} />
+            ) : null}
+          </ItemUnknown>
+        </ItemAccordionDetails>
       </Accordion>
     );
   },

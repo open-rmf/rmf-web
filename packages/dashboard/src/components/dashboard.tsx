@@ -491,14 +491,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                             dispenserStates[dispenser] ? dispenserStates[dispenser] : null
                           }
                           data-component="DispenserAccordion"
-                          dispenser={dispenser}
-                          location={
-                            dispenserStates[dispenser]
-                              ? undefined
-                              : dispensers
-                              ? dispensers[dispenser].location
-                              : undefined
-                          }
+                          dispenserName={dispenser}
                         />
                       ))
                     : null}
