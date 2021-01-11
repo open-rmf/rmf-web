@@ -181,7 +181,7 @@ export default class Ros2Plugin {
   publish(params: PublishParams): void {
     const record = this._publishers[params.id];
     record && record.publisher.publish(params.message);
-    this._logger.info('publish message', { topic: record.topic.topic });
+    this._logger.info('publish message', { id: params.id, topic: record.topic.topic });
   }
 
   async serviceCall(params: ServiceCallParams): Promise<unknown> {

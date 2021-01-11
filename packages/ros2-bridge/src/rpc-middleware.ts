@@ -108,7 +108,11 @@ export default class RpcMiddleware {
         }
         const payload = msgpack.encode(buildResponse({ result: data, more: true }));
         socket.send(payload);
-        logger.verbose('sent response chunk', { id: req.id, payloadLength: payload.length });
+        logger.verbose('sent response chunk', {
+          id: req.id,
+          method: req.method,
+          payloadLength: payload.length,
+        });
       },
       end: (data) => {
         if (isNotification(req)) {
@@ -117,7 +121,11 @@ export default class RpcMiddleware {
         }
         const payload = msgpack.encode(buildResponse({ result: data }));
         socket.send(payload);
-        logger.info('sent response', { id: req.id, payloadLength: payload.length });
+        logger.info('sent response', {
+          id: req.id,
+          method: req.method,
+          payloadLength: payload.length,
+        });
       },
       error: (error) => {
         if (isNotification(req)) {
@@ -125,7 +133,7 @@ export default class RpcMiddleware {
           return;
         }
         socket.send(msgpack.encode(buildResponse({ error })));
-        logger.info('sent error', { id: req.id, error });
+        logger.info('sent error', { id: req.id, method: req.method, error });
       },
     };
 
@@ -141,7 +149,7 @@ export default class RpcMiddleware {
 
       const handler = this._rpcHandlers[req.method];
       if (handler.length > 1) {
-        logger.info('start streaming response chunks', { id: req.id });
+        logger.info('start streaming response chunks', { id: req.id, method: req.method });
       }
       const handlerRet = await handler(req.params, sender);
 
