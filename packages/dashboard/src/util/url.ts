@@ -15,7 +15,7 @@ export function normalizePath(path: string) {
 }
 
 /**
- * Always starts with a '/', never ends with '/', unless it is '/'.
+ * Normalized base path.
  */
 export const BASE_PATH = normalizePath(process.env.REACT_APP_BASE_PATH || '/');
 
