@@ -1,5 +1,4 @@
 import * as msgpack from '@msgpack/msgpack';
-import * as assert from 'assert';
 import WebSocket from 'ws';
 import baseLogger, { Logger as _Logger } from './logger';
 import { WebSocketMiddleware } from './websocket-connect';
@@ -46,7 +45,12 @@ export enum ErrorCodes {
 export default class RpcMiddleware {
   middleware: WebSocketMiddleware = (socket, req, next) => {
     socket.on('message', (data) =>
-      this._onMessage(baseLogger.child({ tag: req.connection.remoteAddress }), socket, data, next),
+      this._onMessage(
+        baseLogger.child({ label: req.connection.remoteAddress }),
+        socket,
+        data,
+        next,
+      ),
     );
   };
 
@@ -56,7 +60,7 @@ export default class RpcMiddleware {
   }
 
   getLogger(name: string): Logger {
-    return baseLogger.child({ tag: name });
+    return baseLogger.child({ label: name });
   }
 
   private _rpcHandlers: Record<string, RpcHandler> = {};
@@ -82,7 +86,7 @@ export default class RpcMiddleware {
       return;
     }
 
-    logger.info(`received request ${JSON.stringify(req)}`);
+    logger.info('received request', req);
 
     const buildResponse = (response: Partial<RpcResponse>) => {
       return {
@@ -92,25 +96,42 @@ export default class RpcMiddleware {
       };
     };
 
+    const isNotification = (req: RpcRequest) =>
+      typeof req.id !== 'string' && typeof req.id !== 'number';
+
     const sender: Sender = {
       socket,
-      send: (data) =>
-        req.id !== undefined &&
-        req.id !== null &&
-        socket.send(msgpack.encode(buildResponse({ result: data, more: true }))),
-      end: (data) =>
-        req.id !== undefined &&
-        req.id !== null &&
-        socket.send(msgpack.encode(buildResponse({ result: data }))),
-      error: (error) =>
-        req.id !== undefined &&
-        req.id !== null &&
-        socket.send(msgpack.encode(buildResponse({ error }))),
+      send: (data) => {
+        if (isNotification(req)) {
+          logger.warn('not sending response for notification request');
+          return;
+        }
+        const payload = msgpack.encode(buildResponse({ result: data, more: true }));
+        socket.send(payload);
+        logger.info('sent response chunk', { id: req.id, payloadLength: payload.length });
+      },
+      end: (data) => {
+        if (isNotification(req)) {
+          logger.warn('not sending response for notification request');
+          return;
+        }
+        const payload = msgpack.encode(buildResponse({ result: data }));
+        socket.send(payload);
+        logger.info('sent response', { id: req.id, payloadLength: payload.length });
+      },
+      error: (error) => {
+        if (isNotification(req)) {
+          logger.warn('not sending response for notification request');
+          return;
+        }
+        socket.send(msgpack.encode(buildResponse({ error })));
+        logger.info('sent error', { id: req.id, error });
+      },
     };
 
     try {
       if (!this._rpcHandlers.hasOwnProperty(req.method)) {
-        logger.warn(`no handler for method "${req.method}"`);
+        logger.error('no handler for method', req);
         sender.error({
           code: ErrorCodes.NoSuchMethod,
           message: 'no such method',
@@ -120,6 +141,7 @@ export default class RpcMiddleware {
 
       const handler = this._rpcHandlers[req.method];
       const handlerRet = await handler(req.params, sender);
+
       /**
        * handler is "req -> resp" if it only has 1 argument, else it is a "stream" with messages
        * sent in chunks.
@@ -135,11 +157,11 @@ export default class RpcMiddleware {
        *     handler should take care of sending the rest of the chunks.
        */
       if (handlerRet === undefined) {
-        if (this._rpcHandlers[req.method].length === 1) {
+        if (handler.length === 1) {
           sender.end(null);
         }
       } else {
-        if (this._rpcHandlers[req.method].length === 1) {
+        if (handler.length === 1) {
           sender.end(handlerRet);
         } else {
           sender.send(handlerRet);

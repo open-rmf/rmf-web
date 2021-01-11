@@ -21,7 +21,7 @@ export default function authenticator(options: Options): WebSocketMiddleware {
   return (socket, req, next) => {
     socket.once('message', (data) => {
       if (typeof data !== 'string') {
-        baseLogger.error('expected token', { tag: req.connection.remoteAddress });
+        baseLogger.error('expected token', { label: req.connection.remoteAddress });
         socket.close(undefined, 'unauthorized');
         return;
       }
@@ -29,7 +29,7 @@ export default function authenticator(options: Options): WebSocketMiddleware {
       try {
         jwt.verify(data, secretOrPublicKey); // will throw if invalid
       } catch (e) {
-        baseLogger.error(e, { tag: req.connection.remoteAddress });
+        baseLogger.error(e, { label: req.connection.remoteAddress });
         socket.close(undefined, 'unauthorized');
         return;
       }
