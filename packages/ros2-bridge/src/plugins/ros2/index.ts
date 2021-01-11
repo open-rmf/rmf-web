@@ -129,7 +129,7 @@ export default class Ros2Plugin {
           const cbs = Object.values(record.callbacks);
           if (cbs.length > 0) {
             cbs.forEach((cb) => cb(msg));
-            this._logger.info('sent subscription update', {
+            this._logger.verbose('sent subscription update', {
               topic: params.topic.topic,
               numOfClients: cbs.length,
             });

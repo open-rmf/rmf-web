@@ -108,7 +108,7 @@ export default class RpcMiddleware {
         }
         const payload = msgpack.encode(buildResponse({ result: data, more: true }));
         socket.send(payload);
-        logger.info('sent response chunk', { id: req.id, payloadLength: payload.length });
+        logger.verbose('sent response chunk', { id: req.id, payloadLength: payload.length });
       },
       end: (data) => {
         if (isNotification(req)) {
@@ -140,6 +140,9 @@ export default class RpcMiddleware {
       }
 
       const handler = this._rpcHandlers[req.method];
+      if (handler.length > 1) {
+        logger.info('start streaming response chunks', { id: req.id });
+      }
       const handlerRet = await handler(req.params, sender);
 
       /**
