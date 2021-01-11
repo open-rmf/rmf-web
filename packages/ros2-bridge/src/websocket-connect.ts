@@ -14,6 +14,8 @@ export default class WebSocketConnect {
   constructor(public server: WebSocket.Server) {
     server.on('connection', async (socket, req) => {
       const logger = baseLogger.child({ tag: req.socket.remoteAddress });
+      socket.on('error', logger.error);
+      socket.on('close', () => logger.info('connection closed'));
       logger.info('connection established');
 
       try {
@@ -21,9 +23,8 @@ export default class WebSocketConnect {
           await new Promise<void>((res) => mdw(socket, req, res));
         }
       } catch (e) {
-        logger.info(e);
+        logger.error(e);
         socket.close();
-        logger.info('connection closed');
       }
     });
   }

@@ -1,6 +1,6 @@
 import * as msgpack from '@msgpack/msgpack';
 import WebSocket from 'ws';
-import RpcMiddleware, { RpcRequest, RpcResponse } from '../rpc-middleware';
+import RpcMiddleware, { RpcRequest, RpcResponse, ErrorCodes } from '../rpc-middleware';
 import WebSocketConnect from '../websocket-connect';
 
 function echo(params: any) {
@@ -94,7 +94,7 @@ test('request using string id results in a response with string id', (done) => {
 });
 
 [undefined, null].forEach((id) => {
-  test(`request with ${id} does not return any results`, (done) => {
+  test(`request with id = "${id}" does not return any results`, (done) => {
     rpc.registerHandler('test', echo);
 
     const client = new WebSocket(url);
@@ -107,7 +107,7 @@ test('request using string id results in a response with string id', (done) => {
   }, 1000);
 });
 
-test('rpc error', (done) => {
+test('returns error message when rpc handler throws error', (done) => {
   rpc.registerHandler('test', () => {
     throw new Error('test error');
   });
@@ -116,7 +116,7 @@ test('rpc error', (done) => {
   client.on('message', (data: Buffer) => {
     const resp = msgpack.decode(data) as RpcResponse;
     expect(resp.result).toBeUndefined();
-    expect(resp.error?.code).toBe(1);
+    expect(resp.error?.code).toBe(ErrorCodes.FunctionError);
     expect(resp.error?.message).toBe('test error');
     done();
   });
@@ -172,3 +172,44 @@ test('async rpc streaming responses', (done) => {
     setTimeout(() => client.send(makeRpcRequest('testOdd', undefined, 1)), 50);
   });
 }, 10000);
+
+test('sending string payload results in websocket error 1007', (done) => {
+  const client = new WebSocket(url);
+  client.on('close', (code) => {
+    expect(code).toBe(1007);
+    done();
+  });
+  client.once('open', () => client.send('hello!'));
+});
+
+test('sending invalid binary payload results in websocket error 1007', (done) => {
+  const client = new WebSocket(url);
+  client.on('close', (code) => {
+    expect(code).toBe(1007);
+    done();
+  });
+  const payload = Buffer.alloc(4, 0xdeadbeef);
+  client.once('open', () => client.send(payload));
+});
+
+test('request with unregistered method return no such method error', (done) => {
+  const client = new WebSocket(url);
+  client.on('message', (data) => {
+    const resp = msgpack.decode(data as Buffer) as RpcResponse;
+    expect(resp.error?.code).toBe(ErrorCodes.NoSuchMethod);
+    expect(resp.error?.message).toBe('no such method');
+    done();
+  });
+  client.once('open', () => client.send(makeRpcRequest('test', 'hello', 0)));
+});
+
+test('request for js internal methods returns no such method error', (done) => {
+  const client = new WebSocket(url);
+  client.on('message', (data) => {
+    const resp = msgpack.decode(data as Buffer) as RpcResponse;
+    expect(resp.error?.code).toBe(ErrorCodes.NoSuchMethod);
+    expect(resp.error?.message).toBe('no such method');
+    done();
+  });
+  client.once('open', () => client.send(makeRpcRequest('__proto__', undefined, 0)));
+});

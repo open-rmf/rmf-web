@@ -38,6 +38,11 @@ export type RpcHandler<Param = any, Result = unknown> = (
   sender: Sender<Result>,
 ) => Promise<Result | void> | Result | void;
 
+export enum ErrorCodes {
+  NoSuchMethod = 1,
+  FunctionError = 100,
+}
+
 export default class RpcMiddleware {
   middleware: WebSocketMiddleware = (socket, req, next) => {
     socket.on('message', (data) =>
@@ -62,12 +67,22 @@ export default class RpcMiddleware {
     data: WebSocket.Data,
     next: () => void,
   ): Promise<void> {
-    assert.ok(data instanceof Buffer);
+    let req: RpcRequest;
+    try {
+      req = msgpack.decode(data as Buffer) as RpcRequest;
+    } catch (e) {
+      logger.error(`decode error: ${e.message}`);
+      socket.close(1007, 'malformed data');
+      return;
+    }
 
-    // Casting data as a Buffer because if not we got an error that says: 'string' is not
-    // assignable to type 'ArrayBuffer | ArrayLike <number> '
-    const req = msgpack.decode(data as Buffer) as RpcRequest;
-    assert.strictEqual('0', req.version);
+    if (req.version !== '0') {
+      logger.error('"version" must be "0"');
+      socket.close(1003, 'wrong version');
+      return;
+    }
+
+    logger.info(`received request ${JSON.stringify(req)}`);
 
     const buildResponse = (response: Partial<RpcResponse>) => {
       return {
@@ -94,16 +109,16 @@ export default class RpcMiddleware {
     };
 
     try {
-      const handler = this._rpcHandlers[req.method];
-      if (!handler) {
+      if (!this._rpcHandlers.hasOwnProperty(req.method)) {
         logger.warn(`no handler for method "${req.method}"`);
         sender.error({
-          code: 1,
+          code: ErrorCodes.NoSuchMethod,
           message: 'no such method',
         });
         return;
       }
 
+      const handler = this._rpcHandlers[req.method];
       const handlerRet = await handler(req.params, sender);
       /**
        * handler is "req -> resp" if it only has 1 argument, else it is a "stream" with messages
@@ -131,7 +146,7 @@ export default class RpcMiddleware {
         }
       }
     } catch (e) {
-      sender.error({ code: 1, message: e.message });
+      sender.error({ code: ErrorCodes.FunctionError, message: e.message });
     }
     next();
   }
