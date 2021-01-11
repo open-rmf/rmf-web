@@ -1,7 +1,7 @@
 import * as msgpack from '@msgpack/msgpack';
 import * as assert from 'assert';
 import WebSocket from 'ws';
-import logger, { Logger as _Logger } from './logger';
+import baseLogger, { Logger as _Logger } from './logger';
 import { WebSocketMiddleware } from './websocket-connect';
 
 export type Logger = _Logger;
@@ -39,27 +39,31 @@ export type RpcHandler<Param = any, Result = unknown> = (
 ) => Promise<Result | void> | Result | void;
 
 export default class RpcMiddleware {
-  middleware: WebSocketMiddleware = (socket, data, next) => {
-    this._onMessage(socket, data, next);
+  middleware: WebSocketMiddleware = (socket, req, next) => {
+    socket.on('message', (data) =>
+      this._onMessage(baseLogger.child({ tag: req.connection.remoteAddress }), socket, data, next),
+    );
   };
 
   registerHandler(method: string, cb: RpcHandler): void {
     this._rpcHandlers[method] = cb;
-    logger.info(`registered handler for "${method}"`);
+    baseLogger.info(`registered handler for "${method}"`);
   }
 
   getLogger(name: string): Logger {
-    return logger.child({ tag: name });
+    return baseLogger.child({ tag: name });
   }
 
   private _rpcHandlers: Record<string, RpcHandler> = {};
 
   private async _onMessage(
+    logger: Logger,
     socket: WebSocket,
     data: WebSocket.Data,
     next: () => void,
   ): Promise<void> {
     assert.ok(data instanceof Buffer);
+
     // Casting data as a Buffer because if not we got an error that says: 'string' is not
     // assignable to type 'ArrayBuffer | ArrayLike <number> '
     const req = msgpack.decode(data as Buffer) as RpcRequest;
