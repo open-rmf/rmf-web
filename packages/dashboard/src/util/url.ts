@@ -1,14 +1,31 @@
 /**
- * Always starts with a '/'.
+ * Normalizes a path so that it always starts with a '/', never ends with '/', unless it is '/'.
  */
-export const BASE_PATH = (() => {
-  if (!process.env.REACT_APP_BASE_PATH || process.env.REACT_APP_BASE_PATH === '') {
-    return '/';
+export function normalizePath(path: string) {
+  while (path.indexOf('//') !== -1) {
+    path = path.replace(/\/\//g, '/');
   }
-  if (!process.env.REACT_APP_BASE_PATH.startsWith('/')) {
-    return `/${process.env.REACT_APP_BASE_PATH}`;
+  if (!path.startsWith('/')) {
+    path = `/${path}`;
   }
-  return process.env.REACT_APP_BASE_PATH;
-})();
+  if (path !== '/' && path.endsWith('/')) {
+    path = path.slice(0, path.length - 1);
+  }
+  return path;
+}
 
-export const LOGIN_ROUTE = `${BASE_PATH}/login`;
+/**
+ * Always starts with a '/', never ends with '/', unless it is '/'.
+ */
+export const BASE_PATH = normalizePath(process.env.REACT_APP_BASE_PATH || '/');
+
+/**
+ * Resolves a relative to the normalized full path.
+ * @param path relative path, should not start with '/'.
+ * @param basePath must be a normalized path.
+ */
+export function getFullPath(path: string, basePath = BASE_PATH): string {
+  return normalizePath(`${basePath}/${path}`);
+}
+
+export const LOGIN_ROUTE = getFullPath('login');
