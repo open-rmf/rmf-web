@@ -143,6 +143,7 @@ export default class Ros2Plugin {
     }
     record.callbacks[id] = (msg) => sender.send({ message: msg });
     this._subscriptions[id] = record;
+    this._logger.info('added subscription', { id, topic: params.topic.topic });
     return { id: id };
   }
 
@@ -173,6 +174,7 @@ export default class Ros2Plugin {
       this._innerPublishers.push(record);
     }
     this._publishers[id] = record;
+    this._logger.info('added publisher', { id, topic: params.topic.topic });
     return id;
   }
 
