@@ -5,18 +5,13 @@ interface CustomLogger extends winston.Logger {
 }
 export type Logger = CustomLogger;
 
-const labelToMessage = winston.format((info) => {
-  if (info.label !== undefined) {
-    info.message = `[${info.label}] ${info.message}`;
-    info.label = undefined;
-  }
-  return info;
-});
-
 export const logger: CustomLogger = winston.createLogger({
   format: winston.format.combine(
-    labelToMessage(),
-    winston.format.simple(),
+    winston.format.timestamp({ format: 'isoDateTime' }),
+    winston.format.printf(({ level, message, label, timestamp }) => {
+      const tag = label ? ` [${label}]` : '';
+      return `${timestamp}${tag} ${level}: ${message}`;
+    }),
     winston.format.colorize({
       all: true,
     }),
