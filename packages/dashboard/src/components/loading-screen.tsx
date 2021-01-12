@@ -31,7 +31,7 @@ export default function LoadingScreen(props: LoadingScreenProps): JSX.Element {
   const theme = useTheme();
   const classes = useStyles();
   return (
-    <React.Fragment>
+    <>
       {caption && (
         <Backdrop className={classes.root} open={true}>
           {(props.variant === undefined || props.variant === 'loading') && (
@@ -51,10 +51,6 @@ export default function LoadingScreen(props: LoadingScreenProps): JSX.Element {
         </Backdrop>
       )}
       <div className={caption && classes.disabled}>{children}</div>
-    </React.Fragment>
+    </>
   );
 }
-
-export const LoadingScreenContext = React.createContext<React.Dispatch<LoadingScreenProps>>(
-  () => {},
-);

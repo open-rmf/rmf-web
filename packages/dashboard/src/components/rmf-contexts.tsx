@@ -7,7 +7,7 @@ import FleetManager from '../fleet-manager';
 import LiftStateManager from '../lift-state-manager';
 import TaskManager from '../managers/task-manager';
 import { NegotiationConflict, NegotiationStatusManager } from '../negotiation-status-manager';
-import { LoadingScreenContext } from './loading-screen';
+import { LoadingScreenContext } from './app-contexts';
 
 export const DoorStateContext = React.createContext<Record<string, RomiCore.DoorState>>({});
 export const LiftStateContext = React.createContext<Record<string, RomiCore.LiftState>>({});

@@ -38,7 +38,3 @@ const NotificationBar = (props: NotificationBarProps) => {
 };
 
 export default NotificationBar;
-
-export const NotificationBarContext = React.createContext<React.Dispatch<
-  React.SetStateAction<NotificationBarProps | null>
-> | null>(null);
