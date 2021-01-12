@@ -19,29 +19,27 @@ import {
 import { GlobalHotKeys } from 'react-hotkeys';
 import 'typeface-roboto';
 import appConfig from '../app-config';
-import DispenserStateManager from '../dispenser-state-manager';
-import DoorStateManager from '../door-state-manager';
-import FleetManager from '../fleet-manager';
 import { buildHotKeys } from '../hotkeys';
-import LiftStateManager from '../lift-state-manager';
 import TaskManager from '../managers/task-manager';
-import {
-  NegotiationStatusManager,
-  NegotiationTrajectoryResponse,
-} from '../negotiation-status-manager';
+import { NegotiationTrajectoryResponse } from '../negotiation-status-manager';
 import ResourceManager from '../resource-manager';
 import { RobotTrajectoryManager } from '../robot-trajectory-manager';
 import { loadSettings } from '../settings';
-import { AppContextProvider } from './app-contexts';
 import AppBar from './appbar';
 import CommandsPanel from './commands-panel';
 import { DashboardDrawers } from './dashboard-drawers';
 import LoadingScreen, { LoadingScreenProps } from './loading-screen';
 import MainMenu from './main-menu';
 import NegotiationsPanel from './negotiations-panel';
-import NotificationBar, { NotificationBarProps } from './notification-bar';
 import { MainMenuState, useMainMenuReducer } from './reducers/main-menu-reducer';
-import { RmfContextProvider } from './rmf-contexts';
+import {
+  DepHacksContext,
+  DispenserStateContext,
+  DoorStateContext,
+  FleetStateContext,
+  LiftStateContext,
+  NegotiationStatusContext,
+} from './rmf-contexts';
 import ScheduleVisualizer, { ScheduleVisualizerProps } from './schedule-visualizer';
 import { SpotlightValue } from './spotlight-value';
 import TaskSummaryPanel from './task-summary-panel';
@@ -123,7 +121,7 @@ function robotKey(fleet: string, robot: RomiCore.RobotState): string {
 export default function Dashboard(_props: {}): React.ReactElement {
   debug('render');
 
-  const { appResources, transportFactory, trajectoryManagerFactory, trajServerUrl } = appConfig;
+  const { appResources, transportFactory, trajectoryManagerFactory } = appConfig;
   const classes = useStyles();
   const [transport, setTransport] = React.useState<RomiCore.Transport | undefined>(undefined);
   const [buildingMap, setBuildingMap] = React.useState<RomiCore.BuildingMap | undefined>(undefined);
@@ -175,8 +173,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     setCurrentView(stackNavigator.top());
   }, [resetView, setCurrentView, stackNavigator]);
 
-  const doorStateManager = React.useMemo(() => new DoorStateManager(), []);
-  const [doorStates, setDoorStates] = React.useState(() => doorStateManager.doorStates());
+  const doorStates = React.useContext(DoorStateContext);
   const [doors, setDoors] = React.useState<RomiCore.Door[]>([]);
   const doorAccordionRefs = React.useMemo(() => defaultDict(createSpotlightRef), []);
   const handleDoorMarkerClick = React.useCallback(
@@ -188,8 +185,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     [doorAccordionRefs, pushView, setShowOmniPanel],
   );
 
-  const liftStateManager = React.useMemo(() => new LiftStateManager(), []);
-  const [liftStates, setLiftStates] = React.useState(() => liftStateManager.liftStates());
+  const liftStates = React.useContext(LiftStateContext);
   const [lifts, setLifts] = React.useState<RomiCore.Lift[]>([]);
   const liftAccordionRefs = React.useMemo(() => defaultDict(createSpotlightRef), []);
   const handleLiftMarkerClick = React.useCallback(
@@ -201,10 +197,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     [liftAccordionRefs, pushView, setShowOmniPanel],
   );
 
-  const dispenserStateManager = React.useMemo(() => new DispenserStateManager(), []);
-  const [dispenserStates, setDispenserStates] = React.useState<
-    Readonly<Record<string, RomiCore.DispenserState>>
-  >(() => dispenserStateManager.dispenserStates());
+  const dispenserStates = React.useContext(DispenserStateContext);
   const dispenserAccordionRefs = React.useMemo(() => defaultDict(createSpotlightRef), []);
   const handleDispenserMarkerClick = React.useCallback<
     Required<ScheduleVisualizerProps>['onDispenserClick']
@@ -221,10 +214,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
     dispensers = Object.keys(resourceManager.current.dispensers.dispensers);
   }
 
-  const fleetManager = React.useMemo(() => new FleetManager(), []);
-  const [fleets, setFleets] = React.useState(fleetManager.fleets());
+  const fleetStates = React.useContext(FleetStateContext);
+  const fleets = React.useMemo(() => Object.values(fleetStates), [fleetStates]);
   const fleetNames = React.useRef<string[]>([]);
-  const newFleetNames = fleets.map((fleet) => fleet.name);
+  const newFleetNames = Object.keys(fleetStates);
   if (newFleetNames.some((fleetName) => !fleetNames.current.includes(fleetName))) {
     fleetNames.current = newFleetNames;
   }
@@ -241,16 +234,11 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const taskManager = React.useMemo(() => new TaskManager(), []);
   const [tasks, setTasks] = React.useState(taskManager.tasks());
 
-  const negotiationStatusManager = React.useMemo(
-    () => new NegotiationStatusManager(trajServerUrl),
-    [trajServerUrl],
-  );
+  const negotiationStatus = React.useContext(NegotiationStatusContext);
+  const { negotiationStatusManager } = React.useContext(DepHacksContext);
   const [negotiationSpotlight, setNegotiationSpotlight] = React.useState<
     SpotlightValue<string> | undefined
   >(undefined);
-  const [negotiationStatus, setNegotiationStatus] = React.useState(
-    negotiationStatusManager.allConflicts(),
-  );
   const [negotiationTrajStore, setNegotiationTrajStore] = React.useState<
     Record<string, NegotiationTrajectoryResponse>
   >({});
@@ -261,22 +249,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
     caption: 'Connecting to server...',
   });
 
-  const [
-    notificationBarMessage,
-    setNotificationBarMessage,
-  ] = React.useState<NotificationBarProps | null>(null);
-
-  const [showTooltips, setTooltips] = React.useState(true);
-
-  const toggleTooltips = React.useCallback(() => {
-    setTooltips(!showTooltips);
-  }, [showTooltips]);
-
-  const tooltipsValue = React.useMemo(() => ({ showTooltips, toggleTooltips }), [
-    showTooltips,
-    toggleTooltips,
-  ]);
-
   React.useEffect(() => {
     setLoading({ caption: 'Connecting to server...' });
     transportFactory()
@@ -286,37 +258,12 @@ export default function Dashboard(_props: {}): React.ReactElement {
           setLoading({ caption: 'Lost connection to server', variant: 'error' });
           setTransport(undefined);
         });
-        doorStateManager.startSubscription(x);
-        dispenserStateManager.startSubscription(x);
-        liftStateManager.startSubscription(x);
-        fleetManager.startSubscription(x);
-        negotiationStatusManager.startSubscription();
-        taskManager.startSubscription(x);
-
-        fleetManager.on('updated', () => setFleets(fleetManager.fleets()));
-        liftStateManager.on('updated', () => setLiftStates(liftStateManager.liftStates()));
-        doorStateManager.on('updated', () => setDoorStates(doorStateManager.doorStates()));
-        dispenserStateManager.on('updated', () =>
-          setDispenserStates(dispenserStateManager.dispenserStates()),
-        );
-        negotiationStatusManager.on('updated', () =>
-          setNegotiationStatus(negotiationStatusManager.allConflicts()),
-        );
-        taskManager.on('updated', () => setTasks(taskManager.tasks()));
         setTransport(x);
       })
       .catch((e: CloseEvent) => {
         setLoading({ caption: `Unable to connect to server (${e.code})`, variant: 'error' });
       });
-  }, [
-    transportFactory,
-    doorStateManager,
-    liftStateManager,
-    dispenserStateManager,
-    fleetManager,
-    negotiationStatusManager,
-    taskManager,
-  ]);
+  }, [transportFactory, taskManager]);
 
   React.useEffect(() => {
     if (!transport) {
@@ -401,134 +348,116 @@ export default function Dashboard(_props: {}): React.ReactElement {
 
   return (
     <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
-      <AppContextProvider
-        settings={settings}
-        notificationDispatch={setNotificationBarMessage}
-        resourceManager={resourceManager.current}
-        tooltips={tooltipsValue}
-      >
-        <RmfContextProvider
-          doorStates={doorStates}
-          liftStates={liftStates}
-          dispenserStates={dispenserStates}
-        >
-          <div className={classes.container}>
-            <AppBar reducerMainMenuDispatch={mainMenuDispatch} />
-            {loading && <LoadingScreen {...loading} />}
-            {buildingMap && mapFloorLayerSorted && (
-              <ScheduleVisualizer
-                buildingMap={buildingMap}
-                mapFloorLayerSorted={mapFloorLayerSorted}
-                fleets={fleets}
-                trajManager={trajManager.current}
-                negotiationTrajStore={negotiationTrajStore}
-                onDoorClick={handleDoorMarkerClick}
-                onLiftClick={handleLiftMarkerClick}
-                onRobotClick={handleRobotMarkerClick}
-                onDispenserClick={handleDispenserMarkerClick}
-              />
-            )}
-            <Fade in={showOmniPanel}>
-              <OmniPanel
-                className={classes.omniPanel}
-                view={currentView}
-                variant="backHomeClose"
-                onBack={handleOmniPanelBack}
-                onHome={handleOmniPanelHome}
-                onClose={handleOmniPanelClose}
-              >
-                <OmniPanelView viewId={OmniPanelViewIndex.MainMenu}>
-                  <MainMenu pushView={pushView} />
-                </OmniPanelView>
-                <OmniPanelView viewId={OmniPanelViewIndex.Doors}>
-                  {doors.map((door) => (
-                    <DoorAccordion
-                      key={door.name}
-                      ref={doorAccordionRefs[door.name].ref}
-                      door={door}
-                      doorState={doorStates[door.name]}
-                      onDoorControlClick={handleOnDoorControlClick}
-                      data-name={door.name}
-                    />
-                  ))}
-                </OmniPanelView>
-                <OmniPanelView viewId={OmniPanelViewIndex.Lifts}>
-                  {lifts.map((lift) => (
-                    <LiftAccordion
-                      key={lift.name}
-                      ref={liftAccordionRefs[lift.name].ref}
-                      lift={lift}
-                      liftState={liftStates[lift.name]}
-                      onRequestSubmit={handleLiftRequestSubmit}
-                    />
-                  ))}
-                </OmniPanelView>
-                <OmniPanelView viewId={OmniPanelViewIndex.Robots}>
-                  {fleets.flatMap((fleet) =>
-                    fleet.robots.map((robot) => (
-                      <RobotAccordion
-                        key={robotKey(fleet.name, robot)}
-                        ref={robotAccordionRefs[robotKey(fleet.name, robot)].ref}
-                        robot={robot}
-                        fleetName={fleet.name}
-                        data-component="RobotAccordion"
-                      />
-                    )),
-                  )}
-                </OmniPanelView>
-                <OmniPanelView viewId={OmniPanelViewIndex.Dispensers}>
-                  {dispensers
-                    ? dispensers.map((dispenser) => (
-                        <DispenserAccordion
-                          key={dispenser}
-                          ref={
-                            dispenserStates[dispenser]
-                              ? dispenserAccordionRefs[dispenserStates[dispenser].guid].ref
-                              : null
-                          }
-                          dispenserState={
-                            dispenserStates[dispenser] ? dispenserStates[dispenser] : null
-                          }
-                          data-component="DispenserAccordion"
-                          dispenser={dispenser}
-                        />
-                      ))
-                    : null}
-                </OmniPanelView>
-                <OmniPanelView viewId={OmniPanelViewIndex.Commands}>
-                  <CommandsPanel transport={transport} allFleets={fleetNames.current} />
-                </OmniPanelView>
-                <OmniPanelView viewId={OmniPanelViewIndex.Negotiations}>
-                  <NegotiationsPanel
-                    conflicts={negotiationStatus}
-                    spotlight={negotiationSpotlight}
-                    mapFloorLayerSorted={mapFloorLayerSorted}
-                    negotiationStatusManager={negotiationStatusManager}
-                    negotiationTrajStore={negotiationTrajStore}
-                    negotiationStatusUpdateTS={statusUpdateTS.current}
-                    setNegotiationTrajStore={setNegotiationTrajStore}
-                  />
-                </OmniPanelView>
-                <OmniPanelView viewId={OmniPanelViewIndex.Tasks}>
-                  <TaskSummaryPanel tasks={tasks} />
-                </OmniPanelView>
-              </OmniPanel>
-            </Fade>
-            <DashboardDrawers
-              settings={settings}
-              showSettings={showSettings}
-              showHelp={showHelp}
-              showHotkeysDialog={showHotkeysDialog}
-              reducerMainMenuDispatch={mainMenuDispatch}
-            ></DashboardDrawers>
-          </div>
-
-          <NotificationBar
-            message={notificationBarMessage?.message}
-            type={notificationBarMessage?.type}
+      <div className={classes.container}>
+        <AppBar reducerMainMenuDispatch={mainMenuDispatch} />
+        {loading && <LoadingScreen {...loading} />}
+        {buildingMap && mapFloorLayerSorted && (
+          <ScheduleVisualizer
+            buildingMap={buildingMap}
+            mapFloorLayerSorted={mapFloorLayerSorted}
+            fleets={fleets}
+            trajManager={trajManager.current}
+            negotiationTrajStore={negotiationTrajStore}
+            onDoorClick={handleDoorMarkerClick}
+            onLiftClick={handleLiftMarkerClick}
+            onRobotClick={handleRobotMarkerClick}
+            onDispenserClick={handleDispenserMarkerClick}
           />
-        </RmfContextProvider>
-      </AppContextProvider>
+        )}
+        <Fade in={showOmniPanel}>
+          <OmniPanel
+            className={classes.omniPanel}
+            view={currentView}
+            variant="backHomeClose"
+            onBack={handleOmniPanelBack}
+            onHome={handleOmniPanelHome}
+            onClose={handleOmniPanelClose}
+          >
+            <OmniPanelView viewId={OmniPanelViewIndex.MainMenu}>
+              <MainMenu pushView={pushView} />
+            </OmniPanelView>
+            <OmniPanelView viewId={OmniPanelViewIndex.Doors}>
+              {doors.map((door) => (
+                <DoorAccordion
+                  key={door.name}
+                  ref={doorAccordionRefs[door.name].ref}
+                  door={door}
+                  doorState={doorStates[door.name]}
+                  onDoorControlClick={handleOnDoorControlClick}
+                  data-name={door.name}
+                />
+              ))}
+            </OmniPanelView>
+            <OmniPanelView viewId={OmniPanelViewIndex.Lifts}>
+              {lifts.map((lift) => (
+                <LiftAccordion
+                  key={lift.name}
+                  ref={liftAccordionRefs[lift.name].ref}
+                  lift={lift}
+                  liftState={liftStates[lift.name]}
+                  onRequestSubmit={handleLiftRequestSubmit}
+                />
+              ))}
+            </OmniPanelView>
+            <OmniPanelView viewId={OmniPanelViewIndex.Robots}>
+              {fleets.flatMap((fleet) =>
+                fleet.robots.map((robot) => (
+                  <RobotAccordion
+                    key={robotKey(fleet.name, robot)}
+                    ref={robotAccordionRefs[robotKey(fleet.name, robot)].ref}
+                    robot={robot}
+                    fleetName={fleet.name}
+                    data-component="RobotAccordion"
+                  />
+                )),
+              )}
+            </OmniPanelView>
+            <OmniPanelView viewId={OmniPanelViewIndex.Dispensers}>
+              {dispensers
+                ? dispensers.map((dispenser) => (
+                    <DispenserAccordion
+                      key={dispenser}
+                      ref={
+                        dispenserStates[dispenser]
+                          ? dispenserAccordionRefs[dispenserStates[dispenser].guid].ref
+                          : null
+                      }
+                      dispenserState={
+                        dispenserStates[dispenser] ? dispenserStates[dispenser] : null
+                      }
+                      data-component="DispenserAccordion"
+                      dispenser={dispenser}
+                    />
+                  ))
+                : null}
+            </OmniPanelView>
+            <OmniPanelView viewId={OmniPanelViewIndex.Commands}>
+              <CommandsPanel transport={transport} allFleets={fleetNames.current} />
+            </OmniPanelView>
+            <OmniPanelView viewId={OmniPanelViewIndex.Negotiations}>
+              <NegotiationsPanel
+                conflicts={negotiationStatus}
+                spotlight={negotiationSpotlight}
+                mapFloorLayerSorted={mapFloorLayerSorted}
+                negotiationStatusManager={negotiationStatusManager}
+                negotiationTrajStore={negotiationTrajStore}
+                negotiationStatusUpdateTS={statusUpdateTS.current}
+                setNegotiationTrajStore={setNegotiationTrajStore}
+              />
+            </OmniPanelView>
+            <OmniPanelView viewId={OmniPanelViewIndex.Tasks}>
+              <TaskSummaryPanel tasks={tasks} />
+            </OmniPanelView>
+          </OmniPanel>
+        </Fade>
+        <DashboardDrawers
+          settings={settings}
+          showSettings={showSettings}
+          showHelp={showHelp}
+          showHotkeysDialog={showHotkeysDialog}
+          reducerMainMenuDispatch={mainMenuDispatch}
+        ></DashboardDrawers>
+      </div>
     </GlobalHotKeys>
   );
 }

@@ -8,13 +8,12 @@ import {
   Typography,
 } from '@material-ui/core';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import DashboardIcon from '@material-ui/icons/Dashboard';
+import HelpIcon from '@material-ui/icons/Help';
 import SettingsIcon from '@material-ui/icons/Settings';
 import React from 'react';
-import { AuthenticatorContext, UserContext } from './auth/contexts';
-import HelpIcon from '@material-ui/icons/Help';
-import { TooltipContext } from './app-contexts';
 import DashboardTooltip from 'react-components/lib/tooltip';
+import { TooltipContext } from './app-contexts';
+import { AuthenticatorContext, UserContext } from './auth/contexts';
 import { ReducerMainMenuDispatch } from './reducers/main-menu-reducer';
 
 export interface AppBarProps {
@@ -26,7 +25,7 @@ export interface AppBarProps {
 
 export const AppBar = React.memo(
   (props: AppBarProps): React.ReactElement => {
-    const { toggleOmnipanel, setShowHelp, setShowSettings } = props.reducerMainMenuDispatch;
+    const { setShowHelp, setShowSettings } = props.reducerMainMenuDispatch;
 
     const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
     const classes = useStyles();
@@ -48,15 +47,6 @@ export const AppBar = React.memo(
           <Typography variant="h6" className={classes.toolbarTitle}>
             Dashboard
           </Typography>
-          <DashboardTooltip
-            title="View all available panel options"
-            id="omnipanel-tooltip"
-            enabled={showTooltips}
-          >
-            <IconButton id="toggle-omnipanel-btn" color="inherit" onClick={() => toggleOmnipanel()}>
-              <DashboardIcon />
-            </IconButton>
-          </DashboardTooltip>
 
           <DashboardTooltip
             title="Define dashboard trajectory settings"
