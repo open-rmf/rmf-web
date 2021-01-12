@@ -4,7 +4,6 @@
   "description": "",
   "main": "lib/index.js",
   "scripts": {
-    "preinstall": "node ../../scripts/install.js",
     "start": "../../node_modules/.bin/start-storybook -p 6006 -s stories",
     "prepare": "npm run build",
     "build": "npm run lint && tsc --build",

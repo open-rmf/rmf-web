@@ -26,14 +26,10 @@ export const appConfig: AppConfig = (() => {
     }
 
     const authConfig: KeycloakConfig = (() => {
-      if (process.env.REACT_APP_AUTH_CONFIG) {
-        return JSON.parse(process.env.REACT_APP_AUTH_CONFIG) as KeycloakConfig;
+      if (!process.env.REACT_APP_AUTH_CONFIG) {
+        throw new Error('REACT_APP_AUTH_CONFIG env variable is needed but not defined');
       }
-      return {
-        realm: 'master',
-        clientId: 'romi-dashboard',
-        url: 'http://localhost:8080/auth',
-      };
+      return JSON.parse(process.env.REACT_APP_AUTH_CONFIG);
     })();
     const authenticator = new DefaultAuthenticator(authConfig);
 

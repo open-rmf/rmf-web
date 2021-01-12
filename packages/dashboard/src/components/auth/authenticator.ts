@@ -1,6 +1,7 @@
 import Debug from 'debug';
 import EventEmitter from 'eventemitter3';
 import Keycloak_, { KeycloakInstance } from 'keycloak-js';
+import { BASE_PATH } from '../../util/url';
 import { User } from './user';
 
 const debug = Debug('authenticator');
@@ -67,7 +68,7 @@ export class DefaultAuthenticator
 
     await this._inst.init({
       onLoad: 'check-sso',
-      silentCheckSsoRedirectUri: `${window.location.origin}/silent-check-sso.html`,
+      silentCheckSsoRedirectUri: `${window.location.origin}${BASE_PATH}/silent-check-sso.html`,
       redirectUri: this._redirectUri,
     });
     try {

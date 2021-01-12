@@ -1,21 +1,17 @@
 {
   "name": "romi-dashboard-e2e",
-  "version": "0.0.0",
   "description": "",
   "main": "index.js",
   "directories": {
     "test": "tests"
   },
   "scripts": {
-    "preinstall": "node ../../../scripts/install.js dashboard",
     "start:react": "serve -c ../e2e/serve.json ../build",
     "setup": "WORLD_NAME=office node scripts/get-resources-location.js",
     "build": ". ./env.sh && cd .. && npm run build",
     "test": ". ./env.sh && npm run setup && node scripts/test-e2e.js",
     "test:dev": ". ./env.sh && ROMI_DASHBOARD_PORT=3000 ROMI_DASHBOARD_LAUNCH_MODE=none wdio"
   },
-  "author": "",
-  "license": "Apache-2.0",
   "dependencies": {
     "@types/mocha": "^8.0.3",
     "@wdio/cli": "^6.5.2",
