@@ -13,6 +13,14 @@ const useStyles = makeStyles((theme) => ({
   errorDisabled: {
     pointerEvents: 'none',
     filter: 'blur(.25rem)',
+    gridArea: '1 / 1',
+  },
+  overlay: {
+    gridArea: '1 / 1',
+    marginTop: '1rem',
+  },
+  container: {
+    display: 'grid',
   },
 }));
 
@@ -28,20 +36,24 @@ export const ItemUnknown = (props: ItemUnknownProps): JSX.Element => {
 
   return showError ? (
     <React.Fragment>
-      <Grid container direction="row" justify="center" alignItems="center" spacing={2}>
-        <Grid item>
-          <Typography color="error" variant="h6" align="center">
-            Error
+      <div className={classes.container}>
+        <div className={classes.errorDisabled}>{children}</div>
+        <div className={children ? classes.overlay : ''}>
+          <Grid container direction="row" justify="center" alignItems="center" spacing={2}>
+            <Grid item>
+              <Typography color="error" variant="h6" align="center">
+                Error
+              </Typography>
+            </Grid>
+            <Grid item>
+              <ErrorIcon className={classes.errorIcon} />
+            </Grid>
+          </Grid>
+          <Typography className={classes.errorMsg} color="error" variant="body1" align="center">
+            {errorMsg ? errorMsg : 'Unknown error'}
           </Typography>
-        </Grid>
-        <Grid item>
-          <ErrorIcon className={classes.errorIcon} />
-        </Grid>
-      </Grid>
-      <Typography className={classes.errorMsg} color="error" variant="body1" align="center">
-        {errorMsg ? errorMsg : 'Unknown error'}
-      </Typography>
-      <div className={classes.errorDisabled}>{children}</div>
+        </div>
+      </div>
     </React.Fragment>
   ) : (
     <React.Fragment>{children}</React.Fragment>
