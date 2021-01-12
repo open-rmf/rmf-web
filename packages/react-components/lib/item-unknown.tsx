@@ -28,16 +28,15 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export interface ItemUnknownProps {
-  errorMsg?: string;
-  showError: boolean;
+  errorMsg: string;
   children: JSX.Element | null;
 }
 
 export const ItemUnknown = (props: ItemUnknownProps): JSX.Element => {
   const classes = useStyles();
-  const { errorMsg, showError, children } = props;
+  const { errorMsg, children } = props;
 
-  return showError ? (
+  return errorMsg ? (
     <React.Fragment>
       <div className={classes.container}>
         <div className={classes.errorDisabled}>{children}</div>

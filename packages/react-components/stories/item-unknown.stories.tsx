@@ -35,7 +35,7 @@ export const ItemUnknownPanel: Story = (args) => {
 
   return (
     <>
-      <ItemUnknown errorMsg={'This is an error message'} showError={true} {...args}>
+      <ItemUnknown errorMsg={'This is an error message'} {...args}>
         <TestComponent />
       </ItemUnknown>
     </>

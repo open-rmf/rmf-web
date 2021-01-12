@@ -117,7 +117,6 @@ export const DispenserAccordion = React.forwardRef(
         <ItemAccordionDetails>
           <ItemUnknown
             errorMsg={'Dispenser is not sending states. Please check if it is working properly.'}
-            showError={!dispenserState}
           >
             {dispenserState ? (
               <DispenserInfo dispenser={dispenserState} />
