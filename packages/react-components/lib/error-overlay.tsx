@@ -30,11 +30,12 @@ const useStyles = makeStyles((theme) => ({
 export interface ErrorOverlayProps {
   errorMsg?: string;
   children: JSX.Element | null;
+  overrideErrorStyle?: string;
 }
 
 export const ErrorOverlay = (props: ErrorOverlayProps): JSX.Element => {
   const classes = useStyles();
-  const { errorMsg, children } = props;
+  const { errorMsg, children, overrideErrorStyle } = props;
 
   return errorMsg ? (
     <React.Fragment>
@@ -55,7 +56,12 @@ export const ErrorOverlay = (props: ErrorOverlayProps): JSX.Element => {
               <ErrorIcon className={classes.errorIcon} />
             </Grid>
           </Grid>
-          <Typography className={classes.errorMsg} color="error" variant="body1" align="center">
+          <Typography
+            className={overrideErrorStyle ? overrideErrorStyle : classes.errorMsg}
+            color="error"
+            variant="body1"
+            align="center"
+          >
             {errorMsg ? errorMsg : 'Unknown error'}
           </Typography>
         </div>
