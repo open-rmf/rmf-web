@@ -27,12 +27,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export interface ItemUnknownProps {
-  errorMsg: string;
+export interface ErrorOverlayProps {
+  errorMsg?: string;
   children: JSX.Element | null;
 }
 
-export const ItemUnknown = (props: ItemUnknownProps): JSX.Element => {
+export const ErrorOverlay = (props: ErrorOverlayProps): JSX.Element => {
   const classes = useStyles();
   const { errorMsg, children } = props;
 

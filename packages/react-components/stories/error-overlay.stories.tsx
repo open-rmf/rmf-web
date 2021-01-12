@@ -1,14 +1,14 @@
 import React from 'react';
 import { Meta, Story } from '@storybook/react';
-import { ItemUnknown, SimpleInfo } from '../lib';
+import { ErrorOverlay, SimpleInfo } from '../lib';
 import { makeStyles } from '@material-ui/core';
 
 export default {
-  title: 'Item Unknown',
-  component: ItemUnknown,
+  title: 'Error Overlay',
+  component: ErrorOverlay,
 } as Meta;
 
-export const ItemUnknownPanel: Story = (args) => {
+export const ErrorOverlayPanel: Story = (args) => {
   // override style with userSelect disabled
   const useStyles = makeStyles(() => ({
     container: {
@@ -35,9 +35,9 @@ export const ItemUnknownPanel: Story = (args) => {
 
   return (
     <>
-      <ItemUnknown errorMsg={'This is an error message'} {...args}>
+      <ErrorOverlay errorMsg={'This is an error message'} {...args}>
         <TestComponent />
-      </ItemUnknown>
+      </ErrorOverlay>
     </>
   );
 };

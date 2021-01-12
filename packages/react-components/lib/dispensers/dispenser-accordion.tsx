@@ -4,7 +4,7 @@ import Debug from 'debug';
 import React, { useEffect, useRef } from 'react';
 import ItemAccordionDetails from '../item-accordion-details';
 import ItemAccordionSummary from '../item-accordion-summary';
-import { ItemUnknown } from '../item-unknown';
+import { ErrorOverlay } from '../error-overlay';
 import { SimpleInfo, SimpleInfoProps } from '../simple-info';
 
 const debug = Debug('Dispensers:DispenserAccordion');
@@ -115,15 +115,19 @@ export const DispenserAccordion = React.forwardRef(
           }}
         />
         <ItemAccordionDetails>
-          <ItemUnknown
-            errorMsg={'Dispenser is not sending states. Please check if it is working properly.'}
+          <ErrorOverlay
+            errorMsg={
+              !dispenserState
+                ? 'Dispenser is not sending states. Please check if it is working properly.'
+                : undefined
+            }
           >
             {dispenserState ? (
               <DispenserInfo dispenser={dispenserState} />
             ) : previousState ? (
               <DispenserInfo dispenser={previousState} overrideStyle={overrideClasses} />
             ) : null}
-          </ItemUnknown>
+          </ErrorOverlay>
         </ItemAccordionDetails>
       </Accordion>
     );
