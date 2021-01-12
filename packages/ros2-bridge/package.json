@@ -26,7 +26,7 @@
     "@types/ws": "^7.2.6",
     "fast-deep-equal": "^3.1.3",
     "jsonwebtoken": "^8.5.1",
-    "rclnodejs": "^0.17.0",
+    "rclnodejs": "git+https://github.com/koonpeng/rclnodejs.git#feat/direct-ros-serialization",
     "winston": "^3.3.3",
     "ws": "^7.3.1",
     "yargs": "^16.0.3"
