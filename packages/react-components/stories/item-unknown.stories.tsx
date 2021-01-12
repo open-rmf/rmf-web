@@ -7,7 +7,7 @@ export default {
   component: ItemUnknown,
 } as Meta;
 
-export const LiftsPanel: Story = (args) => {
+export const ItemUnknownPanel: Story = (args) => {
   function TestComponent() {
     const data = [
       { name: 'String', value: 'This is a string' },
