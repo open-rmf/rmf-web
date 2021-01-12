@@ -22,6 +22,9 @@ const useStyles = makeStyles((theme) => ({
   container: {
     display: 'grid',
   },
+  disableSelect: {
+    userSelect: 'none',
+  },
 }));
 
 export interface ItemUnknownProps {
@@ -38,7 +41,11 @@ export const ItemUnknown = (props: ItemUnknownProps): JSX.Element => {
     <React.Fragment>
       <div className={classes.container}>
         <div className={classes.errorDisabled}>{children}</div>
-        <div className={children ? classes.overlay : ''}>
+        <div
+          className={
+            children ? `${classes.overlay} ${classes.disableSelect}` : classes.disableSelect
+          }
+        >
           <Grid container direction="row" justify="center" alignItems="center" spacing={2}>
             <Grid item>
               <Typography color="error" variant="h6" align="center">

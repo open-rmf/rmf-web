@@ -5,16 +5,17 @@ import React, { useEffect, useRef } from 'react';
 import ItemAccordionDetails from '../item-accordion-details';
 import ItemAccordionSummary from '../item-accordion-summary';
 import { ItemUnknown } from '../item-unknown';
-import { SimpleInfo } from '../simple-info';
+import { SimpleInfo, SimpleInfoProps } from '../simple-info';
 
 const debug = Debug('Dispensers:DispenserAccordion');
 
 interface DispenserInfoProps {
   dispenser: RomiCore.DispenserState;
+  overrideStyle?: SimpleInfoProps['overrideStyle'];
 }
 
 const DispenserInfo = (props: DispenserInfoProps) => {
-  const { dispenser } = props;
+  const { dispenser, overrideStyle } = props;
 
   const data = [
     { name: 'Name', value: dispenser.guid },
@@ -27,7 +28,7 @@ const DispenserInfo = (props: DispenserInfoProps) => {
     { name: 'Seconds Remaining', value: dispenser.seconds_remaining },
   ];
 
-  return <SimpleInfo infoData={data} />;
+  return <SimpleInfo infoData={data} overrideStyle={overrideStyle ? overrideStyle : undefined} />;
 };
 
 function dispenserModeToString(mode: number): string {
@@ -52,6 +53,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const overrideStyles = makeStyles(() => ({
+  container: {
+    display: 'table',
+    borderCollapse: 'collapse',
+    width: '100%',
+    overflowX: 'auto',
+    userSelect: 'none',
+  },
+}));
+
 export interface DispenserAccordionProps extends Omit<AccordionProps, 'children'> {
   /**
    * Pre-condition: `dispenser === dispenserState.guid`
@@ -65,6 +76,7 @@ export const DispenserAccordion = React.forwardRef(
     const { dispenserState, dispenser, ...otherProps } = props;
     debug(`render ${dispenser}`);
     const classes = useStyles();
+    const overrideClasses = overrideStyles();
 
     function usePrevDispenserState(dispenserState: RomiCore.DispenserState | null) {
       const ref = useRef<RomiCore.DispenserState | null>(null);
@@ -110,7 +122,7 @@ export const DispenserAccordion = React.forwardRef(
             {dispenserState ? (
               <DispenserInfo dispenser={dispenserState} />
             ) : previousState ? (
-              <DispenserInfo dispenser={previousState} />
+              <DispenserInfo dispenser={previousState} overrideStyle={overrideClasses} />
             ) : null}
           </ItemUnknown>
         </ItemAccordionDetails>
