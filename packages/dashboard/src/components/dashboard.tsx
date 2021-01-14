@@ -15,6 +15,7 @@ import {
   RobotAccordion as RobotAccordion_,
   StackNavigator,
   withSpotlight,
+  NotificationsDialog,
 } from 'react-components';
 import { GlobalHotKeys } from 'react-hotkeys';
 import 'typeface-roboto';
@@ -76,6 +77,9 @@ export const mainMenuInitialValues: MainMenuState = {
   showOmniPanel: true,
   showSettings: false,
   stackNavigator: new StackNavigator<OmniPanelViewIndex>(OmniPanelViewIndex.MainMenu),
+  showNotifications: false,
+  countNotification: 0,
+  updateNotifications: [],
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -142,9 +146,19 @@ export default function Dashboard(_props: {}): React.ReactElement {
     showSettings,
     showHelp,
     showHotkeysDialog,
+    showNotifications,
+    countNotification,
+    updateNotifications,
   } = mainMenuState;
 
-  const { setCurrentView, setShowOmniPanel, resetView, popView, pushView } = mainMenuDispatch;
+  const {
+    setCurrentView,
+    setShowOmniPanel,
+    resetView,
+    popView,
+    pushView,
+    setShowNotifications,
+  } = mainMenuDispatch;
 
   const mapFloorLayerSorted = React.useMemo<string[] | undefined>(
     () => buildingMap?.levels.sort((a, b) => a.elevation - b.elevation).map((x) => x.name),
@@ -413,7 +427,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
           dispenserStates={dispenserStates}
         >
           <div className={classes.container}>
-            <AppBar reducerMainMenuDispatch={mainMenuDispatch} />
+            <AppBar
+              countNotifications={countNotification}
+              reducerMainMenuDispatch={mainMenuDispatch}
+            />
             {loading && <LoadingScreen {...loading} />}
             {buildingMap && mapFloorLayerSorted && (
               <ScheduleVisualizer
@@ -521,6 +538,11 @@ export default function Dashboard(_props: {}): React.ReactElement {
               showHotkeysDialog={showHotkeysDialog}
               reducerMainMenuDispatch={mainMenuDispatch}
             ></DashboardDrawers>
+            <NotificationsDialog
+              notifications={updateNotifications}
+              showNotificationsDialog={showNotifications}
+              setShowNotifications={() => setShowNotifications(false)}
+            ></NotificationsDialog>
           </div>
 
           <NotificationBar

@@ -21,6 +21,7 @@ export enum MainMenuActionType {
   ShowHotkeysDialog = 'showHotkeysDialog',
   ShowOmniPanel = 'showOmniPanel',
   ShowSettings = 'showSettings',
+  ShowNotifications = 'showNotifications',
   PopView = 'popView',
   PushView = 'pushView',
   ResetView = 'resetView',
@@ -29,6 +30,8 @@ export enum MainMenuActionType {
   ToggleOmnipanel = 'toggleOmnipanel',
   ToggleSettings = 'toggleSettings',
   TourState = 'tourState',
+  CountNotfications = 'countNotification',
+  UpdateNotifications = 'updateNotifications',
 }
 
 export type MainMenuState = {
@@ -39,6 +42,9 @@ export type MainMenuState = {
   [MainMenuActionType.ShowHotkeysDialog]: boolean;
   [MainMenuActionType.ShowOmniPanel]: boolean;
   [MainMenuActionType.ShowSettings]: boolean;
+  [MainMenuActionType.ShowNotifications]: boolean;
+  [MainMenuActionType.CountNotfications]: number;
+  [MainMenuActionType.UpdateNotifications]: { [key: string]: string }[];
   stackNavigator: StackNavigator<OmniPanelViewIndex>;
 };
 
@@ -50,13 +56,16 @@ export type MainMenuAction =
   | MainMenuActionFormat<'showHotkeysDialog', MainMenuState['showHotkeysDialog']>
   | MainMenuActionFormat<'showOmniPanel', MainMenuState['showOmniPanel']>
   | MainMenuActionFormat<'showSettings', MainMenuState['showSettings']>
+  | MainMenuActionFormat<'showNotifications', MainMenuState['showNotifications']>
   | MainMenuActionFormat<'popView'>
   | MainMenuActionFormat<'pushView', MainMenuState['currentView']>
   | MainMenuActionFormat<'resetView'>
   | MainMenuActionFormat<'toggleHelp'>
   | MainMenuActionFormat<'toggleHotkeys'>
   | MainMenuActionFormat<'toggleOmnipanel'>
-  | MainMenuActionFormat<'toggleSettings'>;
+  | MainMenuActionFormat<'toggleSettings'>
+  | MainMenuActionFormat<'countNotification', MainMenuState['countNotification']>
+  | MainMenuActionFormat<'updateNotifications', MainMenuState['updateNotifications']>;
 
 export const mainMenuReducer = (state: MainMenuState, action: MainMenuAction): MainMenuState => {
   switch (action.type) {
@@ -74,6 +83,8 @@ export const mainMenuReducer = (state: MainMenuState, action: MainMenuAction): M
       return { ...state, [MainMenuActionType.ShowHotkeysDialog]: action.payload };
     case MainMenuActionType.ShowHelp:
       return { ...state, [MainMenuActionType.ShowHelp]: action.payload };
+    case MainMenuActionType.ShowNotifications:
+      return { ...state, [MainMenuActionType.ShowNotifications]: action.payload };
     case MainMenuActionType.PopView:
       return { ...state, [MainMenuActionType.CurrentView]: state.stackNavigator.pop() };
     case MainMenuActionType.PushView:
@@ -90,6 +101,10 @@ export const mainMenuReducer = (state: MainMenuState, action: MainMenuAction): M
       return { ...state, showHelp: !state.showHelp };
     case MainMenuActionType.ToggleHotkeys:
       return { ...state, showHotkeysDialog: !state.showHotkeysDialog };
+    case MainMenuActionType.CountNotfications:
+      return { ...state, [MainMenuActionType.CountNotfications]: action.payload };
+    case MainMenuActionType.UpdateNotifications:
+      return { ...state, [MainMenuActionType.UpdateNotifications]: action.payload };
     default:
       console.error('Unexpected action');
       return state;
@@ -107,10 +122,13 @@ export interface ReducerMainMenuDispatch {
   setShowHotkeysDialog: (payload: MainMenuState['showHotkeysDialog']) => void;
   setShowOmniPanel: (payload: MainMenuState['showOmniPanel']) => void;
   setShowSettings: (payload: MainMenuState['showSettings']) => void;
+  setShowNotifications: (payload: MainMenuState['showNotifications']) => void;
   toggleHelp: () => void;
   toggleHotkeys: () => void;
   toggleOmnipanel: () => void;
   toggleSettings: () => void;
+  countNotifications: (payload: MainMenuState['countNotification']) => void;
+  updateNotifications: (payload: MainMenuState['updateNotifications']) => void;
 }
 export interface ReducerMainMenuProps {
   state: MainMenuState;
@@ -138,10 +156,16 @@ export const useMainMenuReducer = (initialValue: MainMenuState): ReducerMainMenu
         _dispatch({ type: MainMenuActionType.ShowOmniPanel, payload: payload }),
       setShowSettings: (payload) =>
         _dispatch({ type: MainMenuActionType.ShowSettings, payload: payload }),
+      setShowNotifications: (payload) =>
+        _dispatch({ type: MainMenuActionType.ShowNotifications, payload }),
       toggleHelp: () => _dispatch({ type: MainMenuActionType.ToggleHelp }),
       toggleHotkeys: () => _dispatch({ type: MainMenuActionType.ToggleHotkeys }),
       toggleOmnipanel: () => _dispatch({ type: MainMenuActionType.ToggleOmnipanel }),
       toggleSettings: () => _dispatch({ type: MainMenuActionType.ToggleSettings }),
+      countNotifications: (payload) =>
+        _dispatch({ type: MainMenuActionType.CountNotfications, payload }),
+      updateNotifications: (payload) =>
+        _dispatch({ type: MainMenuActionType.UpdateNotifications, payload }),
     } as ReducerMainMenuDispatch;
   }, []);
   return {
