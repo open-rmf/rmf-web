@@ -41,4 +41,10 @@ export default class FakeNotifications {
     const notifications = this.makeNotification();
     return notifications.slice(0, interval);
   }
+
+  pushNotifications(notificationsMessage: string) {
+    navigator.serviceWorker.getRegistration().then((registration) => {
+      registration?.showNotification(notificationsMessage);
+    });
+  }
 }

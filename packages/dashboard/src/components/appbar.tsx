@@ -75,7 +75,7 @@ export const AppBar = React.memo(
     const notificationsManager = new FakeNotifications();
 
     function notifyCallback() {
-      if (counter > notificationsManager.makeNotification().length) {
+      if (counter >= notificationsManager.makeNotification().length) {
         setCounter(0);
         countNotifications(0);
         updateNotifications([]);
@@ -83,6 +83,9 @@ export const AppBar = React.memo(
         setCounter((counter += 1));
         countNotifications(notificationsManager.getNotifications(counter).length);
         updateNotifications(notificationsManager.getNotifications(counter));
+        notificationsManager.pushNotifications(
+          notificationsManager.makeNotification()[counter - 1].error,
+        );
       }
     }
     useInterval(notifyCallback, 2000);
