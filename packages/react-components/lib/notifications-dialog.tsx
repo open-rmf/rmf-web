@@ -5,10 +5,10 @@ import {
   DialogTitle,
   makeStyles,
   Typography,
-  Divider,
   DialogActions,
   DialogContent,
   IconButton,
+  Paper,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 
@@ -19,19 +19,6 @@ export interface NotificationDialogProps {
 }
 
 const useStyles = makeStyles((theme) => ({
-  errorColumn: {
-    display: 'flex',
-    flexFlow: 'row',
-    padding: '0.5rem',
-  },
-  detailLine: {
-    display: 'inline-flex',
-    padding: theme.spacing(0.5),
-    width: '100%',
-  },
-  detailLineContent: {
-    marginLeft: theme.spacing(0.5),
-  },
   closeButton: {
     position: 'absolute',
     right: theme.spacing(1),
@@ -45,6 +32,13 @@ const useStyles = makeStyles((theme) => ({
   dialogContent: {
     padding: theme.spacing(5),
   },
+  paper: {
+    display: 'inline-flex',
+    justifyContent: 'space-between',
+    padding: theme.spacing(1),
+    width: '100%',
+    margin: `0.5rem 0`,
+  },
 }));
 
 export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element => {
@@ -56,7 +50,7 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
       open={showNotificationsDialog}
       onClose={() => setShowNotifications(false)}
       fullWidth={true}
-      maxWidth={'md'}
+      maxWidth={'sm'}
     >
       <DialogTitle>
         Notifications
@@ -73,21 +67,10 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
           notifications.map((notification, i) => {
             return (
               <React.Fragment key={notification.time + '_' + i}>
-                <div className={classes.errorColumn}>
-                  {Object.keys(notification).map((key) => {
-                    return (
-                      <div key={key} className={classes.detailLine}>
-                        <Typography variant="body1">
-                          <b>{key}:</b>
-                        </Typography>
-                        <Typography variant="body1" className={classes.detailLineContent}>
-                          {notification[key]}
-                        </Typography>
-                      </div>
-                    );
-                  })}
-                </div>
-                <Divider />
+                <Paper elevation={3} className={classes.paper}>
+                  <Typography variant="body1">{notification.time}:</Typography>
+                  <Typography variant="body1">{notification.error}</Typography>
+                </Paper>
               </React.Fragment>
             );
           })

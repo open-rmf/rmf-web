@@ -20,27 +20,19 @@ export default class FakeNotifications {
     return [
       {
         time: this.getDate(),
-        location: 'x: 10, y: 11, L1',
         error: 'coke_ingestor not sending states',
-        item: 'coke_ingestor',
       },
       {
         time: this.getDate(),
-        location: 'x: 32, y: 19, L1',
-        error: 'Robot is spoilt',
-        item: 'robot A',
+        error: 'Lift is on fire',
       },
       {
         time: this.getDate(),
-        location: 'x: 8, y: 21, L1',
-        error: 'conflict with robot C',
-        item: 'robot B',
+        error: 'Trajectory conflict with robot B and robot C',
       },
       {
         time: this.getDate(),
-        location: 'x: 16, y: 9, L1',
-        error: 'conflict with robot B',
-        item: 'robot C',
+        error: 'Trajectory conflict with robot A and robot B',
       },
     ];
   }
