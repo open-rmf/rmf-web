@@ -1,14 +1,5 @@
 import React from 'react';
-import SearchIcon from '@material-ui/icons/Search';
-import {
-  FormControl,
-  IconButton,
-  InputLabel,
-  makeStyles,
-  MenuItem,
-  Select,
-  TextField,
-} from '@material-ui/core';
+import { FormControl, makeStyles, TextField } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import { SearchFilter } from './search-filter';
 import DateAndTimePickers from '../date-time-picker';
@@ -17,21 +8,12 @@ interface SearchLogFormProps {
   search?: () => void;
 }
 
-// const searchQuery = () => {
-//   // TODO: We should add a debounce if we want to search on every click
-//   axios({
-//     method: 'post',
-//     url: 'localhost:3030/',
-//     headers: {
-//       'Content-Type': 'application/json',
-//     },
-//     data: { query: search },
-//   });
-// };
-
 export const SearchLogForm = (props: SearchLogFormProps) => {
   const { search } = props;
   const [searchText, setSearchText] = React.useState('');
+  const [sourceLog, setSourceLog] = React.useState('');
+  const [logLevel, setLogLevel] = React.useState('');
+  const [rowsCount, setRowsCount] = React.useState(100);
   const [error, setError] = React.useState('');
   const classes = useStyles();
 
@@ -43,9 +25,33 @@ export const SearchLogForm = (props: SearchLogFormProps) => {
     search && search();
   };
 
+  const sourceLogValues = [
+    { label: 'log1', value: 'log1' },
+    { label: 'log2', value: 'log2' },
+  ];
+
+  const logLevelValues = [{ label: 'INFO', value: 'info' }];
+
+  const rowsCountValues = [
+    { label: '50', value: '50' },
+    { label: '100', value: '100' },
+  ];
+
+  const handleSourceLogChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
+    setSourceLog(event.target.value as string);
+  };
+
+  const handleLogLevelChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
+    setLogLevel(event.target.value as string);
+  };
+
+  const handleRowsNumberChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
+    setRowsCount(event.target.value as number);
+  };
+
   return (
     <>
-      <div className={classes.formDiv}>
+      <div className={classes.searchForm}>
         <FormControl variant="outlined" className={classes.formControl}>
           <TextField
             onChange={(e) => {
@@ -55,21 +61,33 @@ export const SearchLogForm = (props: SearchLogFormProps) => {
             type="string"
             value={searchText}
             variant="outlined"
-            // className={classes.search}
             error={!!error}
             helperText={error}
-            // InputProps={{
-            //   classes: {
-            //     input: classes.resize,
-            //   },
-            // }}
           />
         </FormControl>
-        <SearchFilter></SearchFilter>
-        <SearchFilter></SearchFilter>
-        <DateAndTimePickers></DateAndTimePickers>
-        <DateAndTimePickers></DateAndTimePickers>
-        <SearchFilter></SearchFilter>
+        <SearchFilter
+          options={sourceLogValues}
+          name="log-picker"
+          label="Pick Log File"
+          handleOnChange={handleSourceLogChange}
+          currentValue={sourceLog}
+        ></SearchFilter>
+        <SearchFilter
+          options={logLevelValues}
+          name="log-level"
+          label="Pick Log Level"
+          handleOnChange={handleLogLevelChange}
+          currentValue={logLevel}
+        ></SearchFilter>
+        <DateAndTimePickers name="fromLogDate" label="From"></DateAndTimePickers>
+        <DateAndTimePickers name="toLogDate" label="To"></DateAndTimePickers>
+        <SearchFilter
+          options={rowsCountValues}
+          name="rowsCount"
+          label="Rows number"
+          handleOnChange={handleRowsNumberChange}
+          currentValue={rowsCount}
+        ></SearchFilter>
       </div>
       <br></br>
       <Button
@@ -85,23 +103,14 @@ export const SearchLogForm = (props: SearchLogFormProps) => {
 };
 
 const useStyles = makeStyles((theme) => ({
-  searchDiv: {
-    width: '100%',
-  },
-  formDiv: {
-    display: 'flex',
-    flexDirection: 'row',
-  },
-  search: {
-    width: '70%',
+  searchForm: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(3, 1fr)',
+    alignItems: 'center',
+    justifyItems: 'center',
   },
   searchButton: {
     width: '100%',
-  },
-  resize: {
-    fontSize: '3rem',
-    borderRadius: '0.5rem',
-    backgroundColor: 'white',
   },
   formControl: {
     margin: theme.spacing(1),

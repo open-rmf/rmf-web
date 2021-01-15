@@ -16,16 +16,20 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export default function DateAndTimePickers() {
-  const classes = useStyles();
+interface DateTimePickerProps {
+  label: string;
+  name: string;
+}
 
+export default function DateAndTimePickers(props: DateTimePickerProps) {
+  const classes = useStyles();
   return (
     <form className={classes.container} noValidate>
       <TextField
-        id="datetime-local"
-        label="Next appointment"
+        id={`${props.name}-datetime-local`}
+        label={props.label}
         type="datetime-local"
-        defaultValue="2017-05-24T10:30"
+        defaultValue={new Date().toISOString().substr(0, 16)}
         className={classes.textField}
         InputLabelProps={{
           shrink: true,
