@@ -14,6 +14,7 @@ const useStyles = makeStyles((theme) => ({
     pointerEvents: 'none',
     filter: 'blur(.25rem)',
     gridArea: '1 / 1',
+    opacity: 0.6,
   },
   overlay: {
     gridArea: '1 / 1',
