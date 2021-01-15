@@ -18,6 +18,8 @@ const useStyles = makeStyles((theme) => ({
   overlay: {
     gridArea: '1 / 1',
     marginTop: '1rem',
+    backdropFilter: 'blur(.5rem)',
+    padding: theme.spacing(1),
   },
   container: {
     display: 'grid',
@@ -59,7 +61,7 @@ export const ErrorOverlay = (props: ErrorOverlayProps): JSX.Element => {
           <Typography
             className={overrideErrorStyle ? overrideErrorStyle : classes.errorMsg}
             color="error"
-            variant="body1"
+            variant="h6"
             align="center"
           >
             {errorMsg ? errorMsg : 'Unknown error'}
