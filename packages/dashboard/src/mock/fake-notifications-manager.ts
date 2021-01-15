@@ -43,8 +43,20 @@ export default class FakeNotifications {
   }
 
   pushNotifications(notificationsMessage: string) {
-    navigator.serviceWorker.getRegistration().then((registration) => {
-      registration?.showNotification(notificationsMessage);
+    Notification.requestPermission((result) => {
+      if (result === 'granted') {
+        const options = {
+          body: notificationsMessage,
+          vibrate: [200, 100, 200, 100, 200, 100, 400],
+        };
+        if (navigator && navigator.serviceWorker) {
+          navigator.serviceWorker.ready.then((registration) => {
+            if (registration && registration.showNotification) {
+              registration.showNotification('rmf-web notificatons', options);
+            }
+          });
+        }
+      }
     });
   }
 }

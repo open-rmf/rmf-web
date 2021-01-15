@@ -88,7 +88,7 @@ export const AppBar = React.memo(
         );
       }
     }
-    useInterval(notifyCallback, 2000);
+    useInterval(notifyCallback, 5000);
     // end of temp code
 
     async function handleLogout(): Promise<void> {
