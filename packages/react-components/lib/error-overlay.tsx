@@ -8,7 +8,7 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.error.main,
   },
   errorMsg: {
-    margin: '0 0.5rem',
+    margin: '0.5rem',
   },
   errorDisabled: {
     pointerEvents: 'none',
