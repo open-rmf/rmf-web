@@ -152,7 +152,7 @@ export default class Ros2Plugin {
     this._removeInnerHandler(id);
   }
 
-  createPublisher(params: CreatePublisherParams, sender: Sender<never>): number {
+  createPublisher(params: CreatePublisherParams, sender: Sender<number>): void {
     const id = this._idCounter++;
 
     sender.socket.once('close', () => {
@@ -175,7 +175,7 @@ export default class Ros2Plugin {
     }
     this._publishers[id] = record;
     this._logger.info('added publisher', { id, topic: params.topic.topic });
-    return id;
+    sender.end(id);
   }
 
   publish(params: PublishParams): void {
