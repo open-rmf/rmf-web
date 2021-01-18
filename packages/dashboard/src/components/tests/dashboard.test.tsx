@@ -2,7 +2,7 @@ import { createMount } from '@material-ui/core/test-utils';
 import { ReactWrapper } from 'enzyme';
 import React from 'react';
 import ReactTestUtils from 'react-dom/test-utils';
-import Dashboard from '../dashboard';
+import Dashboard from '../dashboard/dashboard';
 
 const mount = createMount();
 

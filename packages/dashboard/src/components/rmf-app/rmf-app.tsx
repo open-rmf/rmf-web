@@ -1,7 +1,13 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 import appConfig from '../../app-config';
-import { LoadingScreenContext } from '../app-contexts';
+import DispenserStateManager from '../../dispenser-state-manager';
+import DoorStateManager from '../../door-state-manager';
+import FleetManager from '../../fleet-manager';
+import LiftStateManager from '../../lift-state-manager';
+import TaskManager from '../../managers/task-manager';
+import { NegotiationStatusManager } from '../../negotiation-status-manager';
+import { AppControllerContext } from '../app-contexts';
 import {
   BuildingMapContext,
   DispenserStateContext,
@@ -9,6 +15,7 @@ import {
   FleetStateContext,
   LiftStateContext,
   NegotiationStatusContext,
+  RmfIngress,
   RmfIngressContext,
   TasksContext,
   TransportContext,
@@ -22,7 +29,7 @@ enum ConnectionState {
 
 function TransportContextsProvider(props: React.PropsWithChildren<{}>): JSX.Element {
   const [transport, setTransport] = React.useState<RomiCore.Transport | null>(null);
-  const setLoadingScreen = React.useContext(LoadingScreenContext);
+  const { showLoadingScreen } = React.useContext(AppControllerContext);
   const [connectionState, setConnectionState] = React.useState(() =>
     transport ? ConnectionState.Connected : ConnectionState.Disconnected,
   );
@@ -44,23 +51,23 @@ function TransportContextsProvider(props: React.PropsWithChildren<{}>): JSX.Elem
   React.useEffect(() => {
     switch (connectionState) {
       case ConnectionState.Connecting:
-        setLoadingScreen({ caption: 'Connecting to server...' });
+        showLoadingScreen({ caption: 'Connecting to server...' });
         break;
       case ConnectionState.Disconnected:
         if (error) {
-          setLoadingScreen({
+          showLoadingScreen({
             caption: `Unable to connect to server (${error.code})`,
             variant: 'error',
           });
         } else {
-          setLoadingScreen({
+          showLoadingScreen({
             caption: `Unable to connect to server (unknown error)`,
             variant: 'error',
           });
         }
         break;
     }
-  }, [connectionState, error, setLoadingScreen]);
+  }, [connectionState, error, showLoadingScreen]);
 
   return <TransportContext.Provider value={transport}>{props.children}</TransportContext.Provider>;
 }
@@ -68,7 +75,7 @@ function TransportContextsProvider(props: React.PropsWithChildren<{}>): JSX.Elem
 function BuildingMapProvider(props: React.PropsWithChildren<{}>): JSX.Element {
   const transport = React.useContext(TransportContext);
   const [buildingMap, setBuildingMap] = React.useState<RomiCore.BuildingMap | null>(null);
-  const setLoadingScreen = React.useContext(LoadingScreenContext);
+  const { showLoadingScreen } = React.useContext(AppControllerContext);
   const downloadingRef = React.useRef(false);
 
   React.useEffect(() => {
@@ -77,13 +84,13 @@ function BuildingMapProvider(props: React.PropsWithChildren<{}>): JSX.Element {
     }
     (async () => {
       downloadingRef.current = true;
-      setLoadingScreen({ caption: 'Downloading building map...' });
+      showLoadingScreen({ caption: 'Downloading building map...' });
       const resp = await transport.call(RomiCore.getBuildingMap, {});
       downloadingRef.current = false;
-      setLoadingScreen({});
+      showLoadingScreen({});
       setBuildingMap(resp.building_map);
     })();
-  }, [buildingMap, transport, downloadingRef, setLoadingScreen]);
+  }, [buildingMap, transport, downloadingRef, showLoadingScreen]);
 
   return (
     <BuildingMapContext.Provider value={buildingMap}>{props.children}</BuildingMapContext.Provider>
@@ -223,6 +230,36 @@ function TaskContextsProvider(props: React.PropsWithChildren<{}>): JSX.Element {
   return <TasksContext.Provider value={tasks}>{props.children}</TasksContext.Provider>;
 }
 
+function RmfIngressProvider(props: React.PropsWithChildren<{}>): JSX.Element {
+  const [rmfIngress, setRmfIngress] = React.useState<RmfIngress>(() => ({
+    dispenserStateManager: new DispenserStateManager(),
+    doorStateManager: new DoorStateManager(),
+    fleetManager: new FleetManager(),
+    liftStateManager: new LiftStateManager(),
+    negotiationStatusManager: new NegotiationStatusManager(appConfig.trajServerUrl),
+    taskManager: new TaskManager(),
+  }));
+
+  // add loading screen if this takes very long
+  React.useEffect(() => {
+    const { trajectoryManagerFactory } = appConfig;
+    if (!trajectoryManagerFactory) {
+      return;
+    }
+    (async () => {
+      const trajectoryManager = await trajectoryManagerFactory();
+      setRmfIngress((prev) => ({
+        ...prev,
+        trajectoryManager,
+      }));
+    })();
+  }, []);
+
+  return (
+    <RmfIngressContext.Provider value={rmfIngress}>{props.children}</RmfIngressContext.Provider>
+  );
+}
+
 export interface RmfAppProps extends React.PropsWithChildren<{}> {}
 
 /**
@@ -241,19 +278,21 @@ export interface RmfAppProps extends React.PropsWithChildren<{}> {}
 export function RmfApp(props: RmfAppProps): JSX.Element {
   return (
     <TransportContextsProvider>
-      <BuildingMapProvider>
-        <DoorContextsProvider>
-          <LiftContextsProvider>
-            <DispenserContextsProvider>
-              <FleetContextsProvider>
-                <NegotiationContextsProvider>
-                  <TaskContextsProvider>{props.children}</TaskContextsProvider>
-                </NegotiationContextsProvider>
-              </FleetContextsProvider>
-            </DispenserContextsProvider>
-          </LiftContextsProvider>
-        </DoorContextsProvider>
-      </BuildingMapProvider>
+      <RmfIngressProvider>
+        <BuildingMapProvider>
+          <DoorContextsProvider>
+            <LiftContextsProvider>
+              <DispenserContextsProvider>
+                <FleetContextsProvider>
+                  <NegotiationContextsProvider>
+                    <TaskContextsProvider>{props.children}</TaskContextsProvider>
+                  </NegotiationContextsProvider>
+                </FleetContextsProvider>
+              </DispenserContextsProvider>
+            </LiftContextsProvider>
+          </DoorContextsProvider>
+        </BuildingMapProvider>
+      </RmfIngressProvider>
     </TransportContextsProvider>
   );
 }

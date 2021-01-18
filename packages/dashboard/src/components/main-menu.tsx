@@ -1,9 +1,9 @@
 import { Divider, List, ListItem, makeStyles, Typography } from '@material-ui/core';
-import React from 'react';
 import Debug from 'debug';
+import React from 'react';
 import DashboardTooltip from 'react-components/lib/tooltip';
-import { TooltipContext } from './app-contexts';
-import { OmniPanelViewIndex } from './dashboard';
+import { TooltipsContext } from './app-contexts';
+import { OmniPanelViewIndex } from './dashboard/dashboard';
 
 const debug = Debug('MainMenu');
 
@@ -19,7 +19,7 @@ export interface MainMenuProps {
 }
 
 export const MainMenu = React.memo((props: MainMenuProps) => {
-  const { showTooltips } = React.useContext(TooltipContext);
+  const { showTooltips } = React.useContext(TooltipsContext);
   const { pushView } = props;
   debug('render');
   const classes = useStyles();

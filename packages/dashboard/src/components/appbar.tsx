@@ -12,26 +12,26 @@ import HelpIcon from '@material-ui/icons/Help';
 import SettingsIcon from '@material-ui/icons/Settings';
 import React from 'react';
 import DashboardTooltip from 'react-components/lib/tooltip';
-import { TooltipContext } from './app-contexts';
+import { AppControllerContext, TooltipsContext } from './app-contexts';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
-import { ReducerMainMenuDispatch } from './reducers/main-menu-reducer';
 
 export interface AppBarProps {
-  reducerMainMenuDispatch: ReducerMainMenuDispatch;
   // TODO: change the alarm status to required when we have an alarm
   // service working properly in the backend
   alarmState?: boolean | null;
 }
 
 export const AppBar = React.memo(
-  (props: AppBarProps): React.ReactElement => {
-    const { setShowHelp, setShowSettings } = props.reducerMainMenuDispatch;
+  (_props: AppBarProps): React.ReactElement => {
+    const { showHelp: setShowHelp, showSettings: setShowSettings } = React.useContext(
+      AppControllerContext,
+    );
 
     const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
     const classes = useStyles();
     const authenticator = React.useContext(AuthenticatorContext);
     const user = React.useContext(UserContext);
-    const { showTooltips } = React.useContext(TooltipContext);
+    const { showTooltips } = React.useContext(TooltipsContext);
 
     async function handleLogout(): Promise<void> {
       try {

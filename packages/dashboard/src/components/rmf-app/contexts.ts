@@ -7,6 +7,7 @@ import FleetManager from '../../fleet-manager';
 import LiftStateManager from '../../lift-state-manager';
 import TaskManager from '../../managers/task-manager';
 import { NegotiationConflict, NegotiationStatusManager } from '../../negotiation-status-manager';
+import { RobotTrajectoryManager } from '../../robot-trajectory-manager';
 
 export const DispenserStateContext = React.createContext<Record<string, RomiCore.DispenserState>>(
   {},
@@ -28,6 +29,7 @@ export interface RmfIngress {
   liftStateManager: LiftStateManager;
   negotiationStatusManager: NegotiationStatusManager;
   taskManager: TaskManager;
+  trajectoryManager?: RobotTrajectoryManager;
 }
 
 export const RmfIngressContext = React.createContext<RmfIngress>({

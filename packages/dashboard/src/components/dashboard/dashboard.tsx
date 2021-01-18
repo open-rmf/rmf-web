@@ -18,32 +18,28 @@ import {
 } from 'react-components';
 import { GlobalHotKeys } from 'react-hotkeys';
 import 'typeface-roboto';
-import appConfig from '../app-config';
-import { buildHotKeys } from '../hotkeys';
-import { NegotiationTrajectoryResponse } from '../negotiation-status-manager';
-import ResourceManager from '../resource-manager';
-import { RobotTrajectoryManager } from '../robot-trajectory-manager';
-import { loadSettings } from '../settings';
-import AppBar from './appbar';
-import CommandsPanel from './commands-panel';
-import { DashboardDrawers } from './dashboard-drawers';
-import LoadingScreen, { LoadingScreenProps } from './loading-screen';
-import MainMenu from './main-menu';
-import NegotiationsPanel from './negotiations-panel';
-import { MainMenuState, useMainMenuReducer } from './reducers/main-menu-reducer';
+import { buildHotKeys } from '../../hotkeys';
+import { NegotiationTrajectoryResponse } from '../../negotiation-status-manager';
+import ResourceManager from '../../resource-manager';
+import { AppControllerContext } from '../app-contexts';
+import CommandsPanel from '../commands-panel';
+import LoadingScreen, { LoadingScreenProps } from '../loading-screen';
+import MainMenu from '../main-menu';
+import NegotiationsPanel from '../negotiations-panel';
 import {
   DispenserStateContext,
   DoorStateContext,
   FleetStateContext,
   LiftStateContext,
   NegotiationStatusContext,
-  NegotiationStatusManagerContext,
+  RmfIngressContext,
   TasksContext,
   TransportContext,
-} from './rmf-app';
-import ScheduleVisualizer, { ScheduleVisualizerProps } from './schedule-visualizer';
-import { SpotlightValue } from './spotlight-value';
-import TaskSummaryPanel from './task-summary-panel';
+} from '../rmf-app';
+import ScheduleVisualizer, { ScheduleVisualizerProps } from '../schedule-visualizer';
+import { SpotlightValue } from '../spotlight-value';
+import TaskSummaryPanel from '../task-summary-panel';
+import { DashboardState, useDashboardReducer } from './reducers/dashboard-reducer';
 
 const debug = Debug('App');
 const DispenserAccordion = React.memo(withSpotlight(DispenserAccordion_));
@@ -64,16 +60,9 @@ export enum OmniPanelViewIndex {
   Tasks,
 }
 
-export const mainMenuInitialValues: MainMenuState = {
-  currentView: 0,
-  loading: {
-    caption: 'Connecting to api server...',
-  },
-  settings: loadSettings(),
-  showHelp: false,
-  showHotkeysDialog: false,
+export const dashboardInitialValues: DashboardState = {
   showOmniPanel: true,
-  showSettings: false,
+  currentView: 0,
   stackNavigator: new StackNavigator<OmniPanelViewIndex>(OmniPanelViewIndex.MainMenu),
 };
 
@@ -122,28 +111,22 @@ function robotKey(fleet: string, robot: RomiCore.RobotState): string {
 export default function Dashboard(_props: {}): React.ReactElement {
   debug('render');
 
-  const { appResources, trajectoryManagerFactory } = appConfig;
   const classes = useStyles();
+
+  const appController = React.useContext(AppControllerContext);
+
   const transport = React.useContext(TransportContext);
   const [buildingMap, setBuildingMap] = React.useState<RomiCore.BuildingMap | undefined>(undefined);
-  const trajManager = React.useRef<RobotTrajectoryManager | undefined>(undefined);
+  const { trajectoryManager: trajManager } = React.useContext(RmfIngressContext);
   const resourceManager = React.useRef<ResourceManager | undefined>(undefined);
 
-  const { state: mainMenuState, dispatch: mainMenuDispatch } = useMainMenuReducer(
-    mainMenuInitialValues,
+  const { state: dashboardState, dispatch: dashboardDispatch } = useDashboardReducer(
+    dashboardInitialValues,
   );
 
-  const {
-    currentView,
-    settings,
-    showOmniPanel,
-    stackNavigator,
-    showSettings,
-    showHelp,
-    showHotkeysDialog,
-  } = mainMenuState;
+  const { currentView, showOmniPanel, stackNavigator } = dashboardState;
 
-  const { setCurrentView, setShowOmniPanel, resetView, popView, pushView } = mainMenuDispatch;
+  const { setCurrentView, setShowOmniPanel, resetView, popView, pushView } = dashboardDispatch;
 
   const mapFloorLayerSorted = React.useMemo<string[] | undefined>(
     () => buildingMap?.levels.sort((a, b) => a.elevation - b.elevation).map((x) => x.name),
@@ -232,7 +215,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     [robotAccordionRefs, pushView, setShowOmniPanel],
   );
 
-  const negotiationStatusManager = React.useContext(NegotiationStatusManagerContext);
+  const { negotiationStatusManager } = React.useContext(RmfIngressContext);
   const negotiationStatus = React.useContext(NegotiationStatusContext);
   const [negotiationSpotlight, setNegotiationSpotlight] = React.useState<
     SpotlightValue<string> | undefined
@@ -265,24 +248,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
         setLoading({ caption: 'Unable to download building map', variant: 'error' });
       });
   }, [transport]);
-
-  React.useEffect(() => {
-    if (!trajectoryManagerFactory) {
-      return;
-    }
-    (async () => {
-      trajManager.current = await trajectoryManagerFactory();
-    })();
-  }, [trajectoryManagerFactory]);
-
-  React.useEffect(() => {
-    if (!appResources) {
-      return;
-    }
-    (async () => {
-      resourceManager.current = await appResources;
-    })();
-  }, [appResources]);
 
   React.useEffect(() => {
     setDoors(buildingMap ? buildingMap.levels.flatMap((x) => x.doors) : []);
@@ -326,21 +291,20 @@ export default function Dashboard(_props: {}): React.ReactElement {
   }
 
   const hotKeysValue = React.useMemo(
-    () => buildHotKeys({ reducerMainMenuDispatch: mainMenuDispatch }),
-    [mainMenuDispatch],
+    () => buildHotKeys({ reducerDashboardDispatch: dashboardDispatch, appController }),
+    [dashboardDispatch, appController],
   );
 
   return (
     <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
       <div className={classes.container}>
-        <AppBar reducerMainMenuDispatch={mainMenuDispatch} />
         {loading && <LoadingScreen {...loading} />}
         {buildingMap && mapFloorLayerSorted && (
           <ScheduleVisualizer
             buildingMap={buildingMap}
             mapFloorLayerSorted={mapFloorLayerSorted}
             fleets={fleets}
-            trajManager={trajManager.current}
+            trajManager={trajManager}
             negotiationTrajStore={negotiationTrajStore}
             onDoorClick={handleDoorMarkerClick}
             onLiftClick={handleLiftMarkerClick}
@@ -416,7 +380,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                 : null}
             </OmniPanelView>
             <OmniPanelView viewId={OmniPanelViewIndex.Commands}>
-              <CommandsPanel transport={transport} allFleets={fleetNames.current} />
+              {transport && <CommandsPanel transport={transport} allFleets={fleetNames.current} />}
             </OmniPanelView>
             <OmniPanelView viewId={OmniPanelViewIndex.Negotiations}>
               <NegotiationsPanel
@@ -434,13 +398,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
             </OmniPanelView>
           </OmniPanel>
         </Fade>
-        <DashboardDrawers
-          settings={settings}
-          showSettings={showSettings}
-          showHelp={showHelp}
-          showHotkeysDialog={showHotkeysDialog}
-          reducerMainMenuDispatch={mainMenuDispatch}
-        ></DashboardDrawers>
       </div>
     </GlobalHotKeys>
   );

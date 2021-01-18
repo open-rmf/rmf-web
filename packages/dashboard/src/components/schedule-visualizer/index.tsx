@@ -14,7 +14,7 @@ import {
   TrajectoryResponse,
 } from '../../robot-trajectory-manager';
 import { toBlobUrl } from '../../util';
-import { NotificationBarContext } from '../notification-bar';
+import { AppControllerContext } from '../app-contexts';
 import DispensersOverlay from './dispensers-overlay';
 import DoorsOverlay from './doors-overlay';
 import LiftsOverlay from './lift-overlay';
@@ -41,9 +41,9 @@ export interface MapFloorLayer {
 }
 
 export interface ScheduleVisualizerProps {
-  buildingMap: Readonly<RomiCore.BuildingMap>;
-  fleets: Readonly<RomiCore.FleetState[]>;
-  trajManager?: Readonly<RobotTrajectoryManager>;
+  buildingMap: RomiCore.BuildingMap;
+  fleets: RomiCore.FleetState[];
+  trajManager?: RobotTrajectoryManager;
   negotiationTrajStore: Readonly<Record<string, NegotiationTrajectoryResponse>>;
   mapFloorLayerSorted: Readonly<string[]>;
   onDoorClick?(door: RomiCore.Door): void;
@@ -199,7 +199,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   }, [props.trajManager, curMapFloorLayer, trajAnimDuration]);
 
   // Show notification when a conflict happens.
-  const notificationDispatch = React.useContext(NotificationBarContext);
+  const { showNotification: notificationDispatch } = React.useContext(AppControllerContext);
   React.useEffect(() => {
     function getConflictRobotMessage(): string {
       let message = '';
