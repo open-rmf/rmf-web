@@ -20,7 +20,6 @@ const useStyles = makeStyles((theme) => ({
     gridArea: '1 / 1',
     backdropFilter: 'blur(.5rem)',
     padding: theme.spacing(1),
-    height: '100vh',
   },
   container: {
     display: 'grid',
@@ -31,46 +30,48 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export interface ErrorOverlayProps {
-  errorMsg?: string;
+  errorMsg?: string | null;
   children: JSX.Element | null;
   overrideErrorStyle?: string;
 }
 
-export const ErrorOverlay = (props: ErrorOverlayProps): JSX.Element => {
-  const classes = useStyles();
-  const { errorMsg, children, overrideErrorStyle } = props;
+export const ErrorOverlay = React.memo(
+  (props: ErrorOverlayProps): JSX.Element => {
+    const classes = useStyles();
+    const { errorMsg, children, overrideErrorStyle } = props;
 
-  return errorMsg ? (
-    <React.Fragment>
-      <div className={classes.container}>
-        <div className={classes.errorDisabled}>{children}</div>
-        <div
-          className={
-            children ? `${classes.overlay} ${classes.disableSelect}` : classes.disableSelect
-          }
-        >
-          <Grid container direction="row" justify="center" alignItems="center" spacing={2}>
-            <Grid item>
-              <ErrorIcon className={classes.errorIcon} />
-            </Grid>
-            <Grid item>
-              <Typography color="error" variant="h4" align="center">
-                Error
-              </Typography>
-            </Grid>
-          </Grid>
-          <Typography
-            className={overrideErrorStyle ? overrideErrorStyle : classes.errorMsg}
-            color="error"
-            variant="h6"
-            align="center"
+    return errorMsg ? (
+      <React.Fragment>
+        <div className={classes.container}>
+          <div className={classes.errorDisabled}>{children}</div>
+          <div
+            className={
+              children ? `${classes.overlay} ${classes.disableSelect}` : classes.disableSelect
+            }
           >
-            {errorMsg ? errorMsg : 'Unknown error'}
-          </Typography>
+            <Grid container direction="row" justify="center" alignItems="center" spacing={2}>
+              <Grid item>
+                <ErrorIcon className={classes.errorIcon} />
+              </Grid>
+              <Grid item>
+                <Typography color="error" variant="h4" align="center">
+                  Error
+                </Typography>
+              </Grid>
+            </Grid>
+            <Typography
+              className={overrideErrorStyle ? overrideErrorStyle : classes.errorMsg}
+              color="error"
+              variant="h6"
+              align="center"
+            >
+              {errorMsg ? errorMsg : 'Unknown error'}
+            </Typography>
+          </div>
         </div>
-      </div>
-    </React.Fragment>
-  ) : (
-    <React.Fragment>{children}</React.Fragment>
-  );
-};
+      </React.Fragment>
+    ) : (
+      <React.Fragment>{children}</React.Fragment>
+    );
+  },
+);

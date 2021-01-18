@@ -78,6 +78,8 @@ export const DispenserAccordion = React.forwardRef(
     const classes = useStyles();
     const overrideClasses = overrideStyles();
 
+    // TODO: refactor this into a common custom hook to handle stored state
+    // in future if we need it to track the states of other items.
     function usePrevDispenserState(dispenserState: RomiCore.DispenserState | null) {
       const ref = useRef<RomiCore.DispenserState | null>(null);
       useEffect(() => {
@@ -88,6 +90,7 @@ export const DispenserAccordion = React.forwardRef(
       return ref.current;
     }
     const previousState = usePrevDispenserState(dispenserState);
+    // end of TODO
 
     const getStatusLabelClass = () => {
       switch (dispenserState?.mode) {
@@ -119,14 +122,15 @@ export const DispenserAccordion = React.forwardRef(
             errorMsg={
               !dispenserState
                 ? 'Dispenser is not sending states. Please check if it is working properly.'
-                : undefined
+                : null
             }
           >
-            {dispenserState ? (
-              <DispenserInfo dispenser={dispenserState} />
-            ) : previousState ? (
-              <DispenserInfo dispenser={previousState} overrideStyle={overrideClasses} />
-            ) : null}
+            <React.Fragment>
+              {dispenserState && <DispenserInfo dispenser={dispenserState} />}
+              {!dispenserState && previousState && (
+                <DispenserInfo dispenser={previousState} overrideStyle={overrideClasses} />
+              )}
+            </React.Fragment>
           </ErrorOverlay>
         </ItemAccordionDetails>
       </Accordion>
