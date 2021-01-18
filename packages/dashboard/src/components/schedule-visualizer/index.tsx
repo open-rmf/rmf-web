@@ -45,7 +45,7 @@ export interface ScheduleVisualizerProps {
   fleets: RomiCore.FleetState[];
   trajManager?: RobotTrajectoryManager;
   negotiationTrajStore: Readonly<Record<string, NegotiationTrajectoryResponse>>;
-  mapFloorLayerSorted: Readonly<string[]>;
+  mapFloorSort?(levels: RomiCore.Level[]): string[];
   onDoorClick?(door: RomiCore.Door): void;
   onLiftClick?(lift: RomiCore.Lift): void;
   onRobotClick?(fleet: string, robot: RomiCore.RobotState): void;
@@ -65,8 +65,16 @@ export function calcMaxBounds(
 
 export default function ScheduleVisualizer(props: ScheduleVisualizerProps): React.ReactElement {
   debug('render');
-  const { negotiationTrajStore, mapFloorLayerSorted } = props;
+  const { buildingMap, negotiationTrajStore, mapFloorSort } = props;
   const negotiationColors = React.useMemo(() => new NegotiationColors(), []);
+
+  const mapFloorLayerSorted = React.useMemo(
+    () =>
+      mapFloorSort
+        ? mapFloorSort(buildingMap.levels)
+        : buildingMap.levels.map((level) => level.name),
+    [mapFloorSort, buildingMap.levels],
+  );
 
   const classes = useStyles();
 

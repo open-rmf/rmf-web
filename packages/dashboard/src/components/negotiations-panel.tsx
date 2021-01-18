@@ -65,9 +65,9 @@ interface Parameter {
 }
 
 export interface NegotiationsPanelProps {
-  conflicts: Readonly<Record<string, NegotiationConflict>>;
-  spotlight?: Readonly<SpotlightValue<string>>;
-  mapFloorLayerSorted?: Readonly<string[]>;
+  conflicts: Record<string, NegotiationConflict>;
+  spotlight?: SpotlightValue<string>;
+  mapFloorLayerSorted?: string[];
   negotiationStatusManager?: Readonly<NegotiationStatusManager>;
   negotiationTrajStore?: Record<string, NegotiationTrajectoryResponse>;
   negotiationStatusUpdateTS: number; // used to trigger rerenders

@@ -20,13 +20,12 @@ import { GlobalHotKeys } from 'react-hotkeys';
 import 'typeface-roboto';
 import { buildHotKeys } from '../../hotkeys';
 import { NegotiationTrajectoryResponse } from '../../negotiation-status-manager';
-import ResourceManager from '../../resource-manager';
-import { AppControllerContext } from '../app-contexts';
+import { AppControllerContext, ResourcesContext } from '../app-contexts';
 import CommandsPanel from '../commands-panel';
-import LoadingScreen, { LoadingScreenProps } from '../loading-screen';
 import MainMenu from '../main-menu';
 import NegotiationsPanel from '../negotiations-panel';
 import {
+  BuildingMapContext,
   DispenserStateContext,
   DoorStateContext,
   FleetStateContext,
@@ -116,9 +115,9 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const appController = React.useContext(AppControllerContext);
 
   const transport = React.useContext(TransportContext);
-  const [buildingMap, setBuildingMap] = React.useState<RomiCore.BuildingMap | undefined>(undefined);
+  const buildingMap = React.useContext(BuildingMapContext);
   const { trajectoryManager: trajManager } = React.useContext(RmfIngressContext);
-  const resourceManager = React.useRef<ResourceManager | undefined>(undefined);
+  const resourceManager = React.useContext(ResourcesContext);
 
   const { state: dashboardState, dispatch: dashboardDispatch } = useDashboardReducer(
     dashboardInitialValues,
@@ -128,9 +127,14 @@ export default function Dashboard(_props: {}): React.ReactElement {
 
   const { setCurrentView, setShowOmniPanel, resetView, popView, pushView } = dashboardDispatch;
 
-  const mapFloorLayerSorted = React.useMemo<string[] | undefined>(
-    () => buildingMap?.levels.sort((a, b) => a.elevation - b.elevation).map((x) => x.name),
-    [buildingMap],
+  const mapFloorSort = React.useCallback(
+    (levels: RomiCore.Level[]) =>
+      levels.sort((a, b) => a.elevation - b.elevation).map((x) => x.name),
+    [],
+  );
+  const mapFloorLayerSorted = React.useMemo(
+    () => (buildingMap ? mapFloorSort(buildingMap.levels) : undefined),
+    [buildingMap, mapFloorSort],
   );
 
   const handleOmniPanelClose = React.useCallback(() => {
@@ -158,7 +162,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
   }, [resetView, setCurrentView, stackNavigator]);
 
   const doorStates = React.useContext(DoorStateContext);
-  const [doors, setDoors] = React.useState<RomiCore.Door[]>([]);
+  const doors = React.useMemo(
+    () => (buildingMap ? buildingMap.levels.flatMap((x) => x.doors) : []),
+    [buildingMap],
+  );
   const doorAccordionRefs = React.useMemo(() => defaultDict(createSpotlightRef), []);
   const handleDoorMarkerClick = React.useCallback(
     (door: RomiCore.Door) => {
@@ -170,7 +177,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   );
 
   const liftStates = React.useContext(LiftStateContext);
-  const [lifts, setLifts] = React.useState<RomiCore.Lift[]>([]);
+  const lifts = React.useMemo(() => (buildingMap ? buildingMap.lifts : []), [buildingMap]);
   const liftAccordionRefs = React.useMemo(() => defaultDict(createSpotlightRef), []);
   const handleLiftMarkerClick = React.useCallback(
     (lift: RomiCore.Lift) => {
@@ -194,8 +201,8 @@ export default function Dashboard(_props: {}): React.ReactElement {
     [dispenserAccordionRefs, pushView, setShowOmniPanel],
   );
   let dispensers: string[] | undefined;
-  if (resourceManager.current && resourceManager.current.dispensers) {
-    dispensers = Object.keys(resourceManager.current.dispensers.dispensers);
+  if (resourceManager && resourceManager.dispensers) {
+    dispensers = Object.keys(resourceManager.dispensers.dispensers);
   }
 
   const fleetStates = React.useContext(FleetStateContext);
@@ -227,32 +234,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
   statusUpdateTS.current = negotiationStatusManager.getLastUpdateTS();
 
   const tasks = React.useContext(TasksContext);
-
-  const [loading, setLoading] = React.useState<LoadingScreenProps | null>({
-    caption: 'Connecting to server...',
-  });
-
-  React.useEffect(() => {
-    if (!transport) {
-      return;
-    }
-    setLoading({ caption: 'Downloading building map...' });
-    const request = new RomiCore.GetBuildingMap_Request();
-    transport
-      .call(RomiCore.getBuildingMap, request)
-      .then((result) => {
-        setBuildingMap(result.building_map);
-        setLoading(null);
-      })
-      .catch(() => {
-        setLoading({ caption: 'Unable to download building map', variant: 'error' });
-      });
-  }, [transport]);
-
-  React.useEffect(() => {
-    setDoors(buildingMap ? buildingMap.levels.flatMap((x) => x.doors) : []);
-    setLifts(buildingMap ? buildingMap.lifts : []);
-  }, [buildingMap]);
 
   const doorRequestPub = React.useMemo(() => transport?.createPublisher(adapterDoorRequests), [
     transport,
@@ -298,11 +279,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
   return (
     <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
       <div className={classes.container}>
-        {loading && <LoadingScreen {...loading} />}
-        {buildingMap && mapFloorLayerSorted && (
+        {buildingMap && (
           <ScheduleVisualizer
             buildingMap={buildingMap}
-            mapFloorLayerSorted={mapFloorLayerSorted}
+            mapFloorSort={mapFloorSort}
             fleets={fleets}
             trajManager={trajManager}
             negotiationTrajStore={negotiationTrajStore}
