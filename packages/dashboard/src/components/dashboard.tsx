@@ -20,7 +20,6 @@ import { GlobalHotKeys } from 'react-hotkeys';
 import 'typeface-roboto';
 import appConfig from '../app-config';
 import { buildHotKeys } from '../hotkeys';
-import TaskManager from '../managers/task-manager';
 import { NegotiationTrajectoryResponse } from '../negotiation-status-manager';
 import ResourceManager from '../resource-manager';
 import { RobotTrajectoryManager } from '../robot-trajectory-manager';
@@ -33,13 +32,15 @@ import MainMenu from './main-menu';
 import NegotiationsPanel from './negotiations-panel';
 import { MainMenuState, useMainMenuReducer } from './reducers/main-menu-reducer';
 import {
-  DepHacksContext,
   DispenserStateContext,
   DoorStateContext,
   FleetStateContext,
   LiftStateContext,
   NegotiationStatusContext,
-} from './rmf-contexts';
+  NegotiationStatusManagerContext,
+  TasksContext,
+  TransportContext,
+} from './rmf-app';
 import ScheduleVisualizer, { ScheduleVisualizerProps } from './schedule-visualizer';
 import { SpotlightValue } from './spotlight-value';
 import TaskSummaryPanel from './task-summary-panel';
@@ -121,9 +122,9 @@ function robotKey(fleet: string, robot: RomiCore.RobotState): string {
 export default function Dashboard(_props: {}): React.ReactElement {
   debug('render');
 
-  const { appResources, transportFactory, trajectoryManagerFactory } = appConfig;
+  const { appResources, trajectoryManagerFactory } = appConfig;
   const classes = useStyles();
-  const [transport, setTransport] = React.useState<RomiCore.Transport | undefined>(undefined);
+  const transport = React.useContext(TransportContext);
   const [buildingMap, setBuildingMap] = React.useState<RomiCore.BuildingMap | undefined>(undefined);
   const trajManager = React.useRef<RobotTrajectoryManager | undefined>(undefined);
   const resourceManager = React.useRef<ResourceManager | undefined>(undefined);
@@ -231,11 +232,8 @@ export default function Dashboard(_props: {}): React.ReactElement {
     [robotAccordionRefs, pushView, setShowOmniPanel],
   );
 
-  const taskManager = React.useMemo(() => new TaskManager(), []);
-  const [tasks, setTasks] = React.useState(taskManager.tasks());
-
+  const negotiationStatusManager = React.useContext(NegotiationStatusManagerContext);
   const negotiationStatus = React.useContext(NegotiationStatusContext);
-  const { negotiationStatusManager } = React.useContext(DepHacksContext);
   const [negotiationSpotlight, setNegotiationSpotlight] = React.useState<
     SpotlightValue<string> | undefined
   >(undefined);
@@ -245,25 +243,11 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const statusUpdateTS = React.useRef<number>();
   statusUpdateTS.current = negotiationStatusManager.getLastUpdateTS();
 
+  const tasks = React.useContext(TasksContext);
+
   const [loading, setLoading] = React.useState<LoadingScreenProps | null>({
     caption: 'Connecting to server...',
   });
-
-  React.useEffect(() => {
-    setLoading({ caption: 'Connecting to server...' });
-    transportFactory()
-      .then((x) => {
-        x.on('error', console.error);
-        x.once('close', () => {
-          setLoading({ caption: 'Lost connection to server', variant: 'error' });
-          setTransport(undefined);
-        });
-        setTransport(x);
-      })
-      .catch((e: CloseEvent) => {
-        setLoading({ caption: `Unable to connect to server (${e.code})`, variant: 'error' });
-      });
-  }, [transportFactory, taskManager]);
 
   React.useEffect(() => {
     if (!transport) {

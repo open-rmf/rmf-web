@@ -6,22 +6,19 @@ type Events = {
 };
 
 export default class DispenserStateManager extends EventEmitter<Events> {
-  dispenserStates(): Record<string, RomiCore.DispenserState> {
-    return { ...this._dispenserStates };
-  }
+  dispenserStates: Record<string, RomiCore.DispenserState> = {};
 
   startSubscription(transport: RomiCore.Transport) {
     this._subscriptions.push(
-      transport.subscribe(RomiCore.dispenserStates, dispenserState => {
-        this._dispenserStates[dispenserState.guid] = dispenserState;
+      transport.subscribe(RomiCore.dispenserStates, (dispenserState) => {
+        this.dispenserStates[dispenserState.guid] = dispenserState;
         this.emit('updated');
       }),
     );
   }
   stopAllSubscriptions(): void {
-    this._subscriptions.forEach(sub => sub.unsubscribe());
+    this._subscriptions.forEach((sub) => sub.unsubscribe());
   }
 
-  private _dispenserStates: Record<string, RomiCore.DispenserState> = {};
   private _subscriptions: RomiCore.Subscription[] = [];
 }

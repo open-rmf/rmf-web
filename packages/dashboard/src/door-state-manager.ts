@@ -6,23 +6,21 @@ type Events = {
 };
 
 export default class DoorStateManager extends EventEmitter<Events> {
-  doorStates(): Record<string, RomiCore.DoorState> {
-    return { ...this._doorStates };
-  }
+  doorStates: Record<string, RomiCore.DoorState> = {};
 
   startSubscription(transport: RomiCore.Transport) {
     this._subscriptions.push(
-      transport.subscribe(RomiCore.doorStates, doorState => {
-        this._doorStates[doorState.door_name] = doorState;
+      transport.subscribe(RomiCore.doorStates, (doorState) => {
+        this.doorStates[doorState.door_name] = doorState;
         this.emit('updated');
       }),
     );
   }
 
   stopAllSubscriptions(): void {
-    this._subscriptions.forEach(sub => sub.unsubscribe());
+    this._subscriptions.forEach((sub) => sub.unsubscribe());
+    this._subscriptions = [];
   }
 
-  private _doorStates: Record<string, RomiCore.DoorState> = {};
   private _subscriptions: RomiCore.Subscription[] = [];
 }

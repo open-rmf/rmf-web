@@ -2,18 +2,18 @@ import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import 'typeface-roboto';
 import { BASE_PATH, LOGIN_ROUTE } from '../util/url';
-import { AppContextProvider } from './app-contexts';
+import { AppBase } from './app-contexts';
 import './app.css';
 import Login from './auth/login';
 import PrivateRoute from './auth/private-route';
 import Dashboard from './dashboard';
 import NotFoundPage from './error-pages/page-not-found';
-import { RmfContextProvider } from './rmf-contexts';
+import { RmfApp } from './rmf-app';
 
 export default function App(): JSX.Element {
   return (
-    <AppContextProvider>
-      <RmfContextProvider>
+    <AppBase>
+      <RmfApp>
         <BrowserRouter>
           <Switch>
             <Route exact={true} path={LOGIN_ROUTE}>
@@ -25,7 +25,7 @@ export default function App(): JSX.Element {
             <Route component={NotFoundPage} />
           </Switch>
         </BrowserRouter>
-      </RmfContextProvider>
-    </AppContextProvider>
+      </RmfApp>
+    </AppBase>
   );
 }

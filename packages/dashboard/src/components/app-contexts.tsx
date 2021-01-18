@@ -1,50 +1,33 @@
 import { createMuiTheme, ThemeProvider } from '@material-ui/core';
+import { Settings } from 'http2';
 import React from 'react';
 import appConfig from '../app-config';
 import ResourceManager from '../resource-manager';
-import { loadSettings, saveSettings, Settings } from '../settings';
+import { defaultSettings, loadSettings } from '../settings';
 import { UserContext } from './auth/contexts';
 import { User } from './auth/user';
+import { DashboardDrawers } from './dashboard-drawers';
 import LoadingScreen, { LoadingScreenProps } from './loading-screen';
 import NotificationBar, { NotificationBarProps } from './notification-bar';
 
 /* Declares the ResourcesContext which contains the resources used on the app*/
 export const ResourcesContext = React.createContext<ResourceManager | undefined>(undefined);
 
-type SaveSettingsAction = {
-  /**
-   * Saves the provided settings into local storage and triggers a state update.
-   *
-   */
-  type: 'saveSettings';
-  settings: Settings;
-};
+export const SettingsContext = React.createContext(defaultSettings());
 
-type LoadSettingsAction = {
-  /**
-   * Loads the state from local storage and triggers a state update.
-   */
-  type: 'loadSettings';
-};
-
-export type SettingsAction = SaveSettingsAction | LoadSettingsAction;
-
-export function settingsReducer(_state: Settings, action: SettingsAction) {
-  switch (action.type) {
-    case 'saveSettings':
-      saveSettings(action.settings);
-      return action.settings;
-    case 'loadSettings':
-      return loadSettings();
-  }
+export interface AppController {
+  showSettings(show: boolean): void;
+  saveSettings(settings: Settings): void;
+  showHelp(show: boolean): void;
+  showHotkeysDialog(show: boolean): void;
 }
 
-/**
- * A value for this context MUST be provided, the default value is not type safe.
- */
-export const SettingsContext = React.createContext<[Settings, React.Dispatch<SettingsAction>]>(
-  null as any,
-);
+export const AppControllerContext = React.createContext<AppController>({
+  showSettings: () => {},
+  saveSettings: () => {},
+  showHelp: () => {},
+  showHotkeysDialog: () => {},
+});
 
 export const NotificationBarContext = React.createContext<React.Dispatch<
   React.SetStateAction<NotificationBarProps | null>
@@ -72,17 +55,27 @@ const theme = createMuiTheme({
 });
 
 /**
- * Provids all the app level contexts.
+ * Contains various components that are essential to the app and provides contexts to control them.
+ * Components include:
+ *
+ * - Settings
+ * - Help
+ * - Tooltip
+ * - Hotkeys reference
+ * - Notifications
+ * - Snackbars
+ *
+ * Also provides `AppControllerContext` to allow children components to control them.
  */
-export function AppContextProvider(props: AppContextProviderProps): JSX.Element | null {
+export function AppBase(props: AppContextProviderProps): JSX.Element | null {
   const { children } = props;
 
   const [authInitialized, setAuthInitialized] = React.useState(false);
   const [user, setUser] = React.useState<User | null>(null);
 
-  const [settings, settingsDispatch] = React.useReducer(settingsReducer, null, () =>
-    loadSettings(),
-  );
+  const [settings, setSettings] = React.useState(() => loadSettings());
+  const [showSettings, setShowSettings] = React.useState(false);
+
   const authenticator = appConfig.authenticator;
 
   const resourceManager = React.useRef<ResourceManager | undefined>(undefined);
@@ -125,7 +118,7 @@ export function AppContextProvider(props: AppContextProviderProps): JSX.Element 
   }, [authenticator]);
 
   return authInitialized && appReady ? (
-    <SettingsContext.Provider value={[settings, settingsDispatch]}>
+    <SettingsContext.Provider value={settings}>
       <UserContext.Provider value={user}>
         <ResourcesContext.Provider value={resourceManager.current}>
           <ThemeProvider theme={theme}>

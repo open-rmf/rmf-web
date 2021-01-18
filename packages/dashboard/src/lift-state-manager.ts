@@ -6,21 +6,20 @@ type Events = {
 };
 
 export default class LiftStateManager extends EventEmitter<Events> {
-  liftStates(): Record<string, RomiCore.LiftState> {
-    return { ...this._liftStates };
-  }
+  liftStates: Record<string, RomiCore.LiftState> = {};
 
   startSubscription(transport: RomiCore.Transport) {
     this._subscriptions.push(
-      transport.subscribe(RomiCore.liftStates, liftState => {
-        this._liftStates[liftState.lift_name] = liftState;
+      transport.subscribe(RomiCore.liftStates, (liftState) => {
+        this.liftStates[liftState.lift_name] = liftState;
         this.emit('updated');
       }),
     );
   }
 
   stopAllSubscriptions(): void {
-    this._subscriptions.forEach(sub => sub.unsubscribe());
+    this._subscriptions.forEach((sub) => sub.unsubscribe());
+    this._subscriptions = [];
   }
 
   static liftModeToString(liftMode: number): string {
@@ -66,7 +65,6 @@ export default class LiftStateManager extends EventEmitter<Events> {
     }
   }
 
-  private _liftStates: Record<string, RomiCore.LiftState> = {};
   private _subscriptions: RomiCore.Subscription[] = [];
 }
 
@@ -84,7 +82,7 @@ export class LiftRequestManager {
 
   static getLiftRequestModes(): requestManagerModes {
     let modes: requestManagerModes = {};
-    this.liftRequestModes.forEach(element => {
+    this.liftRequestModes.forEach((element) => {
       const key = this.requestModeToString(element);
       modes[key] = element;
     });
@@ -93,7 +91,7 @@ export class LiftRequestManager {
 
   static getDoorModes(): requestManagerModes {
     let modes: requestManagerModes = {};
-    this.doorModes.forEach(element => {
+    this.doorModes.forEach((element) => {
       const key = this.doorStateToString(element);
       modes[key] = element;
     });
