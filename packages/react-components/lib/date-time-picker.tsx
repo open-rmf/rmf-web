@@ -21,7 +21,7 @@ interface DateTimePickerProps {
   name: string;
 }
 
-export default function DateAndTimePickers(props: DateTimePickerProps) {
+export default function DateAndTimePickers(props: DateTimePickerProps): React.ReactElement {
   const classes = useStyles();
   return (
     <form className={classes.container} noValidate>

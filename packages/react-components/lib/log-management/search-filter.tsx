@@ -9,7 +9,7 @@ interface SearchFilterProps {
   currentValue: string | number;
 }
 
-export const SearchFilter = (props: SearchFilterProps) => {
+export const SearchFilter = (props: SearchFilterProps): React.ReactElement => {
   const { handleOnChange, options, name, label, currentValue } = props;
   const classes = useStyles();
 

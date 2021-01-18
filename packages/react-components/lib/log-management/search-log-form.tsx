@@ -8,7 +8,7 @@ interface SearchLogFormProps {
   search?: () => void;
 }
 
-export const SearchLogForm = (props: SearchLogFormProps) => {
+export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => {
   const { search } = props;
   const [searchText, setSearchText] = React.useState('');
   const [sourceLog, setSourceLog] = React.useState('');
