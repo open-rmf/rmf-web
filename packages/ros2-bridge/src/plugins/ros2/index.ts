@@ -122,11 +122,7 @@ export default class Ros2Plugin {
           [id]: (msg) => sender.send({ message: msg }),
         },
         subscription: this.transport.subscribe(this.toRomiTopic(params.topic), (msg) => {
-          const record = this._subscriptions[id];
-          if (!record) {
-            return;
-          }
-          const cbs = Object.values(record.callbacks);
+          const cbs = Object.values(newRecord.callbacks);
           if (cbs.length > 0) {
             cbs.forEach((cb) => cb(msg));
             this._logger.verbose('sent subscription update', {
