@@ -18,9 +18,9 @@ const useStyles = makeStyles((theme) => ({
   },
   overlay: {
     gridArea: '1 / 1',
-    marginTop: '1rem',
     backdropFilter: 'blur(.5rem)',
     padding: theme.spacing(1),
+    height: '100vh',
   },
   container: {
     display: 'grid',
@@ -51,12 +51,12 @@ export const ErrorOverlay = (props: ErrorOverlayProps): JSX.Element => {
         >
           <Grid container direction="row" justify="center" alignItems="center" spacing={2}>
             <Grid item>
-              <Typography color="error" variant="h6" align="center">
-                Error
-              </Typography>
+              <ErrorIcon className={classes.errorIcon} />
             </Grid>
             <Grid item>
-              <ErrorIcon className={classes.errorIcon} />
+              <Typography color="error" variant="h4" align="center">
+                Error
+              </Typography>
             </Grid>
           </Grid>
           <Typography
