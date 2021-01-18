@@ -9,8 +9,10 @@ import {
   DialogContent,
   IconButton,
   Paper,
+  Select,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
+import FilterList from '@material-ui/icons/FilterList';
 
 export interface NotificationDialogProps {
   showNotificationsDialog: boolean;
@@ -63,6 +65,7 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
         </IconButton>
       </DialogTitle>
       <DialogContent className={classes.dialogContent} dividers>
+        <Select IconComponent={() => <FilterList />}></Select>
         {notifications.length > 0 ? (
           notifications.map((notification, i) => {
             return (

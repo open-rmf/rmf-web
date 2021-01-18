@@ -21,18 +21,22 @@ export default class FakeNotifications {
       {
         time: this.getDate(),
         error: 'coke_ingestor not sending states',
+        severity: 'High',
       },
       {
         time: this.getDate(),
         error: 'Lift is on fire',
+        severity: 'High',
       },
       {
         time: this.getDate(),
         error: 'Trajectory conflict with robot B and robot C',
+        severity: 'Medium',
       },
       {
         time: this.getDate(),
         error: 'Trajectory conflict with robot A and robot B',
+        severity: 'Low',
       },
     ];
   }
@@ -42,21 +46,21 @@ export default class FakeNotifications {
     return notifications.slice(0, interval);
   }
 
-  pushNotifications(notificationsMessage: string) {
-    Notification.requestPermission((result) => {
-      if (result === 'granted') {
-        const options = {
-          body: notificationsMessage,
-          vibrate: [200, 100, 200, 100, 200, 100, 400],
-        };
-        if (navigator && navigator.serviceWorker) {
-          navigator.serviceWorker.ready.then((registration) => {
-            if (registration && registration.showNotification) {
-              registration.showNotification('rmf-web notificatons', options);
-            }
-          });
-        }
-      }
-    });
-  }
+  // pushNotifications(notificationsMessage: string) {
+  //   Notification.requestPermission((result) => {
+  //     if (result === 'granted') {
+  //       const options = {
+  //         body: notificationsMessage,
+  //         vibrate: [200, 100, 200, 100, 200, 100, 400],
+  //       };
+  //       if (navigator && navigator.serviceWorker) {
+  //         navigator.serviceWorker.ready.then((registration) => {
+  //           if (registration && registration.showNotification) {
+  //             registration.showNotification('rmf-web notificatons', options);
+  //           }
+  //         });
+  //       }
+  //     }
+  //   });
+  // }
 }

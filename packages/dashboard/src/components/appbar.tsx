@@ -83,9 +83,6 @@ export const AppBar = React.memo(
         setCounter((counter += 1));
         countNotifications(notificationsManager.getNotifications(counter).length);
         updateNotifications(notificationsManager.getNotifications(counter));
-        notificationsManager.pushNotifications(
-          notificationsManager.makeNotification()[counter - 1].error,
-        );
       }
     }
     useInterval(notifyCallback, 5000);
