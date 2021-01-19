@@ -2,8 +2,8 @@ import { Divider, List, ListItem, makeStyles, Typography } from '@material-ui/co
 import Debug from 'debug';
 import React from 'react';
 import DashboardTooltip from 'react-components/lib/tooltip';
-import { TooltipsContext } from './app-contexts';
-import { OmniPanelViewIndex } from './dashboard/dashboard';
+import { TooltipsContext } from '../app-contexts';
+import { OmniPanelViewIndex } from './dashboard';
 
 const debug = Debug('MainMenu');
 

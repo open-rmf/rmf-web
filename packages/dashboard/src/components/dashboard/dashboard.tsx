@@ -21,9 +21,6 @@ import 'typeface-roboto';
 import { buildHotKeys } from '../../hotkeys';
 import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
 import { AppControllerContext, ResourcesContext } from '../app-contexts';
-import CommandsPanel from '../commands-panel';
-import MainMenu from '../main-menu';
-import NegotiationsPanel from '../negotiations-panel';
 import {
   BuildingMapContext,
   DispenserStateContext,
@@ -37,7 +34,10 @@ import {
 } from '../rmf-app';
 import ScheduleVisualizer, { ScheduleVisualizerProps } from '../schedule-visualizer';
 import { SpotlightValue } from '../spotlight-value';
-import TaskSummaryPanel from '../task-summary-panel';
+import TaskSummaryPanel from './task-summary-panel';
+import CommandsPanel from './commands-panel';
+import MainMenu from './main-menu';
+import NegotiationsPanel from './negotiations-panel';
 import OmniPanelControl_ from './omnipanel-control';
 import { DashboardState, useDashboardReducer } from './reducers/dashboard-reducer';
 
