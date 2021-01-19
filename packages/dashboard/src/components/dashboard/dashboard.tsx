@@ -345,11 +345,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
               ? dispensers.map((dispenser) => (
                   <DispenserAccordion
                     key={dispenser}
-                    ref={
-                      dispenserStates[dispenser]
-                        ? dispenserAccordionRefs[dispenserStates[dispenser].guid].ref
-                        : null
-                    }
+                    ref={dispenserAccordionRefs[dispenser].ref}
                     dispenserState={dispenserStates[dispenser] ? dispenserStates[dispenser] : null}
                     data-component="DispenserAccordion"
                     dispenser={dispenser}
