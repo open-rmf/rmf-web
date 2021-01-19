@@ -6,7 +6,6 @@ import appConfig from '../app-config';
 import { BASE_PATH, LOGIN_ROUTE } from '../util/url';
 import { AppBase } from './app-base';
 import './app.css';
-import AppBar from './appbar';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
 import Login from './auth/login';
 import PrivateRoute from './auth/private-route';
