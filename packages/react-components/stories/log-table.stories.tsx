@@ -5,9 +5,7 @@ import { LogTable } from '../lib';
 export default {
   title: 'Log table',
   component: LogTable,
-  argTypes: {
-    fullWidth: { control: 'boolean' },
-  },
+  argTypes: {},
 } as Meta;
 
 const rows = [
@@ -36,5 +34,13 @@ const rows = [
     timestamp: 'Mon Jan  1 00:00:02 UTC 2001',
   },
 ];
+
+for (let i = 0; i < 100; i++) {
+  rows.push({
+    message: 'Test' + i,
+    level: 'WARN',
+    timestamp: 'Mon Jan  1 00:00:02 UTC 2001',
+  });
+}
 
 export const SimpleLogTable: Story = (args) => <LogTable rows={rows} {...args} />;
