@@ -2,9 +2,9 @@ import { createMount } from '@material-ui/core/test-utils';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 import { DeliveryRequestForm, LoopRequestForm } from 'react-components';
+import ResourceManager from '../../managers/resource-manager';
 import fakeFleets from '../../mock/data/fleets';
 import fakeResources from '../../mock/data/resources';
-import ResourceManager from '../../resource-manager';
 import { ResourcesContext } from '../app-contexts';
 import CommandsPanel from '../commands-panel';
 

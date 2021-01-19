@@ -1,7 +1,7 @@
 import { Grid, makeStyles } from '@material-ui/core';
 import React from 'react';
 import appConfig from '../app-config';
-import ResourceManager from '../resource-manager';
+import ResourceManager from '../managers/resource-manager';
 import { loadSettings, saveSettings } from '../settings';
 import {
   AppController,

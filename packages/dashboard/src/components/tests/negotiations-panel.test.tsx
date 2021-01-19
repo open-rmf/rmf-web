@@ -6,7 +6,7 @@ import {
   NegotiationStatusManager,
   NegotiationConflict,
   ResolveState,
-} from '../../negotiation-status-manager';
+} from '../../managers/negotiation-status-manager';
 import NegotiationsPanel from '../negotiations-panel';
 import toJson from 'enzyme-to-json';
 

@@ -1,13 +1,16 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 import appConfig from '../../app-config';
-import DispenserStateManager from '../../dispenser-state-manager';
-import DoorStateManager from '../../door-state-manager';
-import FleetManager from '../../fleet-manager';
-import LiftStateManager from '../../lift-state-manager';
+import DispenserStateManager from '../../managers/dispenser-state-manager';
+import DoorStateManager from '../../managers/door-state-manager';
+import FleetManager from '../../managers/fleet-manager';
+import LiftStateManager from '../../managers/lift-state-manager';
+import { RobotTrajectoryManager } from '../../managers/robot-trajectory-manager';
 import TaskManager from '../../managers/task-manager';
-import { NegotiationConflict, NegotiationStatusManager } from '../../negotiation-status-manager';
-import { RobotTrajectoryManager } from '../../robot-trajectory-manager';
+import {
+  NegotiationConflict,
+  NegotiationStatusManager,
+} from '../../managers/negotiation-status-manager';
 
 export const DispenserStateContext = React.createContext<Record<string, RomiCore.DispenserState>>(
   {},

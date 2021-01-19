@@ -1,12 +1,12 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 import appConfig from '../../app-config';
-import DispenserStateManager from '../../dispenser-state-manager';
-import DoorStateManager from '../../door-state-manager';
-import FleetManager from '../../fleet-manager';
-import LiftStateManager from '../../lift-state-manager';
+import DispenserStateManager from '../../managers/dispenser-state-manager';
+import DoorStateManager from '../../managers/door-state-manager';
+import FleetManager from '../../managers/fleet-manager';
+import LiftStateManager from '../../managers/lift-state-manager';
+import { NegotiationStatusManager } from '../../managers/negotiation-status-manager';
 import TaskManager from '../../managers/task-manager';
-import { NegotiationStatusManager } from '../../negotiation-status-manager';
 import { AppControllerContext } from '../app-contexts';
 import {
   BuildingMapContext,

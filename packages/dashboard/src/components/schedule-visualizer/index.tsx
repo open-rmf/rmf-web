@@ -5,14 +5,14 @@ import * as L from 'leaflet';
 import React from 'react';
 import { ColorContext, robotHash } from 'react-components';
 import { AttributionControl, ImageOverlay, LayersControl, Map as LMap, Pane } from 'react-leaflet';
-import { NegotiationTrajectoryResponse } from '../../negotiation-status-manager';
 import {
   Conflict,
   DefaultTrajectoryManager,
   RobotTrajectoryManager,
   Trajectory,
   TrajectoryResponse,
-} from '../../robot-trajectory-manager';
+} from '../../managers/robot-trajectory-manager';
+import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
 import { toBlobUrl } from '../../util';
 import { AppControllerContext } from '../app-contexts';
 import DispensersOverlay from './dispensers-overlay';

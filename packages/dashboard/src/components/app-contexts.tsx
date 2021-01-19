@@ -1,5 +1,5 @@
 import React from 'react';
-import ResourceManager from '../resource-manager';
+import ResourceManager from '../managers/resource-manager';
 import { defaultSettings, Settings } from '../settings';
 import { LoadingScreenProps } from './loading-screen';
 import { NotificationBarProps } from './notification-bar';

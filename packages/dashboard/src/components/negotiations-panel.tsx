@@ -14,7 +14,7 @@ import {
   ResolveState,
   NegotiationStatusManager,
   NegotiationTrajectoryResponse,
-} from '../negotiation-status-manager';
+} from '../managers/negotiation-status-manager';
 import { colorPalette } from '../util/css-utils';
 import Debug from 'debug';
 

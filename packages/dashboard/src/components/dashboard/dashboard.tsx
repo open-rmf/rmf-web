@@ -19,7 +19,7 @@ import {
 import { GlobalHotKeys } from 'react-hotkeys';
 import 'typeface-roboto';
 import { buildHotKeys } from '../../hotkeys';
-import { NegotiationTrajectoryResponse } from '../../negotiation-status-manager';
+import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
 import { AppControllerContext, ResourcesContext } from '../app-contexts';
 import CommandsPanel from '../commands-panel';
 import MainMenu from '../main-menu';
