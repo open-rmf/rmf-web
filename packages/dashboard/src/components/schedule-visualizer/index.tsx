@@ -4,7 +4,14 @@ import Debug from 'debug';
 import * as L from 'leaflet';
 import React from 'react';
 import { ColorContext, robotHash } from 'react-components';
-import { AttributionControl, ImageOverlay, LayersControl, Map as LMap, Pane } from 'react-leaflet';
+import {
+  AttributionControl,
+  ImageOverlay,
+  LayersControl,
+  Map as LMap,
+  Pane,
+  MapControl,
+} from 'react-leaflet';
 import { NegotiationTrajectoryResponse } from '../../negotiation-status-manager';
 import {
   Conflict,

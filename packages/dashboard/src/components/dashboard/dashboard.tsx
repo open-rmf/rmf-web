@@ -66,11 +66,6 @@ export const dashboardInitialValues: DashboardState = {
 };
 
 const useStyles = makeStyles((theme) => ({
-  container: {
-    display: 'flex',
-    flexFlow: 'column',
-    height: '100%',
-  },
   toolBarTitle: {
     flexGrow: 1,
   },
@@ -278,107 +273,103 @@ export default function Dashboard(_props: {}): React.ReactElement {
 
   return (
     <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
-      <div className={classes.container}>
-        {buildingMap && (
-          <ScheduleVisualizer
-            buildingMap={buildingMap}
-            mapFloorSort={mapFloorSort}
-            fleets={fleets}
-            trajManager={trajManager}
-            negotiationTrajStore={negotiationTrajStore}
-            onDoorClick={handleDoorMarkerClick}
-            onLiftClick={handleLiftMarkerClick}
-            onRobotClick={handleRobotMarkerClick}
-            onDispenserClick={handleDispenserMarkerClick}
-          />
-        )}
-        <Fade in={showOmniPanel}>
-          <OmniPanel
-            className={classes.omniPanel}
-            view={currentView}
-            variant="backHomeClose"
-            onBack={handleOmniPanelBack}
-            onHome={handleOmniPanelHome}
-            onClose={handleOmniPanelClose}
-          >
-            <OmniPanelView viewId={OmniPanelViewIndex.MainMenu}>
-              <MainMenu pushView={pushView} />
-            </OmniPanelView>
-            <OmniPanelView viewId={OmniPanelViewIndex.Doors}>
-              {doors.map((door) => (
-                <DoorAccordion
-                  key={door.name}
-                  ref={doorAccordionRefs[door.name].ref}
-                  door={door}
-                  doorState={doorStates[door.name]}
-                  onDoorControlClick={handleOnDoorControlClick}
-                  data-name={door.name}
-                />
-              ))}
-            </OmniPanelView>
-            <OmniPanelView viewId={OmniPanelViewIndex.Lifts}>
-              {lifts.map((lift) => (
-                <LiftAccordion
-                  key={lift.name}
-                  ref={liftAccordionRefs[lift.name].ref}
-                  lift={lift}
-                  liftState={liftStates[lift.name]}
-                  onRequestSubmit={handleLiftRequestSubmit}
-                />
-              ))}
-            </OmniPanelView>
-            <OmniPanelView viewId={OmniPanelViewIndex.Robots}>
-              {fleets.flatMap((fleet) =>
-                fleet.robots.map((robot) => (
-                  <RobotAccordion
-                    key={robotKey(fleet.name, robot)}
-                    ref={robotAccordionRefs[robotKey(fleet.name, robot)].ref}
-                    robot={robot}
-                    fleetName={fleet.name}
-                    data-component="RobotAccordion"
-                  />
-                )),
-              )}
-            </OmniPanelView>
-            <OmniPanelView viewId={OmniPanelViewIndex.Dispensers}>
-              {dispensers
-                ? dispensers.map((dispenser) => (
-                    <DispenserAccordion
-                      key={dispenser}
-                      ref={
-                        dispenserStates[dispenser]
-                          ? dispenserAccordionRefs[dispenserStates[dispenser].guid].ref
-                          : null
-                      }
-                      dispenserState={
-                        dispenserStates[dispenser] ? dispenserStates[dispenser] : null
-                      }
-                      data-component="DispenserAccordion"
-                      dispenser={dispenser}
-                    />
-                  ))
-                : null}
-            </OmniPanelView>
-            <OmniPanelView viewId={OmniPanelViewIndex.Commands}>
-              {transport && <CommandsPanel transport={transport} allFleets={fleetNames.current} />}
-            </OmniPanelView>
-            <OmniPanelView viewId={OmniPanelViewIndex.Negotiations}>
-              <NegotiationsPanel
-                conflicts={negotiationStatus}
-                spotlight={negotiationSpotlight}
-                mapFloorLayerSorted={mapFloorLayerSorted}
-                negotiationStatusManager={negotiationStatusManager}
-                negotiationTrajStore={negotiationTrajStore}
-                negotiationStatusUpdateTS={statusUpdateTS.current}
-                setNegotiationTrajStore={setNegotiationTrajStore}
+      {buildingMap && (
+        <ScheduleVisualizer
+          buildingMap={buildingMap}
+          mapFloorSort={mapFloorSort}
+          fleets={fleets}
+          trajManager={trajManager}
+          negotiationTrajStore={negotiationTrajStore}
+          onDoorClick={handleDoorMarkerClick}
+          onLiftClick={handleLiftMarkerClick}
+          onRobotClick={handleRobotMarkerClick}
+          onDispenserClick={handleDispenserMarkerClick}
+        />
+      )}
+      <Fade in={showOmniPanel}>
+        <OmniPanel
+          className={classes.omniPanel}
+          view={currentView}
+          variant="backHomeClose"
+          onBack={handleOmniPanelBack}
+          onHome={handleOmniPanelHome}
+          onClose={handleOmniPanelClose}
+        >
+          <OmniPanelView viewId={OmniPanelViewIndex.MainMenu}>
+            <MainMenu pushView={pushView} />
+          </OmniPanelView>
+          <OmniPanelView viewId={OmniPanelViewIndex.Doors}>
+            {doors.map((door) => (
+              <DoorAccordion
+                key={door.name}
+                ref={doorAccordionRefs[door.name].ref}
+                door={door}
+                doorState={doorStates[door.name]}
+                onDoorControlClick={handleOnDoorControlClick}
+                data-name={door.name}
               />
-            </OmniPanelView>
-            <OmniPanelView viewId={OmniPanelViewIndex.Tasks}>
-              <TaskSummaryPanel tasks={tasks} />
-            </OmniPanelView>
-          </OmniPanel>
-        </Fade>
-      </div>
+            ))}
+          </OmniPanelView>
+          <OmniPanelView viewId={OmniPanelViewIndex.Lifts}>
+            {lifts.map((lift) => (
+              <LiftAccordion
+                key={lift.name}
+                ref={liftAccordionRefs[lift.name].ref}
+                lift={lift}
+                liftState={liftStates[lift.name]}
+                onRequestSubmit={handleLiftRequestSubmit}
+              />
+            ))}
+          </OmniPanelView>
+          <OmniPanelView viewId={OmniPanelViewIndex.Robots}>
+            {fleets.flatMap((fleet) =>
+              fleet.robots.map((robot) => (
+                <RobotAccordion
+                  key={robotKey(fleet.name, robot)}
+                  ref={robotAccordionRefs[robotKey(fleet.name, robot)].ref}
+                  robot={robot}
+                  fleetName={fleet.name}
+                  data-component="RobotAccordion"
+                />
+              )),
+            )}
+          </OmniPanelView>
+          <OmniPanelView viewId={OmniPanelViewIndex.Dispensers}>
+            {dispensers
+              ? dispensers.map((dispenser) => (
+                  <DispenserAccordion
+                    key={dispenser}
+                    ref={
+                      dispenserStates[dispenser]
+                        ? dispenserAccordionRefs[dispenserStates[dispenser].guid].ref
+                        : null
+                    }
+                    dispenserState={dispenserStates[dispenser] ? dispenserStates[dispenser] : null}
+                    data-component="DispenserAccordion"
+                    dispenser={dispenser}
+                  />
+                ))
+              : null}
+          </OmniPanelView>
+          <OmniPanelView viewId={OmniPanelViewIndex.Commands}>
+            {transport && <CommandsPanel transport={transport} allFleets={fleetNames.current} />}
+          </OmniPanelView>
+          <OmniPanelView viewId={OmniPanelViewIndex.Negotiations}>
+            <NegotiationsPanel
+              conflicts={negotiationStatus}
+              spotlight={negotiationSpotlight}
+              mapFloorLayerSorted={mapFloorLayerSorted}
+              negotiationStatusManager={negotiationStatusManager}
+              negotiationTrajStore={negotiationTrajStore}
+              negotiationStatusUpdateTS={statusUpdateTS.current}
+              setNegotiationTrajStore={setNegotiationTrajStore}
+            />
+          </OmniPanelView>
+          <OmniPanelView viewId={OmniPanelViewIndex.Tasks}>
+            <TaskSummaryPanel tasks={tasks} />
+          </OmniPanelView>
+        </OmniPanel>
+      </Fade>
     </GlobalHotKeys>
   );
 }

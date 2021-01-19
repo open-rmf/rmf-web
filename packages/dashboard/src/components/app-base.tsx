@@ -1,4 +1,4 @@
-import { createMuiTheme, ThemeProvider } from '@material-ui/core';
+import { Grid, makeStyles } from '@material-ui/core';
 import React from 'react';
 import appConfig from '../app-config';
 import ResourceManager from '../resource-manager';
@@ -11,19 +11,15 @@ import {
   Tooltips,
   TooltipsContext,
 } from './app-contexts';
-import { UserContext } from './auth/contexts';
-import { User } from './auth/user';
 import { AppDrawers } from './app-drawers';
+import AppBar from './appbar';
 import LoadingScreen, { LoadingScreenProps } from './loading-screen';
 import NotificationBar, { NotificationBarProps } from './notification-bar';
 
-const theme = createMuiTheme({
-  palette: {
-    primary: {
-      main: '#44497a',
-      dark: '#323558',
-      light: '#565d99',
-    },
+const useStyles = makeStyles({
+  appBase: {
+    width: '100%',
+    height: '100%',
   },
 });
 
@@ -41,11 +37,7 @@ const theme = createMuiTheme({
  * Also provides `AppControllerContext` to allow children components to control them.
  */
 export function AppBase(props: React.PropsWithChildren<{}>): JSX.Element | null {
-  const { children } = props;
-
-  const authenticator = appConfig.authenticator;
-  const [authInitialized, setAuthInitialized] = React.useState(false);
-  const [user, setUser] = React.useState<User | null>(null);
+  const classes = useStyles();
 
   const resourceManager = React.useRef<ResourceManager | undefined>(undefined);
 
@@ -105,37 +97,27 @@ export function AppBase(props: React.PropsWithChildren<{}>): JSX.Element | null 
     })();
   }, []);
 
-  React.useEffect(() => {
-    (async () => {
-      authenticator.on('userChanged', (newUser) => setUser(newUser));
-      await authenticator.init();
-      setUser(authenticator.user || null);
-      setAuthInitialized(true);
-    })();
-  }, [authenticator]);
-
-  return authInitialized && appReady ? (
+  return appReady ? (
     <SettingsContext.Provider value={settings}>
-      <UserContext.Provider value={user}>
-        <ResourcesContext.Provider value={resourceManager.current}>
-          <ThemeProvider theme={theme}>
-            <TooltipsContext.Provider value={tooltips}>
-              <AppControllerContext.Provider value={appController}>
-                <>
-                  <LoadingScreen {...loadingScreenProps}>{children}</LoadingScreen>
-                  <NotificationBar {...notificationProps} />
-                  <AppDrawers
-                    settings={settings}
-                    showHelp={showHelp}
-                    showHotkeysDialog={showHotkeysDialog}
-                    showSettings={showSettings}
-                  />
-                </>
-              </AppControllerContext.Provider>
-            </TooltipsContext.Provider>
-          </ThemeProvider>
-        </ResourcesContext.Provider>
-      </UserContext.Provider>
+      <ResourcesContext.Provider value={resourceManager.current}>
+        <TooltipsContext.Provider value={tooltips}>
+          <AppControllerContext.Provider value={appController}>
+            <Grid container direction="column" className={classes.appBase}>
+              <AppBar />
+              <Grid style={{ flexGrow: 1 }}>
+                <LoadingScreen {...loadingScreenProps}>{props.children}</LoadingScreen>
+              </Grid>
+              <NotificationBar {...notificationProps} />
+              <AppDrawers
+                settings={settings}
+                showHelp={showHelp}
+                showHotkeysDialog={showHotkeysDialog}
+                showSettings={showSettings}
+              />
+            </Grid>
+          </AppControllerContext.Provider>
+        </TooltipsContext.Provider>
+      </ResourcesContext.Provider>
     </SettingsContext.Provider>
   ) : null;
 }
