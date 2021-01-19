@@ -18,10 +18,16 @@ import RestoreIcon from '@material-ui/icons/Restore';
 import CheckIcon from '@material-ui/icons/Check';
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 
+export interface Notification {
+  time: string;
+  error: string;
+  severity: string;
+}
+
 export interface NotificationDialogProps {
   showNotificationsDialog: boolean;
   setShowNotifications: (payload: boolean) => void;
-  notifications: { [key: string]: string }[];
+  notifications: Notification[];
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -109,6 +115,7 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
 
   const [level, setLevel] = React.useState('');
   const [rmfNotifications, setRmfNotifications] = React.useState(notifications);
+  const [notficationsCopy, setNotificationsCopy] = React.useState(notifications);
 
   const alertLevel = React.useMemo(() => {
     const holder: string[] = [];
@@ -123,7 +130,7 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
   const handleChange = (e: any) => {
     const val = e.target.value as string;
     setLevel(val);
-    const filterNotifications: { [key: string]: string }[] = [];
+    const filterNotifications: Notification[] = [];
 
     notifications.forEach((notification) => {
       if (notification.severity === val) {
@@ -134,13 +141,15 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
   };
 
   const restoreNotifications = () => {
-    setRmfNotifications(notifications);
+    setRmfNotifications(notficationsCopy);
   };
 
   const deleteReadNotifications = (i: number) => {
     const beforeIndex = rmfNotifications.slice(0, i);
     const afterIndex = rmfNotifications.slice(i + 1);
-    setRmfNotifications(beforeIndex.concat(afterIndex));
+    const newNotifications = beforeIndex.concat(afterIndex);
+    setRmfNotifications(newNotifications);
+    setNotificationsCopy(newNotifications);
   };
 
   return (

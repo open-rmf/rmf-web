@@ -1,3 +1,5 @@
+import { Notification } from 'react-components';
+
 export default class FakeNotifications {
   getDate() {
     const date = new Date();
@@ -16,7 +18,7 @@ export default class FakeNotifications {
     return dateStr;
   }
 
-  makeNotification() {
+  makeNotification(): Notification[] {
     return [
       {
         time: this.getDate(),
@@ -35,16 +37,31 @@ export default class FakeNotifications {
       },
       {
         time: this.getDate(),
-        error: 'Trajectory conflict with robot A and robot B',
+        error: 'Trajectory conflict with robot B and robot C',
+        severity: 'Medium',
+      },
+      {
+        time: this.getDate(),
+        error: 'Trajectory conflict with robot B and robot C',
+        severity: 'Medium',
+      },
+      {
+        time: this.getDate(),
+        error: 'Robot D not moving for over 10 seconds',
+        severity: 'Low',
+      },
+      {
+        time: this.getDate(),
+        error: 'Lift is offline',
         severity: 'Low',
       },
     ];
   }
 
-  getNotifications(interval: number) {
-    const notifications = this.makeNotification();
-    return notifications.slice(0, interval);
-  }
+  // getNotifications(interval: number) {
+  //   const notifications = this.makeNotification();
+  //   return notifications.slice(0, interval);
+  // }
 
   // pushNotifications(notificationsMessage: string) {
   //   Notification.requestPermission((result) => {

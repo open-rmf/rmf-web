@@ -1,5 +1,5 @@
 import React from 'react';
-import { StackNavigator } from 'react-components';
+import { StackNavigator, Notification } from 'react-components';
 import { Settings } from '../../settings';
 import { OmniPanelViewIndex } from '../dashboard';
 import { LoadingScreenProps } from '../loading-screen';
@@ -44,7 +44,7 @@ export type MainMenuState = {
   [MainMenuActionType.ShowSettings]: boolean;
   [MainMenuActionType.ShowNotifications]: boolean;
   [MainMenuActionType.CountNotfications]: number;
-  [MainMenuActionType.UpdateNotifications]: { [key: string]: string }[];
+  [MainMenuActionType.UpdateNotifications]: Notification[];
   stackNavigator: StackNavigator<OmniPanelViewIndex>;
 };
 
