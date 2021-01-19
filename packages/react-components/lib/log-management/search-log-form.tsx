@@ -5,7 +5,8 @@ import { SearchFilter } from './search-filter';
 import DateAndTimePickers from '../date-time-picker';
 
 interface SearchLogFormProps {
-  search?: () => void;
+  sourceLogValues: string[];
+  search?: (searchText: string, sourceLog: string, logLevel: string, rowsCount: string) => void;
 }
 
 export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => {
@@ -22,7 +23,7 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
       setError('Cannot be empty');
       return;
     }
-    search && search();
+    search && search(searchText, sourceLog, logLevel, rowsCount);
   };
 
   const sourceLogValues = [

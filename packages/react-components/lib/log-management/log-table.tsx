@@ -6,8 +6,9 @@ import { TableFooterPagination } from '../tables';
 import { LogLevel } from '.';
 import moment from 'moment';
 
+export type LogRowsType = { level: string; message: string; timestamp: string }[];
 interface LogTableProps {
-  rows: { level: string; message: string; timestamp: string }[];
+  rows: LogRowsType | [];
 }
 const useStyles = makeStyles((theme) => ({
   table: {
