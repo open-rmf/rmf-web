@@ -18,7 +18,6 @@ import HelpIcon from '@material-ui/icons/Help';
 import { TooltipContext } from './app-contexts';
 import DashboardTooltip from 'react-components/lib/tooltip';
 import { ReducerMainMenuDispatch } from './reducers/main-menu-reducer';
-import FakeNotifications from '../mock/fake-notifications-manager';
 
 export interface AppBarProps {
   reducerMainMenuDispatch: ReducerMainMenuDispatch;
@@ -28,30 +27,6 @@ export interface AppBarProps {
   countNotifications: number;
 }
 
-// temp custom hook to demo incrementing notifications
-function useInterval(callback: () => void, delay: number) {
-  const savedCallback = React.useRef<() => void>();
-
-  // Remember the latest callback.
-  React.useEffect(() => {
-    savedCallback.current = callback;
-  }, [callback]);
-
-  // Set up the interval.
-  React.useEffect(() => {
-    function tick() {
-      if (savedCallback && savedCallback.current) {
-        savedCallback.current();
-      }
-    }
-    if (delay !== null) {
-      let id = setInterval(tick, delay);
-      return () => clearInterval(id);
-    }
-  }, [delay]);
-}
-// end of temp custom hook
-
 export const AppBar = React.memo(
   (props: AppBarProps): React.ReactElement => {
     const notificationCount = props.countNotifications;
@@ -60,8 +35,6 @@ export const AppBar = React.memo(
       setShowHelp,
       setShowSettings,
       setShowNotifications,
-      countNotifications,
-      updateNotifications,
     } = props.reducerMainMenuDispatch;
 
     const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
@@ -69,24 +42,6 @@ export const AppBar = React.memo(
     const authenticator = React.useContext(AuthenticatorContext);
     const user = React.useContext(UserContext);
     const { showTooltips } = React.useContext(TooltipContext);
-
-    // temp code to demonstrate notifications within the app
-    let [counter, setCounter] = React.useState(0);
-    const notificationsManager = new FakeNotifications();
-
-    function notifyCallback() {
-      if (counter >= notificationsManager.makeNotification().length) {
-        setCounter(0);
-        countNotifications(0);
-        updateNotifications([]);
-      } else {
-        setCounter((counter += 1));
-        countNotifications(notificationsManager.getNotifications(counter).length);
-        updateNotifications(notificationsManager.getNotifications(counter));
-      }
-    }
-    useInterval(notifyCallback, 5000);
-    // end of temp code
 
     async function handleLogout(): Promise<void> {
       try {

@@ -47,6 +47,9 @@ import ScheduleVisualizer, { ScheduleVisualizerProps } from './schedule-visualiz
 import { SpotlightValue } from './spotlight-value';
 import TaskSummaryPanel from './task-summary-panel';
 
+import FakeNotifications from '../mock/fake-notifications-manager';
+const fakeNotificationsManager = new FakeNotifications();
+
 const debug = Debug('App');
 const DispenserAccordion = React.memo(withSpotlight(DispenserAccordion_));
 const DoorAccordion = React.memo(withSpotlight(DoorAccordion_));
@@ -78,8 +81,8 @@ export const mainMenuInitialValues: MainMenuState = {
   showSettings: false,
   stackNavigator: new StackNavigator<OmniPanelViewIndex>(OmniPanelViewIndex.MainMenu),
   showNotifications: false,
-  countNotification: 0,
-  updateNotifications: [],
+  countNotification: fakeNotificationsManager.makeNotification().length,
+  updateNotifications: fakeNotificationsManager.makeNotification(),
 };
 
 const useStyles = makeStyles((theme) => ({
