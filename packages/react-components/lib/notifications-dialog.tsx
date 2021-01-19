@@ -39,9 +39,9 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(5),
   },
   paper: {
-    display: 'flex',
-    flexBasis: 0,
-    flexGrow: 1,
+    display: 'grid',
+    gridTemplateColumns: '2rem repeat(2, 1fr) 2rem',
+    textAlign: 'center',
     padding: theme.spacing(1),
     width: '100%',
     margin: `0.5rem 0`,
@@ -49,6 +49,7 @@ const useStyles = makeStyles((theme) => ({
   filter: {
     display: 'flex',
     float: 'right',
+    marginBottom: theme.spacing(1),
   },
   select: {
     width: '150px',
@@ -56,27 +57,32 @@ const useStyles = makeStyles((theme) => ({
   },
   checkIcon: {
     color: theme.palette.success.main,
+    padding: '0',
   },
 }));
 
 const severityStyles = makeStyles((theme) => ({
   high: {
-    color: theme.palette.secondary.main,
+    color: theme.palette.secondary.dark,
+    padding: '0',
   },
   medium: {
     color: theme.palette.error.main,
+    padding: '0',
   },
   low: {
-    color: theme.palette.warning.main,
+    color: theme.palette.warning.light,
+    padding: '0',
   },
 }));
 
 interface SeverityIndicatoryProps {
   severity: string;
+  className?: string;
 }
 
 const SeverityIndicator = (props: SeverityIndicatoryProps): JSX.Element => {
-  const { severity } = props;
+  const { severity, className } = props;
   const classes = severityStyles();
 
   const getStatusLabelClass = (severity: string): string => {
@@ -92,7 +98,8 @@ const SeverityIndicator = (props: SeverityIndicatoryProps): JSX.Element => {
     }
   };
 
-  return <FiberManualRecordIcon className={getStatusLabelClass(severity)} />;
+  const styles = `${getStatusLabelClass(severity)} ${className}`;
+  return <FiberManualRecordIcon className={styles} />;
 };
 
 export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element => {
@@ -130,6 +137,12 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
     setRmfNotifications(notifications);
   };
 
+  const deleteReadNotifications = (i: number) => {
+    const beforeIndex = rmfNotifications.slice(0, i);
+    const afterIndex = rmfNotifications.slice(i + 1);
+    setRmfNotifications(beforeIndex.concat(afterIndex));
+  };
+
   return (
     <Dialog
       open={showNotificationsDialog}
@@ -155,10 +168,10 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
             value={level}
             onChange={(e) => handleChange(e)}
             input={<Input />}
-            renderValue={() => (level === '' ? <em>placeholder</em> : level)}
+            renderValue={() => (level === '' ? <em>Filter by severity</em> : level)}
           >
             <MenuItem disabled value="">
-              <em>Placeholder</em>
+              <em>Filter by severity</em>
             </MenuItem>
             {alertLevel.map((level) => {
               return (
@@ -179,9 +192,14 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
               <React.Fragment key={notification.time + '_' + i}>
                 <Paper elevation={3} className={classes.paper}>
                   <SeverityIndicator severity={notification.severity} />
-                  <Typography variant="body1">{notification.time}:</Typography>
+                  <Typography variant="body1">{notification.time}</Typography>
                   <Typography variant="body1">{notification.error}</Typography>
-                  <CheckIcon className={classes.checkIcon} />
+                  <IconButton
+                    className={classes.checkIcon}
+                    onClick={() => deleteReadNotifications(i)}
+                  >
+                    <CheckIcon />
+                  </IconButton>
                 </Paper>
               </React.Fragment>
             );
