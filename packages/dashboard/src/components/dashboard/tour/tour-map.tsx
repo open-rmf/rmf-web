@@ -4,13 +4,13 @@ import Debug from 'debug';
 import * as L from 'leaflet';
 import React from 'react';
 import { AttributionControl, ImageOverlay, LayersControl, Map as LMap, Pane } from 'react-leaflet';
-import { toBlobUrl } from '../../util';
-import DispensersOverlay from '../schedule-visualizer/dispensers-overlay';
-import DoorsOverlay from '../schedule-visualizer/doors-overlay';
-import { calcMaxBounds, MapFloorLayer } from '../schedule-visualizer/index';
-import LiftsOverlay from '../schedule-visualizer/lift-overlay';
-import RobotsOverlay from '../schedule-visualizer/robots-overlay';
-import WaypointsOverlay from '../schedule-visualizer/waypoints-overlay';
+import { toBlobUrl } from '../../../util';
+import DispensersOverlay from '../../schedule-visualizer/dispensers-overlay';
+import DoorsOverlay from '../../schedule-visualizer/doors-overlay';
+import { calcMaxBounds, MapFloorLayer } from '../../schedule-visualizer/index';
+import LiftsOverlay from '../../schedule-visualizer/lift-overlay';
+import RobotsOverlay from '../../schedule-visualizer/robots-overlay';
+import WaypointsOverlay from '../../schedule-visualizer/waypoints-overlay';
 
 const debug = Debug('TourMap');
 

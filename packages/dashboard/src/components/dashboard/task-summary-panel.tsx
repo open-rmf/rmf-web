@@ -9,7 +9,7 @@ import {
   TrashBinControlButtonGroup,
   useTrashBinReducer,
 } from 'react-components';
-import { mergeContent } from '../utils';
+import { mergeContent } from '../../utils';
 
 const debug = Debug('OmniPanel:TaskSummaryPanel');
 

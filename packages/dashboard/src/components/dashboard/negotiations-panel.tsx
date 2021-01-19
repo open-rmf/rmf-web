@@ -1,22 +1,22 @@
-import React from 'react';
-import { Typography, makeStyles, Button, ButtonGroup } from '@material-ui/core';
-import TreeView from '@material-ui/lab/TreeView';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { Button, ButtonGroup, makeStyles, Typography } from '@material-ui/core';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import ClearAllIcon from '@material-ui/icons/ClearAll';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import RestoreIcon from '@material-ui/icons/Restore';
 import RestoreFromTrashIcon from '@material-ui/icons/RestoreFromTrash';
 import TreeItem from '@material-ui/lab/TreeItem';
-import ClearAllIcon from '@material-ui/icons/ClearAll';
-import RestoreIcon from '@material-ui/icons/Restore';
-import { SpotlightValue } from './spotlight-value';
+import TreeView from '@material-ui/lab/TreeView';
+import Debug from 'debug';
+import React from 'react';
 import {
   NegotiationConflict,
   NegotiationStatus,
-  ResolveState,
   NegotiationStatusManager,
   NegotiationTrajectoryResponse,
-} from '../negotiation-status-manager';
-import { colorPalette } from '../util/css-utils';
-import Debug from 'debug';
+  ResolveState,
+} from '../../managers/negotiation-status-manager';
+import { colorPalette } from '../../util/css-utils';
+import { SpotlightValue } from '../spotlight-value';
 
 const debug = Debug('OmniPanel:NegotiationsPanel');
 
@@ -65,9 +65,9 @@ interface Parameter {
 }
 
 export interface NegotiationsPanelProps {
-  conflicts: Readonly<Record<string, NegotiationConflict>>;
-  spotlight?: Readonly<SpotlightValue<string>>;
-  mapFloorLayerSorted?: Readonly<string[]>;
+  conflicts: Record<string, NegotiationConflict>;
+  spotlight?: SpotlightValue<string>;
+  mapFloorLayerSorted?: string[];
   negotiationStatusManager?: Readonly<NegotiationStatusManager>;
   negotiationTrajStore?: Record<string, NegotiationTrajectoryResponse>;
   negotiationStatusUpdateTS: number; // used to trigger rerenders

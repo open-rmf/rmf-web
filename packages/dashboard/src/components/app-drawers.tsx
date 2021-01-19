@@ -1,27 +1,26 @@
 import React from 'react';
 import { saveSettings, Settings } from '../settings';
+import { AppControllerContext } from './app-contexts';
 import HelpDrawer from './drawers/help-drawer';
 import HotKeysDialog from './drawers/hotkeys-dialog';
 import SettingsDrawer from './drawers/settings-drawer';
-import { ReducerMainMenuDispatch } from './reducers/main-menu-reducer';
 
-interface DashboardDrawersProps {
-  reducerMainMenuDispatch: ReducerMainMenuDispatch;
+interface AppDrawersProps {
   settings: Settings;
   showSettings: boolean;
   showHelp: boolean;
   showHotkeysDialog: boolean;
 }
 
-export const DashboardDrawers = React.memo(
-  (props: DashboardDrawersProps): JSX.Element => {
-    const { settings, showSettings, showHelp, showHotkeysDialog, reducerMainMenuDispatch } = props;
+export const AppDrawers = React.memo(
+  (props: AppDrawersProps): JSX.Element => {
+    const { settings, showSettings, showHelp, showHotkeysDialog } = props;
     const {
-      setShowSettings,
+      showSettings: setShowSettings,
       setSettings,
-      setShowHelp,
-      setShowHotkeysDialog,
-    } = reducerMainMenuDispatch;
+      showHelp: setShowHelp,
+      showHotkeysDialog: setShowHotkeysDialog,
+    } = React.useContext(AppControllerContext);
     return (
       <>
         <SettingsDrawer

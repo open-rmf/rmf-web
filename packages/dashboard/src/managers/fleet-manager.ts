@@ -6,23 +6,20 @@ type Events = {
 };
 
 export default class FleetManager extends EventEmitter<Events> {
-  fleets(): RomiCore.FleetState[] {
-    return Array.from(Object.values(this._fleets));
-  }
+  fleetStates: Record<string, RomiCore.FleetState> = {};
 
   startSubscription(transport: RomiCore.Transport) {
     this._subscriptions.push(
-      transport.subscribe(RomiCore.fleetStates, fleetState => {
-        this._fleets[fleetState.name] = fleetState;
+      transport.subscribe(RomiCore.fleetStates, (fleetState) => {
+        this.fleetStates[fleetState.name] = fleetState;
         this.emit('updated');
       }),
     );
   }
 
   stopAllSubscriptions(): void {
-    this._subscriptions.forEach(sub => sub.unsubscribe());
+    this._subscriptions.forEach((sub) => sub.unsubscribe());
   }
 
-  private _fleets: Record<string, RomiCore.FleetState> = {};
   private _subscriptions: RomiCore.Subscription[] = [];
 }

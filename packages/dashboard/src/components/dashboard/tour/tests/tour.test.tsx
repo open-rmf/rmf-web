@@ -1,8 +1,8 @@
 import { createMount, createShallow } from '@material-ui/core/test-utils';
 import { ReactWrapper } from 'enzyme';
 import React from 'react';
-import DashboardTour from '../tour/tour';
-import { tourText } from '../tour/tour-data';
+import DashboardTour from '../tour';
+import { tourText } from '../tour-data';
 
 /*react-leaflet does not work well on jsdom,
 suppress warnings of not being able to find elements from leaflet*/

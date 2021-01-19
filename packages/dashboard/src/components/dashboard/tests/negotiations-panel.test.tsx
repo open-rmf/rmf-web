@@ -1,14 +1,14 @@
 import { createMount, createShallow } from '@material-ui/core/test-utils';
-import React from 'react';
-import TreeView from '@material-ui/lab/TreeView';
 import TreeItem from '@material-ui/lab/TreeItem';
-import {
-  NegotiationStatusManager,
-  NegotiationConflict,
-  ResolveState,
-} from '../../negotiation-status-manager';
-import NegotiationsPanel from '../negotiations-panel';
+import TreeView from '@material-ui/lab/TreeView';
 import toJson from 'enzyme-to-json';
+import React from 'react';
+import {
+  NegotiationConflict,
+  NegotiationStatusManager,
+  ResolveState,
+} from '../../../managers/negotiation-status-manager';
+import NegotiationsPanel from '../negotiations-panel';
 
 const mount = createMount();
 const shallow = createShallow();
