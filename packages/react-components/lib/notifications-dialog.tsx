@@ -12,6 +12,7 @@ import {
   Select,
   MenuItem,
   Input,
+  Grid,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import RestoreIcon from '@material-ui/icons/Restore';
@@ -64,6 +65,9 @@ const useStyles = makeStyles((theme) => ({
   checkIcon: {
     color: theme.palette.success.main,
     padding: '0',
+  },
+  legend: {
+    display: 'flex',
   },
 }));
 
@@ -132,7 +136,7 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
     setLevel(val);
     const filterNotifications: Notification[] = [];
 
-    notifications.forEach((notification) => {
+    notficationsCopy.forEach((notification) => {
       if (notification.severity === val) {
         filterNotifications.push(notification);
       }
@@ -216,6 +220,19 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
         ) : (
           <Typography variant="body1">No Notifications at the moment</Typography>
         )}
+        <Typography variant="h6">Legend</Typography>
+        <div className={classes.legend}>
+          <Grid container direction="row" alignItems="center">
+            <SeverityIndicator severity={'High'} /> <Typography variant="body1">High</Typography>
+          </Grid>
+          <Grid container direction="row" alignItems="center">
+            <SeverityIndicator severity={'Medium'} />{' '}
+            <Typography variant="body1">Medium</Typography>
+          </Grid>
+          <Grid container direction="row" alignItems="center">
+            <SeverityIndicator severity={'Low'} /> <Typography variant="body1">Low</Typography>
+          </Grid>
+        </div>
       </DialogContent>
       <DialogActions className={classes.dialogActions}>
         <Button autoFocus onClick={() => setShowNotifications(false)} color="primary">
