@@ -38,14 +38,15 @@ import {
 import ScheduleVisualizer, { ScheduleVisualizerProps } from '../schedule-visualizer';
 import { SpotlightValue } from '../spotlight-value';
 import TaskSummaryPanel from '../task-summary-panel';
-import OmniPanelControl from './omnipanel-control';
+import OmniPanelControl_ from './omnipanel-control';
 import { DashboardState, useDashboardReducer } from './reducers/dashboard-reducer';
 
-const debug = Debug('App');
+const debug = Debug('Dashboard');
 const DispenserAccordion = React.memo(withSpotlight(DispenserAccordion_));
 const DoorAccordion = React.memo(withSpotlight(DoorAccordion_));
 const LiftAccordion = React.memo(withSpotlight(LiftAccordion_));
 const RobotAccordion = React.memo(withSpotlight(RobotAccordion_));
+const OmniPanelControl = React.memo(OmniPanelControl_);
 
 const borderRadius = 20;
 

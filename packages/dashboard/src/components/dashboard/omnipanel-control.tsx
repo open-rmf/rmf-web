@@ -1,9 +1,12 @@
 import DashboardIcon from '@material-ui/icons/Dashboard';
+import Debug from 'debug';
 import Leaflet from 'leaflet';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { MapControl, MapControlProps, withLeaflet } from 'react-leaflet';
 import { ReducerDashboardDispatch } from './reducers/dashboard-reducer';
+
+const debug = Debug('Dashboard:OmniPanelControl');
 
 export interface OmniPanelControlProps extends MapControlProps {
   show: boolean;
@@ -17,9 +20,11 @@ class OmniPanelControl extends MapControl<OmniPanelControlProps> {
     this._container.className = 'leaflet-bar';
   }
 
-  createLeafletElement(): Leaflet.Control {
+  createLeafletElement(props: OmniPanelControlProps): Leaflet.Control {
+    debug('createLeafletElement');
     const LeafletControl = Leaflet.Control.extend({
       onAdd: () => {
+        this._showContainer(props.show);
         return this._container;
       },
     });
@@ -28,12 +33,9 @@ class OmniPanelControl extends MapControl<OmniPanelControlProps> {
 
   updateLeafletElement(fromProps: OmniPanelControlProps, toProps: OmniPanelControlProps) {
     super.updateLeafletElement(fromProps, toProps);
+    debug('updateLeafletElement');
     const { show, dashboardDispatch } = toProps;
-    if (!show) {
-      this._container.setAttribute('style', 'display: none');
-    } else {
-      this._container.setAttribute('style', '');
-    }
+    this._showContainer(show);
     ReactDOM.render(
       // leaflet css uses `a` element to style controls
       // eslint-disable-next-line jsx-a11y/anchor-is-valid
@@ -45,6 +47,14 @@ class OmniPanelControl extends MapControl<OmniPanelControlProps> {
   }
 
   private _container: HTMLElement;
+
+  private _showContainer(show: boolean) {
+    if (!show) {
+      this._container.setAttribute('style', 'display: none');
+    } else {
+      this._container.setAttribute('style', '');
+    }
+  }
 }
 
 export default withLeaflet(OmniPanelControl);
