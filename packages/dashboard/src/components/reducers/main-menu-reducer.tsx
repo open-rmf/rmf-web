@@ -30,7 +30,6 @@ export enum MainMenuActionType {
   ToggleOmnipanel = 'toggleOmnipanel',
   ToggleSettings = 'toggleSettings',
   TourState = 'tourState',
-  CountNotfications = 'countNotification',
   UpdateNotifications = 'updateNotifications',
 }
 
@@ -43,8 +42,7 @@ export type MainMenuState = {
   [MainMenuActionType.ShowOmniPanel]: boolean;
   [MainMenuActionType.ShowSettings]: boolean;
   [MainMenuActionType.ShowNotifications]: boolean;
-  [MainMenuActionType.CountNotfications]: number;
-  [MainMenuActionType.UpdateNotifications]: Notification[];
+  notifications: Notification[];
   stackNavigator: StackNavigator<OmniPanelViewIndex>;
 };
 
@@ -64,8 +62,7 @@ export type MainMenuAction =
   | MainMenuActionFormat<'toggleHotkeys'>
   | MainMenuActionFormat<'toggleOmnipanel'>
   | MainMenuActionFormat<'toggleSettings'>
-  | MainMenuActionFormat<'countNotification', MainMenuState['countNotification']>
-  | MainMenuActionFormat<'updateNotifications', MainMenuState['updateNotifications']>;
+  | MainMenuActionFormat<'updateNotifications', MainMenuState['notifications']>;
 
 export const mainMenuReducer = (state: MainMenuState, action: MainMenuAction): MainMenuState => {
   switch (action.type) {
@@ -101,10 +98,8 @@ export const mainMenuReducer = (state: MainMenuState, action: MainMenuAction): M
       return { ...state, showHelp: !state.showHelp };
     case MainMenuActionType.ToggleHotkeys:
       return { ...state, showHotkeysDialog: !state.showHotkeysDialog };
-    case MainMenuActionType.CountNotfications:
-      return { ...state, [MainMenuActionType.CountNotfications]: action.payload };
     case MainMenuActionType.UpdateNotifications:
-      return { ...state, [MainMenuActionType.UpdateNotifications]: action.payload };
+      return { ...state, notifications: action.payload };
     default:
       console.error('Unexpected action');
       return state;
@@ -127,8 +122,7 @@ export interface ReducerMainMenuDispatch {
   toggleHotkeys: () => void;
   toggleOmnipanel: () => void;
   toggleSettings: () => void;
-  countNotifications: (payload: MainMenuState['countNotification']) => void;
-  updateNotifications: (payload: MainMenuState['updateNotifications']) => void;
+  updateNotifications: (payload: MainMenuState['notifications']) => void;
 }
 export interface ReducerMainMenuProps {
   state: MainMenuState;
@@ -162,8 +156,6 @@ export const useMainMenuReducer = (initialValue: MainMenuState): ReducerMainMenu
       toggleHotkeys: () => _dispatch({ type: MainMenuActionType.ToggleHotkeys }),
       toggleOmnipanel: () => _dispatch({ type: MainMenuActionType.ToggleOmnipanel }),
       toggleSettings: () => _dispatch({ type: MainMenuActionType.ToggleSettings }),
-      countNotifications: (payload) =>
-        _dispatch({ type: MainMenuActionType.CountNotfications, payload }),
       updateNotifications: (payload) =>
         _dispatch({ type: MainMenuActionType.UpdateNotifications, payload }),
     } as ReducerMainMenuDispatch;

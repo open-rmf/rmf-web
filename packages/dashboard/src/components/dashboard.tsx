@@ -81,8 +81,7 @@ export const mainMenuInitialValues: MainMenuState = {
   showSettings: false,
   stackNavigator: new StackNavigator<OmniPanelViewIndex>(OmniPanelViewIndex.MainMenu),
   showNotifications: false,
-  countNotification: fakeNotificationsManager.makeNotification().length,
-  updateNotifications: fakeNotificationsManager.makeNotification(),
+  notifications: fakeNotificationsManager.makeNotification(),
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -150,8 +149,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     showHelp,
     showHotkeysDialog,
     showNotifications,
-    countNotification,
-    updateNotifications,
+    notifications,
   } = mainMenuState;
 
   const {
@@ -161,6 +159,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     popView,
     pushView,
     setShowNotifications,
+    updateNotifications,
   } = mainMenuDispatch;
 
   const mapFloorLayerSorted = React.useMemo<string[] | undefined>(
@@ -431,7 +430,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
         >
           <div className={classes.container}>
             <AppBar
-              countNotifications={countNotification}
+              countNotifications={notifications.length}
               reducerMainMenuDispatch={mainMenuDispatch}
             />
             {loading && <LoadingScreen {...loading} />}
@@ -542,9 +541,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
               reducerMainMenuDispatch={mainMenuDispatch}
             ></DashboardDrawers>
             <NotificationsDialog
-              notifications={updateNotifications}
+              notifications={notifications}
               showNotificationsDialog={showNotifications}
               setShowNotifications={() => setShowNotifications(false)}
+              updateNotifications={updateNotifications}
             ></NotificationsDialog>
           </div>
 

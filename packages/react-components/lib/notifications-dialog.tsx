@@ -29,6 +29,7 @@ export interface NotificationDialogProps {
   showNotificationsDialog: boolean;
   setShowNotifications: (payload: boolean) => void;
   notifications: Notification[];
+  updateNotifications: (payload: Notification[]) => void;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -115,7 +116,12 @@ const SeverityIndicator = (props: SeverityIndicatoryProps): JSX.Element => {
 export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element => {
   const classes = useStyles();
 
-  const { showNotificationsDialog, setShowNotifications, notifications } = props;
+  const {
+    showNotificationsDialog,
+    setShowNotifications,
+    notifications,
+    updateNotifications,
+  } = props;
 
   const [level, setLevel] = React.useState('');
   const [rmfNotifications, setRmfNotifications] = React.useState(notifications);
@@ -154,6 +160,7 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
     const newNotifications = beforeIndex.concat(afterIndex);
     setRmfNotifications(newNotifications);
     setNotificationsCopy(newNotifications);
+    updateNotifications(newNotifications);
   };
 
   return (
