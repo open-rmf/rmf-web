@@ -55,6 +55,7 @@ export const AppBar = React.memo(
           >
             <IconButton
               id="show-settings-btn"
+              aria-label="settings"
               color="inherit"
               onClick={() => setShowSettings(true)}
             >
@@ -96,7 +97,12 @@ export const AppBar = React.memo(
             id="help-tooltip"
             enabled={showTooltips}
           >
-            <IconButton id="show-help-btn" color="inherit" onClick={() => setShowHelp(true)}>
+            <IconButton
+              id="show-help-btn"
+              aria-label="help"
+              color="inherit"
+              onClick={() => setShowHelp(true)}
+            >
               <HelpIcon />
             </IconButton>
           </DashboardTooltip>

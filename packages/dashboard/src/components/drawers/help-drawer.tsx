@@ -46,7 +46,7 @@ export default function HelpDrawer(props: HotKeysDrawerProps): React.ReactElemen
             handleCloseButton();
           }}
         >
-          <IconButton id="show-hotkeys-btn" color="inherit">
+          <IconButton id="show-hotkeys-btn" aria-label="close-help" color="inherit">
             <DirectionsIcon />
           </IconButton>
           <Typography variant="h5"> Hotkeys </Typography>
