@@ -4,14 +4,7 @@ import Debug from 'debug';
 import * as L from 'leaflet';
 import React from 'react';
 import { ColorContext, robotHash } from 'react-components';
-import {
-  AttributionControl,
-  ImageOverlay,
-  LayersControl,
-  Map as LMap,
-  Pane,
-  MapControl,
-} from 'react-leaflet';
+import { AttributionControl, ImageOverlay, LayersControl, Map as LMap, Pane } from 'react-leaflet';
 import { NegotiationTrajectoryResponse } from '../../negotiation-status-manager';
 import {
   Conflict,
@@ -47,7 +40,7 @@ export interface MapFloorLayer {
   bounds: L.LatLngBounds;
 }
 
-export interface ScheduleVisualizerProps {
+export interface ScheduleVisualizerProps extends React.PropsWithChildren<{}> {
   buildingMap: RomiCore.BuildingMap;
   fleets: RomiCore.FleetState[];
   trajManager?: RobotTrajectoryManager;
@@ -415,6 +408,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
           )}
         </LayersControl.Overlay>
       </LayersControl>
+      {props.children}
     </LMap>
   );
 }

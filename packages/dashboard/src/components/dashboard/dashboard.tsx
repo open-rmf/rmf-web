@@ -38,6 +38,7 @@ import {
 import ScheduleVisualizer, { ScheduleVisualizerProps } from '../schedule-visualizer';
 import { SpotlightValue } from '../spotlight-value';
 import TaskSummaryPanel from '../task-summary-panel';
+import OmniPanelControl from './omnipanel-control';
 import { DashboardState, useDashboardReducer } from './reducers/dashboard-reducer';
 
 const debug = Debug('App');
@@ -274,17 +275,21 @@ export default function Dashboard(_props: {}): React.ReactElement {
   return (
     <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
       {buildingMap && (
-        <ScheduleVisualizer
-          buildingMap={buildingMap}
-          mapFloorSort={mapFloorSort}
-          fleets={fleets}
-          trajManager={trajManager}
-          negotiationTrajStore={negotiationTrajStore}
-          onDoorClick={handleDoorMarkerClick}
-          onLiftClick={handleLiftMarkerClick}
-          onRobotClick={handleRobotMarkerClick}
-          onDispenserClick={handleDispenserMarkerClick}
-        />
+        <>
+          <ScheduleVisualizer
+            buildingMap={buildingMap}
+            mapFloorSort={mapFloorSort}
+            fleets={fleets}
+            trajManager={trajManager}
+            negotiationTrajStore={negotiationTrajStore}
+            onDoorClick={handleDoorMarkerClick}
+            onLiftClick={handleLiftMarkerClick}
+            onRobotClick={handleRobotMarkerClick}
+            onDispenserClick={handleDispenserMarkerClick}
+          >
+            <OmniPanelControl show={!showOmniPanel} dashboardDispatch={dashboardDispatch} />
+          </ScheduleVisualizer>
+        </>
       )}
       <Fade in={showOmniPanel}>
         <OmniPanel
