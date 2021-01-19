@@ -6,6 +6,7 @@ import { Typography, Grid } from '@material-ui/core';
 const useStyles = makeStyles((theme) => ({
   errorIcon: {
     color: theme.palette.error.main,
+    fontSize: '2rem',
   },
   errorMsg: {
     margin: '0.5rem',
