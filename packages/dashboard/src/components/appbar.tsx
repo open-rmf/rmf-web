@@ -9,18 +9,15 @@ import {
   Badge,
 } from '@material-ui/core';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import DashboardIcon from '@material-ui/icons/Dashboard';
+import HelpIcon from '@material-ui/icons/Help';
 import SettingsIcon from '@material-ui/icons/Settings';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import React from 'react';
-import { AuthenticatorContext, UserContext } from './auth/contexts';
-import HelpIcon from '@material-ui/icons/Help';
-import { TooltipContext } from './app-contexts';
 import DashboardTooltip from 'react-components/lib/tooltip';
-import { ReducerMainMenuDispatch } from './reducers/main-menu-reducer';
+import { AppControllerContext, TooltipsContext } from './app-contexts';
+import { AuthenticatorContext, UserContext } from './auth/contexts';
 
 export interface AppBarProps {
-  reducerMainMenuDispatch: ReducerMainMenuDispatch;
   // TODO: change the alarm status to required when we have an alarm
   // service working properly in the backend
   alarmState?: boolean | null;
@@ -28,20 +25,16 @@ export interface AppBarProps {
 }
 
 export const AppBar = React.memo(
-  (props: AppBarProps): React.ReactElement => {
-    const notificationCount = props.countNotifications;
-    const {
-      toggleOmnipanel,
-      setShowHelp,
-      setShowSettings,
-      setShowNotifications,
-    } = props.reducerMainMenuDispatch;
+  (_props: AppBarProps): React.ReactElement => {
+    const { showHelp: setShowHelp, showSettings: setShowSettings } = React.useContext(
+      AppControllerContext,
+    );
 
     const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
     const classes = useStyles();
     const authenticator = React.useContext(AuthenticatorContext);
     const user = React.useContext(UserContext);
-    const { showTooltips } = React.useContext(TooltipContext);
+    const { showTooltips } = React.useContext(TooltipsContext);
 
     async function handleLogout(): Promise<void> {
       try {
@@ -59,37 +52,13 @@ export const AppBar = React.memo(
           </Typography>
 
           <DashboardTooltip
-            title="View notifications from rmf"
-            id="notifications-tooltip"
-            enabled={showTooltips}
-          >
-            <IconButton
-              id="notifications-btn"
-              color="inherit"
-              onClick={() => setShowNotifications(true)}
-            >
-              <Badge badgeContent={notificationCount} color="error">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
-          </DashboardTooltip>
-          <DashboardTooltip
-            title="View all available panel options"
-            id="omnipanel-tooltip"
-            enabled={showTooltips}
-          >
-            <IconButton id="toggle-omnipanel-btn" color="inherit" onClick={() => toggleOmnipanel()}>
-              <DashboardIcon />
-            </IconButton>
-          </DashboardTooltip>
-
-          <DashboardTooltip
             title="Define dashboard trajectory settings"
             id="setting-tooltip"
             enabled={showTooltips}
           >
             <IconButton
               id="show-settings-btn"
+              aria-label="settings"
               color="inherit"
               onClick={() => setShowSettings(true)}
             >
@@ -131,7 +100,12 @@ export const AppBar = React.memo(
             id="help-tooltip"
             enabled={showTooltips}
           >
-            <IconButton id="show-help-btn" color="inherit" onClick={() => setShowHelp(true)}>
+            <IconButton
+              id="show-help-btn"
+              aria-label="help"
+              color="inherit"
+              onClick={() => setShowHelp(true)}
+            >
               <HelpIcon />
             </IconButton>
           </DashboardTooltip>
