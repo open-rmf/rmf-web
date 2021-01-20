@@ -3,52 +3,95 @@ import { FormControl, makeStyles, TextField } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import { SearchFilter } from './search-filter';
 import DateAndTimePickers from '../date-time-picker';
+import { LogLevel } from './log-level';
 
 interface SearchLogFormProps {
-  sourceLogValues: string[];
-  search?: (searchText: string, sourceLog: string, logLevel: string, rowsCount: string) => void;
+  logLabelValues: { label: string; value: string }[];
+  search?: (searchText: string, logLabel: string, logLevel: string, rowsCount: number) => void;
 }
 
+const logLevelValues = [
+  { label: 'FATAL', value: LogLevel.Fatal },
+  { label: 'ERROR', value: LogLevel.Error },
+  { label: 'WARN', value: LogLevel.Warn },
+  { label: 'INFO', value: LogLevel.Info },
+  { label: 'DEBUG', value: LogLevel.Debug },
+];
+
 export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => {
-  const { search } = props;
+  const { search, logLabelValues } = props;
   const [searchText, setSearchText] = React.useState('');
-  const [sourceLog, setSourceLog] = React.useState('');
-  const [logLevel, setLogLevel] = React.useState('');
+  // The log contains information from different services, the label help us differentiate the service
+  const [logLabel, setLogLabel] = React.useState('');
+  const [logLevel, setLogLevel] = React.useState(LogLevel.Error);
   const [rowsCount, setRowsCount] = React.useState(100);
-  const [error, setError] = React.useState('');
+  const [fromLogDate, setFromLogDate] = React.useState(new Date().toISOString().substr(0, 16));
+  const [toLogDate, setToLogDate] = React.useState(new Date().toISOString().substr(0, 16));
+  const [fromLogDateError, setFromLogDateError] = React.useState('');
+  const [toLogDateError, setToLogDateError] = React.useState('');
+
   const classes = useStyles();
 
-  const searchQuery = () => {
-    if (!searchText) {
-      setError('Cannot be empty');
-      return;
+  const isFormValid = () => {
+    let isValid = true;
+    if (!fromLogDate) {
+      setFromLogDateError('Cannot be empty');
+      isValid = false;
     }
-    search && search(searchText, sourceLog, logLevel, rowsCount);
+    if (!toLogDate) {
+      setToLogDateError('Cannot be empty');
+      isValid = false;
+    }
+    return isValid;
   };
 
-  const sourceLogValues = [
-    { label: 'log1', value: 'log1' },
-    { label: 'log2', value: 'log2' },
-  ];
-
-  const logLevelValues = [{ label: 'INFO', value: 'info' }];
+  const searchQuery = () => {
+    if (!isFormValid()) return;
+    console.log(searchText, logLabel, logLevel, rowsCount, toLogDate, fromLogDate);
+    search && search(searchText, logLabel, logLevel, rowsCount);
+  };
 
   const rowsCountValues = [
     { label: '50', value: '50' },
     { label: '100', value: '100' },
+    { label: '200', value: '200' },
+    { label: '500', value: '500' },
   ];
 
-  const handleSourceLogChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
-    setSourceLog(event.target.value as string);
-  };
+  const handleLogLabelChange = React.useCallback(
+    (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
+      setLogLabel(event.target.value as string);
+    },
+    [],
+  );
 
-  const handleLogLevelChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
-    setLogLevel(event.target.value as string);
-  };
+  const handleLogLevelChange = React.useCallback(
+    (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
+      setLogLevel(event.target.value as LogLevel);
+    },
+    [],
+  );
 
-  const handleRowsNumberChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
-    setRowsCount(event.target.value as number);
-  };
+  const handleRowsNumberChange = React.useCallback(
+    (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
+      setRowsCount(event.target.value as number);
+    },
+    [],
+  );
+
+  const handleFromLogDateChange = React.useCallback(
+    (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
+      setFromLogDate(event.target.value as string);
+    },
+    [],
+  );
+
+  const handleToLogDateChange = React.useCallback(
+    (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
+      setToLogDate(event.target.value as string);
+    },
+    [],
+  );
 
   return (
     <>
@@ -62,17 +105,17 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
             type="string"
             value={searchText}
             variant="outlined"
-            error={!!error}
-            helperText={error}
           />
         </FormControl>
+
         <SearchFilter
-          options={sourceLogValues}
+          options={logLabelValues}
           name="log-picker"
-          label="Pick Log File"
-          handleOnChange={handleSourceLogChange}
-          currentValue={sourceLog}
+          label="Pick Log Label"
+          handleOnChange={handleLogLabelChange}
+          currentValue={logLabel}
         ></SearchFilter>
+
         <SearchFilter
           options={logLevelValues}
           name="log-level"
@@ -80,8 +123,23 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
           handleOnChange={handleLogLevelChange}
           currentValue={logLevel}
         ></SearchFilter>
-        <DateAndTimePickers name="fromLogDate" label="From"></DateAndTimePickers>
-        <DateAndTimePickers name="toLogDate" label="To"></DateAndTimePickers>
+
+        <DateAndTimePickers
+          name="fromLogDate"
+          label="From"
+          date={fromLogDate}
+          error={fromLogDateError}
+          handleDateChange={handleFromLogDateChange}
+        ></DateAndTimePickers>
+
+        <DateAndTimePickers
+          name="toLogDate"
+          label="To"
+          error={toLogDateError}
+          date={toLogDate}
+          handleDateChange={handleToLogDateChange}
+        ></DateAndTimePickers>
+
         <SearchFilter
           options={rowsCountValues}
           name="rowsCount"
@@ -95,7 +153,7 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
         color="primary"
         variant="contained"
         className={classes.searchButton}
-        onClick={() => searchQuery()}
+        onClick={searchQuery}
       >
         Search
       </Button>

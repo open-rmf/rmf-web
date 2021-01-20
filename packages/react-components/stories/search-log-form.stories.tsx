@@ -5,9 +5,13 @@ import { SearchLogForm } from '../lib';
 export default {
   title: 'Search log Form',
   component: SearchLogForm,
-  argTypes: {
-    fullWidth: { control: 'boolean' },
-  },
+  argTypes: {},
 } as Meta;
 
-export const SimpleSearchLogForm: Story = (args) => <SearchLogForm {...args} />;
+const logLabel = [
+  { label: 'Web Server', value: 'web-server' },
+  { label: 'RMF core', value: 'rmf-core' },
+];
+export const SimpleSearchLogForm: Story = (args) => (
+  <SearchLogForm logLabelValues={logLabel} {...args} />
+);

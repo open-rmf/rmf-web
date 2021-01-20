@@ -1,22 +1,30 @@
 import React from 'react';
-import axios from 'axios';
-import { LogRowsType, LogTable, SearchLogForm } from 'react-components';
-import { url } from 'inspector';
+import { LogTable, SearchLogForm } from 'react-components';
+import { makeStyles } from '@material-ui/core';
 
-const LogManagement = (): React.ReactElement => {
-  const [logs, setLogs] = React.useState([]);
-  const [logSources, setLogSources] = React.useState([] as string[]);
+const useStyles = makeStyles(() => ({
+  table: {
+    overflowY: 'scroll',
+    height: '60vh',
+    paddingTop: '20px',
+  },
+}));
+
+export const LogManagementApp = (): React.ReactElement => {
+  const [logs] = React.useState([]);
+  const [logSources] = React.useState([]);
+
+  const classes = useStyles();
 
   React.useEffect(() => {
-    // Get the log list
-    // axios.get()
+    // TODO: get the log labels from the backend on component will mount
   }, []);
 
   const searchLogs = (
     searchText: string,
     sourceLog: string,
     logLevel: string,
-    rowsCount: string,
+    rowsCount: number,
   ) => {
     const payload = {
       searchText: searchText,
@@ -24,19 +32,15 @@ const LogManagement = (): React.ReactElement => {
       logLevel: logLevel,
       rowsCount: rowsCount,
     };
-    axios({ url: `localhost`, baseURL: `localhost`, method: 'get', data: payload })
-      .then((response) => {
-        console.log(response);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    // TODO: send this payload to the backend endpoint to get the logs.
+    // remove console.log
+    console.log(payload);
   };
 
   return (
     <>
-      <SearchLogForm sourceLogValues={logSources} search={searchLogs}></SearchLogForm>
-      <div>
+      <SearchLogForm logLabelValues={logSources} search={searchLogs}></SearchLogForm>
+      <div className={classes.table}>
         <LogTable rows={logs}></LogTable>
       </div>
     </>

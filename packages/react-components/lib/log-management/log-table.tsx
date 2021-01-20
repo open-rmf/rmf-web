@@ -61,7 +61,7 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
 
   return (
     <TableContainer component={Paper}>
-      <Table className={classes.table} size="small" stickyHeader aria-label="sticky table">
+      <Table className={classes.table} size="small" stickyHeader={true} aria-label="sticky table">
         <TableHead>
           <TableRow>
             <TableCell align="left">Level</TableCell>
@@ -88,7 +88,6 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
             </TableRow>
           )}
         </TableBody>
-
         <TableFooterPagination
           count={rows.length}
           rowsPerPage={rowsPerPage}
@@ -100,12 +99,3 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
     </TableContainer>
   );
 };
-{
-  /* <td>{moment(timestamp).format('LLLL')}</td>; */
-}
-// return (
-//   <div>
-//     <div style={{ height: '60%', overflowY: 'scroll' }}>
-//     </div>
-//   </div>
-// );
