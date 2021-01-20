@@ -1,4 +1,4 @@
-import { Knot } from './util/cublic-spline';
+import { Knot } from '../util/cublic-spline';
 
 // RawVelocity received from server is in this format (x, y, theta)
 export type RawVelocity = [number, number, number];
