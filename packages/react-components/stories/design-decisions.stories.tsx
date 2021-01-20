@@ -53,8 +53,7 @@ export const handleLongName: Story = (args) => (
     <Typography variant="body1">
       Since the names of the items have the potential to be longer than the container they are in,
       we truncate it with an ellipsis if it exceeds and also included a <b>Name</b> field in the
-      detail panel. Shown below is an example on the dispenser panel. Press button below to change
-      the state of dispenser panel to <b>null</b>.
+      detail panel. Shown below is an example on the dispenser panel.
     </Typography>
     <Divider style={{ margin: '1rem 0' }} />
     <div style={{ ...styles.spacing, width: 400 }}>
@@ -87,7 +86,8 @@ export const ItemsWithUnknownState: Story = () => (
     <Typography variant="body1">
       There are situations where the state of a component (for example, dispenser or robots) is not
       known due to them being disconnected from RMF or other reasons. We would display a message to
-      show users that the current state of the item is unknown.
+      show users that the current state of the item is unknown. Press button below to change the
+      state of dispenser panel to <b>null</b>.
     </Typography>
     <Divider style={{ margin: '1rem 0' }} />
     <ToggleDispenserState />
