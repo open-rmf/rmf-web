@@ -20,7 +20,9 @@ const useStyles = makeStyles((theme) => ({
   overlay: {
     gridArea: '1 / 1',
     backdropFilter: 'blur(.5rem)',
-    padding: theme.spacing(1),
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   container: {
     display: 'grid',
@@ -49,24 +51,26 @@ export const ErrorOverlay = React.memo(
             children ? `${classes.overlay} ${classes.disableSelect}` : classes.disableSelect
           }
         >
-          <Grid container direction="row" justify="center" alignItems="center" spacing={2}>
-            <Grid item>
-              <ErrorIcon className={classes.errorIcon} />
+          <div>
+            <Grid container direction="row" justify="center" alignItems="center" spacing={2}>
+              <Grid item>
+                <ErrorIcon className={classes.errorIcon} />
+              </Grid>
+              <Grid item>
+                <Typography color="error" variant="h4" align="center">
+                  Error
+                </Typography>
+              </Grid>
             </Grid>
-            <Grid item>
-              <Typography color="error" variant="h4" align="center">
-                Error
-              </Typography>
-            </Grid>
-          </Grid>
-          <Typography
-            className={overrideErrorStyle ? overrideErrorStyle : classes.errorMsg}
-            color="error"
-            variant="h6"
-            align="center"
-          >
-            {errorMsg}
-          </Typography>
+            <Typography
+              className={overrideErrorStyle ? overrideErrorStyle : classes.errorMsg}
+              color="error"
+              variant="h6"
+              align="center"
+            >
+              {errorMsg}
+            </Typography>
+          </div>
         </div>
       </div>
     ) : (

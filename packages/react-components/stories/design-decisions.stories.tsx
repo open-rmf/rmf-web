@@ -22,7 +22,7 @@ const styles: Record<string, React.CSSProperties> = {
 function ToggleDispenserState(): JSX.Element {
   const [toggle, setToggle] = React.useState(true);
 
-  let dispenserState: RomiCore.DispenserState | null = toggle
+  const dispenserState: RomiCore.DispenserState | null = toggle
     ? makeDispenserState({
         guid: 'Stateless dispenser',
         mode: RomiCore.DispenserState.IDLE,
@@ -82,7 +82,7 @@ export const handleUnknown: Story = () => (
   </div>
 );
 
-export const ItemsWithUnknownState: Story = (args) => (
+export const ItemsWithUnknownState: Story = () => (
   <div>
     <Typography variant="body1">
       There are situations where the state of a component (for example, dispenser or robots) is not
