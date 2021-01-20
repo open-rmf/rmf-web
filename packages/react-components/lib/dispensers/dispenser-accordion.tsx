@@ -1,7 +1,7 @@
 import { Accordion, AccordionProps, makeStyles } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import ItemAccordionDetails from '../item-accordion-details';
 import ItemAccordionSummary from '../item-accordion-summary';
 import { ErrorOverlay } from '../error-overlay';
@@ -81,8 +81,8 @@ export const DispenserAccordion = React.forwardRef(
     // TODO: refactor this into a common custom hook to handle stored state
     // in future if we need it to track the states of other items.
     function usePrevDispenserState(dispenserState: RomiCore.DispenserState | null) {
-      const ref = useRef<RomiCore.DispenserState | null>(null);
-      useEffect(() => {
+      const ref = React.useRef<RomiCore.DispenserState | null>(null);
+      React.useEffect(() => {
         if (dispenserState) {
           ref.current = dispenserState;
         }

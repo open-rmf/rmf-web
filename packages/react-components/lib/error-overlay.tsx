@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
 
 export interface ErrorOverlayProps {
   errorMsg?: string | null;
-  children: JSX.Element | null;
+  children: React.ReactNode | null;
   overrideErrorStyle?: string;
 }
 
@@ -42,35 +42,33 @@ export const ErrorOverlay = React.memo(
     const { errorMsg, children, overrideErrorStyle } = props;
 
     return errorMsg ? (
-      <React.Fragment>
-        <div className={classes.container}>
-          <div className={classes.errorDisabled}>{children}</div>
-          <div
-            className={
-              children ? `${classes.overlay} ${classes.disableSelect}` : classes.disableSelect
-            }
-          >
-            <Grid container direction="row" justify="center" alignItems="center" spacing={2}>
-              <Grid item>
-                <ErrorIcon className={classes.errorIcon} />
-              </Grid>
-              <Grid item>
-                <Typography color="error" variant="h4" align="center">
-                  Error
-                </Typography>
-              </Grid>
+      <div className={classes.container}>
+        <div className={classes.errorDisabled}>{children}</div>
+        <div
+          className={
+            children ? `${classes.overlay} ${classes.disableSelect}` : classes.disableSelect
+          }
+        >
+          <Grid container direction="row" justify="center" alignItems="center" spacing={2}>
+            <Grid item>
+              <ErrorIcon className={classes.errorIcon} />
             </Grid>
-            <Typography
-              className={overrideErrorStyle ? overrideErrorStyle : classes.errorMsg}
-              color="error"
-              variant="h6"
-              align="center"
-            >
-              {errorMsg ? errorMsg : 'Unknown error'}
-            </Typography>
-          </div>
+            <Grid item>
+              <Typography color="error" variant="h4" align="center">
+                Error
+              </Typography>
+            </Grid>
+          </Grid>
+          <Typography
+            className={overrideErrorStyle ? overrideErrorStyle : classes.errorMsg}
+            color="error"
+            variant="h6"
+            align="center"
+          >
+            {errorMsg}
+          </Typography>
         </div>
-      </React.Fragment>
+      </div>
     ) : (
       <React.Fragment>{children}</React.Fragment>
     );
