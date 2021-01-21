@@ -22,3 +22,4 @@ export * from './trashbin-control-button-group-reducer';
 export * from './utils';
 export * from './waypoints';
 export * from './notifications-dialog';
+export * from './status';

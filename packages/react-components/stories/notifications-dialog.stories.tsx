@@ -87,7 +87,7 @@ const NotificationDialogHandler = (props: NotificationDialogHandlerProps): JSX.E
   );
 };
 
-export const LiftsPanel: Story = () => {
+export const NotificationsDialogDisplay: Story = () => {
   return (
     <>
       <NotificationDialogHandler notifications={makeNotifications()} />
