@@ -1,6 +1,6 @@
 import React from 'react';
 import { TableFooter, TablePagination, TableRow } from '@material-ui/core';
-import { TablePaginationActions } from '../tables/table-pagination';
+import TablePaginationActions from '@material-ui/core/TablePagination/TablePaginationActions';
 
 /**
  * count: total number of rows
@@ -18,7 +18,7 @@ export interface TableFooterPaginationProps {
   onChangeRowsPerPage: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 }
 
-export const TableFooterPagination = (props: TableFooterPaginationProps) => {
+export const TableFooterPagination = (props: TableFooterPaginationProps): React.ReactElement => {
   const { count, currentPage, rowsPerPage, onChangePage, onChangeRowsPerPage } = props;
   return (
     <TableFooter>

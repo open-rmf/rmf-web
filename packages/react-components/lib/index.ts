@@ -3,6 +3,7 @@ export * from './auth';
 export * from './color-manager';
 export * from './commands';
 export * from './confirmation-alert-dialog';
+export * from './date-time-picker';
 export * from './dispensers';
 export * from './doors';
 export * from './geometry-utils';
