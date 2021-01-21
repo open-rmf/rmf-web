@@ -14,7 +14,6 @@ import {
 import { AppDrawers } from './app-drawers';
 import AppBar from './appbar';
 import LoadingScreen, { LoadingScreenProps } from './loading-screen';
-import NotificationBar, { NotificationBarProps } from './notification-bar';
 import { NotificationsDialog } from 'react-components';
 
 const useStyles = makeStyles({
@@ -33,7 +32,6 @@ const useStyles = makeStyles({
  * - Tooltip
  * - Hotkeys reference
  * - Notifications
- * - Snackbars
  *
  * Also provides `AppControllerContext` to allow children components to control them.
  */
@@ -50,11 +48,6 @@ export function AppBase(props: React.PropsWithChildren<{}>): JSX.Element | null 
   const [showHotkeysDialog, setShowHotkeysDialog] = React.useState(false);
 
   const [loadingScreenProps, setLoadingScreenProps] = React.useState<LoadingScreenProps>({});
-
-  const [notificationProps, setNotificationProps] = React.useState<NotificationBarProps>({
-    message: null,
-    type: 'info',
-  });
 
   const [showTooltips, setShowTooltips] = React.useState(false);
 
@@ -77,7 +70,6 @@ export function AppBase(props: React.PropsWithChildren<{}>): JSX.Element | null 
       toggleHelp: () => setShowHelp((prev) => !prev),
       showHotkeysDialog: setShowHotkeysDialog,
       toggleHotkeysDialog: () => setShowHotkeysDialog((prev) => !prev),
-      showNotification: setNotificationProps,
       showTooltips: setShowTooltips,
       toggleTooltips: () => setShowTooltips((prev) => !prev),
       showLoadingScreen: setLoadingScreenProps,
@@ -112,7 +104,6 @@ export function AppBase(props: React.PropsWithChildren<{}>): JSX.Element | null 
               <Grid style={{ flexGrow: 1 }}>
                 <LoadingScreen {...loadingScreenProps}>{props.children}</LoadingScreen>
               </Grid>
-              <NotificationBar {...notificationProps} />
               <AppDrawers
                 settings={settings}
                 showHelp={showHelp}

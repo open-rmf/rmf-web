@@ -14,7 +14,6 @@ import {
 } from '../../managers/robot-trajectory-manager';
 import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
 import { toBlobUrl } from '../../util';
-import { AppControllerContext } from '../app-contexts';
 import DispensersOverlay from './dispensers-overlay';
 import DoorsOverlay from './doors-overlay';
 import LiftsOverlay from './lift-overlay';
@@ -205,28 +204,6 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     })();
     return () => clearInterval(interval);
   }, [props.trajManager, curMapFloorLayer, trajAnimDuration]);
-
-  // Show notification when a conflict happens.
-  const { showNotification: notificationDispatch } = React.useContext(AppControllerContext);
-  React.useEffect(() => {
-    function getConflictRobotMessage(): string {
-      let message = '';
-      conflictRobotNames.forEach((conflictGroup) => {
-        message += `[${conflictGroup}] `;
-      });
-      return message;
-    }
-
-    const allConflicts = Object.values(trajectories).flatMap((traj) => traj.conflicts);
-
-    if (allConflicts.length !== 0) {
-      notificationDispatch &&
-        notificationDispatch({
-          message: `Trajectory conflicts between: ${getConflictRobotMessage()}`,
-          type: 'error',
-        });
-    }
-  }, [trajectories, notificationDispatch, conflictRobotNames]);
 
   function handleBaseLayerChange(e: L.LayersControlEvent): void {
     debug('set current level name');
