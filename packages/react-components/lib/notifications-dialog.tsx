@@ -12,12 +12,10 @@ import {
   Select,
   MenuItem,
   Input,
-  Grid,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import RestoreIcon from '@material-ui/icons/Restore';
 import CheckIcon from '@material-ui/icons/Check';
-import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 
 export interface Notification {
   time: string;
@@ -29,7 +27,16 @@ export interface NotificationDialogProps {
   showNotificationsDialog: boolean;
   setShowNotifications: (payload: boolean) => void;
   notifications: Notification[];
-  updateNotifications: (payload: Notification[]) => void;
+}
+
+interface SelectChangeEvent {
+  ame?: string | undefined;
+  value: unknown;
+}
+
+interface SeverityIndicatoryProps {
+  severity: string;
+  className?: string;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -48,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
   },
   paper: {
     display: 'grid',
-    gridTemplateColumns: '2rem repeat(2, 1fr) 2rem',
+    gridTemplateColumns: '1fr repeat(2, 3fr) 1fr',
     textAlign: 'center',
     padding: theme.spacing(1),
     width: '100%',
@@ -70,27 +77,23 @@ const useStyles = makeStyles((theme) => ({
   legend: {
     display: 'flex',
   },
+  indicator: {
+    padding: '0',
+    fontWeight: 600,
+  },
 }));
 
 const severityStyles = makeStyles((theme) => ({
   high: {
     color: theme.palette.secondary.dark,
-    padding: '0',
   },
   medium: {
     color: theme.palette.error.main,
-    padding: '0',
   },
   low: {
     color: theme.palette.warning.light,
-    padding: '0',
   },
 }));
-
-interface SeverityIndicatoryProps {
-  severity: string;
-  className?: string;
-}
 
 const SeverityIndicator = (props: SeverityIndicatoryProps): JSX.Element => {
   const { severity, className } = props;
@@ -110,18 +113,17 @@ const SeverityIndicator = (props: SeverityIndicatoryProps): JSX.Element => {
   };
 
   const styles = `${getStatusLabelClass(severity)} ${className}`;
-  return <FiberManualRecordIcon className={styles} />;
+  return (
+    <Typography variant="body1" className={styles} align="left">
+      {severity}
+    </Typography>
+  );
 };
 
 export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element => {
   const classes = useStyles();
 
-  const {
-    showNotificationsDialog,
-    setShowNotifications,
-    notifications,
-    updateNotifications,
-  } = props;
+  const { showNotificationsDialog, setShowNotifications, notifications } = props;
 
   const [level, setLevel] = React.useState('');
   const [rmfNotifications, setRmfNotifications] = React.useState(notifications);
@@ -137,7 +139,7 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
     return holder;
   }, [notifications]);
 
-  const handleChange = (e: any) => {
+  const handleChange = (e: React.ChangeEvent<SelectChangeEvent>) => {
     const val = e.target.value as string;
     setLevel(val);
     const filterNotifications: Notification[] = [];
@@ -160,7 +162,6 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
     const newNotifications = beforeIndex.concat(afterIndex);
     setRmfNotifications(newNotifications);
     setNotificationsCopy(newNotifications);
-    updateNotifications(newNotifications);
   };
 
   return (
@@ -190,9 +191,6 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
             input={<Input />}
             renderValue={() => (level === '' ? <em>Filter by severity</em> : level)}
           >
-            <MenuItem disabled value="">
-              <em>Filter by severity</em>
-            </MenuItem>
             {alertLevel.map((level) => {
               return (
                 <MenuItem key={level} value={level}>
@@ -206,40 +204,50 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
           </IconButton>
         </div>
 
+        <Paper className={classes.paper}>
+          <Typography variant="h6" align="left">
+            Severity
+          </Typography>
+          <Typography variant="h6" align="left">
+            Date
+          </Typography>
+          <Typography variant="h6" align="left">
+            Message
+          </Typography>
+          <Typography variant="h6" align="right">
+            Resolved
+          </Typography>
+        </Paper>
         {rmfNotifications.length > 0 ? (
           rmfNotifications.map((notification, i) => {
             return (
               <React.Fragment key={notification.time + '_' + i}>
                 <Paper elevation={3} className={classes.paper}>
-                  <SeverityIndicator severity={notification.severity} />
-                  <Typography variant="body1">{notification.time}</Typography>
-                  <Typography variant="body1">{notification.error}</Typography>
-                  <IconButton
-                    className={classes.checkIcon}
-                    onClick={() => deleteReadNotifications(i)}
-                  >
-                    <CheckIcon />
-                  </IconButton>
+                  <SeverityIndicator
+                    className={classes.indicator}
+                    severity={notification.severity}
+                  />
+                  <Typography variant="body1" align="left">
+                    {notification.time}
+                  </Typography>
+                  <Typography variant="body1" align="left">
+                    {notification.error}
+                  </Typography>
+                  <Typography align="right">
+                    <IconButton
+                      className={classes.checkIcon}
+                      onClick={() => deleteReadNotifications(i)}
+                    >
+                      <CheckIcon />
+                    </IconButton>
+                  </Typography>
                 </Paper>
               </React.Fragment>
             );
           })
         ) : (
-          <Typography variant="body1">No Notifications at the moment</Typography>
+          <Typography variant="body1">All systems green</Typography>
         )}
-        <Typography variant="h6">Legend</Typography>
-        <div className={classes.legend}>
-          <Grid container direction="row" alignItems="center">
-            <SeverityIndicator severity={'High'} /> <Typography variant="body1">High</Typography>
-          </Grid>
-          <Grid container direction="row" alignItems="center">
-            <SeverityIndicator severity={'Medium'} />{' '}
-            <Typography variant="body1">Medium</Typography>
-          </Grid>
-          <Grid container direction="row" alignItems="center">
-            <SeverityIndicator severity={'Low'} /> <Typography variant="body1">Low</Typography>
-          </Grid>
-        </div>
       </DialogContent>
       <DialogActions className={classes.dialogActions}>
         <Button autoFocus onClick={() => setShowNotifications(false)} color="primary">

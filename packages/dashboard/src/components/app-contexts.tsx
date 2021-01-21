@@ -30,6 +30,7 @@ export interface AppController {
    */
   toggleTooltips(): void;
   showLoadingScreen: React.Dispatch<React.SetStateAction<LoadingScreenProps>>;
+  showNotificationDialog(show: boolean): void;
 }
 
 export interface Tooltips {
@@ -53,4 +54,5 @@ export const AppControllerContext = React.createContext<AppController>({
   showTooltips: () => {},
   toggleTooltips: () => {},
   showLoadingScreen: () => {},
+  showNotificationDialog: () => {},
 });

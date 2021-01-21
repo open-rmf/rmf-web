@@ -21,14 +21,15 @@ export interface AppBarProps {
   // TODO: change the alarm status to required when we have an alarm
   // service working properly in the backend
   alarmState?: boolean | null;
-  countNotifications: number;
 }
 
 export const AppBar = React.memo(
   (_props: AppBarProps): React.ReactElement => {
-    const { showHelp: setShowHelp, showSettings: setShowSettings } = React.useContext(
-      AppControllerContext,
-    );
+    const {
+      showHelp: setShowHelp,
+      showSettings: setShowSettings,
+      showNotificationDialog: setShowNotifications,
+    } = React.useContext(AppControllerContext);
 
     const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
     const classes = useStyles();
@@ -50,6 +51,24 @@ export const AppBar = React.memo(
           <Typography variant="h6" className={classes.toolbarTitle}>
             Dashboard
           </Typography>
+
+          <DashboardTooltip
+            title="View notifications from rmf"
+            id="notifications-tooltip"
+            enabled={showTooltips}
+          >
+            <IconButton
+              id="notifications-btn"
+              color="inherit"
+              onClick={() => {
+                setShowNotifications(true);
+              }}
+            >
+              <Badge badgeContent={0} color="error">
+                <NotificationsIcon />
+              </Badge>
+            </IconButton>
+          </DashboardTooltip>
 
           <DashboardTooltip
             title="Define dashboard trajectory settings"

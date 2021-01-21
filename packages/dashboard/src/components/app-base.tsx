@@ -15,6 +15,7 @@ import { AppDrawers } from './app-drawers';
 import AppBar from './appbar';
 import LoadingScreen, { LoadingScreenProps } from './loading-screen';
 import NotificationBar, { NotificationBarProps } from './notification-bar';
+import { NotificationsDialog } from 'react-components';
 
 const useStyles = makeStyles({
   appBase: {
@@ -56,6 +57,9 @@ export function AppBase(props: React.PropsWithChildren<{}>): JSX.Element | null 
   });
 
   const [showTooltips, setShowTooltips] = React.useState(false);
+
+  const [showNotifications, setShowNotifications] = React.useState(false);
+
   const tooltips = React.useMemo<Tooltips>(
     () => ({
       showTooltips,
@@ -77,6 +81,7 @@ export function AppBase(props: React.PropsWithChildren<{}>): JSX.Element | null 
       showTooltips: setShowTooltips,
       toggleTooltips: () => setShowTooltips((prev) => !prev),
       showLoadingScreen: setLoadingScreenProps,
+      showNotificationDialog: setShowNotifications,
     }),
     [],
   );
@@ -115,6 +120,11 @@ export function AppBase(props: React.PropsWithChildren<{}>): JSX.Element | null 
                 showSettings={showSettings}
               />
             </Grid>
+            <NotificationsDialog
+              notifications={[]}
+              showNotificationsDialog={showNotifications}
+              setShowNotifications={() => setShowNotifications(false)}
+            />
           </AppControllerContext.Provider>
         </TooltipsContext.Provider>
       </ResourcesContext.Provider>
