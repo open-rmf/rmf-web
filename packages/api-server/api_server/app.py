@@ -1,5 +1,3 @@
-import base64
-import hashlib
 import os
 import signal
 import threading
@@ -7,11 +5,10 @@ from urllib.parse import urljoin
 
 import rclpy
 from rclpy.node import Node
-from rosidl_runtime_py.convert import message_to_ordereddict
 
 from flask import Flask
 
-from .building_map import make_blueprint
+from .building_map import building_map_blueprint
 
 
 class MainNode(Node):
@@ -49,9 +46,7 @@ if 'RMF_API_APP_ROOT' in os.environ:
 threading.Thread(target=ros2_thread, args=[ros2_node]).start()
 prev_sigint_handler = signal.signal(signal.SIGINT, sigint_handler)
 
-app.register_blueprint(make_blueprint(ros2_node))
-
-
-@app.route('/building_map')
-def get_building_map():
-    return ros2_node.building_map
+app.register_blueprint(
+    building_map_blueprint(ros2_node),
+    url_prefix='/building_map'
+)
