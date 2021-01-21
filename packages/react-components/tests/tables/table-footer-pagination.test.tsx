@@ -12,8 +12,8 @@ describe('Table footer Pagination', () => {
         count={110}
         rowsPerPage={50}
         currentPage={1}
-        onChangePage={(e) => jest.fn()}
-        onChangeRowsPerPage={(e) => jest.fn()}
+        onChangePage={() => jest.fn()}
+        onChangeRowsPerPage={() => jest.fn()}
       />,
     );
   });

@@ -7,7 +7,7 @@ import { LogLevel } from '.';
 import moment from 'moment';
 
 export type LogRowsType = { level: string; message: string; timestamp: string }[];
-interface LogTableProps {
+export interface LogTableProps {
   rows: LogRowsType | [];
 }
 const useStyles = makeStyles((theme) => ({
@@ -79,7 +79,9 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
                 {row.level}
               </TableCell>
               <TableCell align="left">{row.message}</TableCell>
-              <TableCell align="right">{moment(row.timestamp).format('lll')}</TableCell>
+              <TableCell align="right" data-testid={'log-table-date'}>
+                {moment(row.timestamp).format('lll')}
+              </TableCell>
             </TableRow>
           ))}
           {emptyRows > 0 && (
