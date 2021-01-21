@@ -112,6 +112,7 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
           options={logLabelValues}
           name="log-picker"
           label="Pick Log Label"
+          aria-label="log-label-picker"
           handleOnChange={handleLogLabelChange}
           currentValue={logLabel}
         ></SearchFilter>
