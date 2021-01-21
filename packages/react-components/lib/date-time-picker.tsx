@@ -17,11 +17,11 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface DateTimePickerProps {
+  date?: string;
+  error?: string;
+  handleDateChange: (event: React.ChangeEvent<{ name?: string; value: unknown }>) => void;
   label: string;
   name: string;
-  error?: string;
-  date: string;
-  handleDateChange: (event: React.ChangeEvent<{ name?: string; value: unknown }>) => void;
 }
 
 export default function DateAndTimePickers(props: DateTimePickerProps): React.ReactElement {
