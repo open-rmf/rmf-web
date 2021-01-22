@@ -15,6 +15,7 @@ import {
   RobotAccordion as RobotAccordion_,
   StackNavigator,
   withSpotlight,
+  StatusAccordion,
 } from 'react-components';
 import { GlobalHotKeys } from 'react-hotkeys';
 import 'typeface-roboto';
@@ -41,6 +42,8 @@ import NegotiationsPanel from './negotiations-panel';
 import OmniPanelControl_ from './omnipanel-control';
 import { DashboardState, useDashboardReducer } from './reducers/dashboard-reducer';
 
+import { makeStatusData } from '../../mock/fake-status';
+
 const debug = Debug('Dashboard');
 const DispenserAccordion = React.memo(withSpotlight(DispenserAccordion_));
 const DoorAccordion = React.memo(withSpotlight(DoorAccordion_));
@@ -52,6 +55,7 @@ const borderRadius = 20;
 
 export enum OmniPanelViewIndex {
   MainMenu = 0,
+  Status,
   Doors,
   Lifts,
   Robots,
@@ -97,6 +101,9 @@ const useStyles = makeStyles((theme) => ({
       borderTopRightRadius: borderRadius,
       boxShadow: theme.shadows[12],
     },
+  },
+  online: {
+    color: theme.palette.success.main,
   },
 }));
 
@@ -273,6 +280,29 @@ export default function Dashboard(_props: {}): React.ReactElement {
     [dashboardDispatch, appController],
   );
 
+  const statusIndicators = makeStatusData();
+  let itemIndicator: { [key: string]: boolean };
+  let severityDisplay = true;
+
+  const initialItemIndicator: { [key: string]: boolean } = {
+    doors: true,
+    lifts: true,
+    robots: true,
+    dispensers: true,
+  };
+
+  itemIndicator = React.useMemo(() => {
+    Object.keys(statusIndicators).forEach((category) => {
+      Object.keys(statusIndicators[category]).forEach((item) => {
+        if (!statusIndicators[category][item].state) {
+          initialItemIndicator[category] = false;
+          severityDisplay = false;
+        }
+      });
+    });
+    return initialItemIndicator;
+  }, [statusIndicators]);
+
   return (
     <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
       {buildingMap && (
@@ -302,7 +332,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
           onClose={handleOmniPanelClose}
         >
           <OmniPanelView viewId={OmniPanelViewIndex.MainMenu}>
-            <MainMenu pushView={pushView} />
+            <MainMenu pushView={pushView} severityDisplay={severityDisplay} />
+          </OmniPanelView>
+          <OmniPanelView viewId={OmniPanelViewIndex.Status}>
+            <StatusAccordion statusIndicators={statusIndicators} itemIndicator={itemIndicator} />
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Doors}>
             {doors.map((door) => (

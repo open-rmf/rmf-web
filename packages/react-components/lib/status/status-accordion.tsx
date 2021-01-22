@@ -1,10 +1,20 @@
 import React from 'react';
-import { Accordion, AccordionDetails, makeStyles } from '@material-ui/core';
-import ItemAccordionSummary from '../item-accordion-summary';
-import { StatusCard, StatusIndicator } from './index';
+import {
+  makeStyles,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+  Collapse,
+  Divider,
+  Typography,
+} from '@material-ui/core';
+import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
+import { StatusIndicator } from './index';
 
 export interface StatusAccordionProps {
   statusIndicators: StatusIndicator;
+  itemIndicator: { [key: string]: boolean };
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -15,52 +25,61 @@ const useStyles = makeStyles((theme) => ({
     border: 'none',
   },
   online: {
-    backgroundColor: theme.palette.success.main,
+    color: theme.palette.success.main,
   },
   error: {
-    backgroundColor: theme.palette.error.main,
+    color: theme.palette.error.main,
+  },
+  item: {
+    padding: 0,
+  },
+  nestedList: {
+    paddingLeft: theme.spacing(4),
   },
 }));
 
-export const StatusAccordion = React.forwardRef(
-  (props: StatusAccordionProps, ref: React.Ref<HTMLElement>) => {
-    const classes = useStyles();
-    const { statusIndicators } = props;
-    const [itemIndicator, setItemIndicator] = React.useState<{ [key: string]: boolean }>({});
-    const [serviceIndicatorStyle, setServiceIndicatorStyle] = React.useState(classes.online);
+export const StatusAccordion = (props: StatusAccordionProps): JSX.Element => {
+  const classes = useStyles();
+  const { statusIndicators, itemIndicator } = props;
 
-    React.useEffect(() => {
-      const initialItemIndicator: { [key: string]: boolean } = {
-        doors: true,
-        lifts: true,
-        robots: true,
-        dispensers: true,
-      };
-      Object.keys(statusIndicators).forEach((category) => {
-        Object.keys(statusIndicators[category]).forEach((item) => {
-          if (!statusIndicators[category][item].state) {
-            setServiceIndicatorStyle(classes.error);
-            initialItemIndicator[category] = false;
-            setItemIndicator(initialItemIndicator);
-          }
-        });
-      });
-    }, [statusIndicators, classes.error]);
-
-    return (
-      <Accordion ref={ref}>
-        <ItemAccordionSummary
-          title={'All services are online'}
-          statusProps={{
-            className: `${classes.serviceIndicator} ${serviceIndicatorStyle}`,
-            text: '',
-            variant: 'normal',
-          }}
-        />
-        <AccordionDetails>
-          <StatusCard statusIndicators={statusIndicators} itemIndicator={itemIndicator} />
-        </AccordionDetails>
-      </Accordion>
-    );
-  },
-);
+  return (
+    <List>
+      {Object.keys(statusIndicators).map((category) => {
+        return (
+          <React.Fragment key={category}>
+            <Divider />
+            <ListItem className={classes.item}>
+              <ListItemIcon>
+                <FiberManualRecordIcon
+                  className={itemIndicator[category] ? classes.online : classes.error}
+                />
+              </ListItemIcon>
+              <ListItemText
+                disableTypography
+                primary={<Typography variant="h6">{category}</Typography>}
+              />
+            </ListItem>
+            <Collapse in={true}>
+              <List className={classes.nestedList}>
+                {Object.keys(statusIndicators[category]).map((item) => {
+                  return (
+                    <ListItem key={item} className={classes.item}>
+                      <ListItemIcon>
+                        <FiberManualRecordIcon
+                          className={
+                            statusIndicators[category][item].state ? classes.online : classes.error
+                          }
+                        />
+                      </ListItemIcon>
+                      <ListItemText primary={item} />
+                    </ListItem>
+                  );
+                })}
+              </List>
+            </Collapse>
+          </React.Fragment>
+        );
+      })}
+    </List>
+  );
+};

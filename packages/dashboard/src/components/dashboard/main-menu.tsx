@@ -4,6 +4,7 @@ import React from 'react';
 import DashboardTooltip from 'react-components/lib/tooltip';
 import { TooltipsContext } from '../app-contexts';
 import { OmniPanelViewIndex } from './dashboard';
+import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 
 const debug = Debug('MainMenu');
 
@@ -12,17 +13,27 @@ const useStyles = makeStyles((theme) => ({
     padding: 0,
     backgroundColor: theme.palette.background.paper,
   },
+  online: {
+    color: theme.palette.success.main,
+  },
+  error: {
+    color: theme.palette.error.main,
+  },
 }));
 
 export interface MainMenuProps {
   pushView(view: OmniPanelViewIndex): void;
+  severityDisplay: boolean;
 }
 
 export const MainMenu = React.memo((props: MainMenuProps) => {
   const { showTooltips } = React.useContext(TooltipsContext);
-  const { pushView } = props;
+  const { pushView, severityDisplay } = props;
   debug('render');
   const classes = useStyles();
+  const handleMainMenuStatusClick = React.useCallback(() => {
+    pushView(OmniPanelViewIndex.Status);
+  }, [pushView]);
 
   const handleMainMenuDoorsClick = React.useCallback(() => {
     pushView(OmniPanelViewIndex.Doors);
@@ -54,6 +65,13 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
 
   return (
     <List className={classes.root} data-component="MainMenu">
+      {/**temp */}
+      <ListItem data-item="Status" button={true} onClick={handleMainMenuStatusClick}>
+        <Typography variant="h5">Status</Typography>
+        <FiberManualRecordIcon className={severityDisplay ? classes.online : classes.error} />
+      </ListItem>
+      <Divider />
+
       <ListItem data-item="Doors" button={true} onClick={handleMainMenuDoorsClick}>
         <Typography variant="h5">Doors</Typography>
       </ListItem>
