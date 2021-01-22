@@ -76,7 +76,7 @@ const NotificationDialogHandler = (props: NotificationDialogHandlerProps): JSX.E
   return (
     <>
       <Button variant="contained" onClick={() => setShowDialogBox(true)}>
-        Open Dialog
+        Open Notificatins Dialog box
       </Button>
       <NotificationsDialog
         notifications={notifications}

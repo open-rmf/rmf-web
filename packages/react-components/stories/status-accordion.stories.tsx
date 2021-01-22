@@ -1,16 +1,44 @@
 import React from 'react';
 import { Meta, Story } from '@storybook/react';
-import { StatusAccordion } from '../lib';
+import { StatusAccordion, StatusIndicator } from '../lib';
 
 export default {
   title: 'Status Accordion',
   component: StatusAccordion,
 } as Meta;
 
+const makeStatusData = (): StatusIndicator => {
+  return {
+    doors: {
+      door1: { state: true },
+      door2: { state: false },
+      door3: { state: true },
+    },
+    lifts: {
+      lift1: { state: false },
+      lift2: { state: true },
+      lift3: { state: true },
+      lift4: { state: true },
+    },
+    robots: {
+      robot1: { state: true },
+      robot2: { state: true },
+      robot3: { state: true },
+      robot4: { state: true },
+    },
+    dispensers: {
+      dispenser1: { state: false },
+      dispenser2: { state: false },
+      dispenser3: { state: false },
+      dispenser4: { state: false },
+    },
+  };
+};
+
 export const StatusAccordionDisplay: Story = () => {
   return (
     <>
-      <StatusAccordion />
+      <StatusAccordion statusIndicators={makeStatusData()} />
     </>
   );
 };
