@@ -19,6 +19,10 @@ const useStyles = makeStyles((theme) => ({
   error: {
     color: theme.palette.error.main,
   },
+  statusItem: {
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
 }));
 
 export interface MainMenuProps {
@@ -66,9 +70,17 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
   return (
     <List className={classes.root} data-component="MainMenu">
       {/**temp */}
-      <ListItem data-item="Status" button={true} onClick={handleMainMenuStatusClick}>
+      <ListItem
+        className={classes.statusItem}
+        data-item="Status"
+        button={true}
+        onClick={handleMainMenuStatusClick}
+      >
         <Typography variant="h5">Status</Typography>
-        <FiberManualRecordIcon className={severityDisplay ? classes.online : classes.error} />
+        <FiberManualRecordIcon
+          fontSize="large"
+          className={severityDisplay ? classes.online : classes.error}
+        />
       </ListItem>
       <Divider />
 

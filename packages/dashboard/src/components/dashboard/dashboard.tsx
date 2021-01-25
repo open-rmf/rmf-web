@@ -280,9 +280,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
     [dashboardDispatch, appController],
   );
 
+  // temp code with mock data to display status
   const statusIndicators = makeStatusData();
   let itemIndicator: { [key: string]: boolean };
-  let severityDisplay = true;
+  let severityDisplay = React.useRef(true);
 
   const initialItemIndicator: { [key: string]: boolean } = {
     doors: true,
@@ -296,12 +297,13 @@ export default function Dashboard(_props: {}): React.ReactElement {
       Object.keys(statusIndicators[category]).forEach((item) => {
         if (!statusIndicators[category][item].state) {
           initialItemIndicator[category] = false;
-          severityDisplay = false;
+          severityDisplay.current = false;
         }
       });
     });
     return initialItemIndicator;
   }, [statusIndicators]);
+  // end of temp code
 
   return (
     <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
@@ -332,7 +334,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
           onClose={handleOmniPanelClose}
         >
           <OmniPanelView viewId={OmniPanelViewIndex.MainMenu}>
-            <MainMenu pushView={pushView} severityDisplay={severityDisplay} />
+            <MainMenu pushView={pushView} severityDisplay={severityDisplay.current} />
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Status}>
             <StatusAccordion statusIndicators={statusIndicators} itemIndicator={itemIndicator} />
