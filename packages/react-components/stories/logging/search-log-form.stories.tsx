@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/react';
 import React from 'react';
-import { SearchLogForm } from '../lib';
+import { SearchLogForm } from '../../lib';
 
 export default {
   title: 'Search log Form',

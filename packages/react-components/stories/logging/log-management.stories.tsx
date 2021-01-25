@@ -1,6 +1,6 @@
 import React from 'react';
 import { Story, Meta } from '@storybook/react';
-import { LogManagement } from '../lib';
+import { LogManagement } from '../../lib';
 
 export default {
   title: 'Log Management UI',

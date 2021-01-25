@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/react';
 import React from 'react';
-import { LogTable } from '../lib';
+import { LogTable } from '../../lib';
 
 export default {
   title: 'Log table',

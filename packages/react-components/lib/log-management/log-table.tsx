@@ -50,13 +50,20 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
 
   const getLogLevelStyle = (level: string): string | undefined => {
     level = level.toLowerCase();
-    if (level === LogLevel.Error) return classes.error;
-    if (level === LogLevel.Warn) return classes.warn;
-    if (level === LogLevel.Fatal) return classes.error;
-    if (level === LogLevel.Debug) return classes.debug;
-    if (level === LogLevel.Info) return classes.info;
-
-    return undefined;
+    switch (level) {
+      case LogLevel.Error:
+        return classes.error;
+      case LogLevel.Warn:
+        return classes.warn;
+      case LogLevel.Fatal:
+        return classes.error;
+      case LogLevel.Debug:
+        return classes.debug;
+      case LogLevel.Info:
+        return classes.info;
+      default:
+        return undefined;
+    }
   };
 
   return (
