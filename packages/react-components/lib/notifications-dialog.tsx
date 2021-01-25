@@ -81,6 +81,9 @@ const useStyles = makeStyles((theme) => ({
     padding: '0',
     fontWeight: 600,
   },
+  placeholder: {
+    color: theme.palette.success.main,
+  },
 }));
 
 const severityStyles = makeStyles((theme) => ({
@@ -182,71 +185,75 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
         </IconButton>
       </DialogTitle>
       <DialogContent className={classes.dialogContent} dividers>
-        <div className={classes.filter}>
-          <Select
-            className={classes.select}
-            displayEmpty={true}
-            value={level}
-            onChange={(e) => handleChange(e)}
-            input={<Input />}
-            renderValue={() => (level === '' ? <em>Filter by severity</em> : level)}
-          >
-            {alertLevel.map((level) => {
+        {rmfNotifications.length > 0 ? (
+          <React.Fragment>
+            <div className={classes.filter}>
+              <Select
+                className={classes.select}
+                displayEmpty={true}
+                value={level}
+                onChange={(e) => handleChange(e)}
+                input={<Input />}
+                renderValue={() => (level === '' ? <em>Filter by severity</em> : level)}
+              >
+                {alertLevel.map((level) => {
+                  return (
+                    <MenuItem key={level} value={level}>
+                      {level}
+                    </MenuItem>
+                  );
+                })}
+              </Select>
+              <IconButton onClick={restoreNotifications}>
+                <RestoreIcon />
+              </IconButton>
+            </div>
+
+            <Paper className={classes.paper}>
+              <Typography variant="h6" align="left">
+                Severity
+              </Typography>
+              <Typography variant="h6" align="left">
+                Date
+              </Typography>
+              <Typography variant="h6" align="left">
+                Message
+              </Typography>
+              <Typography variant="h6" align="right">
+                Resolved
+              </Typography>
+            </Paper>
+            {rmfNotifications.map((notification, i) => {
               return (
-                <MenuItem key={level} value={level}>
-                  {level}
-                </MenuItem>
+                <React.Fragment key={notification.time + '_' + i}>
+                  <Paper elevation={3} className={classes.paper}>
+                    <SeverityIndicator
+                      className={classes.indicator}
+                      severity={notification.severity}
+                    />
+                    <Typography variant="body1" align="left">
+                      {notification.time}
+                    </Typography>
+                    <Typography variant="body1" align="left">
+                      {notification.error}
+                    </Typography>
+                    <Typography align="right">
+                      <IconButton
+                        className={classes.checkIcon}
+                        onClick={() => deleteReadNotifications(i)}
+                      >
+                        <CheckIcon />
+                      </IconButton>
+                    </Typography>
+                  </Paper>
+                </React.Fragment>
               );
             })}
-          </Select>
-          <IconButton onClick={restoreNotifications}>
-            <RestoreIcon />
-          </IconButton>
-        </div>
-
-        <Paper className={classes.paper}>
-          <Typography variant="h6" align="left">
-            Severity
-          </Typography>
-          <Typography variant="h6" align="left">
-            Date
-          </Typography>
-          <Typography variant="h6" align="left">
-            Message
-          </Typography>
-          <Typography variant="h6" align="right">
-            Resolved
-          </Typography>
-        </Paper>
-        {rmfNotifications.length > 0 ? (
-          rmfNotifications.map((notification, i) => {
-            return (
-              <React.Fragment key={notification.time + '_' + i}>
-                <Paper elevation={3} className={classes.paper}>
-                  <SeverityIndicator
-                    className={classes.indicator}
-                    severity={notification.severity}
-                  />
-                  <Typography variant="body1" align="left">
-                    {notification.time}
-                  </Typography>
-                  <Typography variant="body1" align="left">
-                    {notification.error}
-                  </Typography>
-                  <Typography align="right">
-                    <IconButton
-                      className={classes.checkIcon}
-                      onClick={() => deleteReadNotifications(i)}
-                    >
-                      <CheckIcon />
-                    </IconButton>
-                  </Typography>
-                </Paper>
-              </React.Fragment>
-            );
-          })
+          </React.Fragment>
         ) : (
-          <Typography variant="body1">All systems green</Typography>
+          <Typography className={classes.placeholder} align="center" variant="h6">
+            All Systems Green
+          </Typography>
         )}
       </DialogContent>
       <DialogActions className={classes.dialogActions}>
