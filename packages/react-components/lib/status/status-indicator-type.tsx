@@ -1,3 +1,4 @@
+// TODO - change typing if backend data is different
 export interface ItemIndicator {
   state: boolean;
 }
