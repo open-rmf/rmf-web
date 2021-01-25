@@ -3,3 +3,5 @@ coverage/
 npm-debug.log
 
 __pycache__/
+logs/
+example-log.log
