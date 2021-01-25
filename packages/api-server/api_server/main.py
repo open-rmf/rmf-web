@@ -1,14 +1,12 @@
-import os
-import os.path
 import subprocess
 
 
 def main():
-    result = subprocess.run(
-        ['flask', 'run'],
-        env={**os.environ, 'FLASK_APP': f'{os.path.dirname(__file__)}/app.py'}
-    )
-    exit(result.returncode)
+    try:
+        result = subprocess.run(['uvicorn', 'api_server.app:app'])
+        exit(result.returncode)
+    except KeyboardInterrupt:
+        pass
 
 
 if __name__ == '__main__':

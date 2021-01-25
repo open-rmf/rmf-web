@@ -1,14 +1,16 @@
+import logging
 import os
-import signal
+import sys
 import threading
-from urllib.parse import urljoin
 
 import rclpy
 from rclpy.node import Node
 
-from flask import Flask
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 
-from .building_map import building_map_blueprint
+from .building_map import building_map_router
+from .repositories.static_files import StaticFilesRepository
 
 
 class MainNode(Node):
@@ -22,31 +24,35 @@ def ros2_thread(node):
     print('leaving ros2 thread')
 
 
-def sigint_handler(signal, frame):
-    '''
-    SIGINT handler
+static_path = '/static'
+static_directory = 'static'
 
-    We have to know when to tell rclpy to shut down, because
-    it's in a child thread which would stall the main thread
-    shutdown sequence. So we use this handler to call
-    rclpy.shutdown() and then call the previously-installed
-    SIGINT handler for Flask
-    '''
+logger = logging.getLogger('app')
+handler = logging.StreamHandler(sys.stdout)
+handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
+logger.addHandler(handler)
+logger.setLevel(logging.INFO)
+
+app = FastAPI()
+os.makedirs(static_directory, exist_ok=True)
+static_files = StaticFiles(directory=static_directory)
+app.mount(static_path, static_files, name='static')
+static_files_repo = StaticFilesRepository(static_path, static_directory)
+ros2_node: Node
+
+
+@app.on_event('startup')
+def start_rclpy():
+    global ros2_node
+    rclpy.init(args=None)
+    ros2_node = MainNode()
+    threading.Thread(target=ros2_thread, args=[ros2_node]).start()
+
+    app.include_router(
+        building_map_router(ros2_node, static_files_repo, logger.getChild('building_map')),
+        prefix='/building_map')
+
+
+@app.on_event('shutdown')
+def shutdown_rclpy():
     rclpy.shutdown()
-    if prev_sigint_handler is not None:
-        prev_sigint_handler(signal)
-
-
-rclpy.init(args=None)
-ros2_node = MainNode()
-app = Flask(__name__)
-if 'RMF_API_APP_ROOT' in os.environ:
-    app.config['APPLICATION_ROOT'] = os.environ['RMF_API_ROOT']
-
-threading.Thread(target=ros2_thread, args=[ros2_node]).start()
-prev_sigint_handler = signal.signal(signal.SIGINT, sigint_handler)
-
-app.register_blueprint(
-    building_map_blueprint(ros2_node),
-    url_prefix='/building_map'
-)

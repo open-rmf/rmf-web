@@ -7,7 +7,7 @@ setup(
     description='RMF api server',
     version='0.0.0',
     packages=['api_server'],
-    install_requires=['flask', 'python-dotenv'],
+    install_requires=['fastapi', 'uvicorn', 'aiofiles'],
     author='Morgan Quigley',
     author_email='morgan@osrfoundation.org',
     maintainer='Morgan Quigley',

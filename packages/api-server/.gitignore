@@ -1,3 +1,3 @@
 /.venv/
 /api_server.egg-info
-/api_server/building_map/static/cache/
+/static
