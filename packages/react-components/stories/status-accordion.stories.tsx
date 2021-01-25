@@ -11,6 +11,7 @@ interface BuilderProps {
   statusIndicators: StatusIndicator;
 }
 
+// temp data for display
 const makeStatusData = (): StatusIndicator => {
   return {
     doors: {
@@ -38,6 +39,7 @@ const makeStatusData = (): StatusIndicator => {
     },
   };
 };
+// end of temp data
 
 const StatusAccordionBuilder = (props: BuilderProps): JSX.Element => {
   const { statusIndicators } = props;

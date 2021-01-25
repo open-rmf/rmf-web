@@ -103,9 +103,6 @@ const useStyles = makeStyles((theme) => ({
       boxShadow: theme.shadows[12],
     },
   },
-  online: {
-    color: theme.palette.success.main,
-  },
 }));
 
 function robotKey(fleet: string, robot: RomiCore.RobotState): string {

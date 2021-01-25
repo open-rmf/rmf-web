@@ -12,6 +12,7 @@ interface NotificationDialogHandlerProps {
   notifications: Notification[];
 }
 
+// temp data for display
 const getDate = () => {
   const date = new Date();
   const dateStr =
@@ -68,6 +69,7 @@ const makeNotifications = (): Notification[] => {
     },
   ];
 };
+// end of temp data
 
 const NotificationDialogHandler = (props: NotificationDialogHandlerProps): JSX.Element => {
   const { notifications } = props;

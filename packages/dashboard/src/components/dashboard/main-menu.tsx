@@ -69,7 +69,6 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
 
   return (
     <List className={classes.root} data-component="MainMenu">
-      {/**temp */}
       <ListItem
         className={classes.statusItem}
         data-item="Status"
