@@ -21,3 +21,4 @@ export * from './trashbin-control-button-group';
 export * from './trashbin-control-button-group-reducer';
 export * from './utils';
 export * from './waypoints';
+export * from './error-overlay';
