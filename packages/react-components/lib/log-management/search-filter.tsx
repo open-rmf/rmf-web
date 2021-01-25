@@ -43,6 +43,6 @@ export const SearchFilter = (props: SearchFilterProps): React.ReactElement => {
 const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
-    minWidth: '200px',
+    minWidth: '230px',
   },
 }));

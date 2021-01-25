@@ -1,6 +1,7 @@
 import { render } from '@testing-library/react';
 import React from 'react';
 import { SearchLogForm } from '../../lib';
+import moment from 'moment';
 
 describe('Search log form tests', () => {
   const logLabel = [
@@ -16,9 +17,10 @@ describe('Search log form tests', () => {
     const root = render(<SearchLogForm logLabelValues={logLabel}></SearchLogForm>);
     expect(root.getByText('ERROR')).toBeTruthy();
     expect(root.getByText('100')).toBeTruthy();
+    const currentDate = moment(new Date().toISOString().substr(0, 16)).format('yyyy/MM/DD HH:mm');
     const fromLogDate = root.container.querySelector('#fromLogDate-datetime-local');
-    expect(fromLogDate?.getAttribute('value')).toBe(new Date().toISOString().substr(0, 16));
+    expect(fromLogDate?.getAttribute('value')).toBe(currentDate);
     const toLogDate = root.container.querySelector('#toLogDate-datetime-local');
-    expect(toLogDate?.getAttribute('value')).toBe(new Date().toISOString().substr(0, 16));
+    expect(toLogDate?.getAttribute('value')).toBe(currentDate);
   });
 });

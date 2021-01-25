@@ -1,9 +1,12 @@
 import React from 'react';
-import { FormControl, makeStyles, TextField } from '@material-ui/core';
+import { FormControl, IconButton, InputAdornment, makeStyles, TextField } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import { SearchFilter } from './search-filter';
 import DateAndTimePickers from '../date-time-picker';
 import { LogLevel } from './log-level';
+
+import moment from 'moment';
+import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 
 interface SearchLogFormProps {
   logLabelValues: { label: string; value: string }[];
@@ -25,28 +28,13 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
   const [logLabel, setLogLabel] = React.useState('');
   const [logLevel, setLogLevel] = React.useState(LogLevel.Error);
   const [rowsCount, setRowsCount] = React.useState(100);
-  const [fromLogDate, setFromLogDate] = React.useState(new Date().toISOString().substr(0, 16));
-  const [toLogDate, setToLogDate] = React.useState(new Date().toISOString().substr(0, 16));
-  const [fromLogDateError, setFromLogDateError] = React.useState('');
-  const [toLogDateError, setToLogDateError] = React.useState('');
+  const nowDateTime = moment(new Date().toISOString().substr(0, 16));
+  const [fromLogDate, setFromLogDate] = React.useState<MaterialUiPickersDate>(nowDateTime);
+  const [toLogDate, setToLogDate] = React.useState<MaterialUiPickersDate>(nowDateTime);
 
   const classes = useStyles();
 
-  const isFormValid = () => {
-    let isValid = true;
-    if (!fromLogDate) {
-      setFromLogDateError('Cannot be empty');
-      isValid = false;
-    }
-    if (!toLogDate) {
-      setToLogDateError('Cannot be empty');
-      isValid = false;
-    }
-    return isValid;
-  };
-
   const searchQuery = () => {
-    if (!isFormValid()) return;
     console.log(searchText, logLabel, logLevel, rowsCount, toLogDate, fromLogDate);
     search && search(searchText, logLabel, logLevel, rowsCount);
   };
@@ -79,23 +67,24 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
     [],
   );
 
-  const handleFromLogDateChange = React.useCallback(
-    (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
-      setFromLogDate(event.target.value as string);
-    },
-    [],
-  );
+  const handleFromLogDateChange = React.useCallback((date: MaterialUiPickersDate) => {
+    setFromLogDate(date);
+  }, []);
 
-  const handleToLogDateChange = React.useCallback(
-    (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
-      setToLogDate(event.target.value as string);
-    },
-    [],
-  );
+  const handleToLogDateChange = React.useCallback((date: MaterialUiPickersDate) => {
+    setToLogDate(date);
+  }, []);
 
   return (
     <>
       <div className={classes.searchForm}>
+        <DateAndTimePickers
+          name="fromLogDate"
+          label="From"
+          value={fromLogDate}
+          onChange={handleFromLogDateChange}
+        ></DateAndTimePickers>
+
         <FormControl variant="outlined" className={classes.formControl}>
           <TextField
             onChange={(e) => {
@@ -117,29 +106,20 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
           currentValue={logLabel}
         ></SearchFilter>
 
+        <DateAndTimePickers
+          name="toLogDate"
+          label="To"
+          value={toLogDate}
+          onChange={handleToLogDateChange}
+        ></DateAndTimePickers>
+
         <SearchFilter
           options={logLevelValues}
           name="log-level"
           label="Pick Log Level"
           handleOnChange={handleLogLevelChange}
           currentValue={logLevel}
-        ></SearchFilter>
-
-        <DateAndTimePickers
-          name="fromLogDate"
-          label="From"
-          date={fromLogDate}
-          error={fromLogDateError}
-          handleDateChange={handleFromLogDateChange}
-        ></DateAndTimePickers>
-
-        <DateAndTimePickers
-          name="toLogDate"
-          label="To"
-          error={toLogDateError}
-          date={toLogDate}
-          handleDateChange={handleToLogDateChange}
-        ></DateAndTimePickers>
+        />
 
         <SearchFilter
           options={rowsCountValues}

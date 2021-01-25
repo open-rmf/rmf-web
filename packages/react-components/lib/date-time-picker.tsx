@@ -1,6 +1,11 @@
 import React from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
+import {
+  DateTimePickerProps,
+  KeyboardDateTimePicker,
+  MuiPickersUtilsProvider,
+} from '@material-ui/pickers';
+import MomentUtils from '@date-io/moment';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -16,32 +21,21 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-interface DateTimePickerProps {
-  date?: string;
-  error?: string;
-  handleDateChange: (event: React.ChangeEvent<{ name?: string; value: unknown }>) => void;
-  label: string;
-  name: string;
-}
-
 export default function DateAndTimePickers(props: DateTimePickerProps): React.ReactElement {
   const classes = useStyles();
-  const { name, label, date, error, handleDateChange } = props;
+  const { name, label, value, error, ...rest } = props;
   return (
-    <form className={classes.container} noValidate>
-      <TextField
+    <MuiPickersUtilsProvider utils={MomentUtils}>
+      <KeyboardDateTimePicker
         id={`${name}-datetime-local`}
+        value={value ? value : new Date().toISOString().substr(0, 16)}
         label={label}
-        type="datetime-local"
-        value={date ? date : new Date().toISOString().substr(0, 16)}
-        className={classes.textField}
-        error={!!error}
-        helperText={error}
-        onChange={(e) => handleDateChange(e)}
-        InputLabelProps={{
-          shrink: true,
-        }}
+        format="yyyy/MM/DD HH:mm"
+        inputVariant="outlined"
+        variant="inline"
+        ampm={false}
+        {...rest}
       />
-    </form>
+    </MuiPickersUtilsProvider>
   );
 }
