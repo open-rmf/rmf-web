@@ -130,8 +130,10 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
 
   const [level, setLevel] = React.useState('');
   const [rmfNotifications, setRmfNotifications] = React.useState(notifications);
+  // a copy of rmfNotifications
+  // ensure notifications can be restored to correct state after filtering
   const [notficationsCopy, setNotificationsCopy] = React.useState(notifications);
-
+  // list of alert level to for filtering
   const alertLevel = React.useMemo(() => {
     const holder: string[] = [];
     notifications.forEach((notification) => {
@@ -142,6 +144,7 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
     return holder;
   }, [notifications]);
 
+  // handle filter change
   const handleChange = (e: React.ChangeEvent<SelectChangeEvent>) => {
     const val = e.target.value as string;
     setLevel(val);
@@ -155,15 +158,18 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
     setRmfNotifications(filterNotifications);
   };
 
+  // restore filtered notifications
   const restoreNotifications = () => {
     setRmfNotifications(notficationsCopy);
   };
 
+  // delete notifications once marked read
   const deleteReadNotifications = (i: number) => {
     const beforeIndex = rmfNotifications.slice(0, i);
     const afterIndex = rmfNotifications.slice(i + 1);
     const newNotifications = beforeIndex.concat(afterIndex);
     setRmfNotifications(newNotifications);
+    // update notificationsCopy to ensure consistent state after with rmfNotifications
     setNotificationsCopy(newNotifications);
   };
 

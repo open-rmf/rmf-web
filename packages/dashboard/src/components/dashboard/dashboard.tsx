@@ -284,7 +284,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
   // temp code with mock data to display status
   // data structure of the notifications is to be determined
   const statusIndicators = makeStatusData();
+  // itemIndicator is used to determine color of the outer dot
   let itemIndicator: { [key: string]: boolean };
+  // used to determine the color of omnipanel main menu indicator
+  // and background color of status card header
   let severityDisplay = React.useRef(true);
 
   itemIndicator = React.useMemo(() => {
@@ -294,6 +297,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
       robots: true,
       dispensers: true,
     };
+    // reset serverityDisplay to true every render
     severityDisplay.current = true;
     Object.keys(statusIndicators).forEach((category) => {
       Object.keys(statusIndicators[category]).forEach((item) => {

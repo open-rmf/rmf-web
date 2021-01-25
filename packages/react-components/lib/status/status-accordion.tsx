@@ -65,6 +65,7 @@ export const StatusAccordion = (props: StatusAccordionProps): JSX.Element => {
   const classes = useStyles();
   const { statusIndicators, itemIndicator, severityDisplay } = props;
 
+  // background color of status card header
   const getStatusLabel = (severityDisplay: boolean): string => {
     return severityDisplay
       ? `
@@ -72,6 +73,7 @@ export const StatusAccordion = (props: StatusAccordionProps): JSX.Element => {
       : `${classes.cardTypography} ${classes.cardTypographyWarning}`;
   };
 
+  // top message on the status card header
   const getStatusMessage = (severityDisplay: boolean): string => {
     return severityDisplay ? 'All systems up' : 'Some services might be down';
   };
