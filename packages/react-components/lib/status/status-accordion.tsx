@@ -17,7 +17,7 @@ import { StatusIndicator } from './index';
 
 export interface StatusAccordionProps {
   statusIndicators: StatusIndicator;
-  itemIndicator: { [key: string]: boolean };
+  itemState: { [key: string]: boolean };
   severityDisplay: boolean;
 }
 
@@ -63,8 +63,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const StatusAccordion = (props: StatusAccordionProps): JSX.Element => {
   const classes = useStyles();
-  const { statusIndicators, itemIndicator, severityDisplay } = props;
-
+  const { statusIndicators, itemState, severityDisplay } = props;
   // background color of status card header
   const getStatusLabel = (severityDisplay: boolean): string => {
     return severityDisplay
@@ -100,7 +99,7 @@ export const StatusAccordion = (props: StatusAccordionProps): JSX.Element => {
                 <ListItemIcon className={classes.listItemIcon}>
                   <FiberManualRecordIcon
                     fontSize="small"
-                    className={itemIndicator[category] ? classes.online : classes.error}
+                    className={itemState[category] ? classes.online : classes.error}
                   />
                 </ListItemIcon>
                 <ListItemText

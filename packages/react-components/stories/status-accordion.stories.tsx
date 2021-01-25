@@ -1,11 +1,15 @@
 import React from 'react';
 import { Meta, Story } from '@storybook/react';
-import { StatusAccordion, StatusIndicator, StatusPanelProps } from '../lib';
+import { StatusAccordion, StatusIndicator } from '../lib';
 
 export default {
   title: 'Status Accordion',
   component: StatusAccordion,
 } as Meta;
+
+interface BuilderProps {
+  statusIndicators: StatusIndicator;
+}
 
 const makeStatusData = (): StatusIndicator => {
   return {
@@ -35,28 +39,37 @@ const makeStatusData = (): StatusIndicator => {
   };
 };
 
-const StatusAccordionBuilder = (props: StatusPanelProps): JSX.Element => {
+const StatusAccordionBuilder = (props: BuilderProps): JSX.Element => {
   const { statusIndicators } = props;
-  const [itemIndicator, setItemIndicator] = React.useState<{ [key: string]: boolean }>({});
 
-  React.useEffect(() => {
-    const initialItemIndicator: { [key: string]: boolean } = {
+  const severityDisplay = React.useRef(true);
+  const itemState = React.useMemo(() => {
+    const initialItemState: { [key: string]: boolean } = {
       doors: true,
       lifts: true,
       robots: true,
       dispensers: true,
     };
+    // reset serverityDisplay to true every render
+    severityDisplay.current = true;
     Object.keys(statusIndicators).forEach((category) => {
       Object.keys(statusIndicators[category]).forEach((item) => {
         if (!statusIndicators[category][item].state) {
-          initialItemIndicator[category] = false;
-          setItemIndicator(initialItemIndicator);
+          initialItemState[category] = false;
+          severityDisplay.current = false;
         }
       });
     });
+    return initialItemState;
   }, [statusIndicators]);
 
-  return <StatusAccordion statusIndicators={makeStatusData()} itemIndicator={itemIndicator} />;
+  return (
+    <StatusAccordion
+      statusIndicators={makeStatusData()}
+      itemState={itemState}
+      severityDisplay={severityDisplay.current}
+    />
+  );
 };
 
 export const StatusAccordionDisplay: Story = () => {
