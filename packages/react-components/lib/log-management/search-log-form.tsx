@@ -10,7 +10,14 @@ import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 
 interface SearchLogFormProps {
   logLabelValues: { label: string; value: string }[];
-  search?: (searchText: string, logLabel: string, logLevel: string, rowsCount: number) => void;
+  search?: (
+    toLogDate: string,
+    fromLogDate: string,
+    searchText: string,
+    logLabel: string,
+    logLevel: string,
+    rowsCount: number,
+  ) => void;
 }
 
 const logLevelValues = [
@@ -35,8 +42,7 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
   const classes = useStyles();
 
   const searchQuery = () => {
-    console.log(searchText, logLabel, logLevel, rowsCount, toLogDate, fromLogDate);
-    search && search(searchText, logLabel, logLevel, rowsCount);
+    search && search(toLogDate, fromLogDate, searchText, logLabel, logLevel, rowsCount);
   };
 
   const rowsCountValues = [

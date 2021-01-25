@@ -11,8 +11,17 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+export interface LogQueryPayload {
+  toLogDate: string;
+  fromLogDate: string;
+  searchText: string;
+  sourceLog: string;
+  logLevel: string;
+  rowsCount: number;
+}
+
 export interface LogManagementProps {
-  getLogs: () => Promise<LogRowsType>;
+  getLogs: (data: LogQueryPayload) => Promise<LogRowsType>;
   getLabels: () => Promise<{ label: string; value: string }[]>;
 }
 
@@ -32,18 +41,22 @@ export const LogManagement = (props: LogManagementProps): React.ReactElement => 
   }, []);
 
   const searchLogs = async (
+    toLogDate: string,
+    fromLogDate: string,
     searchText: string,
     sourceLog: string,
     logLevel: string,
     rowsCount: number,
   ) => {
     const payload = {
-      searchText: searchText,
-      sourceLog: sourceLog,
-      logLevel: logLevel,
-      rowsCount: rowsCount,
+      toLogDate,
+      fromLogDate,
+      searchText,
+      sourceLog,
+      logLevel,
+      rowsCount,
     };
-    setLogs(await getLogs());
+    setLogs(await getLogs(payload));
   };
 
   return (
