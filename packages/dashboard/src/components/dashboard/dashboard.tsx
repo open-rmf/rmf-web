@@ -40,6 +40,7 @@ import MainMenu from './main-menu';
 import NegotiationsPanel from './negotiations-panel';
 import OmniPanelControl_ from './omnipanel-control';
 import { DashboardState, useDashboardReducer } from './reducers/dashboard-reducer';
+import { DispenserResource } from '../../managers/resource-manager-dispensers';
 
 const debug = Debug('Dashboard');
 const DispenserAccordion = React.memo(withSpotlight(DispenserAccordion_));
@@ -197,9 +198,9 @@ export default function Dashboard(_props: {}): React.ReactElement {
     },
     [dispenserAccordionRefs, pushView, setShowOmniPanel],
   );
-  let dispensers: string[] | undefined;
+  let dispensers: Record<string, DispenserResource> | undefined;
   if (resourceManager && resourceManager.dispensers) {
-    dispensers = Object.keys(resourceManager.dispensers.dispensers);
+    dispensers = resourceManager.dispensers.dispensers;
   }
 
   const fleetStates = React.useContext(FleetStateContext);
@@ -342,10 +343,14 @@ export default function Dashboard(_props: {}): React.ReactElement {
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Dispensers}>
             {dispensers
-              ? dispensers.map((dispenser) => (
+              ? Object.keys(dispensers).map((dispenser) => (
                   <DispenserAccordion
                     key={dispenser}
-                    ref={dispenserAccordionRefs[dispenser].ref}
+                    ref={
+                      dispenserStates[dispenser]
+                        ? dispenserAccordionRefs[dispenserStates[dispenser].guid].ref
+                        : null
+                    }
                     dispenserState={dispenserStates[dispenser] ? dispenserStates[dispenser] : null}
                     data-component="DispenserAccordion"
                     dispenser={dispenser}
