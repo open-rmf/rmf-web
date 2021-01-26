@@ -17,7 +17,7 @@ const getLogs = () => {
   for (let i = 0; i < 200; i++) {
     rows.push({
       message: 'Test' + i,
-      level: 'WARN',
+      level: 'Warn',
       timestamp: 'Mon Jan  1 00:00:02 UTC 2001',
     });
   }
@@ -38,7 +38,8 @@ export const SimpleSearchLogForm: Story = (args) => (
 export const SimpleLogTable: Story = (args) => {
   const logs = getLogs();
   logs.unshift({
-    message: `npm ERR! code ELIFECYCLE
+    message: `
+    npm ERR! code ELIFECYCLE
     npm ERR! errno 1
     npm ERR! react-components@0.0.1 build: 'npm run lint && tsc --build'
     npm ERR! Exit status 1
@@ -49,6 +50,11 @@ export const SimpleLogTable: Story = (args) => {
     npm ERR! A complete log of this run can be found in:
     npm ERR!     /home/ekumen/.npm/_logs/2021-01-18T21_20_07_480Z-debug.log`,
     level: 'Error',
+    timestamp: 'Mon Jan  1 00:00:01 UTC 2001',
+  });
+  logs.unshift({
+    message: `long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long msg`,
+    level: 'Debug',
     timestamp: 'Mon Jan  1 00:00:01 UTC 2001',
   });
 

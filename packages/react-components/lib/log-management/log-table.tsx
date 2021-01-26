@@ -7,7 +7,6 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  TableFooter,
   TablePagination,
 } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
@@ -22,6 +21,19 @@ export interface LogTableProps {
 const useStyles = makeStyles((theme) => ({
   table: {
     minWidth: 650,
+  },
+  container: {
+    maxHeight: '55vh',
+  },
+  root: {
+    width: '100%',
+  },
+  dateColumn: {
+    minWidth: '140px',
+  },
+  textColumn: {
+    whiteSpace: 'pre-wrap',
+    wordWrap: 'break-word',
   },
   error: {
     color: theme.palette.error.main,
@@ -76,55 +88,60 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
   };
 
   return (
-    <TableContainer component={Paper}>
-      <Table className={classes.table} size="small" stickyHeader={true} aria-label="sticky table">
-        <TableHead>
-          <TableRow>
-            <TableCell align="left">Level</TableCell>
-            <TableCell align="left">Message</TableCell>
-            <TableCell align="right">Timestamp</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {(rowsPerPage > 0
-            ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            : rows
-          ).map((row) => (
-            <TableRow key={row.message + row.timestamp}>
-              <TableCell align="left" className={getLogLevelStyle(row.level)}>
-                {row.level}
-              </TableCell>
-              <TableCell align="left">{row.message}</TableCell>
-              <TableCell align="right" data-testid={'log-table-date'}>
-                {moment(row.timestamp).format('lll')}
-              </TableCell>
+    <Paper className={classes.root}>
+      <TableContainer className={classes.container}>
+        <Table className={classes.table} size="small" stickyHeader={true} aria-label="sticky table">
+          <TableHead>
+            <TableRow>
+              <TableCell align="left">Level</TableCell>
+              <TableCell align="left">Message</TableCell>
+              <TableCell align="right">Timestamp</TableCell>
             </TableRow>
-          ))}
-          {emptyRows > 0 && (
-            <TableRow style={{ height: 53 * emptyRows }}>
-              <TableCell colSpan={6} />
-            </TableRow>
-          )}
-        </TableBody>
-        <TableFooter>
-          <TableRow>
-            <TablePagination
-              rowsPerPageOptions={[50, 100, 200, { label: 'All', value: -1 }]}
-              colSpan={5}
-              count={rows.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              SelectProps={{
-                inputProps: { 'aria-label': 'rows per page' },
-                native: true,
-              }}
-              onChangePage={handleChangePage}
-              onChangeRowsPerPage={handleChangeRowsPerPage}
-              ActionsComponent={TablePaginationActions}
-            />
-          </TableRow>
-        </TableFooter>
-      </Table>
-    </TableContainer>
+          </TableHead>
+          <TableBody>
+            {(rowsPerPage > 0
+              ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              : rows
+            ).map((row) => (
+              <TableRow key={row.message + row.timestamp}>
+                <TableCell align="left" className={getLogLevelStyle(row.level)}>
+                  {row.level}
+                </TableCell>
+                <TableCell align="left" className={classes.textColumn}>
+                  {' '}
+                  {row.message}
+                </TableCell>
+                <TableCell
+                  className={classes.dateColumn}
+                  align="right"
+                  data-testid={'log-table-date'}
+                >
+                  {moment(row.timestamp).format('lll')}
+                </TableCell>
+              </TableRow>
+            ))}
+            {emptyRows > 0 && (
+              <TableRow style={{ height: 53 * emptyRows }}>
+                <TableCell colSpan={6} />
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <TablePagination
+        rowsPerPageOptions={[50, 100, 200, { label: 'All', value: -1 }]}
+        colSpan={5}
+        count={rows.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        SelectProps={{
+          inputProps: { 'aria-label': 'rows per page' },
+          native: true,
+        }}
+        onChangePage={handleChangePage}
+        onChangeRowsPerPage={handleChangeRowsPerPage}
+        ActionsComponent={TablePaginationActions}
+      />
+    </Paper>
   );
 };
