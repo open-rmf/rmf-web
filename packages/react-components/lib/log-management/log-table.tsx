@@ -34,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
   textColumn: {
     whiteSpace: 'pre-wrap',
     wordWrap: 'break-word',
+    minWidth: '60vw',
   },
   error: {
     color: theme.palette.error.main,
@@ -93,9 +94,9 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
         <Table className={classes.table} size="small" stickyHeader={true} aria-label="sticky table">
           <TableHead>
             <TableRow>
-              <TableCell align="left">Level</TableCell>
-              <TableCell align="left">Message</TableCell>
-              <TableCell align="right">Timestamp</TableCell>
+              <TableCell align="center">Level</TableCell>
+              <TableCell align="center">Message</TableCell>
+              <TableCell align="center">Timestamp</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -104,16 +105,15 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
               : rows
             ).map((row) => (
               <TableRow key={row.message + row.timestamp}>
-                <TableCell align="left" className={getLogLevelStyle(row.level)}>
+                <TableCell align="center" className={getLogLevelStyle(row.level)}>
                   {row.level}
                 </TableCell>
                 <TableCell align="left" className={classes.textColumn}>
-                  {' '}
                   {row.message}
                 </TableCell>
                 <TableCell
                   className={classes.dateColumn}
-                  align="right"
+                  align="center"
                   data-testid={'log-table-date'}
                 >
                   {moment(row.timestamp).format('lll')}
