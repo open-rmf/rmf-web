@@ -30,7 +30,7 @@ export interface NotificationDialogProps {
 }
 
 interface SelectChangeEvent {
-  ame?: string | undefined;
+  name?: string | undefined;
   value: unknown;
 }
 
@@ -133,7 +133,7 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
   // a copy of rmfNotifications
   // ensure notifications can be restored to correct state after filtering
   const [notficationsCopy, setNotificationsCopy] = React.useState(notifications);
-  // list of alert level to for filtering
+  // list of alert level for filtering
   const alertLevel = React.useMemo(() => {
     const holder: string[] = [];
     notifications.forEach((notification) => {
@@ -169,7 +169,7 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
     const afterIndex = rmfNotifications.slice(i + 1);
     const newNotifications = beforeIndex.concat(afterIndex);
     setRmfNotifications(newNotifications);
-    // update notificationsCopy to ensure consistent state after with rmfNotifications
+    // update notificationsCopy to ensure consistent state with rmfNotifications
     setNotificationsCopy(newNotifications);
   };
 
