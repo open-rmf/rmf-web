@@ -1,8 +1,17 @@
 import React from 'react';
 import TableContainer from '@material-ui/core/TableContainer';
-import { makeStyles, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
+import {
+  makeStyles,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  TableFooter,
+  TablePagination,
+} from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
-import { TableFooterPagination } from '../tables';
+import TablePaginationActions from '@material-ui/core/TablePagination/TablePaginationActions';
 import { LogLevel } from '.';
 import moment from 'moment';
 
@@ -97,13 +106,24 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
             </TableRow>
           )}
         </TableBody>
-        <TableFooterPagination
-          count={rows.length}
-          rowsPerPage={rowsPerPage}
-          currentPage={page}
-          onChangePage={handleChangePage}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
-        />
+        <TableFooter>
+          <TableRow>
+            <TablePagination
+              rowsPerPageOptions={[50, 100, 200, { label: 'All', value: -1 }]}
+              colSpan={5}
+              count={rows.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              SelectProps={{
+                inputProps: { 'aria-label': 'rows per page' },
+                native: true,
+              }}
+              onChangePage={handleChangePage}
+              onChangeRowsPerPage={handleChangeRowsPerPage}
+              ActionsComponent={TablePaginationActions}
+            />
+          </TableRow>
+        </TableFooter>
       </Table>
     </TableContainer>
   );
