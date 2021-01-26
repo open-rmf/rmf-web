@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'packages/ros2-bridge'
 env:
   CI: true
 jobs:
