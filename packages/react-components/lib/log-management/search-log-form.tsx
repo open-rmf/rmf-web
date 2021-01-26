@@ -1,5 +1,5 @@
 import React from 'react';
-import { FormControl, IconButton, InputAdornment, makeStyles, TextField } from '@material-ui/core';
+import { FormControl, makeStyles, TextField } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import { SearchFilter } from './search-filter';
 import DateAndTimePickers from '../date-time-picker';
@@ -11,8 +11,8 @@ import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 interface SearchLogFormProps {
   logLabelValues: { label: string; value: string }[];
   search?: (
-    toLogDate: string,
-    fromLogDate: string,
+    toLogDate: moment.Moment,
+    fromLogDate: moment.Moment,
     searchText: string,
     logLabel: string,
     logLevel: string,
@@ -42,6 +42,9 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
   const classes = useStyles();
 
   const searchQuery = () => {
+    if (!toLogDate || !fromLogDate) {
+      return;
+    }
     search && search(toLogDate, fromLogDate, searchText, logLabel, logLevel, rowsCount);
   };
 

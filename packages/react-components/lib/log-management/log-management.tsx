@@ -12,8 +12,8 @@ const useStyles = makeStyles(() => ({
 }));
 
 export interface LogQueryPayload {
-  toLogDate: string;
-  fromLogDate: string;
+  toLogDate: moment.Moment;
+  fromLogDate: moment.Moment;
   searchText: string;
   sourceLog: string;
   logLevel: string;
@@ -38,11 +38,11 @@ export const LogManagement = (props: LogManagementProps): React.ReactElement => 
       setLogLabels(labels);
     };
     getLogLabels();
-  }, []);
+  }, [getLabels]);
 
   const searchLogs = async (
-    toLogDate: string,
-    fromLogDate: string,
+    toLogDate: moment.Moment,
+    fromLogDate: moment.Moment,
     searchText: string,
     sourceLog: string,
     logLevel: string,

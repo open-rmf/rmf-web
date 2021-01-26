@@ -7,7 +7,7 @@ import {
 import MomentUtils from '@date-io/moment';
 
 export default function DateAndTimePickers(props: DateTimePickerProps): React.ReactElement {
-  const { name, label, value, error, ...rest } = props;
+  const { name, label, value, ...rest } = props;
   return (
     <MuiPickersUtilsProvider utils={MomentUtils}>
       <KeyboardDateTimePicker
