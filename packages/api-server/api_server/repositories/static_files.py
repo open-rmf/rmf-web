@@ -23,7 +23,6 @@ class StaticFilesRepository():
         '''
         filepath = f'{self.directory}/{path}'
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
-        print(filepath)
         with open(filepath, 'bw') as f:
             f.write(data)
         urlpath = f'{self.path}/{path}'
