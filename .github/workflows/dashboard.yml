@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+  schedule:
+    # 2am SGT
+    - cron: '0 18 * * *'
 env:
   CI: true
 jobs:
@@ -42,9 +45,34 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: dashboard
+  build-docker-images:
+    name: Push Docker images to GitHub Packages
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    steps:
+      - uses: actions/checkout@v2
+      - name: Push rmf image to GitHub Packages
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          repository: ${{ github.repository }}/rmf
+          tags: nightly
+          path: packages/dashboard/docker/rmf
+      - name: Push e2e image to GitHub Packages
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          repository: ${{ github.repository }}/e2e
+          tags: latest
+          dockerfile: packages/dashboard/docker/e2e.Dockerfile
   e2e-tests:
     name: End-to-End Tests
     runs-on: ubuntu-latest
+    needs: build-docker-images
     container:
       image: docker.pkg.github.com/osrf/rmf-web/e2e
       credentials:
