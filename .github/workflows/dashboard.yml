@@ -42,42 +42,43 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: dashboard
-  # e2e-test:
-  #   name: End-to-End Test
-  #   runs-on: ubuntu-latest
-  #   container:
-  #     image: docker.pkg.github.com/osrf/rmf-web/e2e
-  #     credentials:
-  #       username: ${{ github.repository_owner }}
-  #       password: ${{ secrets.GITHUB_TOKEN }}
-  #     options: --privileged --ipc=host
-  #   defaults: 
-  #     run:
-  #       shell: bash
-  #       working-directory: packages/dashboard
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: actions/setup-node@v1
-  #       with:
-  #         node-version: 12
-  #     - name: bootstrap
-  #       run: |
-  #         . /opt/rmf/setup.bash
-  #         npm config set unsafe-perm
-  #         npm run bootstrap -- packages/dashboard
-  #         docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
-  #         cd packages/dashboard
-  #         npm run sync:docker
-  #         cd e2e
-  #         npm ci
-  #       working-directory: .
-  #     - name: e2e test
-  #       run: |
-  #         . /opt/rmf/setup.bash
-  #         cd e2e && (npm test || npm test || npm test)
-  #     - name: upload artifacts
-  #       uses: actions/upload-artifact@v2
-  #       if: ${{ always() }}
-  #       with:
-  #         name: screenshots
-  #         path: e2e/artifacts
+  e2e-tests:
+    name: End-to-End Tests
+    runs-on: ubuntu-latest
+    container:
+      image: docker.pkg.github.com/osrf/rmf-web/e2e
+      credentials:
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+      options: --privileged --ipc=host
+    defaults: 
+      run:
+        shell: bash
+        working-directory: packages/dashboard
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - name: bootstrap
+        run: |
+          . /opt/rmf/setup.bash
+          npm config set unsafe-perm
+          npm run bootstrap -- packages/dashboard
+          docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
+          cd packages/dashboard
+          npm run sync:docker
+          cd e2e
+          npm ci
+        working-directory: .
+      - name: e2e test
+        run: |
+          . /opt/rmf/setup.bash
+          cd e2e && (npm test || npm test || npm test)
+        continue-on-error: true
+      - name: upload artifacts
+        uses: actions/upload-artifact@v2
+        if: ${{ always() }}
+        with:
+          name: screenshots
+          path: e2e/artifacts
