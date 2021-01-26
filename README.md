@@ -1,5 +1,4 @@
-[![Nightly](https://github.com/osrf/rmf-web/workflows/Nightly/badge.svg)](https://github.com/osrf/rmf-web/actions?query=workflow%3ANightly)
-[![codecov](https://codecov.io/gh/osrf/rmf-web/branch/main/graph/badge.svg)](https://codecov.io/gh/osrf/rmf-web)
+[![End-to-End](https://github.com/osrf/rmf-web/workflows/End-to-End/badge.svg?branch=main)](https://github.com/osrf/rmf-web/workflows/End-to-End/badge.svg?branch=main) [![ros2-bridge](https://github.com/osrf/rmf-web/workflows/ros2-bridge/badge.svg?branch=main)](https://github.com/osrf/rmf-web/workflows/ros2-bridge/badge.svg?branch=main) [![react-components](https://github.com/osrf/rmf-web/workflows/react-components/badge.svg?branch=main)](https://github.com/osrf/rmf-web/workflows/react-components/badge.svg?branch=main) [![dashboard](https://github.com/osrf/rmf-web/workflows/dashboard/badge.svg?branch=main)](https://github.com/osrf/rmf-web/workflows/dashboard/badge.svg?branch=main) [![codecov](https://codecov.io/gh/osrf/rmf-web/branch/main/graph/badge.svg)](https://codecov.io/gh/osrf/rmf-web)
 
 # Running the Dashboard
 
