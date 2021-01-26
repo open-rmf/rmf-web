@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'packages/dashboard'
+      - 'packages/dashboard/**'
 env:
   CI: true
 jobs:

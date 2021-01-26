@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'packages/react-components'
+      - 'packages/react-components/**'
 env:
   CI: true
 jobs:
