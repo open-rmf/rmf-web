@@ -69,7 +69,6 @@ jobs:
         run: |
           . /opt/rmf/setup.bash
           cd e2e && (npm test || npm test || npm test)
-        continue-on-error: true
       - name: upload artifacts
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
