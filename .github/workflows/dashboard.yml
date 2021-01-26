@@ -72,6 +72,7 @@ jobs:
   e2e-tests:
     name: End-to-End Tests
     runs-on: ubuntu-latest
+    if: always()
     needs: build-docker-images
     container:
       image: docker.pkg.github.com/osrf/rmf-web/e2e
