@@ -142,7 +142,7 @@ def main():
     for pkg in packages:
         pkg_spec = PackageSpec(pkg, parse_package(pkg))
         mixins = gen_mixin(pkg_spec)
-        outfile = f'{args.output}/{pkg}_mixins.py'
+        outfile = f'{args.output}/{pkg}.py'
         with open(outfile, 'w') as f:
             f.write(mixins)
         print(outfile)
