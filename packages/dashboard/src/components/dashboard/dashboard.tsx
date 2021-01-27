@@ -37,7 +37,7 @@ import ScheduleVisualizer, { ScheduleVisualizerProps } from '../schedule-visuali
 import { SpotlightValue } from '../spotlight-value';
 import TaskSummaryPanel from './task-summary-panel';
 import CommandsPanel from './commands-panel';
-import MainMenu from './main-menu';
+import MainMenu, { ItemState } from './main-menu';
 import NegotiationsPanel from './negotiations-panel';
 import OmniPanelControl_ from './omnipanel-control';
 import { DashboardState, useDashboardReducer } from './reducers/dashboard-reducer';
@@ -278,35 +278,42 @@ export default function Dashboard(_props: {}): React.ReactElement {
     [dashboardDispatch, appController],
   );
 
-  // temp code with mock data to display status
-  // data structure of the notifications is to be determined
-  const statusIndicators = makeStatusData();
-  // itemIndicator is used to determine color of the outer dot
-  let itemState: { [key: string]: boolean };
-  // used to determine the color of omnipanel main menu indicator
-  // and background color of status card header
-  let severityDisplay = React.useRef(true);
+  const itemStates: ItemState = {
+    doors: doorStates,
+    lifts: liftStates,
+    robots: fleetStates,
+    dispensers: dispenserStates,
+  };
 
-  itemState = React.useMemo(() => {
-    const initialItemState: { [key: string]: boolean } = {
-      doors: true,
-      lifts: true,
-      robots: true,
-      dispensers: true,
-    };
-    // reset serverityDisplay to true every render
-    severityDisplay.current = true;
-    Object.keys(statusIndicators).forEach((category) => {
-      Object.keys(statusIndicators[category]).forEach((item) => {
-        if (!statusIndicators[category][item].state) {
-          initialItemState[category] = false;
-          severityDisplay.current = false;
-        }
-      });
-    });
-    return initialItemState;
-  }, [statusIndicators]);
-  // end of temp code
+  // // temp code with mock data to display status
+  // // data structure of the notifications is to be determined
+  // const statusIndicators = makeStatusData();
+  // // itemIndicator is used to determine color of the outer dot
+  // let itemState: { [key: string]: boolean };
+  // // used to determine the color of omnipanel main menu indicator
+  // // and background color of status card header
+  // let severityDisplay = React.useRef(true);
+
+  // itemState = React.useMemo(() => {
+  //   const initialItemState: { [key: string]: boolean } = {
+  //     doors: true,
+  //     lifts: true,
+  //     robots: true,
+  //     dispensers: true,
+  //   };
+  //   // reset serverityDisplay to true every render
+  //   severityDisplay.current = true;
+  //   Object.keys(statusIndicators).forEach((category) => {
+  //     Object.keys(statusIndicators[category]).forEach((item) => {
+  //       if (!statusIndicators[category][item].state) {
+  //         initialItemState[category] = false;
+  //         severityDisplay.current = false;
+  //       }
+  //     });
+  //   });
+  //   return initialItemState;
+  // }, [statusIndicators]);
+  // // end of temp code
 
   return (
     <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
@@ -337,17 +344,8 @@ export default function Dashboard(_props: {}): React.ReactElement {
           onClose={handleOmniPanelClose}
         >
           <OmniPanelView viewId={OmniPanelViewIndex.MainMenu}>
-            <MainMenu pushView={pushView} severityDisplay={severityDisplay.current} />
+            <MainMenu pushView={pushView} itemState={itemStates} />
           </OmniPanelView>
-          {/** temp */}
-          <OmniPanelView viewId={OmniPanelViewIndex.Status}>
-            <StatusAccordion
-              statusIndicators={statusIndicators}
-              itemState={itemState}
-              severityDisplay={severityDisplay.current}
-            />
-          </OmniPanelView>
-          {/** end of temp */}
           <OmniPanelView viewId={OmniPanelViewIndex.Doors}>
             {doors.map((door) => (
               <DoorAccordion
