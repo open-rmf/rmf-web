@@ -13,17 +13,36 @@ Now let's activate the Python virtual environment and install all sorts of thing
 pip3 install -e .
 ```
 
-# Run development server
+# Run the server
 
 ```bash
-./run.sh
+rmf_api_server
+```
+
+## Configuration
+
+Config files are python modules that export a variable named `config`. See [default_config.py](api_server/default_config.py) for an example and list of the options available. All options are REQUIRED unless specified otherwise.
+
+Configuration is read from the file specified in the env `RMF_API_SERVER_CONFIG`, if not provided, the default config is used.
+
+e.g.
+```bash
+RMF_API_SERVER_CONFIG='my_config.py' rmf_api_server
 ```
 
 # Developers
+
+## Generated files
 
 The files in `api_server/models/mixins` are generated, they are committed to the repo to make distribution easier. Follow these steps to regenerate the files if needed:
 
 ```bash
 pip3 install jinja2
 ./generate_mixins.sh
+```
+
+## Live reload
+
+```bash
+uvicorn --reload api_server.app:app
 ```

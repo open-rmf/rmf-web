@@ -1,3 +1,4 @@
+import importlib
 import logging
 import os
 import sys
@@ -9,6 +10,7 @@ from rclpy.node import Node
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
+from .app_config import AppConfig
 from .building_map import building_map_router
 from .repositories.static_files import StaticFilesRepository
 
@@ -24,8 +26,18 @@ def ros2_thread(node):
     print('leaving ros2 thread')
 
 
-static_path = '/static'
-static_directory = 'static'
+def load_config(config_file: str) -> AppConfig:
+    spec = importlib.util.spec_from_file_location('config', config_file)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return AppConfig(module.config)
+
+
+if 'RMF_API_SERVER_CONFIG' in os.environ:
+    config_file = os.environ['RMF_API_SERVER_CONFIG']
+else:
+    config_file = f'{os.path.dirname(__file__)}/default_config.py'
+app_config = load_config(config_file)
 
 logger = logging.getLogger('app')
 handler = logging.StreamHandler(sys.stdout)
@@ -34,10 +46,11 @@ logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 
 app = FastAPI()
-os.makedirs(static_directory, exist_ok=True)
-static_files = StaticFiles(directory=static_directory)
-app.mount(static_path, static_files, name='static')
-static_files_repo = StaticFilesRepository(static_path, static_directory)
+os.makedirs(app_config.static_directory, exist_ok=True)
+static_files = StaticFiles(directory=app_config.static_directory)
+app.mount(app_config.static_path, static_files, name='static')
+static_files_repo = StaticFilesRepository(
+    app_config.static_path, app_config.static_directory)
 ros2_node: Node
 
 
@@ -49,7 +62,8 @@ def start_rclpy():
     threading.Thread(target=ros2_thread, args=[ros2_node]).start()
 
     app.include_router(
-        building_map_router(ros2_node, static_files_repo, logger.getChild('building_map')),
+        building_map_router(ros2_node, static_files_repo,
+                            logger.getChild('building_map')),
         prefix='/building_map')
 
 
