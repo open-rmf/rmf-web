@@ -25,7 +25,7 @@ exports[`Login page renders correctly 1`] = `
     }
   >
     <Login>
-      <Component
+      <LoginPage
         logo="assets/ros-health.png"
         title="RoMi Dashboard"
       >
@@ -223,7 +223,7 @@ exports[`Login page renders correctly 1`] = `
             </div>
           </ForwardRef>
         </div>
-      </Component>
+      </LoginPage>
     </Login>
   </Router>
 </BrowserRouter>
