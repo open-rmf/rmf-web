@@ -6,19 +6,12 @@ import { makeRobot } from './test-utils';
 
 describe('robot-markers', () => {
   let colorManager: ColorManager;
-  let handler: { onClick: () => void; robotColor: () => Promise<string> };
+  let fakeOnClick: ReturnType<typeof jasmine.createSpy>;
 
   beforeEach(() => {
     colorManager = new ColorManager();
-    handler = {
-      onClick: () => console.log('mock'),
-      robotColor: async () => 'black',
-    };
-
-    spyOn(handler, 'onClick');
-    spyOn(handler, 'robotColor');
-
-    colorManager.robotPrimaryColor = handler.robotColor;
+    fakeOnClick = jasmine.createSpy();
+    colorManager.robotPrimaryColor = jasmine.createSpy();
   });
 
   async function render(Component: JSX.Element): Promise<RenderResult> {
@@ -48,12 +41,12 @@ describe('robot-markers', () => {
         robot={makeRobot()}
         fleetName="test_fleet"
         footprint={1}
-        onClick={handler.onClick}
+        onClick={fakeOnClick}
         data-testid="marker"
       />,
     );
     userEvent.click(root.getByTestId('marker'));
-    expect(handler.onClick).toHaveBeenCalled();
+    expect(fakeOnClick).toHaveBeenCalled();
   });
 
   it('providing iconPath renders an image', async () => {
