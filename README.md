@@ -11,6 +11,12 @@ Install docker and docker-compose
 sudo apt update && sudo apt install docker.io docker-compose
 ```
 
+To avoid having to supply an admin password every time docker containers start (and to avoid losing the password prompt in the massive console log stream if using a window manager that doesn't support pop-up privilege escalation), we suggest adding your user to the `docker` group:
+```bash
+sudo usermod -aG docker $USER
+```
+You'll need to logout/login to reload your group memberships. NOTE: on some window managers like `i3`, you may need to reboot the machine in order to reload your group memberships. Not sure why. You can use the `groups` command to verify that you are in the `docker` group before proceeding.
+
 Install nodejs
 ```bash
 sudo apt update && sudo apt install curl
