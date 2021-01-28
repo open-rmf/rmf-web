@@ -107,6 +107,10 @@ module.exports = (options) => {
           loader: 'istanbul-instrumenter-loader',
           include: root('lib'),
           exclude: [/\.(e2e|spec|d|stories)\.ts$/, /node_modules/],
+          // esModules Set to true to instrument ES2015 Modules
+          query: {
+            esModules: true,
+          },
         },
       ],
     },
