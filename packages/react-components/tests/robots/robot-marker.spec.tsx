@@ -9,7 +9,6 @@ describe('robot-markers', () => {
   let handler: { onClick: () => void; robotColor: () => Promise<string> };
 
   beforeEach(() => {
-    // TextEncoder is not available in node
     colorManager = new ColorManager();
     handler = {
       onClick: () => console.log('mock'),

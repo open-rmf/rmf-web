@@ -2,7 +2,6 @@ import React from 'react';
 import { TrashBinControlButtonGroup } from '../lib';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { buildMockObject } from './test-utils';
 
 it('It disabled buttons', () => {
   const root = render(
@@ -26,24 +25,17 @@ it('It disabled buttons', () => {
 });
 
 it('It executes callbacks correctly', () => {
-  const handler = buildMockObject([
-    'onResetClick',
-    'onClearClick',
-    'onRestoreClick',
-    'onSaveClick',
-  ]);
-
-  spyOn(handler, 'onResetClick');
-  spyOn(handler, 'onClearClick');
-  spyOn(handler, 'onRestoreClick');
-  spyOn(handler, 'onSaveClick');
+  const fakeOnResetClick = jasmine.createSpy();
+  const fakeOnClearClick = jasmine.createSpy();
+  const fakeOnRestoreClick = jasmine.createSpy();
+  const fakeOnSaveClick = jasmine.createSpy();
 
   const root = render(
     <TrashBinControlButtonGroup
-      onResetClick={handler.onResetClick}
-      onClearClick={handler.onClearClick}
-      onRestoreClick={handler.onRestoreClick}
-      onSaveClick={handler.onSaveClick}
+      onResetClick={fakeOnResetClick}
+      onClearClick={fakeOnClearClick}
+      onRestoreClick={fakeOnRestoreClick}
+      onSaveClick={fakeOnSaveClick}
     />,
   );
 
@@ -52,10 +44,10 @@ it('It executes callbacks correctly', () => {
   userEvent.click(root.getByText('Restore'));
   userEvent.click(root.getByText('Save'));
 
-  expect(handler.onResetClick).toHaveBeenCalledTimes(1);
-  expect(handler.onClearClick).toHaveBeenCalledTimes(1);
-  expect(handler.onRestoreClick).toHaveBeenCalledTimes(1);
-  expect(handler.onSaveClick).toHaveBeenCalledTimes(1);
+  expect(fakeOnResetClick).toHaveBeenCalledTimes(1);
+  expect(fakeOnClearClick).toHaveBeenCalledTimes(1);
+  expect(fakeOnRestoreClick).toHaveBeenCalledTimes(1);
+  expect(fakeOnSaveClick).toHaveBeenCalledTimes(1);
 });
 
 it('It hides buttons', () => {

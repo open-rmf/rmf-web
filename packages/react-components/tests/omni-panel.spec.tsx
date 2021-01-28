@@ -3,7 +3,6 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { OmniPanel, OmniPanelView } from '../lib';
 import { OmniPanelProps } from '../lib/omni-panel';
-import { mockOnClick } from './test-utils';
 
 function TestPanel(props: Omit<OmniPanelProps, 'view' | 'children'>) {
   return (
@@ -14,30 +13,28 @@ function TestPanel(props: Omit<OmniPanelProps, 'view' | 'children'>) {
 }
 
 describe('OmniPanel component', () => {
-  let handler: ReturnType<typeof mockOnClick>;
+  let mockOnClick: ReturnType<typeof jasmine.createSpy>;
 
   beforeEach(() => {
-    // TextEncoder is not available in node
-    handler = mockOnClick();
-    spyOn(handler, 'onClick');
+    mockOnClick = jasmine.createSpy();
   });
 
   it('triggers onBack callback', () => {
-    const root = render(<TestPanel onBack={handler.onClick} />);
+    const root = render(<TestPanel onBack={mockOnClick} />);
     userEvent.click(root.getByLabelText('Back'));
-    expect(handler.onClick).toHaveBeenCalled();
+    expect(mockOnClick).toHaveBeenCalled();
   });
 
   it('triggers onHome callback', () => {
-    const root = render(<TestPanel onHome={handler.onClick} />);
+    const root = render(<TestPanel onHome={mockOnClick} />);
     userEvent.click(root.getByLabelText('Home'));
-    expect(handler.onClick).toHaveBeenCalled();
+    expect(mockOnClick).toHaveBeenCalled();
   });
 
   it('triggers onClose callback', () => {
-    const root = render(<TestPanel variant="backHomeClose" onClose={handler.onClick} />);
+    const root = render(<TestPanel variant="backHomeClose" onClose={mockOnClick} />);
     userEvent.click(root.getByLabelText('Close'));
-    expect(handler.onClick).toHaveBeenCalled();
+    expect(mockOnClick).toHaveBeenCalled();
   });
 
   it('only render current view', () => {

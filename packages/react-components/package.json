@@ -10,9 +10,7 @@
     "build:watch": "tsc --build --watch",
     "build:storybook": "tsc --build stories && ../../node_modules/.bin/build-storybook -s stories",
     "clean": "tsc --build --clean",
-    "test": "jest --watch",
-    "test:coverage": "jest --ci --coverage",
-    "test:karma": "./node_modules/karma/bin/karma start karma.conf.js",
+    "test": "./node_modules/karma/bin/karma start karma.conf.js",
     "lint": "eslint --ext ts,tsx, lib stories tests"
   },
   "author": "koonpeng@openrobotics.org",
@@ -28,12 +26,10 @@
     "node-vibrant": "^3.1.6"
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.2.2",
     "@testing-library/user-event": "^12.1.9",
     "@types/debug": "^4.1.5",
     "@types/jasmine": "^3.6.2",
-    "@types/jest": "^26.0.14",
     "@types/karma": "^5.0.1",
     "@types/react-dom": "^16.9.8",
     "@typescript-eslint/eslint-plugin": "^4.4.0",
@@ -47,7 +43,6 @@
     "fontsource-roboto": "^3.0.3",
     "jasmine": "^3.6.3",
     "jasmine-core": "^3.6.0",
-    "jest": "^26.5.2",
     "karma": "^5.2.3",
     "karma-chrome-launcher": "^3.1.0",
     "karma-coverage": "^2.0.3",
@@ -59,7 +54,6 @@
     "karma-webpack": "^4.0.2",
     "puppeteer": "^5.5.0",
     "source-map-loader": "^1.1.3",
-    "ts-jest": "^26.4.1",
     "typescript": "^4.0.3"
   },
   "peerDependencies": {

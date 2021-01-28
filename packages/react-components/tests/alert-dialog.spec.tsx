@@ -2,16 +2,14 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { AlertDialog } from '../lib';
-import { mockOnClick } from './test-utils';
 
 it('triggers onPositiveClick', () => {
-  const handler = mockOnClick();
-  spyOn(handler, 'onClick');
+  const mockOnClick = jasmine.createSpy();
   const root = render(
-    <AlertDialog open={true} title="test" variant="warn" onPositiveClick={handler.onClick} />,
+    <AlertDialog open={true} title="test" variant="warn" onPositiveClick={mockOnClick} />,
   );
   userEvent.click(root.getByText('OK'));
-  expect(handler.onClick).toHaveBeenCalledTimes(1);
+  expect(mockOnClick).toHaveBeenCalledTimes(1);
 });
 
 it('negative button is shown only when negativeText is provided', () => {
@@ -26,24 +24,24 @@ it('negative button is shown only when negativeText is provided', () => {
 });
 
 it('triggers onNegativeClick', () => {
-  const handler = mockOnClick();
-  spyOn(handler, 'onClick');
+  const mockOnClick = jasmine.createSpy();
   const root = render(
     <AlertDialog
       open={true}
       title="test"
       variant="warn"
       negativeText="Cancel"
-      onNegativeClick={handler.onClick}
+      onNegativeClick={mockOnClick}
     />,
   );
   userEvent.click(root.getByText('Cancel'));
-  expect(handler.onClick).toHaveBeenCalledTimes(1);
+  expect(mockOnClick).toHaveBeenCalledTimes(1);
 });
 
 it('has close button when onCloseClick is provided', () => {
+  const mockOnClick = jasmine.createSpy();
   const root = render(
-    <AlertDialog open={true} title="test" variant="warn" onCloseClick={mockOnClick().onClick} />,
+    <AlertDialog open={true} title="test" variant="warn" onCloseClick={mockOnClick} />,
   );
   expect(root.getByLabelText('close')).toBeTruthy();
 });

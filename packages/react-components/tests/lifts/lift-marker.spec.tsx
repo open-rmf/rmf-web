@@ -2,7 +2,6 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { LiftMarker, LiftMarkerProps } from '../../lib';
-import { mockOnClick } from '../test-utils';
 import { makeLift, makeLiftState } from './test-utils';
 
 ([
@@ -24,18 +23,17 @@ import { makeLift, makeLiftState } from './test-utils';
 });
 
 it('trigger onClick event', () => {
-  const handler = mockOnClick();
-  spyOn(handler, 'onClick');
+  let mockOnClick = jasmine.createSpy();
   const root = render(
     <svg>
       <LiftMarker
         lift={makeLift()}
         liftState={makeLiftState()}
-        onClick={handler.onClick}
+        onClick={mockOnClick}
         data-testid="marker"
       />
     </svg>,
   );
   userEvent.click(root.getByTestId('marker'));
-  expect(handler.onClick).toHaveBeenCalled();
+  expect(mockOnClick).toHaveBeenCalled();
 });

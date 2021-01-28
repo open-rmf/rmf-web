@@ -2,23 +2,21 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { DeliveryRequestForm } from '../../lib';
-import { buildMockObject } from '../test-utils';
 import { availableDispensers, availablePlaces, fleets } from './test-data';
 
 describe('Form validation', () => {
-  let handler: ReturnType<typeof buildMockObject>;
+  let fakeDoDeliveryRequest: ReturnType<typeof jasmine.createSpy>;
   let root: ReturnType<typeof renderForm>;
 
   function renderForm() {
-    handler = buildMockObject(['doDeliveryRequest']);
-    spyOn(handler, 'doDeliveryRequest');
+    fakeDoDeliveryRequest = jasmine.createSpy();
 
     return render(
       <DeliveryRequestForm
         fleetNames={fleets}
         availablePlaces={availablePlaces}
         availableDispensers={availableDispensers}
-        doDeliveryRequest={handler.doDeliveryRequest}
+        doDeliveryRequest={fakeDoDeliveryRequest}
       />,
     );
   }
@@ -37,7 +35,7 @@ describe('Form validation', () => {
 
   it('Successful Request', () => {
     userEvent.click(root.getByText('Request'));
-    expect(handler.doDeliveryRequest).toHaveBeenCalled();
+    expect(fakeDoDeliveryRequest).toHaveBeenCalled();
   });
 
   it('Pickup dispenser cannot be empty', () => {
@@ -45,7 +43,7 @@ describe('Form validation', () => {
 
     userEvent.click(root.getByText('Request'));
     expect(root.container.querySelector('.MuiFormHelperText-root.Mui-error')).toBeTruthy();
-    expect(handler.doDeliveryRequest).not.toHaveBeenCalled();
+    expect(fakeDoDeliveryRequest).not.toHaveBeenCalled();
   });
 
   it('Dropoff dispenser cannot be empty', () => {
@@ -53,7 +51,7 @@ describe('Form validation', () => {
 
     userEvent.click(root.getByText('Request'));
     expect(root.container.querySelector('.MuiFormHelperText-root.Mui-error')).toBeTruthy();
-    expect(handler.doDeliveryRequest).not.toHaveBeenCalled();
+    expect(fakeDoDeliveryRequest).not.toHaveBeenCalled();
   });
 
   it('Pickup place cannot be empty', () => {
@@ -61,7 +59,7 @@ describe('Form validation', () => {
 
     userEvent.click(root.getByText('Request'));
     expect(root.container.querySelector('.MuiFormHelperText-root.Mui-error')).toBeTruthy();
-    expect(handler.doDeliveryRequest).not.toHaveBeenCalled();
+    expect(fakeDoDeliveryRequest).not.toHaveBeenCalled();
   });
 
   it('Dropoff place cannot be empty', () => {
@@ -69,7 +67,7 @@ describe('Form validation', () => {
 
     userEvent.click(root.getByText('Request'));
     expect(root.container.querySelector('.MuiFormHelperText-root.Mui-error')).toBeTruthy();
-    expect(handler.doDeliveryRequest).not.toHaveBeenCalled();
+    expect(fakeDoDeliveryRequest).not.toHaveBeenCalled();
   });
 
   it('shows error when a place with no dispenser is picked', () => {
@@ -96,6 +94,6 @@ describe('Form validation', () => {
     userEvent.click(root.getByText('Request'));
 
     expect(root.container.querySelector('.MuiFormHelperText-root.Mui-error')).toBeTruthy();
-    expect(handler.doDeliveryRequest).not.toHaveBeenCalled();
+    expect(fakeDoDeliveryRequest).not.toHaveBeenCalled();
   });
 });

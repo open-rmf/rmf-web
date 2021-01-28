@@ -2,22 +2,20 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { LoopRequestForm } from '../../lib';
-import { buildMockObject } from '../test-utils';
 import { availablePlaces, fleets } from './test-data';
 
 describe('Form validation', () => {
-  let handler: ReturnType<typeof buildMockObject>;
+  let fakeDoLoopRequest: ReturnType<typeof jasmine.createSpy>;
   let root: ReturnType<typeof renderForm>;
 
   function renderForm() {
-    handler = buildMockObject(['doLoopRequest']);
-    spyOn(handler, 'doLoopRequest');
+    fakeDoLoopRequest = jasmine.createSpy();
 
     return render(
       <LoopRequestForm
         fleetNames={fleets}
         availablePlaces={availablePlaces}
-        doLoopRequest={handler.doLoopRequest}
+        doLoopRequest={fakeDoLoopRequest}
       />,
     );
   }
@@ -29,13 +27,13 @@ describe('Form validation', () => {
   it('Successful Request', () => {
     userEvent.type(root.getByPlaceholderText('Number of loops'), '1');
     userEvent.click(root.getByText('Request'));
-    expect(handler.doLoopRequest).toHaveBeenCalled();
+    expect(fakeDoLoopRequest).toHaveBeenCalled();
   });
 
   it('Number of loops cannot be empty', () => {
     userEvent.click(root.getByText('Request'));
     expect(root.container.querySelector('.MuiFormHelperText-root.Mui-error')).toBeTruthy();
-    expect(handler.doLoopRequest).not.toHaveBeenCalled();
+    expect(fakeDoLoopRequest).not.toHaveBeenCalled();
   });
 
   it('Start Location cannot be empty', () => {
@@ -43,7 +41,7 @@ describe('Form validation', () => {
     userEvent.type(root.getByPlaceholderText('Pick Start Location'), '{selectall}{backspace}');
     userEvent.click(root.getByText('Request'));
     expect(root.container.querySelector('.MuiFormHelperText-root.Mui-error')).toBeTruthy();
-    expect(handler.doLoopRequest).not.toHaveBeenCalled();
+    expect(fakeDoLoopRequest).not.toHaveBeenCalled();
   });
 
   it('Finish Location cannot be empty', () => {
@@ -51,7 +49,7 @@ describe('Form validation', () => {
     userEvent.type(root.getByPlaceholderText('Pick Finish Location'), '{selectall}{backspace}');
     userEvent.click(root.getByText('Request'));
     expect(root.container.querySelector('.MuiFormHelperText-root.Mui-error')).toBeTruthy();
-    expect(handler.doLoopRequest).not.toHaveBeenCalled();
+    expect(fakeDoLoopRequest).not.toHaveBeenCalled();
   });
 
   it('Start Location cannot be equal to Finish Location', () => {
@@ -63,7 +61,7 @@ describe('Form validation', () => {
     userEvent.click(root.getByText('Request'));
 
     expect(root.container.querySelector('.MuiFormHelperText-root.Mui-error')).toBeTruthy();
-    expect(handler.doLoopRequest).not.toHaveBeenCalled();
+    expect(fakeDoLoopRequest).not.toHaveBeenCalled();
   });
 
   it('Changing target fleet updates available places', () => {

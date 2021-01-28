@@ -2,24 +2,17 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { DispenserMarker } from '../../lib';
-import { mockOnClick } from '../test-utils';
 
 it('triggers onClick callback when button is clicked', () => {
-  const handler = mockOnClick();
-  spyOn(handler, 'onClick');
+  const mockOnClick = jasmine.createSpy();
 
   const root = render(
     <svg>
-      <DispenserMarker
-        guid="test"
-        location={[0, 0]}
-        onClick={handler.onClick}
-        data-testid="marker"
-      />
+      <DispenserMarker guid="test" location={[0, 0]} onClick={mockOnClick} data-testid="marker" />
     </svg>,
   );
   userEvent.click(root.getByTestId('marker'));
-  expect(handler.onClick).toHaveBeenCalled();
+  expect(mockOnClick).toHaveBeenCalled();
 });
 
 it('smoke test - marker with image icon', () => {
