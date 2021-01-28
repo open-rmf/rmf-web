@@ -37,6 +37,4 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: react-components
-          files: ./lcov.info, lcov.info
-          directory: .
-          verbose: true
+          files: lcov.info
