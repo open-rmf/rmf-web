@@ -14,8 +14,6 @@ import {
   Input,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
-import RestoreIcon from '@material-ui/icons/Restore';
-import CheckIcon from '@material-ui/icons/Check';
 
 export interface Notification {
   time: string;
@@ -70,8 +68,8 @@ const useStyles = makeStyles((theme) => ({
     width: '150px',
     padding: '0 0.5rem',
   },
-  checkIcon: {
-    color: theme.palette.success.main,
+  removeNotificationIcon: {
+    color: theme.palette.error.main,
     padding: '0',
   },
   legend: {
@@ -141,7 +139,7 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
         holder.push(notification.severity);
       }
     });
-    return holder;
+    return [...holder, 'All'];
   }, [notifications]);
 
   // handle filter change
@@ -150,17 +148,16 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
     setLevel(val);
     const filterNotifications: Notification[] = [];
 
-    notficationsCopy.forEach((notification) => {
-      if (notification.severity === val) {
-        filterNotifications.push(notification);
-      }
-    });
-    setRmfNotifications(filterNotifications);
-  };
-
-  // restore filtered notifications
-  const restoreNotifications = () => {
-    setRmfNotifications(notficationsCopy);
+    if (val === 'All') {
+      setRmfNotifications(notficationsCopy);
+    } else {
+      notficationsCopy.forEach((notification) => {
+        if (notification.severity === val) {
+          filterNotifications.push(notification);
+        }
+      });
+      setRmfNotifications(filterNotifications);
+    }
   };
 
   // delete notifications once marked read
@@ -191,76 +188,67 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
         </IconButton>
       </DialogTitle>
       <DialogContent className={classes.dialogContent} dividers>
-        {rmfNotifications.length > 0 ? (
-          <React.Fragment>
-            <div className={classes.filter}>
-              <Select
-                className={classes.select}
-                displayEmpty={true}
-                value={level}
-                onChange={(e) => handleChange(e)}
-                input={<Input />}
-                renderValue={() => (level === '' ? <em>Filter by severity</em> : level)}
-              >
-                {alertLevel.map((level) => {
-                  return (
-                    <MenuItem key={level} value={level}>
-                      {level}
-                    </MenuItem>
-                  );
-                })}
-              </Select>
-              <IconButton onClick={restoreNotifications}>
-                <RestoreIcon />
-              </IconButton>
-            </div>
+        <React.Fragment>
+          <div className={classes.filter}>
+            <Select
+              className={classes.select}
+              displayEmpty={true}
+              value={level}
+              onChange={(e) => handleChange(e)}
+              input={<Input />}
+              renderValue={() => (level === '' ? <em>Filter by severity</em> : level)}
+            >
+              {alertLevel.map((level) => {
+                return (
+                  <MenuItem key={level} value={level}>
+                    {level}
+                  </MenuItem>
+                );
+              })}
+            </Select>
+          </div>
 
-            <Paper className={classes.paper}>
-              <Typography variant="h6" align="left">
-                Severity
-              </Typography>
-              <Typography variant="h6" align="left">
-                Date
-              </Typography>
-              <Typography variant="h6" align="left">
-                Message
-              </Typography>
-              <Typography variant="h6" align="right">
-                Resolved
-              </Typography>
-            </Paper>
-            {rmfNotifications.map((notification, i) => {
-              return (
-                <React.Fragment key={notification.time + '_' + i}>
-                  <Paper elevation={3} className={classes.paper}>
-                    <SeverityIndicator
-                      className={classes.indicator}
-                      severity={notification.severity}
-                    />
-                    <Typography variant="body1" align="left">
-                      {notification.time}
-                    </Typography>
-                    <Typography variant="body1" align="left">
-                      {notification.error}
-                    </Typography>
-                    <Typography align="right">
-                      <IconButton
-                        className={classes.checkIcon}
-                        onClick={() => deleteReadNotifications(i)}
-                      >
-                        <CheckIcon />
-                      </IconButton>
-                    </Typography>
-                  </Paper>
-                </React.Fragment>
-              );
-            })}
-          </React.Fragment>
-        ) : (
-          <Typography className={classes.placeholder} align="center" variant="h6">
-            All Systems Green
-          </Typography>
-        )}
+          <Paper className={classes.paper}>
+            <Typography variant="h6" align="left">
+              Severity
+            </Typography>
+            <Typography variant="h6" align="left">
+              Date
+            </Typography>
+            <Typography variant="h6" align="left">
+              Message
+            </Typography>
+            <Typography variant="h6" align="right">
+              {/* placeholder */}
+            </Typography>
+          </Paper>
+          {rmfNotifications.map((notification, i) => {
+            return (
+              <React.Fragment key={notification.time + '_' + i}>
+                <Paper elevation={3} className={classes.paper}>
+                  <SeverityIndicator
+                    className={classes.indicator}
+                    severity={notification.severity}
+                  />
+                  <Typography variant="body1" align="left">
+                    {notification.time}
+                  </Typography>
+                  <Typography variant="body1" align="left">
+                    {notification.error}
+                  </Typography>
+                  <Typography align="right">
+                    <IconButton
+                      className={classes.removeNotificationIcon}
+                      onClick={() => deleteReadNotifications(i)}
+                    >
+                      <CloseIcon />
+                    </IconButton>
+                  </Typography>
+                </Paper>
+              </React.Fragment>
+            );
+          })}
+        </React.Fragment>
       </DialogContent>
       <DialogActions className={classes.dialogActions}>
         <Button autoFocus onClick={() => setShowNotifications(false)} color="primary">

@@ -7,6 +7,8 @@ import { TooltipsContext } from '../app-contexts';
 import { OmniPanelViewIndex } from './dashboard';
 import { MainMenuItemState } from './main-menu-item-state';
 import { MainMenuTaskState } from './main-menu-task-state';
+import { MainMenuAlert } from './main-menu-alert';
+import { Notification } from 'react-components';
 
 const debug = Debug('MainMenu');
 
@@ -48,11 +50,12 @@ export interface MainMenuProps {
   pushView(view: OmniPanelViewIndex): void;
   itemState: ItemState;
   tasks: RomiCore.TaskSummary[];
+  notifications: Notification[];
 }
 
 export const MainMenu = React.memo((props: MainMenuProps) => {
   const { showTooltips } = React.useContext(TooltipsContext);
-  const { pushView, itemState, tasks } = props;
+  const { pushView, itemState, tasks, notifications } = props;
   debug('render');
   const classes = useStyles();
   // console.log(itemState);
@@ -206,7 +209,11 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
 
   return (
     <div className={classes.root}>
+      <MainMenuAlert notifications={notifications} />
+      <Divider />
+
       <Typography variant="h5">Systems Summary</Typography>
+
       <MainMenuItemState itemSummary={getDoorSummary()} handleClick={handleMainMenuDoorsClick} />
       <MainMenuItemState itemSummary={getLiftSummary()} handleClick={handleMainMenuLiftsClick} />
       <MainMenuItemState

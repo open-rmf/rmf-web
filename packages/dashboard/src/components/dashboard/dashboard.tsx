@@ -344,7 +344,12 @@ export default function Dashboard(_props: {}): React.ReactElement {
           onClose={handleOmniPanelClose}
         >
           <OmniPanelView viewId={OmniPanelViewIndex.MainMenu}>
-            <MainMenu pushView={pushView} itemState={itemStates} tasks={tasks} />
+            <MainMenu
+              pushView={pushView}
+              itemState={itemStates}
+              tasks={tasks}
+              notifications={[{ severity: 'High', time: '11-01-2020', error: 'hello world' }]}
+            />
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Doors}>
             {doors.map((door) => (
