@@ -6,6 +6,7 @@ from logging import Logger
 from typing import Optional
 
 import rclpy
+from rclpy.node import Node as RosNode
 from building_map_msgs.msg import AffineImage, BuildingMap, Level
 from rosidl_runtime_py.convert import message_to_ordereddict
 
@@ -14,7 +15,7 @@ from fastapi import APIRouter, HTTPException
 from ..repositories.static_files import StaticFilesRepository
 
 
-def building_map_router(ros2_node: rclpy.node.Node, repo: StaticFilesRepository, logger: Logger):
+def building_map_router(ros2_node: RosNode, repo: StaticFilesRepository, logger: Logger):
     router = APIRouter()
 
     building_map: Optional[BuildingMap] = None

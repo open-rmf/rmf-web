@@ -1,3 +1,4 @@
+import asyncio
 import importlib
 import logging
 import os
@@ -13,6 +14,7 @@ from fastapi.staticfiles import StaticFiles
 from .app_config import AppConfig
 from .building_map import building_map_router
 from .repositories.static_files import StaticFilesRepository
+from .rmf_io import RmfIO
 
 
 class MainNode(Node):
@@ -61,10 +63,11 @@ def start_rclpy():
     ros2_node = MainNode()
     threading.Thread(target=ros2_thread, args=[ros2_node]).start()
 
-    app.include_router(
-        building_map_router(ros2_node, static_files_repo,
-                            logger.getChild('building_map')),
-        prefix='/building_map')
+    rmfio = RmfIO(asyncio.get_running_loop(), logger.getChild('RmfIO'))
+    # app.include_router(
+    #     building_map_router(ros2_node, static_files_repo,
+    #                         logger.getChild('building_map')),
+    #     prefix='/building_map')
 
 
 @app.on_event('shutdown')
