@@ -277,7 +277,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     () => buildHotKeys({ reducerDashboardDispatch: dashboardDispatch, appController }),
     [dashboardDispatch, appController],
   );
-
+  console.log(tasks);
   const itemStates: ItemState = {
     doors: doorStates,
     lifts: liftStates,
@@ -344,7 +344,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
           onClose={handleOmniPanelClose}
         >
           <OmniPanelView viewId={OmniPanelViewIndex.MainMenu}>
-            <MainMenu pushView={pushView} itemState={itemStates} />
+            <MainMenu pushView={pushView} itemState={itemStates} tasks={tasks} />
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Doors}>
             {doors.map((door) => (
