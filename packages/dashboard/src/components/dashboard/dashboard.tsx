@@ -114,7 +114,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
 
   const transport = React.useContext(TransportContext);
   const buildingMap = React.useContext(BuildingMapContext);
-  const { trajectoryManager: trajManager } = React.useContext(RmfIngressContext);
   const resourceManager = React.useContext(ResourcesContext);
 
   const { state: dashboardState, dispatch: dashboardDispatch } = useDashboardReducer(
@@ -281,7 +280,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
           <ScheduleVisualizer
             buildingMap={buildingMap}
             mapFloorSort={mapFloorSort}
-            trajManager={trajManager}
             negotiationTrajStore={negotiationTrajStore}
             onDoorClick={handleDoorMarkerClick}
             onLiftClick={handleLiftMarkerClick}

@@ -12,7 +12,7 @@ import {
   Trajectory,
   TrajectoryResponse,
 } from '../../managers/robot-trajectory-manager';
-import { FleetStateContext } from '../rmf-app';
+import { FleetStateContext, RmfIngressContext } from '../rmf-app';
 import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
 import { toBlobUrl } from '../../util';
 import { AppControllerContext } from '../app-contexts';
@@ -43,7 +43,6 @@ export interface MapFloorLayer {
 
 export interface ScheduleVisualizerProps extends React.PropsWithChildren<{}> {
   buildingMap: RomiCore.BuildingMap;
-  trajManager?: RobotTrajectoryManager;
   negotiationTrajStore: Readonly<Record<string, NegotiationTrajectoryResponse>>;
   mapFloorSort?(levels: RomiCore.Level[]): string[];
   onDoorClick?(door: RomiCore.Door): void;
@@ -107,6 +106,8 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
 
   const fleetStates = React.useContext(FleetStateContext);
   const fleets = React.useMemo(() => Object.values(fleetStates), [fleetStates]);
+
+  const { trajectoryManager: trajManager } = React.useContext(RmfIngressContext);
 
   const robots = React.useMemo(
     () =>
@@ -182,8 +183,6 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   React.useEffect(() => {
     let interval: number;
     (async () => {
-      const trajManager = props.trajManager;
-
       async function updateTrajectory() {
         if (!curMapFloorLayer || !trajManager) {
           return;
@@ -207,7 +206,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       interval = window.setInterval(updateTrajectory, trajAnimDuration);
     })();
     return () => clearInterval(interval);
-  }, [props.trajManager, curMapFloorLayer, trajAnimDuration]);
+  }, [trajManager, curMapFloorLayer, trajAnimDuration]);
 
   // Show notification when a conflict happens.
   const { showNotification: notificationDispatch } = React.useContext(AppControllerContext);
