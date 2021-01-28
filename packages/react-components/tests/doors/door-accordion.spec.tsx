@@ -6,17 +6,16 @@ import { DoorAccordion } from '../../lib';
 import { makeDoor } from './test-utils';
 
 describe('Door-accordion', () => {
-  let handler: { onClick: (a: unknown, b: unknown, c: number) => void };
+  let fakeOnClick: ReturnType<typeof jasmine.createSpy>;
   let root: RenderResult;
   beforeEach(() => {
-    handler = { onClick: (a: unknown, b: unknown, c: number) => console.log(`mock ${a}${b}${c}`) };
-    spyOn(handler, 'onClick');
-    root = render(<DoorAccordion door={makeDoor()} onDoorControlClick={handler.onClick} />);
+    fakeOnClick = jasmine.createSpy();
+    root = render(<DoorAccordion door={makeDoor()} onDoorControlClick={fakeOnClick} />);
   });
 
   it('triggers door control dispatch when open door button is clicked', () => {
     userEvent.click(root.getByText('Open'));
-    expect(handler.onClick).toHaveBeenCalledWith(
+    expect(fakeOnClick).toHaveBeenCalledWith(
       jasmine.anything(),
       jasmine.anything(),
       RomiCore.DoorMode.MODE_OPEN,
@@ -25,7 +24,7 @@ describe('Door-accordion', () => {
 
   it('triggers door control dispatch when close door button is clicked', () => {
     userEvent.click(root.getByText('Close'));
-    expect(handler.onClick).toHaveBeenCalledWith(
+    expect(fakeOnClick).toHaveBeenCalledWith(
       jasmine.anything(),
       jasmine.anything(),
       RomiCore.DoorMode.MODE_CLOSED,
