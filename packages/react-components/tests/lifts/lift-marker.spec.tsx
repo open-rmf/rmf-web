@@ -23,7 +23,7 @@ import { makeLift, makeLiftState } from './test-utils';
 });
 
 it('trigger onClick event', () => {
-  let mockOnClick = jasmine.createSpy();
+  const mockOnClick = jasmine.createSpy();
   const root = render(
     <svg>
       <LiftMarker
