@@ -44,7 +44,7 @@ export const MainMenuItemState = (props: MainMenuItemStateProps) => {
     switch (mode) {
       case 'operational':
         return `${classes.paper} ${classes.operational}`;
-      case 'out_of_order':
+      case 'outOfOrder':
         return `${classes.paper} ${classes.warning}`;
       case 'idle':
         return `${classes.paper} ${classes.idle}`;
@@ -75,7 +75,7 @@ export const MainMenuItemState = (props: MainMenuItemStateProps) => {
                       {summary[mode]}
                     </Typography>
                     <Typography align="center" variant="body1">
-                      {mode}
+                      {mode === 'outOfOrder' ? 'Out Of Order' : mode}
                     </Typography>
                   </Paper>
                 </Grid>

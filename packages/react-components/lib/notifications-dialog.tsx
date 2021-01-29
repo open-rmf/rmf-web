@@ -209,20 +209,6 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
             </Select>
           </div>
 
-          <Paper className={classes.paper}>
-            <Typography variant="h6" align="left">
-              Severity
-            </Typography>
-            <Typography variant="h6" align="left">
-              Time Sent
-            </Typography>
-            <Typography variant="h6" align="left">
-              Message
-            </Typography>
-            <Typography variant="h6" align="right">
-              {/* placeholder */}
-            </Typography>
-          </Paper>
           {rmfNotifications.map((notification, i) => {
             return (
               <React.Fragment key={notification.time + '_' + i}>

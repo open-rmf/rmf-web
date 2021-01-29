@@ -273,7 +273,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     () => buildHotKeys({ reducerDashboardDispatch: dashboardDispatch, appController }),
     [dashboardDispatch, appController],
   );
-  console.log(tasks);
+
   const itemStates: ItemState = {
     doors: doorStates,
     lifts: liftStates,
