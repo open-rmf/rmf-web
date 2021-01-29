@@ -14,7 +14,7 @@ export default function DateAndTimePickers(props: DateTimePickerProps): React.Re
         id={`${name}-datetime-local`}
         value={value ? value : new Date().toISOString().substr(0, 16)}
         label={label}
-        format="yyyy/MM/DD HH:mm"
+        format="keyboardDateTime24h"
         inputVariant="outlined"
         variant="inline"
         ampm={false}

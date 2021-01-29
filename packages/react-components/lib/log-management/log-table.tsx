@@ -8,6 +8,7 @@ import {
   TableHead,
   TableRow,
   TablePagination,
+  TableFooter,
 } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 import TablePaginationActions from '@material-ui/core/TablePagination/TablePaginationActions';
@@ -29,12 +30,21 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
   },
   dateColumn: {
-    minWidth: '140px',
+    width: '8.5rem',
   },
   textColumn: {
     whiteSpace: 'pre-wrap',
     wordWrap: 'break-word',
-    minWidth: '60vw',
+    width: '65rem',
+  },
+  dateLabel: {
+    width: '8.5rem',
+  },
+  messageLabel: {
+    width: '65rem',
+  },
+  levelLabel: {
+    width: '3rem',
   },
   error: {
     color: theme.palette.error.main,
@@ -94,9 +104,15 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
         <Table className={classes.table} size="small" stickyHeader={true} aria-label="sticky table">
           <TableHead>
             <TableRow>
-              <TableCell align="center">Level</TableCell>
-              <TableCell align="center">Message</TableCell>
-              <TableCell align="center">Timestamp</TableCell>
+              <TableCell align="center" className={classes.levelLabel}>
+                Level
+              </TableCell>
+              <TableCell align="center" className={classes.messageLabel}>
+                Message
+              </TableCell>
+              <TableCell align="center" className={classes.dateLabel}>
+                Timestamp
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -105,7 +121,10 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
               : rows
             ).map((row) => (
               <TableRow key={row.message + row.timestamp}>
-                <TableCell align="center" className={getLogLevelStyle(row.level)}>
+                <TableCell
+                  align="center"
+                  className={`${getLogLevelStyle(row.level)} ${classes.levelLabel}`}
+                >
                   {row.level}
                 </TableCell>
                 <TableCell align="left" className={classes.textColumn}>
@@ -128,20 +147,26 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
           </TableBody>
         </Table>
       </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[50, 100, 200, { label: 'All', value: -1 }]}
-        colSpan={5}
-        count={rows.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        SelectProps={{
-          inputProps: { 'aria-label': 'rows per page' },
-          native: true,
-        }}
-        onChangePage={handleChangePage}
-        onChangeRowsPerPage={handleChangeRowsPerPage}
-        ActionsComponent={TablePaginationActions}
-      />
+      <Table>
+        <TableFooter>
+          <TableRow>
+            <TablePagination
+              rowsPerPageOptions={[50, 100, 200, { label: 'All', value: -1 }]}
+              colSpan={5}
+              count={rows.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              SelectProps={{
+                inputProps: { 'aria-label': 'rows per page' },
+                native: true,
+              }}
+              onChangePage={handleChangePage}
+              onChangeRowsPerPage={handleChangeRowsPerPage}
+              ActionsComponent={TablePaginationActions}
+            />
+          </TableRow>
+        </TableFooter>
+      </Table>
     </Paper>
   );
 };

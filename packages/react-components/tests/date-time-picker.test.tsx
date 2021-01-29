@@ -20,7 +20,7 @@ describe('date time picker', () => {
 
   it('shows the current date if `date` parameter is undefined', () => {
     const handleDateChange = jest.fn();
-    const currentDate = moment(new Date().toISOString().substr(0, 16)).format('yyyy/MM/DD HH:mm');
+    const currentDate = moment(new Date().toISOString().substr(0, 16)).format('MM/DD/yyyy HH:mm');
 
     const root = render(
       <DateAndTimePickers

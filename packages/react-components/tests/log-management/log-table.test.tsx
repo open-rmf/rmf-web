@@ -36,8 +36,8 @@ describe('Log table test', () => {
 
   it('shows the correct number of rows', () => {
     const allRows = root.container.querySelectorAll('tr').length;
-    // -1. from the tr of the table header.
-    expect(allRows - 1).toBe(50);
+    // -2. from the tr of the table header and the tr from the pagination table
+    expect(allRows - 2).toBe(50);
   });
 });
 

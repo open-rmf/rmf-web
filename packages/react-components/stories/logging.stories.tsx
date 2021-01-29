@@ -19,7 +19,7 @@ const getLogs = () => {
   for (let i = 0; i < 200; i++) {
     rows.push({
       message: 'Test' + i,
-      level: 'Warn',
+      level: 'Debug',
       timestamp: timestamp,
     });
   }
