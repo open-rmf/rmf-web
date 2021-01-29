@@ -49,7 +49,7 @@ export const MainMenuAlert = (props: MainMenuAlertProps) => {
       <Typography variant="h6">Notifications</Typography>
       <h2 className={getLabel}>
         <span className={classes.span}>
-          {notifications.length > 0 ? notifications.length + 'Alerts' : 'No Alerts'}
+          {notifications.length > 0 ? notifications.length + ' Alerts' : 'No Alerts'}
         </span>
       </h2>
       <Button

@@ -11,19 +11,22 @@ export interface MainMenuItemStateProps {
 const useStyles = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(0.2),
-    color: theme.palette.background.paper,
   },
   warning: {
-    background: theme.palette.error.main,
+    color: theme.palette.error.main,
+    border: `2px solid ${theme.palette.error.main}`,
   },
   operational: {
-    backgroundColor: theme.palette.success.main,
+    color: theme.palette.success.main,
+    border: `2px solid ${theme.palette.success.main}`,
   },
   idle: {
-    backgroundColor: theme.palette.warning.main,
+    color: theme.palette.warning.main,
+    border: `2px solid ${theme.palette.warning.main}`,
   },
   charging: {
-    backgroundColor: theme.palette.info.main,
+    color: theme.palette.info.main,
+    border: `2px solid ${theme.palette.info.main}`,
   },
   headerGrid: {
     display: 'flex',

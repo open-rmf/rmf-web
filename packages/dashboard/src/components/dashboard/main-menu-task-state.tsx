@@ -8,16 +8,16 @@ const useStyles = makeStyles((theme) => ({
     padding: '0.4rem 0',
   },
   normal: {
-    backgroundColor: theme.palette.success.main,
+    color: theme.palette.success.main,
+    border: `2px solid ${theme.palette.success.main}`,
   },
   failed: {
-    backgroundColor: theme.palette.error.main,
+    color: theme.palette.error.main,
+    border: `2px solid ${theme.palette.error.main}`,
   },
   queue: {
-    backgroundColor: theme.palette.info.main,
-  },
-  paperFont: {
-    color: 'white',
+    color: theme.palette.info.main,
+    border: `2px solid ${theme.palette.info.main}`,
   },
 }));
 
@@ -54,11 +54,11 @@ export const MainMenuTaskState = (props: MainMenuTaskStateProps) => {
     switch (mode) {
       case 'active':
       case 'finish':
-        return `${classes.normal} ${classes.paperFont}`;
+        return classes.normal;
       case 'queued':
-        return `${classes.queue} ${classes.paperFont}`;
+        return classes.queue;
       case 'failed':
-        return `${classes.failed} ${classes.paperFont}`;
+        return classes.failed;
       default:
         return '';
     }
