@@ -13,7 +13,7 @@ const getLogs = () => {
     rows.push({
       message: 'Test' + i,
       level: 'WARN',
-      timestamp: 'Mon Jan  1 00:00:02 UTC 2001',
+      timestamp: new Date('Mon Jan  1 00:00:02 UTC 2001').toISOString(),
     });
   }
   return rows;

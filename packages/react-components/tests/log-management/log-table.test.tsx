@@ -13,11 +13,13 @@ const getRandomLogLevel = () => {
   return logLevels[number];
 };
 
+const timestamp = new Date('Mon Jan  1 00:00:02 UTC 2001').toISOString();
+
 for (let i = 0; i < 110; i++) {
   rows.push({
     message: 'Test' + i,
     level: getRandomLogLevel().toUpperCase(),
-    timestamp: 'Mon Jan  1 00:00:02 UTC 2001',
+    timestamp: timestamp,
   });
 }
 
@@ -29,9 +31,7 @@ describe('Log table test', () => {
 
   it('formats dates correctly', async () => {
     const tableFirstDateElement = (await root.getAllByTestId('log-table-date'))[0];
-    expect(tableFirstDateElement.innerHTML).toBe(
-      moment('Mon Jan  1 00:00:02 UTC 2001').format('lll'),
-    );
+    expect(tableFirstDateElement.innerHTML).toBe(moment(timestamp).format('lll'));
   });
 
   it('shows the correct number of rows', () => {
@@ -77,7 +77,7 @@ describe('Applies styles to labels correctly', () => {
     styleRows.push({
       message: 'Test' + i,
       level: logLevels[i].toUpperCase(),
-      timestamp: 'Mon Jan  1 00:00:02 UTC 2001',
+      timestamp: timestamp,
     });
   }
 

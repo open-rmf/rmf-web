@@ -12,13 +12,15 @@ const getLogLabels = () => [
   { label: 'RMF core', value: 'rmf-core' },
 ];
 
+const timestamp = new Date('Mon Jan  1 00:00:02 UTC 2001').toISOString();
+
 const getLogs = () => {
   const rows = [];
   for (let i = 0; i < 200; i++) {
     rows.push({
       message: 'Test' + i,
       level: 'Warn',
-      timestamp: 'Mon Jan  1 00:00:02 UTC 2001',
+      timestamp: timestamp,
     });
   }
   return rows;
@@ -50,12 +52,12 @@ export const SimpleLogTable: Story = (args) => {
     npm ERR! A complete log of this run can be found in:
     npm ERR!     /home/ekumen/.npm/_logs/2021-01-18T21_20_07_480Z-debug.log`,
     level: 'Error',
-    timestamp: 'Mon Jan  1 00:00:01 UTC 2001',
+    timestamp: timestamp,
   });
   logs.unshift({
     message: `long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long msg`,
     level: 'Debug',
-    timestamp: 'Mon Jan  1 00:00:01 UTC 2001',
+    timestamp: timestamp,
   });
 
   return <LogTable rows={logs} {...args} />;
