@@ -13,6 +13,5 @@ export function makeMockAppController(): AppController {
     toggleHotkeysDialog: jest.fn(),
     toggleSettings: jest.fn(),
     toggleTooltips: jest.fn(),
-    showNotificationDialog: jest.fn(),
   };
 }

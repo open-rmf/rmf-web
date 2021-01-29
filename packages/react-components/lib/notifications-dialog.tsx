@@ -14,6 +14,7 @@ import {
   Input,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
+import moment from 'moment';
 
 export interface Notification {
   time: string;
@@ -53,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
   },
   paper: {
     display: 'grid',
-    gridTemplateColumns: '1fr repeat(2, 3fr) 1fr',
+    gridTemplateColumns: '1fr 2fr 3fr 1fr',
     textAlign: 'center',
     padding: theme.spacing(1),
     width: '100%',
@@ -213,7 +214,7 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
               Severity
             </Typography>
             <Typography variant="h6" align="left">
-              Date
+              Time Sent
             </Typography>
             <Typography variant="h6" align="left">
               Message
@@ -231,7 +232,7 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
                     severity={notification.severity}
                   />
                   <Typography variant="body1" align="left">
-                    {notification.time}
+                    {moment(notification.time, 'MMMM Do YYYY, h:mm:ss').fromNow()}
                   </Typography>
                   <Typography variant="body1" align="left">
                     {notification.error}

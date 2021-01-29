@@ -15,7 +15,6 @@ import {
   RobotAccordion as RobotAccordion_,
   StackNavigator,
   withSpotlight,
-  StatusAccordion,
 } from 'react-components';
 import { GlobalHotKeys } from 'react-hotkeys';
 import 'typeface-roboto';
@@ -43,8 +42,6 @@ import OmniPanelControl_ from './omnipanel-control';
 import { DashboardState, useDashboardReducer } from './reducers/dashboard-reducer';
 import { DispenserResource } from '../../managers/resource-manager-dispensers';
 
-import { makeStatusData } from '../../mock/fake-status';
-
 const debug = Debug('Dashboard');
 const DispenserAccordion = React.memo(withSpotlight(DispenserAccordion_));
 const DoorAccordion = React.memo(withSpotlight(DoorAccordion_));
@@ -56,7 +53,6 @@ const borderRadius = 20;
 
 export enum OmniPanelViewIndex {
   MainMenu = 0,
-  Status,
   Doors,
   Lifts,
   Robots,
@@ -285,36 +281,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
     dispensers: dispenserStates,
   };
 
-  // // temp code with mock data to display status
-  // // data structure of the notifications is to be determined
-  // const statusIndicators = makeStatusData();
-  // // itemIndicator is used to determine color of the outer dot
-  // let itemState: { [key: string]: boolean };
-  // // used to determine the color of omnipanel main menu indicator
-  // // and background color of status card header
-  // let severityDisplay = React.useRef(true);
-
-  // itemState = React.useMemo(() => {
-  //   const initialItemState: { [key: string]: boolean } = {
-  //     doors: true,
-  //     lifts: true,
-  //     robots: true,
-  //     dispensers: true,
-  //   };
-  //   // reset serverityDisplay to true every render
-  //   severityDisplay.current = true;
-  //   Object.keys(statusIndicators).forEach((category) => {
-  //     Object.keys(statusIndicators[category]).forEach((item) => {
-  //       if (!statusIndicators[category][item].state) {
-  //         initialItemState[category] = false;
-  //         severityDisplay.current = false;
-  //       }
-  //     });
-  //   });
-  //   return initialItemState;
-  // }, [statusIndicators]);
-  // // end of temp code
-
   return (
     <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
       {buildingMap && (
@@ -348,7 +314,9 @@ export default function Dashboard(_props: {}): React.ReactElement {
               pushView={pushView}
               itemState={itemStates}
               tasks={tasks}
-              notifications={[{ severity: 'High', time: '11-01-2020', error: 'hello world' }]}
+              notifications={[
+                { severity: 'High', time: 'January 29th 2021, 8:20:50', error: 'hello world' },
+              ]}
             />
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Doors}>
