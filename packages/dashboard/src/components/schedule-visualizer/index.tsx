@@ -8,7 +8,6 @@ import { AttributionControl, ImageOverlay, LayersControl, Map as LMap, Pane } fr
 import {
   Conflict,
   DefaultTrajectoryManager,
-  RobotTrajectoryManager,
   Trajectory,
   TrajectoryResponse,
 } from '../../managers/robot-trajectory-manager';
