@@ -11,11 +11,12 @@ Install docker and docker-compose
 sudo apt update && sudo apt install docker.io docker-compose
 ```
 
-To avoid having to supply an admin password every time docker containers start (and to avoid losing the password prompt in the massive console log stream if using a window manager that doesn't support pop-up privilege escalation), we suggest adding your user to the `docker` group:
-```bash
-sudo usermod -aG docker $USER
-```
-You'll need to logout/login to reload your group memberships. NOTE: on some window managers like `i3`, you may need to reboot the machine in order to reload your group memberships. Not sure why. You can use the `groups` command to verify that you are in the `docker` group before proceeding.
+Note that starting docker containers requires superuser privileges.
+If you're using GNOME or KDE, there will be a pop-up window to ask for privilege escalation when running the Docker container which runs Keycloak, the authentication mechanism we are currently using.
+If you're using `i3` or other "unusual" window managers, this pop-up may not occur, which can be confusing since a password prompt can be easily lost in the console text stream.
+Although it is possible to allow Docker to start without a privilege-escalation password by adding your user account to the `docker` group, this convenience has security implications, because it's essentially allowing password-less sudo.
+This tradeoff is described in more detail in the Docker documentation:
+https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user
 
 Install nodejs
 ```bash
