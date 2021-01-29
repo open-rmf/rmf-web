@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
   },
   paper: {
     display: 'grid',
-    gridTemplateColumns: '1fr 2fr 3fr 1fr',
+    gridTemplateColumns: 'repeat(2, 1fr) 4fr 1fr',
     textAlign: 'center',
     padding: theme.spacing(1),
     width: '100%',
