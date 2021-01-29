@@ -288,7 +288,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
           <ScheduleVisualizer
             buildingMap={buildingMap}
             mapFloorSort={mapFloorSort}
-            fleets={fleets}
             trajManager={trajManager}
             negotiationTrajStore={negotiationTrajStore}
             onDoorClick={handleDoorMarkerClick}

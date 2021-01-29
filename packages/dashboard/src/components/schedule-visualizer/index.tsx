@@ -12,6 +12,7 @@ import {
   Trajectory,
   TrajectoryResponse,
 } from '../../managers/robot-trajectory-manager';
+import { FleetStateContext } from '../rmf-app';
 import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
 import { toBlobUrl } from '../../util';
 import DispensersOverlay from './dispensers-overlay';
@@ -41,7 +42,6 @@ export interface MapFloorLayer {
 
 export interface ScheduleVisualizerProps extends React.PropsWithChildren<{}> {
   buildingMap: RomiCore.BuildingMap;
-  fleets: RomiCore.FleetState[];
   trajManager?: RobotTrajectoryManager;
   negotiationTrajStore: Readonly<Record<string, NegotiationTrajectoryResponse>>;
   mapFloorSort?(levels: RomiCore.Level[]): string[];
@@ -104,15 +104,18 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   );
   const [bound, setBound] = React.useState(initialBounds);
 
+  const fleetStates = React.useContext(FleetStateContext);
+  const fleets = React.useMemo(() => Object.values(fleetStates), [fleetStates]);
+
   const robots = React.useMemo(
     () =>
-      props.fleets.reduce<Record<string, RomiCore.RobotState>>((prev, fleet) => {
+      fleets.reduce<Record<string, RomiCore.RobotState>>((prev, fleet) => {
         fleet.robots.forEach((robot) => {
           prev[robotHash(robot.name, fleet.name)] = robot;
         });
         return prev;
       }, {}),
-    [props.fleets],
+    [fleets],
   );
 
   const trajLookahead = 60000; // 1 min
@@ -356,7 +359,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
               <RobotsOverlay
                 currentFloorName={curLevelName}
                 bounds={curMapFloorLayer.bounds}
-                fleets={props.fleets}
+                fleets={fleets}
                 onRobotClick={props.onRobotClick}
                 conflictRobotNames={conflictRobotNames}
               />
