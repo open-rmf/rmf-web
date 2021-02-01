@@ -195,17 +195,25 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
           },
         });
         debug('set trajectories');
-        setTrajectories((prev) => ({
-          ...prev,
-          [curMapFloorLayer.level.name]: resp,
-        }));
+        if (Object.entries(negotiationTrajStore).length === 0) {
+          // console.log(Object.entries(negotiationTrajStore))
+          // console.log(negotiationTrajStore)
+          // console.log('traj store is empty')
+          setTrajectories((prev) => ({
+            ...prev,
+            [curMapFloorLayer.level.name]: resp,
+          }));
+        } else {
+          // console.log('trajectory is empty')
+          setTrajectories({});
+        }
       }
 
       await updateTrajectory();
       interval = window.setInterval(updateTrajectory, trajAnimDuration);
     })();
     return () => clearInterval(interval);
-  }, [trajManager, curMapFloorLayer, trajAnimDuration]);
+  }, [trajManager, curMapFloorLayer, trajAnimDuration, negotiationTrajStore]);
 
   // Show notification when a conflict happens.
   const { showNotification: notificationDispatch } = React.useContext(AppControllerContext);
@@ -328,28 +336,28 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
           )}
         </LayersControl.Overlay>
 
-        <LayersControl.Overlay
+        {/* <LayersControl.Overlay
           name="Negotiation Trajectories"
           data-component="NegotiationTrajCheckbox"
           checked
-        >
-          {curMapFloorLayer && (
-            <Pane>
-              <ColorContext.Provider value={negotiationColors}>
-                <RobotTrajectoriesOverlay
-                  bounds={curMapFloorLayer.bounds}
-                  robots={robots}
-                  trajectories={
-                    negotiationTrajStore[curLevelName]
-                      ? props.negotiationTrajStore[curLevelName].values
-                      : []
-                  }
-                  conflicts={getConflicts(curLevelName)}
-                />
-              </ColorContext.Provider>
-            </Pane>
-          )}
-        </LayersControl.Overlay>
+        > */}
+        {curMapFloorLayer && (
+          <Pane>
+            <ColorContext.Provider value={negotiationColors}>
+              <RobotTrajectoriesOverlay
+                bounds={curMapFloorLayer.bounds}
+                robots={robots}
+                trajectories={
+                  negotiationTrajStore[curLevelName]
+                    ? props.negotiationTrajStore[curLevelName].values
+                    : []
+                }
+                conflicts={getConflicts(curLevelName)}
+              />
+            </ColorContext.Provider>
+          </Pane>
+        )}
+        {/* </LayersControl.Overlay> */}
 
         <LayersControl.Overlay name="Doors" checked>
           {curMapFloorLayer && (
