@@ -9,7 +9,7 @@ setup(
     packages=['api_server'],
     install_requires=[
         'fastapi>=0.63,<0.64',
-        'uvicorn>=0.13,<0.14',
+        'uvicorn[standard]>=0.13,<0.14',
         'aiofiles>=0.6,<0.7',
         'python-socketio>=5,<6',
         'rx>=3,<4',
