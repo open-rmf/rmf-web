@@ -16,7 +16,7 @@ const timestamp = new Date('Mon Jan  1 00:00:02 UTC 2001').toISOString();
 
 const getLogs = () => {
   const rows = [];
-  for (let i = 0; i < 200; i++) {
+  for (let i = 0; i < 500; i++) {
     rows.push({
       message: 'Test' + i,
       level: 'Debug',

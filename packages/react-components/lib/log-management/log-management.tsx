@@ -63,7 +63,7 @@ export const LogManagement = (props: LogManagementProps): React.ReactElement => 
     <>
       <SearchLogForm logLabelValues={logLabels} search={searchLogs}></SearchLogForm>
       <div className={classes.table}>
-        <LogTable rows={logs}></LogTable>
+        {logs.length !== 0 && <LogTable rows={logs} tableSize={'49vh'} />}
       </div>
     </>
   );

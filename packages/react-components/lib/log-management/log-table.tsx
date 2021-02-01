@@ -1,50 +1,21 @@
 import React from 'react';
-import TableContainer from '@material-ui/core/TableContainer';
-import {
-  makeStyles,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  TablePagination,
-  TableFooter,
-} from '@material-ui/core';
-import Paper from '@material-ui/core/Paper';
-import TablePaginationActions from '@material-ui/core/TablePagination/TablePaginationActions';
+import MaterialTable from 'material-table';
 import { LogLevel } from '.';
+import { makeStyles } from '@material-ui/core';
 import moment from 'moment';
+import { materialTableIcons } from '../material-table-icons';
 
 export type LogRowsType = { level: string; message: string; timestamp: string }[];
+
 export interface LogTableProps {
   rows: LogRowsType | [];
+  tableSize?: string; // units vh or rem
 }
+
 const useStyles = makeStyles((theme) => ({
-  table: {
-    minWidth: 650,
-  },
-  container: {
-    maxHeight: '55vh',
-  },
-  root: {
-    width: '100%',
-  },
-  dateColumn: {
-    width: '8.5rem',
-  },
   textColumn: {
     whiteSpace: 'pre-wrap',
-    wordWrap: 'break-word',
     width: '65rem',
-  },
-  dateLabel: {
-    width: '8.5rem',
-  },
-  messageLabel: {
-    width: '65rem',
-  },
-  levelLabel: {
-    width: '3rem',
   },
   error: {
     color: theme.palette.error.main,
@@ -61,24 +32,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const LogTable = (props: LogTableProps): React.ReactElement => {
-  const { rows } = props;
+  const { rows, tableSize } = props;
   const classes = useStyles();
-
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(50);
-
-  const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
-
-  const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
 
   const getLogLevelStyle = (level: string): string | undefined => {
     level = level.toLowerCase();
@@ -99,74 +54,47 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
   };
 
   return (
-    <Paper className={classes.root}>
-      <TableContainer className={classes.container}>
-        <Table className={classes.table} size="small" stickyHeader={true} aria-label="sticky table">
-          <TableHead>
-            <TableRow>
-              <TableCell align="center" className={classes.levelLabel}>
-                Level
-              </TableCell>
-              <TableCell align="center" className={classes.messageLabel}>
-                Message
-              </TableCell>
-              <TableCell align="center" className={classes.dateLabel}>
-                Timestamp
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {(rowsPerPage > 0
-              ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              : rows
-            ).map((row) => (
-              <TableRow key={row.message + row.timestamp}>
-                <TableCell
-                  align="center"
-                  className={`${getLogLevelStyle(row.level)} ${classes.levelLabel}`}
-                >
-                  {row.level}
-                </TableCell>
-                <TableCell align="left" className={classes.textColumn}>
-                  {row.message}
-                </TableCell>
-                <TableCell
-                  className={classes.dateColumn}
-                  align="center"
-                  data-testid={'log-table-date'}
-                >
-                  {moment(row.timestamp).format('lll')}
-                </TableCell>
-              </TableRow>
-            ))}
-            {emptyRows > 0 && (
-              <TableRow style={{ height: 53 * emptyRows }}>
-                <TableCell colSpan={6} />
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <Table>
-        <TableFooter>
-          <TableRow>
-            <TablePagination
-              rowsPerPageOptions={[50, 100, 200, { label: 'All', value: -1 }]}
-              colSpan={5}
-              count={rows.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              SelectProps={{
-                inputProps: { 'aria-label': 'rows per page' },
-                native: true,
-              }}
-              onChangePage={handleChangePage}
-              onChangeRowsPerPage={handleChangeRowsPerPage}
-              ActionsComponent={TablePaginationActions}
-            />
-          </TableRow>
-        </TableFooter>
-      </Table>
-    </Paper>
+    <MaterialTable
+      title="Log Result"
+      icons={materialTableIcons}
+      columns={[
+        {
+          title: 'Level',
+          field: 'level',
+          type: 'string',
+          align: 'center',
+          cellStyle: { padding: '0px' },
+          render: (rowData) => {
+            return <p className={`${getLogLevelStyle(rowData.level)} `}>{rowData.level}</p>;
+          },
+        },
+        {
+          title: 'Message',
+          field: 'message',
+          type: 'string',
+          cellStyle: { padding: '0px' },
+          render: (rowData) => {
+            return <p className={classes.textColumn}>{rowData.message}</p>;
+          },
+        },
+        {
+          title: 'Timestamp',
+          field: 'timestamp',
+          type: 'datetime',
+          align: 'center',
+          cellStyle: { padding: '0px' },
+          render: (rowData) => {
+            return <p data-testid={'log-table-date'}>{moment(rowData.timestamp).format('lll')}</p>;
+          },
+        },
+      ]}
+      data={rows}
+      options={{
+        filtering: true,
+        pageSize: 100,
+        pageSizeOptions: [50, 100, 200],
+        maxBodyHeight: tableSize ? tableSize : '80vh',
+      }}
+    />
   );
 };

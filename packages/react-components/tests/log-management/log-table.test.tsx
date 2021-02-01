@@ -36,8 +36,8 @@ describe('Log table test', () => {
 
   it('shows the correct number of rows', () => {
     const allRows = root.container.querySelectorAll('tr').length;
-    // -2. from the tr of the table header and the tr from the pagination table
-    expect(allRows - 2).toBe(50);
+    // -3. from the tr of the table header, filter and pagination table
+    expect(allRows - 3).toBe(100);
   });
 });
 
@@ -47,26 +47,26 @@ describe('Table footer Pagination', () => {
     root = render(<LogTable rows={rows} />);
   });
   it('show the correct number of rows per page', () => {
-    expect(root.findByLabelText('1-50 of 110')).toBeTruthy();
-  });
-
-  it('can change the rows per page', async () => {
-    userEvent.click(root.getByText('50'));
-    userEvent.click(root.getByText('100'));
-
     expect(root.findByLabelText('1-100 of 110')).toBeTruthy();
   });
 
+  it('can change the rows per page', async () => {
+    userEvent.click(root.getByText('100 rows'));
+    userEvent.click(root.getByText('50'));
+
+    expect(root.findByLabelText('1-50 of 110')).toBeTruthy();
+  });
+
   it('advance page when the `Next page` button is clicked ', () => {
-    userEvent.click(root.getByLabelText('Next page'));
-    expect(root.findByLabelText('51-100 of 110')).toBeTruthy();
+    userEvent.click(root.getByTitle('Next Page'));
+    expect(root.findByLabelText('101-110 of 110')).toBeTruthy();
   });
 
   it('goes to previous page when the `Previous page` button is clicked ', () => {
-    userEvent.click(root.getByLabelText('Next page'));
-    expect(root.findByLabelText('51-100 of 110')).toBeTruthy();
-    userEvent.click(root.getByLabelText('Previous page'));
-    expect(root.findByLabelText('1-50 of 110')).toBeTruthy();
+    userEvent.click(root.getByTitle('Next Page'));
+    expect(root.findByLabelText('101-110 of 110')).toBeTruthy();
+    userEvent.click(root.getByTitle('Previous Page'));
+    expect(root.findByLabelText('1-100 of 110')).toBeTruthy();
   });
 });
 
