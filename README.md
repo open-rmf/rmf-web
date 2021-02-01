@@ -11,11 +11,15 @@ Install docker and docker-compose
 sudo apt update && sudo apt install docker.io docker-compose
 ```
 
-Note that starting docker containers requires superuser privileges.
 If you're using GNOME or KDE, there will be a pop-up window to ask for privilege escalation when running the Docker container which runs Keycloak, the authentication mechanism we are currently using.
 If you're using `i3` or other "unusual" window managers, this pop-up may not occur, which can be confusing since a password prompt can be easily lost in the console text stream.
-Although it is possible to allow Docker to start without a privilege-escalation password by adding your user account to the `docker` group, this convenience has security implications, because it's essentially allowing password-less sudo.
-This tradeoff is described in more detail in the Docker documentation:
+You can add yourself to the `docker` group to allow containers to start without requesting your password:
+```
+sudo usermod -aG docker $USER
+```
+After issuing this command, you may need to logout/login or restart your system depending on your OS/environment.
+
+Keep in mind that this convenience has security implications. This tradeoff is described in more detail in the Docker documentation:
 https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user
 
 Install nodejs
