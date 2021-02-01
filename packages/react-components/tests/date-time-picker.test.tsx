@@ -6,7 +6,7 @@ import moment from 'moment';
 describe('date time picker', () => {
   it('shows the correct Label', async () => {
     const handleDateChange = jest.fn();
-    const timestamp = new Date('Mon Jan  1 00:00:02 UTC 2001').toISOString();
+    const timestamp = new Date('Mon Jan  1 00:00:02 UTC 2001').toISOString().substr(0, 16);
     const root = render(
       <DateAndTimePickers
         name={'picker'}
