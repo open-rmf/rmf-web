@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles, Typography, Grid, Paper } from '@material-ui/core';
-import { MainMenuTaskStateProps, ItemSummaryState } from './index';
+import { MainMenuTaskStateProps, TaskSummaryState } from './index';
 
 const useStyles = makeStyles((theme) => ({
   grid: {
@@ -25,7 +25,7 @@ export const MainMenuTaskState = (props: MainMenuTaskStateProps): JSX.Element =>
   const { tasks } = props;
 
   const getTaskSummary = () => {
-    const modeCounter: ItemSummaryState = { active: 0, finish: 0, failed: 0, queued: 0 };
+    const modeCounter: TaskSummaryState = { active: 0, finish: 0, failed: 0, queued: 0 };
     tasks.forEach((task) => {
       switch (task.state) {
         case 0:

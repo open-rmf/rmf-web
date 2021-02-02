@@ -17,7 +17,7 @@ export default {
 const itemStateDataDoor: MainMenuItemStateProps = {
   itemSummary: {
     item: 'Doors',
-    summary: [{ operational: 1 }, { outOfOrder: 1 }],
+    summary: { operational: 1, outOfOrder: 1 },
   },
   handleClick: () => {
     /**filler */
@@ -26,8 +26,8 @@ const itemStateDataDoor: MainMenuItemStateProps = {
 
 const itemStateDataRobot: MainMenuItemStateProps = {
   itemSummary: {
-    item: 'Robot',
-    summary: [{ operational: 1 }, { outOfOrder: 1 }, { idle: 1 }, { charging: 1 }],
+    item: 'Robots',
+    summary: { operational: 2, outOfOrder: 0, idle: 1, charging: 1 },
   },
   handleClick: () => {
     /**filler */

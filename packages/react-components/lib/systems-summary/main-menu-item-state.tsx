@@ -30,17 +30,33 @@ const useStyles = makeStyles((theme) => ({
   button: {
     padding: 0,
   },
+  robotGrid: {
+    marginTop: '1rem',
+  },
 }));
 
 export const MainMenuItemState = (props: MainMenuItemStateProps): JSX.Element => {
   const classes = useStyles();
   const { itemSummary, handleClick } = props;
-  const getStatusLabel = (mode: string): string => {
+
+  const totalItem: number = React.useMemo(() => {
+    return itemSummary.summary.operational + itemSummary.summary.outOfOrder;
+  }, [itemSummary]);
+
+  const operationalItem: number = React.useMemo(() => {
+    return itemSummary.summary.operational;
+  }, [itemSummary]);
+
+  const getOperationalStatusLabel = (total: number, operational: number): string => {
+    if (total === operational) {
+      return `${classes.paper} ${classes.operational}`;
+    } else {
+      return `${classes.paper} ${classes.warning}`;
+    }
+  };
+
+  const getOtherStatusLabel = (mode: string): string => {
     switch (mode) {
-      case 'operational':
-        return `${classes.paper} ${classes.operational}`;
-      case 'outOfOrder':
-        return `${classes.paper} ${classes.warning}`;
       case 'idle':
         return `${classes.paper} ${classes.idle}`;
       case 'charging':
@@ -54,29 +70,55 @@ export const MainMenuItemState = (props: MainMenuItemStateProps): JSX.Element =>
     <React.Fragment>
       <Grid container spacing={1} direction="column">
         <Grid item className={classes.headerGrid}>
-          <Typography variant="body1">{itemSummary.item}</Typography>
+          <Typography variant="h6">{itemSummary.item}</Typography>
           <Button className={classes.button} onClick={handleClick}>
-            Details <NavigateNextIcon />{' '}
+            <Typography variant="h6">Details </Typography>
+            <NavigateNextIcon />
           </Button>
         </Grid>
         <Grid item>
-          <Grid container spacing={2} justify="flex-start" direction="row">
-            {itemSummary.summary.map((summary) => {
-              const mode = Object.keys(summary)[0];
-              return (
-                <Grid key={mode} item xs={6}>
-                  <Paper className={getStatusLabel(mode)} elevation={3}>
-                    <Typography noWrap align="center" variant="h6">
-                      {summary[mode]}
-                    </Typography>
-                    <Typography align="center" variant="body1">
-                      {mode === 'outOfOrder' ? 'Out Of Order' : mode}
-                    </Typography>
-                  </Paper>
-                </Grid>
-              );
-            })}
+          <Grid container justify="flex-start" direction="row">
+            <Grid item xs={12}>
+              <Paper
+                className={getOperationalStatusLabel(totalItem, operationalItem)}
+                elevation={3}
+              >
+                <Typography noWrap align="center" variant="h6">
+                  {`${operationalItem}/${totalItem}`}
+                </Typography>
+                <Typography align="center" variant="body1">
+                  operational
+                </Typography>
+              </Paper>
+            </Grid>
           </Grid>
+        </Grid>
+        <Grid className={classes.robotGrid} item>
+          {itemSummary.item === 'Robots' ? (
+            <Grid container justify="flex-start" direction="row" spacing={3}>
+              <Grid item xs={6}>
+                <Paper className={getOtherStatusLabel('idle')} elevation={3}>
+                  <Typography noWrap align="center" variant="h6">
+                    {itemSummary.summary.idle}
+                  </Typography>
+                  <Typography align="center" variant="body1">
+                    Idle
+                  </Typography>
+                </Paper>
+              </Grid>
+
+              <Grid item xs={6}>
+                <Paper className={getOtherStatusLabel('charging')} elevation={3}>
+                  <Typography noWrap align="center" variant="h6">
+                    {itemSummary.summary.charging}
+                  </Typography>
+                  <Typography align="center" variant="body1">
+                    Chargin
+                  </Typography>
+                </Paper>
+              </Grid>
+            </Grid>
+          ) : null}
         </Grid>
       </Grid>
     </React.Fragment>

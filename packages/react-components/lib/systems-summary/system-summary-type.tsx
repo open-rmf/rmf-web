@@ -2,12 +2,15 @@ import { Notification } from '../index';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 
 export interface ItemSummaryState {
-  [key: string]: number;
+  operational: number;
+  outOfOrder: number;
+  idle?: number;
+  charging?: number;
 }
 
 export interface ItemSummary {
   item: string;
-  summary: ItemSummaryState[];
+  summary: ItemSummaryState;
 }
 
 export interface MainMenuItemStateProps {
@@ -21,4 +24,8 @@ export interface MainMenuAlertProps {
 
 export interface MainMenuTaskStateProps {
   tasks: RomiCore.TaskSummary[];
+}
+
+export interface TaskSummaryState {
+  [key: string]: number;
 }

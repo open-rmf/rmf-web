@@ -100,7 +100,7 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
     });
     return {
       item: 'Door',
-      summary: [{ operational: modeCounter.operational }, { outOfOrder: modeCounter.outOfOrder }],
+      summary: { operational: modeCounter.operational, outOfOrder: modeCounter.outOfOrder },
     };
   };
 
@@ -125,7 +125,7 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
     });
     return {
       item: 'Lift',
-      summary: [{ operational: modeCounter.operational }, { outOfOrder: modeCounter.outOfOrder }],
+      summary: { operational: modeCounter.operational, outOfOrder: modeCounter.outOfOrder },
     };
   };
 
@@ -149,7 +149,7 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
 
     return {
       item: 'Dispensers',
-      summary: [{ operational: modeCounter.operational }, { outOfOrder: modeCounter.outOfOrder }],
+      summary: { operational: modeCounter.operational, outOfOrder: modeCounter.outOfOrder },
     };
   };
 
@@ -183,12 +183,12 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
     });
     return {
       item: 'Robots',
-      summary: [
-        { operational: modeCounter.operational },
-        { outOfOrder: modeCounter.outOfOrder },
-        { charging: modeCounter.charging },
-        { idle: modeCounter.idle },
-      ],
+      summary: {
+        operational: modeCounter.operational,
+        outOfOrder: modeCounter.outOfOrder,
+        charging: modeCounter.charging,
+        idle: modeCounter.idle,
+      },
     };
   };
 
