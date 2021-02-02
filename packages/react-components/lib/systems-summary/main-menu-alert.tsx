@@ -1,11 +1,8 @@
 import React from 'react';
 import { makeStyles, Typography, Button, Badge } from '@material-ui/core';
 import NotificationsIcon from '@material-ui/icons/Notifications';
-import { NotificationsDialog, Notification } from 'react-components';
-
-export interface MainMenuAlertProps {
-  notifications: Notification[];
-}
+import { NotificationsDialog } from '../index';
+import { MainMenuAlertProps } from './index';
 
 const useStyles = makeStyles((theme) => ({
   h2: {
@@ -34,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const MainMenuAlert = (props: MainMenuAlertProps) => {
+export const MainMenuAlert = (props: MainMenuAlertProps): JSX.Element => {
   const classes = useStyles();
   const { notifications } = props;
 

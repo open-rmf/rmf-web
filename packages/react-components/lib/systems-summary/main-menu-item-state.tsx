@@ -1,12 +1,7 @@
 import React from 'react';
 import { makeStyles, Typography, Grid, Paper, Button } from '@material-ui/core';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import { ItemSummary } from './main-menu';
-
-export interface MainMenuItemStateProps {
-  itemSummary: ItemSummary;
-  handleClick: () => void;
-}
+import { MainMenuItemStateProps } from './index';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -37,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const MainMenuItemState = (props: MainMenuItemStateProps) => {
+export const MainMenuItemState = (props: MainMenuItemStateProps): JSX.Element => {
   const classes = useStyles();
   const { itemSummary, handleClick } = props;
   const getStatusLabel = (mode: string): string => {
@@ -69,7 +64,7 @@ export const MainMenuItemState = (props: MainMenuItemStateProps) => {
             {itemSummary.summary.map((summary) => {
               const mode = Object.keys(summary)[0];
               return (
-                <Grid item xs={6}>
+                <Grid key={mode} item xs={6}>
                   <Paper className={getStatusLabel(mode)} elevation={3}>
                     <Typography noWrap align="center" variant="h6">
                       {summary[mode]}

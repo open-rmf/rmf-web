@@ -1,7 +1,6 @@
 import React from 'react';
 import { makeStyles, Typography, Grid, Paper } from '@material-ui/core';
-import { ItemSummaryState } from './main-menu';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import { MainMenuTaskStateProps, ItemSummaryState } from './index';
 
 const useStyles = makeStyles((theme) => ({
   grid: {
@@ -21,16 +20,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export interface MainMenuTaskStateProps {
-  tasks: RomiCore.TaskSummary[];
-}
-
-export const MainMenuTaskState = (props: MainMenuTaskStateProps) => {
+export const MainMenuTaskState = (props: MainMenuTaskStateProps): JSX.Element => {
   const classes = useStyles();
   const { tasks } = props;
 
   const getTaskSummary = () => {
-    let modeCounter: ItemSummaryState = { active: 0, finish: 0, failed: 0, queued: 0 };
+    const modeCounter: ItemSummaryState = { active: 0, finish: 0, failed: 0, queued: 0 };
     tasks.forEach((task) => {
       switch (task.state) {
         case 0:
@@ -70,7 +65,7 @@ export const MainMenuTaskState = (props: MainMenuTaskStateProps) => {
       <Grid className={classes.grid} spacing={2} container direction="row">
         {Object.keys(getTaskSummary()).map((key) => {
           return (
-            <Grid item xs={3}>
+            <Grid key={key} item xs={3}>
               <Paper elevation={3} className={getStatusLabel(key)}>
                 <Typography align="center" variant="h6">
                   {getTaskSummary()[key]}

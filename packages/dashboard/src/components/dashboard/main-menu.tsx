@@ -2,13 +2,16 @@ import { Divider, makeStyles, Typography, Button } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import React from 'react';
-import DashboardTooltip from 'react-components/lib/tooltip';
 import { TooltipsContext } from '../app-contexts';
 import { OmniPanelViewIndex } from './dashboard';
-import { MainMenuItemState } from './main-menu-item-state';
-import { MainMenuTaskState } from './main-menu-task-state';
-import { MainMenuAlert } from './main-menu-alert';
-import { Notification } from 'react-components';
+import {
+  Notification,
+  MainMenuItemState,
+  DashboardTooltip,
+  MainMenuAlert,
+  MainMenuTaskState,
+  ItemSummary,
+} from 'react-components';
 
 const debug = Debug('MainMenu');
 
@@ -37,15 +40,6 @@ export interface ItemState {
   dispensers: Record<string, RomiCore.DispenserState>;
 }
 
-export interface ItemSummaryState {
-  [key: string]: number;
-}
-
-export interface ItemSummary {
-  item: string;
-  summary: ItemSummaryState[];
-}
-
 export interface MainMenuProps {
   pushView(view: OmniPanelViewIndex): void;
   itemState: ItemState;
@@ -58,7 +52,7 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
   const { pushView, itemState, tasks, notifications } = props;
   debug('render');
   const classes = useStyles();
-  // console.log(itemState);
+
   const handleMainMenuDoorsClick = React.useCallback(() => {
     pushView(OmniPanelViewIndex.Doors);
   }, [pushView]);
