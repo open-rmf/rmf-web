@@ -5,7 +5,6 @@
 ########################################################
 
 from tortoise import fields
-from .ros_time import RosTimeField
 
 
 class ChargerCancelMixin():
@@ -20,7 +19,7 @@ class ChargerRequestMixin():
     request_id = fields.TextField()
 
 class ChargerStateMixin():
-    charger_time = RosTimeField()
+    charger_time = fields.DatetimeField()
     state = fields.IntField()
     charger_name = fields.TextField()
     error_message = fields.TextField()

@@ -5,7 +5,6 @@
 ########################################################
 
 from tortoise import fields
-from .ros_time import RosTimeField
 
 
 class DestinationRequestMixin():
@@ -31,7 +30,7 @@ class FleetStateMixin():
     robots = fields.JSONField()
 
 class LocationMixin():
-    t = RosTimeField()
+    t = fields.DatetimeField()
     x = fields.FloatField()
     y = fields.FloatField()
     yaw = fields.FloatField()

@@ -5,7 +5,6 @@
 ########################################################
 
 from tortoise import fields
-from .ros_time import RosTimeField
 
 
 class BehaviorMixin():
@@ -25,7 +24,7 @@ class BidProposalMixin():
     task_profile = fields.JSONField()
     prev_cost = fields.FloatField()
     new_cost = fields.FloatField()
-    finish_time = RosTimeField()
+    finish_time = fields.DatetimeField()
     robot_name = fields.TextField()
 
 class CleanMixin():
@@ -59,7 +58,7 @@ class StationMixin():
     place_name = fields.TextField()
 
 class TaskDescriptionMixin():
-    start_time = RosTimeField()
+    start_time = fields.DatetimeField()
     task_type = fields.JSONField()
     station = fields.JSONField()
     loop = fields.JSONField()
@@ -68,7 +67,7 @@ class TaskDescriptionMixin():
 
 class TaskProfileMixin():
     task_id = fields.TextField()
-    submission_time = RosTimeField()
+    submission_time = fields.DatetimeField()
     description = fields.JSONField()
 
 class TaskSummaryMixin():
@@ -77,9 +76,9 @@ class TaskSummaryMixin():
     task_profile = fields.JSONField()
     state = fields.IntField()
     status = fields.TextField()
-    submission_time = RosTimeField()
-    start_time = RosTimeField()
-    end_time = RosTimeField()
+    submission_time = fields.DatetimeField()
+    start_time = fields.DatetimeField()
+    end_time = fields.DatetimeField()
     robot_name = fields.TextField()
 
 class TaskTypeMixin():
@@ -115,7 +114,7 @@ class GetTaskList_ResponseMixin():
 
 class SubmitTask_RequestMixin():
     requester = fields.TextField()
-    start_time = RosTimeField()
+    start_time = fields.DatetimeField()
     description = fields.JSONField()
     evaluator = fields.SmallIntField()
 

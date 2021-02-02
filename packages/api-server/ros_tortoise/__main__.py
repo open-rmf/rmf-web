@@ -57,7 +57,7 @@ def ros_to_tortoise_type(ros_type: RosType) -> str:
         uint8: Binary
         others: JSON
     special:
-        builtin_interfaces/Time: DateTimeField (assumed to be utc)
+        builtin_interfaces/Time: DatetimeField (assumed to be utc)
     '''
     if ros_type.is_primitive_type():
         if ros_type.is_array:
@@ -84,16 +84,12 @@ def ros_to_tortoise_type(ros_type: RosType) -> str:
             return 'fields.BinaryField()'
     else:
         if ros_type.__str__() == 'builtin_interfaces/Time':
-            return 'RosTimeField()'
+            return 'fields.DatetimeField()'
         else:
             return 'fields.JSONField()'
 
 
 def get_imports(pkg_spec: PackageSpec):
-    for message in pkg_spec.messages:
-        for field in message.fields:
-            if field.type.__str__() == 'builtin_interfaces/Time':
-                return ['from .ros_time import RosTimeField']
     return []
 
 
@@ -146,10 +142,6 @@ def main():
         with open(outfile, 'w') as f:
             f.write(mixins)
         print(outfile)
-
-    ros_time_file = f'{args.output}/ros_time.py'
-    shutil.copy(f'{os.path.dirname(__file__)}/ros_time.py', ros_time_file)
-    print(ros_time_file)
 
     init_file = f'{args.output}/__init__.py'
     with open(f'{args.output}/__init__.py', 'w') as f:

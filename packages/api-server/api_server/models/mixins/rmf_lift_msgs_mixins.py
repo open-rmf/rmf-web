@@ -5,19 +5,18 @@
 ########################################################
 
 from tortoise import fields
-from .ros_time import RosTimeField
 
 
 class LiftRequestMixin():
     lift_name = fields.TextField()
-    request_time = RosTimeField()
+    request_time = fields.DatetimeField()
     session_id = fields.TextField()
     request_type = fields.SmallIntField()
     destination_floor = fields.TextField()
     door_state = fields.SmallIntField()
 
 class LiftStateMixin():
-    lift_time = RosTimeField()
+    lift_time = fields.DatetimeField()
     lift_name = fields.TextField()
     available_floors = fields.JSONField()
     current_floor = fields.TextField()

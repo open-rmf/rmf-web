@@ -5,14 +5,13 @@
 ########################################################
 
 from tortoise import fields
-from .ros_time import RosTimeField
 
 
 class DoorModeMixin():
     value = fields.IntField()
 
 class DoorRequestMixin():
-    request_time = RosTimeField()
+    request_time = fields.DatetimeField()
     requester_id = fields.TextField()
     door_name = fields.TextField()
     requested_mode = fields.JSONField()
@@ -22,12 +21,12 @@ class DoorSessionsMixin():
     sessions = fields.JSONField()
 
 class DoorStateMixin():
-    door_time = RosTimeField()
+    door_time = fields.DatetimeField()
     door_name = fields.TextField()
     current_mode = fields.JSONField()
 
 class SessionMixin():
-    request_time = RosTimeField()
+    request_time = fields.DatetimeField()
     requester_id = fields.TextField()
 
 class SupervisorHeartbeatMixin():

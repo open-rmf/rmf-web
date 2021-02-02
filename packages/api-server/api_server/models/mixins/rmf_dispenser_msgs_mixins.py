@@ -5,11 +5,10 @@
 ########################################################
 
 from tortoise import fields
-from .ros_time import RosTimeField
 
 
 class DispenserRequestMixin():
-    time = RosTimeField()
+    time = fields.DatetimeField()
     request_guid = fields.TextField()
     target_guid = fields.TextField()
     transporter_type = fields.TextField()
@@ -21,13 +20,13 @@ class DispenserRequestItemMixin():
     compartment_name = fields.TextField()
 
 class DispenserResultMixin():
-    time = RosTimeField()
+    time = fields.DatetimeField()
     request_guid = fields.TextField()
     source_guid = fields.TextField()
     status = fields.SmallIntField()
 
 class DispenserStateMixin():
-    time = RosTimeField()
+    time = fields.DatetimeField()
     guid = fields.TextField()
     mode = fields.IntField()
     request_guid_queue = fields.JSONField()
