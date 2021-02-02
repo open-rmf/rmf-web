@@ -12,6 +12,8 @@ import {
   MainMenuTaskState,
   ItemSummary,
   MainMenuBanner,
+  liftModeToString,
+  robotModeToString,
 } from 'react-components';
 
 const debug = Debug('MainMenu');
@@ -87,6 +89,7 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
 
   const getDoorSummary = (): ItemSummary => {
     let modeCounter = { operational: 0, outOfOrder: 0 };
+    const spoiltEquipment: string[] = [];
     const doors = itemState.doors;
     const doorKeys = Object.keys(doors);
 
@@ -99,17 +102,20 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
           break;
         default:
           modeCounter['outOfOrder'] += 1;
+          spoiltEquipment.push(door + ' - Unknown');
           break;
       }
     });
     return {
       item: 'Door',
       summary: { operational: modeCounter.operational, outOfOrder: modeCounter.outOfOrder },
+      outOfOrder: spoiltEquipment,
     };
   };
 
   const getLiftSummary = (): ItemSummary => {
     let modeCounter = { operational: 0, outOfOrder: 0 };
+    const spoiltEquipment: string[] = [];
     const lifts = itemState.lifts;
     const liftKeys = Object.keys(lifts);
 
@@ -123,6 +129,7 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
         case 3:
         case 5:
         case 0:
+          spoiltEquipment.push(lift + ` - ${liftModeToString(lifts[lift].current_mode)}`);
           modeCounter['outOfOrder'] += 1;
           break;
       }
@@ -130,11 +137,13 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
     return {
       item: 'Lift',
       summary: { operational: modeCounter.operational, outOfOrder: modeCounter.outOfOrder },
+      outOfOrder: spoiltEquipment,
     };
   };
 
   const getDispenserSummary = (): ItemSummary => {
     let modeCounter = { operational: 0, outOfOrder: 0 };
+    const spoiltEquipment: string[] = [];
     const dispensers = itemState.dispensers;
     const dispenserKeys = Object.keys(dispensers);
 
@@ -146,6 +155,7 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
           modeCounter['operational'] += 1;
           break;
         default:
+          spoiltEquipment.push(dispenser + '- Unknown');
           modeCounter['outOfOrder'] += 1;
           break;
       }
@@ -154,11 +164,13 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
     return {
       item: 'Dispensers',
       summary: { operational: modeCounter.operational, outOfOrder: modeCounter.outOfOrder },
+      outOfOrder: spoiltEquipment,
     };
   };
 
   const getRobotSummary = (): ItemSummary => {
     let modeCounter = { operational: 0, outOfOrder: 0, charging: 0, idle: 0 };
+    const spoiltEquipment: string[] = [];
     const fleets = itemState.robots;
     const fleetKeys = Object.keys(fleets);
 
@@ -167,6 +179,7 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
         switch (robot.mode.mode) {
           case 8:
           case 5:
+            spoiltEquipment.push(robot.name + ` - ${robotModeToString(robot.mode)}`);
             modeCounter['outOfOrder'] += 1;
             break;
           case 1:
@@ -193,6 +206,7 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
         charging: modeCounter.charging,
         idle: modeCounter.idle,
       },
+      outOfOrder: spoiltEquipment,
     };
   };
 

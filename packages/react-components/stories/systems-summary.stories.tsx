@@ -20,6 +20,7 @@ const itemStateDataDoor: MainMenuItemStateProps = {
   itemSummary: {
     item: 'Doors',
     summary: { operational: 1, outOfOrder: 1 },
+    outOfOrder: [],
   },
   handleClick: () => {
     /**filler */
@@ -30,6 +31,7 @@ const itemStateDataRobot: MainMenuItemStateProps = {
   itemSummary: {
     item: 'Robots',
     summary: { operational: 2, outOfOrder: 0, idle: 1, charging: 1 },
+    outOfOrder: [],
   },
   handleClick: () => {
     /**filler */

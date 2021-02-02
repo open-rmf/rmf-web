@@ -11,6 +11,7 @@ export interface ItemSummaryState {
 export interface ItemSummary {
   item: string;
   summary: ItemSummaryState;
+  outOfOrder: string[];
 }
 
 export interface MainMenuItemStateProps {
