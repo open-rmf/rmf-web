@@ -6,6 +6,8 @@ import {
   MainMenuAlert,
   MainMenuTaskState,
   MainMenuTaskStateProps,
+  MainMenuBanner,
+  MainMenuBannerProps,
 } from '../lib';
 import { Meta, Story } from '@storybook/react';
 
@@ -75,6 +77,11 @@ const mainMenuTaskStateData: MainMenuTaskStateProps = {
   ],
 };
 
+const mainMenuBannerData: MainMenuBannerProps = {
+  bannerUrl: 'testUrl',
+  isError: false,
+};
+
 export const MainMenuItemStateStory: Story = (args) => (
   <React.Fragment>
     <MainMenuItemState
@@ -99,4 +106,20 @@ export const MainMenuItemAlertStory: Story = (args) => (
 
 export const MainMenuTaskStateStory: Story = (args) => (
   <MainMenuTaskState tasks={mainMenuTaskStateData.tasks} {...args} />
+);
+
+export const MainMenuBannerStory: Story = (args) => (
+  <React.Fragment>
+    <MainMenuBanner
+      bannerUrl={mainMenuBannerData.bannerUrl}
+      isError={mainMenuBannerData.isError}
+      {...args}
+    />
+    <div style={{ margin: '1rem 0' }}></div>
+    <MainMenuBanner
+      bannerUrl={mainMenuBannerData.bannerUrl}
+      isError={!mainMenuBannerData.isError}
+      {...args}
+    />
+  </React.Fragment>
 );

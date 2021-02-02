@@ -29,3 +29,8 @@ export interface MainMenuTaskStateProps {
 export interface TaskSummaryState {
   [key: string]: number;
 }
+
+export interface MainMenuBannerProps {
+  bannerUrl: string;
+  isError: boolean;
+}

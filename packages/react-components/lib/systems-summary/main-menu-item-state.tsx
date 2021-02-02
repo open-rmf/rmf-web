@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
     padding: 0,
   },
   robotGrid: {
-    marginTop: '1rem',
+    marginTop: theme.spacing(1),
   },
 }));
 
@@ -87,7 +87,7 @@ export const MainMenuItemState = (props: MainMenuItemStateProps): JSX.Element =>
                   {`${operationalItem}/${totalItem}`}
                 </Typography>
                 <Typography align="center" variant="body1">
-                  operational
+                  Operational
                 </Typography>
               </Paper>
             </Grid>
@@ -95,7 +95,7 @@ export const MainMenuItemState = (props: MainMenuItemStateProps): JSX.Element =>
         </Grid>
         <Grid className={classes.robotGrid} item>
           {itemSummary.item === 'Robots' ? (
-            <Grid container justify="flex-start" direction="row" spacing={3}>
+            <Grid container justify="flex-start" direction="row" spacing={2}>
               <Grid item xs={6}>
                 <Paper className={getOtherStatusLabel('idle')} elevation={3}>
                   <Typography noWrap align="center" variant="h6">
@@ -113,7 +113,7 @@ export const MainMenuItemState = (props: MainMenuItemStateProps): JSX.Element =>
                     {itemSummary.summary.charging}
                   </Typography>
                   <Typography align="center" variant="body1">
-                    Chargin
+                    Charging
                   </Typography>
                 </Paper>
               </Grid>

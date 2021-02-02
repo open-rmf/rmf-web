@@ -11,6 +11,7 @@ import {
   MainMenuAlert,
   MainMenuTaskState,
   ItemSummary,
+  MainMenuBanner,
 } from 'react-components';
 
 const debug = Debug('MainMenu');
@@ -30,6 +31,9 @@ const useStyles = makeStyles((theme) => ({
   },
   divider: {
     margin: '0.5em 0',
+  },
+  systemSummaryHeader: {
+    margin: '0.5rem 0',
   },
 }));
 
@@ -192,63 +196,80 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
     };
   };
 
+  const getBannerColor = (): boolean => {
+    const getSpoiltDoor = getDoorSummary().summary.outOfOrder;
+    const getSpoiltLift = getLiftSummary().summary.outOfOrder;
+    const getSpoiltDispensers = getDispenserSummary().summary.outOfOrder;
+    const getSpoiltRobots = getRobotSummary().summary.outOfOrder;
+
+    return getSpoiltDoor + getSpoiltLift + getSpoiltDispensers + getSpoiltRobots !== 0;
+  };
+
   return (
-    <div className={classes.root}>
-      <MainMenuAlert notifications={notifications} />
-      <Divider />
+    <React.Fragment>
+      <MainMenuBanner bannerUrl={'http://localhost:3000/favicon.ico'} isError={getBannerColor()} />
+      <div className={classes.root}>
+        <MainMenuAlert notifications={notifications} />
+        <Divider />
 
-      <Typography variant="h5">Systems Summary</Typography>
+        <Typography variant="h5" className={classes.systemSummaryHeader}>
+          Systems Summary
+        </Typography>
 
-      <MainMenuItemState itemSummary={getDoorSummary()} handleClick={handleMainMenuDoorsClick} />
-      <MainMenuItemState itemSummary={getLiftSummary()} handleClick={handleMainMenuLiftsClick} />
-      <MainMenuItemState
-        itemSummary={getDispenserSummary()}
-        handleClick={handleMainMenuDispensersClick}
-      />
-      <MainMenuItemState itemSummary={getRobotSummary()} handleClick={handleMainMenuRobotsClick} />
-      <Divider className={classes.divider} />
+        <MainMenuItemState itemSummary={getDoorSummary()} handleClick={handleMainMenuDoorsClick} />
+        <MainMenuItemState itemSummary={getLiftSummary()} handleClick={handleMainMenuLiftsClick} />
+        <MainMenuItemState
+          itemSummary={getDispenserSummary()}
+          handleClick={handleMainMenuDispensersClick}
+        />
+        <MainMenuItemState
+          itemSummary={getRobotSummary()}
+          handleClick={handleMainMenuRobotsClick}
+        />
+        <Divider className={classes.divider} />
 
-      <Typography variant="h6">Task Statuses</Typography>
-      <MainMenuTaskState tasks={tasks} />
-      <Button
-        color="primary"
-        className={classes.buttons}
-        variant="contained"
-        onClick={handleMainMenuNegotiationsClick}
-      >
-        <DashboardTooltip
-          title="This panel shows the negotiations between robots when there are conflicts in trajectories"
-          id="negotiations-tooltip"
-          enabled={showTooltips}
+        <Typography variant="h6">Task Statuses</Typography>
+        <MainMenuTaskState tasks={tasks} />
+        <Button
+          color="primary"
+          className={classes.buttons}
+          variant="contained"
+          onClick={handleMainMenuNegotiationsClick}
         >
-          <Typography variant="body1">Negotiations</Typography>
-        </DashboardTooltip>
-      </Button>
-      <Button
-        color="primary"
-        className={classes.buttons}
-        variant="contained"
-        onClick={handleMainMenuTasksClick}
-      >
-        <Typography variant="body1">Plans</Typography>
-      </Button>
-      <Divider className={classes.divider} />
-
-      <Typography variant="h6">Command Center</Typography>
-      <Button
-        className={`${classes.buttons} ${classes.commandButton}`}
-        variant="contained"
-        onClick={handleMainMenuCommandsClick}
-      >
-        <DashboardTooltip
-          title="This panel shows the commands that a user can request and RoMi will allocate the most suitable robot for the task"
-          id="commands-tooltip"
-          enabled={showTooltips}
+          <DashboardTooltip
+            title="This panel shows the negotiations between robots when there are conflicts in trajectories"
+            id="negotiations-tooltip"
+            enabled={showTooltips}
+          >
+            <Typography variant="body1">Negotiations</Typography>
+          </DashboardTooltip>
+        </Button>
+        <Button
+          color="primary"
+          className={classes.buttons}
+          variant="contained"
+          onClick={handleMainMenuTasksClick}
         >
-          <Typography variant="body1">Commands</Typography>
-        </DashboardTooltip>
-      </Button>
-    </div>
+          <Typography variant="body1">Plans</Typography>
+        </Button>
+        <Divider className={classes.divider} />
+
+        <Typography variant="h6">Command Center</Typography>
+        <Button
+          className={`${classes.buttons} ${classes.commandButton}`}
+          variant="contained"
+          onClick={handleMainMenuCommandsClick}
+        >
+          <DashboardTooltip
+            title="This panel shows the commands that a user can request and RoMi will allocate the most suitable robot for the task"
+            id="commands-tooltip"
+            enabled={showTooltips}
+          >
+            <Typography variant="body1">Commands</Typography>
+          </DashboardTooltip>
+        </Button>
+      </div>
+    </React.Fragment>
   );
 });
 
