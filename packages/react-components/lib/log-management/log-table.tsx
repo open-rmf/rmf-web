@@ -64,6 +64,7 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
           type: 'string',
           align: 'center',
           cellStyle: { padding: '0px' },
+          lookup: LogLevel,
           render: (rowData) => {
             return <p className={`${getLogLevelStyle(rowData.level)} `}>{rowData.level}</p>;
           },
@@ -91,6 +92,7 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
       data={rows}
       options={{
         filtering: true,
+        search: false,
         pageSize: 100,
         pageSizeOptions: [50, 100, 200],
         maxBodyHeight: tableSize ? tableSize : '80vh',

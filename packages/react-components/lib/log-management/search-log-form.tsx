@@ -145,7 +145,7 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
         className={classes.searchButton}
         onClick={searchQuery}
       >
-        Search
+        Retrieve Logs
       </Button>
     </>
   );

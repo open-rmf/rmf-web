@@ -14,13 +14,17 @@ const getLogLabels = () => [
 
 const timestamp = new Date('Mon Jan  1 00:00:02 UTC 2001').toISOString();
 
+function randomDate(start: Date, end: Date) {
+  return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+}
+
 const getLogs = () => {
   const rows = [];
   for (let i = 0; i < 500; i++) {
     rows.push({
       message: 'Test' + i,
       level: 'Debug',
-      timestamp: timestamp,
+      timestamp: randomDate(new Date(2012, 0, 1), new Date()).toISOString(),
     });
   }
   return rows;
