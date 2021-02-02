@@ -5,7 +5,7 @@
 ########################################################
 
 from tortoise import fields
-from .fields import RosTimeField
+from ._ros_time import RosTimeField
 
 
 class DispenserRequestMixin():

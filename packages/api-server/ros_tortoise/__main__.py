@@ -93,7 +93,7 @@ def get_imports(pkg_spec: PackageSpec):
     for message in pkg_spec.messages:
         for field in message.fields:
             if field.type.__str__() == 'builtin_interfaces/Time':
-                return ['from .fields import RosTimeField']
+                return ['from ._ros_time import RosTimeField']
     return []
 
 
@@ -147,9 +147,9 @@ def main():
             f.write(mixins)
         print(outfile)
 
-    fields_file = f'{args.output}/fields.py'
-    shutil.copy(f'{os.path.dirname(__file__)}/fields.py', fields_file)
-    print(fields_file)
+    ros_time_file = f'{args.output}/_ros_time.py'
+    shutil.copy(f'{os.path.dirname(__file__)}/ros_time.py', ros_time_file)
+    print(ros_time_file)
 
     init_file = f'{args.output}/__init__.py'
     with open(f'{args.output}/__init__.py', 'w') as f:
