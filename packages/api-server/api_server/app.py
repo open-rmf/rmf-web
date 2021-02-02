@@ -18,6 +18,7 @@ from .building_map import building_map_router
 from .repositories.static_files import StaticFilesRepository
 from .rmf_io import RmfIO
 from .transport import RmfTransport
+from .rmf_io import RmfGateway
 
 
 class MainNode(Node):
@@ -66,12 +67,13 @@ def start_rclpy():
     ros2_node = MainNode()
     threading.Thread(target=ros2_thread, args=[ros2_node]).start()
 
+    rmf_gateway = RmfGateway()
     sio = socketio.AsyncServer(async_mode='asgi')
-    rmf_io = RmfIO(sio, logger=logger.getChild('RmfIO'))
+    rmf_io = RmfIO(sio, rmf_gateway, logger=logger.getChild('RmfIO'))
     rmf_io_app = socketio.ASGIApp(sio)
     app.mount('/rmf_io', rmf_io_app)
 
-    rmf_transport = RmfTransport(ros2_node, rmf_io)
+    rmf_transport = RmfTransport(ros2_node, rmf_gateway)
     rmf_transport.subscribe_all()
 
     app.include_router(

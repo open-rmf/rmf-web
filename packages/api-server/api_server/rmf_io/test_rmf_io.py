@@ -8,6 +8,7 @@ from builtin_interfaces.msg import Time
 from rmf_door_msgs.msg import DoorState, DoorMode
 
 from .rmf_io import RmfIO
+from .gateway import RmfGateway
 from .topics import topics
 
 
@@ -32,8 +33,9 @@ class TestRmfIO(unittest.IsolatedAsyncioTestCase):
 
     async def asyncSetUp(self):
         self.clients = []
+        self.rmf_gateway = RmfGateway()
         self.sio = socketio.AsyncServer(async_mode='aiohttp')
-        self.rmf_io = RmfIO(self.sio)
+        self.rmf_io = RmfIO(self.sio, self.rmf_gateway)
         self.app = aiohttp.web.Application()
         self.sio.attach(self.app)
         self.runner = aiohttp.web.AppRunner(self.app)
@@ -63,7 +65,7 @@ class TestRmfIO(unittest.IsolatedAsyncioTestCase):
                 done.set_result(True)
         client.on(topics.door_states, on_door_states)
 
-        [self.rmf_io.on_door_state(x) for x in test_states]
+        [self.rmf_gateway.door_states.on_next(x) for x in test_states]
         await asyncio.wait_for(done, 1)
         received_states = {}
 

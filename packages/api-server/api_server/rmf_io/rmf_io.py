@@ -6,20 +6,23 @@ from rx.subject import Subject
 
 import socketio
 
-from .topics import topics
 from .authenticator import Authenticator, StubAuthenticator
+from .gateway import RmfGateway
+from .topics import topics
 
 
 class RmfIO():
     def __init__(
         self,
         sio: socketio.AsyncServer,
+        rmf_gateway: RmfGateway,
         *,
         logger: logging.Logger = None,
         loop: asyncio.AbstractEventLoop = None,
         authenticator: Authenticator = StubAuthenticator(),
     ):
         self.sio = sio
+        self.rmf_gateway = rmf_gateway
         self.logger = logger or sio.logger
         self.loop = loop or asyncio.get_event_loop()
         self.authenticator = authenticator
@@ -30,10 +33,10 @@ class RmfIO():
         self.sio.on('subscribe', self._on_subscribe)
 
         self._door_states: Dict[str, dict] = {}
-        self.door_states = Subject()
+        self.rmf_gateway.door_states.subscribe(self._on_door_state)
         self.room_records[topics.door_states] = self._door_states
 
-    def on_door_state(self, state: dict):
+    def _on_door_state(self, state: dict):
         self._door_states[state['door_name']] = state
 
         async def emit_task():
@@ -41,7 +44,6 @@ class RmfIO():
             self.logger.debug(
                 f'emitted message to room "{topics.door_states}"')
         self.loop.create_task(emit_task())
-        self.door_states.on_next(state)
 
     async def _on_subscribe(self, sid, topic):
         self.logger.info(f'[{sid}] got new subscription for "{topic}"')
