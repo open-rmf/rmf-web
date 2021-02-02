@@ -16,8 +16,7 @@ describe('Search log form tests', () => {
   it('places correctly initial values', () => {
     const root = render(<SearchLogForm logLabelValues={logLabel}></SearchLogForm>);
     expect(root.getByText('ERROR')).toBeTruthy();
-    expect(root.getByText('100')).toBeTruthy();
-    const currentDate = moment(new Date().toISOString().substr(0, 16)).format('MM/DD/yyyy HH:mm');
+    const currentDate = moment(new Date()).format('MM/DD/yyyy HH:mm');
     const fromLogDate = root.container.querySelector('#fromLogDate-datetime-local');
     expect(fromLogDate?.getAttribute('value')).toBe(currentDate);
     const toLogDate = root.container.querySelector('#toLogDate-datetime-local');
