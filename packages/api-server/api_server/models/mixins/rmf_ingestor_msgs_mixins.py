@@ -5,38 +5,31 @@
 ########################################################
 
 from tortoise import fields
-from ._ros_time import RosTimeField
+from .ros_time import RosTimeField
 
 
-class AssetMixin():
-    guid = fields.TextField()
-    type = fields.TextField()
-
-class TraitMixin():
-    key = fields.TextField()
-    value = fields.JSONField()
-
-class WorkcellConfigurationMixin():
-    time = RosTimeField()
-    guid = fields.TextField()
-    type = fields.TextField()
-    assets = fields.JSONField()
-    traits = fields.JSONField()
-
-class WorkcellRequestMixin():
+class IngestorRequestMixin():
     time = RosTimeField()
     request_guid = fields.TextField()
     target_guid = fields.TextField()
+    transporter_type = fields.TextField()
+    items = fields.JSONField()
 
-class WorkcellResultMixin():
+class IngestorRequestItemMixin():
+    type_guid = fields.TextField()
+    quantity = fields.IntField()
+    compartment_name = fields.TextField()
+
+class IngestorResultMixin():
     time = RosTimeField()
     request_guid = fields.TextField()
     source_guid = fields.TextField()
     status = fields.SmallIntField()
 
-class WorkcellStateMixin():
+class IngestorStateMixin():
     time = RosTimeField()
     guid = fields.TextField()
     mode = fields.IntField()
     request_guid_queue = fields.JSONField()
+    seconds_remaining = fields.FloatField()
 

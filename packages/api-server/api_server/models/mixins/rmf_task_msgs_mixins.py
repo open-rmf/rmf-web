@@ -5,7 +5,7 @@
 ########################################################
 
 from tortoise import fields
-from ._ros_time import RosTimeField
+from .ros_time import RosTimeField
 
 
 class BehaviorMixin():
