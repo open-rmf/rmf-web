@@ -122,7 +122,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
 
   const { currentView, showOmniPanel, stackNavigator } = dashboardState;
 
-  const { setCurrentView, setShowOmniPanel, resetView, popView, pushView } = dashboardDispatch;
+  const { setShowOmniPanel, resetView, popView, pushView } = dashboardDispatch;
 
   const mapFloorSort = React.useCallback(
     (levels: RomiCore.Level[]) =>
@@ -138,9 +138,8 @@ export default function Dashboard(_props: {}): React.ReactElement {
     clearSpotlights();
     setNegotiationTrajStore({});
     resetView();
-    setCurrentView(OmniPanelViewIndex.MainMenu);
     setShowOmniPanel(false);
-  }, [resetView, setShowOmniPanel, setCurrentView]);
+  }, [resetView, setShowOmniPanel]);
 
   const handleOmniPanelBack = React.useCallback(() => {
     clearSpotlights();
@@ -156,8 +155,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     clearSpotlights();
     setNegotiationTrajStore({});
     resetView();
-    setCurrentView(OmniPanelViewIndex.MainMenu);
-  }, [resetView, setCurrentView]);
+  }, [resetView]);
 
   const doorStates = React.useContext(DoorStateContext);
   const doors = React.useMemo(
