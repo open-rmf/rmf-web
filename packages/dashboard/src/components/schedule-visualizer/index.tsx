@@ -43,6 +43,7 @@ export interface MapFloorLayer {
 export interface ScheduleVisualizerProps extends React.PropsWithChildren<{}> {
   buildingMap: RomiCore.BuildingMap;
   negotiationTrajStore: Readonly<Record<string, NegotiationTrajectoryResponse>>;
+  omniPanelView: number;
   mapFloorSort?(levels: RomiCore.Level[]): string[];
   onDoorClick?(door: RomiCore.Door): void;
   onLiftClick?(lift: RomiCore.Lift): void;
@@ -63,7 +64,7 @@ export function calcMaxBounds(
 
 export default function ScheduleVisualizer(props: ScheduleVisualizerProps): React.ReactElement {
   debug('render');
-  const { buildingMap, negotiationTrajStore, mapFloorSort } = props;
+  const { buildingMap, negotiationTrajStore, mapFloorSort, omniPanelView } = props;
   const negotiationColors = React.useMemo(() => new NegotiationColors(), []);
 
   const mapFloorLayerSorted = React.useMemo(
@@ -195,17 +196,14 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
           },
         });
         debug('set trajectories');
-        if (Object.entries(negotiationTrajStore).length === 0) {
-          // console.log(Object.entries(negotiationTrajStore))
-          // console.log(negotiationTrajStore)
-          // console.log('traj store is empty')
+        // negotiations panel index is 6 on the omni panel
+        if (omniPanelView === 6) {
+          setTrajectories({});
+        } else {
           setTrajectories((prev) => ({
             ...prev,
             [curMapFloorLayer.level.name]: resp,
           }));
-        } else {
-          // console.log('trajectory is empty')
-          setTrajectories({});
         }
       }
 
@@ -213,7 +211,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       interval = window.setInterval(updateTrajectory, trajAnimDuration);
     })();
     return () => clearInterval(interval);
-  }, [trajManager, curMapFloorLayer, trajAnimDuration, negotiationTrajStore]);
+  }, [trajManager, curMapFloorLayer, trajAnimDuration, omniPanelView]);
 
   // Show notification when a conflict happens.
   const { showNotification: notificationDispatch } = React.useContext(AppControllerContext);
@@ -336,11 +334,6 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
           )}
         </LayersControl.Overlay>
 
-        {/* <LayersControl.Overlay
-          name="Negotiation Trajectories"
-          data-component="NegotiationTrajCheckbox"
-          checked
-        > */}
         {curMapFloorLayer && (
           <Pane>
             <ColorContext.Provider value={negotiationColors}>
@@ -357,7 +350,6 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
             </ColorContext.Provider>
           </Pane>
         )}
-        {/* </LayersControl.Overlay> */}
 
         <LayersControl.Overlay name="Doors" checked>
           {curMapFloorLayer && (

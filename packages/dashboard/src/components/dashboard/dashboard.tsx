@@ -138,8 +138,9 @@ export default function Dashboard(_props: {}): React.ReactElement {
     clearSpotlights();
     setNegotiationTrajStore({});
     resetView();
+    setCurrentView(OmniPanelViewIndex.MainMenu);
     setShowOmniPanel(false);
-  }, [resetView, setShowOmniPanel]);
+  }, [resetView, setShowOmniPanel, setCurrentView]);
 
   const handleOmniPanelBack = React.useCallback(() => {
     clearSpotlights();
@@ -155,8 +156,8 @@ export default function Dashboard(_props: {}): React.ReactElement {
     clearSpotlights();
     setNegotiationTrajStore({});
     resetView();
-    setCurrentView(stackNavigator.top());
-  }, [resetView, setCurrentView, stackNavigator]);
+    setCurrentView(OmniPanelViewIndex.MainMenu);
+  }, [resetView, setCurrentView]);
 
   const doorStates = React.useContext(DoorStateContext);
   const doors = React.useMemo(
@@ -281,6 +282,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
             buildingMap={buildingMap}
             mapFloorSort={mapFloorSort}
             negotiationTrajStore={negotiationTrajStore}
+            omniPanelView={currentView}
             onDoorClick={handleDoorMarkerClick}
             onLiftClick={handleLiftMarkerClick}
             onRobotClick={handleRobotMarkerClick}
