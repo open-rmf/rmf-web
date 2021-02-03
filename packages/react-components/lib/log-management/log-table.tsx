@@ -82,6 +82,7 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
           title: 'Timestamp',
           field: 'timestamp',
           type: 'datetime',
+          filtering: false,
           align: 'center',
           cellStyle: { padding: '0px' },
           render: (rowData) => {
