@@ -9,8 +9,8 @@ from rmf_door_msgs.msg import DoorState, DoorMode
 
 from .book_keeper import RmfBookKeeper
 from .gateway import RmfGateway
-from .sql_repository import SqlRepository
 from .test_rmf_io import make_door_state
+from ..repositories import SqlRepository
 
 
 class TestRmfBookKeeperDoorStates(unittest.IsolatedAsyncioTestCase):

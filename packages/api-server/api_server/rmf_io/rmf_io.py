@@ -1,4 +1,7 @@
 import asyncio
+import base64
+import hashlib
+import os
 import logging
 from typing import Optional
 
@@ -7,12 +10,13 @@ from rx.subject import Subject
 import socketio
 
 from rosidl_runtime_py.convert import message_to_ordereddict
+from building_map_msgs.msg import BuildingMap, Level, AffineImage
+from rmf_door_msgs.msg import DoorState
 
 from .authenticator import Authenticator, StubAuthenticator
 from .gateway import RmfGateway
 from .topics import topics
-
-from ..models import DoorState
+from ..repositories.static_files import StaticFilesRepository
 
 
 class RmfIO():
@@ -20,6 +24,7 @@ class RmfIO():
         self,
         sio: socketio.AsyncServer,
         rmf_gateway: RmfGateway,
+        static_files: StaticFilesRepository,
         *,
         logger: logging.Logger = None,
         loop: asyncio.AbstractEventLoop = None,
@@ -27,6 +32,7 @@ class RmfIO():
     ):
         self.sio = sio
         self.rmf_gateway = rmf_gateway
+        self.static_files = static_files
         self.logger = logger or sio.logger
         self.loop = loop or asyncio.get_event_loop()
         self.authenticator = authenticator
@@ -36,9 +42,12 @@ class RmfIO():
         self.sio.on('disconnect', self._on_disconnect)
         self.sio.on('subscribe', self._on_subscribe)
 
-        self._door_states: Dict[str, dict] = {}
+        self._door_states: dict[str, dict] = {}
         self.rmf_gateway.door_states.subscribe(self._on_door_state)
         self.room_records[topics.door_states] = self._door_states
+
+        self._building_map: Optional[dict] = None
+        self.rmf_gateway.building_map.subscribe(self._on_building_map)
 
     def _on_door_state(self, state: DoorState):
         state_dict = message_to_ordereddict(state)
@@ -48,6 +57,38 @@ class RmfIO():
             await self.sio.emit(topics.door_states, state_dict, to=topics.door_states)
             self.logger.debug(
                 f'emitted message to room "{topics.door_states}"')
+        self.loop.create_task(emit_task())
+
+    def _on_building_map(self, building_map: Optional[BuildingMap]):
+        '''
+        1. Converts a `BuildingMap` message to an ordered dict.
+        2. Saves the images into `{static_directory}/{map_name}/`.
+        3. Change the `AffineImage` `data` field to the url of the image.
+        '''
+        if not building_map:
+            return
+        self._building_map = message_to_ordereddict(building_map)
+
+        for i in range(len(building_map.levels)):
+            level: Level = building_map.levels[i]
+            for j in range(len(level.images)):
+                image: AffineImage = level.images[j]
+                # look at non-crypto hashes if we need more performance
+                sha1_hash = hashlib.sha1()
+                sha1_hash.update(image.data)
+                fingerprint = base64.b32encode(
+                    sha1_hash.digest()).lower().decode()
+                relpath = f'{building_map.name}/{level.name}-{image.name}.{fingerprint}.{image.encoding}'
+                (filepath, urlpath) = self.static_files.add_file(
+                    image.data, relpath)
+                self.logger.info(f'saved map image to "{filepath}"')
+                self._building_map['levels'][i]['images'][j]['data'] = urlpath
+        self.room_records[topics.building_map] = { building_map.name: self._building_map }
+
+        async def emit_task():
+            await self.sio.emit(topics.building_map, self._building_map, to=topics.building_map)
+            self.logger.debug(
+                f'emitted message to room "{topics.building_map}"')
         self.loop.create_task(emit_task())
 
     async def _on_subscribe(self, sid, topic):

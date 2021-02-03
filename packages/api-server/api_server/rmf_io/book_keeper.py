@@ -10,7 +10,7 @@ from rx.scheduler.eventloop import AsyncIOScheduler
 from rx.scheduler.scheduler import Scheduler
 
 from .gateway import RmfGateway
-from .sql_repository import SqlRepository
+from ..repositories import SqlRepository
 
 
 def grouped_sample(
