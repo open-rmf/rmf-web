@@ -48,6 +48,7 @@ class RmfIO():
 
         self._building_map: Optional[dict] = None
         self.rmf_gateway.building_map.subscribe(self._on_building_map)
+        self.room_records[topics.building_map] = None
 
     def _on_door_state(self, state: DoorState):
         state_dict = message_to_ordereddict(state)
@@ -67,6 +68,7 @@ class RmfIO():
         '''
         if not building_map:
             return
+        self.logger.info('got new building map')
         self._building_map = message_to_ordereddict(building_map)
 
         for i in range(len(building_map.levels)):
@@ -83,7 +85,8 @@ class RmfIO():
                     image.data, relpath)
                 self.logger.info(f'saved map image to "{filepath}"')
                 self._building_map['levels'][i]['images'][j]['data'] = urlpath
-        self.room_records[topics.building_map] = { building_map.name: self._building_map }
+        self.room_records[topics.building_map] = {
+            building_map.name: self._building_map}
 
         async def emit_task():
             await self.sio.emit(topics.building_map, self._building_map, to=topics.building_map)
@@ -93,6 +96,12 @@ class RmfIO():
 
     async def _on_subscribe(self, sid, topic):
         self.logger.info(f'[{sid}] got new subscription for "{topic}"')
+
+        if topic not in self.room_records:
+            self.logger.warn(f'[{sid}] unknown topic "{topic}"')
+            await self.sio.emit('subscribe', 'unknown topic', to=sid)
+            return
+
         records: dict = self.room_records[topic]
         if records:
             coros = [self.sio.emit(topic, rec, sid)

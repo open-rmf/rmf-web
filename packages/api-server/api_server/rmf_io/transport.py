@@ -19,11 +19,11 @@ class RmfTransport():
 
     def subscribe_all(self):
         self.door_states_sub = self.ros2_node.create_subscription(
-            DoorState, topics.door_states, self.rmf_gateway.door_states.on_next, 10)
+            DoorState, 'door_states', self.rmf_gateway.door_states.on_next, 10)
 
         self.building_map_sub = self.ros2_node.create_subscription(
             BuildingMap,
-            topics.building_map,
+            'map',
             self.rmf_gateway.building_map.on_next,
             rclpy.qos.QoSProfile(
                 history=rclpy.qos.HistoryPolicy.KEEP_LAST,

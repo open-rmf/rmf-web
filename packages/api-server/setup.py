@@ -29,6 +29,7 @@ setup(
     entry_points={
         'console_scripts': [
             'rmf_api_server=api_server.__main__:main',
+            'rmf_api_cli=cli_client.__main__:main',
         ],
     },
     license='Apache License, Version 2.0',
