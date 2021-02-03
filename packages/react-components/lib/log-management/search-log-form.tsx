@@ -7,15 +7,11 @@ import { LogLevel } from './log-level';
 
 import moment from 'moment';
 import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
+import { LogQueryPayload } from '.';
 
 interface SearchLogFormProps {
   logLabelValues: { label: string; value: string }[];
-  search?: (
-    toLogDate: moment.Moment,
-    fromLogDate: moment.Moment,
-    logLabel: string,
-    logLevel: string,
-  ) => void;
+  search?: (payload: LogQueryPayload) => void;
 }
 
 const logLevelValues = [
@@ -38,10 +34,9 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
   const classes = useStyles();
 
   const searchQuery = () => {
-    if (!toLogDate || !fromLogDate) {
-      return;
-    }
-    search && search(toLogDate, fromLogDate, logLabel, logLevel);
+    // If there are no dates, the backend will respond with the number of default logs
+    // (the logs could be from previous hours or days)
+    search && search({ toLogDate, fromLogDate, logLabel, logLevel });
   };
 
   const handleLogLabelChange = React.useCallback(

@@ -12,10 +12,10 @@ const useStyles = makeStyles(() => ({
 }));
 
 export interface LogQueryPayload {
-  toLogDate: moment.Moment;
-  fromLogDate: moment.Moment;
-  sourceLog: string;
-  logLevel: string;
+  toLogDate?: moment.Moment | null;
+  fromLogDate?: moment.Moment | null;
+  logLabel?: string | null;
+  logLevel?: string | null;
 }
 
 export interface LogManagementProps {
@@ -38,18 +38,7 @@ export const LogManagement = (props: LogManagementProps): React.ReactElement => 
     getLogLabels();
   }, [getLabels]);
 
-  const searchLogs = async (
-    toLogDate: moment.Moment,
-    fromLogDate: moment.Moment,
-    sourceLog: string,
-    logLevel: string,
-  ) => {
-    const payload = {
-      toLogDate,
-      fromLogDate,
-      sourceLog,
-      logLevel,
-    };
+  const searchLogs = async (payload: LogQueryPayload) => {
     setLogs(await getLogs(payload));
   };
 
