@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
     color: 'white',
   },
   divider: {
-    margin: '0.5em 0',
+    margin: '0.5rem 0',
   },
   systemSummaryHeader: {
     margin: '0.5rem 0',
@@ -235,12 +235,12 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
       <MainMenuBanner bannerUrl={'http://localhost:3000/favicon.ico'} isError={getBannerColor()} />
       <div className={classes.root}>
         <MainMenuAlert notifications={notifications} />
-        <Divider />
+        <Divider className={classes.divider} />
 
         {getSpoiltEquipment().length > 0 ? (
           <React.Fragment>
             <MainMenuSpoiltItems spoiltItems={getSpoiltEquipment()} />
-            <Divider />
+            <Divider className={classes.divider} />
           </React.Fragment>
         ) : null}
 
