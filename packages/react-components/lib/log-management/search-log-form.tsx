@@ -88,12 +88,14 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
 
         <DateAndTimePickers
           name="fromLogDate"
+          maxDate={new Date()}
           label="From"
           value={fromLogDate}
           onChange={handleFromLogDateChange}
         />
         <DateAndTimePickers
           name="toLogDate"
+          maxDate={new Date()}
           label="To"
           value={toLogDate}
           onChange={handleToLogDateChange}
