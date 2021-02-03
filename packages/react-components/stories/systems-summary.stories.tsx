@@ -8,6 +8,8 @@ import {
   MainMenuTaskStateProps,
   MainMenuBanner,
   MainMenuBannerProps,
+  MainMenuSpoiltItems,
+  MainMenuSpoiltItemsProps,
 } from '../lib';
 import { Meta, Story } from '@storybook/react';
 
@@ -84,6 +86,10 @@ const mainMenuBannerData: MainMenuBannerProps = {
   isError: false,
 };
 
+const spoiltEquipment: MainMenuSpoiltItemsProps = {
+  spoiltItems: ['lift1 - fire', 'door1 - unknown', 'robot1 - unknown'],
+};
+
 export const MainMenuItemStateStory: Story = (args) => (
   <React.Fragment>
     <MainMenuItemState
@@ -124,4 +130,8 @@ export const MainMenuBannerStory: Story = (args) => (
       {...args}
     />
   </React.Fragment>
+);
+
+export const MainMenuSpoiltItemStory: Story = (args) => (
+  <MainMenuSpoiltItems spoiltItems={spoiltEquipment.spoiltItems} {...args} />
 );

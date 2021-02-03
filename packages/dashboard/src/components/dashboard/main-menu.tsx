@@ -14,6 +14,7 @@ import {
   MainMenuBanner,
   liftModeToString,
   robotModeToString,
+  MainMenuSpoiltItems,
 } from 'react-components';
 
 const debug = Debug('MainMenu');
@@ -183,6 +184,7 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
             modeCounter['outOfOrder'] += 1;
             break;
           case 1:
+            modeCounter['operational'] += 1;
             modeCounter['charging'] += 1;
             break;
           case 7:
@@ -193,6 +195,7 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
             modeCounter['operational'] += 1;
             break;
           case 0:
+            modeCounter['operational'] += 1;
             modeCounter['idle'] += 1;
             break;
         }
@@ -219,12 +222,27 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
     return getSpoiltDoor + getSpoiltLift + getSpoiltDispensers + getSpoiltRobots !== 0;
   };
 
+  const getSpoiltEquipment = (): string[] => {
+    const getSpoiltDoor = getDoorSummary().outOfOrder;
+    const getSpoiltLift = getLiftSummary().outOfOrder;
+    const getSpoiltDispensers = getDispenserSummary().outOfOrder;
+    const getSpoiltRobots = getRobotSummary().outOfOrder;
+    return [...getSpoiltDoor, ...getSpoiltLift, ...getSpoiltDispensers, ...getSpoiltRobots];
+  };
+
   return (
     <React.Fragment>
       <MainMenuBanner bannerUrl={'http://localhost:3000/favicon.ico'} isError={getBannerColor()} />
       <div className={classes.root}>
         <MainMenuAlert notifications={notifications} />
         <Divider />
+
+        {getSpoiltEquipment().length > 0 ? (
+          <React.Fragment>
+            <MainMenuSpoiltItems spoiltItems={getSpoiltEquipment()} />
+            <Divider />
+          </React.Fragment>
+        ) : null}
 
         <Typography variant="h5" className={classes.systemSummaryHeader}>
           Systems Summary

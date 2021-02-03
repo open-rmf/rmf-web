@@ -35,3 +35,7 @@ export interface MainMenuBannerProps {
   bannerUrl: string;
   isError: boolean;
 }
+
+export interface MainMenuSpoiltItemsProps {
+  spoiltItems: string[];
+}
