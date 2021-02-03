@@ -4,6 +4,7 @@ import logging
 import os
 import sys
 import threading
+import time
 
 import rclpy
 from rclpy.node import Node
@@ -41,7 +42,6 @@ async def on_startup():
     global ros2_node
     rclpy.init(args=None)
     ros2_node = MainNode()
-    threading.Thread(target=ros2_thread, args=[ros2_node]).start()
 
     os.makedirs(app_config.static_directory, exist_ok=True)
     static_files_repo = StaticFilesRepository(
@@ -58,6 +58,7 @@ async def on_startup():
         rmf_gateway, logger=logger.getChild('BookKeeper'))
     rmf_bookkeeper.start()
 
+    threading.Thread(target=ros2_thread, args=[ros2_node]).start()
     logger.info('started app')
 
 
