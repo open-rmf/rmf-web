@@ -32,6 +32,15 @@ RMF_API_SERVER_CONFIG='my_config.py' rmf_api_server
 
 # Developers
 
+## Running tests
+
+Install the following dev dependencies
+
+```bash
+pip3 install aiohttp
+```
+NOTE: make sure the python virtual env is sourced.
+
 ## Generated files
 
 The files in `api_server/models/mixins` are generated, they are committed to the repo to make distribution easier. Follow these steps to regenerate the files if needed:

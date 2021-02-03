@@ -13,12 +13,12 @@ from fastapi.staticfiles import StaticFiles
 
 import socketio
 
+from tortoise import Tortoise
+
 from .app_config import AppConfig
 from .building_map import building_map_router
 from .repositories.static_files import StaticFilesRepository
-from .rmf_io import RmfIO
-from .transport import RmfTransport
-from .rmf_io import RmfGateway
+from .rmf_io import RmfIO, RmfGateway, RmfTransport
 
 
 class MainNode(Node):
@@ -37,6 +37,11 @@ def load_config(config_file: str) -> AppConfig:
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return AppConfig(module.config)
+
+
+async def init_tortoise(app_config: AppConfig):
+    await Tortoise.init(db_url=app_config.db_url, modules={'models': ['api_server.models']})
+    await Tortoise.generate_schemas()
 
 
 if 'RMF_API_SERVER_CONFIG' in os.environ:
@@ -61,7 +66,9 @@ ros2_node: Node
 
 
 @app.on_event('startup')
-def start_rclpy():
+async def start_rclpy():
+    await init_tortoise(app_config)
+
     global ros2_node
     rclpy.init(args=None)
     ros2_node = MainNode()
@@ -83,5 +90,6 @@ def start_rclpy():
 
 
 @app.on_event('shutdown')
-def shutdown_rclpy():
+async def shutdown_rclpy():
     rclpy.shutdown()
+    await Tortoise.close_connections()

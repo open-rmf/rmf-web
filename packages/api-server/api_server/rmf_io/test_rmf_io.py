@@ -1,7 +1,9 @@
 import unittest
 import asyncio
-import aiohttp.web
 import socketio
+from datetime import datetime
+
+import aiohttp.web
 
 from rosidl_runtime_py.convert import message_to_ordereddict
 from builtin_interfaces.msg import Time
@@ -12,12 +14,12 @@ from .gateway import RmfGateway
 from .topics import topics
 
 
-def make_door_state(name: str):
-    door_state = DoorState()
-    door_state.door_name = name
-    door_state.current_mode = DoorMode(value=DoorMode.MODE_CLOSED)
-    door_state.door_time = Time(sec=0, nanosec=0)
-    return message_to_ordereddict(door_state)
+def make_door_state(name: str, mode: int = DoorMode.MODE_CLOSED) -> DoorState:
+    return DoorState(
+        door_name=name,
+        current_mode=DoorMode(value=mode),
+        door_time=Time(sec=0, nanosec=0),
+    )
 
 
 class TestRmfIO(unittest.IsolatedAsyncioTestCase):

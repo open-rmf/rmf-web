@@ -6,9 +6,13 @@ from rx.subject import Subject
 
 import socketio
 
+from rosidl_runtime_py.convert import message_to_ordereddict
+
 from .authenticator import Authenticator, StubAuthenticator
 from .gateway import RmfGateway
 from .topics import topics
+
+from ..models import DoorState
 
 
 class RmfIO():
@@ -36,11 +40,12 @@ class RmfIO():
         self.rmf_gateway.door_states.subscribe(self._on_door_state)
         self.room_records[topics.door_states] = self._door_states
 
-    def _on_door_state(self, state: dict):
-        self._door_states[state['door_name']] = state
+    def _on_door_state(self, state: DoorState):
+        state_dict = message_to_ordereddict(state)
+        self._door_states[state.door_name] = state_dict
 
         async def emit_task():
-            await self.sio.emit(topics.door_states, state, to=topics.door_states)
+            await self.sio.emit(topics.door_states, state_dict, to=topics.door_states)
             self.logger.debug(
                 f'emitted message to room "{topics.door_states}"')
         self.loop.create_task(emit_task())

@@ -13,6 +13,7 @@ setup(
         'aiofiles>=0.6,<0.7',
         'python-socketio>=5,<6',
         'rx>=3,<4',
+        'tortoise-orm>=0.16,<0.17',
     ],
     author='Morgan Quigley',
     author_email='morgan@osrfoundation.org',
