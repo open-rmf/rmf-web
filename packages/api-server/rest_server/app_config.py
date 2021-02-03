@@ -4,16 +4,15 @@ import os
 
 class AppConfig():
     def __init__(self, dict):
-        self.db_url: str = dict['db_url']
+        self.root_path: str = dict['root_path']
         self.host: str = dict['host']
         self.port: int = dict['port']
-        self.static_path: str = dict['static_path']
-        self.static_directory: str = dict['static_directory']
+        self.api_server_url: str = dict['api_server_url']
 
 
 def _load_config() -> AppConfig:
-    if 'RMF_API_SERVER_CONFIG' in os.environ:
-        config_file = os.environ['RMF_API_SERVER_CONFIG']
+    if 'RMF_REST_SERVER_CONFIG' in os.environ:
+        config_file = os.environ['RMF_REST_SERVER_CONFIG']
     else:
         config_file = f'{os.path.dirname(__file__)}/default_config.py'
 

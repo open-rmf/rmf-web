@@ -82,6 +82,5 @@ app = socketio.ASGIApp(
     static_files={
         app_config.static_path: app_config.static_directory
     },
-    socketio_path=app_config.public_url,
     on_startup=on_startup,
     on_shutdown=on_shutdown)

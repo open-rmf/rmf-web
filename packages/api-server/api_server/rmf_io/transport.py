@@ -1,6 +1,7 @@
 import asyncio
 
 import rclpy
+from rclpy.node import Node as RosNode
 from rclpy.subscription import Subscription
 
 from building_map_msgs.msg import BuildingMap
@@ -11,7 +12,7 @@ from .topics import topics
 
 
 class RmfTransport():
-    def __init__(self, ros2_node: rclpy.node.Node, rmf_gateway: RmfGateway):
+    def __init__(self, ros2_node: RosNode, rmf_gateway: RmfGateway):
         self.ros2_node = ros2_node
         self.rmf_gateway = rmf_gateway
         self.door_states_sub: Optional[Subscription] = None

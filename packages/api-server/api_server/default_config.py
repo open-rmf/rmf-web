@@ -1,6 +1,5 @@
 config = {
     'db_url': 'sqlite://:memory:', # TODO: explain how to use different db
-    'public_url': '/socket.io',
     'host': 'localhost', # ip or hostname to bind the socket to
     'port': 8000,
     'static_path': '/static', # base path that static files should be served from, MUST start with '/' and MUST NOT end with '/'. Also MUST NOT be the root path (i.e. '/' or '').
