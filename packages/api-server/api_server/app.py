@@ -18,7 +18,7 @@ from tortoise import Tortoise
 from .app_config import AppConfig
 from .building_map import building_map_router
 from .repositories.static_files import StaticFilesRepository
-from .rmf_io import RmfIO, RmfGateway, RmfTransport
+from .rmf_io import RmfIO, RmfGateway, RmfTransport, RmfBookKeeper
 
 
 class MainNode(Node):
@@ -54,7 +54,10 @@ logger = logging.getLogger('app')
 handler = logging.StreamHandler(sys.stdout)
 handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
 logger.addHandler(handler)
-logger.setLevel(logging.INFO)
+if 'RMF_API_SERVER_DEBUG' in os.environ:
+    logger.setLevel(logging.DEBUG)
+else:
+    logger.setLevel(logging.INFO)
 
 app = FastAPI()
 os.makedirs(app_config.static_directory, exist_ok=True)
@@ -83,13 +86,20 @@ async def start_rclpy():
     rmf_transport = RmfTransport(ros2_node, rmf_gateway)
     rmf_transport.subscribe_all()
 
-    app.include_router(
-        building_map_router(ros2_node, static_files_repo,
-                            logger.getChild('building_map')),
-        prefix='/building_map')
+    rmf_bookkeeper = RmfBookKeeper(
+        rmf_gateway, logger=logger.getChild('BookKeeper'))
+    rmf_bookkeeper.start()
+
+    # app.include_router(
+    #     building_map_router(ros2_node, static_files_repo,
+    #                         logger.getChild('building_map')),
+    #     prefix='/building_map')
+
+    logger.info('started app')
 
 
 @app.on_event('shutdown')
 async def shutdown_rclpy():
     rclpy.shutdown()
     await Tortoise.close_connections()
+    logger.info('shutdown app')

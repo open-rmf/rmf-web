@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from datetime import timedelta
 from typing import Any, Callable, Optional, Union
 
@@ -35,11 +36,13 @@ class RmfBookKeeper():
         self,
         rmf_gateway: RmfGateway,
         repo: SqlRepository = None,
+        logger: logging.Logger = None,
     ):
         self.rmf = rmf_gateway
-        self.repo = repo or SqlRepository()
+        self.logger = logger or logging.getLogger(self.__class__.__name__)
+        self.repo = repo or SqlRepository(logger=self.logger)
 
-    async def start(
+    def start(
         self,
         loop: asyncio.AbstractEventLoop = None,
         scheduler: Optional[Scheduler] = None,

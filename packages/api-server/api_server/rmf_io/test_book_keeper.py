@@ -19,7 +19,7 @@ class TestRmfBookKeeperDoorStates(unittest.IsolatedAsyncioTestCase):
         self.repo = MagicMock(SqlRepository)
         self.book_keeper = RmfBookKeeper(self.rmf, self.repo)
         self.scheduler = HistoricalScheduler()
-        await self.book_keeper.start(scheduler=self.scheduler)
+        self.book_keeper.start(scheduler=self.scheduler)
 
     async def test_write_frequency(self):
         '''
