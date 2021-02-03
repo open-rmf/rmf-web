@@ -1,11 +1,11 @@
 name: react-components
 on:
   pull_request:
+    paths:
+      - 'packages/react-components/**'
   push:
     branches:
       - main
-    paths:
-      - 'packages/react-components/**'
 env:
   CI: true
 jobs:

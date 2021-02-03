@@ -1,11 +1,11 @@
 name: dashboard
 on:
   pull_request:
+    paths:
+      - 'packages/dashboard/**'
   push:
     branches:
       - main
-    paths:
-      - 'packages/dashboard/**'
 env:
   CI: true
 jobs:
