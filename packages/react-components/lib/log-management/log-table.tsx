@@ -1,6 +1,6 @@
 import React from 'react';
 import MaterialTable from 'material-table';
-import { LogLevel } from '.';
+import { CustomLookupFilter, LogLevel } from '.';
 import { makeStyles, Typography } from '@material-ui/core';
 import moment from 'moment';
 import { materialTableIcons } from '../material-table-icons';
@@ -24,6 +24,13 @@ const useStyles = makeStyles((theme) => ({
   },
   info: {
     color: theme.palette.info.main,
+  },
+  cellContent: {
+    display: 'block',
+    marginBlockStart: '1em',
+    marginBlockEnd: '1em',
+    marginInlineStart: '0px',
+    marginInlineEnd: '0px',
   },
 }));
 
@@ -64,14 +71,16 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
             width: '2rem',
             maxWidth: '2rem',
           },
+          filterCellStyle: {
+            maxHeight: '2px',
+          },
           lookup: LogLevel,
+          filterComponent: (props) => <CustomLookupFilter {...props} />,
           render: (rowData) => {
             return (
-              <p>
-                <Typography className={`${getLogLevelStyle(rowData.level)}`}>
-                  {rowData.level}
-                </Typography>
-              </p>
+              <Typography className={`${getLogLevelStyle(rowData.level)} ${classes.cellContent}`}>
+                {rowData.level}
+              </Typography>
             );
           },
         },
@@ -85,11 +94,7 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
             minWidth: '75rem',
           },
           render: (rowData) => {
-            return (
-              <p>
-                <Typography>{rowData.message}</Typography>
-              </p>
-            );
+            return <Typography className={classes.cellContent}>{rowData.message}</Typography>;
           },
         },
         {
@@ -101,11 +106,9 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
           cellStyle: { padding: '0px' },
           render: (rowData) => {
             return (
-              <p>
-                <Typography data-testid={'log-table-date'}>
-                  {moment(rowData.timestamp).format('lll')}
-                </Typography>
-              </p>
+              <Typography className={classes.cellContent} data-testid={'log-table-date'}>
+                {moment(rowData.timestamp).format('lll')}
+              </Typography>
             );
           },
         },
