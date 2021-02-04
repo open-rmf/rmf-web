@@ -63,7 +63,7 @@ class TestRmfIO(unittest.IsolatedAsyncioTestCase):
     async def make_client(self, topic: str):
         client = client = socketio.AsyncClient()
         self.clients.append(client)
-        await client.connect('http://localhost:8080')
+        await client.connect(f'http://localhost:{self.server_port}')
         fut = asyncio.Future()
         client.on('connect', lambda: fut.set_result(None))
         await fut
@@ -82,8 +82,9 @@ class TestRmfIO(unittest.IsolatedAsyncioTestCase):
         self.sio.attach(self.app)
         self.runner = aiohttp.web.AppRunner(self.app)
         await self.runner.setup()
-        self.site = aiohttp.web.TCPSite(self.runner, 'localhost', 8080)
+        self.site = aiohttp.web.TCPSite(self.runner, 'localhost', 0)
         await self.site.start()
+        self.server_port = self.runner.addresses[0][1]
 
     async def asyncTearDown(self):
         asyncio.gather(*[client.disconnect() for client in self.clients])
