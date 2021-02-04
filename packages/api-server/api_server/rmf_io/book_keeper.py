@@ -30,7 +30,7 @@ def grouped_sample(
 
 class RmfBookKeeper():
     FrequencyStates = 1
-    FrequencyRobotPlans = 0.2
+    FrequencyRobotPlans = 5
 
     def __init__(
         self,
