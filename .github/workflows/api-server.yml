@@ -1,0 +1,31 @@
+name: api-server
+on:
+  pull_request:
+    paths:
+      - 'packages/api-server/**'
+  push:
+    branches:
+      - main
+env:
+  CI: true
+jobs:
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: packages/api-server
+    steps:
+      - uses: actions/checkout@v2
+      - name: bootstrap
+        run: |
+          pip3 install -e .
+          pip3 install aiohttp coverage
+      - name: unit test
+        run: python3 -m coverage run -m unittest
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: api-server
