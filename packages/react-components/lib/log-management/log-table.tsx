@@ -13,10 +13,6 @@ export interface LogTableProps {
 }
 
 const useStyles = makeStyles((theme) => ({
-  textColumn: {
-    whiteSpace: 'pre-wrap',
-    width: '65rem',
-  },
   error: {
     color: theme.palette.error.main,
   },
@@ -63,12 +59,18 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
           field: 'level',
           type: 'string',
           align: 'center',
-          cellStyle: { padding: '0px' },
+          cellStyle: { padding: '0px', width: '2rem', maxWidth: '2rem' },
+          headerStyle: {
+            width: '2rem',
+            maxWidth: '2rem',
+          },
           lookup: LogLevel,
           render: (rowData) => {
             return (
-              <p className={`${getLogLevelStyle(rowData.level)} `}>
-                <Typography>{rowData.level}</Typography>
+              <p>
+                <Typography className={`${getLogLevelStyle(rowData.level)}`}>
+                  {rowData.level}
+                </Typography>
               </p>
             );
           },
@@ -77,10 +79,14 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
           title: <Typography>Message</Typography>,
           field: 'message',
           type: 'string',
-          cellStyle: { padding: '0px' },
+          cellStyle: { padding: '0px', width: '75rem', minWidth: '75rem', whiteSpace: 'pre-wrap' },
+          headerStyle: {
+            width: '75rem',
+            minWidth: '75rem',
+          },
           render: (rowData) => {
             return (
-              <p className={classes.textColumn}>
+              <p>
                 <Typography>{rowData.message}</Typography>
               </p>
             );
@@ -95,8 +101,10 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
           cellStyle: { padding: '0px' },
           render: (rowData) => {
             return (
-              <p data-testid={'log-table-date'}>
-                <Typography>{moment(rowData.timestamp).format('lll')}</Typography>
+              <p>
+                <Typography data-testid={'log-table-date'}>
+                  {moment(rowData.timestamp).format('lll')}
+                </Typography>
               </p>
             );
           },
