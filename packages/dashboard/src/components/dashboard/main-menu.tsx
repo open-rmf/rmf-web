@@ -53,11 +53,12 @@ export interface MainMenuProps {
   itemState: ItemState;
   tasks: RomiCore.TaskSummary[];
   notifications: Notification[];
+  deletedNotifications: Notification[];
 }
 
 export const MainMenu = React.memo((props: MainMenuProps) => {
   const { showTooltips } = React.useContext(TooltipsContext);
-  const { pushView, itemState, tasks, notifications } = props;
+  const { pushView, itemState, tasks, notifications, deletedNotifications } = props;
   debug('render');
   const classes = useStyles();
 
@@ -253,7 +254,7 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
     <React.Fragment>
       <MainMenuBanner bannerUrl={'/favicon.ico'} isError={toggleBannerColor()} />
       <div className={classes.root}>
-        <MainMenuAlert notifications={notifications} deletedNotifications={[]} />
+        <MainMenuAlert notifications={notifications} deletedNotifications={deletedNotifications} />
         <Divider className={classes.divider} />
 
         {getSpoiltEquipment().length > 0 ? (

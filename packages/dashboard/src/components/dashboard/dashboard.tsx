@@ -319,6 +319,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                   error: 'hello world',
                 },
               ]}
+              deletedNotifications={[]}
             />
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Doors}>
