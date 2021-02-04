@@ -86,6 +86,7 @@ class PlaceMixin():
     yaw_tolerance = fields.FloatField()
 
 class GetBuildingMap_RequestMixin():
+    pass
 
 class GetBuildingMap_ResponseMixin():
     building_map = fields.JSONField()

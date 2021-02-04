@@ -39,7 +39,34 @@ Install the following dev dependencies
 ```bash
 pip3 install aiohttp
 ```
-NOTE: make sure the python virtual env is sourced.
+
+Run the tests
+
+```bash
+python3 -m unittest
+```
+
+### Collecting code coverage
+
+Install the following dependencies
+
+```bash
+pip3 install coverage
+```
+
+Run tests with coverage
+
+```bash
+python3 -m coverage run -m unittest
+```
+
+Generate coverage report
+
+```bash
+python3 -m coverage combine
+python3 -m coverage html
+xdg-open htmlcov/index.html
+```
 
 ## Generated files
 

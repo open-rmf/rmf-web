@@ -50,8 +50,7 @@ async def on_startup():
 
     sql_repo = SqlRepository(logger.getChild('sql_repo'))
     rmf_gateway = RmfGateway(
-        initial_door_states=await sql_repo.read_door_states(),
-    )
+        initial_door_states=await sql_repo.read_door_states())
     rmf_io = RmfIO(sio, rmf_gateway, static_files_repo,
                    logger=logger.getChild('RmfIO'))
 
@@ -59,7 +58,7 @@ async def on_startup():
     rmf_transport.subscribe_all()
 
     rmf_bookkeeper = RmfBookKeeper(
-        rmf_gateway, logger=logger.getChild('BookKeeper'))
+        rmf_gateway, sql_repo, logger=logger.getChild('BookKeeper'))
     rmf_bookkeeper.start()
 
     threading.Thread(target=ros2_thread, args=[ros2_node]).start()
