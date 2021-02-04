@@ -81,9 +81,7 @@ class RmfIO():
                 fingerprint = base64.b32encode(
                     sha1_hash.digest()).lower().decode()
                 relpath = f'{building_map.name}/{level.name}-{image.name}.{fingerprint}.{image.encoding}'
-                (filepath, urlpath) = self.static_files.add_file(
-                    image.data, relpath)
-                self.logger.info(f'saved map image to "{filepath}"')
+                urlpath = self.static_files.add_file(image.data, relpath)
                 self._building_map['levels'][i]['images'][j]['data'] = urlpath
         self.room_records[topics.building_map] = {
             building_map.name: self._building_map}

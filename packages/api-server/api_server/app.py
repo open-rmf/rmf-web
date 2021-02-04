@@ -36,6 +36,7 @@ async def init_tortoise(app_config: AppConfig):
 
 sio_client = socketio.AsyncClient()
 
+
 async def on_startup():
     await init_tortoise(app_config)
 
@@ -45,7 +46,7 @@ async def on_startup():
 
     os.makedirs(app_config.static_directory, exist_ok=True)
     static_files_repo = StaticFilesRepository(
-        app_config.static_path, app_config.static_directory)
+        app_config.static_path, app_config.static_directory, logger.getChild('static_files'))
 
     rmf_gateway = RmfGateway()
     rmf_io = RmfIO(sio, rmf_gateway, static_files_repo,

@@ -2,6 +2,7 @@ import unittest
 import asyncio
 import os.path
 from datetime import datetime
+from unittest.mock import MagicMock
 
 import socketio
 import aiohttp.web
@@ -74,9 +75,8 @@ class TestRmfIO(unittest.IsolatedAsyncioTestCase):
         self.clients = []
         self.rmf_gateway = RmfGateway()
         self.sio = socketio.AsyncServer(async_mode='aiohttp')
-        self.static_files_dir = f'{os.path.dirname(os.path.dirname(os.path.dirname(__file__)))}/test_artifacts'
-        self.static_files = StaticFilesRepository(
-            '/static', self.static_files_dir)
+        self.static_files = MagicMock(StaticFilesRepository)
+        self.static_files.add_file.return_value = '/test_url'
         self.rmf_io = RmfIO(self.sio, self.rmf_gateway, self.static_files)
         self.app = aiohttp.web.Application()
         self.sio.attach(self.app)
@@ -129,13 +129,12 @@ class TestRmfIO(unittest.IsolatedAsyncioTestCase):
         def on_building_map(building_map: dict):
             image = building_map['levels'][0]['images'][0]
             image_data = image['data']
-            self.assertEqual(
-                image_data, '/static/test_name/L1-test_image.thbyxgrllndgeciymb3a47hf2re5p7no.png')
-            self.assertTrue(os.path.exists(
-                f'{self.static_files_dir}/test_name/L1-test_image.thbyxgrllndgeciymb3a47hf2re5p7no.png'))
+            self.assertEqual(image_data, '/test_url')
             done.set_result(True)
         client.on(topics.building_map, on_building_map)
 
         building_map = make_building_map()
         self.rmf_gateway.building_map.on_next(building_map)
         await asyncio.wait_for(done, 5)
+        self.assertEqual(
+            self.static_files.add_file.call_args[0][1], 'test_name/L1-test_image.thbyxgrllndgeciymb3a47hf2re5p7no.png')
