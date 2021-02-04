@@ -1,7 +1,7 @@
 import React from 'react';
 import MaterialTable from 'material-table';
 import { LogLevel } from '.';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles, Typography } from '@material-ui/core';
 import moment from 'moment';
 import { materialTableIcons } from '../material-table-icons';
 
@@ -59,34 +59,46 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
       icons={materialTableIcons}
       columns={[
         {
-          title: 'Level',
+          title: <Typography>Level</Typography>,
           field: 'level',
           type: 'string',
           align: 'center',
           cellStyle: { padding: '0px' },
           lookup: LogLevel,
           render: (rowData) => {
-            return <p className={`${getLogLevelStyle(rowData.level)} `}>{rowData.level}</p>;
+            return (
+              <p className={`${getLogLevelStyle(rowData.level)} `}>
+                <Typography>{rowData.level}</Typography>
+              </p>
+            );
           },
         },
         {
-          title: 'Message',
+          title: <Typography>Message</Typography>,
           field: 'message',
           type: 'string',
           cellStyle: { padding: '0px' },
           render: (rowData) => {
-            return <p className={classes.textColumn}>{rowData.message}</p>;
+            return (
+              <p className={classes.textColumn}>
+                <Typography>{rowData.message}</Typography>
+              </p>
+            );
           },
         },
         {
-          title: 'Timestamp',
+          title: <Typography>Timestamp</Typography>,
           field: 'timestamp',
           type: 'datetime',
           filtering: false,
           align: 'center',
           cellStyle: { padding: '0px' },
           render: (rowData) => {
-            return <p data-testid={'log-table-date'}>{moment(rowData.timestamp).format('lll')}</p>;
+            return (
+              <p data-testid={'log-table-date'}>
+                <Typography>{moment(rowData.timestamp).format('lll')}</Typography>
+              </p>
+            );
           },
         },
       ]}

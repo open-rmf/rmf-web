@@ -1,8 +1,12 @@
+/**
+ * Order by severity
+ */
+
 export enum LogLevel {
+  Fatal = 'fatal',
   Error = 'error',
   Warn = 'warn',
   Info = 'info',
-  Fatal = 'fatal',
   Debug = 'debug',
   Trace = 'trace',
 }
