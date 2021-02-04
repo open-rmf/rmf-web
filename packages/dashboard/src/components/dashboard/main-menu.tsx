@@ -96,9 +96,9 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
 
     doorKeys.forEach((door) => {
       switch (doors[door].current_mode.value) {
-        case 0:
-        case 1:
-        case 2:
+        case RomiCore.DoorMode.MODE_CLOSED:
+        case RomiCore.DoorMode.MODE_MOVING:
+        case RomiCore.DoorMode.MODE_OPEN:
           modeCounter['operational'] += 1;
           break;
         default:
@@ -122,14 +122,14 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
 
     liftKeys.forEach((lift) => {
       switch (lifts[lift].current_mode) {
-        case 1:
-        case 2:
-        case 4:
+        case RomiCore.LiftState.MODE_HUMAN:
+        case RomiCore.LiftState.MODE_AGV:
+        case RomiCore.LiftState.MODE_OFFLINE:
           modeCounter['operational'] += 1;
           break;
-        case 3:
-        case 5:
-        case 0:
+        case RomiCore.LiftState.MODE_FIRE:
+        case RomiCore.LiftState.MODE_EMERGENCY:
+        case RomiCore.LiftState.MODE_UNKNOWN:
           spoiltEquipment.push(lift + ` - ${liftModeToString(lifts[lift].current_mode)}`);
           modeCounter['outOfOrder'] += 1;
           break;
@@ -150,9 +150,9 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
 
     dispenserKeys.forEach((dispenser) => {
       switch (dispensers[dispenser].mode) {
-        case 0:
-        case 1:
-        case 2:
+        case RomiCore.DispenserState.IDLE:
+        case RomiCore.DispenserState.BUSY:
+        case RomiCore.DispenserState.OFFLINE:
           modeCounter['operational'] += 1;
           break;
         default:
@@ -178,23 +178,23 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
     fleetKeys.forEach((fleet) => {
       fleets[fleet].robots.forEach((robot) => {
         switch (robot.mode.mode) {
-          case 8:
-          case 5:
+          case RomiCore.RobotMode.MODE_ADAPTER_ERROR:
+          case RomiCore.RobotMode.MODE_EMERGENCY:
             spoiltEquipment.push(robot.name + ` - ${robotModeToString(robot.mode)}`);
             modeCounter['outOfOrder'] += 1;
             break;
-          case 1:
+          case RomiCore.RobotMode.MODE_CHARGING:
             modeCounter['operational'] += 1;
             modeCounter['charging'] += 1;
             break;
-          case 7:
-          case 6:
-          case 2:
-          case 3:
-          case 4:
+          case RomiCore.RobotMode.MODE_DOCKING:
+          case RomiCore.RobotMode.MODE_GOING_HOME:
+          case RomiCore.RobotMode.MODE_MOVING:
+          case RomiCore.RobotMode.MODE_PAUSED:
+          case RomiCore.RobotMode.MODE_WAITING:
             modeCounter['operational'] += 1;
             break;
-          case 0:
+          case RomiCore.RobotMode.MODE_IDLE:
             modeCounter['operational'] += 1;
             modeCounter['idle'] += 1;
             break;
@@ -213,26 +213,43 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
     };
   };
 
-  const getBannerColor = (): boolean => {
-    const getSpoiltDoor = getDoorSummary().summary.outOfOrder;
-    const getSpoiltLift = getLiftSummary().summary.outOfOrder;
-    const getSpoiltDispensers = getDispenserSummary().summary.outOfOrder;
-    const getSpoiltRobots = getRobotSummary().summary.outOfOrder;
+  const getAllEquipmentSummary = () => {
+    const getDoor = getDoorSummary();
+    const getLift = getLiftSummary();
+    const getDispensers = getDispenserSummary();
+    const getRobots = getRobotSummary();
+    return {
+      door: getDoor,
+      lift: getLift,
+      dispenser: getDispensers,
+      robot: getRobots,
+    };
+  };
 
-    return getSpoiltDoor + getSpoiltLift + getSpoiltDispensers + getSpoiltRobots !== 0;
+  const toggleBannerColor = (): boolean => {
+    const equipment = getAllEquipmentSummary();
+    return (
+      equipment.door.summary.outOfOrder +
+        equipment.lift.summary.outOfOrder +
+        equipment.dispenser.summary.outOfOrder +
+        equipment.robot.summary.outOfOrder !==
+      0
+    );
   };
 
   const getSpoiltEquipment = (): string[] => {
-    const getSpoiltDoor = getDoorSummary().outOfOrder;
-    const getSpoiltLift = getLiftSummary().outOfOrder;
-    const getSpoiltDispensers = getDispenserSummary().outOfOrder;
-    const getSpoiltRobots = getRobotSummary().outOfOrder;
-    return [...getSpoiltDoor, ...getSpoiltLift, ...getSpoiltDispensers, ...getSpoiltRobots];
+    const equipment = getAllEquipmentSummary();
+    return [
+      ...equipment.door.outOfOrder,
+      ...equipment.lift.outOfOrder,
+      ...equipment.dispenser.outOfOrder,
+      ...equipment.robot.outOfOrder,
+    ];
   };
 
   return (
     <React.Fragment>
-      <MainMenuBanner bannerUrl={'http://localhost:3000/favicon.ico'} isError={getBannerColor()} />
+      <MainMenuBanner bannerUrl={'/favicon.ico'} isError={toggleBannerColor()} />
       <div className={classes.root}>
         <MainMenuAlert notifications={notifications} />
         <Divider className={classes.divider} />
