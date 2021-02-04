@@ -22,6 +22,7 @@ import { NegotiationColors } from './negotiation-colors';
 import RobotTrajectoriesOverlay from './robot-trajectories-overlay';
 import RobotsOverlay from './robots-overlay';
 import WaypointsOverlay from './waypoints-overlay';
+import { OmniPanelViewIndex } from '../dashboard/dashboard-config';
 
 const debug = Debug('ScheduleVisualizer');
 
@@ -197,7 +198,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
         });
         debug('set trajectories');
         // negotiations panel index is 6 on the omni panel
-        if (omniPanelView === 6) {
+        if (omniPanelView === OmniPanelViewIndex.Negotiations) {
           setTrajectories({});
         } else {
           setTrajectories((prev) => ({

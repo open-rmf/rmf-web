@@ -1,7 +1,7 @@
 import { Box, createMuiTheme, Typography } from '@material-ui/core';
 import React from 'react';
 import { ReactourStep } from 'reactour';
-import { OmniPanelViewIndex } from '../dashboard';
+import { OmniPanelViewIndex } from '../dashboard-config';
 import { stepDetails, stepStyling, tourText } from './tour-data';
 import { NavButtons } from './tour-navigation-control';
 

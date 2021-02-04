@@ -41,6 +41,7 @@ import NegotiationsPanel from './negotiations-panel';
 import OmniPanelControl_ from './omnipanel-control';
 import { DashboardState, useDashboardReducer } from './reducers/dashboard-reducer';
 import { DispenserResource } from '../../managers/resource-manager-dispensers';
+import { OmniPanelViewIndex } from './dashboard-config';
 
 const debug = Debug('Dashboard');
 const DispenserAccordion = React.memo(withSpotlight(DispenserAccordion_));
@@ -50,17 +51,6 @@ const RobotAccordion = React.memo(withSpotlight(RobotAccordion_));
 const OmniPanelControl = React.memo(OmniPanelControl_);
 
 const borderRadius = 20;
-
-export enum OmniPanelViewIndex {
-  MainMenu = 0,
-  Doors,
-  Lifts,
-  Robots,
-  Dispensers,
-  Commands,
-  Negotiations,
-  Tasks,
-}
 
 export const dashboardInitialValues: DashboardState = {
   showOmniPanel: true,

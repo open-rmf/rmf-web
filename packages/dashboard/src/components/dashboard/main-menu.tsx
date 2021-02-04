@@ -3,7 +3,7 @@ import Debug from 'debug';
 import React from 'react';
 import DashboardTooltip from 'react-components/lib/tooltip';
 import { TooltipsContext } from '../app-contexts';
-import { OmniPanelViewIndex } from './dashboard';
+import { OmniPanelViewIndex } from './dashboard-config';
 
 const debug = Debug('MainMenu');
 
