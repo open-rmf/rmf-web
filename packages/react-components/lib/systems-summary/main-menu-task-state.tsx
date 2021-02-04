@@ -63,20 +63,49 @@ export const MainMenuTaskState = (props: MainMenuTaskStateProps): JSX.Element =>
     <React.Fragment>
       <Typography variant="body1">Plans</Typography>
       <Grid className={classes.grid} spacing={2} container direction="row">
-        {Object.keys(getTaskSummary()).map((key) => {
-          return (
-            <Grid key={key} item xs={3}>
-              <Paper elevation={3} className={getStatusLabel(key)}>
-                <Typography align="center" variant="h6">
-                  {getTaskSummary()[key]}
-                </Typography>
-                <Typography align="center" variant="body1">
-                  {key}
-                </Typography>
-              </Paper>
-            </Grid>
-          );
-        })}
+        <Grid key={'active'} item xs={3}>
+          <Paper elevation={3} className={getStatusLabel('active')}>
+            <Typography align="center" variant="h6">
+              {getTaskSummary().active}
+            </Typography>
+            <Typography align="center" variant="body1">
+              Active
+            </Typography>
+          </Paper>
+        </Grid>
+
+        <Grid key={'finish'} item xs={3}>
+          <Paper elevation={3} className={getStatusLabel('finish')}>
+            <Typography align="center" variant="h6">
+              {getTaskSummary().finish}
+            </Typography>
+            <Typography align="center" variant="body1">
+              Finish
+            </Typography>
+          </Paper>
+        </Grid>
+
+        <Grid key={'queued'} item xs={3}>
+          <Paper elevation={3} className={getStatusLabel('queued')}>
+            <Typography align="center" variant="h6">
+              {getTaskSummary().queued}
+            </Typography>
+            <Typography align="center" variant="body1">
+              queued
+            </Typography>
+          </Paper>
+        </Grid>
+
+        <Grid key={'failed'} item xs={3}>
+          <Paper elevation={3} className={getStatusLabel('failed')}>
+            <Typography align="center" variant="h6">
+              {getTaskSummary().failed}
+            </Typography>
+            <Typography align="center" variant="body1">
+              failed
+            </Typography>
+          </Paper>
+        </Grid>
       </Grid>
     </React.Fragment>
   );

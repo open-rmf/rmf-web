@@ -15,6 +15,7 @@ import {
   liftModeToString,
   robotModeToString,
   MainMenuSpoiltItems,
+  SpoiltItem,
 } from 'react-components';
 
 const debug = Debug('MainMenu');
@@ -237,14 +238,15 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
     );
   };
 
-  const getSpoiltEquipment = (): string[] => {
+  const getSpoiltEquipment = (): SpoiltItem[] => {
     const equipment = getAllEquipmentSummary();
-    return [
+    const itemHolder = [
       ...equipment.door.outOfOrder,
       ...equipment.lift.outOfOrder,
       ...equipment.dispenser.outOfOrder,
       ...equipment.robot.outOfOrder,
     ];
+    return [...itemHolder.map((item) => ({ summary: item }))];
   };
 
   return (

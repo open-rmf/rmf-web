@@ -39,13 +39,9 @@ export const MainMenuItemState = (props: MainMenuItemStateProps): JSX.Element =>
   const classes = useStyles();
   const { itemSummary, handleClick } = props;
 
-  const totalItem: number = React.useMemo(() => {
-    return itemSummary.summary.operational + itemSummary.summary.outOfOrder;
-  }, [itemSummary]);
+  const totalItem: number = itemSummary.summary.operational + itemSummary.summary.outOfOrder;
 
-  const operationalItem: number = React.useMemo(() => {
-    return itemSummary.summary.operational;
-  }, [itemSummary]);
+  const operationalItem: number = itemSummary.summary.operational;
 
   const getOperationalStatusLabel = (total: number, operational: number): string => {
     if (total === operational) {

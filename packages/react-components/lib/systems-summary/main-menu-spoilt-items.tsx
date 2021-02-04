@@ -20,9 +20,9 @@ export const MainMenuSpoiltItems = (props: MainMenuSpoiltItemsProps): JSX.Elemen
       </Typography>
       {spoiltItems.map((item) => {
         return (
-          <Paper className={classes.paper} key={item} elevation={3}>
+          <Paper className={classes.paper} key={item.summary} elevation={3}>
             <Typography color="error" variant="body1">
-              {item}
+              {item.summary}
             </Typography>
           </Paper>
         );

@@ -28,7 +28,10 @@ export interface MainMenuTaskStateProps {
 }
 
 export interface TaskSummaryState {
-  [key: string]: number;
+  active: number;
+  finish: number;
+  failed: number;
+  queued: number;
 }
 
 export interface MainMenuBannerProps {
@@ -36,6 +39,12 @@ export interface MainMenuBannerProps {
   isError: boolean;
 }
 
+export interface SpoiltItem {
+  summary: string;
+  errorMessage?: string;
+}
+
 export interface MainMenuSpoiltItemsProps {
-  spoiltItems: string[];
+  spoiltItems: SpoiltItem[];
+  errorMessage?: string;
 }
