@@ -24,7 +24,7 @@ const itemStateDataDoor: MainMenuItemStateProps = {
     summary: { operational: 1, outOfOrder: 1 },
     outOfOrder: [],
   },
-  handleClick: () => {
+  onClick: () => {
     /**filler */
   },
 };
@@ -35,13 +35,16 @@ const itemStateDataRobot: MainMenuItemStateProps = {
     summary: { operational: 2, outOfOrder: 0, idle: 1, charging: 1 },
     outOfOrder: [],
   },
-  handleClick: () => {
+  onClick: () => {
     /**filler */
   },
 };
 
 const mainMenuAlert: MainMenuAlertProps = {
-  notifications: [{ severity: 'High', time: 'January 29th 2021, 8:20:50', error: 'hello world' }],
+  notifications: [
+    { id: 1, severity: 'High', time: 'January 29th 2021, 8:20:50', error: 'hello world' },
+  ],
+  deletedNotifications: [],
 };
 
 const mainMenuTaskStateData: MainMenuTaskStateProps = {
@@ -87,19 +90,23 @@ const mainMenuBannerData: MainMenuBannerProps = {
 };
 
 const spoiltEquipment: MainMenuSpoiltItemsProps = {
-  spoiltItems: ['lift1 - fire', 'door1 - unknown', 'robot1 - unknown'],
+  spoiltItems: [
+    { summary: 'lift1 - fire' },
+    { summary: 'door1 - unknown' },
+    { summary: 'robot1 - unknown' },
+  ],
 };
 
 export const MainMenuItemStateStory: Story = (args) => (
   <React.Fragment>
     <MainMenuItemState
       itemSummary={itemStateDataDoor.itemSummary}
-      handleClick={itemStateDataDoor.handleClick}
+      onClick={itemStateDataDoor.onClick}
       {...args}
     />
     <MainMenuItemState
       itemSummary={itemStateDataRobot.itemSummary}
-      handleClick={itemStateDataRobot.handleClick}
+      onClick={itemStateDataRobot.onClick}
       {...args}
     />
   </React.Fragment>
@@ -107,8 +114,16 @@ export const MainMenuItemStateStory: Story = (args) => (
 
 export const MainMenuItemAlertStory: Story = (args) => (
   <React.Fragment>
-    <MainMenuAlert notifications={mainMenuAlert.notifications} {...args} />
-    <MainMenuAlert notifications={[]} {...args} />
+    <MainMenuAlert
+      notifications={mainMenuAlert.notifications}
+      {...args}
+      deletedNotifications={mainMenuAlert.deletedNotifications}
+    />
+    <MainMenuAlert
+      notifications={[]}
+      deletedNotifications={mainMenuAlert.deletedNotifications}
+      {...args}
+    />
   </React.Fragment>
 );
 

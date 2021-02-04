@@ -17,6 +17,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import moment from 'moment';
 
 export interface Notification {
+  id: number;
   time: string;
   error: string;
   severity: string;
@@ -24,8 +25,9 @@ export interface Notification {
 
 export interface NotificationDialogProps {
   showNotificationsDialog: boolean;
-  setShowNotifications: (payload: boolean) => void;
+  onClose: () => void;
   notifications: Notification[];
+  deletedNotifications: Notification[];
 }
 
 interface SelectChangeEvent {
@@ -125,13 +127,18 @@ const SeverityIndicator = (props: SeverityIndicatoryProps): JSX.Element => {
 export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element => {
   const classes = useStyles();
 
-  const { showNotificationsDialog, setShowNotifications, notifications } = props;
+  const { showNotificationsDialog, onClose, notifications, deletedNotifications } = props;
 
   const [level, setLevel] = React.useState('');
-  const [rmfNotifications, setRmfNotifications] = React.useState(notifications);
-  // a copy of rmfNotifications
-  // ensure notifications can be restored to correct state after filtering
-  const [notficationsCopy, setNotificationsCopy] = React.useState(notifications);
+
+  // filter out the deleted notifications
+  const filteredRmfNotifications = React.useMemo(() => {
+    return notifications.filter((notification) => {
+      return !deletedNotifications.some((deletedNot) => notification.id === deletedNot.id);
+    });
+  }, [notifications, deletedNotifications]);
+  const [rmfNotifications, setRmfNotifications] = React.useState(filteredRmfNotifications);
+
   // list of alert level for filtering
   const alertLevel = React.useMemo(() => {
     const holder: string[] = [];
@@ -150,9 +157,9 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
     const filterNotifications: Notification[] = [];
 
     if (val === 'All') {
-      setRmfNotifications(notficationsCopy);
+      setRmfNotifications(filteredRmfNotifications);
     } else {
-      notficationsCopy.forEach((notification) => {
+      filteredRmfNotifications.forEach((notification) => {
         if (notification.severity === val) {
           filterNotifications.push(notification);
         }
@@ -161,30 +168,24 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
     }
   };
 
-  // delete notifications once marked read
-  const deleteReadNotifications = (i: number) => {
-    const beforeIndex = rmfNotifications.slice(0, i);
-    const afterIndex = rmfNotifications.slice(i + 1);
-    const newNotifications = beforeIndex.concat(afterIndex);
-    setRmfNotifications(newNotifications);
-    // update notificationsCopy to ensure consistent state with rmfNotifications
-    setNotificationsCopy(newNotifications);
-  };
+  // TODO - implement logic to store deleted notifications
+  // const deleteReadNotifications = (i: number) => {
+  // const beforeIndex = rmfNotifications.slice(0, i);
+  // const afterIndex = rmfNotifications.slice(i + 1);
+  // const newNotifications = beforeIndex.concat(afterIndex);
+  // setRmfNotifications(newNotifications);
+  // };
 
   return (
     <Dialog
       open={showNotificationsDialog}
-      onClose={() => setShowNotifications(false)}
+      onClose={() => onClose()}
       fullWidth={true}
       maxWidth={'md'}
     >
       <DialogTitle>
         Notifications
-        <IconButton
-          aria-label="close"
-          className={classes.closeButton}
-          onClick={() => setShowNotifications(false)}
-        >
+        <IconButton aria-label="close" className={classes.closeButton} onClick={() => onClose()}>
           <CloseIcon />
         </IconButton>
       </DialogTitle>
@@ -226,7 +227,7 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
                   <Typography align="right">
                     <IconButton
                       className={classes.removeNotificationIcon}
-                      onClick={() => deleteReadNotifications(i)}
+                      // onClick={() => deleteReadNotifications(i)}
                     >
                       <CloseIcon />
                     </IconButton>
@@ -238,7 +239,7 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
         </React.Fragment>
       </DialogContent>
       <DialogActions className={classes.dialogActions}>
-        <Button autoFocus onClick={() => setShowNotifications(false)} color="primary">
+        <Button autoFocus onClick={() => onClose()} color="primary">
           CLOSE
         </Button>
       </DialogActions>

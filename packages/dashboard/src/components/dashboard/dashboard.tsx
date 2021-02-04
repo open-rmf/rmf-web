@@ -312,7 +312,12 @@ export default function Dashboard(_props: {}): React.ReactElement {
               itemState={itemStates}
               tasks={tasks}
               notifications={[
-                { severity: 'High', time: 'January 29th 2021, 8:20:50', error: 'hello world' },
+                {
+                  id: 1,
+                  severity: 'High',
+                  time: 'January 29th 2021, 8:20:50',
+                  error: 'hello world',
+                },
               ]}
             />
           </OmniPanelView>

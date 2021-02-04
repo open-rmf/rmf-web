@@ -253,7 +253,7 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
     <React.Fragment>
       <MainMenuBanner bannerUrl={'/favicon.ico'} isError={toggleBannerColor()} />
       <div className={classes.root}>
-        <MainMenuAlert notifications={notifications} />
+        <MainMenuAlert notifications={notifications} deletedNotifications={[]} />
         <Divider className={classes.divider} />
 
         {getSpoiltEquipment().length > 0 ? (
@@ -267,16 +267,13 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
           Systems Summary
         </Typography>
 
-        <MainMenuItemState itemSummary={getDoorSummary()} handleClick={handleMainMenuDoorsClick} />
-        <MainMenuItemState itemSummary={getLiftSummary()} handleClick={handleMainMenuLiftsClick} />
+        <MainMenuItemState itemSummary={getDoorSummary()} onClick={handleMainMenuDoorsClick} />
+        <MainMenuItemState itemSummary={getLiftSummary()} onClick={handleMainMenuLiftsClick} />
         <MainMenuItemState
           itemSummary={getDispenserSummary()}
-          handleClick={handleMainMenuDispensersClick}
+          onClick={handleMainMenuDispensersClick}
         />
-        <MainMenuItemState
-          itemSummary={getRobotSummary()}
-          handleClick={handleMainMenuRobotsClick}
-        />
+        <MainMenuItemState itemSummary={getRobotSummary()} onClick={handleMainMenuRobotsClick} />
         <Divider className={classes.divider} />
 
         <Typography variant="h6">Task Statuses</Typography>

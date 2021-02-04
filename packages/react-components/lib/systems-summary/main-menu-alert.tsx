@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const MainMenuAlert = (props: MainMenuAlertProps): JSX.Element => {
   const classes = useStyles();
-  const { notifications } = props;
+  const { notifications, deletedNotifications } = props;
 
   const [showNotifications, setShowNotifications] = React.useState(false);
   const getLabel =
@@ -64,7 +64,8 @@ export const MainMenuAlert = (props: MainMenuAlertProps): JSX.Element => {
       <NotificationsDialog
         notifications={notifications}
         showNotificationsDialog={showNotifications}
-        setShowNotifications={() => setShowNotifications(false)}
+        onClose={() => setShowNotifications(false)}
+        deletedNotifications={deletedNotifications}
       />
     </React.Fragment>
   );

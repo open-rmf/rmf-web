@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const MainMenuItemState = (props: MainMenuItemStateProps): JSX.Element => {
   const classes = useStyles();
-  const { itemSummary, handleClick } = props;
+  const { itemSummary, onClick } = props;
 
   const totalItem: number = itemSummary.summary.operational + itemSummary.summary.outOfOrder;
 
@@ -67,7 +67,7 @@ export const MainMenuItemState = (props: MainMenuItemStateProps): JSX.Element =>
       <Grid container spacing={1} direction="column">
         <Grid item className={classes.headerGrid}>
           <Typography variant="h6">{itemSummary.item}</Typography>
-          <Button className={classes.button} onClick={handleClick}>
+          <Button className={classes.button} onClick={onClick}>
             <Typography variant="h6">Details </Typography>
             <NavigateNextIcon />
           </Button>

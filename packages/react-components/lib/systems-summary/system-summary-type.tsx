@@ -16,11 +16,12 @@ export interface ItemSummary {
 
 export interface MainMenuItemStateProps {
   itemSummary: ItemSummary;
-  handleClick: () => void;
+  onClick: () => void;
 }
 
 export interface MainMenuAlertProps {
   notifications: Notification[];
+  deletedNotifications: Notification[];
 }
 
 export interface MainMenuTaskStateProps {
@@ -46,5 +47,4 @@ export interface SpoiltItem {
 
 export interface MainMenuSpoiltItemsProps {
   spoiltItems: SpoiltItem[];
-  errorMessage?: string;
 }
