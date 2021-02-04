@@ -14,7 +14,7 @@ import socketio
 from tortoise import Tortoise
 
 from .app_config import app_config, AppConfig
-from .repositories.static_files import StaticFilesRepository
+from .repositories import StaticFilesRepository, SqlRepository
 from .rmf_io import RmfIO, RmfGateway, RmfTransport, RmfBookKeeper
 
 
@@ -48,7 +48,10 @@ async def on_startup():
     static_files_repo = StaticFilesRepository(
         app_config.static_path, app_config.static_directory, logger.getChild('static_files'))
 
-    rmf_gateway = RmfGateway()
+    sql_repo = SqlRepository(logger.getChild('sql_repo'))
+    rmf_gateway = RmfGateway(
+        initial_door_states=await sql_repo.read_door_states(),
+    )
     rmf_io = RmfIO(sio, rmf_gateway, static_files_repo,
                    logger=logger.getChild('RmfIO'))
 

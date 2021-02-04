@@ -35,12 +35,12 @@ class RmfBookKeeper():
     def __init__(
         self,
         rmf_gateway: RmfGateway,
-        repo: SqlRepository = None,
+        repo: SqlRepository,
         logger: logging.Logger = None,
     ):
         self.rmf = rmf_gateway
+        self.repo = repo
         self.logger = logger or logging.getLogger(self.__class__.__name__)
-        self.repo = repo or SqlRepository(logger=self.logger)
 
     def start(
         self,
