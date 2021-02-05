@@ -66,22 +66,6 @@ const makeNotifications = (): Notification[] => {
 };
 // end of temp data
 
-// deleted notifications
-const deletedNotifications: Notification[] = [
-  {
-    id: 4,
-    time: getDate(),
-    error: 'Trajectory conflict with robot B and robot C',
-    severity: 'Medium',
-  },
-  {
-    id: 6,
-    time: getDate(),
-    error: 'Robot D not moving for over 10 seconds',
-    severity: 'Low',
-  },
-];
-
 const NotificationDialogHandler = (props: NotificationDialogHandlerProps): JSX.Element => {
   const { notifications } = props;
   const [showDialogBox, setShowDialogBox] = React.useState(false);
@@ -95,7 +79,6 @@ const NotificationDialogHandler = (props: NotificationDialogHandlerProps): JSX.E
         notifications={notifications}
         showNotificationsDialog={showDialogBox}
         onClose={() => setShowDialogBox(false)}
-        deletedNotifications={deletedNotifications}
       />
     </>
   );

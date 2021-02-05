@@ -1,8 +1,12 @@
 import React from 'react';
 import { makeStyles, Typography, Button, Badge } from '@material-ui/core';
 import NotificationsIcon from '@material-ui/icons/Notifications';
-import { NotificationsDialog } from '../index';
-import { MainMenuAlertProps } from './index';
+import { NotificationsDialog, Notification } from '../index';
+
+export interface MainMenuAlertProps {
+  notifications: Notification[];
+  deletedNotifications: Notification[];
+}
 
 const useStyles = makeStyles((theme) => ({
   h2: {

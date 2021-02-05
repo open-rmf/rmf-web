@@ -1,6 +1,17 @@
 import React from 'react';
 import { makeStyles, Typography, Grid, Paper } from '@material-ui/core';
-import { MainMenuTaskStateProps, TaskSummaryState } from './index';
+import * as RomiCore from '@osrf/romi-js-core-interfaces';
+
+export interface MainMenuTaskStateProps {
+  tasks: RomiCore.TaskSummary[];
+}
+
+export interface TaskSummaryState {
+  active: number;
+  finish: number;
+  failed: number;
+  queued: number;
+}
 
 const useStyles = makeStyles((theme) => ({
   grid: {

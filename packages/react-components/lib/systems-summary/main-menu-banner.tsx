@@ -1,6 +1,10 @@
 import React from 'react';
 import { makeStyles, Typography, Card, CardHeader, Avatar } from '@material-ui/core';
-import { MainMenuBannerProps } from './index';
+
+export interface MainMenuBannerProps {
+  bannerUrl: string;
+  isError: boolean;
+}
 
 const useStyles = makeStyles((theme) => ({
   heading: {

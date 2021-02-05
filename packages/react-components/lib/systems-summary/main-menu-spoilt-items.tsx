@@ -1,6 +1,14 @@
 import React from 'react';
 import { makeStyles, Typography, Paper } from '@material-ui/core';
-import { MainMenuSpoiltItemsProps } from './index';
+
+export interface SpoiltItem {
+  summary: string;
+  errorMessage?: string;
+}
+
+export interface MainMenuSpoiltItemsProps {
+  spoiltItems: SpoiltItem[];
+}
 
 const useStyles = makeStyles((theme) => ({
   paper: {
