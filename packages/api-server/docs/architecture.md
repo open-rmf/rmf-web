@@ -18,7 +18,6 @@ In order to tackle the above mentioned issues, this is the current proposed arch
 * These additional apps will not write RMF events data to the database, however they may write non RMF data (e.g. user preferences).
 * These additional apps will not derive any events, all derived events shall be received from the main socketio app.
 * Dataflow from the other direction (from client to RMF) will all have to go through the main socketio app. However, it is assumed that RMF will be the bottleneck anyway.
-    * Picture a scenario where a million users all request a door to open, it is unlikely that RMF will be able to handle this.
 
 ## Other Considerations
 
