@@ -1,0 +1,14 @@
+{
+  "name": "api-server",
+  "version": "0.0.0",
+  "description": "dummy package",
+  "private": true,
+  "scripts": {
+    "install": "pipenv install --site-packages",
+    "test": "pipenv run python -m unittest",
+    "test:cov": "pipenv run python -m coverage run -m unittest && TEST_COVERAGE=1 npm run test:integration",
+    "test:integration": "pipenv run python -m unittest discover -s tests",
+    "test:report": "pipenv run python -m coverage html && xdg-open htmlcov/index.html",
+    "lint": "pipenv run pylint --ignore=mixins api_server"
+  }
+}
