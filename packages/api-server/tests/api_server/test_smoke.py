@@ -10,8 +10,7 @@ class TestApiServerSmoke(unittest.TestCase):
         env["RMF_API_SERVER_CONFIG"] = f"{os.path.dirname(__file__)}/config.py"
         if "TEST_COVERAGE" in os.environ:
             proc = subprocess.Popen(
-                ["python", "-m", "coverage", "run", "-a", "-m", "api_server"],
-                env=env,
+                ["python", "-m", "coverage", "run", "-a", "-m", "api_server"], env=env
             )
         else:
             proc = subprocess.Popen(["rmf_api_server"], env=env)

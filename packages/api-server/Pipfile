@@ -16,8 +16,6 @@ jinja2 = "==2.*"
 pylint = "==2.*"
 coverage = "==5.*"
 api-server = {editable = true, path = "."}
-black = "==20.8b1"
-isort = "==5.*"
 
 [requires]
 python_version = "3.8"

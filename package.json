@@ -2,6 +2,7 @@
   "name": "root",
   "private": true,
   "scripts": {
+    "install": "python3 -m pipenv install -d",
     "bootstrap": "node scripts/bootstrap.js"
   },
   "devDependencies": {
@@ -29,6 +30,10 @@
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx,css,scss}": [
       "prettier --write"
+    ],
+    "**/*.py": [
+      "python3 -m pipenv run black",
+      "python3 -m pipenv run isort"
     ]
   }
 }
