@@ -1,9 +1,8 @@
 from typing import Dict, Optional
 
-from rx.subject import BehaviorSubject, Subject
-
 from building_map_msgs.msg import BuildingMap
 from rmf_door_msgs.msg import DoorState
+from rx.subject import BehaviorSubject, Subject
 
 
 class RmfGateway:

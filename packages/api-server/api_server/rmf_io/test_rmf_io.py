@@ -1,19 +1,18 @@
-import unittest
 import asyncio
 import os.path
+import unittest
 from unittest.mock import MagicMock
 
-import socketio
 import aiohttp.web
-
+import socketio
+from building_map_msgs.msg import AffineImage, BuildingMap, Graph, Level
 from builtin_interfaces.msg import Time
-from building_map_msgs.msg import BuildingMap, Level, AffineImage, Graph
-from rmf_door_msgs.msg import DoorState, DoorMode
+from rmf_door_msgs.msg import DoorMode, DoorState
 
-from .rmf_io import RmfIO
-from .gateway import RmfGateway
-from .topics import topics
 from ..repositories.static_files import StaticFilesRepository
+from .gateway import RmfGateway
+from .rmf_io import RmfIO
+from .topics import topics
 
 
 def make_door_state(name: str, mode: int = DoorMode.MODE_CLOSED) -> DoorState:

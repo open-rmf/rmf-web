@@ -5,11 +5,11 @@ from typing import Optional, Union
 
 import rx
 from rx import Observable
-from rx.operators import sample, group_by, flat_map, Mapper
+from rx.operators import Mapper, flat_map, group_by, sample
 from rx.scheduler.scheduler import Scheduler
 
-from .gateway import RmfGateway
 from ..repositories import SqlRepository
+from .gateway import RmfGateway
 
 
 def grouped_sample(

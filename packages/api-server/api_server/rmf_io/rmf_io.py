@@ -2,18 +2,18 @@ import asyncio
 import base64
 import hashlib
 import logging
-from typing import Optional, Dict
+from typing import Dict, Optional
 
 import socketio
-
-from rosidl_runtime_py.convert import message_to_ordereddict
-from building_map_msgs.msg import BuildingMap, Level, AffineImage
+from building_map_msgs.msg import AffineImage, BuildingMap, Level
 from rmf_door_msgs.msg import DoorState
+from rosidl_runtime_py.convert import message_to_ordereddict
 
-from .authenticator import Authenticator, StubAuthenticator, AuthenticationError
+from ..repositories.static_files import StaticFilesRepository
+from .authenticator import (AuthenticationError, Authenticator,
+                            StubAuthenticator)
 from .gateway import RmfGateway
 from .topics import topics
-from ..repositories.static_files import StaticFilesRepository
 
 
 class RmfIO:

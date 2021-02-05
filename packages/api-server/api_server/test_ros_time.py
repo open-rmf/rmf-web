@@ -1,7 +1,9 @@
 import unittest
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
+
 from builtin_interfaces.msg import Time as RosTime
-from .ros_time import ros_to_py_datetime, py_to_ros_time
+
+from .ros_time import py_to_ros_time, ros_to_py_datetime
 
 
 class TestRosTime(unittest.TestCase):

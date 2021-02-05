@@ -4,15 +4,13 @@ import sys
 import threading
 
 import rclpy
-from rclpy.node import Node
-
 import socketio
-
+from rclpy.node import Node
 from tortoise import Tortoise
 
 from .app_config import app_config
-from .repositories import StaticFilesRepository, SqlRepository
-from .rmf_io import RmfIO, RmfGateway, RmfTransport, RmfBookKeeper
+from .repositories import SqlRepository, StaticFilesRepository
+from .rmf_io import RmfBookKeeper, RmfGateway, RmfIO, RmfTransport
 
 
 class MainNode(Node):

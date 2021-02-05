@@ -1,10 +1,9 @@
 from typing import Optional
 
 import rclpy
+from building_map_msgs.msg import BuildingMap
 from rclpy.node import Node as RosNode
 from rclpy.subscription import Subscription
-
-from building_map_msgs.msg import BuildingMap
 from rmf_door_msgs.msg import DoorState
 
 from .rmf_io import RmfGateway

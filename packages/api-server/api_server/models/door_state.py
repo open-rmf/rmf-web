@@ -1,10 +1,10 @@
+from rmf_door_msgs.msg import DoorMode as RmfDoorMode
+from rmf_door_msgs.msg import DoorState as RmfDoorState
 from tortoise import fields
 from tortoise.models import Model
 
-from rmf_door_msgs.msg import DoorState as RmfDoorState, DoorMode as RmfDoorMode
-
-from .door_mode import DoorModeEnum
 from ..ros_time import py_to_ros_time, ros_to_py_datetime
+from .door_mode import DoorModeEnum
 
 
 class DoorState(Model):

@@ -1,16 +1,14 @@
+import asyncio
 import unittest
 from unittest.mock import MagicMock, call
 
-import asyncio
-
+from rmf_door_msgs.msg import DoorMode, DoorState
 from rx.scheduler.historicalscheduler import HistoricalScheduler
 
-from rmf_door_msgs.msg import DoorState, DoorMode
-
+from ..repositories import SqlRepository
 from .book_keeper import RmfBookKeeper
 from .gateway import RmfGateway
 from .test_rmf_io import make_door_state
-from ..repositories import SqlRepository
 
 
 class TestRmfBookKeeperDoorStates(unittest.IsolatedAsyncioTestCase):

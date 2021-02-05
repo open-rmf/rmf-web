@@ -1,4 +1,5 @@
 import uvicorn
+
 from .app import app
 from .app_config import app_config
 

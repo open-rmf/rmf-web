@@ -1,6 +1,6 @@
 import importlib
 import os
-from typing import Mapping, Any
+from typing import Any, Mapping
 
 
 class AppConfig:

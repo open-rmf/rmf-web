@@ -4,14 +4,10 @@ import shutil
 from typing import Sequence
 
 import ament_index_python
-from rosidl_adapter.parser import (
-    parse_message_file,
-    MessageSpecification,
-    Type as RosType,
-)
-
 import jinja2
-
+from rosidl_adapter.parser import MessageSpecification
+from rosidl_adapter.parser import Type as RosType
+from rosidl_adapter.parser import parse_message_file
 
 templates_dir = f"{os.path.dirname(__file__)}/templates"
 env = jinja2.Environment(

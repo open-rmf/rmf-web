@@ -1,7 +1,6 @@
-import unittest
 import os.path
+import unittest
 from os.path import dirname
-
 
 from .static_files import StaticFilesRepository
 

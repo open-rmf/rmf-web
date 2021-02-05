@@ -9,7 +9,6 @@ from fastapi import FastAPI
 from .app_config import app_config
 from .building_map import building_map_router
 
-
 logger = logging.getLogger("rest_app")
 handler = logging.StreamHandler(sys.stdout)
 handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))

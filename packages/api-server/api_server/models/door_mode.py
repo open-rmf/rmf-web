@@ -1,4 +1,5 @@
 from enum import IntEnum
+
 from rmf_door_msgs.msg import DoorMode as RmfDoorMode
 
 

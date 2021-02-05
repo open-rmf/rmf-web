@@ -1,9 +1,9 @@
 import unittest
 
-from tortoise import Tortoise
-
 from builtin_interfaces.msg import Time as RosTime
-from rmf_door_msgs.msg import DoorState as RmfDoorState, DoorMode as RmfDoorMode
+from rmf_door_msgs.msg import DoorMode as RmfDoorMode
+from rmf_door_msgs.msg import DoorState as RmfDoorState
+from tortoise import Tortoise
 
 from .sql import SqlRepository
 

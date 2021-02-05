@@ -4,7 +4,6 @@ from logging import Logger
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException
-
 from socketio.asyncio_client import AsyncClient as SioAsyncClient
 
 from api_server.rmf_io import topics
