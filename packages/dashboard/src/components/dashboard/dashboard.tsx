@@ -311,6 +311,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
               pushView={pushView}
               itemState={itemStates}
               tasks={tasks}
+              // TODO - refactor out notifications once backend is up
               notifications={[
                 {
                   id: 1,
