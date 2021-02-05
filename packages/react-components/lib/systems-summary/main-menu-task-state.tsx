@@ -102,7 +102,7 @@ export const MainMenuTaskState = (props: MainMenuTaskStateProps): JSX.Element =>
               {getTaskSummary().queued}
             </Typography>
             <Typography align="center" variant="body1">
-              queued
+              Queued
             </Typography>
           </Paper>
         </Grid>
@@ -113,7 +113,7 @@ export const MainMenuTaskState = (props: MainMenuTaskStateProps): JSX.Element =>
               {getTaskSummary().failed}
             </Typography>
             <Typography align="center" variant="body1">
-              failed
+              Failed
             </Typography>
           </Paper>
         </Grid>

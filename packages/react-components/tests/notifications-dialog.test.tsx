@@ -35,7 +35,7 @@ test('should call onClose when close icon at the top is clicked', () => {
   expect(mockOnClose).toHaveBeenCalled();
 });
 
-test('', () => {
+test('should not render other severity levels when a particular level is selected', () => {
   const mockOnClose = jest.fn();
   render(
     <NotificationsDialog
