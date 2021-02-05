@@ -35,6 +35,7 @@ jobs:
           . /opt/rmf/setup.bash
           npm run lint
           npm run test:cov
+          python3 -m pipenv run python -m coverage xml
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
