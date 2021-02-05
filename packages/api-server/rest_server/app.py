@@ -10,11 +10,11 @@ from .app_config import app_config
 from .building_map import building_map_router
 
 
-logger = logging.getLogger('rest_app')
+logger = logging.getLogger("rest_app")
 handler = logging.StreamHandler(sys.stdout)
 handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
 logger.addHandler(handler)
-if 'RMF_REST_SERVER_DEBUG' in os.environ:
+if "RMF_REST_SERVER_DEBUG" in os.environ:
     logger.setLevel(logging.DEBUG)
 else:
     logger.setLevel(logging.INFO)
@@ -23,19 +23,20 @@ app = FastAPI()
 sio = socketio.AsyncClient()
 
 
-@app.on_event('startup')
+@app.on_event("startup")
 async def on_startup():
     await sio.connect(app_config.api_server_url)
     connected = asyncio.Future()
-    sio.on('connect', lambda: connected.set_result(True))
+    sio.on("connect", lambda: connected.set_result(True))
     await connected
-    del sio.handlers['/']['connect']
+    del sio.handlers["/"]["connect"]
 
     app.include_router(
-        building_map_router(sio, logger.getChild('building_map')),
-        prefix='/building_map')
+        building_map_router(sio, logger.getChild("building_map")),
+        prefix="/building_map",
+    )
 
-    logger.info('started app')
+    logger.info("started app")
 
 
 # There is a big with uvicorn and socketio that causes
@@ -45,7 +46,7 @@ async def on_startup():
 # This forces the event loop to stop before uvicorn completes its work, hence the error appears.
 # The side effect is that the shutdown handler is never called because the loop has
 # been stopped.
-@app.on_event('shutdown')
+@app.on_event("shutdown")
 async def on_shutdown():
     await sio.disconnect()
-    logger.info('shutdown app')
+    logger.info("shutdown app")

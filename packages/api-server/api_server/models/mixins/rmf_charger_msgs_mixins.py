@@ -7,18 +7,20 @@
 from tortoise import fields
 
 
-class ChargerCancelMixin():
+class ChargerCancelMixin:
     charger_name = fields.TextField()
     request_id = fields.TextField()
 
-class ChargerRequestMixin():
+
+class ChargerRequestMixin:
     charger_name = fields.TextField()
     fleet_name = fields.TextField()
     robot_name = fields.TextField()
     start_timeout = fields.JSONField()
     request_id = fields.TextField()
 
-class ChargerStateMixin():
+
+class ChargerStateMixin:
     charger_time = fields.DatetimeField()
     state = fields.IntField()
     charger_name = fields.TextField()
@@ -27,4 +29,3 @@ class ChargerStateMixin():
     robot_fleet = fields.TextField()
     robot_name = fields.TextField()
     time_to_fully_charged = fields.JSONField()
-

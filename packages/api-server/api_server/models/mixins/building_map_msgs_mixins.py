@@ -7,7 +7,7 @@
 from tortoise import fields
 
 
-class AffineImageMixin():
+class AffineImageMixin:
     name = fields.TextField()
     x_offset = fields.FloatField()
     y_offset = fields.FloatField()
@@ -16,12 +16,14 @@ class AffineImageMixin():
     encoding = fields.TextField()
     data = fields.BinaryField()
 
-class BuildingMapMixin():
+
+class BuildingMapMixin:
     name = fields.TextField()
     levels = fields.JSONField()
     lifts = fields.JSONField()
 
-class DoorMixin():
+
+class DoorMixin:
     name = fields.TextField()
     v1_x = fields.FloatField()
     v1_y = fields.FloatField()
@@ -31,25 +33,29 @@ class DoorMixin():
     motion_range = fields.FloatField()
     motion_direction = fields.IntField()
 
-class GraphMixin():
+
+class GraphMixin:
     name = fields.TextField()
     vertices = fields.JSONField()
     edges = fields.JSONField()
     params = fields.JSONField()
 
-class GraphEdgeMixin():
+
+class GraphEdgeMixin:
     v1_idx = fields.IntField()
     v2_idx = fields.IntField()
     params = fields.JSONField()
     edge_type = fields.SmallIntField()
 
-class GraphNodeMixin():
+
+class GraphNodeMixin:
     x = fields.FloatField()
     y = fields.FloatField()
     name = fields.TextField()
     params = fields.JSONField()
 
-class LevelMixin():
+
+class LevelMixin:
     name = fields.TextField()
     elevation = fields.FloatField()
     images = fields.JSONField()
@@ -58,7 +64,8 @@ class LevelMixin():
     nav_graphs = fields.JSONField()
     wall_graph = fields.JSONField()
 
-class LiftMixin():
+
+class LiftMixin:
     name = fields.TextField()
     levels = fields.JSONField()
     doors = fields.JSONField()
@@ -69,7 +76,8 @@ class LiftMixin():
     width = fields.FloatField()
     depth = fields.FloatField()
 
-class ParamMixin():
+
+class ParamMixin:
     name = fields.TextField()
     type = fields.IntField()
     value_int = fields.IntField()
@@ -77,7 +85,8 @@ class ParamMixin():
     value_string = fields.TextField()
     value_bool = fields.BooleanField()
 
-class PlaceMixin():
+
+class PlaceMixin:
     name = fields.TextField()
     x = fields.FloatField()
     y = fields.FloatField()
@@ -85,9 +94,10 @@ class PlaceMixin():
     position_tolerance = fields.FloatField()
     yaw_tolerance = fields.FloatField()
 
-class GetBuildingMap_RequestMixin():
+
+class GetBuildingMap_RequestMixin:
     pass
 
-class GetBuildingMap_ResponseMixin():
-    building_map = fields.JSONField()
 
+class GetBuildingMap_ResponseMixin:
+    building_map = fields.JSONField()

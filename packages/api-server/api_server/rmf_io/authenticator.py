@@ -11,6 +11,7 @@ class Authenticator(ABC):
 class AuthenticationError(Exception):
     pass
 
+
 class StubAuthenticator(Authenticator):
     def authenticate(self, environ: dict, auth: Optional[dict]):
         pass

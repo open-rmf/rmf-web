@@ -16,18 +16,18 @@ def grouped_sample(
     key_mapper: Mapper,
     sampler: Union[timedelta, float, Observable],
 ):
-    '''
+    """
     Combination of "group_by", "flat_map" and "sample", groups an observable sequence by the
     "key_mapper" function, maps the resulting observable sequences with the "sample" operator
     and flatten it into a single observable sequence.
-    '''
+    """
     return rx.pipe(
         group_by(key_mapper),
         flat_map(lambda x: x.pipe(sample(sampler))),
     )
 
 
-class RmfBookKeeper():
+class RmfBookKeeper:
     FrequencyStates = 1
     FrequencyRobotPlans = 5
 

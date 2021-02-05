@@ -7,19 +7,22 @@
 from tortoise import fields
 
 
-class BehaviorMixin():
+class BehaviorMixin:
     name = fields.TextField()
     parameters = fields.JSONField()
 
-class BehaviorParameterMixin():
+
+class BehaviorParameterMixin:
     name = fields.TextField()
     value = fields.TextField()
 
-class BidNoticeMixin():
+
+class BidNoticeMixin:
     task_profile = fields.JSONField()
     time_window = fields.JSONField()
 
-class BidProposalMixin():
+
+class BidProposalMixin:
     fleet_name = fields.TextField()
     task_profile = fields.JSONField()
     prev_cost = fields.FloatField()
@@ -27,10 +30,12 @@ class BidProposalMixin():
     finish_time = fields.DatetimeField()
     robot_name = fields.TextField()
 
-class CleanMixin():
+
+class CleanMixin:
     start_waypoint = fields.TextField()
 
-class DeliveryMixin():
+
+class DeliveryMixin:
     task_id = fields.TextField()
     items = fields.JSONField()
     pickup_place_name = fields.TextField()
@@ -40,24 +45,28 @@ class DeliveryMixin():
     dropoff_ingestor = fields.TextField()
     dropoff_behavior = fields.JSONField()
 
-class DispatchRequestMixin():
+
+class DispatchRequestMixin:
     fleet_name = fields.TextField()
     task_profile = fields.JSONField()
     method = fields.SmallIntField()
 
-class LoopMixin():
+
+class LoopMixin:
     task_id = fields.TextField()
     robot_type = fields.TextField()
     num_loops = fields.IntField()
     start_name = fields.TextField()
     finish_name = fields.TextField()
 
-class StationMixin():
+
+class StationMixin:
     task_id = fields.TextField()
     robot_type = fields.TextField()
     place_name = fields.TextField()
 
-class TaskDescriptionMixin():
+
+class TaskDescriptionMixin:
     start_time = fields.DatetimeField()
     task_type = fields.JSONField()
     station = fields.JSONField()
@@ -65,12 +74,14 @@ class TaskDescriptionMixin():
     delivery = fields.JSONField()
     clean = fields.JSONField()
 
-class TaskProfileMixin():
+
+class TaskProfileMixin:
     task_id = fields.TextField()
     submission_time = fields.DatetimeField()
     description = fields.JSONField()
 
-class TaskSummaryMixin():
+
+class TaskSummaryMixin:
     fleet_name = fields.TextField()
     task_id = fields.TextField()
     task_profile = fields.JSONField()
@@ -81,13 +92,16 @@ class TaskSummaryMixin():
     end_time = fields.DatetimeField()
     robot_name = fields.TextField()
 
-class TaskTypeMixin():
+
+class TaskTypeMixin:
     type = fields.IntField()
 
-class TasksMixin():
+
+class TasksMixin:
     tasks = fields.JSONField()
 
-class TowMixin():
+
+class TowMixin:
     task_id = fields.TextField()
     object_type = fields.TextField()
     is_object_id_known = fields.BooleanField()
@@ -96,29 +110,34 @@ class TowMixin():
     is_dropoff_place_known = fields.BooleanField()
     dropoff_place_name = fields.TextField()
 
-class CancelTask_RequestMixin():
+
+class CancelTask_RequestMixin:
     requester = fields.TextField()
     task_id = fields.TextField()
 
-class CancelTask_ResponseMixin():
+
+class CancelTask_ResponseMixin:
     success = fields.BooleanField()
 
-class GetTaskList_RequestMixin():
+
+class GetTaskList_RequestMixin:
     requester = fields.TextField()
     task_id = fields.JSONField()
 
-class GetTaskList_ResponseMixin():
+
+class GetTaskList_ResponseMixin:
     success = fields.BooleanField()
     active_tasks = fields.JSONField()
     terminated_tasks = fields.JSONField()
 
-class SubmitTask_RequestMixin():
+
+class SubmitTask_RequestMixin:
     requester = fields.TextField()
     start_time = fields.DatetimeField()
     description = fields.JSONField()
     evaluator = fields.SmallIntField()
 
-class SubmitTask_ResponseMixin():
+
+class SubmitTask_ResponseMixin:
     success = fields.BooleanField()
     task_id = fields.TextField()
-

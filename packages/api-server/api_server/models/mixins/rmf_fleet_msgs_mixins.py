@@ -7,29 +7,34 @@
 from tortoise import fields
 
 
-class DestinationRequestMixin():
+class DestinationRequestMixin:
     fleet_name = fields.TextField()
     robot_name = fields.TextField()
     destination = fields.JSONField()
     task_id = fields.TextField()
 
-class DockMixin():
+
+class DockMixin:
     fleet_name = fields.TextField()
     params = fields.JSONField()
 
-class DockParameterMixin():
+
+class DockParameterMixin:
     start = fields.TextField()
     finish = fields.TextField()
     path = fields.JSONField()
 
-class DockSummaryMixin():
+
+class DockSummaryMixin:
     docks = fields.JSONField()
 
-class FleetStateMixin():
+
+class FleetStateMixin:
     name = fields.TextField()
     robots = fields.JSONField()
 
-class LocationMixin():
+
+class LocationMixin:
     t = fields.DatetimeField()
     x = fields.FloatField()
     y = fields.FloatField()
@@ -37,35 +42,41 @@ class LocationMixin():
     level_name = fields.TextField()
     index = fields.BigIntField()
 
-class ModeParameterMixin():
+
+class ModeParameterMixin:
     name = fields.TextField()
     value = fields.TextField()
 
-class ModeRequestMixin():
+
+class ModeRequestMixin:
     fleet_name = fields.TextField()
     robot_name = fields.TextField()
     mode = fields.JSONField()
     task_id = fields.TextField()
     parameters = fields.JSONField()
 
-class PathRequestMixin():
+
+class PathRequestMixin:
     fleet_name = fields.TextField()
     robot_name = fields.TextField()
     path = fields.JSONField()
     task_id = fields.TextField()
 
-class PauseRequestMixin():
+
+class PauseRequestMixin:
     fleet_name = fields.TextField()
     robot_name = fields.TextField()
     mode_request_id = fields.BigIntField()
     type = fields.IntField()
     at_checkpoint = fields.IntField()
 
-class RobotModeMixin():
+
+class RobotModeMixin:
     mode = fields.IntField()
     mode_request_id = fields.BigIntField()
 
-class RobotStateMixin():
+
+class RobotStateMixin:
     name = fields.TextField()
     model = fields.TextField()
     task_id = fields.TextField()
@@ -74,4 +85,3 @@ class RobotStateMixin():
     battery_percent = fields.FloatField()
     location = fields.JSONField()
     path = fields.JSONField()
-

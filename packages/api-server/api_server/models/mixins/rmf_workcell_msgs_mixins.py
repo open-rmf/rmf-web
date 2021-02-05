@@ -7,35 +7,39 @@
 from tortoise import fields
 
 
-class AssetMixin():
+class AssetMixin:
     guid = fields.TextField()
     type = fields.TextField()
 
-class TraitMixin():
+
+class TraitMixin:
     key = fields.TextField()
     value = fields.JSONField()
 
-class WorkcellConfigurationMixin():
+
+class WorkcellConfigurationMixin:
     time = fields.DatetimeField()
     guid = fields.TextField()
     type = fields.TextField()
     assets = fields.JSONField()
     traits = fields.JSONField()
 
-class WorkcellRequestMixin():
+
+class WorkcellRequestMixin:
     time = fields.DatetimeField()
     request_guid = fields.TextField()
     target_guid = fields.TextField()
 
-class WorkcellResultMixin():
+
+class WorkcellResultMixin:
     time = fields.DatetimeField()
     request_guid = fields.TextField()
     source_guid = fields.TextField()
     status = fields.SmallIntField()
 
-class WorkcellStateMixin():
+
+class WorkcellStateMixin:
     time = fields.DatetimeField()
     guid = fields.TextField()
     mode = fields.IntField()
     request_guid_queue = fields.JSONField()
-

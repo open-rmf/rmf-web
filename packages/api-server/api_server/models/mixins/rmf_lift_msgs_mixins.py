@@ -7,7 +7,7 @@
 from tortoise import fields
 
 
-class LiftRequestMixin():
+class LiftRequestMixin:
     lift_name = fields.TextField()
     request_time = fields.DatetimeField()
     session_id = fields.TextField()
@@ -15,7 +15,8 @@ class LiftRequestMixin():
     destination_floor = fields.TextField()
     door_state = fields.SmallIntField()
 
-class LiftStateMixin():
+
+class LiftStateMixin:
     lift_time = fields.DatetimeField()
     lift_name = fields.TextField()
     available_floors = fields.JSONField()
@@ -26,4 +27,3 @@ class LiftStateMixin():
     available_modes = fields.BinaryField()
     current_mode = fields.SmallIntField()
     session_id = fields.TextField()
-

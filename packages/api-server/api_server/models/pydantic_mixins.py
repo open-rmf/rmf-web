@@ -3,7 +3,7 @@ from typing import Optional
 from tortoise.contrib.pydantic import pydantic_model_creator
 
 
-def with_pydantic(Model: 'tortoise.Model'):
+def with_pydantic(Model: "tortoise.Model"):
     class WithPydantic(Model):
         _pydantic_model = pydantic_model_creator(Model)
 

@@ -7,28 +7,32 @@
 from tortoise import fields
 
 
-class DoorModeMixin():
+class DoorModeMixin:
     value = fields.IntField()
 
-class DoorRequestMixin():
+
+class DoorRequestMixin:
     request_time = fields.DatetimeField()
     requester_id = fields.TextField()
     door_name = fields.TextField()
     requested_mode = fields.JSONField()
 
-class DoorSessionsMixin():
+
+class DoorSessionsMixin:
     door_name = fields.TextField()
     sessions = fields.JSONField()
 
-class DoorStateMixin():
+
+class DoorStateMixin:
     door_time = fields.DatetimeField()
     door_name = fields.TextField()
     current_mode = fields.JSONField()
 
-class SessionMixin():
+
+class SessionMixin:
     request_time = fields.DatetimeField()
     requester_id = fields.TextField()
 
-class SupervisorHeartbeatMixin():
-    all_sessions = fields.JSONField()
 
+class SupervisorHeartbeatMixin:
+    all_sessions = fields.JSONField()

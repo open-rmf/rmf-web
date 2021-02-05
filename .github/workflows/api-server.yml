@@ -33,6 +33,7 @@ jobs:
       - name: tests
         run: |
           . /opt/rmf/setup.bash
+          npm run lint
           npm run test:cov
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1

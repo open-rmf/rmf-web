@@ -7,42 +7,49 @@
 from tortoise import fields
 
 
-class BlockadeCancelMixin():
+class BlockadeCancelMixin:
     participant = fields.BigIntField()
     all_reservations = fields.BooleanField()
     reservation = fields.BigIntField()
 
-class BlockadeCheckpointMixin():
+
+class BlockadeCheckpointMixin:
     position = fields.JSONField()
     map_name = fields.TextField()
     can_hold = fields.BooleanField()
 
-class BlockadeHeartbeatMixin():
+
+class BlockadeHeartbeatMixin:
     statuses = fields.JSONField()
     has_gridlock = fields.BooleanField()
 
-class BlockadeReachedMixin():
+
+class BlockadeReachedMixin:
     participant = fields.BigIntField()
     reservation = fields.BigIntField()
     checkpoint = fields.BigIntField()
 
-class BlockadeReadyMixin():
+
+class BlockadeReadyMixin:
     participant = fields.BigIntField()
     reservation = fields.BigIntField()
     checkpoint = fields.BigIntField()
 
-class BlockadeReleaseMixin():
+
+class BlockadeReleaseMixin:
     participant = fields.BigIntField()
     reservation = fields.BigIntField()
     checkpoint = fields.BigIntField()
 
-class BlockadeSetMixin():
+
+class BlockadeSetMixin:
     participant = fields.BigIntField()
     reservation = fields.BigIntField()
     radius = fields.FloatField()
     path = fields.JSONField()
 
-class BlockadeStatusMixin():
+
+class BlockadeStatusMixin:
     participant = fields.BigIntField()
     reservation = fields.BigIntField()
     any_ready = fields.BooleanField()
@@ -51,228 +58,279 @@ class BlockadeStatusMixin():
     assignment_begin = fields.BigIntField()
     assignment_end = fields.BigIntField()
 
-class CircleMixin():
+
+class CircleMixin:
     radius = fields.FloatField()
 
-class ConvexShapeMixin():
+
+class ConvexShapeMixin:
     type = fields.SmallIntField()
     index = fields.SmallIntField()
 
-class ConvexShapeContextMixin():
+
+class ConvexShapeContextMixin:
     circles = fields.JSONField()
 
-class ItineraryMixin():
+
+class ItineraryMixin:
     routes = fields.JSONField()
 
-class ItineraryClearMixin():
+
+class ItineraryClearMixin:
     participant = fields.BigIntField()
     itinerary_version = fields.BigIntField()
 
-class ItineraryDelayMixin():
+
+class ItineraryDelayMixin:
     participant = fields.BigIntField()
     from_time = fields.BigIntField()
     delay = fields.BigIntField()
     itinerary_version = fields.BigIntField()
 
-class ItineraryEraseMixin():
+
+class ItineraryEraseMixin:
     participant = fields.BigIntField()
     routes = fields.JSONField()
     itinerary_version = fields.BigIntField()
 
-class ItineraryExtendMixin():
+
+class ItineraryExtendMixin:
     participant = fields.BigIntField()
     routes = fields.JSONField()
     itinerary_version = fields.BigIntField()
 
-class ItinerarySetMixin():
+
+class ItinerarySetMixin:
     participant = fields.BigIntField()
     itinerary = fields.JSONField()
     itinerary_version = fields.BigIntField()
 
-class MirrorWakeupMixin():
+
+class MirrorWakeupMixin:
     latest_version = fields.BigIntField()
 
-class NegotiationAckMixin():
+
+class NegotiationAckMixin:
     conflict_version = fields.BigIntField()
     acknowledgments = fields.JSONField()
 
-class NegotiationConclusionMixin():
+
+class NegotiationConclusionMixin:
     conflict_version = fields.BigIntField()
     resolved = fields.BooleanField()
     table = fields.JSONField()
 
-class NegotiationForfeitMixin():
+
+class NegotiationForfeitMixin:
     conflict_version = fields.BigIntField()
     table = fields.JSONField()
 
-class NegotiationKeyMixin():
+
+class NegotiationKeyMixin:
     participant = fields.BigIntField()
     version = fields.BigIntField()
 
-class NegotiationNoticeMixin():
+
+class NegotiationNoticeMixin:
     conflict_version = fields.BigIntField()
     participants = fields.JSONField()
 
-class NegotiationParticipantAckMixin():
+
+class NegotiationParticipantAckMixin:
     participant = fields.BigIntField()
     updating = fields.BooleanField()
     itinerary_version = fields.BigIntField()
 
-class NegotiationProposalMixin():
+
+class NegotiationProposalMixin:
     conflict_version = fields.BigIntField()
     proposal_version = fields.BigIntField()
     for_participant = fields.BigIntField()
     to_accommodate = fields.JSONField()
     itinerary = fields.JSONField()
 
-class NegotiationRefusalMixin():
+
+class NegotiationRefusalMixin:
     conflict_version = fields.BigIntField()
 
-class NegotiationRejectionMixin():
+
+class NegotiationRejectionMixin:
     conflict_version = fields.BigIntField()
     table = fields.JSONField()
     rejected_by = fields.BigIntField()
     alternatives = fields.JSONField()
 
-class NegotiationRepeatMixin():
+
+class NegotiationRepeatMixin:
     conflict_version = fields.BigIntField()
     table = fields.JSONField()
 
-class ParticipantDescriptionMixin():
+
+class ParticipantDescriptionMixin:
     name = fields.TextField()
     owner = fields.TextField()
     responsiveness = fields.SmallIntField()
     profile = fields.JSONField()
 
-class ProfileMixin():
+
+class ProfileMixin:
     footprint = fields.JSONField()
     vicinity = fields.JSONField()
     shape_context = fields.JSONField()
 
-class RegionMixin():
+
+class RegionMixin:
     map = fields.TextField()
     spaces = fields.JSONField()
     timespan = fields.JSONField()
 
-class RouteMixin():
+
+class RouteMixin:
     map = fields.TextField()
     trajectory = fields.JSONField()
 
-class ScheduleChangeAddMixin():
+
+class ScheduleChangeAddMixin:
     id = fields.BigIntField()
     route = fields.JSONField()
 
-class ScheduleChangeCullMixin():
+
+class ScheduleChangeCullMixin:
     time = fields.BigIntField()
 
-class ScheduleChangeDelayMixin():
+
+class ScheduleChangeDelayMixin:
     delay = fields.BigIntField()
 
-class ScheduleInconsistencyMixin():
+
+class ScheduleInconsistencyMixin:
     participant = fields.BigIntField()
     ranges = fields.JSONField()
     last_known_version = fields.BigIntField()
 
-class ScheduleInconsistencyRangeMixin():
+
+class ScheduleInconsistencyRangeMixin:
     lower = fields.BigIntField()
     upper = fields.BigIntField()
 
-class ScheduleParticipantPatchMixin():
+
+class ScheduleParticipantPatchMixin:
     participant_id = fields.BigIntField()
     erasures = fields.JSONField()
     delays = fields.JSONField()
     additions = fields.JSONField()
 
-class SchedulePatchMixin():
+
+class SchedulePatchMixin:
     unregister_participants = fields.JSONField()
     register_participants = fields.JSONField()
     participants = fields.JSONField()
     cull = fields.JSONField()
     latest_version = fields.BigIntField()
 
-class ScheduleQueryMixin():
+
+class ScheduleQueryMixin:
     spacetime = fields.JSONField()
     participants = fields.JSONField()
 
-class ScheduleQueryParticipantsMixin():
+
+class ScheduleQueryParticipantsMixin:
     type = fields.SmallIntField()
     ids = fields.JSONField()
 
-class ScheduleQuerySpacetimeMixin():
+
+class ScheduleQuerySpacetimeMixin:
     type = fields.SmallIntField()
     regions = fields.JSONField()
     shape_context = fields.JSONField()
     timespan = fields.JSONField()
 
-class ScheduleRegisterMixin():
+
+class ScheduleRegisterMixin:
     participant_id = fields.BigIntField()
     description = fields.JSONField()
 
-class ScheduleWriterItemMixin():
+
+class ScheduleWriterItemMixin:
     id = fields.BigIntField()
     route = fields.JSONField()
 
-class ShapeMixin():
+
+class ShapeMixin:
     type = fields.SmallIntField()
     index = fields.SmallIntField()
 
-class ShapeContextMixin():
+
+class ShapeContextMixin:
     convex_shapes = fields.JSONField()
 
-class SpaceMixin():
+
+class SpaceMixin:
     shape = fields.JSONField()
     pose = fields.JSONField()
 
-class TimespanMixin():
+
+class TimespanMixin:
     maps = fields.JSONField()
     has_lower_bound = fields.BooleanField()
     lower_bound = fields.BigIntField()
     has_upper_bound = fields.BooleanField()
     upper_bound = fields.BigIntField()
 
-class TrajectoryMixin():
+
+class TrajectoryMixin:
     waypoints = fields.JSONField()
 
-class TrajectoryWaypointMixin():
+
+class TrajectoryWaypointMixin:
     time = fields.BigIntField()
     position = fields.JSONField()
     velocity = fields.JSONField()
 
-class MirrorUpdate_RequestMixin():
+
+class MirrorUpdate_RequestMixin:
     query_id = fields.BigIntField()
     initial_request = fields.BooleanField()
     latest_mirror_version = fields.BigIntField()
     minimum_patch_version = fields.BigIntField()
 
-class MirrorUpdate_ResponseMixin():
+
+class MirrorUpdate_ResponseMixin:
     patch = fields.JSONField()
     error = fields.TextField()
 
-class RegisterParticipant_RequestMixin():
+
+class RegisterParticipant_RequestMixin:
     description = fields.JSONField()
 
-class RegisterParticipant_ResponseMixin():
+
+class RegisterParticipant_ResponseMixin:
     participant_id = fields.BigIntField()
     error = fields.TextField()
 
-class RegisterQuery_RequestMixin():
+
+class RegisterQuery_RequestMixin:
     query = fields.JSONField()
 
-class RegisterQuery_ResponseMixin():
+
+class RegisterQuery_ResponseMixin:
     query_id = fields.BigIntField()
     error = fields.TextField()
 
-class UnregisterParticipant_RequestMixin():
+
+class UnregisterParticipant_RequestMixin:
     participant_id = fields.BigIntField()
 
-class UnregisterParticipant_ResponseMixin():
+
+class UnregisterParticipant_ResponseMixin:
     confirmation = fields.BooleanField()
     error = fields.TextField()
 
-class UnregisterQuery_RequestMixin():
+
+class UnregisterQuery_RequestMixin:
     query_id = fields.BigIntField()
 
-class UnregisterQuery_ResponseMixin():
+
+class UnregisterQuery_ResponseMixin:
     confirmation = fields.BooleanField()
     error = fields.TextField()
-

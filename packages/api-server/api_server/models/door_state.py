@@ -14,8 +14,8 @@ class DoorState(Model):
     door_time = fields.DatetimeField()
 
     class Meta:
-        unique_together = (("door_name", "door_time"))
-        indexes = (('door_name', 'door_time'),)
+        unique_together = ("door_name", "door_time")
+        indexes = (("door_name", "door_time"),)
 
     @staticmethod
     def from_rmf(rmf_door_state: RmfDoorState):

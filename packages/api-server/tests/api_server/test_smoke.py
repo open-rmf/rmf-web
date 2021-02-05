@@ -6,10 +6,12 @@ import time
 
 class TestApiServerSmoke(unittest.TestCase):
     def test_smoke(self):
-        if 'TEST_COVERAGE' in os.environ:
-            proc = subprocess.Popen(['python', '-m', 'coverage', 'run', '-a', '-m', 'api_server'])
+        if "TEST_COVERAGE" in os.environ:
+            proc = subprocess.Popen(
+                ["python", "-m", "coverage", "run", "-a", "-m", "api_server"]
+            )
         else:
-            proc = subprocess.Popen(['rmf_api_server'])
+            proc = subprocess.Popen(["rmf_api_server"])
         time.sleep(1)
         self.assertIsNone(proc.poll())
         proc.terminate()

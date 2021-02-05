@@ -4,14 +4,19 @@ import shutil
 from typing import Sequence
 
 import ament_index_python
-from rosidl_adapter.parser import parse_message_file, MessageSpecification, Type as RosType
+from rosidl_adapter.parser import (
+    parse_message_file,
+    MessageSpecification,
+    Type as RosType,
+)
 
 import jinja2
 
 
-templates_dir = f'{os.path.dirname(__file__)}/templates'
-env = jinja2.Environment(loader=jinja2.FileSystemLoader(
-    templates_dir), trim_blocks=True)
+templates_dir = f"{os.path.dirname(__file__)}/templates"
+env = jinja2.Environment(
+    loader=jinja2.FileSystemLoader(templates_dir), trim_blocks=True
+)
 
 
 class PackageSpec:
@@ -21,7 +26,7 @@ class PackageSpec:
 
 
 def ros_to_tortoise_type(ros_type: RosType) -> str:
-    '''
+    """
     tortoise-orm types:
         BigInt
         Binary
@@ -58,35 +63,35 @@ def ros_to_tortoise_type(ros_type: RosType) -> str:
         others: JSON
     special:
         builtin_interfaces/Time: DatetimeField (assumed to be utc)
-    '''
+    """
     if ros_type.is_primitive_type():
         if ros_type.is_array:
-            if ros_type.type in ['int8', 'uint8']:
-                return 'fields.BinaryField()'
+            if ros_type.type in ["int8", "uint8"]:
+                return "fields.BinaryField()"
             else:
-                return 'fields.JSONField()'
+                return "fields.JSONField()"
 
-        if ros_type.type == 'bool':
-            return 'fields.BooleanField()'
-        elif ros_type.type in ['int8', 'uint8']:
-            return 'fields.SmallIntField()'
-        elif ros_type.type in ['int16', 'uint16']:
-            return 'fields.SmallIntField()'
-        elif ros_type.type in ['int32', 'uint32']:
-            return 'fields.IntField()'
-        elif ros_type.type in ['int64', 'uint64']:
-            return 'fields.BigIntField()'
-        elif ros_type.type in ['float', 'double', 'float32', 'float64']:
-            return 'fields.FloatField()'
-        elif ros_type.type == 'string':
-            return 'fields.TextField()'
-        elif ros_type.type == 'wstring':
-            return 'fields.BinaryField()'
+        if ros_type.type == "bool":
+            return "fields.BooleanField()"
+        elif ros_type.type in ["int8", "uint8"]:
+            return "fields.SmallIntField()"
+        elif ros_type.type in ["int16", "uint16"]:
+            return "fields.SmallIntField()"
+        elif ros_type.type in ["int32", "uint32"]:
+            return "fields.IntField()"
+        elif ros_type.type in ["int64", "uint64"]:
+            return "fields.BigIntField()"
+        elif ros_type.type in ["float", "double", "float32", "float64"]:
+            return "fields.FloatField()"
+        elif ros_type.type == "string":
+            return "fields.TextField()"
+        elif ros_type.type == "wstring":
+            return "fields.BinaryField()"
     else:
-        if ros_type.__str__() == 'builtin_interfaces/Time':
-            return 'fields.DatetimeField()'
+        if ros_type.__str__() == "builtin_interfaces/Time":
+            return "fields.DatetimeField()"
         else:
-            return 'fields.JSONField()'
+            return "fields.JSONField()"
 
 
 def get_imports(pkg_spec: PackageSpec):
@@ -94,7 +99,7 @@ def get_imports(pkg_spec: PackageSpec):
 
 
 def gen_mixin(pkg_spec: PackageSpec):
-    template = env.get_template('mixin.j2')
+    template = env.get_template("mixin.j2")
     return template.render(
         vars(pkg_spec),
         to_tortoise_type=ros_to_tortoise_type,
@@ -103,51 +108,57 @@ def gen_mixin(pkg_spec: PackageSpec):
 
 
 def parse_package(pkg) -> Sequence[MessageSpecification]:
-    rosidl_interfaces = ament_index_python.get_resource(
-        'rosidl_interfaces', pkg)[0].split('\n')
+    rosidl_interfaces = ament_index_python.get_resource("rosidl_interfaces", pkg)[
+        0
+    ].split("\n")
     message_files = []
     for interface in rosidl_interfaces:
-        if interface.endswith('.msg'):
+        if interface.endswith(".msg"):
             message_files.append(
-                f'{ament_index_python.get_package_share_directory(pkg)}/{interface}')
+                f"{ament_index_python.get_package_share_directory(pkg)}/{interface}"
+            )
 
     return [parse_message_file(pkg, f) for f in message_files]
 
 
 def main():
     parser = argparse.ArgumentParser(
-        'ros_tortoise',
-        description='Generates tortoise-orm mixins boilerplate from ros messages',
+        "ros_tortoise",
+        description="Generates tortoise-orm mixins boilerplate from ros messages",
     )
     parser.add_argument(
-        '-o', '--output',
+        "-o",
+        "--output",
         required=True,
-        metavar='DIRECTORY',
-        help='output directory',
+        metavar="DIRECTORY",
+        help="output directory",
     )
     parser.add_argument(
-        'packages',
-        nargs='+',
-        help='packages to generate',
+        "packages",
+        nargs="+",
+        help="packages to generate",
     )
 
     args = parser.parse_args()
-    packages = [k for k in ament_index_python.get_resources(
-        'rosidl_interfaces').keys() if k in args.packages]
+    packages = [
+        k
+        for k in ament_index_python.get_resources("rosidl_interfaces").keys()
+        if k in args.packages
+    ]
     os.makedirs(args.output, exist_ok=True)
     for pkg in packages:
         pkg_spec = PackageSpec(pkg, parse_package(pkg))
         mixins = gen_mixin(pkg_spec)
-        outfile = f'{args.output}/{pkg}_mixins.py'
-        with open(outfile, 'w') as f:
+        outfile = f"{args.output}/{pkg}_mixins.py"
+        with open(outfile, "w") as f:
             f.write(mixins)
         print(outfile)
 
-    init_file = f'{args.output}/__init__.py'
-    with open(f'{args.output}/__init__.py', 'w') as f:
-        f.write('')
+    init_file = f"{args.output}/__init__.py"
+    with open(f"{args.output}/__init__.py", "w") as f:
+        f.write("")
     print(init_file)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
