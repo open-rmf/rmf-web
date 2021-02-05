@@ -33,38 +33,28 @@ RMF_API_SERVER_CONFIG='my_config.py' rmf_api_server
 
 ## Running tests
 
-Install the following dev dependencies
+### Running unit tests
 
 ```bash
-pip3 install aiohttp
+npm run test
 ```
 
-Run the tests
+### Running integration tests
 
 ```bash
-python3 -m unittest
+npm run test:integration
 ```
 
 ### Collecting code coverage
 
-Install the following dependencies
-
 ```bash
-pip3 install coverage
+npm run test:cov
 ```
-
-Run tests with coverage
-
-```bash
-python3 -m coverage run -m unittest
-```
+NOTE: This runs both unit and integration tests.
 
 Generate coverage report
-
 ```bash
-python3 -m coverage combine
-python3 -m coverage html
-xdg-open htmlcov/index.html
+npm run test:report
 ```
 
 ## Generated files
@@ -72,7 +62,6 @@ xdg-open htmlcov/index.html
 The files in `api_server/models/mixins` are generated, they are committed to the repo to make distribution easier. Follow these steps to regenerate the files if needed:
 
 ```bash
-pip3 install jinja2
 ./generate_mixins.sh
 ```
 
