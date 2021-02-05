@@ -1,6 +1,6 @@
 import React from 'react';
 import Tour from 'reactour';
-import { OmniPanelViewIndex } from '../dashboard-config';
+import { OmniPanelViewIndex } from '../dashboard';
 import { createTourSteps } from './tour-manager';
 
 export interface DashboardTourProps {

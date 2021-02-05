@@ -1,6 +1,6 @@
 import React from 'react';
 import { StackNavigator } from 'react-components';
-import { OmniPanelViewIndex } from '../dashboard-config';
+import { OmniPanelViewIndex } from '../dashboard';
 
 type DashboardActionFormat<T, K = void> = K extends void
   ? {

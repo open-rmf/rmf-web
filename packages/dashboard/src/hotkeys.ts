@@ -1,6 +1,6 @@
 import { HotKeysEnabledProps, KeyMap, KeySequence } from 'react-hotkeys';
 import { AppController } from './components/app-contexts';
-import { OmniPanelViewIndex } from './components/dashboard/dashboard-config';
+import { OmniPanelViewIndex } from './components/dashboard/dashboard';
 import { ReducerDashboardDispatch } from './components/dashboard/reducers/dashboard-reducer';
 
 export interface hotKeysProps {

@@ -2,7 +2,7 @@ import { act, HookResult, renderHook } from '@testing-library/react-hooks';
 import { HotKeysEnabledProps } from 'react-hotkeys';
 import { AppController } from '../components/app-contexts';
 import { dashboardInitialValues } from '../components/dashboard/dashboard';
-import { OmniPanelViewIndex } from '../components/dashboard/dashboard-config';
+import { OmniPanelViewIndex } from '../components/dashboard/dashboard';
 import {
   ReducerDashboardProps,
   useDashboardReducer,

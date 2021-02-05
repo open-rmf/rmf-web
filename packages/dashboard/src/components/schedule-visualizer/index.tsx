@@ -22,7 +22,6 @@ import { NegotiationColors } from './negotiation-colors';
 import RobotTrajectoriesOverlay from './robot-trajectories-overlay';
 import RobotsOverlay from './robots-overlay';
 import WaypointsOverlay from './waypoints-overlay';
-import { OmniPanelViewIndex } from '../dashboard/dashboard-config';
 
 const debug = Debug('ScheduleVisualizer');
 
@@ -44,7 +43,7 @@ export interface MapFloorLayer {
 export interface ScheduleVisualizerProps extends React.PropsWithChildren<{}> {
   buildingMap: RomiCore.BuildingMap;
   negotiationTrajStore: Readonly<Record<string, NegotiationTrajectoryResponse>>;
-  omniPanelView: number;
+  showTrajectories: boolean;
   mapFloorSort?(levels: RomiCore.Level[]): string[];
   onDoorClick?(door: RomiCore.Door): void;
   onLiftClick?(lift: RomiCore.Lift): void;
@@ -65,7 +64,7 @@ export function calcMaxBounds(
 
 export default function ScheduleVisualizer(props: ScheduleVisualizerProps): React.ReactElement {
   debug('render');
-  const { buildingMap, negotiationTrajStore, mapFloorSort, omniPanelView } = props;
+  const { buildingMap, negotiationTrajStore, mapFloorSort, showTrajectories } = props;
   const negotiationColors = React.useMemo(() => new NegotiationColors(), []);
 
   const mapFloorLayerSorted = React.useMemo(
@@ -197,14 +196,13 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
           },
         });
         debug('set trajectories');
-        // negotiations panel index is 6 on the omni panel
-        if (omniPanelView === OmniPanelViewIndex.Negotiations) {
-          setTrajectories({});
-        } else {
+        if (showTrajectories) {
           setTrajectories((prev) => ({
             ...prev,
             [curMapFloorLayer.level.name]: resp,
           }));
+        } else {
+          setTrajectories({});
         }
       }
 
@@ -212,7 +210,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       interval = window.setInterval(updateTrajectory, trajAnimDuration);
     })();
     return () => clearInterval(interval);
-  }, [trajManager, curMapFloorLayer, trajAnimDuration, omniPanelView]);
+  }, [trajManager, curMapFloorLayer, trajAnimDuration, showTrajectories]);
 
   // Show notification when a conflict happens.
   const { showNotification: notificationDispatch } = React.useContext(AppControllerContext);
