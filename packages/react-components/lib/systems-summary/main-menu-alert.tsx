@@ -35,9 +35,16 @@ export const MainMenuAlert = (props: MainMenuAlertProps): JSX.Element => {
   const classes = useStyles();
   const { notifications, deletedNotifications } = props;
 
+  // filter out the deleted notifications
+  const filteredRmfNotifications = React.useMemo(() => {
+    return notifications.filter((notification) => {
+      return !deletedNotifications.some((deletedNot) => notification.id === deletedNot.id);
+    });
+  }, [notifications, deletedNotifications]);
+
   const [showNotifications, setShowNotifications] = React.useState(false);
   const getLabel =
-    notifications.length > 0
+    filteredRmfNotifications.length > 0
       ? `${classes.h2} ${classes.hasNotification}`
       : `${classes.h2} ${classes.noNotification}`;
 
@@ -46,26 +53,27 @@ export const MainMenuAlert = (props: MainMenuAlertProps): JSX.Element => {
       <Typography variant="h6">Notifications</Typography>
       <h2 className={getLabel}>
         <span className={classes.span}>
-          {notifications.length > 0 ? notifications.length + ' Alerts' : 'No Alerts'}
+          {filteredRmfNotifications.length > 0
+            ? filteredRmfNotifications.length + ' Alerts'
+            : 'No Alerts'}
         </span>
       </h2>
       <Button
-        disabled={notifications.length === 0}
+        disabled={filteredRmfNotifications.length === 0}
         variant="contained"
         color="primary"
         className={classes.button}
         onClick={() => setShowNotifications(true)}
       >
         Notifications
-        <Badge badgeContent={notifications.length} color="error">
+        <Badge badgeContent={filteredRmfNotifications.length} color="error">
           <NotificationsIcon />
         </Badge>
       </Button>
       <NotificationsDialog
-        notifications={notifications}
+        notifications={filteredRmfNotifications}
         showNotificationsDialog={showNotifications}
         onClose={() => setShowNotifications(false)}
-        deletedNotifications={deletedNotifications}
       />
     </React.Fragment>
   );

@@ -27,7 +27,6 @@ export interface NotificationDialogProps {
   showNotificationsDialog: boolean;
   onClose: () => void;
   notifications: Notification[];
-  deletedNotifications: Notification[];
 }
 
 interface SelectChangeEvent {
@@ -127,17 +126,11 @@ const SeverityIndicator = (props: SeverityIndicatoryProps): JSX.Element => {
 export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element => {
   const classes = useStyles();
 
-  const { showNotificationsDialog, onClose, notifications, deletedNotifications } = props;
+  const { showNotificationsDialog, onClose, notifications } = props;
 
   const [level, setLevel] = React.useState('');
 
-  // filter out the deleted notifications
-  const filteredRmfNotifications = React.useMemo(() => {
-    return notifications.filter((notification) => {
-      return !deletedNotifications.some((deletedNot) => notification.id === deletedNot.id);
-    });
-  }, [notifications, deletedNotifications]);
-  const [rmfNotifications, setRmfNotifications] = React.useState(filteredRmfNotifications);
+  const [rmfNotifications, setRmfNotifications] = React.useState(notifications);
 
   // list of alert level for filtering
   const alertLevel = React.useMemo(() => {
@@ -157,9 +150,9 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
     const filterNotifications: Notification[] = [];
 
     if (val === 'All') {
-      setRmfNotifications(filteredRmfNotifications);
+      setRmfNotifications(notifications);
     } else {
-      filteredRmfNotifications.forEach((notification) => {
+      notifications.forEach((notification) => {
         if (notification.severity === val) {
           filterNotifications.push(notification);
         }
