@@ -80,7 +80,7 @@ class TestRmfIO(unittest.IsolatedAsyncioTestCase):
         self.sio.attach(self.app)
         self.runner = aiohttp.web.AppRunner(self.app)
         await self.runner.setup()
-        self.site = aiohttp.web.TCPSite(self.runner, 'localhost', 0)
+        self.site = aiohttp.web.TCPSite(self.runner, '127.0.0.1', 0)
         await self.site.start()
         self.server_port = self.runner.addresses[0][1]
 
