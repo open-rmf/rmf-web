@@ -4,17 +4,18 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-fastapi = "*"
-uvicorn = {extras = ["standard"], version = "*"}
-python-socketio = "*"
-rx = "*"
-tortoise-orm = "*"
+fastapi = "==0.63.*"
+uvicorn = {version = "==0.13.*", extras = ["standard"]}
+python-socketio = "==5.*"
+rx = "==3.*"
+tortoise-orm = "==0.16.*"
 
 [dev-packages]
-aiohttp = "*"
-jinja2 = "*"
-pylint = "*"
-coverage = "*"
+aiohttp = "==3.*"
+jinja2 = "==2.*"
+pylint = "==2.*"
+coverage = "==5.*"
+api-server = {editable = true, path = "."}
 
 [requires]
 python_version = "3.8"

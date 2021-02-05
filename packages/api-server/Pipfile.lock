@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "c9d7c47693e20e05ca24b8eb61eab148eeeff7f812e263eec99b68bc0f7c181c"
+            "sha256": "8e880dee46a0b73165332cb3387e1af9ffe390766d86f72006cfdeccba4ed0fc"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -306,6 +306,10 @@
             "index": "pypi",
             "version": "==3.7.3"
         },
+        "api-server": {
+            "editable": true,
+            "path": "."
+        },
         "astroid": {
             "hashes": [
                 "sha256:2f4078c2a41bf377eea06d71c9d2ba4eb8f6b1af2135bec27bbbb7d8f12bb703",
@@ -405,7 +409,7 @@
                 "sha256:c729845434366216d320e936b8ad6f9d681aab72dc7cbc2d51bedc3582f3ad1e",
                 "sha256:fff4f0c04e1825522ce6949973e83110a6e907750cd92d128b0d14aaaadbffdc"
             ],
-            "markers": "python_version >= '3.6' and python_version < '4.0'",
+            "markers": "python_version >= '3.6' and python_version < '4'",
             "version": "==5.7.0"
         },
         "jinja2": {

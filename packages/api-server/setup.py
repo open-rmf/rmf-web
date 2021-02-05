@@ -6,7 +6,7 @@ setup(
     name=package_name,
     description='RMF api server',
     version='0.0.0',
-    packages=['api_server'],
+    packages=['api_server', 'cli_client', 'rest_server'],
     author='Teo Koon Peng',
     author_email='koonpeng@openrobotics.org',
     keywords=['ROS', 'RMF'],

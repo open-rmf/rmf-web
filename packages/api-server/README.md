@@ -1,17 +1,16 @@
 # Setup
 
-Let's create a virtual environment named `venv` for all this Python magic:
-```
-sudo apt install python3-venv
-python3 -m venv --system-site-packages .venv
-```
-It is recommended to create the virtual environment at the root of this repo so other packages can share it.
+Install pipenv
 
-Now let's activate the Python virtual environment and install all sorts of things into it without breaking our system:
+```bash
+pip3 install pipenv
 ```
-. .venv/bin/activate
-pip3 install -e .
+
+If not already done so, [bootrap](../../README.md#bootstrap) the project, you can use
+```bash
+npm run bootstrap -- packages/api-server
 ```
+to bootstrap only this package.
 
 # Run the server
 
