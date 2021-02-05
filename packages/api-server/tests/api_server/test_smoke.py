@@ -15,10 +15,10 @@ class TestApiServerSmoke(unittest.TestCase):
             )
         else:
             proc = subprocess.Popen(["rmf_api_server"], env=env)
-        time.sleep(1)
+        time.sleep(5)
         self.assertIsNone(proc.poll())
         proc.terminate()
-        proc.wait(1)
+        proc.wait(5)
         self.assertEqual(proc.returncode, 0)
         if proc.poll() is not None:
             proc.kill()
