@@ -1,4 +1,4 @@
-import asyncio
+from typing import Optional
 
 import rclpy
 from rclpy.node import Node as RosNode
@@ -7,8 +7,7 @@ from rclpy.subscription import Subscription
 from building_map_msgs.msg import BuildingMap
 from rmf_door_msgs.msg import DoorState
 
-from .rmf_io import RmfIO, RmfGateway
-from .topics import topics
+from .rmf_io import RmfGateway
 
 
 class RmfTransport():

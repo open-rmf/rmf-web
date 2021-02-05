@@ -1,14 +1,15 @@
 import importlib
 import os
+from typing import Mapping, Any
 
 
 class AppConfig():
-    def __init__(self, dict):
-        self.db_url: str = dict['db_url']
-        self.host: str = dict['host']
-        self.port: int = dict['port']
-        self.static_path: str = dict['static_path']
-        self.static_directory: str = dict['static_directory']
+    def __init__(self, config_dict: Mapping[str, Any]):
+        self.db_url: str = config_dict['db_url']
+        self.host: str = config_dict['host']
+        self.port: int = config_dict['port']
+        self.static_path: str = config_dict['static_path']
+        self.static_directory: str = config_dict['static_directory']
 
 
 def _load_config() -> AppConfig:

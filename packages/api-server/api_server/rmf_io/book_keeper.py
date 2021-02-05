@@ -1,12 +1,11 @@
 import asyncio
 import logging
 from datetime import timedelta
-from typing import Any, Callable, Optional, Union
+from typing import Optional, Union
 
 import rx
 from rx import Observable
 from rx.operators import sample, group_by, flat_map, Mapper
-from rx.scheduler.eventloop import AsyncIOScheduler
 from rx.scheduler.scheduler import Scheduler
 
 from .gateway import RmfGateway

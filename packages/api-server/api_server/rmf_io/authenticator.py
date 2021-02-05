@@ -8,6 +8,9 @@ class Authenticator(ABC):
         pass
 
 
+class AuthenticationError(Exception):
+    pass
+
 class StubAuthenticator(Authenticator):
     def authenticate(self, environ: dict, auth: Optional[dict]):
         pass

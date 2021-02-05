@@ -1,11 +1,8 @@
 import asyncio
 import base64
 import hashlib
-import os
 import logging
-from typing import Optional
-
-from rx.subject import Subject
+from typing import Optional, Dict
 
 import socketio
 
@@ -13,11 +10,10 @@ from rosidl_runtime_py.convert import message_to_ordereddict
 from building_map_msgs.msg import BuildingMap, Level, AffineImage
 from rmf_door_msgs.msg import DoorState
 
-from .authenticator import Authenticator, StubAuthenticator
+from .authenticator import Authenticator, StubAuthenticator, AuthenticationError
 from .gateway import RmfGateway
 from .topics import topics
 from ..repositories.static_files import StaticFilesRepository
-
 
 class RmfIO():
     def __init__(
@@ -42,7 +38,7 @@ class RmfIO():
         self.sio.on('disconnect', self._on_disconnect)
         self.sio.on('subscribe', self._on_subscribe)
 
-        self._door_states: dict[str, dict] = {}
+        self._door_states: Dict[str, dict] = {}
         self.rmf_gateway.door_states.subscribe(self._on_door_state)
         self.room_records[topics.door_states] = self._door_states
 
@@ -80,7 +76,7 @@ class RmfIO():
                 sha1_hash.update(image.data)
                 fingerprint = base64.b32encode(
                     sha1_hash.digest()).lower().decode()
-                relpath = f'{building_map.name}/{level.name}-{image.name}.{fingerprint}.{image.encoding}'
+                relpath = f'{building_map.name}/{level.name}-{image.name}.{fingerprint}.{image.encoding}' # pylint: disable=line-too-long
                 urlpath = self.static_files.add_file(image.data, relpath)
                 self._building_map['levels'][i]['images'][j]['data'] = urlpath
         self.room_records[topics.building_map] = {
@@ -122,7 +118,7 @@ class RmfIO():
             self.logger.info(
                 f'[{sid}] new connection from "{environ["REMOTE_ADDR"]}:{environ["REMOTE_PORT"]}"')
             return True
-        except e:
+        except AuthenticationError as e:
             self.logger.error(f'authentication failed: {e}')
             return False
 

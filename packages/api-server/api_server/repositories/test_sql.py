@@ -6,7 +6,6 @@ from builtin_interfaces.msg import Time as RosTime
 from rmf_door_msgs.msg import DoorState as RmfDoorState, DoorMode as RmfDoorMode
 
 from .sql import SqlRepository
-from ..rmf_io.test_rmf_io import make_door_state
 
 
 class TestSqlRepository(unittest.IsolatedAsyncioTestCase):

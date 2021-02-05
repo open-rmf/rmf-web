@@ -1,3 +1,5 @@
+# pylint: disable=line-too-long
+
 config = {
     'db_url': 'sqlite://:memory:', # TODO: explain how to use different db
     'host': 'localhost', # ip or hostname to bind the socket to

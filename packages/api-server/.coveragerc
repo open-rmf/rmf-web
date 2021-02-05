@@ -7,4 +7,3 @@ omit =
 
     # these files are not used atm
     api_server/models/pydantic_mixins.py
-parallel = true

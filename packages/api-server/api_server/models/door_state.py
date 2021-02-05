@@ -1,5 +1,3 @@
-from enum import Enum
-
 from tortoise import fields
 from tortoise.models import Model
 
@@ -30,6 +28,6 @@ class DoorState(Model):
     def to_rmf(self):
         return RmfDoorState(
             door_name=self.door_name,
-            current_mode=RmfDoorMode(value=self.current_mode.value),
+            current_mode=RmfDoorMode(value=self.current_mode),
             door_time=py_to_ros_time(self.door_time),
         )

@@ -1,10 +1,7 @@
-import asyncio
-import importlib
 import logging
 import os
 import sys
 import threading
-import time
 
 import rclpy
 from rclpy.node import Node
@@ -13,7 +10,7 @@ import socketio
 
 from tortoise import Tortoise
 
-from .app_config import app_config, AppConfig
+from .app_config import app_config
 from .repositories import StaticFilesRepository, SqlRepository
 from .rmf_io import RmfIO, RmfGateway, RmfTransport, RmfBookKeeper
 
@@ -29,7 +26,7 @@ def ros2_thread(node):
     print('leaving ros2 thread')
 
 
-async def init_tortoise(app_config: AppConfig):
+async def init_tortoise():
     await Tortoise.init(db_url=app_config.db_url, modules={'models': ['api_server.models']})
     await Tortoise.generate_schemas()
 
@@ -38,9 +35,8 @@ sio_client = socketio.AsyncClient()
 
 
 async def on_startup():
-    await init_tortoise(app_config)
+    await init_tortoise()
 
-    global ros2_node
     rclpy.init(args=None)
     ros2_node = MainNode()
 
@@ -51,7 +47,7 @@ async def on_startup():
     sql_repo = SqlRepository(logger.getChild('sql_repo'))
     rmf_gateway = RmfGateway(
         initial_door_states=await sql_repo.read_door_states())
-    rmf_io = RmfIO(sio, rmf_gateway, static_files_repo,
+    rmf_io = RmfIO(sio, rmf_gateway, static_files_repo, # pylint: disable=unused-variable
                    logger=logger.getChild('RmfIO'))
 
     rmf_transport = RmfTransport(ros2_node, rmf_gateway)
@@ -78,7 +74,6 @@ if 'RMF_API_SERVER_DEBUG' in os.environ:
     logger.setLevel(logging.DEBUG)
 else:
     logger.setLevel(logging.INFO)
-ros2_node: Node
 
 sio = socketio.AsyncServer(async_mode='asgi')
 app = socketio.ASGIApp(

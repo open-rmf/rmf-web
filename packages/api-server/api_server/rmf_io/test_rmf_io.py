@@ -1,13 +1,11 @@
 import unittest
 import asyncio
 import os.path
-from datetime import datetime
 from unittest.mock import MagicMock
 
 import socketio
 import aiohttp.web
 
-from rosidl_runtime_py.convert import message_to_ordereddict
 from builtin_interfaces.msg import Time
 from building_map_msgs.msg import BuildingMap, Level, AffineImage, Graph
 from rmf_door_msgs.msg import DoorState, DoorMode
@@ -104,11 +102,12 @@ class TestRmfIO(unittest.IsolatedAsyncioTestCase):
         def on_door_states(door_state):
             received_states[door_state['door_name']] = door_state
             if len(received_states) == len(test_states) and \
-                    all([x in test_names for x in received_states.keys()]):
+                    all([x in test_names for x in received_states]):
                 done.set_result(True)
         client.on(topics.door_states, on_door_states)
 
-        [self.rmf_gateway.door_states.on_next(x) for x in test_states]
+        for x in test_states:
+            self.rmf_gateway.door_states.on_next(x)
         await asyncio.wait_for(done, 1)
         received_states = {}
 
@@ -137,4 +136,4 @@ class TestRmfIO(unittest.IsolatedAsyncioTestCase):
         self.rmf_gateway.building_map.on_next(building_map)
         await asyncio.wait_for(done, 5)
         self.assertEqual(
-            self.static_files.add_file.call_args[0][1], 'test_name/L1-test_image.thbyxgrllndgeciymb3a47hf2re5p7no.png')
+            self.static_files.add_file.call_args[0][1], 'test_name/L1-test_image.thbyxgrllndgeciymb3a47hf2re5p7no.png') # pylint: disable=line-too-long
