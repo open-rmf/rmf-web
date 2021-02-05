@@ -9,7 +9,7 @@ The simplest design is a single app that does all the needed functions, At first
 
 In order to tackle the above mentioned issues, this is the current proposed architecture:
 
-![](dashboard-data-backend-proposal.jpg)
+![dashboard-data-backend-proposal](dashboard-data-backend-proposal.jpg)
 
 * A single instance socketio based app will subscribe to RMF events and write them to a database.
 * All events published will be "stickied" or "transient local" in ros terms, it means any client that subscribes to the events will immediately receive the latest state.
