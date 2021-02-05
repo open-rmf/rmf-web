@@ -10,6 +10,6 @@ test('smoke test', () => {
 test('idle and charging panels to be rendered when item value is Robots', () => {
   const itemSummaryError = { ...itemSummary, item: 'Robots' };
   const root = render(<MainMenuItemState itemSummary={itemSummaryError} onClick={jest.fn()} />);
-  expect(root.getAllByText('Idle')).toBeTruthy();
-  expect(root.getAllByText('Charging')).toBeTruthy();
+  expect(root.queryByText('Idle')).toBeTruthy();
+  expect(root.queryByText('Charging')).toBeTruthy();
 });

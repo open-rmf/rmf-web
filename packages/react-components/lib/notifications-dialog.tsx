@@ -166,7 +166,6 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
   // const beforeIndex = rmfNotifications.slice(0, i);
   // const afterIndex = rmfNotifications.slice(i + 1);
   // const newNotifications = beforeIndex.concat(afterIndex);
-  // setRmfNotifications(newNotifications);
   // };
 
   return (
@@ -190,7 +189,7 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
               displayEmpty={true}
               value={level}
               onChange={(e) => handleChange(e)}
-              input={<Input />}
+              input={<Input aria-label="filter-input" />}
               renderValue={() => (level === '' ? <em>Filter by severity</em> : level)}
             >
               {alertLevel.map((level) => {
