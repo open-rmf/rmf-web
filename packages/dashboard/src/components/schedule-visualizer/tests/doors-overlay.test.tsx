@@ -1,11 +1,9 @@
 import { Map as LMap } from 'react-leaflet';
-import { mount } from 'enzyme';
 import { render, waitFor } from '@testing-library/react';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import DoorsOverlay from '../doors-overlay';
 import L from 'leaflet';
 import React from 'react';
-import { DoorMarker } from 'react-components';
 
 const doors = [
   {

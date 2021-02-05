@@ -6,7 +6,7 @@ import App from '../app';
 jest.mock('./../schedule-visualizer', () => () => null);
 
 it('renders without crashing', async () => {
-  let root;
+  let root: any;
   await waitFor(() => {
     root = render(<App />);
   });

@@ -1,8 +1,8 @@
-import { createMount, createShallow } from '@material-ui/core/test-utils';
+import { createShallow } from '@material-ui/core/test-utils';
 import TreeItem from '@material-ui/lab/TreeItem';
 import TreeView from '@material-ui/lab/TreeView';
-import toJson from 'enzyme-to-json';
 import React from 'react';
+import { fireEvent, render } from '@testing-library/react';
 import {
   NegotiationConflict,
   NegotiationStatusManager,
@@ -10,7 +10,6 @@ import {
 } from '../../../managers/negotiation-status-manager';
 import NegotiationsPanel from '../negotiations-panel';
 
-const mount = createMount();
 const shallow = createShallow();
 
 let negotiationStatuses: Record<number, NegotiationConflict>;
@@ -124,8 +123,8 @@ it('renders negotiations correctly', () => {
   root.unmount();
 });
 
-it('matches snapshot', () => {
-  const root = mount(
+it('renders without crashing', () => {
+  const root = render(
     <NegotiationsPanel
       conflicts={negotiationStatuses}
       spotlight={undefined}
@@ -136,14 +135,12 @@ it('matches snapshot', () => {
       setNegotiationTrajStore={setNegotiationTrajStore}
     />,
   );
-
-  expect(toJson(root)).toMatchSnapshot();
 
   root.unmount();
 });
 
 it('should empty all current negotiations when clear button is clicked', () => {
-  const root = mount(
+  const root = render(
     <NegotiationsPanel
       conflicts={negotiationStatuses}
       spotlight={undefined}
@@ -154,14 +151,16 @@ it('should empty all current negotiations when clear button is clicked', () => {
       setNegotiationTrajStore={setNegotiationTrajStore}
     />,
   );
-  root.find('button#clear-button').simulate('click');
-
-  expect(root.find('li').length).toEqual(0);
+  const clear = root.getByRole('button', {
+    name: /Clear/i,
+  });
+  fireEvent.click(clear);
+  expect(root.queryByRole('treeitem')).toBeFalsy();
   root.unmount();
 });
 
 it('should call setNegotiationTrajStore callback when reset-button is clicked', () => {
-  const root = mount(
+  const root = render(
     <NegotiationsPanel
       conflicts={negotiationStatuses}
       spotlight={undefined}
@@ -172,14 +171,18 @@ it('should call setNegotiationTrajStore callback when reset-button is clicked', 
       setNegotiationTrajStore={setNegotiationTrajStore}
     />,
   );
-  root.find('button#reset-button').simulate('click');
+
+  const reset = root.getByRole('button', {
+    name: /Reset/i,
+  });
+  fireEvent.click(reset);
 
   expect(setNegotiationTrajStore).toHaveBeenCalled();
   root.unmount();
 });
 
 it('should render all negotiations when restore button is clicked', () => {
-  const root = mount(
+  const root = render(
     <NegotiationsPanel
       conflicts={negotiationStatuses}
       spotlight={undefined}
@@ -191,15 +194,21 @@ it('should render all negotiations when restore button is clicked', () => {
     />,
   );
   // clear all trajectories first to ensure empty array
-  root.find('button#clear-button').simulate('click');
-  root.find('button#restore-button').simulate('click');
+  const clearButton = root.getByRole('button', {
+    name: /Clear/i,
+  });
+  fireEvent.click(clearButton);
+  const restoreButton = root.getByRole('button', {
+    name: /Restore/i,
+  });
+  fireEvent.click(restoreButton);
 
-  expect(root.find('li').length).toEqual(1);
+  expect(root.queryByRole('treeitem')).toBeTruthy();
   root.unmount();
 });
 
 it('should set disabled to true on buttons when empty conflicts is provided', () => {
-  const root = mount(
+  const root = render(
     <NegotiationsPanel
       conflicts={{}}
       spotlight={undefined}
@@ -210,9 +219,20 @@ it('should set disabled to true on buttons when empty conflicts is provided', ()
       setNegotiationTrajStore={setNegotiationTrajStore}
     />,
   );
-  expect(root.find('button#clear-button').props().disabled).toEqual(true);
-  expect(root.find('button#reset-button').props().disabled).toEqual(true);
-  expect(root.find('button#restore-button').props().disabled).toEqual(true);
+
+  const clearButton = root.getByRole('button', {
+    name: /Clear/i,
+  });
+  const restoreButton = root.getByRole('button', {
+    name: /Restore/i,
+  });
+  const resetButton = root.getByRole('button', {
+    name: /Reset/i,
+  });
+
+  expect(clearButton).toBeDisabled();
+  expect(restoreButton).toBeDisabled();
+  expect(resetButton).toBeDisabled();
 });
 
 it('tests negotiation status manager', () => {
