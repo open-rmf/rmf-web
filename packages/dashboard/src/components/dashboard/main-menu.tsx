@@ -53,12 +53,11 @@ export interface MainMenuProps {
   itemState: ItemState;
   tasks: RomiCore.TaskSummary[];
   notifications: Notification[];
-  deletedNotifications: Notification[];
 }
 
 export const MainMenu = React.memo((props: MainMenuProps) => {
   const { showTooltips } = React.useContext(TooltipsContext);
-  const { pushView, itemState, tasks, notifications, deletedNotifications } = props;
+  const { pushView, itemState, tasks, notifications } = props;
   debug('render');
   const classes = useStyles();
 
@@ -101,10 +100,10 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
         case RomiCore.DoorMode.MODE_CLOSED:
         case RomiCore.DoorMode.MODE_MOVING:
         case RomiCore.DoorMode.MODE_OPEN:
-          modeCounter['operational'] += 1;
+          modeCounter.operational += 1;
           break;
         default:
-          modeCounter['outOfOrder'] += 1;
+          modeCounter.outOfOrder += 1;
           spoiltEquipment.push(door + ' - Unknown');
           break;
       }
@@ -127,13 +126,13 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
         case RomiCore.LiftState.MODE_HUMAN:
         case RomiCore.LiftState.MODE_AGV:
         case RomiCore.LiftState.MODE_OFFLINE:
-          modeCounter['operational'] += 1;
+          modeCounter.operational += 1;
           break;
         case RomiCore.LiftState.MODE_FIRE:
         case RomiCore.LiftState.MODE_EMERGENCY:
         case RomiCore.LiftState.MODE_UNKNOWN:
           spoiltEquipment.push(lift + ` - ${liftModeToString(lifts[lift].current_mode)}`);
-          modeCounter['outOfOrder'] += 1;
+          modeCounter.outOfOrder += 1;
           break;
       }
     });
@@ -155,11 +154,11 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
         case RomiCore.DispenserState.IDLE:
         case RomiCore.DispenserState.BUSY:
         case RomiCore.DispenserState.OFFLINE:
-          modeCounter['operational'] += 1;
+          modeCounter.operational += 1;
           break;
         default:
           spoiltEquipment.push(dispenser + '- Unknown');
-          modeCounter['outOfOrder'] += 1;
+          modeCounter.outOfOrder += 1;
           break;
       }
     });
@@ -183,22 +182,22 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
           case RomiCore.RobotMode.MODE_ADAPTER_ERROR:
           case RomiCore.RobotMode.MODE_EMERGENCY:
             spoiltEquipment.push(robot.name + ` - ${robotModeToString(robot.mode)}`);
-            modeCounter['outOfOrder'] += 1;
+            modeCounter.outOfOrder += 1;
             break;
           case RomiCore.RobotMode.MODE_CHARGING:
-            modeCounter['operational'] += 1;
-            modeCounter['charging'] += 1;
+            modeCounter.operational += 1;
+            modeCounter.charging += 1;
             break;
           case RomiCore.RobotMode.MODE_DOCKING:
           case RomiCore.RobotMode.MODE_GOING_HOME:
           case RomiCore.RobotMode.MODE_MOVING:
           case RomiCore.RobotMode.MODE_PAUSED:
           case RomiCore.RobotMode.MODE_WAITING:
-            modeCounter['operational'] += 1;
+            modeCounter.operational += 1;
             break;
           case RomiCore.RobotMode.MODE_IDLE:
-            modeCounter['operational'] += 1;
-            modeCounter['idle'] += 1;
+            modeCounter.operational += 1;
+            modeCounter.idle += 1;
             break;
         }
       });
@@ -247,17 +246,14 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
       ...equipment.dispenser.outOfOrder,
       ...equipment.robot.outOfOrder,
     ];
-    return [...itemHolder.map((item) => ({ summary: item }))];
+    return [...itemHolder.map((item) => ({ itemNameAndState: item }))];
   };
 
   return (
     <React.Fragment>
       <SystemSummaryBanner bannerUrl={'/favicon.ico'} isError={toggleBannerColor()} />
       <div className={classes.root}>
-        <SystemSummaryAlert
-          notifications={notifications}
-          deletedNotifications={deletedNotifications}
-        />
+        <SystemSummaryAlert notifications={notifications} />
         <Divider className={classes.divider} />
 
         {getSpoiltEquipment().length > 0 ? (

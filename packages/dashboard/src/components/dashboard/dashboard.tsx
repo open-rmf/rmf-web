@@ -311,16 +311,8 @@ export default function Dashboard(_props: {}): React.ReactElement {
               pushView={pushView}
               itemState={itemStates}
               tasks={tasks}
-              // TODO - refactor out notifications once backend is up
-              notifications={[
-                {
-                  id: 1,
-                  severity: 'High',
-                  time: 'January 29th 2021, 8:20:50',
-                  error: 'hello world',
-                },
-              ]}
-              deletedNotifications={[]}
+              // TODO - Link it to notifications once backend is up
+              notifications={[]}
             />
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Doors}>

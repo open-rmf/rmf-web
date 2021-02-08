@@ -1,7 +1,7 @@
 import React from 'react';
-import { MainMenuBanner } from '../../lib';
+import { SystemSummaryBanner } from '../../lib';
 import { render } from '@testing-library/react';
 
 test('smoke test', () => {
-  render(<MainMenuBanner bannerUrl={''} isError={false} />);
+  render(<SystemSummaryBanner bannerUrl={''} isError={false} />);
 });

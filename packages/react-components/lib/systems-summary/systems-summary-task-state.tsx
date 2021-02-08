@@ -70,14 +70,16 @@ export const SystemSummaryTaskState = (props: SystemSummaryTaskStateProps): JSX.
     }
   };
 
+  const summary = getTaskSummary();
+
   return (
     <React.Fragment>
       <Typography variant="body1">Plans</Typography>
       <Grid className={classes.grid} spacing={2} container direction="row">
-        <Grid key={'active'} item xs={3}>
+        <Grid item xs={3}>
           <Paper elevation={3} className={getStatusLabel('active')}>
             <Typography align="center" variant="h6">
-              {getTaskSummary().active}
+              {summary.active}
             </Typography>
             <Typography align="center" variant="body1">
               Active
@@ -85,10 +87,10 @@ export const SystemSummaryTaskState = (props: SystemSummaryTaskStateProps): JSX.
           </Paper>
         </Grid>
 
-        <Grid key={'finish'} item xs={3}>
+        <Grid item xs={3}>
           <Paper elevation={3} className={getStatusLabel('finish')}>
             <Typography align="center" variant="h6">
-              {getTaskSummary().finish}
+              {summary.finish}
             </Typography>
             <Typography align="center" variant="body1">
               Finish
@@ -96,10 +98,10 @@ export const SystemSummaryTaskState = (props: SystemSummaryTaskStateProps): JSX.
           </Paper>
         </Grid>
 
-        <Grid key={'queued'} item xs={3}>
+        <Grid item xs={3}>
           <Paper elevation={3} className={getStatusLabel('queued')}>
             <Typography align="center" variant="h6">
-              {getTaskSummary().queued}
+              {summary.queued}
             </Typography>
             <Typography align="center" variant="body1">
               Queued
@@ -107,10 +109,10 @@ export const SystemSummaryTaskState = (props: SystemSummaryTaskStateProps): JSX.
           </Paper>
         </Grid>
 
-        <Grid key={'failed'} item xs={3}>
+        <Grid item xs={3}>
           <Paper elevation={3} className={getStatusLabel('failed')}>
             <Typography align="center" variant="h6">
-              {getTaskSummary().failed}
+              {summary.failed}
             </Typography>
             <Typography align="center" variant="body1">
               Failed

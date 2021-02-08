@@ -11,10 +11,6 @@ export const notifications: Notification[] = [
   { id: 1, time: 'time', error: 'message', severity: 'High' },
 ];
 
-export const deletedNotifications: Notification[] = [
-  { id: 1, time: 'time', error: 'message', severity: 'High' },
-];
-
 export const tasks: RomiCore.TaskSummary[] = [
   {
     task_id: '1',

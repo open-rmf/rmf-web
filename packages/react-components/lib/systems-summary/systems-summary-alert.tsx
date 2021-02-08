@@ -5,7 +5,6 @@ import { NotificationsDialog, Notification } from '../index';
 
 export interface SystemSummaryAlertProps {
   notifications: Notification[];
-  deletedNotifications: Notification[];
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -37,18 +36,11 @@ const useStyles = makeStyles((theme) => ({
 
 export const SystemSummaryAlert = (props: SystemSummaryAlertProps): JSX.Element => {
   const classes = useStyles();
-  const { notifications, deletedNotifications } = props;
-
-  // filter out the deleted notifications
-  const filteredRmfNotifications = React.useMemo(() => {
-    return notifications.filter((notification) => {
-      return !deletedNotifications.some((deletedNot) => notification.id === deletedNot.id);
-    });
-  }, [notifications, deletedNotifications]);
+  const { notifications } = props;
 
   const [showNotifications, setShowNotifications] = React.useState(false);
   const getLabel =
-    filteredRmfNotifications.length > 0
+    notifications.length > 0
       ? `${classes.h2} ${classes.hasNotification}`
       : `${classes.h2} ${classes.noNotification}`;
 
@@ -57,25 +49,23 @@ export const SystemSummaryAlert = (props: SystemSummaryAlertProps): JSX.Element 
       <Typography variant="h6">Notifications</Typography>
       <h2 className={getLabel}>
         <span className={classes.span}>
-          {filteredRmfNotifications.length > 0
-            ? filteredRmfNotifications.length + ' Alerts'
-            : 'No Alerts'}
+          {notifications.length > 0 ? notifications.length + ' Alerts' : 'No Alerts'}
         </span>
       </h2>
       <Button
-        disabled={filteredRmfNotifications.length === 0}
+        disabled={notifications.length === 0}
         variant="contained"
         color="primary"
         className={classes.button}
         onClick={() => setShowNotifications(true)}
       >
         Notifications
-        <Badge badgeContent={filteredRmfNotifications.length} color="error">
+        <Badge badgeContent={notifications.length} color="error">
           <NotificationsIcon />
         </Badge>
       </Button>
       <NotificationsDialog
-        notifications={filteredRmfNotifications}
+        notifications={notifications}
         showNotificationsDialog={showNotifications}
         onClose={() => setShowNotifications(false)}
       />

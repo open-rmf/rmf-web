@@ -161,13 +161,6 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
     }
   };
 
-  // TODO - implement logic to store deleted notifications
-  // const deleteReadNotifications = (i: number) => {
-  // const beforeIndex = rmfNotifications.slice(0, i);
-  // const afterIndex = rmfNotifications.slice(i + 1);
-  // const newNotifications = beforeIndex.concat(afterIndex);
-  // };
-
   return (
     <Dialog
       open={showNotificationsDialog}
@@ -217,10 +210,7 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
                     {notification.error}
                   </Typography>
                   <Typography align="right">
-                    <IconButton
-                      className={classes.removeNotificationIcon}
-                      // onClick={() => deleteReadNotifications(i)}
-                    >
+                    <IconButton className={classes.removeNotificationIcon}>
                       <CloseIcon />
                     </IconButton>
                   </Typography>

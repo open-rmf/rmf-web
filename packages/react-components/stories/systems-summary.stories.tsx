@@ -1,24 +1,24 @@
 import React from 'react';
 import {
-  MainMenuItemState,
-  MainMenuItemStateProps,
-  MainMenuAlertProps,
-  MainMenuAlert,
-  MainMenuTaskState,
-  MainMenuTaskStateProps,
-  MainMenuBanner,
-  MainMenuBannerProps,
-  MainMenuSpoiltItems,
-  MainMenuSpoiltItemsProps,
+  SystemSummaryItemState,
+  SystemSummaryItemStateProps,
+  SystemSummaryAlertProps,
+  SystemSummaryAlert,
+  SystemSummaryTaskState,
+  SystemSummaryTaskStateProps,
+  SystemSummaryBanner,
+  SystemSummaryBannerProps,
+  SystemSummarySpoiltItems,
+  SystemSummarySpoiltItemsProps,
 } from '../lib';
 import { Meta, Story } from '@storybook/react';
 
 export default {
   title: 'Main Menu Item State',
-  component: MainMenuItemState,
+  component: SystemSummaryItemState,
 } as Meta;
 
-const itemStateDataDoor: MainMenuItemStateProps = {
+const itemStateDataDoor: SystemSummaryItemStateProps = {
   itemSummary: {
     item: 'Doors',
     summary: { operational: 1, outOfOrder: 1 },
@@ -29,7 +29,7 @@ const itemStateDataDoor: MainMenuItemStateProps = {
   },
 };
 
-const itemStateDataRobot: MainMenuItemStateProps = {
+const itemStateDataRobot: SystemSummaryItemStateProps = {
   itemSummary: {
     item: 'Robots',
     summary: { operational: 2, outOfOrder: 0, idle: 1, charging: 1 },
@@ -40,14 +40,13 @@ const itemStateDataRobot: MainMenuItemStateProps = {
   },
 };
 
-const mainMenuAlert: MainMenuAlertProps = {
+const systemSummaryAlert: SystemSummaryAlertProps = {
   notifications: [
     { id: 1, severity: 'High', time: 'January 29th 2021, 8:20:50', error: 'hello world' },
   ],
-  deletedNotifications: [],
 };
 
-const mainMenuTaskStateData: MainMenuTaskStateProps = {
+const systemSummaryTaskStateData: SystemSummaryTaskStateProps = {
   tasks: [
     {
       task_id: 'abc',
@@ -84,12 +83,12 @@ const mainMenuTaskStateData: MainMenuTaskStateProps = {
   ],
 };
 
-const mainMenuBannerData: MainMenuBannerProps = {
+const systemSummaryBannerData: SystemSummaryBannerProps = {
   bannerUrl: 'testUrl',
   isError: false,
 };
 
-const spoiltEquipment: MainMenuSpoiltItemsProps = {
+const spoiltEquipment: SystemSummarySpoiltItemsProps = {
   spoiltItems: [
     { summary: 'lift1 - fire' },
     { summary: 'door1 - unknown' },
@@ -97,14 +96,14 @@ const spoiltEquipment: MainMenuSpoiltItemsProps = {
   ],
 };
 
-export const MainMenuItemStateStory: Story = (args) => (
+export const SystemSummaryItemStateStory: Story = (args) => (
   <React.Fragment>
-    <MainMenuItemState
+    <SystemSummaryItemState
       itemSummary={itemStateDataDoor.itemSummary}
       onClick={itemStateDataDoor.onClick}
       {...args}
     />
-    <MainMenuItemState
+    <SystemSummaryItemState
       itemSummary={itemStateDataRobot.itemSummary}
       onClick={itemStateDataRobot.onClick}
       {...args}
@@ -112,41 +111,33 @@ export const MainMenuItemStateStory: Story = (args) => (
   </React.Fragment>
 );
 
-export const MainMenuItemAlertStory: Story = (args) => (
+export const SystemSummaryItemAlertStory: Story = (args) => (
   <React.Fragment>
-    <MainMenuAlert
-      notifications={mainMenuAlert.notifications}
-      {...args}
-      deletedNotifications={mainMenuAlert.deletedNotifications}
-    />
-    <MainMenuAlert
-      notifications={[]}
-      deletedNotifications={mainMenuAlert.deletedNotifications}
-      {...args}
-    />
+    <SystemSummaryAlert notifications={systemSummaryAlert.notifications} {...args} />
+    <SystemSummaryAlert notifications={[]} {...args} />
   </React.Fragment>
 );
 
-export const MainMenuTaskStateStory: Story = (args) => (
-  <MainMenuTaskState tasks={mainMenuTaskStateData.tasks} {...args} />
+export const SystemSummaryTaskStateStory: Story = (args) => (
+  <SystemSummaryTaskState tasks={systemSummaryTaskStateData.tasks} {...args} />
 );
 
-export const MainMenuBannerStory: Story = (args) => (
+export const SystemSummaryBannerStory: Story = (args) => (
   <React.Fragment>
-    <MainMenuBanner
-      bannerUrl={mainMenuBannerData.bannerUrl}
-      isError={mainMenuBannerData.isError}
+    <SystemSummaryBanner
+      bannerUrl={systemSummaryBannerData.bannerUrl}
+      isError={systemSummaryBannerData.isError}
       {...args}
     />
     <div style={{ margin: '1rem 0' }}></div>
-    <MainMenuBanner
-      bannerUrl={mainMenuBannerData.bannerUrl}
-      isError={!mainMenuBannerData.isError}
+    <SystemSummaryBanner
+      bannerUrl={systemSummaryBannerData.bannerUrl}
+      isError={!systemSummaryBannerData.isError}
       {...args}
     />
   </React.Fragment>
 );
 
-export const MainMenuSpoiltItemStory: Story = (args) => (
-  <MainMenuSpoiltItems spoiltItems={spoiltEquipment.spoiltItems} {...args} />
+export const SystemSummarySpoiltItemStory: Story = (args) => (
+  <SystemSummarySpoiltItems spoiltItems={spoiltEquipment.spoiltItems} {...args} />
 );

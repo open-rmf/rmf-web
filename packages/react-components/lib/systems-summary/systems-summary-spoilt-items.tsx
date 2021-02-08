@@ -2,7 +2,7 @@ import React from 'react';
 import { makeStyles, Typography, Paper } from '@material-ui/core';
 
 export interface SpoiltItem {
-  summary: string;
+  itemNameAndState: string;
   errorMessage?: string;
 }
 
@@ -28,9 +28,9 @@ export const SystemSummarySpoiltItems = (props: SystemSummarySpoiltItemsProps): 
       </Typography>
       {spoiltItems.map((item) => {
         return (
-          <Paper className={classes.paper} key={item.summary} elevation={3}>
+          <Paper className={classes.paper} key={item.itemNameAndState} elevation={3}>
             <Typography color="error" variant="body1">
-              {item.summary}
+              {item.itemNameAndState}
             </Typography>
           </Paper>
         );
