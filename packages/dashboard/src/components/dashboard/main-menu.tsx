@@ -6,15 +6,15 @@ import { TooltipsContext } from '../app-contexts';
 import { OmniPanelViewIndex } from './dashboard';
 import {
   Notification,
-  MainMenuItemState,
+  SystemSummaryItemState,
   DashboardTooltip,
-  MainMenuAlert,
-  MainMenuTaskState,
+  SystemSummaryAlert,
+  SystemSummaryTaskState,
   ItemSummary,
-  MainMenuBanner,
+  SystemSummaryBanner,
   liftModeToString,
   robotModeToString,
-  MainMenuSpoiltItems,
+  SystemSummarySpoiltItems,
   SpoiltItem,
 } from 'react-components';
 
@@ -252,14 +252,17 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
 
   return (
     <React.Fragment>
-      <MainMenuBanner bannerUrl={'/favicon.ico'} isError={toggleBannerColor()} />
+      <SystemSummaryBanner bannerUrl={'/favicon.ico'} isError={toggleBannerColor()} />
       <div className={classes.root}>
-        <MainMenuAlert notifications={notifications} deletedNotifications={deletedNotifications} />
+        <SystemSummaryAlert
+          notifications={notifications}
+          deletedNotifications={deletedNotifications}
+        />
         <Divider className={classes.divider} />
 
         {getSpoiltEquipment().length > 0 ? (
           <React.Fragment>
-            <MainMenuSpoiltItems spoiltItems={getSpoiltEquipment()} />
+            <SystemSummarySpoiltItems spoiltItems={getSpoiltEquipment()} />
             <Divider className={classes.divider} />
           </React.Fragment>
         ) : null}
@@ -268,17 +271,20 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
           Systems Summary
         </Typography>
 
-        <MainMenuItemState itemSummary={getDoorSummary()} onClick={handleMainMenuDoorsClick} />
-        <MainMenuItemState itemSummary={getLiftSummary()} onClick={handleMainMenuLiftsClick} />
-        <MainMenuItemState
+        <SystemSummaryItemState itemSummary={getDoorSummary()} onClick={handleMainMenuDoorsClick} />
+        <SystemSummaryItemState itemSummary={getLiftSummary()} onClick={handleMainMenuLiftsClick} />
+        <SystemSummaryItemState
           itemSummary={getDispenserSummary()}
           onClick={handleMainMenuDispensersClick}
         />
-        <MainMenuItemState itemSummary={getRobotSummary()} onClick={handleMainMenuRobotsClick} />
+        <SystemSummaryItemState
+          itemSummary={getRobotSummary()}
+          onClick={handleMainMenuRobotsClick}
+        />
         <Divider className={classes.divider} />
 
         <Typography variant="h6">Task Statuses</Typography>
-        <MainMenuTaskState tasks={tasks} />
+        <SystemSummaryTaskState tasks={tasks} />
         <Button
           color="primary"
           className={classes.buttons}

@@ -2,7 +2,7 @@ import React from 'react';
 import { makeStyles, Typography, Grid, Paper } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 
-export interface MainMenuTaskStateProps {
+export interface SystemSummaryTaskStateProps {
   tasks: RomiCore.TaskSummary[];
 }
 
@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const MainMenuTaskState = (props: MainMenuTaskStateProps): JSX.Element => {
+export const SystemSummaryTaskState = (props: SystemSummaryTaskStateProps): JSX.Element => {
   const classes = useStyles();
   const { tasks } = props;
 

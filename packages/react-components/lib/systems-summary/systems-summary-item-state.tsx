@@ -15,7 +15,7 @@ export interface ItemSummary {
   outOfOrder: string[];
 }
 
-export interface MainMenuItemStateProps {
+export interface SystemSummaryItemStateProps {
   itemSummary: ItemSummary;
   onClick: () => void;
 }
@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const MainMenuItemState = (props: MainMenuItemStateProps): JSX.Element => {
+export const SystemSummaryItemState = (props: SystemSummaryItemStateProps): JSX.Element => {
   const classes = useStyles();
   const { itemSummary, onClick } = props;
 

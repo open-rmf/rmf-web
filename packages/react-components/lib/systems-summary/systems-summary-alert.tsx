@@ -3,7 +3,7 @@ import { makeStyles, Typography, Button, Badge } from '@material-ui/core';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import { NotificationsDialog, Notification } from '../index';
 
-export interface MainMenuAlertProps {
+export interface SystemSummaryAlertProps {
   notifications: Notification[];
   deletedNotifications: Notification[];
 }
@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const MainMenuAlert = (props: MainMenuAlertProps): JSX.Element => {
+export const SystemSummaryAlert = (props: SystemSummaryAlertProps): JSX.Element => {
   const classes = useStyles();
   const { notifications, deletedNotifications } = props;
 

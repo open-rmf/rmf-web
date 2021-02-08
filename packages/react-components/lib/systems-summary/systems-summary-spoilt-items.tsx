@@ -6,7 +6,7 @@ export interface SpoiltItem {
   errorMessage?: string;
 }
 
-export interface MainMenuSpoiltItemsProps {
+export interface SystemSummarySpoiltItemsProps {
   spoiltItems: SpoiltItem[];
 }
 
@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const MainMenuSpoiltItems = (props: MainMenuSpoiltItemsProps): JSX.Element => {
+export const SystemSummarySpoiltItems = (props: SystemSummarySpoiltItemsProps): JSX.Element => {
   const classes = useStyles();
   const { spoiltItems } = props;
 

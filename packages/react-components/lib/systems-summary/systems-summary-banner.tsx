@@ -1,7 +1,7 @@
 import React from 'react';
 import { makeStyles, Typography, Card, CardHeader, Avatar } from '@material-ui/core';
 
-export interface MainMenuBannerProps {
+export interface SystemSummaryBannerProps {
   bannerUrl: string;
   isError: boolean;
 }
@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const MainMenuBanner = (props: MainMenuBannerProps): JSX.Element => {
+export const SystemSummaryBanner = (props: SystemSummaryBannerProps): JSX.Element => {
   const classes = useStyles();
   const { bannerUrl, isError } = props;
 
