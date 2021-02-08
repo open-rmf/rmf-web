@@ -1,4 +1,4 @@
-import { screen, render, RenderResult, cleanup, waitFor } from '@testing-library/react';
+import { screen, render, RenderResult, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import moment from 'moment';
@@ -64,14 +64,18 @@ describe('Table footer Pagination', () => {
   });
 
   it('advance page when the `Next Page` button is clicked ', async () => {
-    userEvent.click(screen.queryByTitle('Next Page').children[0]);
+    const nextPageButton = screen.queryByTitle('Next Page')?.children[0];
+    nextPageButton && userEvent.click(nextPageButton);
     expect(screen.getAllByText('101-110 of 110').length > 1).toBeTruthy();
   });
 
   it('goes to previous page when the `Previous page` button is clicked ', () => {
-    userEvent.click(root.queryByTitle('Next Page'));
+    const nextPageButton = screen.queryByTitle('Next Page')?.children[0];
+    nextPageButton && userEvent.click(nextPageButton);
     expect(screen.getAllByText('101-110 of 110').length > 1).toBeTruthy();
-    userEvent.click(root.queryByTitle('Previous Page'));
+
+    const previousPageButton = screen.queryByTitle('Previous Page')?.children[0];
+    previousPageButton && userEvent.click(previousPageButton);
     expect(screen.getAllByText('1-100 of 110').length > 1).toBeTruthy();
   });
 });
