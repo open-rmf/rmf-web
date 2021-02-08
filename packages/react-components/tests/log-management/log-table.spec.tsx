@@ -1,4 +1,4 @@
-import { screen, render, RenderResult } from '@testing-library/react';
+import { screen, render, RenderResult, cleanup, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import moment from 'moment';
@@ -29,6 +29,8 @@ describe('Log table test', () => {
     root = render(<LogTable rows={rows} />);
   });
 
+  afterEach(cleanup);
+
   it('formats dates correctly', async () => {
     const tableFirstDateElement = (await root.getAllByTestId('log-table-date'))[0];
     expect(tableFirstDateElement.innerHTML).toBe(moment(timestamp).format('lll'));
@@ -46,27 +48,31 @@ describe('Table footer Pagination', () => {
   beforeEach(() => {
     root = render(<LogTable rows={rows} />);
   });
+
+  afterEach(cleanup);
+
   it('show the correct number of rows per page', () => {
-    expect(root.findByLabelText('1-100 of 110')).toBeTruthy();
+    // It's generating an <span> and a <p> on the real dom
+    expect(screen.getAllByText('1-100 of 110').length > 1).toBeTruthy();
   });
 
   it('can change the rows per page', async () => {
-    userEvent.click(root.getByText('100 rows'));
-    userEvent.click(root.getByText('50'));
+    userEvent.click(screen.getByText('100 rows'));
+    userEvent.click(screen.getByText('50'));
 
-    expect(root.findByLabelText('1-50 of 110')).toBeTruthy();
+    expect(screen.getAllByText('1-50 of 110').length > 1).toBeTruthy();
   });
 
-  it('advance page when the `Next page` button is clicked ', () => {
-    userEvent.click(root.getByTitle('Next Page'));
-    expect(root.findByLabelText('101-110 of 110')).toBeTruthy();
+  it('advance page when the `Next Page` button is clicked ', async () => {
+    userEvent.click(screen.queryByTitle('Next Page').children[0]);
+    expect(screen.getAllByText('101-110 of 110').length > 1).toBeTruthy();
   });
 
   it('goes to previous page when the `Previous page` button is clicked ', () => {
-    userEvent.click(root.getByTitle('Next Page'));
-    expect(root.findByLabelText('101-110 of 110')).toBeTruthy();
-    userEvent.click(root.getByTitle('Previous Page'));
-    expect(root.findByLabelText('1-100 of 110')).toBeTruthy();
+    userEvent.click(root.queryByTitle('Next Page'));
+    expect(screen.getAllByText('101-110 of 110').length > 1).toBeTruthy();
+    userEvent.click(root.queryByTitle('Previous Page'));
+    expect(screen.getAllByText('1-100 of 110').length > 1).toBeTruthy();
   });
 });
 
