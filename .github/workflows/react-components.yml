@@ -29,7 +29,9 @@ jobs:
       - name: build
         run: npm run build:storybook && npm run build
       - name: Setup kernel for Karma tests, increase watchers
-        run: echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p    
+        run: echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+      - name: increase space
+        run: export NODE_OPTIONS="--max-old-space-size=8192" 
       - name: test
         run: npm run test
       - name: Upload coverage to Codecov
