@@ -14,7 +14,7 @@ import {
 import { Meta, Story } from '@storybook/react';
 
 export default {
-  title: 'Main Menu Item State',
+  title: 'Systems summary',
   component: SystemSummaryItemState,
 } as Meta;
 
@@ -22,7 +22,7 @@ const itemStateDataDoor: SystemSummaryItemStateProps = {
   itemSummary: {
     item: 'Doors',
     summary: { operational: 1, outOfOrder: 1 },
-    outOfOrder: [],
+    spoiltItemList: [],
   },
   onClick: () => {
     /**filler */
@@ -33,7 +33,7 @@ const itemStateDataRobot: SystemSummaryItemStateProps = {
   itemSummary: {
     item: 'Robots',
     summary: { operational: 2, outOfOrder: 0, idle: 1, charging: 1 },
-    outOfOrder: [],
+    spoiltItemList: [],
   },
   onClick: () => {
     /**filler */
@@ -90,9 +90,9 @@ const systemSummaryBannerData: SystemSummaryBannerProps = {
 
 const spoiltEquipment: SystemSummarySpoiltItemsProps = {
   spoiltItems: [
-    { summary: 'lift1 - fire' },
-    { summary: 'door1 - unknown' },
-    { summary: 'robot1 - unknown' },
+    { itemNameAndState: 'lift1 - fire' },
+    { itemNameAndState: 'door1 - unknown' },
+    { itemNameAndState: 'robot1 - unknown' },
   ],
 };
 

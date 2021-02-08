@@ -12,7 +12,7 @@ export interface ItemSummaryState {
 export interface ItemSummary {
   item: string;
   summary: ItemSummaryState;
-  outOfOrder: string[];
+  spoiltItemList: string[];
 }
 
 export interface SystemSummaryItemStateProps {

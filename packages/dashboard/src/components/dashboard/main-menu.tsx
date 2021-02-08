@@ -111,7 +111,7 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
     return {
       item: 'Door',
       summary: { operational: modeCounter.operational, outOfOrder: modeCounter.outOfOrder },
-      outOfOrder: spoiltEquipment,
+      spoiltItemList: spoiltEquipment,
     };
   };
 
@@ -139,7 +139,7 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
     return {
       item: 'Lift',
       summary: { operational: modeCounter.operational, outOfOrder: modeCounter.outOfOrder },
-      outOfOrder: spoiltEquipment,
+      spoiltItemList: spoiltEquipment,
     };
   };
 
@@ -166,7 +166,7 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
     return {
       item: 'Dispensers',
       summary: { operational: modeCounter.operational, outOfOrder: modeCounter.outOfOrder },
-      outOfOrder: spoiltEquipment,
+      spoiltItemList: spoiltEquipment,
     };
   };
 
@@ -210,7 +210,7 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
         charging: modeCounter.charging,
         idle: modeCounter.idle,
       },
-      outOfOrder: spoiltEquipment,
+      spoiltItemList: spoiltEquipment,
     };
   };
 
@@ -241,10 +241,10 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
   const getSpoiltEquipment = (): SpoiltItem[] => {
     const equipment = getAllEquipmentSummary();
     const itemHolder = [
-      ...equipment.door.outOfOrder,
-      ...equipment.lift.outOfOrder,
-      ...equipment.dispenser.outOfOrder,
-      ...equipment.robot.outOfOrder,
+      ...equipment.door.spoiltItemList,
+      ...equipment.lift.spoiltItemList,
+      ...equipment.dispenser.spoiltItemList,
+      ...equipment.robot.spoiltItemList,
     ];
     return [...itemHolder.map((item) => ({ itemNameAndState: item }))];
   };
