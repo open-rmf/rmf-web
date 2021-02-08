@@ -43,7 +43,7 @@ export interface MapFloorLayer {
 export interface ScheduleVisualizerProps extends React.PropsWithChildren<{}> {
   buildingMap: RomiCore.BuildingMap;
   negotiationTrajStore: Readonly<Record<string, NegotiationTrajectoryResponse>>;
-  showTrajectories: boolean;
+  showTrajectories?: boolean;
   mapFloorSort?(levels: RomiCore.Level[]): string[];
   onDoorClick?(door: RomiCore.Door): void;
   onLiftClick?(lift: RomiCore.Lift): void;
@@ -196,7 +196,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
           },
         });
         debug('set trajectories');
-        if (showTrajectories) {
+        if (showTrajectories === undefined || showTrajectories) {
           setTrajectories((prev) => ({
             ...prev,
             [curMapFloorLayer.level.name]: resp,
