@@ -1,19 +1,15 @@
-import { createMount } from '@material-ui/core/test-utils';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import { ReactWrapper } from 'enzyme';
-import toJson from 'enzyme-to-json';
 import * as L from 'leaflet';
 import React from 'react';
+import { render } from '@testing-library/react';
 import { robotHash } from 'react-components';
-import { act } from 'react-dom/test-utils';
 import { Map as LMap } from 'react-leaflet';
 import FakeTrajectoryManager from '../../../mock/fake-traj-manager';
-import { Conflict, Trajectory } from '../../../robot-trajectory-manager';
-import { defaultSettings, TrajectoryAnimation } from '../../../settings';
+import { Conflict, Trajectory } from '../../../managers/robot-trajectory-manager';
+import { defaultSettings } from '../../../settings';
 import { SettingsContext } from '../../app-contexts';
 import RobotTrajectoriesOverlay from '../robot-trajectories-overlay';
 
-const mount = createMount();
 const mapBound = new L.LatLngBounds([0, 25.794363144785166], [-17.53525484725833, 0]);
 
 const robots: Record<string, RomiCore.RobotState> = {
@@ -35,34 +31,6 @@ const robots: Record<string, RomiCore.RobotState> = {
     path: [],
     task_id: '',
   },
-};
-
-const createWrapper = async (
-  bounds: L.LatLngBoundsExpression,
-  conflicts: Conflict[],
-  robots: Record<string, RomiCore.RobotState>,
-  trajs: Trajectory[],
-) => {
-  const settings = defaultSettings();
-  // animations use apis not supported in jsdom
-  settings.trajectoryAnimation = TrajectoryAnimation.None;
-  let wrapper: ReactWrapper;
-  await act(
-    async () =>
-      (wrapper = mount(
-        <LMap>
-          <SettingsContext.Provider value={settings}>
-            <RobotTrajectoriesOverlay
-              bounds={bounds}
-              robots={robots}
-              trajectories={trajs}
-              conflicts={conflicts}
-            />
-          </SettingsContext.Provider>
-        </LMap>,
-      )),
-  );
-  return wrapper!;
 };
 
 describe('RobotTrajectoriesOverlay', () => {
@@ -87,8 +55,20 @@ describe('RobotTrajectoriesOverlay', () => {
   });
 
   it('renders without crashing', async () => {
-    const wrapper = await createWrapper(mapBound, trajectoryConflict, robots, [trajectoryValue]);
-    expect(toJson(wrapper)).toMatchSnapshot();
-    wrapper.unmount();
+    const settings = defaultSettings();
+    const root = render(
+      <LMap>
+        <SettingsContext.Provider value={settings}>
+          <RobotTrajectoriesOverlay
+            bounds={mapBound}
+            robots={robots}
+            trajectories={[trajectoryValue]}
+            conflicts={trajectoryConflict}
+          />
+        </SettingsContext.Provider>
+      </LMap>,
+    );
+
+    root.unmount();
   });
 });
