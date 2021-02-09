@@ -38,7 +38,7 @@ async def on_startup():
     logger.info("started app")
 
 
-# There is a big with uvicorn and socketio that causes
+# There is a bug with uvicorn and socketio that causes
 # `RuntimeError: Event loop stopped before Future completed.`
 # when getting SIGINT, the reason is because both uvicorn and socketio installs signal
 # handlers, socketio's handler overwrites uvicorn's and in its handler to calls `asyncio.get_event_loop().stop()`.

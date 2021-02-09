@@ -6,7 +6,7 @@ Install pipenv
 pip3 install pipenv
 ```
 
-If not already done so, [bootrap](../../README.md#bootstrap) the project, you can use
+If not already done so, [bootstrap](../../README.md#bootstrap) the project, you can use
 ```bash
 npm run bootstrap -- packages/api-server
 ```
