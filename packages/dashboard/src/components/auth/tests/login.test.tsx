@@ -58,7 +58,6 @@ describe('Login page', () => {
         </UserContext.Provider>
       </BrowserRouter>,
     );
-    ``;
     //screen.debug();
     expect(root.queryByText('Login with RMF')).toBeFalsy();
     root.unmount();
