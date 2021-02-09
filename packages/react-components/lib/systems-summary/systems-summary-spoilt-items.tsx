@@ -32,6 +32,11 @@ export const SystemSummarySpoiltItems = (props: SystemSummarySpoiltItemsProps): 
             <Typography color="error" variant="body1">
               {item.itemNameAndState}
             </Typography>
+            {item.errorMessage !== undefined ? (
+              <Typography color="error" variant="body1">
+                Error - {item.errorMessage}
+              </Typography>
+            ) : null}
           </Paper>
         );
       })}

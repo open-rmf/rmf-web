@@ -107,8 +107,8 @@ export const SystemSummaryItemState = (props: SystemSummaryItemStateProps): JSX.
           </Grid>
         </Grid>
         <Grid className={classes.robotGrid} item>
-          {itemSummary.item === 'Robots' ? (
-            <Grid container justify="flex-start" direction="row" spacing={2}>
+          <Grid container justify="flex-start" direction="row" spacing={2}>
+            {itemSummary.summary.idle !== undefined ? (
               <Grid item xs={6}>
                 <Paper className={getOtherStatusLabel('idle')} elevation={3}>
                   <Typography noWrap align="center" variant="h6">
@@ -119,7 +119,9 @@ export const SystemSummaryItemState = (props: SystemSummaryItemStateProps): JSX.
                   </Typography>
                 </Paper>
               </Grid>
+            ) : null}
 
+            {itemSummary.summary.charging !== undefined ? (
               <Grid item xs={6}>
                 <Paper className={getOtherStatusLabel('charging')} elevation={3}>
                   <Typography noWrap align="center" variant="h6">
@@ -130,8 +132,8 @@ export const SystemSummaryItemState = (props: SystemSummaryItemStateProps): JSX.
                   </Typography>
                 </Paper>
               </Grid>
-            </Grid>
-          ) : null}
+            ) : null}
+          </Grid>
         </Grid>
       </Grid>
     </React.Fragment>

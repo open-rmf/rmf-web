@@ -2,7 +2,7 @@ import React from 'react';
 import { makeStyles, Typography, Card, CardHeader, Avatar } from '@material-ui/core';
 
 export interface SystemSummaryBannerProps {
-  bannerUrl: string;
+  imageSrc?: string;
   isError: boolean;
 }
 
@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const SystemSummaryBanner = (props: SystemSummaryBannerProps): JSX.Element => {
   const classes = useStyles();
-  const { bannerUrl, isError } = props;
+  const { imageSrc, isError } = props;
 
   const getStatusLabel = () => {
     return isError
@@ -39,7 +39,7 @@ export const SystemSummaryBanner = (props: SystemSummaryBannerProps): JSX.Elemen
       </Typography>
       <CardHeader
         className={classes.cardHeader}
-        avatar={<Avatar alt="Romi-H logo" src={bannerUrl} />}
+        avatar={<Avatar alt="Romi-H logo" src={imageSrc} />}
         title={<Typography variant="body1">Rmf Systems</Typography>}
         subheader={<Typography variant="body2">Summary of equipment states</Typography>}
       />

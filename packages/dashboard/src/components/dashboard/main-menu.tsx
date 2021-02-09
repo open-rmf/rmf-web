@@ -48,6 +48,13 @@ export interface ItemState {
   dispensers: Record<string, RomiCore.DispenserState>;
 }
 
+export interface Equipment {
+  door: ItemSummary;
+  lift: ItemSummary;
+  dispenser: ItemSummary;
+  robot: ItemSummary;
+}
+
 export interface MainMenuProps {
   pushView(view: OmniPanelViewIndex): void;
   itemState: ItemState;
@@ -227,8 +234,9 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
     };
   };
 
-  const toggleBannerColor = (): boolean => {
-    const equipment = getAllEquipmentSummary();
+  const equipment: Equipment = getAllEquipmentSummary();
+
+  const toggleBannerColor = (equipment: Equipment): boolean => {
     return (
       equipment.door.summary.outOfOrder +
         equipment.lift.summary.outOfOrder +
@@ -238,8 +246,7 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
     );
   };
 
-  const getSpoiltEquipment = (): SpoiltItem[] => {
-    const equipment = getAllEquipmentSummary();
+  const getSpoiltEquipment = (equipment: Equipment): SpoiltItem[] => {
     const itemHolder = [
       ...equipment.door.spoiltItemList,
       ...equipment.lift.spoiltItemList,
@@ -249,16 +256,18 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
     return [...itemHolder.map((item) => ({ itemNameAndState: item }))];
   };
 
+  const spoiltEquipmentList = getSpoiltEquipment(equipment);
+
   return (
     <React.Fragment>
-      <SystemSummaryBanner bannerUrl={'/favicon.ico'} isError={toggleBannerColor()} />
+      <SystemSummaryBanner imageSrc={'/favicon.ico'} isError={toggleBannerColor(equipment)} />
       <div className={classes.root}>
         <SystemSummaryAlert notifications={notifications} />
         <Divider className={classes.divider} />
 
-        {getSpoiltEquipment().length > 0 ? (
+        {spoiltEquipmentList.length > 0 ? (
           <React.Fragment>
-            <SystemSummarySpoiltItems spoiltItems={getSpoiltEquipment()} />
+            <SystemSummarySpoiltItems spoiltItems={spoiltEquipmentList} />
             <Divider className={classes.divider} />
           </React.Fragment>
         ) : null}

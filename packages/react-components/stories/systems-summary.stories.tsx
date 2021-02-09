@@ -84,7 +84,6 @@ const systemSummaryTaskStateData: SystemSummaryTaskStateProps = {
 };
 
 const systemSummaryBannerData: SystemSummaryBannerProps = {
-  bannerUrl: 'testUrl',
   isError: false,
 };
 
@@ -124,17 +123,9 @@ export const SystemSummaryTaskStateStory: Story = (args) => (
 
 export const SystemSummaryBannerStory: Story = (args) => (
   <React.Fragment>
-    <SystemSummaryBanner
-      bannerUrl={systemSummaryBannerData.bannerUrl}
-      isError={systemSummaryBannerData.isError}
-      {...args}
-    />
+    <SystemSummaryBanner isError={systemSummaryBannerData.isError} {...args} />
     <div style={{ margin: '1rem 0' }}></div>
-    <SystemSummaryBanner
-      bannerUrl={systemSummaryBannerData.bannerUrl}
-      isError={!systemSummaryBannerData.isError}
-      {...args}
-    />
+    <SystemSummaryBanner isError={!systemSummaryBannerData.isError} {...args} />
   </React.Fragment>
 );
 
