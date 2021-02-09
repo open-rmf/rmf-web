@@ -103,7 +103,7 @@ module.exports = (options) => {
 
         {
           enforce: 'post',
-          test: /\.(js|tsx)$/,
+          test: /\.(ts|tsx)$/,
           loader: 'istanbul-instrumenter-loader',
           include: root('lib'),
           exclude: [/\.(e2e|spec|d|stories)\.ts$/, /node_modules/],
