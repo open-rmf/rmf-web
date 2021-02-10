@@ -1,7 +1,7 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import * as L from 'leaflet';
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, RenderResult, waitFor } from '@testing-library/react';
 import { robotHash } from 'react-components';
 import { Map as LMap } from 'react-leaflet';
 import FakeTrajectoryManager from '../../../mock/fake-traj-manager';
@@ -56,19 +56,22 @@ describe('RobotTrajectoriesOverlay', () => {
 
   it('renders without crashing', async () => {
     const settings = defaultSettings();
-    const root = render(
-      <LMap>
-        <SettingsContext.Provider value={settings}>
-          <RobotTrajectoriesOverlay
-            bounds={mapBound}
-            robots={robots}
-            trajectories={[trajectoryValue]}
-            conflicts={trajectoryConflict}
-          />
-        </SettingsContext.Provider>
-      </LMap>,
-    );
-
-    root.unmount();
+    let root: RenderResult;
+    await waitFor(() => {
+      root = render(
+        <LMap>
+          <SettingsContext.Provider value={settings}>
+            <RobotTrajectoriesOverlay
+              bounds={mapBound}
+              robots={robots}
+              trajectories={[trajectoryValue]}
+              conflicts={trajectoryConflict}
+            />
+          </SettingsContext.Provider>
+        </LMap>,
+      );
+      expect(root.queryAllByTestId('trajMarker')).toBeTruthy();
+      root.unmount();
+    });
   });
 });
