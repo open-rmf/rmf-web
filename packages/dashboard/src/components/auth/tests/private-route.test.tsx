@@ -1,7 +1,7 @@
 import { createMount } from '@material-ui/core/test-utils';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { BrowserRouter, Router, Switch } from 'react-router-dom';
 import { LOGIN_ROUTE } from '../../../util/url';
 import { UserContext } from '../../auth/contexts';

@@ -1,6 +1,6 @@
 import { createMount } from '@material-ui/core/test-utils';
 import React from 'react';
-import { render, fireEvent, screen } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import { Redirect } from 'react-router';
 import { BrowserRouter } from 'react-router-dom';
 import FakeAuthenticator from '../../../mock/fake-authenticator';

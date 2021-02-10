@@ -1,6 +1,5 @@
 import React from 'react';
-import { shallow } from 'enzyme';
-import { render, RenderResult, waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { GlobalHotKeys, KeySequence } from 'react-hotkeys';
 import HotKeysDialog from '../hotkeys-dialog';
 
