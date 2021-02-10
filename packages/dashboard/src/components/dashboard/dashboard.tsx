@@ -36,7 +36,7 @@ import ScheduleVisualizer, { ScheduleVisualizerProps } from '../schedule-visuali
 import { SpotlightValue } from '../spotlight-value';
 import TaskSummaryPanel from './task-summary-panel';
 import CommandsPanel from './commands-panel';
-import MainMenu, { ItemState } from './main-menu';
+import MainMenu from './main-menu';
 import NegotiationsPanel from './negotiations-panel';
 import OmniPanelControl_ from './omnipanel-control';
 import { DashboardState, useDashboardReducer } from './reducers/dashboard-reducer';
@@ -273,13 +273,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
     [dashboardDispatch, appController],
   );
 
-  const itemStates: ItemState = {
-    doors: doorStates,
-    lifts: liftStates,
-    robots: fleetStates,
-    dispensers: dispenserStates,
-  };
-
   return (
     <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
       {buildingMap && (
@@ -309,7 +302,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
           <OmniPanelView viewId={OmniPanelViewIndex.MainMenu}>
             <MainMenu
               pushView={pushView}
-              itemState={itemStates}
               tasks={tasks}
               // TODO - Link it to notifications once backend is up
               notifications={[]}

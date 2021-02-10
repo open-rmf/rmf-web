@@ -1,7 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import MainMenu, { ItemState } from '../main-menu';
+import MainMenu from '../main-menu';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import { createMount } from '@material-ui/core/test-utils';
+import RmfHealthStateManager, { ItemState } from '../../../managers/rmf-health-state-manager';
+import { RmfHealthContext } from '../../rmf-app/contexts';
+
+const mount = createMount();
 
 const mockItemState: ItemState = {
   doors: {
@@ -60,9 +65,115 @@ const mockItemState: ItemState = {
 
 it('renders without crashing', () => {
   const div = document.createElement('div');
+  const healthManager = new RmfHealthStateManager(mockItemState);
   ReactDOM.render(
-    <MainMenu pushView={jest.fn()} itemState={mockItemState} tasks={[]} notifications={[]} />,
+    <RmfHealthContext.Provider value={healthManager.getHealthStatus()}>
+      <MainMenu pushView={jest.fn()} tasks={[]} notifications={[]} />,
+    </RmfHealthContext.Provider>,
     div,
   );
   ReactDOM.unmountComponentAtNode(div);
+});
+
+it('should count equipment are operational', () => {
+  const healthManager = new RmfHealthStateManager(mockItemState);
+  const root = mount(
+    <RmfHealthContext.Provider value={healthManager.getHealthStatus()}>
+      <MainMenu pushView={jest.fn()} tasks={[]} notifications={[]} />
+    </RmfHealthContext.Provider>,
+  );
+  expect(
+    root.find('SystemSummaryItemState').find('.MuiPaper-root').find('h6').at(0).text(),
+  ).toEqual('1/1');
+  expect(
+    root.find('SystemSummaryItemState').find('.MuiPaper-root').find('h6').at(1).text(),
+  ).toEqual('1/1');
+  expect(
+    root.find('SystemSummaryItemState').find('.MuiPaper-root').find('h6').at(2).text(),
+  ).toEqual('1/1');
+  expect(
+    root.find('SystemSummaryItemState').find('.MuiPaper-root').find('h6').at(3).text(),
+  ).toEqual('1/1');
+});
+
+it('it should not count equipment as operational', () => {
+  const mockSpoiltItem: ItemState = {
+    doors: {
+      testDoor: { ...mockItemState.doors.testDoor, current_mode: { value: 10 } },
+    },
+    dispensers: {
+      testDispenser: {
+        ...mockItemState.dispensers.testDispenser,
+        mode: 10,
+      },
+    },
+    lifts: {
+      testLift: {
+        ...mockItemState.lifts.testLift,
+        current_mode: RomiCore.LiftState.MODE_FIRE,
+      },
+    },
+    robots: {
+      fleet: {
+        name: 'fleet',
+        robots: [
+          {
+            ...mockItemState.robots.fleet.robots[0],
+            mode: { mode: RomiCore.RobotMode.MODE_ADAPTER_ERROR },
+          },
+        ],
+      },
+    },
+  };
+  const healthManager = new RmfHealthStateManager(mockSpoiltItem);
+  const root = mount(
+    <RmfHealthContext.Provider value={healthManager.getHealthStatus()}>
+      <MainMenu pushView={jest.fn()} tasks={[]} notifications={[]} />
+    </RmfHealthContext.Provider>,
+  );
+  expect(
+    root.find('SystemSummaryItemState').find('.MuiPaper-root').find('h6').at(0).text(),
+  ).toEqual('0/1');
+  expect(
+    root.find('SystemSummaryItemState').find('.MuiPaper-root').find('h6').at(1).text(),
+  ).toEqual('0/1');
+  expect(
+    root.find('SystemSummaryItemState').find('.MuiPaper-root').find('h6').at(2).text(),
+  ).toEqual('0/1');
+  expect(
+    root.find('SystemSummaryItemState').find('.MuiPaper-root').find('h6').at(3).text(),
+  ).toEqual('0/1');
+});
+
+it('should count robots that are charging and on idle', () => {
+  const idleAndChargingRobots = {
+    ...mockItemState,
+    robots: {
+      fleet: {
+        name: 'fleet',
+        robots: [
+          {
+            ...mockItemState.robots.fleet.robots[0],
+            mode: { mode: RomiCore.RobotMode.MODE_CHARGING },
+          },
+          {
+            ...mockItemState.robots.fleet.robots[0],
+            mode: { mode: RomiCore.RobotMode.MODE_IDLE },
+          },
+        ],
+      },
+    },
+  };
+  const healthManager = new RmfHealthStateManager(idleAndChargingRobots);
+  const root = mount(
+    <RmfHealthContext.Provider value={healthManager.getHealthStatus()}>
+      <MainMenu pushView={jest.fn()} tasks={[]} notifications={[]} />
+    </RmfHealthContext.Provider>,
+  );
+  expect(
+    root.find('SystemSummaryItemState').find('.MuiPaper-root').find('h6').at(4).text(),
+  ).toEqual('1');
+  expect(
+    root.find('SystemSummaryItemState').find('.MuiPaper-root').find('h6').at(5).text(),
+  ).toEqual('1');
 });

@@ -7,6 +7,10 @@ import FleetManager from '../../managers/fleet-manager';
 import LiftStateManager from '../../managers/lift-state-manager';
 import { NegotiationStatusManager } from '../../managers/negotiation-status-manager';
 import TaskManager from '../../managers/task-manager';
+import RmfHealthStateManager, {
+  HealthStatus,
+  ItemState,
+} from '../../managers/rmf-health-state-manager';
 import { AppControllerContext } from '../app-contexts';
 import {
   BuildingMapContext,
@@ -15,11 +19,13 @@ import {
   FleetStateContext,
   LiftStateContext,
   NegotiationStatusContext,
+  RmfHealthContext,
   RmfIngress,
   RmfIngressContext,
   TasksContext,
   TransportContext,
 } from './contexts';
+import { ItemSummary } from 'react-components';
 
 enum ConnectionState {
   Connected,
@@ -230,6 +236,41 @@ function TaskContextsProvider(props: React.PropsWithChildren<{}>): JSX.Element {
   return <TasksContext.Provider value={tasks}>{props.children}</TasksContext.Provider>;
 }
 
+function RmfHealthContextsProvider(props: React.PropsWithChildren<{}>): JSX.Element {
+  const doorStates = React.useContext(DoorStateContext);
+  const liftStates = React.useContext(LiftStateContext);
+  const dispenserStates = React.useContext(DispenserStateContext);
+  const robotStates = React.useContext(FleetStateContext);
+
+  const itemSummary: ItemSummary = {
+    item: '',
+    summary: { operational: 0, outOfOrder: 0 },
+    spoiltItemList: [],
+  };
+
+  const [healthState, SetHealthState] = React.useState<HealthStatus>({
+    door: { ...itemSummary },
+    lift: { ...itemSummary },
+    robot: { ...itemSummary },
+    dispenser: { ...itemSummary },
+  });
+
+  React.useEffect(() => {
+    const itemState: ItemState = {
+      doors: doorStates,
+      lifts: liftStates,
+      dispensers: dispenserStates,
+      robots: robotStates,
+    };
+    const healthManager = new RmfHealthStateManager(itemState);
+    SetHealthState(healthManager.getHealthStatus);
+  }, [doorStates, liftStates, dispenserStates, robotStates]);
+
+  return (
+    <RmfHealthContext.Provider value={healthState}>{props.children}</RmfHealthContext.Provider>
+  );
+}
+
 function RmfIngressProvider(props: React.PropsWithChildren<{}>): JSX.Element {
   const [rmfIngress, setRmfIngress] = React.useState<RmfIngress>(() => ({
     dispenserStateManager: new DispenserStateManager(),
@@ -285,7 +326,9 @@ export function RmfApp(props: RmfAppProps): JSX.Element {
               <DispenserContextsProvider>
                 <FleetContextsProvider>
                   <NegotiationContextsProvider>
-                    <TaskContextsProvider>{props.children}</TaskContextsProvider>
+                    <RmfHealthContextsProvider>
+                      <TaskContextsProvider>{props.children}</TaskContextsProvider>
+                    </RmfHealthContextsProvider>
                   </NegotiationContextsProvider>
                 </FleetContextsProvider>
               </DispenserContextsProvider>

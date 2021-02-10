@@ -10,13 +10,12 @@ import {
   DashboardTooltip,
   SystemSummaryAlert,
   SystemSummaryTaskState,
-  ItemSummary,
   SystemSummaryBanner,
-  liftModeToString,
-  robotModeToString,
   SystemSummarySpoiltItems,
   SpoiltItem,
 } from 'react-components';
+import { RmfHealthContext } from '../rmf-app';
+import { HealthStatus } from '../../managers/rmf-health-state-manager';
 
 const debug = Debug('MainMenu');
 
@@ -41,30 +40,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export interface ItemState {
-  doors: Record<string, RomiCore.DoorState>;
-  lifts: Record<string, RomiCore.LiftState>;
-  robots: Record<string, RomiCore.FleetState>;
-  dispensers: Record<string, RomiCore.DispenserState>;
-}
-
-export interface Equipment {
-  door: ItemSummary;
-  lift: ItemSummary;
-  dispenser: ItemSummary;
-  robot: ItemSummary;
-}
-
 export interface MainMenuProps {
   pushView(view: OmniPanelViewIndex): void;
-  itemState: ItemState;
   tasks: RomiCore.TaskSummary[];
   notifications: Notification[];
 }
 
 export const MainMenu = React.memo((props: MainMenuProps) => {
   const { showTooltips } = React.useContext(TooltipsContext);
-  const { pushView, itemState, tasks, notifications } = props;
+  const { pushView, tasks, notifications } = props;
   debug('render');
   const classes = useStyles();
 
@@ -96,171 +80,33 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
     pushView(OmniPanelViewIndex.Tasks);
   }, [pushView]);
 
-  const getDoorSummary = (): ItemSummary => {
-    let modeCounter = { operational: 0, outOfOrder: 0 };
-    const spoiltEquipment: string[] = [];
-    const doors = itemState.doors;
-    const doorKeys = Object.keys(doors);
+  const healthStatus = React.useContext(RmfHealthContext);
 
-    doorKeys.forEach((door) => {
-      switch (doors[door].current_mode.value) {
-        case RomiCore.DoorMode.MODE_CLOSED:
-        case RomiCore.DoorMode.MODE_MOVING:
-        case RomiCore.DoorMode.MODE_OPEN:
-          modeCounter.operational += 1;
-          break;
-        default:
-          modeCounter.outOfOrder += 1;
-          spoiltEquipment.push(door + ' - Unknown');
-          break;
-      }
-    });
-    return {
-      item: 'Door',
-      summary: { operational: modeCounter.operational, outOfOrder: modeCounter.outOfOrder },
-      spoiltItemList: spoiltEquipment,
-    };
-  };
-
-  const getLiftSummary = (): ItemSummary => {
-    let modeCounter = { operational: 0, outOfOrder: 0 };
-    const spoiltEquipment: string[] = [];
-    const lifts = itemState.lifts;
-    const liftKeys = Object.keys(lifts);
-
-    liftKeys.forEach((lift) => {
-      switch (lifts[lift].current_mode) {
-        case RomiCore.LiftState.MODE_HUMAN:
-        case RomiCore.LiftState.MODE_AGV:
-        case RomiCore.LiftState.MODE_OFFLINE:
-          modeCounter.operational += 1;
-          break;
-        case RomiCore.LiftState.MODE_FIRE:
-        case RomiCore.LiftState.MODE_EMERGENCY:
-        case RomiCore.LiftState.MODE_UNKNOWN:
-          spoiltEquipment.push(lift + ` - ${liftModeToString(lifts[lift].current_mode)}`);
-          modeCounter.outOfOrder += 1;
-          break;
-      }
-    });
-    return {
-      item: 'Lift',
-      summary: { operational: modeCounter.operational, outOfOrder: modeCounter.outOfOrder },
-      spoiltItemList: spoiltEquipment,
-    };
-  };
-
-  const getDispenserSummary = (): ItemSummary => {
-    let modeCounter = { operational: 0, outOfOrder: 0 };
-    const spoiltEquipment: string[] = [];
-    const dispensers = itemState.dispensers;
-    const dispenserKeys = Object.keys(dispensers);
-
-    dispenserKeys.forEach((dispenser) => {
-      switch (dispensers[dispenser].mode) {
-        case RomiCore.DispenserState.IDLE:
-        case RomiCore.DispenserState.BUSY:
-        case RomiCore.DispenserState.OFFLINE:
-          modeCounter.operational += 1;
-          break;
-        default:
-          spoiltEquipment.push(dispenser + '- Unknown');
-          modeCounter.outOfOrder += 1;
-          break;
-      }
-    });
-
-    return {
-      item: 'Dispensers',
-      summary: { operational: modeCounter.operational, outOfOrder: modeCounter.outOfOrder },
-      spoiltItemList: spoiltEquipment,
-    };
-  };
-
-  const getRobotSummary = (): ItemSummary => {
-    let modeCounter = { operational: 0, outOfOrder: 0, charging: 0, idle: 0 };
-    const spoiltEquipment: string[] = [];
-    const fleets = itemState.robots;
-    const fleetKeys = Object.keys(fleets);
-
-    fleetKeys.forEach((fleet) => {
-      fleets[fleet].robots.forEach((robot) => {
-        switch (robot.mode.mode) {
-          case RomiCore.RobotMode.MODE_ADAPTER_ERROR:
-          case RomiCore.RobotMode.MODE_EMERGENCY:
-            spoiltEquipment.push(robot.name + ` - ${robotModeToString(robot.mode)}`);
-            modeCounter.outOfOrder += 1;
-            break;
-          case RomiCore.RobotMode.MODE_CHARGING:
-            modeCounter.operational += 1;
-            modeCounter.charging += 1;
-            break;
-          case RomiCore.RobotMode.MODE_DOCKING:
-          case RomiCore.RobotMode.MODE_GOING_HOME:
-          case RomiCore.RobotMode.MODE_MOVING:
-          case RomiCore.RobotMode.MODE_PAUSED:
-          case RomiCore.RobotMode.MODE_WAITING:
-            modeCounter.operational += 1;
-            break;
-          case RomiCore.RobotMode.MODE_IDLE:
-            modeCounter.operational += 1;
-            modeCounter.idle += 1;
-            break;
-        }
-      });
-    });
-    return {
-      item: 'Robots',
-      summary: {
-        operational: modeCounter.operational,
-        outOfOrder: modeCounter.outOfOrder,
-        charging: modeCounter.charging,
-        idle: modeCounter.idle,
-      },
-      spoiltItemList: spoiltEquipment,
-    };
-  };
-
-  const getAllEquipmentSummary = () => {
-    const getDoor = getDoorSummary();
-    const getLift = getLiftSummary();
-    const getDispensers = getDispenserSummary();
-    const getRobots = getRobotSummary();
-    return {
-      door: getDoor,
-      lift: getLift,
-      dispenser: getDispensers,
-      robot: getRobots,
-    };
-  };
-
-  const equipment: Equipment = getAllEquipmentSummary();
-
-  const toggleBannerColor = (equipment: Equipment): boolean => {
+  const bannerIsError = (healthStatus: HealthStatus): boolean => {
     return (
-      equipment.door.summary.outOfOrder +
-        equipment.lift.summary.outOfOrder +
-        equipment.dispenser.summary.outOfOrder +
-        equipment.robot.summary.outOfOrder !==
+      healthStatus.door.summary.outOfOrder +
+        healthStatus.lift.summary.outOfOrder +
+        healthStatus.dispenser.summary.outOfOrder +
+        healthStatus.robot.summary.outOfOrder !==
       0
     );
   };
 
-  const getSpoiltEquipment = (equipment: Equipment): SpoiltItem[] => {
+  const getSpoiltEquipment = (healthStatus: HealthStatus): SpoiltItem[] => {
     const itemHolder = [
-      ...equipment.door.spoiltItemList,
-      ...equipment.lift.spoiltItemList,
-      ...equipment.dispenser.spoiltItemList,
-      ...equipment.robot.spoiltItemList,
+      ...healthStatus.door.spoiltItemList,
+      ...healthStatus.lift.spoiltItemList,
+      ...healthStatus.dispenser.spoiltItemList,
+      ...healthStatus.robot.spoiltItemList,
     ];
     return [...itemHolder.map((item) => ({ itemNameAndState: item }))];
   };
 
-  const spoiltEquipmentList = getSpoiltEquipment(equipment);
+  const spoiltEquipmentList = getSpoiltEquipment(healthStatus);
 
   return (
     <React.Fragment>
-      <SystemSummaryBanner imageSrc={'/favicon.ico'} isError={toggleBannerColor(equipment)} />
+      <SystemSummaryBanner imageSrc={'/favicon.ico'} isError={bannerIsError(healthStatus)} />
       <div className={classes.root}>
         <SystemSummaryAlert notifications={notifications} />
         <Divider className={classes.divider} />
@@ -276,20 +122,26 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
           Systems Summary
         </Typography>
 
-        <SystemSummaryItemState itemSummary={getDoorSummary()} onClick={handleMainMenuDoorsClick} />
-        <SystemSummaryItemState itemSummary={getLiftSummary()} onClick={handleMainMenuLiftsClick} />
         <SystemSummaryItemState
-          itemSummary={getDispenserSummary()}
+          itemSummary={healthStatus.door}
+          onClick={handleMainMenuDoorsClick}
+        />
+        <SystemSummaryItemState
+          itemSummary={healthStatus.lift}
+          onClick={handleMainMenuLiftsClick}
+        />
+        <SystemSummaryItemState
+          itemSummary={healthStatus.dispenser}
           onClick={handleMainMenuDispensersClick}
         />
         <SystemSummaryItemState
-          itemSummary={getRobotSummary()}
+          itemSummary={healthStatus.robot}
           onClick={handleMainMenuRobotsClick}
         />
         <Divider className={classes.divider} />
 
         <Typography variant="h6">Task Statuses</Typography>
-        <SystemSummaryTaskState tasks={tasks} />
+        <SystemSummaryTaskState tasks={tasks} onClick={handleMainMenuTasksClick} />
         <Button
           color="primary"
           className={classes.buttons}

@@ -4,6 +4,7 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 
 export interface SystemSummaryTaskStateProps {
   tasks: RomiCore.TaskSummary[];
+  onClick: () => void;
 }
 
 export interface TaskSummaryState {
@@ -16,6 +17,10 @@ export interface TaskSummaryState {
 const useStyles = makeStyles((theme) => ({
   grid: {
     padding: '0.4rem 0',
+    '&:hover': {
+      backgroundColor: theme.palette.grey[100],
+      cursor: 'pointer',
+    },
   },
   normal: {
     color: theme.palette.success.main,
@@ -29,11 +34,14 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.info.main,
     border: `2px solid ${theme.palette.info.main}`,
   },
+  header: {
+    marginBottom: '0.5rem',
+  },
 }));
 
 export const SystemSummaryTaskState = (props: SystemSummaryTaskStateProps): JSX.Element => {
   const classes = useStyles();
-  const { tasks } = props;
+  const { tasks, onClick } = props;
 
   const getTaskSummary = () => {
     const modeCounter: TaskSummaryState = { active: 0, finish: 0, failed: 0, queued: 0 };
@@ -74,52 +82,56 @@ export const SystemSummaryTaskState = (props: SystemSummaryTaskStateProps): JSX.
 
   return (
     <React.Fragment>
-      <Typography variant="body1">Plans</Typography>
-      <Grid className={classes.grid} spacing={2} container direction="row">
-        <Grid item xs={3}>
-          <Paper elevation={3} className={getStatusLabel('active')}>
-            <Typography align="center" variant="h6">
-              {summary.active}
-            </Typography>
-            <Typography align="center" variant="body1">
-              Active
-            </Typography>
-          </Paper>
-        </Grid>
+      <Typography className={classes.header} variant="body1">
+        Plans
+      </Typography>
+      <div onClick={onClick}>
+        <Grid className={classes.grid} spacing={2} container direction="row">
+          <Grid item xs={3}>
+            <Paper elevation={3} className={getStatusLabel('active')}>
+              <Typography align="center" variant="h6">
+                {summary.active}
+              </Typography>
+              <Typography align="center" variant="body1">
+                Active
+              </Typography>
+            </Paper>
+          </Grid>
 
-        <Grid item xs={3}>
-          <Paper elevation={3} className={getStatusLabel('finish')}>
-            <Typography align="center" variant="h6">
-              {summary.finish}
-            </Typography>
-            <Typography align="center" variant="body1">
-              Finish
-            </Typography>
-          </Paper>
-        </Grid>
+          <Grid item xs={3}>
+            <Paper elevation={3} className={getStatusLabel('finish')}>
+              <Typography align="center" variant="h6">
+                {summary.finish}
+              </Typography>
+              <Typography align="center" variant="body1">
+                Finish
+              </Typography>
+            </Paper>
+          </Grid>
 
-        <Grid item xs={3}>
-          <Paper elevation={3} className={getStatusLabel('queued')}>
-            <Typography align="center" variant="h6">
-              {summary.queued}
-            </Typography>
-            <Typography align="center" variant="body1">
-              Queued
-            </Typography>
-          </Paper>
-        </Grid>
+          <Grid item xs={3}>
+            <Paper elevation={3} className={getStatusLabel('queued')}>
+              <Typography align="center" variant="h6">
+                {summary.queued}
+              </Typography>
+              <Typography align="center" variant="body1">
+                Queued
+              </Typography>
+            </Paper>
+          </Grid>
 
-        <Grid item xs={3}>
-          <Paper elevation={3} className={getStatusLabel('failed')}>
-            <Typography align="center" variant="h6">
-              {summary.failed}
-            </Typography>
-            <Typography align="center" variant="body1">
-              Failed
-            </Typography>
-          </Paper>
+          <Grid item xs={3}>
+            <Paper elevation={3} className={getStatusLabel('failed')}>
+              <Typography align="center" variant="h6">
+                {summary.failed}
+              </Typography>
+              <Typography align="center" variant="body1">
+                Failed
+              </Typography>
+            </Paper>
+          </Grid>
         </Grid>
-      </Grid>
+      </div>
     </React.Fragment>
   );
 };

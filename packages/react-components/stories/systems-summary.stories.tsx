@@ -81,6 +81,9 @@ const systemSummaryTaskStateData: SystemSummaryTaskStateProps = {
       submission_time: { sec: 0, nanosec: 0 },
     },
   ],
+  onClick: () => {
+    /**filler */
+  },
 };
 
 const systemSummaryBannerData: SystemSummaryBannerProps = {
@@ -118,7 +121,11 @@ export const SystemSummaryItemAlertStory: Story = (args) => (
 );
 
 export const SystemSummaryTaskStateStory: Story = (args) => (
-  <SystemSummaryTaskState tasks={systemSummaryTaskStateData.tasks} {...args} />
+  <SystemSummaryTaskState
+    tasks={systemSummaryTaskStateData.tasks}
+    onClick={systemSummaryTaskStateData.onClick}
+    {...args}
+  />
 );
 
 export const SystemSummaryBannerStory: Story = (args) => (
