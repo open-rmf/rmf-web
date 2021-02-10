@@ -1,6 +1,7 @@
 import React from 'react';
 import { makeStyles, Typography, Grid, Paper, Button } from '@material-ui/core';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+import { SpoiltItem } from './index';
 
 export interface ItemSummaryState {
   operational: number;
@@ -12,7 +13,7 @@ export interface ItemSummaryState {
 export interface ItemSummary {
   item: string;
   summary: ItemSummaryState;
-  spoiltItemList: string[];
+  spoiltItemList: SpoiltItem[];
 }
 
 export interface SystemSummaryItemStateProps {

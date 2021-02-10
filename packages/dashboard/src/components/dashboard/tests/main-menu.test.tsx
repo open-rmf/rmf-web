@@ -68,7 +68,16 @@ it('renders without crashing', () => {
   const healthManager = new RmfHealthStateManager(mockItemState);
   ReactDOM.render(
     <RmfHealthContext.Provider value={healthManager.getHealthStatus()}>
-      <MainMenu pushView={jest.fn()} tasks={[]} notifications={[]} />,
+      <MainMenu
+        pushView={jest.fn()}
+        tasks={[]}
+        notifications={[]}
+        doors={[]}
+        dispensers={{}}
+        lifts={[]}
+        robots={{}}
+      />
+      ,
     </RmfHealthContext.Provider>,
     div,
   );
@@ -79,7 +88,15 @@ it('should count equipment are operational', () => {
   const healthManager = new RmfHealthStateManager(mockItemState);
   const root = mount(
     <RmfHealthContext.Provider value={healthManager.getHealthStatus()}>
-      <MainMenu pushView={jest.fn()} tasks={[]} notifications={[]} />
+      <MainMenu
+        pushView={jest.fn()}
+        tasks={[]}
+        notifications={[]}
+        doors={[]}
+        dispensers={{}}
+        lifts={[]}
+        robots={{}}
+      />
     </RmfHealthContext.Provider>,
   );
   expect(
@@ -128,7 +145,15 @@ it('it should not count equipment as operational', () => {
   const healthManager = new RmfHealthStateManager(mockSpoiltItem);
   const root = mount(
     <RmfHealthContext.Provider value={healthManager.getHealthStatus()}>
-      <MainMenu pushView={jest.fn()} tasks={[]} notifications={[]} />
+      <MainMenu
+        pushView={jest.fn()}
+        tasks={[]}
+        notifications={[]}
+        doors={[]}
+        dispensers={{}}
+        lifts={[]}
+        robots={{}}
+      />
     </RmfHealthContext.Provider>,
   );
   expect(
@@ -167,7 +192,15 @@ it('should count robots that are charging and on idle', () => {
   const healthManager = new RmfHealthStateManager(idleAndChargingRobots);
   const root = mount(
     <RmfHealthContext.Provider value={healthManager.getHealthStatus()}>
-      <MainMenu pushView={jest.fn()} tasks={[]} notifications={[]} />
+      <MainMenu
+        pushView={jest.fn()}
+        tasks={[]}
+        notifications={[]}
+        doors={[]}
+        dispensers={{}}
+        lifts={[]}
+        robots={{}}
+      />
     </RmfHealthContext.Provider>,
   );
   expect(

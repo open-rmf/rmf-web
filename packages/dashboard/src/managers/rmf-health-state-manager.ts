@@ -1,4 +1,4 @@
-import { ItemSummary, liftModeToString, robotModeToString } from 'react-components';
+import { ItemSummary, liftModeToString, robotModeToString, SpoiltItem } from 'react-components';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 
 export interface HealthStatus {
@@ -24,7 +24,7 @@ export default class RmfHealthStateManager {
 
   getDoorSummary = (): ItemSummary => {
     let modeCounter = { operational: 0, outOfOrder: 0 };
-    const spoiltEquipment: string[] = [];
+    const spoiltEquipment: SpoiltItem[] = [];
     const doors = this.itemState.doors;
     const doorKeys = Object.keys(doors);
 
@@ -37,7 +37,7 @@ export default class RmfHealthStateManager {
           break;
         default:
           modeCounter.outOfOrder += 1;
-          spoiltEquipment.push(door + ' - Unknown');
+          spoiltEquipment.push({ type: 'door', name: door, itemNameAndState: `${door} - Unknown` });
           break;
       }
     });
@@ -50,7 +50,7 @@ export default class RmfHealthStateManager {
 
   getLiftSummary = (): ItemSummary => {
     let modeCounter = { operational: 0, outOfOrder: 0 };
-    const spoiltEquipment: string[] = [];
+    const spoiltEquipment: SpoiltItem[] = [];
     const lifts = this.itemState.lifts;
     const liftKeys = Object.keys(lifts);
 
@@ -64,7 +64,11 @@ export default class RmfHealthStateManager {
         case RomiCore.LiftState.MODE_FIRE:
         case RomiCore.LiftState.MODE_EMERGENCY:
         case RomiCore.LiftState.MODE_UNKNOWN:
-          spoiltEquipment.push(lift + ` - ${liftModeToString(lifts[lift].current_mode)}`);
+          spoiltEquipment.push({
+            type: 'lift',
+            name: lift,
+            itemNameAndState: lift + ` - ${liftModeToString(lifts[lift].current_mode)}`,
+          });
           modeCounter.outOfOrder += 1;
           break;
       }
@@ -78,7 +82,7 @@ export default class RmfHealthStateManager {
 
   getDispenserSummary = (): ItemSummary => {
     let modeCounter = { operational: 0, outOfOrder: 0 };
-    const spoiltEquipment: string[] = [];
+    const spoiltEquipment: SpoiltItem[] = [];
     const dispensers = this.itemState.dispensers;
     const dispenserKeys = Object.keys(dispensers);
 
@@ -90,7 +94,11 @@ export default class RmfHealthStateManager {
           modeCounter.operational += 1;
           break;
         default:
-          spoiltEquipment.push(dispenser + '- Unknown');
+          spoiltEquipment.push({
+            type: 'dispenser',
+            name: dispenser,
+            itemNameAndState: dispenser + '- Unknown',
+          });
           modeCounter.outOfOrder += 1;
           break;
       }
@@ -105,7 +113,7 @@ export default class RmfHealthStateManager {
 
   getRobotSummary = (): ItemSummary => {
     let modeCounter = { operational: 0, outOfOrder: 0, charging: 0, idle: 0 };
-    const spoiltEquipment: string[] = [];
+    const spoiltEquipment: SpoiltItem[] = [];
     const fleets = this.itemState.robots;
     const fleetKeys = Object.keys(fleets);
 
@@ -114,7 +122,12 @@ export default class RmfHealthStateManager {
         switch (robot.mode.mode) {
           case RomiCore.RobotMode.MODE_ADAPTER_ERROR:
           case RomiCore.RobotMode.MODE_EMERGENCY:
-            spoiltEquipment.push(robot.name + ` - ${robotModeToString(robot.mode)}`);
+            spoiltEquipment.push({
+              type: 'robot',
+              name: robot.name,
+              fleet: fleet,
+              itemNameAndState: robot.name + ` - ${robotModeToString(robot.mode)}`,
+            });
             modeCounter.outOfOrder += 1;
             break;
           case RomiCore.RobotMode.MODE_CHARGING:

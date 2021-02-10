@@ -16,6 +16,7 @@ import {
 } from 'react-components';
 import { RmfHealthContext } from '../rmf-app';
 import { HealthStatus } from '../../managers/rmf-health-state-manager';
+import { DispenserResource } from '../../managers/resource-manager-dispensers';
 
 const debug = Debug('MainMenu');
 
@@ -44,11 +45,31 @@ export interface MainMenuProps {
   pushView(view: OmniPanelViewIndex): void;
   tasks: RomiCore.TaskSummary[];
   notifications: Notification[];
+  doors: RomiCore.Door[];
+  lifts: RomiCore.Lift[];
+  dispensers: Record<string, DispenserResource> | undefined;
+  robots: Record<string, RomiCore.FleetState>;
+  spoiltDoorClick?(door: RomiCore.Door): void;
+  spoiltLiftClick?(lift: RomiCore.Lift): void;
+  spoiltRobotClick?(fleet: string, robot: RomiCore.RobotState): void;
+  spoiltDispenserClick?(event: React.MouseEvent, guid: string): void;
 }
 
 export const MainMenu = React.memo((props: MainMenuProps) => {
   const { showTooltips } = React.useContext(TooltipsContext);
-  const { pushView, tasks, notifications } = props;
+  const {
+    pushView,
+    tasks,
+    notifications,
+    doors,
+    lifts,
+    dispensers,
+    robots,
+    spoiltDispenserClick,
+    spoiltDoorClick,
+    spoiltLiftClick,
+    spoiltRobotClick,
+  } = props;
   debug('render');
   const classes = useStyles();
 
@@ -93,16 +114,16 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
   };
 
   const getSpoiltEquipment = (healthStatus: HealthStatus): SpoiltItem[] => {
-    const itemHolder = [
+    return [
       ...healthStatus.door.spoiltItemList,
       ...healthStatus.lift.spoiltItemList,
       ...healthStatus.dispenser.spoiltItemList,
       ...healthStatus.robot.spoiltItemList,
     ];
-    return [...itemHolder.map((item) => ({ itemNameAndState: item }))];
   };
 
   const spoiltEquipmentList = getSpoiltEquipment(healthStatus);
+  const getDispenserGuidList = dispensers ? Object.keys(dispensers) : [];
 
   return (
     <React.Fragment>
@@ -113,7 +134,17 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
 
         {spoiltEquipmentList.length > 0 ? (
           <React.Fragment>
-            <SystemSummarySpoiltItems spoiltItems={spoiltEquipmentList} />
+            <SystemSummarySpoiltItems
+              spoiltItems={spoiltEquipmentList}
+              doors={doors}
+              lifts={lifts}
+              dispensers={getDispenserGuidList}
+              robots={robots}
+              spoiltDoorClick={spoiltDoorClick}
+              spoiltDispenserClick={spoiltDispenserClick}
+              spoiltLiftClick={spoiltLiftClick}
+              spoiltRobotClick={spoiltRobotClick}
+            />
             <Divider className={classes.divider} />
           </React.Fragment>
         ) : null}
