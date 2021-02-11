@@ -1,22 +1,13 @@
-import { createMount } from '@material-ui/core/test-utils';
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
-import { Redirect } from 'react-router';
+import { cleanup, render, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import FakeAuthenticator from '../../../mock/fake-authenticator';
 import { AuthenticatorContext, UserContext } from '../../auth/contexts';
 import Login from '../login';
 
-const mount = createMount();
-
 describe('Login page', () => {
-  test('renders correctly', () => {
-    const component = mount(
-      <BrowserRouter>
-        <Login />
-      </BrowserRouter>,
-    );
-    expect(component).toMatchSnapshot();
+  afterEach(() => {
+    cleanup();
   });
 
   test('renders without crashing', () => {
@@ -26,24 +17,6 @@ describe('Login page', () => {
       </BrowserRouter>,
     );
     root.unmount();
-  });
-
-  /*NOTE: Removing this test causes the subsequent 2 tests to fail
-  but running the tests individually (test.only) allows the tests to pass*/
-  test('redirects to dashboard when user is authenticated', () => {
-    window.history.replaceState(window.history.state, '');
-    const wrapper = mount(
-      <BrowserRouter>
-        <UserContext.Provider
-          value={{
-            username: 'test',
-          }}
-        >
-          <Login />
-        </UserContext.Provider>
-      </BrowserRouter>,
-    );
-    expect(wrapper.find(Redirect)).toBeTruthy();
   });
 
   test('redirects from login when user is authenticated', () => {
@@ -58,7 +31,6 @@ describe('Login page', () => {
         </UserContext.Provider>
       </BrowserRouter>,
     );
-    //screen.debug();
     expect(root.queryByText('Login with RMF')).toBeFalsy();
     root.unmount();
   });
@@ -74,7 +46,6 @@ describe('Login page', () => {
         </AuthenticatorContext.Provider>
       </BrowserRouter>,
     );
-    //screen.debug();
     const loginButton = root.getByRole('button', { name: /Login with RMF/i });
     fireEvent.click(loginButton);
     expect(spy).toHaveBeenCalledTimes(1);
