@@ -121,7 +121,6 @@ export default class RmfHealthStateManager {
       fleets[fleet].robots.forEach((robot) => {
         switch (robot.mode.mode) {
           case RomiCore.RobotMode.MODE_ADAPTER_ERROR:
-          case RomiCore.RobotMode.MODE_EMERGENCY:
             spoiltEquipment.push({
               type: 'robot',
               name: robot.name,
@@ -139,6 +138,7 @@ export default class RmfHealthStateManager {
           case RomiCore.RobotMode.MODE_MOVING:
           case RomiCore.RobotMode.MODE_PAUSED:
           case RomiCore.RobotMode.MODE_WAITING:
+          case RomiCore.RobotMode.MODE_EMERGENCY:
             modeCounter.operational += 1;
             break;
           case RomiCore.RobotMode.MODE_IDLE:
