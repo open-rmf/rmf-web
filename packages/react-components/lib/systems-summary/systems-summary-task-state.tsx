@@ -85,7 +85,7 @@ export const SystemSummaryTaskState = (props: SystemSummaryTaskStateProps): JSX.
       <Typography className={classes.header} variant="body1">
         Plans
       </Typography>
-      <div onClick={onClick}>
+      <div aria-label="panel" onClick={onClick}>
         <Grid className={classes.grid} spacing={2} container direction="row">
           <Grid item xs={3}>
             <Paper elevation={3} className={getStatusLabel('active')}>

@@ -44,7 +44,7 @@ test('it should trigger the spoilt item callback function when spoit item is cli
   const dispenserClick = jest.fn();
   const robotClick = jest.fn();
 
-  const { debug } = render(
+  render(
     <SystemSummarySpoiltItems
       doors={[door]}
       lifts={[lift]}
@@ -57,7 +57,7 @@ test('it should trigger the spoilt item callback function when spoit item is cli
       spoiltRobotClick={robotClick}
     />,
   );
-  debug();
+
   fireEvent.click(screen.getByText('door - state'));
   fireEvent.click(screen.getByText('lift - state'));
   fireEvent.click(screen.getByText('dispenser - state'));
