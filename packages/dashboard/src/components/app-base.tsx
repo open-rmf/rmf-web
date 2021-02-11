@@ -21,6 +21,10 @@ const useStyles = makeStyles({
     width: '100%',
     height: '100%',
   },
+  appContent: {
+    position: 'relative',
+    flexGrow: 1,
+  },
 });
 
 /**
@@ -104,7 +108,7 @@ export function AppBase(props: React.PropsWithChildren<{}>): JSX.Element | null 
           <AppControllerContext.Provider value={appController}>
             <Grid container direction="column" className={classes.appBase}>
               <AppBar />
-              <Grid style={{ flexGrow: 1 }}>
+              <Grid className={classes.appContent}>
                 <LoadingScreen {...loadingScreenProps}>{props.children}</LoadingScreen>
               </Grid>
               <NotificationBar {...notificationProps} />

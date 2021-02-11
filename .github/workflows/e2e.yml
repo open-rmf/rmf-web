@@ -61,7 +61,8 @@ jobs:
           npm run bootstrap -- packages/dashboard
           docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
           cd packages/dashboard
-          npm run sync:docker
+          docker pull docker.pkg.github.com/osrf/rmf-web/e2e
+          docker pull quay.io/keycloak/keycloak:11.0.0
           cd e2e
           npm ci
         working-directory: .

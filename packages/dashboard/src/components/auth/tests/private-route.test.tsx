@@ -1,11 +1,28 @@
 import { createMount } from '@material-ui/core/test-utils';
+import EventEmitter from 'eventemitter3';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
+import { act } from 'react-dom/test-utils';
 import { BrowserRouter, Router, Switch } from 'react-router-dom';
 import { LOGIN_ROUTE } from '../../../util/url';
-import { UserContext } from '../../auth/contexts';
+import { AuthenticatorContext, UserContext } from '../../auth/contexts';
 import Unauthorized from '../../error-pages/unauthorized';
+import Authenticator, { AuthenticatorEventType } from '../authenticator';
 import PrivateRoute from '../private-route';
+
+export default class FakeAuthenticator
+  extends EventEmitter<AuthenticatorEventType>
+  implements Authenticator {
+  async init(): Promise<void> {}
+
+  login(): Promise<never> {
+    throw new Error('Method not implemented.');
+  }
+
+  logout(): Promise<never> {
+    throw new Error('Method not implemented.');
+  }
+}
 
 const mount = createMount();
 
@@ -26,14 +43,18 @@ describe('PrivateRoute', () => {
     expect(component.html()).toMatchSnapshot();
   });
 
-  test('redirects when unauthenticated', () => {
-    mount(
-      <Router history={history}>
-        <Switch>
-          <PrivateRoute path="/private" exact />
-        </Switch>
-      </Router>,
-    );
+  test('redirects when unauthenticated', async () => {
+    await act(async () => {
+      mount(
+        <AuthenticatorContext.Provider value={new FakeAuthenticator()}>
+          <Router history={history}>
+            <Switch>
+              <PrivateRoute path="/private" exact />
+            </Switch>
+          </Router>
+        </AuthenticatorContext.Provider>,
+      );
+    });
     expect(history.location.pathname).toBe(LOGIN_ROUTE);
   });
 
