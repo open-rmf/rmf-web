@@ -1,5 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import DrawerHeader from '../drawer-header';
 
 describe('Drawer header', () => {
@@ -14,7 +15,6 @@ describe('Drawer header', () => {
     expect(root.getByText('Test')).toBeDefined();
     expect(root.getByTestId('backDrawerButton')).toBeDefined();
     expect(root.getByTestId('closeDrawerButton')).toBeDefined();
-    //expect(root).toMatchSnapshot();
   });
 
   test('Renders without back button if there is no handler', () => {
@@ -25,7 +25,9 @@ describe('Drawer header', () => {
   test('Click on close button fires an event correctly', () => {
     let clicked = false;
     const root = render(<DrawerHeader handleCloseButton={() => (clicked = true)} title={'Test'} />);
-    root.getByTestId('closeDrawerButton').click();
+    const closeButton = root.getByTestId('closeDrawerButton');
+    userEvent.click(closeButton);
+
     expect(clicked).toBe(true);
   });
 
@@ -38,7 +40,10 @@ describe('Drawer header', () => {
         title={'Test'}
       />,
     );
-    root.getByTestId('backDrawerButton').click();
+
+    const backButton = root.getByTestId('backDrawerButton');
+    userEvent.click(backButton);
+
     expect(clicked).toBe(true);
   });
 });

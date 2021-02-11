@@ -1,5 +1,6 @@
 import React from 'react';
-import { cleanup, render, fireEvent } from '@testing-library/react';
+import { cleanup, render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import FakeAuthenticator from '../../../mock/fake-authenticator';
 import { AuthenticatorContext, UserContext } from '../../auth/contexts';
@@ -31,8 +32,8 @@ describe('Login page', () => {
         </UserContext.Provider>
       </BrowserRouter>,
     );
+
     expect(root.queryByText('Login with RMF')).toBeFalsy();
-    root.unmount();
   });
 
   test('performs login when login button is clicked', () => {
@@ -47,7 +48,8 @@ describe('Login page', () => {
       </BrowserRouter>,
     );
     const loginButton = root.getByRole('button', { name: /Login with RMF/i });
-    fireEvent.click(loginButton);
+    userEvent.click(loginButton);
+
     expect(spy).toHaveBeenCalledTimes(1);
   });
 });

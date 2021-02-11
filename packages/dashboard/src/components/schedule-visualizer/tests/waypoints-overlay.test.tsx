@@ -24,7 +24,6 @@ test('Render waypoints correctly', async () => {
   );
 
   await waitFor(() => {
-    expect(root.queryAllByTestId('waypointMarker')).toBeTruthy();
     expect(root.getAllByTestId('waypointMarker').length).toBe(waypoints.length);
   });
 

@@ -2,7 +2,8 @@ import { createShallow } from '@material-ui/core/test-utils';
 import TreeItem from '@material-ui/lab/TreeItem';
 import TreeView from '@material-ui/lab/TreeView';
 import React from 'react';
-import { fireEvent, render } from '@testing-library/react';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import {
   NegotiationConflict,
   NegotiationStatusManager,
@@ -154,7 +155,7 @@ it('should empty all current negotiations when clear button is clicked', () => {
   const clear = root.getByRole('button', {
     name: /Clear/i,
   });
-  fireEvent.click(clear);
+  userEvent.click(clear);
   expect(root.queryByRole('treeitem')).toBeFalsy();
   root.unmount();
 });
@@ -175,7 +176,7 @@ it('should call setNegotiationTrajStore callback when reset-button is clicked', 
   const reset = root.getByRole('button', {
     name: /Reset/i,
   });
-  fireEvent.click(reset);
+  userEvent.click(reset);
 
   expect(setNegotiationTrajStore).toHaveBeenCalled();
   root.unmount();
@@ -197,11 +198,11 @@ it('should render all negotiations when restore button is clicked', () => {
   const clearButton = root.getByRole('button', {
     name: /Clear/i,
   });
-  fireEvent.click(clearButton);
+  userEvent.click(clearButton);
   const restoreButton = root.getByRole('button', {
     name: /Restore/i,
   });
-  fireEvent.click(restoreButton);
+  userEvent.click(restoreButton);
 
   expect(root.queryByRole('treeitem')).toBeTruthy();
   root.unmount();
