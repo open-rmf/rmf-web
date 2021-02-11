@@ -92,10 +92,14 @@ const systemSummaryBannerData: SystemSummaryBannerProps = {
 
 const spoiltEquipment: SystemSummarySpoiltItemsProps = {
   spoiltItems: [
-    { itemNameAndState: 'lift1 - fire' },
-    { itemNameAndState: 'door1 - unknown' },
-    { itemNameAndState: 'robot1 - unknown' },
+    { type: 'lift', name: 'lift1', itemNameAndState: 'lift1 - fire' },
+    { type: 'door', name: 'door1', itemNameAndState: 'door1 - unknown' },
+    { type: 'robot', name: 'robot1', itemNameAndState: 'robot1 - unknown' },
   ],
+  doors: [],
+  lifts: [],
+  dispensers: [],
+  robots: {},
 };
 
 export const SystemSummaryItemStateStory: Story = (args) => (
@@ -137,5 +141,12 @@ export const SystemSummaryBannerStory: Story = (args) => (
 );
 
 export const SystemSummarySpoiltItemStory: Story = (args) => (
-  <SystemSummarySpoiltItems spoiltItems={spoiltEquipment.spoiltItems} {...args} />
+  <SystemSummarySpoiltItems
+    doors={spoiltEquipment.doors}
+    lifts={spoiltEquipment.lifts}
+    dispensers={spoiltEquipment.dispensers}
+    robots={spoiltEquipment.robots}
+    spoiltItems={spoiltEquipment.spoiltItems}
+    {...args}
+  />
 );
