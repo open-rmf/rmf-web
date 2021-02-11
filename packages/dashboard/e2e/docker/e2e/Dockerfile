@@ -6,6 +6,3 @@ RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add
   && curl -sL https://deb.nodesource.com/setup_12.x | bash - \
   && apt-get update && apt-get install -y nodejs google-chrome-stable docker.io docker-compose \
   && rm -rf /var/lib/apt/lists/*
-
-VOLUME /var/lib/docker
-EXPOSE 2375 2376
