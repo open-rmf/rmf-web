@@ -1,5 +1,5 @@
 import { RobotResource, RobotResourceManager } from '../managers/resource-manager-robots';
-import fakeResources from '../mock/data/resources';
+import fakeResources from '../managers/__mocks__/resources';
 
 describe('The correct operation of the getAvailablePlacesPerFleet method of the RobotResourceManager class', () => {
   let manager: RobotResourceManager;

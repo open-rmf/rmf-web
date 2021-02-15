@@ -1,5 +1,5 @@
 import ResourceManager from '../managers/resource-manager';
-import fakeResources from '../mock/data/resources';
+import fakeResources from '../managers/__mocks__/resources';
 
 describe('Correct instantiation', () => {
   test('Instantiate robots and dispensers', () => {
