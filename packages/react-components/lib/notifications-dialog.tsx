@@ -20,7 +20,7 @@ export interface Notification {
   id: number;
   time: string;
   error: string;
-  severity: string;
+  severity: Severity;
 }
 
 export interface NotificationDialogProps {
@@ -29,13 +29,19 @@ export interface NotificationDialogProps {
   notifications: Notification[];
 }
 
+export enum Severity {
+  Low = 'Low',
+  Medium = 'Medium',
+  High = 'High',
+}
+
 interface SelectChangeEvent {
   name?: string | undefined;
   value: unknown;
 }
 
 interface SeverityIndicatoryProps {
-  severity: string;
+  severity: Severity;
   className?: string;
 }
 
@@ -102,13 +108,13 @@ const SeverityIndicator = (props: SeverityIndicatoryProps): JSX.Element => {
   const { severity, className } = props;
   const classes = severityStyles();
 
-  const getStatusLabelClass = (severity: string): string => {
+  const getStatusLabelClass = (severity: Severity): string => {
     switch (severity) {
-      case 'High':
+      case Severity.High:
         return classes.high;
-      case 'Medium':
+      case Severity.Medium:
         return classes.medium;
-      case 'Low':
+      case Severity.Low:
         return classes.low;
       default:
         return '';
@@ -133,15 +139,8 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
   const [rmfNotifications, setRmfNotifications] = React.useState(notifications);
 
   // list of alert level for filtering
-  const alertLevel = React.useMemo(() => {
-    const holder: string[] = [];
-    notifications.forEach((notification) => {
-      if (!holder.includes(notification.severity)) {
-        holder.push(notification.severity);
-      }
-    });
-    return [...holder, 'All'];
-  }, [notifications]);
+  // TODO - Check and change alert level once backend is up and confirm
+  const alertLevel = ['Low', 'Medium', 'High', 'All'];
 
   // handle filter change
   const handleChange = (e: React.ChangeEvent<SelectChangeEvent>) => {

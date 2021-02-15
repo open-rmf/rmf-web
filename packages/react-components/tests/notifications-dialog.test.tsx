@@ -1,12 +1,12 @@
 import React from 'react';
 import { NotificationsDialog } from '../lib';
 import { render, fireEvent, screen } from '@testing-library/react';
-import { Notification } from '../lib';
+import { Notification, Severity } from '../lib';
 
 const notifications: Notification[] = [
-  { id: 1, time: 'time', error: 'message', severity: 'High' },
-  { id: 2, time: 'time', error: 'message', severity: 'Medium' },
-  { id: 3, time: 'time', error: 'message', severity: 'Low' },
+  { id: 1, time: 'time', error: 'message', severity: Severity.High },
+  { id: 2, time: 'time', error: 'message', severity: Severity.Medium },
+  { id: 3, time: 'time', error: 'message', severity: Severity.Low },
 ];
 
 test('should call onClose when close button is clicked', () => {

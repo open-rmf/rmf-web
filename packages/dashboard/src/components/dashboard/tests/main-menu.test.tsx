@@ -84,7 +84,7 @@ it('renders without crashing', () => {
   ReactDOM.unmountComponentAtNode(div);
 });
 
-it('should count equipment are operational', () => {
+it('should count working equipment as operational', () => {
   const healthManager = new RmfHealthStateManager(mockItemState);
   const root = mount(
     <RmfHealthContext.Provider value={healthManager.getHealthStatus()}>
@@ -113,7 +113,7 @@ it('should count equipment are operational', () => {
   ).toEqual('1/1');
 });
 
-it('it should not count equipment as operational', () => {
+it('it should not count spoilt equipment as operational', () => {
   const mockSpoiltItem: ItemState = {
     doors: {
       testDoor: { ...mockItemState.doors.testDoor, current_mode: { value: 10 } },
@@ -170,7 +170,7 @@ it('it should not count equipment as operational', () => {
   ).toEqual('0/1');
 });
 
-it('should count robots that are charging and on idle', () => {
+it('should count robots that are charging and on idle as operational', () => {
   const idleAndChargingRobots = {
     ...mockItemState,
     robots: {

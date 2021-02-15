@@ -14,10 +14,12 @@ import {
 import { HealthStatus } from '../../managers/rmf-health-state-manager';
 import { ItemSummary } from 'react-components';
 
-const itemSummary: ItemSummary = {
-  item: '',
-  summary: { operational: 0, outOfOrder: 0 },
-  spoiltItemList: [],
+const itemSummary = (): ItemSummary => {
+  return {
+    item: '',
+    summary: { operational: 0, outOfOrder: 0 },
+    spoiltItemList: [],
+  };
 };
 
 export const DispenserStateContext = React.createContext<Record<string, RomiCore.DispenserState>>(
@@ -33,10 +35,10 @@ export const TasksContext = React.createContext<RomiCore.TaskSummary[]>([]);
 export const TransportContext = React.createContext<RomiCore.Transport | null>(null);
 export const BuildingMapContext = React.createContext<RomiCore.BuildingMap | null>(null);
 export const RmfHealthContext = React.createContext<HealthStatus>({
-  door: { ...itemSummary },
-  lift: { ...itemSummary },
-  dispenser: { ...itemSummary },
-  robot: { ...itemSummary },
+  door: itemSummary(),
+  lift: itemSummary(),
+  dispenser: itemSummary(),
+  robot: itemSummary(),
 });
 
 export interface RmfIngress {

@@ -7,10 +7,7 @@ import FleetManager from '../../managers/fleet-manager';
 import LiftStateManager from '../../managers/lift-state-manager';
 import { NegotiationStatusManager } from '../../managers/negotiation-status-manager';
 import TaskManager from '../../managers/task-manager';
-import RmfHealthStateManager, {
-  HealthStatus,
-  ItemState,
-} from '../../managers/rmf-health-state-manager';
+import RmfHealthStateManager from '../../managers/rmf-health-state-manager';
 import { AppControllerContext } from '../app-contexts';
 import {
   BuildingMapContext,
@@ -25,7 +22,6 @@ import {
   TasksContext,
   TransportContext,
 } from './contexts';
-import { ItemSummary } from 'react-components';
 
 enum ConnectionState {
   Connected,
@@ -237,37 +233,12 @@ function TaskContextsProvider(props: React.PropsWithChildren<{}>): JSX.Element {
 }
 
 function RmfHealthContextsProvider(props: React.PropsWithChildren<{}>): JSX.Element {
-  const doorStates = React.useContext(DoorStateContext);
-  const liftStates = React.useContext(LiftStateContext);
-  const dispenserStates = React.useContext(DispenserStateContext);
-  const robotStates = React.useContext(FleetStateContext);
-
-  const itemSummary: ItemSummary = {
-    item: '',
-    summary: { operational: 0, outOfOrder: 0 },
-    spoiltItemList: [],
-  };
-
-  const [healthState, SetHealthState] = React.useState<HealthStatus>({
-    door: { ...itemSummary },
-    lift: { ...itemSummary },
-    robot: { ...itemSummary },
-    dispenser: { ...itemSummary },
-  });
-
-  React.useEffect(() => {
-    const itemState: ItemState = {
-      doors: doorStates,
-      lifts: liftStates,
-      dispensers: dispenserStates,
-      robots: robotStates,
-    };
-    const healthManager = new RmfHealthStateManager(itemState);
-    SetHealthState(healthManager.getHealthStatus);
-  }, [doorStates, liftStates, dispenserStates, robotStates]);
+  const healthManager = new RmfHealthStateManager();
 
   return (
-    <RmfHealthContext.Provider value={healthState}>{props.children}</RmfHealthContext.Provider>
+    <RmfHealthContext.Provider value={healthManager.getHealthStatus()}>
+      {props.children}
+    </RmfHealthContext.Provider>
   );
 }
 
