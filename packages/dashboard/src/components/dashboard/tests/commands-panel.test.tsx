@@ -4,9 +4,9 @@ import React from 'react';
 import { DeliveryRequestForm, LoopRequestForm } from 'react-components';
 import ResourceManager from '../../../managers/resource-manager';
 import fakeResources from '../../../managers/__mocks__/resources';
-import fakeFleets from '../../../mock/data/fleets';
 import { ResourcesContext } from '../../app-contexts';
 import CommandsPanel from '../commands-panel';
+import fakeFleets from './fleets';
 
 const mount = createMount();
 
