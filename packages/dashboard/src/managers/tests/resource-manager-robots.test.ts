@@ -1,5 +1,5 @@
-import { RobotResource, RobotResourceManager } from '../managers/resource-manager-robots';
-import fakeResources from '../managers/__mocks__/resources';
+import { RobotResource, RobotResourceManager } from '../resource-manager-robots';
+import fakeResources from '../__mocks__/resources';
 
 describe('The correct operation of the getAvailablePlacesPerFleet method of the RobotResourceManager class', () => {
   let manager: RobotResourceManager;
@@ -33,7 +33,7 @@ describe('The correct operation of the getIconPath method of the RobotResourceMa
   let resourceData: Record<string, RobotResource>;
 
   beforeAll(() => {
-    resourceData = fakeResources().robots;
+    resourceData = fakeResources().robots!;
     manager = new RobotResourceManager(resourceData);
   });
 
