@@ -10,6 +10,8 @@ describe('PageNotFound', () => {
         <NotFoundPage />
       </BrowserRouter>,
     );
+    expect(root.queryByAltText('404 Not Found')).toBeTruthy();
+    expect(root.queryByText('Are you lost?')).toBeTruthy();
     root.unmount();
   });
 });

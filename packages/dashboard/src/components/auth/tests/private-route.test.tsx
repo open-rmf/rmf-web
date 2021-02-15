@@ -1,6 +1,6 @@
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
-import { cleanup, render } from '@testing-library/react';
+import { cleanup, render, waitFor, RenderResult } from '@testing-library/react';
 import { BrowserRouter, Router, Switch } from 'react-router-dom';
 import { LOGIN_ROUTE } from '../../../util/url';
 import { UserContext } from '../../auth/contexts';
@@ -52,12 +52,15 @@ describe('PrivateRoute', () => {
   });
 
   test('shows unauthorized page when noRedirectToLogin is true', async () => {
-    const root = render(
-      <BrowserRouter>
-        <PrivateRoute path="/private" exact noRedirectToLogin />
-      </BrowserRouter>,
-    );
-    expect(root.queryByText('Unauthorized')).toBeTruthy();
+    let root: RenderResult;
+    waitFor(() => {
+      root = render(
+        <BrowserRouter>
+          <PrivateRoute path="/private" exact noRedirectToLogin />
+        </BrowserRouter>,
+      );
+      expect(root.queryByText('Unauthorized')).toBeTruthy();
+    });
     expect(history.location.pathname).toBe('/private');
   });
 });

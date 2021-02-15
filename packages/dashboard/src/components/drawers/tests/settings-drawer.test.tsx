@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { loadSettings } from '../../../settings';
 import { SettingsContext } from '../../app-contexts';
 import SettingsDrawer from '../../drawers/settings-drawer';
@@ -40,7 +41,7 @@ describe('Settings Drawer', () => {
       </SettingsContext.Provider>,
     );
     const input = root.getByLabelText('None');
-    fireEvent.click(input);
+    userEvent.click(input);
     expect(onSettingsChange).toHaveBeenCalledTimes(1);
   });
 
@@ -56,7 +57,7 @@ describe('Settings Drawer', () => {
       </SettingsContext.Provider>,
     );
     const closeButton = root.getByRole('button');
-    fireEvent.click(closeButton);
+    userEvent.click(closeButton);
     expect(handleCloseButton).toHaveBeenCalledTimes(1);
   });
 });
