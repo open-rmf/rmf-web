@@ -46,7 +46,7 @@ function TransportContextsProvider(props: React.PropsWithChildren<{}>): JSX.Elem
         setConnectionState(ConnectionState.Disconnected);
       }
     })();
-  }, []);
+  }, [appConfig]);
 
   React.useEffect(() => {
     switch (connectionState) {
@@ -254,7 +254,7 @@ function RmfIngressProvider(props: React.PropsWithChildren<{}>): JSX.Element {
         trajectoryManager,
       }));
     })();
-  }, []);
+  }, [appConfig]);
 
   return (
     <RmfIngressContext.Provider value={rmfIngress}>{props.children}</RmfIngressContext.Provider>
