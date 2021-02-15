@@ -1,5 +1,4 @@
 import { createMount } from '@material-ui/core/test-utils';
-import EventEmitter from 'eventemitter3';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
@@ -7,22 +6,8 @@ import { BrowserRouter, Router, Switch } from 'react-router-dom';
 import { LOGIN_ROUTE } from '../../../util/url';
 import { AuthenticatorContext, UserContext } from '../../auth/contexts';
 import Unauthorized from '../../error-pages/unauthorized';
-import Authenticator, { AuthenticatorEventType } from '../authenticator';
 import PrivateRoute from '../private-route';
-
-export default class FakeAuthenticator
-  extends EventEmitter<AuthenticatorEventType>
-  implements Authenticator {
-  async init(): Promise<void> {}
-
-  login(): Promise<never> {
-    throw new Error('Method not implemented.');
-  }
-
-  logout(): Promise<never> {
-    throw new Error('Method not implemented.');
-  }
-}
+import FakeAuthenticator from '../__mocks__/authenticator';
 
 const mount = createMount();
 

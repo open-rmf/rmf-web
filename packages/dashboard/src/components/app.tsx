@@ -3,10 +3,12 @@ import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import 'typeface-roboto';
 import appConfig from '../app-config';
+import ResourceManager from '../managers/resource-manager';
 import { DASHBOARD_ROUTE, LOGIN_ROUTE } from '../util/url';
 import { AppBase } from './app-base';
+import { ResourcesContext, AppConfigContext } from './app-contexts';
 import './app.css';
-import { UserContext } from './auth/contexts';
+import { AuthenticatorContext, UserContext } from './auth/contexts';
 import Login from './auth/login';
 import PrivateRoute from './auth/private-route';
 import { User } from './auth/user';
@@ -54,31 +56,55 @@ export default function App(): JSX.Element | null {
     };
   }, [authenticator, user]);
 
-  return authInitialized ? (
-    <UserContext.Provider value={user}>
-      <ThemeProvider theme={theme}>
-        <BrowserRouter>
-          <Switch>
-            <Route exact path={LOGIN_ROUTE}>
-              <Login />
-            </Route>
-            {/* we need this because we don't want to re-mount `AppIntrinsics` when just moving
-          from one route to another, but we want to unmount it when going "outside" the app. */}
-            <PrivateRoute exact path={appRoutes}>
-              <AppIntrinsics>
+  const resourceManager = React.useRef<ResourceManager | undefined>(undefined);
+  const [appReady, setAppReady] = React.useState(false);
+
+  /**
+   * If resource loading gets too long we should add a loading screen.
+   */
+  React.useEffect(() => {
+    (async () => {
+      const appResources = await appConfig.appResourcesFactory();
+      if (!appResources) {
+        setAppReady(true);
+      } else {
+        resourceManager.current = appResources;
+        setAppReady(true);
+      }
+    })();
+  }, []);
+
+  return authInitialized && appReady ? (
+    <AppConfigContext.Provider value={appConfig}>
+      <ResourcesContext.Provider value={resourceManager.current}>
+        <AuthenticatorContext.Provider value={authenticator}>
+          <UserContext.Provider value={user}>
+            <ThemeProvider theme={theme}>
+              <BrowserRouter>
                 <Switch>
-                  <PrivateRoute exact path={DASHBOARD_ROUTE}>
-                    <Dashboard />
+                  <Route exact path={LOGIN_ROUTE}>
+                    <Login />
+                  </Route>
+                  {/* we need this because we don't want to re-mount `AppIntrinsics` when just moving
+                  from one route to another, but we want to unmount it when going "outside" the app. */}
+                  <PrivateRoute exact path={appRoutes}>
+                    <AppIntrinsics>
+                      <Switch>
+                        <PrivateRoute exact path={DASHBOARD_ROUTE}>
+                          <Dashboard />
+                        </PrivateRoute>
+                      </Switch>
+                    </AppIntrinsics>
                   </PrivateRoute>
+                  <Route>
+                    <NotFoundPage />
+                  </Route>
                 </Switch>
-              </AppIntrinsics>
-            </PrivateRoute>
-            <Route>
-              <NotFoundPage />
-            </Route>
-          </Switch>
-        </BrowserRouter>
-      </ThemeProvider>
-    </UserContext.Provider>
+              </BrowserRouter>
+            </ThemeProvider>
+          </UserContext.Provider>
+        </AuthenticatorContext.Provider>
+      </ResourcesContext.Provider>
+    </AppConfigContext.Provider>
   ) : null;
 }
