@@ -29,6 +29,11 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash
 nvm install 12
 ```
 
+A recent version of pipenv is needed, the system packaged version is too old.
+```bash
+pip3 install pipenv
+```
+
 Install rmf
 ```bash
 sudo apt update && sudo apt install curl gnupg2 lsb-release
