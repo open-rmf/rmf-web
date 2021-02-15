@@ -81,7 +81,7 @@ password: admin
 
 Alternatively, if you want to connect to an existing rmf deployment, set the following environment variables:
 
-* _PUBLIC_URL_: Url that the app is hosted. Defaults to '/dashboard'.
+* _PUBLIC_URL_: Url that the app is hosted. Defaults to '/'.
 * _REACT_APP_TRAJECTORY_SERVER_: **Required** URL to the trajectory server.
 * _REACT_APP_ROS2_BRIDGE_SERVER_: **Required** URL to the ros2 bridge server.
 * _REACT_APP_AUTH_CONFIG_: **Required** A JSON object containing the following
