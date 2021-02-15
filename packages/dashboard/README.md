@@ -107,18 +107,6 @@ npm run storybook
 
 This is ideal if you are working on individual isolated components.
 
-### Mock Data **(not recommended)**
-
-**This does not emulated robots, tasks, trajectories, deliveries, charging etc, running the dashboard with mock data is no longer a good "preview" of the actual dashboard.**
-
-If you are just working on the frontend, you can launch _RoMi-dashboard_ with a set of mock data, this does not require any rmf deployments, simply run
-
-```bash
-npm run start:mock
-```
-
-To bring up a web server using mock data.
-
 ## Building for production
 
 Firstly, set up environment variables according to [this](#External-Server), you may also want to install a resource pack as described [here](#Optional-Import-external-resources.). Then build a production version of _RoMi-dashboard_ with
