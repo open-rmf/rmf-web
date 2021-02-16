@@ -97,7 +97,7 @@
       "!src/components/auth/authenticator.ts",
       "!src/managers/**",
       "!**/stories/**",
-      "!**/mock/**"
+      "!**/tests/**"
     ],
     "snapshotSerializers": [
       "enzyme-to-json/serializer"
