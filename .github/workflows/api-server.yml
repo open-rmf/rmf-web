@@ -1,6 +1,8 @@
 name: api-server
 on:
   pull_request:
+    paths:
+      - 'packages/api-server/**'
   push:
     branches:
       - main

@@ -1,6 +1,8 @@
 name: react-components
 on:
   pull_request:
+    paths:
+      - 'packages/react-components/**'
   push:
     branches:
       - main
