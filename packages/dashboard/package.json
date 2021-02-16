@@ -96,6 +96,7 @@
       "!src/leaflet/**",
       "!src/components/auth/authenticator.ts",
       "!src/managers/**",
+      "!src/components/rmf-app/**",
       "!**/stories/**",
       "!**/tests/**"
     ],
