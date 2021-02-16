@@ -3,16 +3,10 @@
  *   * starts with a '/'
  *   * never ends with '/', unless it is '/'
  *   * does not have repeated forward slashes
- * @param path should only contain the path part of the url, i.e. no schema, hostname, search, fragment etc.
- * e.g.
- *
- *   "/foo/bar" ok
- *
- *   "http://example.com/foo/bar" bad
- *
- *   "/foo/bar?query=baz" bad
+ * @param pathOrUrl if an url is provided, returns only the normalized path portion of the url
  */
-export function normalizePath(path: string) {
+export function normalizePath(pathOrUrl: string) {
+  let path = pathOrUrl.startsWith('http') ? new URL(pathOrUrl).pathname : pathOrUrl;
   while (path.indexOf('//') !== -1) {
     path = path.replace(/\/\//g, '/');
   }
@@ -25,13 +19,7 @@ export function normalizePath(path: string) {
   return path;
 }
 
-export const BASE_PATH = (() => {
-  let path = process.env.PUBLIC_URL || '/';
-  if (path.startsWith('http')) {
-    path = new URL(path).pathname;
-  }
-  return normalizePath(path);
-})();
+export const BASE_PATH = normalizePath(process.env.PUBLIC_URL || '/');
 
 /**
  * Resolves a relative to the normalized full path.
