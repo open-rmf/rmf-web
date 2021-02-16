@@ -34,6 +34,7 @@ jobs:
       - name: bootstrap
         run: |
           . /opt/rmf/setup.bash
+          pip3 install pipenv
           npm config set unsafe-perm
           npm run bootstrap -- packages/dashboard
         working-directory: .

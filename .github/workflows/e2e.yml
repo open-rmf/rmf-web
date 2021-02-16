@@ -57,6 +57,7 @@ jobs:
       - name: bootstrap
         run: |
           . /opt/rmf/setup.bash
+          pip3 install pipenv
           npm config set unsafe-perm
           npm run bootstrap -- packages/dashboard
           docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}

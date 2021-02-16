@@ -33,6 +33,7 @@ jobs:
       - name: tests
         run: |
           . /opt/rmf/setup.bash
+          pip3 install pipenv
           npm run lint
           npm run test:cov
           python3 -m pipenv run python -m coverage xml
