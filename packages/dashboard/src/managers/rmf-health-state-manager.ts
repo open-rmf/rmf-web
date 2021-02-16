@@ -11,7 +11,7 @@ export default class RmfHealthStateManager {
   getDoorSummary = (): ItemSummary => {
     return {
       item: 'Door',
-      summary: { operational: 2, outOfOrder: 1 },
+      itemSummary: { operational: 2, outOfOrder: 1 },
       spoiltItemList: [
         { name: 'hardware_door', type: 'door', itemNameAndState: 'hardware_door - unknown' },
       ],
@@ -21,7 +21,7 @@ export default class RmfHealthStateManager {
   getLiftSummary = (): ItemSummary => {
     return {
       item: 'Lift',
-      summary: { operational: 2, outOfOrder: 0 },
+      itemSummary: { operational: 2, outOfOrder: 0 },
       spoiltItemList: [],
     };
   };
@@ -29,7 +29,7 @@ export default class RmfHealthStateManager {
   getDispenserSummary = (): ItemSummary => {
     return {
       item: 'Dispensers',
-      summary: { operational: 1, outOfOrder: 0 },
+      itemSummary: { operational: 1, outOfOrder: 0 },
       spoiltItemList: [],
     };
   };
@@ -37,7 +37,7 @@ export default class RmfHealthStateManager {
   getRobotSummary = (): ItemSummary => {
     return {
       item: 'Robots',
-      summary: {
+      robotSummary: {
         operational: 3,
         outOfOrder: 0,
         charging: 2,

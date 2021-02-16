@@ -104,13 +104,28 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
   const healthStatus = React.useContext(RmfHealthContext);
 
   const bannerIsError = (healthStatus: HealthStatus): boolean => {
-    return (
-      healthStatus.door.summary.outOfOrder +
-        healthStatus.lift.summary.outOfOrder +
-        healthStatus.dispenser.summary.outOfOrder +
-        healthStatus.robot.summary.outOfOrder !==
-      0
-    );
+    let doorCount = 0;
+    let liftCount = 0;
+    let dispenserCount = 0;
+    let robotCount = 0;
+
+    if (healthStatus.robot.robotSummary) {
+      robotCount = healthStatus.robot.robotSummary.outOfOrder;
+    }
+
+    if (healthStatus.door.itemSummary) {
+      doorCount = healthStatus.door.itemSummary.outOfOrder;
+    }
+
+    if (healthStatus.lift.itemSummary) {
+      liftCount = healthStatus.lift.itemSummary.outOfOrder;
+    }
+
+    if (healthStatus.dispenser.itemSummary) {
+      dispenserCount = healthStatus.dispenser.itemSummary.outOfOrder;
+    }
+
+    return doorCount + liftCount + dispenserCount + robotCount !== 0;
   };
 
   const getSpoiltEquipment = (healthStatus: HealthStatus): SpoiltItem[] => {

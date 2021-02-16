@@ -10,6 +10,7 @@ import {
   SystemSummaryBannerProps,
   SystemSummarySpoiltItems,
   SystemSummarySpoiltItemsProps,
+  Severity,
 } from '../lib';
 import { Meta, Story } from '@storybook/react';
 
@@ -21,7 +22,7 @@ export default {
 const itemStateDataDoor: SystemSummaryItemStateProps = {
   itemSummary: {
     item: 'Doors',
-    summary: { operational: 1, outOfOrder: 1 },
+    itemSummary: { operational: 1, outOfOrder: 1 },
     spoiltItemList: [],
   },
   onClick: () => {
@@ -32,7 +33,7 @@ const itemStateDataDoor: SystemSummaryItemStateProps = {
 const itemStateDataRobot: SystemSummaryItemStateProps = {
   itemSummary: {
     item: 'Robots',
-    summary: { operational: 2, outOfOrder: 0, idle: 1, charging: 1 },
+    robotSummary: { operational: 2, outOfOrder: 0, idle: 1, charging: 1 },
     spoiltItemList: [],
   },
   onClick: () => {
@@ -42,7 +43,7 @@ const itemStateDataRobot: SystemSummaryItemStateProps = {
 
 const systemSummaryAlert: SystemSummaryAlertProps = {
   notifications: [
-    { id: 1, severity: 'High', time: 'January 29th 2021, 8:20:50', error: 'hello world' },
+    { id: 1, severity: Severity.High, time: 'January 29th 2021, 8:20:50', error: 'hello world' },
   ],
 };
 

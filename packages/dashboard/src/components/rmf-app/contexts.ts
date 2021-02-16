@@ -17,7 +17,7 @@ import { ItemSummary } from 'react-components';
 const itemSummary = (): ItemSummary => {
   return {
     item: '',
-    summary: { operational: 0, outOfOrder: 0 },
+    itemSummary: { operational: 0, outOfOrder: 0 },
     spoiltItemList: [],
   };
 };

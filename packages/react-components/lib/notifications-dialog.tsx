@@ -142,6 +142,10 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
   // TODO - Check and change alert level once backend is up and confirm
   const alertLevel = ['Low', 'Medium', 'High', 'All'];
 
+  React.useEffect(() => {
+    setRmfNotifications(notifications);
+  }, [notifications]);
+
   // handle filter change
   const handleChange = (e: React.ChangeEvent<SelectChangeEvent>) => {
     const val = e.target.value as string;

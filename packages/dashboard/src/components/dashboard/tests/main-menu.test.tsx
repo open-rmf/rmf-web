@@ -1,73 +1,46 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import MainMenu from '../main-menu';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { createMount } from '@material-ui/core/test-utils';
-import RmfHealthStateManager, { ItemState } from '../../../managers/rmf-health-state-manager';
+import RmfHealthStateManager from '../../../managers/rmf-health-state-manager';
 import { RmfHealthContext } from '../../rmf-app/contexts';
 
 const mount = createMount();
 
-const mockItemState: ItemState = {
-  doors: {
-    testDoor: {
-      door_name: 'testDoor',
-      door_time: { sec: 0, nanosec: 0 },
-      current_mode: { value: RomiCore.DoorMode.MODE_OPEN },
-    },
+const healthManager = new RmfHealthStateManager();
+let healthStatus = healthManager.getHealthStatus();
+healthStatus = {
+  door: {
+    item: 'Door',
+    itemSummary: { operational: 1, outOfOrder: 0 },
+    spoiltItemList: [],
   },
-  dispensers: {
-    testDispenser: {
-      time: { sec: 0, nanosec: 0 },
-      guid: 'testDispenser',
-      mode: RomiCore.DispenserState.IDLE,
-      request_guid_queue: [],
-      seconds_remaining: 0,
-    },
+  lift: {
+    item: 'Lift',
+    itemSummary: { operational: 1, outOfOrder: 0 },
+    spoiltItemList: [],
   },
-  lifts: {
-    testLift: {
-      lift_name: 'testLift',
-      lift_time: { sec: 0, nanosec: 0 },
-      available_floors: [],
-      current_floor: '',
-      destination_floor: '',
-      door_state: RomiCore.DoorMode.MODE_OPEN,
-      motion_state: RomiCore.LiftState.MOTION_STOPPED,
-      available_modes: new Uint8Array(),
-      current_mode: RomiCore.LiftState.DOOR_OPEN,
-      session_id: '',
-    },
+  dispenser: {
+    item: 'Dispensers',
+    itemSummary: { operational: 1, outOfOrder: 0 },
+    spoiltItemList: [],
   },
-  robots: {
-    fleet: {
-      name: 'fleet',
-      robots: [
-        {
-          name: 'testRobot',
-          model: 'model',
-          task_id: '',
-          battery_percent: 20,
-          mode: { mode: RomiCore.RobotMode.MODE_MOVING },
-          location: {
-            level_name: 'L1',
-            x: 0,
-            y: 0,
-            yaw: 0,
-            t: { sec: 0, nanosec: 0 },
-          },
-          path: [],
-        },
-      ],
+  robot: {
+    item: 'Robots',
+    robotSummary: {
+      operational: 1,
+      outOfOrder: 0,
+      charging: 0,
+      idle: 0,
     },
+    spoiltItemList: [],
   },
 };
 
 it('renders without crashing', () => {
   const div = document.createElement('div');
-  const healthManager = new RmfHealthStateManager(mockItemState);
   ReactDOM.render(
-    <RmfHealthContext.Provider value={healthManager.getHealthStatus()}>
+    <RmfHealthContext.Provider value={healthStatus}>
       <MainMenu
         pushView={jest.fn()}
         tasks={[]}
@@ -85,9 +58,8 @@ it('renders without crashing', () => {
 });
 
 it('should count working equipment as operational', () => {
-  const healthManager = new RmfHealthStateManager(mockItemState);
   const root = mount(
-    <RmfHealthContext.Provider value={healthManager.getHealthStatus()}>
+    <RmfHealthContext.Provider value={healthStatus}>
       <MainMenu
         pushView={jest.fn()}
         tasks={[]}
@@ -114,37 +86,31 @@ it('should count working equipment as operational', () => {
 });
 
 it('it should not count spoilt equipment as operational', () => {
-  const mockSpoiltItem: ItemState = {
-    doors: {
-      testDoor: { ...mockItemState.doors.testDoor, current_mode: { value: 10 } },
+  healthStatus = {
+    door: {
+      ...healthStatus.door,
+      itemSummary: { operational: 0, outOfOrder: 1 },
     },
-    dispensers: {
-      testDispenser: {
-        ...mockItemState.dispensers.testDispenser,
-        mode: 10,
-      },
+    lift: {
+      ...healthStatus.lift,
+      itemSummary: { operational: 0, outOfOrder: 1 },
     },
-    lifts: {
-      testLift: {
-        ...mockItemState.lifts.testLift,
-        current_mode: RomiCore.LiftState.MODE_FIRE,
-      },
+    dispenser: {
+      ...healthStatus.dispenser,
+      itemSummary: { operational: 0, outOfOrder: 1 },
     },
-    robots: {
-      fleet: {
-        name: 'fleet',
-        robots: [
-          {
-            ...mockItemState.robots.fleet.robots[0],
-            mode: { mode: RomiCore.RobotMode.MODE_ADAPTER_ERROR },
-          },
-        ],
+    robot: {
+      ...healthStatus.robot,
+      robotSummary: {
+        operational: 0,
+        outOfOrder: 1,
+        charging: 0,
+        idle: 0,
       },
     },
   };
-  const healthManager = new RmfHealthStateManager(mockSpoiltItem);
   const root = mount(
-    <RmfHealthContext.Provider value={healthManager.getHealthStatus()}>
+    <RmfHealthContext.Provider value={healthStatus}>
       <MainMenu
         pushView={jest.fn()}
         tasks={[]}
@@ -171,27 +137,20 @@ it('it should not count spoilt equipment as operational', () => {
 });
 
 it('should count robots that are charging and on idle as operational', () => {
-  const idleAndChargingRobots = {
-    ...mockItemState,
-    robots: {
-      fleet: {
-        name: 'fleet',
-        robots: [
-          {
-            ...mockItemState.robots.fleet.robots[0],
-            mode: { mode: RomiCore.RobotMode.MODE_CHARGING },
-          },
-          {
-            ...mockItemState.robots.fleet.robots[0],
-            mode: { mode: RomiCore.RobotMode.MODE_IDLE },
-          },
-        ],
+  healthStatus = {
+    ...healthStatus,
+    robot: {
+      ...healthStatus.robot,
+      robotSummary: {
+        operational: 1,
+        outOfOrder: 0,
+        charging: 1,
+        idle: 1,
       },
     },
   };
-  const healthManager = new RmfHealthStateManager(idleAndChargingRobots);
   const root = mount(
-    <RmfHealthContext.Provider value={healthManager.getHealthStatus()}>
+    <RmfHealthContext.Provider value={healthStatus}>
       <MainMenu
         pushView={jest.fn()}
         tasks={[]}
@@ -203,6 +162,9 @@ it('should count robots that are charging and on idle as operational', () => {
       />
     </RmfHealthContext.Provider>,
   );
+  expect(
+    root.find('SystemSummaryItemState').find('.MuiPaper-root').find('h6').at(3).text(),
+  ).toEqual('1/1');
   expect(
     root.find('SystemSummaryItemState').find('.MuiPaper-root').find('h6').at(4).text(),
   ).toEqual('1');

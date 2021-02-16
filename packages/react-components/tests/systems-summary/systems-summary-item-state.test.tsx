@@ -1,5 +1,5 @@
 import React from 'react';
-import { SystemSummaryItemState } from '../../lib';
+import { SystemSummaryItemState, ItemSummary } from '../../lib';
 import { itemSummary } from './test.utils';
 import { render } from '@testing-library/react';
 
@@ -8,9 +8,9 @@ test('smoke test', () => {
 });
 
 test('idle and charging panels to be rendered when idle and charging fields are present', () => {
-  const itemSummaryOptionalFields = {
+  const itemSummaryOptionalFields: ItemSummary = {
     ...itemSummary,
-    summary: { ...itemSummary.summary, idle: 0, charging: 0 },
+    robotSummary: { operational: 0, outOfOrder: 0, idle: 0, charging: 0 },
     item: 'Robots',
   };
   const root = render(

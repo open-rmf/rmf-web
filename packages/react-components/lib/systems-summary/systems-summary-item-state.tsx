@@ -6,13 +6,17 @@ import { SpoiltItem } from './index';
 export interface ItemSummaryState {
   operational: number;
   outOfOrder: number;
-  idle?: number;
-  charging?: number;
+}
+
+export interface RobotSummaryState extends ItemSummaryState {
+  idle: number;
+  charging: number;
 }
 
 export interface ItemSummary {
   item: string;
-  summary: ItemSummaryState;
+  itemSummary?: ItemSummaryState;
+  robotSummary?: RobotSummaryState;
   spoiltItemList: SpoiltItem[];
 }
 
@@ -57,9 +61,16 @@ export const SystemSummaryItemState = (props: SystemSummaryItemStateProps): JSX.
   const classes = useStyles();
   const { itemSummary, onClick } = props;
 
-  const totalItem: number = itemSummary.summary.operational + itemSummary.summary.outOfOrder;
+  let totalItem = 0;
+  let operationalItem = 0;
 
-  const operationalItem: number = itemSummary.summary.operational;
+  if (itemSummary.itemSummary) {
+    totalItem = itemSummary.itemSummary.operational + itemSummary.itemSummary.outOfOrder;
+    operationalItem = itemSummary.itemSummary.operational;
+  } else if (itemSummary.robotSummary) {
+    totalItem = itemSummary.robotSummary.operational + itemSummary.robotSummary.outOfOrder;
+    operationalItem = itemSummary.robotSummary.operational;
+  }
 
   const getOperationalStatusLabel = (total: number, operational: number): string => {
     if (total === operational) {
@@ -81,62 +92,56 @@ export const SystemSummaryItemState = (props: SystemSummaryItemStateProps): JSX.
   };
 
   return (
-    <React.Fragment>
-      <Grid container spacing={1} direction="column">
-        <Grid item className={classes.headerGrid}>
-          <Typography variant="h6">{itemSummary.item}</Typography>
-          <Button className={classes.button} onClick={onClick}>
-            <Typography variant="h6">Details </Typography>
-            <NavigateNextIcon />
-          </Button>
-        </Grid>
-        <Grid item>
-          <Grid container justify="flex-start" direction="row">
-            <Grid item xs={12}>
-              <Paper
-                className={getOperationalStatusLabel(totalItem, operationalItem)}
-                elevation={3}
-              >
-                <Typography noWrap align="center" variant="h6">
-                  {`${operationalItem}/${totalItem}`}
-                </Typography>
-                <Typography align="center" variant="body1">
-                  Operational
-                </Typography>
-              </Paper>
-            </Grid>
+    <Grid container spacing={1} direction="column">
+      <Grid item className={classes.headerGrid}>
+        <Typography variant="h6">{itemSummary.item}</Typography>
+        <Button className={classes.button} onClick={onClick}>
+          <Typography variant="h6">Details </Typography>
+          <NavigateNextIcon />
+        </Button>
+      </Grid>
+      <Grid item>
+        <Grid container justify="flex-start" direction="row">
+          <Grid item xs={12}>
+            <Paper className={getOperationalStatusLabel(totalItem, operationalItem)} elevation={3}>
+              <Typography noWrap align="center" variant="h6">
+                {`${operationalItem}/${totalItem}`}
+              </Typography>
+              <Typography align="center" variant="body1">
+                Operational
+              </Typography>
+            </Paper>
           </Grid>
         </Grid>
-        <Grid className={classes.robotGrid} item>
-          <Grid container justify="flex-start" direction="row" spacing={2}>
-            {itemSummary.summary.idle !== undefined ? (
+      </Grid>
+      <Grid className={classes.robotGrid} item>
+        <Grid container justify="flex-start" direction="row" spacing={2}>
+          {itemSummary.robotSummary ? (
+            <React.Fragment>
               <Grid item xs={6}>
                 <Paper className={getOtherStatusLabel('idle')} elevation={3}>
                   <Typography noWrap align="center" variant="h6">
-                    {itemSummary.summary.idle}
+                    {itemSummary.robotSummary.idle}
                   </Typography>
                   <Typography align="center" variant="body1">
                     Idle
                   </Typography>
                 </Paper>
               </Grid>
-            ) : null}
-
-            {itemSummary.summary.charging !== undefined ? (
               <Grid item xs={6}>
                 <Paper className={getOtherStatusLabel('charging')} elevation={3}>
                   <Typography noWrap align="center" variant="h6">
-                    {itemSummary.summary.charging}
+                    {itemSummary.robotSummary.charging}
                   </Typography>
                   <Typography align="center" variant="body1">
                     Charging
                   </Typography>
                 </Paper>
               </Grid>
-            ) : null}
-          </Grid>
+            </React.Fragment>
+          ) : null}
         </Grid>
       </Grid>
-    </React.Fragment>
+    </Grid>
   );
 };

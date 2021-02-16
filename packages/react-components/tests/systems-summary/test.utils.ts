@@ -1,14 +1,14 @@
-import { ItemSummary, Notification } from '../../lib';
+import { ItemSummary, Notification, Severity } from '../../lib';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 
 export const itemSummary: ItemSummary = {
   item: 'Door',
-  summary: { operational: 0, outOfOrder: 0 },
+  itemSummary: { operational: 0, outOfOrder: 0 },
   spoiltItemList: [],
 };
 
 export const notifications: Notification[] = [
-  { id: 1, time: 'time', error: 'message', severity: 'High' },
+  { id: 1, time: 'time', error: 'message', severity: Severity.High },
 ];
 
 export const tasks: RomiCore.TaskSummary[] = [

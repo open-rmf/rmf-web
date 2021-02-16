@@ -5,13 +5,18 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 export interface SpoiltItem {
   type: string;
   name: string;
+  // a short message about the item name and state in the following format:
+  // name - state
   itemNameAndState: string;
   errorMessage?: string;
-  fleet?: string;
+}
+
+export interface SpoiltRobot extends SpoiltItem {
+  fleet: string;
 }
 
 export interface SystemSummarySpoiltItemsProps {
-  spoiltItems: SpoiltItem[];
+  spoiltItems: (SpoiltItem | SpoiltRobot)[];
   doors: RomiCore.Door[];
   lifts: RomiCore.Lift[];
   dispensers: string[];
@@ -61,9 +66,10 @@ export const SystemSummarySpoiltItems = (props: SystemSummarySpoiltItemsProps): 
 
     // handle robot
     if (spoiltItem.type === 'robot') {
+      const spoiltRobot = spoiltItem as SpoiltRobot;
       Object.keys(robots).forEach((fleet) => {
         robots[fleet].robots.forEach((robot) => {
-          if (spoiltItem.fleet === fleet && spoiltItem.name === robot.name && spoiltRobotClick) {
+          if (spoiltRobot.fleet === fleet && spoiltRobot.name === robot.name && spoiltRobotClick) {
             spoiltRobotClick(fleet, robot);
           }
         });
