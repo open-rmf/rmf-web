@@ -31,6 +31,8 @@ const useStyles = makeStyles((theme) => ({
   },
   slideIn: {
     position: 'relative',
+    height: '100%',
+    overflow: 'auto',
   },
   slideOut: {
     position: 'absolute',

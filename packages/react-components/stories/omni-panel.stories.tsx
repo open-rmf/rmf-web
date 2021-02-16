@@ -7,16 +7,17 @@ export default {
   title: 'Omni Panel',
 };
 
-const SimpleOmniPanel = (): JSX.Element => {
+interface SimpleOmniPanelProps {
+  style?: React.CSSProperties;
+}
+
+const SimpleOmniPanel = (props: SimpleOmniPanelProps): JSX.Element => {
   const [stack, stackDispatch] = useStackNavigator([0], 0);
 
   return (
     <OmniPanel
       stack={stack}
-      style={{
-        width: 500,
-        height: 200,
-      }}
+      style={props.style}
       onBack={() => stackDispatch.pop()}
       onHome={() => stackDispatch.home()}
     >
@@ -76,6 +77,10 @@ const SimpleOmniPanel = (): JSX.Element => {
   );
 };
 
-export const SimplePanel: Story = (args) => {
+export const SimplePanelFixedSize: Story = (args) => {
+  return <SimpleOmniPanel style={{ width: 500, height: 200 }} {...args} />;
+};
+
+export const SimplePanelAutoSize: Story = (args) => {
   return <SimpleOmniPanel {...args} />;
 };
