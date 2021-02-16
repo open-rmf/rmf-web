@@ -1,8 +1,6 @@
 name: ros2-bridge
 on:
   pull_request:
-    paths:
-      - 'packages/react-components/**'
   push:
     branches:
       - main

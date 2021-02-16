@@ -1,8 +1,6 @@
 name: dashboard
 on:
   pull_request:
-    paths:
-      - 'packages/dashboard/**'
   push:
     branches:
       - main
