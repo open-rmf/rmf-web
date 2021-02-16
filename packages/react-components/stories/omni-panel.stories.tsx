@@ -16,9 +16,6 @@ const SimpleOmniPanel = (): JSX.Element => {
       style={{
         width: 500,
         height: 200,
-        border: '1px solid black',
-        borderTopLeftRadius: 16,
-        borderTopRightRadius: 16,
       }}
       onBack={() => stackDispatch.pop()}
       onHome={() => stackDispatch.home()}
