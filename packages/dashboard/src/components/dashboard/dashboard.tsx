@@ -124,7 +124,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
 
   const { currentView, showOmniPanel, stackNavigator } = dashboardState;
 
-  const { setCurrentView, setShowOmniPanel, resetView, popView, pushView } = dashboardDispatch;
+  const { setShowOmniPanel, resetView, popView, pushView } = dashboardDispatch;
 
   const mapFloorSort = React.useCallback(
     (levels: RomiCore.Level[]) =>
@@ -157,8 +157,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     clearSpotlights();
     setNegotiationTrajStore({});
     resetView();
-    setCurrentView(stackNavigator.top());
-  }, [resetView, setCurrentView, stackNavigator]);
+  }, [resetView]);
 
   const doorStates = React.useContext(DoorStateContext);
   const doors = React.useMemo(
@@ -283,6 +282,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
             buildingMap={buildingMap}
             mapFloorSort={mapFloorSort}
             negotiationTrajStore={negotiationTrajStore}
+            showTrajectories={!(currentView === OmniPanelViewIndex.Negotiations)}
             onDoorClick={handleDoorMarkerClick}
             onLiftClick={handleLiftMarkerClick}
             onRobotClick={handleRobotMarkerClick}
