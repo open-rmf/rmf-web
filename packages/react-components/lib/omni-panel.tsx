@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export interface OmniPanelProps extends React.HTMLProps<HTMLDivElement> {
-  view: number | string;
+  stack: (number | string)[];
   children: React.ReactElement<OmniPanelViewProps>[] | React.ReactElement<OmniPanelViewProps>;
   variant?: 'backHome' | 'backHomeClose';
   timeout?: number;
@@ -50,7 +50,7 @@ export interface OmniPanelProps extends React.HTMLProps<HTMLDivElement> {
 
 export const OmniPanel = (props: OmniPanelProps): JSX.Element => {
   const {
-    view,
+    stack,
     children,
     variant,
     timeout,
@@ -67,7 +67,7 @@ export const OmniPanel = (props: OmniPanelProps): JSX.Element => {
     <Slide
       key={child.props.viewId}
       direction="left"
-      in={view === child.props.viewId}
+      in={stack[stack.length - 1] === child.props.viewId}
       appear={false}
       timeout={timeout}
       mountOnEnter={mountOnEnter}
