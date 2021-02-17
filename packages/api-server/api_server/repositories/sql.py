@@ -23,7 +23,7 @@ class SqlRepository:
             },
             door_name=door_state.door_name,
         )
-        self.logger.debug(f'written door_state ("{door_state.door_name}") to database')
+        self.logger.info(f'written door_state ("{door_state.door_name}") to database')
 
     async def read_door_states(self) -> Dict[str, RmfDoorState]:
         all_states = await DoorState.all()
