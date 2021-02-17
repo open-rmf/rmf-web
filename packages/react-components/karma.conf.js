@@ -8,10 +8,10 @@ module.exports = (config) => {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine'],
+    frameworks: ['jasmine', 'webpack'],
 
     // list of files / patterns to load in the browser
-    files: ['tests/**/*.+(ts|tsx)'],
+    files: ['tests/**/*spec.+(ts|tsx)'],
 
     // list of files / patterns to exclude
     exclude: ['**/*.d.ts', '**/*.stories.ts'],
@@ -21,7 +21,7 @@ module.exports = (config) => {
     preprocessors: {
       // add webpack as preprocessor
       'lib/**/**.+(ts|tsx)': ['sourcemap', 'coverage'],
-      'tests/**/*.+(ts|tsx)': ['webpack', 'sourcemap'],
+      'tests/**/*spec.+(ts|tsx)': ['webpack', 'sourcemap'],
     },
 
     webpack: testWebpackConfig,
