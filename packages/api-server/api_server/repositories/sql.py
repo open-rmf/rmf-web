@@ -1,7 +1,9 @@
+import json
 import logging
 from typing import Dict
 
 from rmf_door_msgs.msg import DoorState as RmfDoorState
+from rosidl_runtime_py.convert import message_to_ordereddict
 
 from ..models import DoorState
 
@@ -23,7 +25,7 @@ class SqlRepository:
             },
             door_name=door_state.door_name,
         )
-        self.logger.info(f'written door_state ("{door_state.door_name}") to database')
+        self.logger.info(json.dumps(message_to_ordereddict(rmf_door_state)))
 
     async def read_door_states(self) -> Dict[str, RmfDoorState]:
         all_states = await DoorState.all()
