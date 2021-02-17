@@ -1,12 +1,13 @@
 import React from 'react';
 import { SystemSummarySpoiltItems } from '../../lib';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { door, lift, fleet } from './test.utils';
 
 test('should render the list of spoilt items', () => {
   const spoiltItems = [
-    { type: 'door', name: 'door', itemNameAndState: 'item - state' },
-    { type: 'robot', name: 'robot', itemNameAndState: 'item - state', errorMessage: 'error' },
+    { type: 'door', name: 'door', itemNameAndState: 'door - state' },
+    { type: 'robot', name: 'robot', itemNameAndState: 'robot - state', errorMessage: 'error' },
   ];
   let errorMessageCount = 0;
   spoiltItems.forEach((item) => {
@@ -22,7 +23,8 @@ test('should render the list of spoilt items', () => {
     />,
   );
 
-  expect(screen.getAllByText('item - state').length).toEqual(spoiltItems.length);
+  expect(screen.getAllByText('door - state').length).toEqual(1);
+  expect(screen.getAllByText('robot - state').length).toEqual(1);
   expect(screen.getAllByText('Error - error').length).toEqual(errorMessageCount);
 });
 
@@ -58,10 +60,10 @@ test('it should trigger the spoilt item callback function when spoit item is cli
     />,
   );
 
-  fireEvent.click(screen.getByText('door - state'));
-  fireEvent.click(screen.getByText('lift - state'));
-  fireEvent.click(screen.getByText('dispenser - state'));
-  fireEvent.click(screen.getByText('robot - state'));
+  userEvent.click(screen.getByText('door - state'));
+  userEvent.click(screen.getByText('lift - state'));
+  userEvent.click(screen.getByText('dispenser - state'));
+  userEvent.click(screen.getByText('robot - state'));
 
   expect(doorClick).toBeCalled();
   expect(liftClick).toBeCalled();

@@ -1,6 +1,7 @@
 import React from 'react';
 import { NotificationsDialog } from '../lib';
-import { render, fireEvent, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { Notification, Severity } from '../lib';
 
 const notifications: Notification[] = [
@@ -18,7 +19,7 @@ test('should call onClose when close button is clicked', () => {
       notifications={notifications}
     />,
   );
-  fireEvent.click(screen.getByText(/CLOSE/i));
+  userEvent.click(screen.getByText(/CLOSE/i));
   expect(mockOnClose).toHaveBeenCalled();
 });
 
@@ -31,7 +32,7 @@ test('should call onClose when close icon at the top is clicked', () => {
       notifications={notifications}
     />,
   );
-  fireEvent.click(screen.getByLabelText(/close/i));
+  userEvent.click(screen.getByLabelText(/close/i));
   expect(mockOnClose).toHaveBeenCalled();
 });
 
@@ -44,9 +45,9 @@ test('should not render other severity levels when a particular level is selecte
       notifications={notifications}
     />,
   );
-  fireEvent.change(screen.getByLabelText(/filter-input/i).childNodes[1], {
-    target: { value: 'High' },
-  });
+
+  userEvent.paste(screen.getByDisplayValue(''), 'High');
+
   expect(screen.queryByText('Medium')).toBeNull();
   expect(screen.queryByText('Low')).toBeNull();
 });

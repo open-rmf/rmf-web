@@ -1,6 +1,7 @@
 import React from 'react';
 import { SystemSummaryTaskState } from '../../lib';
-import { screen, render, fireEvent } from '@testing-library/react';
+import { screen, render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { tasks } from './test.utils';
 
 test('expect all different task states to be calculated and rendered', () => {
@@ -12,6 +13,6 @@ test('expect all different task states to be calculated and rendered', () => {
 test('should call onClick when panel is clicked', () => {
   const onClick = jest.fn();
   render(<SystemSummaryTaskState tasks={tasks} onClick={onClick} />);
-  fireEvent.click(screen.getByLabelText('panel'));
+  userEvent.click(screen.getByLabelText('panel'));
   expect(onClick).toBeCalled();
 });

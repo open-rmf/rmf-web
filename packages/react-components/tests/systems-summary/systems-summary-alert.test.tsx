@@ -1,11 +1,12 @@
 import React from 'react';
 import { SystemSummaryAlert } from '../../lib';
-import { render, fireEvent, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { notifications } from './test.utils';
 
 test('button should be disabled when there are no notifications', () => {
   const root = render(<SystemSummaryAlert notifications={[]} />);
-  fireEvent.click(screen.getByRole('button'));
+  userEvent.click(screen.getByRole('button'));
 
   expect(root.container.querySelector('button')?.disabled).toEqual(true);
   // check that notification dialog box is not rendered via Filter text
