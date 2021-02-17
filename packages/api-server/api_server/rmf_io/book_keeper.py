@@ -51,6 +51,6 @@ class RmfBookKeeper:
         self.rmf.door_states.pipe(
             grouped_sample(lambda x: x.door_name, RmfBookKeeper.FrequencyStates),
         ).subscribe(
-            lambda x: loop.create_task(self.repo.write_door_state(x)),
+            lambda x: loop.create_task(self.repo.update_door_state(x)),
             scheduler=scheduler,
         )

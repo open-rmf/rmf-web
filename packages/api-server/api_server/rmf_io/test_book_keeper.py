@@ -26,18 +26,18 @@ class TestRmfBookKeeperDoorStates(unittest.IsolatedAsyncioTestCase):
         self.rmf.door_states.on_next(make_door_state("test_door"))
         self.scheduler.advance_by(0.9)
         # shouldn't write before t = 1
-        self.repo.write_door_state.assert_not_called()
+        self.repo.update_door_state.assert_not_called()
         self.scheduler.advance_by(0.1)
         await asyncio.sleep(0)
-        self.repo.write_door_state.assert_awaited_once()
+        self.repo.update_door_state.assert_awaited_once()
 
         self.rmf.door_states.on_next(make_door_state("test_door"))
         self.scheduler.advance_by(0.9)
         # shouldn't write again before t = 2
-        self.repo.write_door_state.assert_awaited_once()
+        self.repo.update_door_state.assert_awaited_once()
         self.scheduler.advance_by(0.1)
         await asyncio.sleep(0)
-        self.assertEqual(self.repo.write_door_state.await_count, 2)
+        self.assertEqual(self.repo.update_door_state.await_count, 2)
 
     async def test_write_latest(self):
         """
@@ -66,7 +66,7 @@ class TestRmfBookKeeperDoorStates(unittest.IsolatedAsyncioTestCase):
                 return state.current_mode.value == DoorMode.MODE_OPEN
 
         await asyncio.sleep(0)
-        self.repo.write_door_state.assert_awaited_once_with(MatchState())
+        self.repo.update_door_state.assert_awaited_once_with(MatchState())
 
     async def test_write_latest_multiple(self):
         """
@@ -107,5 +107,5 @@ class TestRmfBookKeeperDoorStates(unittest.IsolatedAsyncioTestCase):
             call(MatchState("test_door", DoorMode.MODE_OPEN)),
             call(MatchState("test_door2", DoorMode.MODE_CLOSED)),
         ]
-        self.assertEqual(self.repo.write_door_state.await_count, 2)
-        self.repo.write_door_state.assert_has_awaits(calls)
+        self.assertEqual(self.repo.update_door_state.await_count, 2)
+        self.repo.update_door_state.assert_has_awaits(calls)

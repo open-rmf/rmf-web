@@ -9,16 +9,17 @@ from .door_mode import DoorModeEnum
 
 class DoorState(Model):
     # TODO: foreign key with Door
-    door_name = fields.CharField(255)
+    door_name = fields.CharField(255, pk=True)
     current_mode = fields.IntEnumField(DoorModeEnum)
     door_time = fields.DatetimeField()
 
-    class Meta:
-        unique_together = ("door_name", "door_time")
-        indexes = (("door_name", "door_time"),)
-
     @staticmethod
     def from_rmf(rmf_door_state: RmfDoorState):
+        """
+        NOTE: The object returned is not loaded from database, so some of the internal
+        fields used by tortoise-orm is not set, running some operations like `save` are
+        undefined behaviors.
+        """
         return DoorState(
             door_name=rmf_door_state.door_name,
             current_mode=rmf_door_state.current_mode.value,

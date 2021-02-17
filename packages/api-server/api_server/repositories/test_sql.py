@@ -26,13 +26,13 @@ class TestSqlRepository(unittest.IsolatedAsyncioTestCase):
             current_mode=RmfDoorMode(value=RmfDoorMode.MODE_CLOSED),
             door_time=RosTime(sec=0, nanosec=0),
         )
-        await self.repo.write_door_state(door_state)
-        await self.repo.write_door_state(door_state2)
+        await self.repo.update_door_state(door_state)
+        await self.repo.update_door_state(door_state2)
         door_state.door_time.sec = 1
-        await self.repo.write_door_state(door_state)
+        await self.repo.update_door_state(door_state)
         door_state2.current_mode.value = RmfDoorMode.MODE_OPEN
         door_state2.door_time.sec = 1
-        await self.repo.write_door_state(door_state2)
+        await self.repo.update_door_state(door_state2)
 
     async def asyncTearDown(self):
         await Tortoise.close_connections()
