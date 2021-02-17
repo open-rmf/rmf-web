@@ -2,25 +2,35 @@ import React from 'react';
 import { makeStyles, Typography, Paper } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 
-export interface SpoiltItem {
-  type: string;
-  name: string;
+interface SpoiltItem {
+  errorMessage?: string;
   // a short message about the item name and state in the following format:
   // name - state
   itemNameAndState: string;
-  errorMessage?: string;
+}
+
+export interface SpoiltDoor extends SpoiltItem {
+  door: RomiCore.Door;
+}
+
+export interface SpoiltLift extends SpoiltItem {
+  lift: RomiCore.Lift;
+}
+
+export interface SpoiltDispenser extends SpoiltItem {
+  dispenser: string;
 }
 
 export interface SpoiltRobot extends SpoiltItem {
   fleet: string;
+  robot: RomiCore.RobotState;
 }
 
 export interface SystemSummarySpoiltItemsProps {
-  spoiltItems: (SpoiltItem | SpoiltRobot)[];
-  doors: RomiCore.Door[];
-  lifts: RomiCore.Lift[];
-  dispensers: string[];
-  robots: Record<string, RomiCore.FleetState>;
+  doors: SpoiltDoor[];
+  lifts: SpoiltLift[];
+  dispensers: SpoiltDispenser[];
+  robots: SpoiltRobot[];
   spoiltDoorClick?(door: RomiCore.Door): void;
   spoiltLiftClick?(lift: RomiCore.Lift): void;
   spoiltRobotClick?(fleet: string, robot: RomiCore.RobotState): void;
@@ -41,7 +51,6 @@ const useStyles = makeStyles((theme) => ({
 export const SystemSummarySpoiltItems = (props: SystemSummarySpoiltItemsProps): JSX.Element => {
   const classes = useStyles();
   const {
-    spoiltItems,
     doors,
     lifts,
     robots,
@@ -52,47 +61,19 @@ export const SystemSummarySpoiltItems = (props: SystemSummarySpoiltItemsProps): 
     spoiltRobotClick,
   } = props;
 
-  const handlesSpoiltItemClick = (i: number, e?: React.MouseEvent) => {
-    const spoiltItem = spoiltItems[i];
-
-    // handle lift
-    if (spoiltItem.type === 'lift') {
-      lifts.forEach((lift) => {
-        if (lift.name === spoiltItem.name && spoiltLiftClick) {
-          spoiltLiftClick(lift);
-        }
-      });
-    }
-
-    // handle robot
-    if (spoiltItem.type === 'robot') {
-      const spoiltRobot = spoiltItem as SpoiltRobot;
-      Object.keys(robots).forEach((fleet) => {
-        robots[fleet].robots.forEach((robot) => {
-          if (spoiltRobot.fleet === fleet && spoiltRobot.name === robot.name && spoiltRobotClick) {
-            spoiltRobotClick(fleet, robot);
-          }
-        });
-      });
-    }
-
-    // handle door
-    if (spoiltItem.type === 'door') {
-      doors.forEach((door) => {
-        if (door.name === spoiltItem.name && spoiltDoorClick) {
-          spoiltDoorClick(door);
-        }
-      });
-    }
-
-    // handle dispenser
-    if (spoiltItem.type === 'dispenser') {
-      dispensers.forEach((dispenser) => {
-        if (spoiltItem.name === dispenser && spoiltDispenserClick && e) {
-          spoiltDispenserClick(e, dispenser);
-        }
-      });
-    }
+  const spoiltItemDetails = (nameAndState: string, error?: string): JSX.Element => {
+    return (
+      <React.Fragment>
+        <Typography color="error" variant="body1">
+          {nameAndState}
+        </Typography>
+        {error !== undefined ? (
+          <Typography color="error" variant="body1">
+            Error - {error}
+          </Typography>
+        ) : null}
+      </React.Fragment>
+    );
   };
 
   return (
@@ -100,25 +81,62 @@ export const SystemSummarySpoiltItems = (props: SystemSummarySpoiltItemsProps): 
       <Typography color="error" variant="h6">
         Equipment Out Of Order
       </Typography>
-      {spoiltItems.map((item, i) => {
-        return (
-          <Paper
-            onClick={(e) => handlesSpoiltItemClick(i, e)}
-            className={classes.paper}
-            key={item.itemNameAndState}
-            elevation={3}
-          >
-            <Typography color="error" variant="body1">
-              {item.itemNameAndState}
-            </Typography>
-            {item.errorMessage !== undefined ? (
-              <Typography color="error" variant="body1">
-                Error - {item.errorMessage}
-              </Typography>
-            ) : null}
-          </Paper>
-        );
-      })}
+      {doors.length > 0
+        ? doors.map((item) => {
+            return (
+              <Paper
+                onClick={() => spoiltDoorClick && spoiltDoorClick(item.door)}
+                className={classes.paper}
+                key={item.itemNameAndState}
+                elevation={3}
+              >
+                {spoiltItemDetails(item.itemNameAndState)}
+              </Paper>
+            );
+          })
+        : null}
+      {lifts.length > 0
+        ? lifts.map((item) => {
+            return (
+              <Paper
+                onClick={() => spoiltLiftClick && spoiltLiftClick(item.lift)}
+                className={classes.paper}
+                key={item.itemNameAndState}
+                elevation={3}
+              >
+                {spoiltItemDetails(item.itemNameAndState)}
+              </Paper>
+            );
+          })
+        : null}
+      {dispensers.length > 0
+        ? dispensers.map((item) => {
+            return (
+              <Paper
+                onClick={(e) => spoiltDispenserClick && spoiltDispenserClick(e, item.dispenser)}
+                className={classes.paper}
+                key={item.itemNameAndState}
+                elevation={3}
+              >
+                {spoiltItemDetails(item.itemNameAndState)}
+              </Paper>
+            );
+          })
+        : null}
+      {robots.length > 0
+        ? robots.map((item) => {
+            return (
+              <Paper
+                onClick={() => spoiltRobotClick && spoiltRobotClick(item.fleet, item.robot)}
+                className={classes.paper}
+                key={item.itemNameAndState}
+                elevation={3}
+              >
+                {spoiltItemDetails(item.itemNameAndState)}
+              </Paper>
+            );
+          })
+        : null}
     </React.Fragment>
   );
 };

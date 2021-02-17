@@ -23,7 +23,6 @@ const itemStateDataDoor: SystemSummaryItemStateProps = {
   itemSummary: {
     item: 'Doors',
     itemSummary: { operational: 1, outOfOrder: 1 },
-    spoiltItemList: [],
   },
   onClick: () => {
     /**filler */
@@ -34,7 +33,6 @@ const itemStateDataRobot: SystemSummaryItemStateProps = {
   itemSummary: {
     item: 'Robots',
     robotSummary: { operational: 2, outOfOrder: 0, idle: 1, charging: 1 },
-    spoiltItemList: [],
   },
   onClick: () => {
     /**filler */
@@ -92,15 +90,24 @@ const systemSummaryBannerData: SystemSummaryBannerProps = {
 };
 
 const spoiltEquipment: SystemSummarySpoiltItemsProps = {
-  spoiltItems: [
-    { type: 'lift', name: 'lift1', itemNameAndState: 'lift1 - fire' },
-    { type: 'door', name: 'door1', itemNameAndState: 'door1 - unknown' },
-    { type: 'robot', name: 'robot1', itemNameAndState: 'robot1 - unknown' },
+  doors: [
+    {
+      door: {
+        name: 'hardware_door',
+        v1_x: 4.9,
+        v1_y: -4,
+        v2_x: 4.4,
+        v2_y: -5,
+        door_type: 1,
+        motion_range: 1.571,
+        motion_direction: -1,
+      },
+      itemNameAndState: 'door - unknown',
+    },
   ],
-  doors: [],
   lifts: [],
   dispensers: [],
-  robots: {},
+  robots: [],
 };
 
 export const SystemSummaryItemStateStory: Story = (args) => (
@@ -147,7 +154,6 @@ export const SystemSummarySpoiltItemStory: Story = (args) => (
     lifts={spoiltEquipment.lifts}
     dispensers={spoiltEquipment.dispensers}
     robots={spoiltEquipment.robots}
-    spoiltItems={spoiltEquipment.spoiltItems}
     {...args}
   />
 );

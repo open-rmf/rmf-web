@@ -305,10 +305,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
               tasks={tasks}
               // TODO - Link it to notifications once backend is up
               notifications={[]}
-              doors={doors}
-              lifts={lifts}
-              dispensers={dispensers}
-              robots={fleetStates}
               spoiltDoorClick={handleDoorMarkerClick}
               spoiltLiftClick={handleLiftMarkerClick}
               spoiltRobotClick={handleRobotMarkerClick}

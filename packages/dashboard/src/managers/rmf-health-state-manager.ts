@@ -1,40 +1,52 @@
-import { ItemSummary } from 'react-components';
+import { DoorSummary, LiftSummary, DispenserSummary, RobotSummary } from 'react-components';
 
 export interface HealthStatus {
-  door: ItemSummary;
-  lift: ItemSummary;
-  dispenser: ItemSummary;
-  robot: ItemSummary;
+  door: DoorSummary;
+  lift: LiftSummary;
+  dispenser: DispenserSummary;
+  robot: RobotSummary;
 }
 
 export default class RmfHealthStateManager {
-  getDoorSummary = (): ItemSummary => {
+  getDoorSummary = (): DoorSummary => {
     return {
       item: 'Door',
       itemSummary: { operational: 2, outOfOrder: 1 },
-      spoiltItemList: [
-        { name: 'hardware_door', type: 'door', itemNameAndState: 'hardware_door - unknown' },
+      spoiltDoors: [
+        {
+          itemNameAndState: 'hardware_door - unknown',
+          door: {
+            name: 'hardware_door',
+            v1_x: 4.9,
+            v1_y: -4,
+            v2_x: 4.4,
+            v2_y: -5,
+            door_type: 1,
+            motion_range: 1.571,
+            motion_direction: -1,
+          },
+        },
       ],
     };
   };
 
-  getLiftSummary = (): ItemSummary => {
+  getLiftSummary = (): LiftSummary => {
     return {
       item: 'Lift',
       itemSummary: { operational: 2, outOfOrder: 0 },
-      spoiltItemList: [],
+      spoiltLifts: [],
     };
   };
 
-  getDispenserSummary = (): ItemSummary => {
+  getDispenserSummary = (): DispenserSummary => {
     return {
       item: 'Dispensers',
       itemSummary: { operational: 1, outOfOrder: 0 },
-      spoiltItemList: [],
+      spoiltDispensers: [],
     };
   };
 
-  getRobotSummary = (): ItemSummary => {
+  getRobotSummary = (): RobotSummary => {
     return {
       item: 'Robots',
       robotSummary: {
@@ -43,7 +55,7 @@ export default class RmfHealthStateManager {
         charging: 2,
         idle: 1,
       },
-      spoiltItemList: [],
+      spoiltRobots: [],
     };
   };
 

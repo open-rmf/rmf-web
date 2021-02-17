@@ -12,11 +12,9 @@ import {
   SystemSummaryTaskState,
   SystemSummaryBanner,
   SystemSummarySpoiltItems,
-  SpoiltItem,
 } from 'react-components';
 import { RmfHealthContext } from '../rmf-app';
 import { HealthStatus } from '../../managers/rmf-health-state-manager';
-import { DispenserResource } from '../../managers/resource-manager-dispensers';
 
 const debug = Debug('MainMenu');
 
@@ -45,10 +43,6 @@ export interface MainMenuProps {
   pushView(view: OmniPanelViewIndex): void;
   tasks: RomiCore.TaskSummary[];
   notifications: Notification[];
-  doors: RomiCore.Door[];
-  lifts: RomiCore.Lift[];
-  dispensers: Record<string, DispenserResource> | undefined;
-  robots: Record<string, RomiCore.FleetState>;
   spoiltDoorClick?(door: RomiCore.Door): void;
   spoiltLiftClick?(lift: RomiCore.Lift): void;
   spoiltRobotClick?(fleet: string, robot: RomiCore.RobotState): void;
@@ -61,10 +55,6 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
     pushView,
     tasks,
     notifications,
-    doors,
-    lifts,
-    dispensers,
-    robots,
     spoiltDispenserClick,
     spoiltDoorClick,
     spoiltLiftClick,
@@ -101,8 +91,6 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
     pushView(OmniPanelViewIndex.Tasks);
   }, [pushView]);
 
-  const healthStatus = React.useContext(RmfHealthContext);
-
   const bannerIsError = (healthStatus: HealthStatus): boolean => {
     let doorCount = 0;
     let liftCount = 0;
@@ -128,17 +116,7 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
     return doorCount + liftCount + dispenserCount + robotCount !== 0;
   };
 
-  const getSpoiltEquipment = (healthStatus: HealthStatus): SpoiltItem[] => {
-    return [
-      ...healthStatus.door.spoiltItemList,
-      ...healthStatus.lift.spoiltItemList,
-      ...healthStatus.dispenser.spoiltItemList,
-      ...healthStatus.robot.spoiltItemList,
-    ];
-  };
-
-  const spoiltEquipmentList = getSpoiltEquipment(healthStatus);
-  const getDispenserGuidList = dispensers ? Object.keys(dispensers) : [];
+  const healthStatus = React.useContext(RmfHealthContext);
 
   return (
     <React.Fragment>
@@ -147,22 +125,17 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
         <SystemSummaryAlert notifications={notifications} />
         <Divider className={classes.divider} />
 
-        {spoiltEquipmentList.length > 0 ? (
-          <React.Fragment>
-            <SystemSummarySpoiltItems
-              spoiltItems={spoiltEquipmentList}
-              doors={doors}
-              lifts={lifts}
-              dispensers={getDispenserGuidList}
-              robots={robots}
-              spoiltDoorClick={spoiltDoorClick}
-              spoiltDispenserClick={spoiltDispenserClick}
-              spoiltLiftClick={spoiltLiftClick}
-              spoiltRobotClick={spoiltRobotClick}
-            />
-            <Divider className={classes.divider} />
-          </React.Fragment>
-        ) : null}
+        <SystemSummarySpoiltItems
+          doors={healthStatus.door.spoiltDoors}
+          lifts={healthStatus.lift.spoiltLifts}
+          dispensers={healthStatus.dispenser.spoiltDispensers}
+          robots={healthStatus.robot.spoiltRobots}
+          spoiltDoorClick={spoiltDoorClick}
+          spoiltDispenserClick={spoiltDispenserClick}
+          spoiltLiftClick={spoiltLiftClick}
+          spoiltRobotClick={spoiltRobotClick}
+        />
+        <Divider className={classes.divider} />
 
         <Typography variant="h5" className={classes.systemSummaryHeader}>
           Systems Summary

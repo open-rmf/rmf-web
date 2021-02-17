@@ -4,7 +4,6 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 export const itemSummary: ItemSummary = {
   item: 'Door',
   itemSummary: { operational: 0, outOfOrder: 0 },
-  spoiltItemList: [],
 };
 
 export const notifications: Notification[] = [

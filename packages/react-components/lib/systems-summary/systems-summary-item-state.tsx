@@ -1,7 +1,7 @@
 import React from 'react';
 import { makeStyles, Typography, Grid, Paper, Button } from '@material-ui/core';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import { SpoiltItem } from './index';
+import { SpoiltRobot, SpoiltDispenser, SpoiltDoor, SpoiltLift } from './index';
 
 export interface ItemSummaryState {
   operational: number;
@@ -17,7 +17,23 @@ export interface ItemSummary {
   item: string;
   itemSummary?: ItemSummaryState;
   robotSummary?: RobotSummaryState;
-  spoiltItemList: SpoiltItem[];
+}
+
+export interface DoorSummary extends ItemSummary {
+  spoiltDoors: SpoiltDoor[];
+}
+
+export interface LiftSummary extends ItemSummary {
+  spoiltLifts: SpoiltLift[];
+}
+
+export interface DispenserSummary extends ItemSummary {
+  // list of dispenser names
+  spoiltDispensers: SpoiltDispenser[];
+}
+
+export interface RobotSummary extends ItemSummary {
+  spoiltRobots: SpoiltRobot[];
 }
 
 export interface SystemSummaryItemStateProps {

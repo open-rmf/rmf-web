@@ -51,3 +51,30 @@ test('should not render other severity levels when a particular level is selecte
   expect(screen.queryByText('Medium')).toBeNull();
   expect(screen.queryByText('Low')).toBeNull();
 });
+
+test('should update rmfNotifications state when props are updated', () => {
+  const mockOnClose = jest.fn();
+  // add one more notification
+  const updatedNotifications: Notification[] = [
+    ...notifications,
+    { id: 4, time: 'time', error: 'message', severity: Severity.Low },
+  ];
+
+  const { rerender } = render(
+    <NotificationsDialog
+      onClose={mockOnClose}
+      showNotificationsDialog={true}
+      notifications={notifications}
+    />,
+  );
+  expect(screen.getAllByText('message').length).toEqual(3);
+
+  rerender(
+    <NotificationsDialog
+      onClose={mockOnClose}
+      showNotificationsDialog={true}
+      notifications={updatedNotifications}
+    />,
+  );
+  expect(screen.getAllByText('message').length).toEqual(4);
+});

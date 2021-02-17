@@ -13,17 +13,17 @@ healthStatus = {
   door: {
     item: 'Door',
     itemSummary: { operational: 1, outOfOrder: 0 },
-    spoiltItemList: [],
+    spoiltDoors: [],
   },
   lift: {
     item: 'Lift',
     itemSummary: { operational: 1, outOfOrder: 0 },
-    spoiltItemList: [],
+    spoiltLifts: [],
   },
   dispenser: {
     item: 'Dispensers',
     itemSummary: { operational: 1, outOfOrder: 0 },
-    spoiltItemList: [],
+    spoiltDispensers: [],
   },
   robot: {
     item: 'Robots',
@@ -33,7 +33,7 @@ healthStatus = {
       charging: 0,
       idle: 0,
     },
-    spoiltItemList: [],
+    spoiltRobots: [],
   },
 };
 
@@ -41,16 +41,7 @@ it('renders without crashing', () => {
   const div = document.createElement('div');
   ReactDOM.render(
     <RmfHealthContext.Provider value={healthStatus}>
-      <MainMenu
-        pushView={jest.fn()}
-        tasks={[]}
-        notifications={[]}
-        doors={[]}
-        dispensers={{}}
-        lifts={[]}
-        robots={{}}
-      />
-      ,
+      <MainMenu pushView={jest.fn()} tasks={[]} notifications={[]} />,
     </RmfHealthContext.Provider>,
     div,
   );
@@ -60,15 +51,7 @@ it('renders without crashing', () => {
 it('should count working equipment as operational', () => {
   const root = mount(
     <RmfHealthContext.Provider value={healthStatus}>
-      <MainMenu
-        pushView={jest.fn()}
-        tasks={[]}
-        notifications={[]}
-        doors={[]}
-        dispensers={{}}
-        lifts={[]}
-        robots={{}}
-      />
+      <MainMenu pushView={jest.fn()} tasks={[]} notifications={[]} />
     </RmfHealthContext.Provider>,
   );
   expect(
@@ -111,15 +94,7 @@ it('it should not count spoilt equipment as operational', () => {
   };
   const root = mount(
     <RmfHealthContext.Provider value={healthStatus}>
-      <MainMenu
-        pushView={jest.fn()}
-        tasks={[]}
-        notifications={[]}
-        doors={[]}
-        dispensers={{}}
-        lifts={[]}
-        robots={{}}
-      />
+      <MainMenu pushView={jest.fn()} tasks={[]} notifications={[]} />
     </RmfHealthContext.Provider>,
   );
   expect(
@@ -151,15 +126,7 @@ it('should count robots that are charging and on idle as operational', () => {
   };
   const root = mount(
     <RmfHealthContext.Provider value={healthStatus}>
-      <MainMenu
-        pushView={jest.fn()}
-        tasks={[]}
-        notifications={[]}
-        doors={[]}
-        dispensers={{}}
-        lifts={[]}
-        robots={{}}
-      />
+      <MainMenu pushView={jest.fn()} tasks={[]} notifications={[]} />
     </RmfHealthContext.Provider>,
   );
   expect(

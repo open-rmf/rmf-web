@@ -4,43 +4,31 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { door, lift, fleet } from './test.utils';
 
-test('should render the list of spoilt items', () => {
-  const spoiltItems = [
-    { type: 'door', name: 'door', itemNameAndState: 'door - state' },
-    { type: 'robot', name: 'robot', itemNameAndState: 'robot - state', errorMessage: 'error' },
-  ];
-  let errorMessageCount = 0;
-  spoiltItems.forEach((item) => {
-    if (item.errorMessage !== undefined) errorMessageCount += 1;
-  });
+test('should render the lists of different spoilt items', () => {
   render(
     <SystemSummarySpoiltItems
-      doors={[]}
-      lifts={[]}
+      doors={[
+        {
+          itemNameAndState: 'door - state',
+          door: door,
+        },
+      ]}
+      lifts={[
+        {
+          itemNameAndState: 'lift - state',
+          lift: lift,
+        },
+      ]}
+      robots={[]}
       dispensers={[]}
-      robots={{}}
-      spoiltItems={spoiltItems}
     />,
   );
 
   expect(screen.getAllByText('door - state').length).toEqual(1);
-  expect(screen.getAllByText('robot - state').length).toEqual(1);
-  expect(screen.getAllByText('Error - error').length).toEqual(errorMessageCount);
+  expect(screen.getAllByText('lift - state').length).toEqual(1);
 });
 
 test('it should trigger the spoilt item callback function when spoit item is clicked', () => {
-  const spoiltItems = [
-    { type: 'door', name: 'door', itemNameAndState: 'door - state' },
-    { type: 'lift', name: 'lift', itemNameAndState: 'lift - state' },
-    { type: 'dispenser', name: 'dispenser', itemNameAndState: 'dispenser - state' },
-    {
-      type: 'robot',
-      name: 'robot',
-      fleet: 'fleet',
-      itemNameAndState: 'robot - state',
-      errorMessage: 'error',
-    },
-  ];
   const doorClick = jest.fn();
   const liftClick = jest.fn();
   const dispenserClick = jest.fn();
@@ -48,11 +36,31 @@ test('it should trigger the spoilt item callback function when spoit item is cli
 
   render(
     <SystemSummarySpoiltItems
-      doors={[door]}
-      lifts={[lift]}
-      dispensers={['dispenser']}
-      robots={{ fleet: fleet }}
-      spoiltItems={spoiltItems}
+      doors={[
+        {
+          itemNameAndState: 'door - state',
+          door: door,
+        },
+      ]}
+      lifts={[
+        {
+          itemNameAndState: 'lift - state',
+          lift: lift,
+        },
+      ]}
+      dispensers={[
+        {
+          itemNameAndState: 'dispenser - state',
+          dispenser: 'dispenser',
+        },
+      ]}
+      robots={[
+        {
+          itemNameAndState: 'robot - state',
+          robot: fleet.robots[0],
+          fleet: fleet.name,
+        },
+      ]}
       spoiltDoorClick={doorClick}
       spoiltLiftClick={liftClick}
       spoiltDispenserClick={dispenserClick}
