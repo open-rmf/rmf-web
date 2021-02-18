@@ -1,7 +1,7 @@
 'use strict';
 
 const path = require('path');
-
+const webpack = require('webpack');
 // Helper functions
 const ROOT = path.resolve(__dirname, '..');
 
@@ -74,7 +74,7 @@ module.exports = (options) => {
         {
           test: /\.(tsx|ts)$/,
           loader: 'awesome-typescript-loader',
-          query: {
+          options: {
             // use inline sourcemaps for "karma-remap-coverage" reporter
             sourceMap: false,
             inlineSourceMap: true,
@@ -104,7 +104,7 @@ module.exports = (options) => {
           include: root('lib'),
           exclude: [/\.(e2e|spec|d|stories)\.ts$/, /node_modules/],
           // esModules Set to true to instrument ES2015 Modules
-          query: {
+          options: {
             esModules: true,
           },
         },
@@ -119,11 +119,14 @@ module.exports = (options) => {
      */
     node: {
       global: true,
-      crypto: 'empty',
-      module: false,
-      clearImmediate: false,
-      setImmediate: false,
     },
+
+    // https://stackoverflow.com/questions/65018431/webpack-5-uncaught-referenceerror-process-is-not-defined
+    plugins: [
+      new webpack.ProvidePlugin({
+        process: 'process/browser',
+      }),
+    ],
 
     externals: {
       jsdom: 'window',
