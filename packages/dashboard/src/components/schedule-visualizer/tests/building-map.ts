@@ -1,22 +1,10 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import airportPngUrl from './airport_terminal.png';
-import officePngUrl from './office.png';
-import officeMap from './building-map-office';
 import airportMap from './building-map-airport';
+import officeMap from './building-map-office';
 
 export default async function buildingMap(): Promise<RomiCore.BuildingMap> {
-  let officePng: Uint8Array;
-  let airportPng: Uint8Array;
-  if (process.env.NODE_ENV === 'test') {
-    const fs = await import('fs');
-    officePng = fs.readFileSync(`${__dirname}/office.png`);
-    airportPng = fs.readFileSync(`${__dirname}/airport_terminal.png`);
-  } else {
-    const officePngResp = await fetch(officePngUrl);
-    officePng = new Uint8Array(await officePngResp.arrayBuffer());
-    const airportPngResp = await fetch(airportPngUrl);
-    airportPng = new Uint8Array(await airportPngResp.arrayBuffer());
-  }
+  let officePng = new Uint8Array(new ArrayBuffer(0));
+  let airportPng = new Uint8Array(new ArrayBuffer(0));
 
   return {
     name: 'test building',
