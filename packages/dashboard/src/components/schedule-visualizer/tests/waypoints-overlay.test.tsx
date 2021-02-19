@@ -2,8 +2,8 @@ import L from 'leaflet';
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { Map as LMap } from 'react-leaflet';
-import getBuildingMap from '../../../mock/data/building-map';
 import WaypointsOverlay from '../waypoints-overlay';
+import getBuildingMap from './building-map';
 
 test('Render waypoints correctly', async () => {
   const bounds = new L.LatLngBounds([0, 25.7], [-14, 0]);

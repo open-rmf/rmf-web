@@ -3,8 +3,9 @@ import React from 'react';
 import { cleanup, render, waitFor, RenderResult } from '@testing-library/react';
 import { BrowserRouter, Router, Switch } from 'react-router-dom';
 import { LOGIN_ROUTE } from '../../../util/url';
-import { UserContext } from '../../auth/contexts';
+import { AuthenticatorContext, UserContext } from '../../auth/contexts';
 import PrivateRoute from '../private-route';
+import FakeAuthenticator from '../__mocks__/authenticator';
 
 describe('PrivateRoute', () => {
   let history: MemoryHistory;
@@ -29,11 +30,13 @@ describe('PrivateRoute', () => {
 
   test('redirects when unauthenticated', () => {
     render(
-      <Router history={history}>
-        <Switch>
-          <PrivateRoute path="/private" exact />
-        </Switch>
-      </Router>,
+      <AuthenticatorContext.Provider value={new FakeAuthenticator()}>
+        <Router history={history}>
+          <Switch>
+            <PrivateRoute path="/private" exact />
+          </Switch>
+        </Router>
+      </AuthenticatorContext.Provider>,
     );
     expect(history.location.pathname).toBe(LOGIN_ROUTE);
   });

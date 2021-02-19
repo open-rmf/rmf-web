@@ -78,6 +78,7 @@ it('renders negotiations correctly', () => {
   userEvent.click(finishedLabel);
   const rejectedLabel = root.getAllByRole('treeitem', { name: /[REJECTED]/i });
   expect(rejectedLabel.length).toBe(1);
+  root.unmount();
 });
 
 it('should empty all current negotiations when clear button is clicked', () => {

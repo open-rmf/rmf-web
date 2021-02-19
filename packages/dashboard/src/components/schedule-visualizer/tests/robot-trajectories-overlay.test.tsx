@@ -4,7 +4,7 @@ import React from 'react';
 import { render, RenderResult, waitFor } from '@testing-library/react';
 import { robotHash } from 'react-components';
 import { Map as LMap } from 'react-leaflet';
-import FakeTrajectoryManager from '../../../mock/fake-traj-manager';
+import FakeTrajectoryManager from '../../../managers/__mocks__/robot-trajectory-manager';
 import { Conflict, Trajectory } from '../../../managers/robot-trajectory-manager';
 import { defaultSettings } from '../../../settings';
 import { SettingsContext } from '../../app-contexts';

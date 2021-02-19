@@ -2,10 +2,10 @@ import { render, screen } from '@testing-library/react';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 import ResourceManager from '../../../managers/resource-manager';
-import fakeFleets from '../../../mock/data/fleets';
-import fakeResources from '../../../mock/data/resources';
+import fakeResources from '../../../managers/__mocks__/resources';
 import { ResourcesContext } from '../../app-contexts';
 import CommandsPanel from '../commands-panel';
+import fakeFleets from './fleets';
 
 let fleets: RomiCore.FleetState[];
 

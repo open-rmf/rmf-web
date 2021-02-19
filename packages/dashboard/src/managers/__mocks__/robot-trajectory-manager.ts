@@ -5,8 +5,8 @@ import {
   TimeResponse,
   TrajectoryRequest,
   TrajectoryResponse,
-} from '../managers/robot-trajectory-manager';
-import trajectories from './data/trajectories.json';
+} from '../robot-trajectory-manager';
+import trajectories from './trajectories.json';
 
 const debug = Debug('FakeTrajectoryManager');
 

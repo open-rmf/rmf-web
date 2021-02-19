@@ -2,7 +2,6 @@ import * as ChildProcess from 'child_process';
 
 enum LaunchMode {
   None,
-  Local,
   LocalSingleton,
 }
 
@@ -12,8 +11,7 @@ interface Launcher {
 }
 
 /**
- * Creates a launcher based on the launch mode. If `launchMode` is undefined, the selected launch
- * mode is based on the ROMI_DASHBOARD_LAUNCH_MODE environment variable, the values can be one of
+ * Creates a launcher based on the RMF_LAUNCH_MODE environment variable. Value can be one of:
  *
  *   * none
  *   * local
@@ -21,23 +19,17 @@ interface Launcher {
  * Defaults to `local`.
  *
  * If the value is `local`, a singleton instance is used and signal handlers are installed.
- * @see LocalLauncher#instance
- * @param launchMode
  */
-export function makeLauncher(launchMode?: LaunchMode): Launcher {
-  if (!launchMode) {
-    if (process.env.ROMI_DASHBOARD_LAUNCH_MODE === 'none') {
-      launchMode = LaunchMode.None;
-    } else {
-      launchMode = LaunchMode.LocalSingleton;
-    }
+export function makeLauncher(): Launcher {
+  let launchMode = LaunchMode.LocalSingleton;
+
+  if (process.env.RMF_LAUNCH_MODE === 'none') {
+    launchMode = LaunchMode.None;
   }
 
   switch (launchMode) {
     case LaunchMode.None:
       return new StubLauncher();
-    case LaunchMode.Local:
-      return new LocalLauncher();
     case LaunchMode.LocalSingleton:
       return LocalLauncher.instance;
     default:
@@ -66,7 +58,6 @@ export class LocalLauncher {
        */
       const cleanUp = async () => {
         await this._instance?.kill();
-        process.exit();
       };
 
       process.once('beforeExit', cleanUp);
@@ -91,10 +82,6 @@ export class LocalLauncher {
     }
     this._officeDemo = new ManagedProcess('ros2', officeDemoArgs, { stdio: 'inherit' });
 
-    this._visualizerServer = new ManagedProcess('ros2', ['launch', 'visualizer', 'server.xml'], {
-      stdio: 'inherit',
-    });
-
     const ready = await this._rmfReady();
     if (!ready) {
       throw new Error('unable to detect rmf');
@@ -104,28 +91,13 @@ export class LocalLauncher {
   }
 
   async kill(): Promise<void> {
-    await Promise.all([this._officeDemo?.kill('SIGINT'), this._visualizerServer?.kill('SIGINT')]);
+    await Promise.all([this._officeDemo?.kill('SIGINT')]);
     this._officeDemo = undefined;
-    this._visualizerServer = undefined;
     this._launched = false;
   }
 
   private _launched = false;
   private _officeDemo?: ManagedProcess;
-  private _visualizerServer?: ManagedProcess;
-
-  private async _killProcess(
-    proc: ChildProcess.ChildProcess,
-    signal?: NodeJS.Signals,
-  ): Promise<void> {
-    if (proc.killed) {
-      return Promise.resolve();
-    }
-    return new Promise((res) => {
-      proc.once('exit', res);
-      proc.kill(signal);
-    });
-  }
 
   private async _rmfReady(timeout: number = 30000): Promise<boolean> {
     const ros2Echo = ChildProcess.spawn('ros2', [
