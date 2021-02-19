@@ -80,22 +80,6 @@ it('renders negotiations correctly', () => {
   expect(rejectedLabel.length).toBe(1);
 });
 
-it('renders without crashing', () => {
-  const root = render(
-    <NegotiationsPanel
-      conflicts={negotiationStatuses}
-      spotlight={undefined}
-      mapFloorLayerSorted={undefined}
-      negotiationStatusManager={undefined}
-      negotiationTrajStore={undefined}
-      negotiationStatusUpdateTS={0}
-      setNegotiationTrajStore={setNegotiationTrajStore}
-    />,
-  );
-
-  root.unmount();
-});
-
 it('should empty all current negotiations when clear button is clicked', () => {
   const root = render(
     <NegotiationsPanel
