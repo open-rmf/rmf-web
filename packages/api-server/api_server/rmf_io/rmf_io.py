@@ -9,7 +9,7 @@ from building_map_msgs.msg import AffineImage, BuildingMap, Level
 from rmf_door_msgs.msg import DoorState
 from rosidl_runtime_py.convert import message_to_ordereddict
 
-from ..repositories.static_files import StaticFilesRepository
+from ..repositories import StaticFilesRepository
 from .authenticator import (AuthenticationError, Authenticator,
                             StubAuthenticator)
 from .gateway import RmfGateway
@@ -39,7 +39,10 @@ class RmfIO:
         self.sio.on("disconnect", self._on_disconnect)
         self.sio.on("subscribe", self._on_subscribe)
 
-        self._door_states: Dict[str, dict] = {}
+        self._door_states: Dict[str, dict] = {
+            door_state.door_name: message_to_ordereddict(door_state)
+            for door_state in self.rmf_gateway.current_door_states
+        }
         self.rmf_gateway.door_states.subscribe(self._on_door_state)
         self.room_records[topics.door_states] = self._door_states
 
