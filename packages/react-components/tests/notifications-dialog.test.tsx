@@ -1,7 +1,7 @@
 import React from 'react';
 import { NotificationsDialog } from '../lib';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import userEvent, { TargetElement } from '@testing-library/user-event';
 import { Notification, Severity } from '../lib';
 
 const notifications: Notification[] = [
@@ -46,7 +46,7 @@ test('should not render other severity levels when a particular level is selecte
     />,
   );
 
-  userEvent.paste(screen.getByDisplayValue(''), 'High');
+  userEvent.paste(screen.getByLabelText('filter-input').childNodes[1] as TargetElement, 'High');
 
   expect(screen.queryByText('Medium')).toBeNull();
   expect(screen.queryByText('Low')).toBeNull();
