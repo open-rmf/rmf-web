@@ -9,13 +9,15 @@ test('should render the lists of different spoilt items', () => {
     <SystemSummarySpoiltItems
       doors={[
         {
-          itemNameAndState: 'door - state',
+          name: 'door',
+          state: 'state',
           door: door,
         },
       ]}
       lifts={[
         {
-          itemNameAndState: 'lift - state',
+          name: 'lift',
+          state: 'state',
           lift: lift,
         },
       ]}
@@ -38,33 +40,37 @@ test('it should trigger the spoilt item callback function when spoit item is cli
     <SystemSummarySpoiltItems
       doors={[
         {
-          itemNameAndState: 'door - state',
+          name: 'door',
+          state: 'state',
           door: door,
         },
       ]}
       lifts={[
         {
-          itemNameAndState: 'lift - state',
+          name: 'lift',
+          state: 'state',
           lift: lift,
         },
       ]}
       dispensers={[
         {
-          itemNameAndState: 'dispenser - state',
+          name: 'dispenser',
+          state: 'state',
           dispenser: 'dispenser',
         },
       ]}
       robots={[
         {
-          itemNameAndState: 'robot - state',
+          name: 'robot',
+          state: 'state',
           robot: fleet.robots[0],
           fleet: fleet.name,
         },
       ]}
-      spoiltDoorClick={doorClick}
-      spoiltLiftClick={liftClick}
-      spoiltDispenserClick={dispenserClick}
-      spoiltRobotClick={robotClick}
+      onClickSpoiltDoor={doorClick}
+      onClickSpoiltLift={liftClick}
+      onClickSpoiltDispenser={dispenserClick}
+      onClickSpoiltRobot={robotClick}
     />,
   );
 

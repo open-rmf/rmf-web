@@ -14,7 +14,8 @@ export default class RmfHealthStateManager {
       itemSummary: { operational: 2, outOfOrder: 1 },
       spoiltDoors: [
         {
-          itemNameAndState: 'hardware_door - unknown',
+          name: 'hardware_door',
+          state: 'unknown',
           door: {
             name: 'hardware_door',
             v1_x: 4.9,

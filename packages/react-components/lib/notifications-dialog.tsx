@@ -213,6 +213,7 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
                     {notification.error}
                   </Typography>
                   <Typography align="right">
+                    {/* TODO - add function call to remove notification once backend is up */}
                     <IconButton className={classes.removeNotificationIcon}>
                       <CloseIcon />
                     </IconButton>

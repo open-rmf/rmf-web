@@ -4,9 +4,8 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 
 interface SpoiltItem {
   errorMessage?: string;
-  // a short message about the item name and state in the following format:
-  // name - state
-  itemNameAndState: string;
+  name: string;
+  state: string;
 }
 
 export interface SpoiltDoor extends SpoiltItem {
@@ -31,10 +30,10 @@ export interface SystemSummarySpoiltItemsProps {
   lifts: SpoiltLift[];
   dispensers: SpoiltDispenser[];
   robots: SpoiltRobot[];
-  spoiltDoorClick?(door: RomiCore.Door): void;
-  spoiltLiftClick?(lift: RomiCore.Lift): void;
-  spoiltRobotClick?(fleet: string, robot: RomiCore.RobotState): void;
-  spoiltDispenserClick?(event: React.MouseEvent, guid: string): void;
+  onClickSpoiltDoor?(door: RomiCore.Door): void;
+  onClickSpoiltLift?(lift: RomiCore.Lift): void;
+  onClickSpoiltRobot?(fleet: string, robot: RomiCore.RobotState): void;
+  onClickSpoiltDispenser?(event: React.MouseEvent, guid: string): void;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -55,17 +54,17 @@ export const SystemSummarySpoiltItems = (props: SystemSummarySpoiltItemsProps): 
     lifts,
     robots,
     dispensers,
-    spoiltDoorClick,
-    spoiltDispenserClick,
-    spoiltLiftClick,
-    spoiltRobotClick,
+    onClickSpoiltDoor,
+    onClickSpoiltDispenser,
+    onClickSpoiltLift,
+    onClickSpoiltRobot,
   } = props;
 
-  const spoiltItemDetails = (nameAndState: string, error?: string): JSX.Element => {
+  const spoiltItemDetails = (name: string, state: string, error?: string): JSX.Element => {
     return (
       <React.Fragment>
         <Typography color="error" variant="body1">
-          {nameAndState}
+          {`${name} - ${state}`}
         </Typography>
         {error !== undefined ? (
           <Typography color="error" variant="body1">
@@ -85,12 +84,12 @@ export const SystemSummarySpoiltItems = (props: SystemSummarySpoiltItemsProps): 
         ? doors.map((item) => {
             return (
               <Paper
-                onClick={() => spoiltDoorClick && spoiltDoorClick(item.door)}
+                onClick={() => onClickSpoiltDoor && onClickSpoiltDoor(item.door)}
                 className={classes.paper}
-                key={item.itemNameAndState}
+                key={'door-' + item.name + '-' + item.state}
                 elevation={3}
               >
-                {spoiltItemDetails(item.itemNameAndState)}
+                {spoiltItemDetails(item.name, item.state)}
               </Paper>
             );
           })
@@ -99,12 +98,12 @@ export const SystemSummarySpoiltItems = (props: SystemSummarySpoiltItemsProps): 
         ? lifts.map((item) => {
             return (
               <Paper
-                onClick={() => spoiltLiftClick && spoiltLiftClick(item.lift)}
+                onClick={() => onClickSpoiltLift && onClickSpoiltLift(item.lift)}
                 className={classes.paper}
-                key={item.itemNameAndState}
+                key={'lift-' + item.name + '-' + item.state}
                 elevation={3}
               >
-                {spoiltItemDetails(item.itemNameAndState)}
+                {spoiltItemDetails(item.name, item.state)}
               </Paper>
             );
           })
@@ -113,12 +112,12 @@ export const SystemSummarySpoiltItems = (props: SystemSummarySpoiltItemsProps): 
         ? dispensers.map((item) => {
             return (
               <Paper
-                onClick={(e) => spoiltDispenserClick && spoiltDispenserClick(e, item.dispenser)}
+                onClick={(e) => onClickSpoiltDispenser && onClickSpoiltDispenser(e, item.dispenser)}
                 className={classes.paper}
-                key={item.itemNameAndState}
+                key={'dispenser-' + item.name + '-' + item.state}
                 elevation={3}
               >
-                {spoiltItemDetails(item.itemNameAndState)}
+                {spoiltItemDetails(item.name, item.state)}
               </Paper>
             );
           })
@@ -127,12 +126,12 @@ export const SystemSummarySpoiltItems = (props: SystemSummarySpoiltItemsProps): 
         ? robots.map((item) => {
             return (
               <Paper
-                onClick={() => spoiltRobotClick && spoiltRobotClick(item.fleet, item.robot)}
+                onClick={() => onClickSpoiltRobot && onClickSpoiltRobot(item.fleet, item.robot)}
                 className={classes.paper}
-                key={item.itemNameAndState}
+                key={'robot-' + item.name + '-' + item.state}
                 elevation={3}
               >
-                {spoiltItemDetails(item.itemNameAndState)}
+                {spoiltItemDetails(item.name, item.state)}
               </Paper>
             );
           })

@@ -102,12 +102,17 @@ const spoiltEquipment: SystemSummarySpoiltItemsProps = {
         motion_range: 1.571,
         motion_direction: -1,
       },
-      itemNameAndState: 'door - unknown',
+      name: 'hardware_door',
+      state: 'unknown',
     },
   ],
   lifts: [],
   dispensers: [],
   robots: [],
+};
+
+const onSpoiltItemClick = () => {
+  // filler
 };
 
 export const SystemSummaryItemStateStory: Story = (args) => (
@@ -154,6 +159,7 @@ export const SystemSummarySpoiltItemStory: Story = (args) => (
     lifts={spoiltEquipment.lifts}
     dispensers={spoiltEquipment.dispensers}
     robots={spoiltEquipment.robots}
+    onClickSpoiltDoor={onSpoiltItemClick}
     {...args}
   />
 );

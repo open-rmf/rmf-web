@@ -130,10 +130,10 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
           lifts={healthStatus.lift.spoiltLifts}
           dispensers={healthStatus.dispenser.spoiltDispensers}
           robots={healthStatus.robot.spoiltRobots}
-          spoiltDoorClick={spoiltDoorClick}
-          spoiltDispenserClick={spoiltDispenserClick}
-          spoiltLiftClick={spoiltLiftClick}
-          spoiltRobotClick={spoiltRobotClick}
+          onClickSpoiltDoor={spoiltDoorClick}
+          onClickSpoiltDispenser={spoiltDispenserClick}
+          onClickSpoiltLift={spoiltLiftClick}
+          onClickSpoiltRobot={spoiltRobotClick}
         />
         <Divider className={classes.divider} />
 
