@@ -181,7 +181,13 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
           variant="contained"
           onClick={handleMainMenuTasksClick}
         >
-          <Typography variant="body1">Plans</Typography>
+          <DashboardTooltip
+            title="This panel shows the plans of robots that has received instructions to perform a task"
+            id="plans-tooltip"
+            enabled={showTooltips}
+          >
+            <Typography variant="body1">Plans</Typography>
+          </DashboardTooltip>
         </Button>
         <Divider className={classes.divider} />
 
