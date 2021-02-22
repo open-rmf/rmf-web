@@ -39,7 +39,7 @@ export const SystemSummaryBanner = (props: SystemSummaryBannerProps): JSX.Elemen
       </Typography>
       <CardHeader
         className={classes.cardHeader}
-        avatar={<Avatar alt="Romi-H logo" src={imageSrc} />}
+        avatar={imageSrc ? <Avatar alt="Romi-H logo" src={imageSrc} /> : null}
         title={<Typography variant="body1">Rmf Systems</Typography>}
         subheader={<Typography variant="body2">Summary of equipment states</Typography>}
       />
