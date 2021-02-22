@@ -1,9 +1,12 @@
 import asyncio
+import json
 import logging
 from datetime import timedelta
 from typing import Optional, Union
 
 import rx
+from building_map_msgs.msg import BuildingMap, Door, Level
+from rosidl_runtime_py.convert import message_to_ordereddict
 from rx import Observable
 from rx.operators import Mapper, flat_map, group_by, sample
 from rx.scheduler.scheduler import Scheduler
@@ -48,9 +51,26 @@ class RmfBookKeeper:
     ):
         loop = loop or asyncio.get_event_loop()
 
+        async def update_door_state(door_state):
+            await self.repo.update_door_state(door_state)
+            self.logger.info(json.dumps(message_to_ordereddict(door_state)))
+
         self.rmf.door_states.pipe(
             grouped_sample(lambda x: x.door_name, RmfBookKeeper.FrequencyStates),
         ).subscribe(
-            lambda x: loop.create_task(self.repo.update_door_state(x)),
+            lambda x: loop.create_task(update_door_state(x)),
             scheduler=scheduler,
+        )
+
+        async def update_building_map(building_map: Optional[BuildingMap]):
+            if not building_map:
+                return
+            for level in building_map.levels:
+                level: Level
+                for door in level.doors:
+                    door: Door
+                    await self.repo.update_door(door)
+
+        self.rmf.building_map.subscribe(
+            lambda x: loop.create_task(update_building_map(x)), scheduler=scheduler
         )

@@ -1,62 +1,15 @@
 import asyncio
-import os.path
 import unittest
 from unittest.mock import MagicMock
 
 import aiohttp.web
 import socketio
-from building_map_msgs.msg import AffineImage, BuildingMap, Graph, Level
-from builtin_interfaces.msg import Time
-from rmf_door_msgs.msg import DoorMode, DoorState
 
 from ..repositories.static_files import StaticFilesRepository
 from .gateway import RmfGateway
 from .rmf_io import RmfIO
+from .test_data import make_building_map, make_door_state
 from .topics import topics
-
-
-def make_door_state(name: str, mode: int = DoorMode.MODE_CLOSED) -> DoorState:
-    return DoorState(
-        door_name=name,
-        current_mode=DoorMode(value=mode),
-        door_time=Time(sec=0, nanosec=0),
-    )
-
-
-def make_building_map():
-    with open(f"{os.path.dirname(__file__)}/test_data/office.png", "br") as f:
-        image_data = f.read()
-
-    return BuildingMap(
-        name="test_name",
-        levels=[
-            Level(
-                name="L1",
-                elevation=0.0,
-                images=[
-                    AffineImage(
-                        name="test_image",
-                        x_offset=0.0,
-                        y_offset=0.0,
-                        yaw=0.0,
-                        scale=1.0,
-                        encoding="png",
-                        data=image_data,
-                    )
-                ],
-                places=[],
-                doors=[],
-                nav_graphs=[],
-                wall_graph=Graph(
-                    name="test_graph",
-                    vertices=[],
-                    edges=[],
-                    params=[],
-                ),
-            ),
-        ],
-        lifts=[],
-    )
 
 
 class TestRmfIO(unittest.IsolatedAsyncioTestCase):

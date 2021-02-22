@@ -8,7 +8,7 @@ from rx.scheduler.historicalscheduler import HistoricalScheduler
 from ..repositories import SqlRepository
 from .book_keeper import RmfBookKeeper
 from .gateway import RmfGateway
-from .test_rmf_io import make_door_state
+from .test_data import make_building_map, make_door_state
 
 
 class TestRmfBookKeeperDoorStates(unittest.IsolatedAsyncioTestCase):
@@ -109,3 +109,8 @@ class TestRmfBookKeeperDoorStates(unittest.IsolatedAsyncioTestCase):
         ]
         self.assertEqual(self.repo.update_door_state.await_count, 2)
         self.repo.update_door_state.assert_has_awaits(calls)
+
+
+class TestRmfBookKeeperBuildingMap(unittest.IsolatedAsyncioTestCase):
+    async def test_write_doors(self):
+        building_map = make_building_map()
