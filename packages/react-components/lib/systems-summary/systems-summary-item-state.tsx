@@ -38,7 +38,7 @@ export interface RobotSummary extends ItemSummary {
 
 export interface SystemSummaryItemStateProps {
   itemSummary: ItemSummary;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -111,7 +111,7 @@ export const SystemSummaryItemState = (props: SystemSummaryItemStateProps): JSX.
     <Grid container spacing={1} direction="column">
       <Grid item className={classes.headerGrid}>
         <Typography variant="h6">{itemSummary.item}</Typography>
-        <Button className={classes.button} onClick={onClick}>
+        <Button className={classes.button} disabled={!onClick} onClick={onClick}>
           <Typography variant="h6">Details </Typography>
           <NavigateNextIcon />
         </Button>

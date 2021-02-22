@@ -4,7 +4,7 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 
 export interface SystemSummaryTaskStateProps {
   tasks: RomiCore.TaskSummary[];
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 export interface TaskSummaryState {
@@ -15,12 +15,15 @@ export interface TaskSummaryState {
 }
 
 const useStyles = makeStyles((theme) => ({
-  grid: {
+  gridWithClick: {
     padding: '0.4rem 0',
     '&:hover': {
       backgroundColor: theme.palette.grey[100],
       cursor: 'pointer',
     },
+  },
+  grid: {
+    padding: '0.4rem 0',
   },
   normal: {
     color: theme.palette.success.main,
@@ -85,8 +88,13 @@ export const SystemSummaryTaskState = (props: SystemSummaryTaskStateProps): JSX.
       <Typography className={classes.header} variant="body1">
         Plans
       </Typography>
-      <div aria-label="panel" onClick={onClick}>
-        <Grid className={classes.grid} spacing={2} container direction="row">
+      <div aria-label="panel" aria-disabled={!onClick} onClick={onClick}>
+        <Grid
+          className={onClick ? classes.gridWithClick : classes.grid}
+          spacing={2}
+          container
+          direction="row"
+        >
           <Grid item xs={3}>
             <Paper elevation={3} className={getStatusLabel('active')}>
               <Typography align="center" variant="h6">
