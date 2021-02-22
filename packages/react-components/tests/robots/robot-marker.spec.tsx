@@ -11,6 +11,7 @@ describe('robot-markers', () => {
   beforeEach(() => {
     colorManager = new ColorManager();
     fakeOnClick = jasmine.createSpy();
+    // FIXME: karma should support the apis needed. So we wouldn't need to define the robotPrimaryColor
     colorManager.robotPrimaryColor = jasmine.createSpy();
   });
 
