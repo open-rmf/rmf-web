@@ -10,4 +10,4 @@ class HealthStatus(Enum):
 
 
 class HealthStatusMixin:
-    health_status: fields.CharEnumField(HealthStatus, max_length=255, null=True)
+    health_status = fields.CharEnumField(HealthStatus, max_length=255, null=True)
