@@ -8,7 +8,6 @@ on:
       - main
 env:
   CI: true
-  NODE_OPTIONS: "--max-old-space-size=8192"
 jobs:
   unit-tests:
     name: Unit Tests
