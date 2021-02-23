@@ -10,8 +10,7 @@ from rmf_door_msgs.msg import DoorState
 from rosidl_runtime_py.convert import message_to_ordereddict
 
 from ..repositories import StaticFilesRepository
-from .authenticator import (AuthenticationError, Authenticator,
-                            StubAuthenticator)
+from .authenticator import AuthenticationError, Authenticator, StubAuthenticator
 from .gateway import RmfGateway
 from .topics import topics
 
