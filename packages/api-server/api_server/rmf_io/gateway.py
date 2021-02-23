@@ -1,8 +1,8 @@
-from typing import Dict
+from typing import Dict, Optional
 
 from building_map_msgs.msg import BuildingMap
 from rmf_door_msgs.msg import DoorState
-from rx.subject import Subject
+from rx.subject import BehaviorSubject, Subject
 
 from ..models import DoorHealth
 
@@ -19,7 +19,9 @@ class RmfGateway:
         self.current_door_health: Dict[str, DoorHealth] = {}
         self.door_health.subscribe(self._update_door_health)
 
-        self.building_map: Subject[BuildingMap] = Subject()
+        self.building_map: BehaviorSubject[Optional[BuildingMap]] = BehaviorSubject(
+            None
+        )
 
     def _update_door_states(self, state: DoorState):
         self.current_door_states[state.door_name] = state
