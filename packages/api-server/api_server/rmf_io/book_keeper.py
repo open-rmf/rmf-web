@@ -5,7 +5,7 @@ from datetime import timedelta
 from typing import Optional, Union
 
 import rx
-from building_map_msgs.msg import BuildingMap, Door, Level
+from building_map_msgs.msg import BuildingMap, Level
 from rosidl_runtime_py.convert import message_to_ordereddict
 from rx import Observable
 from rx.operators import Mapper, flat_map, group_by, sample
