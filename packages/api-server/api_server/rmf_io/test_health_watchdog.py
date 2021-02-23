@@ -1,10 +1,8 @@
-import asyncio
 import unittest
 
-from rx.operators import first
 from rx.scheduler.historicalscheduler import HistoricalScheduler
 
-from ..models import DoorHealth, HealthStatus
+from ..models import HealthStatus
 from .gateway import RmfGateway
 from .health_watchdog import HealthWatchdog
 from .test_data import make_door_state

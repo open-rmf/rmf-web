@@ -1,4 +1,3 @@
-import asyncio
 from typing import Optional
 
 from rx.operators import flat_map, group_by
