@@ -38,7 +38,11 @@ export const RmfHealthContext = React.createContext<HealthStatus>({
   door: { ...initializeItemSummary, spoiltDoors: [] },
   lift: { ...initializeItemSummary, spoiltLifts: [] },
   dispenser: { ...initializeItemSummary, spoiltDispensers: [] },
-  robot: { ...initializeItemSummary, spoiltRobots: [] },
+  robot: {
+    item: 'Robot',
+    robotSummary: { ...initializeItemSummary.itemSummary, idle: 0, charging: 0 },
+    spoiltRobots: [],
+  },
 });
 
 export interface RmfIngress {

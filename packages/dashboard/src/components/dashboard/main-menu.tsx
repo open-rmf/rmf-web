@@ -12,6 +12,7 @@ import {
   SystemSummaryTaskState,
   SystemSummaryBanner,
   SystemSummarySpoiltItems,
+  RobotSummaryState,
 } from 'react-components';
 import { RmfHealthContext } from '../rmf-app';
 import { HealthStatus } from '../../managers/rmf-health-state-manager';
@@ -153,10 +154,7 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
           itemSummary={healthStatus.dispenser}
           onClick={handleMainMenuDispensersClick}
         />
-        <SystemSummaryItemState
-          itemSummary={healthStatus.robot}
-          onClick={handleMainMenuRobotsClick}
-        />
+        <RobotSummaryState itemSummary={healthStatus.robot} onClick={handleMainMenuRobotsClick} />
         <Divider className={classes.divider} />
 
         <Typography variant="h6">Task Statuses</Typography>

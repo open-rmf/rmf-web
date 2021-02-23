@@ -7,7 +7,9 @@ export interface HealthStatus {
   robot: RobotSummary;
 }
 
+// TODO - fill up health state manager logic once backend is up
 export default class RmfHealthStateManager {
+  // FIXME - remove mock values
   getDoorSummary = (): DoorSummary => {
     return {
       item: 'Door',

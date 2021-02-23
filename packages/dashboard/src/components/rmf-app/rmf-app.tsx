@@ -233,7 +233,7 @@ function TaskContextsProvider(props: React.PropsWithChildren<{}>): JSX.Element {
 }
 
 function RmfHealthContextsProvider(props: React.PropsWithChildren<{}>): JSX.Element {
-  const healthManager = new RmfHealthStateManager();
+  const healthManager = React.useMemo(() => new RmfHealthStateManager(), []);
 
   return (
     <RmfHealthContext.Provider value={healthManager.getHealthStatus()}>

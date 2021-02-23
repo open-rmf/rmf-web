@@ -11,6 +11,8 @@ import {
   SystemSummarySpoiltItems,
   SystemSummarySpoiltItemsProps,
   Severity,
+  RobotSummaryState,
+  RobotSummaryStateProps,
 } from '../lib';
 import { Meta, Story } from '@storybook/react';
 
@@ -29,10 +31,11 @@ const itemStateDataDoor: SystemSummaryItemStateProps = {
   },
 };
 
-const itemStateDataRobot: SystemSummaryItemStateProps = {
+const itemStateDataRobot: RobotSummaryStateProps = {
   itemSummary: {
     item: 'Robots',
     robotSummary: { operational: 2, outOfOrder: 0, idle: 1, charging: 1 },
+    spoiltRobots: [],
   },
   onClick: () => {
     /**filler */
@@ -122,7 +125,7 @@ export const SystemSummaryItemStateStory: Story = (args) => (
       onClick={itemStateDataDoor.onClick}
       {...args}
     />
-    <SystemSummaryItemState
+    <RobotSummaryState
       itemSummary={itemStateDataRobot.itemSummary}
       onClick={itemStateDataRobot.onClick}
       {...args}
