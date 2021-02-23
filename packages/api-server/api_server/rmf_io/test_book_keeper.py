@@ -5,20 +5,22 @@ from unittest.mock import MagicMock, call
 from rmf_door_msgs.msg import DoorMode, DoorState
 from rx.scheduler.historicalscheduler import HistoricalScheduler
 
-from ..repositories import SqlRepository
+from ..repositories import RmfRepository
 from .book_keeper import RmfBookKeeper
 from .gateway import RmfGateway
-from .test_data import make_building_map, make_door_state
+from .test_data import make_building_map, make_door, make_door_state
 
 
-class TestRmfBookKeeperDoorStates(unittest.IsolatedAsyncioTestCase):
+class RmfBookKeeperFixture(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         self.rmf = RmfGateway()
-        self.repo = MagicMock(SqlRepository)
+        self.repo = MagicMock(RmfRepository)
         self.book_keeper = RmfBookKeeper(self.rmf, self.repo)
         self.scheduler = HistoricalScheduler()
         self.book_keeper.start(scheduler=self.scheduler)
 
+
+class TestRmfBookKeeper_DoorStates(RmfBookKeeperFixture):
     async def test_write_frequency(self):
         """
         door states should write at a frequency of 1 hz
@@ -111,6 +113,15 @@ class TestRmfBookKeeperDoorStates(unittest.IsolatedAsyncioTestCase):
         self.repo.update_door_state.assert_has_awaits(calls)
 
 
-class TestRmfBookKeeperBuildingMap(unittest.IsolatedAsyncioTestCase):
+class TestRmfBookKeeper_BuildingMap(RmfBookKeeperFixture):
     async def test_write_doors(self):
+        """
+        doors should be written when new building map is received
+        """
         building_map = make_building_map()
+        building_map.levels[0].doors.append(make_door("test_door"))
+        building_map.levels[0].doors.append(make_door("test_door2"))
+        self.rmf.building_map.on_next(building_map)
+        self.scheduler.advance_by(0)
+        await asyncio.sleep(0)
+        self.assertEqual(self.repo.update_door.await_count, 2)
