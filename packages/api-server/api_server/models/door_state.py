@@ -19,12 +19,13 @@ class DoorState(Model):
     door_time = fields.DatetimeField()
 
     @staticmethod
-    def from_rmf(rmf_door_state: RmfDoorState):
-        """
-        NOTE: The object returned is not loaded from database, so some of the internal
-        fields used by tortoise-orm is not set, running some operations like `save` are
-        undefined behaviors.
-        """
+    async def from_rmf(rmf_door_state: RmfDoorState):
+        existing = await DoorState.filter(door_name=rmf_door_state.door_name).first()
+        if existing:
+            existing.door_name = rmf_door_state.door_name
+            existing.current_mode = rmf_door_state.current_mode.value
+            existing.door_time = ros_to_py_datetime(rmf_door_state.door_time)
+            return existing
         return DoorState(
             door_name=rmf_door_state.door_name,
             current_mode=rmf_door_state.current_mode.value,
