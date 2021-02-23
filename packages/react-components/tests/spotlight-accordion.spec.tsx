@@ -6,14 +6,14 @@ import { makeDoor } from './doors/test-utils';
 
 const DoorAccordion = withSpotlight(DoorAccordion_);
 
-test('clicking on the accordion expands it', () => {
+it('clicking on the accordion expands it', () => {
   const door = makeDoor();
   const root = render(<DoorAccordion door={door} />);
   userEvent.click(root.getByText(door.name, { selector: 'h6' }));
   expect(root.container.querySelector('[aria-expanded=true]')).toBeTruthy();
 });
 
-test('spotlight opens the accordion', () => {
+it('spotlight opens the accordion', () => {
   const TestComponent = () => {
     return <DoorAccordion ref={(ref) => ref?.spotlight()} door={makeDoor()} />;
   };
@@ -22,7 +22,7 @@ test('spotlight opens the accordion', () => {
   expect(root!.container.querySelector('[aria-expanded=true]')).toBeTruthy();
 });
 
-test('spotlight ref defers spotlight call until component is mounted', () => {
+it('spotlight ref defers spotlight call until component is mounted', () => {
   const TestComponent = () => {
     const spotlightRef = useSpotlightRef();
     spotlightRef.current.spotlight();
