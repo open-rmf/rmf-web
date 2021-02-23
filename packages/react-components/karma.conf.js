@@ -1,7 +1,12 @@
-const testWebpackConfig = require('./karma-config/webpack.test.js')({ env: 'test' });
 process.env.CHROME_BIN = require('puppeteer').executablePath();
 
 module.exports = (config) => {
+  const isCoverage = config.coverage ? true : false;
+  const testWebpackConfig = require('./karma-config/webpack.test.js')({
+    env: 'development',
+    coverage: true,
+  });
+
   config.set({
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: '',
@@ -18,11 +23,13 @@ module.exports = (config) => {
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-    preprocessors: {
-      // add webpack as preprocessor
-      'lib/**/**.+(ts|tsx)': ['sourcemap', 'coverage'],
-      'tests/**/*spec.+(ts|tsx)': ['webpack', 'sourcemap'],
-    },
+    preprocessors: isCoverage
+      ? {
+          // add webpack as preprocessor
+          'lib/**/**.+(ts|tsx)': ['sourcemap', 'coverage'],
+          'tests/**/*spec.+(ts|tsx)': ['webpack', 'sourcemap'],
+        }
+      : { 'tests/**/*spec.+(ts|tsx)': ['webpack'] },
 
     webpack: testWebpackConfig,
 
@@ -48,7 +55,7 @@ module.exports = (config) => {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress', 'coverage', 'dots'],
+    reporters: isCoverage ? ['progress', 'coverage', 'dots'] : ['progress'],
 
     port: 9876,
 
