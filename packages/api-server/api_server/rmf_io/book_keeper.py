@@ -74,3 +74,15 @@ class RmfBookKeeper:
         self.rmf.building_map.subscribe(
             lambda x: loop.create_task(update_building_map(x)), scheduler=scheduler
         )
+
+        self._watch_door_health(loop, scheduler)
+
+    def _watch_door_health(
+        self, loop: asyncio.AbstractEventLoop, scheduler: Optional[Scheduler]
+    ):
+        async def on_next(door_health):
+            await self.repo.update_door_health(door_health)
+
+        self.rmf.door_health.subscribe(
+            lambda x: loop.create_task(on_next(x)), scheduler=scheduler
+        )

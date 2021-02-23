@@ -5,6 +5,7 @@ from unittest.mock import MagicMock, call
 from rmf_door_msgs.msg import DoorMode, DoorState
 from rx.scheduler.historicalscheduler import HistoricalScheduler
 
+from ..models import DoorHealth, HealthStatus
 from ..repositories import RmfRepository
 from .book_keeper import RmfBookKeeper
 from .gateway import RmfGateway
@@ -125,3 +126,21 @@ class TestRmfBookKeeper_BuildingMap(RmfBookKeeperFixture):
         self.scheduler.advance_by(0)
         await asyncio.sleep(0)
         self.repo.sync_doors.assert_awaited()
+
+
+class TestRmfBookKeeper_DoorHealth(RmfBookKeeperFixture):
+    async def test_write_door_health(self):
+        """
+        door health should be written whenever there are changes
+        """
+        door_health = DoorHealth(name="test_door", health_status=HealthStatus.DEAD)
+        self.rmf.door_health.on_next(door_health)
+        self.scheduler.advance_by(0)
+        await asyncio.sleep(0)
+        self.repo.update_door_health.assert_awaited()
+
+        door_health = DoorHealth(name="test_door", health_status=HealthStatus.HEALTHY)
+        self.rmf.door_health.on_next(door_health)
+        self.scheduler.advance_by(0)
+        await asyncio.sleep(0)
+        self.assertEqual(2, self.repo.update_door_health.await_count)

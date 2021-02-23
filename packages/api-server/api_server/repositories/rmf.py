@@ -4,6 +4,8 @@ from typing import Dict, Optional, Sequence
 from building_map_msgs.msg import Door
 from rmf_door_msgs.msg import DoorState
 
+from ..models import DoorHealth
+
 
 class RmfRepository(ABC):
     @abstractmethod
@@ -32,4 +34,16 @@ class RmfRepository(ABC):
     async def sync_doors(self, doors: Sequence[Door]) -> None:
         """
         Update or create a list of doors and remove current doors not inside the list.
+        """
+
+    @abstractmethod
+    async def update_door_health(self, door_health: DoorHealth) -> None:
+        """
+        Update or create door health.
+        """
+
+    @abstractmethod
+    async def read_door_health(self, door_name: str) -> DoorHealth:
+        """
+        Read the current door health
         """

@@ -5,7 +5,7 @@ import tortoise
 from building_map_msgs.msg import Door as RmfDoor
 from rmf_door_msgs.msg import DoorState as RmfDoorState
 
-from ..models import Door, DoorState
+from ..models import Door, DoorHealth, DoorState
 from .rmf import RmfRepository
 
 
@@ -61,3 +61,10 @@ class SqlRepository(RmfRepository):
             await Door.all().delete()
             for door in doors:
                 await self.update_door(door)
+
+    async def update_door_health(self, door_health: DoorHealth):
+        await DoorHealth.update_or_create(vars(door_health))
+        self.logger.debug(f'written door health for "{door_health.name}" to database')
+
+    async def read_door_health(self, door_name: str):
+        return await DoorHealth.filter(name=door_name).first()
