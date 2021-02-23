@@ -5,6 +5,7 @@ from unittest.mock import MagicMock
 import aiohttp.web
 import socketio
 
+from ..models import DoorHealth, HealthStatus
 from ..repositories.static_files import StaticFilesRepository
 from .gateway import RmfGateway
 from .rmf_io import RmfIO
@@ -21,6 +22,9 @@ class TestRmfIO(unittest.IsolatedAsyncioTestCase):
         client.on("connect", lambda: fut.set_result(None))
         await fut
         await client.emit("subscribe", topic)
+        fut = asyncio.Future()
+        client.on("subscribe", fut.set_result)
+        await fut
         return client
 
     async def asyncSetUp(self):
@@ -72,6 +76,18 @@ class TestRmfIO(unittest.IsolatedAsyncioTestCase):
         client = await self.make_client(topics.door_states)
         client.on(topics.door_states, on_door_states)
         await asyncio.wait_for(done, 1)
+
+    async def test_door_health(self):
+        """
+        test receiving door health events
+        """
+        client = await self.make_client(topics.door_health)
+        done = asyncio.Future()
+        client.on(topics.door_health, done.set_result)
+        self.rmf_gateway.door_health.on_next(
+            DoorHealth(name="test_door", health_status=HealthStatus.HEALTHY)
+        )
+        await done
 
     async def test_building_map(self):
         """

@@ -11,6 +11,7 @@ class RmfGateway:
     def __init__(
         self,
     ):
+        # NOTE: the rx type hints don't actually work https://github.com/ReactiveX/RxPY/issues/514
         self.door_states: Subject[DoorState] = Subject()
         self.current_door_states: Dict[str, DoorState] = {}
         self.door_states.subscribe(self._update_door_states)
