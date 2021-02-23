@@ -10,17 +10,6 @@ class Door(Model, DoorMixin):
 
     @staticmethod
     async def from_rmf(rmf_door: RmfDoor):
-        existing = await Door.filter(name=rmf_door.name).first()
-        if existing:
-            existing.name = rmf_door.name
-            existing.v1_x = rmf_door.v1_x
-            existing.v1_y = rmf_door.v1_y
-            existing.v2_x = rmf_door.v2_x
-            existing.v2_y = rmf_door.v2_y
-            existing.door_type = rmf_door.door_type
-            existing.motion_range = rmf_door.motion_range
-            existing.motion_direction = rmf_door.motion_direction
-            return existing
         return Door(
             name=rmf_door.name,
             v1_x=rmf_door.v1_x,

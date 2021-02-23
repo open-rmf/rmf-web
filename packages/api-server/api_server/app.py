@@ -10,7 +10,7 @@ from tortoise import Tortoise
 
 from .app_config import app_config
 from .repositories import RmfRepository, SqlRepository, StaticFilesRepository
-from .rmf_io import RmfBookKeeper, RmfGateway, RmfIO, RmfTransport
+from .rmf_io import HealthWatchdog, RmfBookKeeper, RmfGateway, RmfIO, RmfTransport
 
 
 class MainNode(Node):
@@ -67,7 +67,7 @@ async def on_startup():
         logger.getChild("static_files"),
     )
 
-    sql_repo = SqlRepository(logger.getChild("sql_repo"))
+    sql_repo = SqlRepository(logger.getChild("SqlRepository"))
     rmf_gateway = RmfGateway()
     await load_states(sql_repo, rmf_gateway)
     rmf_io = RmfIO(  # pylint: disable=unused-variable
@@ -76,6 +76,8 @@ async def on_startup():
         static_files_repo,
         logger=logger.getChild("RmfIO"),
     )
+
+    HealthWatchdog(rmf_gateway, logger=logger.getChild("HealthWatchdog"))
 
     rmf_transport = RmfTransport(ros2_node, rmf_gateway)
     rmf_transport.subscribe_all()

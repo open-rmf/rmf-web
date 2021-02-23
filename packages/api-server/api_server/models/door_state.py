@@ -20,12 +20,6 @@ class DoorState(Model):
 
     @staticmethod
     async def from_rmf(rmf_door_state: RmfDoorState):
-        existing = await DoorState.filter(door_name=rmf_door_state.door_name).first()
-        if existing:
-            existing.door_name = rmf_door_state.door_name
-            existing.current_mode = rmf_door_state.current_mode.value
-            existing.door_time = ros_to_py_datetime(rmf_door_state.door_time)
-            return existing
         return DoorState(
             door_name=rmf_door_state.door_name,
             current_mode=rmf_door_state.current_mode.value,
