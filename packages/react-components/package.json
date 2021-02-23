@@ -10,8 +10,7 @@
     "build:watch": "tsc --build --watch",
     "build:storybook": "tsc --build stories && ../../node_modules/.bin/build-storybook -s stories",
     "clean": "tsc --build --clean",
-    "test": "karma start karma.conf.js --singleRun",
-    "test:watch": "karma start karma.conf.js",
+    "test": "karma start karma.conf.js",
     "lint": "eslint --ext ts,tsx, lib stories tests"
   },
   "author": "koonpeng@openrobotics.org",
