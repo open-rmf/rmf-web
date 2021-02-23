@@ -95,6 +95,13 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
     pushView(OmniPanelViewIndex.Tasks);
   }, [pushView]);
 
+  const [allNotifications, setAllNotifications] = React.useState(notifications);
+
+  const handleDismissNotification = (id: number) => {
+    const filteredNotifications = allNotifications.filter((n) => n.id !== id);
+    setAllNotifications(filteredNotifications);
+  };
+
   const bannerIsError = (healthStatus: HealthStatus): boolean => {
     let doorCount = healthStatus.door.spoiltItem.length;
     let liftCount = healthStatus.lift.spoiltItem.length;
@@ -110,7 +117,10 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
     <React.Fragment>
       <SystemSummaryBanner imageSrc={'/favicon.ico'} isError={bannerIsError(healthStatus)} />
       <div className={classes.root}>
-        <SystemSummaryAlert notifications={notifications} />
+        <SystemSummaryAlert
+          notifications={allNotifications}
+          onNotificationsDismiss={handleDismissNotification}
+        />
         <Divider className={classes.divider} />
 
         <SystemSummarySpoiltItems

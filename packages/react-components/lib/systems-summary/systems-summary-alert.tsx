@@ -5,6 +5,7 @@ import { NotificationsDialog, Notification } from '../index';
 
 export interface SystemSummaryAlertProps {
   notifications: Notification[];
+  onNotificationsDismiss: (id: number) => void;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -36,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const SystemSummaryAlert = (props: SystemSummaryAlertProps): JSX.Element => {
   const classes = useStyles();
-  const { notifications } = props;
+  const { notifications, onNotificationsDismiss } = props;
 
   const [showNotifications, setShowNotifications] = React.useState(false);
   const getLabel =
@@ -67,6 +68,7 @@ export const SystemSummaryAlert = (props: SystemSummaryAlertProps): JSX.Element 
       <NotificationsDialog
         notifications={notifications}
         showNotificationsDialog={showNotifications}
+        onNotificationsDismiss={onNotificationsDismiss}
         onClose={() => setShowNotifications(false)}
       />
     </React.Fragment>

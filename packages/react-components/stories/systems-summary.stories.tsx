@@ -49,6 +49,9 @@ const systemSummaryAlert: SystemSummaryAlertProps = {
   notifications: [
     { id: 1, severity: Severity.High, time: 'January 29th 2021, 8:20:50', error: 'hello world' },
   ],
+  onNotificationsDismiss: () => {
+    /**filler */
+  },
 };
 
 const systemSummaryTaskStateData: SystemSummaryTaskStateProps = {
@@ -140,8 +143,16 @@ export const SystemSummaryItemStateStory: Story = (args) => (
 
 export const SystemSummaryItemAlertStory: Story = (args) => (
   <React.Fragment>
-    <SystemSummaryAlert notifications={systemSummaryAlert.notifications} {...args} />
-    <SystemSummaryAlert notifications={[]} {...args} />
+    <SystemSummaryAlert
+      notifications={systemSummaryAlert.notifications}
+      onNotificationsDismiss={systemSummaryAlert.onNotificationsDismiss}
+      {...args}
+    />
+    <SystemSummaryAlert
+      notifications={[]}
+      onNotificationsDismiss={systemSummaryAlert.onNotificationsDismiss}
+      {...args}
+    />
   </React.Fragment>
 );
 

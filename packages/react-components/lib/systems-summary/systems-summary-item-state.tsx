@@ -3,27 +3,10 @@ import { makeStyles, Typography, Grid, Paper, Button } from '@material-ui/core';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import { SpoiltDispenser, SpoiltDoor, SpoiltLift } from './index';
 
-// export interface ItemSummaryState {
-//   operational: number;
-// }
-
 export interface ItemSummary {
   operational: number;
   spoiltItem: SpoiltDoor[] | SpoiltLift[] | SpoiltDispenser[];
 }
-
-// export interface DoorSummary extends ItemSummary {
-//   spoiltDoors: SpoiltDoor[];
-// }
-
-// export interface LiftSummary extends ItemSummary {
-//   spoiltLifts: SpoiltLift[];
-// }
-
-// export interface DispenserSummary extends ItemSummary {
-//   // list of dispenser names
-//   spoiltDispensers: SpoiltDispenser[];
-// }
 
 export interface SystemSummaryItemStateProps {
   item: string;

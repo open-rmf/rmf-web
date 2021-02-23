@@ -3,12 +3,6 @@ import { makeStyles, Typography, Grid, Paper, Button } from '@material-ui/core';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import { SpoiltRobot } from './index';
 
-// export interface RobotSummaryState {
-//   operational: number;
-//   idle: number;
-//   charging: number;
-// }
-
 export interface RobotSummary {
   operational: number;
   idle: number;

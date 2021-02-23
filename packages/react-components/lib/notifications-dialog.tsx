@@ -27,6 +27,7 @@ export interface NotificationDialogProps {
   showNotificationsDialog: boolean;
   onClose: () => void;
   notifications: Notification[];
+  onNotificationsDismiss: (id: number) => void;
 }
 
 export enum Severity {
@@ -132,7 +133,7 @@ const SeverityIndicator = (props: SeverityIndicatoryProps): JSX.Element => {
 export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element => {
   const classes = useStyles();
 
-  const { showNotificationsDialog, onClose, notifications } = props;
+  const { showNotificationsDialog, onClose, notifications, onNotificationsDismiss } = props;
 
   const [level, setLevel] = React.useState('');
 
@@ -213,8 +214,10 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
                     {notification.error}
                   </Typography>
                   <Typography align="right">
-                    {/* TODO - add function call to remove notification once backend is up */}
-                    <IconButton className={classes.removeNotificationIcon}>
+                    <IconButton
+                      className={classes.removeNotificationIcon}
+                      onClick={() => onNotificationsDismiss(notification.id)}
+                    >
                       <CloseIcon />
                     </IconButton>
                   </Typography>

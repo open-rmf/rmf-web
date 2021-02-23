@@ -5,7 +5,10 @@ import userEvent from '@testing-library/user-event';
 import { notifications } from './test.utils';
 
 test('button should be disabled when there are no notifications', () => {
-  const root = render(<SystemSummaryAlert notifications={[]} />);
+  const mockOnNotificationDismiss = jest.fn();
+  const root = render(
+    <SystemSummaryAlert notifications={[]} onNotificationsDismiss={mockOnNotificationDismiss} />,
+  );
   userEvent.click(screen.getByRole('button'));
 
   expect(root.container.querySelector('button')?.disabled).toEqual(true);
@@ -14,6 +17,12 @@ test('button should be disabled when there are no notifications', () => {
 });
 
 test('button should not be disabled when there are notifications', () => {
-  const root = render(<SystemSummaryAlert notifications={notifications} />);
+  const mockOnNotificationDismiss = jest.fn();
+  const root = render(
+    <SystemSummaryAlert
+      notifications={notifications}
+      onNotificationsDismiss={mockOnNotificationDismiss}
+    />,
+  );
   expect(root.container.querySelector('button')?.disabled).toEqual(false);
 });
