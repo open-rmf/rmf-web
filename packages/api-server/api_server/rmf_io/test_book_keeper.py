@@ -124,4 +124,4 @@ class TestRmfBookKeeper_BuildingMap(RmfBookKeeperFixture):
         self.rmf.building_map.on_next(building_map)
         self.scheduler.advance_by(0)
         await asyncio.sleep(0)
-        self.assertEqual(self.repo.update_door.await_count, 2)
+        self.repo.sync_doors.assert_awaited()

@@ -65,11 +65,11 @@ class RmfBookKeeper:
         async def update_building_map(building_map: Optional[BuildingMap]):
             if not building_map:
                 return
+            all_doors = []
             for level in building_map.levels:
                 level: Level
-                for door in level.doors:
-                    door: Door
-                    await self.repo.update_door(door)
+                all_doors.extend(level.doors)
+            await self.repo.sync_doors(all_doors)
 
         self.rmf.building_map.subscribe(
             lambda x: loop.create_task(update_building_map(x)), scheduler=scheduler
