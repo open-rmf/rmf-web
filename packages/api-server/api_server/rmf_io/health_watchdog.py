@@ -32,8 +32,6 @@ class HealthWatchdog:
                 )
             ),
         ).subscribe(
-            lambda x: asyncio.get_event_loop().call_soon_threadsafe(
-                lambda: self.rmf.door_health.on_next(x)
-            ),
+            self.rmf.door_health.on_next,
             scheduler=scheduler,
         )

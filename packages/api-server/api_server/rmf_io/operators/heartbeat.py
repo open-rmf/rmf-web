@@ -1,5 +1,5 @@
 import rx
-from rx.operators import buffer, distinct
+from rx.operators import buffer_with_time_or_count, distinct_until_changed
 from rx.operators import map as rx_map
 
 
@@ -12,9 +12,8 @@ def heartbeat(liveliness):
         alive. Note that an observable may stay alive for up to 2x liveliness between each
         event as this operator checks for items emitted between this window.
     """
-    # FIXME: This implementation is slow as it takes "liveliness" time for status to be updated.
     return rx.pipe(
-        buffer(rx.interval(liveliness)),
+        buffer_with_time_or_count(liveliness, 1),
         rx_map(lambda items: len(items) > 0),
-        distinct(),
+        distinct_until_changed(),
     )

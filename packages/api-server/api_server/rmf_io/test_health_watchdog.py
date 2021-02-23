@@ -17,21 +17,30 @@ class TestHealthWatchdog_DoorHealth(unittest.IsolatedAsyncioTestCase):
         self.health_watchdog = HealthWatchdog(self.rmf, scheduler=self.scheduler)
 
     async def test_heartbeat(self):
-        # first, it will start with unknown health status, when we publish a door state,
-        # the door will be alive only after LIVELINESS, because the implementation only looks at
-        # the number of events emitted in a given window, so it only "ticks" at LIVELINESS.
+        health = None
+
+        def assign(v):
+            nonlocal health
+            health = v
+
+        self.rmf.door_health.pipe().subscribe(assign)
+
         self.rmf.door_states.on_next(make_door_state("test_door"))
-        self.scheduler.advance_by(HealthWatchdog.LIVELINESS)
-        fut = asyncio.Future()
-        self.rmf.door_health.pipe(first()).subscribe(fut.set_result)
-        health: DoorHealth = await fut
+        self.scheduler.advance_by(0)
         self.assertEqual(health.health_status, HealthStatus.HEALTHY)
         self.assertEqual(health.name, "test_door")
 
-        # now, it should be dead because there is no new events emitted
-        self.scheduler.advance_by(HealthWatchdog.LIVELINESS * 2)
-        fut = asyncio.Future()
-        self.rmf.door_health.pipe(first()).subscribe(fut.set_result)
-        health: DoorHealth = await fut
+        # it should not be dead yet
+        self.scheduler.advance_by(HealthWatchdog.LIVELINESS / 2)
+        self.assertEqual(health.health_status, HealthStatus.HEALTHY)
+        self.assertEqual(health.name, "test_door")
+
+        # it should be dead now because the time between states has reached the threshold
+        self.scheduler.advance_by(HealthWatchdog.LIVELINESS / 2)
         self.assertEqual(health.health_status, HealthStatus.DEAD)
+        self.assertEqual(health.name, "test_door")
+
+        # it should become alive again when a new state is emitted
+        self.rmf.door_states.on_next(make_door_state("test_door"))
+        self.assertEqual(health.health_status, HealthStatus.HEALTHY)
         self.assertEqual(health.name, "test_door")
