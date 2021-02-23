@@ -3,30 +3,30 @@ import { makeStyles, Typography, Grid, Paper, Button } from '@material-ui/core';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import { SpoiltDispenser, SpoiltDoor, SpoiltLift } from './index';
 
-export interface ItemSummaryState {
-  operational: number;
-  outOfOrder: number;
-}
+// export interface ItemSummaryState {
+//   operational: number;
+// }
 
 export interface ItemSummary {
-  item: string;
-  itemSummary: ItemSummaryState;
+  operational: number;
+  spoiltItem: SpoiltDoor[] | SpoiltLift[] | SpoiltDispenser[];
 }
 
-export interface DoorSummary extends ItemSummary {
-  spoiltDoors: SpoiltDoor[];
-}
+// export interface DoorSummary extends ItemSummary {
+//   spoiltDoors: SpoiltDoor[];
+// }
 
-export interface LiftSummary extends ItemSummary {
-  spoiltLifts: SpoiltLift[];
-}
+// export interface LiftSummary extends ItemSummary {
+//   spoiltLifts: SpoiltLift[];
+// }
 
-export interface DispenserSummary extends ItemSummary {
-  // list of dispenser names
-  spoiltDispensers: SpoiltDispenser[];
-}
+// export interface DispenserSummary extends ItemSummary {
+//   // list of dispenser names
+//   spoiltDispensers: SpoiltDispenser[];
+// }
 
 export interface SystemSummaryItemStateProps {
+  item: string;
   itemSummary: ItemSummary;
   onClick?: () => void;
 }
@@ -54,10 +54,10 @@ const useStyles = makeStyles((theme) => ({
 
 export const SystemSummaryItemState = (props: SystemSummaryItemStateProps): JSX.Element => {
   const classes = useStyles();
-  const { itemSummary, onClick } = props;
+  const { item, itemSummary, onClick } = props;
 
-  const totalItem = itemSummary.itemSummary.operational + itemSummary.itemSummary.outOfOrder;
-  const operationalItem = itemSummary.itemSummary.operational;
+  const totalItem = itemSummary.operational + itemSummary.spoiltItem.length;
+  const operationalItem = itemSummary.operational;
 
   const getOperationalStatusLabel = (total: number, operational: number): string => {
     if (total === operational) {
@@ -70,7 +70,7 @@ export const SystemSummaryItemState = (props: SystemSummaryItemStateProps): JSX.
   return (
     <Grid container spacing={1} direction="column">
       <Grid item className={classes.headerGrid}>
-        <Typography variant="h6">{itemSummary.item}</Typography>
+        <Typography variant="h6">{item}</Typography>
         <Button className={classes.button} disabled={!onClick} onClick={onClick}>
           <Typography variant="h6">Details </Typography>
           <NavigateNextIcon />

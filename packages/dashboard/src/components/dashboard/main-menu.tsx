@@ -13,6 +13,9 @@ import {
   SystemSummaryBanner,
   SystemSummarySpoiltItems,
   RobotSummaryState,
+  SpoiltDoor,
+  SpoiltLift,
+  SpoiltDispenser,
 } from 'react-components';
 import { RmfHealthContext } from '../rmf-app';
 import { HealthStatus } from '../../managers/rmf-health-state-manager';
@@ -93,26 +96,10 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
   }, [pushView]);
 
   const bannerIsError = (healthStatus: HealthStatus): boolean => {
-    let doorCount = 0;
-    let liftCount = 0;
-    let dispenserCount = 0;
-    let robotCount = 0;
-
-    if (healthStatus.robot.robotSummary) {
-      robotCount = healthStatus.robot.robotSummary.outOfOrder;
-    }
-
-    if (healthStatus.door.itemSummary) {
-      doorCount = healthStatus.door.itemSummary.outOfOrder;
-    }
-
-    if (healthStatus.lift.itemSummary) {
-      liftCount = healthStatus.lift.itemSummary.outOfOrder;
-    }
-
-    if (healthStatus.dispenser.itemSummary) {
-      dispenserCount = healthStatus.dispenser.itemSummary.outOfOrder;
-    }
+    let doorCount = healthStatus.door.spoiltItem.length;
+    let liftCount = healthStatus.lift.spoiltItem.length;
+    let dispenserCount = healthStatus.dispenser.spoiltItem.length;
+    let robotCount = healthStatus.robot.spoiltRobots.length;
 
     return doorCount + liftCount + dispenserCount + robotCount !== 0;
   };
@@ -127,9 +114,9 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
         <Divider className={classes.divider} />
 
         <SystemSummarySpoiltItems
-          doors={healthStatus.door.spoiltDoors}
-          lifts={healthStatus.lift.spoiltLifts}
-          dispensers={healthStatus.dispenser.spoiltDispensers}
+          doors={healthStatus.door.spoiltItem as SpoiltDoor[]}
+          lifts={healthStatus.lift.spoiltItem as SpoiltLift[]}
+          dispensers={healthStatus.dispenser.spoiltItem as SpoiltDispenser[]}
           robots={healthStatus.robot.spoiltRobots}
           onClickSpoiltDoor={spoiltDoorClick}
           onClickSpoiltDispenser={spoiltDispenserClick}
@@ -143,18 +130,25 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
         </Typography>
 
         <SystemSummaryItemState
+          item={'Door'}
           itemSummary={healthStatus.door}
           onClick={handleMainMenuDoorsClick}
         />
         <SystemSummaryItemState
+          item={'Lift'}
           itemSummary={healthStatus.lift}
           onClick={handleMainMenuLiftsClick}
         />
         <SystemSummaryItemState
+          item={'Dispenser'}
           itemSummary={healthStatus.dispenser}
           onClick={handleMainMenuDispensersClick}
         />
-        <RobotSummaryState itemSummary={healthStatus.robot} onClick={handleMainMenuRobotsClick} />
+        <RobotSummaryState
+          item={'Robot'}
+          itemSummary={healthStatus.robot}
+          onClick={handleMainMenuRobotsClick}
+        />
         <Divider className={classes.divider} />
 
         <Typography variant="h6">Task Statuses</Typography>

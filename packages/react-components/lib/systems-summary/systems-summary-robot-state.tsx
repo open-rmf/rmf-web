@@ -1,20 +1,23 @@
 import React from 'react';
 import { makeStyles, Typography, Grid, Paper, Button } from '@material-ui/core';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import { SpoiltRobot, ItemSummaryState } from './index';
+import { SpoiltRobot } from './index';
 
-export interface RobotSummaryState extends ItemSummaryState {
-  idle: number;
-  charging: number;
-}
+// export interface RobotSummaryState {
+//   operational: number;
+//   idle: number;
+//   charging: number;
+// }
 
 export interface RobotSummary {
-  item: string;
-  robotSummary: RobotSummaryState;
+  operational: number;
+  idle: number;
+  charging: number;
   spoiltRobots: SpoiltRobot[];
 }
 
 export interface RobotSummaryStateProps {
+  item: string;
   itemSummary: RobotSummary;
   onClick?: () => void;
 }
@@ -53,10 +56,10 @@ const useStyles = makeStyles((theme) => ({
 
 export const RobotSummaryState = (props: RobotSummaryStateProps): JSX.Element => {
   const classes = useStyles();
-  const { itemSummary, onClick } = props;
+  const { item, itemSummary, onClick } = props;
 
-  const totalItem = itemSummary.robotSummary.operational + itemSummary.robotSummary.outOfOrder;
-  const operationalItem = itemSummary.robotSummary.operational;
+  const totalItem = itemSummary.operational + itemSummary.spoiltRobots.length;
+  const operationalItem = itemSummary.operational;
 
   const getOperationalStatusLabel = (total: number, operational: number): string => {
     if (total === operational) {
@@ -80,7 +83,7 @@ export const RobotSummaryState = (props: RobotSummaryStateProps): JSX.Element =>
   return (
     <Grid container spacing={1} direction="column">
       <Grid item className={classes.headerGrid}>
-        <Typography variant="h6">{itemSummary.item}</Typography>
+        <Typography variant="h6">{item}</Typography>
         <Button className={classes.button} disabled={!onClick} onClick={onClick}>
           <Typography variant="h6">Details </Typography>
           <NavigateNextIcon />
@@ -105,7 +108,7 @@ export const RobotSummaryState = (props: RobotSummaryStateProps): JSX.Element =>
           <Grid item xs={6}>
             <Paper className={getOtherStatusLabel('idle')} elevation={3}>
               <Typography noWrap align="center" variant="h6">
-                {itemSummary.robotSummary.idle}
+                {itemSummary.idle}
               </Typography>
               <Typography align="center" variant="body1">
                 Idle
@@ -115,7 +118,7 @@ export const RobotSummaryState = (props: RobotSummaryStateProps): JSX.Element =>
           <Grid item xs={6}>
             <Paper className={getOtherStatusLabel('charging')} elevation={3}>
               <Typography noWrap align="center" variant="h6">
-                {itemSummary.robotSummary.charging}
+                {itemSummary.charging}
               </Typography>
               <Typography align="center" variant="body1">
                 Charging

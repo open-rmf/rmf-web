@@ -4,35 +4,30 @@ import MainMenu from '../main-menu';
 import { createMount } from '@material-ui/core/test-utils';
 import RmfHealthStateManager from '../../../managers/rmf-health-state-manager';
 import { RmfHealthContext } from '../../rmf-app/contexts';
+import { door, lift, fakeFleets } from './items';
 
 const mount = createMount();
+const fleet = fakeFleets();
 
 const healthManager = new RmfHealthStateManager();
 let healthStatus = healthManager.getHealthStatus();
 healthStatus = {
   door: {
-    item: 'Door',
-    itemSummary: { operational: 1, outOfOrder: 0 },
-    spoiltDoors: [],
+    operational: 1,
+    spoiltItem: [],
   },
   lift: {
-    item: 'Lift',
-    itemSummary: { operational: 1, outOfOrder: 0 },
-    spoiltLifts: [],
+    operational: 1,
+    spoiltItem: [],
   },
   dispenser: {
-    item: 'Dispensers',
-    itemSummary: { operational: 1, outOfOrder: 0 },
-    spoiltDispensers: [],
+    operational: 1,
+    spoiltItem: [],
   },
   robot: {
-    item: 'Robots',
-    robotSummary: {
-      operational: 1,
-      outOfOrder: 0,
-      charging: 0,
-      idle: 0,
-    },
+    operational: 1,
+    charging: 0,
+    idle: 0,
     spoiltRobots: [],
   },
 };
@@ -63,33 +58,30 @@ it('should count working equipment as operational', () => {
   expect(
     root.find('SystemSummaryItemState').find('.MuiPaper-root').find('h6').at(2).text(),
   ).toEqual('1/1');
-  expect(
-    root.find('SystemSummaryItemState').find('.MuiPaper-root').find('h6').at(3).text(),
-  ).toEqual('1/1');
+  expect(root.find('RobotSummaryState').find('.MuiPaper-root').find('h6').at(0).text()).toEqual(
+    '1/1',
+  );
 });
 
 it('it should not count spoilt equipment as operational', () => {
   healthStatus = {
     door: {
       ...healthStatus.door,
-      itemSummary: { operational: 0, outOfOrder: 1 },
+      spoiltItem: [{ name: 'name', state: 'state', door: door }],
     },
     lift: {
       ...healthStatus.lift,
-      itemSummary: { operational: 0, outOfOrder: 1 },
+      spoiltItem: [{ name: 'name', state: 'state', lift: lift }],
     },
     dispenser: {
       ...healthStatus.dispenser,
-      itemSummary: { operational: 0, outOfOrder: 1 },
+      spoiltItem: [{ name: 'name', state: 'state', dispenser: 'dispenser' }],
     },
     robot: {
-      ...healthStatus.robot,
-      robotSummary: {
-        operational: 0,
-        outOfOrder: 1,
-        charging: 0,
-        idle: 0,
-      },
+      operational: 1,
+      charging: 0,
+      idle: 0,
+      spoiltRobots: [{ fleet: 'fleet', name: 'robot', state: 'state', robot: fleet[0].robots[0] }],
     },
   };
   const root = mount(
@@ -99,29 +91,26 @@ it('it should not count spoilt equipment as operational', () => {
   );
   expect(
     root.find('SystemSummaryItemState').find('.MuiPaper-root').find('h6').at(0).text(),
-  ).toEqual('0/1');
+  ).toEqual('1/2');
   expect(
     root.find('SystemSummaryItemState').find('.MuiPaper-root').find('h6').at(1).text(),
-  ).toEqual('0/1');
+  ).toEqual('1/2');
   expect(
     root.find('SystemSummaryItemState').find('.MuiPaper-root').find('h6').at(2).text(),
-  ).toEqual('0/1');
-  expect(
-    root.find('SystemSummaryItemState').find('.MuiPaper-root').find('h6').at(3).text(),
-  ).toEqual('0/1');
+  ).toEqual('1/2');
+  expect(root.find('RobotSummaryState').find('.MuiPaper-root').find('h6').at(0).text()).toEqual(
+    '1/2',
+  );
 });
 
 it('should count robots that are charging and on idle as operational', () => {
   healthStatus = {
     ...healthStatus,
     robot: {
-      ...healthStatus.robot,
-      robotSummary: {
-        operational: 1,
-        outOfOrder: 0,
-        charging: 1,
-        idle: 1,
-      },
+      operational: 2,
+      charging: 1,
+      idle: 1,
+      spoiltRobots: [],
     },
   };
   const root = mount(
@@ -129,13 +118,13 @@ it('should count robots that are charging and on idle as operational', () => {
       <MainMenu pushView={jest.fn()} tasks={[]} notifications={[]} />
     </RmfHealthContext.Provider>,
   );
-  expect(
-    root.find('SystemSummaryItemState').find('.MuiPaper-root').find('h6').at(3).text(),
-  ).toEqual('1/1');
-  expect(
-    root.find('SystemSummaryItemState').find('.MuiPaper-root').find('h6').at(4).text(),
-  ).toEqual('1');
-  expect(
-    root.find('SystemSummaryItemState').find('.MuiPaper-root').find('h6').at(5).text(),
-  ).toEqual('1');
+  expect(root.find('RobotSummaryState').find('.MuiPaper-root').find('h6').at(0).text()).toEqual(
+    '2/2',
+  );
+  expect(root.find('RobotSummaryState').find('.MuiPaper-root').find('h6').at(1).text()).toEqual(
+    '1',
+  );
+  expect(root.find('RobotSummaryState').find('.MuiPaper-root').find('h6').at(2).text()).toEqual(
+    '1',
+  );
 });

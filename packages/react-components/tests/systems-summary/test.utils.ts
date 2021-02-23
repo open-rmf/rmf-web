@@ -2,8 +2,8 @@ import { ItemSummary, Notification, Severity } from '../../lib';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 
 export const itemSummary: ItemSummary = {
-  item: 'Door',
-  itemSummary: { operational: 0, outOfOrder: 0 },
+  operational: 0,
+  spoiltItem: [],
 };
 
 export const notifications: Notification[] = [

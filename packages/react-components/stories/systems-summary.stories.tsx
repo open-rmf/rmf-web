@@ -23,23 +23,26 @@ export default {
 
 const itemStateDataDoor: SystemSummaryItemStateProps = {
   itemSummary: {
-    item: 'Doors',
-    itemSummary: { operational: 1, outOfOrder: 1 },
+    operational: 0,
+    spoiltItem: [],
   },
   onClick: () => {
     /**filler */
   },
+  item: 'Doors',
 };
 
 const itemStateDataRobot: RobotSummaryStateProps = {
   itemSummary: {
-    item: 'Robots',
-    robotSummary: { operational: 2, outOfOrder: 0, idle: 1, charging: 1 },
+    operational: 0,
+    idle: 0,
+    charging: 0,
     spoiltRobots: [],
   },
   onClick: () => {
     /**filler */
   },
+  item: 'Robots',
 };
 
 const systemSummaryAlert: SystemSummaryAlertProps = {
@@ -121,11 +124,13 @@ const onSpoiltItemClick = () => {
 export const SystemSummaryItemStateStory: Story = (args) => (
   <React.Fragment>
     <SystemSummaryItemState
+      item={itemStateDataDoor.item}
       itemSummary={itemStateDataDoor.itemSummary}
       onClick={itemStateDataDoor.onClick}
       {...args}
     />
     <RobotSummaryState
+      item={itemStateDataRobot.item}
       itemSummary={itemStateDataRobot.itemSummary}
       onClick={itemStateDataRobot.onClick}
       {...args}

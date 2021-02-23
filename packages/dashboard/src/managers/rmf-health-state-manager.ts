@@ -1,20 +1,19 @@
-import { DoorSummary, LiftSummary, DispenserSummary, RobotSummary } from 'react-components';
+import { ItemSummary, RobotSummary } from 'react-components';
 
 export interface HealthStatus {
-  door: DoorSummary;
-  lift: LiftSummary;
-  dispenser: DispenserSummary;
+  door: ItemSummary;
+  lift: ItemSummary;
+  dispenser: ItemSummary;
   robot: RobotSummary;
 }
 
 // TODO - fill up health state manager logic once backend is up
 export default class RmfHealthStateManager {
   // FIXME - remove mock values
-  getDoorSummary = (): DoorSummary => {
+  getDoorSummary = (): ItemSummary => {
     return {
-      item: 'Door',
-      itemSummary: { operational: 2, outOfOrder: 1 },
-      spoiltDoors: [
+      operational: 2,
+      spoiltItem: [
         {
           name: 'hardware_door',
           state: 'unknown',
@@ -33,31 +32,25 @@ export default class RmfHealthStateManager {
     };
   };
 
-  getLiftSummary = (): LiftSummary => {
+  getLiftSummary = (): ItemSummary => {
     return {
-      item: 'Lift',
-      itemSummary: { operational: 2, outOfOrder: 0 },
-      spoiltLifts: [],
+      operational: 2,
+      spoiltItem: [],
     };
   };
 
-  getDispenserSummary = (): DispenserSummary => {
+  getDispenserSummary = (): ItemSummary => {
     return {
-      item: 'Dispensers',
-      itemSummary: { operational: 1, outOfOrder: 0 },
-      spoiltDispensers: [],
+      operational: 1,
+      spoiltItem: [],
     };
   };
 
   getRobotSummary = (): RobotSummary => {
     return {
-      item: 'Robots',
-      robotSummary: {
-        operational: 3,
-        outOfOrder: 0,
-        charging: 2,
-        idle: 1,
-      },
+      operational: 3,
+      charging: 2,
+      idle: 1,
       spoiltRobots: [],
     };
   };
