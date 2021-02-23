@@ -21,7 +21,11 @@ class HealthWatchdog:
         def map_door_health(has_heartbeat: bool, door_name: str) -> DoorHealth:
             if has_heartbeat:
                 return DoorHealth(name=door_name, health_status=HealthStatus.HEALTHY)
-            return DoorHealth(name=door_name, health_status=HealthStatus.DEAD)
+            return DoorHealth(
+                name=door_name,
+                health_status=HealthStatus.DEAD,
+                health_message="heartbeat failed",
+            )
 
         self.rmf.door_states.pipe(
             group_by(lambda x: x.door_name),
