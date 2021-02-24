@@ -4,13 +4,14 @@ import React from 'react';
 import { DoorMarker } from '../../lib';
 import { makeDoor } from './test-utils';
 
-test('triggers onClick callback when button is clicked', () => {
-  const handler = jest.fn();
+it('triggers onClick callback when button is clicked', () => {
+  const mockOnClick = jasmine.createSpy();
+
   const root = render(
     <svg>
-      <DoorMarker door={makeDoor()} onClick={handler} data-testid="marker" />
+      <DoorMarker door={makeDoor()} onClick={mockOnClick} data-testid="marker" />
     </svg>,
   );
   userEvent.click(root.getByTestId('marker'));
-  expect(handler).toBeCalled();
+  expect(mockOnClick).toHaveBeenCalled();
 });
