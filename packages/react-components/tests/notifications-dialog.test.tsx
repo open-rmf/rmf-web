@@ -12,11 +12,13 @@ const notifications: Notification[] = [
 
 test('should call onClose when close button is clicked', () => {
   const mockOnClose = jest.fn();
+  const mockOnDismiss = jest.fn();
   render(
     <NotificationsDialog
       onClose={mockOnClose}
       showNotificationsDialog={true}
       notifications={notifications}
+      onNotificationsDismiss={mockOnDismiss}
     />,
   );
   userEvent.click(screen.getByText(/CLOSE/i));
@@ -25,11 +27,13 @@ test('should call onClose when close button is clicked', () => {
 
 test('should call onClose when close icon at the top is clicked', () => {
   const mockOnClose = jest.fn();
+  const mockOnDismiss = jest.fn();
   render(
     <NotificationsDialog
       onClose={mockOnClose}
       showNotificationsDialog={true}
       notifications={notifications}
+      onNotificationsDismiss={mockOnDismiss}
     />,
   );
   userEvent.click(screen.getByLabelText(/close/i));
@@ -38,11 +42,13 @@ test('should call onClose when close icon at the top is clicked', () => {
 
 test('should not render other severity levels when a particular level is selected', () => {
   const mockOnClose = jest.fn();
+  const mockOnDismiss = jest.fn();
   render(
     <NotificationsDialog
       onClose={mockOnClose}
       showNotificationsDialog={true}
       notifications={notifications}
+      onNotificationsDismiss={mockOnDismiss}
     />,
   );
 
@@ -54,6 +60,7 @@ test('should not render other severity levels when a particular level is selecte
 
 test('should update rmfNotifications state when props are updated', () => {
   const mockOnClose = jest.fn();
+  const mockOnDismiss = jest.fn();
   // add one more notification
   const updatedNotifications: Notification[] = [
     ...notifications,
@@ -65,6 +72,7 @@ test('should update rmfNotifications state when props are updated', () => {
       onClose={mockOnClose}
       showNotificationsDialog={true}
       notifications={notifications}
+      onNotificationsDismiss={mockOnDismiss}
     />,
   );
   expect(screen.getAllByText('message').length).toEqual(3);
@@ -74,7 +82,23 @@ test('should update rmfNotifications state when props are updated', () => {
       onClose={mockOnClose}
       showNotificationsDialog={true}
       notifications={updatedNotifications}
+      onNotificationsDismiss={mockOnDismiss}
     />,
   );
   expect(screen.getAllByText('message').length).toEqual(4);
+});
+
+test('should call mockOnDismiss when onNotificationsDismiss button is clicked', () => {
+  const mockOnClose = jest.fn();
+  const mockOnDismiss = jest.fn();
+  render(
+    <NotificationsDialog
+      onClose={mockOnClose}
+      showNotificationsDialog={true}
+      notifications={notifications}
+      onNotificationsDismiss={mockOnDismiss}
+    />,
+  );
+  userEvent.click(screen.getAllByLabelText('dismiss-button')[0]);
+  expect(mockOnDismiss).toHaveBeenCalled();
 });

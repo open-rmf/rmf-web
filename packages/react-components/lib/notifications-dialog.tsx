@@ -215,6 +215,7 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
                   </Typography>
                   <Typography align="right">
                     <IconButton
+                      aria-label="dismiss-button"
                       className={classes.removeNotificationIcon}
                       onClick={() => onNotificationsDismiss(notification.id)}
                     >
