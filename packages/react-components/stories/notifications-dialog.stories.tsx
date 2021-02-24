@@ -64,11 +64,16 @@ const makeNotifications = (): Notification[] => {
     },
   ];
 };
-// end of temp data
 
 const NotificationDialogHandler = (props: NotificationDialogHandlerProps): JSX.Element => {
   const { notifications } = props;
   const [showDialogBox, setShowDialogBox] = React.useState(false);
+  const [allNotifications, setAllNotifications] = React.useState(notifications);
+
+  const handleDismissNotification = (id: number) => {
+    const filteredNotifications = allNotifications.filter((n) => n.id !== id);
+    setAllNotifications(filteredNotifications);
+  };
 
   return (
     <>
@@ -76,9 +81,10 @@ const NotificationDialogHandler = (props: NotificationDialogHandlerProps): JSX.E
         Open Notificatins Dialog box
       </Button>
       <NotificationsDialog
-        notifications={notifications}
+        notifications={allNotifications}
         showNotificationsDialog={showDialogBox}
         onClose={() => setShowDialogBox(false)}
+        onNotificationsDismiss={handleDismissNotification}
       />
     </>
   );

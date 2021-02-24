@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   SystemSummaryItemState,
-  SystemSummaryItemStateProps,
   SystemSummaryAlertProps,
   SystemSummaryAlert,
   SystemSummaryTaskState,
@@ -10,39 +9,32 @@ import {
   SystemSummaryBannerProps,
   SystemSummarySpoiltItems,
   SystemSummarySpoiltItemsProps,
+  ItemSummary,
+  RobotSummary,
   Severity,
   RobotSummaryState,
-  RobotSummaryStateProps,
+  OmniPanel,
+  OmniPanelView,
+  StackNavigator,
 } from '../lib';
 import { Meta, Story } from '@storybook/react';
+import { Button } from '@material-ui/core';
 
 export default {
   title: 'Systems summary',
   component: SystemSummaryItemState,
 } as Meta;
 
-const itemStateDataDoor: SystemSummaryItemStateProps = {
-  itemSummary: {
-    operational: 0,
-    spoiltItem: [],
-  },
-  onClick: () => {
-    /**filler */
-  },
-  item: 'Doors',
+const itemSummary: ItemSummary = {
+  operational: 0,
+  spoiltItem: [],
 };
 
-const itemStateDataRobot: RobotSummaryStateProps = {
-  itemSummary: {
-    operational: 0,
-    idle: 0,
-    charging: 0,
-    spoiltRobots: [],
-  },
-  onClick: () => {
-    /**filler */
-  },
-  item: 'Robots',
+const robotSummary: RobotSummary = {
+  operational: 0,
+  idle: 0,
+  charging: 0,
+  spoiltRobots: [],
 };
 
 const systemSummaryAlert: SystemSummaryAlertProps = {
@@ -120,26 +112,86 @@ const spoiltEquipment: SystemSummarySpoiltItemsProps = {
   robots: [],
 };
 
-const onSpoiltItemClick = () => {
-  // filler
+const SimpleItemSummary = (): JSX.Element => {
+  const [view, setView] = React.useState<number | string>(0);
+  const stack = React.useMemo(() => new StackNavigator<number>(0), []);
+
+  return (
+    <OmniPanel
+      view={view}
+      style={{
+        width: 1000,
+        height: 500,
+        border: '1px solid black',
+        borderTopLeftRadius: 16,
+        borderTopRightRadius: 16,
+      }}
+      onBack={() => setView(stack.pop())}
+      onHome={() => setView(stack.reset())}
+    >
+      <OmniPanelView viewId={0}>
+        <SystemSummaryItemState
+          item={'Door'}
+          itemSummary={itemSummary}
+          onClick={() => (stack.push(1), setView(1))}
+        />
+
+        <RobotSummaryState
+          item={'Robots'}
+          itemSummary={robotSummary}
+          onClick={() => (stack.push(2), setView(2))}
+        />
+      </OmniPanelView>
+      <OmniPanelView viewId={1}>
+        <Button variant="outlined" onClick={() => setView(stack.pop())}>
+          Back
+        </Button>
+      </OmniPanelView>
+      <OmniPanelView viewId={2}>
+        <Button variant="outlined" onClick={() => setView(stack.pop())}>
+          Back
+        </Button>
+      </OmniPanelView>
+    </OmniPanel>
+  );
 };
 
-export const SystemSummaryItemStateStory: Story = (args) => (
-  <React.Fragment>
-    <SystemSummaryItemState
-      item={itemStateDataDoor.item}
-      itemSummary={itemStateDataDoor.itemSummary}
-      onClick={itemStateDataDoor.onClick}
-      {...args}
-    />
-    <RobotSummaryState
-      item={itemStateDataRobot.item}
-      itemSummary={itemStateDataRobot.itemSummary}
-      onClick={itemStateDataRobot.onClick}
-      {...args}
-    />
-  </React.Fragment>
-);
+const SpoiltItem = (): JSX.Element => {
+  const [view, setView] = React.useState<number | string>(0);
+  const stack = React.useMemo(() => new StackNavigator<number>(0), []);
+
+  return (
+    <OmniPanel
+      view={view}
+      style={{
+        width: 1000,
+        height: 500,
+        border: '1px solid black',
+        borderTopLeftRadius: 16,
+        borderTopRightRadius: 16,
+      }}
+      onBack={() => setView(stack.pop())}
+      onHome={() => setView(stack.reset())}
+    >
+      <OmniPanelView viewId={0}>
+        <SystemSummarySpoiltItems
+          doors={spoiltEquipment.doors}
+          lifts={spoiltEquipment.lifts}
+          dispensers={spoiltEquipment.dispensers}
+          robots={spoiltEquipment.robots}
+          onClickSpoiltDoor={() => (stack.push(1), setView(1))}
+        />
+      </OmniPanelView>
+      <OmniPanelView viewId={1}>
+        <Button variant="outlined" onClick={() => setView(stack.pop())}>
+          Back
+        </Button>
+      </OmniPanelView>
+    </OmniPanel>
+  );
+};
+
+export const SystemSummaryItemStateStory: Story = (args) => <SimpleItemSummary {...args} />;
 
 export const SystemSummaryItemAlertStory: Story = (args) => (
   <React.Fragment>
@@ -176,13 +228,4 @@ export const SystemSummaryBannerStory: Story = (args) => (
   </React.Fragment>
 );
 
-export const SystemSummarySpoiltItemStory: Story = (args) => (
-  <SystemSummarySpoiltItems
-    doors={spoiltEquipment.doors}
-    lifts={spoiltEquipment.lifts}
-    dispensers={spoiltEquipment.dispensers}
-    robots={spoiltEquipment.robots}
-    onClickSpoiltDoor={onSpoiltItemClick}
-    {...args}
-  />
-);
+export const SystemSummarySpoiltItemStory: Story = (args) => <SpoiltItem {...args} />;

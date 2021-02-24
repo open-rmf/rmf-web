@@ -300,16 +300,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
           onClose={handleOmniPanelClose}
         >
           <OmniPanelView viewId={OmniPanelViewIndex.MainMenu}>
-            <MainMenu
-              pushView={pushView}
-              tasks={tasks}
-              // TODO - Link it to notifications once backend is up
-              notifications={[]}
-              spoiltDoorClick={handleDoorMarkerClick}
-              spoiltLiftClick={handleLiftMarkerClick}
-              spoiltRobotClick={handleRobotMarkerClick}
-              spoiltDispenserClick={handleDispenserMarkerClick}
-            />
+            <MainMenu pushView={pushView} />
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Doors}>
             {doors.map((door) => (

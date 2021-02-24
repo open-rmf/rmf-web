@@ -1,69 +1,26 @@
-import { Divider, makeStyles, Typography, Button } from '@material-ui/core';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import { Divider, List, ListItem, makeStyles, Typography } from '@material-ui/core';
 import Debug from 'debug';
 import React from 'react';
+import DashboardTooltip from 'react-components/lib/tooltip';
 import { TooltipsContext } from '../app-contexts';
 import { OmniPanelViewIndex } from './dashboard';
-import {
-  Notification,
-  SystemSummaryItemState,
-  DashboardTooltip,
-  SystemSummaryAlert,
-  SystemSummaryTaskState,
-  SystemSummaryBanner,
-  SystemSummarySpoiltItems,
-  RobotSummaryState,
-  SpoiltDoor,
-  SpoiltLift,
-  SpoiltDispenser,
-} from 'react-components';
-import { RmfHealthContext } from '../rmf-app';
-import { HealthStatus } from '../../managers/rmf-health-state-manager';
 
 const debug = Debug('MainMenu');
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    padding: theme.spacing(2),
+    padding: 0,
     backgroundColor: theme.palette.background.paper,
-  },
-  buttons: {
-    width: '100%',
-    margin: '0.5rem 0',
-  },
-  commandButton: {
-    backgroundColor: theme.palette.warning.dark,
-    color: 'white',
-  },
-  divider: {
-    margin: '0.5rem 0',
-  },
-  systemSummaryHeader: {
-    margin: '0.5rem 0',
   },
 }));
 
 export interface MainMenuProps {
   pushView(view: OmniPanelViewIndex): void;
-  tasks: RomiCore.TaskSummary[];
-  notifications: Notification[];
-  spoiltDoorClick?(door: RomiCore.Door): void;
-  spoiltLiftClick?(lift: RomiCore.Lift): void;
-  spoiltRobotClick?(fleet: string, robot: RomiCore.RobotState): void;
-  spoiltDispenserClick?(event: React.MouseEvent, guid: string): void;
 }
 
 export const MainMenu = React.memo((props: MainMenuProps) => {
   const { showTooltips } = React.useContext(TooltipsContext);
-  const {
-    pushView,
-    tasks,
-    notifications,
-    spoiltDispenserClick,
-    spoiltDoorClick,
-    spoiltLiftClick,
-    spoiltRobotClick,
-  } = props;
+  const { pushView } = props;
   debug('render');
   const classes = useStyles();
 
@@ -95,120 +52,55 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
     pushView(OmniPanelViewIndex.Tasks);
   }, [pushView]);
 
-  const [allNotifications, setAllNotifications] = React.useState(notifications);
-
-  const handleDismissNotification = (id: number) => {
-    const filteredNotifications = allNotifications.filter((n) => n.id !== id);
-    setAllNotifications(filteredNotifications);
-  };
-
-  const bannerIsError = (healthStatus: HealthStatus): boolean => {
-    let doorCount = healthStatus.door.spoiltItem.length;
-    let liftCount = healthStatus.lift.spoiltItem.length;
-    let dispenserCount = healthStatus.dispenser.spoiltItem.length;
-    let robotCount = healthStatus.robot.spoiltRobots.length;
-
-    return doorCount + liftCount + dispenserCount + robotCount !== 0;
-  };
-
-  const healthStatus = React.useContext(RmfHealthContext);
-
   return (
-    <React.Fragment>
-      <SystemSummaryBanner imageSrc={'/favicon.ico'} isError={bannerIsError(healthStatus)} />
-      <div className={classes.root}>
-        <SystemSummaryAlert
-          notifications={allNotifications}
-          onNotificationsDismiss={handleDismissNotification}
-        />
-        <Divider className={classes.divider} />
+    <List className={classes.root} data-component="MainMenu">
+      <ListItem data-item="Doors" button={true} onClick={handleMainMenuDoorsClick}>
+        <Typography variant="h5">Doors</Typography>
+      </ListItem>
+      <Divider />
 
-        <SystemSummarySpoiltItems
-          doors={healthStatus.door.spoiltItem as SpoiltDoor[]}
-          lifts={healthStatus.lift.spoiltItem as SpoiltLift[]}
-          dispensers={healthStatus.dispenser.spoiltItem as SpoiltDispenser[]}
-          robots={healthStatus.robot.spoiltRobots}
-          onClickSpoiltDoor={spoiltDoorClick}
-          onClickSpoiltDispenser={spoiltDispenserClick}
-          onClickSpoiltLift={spoiltLiftClick}
-          onClickSpoiltRobot={spoiltRobotClick}
-        />
-        <Divider className={classes.divider} />
+      <ListItem data-item="Lifts" button={true} onClick={handleMainMenuLiftsClick}>
+        <Typography variant="h5">Lifts</Typography>
+      </ListItem>
+      <Divider />
 
-        <Typography variant="h5" className={classes.systemSummaryHeader}>
-          Systems Summary
-        </Typography>
+      <ListItem data-item="Robots" button={true} onClick={handleMainMenuRobotsClick}>
+        <Typography variant="h5">Robots</Typography>
+      </ListItem>
+      <Divider />
 
-        <SystemSummaryItemState
-          item={'Door'}
-          itemSummary={healthStatus.door}
-          onClick={handleMainMenuDoorsClick}
-        />
-        <SystemSummaryItemState
-          item={'Lift'}
-          itemSummary={healthStatus.lift}
-          onClick={handleMainMenuLiftsClick}
-        />
-        <SystemSummaryItemState
-          item={'Dispenser'}
-          itemSummary={healthStatus.dispenser}
-          onClick={handleMainMenuDispensersClick}
-        />
-        <RobotSummaryState
-          item={'Robot'}
-          itemSummary={healthStatus.robot}
-          onClick={handleMainMenuRobotsClick}
-        />
-        <Divider className={classes.divider} />
+      <ListItem data-item="Dispensers" button={true} onClick={handleMainMenuDispensersClick}>
+        <Typography variant="h5">Dispensers</Typography>
+      </ListItem>
+      <Divider />
 
-        <Typography variant="h6">Task Statuses</Typography>
-        <SystemSummaryTaskState tasks={tasks} onClick={handleMainMenuTasksClick} />
-        <Button
-          color="primary"
-          className={classes.buttons}
-          variant="contained"
-          onClick={handleMainMenuNegotiationsClick}
+      <ListItem data-item="Commands" button={true} onClick={handleMainMenuCommandsClick}>
+        <DashboardTooltip
+          title="This panel shows the commands that a user can request and RoMi will allocate the most suitable robot for the task"
+          id="commands-tooltip"
+          enabled={showTooltips}
         >
-          <DashboardTooltip
-            title="This panel shows the negotiations between robots when there are conflicts in trajectories"
-            id="negotiations-tooltip"
-            enabled={showTooltips}
-          >
-            <Typography variant="body1">Negotiations</Typography>
-          </DashboardTooltip>
-        </Button>
-        <Button
-          color="primary"
-          className={classes.buttons}
-          variant="contained"
-          onClick={handleMainMenuTasksClick}
-        >
-          <DashboardTooltip
-            title="This panel shows the plans of robots that has received instructions to perform a task"
-            id="plans-tooltip"
-            enabled={showTooltips}
-          >
-            <Typography variant="body1">Plans</Typography>
-          </DashboardTooltip>
-        </Button>
-        <Divider className={classes.divider} />
+          <Typography variant="h5">Commands</Typography>
+        </DashboardTooltip>
+      </ListItem>
+      <Divider />
 
-        <Typography variant="h6">Command Center</Typography>
-        <Button
-          className={`${classes.buttons} ${classes.commandButton}`}
-          variant="contained"
-          onClick={handleMainMenuCommandsClick}
+      <ListItem data-item="Negotiations" button={true} onClick={handleMainMenuNegotiationsClick}>
+        <DashboardTooltip
+          title="This panel shows the negotiations between robots when there are conflicts in trajectories"
+          id="negotiations-tooltip"
+          enabled={showTooltips}
         >
-          <DashboardTooltip
-            title="This panel shows the commands that a user can request and RoMi will allocate the most suitable robot for the task"
-            id="commands-tooltip"
-            enabled={showTooltips}
-          >
-            <Typography variant="body1">Commands</Typography>
-          </DashboardTooltip>
-        </Button>
-      </div>
-    </React.Fragment>
+          <Typography variant="h5">Negotiations</Typography>
+        </DashboardTooltip>
+      </ListItem>
+      <Divider />
+
+      <ListItem data-item="Plans" button={true} onClick={handleMainMenuTasksClick}>
+        <Typography variant="h5">Plans</Typography>
+      </ListItem>
+      <Divider />
+    </List>
   );
 });
 
