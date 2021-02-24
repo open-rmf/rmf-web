@@ -4,9 +4,9 @@ import React from 'react';
 import { OmniPanel, OmniPanelView } from '../lib';
 import { OmniPanelProps } from '../lib/omni-panel';
 
-function TestPanel(props: Omit<OmniPanelProps, 'view' | 'children'>) {
+function TestPanel(props: Omit<OmniPanelProps, 'stack' | 'children'>) {
   return (
-    <OmniPanel view={0} {...props}>
+    <OmniPanel stack={[0]} {...props}>
       <OmniPanelView viewId={0}></OmniPanelView>
     </OmniPanel>
   );
@@ -35,7 +35,7 @@ test('triggers onClose callback', () => {
 
 test('only render current view', () => {
   const root = render(
-    <OmniPanel view={0}>
+    <OmniPanel stack={[0]}>
       <OmniPanelView viewId={0}>
         <div data-testid="0"></div>
       </OmniPanelView>

@@ -1,31 +1,55 @@
-import { StackNavigator } from '../lib';
+import { useStackNavigator, StackNavigatorDispatch } from '../lib';
+import { renderHook, act, RenderResult } from '@testing-library/react-hooks';
 
-let stack: StackNavigator<number>;
+let hookResult: RenderResult<[number[], StackNavigatorDispatch<number>]>;
+let stackDispatch: StackNavigatorDispatch<number>;
 
 beforeEach(() => {
-  stack = new StackNavigator(0);
+  hookResult = renderHook(() => useStackNavigator([0], 0)).result;
+  stackDispatch = hookResult.current[1];
 });
 
 test('push', () => {
-  stack.push(10);
-  expect(stack.stack).toHaveLength(2);
-  expect(stack.stack[0]).toBe(0);
-  expect(stack.stack[1]).toBe(10);
+  act(() => stackDispatch.push(10));
+  const stack = hookResult.current[0];
+  expect(stack).toHaveLength(2);
+  expect(stack[0]).toBe(0);
+  expect(stack[1]).toBe(10);
 });
 
 test('pop does not remove last item', () => {
-  stack.push(2);
-  stack.pop();
-  stack.pop();
-  expect(stack.stack).toHaveLength(1);
-  expect(stack.stack[0]).toBe(0);
+  act(() => {
+    stackDispatch.push(2);
+    stackDispatch.pop();
+    stackDispatch.pop();
+  });
+  const stack = hookResult.current[0];
+  expect(stack).toHaveLength(1);
+  expect(stack[0]).toBe(0);
 });
 
-test('reset leaves only the home item in the stack', () => {
-  stack.push(2);
-  stack.push(3);
-  expect(stack.stack).toHaveLength(3);
-  stack.reset();
-  expect(stack.stack).toHaveLength(1);
-  expect(stack.stack[0]).toBe(0);
+test('reset returns the stack to the initial state', () => {
+  act(() => {
+    stackDispatch.push(2);
+    stackDispatch.push(3);
+  });
+  expect(hookResult.current[0]).toHaveLength(3);
+  act(() => {
+    stackDispatch.reset();
+  });
+  expect(hookResult.current[0]).toHaveLength(1);
+  expect(hookResult.current[0][0]).toBe(0);
+});
+
+test('home pushes the home view onto the stack', () => {
+  act(() => {
+    stackDispatch.push(2);
+    stackDispatch.push(3);
+  });
+  expect(hookResult.current[0]).toHaveLength(3);
+  act(() => {
+    stackDispatch.home();
+  });
+  expect(hookResult.current[0]).toHaveLength(4);
+  expect(hookResult.current[0][3]).toBe(0);
 });
