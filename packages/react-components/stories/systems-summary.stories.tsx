@@ -156,6 +156,22 @@ const SimpleItemSummary = (): JSX.Element => {
   );
 };
 
+const SimpleNotifications = (): JSX.Element => {
+  const [allNotifications, setAllNotifications] = React.useState(systemSummaryAlert.notifications);
+
+  const handleDismissNotification = (id: number) => {
+    const filteredNotifications = allNotifications.filter((n) => n.id !== id);
+    setAllNotifications(filteredNotifications);
+  };
+
+  return (
+    <SystemSummaryAlert
+      notifications={allNotifications}
+      onNotificationsDismiss={handleDismissNotification}
+    />
+  );
+};
+
 const SpoiltItem = (): JSX.Element => {
   const [view, setView] = React.useState<number | string>(0);
   const stack = React.useMemo(() => new StackNavigator<number>(0), []);
@@ -195,11 +211,7 @@ export const SystemSummaryItemStateStory: Story = (args) => <SimpleItemSummary {
 
 export const SystemSummaryItemAlertStory: Story = (args) => (
   <React.Fragment>
-    <SystemSummaryAlert
-      notifications={systemSummaryAlert.notifications}
-      onNotificationsDismiss={systemSummaryAlert.onNotificationsDismiss}
-      {...args}
-    />
+    <SimpleNotifications {...args} />
     <SystemSummaryAlert
       notifications={[]}
       onNotificationsDismiss={systemSummaryAlert.onNotificationsDismiss}
