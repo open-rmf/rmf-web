@@ -13,6 +13,8 @@ services:
     - ./logs:/output/ # Example: Fluentd will collect logs and store it here for demo
     logging:
       driver: "local"
+    ports:
+      - 9880:9880
  
   # This app sends logs to Fluentd via HTTP
   http-myapp:

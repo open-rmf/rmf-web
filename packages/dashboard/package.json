@@ -58,6 +58,7 @@
     "eventemitter3": "^4.0.7",
     "keycloak-js": "^11.0.2",
     "leaflet": "^1.7.1",
+    "monitoring": "file:../monitoring",
     "node-vibrant": "^3.1.5",
     "react-async": "^10.0.0",
     "react-components": "file:../react-components",

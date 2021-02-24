@@ -1,0 +1,28 @@
+{
+  "name": "monitoring",
+  "version": "1.0.0",
+  "description": "",
+  "main": "lib/index.js",
+  "scripts": {
+    "prepare": "npm run build",
+    "build": "npm run lint && tsc --build",
+    "build:watch": "tsc --build --watch",
+    "clean": "tsc --build --clean",
+    "lint": "eslint --ext ts,tsx, lib"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "debug": "^4.2.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.4.0",
+    "@typescript-eslint/parser": "^4.4.0",
+    "eslint": "^7.11.0",
+    "typescript": "^4.0.3"
+  },
+  "files": [
+    "lib/"
+  ]
+}
