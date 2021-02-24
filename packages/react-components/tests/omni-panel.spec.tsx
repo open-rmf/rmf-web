@@ -12,28 +12,28 @@ function TestPanel(props: Omit<OmniPanelProps, 'stack' | 'children'>) {
   );
 }
 
-test('triggers onBack callback', () => {
-  const handler = jest.fn();
+it('triggers onBack callback', () => {
+  const handler = jasmine.createSpy();
   const root = render(<TestPanel onBack={handler} />);
   userEvent.click(root.getByLabelText('Back'));
   expect(handler).toHaveBeenCalled();
 });
 
-test('triggers onHome callback', () => {
-  const handler = jest.fn();
+it('triggers onHome callback', () => {
+  const handler = jasmine.createSpy();
   const root = render(<TestPanel onHome={handler} />);
   userEvent.click(root.getByLabelText('Home'));
   expect(handler).toHaveBeenCalled();
 });
 
-test('triggers onClose callback', () => {
-  const handler = jest.fn();
+it('triggers onClose callback', () => {
+  const handler = jasmine.createSpy();
   const root = render(<TestPanel variant="backHomeClose" onClose={handler} />);
   userEvent.click(root.getByLabelText('Close'));
   expect(handler).toHaveBeenCalled();
 });
 
-test('only render current view', () => {
+it('only render current view', () => {
   const root = render(
     <OmniPanel stack={[0]}>
       <OmniPanelView viewId={0}>
