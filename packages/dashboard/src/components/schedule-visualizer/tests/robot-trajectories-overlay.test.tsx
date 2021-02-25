@@ -54,7 +54,7 @@ describe('RobotTrajectoriesOverlay', () => {
     trajectoryConflict = trajectoryData.conflicts;
   });
 
-  it('renders without crashing', async () => {
+  it('smoke test', async () => {
     const settings = defaultSettings();
     let root: RenderResult;
     await waitFor(() => {
@@ -70,7 +70,6 @@ describe('RobotTrajectoriesOverlay', () => {
           </SettingsContext.Provider>
         </LMap>,
       );
-      expect(root.queryAllByTestId('trajMarker')).toBeTruthy();
       root.unmount();
     });
   });
