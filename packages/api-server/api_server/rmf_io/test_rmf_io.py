@@ -14,18 +14,20 @@ from .topics import topics
 
 
 class TestRmfIO(unittest.IsolatedAsyncioTestCase):
-    async def make_client(self, topic: str):
-        client = client = socketio.AsyncClient()
+    async def make_client(self):
+        client = socketio.AsyncClient()
         self.clients.append(client)
         await client.connect(f"http://localhost:{self.server_port}")
         fut = asyncio.Future()
         client.on("connect", lambda: fut.set_result(None))
         await fut
+        return client
+
+    async def client_subscribe(self, client: socketio.AsyncClient, topic: str):
         await client.emit("subscribe", topic)
         fut = asyncio.Future()
         client.on("subscribe", fut.set_result)
-        await fut
-        return client
+        return await fut
 
     async def asyncSetUp(self):
         self.clients = []
@@ -55,7 +57,8 @@ class TestRmfIO(unittest.IsolatedAsyncioTestCase):
         test_names = ["test_door", "test_door_2"]
         test_states = [make_door_state(name) for name in test_names]
         received_states = {}
-        client = await self.make_client(topics.door_states)
+        client = await self.make_client()
+        await self.client_subscribe(client, topics.door_states)
 
         def on_door_states(door_state):
             received_states[door_state["door_name"]] = door_state
@@ -73,15 +76,17 @@ class TestRmfIO(unittest.IsolatedAsyncioTestCase):
 
         # test that a new client receives all the current states on subscribe
         done = asyncio.Future()
-        client = await self.make_client(topics.door_states)
+        client = await self.make_client()
         client.on(topics.door_states, on_door_states)
+        await self.client_subscribe(client, topics.door_states)
         await asyncio.wait_for(done, 1)
 
     async def test_door_health(self):
         """
         test receiving door health events
         """
-        client = await self.make_client(topics.door_health)
+        client = await self.make_client()
+        await self.client_subscribe(client, topics.door_health)
         done = asyncio.Future()
         client.on(topics.door_health, done.set_result)
         self.rmf_gateway.door_health.on_next(
@@ -94,7 +99,8 @@ class TestRmfIO(unittest.IsolatedAsyncioTestCase):
         test building map image is saved to static files and data is replaced
         with the url.
         """
-        client = await self.make_client(topics.building_map)
+        client = await self.make_client()
+        await self.client_subscribe(client, topics.building_map)
         done = asyncio.Future()
 
         def on_building_map(building_map: dict):
