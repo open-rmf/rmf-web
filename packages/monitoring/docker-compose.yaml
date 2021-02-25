@@ -15,14 +15,6 @@ services:
       driver: "local"
     ports:
       - 9880:9880
- 
-  # This app sends logs to Fluentd via HTTP
-  http-myapp:
-    container_name: http-mock-myapp
-    image: alpine
-    volumes:
-    - ./http-mock:/app
-    command: [ /bin/sh , -c , "apk add --no-cache curl && chmod +x /app/app.sh && ./app/app.sh"]
 
   # This app writes logs to a local file
   file-myapp:

@@ -2,6 +2,7 @@ import React from 'react';
 import { linkTo } from '@storybook/addon-links';
 import { Welcome } from '@storybook/react/demo';
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default {
   title: 'Welcome',
   component: Welcome,
