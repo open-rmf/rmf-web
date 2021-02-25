@@ -3,6 +3,7 @@ import Authenticator from './components/auth/authenticator';
 import KeycloakAuthenticator from './components/auth/keycloak';
 import StubAuthenticator from './components/auth/stub';
 import ResourceManager from './managers/resource-manager';
+import { FluentdLog } from 'monitoring';
 import {
   DefaultTrajectoryManager,
   RobotTrajectoryManager,
@@ -17,6 +18,11 @@ export interface AppConfig {
   trajServerUrl: string;
   appResourcesFactory: () => Promise<ResourceManager | undefined>;
 }
+
+export const fluentd = new FluentdLog({
+  logIdentifier: 'dashboard',
+  url: 'http://localhost:9880/http-dashboard.log',
+});
 
 export const appConfig: AppConfig = (() => {
   const trajServer = process.env.REACT_APP_TRAJECTORY_SERVER;

@@ -5,7 +5,7 @@ export interface FluentdLogProps {
   url: string;
 }
 
-class FluentdLog {
+export class FluentdLog {
   logIdentifier: string;
   url: string;
 
@@ -14,7 +14,7 @@ class FluentdLog {
     this.url = props.url;
   }
 
-  public send = (data: string, moduleIdentifier: string) => {
+  public send = (data: string, moduleIdentifier?: string) => {
     // Fluentd specs to receive formData
     const form = new FormData();
     const logIdentifier = moduleIdentifier
