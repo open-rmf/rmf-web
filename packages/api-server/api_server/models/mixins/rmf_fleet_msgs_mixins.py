@@ -85,3 +85,12 @@ class RobotStateMixin:
     battery_percent = fields.FloatField()
     location = fields.JSONField()
     path = fields.JSONField()
+
+
+class LiftClearance_RequestMixin:
+    robot_name = fields.TextField()
+    lift_name = fields.TextField()
+
+
+class LiftClearance_ResponseMixin:
+    decision = fields.IntField()

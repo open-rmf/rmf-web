@@ -46,6 +46,11 @@ class DeliveryMixin:
     dropoff_behavior = fields.JSONField()
 
 
+class DispatchAckMixin:
+    dispatch_request = fields.JSONField()
+    success = fields.BooleanField()
+
+
 class DispatchRequestMixin:
     fleet_name = fields.TextField()
     task_profile = fields.JSONField()
@@ -133,7 +138,6 @@ class GetTaskList_ResponseMixin:
 
 class SubmitTask_RequestMixin:
     requester = fields.TextField()
-    start_time = fields.DatetimeField()
     description = fields.JSONField()
     evaluator = fields.SmallIntField()
 
