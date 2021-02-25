@@ -52,6 +52,7 @@ export const DispensersOverlay = (props: DispensersOverlayProps): React.ReactEle
                 onClick={onDispenserClick}
                 aria-label={dispenser.guid}
                 data-component="DispenserMarker"
+                data-testid="dispenserMarker"
               />
             );
           })}
