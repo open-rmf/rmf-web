@@ -11,26 +11,19 @@ describe('robot-markers', () => {
   beforeEach(() => {
     colorManager = new ColorManager();
     fakeOnClick = jasmine.createSpy();
-    // FIXME: karma should support the apis needed. So we wouldn't need to define the robotPrimaryColor
-    colorManager.robotPrimaryColor = jasmine.createSpy();
   });
 
   async function render(Component: JSX.Element): Promise<RenderResult> {
-    const renderImpl = () => {
-      return render_(
-        <ColorContext.Provider value={colorManager}>
-          <svg>{Component}</svg>
-        </ColorContext.Provider>,
-      );
-    };
-
-    let root: ReturnType<typeof renderImpl>;
+    let root: RenderResult;
     await act(async () => {
       root = render_(
         <ColorContext.Provider value={colorManager}>
           <svg>{Component}</svg>
         </ColorContext.Provider>,
       );
+      // default marker sets the color using an async function, need this to ensure
+      // the promise is resolved.
+      await new Promise((res) => setTimeout(res, 0));
     });
 
     return root!;
@@ -55,10 +48,5 @@ describe('robot-markers', () => {
       <RobotMarker robot={makeRobot()} fleetName="test_fleet" footprint={1} iconPath="test_icon" />,
     );
     expect(root.container.querySelector('image')).not.toBeNull();
-  });
-
-  it("uses ColorManager to determine robot's color", async () => {
-    await render(<RobotMarker robot={makeRobot()} fleetName="test_fleet" footprint={1} />);
-    expect(colorManager.robotPrimaryColor).toHaveBeenCalled();
   });
 });
