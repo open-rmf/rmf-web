@@ -1,25 +1,60 @@
-import { render } from '@testing-library/react';
+import { cleanup, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { LiftMarker, LiftMarkerProps } from '../../lib';
-import { makeLift, makeLiftState } from './test-utils';
+import { allLiftModes, allLiftMotion, makeLift, makeLiftState } from './test-utils';
 
-([
-  'emergency',
-  'fire',
-  'human',
-  'moving',
-  'offLine',
-  'onCurrentFloor',
-  'unknown',
-] as LiftMarkerProps['variant'][]).forEach((variant) => {
-  it(`smoke test - ${variant}`, () => {
+it('smoke test with different variants', () => {
+  ([
+    'emergency',
+    'fire',
+    'human',
+    'moving',
+    'offLine',
+    'onCurrentFloor',
+    'unknown',
+  ] as LiftMarkerProps['variant'][]).forEach((variant) => {
     render(
       <svg>
         <LiftMarker lift={makeLift()} liftState={makeLiftState()} variant={variant} />
       </svg>,
     );
+    cleanup();
   });
+});
+
+it('smoke test with different modes', () => {
+  allLiftModes()
+    .map((mode) =>
+      makeLiftState({
+        current_mode: mode,
+      }),
+    )
+    .forEach((state) => {
+      render(
+        <svg>
+          <LiftMarker lift={makeLift()} liftState={state} />
+        </svg>,
+      );
+      cleanup();
+    });
+});
+
+it('smoke test with different motions', () => {
+  allLiftMotion()
+    .map((motion) =>
+      makeLiftState({
+        motion_state: motion,
+      }),
+    )
+    .forEach((state) => {
+      render(
+        <svg>
+          <LiftMarker lift={makeLift()} liftState={state} />
+        </svg>,
+      );
+      cleanup();
+    });
 });
 
 it('trigger onClick event', () => {
