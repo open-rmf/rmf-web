@@ -58,12 +58,20 @@ export const RobotMarker = React.forwardRef(
 
     const translateTransform = translate ? `translate(${pos[0]} ${pos[1]})` : undefined;
 
+    const isMounted = React.useRef(true);
+    React.useEffect(() => {
+      return () => {
+        isMounted.current = false;
+      };
+    }, []);
+
     React.useEffect(() => {
       if (useImageMarker) {
         return;
       }
       (async () => {
-        setRobotColor(await colorManager.robotPrimaryColor(fleetName, robot.name, robot.model));
+        const color = await colorManager.robotPrimaryColor(fleetName, robot.name, robot.model);
+        isMounted.current && setRobotColor(color);
       })();
     }, [colorManager, fleetName, robot.model, robot.name, useImageMarker]);
 

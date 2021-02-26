@@ -21,9 +21,6 @@ describe('robot-markers', () => {
           <svg>{Component}</svg>
         </ColorContext.Provider>,
       );
-      // default marker sets the color using an async function, need this to ensure
-      // the promise is resolved.
-      await new Promise((res) => setTimeout(res, 0));
     });
 
     return root!;
