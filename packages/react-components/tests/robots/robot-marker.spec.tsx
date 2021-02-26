@@ -1,7 +1,7 @@
-import { act, render as render_, RenderResult } from '@testing-library/react';
+import { act, cleanup, render as render_, RenderResult } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { ColorContext, ColorManager, RobotMarker } from '../../lib';
+import { ColorContext, ColorManager, RobotMarker, RobotMarkerProps } from '../../lib';
 import { makeRobot } from './test-utils';
 
 describe('robot-markers', () => {
@@ -28,6 +28,16 @@ describe('robot-markers', () => {
 
     return root!;
   }
+
+  it('smoke test with different variant', async () => {
+    const variants: RobotMarkerProps['variant'][] = ['inConflict', 'normal'];
+    for (const v of variants) {
+      await render(
+        <RobotMarker robot={makeRobot()} fleetName="test_fleet" footprint={1} variant={v} />,
+      );
+      cleanup();
+    }
+  });
 
   it('trigger onClick event', async () => {
     const root = await render(
