@@ -8,7 +8,7 @@ def heartbeat(liveliness):
     Projects a source observable sequence to a boolean. The resulting value is True when there
     is an observable emitted within the liveliness factor and False otherwise.
     Args:
-        liveliness: The amount of time between each event for the observable to be considered
+        liveliness: The amount of time (in seconds) between each event for the observable to be considered
         alive. Note that an observable may stay alive for up to 2x liveliness between each
         event as this operator checks for items emitted between this window.
     """
