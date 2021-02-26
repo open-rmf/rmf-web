@@ -45,6 +45,24 @@ describe('Door accordion', () => {
     });
   });
 
+  it('renders basic door information', () => {
+    const door = makeDoor({
+      name: 'test_door',
+      door_type: RomiCore.Door.DOOR_TYPE_SINGLE_SWING,
+      motion_direction: 1,
+    });
+    const doorState = makeDoorState({
+      door_name: 'test_door',
+      current_mode: { value: RomiCore.DoorMode.MODE_CLOSED },
+    });
+    const accordion = render(<DoorAccordion door={door} doorState={doorState} />);
+    expect(accordion.queryAllByText('test_door').length).toBeTruthy();
+    expect(accordion.queryByText('Single Swing')).toBeTruthy();
+    expect(accordion.queryByText('Clockwise')).toBeTruthy();
+    expect(accordion.queryByText('1.571')).toBeTruthy();
+    expect(accordion.queryByText('(0.000, 0.000)')).toBeTruthy();
+  });
+
   it('triggers door control dispatch when open door button is clicked', () => {
     const fakeOnClick = jasmine.createSpy();
     const root = render(<DoorAccordion door={makeDoor()} onDoorControlClick={fakeOnClick} />);
