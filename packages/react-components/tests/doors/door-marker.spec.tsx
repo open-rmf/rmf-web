@@ -1,17 +1,11 @@
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { cleanup, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { DoorMarker } from '../../lib';
-import { makeDoor } from './test-utils';
+import { allDoorModes, allDoorTypes, makeDoor } from './test-utils';
 
 it('smoke test with different door modes', () => {
-  ([
-    { value: RomiCore.DoorMode.MODE_CLOSED },
-    { value: RomiCore.DoorMode.MODE_MOVING },
-    { value: RomiCore.DoorMode.MODE_OPEN },
-    { value: -1 },
-  ] as RomiCore.DoorMode[]).forEach((mode) => {
+  allDoorModes().forEach((mode) => {
     render(
       <svg>
         <DoorMarker door={makeDoor()} doorMode={mode} />
@@ -22,39 +16,20 @@ it('smoke test with different door modes', () => {
 });
 
 it('smoke test with different door types', () => {
-  [
-    makeDoor({
-      door_type: RomiCore.Door.DOOR_TYPE_DOUBLE_SLIDING,
-    }),
-    makeDoor({
-      door_type: RomiCore.Door.DOOR_TYPE_DOUBLE_SWING,
-    }),
-    makeDoor({
-      door_type: RomiCore.Door.DOOR_TYPE_DOUBLE_TELESCOPE,
-    }),
-    makeDoor({
-      door_type: RomiCore.Door.DOOR_TYPE_SINGLE_SLIDING,
-    }),
-    makeDoor({
-      door_type: RomiCore.Door.DOOR_TYPE_SINGLE_SWING,
-    }),
-    makeDoor({
-      door_type: RomiCore.Door.DOOR_TYPE_SINGLE_TELESCOPE,
-    }),
-    makeDoor({
-      door_type: RomiCore.Door.DOOR_TYPE_UNDEFINED,
-    }),
-    makeDoor({
-      door_type: -1,
-    }),
-  ].forEach((door) => {
-    render(
-      <svg>
-        <DoorMarker door={door} />
-      </svg>,
-    );
-    cleanup();
-  });
+  allDoorTypes()
+    .map((type) =>
+      makeDoor({
+        door_type: type,
+      }),
+    )
+    .forEach((door) => {
+      render(
+        <svg>
+          <DoorMarker door={door} />
+        </svg>,
+      );
+      cleanup();
+    });
 });
 
 it('triggers onClick callback when button is clicked', () => {

@@ -3,59 +3,29 @@ import { cleanup, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { DoorAccordion } from '../../lib';
-import { makeDoor, makeDoorState } from './test-utils';
+import { allDoorModes, allDoorTypes, makeDoor, makeDoorState } from './test-utils';
 
 describe('Door accordion', () => {
   it('smoke test with different door types', () => {
-    [
-      makeDoor({
-        door_type: RomiCore.Door.DOOR_TYPE_DOUBLE_SLIDING,
-      }),
-      makeDoor({
-        door_type: RomiCore.Door.DOOR_TYPE_DOUBLE_SWING,
-      }),
-      makeDoor({
-        door_type: RomiCore.Door.DOOR_TYPE_DOUBLE_TELESCOPE,
-      }),
-      makeDoor({
-        door_type: RomiCore.Door.DOOR_TYPE_SINGLE_SLIDING,
-      }),
-      makeDoor({
-        door_type: RomiCore.Door.DOOR_TYPE_SINGLE_SWING,
-      }),
-      makeDoor({
-        door_type: RomiCore.Door.DOOR_TYPE_SINGLE_TELESCOPE,
-      }),
-      makeDoor({
-        door_type: RomiCore.Door.DOOR_TYPE_UNDEFINED,
-      }),
-      makeDoor({
-        door_type: -1,
-      }),
-    ].forEach((door) => {
-      render(<DoorAccordion door={door} />);
-      cleanup();
-    });
+    allDoorTypes()
+      .map((type) =>
+        makeDoor({
+          door_type: type,
+        }),
+      )
+      .forEach((door) => {
+        render(<DoorAccordion door={door} />);
+        cleanup();
+      });
   });
 
   it('smoke test with different door modes', () => {
-    [
-      makeDoorState({
-        current_mode: { value: RomiCore.DoorMode.MODE_CLOSED },
-      }),
-      makeDoorState({
-        current_mode: { value: RomiCore.DoorMode.MODE_OPEN },
-      }),
-      makeDoorState({
-        current_mode: { value: RomiCore.DoorMode.MODE_MOVING },
-      }),
-      makeDoorState({
-        current_mode: { value: -1 },
-      }),
-    ].forEach((state) => {
-      render(<DoorAccordion door={makeDoor()} doorState={state} />);
-      cleanup();
-    });
+    allDoorModes()
+      .map((mode) => makeDoorState({ current_mode: mode }))
+      .forEach((state) => {
+        render(<DoorAccordion door={makeDoor()} doorState={state} />);
+        cleanup();
+      });
   });
 
   it('smoke test with different motion direction', () => {
