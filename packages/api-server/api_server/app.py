@@ -47,7 +47,7 @@ async def load_states(repo: RmfRepository, gateway: RmfGateway):
     logger.info("loading states from database...")
 
     door_states = await repo.read_door_states()
-    for state in await repo.read_door_states():
+    for state in door_states:
         gateway.door_states.on_next(state)
     logger.info(f"loaded {len(door_states)} door states")
 
