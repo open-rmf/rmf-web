@@ -80,6 +80,7 @@ export const RobotsOverlay = (props: RobotsOverlayProps) => {
               onClick={handleRobotClick}
               aria-label={robot.name}
               data-component="RobotMarker"
+              data-testid="robotMarker"
             />
           )),
         )}
