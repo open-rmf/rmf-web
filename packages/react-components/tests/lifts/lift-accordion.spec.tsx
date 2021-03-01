@@ -2,7 +2,7 @@ import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { cleanup, render, within } from '@testing-library/react';
 import React from 'react';
 import { LiftAccordion } from '../../lib';
-import { allLiftMotion, makeLift, makeLiftState } from './test-utils';
+import { allDoorStates, allLiftModes, allLiftMotion, makeLift, makeLiftState } from './test-utils';
 
 it('smoke test with different lift motion', () => {
   allLiftMotion()
@@ -19,6 +19,32 @@ it('smoke test with different lift motion', () => {
 
 it('smoke test without lift state', () => {
   render(<LiftAccordion lift={makeLift()} />);
+});
+
+it('smoke test with different lift modes', () => {
+  allLiftModes().forEach((mode) => {
+    render(
+      <LiftAccordion
+        lift={makeLift()}
+        liftState={makeLiftState({
+          current_mode: mode,
+        })}
+      />,
+    );
+  });
+});
+
+it('smoke test with different door modes', () => {
+  allDoorStates().forEach((doorState) => {
+    render(
+      <LiftAccordion
+        lift={makeLift()}
+        liftState={makeLiftState({
+          door_state: doorState,
+        })}
+      />,
+    );
+  });
 });
 
 it('renders basic lift information', () => {

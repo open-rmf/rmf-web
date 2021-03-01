@@ -22,6 +22,15 @@ export function allLiftModes(): number[] {
   ];
 }
 
+export function allDoorStates(): number[] {
+  return [
+    RomiCore.LiftState.DOOR_CLOSED,
+    RomiCore.LiftState.DOOR_MOVING,
+    RomiCore.LiftState.DOOR_OPEN,
+    -1,
+  ];
+}
+
 export function makeLift(lift?: Partial<RomiCore.Lift>): RomiCore.Lift {
   return {
     name: 'test',
