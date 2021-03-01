@@ -16,6 +16,10 @@ it('smoke test with different states', () => {
   });
 });
 
+it('smoke test with no state', () => {
+  render(<DispenserAccordion dispenser="test_dispenser" dispenserState={null} />);
+});
+
 it('renders basic information', () => {
   const dispenser = 'test_dispenser';
   const state = makeDispenserState({
