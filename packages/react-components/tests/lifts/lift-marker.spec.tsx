@@ -13,6 +13,7 @@ it('smoke test with different variants', () => {
     'offLine',
     'onCurrentFloor',
     'unknown',
+    undefined,
   ] as LiftMarkerProps['variant'][]).forEach((variant) => {
     render(
       <svg>
@@ -21,6 +22,14 @@ it('smoke test with different variants', () => {
     );
     cleanup();
   });
+});
+
+it('smoke test with translate false', () => {
+  render(
+    <svg>
+      <LiftMarker lift={makeLift()} liftState={makeLiftState()} translate={false} />
+    </svg>,
+  );
 });
 
 it('smoke test with different modes', () => {
@@ -55,6 +64,14 @@ it('smoke test with different motions', () => {
       );
       cleanup();
     });
+});
+
+it('smoke test with no state', () => {
+  render(
+    <svg>
+      <LiftMarker lift={makeLift()} />
+    </svg>,
+  );
 });
 
 it('trigger onClick event', () => {
