@@ -33,7 +33,7 @@ jobs:
           registry: docker.pkg.github.com
           repository: ${{ github.repository }}/e2e
           tags: latest
-          build-args: BASE_IMAGE=docker.pkg.github.com/osrf/rmf-web/rmf:nightly
+          build-args: 'BASE_IMAGE=docker.pkg.github.com/osrf/rmf-web/rmf:nightly'
           path: packages/dashboard/e2e/docker/e2e
   e2e-tests:
     name: End-to-End Tests
