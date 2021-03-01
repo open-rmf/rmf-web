@@ -27,7 +27,7 @@ describe('robot-markers', () => {
   }
 
   it('smoke test with different variant', async () => {
-    const variants: RobotMarkerProps['variant'][] = ['inConflict', 'normal'];
+    const variants: RobotMarkerProps['variant'][] = ['inConflict', 'normal', undefined];
     for (const v of variants) {
       await render(
         <RobotMarker robot={makeRobot()} fleetName="test_fleet" footprint={1} variant={v} />,
