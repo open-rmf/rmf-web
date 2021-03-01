@@ -1,12 +1,11 @@
-import { mount, ReactWrapper } from 'enzyme';
 import L from 'leaflet';
 import React from 'react';
-import { ColorManager, RobotMarker } from 'react-components';
-import { act } from 'react-dom/test-utils';
+import { render, waitFor } from '@testing-library/react';
+import { ColorManager } from 'react-components';
 import { Map as LMap } from 'react-leaflet';
-import getBuildingMap from '../../../mock/data/building-map';
-import fakeFleets from '../../../mock/data/fleets';
 import RobotsOverlay from '../robots-overlay';
+import getBuildingMap from './building-map';
+import fakeFleets from './fleets';
 
 describe('Robots Overlay', () => {
   let colorManager: ColorManager;
@@ -24,28 +23,22 @@ describe('Robots Overlay', () => {
     const buildingMap = await getBuildingMap();
     const fleet = fakeFleets()[0];
     const robots = fleet.robots;
-    let wrapper: ReactWrapper;
-    await act(async () => {
-      wrapper = mount(
-        <LMap
-          bounds={[
-            [0, 0],
-            [1, 1],
-          ]}
-        >
-          <RobotsOverlay
-            fleets={[fleet]}
-            bounds={bounds}
-            conflictRobotNames={conflictRobotNames}
-            currentFloorName={buildingMap.levels[0].name}
-          />
-        </LMap>,
-      );
-    });
-    wrapper!.update();
-
-    expect(wrapper!.find(RobotMarker).length).toBe(robots.length);
-
-    wrapper!.unmount();
+    const root = render(
+      <LMap
+        bounds={[
+          [0, 0],
+          [1, 1],
+        ]}
+      >
+        <RobotsOverlay
+          fleets={[fleet]}
+          bounds={bounds}
+          conflictRobotNames={conflictRobotNames}
+          currentFloorName={buildingMap.levels[0].name}
+        />
+      </LMap>,
+    );
+    await waitFor(() => expect(root.getAllByTestId('robotMarker').length).toBe(robots.length));
+    root.unmount();
   });
 });

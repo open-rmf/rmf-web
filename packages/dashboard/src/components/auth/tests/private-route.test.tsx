@@ -1,13 +1,11 @@
-import { createMount } from '@material-ui/core/test-utils';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
+import { cleanup, render, waitFor, RenderResult } from '@testing-library/react';
 import { BrowserRouter, Router, Switch } from 'react-router-dom';
 import { LOGIN_ROUTE } from '../../../util/url';
-import { UserContext } from '../../auth/contexts';
-import Unauthorized from '../../error-pages/unauthorized';
+import { AuthenticatorContext, UserContext } from '../../auth/contexts';
 import PrivateRoute from '../private-route';
-
-const mount = createMount();
+import FakeAuthenticator from '../__mocks__/authenticator';
 
 describe('PrivateRoute', () => {
   let history: MemoryHistory;
@@ -17,28 +15,34 @@ describe('PrivateRoute', () => {
     history.location.pathname = '/private';
   });
 
+  afterEach(() => {
+    cleanup();
+  });
+
   test('renders correctly', () => {
-    const component = mount(
+    const root = render(
       <BrowserRouter>
         <PrivateRoute path="/private" exact />
       </BrowserRouter>,
     );
-    expect(component.html()).toMatchSnapshot();
+    root.unmount();
   });
 
   test('redirects when unauthenticated', () => {
-    mount(
-      <Router history={history}>
-        <Switch>
-          <PrivateRoute path="/private" exact />
-        </Switch>
-      </Router>,
+    render(
+      <AuthenticatorContext.Provider value={new FakeAuthenticator()}>
+        <Router history={history}>
+          <Switch>
+            <PrivateRoute path="/private" exact />
+          </Switch>
+        </Router>
+      </AuthenticatorContext.Provider>,
     );
     expect(history.location.pathname).toBe(LOGIN_ROUTE);
   });
 
   test('no redirects when authenticated', () => {
-    mount(
+    render(
       <UserContext.Provider value={{ username: 'test' }}>
         <Router history={history}>
           <Switch>
@@ -50,13 +54,16 @@ describe('PrivateRoute', () => {
     expect(history.location.pathname).toBe('/private');
   });
 
-  test('shows unauthorized page when noRedirectToLogin is true', () => {
-    const component = mount(
-      <BrowserRouter>
-        <PrivateRoute path="/private" exact noRedirectToLogin />
-      </BrowserRouter>,
-    );
+  test('shows unauthorized page when noRedirectToLogin is true', async () => {
+    let root: RenderResult;
+    waitFor(() => {
+      root = render(
+        <BrowserRouter>
+          <PrivateRoute path="/private" exact noRedirectToLogin />
+        </BrowserRouter>,
+      );
+      expect(root.queryByText('Unauthorized')).toBeTruthy();
+    });
     expect(history.location.pathname).toBe('/private');
-    expect(component.find(Unauthorized)).toBeTruthy();
   });
 });
