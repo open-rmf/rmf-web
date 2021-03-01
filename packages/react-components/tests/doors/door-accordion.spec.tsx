@@ -1,5 +1,5 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import { cleanup, render } from '@testing-library/react';
+import { cleanup, render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { DoorAccordion } from '../../lib';
@@ -56,11 +56,27 @@ describe('Door accordion', () => {
       current_mode: { value: RomiCore.DoorMode.MODE_CLOSED },
     });
     const accordion = render(<DoorAccordion door={door} doorState={doorState} />);
-    expect(accordion.queryAllByText('test_door').length).toBeTruthy();
-    expect(accordion.queryByText('Single Swing')).toBeTruthy();
-    expect(accordion.queryByText('Clockwise')).toBeTruthy();
-    expect(accordion.queryByText('1.571')).toBeTruthy();
-    expect(accordion.queryByText('(0.000, 0.000)')).toBeTruthy();
+    const rows = accordion.queryAllByRole('row', { hidden: true });
+
+    const nameRow = rows.find((r) => r.getAttribute('aria-label') === 'Name')!;
+    expect(nameRow).toBeTruthy();
+    expect(within(nameRow).queryByText('test_door')).toBeTruthy();
+
+    const type = rows.find((r) => r.getAttribute('aria-label') === 'Type')!;
+    expect(type).toBeTruthy();
+    expect(within(type).queryByText('Single Swing')).toBeTruthy();
+
+    const motionDir = rows.find((r) => r.getAttribute('aria-label') === 'Motion Direction')!;
+    expect(motionDir).toBeTruthy();
+    expect(within(motionDir).queryByText('Clockwise')).toBeTruthy();
+
+    const motionRange = rows.find((r) => r.getAttribute('aria-label') === 'Motion Range')!;
+    expect(motionRange).toBeTruthy();
+    expect(within(motionRange).queryByText('1.571')).toBeTruthy();
+
+    const location = rows.find((r) => r.getAttribute('aria-label') === 'Location')!;
+    expect(location).toBeTruthy();
+    expect(within(location).queryByText('(0.000, 0.000)')).toBeTruthy();
   });
 
   it('triggers door control dispatch when open door button is clicked', () => {

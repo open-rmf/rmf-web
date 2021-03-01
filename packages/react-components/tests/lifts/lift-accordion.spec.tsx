@@ -1,5 +1,5 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import { cleanup, render } from '@testing-library/react';
+import { cleanup, render, within } from '@testing-library/react';
 import React from 'react';
 import { LiftAccordion } from '../../lib';
 import { allLiftMotion, makeLift, makeLiftState } from './test-utils';
@@ -49,11 +49,38 @@ it('renders basic lift information', () => {
     session_id: 'test_session',
   });
   const accordion = render(<LiftAccordion lift={lift} liftState={liftState} />);
-  expect(accordion.queryAllByText('test_lift').length).toBeTruthy();
-  expect(accordion.queryByText('(0.000, 0.000)')).toBeTruthy();
-  expect(accordion.queryAllByText('L1')).toHaveSize(3); // destination floor, current floor and available floors
-  expect(accordion.queryByText('L2')).toBeTruthy();
-  expect(accordion.queryAllByText('AGV')).toHaveSize(2); // current mode and available modes
-  expect(accordion.queryByText('Closed')).toBeTruthy();
-  expect(accordion.queryByText('Stopped')).toBeTruthy();
+  const rows = accordion.queryAllByRole('row', { hidden: true });
+
+  const nameRow = rows.find((r) => r.getAttribute('aria-label') === 'Name')!;
+  expect(nameRow).toBeTruthy();
+  expect(within(nameRow).queryByText('test_lift')).toBeTruthy();
+
+  const location = rows.find((r) => r.getAttribute('aria-label') === 'Location')!;
+  expect(location).toBeTruthy();
+  expect(within(location).queryByText('(0.000, 0.000)')).toBeTruthy();
+
+  const destFloor = rows.find((r) => r.getAttribute('aria-label') === 'Destination Floor')!;
+  expect(destFloor).toBeTruthy();
+  expect(within(destFloor).queryByText('L1')).toBeTruthy();
+
+  const availFloors = rows.find((r) => r.getAttribute('aria-label') === 'Available Floors')!;
+  expect(availFloors).toBeTruthy();
+  expect(within(availFloors).queryByText('L1')).toBeTruthy();
+  expect(within(availFloors).queryByText('L2')).toBeTruthy();
+
+  const curMode = rows.find((r) => r.getAttribute('aria-label') === 'Current Mode')!;
+  expect(curMode).toBeTruthy();
+  expect(within(curMode).queryByText('AGV')).toBeTruthy();
+
+  const availModes = rows.find((r) => r.getAttribute('aria-label') === 'Available Modes')!;
+  expect(availModes).toBeTruthy();
+  expect(within(availModes).queryByText('AGV')).toBeTruthy();
+
+  const doorState = rows.find((r) => r.getAttribute('aria-label') === 'Door State')!;
+  expect(doorState).toBeTruthy();
+  expect(within(doorState).queryByText('Closed')).toBeTruthy();
+
+  const motionState = rows.find((r) => r.getAttribute('aria-label') === 'Motion State')!;
+  expect(motionState).toBeTruthy();
+  expect(within(motionState).queryByText('Stopped')).toBeTruthy();
 });
