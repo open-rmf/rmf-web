@@ -63,7 +63,7 @@ class TestRmfIO(unittest.IsolatedAsyncioTestCase):
         def on_door_states(door_state):
             received_states[door_state["door_name"]] = door_state
             if len(received_states) == len(test_states) and all(
-                [x in test_names for x in received_states]
+                (x in test_names for x in received_states)
             ):
                 done.set_result(True)
 
