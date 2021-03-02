@@ -28,6 +28,7 @@ jobs:
         run: |
           apt update && apt install -y python3-pip
           pip3 install pipenv
+          npm config set unsafe-perm
           npm run bootstrap -- packages/api-server
         working-directory: .
       - name: tests
