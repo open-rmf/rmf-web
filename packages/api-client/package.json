@@ -1,0 +1,19 @@
+{
+  "name": "api-client",
+  "version": "0.0.0",
+  "description": "",
+  "main": "lib/index.js",
+  "scripts": {
+    "gen": "python3 -m pipenv run python generate-schemas.py && node generate-models.js build/schema/door-health.json build/schema/door-state.json build/schema/door.json",
+    "lint": "python3 -m pipenv run pylint --ignore=mixins api_server"
+  },
+  "author": "koonpeng@openrobotics.org",
+  "license": "Apache-2.0",
+  "dependencies": {},
+  "devDependencies": {
+    "json-schema-to-typescript": "^10.1.3"
+  },
+  "files": [
+    "lib/"
+  ]
+}
