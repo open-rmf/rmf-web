@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "start": "ts-node src/index.ts",
-    "build": "tsc --build",
+    "build": "npm run lint && tsc --build",
     "clean": "tsc --build --clean",
     "prepack": "npm ci && npm run clean && npm run build",
     "prepare": "npm run build",
