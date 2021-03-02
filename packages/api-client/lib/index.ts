@@ -1,11 +1,7 @@
 import { io, Socket } from 'socket.io-client';
 import { BuildingMap, DoorHealth, DoorState } from './models';
 
-export const topics = {
-  doorStates: 'door_states',
-  doorHealth: 'door_health',
-  buildingMap: 'building_map',
-};
+export type Topic = 'door_states' | 'door_health' | 'building_map';
 
 export interface ApiClient extends Socket {
   on(event: 'subscribe', listener: (resp: string) => void): this;
@@ -14,7 +10,7 @@ export interface ApiClient extends Socket {
   on(event: 'building_map', listener: (resp: BuildingMap) => void): this;
   on(event: string, listener: Function): this; // eslint-disable-line @typescript-eslint/ban-types
 
-  emit(event: 'subscribe', topic: string): this;
+  emit(event: 'subscribe', topic: Topic): this;
   emit(event: string, ...args: any[]): this; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
