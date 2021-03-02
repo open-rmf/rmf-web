@@ -4,7 +4,7 @@
   "description": "",
   "main": "lib/index.js",
   "scripts": {
-    "gen": "python3 -m pipenv run python generate-schemas.py && node generate-models.js build/schema/door-health.json build/schema/door-state.json build/schema/door.json",
+    "gen": "node generate-models.js",
     "lint": "python3 -m pipenv run pylint --ignore=mixins api_server"
   },
   "author": "koonpeng@openrobotics.org",
