@@ -91,6 +91,8 @@ will only bootstrap `react-components` and it's dependencies.
 ## Troubleshooting
 First thing to try is to build rmf from source, in order to speed up development, `rmf-web` may use in-development features of rmf. That means that the binary releases may not have the features required, sometimes the features `rmf-web` uses may be so new that not even the rolling releases has it.
 
+Refer to [rmf_demos](https://github.com/open-rmf/rmf_demos) for instructions to build rmf. You should end up with a colcon workspace with all of rmf packages, remember to source the workspace before running any of the commands.
+
 ## Deploying
 * Build all the packages with the version of you are using in your deployment of RMF. This is important because message definitions and other behaviors might change depending on your version of RMF. The easiest way to do this is to source your version of RMF and run `npm run bootstrap`.
 
@@ -117,8 +119,6 @@ Kubernetes is an easy way to manage a web stack deployment, there are some minor
 * **DO** build or install only rmf message packages to keep image size down.
 * **DO NOT** build the packages in `rmf-web` on the host and copy it into the image. Instead, copy the source files and build the packages from within the container.
 * **DO NOT** run multiple instance of `api-server`. It is not designed to support concurrency.
-
-Refer to [rmf_demos](https://github.com/open-rmf/rmf_demos) for instructions to build rmf. You should end up with a colcon workspace with all of rmf packages, remember to source the workspace before running any of the commands.
 
 # Further documentation
 
