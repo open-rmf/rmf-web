@@ -7,7 +7,7 @@ const { execSync } = require('child_process');
 
 try {
   fs.accessSync(`${__dirname}/../.venv/lib`);
-  execSync('python3 -m pipenv install', { stdio: 'inherit' });
+  execSync('python3 -m pipenv install -d', { stdio: 'inherit' });
 } catch (e) {
   execSync('python3 -m pipenv install -d --site-packages', { stdio: 'inherit' });
 }
