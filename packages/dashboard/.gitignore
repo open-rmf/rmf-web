@@ -27,3 +27,5 @@ yarn-error.log*
 
 # test artifacts
 /e2e/artifacts
+
+/.rmf

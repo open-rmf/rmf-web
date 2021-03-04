@@ -35,7 +35,21 @@ process.env.ROMI_DASHBOARD_PORT = '5000';
 
 execSync('WORLD_NAME=office node scripts/get-resources-location.js', { stdio: 'inherit' });
 execSync('cd .. && node ./scripts/setup/get-icons.js', { stdio: 'inherit' });
-execSync('npm --prefix .. run build', { stdio: 'inherit' });
+// eslint-disable-next-line no-eval
+if (!eval(process.env.E2E_NO_BUILD)) {
+  execSync('npm --prefix .. run build', {
+    stdio: 'inherit',
+    env: {
+      ...process.env,
+      REACT_APP_AUTH_PROVIDER: 'keycloak',
+      REACT_APP_KEYCLOAK_CONFIG: JSON.stringify({
+        realm: 'master',
+        clientId: 'romi-dashboard',
+        url: 'http://localhost:8088/auth',
+      }),
+    },
+  });
+}
 
 // wrap in double quotes to support args with spaces
 const wdioArgs = process.argv
@@ -45,8 +59,8 @@ const wdioArgs = process.argv
 
 concurrently(
   [
-    'npm --prefix .. run start:ros2-bridge',
-    'npm --prefix .. run start:keycloak',
+    'npm run start:ros2-bridge',
+    'npm run start:keycloak',
     'serve -c ../e2e/serve.json ../build',
     `node scripts/auth-ready.js && wdio ${wdioArgs}`,
   ],
