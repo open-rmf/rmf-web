@@ -57,7 +57,7 @@ export const CustomLookupFilterParser = (
 
 export interface CustomLookupFilterProps {
   tableId: number;
-  filterValue: any;
+  filterValue: EditCellColumnDef['tableData']['filterValue'];
   filterOnItemSelect: unknown;
   onFilterChanged: (rowId: string, value: string | number | unknown) => void;
   lookup: Record<string, string>;
