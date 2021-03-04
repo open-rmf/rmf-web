@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { CustomLookupFilter, CustomLookupFilterParser } from '../../lib';
@@ -19,6 +19,7 @@ describe('Custom Lookup filter parser', () => {
   it('smoke test', () => {
     const mockOnChange = jasmine.createSpy();
     render(<CustomLookupFilterParser columnDef={columnDef} onFilterChanged={mockOnChange} />);
+    cleanup();
   });
 });
 
@@ -26,6 +27,10 @@ describe('Custom Lookup filter', () => {
   let mockOnChange: ReturnType<typeof jasmine.createSpy>;
   beforeEach(() => {
     mockOnChange = jasmine.createSpy();
+  });
+
+  afterEach(() => {
+    cleanup();
   });
 
   it('triggers a new search on filter change', () => {
