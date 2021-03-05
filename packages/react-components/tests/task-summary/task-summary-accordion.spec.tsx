@@ -1,6 +1,7 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import { act, render, waitForElementToBeRemoved } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { render } from '@testing-library/react';
 import { TaskSummaryAccordion, TaskSummaryAccordionInfo } from '../../lib';
 import {
   getActorFromStatus,
@@ -172,6 +173,34 @@ describe('Sort Tasks', () => {
     expect(sortedTasks[0].task_id).toBe('task2');
     expect(sortedTasks[1].task_id).toBe('task1');
     expect(sortedTasks[2].task_id).toBe('task3');
+  });
+});
+
+describe('user interactions', () => {
+  let tasks: RomiCore.TaskSummary[];
+  beforeEach(() => {
+    tasks = Object.values(getTaskObject());
+  });
+
+  function getHeader(container: Element) {
+    return container.querySelector('.MuiTreeItem-content');
+  }
+
+  it('toggle expands when clicked', async () => {
+    const root = render(<TaskSummaryAccordion tasks={[tasks[0]]} />);
+    const header = getHeader(root.container)!;
+    expect(header).toBeTruthy();
+    act(() => {
+      userEvent.click(header);
+    });
+    expect(root.queryAllByRole('row', { hidden: false }).length).toBeTruthy();
+
+    act(() => {
+      userEvent.click(getHeader(root.container)!);
+    });
+    await waitForElementToBeRemoved(() => root.queryAllByRole('row', { hidden: false }), {
+      timeout: 1000,
+    });
   });
 });
 

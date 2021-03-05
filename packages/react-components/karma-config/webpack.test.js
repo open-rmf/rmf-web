@@ -43,6 +43,7 @@ module.exports = (options) => {
         compilerOptions: {
           removeComments: true,
         },
+        declaration: false,
       },
       exclude: [/\.e2e\.ts$/],
     },

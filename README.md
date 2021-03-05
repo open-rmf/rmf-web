@@ -60,7 +60,7 @@ Refer to the following documentations:
 * [rmf_demos](https://github.com/osrf/rmf_demos)
 
 ## Bootstrap
-Before running the commands, make sure that rmf is sourced.
+Before running the commands, make sure that rmf is sourced. We recommend using an `npm` version lower than 7.0.0 ([more information](https://github.com/osrf/rmf-web/issues/232)).
 ```bash
 git clone https://github.com/osrf/rmf-web
 cd rmf-web

@@ -7,7 +7,11 @@ function dockert(cmd) {
 
 // only create rmf-web network if it doesn't exist, `rmf-web_default` is the default network
 // used  by docker-compose.
-if (!execSync(dockert("docker network ls -f=name='^rmf-web_default$'").toString())) {
+if (
+  !execSync(
+    dockert("docker network ls -f=name='^rmf-web_default$' --format '{{.Name}}'"),
+  ).toString()
+) {
   execSync(dockert('docker network create rmf-web_default', { stdio: 'inherit' }));
   console.log('created new docker "rmf-web_default"');
 }
