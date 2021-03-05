@@ -62,23 +62,22 @@ jobs:
           pip3 install pipenv
           npm config set unsafe-perm
           npm run bootstrap -- packages/dashboard
-          docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
-          cd packages/dashboard
-          docker pull docker.pkg.github.com/osrf/rmf-web/e2e
           docker pull quay.io/keycloak/keycloak:11.0.0
-          cd e2e
+          cd packages/dashboard/e2e
           npm ci
         working-directory: .
       - name: e2e test
         run: |
           . /opt/rmf/setup.bash
-          cd e2e && (npm test || npm test || npm test)
+          cd e2e && (npm test || npm test)
         env:
           E2E_DOCKER_NETWORK: ${{job.container.network}}
-          E2E_KEYCLOAK_ADDRESS: rmf-web_keycloak_1
+          REACT_APP_AUTH_PROVIDER: keycloak
+          # need to use the internal port because we are connecting from within the same network
+          REACT_APP_KEYCLOAK_CONFIG: '{ "realm": "master", "clientId": "romi-dashboard", "url": "http://rmf-web_keycloak_1:8080/auth" }'
       - name: upload artifacts
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
         with:
           name: screenshots
-          path: e2e/artifacts
+          path: packages/dashboard/e2e/artifacts
