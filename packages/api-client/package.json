@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "description": "",
   "main": "lib/index.js",
+  "private": true,
   "scripts": {
     "prepare": "node generate-models.js",
     "lint": "../../node_modules/.bin/eslint --ext ts,tsx lib"
