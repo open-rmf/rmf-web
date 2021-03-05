@@ -16,7 +16,19 @@ module.exports = (config) => {
     frameworks: ['jasmine', 'webpack'],
 
     // list of files / patterns to load in the browser
-    files: ['tests/**/*spec.+(ts|tsx)'],
+    files: [
+      {
+        pattern: 'tests/**/*spec.+(ts|tsx)',
+        watched: false,
+      },
+      {
+        pattern: 'tests/assets/*',
+        watched: false,
+        included: false,
+        served: true,
+        nocache: false,
+      },
+    ],
 
     // list of files / patterns to exclude
     exclude: ['**/*.d.ts', '**/*.stories.ts'],
