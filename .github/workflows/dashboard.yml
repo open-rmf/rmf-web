@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - 'packages/dashboard/**'
+      - 'packages/react-components/**'
   push:
     branches:
       - main

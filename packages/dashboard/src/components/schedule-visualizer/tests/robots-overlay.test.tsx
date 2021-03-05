@@ -1,21 +1,17 @@
 import L from 'leaflet';
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
-import { ColorManager } from 'react-components';
+import { ColorManager, RobotMarkerProps } from 'react-components';
 import { Map as LMap } from 'react-leaflet';
 import RobotsOverlay from '../robots-overlay';
 import getBuildingMap from './building-map';
 import fakeFleets from './fleets';
 
+function FakeMarker(props: RobotMarkerProps & { 'data-testid'?: string }) {
+  return <div data-testid={props['data-testid']}></div>;
+}
+
 describe('Robots Overlay', () => {
-  let colorManager: ColorManager;
-
-  beforeEach(() => {
-    // TextEncoder is not available in node
-    colorManager = new ColorManager();
-    colorManager.robotPrimaryColor = jest.fn(async () => 'black');
-  });
-
   const bounds = new L.LatLngBounds([0, 25.7], [-14, 0]);
   let conflictRobotNames: string[][] = [];
 
@@ -35,6 +31,7 @@ describe('Robots Overlay', () => {
           bounds={bounds}
           conflictRobotNames={conflictRobotNames}
           currentFloorName={buildingMap.levels[0].name}
+          MarkerComponent={FakeMarker}
         />
       </LMap>,
     );

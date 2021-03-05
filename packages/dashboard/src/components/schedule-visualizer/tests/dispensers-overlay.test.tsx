@@ -1,11 +1,16 @@
+import { render, waitFor } from '@testing-library/react';
 import L from 'leaflet';
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { DispenserMarkerProps } from 'react-components';
 import { Map as LMap } from 'react-leaflet';
 import ResourceManager from '../../../managers/resource-manager';
 import fakeResources from '../../../managers/__mocks__/resources';
 import { ResourcesContext } from '../../app-contexts';
 import DispensersOverlay from '../dispensers-overlay';
+
+function FakeMarker(props: DispenserMarkerProps & { 'data-testid'?: string }) {
+  return <div data-testid={props['data-testid']}></div>;
+}
 
 describe('Dispensers Overlay', () => {
   test('Render dispensers correctly', async () => {
@@ -20,7 +25,7 @@ describe('Dispensers Overlay', () => {
             [1, 1],
           ]}
         >
-          <DispensersOverlay bounds={bounds} currentFloorName="L1" />
+          <DispensersOverlay bounds={bounds} currentFloorName="L1" MarkerComponent={FakeMarker} />
         </LMap>
       </ResourcesContext.Provider>,
     );
