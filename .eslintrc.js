@@ -1,15 +1,23 @@
 module.exports = {
-  extends: ['eslint:recommended'],
   env: {
     node: true,
-    es2020: true,
+    es2021: true,
   },
+  extends: ['eslint:recommended'],
+  ignorePatterns: ['*.d.ts'],
   overrides: [
     {
       files: ['*.ts', '*.tsx'],
+      extends: ['plugin:@typescript-eslint/recommended'],
       parser: '@typescript-eslint/parser',
       plugins: ['@typescript-eslint'],
-      extends: ['plugin:@typescript-eslint/recommended'],
+    },
+    {
+      files: ['*.test.ts', '*.test.tsx', '*.spec.ts', '*.spec.tsx'],
+      rules: {
+        // null assertions is often useful in tests
+        '@typescript-eslint/no-non-null-assertion': 'off',
+      },
     },
   ],
 };

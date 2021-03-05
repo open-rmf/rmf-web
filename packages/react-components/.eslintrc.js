@@ -1,29 +1,32 @@
 module.exports = {
-  extends: ['../../.eslintrc'],
+  env: {
+    browser: true,
+    es2021: true,
+  },
+  extends: ['../../.eslintrc.js', 'plugin:react/recommended', 'plugin:react-hooks/recommended'],
+  parser: '@typescript-eslint/parser',
+  parserOptions: {
+    ecmaFeatures: {
+      jsx: true,
+    },
+    ecmaVersion: 12,
+    sourceType: 'module',
+  },
+  plugins: ['react'],
+  settings: {
+    react: {
+      version: 'detect',
+    },
+  },
+  rules: {
+    'react/display-name': 'off',
+    'react/prop-types': 'off',
+  },
   overrides: [
     {
-      files: ['lib/**', 'tests/**', 'stories/**'],
-      extends: ['plugin:react/recommended', 'plugin:react-hooks/recommended'],
+      files: ['lib/**', 'stories/**', 'tests/**'],
       env: {
-        browser: true,
-        es2021: true,
-      },
-      parserOptions: {
-        ecmaFeatures: {
-          jsx: true,
-        },
-        ecmaVersion: 12,
-        sourceType: 'module',
-      },
-      plugins: ['react'],
-      settings: {
-        react: {
-          version: 'detect',
-        },
-      },
-      rules: {
-        'react/display-name': 'off',
-        'react/prop-types': 'off',
+        node: false,
       },
     },
     {
