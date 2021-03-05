@@ -22,7 +22,7 @@ There are also some environment variables the test sets by default
 | REACT_APP_ROS2_BRIDGE_SERVER | ws://localhost:50002 |
 | E2E_USER | admin |
 | E2E_PASSWORD | admin |
-| E2E_DASHBOARD_URL | 'http://localhost:5000' |
+| E2E_DASHBOARD_URL | http://localhost:5000 |
 
 You can overwrite them by setting them in your environment variables.
 
