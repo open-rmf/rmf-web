@@ -6,6 +6,8 @@ There are some environment variables that control how the tests.
 |---|---|
 | E2E_DOCKER_NETWORK | The network that services uses, defaults to `rmf-web_default` |
 | E2E_NO_AUTH | Do not launch the authentication provider service |
+| E2E_NO_DASHBOARD | Do not launch the dashboard server |
+| E2E_NO_ROS2_BRIDGE | Do not launch the ros2-bridge server |
 | E2E_USER | The user to login with |
 | E2E_PASSWORD | The password to login with |
 | E2E_DASHBOARD_URL | Base url where the dashboard is hosted |

@@ -40,19 +40,19 @@ if (!eval(process.env.E2E_NO_AUTH)) {
       throw new Error('cannot start auth provider');
   }
 }
+// eslint-disable-next-line no-eval
+if (!eval(process.env.E2E_NO_DASHBOARD)) {
+  services.push('serve -c ../e2e/serve.json ../build');
+}
+// eslint-disable-next-line no-eval
+if (!eval(process.env.E2E_NO_ROS2_BRIDGE)) {
+  services.push('npm run start:ros2-bridge');
+}
 
-concurrently(
-  [
-    ...services,
-    'npm run start:ros2-bridge',
-    'serve -c ../e2e/serve.json ../build',
-    `node scripts/auth-ready.js && wdio ${wdioArgs}`,
-  ],
-  {
-    killOthers: ['success', 'failure'],
-    successCondition: 'first',
-  },
-).catch((e) => {
+concurrently([...services, `node scripts/auth-ready.js && wdio ${wdioArgs}`], {
+  killOthers: ['success', 'failure'],
+  successCondition: 'first',
+}).catch((e) => {
   console.error(e);
   process.exitCode = -1;
 });
