@@ -6,6 +6,9 @@ There are some environment variables that control how the tests.
 |---|---|
 | E2E_DOCKER_NETWORK | The network that services uses, defaults to `rmf-web_default` |
 | E2E_NO_AUTH | Do not launch the authentication provider service |
+| E2E_USER | The user to login with |
+| E2E_PASSWORD | The password to login with |
+| E2E_DASHBOARD_URL | Base url where the dashboard is hosted |
 
 There are also some environment variables the test sets by default
 
@@ -13,6 +16,11 @@ There are also some environment variables the test sets by default
 |---|---|
 | REACT_APP_AUTH_PROVIDER | keycloak |
 | REACT_APP_KEYCLOAK_CONFIG | { "realm": "master", "clientId": "romi-dashboard", "url": "http://localhost:8088/auth" } |
+| REACT_APP_TRAJECTORY_SERVER | ws://localhost:8006 |
+| REACT_APP_ROS2_BRIDGE_SERVER | ws://localhost:50002 |
+| E2E_USER | admin |
+| E2E_PASSWORD | admin |
+| E2E_DASHBOARD_URL | 'http://localhost:5000' |
 
 You can overwrite them by setting them in your environment variables.
 

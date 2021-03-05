@@ -56,8 +56,9 @@ export const getRobotLocations = (browser: WebdriverIO.BrowserObject): string[] 
 export function login(): void {
   browser.url('/login');
   $('#login-button').click();
-  $('#username').setValue('admin');
-  $('#password').setValue('admin');
+  console.log(process.env.E2E_USER);
+  $('#username').setValue(process.env.E2E_USER);
+  $('#password').setValue(process.env.E2E_PASSWORD);
   $('#kc-login').click();
 }
 

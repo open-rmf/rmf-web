@@ -11,10 +11,13 @@ if (process.env.REACT_APP_AUTH_PROVIDER === 'keycloak') {
       url: 'http://localhost:8088/auth',
     });
 }
-
-process.env.REACT_APP_TRAJECTORY_SERVER = 'ws://localhost:8006';
-process.env.REACT_APP_ROS2_BRIDGE_SERVER = 'ws://localhost:50002';
-process.env.ROMI_DASHBOARD_PORT = '5000';
+process.env.REACT_APP_TRAJECTORY_SERVER =
+  process.env.REACT_APP_TRAJECTORY_SERVER || 'ws://localhost:8006';
+process.env.REACT_APP_ROS2_BRIDGE_SERVER =
+  process.env.REACT_APP_ROS2_BRIDGE_SERVER || 'ws://localhost:50002';
+process.env.E2E_USER = process.env.E2E_USER || 'admin';
+process.env.E2E_PASSWORD = process.env.E2E_PASSWORD || 'admin';
+process.env.E2E_DASHBOARD_URL = process.env.E2E_DASHBOARD_URL || 'http://localhost:5000';
 
 execSync('WORLD_NAME=office node scripts/get-resources-location.js', { stdio: 'inherit' });
 execSync('cd .. && node ./scripts/setup/get-icons.js', { stdio: 'inherit' });
