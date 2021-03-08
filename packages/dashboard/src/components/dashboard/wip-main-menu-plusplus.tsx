@@ -50,7 +50,7 @@ export interface MainMenuProps {
   spoiltDoorClick?(door: RomiCore.Door): void;
   spoiltLiftClick?(lift: RomiCore.Lift): void;
   spoiltRobotClick?(fleet: string, robot: RomiCore.RobotState): void;
-  spoiltDispenserClick?(event: React.MouseEvent, guid: string): void;
+  spoiltDispenserClick?(guid: string): void;
 }
 
 export const MainMenu = React.memo((props: MainMenuProps) => {

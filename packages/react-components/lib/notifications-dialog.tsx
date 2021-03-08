@@ -27,7 +27,7 @@ export interface NotificationDialogProps {
   showNotificationsDialog: boolean;
   onClose: () => void;
   notifications: Notification[];
-  onNotificationsDismiss: (id: number) => void;
+  onNotificationsDismiss?: (id: number) => void;
 }
 
 export enum Severity {
@@ -217,7 +217,9 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
                     <IconButton
                       aria-label="dismiss-button"
                       className={classes.removeNotificationIcon}
-                      onClick={() => onNotificationsDismiss(notification.id)}
+                      onClick={() =>
+                        onNotificationsDismiss && onNotificationsDismiss(notification.id)
+                      }
                     >
                       <CloseIcon />
                     </IconButton>

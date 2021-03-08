@@ -33,7 +33,7 @@ export interface SystemSummarySpoiltItemsProps {
   onClickSpoiltDoor?(door: RomiCore.Door): void;
   onClickSpoiltLift?(lift: RomiCore.Lift): void;
   onClickSpoiltRobot?(fleet: string, robot: RomiCore.RobotState): void;
-  onClickSpoiltDispenser?(event: React.MouseEvent, guid: string): void;
+  onClickSpoiltDispenser?(guid: string): void;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -112,7 +112,7 @@ export const SystemSummarySpoiltItems = (props: SystemSummarySpoiltItemsProps): 
         ? dispensers.map((item) => {
             return (
               <Paper
-                onClick={(e) => onClickSpoiltDispenser && onClickSpoiltDispenser(e, item.dispenser)}
+                onClick={() => onClickSpoiltDispenser && onClickSpoiltDispenser(item.dispenser)}
                 className={classes.paper}
                 key={'dispenser-' + item.name + '-' + item.state}
                 elevation={3}
