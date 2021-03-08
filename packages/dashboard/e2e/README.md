@@ -4,13 +4,15 @@ There are some environment variables that control how the tests.
 
 | Key | Description |
 |---|---|
-| E2E_DOCKER_NETWORK | The network that services uses, defaults to `rmf-web_default` |
-| E2E_NO_AUTH | Do not launch the authentication provider service |
-| E2E_NO_DASHBOARD | Do not launch the dashboard server |
-| E2E_NO_ROS2_BRIDGE | Do not launch the ros2-bridge server |
-| E2E_USER | The user to login with |
-| E2E_PASSWORD | The password to login with |
-| E2E_DASHBOARD_URL | Base url where the dashboard is hosted |
+| E2E_DOCKER_NETWORK | _(string)_ The network that services uses, defaults to `rmf-web_default` |
+| E2E_NO_AUTH | _(bool)_ Do not launch the authentication provider service |
+| E2E_NO_DASHBOARD | _(bool)_ Do not launch the dashboard server |
+| E2E_NO_ROS2_BRIDGE | _(bool)_ Do not launch the ros2-bridge server |
+| E2E_USER | _(string)_ The user to login with |
+| E2E_PASSWORD | _(string)_ The password to login with |
+| E2E_DASHBOARD_URL | _(string)_ Base url where the dashboard is hosted |
+
+Boolean values can be 0/1/true/false.
 
 There are also some environment variables the test sets by default
 
@@ -43,6 +45,6 @@ Below is a diagram representing the flow of commands when running `npm run test:
 
 ## Container and network interactions
 
-The key difference between running the tests locally and in github workflows is that in github, the tests are ran from inside a container with docker-beside-docker. So the docker commands connects to the host daemon. The main difference this cause is that "localhost" in github refers to the container, but "localhost" in local runs refers to the host (where the docker daemon is running), as such, the tests wouldn't be able to connect to the auth service because when you "expose" or "publish" a port, it is mapped to the host, not the container.
+The key difference between running the tests locally and in github workflows is that in github, the tests are ran from inside a container with docker-beside-docker. So, the docker commands connect to the host daemon, this causes that the "localhost" in GitHub refers to the container. "Localhost" in local runs refers to the host (where the docker daemon is running). Tests in CI runs wouldn't be able to connect to the auth service with "localhost" because when a port is "exposed" or "published" is mapped to the host and not the container.
 
 Instead of host <-> container communication, we will need to do container <-> container communication. This is achieved by setting `E2E_DOCKER_NETWORK` to the github workflow's network and setting `REACT_APP_KEYCLOAK_CONFIG` to point to the auth service via the container name.
