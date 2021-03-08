@@ -63,9 +63,9 @@ def make_door(name: str) -> Door:
     )
 
 
-def make_lift_state() -> LiftState:
+def make_lift_state(name: str = "test_lift") -> LiftState:
     return LiftState(
-        lift_name="test_lift",
+        lift_name=name or "test_lift",
         lift_time=Time(sec=0, nanosec=0),
         available_floors=["L1", "L2"],
         current_floor="L1",

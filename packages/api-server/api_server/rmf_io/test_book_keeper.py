@@ -1,19 +1,20 @@
 import asyncio
 import unittest
+from typing import Any, Callable
 from unittest.mock import MagicMock, call
 
-from rmf_door_msgs.msg import DoorMode, DoorState
+from rx import Observable
 from rx.scheduler.historicalscheduler import HistoricalScheduler
 
 from ..models import DoorHealth, HealthStatus, LiftHealth
 from ..repositories import RmfRepository
 from .book_keeper import RmfBookKeeper
 from .gateway import RmfGateway
-from .test_data import make_building_map, make_door, make_door_state
+from .test_data import make_building_map, make_door, make_door_state, make_lift_state
 
 
 class RmfBookKeeperFixture(unittest.IsolatedAsyncioTestCase):
-    async def asyncSetUp(self):
+    def setUp(self):
         self.rmf = RmfGateway()
         self.repo = MagicMock(RmfRepository)
         self.scheduler = HistoricalScheduler()
@@ -21,117 +22,123 @@ class RmfBookKeeperFixture(unittest.IsolatedAsyncioTestCase):
         self.book_keeper.start()
 
 
-class TestRmfBookKeeper_DoorStates(RmfBookKeeperFixture):
-    async def test_write_frequency(self):
-        """
-        door states should write at a frequency of 1 hz
-        """
-        self.rmf.door_states.on_next(make_door_state("test_door"))
-        self.scheduler.advance_by(0.9)
-        # shouldn't write before t = 1
-        self.repo.update_door_state.assert_not_called()
-        self.scheduler.advance_by(0.1)
-        await asyncio.sleep(0)
-        self.repo.update_door_state.assert_awaited_once()
+def make_base_test(
+    get_source: Callable[[RmfGateway], Observable],
+    factory: Callable[[str], Any],
+    frequency: float,
+    get_update_mock: Callable[[RmfRepository], Any],
+):
+    """
+    Args:
+        factory: Return value must be the requirement:
+            `factory("foo") is factory("foo") == True`
+        frequency: Must be > 0
+    """
 
-        self.rmf.door_states.on_next(make_door_state("test_door"))
-        self.scheduler.advance_by(0.9)
-        # shouldn't write again before t = 2
-        self.repo.update_door_state.assert_awaited_once()
-        self.scheduler.advance_by(0.1)
-        await asyncio.sleep(0)
-        self.assertEqual(self.repo.update_door_state.await_count, 2)
+    class BaseTest(RmfBookKeeperFixture):
+        def setUp(self):
+            super().setUp()
+            self.source = get_source(self.rmf)
+            self.update_mock = get_update_mock(self.repo)
 
-    async def test_write_latest(self):
-        """
-        the latest state every 1 hz should be written
-        """
-        state = make_door_state("test_door", DoorMode.MODE_CLOSED)
-        self.rmf.door_states.on_next(state)
+        async def test_write_frequency(self):
+            self.source.on_next(factory("test_id"))
+            self.scheduler.advance_by(0.9 * frequency)
+            # shouldn't write before t = 1
+            self.update_mock.assert_not_called()
+            self.scheduler.advance_by(0.1 * frequency)
+            await asyncio.sleep(0)
+            self.update_mock.assert_awaited_once()
 
-        self.scheduler.advance_by(0.5)
-        state = make_door_state("test_door", DoorMode.MODE_CLOSED)
-        self.rmf.door_states.on_next(state)
+            self.source.on_next(factory("test_id"))
+            self.scheduler.advance_by(0.9 * frequency)
+            # shouldn't write again before t = 2
+            self.update_mock.assert_called_once()
+            self.scheduler.advance_by(0.1 * frequency)
+            await asyncio.sleep(0)
+            self.assertEqual(self.update_mock.await_count, 2)
 
-        self.scheduler.advance_by(0.4)
-        state = make_door_state("test_door", DoorMode.MODE_OPEN)
-        self.rmf.door_states.on_next(state)
+        async def test_write_latest(self):
+            """
+            If new values are received before due time, should update only the latest value
+            """
+            value = factory("test_id")
+            self.source.on_next(value)
+            self.scheduler.advance_by(0.9 * frequency)
+            value_2 = factory("test_id")
+            self.source.on_next(value_2)
+            self.scheduler.advance_by(0.1 * frequency)
 
-        self.scheduler.advance_by(0.1)
+            await asyncio.sleep(0)
 
-        # at t = 0, mode = MODE_CLOSED
-        # at t = 0.5, mode = MODE_CLOSED
-        # at t = 0.9, mode = MODE_OPEN
-        # at t = 1, write the latest state, i.e. MODE_OPEN
+            class Matcher:
+                def __eq__(self, other):
+                    return other is value_2
 
-        class MatchState:
-            def __eq__(self, state):
-                return state.current_mode.value == DoorMode.MODE_OPEN
+            self.update_mock.assert_awaited_once_with(Matcher())
 
-        await asyncio.sleep(0)
-        self.repo.update_door_state.assert_awaited_once_with(MatchState())
+        async def test_write_latest_multiple(self):
+            """
+            If new values for different keys are received before due time,
+            the latest value of each key should be written.
+            """
+            value = factory("test_id")
+            self.source.on_next(value)
+            value2 = factory("test_id_2")
+            self.source.on_next(value2)
 
-    async def test_write_latest_multiple(self):
-        """
-        the latest state of each door should be written
-        """
-        state = make_door_state("test_door", DoorMode.MODE_CLOSED)
-        self.rmf.door_states.on_next(state)
-        state2 = make_door_state("test_door2", DoorMode.MODE_OPEN)
-        self.rmf.door_states.on_next(state2)
+            self.scheduler.advance_by(0.9 * frequency)
+            value_2 = factory("test_id")
+            self.source.on_next(value_2)
+            value2_2 = factory("test_id_2")
+            self.source.on_next(value2_2)
 
-        self.scheduler.advance_by(0.5)
-        state = make_door_state("test_door", DoorMode.MODE_CLOSED)
-        self.rmf.door_states.on_next(state)
-        state2 = make_door_state("test_door2", DoorMode.MODE_OPEN)
-        self.rmf.door_states.on_next(state2)
+            self.scheduler.advance_by(0.1 * frequency)
 
-        self.scheduler.advance_by(0.4)
-        state = make_door_state("test_door", DoorMode.MODE_OPEN)
-        self.rmf.door_states.on_next(state)
-        state2 = make_door_state("test_door2", DoorMode.MODE_CLOSED)
-        self.rmf.door_states.on_next(state2)
+            class Matcher:
+                def __init__(self, val):
+                    self.val = val
 
-        self.scheduler.advance_by(0.1)
+                def __eq__(self, other):
+                    return other is self.val
 
-        class MatchState:
-            def __init__(self, name: str, mode: int):
-                self.name = name
-                self.mode = mode
+            await asyncio.sleep(0)
+            calls = [
+                call(Matcher(value_2)),
+                call(Matcher(value2_2)),
+            ]
+            self.assertEqual(self.update_mock.await_count, 2)
+            self.update_mock.assert_has_awaits(calls)
 
-            def __eq__(self, state: DoorState):
-                return (
-                    state.door_name == self.name
-                    and state.current_mode.value == self.mode
-                )
-
-        await asyncio.sleep(0)
-        calls = [
-            call(MatchState("test_door", DoorMode.MODE_OPEN)),
-            call(MatchState("test_door2", DoorMode.MODE_CLOSED)),
-        ]
-        self.assertEqual(self.repo.update_door_state.await_count, 2)
-        self.repo.update_door_state.assert_has_awaits(calls)
+    return BaseTest
 
 
-class TestRmfBookKeeper_BuildingMap(RmfBookKeeperFixture):
-    async def test_write_doors(self):
-        """
-        doors should be written when new building map is received
-        """
-        building_map = make_building_map()
-        building_map.levels[0].doors.append(make_door("test_door"))
-        building_map.levels[0].doors.append(make_door("test_door2"))
-        self.rmf.building_map.on_next(building_map)
-        self.scheduler.advance_by(0)
-        await asyncio.sleep(0)
-        self.repo.sync_doors.assert_awaited()
+class TestRmfBookKeeper_DoorStates(
+    make_base_test(
+        lambda x: x.door_states,
+        make_door_state,
+        1,
+        lambda x: x.update_door_state,
+    )
+):
+    pass
+
+
+class TestRmfBookKeeper_LiftStates(
+    make_base_test(
+        lambda x: x.lift_states,
+        make_lift_state,
+        1,
+        lambda x: x.update_lift_state,
+    )
+):
+    pass
 
 
 class TestRmfBookKeeper_DoorHealth(RmfBookKeeperFixture):
     async def test_write_door_health(self):
         """
-        door health should be written whenever there are changes
+        All health changes should be written, regardless of time between them.
         """
         door_health = DoorHealth(name="test_door", health_status=HealthStatus.DEAD)
         self.rmf.door_health.on_next(door_health)
@@ -148,6 +155,9 @@ class TestRmfBookKeeper_DoorHealth(RmfBookKeeperFixture):
 
 class TestRmfBookKeeper_LiftHealth(RmfBookKeeperFixture):
     async def test_write_lift_health(self):
+        """
+        All health changes should be written, regardless of time between them.
+        """
         lift_health = LiftHealth(name="test_lift", health_status=HealthStatus.DEAD)
         self.rmf.lift_health.on_next(lift_health)
         self.scheduler.advance_by(0)
@@ -159,3 +169,17 @@ class TestRmfBookKeeper_LiftHealth(RmfBookKeeperFixture):
         self.scheduler.advance_by(0)
         await asyncio.sleep(0)
         self.assertEqual(2, self.repo.update_lift_health.await_count)
+
+
+class TestRmfBookKeeper_BuildingMap(RmfBookKeeperFixture):
+    async def test_write_doors(self):
+        """
+        doors should be written when new building map is received
+        """
+        building_map = make_building_map()
+        building_map.levels[0].doors.append(make_door("test_door"))
+        building_map.levels[0].doors.append(make_door("test_door2"))
+        self.rmf.building_map.on_next(building_map)
+        self.scheduler.advance_by(0)
+        await asyncio.sleep(0)
+        self.repo.sync_doors.assert_awaited()
