@@ -4,8 +4,9 @@ from typing import Dict, Sequence
 import tortoise
 from building_map_msgs.msg import Door as RmfDoor
 from rmf_door_msgs.msg import DoorState as RmfDoorState
+from rmf_lift_msgs.msg import LiftState as RmfLiftState
 
-from ..models import Door, DoorHealth, DoorState
+from ..models import Door, DoorHealth, DoorState, LiftState
 from .rmf import RmfRepository
 
 
@@ -38,7 +39,7 @@ class SqlRepository(RmfRepository):
     async def update_door(self, door: RmfDoor):
         sql_door = await Door.from_rmf(door)
         await self._save(sql_door, name=sql_door.name)
-        self.logger.debug(f"written door ({sql_door.name}) to database")
+        self.logger.debug("written door to database")
 
     async def read_door(self, name: str):
         door = await Door.filter(name=name).first()
@@ -58,3 +59,12 @@ class SqlRepository(RmfRepository):
 
     async def read_door_health(self, door_name: str):
         return await DoorHealth.filter(name=door_name).first()
+
+    async def update_lift_state(self, lift_state: RmfLiftState):
+        state = await LiftState.from_rmf(lift_state)
+        await self._save(state, lift_name=state.lift_name)
+        self.logger.debug("written lift_state to database")
+
+    async def read_lift_states(self) -> Dict[str, RmfLiftState]:
+        all_states = await LiftState.all()
+        return {x.lift_name: x.to_rmf() for x in all_states}

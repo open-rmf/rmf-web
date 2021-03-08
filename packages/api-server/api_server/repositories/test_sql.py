@@ -3,9 +3,10 @@ import unittest
 from building_map_msgs.msg import Door
 from builtin_interfaces.msg import Time as RosTime
 from rmf_door_msgs.msg import DoorMode as RmfDoorMode
+from rmf_lift_msgs.msg import LiftState as RmfLiftState
 from tortoise import Tortoise
 
-from ..rmf_io.test_data import make_door, make_door_state
+from ..rmf_io.test_data import make_door, make_door_state, make_lift_state
 from .sql import SqlRepository
 
 
@@ -65,3 +66,27 @@ class TestSqlRepository(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result.name, "test_door2")
         result = await self.repo.read_door("test_door")
         self.assertIsNone(result)
+
+    async def test_update_lift_state(self):
+        lift_state = make_lift_state()
+        lift_state.lift_name = "test_lift"
+        await self.repo.update_lift_state(lift_state)
+        result: RmfLiftState = await self.repo.read_lift_states()
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result["test_lift"].lift_name, "test_lift")
+
+        lift_state2 = make_lift_state()
+        lift_state2.lift_name = "test_lift2"
+        lift_state2.available_floors = ["L1", "L2"]
+        lift_state2.current_floor = "L1"
+        await self.repo.update_lift_state(lift_state2)
+        result: RmfLiftState = await self.repo.read_lift_states()
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result["test_lift2"].lift_name, "test_lift2")
+        self.assertEqual(result["test_lift2"].current_floor, "L1")
+
+        lift_state2.current_floor = "L2"
+        await self.repo.update_lift_state(lift_state2)
+        result: RmfLiftState = await self.repo.read_lift_states()
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result["test_lift2"].current_floor, "L2")
