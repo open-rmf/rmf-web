@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, call
 from rmf_door_msgs.msg import DoorMode, DoorState
 from rx.scheduler.historicalscheduler import HistoricalScheduler
 
-from ..models import DoorHealth, HealthStatus
+from ..models import DoorHealth, HealthStatus, LiftHealth
 from ..repositories import RmfRepository
 from .book_keeper import RmfBookKeeper
 from .gateway import RmfGateway
@@ -16,9 +16,9 @@ class RmfBookKeeperFixture(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         self.rmf = RmfGateway()
         self.repo = MagicMock(RmfRepository)
-        self.book_keeper = RmfBookKeeper(self.rmf, self.repo)
         self.scheduler = HistoricalScheduler()
-        self.book_keeper.start(scheduler=self.scheduler)
+        self.book_keeper = RmfBookKeeper(self.rmf, self.repo, scheduler=self.scheduler)
+        self.book_keeper.start()
 
 
 class TestRmfBookKeeper_DoorStates(RmfBookKeeperFixture):
@@ -144,3 +144,18 @@ class TestRmfBookKeeper_DoorHealth(RmfBookKeeperFixture):
         self.scheduler.advance_by(0)
         await asyncio.sleep(0)
         self.assertEqual(2, self.repo.update_door_health.await_count)
+
+
+class TestRmfBookKeeper_LiftHealth(RmfBookKeeperFixture):
+    async def test_write_lift_health(self):
+        lift_health = LiftHealth(name="test_lift", health_status=HealthStatus.DEAD)
+        self.rmf.lift_health.on_next(lift_health)
+        self.scheduler.advance_by(0)
+        await asyncio.sleep(0)
+        self.repo.update_lift_health.assert_awaited()
+
+        lift_health = LiftHealth(name="test_lift", health_status=HealthStatus.HEALTHY)
+        self.rmf.lift_health.on_next(lift_health)
+        self.scheduler.advance_by(0)
+        await asyncio.sleep(0)
+        self.assertEqual(2, self.repo.update_lift_health.await_count)

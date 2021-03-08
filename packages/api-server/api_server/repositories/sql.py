@@ -6,7 +6,7 @@ from building_map_msgs.msg import Door as RmfDoor
 from rmf_door_msgs.msg import DoorState as RmfDoorState
 from rmf_lift_msgs.msg import LiftState as RmfLiftState
 
-from ..models import Door, DoorHealth, DoorState, LiftState
+from ..models import Door, DoorHealth, DoorState, LiftHealth, LiftState
 from .rmf import RmfRepository
 
 
@@ -55,7 +55,7 @@ class SqlRepository(RmfRepository):
 
     async def update_door_health(self, door_health: DoorHealth):
         await self._save(door_health, name=door_health.name)
-        self.logger.debug(f'written door health for "{door_health.name}" to database')
+        self.logger.debug("written door health for to database")
 
     async def read_door_health(self, door_name: str):
         return await DoorHealth.filter(name=door_name).first()
@@ -68,3 +68,10 @@ class SqlRepository(RmfRepository):
     async def read_lift_states(self) -> Dict[str, RmfLiftState]:
         all_states = await LiftState.all()
         return {x.lift_name: x.to_rmf() for x in all_states}
+
+    async def update_lift_health(self, lift_health: LiftHealth) -> None:
+        await self._save(lift_health, name=lift_health.name)
+        self.logger.debug("written lift health for to database")
+
+    async def read_lift_health(self, lift_name: str) -> LiftHealth:
+        return await LiftHealth.filter(name=lift_name).first()

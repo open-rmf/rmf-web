@@ -38,19 +38,19 @@ class RmfBookKeeper:
         self,
         rmf_gateway: RmfGateway,
         repo: SqlRepository,
+        loop: asyncio.AbstractEventLoop = None,
+        scheduler: Optional[Scheduler] = None,
         logger: logging.Logger = None,
     ):
         self.rmf = rmf_gateway
         self.repo = repo
+        self.loop: asyncio.AbstractEventLoop = loop or asyncio.get_event_loop()
+        self.scheduler = scheduler or None
         self.logger = logger or logging.getLogger(self.__class__.__name__)
 
     def start(
         self,
-        loop: asyncio.AbstractEventLoop = None,
-        scheduler: Optional[Scheduler] = None,
     ):
-        loop = loop or asyncio.get_event_loop()
-
         async def update_door_state(door_state):
             await self.repo.update_door_state(door_state)
             self.logger.info(json.dumps(message_to_ordereddict(door_state)))
@@ -58,8 +58,8 @@ class RmfBookKeeper:
         self.rmf.door_states.pipe(
             grouped_sample(lambda x: x.door_name, RmfBookKeeper.FrequencyStates),
         ).subscribe(
-            lambda x: loop.create_task(update_door_state(x)),
-            scheduler=scheduler,
+            lambda x: self.loop.create_task(update_door_state(x)),
+            scheduler=self.scheduler,
         )
 
         async def update_building_map(building_map: Optional[BuildingMap]):
@@ -72,17 +72,25 @@ class RmfBookKeeper:
             await self.repo.sync_doors(all_doors)
 
         self.rmf.building_map.subscribe(
-            lambda x: loop.create_task(update_building_map(x)), scheduler=scheduler
+            lambda x: self.loop.create_task(update_building_map(x)),
+            scheduler=self.scheduler,
         )
 
-        self._watch_door_health(loop, scheduler)
+        self._watch_door_health()
+        self._watch_lift_health()
 
-    def _watch_door_health(
-        self, loop: asyncio.AbstractEventLoop, scheduler: Optional[Scheduler]
-    ):
+    def _watch_door_health(self):
         async def on_next(door_health):
             await self.repo.update_door_health(door_health)
 
         self.rmf.door_health.subscribe(
-            lambda x: loop.create_task(on_next(x)), scheduler=scheduler
+            lambda x: self.loop.create_task(on_next(x)), scheduler=self.scheduler
+        )
+
+    def _watch_lift_health(self):
+        async def on_next(lift_health):
+            await self.repo.update_lift_health(lift_health)
+
+        self.rmf.lift_health.subscribe(
+            lambda x: self.loop.create_task(on_next(x)), scheduler=self.scheduler
         )

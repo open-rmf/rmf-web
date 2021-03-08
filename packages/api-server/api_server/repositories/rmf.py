@@ -3,8 +3,9 @@ from typing import Dict, Optional, Sequence
 
 from building_map_msgs.msg import Door
 from rmf_door_msgs.msg import DoorState
+from rmf_lift_msgs.msg import LiftState
 
-from ..models import DoorHealth
+from ..models import DoorHealth, LiftHealth
 
 
 class RmfRepository(ABC):
@@ -46,4 +47,28 @@ class RmfRepository(ABC):
     async def read_door_health(self, door_name: str) -> DoorHealth:
         """
         Read the current door health
+        """
+
+    @abstractmethod
+    async def update_lift_state(self, lift_state: LiftState):
+        """
+        Update or create a lift state
+        """
+
+    @abstractmethod
+    async def read_lift_states(self) -> Dict[str, LiftState]:
+        """
+        Read the list of all current lift states.
+        """
+
+    @abstractmethod
+    async def update_lift_health(self, lift_health: LiftHealth) -> None:
+        """
+        Update or create lift health.
+        """
+
+    @abstractmethod
+    async def read_lift_health(self, lift_name: str) -> LiftHealth:
+        """
+        Read the current lift health
         """
