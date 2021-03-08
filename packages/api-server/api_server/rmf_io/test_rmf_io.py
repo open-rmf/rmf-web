@@ -1,9 +1,11 @@
 import asyncio
 import unittest
+from typing import Any, Callable
 from unittest.mock import MagicMock
 
 import aiohttp.web
 import socketio
+from rx import Observable
 
 from ..models import DoorHealth, HealthStatus, LiftHealth
 from ..repositories.static_files import StaticFilesRepository
@@ -49,101 +51,87 @@ class TestRmfIO(unittest.IsolatedAsyncioTestCase):
         self.clients.clear()
         await self.runner.cleanup()
 
-    async def test_door_states(self):
+    async def check_endpoint(
+        self,
+        topic: str,
+        factory: Callable[[str], Any],
+        id_mapper: Callable[[Any], str],
+        source: Observable,
+    ):
         """
-        test receiving door states events
+        Checks that an endpoint can receive events and that newly connected clients receive the
+        current state of all subjects
         """
         done = asyncio.Future()
-        test_names = ["test_door", "test_door_2"]
-        test_states = [make_door_state(name) for name in test_names]
-        received_states = {}
+        test_ids = ["test_id", "test_id_2"]
+        test_values = [factory(x) for x in test_ids]
+        received = {}
         client = await self.make_client()
-        await self.client_subscribe(client, topics.door_states)
+        await self.client_subscribe(client, topic)
 
-        def on_door_states(door_state):
-            received_states[door_state["door_name"]] = door_state
-            if len(received_states) == len(test_states) and all(
-                (x in test_names for x in received_states)
+        def on_receive(data):
+            received[id_mapper(data)] = data
+            if len(received) == len(test_ids) and all(
+                (x in test_ids for x in received)
             ):
                 done.set_result(True)
 
-        client.on(topics.door_states, on_door_states)
+        client.on(topic, on_receive)
 
-        for x in test_states:
-            self.rmf_gateway.door_states.on_next(x)
+        for x in test_values:
+            source.on_next(x)
         await asyncio.wait_for(done, 1)
-        received_states = {}
+        received = {}
 
         # test that a new client receives all the current states on subscribe
         done = asyncio.Future()
         client = await self.make_client()
-        client.on(topics.door_states, on_door_states)
-        await self.client_subscribe(client, topics.door_states)
+        client.on(topic, on_receive)
+        await self.client_subscribe(client, topic)
         await asyncio.wait_for(done, 1)
 
-    async def test_door_health(self):
-        """
-        test receiving door health events
-        """
-        client = await self.make_client()
-        await self.client_subscribe(client, topics.door_health)
-        done = asyncio.Future()
-        client.on(topics.door_health, done.set_result)
-        self.rmf_gateway.door_health.on_next(
-            DoorHealth(name="test_door", health_status=HealthStatus.HEALTHY)
+    async def test_door_states(self):
+        await self.check_endpoint(
+            topics.door_states,
+            make_door_state,
+            lambda x: x["door_name"],
+            self.rmf_gateway.door_states,
         )
-        await done
+
+    async def test_door_health(self):
+        def factory(name: str):
+            return DoorHealth(name=name, health_status=HealthStatus.HEALTHY)
+
+        await self.check_endpoint(
+            topics.door_health,
+            factory,
+            lambda x: x["name"],
+            self.rmf_gateway.door_health,
+        )
 
     async def test_lift_states(self):
-        """
-        test receiving lift states events
-        """
-
-        def lift_factory(name: str):
+        def factory(name: str):
             state = make_lift_state()
             state.lift_name = name
             return state
 
-        done = asyncio.Future()
-        test_names = ["test_lift", "test_lift_2"]
-        test_states = [lift_factory(name) for name in test_names]
-        received_states = {}
-        client = await self.make_client()
-        await self.client_subscribe(client, topics.lift_states)
-
-        def on_lift_states(lift_state):
-            received_states[lift_state["lift_name"]] = lift_state
-            if len(received_states) == len(test_states) and all(
-                (x in test_names for x in received_states)
-            ):
-                done.set_result(True)
-
-        client.on(topics.lift_states, on_lift_states)
-
-        for x in test_states:
-            self.rmf_gateway.lift_states.on_next(x)
-        await asyncio.wait_for(done, 1)
-        received_states = {}
-
-        # test that a new client receives all the current states on subscribe
-        done = asyncio.Future()
-        client = await self.make_client()
-        client.on(topics.lift_states, on_lift_states)
-        await self.client_subscribe(client, topics.lift_states)
-        await asyncio.wait_for(done, 1)
+        await self.check_endpoint(
+            topics.lift_states,
+            factory,
+            lambda x: x["lift_name"],
+            self.rmf_gateway.lift_states,
+        )
 
     async def test_lift_health(self):
-        """
-        test receiving lift health events
-        """
-        client = await self.make_client()
-        await self.client_subscribe(client, topics.lift_health)
-        done = asyncio.Future()
-        client.on(topics.lift_health, done.set_result)
-        self.rmf_gateway.lift_health.on_next(
-            LiftHealth(name="test_lift", health_status=HealthStatus.HEALTHY)
+        def factory(name: str):
+            return LiftHealth(name=name, health_status=HealthStatus.HEALTHY)
+
+        await self.check_endpoint(
+            topics.lift_health,
+            factory,
+            lambda x: x["name"],
+            self.rmf_gateway.lift_health,
         )
-        await done
 
     async def test_building_map(self):
         """
