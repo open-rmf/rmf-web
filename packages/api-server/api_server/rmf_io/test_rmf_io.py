@@ -5,11 +5,11 @@ from unittest.mock import MagicMock
 import aiohttp.web
 import socketio
 
-from ..models import DoorHealth, HealthStatus
+from ..models import DoorHealth, HealthStatus, LiftHealth
 from ..repositories.static_files import StaticFilesRepository
 from .gateway import RmfGateway
 from .rmf_io import RmfIO
-from .test_data import make_building_map, make_door_state
+from .test_data import make_building_map, make_door_state, make_lift_state
 from .topics import topics
 
 
@@ -91,6 +91,57 @@ class TestRmfIO(unittest.IsolatedAsyncioTestCase):
         client.on(topics.door_health, done.set_result)
         self.rmf_gateway.door_health.on_next(
             DoorHealth(name="test_door", health_status=HealthStatus.HEALTHY)
+        )
+        await done
+
+    async def test_lift_states(self):
+        """
+        test receiving lift states events
+        """
+
+        def lift_factory(name: str):
+            state = make_lift_state()
+            state.lift_name = name
+            return state
+
+        done = asyncio.Future()
+        test_names = ["test_lift", "test_lift_2"]
+        test_states = [lift_factory(name) for name in test_names]
+        received_states = {}
+        client = await self.make_client()
+        await self.client_subscribe(client, topics.lift_states)
+
+        def on_lift_states(lift_state):
+            received_states[lift_state["lift_name"]] = lift_state
+            if len(received_states) == len(test_states) and all(
+                (x in test_names for x in received_states)
+            ):
+                done.set_result(True)
+
+        client.on(topics.lift_states, on_lift_states)
+
+        for x in test_states:
+            self.rmf_gateway.lift_states.on_next(x)
+        await asyncio.wait_for(done, 1)
+        received_states = {}
+
+        # test that a new client receives all the current states on subscribe
+        done = asyncio.Future()
+        client = await self.make_client()
+        client.on(topics.lift_states, on_lift_states)
+        await self.client_subscribe(client, topics.lift_states)
+        await asyncio.wait_for(done, 1)
+
+    async def test_lift_health(self):
+        """
+        test receiving lift health events
+        """
+        client = await self.make_client()
+        await self.client_subscribe(client, topics.lift_health)
+        done = asyncio.Future()
+        client.on(topics.lift_health, done.set_result)
+        self.rmf_gateway.lift_health.on_next(
+            LiftHealth(name="test_lift", health_status=HealthStatus.HEALTHY)
         )
         await done
 
