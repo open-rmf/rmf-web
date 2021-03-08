@@ -1,16 +1,16 @@
-import { ItemSummary, RobotSummary } from 'react-components';
+import { DoorSummary, DispenserSummary, LiftSummary, RobotSummary } from 'react-components';
 
 export interface HealthStatus {
-  door: ItemSummary;
-  lift: ItemSummary;
-  dispenser: ItemSummary;
+  door: DoorSummary;
+  lift: LiftSummary;
+  dispenser: DispenserSummary;
   robot: RobotSummary;
 }
 
 // TODO - fill up health state manager logic once backend is up
 export default class RmfHealthStateManager {
   // FIXME - remove mock values
-  getDoorSummary = (): ItemSummary => {
+  getDoorSummary = (): DoorSummary => {
     return {
       operational: 2,
       spoiltItem: [
@@ -32,14 +32,14 @@ export default class RmfHealthStateManager {
     };
   };
 
-  getLiftSummary = (): ItemSummary => {
+  getLiftSummary = (): LiftSummary => {
     return {
       operational: 2,
       spoiltItem: [],
     };
   };
 
-  getDispenserSummary = (): ItemSummary => {
+  getDispenserSummary = (): DispenserSummary => {
     return {
       operational: 1,
       spoiltItem: [],

@@ -141,17 +141,17 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
 
         <SystemSummaryItemState
           item={'Door'}
-          itemSummary={healthStatus.door}
+          doorSummary={healthStatus.door}
           onClick={handleMainMenuDoorsClick}
         />
         <SystemSummaryItemState
           item={'Lift'}
-          itemSummary={healthStatus.lift}
+          liftSummary={healthStatus.lift}
           onClick={handleMainMenuLiftsClick}
         />
         <SystemSummaryItemState
           item={'Dispenser'}
-          itemSummary={healthStatus.dispenser}
+          dispenserSummary={healthStatus.dispenser}
           onClick={handleMainMenuDispensersClick}
         />
         <RobotSummaryState

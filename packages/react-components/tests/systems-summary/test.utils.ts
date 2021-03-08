@@ -1,7 +1,7 @@
-import { ItemSummary, Notification, Severity, RobotSummary } from '../../lib';
+import { DoorSummary, Notification, Severity, RobotSummary } from '../../lib';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 
-export const itemSummary: ItemSummary = {
+export const itemSummary: DoorSummary = {
   operational: 0,
   spoiltItem: [],
 };

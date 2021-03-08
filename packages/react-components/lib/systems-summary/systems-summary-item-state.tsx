@@ -3,14 +3,27 @@ import { makeStyles, Typography, Grid, Paper, Button } from '@material-ui/core';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import { SpoiltDispenser, SpoiltDoor, SpoiltLift } from './index';
 
-export interface ItemSummary {
+interface ItemSummary {
   operational: number;
-  spoiltItem: SpoiltDoor[] | SpoiltLift[] | SpoiltDispenser[];
+}
+
+export interface DoorSummary extends ItemSummary {
+  spoiltItem: SpoiltDoor[];
+}
+
+export interface LiftSummary extends ItemSummary {
+  spoiltItem: SpoiltLift[];
+}
+
+export interface DispenserSummary extends ItemSummary {
+  spoiltItem: SpoiltDispenser[];
 }
 
 export interface SystemSummaryItemStateProps {
   item: string;
-  itemSummary: ItemSummary;
+  doorSummary?: DoorSummary;
+  liftSummary?: LiftSummary;
+  dispenserSummary?: DispenserSummary;
   onClick?: () => void;
 }
 
@@ -37,10 +50,25 @@ const useStyles = makeStyles((theme) => ({
 
 export const SystemSummaryItemState = (props: SystemSummaryItemStateProps): JSX.Element => {
   const classes = useStyles();
-  const { item, itemSummary, onClick } = props;
+  const { item, dispenserSummary, doorSummary, liftSummary, onClick } = props;
 
-  const totalItem = itemSummary.operational + itemSummary.spoiltItem.length;
-  const operationalItem = itemSummary.operational;
+  let totalItem = 0;
+  let operationalItem = 0;
+
+  if (dispenserSummary) {
+    totalItem = dispenserSummary.operational + dispenserSummary.spoiltItem.length;
+    operationalItem = dispenserSummary.operational;
+  }
+
+  if (doorSummary) {
+    totalItem = doorSummary.operational + doorSummary.spoiltItem.length;
+    operationalItem = doorSummary.operational;
+  }
+
+  if (liftSummary) {
+    totalItem = liftSummary.operational + liftSummary.spoiltItem.length;
+    operationalItem = liftSummary.operational;
+  }
 
   const getOperationalStatusLabel = (total: number, operational: number): string => {
     if (total === operational) {
