@@ -1,6 +1,6 @@
 # Settings
 
-There are some environment variables that control how the tests.
+There are some environment variables that control how the test runs.
 
 | Key | Description |
 |---|---|
@@ -14,7 +14,7 @@ There are some environment variables that control how the tests.
 
 Boolean values can be 0/1/true/false.
 
-There are also some environment variables the test sets by default
+There are also some environment variables the test runner sets by default
 
 | Key | Default Value |
 |---|---|
