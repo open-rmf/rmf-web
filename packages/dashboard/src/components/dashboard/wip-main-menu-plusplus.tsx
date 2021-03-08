@@ -156,7 +156,7 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
         />
         <RobotSummaryState
           item={'Robot'}
-          itemSummary={healthStatus.robot}
+          robotSummary={healthStatus.robot}
           onClick={handleMainMenuRobotsClick}
         />
         <Divider className={classes.divider} />

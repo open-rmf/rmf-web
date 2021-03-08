@@ -31,7 +31,7 @@ export const SystemSummaryItemStateStory: Story = (args) => (
     />
     <RobotSummaryState
       item={'Robots'}
-      itemSummary={robotSummary}
+      robotSummary={robotSummary}
       onClick={() => {
         /**filler */
       }}

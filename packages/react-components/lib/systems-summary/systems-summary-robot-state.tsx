@@ -12,7 +12,7 @@ export interface RobotSummary {
 
 export interface RobotSummaryStateProps {
   item: string;
-  itemSummary: RobotSummary;
+  robotSummary: RobotSummary;
   onClick?: () => void;
 }
 
@@ -50,10 +50,10 @@ const useStyles = makeStyles((theme) => ({
 
 export const RobotSummaryState = (props: RobotSummaryStateProps): JSX.Element => {
   const classes = useStyles();
-  const { item, itemSummary, onClick } = props;
+  const { item, robotSummary, onClick } = props;
 
-  const totalItem = itemSummary.operational + itemSummary.spoiltRobots.length;
-  const operationalItem = itemSummary.operational;
+  const totalItem = robotSummary.operational + robotSummary.spoiltRobots.length;
+  const operationalItem = robotSummary.operational;
 
   const getOperationalStatusLabel = (total: number, operational: number): string => {
     if (total === operational) {
@@ -102,7 +102,7 @@ export const RobotSummaryState = (props: RobotSummaryStateProps): JSX.Element =>
           <Grid item xs={6}>
             <Paper className={getOtherStatusLabel('idle')} elevation={3}>
               <Typography noWrap align="center" variant="h6">
-                {itemSummary.idle}
+                {robotSummary.idle}
               </Typography>
               <Typography align="center" variant="body1">
                 Idle
@@ -112,7 +112,7 @@ export const RobotSummaryState = (props: RobotSummaryStateProps): JSX.Element =>
           <Grid item xs={6}>
             <Paper className={getOtherStatusLabel('charging')} elevation={3}>
               <Typography noWrap align="center" variant="h6">
-                {itemSummary.charging}
+                {robotSummary.charging}
               </Typography>
               <Typography align="center" variant="body1">
                 Charging
