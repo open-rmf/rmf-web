@@ -5,12 +5,13 @@
   "main": "src/index.js",
   "scripts": {
     "start": "ts-node src/index.ts",
-    "build": "tsc --build",
+    "build": "npm run lint && tsc --build",
     "clean": "tsc --build --clean",
     "prepack": "npm ci && npm run clean && npm run build",
     "prepare": "npm run build",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "lint": "../../node_modules/.bin/eslint --ext ts,tsx src"
   },
   "author": "koonpeng@openrobotics.org",
   "license": "Apache-2.0",

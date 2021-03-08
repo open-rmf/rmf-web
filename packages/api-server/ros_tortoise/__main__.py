@@ -1,6 +1,7 @@
 import argparse
+import base64
+import hashlib
 import os.path
-import shutil
 from typing import Sequence
 
 import ament_index_python
@@ -138,17 +139,23 @@ def main():
     args = parser.parse_args()
     packages = [
         k
-        for k in ament_index_python.get_resources("rosidl_interfaces").keys()
+        for k in ament_index_python.get_resources("rosidl_interfaces")
         if k in args.packages
     ]
     os.makedirs(args.output, exist_ok=True)
+    sha1 = hashlib.sha1()
     for pkg in packages:
         pkg_spec = PackageSpec(pkg, parse_package(pkg))
         mixins = gen_mixin(pkg_spec)
+        sha1.update(mixins.encode())
         outfile = f"{args.output}/{pkg}_mixins.py"
         with open(outfile, "w") as f:
             f.write(mixins)
         print(outfile)
+
+    rev = base64.b32encode(sha1.digest())
+    with open(f"{args.output}/rev", "bw") as f:
+        f.write(rev)
 
     init_file = f"{args.output}/__init__.py"
     with open(f"{args.output}/__init__.py", "w") as f:

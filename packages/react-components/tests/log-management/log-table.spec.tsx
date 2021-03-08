@@ -44,9 +44,8 @@ describe('Log table test', () => {
 });
 
 describe('Table footer Pagination', () => {
-  let root: RenderResult;
   beforeEach(() => {
-    root = render(<LogTable rows={rows} />);
+    render(<LogTable rows={rows} />);
   });
 
   afterEach(cleanup);
