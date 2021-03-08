@@ -6,6 +6,7 @@ from rmf_door_msgs.msg import DoorMode as RmfDoorMode
 from rmf_lift_msgs.msg import LiftState as RmfLiftState
 from tortoise import Tortoise
 
+from ..models import DoorHealth, HealthStatus, LiftHealth
 from ..rmf_io.test_data import make_door, make_door_state, make_lift_state
 from .sql import SqlRepository
 
@@ -67,6 +68,15 @@ class TestSqlRepository(unittest.IsolatedAsyncioTestCase):
         result = await self.repo.read_door("test_door")
         self.assertIsNone(result)
 
+    async def test_update_door_health(self):
+        await self.repo.update_door_health(
+            DoorHealth(
+                name="test_door",
+                health_status=HealthStatus.HEALTHY,
+            )
+        )
+        self.assertIsNotNone(await self.repo.read_door_health("test_door"))
+
     async def test_update_lift_state(self):
         lift_state = make_lift_state()
         lift_state.lift_name = "test_lift"
@@ -90,3 +100,12 @@ class TestSqlRepository(unittest.IsolatedAsyncioTestCase):
         result: RmfLiftState = await self.repo.read_lift_states()
         self.assertEqual(len(result), 2)
         self.assertEqual(result["test_lift2"].current_floor, "L2")
+
+    async def test_update_lift_health(self):
+        await self.repo.update_lift_health(
+            LiftHealth(
+                name="test_lift",
+                health_status=HealthStatus.HEALTHY,
+            )
+        )
+        self.assertIsNotNone(await self.repo.read_lift_health("test_lift"))
