@@ -4,9 +4,7 @@ from typing import Any, Callable, Optional
 
 from rmf_door_msgs.msg import DoorMode, DoorState
 from rx import Observable
-from rx.operators import combine_latest, flat_map, group_by
-from rx.operators import map as rx_map
-from rx.operators import timestamp
+from rx import operators as op
 from rx.scheduler.scheduler import Scheduler
 
 from ..models import BasicHealthModel, DoorHealth, HealthStatus, LiftHealth
@@ -74,11 +72,11 @@ class HealthWatchdog:
             )
 
         return source.pipe(
-            group_by(key_mapper),
-            flat_map(
+            op.group_by(key_mapper),
+            op.flat_map(
                 lambda x: x.pipe(
                     heartbeat(self.LIVELINESS),
-                    rx_map(lambda y: map_health(y, x.key)),
+                    op.map(lambda y: map_health(y, x.key)),
                 )
             ),
         )
@@ -103,18 +101,18 @@ class HealthWatchdog:
             )
 
         door_mode_health = self.rmf.door_states.pipe(
-            rx_map(door_mode_to_health),
-            timestamp(),
+            op.map(door_mode_to_health),
+            op.timestamp(),
         )
 
         heartbeat_health = self._watch_heartbeat(
             DoorHealth,
             self.rmf.door_states,
             lambda x: x.door_name,
-        ).pipe(timestamp())
+        ).pipe(op.timestamp())
 
         heartbeat_health.pipe(
-            combine_latest(door_mode_health),
+            op.combine_latest(door_mode_health),
             most_critical(),
         ).subscribe(self._report_health(self.rmf.door_health), scheduler=self.scheduler)
 

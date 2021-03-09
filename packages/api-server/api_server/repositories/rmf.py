@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Dict, Optional, Sequence
 
 from building_map_msgs.msg import Door
+from rmf_dispenser_msgs.msg import DispenserState
 from rmf_door_msgs.msg import DoorState
 from rmf_lift_msgs.msg import LiftState
 
@@ -44,7 +45,7 @@ class RmfRepository(ABC):
         """
 
     @abstractmethod
-    async def read_door_health(self, door_name: str) -> DoorHealth:
+    async def read_door_health(self, door_name: str) -> Optional[DoorHealth]:
         """
         Read the current door health
         """
@@ -68,7 +69,19 @@ class RmfRepository(ABC):
         """
 
     @abstractmethod
-    async def read_lift_health(self, lift_name: str) -> LiftHealth:
+    async def read_lift_health(self, lift_name: str) -> Optional[LiftHealth]:
         """
         Read the current lift health
+        """
+
+    @abstractmethod
+    async def update_dispenser_state(self, dispenser_state: DispenserState):
+        """
+        Update or create a dispenser state
+        """
+
+    @abstractmethod
+    async def read_dispenser_states(self) -> Dict[str, DispenserState]:
+        """
+        Read the list of all current dispenser states.
         """

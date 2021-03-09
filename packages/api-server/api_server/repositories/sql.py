@@ -3,10 +3,11 @@ from typing import Dict, Sequence
 
 import tortoise
 from building_map_msgs.msg import Door as RmfDoor
+from rmf_dispenser_msgs.msg import DispenserState as RmfDispenserState
 from rmf_door_msgs.msg import DoorState as RmfDoorState
 from rmf_lift_msgs.msg import LiftState as RmfLiftState
 
-from ..models import Door, DoorHealth, DoorState, LiftHealth, LiftState
+from ..models import DispenserState, Door, DoorHealth, DoorState, LiftHealth, LiftState
 from .rmf import RmfRepository
 
 
@@ -75,3 +76,12 @@ class SqlRepository(RmfRepository):
 
     async def read_lift_health(self, lift_name: str) -> LiftHealth:
         return await LiftHealth.filter(name=lift_name).first()
+
+    async def update_dispenser_state(self, dispenser_state: RmfDispenserState):
+        state = DispenserState().update_from_rmf(dispenser_state)
+        await self._save(state, id_=state.id_)
+        self.logger.debug("written dispenser_state to database")
+
+    async def read_dispenser_states(self) -> Dict[str, RmfDispenserState]:
+        all_states = await DispenserState.all()
+        return {x.id_: x.to_rmf() for x in all_states}
