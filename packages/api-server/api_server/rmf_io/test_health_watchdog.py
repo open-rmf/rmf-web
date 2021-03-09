@@ -1,17 +1,18 @@
 import logging
 import unittest
-from typing import Any, Callable, List
+from typing import Any, Callable
 
+from rmf_door_msgs.msg import DoorMode
 from rx import Observable
 from rx.scheduler.historicalscheduler import HistoricalScheduler
 
-from ..models import HealthStatus
+from ..models import DoorHealth, HealthStatus
 from .gateway import RmfGateway
 from .health_watchdog import HealthWatchdog
 from .test_data import make_door_state, make_lift_state
 
 
-class TestHealthWatchdog_DoorHealth(unittest.IsolatedAsyncioTestCase):
+class BaseHealthWatchdogTests(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         self.scheduler = HistoricalScheduler()
         self.rmf = RmfGateway()
@@ -21,54 +22,85 @@ class TestHealthWatchdog_DoorHealth(unittest.IsolatedAsyncioTestCase):
             self.rmf, scheduler=self.scheduler, logger=logger
         )
 
+
+async def test_heartbeat(
+    test: BaseHealthWatchdogTests,
+    health_obs: Observable,
+    source: Observable,
+    factory: Callable[[str], Any],
+):
+    """
+    :param health_obs: Observable[BasicHealthModel], the observable of the heartbeat events
+    :param source: Observable[SourceType], the observable that should trigger heartbeat events
+    :param factory: Callable[[str], SourceType], a factory function that returns an object of
+        the source observable sequence type
+    """
+    health = None
+
+    def assign(v):
+        nonlocal health
+        health = v
+
+    health_obs.pipe().subscribe(assign)
+
+    source.on_next(factory("test_id"))
+    test.scheduler.advance_by(0)
+    test.assertEqual(health.health_status, HealthStatus.HEALTHY)
+    test.assertEqual(health.name, "test_id")
+
+    # it should not be dead yet
+    test.scheduler.advance_by(HealthWatchdog.LIVELINESS / 2)
+    test.assertEqual(health.health_status, HealthStatus.HEALTHY)
+    test.assertEqual(health.name, "test_id")
+
+    # it should be dead now because the time between states has reached the threshold
+    test.scheduler.advance_by(HealthWatchdog.LIVELINESS / 2)
+    test.assertEqual(health.health_status, HealthStatus.DEAD)
+    test.assertEqual(health.name, "test_id")
+
+    # it should become alive again when a new state is emitted
+    source.on_next(factory("test_id"))
+    test.assertEqual(health.health_status, HealthStatus.HEALTHY)
+    test.assertEqual(health.name, "test_id")
+
+
+class TestHealthWatchdog_DoorHealth(BaseHealthWatchdogTests):
     async def test_heartbeat(self):
-        class Param:
-            def __init__(
-                self,
-                health_obs: Observable,
-                source: Observable,
-                factory: Callable[[str], Any],
-            ):
-                self.health_obs = health_obs
-                self.source = source
-                self.factory = factory
+        await test_heartbeat(
+            self, self.rmf.door_health, self.rmf.door_states, make_door_state
+        )
 
-        def lift_state_factory(name: str):
-            state = make_lift_state()
-            state.lift_name = name
-            return state
+    async def test_door_mode_offline_is_unhealthy(self):
+        health: DoorHealth = None
 
-        params: List[Param] = [
-            Param(self.rmf.door_health, self.rmf.door_states, make_door_state),
-            Param(self.rmf.lift_health, self.rmf.lift_states, lift_state_factory),
-        ]
+        def on_next(v):
+            nonlocal health
+            health = v
 
-        for p in params:
-            with self.subTest(p=p):
-                health = None
+        self.rmf.door_health.subscribe(on_next)
 
-                def assign(v):
-                    nonlocal health
-                    health = v
+        state = make_door_state("test_door", DoorMode.MODE_OFFLINE)
+        self.rmf.door_states.on_next(state)
+        self.scheduler.advance_by(0)
+        self.assertEqual(health.health_status, HealthStatus.UNHEALTHY)
 
-                p.health_obs.pipe().subscribe(assign)
+    async def test_door_mode_unknown_is_unhealthy(self):
+        health: DoorHealth = None
 
-                p.source.on_next(p.factory("test"))
-                self.scheduler.advance_by(0)
-                self.assertEqual(health.health_status, HealthStatus.HEALTHY)
-                self.assertEqual(health.name, "test")
+        def on_next(v):
+            nonlocal health
+            health = v
 
-                # it should not be dead yet
-                self.scheduler.advance_by(HealthWatchdog.LIVELINESS / 2)
-                self.assertEqual(health.health_status, HealthStatus.HEALTHY)
-                self.assertEqual(health.name, "test")
+        self.rmf.door_health.subscribe(on_next)
 
-                # it should be dead now because the time between states has reached the threshold
-                self.scheduler.advance_by(HealthWatchdog.LIVELINESS / 2)
-                self.assertEqual(health.health_status, HealthStatus.DEAD)
-                self.assertEqual(health.name, "test")
+        state = make_door_state("test_door", DoorMode.MODE_UNKNOWN)
+        self.rmf.door_states.on_next(state)
+        self.scheduler.advance_by(0)
+        self.assertEqual(health.health_status, HealthStatus.UNHEALTHY)
 
-                # it should become alive again when a new state is emitted
-                p.source.on_next(p.factory("test"))
-                self.assertEqual(health.health_status, HealthStatus.HEALTHY)
-                self.assertEqual(health.name, "test")
+
+class TestHealthWatchdog_LiftHealth(BaseHealthWatchdogTests):
+    async def test_heartbeat(self):
+        await test_heartbeat(
+            self, self.rmf.lift_health, self.rmf.lift_states, make_lift_state
+        )
