@@ -1,26 +1,28 @@
 import logging
 import unittest
-from typing import Any, Callable
+from typing import Any, Callable, Optional
 
 from rmf_door_msgs.msg import DoorMode
 from rx import Observable
 from rx.scheduler.historicalscheduler import HistoricalScheduler
 
-from ..models import DoorHealth, HealthStatus
+from ..models import DoorHealth, HealthStatus, LiftHealth
 from .gateway import RmfGateway
 from .health_watchdog import HealthWatchdog
-from .test_data import make_door_state, make_lift_state
+from .test_data import make_building_map, make_door_state, make_lift, make_lift_state
 
 
 class BaseHealthWatchdogTests(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         self.scheduler = HistoricalScheduler()
         self.rmf = RmfGateway()
+
         logger = logging.Logger("test")
         logger.setLevel("CRITICAL")
         self.health_watchdog = HealthWatchdog(
             self.rmf, scheduler=self.scheduler, logger=logger
         )
+        self.scheduler.advance_by(1)
 
 
 async def test_heartbeat(
@@ -41,7 +43,7 @@ async def test_heartbeat(
         nonlocal health
         health = v
 
-    health_obs.pipe().subscribe(assign)
+    health_obs.subscribe(assign)
 
     source.on_next(factory("test_id"))
     test.scheduler.advance_by(0)
@@ -53,12 +55,12 @@ async def test_heartbeat(
     test.assertEqual(health.health_status, HealthStatus.HEALTHY)
     test.assertEqual(health.name, "test_id")
 
-    # it should be dead now because the time between states has reached the threshold
+    # # it should be dead now because the time between states has reached the threshold
     test.scheduler.advance_by(HealthWatchdog.LIVELINESS / 2)
     test.assertEqual(health.health_status, HealthStatus.DEAD)
     test.assertEqual(health.name, "test_id")
 
-    # it should become alive again when a new state is emitted
+    # # it should become alive again when a new state is emitted
     source.on_next(factory("test_id"))
     test.assertEqual(health.health_status, HealthStatus.HEALTHY)
     test.assertEqual(health.name, "test_id")
@@ -104,3 +106,25 @@ class TestHealthWatchdog_LiftHealth(BaseHealthWatchdogTests):
         await test_heartbeat(
             self, self.rmf.lift_health, self.rmf.lift_states, make_lift_state
         )
+
+    async def test_heartbeat_with_no_state(self):
+        """
+        Tests that a lift that never sends any state can be caught by the heartbeat watchdog.
+        This also tests that the list of known lifts is automatically updated when a new
+        building map comes in.
+        """
+        building_map = make_building_map()
+        building_map.lifts = [make_lift("test_lift")]
+        self.rmf.building_map.on_next(building_map)
+
+        health: Optional[LiftHealth] = None
+
+        def assign(v):
+            nonlocal health
+            health = v
+
+        self.rmf.lift_health.subscribe(assign)
+
+        self.scheduler.advance_by(self.health_watchdog.LIVELINESS)
+        self.assertEqual(health.name, "test_lift")
+        self.assertEqual(health.health_status, HealthStatus.DEAD)

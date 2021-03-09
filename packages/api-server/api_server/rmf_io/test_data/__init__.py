@@ -1,9 +1,43 @@
 import os.path
 
-from building_map_msgs.msg import AffineImage, BuildingMap, Door, Graph, Level
+from building_map_msgs.msg import AffineImage, BuildingMap, Door, Graph, Level, Lift
 from builtin_interfaces.msg import Time
 from rmf_door_msgs.msg import DoorMode, DoorState
 from rmf_lift_msgs.msg import LiftState
+
+
+def make_door(name: str = "test_door") -> Door:
+    return Door(
+        name=name,
+        v1_x=0.0,
+        v1_y=0.0,
+        v2_x=0.0,
+        v2_y=0.0,
+        door_type=Door.DOOR_TYPE_SINGLE_SLIDING,
+        motion_range=0.0,
+        motion_direction=1,
+    )
+
+
+def make_lift(name: str = "test_lift") -> Lift:
+    return Lift(
+        name=name,
+        levels=["L1", "L2"],
+        doors=[
+            make_door(),
+        ],
+        wall_graph=Graph(
+            name="test_graph",
+            vertices=[],
+            edges=[],
+            params=[],
+        ),
+        ref_x=0.0,
+        ref_y=0.0,
+        ref_yaw=0.0,
+        width=0.0,
+        depth=0.0,
+    )
 
 
 def make_building_map():
@@ -47,19 +81,6 @@ def make_door_state(name: str, mode: int = DoorMode.MODE_CLOSED) -> DoorState:
         door_name=name,
         current_mode=DoorMode(value=mode),
         door_time=Time(sec=0, nanosec=0),
-    )
-
-
-def make_door(name: str) -> Door:
-    return Door(
-        name=name,
-        v1_x=0.0,
-        v1_y=0.0,
-        v2_x=0.0,
-        v2_y=0.0,
-        door_type=Door.DOOR_TYPE_SINGLE_SLIDING,
-        motion_range=0.0,
-        motion_direction=1,
     )
 
 
