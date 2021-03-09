@@ -7,19 +7,15 @@ import BatteryCharging80Icon from '@material-ui/icons/BatteryCharging80';
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import BusinessCenterIcon from '@material-ui/icons/BusinessCenter';
+import { ReducerReporterDispatch } from './reporter-reducer';
 
-interface BuildMenuProps {
-  allLogs: () => void;
-  doorsStateReport: () => void;
-}
-
-export const buildMenu = (props: BuildMenuProps) => {
+export const buildMenu = (reporterDispatch: ReducerReporterDispatch) => {
   return [
     {
       icon: <SearchIcon />,
       title: 'All logs',
       items: [],
-      onClick: props.allLogs,
+      onClick: () => reporterDispatch.setQueryAllLogs(true),
     },
     {
       icon: <BatteryCharging80Icon />,
@@ -29,7 +25,7 @@ export const buildMenu = (props: BuildMenuProps) => {
       icon: <KitchenIcon />,
       title: 'Doors',
       items: [],
-      onClick: props.doorsStateReport,
+      onClick: () => reporterDispatch.setShowDoorStateReport(true),
     },
     {
       icon: <ArrowDropUpIcon />,

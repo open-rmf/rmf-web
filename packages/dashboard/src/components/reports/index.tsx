@@ -15,7 +15,8 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
-import { LogManagement, DoorStateReport, DoorRowsType } from 'react-components';
+import { useReporterReducer } from './reporter-reducer';
+import { ReporterBody } from './reporter-body';
 
 const drawerWidth = 240;
 
@@ -78,36 +79,26 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const getLogLabels = () => [
-  { label: 'Web Server', value: 'web-server' },
-  { label: 'RMF core', value: 'rmf-core' },
-];
-
-function randomDate(start: Date, end: Date) {
-  return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
-}
-
-const getLogs = () => {
-  const rows = [];
-  for (let i = 0; i < 500; i++) {
-    rows.push({
-      message: 'Test' + i,
-      level: 'Debug',
-      timestamp: randomDate(new Date(2012, 0, 1), new Date()).toISOString(),
-    });
-  }
-  return rows;
-};
-
-const getLogsPromise = async () => getLogs();
-const getLabelsPromise = async () => getLogLabels();
-
 export const Reporter = () => {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
-  const [allLogs, setAllLogs] = React.useState(false);
-  const [doorStates, setDoorStates] = React.useState(true);
+  const initialState = {
+    queryAllLogs: false,
+    showChargerStateReport: false,
+    showDoorStateReport: false,
+    showLiftStateReport: false,
+    showRobotStateReport: false,
+    showRobotMotionPlansReport: false,
+    showRobotActionReport: false,
+    showTasksReport: false,
+    showUserActionsReport: false,
+    showLoginsReport: false,
+    showLogoutsReport: false,
+    showLoginFailuresReport: false,
+    showWorkCellStatesReport: false,
+  };
+  const { state, dispatch } = useReporterReducer(initialState);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -115,11 +106,6 @@ export const Reporter = () => {
 
   const handleDrawerClose = () => {
     setOpen(false);
-  };
-
-  const turnOffAllReports = () => {
-    setAllLogs(false);
-    setDoorStates(false);
   };
 
   return (
@@ -161,20 +147,7 @@ export const Reporter = () => {
           </IconButton>
         </div>
         <Divider />
-        <ReporterMenu
-          menuStructure={
-            buildMenu({
-              allLogs: () => {
-                turnOffAllReports();
-                setAllLogs(true);
-              },
-              doorsStateReport: () => {
-                turnOffAllReports();
-                setDoorStates(true);
-              },
-            }) as ExpandableReporterMenuProps[]
-          }
-        />
+        <ReporterMenu menuStructure={buildMenu(dispatch) as ExpandableReporterMenuProps[]} />
       </Drawer>
       <main
         className={clsx(classes.content, {
@@ -182,23 +155,7 @@ export const Reporter = () => {
         })}
       >
         <div className={classes.drawerHeader} />
-        {allLogs && <LogManagement getLogs={getLogsPromise} getLabels={getLabelsPromise} />}
-        {doorStates && (
-          <DoorStateReport
-            rows={
-              [
-                {
-                  name: 'doorA',
-                  status: 'closed',
-                  message: 'test',
-                  timestamp: new Date().toISOString(),
-                },
-              ] as DoorRowsType
-            }
-            tableSize={'49vh'}
-          />
-        )}
-        {!allLogs && !doorStates && <h1>you should pick a report</h1>}
+        <ReporterBody reporterState={state} />
       </main>
     </div>
   );
