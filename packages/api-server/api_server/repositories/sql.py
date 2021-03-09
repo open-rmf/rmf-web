@@ -61,13 +61,13 @@ class SqlRepository(RmfRepository):
         return await DoorHealth.filter(name=door_name).first()
 
     async def update_lift_state(self, lift_state: RmfLiftState):
-        state = await LiftState.from_rmf(lift_state)
-        await self._save(state, lift_name=state.lift_name)
+        state = LiftState().update_from_rmf(lift_state)
+        await self._save(state, id_=state.id_)
         self.logger.debug("written lift_state to database")
 
     async def read_lift_states(self) -> Dict[str, RmfLiftState]:
         all_states = await LiftState.all()
-        return {x.lift_name: x.to_rmf() for x in all_states}
+        return {x.id_: x.to_rmf() for x in all_states}
 
     async def update_lift_health(self, lift_health: LiftHealth) -> None:
         await self._save(lift_health, name=lift_health.name)
