@@ -76,7 +76,14 @@ class HealthWatchdog:
         )
 
     def _watch_door_health(self, building_map):
-        def door_mode_to_health(state: DoorState):
+        def door_mode_to_health(data: Tuple[str, DoorState]):
+            state = data[1]
+            # default to healthy if state is unknown
+            if state is None:
+                return DoorHealth(
+                    name=data[0],
+                    health_status=HealthStatus.HEALTHY,
+                )
             if state.current_mode.value == DoorMode.MODE_OFFLINE:
                 return DoorHealth(
                     name=state.door_name,
@@ -93,11 +100,6 @@ class HealthWatchdog:
                 name=state.door_name,
                 health_status=HealthStatus.HEALTHY,
             )
-
-        door_mode_health = self.rmf.door_states.pipe(
-            op.map(door_mode_to_health),
-            op.timestamp(),
-        )
 
         doors: List[Door] = []
         if building_map:
@@ -119,10 +121,17 @@ class HealthWatchdog:
 
         keys = [x.name for x in doors]
         initial_values: Sequence[Tuple[str, Any]] = [(k, None) for k in keys]
-        heartbeat_health = rx.merge(
+        obs = rx.merge(
             rx.of(*initial_values),
             self.rmf.door_states.pipe(op.map(lambda x: (x.door_name, x))),
-        ).pipe(
+        )
+
+        door_mode_health = obs.pipe(
+            op.map(door_mode_to_health),
+            op.timestamp(),
+        )
+
+        heartbeat_health = obs.pipe(
             self._watch_heartbeat(lambda x: x[0]),
             op.map(to_door_health),
             op.timestamp(),

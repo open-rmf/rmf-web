@@ -9,7 +9,13 @@ from rx.scheduler.historicalscheduler import HistoricalScheduler
 from ..models import DoorHealth, HealthStatus, LiftHealth
 from .gateway import RmfGateway
 from .health_watchdog import HealthWatchdog
-from .test_data import make_building_map, make_door_state, make_lift, make_lift_state
+from .test_data import (
+    make_building_map,
+    make_door,
+    make_door_state,
+    make_lift,
+    make_lift_state,
+)
 
 
 class BaseHealthWatchdogTests(unittest.IsolatedAsyncioTestCase):
@@ -99,6 +105,23 @@ class TestHealthWatchdog_DoorHealth(BaseHealthWatchdogTests):
         self.rmf.door_states.on_next(state)
         self.scheduler.advance_by(0)
         self.assertEqual(health.health_status, HealthStatus.UNHEALTHY)
+
+    async def test_heartbeat_with_no_state(self):
+        building_map = make_building_map()
+        building_map.levels[0].doors = [make_door("test_door")]
+        self.rmf.building_map.on_next(building_map)
+
+        health: Optional[DoorHealth] = None
+
+        def assign(v):
+            nonlocal health
+            health = v
+
+        self.rmf.door_health.subscribe(assign)
+
+        self.scheduler.advance_by(self.health_watchdog.LIVELINESS)
+        self.assertEqual(health.name, "test_door")
+        self.assertEqual(health.health_status, HealthStatus.DEAD)
 
 
 class TestHealthWatchdog_LiftHealth(BaseHealthWatchdogTests):
