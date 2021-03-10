@@ -33,7 +33,7 @@ describe('Login page', () => {
       </BrowserRouter>,
     );
 
-    expect(root.queryByText('Login with RMF')).toBeFalsy();
+    expect(root.queryByText('Login')).toBeFalsy();
   });
 
   test('performs login when login button is clicked', () => {
@@ -47,7 +47,7 @@ describe('Login page', () => {
         </AuthenticatorContext.Provider>
       </BrowserRouter>,
     );
-    const loginButton = root.getByRole('button', { name: /Login with RMF/i });
+    const loginButton = root.getByRole('button', { name: /Login/i });
     userEvent.click(loginButton);
 
     expect(spy).toHaveBeenCalledTimes(1);
