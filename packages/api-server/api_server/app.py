@@ -46,9 +46,7 @@ else:
 sio_client = socketio.AsyncClient()
 
 
-async def load_states(repo: RmfRepository, gateway: RmfGateway):
-    logger.info("loading states from database...")
-
+async def load_doors(repo: RmfRepository, gateway: RmfGateway):
     door_states = await repo.read_door_states()
     for state in door_states:
         gateway.door_states.on_next(state)
@@ -63,6 +61,8 @@ async def load_states(repo: RmfRepository, gateway: RmfGateway):
         gateway.door_health.on_next(health)
     logger.info(f"loaded {len(door_health)} door health")
 
+
+async def load_lifts(repo: RmfRepository, gateway: RmfGateway):
     lift_states = await repo.read_lift_states()
     for state in lift_states:
         gateway.lift_states.on_next(state)
@@ -77,6 +77,8 @@ async def load_states(repo: RmfRepository, gateway: RmfGateway):
         gateway.lift_health.on_next(health)
     logger.info(f"loaded {len(lift_health)} lift health")
 
+
+async def load_dispensers(repo: RmfRepository, gateway: RmfGateway):
     dispenser_states = await repo.read_dispenser_states()
     for state in dispenser_states:
         gateway.dispenser_states.on_next(state)
@@ -91,6 +93,8 @@ async def load_states(repo: RmfRepository, gateway: RmfGateway):
         gateway.dispenser_health.on_next(health)
     logger.info(f"loaded {len(dispenser_health)} dispenser health")
 
+
+async def load_fleets(repo: RmfRepository, gateway: RmfGateway):
     fleet_states = await repo.read_fleet_states()
     for state in fleet_states:
         gateway.fleet_states.on_next(state)
@@ -106,6 +110,15 @@ async def load_states(repo: RmfRepository, gateway: RmfGateway):
     for health in robot_health:
         gateway.robot_health.on_next(health)
     logger.info(f"loaded {len(robot_health)} robot health")
+
+
+async def load_states(repo: RmfRepository, gateway: RmfGateway):
+    logger.info("loading states from database...")
+
+    load_doors(repo, gateway)
+    load_lifts(repo, gateway)
+    load_dispensers(repo, gateway)
+    load_fleets(repo, gateway)
 
     logger.info("successfully loaded all states")
 

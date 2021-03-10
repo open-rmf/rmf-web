@@ -13,15 +13,7 @@ from rx.core.typing import Disposable
 from rx.scheduler.scheduler import Scheduler
 from rx.subject import Subject
 
-from ..models import (
-    BasicHealthModel,
-    DispenserHealth,
-    DoorHealth,
-    HealthStatus,
-    LiftHealth,
-    RobotHealth,
-    get_robot_id,
-)
+from .. import models
 from .gateway import RmfGateway
 from .operators import heartbeat, most_critical
 
@@ -54,7 +46,7 @@ class HealthWatchdog:
         self._watch_robot_health()
 
     def _report_health(self, target: Observable):
-        def on_next(health: BasicHealthModel):
+        def on_next(health: models.BasicHealthModel):
             message = json.dumps(
                 {
                     "id": health.id_,
@@ -62,9 +54,9 @@ class HealthWatchdog:
                     "health_message": health.health_message,
                 }
             )
-            if health.health_status == HealthStatus.UNHEALTHY:
+            if health.health_status == models.HealthStatus.UNHEALTHY:
                 self.logger.warning(message)
-            elif health.health_status == HealthStatus.DEAD:
+            elif health.health_status == models.HealthStatus.DEAD:
                 self.logger.error(message)
             else:
                 self.logger.info(message)
@@ -94,9 +86,9 @@ class HealthWatchdog:
             state = data[1]
 
             if state is None:
-                return DoorHealth(
+                return models.DoorHealth(
                     id_=data[0],
-                    health_status=HealthStatus.UNHEALTHY,
+                    health_status=models.HealthStatus.UNHEALTHY,
                     health_message="unknown",
                 )
             if state.current_mode.value in (
@@ -104,19 +96,19 @@ class HealthWatchdog:
                 DoorMode.MODE_MOVING,
                 DoorMode.MODE_OPEN,
             ):
-                return DoorHealth(
+                return models.DoorHealth(
                     id_=state.door_name,
-                    health_status=HealthStatus.HEALTHY,
+                    health_status=models.HealthStatus.HEALTHY,
                 )
             if state.current_mode.value == DoorMode.MODE_OFFLINE:
-                return DoorHealth(
+                return models.DoorHealth(
                     id_=state.door_name,
-                    health_status=HealthStatus.UNHEALTHY,
+                    health_status=models.HealthStatus.UNHEALTHY,
                     health_message="offline",
                 )
-            return DoorHealth(
+            return models.DoorHealth(
                 id_=state.door_name,
-                health_status=HealthStatus.UNHEALTHY,
+                health_status=models.HealthStatus.UNHEALTHY,
                 health_message="unknown",
             )
 
@@ -131,10 +123,12 @@ class HealthWatchdog:
             id_ = data[0]
             has_heartbeat = data[1]
             if has_heartbeat:
-                return DoorHealth(id_=id_, health_status=HealthStatus.HEALTHY)
-            return DoorHealth(
+                return models.DoorHealth(
+                    id_=id_, health_status=models.HealthStatus.HEALTHY
+                )
+            return models.DoorHealth(
                 id_=id_,
-                health_status=HealthStatus.DEAD,
+                health_status=models.HealthStatus.DEAD,
                 health_message="heartbeat failed",
             )
 
@@ -169,10 +163,12 @@ class HealthWatchdog:
             id_ = data[0]
             has_heartbeat = data[1]
             if has_heartbeat:
-                return LiftHealth(id_=id_, health_status=HealthStatus.HEALTHY)
-            return LiftHealth(
+                return models.LiftHealth(
+                    id_=id_, health_status=models.HealthStatus.HEALTHY
+                )
+            return models.LiftHealth(
                 id_=id_,
-                health_status=HealthStatus.DEAD,
+                health_status=models.HealthStatus.DEAD,
                 health_message="heartbeat failed",
             )
 
@@ -197,10 +193,12 @@ class HealthWatchdog:
     def _watch_dispenser_health(self):
         def to_dispenser_health(id_: str, has_heartbeat: bool):
             if has_heartbeat:
-                return DispenserHealth(id_=id_, health_status=HealthStatus.HEALTHY)
-            return DispenserHealth(
+                return models.DispenserHealth(
+                    id_=id_, health_status=models.HealthStatus.HEALTHY
+                )
+            return models.DispenserHealth(
                 id_=id_,
-                health_status=HealthStatus.DEAD,
+                health_status=models.HealthStatus.DEAD,
                 health_message="heartbeat failed",
             )
 
@@ -229,13 +227,13 @@ class HealthWatchdog:
     def _watch_robot_health(self):
         def to_robot_health(id_: str, has_heartbeat: bool):
             if has_heartbeat:
-                return RobotHealth(
+                return models.RobotHealth(
                     id_=id_,
-                    health_status=HealthStatus.HEALTHY,
+                    health_status=models.HealthStatus.HEALTHY,
                 )
-            return RobotHealth(
+            return models.RobotHealth(
                 id_=id_,
-                health_status=HealthStatus.DEAD,
+                health_status=models.HealthStatus.DEAD,
                 health_message="heartbeat failed",
             )
 
@@ -252,7 +250,7 @@ class HealthWatchdog:
             fleet_state: FleetState
             for robot_state in fleet_state.robots:
                 robot_state: RobotState
-                robot_id = get_robot_id(fleet_state.name, robot_state.name)
+                robot_id = models.get_robot_id(fleet_state.name, robot_state.name)
                 subjects[robot_id] = Subject()
 
         for id_, subject in subjects.items():
@@ -261,7 +259,7 @@ class HealthWatchdog:
         def on_state(fleet_state: FleetState):
             for robot_state in fleet_state.robots:
                 robot_state: RobotState
-                robot_id = get_robot_id(fleet_state.name, robot_state.name)
+                robot_id = models.get_robot_id(fleet_state.name, robot_state.name)
 
                 if robot_id not in subjects:
                     subjects[robot_id] = Subject()

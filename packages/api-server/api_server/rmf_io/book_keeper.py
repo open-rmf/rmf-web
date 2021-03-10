@@ -42,6 +42,7 @@ class RmfBookKeeper:
         self,
         rmf_gateway: RmfGateway,
         repo: SqlRepository,
+        *,
         loop: asyncio.AbstractEventLoop = None,
         scheduler: Optional[Scheduler] = None,
         logger: logging.Logger = None,
