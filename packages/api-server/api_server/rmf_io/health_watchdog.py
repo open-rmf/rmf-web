@@ -1,11 +1,12 @@
 import json
 import logging
-from typing import Any, Callable, List, Optional, Sequence, Tuple
+from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple
 
 import rx
 from building_map_msgs.msg import BuildingMap, Door, Level, Lift
 from rmf_dispenser_msgs.msg import DispenserState
 from rmf_door_msgs.msg import DoorMode, DoorState
+from rmf_fleet_msgs.msg import FleetState, RobotState
 from rx import Observable
 from rx import operators as op
 from rx.core.typing import Disposable
@@ -18,6 +19,8 @@ from ..models import (
     DoorHealth,
     HealthStatus,
     LiftHealth,
+    RobotHealth,
+    get_robot_id,
 )
 from .gateway import RmfGateway
 from .operators import heartbeat, most_critical
@@ -48,6 +51,7 @@ class HealthWatchdog:
         self.rmf.building_map.subscribe(on_building_map)
 
         self._watch_dispenser_health()
+        self._watch_robot_health()
 
     def _report_health(self, target: Observable):
         def on_next(health: BasicHealthModel):
@@ -216,3 +220,47 @@ class HealthWatchdog:
             subjects[state.guid].on_next(state)
 
         self.rmf.dispenser_states.subscribe(on_state)
+
+    def _watch_robot_health(self):
+        def to_robot_health(id_: str, has_heartbeat: bool):
+            if has_heartbeat:
+                return RobotHealth(
+                    id_=id_,
+                    health_status=HealthStatus.HEALTHY,
+                )
+            return RobotHealth(
+                id_=id_,
+                health_status=HealthStatus.DEAD,
+                health_message="heartbeat failed",
+            )
+
+        def watch(id_: str, obs: Observable):
+            obs.pipe(
+                heartbeat(self.LIVELINESS),
+                op.map(lambda x: to_robot_health(id_, x)),
+            ).subscribe(
+                self._report_health(self.rmf.robot_health), scheduler=self.scheduler
+            )
+
+        subjects: Dict[str, Subject] = {}
+        for fleet_state in self.rmf.current_fleet_states.values():
+            fleet_state: FleetState
+            for robot_state in fleet_state.robots:
+                robot_state: RobotState
+                robot_id = get_robot_id(fleet_state.name, robot_state.name)
+                subjects[robot_id] = Subject()
+
+        for id_, subject in subjects.items():
+            watch(id_, subject)
+
+        def on_state(fleet_state: FleetState):
+            for robot_state in fleet_state.robots:
+                robot_state: RobotState
+                robot_id = get_robot_id(fleet_state.name, robot_state.name)
+
+                if robot_id not in subjects:
+                    subjects[robot_id] = Subject()
+                    watch(robot_id, subjects[robot_id])
+                subjects[robot_id].on_next(robot_state)
+
+        self.rmf.fleet_states.subscribe(on_state)

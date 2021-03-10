@@ -235,8 +235,6 @@ class TestRmfBookKeeper_RobotHealth(
     make_health_tests(
         lambda status: RobotHealth(
             id_=get_robot_id("test_fleet", "test_robot"),
-            fleet_name="test_fleet",
-            robot_name="robot_name",
             health_status=status,
         ),
         lambda rmf: rmf.robot_health,

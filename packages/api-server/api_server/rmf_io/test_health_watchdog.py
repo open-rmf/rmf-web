@@ -6,7 +6,14 @@ from rmf_door_msgs.msg import DoorMode
 from rx import Observable
 from rx.scheduler.historicalscheduler import HistoricalScheduler
 
-from ..models import DoorHealth, HealthStatus, LiftHealth
+from ..models import (
+    DispenserHealth,
+    DoorHealth,
+    HealthStatus,
+    LiftHealth,
+    RobotHealth,
+    get_robot_id,
+)
 from .gateway import RmfGateway
 from .health_watchdog import HealthWatchdog
 from .test_data import (
@@ -14,8 +21,10 @@ from .test_data import (
     make_dispenser_state,
     make_door,
     make_door_state,
+    make_fleet_state,
     make_lift,
     make_lift_state,
+    make_robot_state,
 )
 
 
@@ -171,7 +180,7 @@ class TestHealthWatchdog_DispenserHealth(BaseHealthWatchdogTests):
             self.rmf, scheduler=self.scheduler, logger=self.logger
         )
 
-        health: Optional[LiftHealth] = None
+        health: Optional[DispenserHealth] = None
 
         def assign(v):
             nonlocal health
@@ -181,4 +190,67 @@ class TestHealthWatchdog_DispenserHealth(BaseHealthWatchdogTests):
 
         self.scheduler.advance_by(self.health_watchdog.LIVELINESS)
         self.assertEqual(health.id_, "test_dispenser")
+        self.assertEqual(health.health_status, HealthStatus.DEAD)
+
+
+class TestHealthWatchdog_RobotHealth(BaseHealthWatchdogTests):
+    async def test_heartbeat(self):
+        health = None
+
+        def assign(v):
+            nonlocal health
+            health = v
+
+        self.rmf.robot_health.subscribe(assign)
+
+        def factory():
+            state = make_fleet_state("test_fleet")
+            state.robots = [make_robot_state("test_robot")]
+            return state
+
+        robot_id = get_robot_id("test_fleet", "test_robot")
+        self.rmf.fleet_states.on_next(factory())
+        self.scheduler.advance_by(0)
+        self.assertEqual(health.health_status, HealthStatus.HEALTHY)
+        self.assertEqual(health.id_, robot_id)
+
+        # it should not be dead yet
+        self.scheduler.advance_by(HealthWatchdog.LIVELINESS / 2)
+        self.assertEqual(health.health_status, HealthStatus.HEALTHY)
+        self.assertEqual(health.id_, robot_id)
+
+        # # it should be dead now because the time between states has reached the threshold
+        self.scheduler.advance_by(HealthWatchdog.LIVELINESS / 2)
+        self.assertEqual(health.health_status, HealthStatus.DEAD)
+        self.assertEqual(health.id_, robot_id)
+
+        # # it should become alive again when a new state is emitted
+        self.rmf.fleet_states.on_next(factory())
+        self.assertEqual(health.health_status, HealthStatus.HEALTHY)
+        self.assertEqual(health.id_, robot_id)
+
+    async def test_heartbeat_with_no_state(self):
+        # simulate the situation where a fleet state loaded from persistent
+        # store never send any states.
+        def factory():
+            state = make_fleet_state("test_fleet")
+            state.robots = [make_robot_state("test_robot")]
+            return state
+
+        self.rmf.fleet_states.on_next(factory())
+        self.health_watchdog = HealthWatchdog(
+            self.rmf, scheduler=self.scheduler, logger=self.logger
+        )
+
+        health: Optional[RobotHealth] = None
+
+        def assign(v):
+            nonlocal health
+            health = v
+
+        self.rmf.robot_health.subscribe(assign)
+
+        robot_id = get_robot_id("test_fleet", "test_robot")
+        self.scheduler.advance_by(self.health_watchdog.LIVELINESS)
+        self.assertEqual(health.id_, robot_id)
         self.assertEqual(health.health_status, HealthStatus.DEAD)

@@ -182,8 +182,6 @@ class TestSqlRepository(unittest.IsolatedAsyncioTestCase):
         await self.repo.update_robot_health(
             RobotHealth(
                 id_=get_robot_id("test_fleet", "test_robot"),
-                robot_name="test_robot",
-                fleet_name="test_fleet",
                 health_status=HealthStatus.HEALTHY,
             )
         )
