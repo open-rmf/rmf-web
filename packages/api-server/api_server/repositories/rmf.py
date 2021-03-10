@@ -4,9 +4,10 @@ from typing import Dict, Optional, Sequence
 from building_map_msgs.msg import Door
 from rmf_dispenser_msgs.msg import DispenserState
 from rmf_door_msgs.msg import DoorState
+from rmf_fleet_msgs.msg import FleetState
 from rmf_lift_msgs.msg import LiftState
 
-from ..models import DispenserHealth, DoorHealth, LiftHealth
+from ..models import DispenserHealth, DoorHealth, LiftHealth, RobotHealth
 
 
 class RmfRepository(ABC):
@@ -96,4 +97,30 @@ class RmfRepository(ABC):
     async def read_dispenser_health(self, guid: str) -> Optional[DispenserHealth]:
         """
         Read the current dispenser health
+        """
+
+    @abstractmethod
+    async def update_fleet_state(self, fleet_state: FleetState):
+        """
+        Update or create a fleet state
+        """
+
+    @abstractmethod
+    async def read_fleet_states(self) -> Dict[str, FleetState]:
+        """
+        Read the list of all current fleet states.
+        """
+
+    @abstractmethod
+    async def update_robot_health(self, robot_health: RobotHealth) -> None:
+        """
+        Update or create robot health.
+        """
+
+    @abstractmethod
+    async def read_robot_health(
+        self, fleet_name: str, robot_name: str
+    ) -> Optional[RobotHealth]:
+        """
+        Read the current robot health
         """

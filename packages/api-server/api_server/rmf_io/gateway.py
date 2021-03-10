@@ -2,11 +2,12 @@ from typing import Any, Callable, Dict
 
 from rmf_dispenser_msgs.msg import DispenserState
 from rmf_door_msgs.msg import DoorState
+from rmf_fleet_msgs.msg import FleetState
 from rmf_lift_msgs.msg import LiftState
 from rx import Observable
 from rx.subject import BehaviorSubject, Subject
 
-from ..models import DispenserHealth, DoorHealth, LiftHealth
+from ..models import DispenserHealth, DoorHealth, LiftHealth, RobotHealth
 
 
 class RmfGateway:
@@ -54,11 +55,27 @@ class RmfGateway:
             lambda x: x.guid,
         )
 
-        self.dispenser_health = Subject()
+        self.dispenser_health = Subject()  # Subject[DispenserHealth]
         self.current_dispenser_health: Dict[str, DispenserHealth] = {}
         self._save_event(
             self.dispenser_health,
             self.current_dispenser_health,
+            lambda x: x.id_,
+        )
+
+        self.fleet_states = Subject()  # Subject[FleetState]
+        self.current_fleet_states: Dict[str, FleetState] = {}
+        self._save_event(
+            self.fleet_states,
+            self.current_fleet_states,
+            lambda x: x.name,
+        )
+
+        self.robot_health = Subject()  # Subject[RobotHealth]
+        self.current_robot_health: Dict[str, RobotHealth] = {}
+        self._save_event(
+            self.robot_health,
+            self.current_robot_health,
             lambda x: x.id_,
         )
 

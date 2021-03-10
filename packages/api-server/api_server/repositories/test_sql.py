@@ -4,15 +4,26 @@ from building_map_msgs.msg import Door
 from builtin_interfaces.msg import Time as RosTime
 from rmf_dispenser_msgs.msg import DispenserState as RmfDispenserState
 from rmf_door_msgs.msg import DoorMode as RmfDoorMode
+from rmf_fleet_msgs.msg import FleetState as RmfFleetState
+from rmf_fleet_msgs.msg import RobotState as RmfRobotState
 from rmf_lift_msgs.msg import LiftState as RmfLiftState
 from tortoise import Tortoise
 
-from ..models import DispenserHealth, DoorHealth, HealthStatus, LiftHealth
+from ..models import (
+    DispenserHealth,
+    DoorHealth,
+    HealthStatus,
+    LiftHealth,
+    RobotHealth,
+    get_robot_id,
+)
 from ..rmf_io.test_data import (
     make_dispenser_state,
     make_door,
     make_door_state,
+    make_fleet_state,
     make_lift_state,
+    make_robot_state,
 )
 from .sql import SqlRepository
 
@@ -145,3 +156,37 @@ class TestSqlRepository(unittest.IsolatedAsyncioTestCase):
             )
         )
         self.assertIsNotNone(await self.repo.read_dispenser_health("test_dispenser"))
+
+    async def test_update_fleet_state(self):
+        state = make_fleet_state("test_fleet")
+        await self.repo.update_fleet_state(state)
+        result: RmfFleetState = await self.repo.read_fleet_states()
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result["test_fleet"].name, "test_fleet")
+
+        state_2 = make_fleet_state("test_fleet_2")
+        state_2.robots = []
+        await self.repo.update_fleet_state(state_2)
+        result: RmfFleetState = await self.repo.read_fleet_states()
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result["test_fleet_2"].name, "test_fleet_2")
+        self.assertEqual(len(result["test_fleet_2"].robots), 0)
+
+        state_2.robots = [make_robot_state("test_robot_2")]
+        await self.repo.update_fleet_state(state_2)
+        result: RmfFleetState = await self.repo.read_fleet_states()
+        self.assertEqual(len(result), 2)
+        self.assertEqual(len(result["test_fleet_2"].robots), 1)
+
+    async def test_update_robot_health(self):
+        await self.repo.update_robot_health(
+            RobotHealth(
+                id_=get_robot_id("test_fleet", "test_robot"),
+                robot_name="test_robot",
+                fleet_name="test_fleet",
+                health_status=HealthStatus.HEALTHY,
+            )
+        )
+        self.assertIsNotNone(
+            await self.repo.read_robot_health("test_fleet", "test_robot")
+        )

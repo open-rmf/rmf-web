@@ -4,6 +4,7 @@ from building_map_msgs.msg import AffineImage, BuildingMap, Door, Graph, Level, 
 from builtin_interfaces.msg import Time
 from rmf_dispenser_msgs.msg import DispenserState
 from rmf_door_msgs.msg import DoorMode, DoorState
+from rmf_fleet_msgs.msg import FleetState, Location, RobotMode, RobotState
 from rmf_lift_msgs.msg import LiftState
 
 
@@ -107,4 +108,31 @@ def make_dispenser_state(guid: str = "test_dispenser") -> DispenserState:
         mode=DispenserState.IDLE,
         request_guid_queue=[],
         seconds_remaining=0.0,
+    )
+
+
+def make_robot_state(name: str = "test_robot") -> RobotState:
+    return RobotState(
+        name=name,
+        model="test_model",
+        task_id="",
+        seq=0,
+        mode=RobotMode(mode=RobotMode.MODE_IDLE, mode_request_id=0),
+        battery_percent=0.0,
+        location=Location(
+            t=Time(sec=0, nanosec=0),
+            x=0.0,
+            y=0.0,
+            yaw=0.0,
+            level_name="test_level",
+            index=0,
+        ),
+        path=[],
+    )
+
+
+def make_fleet_state(name: str = "test_fleet") -> FleetState:
+    return FleetState(
+        name=name,
+        robots=[make_robot_state()],
     )

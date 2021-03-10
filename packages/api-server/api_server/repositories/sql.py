@@ -1,10 +1,11 @@
 import logging
-from typing import Dict, Sequence
+from typing import Dict, Optional, Sequence
 
 import tortoise
 from building_map_msgs.msg import Door as RmfDoor
 from rmf_dispenser_msgs.msg import DispenserState as RmfDispenserState
 from rmf_door_msgs.msg import DoorState as RmfDoorState
+from rmf_fleet_msgs.msg import FleetState as RmfFleetState
 from rmf_lift_msgs.msg import LiftState as RmfLiftState
 
 from ..models import (
@@ -13,8 +14,11 @@ from ..models import (
     Door,
     DoorHealth,
     DoorState,
+    FleetState,
     LiftHealth,
     LiftState,
+    RobotHealth,
+    get_robot_id,
 )
 from .rmf import RmfRepository
 
@@ -66,7 +70,7 @@ class SqlRepository(RmfRepository):
         await self._save(door_health, id_=door_health.id_)
         self.logger.debug("written door health for to database")
 
-    async def read_door_health(self, door_name: str):
+    async def read_door_health(self, door_name: str) -> Optional[DoorHealth]:
         return await DoorHealth.filter(id_=door_name).first()
 
     async def update_lift_state(self, lift_state: RmfLiftState):
@@ -82,7 +86,7 @@ class SqlRepository(RmfRepository):
         await self._save(lift_health, id_=lift_health.id_)
         self.logger.debug("written lift health for to database")
 
-    async def read_lift_health(self, lift_name: str) -> LiftHealth:
+    async def read_lift_health(self, lift_name: str) -> Optional[LiftHealth]:
         return await LiftHealth.filter(id_=lift_name).first()
 
     async def update_dispenser_state(self, dispenser_state: RmfDispenserState):
@@ -98,5 +102,25 @@ class SqlRepository(RmfRepository):
         await self._save(dispenser_health, id_=dispenser_health.id_)
         self.logger.debug("written dispenser health for to database")
 
-    async def read_dispenser_health(self, guid: str) -> DispenserHealth:
+    async def read_dispenser_health(self, guid: str) -> Optional[DispenserHealth]:
         return await DispenserHealth.filter(id_=guid).first()
+
+    async def update_fleet_state(self, fleet_state: RmfFleetState):
+        state = FleetState().update_from_rmf(fleet_state)
+        await self._save(state, id_=state.id_)
+        self.logger.debug("written fleet_state to database")
+
+    async def read_fleet_states(self) -> Dict[str, FleetState]:
+        all_states = await FleetState.all()
+        return {x.id_: x.to_rmf() for x in all_states}
+
+    async def update_robot_health(self, robot_health: RobotHealth) -> None:
+        await self._save(robot_health, id_=robot_health.id_)
+        self.logger.debug("written robot health for to database")
+
+    async def read_robot_health(
+        self, fleet_name: str, robot_name: str
+    ) -> Optional[RobotHealth]:
+        return await RobotHealth.filter(
+            id_=get_robot_id(fleet_name, robot_name)
+        ).first()

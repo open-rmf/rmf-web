@@ -1,9 +1,8 @@
 from typing import Any, Callable
 
 from rosidl_runtime_py.convert import message_to_ordereddict
+from rosidl_runtime_py.set_message import set_message_fields
 from tortoise import fields
-
-from .ros_convert import update_message_from_dict
 
 
 def json_mixin(RmfMessage, key_mapper: Callable[[Any], str]):
@@ -18,7 +17,7 @@ def json_mixin(RmfMessage, key_mapper: Callable[[Any], str]):
 
         def to_rmf(self):
             rmf_msg = RmfMessage()
-            update_message_from_dict(rmf_msg, self.data)
+            set_message_fields(rmf_msg, self.data)
             return rmf_msg
 
     return JsonMixin
