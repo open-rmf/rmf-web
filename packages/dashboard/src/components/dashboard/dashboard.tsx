@@ -379,7 +379,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
             <TaskSummaryPanel tasks={tasks} />
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Emergency}>
-            <EmergencyPanel emergencyState={'Code Blue'} />
+            <EmergencyPanel emergencyState={'No Emergency'} />
           </OmniPanelView>
         </OmniPanel>
       </Fade>

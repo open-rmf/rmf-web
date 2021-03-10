@@ -23,7 +23,7 @@ const returnChipColor = (state: string): string => {
       return blue[500];
     case 'Code Red':
       return red[400];
-    case 'NA':
+    case 'No Emergency':
       return teal[500];
   }
   return cyan[500];

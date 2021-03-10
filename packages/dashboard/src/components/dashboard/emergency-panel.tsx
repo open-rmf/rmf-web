@@ -1,9 +1,13 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Divider from '@material-ui/core/Divider';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Typography from '@material-ui/core/Typography';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import StyledChip from '../styled-chip';
@@ -77,18 +81,46 @@ export const EmergencyPanel = (props: EmergencyPanelProps): JSX.Element => {
       <div className={classes_.messageContainer}>
         <Card className={classes_.cardRoot}>
           <CardContent>
-            <Alert severity="error">
-              <AlertTitle>Emergency</AlertTitle>
-              This is a code-red alert.
-            </Alert>
-            <Alert severity="error" color="info">
-              <AlertTitle>Emergency</AlertTitle>
-              This is a code-blue alert.
-            </Alert>
-            <Divider />
-            <Typography variant="body2" component="p">
-              Emergency details
-            </Typography>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header"
+              >
+                <Alert severity="error">
+                  <AlertTitle>Emergency</AlertTitle>
+                  This is a code-red alert.
+                </Alert>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Typography variant="body2" component="p">
+                  Do less with more. Can my website be in english? this turned out different that i
+                  decscribed or that's great, but can you make it work for ie 2 please labrador is
+                  there a way we can make the page feel more introductory without being cheesy. I
+                  really like the colour but can you change it i know you've made thirty iterations
+                  but can we go back to the first one that was the best version
+                </Typography>
+              </AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header"
+              >
+                <Alert severity="error" color="info">
+                  <AlertTitle>Emergency</AlertTitle>
+                  This is a code-blue alert.
+                </Alert>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Typography variant="body2" component="p">
+                  we need to make the new version clean and sexy. Needs to be sleeker it's great,
+                  can you add a beard though . Just do what you think. I trust you it needs to be
+                  the same, but totally different .
+                </Typography>
+              </AccordionDetails>
+            </Accordion>
           </CardContent>
         </Card>
       </div>
