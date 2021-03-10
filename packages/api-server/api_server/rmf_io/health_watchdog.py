@@ -92,10 +92,20 @@ class HealthWatchdog:
     def _watch_door_health(self, building_map):
         def door_mode_to_health(data: Tuple[str, DoorState]):
             state = data[1]
-            # default to healthy if state is unknown
+
             if state is None:
                 return DoorHealth(
                     id_=data[0],
+                    health_status=HealthStatus.UNHEALTHY,
+                    health_message="unknown",
+                )
+            if state.current_mode.value in (
+                DoorMode.MODE_CLOSED,
+                DoorMode.MODE_MOVING,
+                DoorMode.MODE_OPEN,
+            ):
+                return DoorHealth(
+                    id_=state.door_name,
                     health_status=HealthStatus.HEALTHY,
                 )
             if state.current_mode.value == DoorMode.MODE_OFFLINE:
@@ -104,15 +114,10 @@ class HealthWatchdog:
                     health_status=HealthStatus.UNHEALTHY,
                     health_message="offline",
                 )
-            if state.current_mode.value == DoorMode.MODE_UNKNOWN:
-                return DoorHealth(
-                    id_=state.door_name,
-                    health_status=HealthStatus.UNHEALTHY,
-                    health_message="unknown",
-                )
             return DoorHealth(
                 id_=state.door_name,
-                health_status=HealthStatus.HEALTHY,
+                health_status=HealthStatus.UNHEALTHY,
+                health_message="unknown",
             )
 
         doors: List[Door] = []
