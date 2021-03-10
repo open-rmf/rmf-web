@@ -54,22 +54,22 @@ async def test_heartbeat(
     source.on_next(factory("test_id"))
     test.scheduler.advance_by(0)
     test.assertEqual(health.health_status, HealthStatus.HEALTHY)
-    test.assertEqual(health.name, "test_id")
+    test.assertEqual(health.id_, "test_id")
 
     # it should not be dead yet
     test.scheduler.advance_by(HealthWatchdog.LIVELINESS / 2)
     test.assertEqual(health.health_status, HealthStatus.HEALTHY)
-    test.assertEqual(health.name, "test_id")
+    test.assertEqual(health.id_, "test_id")
 
     # # it should be dead now because the time between states has reached the threshold
     test.scheduler.advance_by(HealthWatchdog.LIVELINESS / 2)
     test.assertEqual(health.health_status, HealthStatus.DEAD)
-    test.assertEqual(health.name, "test_id")
+    test.assertEqual(health.id_, "test_id")
 
     # # it should become alive again when a new state is emitted
     source.on_next(factory("test_id"))
     test.assertEqual(health.health_status, HealthStatus.HEALTHY)
-    test.assertEqual(health.name, "test_id")
+    test.assertEqual(health.id_, "test_id")
 
 
 class TestHealthWatchdog_DoorHealth(BaseHealthWatchdogTests):
@@ -120,7 +120,7 @@ class TestHealthWatchdog_DoorHealth(BaseHealthWatchdogTests):
         self.rmf.door_health.subscribe(assign)
 
         self.scheduler.advance_by(self.health_watchdog.LIVELINESS)
-        self.assertEqual(health.name, "test_door")
+        self.assertEqual(health.id_, "test_door")
         self.assertEqual(health.health_status, HealthStatus.DEAD)
 
 
@@ -149,5 +149,5 @@ class TestHealthWatchdog_LiftHealth(BaseHealthWatchdogTests):
         self.rmf.lift_health.subscribe(assign)
 
         self.scheduler.advance_by(self.health_watchdog.LIVELINESS)
-        self.assertEqual(health.name, "test_lift")
+        self.assertEqual(health.id_, "test_lift")
         self.assertEqual(health.health_status, HealthStatus.DEAD)

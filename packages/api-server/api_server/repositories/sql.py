@@ -55,11 +55,11 @@ class SqlRepository(RmfRepository):
                 await self.update_door(door)
 
     async def update_door_health(self, door_health: DoorHealth):
-        await self._save(door_health, name=door_health.name)
+        await self._save(door_health, id_=door_health.id_)
         self.logger.debug("written door health for to database")
 
     async def read_door_health(self, door_name: str):
-        return await DoorHealth.filter(name=door_name).first()
+        return await DoorHealth.filter(id_=door_name).first()
 
     async def update_lift_state(self, lift_state: RmfLiftState):
         state = LiftState().update_from_rmf(lift_state)
@@ -71,11 +71,11 @@ class SqlRepository(RmfRepository):
         return {x.id_: x.to_rmf() for x in all_states}
 
     async def update_lift_health(self, lift_health: LiftHealth) -> None:
-        await self._save(lift_health, name=lift_health.name)
+        await self._save(lift_health, id_=lift_health.id_)
         self.logger.debug("written lift health for to database")
 
     async def read_lift_health(self, lift_name: str) -> LiftHealth:
-        return await LiftHealth.filter(name=lift_name).first()
+        return await LiftHealth.filter(id_=lift_name).first()
 
     async def update_dispenser_state(self, dispenser_state: RmfDispenserState):
         state = DispenserState().update_from_rmf(dispenser_state)

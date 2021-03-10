@@ -71,7 +71,7 @@ class TestSqlRepository(unittest.IsolatedAsyncioTestCase):
     async def test_update_door_health(self):
         await self.repo.update_door_health(
             DoorHealth(
-                name="test_door",
+                id_="test_door",
                 health_status=HealthStatus.HEALTHY,
             )
         )
@@ -104,7 +104,7 @@ class TestSqlRepository(unittest.IsolatedAsyncioTestCase):
     async def test_update_lift_health(self):
         await self.repo.update_lift_health(
             LiftHealth(
-                name="test_lift",
+                id_="test_lift",
                 health_status=HealthStatus.HEALTHY,
             )
         )

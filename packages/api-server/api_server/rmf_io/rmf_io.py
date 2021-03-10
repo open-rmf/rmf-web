@@ -47,8 +47,7 @@ class RmfIO:
 
     def _init_room(self, topic: str, source: ObservableType[Mapping[str, Any]]):
         """
-        Args:
-            source: The mapping values must be jsn serializable.
+        :param source: The mapping values must be json serializable.
         """
         records = cast(Dict[str, Any], {})
         self.room_records[topic] = records
@@ -76,7 +75,7 @@ class RmfIO:
     def _init_door_health(self):
         self._init_room(
             topics.door_health,
-            self.rmf_gateway.door_health.pipe(rx_map(lambda x: {x.name: x.to_dict()})),
+            self.rmf_gateway.door_health.pipe(rx_map(lambda x: {x.id_: x.to_dict()})),
         )
 
     def _init_lift_state(self):
@@ -90,7 +89,7 @@ class RmfIO:
     def _init_lift_health(self):
         self._init_room(
             topics.lift_health,
-            self.rmf_gateway.lift_health.pipe(rx_map(lambda x: {x.name: x.to_dict()})),
+            self.rmf_gateway.lift_health.pipe(rx_map(lambda x: {x.id_: x.to_dict()})),
         )
 
     def _init_building_map(self):

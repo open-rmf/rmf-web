@@ -43,7 +43,7 @@ class HealthWatchdog:
         def on_next(health: BasicHealthModel):
             message = json.dumps(
                 {
-                    "name": health.name,
+                    "id": health.id_,
                     "health_status": str(health.health_status),
                     "health_message": health.health_message,
                 }
@@ -81,23 +81,23 @@ class HealthWatchdog:
             # default to healthy if state is unknown
             if state is None:
                 return DoorHealth(
-                    name=data[0],
+                    id_=data[0],
                     health_status=HealthStatus.HEALTHY,
                 )
             if state.current_mode.value == DoorMode.MODE_OFFLINE:
                 return DoorHealth(
-                    name=state.door_name,
+                    id_=state.door_name,
                     health_status=HealthStatus.UNHEALTHY,
                     health_message="offline",
                 )
             if state.current_mode.value == DoorMode.MODE_UNKNOWN:
                 return DoorHealth(
-                    name=state.door_name,
+                    id_=state.door_name,
                     health_status=HealthStatus.UNHEALTHY,
                     health_message="unknown",
                 )
             return DoorHealth(
-                name=state.door_name,
+                id_=state.door_name,
                 health_status=HealthStatus.HEALTHY,
             )
 
@@ -109,12 +109,12 @@ class HealthWatchdog:
                     doors.append(door)
 
         def to_door_health(data: Tuple[str, bool]):
-            name = data[0]
+            id_ = data[0]
             has_heartbeat = data[1]
             if has_heartbeat:
-                return DoorHealth(name=name, health_status=HealthStatus.HEALTHY)
+                return DoorHealth(id_=id_, health_status=HealthStatus.HEALTHY)
             return DoorHealth(
-                name=name,
+                id_=id_,
                 health_status=HealthStatus.DEAD,
                 health_message="heartbeat failed",
             )
@@ -147,12 +147,12 @@ class HealthWatchdog:
         lifts: Sequence[Lift] = building_map.lifts if building_map else []
 
         def to_lift_health(data: Tuple[str, bool]):
-            name = data[0]
+            id_ = data[0]
             has_heartbeat = data[1]
             if has_heartbeat:
-                return LiftHealth(name=name, health_status=HealthStatus.HEALTHY)
+                return LiftHealth(id_=id_, health_status=HealthStatus.HEALTHY)
             return LiftHealth(
-                name=name,
+                id_=id_,
                 health_status=HealthStatus.DEAD,
                 health_message="heartbeat failed",
             )

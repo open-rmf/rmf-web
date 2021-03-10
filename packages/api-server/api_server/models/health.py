@@ -4,11 +4,11 @@ from .health_status_mixin import HealthStatusMixin
 
 
 class BasicHealthModel(Model, HealthStatusMixin):
-    name = fields.CharField(255, pk=True)
+    id_ = fields.CharField(255, pk=True, source_field="id")
 
     def to_dict(self):
         result = super().to_dict()
-        result.update({"name": self.name})
+        result.update({"id": self.id_})
         return result
 
 
@@ -17,4 +17,8 @@ class DoorHealth(BasicHealthModel):
 
 
 class LiftHealth(BasicHealthModel):
+    pass
+
+
+class DispenserHealth(BasicHealthModel):
     pass

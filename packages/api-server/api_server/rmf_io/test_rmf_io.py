@@ -99,20 +99,20 @@ class TestRmfIO(unittest.IsolatedAsyncioTestCase):
         )
 
     async def test_door_health(self):
-        def factory(name: str):
-            return DoorHealth(name=name, health_status=HealthStatus.HEALTHY)
+        def factory(id_: str):
+            return DoorHealth(id_=id_, health_status=HealthStatus.HEALTHY)
 
         await self.check_endpoint(
             topics.door_health,
             factory,
-            lambda x: x["name"],
+            lambda x: x["id"],
             self.rmf_gateway.door_health,
         )
 
     async def test_lift_states(self):
-        def factory(name: str):
+        def factory(id_: str):
             state = make_lift_state()
-            state.lift_name = name
+            state.lift_name = id_
             return state
 
         await self.check_endpoint(
@@ -123,13 +123,13 @@ class TestRmfIO(unittest.IsolatedAsyncioTestCase):
         )
 
     async def test_lift_health(self):
-        def factory(name: str):
-            return LiftHealth(name=name, health_status=HealthStatus.HEALTHY)
+        def factory(id_: str):
+            return LiftHealth(id_=id_, health_status=HealthStatus.HEALTHY)
 
         await self.check_endpoint(
             topics.lift_health,
             factory,
-            lambda x: x["name"],
+            lambda x: x["id"],
             self.rmf_gateway.lift_health,
         )
 
