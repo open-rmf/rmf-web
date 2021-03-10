@@ -1,5 +1,5 @@
 import React from 'react';
-import { SystemSummaryItemState, DoorSummary, RobotSummary, RobotSummaryState } from '../lib';
+import { SystemSummaryItemState, ItemSummary, RobotSummary, RobotSummaryState } from '../lib';
 import { Meta, Story } from '@storybook/react';
 
 export default {
@@ -7,7 +7,7 @@ export default {
   component: SystemSummaryItemState,
 } as Meta;
 
-const itemSummary: DoorSummary = {
+const itemSummary: ItemSummary = {
   operational: 0,
   spoiltItem: [],
 };
@@ -23,7 +23,7 @@ export const SystemSummaryItemStateStory: Story = (args) => (
   <React.Fragment>
     <SystemSummaryItemState
       item={'Door'}
-      doorSummary={itemSummary}
+      itemSummary={itemSummary}
       onClick={() => {
         /**filler */
       }}
