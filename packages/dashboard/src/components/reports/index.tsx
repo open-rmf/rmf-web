@@ -15,8 +15,8 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
-import { useReporterReducer } from './reporter-reducer';
 import { ReporterBody } from './reporter-body';
+import { Reports } from './report-list';
 
 const drawerWidth = 240;
 
@@ -82,23 +82,15 @@ const useStyles = makeStyles((theme: Theme) =>
 export const Reporter = () => {
   const classes = useStyles();
   const theme = useTheme();
-  const [open, setOpen] = React.useState(false);
-  const initialState = {
-    queryAllLogs: false,
-    showChargerStateReport: false,
-    showDoorStateReport: false,
-    showLiftStateReport: false,
-    showRobotStateReport: false,
-    showRobotMotionPlansReport: false,
-    showRobotActionReport: false,
-    showTasksReport: false,
-    showUserActionsReport: false,
-    showLoginsReport: false,
-    showLogoutsReport: false,
-    showLoginFailuresReport: false,
-    showWorkCellStatesReport: false,
-  };
-  const { state, dispatch } = useReporterReducer(initialState);
+  const [open, setOpen] = React.useState(true);
+  const [currentReport, setCurrentReport] = React.useState(Reports.queryAllLogs);
+
+  const setReport = React.useCallback(
+    (report: Reports) => {
+      setCurrentReport(report);
+    },
+    [setCurrentReport],
+  );
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -147,7 +139,7 @@ export const Reporter = () => {
           </IconButton>
         </div>
         <Divider />
-        <ReporterMenu menuStructure={buildMenu(dispatch) as ExpandableReporterMenuProps[]} />
+        <ReporterMenu menuStructure={buildMenu(setReport) as ExpandableReporterMenuProps[]} />
       </Drawer>
       <main
         className={clsx(classes.content, {
@@ -155,7 +147,7 @@ export const Reporter = () => {
         })}
       >
         <div className={classes.drawerHeader} />
-        <ReporterBody reporterState={state} />
+        <ReporterBody currentReport={currentReport} />
       </main>
     </div>
   );
