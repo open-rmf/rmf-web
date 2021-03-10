@@ -10,34 +10,17 @@ import {
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import React from 'react';
-import { OmniPanelViewIndex } from '../dashboard';
-import { useDashboardReducer } from '../dashboard/reducers/dashboard-reducer';
-import { dashboardInitialValues } from '../dashboard';
+import { Emergency } from '../emergency-alarm';
 
 export interface EmergencyDialogProps {
   handleClose(): void;
   open: boolean;
-  type: string;
+  type: Emergency;
 }
 
 export default function EmergencyDialog(props: EmergencyDialogProps): React.ReactElement {
   const { open, handleClose, type } = props;
   const classes = useStyles();
-
-  const { state: dashboardState, dispatch: dashboardDispatch } = useDashboardReducer(
-    dashboardInitialValues,
-  );
-
-  const { currentView } = dashboardState;
-
-  const { setShowOmniPanel, pushView } = dashboardDispatch;
-
-  const openEmergencyPanel = React.useCallback(() => {
-    setShowOmniPanel(true);
-    pushView(OmniPanelViewIndex.Emergency);
-    console.log('curr View:', currentView);
-    console.log('push');
-  }, [setShowOmniPanel, pushView, currentView]);
 
   return (
     <Dialog
@@ -49,21 +32,18 @@ export default function EmergencyDialog(props: EmergencyDialogProps): React.Reac
     >
       <DialogTitle id="emergency-dialog-title">
         <div>
-          <Typography variant="h6">Emergency: {type}</Typography>
+          <Typography variant="h6">Emergency: {type.type}</Typography>
           <IconButton aria-label="close" className={classes.closeButton} onClick={handleClose}>
             <CloseIcon />
           </IconButton>
         </div>
       </DialogTitle>
       <DialogContent className={classes.dialogContent} dividers>
-        <div className={classes.detail}>message alert here</div>
+        <div className={classes.detail}>Message details here</div>
       </DialogContent>
       <DialogActions className={classes.dialogActions}>
         <Button autoFocus onClick={handleClose} color="primary">
           OK
-        </Button>
-        <Button autoFocus onClick={openEmergencyPanel} color="primary">
-          Open Emergency Panel
         </Button>
       </DialogActions>
     </Dialog>
