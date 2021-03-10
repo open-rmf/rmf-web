@@ -6,7 +6,14 @@ from unittest.mock import MagicMock, call
 from rx import Observable
 from rx.scheduler.historicalscheduler import HistoricalScheduler
 
-from ..models import DispenserHealth, DoorHealth, HealthStatus, LiftHealth
+from ..models import (
+    DispenserHealth,
+    DoorHealth,
+    HealthStatus,
+    LiftHealth,
+    RobotHealth,
+    get_robot_id,
+)
 from ..repositories import RmfRepository
 from .book_keeper import RmfBookKeeper
 from .gateway import RmfGateway
@@ -15,6 +22,7 @@ from .test_data import (
     make_dispenser_state,
     make_door,
     make_door_state,
+    make_fleet_state,
     make_lift_state,
 )
 
@@ -152,6 +160,17 @@ class TestRmfBookKeeper_DispenserStates(
     pass
 
 
+class TestRmfBookKeeper_FleetStates(
+    make_base_test(
+        lambda x: x.fleet_states,
+        make_fleet_state,
+        1,
+        lambda x: x.update_fleet_state,
+    )
+):
+    pass
+
+
 def make_health_tests(
     factory: Callable[[str, HealthStatus], Any],
     get_source: Callable[[RmfGateway], Observable],
@@ -207,6 +226,21 @@ class TestRmfBookKeeper_DispenserHealth(
         lambda status: DispenserHealth(id_="test_dispenser", health_status=status),
         lambda rmf: rmf.dispenser_health,
         lambda repo: repo.update_dispenser_health,
+    )
+):
+    pass
+
+
+class TestRmfBookKeeper_RobotHealth(
+    make_health_tests(
+        lambda status: RobotHealth(
+            id_=get_robot_id("test_fleet", "test_robot"),
+            fleet_name="test_fleet",
+            robot_name="robot_name",
+            health_status=status,
+        ),
+        lambda rmf: rmf.robot_health,
+        lambda repo: repo.update_robot_health,
     )
 ):
     pass
