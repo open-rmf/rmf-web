@@ -43,6 +43,8 @@ class RmfIO:
         self._init_door_health()
         self._init_lift_state()
         self._init_lift_health()
+        self._init_dispenser_state()
+        self._init_dispenser_health()
         self._init_building_map()
 
     def _init_room(self, topic: str, source: ObservableType[Mapping[str, Any]]):
@@ -90,6 +92,22 @@ class RmfIO:
         self._init_room(
             topics.lift_health,
             self.rmf_gateway.lift_health.pipe(rx_map(lambda x: {x.id_: x.to_dict()})),
+        )
+
+    def _init_dispenser_state(self):
+        self._init_room(
+            topics.dispenser_states,
+            self.rmf_gateway.dispenser_states.pipe(
+                rx_map(lambda x: {x.guid: message_to_ordereddict(x)})
+            ),
+        )
+
+    def _init_dispenser_health(self):
+        self._init_room(
+            topics.dispenser_health,
+            self.rmf_gateway.dispenser_health.pipe(
+                rx_map(lambda x: {x.id_: x.to_dict()})
+            ),
         )
 
     def _init_building_map(self):

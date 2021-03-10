@@ -7,11 +7,16 @@ import aiohttp.web
 import socketio
 from rx import Observable
 
-from ..models import DoorHealth, HealthStatus, LiftHealth
+from ..models import DispenserHealth, DoorHealth, HealthStatus, LiftHealth
 from ..repositories.static_files import StaticFilesRepository
 from .gateway import RmfGateway
 from .rmf_io import RmfIO
-from .test_data import make_building_map, make_door_state, make_lift_state
+from .test_data import (
+    make_building_map,
+    make_dispenser_state,
+    make_door_state,
+    make_lift_state,
+)
 from .topics import topics
 
 
@@ -131,6 +136,30 @@ class TestRmfIO(unittest.IsolatedAsyncioTestCase):
             factory,
             lambda x: x["id"],
             self.rmf_gateway.lift_health,
+        )
+
+    async def test_dispenser_states(self):
+        def factory(id_: str):
+            state = make_dispenser_state()
+            state.guid = id_
+            return state
+
+        await self.check_endpoint(
+            topics.dispenser_states,
+            factory,
+            lambda x: x["guid"],
+            self.rmf_gateway.dispenser_states,
+        )
+
+    async def test_dispenser_health(self):
+        def factory(id_: str):
+            return DispenserHealth(id_=id_, health_status=HealthStatus.HEALTHY)
+
+        await self.check_endpoint(
+            topics.dispenser_health,
+            factory,
+            lambda x: x["id"],
+            self.rmf_gateway.dispenser_health,
         )
 
     async def test_building_map(self):
