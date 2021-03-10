@@ -7,10 +7,11 @@ from typing import List
 import rclpy
 import socketio
 from rclpy.node import Node
+from rmf_fleet_msgs.msg import RobotState
 from tortoise import Tortoise
 
 from .app_config import app_config
-from .models import DispenserHealth, DoorHealth, LiftHealth
+from .models import DispenserHealth, DoorHealth, LiftHealth, RobotHealth
 from .repositories import RmfRepository, SqlRepository, StaticFilesRepository
 from .rmf_io import HealthWatchdog, RmfBookKeeper, RmfGateway, RmfIO, RmfTransport
 
@@ -89,6 +90,22 @@ async def load_states(repo: RmfRepository, gateway: RmfGateway):
     for health in dispenser_health:
         gateway.dispenser_health.on_next(health)
     logger.info(f"loaded {len(dispenser_health)} dispenser health")
+
+    fleet_states = await repo.read_fleet_states()
+    for state in fleet_states:
+        gateway.fleet_states.on_next(state)
+    logger.info(f"loaded {len(fleet_states)} fleet states")
+
+    robot_health: List[RobotHealth] = []
+    for fleet_state in fleet_states.values():
+        for robot_state in fleet_state.robots:
+            robot_state: RobotState
+            health = await repo.read_robot_health(fleet_state.name, robot_state.name)
+            if health:
+                robot_health.append(health)
+    for health in robot_health:
+        gateway.robot_health.on_next(health)
+    logger.info(f"loaded {len(robot_health)} robot health")
 
     logger.info("successfully loaded all states")
 
