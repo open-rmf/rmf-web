@@ -39,14 +39,14 @@ const MenuItem = (props: MenuItemProps): JSX.Element => {
   );
 };
 
-export interface ExpandableReporterMenuProps {
+export interface ExpandableMultilevelMenuProps {
   icon?: JSX.Element;
   title: string;
   items: MenuItemProps[];
   onClick?: () => void;
 }
 
-const ExpandableMenuItem = (props: ExpandableReporterMenuProps): JSX.Element => {
+const ExpandableMenuItem = (props: ExpandableMultilevelMenuProps): JSX.Element => {
   const { items, icon, title } = props;
   const [open, setOpen] = useState(false);
 
@@ -61,20 +61,20 @@ const ExpandableMenuItem = (props: ExpandableReporterMenuProps): JSX.Element => 
         {open ? <ExpandLess /> : <ExpandMore />}
       </ListItem>
       <Collapse in={open} timeout="auto" unmountOnExit>
-        <ReporterMenu menuStructure={items} />
+        <MultiLevelMenu menuStructure={items} />
       </Collapse>
     </div>
   );
 };
 
-export interface ReporterMenuProps {
-  menuStructure: ExpandableReporterMenuProps[] | MenuItemProps[];
+export interface MultilevelMenuProps {
+  menuStructure: (ExpandableMultilevelMenuProps | MenuItemProps)[];
 }
 
-export const ReporterMenu = (props: ReporterMenuProps) => {
-  const createList = (items: ExpandableReporterMenuProps[] | MenuItemProps[]) => {
-    let menu: JSX.Element[] = [];
-    items.map((menuItem: ExpandableReporterMenuProps | MenuItemProps) => {
+export const MultiLevelMenu = (props: MultilevelMenuProps): React.ReactElement => {
+  const createList = (items: (ExpandableMultilevelMenuProps | MenuItemProps)[]) => {
+    const menu: JSX.Element[] = [];
+    items.map((menuItem: ExpandableMultilevelMenuProps | MenuItemProps) => {
       // If it has children's
       if (Array.isArray(menuItem.items) && menuItem.items.length > 0) {
         menu.push(
