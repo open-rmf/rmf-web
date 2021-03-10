@@ -1,5 +1,5 @@
 import React from 'react';
-import { buildMenu } from './reporter-side-bar';
+import { BuildMenuType } from './reporter-side-bar-structure';
 
 import clsx from 'clsx';
 import { makeStyles, useTheme, Theme } from '@material-ui/core/styles';
@@ -80,7 +80,13 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export const Reporter = () => {
+export interface ReporterProps {
+  buildMenuReportStructure(setCurrentReport: BuildMenuType): ExpandableMultilevelMenuProps[];
+  reportContainer: typeof ReportContainer;
+}
+
+export const Reporter = (props: ReporterProps) => {
+  const { buildMenuReportStructure, reportContainer } = props;
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
@@ -140,7 +146,7 @@ export const Reporter = () => {
           </IconButton>
         </div>
         <Divider />
-        <MultiLevelMenu menuStructure={buildMenu(setReport) as ExpandableMultilevelMenuProps[]} />
+        <MultiLevelMenu menuStructure={buildMenuReportStructure(setReport)} />
       </Drawer>
       <main
         className={clsx(classes.content, {
@@ -148,7 +154,7 @@ export const Reporter = () => {
         })}
       >
         <div className={classes.drawerHeader} />
-        <RenderSelectedComponentFromDict obj={ReportContainer} selectedKey={currentReport} />
+        <RenderSelectedComponentFromDict obj={reportContainer} selectedKey={currentReport} />
       </main>
     </div>
   );

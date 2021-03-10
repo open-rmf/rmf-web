@@ -8,8 +8,13 @@ import ListAltIcon from '@material-ui/icons/ListAlt';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import BusinessCenterIcon from '@material-ui/icons/BusinessCenter';
 import { Reports } from './report-list';
+import { ExpandableMultilevelMenuProps } from 'react-components';
 
-export const buildMenu = (setCurrentReport: (report: Reports) => void) => {
+export type BuildMenuType = (report: Reports) => void;
+
+export const buildReportMenuStructure = (
+  setCurrentReport: BuildMenuType,
+): ExpandableMultilevelMenuProps[] => {
   return [
     {
       icon: <SearchIcon />,
@@ -94,5 +99,5 @@ export const buildMenu = (setCurrentReport: (report: Reports) => void) => {
       title: 'Workcell States',
       onClick: () => setCurrentReport(Reports.showWorkCellStatesReport),
     },
-  ];
+  ] as ExpandableMultilevelMenuProps[];
 };
