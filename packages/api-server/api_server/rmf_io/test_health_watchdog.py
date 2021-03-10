@@ -11,6 +11,7 @@ from .gateway import RmfGateway
 from .health_watchdog import HealthWatchdog
 from .test_data import (
     make_building_map,
+    make_dispenser_state,
     make_door,
     make_door_state,
     make_lift,
@@ -23,10 +24,10 @@ class BaseHealthWatchdogTests(unittest.IsolatedAsyncioTestCase):
         self.scheduler = HistoricalScheduler()
         self.rmf = RmfGateway()
 
-        logger = logging.Logger("test")
-        logger.setLevel("CRITICAL")
+        self.logger = logging.Logger("test")
+        self.logger.setLevel("CRITICAL")
         self.health_watchdog = HealthWatchdog(
-            self.rmf, scheduler=self.scheduler, logger=logger
+            self.rmf, scheduler=self.scheduler, logger=self.logger
         )
         self.scheduler.advance_by(1)
 
@@ -150,4 +151,34 @@ class TestHealthWatchdog_LiftHealth(BaseHealthWatchdogTests):
 
         self.scheduler.advance_by(self.health_watchdog.LIVELINESS)
         self.assertEqual(health.id_, "test_lift")
+        self.assertEqual(health.health_status, HealthStatus.DEAD)
+
+
+class TestHealthWatchdog_DispenserHealth(BaseHealthWatchdogTests):
+    async def test_heartbeat(self):
+        await test_heartbeat(
+            self,
+            self.rmf.dispenser_health,
+            self.rmf.dispenser_states,
+            make_dispenser_state,
+        )
+
+    async def test_heartbeat_with_no_state(self):
+        # simulate the situation where a dispenser state loaded from persistent
+        # store never send any states.
+        self.rmf.dispenser_states.on_next(make_dispenser_state("test_dispenser"))
+        self.health_watchdog = HealthWatchdog(
+            self.rmf, scheduler=self.scheduler, logger=self.logger
+        )
+
+        health: Optional[LiftHealth] = None
+
+        def assign(v):
+            nonlocal health
+            health = v
+
+        self.rmf.dispenser_health.subscribe(assign)
+
+        self.scheduler.advance_by(self.health_watchdog.LIVELINESS)
+        self.assertEqual(health.id_, "test_dispenser")
         self.assertEqual(health.health_status, HealthStatus.DEAD)

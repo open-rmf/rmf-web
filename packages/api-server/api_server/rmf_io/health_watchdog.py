@@ -4,13 +4,21 @@ from typing import Any, Callable, List, Optional, Sequence, Tuple
 
 import rx
 from building_map_msgs.msg import BuildingMap, Door, Level, Lift
+from rmf_dispenser_msgs.msg import DispenserState
 from rmf_door_msgs.msg import DoorMode, DoorState
 from rx import Observable
 from rx import operators as op
 from rx.core.typing import Disposable
 from rx.scheduler.scheduler import Scheduler
+from rx.subject import Subject
 
-from ..models import BasicHealthModel, DoorHealth, HealthStatus, LiftHealth
+from ..models import (
+    BasicHealthModel,
+    DispenserHealth,
+    DoorHealth,
+    HealthStatus,
+    LiftHealth,
+)
 from .gateway import RmfGateway
 from .operators import heartbeat, most_critical
 
@@ -38,6 +46,8 @@ class HealthWatchdog:
             self._watch_lift_health(building_map)
 
         self.rmf.building_map.subscribe(on_building_map)
+
+        self._watch_dispenser_health()
 
     def _report_health(self, target: Observable):
         def on_next(health: BasicHealthModel):
@@ -174,3 +184,35 @@ class HealthWatchdog:
             )
         )
         self.watchers.append(sub)
+
+    def _watch_dispenser_health(self):
+        def to_dispenser_health(id_: str, has_heartbeat: bool):
+            if has_heartbeat:
+                return DispenserHealth(id_=id_, health_status=HealthStatus.HEALTHY)
+            return DispenserHealth(
+                id_=id_,
+                health_status=HealthStatus.DEAD,
+                health_message="heartbeat failed",
+            )
+
+        def watch(id_: str, obs: Observable):
+            obs.pipe(
+                heartbeat(self.LIVELINESS),
+                op.map(lambda x: to_dispenser_health(id_, x)),
+            ).subscribe(
+                self._report_health(self.rmf.dispenser_health), scheduler=self.scheduler
+            )
+
+        subjects = {
+            x.guid: Subject() for x in self.rmf.current_dispenser_states.values()
+        }
+        for guid, subject in subjects.items():
+            watch(guid, subject)
+
+        def on_state(state: DispenserState):
+            if state.guid not in subjects:
+                subjects[state.guid] = Subject()
+                watch(state.guid, subjects[state.guid])
+            subjects[state.guid].on_next(state)
+
+        self.rmf.dispenser_states.subscribe(on_state)
