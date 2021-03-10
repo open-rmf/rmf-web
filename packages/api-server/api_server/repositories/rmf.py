@@ -6,7 +6,7 @@ from rmf_dispenser_msgs.msg import DispenserState
 from rmf_door_msgs.msg import DoorState
 from rmf_lift_msgs.msg import LiftState
 
-from ..models import DoorHealth, LiftHealth
+from ..models import DispenserHealth, DoorHealth, LiftHealth
 
 
 class RmfRepository(ABC):
@@ -84,4 +84,16 @@ class RmfRepository(ABC):
     async def read_dispenser_states(self) -> Dict[str, DispenserState]:
         """
         Read the list of all current dispenser states.
+        """
+
+    @abstractmethod
+    async def update_dispenser_health(self, dispenser_health: DispenserHealth) -> None:
+        """
+        Update or create dispenser health.
+        """
+
+    @abstractmethod
+    async def read_dispenser_health(self, guid: str) -> Optional[DispenserHealth]:
+        """
+        Read the current dispenser health
         """

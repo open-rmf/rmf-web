@@ -2,12 +2,18 @@ import unittest
 
 from building_map_msgs.msg import Door
 from builtin_interfaces.msg import Time as RosTime
+from rmf_dispenser_msgs.msg import DispenserState as RmfDispenserState
 from rmf_door_msgs.msg import DoorMode as RmfDoorMode
 from rmf_lift_msgs.msg import LiftState as RmfLiftState
 from tortoise import Tortoise
 
-from ..models import DoorHealth, HealthStatus, LiftHealth
-from ..rmf_io.test_data import make_door, make_door_state, make_lift_state
+from ..models import DispenserHealth, DoorHealth, HealthStatus, LiftHealth
+from ..rmf_io.test_data import (
+    make_dispenser_state,
+    make_door,
+    make_door_state,
+    make_lift_state,
+)
 from .sql import SqlRepository
 
 
@@ -109,3 +115,33 @@ class TestSqlRepository(unittest.IsolatedAsyncioTestCase):
             )
         )
         self.assertIsNotNone(await self.repo.read_lift_health("test_lift"))
+
+    async def test_update_dispenser_state(self):
+        state = make_dispenser_state("test_dispenser")
+        await self.repo.update_dispenser_state(state)
+        result: RmfDispenserState = await self.repo.read_dispenser_states()
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result["test_dispenser"].guid, "test_dispenser")
+
+        state_2 = make_dispenser_state("test_dispenser_2")
+        state_2.seconds_remaining = 10.0
+        await self.repo.update_dispenser_state(state_2)
+        result: RmfDispenserState = await self.repo.read_dispenser_states()
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result["test_dispenser_2"].guid, "test_dispenser_2")
+        self.assertEqual(result["test_dispenser_2"].seconds_remaining, 10.0)
+
+        state_2.seconds_remaining = 20.0
+        await self.repo.update_dispenser_state(state_2)
+        result: RmfDispenserState = await self.repo.read_dispenser_states()
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result["test_dispenser_2"].seconds_remaining, 20.0)
+
+    async def test_update_dispenser_health(self):
+        await self.repo.update_dispenser_health(
+            DispenserHealth(
+                id_="test_dispenser",
+                health_status=HealthStatus.HEALTHY,
+            )
+        )
+        self.assertIsNotNone(await self.repo.read_dispenser_health("test_dispenser"))

@@ -7,7 +7,15 @@ from rmf_dispenser_msgs.msg import DispenserState as RmfDispenserState
 from rmf_door_msgs.msg import DoorState as RmfDoorState
 from rmf_lift_msgs.msg import LiftState as RmfLiftState
 
-from ..models import DispenserState, Door, DoorHealth, DoorState, LiftHealth, LiftState
+from ..models import (
+    DispenserHealth,
+    DispenserState,
+    Door,
+    DoorHealth,
+    DoorState,
+    LiftHealth,
+    LiftState,
+)
 from .rmf import RmfRepository
 
 
@@ -85,3 +93,10 @@ class SqlRepository(RmfRepository):
     async def read_dispenser_states(self) -> Dict[str, RmfDispenserState]:
         all_states = await DispenserState.all()
         return {x.id_: x.to_rmf() for x in all_states}
+
+    async def update_dispenser_health(self, dispenser_health: DispenserHealth) -> None:
+        await self._save(dispenser_health, id_=dispenser_health.id_)
+        self.logger.debug("written dispenser health for to database")
+
+    async def read_dispenser_health(self, guid: str) -> DispenserHealth:
+        return await DispenserHealth.filter(id_=guid).first()

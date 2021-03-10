@@ -6,11 +6,17 @@ from unittest.mock import MagicMock, call
 from rx import Observable
 from rx.scheduler.historicalscheduler import HistoricalScheduler
 
-from ..models import DoorHealth, HealthStatus, LiftHealth
+from ..models import DispenserHealth, DoorHealth, HealthStatus, LiftHealth
 from ..repositories import RmfRepository
 from .book_keeper import RmfBookKeeper
 from .gateway import RmfGateway
-from .test_data import make_building_map, make_door, make_door_state, make_lift_state
+from .test_data import (
+    make_building_map,
+    make_dispenser_state,
+    make_door,
+    make_door_state,
+    make_lift_state,
+)
 
 
 class RmfBookKeeperFixture(unittest.IsolatedAsyncioTestCase):
@@ -135,40 +141,75 @@ class TestRmfBookKeeper_LiftStates(
     pass
 
 
-class TestRmfBookKeeper_DoorHealth(RmfBookKeeperFixture):
-    async def test_write_door_health(self):
-        """
-        All health changes should be written, regardless of time between them.
-        """
-        door_health = DoorHealth(name="test_door", health_status=HealthStatus.DEAD)
-        self.rmf.door_health.on_next(door_health)
-        self.scheduler.advance_by(0)
-        await asyncio.sleep(0)
-        self.repo.update_door_health.assert_awaited()
-
-        door_health = DoorHealth(name="test_door", health_status=HealthStatus.HEALTHY)
-        self.rmf.door_health.on_next(door_health)
-        self.scheduler.advance_by(0)
-        await asyncio.sleep(0)
-        self.assertEqual(2, self.repo.update_door_health.await_count)
+class TestRmfBookKeeper_DispenserStates(
+    make_base_test(
+        lambda x: x.dispenser_states,
+        make_dispenser_state,
+        1,
+        lambda x: x.update_dispenser_state,
+    )
+):
+    pass
 
 
-class TestRmfBookKeeper_LiftHealth(RmfBookKeeperFixture):
-    async def test_write_lift_health(self):
-        """
-        All health changes should be written, regardless of time between them.
-        """
-        lift_health = LiftHealth(name="test_lift", health_status=HealthStatus.DEAD)
-        self.rmf.lift_health.on_next(lift_health)
-        self.scheduler.advance_by(0)
-        await asyncio.sleep(0)
-        self.repo.update_lift_health.assert_awaited()
+def make_health_tests(
+    factory: Callable[[str, HealthStatus], Any],
+    get_source: Callable[[RmfGateway], Observable],
+    get_mock: Callable[[RmfRepository], Any],
+):
+    """
+    :param factory: a function that returns an instance of the health model
+    :param get_mock: a function that returns the mock that should be called/awaited
+    """
 
-        lift_health = LiftHealth(name="test_lift", health_status=HealthStatus.HEALTHY)
-        self.rmf.lift_health.on_next(lift_health)
-        self.scheduler.advance_by(0)
-        await asyncio.sleep(0)
-        self.assertEqual(2, self.repo.update_lift_health.await_count)
+    class HealthTests(RmfBookKeeperFixture):
+        async def test_write_health(self):
+            """
+            All health changes should be written, regardless of time between them.
+            """
+            health = factory(HealthStatus.DEAD)
+            get_source(self.rmf).on_next(health)
+            self.scheduler.advance_by(0)
+            await asyncio.sleep(0)
+            get_mock(self.repo).assert_awaited()
+
+            health = factory(HealthStatus.HEALTHY)
+            get_source(self.rmf).on_next(health)
+            self.scheduler.advance_by(0)
+            await asyncio.sleep(0)
+            self.assertEqual(2, get_mock(self.repo).await_count)
+
+    return HealthTests
+
+
+class TestRmfBookKeeper_DoorHealth(
+    make_health_tests(
+        lambda status: DoorHealth(id_="test_door", health_status=status),
+        lambda rmf: rmf.door_health,
+        lambda repo: repo.update_door_health,
+    )
+):
+    pass
+
+
+class TestRmfBookKeeper_LiftHealth(
+    make_health_tests(
+        lambda status: LiftHealth(id_="test_lift", health_status=status),
+        lambda rmf: rmf.lift_health,
+        lambda repo: repo.update_lift_health,
+    )
+):
+    pass
+
+
+class TestRmfBookKeeper_DispenserHealth(
+    make_health_tests(
+        lambda status: DispenserHealth(id_="test_dispenser", health_status=status),
+        lambda rmf: rmf.dispenser_health,
+        lambda repo: repo.update_dispenser_health,
+    )
+):
+    pass
 
 
 class TestRmfBookKeeper_BuildingMap(RmfBookKeeperFixture):

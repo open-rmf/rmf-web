@@ -2,6 +2,7 @@ import os.path
 
 from building_map_msgs.msg import AffineImage, BuildingMap, Door, Graph, Level, Lift
 from builtin_interfaces.msg import Time
+from rmf_dispenser_msgs.msg import DispenserState
 from rmf_door_msgs.msg import DoorMode, DoorState
 from rmf_lift_msgs.msg import LiftState
 
@@ -96,4 +97,14 @@ def make_lift_state(name: str = "test_lift") -> LiftState:
         available_modes=[LiftState.MODE_AGV],
         current_mode=LiftState.MODE_AGV,
         session_id="test_session",
+    )
+
+
+def make_dispenser_state(guid: str = "test_dispenser") -> DispenserState:
+    return DispenserState(
+        guid=guid,
+        time=Time(sec=0, nanosec=0),
+        mode=DispenserState.IDLE,
+        request_guid_queue=[],
+        seconds_remaining=0.0,
     )

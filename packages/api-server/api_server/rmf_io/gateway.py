@@ -46,10 +46,10 @@ class RmfGateway:
             lambda x: x.id_,
         )
 
-        self.dispenser_state = Subject()  # Subject[DispenserState]
+        self.dispenser_states = Subject()  # Subject[DispenserState]
         self.current_dispenser_states: Dict[str, DispenserState] = {}
         self._save_event(
-            self.dispenser_state,
+            self.dispenser_states,
             self.current_dispenser_states,
             lambda x: x.guid,
         )
@@ -57,14 +57,14 @@ class RmfGateway:
         self.dispenser_health = Subject()
         self.current_dispenser_health: Dict[str, DispenserHealth] = {}
         self._save_event(
-            self.dispenser_state,
+            self.dispenser_health,
             self.current_dispenser_health,
             lambda x: x.id_,
         )
 
-        self.building_map = BehaviorSubject(
+        self.building_map = BehaviorSubject(  # BehaviorSubject[Optional[BuildingMap]]
             None
-        )  # BehaviorSubject[Optional[BuildingMap]]
+        )
 
     @staticmethod
     def _save_event(source: Observable, dic, key_mapper: Callable[[Any], str]):

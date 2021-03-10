@@ -6,6 +6,7 @@ from typing import Optional, Union
 
 import rx
 from building_map_msgs.msg import BuildingMap, Level
+from rmf_dispenser_msgs.msg import DispenserState
 from rmf_door_msgs.msg import DoorState
 from rmf_lift_msgs.msg import LiftState
 from rosidl_runtime_py.convert import message_to_ordereddict
@@ -57,6 +58,8 @@ class RmfBookKeeper:
         self._record_door_health()
         self._record_lift_state()
         self._record_lift_health()
+        self._record_dispenser_state()
+        self._record_dispenser_health()
         self._record_building_map()
 
     def _record_door_state(self):
@@ -96,6 +99,26 @@ class RmfBookKeeper:
             await self.repo.update_lift_health(lift_health)
 
         self.rmf.lift_health.subscribe(
+            lambda x: self.loop.create_task(on_next(x)), scheduler=self.scheduler
+        )
+
+    def _record_dispenser_state(self):
+        async def update(dispenser_state: DispenserState):
+            await self.repo.update_dispenser_state(dispenser_state)
+            self.logger.info(json.dumps(message_to_ordereddict(dispenser_state)))
+
+        self.rmf.dispenser_states.pipe(
+            grouped_sample(lambda x: x.guid, RmfBookKeeper.FrequencyStates),
+        ).subscribe(
+            lambda x: self.loop.create_task(update(x)),
+            scheduler=self.scheduler,
+        )
+
+    def _record_dispenser_health(self):
+        async def on_next(dispenser_health):
+            await self.repo.update_dispenser_health(dispenser_health)
+
+        self.rmf.dispenser_health.subscribe(
             lambda x: self.loop.create_task(on_next(x)), scheduler=self.scheduler
         )
 
