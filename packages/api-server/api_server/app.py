@@ -10,7 +10,7 @@ from rclpy.node import Node
 from tortoise import Tortoise
 
 from .app_config import app_config
-from .models import DoorHealth, LiftHealth
+from .models import DispenserHealth, DoorHealth, LiftHealth
 from .repositories import RmfRepository, SqlRepository, StaticFilesRepository
 from .rmf_io import HealthWatchdog, RmfBookKeeper, RmfGateway, RmfIO, RmfTransport
 
@@ -60,7 +60,7 @@ async def load_states(repo: RmfRepository, gateway: RmfGateway):
             door_health.append(health)
     for health in door_health:
         gateway.door_health.on_next(health)
-    logger.info(f"loading {len(door_health)} door health")
+    logger.info(f"loaded {len(door_health)} door health")
 
     lift_states = await repo.read_lift_states()
     for state in lift_states:
@@ -74,7 +74,21 @@ async def load_states(repo: RmfRepository, gateway: RmfGateway):
             lift_health.append(health)
     for health in lift_health:
         gateway.lift_health.on_next(health)
-    logger.info(f"loading {len(lift_health)} lift health")
+    logger.info(f"loaded {len(lift_health)} lift health")
+
+    dispenser_states = await repo.read_dispenser_states()
+    for state in dispenser_states:
+        gateway.dispenser_states.on_next(state)
+    logger.info(f"loaded {len(dispenser_states)} dispenser states")
+
+    dispenser_health: List[DispenserHealth] = []
+    for state in dispenser_states.values():
+        health = await repo.read_dispenser_health(state.guid)
+        if health:
+            dispenser_health.append(health)
+    for health in dispenser_health:
+        gateway.dispenser_health.on_next(health)
+    logger.info(f"loaded {len(dispenser_health)} dispenser health")
 
     logger.info("successfully loaded all states")
 
