@@ -1,9 +1,15 @@
-import { ItemSummary, RobotSummary } from 'react-components';
+import {
+  ItemSummary,
+  RobotSummary,
+  SpoiltDispenser,
+  SpoiltDoor,
+  SpoiltLift,
+} from 'react-components';
 
 export interface HealthStatus {
-  door: ItemSummary;
-  lift: ItemSummary;
-  dispenser: ItemSummary;
+  door: ItemSummary<SpoiltDoor>;
+  lift: ItemSummary<SpoiltLift>;
+  dispenser: ItemSummary<SpoiltDispenser>;
   robot: RobotSummary;
 }
 
