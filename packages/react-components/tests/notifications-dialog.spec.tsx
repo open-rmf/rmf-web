@@ -10,9 +10,9 @@ const notifications: Notification[] = [
   { id: 3, time: 'time', error: 'message', severity: Severity.Low },
 ];
 
-test('should call onClose when close button is clicked', () => {
-  const mockOnClose = jest.fn();
-  const mockOnDismiss = jest.fn();
+it('should call onClose when close button is clicked', () => {
+  const mockOnClose = jasmine.createSpy();
+  const mockOnDismiss = jasmine.createSpy();
   render(
     <NotificationsDialog
       onClose={mockOnClose}
@@ -25,9 +25,9 @@ test('should call onClose when close button is clicked', () => {
   expect(mockOnClose).toHaveBeenCalled();
 });
 
-test('should call onClose when close icon at the top is clicked', () => {
-  const mockOnClose = jest.fn();
-  const mockOnDismiss = jest.fn();
+it('should call onClose when close icon at the top is clicked', () => {
+  const mockOnClose = jasmine.createSpy();
+  const mockOnDismiss = jasmine.createSpy();
   render(
     <NotificationsDialog
       onClose={mockOnClose}
@@ -40,9 +40,9 @@ test('should call onClose when close icon at the top is clicked', () => {
   expect(mockOnClose).toHaveBeenCalled();
 });
 
-test('should not render other severity levels when a particular level is selected', () => {
-  const mockOnClose = jest.fn();
-  const mockOnDismiss = jest.fn();
+it('should not render other severity levels when a particular level is selected', () => {
+  const mockOnClose = jasmine.createSpy();
+  const mockOnDismiss = jasmine.createSpy();
   render(
     <NotificationsDialog
       onClose={mockOnClose}
@@ -58,9 +58,9 @@ test('should not render other severity levels when a particular level is selecte
   expect(screen.queryByText('Low')).toBeNull();
 });
 
-test('should update rmfNotifications state when props are updated', () => {
-  const mockOnClose = jest.fn();
-  const mockOnDismiss = jest.fn();
+it('should update rmfNotifications state when props are updated', () => {
+  const mockOnClose = jasmine.createSpy();
+  const mockOnDismiss = jasmine.createSpy();
   // add one more notification
   const updatedNotifications: Notification[] = [
     ...notifications,
@@ -88,9 +88,9 @@ test('should update rmfNotifications state when props are updated', () => {
   expect(screen.getAllByText('message').length).toEqual(4);
 });
 
-test('should call mockOnDismiss when onNotificationsDismiss button is clicked', () => {
-  const mockOnClose = jest.fn();
-  const mockOnDismiss = jest.fn();
+it('should call mockOnDismiss when onNotificationsDismiss button is clicked', () => {
+  const mockOnClose = jasmine.createSpy();
+  const mockOnDismiss = jasmine.createSpy();
   render(
     <NotificationsDialog
       onClose={mockOnClose}

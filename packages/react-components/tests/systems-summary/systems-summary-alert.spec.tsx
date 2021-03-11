@@ -4,8 +4,8 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { notifications } from './test.utils';
 
-test('button should be disabled when there are no notifications', () => {
-  const mockOnNotificationDismiss = jest.fn();
+it('button should be disabled when there are no notifications', () => {
+  const mockOnNotificationDismiss = jasmine.createSpy();
   const root = render(
     <SystemSummaryAlert notifications={[]} onNotificationsDismiss={mockOnNotificationDismiss} />,
   );
@@ -16,8 +16,8 @@ test('button should be disabled when there are no notifications', () => {
   expect(screen.queryByText('Filter by severity')).toBeNull();
 });
 
-test('button should not be disabled when there are notifications', () => {
-  const mockOnNotificationDismiss = jest.fn();
+it('button should not be disabled when there are notifications', () => {
+  const mockOnNotificationDismiss = jasmine.createSpy();
   const root = render(
     <SystemSummaryAlert
       notifications={notifications}

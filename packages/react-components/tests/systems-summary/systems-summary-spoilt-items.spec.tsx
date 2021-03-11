@@ -4,7 +4,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { door, lift, fleet } from './test.utils';
 
-test('should render the lists of different spoilt items', () => {
+it('should render the lists of different spoilt items', () => {
   render(
     <SystemSummarySpoiltItems
       doors={[
@@ -30,11 +30,11 @@ test('should render the lists of different spoilt items', () => {
   expect(screen.getAllByText('lift - state').length).toEqual(1);
 });
 
-test('it should trigger the spoilt item callback function when spoit item is clicked', () => {
-  const doorClick = jest.fn();
-  const liftClick = jest.fn();
-  const dispenserClick = jest.fn();
-  const robotClick = jest.fn();
+it('it should trigger the spoilt item callback function when spoit item is clicked', () => {
+  const doorClick = jasmine.createSpy();
+  const liftClick = jasmine.createSpy();
+  const dispenserClick = jasmine.createSpy();
+  const robotClick = jasmine.createSpy();
 
   render(
     <SystemSummarySpoiltItems
@@ -79,8 +79,8 @@ test('it should trigger the spoilt item callback function when spoit item is cli
   userEvent.click(screen.getByText('dispenser - state'));
   userEvent.click(screen.getByText('robot - state'));
 
-  expect(doorClick).toBeCalled();
-  expect(liftClick).toBeCalled();
-  expect(dispenserClick).toBeCalled();
-  expect(robotClick).toBeCalled();
+  expect(doorClick).toHaveBeenCalled();
+  expect(liftClick).toHaveBeenCalled();
+  expect(dispenserClick).toHaveBeenCalled();
+  expect(robotClick).toHaveBeenCalled();
 });
