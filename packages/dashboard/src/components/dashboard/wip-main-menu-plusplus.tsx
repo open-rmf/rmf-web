@@ -124,9 +124,9 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
         <Divider className={classes.divider} />
 
         <SystemSummarySpoiltItems
-          doors={healthStatus.door.spoiltItem as SpoiltDoor[]}
-          lifts={healthStatus.lift.spoiltItem as SpoiltLift[]}
-          dispensers={healthStatus.dispenser.spoiltItem as SpoiltDispenser[]}
+          doors={healthStatus.door.spoiltItem}
+          lifts={healthStatus.lift.spoiltItem}
+          dispensers={healthStatus.dispenser.spoiltItem}
           robots={healthStatus.robot.spoiltRobots}
           onClickSpoiltDoor={spoiltDoorClick}
           onClickSpoiltDispenser={spoiltDispenserClick}
