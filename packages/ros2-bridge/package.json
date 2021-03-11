@@ -17,7 +17,7 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/osrf/rmf-web",
+    "url": "https://github.com/open-rmf/rmf-web",
     "directory": "packages/ros2-bridge"
   },
   "dependencies": {

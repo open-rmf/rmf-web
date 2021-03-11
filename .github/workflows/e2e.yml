@@ -33,7 +33,7 @@ jobs:
           registry: docker.pkg.github.com
           repository: ${{ github.repository }}/e2e
           tags: latest
-          build_args: BASE_IMAGE=docker.pkg.github.com/osrf/rmf-web/rmf:nightly
+          build_args: BASE_IMAGE=docker.pkg.github.com/open-rmf/rmf-web/rmf:nightly
           path: packages/dashboard/e2e/docker/e2e
   e2e-tests:
     name: End-to-End Tests
@@ -41,7 +41,7 @@ jobs:
     if: always()
     needs: build-docker-images
     container:
-      image: docker.pkg.github.com/osrf/rmf-web/e2e
+      image: docker.pkg.github.com/open-rmf/rmf-web/e2e
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}

@@ -1,4 +1,4 @@
-[![End-to-End](https://github.com/osrf/rmf-web/workflows/End-to-End/badge.svg?branch=main)](https://github.com/osrf/rmf-web/actions?query=workflow%3AEnd-to-End+branch%3Amain) [![ros2-bridge](https://github.com/osrf/rmf-web/workflows/ros2-bridge/badge.svg?branch=main)](https://github.com/osrf/rmf-web/actions?query=workflow%3Aros2-bridge+branch%3Amain) [![react-components](https://github.com/osrf/rmf-web/workflows/react-components/badge.svg?branch=main)](https://github.com/osrf/rmf-web/actions?query=workflow%3Areact-components+branch%3Amain) [![dashboard](https://github.com/osrf/rmf-web/workflows/dashboard/badge.svg?branch=main)](https://github.com/osrf/rmf-web/actions?query=workflow%3Adashboard+branch%3Amain) [![api-server](https://github.com/osrf/rmf-web/workflows/api-server/badge.svg?branch=main)](https://github.com/osrf/rmf-web/actions?query=workflow%3Aapi-server+branch%3Amain) [![codecov](https://codecov.io/gh/osrf/rmf-web/branch/main/graph/badge.svg)](https://codecov.io/gh/osrf/rmf-web)
+[![End-to-End](https://github.com/open-rmf/rmf-web/workflows/End-to-End/badge.svg?branch=main)](https://github.com/open-rmf/rmf-web/actions?query=workflow%3AEnd-to-End+branch%3Amain) [![ros2-bridge](https://github.com/open-rmf/rmf-web/workflows/ros2-bridge/badge.svg?branch=main)](https://github.com/open-rmf/rmf-web/actions?query=workflow%3Aros2-bridge+branch%3Amain) [![react-components](https://github.com/open-rmf/rmf-web/workflows/react-components/badge.svg?branch=main)](https://github.com/open-rmf/rmf-web/actions?query=workflow%3Areact-components+branch%3Amain) [![dashboard](https://github.com/open-rmf/rmf-web/workflows/dashboard/badge.svg?branch=main)](https://github.com/open-rmf/rmf-web/actions?query=workflow%3Adashboard+branch%3Amain) [![api-server](https://github.com/open-rmf/rmf-web/workflows/api-server/badge.svg?branch=main)](https://github.com/open-rmf/rmf-web/actions?query=workflow%3Aapi-server+branch%3Amain) [![codecov](https://codecov.io/gh/open-rmf/rmf-web/branch/main/graph/badge.svg)](https://codecov.io/gh/open-rmf/rmf-web)
 
 # Running the Dashboard
 
@@ -54,15 +54,15 @@ Refer to the following documentations:
 * [docker-compose](https://docs.docker.com/compose/install/)
 * [nodejs](https://nodejs.org/en/download/package-manager/)
   * alternative: [nvm](https://github.com/nvm-sh/nvm)
-* [rmf_core](https://github.com/osrf/rmf_core)
-* [traffic_editor](https://github.com/osrf/traffic_editor)
-* [rmf schedule visualizer](https://github.com/osrf/rmf_schedule_visualizer)
-* [rmf_demos](https://github.com/osrf/rmf_demos)
+* [rmf_core](https://github.com/open-rmf/rmf_core)
+* [traffic_editor](https://github.com/open-rmf/traffic_editor)
+* [rmf schedule visualizer](https://github.com/open-rmf/rmf_schedule_visualizer)
+* [rmf_demos](https://github.com/open-rmf/rmf_demos)
 
 ## Bootstrap
-Before running the commands, make sure that rmf is sourced. We recommend using an `npm` version lower than 7.0.0 ([more information](https://github.com/osrf/rmf-web/issues/232)).
+Before running the commands, make sure that rmf is sourced. We recommend using an `npm` version lower than 7.0.0 ([more information](https://github.com/open-rmf/rmf-web/issues/232)).
 ```bash
-git clone https://github.com/osrf/rmf-web
+git clone https://github.com/open-rmf/rmf-web
 cd rmf-web
 npm run bootstrap
 ```
