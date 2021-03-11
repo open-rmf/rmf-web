@@ -2,9 +2,9 @@ import React from 'react';
 import { makeStyles, Typography, Grid, Paper, Button } from '@material-ui/core';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 
-export interface ItemSummary {
+export interface ItemSummary<T = unknown> {
   operational: number;
-  spoiltItem: unknown[];
+  spoiltItem: T[];
 }
 
 export interface SystemSummaryItemStateProps {

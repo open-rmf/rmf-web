@@ -1,24 +1,21 @@
-import { Divider, makeStyles, Typography, Button } from '@material-ui/core';
+import { Button, Divider, makeStyles, Typography } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import React from 'react';
-import { TooltipsContext } from '../app-contexts';
-import { OmniPanelViewIndex } from './dashboard';
 import {
-  Notification,
-  SystemSummaryItemState,
   DashboardTooltip,
-  SystemSummaryAlert,
-  SystemSummaryTaskState,
-  SystemSummaryBanner,
-  SystemSummarySpoiltItems,
+  Notification,
   RobotSummaryState,
-  SpoiltDoor,
-  SpoiltLift,
-  SpoiltDispenser,
+  SystemSummaryAlert,
+  SystemSummaryBanner,
+  SystemSummaryItemState,
+  SystemSummarySpoiltItems,
+  SystemSummaryTaskState,
 } from 'react-components';
-import { RmfHealthContext } from '../rmf-app';
 import { HealthStatus } from '../../managers/rmf-health-state-manager';
+import { TooltipsContext } from '../app-contexts';
+import { RmfHealthContext } from '../rmf-app';
+import { OmniPanelViewIndex } from './dashboard';
 
 const debug = Debug('MainMenu');
 
