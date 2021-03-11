@@ -26,7 +26,7 @@ function superFleet(): RomiCore.FleetState {
   };
 }
 
-export default function fakeFleets(): RomiCore.FleetState[] {
+export function fakeFleets(): RomiCore.FleetState[] {
   return [
     {
       name: 'Fleet1',
@@ -146,3 +146,31 @@ export default function fakeFleets(): RomiCore.FleetState[] {
     superFleet(),
   ];
 }
+
+export const door: RomiCore.Door = {
+  name: 'door',
+  v1_x: 8.2,
+  v1_y: -5.5,
+  v2_x: 7.85,
+  v2_y: -6.2,
+  door_type: 2,
+  motion_range: -1.571,
+  motion_direction: 1,
+};
+
+export const lift: RomiCore.Lift = {
+  name: 'lift',
+  doors: [door],
+  levels: ['L1', 'L2', 'L3'],
+  ref_x: 7.1,
+  ref_y: -2.8,
+  ref_yaw: -0.5,
+  width: 2.5,
+  depth: 2.5,
+  wall_graph: {
+    name: 'wallgraph',
+    vertices: [],
+    edges: [],
+    params: [],
+  },
+};
