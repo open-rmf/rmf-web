@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Divider, Typography, Button, Grid } from '@material-ui/core';
 
-import AlertSnackBar from '../../components/alert-snack-bar';
-import { AlertSnackBarProps } from '../../components/alert-snack-bar';
+import AlertSnackBar from '../../components/__trash/alert-snack-bar';
+import { AlertSnackBarProps } from '../../components/__trash/alert-snack-bar';
 import { StyleTyping, defaultStyles } from './utils';
 
 const styles: StyleTyping = {
