@@ -185,28 +185,6 @@ export const createTourSteps = (props: createTourProps) => {
         </Box>
       ),
     },
-    commandsPanel: {
-      selector: '[data-item="Commands"]',
-      content: ({ goTo, step }) => (
-        <Box data-testid="stepBox">
-          <Typography variant="h6" data-testid="step9">
-            {tourText.CommandsPanel.text}
-          </Typography>
-          <NavButtons
-            goTo={goTo}
-            step={step}
-            handleNextClick={() => {
-              showSettingsOmniPanelHelpClearSpotlight(false, true, false, false);
-              setCurrentView(OmniPanelViewIndex.Commands);
-            }}
-            handleBackClick={() => {
-              showSettingsOmniPanelHelpClearSpotlight(false, true, false, false);
-              setCurrentView(OmniPanelViewIndex.Doors);
-            }}
-          />
-        </Box>
-      ),
-    },
     loopRequest: {
       selector: '[data-component="LoopForm"]',
       content: ({ goTo, step }) => (
