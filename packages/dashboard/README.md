@@ -2,26 +2,6 @@
 
 Hello! `romi-dashboard` is a web application that provides overall visualization and control over the RoMi system.
 
-## Setup
-
-Prerequisites:
-
-* nodejs == v12
-* docker
-* docker-compose
-* [rmf_core](https://github.com/open-rmf/rmf_core)
-* [traffic_editor](https://github.com/open-rmf/traffic_editor)
-* [rmf_schedule_visualizer](https://github.com/open-rmf/rmf_schedule_visualizer)
-* [rmf_demos](https://github.com/open-rmf/rmf_demos)
-
-Refer to the various repository for instructions to set them up.
-
-```bash
-git clone https://github.com/open-rmf/rmf-web
-cd rmf-web
-npm run bootstrap
-```
-
 ### (Optional) Import external resources.
 
 ```bash
@@ -66,6 +46,10 @@ npm run setup
 
 ### Local Dev Server
 
+You must have an installation of RMF sourced, you must have also bootstrap all of the packages, if you follow the instructions from the [main README](../../README.md), you should already have things ready.
+
+To start the dev server, run
+
 ```bash
 npm start
 ```
@@ -77,9 +61,9 @@ user: admin
 password: admin
 ```
 
-### External Server
+### Connecting to External Server
 
-Alternatively, if you want to connect to an existing rmf deployment, set the following environment variables:
+Alternatively, if you want to connect to an existing rmf deployment, or if you want to manage one or more backends manually, set the following environment variables:
 
 * _PUBLIC_URL_: Url that the app is hosted. Defaults to '/'.
 * _REACT_APP_TRAJECTORY_SERVER_: **Required** URL to the trajectory server.
@@ -96,13 +80,11 @@ Supported auth providers are
 
 **Many of the components are reused from `react-components`, you may want to run storybook on `react-components` instead.**
 
-Another way to work on the frontend without rmf is with [storybook](https://storybook.js.org/), simply run
+If you are working on the frontend, it is recommended to use [storybook](https://storybook.js.org/) to test your components in isolation before integrating them into the dashboard for e2e tests.
 
 ```bash
 npm run storybook
 ```
-
-This is ideal if you are working on individual isolated components.
 
 ## Building for production
 

@@ -4,7 +4,7 @@
   "description": "bridges ros2 messages to websocket/msgpack",
   "main": "src/index.js",
   "scripts": {
-    "start": "ts-node src/index.ts",
+    "start": "ts-node -T src/index.ts",
     "build": "npm run lint && tsc --build",
     "clean": "tsc --build --clean",
     "prepack": "npm ci && npm run clean && npm run build",

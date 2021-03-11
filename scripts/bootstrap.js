@@ -14,7 +14,7 @@ const child_process = require('child_process');
 
 // hardcoded for now
 const deps = {
-  'packages/dashboard': ['packages/ros2-bridge', 'packages/react-components'],
+  'packages/dashboard': ['packages/react-components'],
   'packages/api-client': ['packages/api-server'],
 };
 
