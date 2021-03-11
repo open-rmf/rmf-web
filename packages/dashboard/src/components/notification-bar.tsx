@@ -2,13 +2,13 @@ import { Snackbar } from '@material-ui/core';
 import Alert, { AlertProps } from '@material-ui/lab/Alert';
 import React, { useEffect, useState } from 'react';
 
-export interface AlertSnackBarProps {
+export interface NotificationBarProps {
   message: string | undefined | null;
   type: AlertProps['severity']; // error | warning | info | success
   time?: string; // milliseconds
 }
 
-const AlertSnackBar = (props: AlertSnackBarProps) => {
+const NotificationBar = (props: NotificationBarProps) => {
   const [showAlert, setShowAlert] = useState(false);
   const { message, type } = props;
 
@@ -31,4 +31,4 @@ const AlertSnackBar = (props: AlertSnackBarProps) => {
   );
 };
 
-export default AlertSnackBar;
+export default NotificationBar;

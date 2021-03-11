@@ -5,7 +5,6 @@ import React from 'react';
 import ItemAccordionDetails from '../item-accordion-details';
 import ItemAccordionSummary from '../item-accordion-summary';
 import { SimpleInfo } from '../simple-info';
-import { robotModeToString } from './utils';
 
 const debug = Debug('Robots:RobotAccordion');
 
@@ -14,6 +13,29 @@ const useStyles = makeStyles((theme) => ({
     borderColor: theme.palette.info.main,
   },
 }));
+
+function robotModeToString(robotMode: RomiCore.RobotMode): string {
+  switch (robotMode.mode) {
+    case RomiCore.RobotMode.MODE_CHARGING:
+      return 'Charging';
+    case RomiCore.RobotMode.MODE_DOCKING:
+      return 'Docking';
+    case RomiCore.RobotMode.MODE_EMERGENCY:
+      return 'Emergency';
+    case RomiCore.RobotMode.MODE_GOING_HOME:
+      return 'Going Home';
+    case RomiCore.RobotMode.MODE_IDLE:
+      return 'Idle';
+    case RomiCore.RobotMode.MODE_MOVING:
+      return 'Moving';
+    case RomiCore.RobotMode.MODE_PAUSED:
+      return 'Paused';
+    case RomiCore.RobotMode.MODE_WAITING:
+      return 'Waiting';
+    default:
+      return `Unknown (${robotMode.mode})`;
+  }
+}
 
 interface RobotInfoProps {
   fleetName: string;

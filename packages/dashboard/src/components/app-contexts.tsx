@@ -3,6 +3,7 @@ import appConfig, { AppConfig } from '../app-config';
 import ResourceManager from '../managers/resource-manager';
 import { defaultSettings, Settings } from '../settings';
 import { LoadingScreenProps } from './loading-screen';
+import { NotificationBarProps } from './notification-bar';
 
 /* Declares the ResourcesContext which contains the resources used on the app*/
 export const ResourcesContext = React.createContext<ResourceManager | undefined>(undefined);
@@ -18,6 +19,7 @@ export interface AppController {
   toggleHelp(): void;
   showHotkeysDialog(show: boolean): void;
   toggleHotkeysDialog(): void;
+  showNotification: React.Dispatch<React.SetStateAction<NotificationBarProps>>;
   /**
    * FIXME: Move this to settings, this sets if we should show the tooltip icon, and not trigger
    * a tooltip to show.
@@ -48,6 +50,7 @@ export const AppControllerContext = React.createContext<AppController>({
   toggleHelp: () => {},
   showHotkeysDialog: () => {},
   toggleHotkeysDialog: () => {},
+  showNotification: () => {},
   showTooltips: () => {},
   toggleTooltips: () => {},
   showLoadingScreen: () => {},

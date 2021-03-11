@@ -11,16 +11,6 @@ import {
   NegotiationConflict,
   NegotiationStatusManager,
 } from '../../managers/negotiation-status-manager';
-import { HealthStatus } from '../../managers/rmf-health-state-manager';
-
-const itemSummary = () => {
-  return {
-    operational: 0,
-    spoiltItem: [],
-  };
-};
-
-const initializeItemSummary = itemSummary();
 
 export const DispenserStateContext = React.createContext<Record<string, RomiCore.DispenserState>>(
   {},
@@ -34,17 +24,6 @@ export const NegotiationStatusContext = React.createContext<Record<number, Negot
 export const TasksContext = React.createContext<RomiCore.TaskSummary[]>([]);
 export const TransportContext = React.createContext<RomiCore.Transport | null>(null);
 export const BuildingMapContext = React.createContext<RomiCore.BuildingMap | null>(null);
-export const RmfHealthContext = React.createContext<HealthStatus>({
-  door: { ...initializeItemSummary },
-  lift: { ...initializeItemSummary },
-  dispenser: { ...initializeItemSummary },
-  robot: {
-    operational: 0,
-    idle: 0,
-    charging: 0,
-    spoiltRobots: [],
-  },
-});
 
 export interface RmfIngress {
   dispenserStateManager: DispenserStateManager;

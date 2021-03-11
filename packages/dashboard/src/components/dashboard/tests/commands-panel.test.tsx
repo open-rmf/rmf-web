@@ -5,7 +5,7 @@ import ResourceManager from '../../../managers/resource-manager';
 import fakeResources from '../../../managers/__mocks__/resources';
 import { ResourcesContext } from '../../app-contexts';
 import CommandsPanel from '../commands-panel';
-import { fakeFleets } from './items';
+import fakeFleets from './fleets';
 
 let fleets: RomiCore.FleetState[];
 
