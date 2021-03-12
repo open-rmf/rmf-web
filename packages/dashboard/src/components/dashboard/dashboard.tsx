@@ -15,6 +15,7 @@ import {
   RobotAccordion as RobotAccordion_,
   useStackNavigator,
   withSpotlight,
+  SimpleSearch,
 } from 'react-components';
 import { GlobalHotKeys } from 'react-hotkeys';
 import 'typeface-roboto';
@@ -280,6 +281,12 @@ export default function Dashboard(_props: {}): React.ReactElement {
     [dashboardDispatch, viewStackDispatch, appController],
   );
 
+  const [search, setSearch] = React.useState('');
+
+  const onChange = (e: any) => {
+    setSearch(e.target.value);
+  };
+
   return (
     <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
       {buildingMap && (
@@ -311,6 +318,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
             <MainMenu pushView={viewStackDispatch.push} />
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Doors}>
+            <SimpleSearch disabled={doors.length === 0} onChange={onChange} value={search} />
             {doors.map((door) => (
               <DoorAccordion
                 key={door.name}
@@ -323,6 +331,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
             ))}
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Lifts}>
+            <SimpleSearch disabled={lifts.length === 0} onChange={onChange} value={search} />
             {lifts.map((lift) => (
               <LiftAccordion
                 key={lift.name}
@@ -334,6 +343,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
             ))}
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Robots}>
+            <SimpleSearch disabled={fleets.length === 0} onChange={onChange} value={search} />
             {fleets.flatMap((fleet) =>
               fleet.robots.map((robot) => (
                 <RobotAccordion
@@ -347,6 +357,11 @@ export default function Dashboard(_props: {}): React.ReactElement {
             )}
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Dispensers}>
+            <SimpleSearch
+              disabled={!dispensers || Object.keys(dispensers).length === 0}
+              onChange={onChange}
+              value={search}
+            />
             {dispensers
               ? Object.keys(dispensers).map((dispenser) => (
                   <DispenserAccordion
