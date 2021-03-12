@@ -1,5 +1,6 @@
 import React from 'react';
-import { TextField, makeStyles } from '@material-ui/core';
+import { TextField, makeStyles, IconButton } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
 
 export interface SimpleSearchProps {
   onChange?: (e: any) => void;
@@ -7,11 +8,17 @@ export interface SimpleSearchProps {
   value: string;
 }
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   simpleSearch: {
     margin: '1rem',
     display: 'flex',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+  },
+  clearSearch: {
+    color: theme.palette.error.main,
+  },
+  searchBar: {
+    width: '100%',
   },
 }));
 
@@ -21,13 +28,18 @@ export const SimpleSearch = (props: SimpleSearchProps): JSX.Element => {
   const { onChange, disabled, value } = props;
 
   return (
-    <TextField
-      label="Search"
-      value={value}
-      disabled={disabled}
-      className={classes.simpleSearch}
-      variant="outlined"
-      onChange={onChange}
-    />
+    <div className={classes.simpleSearch}>
+      <TextField
+        label="Search"
+        value={value}
+        disabled={disabled}
+        variant="outlined"
+        onChange={onChange}
+        className={classes.searchBar}
+      />
+      <IconButton className={classes.clearSearch}>
+        <CloseIcon />
+      </IconButton>
+    </div>
   );
 };
