@@ -319,41 +319,47 @@ export default function Dashboard(_props: {}): React.ReactElement {
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Doors}>
             <SimpleSearch disabled={doors.length === 0} onChange={onChange} value={search} />
-            {doors.map((door) => (
-              <DoorAccordion
-                key={door.name}
-                ref={doorAccordionRefs[door.name].ref}
-                door={door}
-                doorState={doorStates[door.name]}
-                onDoorControlClick={handleOnDoorControlClick}
-                data-name={door.name}
-              />
-            ))}
+            {doors.map((door) => {
+              return door.name.includes(search) ? (
+                <DoorAccordion
+                  key={door.name}
+                  ref={doorAccordionRefs[door.name].ref}
+                  door={door}
+                  doorState={doorStates[door.name]}
+                  onDoorControlClick={handleOnDoorControlClick}
+                  data-name={door.name}
+                />
+              ) : null;
+            })}
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Lifts}>
             <SimpleSearch disabled={lifts.length === 0} onChange={onChange} value={search} />
-            {lifts.map((lift) => (
-              <LiftAccordion
-                key={lift.name}
-                ref={liftAccordionRefs[lift.name].ref}
-                lift={lift}
-                liftState={liftStates[lift.name]}
-                onRequestSubmit={handleLiftRequestSubmit}
-              />
-            ))}
+            {lifts.map((lift) => {
+              return lift.name.includes(search) ? (
+                <LiftAccordion
+                  key={lift.name}
+                  ref={liftAccordionRefs[lift.name].ref}
+                  lift={lift}
+                  liftState={liftStates[lift.name]}
+                  onRequestSubmit={handleLiftRequestSubmit}
+                />
+              ) : null;
+            })}
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Robots}>
             <SimpleSearch disabled={fleets.length === 0} onChange={onChange} value={search} />
             {fleets.flatMap((fleet) =>
-              fleet.robots.map((robot) => (
-                <RobotAccordion
-                  key={robotKey(fleet.name, robot)}
-                  ref={robotAccordionRefs[robotKey(fleet.name, robot)].ref}
-                  robot={robot}
-                  fleetName={fleet.name}
-                  data-component="RobotAccordion"
-                />
-              )),
+              fleet.robots.map((robot) => {
+                return robot.name.includes(search) ? (
+                  <RobotAccordion
+                    key={robotKey(fleet.name, robot)}
+                    ref={robotAccordionRefs[robotKey(fleet.name, robot)].ref}
+                    robot={robot}
+                    fleetName={fleet.name}
+                    data-component="RobotAccordion"
+                  />
+                ) : null;
+              }),
             )}
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Dispensers}>
@@ -363,15 +369,19 @@ export default function Dashboard(_props: {}): React.ReactElement {
               value={search}
             />
             {dispensers
-              ? Object.keys(dispensers).map((dispenser) => (
-                  <DispenserAccordion
-                    key={dispenser}
-                    ref={dispenserAccordionRefs[dispenser].ref}
-                    dispenserState={dispenserStates[dispenser] ? dispenserStates[dispenser] : null}
-                    data-component="DispenserAccordion"
-                    dispenser={dispenser}
-                  />
-                ))
+              ? Object.keys(dispensers).map((dispenser) => {
+                  return dispenser.includes(search) ? (
+                    <DispenserAccordion
+                      key={dispenser}
+                      ref={dispenserAccordionRefs[dispenser].ref}
+                      dispenserState={
+                        dispenserStates[dispenser] ? dispenserStates[dispenser] : null
+                      }
+                      data-component="DispenserAccordion"
+                      dispenser={dispenser}
+                    />
+                  ) : null;
+                })
               : null}
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Commands}>
