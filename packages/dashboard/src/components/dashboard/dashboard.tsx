@@ -305,6 +305,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
           onBack={handleOmniPanelBack}
           onHome={handleOmniPanelHome}
           onClose={handleOmniPanelClose}
+          id="omnipanel"
         >
           <OmniPanelView viewId={OmniPanelViewIndex.MainMenu}>
             <MainMenu pushView={viewStackDispatch.push} />
