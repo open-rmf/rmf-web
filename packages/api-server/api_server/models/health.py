@@ -24,5 +24,9 @@ class DispenserHealth(BasicHealthModel):
     pass
 
 
+class IngestorHealth(BasicHealthModel):
+    pass
+
+
 class RobotHealth(BasicHealthModel):
     pass

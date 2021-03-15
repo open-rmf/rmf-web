@@ -1,8 +1,7 @@
-from rmf_dispenser_msgs.msg import DispenserState as RmfDispenerState
-from tortoise.models import Model
+from rmf_dispenser_msgs.msg import DispenserState as RmfDispenserState
 
-from .json_mixin import json_mixin
+from .json_model import json_model
 
 
-class DispenserState(Model, json_mixin(RmfDispenerState, lambda x: x.guid)):
+class DispenserState(json_model(RmfDispenserState, lambda x: x.guid)):
     pass

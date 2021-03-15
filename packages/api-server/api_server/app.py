@@ -2,17 +2,15 @@ import logging
 import os
 import sys
 import threading
-from typing import List
 
 import rclpy
 import socketio
 from rclpy.node import Node
-from rmf_fleet_msgs.msg import RobotState
 from tortoise import Tortoise
 
+from . import models
 from .app_config import app_config
-from .models import DispenserHealth, DoorHealth, LiftHealth, RobotHealth
-from .repositories import RmfRepository, SqlRepository, StaticFilesRepository
+from .repositories import StaticFilesRepository
 from .rmf_io import HealthWatchdog, RmfBookKeeper, RmfGateway, RmfIO, RmfTransport
 
 
@@ -46,79 +44,61 @@ else:
 sio_client = socketio.AsyncClient()
 
 
-async def load_doors(repo: RmfRepository, gateway: RmfGateway):
-    door_states = await repo.read_door_states()
+async def load_doors(gateway: RmfGateway):
+    door_states = await models.DoorState.all()
     for state in door_states:
-        gateway.door_states.on_next(state)
+        gateway.door_states.on_next(state.to_rmf())
     logger.info(f"loaded {len(door_states)} door states")
 
-    door_health: List[DoorHealth] = []
-    for state in door_states.values():
-        health = await repo.read_door_health(state.door_name)
-        if health:
-            door_health.append(health)
-    for health in door_health:
+    healths = await models.DoorHealth.all()
+    for health in healths:
         gateway.door_health.on_next(health)
-    logger.info(f"loaded {len(door_health)} door health")
+    logger.info(f"loaded {len(healths)} door health")
 
 
-async def load_lifts(repo: RmfRepository, gateway: RmfGateway):
-    lift_states = await repo.read_lift_states()
+async def load_lifts(gateway: RmfGateway):
+    lift_states = await models.LiftState.all()
     for state in lift_states:
         gateway.lift_states.on_next(state)
     logger.info(f"loaded {len(lift_states)} lift states")
 
-    lift_health: List[LiftHealth] = []
-    for state in lift_states.values():
-        health = await repo.read_lift_health(state.lift_name)
-        if health:
-            lift_health.append(health)
-    for health in lift_health:
+    healths = await models.LiftHealth.all()
+    for health in healths:
         gateway.lift_health.on_next(health)
-    logger.info(f"loaded {len(lift_health)} lift health")
+    logger.info(f"loaded {len(healths)} lift health")
 
 
-async def load_dispensers(repo: RmfRepository, gateway: RmfGateway):
-    dispenser_states = await repo.read_dispenser_states()
+async def load_dispensers(gateway: RmfGateway):
+    dispenser_states = await models.DispenserState.all()
     for state in dispenser_states:
         gateway.dispenser_states.on_next(state)
     logger.info(f"loaded {len(dispenser_states)} dispenser states")
 
-    dispenser_health: List[DispenserHealth] = []
-    for state in dispenser_states.values():
-        health = await repo.read_dispenser_health(state.guid)
-        if health:
-            dispenser_health.append(health)
-    for health in dispenser_health:
+    healths = await models.DispenserHealth.all()
+    for health in healths:
         gateway.dispenser_health.on_next(health)
-    logger.info(f"loaded {len(dispenser_health)} dispenser health")
+    logger.info(f"loaded {len(healths)} dispenser health")
 
 
-async def load_fleets(repo: RmfRepository, gateway: RmfGateway):
-    fleet_states = await repo.read_fleet_states()
+async def load_fleets(gateway: RmfGateway):
+    fleet_states = await models.FleetState.all()
     for state in fleet_states:
         gateway.fleet_states.on_next(state)
     logger.info(f"loaded {len(fleet_states)} fleet states")
 
-    robot_health: List[RobotHealth] = []
-    for fleet_state in fleet_states.values():
-        for robot_state in fleet_state.robots:
-            robot_state: RobotState
-            health = await repo.read_robot_health(fleet_state.name, robot_state.name)
-            if health:
-                robot_health.append(health)
-    for health in robot_health:
+    healths = await models.RobotHealth.all()
+    for health in healths:
         gateway.robot_health.on_next(health)
-    logger.info(f"loaded {len(robot_health)} robot health")
+    logger.info(f"loaded {len(healths)} robot health")
 
 
-async def load_states(repo: RmfRepository, gateway: RmfGateway):
+async def load_states(gateway: RmfGateway):
     logger.info("loading states from database...")
 
-    load_doors(repo, gateway)
-    load_lifts(repo, gateway)
-    load_dispensers(repo, gateway)
-    load_fleets(repo, gateway)
+    await load_doors(gateway)
+    await load_lifts(gateway)
+    await load_dispensers(gateway)
+    await load_fleets(gateway)
 
     logger.info("successfully loaded all states")
 
@@ -136,7 +116,6 @@ async def on_startup():
         logger.getChild("static_files"),
     )
 
-    sql_repo = SqlRepository(logger.getChild("SqlRepository"))
     rmf_gateway = RmfGateway()
     RmfIO(
         sio,
@@ -150,16 +129,14 @@ async def on_startup():
     # to load states before initializing some components like the watchdog because we don't want
     # these fake events to affect them. e.g. The fake events from loading states will trigger the
     # health watchdog to think that a dead component has come back alive.
-    await load_states(sql_repo, rmf_gateway)
+    await load_states(rmf_gateway)
 
     HealthWatchdog(rmf_gateway, logger=logger.getChild("HealthWatchdog"))
 
     rmf_transport = RmfTransport(ros2_node, rmf_gateway)
     rmf_transport.subscribe_all()
 
-    rmf_bookkeeper = RmfBookKeeper(
-        rmf_gateway, sql_repo, logger=logger.getChild("BookKeeper")
-    )
+    rmf_bookkeeper = RmfBookKeeper(rmf_gateway, logger=logger.getChild("BookKeeper"))
     rmf_bookkeeper.start()
 
     threading.Thread(target=ros2_thread, args=[ros2_node]).start()

@@ -6,9 +6,11 @@ from .health import (
     BasicHealthModel,
     DispenserHealth,
     DoorHealth,
+    IngestorHealth,
     LiftHealth,
     RobotHealth,
 )
 from .health_status_mixin import HealthStatus
+from .ingestor_state import IngestorState
 from .lift_state import LiftState
 from .robot import get_robot_id

@@ -1,4 +1,3 @@
-import json
 import logging
 from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple
 
@@ -45,25 +44,6 @@ class HealthWatchdog:
 
         self._watch_dispenser_health()
         self._watch_robot_health()
-
-    def _report_health(self, target: Observable):
-        def on_next(health: models.BasicHealthModel):
-            message = json.dumps(
-                {
-                    "id": health.id_,
-                    "health_status": str(health.health_status),
-                    "health_message": health.health_message,
-                }
-            )
-            if health.health_status == models.HealthStatus.UNHEALTHY:
-                self.logger.warning(message)
-            elif health.health_status == models.HealthStatus.DEAD:
-                self.logger.error(message)
-            else:
-                self.logger.info(message)
-            target.on_next(health)
-
-        return on_next
 
     def _watch_heartbeat(
         self,
@@ -165,7 +145,7 @@ class HealthWatchdog:
 
         sub = heartbeat_health.pipe(
             self._combine_most_critical(door_mode_health),
-        ).subscribe(self._report_health(self.rmf.door_health), scheduler=self.scheduler)
+        ).subscribe(self.rmf.door_health.on_next, scheduler=self.scheduler)
         self.watchers.append(sub)
 
     @staticmethod
@@ -233,10 +213,7 @@ class HealthWatchdog:
         )
         sub = heartbeat_health.pipe(
             self._combine_most_critical(lift_mode_health)
-        ).subscribe(
-            self._report_health(self.rmf.lift_health),
-            scheduler=self.scheduler,
-        )
+        ).subscribe(self.rmf.lift_health.on_next, scheduler=self.scheduler)
         self.watchers.append(sub)
 
     @staticmethod
@@ -287,9 +264,7 @@ class HealthWatchdog:
                 heartbeat(self.LIVELINESS),
                 ops.map(lambda x: to_dispenser_health(id_, x)),
                 self._combine_most_critical(dispenser_mode_health),
-            ).subscribe(
-                self._report_health(self.rmf.dispenser_health), scheduler=self.scheduler
-            )
+            ).subscribe(self.rmf.dispenser_health.on_next, scheduler=self.scheduler)
 
         subjects = {
             x.guid: Subject() for x in self.rmf.current_dispenser_states.values()
@@ -368,9 +343,7 @@ class HealthWatchdog:
                 heartbeat(self.LIVELINESS),
                 ops.map(lambda x: to_robot_health(id_, x)),
                 self._combine_most_critical(robot_mode_health),
-            ).subscribe(
-                self._report_health(self.rmf.robot_health), scheduler=self.scheduler
-            )
+            ).subscribe(self.rmf.robot_health.on_next, scheduler=self.scheduler)
 
         subjects: Dict[str, Subject] = {}
         for fleet_state in self.rmf.current_fleet_states.values():

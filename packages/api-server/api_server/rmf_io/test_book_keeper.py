@@ -1,246 +1,196 @@
 import asyncio
+import logging
 import unittest
-from typing import Any, Callable
-from unittest.mock import MagicMock, call
 
-from rx import Observable
-from rx.scheduler.historicalscheduler import HistoricalScheduler
+from rmf_door_msgs.msg import DoorMode
+from tortoise import Tortoise
 
 from .. import models
-from ..repositories import RmfRepository
 from . import test_data
 from .book_keeper import RmfBookKeeper
 from .gateway import RmfGateway
 
 
-class RmfBookKeeperFixture(unittest.IsolatedAsyncioTestCase):
-    def setUp(self):
+class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
+    async def asyncSetUp(self):
+        await Tortoise.init(
+            db_url="sqlite://:memory:", modules={"models": ["api_server.models"]}
+        )
+        await Tortoise.generate_schemas()
         self.rmf = RmfGateway()
-        self.repo = MagicMock(RmfRepository)
-        self.scheduler = HistoricalScheduler()
-        self.book_keeper = RmfBookKeeper(self.rmf, self.repo, scheduler=self.scheduler)
+        logger = logging.Logger("test", level="CRITICAL")
+        self.book_keeper = RmfBookKeeper(self.rmf, logger=logger)
         self.book_keeper.start()
 
+    async def asyncTearDown(self):
+        await Tortoise.close_connections()
 
-def make_base_test(
-    get_source: Callable[[RmfGateway], Observable],
-    factory: Callable[[str], Any],
-    frequency: float,
-    get_update_mock: Callable[[RmfRepository], Any],
-):
-    """
-    Args:
-        factory: Return value must be the requirement:
-            `factory("foo") is factory("foo") == True`
-        frequency: Must be > 0
-    """
-
-    class BaseTest(RmfBookKeeperFixture):
-        def setUp(self):
-            super().setUp()
-            self.source = get_source(self.rmf)
-            self.update_mock = get_update_mock(self.repo)
-
-        async def test_write_frequency(self):
-            self.source.on_next(factory("test_id"))
-            self.scheduler.advance_by(0.9 * frequency)
-            # shouldn't write before t = 1
-            self.update_mock.assert_not_called()
-            self.scheduler.advance_by(0.1 * frequency)
-            await asyncio.sleep(0)
-            self.update_mock.assert_awaited_once()
-
-            self.source.on_next(factory("test_id"))
-            self.scheduler.advance_by(0.9 * frequency)
-            # shouldn't write again before t = 2
-            self.update_mock.assert_called_once()
-            self.scheduler.advance_by(0.1 * frequency)
-            await asyncio.sleep(0)
-            self.assertEqual(self.update_mock.await_count, 2)
-
-        async def test_write_latest(self):
-            """
-            If new values are received before due time, should update only the latest value
-            """
-            value = factory("test_id")
-            self.source.on_next(value)
-            self.scheduler.advance_by(0.9 * frequency)
-            value_2 = factory("test_id")
-            self.source.on_next(value_2)
-            self.scheduler.advance_by(0.1 * frequency)
-
-            await asyncio.sleep(0)
-
-            class Matcher:
-                def __eq__(self, other):
-                    return other is value_2
-
-            self.update_mock.assert_awaited_once_with(Matcher())
-
-        async def test_write_latest_multiple(self):
-            """
-            If new values for different keys are received before due time,
-            the latest value of each key should be written.
-            """
-            value = factory("test_id")
-            self.source.on_next(value)
-            value2 = factory("test_id_2")
-            self.source.on_next(value2)
-
-            self.scheduler.advance_by(0.9 * frequency)
-            value_2 = factory("test_id")
-            self.source.on_next(value_2)
-            value2_2 = factory("test_id_2")
-            self.source.on_next(value2_2)
-
-            self.scheduler.advance_by(0.1 * frequency)
-
-            class Matcher:
-                def __init__(self, val):
-                    self.val = val
-
-                def __eq__(self, other):
-                    return other is self.val
-
-            await asyncio.sleep(0)
-            calls = [
-                call(Matcher(value_2)),
-                call(Matcher(value2_2)),
-            ]
-            self.assertEqual(self.update_mock.await_count, 2)
-            self.update_mock.assert_has_awaits(calls)
-
-    return BaseTest
-
-
-class TestRmfBookKeeper_DoorStates(
-    make_base_test(
-        lambda x: x.door_states,
-        test_data.make_door_state,
-        1,
-        lambda x: x.update_door_state,
-    )
-):
-    pass
-
-
-class TestRmfBookKeeper_LiftStates(
-    make_base_test(
-        lambda x: x.lift_states,
-        test_data.make_lift_state,
-        1,
-        lambda x: x.update_lift_state,
-    )
-):
-    pass
-
-
-class TestRmfBookKeeper_DispenserStates(
-    make_base_test(
-        lambda x: x.dispenser_states,
-        test_data.make_dispenser_state,
-        1,
-        lambda x: x.update_dispenser_state,
-    )
-):
-    pass
-
-
-class TestRmfBookKeeper_FleetStates(
-    make_base_test(
-        lambda x: x.fleet_states,
-        test_data.make_fleet_state,
-        1,
-        lambda x: x.update_fleet_state,
-    )
-):
-    pass
-
-
-def make_health_tests(
-    factory: Callable[[str, models.HealthStatus], Any],
-    get_source: Callable[[RmfGateway], Observable],
-    get_mock: Callable[[RmfRepository], Any],
-):
-    """
-    :param factory: a function that returns an instance of the health model
-    :param get_mock: a function that returns the mock that should be called/awaited
-    """
-
-    class HealthTests(RmfBookKeeperFixture):
-        async def test_write_health(self):
-            """
-            All health changes should be written, regardless of time between them.
-            """
-            health = factory(models.HealthStatus.DEAD)
-            get_source(self.rmf).on_next(health)
-            self.scheduler.advance_by(0)
-            await asyncio.sleep(0)
-            get_mock(self.repo).assert_awaited()
-
-            health = factory(models.HealthStatus.HEALTHY)
-            get_source(self.rmf).on_next(health)
-            self.scheduler.advance_by(0)
-            await asyncio.sleep(0)
-            self.assertEqual(2, get_mock(self.repo).await_count)
-
-    return HealthTests
-
-
-class TestRmfBookKeeper_DoorHealth(
-    make_health_tests(
-        lambda status: models.DoorHealth(id_="test_door", health_status=status),
-        lambda rmf: rmf.door_health,
-        lambda repo: repo.update_door_health,
-    )
-):
-    pass
-
-
-class TestRmfBookKeeper_LiftHealth(
-    make_health_tests(
-        lambda status: models.LiftHealth(id_="test_lift", health_status=status),
-        lambda rmf: rmf.lift_health,
-        lambda repo: repo.update_lift_health,
-    )
-):
-    pass
-
-
-class TestRmfBookKeeper_DispenserHealth(
-    make_health_tests(
-        lambda status: models.DispenserHealth(
-            id_="test_dispenser", health_status=status
-        ),
-        lambda rmf: rmf.dispenser_health,
-        lambda repo: repo.update_dispenser_health,
-    )
-):
-    pass
-
-
-class TestRmfBookKeeper_RobotHealth(
-    make_health_tests(
-        lambda status: models.RobotHealth(
-            id_=models.get_robot_id("test_fleet", "test_robot"),
-            health_status=status,
-        ),
-        lambda rmf: rmf.robot_health,
-        lambda repo: repo.update_robot_health,
-    )
-):
-    pass
-
-
-class TestRmfBookKeeper_BuildingMap(RmfBookKeeperFixture):
-    async def test_write_doors(self):
-        """
-        doors should be written when new building map is received
-        """
-        building_map = test_data.make_building_map()
-        building_map.levels[0].doors.append(test_data.make_door("test_door"))
-        building_map.levels[0].doors.append(test_data.make_door("test_door2"))
-        self.rmf.building_map.on_next(building_map)
-        self.scheduler.advance_by(0)
+    async def test_write_door_state(self):
+        state = test_data.make_door_state("test_door")
+        state.current_mode.value = DoorMode.MODE_OPEN
+        self.rmf.door_states.on_next(state)
         await asyncio.sleep(0)
-        self.repo.sync_doors.assert_awaited()
+        result = await models.DoorState.get(id_="test_door")
+        self.assertIsNotNone(result)
+        result_rmf = result.to_rmf()
+        self.assertEqual(result_rmf.current_mode.value, DoorMode.MODE_OPEN)
+
+        state = test_data.make_door_state("test_door")
+        state.current_mode.value = DoorMode.MODE_CLOSED
+        self.rmf.door_states.on_next(state)
+        await asyncio.sleep(0)
+        result = await models.DoorState.get(id_="test_door")
+        self.assertIsNotNone(result)
+        result_rmf = result.to_rmf()
+        self.assertEqual(result_rmf.current_mode.value, DoorMode.MODE_CLOSED)
+
+    async def test_write_door_health(self):
+        self.rmf.door_health.on_next(
+            models.DoorHealth(
+                id_="test_door",
+                health_status=models.HealthStatus.HEALTHY,
+            )
+        )
+        await asyncio.sleep(0)
+        health = await models.DoorHealth.get(id_="test_door")
+        self.assertIsNotNone(health)
+        self.assertEqual(health.health_status, models.HealthStatus.HEALTHY)
+
+        self.rmf.door_health.on_next(
+            models.DoorHealth(
+                id_="test_door",
+                health_status=models.HealthStatus.UNHEALTHY,
+            )
+        )
+        await asyncio.sleep(0)
+        health = await models.DoorHealth.get(id_="test_door")
+        self.assertIsNotNone(health)
+        self.assertEqual(health.health_status, models.HealthStatus.UNHEALTHY)
+
+    async def test_write_lift_state(self):
+        state = test_data.make_lift_state("test_lift")
+        state.available_floors = ["L1", "L2"]
+        state.current_floor = "L1"
+        self.rmf.lift_states.on_next(state)
+        await asyncio.sleep(0)
+        result = await models.LiftState.get(id_="test_lift")
+        self.assertIsNotNone(result)
+        result_rmf = result.to_rmf()
+        self.assertEqual(result_rmf.current_floor, "L1")
+
+        state = test_data.make_lift_state("test_lift")
+        state.available_floors = ["L1", "L2"]
+        state.current_floor = "L2"
+        self.rmf.lift_states.on_next(state)
+        await asyncio.sleep(0)
+        result = await models.LiftState.get(id_="test_lift")
+        self.assertIsNotNone(result)
+        result_rmf = result.to_rmf()
+        self.assertEqual(result_rmf.current_floor, "L2")
+
+    async def test_write_lift_health(self):
+        self.rmf.lift_health.on_next(
+            models.LiftHealth(
+                id_="test_lift",
+                health_status=models.HealthStatus.HEALTHY,
+            )
+        )
+        await asyncio.sleep(0)
+        health = await models.LiftHealth.get(id_="test_lift")
+        self.assertIsNotNone(health)
+        self.assertEqual(health.health_status, models.HealthStatus.HEALTHY)
+
+        self.rmf.lift_health.on_next(
+            models.LiftHealth(
+                id_="test_lift",
+                health_status=models.HealthStatus.UNHEALTHY,
+            )
+        )
+        await asyncio.sleep(0)
+        health = await models.LiftHealth.get(id_="test_lift")
+        self.assertIsNotNone(health)
+        self.assertEqual(health.health_status, models.HealthStatus.UNHEALTHY)
+
+    async def test_write_dispenser_state(self):
+        state = test_data.make_dispenser_state("test_dispenser")
+        state.seconds_remaining = 2.0
+        self.rmf.dispenser_states.on_next(state)
+        await asyncio.sleep(0)
+        result = await models.DispenserState.get(id_="test_dispenser")
+        self.assertIsNotNone(result)
+        result_rmf = result.to_rmf()
+        self.assertEqual(result_rmf.seconds_remaining, 2.0)
+
+        state = test_data.make_dispenser_state("test_dispenser")
+        state.seconds_remaining = 1.0
+        self.rmf.dispenser_states.on_next(state)
+        await asyncio.sleep(0)
+        result = await models.DispenserState.get(id_="test_dispenser")
+        self.assertIsNotNone(result)
+        result_rmf = result.to_rmf()
+        self.assertEqual(result_rmf.seconds_remaining, 1.0)
+
+    async def test_write_dispenser_health(self):
+        self.rmf.dispenser_health.on_next(
+            models.DispenserHealth(
+                id_="test_dispenser",
+                health_status=models.HealthStatus.HEALTHY,
+            )
+        )
+        await asyncio.sleep(0)
+        health = await models.DispenserHealth.get(id_="test_dispenser")
+        self.assertIsNotNone(health)
+        self.assertEqual(health.health_status, models.HealthStatus.HEALTHY)
+
+        self.rmf.dispenser_health.on_next(
+            models.DispenserHealth(
+                id_="test_dispenser",
+                health_status=models.HealthStatus.UNHEALTHY,
+            )
+        )
+        await asyncio.sleep(0)
+        health = await models.DispenserHealth.get(id_="test_dispenser")
+        self.assertIsNotNone(health)
+        self.assertEqual(health.health_status, models.HealthStatus.UNHEALTHY)
+
+    async def test_write_fleet_state(self):
+        state = test_data.make_fleet_state("test_fleet")
+        state.robots = [test_data.make_robot_state()]
+        self.rmf.fleet_states.on_next(state)
+        await asyncio.sleep(0)
+        result = await models.FleetState.get(id_="test_fleet")
+        self.assertIsNotNone(result)
+        result_rmf = result.to_rmf()
+        self.assertEqual(len(result_rmf.robots), 1)
+
+        state = test_data.make_fleet_state("test_fleet")
+        state.robots = []
+        self.rmf.fleet_states.on_next(state)
+        await asyncio.sleep(0)
+        result = await models.FleetState.get(id_="test_fleet")
+        self.assertIsNotNone(result)
+        result_rmf = result.to_rmf()
+        self.assertEqual(len(result_rmf.robots), 0)
+
+    async def test_write_robot_health(self):
+        self.rmf.robot_health.on_next(
+            models.RobotHealth(
+                id_="test_robot",
+                health_status=models.HealthStatus.HEALTHY,
+            )
+        )
+        await asyncio.sleep(0)
+        health = await models.RobotHealth.get(id_="test_robot")
+        self.assertIsNotNone(health)
+        self.assertEqual(health.health_status, models.HealthStatus.HEALTHY)
+
+        self.rmf.robot_health.on_next(
+            models.RobotHealth(
+                id_="test_robot",
+                health_status=models.HealthStatus.UNHEALTHY,
+            )
+        )
+        await asyncio.sleep(0)
+        health = await models.RobotHealth.get(id_="test_robot")
+        self.assertIsNotNone(health)
+        self.assertEqual(health.health_status, models.HealthStatus.UNHEALTHY)

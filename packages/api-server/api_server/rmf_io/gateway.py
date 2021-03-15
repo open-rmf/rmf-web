@@ -11,6 +11,15 @@ from ..models import DispenserHealth, DoorHealth, LiftHealth, RobotHealth
 
 
 class RmfGateway:
+    """
+    NOTE: Observables that contains tortoise models might not be synchronized to the database,
+    this means that calling certain functions are undefined behavior. Below are a list
+    of methods that should not be called:
+
+    * `save`. `save` requires the model to be synchronized to the db to correctly determine
+      if it should update or create a new record. Instead, use `Model.update_or_create`.
+    """
+
     def __init__(
         self,
     ):
