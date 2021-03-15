@@ -1,5 +1,6 @@
 import { makeLauncher } from '../../rmf-launcher';
-import { login, openRequestForm, overwriteClick, requestLoop } from './utils';
+import { login, overwriteClick } from './utils';
+import { execSync } from 'child_process';
 
 describe('Loop request for negotiations', () => {
   const launcher = makeLauncher();
@@ -14,18 +15,7 @@ describe('Loop request for negotiations', () => {
 
   it('renders negotiation trajectory', () => {
     browser.setTimeout({ script: 120000 });
-    openRequestForm();
-    requestLoop({
-      pointA: 'pantry',
-      pointB: 'cubicle_1',
-    });
-    requestLoop({
-      pointA: 'pantry',
-      pointB: 'cubicle_2',
-    });
-
-    const backButton = $('[aria-label="Back"]');
-    backButton.click();
+    execSync('ros2 launch rmf_demos office_conflict.launch.xml');
 
     $('[data-component=MainMenu] [data-item=Negotiations]').click();
 
@@ -42,7 +32,7 @@ describe('Loop request for negotiations', () => {
     const subTreeItem = treeItem.$('[data-component=TreeItem]');
     expect(subTreeItem).toBeVisible();
     subTreeItem.click();
-  });
+  }).timeout(300000);
 
   // Disabled till we find out a way to locate that floor icon
   // Also figure out a way for a non-rejected negotiation status click
