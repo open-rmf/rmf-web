@@ -6,6 +6,20 @@ from tortoise import fields
 
 
 def json_mixin(RmfMessage, key_mapper: Callable[[Any], str]):
+    """
+    Returns a tortoise mixin that wraps a RMF message in a JSON field.
+
+    :param RmfMessage: A ROS2 message class
+    :param key_mapper: A function that, given an instance of RmfMessage, returns
+        a string that can be used to uniquely identify the rmf message. The string
+        returned will be used as the primary key.
+
+    :example:
+
+    class MyRmfModel(Model, json_mixin(DoorState, lambda x: x.door_name)):
+        pass
+    """
+
     class JsonMixin:
         id_ = fields.CharField(255, pk=True, source_field="id")
         data = fields.JSONField()
