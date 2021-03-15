@@ -16,7 +16,7 @@ export interface HealthStatus {
 // TODO - fill up health state manager logic once backend is up
 export default class RmfHealthStateManager {
   // FIXME - remove mock values
-  getDoorSummary = (): ItemSummary => {
+  getDoorSummary = (): ItemSummary<SpoiltDoor> => {
     return {
       operational: 2,
       spoiltItem: [
@@ -38,14 +38,14 @@ export default class RmfHealthStateManager {
     };
   };
 
-  getLiftSummary = (): ItemSummary => {
+  getLiftSummary = (): ItemSummary<SpoiltLift> => {
     return {
       operational: 2,
       spoiltItem: [],
     };
   };
 
-  getDispenserSummary = (): ItemSummary => {
+  getDispenserSummary = (): ItemSummary<SpoiltDispenser> => {
     return {
       operational: 1,
       spoiltItem: [],
