@@ -147,19 +147,6 @@ describe('Dashboard Tour', () => {
     expect(stepText.includes(expectedText));
   });
 
-  it('renders commands panel step', async () => {
-    expectedText = tourText.CommandsPanel.text;
-
-    for (let i = 1; i < tourText.CommandsPanel.id; i++) {
-      nextBtn.simulate('click');
-      await wait(5);
-    }
-
-    stepText = root.find('[data-testid="stepBox"]').first().text();
-
-    expect(stepText.includes(expectedText));
-  });
-
   it('renders loop request step', async () => {
     expectedText = tourText.LoopRequest.text;
 

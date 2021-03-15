@@ -54,7 +54,12 @@ export const RobotTrajectoriesOverlay = (props: RobotTrajectoriesOverlayProps) =
           const key = robotHash(traj.robot_name, traj.fleet_name);
           const robot = robots[key];
           if (!robot) {
-            console.error(`trajectory "${traj.id}" belongs to unknown robot`);
+            const traj_json = JSON.stringify({
+              id: traj.id,
+              robot_name: traj.robot_name,
+              fleet_name: traj.fleet_name,
+            });
+            console.error(`trajectory ${traj_json} belongs to unknown robot`);
             return;
           }
           newColors[traj.id] = await colorManager.robotPrimaryColor(
