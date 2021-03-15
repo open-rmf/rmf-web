@@ -32,7 +32,7 @@ describe('Loop request for negotiations', () => {
     const subTreeItem = treeItem.$('[data-component=TreeItem]');
     expect(subTreeItem).toBeVisible();
     subTreeItem.click();
-  }).timeout(13000);
+  }).timeout(60000);
 
   // Disabled till we find out a way to locate that floor icon
   // Also figure out a way for a non-rejected negotiation status click
