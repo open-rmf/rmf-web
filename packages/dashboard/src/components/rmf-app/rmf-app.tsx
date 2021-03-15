@@ -7,6 +7,7 @@ import LiftStateManager from '../../managers/lift-state-manager';
 import { NegotiationStatusManager } from '../../managers/negotiation-status-manager';
 import TaskManager from '../../managers/task-manager';
 import { AppConfigContext, AppControllerContext } from '../app-contexts';
+import RmfHealthStateManager from '../../managers/rmf-health-state-manager';
 import {
   BuildingMapContext,
   DispenserStateContext,
@@ -14,6 +15,7 @@ import {
   FleetStateContext,
   LiftStateContext,
   NegotiationStatusContext,
+  RmfHealthContext,
   RmfIngress,
   RmfIngressContext,
   TasksContext,
@@ -231,6 +233,16 @@ function TaskContextsProvider(props: React.PropsWithChildren<{}>): JSX.Element {
   return <TasksContext.Provider value={tasks}>{props.children}</TasksContext.Provider>;
 }
 
+function RmfHealthContextsProvider(props: React.PropsWithChildren<{}>): JSX.Element {
+  const healthManager = React.useMemo(() => new RmfHealthStateManager(), []);
+
+  return (
+    <RmfHealthContext.Provider value={healthManager.getHealthStatus()}>
+      {props.children}
+    </RmfHealthContext.Provider>
+  );
+}
+
 function RmfIngressProvider(props: React.PropsWithChildren<{}>): JSX.Element {
   const appConfig = React.useContext(AppConfigContext);
   const [rmfIngress, setRmfIngress] = React.useState<RmfIngress>(() => ({
@@ -287,7 +299,9 @@ export function RmfApp(props: RmfAppProps): JSX.Element {
               <DispenserContextsProvider>
                 <FleetContextsProvider>
                   <NegotiationContextsProvider>
-                    <TaskContextsProvider>{props.children}</TaskContextsProvider>
+                    <RmfHealthContextsProvider>
+                      <TaskContextsProvider>{props.children}</TaskContextsProvider>
+                    </RmfHealthContextsProvider>
                   </NegotiationContextsProvider>
                 </FleetContextsProvider>
               </DispenserContextsProvider>

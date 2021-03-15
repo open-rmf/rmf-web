@@ -98,7 +98,8 @@
       "!src/managers/**",
       "!src/components/rmf-app/**",
       "!**/stories/**",
-      "!**/tests/**"
+      "!**/tests/**",
+      "!src/components/__trash/**"
     ],
     "snapshotSerializers": [
       "enzyme-to-json/serializer"
