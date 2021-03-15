@@ -2,8 +2,13 @@ import React from 'react';
 import { TextField, makeStyles, IconButton } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 
+export interface OnChangeEvent {
+  name?: string | undefined;
+  value: string;
+}
+
 export interface SimpleSearchProps {
-  onChange?: (e: any) => void;
+  onChange?: (e: React.ChangeEvent<OnChangeEvent>) => void;
   disabled: boolean;
   value: string;
 }

@@ -16,6 +16,7 @@ import {
   useStackNavigator,
   withSpotlight,
   SimpleSearch,
+  OnChangeEvent,
 } from 'react-components';
 import { GlobalHotKeys } from 'react-hotkeys';
 import 'typeface-roboto';
@@ -283,7 +284,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
 
   const [search, setSearch] = React.useState('');
 
-  const onChange = (e: any) => {
+  const onChange = (e: React.ChangeEvent<OnChangeEvent>) => {
     setSearch(e.target.value);
   };
 
