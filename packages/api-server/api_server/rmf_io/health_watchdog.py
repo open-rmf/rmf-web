@@ -239,6 +239,34 @@ class HealthWatchdog:
         )
         self.watchers.append(sub)
 
+    @staticmethod
+    def _dispenser_mode_to_health(id_: str, state: DispenserState):
+        if state is None:
+            return models.DispenserHealth(
+                id_=id_,
+                health_status=models.HealthStatus.UNHEALTHY,
+                health_message="no state available",
+            )
+        if state.mode in (
+            DispenserState.IDLE,
+            DispenserState.BUSY,
+        ):
+            return models.DispenserHealth(
+                id_=id_,
+                health_status=models.HealthStatus.HEALTHY,
+            )
+        if state.mode == DispenserState.OFFLINE:
+            return models.DispenserHealth(
+                id_=id_,
+                health_status=models.HealthStatus.UNHEALTHY,
+                health_message="dispenser is OFFLINE",
+            )
+        return models.DispenserHealth(
+            id_=id_,
+            health_status=models.HealthStatus.UNHEALTHY,
+            health_message="dispenser is in an unknown mode",
+        )
+
     def _watch_dispenser_health(self):
         def to_dispenser_health(id_: str, has_heartbeat: bool):
             if has_heartbeat:
@@ -252,9 +280,13 @@ class HealthWatchdog:
             )
 
         def watch(id_: str, obs: Observable):
+            dispenser_mode_health = obs.pipe(
+                ops.map(lambda x: self._dispenser_mode_to_health(id_, x))
+            )
             obs.pipe(
                 heartbeat(self.LIVELINESS),
                 ops.map(lambda x: to_dispenser_health(id_, x)),
+                self._combine_most_critical(dispenser_mode_health),
             ).subscribe(
                 self._report_health(self.rmf.dispenser_health), scheduler=self.scheduler
             )

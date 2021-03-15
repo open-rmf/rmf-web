@@ -2,6 +2,7 @@ import logging
 import unittest
 from typing import Any, Callable, Optional
 
+from rmf_dispenser_msgs.msg import DispenserState
 from rmf_door_msgs.msg import DoorMode
 from rmf_fleet_msgs.msg import RobotMode
 from rmf_lift_msgs.msg import LiftState
@@ -206,6 +207,31 @@ class TestHealthWatchdog_DispenserHealth(BaseHealthWatchdogTests):
         self.assertEqual(health.id_, "test_dispenser")
         self.assertEqual(health.health_status, models.HealthStatus.DEAD)
 
+    async def _check_dispenser_mode(
+        self, mode: int, expected_health: models.HealthStatus
+    ):
+        health: Optional[models.RobotHealth] = None
+
+        def assign(v):
+            nonlocal health
+            health = v
+
+        self.rmf.dispenser_health.subscribe(assign)
+        state = test_data.make_dispenser_state()
+        state.mode = mode
+        self.rmf.dispenser_states.on_next(state)
+        self.assertEqual(health.health_status, expected_health)
+
+    async def test_dispenser_mode(self):
+        test_cases = [
+            (DispenserState.IDLE, models.HealthStatus.HEALTHY),
+            (DispenserState.BUSY, models.HealthStatus.HEALTHY),
+            (DispenserState.OFFLINE, models.HealthStatus.UNHEALTHY),
+            (128, models.HealthStatus.UNHEALTHY),
+        ]
+        for test in test_cases:
+            await self._check_dispenser_mode(*test)
+
 
 class TestHealthWatchdog_RobotHealth(BaseHealthWatchdogTests):
     async def test_heartbeat(self):
@@ -295,6 +321,7 @@ class TestHealthWatchdog_RobotHealth(BaseHealthWatchdogTests):
             (RobotMode.MODE_DOCKING, models.HealthStatus.HEALTHY),
             (RobotMode.MODE_EMERGENCY, models.HealthStatus.UNHEALTHY),
             (RobotMode.MODE_ADAPTER_ERROR, models.HealthStatus.UNHEALTHY),
+            (128, models.HealthStatus.UNHEALTHY),
         ]
         for test in test_cases:
             await self._check_robot_mode(*test)
