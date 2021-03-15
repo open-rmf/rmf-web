@@ -43,7 +43,7 @@ export const SimpleSearch = (props: SimpleSearchProps): JSX.Element => {
         onChange={onChange}
         className={classes.searchBar}
       />
-      <IconButton className={classes.clearSearch} onClick={onClick}>
+      <IconButton disabled={disabled} className={classes.clearSearch} onClick={onClick}>
         <CloseIcon />
       </IconButton>
     </div>
