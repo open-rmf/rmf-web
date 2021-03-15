@@ -42,6 +42,7 @@ export const SimpleSearch = (props: SimpleSearchProps): JSX.Element => {
         variant="outlined"
         onChange={onChange}
         className={classes.searchBar}
+        aria-label="text-input"
       />
       <IconButton disabled={disabled} className={classes.clearSearch} onClick={onClick}>
         <CloseIcon />
