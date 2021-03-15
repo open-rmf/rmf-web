@@ -13,15 +13,15 @@ class TestMostCritical(unittest.TestCase):
         healths = [
             BasicHealthModel(
                 name="test",
-                health_status=HealthStatus.UNHEALTHY,
+                health_status=HealthStatus.DEAD,
             ),
             BasicHealthModel(
                 name="test",
-                health_status=HealthStatus.DEAD,
+                health_status=HealthStatus.UNHEALTHY,
             ),
         ]
-        obs_a = rx.of(healths[0]).pipe(op.timestamp())
-        obs_b = rx.of(healths[1]).pipe(op.timestamp())
+        obs_a = rx.of(healths[0]).pipe(op.timestamp(scheduler=HistoricalScheduler(1)))
+        obs_b = rx.of(healths[1]).pipe(op.timestamp(scheduler=HistoricalScheduler(2)))
 
         result: BasicHealthModel = None
 
