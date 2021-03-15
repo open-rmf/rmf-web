@@ -8,7 +8,7 @@ from rmf_dispenser_msgs.msg import DispenserState
 from rmf_door_msgs.msg import DoorMode, DoorState
 from rmf_fleet_msgs.msg import FleetState, RobotState
 from rx import Observable
-from rx import operators as op
+from rx import operators as ops
 from rx.core.typing import Disposable
 from rx.scheduler.scheduler import Scheduler
 from rx.subject import Subject
@@ -72,11 +72,11 @@ class HealthWatchdog:
         :returns: Observable[Tuple[str, bool]]
         """
         return rx.pipe(
-            op.group_by(key_mapper),
-            op.flat_map(
+            ops.group_by(key_mapper),
+            ops.flat_map(
                 lambda x: x.pipe(
                     heartbeat(self.LIVELINESS),
-                    op.map(lambda y: (x.key, y)),
+                    ops.map(lambda y: (x.key, y)),
                 )
             ),
         )
@@ -136,22 +136,22 @@ class HealthWatchdog:
         initial_values: Sequence[Tuple[str, Any]] = [(k, None) for k in keys]
         obs = rx.merge(
             rx.of(*initial_values),
-            self.rmf.door_states.pipe(op.map(lambda x: (x.door_name, x))),
+            self.rmf.door_states.pipe(ops.map(lambda x: (x.door_name, x))),
         )
 
         door_mode_health = obs.pipe(
-            op.map(door_mode_to_health),
-            op.timestamp(),
+            ops.map(door_mode_to_health),
+            ops.timestamp(),
         )
 
         heartbeat_health = obs.pipe(
             self._watch_heartbeat(lambda x: x[0]),
-            op.map(to_door_health),
-            op.timestamp(),
+            ops.map(to_door_health),
+            ops.timestamp(),
         )
 
         sub = heartbeat_health.pipe(
-            op.combine_latest(door_mode_health),
+            ops.combine_latest(door_mode_health),
             most_critical(),
         ).subscribe(self._report_health(self.rmf.door_health), scheduler=self.scheduler)
         self.watchers.append(sub)
@@ -177,11 +177,11 @@ class HealthWatchdog:
         sub = (
             rx.merge(
                 rx.of(*initial_values),
-                self.rmf.lift_states.pipe(op.map(lambda x: (x.lift_name, x))),
+                self.rmf.lift_states.pipe(ops.map(lambda x: (x.lift_name, x))),
             )
             .pipe(
                 self._watch_heartbeat(lambda x: x[0]),
-                op.map(to_lift_health),
+                ops.map(to_lift_health),
             )
             .subscribe(
                 self._report_health(self.rmf.lift_health),
@@ -205,7 +205,7 @@ class HealthWatchdog:
         def watch(id_: str, obs: Observable):
             obs.pipe(
                 heartbeat(self.LIVELINESS),
-                op.map(lambda x: to_dispenser_health(id_, x)),
+                ops.map(lambda x: to_dispenser_health(id_, x)),
             ).subscribe(
                 self._report_health(self.rmf.dispenser_health), scheduler=self.scheduler
             )
@@ -240,7 +240,7 @@ class HealthWatchdog:
         def watch(id_: str, obs: Observable):
             obs.pipe(
                 heartbeat(self.LIVELINESS),
-                op.map(lambda x: to_robot_health(id_, x)),
+                ops.map(lambda x: to_robot_health(id_, x)),
             ).subscribe(
                 self._report_health(self.rmf.robot_health), scheduler=self.scheduler
             )

@@ -1,7 +1,7 @@
 from typing import Sequence
 
 import rx
-from rx import operators as op
+from rx import operators as ops
 from rx.core.operators.timestamp import Timestamp
 
 from ...models import HealthStatus
@@ -42,4 +42,4 @@ def most_critical():
                     most_crit = health
         return most_crit.value
 
-    return rx.pipe(op.map(get_most_critical))
+    return rx.pipe(ops.map(get_most_critical))
