@@ -40,10 +40,6 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
     pushView(OmniPanelViewIndex.Dispensers);
   }, [pushView]);
 
-  const handleMainMenuCommandsClick = React.useCallback(() => {
-    pushView(OmniPanelViewIndex.Commands);
-  }, [pushView]);
-
   const handleMainMenuNegotiationsClick = React.useCallback(() => {
     pushView(OmniPanelViewIndex.Negotiations);
   }, [pushView]);
@@ -71,17 +67,6 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
 
       <ListItem data-item="Dispensers" button={true} onClick={handleMainMenuDispensersClick}>
         <Typography variant="h5">Dispensers</Typography>
-      </ListItem>
-      <Divider />
-
-      <ListItem data-item="Commands" button={true} onClick={handleMainMenuCommandsClick}>
-        <DashboardTooltip
-          title="This panel shows the commands that a user can request and RoMi will allocate the most suitable robot for the task"
-          id="commands-tooltip"
-          enabled={showTooltips}
-        >
-          <Typography variant="h5">Commands</Typography>
-        </DashboardTooltip>
       </ListItem>
       <Divider />
 

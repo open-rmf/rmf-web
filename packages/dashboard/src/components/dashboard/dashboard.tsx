@@ -37,7 +37,6 @@ import {
 } from '../rmf-app';
 import ScheduleVisualizer, { ScheduleVisualizerProps } from '../schedule-visualizer';
 import { SpotlightValue } from '../spotlight-value';
-import CommandsPanel from './commands-panel';
 import MainMenu from './main-menu';
 import NegotiationsPanel from './negotiations-panel';
 import OmniPanelControl_ from './omnipanel-control';
@@ -318,6 +317,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
           onBack={handleOmniPanelBack}
           onHome={handleOmniPanelHome}
           onClose={handleOmniPanelClose}
+          id="omnipanel"
         >
           <OmniPanelView viewId={OmniPanelViewIndex.MainMenu}>
             <MainMenu pushView={viewStackDispatch.push} />
@@ -404,9 +404,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
                   ) : null;
                 })
               : null}
-          </OmniPanelView>
-          <OmniPanelView viewId={OmniPanelViewIndex.Commands}>
-            {transport && <CommandsPanel transport={transport} allFleets={fleetNames.current} />}
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Negotiations}>
             <NegotiationsPanel

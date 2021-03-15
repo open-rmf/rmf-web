@@ -28,11 +28,6 @@ export const tourText: { [stepName: string]: { id: number; text: string } } = {
   },
   DoorPanel: { id: 7, text: 'Let us take a look into the 🚪 Doors Panel.' },
   DoorTab: { id: 8, text: 'Here is an example of what you will see when a door tab is expanded' },
-  CommandsPanel: {
-    id: 9,
-    text:
-      'The Commands Panel allows you to send different types of requests that will be handled by RoMi.',
-  },
   LoopRequest: {
     id: 10,
     text:

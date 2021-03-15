@@ -109,16 +109,6 @@ exports[`Dashboard Tour renders without crashing 1`] = `
       Object {
         "action": undefined,
         "content": [Function],
-        "selector": "[data-item=\\"Commands\\"]",
-        "style": Object {
-          "backgroundColor": "#7986cb",
-          "borderRadius": "5px",
-          "color": "#fff",
-        },
-      },
-      Object {
-        "action": undefined,
-        "content": [Function],
         "selector": "[data-component=\\"LoopForm\\"]",
         "style": Object {
           "backgroundColor": "#7986cb",

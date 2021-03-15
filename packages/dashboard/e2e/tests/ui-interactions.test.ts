@@ -12,7 +12,12 @@ describe('ui interactions', () => {
 
   before(login);
 
+  function closeOmniPanel() {
+    $(`#omnipanel [aria-label=Close]`).click();
+  }
+
   it('clicking a door on the map focuses it on the panel', () => {
+    closeOmniPanel();
     const door = $(`[data-component=DoorMarker]`);
     const doorName = door.getAttribute('aria-label');
     door.waitForClickable();
@@ -22,6 +27,7 @@ describe('ui interactions', () => {
   });
 
   it('clicking a dispenser on the map focuses it on the panel', () => {
+    closeOmniPanel();
     const dispenser = $('[data-component=DispenserMarker]');
     const guid = dispenser.getAttribute('aria-label');
     dispenser.click();
@@ -30,6 +36,7 @@ describe('ui interactions', () => {
   });
 
   it('clicking a robot on the map focuses it on the panel', () => {
+    closeOmniPanel();
     const robot = $('[data-component=RobotMarker]');
     const robotName = robot.getAttribute('aria-label');
     robot.click();
