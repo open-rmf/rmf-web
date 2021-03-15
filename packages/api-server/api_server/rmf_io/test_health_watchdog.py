@@ -3,6 +3,7 @@ import unittest
 from typing import Any, Callable, Optional
 
 from rmf_door_msgs.msg import DoorMode
+from rmf_lift_msgs.msg import LiftState
 from rx import Observable
 from rx.scheduler.historicalscheduler import HistoricalScheduler
 
@@ -72,7 +73,7 @@ class TestHealthWatchdog_DoorHealth(BaseHealthWatchdogTests):
             self, self.rmf.door_health, self.rmf.door_states, test_data.make_door_state
         )
 
-    async def test_door_mode_offline_is_unhealthy(self):
+    async def _check_door_mode(self, mode: int, expected_health: models.HealthStatus):
         health: models.DoorHealth = None
 
         def on_next(v):
@@ -81,24 +82,22 @@ class TestHealthWatchdog_DoorHealth(BaseHealthWatchdogTests):
 
         self.rmf.door_health.subscribe(on_next)
 
-        state = test_data.make_door_state("test_door", DoorMode.MODE_OFFLINE)
+        state = test_data.make_door_state("test_door", mode)
         self.rmf.door_states.on_next(state)
         self.scheduler.advance_by(0)
-        self.assertEqual(health.health_status, models.HealthStatus.UNHEALTHY)
+        self.assertEqual(health.health_status, expected_health)
 
-    async def test_door_mode_unknown_is_unhealthy(self):
-        health: models.DoorHealth = None
-
-        def on_next(v):
-            nonlocal health
-            health = v
-
-        self.rmf.door_health.subscribe(on_next)
-
-        state = test_data.make_door_state("test_door", DoorMode.MODE_UNKNOWN)
-        self.rmf.door_states.on_next(state)
-        self.scheduler.advance_by(0)
-        self.assertEqual(health.health_status, models.HealthStatus.UNHEALTHY)
+    async def test_door_mode(self):
+        test_cases = [
+            (DoorMode.MODE_CLOSED, models.HealthStatus.HEALTHY),
+            (DoorMode.MODE_MOVING, models.HealthStatus.HEALTHY),
+            (DoorMode.MODE_OPEN, models.HealthStatus.HEALTHY),
+            (DoorMode.MODE_OFFLINE, models.HealthStatus.UNHEALTHY),
+            (DoorMode.MODE_UNKNOWN, models.HealthStatus.UNHEALTHY),
+            (128, models.HealthStatus.UNHEALTHY),
+        ]
+        for test in test_cases:
+            await self._check_door_mode(*test)
 
     async def test_heartbeat_with_no_state(self):
         building_map = test_data.make_building_map()
@@ -145,6 +144,34 @@ class TestHealthWatchdog_LiftHealth(BaseHealthWatchdogTests):
         self.scheduler.advance_by(self.health_watchdog.LIVELINESS)
         self.assertEqual(health.id_, "test_lift")
         self.assertEqual(health.health_status, models.HealthStatus.DEAD)
+
+    async def _check_lift_mode(self, mode: int, expected_health: models.HealthStatus):
+        health: models.LiftHealth = None
+
+        def on_next(v):
+            nonlocal health
+            health = v
+
+        self.rmf.lift_health.subscribe(on_next)
+
+        state = test_data.make_lift_state("test_door")
+        state.current_mode = mode
+        self.rmf.lift_states.on_next(state)
+        self.scheduler.advance_by(0)
+        self.assertEqual(health.health_status, expected_health)
+
+    async def test_lift_mode(self):
+        test_cases = [
+            (LiftState.MODE_HUMAN, models.HealthStatus.HEALTHY),
+            (LiftState.MODE_AGV, models.HealthStatus.HEALTHY),
+            (LiftState.MODE_UNKNOWN, models.HealthStatus.UNHEALTHY),
+            (LiftState.MODE_FIRE, models.HealthStatus.UNHEALTHY),
+            (LiftState.MODE_EMERGENCY, models.HealthStatus.UNHEALTHY),
+            (LiftState.MODE_OFFLINE, models.HealthStatus.UNHEALTHY),
+            (128, models.HealthStatus.UNHEALTHY),
+        ]
+        for test in test_cases:
+            await self._check_lift_mode(*test)
 
 
 class TestHealthWatchdog_DispenserHealth(BaseHealthWatchdogTests):

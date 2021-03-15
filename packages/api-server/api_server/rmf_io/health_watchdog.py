@@ -7,6 +7,7 @@ from building_map_msgs.msg import BuildingMap, Door, Level, Lift
 from rmf_dispenser_msgs.msg import DispenserState
 from rmf_door_msgs.msg import DoorMode, DoorState
 from rmf_fleet_msgs.msg import FleetState, RobotState
+from rmf_lift_msgs.msg import LiftState
 from rx import Observable
 from rx import operators as ops
 from rx.core.typing import Disposable
@@ -81,37 +82,53 @@ class HealthWatchdog:
             ),
         )
 
-    def _watch_door_health(self, building_map):
-        def door_mode_to_health(data: Tuple[str, DoorState]):
-            state = data[1]
+    @staticmethod
+    def _combine_most_critical(*obs: Sequence[rx.Observable]):
+        """
+        Combines an observable sequence of an observable sequence of BasicHealthModel to an
+        observable sequence of BasicHealthModel with the most critical health status. If there
+        are multiple BasicHealthModel with the same criticality, the most recent item is
+        chosen.
 
-            if state is None:
-                return models.DoorHealth(
-                    id_=data[0],
-                    health_status=models.HealthStatus.UNHEALTHY,
-                    health_message="unknown",
-                )
-            if state.current_mode.value in (
-                DoorMode.MODE_CLOSED,
-                DoorMode.MODE_MOVING,
-                DoorMode.MODE_OPEN,
-            ):
-                return models.DoorHealth(
-                    id_=state.door_name,
-                    health_status=models.HealthStatus.HEALTHY,
-                )
-            if state.current_mode.value == DoorMode.MODE_OFFLINE:
-                return models.DoorHealth(
-                    id_=state.door_name,
-                    health_status=models.HealthStatus.UNHEALTHY,
-                    health_message="offline",
-                )
+        :param obs: Sequence[rx.Observable[BasicHealthModel]]
+        """
+        return rx.pipe(
+            ops.timestamp(),
+            ops.combine_latest(*[x.pipe(ops.timestamp()) for x in obs]),
+            most_critical(),
+        )
+
+    @staticmethod
+    def _door_mode_to_health(data: Tuple[str, DoorState]):
+        state = data[1]
+        if state is None:
+            return models.DoorHealth(
+                id_=data[0],
+                health_status=models.HealthStatus.UNHEALTHY,
+                health_message="no state available",
+            )
+        if state.current_mode.value in (
+            DoorMode.MODE_CLOSED,
+            DoorMode.MODE_MOVING,
+            DoorMode.MODE_OPEN,
+        ):
+            return models.DoorHealth(
+                id_=state.door_name,
+                health_status=models.HealthStatus.HEALTHY,
+            )
+        if state.current_mode.value == DoorMode.MODE_OFFLINE:
             return models.DoorHealth(
                 id_=state.door_name,
                 health_status=models.HealthStatus.UNHEALTHY,
-                health_message="unknown",
+                health_message="door is OFFLINE",
             )
+        return models.DoorHealth(
+            id_=state.door_name,
+            health_status=models.HealthStatus.UNHEALTHY,
+            health_message="door is in an unknown mode",
+        )
 
+    def _watch_door_health(self, building_map):
         doors: List[Door] = []
         if building_map:
             for level in building_map.levels:
@@ -139,22 +156,52 @@ class HealthWatchdog:
             self.rmf.door_states.pipe(ops.map(lambda x: (x.door_name, x))),
         )
 
-        door_mode_health = obs.pipe(
-            ops.map(door_mode_to_health),
-            ops.timestamp(),
-        )
+        door_mode_health = obs.pipe(ops.map(self._door_mode_to_health))
 
         heartbeat_health = obs.pipe(
             self._watch_heartbeat(lambda x: x[0]),
             ops.map(to_door_health),
-            ops.timestamp(),
         )
 
         sub = heartbeat_health.pipe(
-            ops.combine_latest(door_mode_health),
-            most_critical(),
+            self._combine_most_critical(door_mode_health),
         ).subscribe(self._report_health(self.rmf.door_health), scheduler=self.scheduler)
         self.watchers.append(sub)
+
+    @staticmethod
+    def _lift_mode_to_health(data: Tuple[str, LiftState]):
+        state = data[1]
+        if state is None:
+            return models.LiftHealth(
+                id_=data[0],
+                health_status=models.HealthStatus.UNHEALTHY,
+                health_message="no state available",
+            )
+        if state.current_mode in (
+            LiftState.MODE_HUMAN,
+            LiftState.MODE_AGV,
+        ):
+            return models.LiftHealth(
+                id_=state.lift_name,
+                health_status=models.HealthStatus.HEALTHY,
+            )
+        if state.current_mode == LiftState.MODE_FIRE:
+            return models.LiftHealth(
+                id_=state.lift_name,
+                health_status=models.HealthStatus.UNHEALTHY,
+                health_message="lift is in FIRE mode",
+            )
+        if state.current_mode == LiftState.MODE_EMERGENCY:
+            return models.LiftHealth(
+                id_=state.lift_name,
+                health_status=models.HealthStatus.UNHEALTHY,
+                health_message="lift is in EMERGENCY mode",
+            )
+        return models.LiftHealth(
+            id_=state.lift_name,
+            health_status=models.HealthStatus.UNHEALTHY,
+            health_message="lift is in an unknown mode",
+        )
 
     def _watch_lift_health(self, building_map):
         lifts: Sequence[Lift] = building_map.lifts if building_map else []
@@ -174,19 +221,21 @@ class HealthWatchdog:
 
         keys = [x.name for x in lifts]
         initial_values: Sequence[Tuple[str, Any]] = [(k, None) for k in keys]
-        sub = (
-            rx.merge(
-                rx.of(*initial_values),
-                self.rmf.lift_states.pipe(ops.map(lambda x: (x.lift_name, x))),
-            )
-            .pipe(
-                self._watch_heartbeat(lambda x: x[0]),
-                ops.map(to_lift_health),
-            )
-            .subscribe(
-                self._report_health(self.rmf.lift_health),
-                scheduler=self.scheduler,
-            )
+        obs = rx.merge(
+            rx.of(*initial_values),
+            self.rmf.lift_states.pipe(ops.map(lambda x: (x.lift_name, x))),
+        )
+
+        lift_mode_health = obs.pipe(ops.map(self._lift_mode_to_health))
+        heartbeat_health = obs.pipe(
+            self._watch_heartbeat(lambda x: x[0]),
+            ops.map(to_lift_health),
+        )
+        sub = heartbeat_health.pipe(
+            self._combine_most_critical(lift_mode_health)
+        ).subscribe(
+            self._report_health(self.rmf.lift_health),
+            scheduler=self.scheduler,
         )
         self.watchers.append(sub)
 
