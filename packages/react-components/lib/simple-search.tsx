@@ -9,6 +9,7 @@ export interface OnChangeEvent {
 
 export interface SimpleSearchProps {
   onChange?: (e: React.ChangeEvent<OnChangeEvent>) => void;
+  onClick?: () => void;
   disabled: boolean;
   value: string;
 }
@@ -30,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
 export const SimpleSearch = (props: SimpleSearchProps): JSX.Element => {
   const classes = useStyles();
 
-  const { onChange, disabled, value } = props;
+  const { onChange, disabled, value, onClick } = props;
 
   return (
     <div className={classes.simpleSearch}>
@@ -42,7 +43,7 @@ export const SimpleSearch = (props: SimpleSearchProps): JSX.Element => {
         onChange={onChange}
         className={classes.searchBar}
       />
-      <IconButton className={classes.clearSearch}>
+      <IconButton className={classes.clearSearch} onClick={onClick}>
         <CloseIcon />
       </IconButton>
     </div>
