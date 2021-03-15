@@ -3,6 +3,7 @@ import unittest
 from typing import Any, Callable, Optional
 
 from rmf_door_msgs.msg import DoorMode
+from rmf_fleet_msgs.msg import RobotMode
 from rmf_lift_msgs.msg import LiftState
 from rx import Observable
 from rx.scheduler.historicalscheduler import HistoricalScheduler
@@ -267,3 +268,33 @@ class TestHealthWatchdog_RobotHealth(BaseHealthWatchdogTests):
         self.scheduler.advance_by(self.health_watchdog.LIVELINESS)
         self.assertEqual(health.id_, robot_id)
         self.assertEqual(health.health_status, models.HealthStatus.DEAD)
+
+    async def _check_robot_mode(self, mode: int, expected_health: models.HealthStatus):
+        health: Optional[models.RobotHealth] = None
+
+        def assign(v):
+            nonlocal health
+            health = v
+
+        self.rmf.robot_health.subscribe(assign)
+        state = test_data.make_robot_state()
+        state.mode.mode = mode
+        fleet_state = test_data.make_fleet_state()
+        fleet_state.robots = [state]
+        self.rmf.fleet_states.on_next(fleet_state)
+        self.assertEqual(health.health_status, expected_health)
+
+    async def test_robot_mode(self):
+        test_cases = [
+            (RobotMode.MODE_IDLE, models.HealthStatus.HEALTHY),
+            (RobotMode.MODE_CHARGING, models.HealthStatus.HEALTHY),
+            (RobotMode.MODE_MOVING, models.HealthStatus.HEALTHY),
+            (RobotMode.MODE_PAUSED, models.HealthStatus.HEALTHY),
+            (RobotMode.MODE_WAITING, models.HealthStatus.HEALTHY),
+            (RobotMode.MODE_GOING_HOME, models.HealthStatus.HEALTHY),
+            (RobotMode.MODE_DOCKING, models.HealthStatus.HEALTHY),
+            (RobotMode.MODE_EMERGENCY, models.HealthStatus.UNHEALTHY),
+            (RobotMode.MODE_ADAPTER_ERROR, models.HealthStatus.UNHEALTHY),
+        ]
+        for test in test_cases:
+            await self._check_robot_mode(*test)

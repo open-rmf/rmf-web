@@ -6,7 +6,7 @@ import rx
 from building_map_msgs.msg import BuildingMap, Door, Level, Lift
 from rmf_dispenser_msgs.msg import DispenserState
 from rmf_door_msgs.msg import DoorMode, DoorState
-from rmf_fleet_msgs.msg import FleetState, RobotState
+from rmf_fleet_msgs.msg import FleetState, RobotMode, RobotState
 from rmf_lift_msgs.msg import LiftState
 from rx import Observable
 from rx import operators as ops
@@ -273,6 +273,45 @@ class HealthWatchdog:
 
         self.rmf.dispenser_states.subscribe(on_state)
 
+    @staticmethod
+    def _robot_mode_to_health(id_: str, state: RobotState):
+        if state is None:
+            return models.RobotHealth(
+                id_=id_,
+                health_status=models.HealthStatus.UNHEALTHY,
+                health_message="no state available",
+            )
+        if state.mode.mode in (
+            RobotMode.MODE_IDLE,
+            RobotMode.MODE_CHARGING,
+            RobotMode.MODE_MOVING,
+            RobotMode.MODE_PAUSED,
+            RobotMode.MODE_WAITING,
+            RobotMode.MODE_GOING_HOME,
+            RobotMode.MODE_DOCKING,
+        ):
+            return models.RobotHealth(
+                id_=id_,
+                health_status=models.HealthStatus.HEALTHY,
+            )
+        if state.mode.mode == RobotMode.MODE_EMERGENCY:
+            return models.RobotHealth(
+                id_=id_,
+                health_status=models.HealthStatus.UNHEALTHY,
+                health_message="robot is in EMERGENCY mode",
+            )
+        if state.mode.mode == RobotMode.MODE_ADAPTER_ERROR:
+            return models.RobotHealth(
+                id_=id_,
+                health_status=models.HealthStatus.UNHEALTHY,
+                health_message="error in fleet adapter",
+            )
+        return models.RobotHealth(
+            id_=id_,
+            health_status=models.HealthStatus.UNHEALTHY,
+            health_message="robot is in an unknown mode",
+        )
+
     def _watch_robot_health(self):
         def to_robot_health(id_: str, has_heartbeat: bool):
             if has_heartbeat:
@@ -287,9 +326,16 @@ class HealthWatchdog:
             )
 
         def watch(id_: str, obs: Observable):
+            """
+            :param obs: Observable[RobotState]
+            """
+            robot_mode_health = obs.pipe(
+                ops.map(lambda x: self._robot_mode_to_health(id_, x))
+            )
             obs.pipe(
                 heartbeat(self.LIVELINESS),
                 ops.map(lambda x: to_robot_health(id_, x)),
+                self._combine_most_critical(robot_mode_health),
             ).subscribe(
                 self._report_health(self.rmf.robot_health), scheduler=self.scheduler
             )
