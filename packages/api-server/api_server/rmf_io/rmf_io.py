@@ -45,6 +45,8 @@ class RmfIO:
         self._init_lift_health()
         self._init_dispenser_state()
         self._init_dispenser_health()
+        self._init_ingestor_state()
+        self._init_ingestor_health()
         self._init_fleet_state()
         self._init_robot_health()
         self._init_building_map()
@@ -108,6 +110,22 @@ class RmfIO:
         self._init_room(
             topics.dispenser_health,
             self.rmf_gateway.dispenser_health.pipe(
+                rx_map(lambda x: {x.id_: x.to_dict()})
+            ),
+        )
+
+    def _init_ingestor_state(self):
+        self._init_room(
+            topics.ingestor_states,
+            self.rmf_gateway.ingestor_states.pipe(
+                rx_map(lambda x: {x.guid: message_to_ordereddict(x)})
+            ),
+        )
+
+    def _init_ingestor_health(self):
+        self._init_room(
+            topics.ingestor_health,
+            self.rmf_gateway.ingestor_health.pipe(
                 rx_map(lambda x: {x.id_: x.to_dict()})
             ),
         )

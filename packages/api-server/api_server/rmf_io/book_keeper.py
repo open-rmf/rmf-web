@@ -5,6 +5,7 @@ import logging
 from rmf_dispenser_msgs.msg import DispenserState
 from rmf_door_msgs.msg import DoorState
 from rmf_fleet_msgs.msg import FleetState
+from rmf_ingestor_msgs.msg import IngestorState
 from rmf_lift_msgs.msg import LiftState
 from rosidl_runtime_py.convert import message_to_ordereddict
 
@@ -33,6 +34,8 @@ class RmfBookKeeper:
         self._record_lift_health()
         self._record_dispenser_state()
         self._record_dispenser_health()
+        self._record_ingestor_state()
+        self._record_ingestor_health()
         self._record_fleet_state()
         self._record_robot_health()
 
@@ -110,6 +113,26 @@ class RmfBookKeeper:
             self._report_health(health)
 
         self.rmf.dispenser_health.subscribe(lambda x: self.loop.create_task(update(x)))
+
+    def _record_ingestor_state(self):
+        async def update(ingestor_state: IngestorState):
+            await models.IngestorState.update_or_create_from_rmf(ingestor_state)
+            self.logger.info(json.dumps(message_to_ordereddict(ingestor_state)))
+
+        self.rmf.ingestor_states.subscribe(lambda x: self.loop.create_task(update(x)))
+
+    def _record_ingestor_health(self):
+        async def update(health: models.IngestorHealth):
+            await models.IngestorHealth.update_or_create(
+                {
+                    "health_status": health.health_status,
+                    "health_message": health.health_message,
+                },
+                id_=health.id_,
+            )
+            self._report_health(health)
+
+        self.rmf.ingestor_health.subscribe(lambda x: self.loop.create_task(update(x)))
 
     def _record_fleet_state(self):
         async def update(fleet_state: FleetState):

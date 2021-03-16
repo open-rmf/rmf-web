@@ -6,6 +6,7 @@ from building_map_msgs.msg import BuildingMap, Door, Level, Lift
 from rmf_dispenser_msgs.msg import DispenserState
 from rmf_door_msgs.msg import DoorMode, DoorState
 from rmf_fleet_msgs.msg import FleetState, RobotMode, RobotState
+from rmf_ingestor_msgs.msg import IngestorState
 from rmf_lift_msgs.msg import LiftState
 from rx import Observable
 from rx import operators as ops
@@ -43,6 +44,7 @@ class HealthWatchdog:
         self.rmf.building_map.subscribe(on_building_map)
 
         self._watch_dispenser_health()
+        self._watch_ingestor_health()
         self._watch_robot_health()
 
     def _watch_heartbeat(
@@ -279,6 +281,70 @@ class HealthWatchdog:
             subjects[state.guid].on_next(state)
 
         self.rmf.dispenser_states.subscribe(on_state)
+
+    @staticmethod
+    def _ingestor_mode_to_health(id_: str, state: IngestorState):
+        if state is None:
+            return models.IngestorHealth(
+                id_=id_,
+                health_status=models.HealthStatus.UNHEALTHY,
+                health_message="no state available",
+            )
+        if state.mode in (
+            IngestorState.IDLE,
+            IngestorState.BUSY,
+        ):
+            return models.IngestorHealth(
+                id_=id_,
+                health_status=models.HealthStatus.HEALTHY,
+            )
+        if state.mode == IngestorState.OFFLINE:
+            return models.IngestorHealth(
+                id_=id_,
+                health_status=models.HealthStatus.UNHEALTHY,
+                health_message="ingestor is OFFLINE",
+            )
+        return models.IngestorHealth(
+            id_=id_,
+            health_status=models.HealthStatus.UNHEALTHY,
+            health_message="ingestor is in an unknown mode",
+        )
+
+    def _watch_ingestor_health(self):
+        def to_ingestor_health(id_: str, has_heartbeat: bool):
+            if has_heartbeat:
+                return models.IngestorHealth(
+                    id_=id_, health_status=models.HealthStatus.HEALTHY
+                )
+            return models.IngestorHealth(
+                id_=id_,
+                health_status=models.HealthStatus.DEAD,
+                health_message="heartbeat failed",
+            )
+
+        def watch(id_: str, obs: Observable):
+            ingestor_mode_health = obs.pipe(
+                ops.map(lambda x: self._ingestor_mode_to_health(id_, x))
+            )
+            obs.pipe(
+                heartbeat(self.LIVELINESS),
+                ops.map(lambda x: to_ingestor_health(id_, x)),
+                self._combine_most_critical(ingestor_mode_health),
+            ).subscribe(self.rmf.ingestor_health.on_next, scheduler=self.scheduler)
+
+        subjects = {
+            x.guid: Subject() for x in self.rmf.current_ingestor_states.values()
+        }
+        for guid, subject in subjects.items():
+            watch(guid, subject)
+
+        def on_state(state: IngestorState):
+            if state.guid not in subjects:
+                subjects[state.guid] = Subject()
+                watch(state.guid, subjects[state.guid])
+            subjects[state.guid].on_next(state)
+
+        self.rmf.ingestor_states.subscribe(on_state)
 
     @staticmethod
     def _robot_mode_to_health(id_: str, state: RobotState):

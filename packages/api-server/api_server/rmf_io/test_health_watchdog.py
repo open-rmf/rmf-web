@@ -5,6 +5,7 @@ from typing import Any, Callable, Optional
 from rmf_dispenser_msgs.msg import DispenserState
 from rmf_door_msgs.msg import DoorMode
 from rmf_fleet_msgs.msg import RobotMode
+from rmf_ingestor_msgs.msg import IngestorState
 from rmf_lift_msgs.msg import LiftState
 from rx import Observable
 from rx.scheduler.historicalscheduler import HistoricalScheduler
@@ -231,6 +232,61 @@ class TestHealthWatchdog_DispenserHealth(BaseHealthWatchdogTests):
         ]
         for test in test_cases:
             await self._check_dispenser_mode(*test)
+
+
+class TestHealthWatchdog_IngestorHealth(BaseHealthWatchdogTests):
+    async def test_heartbeat(self):
+        await test_heartbeat(
+            self,
+            self.rmf.ingestor_health,
+            self.rmf.ingestor_states,
+            test_data.make_ingestor_state,
+        )
+
+    async def test_heartbeat_with_no_state(self):
+        # simulate the situation where a ingestor state loaded from persistent
+        # store never send any states.
+        self.rmf.ingestor_states.on_next(test_data.make_ingestor_state("test_ingestor"))
+        self.health_watchdog = HealthWatchdog(
+            self.rmf, scheduler=self.scheduler, logger=self.logger
+        )
+
+        health: Optional[models.IngestorHealth] = None
+
+        def assign(v):
+            nonlocal health
+            health = v
+
+        self.rmf.ingestor_health.subscribe(assign)
+
+        self.scheduler.advance_by(self.health_watchdog.LIVELINESS)
+        self.assertEqual(health.id_, "test_ingestor")
+        self.assertEqual(health.health_status, models.HealthStatus.DEAD)
+
+    async def _check_ingestor_mode(
+        self, mode: int, expected_health: models.HealthStatus
+    ):
+        health: Optional[models.RobotHealth] = None
+
+        def assign(v):
+            nonlocal health
+            health = v
+
+        self.rmf.ingestor_health.subscribe(assign)
+        state = test_data.make_ingestor_state()
+        state.mode = mode
+        self.rmf.ingestor_states.on_next(state)
+        self.assertEqual(health.health_status, expected_health)
+
+    async def test_ingestor_mode(self):
+        test_cases = [
+            (IngestorState.IDLE, models.HealthStatus.HEALTHY),
+            (IngestorState.BUSY, models.HealthStatus.HEALTHY),
+            (IngestorState.OFFLINE, models.HealthStatus.UNHEALTHY),
+            (128, models.HealthStatus.UNHEALTHY),
+        ]
+        for test in test_cases:
+            await self._check_ingestor_mode(*test)
 
 
 class TestHealthWatchdog_RobotHealth(BaseHealthWatchdogTests):

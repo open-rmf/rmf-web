@@ -7,6 +7,7 @@ from rclpy.subscription import Subscription
 from rmf_dispenser_msgs.msg import DispenserState
 from rmf_door_msgs.msg import DoorState
 from rmf_fleet_msgs.msg import FleetState
+from rmf_ingestor_msgs.msg import IngestorState
 from rmf_lift_msgs.msg import LiftState
 
 from .rmf_io import RmfGateway
@@ -41,6 +42,13 @@ class RmfTransport:
             10,
         )
 
+        self.ingestor_states_sub = self.ros2_node.create_subscription(
+            IngestorState,
+            "ingestor_states",
+            self.rmf_gateway.ingestor_states.on_next,
+            10,
+        )
+
         self.fleet_states_sub = self.ros2_node.create_subscription(
             FleetState,
             "fleet_states",
@@ -72,6 +80,10 @@ class RmfTransport:
         if self.dispenser_states_sub:
             self.dispenser_states_sub.destroy()
             self.dispenser_states_sub = None
+
+        if self.ingestor_states_sub:
+            self.ingestor_states_sub.destroy()
+            self.ingestor_states_sub = None
 
         if self.fleet_states_sub:
             self.fleet_states_sub.destroy()

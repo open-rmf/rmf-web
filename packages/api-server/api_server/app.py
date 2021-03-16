@@ -80,6 +80,18 @@ async def load_dispensers(gateway: RmfGateway):
     logger.info(f"loaded {len(healths)} dispenser health")
 
 
+async def load_ingestors(gateway: RmfGateway):
+    ingestor_states = await models.IngestorState.all()
+    for state in ingestor_states:
+        gateway.ingestor_states.on_next(state)
+    logger.info(f"loaded {len(ingestor_states)} ingestor states")
+
+    healths = await models.IngestorHealth.all()
+    for health in healths:
+        gateway.ingestor_health.on_next(health)
+    logger.info(f"loaded {len(healths)} ingestor health")
+
+
 async def load_fleets(gateway: RmfGateway):
     fleet_states = await models.FleetState.all()
     for state in fleet_states:

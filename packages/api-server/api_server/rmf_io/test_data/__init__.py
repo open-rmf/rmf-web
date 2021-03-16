@@ -5,6 +5,7 @@ from builtin_interfaces.msg import Time
 from rmf_dispenser_msgs.msg import DispenserState
 from rmf_door_msgs.msg import DoorMode, DoorState
 from rmf_fleet_msgs.msg import FleetState, Location, RobotMode, RobotState
+from rmf_ingestor_msgs.msg import IngestorState
 from rmf_lift_msgs.msg import LiftState
 
 
@@ -106,6 +107,16 @@ def make_dispenser_state(guid: str = "test_dispenser") -> DispenserState:
         guid=guid,
         time=Time(sec=0, nanosec=0),
         mode=DispenserState.IDLE,
+        request_guid_queue=[],
+        seconds_remaining=0.0,
+    )
+
+
+def make_ingestor_state(guid: str = "test_ingestor") -> IngestorState:
+    return IngestorState(
+        guid=guid,
+        time=Time(sec=0, nanosec=0),
+        mode=IngestorState.IDLE,
         request_guid_queue=[],
         seconds_remaining=0.0,
     )

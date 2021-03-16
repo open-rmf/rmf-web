@@ -153,6 +153,29 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
         self.assertIsNotNone(health)
         self.assertEqual(health.health_status, models.HealthStatus.UNHEALTHY)
 
+    async def test_write_ingestor_health(self):
+        self.rmf.ingestor_health.on_next(
+            models.IngestorHealth(
+                id_="test_ingestor",
+                health_status=models.HealthStatus.HEALTHY,
+            )
+        )
+        await asyncio.sleep(0)
+        health = await models.IngestorHealth.get(id_="test_ingestor")
+        self.assertIsNotNone(health)
+        self.assertEqual(health.health_status, models.HealthStatus.HEALTHY)
+
+        self.rmf.ingestor_health.on_next(
+            models.IngestorHealth(
+                id_="test_ingestor",
+                health_status=models.HealthStatus.UNHEALTHY,
+            )
+        )
+        await asyncio.sleep(0)
+        health = await models.IngestorHealth.get(id_="test_ingestor")
+        self.assertIsNotNone(health)
+        self.assertEqual(health.health_status, models.HealthStatus.UNHEALTHY)
+
     async def test_write_fleet_state(self):
         state = test_data.make_fleet_state("test_fleet")
         state.robots = [test_data.make_robot_state()]
