@@ -13,7 +13,7 @@ describe('RenderSelectedComponentFromDict', () => {
     expect(screen.getByText('test')).toBeTruthy();
   });
 
-  it('render nothing on null value', () => {
+  it('renders nothing on null value', () => {
     const test = {
       test: null,
     };
@@ -21,7 +21,7 @@ describe('RenderSelectedComponentFromDict', () => {
     expect(screen.queryByText('test')).toBeFalsy();
   });
 
-  it('render nothing on missing attribute', () => {
+  it('renders nothing on missing attribute', () => {
     const test = {};
     render(<RenderSelectedComponentFromDict selectedKey={'test'} obj={test} />);
     expect(screen.queryByText('test')).toBeFalsy();

@@ -40,7 +40,7 @@ describe('Multi level menu', () => {
     cleanup();
   });
 
-  it('renders correctly with All logs and Robots on the first level', () => {
+  it('renders correctly with `All logs` and `Robots` titles on the first level', () => {
     render(<MultiLevelMenu menuStructure={buildMenuStructure}></MultiLevelMenu>);
     expect(screen.getByText('Mock Icon 1')).toBeTruthy();
     expect(screen.getByText('All logs')).toBeTruthy();
@@ -51,7 +51,7 @@ describe('Multi level menu', () => {
     expect(screen.queryByText('Robot states')).toBeFalsy();
   });
 
-  it('clicks on a title should trigger an action if defined', () => {
+  it('triggers an action, if defined, when clicking on a title ', () => {
     render(<MultiLevelMenu menuStructure={buildMenuStructure}></MultiLevelMenu>);
     userEvent.click(screen.getByText('All logs'));
     expect(mockClickAllLogs).toHaveBeenCalledTimes(1);
@@ -63,7 +63,7 @@ describe('Multi level menu', () => {
     expect(screen.getByText('Robot states')).toBeTruthy();
   });
 
-  it('clicks on a child level should trigger an action if defined', () => {
+  it('triggers an action, if defined, after clicking on a child level title', () => {
     render(<MultiLevelMenu menuStructure={buildMenuStructure}></MultiLevelMenu>);
     userEvent.click(screen.getByText('Robots'));
     userEvent.click(screen.getByText('Robot states'));

@@ -19,7 +19,7 @@ it('smoke test', () => {
   cleanup();
 });
 
-it('shows the report picker bar', () => {
+it('shows the report picker side bar', () => {
   const ReportContainer: Record<string, React.ReactElement> = {
     queryAllLogs: <h1>QueryAllLogs</h1>,
   };
@@ -34,7 +34,7 @@ it('shows the report picker bar', () => {
   cleanup();
 });
 
-it('renders main screen correctly', () => {
+it('renders the main screen correctly', () => {
   const ReportContainer: Record<string, React.ReactElement> = {
     queryAllLogs: <h1>QueryAllLogs</h1>,
   };
