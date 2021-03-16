@@ -1,8 +1,10 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import { RenderSelectedComponentFromDict } from '../../lib';
 
 describe('RenderSelectedComponentFromDict', () => {
+  afterEach(() => cleanup());
+
   it('renders correctly', () => {
     const test = {
       test: <h1> test</h1>,

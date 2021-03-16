@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { ReportDashboard } from '../report-dashboard';
@@ -15,6 +15,8 @@ it('smoke test', () => {
       reportContainer={ReportContainer}
     />,
   );
+
+  cleanup();
 });
 
 it('shows the report picker bar', () => {
@@ -29,6 +31,7 @@ it('shows the report picker bar', () => {
     />,
   );
   expect(screen.getByText('All logs')).toBeTruthy();
+  cleanup();
 });
 
 it('renders main screen correctly', () => {
@@ -43,6 +46,7 @@ it('renders main screen correctly', () => {
     />,
   );
   expect(screen.getByText('QueryAllLogs')).toBeTruthy();
+  cleanup();
 });
 
 it('picks a different report and renders correctly', () => {
@@ -60,4 +64,5 @@ it('picks a different report and renders correctly', () => {
 
   userEvent.click(screen.getByText('Charger states'));
   expect(screen.getByText('Test'));
+  cleanup();
 });
