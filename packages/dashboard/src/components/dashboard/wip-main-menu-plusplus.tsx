@@ -48,6 +48,7 @@ export interface MainMenuProps {
   spoiltLiftClick?(lift: RomiCore.Lift): void;
   spoiltRobotClick?(fleet: string, robot: RomiCore.RobotState): void;
   spoiltDispenserClick?(guid: string): void;
+  setSearch?: () => void;
 }
 
 export const MainMenu = React.memo((props: MainMenuProps) => {
@@ -60,37 +61,45 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
     spoiltDoorClick,
     spoiltLiftClick,
     spoiltRobotClick,
+    setSearch,
   } = props;
   debug('render');
   const classes = useStyles();
 
   const handleMainMenuDoorsClick = React.useCallback(() => {
     pushView(OmniPanelViewIndex.Doors);
-  }, [pushView]);
+    setSearch && setSearch();
+  }, [pushView, setSearch]);
 
   const handleMainMenuLiftsClick = React.useCallback(() => {
     pushView(OmniPanelViewIndex.Lifts);
-  }, [pushView]);
+    setSearch && setSearch();
+  }, [pushView, setSearch]);
 
   const handleMainMenuRobotsClick = React.useCallback(() => {
     pushView(OmniPanelViewIndex.Robots);
-  }, [pushView]);
+    setSearch && setSearch();
+  }, [pushView, setSearch]);
 
   const handleMainMenuDispensersClick = React.useCallback(() => {
     pushView(OmniPanelViewIndex.Dispensers);
-  }, [pushView]);
+    setSearch && setSearch();
+  }, [pushView, setSearch]);
 
   const handleMainMenuCommandsClick = React.useCallback(() => {
     pushView(OmniPanelViewIndex.Commands);
-  }, [pushView]);
+    setSearch && setSearch();
+  }, [pushView, setSearch]);
 
   const handleMainMenuNegotiationsClick = React.useCallback(() => {
     pushView(OmniPanelViewIndex.Negotiations);
-  }, [pushView]);
+    setSearch && setSearch();
+  }, [pushView, setSearch]);
 
   const handleMainMenuTasksClick = React.useCallback(() => {
     pushView(OmniPanelViewIndex.Tasks);
-  }, [pushView]);
+    setSearch && setSearch();
+  }, [pushView, setSearch]);
 
   const [allNotifications, setAllNotifications] = React.useState(notifications);
 
