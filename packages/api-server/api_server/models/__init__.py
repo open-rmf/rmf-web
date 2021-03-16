@@ -1,5 +1,4 @@
 from .dispenser_state import DispenserState
-from .door import Door
 from .door_state import DoorState
 from .fleet_state import FleetState
 from .health import (

@@ -6,11 +6,7 @@ const { execSync } = require('child_process');
 console.log('generate schemas:');
 execSync(`python3 -m pipenv run python ${__dirname}/generate-schemas.py`, { stdio: 'inherit' });
 
-const schemas = [
-  'build/schema/door-health.json',
-  'build/schema/door-state.json',
-  'build/schema/door.json',
-];
+const schemas = fs.readdirSync('build/schema/').map((f) => `build/schema/${f}`);
 
 const modelsDir = path.join(__dirname, 'lib', 'models', 'generated');
 fs.rmdirSync(modelsDir, { recursive: true, force: true });
