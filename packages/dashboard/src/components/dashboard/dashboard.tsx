@@ -175,6 +175,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
       setShowOmniPanel(true);
       viewStackDispatch.push(OmniPanelViewIndex.Doors);
       doorAccordionRefs[door.name].spotlight();
+      setSearch('');
     },
     [doorAccordionRefs, viewStackDispatch, setShowOmniPanel],
   );
@@ -187,6 +188,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
       setShowOmniPanel(true);
       viewStackDispatch.push(OmniPanelViewIndex.Lifts);
       liftAccordionRefs[lift.name].spotlight();
+      setSearch('');
     },
     [liftAccordionRefs, viewStackDispatch, setShowOmniPanel],
   );
@@ -200,6 +202,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
       setShowOmniPanel(true);
       viewStackDispatch.push(OmniPanelViewIndex.Dispensers);
       dispenserAccordionRefs[guid].spotlight();
+      setSearch('');
     },
     [dispenserAccordionRefs, viewStackDispatch, setShowOmniPanel],
   );
@@ -221,6 +224,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
       setShowOmniPanel(true);
       viewStackDispatch.push(OmniPanelViewIndex.Robots);
       robotAccordionRefs[robotKey(fleet, robot)].spotlight();
+      setSearch('');
     },
     [robotAccordionRefs, viewStackDispatch, setShowOmniPanel],
   );
