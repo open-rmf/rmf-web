@@ -80,12 +80,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export interface ReporterProps {
+export interface ReportDashboardProps {
   buildMenuReportStructure(setCurrentReport: BuildMenuType): ExpandableMultilevelMenuProps[];
   reportContainer: typeof ReportContainer;
 }
 
-export const Reporter = (props: ReporterProps) => {
+export const ReportDashboard = (props: ReportDashboardProps) => {
   const { buildMenuReportStructure, reportContainer } = props;
   const classes = useStyles();
   const theme = useTheme();

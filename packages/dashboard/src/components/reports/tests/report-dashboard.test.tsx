@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { Reporter } from '..';
+import { ReportDashboard } from '../report-dashboard';
 import { buildReportMenuStructure } from '../reporter-side-bar-structure';
 
 it('smoke test', () => {
@@ -10,7 +10,7 @@ it('smoke test', () => {
   };
 
   render(
-    <Reporter
+    <ReportDashboard
       buildMenuReportStructure={buildReportMenuStructure}
       reportContainer={ReportContainer}
     />,
@@ -23,7 +23,7 @@ it('shows the report picker bar', () => {
   };
 
   render(
-    <Reporter
+    <ReportDashboard
       buildMenuReportStructure={buildReportMenuStructure}
       reportContainer={ReportContainer}
     />,
@@ -37,7 +37,7 @@ it('renders main screen correctly', () => {
   };
 
   render(
-    <Reporter
+    <ReportDashboard
       buildMenuReportStructure={buildReportMenuStructure}
       reportContainer={ReportContainer}
     />,
@@ -52,7 +52,7 @@ it('picks a different report and renders correctly', () => {
   };
 
   render(
-    <Reporter
+    <ReportDashboard
       buildMenuReportStructure={buildReportMenuStructure}
       reportContainer={ReportContainer}
     />,

@@ -1,12 +1,12 @@
 import React from 'react';
 import { DoorRowsType, DoorStateReport, LogManagement } from 'react-components';
-import { Reporter } from '../../components/reports';
+import { ReportDashboard } from '../../components/reports/report-dashboard';
 import { Reports } from '../../components/reports/report-list';
 import { buildReportMenuStructure } from '../../components/reports/reporter-side-bar-structure';
 
 export default {
   title: 'Reports',
-  component: Reporter,
+  component: ReportDashboard,
 };
 
 const getLogLabels = () => [
@@ -65,5 +65,8 @@ const ReportContainer: Record<string, React.ReactElement> = {
 };
 
 export const StaticReportsView = () => (
-  <Reporter buildMenuReportStructure={buildReportMenuStructure} reportContainer={ReportContainer} />
+  <ReportDashboard
+    buildMenuReportStructure={buildReportMenuStructure}
+    reportContainer={ReportContainer}
+  />
 );
