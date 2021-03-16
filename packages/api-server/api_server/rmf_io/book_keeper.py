@@ -80,7 +80,8 @@ class RmfBookKeeper:
         self._record_fleet_state()
         self._record_robot_health()
 
-    def _report_health(self, health: models.BasicHealthModel, logger: logging.Logger):
+    @staticmethod
+    def _report_health(health: models.BasicHealthModel, logger: logging.Logger):
         message = json.dumps(
             {
                 "id": health.id_,
