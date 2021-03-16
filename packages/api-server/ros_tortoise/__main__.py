@@ -16,8 +16,14 @@ env = jinja2.Environment(
 )
 
 
+class MessageMetadata:
+    def __init__(self, import_prefix: str, spec: MessageSpecification):
+        self.import_prefix = import_prefix
+        self.spec = spec
+
+
 class PackageSpec:
-    def __init__(self, pkg_name: str, messages: Sequence[MessageSpecification]):
+    def __init__(self, pkg_name: str, messages: Sequence[MessageMetadata]):
         self.pkg_name = pkg_name
         self.messages = messages
 
@@ -91,8 +97,9 @@ def ros_to_tortoise_type(ros_type: RosType) -> str:
             return "fields.JSONField()"
 
 
-def get_imports(pkg_spec: PackageSpec):
-    return []
+def get_import_prefix(pkg_name: str, interface: str) -> str:
+    path = interface[: interface.rfind("/")]
+    return f"{pkg_name}.{path}"
 
 
 def gen_mixin(pkg_spec: PackageSpec):
@@ -100,22 +107,25 @@ def gen_mixin(pkg_spec: PackageSpec):
     return template.render(
         vars(pkg_spec),
         to_tortoise_type=ros_to_tortoise_type,
-        import_strings=get_imports(pkg_spec),
     )
 
 
-def parse_package(pkg) -> Sequence[MessageSpecification]:
+def parse_package(pkg: str) -> Sequence[MessageMetadata]:
     rosidl_interfaces = ament_index_python.get_resource("rosidl_interfaces", pkg)[
         0
     ].split("\n")
-    message_files = []
+    message_meta = []
     for interface in rosidl_interfaces:
         if interface.endswith(".msg"):
-            message_files.append(
-                f"{ament_index_python.get_package_share_directory(pkg)}/{interface}"
+            file = f"{ament_index_python.get_package_share_directory(pkg)}/{interface}"
+            message_meta.append(
+                MessageMetadata(
+                    get_import_prefix(pkg, interface),
+                    parse_message_file(pkg, file),
+                )
             )
 
-    return [parse_message_file(pkg, f) for f in message_files]
+    return message_meta
 
 
 def main():

@@ -2,14 +2,14 @@ import asyncio
 import base64
 import hashlib
 import logging
-from typing import Dict, Optional, OrderedDict, cast
+from typing import Any, Dict, Mapping, Optional, cast
 
 import socketio
 from building_map_msgs.msg import AffineImage, BuildingMap, Level
-from rmf_door_msgs.msg import DoorState
 from rosidl_runtime_py.convert import message_to_ordereddict
+from rx.core.typing import Observable as ObservableType
+from rx.operators import map as rx_map
 
-from ..models import DoorHealth
 from ..repositories import StaticFilesRepository
 from .authenticator import AuthenticationError, Authenticator, StubAuthenticator
 from .gateway import RmfGateway
@@ -39,69 +39,140 @@ class RmfIO:
         self.sio.on("disconnect", self._on_disconnect)
         self.sio.on("subscribe", self._on_subscribe)
 
-        self._door_states = cast(Dict[str, OrderedDict], {})
-        self.rmf_gateway.door_states.subscribe(self._on_door_state)
-        self.room_records[topics.door_states] = self._door_states
+        self._init_door_state()
+        self._init_door_health()
+        self._init_lift_state()
+        self._init_lift_health()
+        self._init_dispenser_state()
+        self._init_dispenser_health()
+        self._init_ingestor_state()
+        self._init_ingestor_health()
+        self._init_fleet_state()
+        self._init_robot_health()
+        self._init_building_map()
 
-        self._door_health = cast(Dict[str, OrderedDict], {})
-        self.rmf_gateway.door_health.subscribe(self._on_door_health)
-        self.room_records[topics.door_health] = self._door_health
-
-        self._building_map: Optional[OrderedDict] = None
-        self.rmf_gateway.building_map.subscribe(self._on_building_map)
-        self.room_records[topics.building_map] = None
-
-    def _on_door_state(self, state: DoorState):
-        state_dict = message_to_ordereddict(state)
-        self._door_states[state.door_name] = state_dict
-
-        async def emit_task():
-            await self.sio.emit(topics.door_states, state_dict, to=topics.door_states)
-            self.logger.debug(f'emitted message to room "{topics.door_states}"')
-
-        self.loop.create_task(emit_task())
-
-    def _on_door_health(self, health: DoorHealth):
-        health_dict = health.to_dict()
-        self._door_health[health.name] = health_dict
-
-        async def emit_task():
-            await self.sio.emit(topics.door_health, health_dict, to=topics.door_health)
-            self.logger.debug(f'emitted message to room "{topics.door_health}"')
-
-        self.loop.create_task(emit_task())
-
-    def _on_building_map(self, building_map: Optional[BuildingMap]):
+    def _init_room(self, topic: str, source: ObservableType[Mapping[str, Any]]):
         """
-        1. Converts a `BuildingMap` message to an ordered dict.
-        2. Saves the images into `{static_directory}/{map_name}/`.
-        3. Change the `AffineImage` `data` field to the url of the image.
+        :param source: The mapping values must be json serializable.
         """
-        if not building_map:
-            return
-        self.logger.info("got new building map")
-        self._building_map = message_to_ordereddict(building_map)
+        records = cast(Dict[str, Any], {})
+        self.room_records[topic] = records
 
-        for i in range(len(building_map.levels)):
-            level: Level = building_map.levels[i]
-            for j in range(len(level.images)):
-                image: AffineImage = level.images[j]
-                # look at non-crypto hashes if we need more performance
-                sha1_hash = hashlib.sha1()
-                sha1_hash.update(image.data)
-                fingerprint = base64.b32encode(sha1_hash.digest()).lower().decode()
-                relpath = f"{building_map.name}/{level.name}-{image.name}.{fingerprint}.{image.encoding}"  # pylint: disable=line-too-long
-                urlpath = self.static_files.add_file(image.data, relpath)
-                self._building_map["levels"][i]["images"][j]["data"] = urlpath
-        self.room_records[topics.building_map] = {building_map.name: self._building_map}
+        def on_next(new_records: Mapping[str, Any]):
+            records.update(new_records)
 
-        async def emit_task():
-            await self.sio.emit(
-                topics.building_map, self._building_map, to=topics.building_map
-            )
-            self.logger.debug(f'emitted message to room "{topics.building_map}"')
+            async def emit_task():
+                for v in new_records.values():
+                    await self.sio.emit(topic, v, to=topic)
+                self.logger.debug(f'emitted message to room "{topic}"')
 
-        self.loop.create_task(emit_task())
+            self.loop.create_task(emit_task())
+
+        source.subscribe(on_next)
+
+    def _init_door_state(self):
+        self._init_room(
+            topics.door_states,
+            self.rmf_gateway.door_states.pipe(
+                rx_map(lambda x: {x.door_name: message_to_ordereddict(x)})
+            ),
+        )
+
+    def _init_door_health(self):
+        self._init_room(
+            topics.door_health,
+            self.rmf_gateway.door_health.pipe(rx_map(lambda x: {x.id_: x.to_dict()})),
+        )
+
+    def _init_lift_state(self):
+        self._init_room(
+            topics.lift_states,
+            self.rmf_gateway.lift_states.pipe(
+                rx_map(lambda x: {x.lift_name: message_to_ordereddict(x)})
+            ),
+        )
+
+    def _init_lift_health(self):
+        self._init_room(
+            topics.lift_health,
+            self.rmf_gateway.lift_health.pipe(rx_map(lambda x: {x.id_: x.to_dict()})),
+        )
+
+    def _init_dispenser_state(self):
+        self._init_room(
+            topics.dispenser_states,
+            self.rmf_gateway.dispenser_states.pipe(
+                rx_map(lambda x: {x.guid: message_to_ordereddict(x)})
+            ),
+        )
+
+    def _init_dispenser_health(self):
+        self._init_room(
+            topics.dispenser_health,
+            self.rmf_gateway.dispenser_health.pipe(
+                rx_map(lambda x: {x.id_: x.to_dict()})
+            ),
+        )
+
+    def _init_ingestor_state(self):
+        self._init_room(
+            topics.ingestor_states,
+            self.rmf_gateway.ingestor_states.pipe(
+                rx_map(lambda x: {x.guid: message_to_ordereddict(x)})
+            ),
+        )
+
+    def _init_ingestor_health(self):
+        self._init_room(
+            topics.ingestor_health,
+            self.rmf_gateway.ingestor_health.pipe(
+                rx_map(lambda x: {x.id_: x.to_dict()})
+            ),
+        )
+
+    def _init_fleet_state(self):
+        self._init_room(
+            topics.fleet_states,
+            self.rmf_gateway.fleet_states.pipe(
+                rx_map(lambda x: {x.name: message_to_ordereddict(x)})
+            ),
+        )
+
+    def _init_robot_health(self):
+        self._init_room(
+            topics.robot_health,
+            self.rmf_gateway.robot_health.pipe(rx_map(lambda x: {x.id_: x.to_dict()})),
+        )
+
+    def _init_building_map(self):
+        def process(building_map: Optional[BuildingMap]):
+            """
+            1. Converts a `BuildingMap` message to an ordered dict.
+            2. Saves the images into `{static_directory}/{map_name}/`.
+            3. Change the `AffineImage` `data` field to the url of the image.
+            """
+            if not building_map:
+                return {}
+            self.logger.info("got new building map")
+            processed_map = message_to_ordereddict(building_map)
+
+            for i in range(len(building_map.levels)):
+                level: Level = building_map.levels[i]
+                for j in range(len(level.images)):
+                    image: AffineImage = level.images[j]
+                    # look at non-crypto hashes if we need more performance
+                    sha1_hash = hashlib.sha1()
+                    sha1_hash.update(image.data)
+                    fingerprint = base64.b32encode(sha1_hash.digest()).lower().decode()
+                    relpath = f"{building_map.name}/{level.name}-{image.name}.{fingerprint}.{image.encoding}"  # pylint: disable=line-too-long
+                    urlpath = self.static_files.add_file(image.data, relpath)
+                    processed_map["levels"][i]["images"][j]["data"] = urlpath
+            return {building_map.name: processed_map}
+
+        self._init_room(
+            topics.building_map,
+            self.rmf_gateway.building_map.pipe(rx_map(process)),
+        )
 
     async def _on_subscribe(self, sid, topic):
         self.logger.info(f'[{sid}] got new subscription for "{topic}"')

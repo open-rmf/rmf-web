@@ -1,6 +1,14 @@
-export { Door } from './generated/door';
 export { DoorHealth } from './generated/door-health';
 export { DoorState } from './generated/door-state';
+export { LiftState } from './generated/lift-state';
+export { LiftHealth } from './generated/lift-health';
+export { DispenserState } from './generated/dispenser-state';
+export { DispenserHealth } from './generated/dispenser-health';
+export { IngestorState } from './generated/ingestor-state';
+export { IngestorHealth } from './generated/ingestor-health';
+export { FleetState } from './generated/fleet-state';
+export { RobotHealth } from './generated/robot-health';
+
 import type {
   AffineImage as BaseAffineImage,
   BuildingMap as BaseBuildingMap,

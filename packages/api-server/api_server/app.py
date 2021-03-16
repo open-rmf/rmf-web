@@ -8,8 +8,9 @@ import socketio
 from rclpy.node import Node
 from tortoise import Tortoise
 
+from . import models
 from .app_config import app_config
-from .repositories import RmfRepository, SqlRepository, StaticFilesRepository
+from .repositories import StaticFilesRepository
 from .rmf_io import HealthWatchdog, RmfBookKeeper, RmfGateway, RmfIO, RmfTransport
 
 
@@ -35,21 +36,78 @@ logger = logging.getLogger("app")
 handler = logging.StreamHandler(sys.stdout)
 handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
 logger.addHandler(handler)
-if "RMF_API_SERVER_DEBUG" in os.environ:
-    logger.setLevel(logging.DEBUG)
-else:
-    logger.setLevel(logging.INFO)
+logger.setLevel(app_config.log_level)
 
 sio_client = socketio.AsyncClient()
 
 
-async def load_states(repo: RmfRepository, gateway: RmfGateway):
+async def load_doors(gateway: RmfGateway):
+    door_states = await models.DoorState.all()
+    for state in door_states:
+        gateway.door_states.on_next(state.to_rmf())
+    logger.info(f"loaded {len(door_states)} door states")
+
+    healths = await models.DoorHealth.all()
+    for health in healths:
+        gateway.door_health.on_next(health)
+    logger.info(f"loaded {len(healths)} door health")
+
+
+async def load_lifts(gateway: RmfGateway):
+    lift_states = await models.LiftState.all()
+    for state in lift_states:
+        gateway.lift_states.on_next(state)
+    logger.info(f"loaded {len(lift_states)} lift states")
+
+    healths = await models.LiftHealth.all()
+    for health in healths:
+        gateway.lift_health.on_next(health)
+    logger.info(f"loaded {len(healths)} lift health")
+
+
+async def load_dispensers(gateway: RmfGateway):
+    dispenser_states = await models.DispenserState.all()
+    for state in dispenser_states:
+        gateway.dispenser_states.on_next(state)
+    logger.info(f"loaded {len(dispenser_states)} dispenser states")
+
+    healths = await models.DispenserHealth.all()
+    for health in healths:
+        gateway.dispenser_health.on_next(health)
+    logger.info(f"loaded {len(healths)} dispenser health")
+
+
+async def load_ingestors(gateway: RmfGateway):
+    ingestor_states = await models.IngestorState.all()
+    for state in ingestor_states:
+        gateway.ingestor_states.on_next(state)
+    logger.info(f"loaded {len(ingestor_states)} ingestor states")
+
+    healths = await models.IngestorHealth.all()
+    for health in healths:
+        gateway.ingestor_health.on_next(health)
+    logger.info(f"loaded {len(healths)} ingestor health")
+
+
+async def load_fleets(gateway: RmfGateway):
+    fleet_states = await models.FleetState.all()
+    for state in fleet_states:
+        gateway.fleet_states.on_next(state)
+    logger.info(f"loaded {len(fleet_states)} fleet states")
+
+    healths = await models.RobotHealth.all()
+    for health in healths:
+        gateway.robot_health.on_next(health)
+    logger.info(f"loaded {len(healths)} robot health")
+
+
+async def load_states(gateway: RmfGateway):
     logger.info("loading states from database...")
 
-    door_states = await repo.read_door_states()
-    for state in door_states:
-        gateway.door_states.on_next(state)
-    logger.info(f"loaded {len(door_states)} door states")
+    await load_doors(gateway)
+    await load_lifts(gateway)
+    await load_dispensers(gateway)
+    await load_fleets(gateway)
 
     logger.info("successfully loaded all states")
 
@@ -67,24 +125,27 @@ async def on_startup():
         logger.getChild("static_files"),
     )
 
-    sql_repo = SqlRepository(logger.getChild("SqlRepository"))
     rmf_gateway = RmfGateway()
-    await load_states(sql_repo, rmf_gateway)
-    rmf_io = RmfIO(  # pylint: disable=unused-variable
+    RmfIO(
         sio,
         rmf_gateway,
         static_files_repo,
         logger=logger.getChild("RmfIO"),
     )
 
+    # loading states involves emitting events to observables in RmfGateway, we need to load states
+    # after initializing RmfIO so that new clients continues to receive the same data. BUT we want
+    # to load states before initializing some components like the watchdog because we don't want
+    # these fake events to affect them. e.g. The fake events from loading states will trigger the
+    # health watchdog to think that a dead component has come back alive.
+    await load_states(rmf_gateway)
+
     HealthWatchdog(rmf_gateway, logger=logger.getChild("HealthWatchdog"))
 
     rmf_transport = RmfTransport(ros2_node, rmf_gateway)
     rmf_transport.subscribe_all()
 
-    rmf_bookkeeper = RmfBookKeeper(
-        rmf_gateway, sql_repo, logger=logger.getChild("BookKeeper")
-    )
+    rmf_bookkeeper = RmfBookKeeper(rmf_gateway, logger=logger.getChild("BookKeeper"))
     rmf_bookkeeper.start()
 
     threading.Thread(target=ros2_thread, args=[ros2_node]).start()

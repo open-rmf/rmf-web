@@ -1,15 +1,31 @@
 import asyncio
 import unittest
+from typing import Any, Callable
 from unittest.mock import MagicMock
 
 import aiohttp.web
 import socketio
+from rx import Observable
 
-from ..models import DoorHealth, HealthStatus
+from ..models import (
+    DispenserHealth,
+    DoorHealth,
+    HealthStatus,
+    IngestorHealth,
+    LiftHealth,
+    RobotHealth,
+)
 from ..repositories.static_files import StaticFilesRepository
 from .gateway import RmfGateway
 from .rmf_io import RmfIO
-from .test_data import make_building_map, make_door_state
+from .test_data import (
+    make_building_map,
+    make_dispenser_state,
+    make_door_state,
+    make_fleet_state,
+    make_ingestor_state,
+    make_lift_state,
+)
 from .topics import topics
 
 
@@ -49,50 +65,159 @@ class TestRmfIO(unittest.IsolatedAsyncioTestCase):
         self.clients.clear()
         await self.runner.cleanup()
 
-    async def test_door_states(self):
+    async def check_endpoint(
+        self,
+        topic: str,
+        factory: Callable[[str], Any],
+        id_mapper: Callable[[Any], str],
+        source: Observable,
+    ):
         """
-        test receiving door states events
+        Checks that an endpoint can receive events and that newly connected clients receive the
+        current state of all subjects
         """
         done = asyncio.Future()
-        test_names = ["test_door", "test_door_2"]
-        test_states = [make_door_state(name) for name in test_names]
-        received_states = {}
+        test_ids = ["test_id", "test_id_2"]
+        test_values = [factory(x) for x in test_ids]
+        received = {}
         client = await self.make_client()
-        await self.client_subscribe(client, topics.door_states)
+        await self.client_subscribe(client, topic)
 
-        def on_door_states(door_state):
-            received_states[door_state["door_name"]] = door_state
-            if len(received_states) == len(test_states) and all(
-                (x in test_names for x in received_states)
+        def on_receive(data):
+            received[id_mapper(data)] = data
+            if len(received) == len(test_ids) and all(
+                (x in test_ids for x in received)
             ):
                 done.set_result(True)
 
-        client.on(topics.door_states, on_door_states)
+        client.on(topic, on_receive)
 
-        for x in test_states:
-            self.rmf_gateway.door_states.on_next(x)
+        for x in test_values:
+            source.on_next(x)
         await asyncio.wait_for(done, 1)
-        received_states = {}
+        received = {}
 
         # test that a new client receives all the current states on subscribe
         done = asyncio.Future()
         client = await self.make_client()
-        client.on(topics.door_states, on_door_states)
-        await self.client_subscribe(client, topics.door_states)
+        client.on(topic, on_receive)
+        await self.client_subscribe(client, topic)
         await asyncio.wait_for(done, 1)
 
-    async def test_door_health(self):
-        """
-        test receiving door health events
-        """
-        client = await self.make_client()
-        await self.client_subscribe(client, topics.door_health)
-        done = asyncio.Future()
-        client.on(topics.door_health, done.set_result)
-        self.rmf_gateway.door_health.on_next(
-            DoorHealth(name="test_door", health_status=HealthStatus.HEALTHY)
+    async def test_door_states(self):
+        await self.check_endpoint(
+            topics.door_states,
+            make_door_state,
+            lambda x: x["door_name"],
+            self.rmf_gateway.door_states,
         )
-        await done
+
+    async def test_door_health(self):
+        def factory(id_: str):
+            return DoorHealth(id_=id_, health_status=HealthStatus.HEALTHY)
+
+        await self.check_endpoint(
+            topics.door_health,
+            factory,
+            lambda x: x["id"],
+            self.rmf_gateway.door_health,
+        )
+
+    async def test_lift_states(self):
+        def factory(id_: str):
+            state = make_lift_state()
+            state.lift_name = id_
+            return state
+
+        await self.check_endpoint(
+            topics.lift_states,
+            factory,
+            lambda x: x["lift_name"],
+            self.rmf_gateway.lift_states,
+        )
+
+    async def test_lift_health(self):
+        def factory(id_: str):
+            return LiftHealth(id_=id_, health_status=HealthStatus.HEALTHY)
+
+        await self.check_endpoint(
+            topics.lift_health,
+            factory,
+            lambda x: x["id"],
+            self.rmf_gateway.lift_health,
+        )
+
+    async def test_dispenser_states(self):
+        def factory(id_: str):
+            state = make_dispenser_state()
+            state.guid = id_
+            return state
+
+        await self.check_endpoint(
+            topics.dispenser_states,
+            factory,
+            lambda x: x["guid"],
+            self.rmf_gateway.dispenser_states,
+        )
+
+    async def test_dispenser_health(self):
+        def factory(id_: str):
+            return DispenserHealth(id_=id_, health_status=HealthStatus.HEALTHY)
+
+        await self.check_endpoint(
+            topics.dispenser_health,
+            factory,
+            lambda x: x["id"],
+            self.rmf_gateway.dispenser_health,
+        )
+
+    async def test_ingestor_states(self):
+        def factory(id_: str):
+            state = make_ingestor_state()
+            state.guid = id_
+            return state
+
+        await self.check_endpoint(
+            topics.ingestor_states,
+            factory,
+            lambda x: x["guid"],
+            self.rmf_gateway.ingestor_states,
+        )
+
+    async def test_ingestor_health(self):
+        def factory(id_: str):
+            return IngestorHealth(id_=id_, health_status=HealthStatus.HEALTHY)
+
+        await self.check_endpoint(
+            topics.ingestor_health,
+            factory,
+            lambda x: x["id"],
+            self.rmf_gateway.ingestor_health,
+        )
+
+    async def test_fleet_states(self):
+        def factory(id_: str):
+            state = make_fleet_state()
+            state.name = id_
+            return state
+
+        await self.check_endpoint(
+            topics.fleet_states,
+            factory,
+            lambda x: x["name"],
+            self.rmf_gateway.fleet_states,
+        )
+
+    async def test_robot_health(self):
+        def factory(id_: str):
+            return RobotHealth(id_=id_, health_status=HealthStatus.HEALTHY)
+
+        await self.check_endpoint(
+            topics.robot_health,
+            factory,
+            lambda x: x["id"],
+            self.rmf_gateway.robot_health,
+        )
 
     async def test_building_map(self):
         """
