@@ -2,7 +2,7 @@ import { screen, render, RenderResult, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import moment from 'moment';
-import { LogRowsType, LogLevel, LogTable } from '../../lib';
+import { LogRowsType, LogLevel, LogTable } from '../../../lib';
 
 const rows = [] as LogRowsType;
 

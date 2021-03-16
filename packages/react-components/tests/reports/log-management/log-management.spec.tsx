@@ -1,6 +1,6 @@
 import { render, waitFor } from '@testing-library/react';
 import React from 'react';
-import { LogManagement } from '../../lib';
+import { LogManagement } from '../../../lib';
 
 const getLogLabels = () => [
   { label: 'Web Server', value: 'web-server' },

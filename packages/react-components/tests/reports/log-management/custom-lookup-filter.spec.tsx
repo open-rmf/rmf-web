@@ -1,7 +1,7 @@
 import { render, screen, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { CustomLookupFilter, CustomLookupFilterParser } from '../../lib';
+import { CustomLookupFilter, CustomLookupFilterParser } from '../../../lib';
 
 describe('Custom Lookup filter parser', () => {
   const columnDef = {

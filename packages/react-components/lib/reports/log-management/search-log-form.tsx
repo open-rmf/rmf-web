@@ -2,7 +2,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import { SearchFilter } from './search-filter';
-import DateAndTimePickers from '../date-time-picker';
+import DateAndTimePickers from '../../date-time-picker';
 import { LogLevel } from './log-level';
 
 import moment from 'moment';

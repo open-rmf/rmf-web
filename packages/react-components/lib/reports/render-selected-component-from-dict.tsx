@@ -2,7 +2,7 @@ import React from 'react';
 
 interface RenderSelectedComponentProps {
   selectedKey: string;
-  obj: Record<string, React.ReactElement>;
+  obj: Record<string, React.ReactElement | null>;
 }
 
 export const RenderSelectedComponentFromDict = (

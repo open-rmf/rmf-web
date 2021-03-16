@@ -3,7 +3,7 @@ import MaterialTable from 'material-table';
 import { CustomLookupFilterParser, LogLevel } from '.';
 import { makeStyles, Typography } from '@material-ui/core';
 import moment from 'moment';
-import { materialTableIcons } from '../material-table-icons';
+import { materialTableIcons } from '../../material-table-icons';
 
 export type LogRowsType = { level: string; message: string; timestamp: string }[];
 

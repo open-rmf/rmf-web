@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 import React from 'react';
-import { SearchLogForm } from '../../lib';
+import { SearchLogForm } from '../../../lib';
 import moment from 'moment';
 
 describe('Search log form tests', () => {

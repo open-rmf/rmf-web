@@ -8,7 +8,7 @@ export * from './dispensers';
 export * from './doors';
 export * from './geometry-utils';
 export * from './lifts';
-export * from './log-management';
+export * from './reports';
 export * from './omni-panel';
 export * from './omni-panel-view';
 export * from './robots';
