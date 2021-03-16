@@ -143,10 +143,12 @@ export default function Dashboard(_props: {}): React.ReactElement {
     setNegotiationTrajStore({});
     viewStackDispatch.reset();
     setShowOmniPanel(false);
+    setSearch('');
   }, [setShowOmniPanel, viewStackDispatch]);
 
   const handleOmniPanelBack = React.useCallback(() => {
     clearSpotlights();
+    setSearch('');
     if (viewStack.length === 1) {
       return handleOmniPanelClose();
     } else {
@@ -159,6 +161,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     clearSpotlights();
     setNegotiationTrajStore({});
     viewStackDispatch.reset();
+    setSearch('');
   }, [viewStackDispatch]);
 
   const doorStates = React.useContext(DoorStateContext);
@@ -316,7 +319,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
           id="omnipanel"
         >
           <OmniPanelView viewId={OmniPanelViewIndex.MainMenu}>
-            <MainMenu pushView={viewStackDispatch.push} />
+            <MainMenu pushView={viewStackDispatch.push} setSearch={() => setSearch('')} />
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Doors}>
             <SimpleSearch onChange={onChange} value={search} />
