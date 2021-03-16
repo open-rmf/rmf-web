@@ -1,6 +1,5 @@
 import React from 'react';
-import { TextField, makeStyles, IconButton } from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
+import { TextField, makeStyles, Divider } from '@material-ui/core';
 
 export interface OnChangeEvent {
   name?: string | undefined;
@@ -9,16 +8,12 @@ export interface OnChangeEvent {
 
 export interface SimpleSearchProps {
   onChange?: (e: React.ChangeEvent<OnChangeEvent>) => void;
-  onClick?: () => void;
-  disabled: boolean;
   value: string;
 }
 
 const useStyles = makeStyles((theme) => ({
   simpleSearch: {
     margin: '1rem',
-    display: 'flex',
-    justifyContent: 'space-between',
   },
   clearSearch: {
     color: theme.palette.error.main,
@@ -26,27 +21,27 @@ const useStyles = makeStyles((theme) => ({
   searchBar: {
     width: '100%',
   },
+  divider: {
+    margin: '1.5rem 0',
+  },
 }));
 
 export const SimpleSearch = (props: SimpleSearchProps): JSX.Element => {
   const classes = useStyles();
 
-  const { onChange, disabled, value, onClick } = props;
+  const { onChange, value } = props;
 
   return (
     <div className={classes.simpleSearch}>
       <TextField
         label="Search"
         value={value}
-        disabled={disabled}
         variant="outlined"
         onChange={onChange}
         className={classes.searchBar}
         aria-label="text-input"
       />
-      <IconButton disabled={disabled} className={classes.clearSearch} onClick={onClick}>
-        <CloseIcon />
-      </IconButton>
+      <Divider className={classes.divider} />
     </div>
   );
 };

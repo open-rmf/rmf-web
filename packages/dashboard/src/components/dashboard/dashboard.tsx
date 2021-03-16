@@ -287,10 +287,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
     setSearch(e.target.value);
   };
 
-  const deleteSearchTerm = () => {
-    setSearch('');
-  };
-
   return (
     <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
       {buildingMap && (
@@ -323,12 +319,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
             <MainMenu pushView={viewStackDispatch.push} />
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Doors}>
-            <SimpleSearch
-              disabled={doors.length === 0}
-              onChange={onChange}
-              value={search}
-              onClick={deleteSearchTerm}
-            />
+            <SimpleSearch onChange={onChange} value={search} />
             {doors.map((door) => {
               return door.name.includes(search) ? (
                 <DoorAccordion
@@ -343,12 +334,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
             })}
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Lifts}>
-            <SimpleSearch
-              disabled={lifts.length === 0}
-              onChange={onChange}
-              value={search}
-              onClick={deleteSearchTerm}
-            />
+            <SimpleSearch onChange={onChange} value={search} />
             {lifts.map((lift) => {
               return lift.name.includes(search) ? (
                 <LiftAccordion
@@ -362,12 +348,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
             })}
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Robots}>
-            <SimpleSearch
-              disabled={fleets.length === 0}
-              onChange={onChange}
-              value={search}
-              onClick={deleteSearchTerm}
-            />
+            <SimpleSearch onChange={onChange} value={search} />
             {fleets.flatMap((fleet) =>
               fleet.robots.map((robot) => {
                 return robot.name.includes(search) ? (
@@ -383,12 +364,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
             )}
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Dispensers}>
-            <SimpleSearch
-              disabled={!dispensers || Object.keys(dispensers).length === 0}
-              onChange={onChange}
-              value={search}
-              onClick={deleteSearchTerm}
-            />
+            <SimpleSearch onChange={onChange} value={search} />
             {dispensers
               ? Object.keys(dispensers).map((dispenser) => {
                   return dispenser.includes(search) ? (
