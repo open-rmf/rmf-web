@@ -10,6 +10,7 @@ class AppConfig:
         self.port: int = config_dict["port"]
         self.static_path: str = config_dict["static_path"]
         self.static_directory: str = config_dict["static_directory"]
+        self.log_level = config_dict["log_level"]
 
 
 def _load_config() -> AppConfig:

@@ -36,10 +36,7 @@ logger = logging.getLogger("app")
 handler = logging.StreamHandler(sys.stdout)
 handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
 logger.addHandler(handler)
-if "RMF_API_SERVER_DEBUG" in os.environ:
-    logger.setLevel(logging.DEBUG)
-else:
-    logger.setLevel(logging.INFO)
+logger.setLevel(app_config.log_level)
 
 sio_client = socketio.AsyncClient()
 
