@@ -140,13 +140,18 @@ export const ReportDashboard = (props: ReportDashboardProps) => {
           paper: classes.drawerPaper,
         }}
       >
-        <div className={classes.drawerHeader}>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-          </IconButton>
-        </div>
-        <Divider />
-        <MultiLevelMenu menuStructure={buildMenuReportStructure(setReport)} />
+        {open && (
+          <>
+            <div className={classes.drawerHeader}>
+              <IconButton onClick={handleDrawerClose} aria-label="close drawer">
+                {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+              </IconButton>
+            </div>
+
+            <Divider />
+            <MultiLevelMenu menuStructure={buildMenuReportStructure(setReport)} />
+          </>
+        )}
       </Drawer>
       <main
         className={clsx(classes.content, {

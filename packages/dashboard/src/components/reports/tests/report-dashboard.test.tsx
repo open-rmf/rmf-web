@@ -1,52 +1,46 @@
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, screen, cleanup, RenderResult } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { ReportDashboard } from '../report-dashboard';
 import { buildReportMenuStructure } from '../reporter-side-bar-structure';
 
-it('smoke test', () => {
-  const ReportContainer: Record<string, React.ReactElement> = {
-    queryAllLogs: <h1>Still not implemented</h1>,
-  };
+describe('ReportDashboard', () => {
+  beforeEach(() => {
+    const ReportContainer: Record<string, React.ReactElement> = {
+      queryAllLogs: <h1>QueryAllLogs</h1>,
+    };
 
-  render(
-    <ReportDashboard
-      buildMenuReportStructure={buildReportMenuStructure}
-      reportContainer={ReportContainer}
-    />,
-  );
+    render(
+      <ReportDashboard
+        buildMenuReportStructure={buildReportMenuStructure}
+        reportContainer={ReportContainer}
+      />,
+    );
+  });
 
-  cleanup();
-});
+  afterEach(() => cleanup());
 
-it('shows the report picker side bar', () => {
-  const ReportContainer: Record<string, React.ReactElement> = {
-    queryAllLogs: <h1>QueryAllLogs</h1>,
-  };
+  it('shows the report picker side bar on start', () => {
+    expect(screen.getByText('All logs')).toBeTruthy();
+  });
 
-  render(
-    <ReportDashboard
-      buildMenuReportStructure={buildReportMenuStructure}
-      reportContainer={ReportContainer}
-    />,
-  );
-  expect(screen.getByText('All logs')).toBeTruthy();
-  cleanup();
-});
+  it('closes the side-bar correctly', async () => {
+    // To check that it's open
+    expect(screen.getByText('All logs')).toBeTruthy();
+    userEvent.click(screen.getByLabelText('close drawer'));
+    expect(screen.queryByText('All logs')).toBeFalsy();
+  });
 
-it('renders the main screen correctly', () => {
-  const ReportContainer: Record<string, React.ReactElement> = {
-    queryAllLogs: <h1>QueryAllLogs</h1>,
-  };
+  it('it closes side-bar and opens it correctly', async () => {
+    // To check that it's open
+    expect(screen.getByText('All logs')).toBeTruthy();
+    userEvent.click(screen.getByLabelText('close drawer'));
+    // To check that it's closed
+    expect(screen.queryByText('All logs')).toBeFalsy();
 
-  render(
-    <ReportDashboard
-      buildMenuReportStructure={buildReportMenuStructure}
-      reportContainer={ReportContainer}
-    />,
-  );
-  expect(screen.getByText('QueryAllLogs')).toBeTruthy();
-  cleanup();
+    userEvent.click(screen.getByLabelText('open drawer'));
+    expect(screen.queryByText('All logs')).toBeTruthy();
+  });
 });
 
 it('picks a different report and renders correctly', () => {
@@ -61,8 +55,6 @@ it('picks a different report and renders correctly', () => {
       reportContainer={ReportContainer}
     />,
   );
-
   userEvent.click(screen.getByText('Charger states'));
   expect(screen.getByText('Test'));
-  cleanup();
 });
