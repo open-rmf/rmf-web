@@ -8,6 +8,7 @@ from rmf_door_msgs.msg import DoorState
 from rmf_fleet_msgs.msg import FleetState
 from rmf_ingestor_msgs.msg import IngestorState
 from rmf_lift_msgs.msg import LiftState
+from rmf_task_msgs.msg import TaskSummary
 from rosidl_runtime_py.convert import message_to_ordereddict
 
 from .. import models
@@ -28,6 +29,7 @@ class RmfBookKeeper:
             "ingestor_health",
             "fleet_state",
             "robot_health",
+            "task_summary",
         ],
     )
 
@@ -53,6 +55,7 @@ class RmfBookKeeper:
             self._main_logger.getChild("ingestor_health"),
             self._main_logger.getChild("fleet_state"),
             self._main_logger.getChild("robot_health"),
+            self._main_logger.getChild("task_summary"),
         )
 
         self._loggers.door_state.parent = self._main_logger
@@ -65,6 +68,7 @@ class RmfBookKeeper:
         self._loggers.ingestor_health.parent = self._main_logger
         self._loggers.fleet_state.parent = self._main_logger
         self._loggers.robot_health.parent = self._main_logger
+        self._loggers.task_summary.parent = self._main_logger
 
     def start(
         self,
@@ -79,6 +83,7 @@ class RmfBookKeeper:
         self._record_ingestor_health()
         self._record_fleet_state()
         self._record_robot_health()
+        self._record_task_summary()
 
     @staticmethod
     def _report_health(health: models.BasicHealthModel, logger: logging.Logger):
@@ -205,3 +210,14 @@ class RmfBookKeeper:
             self._report_health(health, self._loggers.robot_health)
 
         self.rmf.robot_health.subscribe(lambda x: self.loop.create_task(update(x)))
+
+    def _record_task_summary(self):
+        async def update(task: TaskSummary):
+            if task.state in models.TaskSummary.ACTIVE_STATES:
+                await models.TaskSummary.update_or_create_from_rmf(task)
+            else:
+                record = await models.TaskSummary.get(id_=task.task_id)
+                await record.delete()
+            self._loggers.task_summary.info(json.dumps(message_to_ordereddict(task)))
+
+        self.rmf.task_summaries.subscribe(lambda x: self.loop.create_task(update(x)))

@@ -5,6 +5,7 @@ from unittest.mock import MagicMock
 
 import aiohttp.web
 import socketio
+from rmf_task_msgs.msg import TaskSummary
 from rx import Observable
 
 from ..models import (
@@ -217,6 +218,17 @@ class TestRmfIO(unittest.IsolatedAsyncioTestCase):
             factory,
             lambda x: x["id"],
             self.rmf_gateway.robot_health,
+        )
+
+    async def test_task_summary(self):
+        def factory(id_: str):
+            return TaskSummary(task_id=id_)
+
+        await self.check_endpoint(
+            topics.task_summaries,
+            factory,
+            lambda x: x["task_id"],
+            self.rmf_gateway.task_summaries,
         )
 
     async def test_building_map(self):
