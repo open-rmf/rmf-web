@@ -1,5 +1,5 @@
 import React from 'react';
-import { DoorRowsType, DoorStateReport, LogManagement } from 'react-components';
+import { LogManagement } from 'react-components';
 import { ReportDashboard } from '../../components/reports/report-dashboard';
 import { Reports } from '../../components/reports/report-list';
 import { buildReportMenuStructure } from '../../components/reports/reporter-side-bar-structure';
@@ -36,21 +36,7 @@ const getLabelsPromise = async () => getLogLabels();
 const ReportContainer: Record<string, React.ReactElement> = {
   [Reports.queryAllLogs]: <LogManagement getLogs={getLogsPromise} getLabels={getLabelsPromise} />,
   [Reports.showChargerStateReport]: <h1>Still not implemented</h1>,
-  [Reports.showDoorStateReport]: (
-    <DoorStateReport
-      rows={
-        [
-          {
-            name: 'doorA',
-            status: 'closed',
-            message: 'test',
-            timestamp: new Date().toISOString(),
-          },
-        ] as DoorRowsType
-      }
-      tableSize={'49vh'}
-    />
-  ),
+  [Reports.showDoorStateReport]: <h1>Still not implemented</h1>,
   [Reports.showLiftStateReport]: <h1>Still not implemented</h1>,
   [Reports.showNegotiationsReport]: <h1>Still not implemented</h1>,
   [Reports.showRobotStateReport]: <h1>Still not implemented</h1>,
