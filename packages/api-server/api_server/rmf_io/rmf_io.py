@@ -6,7 +6,6 @@ from typing import Any, Dict, Mapping, Optional, cast
 
 import socketio
 from building_map_msgs.msg import AffineImage, BuildingMap, Level
-from rmf_task_msgs.msg import TaskSummary
 from rosidl_runtime_py.convert import message_to_ordereddict
 from rx.core.typing import Observable as ObservableType
 from rx.operators import map as rx_map
@@ -50,7 +49,6 @@ class RmfIO:
         self._init_ingestor_health()
         self._init_fleet_state()
         self._init_robot_health()
-        self._init_task_summary()
         self._init_building_map()
 
     def _init_room(self, topic: str, source: ObservableType[Mapping[str, Any]]):
@@ -146,23 +144,6 @@ class RmfIO:
             self.rmf_gateway.robot_health.pipe(rx_map(lambda x: {x.id_: x.to_dict()})),
         )
 
-    def _init_task_summary(self):
-        topic = topics.task_summaries
-
-        self.room_records[topic] = lambda: {
-            x.task_id: message_to_ordereddict(x)
-            for x in self.rmf_gateway.current_task_summaries.values()
-        }
-
-        def on_next(task: TaskSummary):
-            async def emit_task():
-                await self.sio.emit(topic, message_to_ordereddict(task), to=topic)
-                self.logger.debug(f'emitted message to room "{topic}"')
-
-            self.loop.create_task(emit_task())
-
-        self.rmf_gateway.task_summaries.subscribe(on_next)
-
     def _init_building_map(self):
         def process(building_map: Optional[BuildingMap]):
             """
@@ -201,10 +182,7 @@ class RmfIO:
             await self.sio.emit("subscribe", "unknown topic", to=sid)
             return
 
-        if callable(self.room_records[topic]):
-            records: dict = self.room_records[topic]()
-        else:
-            records: dict = self.room_records[topic]
+        records: dict = self.room_records[topic]
         if records:
             coros = [self.sio.emit(topic, rec, sid) for rec in records.values()]
             await asyncio.gather(*coros)

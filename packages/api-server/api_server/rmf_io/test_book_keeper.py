@@ -3,7 +3,6 @@ import logging
 import unittest
 
 from rmf_door_msgs.msg import DoorMode
-from rmf_task_msgs.msg import TaskSummary
 from tortoise import Tortoise
 
 from .. import models
@@ -218,67 +217,3 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
         health = await models.RobotHealth.get(id_="test_robot")
         self.assertIsNotNone(health)
         self.assertEqual(health.health_status, models.HealthStatus.UNHEALTHY)
-
-    async def test_write_task_summary(self):
-        task = TaskSummary(task_id="test_task")
-        task.status = "test_status"
-        self.rmf.task_summaries.on_next(task)
-        await asyncio.sleep(0)
-        result = await models.TaskSummary.get(id_="test_task")
-        self.assertIsNotNone(result)
-        result_rmf = result.to_rmf()
-        self.assertEqual(result_rmf.status, "test_status")
-
-        task = TaskSummary(task_id="test_task")
-        task.status = "test_status_2"
-        self.rmf.task_summaries.on_next(task)
-        await asyncio.sleep(0)
-        result = await models.TaskSummary.get(id_="test_task")
-        self.assertIsNotNone(result)
-        result_rmf = result.to_rmf()
-        self.assertEqual(result_rmf.status, "test_status_2")
-
-    async def test_delete_completed_tasks(self):
-        task = TaskSummary(task_id="test_task", state=TaskSummary.STATE_ACTIVE)
-        self.rmf.task_summaries.on_next(task)
-        await asyncio.sleep(0)
-        result = await models.TaskSummary.get(id_="test_task")
-        self.assertIsNotNone(result)
-
-        task = TaskSummary(task_id="test_task", state=TaskSummary.STATE_COMPLETED)
-        self.rmf.task_summaries.on_next(task)
-        result = await models.TaskSummary.filter(id_="test_task").first()
-        while result is not None:
-            await asyncio.sleep(0)
-            result = await models.TaskSummary.filter(id_="test_task").first()
-        self.assertIsNone(result)
-
-    async def test_delete_failed_tasks(self):
-        task = TaskSummary(task_id="test_task", state=TaskSummary.STATE_ACTIVE)
-        self.rmf.task_summaries.on_next(task)
-        await asyncio.sleep(0)
-        result = await models.TaskSummary.get(id_="test_task")
-        self.assertIsNotNone(result)
-
-        task = TaskSummary(task_id="test_task", state=TaskSummary.STATE_FAILED)
-        self.rmf.task_summaries.on_next(task)
-        result = await models.TaskSummary.filter(id_="test_task").first()
-        while result is not None:
-            await asyncio.sleep(0)
-            result = await models.TaskSummary.filter(id_="test_task").first()
-        self.assertIsNone(result)
-
-    async def test_delete_cancelled_tasks(self):
-        task = TaskSummary(task_id="test_task", state=TaskSummary.STATE_ACTIVE)
-        self.rmf.task_summaries.on_next(task)
-        await asyncio.sleep(0)
-        result = await models.TaskSummary.get(id_="test_task")
-        self.assertIsNotNone(result)
-
-        task = TaskSummary(task_id="test_task", state=TaskSummary.STATE_CANCELED)
-        self.rmf.task_summaries.on_next(task)
-        result = await models.TaskSummary.filter(id_="test_task").first()
-        while result is not None:
-            await asyncio.sleep(0)
-            result = await models.TaskSummary.filter(id_="test_task").first()
-        self.assertIsNone(result)

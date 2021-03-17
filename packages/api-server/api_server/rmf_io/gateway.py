@@ -5,11 +5,16 @@ from rmf_door_msgs.msg import DoorState
 from rmf_fleet_msgs.msg import FleetState
 from rmf_ingestor_msgs.msg import IngestorState
 from rmf_lift_msgs.msg import LiftState
-from rmf_task_msgs.msg import TaskSummary
 from rx import Observable
 from rx.subject import BehaviorSubject, Subject
 
-from .. import models
+from ..models import (
+    DispenserHealth,
+    DoorHealth,
+    IngestorHealth,
+    LiftHealth,
+    RobotHealth,
+)
 
 
 class RmfGateway:
@@ -35,7 +40,7 @@ class RmfGateway:
         )
 
         self.door_health = Subject()  # Subject[DoorHealth]
-        self.current_door_health: Dict[str, models.DoorHealth] = {}
+        self.current_door_health: Dict[str, DoorHealth] = {}
         self._save_event(
             self.door_health,
             self.current_door_health,
@@ -51,7 +56,7 @@ class RmfGateway:
         )
 
         self.lift_health = Subject()  # Subject[LiftHealth]
-        self.current_lift_health: Dict[str, models.LiftHealth] = {}
+        self.current_lift_health: Dict[str, LiftHealth] = {}
         self._save_event(
             self.lift_health,
             self.current_lift_health,
@@ -67,7 +72,7 @@ class RmfGateway:
         )
 
         self.dispenser_health = Subject()  # Subject[DispenserHealth]
-        self.current_dispenser_health: Dict[str, models.DispenserHealth] = {}
+        self.current_dispenser_health: Dict[str, DispenserHealth] = {}
         self._save_event(
             self.dispenser_health,
             self.current_dispenser_health,
@@ -83,7 +88,7 @@ class RmfGateway:
         )
 
         self.ingestor_health = Subject()  # Subject[IngestorHealth]
-        self.current_ingestor_health: Dict[str, models.IngestorHealth] = {}
+        self.current_ingestor_health: Dict[str, IngestorHealth] = {}
         self._save_event(
             self.ingestor_health,
             self.current_ingestor_health,
@@ -99,16 +104,12 @@ class RmfGateway:
         )
 
         self.robot_health = Subject()  # Subject[RobotHealth]
-        self.current_robot_health: Dict[str, models.RobotHealth] = {}
+        self.current_robot_health: Dict[str, RobotHealth] = {}
         self._save_event(
             self.robot_health,
             self.current_robot_health,
             lambda x: x.id_,
         )
-
-        self.task_summaries = Subject()  # Subject[TaskSummary]
-        self.current_task_summaries: Dict[str, TaskSummary] = {}
-        self._init_task_summaries()
 
         self.building_map = BehaviorSubject(  # BehaviorSubject[Optional[BuildingMap]]
             None
@@ -120,13 +121,3 @@ class RmfGateway:
             dic[key_mapper(data)] = data
 
         source.subscribe(on_next)
-
-    def _init_task_summaries(self):
-        def on_next(task: TaskSummary):
-            keep_states = models.TaskSummary.ACTIVE_STATES
-            if task.state in keep_states:
-                self.current_task_summaries[task.task_id] = task
-            else:
-                self.current_task_summaries.pop(task.task_id)
-
-        self.task_summaries.subscribe(on_next)
