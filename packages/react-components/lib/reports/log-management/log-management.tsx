@@ -6,7 +6,6 @@ import { LogRowsType, LogTable } from './log-table';
 const useStyles = makeStyles(() => ({
   table: {
     overflowY: 'scroll',
-    height: '60vh',
     paddingTop: '20px',
   },
 }));
@@ -46,7 +45,7 @@ export const LogManagement = (props: LogManagementProps): React.ReactElement => 
     <>
       <SearchLogForm logLabelValues={logLabels} search={searchLogs}></SearchLogForm>
       <div className={classes.table}>
-        {logs.length !== 0 && <LogTable rows={logs} tableSize={'49vh'} />}
+        {logs.length !== 0 && <LogTable rows={logs} tableSize={'48vh'} />}
       </div>
     </>
   );
