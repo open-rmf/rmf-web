@@ -56,7 +56,7 @@ async def load_doors(gateway: RmfGateway):
 async def load_lifts(gateway: RmfGateway):
     lift_states = await models.LiftState.all()
     for state in lift_states:
-        gateway.lift_states.on_next(state)
+        gateway.lift_states.on_next(state.to_rmf())
     logger.info(f"loaded {len(lift_states)} lift states")
 
     healths = await models.LiftHealth.all()
@@ -68,7 +68,7 @@ async def load_lifts(gateway: RmfGateway):
 async def load_dispensers(gateway: RmfGateway):
     dispenser_states = await models.DispenserState.all()
     for state in dispenser_states:
-        gateway.dispenser_states.on_next(state)
+        gateway.dispenser_states.on_next(state.to_rmf())
     logger.info(f"loaded {len(dispenser_states)} dispenser states")
 
     healths = await models.DispenserHealth.all()
@@ -80,7 +80,7 @@ async def load_dispensers(gateway: RmfGateway):
 async def load_ingestors(gateway: RmfGateway):
     ingestor_states = await models.IngestorState.all()
     for state in ingestor_states:
-        gateway.ingestor_states.on_next(state)
+        gateway.ingestor_states.on_next(state.to_rmf())
     logger.info(f"loaded {len(ingestor_states)} ingestor states")
 
     healths = await models.IngestorHealth.all()
@@ -92,13 +92,20 @@ async def load_ingestors(gateway: RmfGateway):
 async def load_fleets(gateway: RmfGateway):
     fleet_states = await models.FleetState.all()
     for state in fleet_states:
-        gateway.fleet_states.on_next(state)
+        gateway.fleet_states.on_next(state.to_rmf())
     logger.info(f"loaded {len(fleet_states)} fleet states")
 
     healths = await models.RobotHealth.all()
     for health in healths:
         gateway.robot_health.on_next(health)
     logger.info(f"loaded {len(healths)} robot health")
+
+
+async def load_tasks(gateway: RmfGateway):
+    task_summaries = await models.TaskSummary.all()
+    for task in task_summaries:
+        gateway.task_summaries.on_next(task.to_rmf())
+    logger.info(f"loaded {len(task_summaries)} tasks")
 
 
 async def load_states(gateway: RmfGateway):
@@ -108,6 +115,7 @@ async def load_states(gateway: RmfGateway):
     await load_lifts(gateway)
     await load_dispensers(gateway)
     await load_fleets(gateway)
+    await load_tasks(gateway)
 
     logger.info("successfully loaded all states")
 

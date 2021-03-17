@@ -9,6 +9,7 @@ from rmf_door_msgs.msg import DoorState
 from rmf_fleet_msgs.msg import FleetState
 from rmf_ingestor_msgs.msg import IngestorState
 from rmf_lift_msgs.msg import LiftState
+from rmf_task_msgs.msg import TaskSummary
 
 from .rmf_io import RmfGateway
 
@@ -53,6 +54,13 @@ class RmfTransport:
             FleetState,
             "fleet_states",
             self.rmf_gateway.fleet_states.on_next,
+            10,
+        )
+
+        self.task_summaries_sub = self.ros2_node.create_subscription(
+            TaskSummary,
+            "task_summaries",
+            self.rmf_gateway.task_summaries.on_next,
             10,
         )
 
