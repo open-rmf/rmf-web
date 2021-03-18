@@ -25,11 +25,8 @@ describe('door request', () => {
     // set value to filter input
     $('[data-component=simple-filter]').$('input').setValue('value');
     console.log($('[data-component=simple-filter]').$('input').getValue());
-    $('data-component=DoorMarker').click();
-    console.log(
-      $('final value ' + '[data-component=simple-filter]')
-        .$('input')
-        .getValue(),
-    );
+    console.log($('data-component=DoorMarker'));
+    // $('data-component=DoorMarker').click();
+    console.log('final value ' + $('[data-component=simple-filter]').$('input').getValue());
   });
 });
