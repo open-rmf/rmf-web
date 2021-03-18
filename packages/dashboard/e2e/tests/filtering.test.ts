@@ -2,7 +2,7 @@ import { Element } from '@wdio/sync';
 import { makeLauncher } from '../../rmf-launcher';
 import { login, overwriteClick } from './utils';
 
-describe('door request', () => {
+describe('Simple Filter', () => {
   const launcher = makeLauncher();
 
   before(async () => await launcher.launch());
@@ -16,8 +16,6 @@ describe('door request', () => {
   before(() => {
     $('[data-component=MainMenu] [data-item=Doors]').click();
     console.log($('[data-component=simple-filter]').getHTML());
-    // doorAccordion = $('.MuiAccordion-root*=main_door');
-    // doorAccordion.click();
   });
 
   it('testing', () => {
@@ -25,7 +23,7 @@ describe('door request', () => {
     // set value to filter input
     $('[data-component=simple-filter]').$('input').setValue('value');
     console.log($('[data-component=simple-filter]').$('input').getValue());
-    console.log($('data-component=DoorMarker'));
+    console.log($('[data-component=DoorMarker]').getHTML());
     // $('data-component=DoorMarker').click();
     console.log('final value ' + $('[data-component=simple-filter]').$('input').getValue());
   });
