@@ -291,7 +291,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const [filter, setFilter] = React.useState('');
 
   const onChange = (e: React.ChangeEvent<OnChangeEvent>) => {
-    setFilter(e.target.value);
+    setFilter(e.target.value.toLowerCase());
   };
 
   return (
@@ -328,7 +328,8 @@ export default function Dashboard(_props: {}): React.ReactElement {
           <OmniPanelView viewId={OmniPanelViewIndex.Doors}>
             <SimpleFilter onChange={onChange} value={filter} />
             {doors.map((door) => {
-              return door.name.includes(filter) ? (
+              const toLower = door.name.toLowerCase();
+              return toLower.includes(filter) ? (
                 <DoorAccordion
                   key={door.name}
                   ref={doorAccordionRefs[door.name].ref}
@@ -343,7 +344,8 @@ export default function Dashboard(_props: {}): React.ReactElement {
           <OmniPanelView viewId={OmniPanelViewIndex.Lifts}>
             <SimpleFilter onChange={onChange} value={filter} />
             {lifts.map((lift) => {
-              return lift.name.includes(filter) ? (
+              const toLower = lift.name.toLowerCase();
+              return toLower.includes(filter) ? (
                 <LiftAccordion
                   key={lift.name}
                   ref={liftAccordionRefs[lift.name].ref}
@@ -358,7 +360,8 @@ export default function Dashboard(_props: {}): React.ReactElement {
             <SimpleFilter onChange={onChange} value={filter} />
             {fleets.flatMap((fleet) =>
               fleet.robots.map((robot) => {
-                return robot.name.includes(filter) ? (
+                const toLower = robot.name;
+                return toLower.includes(filter) ? (
                   <RobotAccordion
                     key={robotKey(fleet.name, robot)}
                     ref={robotAccordionRefs[robotKey(fleet.name, robot)].ref}
@@ -374,7 +377,8 @@ export default function Dashboard(_props: {}): React.ReactElement {
             <SimpleFilter onChange={onChange} value={filter} />
             {dispensers
               ? Object.keys(dispensers).map((dispenser) => {
-                  return dispenser.includes(filter) ? (
+                  const toLower = dispenser.toLowerCase();
+                  return toLower.includes(filter) ? (
                     <DispenserAccordion
                       key={dispenser}
                       ref={dispenserAccordionRefs[dispenser].ref}
