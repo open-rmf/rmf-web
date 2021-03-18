@@ -15,8 +15,8 @@ describe('door request', () => {
 
   before(() => {
     $('[data-component=MainMenu] [data-item=Doors]').click();
-    console.log($('[data-item=door-filter]').getHTML());
     console.log($('.MuiAccordion-root*=main_door').getHTML());
+    console.log($('[data-component=simple-filter]').getHTML());
     // doorAccordion = $('.MuiAccordion-root*=main_door');
     // doorAccordion.click();
   });

@@ -37,6 +37,7 @@ export const SimpleFilter = (props: SimpleFilterProps): JSX.Element => {
         onChange={onChange}
         className={classes.filterBar}
         aria-label="text-input"
+        data-component="simple-filter"
       />
       <Divider className={classes.divider} />
     </div>
