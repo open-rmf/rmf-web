@@ -23,8 +23,10 @@ describe('Simple Filter', () => {
     // set value to filter input
     $('[data-component=simple-filter]').$('input').setValue('value');
     console.log($('[data-component=simple-filter]').$('input').getValue());
-    console.log($('[data-component=DoorMarker]').getHTML());
+    const door = $('[data-component=DoorMarker]');
+    door.waitForClickable();
+    door.click();
     // $('data-component=DoorMarker').click();
-    console.log('final value ' + $('[data-component=simple-filter]').$('input').getValue());
+    expect($('[data-component=simple-filter]').$('input').getValue()).toEqual('');
   });
 });
