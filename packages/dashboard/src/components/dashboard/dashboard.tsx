@@ -326,7 +326,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
             <MainMenu pushView={viewStackDispatch.push} setFilter={() => setFilter('')} />
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Doors}>
-            <SimpleFilter onChange={onChange} value={filter} />
+            <SimpleFilter data-item="door-filter" onChange={onChange} value={filter} />
             {doors.map((door) => {
               return door.name.includes(filter) ? (
                 <DoorAccordion
