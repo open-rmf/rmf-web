@@ -3,7 +3,6 @@ import { makeLauncher } from '../../rmf-launcher';
 import { login, overwriteClick } from './utils';
 
 describe('door request', () => {
-  let doorAccordion: Element;
   const launcher = makeLauncher();
 
   before(async () => await launcher.launch());
@@ -17,8 +16,9 @@ describe('door request', () => {
   before(() => {
     $('[data-component=MainMenu] [data-item=Doors]').click();
     console.log($('[data-item=door-filter]').getHTML());
-    doorAccordion = $('.MuiAccordion-root*=main_door');
-    doorAccordion.click();
+    console.log($('.MuiAccordion-root*=main_door').getHTML());
+    // doorAccordion = $('.MuiAccordion-root*=main_door');
+    // doorAccordion.click();
   });
 
   it('testing', () => {
