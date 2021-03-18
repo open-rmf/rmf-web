@@ -1,4 +1,3 @@
-import { Element } from '@wdio/sync';
 import { makeLauncher } from '../../rmf-launcher';
 import { login, overwriteClick } from './utils';
 
@@ -15,18 +14,18 @@ describe('Simple Filter', () => {
 
   before(() => {
     $('[data-component=MainMenu] [data-item=Doors]').click();
-    console.log($('[data-component=simple-filter]').getHTML());
   });
 
-  it('testing', () => {
-    console.log('blah');
+  it('Clicking on an equipment on the map resets the filter', () => {
     // set value to filter input
     $('[data-component=simple-filter]').$('input').setValue('value');
-    console.log($('[data-component=simple-filter]').$('input').getValue());
+
+    // get door marker and click
     const door = $('[data-component=DoorMarker]');
     door.waitForClickable();
     door.click();
-    // $('data-component=DoorMarker').click();
+
+    // check that the filter is empty after clicking
     expect($('[data-component=simple-filter]').$('input').getValue()).toEqual('');
   });
 });
