@@ -27,4 +27,4 @@ export * from './error-overlay';
 export * from './material-table-icons';
 export * from './notifications-dialog';
 export * from './systems-summary';
-export * from './simple-search';
+export * from './simple-filter';

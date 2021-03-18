@@ -15,7 +15,7 @@ import {
   RobotAccordion as RobotAccordion_,
   useStackNavigator,
   withSpotlight,
-  SimpleSearch,
+  SimpleFilter,
   OnChangeEvent,
 } from 'react-components';
 import { GlobalHotKeys } from 'react-hotkeys';
@@ -143,12 +143,12 @@ export default function Dashboard(_props: {}): React.ReactElement {
     setNegotiationTrajStore({});
     viewStackDispatch.reset();
     setShowOmniPanel(false);
-    setSearch('');
+    setFilter('');
   }, [setShowOmniPanel, viewStackDispatch]);
 
   const handleOmniPanelBack = React.useCallback(() => {
     clearSpotlights();
-    setSearch('');
+    setFilter('');
     if (viewStack.length === 1) {
       return handleOmniPanelClose();
     } else {
@@ -161,7 +161,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     clearSpotlights();
     setNegotiationTrajStore({});
     viewStackDispatch.reset();
-    setSearch('');
+    setFilter('');
   }, [viewStackDispatch]);
 
   const doorStates = React.useContext(DoorStateContext);
@@ -175,7 +175,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
       setShowOmniPanel(true);
       viewStackDispatch.push(OmniPanelViewIndex.Doors);
       doorAccordionRefs[door.name].spotlight();
-      setSearch('');
+      setFilter('');
     },
     [doorAccordionRefs, viewStackDispatch, setShowOmniPanel],
   );
@@ -188,7 +188,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
       setShowOmniPanel(true);
       viewStackDispatch.push(OmniPanelViewIndex.Lifts);
       liftAccordionRefs[lift.name].spotlight();
-      setSearch('');
+      setFilter('');
     },
     [liftAccordionRefs, viewStackDispatch, setShowOmniPanel],
   );
@@ -202,7 +202,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
       setShowOmniPanel(true);
       viewStackDispatch.push(OmniPanelViewIndex.Dispensers);
       dispenserAccordionRefs[guid].spotlight();
-      setSearch('');
+      setFilter('');
     },
     [dispenserAccordionRefs, viewStackDispatch, setShowOmniPanel],
   );
@@ -224,7 +224,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
       setShowOmniPanel(true);
       viewStackDispatch.push(OmniPanelViewIndex.Robots);
       robotAccordionRefs[robotKey(fleet, robot)].spotlight();
-      setSearch('');
+      setFilter('');
     },
     [robotAccordionRefs, viewStackDispatch, setShowOmniPanel],
   );
@@ -288,10 +288,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
     [dashboardDispatch, viewStackDispatch, appController],
   );
 
-  const [search, setSearch] = React.useState('');
+  const [filter, setFilter] = React.useState('');
 
   const onChange = (e: React.ChangeEvent<OnChangeEvent>) => {
-    setSearch(e.target.value);
+    setFilter(e.target.value);
   };
 
   return (
@@ -323,12 +323,12 @@ export default function Dashboard(_props: {}): React.ReactElement {
           id="omnipanel"
         >
           <OmniPanelView viewId={OmniPanelViewIndex.MainMenu}>
-            <MainMenu pushView={viewStackDispatch.push} setSearch={() => setSearch('')} />
+            <MainMenu pushView={viewStackDispatch.push} setFilter={() => setFilter('')} />
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Doors}>
-            <SimpleSearch onChange={onChange} value={search} />
+            <SimpleFilter onChange={onChange} value={filter} />
             {doors.map((door) => {
-              return door.name.includes(search) ? (
+              return door.name.includes(filter) ? (
                 <DoorAccordion
                   key={door.name}
                   ref={doorAccordionRefs[door.name].ref}
@@ -341,9 +341,9 @@ export default function Dashboard(_props: {}): React.ReactElement {
             })}
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Lifts}>
-            <SimpleSearch onChange={onChange} value={search} />
+            <SimpleFilter onChange={onChange} value={filter} />
             {lifts.map((lift) => {
-              return lift.name.includes(search) ? (
+              return lift.name.includes(filter) ? (
                 <LiftAccordion
                   key={lift.name}
                   ref={liftAccordionRefs[lift.name].ref}
@@ -355,10 +355,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
             })}
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Robots}>
-            <SimpleSearch onChange={onChange} value={search} />
+            <SimpleFilter onChange={onChange} value={filter} />
             {fleets.flatMap((fleet) =>
               fleet.robots.map((robot) => {
-                return robot.name.includes(search) ? (
+                return robot.name.includes(filter) ? (
                   <RobotAccordion
                     key={robotKey(fleet.name, robot)}
                     ref={robotAccordionRefs[robotKey(fleet.name, robot)].ref}
@@ -371,10 +371,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
             )}
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Dispensers}>
-            <SimpleSearch onChange={onChange} value={search} />
+            <SimpleFilter onChange={onChange} value={filter} />
             {dispensers
               ? Object.keys(dispensers).map((dispenser) => {
-                  return dispenser.includes(search) ? (
+                  return dispenser.includes(filter) ? (
                     <DispenserAccordion
                       key={dispenser}
                       ref={dispenserAccordionRefs[dispenser].ref}

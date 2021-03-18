@@ -6,19 +6,16 @@ export interface OnChangeEvent {
   value: string;
 }
 
-export interface SimpleSearchProps {
+export interface SimpleFilterProps {
   onChange?: (e: React.ChangeEvent<OnChangeEvent>) => void;
   value: string;
 }
 
-const useStyles = makeStyles((theme) => ({
-  simpleSearch: {
+const useStyles = makeStyles(() => ({
+  simpleFilter: {
     margin: '1rem',
   },
-  clearSearch: {
-    color: theme.palette.error.main,
-  },
-  searchBar: {
+  filterBar: {
     width: '100%',
   },
   divider: {
@@ -26,19 +23,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const SimpleSearch = (props: SimpleSearchProps): JSX.Element => {
+export const SimpleFilter = (props: SimpleFilterProps): JSX.Element => {
   const classes = useStyles();
 
   const { onChange, value } = props;
 
   return (
-    <div className={classes.simpleSearch}>
+    <div className={classes.simpleFilter}>
       <TextField
-        label="Search"
+        label="Filter"
         value={value}
         variant="outlined"
         onChange={onChange}
-        className={classes.searchBar}
+        className={classes.filterBar}
         aria-label="text-input"
       />
       <Divider className={classes.divider} />

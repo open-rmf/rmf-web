@@ -16,44 +16,44 @@ const useStyles = makeStyles((theme) => ({
 
 export interface MainMenuProps {
   pushView(view: OmniPanelViewIndex): void;
-  setSearch?: () => void;
+  setFilter?: () => void;
 }
 
 export const MainMenu = React.memo((props: MainMenuProps) => {
   const { showTooltips } = React.useContext(TooltipsContext);
-  const { pushView, setSearch } = props;
+  const { pushView, setFilter } = props;
   debug('render');
   const classes = useStyles();
 
   const handleMainMenuDoorsClick = React.useCallback(() => {
     pushView(OmniPanelViewIndex.Doors);
-    setSearch && setSearch();
-  }, [pushView, setSearch]);
+    setFilter && setFilter();
+  }, [pushView, setFilter]);
 
   const handleMainMenuLiftsClick = React.useCallback(() => {
     pushView(OmniPanelViewIndex.Lifts);
-    setSearch && setSearch();
-  }, [pushView, setSearch]);
+    setFilter && setFilter();
+  }, [pushView, setFilter]);
 
   const handleMainMenuRobotsClick = React.useCallback(() => {
     pushView(OmniPanelViewIndex.Robots);
-    setSearch && setSearch();
-  }, [pushView, setSearch]);
+    setFilter && setFilter();
+  }, [pushView, setFilter]);
 
   const handleMainMenuDispensersClick = React.useCallback(() => {
     pushView(OmniPanelViewIndex.Dispensers);
-    setSearch && setSearch();
-  }, [pushView, setSearch]);
+    setFilter && setFilter();
+  }, [pushView, setFilter]);
 
   const handleMainMenuNegotiationsClick = React.useCallback(() => {
     pushView(OmniPanelViewIndex.Negotiations);
-    setSearch && setSearch();
-  }, [pushView, setSearch]);
+    setFilter && setFilter();
+  }, [pushView, setFilter]);
 
   const handleMainMenuTasksClick = React.useCallback(() => {
     pushView(OmniPanelViewIndex.Tasks);
-    setSearch && setSearch();
-  }, [pushView, setSearch]);
+    setFilter && setFilter();
+  }, [pushView, setFilter]);
 
   return (
     <List className={classes.root} data-component="MainMenu">
