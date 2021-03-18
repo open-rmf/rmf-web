@@ -15,7 +15,6 @@ describe('door request', () => {
 
   before(() => {
     $('[data-component=MainMenu] [data-item=Doors]').click();
-    console.log($('.MuiAccordion-root*=main_door').getHTML());
     console.log($('[data-component=simple-filter]').getHTML());
     // doorAccordion = $('.MuiAccordion-root*=main_door');
     // doorAccordion.click();
@@ -23,5 +22,14 @@ describe('door request', () => {
 
   it('testing', () => {
     console.log('blah');
+    // set value to filter input
+    $('[data-component=simple-filter]').$('input').setValue('value');
+    console.log($('[data-component=simple-filter]').$('input').getValue());
+    $('data-component=DoorMarker').click();
+    console.log(
+      $('final value ' + '[data-component=simple-filter]')
+        .$('input')
+        .getValue(),
+    );
   });
 });
