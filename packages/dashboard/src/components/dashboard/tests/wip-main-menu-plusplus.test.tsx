@@ -4,6 +4,7 @@ import { render, screen } from '@testing-library/react';
 import RmfHealthStateManager from '../../../managers/rmf-health-state-manager';
 import { RmfHealthContext } from '../../rmf-app/contexts';
 import { door, lift, fakeFleets } from './items';
+import userEvent from '@testing-library/user-event';
 
 const fleet = fakeFleets();
 
@@ -45,6 +46,7 @@ it('should count working equipment as operational', () => {
       <MainMenu pushView={jest.fn()} tasks={[]} notifications={[]} />
     </RmfHealthContext.Provider>,
   );
+
   expect(screen.getByLabelText('Door-operational').textContent).toEqual('1/1');
   expect(screen.getByLabelText('Lift-operational').textContent).toEqual('1/1');
   expect(screen.getByLabelText('Dispenser-operational').textContent).toEqual('1/1');
@@ -72,11 +74,13 @@ it('it should not count spoilt equipment as operational', () => {
       spoiltRobots: [{ fleet: 'fleet', name: 'robot', state: 'state', robot: fleet[0].robots[0] }],
     },
   };
+
   render(
     <RmfHealthContext.Provider value={healthStatus}>
       <MainMenu pushView={jest.fn()} tasks={[]} notifications={[]} />
     </RmfHealthContext.Provider>,
   );
+
   expect(screen.getByLabelText('Door-operational').textContent).toEqual('1/2');
   expect(screen.getByLabelText('Lift-operational').textContent).toEqual('1/2');
   expect(screen.getByLabelText('Dispenser-operational').textContent).toEqual('1/2');
@@ -93,12 +97,50 @@ it('should count robots that are charging and on idle as operational', () => {
       spoiltRobots: [],
     },
   };
+
   render(
     <RmfHealthContext.Provider value={healthStatus}>
       <MainMenu pushView={jest.fn()} tasks={[]} notifications={[]} />
     </RmfHealthContext.Provider>,
   );
+
   expect(screen.getByLabelText('Robot-operational').textContent).toEqual('2/2');
   expect(screen.getByLabelText('Robot-idle').textContent).toEqual('1');
   expect(screen.getByLabelText('Robot-charging').textContent).toEqual('1');
+});
+
+it('should call pushView and setFilter when Details button is clicked', () => {
+  const mockPushView = jest.fn();
+  const mockSetFilter = jest.fn();
+
+  render(
+    <RmfHealthContext.Provider value={healthStatus}>
+      <MainMenu pushView={mockPushView} setFilter={mockSetFilter} tasks={[]} notifications={[]} />
+    </RmfHealthContext.Provider>,
+  );
+
+  userEvent.click(screen.getAllByText('Details')[0]);
+  userEvent.click(screen.getAllByText('Details')[1]);
+  userEvent.click(screen.getAllByText('Details')[2]);
+  userEvent.click(screen.getAllByText('Details')[3]);
+
+  expect(mockPushView).toBeCalledTimes(4);
+  expect(mockSetFilter).toBeCalledTimes(4);
+});
+
+it('should call pushView and setFilter when Negotiations and Plans button is clicked', () => {
+  const mockPushView = jest.fn();
+  const mockSetFilter = jest.fn();
+
+  render(
+    <RmfHealthContext.Provider value={healthStatus}>
+      <MainMenu pushView={mockPushView} setFilter={mockSetFilter} tasks={[]} notifications={[]} />
+    </RmfHealthContext.Provider>,
+  );
+
+  userEvent.click(screen.getByTestId('negotiations-tooltip-tooltip'));
+  userEvent.click(screen.getByTestId('plans-tooltip-tooltip'));
+
+  expect(mockPushView).toBeCalledTimes(2);
+  expect(mockSetFilter).toBeCalledTimes(2);
 });

@@ -8,68 +8,18 @@ it('renders without crashing', () => {
   root.unmount();
 });
 
-it('should call pushView and setFilter when Doors button is clicked', () => {
+it('should call pushView and setFilter when buttons are clicked', () => {
   const mockPushView = jest.fn();
   const mockSetFilter = jest.fn();
   render(<MainMenu pushView={mockPushView} setFilter={mockSetFilter} />);
 
   userEvent.click(screen.getByText('Doors'));
-
-  expect(mockPushView).toBeCalled();
-  expect(mockSetFilter).toBeCalled();
-});
-
-it('should call pushView and setFilter when Lifts button is clicked', () => {
-  const mockPushView = jest.fn();
-  const mockSetFilter = jest.fn();
-  render(<MainMenu pushView={mockPushView} setFilter={mockSetFilter} />);
-
   userEvent.click(screen.getByText('Lifts'));
-
-  expect(mockPushView).toBeCalled();
-  expect(mockSetFilter).toBeCalled();
-});
-
-it('should call pushView and setFilter when Robots button is clicked', () => {
-  const mockPushView = jest.fn();
-  const mockSetFilter = jest.fn();
-  render(<MainMenu pushView={mockPushView} setFilter={mockSetFilter} />);
-
   userEvent.click(screen.getByText('Robots'));
-
-  expect(mockPushView).toBeCalled();
-  expect(mockSetFilter).toBeCalled();
-});
-
-it('should call pushView and setFilter when Dispensers button is clicked', () => {
-  const mockPushView = jest.fn();
-  const mockSetFilter = jest.fn();
-  render(<MainMenu pushView={mockPushView} setFilter={mockSetFilter} />);
-
   userEvent.click(screen.getByText('Dispensers'));
-
-  expect(mockPushView).toBeCalled();
-  expect(mockSetFilter).toBeCalled();
-});
-
-it('should call pushView and setFilter when Negotiations button is clicked', () => {
-  const mockPushView = jest.fn();
-  const mockSetFilter = jest.fn();
-  render(<MainMenu pushView={mockPushView} setFilter={mockSetFilter} />);
-
   userEvent.click(screen.getByText('Negotiations'));
-
-  expect(mockPushView).toBeCalled();
-  expect(mockSetFilter).toBeCalled();
-});
-
-it('should call pushView and setFilter when Plans button is clicked', () => {
-  const mockPushView = jest.fn();
-  const mockSetFilter = jest.fn();
-  render(<MainMenu pushView={mockPushView} setFilter={mockSetFilter} />);
-
   userEvent.click(screen.getByText('Plans'));
 
-  expect(mockPushView).toBeCalled();
-  expect(mockSetFilter).toBeCalled();
+  expect(mockPushView).toBeCalledTimes(6);
+  expect(mockSetFilter).toBeCalledTimes(6);
 });

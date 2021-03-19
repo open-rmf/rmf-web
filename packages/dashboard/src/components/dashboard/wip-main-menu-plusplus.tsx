@@ -86,11 +86,6 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
     setFilter && setFilter();
   }, [pushView, setFilter]);
 
-  // const handleMainMenuCommandsClick = React.useCallback(() => {
-  //   pushView(OmniPanelViewIndex.Commands);
-  //   setFilter && setFilter();
-  // }, [pushView, setFilter]);
-
   const handleMainMenuNegotiationsClick = React.useCallback(() => {
     pushView(OmniPanelViewIndex.Negotiations);
     setFilter && setFilter();
@@ -198,21 +193,6 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
           </DashboardTooltip>
         </Button>
         <Divider className={classes.divider} />
-
-        {/* <Typography variant="h6">Command Center</Typography>
-        <Button
-          className={`${classes.buttons} ${classes.commandButton}`}
-          variant="contained"
-          onClick={handleMainMenuCommandsClick}
-        >
-          <DashboardTooltip
-            title="This panel shows the commands that a user can request and RoMi will allocate the most suitable robot for the task"
-            id="commands-tooltip"
-            enabled={showTooltips}
-          >
-            <Typography variant="body1">Commands</Typography>
-          </DashboardTooltip>
-        </Button> */}
       </div>
     </React.Fragment>
   );
