@@ -1,12 +1,10 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import MainMenu from '../wip-main-menu-plusplus';
-import { createMount } from '@material-ui/core/test-utils';
+import { render, screen } from '@testing-library/react';
 import RmfHealthStateManager from '../../../managers/rmf-health-state-manager';
 import { RmfHealthContext } from '../../rmf-app/contexts';
 import { door, lift, fakeFleets } from './items';
 
-const mount = createMount();
 const fleet = fakeFleets();
 
 const healthManager = new RmfHealthStateManager();
@@ -33,34 +31,24 @@ healthStatus = {
 };
 
 it('renders without crashing', () => {
-  const div = document.createElement('div');
-  ReactDOM.render(
+  const root = render(
     <RmfHealthContext.Provider value={healthStatus}>
-      <MainMenu pushView={jest.fn()} tasks={[]} notifications={[]} />,
+      <MainMenu pushView={jest.fn()} setFilter={jest.fn()} tasks={[]} notifications={[]} />,
     </RmfHealthContext.Provider>,
-    div,
   );
-  ReactDOM.unmountComponentAtNode(div);
+  root.unmount();
 });
 
 it('should count working equipment as operational', () => {
-  const root = mount(
+  render(
     <RmfHealthContext.Provider value={healthStatus}>
       <MainMenu pushView={jest.fn()} tasks={[]} notifications={[]} />
     </RmfHealthContext.Provider>,
   );
-  expect(
-    root.find('SystemSummaryItemState').find('.MuiPaper-root').find('h6').at(0).text(),
-  ).toEqual('1/1');
-  expect(
-    root.find('SystemSummaryItemState').find('.MuiPaper-root').find('h6').at(1).text(),
-  ).toEqual('1/1');
-  expect(
-    root.find('SystemSummaryItemState').find('.MuiPaper-root').find('h6').at(2).text(),
-  ).toEqual('1/1');
-  expect(root.find('RobotSummaryState').find('.MuiPaper-root').find('h6').at(0).text()).toEqual(
-    '1/1',
-  );
+  expect(screen.getByLabelText('Door-operational').textContent).toEqual('1/1');
+  expect(screen.getByLabelText('Lift-operational').textContent).toEqual('1/1');
+  expect(screen.getByLabelText('Dispenser-operational').textContent).toEqual('1/1');
+  expect(screen.getByLabelText('Robot-operational').textContent).toEqual('1/1');
 });
 
 it('it should not count spoilt equipment as operational', () => {
@@ -84,23 +72,15 @@ it('it should not count spoilt equipment as operational', () => {
       spoiltRobots: [{ fleet: 'fleet', name: 'robot', state: 'state', robot: fleet[0].robots[0] }],
     },
   };
-  const root = mount(
+  render(
     <RmfHealthContext.Provider value={healthStatus}>
       <MainMenu pushView={jest.fn()} tasks={[]} notifications={[]} />
     </RmfHealthContext.Provider>,
   );
-  expect(
-    root.find('SystemSummaryItemState').find('.MuiPaper-root').find('h6').at(0).text(),
-  ).toEqual('1/2');
-  expect(
-    root.find('SystemSummaryItemState').find('.MuiPaper-root').find('h6').at(1).text(),
-  ).toEqual('1/2');
-  expect(
-    root.find('SystemSummaryItemState').find('.MuiPaper-root').find('h6').at(2).text(),
-  ).toEqual('1/2');
-  expect(root.find('RobotSummaryState').find('.MuiPaper-root').find('h6').at(0).text()).toEqual(
-    '1/2',
-  );
+  expect(screen.getByLabelText('Door-operational').textContent).toEqual('1/2');
+  expect(screen.getByLabelText('Lift-operational').textContent).toEqual('1/2');
+  expect(screen.getByLabelText('Dispenser-operational').textContent).toEqual('1/2');
+  expect(screen.getByLabelText('Robot-operational').textContent).toEqual('1/2');
 });
 
 it('should count robots that are charging and on idle as operational', () => {
@@ -113,18 +93,12 @@ it('should count robots that are charging and on idle as operational', () => {
       spoiltRobots: [],
     },
   };
-  const root = mount(
+  render(
     <RmfHealthContext.Provider value={healthStatus}>
       <MainMenu pushView={jest.fn()} tasks={[]} notifications={[]} />
     </RmfHealthContext.Provider>,
   );
-  expect(root.find('RobotSummaryState').find('.MuiPaper-root').find('h6').at(0).text()).toEqual(
-    '2/2',
-  );
-  expect(root.find('RobotSummaryState').find('.MuiPaper-root').find('h6').at(1).text()).toEqual(
-    '1',
-  );
-  expect(root.find('RobotSummaryState').find('.MuiPaper-root').find('h6').at(2).text()).toEqual(
-    '1',
-  );
+  expect(screen.getByLabelText('Robot-operational').textContent).toEqual('2/2');
+  expect(screen.getByLabelText('Robot-idle').textContent).toEqual('1');
+  expect(screen.getByLabelText('Robot-charging').textContent).toEqual('1');
 });

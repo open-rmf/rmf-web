@@ -48,7 +48,7 @@ export interface MainMenuProps {
   spoiltLiftClick?(lift: RomiCore.Lift): void;
   spoiltRobotClick?(fleet: string, robot: RomiCore.RobotState): void;
   spoiltDispenserClick?(guid: string): void;
-  setSearch?: () => void;
+  setFilter?: () => void;
 }
 
 export const MainMenu = React.memo((props: MainMenuProps) => {
@@ -61,45 +61,45 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
     spoiltDoorClick,
     spoiltLiftClick,
     spoiltRobotClick,
-    setSearch,
+    setFilter,
   } = props;
   debug('render');
   const classes = useStyles();
 
   const handleMainMenuDoorsClick = React.useCallback(() => {
     pushView(OmniPanelViewIndex.Doors);
-    setSearch && setSearch();
-  }, [pushView, setSearch]);
+    setFilter && setFilter();
+  }, [pushView, setFilter]);
 
   const handleMainMenuLiftsClick = React.useCallback(() => {
     pushView(OmniPanelViewIndex.Lifts);
-    setSearch && setSearch();
-  }, [pushView, setSearch]);
+    setFilter && setFilter();
+  }, [pushView, setFilter]);
 
   const handleMainMenuRobotsClick = React.useCallback(() => {
     pushView(OmniPanelViewIndex.Robots);
-    setSearch && setSearch();
-  }, [pushView, setSearch]);
+    setFilter && setFilter();
+  }, [pushView, setFilter]);
 
   const handleMainMenuDispensersClick = React.useCallback(() => {
     pushView(OmniPanelViewIndex.Dispensers);
-    setSearch && setSearch();
-  }, [pushView, setSearch]);
+    setFilter && setFilter();
+  }, [pushView, setFilter]);
 
-  const handleMainMenuCommandsClick = React.useCallback(() => {
-    pushView(OmniPanelViewIndex.Commands);
-    setSearch && setSearch();
-  }, [pushView, setSearch]);
+  // const handleMainMenuCommandsClick = React.useCallback(() => {
+  //   pushView(OmniPanelViewIndex.Commands);
+  //   setFilter && setFilter();
+  // }, [pushView, setFilter]);
 
   const handleMainMenuNegotiationsClick = React.useCallback(() => {
     pushView(OmniPanelViewIndex.Negotiations);
-    setSearch && setSearch();
-  }, [pushView, setSearch]);
+    setFilter && setFilter();
+  }, [pushView, setFilter]);
 
   const handleMainMenuTasksClick = React.useCallback(() => {
     pushView(OmniPanelViewIndex.Tasks);
-    setSearch && setSearch();
-  }, [pushView, setSearch]);
+    setFilter && setFilter();
+  }, [pushView, setFilter]);
 
   const [allNotifications, setAllNotifications] = React.useState(notifications);
 
@@ -199,7 +199,7 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
         </Button>
         <Divider className={classes.divider} />
 
-        <Typography variant="h6">Command Center</Typography>
+        {/* <Typography variant="h6">Command Center</Typography>
         <Button
           className={`${classes.buttons} ${classes.commandButton}`}
           variant="contained"
@@ -212,7 +212,7 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
           >
             <Typography variant="body1">Commands</Typography>
           </DashboardTooltip>
-        </Button>
+        </Button> */}
       </div>
     </React.Fragment>
   );

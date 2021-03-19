@@ -87,7 +87,7 @@ export const RobotSummaryState = (props: RobotSummaryStateProps): JSX.Element =>
         <Grid container justify="flex-start" direction="row">
           <Grid item xs={12}>
             <Paper className={getOperationalStatusLabel(totalItem, operationalItem)} elevation={3}>
-              <Typography noWrap align="center" variant="h6">
+              <Typography noWrap align="center" variant="h6" aria-label={`${item}-operational`}>
                 {`${operationalItem}/${totalItem}`}
               </Typography>
               <Typography align="center" variant="body1">
@@ -101,7 +101,7 @@ export const RobotSummaryState = (props: RobotSummaryStateProps): JSX.Element =>
         <Grid container justify="flex-start" direction="row" spacing={2}>
           <Grid item xs={6}>
             <Paper className={getOtherStatusLabel('idle')} elevation={3}>
-              <Typography noWrap align="center" variant="h6">
+              <Typography noWrap align="center" variant="h6" aria-label={`${item}-idle`}>
                 {robotSummary.idle}
               </Typography>
               <Typography align="center" variant="body1">
@@ -111,7 +111,7 @@ export const RobotSummaryState = (props: RobotSummaryStateProps): JSX.Element =>
           </Grid>
           <Grid item xs={6}>
             <Paper className={getOtherStatusLabel('charging')} elevation={3}>
-              <Typography noWrap align="center" variant="h6">
+              <Typography noWrap align="center" variant="h6" aria-label={`${item}-charging`}>
                 {robotSummary.charging}
               </Typography>
               <Typography align="center" variant="body1">
