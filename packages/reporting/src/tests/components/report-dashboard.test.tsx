@@ -1,8 +1,8 @@
 import { render, screen, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { ReportDashboard } from '../report-dashboard';
-import { buildReportMenuStructure } from '../reporter-side-bar-structure';
+import { ReportDashboard } from '../../components/reports/report-dashboard';
+import { buildReportMenuStructure } from '../../components/reports/reporter-side-bar-structure';
 
 describe('ReportDashboard', () => {
   beforeEach(() => {

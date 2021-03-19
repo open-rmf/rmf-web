@@ -6,7 +6,6 @@
   "private": true,
   "scripts": {
     "start": "react-scripts start",
-    "start:react": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "test:coverage": "npm run test -- --coverage --watchAll=false",
@@ -54,7 +53,8 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "^4.0.1",
     "styled-components": "^4.4.1",
-    "typeface-roboto": "0.0.75"
+    "typeface-roboto": "0.0.75",
+    "web-vitals": "^1.0.1"
   },
   "devDependencies": {
     "@testing-library/react": "^11.2.3",
