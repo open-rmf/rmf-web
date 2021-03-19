@@ -99,7 +99,9 @@
       "!src/components/rmf-app/**",
       "!**/stories/**",
       "!**/tests/**",
-      "!src/components/__trash/**"
+      "!src/components/__trash/**",
+      "!src/components/dashboard/dashboard.tsx",
+      "!src/components/dashboard/index.ts"
     ],
     "snapshotSerializers": [
       "enzyme-to-json/serializer"
