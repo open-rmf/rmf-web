@@ -16,6 +16,9 @@ const useStyles = makeStyles((theme) => ({
 
 export interface MainMenuProps {
   pushView(view: OmniPanelViewIndex): void;
+  /**
+   * resets the filter term once called
+   */
   setFilter?: () => void;
 }
 

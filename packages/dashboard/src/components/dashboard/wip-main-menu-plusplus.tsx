@@ -48,6 +48,9 @@ export interface MainMenuProps {
   spoiltLiftClick?(lift: RomiCore.Lift): void;
   spoiltRobotClick?(fleet: string, robot: RomiCore.RobotState): void;
   spoiltDispenserClick?(guid: string): void;
+  /**
+   * resets the filter term once called
+   */
   setFilter?: () => void;
 }
 
