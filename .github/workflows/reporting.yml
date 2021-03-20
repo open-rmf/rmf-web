@@ -1,0 +1,39 @@
+name: reporting
+on:
+  pull_request:
+    paths:
+      - 'packages/reporting/**'
+      - 'packages/react-components/**'
+  push:
+    branches:
+      - main
+env:
+  CI: true
+jobs:
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: packages/reporting
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - name: bootstrap
+        run: |
+          pip3 install pipenv
+          npm config set unsafe-perm
+          npm run bootstrap -- packages/reporting
+        working-directory: .
+      - name: build
+        run: npm run build:storybook && npm run build
+      - name: unit test
+        run: npm run test:coverage
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: reporting

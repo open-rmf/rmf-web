@@ -26,6 +26,7 @@ const allPackages = [
   '.',
   'packages/ros2-bridge',
   'packages/react-components',
+  'packages/reporting',
   'packages/dashboard',
   'packages/api-server',
   'packages/api-client',
