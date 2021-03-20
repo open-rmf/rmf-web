@@ -70,6 +70,10 @@
     "collectCoverageFrom": [
       "src/**/*.{js,jsx,ts,tsx}",
       "!src/index.tsx",
+      "!src/reportWebVitals.ts",
+      "!src/serviceWorker.ts",
+      "!src/react-app-env.d.ts",
+      "!src/components/reporter-side-bar-structure.tsx",
       "!**/stories/**",
       "!**/tests/**",
       "!src/components/__trash/**"

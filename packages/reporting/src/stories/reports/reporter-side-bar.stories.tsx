@@ -1,8 +1,8 @@
 import React from 'react';
 import { LogManagement } from 'react-components';
-import { ReportDashboard } from '../../components/reports/report-dashboard';
-import { Reports } from '../../components/reports/report-list';
-import { buildReportMenuStructure } from '../../components/reports/reporter-side-bar-structure';
+import { ReportDashboard } from '../../components/report-dashboard';
+import { Reports } from '../../components/report-list';
+import { buildReportMenuStructure } from '../../components/reporter-side-bar-structure';
 
 export default {
   title: 'Reports',
