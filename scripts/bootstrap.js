@@ -19,6 +19,7 @@ const deps = {
     'packages/react-components',
     'packages/api-client',
   ],
+  'packages/reporting': ['packages/react-components'],
   'packages/api-client': ['packages/api-server'],
 };
 
