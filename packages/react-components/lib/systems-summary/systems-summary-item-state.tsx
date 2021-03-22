@@ -62,7 +62,7 @@ export const SystemSummaryItemState = (props: SystemSummaryItemStateProps): JSX.
         <Grid container justify="flex-start" direction="row">
           <Grid item xs={12}>
             <Paper className={getOperationalStatusLabel(totalItem, operationalItem)} elevation={3}>
-              <Typography noWrap align="center" variant="h6">
+              <Typography noWrap align="center" variant="h6" aria-label={`${item}-operational`}>
                 {`${operationalItem}/${totalItem}`}
               </Typography>
               <Typography align="center" variant="body1">

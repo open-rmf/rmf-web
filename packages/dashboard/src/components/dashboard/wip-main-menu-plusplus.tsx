@@ -48,6 +48,10 @@ export interface MainMenuProps {
   spoiltLiftClick?(lift: RomiCore.Lift): void;
   spoiltRobotClick?(fleet: string, robot: RomiCore.RobotState): void;
   spoiltDispenserClick?(guid: string): void;
+  /**
+   * resets the filter term once called
+   */
+  setFilter?: () => void;
 }
 
 export const MainMenu = React.memo((props: MainMenuProps) => {
@@ -60,37 +64,40 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
     spoiltDoorClick,
     spoiltLiftClick,
     spoiltRobotClick,
+    setFilter,
   } = props;
   debug('render');
   const classes = useStyles();
 
   const handleMainMenuDoorsClick = React.useCallback(() => {
     pushView(OmniPanelViewIndex.Doors);
-  }, [pushView]);
+    setFilter && setFilter();
+  }, [pushView, setFilter]);
 
   const handleMainMenuLiftsClick = React.useCallback(() => {
     pushView(OmniPanelViewIndex.Lifts);
-  }, [pushView]);
+    setFilter && setFilter();
+  }, [pushView, setFilter]);
 
   const handleMainMenuRobotsClick = React.useCallback(() => {
     pushView(OmniPanelViewIndex.Robots);
-  }, [pushView]);
+    setFilter && setFilter();
+  }, [pushView, setFilter]);
 
   const handleMainMenuDispensersClick = React.useCallback(() => {
     pushView(OmniPanelViewIndex.Dispensers);
-  }, [pushView]);
-
-  const handleMainMenuCommandsClick = React.useCallback(() => {
-    pushView(OmniPanelViewIndex.Commands);
-  }, [pushView]);
+    setFilter && setFilter();
+  }, [pushView, setFilter]);
 
   const handleMainMenuNegotiationsClick = React.useCallback(() => {
     pushView(OmniPanelViewIndex.Negotiations);
-  }, [pushView]);
+    setFilter && setFilter();
+  }, [pushView, setFilter]);
 
   const handleMainMenuTasksClick = React.useCallback(() => {
     pushView(OmniPanelViewIndex.Tasks);
-  }, [pushView]);
+    setFilter && setFilter();
+  }, [pushView, setFilter]);
 
   const [allNotifications, setAllNotifications] = React.useState(notifications);
 
@@ -189,21 +196,6 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
           </DashboardTooltip>
         </Button>
         <Divider className={classes.divider} />
-
-        <Typography variant="h6">Command Center</Typography>
-        <Button
-          className={`${classes.buttons} ${classes.commandButton}`}
-          variant="contained"
-          onClick={handleMainMenuCommandsClick}
-        >
-          <DashboardTooltip
-            title="This panel shows the commands that a user can request and RoMi will allocate the most suitable robot for the task"
-            id="commands-tooltip"
-            enabled={showTooltips}
-          >
-            <Typography variant="body1">Commands</Typography>
-          </DashboardTooltip>
-        </Button>
       </div>
     </React.Fragment>
   );
