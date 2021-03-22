@@ -15,11 +15,7 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
 import { ReportContainer, Reports } from './report-list';
-import {
-  ExpandableMultilevelMenuProps,
-  MultiLevelMenu,
-  RenderSelectedComponentFromDict,
-} from 'react-components';
+import { ExpandableMultilevelMenuProps, MultiLevelMenu } from 'react-components';
 
 const drawerWidth = 240;
 
@@ -159,7 +155,10 @@ export const ReportDashboard = (props: ReportDashboardProps) => {
         })}
       >
         <div className={classes.drawerHeader} />
-        <RenderSelectedComponentFromDict obj={reportContainer} selectedKey={currentReport} />
+        {Object.prototype.hasOwnProperty.call(reportContainer, currentReport) &&
+        reportContainer[currentReport]
+          ? reportContainer[currentReport]
+          : null}
       </main>
     </div>
   );
