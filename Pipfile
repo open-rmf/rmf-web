@@ -10,11 +10,12 @@ black = "==20.8b1"
 isort = "==5.*"
 pylint = "==2.*"
 coverage = "==5.*"
-
 # api-server
 api-server = {editable = true, path = "packages/api-server"}
 aiohttp = "==3.*"
 jinja2 = "==2.*"
+# api-client
+ts-ros = {git = "https://github.com/open-rmf/ts_ros"}
 
 [requires]
 python_version = "3.8"

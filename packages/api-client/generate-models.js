@@ -23,4 +23,14 @@ console.log('generate models:');
     console.log(tsFilePath);
   }
   fs.writeFileSync(path.join(modelsDir, 'GENERATED'), 'THIS DIRECTORY IS GENERATED, DO NOT EDIT!!');
+
+  const rmfMsgs = [
+    'rmf_door_msgs',
+    'rmf_lift_msgs',
+    'rmf_dispenser_msgs',
+    'rmf_ingestor_msgs',
+    'rmf_fleet_msgs',
+    'rmf_task_msgs',
+  ];
+  execSync(`ts_ros -o lib/models/generated/ros/ ${rmfMsgs.join(' ')}`, { stdio: 'inherit' });
 })();
