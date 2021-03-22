@@ -34,10 +34,10 @@ class TestRmfIO(unittest.IsolatedAsyncioTestCase):
     async def make_client(self):
         client = socketio.AsyncClient()
         self.clients.append(client)
-        await client.connect(f"http://localhost:{self.server_port}")
         fut = asyncio.Future()
         client.on("connect", lambda: fut.set_result(None))
-        await fut
+        await client.connect(f"http://localhost:{self.server_port}")
+        await asyncio.wait_for(fut, 5)
         return client
 
     async def client_subscribe(self, client: socketio.AsyncClient, topic: str):

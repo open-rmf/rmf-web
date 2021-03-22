@@ -10,13 +10,6 @@ setup(
     author="Teo Koon Peng",
     author_email="koonpeng@openrobotics.org",
     keywords=["ROS", "RMF"],
-    install_requires=[
-        "fastapi==0.63.*",
-        "uvicorn[standard]==0.13.*",
-        "python-socketio==5.*",
-        "rx==3.*",
-        "tortoise-orm==0.16.*",
-    ],
     classifiers=[
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Apache Software License",
