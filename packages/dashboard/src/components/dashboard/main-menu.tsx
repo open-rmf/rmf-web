@@ -16,37 +16,47 @@ const useStyles = makeStyles((theme) => ({
 
 export interface MainMenuProps {
   pushView(view: OmniPanelViewIndex): void;
+  /**
+   * resets the filter term once called
+   */
+  setFilter?: () => void;
 }
 
 export const MainMenu = React.memo((props: MainMenuProps) => {
   const { showTooltips } = React.useContext(TooltipsContext);
-  const { pushView } = props;
+  const { pushView, setFilter } = props;
   debug('render');
   const classes = useStyles();
 
   const handleMainMenuDoorsClick = React.useCallback(() => {
     pushView(OmniPanelViewIndex.Doors);
-  }, [pushView]);
+    setFilter && setFilter();
+  }, [pushView, setFilter]);
 
   const handleMainMenuLiftsClick = React.useCallback(() => {
     pushView(OmniPanelViewIndex.Lifts);
-  }, [pushView]);
+    setFilter && setFilter();
+  }, [pushView, setFilter]);
 
   const handleMainMenuRobotsClick = React.useCallback(() => {
     pushView(OmniPanelViewIndex.Robots);
-  }, [pushView]);
+    setFilter && setFilter();
+  }, [pushView, setFilter]);
 
   const handleMainMenuDispensersClick = React.useCallback(() => {
     pushView(OmniPanelViewIndex.Dispensers);
-  }, [pushView]);
+    setFilter && setFilter();
+  }, [pushView, setFilter]);
 
   const handleMainMenuNegotiationsClick = React.useCallback(() => {
     pushView(OmniPanelViewIndex.Negotiations);
-  }, [pushView]);
+    setFilter && setFilter();
+  }, [pushView, setFilter]);
 
   const handleMainMenuTasksClick = React.useCallback(() => {
     pushView(OmniPanelViewIndex.Tasks);
-  }, [pushView]);
+    setFilter && setFilter();
+  }, [pushView, setFilter]);
 
   return (
     <List className={classes.root} data-component="MainMenu">
