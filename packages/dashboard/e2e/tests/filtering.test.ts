@@ -22,10 +22,14 @@ describe('Simple Filter', () => {
 
     // get door marker and click
     const door = $('[data-component=DoorMarker]');
+    const doorName = door.getAttribute('aria-label');
+
     door.waitForClickable();
     door.click();
 
     // check that the filter is empty after clicking
     expect($('[data-component=simple-filter]').$('input').getValue()).toEqual('');
+    // check that door panel is expanded
+    expect($(`.MuiAccordion-root*=${doorName}`).$('.MuiAccordionDetails-root')).toBeVisible();
   });
 });
