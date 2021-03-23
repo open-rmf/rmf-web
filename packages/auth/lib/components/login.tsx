@@ -11,11 +11,11 @@ export interface LoginProps {
    */
   successRedirectUri?: string;
   defaultRoute: string;
-  user: User;
+  user?: User;
   authenticator: Authenticator;
 }
 
-export default function Login(props: LoginProps): JSX.Element {
+export const Login = (props: LoginProps): JSX.Element => {
   const { defaultRoute, authenticator, user } = props;
   const successRedirectUri = props.successRedirectUri || props.defaultRoute; //getUrl(DASHBOARD_ROUTE);
   // const authenticator = React.useContext(AuthenticatorContext);
@@ -34,4 +34,6 @@ export default function Login(props: LoginProps): JSX.Element {
       </Button>
     </LoginPage>
   );
-}
+};
+
+export default Login;
