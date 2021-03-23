@@ -263,7 +263,7 @@ class TestRmfIO(unittest.IsolatedAsyncioTestCase):
 
 class TestRmfIO_JWTAuth(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
-        self.clients = []
+        self.client = socketio.AsyncClient()
         self.rmf_gateway = RmfGateway()
         self.sio = socketio.AsyncServer(async_mode="aiohttp")
         self.static_files = MagicMock(StaticFilesRepository)
@@ -287,32 +287,29 @@ class TestRmfIO_JWTAuth(unittest.IsolatedAsyncioTestCase):
         await self.site.start()
         self.server_port = self.runner.addresses[0][1]
 
+    async def asyncTearDown(self):
+        await self.client.disconnect()
+        await self.runner.cleanup()
+
     async def test_fail_with_no_auth(self):
-        client = socketio.AsyncClient()
-        fut = asyncio.Future()
-        client.on("connect", lambda: fut.set_result(None))
         try:
-            await client.connect(f"http://localhost:{self.server_port}")
+            await self.client.connect(f"http://localhost:{self.server_port}")
             self.fail("expected connection to fail")
         except socketio.exceptions.ConnectionError:
             pass
 
     async def test_fail_with_no_token(self):
-        client = socketio.AsyncClient()
-        fut = asyncio.Future()
-        client.on("connect", lambda: fut.set_result(None))
         try:
-            await client.connect(f"http://localhost:{self.server_port}", {"foo": "bar"})
+            await self.client.connect(
+                f"http://localhost:{self.server_port}", {"foo": "bar"}
+            )
             self.fail("expected connection to fail")
         except socketio.exceptions.ConnectionError:
             pass
 
     async def test_fail_with_invalid_token(self):
-        client = socketio.AsyncClient()
-        fut = asyncio.Future()
-        client.on("connect", lambda: fut.set_result(None))
         try:
-            await client.connect(
+            await self.client.connect(
                 f"http://localhost:{self.server_port}", {"token": "invalid"}
             )
             self.fail("expected connection to fail")
@@ -324,11 +321,8 @@ class TestRmfIO_JWTAuth(unittest.IsolatedAsyncioTestCase):
             private_key = f.read()
         token = jwt.encode({"some": "payload"}, private_key, algorithm="RS256")
 
-        client = socketio.AsyncClient()
-        fut = asyncio.Future()
-        client.on("connect", lambda: fut.set_result(None))
         try:
-            await client.connect(
+            await self.client.connect(
                 f"http://localhost:{self.server_port}", {"token": token}
             )
             self.fail("expected connection to fail")
