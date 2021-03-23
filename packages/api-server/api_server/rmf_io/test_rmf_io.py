@@ -1,9 +1,12 @@
 import asyncio
+import logging
+import os
 import unittest
 from typing import Any, Callable
 from unittest.mock import MagicMock
 
 import aiohttp.web
+import jwt
 import socketio
 from rmf_task_msgs.msg import TaskSummary
 from rx import Observable
@@ -17,6 +20,7 @@ from ..models import (
     RobotHealth,
 )
 from ..repositories.static_files import StaticFilesRepository
+from .authenticator import JwtAuthenticator
 from .gateway import RmfGateway
 from .rmf_io import RmfIO
 from .test_data import (
@@ -255,3 +259,78 @@ class TestRmfIO(unittest.IsolatedAsyncioTestCase):
             self.static_files.add_file.call_args[0][1],
             "test_name/L1-test_image.thbyxgrllndgeciymb3a47hf2re5p7no.png",
         )
+
+
+class TestRmfIO_JWTAuth(unittest.IsolatedAsyncioTestCase):
+    async def asyncSetUp(self):
+        self.clients = []
+        self.rmf_gateway = RmfGateway()
+        self.sio = socketio.AsyncServer(async_mode="aiohttp")
+        self.static_files = MagicMock(StaticFilesRepository)
+        self.static_files.add_file.return_value = "/test_url"
+        self.test_cert = f"{os.path.dirname(__file__)}/test_data/test.pem"
+        self.auth = JwtAuthenticator(self.test_cert)
+        logger = logging.Logger("test")
+        logger.setLevel("CRITICAL")
+        self.rmf_io = RmfIO(
+            self.sio,
+            self.rmf_gateway,
+            self.static_files,
+            authenticator=self.auth,
+            logger=logger,
+        )
+        self.app = aiohttp.web.Application()
+        self.sio.attach(self.app)
+        self.runner = aiohttp.web.AppRunner(self.app)
+        await self.runner.setup()
+        self.site = aiohttp.web.TCPSite(self.runner, "127.0.0.1", 0)
+        await self.site.start()
+        self.server_port = self.runner.addresses[0][1]
+
+    async def test_fail_with_no_auth(self):
+        client = socketio.AsyncClient()
+        fut = asyncio.Future()
+        client.on("connect", lambda: fut.set_result(None))
+        try:
+            await client.connect(f"http://localhost:{self.server_port}")
+            self.fail("expected connection to fail")
+        except socketio.exceptions.ConnectionError:
+            pass
+
+    async def test_fail_with_no_token(self):
+        client = socketio.AsyncClient()
+        fut = asyncio.Future()
+        client.on("connect", lambda: fut.set_result(None))
+        try:
+            await client.connect(f"http://localhost:{self.server_port}", {"foo": "bar"})
+            self.fail("expected connection to fail")
+        except socketio.exceptions.ConnectionError:
+            pass
+
+    async def test_fail_with_invalid_token(self):
+        client = socketio.AsyncClient()
+        fut = asyncio.Future()
+        client.on("connect", lambda: fut.set_result(None))
+        try:
+            await client.connect(
+                f"http://localhost:{self.server_port}", {"token": "invalid"}
+            )
+            self.fail("expected connection to fail")
+        except socketio.exceptions.ConnectionError:
+            pass
+
+    async def test_success_with_valid_token(self):
+        with open(f"{os.path.dirname(__file__)}/test_data/test.key", "br") as f:
+            private_key = f.read()
+        token = jwt.encode({"some": "payload"}, private_key, algorithm="RS256")
+
+        client = socketio.AsyncClient()
+        fut = asyncio.Future()
+        client.on("connect", lambda: fut.set_result(None))
+        try:
+            await client.connect(
+                f"http://localhost:{self.server_port}", {"token": token}
+            )
+            self.fail("expected connection to fail")
+        except socketio.exceptions.ConnectionError:
+            pass
