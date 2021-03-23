@@ -32,5 +32,7 @@ console.log('generate models:');
     'rmf_fleet_msgs',
     'rmf_task_msgs',
   ];
-  execSync(`ts_ros -o lib/models/generated/ros/ ${rmfMsgs.join(' ')}`, { stdio: 'inherit' });
+  execSync(`python3 -m pipenv run ts_ros -o lib/models/generated/ros/ ${rmfMsgs.join(' ')}`, {
+    stdio: 'inherit',
+  });
 })();
