@@ -12,6 +12,7 @@ from . import models
 from .app_config import app_config
 from .repositories import StaticFilesRepository
 from .rmf_io import HealthWatchdog, RmfBookKeeper, RmfGateway, RmfIO, RmfTransport
+from .rmf_io.authenticator import JwtAuthenticator, StubAuthenticator
 
 
 class MainNode(Node):
@@ -133,12 +134,19 @@ async def on_startup():
         logger.getChild("static_files"),
     )
 
+    if app_config.jwt_public_key is None:
+        auth = StubAuthenticator()
+        logger.warning("authentication is disabled")
+    else:
+        auth = JwtAuthenticator(app_config.jwt_public_key)
+
     rmf_gateway = RmfGateway()
     RmfIO(
         sio,
         rmf_gateway,
         static_files_repo,
         logger=logger.getChild("RmfIO"),
+        authenticator=auth,
     )
 
     # loading states involves emitting events to observables in RmfGateway, we need to load states

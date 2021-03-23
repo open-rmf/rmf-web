@@ -1,6 +1,6 @@
 import importlib
 import os
-from typing import Any, Mapping
+from typing import Any, Mapping, Optional
 
 
 class AppConfig:
@@ -10,7 +10,8 @@ class AppConfig:
         self.port: int = config_dict["port"]
         self.static_path: str = config_dict["static_path"]
         self.static_directory: str = config_dict["static_directory"]
-        self.log_level = config_dict["log_level"]
+        self.log_level: str = config_dict["log_level"]
+        self.jwt_public_key: Optional[str] = config_dict["jwt_public_key"]
 
 
 def _load_config() -> AppConfig:
