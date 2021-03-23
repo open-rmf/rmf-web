@@ -1,7 +1,7 @@
 import Debug from 'debug';
 import React from 'react';
 import { Redirect, Route, RouteProps, useLocation } from 'react-router';
-import { User } from '../user';
+import { User } from 'rmf-auth';
 // import Unauthorized from '../error-pages/unauthorized';
 // import { UserContext } from '../contexts';
 
@@ -12,14 +12,14 @@ export interface PrivateRouteProps extends React.PropsWithChildren<RouteProps> {
   noRedirectToLogin?: boolean;
   loginRoute?: string;
   unauthorized: React.ReactElement;
-  user?: User;
+  user?: User | null;
 }
 
 /**
  * This component validates if the user is authenticated before rendering component passed as a
  * prop.
  */
-const PrivateRoute = ({
+const PrivateRouteReporting = ({
   noRedirectToLogin,
   children,
   loginRoute,
@@ -47,4 +47,4 @@ const PrivateRoute = ({
   return <Route {...rest}>{render()}</Route>;
 };
 
-export default PrivateRoute;
+export default PrivateRouteReporting;

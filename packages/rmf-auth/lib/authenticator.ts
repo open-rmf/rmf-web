@@ -6,7 +6,7 @@ export type AuthenticatorEventType = {
   userChanged: [User | null];
 };
 
-export default interface Authenticator extends EventEmitter<AuthenticatorEventType> {
+export interface Authenticator extends EventEmitter<AuthenticatorEventType> {
   readonly user?: User;
   readonly token?: string;
 
@@ -28,3 +28,5 @@ export default interface Authenticator extends EventEmitter<AuthenticatorEventTy
 }
 
 export type AuthConfig<T = typeof Keycloak_> = T extends (config: infer U) => unknown ? U : never;
+
+export default Authenticator;

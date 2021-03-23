@@ -1,7 +1,7 @@
 import Debug from 'debug';
 import EventEmitter from 'eventemitter3';
 import Keycloak_, { KeycloakInstance } from 'keycloak-js';
-import Authenticator, { AuthConfig, AuthenticatorEventType } from './authenticator';
+import { Authenticator, AuthConfig, AuthenticatorEventType } from './authenticator';
 import { User } from './user';
 import { BASE_PATH, getUrl } from './utils/url';
 

@@ -1,8 +1,8 @@
 {
-  "name": "auth",
+  "name": "rmf-auth",
   "version": "0.0.1",
   "description": "Auth layer to be used on web UI services",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "start": "../../node_modules/.bin/start-storybook -p 6006 -s stories",
     "prepare": "npm run build",
@@ -36,8 +36,7 @@
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "styled-components": "^4.4.1",
-    "typeface-roboto": "0.0.75",
-    "web-vitals": "^1.0.1"
+    "typeface-roboto": "0.0.75"
   },
   "devDependencies": {
     "@testing-library/react": "^11.2.3",
@@ -49,7 +48,9 @@
     "ts-node": "^9.0.0",
     "jest": "^26.5.0",
     "ts-jest": "^26.4.1",
-    "typescript": "^3.9.7"
+    "typescript": "^3.9.7",
+    "eslint-plugin-react": "^7.21.4",
+    "eslint-plugin-react-hooks": "^4.1.2"
   },
   "peerDependencies": {
     "@material-ui/core": "^4.11.0",
@@ -57,6 +58,9 @@
     "@material-ui/lab": "^4.0.0-alpha.56",
     "react": "^16.13.1"
   },
+  "files": [
+    "lib/"
+  ],
   "jest": {
     "collectCoverageFrom": [
       "lib/**/*.{js,jsx,ts,tsx}",
