@@ -52,6 +52,7 @@
     "@types/reactour": "^1.17.1",
     "@types/uuid": "^8.3.0",
     "axios": "^0.21.1",
+    "api-client": "file:../api-client",
     "chalk": "^4.1.0",
     "clsx": "^1.1.1",
     "debug": "^4.1.1",
