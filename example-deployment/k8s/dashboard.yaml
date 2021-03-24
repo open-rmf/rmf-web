@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: dashboard
+  labels:
+    app: dashboard
+spec:
+  type: LoadBalancer
+  selector:
+    app: dashboard
+  ports:
+    - protocol: TCP
+      port: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dashboard
+  labels:
+    app: dashboard
+spec:
+  selector:
+    matchLabels:
+      app: dashboard
+  template:
+    metadata:
+      labels:
+        app: dashboard
+    spec:
+      containers:
+      - name: dashboard
+        image: rmf-web/dashboard
+        imagePullPolicy: Never # remove this in a real deployment
+        ports:
+        - containerPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dashboard
+  labels:
+    app: dashboard
+spec:
+  tls:
+    - hosts:
+      - example.com
+  rules:
+    - host: example.com
+      http:
+        paths:
+          - path: /dashboard/
+            pathType: Prefix
+            backend:
+              service:
+                name: dashboard
+                port:
+                  number: 80
