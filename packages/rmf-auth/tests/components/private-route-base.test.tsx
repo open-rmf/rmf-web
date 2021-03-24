@@ -1,8 +1,8 @@
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
 import { cleanup, render, waitFor } from '@testing-library/react';
-import { BrowserRouter, Router, Switch } from 'react-router-dom';
-import PrivateRoute from '../../lib/components/private-route';
+import { BrowserRouter, Redirect, Router, Switch } from 'react-router-dom';
+import PrivateRouteBase from '../../lib/components/private-route-base';
 import FakeAuthenticator from '../../lib/fake-authenticator';
 
 describe('PrivateRoute', () => {
@@ -20,12 +20,10 @@ describe('PrivateRoute', () => {
   test('renders correctly', () => {
     const root = render(
       <BrowserRouter>
-        <PrivateRoute
-          path="/private"
-          exact
-          loginRoute={'/login'}
+        <PrivateRouteBase
           user={{ username: 'test' }}
           unauthorized={<h1>unauthorized</h1>}
+          redirect={<Redirect to={{ pathname: '/test', state: { from: location } }} />}
         />
       </BrowserRouter>,
     );
@@ -37,12 +35,9 @@ describe('PrivateRoute', () => {
     const root = render(
       <Router history={history}>
         <Switch>
-          <PrivateRoute
-            path="/private"
-            exact
-            loginRoute={'/login'}
-            user={authenticator.user}
+          <PrivateRouteBase
             unauthorized={<h1>unauthorized</h1>}
+            redirect={<Redirect to={{ pathname: '/login', state: { from: location } }} />}
           />
         </Switch>
       </Router>,
@@ -55,12 +50,10 @@ describe('PrivateRoute', () => {
     const root = render(
       <Router history={history}>
         <Switch>
-          <PrivateRoute
-            path="/private"
-            exact
-            loginRoute={'login'}
+          <PrivateRouteBase
             user={{ username: 'test' }}
             unauthorized={<h1>unauthorized</h1>}
+            redirect={<Redirect to={{ pathname: '/login', state: { from: location } }} />}
           />
         </Switch>
       </Router>,
@@ -72,12 +65,11 @@ describe('PrivateRoute', () => {
   test('shows unauthorized page when noRedirectToLogin is true', async () => {
     const root = render(
       <BrowserRouter>
-        <PrivateRoute
-          path="/private"
-          exact
+        <PrivateRouteBase
           noRedirectToLogin
           user={{ username: 'test' }}
-          unauthorized={<h1>Unauthorized</h1>}
+          unauthorized={<h1>unauthorized</h1>}
+          redirect={<Redirect to={{ pathname: '/login', state: { from: location } }} />}
         />
       </BrowserRouter>,
     );
