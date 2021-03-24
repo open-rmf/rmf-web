@@ -3,7 +3,7 @@ import { cleanup, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import FakeAuthenticator from '../lib/__mocks__/authenticator';
-import { Login } from '../lib/components/login';
+import { LoginBase } from '../lib/components/login-base';
 
 describe('Login page', () => {
   afterEach(() => {
@@ -14,22 +14,10 @@ describe('Login page', () => {
     const authenticator = new FakeAuthenticator();
     const root = render(
       <BrowserRouter>
-        <Login defaultRoute={'/test'} authenticator={authenticator} />
+        <LoginBase title={'Test'} successRedirectUri={'/test'} authenticator={authenticator} />
       </BrowserRouter>,
     );
     root.unmount();
-  });
-
-  test('redirects from login when user is authenticated', () => {
-    const authenticator = new FakeAuthenticator();
-
-    const root = render(
-      <BrowserRouter>
-        <Login defaultRoute={'/test'} user={{ username: 'test' }} authenticator={authenticator} />
-      </BrowserRouter>,
-    );
-
-    expect(root.queryByText('Login')).toBeFalsy();
   });
 
   test('performs login when login button is clicked', () => {
@@ -38,7 +26,7 @@ describe('Login page', () => {
 
     const root = render(
       <BrowserRouter>
-        <Login defaultRoute={'/test'} authenticator={authenticator} />
+        <LoginBase title={'Test'} successRedirectUri={'/test'} authenticator={authenticator} />
       </BrowserRouter>,
     );
     const loginButton = root.getByRole('button', { name: /Login/i });

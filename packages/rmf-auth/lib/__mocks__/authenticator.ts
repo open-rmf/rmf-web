@@ -2,7 +2,7 @@ import EventEmitter from 'eventemitter3';
 import { Authenticator, AuthenticatorEventType } from '../authenticator';
 import { User } from '../user';
 
-export default class FakeAuthenticator
+export class FakeAuthenticator
   extends EventEmitter<AuthenticatorEventType>
   implements Authenticator {
   user?: User;
@@ -24,3 +24,5 @@ export default class FakeAuthenticator
     throw new Error('Method not implemented.');
   }
 }
+
+export default FakeAuthenticator;

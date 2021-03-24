@@ -1,11 +1,9 @@
 import { Button } from '@material-ui/core';
 import React from 'react';
-import { Redirect } from 'react-router';
 import { LoginPage } from '.';
 import { Authenticator } from '../authenticator';
-import { User } from '../user';
 
-export interface LoginProps {
+export interface LoginBaseProps {
   /**
    * defaults to url of `DASHBOARD_ROUTE`
    */
@@ -14,7 +12,7 @@ export interface LoginProps {
   authenticator: Authenticator;
 }
 
-export const LoginBase = (props: LoginProps): JSX.Element => {
+export const LoginBase = (props: LoginBaseProps): JSX.Element => {
   const { successRedirectUri, authenticator, title } = props;
 
   async function handleRmfLogin(_event: React.MouseEvent): Promise<void> {
