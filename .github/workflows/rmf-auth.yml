@@ -28,7 +28,7 @@ jobs:
           npm run bootstrap -- packages/rmf-auth
         working-directory: .
       - name: build
-        run: npm run build:storybook && npm run build
+        run: npm run build
       - name: unit test
         run: npm run test:coverage
       - name: Upload coverage to Codecov
