@@ -3,3 +3,5 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
+// To fix `Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)` This happens after react-script versions >3.5
+import 'jest-canvas-mock';

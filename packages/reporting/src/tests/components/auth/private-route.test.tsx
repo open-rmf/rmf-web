@@ -55,13 +55,12 @@ describe('PrivateRoute', () => {
   });
 
   test('shows unauthorized page when noRedirectToLogin is true', async () => {
-    let root: RenderResult;
+    const root = render(
+      <BrowserRouter>
+        <PrivateRoute path="/private" exact noRedirectToLogin />
+      </BrowserRouter>,
+    );
     waitFor(() => {
-      root = render(
-        <BrowserRouter>
-          <PrivateRoute path="/private" exact noRedirectToLogin />
-        </BrowserRouter>,
-      );
       expect(root.queryByText('Unauthorized')).toBeTruthy();
     });
     expect(history.location.pathname).toBe('/private');
