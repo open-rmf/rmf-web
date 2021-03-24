@@ -166,7 +166,7 @@ async def on_shutdown():
     logger.info("shutdown app")
 
 
-sio = socketio.AsyncServer(async_mode="asgi")
+sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins="*")
 app = socketio.ASGIApp(
     sio,
     static_files={app_config.static_path: app_config.static_directory},
