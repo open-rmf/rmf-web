@@ -60,13 +60,5 @@
   },
   "files": [
     "lib/"
-  ],
-  "jest": {
-    "collectCoverageFrom": [
-      "lib/**/*.{js,jsx,ts,tsx}",
-      "!lib/index.tsx",
-      "!**/stories/**",
-      "!**/tests/**"
-    ]
-  }
+  ]
 }

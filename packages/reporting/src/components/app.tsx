@@ -54,10 +54,6 @@ export default function App(): JSX.Element | null {
                 <Route exact path={LOGIN_ROUTE}>
                   <Login />
                 </Route>
-                {/* we need this because we don't want to re-mount `AppIntrinsics` when just moving
-                  from one route to another, but we want to unmount it when going "outside" the app. */}
-
-                {/* <AppIntrinsics> */}
                 <PrivateRoute exact path={appRoutes}>
                   <Switch>
                     <PrivateRoute exact path={DASHBOARD_ROUTE}>
@@ -65,8 +61,6 @@ export default function App(): JSX.Element | null {
                     </PrivateRoute>
                   </Switch>
                 </PrivateRoute>
-                {/* </AppIntrinsics> */}
-
                 <Route>
                   <h1>Page not found</h1>
                   {/* <NotFoundPage /> */}

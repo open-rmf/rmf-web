@@ -71,6 +71,7 @@
     "collectCoverageFrom": [
       "src/**/*.{js,jsx,ts,tsx}",
       "!src/index.tsx",
+      "!src/app-config.ts",
       "!src/serviceWorker.ts",
       "!src/react-app-env.d.ts",
       "!src/components/reporter-side-bar-structure.tsx",
