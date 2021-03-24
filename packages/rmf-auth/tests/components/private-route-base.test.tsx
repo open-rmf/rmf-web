@@ -1,6 +1,6 @@
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
-import { cleanup, render, waitFor } from '@testing-library/react';
+import { cleanup, render, waitFor, screen } from '@testing-library/react';
 import { BrowserRouter, Redirect, Router, Switch } from 'react-router-dom';
 import PrivateRouteBase from '../../lib/components/private-route-base';
 import FakeAuthenticator from '../../lib/fake-authenticator';
@@ -66,7 +66,7 @@ describe('PrivateRoute', () => {
     const root = render(
       <BrowserRouter>
         <PrivateRouteBase
-          noRedirectToLogin
+          noRedirectToLogin={true}
           user={{ username: 'test' }}
           unauthorized={<h1>unauthorized</h1>}
           redirect={<Redirect to={{ pathname: '/login', state: { from: location } }} />}
@@ -74,7 +74,7 @@ describe('PrivateRoute', () => {
       </BrowserRouter>,
     );
     waitFor(() => {
-      expect(root.queryByText('Unauthorized')).toBeTruthy();
+      expect(screen.getByText('unauthorized')).toBeTruthy();
     });
     expect(history.location.pathname).toBe('/private');
   });
