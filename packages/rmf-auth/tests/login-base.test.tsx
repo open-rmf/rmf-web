@@ -42,7 +42,7 @@ describe('Login page', () => {
     );
     const loginButton = root.getByRole('button', { name: /Login/i });
     userEvent.click(loginButton);
-
     expect(spy).toHaveBeenCalledTimes(1);
+    root.unmount();
   });
 });

@@ -34,7 +34,7 @@ describe('PrivateRoute', () => {
 
   test('redirects when unauthenticated', () => {
     const authenticator = new FakeAuthenticator();
-    render(
+    const root = render(
       <Router history={history}>
         <Switch>
           <PrivateRoute
@@ -48,10 +48,11 @@ describe('PrivateRoute', () => {
       </Router>,
     );
     expect(history.location.pathname).toBe('/login');
+    root.unmount();
   });
 
   test('no redirects when authenticated', () => {
-    render(
+    const root = render(
       <Router history={history}>
         <Switch>
           <PrivateRoute
@@ -65,22 +66,22 @@ describe('PrivateRoute', () => {
       </Router>,
     );
     expect(history.location.pathname).toBe('/private');
+    root.unmount();
   });
 
   test('shows unauthorized page when noRedirectToLogin is true', async () => {
-    let root: RenderResult;
+    const root = render(
+      <BrowserRouter>
+        <PrivateRoute
+          path="/private"
+          exact
+          noRedirectToLogin
+          user={{ username: 'test' }}
+          unauthorized={<h1>Unauthorized</h1>}
+        />
+      </BrowserRouter>,
+    );
     waitFor(() => {
-      root = render(
-        <BrowserRouter>
-          <PrivateRoute
-            path="/private"
-            exact
-            noRedirectToLogin
-            user={{ username: 'test' }}
-            unauthorized={<h1>Unauthorized</h1>}
-          />
-        </BrowserRouter>,
-      );
       expect(root.queryByText('Unauthorized')).toBeTruthy();
     });
     expect(history.location.pathname).toBe('/private');
