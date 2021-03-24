@@ -1,9 +1,7 @@
-name: reporting
+name: rmf-auth
 on:
   pull_request:
     paths:
-      - 'packages/reporting/**'
-      - 'packages/react-components/**'
       - 'packages/rmf-auth/**'
   push:
     branches:
@@ -17,7 +15,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: packages/reporting
+        working-directory: packages/rmf-auth
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
@@ -27,7 +25,7 @@ jobs:
         run: |
           pip3 install pipenv
           npm config set unsafe-perm
-          npm run bootstrap -- packages/reporting
+          npm run bootstrap -- packages/rmf-auth
         working-directory: .
       - name: build
         run: npm run build:storybook && npm run build
@@ -37,4 +35,4 @@ jobs:
         uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          flags: reporting
+          flags: rmf-auth
