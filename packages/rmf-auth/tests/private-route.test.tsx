@@ -3,7 +3,7 @@ import React from 'react';
 import { cleanup, render, waitFor, RenderResult } from '@testing-library/react';
 import { BrowserRouter, Router, Switch } from 'react-router-dom';
 import PrivateRoute from '../lib/components/private-route';
-import FakeAuthenticator from '../lib/__mocks__/authenticator';
+import FakeAuthenticator from '../lib/fake-authenticator';
 
 describe('PrivateRoute', () => {
   let history: MemoryHistory;
