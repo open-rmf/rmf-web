@@ -12,6 +12,7 @@ export type Topic =
   | 'ingestor_health'
   | 'fleet_states'
   | 'robot_health'
+  | 'task_summaries'
   | 'building_map';
 
 export interface ApiClient extends Socket {
@@ -26,6 +27,7 @@ export interface ApiClient extends Socket {
   on(event: 'ingestor_health', listener: (resp: mdl.IngestorHealth) => void): this;
   on(event: 'fleet_states', listener: (resp: mdl.FleetState) => void): this;
   on(event: 'robot_health', listener: (resp: mdl.RobotHealth) => void): this;
+  on(event: 'task_summaries', listener: (resp: mdl.TaskSummary) => void): this;
   on(event: 'building_map', listener: (resp: mdl.BuildingMap) => void): this;
   on(event: string, listener: Function): this; // eslint-disable-line @typescript-eslint/ban-types
 
