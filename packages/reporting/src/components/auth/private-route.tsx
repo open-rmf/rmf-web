@@ -1,5 +1,6 @@
 import Debug from 'debug';
 import React from 'react';
+import { Unauthorized } from 'react-components';
 import { Redirect, Route, RouteProps, useLocation } from 'react-router';
 import { LOGIN_ROUTE } from '../../util/url';
 import { UserContext } from '../auth-contexts';
@@ -32,7 +33,7 @@ export const PrivateRoute = ({
         debug('redirecting to login page');
         return <Redirect to={{ pathname: LOGIN_ROUTE, state: { from: location } }} />;
       } else {
-        return <h1>Unauthorized</h1>;
+        return <Unauthorized />;
       }
     }
   }

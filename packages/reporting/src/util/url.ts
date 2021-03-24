@@ -1,4 +1,4 @@
-import { BASE_PATH, normalizePath } from 'rmf-auth';
+import { normalizePath } from 'rmf-auth';
 
-export const DASHBOARD_ROUTE = BASE_PATH;
-export const LOGIN_ROUTE = normalizePath(`${BASE_PATH}/login`);
+export const DASHBOARD_ROUTE = ``;
+export const LOGIN_ROUTE = normalizePath(`/login`);

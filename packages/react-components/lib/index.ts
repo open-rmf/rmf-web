@@ -6,6 +6,7 @@ export * from './confirmation-alert-dialog';
 export * from './date-time-picker';
 export * from './dispensers';
 export * from './doors';
+export * from './error-pages';
 export * from './geometry-utils';
 export * from './lifts';
 export * from './reports';

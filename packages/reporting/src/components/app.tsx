@@ -1,6 +1,7 @@
 import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 import React from 'react';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { NotFoundPage } from 'react-components';
+import { BrowserRouter, Link, Route, Switch } from 'react-router-dom';
 import { User } from 'rmf-auth';
 import 'typeface-roboto';
 import appConfig from '../app-config';
@@ -10,7 +11,6 @@ import { AuthenticatorContext, UserContext } from './auth-contexts';
 import Login from './auth/login';
 import { PrivateRoute } from './auth/private-route';
 import Dashboard from './dashboard';
-// import NotFoundPage from './error-pages/page-not-found';
 
 const theme = createMuiTheme({
   palette: {
@@ -62,8 +62,7 @@ export default function App(): JSX.Element | null {
                   </Switch>
                 </PrivateRoute>
                 <Route>
-                  <h1>Page not found</h1>
-                  {/* <NotFoundPage /> */}
+                  <NotFoundPage routeLinkComponent={<Link to={LOGIN_ROUTE}>Go to Login</Link>} />
                 </Route>
               </Switch>
             </BrowserRouter>
