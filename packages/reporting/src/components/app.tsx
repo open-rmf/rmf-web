@@ -2,18 +2,15 @@ import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { User } from 'rmf-auth';
-import PrivateRoute from 'rmf-auth/lib/components/private-route';
 import 'typeface-roboto';
 import appConfig from '../app-config';
 import { DASHBOARD_ROUTE, LOGIN_ROUTE } from '../util/url';
 import { AppConfigContext } from './app-contexts';
 import { AuthenticatorContext, UserContext } from './auth-contexts';
 import Login from './auth/login';
-import PrivateRouteReporting from './auth/private-route-reporting';
+import { PrivateRoute } from './auth/private-route';
 import Dashboard from './dashboard';
 // import NotFoundPage from './error-pages/page-not-found';
-// import { AppBase } from './app-base';
-// import './app.css';
 
 const theme = createMuiTheme({
   palette: {
@@ -24,14 +21,6 @@ const theme = createMuiTheme({
     },
   },
 });
-
-// function AppIntrinsics({ children }: React.PropsWithChildren<{}>): JSX.Element | null {
-//   return (
-//     <AppBase>
-//       <RmfApp>{children}</RmfApp>
-//     </AppBase>
-//   );
-// }
 
 export default function App(): JSX.Element | null {
   const authenticator = appConfig.authenticator;
@@ -69,17 +58,13 @@ export default function App(): JSX.Element | null {
                   from one route to another, but we want to unmount it when going "outside" the app. */}
 
                 {/* <AppIntrinsics> */}
-                <Switch>
-                  <PrivateRouteReporting
-                    exact
-                    path={DASHBOARD_ROUTE}
-                    loginRoute={LOGIN_ROUTE}
-                    unauthorized={<h1> Are you lost?</h1>}
-                    user={user}
-                  >
-                    <Dashboard />
-                  </PrivateRouteReporting>
-                </Switch>
+                <PrivateRoute exact path={appRoutes}>
+                  <Switch>
+                    <PrivateRoute exact path={DASHBOARD_ROUTE}>
+                      <Dashboard />
+                    </PrivateRoute>
+                  </Switch>
+                </PrivateRoute>
                 {/* </AppIntrinsics> */}
 
                 <Route>

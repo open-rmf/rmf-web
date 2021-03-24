@@ -1,33 +1,26 @@
 import Debug from 'debug';
 import React from 'react';
 import { Redirect, Route, RouteProps, useLocation } from 'react-router';
-import { User } from 'rmf-auth';
-// import Unauthorized from '../error-pages/unauthorized';
-// import { UserContext } from '../contexts';
+import { LOGIN_ROUTE } from '../../util/url';
+import { UserContext } from '../auth-contexts';
 
 const debug = Debug('PrivateRoute');
 
 export interface PrivateRouteProps extends React.PropsWithChildren<RouteProps> {
   // if true, do not redirect to login url if not authenticated
   noRedirectToLogin?: boolean;
-  loginRoute?: string;
-  unauthorized: React.ReactElement;
-  user?: User | null;
 }
 
 /**
  * This component validates if the user is authenticated before rendering component passed as a
  * prop.
  */
-const PrivateRouteReporting = ({
+export const PrivateRoute = ({
   noRedirectToLogin,
   children,
-  loginRoute,
-  unauthorized,
-  user,
   ...rest
 }: PrivateRouteProps): JSX.Element | null => {
-  // const user = React.useContext(UserContext);
+  const user = React.useContext(UserContext);
   const location = useLocation();
 
   function render() {
@@ -37,9 +30,9 @@ const PrivateRouteReporting = ({
       if (!noRedirectToLogin) {
         debug('accessing private route while unauthenticated');
         debug('redirecting to login page');
-        return <Redirect to={{ pathname: loginRoute, state: { from: location } }} />;
+        return <Redirect to={{ pathname: LOGIN_ROUTE, state: { from: location } }} />;
       } else {
-        return { unauthorized };
+        return <h1>Unauthorized</h1>;
       }
     }
   }
@@ -47,4 +40,4 @@ const PrivateRouteReporting = ({
   return <Route {...rest}>{render()}</Route>;
 };
 
-export default PrivateRouteReporting;
+export default PrivateRoute;
