@@ -4,3 +4,4 @@
 /lib/**/*.d.ts
 /examples/**/*.js
 /examples/**/*.d.ts
+/static/

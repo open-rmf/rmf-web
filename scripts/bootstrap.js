@@ -31,8 +31,6 @@ const allPackages = [
   'packages/api-client',
 ];
 const scope = process.argv.length > 2 ? process.argv.slice(2) : allPackages;
-console.log('------- scope --------');
-console.log(scope);
 const verb = process.env['CI'] ? 'ci' : 'install';
 const targets = new Set(['.']);
 scope.forEach((pkg) => {
@@ -43,8 +41,6 @@ scope.forEach((pkg) => {
 });
 targets.forEach((pkg) => {
   const cwd = `${__dirname}/../${pkg}`;
-  console.log('------------ cwd -------------');
-  console.log(cwd);
   const result = child_process.spawnSync('npm', [verb], { stdio: 'inherit', cwd });
   if (result.status !== 0) {
     process.exit(result.status);
