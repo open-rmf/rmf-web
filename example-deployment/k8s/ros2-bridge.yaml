@@ -34,16 +34,16 @@ spec:
         args:
           - --host=0.0.0.0
           - --port=50002
-          - --publicKey=/configmap/jwt-cert.pem
+          - --publicKey=/configmap/jwt-pub-key.pub
         ports:
           - containerPort: 50002
         volumeMounts:
           - mountPath: /configmap
-            name: jwt-cert
+            name: jwt-pub-key
       volumes:
-        - name: jwt-cert
+        - name: jwt-pub-key
           configMap:
-            name: jwt-cert
+            name: jwt-pub-key
       hostNetwork: true
 ---
 apiVersion: networking.k8s.io/v1
