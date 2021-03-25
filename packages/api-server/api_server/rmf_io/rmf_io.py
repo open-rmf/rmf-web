@@ -12,7 +12,7 @@ from rx.core.typing import Observable as ObservableType
 from rx.operators import map as rx_map
 
 from ..repositories import StaticFilesRepository
-from .authenticator import Authenticator, StubAuthenticator
+from .authenticator import AuthenticationError, Authenticator, StubAuthenticator
 from .gateway import RmfGateway
 from .topics import topics
 
@@ -226,7 +226,7 @@ class RmfIO:
                 f'[{sid}] new connection from "{environ["REMOTE_ADDR"]}:{environ["REMOTE_PORT"]}"'
             )
             return True
-        except Exception as e:  # pylint: disable=broad-except
+        except AuthenticationError as e:
             self.logger.error(f"authentication failed: {e}")
             return False
 

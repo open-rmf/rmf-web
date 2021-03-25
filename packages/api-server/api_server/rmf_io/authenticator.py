@@ -43,6 +43,6 @@ class JwtAuthenticator(Authenticator):
             raise AuthenticationError("no token provided")
         token = auth["token"]
         try:
-            jwt.decode(token, self._public_key)
+            jwt.decode(token, self._public_key, algorithms=["RS256"])
         except jwt.DecodeError as e:
             raise AuthenticationError from e
