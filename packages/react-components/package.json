@@ -26,8 +26,7 @@
     "istanbul-instrumenter-loader": "^3.0.1",
     "material-table": "^1.69.2",
     "moment": "^2.29.1",
-    "node-vibrant": "^3.1.6",
-    "react-router-dom": "^5.2.0"
+    "node-vibrant": "^3.1.6"
   },
   "devDependencies": {
     "@testing-library/react": "^11.2.2",
