@@ -1,7 +1,6 @@
 import asyncio
 import logging
 import os
-import subprocess
 import unittest
 from typing import Any, Callable, Optional
 from unittest.mock import MagicMock
