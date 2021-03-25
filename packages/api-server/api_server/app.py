@@ -166,6 +166,7 @@ async def on_shutdown():
     logger.info("shutdown app")
 
 
+# TODO - change cors_allowed_origin to more specific origin. Putting a wild card for now
 sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins="*")
 app = socketio.ASGIApp(
     sio,
