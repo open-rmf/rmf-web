@@ -7,7 +7,9 @@ import socketio
 from fastapi import FastAPI
 
 from .app_config import app_config
-from .building_map import building_map_router
+
+# from .building_map import building_map_router
+from .tasks import tasks
 
 logger = logging.getLogger("rest_app")
 handler = logging.StreamHandler(sys.stdout)
@@ -22,20 +24,23 @@ app = FastAPI()
 sio = socketio.AsyncClient()
 
 
-@app.on_event("startup")
-async def on_startup():
-    await sio.connect(app_config.api_server_url)
-    connected = asyncio.Future()
-    sio.on("connect", lambda: connected.set_result(True))
-    await connected
-    del sio.handlers["/"]["connect"]
+# @app.on_event("startup")
+# async def on_startup():
+# await sio.connect(app_config.api_server_url)
+# logger.info("connecting ............")
+# connected = asyncio.Future()
+# logger.info(connected)
+# sio.on("connect", lambda: connected.set_result(True))
+# await connected
+# del sio.handlers["/"]["connect"]
 
-    app.include_router(
-        building_map_router(sio, logger.getChild("building_map")),
-        prefix="/building_map",
-    )
-
-    logger.info("started app")
+# app.include_router(
+#     building_map_router(sio, logger.getChild("building_map")),
+#     prefix="/building_map",
+# )
+# logger.info("including tasks router ....")
+app.include_router(tasks.router)
+logger.info("started app")
 
 
 # There is a bug with uvicorn and socketio that causes
@@ -45,7 +50,8 @@ async def on_startup():
 # This forces the event loop to stop before uvicorn completes its work, hence the error appears.
 # The side effect is that the shutdown handler is never called because the loop has
 # been stopped.
-@app.on_event("shutdown")
-async def on_shutdown():
-    await sio.disconnect()
-    logger.info("shutdown app")
+
+# @app.on_event("shutdown")
+# async def on_shutdown():
+#     await sio.disconnect()
+#     logger.info("shutdown app")
