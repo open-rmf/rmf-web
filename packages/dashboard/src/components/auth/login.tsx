@@ -2,7 +2,7 @@ import React from 'react';
 import { Redirect } from 'react-router';
 import { DASHBOARD_ROUTE } from '../../util/url';
 import { AuthenticatorContext, UserContext } from '../auth/contexts';
-import { LoginBase } from 'rmf-auth';
+import { getUrl, LoginBase } from 'rmf-auth';
 
 export interface LoginProps {
   /**
@@ -12,7 +12,7 @@ export interface LoginProps {
 }
 
 export default function Login(props: LoginProps): JSX.Element {
-  const successRedirectUri = props.successRedirectUri || DASHBOARD_ROUTE;
+  const successRedirectUri = props.successRedirectUri || getUrl(DASHBOARD_ROUTE);
   const authenticator = React.useContext(AuthenticatorContext);
   const user = React.useContext(UserContext);
 
