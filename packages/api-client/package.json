@@ -7,7 +7,7 @@
   "scripts": {
     "prepare": "node generate-models.js && npm run build",
     "build": "npm run lint && tsc --build",
-    "lint": "../../node_modules/.bin/eslint --ext ts,tsx lib"
+    "lint": "../../node_modules/.bin/eslint --ext ts,tsx lib --ignore-pattern lib/models/"
   },
   "author": "koonpeng@openrobotics.org",
   "license": "Apache-2.0",
