@@ -1,9 +1,8 @@
-import { Button } from '@material-ui/core';
 import React from 'react';
-import { LoginPage } from 'react-components';
 import { Redirect } from 'react-router';
-import { DASHBOARD_ROUTE, getUrl } from '../../util/url';
+import { DASHBOARD_ROUTE } from '../../util/url';
 import { AuthenticatorContext, UserContext } from '../auth/contexts';
+import { LoginBase } from 'rmf-auth';
 
 export interface LoginProps {
   /**
@@ -13,21 +12,18 @@ export interface LoginProps {
 }
 
 export default function Login(props: LoginProps): JSX.Element {
-  const successRedirectUri = props.successRedirectUri || getUrl(DASHBOARD_ROUTE);
+  const successRedirectUri = props.successRedirectUri || DASHBOARD_ROUTE;
   const authenticator = React.useContext(AuthenticatorContext);
   const user = React.useContext(UserContext);
 
-  async function handleRmfLogin(_event: React.MouseEvent): Promise<void> {
-    authenticator.login(successRedirectUri);
-  }
-
+  // Redirect is not working if use a component from a different package
   return user ? (
     <Redirect to={DASHBOARD_ROUTE} />
   ) : (
-    <LoginPage title="Dashboard" logo="assets/ros-health.png">
-      <Button id="login-button" onClick={handleRmfLogin} variant="contained">
-        Login
-      </Button>
-    </LoginPage>
+    <LoginBase
+      authenticator={authenticator}
+      title="Reporting"
+      successRedirectUri={successRedirectUri}
+    />
   );
 }

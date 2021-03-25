@@ -2,10 +2,10 @@ import { render } from '@testing-library/react';
 import { act } from '@testing-library/react-hooks';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
+import { FakeAuthenticator } from 'rmf-auth';
 import { AppController, AppControllerContext } from '../app-contexts';
 import AppBar from '../appbar';
 import { AuthenticatorContext, UserContext } from '../auth/contexts';
-import FakeAuthenticator from '../auth/__mocks__/authenticator';
 import { makeMockAppController } from './mock-app-controller';
 
 describe('AppBar', () => {

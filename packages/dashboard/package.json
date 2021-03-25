@@ -69,6 +69,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "^4.0.1",
     "reactour": "^1.18.0",
+    "rmf-auth": "file:../rmf-auth",
     "styled-components": "^4.4.1",
     "typeface-roboto": "0.0.75",
     "uuid": "^8.3.0"

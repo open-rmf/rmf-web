@@ -18,8 +18,8 @@ const deps = {
     'packages/ros2-bridge',
     'packages/react-components',
     'packages/api-client',
+    'packages/rmf-auth',
   ],
-  'packages/reporting': ['packages/react-components'],
   'packages/reporting': ['packages/react-components', 'packages/rmf-auth'],
   'packages/api-client': ['packages/api-server'],
 };
