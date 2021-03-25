@@ -14,7 +14,11 @@ const child_process = require('child_process');
 
 // hardcoded for now
 const deps = {
-  'packages/dashboard': ['packages/ros2-bridge', 'packages/react-components'],
+  'packages/dashboard': [
+    'packages/ros2-bridge',
+    'packages/react-components',
+    'packages/api-client',
+  ],
   'packages/api-client': ['packages/api-server'],
 };
 
@@ -27,7 +31,6 @@ const allPackages = [
   'packages/api-client',
 ];
 const scope = process.argv.length > 2 ? process.argv.slice(2) : allPackages;
-
 const verb = process.env['CI'] ? 'ci' : 'install';
 const targets = new Set(['.']);
 scope.forEach((pkg) => {
