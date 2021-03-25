@@ -11,7 +11,7 @@ class AppConfig:
         self.static_path: str = config_dict["static_path"]
         self.static_directory: str = config_dict["static_directory"]
         self.log_level: str = config_dict["log_level"]
-        self.jwt_cert: Optional[str] = config_dict["jwt_cert"]
+        self.jwt_public_key: Optional[str] = config_dict["jwt_public_key"]
 
 
 def _load_config() -> AppConfig:

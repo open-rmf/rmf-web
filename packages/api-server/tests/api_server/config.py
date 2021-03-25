@@ -7,5 +7,5 @@ config = {
     "static_path": "/static",  # base path that static files should be served from, MUST start with '/' and MUST NOT end with '/'. Also MUST NOT be the root path (i.e. '/' or '').
     "static_directory": "static",  # the directory where static files should be stored.
     "log_level": "CRITICAL",
-    "jwt_cert": None,
+    "jwt_public_key": None,
 }

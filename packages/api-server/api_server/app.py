@@ -134,11 +134,11 @@ async def on_startup():
         logger.getChild("static_files"),
     )
 
-    if app_config.jwt_cert is None:
+    if app_config.jwt_public_key is None:
         auth = StubAuthenticator()
         logger.warning("authentication is disabled")
     else:
-        auth = JwtAuthenticator(app_config.jwt_cert)
+        auth = JwtAuthenticator(app_config.jwt_public_key)
 
     rmf_gateway = RmfGateway()
     RmfIO(
