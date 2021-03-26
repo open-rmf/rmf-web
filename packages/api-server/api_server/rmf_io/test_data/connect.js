@@ -3,8 +3,6 @@ const io = require('socket.io-client');
 const uri = process.argv[2];
 const token = process.argv[3];
 
-console.log(process.argv);
-
 (async () => {
   const client = io(uri, { auth: { token: token } });
   const success = await new Promise((res) => {

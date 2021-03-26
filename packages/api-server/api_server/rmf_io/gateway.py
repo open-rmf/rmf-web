@@ -9,7 +9,7 @@ from rmf_task_msgs.msg import TaskSummary
 from rx import Observable
 from rx.subject import BehaviorSubject, Subject
 
-from .. import models
+from ..models import tortoise_models as ttm
 
 
 class RmfGateway:
@@ -35,7 +35,7 @@ class RmfGateway:
         )
 
         self.door_health = Subject()  # Subject[DoorHealth]
-        self.current_door_health: Dict[str, models.DoorHealth] = {}
+        self.current_door_health: Dict[str, ttm.DoorHealth] = {}
         self._save_event(
             self.door_health,
             self.current_door_health,
@@ -51,7 +51,7 @@ class RmfGateway:
         )
 
         self.lift_health = Subject()  # Subject[LiftHealth]
-        self.current_lift_health: Dict[str, models.LiftHealth] = {}
+        self.current_lift_health: Dict[str, ttm.LiftHealth] = {}
         self._save_event(
             self.lift_health,
             self.current_lift_health,
@@ -67,7 +67,7 @@ class RmfGateway:
         )
 
         self.dispenser_health = Subject()  # Subject[DispenserHealth]
-        self.current_dispenser_health: Dict[str, models.DispenserHealth] = {}
+        self.current_dispenser_health: Dict[str, ttm.DispenserHealth] = {}
         self._save_event(
             self.dispenser_health,
             self.current_dispenser_health,
@@ -83,7 +83,7 @@ class RmfGateway:
         )
 
         self.ingestor_health = Subject()  # Subject[IngestorHealth]
-        self.current_ingestor_health: Dict[str, models.IngestorHealth] = {}
+        self.current_ingestor_health: Dict[str, ttm.IngestorHealth] = {}
         self._save_event(
             self.ingestor_health,
             self.current_ingestor_health,
@@ -99,7 +99,7 @@ class RmfGateway:
         )
 
         self.robot_health = Subject()  # Subject[RobotHealth]
-        self.current_robot_health: Dict[str, models.RobotHealth] = {}
+        self.current_robot_health: Dict[str, ttm.RobotHealth] = {}
         self._save_event(
             self.robot_health,
             self.current_robot_health,
@@ -123,7 +123,7 @@ class RmfGateway:
 
     def _init_task_summaries(self):
         def on_next(task: TaskSummary):
-            keep_states = models.TaskSummary.ACTIVE_STATES
+            keep_states = ttm.TaskSummary.ACTIVE_STATES
             if task.state in keep_states:
                 self.current_task_summaries[task.task_id] = task
             else:

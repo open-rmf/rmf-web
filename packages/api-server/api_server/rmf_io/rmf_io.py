@@ -11,8 +11,8 @@ from rosidl_runtime_py.convert import message_to_ordereddict
 from rx.core.typing import Observable as ObservableType
 from rx.operators import map as rx_map
 
+from ..authenticator import AuthenticationError, Authenticator, StubAuthenticator
 from ..repositories import StaticFilesRepository
-from .authenticator import AuthenticationError, Authenticator, StubAuthenticator
 from .gateway import RmfGateway
 from .topics import topics
 

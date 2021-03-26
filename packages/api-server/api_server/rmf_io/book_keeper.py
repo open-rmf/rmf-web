@@ -11,7 +11,7 @@ from rmf_lift_msgs.msg import LiftState
 from rmf_task_msgs.msg import TaskSummary
 from rosidl_runtime_py.convert import message_to_ordereddict
 
-from .. import models
+from ..models import tortoise_models as ttm
 from .gateway import RmfGateway
 
 
@@ -86,7 +86,7 @@ class RmfBookKeeper:
         self._record_task_summary()
 
     @staticmethod
-    def _report_health(health: models.BasicHealthModel, logger: logging.Logger):
+    def _report_health(health: ttm.BasicHealthModel, logger: logging.Logger):
         message = json.dumps(
             {
                 "id": health.id_,
@@ -94,16 +94,16 @@ class RmfBookKeeper:
                 "health_message": health.health_message,
             }
         )
-        if health.health_status == models.HealthStatus.UNHEALTHY:
+        if health.health_status == ttm.HealthStatus.UNHEALTHY:
             logger.warning(message)
-        elif health.health_status == models.HealthStatus.DEAD:
+        elif health.health_status == ttm.HealthStatus.DEAD:
             logger.error(message)
         else:
             logger.info(message)
 
     def _record_door_state(self):
         async def update(door_state: DoorState):
-            await models.DoorState.update_or_create_from_rmf(door_state)
+            await ttm.DoorState.update_or_create_from_rmf(door_state)
             self._loggers.door_state.info(
                 json.dumps(message_to_ordereddict(door_state))
             )
@@ -111,8 +111,8 @@ class RmfBookKeeper:
         self.rmf.door_states.subscribe(lambda x: self.loop.create_task(update(x)))
 
     def _record_door_health(self):
-        async def update(health: models.DoorHealth):
-            await models.DoorHealth.update_or_create(
+        async def update(health: ttm.DoorHealth):
+            await ttm.DoorHealth.update_or_create(
                 {
                     "health_status": health.health_status,
                     "health_message": health.health_message,
@@ -125,7 +125,7 @@ class RmfBookKeeper:
 
     def _record_lift_state(self):
         async def update(lift_state: LiftState):
-            await models.LiftState.update_or_create_from_rmf(lift_state)
+            await ttm.LiftState.update_or_create_from_rmf(lift_state)
             self._loggers.lift_state.info(
                 json.dumps(message_to_ordereddict(lift_state))
             )
@@ -133,8 +133,8 @@ class RmfBookKeeper:
         self.rmf.lift_states.subscribe(lambda x: self.loop.create_task(update(x)))
 
     def _record_lift_health(self):
-        async def update(health: models.LiftHealth):
-            await models.LiftHealth.update_or_create(
+        async def update(health: ttm.LiftHealth):
+            await ttm.LiftHealth.update_or_create(
                 {
                     "health_status": health.health_status,
                     "health_message": health.health_message,
@@ -147,7 +147,7 @@ class RmfBookKeeper:
 
     def _record_dispenser_state(self):
         async def update(dispenser_state: DispenserState):
-            await models.DispenserState.update_or_create_from_rmf(dispenser_state)
+            await ttm.DispenserState.update_or_create_from_rmf(dispenser_state)
             self._loggers.dispenser_state.info(
                 json.dumps(message_to_ordereddict(dispenser_state))
             )
@@ -155,8 +155,8 @@ class RmfBookKeeper:
         self.rmf.dispenser_states.subscribe(lambda x: self.loop.create_task(update(x)))
 
     def _record_dispenser_health(self):
-        async def update(health: models.DispenserHealth):
-            await models.DispenserHealth.update_or_create(
+        async def update(health: ttm.DispenserHealth):
+            await ttm.DispenserHealth.update_or_create(
                 {
                     "health_status": health.health_status,
                     "health_message": health.health_message,
@@ -169,7 +169,7 @@ class RmfBookKeeper:
 
     def _record_ingestor_state(self):
         async def update(ingestor_state: IngestorState):
-            await models.IngestorState.update_or_create_from_rmf(ingestor_state)
+            await ttm.IngestorState.update_or_create_from_rmf(ingestor_state)
             self._loggers.ingestor_state.info(
                 json.dumps(message_to_ordereddict(ingestor_state))
             )
@@ -177,8 +177,8 @@ class RmfBookKeeper:
         self.rmf.ingestor_states.subscribe(lambda x: self.loop.create_task(update(x)))
 
     def _record_ingestor_health(self):
-        async def update(health: models.IngestorHealth):
-            await models.IngestorHealth.update_or_create(
+        async def update(health: ttm.IngestorHealth):
+            await ttm.IngestorHealth.update_or_create(
                 {
                     "health_status": health.health_status,
                     "health_message": health.health_message,
@@ -191,7 +191,7 @@ class RmfBookKeeper:
 
     def _record_fleet_state(self):
         async def update(fleet_state: FleetState):
-            await models.FleetState.update_or_create_from_rmf(fleet_state)
+            await ttm.FleetState.update_or_create_from_rmf(fleet_state)
             self._loggers.fleet_state.info(
                 json.dumps(message_to_ordereddict(fleet_state))
             )
@@ -199,8 +199,8 @@ class RmfBookKeeper:
         self.rmf.fleet_states.subscribe(lambda x: self.loop.create_task(update(x)))
 
     def _record_robot_health(self):
-        async def update(health: models.RobotHealth):
-            await models.RobotHealth.update_or_create(
+        async def update(health: ttm.RobotHealth):
+            await ttm.RobotHealth.update_or_create(
                 {
                     "health_status": health.health_status,
                     "health_message": health.health_message,
@@ -213,10 +213,10 @@ class RmfBookKeeper:
 
     def _record_task_summary(self):
         async def update(task: TaskSummary):
-            if task.state in models.TaskSummary.ACTIVE_STATES:
-                await models.TaskSummary.update_or_create_from_rmf(task)
+            if task.state in ttm.TaskSummary.ACTIVE_STATES:
+                await ttm.TaskSummary.update_or_create_from_rmf(task)
             else:
-                record = await models.TaskSummary.get(id_=task.task_id)
+                record = await ttm.TaskSummary.get(id_=task.task_id)
                 await record.delete()
             self._loggers.task_summary.info(json.dumps(message_to_ordereddict(task)))
 

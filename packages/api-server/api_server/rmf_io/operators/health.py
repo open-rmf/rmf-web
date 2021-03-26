@@ -4,7 +4,7 @@ import rx
 from rx import operators as ops
 from rx.core.operators.timestamp import Timestamp
 
-from ...models import HealthStatus
+from ...models.tortoise_models import HealthStatus
 
 
 def most_critical():

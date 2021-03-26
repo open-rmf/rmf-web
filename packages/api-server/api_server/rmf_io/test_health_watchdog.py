@@ -10,7 +10,7 @@ from rmf_lift_msgs.msg import LiftState
 from rx import Observable
 from rx.scheduler.historicalscheduler import HistoricalScheduler
 
-from .. import models
+from ..models import tortoise_models as ttm
 from . import test_data
 from .gateway import RmfGateway
 from .health_watchdog import HealthWatchdog
@@ -51,22 +51,22 @@ async def test_heartbeat(
 
     source.on_next(factory("test_id"))
     test.scheduler.advance_by(0)
-    test.assertEqual(health.health_status, models.HealthStatus.HEALTHY)
+    test.assertEqual(health.health_status, ttm.HealthStatus.HEALTHY)
     test.assertEqual(health.id_, "test_id")
 
     # it should not be dead yet
     test.scheduler.advance_by(HealthWatchdog.LIVELINESS / 2)
-    test.assertEqual(health.health_status, models.HealthStatus.HEALTHY)
+    test.assertEqual(health.health_status, ttm.HealthStatus.HEALTHY)
     test.assertEqual(health.id_, "test_id")
 
     # # it should be dead now because the time between states has reached the threshold
     test.scheduler.advance_by(HealthWatchdog.LIVELINESS / 2)
-    test.assertEqual(health.health_status, models.HealthStatus.DEAD)
+    test.assertEqual(health.health_status, ttm.HealthStatus.DEAD)
     test.assertEqual(health.id_, "test_id")
 
     # # it should become alive again when a new state is emitted
     source.on_next(factory("test_id"))
-    test.assertEqual(health.health_status, models.HealthStatus.HEALTHY)
+    test.assertEqual(health.health_status, ttm.HealthStatus.HEALTHY)
     test.assertEqual(health.id_, "test_id")
 
 
@@ -76,8 +76,8 @@ class TestHealthWatchdog_DoorHealth(BaseHealthWatchdogTests):
             self, self.rmf.door_health, self.rmf.door_states, test_data.make_door_state
         )
 
-    async def _check_door_mode(self, mode: int, expected_health: models.HealthStatus):
-        health: models.DoorHealth = None
+    async def _check_door_mode(self, mode: int, expected_health: ttm.HealthStatus):
+        health: ttm.DoorHealth = None
 
         def on_next(v):
             nonlocal health
@@ -92,12 +92,12 @@ class TestHealthWatchdog_DoorHealth(BaseHealthWatchdogTests):
 
     async def test_door_mode(self):
         test_cases = [
-            (DoorMode.MODE_CLOSED, models.HealthStatus.HEALTHY),
-            (DoorMode.MODE_MOVING, models.HealthStatus.HEALTHY),
-            (DoorMode.MODE_OPEN, models.HealthStatus.HEALTHY),
-            (DoorMode.MODE_OFFLINE, models.HealthStatus.UNHEALTHY),
-            (DoorMode.MODE_UNKNOWN, models.HealthStatus.UNHEALTHY),
-            (128, models.HealthStatus.UNHEALTHY),
+            (DoorMode.MODE_CLOSED, ttm.HealthStatus.HEALTHY),
+            (DoorMode.MODE_MOVING, ttm.HealthStatus.HEALTHY),
+            (DoorMode.MODE_OPEN, ttm.HealthStatus.HEALTHY),
+            (DoorMode.MODE_OFFLINE, ttm.HealthStatus.UNHEALTHY),
+            (DoorMode.MODE_UNKNOWN, ttm.HealthStatus.UNHEALTHY),
+            (128, ttm.HealthStatus.UNHEALTHY),
         ]
         for test in test_cases:
             await self._check_door_mode(*test)
@@ -107,7 +107,7 @@ class TestHealthWatchdog_DoorHealth(BaseHealthWatchdogTests):
         building_map.levels[0].doors = [test_data.make_door("test_door")]
         self.rmf.building_map.on_next(building_map)
 
-        health: Optional[models.DoorHealth] = None
+        health: Optional[ttm.DoorHealth] = None
 
         def assign(v):
             nonlocal health
@@ -117,7 +117,7 @@ class TestHealthWatchdog_DoorHealth(BaseHealthWatchdogTests):
 
         self.scheduler.advance_by(self.health_watchdog.LIVELINESS)
         self.assertEqual(health.id_, "test_door")
-        self.assertEqual(health.health_status, models.HealthStatus.DEAD)
+        self.assertEqual(health.health_status, ttm.HealthStatus.DEAD)
 
 
 class TestHealthWatchdog_LiftHealth(BaseHealthWatchdogTests):
@@ -136,7 +136,7 @@ class TestHealthWatchdog_LiftHealth(BaseHealthWatchdogTests):
         building_map.lifts = [test_data.make_lift("test_lift")]
         self.rmf.building_map.on_next(building_map)
 
-        health: Optional[models.LiftHealth] = None
+        health: Optional[ttm.LiftHealth] = None
 
         def assign(v):
             nonlocal health
@@ -146,10 +146,10 @@ class TestHealthWatchdog_LiftHealth(BaseHealthWatchdogTests):
 
         self.scheduler.advance_by(self.health_watchdog.LIVELINESS)
         self.assertEqual(health.id_, "test_lift")
-        self.assertEqual(health.health_status, models.HealthStatus.DEAD)
+        self.assertEqual(health.health_status, ttm.HealthStatus.DEAD)
 
-    async def _check_lift_mode(self, mode: int, expected_health: models.HealthStatus):
-        health: models.LiftHealth = None
+    async def _check_lift_mode(self, mode: int, expected_health: ttm.HealthStatus):
+        health: ttm.LiftHealth = None
 
         def on_next(v):
             nonlocal health
@@ -165,13 +165,13 @@ class TestHealthWatchdog_LiftHealth(BaseHealthWatchdogTests):
 
     async def test_lift_mode(self):
         test_cases = [
-            (LiftState.MODE_HUMAN, models.HealthStatus.HEALTHY),
-            (LiftState.MODE_AGV, models.HealthStatus.HEALTHY),
-            (LiftState.MODE_UNKNOWN, models.HealthStatus.UNHEALTHY),
-            (LiftState.MODE_FIRE, models.HealthStatus.UNHEALTHY),
-            (LiftState.MODE_EMERGENCY, models.HealthStatus.UNHEALTHY),
-            (LiftState.MODE_OFFLINE, models.HealthStatus.UNHEALTHY),
-            (128, models.HealthStatus.UNHEALTHY),
+            (LiftState.MODE_HUMAN, ttm.HealthStatus.HEALTHY),
+            (LiftState.MODE_AGV, ttm.HealthStatus.HEALTHY),
+            (LiftState.MODE_UNKNOWN, ttm.HealthStatus.UNHEALTHY),
+            (LiftState.MODE_FIRE, ttm.HealthStatus.UNHEALTHY),
+            (LiftState.MODE_EMERGENCY, ttm.HealthStatus.UNHEALTHY),
+            (LiftState.MODE_OFFLINE, ttm.HealthStatus.UNHEALTHY),
+            (128, ttm.HealthStatus.UNHEALTHY),
         ]
         for test in test_cases:
             await self._check_lift_mode(*test)
@@ -196,7 +196,7 @@ class TestHealthWatchdog_DispenserHealth(BaseHealthWatchdogTests):
             self.rmf, scheduler=self.scheduler, logger=self.logger
         )
 
-        health: Optional[models.DispenserHealth] = None
+        health: Optional[ttm.DispenserHealth] = None
 
         def assign(v):
             nonlocal health
@@ -206,12 +206,10 @@ class TestHealthWatchdog_DispenserHealth(BaseHealthWatchdogTests):
 
         self.scheduler.advance_by(self.health_watchdog.LIVELINESS)
         self.assertEqual(health.id_, "test_dispenser")
-        self.assertEqual(health.health_status, models.HealthStatus.DEAD)
+        self.assertEqual(health.health_status, ttm.HealthStatus.DEAD)
 
-    async def _check_dispenser_mode(
-        self, mode: int, expected_health: models.HealthStatus
-    ):
-        health: Optional[models.RobotHealth] = None
+    async def _check_dispenser_mode(self, mode: int, expected_health: ttm.HealthStatus):
+        health: Optional[ttm.RobotHealth] = None
 
         def assign(v):
             nonlocal health
@@ -225,10 +223,10 @@ class TestHealthWatchdog_DispenserHealth(BaseHealthWatchdogTests):
 
     async def test_dispenser_mode(self):
         test_cases = [
-            (DispenserState.IDLE, models.HealthStatus.HEALTHY),
-            (DispenserState.BUSY, models.HealthStatus.HEALTHY),
-            (DispenserState.OFFLINE, models.HealthStatus.UNHEALTHY),
-            (128, models.HealthStatus.UNHEALTHY),
+            (DispenserState.IDLE, ttm.HealthStatus.HEALTHY),
+            (DispenserState.BUSY, ttm.HealthStatus.HEALTHY),
+            (DispenserState.OFFLINE, ttm.HealthStatus.UNHEALTHY),
+            (128, ttm.HealthStatus.UNHEALTHY),
         ]
         for test in test_cases:
             await self._check_dispenser_mode(*test)
@@ -251,7 +249,7 @@ class TestHealthWatchdog_IngestorHealth(BaseHealthWatchdogTests):
             self.rmf, scheduler=self.scheduler, logger=self.logger
         )
 
-        health: Optional[models.IngestorHealth] = None
+        health: Optional[ttm.IngestorHealth] = None
 
         def assign(v):
             nonlocal health
@@ -261,12 +259,10 @@ class TestHealthWatchdog_IngestorHealth(BaseHealthWatchdogTests):
 
         self.scheduler.advance_by(self.health_watchdog.LIVELINESS)
         self.assertEqual(health.id_, "test_ingestor")
-        self.assertEqual(health.health_status, models.HealthStatus.DEAD)
+        self.assertEqual(health.health_status, ttm.HealthStatus.DEAD)
 
-    async def _check_ingestor_mode(
-        self, mode: int, expected_health: models.HealthStatus
-    ):
-        health: Optional[models.RobotHealth] = None
+    async def _check_ingestor_mode(self, mode: int, expected_health: ttm.HealthStatus):
+        health: Optional[ttm.RobotHealth] = None
 
         def assign(v):
             nonlocal health
@@ -280,10 +276,10 @@ class TestHealthWatchdog_IngestorHealth(BaseHealthWatchdogTests):
 
     async def test_ingestor_mode(self):
         test_cases = [
-            (IngestorState.IDLE, models.HealthStatus.HEALTHY),
-            (IngestorState.BUSY, models.HealthStatus.HEALTHY),
-            (IngestorState.OFFLINE, models.HealthStatus.UNHEALTHY),
-            (128, models.HealthStatus.UNHEALTHY),
+            (IngestorState.IDLE, ttm.HealthStatus.HEALTHY),
+            (IngestorState.BUSY, ttm.HealthStatus.HEALTHY),
+            (IngestorState.OFFLINE, ttm.HealthStatus.UNHEALTHY),
+            (128, ttm.HealthStatus.UNHEALTHY),
         ]
         for test in test_cases:
             await self._check_ingestor_mode(*test)
@@ -304,25 +300,25 @@ class TestHealthWatchdog_RobotHealth(BaseHealthWatchdogTests):
             state.robots = [test_data.make_robot_state("test_robot")]
             return state
 
-        robot_id = models.get_robot_id("test_fleet", "test_robot")
+        robot_id = ttm.get_robot_id("test_fleet", "test_robot")
         self.rmf.fleet_states.on_next(factory())
         self.scheduler.advance_by(0)
-        self.assertEqual(health.health_status, models.HealthStatus.HEALTHY)
+        self.assertEqual(health.health_status, ttm.HealthStatus.HEALTHY)
         self.assertEqual(health.id_, robot_id)
 
         # it should not be dead yet
         self.scheduler.advance_by(HealthWatchdog.LIVELINESS / 2)
-        self.assertEqual(health.health_status, models.HealthStatus.HEALTHY)
+        self.assertEqual(health.health_status, ttm.HealthStatus.HEALTHY)
         self.assertEqual(health.id_, robot_id)
 
         # # it should be dead now because the time between states has reached the threshold
         self.scheduler.advance_by(HealthWatchdog.LIVELINESS / 2)
-        self.assertEqual(health.health_status, models.HealthStatus.DEAD)
+        self.assertEqual(health.health_status, ttm.HealthStatus.DEAD)
         self.assertEqual(health.id_, robot_id)
 
         # # it should become alive again when a new state is emitted
         self.rmf.fleet_states.on_next(factory())
-        self.assertEqual(health.health_status, models.HealthStatus.HEALTHY)
+        self.assertEqual(health.health_status, ttm.HealthStatus.HEALTHY)
         self.assertEqual(health.id_, robot_id)
 
     async def test_heartbeat_with_no_state(self):
@@ -338,7 +334,7 @@ class TestHealthWatchdog_RobotHealth(BaseHealthWatchdogTests):
             self.rmf, scheduler=self.scheduler, logger=self.logger
         )
 
-        health: Optional[models.RobotHealth] = None
+        health: Optional[ttm.RobotHealth] = None
 
         def assign(v):
             nonlocal health
@@ -346,13 +342,13 @@ class TestHealthWatchdog_RobotHealth(BaseHealthWatchdogTests):
 
         self.rmf.robot_health.subscribe(assign)
 
-        robot_id = models.get_robot_id("test_fleet", "test_robot")
+        robot_id = ttm.get_robot_id("test_fleet", "test_robot")
         self.scheduler.advance_by(self.health_watchdog.LIVELINESS)
         self.assertEqual(health.id_, robot_id)
-        self.assertEqual(health.health_status, models.HealthStatus.DEAD)
+        self.assertEqual(health.health_status, ttm.HealthStatus.DEAD)
 
-    async def _check_robot_mode(self, mode: int, expected_health: models.HealthStatus):
-        health: Optional[models.RobotHealth] = None
+    async def _check_robot_mode(self, mode: int, expected_health: ttm.HealthStatus):
+        health: Optional[ttm.RobotHealth] = None
 
         def assign(v):
             nonlocal health
@@ -368,16 +364,16 @@ class TestHealthWatchdog_RobotHealth(BaseHealthWatchdogTests):
 
     async def test_robot_mode(self):
         test_cases = [
-            (RobotMode.MODE_IDLE, models.HealthStatus.HEALTHY),
-            (RobotMode.MODE_CHARGING, models.HealthStatus.HEALTHY),
-            (RobotMode.MODE_MOVING, models.HealthStatus.HEALTHY),
-            (RobotMode.MODE_PAUSED, models.HealthStatus.HEALTHY),
-            (RobotMode.MODE_WAITING, models.HealthStatus.HEALTHY),
-            (RobotMode.MODE_GOING_HOME, models.HealthStatus.HEALTHY),
-            (RobotMode.MODE_DOCKING, models.HealthStatus.HEALTHY),
-            (RobotMode.MODE_EMERGENCY, models.HealthStatus.UNHEALTHY),
-            (RobotMode.MODE_ADAPTER_ERROR, models.HealthStatus.UNHEALTHY),
-            (128, models.HealthStatus.UNHEALTHY),
+            (RobotMode.MODE_IDLE, ttm.HealthStatus.HEALTHY),
+            (RobotMode.MODE_CHARGING, ttm.HealthStatus.HEALTHY),
+            (RobotMode.MODE_MOVING, ttm.HealthStatus.HEALTHY),
+            (RobotMode.MODE_PAUSED, ttm.HealthStatus.HEALTHY),
+            (RobotMode.MODE_WAITING, ttm.HealthStatus.HEALTHY),
+            (RobotMode.MODE_GOING_HOME, ttm.HealthStatus.HEALTHY),
+            (RobotMode.MODE_DOCKING, ttm.HealthStatus.HEALTHY),
+            (RobotMode.MODE_EMERGENCY, ttm.HealthStatus.UNHEALTHY),
+            (RobotMode.MODE_ADAPTER_ERROR, ttm.HealthStatus.UNHEALTHY),
+            (128, ttm.HealthStatus.UNHEALTHY),
         ]
         for test in test_cases:
             await self._check_robot_mode(*test)

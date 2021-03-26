@@ -11,7 +11,8 @@ import socketio
 from rmf_task_msgs.msg import TaskSummary
 from rx import Observable
 
-from ..models import (
+from ..authenticator import JwtAuthenticator
+from ..models.tortoise_models import (
     DispenserHealth,
     DoorHealth,
     HealthStatus,
@@ -20,7 +21,6 @@ from ..models import (
     RobotHealth,
 )
 from ..repositories.static_files import StaticFilesRepository
-from .authenticator import JwtAuthenticator
 from .gateway import RmfGateway
 from .rmf_io import RmfIO
 from .test_data import (

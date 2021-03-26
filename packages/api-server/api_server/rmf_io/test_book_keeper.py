@@ -6,7 +6,7 @@ from rmf_door_msgs.msg import DoorMode
 from rmf_task_msgs.msg import TaskSummary
 from tortoise import Tortoise
 
-from .. import models
+from ..models import tortoise_models as ttm
 from . import test_data
 from .book_keeper import RmfBookKeeper
 from .gateway import RmfGateway
@@ -15,7 +15,8 @@ from .gateway import RmfGateway
 class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         await Tortoise.init(
-            db_url="sqlite://:memory:", modules={"models": ["api_server.models"]}
+            db_url="sqlite://:memory:",
+            modules={"ttm.": ["api_server.models.tortoise_models"]},
         )
         await Tortoise.generate_schemas()
         self.rmf = RmfGateway()
@@ -31,7 +32,7 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
         state.current_mode.value = DoorMode.MODE_OPEN
         self.rmf.door_states.on_next(state)
         await asyncio.sleep(0)
-        result = await models.DoorState.get(id_="test_door")
+        result = await ttm.DoorState.get(id_="test_door")
         self.assertIsNotNone(result)
         result_rmf = result.to_rmf()
         self.assertEqual(result_rmf.current_mode.value, DoorMode.MODE_OPEN)
@@ -40,33 +41,33 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
         state.current_mode.value = DoorMode.MODE_CLOSED
         self.rmf.door_states.on_next(state)
         await asyncio.sleep(0)
-        result = await models.DoorState.get(id_="test_door")
+        result = await ttm.DoorState.get(id_="test_door")
         self.assertIsNotNone(result)
         result_rmf = result.to_rmf()
         self.assertEqual(result_rmf.current_mode.value, DoorMode.MODE_CLOSED)
 
     async def test_write_door_health(self):
         self.rmf.door_health.on_next(
-            models.DoorHealth(
+            ttm.DoorHealth(
                 id_="test_door",
-                health_status=models.HealthStatus.HEALTHY,
+                health_status=ttm.HealthStatus.HEALTHY,
             )
         )
         await asyncio.sleep(0)
-        health = await models.DoorHealth.get(id_="test_door")
+        health = await ttm.DoorHealth.get(id_="test_door")
         self.assertIsNotNone(health)
-        self.assertEqual(health.health_status, models.HealthStatus.HEALTHY)
+        self.assertEqual(health.health_status, ttm.HealthStatus.HEALTHY)
 
         self.rmf.door_health.on_next(
-            models.DoorHealth(
+            ttm.DoorHealth(
                 id_="test_door",
-                health_status=models.HealthStatus.UNHEALTHY,
+                health_status=ttm.HealthStatus.UNHEALTHY,
             )
         )
         await asyncio.sleep(0)
-        health = await models.DoorHealth.get(id_="test_door")
+        health = await ttm.DoorHealth.get(id_="test_door")
         self.assertIsNotNone(health)
-        self.assertEqual(health.health_status, models.HealthStatus.UNHEALTHY)
+        self.assertEqual(health.health_status, ttm.HealthStatus.UNHEALTHY)
 
     async def test_write_lift_state(self):
         state = test_data.make_lift_state("test_lift")
@@ -74,7 +75,7 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
         state.current_floor = "L1"
         self.rmf.lift_states.on_next(state)
         await asyncio.sleep(0)
-        result = await models.LiftState.get(id_="test_lift")
+        result = await ttm.LiftState.get(id_="test_lift")
         self.assertIsNotNone(result)
         result_rmf = result.to_rmf()
         self.assertEqual(result_rmf.current_floor, "L1")
@@ -84,40 +85,40 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
         state.current_floor = "L2"
         self.rmf.lift_states.on_next(state)
         await asyncio.sleep(0)
-        result = await models.LiftState.get(id_="test_lift")
+        result = await ttm.LiftState.get(id_="test_lift")
         self.assertIsNotNone(result)
         result_rmf = result.to_rmf()
         self.assertEqual(result_rmf.current_floor, "L2")
 
     async def test_write_lift_health(self):
         self.rmf.lift_health.on_next(
-            models.LiftHealth(
+            ttm.LiftHealth(
                 id_="test_lift",
-                health_status=models.HealthStatus.HEALTHY,
+                health_status=ttm.HealthStatus.HEALTHY,
             )
         )
         await asyncio.sleep(0)
-        health = await models.LiftHealth.get(id_="test_lift")
+        health = await ttm.LiftHealth.get(id_="test_lift")
         self.assertIsNotNone(health)
-        self.assertEqual(health.health_status, models.HealthStatus.HEALTHY)
+        self.assertEqual(health.health_status, ttm.HealthStatus.HEALTHY)
 
         self.rmf.lift_health.on_next(
-            models.LiftHealth(
+            ttm.LiftHealth(
                 id_="test_lift",
-                health_status=models.HealthStatus.UNHEALTHY,
+                health_status=ttm.HealthStatus.UNHEALTHY,
             )
         )
         await asyncio.sleep(0)
-        health = await models.LiftHealth.get(id_="test_lift")
+        health = await ttm.LiftHealth.get(id_="test_lift")
         self.assertIsNotNone(health)
-        self.assertEqual(health.health_status, models.HealthStatus.UNHEALTHY)
+        self.assertEqual(health.health_status, ttm.HealthStatus.UNHEALTHY)
 
     async def test_write_dispenser_state(self):
         state = test_data.make_dispenser_state("test_dispenser")
         state.seconds_remaining = 2.0
         self.rmf.dispenser_states.on_next(state)
         await asyncio.sleep(0)
-        result = await models.DispenserState.get(id_="test_dispenser")
+        result = await ttm.DispenserState.get(id_="test_dispenser")
         self.assertIsNotNone(result)
         result_rmf = result.to_rmf()
         self.assertEqual(result_rmf.seconds_remaining, 2.0)
@@ -126,63 +127,63 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
         state.seconds_remaining = 1.0
         self.rmf.dispenser_states.on_next(state)
         await asyncio.sleep(0)
-        result = await models.DispenserState.get(id_="test_dispenser")
+        result = await ttm.DispenserState.get(id_="test_dispenser")
         self.assertIsNotNone(result)
         result_rmf = result.to_rmf()
         self.assertEqual(result_rmf.seconds_remaining, 1.0)
 
     async def test_write_dispenser_health(self):
         self.rmf.dispenser_health.on_next(
-            models.DispenserHealth(
+            ttm.DispenserHealth(
                 id_="test_dispenser",
-                health_status=models.HealthStatus.HEALTHY,
+                health_status=ttm.HealthStatus.HEALTHY,
             )
         )
         await asyncio.sleep(0)
-        health = await models.DispenserHealth.get(id_="test_dispenser")
+        health = await ttm.DispenserHealth.get(id_="test_dispenser")
         self.assertIsNotNone(health)
-        self.assertEqual(health.health_status, models.HealthStatus.HEALTHY)
+        self.assertEqual(health.health_status, ttm.HealthStatus.HEALTHY)
 
         self.rmf.dispenser_health.on_next(
-            models.DispenserHealth(
+            ttm.DispenserHealth(
                 id_="test_dispenser",
-                health_status=models.HealthStatus.UNHEALTHY,
+                health_status=ttm.HealthStatus.UNHEALTHY,
             )
         )
         await asyncio.sleep(0)
-        health = await models.DispenserHealth.get(id_="test_dispenser")
+        health = await ttm.DispenserHealth.get(id_="test_dispenser")
         self.assertIsNotNone(health)
-        self.assertEqual(health.health_status, models.HealthStatus.UNHEALTHY)
+        self.assertEqual(health.health_status, ttm.HealthStatus.UNHEALTHY)
 
     async def test_write_ingestor_health(self):
         self.rmf.ingestor_health.on_next(
-            models.IngestorHealth(
+            ttm.IngestorHealth(
                 id_="test_ingestor",
-                health_status=models.HealthStatus.HEALTHY,
+                health_status=ttm.HealthStatus.HEALTHY,
             )
         )
         await asyncio.sleep(0)
-        health = await models.IngestorHealth.get(id_="test_ingestor")
+        health = await ttm.IngestorHealth.get(id_="test_ingestor")
         self.assertIsNotNone(health)
-        self.assertEqual(health.health_status, models.HealthStatus.HEALTHY)
+        self.assertEqual(health.health_status, ttm.HealthStatus.HEALTHY)
 
         self.rmf.ingestor_health.on_next(
-            models.IngestorHealth(
+            ttm.IngestorHealth(
                 id_="test_ingestor",
-                health_status=models.HealthStatus.UNHEALTHY,
+                health_status=ttm.HealthStatus.UNHEALTHY,
             )
         )
         await asyncio.sleep(0)
-        health = await models.IngestorHealth.get(id_="test_ingestor")
+        health = await ttm.IngestorHealth.get(id_="test_ingestor")
         self.assertIsNotNone(health)
-        self.assertEqual(health.health_status, models.HealthStatus.UNHEALTHY)
+        self.assertEqual(health.health_status, ttm.HealthStatus.UNHEALTHY)
 
     async def test_write_fleet_state(self):
         state = test_data.make_fleet_state("test_fleet")
         state.robots = [test_data.make_robot_state()]
         self.rmf.fleet_states.on_next(state)
         await asyncio.sleep(0)
-        result = await models.FleetState.get(id_="test_fleet")
+        result = await ttm.FleetState.get(id_="test_fleet")
         self.assertIsNotNone(result)
         result_rmf = result.to_rmf()
         self.assertEqual(len(result_rmf.robots), 1)
@@ -191,40 +192,40 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
         state.robots = []
         self.rmf.fleet_states.on_next(state)
         await asyncio.sleep(0)
-        result = await models.FleetState.get(id_="test_fleet")
+        result = await ttm.FleetState.get(id_="test_fleet")
         self.assertIsNotNone(result)
         result_rmf = result.to_rmf()
         self.assertEqual(len(result_rmf.robots), 0)
 
     async def test_write_robot_health(self):
         self.rmf.robot_health.on_next(
-            models.RobotHealth(
+            ttm.RobotHealth(
                 id_="test_robot",
-                health_status=models.HealthStatus.HEALTHY,
+                health_status=ttm.HealthStatus.HEALTHY,
             )
         )
         await asyncio.sleep(0)
-        health = await models.RobotHealth.get(id_="test_robot")
+        health = await ttm.RobotHealth.get(id_="test_robot")
         self.assertIsNotNone(health)
-        self.assertEqual(health.health_status, models.HealthStatus.HEALTHY)
+        self.assertEqual(health.health_status, ttm.HealthStatus.HEALTHY)
 
         self.rmf.robot_health.on_next(
-            models.RobotHealth(
+            ttm.RobotHealth(
                 id_="test_robot",
-                health_status=models.HealthStatus.UNHEALTHY,
+                health_status=ttm.HealthStatus.UNHEALTHY,
             )
         )
         await asyncio.sleep(0)
-        health = await models.RobotHealth.get(id_="test_robot")
+        health = await ttm.RobotHealth.get(id_="test_robot")
         self.assertIsNotNone(health)
-        self.assertEqual(health.health_status, models.HealthStatus.UNHEALTHY)
+        self.assertEqual(health.health_status, ttm.HealthStatus.UNHEALTHY)
 
     async def test_write_task_summary(self):
         task = TaskSummary(task_id="test_task")
         task.status = "test_status"
         self.rmf.task_summaries.on_next(task)
         await asyncio.sleep(0)
-        result = await models.TaskSummary.get(id_="test_task")
+        result = await ttm.TaskSummary.get(id_="test_task")
         self.assertIsNotNone(result)
         result_rmf = result.to_rmf()
         self.assertEqual(result_rmf.status, "test_status")
@@ -233,7 +234,7 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
         task.status = "test_status_2"
         self.rmf.task_summaries.on_next(task)
         await asyncio.sleep(0)
-        result = await models.TaskSummary.get(id_="test_task")
+        result = await ttm.TaskSummary.get(id_="test_task")
         self.assertIsNotNone(result)
         result_rmf = result.to_rmf()
         self.assertEqual(result_rmf.status, "test_status_2")
@@ -242,43 +243,43 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
         task = TaskSummary(task_id="test_task", state=TaskSummary.STATE_ACTIVE)
         self.rmf.task_summaries.on_next(task)
         await asyncio.sleep(0)
-        result = await models.TaskSummary.get(id_="test_task")
+        result = await ttm.TaskSummary.get(id_="test_task")
         self.assertIsNotNone(result)
 
         task = TaskSummary(task_id="test_task", state=TaskSummary.STATE_COMPLETED)
         self.rmf.task_summaries.on_next(task)
-        result = await models.TaskSummary.filter(id_="test_task").first()
+        result = await ttm.TaskSummary.filter(id_="test_task").first()
         while result is not None:
             await asyncio.sleep(0)
-            result = await models.TaskSummary.filter(id_="test_task").first()
+            result = await ttm.TaskSummary.filter(id_="test_task").first()
         self.assertIsNone(result)
 
     async def test_delete_failed_tasks(self):
         task = TaskSummary(task_id="test_task", state=TaskSummary.STATE_ACTIVE)
         self.rmf.task_summaries.on_next(task)
         await asyncio.sleep(0)
-        result = await models.TaskSummary.get(id_="test_task")
+        result = await ttm.TaskSummary.get(id_="test_task")
         self.assertIsNotNone(result)
 
         task = TaskSummary(task_id="test_task", state=TaskSummary.STATE_FAILED)
         self.rmf.task_summaries.on_next(task)
-        result = await models.TaskSummary.filter(id_="test_task").first()
+        result = await ttm.TaskSummary.filter(id_="test_task").first()
         while result is not None:
             await asyncio.sleep(0)
-            result = await models.TaskSummary.filter(id_="test_task").first()
+            result = await ttm.TaskSummary.filter(id_="test_task").first()
         self.assertIsNone(result)
 
     async def test_delete_cancelled_tasks(self):
         task = TaskSummary(task_id="test_task", state=TaskSummary.STATE_ACTIVE)
         self.rmf.task_summaries.on_next(task)
         await asyncio.sleep(0)
-        result = await models.TaskSummary.get(id_="test_task")
+        result = await ttm.TaskSummary.get(id_="test_task")
         self.assertIsNotNone(result)
 
         task = TaskSummary(task_id="test_task", state=TaskSummary.STATE_CANCELED)
         self.rmf.task_summaries.on_next(task)
-        result = await models.TaskSummary.filter(id_="test_task").first()
+        result = await ttm.TaskSummary.filter(id_="test_task").first()
         while result is not None:
             await asyncio.sleep(0)
-            result = await models.TaskSummary.filter(id_="test_task").first()
+            result = await ttm.TaskSummary.filter(id_="test_task").first()
         self.assertIsNone(result)

@@ -4,7 +4,7 @@ import rx
 from rx import operators as ops
 from rx.scheduler.historicalscheduler import HistoricalScheduler
 
-from ...models import BasicHealthModel, HealthStatus
+from ...models.tortoise_models import BasicHealthModel, HealthStatus
 from . import most_critical
 
 
