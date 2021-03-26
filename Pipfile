@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 # api-server
 fastapi = "~=0.63.0"
+aiofiles = "~=0.6.0"
 uvicorn = {version = "~=0.13.0", extras = ["standard"]}
 python-socketio = "~=5.0"
 rx = "~=3.0"

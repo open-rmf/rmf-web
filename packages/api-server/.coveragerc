@@ -5,8 +5,11 @@ omit =
     # test files
     **/test_*.py
 
+    # config files
+    api_server/default_config.py
+
     # generated files
-    api_server/models/mixins/**
+    api_server/models/tortoise_models/mixins/**
 
     # these files are not used atm
-    api_server/models/pydantic_mixins.py
+    api_server/models/tortoise_models/pydantic_mixins.py
