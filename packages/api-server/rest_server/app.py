@@ -31,15 +31,7 @@ else:
     logger.setLevel(logging.INFO)
 
 app = FastAPI()
-sio = socketio.AsyncClient()
-
-
-def on_sigint():
-    async def h():
-        await sio.disconnect()
-        print(app.servers)
-
-    asyncio.create_task(h())
+sio = socketio.AsyncClient(logger=logger)
 
 
 @app.on_event("startup")
