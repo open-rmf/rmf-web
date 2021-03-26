@@ -1,12 +1,9 @@
-import asyncio
 import logging
 import os
 import sys
 
-import socketio
 from fastapi import FastAPI
 
-from .app_config import app_config
 from .tasks import tasks
 
 logger = logging.getLogger("rest_app")
@@ -19,7 +16,6 @@ else:
     logger.setLevel(logging.INFO)
 
 app = FastAPI()
-sio = socketio.AsyncClient()
 
 app.include_router(tasks.router)
 logger.info("started app")
