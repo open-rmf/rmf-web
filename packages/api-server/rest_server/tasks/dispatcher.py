@@ -28,12 +28,7 @@ class DispatcherClient(Node):
             future = self.submit_task_srv.call_async(req_msg)
             rclpy.spin_until_future_complete(self, future, timeout_sec=0.5)
             response = future.result()
-            if response is None:
-                self.get_logger().warn("/submit_task srv call failed")
-            elif not response.success:
-                self.node.get_logger().error("Dispatcher node failed to accept task")
-            else:
-                self.get_logger().info(f"New Dispatch task_id {response.task_id}")
+            if response and response.success:
                 return response.task_id
         except Exception as e:
             self.get_logger().error("Error! Submit Srv failed %r" % (e,))
