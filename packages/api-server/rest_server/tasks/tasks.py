@@ -10,7 +10,7 @@ rclpy.init(args=None)
 dispatcher_client = DispatcherClient()
 
 
-@router.get("/task_list")
+@router.get("/get_tasks")
 async def get_tasks():
     tasks = dispatcher_client.get_task_status()
     return JSONResponse(content=tasks)
@@ -27,3 +27,11 @@ async def submit_task(submit_task_params: Request):
             return JSONResponse(content={"task_id": task_id, "error_msg": ""})
 
     return JSONResponse(content={"error_msg": err_msg})
+
+
+@router.post("/cancel_task")
+async def cancel_task(task_id: Request):
+    request_to_task_id = await task_id.json()
+    get_task_id = request_to_task_id["task_id"]
+    cancel_status = dispatcher_client.cancel_task_request(get_task_id)
+    return JSONResponse(content={"success": cancel_status})

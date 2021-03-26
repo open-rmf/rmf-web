@@ -1,7 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from rmf_task_msgs.msg import Delivery, Loop, TaskType
-from rmf_task_msgs.srv import GetTaskList, SubmitTask
+from rmf_task_msgs.srv import CancelTask, GetTaskList, SubmitTask
 
 
 # dispatcher class
@@ -10,6 +10,7 @@ class DispatcherClient(Node):
         super().__init__("dispatcher_client")
         self.submit_task_srv = self.create_client(SubmitTask, "/submit_task")
         self.get_tasks_srv = self.create_client(GetTaskList, "/get_tasks")
+        self.cancel_task_srv = self.create_client(CancelTask, "/cancel_task")
 
         self.active_tasks_cache = []
         self.terminated_tasks_cache = []
@@ -123,6 +124,25 @@ class DispatcherClient(Node):
         except Exception as e:
             self.get_logger().error("Error! GetTasks Srv failed %r" % (e,))
         return []
+
+    def cancel_task_request(self, task_id) -> bool:
+        """
+        Cancel Task - This function will trigger a ros srv call to the
+        dispatcher node, and return a response.
+        """
+        req = CancelTask.Request()
+        req.task_id = task_id
+        try:
+            future = self.cancel_task_srv.call_async(req)
+            rclpy.spin_until_future_complete(self, future, timeout_sec=0.5)
+            response = future.result()
+            if response is None:
+                self.get_logger().warn("/cancel_task srv call failed")
+            else:
+                return response.success
+        except Exception as e:
+            self.get_logger().error("Error! Cancel Srv failed %r" % (e,))
+        return False
 
     def __convert_task_status_msg(self, task_summaries, is_done=True):
         """
