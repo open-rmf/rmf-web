@@ -81,9 +81,9 @@ In a real deployment, you will get a verified cert, for this example, we will be
 
 # Deploying rmf-web
 
-# Keycloak
+## Keycloak
 
-## Deploying
+### Deploying
 
 In this example, we will be using [Keycloak](https://www.keycloak.org/) to do user management and authentication. It is an open source identity and access management, released under the Apache 2.0 license.
 
@@ -112,7 +112,7 @@ Use kubectl to wait for keycloak to be ready
 
 When keycloak is ready, test it out by going to https://example.com/auth. The superuser created by this deployment is `user=admin,password=admin`.
 
-## Configuration
+### Configuration
 
 For this example, we will
 
@@ -129,7 +129,7 @@ node keycloak-tools/bootstrap-keycloak.js
 
 You may check out the keycloak docs if you would like to learn more about it's features.
 
-## Get the keycloak cert
+### Get the keycloak cert
 
 Keycloak implements the openid-connect standard, by default the JWT is signed with an auto generated RSA key. We will need the cert so that `rmf-web` backend services can verify the token. You can use the admin console to get it or use the provided script
 
@@ -151,7 +151,7 @@ openssl x509 -in keycloak.pem -pubkey -noout -out jwt-pub-key.pub
 
 **NOTE: deleting the persistent volume used by postgres will delete the database, the next time you start keycloak it will start from a fresh state, meaning the realm we created will be gone and the public key will be different.**
 
-## Add the cert to kubernetes
+### Add the cert to kubernetes
 
 In order to use the cert, we will add it as a configmap to kubernetes
 
@@ -166,9 +166,9 @@ note: to update the configmap, delete it first and re-create it
 .bin/minikube kubectl -- create configmap jwt-pub-key --from-file=jwt-pub-key.pub
 ```
 
-# ros2-bridge
+## ros2-bridge
 
-## Build minimal RMF image
+### Build minimal RMF image
 
 We will need a minimal base image containing all the RMF messages. This image will be used to build the ros2-bridge image.
 
@@ -191,7 +191,7 @@ build the image
 docker build -t rmf-web/builder -f docker/builder.dockerfile ws/rmf/src
 ```
 
-## Build ros2-bridge image
+### Build ros2-bridge image
 
 Get rmf-web source
 
@@ -217,7 +217,7 @@ deploy it
 .bin/minikube kubectl -- apply -f k8s/ros2-bridge.yaml
 ```
 
-# dashboard
+## dashboard
 
 build the image
 
@@ -237,7 +237,7 @@ deploy it
 .bin/minikube kubectl -- apply -f k8s/dashboard.yaml
 ```
 
-# Test the deployment
+## Test the deployment
 
 If not done so already, launch the office demo
 
