@@ -1,5 +1,4 @@
 export * from './alert-dialog';
-export * from './auth';
 export * from './color-manager';
 export * from './commands';
 export * from './confirmation-alert-dialog';
