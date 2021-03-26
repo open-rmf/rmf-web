@@ -51,7 +51,8 @@
     "react-scripts": "^4.0.1",
     "rmf-auth": "file:../rmf-auth",
     "styled-components": "^4.4.1",
-    "typeface-roboto": "0.0.75"
+    "typeface-roboto": "0.0.75",
+    "react-router-dom": "^5.2.0"
   },
   "devDependencies": {
     "@testing-library/react": "^11.2.3",
@@ -63,13 +64,6 @@
     "ts-node": "^9.0.0",
     "typescript": "^3.9.7",
     "jest-canvas-mock": "^2.3.1"
-  },
-  "peerDependencies": {
-    "@material-ui/core": "^4.11.0",
-    "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "^4.0.0-alpha.56",
-    "react": "^16.13.1",
-    "react-router-dom": "^5.2.0"
   },
   "jest": {
     "collectCoverageFrom": [

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Redirect, Route, RouteProps, useLocation } from 'react-router';
+import { Redirect, Route, RouteProps, useLocation } from 'react-router-dom';
 import { LOGIN_ROUTE } from '../../util/url';
 import { UserContext } from './contexts';
 import { Unauthorized } from 'react-components';

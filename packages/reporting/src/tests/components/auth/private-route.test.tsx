@@ -1,11 +1,11 @@
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
-import { cleanup, render, waitFor, RenderResult } from '@testing-library/react';
+import { cleanup, render, waitFor } from '@testing-library/react';
 import { BrowserRouter, Router, Switch } from 'react-router-dom';
 import { LOGIN_ROUTE } from '../../../util/url';
 import { PrivateRoute } from '../../../components/auth/private-route';
 import { AuthenticatorContext, UserContext } from '../../../components/auth-contexts';
-import { FakeAuthenticator } from 'rmf-auth';
+import FakeAuthenticator from '../../../components/auth/__mocks__/fake-authenticator';
 
 describe('PrivateRoute', () => {
   let history: MemoryHistory;
