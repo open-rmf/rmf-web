@@ -9,7 +9,7 @@ from threading import Thread
 
 import rclpy
 import yaml
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
@@ -24,19 +24,6 @@ from rmf_task_msgs.srv import SubmitTask
 # from typing import Optional
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
-
-# response type
-class Description(BaseModel):
-    start_name: str
-    finish_name: str
-    num_loops: int
-
-
-class Submit_Task(BaseModel):
-    task_type: str
-    start_time: int
-    description: Description
-
 
 # dispatcher class
 class DispatcherClient(Node):
@@ -142,8 +129,8 @@ dispatcher_client = DispatcherClient()
 
 
 @router.post("/submit_task")
-async def submit_task(submit_task_params: Submit_Task):
-    params_to_dict = jsonable_encoder(submit_task_params)
+async def submit_task(submit_task_params: Request):
+    params_to_dict = await submit_task_params.json()
     req_msg, err_msg = dispatcher_client.convert_task_request(params_to_dict)
 
     if req_msg:
@@ -151,4 +138,4 @@ async def submit_task(submit_task_params: Submit_Task):
         if task_id:
             return JSONResponse(content={"task_id": task_id, "error_msg": ""})
 
-    return submit_task_params
+    return JSONResponse(content={"error_msg": err_msg})
