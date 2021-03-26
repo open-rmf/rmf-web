@@ -1,5 +1,5 @@
 import React from 'react';
-import { Redirect } from 'react-router';
+import { Redirect } from 'react-router-dom';
 import { LoginBase } from 'rmf-auth';
 import { DASHBOARD_ROUTE } from '../../util/url';
 import { AuthenticatorContext, UserContext } from '../auth-contexts';

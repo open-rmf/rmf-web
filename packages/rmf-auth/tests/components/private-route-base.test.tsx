@@ -3,7 +3,6 @@ import React from 'react';
 import { cleanup, render, waitFor, screen } from '@testing-library/react';
 import { BrowserRouter, Redirect, Router, Switch } from 'react-router-dom';
 import PrivateRouteBase from '../../lib/components/private-route-base';
-import FakeAuthenticator from '../../lib/fake-authenticator';
 
 describe('PrivateRoute', () => {
   let history: MemoryHistory;
@@ -31,7 +30,6 @@ describe('PrivateRoute', () => {
   });
 
   test('redirects when unauthenticated', () => {
-    const authenticator = new FakeAuthenticator();
     const root = render(
       <Router history={history}>
         <Switch>
@@ -63,7 +61,7 @@ describe('PrivateRoute', () => {
   });
 
   test('shows unauthorized page when noRedirectToLogin is true', async () => {
-    const root = render(
+    render(
       <BrowserRouter>
         <PrivateRouteBase
           noRedirectToLogin={true}

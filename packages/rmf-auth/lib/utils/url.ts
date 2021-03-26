@@ -5,7 +5,7 @@
  *   * does not have repeated forward slashes
  * @param pathOrUrl if an url is provided, returns only the normalized path portion of the url
  */
-export function normalizePath(pathOrUrl: string) {
+export function normalizePath(pathOrUrl: string): string {
   let path = pathOrUrl.startsWith('http') ? new URL(pathOrUrl).pathname : pathOrUrl;
   while (path.indexOf('//') !== -1) {
     path = path.replace(/\/\//g, '/');

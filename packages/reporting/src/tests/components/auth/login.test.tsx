@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthenticatorContext, UserContext } from '../../../components/auth-contexts';
 import Login from '../../../components/auth/login';
-import { FakeAuthenticator } from 'rmf-auth';
+import FakeAuthenticator from '../../../components/auth/__mocks__/fake-authenticator';
 
 describe('Login page', () => {
   afterEach(() => {

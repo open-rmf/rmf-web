@@ -24,7 +24,7 @@ export default class KeycloakAuthenticator
     this._redirectUri = redirectUri;
   }
 
-  async init() {
+  async init(): Promise<void> {
     if (this._initialized) {
       debug('already initialized');
       return;

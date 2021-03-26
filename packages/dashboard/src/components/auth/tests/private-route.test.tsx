@@ -5,7 +5,7 @@ import { BrowserRouter, Router, Switch } from 'react-router-dom';
 import { LOGIN_ROUTE } from '../../../util/url';
 import { AuthenticatorContext, UserContext } from '../../auth/contexts';
 import PrivateRoute from '../private-route';
-import { FakeAuthenticator } from 'rmf-auth';
+import FakeAuthenticator from '../__mocks__/fake-authenticator';
 
 describe('PrivateRoute', () => {
   let history: MemoryHistory;

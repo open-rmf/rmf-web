@@ -2,8 +2,8 @@ import React from 'react';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
-import FakeAuthenticator from '../../lib/fake-authenticator';
 import { LoginBase } from '../../lib/components/login-base';
+import FakeAuthenticator from '../fake-authenticator';
 
 describe('Login page', () => {
   afterEach(() => {
