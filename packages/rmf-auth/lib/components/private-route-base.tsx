@@ -1,6 +1,6 @@
 import Debug from 'debug';
 import React from 'react';
-import { RouteProps } from 'react-router';
+import { RouteProps } from 'react-router-dom';
 import { User } from '../user';
 
 const debug = Debug('PrivateRoute');

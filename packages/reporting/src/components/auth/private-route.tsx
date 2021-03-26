@@ -1,6 +1,6 @@
 import React from 'react';
 import { Unauthorized } from 'react-components';
-import { Redirect, Route, RouteProps, useLocation } from 'react-router';
+import { Redirect, Route, RouteProps, useLocation } from 'react-router-dom';
 import { PrivateRouteBase } from 'rmf-auth';
 import { LOGIN_ROUTE } from '../../util/url';
 import { UserContext } from '../auth-contexts';
