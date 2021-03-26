@@ -9,6 +9,18 @@ from fastapi import FastAPI
 from .app_config import app_config
 from .building_map import building_map_router
 
+# There is a bug with uvicorn and socketio that causes
+# `RuntimeError: Event loop stopped before Future completed.`
+# when getting SIGINT, the reason is because both uvicorn and socketio installs signal
+# handlers, socketio's handler overwrites uvicorn's and in its handler to calls
+# `asyncio.get_event_loop().stop()`.
+# This forces the event loop to stop before uvicorn completes its work, hence the error appears.
+# The side effect is that the shutdown handler is never called because the loop has
+# been stopped.
+#
+# This is a hack to stop socketio from installing signal handlers.
+socketio.asyncio_client.engineio.asyncio_client.async_signal_handler_set = True
+
 logger = logging.getLogger("rest_app")
 handler = logging.StreamHandler(sys.stdout)
 handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
@@ -22,29 +34,33 @@ app = FastAPI()
 sio = socketio.AsyncClient()
 
 
+def on_sigint():
+    async def h():
+        await sio.disconnect()
+        print(app.servers)
+
+    asyncio.create_task(h())
+
+
 @app.on_event("startup")
 async def on_startup():
-    await sio.connect(app_config.api_server_url)
-    connected = asyncio.Future()
-    sio.on("connect", lambda: connected.set_result(True))
-    await connected
-    del sio.handlers["/"]["connect"]
+    try:
+        await sio.connect(app_config.api_server_url)
+    except socketio.exceptions.ConnectionError:
+        logger.error(
+            "unable to connect to socketio server, some functions will not be available"
+        )
+        await sio.disconnect()
 
-    app.include_router(
-        building_map_router(sio, logger.getChild("building_map")),
-        prefix="/building_map",
-    )
+    if sio.connected:
+        app.include_router(
+            building_map_router(sio, logger.getChild("building_map")),
+            prefix="/building_map",
+        )
 
     logger.info("started app")
 
 
-# There is a bug with uvicorn and socketio that causes
-# `RuntimeError: Event loop stopped before Future completed.`
-# when getting SIGINT, the reason is because both uvicorn and socketio installs signal
-# handlers, socketio's handler overwrites uvicorn's and in its handler to calls `asyncio.get_event_loop().stop()`.
-# This forces the event loop to stop before uvicorn completes its work, hence the error appears.
-# The side effect is that the shutdown handler is never called because the loop has
-# been stopped.
 @app.on_event("shutdown")
 async def on_shutdown():
     await sio.disconnect()
