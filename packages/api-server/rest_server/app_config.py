@@ -3,11 +3,11 @@ import os
 
 
 class AppConfig:
-    def __init__(self, dict):
-        self.root_path: str = dict["root_path"]
-        self.host: str = dict["host"]
-        self.port: int = dict["port"]
-        self.api_server_url: str = dict["api_server_url"]
+    def __init__(self, config_dict):
+        self.root_path: str = config_dict["root_path"]
+        self.host: str = config_dict["host"]
+        self.port: int = config_dict["port"]
+        self.api_server_url: str = config_dict["api_server_url"]
 
 
 def _load_config() -> AppConfig:
