@@ -209,6 +209,8 @@ class DispatcherClient(Node):
                 )
             elif status.task_type == "Charging":
                 status.description = "Back to Charging Station"
+            else:
+                status.description = "Unknown Task Type"
 
             # Generate a progress percentage
             duration = abs(task.end_time.sec - task.start_time.sec)
