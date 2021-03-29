@@ -50,7 +50,7 @@ class DispatcherClient(Node):
             ):
                 raise Exception("Key value is incomplete")
 
-            if "priority" in task_json:
+            if "priority" in task_json and task_json["priority"] is not None:
                 priority = int(task_json["priority"])
                 if priority < 0:
                     raise Exception("Priority value is less than 0")
