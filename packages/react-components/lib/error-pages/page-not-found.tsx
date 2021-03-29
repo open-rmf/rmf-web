@@ -1,11 +1,12 @@
 import React from 'react';
 import { makeStyles, Typography } from '@material-ui/core';
+import type { Link } from 'react-router-dom';
 
 export interface NotFoundPageProps {
   /**
    * FIXME: This is expecting a react-router-dom Link component. We cannot keep the scope of the BrowserRouter (react-router component) on components outside the package.
    */
-  routeLinkComponent: React.ReactElement;
+  routeLinkComponent: React.ReactElement<Link>;
 }
 
 export const NotFoundPage = (props: NotFoundPageProps): React.ReactElement => {
