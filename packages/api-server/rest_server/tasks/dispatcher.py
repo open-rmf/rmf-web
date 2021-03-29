@@ -12,9 +12,6 @@ class DispatcherClient(Node):
         self.get_tasks_srv = self.create_client(GetTaskList, "/get_tasks")
         self.cancel_task_srv = self.create_client(CancelTask, "/cancel_task")
 
-        self.active_tasks_cache = []
-        self.terminated_tasks_cache = []
-
         # detect if rmf is up
         while not self.submit_task_srv.wait_for_service(timeout_sec=1.0):
             self.get_logger().warn("Dispatcher node is not avail, waiting...")
@@ -105,7 +102,7 @@ class DispatcherClient(Node):
             rclpy.spin_until_future_complete(self, future, timeout_sec=0.5)
             response = future.result()
             if response is None:
-                return self.active_tasks_cache + self.terminated_tasks_cache
+                raise Exception("Unable to retrieve tasks")
             else:
                 active_tasks = self.__convert_task_status_msg(
                     response.active_tasks, False
@@ -113,9 +110,10 @@ class DispatcherClient(Node):
                 terminated_tasks = self.__convert_task_status_msg(
                     response.terminated_tasks, True
                 )
-                self.active_tasks_cache = active_tasks
-                self.terminated_tasks_cache = terminated_tasks
-                return active_tasks + terminated_tasks
+                return {
+                    "active_tasks": active_tasks,
+                    "terminated_tasks": terminated_tasks,
+                }
         except Exception as e:
             self.get_logger().error("Error! GetTasks Srv failed %r" % (e,))
         return []
