@@ -1,7 +1,7 @@
 import L from 'leaflet';
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
-import { ColorManager, RobotMarkerProps } from 'react-components';
+import { RobotMarkerProps } from 'react-components';
 import { Map as LMap } from 'react-leaflet';
 import RobotsOverlay from '../robots-overlay';
 import getBuildingMap from './building-map';
