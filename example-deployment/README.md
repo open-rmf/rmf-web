@@ -100,7 +100,7 @@ This requires internet connection, see [Deploying in an airgapped network](#depl
 docker pull quay.io/keycloak/keycloak:12.0.4
 
 # connected to airgap network
-.bin/minikube load quay.io/keycloak/keycloak:12.0.4
+docker save quay.io/keycloak/keycloak:12.0.4 | bash -c 'eval $(.bin/minikube docker-env) && docker load'
 .bin/minikube kubectl -- apply -f k8s/keycloak.yaml
 ```
 
@@ -199,6 +199,8 @@ build the image
 docker build -t rmf-web/builder -f docker/builder.dockerfile ws/rmf/src
 ```
 
+NOTE: It is not recommended to use the default "latest" tag in a real deployment, be sure to tag your images accordingly.
+
 ### Build ros2-bridge image
 
 Get rmf-web source
@@ -216,7 +218,7 @@ docker build -t rmf-web/ros2-bridge -f docker/ros2-bridge.dockerfile ws/rmf-web
 "publish" the image, in a normal deployment, you would publish this to your docker registry, since we don't have a registry in this example, we will push the image directly to minikube
 
 ```bash
-.bin/minikube image load rmf-web/ros2-bridge
+docker save rmf-web/ros2-bridge | bash -c 'eval $(.bin/minikube docker-env) && docker load'
 ```
 
 deploy it
@@ -236,7 +238,7 @@ docker build -t rmf-web/dashboard -f docker/dashboard.dockerfile ws/rmf-web
 "publish" the image
 
 ```bash
-.bin/minikube image load rmf-web/dashboard
+docker save rmf-web/dashboard | bash -c 'eval $(.bin/minikube docker-env) && docker load'
 ```
 
 deploy it
@@ -270,7 +272,7 @@ docker pull quay.io/keycloak/keycloak:12.0.4
 
 now, connect to the airgapped network and push the image to minikube
 ```bash
-.bin/minikube load quay.io/keycloak/keycloak:12.0.4
+docker save quay.io/keycloak/keycloak:12.0.4 | bash -c 'eval $(.bin/minikube docker-env) && docker load'
 ```
 
 now you can deploy keycloak without require access to the internet
@@ -285,13 +287,26 @@ Since we are pushing the images directly to minikube, we can't tell kubernetes t
 
 ```bash
 .bin/minikube kubectl -- delete -f <path-to-k8s-file>
-.bin/minikube kubectl -- apply -f <path-to-k8s-file>
 ```
 
 Note that when using the above method to delete the keycloak deployment, it will delete the persistent volume containing the database as well, to only delete the keycloak app, use
 
 ```bash
 .bin/minikube kubectl -- delete -f k8s/keycloak.yaml -ltier=app
+```
+
+push the image to minikube
+
+```bash
+docker save <image> | bash -c 'eval $(.bin/minikube docker-env) && docker load'
+# optional, delete old images
+docker system prune
+```
+
+re-deploy it
+
+```bash
+.bin/minikube kubectl -- apply -f <path>
 ```
 
 ## Get a shell into the container
