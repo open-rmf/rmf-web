@@ -19,4 +19,4 @@ if ! test -f .bin/minikube; then
 fi
 
 # start minikube
-.bin/minikube start --cpus=$(nproc) --memory=8g --driver=docker --addons ingress
+.bin/minikube start --cpus=$(nproc) --driver=docker --addons ingress
