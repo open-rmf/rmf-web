@@ -1,2 +1,4 @@
 /.bin/
 /ws/
+/jwt-pub-key.pub
+/keycloak.pem
