@@ -1,15 +1,13 @@
 import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 import React from 'react';
 import { NotFoundPage } from 'react-components';
-import { BrowserRouter, Link, Route, Switch } from 'react-router-dom';
-import { User } from 'rmf-auth';
+import { BrowserRouter, Link, Redirect, Route, Switch, useLocation } from 'react-router-dom';
+import { LoginHOC, PrivateRouteHOC, User } from 'rmf-auth';
 import 'typeface-roboto';
 import appConfig from '../app-config';
 import { DASHBOARD_ROUTE, LOGIN_ROUTE } from '../util/url';
 import { AppConfigContext } from './app-contexts';
 import { AuthenticatorContext, UserContext } from './auth-contexts';
-import Login from './auth/login';
-import { PrivateRoute } from './auth/private-route';
 import Dashboard from './dashboard';
 
 const theme = createMuiTheme({
@@ -44,6 +42,9 @@ export default function App(): JSX.Element | null {
     };
   }, [authenticator, user]);
 
+  const PrivateRoute = PrivateRouteHOC(Route, Redirect, useLocation);
+  const Login = LoginHOC(Redirect);
+
   return authInitialized ? (
     <AppConfigContext.Provider value={appConfig}>
       <AuthenticatorContext.Provider value={authenticator}>
@@ -52,11 +53,21 @@ export default function App(): JSX.Element | null {
             <BrowserRouter>
               <Switch>
                 <Route exact path={LOGIN_ROUTE}>
-                  <Login />
+                  <Login
+                    user={user}
+                    title={'Reporting'}
+                    authenticator={authenticator}
+                    successRedirectUri={DASHBOARD_ROUTE}
+                  />
                 </Route>
-                <PrivateRoute exact path={appRoutes}>
+                <PrivateRoute exact path={appRoutes} redirectPath={LOGIN_ROUTE} user={user}>
                   <Switch>
-                    <PrivateRoute exact path={DASHBOARD_ROUTE}>
+                    <PrivateRoute
+                      exact
+                      path={DASHBOARD_ROUTE}
+                      redirectPath={LOGIN_ROUTE}
+                      user={user}
+                    >
                       <Dashboard />
                     </PrivateRoute>
                   </Switch>
