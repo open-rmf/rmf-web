@@ -1,7 +1,7 @@
 import os.path
 
-from building_map_msgs.msg import AffineImage, BuildingMap, Door, Graph, Level, Lift
 from builtin_interfaces.msg import Time
+from rmf_building_map_msgs.msg import AffineImage, BuildingMap, Door, Graph, Level, Lift
 from rmf_dispenser_msgs.msg import DispenserState
 from rmf_door_msgs.msg import DoorMode, DoorState
 from rmf_fleet_msgs.msg import FleetState, Location, RobotMode, RobotState

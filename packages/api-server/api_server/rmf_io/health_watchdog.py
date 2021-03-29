@@ -2,7 +2,7 @@ import logging
 from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple
 
 import rx
-from building_map_msgs.msg import BuildingMap, Door, Level, Lift
+from rmf_building_map_msgs.msg import BuildingMap, Door, Level, Lift
 from rmf_dispenser_msgs.msg import DispenserState
 from rmf_door_msgs.msg import DoorMode, DoorState
 from rmf_fleet_msgs.msg import FleetState, RobotMode, RobotState
