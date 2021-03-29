@@ -14,7 +14,7 @@ rclpy.init(args=None)
 dispatcher_client = DispatcherClient()
 
 
-class Description(BaseModel):
+class TaskTypeDescription(BaseModel):
     cleaning_zone: Optional[str] = None
     option: Optional[str] = None
     pickup_place_name: Optional[str] = None
@@ -30,7 +30,7 @@ class SubmitTask(BaseModel):
     task_type: str
     start_time: int
     priority: Optional[int] = None
-    description: Description
+    description: TaskTypeDescription
 
 
 class TaskId(BaseModel):
