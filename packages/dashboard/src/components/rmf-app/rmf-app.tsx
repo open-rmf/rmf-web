@@ -75,6 +75,13 @@ function TransportContextsProvider(props: React.PropsWithChildren<{}>): JSX.Elem
   return <TransportContext.Provider value={transport}>{props.children}</TransportContext.Provider>;
 }
 
+// FIXME: Temp workaround for api breakage in RMF. Eventually we will move away from ros2-bridge
+// and use only api-server.
+const buildingMapService = {
+  ...RomiCore.getBuildingMap,
+  type: 'rmf_building_map_msgs/srv/GetBuildingMap',
+};
+
 function BuildingMapProvider(props: React.PropsWithChildren<{}>): JSX.Element {
   const transport = React.useContext(TransportContext);
   const [buildingMap, setBuildingMap] = React.useState<RomiCore.BuildingMap | null>(null);
@@ -88,7 +95,7 @@ function BuildingMapProvider(props: React.PropsWithChildren<{}>): JSX.Element {
     (async () => {
       downloadingRef.current = true;
       showLoadingScreen({ caption: 'Downloading building map...' });
-      const resp = await transport.call(RomiCore.getBuildingMap, {});
+      const resp = await transport.call(buildingMapService, {});
       downloadingRef.current = false;
       showLoadingScreen({});
       setBuildingMap(resp.building_map);

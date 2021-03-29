@@ -12,6 +12,7 @@ from . import models
 from .app_config import app_config
 from .repositories import StaticFilesRepository
 from .rmf_io import HealthWatchdog, RmfBookKeeper, RmfGateway, RmfIO, RmfTransport
+from .rmf_io.authenticator import JwtAuthenticator, StubAuthenticator
 
 
 class MainNode(Node):
@@ -133,12 +134,19 @@ async def on_startup():
         logger.getChild("static_files"),
     )
 
+    if app_config.jwt_public_key is None:
+        auth = StubAuthenticator()
+        logger.warning("authentication is disabled")
+    else:
+        auth = JwtAuthenticator(app_config.jwt_public_key)
+
     rmf_gateway = RmfGateway()
     RmfIO(
         sio,
         rmf_gateway,
         static_files_repo,
         logger=logger.getChild("RmfIO"),
+        authenticator=auth,
     )
 
     # loading states involves emitting events to observables in RmfGateway, we need to load states
@@ -166,7 +174,8 @@ async def on_shutdown():
     logger.info("shutdown app")
 
 
-sio = socketio.AsyncServer(async_mode="asgi")
+# TODO - change cors_allowed_origin to more specific origin. Putting a wild card for now
+sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins="*")
 app = socketio.ASGIApp(
     sio,
     static_files={app_config.static_path: app_config.static_directory},
