@@ -110,6 +110,14 @@ Use kubectl to wait for keycloak to be ready
 .bin/minikube kubectl -- get deployment
 ```
 
+When it's ready, you should see something like
+
+```
+NAME          READY   UP-TO-DATE   AVAILABLE   AGE
+keycloak      1/1     1            1           55s
+keycloak-db   1/1     1            1           56s
+```
+
 When keycloak is ready, test it out by going to https://example.com/auth. The superuser created by this deployment is `user=admin,password=admin`.
 
 ### Configuration
