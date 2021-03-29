@@ -1,13 +1,10 @@
-from enum import IntEnum
+# pylint: disable=line-too-long
 
-from pydantic import BaseModel
-from rmf_door_msgs.msg import DoorMode as RmfDoorMode
-
-
-class DoorModeEnum(IntEnum):
-    OPEN = RmfDoorMode.MODE_OPEN
-    CLOSED = RmfDoorMode.MODE_CLOSED
+from pydantic import BaseModel, Field
 
 
-class DoorMode(BaseModel):
-    mode: DoorModeEnum
+class DoorRequest(BaseModel):
+    mode: int = Field(
+        ...,
+        description="https://github.com/open-rmf/rmf_internal_msgs/blob/main/rmf_door_msgs/msg/DoorMode.msg",
+    )

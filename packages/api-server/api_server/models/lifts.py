@@ -1,21 +1,15 @@
-from enum import IntEnum
+# pylint: disable=line-too-long
 
-from pydantic import BaseModel
-from rmf_lift_msgs.msg import LiftRequest as RmfLiftRequest
-
-
-class LiftRequestModeEnum(IntEnum):
-    END_SESSION = RmfLiftRequest.REQUEST_END_SESSION
-    AGV = RmfLiftRequest.REQUEST_AGV_MODE
-    HUMAN = RmfLiftRequest.REQUEST_HUMAN_MODE
-
-
-class LiftRequestDoorModeEnum(IntEnum):
-    CLOSED = RmfLiftRequest.DOOR_CLOSED
-    OPEN = RmfLiftRequest.DOOR_OPEN
+from pydantic import BaseModel, Field
 
 
 class LiftRequest(BaseModel):
-    mode: LiftRequestModeEnum
-    door_mode: LiftRequestDoorModeEnum
+    request_type: int = Field(
+        ...,
+        description="https://github.com/open-rmf/rmf_internal_msgs/blob/main/rmf_lift_msgs/msg/LiftRequest.msg",
+    )
+    door_mode: int = Field(
+        ...,
+        description="https://github.com/open-rmf/rmf_internal_msgs/blob/main/rmf_lift_msgs/msg/LiftRequest.msg",
+    )
     destination: str
