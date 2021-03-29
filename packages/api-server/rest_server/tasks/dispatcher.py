@@ -1,7 +1,23 @@
 import rclpy
+from fastapi.encoders import jsonable_encoder
 from rclpy.node import Node
 from rmf_task_msgs.msg import Delivery, Loop, TaskSummary, TaskType
 from rmf_task_msgs.srv import CancelTask, GetTaskList, SubmitTask
+
+
+class StatusModel:
+    task_id: str
+    state: str
+    done: bool
+    fleet_name: str
+    robot_name: str
+    task_type: str
+    priority: int
+    submited_start_time: int
+    start_time: int
+    end_time: int
+    description: str
+    progress: str
 
 
 # dispatcher class
@@ -163,52 +179,52 @@ class DispatcherClient(Node):
         now = self.get_clock().now().to_msg().sec  # only use sec
         for task in task_summaries:
             desc = task.task_profile.description
-            status = {}
-            status["task_id"] = task.task_id
-            status["state"] = states_enum[task.state]
-            status["done"] = is_done
-            status["fleet_name"] = task.fleet_name
-            status["robot_name"] = task.robot_name
-            status["task_type"] = type_enum[desc.task_type.type]
-            status["priority"] = desc.priority.value
-            status["submited_start_time"] = desc.start_time.sec
-            status["start_time"] = task.start_time.sec  # only use sec
-            status["end_time"] = task.end_time.sec  # only use sec
+            status = StatusModel()
+            status.task_id = task.task_id
+            status.state = states_enum[task.state]
+            status.done = is_done
+            status.fleet_name = task.fleet_name
+            status.robot_name = task.robot_name
+            status.task_type = type_enum[desc.task_type.type]
+            status.priority = desc.priority.value
+            status.submited_start_time = desc.start_time.sec
+            status.start_time = task.start_time.sec  # only use sec
+            status.end_time = task.end_time.sec  # only use sec
 
-            if status["task_type"] == "Clean":
-                status["description"] = desc.clean.start_waypoint
-            elif status["task_type"] == "Loop":
-                status["description"] = (
+            if status.task_type == "Clean":
+                status.description = desc.clean.start_waypoint
+            elif status.task_type == "Loop":
+                status.description = (
                     desc.loop.start_name
                     + " --> "
                     + desc.loop.finish_name
                     + " x"
                     + str(desc.loop.num_loops)
                 )
-            elif status["task_type"] == "Delivery":
-                status["description"] = (
+            elif status.task_type == "Delivery":
+                status.description = (
                     desc.delivery.pickup_place_name
                     + " --> "
                     + desc.delivery.dropoff_place_name
                 )
-            elif status["task_type"] == "Charging":
-                status["description"] = "Back to Charging Station"
+            elif status.task_type == "Charging":
+                status.description = "Back to Charging Station"
 
             # Generate a progress percentage
             duration = abs(task.end_time.sec - task.start_time.sec)
             # check if is completed
             if is_done or task.state == TaskSummary.STATE_FAILED:
-                status["progress"] = "100%"
+                status.progress = "100%"
             # check if it state is queued/cancelled
             elif duration == 0 or (task.state in [0, 4]):
-                status["progress"] = "0%"
+                status.progress = "0%"
             else:
                 percent = int(100 * (now - task.start_time.sec) / float(duration))
                 if percent < 0:
-                    status["progress"] = "0%"
+                    status.progress = "0%"
                 elif percent > 100:
-                    status["progress"] = "Delayed"
+                    status.progress = "Delayed"
                 else:
-                    status["progress"] = f"{percent}%"
-            status_list.insert(0, status)
+                    status.progress = f"{percent}%"
+            status_list.insert(0, jsonable_encoder(status))
         return status_list
