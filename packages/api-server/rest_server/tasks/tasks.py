@@ -46,7 +46,6 @@ async def get_tasks():
 @router.post("/submit_task")
 async def submit_task(submit_task_params: SubmitTask):
     params_to_dict = jsonable_encoder(submit_task_params)
-    print(params_to_dict)
     req_msg, err_msg = dispatcher_client.convert_task_request(params_to_dict)
 
     if req_msg:

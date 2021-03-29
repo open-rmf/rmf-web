@@ -1,6 +1,6 @@
 import rclpy
 from rclpy.node import Node
-from rmf_task_msgs.msg import Delivery, Loop, TaskType
+from rmf_task_msgs.msg import Delivery, Loop, TaskSummary, TaskType
 from rmf_task_msgs.srv import CancelTask, GetTaskList, SubmitTask
 
 
@@ -197,7 +197,7 @@ class DispatcherClient(Node):
             # Generate a progress percentage
             duration = abs(task.end_time.sec - task.start_time.sec)
             # check if is completed
-            if is_done or task.state == 3:
+            if is_done or task.state == TaskSummary.STATE_FAILED:
                 status["progress"] = "100%"
             # check if it state is queued/cancelled
             elif duration == 0 or (task.state in [0, 4]):
