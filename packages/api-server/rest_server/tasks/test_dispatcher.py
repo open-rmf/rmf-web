@@ -93,3 +93,43 @@ class TestDispatcherClient(unittest.TestCase):
         req_msg_9, err_msg_9 = dispatcher_client.convert_task_request(mock_task_json_9)
         self.assertEqual(err_msg_9, "Missing Key value in json body: 'num_loops'")
         self.assertEqual(req_msg_9, None)
+
+    def test_submit_task_request(self):
+        class MockResult:
+            success = True
+            task_id = "test_task_id"
+
+        class MockFuture:
+            def done(self):
+                return True
+
+            def result(self):
+                return MockResult()
+
+        # create a submit task request message
+        mock_task_json = {
+            "task_type": "Clean",
+            "start_time": 0,
+            "description": {"cleaning_zone": "zone_2"},
+            "priority": "0",
+        }
+        Client.call_async = MagicMock(return_value=MockFuture())
+        req_msg, err_msg = dispatcher_client.convert_task_request(mock_task_json)
+        task_id = dispatcher_client.submit_task_request(req_msg)
+        self.assertEqual(task_id, MockResult().task_id)
+
+    def test_cancel_task_request(self):
+        class MockResult:
+            success = True
+            task_id = "test_task_id"
+
+        class MockFuture:
+            def done(self):
+                return True
+
+            def result(self):
+                return MockResult()
+
+        Client.call_async = MagicMock(return_value=MockFuture())
+        cancel_status = dispatcher_client.cancel_task_request("")
+        self.assertEqual(cancel_status, MockResult().success)
