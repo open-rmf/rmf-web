@@ -158,20 +158,20 @@ class DispatcherClient(Node):
         convert task summary msg and return a jsonify-able task status obj
         """
         states_enum = {
-            0: "Queued",
-            1: "Active/Executing",
-            2: "Completed",
-            3: "Failed",
-            4: "Cancelled",
-            5: "Pending",
+            TaskSummary.STATE_QUEUED: "Queued",
+            TaskSummary.STATE_ACTIVE: "Active/Executing",
+            TaskSummary.STATE_COMPLETED: "Completed",
+            TaskSummary.STATE_FAILED: "Failed",
+            TaskSummary.STATE_CANCELED: "Cancelled",
+            TaskSummary.STATE_PENDING: "Pending",
         }
         type_enum = {
-            0: "Station",
-            1: "Loop",
-            2: "Delivery",
-            3: "Charging",
-            4: "Clean",
-            5: "Patrol",
+            TaskType.TYPE_STATION: "Station",
+            TaskType.TYPE_LOOP: "Loop",
+            TaskType.TYPE_DELIVERY: "Delivery",
+            TaskType.TYPE_CHARGE_BATTERY: "Charging",
+            TaskType.TYPE_CLEAN: "Clean",
+            TaskType.TYPE_PATROL: "Patrol",
         }
 
         status_list = []
@@ -182,7 +182,6 @@ class DispatcherClient(Node):
             status = StatusModel()
             status.task_id = task.task_id
             status.state = states_enum[task.state]
-            status.done = is_done
             status.fleet_name = task.fleet_name
             status.robot_name = task.robot_name
             status.task_type = type_enum[desc.task_type.type]
