@@ -2,13 +2,14 @@ import asyncio
 
 from fastapi import APIRouter, HTTPException
 
+from ..models import BuildingMap
 from ..rmf_io import RmfGateway
 
 
 def building_map_router(rmf: RmfGateway):
     router = APIRouter()
 
-    @router.get("")
+    @router.get("", response_model=BuildingMap)
     async def _get_building_map():
         await asyncio.sleep(1)
         building_map = rmf.building_map.value

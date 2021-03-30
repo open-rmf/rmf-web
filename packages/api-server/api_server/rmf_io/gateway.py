@@ -111,7 +111,8 @@ class RmfGateway:
         # BehaviorSubject[Optional[RmfBuildingMap]]
         self.rmf_building_map = BehaviorSubject(None)
 
-        # BehaviorSubject[Optional[BuildingMap]]
+        # BehaviorSubject[Optional[Dict]], a dict containing fields same as RmfBuildingMap,
+        # but with the image data changed to an url.
         self.building_map = BehaviorSubject(None)
 
     @staticmethod
