@@ -57,6 +57,7 @@ class TestRmfIO(unittest.IsolatedAsyncioTestCase):
         self.static_files = MagicMock(StaticFilesRepository)
         self.static_files.add_file.return_value = "/test_url"
         self.rmf_io = RmfIO(self.sio, self.rmf_gateway, self.static_files)
+        self.rmf_io.start()
         self.app = aiohttp.web.Application()
         self.sio.attach(self.app)
         self.runner = aiohttp.web.AppRunner(self.app)
@@ -68,6 +69,7 @@ class TestRmfIO(unittest.IsolatedAsyncioTestCase):
     async def asyncTearDown(self):
         asyncio.gather(*[client.disconnect() for client in self.clients])
         self.clients.clear()
+        self.rmf_io.stop()
         await self.runner.cleanup()
 
     async def check_endpoint(

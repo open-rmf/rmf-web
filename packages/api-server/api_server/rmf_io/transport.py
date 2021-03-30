@@ -15,56 +15,55 @@ from .rmf_io import RmfGateway
 
 
 class RmfTransport:
-    def __init__(self, ros2_node: RosNode, rmf_gateway: RmfGateway):
-        self.ros2_node = ros2_node
+    def __init__(self, rmf_gateway: RmfGateway):
         self.rmf_gateway = rmf_gateway
         self.door_states_sub: Optional[Subscription] = None
         self.building_map_sub: Optional[Subscription] = None
 
-    def subscribe_all(self):
-        self.door_states_sub = self.ros2_node.create_subscription(
+    def subscribe_all(self, ros2_node: rclpy.node.Node):
+        self.door_states_sub = ros2_node.create_subscription(
             DoorState,
             "door_states",
             self.rmf_gateway.door_states.on_next,
             10,
         )
 
-        self.lift_states_sub = self.ros2_node.create_subscription(
+        self.lift_states_sub = ros2_node.create_subscription(
             LiftState,
             "lift_states",
             self.rmf_gateway.lift_states.on_next,
             10,
         )
 
-        self.dispenser_states_sub = self.ros2_node.create_subscription(
+        self.dispenser_states_sub = ros2_node.create_subscription(
             DispenserState,
             "dispenser_states",
             self.rmf_gateway.dispenser_states.on_next,
             10,
         )
 
-        self.ingestor_states_sub = self.ros2_node.create_subscription(
+        self.ingestor_states_sub = ros2_node.create_subscription(
             IngestorState,
             "ingestor_states",
             self.rmf_gateway.ingestor_states.on_next,
             10,
         )
 
-        self.fleet_states_sub = self.ros2_node.create_subscription(
+        self.fleet_states_sub = ros2_node.create_subscription(
             FleetState,
             "fleet_states",
             self.rmf_gateway.fleet_states.on_next,
             10,
         )
 
-        self.task_summaries_sub = self.ros2_node.create_subscription(
+        self.task_summaries_sub = ros2_node.create_subscription(
             TaskSummary,
             "task_summaries",
             self.rmf_gateway.task_summaries.on_next,
             10,
         )
 
-        self.building_map_sub = self.ros2_node.create_subscription(
+        self.building_map_sub = ros2_node.create_subscription(
             BuildingMap,
             "map",
             self.rmf_gateway.building_map.on_next,

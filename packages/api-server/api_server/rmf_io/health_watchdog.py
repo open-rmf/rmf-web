@@ -32,12 +32,18 @@ class HealthWatchdog:
         self.rmf = rmf_gateway
         self.scheduler = scheduler
         self.logger = logger or logging.getLogger(self.__class__.__name__)
-        self.watchers: List[Disposable] = []
+        self._watchers: List[Disposable] = []
+        self._building_watchers: List[Disposable] = []
+        self._started = False
+
+    def start(self):
+        if self._started:
+            return
 
         def on_building_map(building_map: Optional[BuildingMap]):
-            for sub in self.watchers:
+            for sub in self._building_watchers:
                 sub.dispose()
-            self.watchers.clear()
+            self._building_watchers.clear()
             self._watch_door_health(building_map)
             self._watch_lift_health(building_map)
 
@@ -46,6 +52,17 @@ class HealthWatchdog:
         self._watch_dispenser_health()
         self._watch_ingestor_health()
         self._watch_robot_health()
+        self._started = True
+
+    def stop(self):
+        for sub in self._watchers:
+            sub.dispose()
+        self._watchers.clear()
+        for sub in self._building_watchers:
+            sub.dispose()
+        self._building_watchers.clear()
+
+        self._started = False
 
     def _watch_heartbeat(
         self,
@@ -146,7 +163,7 @@ class HealthWatchdog:
         sub = heartbeat_health.pipe(
             self._combine_most_critical(door_mode_health),
         ).subscribe(self.rmf.door_health.on_next, scheduler=self.scheduler)
-        self.watchers.append(sub)
+        self._building_watchers.append(sub)
 
     @staticmethod
     def _lift_mode_to_health(data: Tuple[str, LiftState]):
@@ -212,7 +229,7 @@ class HealthWatchdog:
         sub = heartbeat_health.pipe(
             self._combine_most_critical(lift_mode_health)
         ).subscribe(self.rmf.lift_health.on_next, scheduler=self.scheduler)
-        self.watchers.append(sub)
+        self._building_watchers.append(sub)
 
     @staticmethod
     def _dispenser_mode_to_health(id_: str, state: DispenserState):

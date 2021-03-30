@@ -2,13 +2,14 @@ import asyncio
 import base64
 import hashlib
 import logging
-from typing import Any, Dict, Mapping, Optional, cast
+from typing import Any, Dict, List, Mapping, Optional, cast
 
+import rx
 import socketio
 from rmf_building_map_msgs.msg import AffineImage, BuildingMap, Level
 from rmf_task_msgs.msg import TaskSummary
 from rosidl_runtime_py.convert import message_to_ordereddict
-from rx.core.typing import Observable as ObservableType
+from rx.core.typing import Disposable
 from rx.operators import map as rx_map
 
 from ..authenticator import AuthenticationError, Authenticator, StubAuthenticator
@@ -35,11 +36,16 @@ class RmfIO:
         self.loop = loop or asyncio.get_event_loop()
         self.authenticator = authenticator
         self.room_records = {}
+        self._subscriptions: List[Disposable] = []
+        self._started = False
 
         self.sio.on("connect", self._on_connect)
         self.sio.on("disconnect", self._on_disconnect)
         self.sio.on("subscribe", self._on_subscribe)
 
+    def start(self):
+        if self._started:
+            return
         self._init_door_state()
         self._init_door_health()
         self._init_lift_state()
@@ -52,10 +58,18 @@ class RmfIO:
         self._init_robot_health()
         self._init_task_summary()
         self._init_building_map()
+        self._started = True
 
-    def _init_room(self, topic: str, source: ObservableType[Mapping[str, Any]]):
+    def stop(self):
+        for sub in self._subscriptions:
+            sub.dispose()
+        self._subscriptions.clear()
+        self._started = False
+
+    def _init_room(self, topic: str, source: rx.Observable):
         """
-        :param source: The mapping values must be json serializable.
+        :param source: rx.Observable[Mapping[str, Any]].
+            The mapping values must be json serializable.
         """
         records = cast(Dict[str, Any], {})
         self.room_records[topic] = records
@@ -70,7 +84,7 @@ class RmfIO:
 
             self.loop.create_task(emit_task())
 
-        source.subscribe(on_next)
+        self._subscriptions.append(source.subscribe(on_next))
 
     def _init_door_state(self):
         self._init_room(
@@ -161,7 +175,7 @@ class RmfIO:
 
             self.loop.create_task(emit_task())
 
-        self.rmf_gateway.task_summaries.subscribe(on_next)
+        self._subscriptions.append(self.rmf_gateway.task_summaries.subscribe(on_next))
 
     def _init_building_map(self):
         def process(building_map: Optional[BuildingMap]):

@@ -26,7 +26,11 @@ class BaseHealthWatchdogTests(unittest.IsolatedAsyncioTestCase):
         self.health_watchdog = HealthWatchdog(
             self.rmf, scheduler=self.scheduler, logger=self.logger
         )
+        self.health_watchdog.start()
         self.scheduler.advance_by(1)
+
+    def tearDown(self):
+        self.health_watchdog.stop()
 
 
 async def test_heartbeat(

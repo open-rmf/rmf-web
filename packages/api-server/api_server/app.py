@@ -25,6 +25,12 @@ logger.setLevel(app_config.log_level)
 if "RMF_API_SEVER_LOG_LEVEL" in os.environ:
     logger.setLevel(os.environ["RMF_API_SEVER_LOG_LEVEL"])
 
+if app_config.jwt_public_key is None:
+    auth = StubAuthenticator()
+    logger.warning("authentication is disabled")
+else:
+    auth = JwtAuthenticator(app_config.jwt_public_key)
+
 app = FastAPI(
     openapi_url=f"{app_config.root_path}/openapi.json",
     docs_url=f"{app_config.root_path}/docs",
@@ -40,17 +46,26 @@ sio_app = socketio.ASGIApp(
     sio, other_asgi_app=app, socketio_path=app_config.socket_io_path
 )
 
-rclpy.init()
-ros_node = RosNode()
+os.makedirs(app_config.static_directory, exist_ok=True)
+static_files_repo = StaticFilesRepository(
+    app_config.static_path,
+    app_config.static_directory,
+    logger.getChild("static_files"),
+)
+rmf_gateway = RmfGateway()
+rmf_transport = RmfTransport(rmf_gateway)
+rmf_io = RmfIO(
+    sio,
+    rmf_gateway,
+    static_files_repo,
+    logger=logger.getChild("RmfIO"),
+    authenticator=auth,
+)
+health_watchdog = HealthWatchdog(rmf_gateway, logger=logger.getChild("HealthWatchdog"))
+rmf_bookkeeper = RmfBookKeeper(rmf_gateway, logger=logger.getChild("BookKeeper"))
 
-if app_config.jwt_public_key is None:
-    auth = StubAuthenticator()
-    logger.warning("authentication is disabled")
-else:
-    auth = JwtAuthenticator(app_config.jwt_public_key)
 
-
-def ros_main():
+def ros_main(ros_node: rclpy.node.Node):
     logger.info("start spinning rclpy node")
     rclpy.spin(ros_node)
     logger.info("finished spinning rclpy node")
@@ -137,27 +152,14 @@ async def load_states(gateway: RmfGateway):
 
 @app.on_event("startup")
 async def on_startup():
+    rclpy.init()
+    ros_node = RosNode()
+
     await Tortoise.init(
         db_url=app_config.db_url,
         modules={"models": ["api_server.models.tortoise_models"]},
     )
     await Tortoise.generate_schemas()
-
-    os.makedirs(app_config.static_directory, exist_ok=True)
-    static_files_repo = StaticFilesRepository(
-        app_config.static_path,
-        app_config.static_directory,
-        logger.getChild("static_files"),
-    )
-
-    rmf_gateway = RmfGateway()
-    RmfIO(
-        sio,
-        rmf_gateway,
-        static_files_repo,
-        logger=logger.getChild("RmfIO"),
-        authenticator=auth,
-    )
 
     # loading states involves emitting events to observables in RmfGateway, we need to load states
     # after initializing RmfIO so that new clients continues to receive the same data. BUT we want
@@ -166,12 +168,9 @@ async def on_startup():
     # health watchdog to think that a dead component has come back alive.
     await load_states(rmf_gateway)
 
-    HealthWatchdog(rmf_gateway, logger=logger.getChild("HealthWatchdog"))
-
-    rmf_transport = RmfTransport(ros_node, rmf_gateway)
-    rmf_transport.subscribe_all()
-
-    rmf_bookkeeper = RmfBookKeeper(rmf_gateway, logger=logger.getChild("BookKeeper"))
+    health_watchdog.start()
+    rmf_io.start()
+    rmf_transport.subscribe_all(ros_node)
     rmf_bookkeeper.start()
 
     app.include_router(
@@ -185,13 +184,17 @@ async def on_startup():
         routes.lifts_router(ros_node), prefix=f"{app_config.root_path}/lifts"
     )
 
-    threading.Thread(target=ros_main).start()
+    threading.Thread(target=ros_main, args=(ros_node,)).start()
 
     logger.info("started app")
 
 
 @app.on_event("shutdown")
 async def on_shutdown():
+    rmf_bookkeeper.stop()
+    rmf_io.stop()
+    rmf_transport.unsubscribe_all()
+    health_watchdog.stop()
     rclpy.shutdown()
     await Tortoise.close_connections()
     logger.info("shutdown app")

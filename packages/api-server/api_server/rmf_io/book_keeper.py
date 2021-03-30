@@ -2,6 +2,7 @@ import asyncio
 import json
 import logging
 from collections import namedtuple
+from typing import List
 
 from rmf_dispenser_msgs.msg import DispenserState
 from rmf_door_msgs.msg import DoorState
@@ -10,6 +11,7 @@ from rmf_ingestor_msgs.msg import IngestorState
 from rmf_lift_msgs.msg import LiftState
 from rmf_task_msgs.msg import TaskSummary
 from rosidl_runtime_py.convert import message_to_ordereddict
+from rx.core.typing import Disposable
 
 from ..models import tortoise_models as ttm
 from .gateway import RmfGateway
@@ -70,9 +72,12 @@ class RmfBookKeeper:
         self._loggers.robot_health.parent = self._main_logger
         self._loggers.task_summary.parent = self._main_logger
 
-    def start(
-        self,
-    ):
+        self._subscriptions: List[Disposable] = []
+        self._started = False
+
+    def start(self):
+        if self._started:
+            return
         self._record_door_state()
         self._record_door_health()
         self._record_lift_state()
@@ -84,6 +89,13 @@ class RmfBookKeeper:
         self._record_fleet_state()
         self._record_robot_health()
         self._record_task_summary()
+        self._started = True
+
+    def stop(self):
+        for sub in self._subscriptions:
+            sub.dispose()
+        self._subscriptions.clear()
+        self._started = False
 
     @staticmethod
     def _report_health(health: ttm.BasicHealthModel, logger: logging.Logger):
@@ -108,7 +120,9 @@ class RmfBookKeeper:
                 json.dumps(message_to_ordereddict(door_state))
             )
 
-        self.rmf.door_states.subscribe(lambda x: self.loop.create_task(update(x)))
+        self._subscriptions.append(
+            self.rmf.door_states.subscribe(lambda x: self.loop.create_task(update(x)))
+        )
 
     def _record_door_health(self):
         async def update(health: ttm.DoorHealth):
@@ -121,7 +135,9 @@ class RmfBookKeeper:
             )
             self._report_health(health, self._loggers.door_health)
 
-        self.rmf.door_health.subscribe(lambda x: self.loop.create_task(update(x)))
+        self._subscriptions.append(
+            self.rmf.door_health.subscribe(lambda x: self.loop.create_task(update(x)))
+        )
 
     def _record_lift_state(self):
         async def update(lift_state: LiftState):
@@ -130,7 +146,9 @@ class RmfBookKeeper:
                 json.dumps(message_to_ordereddict(lift_state))
             )
 
-        self.rmf.lift_states.subscribe(lambda x: self.loop.create_task(update(x)))
+        self._subscriptions.append(
+            self.rmf.lift_states.subscribe(lambda x: self.loop.create_task(update(x)))
+        )
 
     def _record_lift_health(self):
         async def update(health: ttm.LiftHealth):
@@ -143,7 +161,9 @@ class RmfBookKeeper:
             )
             self._report_health(health, self._loggers.lift_health)
 
-        self.rmf.lift_health.subscribe(lambda x: self.loop.create_task(update(x)))
+        self._subscriptions.append(
+            self.rmf.lift_health.subscribe(lambda x: self.loop.create_task(update(x)))
+        )
 
     def _record_dispenser_state(self):
         async def update(dispenser_state: DispenserState):
@@ -152,7 +172,11 @@ class RmfBookKeeper:
                 json.dumps(message_to_ordereddict(dispenser_state))
             )
 
-        self.rmf.dispenser_states.subscribe(lambda x: self.loop.create_task(update(x)))
+        self._subscriptions.append(
+            self.rmf.dispenser_states.subscribe(
+                lambda x: self.loop.create_task(update(x))
+            )
+        )
 
     def _record_dispenser_health(self):
         async def update(health: ttm.DispenserHealth):
@@ -165,7 +189,11 @@ class RmfBookKeeper:
             )
             self._report_health(health, self._loggers.dispenser_health)
 
-        self.rmf.dispenser_health.subscribe(lambda x: self.loop.create_task(update(x)))
+        self._subscriptions.append(
+            self.rmf.dispenser_health.subscribe(
+                lambda x: self.loop.create_task(update(x))
+            )
+        )
 
     def _record_ingestor_state(self):
         async def update(ingestor_state: IngestorState):
@@ -174,7 +202,11 @@ class RmfBookKeeper:
                 json.dumps(message_to_ordereddict(ingestor_state))
             )
 
-        self.rmf.ingestor_states.subscribe(lambda x: self.loop.create_task(update(x)))
+        self._subscriptions.append(
+            self.rmf.ingestor_states.subscribe(
+                lambda x: self.loop.create_task(update(x))
+            )
+        )
 
     def _record_ingestor_health(self):
         async def update(health: ttm.IngestorHealth):
@@ -187,7 +219,11 @@ class RmfBookKeeper:
             )
             self._report_health(health, self._loggers.ingestor_health)
 
-        self.rmf.ingestor_health.subscribe(lambda x: self.loop.create_task(update(x)))
+        self._subscriptions.append(
+            self.rmf.ingestor_health.subscribe(
+                lambda x: self.loop.create_task(update(x))
+            )
+        )
 
     def _record_fleet_state(self):
         async def update(fleet_state: FleetState):
@@ -196,7 +232,9 @@ class RmfBookKeeper:
                 json.dumps(message_to_ordereddict(fleet_state))
             )
 
-        self.rmf.fleet_states.subscribe(lambda x: self.loop.create_task(update(x)))
+        self._subscriptions.append(
+            self.rmf.fleet_states.subscribe(lambda x: self.loop.create_task(update(x)))
+        )
 
     def _record_robot_health(self):
         async def update(health: ttm.RobotHealth):
@@ -209,7 +247,9 @@ class RmfBookKeeper:
             )
             self._report_health(health, self._loggers.robot_health)
 
-        self.rmf.robot_health.subscribe(lambda x: self.loop.create_task(update(x)))
+        self._subscriptions.append(
+            self.rmf.robot_health.subscribe(lambda x: self.loop.create_task(update(x)))
+        )
 
     def _record_task_summary(self):
         async def update(task: TaskSummary):
@@ -220,4 +260,8 @@ class RmfBookKeeper:
                 await record.delete()
             self._loggers.task_summary.info(json.dumps(message_to_ordereddict(task)))
 
-        self.rmf.task_summaries.subscribe(lambda x: self.loop.create_task(update(x)))
+        self._subscriptions.append(
+            self.rmf.task_summaries.subscribe(
+                lambda x: self.loop.create_task(update(x))
+            )
+        )
