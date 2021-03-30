@@ -10,7 +10,7 @@ from fastapi.testclient import TestClient
 from ...app import app
 
 
-class RouteFixture(unittest.TestCase):
+class RouteFixture(unittest.IsolatedAsyncioTestCase):
     @classmethod
     def setUpClass(cls):
         cls.rcl_ctx = rclpy.Context()

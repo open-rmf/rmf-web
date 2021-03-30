@@ -200,11 +200,12 @@ class RmfIO:
                     relpath = f"{building_map.name}/{level.name}-{image.name}.{fingerprint}.{image.encoding}"  # pylint: disable=line-too-long
                     urlpath = self.static_files.add_file(image.data, relpath)
                     processed_map["levels"][i]["images"][j]["data"] = urlpath
+            self.rmf_gateway.building_map.on_next(processed_map)
             return {building_map.name: processed_map}
 
         self._init_room(
             topics.building_map,
-            self.rmf_gateway.building_map.pipe(rx_map(process)),
+            self.rmf_gateway.rmf_building_map.pipe(rx_map(process)),
         )
 
     async def _on_subscribe(self, sid, topic):

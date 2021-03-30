@@ -108,9 +108,11 @@ class RmfGateway:
         self.current_task_summaries: Dict[str, TaskSummary] = {}
         self._init_task_summaries()
 
-        self.building_map = BehaviorSubject(  # BehaviorSubject[Optional[BuildingMap]]
-            None
-        )
+        # BehaviorSubject[Optional[RmfBuildingMap]]
+        self.rmf_building_map = BehaviorSubject(None)
+
+        # BehaviorSubject[Optional[BuildingMap]]
+        self.building_map = BehaviorSubject(None)
 
     @staticmethod
     def _save_event(source: Observable, dic, key_mapper: Callable[[Any], str]):

@@ -255,7 +255,7 @@ class TestRmfIO(unittest.IsolatedAsyncioTestCase):
         client.on(topics.building_map, on_building_map)
 
         building_map = make_building_map()
-        self.rmf_gateway.building_map.on_next(building_map)
+        self.rmf_gateway.rmf_building_map.on_next(building_map)
         await asyncio.wait_for(done, 5)
         self.assertEqual(
             self.static_files.add_file.call_args[0][1],

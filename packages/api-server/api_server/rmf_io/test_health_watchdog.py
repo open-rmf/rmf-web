@@ -109,7 +109,7 @@ class TestHealthWatchdog_DoorHealth(BaseHealthWatchdogTests):
     async def test_heartbeat_with_no_state(self):
         building_map = test_data.make_building_map()
         building_map.levels[0].doors = [test_data.make_door("test_door")]
-        self.rmf.building_map.on_next(building_map)
+        self.rmf.rmf_building_map.on_next(building_map)
 
         health: Optional[ttm.DoorHealth] = None
 
@@ -138,7 +138,7 @@ class TestHealthWatchdog_LiftHealth(BaseHealthWatchdogTests):
         """
         building_map = test_data.make_building_map()
         building_map.lifts = [test_data.make_lift("test_lift")]
-        self.rmf.building_map.on_next(building_map)
+        self.rmf.rmf_building_map.on_next(building_map)
 
         health: Optional[ttm.LiftHealth] = None
 

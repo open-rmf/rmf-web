@@ -47,7 +47,7 @@ class HealthWatchdog:
             self._watch_door_health(building_map)
             self._watch_lift_health(building_map)
 
-        self.rmf.building_map.subscribe(on_building_map)
+        self.rmf.rmf_building_map.subscribe(on_building_map)
 
         self._watch_dispenser_health()
         self._watch_ingestor_health()
