@@ -2,7 +2,7 @@ import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 import React from 'react';
 import { NotFoundPage } from 'react-components';
 import { BrowserRouter, Link, Redirect, Route, Switch, useLocation } from 'react-router-dom';
-import { LoginHOC, PrivateRouteHOC, User } from 'rmf-auth';
+import { getUrl, LoginHOC, PrivateRouteHOC, User } from 'rmf-auth';
 import 'typeface-roboto';
 import appConfig from '../app-config';
 import ResourceManager from '../managers/resource-manager';
@@ -88,7 +88,7 @@ export default function App(): JSX.Element | null {
                       user={user}
                       title={'Dashboard'}
                       authenticator={authenticator}
-                      successRedirectUri={DASHBOARD_ROUTE}
+                      successRedirectUri={getUrl(DASHBOARD_ROUTE)}
                     />
                   </Route>
                   {/* we need this because we don't want to re-mount `AppIntrinsics` when just moving
