@@ -12,5 +12,5 @@ python3 -m pipenv run python3 -m ros_tortoise -o api_server/models/mixins \
   rmf_task_msgs \
   rmf_traffic_msgs \
   rmf_workcell_msgs \
-  building_map_msgs
+  rmf_building_map_msgs
 python3 -m pipenv run python3 -m pipenv run python3 -m black api_server/models/mixins/*.py

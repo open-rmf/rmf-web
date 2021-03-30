@@ -5,7 +5,7 @@ import logging
 from typing import Any, Dict, Mapping, Optional, cast
 
 import socketio
-from building_map_msgs.msg import AffineImage, BuildingMap, Level
+from rmf_building_map_msgs.msg import AffineImage, BuildingMap, Level
 from rmf_task_msgs.msg import TaskSummary
 from rosidl_runtime_py.convert import message_to_ordereddict
 from rx.core.typing import Observable as ObservableType

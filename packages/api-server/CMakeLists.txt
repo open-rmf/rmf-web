@@ -10,7 +10,7 @@ find_package(rmf_lift_msgs 1.2 REQUIRED)
 find_package(rmf_task_msgs 1.2 REQUIRED)
 find_package(rmf_traffic_msgs 1.2 REQUIRED)
 find_package(rmf_workcell_msgs 1.2 REQUIRED)
-find_package(building_map_msgs 1.2 REQUIRED)
+find_package(rmf_building_map_msgs 1.2 REQUIRED)
 
 find_package(ament_cmake REQUIRED)
 
@@ -34,7 +34,7 @@ append_rosidl_interfaces(rmf_interfaces rmf_lift_msgs)
 append_rosidl_interfaces(rmf_interfaces rmf_task_msgs)
 append_rosidl_interfaces(rmf_interfaces rmf_traffic_msgs)
 append_rosidl_interfaces(rmf_interfaces rmf_workcell_msgs)
-append_rosidl_interfaces(rmf_interfaces building_map_msgs)
+append_rosidl_interfaces(rmf_interfaces rmf_building_map_msgs)
 
 add_custom_command(
   OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/api_server/models/mixins/rev
