@@ -16,7 +16,7 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         await Tortoise.init(
             db_url="sqlite://:memory:",
-            modules={"ttm.": ["api_server.models.tortoise_models"]},
+            modules={"models": ["api_server.models.tortoise_models"]},
         )
         await Tortoise.generate_schemas()
         self.rmf = RmfGateway()

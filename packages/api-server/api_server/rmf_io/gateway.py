@@ -22,9 +22,7 @@ class RmfGateway:
       if it should update or create a new record. Instead, use `Model.update_or_create`.
     """
 
-    def __init__(
-        self,
-    ):
+    def __init__(self):
         # NOTE: the rx type hints don't actually work https://github.com/ReactiveX/RxPY/issues/514
         self.door_states = Subject()  # Subject[DoorState]
         self.current_door_states: Dict[str, DoorState] = {}

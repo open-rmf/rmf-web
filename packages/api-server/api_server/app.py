@@ -1,7 +1,9 @@
+import asyncio
 import logging
 import os
 import sys
 import threading
+from typing import Awaitable, Callable, List, Union
 
 import rclpy
 import socketio
@@ -31,6 +33,12 @@ if app_config.jwt_public_key is None:
 else:
     auth = JwtAuthenticator(app_config.jwt_public_key)
 
+shutdown_cbs: List[Callable[[], Union[None, Awaitable[None]]]] = []
+
+rclpy.init()
+rcl_executor = rclpy.executors.SingleThreadedExecutor()
+ros_node = RosNode()
+
 app = FastAPI(
     openapi_url=f"{app_config.root_path}/openapi.json",
     docs_url=f"{app_config.root_path}/docs",
@@ -46,28 +54,26 @@ sio_app = socketio.ASGIApp(
     sio, other_asgi_app=app, socketio_path=app_config.socket_io_path
 )
 
-os.makedirs(app_config.static_directory, exist_ok=True)
-static_files_repo = StaticFilesRepository(
-    app_config.static_path,
-    app_config.static_directory,
-    logger.getChild("static_files"),
-)
 rmf_gateway = RmfGateway()
-rmf_transport = RmfTransport(rmf_gateway)
-rmf_io = RmfIO(
-    sio,
-    rmf_gateway,
-    static_files_repo,
-    logger=logger.getChild("RmfIO"),
-    authenticator=auth,
+
+app.include_router(
+    routes.building_map_router(rmf_gateway),
+    prefix=f"{app_config.root_path}/building_map",
 )
-health_watchdog = HealthWatchdog(rmf_gateway, logger=logger.getChild("HealthWatchdog"))
-rmf_bookkeeper = RmfBookKeeper(rmf_gateway, logger=logger.getChild("BookKeeper"))
+app.include_router(
+    routes.doors_router(ros_node), prefix=f"{app_config.root_path}/doors"
+)
+app.include_router(
+    routes.lifts_router(ros_node), prefix=f"{app_config.root_path}/lifts"
+)
 
 
-def ros_main(ros_node: rclpy.node.Node):
+def ros_main():
+    shutdown_fut = rclpy.task.Future(executor=rcl_executor)
+    shutdown_fut.add_done_callback(lambda x: logger.info("stopping ros node"))
+    shutdown_cbs.append(lambda: shutdown_fut.set_result(True))
     logger.info("start spinning rclpy node")
-    rclpy.spin(ros_node)
+    rclpy.spin_until_future_complete(ros_node, shutdown_fut, rcl_executor)
     logger.info("finished spinning rclpy node")
 
 
@@ -152,14 +158,31 @@ async def load_states(gateway: RmfGateway):
 
 @app.on_event("startup")
 async def on_startup():
-    rclpy.init()
-    ros_node = RosNode()
-
     await Tortoise.init(
         db_url=app_config.db_url,
         modules={"models": ["api_server.models.tortoise_models"]},
     )
     await Tortoise.generate_schemas()
+
+    os.makedirs(app_config.static_directory, exist_ok=True)
+    static_files_repo = StaticFilesRepository(
+        app_config.static_path,
+        app_config.static_directory,
+        logger.getChild("static_files"),
+    )
+    rmf_transport = RmfTransport(rmf_gateway)
+    health_watchdog = HealthWatchdog(
+        rmf_gateway, logger=logger.getChild("HealthWatchdog")
+    )
+    rmf_bookkeeper = RmfBookKeeper(rmf_gateway, logger=logger.getChild("BookKeeper"))
+    rmf_io = RmfIO(
+        sio,
+        rmf_gateway,
+        static_files_repo,
+        logger=logger.getChild("RmfIO"),
+        authenticator=auth,
+    )
+    rmf_io.start()
 
     # loading states involves emitting events to observables in RmfGateway, we need to load states
     # after initializing RmfIO so that new clients continues to receive the same data. BUT we want
@@ -169,32 +192,26 @@ async def on_startup():
     await load_states(rmf_gateway)
 
     health_watchdog.start()
-    rmf_io.start()
     rmf_transport.subscribe_all(ros_node)
     rmf_bookkeeper.start()
 
-    app.include_router(
-        routes.building_map_router(rmf_gateway),
-        prefix=f"{app_config.root_path}/building_map",
-    )
-    app.include_router(
-        routes.doors_router(ros_node), prefix=f"{app_config.root_path}/doors"
-    )
-    app.include_router(
-        routes.lifts_router(ros_node), prefix=f"{app_config.root_path}/lifts"
-    )
+    threading.Thread(target=ros_main).start()
 
-    threading.Thread(target=ros_main, args=(ros_node,)).start()
+    shutdown_cbs.append(rmf_bookkeeper.stop)
+    shutdown_cbs.append(rmf_transport.unsubscribe_all)
+    shutdown_cbs.append(health_watchdog.stop)
+    shutdown_cbs.append(rmf_io.stop)
+    shutdown_cbs.append(Tortoise.close_connections)
 
     logger.info("started app")
 
 
 @app.on_event("shutdown")
 async def on_shutdown():
-    rmf_bookkeeper.stop()
-    rmf_io.stop()
-    rmf_transport.unsubscribe_all()
-    health_watchdog.stop()
-    rclpy.shutdown()
-    await Tortoise.close_connections()
+    for cb in shutdown_cbs:
+        result = cb()
+        if asyncio.iscoroutine(result):
+            await result
+    shutdown_cbs.clear()
+
     logger.info("shutdown app")
