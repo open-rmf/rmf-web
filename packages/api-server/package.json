@@ -4,7 +4,7 @@
   "description": "dummy package",
   "private": true,
   "scripts": {
-    "prepare": "cmake -B build && cmake --build build",
+    "prepare": "",
     "test": "RMF_API_SEVER_LOG_LEVEL=CRITICAL python3 -m pipenv run python -m unittest",
     "test:cov": "TEST_COVERAGE=1 python3 -m pipenv run python -m coverage run -m unittest",
     "test:report": "python3 -m pipenv run python -m coverage html && xdg-open htmlcov/index.html",
