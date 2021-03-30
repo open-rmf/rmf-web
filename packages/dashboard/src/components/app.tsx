@@ -1,8 +1,8 @@
 import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 import React from 'react';
 import { NotFoundPage } from 'react-components';
-import { BrowserRouter, Link, Route, Switch } from 'react-router-dom';
-import { User } from 'rmf-auth';
+import { BrowserRouter, Link, Redirect, Route, Switch, useLocation } from 'react-router-dom';
+import { LoginHOC, PrivateRouteHOC, User } from 'rmf-auth';
 import 'typeface-roboto';
 import appConfig from '../app-config';
 import ResourceManager from '../managers/resource-manager';
@@ -11,8 +11,6 @@ import { AppBase } from './app-base';
 import { ResourcesContext, AppConfigContext } from './app-contexts';
 import './app.css';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
-import Login from './auth/login';
-import PrivateRoute from './auth/private-route';
 import Dashboard from './dashboard/dashboard';
 import { RmfApp } from './rmf-app';
 
@@ -74,6 +72,9 @@ export default function App(): JSX.Element | null {
     })();
   }, []);
 
+  const PrivateRoute = PrivateRouteHOC(Route, Redirect, useLocation);
+  const Login = LoginHOC(Redirect);
+
   return authInitialized && appReady ? (
     <AppConfigContext.Provider value={appConfig}>
       <ResourcesContext.Provider value={resourceManager.current}>
@@ -83,14 +84,24 @@ export default function App(): JSX.Element | null {
               <BrowserRouter>
                 <Switch>
                   <Route exact path={LOGIN_ROUTE}>
-                    <Login />
+                    <Login
+                      user={user}
+                      title={'Dashboard'}
+                      authenticator={authenticator}
+                      successRedirectUri={DASHBOARD_ROUTE}
+                    />
                   </Route>
                   {/* we need this because we don't want to re-mount `AppIntrinsics` when just moving
                   from one route to another, but we want to unmount it when going "outside" the app. */}
-                  <PrivateRoute exact path={appRoutes}>
+                  <PrivateRoute exact path={appRoutes} redirectPath={LOGIN_ROUTE} user={user}>
                     <AppIntrinsics>
                       <Switch>
-                        <PrivateRoute exact path={DASHBOARD_ROUTE}>
+                        <PrivateRoute
+                          exact
+                          path={DASHBOARD_ROUTE}
+                          redirectPath={LOGIN_ROUTE}
+                          user={user}
+                        >
                           <Dashboard />
                         </PrivateRoute>
                       </Switch>
