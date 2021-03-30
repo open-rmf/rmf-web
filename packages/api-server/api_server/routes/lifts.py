@@ -18,6 +18,6 @@ def lifts_router(ros_node: rclpy.node.Node):
             destination_floor=lift_request.destination,
             door_state=lift_request.door_mode,
         )
-        ros_node.door_req.publish(msg)
+        ros_node.lift_req.publish(msg)
 
     return router
