@@ -44,6 +44,12 @@ def on_startup():
     rclpy.init()
     global node
     node = RosNode()
+
+
+def start_spin():
+    """
+    Must be called on app startup, AFTER subscriptions have been created
+    """
     global spin_thread
     spin_thread = threading.Thread(target=_spin)
     spin_thread.start()

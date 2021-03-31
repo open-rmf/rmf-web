@@ -1,24 +1,23 @@
 import asyncio
 import os
-import threading
 from typing import Awaitable, Callable, List, Union
 
 import socketio
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.staticfiles import StaticFiles
 from tortoise import Tortoise
 
 from . import routes
 from .app_config import app_config
 from .authenticator import JwtAuthenticator, StubAuthenticator
-from .dependencies import logger, ros
+from .dependencies import auth_scheme, logger, ros
 from .models import tortoise_models as ttm
 from .repositories import StaticFilesRepository
 from .rmf_io import HealthWatchdog, RmfBookKeeper, RmfIO, RmfTransport
 
 if app_config.jwt_public_key is None:
     auth = StubAuthenticator()
-    logger.warning("authentication is disabled")
+    logger.warning("socketio authentication is disabled")
 else:
     auth = JwtAuthenticator(app_config.jwt_public_key)
 
@@ -29,6 +28,7 @@ app = FastAPI(
     openapi_url=f"{app_config.root_path}/openapi.json",
     docs_url=f"{app_config.root_path}/docs",
     swagger_ui_oauth2_redirect_url=f"{app_config.root_path}/docs/oauth2-redirect",
+    dependencies=[Depends(auth_scheme)],
 )
 app.mount(
     f"{app_config.static_path}",
@@ -136,16 +136,12 @@ async def on_startup():
     await Tortoise.generate_schemas()
     shutdown_cbs.append(Tortoise.close_connections)
 
-    ros.on_startup()
-    shutdown_cbs.append(ros.on_shutdown)
-
     os.makedirs(app_config.static_directory, exist_ok=True)
     static_files_repo = StaticFilesRepository(
         app_config.static_path,
         app_config.static_directory,
         logger.getChild("static_files"),
     )
-    rmf_transport = RmfTransport(ros.rmf_gateway)
     health_watchdog = HealthWatchdog(
         ros.rmf_gateway, logger=logger.getChild("HealthWatchdog")
     )
@@ -171,10 +167,17 @@ async def on_startup():
 
     health_watchdog.start()
     shutdown_cbs.append(health_watchdog.stop)
-    rmf_transport.subscribe_all(ros.node)
-    shutdown_cbs.append(rmf_transport.unsubscribe_all)
     rmf_bookkeeper.start()
     shutdown_cbs.append(rmf_bookkeeper.stop)
+
+    ros.on_startup()
+    shutdown_cbs.append(ros.on_shutdown)
+
+    rmf_transport = RmfTransport(ros.rmf_gateway)
+    rmf_transport.subscribe_all(ros.node)
+    shutdown_cbs.append(rmf_transport.unsubscribe_all)
+
+    ros.start_spin()
 
     logger.info("started app")
 

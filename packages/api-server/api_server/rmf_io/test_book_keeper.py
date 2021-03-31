@@ -3,7 +3,7 @@ import logging
 import unittest
 
 from rmf_door_msgs.msg import DoorMode
-from rmf_task_msgs.msg import TaskSummary
+from rmf_task_msgs.msg import Tasks, TaskSummary
 from tortoise import Tortoise
 
 from ..models import tortoise_models as ttm
@@ -223,7 +223,8 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
     async def test_write_task_summary(self):
         task = TaskSummary(task_id="test_task")
         task.status = "test_status"
-        self.rmf.task_summaries.on_next(task)
+        tasks = Tasks(tasks=[task])
+        self.rmf.task_summaries.on_next(tasks)
         await asyncio.sleep(0)
         result = await ttm.TaskSummary.get(id_="test_task")
         self.assertIsNotNone(result)
@@ -232,7 +233,8 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
 
         task = TaskSummary(task_id="test_task")
         task.status = "test_status_2"
-        self.rmf.task_summaries.on_next(task)
+        tasks = Tasks(tasks=[task])
+        self.rmf.task_summaries.on_next(tasks)
         await asyncio.sleep(0)
         result = await ttm.TaskSummary.get(id_="test_task")
         self.assertIsNotNone(result)
@@ -241,13 +243,15 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
 
     async def test_delete_completed_tasks(self):
         task = TaskSummary(task_id="test_task", state=TaskSummary.STATE_ACTIVE)
-        self.rmf.task_summaries.on_next(task)
+        tasks = Tasks(tasks=[task])
+        self.rmf.task_summaries.on_next(tasks)
         await asyncio.sleep(0)
         result = await ttm.TaskSummary.get(id_="test_task")
         self.assertIsNotNone(result)
 
         task = TaskSummary(task_id="test_task", state=TaskSummary.STATE_COMPLETED)
-        self.rmf.task_summaries.on_next(task)
+        tasks = Tasks(tasks=[task])
+        self.rmf.task_summaries.on_next(tasks)
         result = await ttm.TaskSummary.filter(id_="test_task").first()
         while result is not None:
             await asyncio.sleep(0)
@@ -256,13 +260,15 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
 
     async def test_delete_failed_tasks(self):
         task = TaskSummary(task_id="test_task", state=TaskSummary.STATE_ACTIVE)
-        self.rmf.task_summaries.on_next(task)
+        tasks = Tasks(tasks=[task])
+        self.rmf.task_summaries.on_next(tasks)
         await asyncio.sleep(0)
         result = await ttm.TaskSummary.get(id_="test_task")
         self.assertIsNotNone(result)
 
         task = TaskSummary(task_id="test_task", state=TaskSummary.STATE_FAILED)
-        self.rmf.task_summaries.on_next(task)
+        tasks = Tasks(tasks=[task])
+        self.rmf.task_summaries.on_next(tasks)
         result = await ttm.TaskSummary.filter(id_="test_task").first()
         while result is not None:
             await asyncio.sleep(0)
@@ -271,13 +277,15 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
 
     async def test_delete_cancelled_tasks(self):
         task = TaskSummary(task_id="test_task", state=TaskSummary.STATE_ACTIVE)
-        self.rmf.task_summaries.on_next(task)
+        tasks = Tasks(tasks=[task])
+        self.rmf.task_summaries.on_next(tasks)
         await asyncio.sleep(0)
         result = await ttm.TaskSummary.get(id_="test_task")
         self.assertIsNotNone(result)
 
         task = TaskSummary(task_id="test_task", state=TaskSummary.STATE_CANCELED)
-        self.rmf.task_summaries.on_next(task)
+        tasks = Tasks(tasks=[task])
+        self.rmf.task_summaries.on_next(tasks)
         result = await ttm.TaskSummary.filter(id_="test_task").first()
         while result is not None:
             await asyncio.sleep(0)

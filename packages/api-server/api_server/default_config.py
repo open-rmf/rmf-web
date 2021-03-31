@@ -8,5 +8,10 @@ config = {
     "static_path": "/static",  # base path that static files should be served from, this is NOT relative to the root path
     "static_directory": "static",  # the directory where static files should be stored.
     "log_level": "INFO",  # https://docs.python.org/3.8/library/logging.html#levels
-    "jwt_public_key": None,  # path to a PEM encoded RSA public key which is used to verify JWT tokens, if the path is relative, it is based on the working dir. If `None`, authentication will be disabled.
+    # path to a PEM encoded RSA public key which is used to verify JWT tokens, if the path is relative, it is based on the working dir.
+    # Used to authenticate socketio requests.
+    "jwt_public_key": None,
+    # url to the oidc endpoint, used to authenticate rest requests, it should point to the well known endpoint, e.g.
+    # http://localhost:8080/auth/realms/rmf-web/.well-known/openid-configuration
+    "oidc_url": None,
 }

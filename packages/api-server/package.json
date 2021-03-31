@@ -5,10 +5,11 @@
   "private": true,
   "scripts": {
     "prepare": "",
-    "test": "RMF_API_SEVER_LOG_LEVEL=CRITICAL python3 -m pipenv run python -m unittest",
-    "test:cov": "TEST_COVERAGE=1 RMF_API_SEVER_LOG_LEVEL=CRITICAL python3 -m pipenv run python -m coverage run -m unittest",
-    "test:report": "python3 -m pipenv run python -m coverage html && xdg-open htmlcov/index.html",
-    "lint": "python3 -m pipenv run pylint --ignore=mixins api_server"
+    "test": "RMF_API_SERVER_LOG_LEVEL=CRITICAL python3 -m pipenv run python -m unittest discover -s api_server -t .",
+    "test:integration": "RMF_API_SERVER_LOG_LEVEL=CRITICAL python3 -m pipenv run python -m unittest discover -s tests -t .",
+    "test:cov": "RMF_API_SERVER_LOG_LEVEL=CRITICAL RMF_API_SERVER_TEST_COVERAGE=1 python3 -m pipenv run python -m coverage run -p -m unittest",
+    "test:report": "python3 -m pipenv run python -m coverage combine && python3 -m pipenv run python -m coverage html && xdg-open htmlcov/index.html",
+    "lint": "python3 -m pipenv run pylint api_server tests"
   },
   "devDependencies": {
     "socket.io-client": "^3.1.3"

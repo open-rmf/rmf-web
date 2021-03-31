@@ -9,7 +9,7 @@ from rmf_door_msgs.msg import DoorState
 from rmf_fleet_msgs.msg import FleetState
 from rmf_ingestor_msgs.msg import IngestorState
 from rmf_lift_msgs.msg import LiftState
-from rmf_task_msgs.msg import TaskSummary
+from rmf_task_msgs.msg import Tasks
 from rosidl_runtime_py.convert import message_to_ordereddict
 from rx.core.typing import Disposable
 
@@ -252,13 +252,16 @@ class RmfBookKeeper:
         )
 
     def _record_task_summary(self):
-        async def update(task: TaskSummary):
-            if task.state in ttm.TaskSummary.ACTIVE_STATES:
-                await ttm.TaskSummary.update_or_create_from_rmf(task)
-            else:
-                record = await ttm.TaskSummary.get(id_=task.task_id)
-                await record.delete()
-            self._loggers.task_summary.info(json.dumps(message_to_ordereddict(task)))
+        async def update(tasks: Tasks):
+            for task in tasks.tasks:
+                if task.state in ttm.TaskSummary.ACTIVE_STATES:
+                    await ttm.TaskSummary.update_or_create_from_rmf(task)
+                else:
+                    record = await ttm.TaskSummary.get(id_=task.task_id)
+                    await record.delete()
+                self._loggers.task_summary.info(
+                    json.dumps(message_to_ordereddict(task))
+                )
 
         self._subscriptions.append(
             self.rmf.task_summaries.subscribe(

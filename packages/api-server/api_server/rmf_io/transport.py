@@ -1,7 +1,7 @@
 from typing import Optional
 
 import rclpy
-from rclpy.node import Node as RosNode
+import rclpy.node
 from rclpy.subscription import Subscription
 from rmf_building_map_msgs.msg import BuildingMap
 from rmf_dispenser_msgs.msg import DispenserState
@@ -9,7 +9,7 @@ from rmf_door_msgs.msg import DoorState
 from rmf_fleet_msgs.msg import FleetState
 from rmf_ingestor_msgs.msg import IngestorState
 from rmf_lift_msgs.msg import LiftState
-from rmf_task_msgs.msg import TaskSummary
+from rmf_task_msgs.msg import Tasks
 
 from .rmf_io import RmfGateway
 
@@ -57,7 +57,7 @@ class RmfTransport:
         )
 
         self.task_summaries_sub = ros2_node.create_subscription(
-            TaskSummary,
+            Tasks,
             "task_summaries",
             self.rmf_gateway.task_summaries.on_next,
             10,
@@ -66,9 +66,9 @@ class RmfTransport:
         self.building_map_sub = ros2_node.create_subscription(
             BuildingMap,
             "map",
-            self.rmf_gateway.building_map.on_next,
+            self.rmf_gateway.rmf_building_map.on_next,
             rclpy.qos.QoSProfile(
-                history=rclpy.qos.HistoryPolicy.KEEP_LAST,
+                history=rclpy.qos.HistoryPolicy.KEEP_ALL,
                 depth=1,
                 reliability=rclpy.qos.ReliabilityPolicy.RELIABLE,
                 durability=rclpy.qos.DurabilityPolicy.TRANSIENT_LOCAL,

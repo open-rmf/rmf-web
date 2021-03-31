@@ -15,6 +15,7 @@ class AppConfig:
     static_directory: str
     log_level: str
     jwt_public_key: Optional[str]
+    oidc_url: Optional[str]
 
 
 def _load_config() -> AppConfig:
