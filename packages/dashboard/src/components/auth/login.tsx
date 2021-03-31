@@ -22,7 +22,7 @@ export default function Login(props: LoginProps): JSX.Element {
   }
 
   return user ? (
-    <Redirect to={successRedirectUri} />
+    <Redirect to={DASHBOARD_ROUTE} />
   ) : (
     <LoginPage title="Dashboard" logo="assets/ros-health.png">
       <Button id="login-button" onClick={handleRmfLogin} variant="contained">

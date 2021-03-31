@@ -94,32 +94,5 @@ First thing to try is to build rmf from source, in order to speed up development
 Refer to [rmf_demos](https://github.com/open-rmf/rmf_demos) for instructions to build rmf. You should end up with a colcon workspace with all of rmf packages, remember to source the workspace before running any of the commands.
 
 ## Deploying
-* Build all the packages with the version of you are using in your deployment of RMF. This is important because message definitions and other behaviors might change depending on your version of RMF. The easiest way to do this is to source your version of RMF and run `npm run bootstrap`.
 
-* Build the dashboard with the config of your deployment, refer to the [instructions](./packages/dashboard/README.md#external-server) for connecting to an external server. You want to make sure the urls matches the location where you are hosting the various backends.
-
-* Make sure that the server for dashboard is set up to support client side routing, it should serve `index.html` for other routes.
-
-* Use a sql database for keycloak and configure your keycloak settings. Refer to [keycloak docs](https://www.keycloak.org/getting-started) for more information regarding keycloak deployment. **DO NOT** use the default admin password.
-
-* Use a sql database for `api-server`, by default it keeps a sqlite database in memory, obviously that is not suitable for production.
-
-* Use a ssl termination proxy to provide https connection. Some of the components only support http and should never be exposed to the outside directly. Also make sure to use a valid certificate.
-
-* The following services should be deployed
-    * ros2-bridge
-    * api-server
-    * keycloak
-    * web server
-
-### About deployment with kubernetes
-Kubernetes is an easy way to manage a web stack deployment, there are some minor things that you should take note of if you are using kubernetes (or other container based deployment).
-
-* **DO** use a base image with the correct version of RMF for services that connects to rmf (ros2-bridge, api-server). **DO NOT** use a public image, it may not have the correct message definitions.
-* **DO** build or install only rmf message packages to keep image size down.
-* **DO NOT** build the packages in `rmf-web` on the host and copy it into the image. Instead, copy the source files and build the packages from within the container.
-* **DO NOT** run multiple instance of `api-server`. It is not designed to support concurrency.
-
-# Further documentation
-
-Please refer to the README in each package.
+See [example deployment](example-deployment/README.md)
