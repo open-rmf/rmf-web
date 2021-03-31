@@ -254,11 +254,7 @@ class RmfBookKeeper:
     def _record_task_summary(self):
         async def update(tasks: Tasks):
             for task in tasks.tasks:
-                if task.state in ttm.TaskSummary.ACTIVE_STATES:
-                    await ttm.TaskSummary.update_or_create_from_rmf(task)
-                else:
-                    record = await ttm.TaskSummary.get(id_=task.task_id)
-                    await record.delete()
+                await ttm.TaskSummary.update_or_create_from_rmf(task)
                 self._loggers.task_summary.info(
                     json.dumps(message_to_ordereddict(task))
                 )
