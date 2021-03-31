@@ -1,0 +1,3 @@
+{"log":"\u001b[32m2021-03-30T23:18:21+00:00 [ros2] info: removed subscription {\"id\":111,\"topic\":\"door_states\"}\u001b[39m\n","stream":"stdout","time":"2021-03-30T23:18:21.70581143Z"}
+
+{"log":"2123: Tue Mar 30 23:53:00 UTC 2021\n","stream":"stdout","time":"2021-03-30T23:53:00.197536044Z"}
