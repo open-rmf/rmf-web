@@ -1,3 +1,3 @@
-from .building_map import building_map_router
-from .doors import doors_router
-from .lifts import lifts_router
+from .building_map import router as building_map_router
+from .doors import router as doors_router
+from .lifts import router as lifts_router
