@@ -63,7 +63,7 @@ class TestDispatcherClient(RouteFixture):
 
     async def test_cancel_task_request(self):
         fut = self.host_service_one(CancelTask, "cancel_task", CancelTask.Response())
-        await dispatcher_client.cancel_task_request(mdl.TaskId(task_id="test_task"))
+        await dispatcher_client.cancel_task_request(mdl.CancelTask(task_id="test_task"))
         # checks that a service request is received
         received: CancelTask.Request = await fut
         self.assertEqual(received.task_id, "test_task")

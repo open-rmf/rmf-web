@@ -51,7 +51,7 @@ class RouteFixture(unittest.IsolatedAsyncioTestCase):
         Hosts a service until a request is received. Returns a future that is set when
         the first request is received. The node is spun in a background thread.
         """
-        ros_fut = rclpy.task.Future()
+        ros_fut = rclpy.task.Future(executor=self.rcl_executor)
         loop = asyncio.get_event_loop()
         fut = asyncio.Future()
 
