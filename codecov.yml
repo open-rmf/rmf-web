@@ -19,3 +19,11 @@ flags:
     paths:
       - packages/api-server
     carryforward: true
+  reporting:
+    paths:
+      - packages/reporting
+    carryforward: true
+  rmf-auth:
+    paths:
+      - packages/rmf-auth
+    carryforward: true

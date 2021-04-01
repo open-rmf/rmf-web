@@ -1,7 +1,7 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import Authenticator from './components/auth/authenticator';
-import KeycloakAuthenticator from './components/auth/keycloak';
-import StubAuthenticator from './components/auth/stub';
+import { Authenticator } from 'rmf-auth';
+import KeycloakAuthenticator from 'rmf-auth/lib/keycloak';
+import StubAuthenticator from 'rmf-auth/lib/stub';
 import ResourceManager from './managers/resource-manager';
 import {
   DefaultTrajectoryManager,

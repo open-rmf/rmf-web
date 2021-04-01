@@ -5,7 +5,7 @@ import React from 'react';
 import { AppController, AppControllerContext } from '../app-contexts';
 import AppBar from '../appbar';
 import { AuthenticatorContext, UserContext } from '../auth/contexts';
-import FakeAuthenticator from '../auth/__mocks__/authenticator';
+import FakeAuthenticator from '../auth/__mocks__/fake-authenticator';
 import { makeMockAppController } from './mock-app-controller';
 
 describe('AppBar', () => {

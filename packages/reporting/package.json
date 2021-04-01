@@ -1,0 +1,84 @@
+{
+  "name": "reporting",
+  "version": "0.0.1",
+  "description": "Interface in charge of displaying reports to end users",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "test:coverage": "npm run test -- --coverage --watchAll=false",
+    "test:e2e": "cd e2e && npm test",
+    "test:e2e:dev": "cd e2e && npm run test:dev",
+    "eject": "react-scripts eject",
+    "storybook": "../../node_modules/.bin/start-storybook -p 9009 -s public -s src/stories/static",
+    "build:storybook": "../../node_modules/.bin/build-storybook -s public -s src/stories"
+  },
+  "keywords": [
+    "reporting"
+  ],
+  "author": "matiasbavera@gmail.com",
+  "license": "Apache-2.0",
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "dependencies": {
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react-hooks": "^3.4.2",
+    "@testing-library/user-event": "^12.1.9",
+    "@types/debug": "^4.1.5",
+    "@types/node": "12.12.14",
+    "@types/react": "^16.9.49",
+    "@types/react-router": "^5.1.7",
+    "@types/react-router-dom": "^5.1.5",
+    "clsx": "^1.1.1",
+    "react-async": "^10.0.0",
+    "react-components": "file:../react-components",
+    "react-scripts": "^4.0.1",
+    "rmf-auth": "file:../rmf-auth",
+    "styled-components": "^4.4.1",
+    "typeface-roboto": "0.0.75"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^11.2.3",
+    "@types/jest": "^26.0.13",
+    "@types/react-dom": "^16.9.8",
+    "concurrently": "^5.3.0",
+    "gh-pages": "^3.1.0",
+    "react-test-renderer": "^17.0.1",
+    "ts-node": "^9.0.0",
+    "typescript": "^3.9.7",
+    "jest-canvas-mock": "^2.3.1"
+  },
+  "peerDependencies": {
+    "react": "^16.13.1",
+    "react-router-dom": "^5.2.0",
+    "react-router": "^5.2.0"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx,ts,tsx}",
+      "!src/index.tsx",
+      "!src/app-config.ts",
+      "!src/serviceWorker.ts",
+      "!src/react-app-env.d.ts",
+      "!src/components/reporter-side-bar-structure.tsx",
+      "!**/stories/**",
+      "!**/tests/**",
+      "!src/components/__trash/**"
+    ]
+  }
+}
