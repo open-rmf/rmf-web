@@ -1,5 +1,4 @@
 import asyncio
-import time
 import unittest
 from concurrent.futures import Future
 from threading import Thread

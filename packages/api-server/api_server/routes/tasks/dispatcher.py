@@ -34,7 +34,8 @@ class DispatcherClient:
         """
         return await ros.call_service(ros.node.submit_task_srv, req_msg)
 
-    def convert_task_request(self, task_request: mdl.SubmitTask):
+    @staticmethod
+    def convert_task_request(task_request: mdl.SubmitTask):
         """
         :param (obj) task_json:
         :return req_msgs, error_msg
@@ -108,7 +109,8 @@ class DispatcherClient:
         response = await ros.call_service(ros.node.cancel_task_srv, req)
         return response.success
 
-    def __convert_task_status_msg(self, task_summaries, is_done=True):
+    @staticmethod
+    def __convert_task_status_msg(task_summaries, is_done=True):
         """
         convert task summary msg and return a jsonify-able task status obj
         """

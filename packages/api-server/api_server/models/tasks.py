@@ -38,7 +38,7 @@ class SubmitTask(BaseModel):
     priority: Optional[int] = None
     description: TaskDescriptionT
 
-    # pylint: disable=no-self-argument
+    # pylint: disable=no-self-argument,no-self-use
     @validator("description")
     def description_matches_task_type(cls, description, values):
         if not "task_type" in values:
