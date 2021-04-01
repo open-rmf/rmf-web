@@ -30,6 +30,7 @@ app = FastAPI(
     swagger_ui_oauth2_redirect_url=f"{app_config.root_path}/docs/oauth2-redirect",
     dependencies=[Depends(auth_scheme)],
 )
+os.makedirs(app_config.static_directory, exist_ok=True)
 app.mount(
     f"{app_config.static_path}",
     StaticFiles(directory=app_config.static_directory),
@@ -137,7 +138,6 @@ async def on_startup():
     await Tortoise.generate_schemas()
     shutdown_cbs.append(Tortoise.close_connections)
 
-    os.makedirs(app_config.static_directory, exist_ok=True)
     static_files_repo = StaticFilesRepository(
         app_config.static_path,
         app_config.static_directory,
