@@ -47,12 +47,17 @@ class TestRmfIO(RosFixture):
         client = socketio.AsyncClient()
         fut = asyncio.Future()
         client.on("connect", lambda: fut.set_result(None))
+        retry_count = 0
         while True:
             try:
                 await client.connect("http://localhost:8000")
                 break
             except socketio.exceptions.ConnectionError:
-                await asyncio.sleep(1)
+                if retry_count < 3:
+                    retry_count += 1
+                    await asyncio.sleep(1)
+                else:
+                    raise
         await asyncio.wait_for(fut, 5)
         return client
 
