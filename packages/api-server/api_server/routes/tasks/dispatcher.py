@@ -98,14 +98,14 @@ class DispatcherClient:
             "terminated_tasks": terminated_tasks,
         }
 
-    async def cancel_task_request(self, task_id: mdl.TaskId) -> bool:
+    async def cancel_task_request(self, task: mdl.CancelTask) -> bool:
         """
         Cancel Task - This function will trigger a ros srv call to the
         dispatcher node, and return a response.
         Raises "HTTPException" if service call fails.
         """
         req = CancelTask.Request()
-        req.task_id = task_id.task_id
+        req.task_id = task.task_id
         response = await ros.call_service(ros.node.cancel_task_srv, req)
         return response.success
 

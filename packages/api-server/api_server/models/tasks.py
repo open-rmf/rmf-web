@@ -56,5 +56,5 @@ class SubmitTask(BaseModel):
         return description
 
 
-class TaskId(BaseModel):
+class CancelTask(BaseModel):
     task_id: str

@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
-from ...models import SubmitTask, TaskId
+from ...models import CancelTask, SubmitTask
 from .dispatcher import DispatcherClient
 
 router = APIRouter(tags=["tasks"])
@@ -28,6 +28,6 @@ async def submit_task(submit_task_params: SubmitTask):
 
 
 @router.post("/cancel_task")
-async def cancel_task(task_id: TaskId):
-    cancel_status = await dispatcher_client.cancel_task_request(task_id)
+async def cancel_task(task: CancelTask):
+    cancel_status = await dispatcher_client.cancel_task_request(task)
     return JSONResponse(content={"success": cancel_status})
