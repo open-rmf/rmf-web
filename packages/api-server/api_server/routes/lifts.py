@@ -4,7 +4,7 @@ from rmf_lift_msgs.msg import LiftRequest as RmfLiftRequest
 from ..dependencies import ros
 from ..models import LiftRequest
 
-router = APIRouter()
+router = APIRouter(tags=["lifts"])
 
 
 @router.post("/{lift_name}/request")

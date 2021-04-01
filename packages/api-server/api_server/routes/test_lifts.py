@@ -15,4 +15,5 @@ class TestLiftsRoute(RouteFixture):
             },
         )
         self.assertEqual(resp.status_code, 200)
-        fut.result(1)
+        received: LiftRequest = self.spin_until(fut)
+        self.assertEqual(received.lift_name, "test_lift")

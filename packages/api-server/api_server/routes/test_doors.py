@@ -10,4 +10,5 @@ class TestDoorsRoute(RouteFixture):
             "/doors/test_door/request", json={"mode": DoorMode.MODE_OPEN}
         )
         self.assertEqual(resp.status_code, 200)
-        fut.result(1)
+        received: DoorRequest = self.spin_until(fut)
+        self.assertEqual(received.door_name, "test_door")

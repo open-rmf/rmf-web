@@ -46,6 +46,7 @@ app.include_router(
 )
 app.include_router(routes.doors_router, prefix=f"{app_config.root_path}/doors")
 app.include_router(routes.lifts_router, prefix=f"{app_config.root_path}/lifts")
+app.include_router(routes.tasks_router, prefix=f"{app_config.root_path}/tasks")
 
 
 async def load_doors():

@@ -5,7 +5,7 @@ from rmf_door_msgs.msg import DoorRequest as RmfDoorRequest
 from ..dependencies import ros
 from ..models import DoorRequest
 
-router = APIRouter()
+router = APIRouter(tags=["doors"])
 
 
 @router.post("/{door_name}/request")

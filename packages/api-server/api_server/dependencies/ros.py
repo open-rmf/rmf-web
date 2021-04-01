@@ -6,8 +6,10 @@ from typing import Optional
 
 import rclpy
 import rclpy.node
+from fastapi import HTTPException
 from rmf_door_msgs.msg import DoorRequest
 from rmf_lift_msgs.msg import LiftRequest
+from rmf_task_msgs.srv import CancelTask, GetTaskList, SubmitTask
 
 from ..rmf_io import RmfGateway
 from .logging import logger as parent_logger
@@ -23,6 +25,9 @@ class RosNode(rclpy.node.Node):
         super().__init__("rmf_api_server")
         self.door_req = self.create_publisher(DoorRequest, "adapter_door_requests", 10)
         self.lift_req = self.create_publisher(LiftRequest, "adapter_lift_requests", 10)
+        self.submit_task_srv = self.create_client(SubmitTask, "submit_task")
+        self.get_tasks_srv = self.create_client(GetTaskList, "get_tasks")
+        self.cancel_task_srv = self.create_client(CancelTask, "cancel_task")
 
 
 node: Optional[RosNode] = None
@@ -66,3 +71,20 @@ def on_shutdown():
     spin_thread = None
     global node
     node = None
+
+
+async def call_service(client: rclpy.client.Client, req, timeout=1):
+    """
+    Raises HTTPException if service call fails
+    """
+    fut = client.call_async(req)
+
+    def on_timeout():
+        fut.set_exception(HTTPException(503, "ros service call timed out"))
+        node.destroy_timer(timer)
+
+    try:
+        timer = node.create_timer(timeout, on_timeout)
+        return await fut
+    finally:
+        node.destroy_timer(timer)
