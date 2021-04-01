@@ -1,4 +1,5 @@
 import asyncio
+import time
 import unittest
 from concurrent.futures import Future
 from threading import Thread
@@ -13,6 +14,7 @@ from ..app import app
 class RouteFixture(unittest.IsolatedAsyncioTestCase):
     @classmethod
     def setUpClass(cls):
+        cls.asd = []
         cls.rcl_ctx = rclpy.Context()
         rclpy.init(context=cls.rcl_ctx)
         cls.rcl_executor = rclpy.executors.SingleThreadedExecutor(context=cls.rcl_ctx)
@@ -50,17 +52,20 @@ class RouteFixture(unittest.IsolatedAsyncioTestCase):
         Hosts a service until a request is received. Returns a future that is set when
         the first request is received. The node is spun in a background thread.
         """
-        fut = rclpy.task.Future()
+        ros_fut = rclpy.task.Future()
+        loop = asyncio.get_event_loop()
+        fut = asyncio.Future()
 
         def on_request(request, _resp):
-            fut.set_result(request)
+            ros_fut.set_result(request)
             return response
 
         srv = self.node.create_service(Service, srv_name, on_request)
 
         def spin():
-            rclpy.spin_until_future_complete(self.node, fut, self.rcl_executor, 1)
-            srv.destroy()
+            rclpy.spin_until_future_complete(self.node, ros_fut, self.rcl_executor, 1)
+            self.node.destroy_service(srv)
+            loop.call_soon_threadsafe(fut.set_result, ros_fut.result())
 
         Thread(target=spin).start()
         return fut
