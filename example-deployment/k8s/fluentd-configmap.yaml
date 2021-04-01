@@ -80,7 +80,34 @@ data:
       </buffer>
     
   file-fluent.conf: |-
+    # <match sqlite3.**>
+    #   @type sqlite3
+    #   path test.db
+    # </match>
+
     <match **>
       @type file
       path /tmp/all-logs.log
     </match>
+    
+    <match **>
+      @type s3
+      aws_key_id minio         # The access key for Minio
+      aws_sec_key minio123        # The secret key for Minio
+      s3_bucket test         # The bucket to store the log data
+      s3_endpoint http://localhost:9000/  # The endpoint URL (like "http://localhost:9000/")
+      # s3_region us-east-1           # See the region settings of your Minio server
+      path logs/                    # This prefix is added to each file
+      force_path_style true         # This prevents AWS SDK from breaking endpoint URL
+      time_slice_format %Y%m%d%H%M  # This timestamp is added to each file name
+
+      <buffer time>
+        @type file
+        path /var/log/fluent/s3
+        timekey 10                # Flush the accumulated chunks every hour
+        timekey_wait 1m             # Wait for 60 seconds before flushing
+        timekey_use_utc true        # Use this option if you prefer UTC timestamps
+        chunk_limit_size 1m       # The maximum size of each chunk
+      </buffer>
+    </match>  
+
