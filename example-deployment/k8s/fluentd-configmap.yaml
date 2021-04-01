@@ -26,6 +26,20 @@ data:
       </parse>
     </source>
 
+    <source>
+      @type tail
+      read_from_head true
+      tag minio.s3.*
+      path /var/log/containers/app-that-writes**.log
+      pos_file /var/log/fluentd-containers-app.log.pos
+      exclude_path ["/var/log/containers/fluent*"]
+      <parse>
+        @type kubernetes
+        @type "#{ENV['FLUENT_CONTAINER_TAIL_PARSER_TYPE'] || 'json'}"
+        time_format %Y-%m-%dT%H:%M:%S.%NZ
+      </parse>
+    </source>
+
     # <filter kubernetes.**>
     #   @type kubernetes_metadata
     #   @id filter_kube_metadata
@@ -85,17 +99,22 @@ data:
     #   path test.db
     # </match>
 
-    <match **>
-      @type file
-      path /tmp/all-logs.log
-    </match>
+    # <match minio.s3.**>
+    #   @type file
+    #   path /tmp/minio.log
+    # </match>
     
-    <match **>
+    # <match **>
+    #   @type file
+    #   path /tmp/all-logs.log
+    # </match>
+    
+    <match minio.s3.**>
       @type s3
       aws_key_id minio         # The access key for Minio
       aws_sec_key minio123        # The secret key for Minio
       s3_bucket test         # The bucket to store the log data
-      s3_endpoint http://localhost:9000/  # The endpoint URL (like "http://localhost:9000/")
+      s3_endpoint http://minio-service:9000/  # The endpoint URL (like "http://localhost:9000/")
       # s3_region us-east-1           # See the region settings of your Minio server
       path logs/                    # This prefix is added to each file
       force_path_style true         # This prevents AWS SDK from breaking endpoint URL
@@ -104,10 +123,13 @@ data:
       <buffer time>
         @type file
         path /var/log/fluent/s3
-        timekey 10                # Flush the accumulated chunks every hour
-        timekey_wait 1m             # Wait for 60 seconds before flushing
+        timekey 1m                # Flush the accumulated chunks every hour
+        timekey_wait 1s             # Wait for 60 seconds before flushing
         timekey_use_utc true        # Use this option if you prefer UTC timestamps
-        chunk_limit_size 1m       # The maximum size of each chunk
+        chunk_limit_size 2k       # The maximum size of each chunk
       </buffer>
     </match>  
+    # <system>
+    #   log_level trace
+    # </system>
 
