@@ -1,6 +1,6 @@
 # pylint: disable=line-too-long
 config = {
-    "host": "localhost",  # ip or hostname to bind the socket to
+    "host": "127.0.0.1",  # ip or hostname to bind the socket to
     "port": 8000,
     "db_url": "sqlite://:memory:",  # TODO: explain how to use different db
     "root_path": "",  # base path to mount the app on, must not end with '/'
