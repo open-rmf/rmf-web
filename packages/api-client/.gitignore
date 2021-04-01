@@ -1,7 +1,4 @@
+/dist/
 /build/
 /lib/models/generated/
-/lib/**/*.js
-/lib/**/*.d.ts
-/examples/**/*.js
-/examples/**/*.d.ts
-/static/
+/.bin/

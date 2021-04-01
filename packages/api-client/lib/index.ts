@@ -1,4 +1,4 @@
-import { io, Socket } from 'socket.io-client';
+import { io as _io, Socket } from 'socket.io-client';
 import * as mdl from './models';
 
 export type Topic =
@@ -15,7 +15,7 @@ export type Topic =
   | 'task_summaries'
   | 'building_map';
 
-export interface ApiClient extends Socket {
+export interface SioClient extends Socket {
   on(event: 'subscribe', listener: (resp: string) => void): this;
   on(event: 'door_states', listener: (resp: mdl.DoorState) => void): this;
   on(event: 'door_health', listener: (resp: mdl.DoorHealth) => void): this;
@@ -35,6 +35,8 @@ export interface ApiClient extends Socket {
   emit(event: string, ...args: any[]): this; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
-export function makeClient(...args: Parameters<typeof io>): ApiClient {
-  return io(...args) as ApiClient;
+export function io(...args: Parameters<typeof _io>): SioClient {
+  return _io(...args) as SioClient;
 }
+
+export * from './openapi';
