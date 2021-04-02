@@ -1,0 +1,9 @@
+[run]
+source =
+    api_server
+omit =
+    # test files
+    **/test_*.py
+
+    # these files are not used atm
+    api_server/models/pydantic_mixins.py

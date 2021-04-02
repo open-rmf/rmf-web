@@ -12,12 +12,26 @@ data:
     @include minio-fluent-dev.conf
   # This is for running fluentd in the cloud
   pods-fluent.conf: |-
+    # <source>
+    #   @type tail
+    #   read_from_head true
+    #   tag kubernetes.*
+    #   path /var/log/containers/*.log
+    #   pos_file /var/log/fluentd-containers.log.pos
+    #   exclude_path ["/var/log/containers/fluent*"]
+    #   <parse>
+    #     @type kubernetes
+    #     @type "#{ENV['FLUENT_CONTAINER_TAIL_PARSER_TYPE'] || 'json'}"
+    #     time_format %Y-%m-%dT%H:%M:%S.%NZ
+    #   </parse>
+    # </source>
+    
     <source>
       @type tail
       read_from_head true
-      tag minio.s3.*
-      path /var/log/containers/*.log
-      pos_file /var/log/fluent/fluentd-all-containers.log.pos
+      tag dashboard.*
+      path /var/log/containers/dashboard*.log
+      pos_file /var/log/fluent/fluentd-dashboard.log.pos
       exclude_path ["/var/log/containers/fluent*"]
       <parse>
         @type kubernetes
@@ -30,8 +44,8 @@ data:
       @type tail
       read_from_head true
       tag minio.s3.*
-      path /var/log/containers/app-that-writes**.log
-      pos_file /var/log/fluentd-containers-app.log.pos
+      path /var/log/containers/*.log
+      pos_file /var/log/fluent/fluentd-all-containers.log.pos
       exclude_path ["/var/log/containers/fluent*"]
       <parse>
         @type kubernetes
@@ -94,11 +108,6 @@ data:
       </buffer>
     
   file-fluent.conf: |-
-    # <match sqlite3.**>
-    #   @type sqlite3
-    #   path test.db
-    # </match>
-
     # <match minio.s3.**>
     #   @type file
     #   path /tmp/minio.log
@@ -109,6 +118,25 @@ data:
     #   path /tmp/all-logs.log
     # </match>
     
+    <match pattern>
+      @type http
+      endpoint http://logserver.com:9000/api
+      http_method post
+      open_timeout 3
+      # content_type
+      <format>
+        @type json
+      </format>
+      <buffer>
+        flush_interval 10s
+      </buffer>
+    </match>
+
+    # <match dashboard.**>
+    #   @type file
+    #   path /tmp/dashboard.log
+    # </match>
+
     <match minio.s3.**>
       @type s3
       aws_key_id minio         # The access key for Minio
