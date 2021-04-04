@@ -4,3 +4,4 @@ npm-debug.log
 
 __pycache__/
 /static
+.idea/

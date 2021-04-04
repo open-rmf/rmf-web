@@ -1,11 +1,9 @@
-import asyncio
 import logging
 import os
 import sys
 
 from fastapi import FastAPI
-
-# from .app_config import app_config
+from routers import log, report
 
 logger = logging.getLogger("rest_app")
 handler = logging.StreamHandler(sys.stdout)
@@ -18,16 +16,7 @@ else:
 
 app = FastAPI()
 
+app.include_router(log.router, prefix="/log", tags=["log"])
+app.include_router(report.router, prefix="/report", tags=["report"])
 
-@app.get("/models")
-async def on_startup():
-    # connected = asyncio.Future()
-    # sio.on("connect", lambda: connected.set_result(True))
-    # await connected
-    # del sio.handlers["/"]["connect"]
-
-    app.include_router(
-        prefix="/building_map",
-    )
-
-    logger.info("started app")
+logger.info("started app")
