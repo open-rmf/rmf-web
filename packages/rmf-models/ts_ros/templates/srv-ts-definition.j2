@@ -3,8 +3,8 @@
 import { {{ srvspec.srv_name }}_Request } from './{{ srvspec.srv_name }}_Request';
 import { {{ srvspec.srv_name }}_Response } from './{{ srvspec.srv_name }}_Response';
 
-export namespace {{ srvspec.srv_name }} {
-  export type FullServiceName = '{{ srvspec.pkg_name }}/{{ srvspec.reldir }}/{{ srvspec.srv_name }}';
-  export type RequestType = {{ srvspec.srv_name }}_Request;
-  export type ResponseType = {{ srvspec.srv_name }}_Response;
+export class {{ srvspec.srv_name }} {
+  static readonly FullServiceName = '{{ srvspec.pkg_name }}/{{ srvspec.reldir }}/{{ srvspec.srv_name }}';
+  static readonly Request = {{ srvspec.srv_name }}_Request;
+  static readonly Response = {{ srvspec.srv_name }}_Response;
 }

@@ -6,7 +6,7 @@
   "scripts": {
     "prepare": "node generate-models.js && npm run build",
     "build": "tsc --build",
-    "test": "cd test && ./test.bash"
+    "test": "./test/test.bash"
   },
   "repository": {
     "type": "git",

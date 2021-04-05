@@ -5,20 +5,26 @@
 import { {{ type.type }} } from '../../{{ type.pkg_name }}/msg/{{ type.type }}';
 {% endfor %}
 
-export interface {{ base_type.type }} {
+export class {{ base_type.type }} {
+  static readonly FullTypeName = '{{ base_type.pkg_name }}/{{ msgspec.reldir }}/{{ base_type.type }}';
+
+{% if msgspec.constants %}
+{% for const in msgspec.constants %}
+  static readonly {{ const.name }} = {{ const.value }};
+{% endfor %}
+{% endif %}
+
+  constructor(
 {% for field in msgspec.fields %}
 {% if field.js_type.is_typed_array %}
-  {{ field.name }}: {{ field.js_type.type }} | number[];
+    public {{ field.name }}: {{ field.js_type.type }} | number[],
 {% else %}
-  {{ field.name }}: {{ field.js_type.type }};
+    public {{ field.name }}: {{ field.js_type.type }},
 {% endif %}
 {% endfor %}
-}
+  ) {}
 
-export namespace {{ base_type.type }} {
-  export const fullTypeName = '{{ base_type.pkg_name }}/{{ msgspec.reldir }}/{{ base_type.type }}';
-
-  export function validate(obj: Record<string, any>) {
+  static validate(obj: Record<string, unknown>): void {
 {% for field in msgspec.fields %}
 {% if field.type.is_array %}
 {% if field.js_type.is_typed_array %}
@@ -71,7 +77,7 @@ export namespace {{ base_type.type }} {
     }
 {% else %}
     try {
-      {{ field.type.type }}.validate(obj['{{ field.name }}']);
+      {{ field.type.type }}.validate(obj['{{ field.name }}'] as Record<string, unknown>);
     } catch (e) {
       throw new Error('in "{{ field.name }}":\n  ' + e.message);
     }
@@ -79,14 +85,6 @@ export namespace {{ base_type.type }} {
 {% endif %}
 {% endfor %}
   }
-
-{% if msgspec.constants %}
-  export const enum Constants {
-{% for const in msgspec.constants %}
-    {{ const.name }} = {{ const.value }},
-{% endfor %}
-  }
-{% endif %}
 }
 
 /*
