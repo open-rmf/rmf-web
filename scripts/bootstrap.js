@@ -20,9 +20,23 @@ const deps = {
     'packages/api-client',
     'packages/rmf-auth',
   ],
+  'packages/react-components': ['packages/api-client'],
   'packages/reporting': ['packages/react-components', 'packages/rmf-auth'],
   'packages/api-client': ['packages/api-server'],
 };
+
+function getDeps(pkg) {
+  const recur = (pkg, cur) => {
+    if (deps[pkg]) {
+      deps[pkg].forEach((p) => {
+        recur(p, cur);
+      });
+    }
+    cur.add(pkg);
+    return cur;
+  };
+  return recur(pkg, new Set());
+}
 
 const allPackages = [
   '.',
@@ -38,13 +52,11 @@ const scope = process.argv.length > 2 ? process.argv.slice(2) : allPackages;
 const verb = process.env['CI'] ? 'ci' : 'install';
 const targets = new Set(['.']);
 scope.forEach((pkg) => {
-  if (deps[pkg]) {
-    deps[pkg].forEach((p) => targets.add(p));
-  }
-  targets.add(pkg);
+  getDeps(pkg).forEach((p) => targets.add(p));
 });
 targets.forEach((pkg) => {
   const cwd = `${__dirname}/../${pkg}`;
+  console.log(pkg);
   const result = child_process.spawnSync('npm', [verb], { stdio: 'inherit', cwd });
   if (result.status !== 0) {
     process.exit(result.status);
