@@ -1,4 +1,4 @@
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import * as RmfModels from 'rmf-models';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { LiftMarker, LiftMarkerProps } from '../lib';
@@ -10,8 +10,8 @@ export default {
 } as Meta;
 
 function makeStory(
-  lift: RomiCore.Lift,
-  liftState?: RomiCore.LiftState,
+  lift: RmfModels.Lift,
+  liftState?: RmfModels.LiftState,
   variant?: LiftMarkerProps['variant'],
 ): Story {
   return (args) => (
@@ -31,7 +31,7 @@ export const Rotated = makeStory(
     doors: [
       {
         name: 'door',
-        door_type: RomiCore.Door.DOOR_TYPE_DOUBLE_TELESCOPE,
+        door_type: RmfModels.Door.DOOR_TYPE_DOUBLE_TELESCOPE,
         motion_direction: 1,
         motion_range: Math.PI / 2,
         v1_x: -1.414,
@@ -51,7 +51,7 @@ export const LongLongLift = makeStory(
     doors: [
       {
         name: 'door',
-        door_type: RomiCore.Door.DOOR_TYPE_DOUBLE_TELESCOPE,
+        door_type: RmfModels.Door.DOOR_TYPE_DOUBLE_TELESCOPE,
         motion_direction: 1,
         motion_range: Math.PI / 2,
         v1_x: -2,
@@ -75,7 +75,7 @@ export const NoTranslate: Story = (args) => (
         doors: [
           {
             name: 'door',
-            door_type: RomiCore.Door.DOOR_TYPE_DOUBLE_TELESCOPE,
+            door_type: RmfModels.Door.DOOR_TYPE_DOUBLE_TELESCOPE,
             motion_direction: 1,
             motion_range: Math.PI / 2,
             v1_x: 9,

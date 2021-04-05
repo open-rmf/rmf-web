@@ -1,5 +1,5 @@
 import { ItemSummary, Notification, Severity, RobotSummary } from '../../lib';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import * as RmfModels from 'rmf-models';
 
 export const itemSummary: ItemSummary = {
   operational: 0,
@@ -17,7 +17,7 @@ export const notifications: Notification[] = [
   { id: 1, time: 'time', error: 'message', severity: Severity.High },
 ];
 
-export const tasks: RomiCore.TaskSummary[] = [
+export const tasks: RmfModels.TaskSummary[] = [
   {
     task_id: '1',
     state: 0,
@@ -52,7 +52,7 @@ export const tasks: RomiCore.TaskSummary[] = [
   },
 ];
 
-export const door: RomiCore.Door = {
+export const door: RmfModels.Door = {
   name: 'door',
   v1_x: 8.2,
   v1_y: -5.5,
@@ -63,7 +63,7 @@ export const door: RomiCore.Door = {
   motion_direction: 1,
 };
 
-export const lift: RomiCore.Lift = {
+export const lift: RmfModels.Lift = {
   name: 'lift',
   doors: [door],
   levels: ['L1', 'L2', 'L3'],
@@ -80,13 +80,13 @@ export const lift: RomiCore.Lift = {
   },
 };
 
-export const fleet: RomiCore.FleetState = {
+export const fleet: RmfModels.FleetState = {
   name: 'fleet',
   robots: [
     {
       name: 'robot',
       model: 'Model1',
-      mode: { mode: RomiCore.RobotMode.MODE_EMERGENCY },
+      mode: { mode: RmfModels.RobotMode.MODE_EMERGENCY },
       location: {
         level_name: 'L1',
         x: 4,

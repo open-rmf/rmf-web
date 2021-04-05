@@ -1,4 +1,4 @@
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import * as RmfModels from 'rmf-models';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { DoorAccordion, DoorMode, DoorMotion, DoorType } from '../lib';
@@ -87,20 +87,20 @@ const doors = [
   },
 ];
 
-const doorStates: Record<string, RomiCore.DoorState> = {
+const doorStates: Record<string, RmfModels.DoorState> = {
   coe_door: {
     door_name: 'coe_door',
-    current_mode: { value: RomiCore.DoorMode.MODE_OPEN },
+    current_mode: { value: RmfModels.DoorMode.MODE_OPEN },
     door_time: { sec: 0, nanosec: 0 },
   },
   hardware_door: {
     door_name: 'hardware_door',
-    current_mode: { value: RomiCore.DoorMode.MODE_CLOSED },
+    current_mode: { value: RmfModels.DoorMode.MODE_CLOSED },
     door_time: { sec: 0, nanosec: 0 },
   },
   exit_door: {
     door_name: 'exit_door',
-    current_mode: { value: RomiCore.DoorMode.MODE_MOVING },
+    current_mode: { value: RmfModels.DoorMode.MODE_MOVING },
     door_time: { sec: 0, nanosec: 0 },
   },
 };

@@ -1,8 +1,8 @@
 import { makeStyles } from '@material-ui/core';
 import Accordion, { AccordionProps } from '@material-ui/core/Accordion';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import React from 'react';
+import * as RmfModels from 'rmf-models';
 import { AntTab, AntTabs, TabPanel } from '../ant-tab';
 import ItemAccordionDetails from '../item-accordion-details';
 import ItemAccordionSummary from '../item-accordion-summary';
@@ -31,8 +31,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export interface LiftInfoProps extends React.HTMLProps<HTMLDivElement> {
-  lift: RomiCore.Lift;
-  liftState?: RomiCore.LiftState;
+  lift: RmfModels.Lift;
+  liftState?: RmfModels.LiftState;
 }
 
 export const LiftInfo = (props: LiftInfoProps): JSX.Element => {
@@ -71,11 +71,11 @@ export const LiftInfo = (props: LiftInfoProps): JSX.Element => {
 };
 
 export interface LiftAccordionProps extends Omit<AccordionProps, 'children'> {
-  lift: RomiCore.Lift;
-  liftState?: RomiCore.LiftState;
+  lift: RmfModels.Lift;
+  liftState?: RmfModels.LiftState;
   onRequestSubmit?(
     event: React.FormEvent,
-    lift: RomiCore.Lift,
+    lift: RmfModels.Lift,
     doorState: number,
     requestType: number,
     destination: string,
@@ -90,15 +90,15 @@ export const LiftAccordion = React.forwardRef(
     const classes = useStyles();
 
     const liftFloorLabelClass = React.useCallback(
-      (liftState?: RomiCore.LiftState): string | null => {
+      (liftState?: RmfModels.LiftState): string | null => {
         if (!liftState) {
           return null;
         }
         switch (liftState.motion_state) {
-          case RomiCore.LiftState.MOTION_UP:
-          case RomiCore.LiftState.MOTION_DOWN:
+          case RmfModels.LiftState.MOTION_UP:
+          case RmfModels.LiftState.MOTION_DOWN:
             return classes.liftFloorLabelMoving;
-          case RomiCore.LiftState.MOTION_STOPPED:
+          case RmfModels.LiftState.MOTION_STOPPED:
             return classes.liftFloorLabelStopped;
           default:
             return null;

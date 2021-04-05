@@ -1,9 +1,9 @@
 import React from 'react';
 import { makeStyles, Typography, Grid, Paper } from '@material-ui/core';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import * as RmfModels from 'rmf-models';
 
 export interface SystemSummaryTaskStateProps {
-  tasks: RomiCore.TaskSummary[];
+  tasks: RmfModels.TaskSummary[];
   onClick?: () => void;
 }
 

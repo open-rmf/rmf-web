@@ -1,4 +1,4 @@
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import * as RmfModels from 'rmf-models';
 import { cleanup, render, within } from '@testing-library/react';
 import React from 'react';
 import { DispenserAccordion } from '../../lib';
@@ -24,7 +24,7 @@ it('renders basic information', () => {
   const dispenser = 'test_dispenser';
   const state = makeDispenserState({
     guid: 'test_dispenser',
-    mode: RomiCore.DispenserState.IDLE,
+    mode: RmfModels.DispenserState.IDLE,
     request_guid_queue: ['test_task'],
     seconds_remaining: 10,
   });

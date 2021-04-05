@@ -1,4 +1,4 @@
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import * as RmfModels from 'rmf-models';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { RobotMarker } from '../../lib';
@@ -21,7 +21,7 @@ interface RobotMarkerArgs {
 }
 
 interface AnimationState {
-  robot: RomiCore.RobotState;
+  robot: RmfModels.RobotState;
   target: [number, number];
   heading: [number, number];
 }

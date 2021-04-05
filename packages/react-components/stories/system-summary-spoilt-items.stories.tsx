@@ -1,7 +1,7 @@
 import React from 'react';
 import { SystemSummarySpoiltItems, SystemSummarySpoiltItemsProps } from '../lib';
 import { Meta, Story } from '@storybook/react';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import * as RmfModels from 'rmf-models';
 
 export default {
   title: 'Systems summary spoilt items',
@@ -61,7 +61,7 @@ const spoiltEquipment: SystemSummarySpoiltItemsProps = {
       robot: {
         name: 'robot',
         model: 'Model1',
-        mode: { mode: RomiCore.RobotMode.MODE_EMERGENCY },
+        mode: { mode: RmfModels.RobotMode.MODE_EMERGENCY },
         location: {
           level_name: 'L1',
           x: 4,

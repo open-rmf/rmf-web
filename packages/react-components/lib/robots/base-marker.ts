@@ -1,7 +1,7 @@
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import * as RmfModels from 'rmf-models';
 
 export interface BaseMarkerProps extends Omit<React.SVGAttributes<SVGGElement>, 'onClick'> {
-  robot: RomiCore.RobotState;
+  robot: RmfModels.RobotState;
   footprint: number;
   fleetName: string;
   /**
@@ -12,5 +12,5 @@ export interface BaseMarkerProps extends Omit<React.SVGAttributes<SVGGElement>, 
    */
   translate?: boolean;
   variant?: 'normal' | 'inConflict';
-  onClick?(event: React.MouseEvent, fleet: string, robot: RomiCore.RobotState): void;
+  onClick?(event: React.MouseEvent, fleet: string, robot: RmfModels.RobotState): void;
 }

@@ -1,20 +1,20 @@
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import * as RmfModels from 'rmf-models';
 
 export function allStateModes(): number[] {
   return [
-    RomiCore.DispenserState.IDLE,
-    RomiCore.DispenserState.OFFLINE,
-    RomiCore.DispenserState.BUSY,
+    RmfModels.DispenserState.IDLE,
+    RmfModels.DispenserState.OFFLINE,
+    RmfModels.DispenserState.BUSY,
     -1,
   ];
 }
 
 export function makeDispenserState(
-  dispenserState?: Partial<RomiCore.DispenserState>,
-): RomiCore.DispenserState {
+  dispenserState?: Partial<RmfModels.DispenserState>,
+): RmfModels.DispenserState {
   return {
     guid: 'test',
-    mode: RomiCore.DispenserState.IDLE,
+    mode: RmfModels.DispenserState.IDLE,
     request_guid_queue: [],
     seconds_remaining: 0,
     time: { sec: 0, nanosec: 0 },

@@ -1,4 +1,4 @@
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import * as RmfModels from 'rmf-models';
 import { cleanup, render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
@@ -48,12 +48,12 @@ describe('Door accordion', () => {
   it('renders basic door information', () => {
     const door = makeDoor({
       name: 'test_door',
-      door_type: RomiCore.Door.DOOR_TYPE_SINGLE_SWING,
+      door_type: RmfModels.Door.DOOR_TYPE_SINGLE_SWING,
       motion_direction: 1,
     });
     const doorState = makeDoorState({
       door_name: 'test_door',
-      current_mode: { value: RomiCore.DoorMode.MODE_CLOSED },
+      current_mode: { value: RmfModels.DoorMode.MODE_CLOSED },
     });
     const accordion = render(<DoorAccordion door={door} doorState={doorState} />);
     const rows = accordion.queryAllByRole('row', { hidden: true });
@@ -87,7 +87,7 @@ describe('Door accordion', () => {
     expect(fakeOnClick).toHaveBeenCalledWith(
       jasmine.anything(),
       jasmine.anything(),
-      RomiCore.DoorMode.MODE_OPEN,
+      RmfModels.DoorMode.MODE_OPEN,
     );
   });
 
@@ -99,7 +99,7 @@ describe('Door accordion', () => {
     expect(fakeOnClick).toHaveBeenCalledWith(
       jasmine.anything(),
       jasmine.anything(),
-      RomiCore.DoorMode.MODE_CLOSED,
+      RmfModels.DoorMode.MODE_CLOSED,
     );
   });
 });

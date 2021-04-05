@@ -1,4 +1,4 @@
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import * as RmfModels from 'rmf-models';
 import { cleanup, render, within } from '@testing-library/react';
 import React from 'react';
 import { LiftAccordion } from '../../lib';
@@ -53,7 +53,7 @@ it('renders basic lift information', () => {
     doors: [
       {
         name: 'door',
-        door_type: RomiCore.Door.DOOR_TYPE_DOUBLE_TELESCOPE,
+        door_type: RmfModels.Door.DOOR_TYPE_DOUBLE_TELESCOPE,
         motion_direction: 1,
         motion_range: Math.PI / 2,
         v1_x: -1,
@@ -66,12 +66,12 @@ it('renders basic lift information', () => {
   const liftState = makeLiftState({
     lift_name: 'test_lift',
     available_floors: ['L1', 'L2'],
-    available_modes: Uint8Array.from([RomiCore.LiftState.MODE_AGV]),
+    available_modes: Uint8Array.from([RmfModels.LiftState.MODE_AGV]),
     current_floor: 'L1',
-    current_mode: RomiCore.LiftState.MODE_AGV,
+    current_mode: RmfModels.LiftState.MODE_AGV,
     destination_floor: 'L1',
-    door_state: RomiCore.LiftState.DOOR_CLOSED,
-    motion_state: RomiCore.LiftState.MOTION_STOPPED,
+    door_state: RmfModels.LiftState.DOOR_CLOSED,
+    motion_state: RmfModels.LiftState.MOTION_STOPPED,
     session_id: 'test_session',
   });
   const accordion = render(<LiftAccordion lift={lift} liftState={liftState} />);

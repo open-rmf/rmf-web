@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles, Typography, Paper } from '@material-ui/core';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import * as RmfModels from 'rmf-models';
 
 interface SpoiltItem {
   errorMessage?: string;
@@ -9,11 +9,11 @@ interface SpoiltItem {
 }
 
 export interface SpoiltDoor extends SpoiltItem {
-  door: RomiCore.Door;
+  door: RmfModels.Door;
 }
 
 export interface SpoiltLift extends SpoiltItem {
-  lift: RomiCore.Lift;
+  lift: RmfModels.Lift;
 }
 
 export interface SpoiltDispenser extends SpoiltItem {
@@ -22,7 +22,7 @@ export interface SpoiltDispenser extends SpoiltItem {
 
 export interface SpoiltRobot extends SpoiltItem {
   fleet: string;
-  robot: RomiCore.RobotState;
+  robot: RmfModels.RobotState;
 }
 
 export interface SystemSummarySpoiltItemsProps {
@@ -30,9 +30,9 @@ export interface SystemSummarySpoiltItemsProps {
   lifts: SpoiltLift[];
   dispensers: SpoiltDispenser[];
   robots: SpoiltRobot[];
-  onClickSpoiltDoor?(door: RomiCore.Door): void;
-  onClickSpoiltLift?(lift: RomiCore.Lift): void;
-  onClickSpoiltRobot?(fleet: string, robot: RomiCore.RobotState): void;
+  onClickSpoiltDoor?(door: RmfModels.Door): void;
+  onClickSpoiltLift?(lift: RmfModels.Lift): void;
+  onClickSpoiltRobot?(fleet: string, robot: RmfModels.RobotState): void;
   onClickSpoiltDispenser?(guid: string): void;
 }
 

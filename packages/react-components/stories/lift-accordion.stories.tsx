@@ -1,4 +1,4 @@
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import * as RmfModels from 'rmf-models';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { LiftAccordion } from '../lib';
@@ -81,29 +81,29 @@ const lifts = [
   },
 ];
 
-const liftStates: Record<string, RomiCore.LiftState> = {
+const liftStates: Record<string, RmfModels.LiftState> = {
   Lift1: {
     lift_name: 'Lift1',
     available_floors: ['L1', 'L2', 'L3'],
-    available_modes: new Uint8Array([RomiCore.LiftState.MODE_AGV]),
+    available_modes: new Uint8Array([RmfModels.LiftState.MODE_AGV]),
     current_floor: 'L1',
-    current_mode: RomiCore.LiftState.MODE_AGV,
+    current_mode: RmfModels.LiftState.MODE_AGV,
     destination_floor: 'L1',
-    door_state: RomiCore.LiftState.DOOR_OPEN,
+    door_state: RmfModels.LiftState.DOOR_OPEN,
     lift_time: { sec: 0, nanosec: 0 },
-    motion_state: RomiCore.LiftState.MOTION_STOPPED,
+    motion_state: RmfModels.LiftState.MOTION_STOPPED,
     session_id: '',
   },
   Lift2: {
     lift_name: 'Lift2',
     available_floors: ['L1', 'L2', 'L3', 'L4'],
-    available_modes: new Uint8Array([RomiCore.LiftState.MODE_AGV]),
+    available_modes: new Uint8Array([RmfModels.LiftState.MODE_AGV]),
     current_floor: 'L2',
-    current_mode: RomiCore.LiftState.MODE_FIRE,
+    current_mode: RmfModels.LiftState.MODE_FIRE,
     destination_floor: 'L4',
-    door_state: RomiCore.LiftState.DOOR_CLOSED,
+    door_state: RmfModels.LiftState.DOOR_CLOSED,
     lift_time: { sec: 0, nanosec: 0 },
-    motion_state: RomiCore.LiftState.MOTION_UP,
+    motion_state: RmfModels.LiftState.MOTION_UP,
     session_id: '',
   },
 };

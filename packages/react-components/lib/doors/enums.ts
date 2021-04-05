@@ -1,12 +1,12 @@
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import * as RmfModels from 'rmf-models';
 
 export enum DoorType {
-  SingleSwing = RomiCore.Door.DOOR_TYPE_SINGLE_SWING,
-  SingleSliding = RomiCore.Door.DOOR_TYPE_SINGLE_SLIDING,
-  SingleTelescope = RomiCore.Door.DOOR_TYPE_SINGLE_TELESCOPE,
-  DoubleSwing = RomiCore.Door.DOOR_TYPE_DOUBLE_SWING,
-  DoubleSliding = RomiCore.Door.DOOR_TYPE_DOUBLE_SLIDING,
-  DoubleTelescope = RomiCore.Door.DOOR_TYPE_DOUBLE_TELESCOPE,
+  SingleSwing = RmfModels.Door.DOOR_TYPE_SINGLE_SWING,
+  SingleSliding = RmfModels.Door.DOOR_TYPE_SINGLE_SLIDING,
+  SingleTelescope = RmfModels.Door.DOOR_TYPE_SINGLE_TELESCOPE,
+  DoubleSwing = RmfModels.Door.DOOR_TYPE_DOUBLE_SWING,
+  DoubleSliding = RmfModels.Door.DOOR_TYPE_DOUBLE_SLIDING,
+  DoubleTelescope = RmfModels.Door.DOOR_TYPE_DOUBLE_TELESCOPE,
 }
 
 export enum DoorMotion {
@@ -15,7 +15,7 @@ export enum DoorMotion {
 }
 
 export enum DoorMode {
-  Open = RomiCore.DoorMode.MODE_OPEN,
-  Closed = RomiCore.DoorMode.MODE_CLOSED,
-  Moving = RomiCore.DoorMode.MODE_MOVING,
+  Open = RmfModels.DoorMode.MODE_OPEN,
+  Closed = RmfModels.DoorMode.MODE_CLOSED,
+  Moving = RmfModels.DoorMode.MODE_MOVING,
 }

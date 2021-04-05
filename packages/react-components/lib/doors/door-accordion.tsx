@@ -2,9 +2,9 @@ import { makeStyles } from '@material-ui/core';
 import Accordion, { AccordionProps } from '@material-ui/core/Accordion';
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import React from 'react';
+import * as RmfModels from 'rmf-models';
 import ItemAccordionDetails from '../item-accordion-details';
 import ItemAccordionSummary from '../item-accordion-summary';
 import { SimpleInfo, SimpleInfoData } from '../simple-info';
@@ -28,33 +28,33 @@ const useStyles = makeStyles((theme) => ({
 
 function doorTypeToString(doorType: number): string {
   switch (doorType) {
-    case RomiCore.Door.DOOR_TYPE_DOUBLE_SLIDING:
+    case RmfModels.Door.DOOR_TYPE_DOUBLE_SLIDING:
       return 'Double Sliding';
-    case RomiCore.Door.DOOR_TYPE_DOUBLE_SWING:
+    case RmfModels.Door.DOOR_TYPE_DOUBLE_SWING:
       return 'Double Swing';
-    case RomiCore.Door.DOOR_TYPE_DOUBLE_TELESCOPE:
+    case RmfModels.Door.DOOR_TYPE_DOUBLE_TELESCOPE:
       return 'Double Telescope';
-    case RomiCore.Door.DOOR_TYPE_SINGLE_SLIDING:
+    case RmfModels.Door.DOOR_TYPE_SINGLE_SLIDING:
       return 'Single Sliding';
-    case RomiCore.Door.DOOR_TYPE_SINGLE_SWING:
+    case RmfModels.Door.DOOR_TYPE_SINGLE_SWING:
       return 'Single Swing';
-    case RomiCore.Door.DOOR_TYPE_SINGLE_TELESCOPE:
+    case RmfModels.Door.DOOR_TYPE_SINGLE_TELESCOPE:
       return 'Single Telescope';
     default:
       return `Unknown (${doorType})`;
   }
 }
 
-function doorModeToString(doorState?: RomiCore.DoorState): string {
+function doorModeToString(doorState?: RmfModels.DoorState): string {
   if (!doorState) {
     return 'N/A';
   }
   switch (doorState.current_mode.value) {
-    case RomiCore.DoorMode.MODE_OPEN:
+    case RmfModels.DoorMode.MODE_OPEN:
       return 'OPEN';
-    case RomiCore.DoorMode.MODE_CLOSED:
+    case RmfModels.DoorMode.MODE_CLOSED:
       return 'CLOSED';
-    case RomiCore.DoorMode.MODE_MOVING:
+    case RmfModels.DoorMode.MODE_MOVING:
       return 'MOVING';
     default:
       return 'N/A';
@@ -73,7 +73,7 @@ function motionDirectionToString(motionDirection: number): string {
 }
 
 interface DoorInfoProps {
-  door: RomiCore.Door;
+  door: RmfModels.Door;
 }
 
 const DoorInfo = (props: DoorInfoProps) => {
@@ -91,9 +91,9 @@ const DoorInfo = (props: DoorInfoProps) => {
 };
 
 export interface DoorAccordionProps extends Omit<AccordionProps, 'children'> {
-  door: RomiCore.Door;
-  doorState?: RomiCore.DoorState;
-  onDoorControlClick?(event: React.MouseEvent, door: RomiCore.Door, mode: number): void;
+  door: RmfModels.Door;
+  doorState?: RmfModels.DoorState;
+  onDoorControlClick?(event: React.MouseEvent, door: RmfModels.Door, mode: number): void;
 }
 
 export const DoorAccordion = React.forwardRef(
@@ -103,16 +103,16 @@ export const DoorAccordion = React.forwardRef(
     const classes = useStyles();
 
     const doorModeLabelClasses = React.useCallback(
-      (doorState?: RomiCore.DoorState): string | null => {
+      (doorState?: RmfModels.DoorState): string | null => {
         if (!doorState) {
           return null;
         }
         switch (doorState.current_mode.value) {
-          case RomiCore.DoorMode.MODE_OPEN:
+          case RmfModels.DoorMode.MODE_OPEN:
             return `${classes.doorLabelOpen}`;
-          case RomiCore.DoorMode.MODE_CLOSED:
+          case RmfModels.DoorMode.MODE_CLOSED:
             return `${classes.doorLabelClosed}`;
-          case RomiCore.DoorMode.MODE_MOVING:
+          case RmfModels.DoorMode.MODE_MOVING:
             return `${classes.doorLabelMoving}`;
           default:
             return null;
@@ -137,10 +137,12 @@ export const DoorAccordion = React.forwardRef(
           <DoorInfo door={door} />
           {onDoorControlClick && (
             <ButtonGroup className={classes.controlButtonGroup} fullWidth>
-              <Button onClick={(ev) => onDoorControlClick(ev, door, RomiCore.DoorMode.MODE_CLOSED)}>
+              <Button
+                onClick={(ev) => onDoorControlClick(ev, door, RmfModels.DoorMode.MODE_CLOSED)}
+              >
                 Close
               </Button>
-              <Button onClick={(ev) => onDoorControlClick(ev, door, RomiCore.DoorMode.MODE_OPEN)}>
+              <Button onClick={(ev) => onDoorControlClick(ev, door, RmfModels.DoorMode.MODE_OPEN)}>
                 Open
               </Button>
             </ButtonGroup>

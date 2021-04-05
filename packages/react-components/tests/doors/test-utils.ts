@@ -1,9 +1,9 @@
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import * as RmfModels from 'rmf-models';
 
-export function makeDoor(door?: Partial<RomiCore.Door>): RomiCore.Door {
+export function makeDoor(door?: Partial<RmfModels.Door>): RmfModels.Door {
   return {
     name: 'test',
-    door_type: RomiCore.Door.DOOR_TYPE_SINGLE_SWING,
+    door_type: RmfModels.Door.DOOR_TYPE_SINGLE_SWING,
     motion_direction: 1,
     motion_range: Math.PI / 2,
     v1_x: 0,
@@ -16,31 +16,31 @@ export function makeDoor(door?: Partial<RomiCore.Door>): RomiCore.Door {
 
 export function allDoorTypes(): number[] {
   return [
-    RomiCore.Door.DOOR_TYPE_DOUBLE_SLIDING,
-    RomiCore.Door.DOOR_TYPE_DOUBLE_SWING,
-    RomiCore.Door.DOOR_TYPE_DOUBLE_TELESCOPE,
-    RomiCore.Door.DOOR_TYPE_SINGLE_SLIDING,
-    RomiCore.Door.DOOR_TYPE_SINGLE_SWING,
-    RomiCore.Door.DOOR_TYPE_SINGLE_TELESCOPE,
-    RomiCore.Door.DOOR_TYPE_UNDEFINED,
+    RmfModels.Door.DOOR_TYPE_DOUBLE_SLIDING,
+    RmfModels.Door.DOOR_TYPE_DOUBLE_SWING,
+    RmfModels.Door.DOOR_TYPE_DOUBLE_TELESCOPE,
+    RmfModels.Door.DOOR_TYPE_SINGLE_SLIDING,
+    RmfModels.Door.DOOR_TYPE_SINGLE_SWING,
+    RmfModels.Door.DOOR_TYPE_SINGLE_TELESCOPE,
+    RmfModels.Door.DOOR_TYPE_UNDEFINED,
     -1,
   ];
 }
 
-export function makeDoorState(state?: Partial<RomiCore.DoorState>): RomiCore.DoorState {
+export function makeDoorState(state?: Partial<RmfModels.DoorState>): RmfModels.DoorState {
   return {
     door_name: 'test',
-    current_mode: { value: RomiCore.DoorMode.MODE_CLOSED },
+    current_mode: { value: RmfModels.DoorMode.MODE_CLOSED },
     door_time: { sec: 0, nanosec: 0 },
     ...state,
   };
 }
 
-export function allDoorModes(): RomiCore.DoorMode[] {
+export function allDoorModes(): RmfModels.DoorMode[] {
   return [
-    { value: RomiCore.DoorMode.MODE_CLOSED },
-    { value: RomiCore.DoorMode.MODE_OPEN },
-    { value: RomiCore.DoorMode.MODE_MOVING },
+    { value: RmfModels.DoorMode.MODE_CLOSED },
+    { value: RmfModels.DoorMode.MODE_OPEN },
+    { value: RmfModels.DoorMode.MODE_MOVING },
     { value: -1 },
   ];
 }

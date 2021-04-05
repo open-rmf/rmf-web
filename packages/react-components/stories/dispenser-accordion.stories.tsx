@@ -1,4 +1,4 @@
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import * as RmfModels from 'rmf-models';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { DispenserAccordion } from '../lib';
@@ -9,9 +9,9 @@ export default {
   parameters: { actions: { argTypesRegex: '^on.*' } },
 } as Meta;
 
-const baseDispenser: RomiCore.DispenserState = {
+const baseDispenser: RmfModels.DispenserState = {
   guid: 'test',
-  mode: RomiCore.DispenserState.IDLE,
+  mode: RmfModels.DispenserState.IDLE,
   request_guid_queue: [],
   seconds_remaining: 0,
   time: { sec: 0, nanosec: 0 },

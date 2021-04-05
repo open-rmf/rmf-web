@@ -1,5 +1,5 @@
 import { Grid, Paper, Typography } from '@material-ui/core';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import * as RmfModels from 'rmf-models';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { RobotMarker, RobotMarkerProps } from '../lib';
@@ -11,7 +11,7 @@ export default {
 } as Meta;
 
 function makeRobotProps(
-  robot?: Partial<RomiCore.RobotState>,
+  robot?: Partial<RmfModels.RobotState>,
   props?: Partial<Omit<RobotMarkerProps, 'robot'>>,
 ): RobotMarkerProps {
   props = props || {};
