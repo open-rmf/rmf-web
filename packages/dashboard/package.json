@@ -3,7 +3,7 @@
   "version": "0.0.1-alpha.0",
   "private": true,
   "scripts": {
-    "start": "concurrently npm:start:ros2-bridge npm:start:rmf-server npm:start:rmf npm:start:react",
+    "start": "concurrently npm:start:rmf-server npm:start:rmf npm:start:react",
     "start:react": "react-scripts start",
     "start:rmf": "ts-node -P scripts/tsconfig.json -T scripts/start-rmf.ts",
     "start:ros2-bridge": "ros2-bridge --port 50002",
@@ -38,7 +38,6 @@
     "@fortawesome/free-solid-svg-icons": "^5.14.0",
     "@fortawesome/react-fontawesome": "^0.1.11",
     "@msgpack/msgpack": "^2.1.0",
-    "@osrf/romi-js-core-interfaces": "^0.1.4",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react-hooks": "^3.4.2",
     "@testing-library/user-event": "^12.1.9",
@@ -53,7 +52,6 @@
     "@types/reactour": "^1.17.1",
     "@types/uuid": "^8.3.0",
     "axios": "^0.21.1",
-    "api-client": "file:../api-client",
     "chalk": "^4.1.0",
     "clsx": "^1.1.1",
     "eventemitter3": "^4.0.7",
@@ -69,6 +67,7 @@
     "react-scripts": "^4.0.1",
     "reactour": "^1.18.0",
     "rmf-auth": "file:../rmf-auth",
+    "rmf-models": "file:../rmf-models",
     "styled-components": "^4.4.1",
     "typeface-roboto": "0.0.75",
     "uuid": "^8.3.0"

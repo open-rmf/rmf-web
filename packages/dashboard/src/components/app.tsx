@@ -8,7 +8,7 @@ import appConfig from '../app-config';
 import ResourceManager from '../managers/resource-manager';
 import { DASHBOARD_ROUTE, LOGIN_ROUTE } from '../util/url';
 import { AppBase } from './app-base';
-import { ResourcesContext, AppConfigContext } from './app-contexts';
+import { AppConfigContext, ResourcesContext } from './app-contexts';
 import './app.css';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
 import Dashboard from './dashboard/dashboard';

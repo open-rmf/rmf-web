@@ -83,7 +83,7 @@ Alternatively, if you want to connect to an existing rmf deployment, set the fol
 
 * _PUBLIC_URL_: Url that the app is hosted. Defaults to '/'.
 * _REACT_APP_TRAJECTORY_SERVER_: **Required** URL to the trajectory server.
-* _REACT_APP_ROS2_BRIDGE_SERVER_: **Required** URL to the ros2 bridge server.
+* _REACT_APP_RMF_SERVER_: **Required** URL to the RMF api server.
 * _REACT_APP_AUTH_PROVIDER_: A string indicating the auth provider to use, defaults to the stub authenticator.
 
 Supported auth providers are

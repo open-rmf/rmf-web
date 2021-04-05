@@ -1,6 +1,4 @@
 import { Fade, makeStyles } from '@material-ui/core';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
-import { adapterDoorRequests, adapterLiftRequests, toRosTime } from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import React from 'react';
 import {
@@ -9,16 +7,16 @@ import {
   DispenserAccordion as DispenserAccordion_,
   DoorAccordion as DoorAccordion_,
   LiftAccordion as LiftAccordion_,
-  LiftAccordionProps,
   OmniPanel,
   OmniPanelView,
+  OnChangeEvent,
   RobotAccordion as RobotAccordion_,
+  SimpleFilter,
   useStackNavigator,
   withSpotlight,
-  SimpleFilter,
-  OnChangeEvent,
 } from 'react-components';
 import { GlobalHotKeys } from 'react-hotkeys';
+import * as RmfModels from 'rmf-models';
 import 'typeface-roboto';
 import { buildHotKeys } from '../../hotkeys';
 import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
@@ -33,7 +31,6 @@ import {
   NegotiationStatusContext,
   RmfIngressContext,
   TasksContext,
-  TransportContext,
 } from '../rmf-app';
 import ScheduleVisualizer, { ScheduleVisualizerProps } from '../schedule-visualizer';
 import { SpotlightValue } from '../spotlight-value';
@@ -100,7 +97,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function robotKey(fleet: string, robot: RomiCore.RobotState): string {
+function robotKey(fleet: string, robot: RmfModels.RobotState): string {
   return `${fleet}-${robot.name}`;
 }
 
@@ -111,7 +108,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
 
   const appController = React.useContext(AppControllerContext);
 
-  const transport = React.useContext(TransportContext);
   const buildingMap = React.useContext(BuildingMapContext);
   const resourceManager = React.useContext(ResourcesContext);
 
@@ -129,7 +125,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const { setShowOmniPanel } = dashboardDispatch;
 
   const mapFloorSort = React.useCallback(
-    (levels: RomiCore.Level[]) =>
+    (levels: RmfModels.Level[]) =>
       levels.sort((a, b) => a.elevation - b.elevation).map((x) => x.name),
     [],
   );
@@ -171,7 +167,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   );
   const doorAccordionRefs = React.useMemo(() => defaultDict(createSpotlightRef), []);
   const handleDoorMarkerClick = React.useCallback(
-    (door: RomiCore.Door) => {
+    (door: RmfModels.Door) => {
       setShowOmniPanel(true);
       viewStackDispatch.push(OmniPanelViewIndex.Doors);
       doorAccordionRefs[door.name].spotlight();
@@ -184,7 +180,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const lifts = React.useMemo(() => (buildingMap ? buildingMap.lifts : []), [buildingMap]);
   const liftAccordionRefs = React.useMemo(() => defaultDict(createSpotlightRef), []);
   const handleLiftMarkerClick = React.useCallback(
-    (lift: RomiCore.Lift) => {
+    (lift: RmfModels.Lift) => {
       setShowOmniPanel(true);
       viewStackDispatch.push(OmniPanelViewIndex.Lifts);
       liftAccordionRefs[lift.name].spotlight();
@@ -220,7 +216,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   }
   const robotAccordionRefs = React.useMemo(() => defaultDict(createSpotlightRef), []);
   const handleRobotMarkerClick = React.useCallback(
-    (fleet: string, robot: RomiCore.RobotState) => {
+    (fleet: string, robot: RmfModels.RobotState) => {
       setShowOmniPanel(true);
       viewStackDispatch.push(OmniPanelViewIndex.Robots);
       robotAccordionRefs[robotKey(fleet, robot)].spotlight();
@@ -242,37 +238,38 @@ export default function Dashboard(_props: {}): React.ReactElement {
 
   const tasks = React.useContext(TasksContext);
 
-  const doorRequestPub = React.useMemo(() => transport?.createPublisher(adapterDoorRequests), [
-    transport,
-  ]);
-  const handleOnDoorControlClick = React.useCallback(
-    (_ev, door: RomiCore.Door, mode: number) =>
-      doorRequestPub?.publish({
-        door_name: door.name,
-        request_time: RomiCore.toRosTime(new Date()),
-        requested_mode: { value: mode },
-        requester_id: 'dashboard',
-      }),
-    [doorRequestPub],
-  );
+  // TODO:
+  // const doorRequestPub = React.useMemo(() => transport?.createPublisher(adapterDoorRequests), [
+  //   transport,
+  // ]);
+  // const handleOnDoorControlClick = React.useCallback(
+  //   (_ev, door: RmfModels.Door, mode: number) =>
+  //     doorRequestPub?.publish({
+  //       door_name: door.name,
+  //       request_time: RomiCore.toRosTime(new Date()),
+  //       requested_mode: { value: mode },
+  //       requester_id: 'dashboard',
+  //     }),
+  //   [doorRequestPub],
+  // );
 
-  const liftRequestPub = React.useMemo(() => transport?.createPublisher(adapterLiftRequests), [
-    transport,
-  ]);
-  const handleLiftRequestSubmit = React.useCallback<
-    Required<LiftAccordionProps>['onRequestSubmit']
-  >(
-    (_ev, lift, doorState, requestType, destination) =>
-      liftRequestPub?.publish({
-        lift_name: lift.name,
-        destination_floor: destination,
-        door_state: doorState,
-        request_type: requestType,
-        request_time: toRosTime(new Date()),
-        session_id: 'dashboard',
-      }),
-    [liftRequestPub],
-  );
+  // const liftRequestPub = React.useMemo(() => transport?.createPublisher(adapterLiftRequests), [
+  //   transport,
+  // ]);
+  // const handleLiftRequestSubmit = React.useCallback<
+  //   Required<LiftAccordionProps>['onRequestSubmit']
+  // >(
+  //   (_ev, lift, doorState, requestType, destination) =>
+  //     liftRequestPub?.publish({
+  //       lift_name: lift.name,
+  //       destination_floor: destination,
+  //       door_state: doorState,
+  //       request_type: requestType,
+  //       request_time: toRosTime(new Date()),
+  //       session_id: 'dashboard',
+  //     }),
+  //   [liftRequestPub],
+  // );
 
   function clearSpotlights() {
     setNegotiationSpotlight(undefined);
@@ -335,7 +332,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                   ref={doorAccordionRefs[door.name].ref}
                   door={door}
                   doorState={doorStates[door.name]}
-                  onDoorControlClick={handleOnDoorControlClick}
+                  // onDoorControlClick={handleOnDoorControlClick}
                   data-name={door.name}
                 />
               ) : null;
@@ -351,7 +348,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                   ref={liftAccordionRefs[lift.name].ref}
                   lift={lift}
                   liftState={liftStates[lift.name]}
-                  onRequestSubmit={handleLiftRequestSubmit}
+                  // onRequestSubmit={handleLiftRequestSubmit}
                 />
               ) : null;
             })}
@@ -404,7 +401,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
             />
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Tasks}>
-            <TaskSummaryPanel tasks={tasks} />
+            <TaskSummaryPanel tasks={Object.values(tasks)} />
           </OmniPanelView>
         </OmniPanel>
       </Fade>

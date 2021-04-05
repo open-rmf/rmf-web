@@ -1,10 +1,9 @@
 import { makeStyles } from '@material-ui/core';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import * as L from 'leaflet';
 import React from 'react';
 import { AttributionControl, ImageOverlay, LayersControl, Map as LMap, Pane } from 'react-leaflet';
-import { toBlobUrl } from '../../../util';
+import * as RmfModels from 'rmf-models';
 import DispensersOverlay from '../../schedule-visualizer/dispensers-overlay';
 import DoorsOverlay from '../../schedule-visualizer/doors-overlay';
 import { calcMaxBounds, MapFloorLayer } from '../../schedule-visualizer/index';
@@ -24,8 +23,8 @@ const useStyles = makeStyles(() => ({
 }));
 
 export interface TourMapProps {
-  buildingMap: Readonly<RomiCore.BuildingMap>;
-  fleets: Readonly<RomiCore.FleetState[]>;
+  buildingMap: Readonly<RmfModels.BuildingMap>;
+  fleets: Readonly<RmfModels.FleetState[]>;
   mapFloorLayerSorted: Readonly<string[]>;
 }
 
@@ -82,9 +81,9 @@ export default function TourMap(props: TourMapProps): React.ReactElement {
         }
 
         promises.push(
-          new Promise((res) => {
+          new Promise<void>((res) => {
             const imageElement = new Image();
-            const imageUrl = toBlobUrl(image.data);
+            const imageUrl = image.data;
             imageElement.src = imageUrl;
 
             const listener = () => {

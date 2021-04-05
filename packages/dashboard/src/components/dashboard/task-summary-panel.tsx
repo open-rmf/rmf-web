@@ -1,5 +1,4 @@
 import { makeStyles, Typography } from '@material-ui/core';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import React from 'react';
 import {
@@ -9,12 +8,13 @@ import {
   TrashBinControlButtonGroup,
   useTrashBinReducer,
 } from 'react-components';
+import * as RmfModels from 'rmf-models';
 import { mergeContent } from '../../utils';
 
 const debug = Debug('OmniPanel:TaskSummaryPanel');
 
 export interface TaskSummaryAccordionProps {
-  tasks: RomiCore.TaskSummary[];
+  tasks: RmfModels.TaskSummary[];
 }
 
 export const TaskSummaryPanel = React.memo((props: TaskSummaryAccordionProps) => {
@@ -23,7 +23,9 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryAccordionProps) =>
   const { tasks } = props;
   const classes = useStyles();
 
-  const [savedTasks, dispatchSavedTasks] = useTrashBinReducer<Record<string, RomiCore.TaskSummary>>(
+  const [savedTasks, dispatchSavedTasks] = useTrashBinReducer<
+    Record<string, RmfModels.TaskSummary>
+  >(
     {},
     {},
     (current, trash) => mergeContent(current, trash, false),
@@ -47,7 +49,7 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryAccordionProps) =>
   // Update Task list content
   React.useEffect(() => {
     if (!tasksExists) return;
-    let taskSummaryObject: Record<string, RomiCore.TaskSummary> = {};
+    let taskSummaryObject: Record<string, RmfModels.TaskSummary> = {};
     tasks.forEach((task) => {
       taskSummaryObject[task.task_id] = task;
     });
@@ -58,7 +60,7 @@ export const TaskSummaryPanel = React.memo((props: TaskSummaryAccordionProps) =>
   }, [tasks, tasksExists, dispatchSavedTasks]);
 
   // Order by state and submission time. Order: Active -> Queue -> Failed -> Finished
-  const currentTaskContents: RomiCore.TaskSummary[] = React.useMemo(() => {
+  const currentTaskContents: RmfModels.TaskSummary[] = React.useMemo(() => {
     return sortTasks(savedTasks.current);
   }, [savedTasks]);
 

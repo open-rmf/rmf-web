@@ -1,8 +1,8 @@
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import * as RmfModels from 'rmf-models';
 
-export default function fakeTaskSummary(): Record<string, RomiCore.TaskSummary> {
+export default function fakeTaskSummary(): Record<string, RmfModels.TaskSummary> {
   return {
-    'af8faee9-84ca-41ea-8bb6-8493cc9f824c': {
+    'af8faee9-84ca-41ea-8bb6-8493cc9f824c': new RmfModels.TaskSummary({
       end_time: { sec: 0, nanosec: 0 },
       start_time: { sec: 0, nanosec: 0 },
       state: 1,
@@ -10,8 +10,10 @@ export default function fakeTaskSummary(): Record<string, RomiCore.TaskSummary> 
         'Moving [tinyRobot/tinyRobot1]: ( 9.81228 -6.98942 -3.12904) -> ( 6.26403 -3.51569  1.16864) | Remaining phases: 1 | Remaining phases: 6',
       submission_time: { sec: 0, nanosec: 0 },
       task_id: 'af8faee9-84ca-41ea-8bb6-8493cc9f824c',
-    },
-    'am8faee9-84ca-41ea-8bb6-8493cc9f8249': {
+      fleet_name: 'test_fleet',
+      robot_name: 'test_robot',
+    }),
+    'am8faee9-84ca-41ea-8bb6-8493cc9f8249': new RmfModels.TaskSummary({
       end_time: { sec: 0, nanosec: 0 },
       start_time: { sec: 0, nanosec: 0 },
       state: 0,
@@ -19,6 +21,6 @@ export default function fakeTaskSummary(): Record<string, RomiCore.TaskSummary> 
         'Moving [tinyRobot/tinyRobot2]: ( 9.81228 -6.98942 -3.12904) -> ( 6.26403 -3.51569  1.16864) | Remaining phases: 1 | Remaining phases: 6',
       submission_time: { sec: 0, nanosec: 0 },
       task_id: 'am8faee9-84ca-41ea-8bb6-8493cc9f8249',
-    },
+    }),
   };
 }
