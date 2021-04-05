@@ -136,7 +136,21 @@ async def on_startup():
         modules={"models": ["api_server.models.tortoise_models"]},
     )
     await Tortoise.generate_schemas()
-    shutdown_cbs.append(Tortoise.close_connections)
+
+    async def shutdown_tortoise():
+        logger.info("waiting for tasks to finish")
+
+        async def wait_tasks():
+            while len(asyncio.all_tasks()) > 3:
+                await asyncio.sleep(0)
+
+        try:
+            await asyncio.wait_for(wait_tasks(), 1)
+        except asyncio.TimeoutError:
+            logger.warning("one or more tasks did not finish")
+        await Tortoise.close_connections()
+
+    shutdown_cbs.append(shutdown_tortoise)
 
     static_files_repo = StaticFilesRepository(
         app_config.static_path,
