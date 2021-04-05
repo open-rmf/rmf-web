@@ -1,5 +1,6 @@
 import asyncio
 import os
+import signal
 from typing import Awaitable, Callable, List, Union
 
 import socketio
@@ -131,6 +132,17 @@ async def load_states():
 
 @app.on_event("startup")
 async def on_startup():
+    # for some unexplainable reason, when running with "npx concurrently", the signals
+    # are not captured and the app is not shutdown. Capturing the signal manually makes
+    # it work for some reason.
+    loop = asyncio.get_event_loop()
+
+    def on_signal(_sig, _frame):
+        loop.create_task(on_shutdown())
+
+    signal.signal(signal.SIGINT, on_signal)
+    signal.signal(signal.SIGTERM, on_signal)
+
     await Tortoise.init(
         db_url=app_config.db_url,
         modules={"models": ["api_server.models.tortoise_models"]},
