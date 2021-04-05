@@ -3,6 +3,7 @@ const { rmdirSync } = require('fs');
 
 rmdirSync(`${__dirname}/lib`, { recursive: true });
 const rmfMsgs = [
+  'rmf_building_map_msgs',
   'rmf_charger_msgs',
   'rmf_door_msgs',
   'rmf_lift_msgs',

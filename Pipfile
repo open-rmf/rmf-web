@@ -22,9 +22,8 @@ coverage = "==5.*"
 # api-server
 api-server = {editable = true, path = "packages/api-server"}
 aiohttp = "==3.*"
+# rmf-models
 jinja2 = "==2.*"
-# api-client
-ts-ros = {git = "https://github.com/open-rmf/ts_ros"}
 
 [requires]
 python_version = "3.8"

@@ -1,4 +1,4 @@
 /dist/
 /build/
-/lib/models/generated/
+/lib/models/tortoise/
 /.bin/

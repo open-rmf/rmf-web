@@ -4,7 +4,7 @@
   "description": "RMF models generated from ROS messages",
   "main": "dist/index.js",
   "scripts": {
-    "prepare": "node generate-models.js",
+    "prepare": "node generate-models.js && npm run build",
     "build": "tsc --build",
     "test": "cd test && ./test.bash"
   },

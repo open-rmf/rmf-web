@@ -22,7 +22,7 @@ const deps = {
   ],
   'packages/react-components': ['packages/api-client'],
   'packages/reporting': ['packages/react-components', 'packages/rmf-auth'],
-  'packages/api-client': ['packages/api-server'],
+  'packages/api-client': ['packages/api-server', 'packages/rmf-models'],
 };
 
 function getDeps(pkg) {
