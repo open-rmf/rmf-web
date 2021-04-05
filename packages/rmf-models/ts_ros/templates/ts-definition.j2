@@ -14,15 +14,19 @@ export class {{ base_type.type }} {
 {% endfor %}
 {% endif %}
 
-  constructor(
 {% for field in msgspec.fields %}
 {% if field.js_type.is_typed_array %}
-    public {{ field.name }}: {{ field.js_type.type }} | number[],
+  {{ field.name }}: {{ field.js_type.type }} | number[];
 {% else %}
-    public {{ field.name }}: {{ field.js_type.type }},
+  {{ field.name }}: {{ field.js_type.type }};
 {% endif %}
 {% endfor %}
-  ) {}
+
+  constructor(fields: Partial<{{ base_type.type }}> = {}) {
+{% for field in msgspec.fields %}
+    this.{{ field.name }} = fields.{{ field.name }} || {{ field.js_type.default_value }};
+{% endfor %}
+  }
 
   static validate(obj: Record<string, unknown>): void {
 {% for field in msgspec.fields %}

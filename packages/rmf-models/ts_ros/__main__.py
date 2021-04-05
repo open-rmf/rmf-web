@@ -35,7 +35,7 @@ template_env.keep_trailing_newline = True
 PRIMITIVE_TYPES = {
     "bool": "boolean",
     "byte": "number",
-    "char": "string",
+    "char": "number",
     "float32": "number",
     "float64": "number",
     "int8": "number",
@@ -97,8 +97,10 @@ class JsType:
         self.is_primitive = False
         self.is_typed_array = False
         self.is_array = False
+        self.default_value = None
         if hasattr(ros_type, "is_array") and ros_type.is_array:
             self.type = TYPED_ARRAY_TYPES.get(ros_type.type)
+            self.default_value = "[]"
             if self.type is None:
                 if ros_type.is_primitive_type():
                     self.type = f"{PRIMITIVE_TYPES[ros_type.type]}[]"
@@ -113,6 +115,10 @@ class JsType:
             self.base_type = self.type[: len(self.type) - 2]
         else:
             self.type = PRIMITIVE_TYPES.get(ros_type.type)
+            if ros_type.is_primitive_type():
+                self.default_value = PRIMITIVE_TYPES_DEFAULT_VALUES[ros_type.type]
+            else:
+                self.default_value = f"new {ros_type.type}()"
             if self.type is None:
                 self.type = ros_type.type
             self.base_type = self.type
