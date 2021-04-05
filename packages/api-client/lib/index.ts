@@ -1,19 +1,19 @@
+import * as RmfModels from 'rmf-models';
 import { io as _io, Socket } from 'socket.io-client';
-import * as mdl from './models';
 
 export type MessageType = {
-  door_states: mdl.DoorState;
-  door_health: mdl.DoorHealth;
-  lift_states: mdl.LiftState;
-  lift_health: mdl.LiftHealth;
-  dispenser_states: mdl.DispenserState;
-  dispenser_health: mdl.DispenserHealth;
-  ingestor_states: mdl.IngestorState;
-  ingestor_health: mdl.IngestorHealth;
-  fleet_states: mdl.FleetState;
-  robot_health: mdl.RobotHealth;
-  task_summaries: mdl.TaskSummary;
-  building_map: mdl.BuildingMap;
+  door_states: RmfModels.DoorState;
+  door_health: RmfModels.DoorHealth;
+  lift_states: RmfModels.LiftState;
+  lift_health: RmfModels.LiftHealth;
+  dispenser_states: RmfModels.DispenserState;
+  dispenser_health: RmfModels.DispenserHealth;
+  ingestor_states: RmfModels.IngestorState;
+  ingestor_health: RmfModels.IngestorHealth;
+  fleet_states: RmfModels.FleetState;
+  robot_health: RmfModels.RobotHealth;
+  task_summaries: RmfModels.TaskSummary;
+  building_map: RmfModels.BuildingMap;
 };
 
 export type Topic = keyof MessageType;
@@ -42,5 +42,4 @@ export function io(...args: Parameters<typeof _io>): SioClient {
   return _io(...args) as SioClient;
 }
 
-export * from './models';
 export * from './openapi';
