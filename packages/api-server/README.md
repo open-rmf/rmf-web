@@ -36,13 +36,7 @@ RMF_API_SERVER_CONFIG='my_config.py' rmf_api_server
 ### Running unit tests
 
 ```bash
-npm run test
-```
-
-### Running integration tests
-
-```bash
-npm run test:integration
+npm test
 ```
 
 ### Collecting code coverage
@@ -50,7 +44,6 @@ npm run test:integration
 ```bash
 npm run test:cov
 ```
-NOTE: This runs both unit and integration tests.
 
 Generate coverage report
 ```bash

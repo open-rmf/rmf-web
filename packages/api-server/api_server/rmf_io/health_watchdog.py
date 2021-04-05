@@ -14,7 +14,7 @@ from rx.core.typing import Disposable
 from rx.scheduler.scheduler import Scheduler
 from rx.subject import Subject
 
-from .. import models
+from ..models import tortoise_models as ttm
 from .gateway import RmfGateway
 from .operators import heartbeat, most_critical
 
@@ -32,20 +32,37 @@ class HealthWatchdog:
         self.rmf = rmf_gateway
         self.scheduler = scheduler
         self.logger = logger or logging.getLogger(self.__class__.__name__)
-        self.watchers: List[Disposable] = []
+        self._watchers: List[Disposable] = []
+        self._building_watchers: List[Disposable] = []
+        self._started = False
+
+    def start(self):
+        if self._started:
+            return
 
         def on_building_map(building_map: Optional[BuildingMap]):
-            for sub in self.watchers:
+            for sub in self._building_watchers:
                 sub.dispose()
-            self.watchers.clear()
+            self._building_watchers.clear()
             self._watch_door_health(building_map)
             self._watch_lift_health(building_map)
 
-        self.rmf.building_map.subscribe(on_building_map)
+        self.rmf.rmf_building_map.subscribe(on_building_map)
 
         self._watch_dispenser_health()
         self._watch_ingestor_health()
         self._watch_robot_health()
+        self._started = True
+
+    def stop(self):
+        for sub in self._watchers:
+            sub.dispose()
+        self._watchers.clear()
+        for sub in self._building_watchers:
+            sub.dispose()
+        self._building_watchers.clear()
+
+        self._started = False
 
     def _watch_heartbeat(
         self,
@@ -84,9 +101,9 @@ class HealthWatchdog:
     def _door_mode_to_health(data: Tuple[str, DoorState]):
         state = data[1]
         if state is None:
-            return models.DoorHealth(
+            return ttm.DoorHealth(
                 id_=data[0],
-                health_status=models.HealthStatus.UNHEALTHY,
+                health_status=ttm.HealthStatus.UNHEALTHY,
                 health_message="no state available",
             )
         if state.current_mode.value in (
@@ -94,19 +111,19 @@ class HealthWatchdog:
             DoorMode.MODE_MOVING,
             DoorMode.MODE_OPEN,
         ):
-            return models.DoorHealth(
+            return ttm.DoorHealth(
                 id_=state.door_name,
-                health_status=models.HealthStatus.HEALTHY,
+                health_status=ttm.HealthStatus.HEALTHY,
             )
         if state.current_mode.value == DoorMode.MODE_OFFLINE:
-            return models.DoorHealth(
+            return ttm.DoorHealth(
                 id_=state.door_name,
-                health_status=models.HealthStatus.UNHEALTHY,
+                health_status=ttm.HealthStatus.UNHEALTHY,
                 health_message="door is OFFLINE",
             )
-        return models.DoorHealth(
+        return ttm.DoorHealth(
             id_=state.door_name,
-            health_status=models.HealthStatus.UNHEALTHY,
+            health_status=ttm.HealthStatus.UNHEALTHY,
             health_message="door is in an unknown mode",
         )
 
@@ -122,12 +139,10 @@ class HealthWatchdog:
             id_ = data[0]
             has_heartbeat = data[1]
             if has_heartbeat:
-                return models.DoorHealth(
-                    id_=id_, health_status=models.HealthStatus.HEALTHY
-                )
-            return models.DoorHealth(
+                return ttm.DoorHealth(id_=id_, health_status=ttm.HealthStatus.HEALTHY)
+            return ttm.DoorHealth(
                 id_=id_,
-                health_status=models.HealthStatus.DEAD,
+                health_status=ttm.HealthStatus.DEAD,
                 health_message="heartbeat failed",
             )
 
@@ -148,40 +163,40 @@ class HealthWatchdog:
         sub = heartbeat_health.pipe(
             self._combine_most_critical(door_mode_health),
         ).subscribe(self.rmf.door_health.on_next, scheduler=self.scheduler)
-        self.watchers.append(sub)
+        self._building_watchers.append(sub)
 
     @staticmethod
     def _lift_mode_to_health(data: Tuple[str, LiftState]):
         state = data[1]
         if state is None:
-            return models.LiftHealth(
+            return ttm.LiftHealth(
                 id_=data[0],
-                health_status=models.HealthStatus.UNHEALTHY,
+                health_status=ttm.HealthStatus.UNHEALTHY,
                 health_message="no state available",
             )
         if state.current_mode in (
             LiftState.MODE_HUMAN,
             LiftState.MODE_AGV,
         ):
-            return models.LiftHealth(
+            return ttm.LiftHealth(
                 id_=state.lift_name,
-                health_status=models.HealthStatus.HEALTHY,
+                health_status=ttm.HealthStatus.HEALTHY,
             )
         if state.current_mode == LiftState.MODE_FIRE:
-            return models.LiftHealth(
+            return ttm.LiftHealth(
                 id_=state.lift_name,
-                health_status=models.HealthStatus.UNHEALTHY,
+                health_status=ttm.HealthStatus.UNHEALTHY,
                 health_message="lift is in FIRE mode",
             )
         if state.current_mode == LiftState.MODE_EMERGENCY:
-            return models.LiftHealth(
+            return ttm.LiftHealth(
                 id_=state.lift_name,
-                health_status=models.HealthStatus.UNHEALTHY,
+                health_status=ttm.HealthStatus.UNHEALTHY,
                 health_message="lift is in EMERGENCY mode",
             )
-        return models.LiftHealth(
+        return ttm.LiftHealth(
             id_=state.lift_name,
-            health_status=models.HealthStatus.UNHEALTHY,
+            health_status=ttm.HealthStatus.UNHEALTHY,
             health_message="lift is in an unknown mode",
         )
 
@@ -192,12 +207,10 @@ class HealthWatchdog:
             id_ = data[0]
             has_heartbeat = data[1]
             if has_heartbeat:
-                return models.LiftHealth(
-                    id_=id_, health_status=models.HealthStatus.HEALTHY
-                )
-            return models.LiftHealth(
+                return ttm.LiftHealth(id_=id_, health_status=ttm.HealthStatus.HEALTHY)
+            return ttm.LiftHealth(
                 id_=id_,
-                health_status=models.HealthStatus.DEAD,
+                health_status=ttm.HealthStatus.DEAD,
                 health_message="heartbeat failed",
             )
 
@@ -216,45 +229,45 @@ class HealthWatchdog:
         sub = heartbeat_health.pipe(
             self._combine_most_critical(lift_mode_health)
         ).subscribe(self.rmf.lift_health.on_next, scheduler=self.scheduler)
-        self.watchers.append(sub)
+        self._building_watchers.append(sub)
 
     @staticmethod
     def _dispenser_mode_to_health(id_: str, state: DispenserState):
         if state is None:
-            return models.DispenserHealth(
+            return ttm.DispenserHealth(
                 id_=id_,
-                health_status=models.HealthStatus.UNHEALTHY,
+                health_status=ttm.HealthStatus.UNHEALTHY,
                 health_message="no state available",
             )
         if state.mode in (
             DispenserState.IDLE,
             DispenserState.BUSY,
         ):
-            return models.DispenserHealth(
+            return ttm.DispenserHealth(
                 id_=id_,
-                health_status=models.HealthStatus.HEALTHY,
+                health_status=ttm.HealthStatus.HEALTHY,
             )
         if state.mode == DispenserState.OFFLINE:
-            return models.DispenserHealth(
+            return ttm.DispenserHealth(
                 id_=id_,
-                health_status=models.HealthStatus.UNHEALTHY,
+                health_status=ttm.HealthStatus.UNHEALTHY,
                 health_message="dispenser is OFFLINE",
             )
-        return models.DispenserHealth(
+        return ttm.DispenserHealth(
             id_=id_,
-            health_status=models.HealthStatus.UNHEALTHY,
+            health_status=ttm.HealthStatus.UNHEALTHY,
             health_message="dispenser is in an unknown mode",
         )
 
     def _watch_dispenser_health(self):
         def to_dispenser_health(id_: str, has_heartbeat: bool):
             if has_heartbeat:
-                return models.DispenserHealth(
-                    id_=id_, health_status=models.HealthStatus.HEALTHY
+                return ttm.DispenserHealth(
+                    id_=id_, health_status=ttm.HealthStatus.HEALTHY
                 )
-            return models.DispenserHealth(
+            return ttm.DispenserHealth(
                 id_=id_,
-                health_status=models.HealthStatus.DEAD,
+                health_status=ttm.HealthStatus.DEAD,
                 health_message="heartbeat failed",
             )
 
@@ -285,40 +298,40 @@ class HealthWatchdog:
     @staticmethod
     def _ingestor_mode_to_health(id_: str, state: IngestorState):
         if state is None:
-            return models.IngestorHealth(
+            return ttm.IngestorHealth(
                 id_=id_,
-                health_status=models.HealthStatus.UNHEALTHY,
+                health_status=ttm.HealthStatus.UNHEALTHY,
                 health_message="no state available",
             )
         if state.mode in (
             IngestorState.IDLE,
             IngestorState.BUSY,
         ):
-            return models.IngestorHealth(
+            return ttm.IngestorHealth(
                 id_=id_,
-                health_status=models.HealthStatus.HEALTHY,
+                health_status=ttm.HealthStatus.HEALTHY,
             )
         if state.mode == IngestorState.OFFLINE:
-            return models.IngestorHealth(
+            return ttm.IngestorHealth(
                 id_=id_,
-                health_status=models.HealthStatus.UNHEALTHY,
+                health_status=ttm.HealthStatus.UNHEALTHY,
                 health_message="ingestor is OFFLINE",
             )
-        return models.IngestorHealth(
+        return ttm.IngestorHealth(
             id_=id_,
-            health_status=models.HealthStatus.UNHEALTHY,
+            health_status=ttm.HealthStatus.UNHEALTHY,
             health_message="ingestor is in an unknown mode",
         )
 
     def _watch_ingestor_health(self):
         def to_ingestor_health(id_: str, has_heartbeat: bool):
             if has_heartbeat:
-                return models.IngestorHealth(
-                    id_=id_, health_status=models.HealthStatus.HEALTHY
+                return ttm.IngestorHealth(
+                    id_=id_, health_status=ttm.HealthStatus.HEALTHY
                 )
-            return models.IngestorHealth(
+            return ttm.IngestorHealth(
                 id_=id_,
-                health_status=models.HealthStatus.DEAD,
+                health_status=ttm.HealthStatus.DEAD,
                 health_message="heartbeat failed",
             )
 
@@ -349,9 +362,9 @@ class HealthWatchdog:
     @staticmethod
     def _robot_mode_to_health(id_: str, state: RobotState):
         if state is None:
-            return models.RobotHealth(
+            return ttm.RobotHealth(
                 id_=id_,
-                health_status=models.HealthStatus.UNHEALTHY,
+                health_status=ttm.HealthStatus.UNHEALTHY,
                 health_message="no state available",
             )
         if state.mode.mode in (
@@ -363,38 +376,38 @@ class HealthWatchdog:
             RobotMode.MODE_GOING_HOME,
             RobotMode.MODE_DOCKING,
         ):
-            return models.RobotHealth(
+            return ttm.RobotHealth(
                 id_=id_,
-                health_status=models.HealthStatus.HEALTHY,
+                health_status=ttm.HealthStatus.HEALTHY,
             )
         if state.mode.mode == RobotMode.MODE_EMERGENCY:
-            return models.RobotHealth(
+            return ttm.RobotHealth(
                 id_=id_,
-                health_status=models.HealthStatus.UNHEALTHY,
+                health_status=ttm.HealthStatus.UNHEALTHY,
                 health_message="robot is in EMERGENCY mode",
             )
         if state.mode.mode == RobotMode.MODE_ADAPTER_ERROR:
-            return models.RobotHealth(
+            return ttm.RobotHealth(
                 id_=id_,
-                health_status=models.HealthStatus.UNHEALTHY,
+                health_status=ttm.HealthStatus.UNHEALTHY,
                 health_message="error in fleet adapter",
             )
-        return models.RobotHealth(
+        return ttm.RobotHealth(
             id_=id_,
-            health_status=models.HealthStatus.UNHEALTHY,
+            health_status=ttm.HealthStatus.UNHEALTHY,
             health_message="robot is in an unknown mode",
         )
 
     def _watch_robot_health(self):
         def to_robot_health(id_: str, has_heartbeat: bool):
             if has_heartbeat:
-                return models.RobotHealth(
+                return ttm.RobotHealth(
                     id_=id_,
-                    health_status=models.HealthStatus.HEALTHY,
+                    health_status=ttm.HealthStatus.HEALTHY,
                 )
-            return models.RobotHealth(
+            return ttm.RobotHealth(
                 id_=id_,
-                health_status=models.HealthStatus.DEAD,
+                health_status=ttm.HealthStatus.DEAD,
                 health_message="heartbeat failed",
             )
 
@@ -416,7 +429,7 @@ class HealthWatchdog:
             fleet_state: FleetState
             for robot_state in fleet_state.robots:
                 robot_state: RobotState
-                robot_id = models.get_robot_id(fleet_state.name, robot_state.name)
+                robot_id = ttm.get_robot_id(fleet_state.name, robot_state.name)
                 subjects[robot_id] = Subject()
 
         for id_, subject in subjects.items():
@@ -425,7 +438,7 @@ class HealthWatchdog:
         def on_state(fleet_state: FleetState):
             for robot_state in fleet_state.robots:
                 robot_state: RobotState
-                robot_id = models.get_robot_id(fleet_state.name, robot_state.name)
+                robot_id = ttm.get_robot_id(fleet_state.name, robot_state.name)
 
                 if robot_id not in subjects:
                     subjects[robot_id] = Subject()

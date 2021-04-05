@@ -5,11 +5,11 @@ from rmf_door_msgs.msg import DoorState
 from rmf_fleet_msgs.msg import FleetState
 from rmf_ingestor_msgs.msg import IngestorState
 from rmf_lift_msgs.msg import LiftState
-from rmf_task_msgs.msg import TaskSummary
+from rmf_task_msgs.msg import Tasks
 from rx import Observable
 from rx.subject import BehaviorSubject, Subject
 
-from .. import models
+from ..models import tortoise_models as ttm
 
 
 class RmfGateway:
@@ -22,9 +22,7 @@ class RmfGateway:
       if it should update or create a new record. Instead, use `Model.update_or_create`.
     """
 
-    def __init__(
-        self,
-    ):
+    def __init__(self):
         # NOTE: the rx type hints don't actually work https://github.com/ReactiveX/RxPY/issues/514
         self.door_states = Subject()  # Subject[DoorState]
         self.current_door_states: Dict[str, DoorState] = {}
@@ -35,7 +33,7 @@ class RmfGateway:
         )
 
         self.door_health = Subject()  # Subject[DoorHealth]
-        self.current_door_health: Dict[str, models.DoorHealth] = {}
+        self.current_door_health: Dict[str, ttm.DoorHealth] = {}
         self._save_event(
             self.door_health,
             self.current_door_health,
@@ -51,7 +49,7 @@ class RmfGateway:
         )
 
         self.lift_health = Subject()  # Subject[LiftHealth]
-        self.current_lift_health: Dict[str, models.LiftHealth] = {}
+        self.current_lift_health: Dict[str, ttm.LiftHealth] = {}
         self._save_event(
             self.lift_health,
             self.current_lift_health,
@@ -67,7 +65,7 @@ class RmfGateway:
         )
 
         self.dispenser_health = Subject()  # Subject[DispenserHealth]
-        self.current_dispenser_health: Dict[str, models.DispenserHealth] = {}
+        self.current_dispenser_health: Dict[str, ttm.DispenserHealth] = {}
         self._save_event(
             self.dispenser_health,
             self.current_dispenser_health,
@@ -83,7 +81,7 @@ class RmfGateway:
         )
 
         self.ingestor_health = Subject()  # Subject[IngestorHealth]
-        self.current_ingestor_health: Dict[str, models.IngestorHealth] = {}
+        self.current_ingestor_health: Dict[str, ttm.IngestorHealth] = {}
         self._save_event(
             self.ingestor_health,
             self.current_ingestor_health,
@@ -99,20 +97,23 @@ class RmfGateway:
         )
 
         self.robot_health = Subject()  # Subject[RobotHealth]
-        self.current_robot_health: Dict[str, models.RobotHealth] = {}
+        self.current_robot_health: Dict[str, ttm.RobotHealth] = {}
         self._save_event(
             self.robot_health,
             self.current_robot_health,
             lambda x: x.id_,
         )
 
-        self.task_summaries = Subject()  # Subject[TaskSummary]
-        self.current_task_summaries: Dict[str, TaskSummary] = {}
+        self.task_summaries = Subject()  # Subject[Tasks]
+        self.current_task_summaries: Dict[str, Tasks] = {}
         self._init_task_summaries()
 
-        self.building_map = BehaviorSubject(  # BehaviorSubject[Optional[BuildingMap]]
-            None
-        )
+        # BehaviorSubject[Optional[RmfBuildingMap]]
+        self.rmf_building_map = BehaviorSubject(None)
+
+        # BehaviorSubject[Optional[Dict]], a dict containing fields same as RmfBuildingMap,
+        # but with the image data changed to an url.
+        self.building_map = BehaviorSubject(None)
 
     @staticmethod
     def _save_event(source: Observable, dic, key_mapper: Callable[[Any], str]):
@@ -122,11 +123,12 @@ class RmfGateway:
         source.subscribe(on_next)
 
     def _init_task_summaries(self):
-        def on_next(task: TaskSummary):
-            keep_states = models.TaskSummary.ACTIVE_STATES
-            if task.state in keep_states:
-                self.current_task_summaries[task.task_id] = task
-            else:
-                self.current_task_summaries.pop(task.task_id)
+        def on_next(tasks: Tasks):
+            keep_states = ttm.TaskSummary.ACTIVE_STATES
+            for task in tasks.tasks:
+                if task.state in keep_states:
+                    self.current_task_summaries[task.task_id] = task
+                else:
+                    self.current_task_summaries.pop(task.task_id)
 
         self.task_summaries.subscribe(on_next)

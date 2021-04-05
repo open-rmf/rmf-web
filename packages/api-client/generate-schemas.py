@@ -3,7 +3,7 @@ import shutil
 from os.path import join as pathjoin
 
 import tortoise
-from api_server import models
+from api_server.models import tortoise_models as models
 from tortoise.contrib.pydantic import pydantic_model_creator
 
 here = os.path.dirname(__file__)

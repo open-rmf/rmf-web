@@ -4,12 +4,11 @@
   "description": "dummy package",
   "private": true,
   "scripts": {
-    "prepare": "cmake -B build && cmake --build build",
-    "test": "python3 -m pipenv run python -m unittest",
-    "test:cov": "python3 -m pipenv run python -m coverage run -m unittest && TEST_COVERAGE=1 npm run test:integration",
-    "test:integration": "python3 -m pipenv run python -m unittest discover -s tests",
+    "prepare": "",
+    "test": "RMF_API_SERVER_LOG_LEVEL=CRITICAL python3 -m pipenv run python -m unittest",
+    "test:cov": "RMF_API_SERVER_LOG_LEVEL=CRITICAL RMF_API_SERVER_TEST_COVERAGE=1 python3 -m pipenv run python -m coverage run -p -m unittest && python3 -m pipenv run python -m coverage combine",
     "test:report": "python3 -m pipenv run python -m coverage html && xdg-open htmlcov/index.html",
-    "lint": "python3 -m pipenv run pylint --ignore=mixins api_server"
+    "lint": "python3 -m pipenv run pylint api_server tests"
   },
   "devDependencies": {
     "socket.io-client": "^3.1.3"

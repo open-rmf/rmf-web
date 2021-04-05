@@ -1,17 +1,21 @@
 import importlib
 import os
-from typing import Any, Mapping, Optional
+from dataclasses import dataclass
+from typing import Optional
 
 
+@dataclass
 class AppConfig:
-    def __init__(self, config_dict: Mapping[str, Any]):
-        self.db_url: str = config_dict["db_url"]
-        self.host: str = config_dict["host"]
-        self.port: int = config_dict["port"]
-        self.static_path: str = config_dict["static_path"]
-        self.static_directory: str = config_dict["static_directory"]
-        self.log_level: str = config_dict["log_level"]
-        self.jwt_public_key: Optional[str] = config_dict["jwt_public_key"]
+    host: str
+    port: int
+    db_url: str
+    root_path: str
+    socket_io_path: str
+    static_path: str
+    static_directory: str
+    log_level: str
+    jwt_public_key: Optional[str]
+    oidc_url: Optional[str]
 
 
 def _load_config() -> AppConfig:
@@ -23,7 +27,7 @@ def _load_config() -> AppConfig:
     spec = importlib.util.spec_from_file_location("config", config_file)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    return AppConfig(module.config)
+    return AppConfig(**module.config)
 
 
 app_config = _load_config()
