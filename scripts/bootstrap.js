@@ -20,7 +20,7 @@ const deps = {
     'packages/api-client',
     'packages/rmf-auth',
   ],
-  'packages/react-components': ['packages/api-client'],
+  'packages/react-components': ['packages/api-client', 'packages/rmf-models'],
   'packages/reporting': ['packages/react-components', 'packages/rmf-auth'],
   'packages/api-client': ['packages/api-server', 'packages/rmf-models'],
 };
