@@ -1,17 +1,17 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import { DoorState, FleetState, io, LiftState, SioClient } from 'api-client';
 import React from 'react';
 import appConfig from '../../app-config';
 import DispenserStateManager from '../../managers/dispenser-state-manager';
-import DoorStateManager from '../../managers/door-state-manager';
 import FleetManager from '../../managers/fleet-manager';
 import LiftStateManager from '../../managers/lift-state-manager';
-import { RobotTrajectoryManager } from '../../managers/robot-trajectory-manager';
-import TaskManager from '../../managers/task-manager';
 import {
   NegotiationConflict,
   NegotiationStatusManager,
 } from '../../managers/negotiation-status-manager';
 import { HealthStatus } from '../../managers/rmf-health-state-manager';
+import { RobotTrajectoryManager } from '../../managers/robot-trajectory-manager';
+import TaskManager from '../../managers/task-manager';
 
 const itemSummary = () => {
   return {
@@ -22,12 +22,26 @@ const itemSummary = () => {
 
 const initializeItemSummary = itemSummary();
 
+const sioClient = (() => {
+  const token = appConfig.authenticator.token;
+  const options: Parameters<typeof io>[1] = {};
+  if (token) {
+    options.auth = { token };
+  }
+  if (process.env.REACT_APP_RMF_SERVER) {
+    return io(process.env.REACT_APP_RMF_SERVER, options);
+  } else {
+    return io(options);
+  }
+})();
+sioClient.on('error', console.error);
+
 export const DispenserStateContext = React.createContext<Record<string, RomiCore.DispenserState>>(
   {},
 );
-export const DoorStateContext = React.createContext<Record<string, RomiCore.DoorState>>({});
-export const FleetStateContext = React.createContext<Record<string, RomiCore.FleetState>>({});
-export const LiftStateContext = React.createContext<Record<string, RomiCore.LiftState>>({});
+export const DoorStateContext = React.createContext<Record<string, DoorState>>({});
+export const FleetStateContext = React.createContext<Record<string, FleetState>>({});
+export const LiftStateContext = React.createContext<Record<string, LiftState>>({});
 export const NegotiationStatusContext = React.createContext<Record<number, NegotiationConflict>>(
   {},
 );
@@ -47,8 +61,8 @@ export const RmfHealthContext = React.createContext<HealthStatus>({
 });
 
 export interface RmfIngress {
+  sioClient: SioClient;
   dispenserStateManager: DispenserStateManager;
-  doorStateManager: DoorStateManager;
   fleetManager: FleetManager;
   liftStateManager: LiftStateManager;
   negotiationStatusManager: NegotiationStatusManager;
@@ -57,8 +71,8 @@ export interface RmfIngress {
 }
 
 export const RmfIngressContext = React.createContext<RmfIngress>({
+  sioClient,
   dispenserStateManager: new DispenserStateManager(),
-  doorStateManager: new DoorStateManager(),
   fleetManager: new FleetManager(),
   liftStateManager: new LiftStateManager(),
   negotiationStatusManager: new NegotiationStatusManager(appConfig.trajServerUrl),

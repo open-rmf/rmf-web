@@ -3,10 +3,11 @@
   "version": "0.0.1-alpha.0",
   "private": true,
   "scripts": {
-    "start": "concurrently npm:start:ros2-bridge npm:start:rmf npm:start:react",
+    "start": "concurrently npm:start:ros2-bridge npm:start:rmf-server npm:start:rmf npm:start:react",
     "start:react": "react-scripts start",
     "start:rmf": "ts-node -P scripts/tsconfig.json -T scripts/start-rmf.ts",
     "start:ros2-bridge": "ros2-bridge --port 50002",
+    "start:rmf-server": "npm --prefix ../api-server start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "test:coverage": "npm run test -- --coverage --watchAll=false",

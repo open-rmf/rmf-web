@@ -1,13 +1,8 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import { MessageType, Topic } from 'api-client';
 import React from 'react';
-import DispenserStateManager from '../../managers/dispenser-state-manager';
-import DoorStateManager from '../../managers/door-state-manager';
-import FleetManager from '../../managers/fleet-manager';
-import LiftStateManager from '../../managers/lift-state-manager';
-import { NegotiationStatusManager } from '../../managers/negotiation-status-manager';
-import TaskManager from '../../managers/task-manager';
-import { AppConfigContext, AppControllerContext } from '../app-contexts';
 import RmfHealthStateManager from '../../managers/rmf-health-state-manager';
+import { AppConfigContext, AppControllerContext } from '../app-contexts';
 import {
   BuildingMapContext,
   DispenserStateContext,
@@ -16,7 +11,6 @@ import {
   LiftStateContext,
   NegotiationStatusContext,
   RmfHealthContext,
-  RmfIngress,
   RmfIngressContext,
   TasksContext,
   TransportContext,
@@ -107,95 +101,51 @@ function BuildingMapProvider(props: React.PropsWithChildren<{}>): JSX.Element {
   );
 }
 
-function DispenserContextsProvider(props: React.PropsWithChildren<{}>): JSX.Element {
-  const transport = React.useContext(TransportContext);
-  const { dispenserStateManager } = React.useContext(RmfIngressContext);
-  const [dispenserStates, setDispenserStates] = React.useState(() => ({
-    ...dispenserStateManager.dispenserStates,
-  }));
+function rmfContextProviderHOC<TopicT extends Topic>(
+  topic: TopicT,
+  Context: React.Context<Record<string, MessageType[TopicT]>>,
+  keyMapper: (msg: MessageType[TopicT]) => string,
+) {
+  return (props: React.PropsWithChildren<{}>) => {
+    const { sioClient } = React.useContext(RmfIngressContext);
+    const [state, setState] = React.useState<Record<string, MessageType[TopicT]>>({});
 
-  React.useEffect(() => {
-    if (transport) {
-      dispenserStateManager.startSubscription(transport);
-    }
-    const onUpdated = () => setDispenserStates({ ...dispenserStateManager.dispenserStates });
-    dispenserStateManager.on('updated', onUpdated);
+    React.useEffect(() => {
+      sioClient.emit('subscribe', topic);
+      sioClient.on(topic, (msg: MessageType[TopicT]) =>
+        setState((prev) => ({ ...prev, [keyMapper(msg)]: msg })),
+      );
 
-    return () => {
-      dispenserStateManager.off('updated', onUpdated);
-    };
-  }, [transport, dispenserStateManager]);
+      // TODO: unsubscribe
+    }, [sioClient]);
 
-  return (
-    <DispenserStateContext.Provider value={dispenserStates}>
-      {props.children}
-    </DispenserStateContext.Provider>
-  );
+    return <Context.Provider value={state}>{props.children}</Context.Provider>;
+  };
 }
 
-function DoorContextsProvider(props: React.PropsWithChildren<{}>): JSX.Element {
-  const transport = React.useContext(TransportContext);
-  const { doorStateManager } = React.useContext(RmfIngressContext);
-  const [doorStates, setDoorStates] = React.useState(() => ({ ...doorStateManager.doorStates }));
+const DispenserContextsProvider = rmfContextProviderHOC(
+  'dispenser_states',
+  DispenserStateContext,
+  (msg) => msg.guid,
+);
 
-  React.useEffect(() => {
-    if (transport) {
-      doorStateManager.startSubscription(transport);
-    }
-    const onUpdated = () => setDoorStates({ ...doorStateManager.doorStates });
-    doorStateManager.on('updated', onUpdated);
+const DoorContextsProvider = rmfContextProviderHOC(
+  'door_states',
+  DoorStateContext,
+  (msg) => msg.door_name,
+);
 
-    return () => {
-      doorStateManager.off('updated', onUpdated);
-    };
-  }, [transport, doorStateManager]);
+const LiftContextsProvider = rmfContextProviderHOC(
+  'lift_states',
+  LiftStateContext,
+  (msg) => msg.lift_name,
+);
 
-  return <DoorStateContext.Provider value={doorStates}>{props.children}</DoorStateContext.Provider>;
-}
-
-function FleetContextsProvider(props: React.PropsWithChildren<{}>): JSX.Element {
-  const transport = React.useContext(TransportContext);
-  const { fleetManager } = React.useContext(RmfIngressContext);
-  const [fleetStates, setFleetStates] = React.useState(() => ({
-    ...fleetManager.fleetStates,
-  }));
-
-  React.useEffect(() => {
-    if (transport) {
-      fleetManager.startSubscription(transport);
-    }
-    const onUpdated = () => setFleetStates({ ...fleetManager.fleetStates });
-    fleetManager.on('updated', onUpdated);
-
-    return () => {
-      fleetManager.off('updated', onUpdated);
-    };
-  }, [transport, fleetManager]);
-
-  return (
-    <FleetStateContext.Provider value={fleetStates}>{props.children}</FleetStateContext.Provider>
-  );
-}
-
-function LiftContextsProvider(props: React.PropsWithChildren<{}>): JSX.Element {
-  const transport = React.useContext(TransportContext);
-  const { liftStateManager } = React.useContext(RmfIngressContext);
-  const [liftStates, setLiftStates] = React.useState(() => ({ ...liftStateManager.liftStates }));
-
-  React.useEffect(() => {
-    if (transport) {
-      liftStateManager.startSubscription(transport);
-    }
-    const onUpdated = () => setLiftStates({ ...liftStateManager.liftStates });
-    liftStateManager.on('updated', onUpdated);
-
-    return () => {
-      liftStateManager.off('updated', onUpdated);
-    };
-  }, [transport, liftStateManager]);
-
-  return <LiftStateContext.Provider value={liftStates}>{props.children}</LiftStateContext.Provider>;
-}
+const FleetContextsProvider = rmfContextProviderHOC(
+  'fleet_states',
+  FleetStateContext,
+  (msg) => msg.name,
+);
 
 function NegotiationContextsProvider(props: React.PropsWithChildren<{}>): JSX.Element {
   const { negotiationStatusManager } = React.useContext(RmfIngressContext);
@@ -250,37 +200,6 @@ function RmfHealthContextsProvider(props: React.PropsWithChildren<{}>): JSX.Elem
   );
 }
 
-function RmfIngressProvider(props: React.PropsWithChildren<{}>): JSX.Element {
-  const appConfig = React.useContext(AppConfigContext);
-  const [rmfIngress, setRmfIngress] = React.useState<RmfIngress>(() => ({
-    dispenserStateManager: new DispenserStateManager(),
-    doorStateManager: new DoorStateManager(),
-    fleetManager: new FleetManager(),
-    liftStateManager: new LiftStateManager(),
-    negotiationStatusManager: new NegotiationStatusManager(appConfig.trajServerUrl),
-    taskManager: new TaskManager(),
-  }));
-
-  // add loading screen if this takes very long
-  React.useEffect(() => {
-    const { trajectoryManagerFactory } = appConfig;
-    if (!trajectoryManagerFactory) {
-      return;
-    }
-    (async () => {
-      const trajectoryManager = await trajectoryManagerFactory();
-      setRmfIngress((prev) => ({
-        ...prev,
-        trajectoryManager,
-      }));
-    })();
-  }, [appConfig]);
-
-  return (
-    <RmfIngressContext.Provider value={rmfIngress}>{props.children}</RmfIngressContext.Provider>
-  );
-}
-
 export interface RmfAppProps extends React.PropsWithChildren<{}> {}
 
 /**
@@ -299,23 +218,21 @@ export interface RmfAppProps extends React.PropsWithChildren<{}> {}
 export function RmfApp(props: RmfAppProps): JSX.Element {
   return (
     <TransportContextsProvider>
-      <RmfIngressProvider>
-        <BuildingMapProvider>
-          <DoorContextsProvider>
-            <LiftContextsProvider>
-              <DispenserContextsProvider>
-                <FleetContextsProvider>
-                  <NegotiationContextsProvider>
-                    <RmfHealthContextsProvider>
-                      <TaskContextsProvider>{props.children}</TaskContextsProvider>
-                    </RmfHealthContextsProvider>
-                  </NegotiationContextsProvider>
-                </FleetContextsProvider>
-              </DispenserContextsProvider>
-            </LiftContextsProvider>
-          </DoorContextsProvider>
-        </BuildingMapProvider>
-      </RmfIngressProvider>
+      <BuildingMapProvider>
+        <DoorContextsProvider>
+          <LiftContextsProvider>
+            <DispenserContextsProvider>
+              <FleetContextsProvider>
+                <NegotiationContextsProvider>
+                  <RmfHealthContextsProvider>
+                    <TaskContextsProvider>{props.children}</TaskContextsProvider>
+                  </RmfHealthContextsProvider>
+                </NegotiationContextsProvider>
+              </FleetContextsProvider>
+            </DispenserContextsProvider>
+          </LiftContextsProvider>
+        </DoorContextsProvider>
+      </BuildingMapProvider>
     </TransportContextsProvider>
   );
 }

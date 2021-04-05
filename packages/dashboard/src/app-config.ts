@@ -9,6 +9,7 @@ import {
 } from './managers/robot-trajectory-manager';
 import Ros2Transport from './ros2-transport';
 import RpcClient from './rpc-client';
+import { io } from 'api-client';
 
 export interface AppConfig {
   authenticator: Authenticator;
