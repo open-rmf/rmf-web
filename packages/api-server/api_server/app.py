@@ -5,6 +5,7 @@ from typing import Awaitable, Callable, List, Union
 
 import socketio
 from fastapi import Depends, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from tortoise import Tortoise
 
@@ -30,6 +31,13 @@ app = FastAPI(
     docs_url=f"{app_config.root_path}/docs",
     swagger_ui_oauth2_redirect_url=f"{app_config.root_path}/docs/oauth2-redirect",
     dependencies=[Depends(auth_scheme)],
+)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 os.makedirs(app_config.static_directory, exist_ok=True)
 app.mount(
