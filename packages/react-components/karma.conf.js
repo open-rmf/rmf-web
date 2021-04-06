@@ -1,5 +1,7 @@
 process.env.CHROME_BIN = require('puppeteer').executablePath();
 
+const chromeFlags = process.env.CHROME_FLAGS ? JSON.parse(process.env.CHROME_FLAGS) : [];
+
 module.exports = (config) => {
   const isCoverage = config.coverage ? true : false;
   const testWebpackConfig = require('./karma-config/webpack.test.js')({
@@ -84,6 +86,12 @@ module.exports = (config) => {
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
     browsers: ['ChromeHeadless'],
+
+    customLaunchers: {
+      ChromeHeadless: {
+        flags: chromeFlags,
+      },
+    },
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
