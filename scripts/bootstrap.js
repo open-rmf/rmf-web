@@ -51,7 +51,20 @@ const allPackages = [
 ];
 const scope = process.argv.length > 2 ? process.argv.slice(2) : allPackages;
 const verb = process.env['CI'] ? 'ci' : 'install';
-const targets = new Set(['.']);
+
+const result = child_process.spawnSync('npm', [verb], { stdio: 'inherit', cwd: `${__dirname}/..` });
+if (result.status !== 0) {
+  process.exit(result.status);
+}
+allPackages.forEach((pkg) => {
+  const packageJson = JSON.parse(fs.readFileSync(`${pkg}/package.json`));
+  const pkgName = packageJson.name;
+  fs.unlinkSync(`node_modules/${pkgName}`);
+  fs.symlinkSync(`../${pkg}`, `node_modules/${pkgName}`);
+  console.log(`symlinked ${pkgName}`);
+});
+
+const targets = new Set();
 scope.forEach((pkg) => {
   getDeps(pkg).forEach((p) => targets.add(p));
 });
@@ -61,12 +74,4 @@ targets.forEach((pkg) => {
   if (result.status !== 0) {
     process.exit(result.status);
   }
-});
-
-allPackages.forEach((pkg) => {
-  const packageJson = JSON.parse(fs.readFileSync(`${pkg}/package.json`));
-  const pkgName = packageJson.name;
-  fs.unlinkSync(`node_modules/${pkgName}`);
-  fs.symlinkSync(`../${pkg}`, `node_modules/${pkgName}`);
-  console.log(`symlinked ${pkgName}`);
 });
