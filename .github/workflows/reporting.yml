@@ -5,6 +5,7 @@ on:
       - 'packages/reporting/**'
       - 'packages/react-components/**'
       - 'packages/rmf-auth/**'
+      - 'packages/rmf-models/**'
   push:
     branches:
       - main
@@ -19,7 +20,6 @@ jobs:
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
-      options: --privileged --ipc=host
     defaults:
       run:
         shell: bash

@@ -3,16 +3,16 @@ import { RawKnot, RawVelocity, Trajectory } from '../../lib';
 
 export function allRobotModes(): RmfModels.RobotMode[] {
   return [
-    { mode: RmfModels.RobotMode.MODE_ADAPTER_ERROR },
-    { mode: RmfModels.RobotMode.MODE_CHARGING },
-    { mode: RmfModels.RobotMode.MODE_DOCKING },
-    { mode: RmfModels.RobotMode.MODE_EMERGENCY },
-    { mode: RmfModels.RobotMode.MODE_GOING_HOME },
-    { mode: RmfModels.RobotMode.MODE_IDLE },
-    { mode: RmfModels.RobotMode.MODE_MOVING },
-    { mode: RmfModels.RobotMode.MODE_PAUSED },
-    { mode: RmfModels.RobotMode.MODE_WAITING },
-    { mode: -1 },
+    { mode: RmfModels.RobotMode.MODE_ADAPTER_ERROR, mode_request_id: 0 },
+    { mode: RmfModels.RobotMode.MODE_CHARGING, mode_request_id: 0 },
+    { mode: RmfModels.RobotMode.MODE_DOCKING, mode_request_id: 0 },
+    { mode: RmfModels.RobotMode.MODE_EMERGENCY, mode_request_id: 0 },
+    { mode: RmfModels.RobotMode.MODE_GOING_HOME, mode_request_id: 0 },
+    { mode: RmfModels.RobotMode.MODE_IDLE, mode_request_id: 0 },
+    { mode: RmfModels.RobotMode.MODE_MOVING, mode_request_id: 0 },
+    { mode: RmfModels.RobotMode.MODE_PAUSED, mode_request_id: 0 },
+    { mode: RmfModels.RobotMode.MODE_WAITING, mode_request_id: 0 },
+    { mode: -1, mode_request_id: 0 },
   ];
 }
 
@@ -20,11 +20,12 @@ export function makeRobot(robotState?: Partial<RmfModels.RobotState>): RmfModels
   return {
     name: 'test',
     battery_percent: 1,
-    location: { level_name: 'test_level', x: 0, y: 0, yaw: 0, t: { sec: 0, nanosec: 0 } },
-    mode: { mode: RmfModels.RobotMode.MODE_PAUSED },
+    location: { level_name: 'test_level', x: 0, y: 0, yaw: 0, t: { sec: 0, nanosec: 0 }, index: 0 },
+    mode: { mode: RmfModels.RobotMode.MODE_PAUSED, mode_request_id: 0 },
     model: 'test_model',
     task_id: 'test_task_id',
     path: [],
+    seq: 0,
     ...robotState,
   };
 }

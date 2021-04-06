@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - 'packages/react-components/**'
+      - 'packages/rmf-models/**'
   push:
     branches:
       - main

@@ -1,7 +1,7 @@
-import * as RmfModels from 'rmf-models';
 import { act, render, waitForElementToBeRemoved } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
+import * as RmfModels from 'rmf-models';
 import { TaskSummaryAccordion, TaskSummaryAccordionInfo } from '../../lib';
 import {
   getActorFromStatus,
@@ -12,7 +12,7 @@ import {
 function getTaskObject(): Record<string, RmfModels.TaskSummary> {
   // Returns a task object with a new memory allocation
   return {
-    task1: {
+    task1: new RmfModels.TaskSummary({
       end_time: { sec: 0, nanosec: 0 },
       start_time: { sec: 0, nanosec: 0 },
       state: 1,
@@ -20,8 +20,8 @@ function getTaskObject(): Record<string, RmfModels.TaskSummary> {
         'Moving [tinyRobot/tinyRobot1]: ( 9.81228 -6.98942 -3.12904) -> ( 6.26403 -3.51569  1.16864) | Remaining phases: 1 | Remaining phases: 6',
       submission_time: { sec: 0, nanosec: 500 },
       task_id: 'task1',
-    },
-    task2: {
+    }),
+    task2: new RmfModels.TaskSummary({
       end_time: { sec: 0, nanosec: 0 },
       start_time: { sec: 0, nanosec: 0 },
       state: 1,
@@ -29,8 +29,8 @@ function getTaskObject(): Record<string, RmfModels.TaskSummary> {
         'Moving [tinyRobot/tinyRobot2]: ( 9.81228 -6.98942 -3.12904) -> ( 6.26403 -3.51569  1.16864) | Remaining phases: 1 | Remaining phases: 6',
       submission_time: { sec: 0, nanosec: 1000 },
       task_id: 'task2',
-    },
-    task3: {
+    }),
+    task3: new RmfModels.TaskSummary({
       end_time: { sec: 0, nanosec: 0 },
       start_time: { sec: 0, nanosec: 0 },
       state: 0,
@@ -38,7 +38,7 @@ function getTaskObject(): Record<string, RmfModels.TaskSummary> {
         'Moving [tinyRobot/tinyRobot3]: ( 9.81228 -6.98942 -3.12904) -> ( 6.26403 -3.51569  1.16864) | Remaining phases: 1 | Remaining phases: 6',
       submission_time: { sec: 0, nanosec: 1500 },
       task_id: 'task3',
-    },
+    }),
   };
 }
 
@@ -136,22 +136,22 @@ describe('Components gets the correct label on specifics states', () => {
 describe('Sort Tasks', () => {
   it('Sorts a task list by state correctly', () => {
     const tasks = getTaskObject();
-    tasks['test1'] = {
+    tasks['test1'] = new RmfModels.TaskSummary({
       end_time: { sec: 0, nanosec: 0 },
       start_time: { sec: 0, nanosec: 0 },
       state: 2,
       status: 'test1',
       submission_time: { sec: 0, nanosec: 0 },
       task_id: 'test1',
-    };
-    tasks['test2'] = {
+    });
+    tasks['test2'] = new RmfModels.TaskSummary({
       end_time: { sec: 0, nanosec: 0 },
       start_time: { sec: 0, nanosec: 0 },
       state: 3,
       status: 'test2',
       submission_time: { sec: 0, nanosec: 0 },
       task_id: 'test2',
-    };
+    });
     const sortedTasks = sortTasks(tasks);
     expect(sortedTasks[0].state).toBe(RmfModels.TaskSummary.STATE_ACTIVE);
     expect(sortedTasks[1].state).toBe(RmfModels.TaskSummary.STATE_ACTIVE);

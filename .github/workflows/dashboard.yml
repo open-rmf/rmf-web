@@ -5,6 +5,8 @@ on:
       - 'packages/dashboard/**'
       - 'packages/react-components/**'
       - 'packages/rmf-auth/**'
+      - 'packages/rmf-models/**'
+      - 'packages/api-client/**'
   push:
     branches:
       - main

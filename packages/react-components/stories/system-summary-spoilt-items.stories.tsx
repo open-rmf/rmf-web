@@ -1,7 +1,7 @@
-import React from 'react';
-import { SystemSummarySpoiltItems, SystemSummarySpoiltItemsProps } from '../lib';
 import { Meta, Story } from '@storybook/react';
+import React from 'react';
 import * as RmfModels from 'rmf-models';
+import { SystemSummarySpoiltItems, SystemSummarySpoiltItemsProps } from '../lib';
 
 export default {
   title: 'Systems summary spoilt items',
@@ -58,21 +58,21 @@ const spoiltEquipment: SystemSummarySpoiltItemsProps = {
     {
       name: 'robot',
       state: 'state',
-      robot: {
+      robot: new RmfModels.RobotState({
         name: 'robot',
         model: 'Model1',
-        mode: { mode: RmfModels.RobotMode.MODE_EMERGENCY },
-        location: {
+        mode: new RmfModels.RobotMode({ mode: RmfModels.RobotMode.MODE_EMERGENCY }),
+        location: new RmfModels.Location({
           level_name: 'L1',
           x: 4,
           y: -12,
           yaw: 0,
           t: { sec: 0, nanosec: 0 },
-        },
+        }),
         battery_percent: 100,
         path: [],
         task_id: 'task1',
-      },
+      }),
       fleet: 'fleet',
     },
   ],

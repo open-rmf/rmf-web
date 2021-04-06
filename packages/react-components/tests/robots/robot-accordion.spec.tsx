@@ -21,8 +21,14 @@ it('renders basic robot information', () => {
   const robot = makeRobot({
     name: 'test_robot',
     battery_percent: 1,
-    location: { level_name: 'test_level', x: 0, y: 0, yaw: 0, t: { sec: 0, nanosec: 0 } },
-    mode: { mode: RmfModels.RobotMode.MODE_PAUSED },
+    location: new RmfModels.Location({
+      level_name: 'test_level',
+      x: 0,
+      y: 0,
+      yaw: 0,
+      t: { sec: 0, nanosec: 0 },
+    }),
+    mode: new RmfModels.RobotMode({ mode: RmfModels.RobotMode.MODE_PAUSED }),
     model: 'test_model',
     task_id: 'test_task_id',
     path: [],

@@ -41,6 +41,7 @@ export const RobotMarkers: Story<RobotMarkerArgs> = ({ count, ...args }) => {
           y: -Math.random() * 20,
           yaw: 0,
           t: { sec: 0, nanosec: 0 },
+          index: 0,
         },
       });
       const target: [number, number] = [Math.random() * 20, -Math.random() * 20];
