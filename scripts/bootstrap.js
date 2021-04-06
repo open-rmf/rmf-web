@@ -48,6 +48,7 @@ const allPackages = [
   'packages/dashboard',
   'packages/api-server',
   'packages/api-client',
+  'packages/rmf-models',
 ];
 const scope = process.argv.length > 2 ? process.argv.slice(2) : allPackages;
 const verb = process.env['CI'] ? 'ci' : 'install';
@@ -59,7 +60,13 @@ if (result.status !== 0) {
 allPackages.forEach((pkg) => {
   const packageJson = JSON.parse(fs.readFileSync(`${pkg}/package.json`));
   const pkgName = packageJson.name;
-  fs.unlinkSync(`node_modules/${pkgName}`);
+  try {
+    fs.unlinkSync(`node_modules/${pkgName}`);
+  } catch (e) {
+    if (e.code !== 'ENOENT') {
+      throw e;
+    }
+  }
   fs.symlinkSync(`../${pkg}`, `node_modules/${pkgName}`);
   console.log(`symlinked ${pkgName}`);
 });
