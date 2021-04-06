@@ -185,7 +185,7 @@ class TestRmfIO(RosFixture):
         image_data = result["levels"][0]["images"][0]["data"]
         self.assertEqual(type(image_data), str)
 
-        resp = urllib.request.urlopen(f"http://localhost:8000{image_data}")
+        resp = urllib.request.urlopen(image_data)
         self.assertEqual(resp.status, 200)
 
 

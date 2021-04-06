@@ -33,7 +33,7 @@ app = FastAPI(
 )
 os.makedirs(app_config.static_directory, exist_ok=True)
 app.mount(
-    f"{app_config.static_path}",
+    "/static",
     StaticFiles(directory=app_config.static_directory),
     name="static",
 )
@@ -151,7 +151,7 @@ async def on_startup():
     shutdown_cbs.append(Tortoise.close_connections)
 
     static_files_repo = StaticFilesRepository(
-        app_config.static_path,
+        f"{app_config.proxy_url}/static",
         app_config.static_directory,
         logger.getChild("static_files"),
     )

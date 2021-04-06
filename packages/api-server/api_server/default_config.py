@@ -5,8 +5,10 @@ config = {
     "db_url": "sqlite://:memory:",  # TODO: explain how to use different db
     "root_path": "",  # base path to mount the app on, must not end with '/'
     "socket_io_path": "socket.io",  # the path to handle socket.io connections
-    "static_path": "/static",  # base path that static files should be served from, this is NOT relative to the root path
-    "static_directory": "static",  # the directory where static files should be stored.
+    "static_directory": "static",  # The directory where static files should be stored.
+    # If running behind a proxy, this should be the url of the proxy, else it should be
+    # the same url that the server is bounded to.
+    "proxy_url": "http://localhost:8000",
     "log_level": "WARNING",  # https://docs.python.org/3.8/library/logging.html#levels
     # path to a PEM encoded RSA public key which is used to verify JWT tokens, if the path is relative, it is based on the working dir.
     # Used to authenticate socketio requests.

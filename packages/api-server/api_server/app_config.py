@@ -11,8 +11,8 @@ class AppConfig:
     db_url: str
     root_path: str
     socket_io_path: str
-    static_path: str
     static_directory: str
+    proxy_url: str
     log_level: str
     jwt_public_key: Optional[str]
     oidc_url: Optional[str]

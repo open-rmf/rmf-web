@@ -4,7 +4,7 @@
   "description": "dummy package",
   "private": true,
   "scripts": {
-    "prepare": "",
+    "prepare": "python3 -m pipenv run python setup.py --help",
     "start": "python3 -m pipenv run python -m api_server",
     "test": "RMF_API_SERVER_LOG_LEVEL=CRITICAL python3 -m pipenv run python -m unittest",
     "test:cov": "RMF_API_SERVER_LOG_LEVEL=CRITICAL RMF_API_SERVER_TEST_COVERAGE=1 python3 -m pipenv run python -m coverage run -p -m unittest && python3 -m pipenv run python -m coverage combine",
