@@ -52,14 +52,9 @@ jobs:
         working-directory: packages/dashboard
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 12
       - name: bootstrap
         run: |
           . /opt/rmf/setup.bash
-          apt-get update && apt-get install -y python3-pip
-          pip3 install pipenv
           npm config set unsafe-perm
           npm run bootstrap -- packages/dashboard
           docker pull quay.io/keycloak/keycloak:11.0.0

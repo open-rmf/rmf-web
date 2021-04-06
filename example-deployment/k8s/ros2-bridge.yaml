@@ -1,57 +1,46 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: ros2-bridge
+  name: rmf-server
   labels:
-    app: ros2-bridge
+    app: rmf-server
 spec:
   type: LoadBalancer
   selector:
-    app: ros2-bridge
+    app: rmf-server
   ports:
     - protocol: TCP
-      port: 50002
+      port: 8000
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ros2-bridge
+  name: rmf-server
   labels:
-    app: ros2-bridge
+    app: rmf-server
 spec:
   selector:
     matchLabels:
-      app: ros2-bridge
+      app: rmf-server
   template:
     metadata:
       labels:
-        app: ros2-bridge
+        app: rmf-server
     spec:
       containers:
-      - name: ros2-bridge
-        image: rmf-web/ros2-bridge
+      - name: rmf-server
+        image: rmf-web/rmf-server
         imagePullPolicy: Never # remove this in a real deployment
-        args:
-          - --host=0.0.0.0
-          - --port=50002
-          - --publicKey=/configmap/jwt-pub-key.pub
         ports:
-          - containerPort: 50002
-        volumeMounts:
-          - mountPath: /configmap
-            name: jwt-pub-key
-      volumes:
-        - name: jwt-pub-key
-          configMap:
-            name: jwt-pub-key
+          - containerPort: 8000
       hostNetwork: true
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ros2-bridge
+  name: rmf-server
   labels:
-    app: ros2-bridge
+    app: rmf-server
 spec:
   tls:
     - hosts:
@@ -60,10 +49,10 @@ spec:
     - host: example.com
       http:
         paths:
-          - path: /ros2
+          - path: /rmf/api/1.0
             pathType: Prefix
             backend:
               service:
-                name: ros2-bridge
+                name: rmf-server
                 port:
-                  number: 50002
+                  number: 8000
