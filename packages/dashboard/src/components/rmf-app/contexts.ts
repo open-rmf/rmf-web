@@ -1,4 +1,4 @@
-import { io, SioClient } from 'api-client';
+import { Configuration, DoorsApi, io, LiftsApi, SioClient, TasksApi } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import appConfig from '../../app-config';
@@ -57,11 +57,21 @@ export const RmfHealthContext = React.createContext<HealthStatus>({
 
 export interface RmfIngress {
   sioClient: SioClient;
+  doorsApi: DoorsApi;
+  liftsApi: LiftsApi;
+  tasksApi: TasksApi;
   negotiationStatusManager: NegotiationStatusManager;
   trajectoryManager?: RobotTrajectoryManager;
 }
 
+const apiConfig: Configuration = {
+  accessToken: appConfig.authenticator.token,
+  basePath: appConfig.rmfServerUrl,
+};
 export const RmfIngressContext = React.createContext<RmfIngress>({
   sioClient,
+  doorsApi: new DoorsApi(apiConfig),
+  liftsApi: new LiftsApi(),
+  tasksApi: new TasksApi(),
   negotiationStatusManager: new NegotiationStatusManager(appConfig.trajServerUrl),
 });

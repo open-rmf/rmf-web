@@ -7,6 +7,7 @@ import {
   DispenserAccordion as DispenserAccordion_,
   DoorAccordion as DoorAccordion_,
   LiftAccordion as LiftAccordion_,
+  LiftAccordionProps,
   OmniPanel,
   OmniPanelView,
   OnChangeEvent,
@@ -238,38 +239,33 @@ export default function Dashboard(_props: {}): React.ReactElement {
 
   const tasks = React.useContext(TasksContext);
 
-  // TODO:
-  // const doorRequestPub = React.useMemo(() => transport?.createPublisher(adapterDoorRequests), [
-  //   transport,
-  // ]);
-  // const handleOnDoorControlClick = React.useCallback(
-  //   (_ev, door: RmfModels.Door, mode: number) =>
-  //     doorRequestPub?.publish({
-  //       door_name: door.name,
-  //       request_time: RomiCore.toRosTime(new Date()),
-  //       requested_mode: { value: mode },
-  //       requester_id: 'dashboard',
-  //     }),
-  //   [doorRequestPub],
-  // );
+  const { doorsApi, liftsApi } = React.useContext(RmfIngressContext);
 
-  // const liftRequestPub = React.useMemo(() => transport?.createPublisher(adapterLiftRequests), [
-  //   transport,
-  // ]);
-  // const handleLiftRequestSubmit = React.useCallback<
-  //   Required<LiftAccordionProps>['onRequestSubmit']
-  // >(
-  //   (_ev, lift, doorState, requestType, destination) =>
-  //     liftRequestPub?.publish({
-  //       lift_name: lift.name,
-  //       destination_floor: destination,
-  //       door_state: doorState,
-  //       request_type: requestType,
-  //       request_time: toRosTime(new Date()),
-  //       session_id: 'dashboard',
-  //     }),
-  //   [liftRequestPub],
-  // );
+  const handleOnDoorControlClick = React.useCallback(
+    (_ev, door: RmfModels.Door, mode: number) =>
+      doorsApi.postDoorRequestDoorsDoorNameRequestPost(
+        {
+          mode: mode,
+        },
+        door.name,
+      ),
+    [doorsApi],
+  );
+
+  const handleLiftRequestSubmit = React.useCallback<
+    Required<LiftAccordionProps>['onRequestSubmit']
+  >(
+    (_ev, lift, doorState, requestType, destination) =>
+      liftsApi.postLiftRequestLiftsLiftNameRequestPost(
+        {
+          destination,
+          requestType,
+          doorMode: doorState,
+        },
+        lift.name,
+      ),
+    [liftsApi],
+  );
 
   function clearSpotlights() {
     setNegotiationSpotlight(undefined);
@@ -332,7 +328,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                   ref={doorAccordionRefs[door.name].ref}
                   door={door}
                   doorState={doorStates[door.name]}
-                  // onDoorControlClick={handleOnDoorControlClick}
+                  onDoorControlClick={handleOnDoorControlClick}
                   data-name={door.name}
                 />
               ) : null;
@@ -348,7 +344,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                   ref={liftAccordionRefs[lift.name].ref}
                   lift={lift}
                   liftState={liftStates[lift.name]}
-                  // onRequestSubmit={handleLiftRequestSubmit}
+                  onRequestSubmit={handleLiftRequestSubmit}
                 />
               ) : null;
             })}

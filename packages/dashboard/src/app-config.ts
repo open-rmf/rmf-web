@@ -11,6 +11,7 @@ export interface AppConfig {
   authenticator: Authenticator;
   trajectoryManagerFactory?: () => Promise<RobotTrajectoryManager>;
   trajServerUrl: string;
+  rmfServerUrl: string;
   appResourcesFactory: () => Promise<ResourceManager | undefined>;
 }
 
@@ -41,11 +42,16 @@ export const appConfig: AppConfig = (() => {
     }
   })();
 
+  if (!process.env.REACT_APP_RMF_SERVER) {
+    throw new Error('REACT_APP_RMF_SERVER is required');
+  }
+
   return {
     authenticator,
     appResourcesFactory: ResourceManager.getResourceConfigurationFile,
     trajectoryManagerFactory: () => DefaultTrajectoryManager.create(trajServer),
     trajServerUrl: trajServer,
+    rmfServerUrl: process.env.REACT_APP_RMF_SERVER,
   };
 })();
 
