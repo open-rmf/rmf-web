@@ -1,8 +1,8 @@
-name: react-components
+ 
+name: rmf-models
 on:
   pull_request:
     paths:
-      - 'packages/react-components/**'
       - 'packages/rmf-models/**'
   push:
     branches:
@@ -18,25 +18,22 @@ jobs:
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
-      options: --privileged --ipc=host
     defaults:
       run:
         shell: bash
-        working-directory: packages/react-components
+        working-directory: packages/rmf-models
     steps:
       - uses: actions/checkout@v2
       - name: bootstrap
         run: |
           . /opt/rmf/setup.bash
           npm config set unsafe-perm
-          npm run bootstrap -- packages/react-components
+          npm run bootstrap -- packages/rmf-models
         working-directory: .
-      - name: build
-        run: npm run build:storybook && npm run build
       - name: test
-        run: npm run test:coverage
+        run: npm test
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          flags: react-components
+          flags: rmf-models
