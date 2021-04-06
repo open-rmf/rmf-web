@@ -31,7 +31,7 @@ jobs:
           npm run bootstrap -- packages/rmf-models
         working-directory: .
       - name: test
-        run: npm test
+        run: . /opt/rmf/setup.bash && npm test
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
