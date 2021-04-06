@@ -31,8 +31,8 @@ jobs:
           npm config set unsafe-perm
           npm run bootstrap -- packages/react-components
         working-directory: .
-      - name: build
-        run: npm run build:storybook && npm run build
+      - name: test build storybook
+        run: npm run build:storybook
       - name: test
         run: npm run test:coverage
       - name: Upload coverage to Codecov
