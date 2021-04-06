@@ -11,6 +11,7 @@
  *     there on an "external" install.
  */
 const child_process = require('child_process');
+const fs = require('fs');
 
 // hardcoded for now
 const deps = {
@@ -40,7 +41,6 @@ function getDeps(pkg) {
 }
 
 const allPackages = [
-  '.',
   'packages/ros2-bridge',
   'packages/react-components',
   'packages/rmf-auth',
@@ -61,4 +61,12 @@ targets.forEach((pkg) => {
   if (result.status !== 0) {
     process.exit(result.status);
   }
+});
+
+allPackages.forEach((pkg) => {
+  const packageJson = JSON.parse(fs.readFileSync(`${pkg}/package.json`));
+  const pkgName = packageJson.name;
+  fs.unlinkSync(`node_modules/${pkgName}`);
+  fs.symlinkSync(`../${pkg}`, `node_modules/${pkgName}`);
+  console.log(`symlinked ${pkgName}`);
 });
