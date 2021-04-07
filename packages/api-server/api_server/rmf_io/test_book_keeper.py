@@ -223,8 +223,7 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
     async def test_write_task_summary(self):
         task = TaskSummary(task_id="test_task")
         task.status = "test_status"
-        tasks = Tasks(tasks=[task])
-        self.rmf.task_summaries.on_next(tasks)
+        self.rmf.task_summaries.on_next(task)
         await asyncio.sleep(0)
         result = await ttm.TaskSummary.get(id_="test_task")
         self.assertIsNotNone(result)
@@ -233,8 +232,7 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
 
         task = TaskSummary(task_id="test_task")
         task.status = "test_status_2"
-        tasks = Tasks(tasks=[task])
-        self.rmf.task_summaries.on_next(tasks)
+        self.rmf.task_summaries.on_next(task)
         await asyncio.sleep(0)
         result = await ttm.TaskSummary.get(id_="test_task")
         self.assertIsNotNone(result)

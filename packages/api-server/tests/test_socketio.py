@@ -17,7 +17,7 @@ from rmf_door_msgs.msg import DoorState
 from rmf_fleet_msgs.msg import FleetState
 from rmf_ingestor_msgs.msg import IngestorState
 from rmf_lift_msgs.msg import LiftState
-from rmf_task_msgs.msg import Tasks
+from rmf_task_msgs.msg import TaskSummary
 
 from .ros_fixture import RosFixture
 from .server import launch_server, terminate_server
@@ -28,7 +28,7 @@ from .test_data import (
     make_fleet_state,
     make_ingestor_state,
     make_lift_state,
-    make_task_summaries,
+    make_task_summary,
 )
 
 
@@ -156,8 +156,8 @@ class TestRmfIO(RosFixture):
 
     async def test_task_summary(self):
         def ros_pub():
-            pub = self.node.create_publisher(Tasks, "task_summaries", 10)
-            pub.publish(make_task_summaries())
+            pub = self.node.create_publisher(TaskSummary, "task_summaries", 10)
+            pub.publish(make_task_summary())
 
         result = await self.check_endpoint(topics.task_summaries, ros_pub)
         self.assertEqual(result["task_id"], "test_task")

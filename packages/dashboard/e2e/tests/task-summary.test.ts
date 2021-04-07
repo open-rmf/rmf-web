@@ -20,12 +20,12 @@ describe('Loop request for task summary', () => {
     $('[data-component=MainMenu] [data-item=Plans]').click();
 
     browser.waitUntil(() => $('[role="treeitem"]').isDisplayed() === true, {
-      timeout: 60000,
+      timeout: 120000,
       timeoutMsg: 'expected TreeItem to be not null!',
     });
 
     const treeItem = $('[role="treeitem"]');
     expect(treeItem).toBeVisible();
     treeItem.click();
-  });
+  }).timeout(180000);
 });

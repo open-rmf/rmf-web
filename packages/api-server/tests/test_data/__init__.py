@@ -155,11 +155,3 @@ def make_task_summary(task_id: str = "test_task") -> TaskSummary:
         task_id=task_id,
         state=TaskSummary.STATE_ACTIVE,
     )
-
-
-def make_task_summaries() -> Tasks:
-    return Tasks(
-        tasks=[
-            make_task_summary(),
-        ]
-    )
