@@ -4,7 +4,7 @@ package_name = "reporting_server"
 
 setup(
     name=package_name,
-    description="RMF api server",
+    description="RMF reporting server",
     version="0.0.0",
     packages=["rest_server"],
     author="Matias Bavera",

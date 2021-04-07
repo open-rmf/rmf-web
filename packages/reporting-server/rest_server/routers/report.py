@@ -1,6 +1,8 @@
+from typing import List
+
 from fastapi import APIRouter
-from repository.raw_log import get_raw_logs
-from repository.report import get_doors_state
+from models.raw_log import RawLog_Pydantic
+from rest_server.repositories.report import get_all_raw_logs, get_doors_state
 
 router = APIRouter()
 
@@ -10,6 +12,6 @@ async def door_state_report():
     return get_doors_state()
 
 
-@router.get("/raw_logs/", tags=["raw_logs"])
+@router.get("/raw_logs/", tags=["raw_logs"], response_model=List[RawLog_Pydantic])
 async def raw_logs_report():
-    return get_raw_logs()
+    return await get_all_raw_logs()

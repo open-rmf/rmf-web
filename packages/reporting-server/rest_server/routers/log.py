@@ -1,12 +1,18 @@
 from fastapi import APIRouter, HTTPException, status
-from repository.raw_log import create_raw_log
+from pydantic import BaseModel
+from rest_server.repositories.raw_log import create_raw_log
 
 router = APIRouter()
 
+# class Data(BaseModel):
+#     hola: str
+
 
 @router.post("/raw/", tags=["raw_logs"], status_code=status.HTTP_201_CREATED)
-async def write_logs():
+async def write_logs(body: dict):
+    print(body)
     try:
-        create_raw_log()
-    except Exception:
+        await create_raw_log([body["log"]])
+    except Exception as e:
+        print(e)
         raise HTTPException(503, "cannot create the log")
