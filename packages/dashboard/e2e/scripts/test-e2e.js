@@ -13,8 +13,7 @@ if (process.env.REACT_APP_AUTH_PROVIDER === 'keycloak') {
 }
 process.env.REACT_APP_TRAJECTORY_SERVER =
   process.env.REACT_APP_TRAJECTORY_SERVER || 'ws://localhost:8006';
-process.env.REACT_APP_ROS2_BRIDGE_SERVER =
-  process.env.REACT_APP_ROS2_BRIDGE_SERVER || 'ws://localhost:50002';
+process.env.REACT_APP_RMF_SERVER = process.env.REACT_APP_RMF_SERVER || 'http://localhost:8000';
 process.env.E2E_USER = process.env.E2E_USER || 'admin';
 process.env.E2E_PASSWORD = process.env.E2E_PASSWORD || 'admin';
 process.env.E2E_DASHBOARD_URL = process.env.E2E_DASHBOARD_URL || 'http://localhost:5000';

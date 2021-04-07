@@ -19,11 +19,14 @@ export class RmfIngress {
     }
     this.sioClient = (() => {
       const token = appConfig.authenticator.token;
-      const options: Parameters<typeof io>[1] = {};
+      const url = new URL(appConfig.rmfServerUrl);
+      const options: Parameters<typeof io>[1] = {
+        path: `${url.pathname}/socket.io`,
+      };
       if (token) {
         options.auth = { token };
       }
-      return io(appConfig.rmfServerUrl, options);
+      return io(options);
     })();
     this.sioClient.on('error', console.error);
 
