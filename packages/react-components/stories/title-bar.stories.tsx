@@ -1,12 +1,25 @@
 import React from 'react';
 import { Story, Meta } from '@storybook/react';
 import TitleBar from '../lib/title-bar';
+import AccountCircle from '@material-ui/icons/AccountCircle';
+import IconButton from '@material-ui/core/IconButton';
 
 export default {
   title: 'Title Bar',
   component: TitleBar,
 } as Meta;
 
-export const SimpleTooltip: Story = (args) => {
-  return <TitleBar logoPath={'/resources/roshealth-logo-white.png'} {...args} />;
+export const ExampleTitleBar: Story = (args) => {
+  return (
+    <TitleBar logoPath={'/resources/roshealth-logo-white.png'} {...args}>
+      <IconButton
+        aria-label="account of current user"
+        aria-controls="menu-appbar"
+        aria-haspopup="true"
+        color="inherit"
+      >
+        <AccountCircle />
+      </IconButton>
+    </TitleBar>
+  );
 };
