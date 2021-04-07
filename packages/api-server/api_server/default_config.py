@@ -4,7 +4,6 @@ config = {
     "port": 8000,
     "db_url": "sqlite://:memory:",  # TODO: explain how to use different db
     "root_path": "",  # base path to mount the app on, must not end with '/'
-    "socket_io_path": "socket.io",  # the path to handle socket.io connections
     "static_directory": "static",  # The directory where static files should be stored.
     # If running behind a proxy, this should be the url of the proxy, else it should be
     # the same url that the server is bounded to.

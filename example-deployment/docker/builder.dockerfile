@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y curl && \
 
 RUN pip3 install pipenv
 
-COPY rmf/rmf_internal_msgs/rmf_charger_msgs /root/rmf_ws/src/rmf_dispenser_msgs
+COPY rmf/rmf_internal_msgs/rmf_charger_msgs /root/rmf_ws/src/rmf_charger_msgs
 COPY rmf/rmf_internal_msgs/rmf_dispenser_msgs /root/rmf_ws/src/rmf_dispenser_msgs
 COPY rmf/rmf_internal_msgs/rmf_door_msgs /root/rmf_ws/src/rmf_door_msgs
 COPY rmf/rmf_internal_msgs/rmf_fleet_msgs /root/rmf_ws/src/rmf_fleet_msgs
