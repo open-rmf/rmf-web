@@ -1,6 +1,6 @@
 import unittest
 
-from rmf_task_msgs.msg import Tasks, TaskSummary
+from rmf_task_msgs.msg import TaskSummary
 
 from . import RmfGateway
 

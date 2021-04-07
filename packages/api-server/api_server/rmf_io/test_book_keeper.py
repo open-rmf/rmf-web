@@ -3,7 +3,7 @@ import logging
 import unittest
 
 from rmf_door_msgs.msg import DoorMode
-from rmf_task_msgs.msg import Tasks, TaskSummary
+from rmf_task_msgs.msg import TaskSummary
 from tortoise import Tortoise
 
 from ..models import tortoise_models as ttm
