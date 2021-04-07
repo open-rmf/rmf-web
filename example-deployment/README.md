@@ -174,13 +174,13 @@ note: to update the configmap, delete it first and re-create it
 .bin/minikube kubectl -- create configmap jwt-pub-key --from-file=jwt-pub-key.pub
 ```
 
-## ros2-bridge
+## rmf-server
 
 ### Build minimal RMF image
 
-We will need a minimal base image containing all the RMF messages. This image will be used to build the ros2-bridge image.
+We will need a minimal base image containing all the RMF messages. This image will be used to build the rmf-server image.
 
-How you get this image will vary depending what version of RMF, and what extensions you are deploying it with. It is important that ros2-bridge is using the exact same message definitions as used by the deployment of RMF. For this example, we assume that you built rmf_demos from source using the main branch, so we will build the messages from source as well.
+How you get this image will vary depending what version of RMF, and what extensions you are deploying it with. It is important that rmf-server is using the exact same message definitions as used by the deployment of RMF. For this example, we assume that you built rmf_demos from source using the main branch, so we will build the messages from source as well.
 
 Get RMF source code
 
@@ -212,19 +212,25 @@ git clone --depth 1 https://github.com/open-rmf/rmf-web ws/rmf-web
 build the image
 
 ```bash
-docker build -t rmf-web/ros2-bridge -f docker/ros2-bridge.dockerfile ws/rmf-web
+docker build -t rmf-web/rmf-server -f docker/rmf-server.dockerfile ws/rmf-web
 ```
 
 "publish" the image, in a normal deployment, you would publish this to your docker registry, since we don't have a registry in this example, we will push the image directly to minikube
 
 ```bash
-docker save rmf-web/ros2-bridge | bash -c 'eval $(.bin/minikube docker-env) && docker load'
+docker save rmf-web/rmf-server | bash -c 'eval $(.bin/minikube docker-env) && docker load'
+```
+
+create a configmap for the server
+
+```bash
+.bin/minikube kubectl -- create configmap rmf-server-config --from-file=rmf_server_config.py
 ```
 
 deploy it
 
 ```bash
-.bin/minikube kubectl -- apply -f k8s/ros2-bridge.yaml
+.bin/minikube kubectl -- apply -f k8s/rmf-server.yaml
 ```
 
 ## dashboard
