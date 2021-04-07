@@ -7,6 +7,7 @@ config["host"] = "0.0.0.0"
 config["port"] = "8000"
 config["root_path"] = "/rmf/api/1.0"
 config["proxy_url"] = "https://example.com/rmf/api/1.0"
+config["log_level"] = "INFO"
 config["jwt_public_key"] = "/jwt-configmap/jwt-pub-key.pub"
 config[
     "oidc_url"
