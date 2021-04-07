@@ -13,7 +13,7 @@ Deploying a web app can be very complicated, so this repo serves as an example d
 In this example, we will be using the following software
 
 rmf-web:
-* ros2-bridge
+* rmf-server (aka api-server)
 * dashboard
 
 others:
@@ -201,7 +201,7 @@ docker build -t rmf-web/builder -f docker/builder.dockerfile ws/rmf/src
 
 NOTE: It is not recommended to use the default "latest" tag in a real deployment, be sure to tag your images accordingly.
 
-### Build ros2-bridge image
+### Build rmf-server image
 
 Get rmf-web source
 
@@ -330,15 +330,15 @@ The most common cause is that connection to the keycloak server is not working, 
 
 ## It is stuck in "downloading building map..."
 
-This is usually because the ros2-bridge server can't connect to rmf, first make sure that
+This is usually because the rmf-server server can't connect to rmf, first make sure that
 
 * rmf_demos is running
-* your version of rmf_demos is exactly the same as the one used to build your ros2-bridge image.
+* your version of rmf_demos is exactly the same as the one used to build your rmf-server image.
 
-If it still doesn't work, get a shell into the ros2-bridge port
+If it still doesn't work, get a shell into the rmf-server port
 
 ```bash
-.bin/minikube kubectl -- exec -it deployment/ros2-bridge -- bash
+.bin/minikube kubectl -- exec -it deployment/rmf-server -- bash
 ```
 
 When inside, test that you can connect to rmf
@@ -353,6 +353,6 @@ If you can't connect to rmf with ros cli tools, that indicates that there is som
 If you can connect to rmf, there is a chance that there is some discovery issues with rclnodejs. One possible workaround is to restart it. Exit your session inside the container and back on the host,
 
 ```bash
-.bin/minikube kubectl -- delete -f k8s/ros2-bridge.yaml
-.bin/minikube kubectl -- apply -f k8s/ros2-bridge.yaml
+.bin/minikube kubectl -- delete -f k8s/rmf-server.yaml
+.bin/minikube kubectl -- apply -f k8s/rmf-server.yaml
 ```

@@ -4,7 +4,7 @@ const fs = require('fs');
 const { execSync } = require('child_process');
 
 console.log('generate schemas:');
-execSync(`python3 -m pipenv run python ${__dirname}/generate-schemas.py`, { stdio: 'inherit' });
+execSync(`pipenv run python ${__dirname}/generate-schemas.py`, { stdio: 'inherit' });
 
 const schemas = fs.readdirSync('build/schema/').map((f) => `build/schema/${f}`);
 
