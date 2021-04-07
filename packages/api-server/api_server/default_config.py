@@ -16,4 +16,7 @@ config = {
     # url to the oidc endpoint, used to authenticate rest requests, it should point to the well known endpoint, e.g.
     # http://localhost:8080/auth/realms/rmf-web/.well-known/openid-configuration
     "oidc_url": None,
+    # client id registered with the authentication provider, this will be used to verify the
+    # "aud" claim.
+    "client_id": "rmf-server",
 }

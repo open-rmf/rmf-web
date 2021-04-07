@@ -3,6 +3,8 @@ from typing import Optional
 
 import jwt
 
+from .app_config import app_config
+
 
 class Authenticator(ABC):
     @abstractmethod
@@ -43,6 +45,11 @@ class JwtAuthenticator(Authenticator):
             raise AuthenticationError("no token provided")
         token = auth["token"]
         try:
-            jwt.decode(token, self._public_key, algorithms=["RS256"])
+            jwt.decode(
+                token,
+                self._public_key,
+                algorithms=["RS256"],
+                audience=app_config.client_id,
+            )
         except jwt.DecodeError as e:
             raise AuthenticationError from e

@@ -7,6 +7,7 @@ export default class StubAuthenticator
   implements Authenticator {
   readonly user: User = {
     username: 'stub',
+    token: '',
   };
 
   readonly token?: string = undefined;

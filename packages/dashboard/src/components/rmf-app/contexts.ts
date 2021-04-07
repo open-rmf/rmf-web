@@ -1,13 +1,8 @@
-import { Configuration, DoorsApi, io, LiftsApi, SioClient, TasksApi } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import appConfig from '../../app-config';
-import {
-  NegotiationConflict,
-  NegotiationStatusManager,
-} from '../../managers/negotiation-status-manager';
+import { NegotiationConflict } from '../../managers/negotiation-status-manager';
 import { HealthStatus } from '../../managers/rmf-health-state-manager';
-import { RobotTrajectoryManager } from '../../managers/robot-trajectory-manager';
+import { RmfIngress } from './rmf-ingress';
 
 const itemSummary = () => {
   return {
@@ -17,20 +12,6 @@ const itemSummary = () => {
 };
 
 const initializeItemSummary = itemSummary();
-
-const sioClient = (() => {
-  const token = appConfig.authenticator.token;
-  const options: Parameters<typeof io>[1] = {};
-  if (token) {
-    options.auth = { token };
-  }
-  if (process.env.REACT_APP_RMF_SERVER) {
-    return io(process.env.REACT_APP_RMF_SERVER, options);
-  } else {
-    return io(options);
-  }
-})();
-sioClient.on('error', console.error);
 
 export const DispenserStateContext = React.createContext<Record<string, RmfModels.DispenserState>>(
   {},
@@ -55,23 +36,4 @@ export const RmfHealthContext = React.createContext<HealthStatus>({
   },
 });
 
-export interface RmfIngress {
-  sioClient: SioClient;
-  doorsApi: DoorsApi;
-  liftsApi: LiftsApi;
-  tasksApi: TasksApi;
-  negotiationStatusManager: NegotiationStatusManager;
-  trajectoryManager?: RobotTrajectoryManager;
-}
-
-const apiConfig: Configuration = {
-  accessToken: appConfig.authenticator.token,
-  basePath: appConfig.rmfServerUrl,
-};
-export const RmfIngressContext = React.createContext<RmfIngress>({
-  sioClient,
-  doorsApi: new DoorsApi(apiConfig),
-  liftsApi: new LiftsApi(),
-  tasksApi: new TasksApi(),
-  negotiationStatusManager: new NegotiationStatusManager(appConfig.trajServerUrl),
-});
+export const RmfIngressContext = React.createContext(new RmfIngress());

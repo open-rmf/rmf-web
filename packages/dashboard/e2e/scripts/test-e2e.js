@@ -45,8 +45,8 @@ if (!eval(process.env.E2E_NO_DASHBOARD)) {
   services.push('serve -c ../e2e/serve.json ../build');
 }
 // eslint-disable-next-line no-eval
-if (!eval(process.env.E2E_NO_ROS2_BRIDGE)) {
-  services.push('npm run start:ros2-bridge');
+if (!eval(process.env.E2E_NO_RMF_SERVER)) {
+  services.push('npm run start:rmf-server');
 }
 
 concurrently([...services, `node scripts/auth-ready.js && wdio ${wdioArgs}`], {

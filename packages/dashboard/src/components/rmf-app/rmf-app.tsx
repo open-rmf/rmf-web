@@ -1,7 +1,13 @@
 import { MessageType, Topic } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
+import appConfig from '../../app-config';
 import RmfHealthStateManager from '../../managers/rmf-health-state-manager';
+import {
+  DefaultTrajectoryManager,
+  RobotTrajectoryManager,
+} from '../../managers/robot-trajectory-manager';
+import { UserContext } from '../auth/contexts';
 import {
   BuildingMapContext,
   DispenserStateContext,
@@ -13,6 +19,7 @@ import {
   RmfIngressContext,
   TasksContext,
 } from './contexts';
+import { RmfIngress } from './rmf-ingress';
 
 function rmfStateContextProviderHOC<TopicT extends Topic>(
   topic: TopicT,
@@ -132,6 +139,21 @@ function RmfHealthContextsProvider(props: React.PropsWithChildren<{}>): JSX.Elem
   );
 }
 
+function RmfIngressProvider(props: React.PropsWithChildren<{}>) {
+  const user = React.useContext(UserContext);
+  const [trajMgr, setTrajMgr] = React.useState<RobotTrajectoryManager | undefined>(undefined);
+  React.useEffect(() => {
+    (async () => {
+      setTrajMgr(await DefaultTrajectoryManager.create(appConfig.trajServerUrl));
+    })();
+  }, []);
+
+  const rmfIngress = React.useMemo(() => new RmfIngress(user, trajMgr), [user, trajMgr]);
+  return (
+    <RmfIngressContext.Provider value={rmfIngress}>{props.children}</RmfIngressContext.Provider>
+  );
+}
+
 export interface RmfAppProps extends React.PropsWithChildren<{}> {}
 
 /**
@@ -149,20 +171,22 @@ export interface RmfAppProps extends React.PropsWithChildren<{}> {}
  */
 export function RmfApp(props: RmfAppProps): JSX.Element {
   return (
-    <BuildingMapProvider>
-      <DoorContextsProvider>
-        <LiftContextsProvider>
-          <DispenserContextsProvider>
-            <FleetContextsProvider>
-              <NegotiationContextsProvider>
-                <RmfHealthContextsProvider>
-                  <TaskContextsProvider>{props.children}</TaskContextsProvider>
-                </RmfHealthContextsProvider>
-              </NegotiationContextsProvider>
-            </FleetContextsProvider>
-          </DispenserContextsProvider>
-        </LiftContextsProvider>
-      </DoorContextsProvider>
-    </BuildingMapProvider>
+    <RmfIngressProvider>
+      <BuildingMapProvider>
+        <DoorContextsProvider>
+          <LiftContextsProvider>
+            <DispenserContextsProvider>
+              <FleetContextsProvider>
+                <NegotiationContextsProvider>
+                  <RmfHealthContextsProvider>
+                    <TaskContextsProvider>{props.children}</TaskContextsProvider>
+                  </RmfHealthContextsProvider>
+                </NegotiationContextsProvider>
+              </FleetContextsProvider>
+            </DispenserContextsProvider>
+          </LiftContextsProvider>
+        </DoorContextsProvider>
+      </BuildingMapProvider>
+    </RmfIngressProvider>
   );
 }
