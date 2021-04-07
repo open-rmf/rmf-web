@@ -1,17 +1,10 @@
-import {
-  AppBar as MuiAppBar,
-  IconButton,
-  makeStyles,
-  Menu,
-  MenuItem,
-  Toolbar,
-  Typography,
-} from '@material-ui/core';
+import { IconButton, Menu, MenuItem } from '@material-ui/core';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import HelpIcon from '@material-ui/icons/Help';
 import SettingsIcon from '@material-ui/icons/Settings';
 import React from 'react';
 import DashboardTooltip from 'react-components/lib/tooltip';
+import TitleBar from 'react-components/lib/title-bar';
 import { AppControllerContext, TooltipsContext } from './app-contexts';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
 
@@ -28,7 +21,6 @@ export const AppBar = React.memo(
     );
 
     const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
-    const classes = useStyles();
     const authenticator = React.useContext(AuthenticatorContext);
     const user = React.useContext(UserContext);
     const { showTooltips } = React.useContext(TooltipsContext);
@@ -42,12 +34,8 @@ export const AppBar = React.memo(
     }
 
     return (
-      <MuiAppBar id="appbar" position="static">
-        <Toolbar>
-          <Typography variant="h6" className={classes.toolbarTitle}>
-            Dashboard
-          </Typography>
-
+      <div>
+        <TitleBar logoPath={'/roshealth-logo-white.png'}>
           <DashboardTooltip
             title="Define dashboard trajectory settings"
             id="setting-tooltip"
@@ -106,19 +94,10 @@ export const AppBar = React.memo(
               <HelpIcon />
             </IconButton>
           </DashboardTooltip>
-        </Toolbar>
-      </MuiAppBar>
+        </TitleBar>
+      </div>
     );
   },
 );
-
-const useStyles = makeStyles((_theme) => ({
-  toolbarTitle: {
-    flexGrow: 1,
-  },
-  avatar: {
-    cursor: 'pointer',
-  },
-}));
 
 export default AppBar;
