@@ -7,7 +7,7 @@ from rmf_task_msgs.msg import TaskSummary
 from tortoise import Tortoise
 
 from ..models import tortoise_models as ttm
-from . import test_data
+from ..test import test_data
 from .book_keeper import RmfBookKeeper
 from .gateway import RmfGateway
 

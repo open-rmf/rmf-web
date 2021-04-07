@@ -19,9 +19,9 @@ from rmf_ingestor_msgs.msg import IngestorState
 from rmf_lift_msgs.msg import LiftState
 from rmf_task_msgs.msg import TaskSummary
 
-from .ros_fixture import RosFixture
-from .server import launch_server, terminate_server
-from .test_data import (
+from .test.ros_fixture import RosFixture
+from .test.server import launch_server, terminate_server
+from .test.test_data import (
     make_building_map,
     make_dispenser_state,
     make_door_state,
@@ -192,7 +192,9 @@ class TestRmfIO(RosFixture):
 class TestRmfIO_JWTAuth(unittest.IsolatedAsyncioTestCase):
     @classmethod
     def setUpClass(cls):
-        cls.server_proc = launch_server(f"{os.path.dirname(__file__)}/config_auth.py")
+        cls.server_proc = launch_server(
+            f"{os.path.dirname(__file__)}/test/config_auth.py"
+        )
         super().setUpClass()
 
     @classmethod
@@ -210,7 +212,7 @@ class TestRmfIO_JWTAuth(unittest.IsolatedAsyncioTestCase):
     async def try_connect(self, token: Optional[str] = None) -> bool:
         args = [
             "node",
-            f"{os.path.dirname(__file__)}/test_data/connect.js",
+            f"{os.path.dirname(__file__)}/test/connect.js",
             "http://localhost:8000",
         ]
         if token:
@@ -233,7 +235,7 @@ class TestRmfIO_JWTAuth(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(await self.try_connect("invalid"))
 
     async def test_success_with_valid_token(self):
-        with open(f"{os.path.dirname(__file__)}/test_data/test.key", "br") as f:
+        with open(f"{os.path.dirname(__file__)}/test/test.key", "br") as f:
             private_key = f.read()
         token = jwt.encode(
             {"some": "payload", "aud": "rmf-server"}, private_key, algorithm="RS256"

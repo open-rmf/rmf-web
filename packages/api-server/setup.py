@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import find_packages, setup
 
 package_name = "api_server"
 
@@ -6,7 +6,7 @@ setup(
     name=package_name,
     description="RMF api server",
     version="0.0.1",
-    packages=["api_server"],
+    packages=find_packages(exclude=["tests"]),
     author="Teo Koon Peng",
     author_email="koonpeng@openrobotics.org",
     keywords=["ROS", "RMF"],

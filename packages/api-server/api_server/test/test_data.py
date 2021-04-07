@@ -7,7 +7,7 @@ from rmf_door_msgs.msg import DoorMode, DoorState
 from rmf_fleet_msgs.msg import FleetState, Location, RobotMode, RobotState
 from rmf_ingestor_msgs.msg import IngestorState
 from rmf_lift_msgs.msg import LiftState
-from rmf_task_msgs.msg import Tasks, TaskSummary
+from rmf_task_msgs.msg import TaskSummary
 
 
 def make_door(name: str = "test_door") -> Door:
