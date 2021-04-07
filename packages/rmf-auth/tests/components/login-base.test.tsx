@@ -32,7 +32,8 @@ describe('Login page', () => {
   });
 
   it('performs login when login button is clicked', () => {
-    const authenticator = new FakeAuthenticator({ username: 'fakeUser' });
+    const authenticator = new FakeAuthenticator({ username: 'fakeUser', token: '' });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const spy = jest.spyOn(authenticator, 'login').mockImplementation(() => undefined as any);
 
     const root = render(
