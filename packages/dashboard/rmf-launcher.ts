@@ -76,7 +76,7 @@ export class LocalLauncher {
       return;
     }
 
-    const headless = !process.env.ROMI_DASHBOARD_NO_HEADLESS;
+    const headless = !process.env.RMF_DASHBOARD_NO_HEADLESS;
     const officeDemoArgs = ['launch', 'rmf_demos', 'office.launch.xml'];
     if (headless) {
       officeDemoArgs.push('headless:=true');

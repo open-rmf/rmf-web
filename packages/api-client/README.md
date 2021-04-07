@@ -56,7 +56,6 @@ Generate code
 java -jar .bin/swagger-codegen-cli.jar generate -ihttp://localhost:8000/openapi.json -ltypescript-axios -olib/openapi
 ```
 
-**Only for swagger-codegen 3.0.25**
 There is a bug with `ModelObject` type being missing, workaround it by adding a type to the generated models.
 ```bash
 echo 'export type ModelObject = Record<string, any>;' >> lib/openapi/models/index.ts

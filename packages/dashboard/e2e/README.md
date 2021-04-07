@@ -19,7 +19,7 @@ There are also some environment variables the test runner sets by default
 | Key | Default Value |
 |---|---|
 | REACT_APP_AUTH_PROVIDER | keycloak |
-| REACT_APP_KEYCLOAK_CONFIG | { "realm": "master", "clientId": "romi-dashboard", "url": "http://localhost:8088/auth" } |
+| REACT_APP_KEYCLOAK_CONFIG | { "realm": "master", "clientId": "rmf-dashboard", "url": "http://localhost:8088/auth" } |
 | REACT_APP_TRAJECTORY_SERVER | ws://localhost:8006 |
 | REACT_APP_ROS2_BRIDGE_SERVER | ws://localhost:50002 |
 | E2E_USER | admin |

@@ -61,7 +61,7 @@ export const NavButtons = React.memo((props: NavButtonProps) => {
           id="tour-last-step-btn"
           data-testid="last-step-btn"
         >
-          Start Using Romi
+          Start Using RMF
         </Button>
       )}
     </Box>

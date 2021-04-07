@@ -1,7 +1,7 @@
 import { ReactourStep } from 'reactour';
 
 export const tourText: { [stepName: string]: { id: number; text: string } } = {
-  Welcome: { id: 1, text: 'Welcome to RoMi dashboard' },
+  Welcome: { id: 1, text: 'Welcome to RMF dashboard' },
   Zoom: {
     id: 2,
     text:
@@ -31,7 +31,7 @@ export const tourText: { [stepName: string]: { id: number; text: string } } = {
   LoopRequest: {
     id: 10,
     text:
-      'An example is the Loop Request, where RoMi will assign the most suitable robot to perform the task at the point of request.',
+      'An example is the Loop Request, where RMF will assign the most suitable robot to perform the task at the point of request.',
   },
   Settings: {
     id: 11,

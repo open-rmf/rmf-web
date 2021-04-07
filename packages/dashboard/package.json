@@ -1,6 +1,6 @@
 {
-  "name": "romi-dashboard",
-  "version": "0.0.1-alpha.0",
+  "name": "rmf-dashboard",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
     "start": "concurrently npm:start:rmf-server npm:start:rmf npm:start:react",

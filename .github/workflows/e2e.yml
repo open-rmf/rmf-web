@@ -57,7 +57,7 @@ jobs:
           . /opt/rmf/setup.bash
           npm config set unsafe-perm
           npm run bootstrap -- packages/dashboard
-          docker pull quay.io/keycloak/keycloak:11.0.0
+          docker pull quay.io/keycloak/keycloak:12.0.4
           cd packages/dashboard/e2e
           npm ci
         working-directory: .

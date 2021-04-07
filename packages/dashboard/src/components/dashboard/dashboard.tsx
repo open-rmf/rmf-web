@@ -243,7 +243,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
 
   const handleOnDoorControlClick = React.useCallback(
     (_ev, door: RmfModels.Door, mode: number) =>
-      doorsApi.postDoorRequestDoorsDoorNameRequestPost(
+      doorsApi?.postDoorRequestDoorsDoorNameRequestPost(
         {
           mode: mode,
         },
@@ -256,7 +256,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     Required<LiftAccordionProps>['onRequestSubmit']
   >(
     (_ev, lift, doorState, requestType, destination) =>
-      liftsApi.postLiftRequestLiftsLiftNameRequestPost(
+      liftsApi?.postLiftRequestLiftsLiftNameRequestPost(
         {
           destination,
           requestType,

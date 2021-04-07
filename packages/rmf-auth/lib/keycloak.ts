@@ -33,7 +33,6 @@ export default class KeycloakAuthenticator
     debug('initializing authenticator');
 
     this._inst.onAuthSuccess = async () => {
-      console.log(this._inst.idTokenParsed);
       this._user = {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         username: (this._inst.idTokenParsed as any).preferred_username,

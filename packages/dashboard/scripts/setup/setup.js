@@ -9,7 +9,7 @@ const createConfigFile = () => {
   console.log(chalk`
 Hello! 👋
 
-{bold.red IMPORTANT} 🚨 You are about to configure the source of the resources for the Romi Dashboard project `);
+{bold.red IMPORTANT} 🚨 You are about to configure the source of the resources for the RMF Dashboard project `);
   console.log(chalk`
 You have two options:
 {cyan →} 1. {blue get} the assets from a remote GH source.

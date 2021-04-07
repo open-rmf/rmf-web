@@ -31,6 +31,9 @@ function rmfStateContextProviderHOC<TopicT extends Topic>(
     const [state, setState] = React.useState<Record<string, MessageType[TopicT]>>({});
 
     React.useEffect(() => {
+      if (!sioClient) {
+        return;
+      }
       sioClient.emit('subscribe', topic);
       sioClient.on(topic, (msg: MessageType[TopicT]) =>
         setState((prev) => ({ ...prev, [keyMapper(msg)]: msg })),
@@ -48,6 +51,9 @@ function BuildingMapProvider(props: React.PropsWithChildren<{}>): JSX.Element {
   const [buildingMap, setBuildingMap] = React.useState<RmfModels.BuildingMap | null>(null);
 
   React.useEffect(() => {
+    if (!sioClient) {
+      return;
+    }
     sioClient.emit('subscribe', 'building_map');
     sioClient.on('building_map', setBuildingMap);
 
@@ -148,7 +154,10 @@ function RmfIngressProvider(props: React.PropsWithChildren<{}>) {
     })();
   }, []);
 
-  const rmfIngress = React.useMemo(() => new RmfIngress(user, trajMgr), [user, trajMgr]);
+  const rmfIngress = React.useMemo(() => new RmfIngress(user || undefined, trajMgr), [
+    user,
+    trajMgr,
+  ]);
   return (
     <RmfIngressContext.Provider value={rmfIngress}>{props.children}</RmfIngressContext.Provider>
   );
