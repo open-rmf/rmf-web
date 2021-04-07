@@ -67,6 +67,9 @@ class RouteFixture(unittest.IsolatedAsyncioTestCase):
             loop.call_soon_threadsafe(fut.set_result, ros_fut.result())
 
         Thread(target=spin).start()
+        cli = self.node.create_client(Service, srv_name)
+        if not cli.wait_for_service(1):
+            raise RuntimeError("fail to create service")
         return fut
 
     def spin_until(self, fut: rclpy.task.Future):
