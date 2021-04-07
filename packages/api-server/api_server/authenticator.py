@@ -51,5 +51,5 @@ class JwtAuthenticator(Authenticator):
                 algorithms=["RS256"],
                 audience=app_config.client_id,
             )
-        except jwt.DecodeError as e:
+        except jwt.InvalidTokenError as e:
             raise AuthenticationError from e
