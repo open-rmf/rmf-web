@@ -64,7 +64,7 @@ const NavigationTabs = (props: NavigationBarProps): React.ReactElement => {
   return (
     <div className={classes.root}>
       <AppBar position="static">
-        <Tabs value={value} onChange={handleChange} aria-label="simple tabs example">
+        <Tabs value={value} onChange={handleChange} aria-label="navigation-tabs">
           {populateTabs()}
         </Tabs>
       </AppBar>
