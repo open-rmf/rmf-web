@@ -26,6 +26,11 @@ setup(
         "pyjwt[crypto]~=2.0",
         "pydantic~=1.8",
     ],
+    extras_require={
+        "postgres": ["asyncpg~=0.22.0"],
+        "mysql": ["aiomysql~=0.0.21"],
+        "maria": ["aiomysql~=0.0.21"],
+    },
     entry_points={
         "console_scripts": [
             "rmf_api_server=api_server.__main__:main",
