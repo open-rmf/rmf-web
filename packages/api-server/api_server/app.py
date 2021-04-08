@@ -27,9 +27,6 @@ else:
 shutdown_cbs: List[Callable[[], Union[None, Awaitable[None]]]] = []
 
 app = FastAPI(
-    openapi_url=f"{app_config.root_path}/openapi.json",
-    docs_url=f"{app_config.root_path}/docs",
-    swagger_ui_oauth2_redirect_url=f"{app_config.root_path}/docs/oauth2-redirect",
     dependencies=[Depends(auth_scheme)],
 )
 app.add_middleware(
@@ -41,22 +38,20 @@ app.add_middleware(
 )
 os.makedirs(app_config.static_directory, exist_ok=True)
 app.mount(
-    f"{app_config.root_path}/static",
+    "/static",
     StaticFiles(directory=app_config.static_directory),
     name="static",
 )
 sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins="*", logger=logger)
-sio_app = socketio.ASGIApp(
-    sio, other_asgi_app=app, socketio_path=f"{app_config.root_path}/socket.io"
-)
+sio_app = socketio.ASGIApp(sio, other_asgi_app=app, socketio_path="/socket.io")
 
 app.include_router(
     routes.building_map_router,
-    prefix=f"{app_config.root_path}/building_map",
+    prefix="/building_map",
 )
-app.include_router(routes.doors_router, prefix=f"{app_config.root_path}/doors")
-app.include_router(routes.lifts_router, prefix=f"{app_config.root_path}/lifts")
-app.include_router(routes.tasks_router, prefix=f"{app_config.root_path}/tasks")
+app.include_router(routes.doors_router, prefix="/doors")
+app.include_router(routes.lifts_router, prefix="/lifts")
+app.include_router(routes.tasks_router, prefix="/tasks")
 
 
 async def load_doors():
@@ -159,7 +154,7 @@ async def on_startup():
     shutdown_cbs.append(Tortoise.close_connections)
 
     static_files_repo = StaticFilesRepository(
-        f"{app_config.proxy_url}/static",
+        f"{app_config.public_url.geturl()}/static",
         app_config.static_directory,
         logger.getChild("static_files"),
     )

@@ -4,9 +4,8 @@ from api_server.default_config import config as default_config
 
 config = deepcopy(default_config)
 config["host"] = "0.0.0.0"
-config["port"] = "8000"
-config["root_path"] = "/rmf/api/1.0"
-config["proxy_url"] = "https://example.com/rmf/api/1.0"
+config["port"] = 8000
+config["public_url"] = "http://localhost:8001/rmf/api/v1"
 config["log_level"] = "INFO"
 config["jwt_public_key"] = "/jwt-configmap/jwt-pub-key.pub"
 config[
