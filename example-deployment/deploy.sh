@@ -41,7 +41,10 @@ echo 'waiting for keycloak to be ready...'
 kubectl wait --for=condition=available deployment/keycloak
 
 echo 'creating jwt configmap...'
-node keycloak-tools/bootstrap-keycloak.js
+function bootstrap_kc() {
+  node keycloak-tools/bootstrap-keycloak.js
+}
+bootstrap_kc || (sleep 1 && bootstrap_kc) # sometimes keycloak reports that it is ready before it can actually serve requests
 node keycloak-tools/get-cert.js > keycloak.pem
 openssl x509 -in keycloak.pem -pubkey -noout -out jwt-pub-key.pub
 kubectl create configmap jwt-pub-key --from-file=jwt-pub-key.pub -o=yaml --dry-run=client | kubectl apply -f -
@@ -56,11 +59,11 @@ docker save rmf-web/rmf-server | bash -c 'eval $(.bin/minikube docker-env) && do
 echo 'creating rmf-server configmap...'
 kubectl create configmap rmf-server-config --from-file=rmf_server_config.py -o=yaml --dry-run=client | kubectl apply -f -
 echo 'deploying rmf-server...'
-.bin/minikube kubectl -- apply -f k8s/rmf-server.yaml
+kubectl apply -f k8s/rmf-server.yaml
 
 echo 'building dashboard image...'
 docker build -t rmf-web/dashboard -f docker/dashboard.dockerfile $rmf_web_ws
 echo 'publishing rmf-server image...'
 docker save rmf-web/dashboard | bash -c 'eval $(.bin/minikube docker-env) && docker load'
 echo 'deploying dashboard...'
-.bin/minikube kubectl -- apply -f k8s/dashboard.yaml
+kubectl apply -f k8s/dashboard.yaml
