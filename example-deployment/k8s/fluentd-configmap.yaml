@@ -29,9 +29,23 @@ data:
     <source>
       @type tail
       read_from_head true
-      tag dashboard.*
+      tag rmf.dashboard.*
       path /var/log/containers/dashboard*.log
       pos_file /var/log/fluent/fluentd-dashboard.log.pos
+      exclude_path ["/var/log/containers/fluent*"]
+      <parse>
+        @type kubernetes
+        @type "#{ENV['FLUENT_CONTAINER_TAIL_PARSER_TYPE'] || 'json'}"
+        time_format %Y-%m-%dT%H:%M:%S.%NZ
+      </parse>
+    </source>
+
+     <source>
+      @type tail
+      read_from_head true
+      tag rmf.ros-bridge.*
+      path /var/log/containers/ros-bridge*.log
+      pos_file /var/log/fluent/fluentd-ros-bridge.log.pos
       exclude_path ["/var/log/containers/fluent*"]
       <parse>
         @type kubernetes
@@ -118,15 +132,16 @@ data:
     #   path /tmp/all-logs.log
     # </match>
     
-    <match pattern>
+    <match rmf.**>
       @type http
-      endpoint http://logserver.com:9000/api
+      endpoint http://node-app-service:9009/post
       http_method post
       open_timeout 3
       # content_type
       <format>
         @type json
       </format>
+      json_array true
       <buffer>
         flush_interval 10s
       </buffer>

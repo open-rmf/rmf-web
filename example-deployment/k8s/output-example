@@ -1,3 +1,109 @@
 {"log":"\u001b[32m2021-03-30T23:18:21+00:00 [ros2] info: removed subscription {\"id\":111,\"topic\":\"door_states\"}\u001b[39m\n","stream":"stdout","time":"2021-03-30T23:18:21.70581143Z"}
 
 {"log":"2123: Tue Mar 30 23:53:00 UTC 2021\n","stream":"stdout","time":"2021-03-30T23:53:00.197536044Z"}
+
+
+[
+  {
+    log: '/docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration\n',
+    stream: 'stdout'
+  },
+  {
+    log: '/docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/\n',
+    stream: 'stdout'
+  },
+  {
+    log: '/docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh\n',
+    stream: 'stdout'
+  },
+  {
+    log: '10-listen-on-ipv6-by-default.sh: Getting the checksum of /etc/nginx/conf.d/default.conf\n',
+    stream: 'stdout'
+  },
+  {
+    log: '10-listen-on-ipv6-by-default.sh: Enabled listen on IPv6 in /etc/nginx/conf.d/default.conf\n',
+    stream: 'stdout'
+  },
+  {
+    log: '/docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh\n',
+    stream: 'stdout'
+  },
+  {
+    log: '/docker-entrypoint.sh: Configuration complete; ready for start up\n',
+    stream: 'stdout'
+  }
+]
+post
+[
+  {
+    log: '172.17.0.4 - - [08/Apr/2021:04:21:36 +0000] "GET /dashboard HTTP/1.1" 200 3255 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36" "192.168.49.1"\n',
+    stream: 'stdout'
+  },
+  {
+    log: '172.17.0.4 - - [08/Apr/2021:04:21:36 +0000] "GET /dashboard/static/css/2.350091fa.chunk.css HTTP/1.1" 200 18473 "https://example.com/dashboard" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36" "192.168.49.1"\n',
+    stream: 'stdout'
+  },
+  {
+    log: '172.17.0.4 - - [08/Apr/2021:04:21:36 +0000] "GET /dashboard/static/css/main.96ca5f97.chunk.css HTTP/1.1" 200 893 "https://example.com/dashboard" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36" "192.168.49.1"\n',
+    stream: 'stdout'
+  },
+  {
+    log: '172.17.0.4 - - [08/Apr/2021:04:21:36 +0000] "GET /dashboard/static/js/main.d7541356.chunk.js HTTP/1.1" 200 148643 "https://example.com/dashboard" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36" "192.168.49.1"\n',
+    stream: 'stdout'
+  },
+  {
+    log: '172.17.0.4 - - [08/Apr/2021:04:21:36 +0000] "GET /dashboard/static/js/2.510cb2a8.chunk.js HTTP/1.1" 200 2022180 "https://example.com/dashboard" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36" "192.168.49.1"\n',
+    stream: 'stdout'
+  },
+  {
+    log: '172.17.0.4 - - [08/Apr/2021:04:21:37 +0000] "GET /dashboard/favicon.ico HTTP/1.1" 200 9294 "https://example.com/dashboard" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36" "192.168.49.1"\n',
+    stream: 'stdout'
+  },
+  {
+    log: '172.17.0.4 - - [08/Apr/2021:04:21:37 +0000] "GET /dashboard/silent-check-sso.html HTTP/1.1" 200 116 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36" "192.168.49.1"\n',
+    stream: 'stdout'
+  },
+  {
+    log: '172.17.0.4 - - [08/Apr/2021:04:21:37 +0000] "GET /dashboard/assets/ros-health.png HTTP/1.1" 200 8220 "https://example.com/dashboard/login" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36" "192.168.49.1"\n',
+    stream: 'stdout'
+  },
+  {
+    log: '172.17.0.4 - - [08/Apr/2021:04:21:37 +0000] "GET /dashboard/static/media/roboto-latin-400.176f8f5b.woff2 HTTP/1.1" 200 15736 "https://example.com/dashboard/static/css/2.350091fa.chunk.css" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36" "192.168.49.1"\n',
+    stream: 'stdout'
+  },
+  {
+    log: '172.17.0.4 - - [08/Apr/2021:04:21:37 +0000] "GET /dashboard/static/media/roboto-latin-500.f5b74d7f.woff2 HTTP/1.1" 200 15872 "https://example.com/dashboard/static/css/2.350091fa.chunk.css" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36" "192.168.49.1"\n',
+    stream: 'stdout'
+  }
+]
+post
+[
+  {
+    log: '172.17.0.4 - - [08/Apr/2021:04:21:59 +0000] "GET /dashboard HTTP/1.1" 200 3255 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36" "192.168.49.1"\n',
+    stream: 'stdout'
+  },
+  {
+    log: '172.17.0.4 - - [08/Apr/2021:04:21:59 +0000] "GET /dashboard/static/css/2.350091fa.chunk.css HTTP/1.1" 200 18473 "https://example.com/dashboard" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36" "192.168.49.1"\n',
+    stream: 'stdout'
+  },
+  {
+    log: '172.17.0.4 - - [08/Apr/2021:04:21:59 +0000] "GET /dashboard/static/css/main.96ca5f97.chunk.css HTTP/1.1" 200 893 "https://example.com/dashboard" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36" "192.168.49.1"\n',
+    stream: 'stdout'
+  },
+  {
+    log: '172.17.0.4 - - [08/Apr/2021:04:21:59 +0000] "GET /dashboard/static/js/2.510cb2a8.chunk.js HTTP/1.1" 200 2022180 "https://example.com/dashboard" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36" "192.168.49.1"\n',
+    stream: 'stdout'
+  },
+  {
+    log: '172.17.0.4 - - [08/Apr/2021:04:21:59 +0000] "GET /dashboard/static/js/main.d7541356.chunk.js HTTP/1.1" 200 148643 "https://example.com/dashboard" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36" "192.168.49.1"\n',
+    stream: 'stdout'
+  },
+  {
+    log: '172.17.0.4 - - [08/Apr/2021:04:22:00 +0000] "GET /dashboard/static/media/roboto-latin-500.f5b74d7f.woff2 HTTP/1.1" 200 15872 "https://example.com/dashboard/static/css/2.350091fa.chunk.css" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36" "192.168.49.1"\n',
+    stream: 'stdout'
+  },
+  {
+    log: '172.17.0.4 - - [08/Apr/2021:04:22:00 +0000] "GET /dashboard/static/media/roboto-latin-400.176f8f5b.woff2 HTTP/1.1" 200 15736 "https://example.com/dashboard/static/css/2.350091fa.chunk.css" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36" "192.168.49.1"\n',
+    stream: 'stdout'
+  }
+]
