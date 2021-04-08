@@ -164,14 +164,7 @@ openssl x509 -in keycloak.pem -pubkey -noout -out jwt-pub-key.pub
 In order to use the cert, we will add it as a configmap to kubernetes
 
 ```bash
-.bin/minikube kubectl -- create configmap jwt-pub-key --from-file=jwt-pub-key.pub
-```
-
-note: to update the configmap, delete it first and re-create it
-
-```bash
-.bin/minikube kubectl -- delete configmap jwt-pub-key
-.bin/minikube kubectl -- create configmap jwt-pub-key --from-file=jwt-pub-key.pub
+kubectl create configmap jwt-pub-key --from-file=jwt-pub-key.pub -o=yaml --dry-run=client | kubectl apply -f -
 ```
 
 ## rmf-server
@@ -224,7 +217,7 @@ docker save rmf-web/rmf-server | bash -c 'eval $(.bin/minikube docker-env) && do
 create a configmap for the server
 
 ```bash
-.bin/minikube kubectl -- create configmap rmf-server-config --from-file=rmf_server_config.py
+kubectl create configmap rmf-server-config --from-file=rmf_server_config.py -o=yaml --dry-run=client | kubectl apply -f -
 ```
 
 deploy it
@@ -264,6 +257,20 @@ ros2 launch rmf_demos office.launch.xml headless:=true
 Go to https://example.com/dashboard, if everything works, you should see a log in screen, use user=example, password=example.
 
 After that, you should be presented with the dashboard, you have successfully deployed `rmf-web`! 🎉
+
+## Automating deployment
+
+It can be very useful to automate everything mentioned above and instantly deploy rmf-web. The `deploy.sh` script is an example of how you can do that.
+
+Before you run the script, first you have to obtain the source. Refer to the above instructions if you don't know how to do it. You should have a git repo for rmf-web and a colcon workspace for rmf, then just run
+
+```bash
+./deploy.sh --rmf-ws <path-to-rmf-ws> --rmf-web-ws <path-to-rmf-web-ws>
+```
+
+Note: If you followed the above instructions to obtain the source, your rmf workspace will be in `ws/rmf`, and your rmf-web workspace will be in `ws/rmf-web`. So you will run it with `./deploy.sh --rmf-ws ws/rmf --rmf-web-ws ws/rmf`.
+
+Sit back and relax, everything will be done for you!
 
 # Troubleshooting
 

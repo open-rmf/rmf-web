@@ -43,7 +43,7 @@ app.mount(
     name="static",
 )
 sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins="*", logger=logger)
-sio_app = socketio.ASGIApp(sio, other_asgi_app=app, socketio_path="/socket.io")
+sio_app = socketio.ASGIApp(sio, other_asgi_app=app)
 
 app.include_router(
     routes.building_map_router,
