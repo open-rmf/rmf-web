@@ -1,3 +1,4 @@
+const http = require('http');
 const https = require('https');
 
 async function request(url, options, body) {
@@ -15,12 +16,12 @@ async function request(url, options, body) {
     ...options.headers,
   };
 
-  const p = new Promise((res) => {
+  const p = new Promise((res, rej) => {
     const req = https.request(url, options, (resp) => {
       resp.body = '';
       resp.on('end', () => {
         if (resp.statusCode < 200 || resp.statusCode >= 300) {
-          console.error(resp.body);
+          rej(resp);
         }
         res(resp);
       });
@@ -36,6 +37,18 @@ async function request(url, options, body) {
     req.end();
   });
   return p;
+}
+
+async function tryRequest(url, options, body) {
+  try {
+    return await request(url, options, body);
+  } catch (e) {
+    if (e instanceof http.IncomingMessage) {
+      console.error(e.body);
+    } else {
+      throw e;
+    }
+  }
 }
 
 async function post(url, data) {
@@ -66,6 +79,7 @@ async function getToken() {
 
 module.exports = {
   request,
+  tryRequest,
   post,
   getToken,
   baseUrl,

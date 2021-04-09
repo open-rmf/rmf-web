@@ -41,11 +41,12 @@ echo 'waiting for keycloak to be ready...'
 kubectl wait --for=condition=available deployment/keycloak
 
 echo 'creating jwt configmap...'
-function bootstrap_kc() {
-  node keycloak-tools/bootstrap-keycloak.js
+function try() {
+  "$@" || (sleep 1 && "$@") || (sleep 5 && "$@")
 }
-bootstrap_kc || (sleep 1 && bootstrap_kc) # sometimes keycloak reports that it is ready before it can actually serve requests
-node keycloak-tools/get-cert.js > keycloak.pem
+# sometimes keycloak reports that it is ready before it can actually serve requests
+try node keycloak-tools/bootstrap-keycloak.js
+try node keycloak-tools/get-cert.js > keycloak.pem
 openssl x509 -in keycloak.pem -pubkey -noout -out jwt-pub-key.pub
 kubectl create configmap jwt-pub-key --from-file=jwt-pub-key.pub -o=yaml --dry-run=client | kubectl apply -f -
 

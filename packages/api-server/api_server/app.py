@@ -11,17 +11,10 @@ from tortoise import Tortoise
 
 from . import routes
 from .app_config import app_config
-from .authenticator import JwtAuthenticator, StubAuthenticator
-from .dependencies import auth_scheme, logger, ros
+from .dependencies import auth_scheme, authenticator, logger, ros
 from .models import tortoise_models as ttm
 from .repositories import StaticFilesRepository
 from .rmf_io import HealthWatchdog, RmfBookKeeper, RmfIO, RmfTransport
-
-if app_config.jwt_public_key is None:
-    auth = StubAuthenticator()
-    logger.warning("socketio authentication is disabled")
-else:
-    auth = JwtAuthenticator(app_config.jwt_public_key)
 
 # will be called in reverse order on app shutdown
 shutdown_cbs: List[Callable[[], Union[None, Awaitable[None]]]] = []
@@ -169,7 +162,7 @@ async def on_startup():
         ros.rmf_gateway,
         static_files_repo,
         logger=logger.getChild("RmfIO"),
-        authenticator=auth,
+        authenticator=authenticator,
     )
     rmf_io.start()
     shutdown_cbs.append(rmf_io.stop)
