@@ -11,21 +11,35 @@
  *     there on an "external" install.
  */
 const child_process = require('child_process');
+const fs = require('fs');
 
 // hardcoded for now
 const deps = {
   'packages/dashboard': [
-    'packages/ros2-bridge',
     'packages/react-components',
     'packages/api-client',
     'packages/rmf-auth',
+    'packages/rmf-models',
   ],
+  'packages/react-components': ['packages/api-client', 'packages/rmf-models'],
   'packages/reporting': ['packages/react-components', 'packages/rmf-auth'],
-  'packages/api-client': ['packages/api-server'],
+  'packages/api-client': ['packages/rmf-models'],
 };
 
+function getDeps(pkg) {
+  const recur = (pkg, cur) => {
+    if (deps[pkg]) {
+      deps[pkg].forEach((p) => {
+        recur(p, cur);
+      });
+    }
+    cur.add(pkg);
+    return cur;
+  };
+  return recur(pkg, new Set());
+}
+
 const allPackages = [
-  '.',
   'packages/ros2-bridge',
   'packages/react-components',
   'packages/rmf-auth',
@@ -33,15 +47,32 @@ const allPackages = [
   'packages/dashboard',
   'packages/api-server',
   'packages/api-client',
+  'packages/rmf-models',
 ];
 const scope = process.argv.length > 2 ? process.argv.slice(2) : allPackages;
 const verb = process.env['CI'] ? 'ci' : 'install';
-const targets = new Set(['.']);
-scope.forEach((pkg) => {
-  if (deps[pkg]) {
-    deps[pkg].forEach((p) => targets.add(p));
+
+const result = child_process.spawnSync('npm', [verb], { stdio: 'inherit', cwd: `${__dirname}/..` });
+if (result.status !== 0) {
+  process.exit(result.status);
+}
+allPackages.forEach((pkg) => {
+  const packageJson = JSON.parse(fs.readFileSync(`${pkg}/package.json`));
+  const pkgName = packageJson.name;
+  try {
+    fs.unlinkSync(`node_modules/${pkgName}`);
+  } catch (e) {
+    if (e.code !== 'ENOENT') {
+      throw e;
+    }
   }
-  targets.add(pkg);
+  fs.symlinkSync(`../${pkg}`, `node_modules/${pkgName}`);
+  console.log(`symlinked ${pkgName}`);
+});
+
+const targets = new Set();
+scope.forEach((pkg) => {
+  getDeps(pkg).forEach((p) => targets.add(p));
 });
 targets.forEach((pkg) => {
   const cwd = `${__dirname}/../${pkg}`;

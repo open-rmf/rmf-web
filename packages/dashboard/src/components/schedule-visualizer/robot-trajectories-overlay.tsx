@@ -1,4 +1,4 @@
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import * as RmfModels from 'rmf-models';
 import Debug from 'debug';
 import * as L from 'leaflet';
 import React from 'react';
@@ -22,7 +22,7 @@ export interface RobotTrajectoriesOverlayProps extends SVGOverlayProps {
    *
    * Remarks: `Trajectory` is missing robot model so we need to join it with the robot data.
    */
-  robots: Record<string, RomiCore.RobotState>;
+  robots: Record<string, RmfModels.RobotState>;
   trajectories: Trajectory[];
   conflicts: Conflict[];
   animationScale?: number;

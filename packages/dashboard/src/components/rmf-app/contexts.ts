@@ -1,17 +1,8 @@
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
-import appConfig from '../../app-config';
-import DispenserStateManager from '../../managers/dispenser-state-manager';
-import DoorStateManager from '../../managers/door-state-manager';
-import FleetManager from '../../managers/fleet-manager';
-import LiftStateManager from '../../managers/lift-state-manager';
-import { RobotTrajectoryManager } from '../../managers/robot-trajectory-manager';
-import TaskManager from '../../managers/task-manager';
-import {
-  NegotiationConflict,
-  NegotiationStatusManager,
-} from '../../managers/negotiation-status-manager';
+import * as RmfModels from 'rmf-models';
+import { NegotiationConflict } from '../../managers/negotiation-status-manager';
 import { HealthStatus } from '../../managers/rmf-health-state-manager';
+import { RmfIngress } from './rmf-ingress';
 
 const itemSummary = () => {
   return {
@@ -22,18 +13,17 @@ const itemSummary = () => {
 
 const initializeItemSummary = itemSummary();
 
-export const DispenserStateContext = React.createContext<Record<string, RomiCore.DispenserState>>(
+export const DispenserStateContext = React.createContext<Record<string, RmfModels.DispenserState>>(
   {},
 );
-export const DoorStateContext = React.createContext<Record<string, RomiCore.DoorState>>({});
-export const FleetStateContext = React.createContext<Record<string, RomiCore.FleetState>>({});
-export const LiftStateContext = React.createContext<Record<string, RomiCore.LiftState>>({});
+export const DoorStateContext = React.createContext<Record<string, RmfModels.DoorState>>({});
+export const FleetStateContext = React.createContext<Record<string, RmfModels.FleetState>>({});
+export const LiftStateContext = React.createContext<Record<string, RmfModels.LiftState>>({});
 export const NegotiationStatusContext = React.createContext<Record<number, NegotiationConflict>>(
   {},
 );
-export const TasksContext = React.createContext<RomiCore.TaskSummary[]>([]);
-export const TransportContext = React.createContext<RomiCore.Transport | null>(null);
-export const BuildingMapContext = React.createContext<RomiCore.BuildingMap | null>(null);
+export const TasksContext = React.createContext<Record<string, RmfModels.TaskSummary>>({});
+export const BuildingMapContext = React.createContext<RmfModels.BuildingMap | null>(null);
 export const RmfHealthContext = React.createContext<HealthStatus>({
   door: { ...initializeItemSummary },
   lift: { ...initializeItemSummary },
@@ -46,21 +36,4 @@ export const RmfHealthContext = React.createContext<HealthStatus>({
   },
 });
 
-export interface RmfIngress {
-  dispenserStateManager: DispenserStateManager;
-  doorStateManager: DoorStateManager;
-  fleetManager: FleetManager;
-  liftStateManager: LiftStateManager;
-  negotiationStatusManager: NegotiationStatusManager;
-  taskManager: TaskManager;
-  trajectoryManager?: RobotTrajectoryManager;
-}
-
-export const RmfIngressContext = React.createContext<RmfIngress>({
-  dispenserStateManager: new DispenserStateManager(),
-  doorStateManager: new DoorStateManager(),
-  fleetManager: new FleetManager(),
-  liftStateManager: new LiftStateManager(),
-  negotiationStatusManager: new NegotiationStatusManager(appConfig.trajServerUrl),
-  taskManager: new TaskManager(),
-});
+export const RmfIngressContext = React.createContext(new RmfIngress());

@@ -1,6 +1,6 @@
 import { Map as LMap } from 'react-leaflet';
 import { render, waitFor } from '@testing-library/react';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import * as RmfModels from 'rmf-models';
 import DoorsOverlay from '../doors-overlay';
 import L from 'leaflet';
 import React from 'react';
@@ -12,7 +12,7 @@ const doors = [
     v1_y: -5.5,
     v2_x: 7.85,
     v2_y: -6.2,
-    door_type: RomiCore.Door.DOOR_TYPE_DOUBLE_SLIDING,
+    door_type: RmfModels.Door.DOOR_TYPE_DOUBLE_SLIDING,
     motion_range: -1.571,
     motion_direction: 1,
   },
@@ -22,7 +22,7 @@ const doors = [
     v1_y: -2.7,
     v2_x: 14.1,
     v2_y: -2.7,
-    door_type: RomiCore.Door.DOOR_TYPE_SINGLE_SLIDING,
+    door_type: RmfModels.Door.DOOR_TYPE_SINGLE_SLIDING,
     motion_range: -1.571,
     motion_direction: 1,
   },

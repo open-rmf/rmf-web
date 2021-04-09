@@ -1,6 +1,7 @@
-import React from 'react';
-import { SystemSummaryTaskState, SystemSummaryTaskStateProps } from '../lib';
 import { Meta, Story } from '@storybook/react';
+import React from 'react';
+import * as RmfModels from 'rmf-models';
+import { SystemSummaryTaskState, SystemSummaryTaskStateProps } from '../lib';
 
 export default {
   title: 'Systems summary task state',
@@ -9,38 +10,38 @@ export default {
 
 const systemSummaryTaskStateData: SystemSummaryTaskStateProps = {
   tasks: [
-    {
+    new RmfModels.TaskSummary({
       task_id: 'abc',
       state: 0,
       start_time: { sec: 0, nanosec: 0 },
       end_time: { sec: 0, nanosec: 0 },
       status: 'status',
       submission_time: { sec: 0, nanosec: 0 },
-    },
-    {
+    }),
+    new RmfModels.TaskSummary({
       task_id: 'abc',
       state: 1,
       start_time: { sec: 0, nanosec: 0 },
       end_time: { sec: 0, nanosec: 0 },
       status: 'status',
       submission_time: { sec: 0, nanosec: 0 },
-    },
-    {
+    }),
+    new RmfModels.TaskSummary({
       task_id: 'abc',
       state: 2,
       start_time: { sec: 0, nanosec: 0 },
       end_time: { sec: 0, nanosec: 0 },
       status: 'status',
       submission_time: { sec: 0, nanosec: 0 },
-    },
-    {
+    }),
+    new RmfModels.TaskSummary({
       task_id: 'abc',
       state: 3,
       start_time: { sec: 0, nanosec: 0 },
       end_time: { sec: 0, nanosec: 0 },
       status: 'status',
       submission_time: { sec: 0, nanosec: 0 },
-    },
+    }),
   ],
   onClick: () => {
     /**filler */

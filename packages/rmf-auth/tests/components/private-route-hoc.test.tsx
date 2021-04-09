@@ -1,15 +1,13 @@
+import { cleanup, render, waitFor } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
-import { cleanup, render, waitFor } from '@testing-library/react';
 import { BrowserRouter, Redirect, Route, Router, Switch, useLocation } from 'react-router-dom';
 import { Authenticator, PrivateRouteHOC, User } from '../../lib';
-import FakeAuthenticator from '../fake-authenticator';
 
 describe('PrivateRoute', () => {
   let history: MemoryHistory;
   let PrivateRoute: ReturnType<typeof PrivateRouteHOC>;
   let user: User;
-  let authenticator: Authenticator;
   const LOGIN_ROUTE = '/login';
 
   beforeEach(() => {
@@ -19,8 +17,8 @@ describe('PrivateRoute', () => {
     PrivateRoute = PrivateRouteHOC(Route, Redirect, useLocation);
     user = {
       username: 'test',
+      token: '',
     };
-    authenticator = new FakeAuthenticator();
   });
 
   afterEach(() => {

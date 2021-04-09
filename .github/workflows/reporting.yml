@@ -5,6 +5,7 @@ on:
       - 'packages/reporting/**'
       - 'packages/react-components/**'
       - 'packages/rmf-auth/**'
+      - 'packages/rmf-models/**'
   push:
     branches:
       - main
@@ -19,7 +20,6 @@ jobs:
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
-      options: --privileged --ipc=host
     defaults:
       run:
         shell: bash
@@ -28,6 +28,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: bootstrap
         run: |
+          . /opt/rmf/setup.bash
           npm config set unsafe-perm
           npm run bootstrap -- packages/reporting
         working-directory: .

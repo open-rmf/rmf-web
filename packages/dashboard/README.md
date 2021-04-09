@@ -1,12 +1,12 @@
-## RoMi-dashboard
+## rmf-dashboard
 
-Hello! `romi-dashboard` is a web application that provides overall visualization and control over the RoMi system.
+Hello! `rmf-dashboard` is a web application that provides overall visualization and control over the RMF system.
 
 ## Setup
 
 Prerequisites:
 
-* nodejs == v12
+* nodejs >= v12
 * docker
 * docker-compose
 * [rmf_core](https://github.com/open-rmf/rmf_core)
@@ -34,7 +34,7 @@ You have two options, import a specific folder with assets from a repository (li
 
 In the case of choosing to obtain the data from a repository, you must define: (1) The repository URL and (2) the folder within the repository. In case of choosing to obtain the data from a local directory, the absolute path must be defined.
 
-This folder obtained must contain at its root a JSON file calling `main.json`, with the _RomiDashboard_ actors (robots, dispensers, etc.) and the path to their corresponding resources. E.g.:
+This folder obtained must contain at its root a JSON file calling `main.json`, with the _RmfDashboard_ actors (robots, dispensers, etc.) and the path to their corresponding resources. E.g.:
 
 ```json
 {
@@ -83,7 +83,7 @@ Alternatively, if you want to connect to an existing rmf deployment, set the fol
 
 * _PUBLIC_URL_: Url that the app is hosted. Defaults to '/'.
 * _REACT_APP_TRAJECTORY_SERVER_: **Required** URL to the trajectory server.
-* _REACT_APP_ROS2_BRIDGE_SERVER_: **Required** URL to the ros2 bridge server.
+* _REACT_APP_RMF_SERVER_: **Required** URL to the RMF api server.
 * _REACT_APP_AUTH_PROVIDER_: A string indicating the auth provider to use, defaults to the stub authenticator.
 
 Supported auth providers are
@@ -106,7 +106,7 @@ This is ideal if you are working on individual isolated components.
 
 ## Building for production
 
-Firstly, set up environment variables according to [this](#External-Server), you may also want to install a resource pack as described [here](#Optional-Import-external-resources.). Then build a production version of _RoMi-dashboard_ with
+Firstly, set up environment variables according to [this](#External-Server), you may also want to install a resource pack as described [here](#Optional-Import-external-resources.). Then build a production version of _rmf-dashboard_ with
 
 ```bash
 npm run build

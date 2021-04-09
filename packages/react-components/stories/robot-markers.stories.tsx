@@ -1,7 +1,7 @@
 import { Grid, Paper, Typography } from '@material-ui/core';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
+import * as RmfModels from 'rmf-models';
 import { RobotMarker, RobotMarkerProps } from '../lib';
 import { makeRobot } from '../tests/robots/test-utils';
 
@@ -11,7 +11,7 @@ export default {
 } as Meta;
 
 function makeRobotProps(
-  robot?: Partial<RomiCore.RobotState>,
+  robot?: Partial<RmfModels.RobotState>,
   props?: Partial<Omit<RobotMarkerProps, 'robot'>>,
 ): RobotMarkerProps {
   props = props || {};
@@ -68,7 +68,14 @@ export const NoTranslate: Story = (args) => {
     <svg viewBox="-2 -2 4 4" width={400} height={400}>
       <RobotMarker
         robot={makeRobot({
-          location: { level_name: 'test', x: 10, y: 10, yaw: 0, t: { sec: 0, nanosec: 0 } },
+          location: {
+            level_name: 'test',
+            x: 10,
+            y: 10,
+            yaw: 0,
+            t: { sec: 0, nanosec: 0 },
+            index: 0,
+          },
         })}
         fleetName="test_fleet"
         footprint={1}

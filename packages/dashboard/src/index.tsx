@@ -9,7 +9,7 @@ extendControlPositions();
 
 ReactDOM.render(<App />, document.getElementById('root'));
 
-// NOTE: There is no point to have the app work offline as all the data must come from rmf/romi and
+// NOTE: There is no point to have the app work offline as all the data must come from rmf and
 // cannot be cached.
 
 // If you want your app to work offline and load faster, you can change

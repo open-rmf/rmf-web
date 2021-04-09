@@ -1,6 +1,6 @@
 import React from 'react';
 import Debug from 'debug';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import * as RmfModels from 'rmf-models';
 import { IconButton, makeStyles, Typography } from '@material-ui/core';
 import {
   MultiSelectTreeViewProps,
@@ -19,7 +19,7 @@ import { formatStatus, getActorFromStatus, getStateLabel } from './task-summary-
 const debug = Debug('Tasks:TaskSummaryAccordion');
 
 interface TaskSummaryAccordionInfoProps {
-  task: RomiCore.TaskSummary;
+  task: RmfModels.TaskSummary;
 }
 
 export const TaskSummaryAccordionInfo = (props: TaskSummaryAccordionInfoProps): JSX.Element => {
@@ -47,7 +47,7 @@ export const TaskSummaryAccordionInfo = (props: TaskSummaryAccordionInfoProps): 
 };
 
 export interface TaskSummaryAccordionProps {
-  tasks: RomiCore.TaskSummary[];
+  tasks: RmfModels.TaskSummary[];
 }
 
 export const TaskSummaryAccordion = React.memo((props: TaskSummaryAccordionProps) => {
@@ -67,13 +67,13 @@ export const TaskSummaryAccordion = React.memo((props: TaskSummaryAccordionProps
 
   const determineStyle = (state: number): string => {
     switch (state) {
-      case RomiCore.TaskSummary.STATE_QUEUED:
+      case RmfModels.TaskSummary.STATE_QUEUED:
         return classes.queued;
-      case RomiCore.TaskSummary.STATE_ACTIVE:
+      case RmfModels.TaskSummary.STATE_ACTIVE:
         return classes.active;
-      case RomiCore.TaskSummary.STATE_COMPLETED:
+      case RmfModels.TaskSummary.STATE_COMPLETED:
         return classes.completed;
-      case RomiCore.TaskSummary.STATE_FAILED:
+      case RmfModels.TaskSummary.STATE_FAILED:
         return classes.failed;
       default:
         return 'UNKNOWN';
@@ -90,7 +90,7 @@ export const TaskSummaryAccordion = React.memo((props: TaskSummaryAccordionProps
     );
   };
 
-  const renderTaskTreeItem = (task: RomiCore.TaskSummary) => {
+  const renderTaskTreeItem = (task: RmfModels.TaskSummary) => {
     return (
       <TreeItem
         role={'treeitem'}
@@ -104,13 +104,13 @@ export const TaskSummaryAccordion = React.memo((props: TaskSummaryAccordionProps
         label={
           <>
             <Typography variant="body1" noWrap>
-              {task.state === RomiCore.TaskSummary.STATE_ACTIVE && (
+              {task.state === RmfModels.TaskSummary.STATE_ACTIVE && (
                 // TODO: add onClick with e.preventDefault() and with the pause plans logic.
                 <IconButton disabled>
                   <PlayCircleFilledWhiteIcon />
                 </IconButton>
               )}
-              {task.state === RomiCore.TaskSummary.STATE_QUEUED && (
+              {task.state === RmfModels.TaskSummary.STATE_QUEUED && (
                 <IconButton disabled>
                   <PauseCircleFilledIcon />
                 </IconButton>

@@ -1,53 +1,50 @@
 import asyncio
 import os
+import signal
 from typing import Awaitable, Callable, List, Union
 
 import socketio
 from fastapi import Depends, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from tortoise import Tortoise
 
 from . import routes
 from .app_config import app_config
-from .authenticator import JwtAuthenticator, StubAuthenticator
-from .dependencies import auth_scheme, logger, ros
+from .dependencies import auth_scheme, authenticator, logger, ros
 from .models import tortoise_models as ttm
 from .repositories import StaticFilesRepository
 from .rmf_io import HealthWatchdog, RmfBookKeeper, RmfIO, RmfTransport
-
-if app_config.jwt_public_key is None:
-    auth = StubAuthenticator()
-    logger.warning("socketio authentication is disabled")
-else:
-    auth = JwtAuthenticator(app_config.jwt_public_key)
 
 # will be called in reverse order on app shutdown
 shutdown_cbs: List[Callable[[], Union[None, Awaitable[None]]]] = []
 
 app = FastAPI(
-    openapi_url=f"{app_config.root_path}/openapi.json",
-    docs_url=f"{app_config.root_path}/docs",
-    swagger_ui_oauth2_redirect_url=f"{app_config.root_path}/docs/oauth2-redirect",
     dependencies=[Depends(auth_scheme)],
+)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 os.makedirs(app_config.static_directory, exist_ok=True)
 app.mount(
-    f"{app_config.static_path}",
+    "/static",
     StaticFiles(directory=app_config.static_directory),
     name="static",
 )
 sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins="*", logger=logger)
-sio_app = socketio.ASGIApp(
-    sio, other_asgi_app=app, socketio_path=app_config.socket_io_path
-)
+sio_app = socketio.ASGIApp(sio, other_asgi_app=app)
 
 app.include_router(
     routes.building_map_router,
-    prefix=f"{app_config.root_path}/building_map",
+    prefix="/building_map",
 )
-app.include_router(routes.doors_router, prefix=f"{app_config.root_path}/doors")
-app.include_router(routes.lifts_router, prefix=f"{app_config.root_path}/lifts")
-app.include_router(routes.tasks_router, prefix=f"{app_config.root_path}/tasks")
+app.include_router(routes.doors_router, prefix="/doors")
+app.include_router(routes.lifts_router, prefix="/lifts")
+app.include_router(routes.tasks_router, prefix="/tasks")
 
 
 async def load_doors():
@@ -131,6 +128,17 @@ async def load_states():
 
 @app.on_event("startup")
 async def on_startup():
+    # for some unexplainable reason, when running with "npx concurrently", the signals
+    # are not captured and the app is not shutdown. Capturing the signal manually makes
+    # it work for some reason.
+    loop = asyncio.get_event_loop()
+
+    def on_signal(_sig, _frame):
+        loop.create_task(on_shutdown())
+
+    signal.signal(signal.SIGINT, on_signal)
+    signal.signal(signal.SIGTERM, on_signal)
+
     await Tortoise.init(
         db_url=app_config.db_url,
         modules={"models": ["api_server.models.tortoise_models"]},
@@ -139,7 +147,7 @@ async def on_startup():
     shutdown_cbs.append(Tortoise.close_connections)
 
     static_files_repo = StaticFilesRepository(
-        app_config.static_path,
+        f"{app_config.public_url.geturl()}/static",
         app_config.static_directory,
         logger.getChild("static_files"),
     )
@@ -154,7 +162,7 @@ async def on_startup():
         ros.rmf_gateway,
         static_files_repo,
         logger=logger.getChild("RmfIO"),
-        authenticator=auth,
+        authenticator=authenticator,
     )
     rmf_io.start()
     shutdown_cbs.append(rmf_io.stop)

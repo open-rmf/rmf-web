@@ -1,16 +1,16 @@
 import { Accordion, AccordionProps, makeStyles } from '@material-ui/core';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import React from 'react';
+import * as RmfModels from 'rmf-models';
+import { ErrorOverlay } from '../error-overlay';
 import ItemAccordionDetails from '../item-accordion-details';
 import ItemAccordionSummary from '../item-accordion-summary';
-import { ErrorOverlay } from '../error-overlay';
 import { SimpleInfo, SimpleInfoProps } from '../simple-info';
 
 const debug = Debug('Dispensers:DispenserAccordion');
 
 interface DispenserInfoProps {
-  dispenser: RomiCore.DispenserState;
+  dispenser: RmfModels.DispenserState;
   overrideStyle?: SimpleInfoProps['overrideStyle'];
 }
 
@@ -33,11 +33,11 @@ const DispenserInfo = (props: DispenserInfoProps) => {
 
 function dispenserModeToString(mode: number): string {
   switch (mode) {
-    case RomiCore.DispenserState.IDLE:
+    case RmfModels.DispenserState.IDLE:
       return 'IDLE';
-    case RomiCore.DispenserState.BUSY:
+    case RmfModels.DispenserState.BUSY:
       return 'ONLINE';
-    case RomiCore.DispenserState.OFFLINE:
+    case RmfModels.DispenserState.OFFLINE:
       return 'OFFLINE';
     default:
       return 'N/A';
@@ -67,7 +67,7 @@ export interface DispenserAccordionProps extends Omit<AccordionProps, 'children'
   /**
    * Pre-condition: `dispenser === dispenserState.guid`
    */
-  dispenserState: RomiCore.DispenserState | null;
+  dispenserState: RmfModels.DispenserState | null;
   dispenser: string;
 }
 
@@ -80,8 +80,8 @@ export const DispenserAccordion = React.forwardRef(
 
     // TODO: refactor this into a common custom hook to handle stored state
     // in future if we need it to track the states of other items.
-    function usePrevDispenserState(dispenserState: RomiCore.DispenserState | null) {
-      const ref = React.useRef<RomiCore.DispenserState | null>(null);
+    function usePrevDispenserState(dispenserState: RmfModels.DispenserState | null) {
+      const ref = React.useRef<RmfModels.DispenserState | null>(null);
       React.useEffect(() => {
         if (dispenserState) {
           ref.current = dispenserState;
@@ -94,11 +94,11 @@ export const DispenserAccordion = React.forwardRef(
 
     const getStatusLabelClass = () => {
       switch (dispenserState?.mode) {
-        case RomiCore.DispenserState.IDLE:
+        case RmfModels.DispenserState.IDLE:
           return classes.statusLabelIdle;
-        case RomiCore.DispenserState.BUSY:
+        case RmfModels.DispenserState.BUSY:
           return classes.statusLabelBusy;
-        case RomiCore.DispenserState.OFFLINE:
+        case RmfModels.DispenserState.OFFLINE:
           return classes.statusLabelOffline;
         default:
           return null;

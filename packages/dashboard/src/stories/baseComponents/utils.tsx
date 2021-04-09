@@ -1,5 +1,5 @@
 import React from 'react';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import * as RmfModels from 'rmf-models';
 import * as L from 'leaflet';
 
 import { colorPalette } from '../../util/css-utils';
@@ -29,8 +29,8 @@ export interface FormProps {
  * The above applies to the Dispenser, Lift and Robot util state
  */
 
-const door: RomiCore.Door = {
-  door_type: RomiCore.Door.DOOR_TYPE_SINGLE_SLIDING,
+const door: RmfModels.Door = {
+  door_type: RmfModels.Door.DOOR_TYPE_SINGLE_SLIDING,
   motion_direction: 1,
   motion_range: -1.571,
   name: 'main_door',
@@ -40,36 +40,36 @@ const door: RomiCore.Door = {
   v2_y: -5.5,
 };
 
-const doors: RomiCore.Door[] = [
+const doors: RmfModels.Door[] = [
   { ...door },
   { ...door, name: 'second_door' },
   { ...door, name: 'third_door' },
   { ...door, name: 'fourth_door' },
 ];
 
-const doorStateTemplate: RomiCore.DoorState = {
+const doorStateTemplate: RmfModels.DoorState = {
   current_mode: {
-    value: RomiCore.DoorMode.MODE_CLOSED,
+    value: RmfModels.DoorMode.MODE_CLOSED,
   },
   door_name: 'main_door',
   door_time: { sec: 0, nanosec: 0 },
 };
 
-const doorStates: { [key: string]: RomiCore.DoorState } = {
+const doorStates: { [key: string]: RmfModels.DoorState } = {
   main_door: {
     ...doorStateTemplate,
   },
   second_door: {
     ...doorStateTemplate,
     current_mode: {
-      value: RomiCore.DoorMode.MODE_OPEN,
+      value: RmfModels.DoorMode.MODE_OPEN,
     },
     door_name: 'second_door',
   },
   third_door: {
     ...doorStateTemplate,
     current_mode: {
-      value: RomiCore.DoorMode.MODE_MOVING,
+      value: RmfModels.DoorMode.MODE_MOVING,
     },
     door_name: 'third_door',
   },
@@ -87,25 +87,25 @@ const doorStates: { [key: string]: RomiCore.DoorState } = {
 /***
  * Start of Dispenser Utils
  */
-const dispenserStateTemplate: RomiCore.DispenserState = {
+const dispenserStateTemplate: RmfModels.DispenserState = {
   guid: 'main_dispenser',
-  mode: RomiCore.DispenserState.IDLE,
+  mode: RmfModels.DispenserState.IDLE,
   request_guid_queue: [],
   seconds_remaining: 0,
   time: { sec: 0, nanosec: 0 },
 };
 
-const dispenserStates: { [key: string]: RomiCore.DispenserState } = {
+const dispenserStates: { [key: string]: RmfModels.DispenserState } = {
   main_dispenser: { ...dispenserStateTemplate },
   second_dispenser: {
     ...dispenserStateTemplate,
     guid: 'second_dispenser',
-    mode: RomiCore.DispenserState.BUSY,
+    mode: RmfModels.DispenserState.BUSY,
   },
   third_dispenser: {
     ...dispenserStateTemplate,
     guid: 'third_dispenser',
-    mode: RomiCore.DispenserState.OFFLINE,
+    mode: RmfModels.DispenserState.OFFLINE,
   },
   fourth_dispenser: {
     ...dispenserStateTemplate,
@@ -120,7 +120,7 @@ const dispenserStates: { [key: string]: RomiCore.DispenserState } = {
  * Start of lift utils
  */
 
-const lift: RomiCore.Lift = {
+const lift: RmfModels.Lift = {
   depth: 2.5,
   doors: [
     {
@@ -148,7 +148,7 @@ const lift: RomiCore.Lift = {
   width: 2.5,
 };
 
-const lifts: RomiCore.Lift[] = [
+const lifts: RmfModels.Lift[] = [
   { ...lift },
   {
     ...lift,
@@ -157,25 +157,25 @@ const lifts: RomiCore.Lift[] = [
   },
 ];
 
-const liftStateTemplate: RomiCore.LiftState = {
+const liftStateTemplate: RmfModels.LiftState = {
   available_floors: ['L1', 'L2', 'L3', 'L4'],
   available_modes: new Uint8Array(0),
   current_floor: 'L1',
-  current_mode: RomiCore.LiftState.MODE_UNKNOWN,
+  current_mode: RmfModels.LiftState.MODE_UNKNOWN,
   destination_floor: 'L1',
-  door_state: RomiCore.LiftState.DOOR_CLOSED,
+  door_state: RmfModels.LiftState.DOOR_CLOSED,
   lift_name: 'main_lift',
   lift_time: { sec: 0, nanosec: 0 },
-  motion_state: RomiCore.LiftState.MOTION_STOPPED,
+  motion_state: RmfModels.LiftState.MOTION_STOPPED,
   session_id: '',
 };
 
-const liftStates: { [key: string]: RomiCore.LiftState } = {
+const liftStates: { [key: string]: RmfModels.LiftState } = {
   main_lift: { ...liftStateTemplate },
   second_lift: {
     ...liftStateTemplate,
     lift_name: 'second_lift',
-    motion_state: RomiCore.LiftState.MOTION_UP,
+    motion_state: RmfModels.LiftState.MOTION_UP,
   },
 };
 
@@ -184,7 +184,7 @@ const liftStates: { [key: string]: RomiCore.LiftState } = {
 /***
  * Start of Robot utils
  */
-const robotState: RomiCore.RobotState = {
+const robotState: RmfModels.RobotState = {
   battery_percent: 100,
   location: {
     level_name: 'L1',
@@ -192,15 +192,17 @@ const robotState: RomiCore.RobotState = {
     x: 8,
     y: -4,
     yaw: 0,
+    index: 0,
   },
-  mode: { mode: RomiCore.RobotMode.MODE_IDLE },
+  mode: { mode: RmfModels.RobotMode.MODE_IDLE, mode_request_id: 0 },
   model: '40_hours',
   name: 'main_robot',
   path: [],
   task_id: 'taskA',
+  seq: 0,
 };
 
-const robotStates: RomiCore.FleetState[] = [
+const robotStates: RmfModels.FleetState[] = [
   {
     name: 'main_fleet',
     robots: [
@@ -208,37 +210,37 @@ const robotStates: RomiCore.FleetState[] = [
       {
         ...robotState,
         name: 'second_robot',
-        mode: { mode: RomiCore.RobotMode.MODE_CHARGING },
+        mode: { mode: RmfModels.RobotMode.MODE_CHARGING, mode_request_id: 0 },
       },
       {
         ...robotState,
         name: 'third_robot',
-        mode: { mode: RomiCore.RobotMode.MODE_DOCKING },
+        mode: { mode: RmfModels.RobotMode.MODE_DOCKING, mode_request_id: 0 },
       },
       {
         ...robotState,
         name: 'fourth_robot',
-        mode: { mode: RomiCore.RobotMode.MODE_EMERGENCY },
+        mode: { mode: RmfModels.RobotMode.MODE_EMERGENCY, mode_request_id: 0 },
       },
       {
         ...robotState,
         name: 'fifth_robot',
-        mode: { mode: RomiCore.RobotMode.MODE_GOING_HOME },
+        mode: { mode: RmfModels.RobotMode.MODE_GOING_HOME, mode_request_id: 0 },
       },
       {
         ...robotState,
         name: 'sixth_robot',
-        mode: { mode: RomiCore.RobotMode.MODE_MOVING },
+        mode: { mode: RmfModels.RobotMode.MODE_MOVING, mode_request_id: 0 },
       },
       {
         ...robotState,
         name: 'seventh_robot',
-        mode: { mode: RomiCore.RobotMode.MODE_PAUSED },
+        mode: { mode: RmfModels.RobotMode.MODE_PAUSED, mode_request_id: 0 },
       },
       {
         ...robotState,
         name: 'eigth_robot',
-        mode: { mode: RomiCore.RobotMode.MODE_WAITING },
+        mode: { mode: RmfModels.RobotMode.MODE_WAITING, mode_request_id: 0 },
       },
     ],
   },

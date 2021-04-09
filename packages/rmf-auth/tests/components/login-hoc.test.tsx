@@ -1,10 +1,10 @@
-import React from 'react';
-import { cleanup, render, waitFor } from '@testing-library/react';
+import { cleanup, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import React from 'react';
 import { BrowserRouter, Redirect } from 'react-router-dom';
-import { LoginHOC } from '../../lib/components/login-hoc';
 import { User } from '../../lib';
 import { Authenticator } from '../../lib/authenticator';
+import { LoginHOC } from '../../lib/components/login-hoc';
 import { FakeAuthenticator } from '../fake-authenticator';
 
 describe('Login page', () => {
@@ -16,6 +16,7 @@ describe('Login page', () => {
     Login = LoginHOC(Redirect);
     user = {
       username: 'test',
+      token: '',
     };
     authenticator = new FakeAuthenticator();
   });
@@ -54,7 +55,8 @@ describe('Login page', () => {
   });
 
   test('performs login when login button is clicked', () => {
-    const authenticator = new FakeAuthenticator({ username: 'fakeUser' });
+    const authenticator = new FakeAuthenticator({ username: 'fakeUser', token: '' });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const spy = jest.spyOn(authenticator, 'login').mockImplementation(() => undefined as any);
 
     const root = render(

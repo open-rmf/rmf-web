@@ -1,7 +1,7 @@
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { act, render, waitForElementToBeRemoved } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
+import * as RmfModels from 'rmf-models';
 import { TaskSummaryAccordion, TaskSummaryAccordionInfo } from '../../lib';
 import {
   getActorFromStatus,
@@ -9,10 +9,10 @@ import {
   sortTasksBySubmissionTime,
 } from '../../lib/task-summary/task-summary-utils';
 
-function getTaskObject(): Record<string, RomiCore.TaskSummary> {
+function getTaskObject(): Record<string, RmfModels.TaskSummary> {
   // Returns a task object with a new memory allocation
   return {
-    task1: {
+    task1: new RmfModels.TaskSummary({
       end_time: { sec: 0, nanosec: 0 },
       start_time: { sec: 0, nanosec: 0 },
       state: 1,
@@ -20,8 +20,8 @@ function getTaskObject(): Record<string, RomiCore.TaskSummary> {
         'Moving [tinyRobot/tinyRobot1]: ( 9.81228 -6.98942 -3.12904) -> ( 6.26403 -3.51569  1.16864) | Remaining phases: 1 | Remaining phases: 6',
       submission_time: { sec: 0, nanosec: 500 },
       task_id: 'task1',
-    },
-    task2: {
+    }),
+    task2: new RmfModels.TaskSummary({
       end_time: { sec: 0, nanosec: 0 },
       start_time: { sec: 0, nanosec: 0 },
       state: 1,
@@ -29,8 +29,8 @@ function getTaskObject(): Record<string, RomiCore.TaskSummary> {
         'Moving [tinyRobot/tinyRobot2]: ( 9.81228 -6.98942 -3.12904) -> ( 6.26403 -3.51569  1.16864) | Remaining phases: 1 | Remaining phases: 6',
       submission_time: { sec: 0, nanosec: 1000 },
       task_id: 'task2',
-    },
-    task3: {
+    }),
+    task3: new RmfModels.TaskSummary({
       end_time: { sec: 0, nanosec: 0 },
       start_time: { sec: 0, nanosec: 0 },
       state: 0,
@@ -38,12 +38,12 @@ function getTaskObject(): Record<string, RomiCore.TaskSummary> {
         'Moving [tinyRobot/tinyRobot3]: ( 9.81228 -6.98942 -3.12904) -> ( 6.26403 -3.51569  1.16864) | Remaining phases: 1 | Remaining phases: 6',
       submission_time: { sec: 0, nanosec: 1500 },
       task_id: 'task3',
-    },
+    }),
   };
 }
 
 describe('Renders correctly', () => {
-  let task: RomiCore.TaskSummary;
+  let task: RmfModels.TaskSummary;
   beforeEach(() => {
     task = Object.values(getTaskObject())[0];
   });
@@ -72,62 +72,62 @@ describe('Renders correctly', () => {
 });
 
 describe('Components gets the correct style on specifics states', () => {
-  let task: RomiCore.TaskSummary;
+  let task: RmfModels.TaskSummary;
   beforeEach(() => {
     task = Object.values(getTaskObject())[0];
   });
 
   it('Active style is applied ', () => {
-    task.state = RomiCore.TaskSummary.STATE_ACTIVE;
+    task.state = RmfModels.TaskSummary.STATE_ACTIVE;
     const root = render(<TaskSummaryAccordion tasks={[task]} />);
     expect(root.getByText(task.task_id).parentElement?.className).toContain('makeStyles-active');
   });
 
   it('Queue style is applied', () => {
-    task.state = RomiCore.TaskSummary.STATE_QUEUED;
+    task.state = RmfModels.TaskSummary.STATE_QUEUED;
     const root = render(<TaskSummaryAccordion tasks={[task]} />);
     expect(root.getByText(task.task_id).parentElement?.className).toContain('makeStyles-queued');
   });
 
   it('Completed style is applied', () => {
-    task.state = RomiCore.TaskSummary.STATE_COMPLETED;
+    task.state = RmfModels.TaskSummary.STATE_COMPLETED;
     const root = render(<TaskSummaryAccordion tasks={[task]} />);
     expect(root.getByText(task.task_id).parentElement?.className).toContain('makeStyles-completed');
   });
 
   it('Failed style is applied', () => {
-    task.state = RomiCore.TaskSummary.STATE_FAILED;
+    task.state = RmfModels.TaskSummary.STATE_FAILED;
     const root = render(<TaskSummaryAccordion tasks={[task]} />);
     expect(root.getByText(task.task_id).parentElement?.className).toContain('makeStyles-failed');
   });
 });
 
 describe('Components gets the correct label on specifics states', () => {
-  let task: RomiCore.TaskSummary;
+  let task: RmfModels.TaskSummary;
   beforeEach(() => {
     task = Object.values(getTaskObject())[0];
   });
 
   it('Shows ACTIVE label', () => {
-    task.state = RomiCore.TaskSummary.STATE_ACTIVE;
+    task.state = RmfModels.TaskSummary.STATE_ACTIVE;
     const root = render(<TaskSummaryAccordionInfo task={task} />);
     expect(root.getByText('ACTIVE')).toBeTruthy();
   });
 
   it('Shows QUEUE label', () => {
-    task.state = RomiCore.TaskSummary.STATE_QUEUED;
+    task.state = RmfModels.TaskSummary.STATE_QUEUED;
     const root = render(<TaskSummaryAccordionInfo task={task} />);
     expect(root.getByText('QUEUED')).toBeTruthy();
   });
 
   it('Shows COMPLETED label', () => {
-    task.state = RomiCore.TaskSummary.STATE_COMPLETED;
+    task.state = RmfModels.TaskSummary.STATE_COMPLETED;
     const root = render(<TaskSummaryAccordionInfo task={task} />);
     expect(root.getByText('COMPLETED')).toBeTruthy();
   });
 
   it('Shows FAILED label', () => {
-    task.state = RomiCore.TaskSummary.STATE_FAILED;
+    task.state = RmfModels.TaskSummary.STATE_FAILED;
     const root = render(<TaskSummaryAccordionInfo task={task} />);
     expect(root.getByText('FAILED')).toBeTruthy();
   });
@@ -136,28 +136,28 @@ describe('Components gets the correct label on specifics states', () => {
 describe('Sort Tasks', () => {
   it('Sorts a task list by state correctly', () => {
     const tasks = getTaskObject();
-    tasks['test1'] = {
+    tasks['test1'] = new RmfModels.TaskSummary({
       end_time: { sec: 0, nanosec: 0 },
       start_time: { sec: 0, nanosec: 0 },
       state: 2,
       status: 'test1',
       submission_time: { sec: 0, nanosec: 0 },
       task_id: 'test1',
-    };
-    tasks['test2'] = {
+    });
+    tasks['test2'] = new RmfModels.TaskSummary({
       end_time: { sec: 0, nanosec: 0 },
       start_time: { sec: 0, nanosec: 0 },
       state: 3,
       status: 'test2',
       submission_time: { sec: 0, nanosec: 0 },
       task_id: 'test2',
-    };
+    });
     const sortedTasks = sortTasks(tasks);
-    expect(sortedTasks[0].state).toBe(RomiCore.TaskSummary.STATE_ACTIVE);
-    expect(sortedTasks[1].state).toBe(RomiCore.TaskSummary.STATE_ACTIVE);
-    expect(sortedTasks[2].state).toBe(RomiCore.TaskSummary.STATE_QUEUED);
-    expect(sortedTasks[3].state).toBe(RomiCore.TaskSummary.STATE_FAILED);
-    expect(sortedTasks[4].state).toBe(RomiCore.TaskSummary.STATE_COMPLETED);
+    expect(sortedTasks[0].state).toBe(RmfModels.TaskSummary.STATE_ACTIVE);
+    expect(sortedTasks[1].state).toBe(RmfModels.TaskSummary.STATE_ACTIVE);
+    expect(sortedTasks[2].state).toBe(RmfModels.TaskSummary.STATE_QUEUED);
+    expect(sortedTasks[3].state).toBe(RmfModels.TaskSummary.STATE_FAILED);
+    expect(sortedTasks[4].state).toBe(RmfModels.TaskSummary.STATE_COMPLETED);
   });
 
   it('Sorts a task list by submission time correctly', () => {
@@ -177,7 +177,7 @@ describe('Sort Tasks', () => {
 });
 
 describe('user interactions', () => {
-  let tasks: RomiCore.TaskSummary[];
+  let tasks: RmfModels.TaskSummary[];
   beforeEach(() => {
     tasks = Object.values(getTaskObject());
   });

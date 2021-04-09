@@ -1,7 +1,7 @@
 import { makeStyles } from '@material-ui/core';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import React from 'react';
+import * as RmfModels from 'rmf-models';
 import { DoorMarker, fromRmfYaw } from '..';
 import { fromRmfCoords, radiansToDegrees } from '../geometry-utils';
 
@@ -9,29 +9,29 @@ const debug = Debug('Lifts:LiftMarker');
 
 // Gets the text to insert to the lift, the text depend on the current mode, motion state and the
 // current and destination floor of the lift.
-function getLiftModeText(liftState: RomiCore.LiftState): string {
+function getLiftModeText(liftState: RmfModels.LiftState): string {
   if (!liftState.current_mode) {
     return 'UNKNOWN';
   }
   switch (liftState.current_mode) {
-    case RomiCore.LiftState.MODE_FIRE:
+    case RmfModels.LiftState.MODE_FIRE:
       return 'FIRE!';
-    case RomiCore.LiftState.MODE_EMERGENCY:
+    case RmfModels.LiftState.MODE_EMERGENCY:
       return 'EMERGENCY!';
-    case RomiCore.LiftState.MODE_OFFLINE:
+    case RmfModels.LiftState.MODE_OFFLINE:
       return 'OFFLINE';
     default:
       return 'NORMAL';
   }
 }
 
-function getLiftMotionText(liftState: RomiCore.LiftState): string {
+function getLiftMotionText(liftState: RmfModels.LiftState): string {
   switch (liftState.motion_state) {
-    case RomiCore.LiftState.MOTION_UP:
+    case RmfModels.LiftState.MOTION_UP:
       return '▲';
-    case RomiCore.LiftState.MOTION_DOWN:
+    case RmfModels.LiftState.MOTION_DOWN:
       return '▼';
-    case RomiCore.LiftState.MOTION_STOPPED:
+    case RmfModels.LiftState.MOTION_STOPPED:
       return '⯀';
     default:
       return '?';
@@ -87,15 +87,15 @@ export const useLiftMarkerStyles = makeStyles({
   },
 });
 
-function toDoorMode(liftState: RomiCore.LiftState): RomiCore.DoorMode {
+function toDoorMode(liftState: RmfModels.LiftState): RmfModels.DoorMode {
   // LiftState uses its own enum definition of door state/mode which is separated from DoorMode.
   // But their definitions are equal so we can skip conversion.
   return { value: liftState.door_state };
 }
 
 export interface LiftMarkerProps extends Omit<React.SVGProps<SVGGElement>, 'onClick'> {
-  lift: RomiCore.Lift;
-  liftState?: RomiCore.LiftState;
+  lift: RmfModels.Lift;
+  liftState?: RmfModels.LiftState;
   /**
    * Whether the component should perform a translate transform to put it inline with the position
    * in RMF.
@@ -104,7 +104,7 @@ export interface LiftMarkerProps extends Omit<React.SVGProps<SVGGElement>, 'onCl
    */
   translate?: boolean;
   variant?: keyof ReturnType<typeof useLiftMarkerStyles>;
-  onClick?(event: React.MouseEvent, lift: RomiCore.Lift): void;
+  onClick?(event: React.MouseEvent, lift: RmfModels.Lift): void;
 }
 
 export const LiftMarker = React.forwardRef(function (

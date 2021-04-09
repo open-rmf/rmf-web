@@ -1,4 +1,4 @@
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import * as RmfModels from 'rmf-models';
 import Debug from 'debug';
 import React, { useMemo } from 'react';
 import { WaypointMarker as WaypointMarker_ } from 'react-components';
@@ -9,7 +9,7 @@ const debug = Debug('ScheduleVisualier:WaypointsOverlay');
 const WaypointMarker = React.memo(WaypointMarker_);
 
 export interface WaypointsOverlayProps extends SVGOverlayProps {
-  currentLevel: RomiCore.Level;
+  currentLevel: RmfModels.Level;
 }
 
 export const WaypointsOverlay = (props: WaypointsOverlayProps) => {

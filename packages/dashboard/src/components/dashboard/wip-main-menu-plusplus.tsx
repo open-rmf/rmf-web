@@ -1,5 +1,5 @@
 import { Button, Divider, makeStyles, Typography } from '@material-ui/core';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import * as RmfModels from 'rmf-models';
 import Debug from 'debug';
 import React from 'react';
 import {
@@ -42,11 +42,11 @@ const useStyles = makeStyles((theme) => ({
 
 export interface MainMenuProps {
   pushView(view: OmniPanelViewIndex): void;
-  tasks: RomiCore.TaskSummary[];
+  tasks: RmfModels.TaskSummary[];
   notifications: Notification[];
-  spoiltDoorClick?(door: RomiCore.Door): void;
-  spoiltLiftClick?(lift: RomiCore.Lift): void;
-  spoiltRobotClick?(fleet: string, robot: RomiCore.RobotState): void;
+  spoiltDoorClick?(door: RmfModels.Door): void;
+  spoiltLiftClick?(lift: RmfModels.Lift): void;
+  spoiltRobotClick?(fleet: string, robot: RmfModels.RobotState): void;
   spoiltDispenserClick?(guid: string): void;
   /**
    * resets the filter term once called

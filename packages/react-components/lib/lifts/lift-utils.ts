@@ -1,16 +1,16 @@
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import * as RmfModels from 'rmf-models';
 
 export function liftModeToString(liftMode: number): string {
   switch (liftMode) {
-    case RomiCore.LiftState.MODE_AGV:
+    case RmfModels.LiftState.MODE_AGV:
       return 'AGV';
-    case RomiCore.LiftState.MODE_EMERGENCY:
+    case RmfModels.LiftState.MODE_EMERGENCY:
       return 'Emergency';
-    case RomiCore.LiftState.MODE_FIRE:
+    case RmfModels.LiftState.MODE_FIRE:
       return 'Fire';
-    case RomiCore.LiftState.MODE_HUMAN:
+    case RmfModels.LiftState.MODE_HUMAN:
       return 'Human';
-    case RomiCore.LiftState.MODE_OFFLINE:
+    case RmfModels.LiftState.MODE_OFFLINE:
       return 'Offline';
     default:
       return `Unknown (${liftMode})`;
@@ -19,11 +19,11 @@ export function liftModeToString(liftMode: number): string {
 
 export function doorStateToString(doorState: number): string {
   switch (doorState) {
-    case RomiCore.LiftState.DOOR_OPEN:
+    case RmfModels.LiftState.DOOR_OPEN:
       return 'Open';
-    case RomiCore.LiftState.DOOR_CLOSED:
+    case RmfModels.LiftState.DOOR_CLOSED:
       return 'Closed';
-    case RomiCore.LiftState.DOOR_MOVING:
+    case RmfModels.LiftState.DOOR_MOVING:
       return 'Moving';
     default:
       return `Unknown (${doorState})`;
@@ -32,11 +32,11 @@ export function doorStateToString(doorState: number): string {
 
 export function motionStateToString(motionState: number): string {
   switch (motionState) {
-    case RomiCore.LiftState.MOTION_DOWN:
+    case RmfModels.LiftState.MOTION_DOWN:
       return 'Down';
-    case RomiCore.LiftState.MOTION_STOPPED:
+    case RmfModels.LiftState.MOTION_STOPPED:
       return 'Stopped';
-    case RomiCore.LiftState.MOTION_UP:
+    case RmfModels.LiftState.MOTION_UP:
       return 'Up';
     default:
       return `Unknown (${motionState})`;
@@ -44,26 +44,29 @@ export function motionStateToString(motionState: number): string {
 }
 
 export const requestModes = [
-  RomiCore.LiftRequest.REQUEST_AGV_MODE,
-  RomiCore.LiftRequest.REQUEST_HUMAN_MODE,
-  RomiCore.LiftRequest.REQUEST_END_SESSION,
+  RmfModels.LiftRequest.REQUEST_AGV_MODE,
+  RmfModels.LiftRequest.REQUEST_HUMAN_MODE,
+  RmfModels.LiftRequest.REQUEST_END_SESSION,
 ];
 
 export const requestModeStrings: Record<number, string> = {
-  [RomiCore.LiftRequest.REQUEST_END_SESSION]: 'End Session',
-  [RomiCore.LiftRequest.REQUEST_AGV_MODE]: 'AGV',
-  [RomiCore.LiftRequest.REQUEST_HUMAN_MODE]: 'Human',
+  [RmfModels.LiftRequest.REQUEST_END_SESSION]: 'End Session',
+  [RmfModels.LiftRequest.REQUEST_AGV_MODE]: 'AGV',
+  [RmfModels.LiftRequest.REQUEST_HUMAN_MODE]: 'Human',
 };
 
 export function requestModeToString(requestMode: number): string {
   return requestModeStrings[requestMode] || `Unknown (${requestMode})`;
 }
 
-export const requestDoorModes = [RomiCore.LiftRequest.DOOR_OPEN, RomiCore.LiftRequest.DOOR_CLOSED];
+export const requestDoorModes = [
+  RmfModels.LiftRequest.DOOR_OPEN,
+  RmfModels.LiftRequest.DOOR_CLOSED,
+];
 
 export const requestDoorModeStrings: Record<number, string> = {
-  [RomiCore.LiftRequest.DOOR_OPEN]: 'Open',
-  [RomiCore.LiftRequest.DOOR_CLOSED]: 'Closed',
+  [RmfModels.LiftRequest.DOOR_OPEN]: 'Open',
+  [RmfModels.LiftRequest.DOOR_CLOSED]: 'Closed',
 };
 
 export function requestDoorModeToString(requestDoorMode: number): string {

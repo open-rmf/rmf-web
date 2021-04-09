@@ -2,7 +2,7 @@ import { makeStyles } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import * as RmfModels from 'rmf-models';
 import React from 'react';
 import { requestDoorModeToString, requestModeToString } from './lift-utils';
 
@@ -33,12 +33,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export interface LiftRequestFormProps {
-  lift: RomiCore.Lift;
+  lift: RmfModels.Lift;
   availableRequestTypes: number[];
   availableDoorModes: number[];
   onRequestSubmit?(
     event: React.FormEvent,
-    lift: RomiCore.Lift,
+    lift: RmfModels.Lift,
     doorState: number,
     requestType: number,
     destination: string,

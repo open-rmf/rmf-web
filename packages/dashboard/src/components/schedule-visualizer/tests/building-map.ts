@@ -1,11 +1,8 @@
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import * as RmfModels from 'rmf-models';
 import airportMap from './building-map-airport';
 import officeMap from './building-map-office';
 
-export default async function buildingMap(): Promise<RomiCore.BuildingMap> {
-  let officePng = new Uint8Array(new ArrayBuffer(0));
-  let airportPng = new Uint8Array(new ArrayBuffer(0));
-
+export default async function buildingMap(): Promise<RmfModels.BuildingMap> {
   return {
     name: 'test building',
     levels: [
@@ -14,7 +11,7 @@ export default async function buildingMap(): Promise<RomiCore.BuildingMap> {
         elevation: 0,
         images: [
           {
-            data: officePng,
+            data: '',
             encoding: 'png',
             name: 'office',
             scale: 0.008465494960546494,
@@ -38,7 +35,7 @@ export default async function buildingMap(): Promise<RomiCore.BuildingMap> {
         elevation: 10,
         images: [
           {
-            data: airportPng,
+            data: '',
             encoding: 'png',
             name: 'airport_terminal',
             scale: 0.08212187141180038,

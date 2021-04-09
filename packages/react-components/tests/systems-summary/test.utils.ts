@@ -1,5 +1,5 @@
-import { ItemSummary, Notification, Severity, RobotSummary } from '../../lib';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import * as RmfModels from 'rmf-models';
+import { ItemSummary, Notification, RobotSummary, Severity } from '../../lib';
 
 export const itemSummary: ItemSummary = {
   operational: 0,
@@ -17,42 +17,42 @@ export const notifications: Notification[] = [
   { id: 1, time: 'time', error: 'message', severity: Severity.High },
 ];
 
-export const tasks: RomiCore.TaskSummary[] = [
-  {
+export const tasks: RmfModels.TaskSummary[] = [
+  new RmfModels.TaskSummary({
     task_id: '1',
     state: 0,
     start_time: { sec: 0, nanosec: 0 },
     status: 'state',
     submission_time: { sec: 0, nanosec: 0 },
     end_time: { sec: 0, nanosec: 0 },
-  },
-  {
+  }),
+  new RmfModels.TaskSummary({
     task_id: '2',
     state: 1,
     start_time: { sec: 0, nanosec: 0 },
     status: 'state',
     submission_time: { sec: 0, nanosec: 0 },
     end_time: { sec: 0, nanosec: 0 },
-  },
-  {
+  }),
+  new RmfModels.TaskSummary({
     task_id: '3',
     state: 2,
     start_time: { sec: 0, nanosec: 0 },
     status: 'state',
     submission_time: { sec: 0, nanosec: 0 },
     end_time: { sec: 0, nanosec: 0 },
-  },
-  {
+  }),
+  new RmfModels.TaskSummary({
     task_id: '4',
     state: 3,
     start_time: { sec: 0, nanosec: 0 },
     status: 'state',
     submission_time: { sec: 0, nanosec: 0 },
     end_time: { sec: 0, nanosec: 0 },
-  },
+  }),
 ];
 
-export const door: RomiCore.Door = {
+export const door: RmfModels.Door = {
   name: 'door',
   v1_x: 8.2,
   v1_y: -5.5,
@@ -63,7 +63,7 @@ export const door: RomiCore.Door = {
   motion_direction: 1,
 };
 
-export const lift: RomiCore.Lift = {
+export const lift: RmfModels.Lift = {
   name: 'lift',
   doors: [door],
   levels: ['L1', 'L2', 'L3'],
@@ -80,23 +80,23 @@ export const lift: RomiCore.Lift = {
   },
 };
 
-export const fleet: RomiCore.FleetState = {
+export const fleet: RmfModels.FleetState = {
   name: 'fleet',
   robots: [
-    {
+    new RmfModels.RobotState({
       name: 'robot',
       model: 'Model1',
-      mode: { mode: RomiCore.RobotMode.MODE_EMERGENCY },
-      location: {
+      mode: new RmfModels.RobotMode({ mode: RmfModels.RobotMode.MODE_EMERGENCY }),
+      location: new RmfModels.Location({
         level_name: 'L1',
         x: 4,
         y: -12,
         yaw: 0,
         t: { sec: 0, nanosec: 0 },
-      },
+      }),
       battery_percent: 100,
       path: [],
       task_id: 'task1',
-    },
+    }),
   ],
 };

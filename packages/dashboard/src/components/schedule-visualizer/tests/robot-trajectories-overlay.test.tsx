@@ -1,4 +1,4 @@
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import * as RmfModels from 'rmf-models';
 import * as L from 'leaflet';
 import React from 'react';
 import { render, RenderResult, waitFor } from '@testing-library/react';
@@ -12,12 +12,12 @@ import RobotTrajectoriesOverlay from '../robot-trajectories-overlay';
 
 const mapBound = new L.LatLngBounds([0, 25.794363144785166], [-17.53525484725833, 0]);
 
-const robots: Record<string, RomiCore.RobotState> = {
+const robots: Record<string, RmfModels.RobotState> = {
   [robotHash('tinyRobot1', 'tinyRobot')]: {
     name: 'tinyRobot1',
     battery_percent: 100,
     location: { level_name: 'L1', x: 0, y: 0, yaw: 0, t: { sec: 0, nanosec: 0 } },
-    mode: { mode: RomiCore.RobotMode.MODE_IDLE },
+    mode: { mode: RmfModels.RobotMode.MODE_IDLE },
     model: 'tinyRobot',
     path: [],
     task_id: '',
@@ -26,7 +26,7 @@ const robots: Record<string, RomiCore.RobotState> = {
     name: 'tinyRobot2',
     battery_percent: 100,
     location: { level_name: 'L1', x: 0, y: 0, yaw: 0, t: { sec: 0, nanosec: 0 } },
-    mode: { mode: RomiCore.RobotMode.MODE_IDLE },
+    mode: { mode: RmfModels.RobotMode.MODE_IDLE },
     model: 'tinyRobot',
     path: [],
     task_id: '',

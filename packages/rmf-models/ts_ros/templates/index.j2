@@ -1,0 +1,11 @@
+/* This is a generated file, do not edit */
+
+// messages
+{% for msgspec in msgspecs %}
+export * from './{{ msgspec.base_type.pkg_name }}/{{ msgspec.reldir }}/{{ msgspec.base_type.type }}';
+{% endfor %}
+
+// services
+{% for srvspec in srvspecs %}
+export * from './{{ srvspec.pkg_name }}/{{ srvspec.reldir }}/{{ srvspec.srv_name }}';
+{% endfor %}

@@ -1,20 +1,12 @@
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { Authenticator } from 'rmf-auth';
 import KeycloakAuthenticator from 'rmf-auth/lib/keycloak';
 import StubAuthenticator from 'rmf-auth/lib/stub';
 import ResourceManager from './managers/resource-manager';
-import {
-  DefaultTrajectoryManager,
-  RobotTrajectoryManager,
-} from './managers/robot-trajectory-manager';
-import Ros2Transport from './ros2-transport';
-import RpcClient from './rpc-client';
 
 export interface AppConfig {
   authenticator: Authenticator;
-  transportFactory: () => Promise<RomiCore.Transport>;
-  trajectoryManagerFactory?: () => Promise<RobotTrajectoryManager>;
   trajServerUrl: string;
+  rmfServerUrl: string;
   appResourcesFactory: () => Promise<ResourceManager | undefined>;
 }
 
@@ -45,27 +37,15 @@ export const appConfig: AppConfig = (() => {
     }
   })();
 
-  if (!process.env.REACT_APP_ROS2_BRIDGE_SERVER) {
-    throw new Error('REACT_APP_ROS2_BRIDGE_SERVER env variable is needed but not defined');
+  if (!process.env.REACT_APP_RMF_SERVER) {
+    throw new Error('REACT_APP_RMF_SERVER is required');
   }
-  const ros2BridgeServer = process.env.REACT_APP_ROS2_BRIDGE_SERVER;
-  let ros2BridgeClientPromise: Promise<RpcClient> | undefined;
-  const getRos2BridgeClientPromise = () => {
-    if (!ros2BridgeClientPromise) {
-      ros2BridgeClientPromise = RpcClient.connect(ros2BridgeServer, authenticator.token);
-    }
-    return ros2BridgeClientPromise;
-  };
 
   return {
     authenticator,
     appResourcesFactory: ResourceManager.getResourceConfigurationFile,
-    trajectoryManagerFactory: () => DefaultTrajectoryManager.create(trajServer),
-    transportFactory: async () => {
-      const ros2BridgeClient = await getRos2BridgeClientPromise();
-      return new Ros2Transport(ros2BridgeClient);
-    },
     trajServerUrl: trajServer,
+    rmfServerUrl: process.env.REACT_APP_RMF_SERVER,
   };
 })();
 

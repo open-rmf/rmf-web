@@ -4,27 +4,17 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-# api-server
-fastapi = "~=0.63.0"
-aiofiles = "~=0.6.0"
-uvicorn = {version = "~=0.13.0", extras = ["standard"]}
-python-socketio = "~=5.0"
-rx = "~=3.0"
-tortoise-orm = "~=0.16.0"
-pyjwt = {version = "~=2.0", extras = ["crypto"]}
-pydantic = "~=1.0"
 
 [dev-packages]
 black = "==20.8b1"
-isort = "==5.*"
-pylint = "==2.*"
-coverage = "==5.*"
+isort = "~=5.8"
+pylint = "~=2.7"
+coverage = "~=5.5"
 # api-server
-api-server = {editable = true, path = "packages/api-server"}
-aiohttp = "==3.*"
-jinja2 = "==2.*"
-# api-client
-ts-ros = {git = "https://github.com/open-rmf/ts_ros"}
+api-server = {editable = true, path = "./packages/api-server"}
+aiohttp = "~=3.7"
+# rmf-models
+jinja2 = "~=2.11"
 
 [requires]
 python_version = "3.8"

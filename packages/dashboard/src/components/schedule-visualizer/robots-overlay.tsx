@@ -1,4 +1,4 @@
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import * as RmfModels from 'rmf-models';
 import Debug from 'debug';
 import React, { useMemo } from 'react';
 import { RobotMarker as RobotMarker_, RobotMarkerProps } from 'react-components';
@@ -10,8 +10,8 @@ const debug = Debug('ScheduleVisualizer:RobotsOverlay');
 const RobotMarker = React.memo(RobotMarker_);
 
 export interface RobotsOverlayProps extends SVGOverlayProps {
-  fleets: readonly RomiCore.FleetState[];
-  onRobotClick?(fleet: string, robot: RomiCore.RobotState): void;
+  fleets: readonly RmfModels.FleetState[];
+  onRobotClick?(fleet: string, robot: RmfModels.RobotState): void;
   conflictRobotNames: string[][];
   currentFloorName: string;
   MarkerComponent?: React.ComponentType<RobotMarkerProps>;
@@ -66,7 +66,7 @@ export const RobotsOverlay = (props: RobotsOverlayProps) => {
   );
 
   const getIconPath = React.useCallback(
-    (fleet: string, robot: RomiCore.RobotState) => {
+    (fleet: string, robot: RmfModels.RobotState) => {
       const icon = robotResourcesContext?.getIconPath(fleet, robot.model);
       return icon ? icon : undefined;
     },

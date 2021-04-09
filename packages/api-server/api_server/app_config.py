@@ -1,5 +1,6 @@
 import importlib
 import os
+import urllib.parse
 from dataclasses import dataclass
 from typing import Optional
 
@@ -9,13 +10,15 @@ class AppConfig:
     host: str
     port: int
     db_url: str
-    root_path: str
-    socket_io_path: str
-    static_path: str
+    public_url: urllib.parse.ParseResult
     static_directory: str
     log_level: str
     jwt_public_key: Optional[str]
     oidc_url: Optional[str]
+    client_id: str
+
+    def __post_init__(self):
+        self.public_url = urllib.parse.urlparse(self.public_url)
 
 
 def _load_config() -> AppConfig:

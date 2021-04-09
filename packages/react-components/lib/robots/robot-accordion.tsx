@@ -1,5 +1,5 @@
 import { Accordion, AccordionProps, makeStyles } from '@material-ui/core';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import * as RmfModels from 'rmf-models';
 import Debug from 'debug';
 import React from 'react';
 import ItemAccordionDetails from '../item-accordion-details';
@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
 
 interface RobotInfoProps {
   fleetName: string;
-  robot: RomiCore.RobotState;
+  robot: RmfModels.RobotState;
 }
 
 const RobotInfo = (props: RobotInfoProps) => {
@@ -43,7 +43,7 @@ const RobotInfo = (props: RobotInfoProps) => {
 
 export interface RobotAccordionProps extends Omit<AccordionProps, 'children'> {
   fleetName: string;
-  robot: RomiCore.RobotState;
+  robot: RmfModels.RobotState;
 }
 
 export const RobotAccordion = React.forwardRef(

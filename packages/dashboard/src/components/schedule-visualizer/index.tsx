@@ -1,10 +1,11 @@
 import { makeStyles } from '@material-ui/core';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import * as L from 'leaflet';
 import React from 'react';
 import { ColorContext, robotHash } from 'react-components';
 import { AttributionControl, ImageOverlay, LayersControl, Map as LMap, Pane } from 'react-leaflet';
+import * as RmfModels from 'rmf-models';
+import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
 import {
   Conflict,
   DefaultTrajectoryManager,
@@ -12,8 +13,6 @@ import {
   TrajectoryResponse,
 } from '../../managers/robot-trajectory-manager';
 import { FleetStateContext, RmfIngressContext } from '../rmf-app';
-import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
-import { toBlobUrl } from '../../util';
 import DispensersOverlay from './dispensers-overlay';
 import DoorsOverlay from './doors-overlay';
 import LiftsOverlay from './lift-overlay';
@@ -34,19 +33,19 @@ const useStyles = makeStyles(() => ({
 }));
 
 export interface MapFloorLayer {
-  level: RomiCore.Level;
+  level: RmfModels.Level;
   imageUrl: string;
   bounds: L.LatLngBounds;
 }
 
 export interface ScheduleVisualizerProps extends React.PropsWithChildren<{}> {
-  buildingMap: RomiCore.BuildingMap;
+  buildingMap: RmfModels.BuildingMap;
   negotiationTrajStore: Readonly<Record<string, NegotiationTrajectoryResponse>>;
   showTrajectories?: boolean;
-  mapFloorSort?(levels: RomiCore.Level[]): string[];
-  onDoorClick?(door: RomiCore.Door): void;
-  onLiftClick?(lift: RomiCore.Lift): void;
-  onRobotClick?(fleet: string, robot: RomiCore.RobotState): void;
+  mapFloorSort?(levels: RmfModels.Level[]): string[];
+  onDoorClick?(door: RmfModels.Door): void;
+  onLiftClick?(lift: RmfModels.Lift): void;
+  onRobotClick?(fleet: string, robot: RmfModels.RobotState): void;
   onDispenserClick?(event: React.MouseEvent, guid: string): void;
 }
 
@@ -110,7 +109,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
 
   const robots = React.useMemo(
     () =>
-      fleets.reduce<Record<string, RomiCore.RobotState>>((prev, fleet) => {
+      fleets.reduce<Record<string, RmfModels.RobotState>>((prev, fleet) => {
         fleet.robots.forEach((robot) => {
           prev[robotHash(robot.name, fleet.name)] = robot;
         });
@@ -138,9 +137,9 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
         }
 
         promises.push(
-          new Promise((res) => {
+          new Promise<void>((res) => {
             const imageElement = new Image();
-            const imageUrl = toBlobUrl(image.data);
+            const imageUrl = image.data;
             imageElement.src = imageUrl;
 
             const listener = () => {

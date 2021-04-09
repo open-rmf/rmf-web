@@ -1,4 +1,4 @@
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import * as RmfModels from 'rmf-models';
 import Debug from 'debug';
 import React, { useContext } from 'react';
 import { LiftMarker as LiftMarker_, LiftMarkerProps, useLiftMarkerStyles } from 'react-components';
@@ -15,25 +15,25 @@ export const getLiftModeVariant = (
   liftStateFloor?: string,
 ): keyof ReturnType<typeof useLiftMarkerStyles> | undefined => {
   if (!liftStateMode && !liftStateFloor) return 'unknown';
-  if (liftStateMode === RomiCore.LiftState.MODE_FIRE) return 'fire';
-  if (liftStateMode === RomiCore.LiftState.MODE_EMERGENCY) return 'emergency';
-  if (liftStateMode === RomiCore.LiftState.MODE_OFFLINE) return 'offLine';
+  if (liftStateMode === RmfModels.LiftState.MODE_FIRE) return 'fire';
+  if (liftStateMode === RmfModels.LiftState.MODE_EMERGENCY) return 'emergency';
+  if (liftStateMode === RmfModels.LiftState.MODE_OFFLINE) return 'offLine';
   if (liftStateFloor === currentFloor) {
-    if (liftStateMode === RomiCore.LiftState.MODE_HUMAN) return 'human';
-    if (liftStateMode === RomiCore.LiftState.MODE_AGV) return 'onCurrentFloor';
+    if (liftStateMode === RmfModels.LiftState.MODE_HUMAN) return 'human';
+    if (liftStateMode === RmfModels.LiftState.MODE_AGV) return 'onCurrentFloor';
   } else {
-    if (liftStateMode === RomiCore.LiftState.MODE_HUMAN) return 'moving';
-    if (liftStateMode === RomiCore.LiftState.MODE_AGV) return 'moving';
+    if (liftStateMode === RmfModels.LiftState.MODE_HUMAN) return 'moving';
+    if (liftStateMode === RmfModels.LiftState.MODE_AGV) return 'moving';
   }
-  if (liftStateMode === RomiCore.LiftState.MODE_UNKNOWN) return 'unknown';
+  if (liftStateMode === RmfModels.LiftState.MODE_UNKNOWN) return 'unknown';
 
   return 'unknown';
 };
 
 export interface LiftsOverlayProps extends SVGOverlayProps {
   currentFloor: string;
-  lifts: readonly RomiCore.Lift[];
-  onLiftClick?(lift: RomiCore.Lift): void;
+  lifts: readonly RmfModels.Lift[];
+  onLiftClick?(lift: RmfModels.Lift): void;
 }
 
 export const LiftsOverlay = (props: LiftsOverlayProps) => {

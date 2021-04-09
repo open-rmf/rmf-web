@@ -5,7 +5,7 @@ from rmf_door_msgs.msg import DoorState
 from rmf_fleet_msgs.msg import FleetState
 from rmf_ingestor_msgs.msg import IngestorState
 from rmf_lift_msgs.msg import LiftState
-from rmf_task_msgs.msg import Tasks
+from rmf_task_msgs.msg import TaskSummary
 from rx import Observable
 from rx.subject import BehaviorSubject, Subject
 
@@ -104,8 +104,8 @@ class RmfGateway:
             lambda x: x.id_,
         )
 
-        self.task_summaries = Subject()  # Subject[Tasks]
-        self.current_task_summaries: Dict[str, Tasks] = {}
+        self.task_summaries = Subject()  # Subject[TaskSummary]
+        self.current_task_summaries: Dict[str, TaskSummary] = {}
         self._init_task_summaries()
 
         # BehaviorSubject[Optional[RmfBuildingMap]]
@@ -123,12 +123,11 @@ class RmfGateway:
         source.subscribe(on_next)
 
     def _init_task_summaries(self):
-        def on_next(tasks: Tasks):
+        def on_next(task: TaskSummary):
             keep_states = ttm.TaskSummary.ACTIVE_STATES
-            for task in tasks.tasks:
-                if task.state in keep_states:
-                    self.current_task_summaries[task.task_id] = task
-                else:
-                    self.current_task_summaries.pop(task.task_id)
+            if task.state in keep_states:
+                self.current_task_summaries[task.task_id] = task
+            else:
+                self.current_task_summaries.pop(task.task_id)
 
         self.task_summaries.subscribe(on_next)

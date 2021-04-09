@@ -1,0 +1,27 @@
+{
+  "name": "rmf-models",
+  "version": "0.0.1",
+  "description": "RMF models generated from ROS messages",
+  "main": "dist/index.js",
+  "scripts": {
+    "prepare": "tsc --build",
+    "test": "./test/test.bash"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/open-rmf"
+  },
+  "author": "Teo Koon Peng <koonpeng@openrobotics.org>",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/jasmine": "^3.6.6",
+    "@types/node": "^14.14.35",
+    "jasmine": "^3.6.4",
+    "json-schema-to-typescript": "^10.1.4",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.2.3"
+  },
+  "files": [
+    "dist/**"
+  ]
+}

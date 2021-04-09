@@ -13,7 +13,7 @@ Deploying a web app can be very complicated, so this repo serves as an example d
 In this example, we will be using the following software
 
 rmf-web:
-* ros2-bridge
+* rmf-server (aka api-server)
 * dashboard
 
 others:
@@ -164,23 +164,16 @@ openssl x509 -in keycloak.pem -pubkey -noout -out jwt-pub-key.pub
 In order to use the cert, we will add it as a configmap to kubernetes
 
 ```bash
-.bin/minikube kubectl -- create configmap jwt-pub-key --from-file=jwt-pub-key.pub
+kubectl create configmap jwt-pub-key --from-file=jwt-pub-key.pub -o=yaml --dry-run=client | kubectl apply -f -
 ```
 
-note: to update the configmap, delete it first and re-create it
-
-```bash
-.bin/minikube kubectl -- delete configmap jwt-pub-key
-.bin/minikube kubectl -- create configmap jwt-pub-key --from-file=jwt-pub-key.pub
-```
-
-## ros2-bridge
+## rmf-server
 
 ### Build minimal RMF image
 
-We will need a minimal base image containing all the RMF messages. This image will be used to build the ros2-bridge image.
+We will need a minimal base image containing all the RMF messages. This image will be used to build the rmf-server image.
 
-How you get this image will vary depending what version of RMF, and what extensions you are deploying it with. It is important that ros2-bridge is using the exact same message definitions as used by the deployment of RMF. For this example, we assume that you built rmf_demos from source using the main branch, so we will build the messages from source as well.
+How you get this image will vary depending what version of RMF, and what extensions you are deploying it with. It is important that rmf-server is using the exact same message definitions as used by the deployment of RMF. For this example, we assume that you built rmf_demos from source using the main branch, so we will build the messages from source as well.
 
 Get RMF source code
 
@@ -201,7 +194,7 @@ docker build -t rmf-web/builder -f docker/builder.dockerfile ws/rmf/src
 
 NOTE: It is not recommended to use the default "latest" tag in a real deployment, be sure to tag your images accordingly.
 
-### Build ros2-bridge image
+### Build rmf-server image
 
 Get rmf-web source
 
@@ -212,19 +205,25 @@ git clone --depth 1 https://github.com/open-rmf/rmf-web ws/rmf-web
 build the image
 
 ```bash
-docker build -t rmf-web/ros2-bridge -f docker/ros2-bridge.dockerfile ws/rmf-web
+docker build -t rmf-web/rmf-server -f docker/rmf-server.dockerfile ws/rmf-web
 ```
 
 "publish" the image, in a normal deployment, you would publish this to your docker registry, since we don't have a registry in this example, we will push the image directly to minikube
 
 ```bash
-docker save rmf-web/ros2-bridge | bash -c 'eval $(.bin/minikube docker-env) && docker load'
+docker save rmf-web/rmf-server | bash -c 'eval $(.bin/minikube docker-env) && docker load'
+```
+
+create a configmap for the server
+
+```bash
+kubectl create configmap rmf-server-config --from-file=rmf_server_config.py -o=yaml --dry-run=client | kubectl apply -f -
 ```
 
 deploy it
 
 ```bash
-.bin/minikube kubectl -- apply -f k8s/ros2-bridge.yaml
+.bin/minikube kubectl -- apply -f k8s/rmf-server.yaml
 ```
 
 ## dashboard
@@ -258,6 +257,20 @@ ros2 launch rmf_demos office.launch.xml headless:=true
 Go to https://example.com/dashboard, if everything works, you should see a log in screen, use user=example, password=example.
 
 After that, you should be presented with the dashboard, you have successfully deployed `rmf-web`! 🎉
+
+## Automating deployment
+
+It can be very useful to automate everything mentioned above and instantly deploy rmf-web. The `deploy.sh` script is an example of how you can do that.
+
+Before you run the script, first you have to obtain the source. Refer to the above instructions if you don't know how to do it. You should have a git repo for rmf-web and a colcon workspace for rmf, then just run
+
+```bash
+./deploy.sh --rmf-ws <path-to-rmf-ws> --rmf-web-ws <path-to-rmf-web-ws>
+```
+
+Note: If you followed the above instructions to obtain the source, your rmf workspace will be in `ws/rmf`, and your rmf-web workspace will be in `ws/rmf-web`. So you will run it with `./deploy.sh --rmf-ws ws/rmf --rmf-web-ws ws/rmf`.
+
+Sit back and relax, everything will be done for you!
 
 # Troubleshooting
 
@@ -324,15 +337,15 @@ The most common cause is that connection to the keycloak server is not working, 
 
 ## It is stuck in "downloading building map..."
 
-This is usually because the ros2-bridge server can't connect to rmf, first make sure that
+This is usually because the rmf-server server can't connect to rmf, first make sure that
 
 * rmf_demos is running
-* your version of rmf_demos is exactly the same as the one used to build your ros2-bridge image.
+* your version of rmf_demos is exactly the same as the one used to build your rmf-server image.
 
-If it still doesn't work, get a shell into the ros2-bridge port
+If it still doesn't work, get a shell into the rmf-server port
 
 ```bash
-.bin/minikube kubectl -- exec -it deployment/ros2-bridge -- bash
+.bin/minikube kubectl -- exec -it deployment/rmf-server -- bash
 ```
 
 When inside, test that you can connect to rmf
@@ -347,6 +360,6 @@ If you can't connect to rmf with ros cli tools, that indicates that there is som
 If you can connect to rmf, there is a chance that there is some discovery issues with rclnodejs. One possible workaround is to restart it. Exit your session inside the container and back on the host,
 
 ```bash
-.bin/minikube kubectl -- delete -f k8s/ros2-bridge.yaml
-.bin/minikube kubectl -- apply -f k8s/ros2-bridge.yaml
+.bin/minikube kubectl -- delete -f k8s/rmf-server.yaml
+.bin/minikube kubectl -- apply -f k8s/rmf-server.yaml
 ```

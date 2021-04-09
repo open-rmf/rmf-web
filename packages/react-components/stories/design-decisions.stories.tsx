@@ -1,5 +1,5 @@
 import { Divider, Typography, Button } from '@material-ui/core';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import * as RmfModels from 'rmf-models';
 import { Story } from '@storybook/react';
 import React from 'react';
 import { DispenserAccordion, StatusLabel } from '../lib';
@@ -22,10 +22,10 @@ const styles: Record<string, React.CSSProperties> = {
 function ToggleDispenserState(): JSX.Element {
   const [toggle, setToggle] = React.useState(true);
 
-  const dispenserState: RomiCore.DispenserState | null = toggle
+  const dispenserState: RmfModels.DispenserState | null = toggle
     ? makeDispenserState({
         guid: 'Stateless dispenser',
-        mode: RomiCore.DispenserState.IDLE,
+        mode: RmfModels.DispenserState.IDLE,
         request_guid_queue: [],
         seconds_remaining: 0,
         time: { sec: 0, nanosec: 0 },

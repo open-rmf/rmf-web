@@ -7,14 +7,13 @@ if (process.env.REACT_APP_AUTH_PROVIDER === 'keycloak') {
     process.env.REACT_APP_KEYCLOAK_CONFIG ||
     JSON.stringify({
       realm: 'master',
-      clientId: 'romi-dashboard',
+      clientId: 'rmf-dashboard',
       url: 'http://localhost:8088/auth',
     });
 }
 process.env.REACT_APP_TRAJECTORY_SERVER =
   process.env.REACT_APP_TRAJECTORY_SERVER || 'ws://localhost:8006';
-process.env.REACT_APP_ROS2_BRIDGE_SERVER =
-  process.env.REACT_APP_ROS2_BRIDGE_SERVER || 'ws://localhost:50002';
+process.env.REACT_APP_RMF_SERVER = process.env.REACT_APP_RMF_SERVER || 'http://localhost:8000';
 process.env.E2E_USER = process.env.E2E_USER || 'admin';
 process.env.E2E_PASSWORD = process.env.E2E_PASSWORD || 'admin';
 process.env.E2E_DASHBOARD_URL = process.env.E2E_DASHBOARD_URL || 'http://localhost:5000';
@@ -45,8 +44,8 @@ if (!eval(process.env.E2E_NO_DASHBOARD)) {
   services.push('serve -c ../e2e/serve.json ../build');
 }
 // eslint-disable-next-line no-eval
-if (!eval(process.env.E2E_NO_ROS2_BRIDGE)) {
-  services.push('npm run start:ros2-bridge');
+if (!eval(process.env.E2E_NO_RMF_SERVER)) {
+  services.push('npm run start:rmf-server');
 }
 
 concurrently([...services, `node scripts/auth-ready.js && wdio ${wdioArgs}`], {

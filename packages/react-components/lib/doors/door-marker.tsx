@@ -1,7 +1,7 @@
 import { makeStyles } from '@material-ui/core';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import React from 'react';
+import * as RmfModels from 'rmf-models';
 import { joinClasses } from '../css-utils';
 import { fromRmfCoords } from '../geometry-utils';
 
@@ -34,7 +34,7 @@ const useDoorStyles = makeStyles({
   },
 });
 
-function useDoorStyle(doorMode?: RomiCore.DoorMode): string {
+function useDoorStyle(doorMode?: RmfModels.DoorMode): string {
   const classes = useDoorStyles();
 
   if (!doorMode) {
@@ -42,27 +42,27 @@ function useDoorStyle(doorMode?: RomiCore.DoorMode): string {
   }
 
   switch (doorMode.value) {
-    case RomiCore.DoorMode.MODE_OPEN:
+    case RmfModels.DoorMode.MODE_OPEN:
       return classes.open;
-    case RomiCore.DoorMode.MODE_MOVING:
+    case RmfModels.DoorMode.MODE_MOVING:
       return classes.moving;
-    case RomiCore.DoorMode.MODE_CLOSED:
+    case RmfModels.DoorMode.MODE_CLOSED:
       return classes.close;
     default:
       return classes.unknown;
   }
 }
 
-function getDoorCenter(door: RomiCore.Door): [number, number] {
+function getDoorCenter(door: RmfModels.Door): [number, number] {
   const v1 = [door.v1_x, door.v1_y];
   const v2 = [door.v2_x, door.v2_y];
   switch (door.door_type) {
-    case RomiCore.Door.DOOR_TYPE_SINGLE_SLIDING:
-    case RomiCore.Door.DOOR_TYPE_SINGLE_SWING:
-    case RomiCore.Door.DOOR_TYPE_SINGLE_TELESCOPE:
-    case RomiCore.Door.DOOR_TYPE_DOUBLE_SLIDING:
-    case RomiCore.Door.DOOR_TYPE_DOUBLE_SWING:
-    case RomiCore.Door.DOOR_TYPE_DOUBLE_TELESCOPE:
+    case RmfModels.Door.DOOR_TYPE_SINGLE_SLIDING:
+    case RmfModels.Door.DOOR_TYPE_SINGLE_SWING:
+    case RmfModels.Door.DOOR_TYPE_SINGLE_TELESCOPE:
+    case RmfModels.Door.DOOR_TYPE_DOUBLE_SLIDING:
+    case RmfModels.Door.DOOR_TYPE_DOUBLE_SWING:
+    case RmfModels.Door.DOOR_TYPE_DOUBLE_TELESCOPE:
       return [(v1[0] + v2[0]) / 2, (v2[1] + v1[1]) / 2];
     default:
       throw new Error('unknown door type');
@@ -208,8 +208,8 @@ const DoubleTelescopeDoor = DoubleSlidingDoor;
  * onClick: Action to trigger on click.
  */
 export interface DoorMarkerProps extends Omit<React.SVGProps<SVGGElement>, 'onClick'> {
-  door: RomiCore.Door;
-  doorMode?: RomiCore.DoorMode;
+  door: RmfModels.Door;
+  doorMode?: RmfModels.DoorMode;
   /**
    * Whether the component should perform a translate transform to put it inline with the position
    * in RMF.
@@ -217,7 +217,7 @@ export interface DoorMarkerProps extends Omit<React.SVGProps<SVGGElement>, 'onCl
    * default: true
    */
   translate?: boolean;
-  onClick?(event: React.MouseEvent, door: RomiCore.Door): void;
+  onClick?(event: React.MouseEvent, door: RmfModels.Door): void;
 }
 
 export const DoorMarker = React.forwardRef(
@@ -228,17 +228,17 @@ export const DoorMarker = React.forwardRef(
 
     const renderDoor = () => {
       switch (door.door_type) {
-        case RomiCore.Door.DOOR_TYPE_SINGLE_SWING:
+        case RmfModels.Door.DOOR_TYPE_SINGLE_SWING:
           return <SingleSwingDoor door={door} doorMode={doorMode} />;
-        case RomiCore.Door.DOOR_TYPE_SINGLE_SLIDING:
+        case RmfModels.Door.DOOR_TYPE_SINGLE_SLIDING:
           return <SingleSlidingDoor door={door} doorMode={doorMode} />;
-        case RomiCore.Door.DOOR_TYPE_SINGLE_TELESCOPE:
+        case RmfModels.Door.DOOR_TYPE_SINGLE_TELESCOPE:
           return <SingleTelescopeDoor door={door} doorMode={doorMode} />;
-        case RomiCore.Door.DOOR_TYPE_DOUBLE_SWING:
+        case RmfModels.Door.DOOR_TYPE_DOUBLE_SWING:
           return <DoubleSwingDoor door={door} doorMode={doorMode} />;
-        case RomiCore.Door.DOOR_TYPE_DOUBLE_SLIDING:
+        case RmfModels.Door.DOOR_TYPE_DOUBLE_SLIDING:
           return <DoubleSlidingDoor door={door} doorMode={doorMode} />;
-        case RomiCore.Door.DOOR_TYPE_DOUBLE_TELESCOPE:
+        case RmfModels.Door.DOOR_TYPE_DOUBLE_TELESCOPE:
           return <DoubleTelescopeDoor door={door} doorMode={doorMode} />;
         default:
           return null;

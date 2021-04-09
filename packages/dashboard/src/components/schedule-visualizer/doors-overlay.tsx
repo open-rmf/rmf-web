@@ -1,4 +1,4 @@
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import * as RmfModels from 'rmf-models';
 import Debug from 'debug';
 import React, { useContext } from 'react';
 import { DoorMarker as DoorMarker_, DoorMarkerProps } from 'react-components';
@@ -10,8 +10,8 @@ const debug = Debug('ScheduleVisualizer:DoorsOverlay');
 const DoorMarker = React.memo(DoorMarker_);
 
 export interface DoorsOverlayProps extends SVGOverlayProps {
-  doors: readonly RomiCore.Door[];
-  onDoorClick?(door: RomiCore.Door): void;
+  doors: readonly RmfModels.Door[];
+  onDoorClick?(door: RmfModels.Door): void;
 }
 
 export const DoorsOverlay = (props: DoorsOverlayProps) => {

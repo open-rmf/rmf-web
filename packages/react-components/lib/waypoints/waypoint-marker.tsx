@@ -1,5 +1,5 @@
 import { makeStyles } from '@material-ui/core';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import * as RmfModels from 'rmf-models';
 import Debug from 'debug';
 import React from 'react';
 import { fromRmfCoords } from '../geometry-utils';
@@ -23,7 +23,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 export interface WaypointMarkerProps extends React.SVGProps<SVGGElement> {
-  waypoint: RomiCore.GraphNode;
+  waypoint: RmfModels.GraphNode;
   /**
    * default: 0.1
    */
