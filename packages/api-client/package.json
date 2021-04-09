@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "private": true,
   "scripts": {
-    "prepare": "node generate-models.js && npm run build",
+    "prepare": "tsc --build",
     "build": "npm run lint && tsc --build",
     "lint": "../../node_modules/.bin/eslint --ext ts,tsx lib"
   },
