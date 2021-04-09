@@ -2,22 +2,13 @@
 set -e
 
 if [[ $# != 1 ]]; then
-  echo 'Usage generate-models.sh <rmf-ws>'
+  echo 'Usage generate-models.sh <rmf-branch-or-tag>'
   exit 1
 fi
 
-rmf_ws=$1
+rmf_branch=$1
 script_dir=$(realpath $(dirname $0))
 cd "$script_dir"
-
-function getVersion {( set -e
-  cd $1
-  version=$(git tag --points-at HEAD)
-  if [[ -z $version ]]; then
-    version=$(git rev-parse HEAD)
-  fi
-  echo $version
-)}
 
 rmf_msgs=(
   'rmf_building_map_msgs'
@@ -43,17 +34,28 @@ fi
 
 rm -rf build
 mkdir -p "$script_dir/build/rmf/src"
-cd "$script_dir/build/rmf"
-ln -sf "$rmf_ws/src/rmf/rmf_internal_msgs" "$rmf_ws/src/rmf/rmf_building_map_msgs" ./src/
+cd "$script_dir/build/rmf/src"
+git clone --depth 1 -b "$rmf_branch" "https://github.com/open-rmf/rmf_internal_msgs.git"
+git clone --depth 1 -b "$rmf_branch" "https://github.com/open-rmf/rmf_building_map_msgs.git"
 . /opt/ros/foxy/setup.bash
+cd ..
 colcon build --merge-install --cmake-args -DCMAKE_BUILD_TYPE=Release
 . install/setup.bash
 cd "$script_dir"
 
 node generate-models.js "${rmf_msgs[@]}"
 
-rmf_internal_msgs_version=$(getVersion "$rmf_ws/src/rmf/rmf_internal_msgs")
-rmf_building_map_msgs_version=$(getVersion "$rmf_ws/src/rmf/rmf_building_map_msgs")
+function getVersion {( set -e
+  cd $1
+  version=$(git tag --points-at HEAD)
+  if [[ -z $version ]]; then
+    version=$(git rev-parse HEAD)
+  fi
+  echo $version
+)}
+
+rmf_internal_msgs_version=$(getVersion "build/rmf/src/rmf_internal_msgs")
+rmf_building_map_msgs_version=$(getVersion "build/rmf/src/rmf_building_map_msgs")
 rmf_server_version=$(getVersion .)
 
 cat << EOF > lib/version.ts
