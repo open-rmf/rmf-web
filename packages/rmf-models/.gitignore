@@ -1,5 +1,3 @@
 __pycache__/
 /build/
-/lib/ros/
-/lib/tortoise/
 /dist/

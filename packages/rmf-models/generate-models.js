@@ -1,11 +1,10 @@
 const { execSync } = require('child_process');
-const { rmdirSync } = require('fs');
+const fs = require('fs');
+const path = require('path');
 
 const jsonSchemaToTs = require('json-schema-to-typescript');
-const path = require('path');
-const fs = require('fs');
 
-rmdirSync(`${__dirname}/lib/generated`, { recursive: true });
+const rmfMsgs = process.argv.slice(2);
 
 console.log('generate schemas:');
 execSync(`python3 -m pipenv run python ${__dirname}/generate-schemas.py`, { stdio: 'inherit' });
@@ -32,17 +31,7 @@ console.log('generate models:');
   );
 })();
 
-const rmfMsgs = [
-  'rmf_building_map_msgs',
-  'rmf_charger_msgs',
-  'rmf_door_msgs',
-  'rmf_lift_msgs',
-  'rmf_dispenser_msgs',
-  'rmf_ingestor_msgs',
-  'rmf_fleet_msgs',
-  'rmf_task_msgs',
-];
-execSync(`python3 -m pipenv run python -m ts_ros -o lib/ros ${rmfMsgs.join(' ')}`, {
+execSync(`pipenv run python -m ts_ros -o lib/ros ${rmfMsgs.join(' ')}`, {
   stdio: 'inherit',
 });
 fs.writeFileSync(
