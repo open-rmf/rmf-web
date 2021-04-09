@@ -1,12 +1,9 @@
 #!/bin/bash
 set -e
 
-if [[ $# != 1 ]]; then
-  echo 'Usage generate-models.sh <rmf-branch-or-tag>'
-  exit 1
+if [[ -z $1 ]]; then
+  rmf_commit='main'
 fi
-
-rmf_branch=$1
 script_dir=$(realpath $(dirname $0))
 cd "$script_dir"
 
@@ -35,14 +32,17 @@ fi
 rm -rf build
 mkdir -p "$script_dir/build/rmf/src"
 cd "$script_dir/build/rmf/src"
-git clone --depth 1 -b "$rmf_branch" "https://github.com/open-rmf/rmf_internal_msgs.git"
-git clone --depth 1 -b "$rmf_branch" "https://github.com/open-rmf/rmf_building_map_msgs.git"
+git clone --depth 1 -b "$rmf_commit" "https://github.com/open-rmf/rmf_internal_msgs.git"
+git clone --depth 1 -b "$rmf_commit" "https://github.com/open-rmf/rmf_building_map_msgs.git"
 . /opt/ros/foxy/setup.bash
 cd ..
 colcon build --merge-install --cmake-args -DCMAKE_BUILD_TYPE=Release
 . install/setup.bash
 cd "$script_dir"
 
+# TODO: update this when this branch is merged, chicken egg problem.
+# cd "$script_dir/build"
+# git clone --depth 1 -b main "https://github.com/open-rmf/rmf-web.git"
 node generate-models.js "${rmf_msgs[@]}"
 
 function getVersion {( set -e

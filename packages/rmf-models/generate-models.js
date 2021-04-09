@@ -7,7 +7,7 @@ const jsonSchemaToTs = require('json-schema-to-typescript');
 const rmfMsgs = process.argv.slice(2);
 
 console.log('generate schemas:');
-execSync(`python3 -m pipenv run python ${__dirname}/generate-schemas.py`, { stdio: 'inherit' });
+execSync(`pipenv run python ${__dirname}/generate-schemas.py`, { stdio: 'inherit' });
 
 const schemas = fs.readdirSync('build/schema/').map((f) => `build/schema/${f}`);
 
