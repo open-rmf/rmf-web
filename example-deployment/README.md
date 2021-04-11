@@ -246,6 +246,60 @@ deploy it
 .bin/minikube kubectl -- apply -f k8s/dashboard.yaml
 ```
 
+## [MinIO](https://github.com/minio/minio)
+MinIO is a High-Performance Object Storage released under Apache License v2.0. MinIO has several uses but in our case, we will use MinIO to store logs.
+
+``` bash
+# connected to internet
+docker pull minio/minio:RELEASE.2021-03-10T05-11-33Z
+
+# connected to airgap network
+docker save minio/minio:RELEASE.2021-03-10T05-11-33Z | bash -c 'eval $(.bin/minikube docker-env) && docker load'
+
+.bin/minikube kubectl -- apply -f k8s/minio.yaml
+```
+
+## FluentD
+
+Fluentd is an open source data collector for unified logging layer. Fluentd allows you to unify data collection and consumption for a better use and understanding of data.
+### Fluentd Manifests
+
+Manifests from the official fluentd [github repo](https://github.com/fluent/fluentd-kubernetes-daemonset).
+
+### Fluentd Docker
+
+Official docker image of [fluentd](https://hub.docker.com/r/fluent/fluentd/). <br/> We adjusted `fluentd` to send logs to a local storage server called MinIO.
+
+``` bash
+# connected to internet
+docker pull fluent/fluentd-kubernetes-daemonset:v1.12.2-debian-s3-1.0
+
+# connected to airgap network
+docker save fluent/fluentd-kubernetes-daemonset:v1.12.2-debian-s3-1.0 | bash -c 'eval $(.bin/minikube docker-env) && docker load'
+```
+
+### Fluentd Configmap
+
+We have 4 files in our `fluentd-configmap.yaml` :
+* `fluent.conf`: Our main config which includes all configurations we want to run.
+* `pods-fluent.conf`: `tail` config that sources all pod logs on the `kubernetes` host in the cluster.
+* `minio-fluent.conf`: `match` config to capture all logs and send them to MinIO. Every chunck of logs should have 5mb. </br>
+* `minio-fluent-dev.conf`: `match` config to capture all logs and send them to MinIO. Every chunck of logs should have 2kb for development purposes. </br>
+
+Let's deploy our `configmap`:
+
+``` bash
+.bin/minikube kubectl -- apply -f k8s/fluentd-configmap.yaml
+```
+
+### Fluentd Daemonset
+
+Let's deploy the `daemonset`, on the kubernetes folder run:
+
+``` bash
+.bin/minikube kubectl -- apply -f k8s/fluentd.yaml
+```
+
 ## Test the deployment
 
 If not done so already, launch the office demo
