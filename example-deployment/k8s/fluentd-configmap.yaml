@@ -7,25 +7,12 @@ data:
     ################################################################
     # This source gets all logs from local docker host
     @include pods-fluent.conf
+    @include reporting-server.conf
     # Use this configuration for production
     # @include minio-fluent.conf
     @include minio-fluent-dev.conf
   # This is for running fluentd in the cloud
   pods-fluent.conf: |-
-    # <source>
-    #   @type tail
-    #   read_from_head true
-    #   tag kubernetes.*
-    #   path /var/log/containers/*.log
-    #   pos_file /var/log/fluentd-containers.log.pos
-    #   exclude_path ["/var/log/containers/fluent*"]
-    #   <parse>
-    #     @type kubernetes
-    #     @type "#{ENV['FLUENT_CONTAINER_TAIL_PARSER_TYPE'] || 'json'}"
-    #     time_format %Y-%m-%dT%H:%M:%S.%NZ
-    #   </parse>
-    # </source>
-    
     <source>
       @type tail
       read_from_head true
@@ -120,18 +107,8 @@ data:
         timekey_use_utc true        # Use this option if you prefer UTC timestamps
         chunk_limit_size 5mb       # The maximum size of each chunk
       </buffer>
-    
-  file-fluent.conf: |-
-    # <match minio.s3.**>
-    #   @type file
-    #   path /tmp/minio.log
-    # </match>
-    
-    # <match **>
-    #   @type file
-    #   path /tmp/all-logs.log
-    # </match>
-    
+
+  reporting-server.conf: |-
     <match rmf.**>
       @type http
       endpoint http://node-app-service:9009/post
@@ -146,32 +123,23 @@ data:
         flush_interval 10s
       </buffer>
     </match>
+    
+  file-fluent.conf: |-
+    # <match minio.s3.**>
+    #   @type file
+    #   path /tmp/minio.log
+    # </match>
+    
+    # <match **>
+    #   @type file
+    #   path /tmp/all-logs.log
+    # </match>
 
     # <match dashboard.**>
     #   @type file
     #   path /tmp/dashboard.log
     # </match>
 
-    <match minio.s3.**>
-      @type s3
-      aws_key_id minio         # The access key for Minio
-      aws_sec_key minio123        # The secret key for Minio
-      s3_bucket test         # The bucket to store the log data
-      s3_endpoint http://minio-service:9000/  # The endpoint URL (like "http://localhost:9000/")
-      # s3_region us-east-1           # See the region settings of your Minio server
-      path logs/                    # This prefix is added to each file
-      force_path_style true         # This prevents AWS SDK from breaking endpoint URL
-      time_slice_format %Y%m%d%H%M  # This timestamp is added to each file name
-
-      <buffer time>
-        @type file
-        path /var/log/fluent/s3
-        timekey 1m                # Flush the accumulated chunks every hour
-        timekey_wait 1s             # Wait for 60 seconds before flushing
-        timekey_use_utc true        # Use this option if you prefer UTC timestamps
-        chunk_limit_size 2k       # The maximum size of each chunk
-      </buffer>
-    </match>  
     # <system>
     #   log_level trace
     # </system>
