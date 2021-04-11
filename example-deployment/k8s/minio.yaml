@@ -94,3 +94,26 @@ spec:
   selector:
     # Looks for labels `app:minio` in the namespace and applies the spec
     app: minio
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: minio-ingress
+  labels:
+    app: minio
+spec:
+  tls:
+    - hosts:
+      - example.com
+  rules:
+    - host: example.com
+      http:
+        paths:
+          - path: /minio
+            pathType: Prefix
+            backend:
+              service:
+                name: minio-service
+                port:
+                  number: 9000
