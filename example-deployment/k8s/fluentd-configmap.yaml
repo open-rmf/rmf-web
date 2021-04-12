@@ -27,6 +27,20 @@ data:
       </parse>
     </source>
 
+    <source>
+      @type tail
+      read_from_head true
+      tag rmf.server.*
+      path /var/log/containers/rmf-server*.log
+      pos_file /var/log/fluent/fluentd-rmf-server.log.pos
+      exclude_path ["/var/log/containers/fluent*"]
+      <parse>
+        @type kubernetes
+        @type "#{ENV['FLUENT_CONTAINER_TAIL_PARSER_TYPE'] || 'json'}"
+        time_format %Y-%m-%dT%H:%M:%S.%NZ
+      </parse>
+    </source>
+
      <source>
       @type tail
       read_from_head true

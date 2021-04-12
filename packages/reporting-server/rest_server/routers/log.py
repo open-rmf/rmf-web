@@ -9,10 +9,10 @@ router = APIRouter()
 
 
 @router.post("/raw/", tags=["raw_logs"], status_code=status.HTTP_201_CREATED)
-async def write_logs(body: dict):
-    print(body)
+async def write_logs(body: list):
+    print("request body", body)
     try:
-        await create_raw_log([body["log"]])
+        await create_raw_log(body)
     except Exception as e:
         print(e)
         raise HTTPException(503, "cannot create the log")

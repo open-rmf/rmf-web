@@ -6,8 +6,8 @@ from parsers.log_type_parser import get_log_type
 async def create_raw_log(logs: list):
     for log in logs:
         print(log)
-        log_level = get_log_type(log)
-        await RawLog.create(level=log_level, payload={log: log}, message=log)
+        log_level = get_log_type(log["log"])
+        await RawLog.create(level=log_level, payload=log, message=log["log"])
     return "The logs were saved correctly"
 
 
