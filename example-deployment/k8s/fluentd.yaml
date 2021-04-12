@@ -60,7 +60,6 @@ spec:
         effect: NoSchedule
       containers:
       - name: fluentd
-        imagePullPolicy: "Always"
         image: fluent/fluentd-kubernetes-daemonset:v1.12.2-debian-s3-1.0
         resources:
           limits:

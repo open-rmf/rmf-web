@@ -40,8 +40,8 @@ data:
       <buffer time>
         @type file
         path /var/log/fluent/s3
-        timekey 1m                # Flush the accumulated chunks every hour
-        timekey_wait 1s             # Wait for 60 seconds before flushing
+        timekey 1m                # Flush the accumulated chunks every 1 min
+        timekey_wait 1s             # Wait for 1 seconds before flushing
         timekey_use_utc true        # Use this option if you prefer UTC timestamps
         chunk_limit_size 2k       # The maximum size of each chunk
       </buffer>
