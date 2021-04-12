@@ -7,9 +7,9 @@ data:
     ################################################################
     # This source gets all logs from local docker host
     @include pods-fluent.conf
-    @include minio-fluent-dev.conf
+    # @include minio-fluent-dev.conf
     # Use this configuration for production
-    # @include minio-fluent.conf
+    @include minio-fluent.conf
   # This is for running fluentd in the cloud
   pods-fluent.conf: |-
     <source>
