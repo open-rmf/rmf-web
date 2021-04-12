@@ -5,10 +5,12 @@ import appConfig from '../../app-config';
 
 const AllLogsReport = () => {
   // (data: LogQueryPayload) => Promise<LogRowsType>
-  const getLogs = async (data: LogQueryPayload): Promise<LogRowsType> => {
+  const getLogs = async (params: LogQueryPayload): Promise<LogRowsType> => {
     try {
       // Gets data served by the project itself
-      const response = await axios.get(`${appConfig.reportingServerUrl}/report/raw_logs/`);
+      const response = await axios.get(`${appConfig.reportingServerUrl}/report/raw_logs/`, {
+        params: params,
+      });
       console.log(response);
       return response.data as LogRowsType;
     } catch (error) {

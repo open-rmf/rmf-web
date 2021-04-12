@@ -8,7 +8,7 @@ config["port"] = 8002
 config[
     "db_url"
 ] = "postgres://reporting-server:reporting-server@reporting-server-db/reporting-server"
-config["public_url"] = "https://example.com/reporting/api/v1"
+config["public_url"] = "https://example.com/logserver/api/v1"
 config["log_level"] = "INFO"
 config["jwt_public_key"] = "/jwt-configmap/jwt-pub-key.pub"
 config[
