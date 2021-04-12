@@ -39,24 +39,6 @@ client.on('door_states', console.log);
 Requirements:
 * java >= 8
 
-
-Download the swagger codegen
 ```bash
-wget https://repo1.maven.org/maven2/io/swagger/codegen/v3/swagger-codegen-cli/3.0.25/swagger-codegen-cli-3.0.25.jar -O .bin/swagger-codegen-cli.jar
-```
-
-Run the api-server locally
-```bash
-cd ../api_server
-npm start
-```
-
-Generate code
-```bash
-java -jar .bin/swagger-codegen-cli.jar generate -ihttp://localhost:8000/openapi.json -ltypescript-axios -olib/openapi
-```
-
-There is a bug with `ModelObject` type being missing, workaround it by adding a type to the generated models.
-```bash
-echo 'export type ModelObject = Record<string, any>;' >> lib/openapi/models/index.ts
+./generate-openapi.sh
 ```

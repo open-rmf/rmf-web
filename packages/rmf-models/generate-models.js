@@ -29,12 +29,13 @@ console.log('generate models:');
     path.join(tortoiseDir, 'GENERATED'),
     'THIS DIRECTORY IS GENERATED, DO NOT EDIT!!',
   );
-})();
 
-execSync(`pipenv run python -m ts_ros -o lib/ros ${rmfMsgs.join(' ')}`, {
-  stdio: 'inherit',
-});
-fs.writeFileSync(
-  path.join(__dirname, 'lib', 'ros', 'GENERATED'),
-  'THIS DIRECTORY IS GENERATED, DO NOT EDIT!!',
-);
+  execSync(`pipenv run python -m ts_ros -o lib/ros ${rmfMsgs.join(' ')}`, {
+    stdio: 'inherit',
+  });
+  fs.writeFileSync(
+    path.join(__dirname, 'lib', 'ros', 'GENERATED'),
+    'THIS DIRECTORY IS GENERATED, DO NOT EDIT!!',
+  );
+  execSync(`../../node_modules/.bin/prettier -w lib/ros lib/tortoise`, { stdio: 'inherit' });
+})();
