@@ -105,5 +105,24 @@ post
   {
     log: '172.17.0.4 - - [08/Apr/2021:04:22:00 +0000] "GET /dashboard/static/media/roboto-latin-400.176f8f5b.woff2 HTTP/1.1" 200 15736 "https://example.com/dashboard/static/css/2.350091fa.chunk.css" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36" "192.168.49.1"\n',
     stream: 'stdout'
-  }
+  } 
 ]
+
+
+{"log":"INFO:     Started server process [1]\n","stream":"stderr","time":"2021-04-11T21:19:35.639008147Z"}
+{"log":"INFO:     Waiting for application startup.\n","stream":"stderr","time":"2021-04-11T21:19:35.639061847Z"}
+{"log":"INFO:app:loading states from database...\n","stream":"stdout","time":"2021-04-11T21:19:35.860966458Z"}
+{"log":"INFO:app:loaded 0 door states\n","stream":"stdout","time":"2021-04-11T21:19:35.865331275Z"}
+{"log":"INFO:app:loaded 0 door health\n","stream":"stdout","time":"2021-04-11T21:19:35.86907532Z"}
+{"log":"INFO:app:loaded 0 lift states\n","stream":"stdout","time":"2021-04-11T21:19:35.872483604Z"}
+{"log":"INFO:app:loaded 0 lift health\n","stream":"stdout","time":"2021-04-11T21:19:35.875879699Z"}
+{"log":"INFO:app:loaded 0 dispenser states\n","stream":"stdout","time":"2021-04-11T21:19:35.879653385Z"}
+{"log":"INFO:app:loaded 0 dispenser health\n","stream":"stdout","time":"2021-04-11T21:19:35.88335184Z"}
+{"log":"INFO:app:loaded 0 fleet states\n","stream":"stdout","time":"2021-04-11T21:19:35.887286925Z"}
+{"log":"INFO:app:loaded 0 robot health\n","stream":"stdout","time":"2021-04-11T21:19:35.89018964Z"}
+{"log":"INFO:app:loaded 0 tasks\n","stream":"stdout","time":"2021-04-11T21:19:35.892812967Z"}
+{"log":"INFO:app:successfully loaded all states\n","stream":"stdout","time":"2021-04-11T21:19:35.892864491Z"}
+{"log":"INFO:app.ros:start spinning rclpy node\n","stream":"stdout","time":"2021-04-11T21:19:36.058894778Z"}
+{"log":"INFO:app:started app\n","stream":"stdout","time":"2021-04-11T21:19:36.059193172Z"}
+{"log":"INFO:     Application startup complete.\n","stream":"stderr","time":"2021-04-11T21:19:36.05930149Z"}
+{"log":"INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)\n","stream":"stderr","time":"2021-04-11T21:19:36.059504321Z"}

@@ -1,4 +1,5 @@
 import React from 'react';
+import AllLogsReport from './reports/all-logs';
 
 export enum Reports {
   queryAllLogs = 'queryAllLogs',
@@ -22,7 +23,7 @@ export enum Reports {
  */
 
 export const ReportContainer: Record<string, React.ReactElement> = {
-  [Reports.queryAllLogs]: <h1>Still not implemented</h1>,
+  [Reports.queryAllLogs]: <AllLogsReport />,
   [Reports.showChargerStateReport]: <h1>Still not implemented</h1>,
   [Reports.showDoorStateReport]: <h1>Still not implemented</h1>,
   [Reports.showLiftStateReport]: <h1>Still not implemented</h1>,

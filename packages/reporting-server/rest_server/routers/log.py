@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel
-from rest_server.repositories.raw_log import create_raw_log
+from rest_server.repositories.log_creation_handler import create_raw_log
 
 router = APIRouter()
 
