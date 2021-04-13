@@ -7,6 +7,11 @@ from rest_server.repositories.report import get_all_raw_logs, get_doors_state
 router = APIRouter()
 
 
+@router.get("/test/", tags=["test"])
+async def test():
+    return "test"
+
+
 @router.get("/door_state/", tags=["door_state"])
 async def door_state_report():
     return get_doors_state()

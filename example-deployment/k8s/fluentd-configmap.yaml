@@ -125,7 +125,7 @@ data:
   reporting-server.conf: |-
     <match rmf.**>
       @type http
-      endpoint http://node-app-service:9009/post
+      endpoint http://reporting-server:8002/log/raw
       http_method post
       open_timeout 3
       # content_type

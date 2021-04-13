@@ -7,6 +7,8 @@ from rest_server.routers import log_router, report_router
 from tortoise import Tortoise, run_async
 from tortoise.contrib.fastapi import register_tortoise
 
+from .app_config import app_config
+
 logger = logging.getLogger("rest_app")
 handler = logging.StreamHandler(sys.stdout)
 handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
@@ -25,7 +27,7 @@ app.include_router(report_router, prefix="/report", tags=["report"])
 
 register_tortoise(
     app,
-    db_url="sqlite://:memory:",
+    db_url=app_config.db_url,
     modules={"models": ["models.raw_log"]},
     generate_schemas=True,
     add_exception_handlers=True,
