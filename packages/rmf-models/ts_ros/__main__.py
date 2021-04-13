@@ -228,7 +228,7 @@ def generate(dstdir):
 
             print(f"Generating model {full_type}")
             template.stream(srvspec=srvspec).dump(output_fpath)
-            modules.append(f"./{pkg_name}/{msgspec.reldir}/{srvspec.srv_name}")
+            modules.append(f"./{srvspec.pkg_name}/{srvspec.reldir}/{srvspec.srv_name}")
     return modules
 
 
