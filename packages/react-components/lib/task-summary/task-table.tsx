@@ -26,6 +26,11 @@ const useStyles = makeStyles((theme) => ({
   title: {
     flex: '1 1 100%',
   },
+  infoRow: {
+    '& > *': {
+      borderBottom: 'unset',
+    },
+  },
   phasesCell: {
     padding: `0 ${theme.spacing(1)}px`,
   },
@@ -73,7 +78,7 @@ export function TaskTable({ tasks }: TaskTableProps): JSX.Element {
           <TableBody>
             {tasks.map((task) => (
               <React.Fragment key={task.task_id}>
-                <TableRow key={task.task_id}>
+                <TableRow key={task.task_id} className={classes.infoRow}>
                   <TableCell>{task.task_id}</TableCell>
                   <TableCell>{task.robot_name}</TableCell>
                   <TableCell>{toRelativeDate(task.start_time)}</TableCell>
