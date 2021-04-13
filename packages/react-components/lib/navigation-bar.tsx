@@ -3,29 +3,7 @@ import { makeStyles, Theme } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import Box from '@material-ui/core/Box';
-
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`navigation-tabpanel-${index}`}
-      aria-labelledby={`navigation-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box p={3}>{children}</Box>}
-    </div>
-  );
-}
+import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -34,13 +12,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-interface NavigationBarProps {
-  tabNames: string[];
-}
-
-const NavigationTabs = (props: NavigationBarProps): React.ReactElement => {
-  const { tabNames } = props;
+const NavigationBar = (): React.ReactElement => {
   const classes = useStyles();
+  const tabNames = ['Overview', 'Building', 'Robots', 'Tasks', 'Logs'];
+  const routes = ['/', '/building', '/robots', '/tasks', '/logs'];
   const [value, setValue] = React.useState(0);
 
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -49,16 +24,10 @@ const NavigationTabs = (props: NavigationBarProps): React.ReactElement => {
   };
 
   const populateTabs = () => {
-    const tabs = tabNames.map((value, index) => <Tab key={index} label={value} />);
+    const tabs = tabNames.map((value, index) => (
+      <Tab key={index} label={value} value={routes[index]} component={Link} to={routes[index]} />
+    ));
     return tabs;
-  };
-
-  const populateTabPanel = () => {
-    return (
-      <TabPanel key={'tab' + value} value={value} index={value}>
-        {tabNames[value]}
-      </TabPanel>
-    );
   };
 
   return (
@@ -68,9 +37,8 @@ const NavigationTabs = (props: NavigationBarProps): React.ReactElement => {
           {populateTabs()}
         </Tabs>
       </AppBar>
-      {populateTabPanel()}
     </div>
   );
 };
 
-export default NavigationTabs;
+export default NavigationBar;
