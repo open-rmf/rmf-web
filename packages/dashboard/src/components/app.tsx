@@ -1,6 +1,6 @@
-import { createMuiTheme, ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@material-ui/core';
 import React from 'react';
-import { NotFoundPage } from 'react-components';
+import { NotFoundPage, customTheme } from 'react-components';
 import { BrowserRouter, Link, Redirect, Route, Switch, useLocation } from 'react-router-dom';
 import { getUrl, LoginHOC, PrivateRouteHOC, User } from 'rmf-auth';
 import 'typeface-roboto';
@@ -18,16 +18,6 @@ import { TaskPage } from './tasks';
 
 const PrivateRoute = PrivateRouteHOC(Route, Redirect, useLocation);
 const Login = LoginHOC(Redirect);
-
-const theme = createMuiTheme({
-  palette: {
-    primary: {
-      main: '#44497a',
-      dark: '#323558',
-      light: '#565d99',
-    },
-  },
-});
 
 function locationToTabValue(pathname: string): TabValue | null {
   switch (pathname) {
@@ -97,7 +87,7 @@ export default function App(): JSX.Element | null {
         <AuthenticatorContext.Provider value={authenticator}>
           <UserContext.Provider value={user}>
             <TrajectorySocketContext.Provider value={new WebSocket(appConfig.trajServerUrl)}>
-              <ThemeProvider theme={theme}>
+              <ThemeProvider theme={customTheme}>
                 <BrowserRouter>
                   <Switch>
                     <Route exact path={LOGIN_ROUTE}>
