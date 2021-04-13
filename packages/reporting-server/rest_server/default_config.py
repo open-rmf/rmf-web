@@ -9,6 +9,7 @@ config = {
     "host": "127.0.0.1",  # ip or hostname to bind the socket to
     "port": 8002,
     "db_url": "sqlite://:memory:",
+    "root_path": "/api",
     # url that rmf-server is being served on.
     # When being a proxy, this must be the url that rmf-server is mounted on.
     # E.g. https://example.com/rmf/api/v1
