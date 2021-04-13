@@ -278,9 +278,7 @@ export interface CreateTaskFormProps {}
 export function CreateTaskForm() {
   const classes = useStyles();
   const theme = useTheme();
-  const [taskType, setTaskType] = React.useState<number | undefined>(
-    RmfModels.TaskType.TYPE_DELIVERY,
-  );
+  const [taskType, setTaskType] = React.useState<number | undefined>(undefined);
   const [startDate, setStartDate] = React.useState(new Date());
   const [priority, setPriority] = React.useState(0);
   const [taskDescription, setTaskDescrption] = React.useState<TaskDescription | undefined>(() =>
