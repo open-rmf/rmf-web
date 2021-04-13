@@ -12,8 +12,8 @@ import {
 import { KeyboardDateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import type {
   CleanTaskDescription,
-  LoopTaskDescription,
   DeliveryTaskDescription,
+  LoopTaskDescription,
 } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
@@ -30,7 +30,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function FormToolbar() {
+interface FormToolbarProps {
+  allowBatch: boolean;
+}
+
+function FormToolbar({ allowBatch }: FormToolbarProps) {
   const classes = useStyles();
 
   return (
@@ -38,11 +42,13 @@ function FormToolbar() {
       <Grid style={{ flexGrow: 1 }}>
         <Typography variant="h6">Create Task</Typography>
       </Grid>
-      <Grid>
-        <Button className={classes.uploadFileBtn} variant="contained" color="primary">
-          Upload File
-        </Button>
-      </Grid>
+      {allowBatch && (
+        <Grid>
+          <Button className={classes.uploadFileBtn} variant="contained" color="primary">
+            Upload File
+          </Button>
+        </Grid>
+      )}
     </Grid>
   );
 }
@@ -221,6 +227,7 @@ function CleanTaskForm({ value, onChange }: CleanTaskFormProps) {
 interface TaskDescriptionFormProps {
   taskType: number;
   value: TaskDescription;
+  allowBatch?: boolean;
   onChange(taskDescription: TaskDescription): void;
 }
 
@@ -273,9 +280,14 @@ function defaultTaskDescription(taskType?: number): TaskDescription | undefined 
   }
 }
 
-export interface CreateTaskFormProps {}
+export interface CreateTaskFormProps {
+  /**
+   * Shows extra UI elements suitable for submittng batched tasks. Default to 'false'.
+   */
+  allowBatch?: boolean;
+}
 
-export function CreateTaskForm() {
+export function CreateTaskForm({ allowBatch }: CreateTaskFormProps): JSX.Element {
   const classes = useStyles();
   const theme = useTheme();
   const [taskType, setTaskType] = React.useState<number | undefined>(undefined);
@@ -293,7 +305,7 @@ export function CreateTaskForm() {
 
   return (
     <Grid container direction="column" wrap="nowrap">
-      <FormToolbar />
+      <FormToolbar allowBatch={Boolean(allowBatch)} />
       <Divider />
       <Grid>
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
