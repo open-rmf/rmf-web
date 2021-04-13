@@ -1,15 +1,11 @@
 import React from 'react';
 import NavigationBar from '../lib/navigation-bar';
 import { render, screen } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
 
 describe('Navigation Bar', () => {
-  it('renders the title bar', () => {
-    const root = render(
-      <BrowserRouter>
-        <NavigationBar />
-      </BrowserRouter>,
-    );
+  it('renders correctly', () => {
+    const tabNames = ['Robots', 'Tasks'];
+    const root = render(<NavigationBar tabNames={tabNames} />);
     expect(screen.getByLabelText('navigation-tabs')).toBeTruthy();
     root.unmount();
   });
