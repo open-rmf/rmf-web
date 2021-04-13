@@ -114,38 +114,3 @@ npm run build
 
 You can then serve the `build` directory using the webserver of your choice.
 
-## Using Custom Theme
-
-1) Import the custom theme and material ui theme provider
-
-```
-import { customTheme } from 'react-components';
-import { ThemeProvider } from '@material-ui/styles';
-```
-
-2) Provide the app with the theme
-
-```
-<ThemeProvider theme={customTheme}>
-  <App />
-</ThemeProvider>
-```
-
-3) Use them in your styles
-
-An example:
-
-```
-const useStyles = makeStyles((theme) => ({
-    main: {
-      backgroundColor: theme.palette.primary.main,
-    },
-    .
-    .
-    .
-    .
-    fireOpal: {
-      backgroundColor: theme.colors.fireOpal,
-    },
-  }));
-```
