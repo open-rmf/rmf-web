@@ -28,3 +28,4 @@ export * from './material-table-icons';
 export * from './notifications-dialog';
 export * from './systems-summary';
 export * from './simple-filter';
+export * from './theme/theme';
