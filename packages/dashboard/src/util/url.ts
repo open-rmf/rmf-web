@@ -7,3 +7,5 @@ export const BUILDING_ROUTE = normalizePath(`${BASE_PATH}/building`);
 export const ROBOTS_ROUTE = normalizePath(`${BASE_PATH}/robots`);
 export const TASKS_ROUTE = normalizePath(`${BASE_PATH}/tasks`);
 export const LOGS_ROUTE = normalizePath(`${BASE_PATH}/logs`);
+
+export const TAB_NAMES = ['Overview', 'Building', 'Robots', 'Tasks', 'Logs'];
