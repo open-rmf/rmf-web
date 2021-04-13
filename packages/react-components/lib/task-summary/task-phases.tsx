@@ -81,11 +81,11 @@ function PhaseSeparator({ leftColor, rightColor }: PhaseSeparatorProps) {
   );
 }
 
-export interface TaskViewProps {
+export interface TaskPhasesProps {
   taskSummary: RmfModels.TaskSummary;
 }
 
-export function TaskView({ taskSummary }: TaskViewProps): JSX.Element {
+export function TaskPhases({ taskSummary }: TaskPhasesProps): JSX.Element {
   const classes = useStyles();
   const theme = useTheme();
   const phaseColors = getPhaseColors(theme);

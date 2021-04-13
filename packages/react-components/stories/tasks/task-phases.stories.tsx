@@ -1,7 +1,7 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import { TaskView as TaskView_, TaskViewProps } from '../lib';
+import { TaskPhases as TaskPhases_, TaskPhasesProps } from '../../lib';
 
 const task: RmfModels.TaskSummary = new RmfModels.TaskSummary({
   end_time: { sec: 0, nanosec: 0 },
@@ -20,8 +20,8 @@ test phase 3`,
 });
 
 export default {
-  title: 'Task View',
-  component: TaskView_,
+  title: 'Tasks/Task Phases',
+  component: TaskPhases_,
   argTypes: {
     taskSummary: {
       control: {
@@ -31,10 +31,10 @@ export default {
   },
 } as Meta;
 
-export const TaskView: Story<TaskViewProps> = (args) => {
-  return <TaskView_ {...args}></TaskView_>;
+export const TaskPhases: Story<TaskPhasesProps> = (args) => {
+  return <TaskPhases_ {...args}></TaskPhases_>;
 };
 
-TaskView.args = {
+TaskPhases.args = {
   taskSummary: task,
 };
