@@ -43,3 +43,4 @@ export function io(...args: Parameters<typeof _io>): SioClient {
 }
 
 export * from './openapi';
+export * from './openapi/models';

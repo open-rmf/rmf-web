@@ -65,7 +65,7 @@ export function TaskTable({ tasks }: TaskTableProps): JSX.Element {
     <Paper>
       <TableToolbar />
       <TableContainer>
-        <Table className={classes.table} stickyHeader={true} size="small">
+        <Table className={classes.table} stickyHeader size="small">
           <TableHead>
             <TableRow>
               <TableCell>Task Id</TableCell>
