@@ -22,6 +22,8 @@ others:
 * keycloak
 * nginx
 * postgres
+* minio
+* fluentd
 
 **NOTE: If you are using this example as a starting point for your own deployment, you must make sure that you have the proper license to use the softwares used in this example.**
 
@@ -246,6 +248,25 @@ deploy it
 .bin/minikube kubectl -- apply -f k8s/dashboard.yaml
 ```
 
+Capture all logs and send them to MinIO. Every chunck of logs should have 5mb. 
+* `minio-fluent-dev.conf`: `match` config to capture all logs and send them to MinIO. Every chunck of logs should have 2kb for development purposes.
+
+Let's deploy our `configmap`:
+
+``` bash
+.bin/minikube kubectl -- apply -f k8s/fluentd-configmap.yaml
+```
+
+### Fluentd Daemonset
+
+Let's deploy the `daemonset`,
+
+This requires internet connection, see [Deploying in an airgapped network](#deploying-in-an-airgapped-network) if you are in an airgap network.
+
+``` bash
+.bin/minikube kubectl -- apply -f k8s/fluentd.yaml
+```
+
 ## Test the deployment
 
 If not done so already, launch the office demo
@@ -278,17 +299,21 @@ Sit back and relax, everything will be done for you!
 
 There are certain parts that requires an internet connection to fetch the docker images and source codes, in order to deploy from within an airgapped network, you can use obtain the images first, then push them directly to minikube. For example
 
-when you have internet, run this to get the keycloak image
+when you have internet, run this to get the keycloak, MinIO and Fluentd images
 ```bash
 docker pull quay.io/keycloak/keycloak:12.0.4
+docker pull minio/minio:RELEASE.2021-03-10T05-11-33Z
+docker pull fluent/fluentd-kubernetes-daemonset:v1.12.2-debian-s3-1.0
 ```
 
-now, connect to the airgapped network and push the image to minikube
+now, connect to the airgapped network and push the images to minikube
 ```bash
 docker save quay.io/keycloak/keycloak:12.0.4 | bash -c 'eval $(.bin/minikube docker-env) && docker load'
+docker save minio/minio:RELEASE.2021-03-10T05-11-33Z | bash -c 'eval $(.bin/minikube docker-env) && docker load'
+docker save fluent/fluentd-kubernetes-daemonset:v1.12.2-debian-s3-1.0 | bash -c 'eval $(.bin/minikube docker-env) && docker load'
 ```
 
-now you can deploy keycloak without require access to the internet
+now you can deploy keycloak, MinIO and Fluentd without require access to the internet
 
 If connection to the internet from the same PC is not possible, you can use `docker save` to save the image into a tarball, then transfer it to the minikube PC through whatever method possible (thumbdrives, cds etc) and use `docker load` to load the image. Then you can use `.bin/minikube load` to push it into minikube.
 
