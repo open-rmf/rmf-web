@@ -13,6 +13,7 @@ import {
   ROBOTS_ROUTE,
   TASKS_ROUTE,
   LOGS_ROUTE,
+  TAB_NAMES,
 } from '../util/url';
 import { AppBase } from './app-base';
 import { AppConfigContext, ResourcesContext } from './app-contexts';
@@ -36,7 +37,7 @@ const theme = createMuiTheme({
 function AppIntrinsics({ children }: React.PropsWithChildren<{}>): JSX.Element | null {
   return (
     <AppBase>
-      <NavigationBar />
+      <NavigationBar tabNames={TAB_NAMES} />
       <RmfApp>{children}</RmfApp>
     </AppBase>
   );

@@ -3,8 +3,10 @@ import { makeStyles, Theme } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import { Link } from 'react-router-dom';
 
+interface NavigationBarProps {
+  tabNames: string[];
+}
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     flexGrow: 1,
@@ -12,10 +14,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-const NavigationBar = (): React.ReactElement => {
+const NavigationBar = (props: NavigationBarProps): React.ReactElement => {
   const classes = useStyles();
-  const tabNames = ['Overview', 'Building', 'Robots', 'Tasks', 'Logs'];
-  const routes = ['/', '/building', '/robots', '/tasks', '/logs'];
+  const { tabNames } = props;
   const [value, setValue] = React.useState(0);
 
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -25,7 +26,7 @@ const NavigationBar = (): React.ReactElement => {
 
   const populateTabs = () => {
     const tabs = tabNames.map((value, index) => (
-      <Tab key={index} label={value} value={routes[index]} component={Link} to={routes[index]} />
+      <Tab key={index} label={value} value={tabNames[index]} />
     ));
     return tabs;
   };
