@@ -30,7 +30,7 @@ const TitleBar = (props: TitleBarProps): React.ReactElement => {
   return (
     <div className={classes.root}>
       <AppBar id="appbar" position="static">
-        <Toolbar variant="dense">
+        <Toolbar>
           <img src={logoPath} alt="logo" className={classes.logo} />
           <Typography variant="caption" className={classes.subtitle}>
             Powered by OpenRMF
