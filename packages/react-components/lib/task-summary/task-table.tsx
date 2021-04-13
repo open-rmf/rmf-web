@@ -11,11 +11,13 @@ import {
   Toolbar,
   Typography,
 } from '@material-ui/core';
+import AddOutlinedIcon from '@material-ui/icons/AddCircle';
+import { formatDistanceToNow } from 'date-fns';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import { taskStateToStr } from './utils';
+import { rosTimeToJs } from '../utils';
 import { TaskPhases } from './task-phases';
-import AddOutlinedIcon from '@material-ui/icons/AddCircle';
+import { taskStateToStr } from './utils';
 
 const useStyles = makeStyles((theme) => ({
   table: {
@@ -42,6 +44,10 @@ function TableToolbar() {
     </Toolbar>
   );
 }
+
+const toRelativeDate = (rosTime: RmfModels.Time) => {
+  return formatDistanceToNow(rosTimeToJs(rosTime), { addSuffix: true });
+};
 
 export interface TaskTableProps {
   tasks: RmfModels.TaskSummary[];
@@ -70,8 +76,8 @@ export function TaskTable({ tasks }: TaskTableProps): JSX.Element {
                 <TableRow key={task.task_id}>
                   <TableCell>{task.task_id}</TableCell>
                   <TableCell>{task.robot_name}</TableCell>
-                  <TableCell>{task.start_time.sec}</TableCell>
-                  <TableCell>{task.end_time.sec}</TableCell>
+                  <TableCell>{toRelativeDate(task.start_time)}</TableCell>
+                  <TableCell>{toRelativeDate(task.end_time)}</TableCell>
                   <TableCell>{taskStateToStr(task.state)}</TableCell>
                 </TableRow>
                 <TableRow>
