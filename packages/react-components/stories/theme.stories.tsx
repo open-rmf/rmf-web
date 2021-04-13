@@ -1,74 +1,93 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { customTheme } from '../lib';
-import { Typography } from '@material-ui/core';
+import { Typography, makeStyles, Paper } from '@material-ui/core';
+import { ThemeProvider } from '@material-ui/styles';
 
 export default {
   title: 'Theme',
 } as Meta;
 
-interface ColorDisplayProps {
+interface ColorCardProps {
   color: string | undefined;
+  colorName: string;
 }
 
-const ColorDisplay = (props: ColorDisplayProps): JSX.Element => {
-  const { color } = props;
-  let colorDesc;
-
-  switch (color) {
-    case '#1F396B':
-      colorDesc = 'Dark Corn Flower Blue (Main)';
-      break;
-    case '#20a39e':
-      colorDesc = 'Light Sea Green (Secondary)';
-      break;
-    case '#000000':
-      colorDesc = 'Black';
-      break;
-    case '#6B7D7D':
-      colorDesc = 'Xanadu';
-      break;
-    case '#103375':
-      colorDesc = "St Patrick's Blue";
-      break;
-    case '#5873A8':
-      colorDesc = 'Blue Yonder';
-      break;
-    case '#FBFCFF':
-      colorDesc = 'Ghost White';
-      break;
-    case '#DEA54B':
-      colorDesc = 'Indian Yellow';
-      break;
-    case '#F25F5C':
-      colorDesc = 'Fire Opal';
-      break;
-  }
+const ColorCard = (props: ColorCardProps): JSX.Element => {
+  const { color, colorName } = props;
+  const useStyles = makeStyles(() => ({
+    paperSize: {
+      width: '100px',
+      height: '100px',
+    },
+    colorDescription: {
+      width: '100px',
+    },
+  }));
+  const classes = useStyles();
 
   return (
     <div style={{ margin: '0 1rem' }}>
-      <div
-        style={{ width: '100px', height: '100px', backgroundColor: color, margin: '0 auto' }}
-      ></div>
-      <Typography variant="body1" align="center" style={{ width: '100px' }}>
-        {colorDesc}
+      <Paper className={`${color} ${classes.paperSize}`} />
+      <Typography variant="body1" align="center" className={classes.colorDescription}>
+        {colorName}
       </Typography>
     </div>
   );
 };
 
+const ColorDisplay = (): JSX.Element => {
+  const useStyles = makeStyles((theme) => ({
+    main: {
+      backgroundColor: theme.palette.primary.main,
+    },
+    secondary: {
+      backgroundColor: theme.palette.secondary.main,
+    },
+    black: {
+      backgroundColor: theme.colors.black,
+    },
+    xanadu: {
+      backgroundColor: theme.colors.xanadu,
+    },
+    stPatrickBlue: {
+      backgroundColor: theme.colors.stPatricksBlue,
+    },
+    blueYonder: {
+      backgroundColor: theme.colors.blueYonder,
+    },
+    ghostWhite: {
+      backgroundColor: theme.colors.ghostWhite,
+    },
+    indianYellow: {
+      backgroundColor: theme.colors.indianYellow,
+    },
+    fireOpal: {
+      backgroundColor: theme.colors.fireOpal,
+    },
+  }));
+  const classes = useStyles();
+
+  return (
+    <div style={{ display: 'flex' }}>
+      <ColorCard color={classes.main} colorName={'Dark Corn Flower Blue (Main)'} />
+      <ColorCard color={classes.secondary} colorName={'Light Sea Green (Secondary)'} />
+      <ColorCard color={classes.black} colorName={'Black'} />
+      <ColorCard color={classes.xanadu} colorName={'Xanadu'} />
+      <ColorCard color={classes.stPatrickBlue} colorName={"St Patrick's Blue"} />
+      <ColorCard color={classes.blueYonder} colorName={'Blue Yonder'} />
+      <ColorCard color={classes.ghostWhite} colorName={'Ghost White'} />
+      <ColorCard color={classes.indianYellow} colorName={'Indian Yellow'} />
+      <ColorCard color={classes.fireOpal} colorName={'Fire Opal'} />
+    </div>
+  );
+};
+
+// demonstration of how to inject custom theme
 export const ThemeStory: Story = (args) => {
   return (
-    <div {...args} style={{ display: 'flex' }}>
-      <ColorDisplay color={customTheme.palette.primary.main} />
-      <ColorDisplay color={customTheme.palette.secondary.main} />
-      <ColorDisplay color={customTheme.colors.black} />
-      <ColorDisplay color={customTheme.colors.xanadu} />
-      <ColorDisplay color={customTheme.colors.stPatricksBlue} />
-      <ColorDisplay color={customTheme.colors.blueYonder} />
-      <ColorDisplay color={customTheme.colors.ghostWhite} />
-      <ColorDisplay color={customTheme.colors.indianYellow} />
-      <ColorDisplay color={customTheme.colors.fireOpal} />
-    </div>
+    <ThemeProvider theme={customTheme}>
+      <ColorDisplay {...args} />
+    </ThemeProvider>
   );
 };
