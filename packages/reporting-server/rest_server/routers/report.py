@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter
 from models.raw_log import RawLog_Pydantic
@@ -13,5 +13,11 @@ async def door_state_report():
 
 
 @router.get("/raw_logs/", tags=["raw_logs"], response_model=List[RawLog_Pydantic])
-async def raw_logs_report():
-    return await get_all_raw_logs()
+async def raw_logs_report(
+    toLogDate: Optional[str] = None,
+    fromLogDate: Optional[str] = None,
+    logLabel: Optional[str] = None,
+    logLevel: Optional[str] = None,
+):
+
+    return await get_all_raw_logs(toLogDate, fromLogDate, logLabel, logLevel)
