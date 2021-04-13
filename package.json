@@ -2,7 +2,7 @@
   "name": "root",
   "private": true,
   "scripts": {
-    "install": "node scripts/pipenv-install.js",
+    "install": "node scripts/symlink-packages.js && node scripts/pipenv-install.js",
     "bootstrap": "node scripts/bootstrap.js"
   },
   "devDependencies": {
@@ -42,5 +42,8 @@
       "python3 -m pipenv run isort",
       "python3 -m pipenv run black"
     ]
+  },
+  "dependencies": {
+    "@fontsource/roboto": "^4.2.3"
   }
 }
