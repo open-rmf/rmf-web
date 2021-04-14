@@ -75,6 +75,7 @@ function DeliveryTaskForm({ value, onChange }: DeliveryTaskFormProps) {
       <Grid container wrap="nowrap">
         <Grid style={{ flex: '1 1 60%' }}>
           <TextField
+            id="pickup-location"
             label="Pickup Location"
             fullWidth
             margin="normal"
@@ -95,6 +96,7 @@ function DeliveryTaskForm({ value, onChange }: DeliveryTaskFormProps) {
           }}
         >
           <TextField
+            id="dispenser"
             label="Dispenser"
             fullWidth
             margin="normal"
@@ -111,6 +113,7 @@ function DeliveryTaskForm({ value, onChange }: DeliveryTaskFormProps) {
       <Grid container wrap="nowrap">
         <Grid style={{ flex: '1 1 60%' }}>
           <TextField
+            id="dropoff-location"
             label="Dropoff Location"
             fullWidth
             margin="normal"
@@ -131,6 +134,7 @@ function DeliveryTaskForm({ value, onChange }: DeliveryTaskFormProps) {
           }}
         >
           <TextField
+            id="ingestor"
             label="Ingestor"
             fullWidth
             margin="normal"
@@ -159,6 +163,7 @@ function LoopTaskForm({ value, onChange }: LoopTaskFormProps) {
   return (
     <>
       <TextField
+        id="start-location"
         label="Start Location"
         fullWidth
         margin="normal"
@@ -173,6 +178,7 @@ function LoopTaskForm({ value, onChange }: LoopTaskFormProps) {
       <Grid container wrap="nowrap">
         <Grid style={{ flex: '1 1 100%' }}>
           <TextField
+            id="finish-location"
             label="Finish Location"
             fullWidth
             margin="normal"
@@ -193,6 +199,7 @@ function LoopTaskForm({ value, onChange }: LoopTaskFormProps) {
           }}
         >
           <TextField
+            id="loops"
             error={isNaN(value.numLoops)}
             type="number"
             label="Loops"
@@ -220,6 +227,7 @@ interface CleanTaskFormProps {
 function CleanTaskForm({ value, onChange }: CleanTaskFormProps) {
   return (
     <TextField
+      id="cleaning-zone"
       label="Cleaning Zone"
       fullWidth
       margin="normal"
@@ -350,85 +358,99 @@ export function CreateTaskForm({
   };
 
   return (
-    <Dialog {...dialogProps}>
-      <DialogTitle>
-        <FormToolbar batchMode={batchMode} onUploadFileClick={onUploadFileClick} />
-      </DialogTitle>
-      <Divider />
-      <DialogContent>
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-          <TextField
-            select
-            label="Task Type"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={taskType}
-            onChange={handleTaskTypeChange}
-          >
-            <MenuItem value={RmfModels.TaskType.TYPE_CLEAN}>Clean</MenuItem>
-            <MenuItem value={RmfModels.TaskType.TYPE_LOOP}>Loop</MenuItem>
-            <MenuItem value={RmfModels.TaskType.TYPE_DELIVERY}>Delivery</MenuItem>
-          </TextField>
-          <Grid container wrap="nowrap">
-            <Grid style={{ flexGrow: 1 }}>
-              <KeyboardDateTimePicker
-                value={startDate}
-                onChange={(date) => date && setStartDate((date as unknown) as Date)}
-                label="Start Time"
-                margin="normal"
-                fullWidth
-              />
-            </Grid>
-            <Grid
-              style={{
-                flex: '0 1 5em',
-                marginLeft: theme.spacing(2),
-                marginRight: theme.spacing(2),
-              }}
+    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <Dialog {...dialogProps}>
+        <form onSubmit={console.log}>
+          <DialogTitle>
+            <FormToolbar batchMode={batchMode} onUploadFileClick={onUploadFileClick} />
+          </DialogTitle>
+          <Divider />
+          <DialogContent>
+            <TextField
+              select
+              id="task-type"
+              label="Task Type"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={taskType || ''}
+              onChange={handleTaskTypeChange}
             >
-              <TextField
-                error={isNaN(priority)}
-                type="number"
-                label="Priority"
-                helperText={isNaN(priority) && 'Required'}
-                margin="normal"
-                value={priority}
-                onChange={(ev) => setPriority(parseInt(ev.target.value))}
-              />
+              <MenuItem value={RmfModels.TaskType.TYPE_CLEAN}>Clean</MenuItem>
+              <MenuItem value={RmfModels.TaskType.TYPE_LOOP}>Loop</MenuItem>
+              <MenuItem value={RmfModels.TaskType.TYPE_DELIVERY}>Delivery</MenuItem>
+            </TextField>
+            <Grid container wrap="nowrap">
+              <Grid style={{ flexGrow: 1 }}>
+                <KeyboardDateTimePicker
+                  id="start-time"
+                  value={startDate}
+                  onChange={(date) => date && setStartDate((date as unknown) as Date)}
+                  label="Start Time"
+                  margin="normal"
+                  fullWidth
+                />
+              </Grid>
+              <Grid
+                style={{
+                  flex: '0 1 5em',
+                  marginLeft: theme.spacing(2),
+                  marginRight: theme.spacing(2),
+                }}
+              >
+                <TextField
+                  id="priority"
+                  error={isNaN(priority)}
+                  type="number"
+                  label="Priority"
+                  helperText={isNaN(priority) && 'Required'}
+                  margin="normal"
+                  value={priority}
+                  onChange={(ev) => setPriority(parseInt(ev.target.value))}
+                />
+              </Grid>
             </Grid>
-          </Grid>
-          {taskType && taskDescription && (
-            <TaskDescriptionForm
-              taskType={taskType}
-              value={taskDescription}
-              onChange={setTaskDescrption}
-            />
-          )}
-        </MuiPickersUtilsProvider>
-      </DialogContent>
-      <Divider />
-      <DialogActions>
-        <Button variant="contained" color="primary" disabled={submitting} onClick={onCancelClick}>
-          Cancel
-        </Button>
-        <Button
-          style={{ margin: theme.spacing(1) }}
-          variant="contained"
-          color="primary"
-          disabled={submitting}
-          onClick={handleSubmit}
-        >
-          <Typography style={{ visibility: submitting ? 'hidden' : 'visible' }} variant="button">
-            Submit
-          </Typography>
-          <CircularProgress
-            style={{ position: 'absolute', visibility: submitting ? 'visible' : 'hidden' }}
-            color="inherit"
-            size="1.8em"
-          />
-        </Button>
-      </DialogActions>
-    </Dialog>
+            {taskType && taskDescription && (
+              <TaskDescriptionForm
+                taskType={taskType}
+                value={taskDescription}
+                onChange={setTaskDescrption}
+              />
+            )}
+          </DialogContent>
+          <Divider />
+          <DialogActions>
+            <Button
+              variant="contained"
+              color="primary"
+              disabled={submitting}
+              onClick={onCancelClick}
+            >
+              Cancel
+            </Button>
+            <Button
+              style={{ margin: theme.spacing(1) }}
+              type="submit"
+              variant="contained"
+              color="primary"
+              disabled={submitting}
+              onClick={handleSubmit}
+            >
+              <Typography
+                style={{ visibility: submitting ? 'hidden' : 'visible' }}
+                variant="button"
+              >
+                Submit
+              </Typography>
+              <CircularProgress
+                style={{ position: 'absolute', visibility: submitting ? 'visible' : 'hidden' }}
+                color="inherit"
+                size="1.8em"
+              />
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+    </MuiPickersUtilsProvider>
   );
 }

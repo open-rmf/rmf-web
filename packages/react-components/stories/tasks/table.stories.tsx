@@ -1,8 +1,8 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
-import { PaginationOptions, TaskTable, TaskTableProps } from '../../lib';
-import { makeTask } from './test-data';
 import * as RmfModels from 'rmf-models';
+import { PaginationOptions, TaskTable, TaskTableProps } from '../../lib';
+import { makeTask } from '../../tests/test-data/tasks';
 
 const failedTask = makeTask('failed_task', 3, 3);
 failedTask.state = RmfModels.TaskSummary.STATE_FAILED;
@@ -12,7 +12,6 @@ const completedtasks = Array.from(Array(100)).map((_, idx) => {
   task.state = RmfModels.TaskSummary.STATE_COMPLETED;
   return task;
 });
-console.log(completedtasks);
 
 const tasks = [
   makeTask('active_task', 3, 3),
