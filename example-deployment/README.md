@@ -248,7 +248,28 @@ deploy it
 .bin/minikube kubectl -- apply -f k8s/dashboard.yaml
 ```
 
-Capture all logs and send them to MinIO. Every chunck of logs should have 5mb. 
+## [MinIO](https://github.com/minio/minio)
+MinIO is a High-Performance Object Storage released under Apache License v2.0. MinIO has several uses but in our case, we will use MinIO to store logs.
+
+This requires internet connection, see [Deploying in an airgapped network](#deploying-in-an-airgapped-network) if you are in an airgap network.
+
+Let's deploy our `Minio`:
+
+``` bash
+.bin/minikube kubectl -- apply -f k8s/minio.yaml
+```
+
+## FluentD
+
+Fluentd is an open source data collector for unified logging layer. Fluentd allows you to unify data collection and consumption for a better use and understanding of data.
+
+### Fluentd Configmap
+
+We have 4 files in our `fluentd-configmap.yaml` :
+* `fluent.conf`: Our main config which includes all configurations we want to run.
+* `pods-fluent.conf`: `tail` config that sources all pod logs on the `kubernetes` host in the cluster.
+* `minio-fluent.conf`: `match` config to capture all logs and send them to MinIO. Every chunck of logs should have 5mb.
+Capture all logs and send them to MinIO. Every chunck of logs should have 5mb.
 * `minio-fluent-dev.conf`: `match` config to capture all logs and send them to MinIO. Every chunck of logs should have 2kb for development purposes.
 
 Let's deploy our `configmap`:
