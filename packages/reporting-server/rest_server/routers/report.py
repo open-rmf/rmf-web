@@ -23,6 +23,8 @@ async def raw_logs_report(
     fromLogDate: Optional[str] = None,
     logLabel: Optional[str] = None,
     logLevel: Optional[str] = None,
+    offset: Optional[int] = 0,
+    limit: Optional[int] = 500,
 ):
 
     return await get_all_raw_logs(toLogDate, fromLogDate, logLabel, logLevel)

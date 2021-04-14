@@ -15,6 +15,7 @@ export interface LogQueryPayload {
   fromLogDate?: moment.Moment | null;
   logLabel?: string | null;
   logLevel?: string | null;
+  offset?: number | null;
 }
 
 export interface LogManagementProps {
@@ -26,6 +27,7 @@ export const LogManagement = (props: LogManagementProps): React.ReactElement => 
   const { getLogs, getLabels } = props;
   const [logs, setLogs] = React.useState<LogRowsType>([]);
   const [logLabels, setLogLabels] = React.useState<{ label: string; value: string }[]>([]);
+  const [lastSearchParams, setLastSearchParams] = React.useState<LogQueryPayload>({});
 
   const classes = useStyles();
 
@@ -38,14 +40,20 @@ export const LogManagement = (props: LogManagementProps): React.ReactElement => 
   }, [getLabels]);
 
   const searchLogs = async (payload: LogQueryPayload) => {
+    setLastSearchParams(payload);
     setLogs(await getLogs(payload));
+  };
+
+  const getMoreLogs = async () => {
+    console.log({ ...lastSearchParams, offset: logs.length });
+    setLogs(logs.concat(await getLogs({ ...lastSearchParams, offset: logs.length })));
   };
 
   return (
     <>
       <SearchLogForm logLabelValues={logLabels} search={searchLogs}></SearchLogForm>
       <div className={classes.table}>
-        {logs.length !== 0 && <LogTable rows={logs} tableSize={'48vh'} />}
+        {logs.length !== 0 && <LogTable rows={logs} tableSize={'48vh'} addMoreRows={getMoreLogs} />}
       </div>
     </>
   );

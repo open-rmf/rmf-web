@@ -1,5 +1,5 @@
 import React from 'react';
-import MaterialTable from 'material-table';
+import MaterialTable, { Column } from 'material-table';
 import { CustomLookupFilterParser, LogLevel } from '.';
 import { makeStyles, Typography } from '@material-ui/core';
 import moment from 'moment';
@@ -10,6 +10,7 @@ export type LogRowsType = { level: string; message: string; timestamp: string }[
 export interface LogTableProps {
   rows: LogRowsType | [];
   tableSize?: string; // units vh or rem
+  addMoreRows(): void;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -35,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const LogTable = (props: LogTableProps): React.ReactElement => {
-  const { rows, tableSize } = props;
+  const { rows, tableSize, addMoreRows } = props;
   const classes = useStyles();
 
   const getLogLevelStyle = (level: string): string | undefined => {
@@ -58,7 +59,7 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
 
   // FIXME: we cannot copy the LogLevel Enum directly and remove the all attribute because it has a protected attribute.
   const logLevels = React.useMemo(() => {
-    let logLevelCopy: Record<string, string> = {};
+    const logLevelCopy: Record<string, string> = {};
     Object.keys(LogLevel).forEach((element: string) => {
       logLevelCopy[element] = LogLevel[element as keyof typeof LogLevel];
     });
@@ -84,7 +85,11 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
           filterCellStyle: {
             maxHeight: '2px',
           },
-          lookup: logLevels as object,
+          lookup: logLevels as Column<{
+            level: string;
+            message: string;
+            timestamp: string;
+          }>['lookup'],
           filterComponent: (props) => <CustomLookupFilterParser {...props} />,
           render: (rowData) => {
             return (
@@ -130,6 +135,9 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
         pageSize: 100,
         pageSizeOptions: [50, 100, 200],
         maxBodyHeight: tableSize ? tableSize : '80vh',
+      }}
+      onChangePage={(page, pageSize) => {
+        rows.length / pageSize - 1 === page && addMoreRows();
       }}
     />
   );

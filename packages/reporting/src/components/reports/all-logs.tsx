@@ -10,9 +10,10 @@ const AllLogsReport = () => {
       const response = await axios.get(`${appConfig.reportingServerUrl}/report/raw_logs/`, {
         params: {
           toLogDate: params.toLogDate ? params.toLogDate.format() : null,
-          fromLogDate: params.toLogDate ? params.toLogDate.format() : null,
+          fromLogDate: params.fromLogDate ? params.fromLogDate.format() : null,
           logLabel: params.logLabel,
           logLevel: params.logLevel,
+          offset: params.offset,
         },
       });
       console.log(response);
@@ -23,7 +24,6 @@ const AllLogsReport = () => {
     }
   };
 
-  // (data: LogQueryPayload) => Promise<LogRowsType>
   const getLogServerLabels = async () => [
     { label: 'Web Server', value: 'web-server' },
     { label: 'RMF core', value: 'rmf-core' },
