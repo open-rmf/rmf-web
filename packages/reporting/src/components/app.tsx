@@ -1,6 +1,6 @@
-import { createMuiTheme, ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@material-ui/core';
 import React from 'react';
-import { NotFoundPage } from 'react-components';
+import { NotFoundPage, customTheme } from 'react-components';
 import { BrowserRouter, Link, Redirect, Route, Switch, useLocation } from 'react-router-dom';
 import { getUrl, LoginHOC, PrivateRouteHOC, User } from 'rmf-auth';
 import 'typeface-roboto';
@@ -9,16 +9,6 @@ import { DASHBOARD_ROUTE, LOGIN_ROUTE } from '../util/url';
 import { AppConfigContext } from './app-contexts';
 import { AuthenticatorContext, UserContext } from './auth-contexts';
 import Dashboard from './dashboard';
-
-const theme = createMuiTheme({
-  palette: {
-    primary: {
-      main: '#44497a',
-      dark: '#323558',
-      light: '#565d99',
-    },
-  },
-});
 
 export default function App(): JSX.Element | null {
   const authenticator = appConfig.authenticator;
@@ -49,7 +39,7 @@ export default function App(): JSX.Element | null {
     <AppConfigContext.Provider value={appConfig}>
       <AuthenticatorContext.Provider value={authenticator}>
         <UserContext.Provider value={user}>
-          <ThemeProvider theme={theme}>
+          <ThemeProvider theme={customTheme}>
             <BrowserRouter>
               <Switch>
                 <Route exact path={LOGIN_ROUTE}>
