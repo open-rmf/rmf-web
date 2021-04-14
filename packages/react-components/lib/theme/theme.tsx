@@ -30,10 +30,14 @@ export const customTheme = createMuiTheme({
     primary: {
       // Dark cornflower blue
       main: '#1F396B',
+      light: '#4B6088',
+      dark: '#15274A',
     },
     secondary: {
       // Light sea green
-      main: '#20a39e',
+      main: '#20A39E',
+      light: '#4CB5B1',
+      dark: '#16726E',
     },
   },
   colors: {
