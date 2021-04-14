@@ -8,7 +8,7 @@ export default {
 } as Meta;
 
 export const CreateTask: Story<CreateTaskFormProps> = (args) => {
-  return <CreateTaskForm {...args}></CreateTaskForm>;
+  return <CreateTaskForm {...args} open></CreateTaskForm>;
 };
 
 CreateTask.args = {

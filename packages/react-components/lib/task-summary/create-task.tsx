@@ -2,6 +2,11 @@ import DateFnsUtils from '@date-io/date-fns';
 import {
   Button,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogProps,
+  DialogTitle,
   Divider,
   Grid,
   makeStyles,
@@ -171,7 +176,7 @@ function LoopTaskForm({ value, onChange }: LoopTaskFormProps) {
             label="Finish Location"
             fullWidth
             margin="normal"
-            value={value.startName}
+            value={value.finishName}
             onChange={(ev) =>
               onChange({
                 ...value,
@@ -283,30 +288,26 @@ function defaultTaskDescription(taskType?: number): TaskDescription | undefined 
   }
 }
 
-export interface CreateTaskFormProps {
+export interface CreateTaskFormProps extends DialogProps {
   /**
    * Shows extra UI elements suitable for submittng batched tasks. Default to 'false'.
    */
   batchMode?: boolean;
-  /**
-   * Shows extra UI elements suitable for a modal.
-   */
-  modal?: boolean;
   submitTask?(task: SubmitTask): Promise<void>;
   onSuccess?(): void;
   onFail?(error: Error): void;
-  onCancel?(ev: React.MouseEvent<HTMLButtonElement>): void;
+  onCancelClick?(ev: React.MouseEvent<HTMLButtonElement>): void;
   onUploadFileClick?(ev: React.MouseEvent<HTMLButtonElement>): void;
 }
 
 export function CreateTaskForm({
   batchMode = false,
-  modal = false,
   submitTask,
   onSuccess,
   onFail,
-  onCancel,
+  onCancelClick,
   onUploadFileClick,
+  ...dialogProps
 }: CreateTaskFormProps): JSX.Element {
   const theme = useTheme();
   const [taskType, setTaskType] = React.useState<number | undefined>(undefined);
@@ -326,6 +327,7 @@ export function CreateTaskForm({
   // no memo because deps would likely change
   const handleSubmit = () => {
     if (!submitTask) {
+      onSuccess && onSuccess();
       return;
     }
     (async () => {
@@ -348,10 +350,12 @@ export function CreateTaskForm({
   };
 
   return (
-    <Grid container direction="column" wrap="nowrap">
-      <FormToolbar batchMode={batchMode} onUploadFileClick={onUploadFileClick} />
+    <Dialog {...dialogProps}>
+      <DialogTitle>
+        <FormToolbar batchMode={batchMode} onUploadFileClick={onUploadFileClick} />
+      </DialogTitle>
       <Divider />
-      <Grid>
+      <DialogContent>
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
           <TextField
             select
@@ -402,13 +406,12 @@ export function CreateTaskForm({
             />
           )}
         </MuiPickersUtilsProvider>
-      </Grid>
-      <Grid style={{ alignSelf: 'flex-end' }}>
-        {modal && (
-          <Button variant="contained" color="primary" disabled={submitting} onClick={onCancel}>
-            Cancel
-          </Button>
-        )}
+      </DialogContent>
+      <Divider />
+      <DialogActions>
+        <Button variant="contained" color="primary" disabled={submitting} onClick={onCancelClick}>
+          Cancel
+        </Button>
         <Button
           style={{ margin: theme.spacing(1) }}
           variant="contained"
@@ -425,7 +428,7 @@ export function CreateTaskForm({
             size="1.8em"
           />
         </Button>
-      </Grid>
-    </Grid>
+      </DialogActions>
+    </Dialog>
   );
 }
