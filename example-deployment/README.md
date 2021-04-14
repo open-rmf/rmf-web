@@ -288,6 +288,52 @@ This requires internet connection, see [Deploying in an airgapped network](#depl
 .bin/minikube kubectl -- apply -f k8s/fluentd.yaml
 ```
 
+### Build reporting-server image
+
+build the image
+
+```bash
+docker build -t rmf-web/reporting-server -f docker/reporting-server.dockerfile ws/rmf-web
+```
+
+"publish" the image, in a normal deployment, you would publish this to your docker registry, since we don't have a registry in this example, we will push the image directly to minikube
+
+```bash
+docker save rmf-web/reporting-server | bash -c 'eval $(.bin/minikube docker-env) && docker load'
+```
+
+create a configmap for the server
+
+```bash
+kubectl create configmap reporting-server-config --from-file=reporting_server_config.py -o=yaml --dry-run=client | kubectl apply -f -
+```
+
+deploy it
+
+```bash
+.bin/minikube kubectl -- apply -f k8s/reporting-server.yaml
+```
+
+## Reporting
+
+build the image
+
+```bash
+docker build -t rmf-web/reporting -f docker/reporting.dockerfile ws/rmf-web
+```
+
+"publish" the image
+
+```bash
+docker save rmf-web/reporting | bash -c 'eval $(.bin/minikube docker-env) && docker load'
+```
+
+deploy it
+
+```bash
+.bin/minikube kubectl -- apply -f k8s/reporting.yaml
+```
+
 ## Test the deployment
 
 If not done so already, launch the office demo
