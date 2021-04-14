@@ -125,7 +125,7 @@ data:
   reporting-server.conf: |-
     <match rmf.**>
       @type http
-      endpoint http://reporting-server:8002/log/raw
+      endpoint http://reporting-server:8002/log/raw/
       http_method post
       open_timeout 3
       # content_type

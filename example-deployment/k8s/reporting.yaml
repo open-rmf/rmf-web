@@ -10,8 +10,8 @@ spec:
     app: reporting
   ports:
     - protocol: TCP
-      port: 8001
-      targetPort: 8001
+      port: 80
+      targetPort: 80
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -33,7 +33,7 @@ spec:
         image: rmf-web/reporting
         imagePullPolicy: Never # remove this in a real deployment
         ports:
-        - containerPort: 8001
+        - containerPort: 80
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -55,4 +55,4 @@ spec:
               service:
                 name: reporting
                 port:
-                  number: 8001
+                  number: 80
