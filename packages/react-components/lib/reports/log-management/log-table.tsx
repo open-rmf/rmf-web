@@ -56,6 +56,16 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
     }
   };
 
+  // FIXME: we cannot copy the LogLevel Enum directly and remove the all attribute because it has a protected attribute.
+  const logLevels = React.useMemo(() => {
+    let logLevelCopy: Record<string, string> = {};
+    Object.keys(LogLevel).forEach((element: string) => {
+      logLevelCopy[element] = LogLevel[element as keyof typeof LogLevel];
+    });
+    delete logLevelCopy['All'];
+    return logLevelCopy;
+  }, []);
+
   return (
     <MaterialTable
       title="Log Result"
@@ -74,7 +84,7 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
           filterCellStyle: {
             maxHeight: '2px',
           },
-          lookup: LogLevel,
+          lookup: logLevels as object,
           filterComponent: (props) => <CustomLookupFilterParser {...props} />,
           render: (rowData) => {
             return (

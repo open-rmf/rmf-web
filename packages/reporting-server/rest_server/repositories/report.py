@@ -24,7 +24,7 @@ async def get_all_raw_logs(
     #     query['created__lt'] = to_log_utc_time
     # if log_label:
     #     query['name__gte'] = log_label
-    if log_level:
+    if log_level and log_label != "all":
         query["level__iexact"] = log_level
     return await RawLog_Pydantic.from_queryset(RawLog.filter(**query))
 

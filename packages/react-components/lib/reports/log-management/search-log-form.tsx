@@ -15,6 +15,7 @@ interface SearchLogFormProps {
 }
 
 const logLevelValues = [
+  { label: 'ALL', value: LogLevel.All },
   { label: 'FATAL', value: LogLevel.Fatal },
   { label: 'ERROR', value: LogLevel.Error },
   { label: 'WARN', value: LogLevel.Warn },
@@ -26,7 +27,7 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
   const { search, logLabelValues } = props;
   // The log contains information from different services, the label help us differentiate the service
   const [logLabel, setLogLabel] = React.useState('');
-  const [logLevel, setLogLevel] = React.useState(LogLevel.Error);
+  const [logLevel, setLogLevel] = React.useState(LogLevel.All);
   const nowDateTime = moment(new Date());
   const [fromLogDate, setFromLogDate] = React.useState<MaterialUiPickersDate>(nowDateTime);
   const [toLogDate, setToLogDate] = React.useState<MaterialUiPickersDate>(nowDateTime);
