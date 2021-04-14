@@ -106,6 +106,13 @@ export function TaskPhases({ taskSummary }: TaskPhasesProps): JSX.Element {
       };
     }
 
+    if (taskSummary.state === RmfModels.TaskSummary.STATE_COMPLETED) {
+      return {
+        className: classes.completedPhase,
+        color: phaseColors.completed,
+      };
+    }
+
     if (taskSummary.state === RmfModels.TaskSummary.STATE_ACTIVE && idx < currentPhaseIdx) {
       return {
         className: classes.completedPhase,

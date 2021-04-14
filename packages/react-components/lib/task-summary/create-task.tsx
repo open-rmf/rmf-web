@@ -29,11 +29,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface FormToolbarProps {
-  allowBatch: boolean;
+  batchMode: boolean;
   onUploadFileClick?(ev: React.MouseEvent<HTMLButtonElement>): void;
 }
 
-function FormToolbar({ allowBatch, onUploadFileClick }: FormToolbarProps) {
+function FormToolbar({ batchMode, onUploadFileClick }: FormToolbarProps) {
   const classes = useStyles();
 
   return (
@@ -41,7 +41,7 @@ function FormToolbar({ allowBatch, onUploadFileClick }: FormToolbarProps) {
       <Grid style={{ flexGrow: 1 }}>
         <Typography variant="h6">Create Task</Typography>
       </Grid>
-      {allowBatch && (
+      {batchMode && (
         <Grid>
           <Button
             className={classes.uploadFileBtn}
@@ -231,7 +231,6 @@ function CleanTaskForm({ value, onChange }: CleanTaskFormProps) {
 interface TaskDescriptionFormProps {
   taskType: number;
   value: TaskDescription;
-  allowBatch?: boolean;
   onChange(taskDescription: TaskDescription): void;
 }
 
@@ -288,7 +287,7 @@ export interface CreateTaskFormProps {
   /**
    * Shows extra UI elements suitable for submittng batched tasks. Default to 'false'.
    */
-  allowBatch?: boolean;
+  batchMode?: boolean;
   /**
    * Shows extra UI elements suitable for a modal.
    */
@@ -301,7 +300,7 @@ export interface CreateTaskFormProps {
 }
 
 export function CreateTaskForm({
-  allowBatch = false,
+  batchMode = false,
   modal = false,
   submitTask,
   onSuccess,
@@ -350,7 +349,7 @@ export function CreateTaskForm({
 
   return (
     <Grid container direction="column" wrap="nowrap">
-      <FormToolbar allowBatch={allowBatch} onUploadFileClick={onUploadFileClick} />
+      <FormToolbar batchMode={batchMode} onUploadFileClick={onUploadFileClick} />
       <Divider />
       <Grid>
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
