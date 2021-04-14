@@ -1,6 +1,7 @@
 import DateFnsUtils from '@date-io/date-fns';
 import {
   Button,
+  CircularProgress,
   Divider,
   Grid,
   makeStyles,
@@ -14,6 +15,7 @@ import type {
   CleanTaskDescription,
   DeliveryTaskDescription,
   LoopTaskDescription,
+  SubmitTask,
 } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
@@ -24,17 +26,14 @@ const useStyles = makeStyles((theme) => ({
   uploadFileBtn: {
     marginBottom: theme.spacing(1),
   },
-  submitBtn: {
-    alignSelf: 'flex-end',
-    marginTop: theme.spacing(1),
-  },
 }));
 
 interface FormToolbarProps {
   allowBatch: boolean;
+  onUploadFileClick?(ev: React.MouseEvent<HTMLButtonElement>): void;
 }
 
-function FormToolbar({ allowBatch }: FormToolbarProps) {
+function FormToolbar({ allowBatch, onUploadFileClick }: FormToolbarProps) {
   const classes = useStyles();
 
   return (
@@ -44,7 +43,12 @@ function FormToolbar({ allowBatch }: FormToolbarProps) {
       </Grid>
       {allowBatch && (
         <Grid>
-          <Button className={classes.uploadFileBtn} variant="contained" color="primary">
+          <Button
+            className={classes.uploadFileBtn}
+            variant="contained"
+            color="primary"
+            onClick={onUploadFileClick}
+          >
             Upload File
           </Button>
         </Grid>
@@ -285,10 +289,26 @@ export interface CreateTaskFormProps {
    * Shows extra UI elements suitable for submittng batched tasks. Default to 'false'.
    */
   allowBatch?: boolean;
+  /**
+   * Shows extra UI elements suitable for a modal.
+   */
+  modal?: boolean;
+  submitTask?(task: SubmitTask): Promise<void>;
+  onSuccess?(): void;
+  onFail?(error: Error): void;
+  onCancel?(ev: React.MouseEvent<HTMLButtonElement>): void;
+  onUploadFileClick?(ev: React.MouseEvent<HTMLButtonElement>): void;
 }
 
-export function CreateTaskForm({ allowBatch }: CreateTaskFormProps): JSX.Element {
-  const classes = useStyles();
+export function CreateTaskForm({
+  allowBatch = false,
+  modal = false,
+  submitTask,
+  onSuccess,
+  onFail,
+  onCancel,
+  onUploadFileClick,
+}: CreateTaskFormProps): JSX.Element {
   const theme = useTheme();
   const [taskType, setTaskType] = React.useState<number | undefined>(undefined);
   const [startDate, setStartDate] = React.useState(new Date());
@@ -296,6 +316,7 @@ export function CreateTaskForm({ allowBatch }: CreateTaskFormProps): JSX.Element
   const [taskDescription, setTaskDescrption] = React.useState<TaskDescription | undefined>(() =>
     defaultTaskDescription(taskType),
   );
+  const [submitting, setSubmitting] = React.useState(false);
 
   const handleTaskTypeChange = React.useCallback((ev: React.ChangeEvent<HTMLInputElement>) => {
     const newType = parseInt(ev.target.value);
@@ -303,9 +324,33 @@ export function CreateTaskForm({ allowBatch }: CreateTaskFormProps): JSX.Element
     setTaskType(newType);
   }, []);
 
+  // no memo because deps would likely change
+  const handleSubmit = () => {
+    if (!submitTask) {
+      return;
+    }
+    (async () => {
+      const task: SubmitTask = {
+        taskType,
+        startTime: startDate.valueOf(),
+        priority: priority,
+        description: taskDescription,
+      };
+      try {
+        setSubmitting(true);
+        await submitTask(task);
+        onSuccess && onSuccess();
+      } catch (e) {
+        onFail && onFail(e);
+      } finally {
+        setSubmitting(false);
+      }
+    })();
+  };
+
   return (
     <Grid container direction="column" wrap="nowrap">
-      <FormToolbar allowBatch={Boolean(allowBatch)} />
+      <FormToolbar allowBatch={allowBatch} onUploadFileClick={onUploadFileClick} />
       <Divider />
       <Grid>
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -359,9 +404,27 @@ export function CreateTaskForm({ allowBatch }: CreateTaskFormProps): JSX.Element
           )}
         </MuiPickersUtilsProvider>
       </Grid>
-      <Grid className={classes.submitBtn}>
-        <Button variant="contained" color="primary">
-          Submit
+      <Grid style={{ alignSelf: 'flex-end' }}>
+        {modal && (
+          <Button variant="contained" color="primary" disabled={submitting} onClick={onCancel}>
+            Cancel
+          </Button>
+        )}
+        <Button
+          style={{ margin: theme.spacing(1) }}
+          variant="contained"
+          color="primary"
+          disabled={submitting}
+          onClick={handleSubmit}
+        >
+          <Typography style={{ visibility: submitting ? 'hidden' : 'visible' }} variant="button">
+            Submit
+          </Typography>
+          <CircularProgress
+            style={{ position: 'absolute', visibility: submitting ? 'visible' : 'hidden' }}
+            color="inherit"
+            size="1.8em"
+          />
         </Button>
       </Grid>
     </Grid>

@@ -10,3 +10,7 @@ export default {
 export const CreateTask: Story<CreateTaskFormProps> = (args) => {
   return <CreateTaskForm {...args}></CreateTaskForm>;
 };
+
+CreateTask.args = {
+  submitTask: async () => new Promise((res) => setTimeout(res, 1000)),
+};
