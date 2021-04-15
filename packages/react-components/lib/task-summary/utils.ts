@@ -18,3 +18,22 @@ export function taskStateToStr(state: number): string {
       return 'Unknown';
   }
 }
+
+export function taskTypeToStr(taskType: number): string {
+  switch (taskType) {
+    case RmfModels.TaskType.TYPE_CHARGE_BATTERY:
+      return 'Charge';
+    case RmfModels.TaskType.TYPE_CLEAN:
+      return 'Clean';
+    case RmfModels.TaskType.TYPE_DELIVERY:
+      return 'Delivery';
+    case RmfModels.TaskType.TYPE_LOOP:
+      return 'Loop';
+    case RmfModels.TaskType.TYPE_PATROL:
+      return 'Patrol';
+    case RmfModels.TaskType.TYPE_STATION:
+      return 'Station';
+    default:
+      return 'Unknown';
+  }
+}
