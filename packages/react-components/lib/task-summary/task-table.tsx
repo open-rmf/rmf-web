@@ -76,9 +76,15 @@ export interface TaskTableProps {
   tasks: RmfModels.TaskSummary[];
   paginationOptions?: PaginationOptions;
   submitTask?: CreateTaskFormProps['submitTask'];
+  onTaskClick?(ev: React.MouseEvent<HTMLDivElement>, task: RmfModels.TaskSummary): void;
 }
 
-export function TaskTable({ tasks, paginationOptions, submitTask }: TaskTableProps): JSX.Element {
+export function TaskTable({
+  tasks,
+  paginationOptions,
+  submitTask,
+  onTaskClick,
+}: TaskTableProps): JSX.Element {
   const classes = useStyles();
   const [openCreateTaskForm, setOpenCreateTaskForm] = React.useState(false);
   const [openSubmitResultSnackbar, setOpenSubmitResultSnackbar] = React.useState(false);
@@ -104,15 +110,23 @@ export function TaskTable({ tasks, paginationOptions, submitTask }: TaskTablePro
               <TableBody>
                 {tasks.map((task) => (
                   <React.Fragment key={task.task_id}>
-                    <TableRow key={task.task_id} className={classes.infoRow}>
+                    <TableRow
+                      className={classes.infoRow}
+                      onClick={(ev) => onTaskClick && onTaskClick(ev, task)}
+                      hover={!!onTaskClick}
+                    >
                       <TableCell>{task.task_id}</TableCell>
                       <TableCell>{task.robot_name}</TableCell>
                       <TableCell>{toRelativeDate(task.start_time)}</TableCell>
                       <TableCell>{toRelativeDate(task.end_time)}</TableCell>
                       <TableCell>{taskStateToStr(task.state)}</TableCell>
                     </TableRow>
-                    <TableRow>
-                      <TableCell className={classes.phasesCell} colSpan={5}>
+                    <TableRow hover={!!onTaskClick}>
+                      <TableCell
+                        className={classes.phasesCell}
+                        colSpan={5}
+                        onClick={(ev) => onTaskClick && onTaskClick(ev, task)}
+                      >
                         <TaskPhases taskSummary={task}></TaskPhases>
                       </TableCell>
                     </TableRow>

@@ -49,6 +49,7 @@ export const Table: Story<TaskTableProps> = (args) => {
   return (
     <div style={{ height: '95vh' }}>
       <TaskTable
+        {...args}
         tasks={args.tasks.slice(page * 10, (page + 1) * 10)}
         paginationOptions={paginationOptions}
         submitTask={async () => new Promise((res) => setTimeout(res, 1000))}

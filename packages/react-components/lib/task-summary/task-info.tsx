@@ -1,8 +1,8 @@
 import { Divider, Typography, useTheme } from '@material-ui/core';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import { taskStateToStr, taskTypeToStr } from './utils';
 import { rosTimeToJs } from '../utils';
+import { taskStateToStr, taskTypeToStr } from './utils';
 
 function InfoLine({ children }: React.PropsWithChildren<unknown>) {
   return (
