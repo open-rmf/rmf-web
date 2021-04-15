@@ -362,7 +362,7 @@ export function CreateTaskForm({
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <Dialog {...dialogProps}>
-        <form onSubmit={console.log}>
+        <form>
           <DialogTitle>
             <FormToolbar batchMode={batchMode} onUploadFileClick={onUploadFileClick} />
           </DialogTitle>
