@@ -52,7 +52,7 @@ function TableToolbar({ onCreateTaskClick }: TableToolbarProps) {
       <Typography className={classes.title} variant="h6">
         Tasks
       </Typography>
-      <IconButton onClick={onCreateTaskClick}>
+      <IconButton onClick={onCreateTaskClick} aria-label="Create Task">
         <AddOutlinedIcon />
       </IconButton>
     </Toolbar>
@@ -126,6 +126,7 @@ export function TaskTable({ tasks, paginationOptions, submitTask }: TaskTablePro
       </Paper>
       <CreateTaskForm
         open={openCreateTaskForm}
+        onClose={() => setOpenCreateTaskForm(false)}
         submitTask={submitTask}
         onCancelClick={() => setOpenCreateTaskForm(false)}
         onSuccess={() => {

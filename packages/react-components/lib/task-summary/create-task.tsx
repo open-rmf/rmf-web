@@ -42,13 +42,14 @@ function FormToolbar({ batchMode, onUploadFileClick }: FormToolbarProps) {
   const classes = useStyles();
 
   return (
-    <Grid container wrap="nowrap" justify="center">
+    <Grid container wrap="nowrap" alignItems="center">
       <Grid style={{ flexGrow: 1 }}>
         <Typography variant="h6">Create Task</Typography>
       </Grid>
       {batchMode && (
         <Grid>
           <Button
+            aria-label="Upload File"
             className={classes.uploadFileBtn}
             variant="contained"
             color="primary"
@@ -333,7 +334,8 @@ export function CreateTaskForm({
   }, []);
 
   // no memo because deps would likely change
-  const handleSubmit = () => {
+  const handleSubmit: React.MouseEventHandler<HTMLButtonElement> = (ev) => {
+    ev.preventDefault();
     if (!submitTask) {
       onSuccess && onSuccess();
       return;
@@ -425,6 +427,7 @@ export function CreateTaskForm({
               color="primary"
               disabled={submitting}
               onClick={onCancelClick}
+              aria-label="Cancel"
             >
               Cancel
             </Button>
@@ -435,6 +438,7 @@ export function CreateTaskForm({
               color="primary"
               disabled={submitting}
               onClick={handleSubmit}
+              aria-label="Submit"
             >
               <Typography
                 style={{ visibility: submitting ? 'hidden' : 'visible' }}
