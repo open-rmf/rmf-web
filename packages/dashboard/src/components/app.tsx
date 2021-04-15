@@ -6,23 +6,13 @@ import { getUrl, LoginHOC, PrivateRouteHOC, User } from 'rmf-auth';
 import 'typeface-roboto';
 import appConfig from '../app-config';
 import ResourceManager from '../managers/resource-manager';
-import {
-  DASHBOARD_ROUTE,
-  LOGIN_ROUTE,
-  BUILDING_ROUTE,
-  ROBOTS_ROUTE,
-  TASKS_ROUTE,
-  LOGS_ROUTE,
-  TAB_NAMES,
-} from '../util/url';
+import { DASHBOARD_ROUTE, LOGIN_ROUTE } from '../util/url';
 import { AppBase } from './app-base';
 import { AppConfigContext, ResourcesContext } from './app-contexts';
 import './app.css';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
 import Dashboard from './dashboard/dashboard';
-import NavigationBar from 'react-components/lib/navigation-bar';
 import { RmfApp } from './rmf-app';
-import { TestBuildingPanel, TestRobotsPanel, TestTasksPanel, TestLogsPanel } from './test-panel';
 
 const theme = createMuiTheme({
   palette: {
@@ -37,7 +27,6 @@ const theme = createMuiTheme({
 function AppIntrinsics({ children }: React.PropsWithChildren<{}>): JSX.Element | null {
   return (
     <AppBase>
-      <NavigationBar tabNames={TAB_NAMES} />
       <RmfApp>{children}</RmfApp>
     </AppBase>
   );
@@ -47,7 +36,7 @@ export default function App(): JSX.Element | null {
   const authenticator = appConfig.authenticator;
   const [authInitialized, setAuthInitialized] = React.useState(!!authenticator.user);
   const [user, setUser] = React.useState<User | null>(authenticator.user || null);
-  const appRoutes = [DASHBOARD_ROUTE, BUILDING_ROUTE, ROBOTS_ROUTE, TASKS_ROUTE, LOGS_ROUTE];
+  const appRoutes = [DASHBOARD_ROUTE];
 
   React.useEffect(() => {
     if (user) {
@@ -114,38 +103,6 @@ export default function App(): JSX.Element | null {
                           user={user}
                         >
                           <Dashboard />
-                        </PrivateRoute>
-                        <PrivateRoute
-                          exact
-                          path={BUILDING_ROUTE}
-                          redirectPath={LOGIN_ROUTE}
-                          user={user}
-                        >
-                          <TestBuildingPanel />
-                        </PrivateRoute>
-                        <PrivateRoute
-                          exact
-                          path={ROBOTS_ROUTE}
-                          redirectPath={LOGIN_ROUTE}
-                          user={user}
-                        >
-                          <TestRobotsPanel />
-                        </PrivateRoute>
-                        <PrivateRoute
-                          exact
-                          path={TASKS_ROUTE}
-                          redirectPath={LOGIN_ROUTE}
-                          user={user}
-                        >
-                          <TestTasksPanel />
-                        </PrivateRoute>
-                        <PrivateRoute
-                          exact
-                          path={LOGS_ROUTE}
-                          redirectPath={LOGIN_ROUTE}
-                          user={user}
-                        >
-                          <TestLogsPanel />
                         </PrivateRoute>
                       </Switch>
                     </AppIntrinsics>
