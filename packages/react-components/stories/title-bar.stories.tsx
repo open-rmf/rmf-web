@@ -10,8 +10,9 @@ export default {
 } as Meta;
 
 export const ExampleTitleBar: Story = (args) => {
+  const tabNames = ['Robots', 'Tasks'];
   return (
-    <TitleBar logoPath={'/resources/roshealth-logo-white.png'} {...args}>
+    <TitleBar logoPath={'/resources/roshealth-logo-white.png'} tabNames={tabNames} {...args}>
       <IconButton
         aria-label="account of current user"
         aria-controls="menu-appbar"
