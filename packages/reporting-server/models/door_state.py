@@ -12,16 +12,7 @@ class DoorStateEnum(str, Enum):
     UNKNOWN = "unknown"
 
 
-class DoorState(models.Model):
-    id = fields.IntField(pk=True)
-    # JSONField https://tortoise-orm.readthedocs.io/en/latest/fields.html#tortoise.fields.data.IntField.field_type
-    state: DoorStateEnum = fields.CharEnumField(
-        DoorStateEnum, default=DoorStateEnum.UNKNOWN
-    )
-    payload = fields.JSONField()
-    name = fields.CharField(max_length=200)
-    created = fields.DatetimeField(auto_now_add=True)
-
+class DoorStateService:
     def get_state_name(self, door_state: int):
         if door_state == 0:
             return DoorStateEnum.CLOSED
@@ -35,3 +26,16 @@ class DoorState(models.Model):
             return DoorStateEnum.UNKNOWN
         else:
             return DoorStateEnum.UNKNOWN
+
+
+class DoorState(models.Model):
+    id = fields.IntField(pk=True)
+    # JSONField https://tortoise-orm.readthedocs.io/en/latest/fields.html#tortoise.fields.data.IntField.field_type
+    state: DoorStateEnum = fields.CharEnumField(
+        DoorStateEnum, default=DoorStateEnum.UNKNOWN
+    )
+    payload = fields.JSONField()
+    name = fields.CharField(max_length=200)
+    created = fields.DatetimeField(auto_now_add=True)
+
+    service = DoorStateService()
