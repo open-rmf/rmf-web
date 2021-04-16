@@ -8,8 +8,20 @@ from .parser_dispacher import log_model_dispacher
 async def create_raw_log(logs: list):
     for log in logs:
         print(log)
-        log_level = get_log_type(log["log"])
-        await RawLog.create(level=log_level, payload=log, message=log["log"])
+        if isinstance(log, dict):
+            if "log" not in log:
+                continue
+
+            log_level = get_log_type(log["log"])
+            await RawLog.create(level=log_level, payload=log, message=log["log"])
+
+        elif isinstance(log, str):
+            if log.isspace():
+                continue
+
+            log_level = get_log_type(log)
+            await RawLog.create(level=log_level, payload={log: log}, message=log)
+
     return "The logs were saved correctly"
 
 
@@ -23,5 +35,5 @@ async def create_rmf_server_log(logs: list):
             continue
         modified_log = log["log"].replace("INFO:app.BookKeeper.", "")
         # it should get the model instance to add the data
-        log_model_dispacher(modified_log)
+        await log_model_dispacher(modified_log)
     return "Logs were saved correctly"

@@ -14,36 +14,46 @@ from parsers.lift_state_parser import lift_state_parser
 
 # This function dispatchs to the correct handler dependending on the text content.
 async def log_model_dispacher(fullstring: str):
-    if "dispenser states" in fullstring.lower():
-        DispenserState.create(dispenser_state_parser(fullstring))
+    if "dispenser_state" in fullstring.lower():
+        data = await dispenser_state_parser(fullstring)
+        await DispenserState.create(**data)
 
     elif "door_state" in fullstring.lower():
-        DoorState.create(doors_state_parser(fullstring))
+        data = await doors_state_parser(fullstring)
+        await DoorState.create(**data)
 
     elif "fleet_state" in fullstring.lower():
-        FleetState.create(fleet_state_parser(fullstring))
+        data = await fleet_state_parser(fullstring)
+        await FleetState.create(**data)
 
     elif "lift_state" in fullstring.lower():
-        LiftState.create(lift_state_parser(fullstring))
+        data = await lift_state_parser(fullstring)
+        await LiftState.create(**data)
 
     elif "ingestor_state" in fullstring.lower():
-        IngestorState.create(lift_state_parser(fullstring))
+        data = await ingestor_state_parser(fullstring)
+        await IngestorState.create(**data)
 
     elif "tasks" in fullstring.lower():
         print("not implemented")
 
     # Health
     elif "dispenser_health" in fullstring.lower():
-        HealthStatus.create(health_status_parser(fullstring, "dispenser_health"))
+        data = await health_status_parser(fullstring, "dispenser_health")
+        await HealthStatus.create(**data)
 
     elif "door_health" in fullstring.lower():
-        HealthStatus.create(health_status_parser(fullstring, "door_health"))
+        data = await health_status_parser(fullstring, "door_health")
+        await HealthStatus.create(**data)
 
     elif "ingestor_health" in fullstring.lower():
-        HealthStatus.create(health_status_parser(fullstring, "ingestor_health"))
+        data = await health_status_parser(fullstring, "ingestor_health")
+        await HealthStatus.create(**data)
 
     elif "lift_health" in fullstring.lower():
-        HealthStatus.create(health_status_parser(fullstring, "lift_health"))
+        data = await health_status_parser(fullstring, "lift_health")
+        await HealthStatus.create(**data)
 
-    elif "robot health" in fullstring.lower():
-        HealthStatus.create(health_status_parser(fullstring, "robot health"))
+    elif "robot_health" in fullstring.lower():
+        data = await health_status_parser(fullstring, "robot_health")
+        await HealthStatus.create(**data)

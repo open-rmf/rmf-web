@@ -16,9 +16,9 @@ data:
     <source>
       @type tail
       read_from_head true
-      tag rmf.dashboard.*
-      path /var/log/containers/dashboard*.log
-      pos_file /var/log/fluent/fluentd-dashboard.log.pos
+      tag rmf.all.*
+      path /var/log/containers/*.log
+      pos_file /var/log/fluent/fluentd-rmf-all.log.pos
       exclude_path ["/var/log/containers/fluent*"]
       <parse>
         @type kubernetes
@@ -33,20 +33,6 @@ data:
       tag rmf.server.*
       path /var/log/containers/rmf-server*.log
       pos_file /var/log/fluent/fluentd-rmf-server.log.pos
-      exclude_path ["/var/log/containers/fluent*"]
-      <parse>
-        @type kubernetes
-        @type "#{ENV['FLUENT_CONTAINER_TAIL_PARSER_TYPE'] || 'json'}"
-        time_format %Y-%m-%dT%H:%M:%S.%NZ
-      </parse>
-    </source>
-
-     <source>
-      @type tail
-      read_from_head true
-      tag rmf.ros-bridge.*
-      path /var/log/containers/ros-bridge*.log
-      pos_file /var/log/fluent/fluentd-ros-bridge.log.pos
       exclude_path ["/var/log/containers/fluent*"]
       <parse>
         @type kubernetes
@@ -121,11 +107,27 @@ data:
         timekey_use_utc true        # Use this option if you prefer UTC timestamps
         chunk_limit_size 5mb       # The maximum size of each chunk
       </buffer>
+  
+  reporting-server-all-logs: |-
+    <match rmf.all.**>
+      @type http
+      endpoint http://reporting-server:8002/log/all/
+      http_method post
+      open_timeout 3
+      # content_type
+      <format>
+        @type json
+      </format>
+      json_array true
+      <buffer>
+        flush_interval 10s
+      </buffer>
+    </match>
 
   reporting-server.conf: |-
-    <match rmf.**>
+    <match rmf.server.**>
       @type http
-      endpoint http://reporting-server:8002/log/raw/
+      endpoint http://reporting-server:8002/log/rmfserver/
       http_method post
       open_timeout 3
       # content_type

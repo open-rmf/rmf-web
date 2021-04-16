@@ -29,7 +29,7 @@ app.include_router(report_router, prefix="/report", tags=["report"])
 register_tortoise(
     app,
     db_url=app_config.db_url,
-    modules={"models": ["models.raw_log"]},
+    modules={"models": ["models"]},
     generate_schemas=True,
     add_exception_handlers=True,
 )
