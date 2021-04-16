@@ -23,6 +23,7 @@ import { rosTimeToJs } from '../utils';
 import { CreateTaskForm, CreateTaskFormProps } from './create-task';
 import { TaskPhases } from './task-phases';
 import { taskStateToStr } from './utils';
+import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
   table: {
@@ -30,6 +31,9 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     flex: '1 1 100%',
+  },
+  taskRowHover: {
+    background: theme.palette.action.hover,
   },
   infoRow: {
     '& > *': {
@@ -56,6 +60,43 @@ function TableToolbar({ onCreateTaskClick }: TableToolbarProps) {
         <AddOutlinedIcon />
       </IconButton>
     </Toolbar>
+  );
+}
+
+interface TaskRowProps {
+  task: RmfModels.TaskSummary;
+  onClick: React.MouseEventHandler<HTMLTableRowElement>;
+}
+
+function TaskRow({ task, onClick }: TaskRowProps) {
+  const classes = useStyles();
+  const [hover, setHover] = React.useState(false);
+
+  return (
+    <>
+      <TableRow
+        className={clsx(classes.infoRow, hover && classes.taskRowHover)}
+        onClick={onClick}
+        onMouseOver={() => setHover(true)}
+        onMouseOut={() => setHover(false)}
+      >
+        <TableCell>{task.task_id}</TableCell>
+        <TableCell>{task.robot_name}</TableCell>
+        <TableCell>{toRelativeDate(task.start_time)}</TableCell>
+        <TableCell>{toRelativeDate(task.end_time)}</TableCell>
+        <TableCell>{taskStateToStr(task.state)}</TableCell>
+      </TableRow>
+      <TableRow
+        className={clsx(hover && classes.taskRowHover)}
+        onClick={onClick}
+        onMouseOver={() => setHover(true)}
+        onMouseOut={() => setHover(false)}
+      >
+        <TableCell className={classes.phasesCell} colSpan={5}>
+          <TaskPhases taskSummary={task}></TaskPhases>
+        </TableCell>
+      </TableRow>
+    </>
   );
 }
 
@@ -109,28 +150,11 @@ export function TaskTable({
               </TableHead>
               <TableBody>
                 {tasks.map((task) => (
-                  <React.Fragment key={task.task_id}>
-                    <TableRow
-                      className={classes.infoRow}
-                      onClick={(ev) => onTaskClick && onTaskClick(ev, task)}
-                      hover={!!onTaskClick}
-                    >
-                      <TableCell>{task.task_id}</TableCell>
-                      <TableCell>{task.robot_name}</TableCell>
-                      <TableCell>{toRelativeDate(task.start_time)}</TableCell>
-                      <TableCell>{toRelativeDate(task.end_time)}</TableCell>
-                      <TableCell>{taskStateToStr(task.state)}</TableCell>
-                    </TableRow>
-                    <TableRow hover={!!onTaskClick}>
-                      <TableCell
-                        className={classes.phasesCell}
-                        colSpan={5}
-                        onClick={(ev) => onTaskClick && onTaskClick(ev, task)}
-                      >
-                        <TaskPhases taskSummary={task}></TaskPhases>
-                      </TableCell>
-                    </TableRow>
-                  </React.Fragment>
+                  <TaskRow
+                    key={task.task_id}
+                    task={task}
+                    onClick={(ev) => onTaskClick && onTaskClick(ev, task)}
+                  />
                 ))}
               </TableBody>
             </Table>
