@@ -16,6 +16,7 @@ class HealthStatus(models.Model):
     health_status = fields.CharField(max_length=25, null=True)
     health_message = fields.TextField(null=True)
     payload = fields.JSONField()
+    created = fields.DatetimeField(auto_now_add=True)
 
 
 HealthStatus_Pydantic = pydantic_model_creator(HealthStatus, name="HealthStatus")
