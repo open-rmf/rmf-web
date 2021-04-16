@@ -3,7 +3,6 @@ import os
 import sys
 
 from fastapi import FastAPI
-from fastapi_pagination import add_pagination
 from rest_server.routers import log_router, report_router
 from tortoise import Tortoise, run_async
 from tortoise.contrib.fastapi import register_tortoise
@@ -33,5 +32,3 @@ register_tortoise(
     generate_schemas=True,
     add_exception_handlers=True,
 )
-
-add_pagination(app)
