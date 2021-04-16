@@ -14,6 +14,7 @@ from parsers.lift_state_parser import lift_state_parser
 
 # This function dispatchs to the correct handler dependending on the text content.
 async def log_model_dispacher(fullstring: str):
+    print(fullstring)
     if "dispenser_state" in fullstring.lower():
         data = await dispenser_state_parser(fullstring)
         await DispenserState.create(**data)

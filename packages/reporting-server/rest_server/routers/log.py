@@ -24,7 +24,6 @@ async def write_logs(body: list):
     "/rmfserver/", tags=["rmfserver_logs"], status_code=status.HTTP_201_CREATED
 )
 async def write_rmf_server_logs(body: list):
-    print("request body", body)
     try:
         await create_rmf_server_log(body)
     except Exception as e:

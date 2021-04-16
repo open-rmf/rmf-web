@@ -6,7 +6,6 @@ from models.door_state import DoorState
 
 
 async def doors_state_parser(fullstring: str):
-    print(fullstring)
     modified_string = fullstring.replace("door_state:", "")
     door_state_json = json.loads(modified_string)
 
