@@ -39,3 +39,6 @@ class DoorState(models.Model):
     created = fields.DatetimeField(auto_now_add=True)
 
     service = DoorStateService()
+
+
+DoorState_Pydantic = pydantic_model_creator(DoorState, name="DoorState")

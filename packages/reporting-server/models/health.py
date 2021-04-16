@@ -1,6 +1,7 @@
 from enum import Enum
 
 from tortoise import fields, models
+from tortoise.contrib.pydantic import pydantic_model_creator
 
 
 class HealthStatusEmun(Enum):
@@ -15,3 +16,6 @@ class HealthStatus(models.Model):
     health_status = fields.CharField(max_length=25, null=True)
     health_message = fields.TextField(null=True)
     payload = fields.JSONField()
+
+
+HealthStatus_Pydantic = pydantic_model_creator(HealthStatus, name="HealthStatus")

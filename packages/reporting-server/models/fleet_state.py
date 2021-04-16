@@ -49,3 +49,6 @@ class FleetState(models.Model):
     created = fields.DatetimeField(auto_now_add=True)
 
     service = RobotStateService()
+
+
+FleetState_Pydantic = pydantic_model_creator(FleetState, name="FleetState")

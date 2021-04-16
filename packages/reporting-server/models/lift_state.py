@@ -64,3 +64,6 @@ class LiftState(models.Model):
     created = fields.DatetimeField(auto_now_add=True)
 
     service = LiftStateService()
+
+
+LiftState_Pydantic = pydantic_model_creator(LiftState, name="LiftStates")

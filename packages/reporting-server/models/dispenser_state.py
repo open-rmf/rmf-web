@@ -30,3 +30,6 @@ class DispenserState(models.Model):
     created = fields.DatetimeField(auto_now_add=True)
 
     service = DoorStateService()
+
+
+DispenserState_Pydantic = pydantic_model_creator(DispenserState, name="DispenserState")
