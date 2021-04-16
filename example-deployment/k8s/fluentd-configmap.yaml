@@ -8,6 +8,7 @@ data:
     # This source gets all logs from local docker host
     @include pods-fluent.conf
     @include reporting-server.conf
+    include @reporting-server-all-logs.conf
     # Use this configuration for production
     # @include minio-fluent.conf
     @include minio-fluent-dev.conf
@@ -140,22 +141,6 @@ data:
       </buffer>
     </match>
     
-  file-fluent.conf: |-
-    # <match minio.s3.**>
-    #   @type file
-    #   path /tmp/minio.log
-    # </match>
-    
-    # <match **>
-    #   @type file
-    #   path /tmp/all-logs.log
-    # </match>
-
-    # <match dashboard.**>
-    #   @type file
-    #   path /tmp/dashboard.log
-    # </match>
-
     # <system>
     #   log_level trace
     # </system>
