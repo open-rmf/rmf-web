@@ -1,8 +1,15 @@
-import { Divider, Typography, useTheme } from '@material-ui/core';
+import { Divider, makeStyles, Typography, useTheme } from '@material-ui/core';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { rosTimeToJs } from '../utils';
 import { taskStateToStr, taskTypeToStr } from './utils';
+
+const useStyles = makeStyles({
+  infoValue: {
+    float: 'right',
+    textAlign: 'right',
+  },
+});
 
 function InfoLine({ children }: React.PropsWithChildren<unknown>) {
   return (
@@ -10,6 +17,11 @@ function InfoLine({ children }: React.PropsWithChildren<unknown>) {
       {children}
     </Typography>
   );
+}
+
+function InfoValue({ children }: React.PropsWithChildren<unknown>) {
+  const classes = useStyles();
+  return <span className={classes.infoValue}>{children}</span>;
 }
 
 interface CleanTaskInfoProps {
@@ -34,15 +46,15 @@ function LoopTaskInfo({ task }: LoopTaskInfoProps) {
     <>
       <InfoLine>
         <span>Start Waypoint:</span>
-        <span style={{ float: 'right' }}>{task.task_profile.description.loop.start_name}</span>
+        <InfoValue>{task.task_profile.description.loop.start_name}</InfoValue>
       </InfoLine>
       <InfoLine>
         <span>Finish Waypoint:</span>
-        <span style={{ float: 'right' }}>{task.task_profile.description.loop.start_name}</span>
+        <InfoValue>{task.task_profile.description.loop.start_name}</InfoValue>
       </InfoLine>
       <InfoLine>
         <span>Num of Loops:</span>
-        <span style={{ float: 'right' }}>{task.task_profile.description.loop.num_loops}</span>
+        <InfoValue>{task.task_profile.description.loop.num_loops}</InfoValue>
       </InfoLine>
     </>
   );
@@ -117,27 +129,27 @@ export function TaskInfo({ task }: TaskInfoProps): JSX.Element {
       <div style={{ marginBottom: theme.spacing(1) }}></div>
       <InfoLine>
         <span>Task Type:</span>
-        <span style={{ float: 'right' }}>{taskTypeToStr(taskType)}</span>
+        <InfoValue>{taskTypeToStr(taskType)}</InfoValue>
       </InfoLine>
       <InfoLine>
         <span>Priority:</span>
-        <span style={{ float: 'right' }}>{task.task_profile.description.priority.value}</span>
+        <InfoValue>{task.task_profile.description.priority.value}</InfoValue>
       </InfoLine>
       <InfoLine>
         <span>Assigned Robot:</span>
-        <span style={{ float: 'right' }}>{task.robot_name}</span>
+        <InfoValue>{task.robot_name}</InfoValue>
       </InfoLine>
       <InfoLine>
         <span>Start Time:</span>
-        <span style={{ float: 'right' }}>{rosTimeToJs(task.start_time).toLocaleString()}</span>
+        <InfoValue>{rosTimeToJs(task.start_time).toLocaleString()}</InfoValue>
       </InfoLine>
       <InfoLine>
         <span>{!hasConcreteEndTime && 'Est. '}End Time:</span>
-        <span style={{ float: 'right' }}>{rosTimeToJs(task.end_time).toLocaleString()}</span>
+        <InfoValue>{rosTimeToJs(task.end_time).toLocaleString()}</InfoValue>
       </InfoLine>
       <InfoLine>
         <span>State:</span>
-        <span style={{ float: 'right' }}>{taskStateToStr(task.state)}</span>
+        <InfoValue>{taskStateToStr(task.state)}</InfoValue>
       </InfoLine>
       {detailInfo}
     </div>
