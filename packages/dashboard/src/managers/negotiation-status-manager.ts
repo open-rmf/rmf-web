@@ -49,9 +49,9 @@ export interface NegotiationTrajectoryResponse {
 }
 
 export class NegotiationStatusManager extends EventEmitter<Events> {
-  constructor(url: string) {
+  constructor(ws: WebSocket | undefined) {
     super();
-    if (url) this._backendWs = new WebSocket(url);
+    if (ws) this._backendWs = ws;
   }
 
   allConflicts(): Record<number, NegotiationConflict> {

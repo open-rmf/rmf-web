@@ -54,3 +54,5 @@ export const AppControllerContext = React.createContext<AppController>({
 });
 
 export const AppConfigContext = React.createContext<AppConfig>(appConfig);
+
+export const TrajectorySocketContext = React.createContext<WebSocket | undefined>(undefined);

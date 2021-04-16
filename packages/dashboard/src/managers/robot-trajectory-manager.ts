@@ -65,20 +65,9 @@ interface Response {
 }
 
 export class DefaultTrajectoryManager {
-  static async create(url: string): Promise<DefaultTrajectoryManager> {
-    let ws = new WebSocket(url);
-    await new Promise<void>((res, rej) => {
-      ws.addEventListener('open', function listener() {
-        ws.removeEventListener('open', listener);
-        res();
-      });
-
-      ws.addEventListener('error', function listener(e) {
-        ws.removeEventListener('error', listener);
-        rej(e);
-      });
-    });
-    return new DefaultTrajectoryManager(ws);
+  private _webSocket: WebSocket;
+  constructor(ws: WebSocket) {
+    this._webSocket = ws;
   }
 
   async latestTrajectory(request: TrajectoryRequest): Promise<TrajectoryResponse> {
@@ -107,8 +96,6 @@ export class DefaultTrajectoryManager {
   }
 
   private _ongoingRequest: Promise<MessageEvent> | null = null;
-
-  private constructor(private _webSocket: WebSocket) {}
 
   private _listenOnce<K extends keyof WebSocketEventMap>(
     event: K,

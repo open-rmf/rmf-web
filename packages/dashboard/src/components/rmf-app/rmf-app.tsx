@@ -1,7 +1,6 @@
 import { MessageType, Topic } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import appConfig from '../../app-config';
 import RmfHealthStateManager from '../../managers/rmf-health-state-manager';
 import {
   DefaultTrajectoryManager,
@@ -20,6 +19,7 @@ import {
   TasksContext,
 } from './contexts';
 import { RmfIngress } from './rmf-ingress';
+import { TrajectorySocketContext } from '../app-contexts';
 
 function rmfStateContextProviderHOC<TopicT extends Topic>(
   topic: TopicT,
@@ -147,16 +147,19 @@ function RmfHealthContextsProvider(props: React.PropsWithChildren<{}>): JSX.Elem
 
 function RmfIngressProvider(props: React.PropsWithChildren<{}>) {
   const user = React.useContext(UserContext);
+  const ws = React.useContext(TrajectorySocketContext);
+
   const [trajMgr, setTrajMgr] = React.useState<RobotTrajectoryManager | undefined>(undefined);
   React.useEffect(() => {
     (async () => {
-      setTrajMgr(await DefaultTrajectoryManager.create(appConfig.trajServerUrl));
+      if (ws) setTrajMgr(new DefaultTrajectoryManager(ws));
     })();
-  }, []);
+  }, [ws]);
 
-  const rmfIngress = React.useMemo(() => new RmfIngress(user || undefined, trajMgr), [
+  const rmfIngress = React.useMemo(() => new RmfIngress(user || undefined, trajMgr, ws), [
     user,
     trajMgr,
+    ws,
   ]);
   return (
     <RmfIngressContext.Provider value={rmfIngress}>{props.children}</RmfIngressContext.Provider>
