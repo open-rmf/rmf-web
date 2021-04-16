@@ -1,8 +1,16 @@
-import { Grid, Typography, useTheme } from '@material-ui/core';
+import { Grid, makeStyles, Paper, Typography } from '@material-ui/core';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { TaskInfo } from './task-info';
 import { TaskTable, TaskTableProps } from './task-table';
+
+const useStyles = makeStyles((theme) => ({
+  detailPanelContainer: {
+    width: 350,
+    padding: theme.spacing(2),
+    marginLeft: theme.spacing(1),
+  },
+}));
 
 function NoSelectedTask() {
   return (
@@ -20,15 +28,15 @@ export interface TaskPanelProps {
 }
 
 export function TaskPanel({ tasks, submitTask }: TaskPanelProps): JSX.Element {
-  const theme = useTheme();
+  const classes = useStyles();
   const [page, setPage] = React.useState(0);
   const [selectedTask, setSelectedTask] = React.useState<RmfModels.TaskSummary | undefined>(
     undefined,
   );
 
   return (
-    <Grid container style={{ height: '95vh' }} wrap="nowrap">
-      <Grid style={{ flex: '1 1 100%', height: '100%' }}>
+    <Grid container style={{ height: '95vh' }} wrap="nowrap" justify="center">
+      <Grid style={{ flex: '1 1 auto', maxWidth: 1440 }}>
         <TaskTable
           tasks={tasks.slice(page * 10, (page + 1) * 10)}
           paginationOptions={{
@@ -42,9 +50,9 @@ export function TaskPanel({ tasks, submitTask }: TaskPanelProps): JSX.Element {
           onTaskClick={(_ev, task) => setSelectedTask(task)}
         />
       </Grid>
-      <Grid style={{ width: 350, padding: theme.spacing(2) }}>
+      <Paper className={classes.detailPanelContainer}>
         {selectedTask ? <TaskInfo task={selectedTask} /> : <NoSelectedTask />}
-      </Grid>
+      </Paper>
     </Grid>
   );
 }

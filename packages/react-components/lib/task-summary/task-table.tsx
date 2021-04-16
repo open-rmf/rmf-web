@@ -135,7 +135,7 @@ export function TaskTable({
   return (
     <>
       <Paper style={{ height: '100%' }}>
-        <Grid container direction="column" wrap="nowrap" style={{ height: '100%' }}>
+        <Grid container direction="column" wrap="nowrap" style={{ height: 'inherit' }}>
           <TableToolbar onCreateTaskClick={() => setOpenCreateTaskForm(true)} />
           <TableContainer style={{ flex: '1 1 0' }}>
             <Table className={classes.table} stickyHeader size="small">
