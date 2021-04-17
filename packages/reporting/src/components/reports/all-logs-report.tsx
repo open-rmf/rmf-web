@@ -16,7 +16,6 @@ const AllLogsReport = () => {
           offset: params.offset,
         },
       });
-      console.log(response);
       return response.data as LogRowsType;
     } catch (error) {
       console.error(error);

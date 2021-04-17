@@ -22,10 +22,16 @@ export const buildReportMenuStructure = (
       items: [],
       onClick: () => setCurrentReport(Reports.queryAllLogs),
     },
+    // {
+    //   icon: <BatteryCharging80Icon />,
+    //   title: 'Charger states',
+    //   onClick: () => setCurrentReport(Reports.showChargerStateReport),
+    // },
     {
-      icon: <BatteryCharging80Icon />,
-      title: 'Charger states',
-      onClick: () => setCurrentReport(Reports.showChargerStateReport),
+      icon: <KitchenIcon />,
+      title: 'Dispensers',
+      items: [],
+      onClick: () => setCurrentReport(Reports.showDispenserStateReport),
     },
     {
       icon: <KitchenIcon />,
@@ -34,70 +40,88 @@ export const buildReportMenuStructure = (
       onClick: () => setCurrentReport(Reports.showDoorStateReport),
     },
     {
+      icon: <AndroidIcon />,
+      title: 'Fleets',
+      items: [],
+      onClick: () => setCurrentReport(Reports.showFleetStateReport),
+    },
+    {
+      icon: <AndroidIcon />,
+      title: 'Health',
+      items: [],
+      onClick: () => setCurrentReport(Reports.showHealthReport),
+    },
+    {
+      icon: <AndroidIcon />,
+      title: 'Ingestor',
+      items: [],
+      onClick: () => setCurrentReport(Reports.showIngestorStateReport),
+    },
+    {
       icon: <ArrowDropUpIcon />,
       title: 'Lifts',
       onClick: () => setCurrentReport(Reports.showLiftStateReport),
     },
-    {
-      icon: <BusinessCenterIcon />,
-      title: 'Negotiations',
-      onClick: () => setCurrentReport(Reports.showNegotiationsReport),
-    },
-    {
-      icon: <AndroidIcon />,
-      title: 'Robots',
-      items: [
-        {
-          title: 'Robot states',
-          items: [],
-          onClick: () => setCurrentReport(Reports.showRobotStateReport),
-        },
-        {
-          title: 'Robot Motion Plans',
-          items: [],
-          onClick: () => setCurrentReport(Reports.showRobotMotionPlansReport),
-        },
-        {
-          title: 'Robot Actions',
-          items: [],
-          onClick: () => setCurrentReport(Reports.showRobotActionReport),
-        },
-      ],
-    },
-    {
-      icon: <ListAltIcon />,
-      title: 'Tasks',
-      onClick: () => setCurrentReport(Reports.showTasksReport),
-    },
-    {
-      icon: <AccountCircleIcon />,
-      title: 'Users',
-      items: [
-        {
-          title: 'User Actions',
-          items: [],
-          onClick: () => setCurrentReport(Reports.showUserActionsReport),
-        },
-        {
-          title: 'Logins',
-          items: [],
-          onClick: () => setCurrentReport(Reports.showLoginsReport),
-        },
-        {
-          title: 'Logouts',
-          items: [],
-          onClick: () => setCurrentReport(Reports.showLogoutsReport),
-        },
-        {
-          title: 'Login failures',
-          items: [],
-          onClick: () => setCurrentReport(Reports.showLoginFailuresReport),
-        },
-      ],
-    },
-    {
-      title: 'Workcell States',
-      onClick: () => setCurrentReport(Reports.showWorkCellStatesReport),
-    },
+    // {
+    //   icon: <BusinessCenterIcon />,
+    //   title: 'Negotiations',
+    //   onClick: () => setCurrentReport(Reports.showNegotiationsReport),
+    // },
+    // {
+    //   icon: <AndroidIcon />,
+    //   title: 'Robots',
+    //   items: [
+    //     {
+    //       title: 'Robot states',
+    //       items: [],
+    //       onClick: () => setCurrentReport(Reports.showRobotStateReport),
+    //     },
+    //     {
+    //       title: 'Robot Motion Plans',
+    //       items: [],
+    //       onClick: () => setCurrentReport(Reports.showRobotMotionPlansReport),
+    //     },
+    //     {
+    //       title: 'Robot Actions',
+    //       items: [],
+    //       onClick: () => setCurrentReport(Reports.showRobotActionReport),
+    //     },
+    //   ],
+    // },
+    // {
+    //   icon: <ListAltIcon />,
+    //   title: 'Tasks',
+    //   onClick: () => setCurrentReport(Reports.showTasksReport),
+    // },
+    // {
+    //   icon: <AccountCircleIcon />,
+    //   title: 'Users',
+    //   items: [
+    //     {
+    //       title: 'User Actions',
+    //       items: [],
+    //       onClick: () => setCurrentReport(Reports.showUserActionsReport),
+    //     },
+    //     {
+    //       title: 'Logins',
+    //       items: [],
+    //       onClick: () => setCurrentReport(Reports.showLoginsReport),
+    //     },
+    //     {
+    //       title: 'Logouts',
+    //       items: [],
+    //       onClick: () => setCurrentReport(Reports.showLogoutsReport),
+    //     },
+    //     {
+    //       title: 'Login failures',
+    //       items: [],
+    //       onClick: () => setCurrentReport(Reports.showLoginFailuresReport),
+    //     },
+    //   ],
+    // },
+    // {
+    //   title: 'Workcell States',
+    //   onClick: () => setCurrentReport(Reports.showWorkCellStatesReport),
+    // },
   ] as ExpandableMultilevelMenuProps[];
 };
