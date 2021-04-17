@@ -6,7 +6,6 @@ from models.health import HealthStatus
 
 
 async def health_status_parser(fullstring: str, health_device: str):
-    print(fullstring)
     modified_string = fullstring.replace(health_device + ":", "")
     state_json = json.loads(modified_string)
 

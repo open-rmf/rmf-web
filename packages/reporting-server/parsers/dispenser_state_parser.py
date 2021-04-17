@@ -6,7 +6,6 @@ from models.dispenser_state import DispenserState
 
 
 async def dispenser_state_parser(fullstring: str):
-    print(fullstring)
     modified_string = fullstring.replace("dispenser_state:", "")
     state_json = json.loads(modified_string)
 

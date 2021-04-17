@@ -7,49 +7,66 @@ from .door_state import DoorStateEnum
 
 
 class LiftStateEnum(str, Enum):
-    MODE_HUMAN = "human"
     MODE_AGV = "avg"
-    MODE_UNKNOWN = "unknown"
-    MODE_FIRE = "fire"
     MODE_EMERGENCY = "emergency"
+    MODE_FIRE = "fire"
+    MODE_HUMAN = "human"
     MODE_OFFLINE = "offline"
+    MODE_UNKNOWN = "unknown"
 
 
 # FIXME: add all lift states
 class LiftMotionStateEnum(str, Enum):
+    MOTION_DOWN = "down"
     MOTION_STOPPED = "stopped"
+    MOTION_UNKNOWN = "unknown"
+    MOTION_UP = "up"
+
+
+class LiftDoorStateEmun(str, Enum):
+    DOOR_CLOSED = "closed"
+    DOOR_MOVING = "moving"
+    DOOR_OPEN = "open"
 
 
 class LiftStateService:
     def get_state_name(self, state: int):
         if state == 0:
-            return LiftStateEnum.MODE_HUMAN
-        elif state == 1:
-            return LiftStateEnum.MODE_AGV
-        elif state == 2:
             return LiftStateEnum.MODE_UNKNOWN
+        elif state == 1:
+            return LiftStateEnum.MODE_HUMAN
+        elif state == 2:
+            return LiftStateEnum.MODE_AGV
         elif state == 3:
             return LiftStateEnum.MODE_FIRE
         elif state == 4:
-            return LiftStateEnum.MODE_EMERGENCY
-        elif state == 5:
             return LiftStateEnum.MODE_OFFLINE
+        elif state == 5:
+            return LiftStateEnum.MODE_EMERGENCY
 
     def get_motion_state_name(self, state: int):
         if state == 0:
             return LiftMotionStateEnum.MOTION_STOPPED
         elif state == 1:
-            return LiftMotionStateEnum.MOTION_STOPPED
+            return LiftMotionStateEnum.MOTION_UP
         elif state == 2:
-            pass
+            return LiftMotionStateEnum.MOTION_DOWN
         elif state == 3:
-            pass
+            return LiftMotionStateEnum.MOTION_UNKNOWN
+
+    def get_door_state_name(self, state: int):
+        if state == 0:
+            return LiftDoorStateEmun.DOOR_CLOSED
+        elif state == 1:
+            return LiftDoorStateEmun.DOOR_MOVING
+        elif state == 2:
+            return LiftDoorStateEmun.DOOR_OPEN
 
 
 class LiftState(models.Model):
     id = fields.IntField(pk=True)
-    door_state: DoorStateEnum = fields.CharEnumField(
-        DoorStateEnum, default=DoorStateEnum.UNKNOWN
+    door_state: LiftDoorStateEmun = fields.CharEnumField(
+        LiftDoorStateEmun, default=LiftDoorStateEmun.DOOR_CLOSED
     )
     state: LiftStateEnum = fields.CharEnumField(
         LiftStateEnum, default=LiftStateEnum.MODE_UNKNOWN

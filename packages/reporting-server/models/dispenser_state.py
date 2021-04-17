@@ -12,7 +12,7 @@ class DispenserStateEnum(str, Enum):
     OFFLINE = "offline"
 
 
-class DoorStateService:
+class DispenserStateService:
     def get_state_name(self, state: int):
         if state == 0:
             return DispenserStateEnum.IDLE
@@ -29,7 +29,7 @@ class DispenserState(models.Model):
     guid = fields.CharField(max_length=200)
     created = fields.DatetimeField(auto_now_add=True)
 
-    service = DoorStateService()
+    service = DispenserStateService()
 
 
 DispenserState_Pydantic = pydantic_model_creator(DispenserState, name="DispenserState")
