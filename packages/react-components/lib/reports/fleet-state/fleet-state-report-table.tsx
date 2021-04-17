@@ -8,8 +8,7 @@ import { DefaultLogTableProps } from '../default-report-interface';
 export type FleetStateRowsType = {
   // id: number;
   created: string; //date
-  guid: string;
-  state: string;
+  name: string;
   payload: any;
 }[];
 
@@ -33,11 +32,11 @@ export const FleetStateReportTable = (props: FleetStateReportTable): React.React
 
   return (
     <MaterialTable
-      title="Dispensers State"
+      title="Fleet State"
       icons={materialTableIcons}
       columns={[
         {
-          title: <Typography>Guid</Typography>,
+          title: <Typography>Name</Typography>,
           field: 'level',
           type: 'string',
           align: 'center',
@@ -50,7 +49,7 @@ export const FleetStateReportTable = (props: FleetStateReportTable): React.React
             maxHeight: '2px',
           },
           render: (rowData) => {
-            return <Typography className={classes.cellContent}>{rowData.guid}</Typography>;
+            return <Typography className={classes.cellContent}>{rowData.name}</Typography>;
           },
           // lookup: logLevels as Column<{
           //   level: string;
@@ -60,7 +59,7 @@ export const FleetStateReportTable = (props: FleetStateReportTable): React.React
           // filterComponent: (props) => <CustomLookupFilterParser {...props} />,
         },
         {
-          title: <Typography>State</Typography>,
+          title: <Typography>Payload</Typography>,
           field: 'message',
           type: 'string',
           cellStyle: { padding: '0px', width: '75rem', minWidth: '75rem', whiteSpace: 'pre-wrap' },
@@ -69,7 +68,7 @@ export const FleetStateReportTable = (props: FleetStateReportTable): React.React
             minWidth: '75rem',
           },
           render: (rowData) => {
-            return <Typography className={classes.cellContent}>{rowData.state}</Typography>;
+            return <Typography className={classes.cellContent}>{rowData.payload}</Typography>;
           },
         },
         {

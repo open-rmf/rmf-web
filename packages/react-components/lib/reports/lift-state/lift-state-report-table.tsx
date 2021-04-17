@@ -8,8 +8,12 @@ import { DefaultLogTableProps } from '../default-report-interface';
 export type LiftStateRowsType = {
   // id: number;
   created: string; //date
-  guid: string;
   state: string;
+  door_state: string;
+  destination_floor: string;
+  motion_state: string;
+  current_floor: string;
+  session_id: string;
   payload: any;
 }[];
 
@@ -33,11 +37,11 @@ export const LiftStateReportTable = (props: LiftStateReportTable): React.ReactEl
 
   return (
     <MaterialTable
-      title="Dispensers State"
+      title="Lift State"
       icons={materialTableIcons}
       columns={[
         {
-          title: <Typography>Guid</Typography>,
+          title: <Typography>Session id</Typography>,
           field: 'level',
           type: 'string',
           align: 'center',
@@ -50,7 +54,7 @@ export const LiftStateReportTable = (props: LiftStateReportTable): React.ReactEl
             maxHeight: '2px',
           },
           render: (rowData) => {
-            return <Typography className={classes.cellContent}>{rowData.guid}</Typography>;
+            return <Typography className={classes.cellContent}>{rowData.session_id}</Typography>;
           },
           // lookup: logLevels as Column<{
           //   level: string;
@@ -72,6 +76,61 @@ export const LiftStateReportTable = (props: LiftStateReportTable): React.ReactEl
             return <Typography className={classes.cellContent}>{rowData.state}</Typography>;
           },
         },
+        {
+          title: <Typography>Door State</Typography>,
+          field: 'message',
+          type: 'string',
+          cellStyle: { padding: '0px', width: '75rem', minWidth: '75rem', whiteSpace: 'pre-wrap' },
+          headerStyle: {
+            width: '75rem',
+            minWidth: '75rem',
+          },
+          render: (rowData) => {
+            return <Typography className={classes.cellContent}>{rowData.door_state}</Typography>;
+          },
+        },
+        {
+          title: <Typography>Destination floor</Typography>,
+          field: 'message',
+          type: 'string',
+          cellStyle: { padding: '0px', width: '75rem', minWidth: '75rem', whiteSpace: 'pre-wrap' },
+          headerStyle: {
+            width: '75rem',
+            minWidth: '75rem',
+          },
+          render: (rowData) => {
+            return (
+              <Typography className={classes.cellContent}>{rowData.destination_floor}</Typography>
+            );
+          },
+        },
+        {
+          title: <Typography>Motion State</Typography>,
+          field: 'message',
+          type: 'string',
+          cellStyle: { padding: '0px', width: '75rem', minWidth: '75rem', whiteSpace: 'pre-wrap' },
+          headerStyle: {
+            width: '75rem',
+            minWidth: '75rem',
+          },
+          render: (rowData) => {
+            return <Typography className={classes.cellContent}>{rowData.motion_state}</Typography>;
+          },
+        },
+        {
+          title: <Typography>Current Floor</Typography>,
+          field: 'message',
+          type: 'string',
+          cellStyle: { padding: '0px', width: '75rem', minWidth: '75rem', whiteSpace: 'pre-wrap' },
+          headerStyle: {
+            width: '75rem',
+            minWidth: '75rem',
+          },
+          render: (rowData) => {
+            return <Typography className={classes.cellContent}>{rowData.current_floor}</Typography>;
+          },
+        },
+
         {
           title: <Typography>Timestamp</Typography>,
           field: 'timestamp',

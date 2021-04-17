@@ -8,7 +8,7 @@ import { DefaultLogTableProps } from '../default-report-interface';
 export type DoorStateRowsType = {
   // id: number;
   created: string; //date
-  guid: string;
+  name: string;
   state: string;
   payload: any;
 }[];
@@ -33,11 +33,11 @@ export const DoorStateReportTable = (props: DoorStateReportTable): React.ReactEl
 
   return (
     <MaterialTable
-      title="Dispensers State"
+      title="Door State"
       icons={materialTableIcons}
       columns={[
         {
-          title: <Typography>Guid</Typography>,
+          title: <Typography>Name</Typography>,
           field: 'level',
           type: 'string',
           align: 'center',
@@ -50,7 +50,7 @@ export const DoorStateReportTable = (props: DoorStateReportTable): React.ReactEl
             maxHeight: '2px',
           },
           render: (rowData) => {
-            return <Typography className={classes.cellContent}>{rowData.guid}</Typography>;
+            return <Typography className={classes.cellContent}>{rowData.name}</Typography>;
           },
           // lookup: logLevels as Column<{
           //   level: string;

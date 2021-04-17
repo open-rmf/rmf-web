@@ -33,7 +33,7 @@ export const IngestorStateReportTable = (props: IngestorStateReportTable): React
 
   return (
     <MaterialTable
-      title="Dispensers State"
+      title="Ingestor State"
       icons={materialTableIcons}
       columns={[
         {

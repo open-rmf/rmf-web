@@ -8,8 +8,10 @@ import { DefaultLogTableProps } from '../default-report-interface';
 export type HealthRowsType = {
   // id: number;
   created: string; //date
-  guid: string;
-  state: string;
+  device: string;
+  actor_id: string;
+  health_status: string;
+  health_message: string;
   payload: any;
 }[];
 
@@ -33,11 +35,11 @@ export const HealthReportTable = (props: HealthReportTable): React.ReactElement 
 
   return (
     <MaterialTable
-      title="Dispensers State"
+      title="Health"
       icons={materialTableIcons}
       columns={[
         {
-          title: <Typography>Guid</Typography>,
+          title: <Typography>Device</Typography>,
           field: 'level',
           type: 'string',
           align: 'center',
@@ -50,7 +52,7 @@ export const HealthReportTable = (props: HealthReportTable): React.ReactElement 
             maxHeight: '2px',
           },
           render: (rowData) => {
-            return <Typography className={classes.cellContent}>{rowData.guid}</Typography>;
+            return <Typography className={classes.cellContent}>{rowData.device}</Typography>;
           },
           // lookup: logLevels as Column<{
           //   level: string;
@@ -60,7 +62,7 @@ export const HealthReportTable = (props: HealthReportTable): React.ReactElement 
           // filterComponent: (props) => <CustomLookupFilterParser {...props} />,
         },
         {
-          title: <Typography>State</Typography>,
+          title: <Typography>Actor</Typography>,
           field: 'message',
           type: 'string',
           cellStyle: { padding: '0px', width: '75rem', minWidth: '75rem', whiteSpace: 'pre-wrap' },
@@ -69,8 +71,54 @@ export const HealthReportTable = (props: HealthReportTable): React.ReactElement 
             minWidth: '75rem',
           },
           render: (rowData) => {
-            return <Typography className={classes.cellContent}>{rowData.state}</Typography>;
+            return <Typography className={classes.cellContent}>{rowData.actor_id}</Typography>;
           },
+        },
+        {
+          title: <Typography>Health status</Typography>,
+          field: 'level',
+          type: 'string',
+          align: 'center',
+          cellStyle: { padding: '0px', width: '2rem', maxWidth: '2rem' },
+          headerStyle: {
+            width: '2rem',
+            maxWidth: '2rem',
+          },
+          filterCellStyle: {
+            maxHeight: '2px',
+          },
+          render: (rowData) => {
+            return <Typography className={classes.cellContent}>{rowData.health_status}</Typography>;
+          },
+          // lookup: logLevels as Column<{
+          //   level: string;
+          //   message: string;
+          //   timestamp: string;
+          // }>['lookup'],
+          // filterComponent: (props) => <CustomLookupFilterParser {...props} />,
+        },
+        {
+          title: <Typography>Health message</Typography>,
+          field: 'level',
+          type: 'string',
+          align: 'center',
+          cellStyle: { padding: '0px', width: '2rem', maxWidth: '2rem' },
+          headerStyle: {
+            width: '2rem',
+            maxWidth: '2rem',
+          },
+          filterCellStyle: {
+            maxHeight: '2px',
+          },
+          render: (rowData) => {
+            return <Typography className={classes.cellContent}>{rowData.health_status}</Typography>;
+          },
+          // lookup: logLevels as Column<{
+          //   level: string;
+          //   message: string;
+          //   timestamp: string;
+          // }>['lookup'],
+          // filterComponent: (props) => <CustomLookupFilterParser {...props} />,
         },
         {
           title: <Typography>Timestamp</Typography>,
