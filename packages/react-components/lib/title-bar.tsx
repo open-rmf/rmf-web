@@ -14,6 +14,7 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       flexGrow: 1,
       width: '100%',
+      alignItems: 'center',
     },
     logo: {
       maxHeight: 30,
@@ -24,6 +25,9 @@ const useStyles = makeStyles((theme: Theme) =>
       textAlign: 'right',
       flexGrow: 1,
     },
+    tab: {
+      borderRight: '0.25px solid rgba(251, 252, 255, 0.5)',
+    },
   }),
 );
 
@@ -31,16 +35,16 @@ const TitleBar = (props: TitleBarProps): React.ReactElement => {
   const { logoPath, children, tabNames } = props;
   const classes = useStyles();
 
-  const [value, setValue] = React.useState(tabNames[0]);
+  const [value, setValue] = React.useState(0);
 
   // eslint-disable-next-line @typescript-eslint/ban-types
-  const handleChange = (event: React.ChangeEvent<{}>, newValue: string) => {
+  const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setValue(newValue);
   };
 
   const populateTabs = () => {
     const tabs = tabNames.map((value, index) => (
-      <Tab key={index} label={value} value={tabNames[index]} />
+      <Tab key={index} label={value} value={index} className={classes.tab} />
     ));
     return tabs;
   };
