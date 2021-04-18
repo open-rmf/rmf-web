@@ -67,16 +67,10 @@ export const DefaultDatesForm = (props: DefaultDatesFormProps): React.ReactEleme
 
 const useStyles = makeStyles((theme) => ({
   searchForm: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr 1fr 1fr',
-    alignItems: 'center',
-    justifyItems: 'center',
+    display: 'flex',
+    justifyContent: 'space-evenly',
   },
   searchButton: {
     width: '100%',
-  },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
   },
 }));
