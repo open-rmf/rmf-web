@@ -1,7 +1,7 @@
-from datetime import datetime, timezone
-from typing import List, Optional
+from datetime import timezone
+from typing import Optional
 
-from dateutil import parser, tz
+from dateutil import parser
 from models.fleet_state import FleetState, FleetState_Pydantic
 
 

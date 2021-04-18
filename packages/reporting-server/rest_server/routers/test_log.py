@@ -1,7 +1,6 @@
 import unittest
 
 from fastapi.testclient import TestClient
-from models import DispenserState, RawLog
 from tortoise import Tortoise
 
 from ..app import app

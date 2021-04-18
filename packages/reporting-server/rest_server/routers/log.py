@@ -1,5 +1,4 @@
 from fastapi import APIRouter, HTTPException, status
-from pydantic import BaseModel
 from rest_server.repositories.log_creation_handler import (
     create_raw_log,
     create_rmf_server_log,
@@ -15,7 +14,7 @@ async def write_logs(body: list):
         return await create_raw_log(body)
     except Exception as e:
         print(e)
-        raise HTTPException(503, "cannot create the log" + str(e))
+        raise HTTPException(503, "cannot create the log" + str(e)) from e
 
 
 # Will receive information from rmf-server only
@@ -25,10 +24,11 @@ async def write_logs(body: list):
 async def write_rmf_server_logs(body: list):
     try:
         response = await create_rmf_server_log(body)
-        if isinstance(response, str):
-            return response
-        else:
+        if not isinstance(response, str):
             raise HTTPException(503, "Error creating some logs" + str(response))
+
+        return response
+
     except Exception as e:
         print(e)
-        raise HTTPException(503, "cannot create the rmfserver log" + str(e))
+        raise HTTPException(503, "cannot create the rmfserver log" + str(e)) from e

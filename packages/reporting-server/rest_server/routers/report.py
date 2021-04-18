@@ -27,15 +27,12 @@ LIMIT = 500
 async def raw_logs_report(
     toLogDate: Optional[str] = None,
     fromLogDate: Optional[str] = None,
-    logLabel: Optional[str] = None,
     logLevel: Optional[str] = None,
     offset: Optional[int] = 0,
     limit: Optional[int] = LIMIT,
 ):
 
-    return await get_all_raw_logs(
-        offset, limit, toLogDate, fromLogDate, logLabel, logLevel
-    )
+    return await get_all_raw_logs(offset, limit, toLogDate, fromLogDate, logLevel)
 
 
 @router.get(

@@ -4,7 +4,6 @@ import sys
 
 from fastapi import FastAPI
 from rest_server.routers import log_router, report_router
-from tortoise import Tortoise, run_async
 from tortoise.contrib.fastapi import register_tortoise
 
 from .app_config import app_config
