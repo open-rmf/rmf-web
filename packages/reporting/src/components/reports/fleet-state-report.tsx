@@ -15,7 +15,6 @@ const FleetStateReportConfig = () => {
           limit: params.limit,
         },
       });
-      console.log(response);
       return response.data as FleetStateRowsType;
     } catch (error) {
       console.error(error);

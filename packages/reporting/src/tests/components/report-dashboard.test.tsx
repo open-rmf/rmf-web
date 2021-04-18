@@ -46,7 +46,7 @@ describe('ReportDashboard', () => {
 it('picks a different report and renders correctly', () => {
   const ReportContainer: Record<string, React.ReactElement> = {
     queryAllLogs: <h1>QueryAllLogs</h1>,
-    showChargerStateReport: <h1>Test</h1>,
+    showDoorStateReport: <h1>Test</h1>,
   };
 
   render(
@@ -55,6 +55,6 @@ it('picks a different report and renders correctly', () => {
       reportContainer={ReportContainer}
     />,
   );
-  userEvent.click(screen.getByText('Charger states'));
+  userEvent.click(screen.getByText('Doors'));
   expect(screen.getByText('Test'));
 });

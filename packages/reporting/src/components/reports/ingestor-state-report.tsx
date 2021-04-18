@@ -19,7 +19,6 @@ const IngestorStateReportConfig = () => {
           limit: params.limit,
         },
       });
-      console.log(response);
       return response.data as IngestorStateRowsType;
     } catch (error) {
       console.error(error);

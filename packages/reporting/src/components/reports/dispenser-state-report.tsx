@@ -19,7 +19,6 @@ const DispenserStateReportConfig = () => {
           limit: params.limit,
         },
       });
-      console.log(response);
       return response.data as DispenserStateRowsType;
     } catch (error) {
       console.error(error);

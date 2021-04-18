@@ -15,7 +15,6 @@ const DoorStateReportConfig = () => {
           limit: params.limit,
         },
       });
-      console.log(response);
       return response.data as DoorStateRowsType;
     } catch (error) {
       console.error(error);

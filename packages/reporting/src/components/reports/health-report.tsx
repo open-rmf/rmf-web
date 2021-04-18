@@ -15,7 +15,6 @@ const HealthReportConfig = () => {
           limit: params.limit,
         },
       });
-      console.log(response);
       return response.data as HealthRowsType;
     } catch (error) {
       console.error(error);

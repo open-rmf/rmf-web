@@ -15,7 +15,6 @@ const LiftStateReportConfig = () => {
           limit: params.limit,
         },
       });
-      console.log(response);
       return response.data as LiftStateRowsType;
     } catch (error) {
       console.error(error);
