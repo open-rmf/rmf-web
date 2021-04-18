@@ -6,23 +6,31 @@ from .parser_dispacher import log_model_dispacher
 
 # Function that receives all the logs and store them on the database
 async def create_raw_log(logs: list):
+    if len(logs) == 0:
+        return "No data received"
+
+    error_logs = []
+
     for log in logs:
-        print(log)
-        if isinstance(log, dict):
-            if "log" not in log:
-                continue
+        try:
+            if isinstance(log, dict):
+                if "log" not in log:
+                    continue
 
-            log_level = get_log_type(log["log"])
-            await RawLog.create(level=log_level, payload=log, message=log["log"])
+                log_level = get_log_type(log["log"])
+                await RawLog.create(level=log_level, payload=log, message=log["log"])
 
-        elif isinstance(log, str):
-            if log.isspace():
-                continue
+            elif isinstance(log, str):
+                if log.isspace():
+                    continue
 
-            log_level = get_log_type(log)
-            await RawLog.create(level=log_level, payload={log: log}, message=log)
+                log_level = get_log_type(log)
+                await RawLog.create(level=log_level, payload={log: log}, message=log)
 
-    return "The logs were saved correctly"
+        except Exception as e:
+            error_logs.append("Error:" + str(e) + "Log:" + str(log))
+
+    return error_logs if len(error_logs) > 0 else "Logs were saved correctly"
 
 
 # We want to grab specific data from this list of strings, so we need to preprocess
@@ -30,6 +38,8 @@ async def create_raw_log(logs: list):
 async def create_rmf_server_log(logs: list):
     if len(logs) == 0:
         return "No data received"
+    error_logs = []
+
     for log in logs:
         try:
             # If it not data app, we will skip it because the create_raw_log in theory will register that log
@@ -39,6 +49,6 @@ async def create_rmf_server_log(logs: list):
             await log_model_dispacher(modified_log)
 
         except Exception as e:
-            print("Error storing log" + log + e)
+            error_logs.append("Error:" + str(e) + "Log:" + str(log))
 
-    return "Logs were saved correctly"
+    return error_logs if len(error_logs) > 0 else "Logs were saved correctly"

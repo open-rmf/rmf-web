@@ -27,7 +27,7 @@ from .parser_dispacher import log_model_dispacher
 # {'log': 'INFO:app.BookKeeper.lift_state:{"time": {"sec": 1600, "nanosec": 0}, "state": 1, "mode": 0, "request_guid_queue": [], "seconds_remaining": 0.0}\n', 'stream': 'stdout'}
 
 
-class TestCaseLiftState(unittest.IsolatedAsyncioTestCase):
+class TestCaseLogParserDispatcher(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         await Tortoise.init(
             db_url="sqlite://:memory:",
