@@ -192,7 +192,9 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
             duration: trajLookahead,
             trim: true,
           },
+          token: '',
         });
+
         debug('set trajectories');
         if (showTrajectories === undefined || showTrajectories) {
           setTrajectories((prev) => ({

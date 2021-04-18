@@ -41,6 +41,12 @@ export interface NegotiationTrajectoryRequest {
     conflict_version: number;
     sequence: number[];
   };
+  token?: string;
+}
+
+export interface NegotiationSubscribeUpdateRequest {
+  request: 'negotiation_update_subscribe';
+  token?: string;
 }
 
 export interface NegotiationTrajectoryResponse {
@@ -68,7 +74,11 @@ export class NegotiationStatusManager extends EventEmitter<Events> {
       return;
     }
     if (this._backendWs.readyState === WebSocket.OPEN) {
-      this._backendWs.send(JSON.stringify({ request: 'negotiation_update_subscribe' }));
+      const negotiationUpdate: NegotiationSubscribeUpdateRequest = {
+        request: 'negotiation_update_subscribe',
+        token: '',
+      };
+      this._backendWs.send(JSON.stringify(negotiationUpdate));
 
       this._backendWs.onmessage = (event) => {
         const msg = JSON.parse(event.data);
@@ -128,6 +138,8 @@ export class NegotiationStatusManager extends EventEmitter<Events> {
           else conflict.resolved = ResolveState.FAILED;
 
           this.removeOldConflicts();
+        } else if (msg.error) {
+          throw new Error(msg.error);
         }
       };
     } else {

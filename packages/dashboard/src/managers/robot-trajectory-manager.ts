@@ -19,11 +19,13 @@ export interface TrajectoryRequest {
     duration: number;
     trim: boolean;
   };
+  token?: string;
 }
 
 export interface TimeRequest {
   request: 'time';
   param: {};
+  token?: string;
 }
 
 export interface TimeResponse {
@@ -62,6 +64,7 @@ interface Request {
 interface Response {
   response: string;
   values: unknown;
+  error?: string;
 }
 
 export class DefaultTrajectoryManager {
@@ -133,7 +136,8 @@ export class DefaultTrajectoryManager {
   }
 
   private _checkResponse(request: Request, resp: Response): void {
-    if (request.request !== resp.response) {
+    if (resp.error) throw new Error(resp.error);
+    else if (request.request !== resp.response) {
       console.warn(
         `received response for wrong request. Request: ${request.request} Response: ${resp.response}`,
       );

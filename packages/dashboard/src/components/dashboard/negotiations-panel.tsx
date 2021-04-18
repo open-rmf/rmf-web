@@ -298,6 +298,7 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
       const resp = await negotiationStatusManager.negotiationTrajectory({
         request: 'negotiation_trajectory',
         param: trajParams,
+        token: '',
       });
       if (resp.values === undefined) console.warn('values undefined!');
       if (resp.response !== 'negotiation_trajectory') {
