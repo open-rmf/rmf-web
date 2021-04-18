@@ -2,8 +2,6 @@ import json
 
 from models.door_state import DoorState
 
-# {'log': 'INFO:app.BookKeeper.door_state:{"door_time": {"sec": 1596, "nanosec": 548000000}, "door_name": "hardware_door", "current_mode": {"value": 0}}\n', 'stream': 'stdout'}
-
 
 async def doors_state_parser(fullstring: str):
     modified_string = fullstring.replace("door_state:", "")

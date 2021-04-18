@@ -2,8 +2,6 @@ import json
 
 from models.ingestor_state import IngestorState
 
-# {'log': 'INFO:app.BookKeeper.ingestor_state:{"time": {"sec": 1600, "nanosec": 0}, "guid": "coke_ingestor", "mode": 0, "request_guid_queue": [], "seconds_remaining": 0.0}\n', 'stream': 'stdout'}
-
 
 async def ingestor_state_parser(fullstring: str):
     modified_string = fullstring.replace("ingestor_state:", "")

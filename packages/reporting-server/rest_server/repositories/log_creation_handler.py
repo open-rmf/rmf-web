@@ -28,17 +28,17 @@ async def create_raw_log(logs: list):
 # We want to grab specific data from this list of strings, so we need to preprocess
 # this information
 async def create_rmf_server_log(logs: list):
+    if len(logs) == 0:
+        return "No data received"
     for log in logs:
         try:
             # If it not data app, we will skip it because the create_raw_log in theory will register that log
             if "INFO:app.BookKeeper." not in log["log"]:
                 continue
             modified_log = log["log"].replace("INFO:app.BookKeeper.", "")
-            # it should get the model instance to add the data
             await log_model_dispacher(modified_log)
 
         except Exception as e:
-            print(e)
-            print(log)
+            print("Error storing log" + log + e)
 
     return "Logs were saved correctly"

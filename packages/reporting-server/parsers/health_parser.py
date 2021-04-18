@@ -2,8 +2,6 @@ import json
 
 from models.health import HealthStatus
 
-# {'log': 'INFO:app.BookKeeper.door_health:{"id": "hardware_door", "health_status": "HealthStatus.HEALTHY", "health_message": null}\n', 'stream': 'stdout'}
-
 
 async def health_status_parser(fullstring: str, health_device: str):
     modified_string = fullstring.replace(health_device + ":", "")
