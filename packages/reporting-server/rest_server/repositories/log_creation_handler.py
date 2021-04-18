@@ -26,7 +26,7 @@ async def create_raw_log(logs: list):
 
                 log_level = get_log_type(log)
                 await RawLog.create(level=log_level, payload={log: log}, message=log)
-        except SyntaxError as e:
+        except (SyntaxError, ValueError, KeyError) as e:
             error_logs.append("Error:" + str(e) + "Log:" + str(log))
 
     return error_logs if len(error_logs) > 0 else "Logs were saved correctly"
@@ -47,7 +47,7 @@ async def create_rmf_server_log(logs: list):
             modified_log = log["log"].replace("INFO:app.BookKeeper.", "")
             await log_model_dispacher(modified_log)
 
-        except SyntaxError as e:
+        except (SyntaxError, ValueError, KeyError) as e:
             error_logs.append("Error:" + str(e) + "Log:" + str(log))
 
     return error_logs if len(error_logs) > 0 else "Logs were saved correctly"
