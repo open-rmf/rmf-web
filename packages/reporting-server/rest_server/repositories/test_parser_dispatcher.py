@@ -1,5 +1,8 @@
 import unittest
 
+# Husky is sorting tortoise in a way that tortoise goes after our custom packages.
+# and because of that the lint is failing
+import tortoise
 from fastapi.testclient import TestClient
 from models import (
     DispenserState,
@@ -10,7 +13,6 @@ from models import (
     LiftState,
 )
 from rest_server.app import app
-from tortoise import Tortoise
 
 from .parser_dispacher import log_model_dispacher
 
@@ -30,15 +32,15 @@ from .parser_dispacher import log_model_dispacher
 
 class TestCaseLogParserDispatcher(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
-        await Tortoise.init(
+        await tortoise.Tortoise.init(
             db_url="sqlite://:memory:",
             modules={"models": ["models"]},
         )
-        await Tortoise.generate_schemas()
+        await tortoise.Tortoise.generate_schemas()
         self.client = TestClient(app)
 
     async def asyncTearDown(self):
-        await Tortoise.close_connections()
+        await tortoise.Tortoise.close_connections()
 
     async def test_dispenser_state_created(self):
         data = 'dispenser_state:{"time": {"sec": 1600, "nanosec": 0}, "guid": "coke_dispenser", "mode": 0, "request_guid_queue": [], "seconds_remaining": 0.0}\n'
