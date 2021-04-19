@@ -1,0 +1,17 @@
+ROS_TYPES = [
+    "bool",
+    "byte",
+    "char",
+    "float32",
+    "float64",
+    "int8",
+    "int16",
+    "int32",
+    "int64",
+    "string",
+    "wstring",
+    "uint8",
+    "uint16",
+    "uint32",
+    "uint64",
+]

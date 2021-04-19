@@ -2,8 +2,7 @@
 {% set base_type = msgspec.base_type %}
 /* This is a generated file, do not edit */
 
-{% for type in msg.dependent_types %}
-{% set dep_msg = parse_message(type) %}
+{% for dep_msg in msg.dependent_types %}
 import { {{ dep_msg.spec.base_type.type }} } from '../../{{ dep_msg.spec.base_type.pkg_name }}/{{ dep_msg.rel_dir }}/{{ dep_msg.spec.base_type.type }}';
 {% endfor %}
 

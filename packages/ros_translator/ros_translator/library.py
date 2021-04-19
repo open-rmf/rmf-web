@@ -25,7 +25,7 @@ class Interface:
 @dataclass
 class Message(Interface):
     spec: MessageSpecification
-    dependent_types: List[str]
+    dependent_types: List["Message"]
 
 
 @dataclass
@@ -61,6 +61,13 @@ class RosLibrary:
             self._messages[full_msg_type] = self._parse_message(full_msg_type)
         return self._messages[full_msg_type]
 
+    def get_all_interfaces(self, *pkgs: Iterable[str]) -> Dict[str, PackageIndex]:
+        """
+        Recursively gets the package index for packages and their dependencies.
+        """
+        all_pkgs = self.get_all_dependent_packages(*pkgs)
+        return {p: self.get_package_index(p) for p in all_pkgs}
+
     def get_service(self, full_srv_type: str) -> Service:
         """
         :param full_srv_type: The full service type
@@ -82,8 +89,7 @@ class RosLibrary:
             msgs = [self.get_message(m) for m in pkg_index.messages]
             dep_msgs = []
             for m in msgs:
-                dms = [self.get_message(mm) for mm in m.dependent_types]
-                dep_msgs.extend([dm for dm in dms if dm.pkg != pkg_name_])
+                dep_msgs.extend([dm for dm in m.dependent_types if dm.pkg != pkg_name_])
             dep_pkgs = {}
             for m in dep_msgs:
                 for dp in recur(m.pkg):
@@ -132,15 +138,14 @@ class RosLibrary:
     def _get_rel_dir(full_type_with_path: str):
         return f"{full_type_with_path[full_type_with_path.index('/')+1:full_type_with_path.rindex('/')]}"
 
-    @staticmethod
-    def _get_msg_dependent_types(msgspec: MessageSpecification):
+    def _get_msg_dependent_types(self, msgspec: MessageSpecification):
         dependent_types = [
             f"{f.type.pkg_name}/{f.type.type}"
             for f in msgspec.fields
             if not f.type.is_primitive_type()
         ]
         dedup = {f: f for f in dependent_types}
-        return dedup.keys()
+        return [self.get_message(m) for m in dedup.keys()]
 
     def _parse_message(self, full_msg_type: str):
         parts = full_msg_type.split("/")

@@ -10,21 +10,6 @@ import jinja2
 from jinja2 import Environment, FileSystemLoader
 from ros_translator.library import Message, PostProcessors, RosLibrary, Service
 
-try:
-    from rosidl_adapter.parser import (
-        MessageSpecification,
-        parse_message_file,
-        parse_service_file,
-    )
-except ImportError:
-    sys.exit(
-        "Unable to import rosidl_adapter. " "Please source a ROS2 installation first."
-    )
-
-__MSG_DIR = "msg"
-
-__dir__ = dirname(__file__)
-
 template_loader = FileSystemLoader(searchpath=joinp(dirname(__file__), "templates"))
 template_env = Environment(loader=template_loader)
 template_env.trim_blocks = True
@@ -158,9 +143,7 @@ def generate_modules(pkgs: Sequence[str], dstdir: str):
                 makedirs(dirname(output_fpath))
 
             print(f"Generating model {base_type}")
-            template.stream(msg=msg, parse_message=roslib.get_message).dump(
-                output_fpath
-            )
+            template.stream(msg=msg).dump(output_fpath)
             modules.append(f"./{pkg_name}/{msg.rel_dir}/{base_type.type}")
 
     template = template_env.get_template("srv-ts-definition.j2")
