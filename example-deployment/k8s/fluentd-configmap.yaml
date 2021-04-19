@@ -8,10 +8,10 @@ data:
     # This source gets all logs from local docker host
     @include pods-fluent.conf
     @include reporting-server.conf
-    include @reporting-server-all-logs.conf
+    @include reporting-server-all-logs.conf
     # Use this configuration for production
-    # @include minio-fluent.conf
-    @include minio-fluent-dev.conf
+    @include minio-fluent.conf
+    # @include minio-fluent-dev.conf
   # This is for running fluentd in the cloud
   pods-fluent.conf: |-
     <source>
@@ -55,18 +55,6 @@ data:
         time_format %Y-%m-%dT%H:%M:%S.%NZ
       </parse>
     </source>
-
-    # <filter kubernetes.**>
-    #   @type kubernetes_metadata
-    #   @id filter_kube_metadata
-    #   kubernetes_url "#{ENV['FLUENT_FILTER_KUBERNETES_URL'] || 'https://' + ENV.fetch('KUBERNETES_SERVICE_HOST') + ':' + ENV.fetch('KUBERNETES_SERVICE_PORT') + '/api'}"
-    #   verify_ssl "#{ENV['KUBERNETES_VERIFY_SSL'] || true}"
-    #   ca_file "#{ENV['KUBERNETES_CA_FILE']}"
-    #   skip_labels "#{ENV['FLUENT_KUBERNETES_METADATA_SKIP_LABELS'] || 'false'}"
-    #   skip_container_metadata "#{ENV['FLUENT_KUBERNETES_METADATA_SKIP_CONTAINER_METADATA'] || 'false'}"
-    #   skip_master_url "#{ENV['FLUENT_KUBERNETES_METADATA_SKIP_MASTER_URL'] || 'false'}"
-    #   skip_namespace_metadata "#{ENV['FLUENT_KUBERNETES_METADATA_SKIP_NAMESPACE_METADATA'] || 'false'}"
-    # </filter>
 
   minio-fluent-dev.conf: |-
     <match minio.s3.**>
@@ -140,8 +128,4 @@ data:
         flush_interval 10s
       </buffer>
     </match>
-    
-    # <system>
-    #   log_level trace
-    # </system>
 
