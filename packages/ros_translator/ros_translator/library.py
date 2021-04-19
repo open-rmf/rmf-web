@@ -134,11 +134,13 @@ class RosLibrary:
 
     @staticmethod
     def _get_msg_dependent_types(msgspec: MessageSpecification):
-        return [
+        dependent_types = [
             f"{f.type.pkg_name}/{f.type.type}"
             for f in msgspec.fields
             if not f.type.is_primitive_type()
         ]
+        dedup = {f: f for f in dependent_types}
+        return dedup.keys()
 
     def _parse_message(self, full_msg_type: str):
         parts = full_msg_type.split("/")

@@ -63,13 +63,13 @@ if ros2 pkg list | grep "${grep_args[@]}"; then
   exit 1
 fi
 
-rm -rf build
-mkdir -p "$script_dir/build/rmf/src"
-cd "$script_dir/build/rmf/src"
-git clone --depth 1 -b "$rmf_tag" "https://github.com/open-rmf/rmf_internal_msgs.git"
-git clone --depth 1 -b "$rmf_tag" "https://github.com/open-rmf/rmf_building_map_msgs.git"
+# rm -rf build
+# mkdir -p "$script_dir/build/rmf/src"
+# cd "$script_dir/build/rmf/src"
+# git clone --depth 1 -b "$rmf_tag" "https://github.com/open-rmf/rmf_internal_msgs.git"
+# git clone --depth 1 -b "$rmf_tag" "https://github.com/open-rmf/rmf_building_map_msgs.git"
 cd "$script_dir/build/rmf"
-colcon build --merge-install --cmake-args -DCMAKE_BUILD_TYPE=Release
+# colcon build --merge-install --cmake-args -DCMAKE_BUILD_TYPE=Release
 . install/setup.bash
 cd "$script_dir"
 

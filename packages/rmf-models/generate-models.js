@@ -30,7 +30,7 @@ console.log('generate models:');
     'THIS DIRECTORY IS GENERATED, DO NOT EDIT!!',
   );
 
-  execSync(`pipenv run python -m ts_ros -o lib/ros ${rmfMsgs.join(' ')}`, {
+  execSync(`pipenv run python -m ros_translator -t=typescript -o=lib/ros ${rmfMsgs.join(' ')}`, {
     stdio: 'inherit',
   });
   fs.writeFileSync(

@@ -167,15 +167,15 @@ def generate_modules(pkgs: Sequence[str], dstdir: str):
     for srv in all_services:
         if not isinstance(srv.spec, str):
             output_fpath = joinp(
-                dstdir, srv.spec.pkg_name, srv.reldir, f"{srv.spec.srv_name}.ts"
+                dstdir, srv.spec.pkg_name, srv.rel_dir, f"{srv.spec.srv_name}.ts"
             )
 
             if not exists(dirname(output_fpath)):
                 makedirs(dirname(output_fpath))
 
             print(f"Generating model {srv.full_type}")
-            template.stream(srvspec=srv.spec).dump(output_fpath)
-            modules.append(f"./{srv.spec.pkg_name}/{srv.reldir}/{srv.spec.srv_name}")
+            template.stream(srv=srv).dump(output_fpath)
+            modules.append(f"./{srv.spec.pkg_name}/{srv.rel_dir}/{srv.spec.srv_name}")
     return modules
 
 

@@ -8,7 +8,7 @@ import { {{ dep_msg.spec.base_type.type }} } from '../../{{ dep_msg.spec.base_ty
 {% endfor %}
 
 export class {{ base_type.type }} {
-  static readonly FullTypeName = '{{ base_type.pkg_name }}/{{ msgspec.reldir }}/{{ base_type.type }}';
+  static readonly FullTypeName = '{{ base_type.pkg_name }}/{{ msg.rel_dir }}/{{ base_type.type }}';
 
 {% if msgspec.constants %}
 {% for const in msgspec.constants %}
