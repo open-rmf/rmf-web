@@ -6,7 +6,6 @@ import { materialTableIcons } from '../../material-table-icons';
 import { DefaultLogTableProps } from '../default-report-interface';
 
 export type LiftStateRowsType = {
-  // id: number;
   created: string; //date
   state: string;
   door_state: string;
@@ -41,37 +40,17 @@ export const LiftStateReportTable = (props: LiftStateReportTable): React.ReactEl
       icons={materialTableIcons}
       columns={[
         {
-          title: <Typography>Session id</Typography>,
+          title: <Typography>Session ID</Typography>,
           field: 'level',
           type: 'string',
-          align: 'center',
-          cellStyle: { padding: '0px', width: '2rem', maxWidth: '2rem' },
-          headerStyle: {
-            width: '2rem',
-            maxWidth: '2rem',
-          },
-          filterCellStyle: {
-            maxHeight: '2px',
-          },
           render: (rowData) => {
             return <Typography className={classes.cellContent}>{rowData.session_id}</Typography>;
           },
-          // lookup: logLevels as Column<{
-          //   level: string;
-          //   message: string;
-          //   timestamp: string;
-          // }>['lookup'],
-          // filterComponent: (props) => <CustomLookupFilterParser {...props} />,
         },
         {
           title: <Typography>State</Typography>,
           field: 'message',
           type: 'string',
-          cellStyle: { padding: '0px', width: '75rem', minWidth: '75rem', whiteSpace: 'pre-wrap' },
-          headerStyle: {
-            width: '75rem',
-            minWidth: '75rem',
-          },
           render: (rowData) => {
             return <Typography className={classes.cellContent}>{rowData.state}</Typography>;
           },
@@ -80,24 +59,14 @@ export const LiftStateReportTable = (props: LiftStateReportTable): React.ReactEl
           title: <Typography>Door State</Typography>,
           field: 'message',
           type: 'string',
-          cellStyle: { padding: '0px', width: '75rem', minWidth: '75rem', whiteSpace: 'pre-wrap' },
-          headerStyle: {
-            width: '75rem',
-            minWidth: '75rem',
-          },
           render: (rowData) => {
             return <Typography className={classes.cellContent}>{rowData.door_state}</Typography>;
           },
         },
         {
-          title: <Typography>Destination floor</Typography>,
+          title: <Typography>Destination Floor</Typography>,
           field: 'message',
           type: 'string',
-          cellStyle: { padding: '0px', width: '75rem', minWidth: '75rem', whiteSpace: 'pre-wrap' },
-          headerStyle: {
-            width: '75rem',
-            minWidth: '75rem',
-          },
           render: (rowData) => {
             return (
               <Typography className={classes.cellContent}>{rowData.destination_floor}</Typography>
@@ -108,11 +77,6 @@ export const LiftStateReportTable = (props: LiftStateReportTable): React.ReactEl
           title: <Typography>Motion State</Typography>,
           field: 'message',
           type: 'string',
-          cellStyle: { padding: '0px', width: '75rem', minWidth: '75rem', whiteSpace: 'pre-wrap' },
-          headerStyle: {
-            width: '75rem',
-            minWidth: '75rem',
-          },
           render: (rowData) => {
             return <Typography className={classes.cellContent}>{rowData.motion_state}</Typography>;
           },
@@ -121,11 +85,6 @@ export const LiftStateReportTable = (props: LiftStateReportTable): React.ReactEl
           title: <Typography>Current Floor</Typography>,
           field: 'message',
           type: 'string',
-          cellStyle: { padding: '0px', width: '75rem', minWidth: '75rem', whiteSpace: 'pre-wrap' },
-          headerStyle: {
-            width: '75rem',
-            minWidth: '75rem',
-          },
           render: (rowData) => {
             return <Typography className={classes.cellContent}>{rowData.current_floor}</Typography>;
           },
@@ -137,10 +96,9 @@ export const LiftStateReportTable = (props: LiftStateReportTable): React.ReactEl
           type: 'datetime',
           filtering: false,
           align: 'center',
-          cellStyle: { padding: '0px' },
           render: (rowData) => {
             return (
-              <Typography className={classes.cellContent} data-testid={'dispenser-table-date'}>
+              <Typography className={classes.cellContent} data-testid={'lift-table-date'}>
                 {moment(rowData.created).format('lll')}
               </Typography>
             );
@@ -156,7 +114,9 @@ export const LiftStateReportTable = (props: LiftStateReportTable): React.ReactEl
         maxBodyHeight: tableSize ? tableSize : '80vh',
       }}
       onChangePage={(page, pageSize) => {
-        rows.length / pageSize - 1 === page && addMoreRows();
+        if (addMoreRows) {
+          rows.length / pageSize - 1 === page && addMoreRows();
+        }
       }}
     />
   );

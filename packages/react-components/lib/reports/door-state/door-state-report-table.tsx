@@ -1,12 +1,11 @@
 import React from 'react';
 import MaterialTable from 'material-table';
-import { makeStyles, Typography } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 import moment from 'moment';
 import { materialTableIcons } from '../../material-table-icons';
 import { DefaultLogTableProps } from '../default-report-interface';
 
 export type DoorStateRowsType = {
-  // id: number;
   created: string; //date
   name: string;
   state: string;
@@ -17,19 +16,8 @@ export interface DoorStateReportTable extends DefaultLogTableProps {
   rows: DoorStateRowsType | [];
 }
 
-const useStyles = makeStyles((theme) => ({
-  cellContent: {
-    display: 'block',
-    marginBlockStart: '1em',
-    marginBlockEnd: '1em',
-    marginInlineStart: '0px',
-    marginInlineEnd: '0px',
-  },
-}));
-
 export const DoorStateReportTable = (props: DoorStateReportTable): React.ReactElement => {
   const { rows, tableSize, addMoreRows } = props;
-  const classes = useStyles();
 
   return (
     <MaterialTable
@@ -38,50 +26,29 @@ export const DoorStateReportTable = (props: DoorStateReportTable): React.ReactEl
       columns={[
         {
           title: <Typography>Name</Typography>,
-          field: 'level',
+          field: 'name',
           type: 'string',
-          align: 'center',
-          cellStyle: { padding: '0px', width: '2rem', maxWidth: '2rem' },
-          headerStyle: {
-            width: '2rem',
-            maxWidth: '2rem',
-          },
-          filterCellStyle: {
-            maxHeight: '2px',
-          },
           render: (rowData) => {
-            return <Typography className={classes.cellContent}>{rowData.name}</Typography>;
+            return <Typography>{rowData.name}</Typography>;
           },
-          // lookup: logLevels as Column<{
-          //   level: string;
-          //   message: string;
-          //   timestamp: string;
-          // }>['lookup'],
-          // filterComponent: (props) => <CustomLookupFilterParser {...props} />,
         },
         {
           title: <Typography>State</Typography>,
-          field: 'message',
+          field: 'state',
           type: 'string',
-          cellStyle: { padding: '0px', width: '75rem', minWidth: '75rem', whiteSpace: 'pre-wrap' },
-          headerStyle: {
-            width: '75rem',
-            minWidth: '75rem',
-          },
           render: (rowData) => {
-            return <Typography className={classes.cellContent}>{rowData.state}</Typography>;
+            return <Typography>{rowData.state}</Typography>;
           },
         },
         {
           title: <Typography>Timestamp</Typography>,
-          field: 'timestamp',
+          field: 'created',
           type: 'datetime',
           filtering: false,
           align: 'center',
-          cellStyle: { padding: '0px' },
           render: (rowData) => {
             return (
-              <Typography className={classes.cellContent} data-testid={'dispenser-table-date'}>
+              <Typography data-testid={'door-table-date'}>
                 {moment(rowData.created).format('lll')}
               </Typography>
             );
@@ -97,7 +64,9 @@ export const DoorStateReportTable = (props: DoorStateReportTable): React.ReactEl
         maxBodyHeight: tableSize ? tableSize : '80vh',
       }}
       onChangePage={(page, pageSize) => {
-        rows.length / pageSize - 1 === page && addMoreRows();
+        if (addMoreRows) {
+          rows.length / pageSize - 1 === page && addMoreRows();
+        }
       }}
     />
   );

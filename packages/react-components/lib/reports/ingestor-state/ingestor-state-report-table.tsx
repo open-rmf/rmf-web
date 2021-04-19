@@ -40,34 +40,14 @@ export const IngestorStateReportTable = (props: IngestorStateReportTable): React
           title: <Typography>Guid</Typography>,
           field: 'level',
           type: 'string',
-          align: 'center',
-          cellStyle: { padding: '0px', width: '2rem', maxWidth: '2rem' },
-          headerStyle: {
-            width: '2rem',
-            maxWidth: '2rem',
-          },
-          filterCellStyle: {
-            maxHeight: '2px',
-          },
           render: (rowData) => {
             return <Typography className={classes.cellContent}>{rowData.guid}</Typography>;
           },
-          // lookup: logLevels as Column<{
-          //   level: string;
-          //   message: string;
-          //   timestamp: string;
-          // }>['lookup'],
-          // filterComponent: (props) => <CustomLookupFilterParser {...props} />,
         },
         {
           title: <Typography>State</Typography>,
           field: 'message',
           type: 'string',
-          cellStyle: { padding: '0px', width: '75rem', minWidth: '75rem', whiteSpace: 'pre-wrap' },
-          headerStyle: {
-            width: '75rem',
-            minWidth: '75rem',
-          },
           render: (rowData) => {
             return <Typography className={classes.cellContent}>{rowData.state}</Typography>;
           },
@@ -78,10 +58,9 @@ export const IngestorStateReportTable = (props: IngestorStateReportTable): React
           type: 'datetime',
           filtering: false,
           align: 'center',
-          cellStyle: { padding: '0px' },
           render: (rowData) => {
             return (
-              <Typography className={classes.cellContent} data-testid={'dispenser-table-date'}>
+              <Typography className={classes.cellContent} data-testid={'ingestor-table-date'}>
                 {moment(rowData.created).format('lll')}
               </Typography>
             );
@@ -97,7 +76,9 @@ export const IngestorStateReportTable = (props: IngestorStateReportTable): React
         maxBodyHeight: tableSize ? tableSize : '80vh',
       }}
       onChangePage={(page, pageSize) => {
-        rows.length / pageSize - 1 === page && addMoreRows();
+        if (addMoreRows) {
+          rows.length / pageSize - 1 === page && addMoreRows();
+        }
       }}
     />
   );

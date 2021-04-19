@@ -10,7 +10,7 @@ export type LogRowsType = { level: string; message: string; timestamp: string }[
 export interface LogTableProps {
   rows: LogRowsType | [];
   tableSize?: string; // units vh or rem
-  addMoreRows(): void;
+  addMoreRows?(): void;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -137,7 +137,9 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
         maxBodyHeight: tableSize ? tableSize : '80vh',
       }}
       onChangePage={(page, pageSize) => {
-        rows.length / pageSize - 1 === page && addMoreRows();
+        if (addMoreRows) {
+          rows.length / pageSize - 1 === page && addMoreRows();
+        }
       }}
     />
   );
