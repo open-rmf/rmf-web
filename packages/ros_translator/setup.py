@@ -5,6 +5,9 @@ setup(
     description="Translates ros interface definitions to other formats",
     version="0.0.1",
     packages=find_packages(exclude=["tests"]),
+    package_data={
+        "ros_translator": ["typescript/templates/*", "pydantic/*.j2"],
+    },
     author="Teo Koon Peng",
     author_email="koonpeng@openrobotics.org",
     keywords=["ROS"],

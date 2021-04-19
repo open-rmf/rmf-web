@@ -16,7 +16,6 @@ from ros_translator.library import (
     RosLibrary,
     Service,
 )
-from rosidl_adapter.parser import Field
 
 template_loader = FileSystemLoader(searchpath=dirname(__file__))
 template_env = Environment(loader=template_loader)
