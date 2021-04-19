@@ -1,6 +1,3 @@
-from unittest.mock import MagicMock
-
-from rclpy.node import Client
 from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
 from rmf_task_msgs.srv import CancelTask, GetTaskList, SubmitTask
 
