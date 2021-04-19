@@ -1,6 +1,6 @@
 import React from 'react';
 import MaterialTable from 'material-table';
-import { makeStyles, Typography } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 import moment from 'moment';
 import { materialTableIcons } from '../../material-table-icons';
 import { DefaultLogTableProps } from '../default-report-interface';
@@ -13,26 +13,15 @@ export type LiftStateRowsType = {
   motion_state: string;
   current_floor: string;
   session_id: string;
-  payload: any;
+  payload: string | any;
 }[];
 
 export interface LiftStateReportTable extends DefaultLogTableProps {
   rows: LiftStateRowsType | [];
 }
 
-const useStyles = makeStyles((theme) => ({
-  cellContent: {
-    display: 'block',
-    marginBlockStart: '1em',
-    marginBlockEnd: '1em',
-    marginInlineStart: '0px',
-    marginInlineEnd: '0px',
-  },
-}));
-
 export const LiftStateReportTable = (props: LiftStateReportTable): React.ReactElement => {
   const { rows, tableSize, addMoreRows } = props;
-  const classes = useStyles();
 
   return (
     <MaterialTable
@@ -44,7 +33,7 @@ export const LiftStateReportTable = (props: LiftStateReportTable): React.ReactEl
           field: 'level',
           type: 'string',
           render: (rowData) => {
-            return <Typography className={classes.cellContent}>{rowData.session_id}</Typography>;
+            return <Typography>{rowData.session_id}</Typography>;
           },
         },
         {
@@ -52,7 +41,7 @@ export const LiftStateReportTable = (props: LiftStateReportTable): React.ReactEl
           field: 'message',
           type: 'string',
           render: (rowData) => {
-            return <Typography className={classes.cellContent}>{rowData.state}</Typography>;
+            return <Typography>{rowData.state}</Typography>;
           },
         },
         {
@@ -60,7 +49,7 @@ export const LiftStateReportTable = (props: LiftStateReportTable): React.ReactEl
           field: 'message',
           type: 'string',
           render: (rowData) => {
-            return <Typography className={classes.cellContent}>{rowData.door_state}</Typography>;
+            return <Typography>{rowData.door_state}</Typography>;
           },
         },
         {
@@ -68,9 +57,7 @@ export const LiftStateReportTable = (props: LiftStateReportTable): React.ReactEl
           field: 'message',
           type: 'string',
           render: (rowData) => {
-            return (
-              <Typography className={classes.cellContent}>{rowData.destination_floor}</Typography>
-            );
+            return <Typography>{rowData.destination_floor}</Typography>;
           },
         },
         {
@@ -78,7 +65,7 @@ export const LiftStateReportTable = (props: LiftStateReportTable): React.ReactEl
           field: 'message',
           type: 'string',
           render: (rowData) => {
-            return <Typography className={classes.cellContent}>{rowData.motion_state}</Typography>;
+            return <Typography>{rowData.motion_state}</Typography>;
           },
         },
         {
@@ -86,7 +73,7 @@ export const LiftStateReportTable = (props: LiftStateReportTable): React.ReactEl
           field: 'message',
           type: 'string',
           render: (rowData) => {
-            return <Typography className={classes.cellContent}>{rowData.current_floor}</Typography>;
+            return <Typography>{rowData.current_floor}</Typography>;
           },
         },
 
@@ -98,7 +85,7 @@ export const LiftStateReportTable = (props: LiftStateReportTable): React.ReactEl
           align: 'center',
           render: (rowData) => {
             return (
-              <Typography className={classes.cellContent} data-testid={'lift-table-date'}>
+              <Typography data-testid={'lift-table-date'}>
                 {moment(rowData.created).format('lll')}
               </Typography>
             );

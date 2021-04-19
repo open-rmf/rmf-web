@@ -9,7 +9,7 @@ export type DoorStateRowsType = {
   created: string; //date
   name: string;
   state: string;
-  payload: any;
+  payload: string | any;
 }[];
 
 export interface DoorStateReportTable extends DefaultLogTableProps {

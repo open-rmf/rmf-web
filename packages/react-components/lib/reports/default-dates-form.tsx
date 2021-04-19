@@ -65,7 +65,7 @@ export const DefaultDatesForm = (props: DefaultDatesFormProps): React.ReactEleme
   );
 };
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   searchForm: {
     display: 'flex',
     justifyContent: 'space-evenly',

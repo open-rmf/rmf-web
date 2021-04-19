@@ -6,17 +6,16 @@ import { materialTableIcons } from '../../material-table-icons';
 import { DefaultLogTableProps } from '../default-report-interface';
 
 export type FleetStateRowsType = {
-  // id: number;
   created: string; //date
   name: string;
-  payload: any;
+  payload: string | any;
 }[];
 
 export interface FleetStateReportTable extends DefaultLogTableProps {
   rows: FleetStateRowsType | [];
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   cellContent: {
     display: 'block',
     marginBlockStart: '1em',
@@ -48,7 +47,7 @@ export const FleetStateReportTable = (props: FleetStateReportTable): React.React
           field: 'message',
           type: 'string',
           render: (rowData) => {
-            return <Typography className={classes.cellContent}>{rowData.payload}</Typography>;
+            return <Typography>{rowData.payload}</Typography>;
           },
         },
         {

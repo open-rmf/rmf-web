@@ -11,7 +11,7 @@ export type HealthRowsType = {
   actor_id: string;
   health_status: string;
   health_message: string;
-  payload: any;
+  payload: string | any;
 }[];
 
 export interface HealthReportTable extends DefaultLogTableProps {

@@ -1,35 +1,23 @@
 import React from 'react';
 import MaterialTable from 'material-table';
-import { makeStyles, Typography } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 import moment from 'moment';
 import { materialTableIcons } from '../../material-table-icons';
 import { DefaultLogTableProps } from '../default-report-interface';
 
 export type IngestorStateRowsType = {
-  // id: number;
   created: string; //date
   guid: string;
   state: string;
-  payload: any;
+  payload: string | any;
 }[];
 
 export interface IngestorStateReportTable extends DefaultLogTableProps {
   rows: IngestorStateRowsType | [];
 }
 
-const useStyles = makeStyles((theme) => ({
-  cellContent: {
-    display: 'block',
-    marginBlockStart: '1em',
-    marginBlockEnd: '1em',
-    marginInlineStart: '0px',
-    marginInlineEnd: '0px',
-  },
-}));
-
 export const IngestorStateReportTable = (props: IngestorStateReportTable): React.ReactElement => {
   const { rows, tableSize, addMoreRows } = props;
-  const classes = useStyles();
 
   return (
     <MaterialTable
@@ -41,7 +29,7 @@ export const IngestorStateReportTable = (props: IngestorStateReportTable): React
           field: 'level',
           type: 'string',
           render: (rowData) => {
-            return <Typography className={classes.cellContent}>{rowData.guid}</Typography>;
+            return <Typography>{rowData.guid}</Typography>;
           },
         },
         {
@@ -49,7 +37,7 @@ export const IngestorStateReportTable = (props: IngestorStateReportTable): React
           field: 'message',
           type: 'string',
           render: (rowData) => {
-            return <Typography className={classes.cellContent}>{rowData.state}</Typography>;
+            return <Typography>{rowData.state}</Typography>;
           },
         },
         {
@@ -60,7 +48,7 @@ export const IngestorStateReportTable = (props: IngestorStateReportTable): React
           align: 'center',
           render: (rowData) => {
             return (
-              <Typography className={classes.cellContent} data-testid={'ingestor-table-date'}>
+              <Typography data-testid={'ingestor-table-date'}>
                 {moment(rowData.created).format('lll')}
               </Typography>
             );

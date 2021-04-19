@@ -9,7 +9,7 @@ import {
 
 const timestamp = new Date('Mon Jan  1 00:00:02 UTC 2001').toISOString();
 
-export const getDispenserLogs = () => {
+export const getDispenserLogs = (): DispenserStateRowsType => {
   const rows = [];
   for (let i = 0; i < 200; i++) {
     rows.push({
@@ -19,10 +19,10 @@ export const getDispenserLogs = () => {
       created: timestamp,
     });
   }
-  return rows as DispenserStateRowsType;
+  return rows;
 };
 
-export const getDoorLogs = () => {
+export const getDoorLogs = (): DoorStateRowsType => {
   const rows = [];
   for (let i = 0; i < 200; i++) {
     rows.push({
@@ -32,10 +32,10 @@ export const getDoorLogs = () => {
       name: 'door_test',
     });
   }
-  return rows as DoorStateRowsType;
+  return rows;
 };
 
-export const getFleetLogs = () => {
+export const getFleetLogs = (): FleetStateRowsType => {
   const rows = [];
   for (let i = 0; i < 200; i++) {
     rows.push({
@@ -44,27 +44,28 @@ export const getFleetLogs = () => {
       name: 'fleet_test',
     });
   }
-  return rows as FleetStateRowsType;
+  return rows;
 };
 
-export const getHealthLogs = () => {
+export const getHealthLogs = (): HealthRowsType => {
   const rows = [];
   for (let i = 0; i < 200; i++) {
     rows.push({
       device: 'door',
       actor_id: 'door-1',
       health_status: 'DEAD',
-      health_message: null,
+      health_message: 'this is a message',
       created: timestamp,
       payload: 'Test' + i,
     });
   }
-  return rows as HealthRowsType;
+  return rows;
 };
 
-export const getIngestorLogs = () => getDispenserLogs() as IngestorStateRowsType;
+export const getIngestorLogs = (): IngestorStateRowsType =>
+  getDispenserLogs() as IngestorStateRowsType;
 
-export const getLiftLogs = () => {
+export const getLiftLogs = (): LiftStateRowsType => {
   const rows = [];
   for (let i = 0; i < 200; i++) {
     rows.push({
@@ -78,5 +79,5 @@ export const getLiftLogs = () => {
       payload: 'Test' + i,
     });
   }
-  return rows as LiftStateRowsType;
+  return rows;
 };

@@ -9,7 +9,7 @@ export type DispenserStateRowsType = {
   created: string; //date
   guid: string;
   state: string;
-  payload: any;
+  payload: string | any;
 }[];
 
 export interface DispenserStateReportTable extends DefaultLogTableProps {
