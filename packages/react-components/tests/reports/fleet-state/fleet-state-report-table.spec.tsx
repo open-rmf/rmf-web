@@ -3,13 +3,17 @@ import React from 'react';
 import moment from 'moment';
 import { FleetStateReportTable } from '../../../lib';
 import { getFleetLogs } from '../utils';
+import userEvent from '@testing-library/user-event';
 
 const timestamp = new Date('Mon Jan  1 00:00:02 UTC 2001').toISOString();
 
 describe('Fleet table test', () => {
   let root: RenderResult;
+  let mockAddMoreRows: ReturnType<typeof jasmine.createSpy>;
+
   beforeEach(() => {
-    root = render(<FleetStateReportTable rows={getFleetLogs()} />);
+    mockAddMoreRows = jasmine.createSpy();
+    root = render(<FleetStateReportTable rows={getFleetLogs()} addMoreRows={mockAddMoreRows} />);
   });
 
   afterEach(cleanup);
@@ -33,5 +37,11 @@ describe('Fleet table test', () => {
     expect(screen.queryByText('Model')).toBeTruthy();
     expect(screen.queryByText('TaskID')).toBeTruthy();
     expect(screen.queryByText('Timestamp')).toBeTruthy();
+  });
+
+  it('executes the addMoreRows', () => {
+    const nextPageButton = screen.queryByTitle('Next Page')?.children[0];
+    nextPageButton && userEvent.click(nextPageButton);
+    expect(mockAddMoreRows).toHaveBeenCalled();
   });
 });

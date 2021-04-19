@@ -3,13 +3,17 @@ import React from 'react';
 import moment from 'moment';
 import { LiftStateReportTable } from '../../../lib';
 import { getLiftLogs } from '../utils';
+import userEvent from '@testing-library/user-event';
 
 const timestamp = new Date('Mon Jan  1 00:00:02 UTC 2001').toISOString();
 
 describe('Lift table test', () => {
+  let mockAddMoreRows: ReturnType<typeof jasmine.createSpy>;
   let root: RenderResult;
+
   beforeEach(() => {
-    root = render(<LiftStateReportTable rows={getLiftLogs()} />);
+    mockAddMoreRows = jasmine.createSpy();
+    root = render(<LiftStateReportTable rows={getLiftLogs()} addMoreRows={mockAddMoreRows} />);
   });
 
   afterEach(cleanup);
@@ -33,5 +37,11 @@ describe('Lift table test', () => {
     expect(screen.queryByText('Current Floor')).toBeTruthy();
     expect(screen.queryByText('Session ID')).toBeTruthy();
     expect(screen.queryByText('Timestamp')).toBeTruthy();
+  });
+
+  it('executes the addMoreRows', () => {
+    const nextPageButton = screen.queryByTitle('Next Page')?.children[0];
+    nextPageButton && userEvent.click(nextPageButton);
+    expect(mockAddMoreRows).toHaveBeenCalled();
   });
 });

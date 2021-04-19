@@ -3,13 +3,17 @@ import React from 'react';
 import moment from 'moment';
 import { DoorStateReportTable } from '../../../lib';
 import { getDoorLogs } from '../utils';
+import userEvent from '@testing-library/user-event';
 
 const timestamp = new Date('Mon Jan  1 00:00:02 UTC 2001').toISOString();
 
 describe('Door table test', () => {
   let root: RenderResult;
+  let mockAddMoreRows: ReturnType<typeof jasmine.createSpy>;
+
   beforeEach(() => {
-    root = render(<DoorStateReportTable rows={getDoorLogs()} />);
+    mockAddMoreRows = jasmine.createSpy();
+    root = render(<DoorStateReportTable rows={getDoorLogs()} addMoreRows={mockAddMoreRows} />);
   });
 
   afterEach(cleanup);
@@ -29,5 +33,11 @@ describe('Door table test', () => {
     expect(screen.queryByText('Name')).toBeTruthy();
     expect(screen.queryByText('State')).toBeTruthy();
     expect(screen.queryByText('Timestamp')).toBeTruthy();
+  });
+
+  it('executes the addMoreRows', () => {
+    const nextPageButton = screen.queryByTitle('Next Page')?.children[0];
+    nextPageButton && userEvent.click(nextPageButton);
+    expect(mockAddMoreRows).toHaveBeenCalled();
   });
 });

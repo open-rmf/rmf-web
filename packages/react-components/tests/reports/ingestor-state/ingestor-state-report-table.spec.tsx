@@ -3,13 +3,19 @@ import React from 'react';
 import moment from 'moment';
 import { IngestorStateReportTable } from '../../../lib';
 import { getIngestorLogs } from '../utils';
+import userEvent from '@testing-library/user-event';
 
 const timestamp = new Date('Mon Jan  1 00:00:02 UTC 2001').toISOString();
 
 describe('Ingestor table test', () => {
   let root: RenderResult;
+  let mockAddMoreRows: ReturnType<typeof jasmine.createSpy>;
+
   beforeEach(() => {
-    root = render(<IngestorStateReportTable rows={getIngestorLogs()} />);
+    mockAddMoreRows = jasmine.createSpy();
+    root = render(
+      <IngestorStateReportTable rows={getIngestorLogs()} addMoreRows={mockAddMoreRows} />,
+    );
   });
 
   afterEach(cleanup);
@@ -29,5 +35,11 @@ describe('Ingestor table test', () => {
     expect(screen.queryByText('Guid')).toBeTruthy();
     expect(screen.queryByText('State')).toBeTruthy();
     expect(screen.queryByText('Timestamp')).toBeTruthy();
+  });
+
+  it('executes the addMoreRows', () => {
+    const nextPageButton = screen.queryByTitle('Next Page')?.children[0];
+    nextPageButton && userEvent.click(nextPageButton);
+    expect(mockAddMoreRows).toHaveBeenCalled();
   });
 });

@@ -42,9 +42,18 @@ export const getFleetLogs = (): FleetStateRowsType => {
       created: timestamp,
       payload: 'Test' + i,
       name: 'fleet_test',
+      fleet_name: 'test',
+      robots: 'test',
+      robot_battery_percent: 'test',
+      robot_location: 'test',
+      robot_mode: 'test',
+      robot_model: 'test',
+      robot_name: 'test',
+      robot_seq: 1,
+      robot_task_id: 'test',
     });
   }
-  return rows;
+  return rows as FleetStateRowsType;
 };
 
 export const getHealthLogs = (): HealthRowsType => {
