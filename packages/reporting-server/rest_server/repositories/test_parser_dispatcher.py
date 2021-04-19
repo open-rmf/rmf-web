@@ -1,8 +1,6 @@
 import unittest
 
 from fastapi.testclient import TestClient
-from tortoise import Tortoise
-
 from models import (
     DispenserState,
     DoorState,
@@ -12,6 +10,8 @@ from models import (
     LiftState,
 )
 from rest_server.app import app
+from tortoise import Tortoise
+
 from .parser_dispacher import log_model_dispacher
 
 # {'log': 'INFO:app.BookKeeper.dispenser_state:{"time": {"sec": 1600, "nanosec": 0}, "guid": "coke_dispenser", "mode": 0, "request_guid_queue": [], "seconds_remaining": 0.0}\n', 'stream': 'stdout'}
@@ -54,8 +54,14 @@ class TestCaseLogParserDispatcher(unittest.IsolatedAsyncioTestCase):
     async def test_fleet_state_created(self):
         data = 'fleet_state:{"name": "tinyRobot", "robots": [{"name": "tinyRobot1", "model": "", "task_id": "", "seq": 3194, "mode": {"mode": 1, "mode_request_id": 0}, "battery_percent": 100.0, "location": {"t": {"sec": 1600, "nanosec": 189000000}, "x": 11.55367374420166, "y": -11.317498207092285, "yaw": -1.5998055934906006, "level_name": "L1", "index": 0}, "path": []}, {"name": "tinyRobot2", "model": "", "task_id": "", "seq": 3194, "mode": {"mode": 1, "mode_request_id": 0}, "battery_percent": 100.0, "location": {"t": {"sec": 1600, "nanosec": 189000000}, "x": 15.15751838684082, "y": -11.22861385345459, "yaw": -1.5839799642562866, "level_name": "L1", "index": 0}, "path": []}]}\n'
         await log_model_dispacher(data)
-        instance = await FleetState.first()
-        self.assertEqual(instance.name, "tinyRobot")
+        instance = await FleetState.all()
+        self.assertEqual(len(instance), 2)
+
+        self.assertEqual(instance[0].fleet_name, "tinyRobot")
+        self.assertEqual(instance[0].robot_name, "tinyRobot1")
+
+        self.assertEqual(instance[1].fleet_name, "tinyRobot")
+        self.assertEqual(instance[1].robot_name, "tinyRobot2")
 
     async def test_health_created(self):
         data = 'door_health:{"id": "hardware_door", "health_status": "HealthStatus.HEALTHY", "health_message": null}\n'

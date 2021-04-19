@@ -26,8 +26,12 @@ describe('Fleet table test', () => {
   });
 
   it('shows titles correctly', () => {
-    expect(screen.queryByText('Name')).toBeTruthy();
-    expect(screen.queryByText('Payload')).toBeTruthy();
+    expect(screen.queryByText('Fleet')).toBeTruthy();
+    expect(screen.queryByText('Robot')).toBeTruthy();
+    expect(screen.queryByText('Battery')).toBeTruthy();
+    expect(screen.queryByText('Mode')).toBeTruthy();
+    expect(screen.queryByText('Model')).toBeTruthy();
+    expect(screen.queryByText('TaskID')).toBeTruthy();
     expect(screen.queryByText('Timestamp')).toBeTruthy();
   });
 });

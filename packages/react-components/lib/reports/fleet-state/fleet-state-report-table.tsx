@@ -1,33 +1,30 @@
 import React from 'react';
 import MaterialTable from 'material-table';
-import { makeStyles, Typography } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 import moment from 'moment';
 import { materialTableIcons } from '../../material-table-icons';
 import { DefaultLogTableProps } from '../default-report-interface';
 
 export type FleetStateRowsType = {
   created: string; //date
-  name: string;
-  payload: string | any;
+  payload: string | unknown;
+  fleet_name: string;
+  robots: string;
+  robot_battery_percent: string;
+  robot_location: string;
+  robot_mode: string;
+  robot_model: string;
+  robot_name: string;
+  robot_seq: number;
+  robot_task_id: string;
 }[];
 
 export interface FleetStateReportTable extends DefaultLogTableProps {
   rows: FleetStateRowsType | [];
 }
 
-const useStyles = makeStyles(() => ({
-  cellContent: {
-    display: 'block',
-    marginBlockStart: '1em',
-    marginBlockEnd: '1em',
-    marginInlineStart: '0px',
-    marginInlineEnd: '0px',
-  },
-}));
-
 export const FleetStateReportTable = (props: FleetStateReportTable): React.ReactElement => {
   const { rows, tableSize, addMoreRows } = props;
-  const classes = useStyles();
 
   return (
     <MaterialTable
@@ -35,19 +32,51 @@ export const FleetStateReportTable = (props: FleetStateReportTable): React.React
       icons={materialTableIcons}
       columns={[
         {
-          title: <Typography>Name</Typography>,
-          field: 'level',
+          title: <Typography>Fleet</Typography>,
+          field: 'fleet_name',
           type: 'string',
           render: (rowData) => {
-            return <Typography className={classes.cellContent}>{rowData.name}</Typography>;
+            return <Typography>{rowData.fleet_name}</Typography>;
           },
         },
         {
-          title: <Typography>Payload</Typography>,
-          field: 'message',
+          title: <Typography>Robot</Typography>,
+          field: 'robot_name',
           type: 'string',
           render: (rowData) => {
-            return <Typography>{rowData.payload}</Typography>;
+            return <Typography>{rowData.robot_name}</Typography>;
+          },
+        },
+        {
+          title: <Typography>Battery</Typography>,
+          field: 'robot_battery_percent',
+          type: 'string',
+          render: (rowData) => {
+            return <Typography>{rowData.robot_battery_percent}</Typography>;
+          },
+        },
+        {
+          title: <Typography>Mode</Typography>,
+          field: 'robot_mode',
+          type: 'string',
+          render: (rowData) => {
+            return <Typography>{rowData.robot_mode}</Typography>;
+          },
+        },
+        {
+          title: <Typography>Model</Typography>,
+          field: 'robot_model',
+          type: 'string',
+          render: (rowData) => {
+            return <Typography>{rowData.robot_model}</Typography>;
+          },
+        },
+        {
+          title: <Typography>TaskID</Typography>,
+          field: 'robot_task_id',
+          type: 'string',
+          render: (rowData) => {
+            return <Typography>{rowData.robot_task_id}</Typography>;
           },
         },
         {
@@ -58,7 +87,7 @@ export const FleetStateReportTable = (props: FleetStateReportTable): React.React
           align: 'center',
           render: (rowData) => {
             return (
-              <Typography className={classes.cellContent} data-testid={'fleet-table-date'}>
+              <Typography data-testid={'fleet-table-date'}>
                 {moment(rowData.created).format('lll')}
               </Typography>
             );

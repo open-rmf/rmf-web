@@ -14,7 +14,6 @@ from parsers.lift_state_parser import lift_state_parser
 
 # This function dispatchs to the correct handler dependending on the text content.
 async def log_model_dispacher(fullstring: str):
-    print(fullstring)
     if "dispenser_state:" in fullstring.lower():
         data = await dispenser_state_parser(fullstring)
         await DispenserState.create(**data)
@@ -24,8 +23,12 @@ async def log_model_dispacher(fullstring: str):
         await DoorState.create(**data)
 
     elif "fleet_state:" in fullstring.lower():
-        data = await fleet_state_parser(fullstring)
-        await FleetState.create(**data)
+        robots = await fleet_state_parser(fullstring)
+        if len(robots) == 0:
+            return
+
+        for robot in robots:
+            await FleetState.create(**robot)
 
     elif "lift_state:" in fullstring.lower():
         data = await lift_state_parser(fullstring)
