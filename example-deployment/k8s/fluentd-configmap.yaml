@@ -7,11 +7,11 @@ data:
     ################################################################
     # This source gets all logs from local docker host
     @include pods-fluent.conf
-    @include reporting-server.conf
-    @include reporting-server-all-logs.conf
     # Use this configuration for production
     @include minio-fluent.conf
     # @include minio-fluent-dev.conf
+    @include reporting-server.conf
+    @include reporting-server-all-logs.conf
   # This is for running fluentd in the cloud
   pods-fluent.conf: |-
     <source>
@@ -96,21 +96,6 @@ data:
         timekey_use_utc true        # Use this option if you prefer UTC timestamps
         chunk_limit_size 5mb       # The maximum size of each chunk
       </buffer>
-  
-  reporting-server-all-logs: |-
-    <match rmf.all.**>
-      @type http
-      endpoint http://reporting-server:8002/log/all/
-      http_method post
-      open_timeout 3
-      # content_type
-      <format>
-        @type json
-      </format>
-      json_array true
-      <buffer>
-        flush_interval 10s
-      </buffer>
     </match>
 
   reporting-server.conf: |-
@@ -129,3 +114,17 @@ data:
       </buffer>
     </match>
 
+  reporting-server-all-logs.conf: |-
+    <match rmf.all.**>
+      @type http
+      endpoint http://reporting-server:8002/log/all/
+      http_method post
+      open_timeout 3
+      <format>
+        @type json
+      </format>
+      json_array true
+      <buffer>
+        flush_interval 10s
+      </buffer>
+    </match>
