@@ -199,6 +199,7 @@ def parse_packages(ros2_pkgs):
 
 def generate(dstdir):
     template = template_env.get_template("ts-definition.j2")
+    modules = []
 
     for _, msgspec in __parsed_msgs.items():
         if not isinstance(msgspec, str):
@@ -213,6 +214,7 @@ def generate(dstdir):
 
             print(f"Generating model {base_type}")
             template.stream(msgspec=msgspec).dump(output_fpath)
+            modules.append(f"./{pkg_name}/{msgspec.reldir}/{base_type.type}")
 
     template = template_env.get_template("srv-ts-definition.j2")
     for full_type, srvspec in __parsed_srvs.items():
@@ -226,27 +228,16 @@ def generate(dstdir):
 
             print(f"Generating model {full_type}")
             template.stream(srvspec=srvspec).dump(output_fpath)
+            modules.append(f"./{srvspec.pkg_name}/{srvspec.reldir}/{srvspec.srv_name}")
+    return modules
 
 
-def generate_index(target_pkgs, dstdir):
+def generate_index(modules, dstdir):
     template = template_env.get_template("index.j2")
 
-    in_target_pkg = []
-    in_target_pkg_srv = []
-    for msgspec in __parsed_msgs.values():
-        if isinstance(msgspec, str):
-            continue
-        if msgspec.base_type.pkg_name in target_pkgs:
-            in_target_pkg.append(msgspec)
-    for msgspec in __parsed_srvs.values():
-        if isinstance(msgspec, str):
-            continue
-        if msgspec.pkg_name in target_pkgs:
-            in_target_pkg_srv.append(msgspec)
     output_fpath = joinp(dstdir, "index.ts")
     template.stream(
-        msgspecs=in_target_pkg,
-        srvspecs=in_target_pkg_srv,
+        modules=modules,
     ).dump(output_fpath)
 
 
@@ -267,9 +258,9 @@ def main():
     print(f"Parsing packages {args.ros2_pkgs} ...")
     parse_packages(args.ros2_pkgs)
     print(f"Generating typescript interfaces")
-    generate(args.outdir)
+    modules = generate(args.outdir)
     print(f"Generating index")
-    generate_index(args.ros2_pkgs, args.outdir)
+    generate_index(modules, args.outdir)
     print("Successfully generated typings")
 
 
