@@ -3,6 +3,8 @@ from typing import Optional, Union
 
 from pydantic import BaseModel, validator
 
+from .ros_pydantic.rmf_task_msgs.TaskSummary import TaskSummary as RmfTaskSummary
+
 
 class CleanTaskDescription(BaseModel):
     cleaning_zone: str
@@ -30,6 +32,11 @@ class TaskTypeEnum(str, Enum):
     CLEAN = "clean"
     LOOP = "loop"
     DELIVERY = "delivery"
+
+
+class Task(BaseModel):
+    task_summary: RmfTaskSummary
+    progress: str
 
 
 class SubmitTask(BaseModel):

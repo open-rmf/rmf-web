@@ -1,27 +1,12 @@
-from typing import cast
+from typing import List, Sequence, cast
 
 from builtin_interfaces.msg import Time as RosTime
-from fastapi.encoders import jsonable_encoder
 from rmf_task_msgs.msg import Delivery, Loop, TaskSummary, TaskType
 from rmf_task_msgs.srv import CancelTask, GetTaskList, SubmitTask
 
 from ... import models as mdl
 from ...dependencies import ros
-
-
-class StatusModel:
-    task_id: str
-    state: str
-    done: bool
-    fleet_name: str
-    robot_name: str
-    task_type: str
-    priority: int
-    submited_start_time: int
-    start_time: int
-    end_time: int
-    description: str
-    progress: str
+from ...models.tasks import Task
 
 
 # dispatcher class
@@ -81,7 +66,7 @@ class DispatcherClient:
         req_msg.description.start_time = ros_start_time
         return req_msg, ""
 
-    async def get_task_status(self):
+    async def get_task_status(self) -> List[Task]:
         """
         Get all task status - This fn will trigger a ros srv call to acquire
         all submitted tasks to dispatcher node. Fn returns an object of tasks.
@@ -89,14 +74,10 @@ class DispatcherClient:
         """
         req = GetTaskList.Request()
         response = await ros.call_service(ros.node.get_tasks_srv, req)
-        active_tasks = self.__convert_task_status_msg(response.active_tasks, False)
-        terminated_tasks = self.__convert_task_status_msg(
-            response.terminated_tasks, True
-        )
-        return {
-            "active_tasks": active_tasks,
-            "terminated_tasks": terminated_tasks,
-        }
+        return [
+            *self.__convert_task_status_msg(response.active_tasks),
+            *self.__convert_task_status_msg(response.terminated_tasks),
+        ]
 
     async def cancel_task_request(self, task: mdl.CancelTask) -> bool:
         """
@@ -110,81 +91,31 @@ class DispatcherClient:
         return response.success
 
     @staticmethod
-    def __convert_task_status_msg(task_summaries, is_done=True):
+    def __convert_task_status_msg(task_summaries: Sequence[TaskSummary]):
         """
-        convert task summary msg and return a jsonify-able task status obj
+        convert rmf task summary msg to a task
         """
-        states_enum = {
-            TaskSummary.STATE_QUEUED: "Queued",
-            TaskSummary.STATE_ACTIVE: "Active/Executing",
-            TaskSummary.STATE_COMPLETED: "Completed",
-            TaskSummary.STATE_FAILED: "Failed",
-            TaskSummary.STATE_CANCELED: "Cancelled",
-            TaskSummary.STATE_PENDING: "Pending",
-        }
-        type_enum = {
-            TaskType.TYPE_STATION: "Station",
-            TaskType.TYPE_LOOP: "Loop",
-            TaskType.TYPE_DELIVERY: "Delivery",
-            TaskType.TYPE_CHARGE_BATTERY: "Charging",
-            TaskType.TYPE_CLEAN: "Clean",
-            TaskType.TYPE_PATROL: "Patrol",
-        }
-
-        status_list = []
+        tasks = []
         now = ros.node.get_clock().now().to_msg().sec  # only use sec
-        for task in task_summaries:
-            desc = task.task_profile.description
-            status = StatusModel()
-            status.task_id = task.task_id
-            status.state = states_enum[task.state]
-            status.fleet_name = task.fleet_name
-            status.robot_name = task.robot_name
-            status.task_type = type_enum[desc.task_type.type]
-            status.priority = desc.priority.value
-            status.submited_start_time = desc.start_time.sec
-            status.start_time = task.start_time.sec  # only use sec
-            status.end_time = task.end_time.sec  # only use sec
-
-            if status.task_type == "Clean":
-                status.description = desc.clean.start_waypoint
-            elif status.task_type == "Loop":
-                status.description = (
-                    desc.loop.start_name
-                    + " --> "
-                    + desc.loop.finish_name
-                    + " x"
-                    + str(desc.loop.num_loops)
-                )
-            elif status.task_type == "Delivery":
-                status.description = (
-                    desc.delivery.pickup_place_name
-                    + " --> "
-                    + desc.delivery.dropoff_place_name
-                )
-            elif status.task_type == "Charging":
-                status.description = "Back to Charging Station"
-            else:
-                status.description = "Unknown Task Type"
-
+        for rmf_task in task_summaries:
             # Generate a progress percentage
-            duration = abs(task.end_time.sec - task.start_time.sec)
+            duration = abs(rmf_task.end_time.sec - rmf_task.start_time.sec)
             # check if is completed
-            if is_done or task.state == TaskSummary.STATE_FAILED:
-                status.progress = "100%"
+            if rmf_task.state == TaskSummary.STATE_COMPLETED:
+                progress = "100%"
             # check if it state is queued/cancelled
-            elif duration == 0 or (task.state in [0, 4]):
-                status.progress = "0%"
+            elif duration == 0 or (rmf_task.state in [0, 4]):
+                progress = "0%"
             else:
-                percent = int(100 * (now - task.start_time.sec) / float(duration))
+                percent = int(100 * (now - rmf_task.start_time.sec) / float(duration))
                 if percent < 0:
-                    status.progress = "0%"
+                    progress = "0%"
                 elif percent > 100:
-                    status.progress = "Delayed"
+                    progress = "Delayed"
                 else:
-                    status.progress = f"{percent}%"
-            status_list.insert(0, jsonable_encoder(status))
-        return status_list
+                    progress = f"{percent}%"
+            tasks.append(Task(task_summary=TaskSummary, progress=progress))
+        return tasks
 
 
 task_dispatcher = DispatcherClient()

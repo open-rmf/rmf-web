@@ -1,7 +1,9 @@
+from typing import List
+
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
-from ...models import CancelTask, SubmitTask
+from ...models import CancelTask, SubmitTask, Task
 from .dispatcher import DispatcherClient
 
 router = APIRouter(tags=["tasks"])
@@ -9,10 +11,10 @@ router = APIRouter(tags=["tasks"])
 dispatcher_client = DispatcherClient()
 
 
-@router.get("/get_tasks")
+@router.get("/get_tasks", response_model=List[Task])
 async def get_tasks():
     tasks = await dispatcher_client.get_task_status()
-    return JSONResponse(content=tasks)
+    return tasks
 
 
 @router.post("/submit_task")
