@@ -1,6 +1,6 @@
 // THIS FILE IS GENERATED
 export const version = {
-  rmfInternalMsgs: 'bc19d37af964dd199b24a7043dd7d5d55f7c0017',
-  rmfBuildingMapMsgs: '58c2a1660596f77f09e39c808743491959608df4',
-  rmfServer: 'dcfad66d84c86d3555873d912e60f908b6b3d1f4',
+  rmf_internal_msgs: 'a0b81ffacd972f12fe29cb298d0c128adf25d556',
+  rmf_building_map_msgs: '58c2a1660596f77f09e39c808743491959608df4',
+  rmf_server: 'e6b00fa6d098a59819f6a6145e29385f78085391',
 };

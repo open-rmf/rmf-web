@@ -9,7 +9,7 @@ usage() {
   echo "Usage: generate-models.sh"
   echo "Options:"
   echo "  --rmf-tag <tag-or-branch>"
-  echo "  --rmf-server-ver <version> If not provided, use the git sha of the current commit"
+  echo "  --ros-translator-version <version> If not provided, use the git sha of the current commit"
 }
 
 options=$(getopt -o '' -l rmf-tag:,rmf-server-ver: -- "$@")
@@ -20,9 +20,9 @@ while true; do
       shift
       rmf_tag=$1
       ;;
-    --rmf-server-ver)
+    --ros-translator)
       shift
-      rmf_server_ver=$1
+      ros_translator_ver=$1
       ;;
     --)
       shift
@@ -35,30 +35,33 @@ done
 if [[ -z $rmf_tag ]]; then
   rmf_tag='main'
 fi
-if [[ -z $rmf_server_ver ]]; then
-  rmf_server_ver=$(getVersion .)
+if [[ -z $ros_translator_ver ]]; then
+  ros_translator_ver=$(getVersion .)
 fi
 
 build_and_source_rmf_msgs "$rmf_tag"
-node generate-models.js "${rmf_msgs[@]}"
+pipenv run ros_translator -t=pydantic -o=api_server/models/ros_pydantic "${rmf_msgs[@]}"
 
 rmf_internal_msgs_ver=$(getVersion "build/rmf/src/rmf_internal_msgs")
 rmf_building_map_msgs_ver=$(getVersion "build/rmf/src/rmf_building_map_msgs")
 
-cat << EOF > lib/version.ts
-// THIS FILE IS GENERATED
-export const version = {
-  rmf_internal_msgs: '$rmf_internal_msgs_ver',
-  rmf_building_map_msgs: '$rmf_building_map_msgs_ver',
-  rmf_server: '$rmf_server_ver',
-};
+cat << EOF > api_server/models/ros_pydantic/version.py
+# THIS FILE IS GENERATED
+version = {
+  "rmf_internal_msgs": "$rmf_internal_msgs_ver",
+  "rmf_building_map_msgs": "$rmf_building_map_msgs_ver",
+  "ros_translator": "$ros_translator_ver",
+}
 
 EOF
+
+pipenv run isort api_server/models/ros_pydantic
+pipenv run black api_server/models/ros_pydantic
 
 echo ''
 echo 'versions:'
 echo "  rmf_internal_msgs: $rmf_internal_msgs_ver"
 echo "  rmf_building_map_msgs: $rmf_building_map_msgs_ver"
-echo "  rmf_server: $rmf_server_ver"
+echo "  ros_translator: $ros_translator"
 echo ''
-echo 'Successfully generated rmf-models'
+echo 'Successfully generated ros_pydantic models'
