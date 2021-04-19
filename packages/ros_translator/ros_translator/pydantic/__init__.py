@@ -37,7 +37,7 @@ PRIMITIVE_TYPES = {
     "uint8": "pydantic.conint(ge=0, le=255)",
     "uint16": "pydantic.conint(ge=0, le=65535)",
     "uint32": "pydantic.conint(ge=0, le=4294967295)",
-    "uint64": "pydantic.PositiveInt",
+    "uint64": "pydantic.conint(ge=0, le=18446744073709551615)",
 }
 
 DEFAULT_VALUES = {

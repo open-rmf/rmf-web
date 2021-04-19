@@ -13,7 +13,7 @@ class Location(pydantic.BaseModel):
     y: float = 0  # float32
     yaw: float = 0  # float32
     level_name: str = ""  # string
-    index: pydantic.PositiveInt = 0  # uint64
+    index: pydantic.conint(ge=0, le=18446744073709551615) = 0  # uint64
 
 
 # builtin_interfaces/Time t

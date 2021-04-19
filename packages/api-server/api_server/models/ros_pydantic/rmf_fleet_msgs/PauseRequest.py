@@ -8,7 +8,7 @@ import pydantic
 class PauseRequest(pydantic.BaseModel):
     fleet_name: str = ""  # string
     robot_name: str = ""  # string
-    mode_request_id: pydantic.PositiveInt = 0  # uint64
+    mode_request_id: pydantic.conint(ge=0, le=18446744073709551615) = 0  # uint64
     type: pydantic.conint(ge=0, le=4294967295) = 0  # uint32
     at_checkpoint: pydantic.conint(ge=0, le=4294967295) = 0  # uint32
 

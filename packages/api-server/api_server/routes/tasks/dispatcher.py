@@ -3,6 +3,7 @@ from typing import List, Sequence, cast
 from builtin_interfaces.msg import Time as RosTime
 from rmf_task_msgs.msg import Delivery, Loop, TaskSummary, TaskType
 from rmf_task_msgs.srv import CancelTask, GetTaskList, SubmitTask
+from rosidl_runtime_py.convert import message_to_ordereddict
 
 from ... import models as mdl
 from ...dependencies import ros
@@ -114,7 +115,9 @@ class DispatcherClient:
                     progress = "Delayed"
                 else:
                     progress = f"{percent}%"
-            tasks.append(Task(task_summary=TaskSummary, progress=progress))
+            tasks.append(
+                Task(task_summary=message_to_ordereddict(rmf_task), progress=progress)
+            )
         return tasks
 
 

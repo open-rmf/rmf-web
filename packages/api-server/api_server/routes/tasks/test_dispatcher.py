@@ -1,13 +1,13 @@
 from unittest.mock import MagicMock
 
 from rclpy.node import Client
-from rmf_task_msgs.srv import CancelTask, SubmitTask
+from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
+from rmf_task_msgs.srv import CancelTask, GetTaskList, SubmitTask
 
 from ... import models as mdl
 from ..test_fixtures import RouteFixture
 from .dispatcher import DispatcherClient
 
-Client.wait_for_service = MagicMock(return_value=True)
 dispatcher_client = DispatcherClient()
 
 
@@ -67,3 +67,12 @@ class TestDispatcherClient(RouteFixture):
         # checks that a service request is received
         received: CancelTask.Request = await fut
         self.assertEqual(received.task_id, "test_task")
+
+    async def test_get_task_status(self):
+        self.host_service_one(
+            GetTaskList,
+            "get_tasks",
+            GetTaskList.Response(active_tasks=[RmfTaskSummary(task_id="test_task")]),
+        )
+        result = await dispatcher_client.get_task_status()
+        self.assertTrue(isinstance(result, list))
