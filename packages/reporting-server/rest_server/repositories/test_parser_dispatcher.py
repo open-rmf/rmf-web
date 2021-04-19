@@ -63,12 +63,26 @@ class TestCaseLogParserDispatcher(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(instance[1].fleet_name, "tinyRobot")
         self.assertEqual(instance[1].robot_name, "tinyRobot2")
 
-    async def test_health_created(self):
+    async def test_door_health_created(self):
         data = 'door_health:{"id": "hardware_door", "health_status": "HealthStatus.HEALTHY", "health_message": null}\n'
         await log_model_dispacher(data)
         instance = await HealthStatus.first()
         self.assertEqual(instance.actor_id, "hardware_door")
         self.assertEqual(instance.device, "door_health")
+
+    async def test_robot_health_created(self):
+        data = 'robot_health:{"id": "robot1", "health_status": "HealthStatus.HEALTHY", "health_message": null}\n'
+        await log_model_dispacher(data)
+        instance = await HealthStatus.first()
+        self.assertEqual(instance.actor_id, "robot1")
+        self.assertEqual(instance.device, "robot_health")
+
+    async def test_lift_health_created(self):
+        data = 'lift_health:{"id": "lift1", "health_status": "HealthStatus.HEALTHY", "health_message": null}\n'
+        await log_model_dispacher(data)
+        instance = await HealthStatus.first()
+        self.assertEqual(instance.actor_id, "lift1")
+        self.assertEqual(instance.device, "lift_health")
 
     async def test_ingestor_state_created(self):
         data = 'ingestor_state:{"time": {"sec": 1600, "nanosec": 0}, "guid": "coke_ingestor", "mode": 0, "request_guid_queue": [], "seconds_remaining": 0.0}\n'
