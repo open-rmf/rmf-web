@@ -1,11 +1,10 @@
 import logging
 import os
 import sys
-
 from fastapi import FastAPI
-from rest_server.routers import log_router, report_router
 from tortoise.contrib.fastapi import register_tortoise
 
+from rest_server.routers import log_router, report_router
 from .app_config import app_config
 
 logger = logging.getLogger("rest_app")

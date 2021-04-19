@@ -1,6 +1,8 @@
 import unittest
 
 from fastapi.testclient import TestClient
+from tortoise import Tortoise
+
 from models import (
     DispenserState,
     DoorState,
@@ -10,8 +12,6 @@ from models import (
     LiftState,
 )
 from rest_server.app import app
-from tortoise import Tortoise
-
 from .parser_dispacher import log_model_dispacher
 
 # {'log': 'INFO:app.BookKeeper.dispenser_state:{"time": {"sec": 1600, "nanosec": 0}, "guid": "coke_dispenser", "mode": 0, "request_guid_queue": [], "seconds_remaining": 0.0}\n', 'stream': 'stdout'}
