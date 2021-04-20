@@ -73,7 +73,7 @@ def on_shutdown():
     node = None
 
 
-async def call_service(client: rclpy.client.Client, req, timeout=1):
+def call_service(client: rclpy.client.Client, req, timeout=1):
     """
     Raises HTTPException if service call fails
     """
@@ -85,6 +85,6 @@ async def call_service(client: rclpy.client.Client, req, timeout=1):
 
     try:
         timer = node.create_timer(timeout, on_timeout)
-        return await fut
+        return fut
     finally:
         node.destroy_timer(timer)

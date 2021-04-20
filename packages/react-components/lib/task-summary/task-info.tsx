@@ -50,7 +50,7 @@ function LoopTaskInfo({ task }: LoopTaskInfoProps) {
       </InfoLine>
       <InfoLine>
         <span>Finish Waypoint:</span>
-        <InfoValue>{task.task_profile.description.loop.start_name}</InfoValue>
+        <InfoValue>{task.task_profile.description.loop.finish_name}</InfoValue>
       </InfoLine>
       <InfoLine>
         <span>Num of Loops:</span>

@@ -10,18 +10,14 @@ import {
 } from './app-contexts';
 import { AppDrawers } from './app-drawers';
 import AppBar from './appbar';
-import LoadingScreen, { LoadingScreenProps } from './loading-screen';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   appBase: {
     width: '100%',
     height: '100%',
+    backgroundColor: theme.palette.background.default,
   },
-  appContent: {
-    position: 'relative',
-    flexGrow: 1,
-  },
-});
+}));
 
 /**
  * Contains various components that are essential to the app and provides contexts to control them.
@@ -45,8 +41,6 @@ export function AppBase(props: React.PropsWithChildren<{}>): JSX.Element | null 
 
   const [showHotkeysDialog, setShowHotkeysDialog] = React.useState(false);
 
-  const [loadingScreenProps, setLoadingScreenProps] = React.useState<LoadingScreenProps>({});
-
   const [showTooltips, setShowTooltips] = React.useState(false);
 
   const tooltips = React.useMemo<Tooltips>(
@@ -68,7 +62,6 @@ export function AppBase(props: React.PropsWithChildren<{}>): JSX.Element | null 
       toggleHotkeysDialog: () => setShowHotkeysDialog((prev) => !prev),
       showTooltips: setShowTooltips,
       toggleTooltips: () => setShowTooltips((prev) => !prev),
-      showLoadingScreen: setLoadingScreenProps,
     }),
     [],
   );
@@ -77,11 +70,9 @@ export function AppBase(props: React.PropsWithChildren<{}>): JSX.Element | null 
     <SettingsContext.Provider value={settings}>
       <TooltipsContext.Provider value={tooltips}>
         <AppControllerContext.Provider value={appController}>
-          <Grid container direction="column" className={classes.appBase}>
+          <Grid container direction="column" className={classes.appBase} wrap="nowrap">
             <AppBar />
-            <Grid className={classes.appContent}>
-              <LoadingScreen {...loadingScreenProps}>{props.children}</LoadingScreen>
-            </Grid>
+            {props.children}
             <AppDrawers
               settings={settings}
               showHelp={showHelp}

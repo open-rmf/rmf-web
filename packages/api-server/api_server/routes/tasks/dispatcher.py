@@ -12,13 +12,16 @@ from ...models.tasks import Task
 
 # dispatcher class
 class DispatcherClient:
-    async def submit_task_request(self, req_msg: SubmitTask.Request) -> str:
+    async def submit_task_request(self, req_msg: SubmitTask.Request):
         """
         Task Submission - This function will trigger a ros srv call to the
         dispatcher node, and return a response. Function will return a Task ID.
         Raises "HTTPException" if service call fails.
         """
-        return await ros.call_service(ros.node.submit_task_srv, req_msg)
+        resp: SubmitTask.Response = await ros.call_service(
+            ros.node.submit_task_srv, req_msg
+        )
+        return resp
 
     @staticmethod
     def convert_task_request(task_request: mdl.SubmitTask):
@@ -34,6 +37,7 @@ class DispatcherClient:
         # NOTE: task request should already be validated by pydantic
 
         req_msg = SubmitTask.Request()
+        req_msg.requester = "rmf_server"  # TODO: Set this as the user id
         if task_request.priority is not None:
             req_msg.description.priority.value = task_request.priority
 

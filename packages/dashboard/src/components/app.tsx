@@ -13,6 +13,7 @@ import './app.css';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
 import Dashboard from './dashboard/dashboard';
 import { RmfApp } from './rmf-app';
+import { TaskPage } from './tasks';
 
 const theme = createMuiTheme({
   palette: {
@@ -103,6 +104,7 @@ export default function App(): JSX.Element | null {
                           user={user}
                         >
                           <Dashboard />
+                          <TaskPage />
                         </PrivateRoute>
                       </Switch>
                     </AppIntrinsics>

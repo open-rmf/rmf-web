@@ -80,11 +80,11 @@ function DeliveryTaskForm({ value, onChange }: DeliveryTaskFormProps) {
             label="Pickup Location"
             fullWidth
             margin="normal"
-            value={value.pickupPlaceName}
+            value={value.pickup_place_name}
             onChange={(ev) =>
               onChange({
                 ...value,
-                pickupPlaceName: ev.target.value,
+                pickup_place_name: ev.target.value,
               })
             }
           />
@@ -101,11 +101,11 @@ function DeliveryTaskForm({ value, onChange }: DeliveryTaskFormProps) {
             label="Dispenser"
             fullWidth
             margin="normal"
-            value={value.pickupDispenser}
+            value={value.pickup_dispenser}
             onChange={(ev) => {
               onChange({
                 ...value,
-                pickupDispenser: ev.target.value,
+                pickup_dispenser: ev.target.value,
               });
             }}
           />
@@ -118,11 +118,11 @@ function DeliveryTaskForm({ value, onChange }: DeliveryTaskFormProps) {
             label="Dropoff Location"
             fullWidth
             margin="normal"
-            value={value.dropoffPlaceName}
+            value={value.dropoff_place_name}
             onChange={(ev) =>
               onChange({
                 ...value,
-                dropoffPlaceName: ev.target.value,
+                dropoff_place_name: ev.target.value,
               })
             }
           />
@@ -139,11 +139,11 @@ function DeliveryTaskForm({ value, onChange }: DeliveryTaskFormProps) {
             label="Ingestor"
             fullWidth
             margin="normal"
-            value={value.dropoffIngestor}
+            value={value.dropoff_ingestor}
             onChange={(ev) => {
               onChange({
                 ...value,
-                dropoffIngestor: ev.target.value,
+                dropoff_ingestor: ev.target.value,
               });
             }}
           />
@@ -168,11 +168,11 @@ function LoopTaskForm({ value, onChange }: LoopTaskFormProps) {
         label="Start Location"
         fullWidth
         margin="normal"
-        value={value.startName}
+        value={value.start_name}
         onChange={(ev) =>
           onChange({
             ...value,
-            startName: ev.target.value,
+            start_name: ev.target.value,
           })
         }
       />
@@ -183,11 +183,11 @@ function LoopTaskForm({ value, onChange }: LoopTaskFormProps) {
             label="Finish Location"
             fullWidth
             margin="normal"
-            value={value.finishName}
+            value={value.finish_name}
             onChange={(ev) =>
               onChange({
                 ...value,
-                finishName: ev.target.value,
+                finish_name: ev.target.value,
               })
             }
           />
@@ -201,16 +201,16 @@ function LoopTaskForm({ value, onChange }: LoopTaskFormProps) {
         >
           <TextField
             id="loops"
-            error={isNaN(value.numLoops)}
+            error={isNaN(value.num_loops)}
             type="number"
             label="Loops"
-            helperText={isNaN(value.numLoops) && 'Required'}
+            helperText={isNaN(value.num_loops) && 'Required'}
             margin="normal"
-            value={value.numLoops}
+            value={value.num_loops}
             onChange={(ev) => {
               onChange({
                 ...value,
-                numLoops: parseInt(ev.target.value),
+                num_loops: parseInt(ev.target.value),
               });
             }}
           />
@@ -232,10 +232,10 @@ function CleanTaskForm({ value, onChange }: CleanTaskFormProps) {
       label="Cleaning Zone"
       fullWidth
       margin="normal"
-      value={value.cleaningZone}
+      value={value.cleaning_zone}
       onChange={(ev) =>
         onChange({
-          cleaningZone: ev.target.value,
+          cleaning_zone: ev.target.value,
         })
       }
     />
@@ -263,24 +263,24 @@ function TaskDescriptionForm({ taskType, value, onChange }: TaskDescriptionFormP
 
 function defaultCleanTask(): CleanTaskDescription {
   return {
-    cleaningZone: '',
+    cleaning_zone: '',
   };
 }
 
 function defaultLoopsTask(): LoopTaskDescription {
   return {
-    startName: '',
-    finishName: '',
-    numLoops: 1,
+    start_name: '',
+    finish_name: '',
+    num_loops: 1,
   };
 }
 
 function defaultDeliveryTask(): DeliveryTaskDescription {
   return {
-    pickupPlaceName: '',
-    pickupDispenser: '',
-    dropoffPlaceName: '',
-    dropoffIngestor: '',
+    pickup_place_name: '',
+    pickup_dispenser: '',
+    dropoff_place_name: '',
+    dropoff_ingestor: '',
   };
 }
 
@@ -342,9 +342,9 @@ export function CreateTaskForm({
     }
     (async () => {
       const task: SubmitTask = {
-        taskType,
-        startTime: startDate.valueOf(),
-        priority: priority,
+        task_type: taskType,
+        start_time: Math.floor(startDate.valueOf() / 1000),
+        priority,
         description: taskDescription,
       };
       try {

@@ -259,8 +259,8 @@ export default function Dashboard(_props: {}): React.ReactElement {
       liftsApi?.postLiftRequestLiftsLiftNameRequestPost(
         {
           destination,
-          requestType,
-          doorMode: doorState,
+          request_type: requestType,
+          door_mode: doorState,
         },
         lift.name,
       ),

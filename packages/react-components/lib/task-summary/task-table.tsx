@@ -137,7 +137,7 @@ export function TaskTable({
       <Paper style={{ height: '100%' }}>
         <Grid container direction="column" wrap="nowrap" style={{ height: 'inherit' }}>
           <TableToolbar onCreateTaskClick={() => setOpenCreateTaskForm(true)} />
-          <TableContainer style={{ flex: '1 1 0' }}>
+          <TableContainer style={{ flex: '1 1 auto' }}>
             <Table className={classes.table} stickyHeader size="small">
               <TableHead>
                 <TableRow>
@@ -159,7 +159,9 @@ export function TaskTable({
               </TableBody>
             </Table>
           </TableContainer>
-          {paginationOptions && <TablePagination component="div" {...paginationOptions} />}
+          {paginationOptions && (
+            <TablePagination component="div" {...paginationOptions} style={{ flex: '0 0 auto' }} />
+          )}
         </Grid>
       </Paper>
       <CreateTaskForm
