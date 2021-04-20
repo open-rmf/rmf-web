@@ -1,4 +1,5 @@
 import { Knot } from '../util/cublic-spline';
+import TrajectorySocketManager from './trajectory-socket-manager';
 
 // RawVelocity received from server is in this format (x, y, theta)
 export type RawVelocity = [number, number, number];
@@ -67,14 +68,14 @@ interface Response {
   error?: string;
 }
 
-export class DefaultTrajectoryManager {
-  private _webSocket: WebSocket;
+export class DefaultTrajectoryManager extends TrajectorySocketManager {
   constructor(ws: WebSocket) {
-    this._webSocket = ws;
+    super();
+    if (ws) this._webSocket = ws;
   }
 
   async latestTrajectory(request: TrajectoryRequest): Promise<TrajectoryResponse> {
-    const event = await this._send(JSON.stringify(request));
+    const event = await this._send(JSON.stringify(request), this._webSocket);
     const resp = JSON.parse(event.data);
     this._checkResponse(request, resp);
     if (resp.values === null) {
@@ -84,7 +85,7 @@ export class DefaultTrajectoryManager {
   }
 
   async serverTime(request: TimeRequest): Promise<TimeResponse> {
-    const event = await this._send(JSON.stringify(request));
+    const event = await this._send(JSON.stringify(request), this._webSocket);
     const resp = JSON.parse(event.data);
     this._checkResponse(request, resp);
     return resp as TimeResponse;
@@ -98,43 +99,6 @@ export class DefaultTrajectoryManager {
     return traj?.robot_name;
   }
 
-  private _ongoingRequest: Promise<MessageEvent> | null = null;
-
-  private _listenOnce<K extends keyof WebSocketEventMap>(
-    event: K,
-    listener: (e: WebSocketEventMap[K]) => unknown,
-  ): void {
-    this._webSocket.addEventListener(event, (e) => {
-      this._webSocket.removeEventListener(event, listener);
-      listener(e);
-    });
-  }
-
-  /**
-   * Sends a message and waits for response from the server.
-   *
-   * @remarks This is an alternative to the old implementation of creating a promise, storing the
-   * resolver and processing each message in an event loop. Advantage of this is that each message
-   * processing logic can be self-contained without a need for a switch or if elses.
-   */
-  private async _send(payload: WebSocketSendParam0T): Promise<MessageEvent> {
-    // response should come in the order that requests are sent, this should allow multiple messages
-    // in-flight while processing the responses in the order they are sent.
-    this._webSocket.send(payload);
-    // waits for the earlier response to be processed.
-    if (this._ongoingRequest) {
-      await this._ongoingRequest;
-    }
-
-    this._ongoingRequest = new Promise((res) => {
-      this._listenOnce('message', (e) => {
-        this._ongoingRequest = null;
-        res(e);
-      });
-    });
-    return this._ongoingRequest;
-  }
-
   private _checkResponse(request: Request, resp: Response): void {
     if (resp.error) throw new Error(resp.error);
     else if (request.request !== resp.response) {
@@ -144,6 +108,8 @@ export class DefaultTrajectoryManager {
       throw new Error('received response for wrong request');
     }
   }
+
+  private _webSocket: WebSocket | undefined;
 }
 
 export function rawKnotsToKnots(rawKnots: RawKnot[]): Knot[] {
@@ -169,5 +135,3 @@ export function rawKnotsToKnots(rawKnots: RawKnot[]): Knot[] {
 
   return knots;
 }
-
-type WebSocketSendParam0T = Parameters<WebSocket['send']>[0];

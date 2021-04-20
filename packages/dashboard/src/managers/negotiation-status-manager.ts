@@ -1,9 +1,5 @@
-import EventEmitter from 'eventemitter3';
 import { Trajectory } from './robot-trajectory-manager';
-
-type Events = {
-  updated: [];
-};
+import TrajectorySocketManager from './trajectory-socket-manager';
 
 export enum NegotiationState {
   NOT_RESOLVED = 0,
@@ -54,10 +50,10 @@ export interface NegotiationTrajectoryResponse {
   values: Trajectory[];
 }
 
-export class NegotiationStatusManager extends EventEmitter<Events> {
+export class NegotiationStatusManager extends TrajectorySocketManager {
   constructor(ws: WebSocket | undefined) {
     super();
-    if (ws) this._backendWs = ws;
+    if (ws) this._webSocket = ws;
   }
 
   allConflicts(): Record<number, NegotiationConflict> {
@@ -68,19 +64,19 @@ export class NegotiationStatusManager extends EventEmitter<Events> {
     return this._statusUpdateLastTS;
   }
 
-  startSubscription(): void {
-    if (!this._backendWs) {
+  startSubscription(token?: string): void {
+    if (!this._webSocket) {
       console.warn('backend websocket not available');
       return;
     }
-    if (this._backendWs.readyState === WebSocket.OPEN) {
+    if (this._webSocket.readyState === WebSocket.OPEN) {
       const negotiationUpdate: NegotiationSubscribeUpdateRequest = {
         request: 'negotiation_update_subscribe',
-        token: '',
+        token: token,
       };
-      this._backendWs.send(JSON.stringify(negotiationUpdate));
+      this._webSocket.send(JSON.stringify(negotiationUpdate));
 
-      this._backendWs.onmessage = (event) => {
+      this._webSocket.onmessage = (event) => {
         const msg = JSON.parse(event.data);
         if (msg['type'] === 'negotiation_status') {
           this._statusUpdateLastTS = Date.now();
@@ -143,7 +139,7 @@ export class NegotiationStatusManager extends EventEmitter<Events> {
         }
       };
     } else {
-      this._backendWs.onopen = () => this.startSubscription();
+      this._webSocket.onopen = () => this.startSubscription(token);
     }
   }
 
@@ -168,7 +164,7 @@ export class NegotiationStatusManager extends EventEmitter<Events> {
   async negotiationTrajectory(
     request: NegotiationTrajectoryRequest,
   ): Promise<NegotiationTrajectoryResponse> {
-    const event = await this._send(JSON.stringify(request));
+    const event = await this._send(JSON.stringify(request), this._webSocket);
     const resp = JSON.parse(event.data);
 
     if (resp.values === null) {
@@ -177,43 +173,7 @@ export class NegotiationStatusManager extends EventEmitter<Events> {
     return resp as NegotiationTrajectoryResponse;
   }
 
-  // TODO: temporary function until we unite the 2 websockets
-  private async _send(payload: WebSocketSendParam0T): Promise<MessageEvent> {
-    if (!this._backendWs) throw Error('Null _backendWs');
-    // response should come in the order that requests are sent, this should allow multiple messages
-    // in-flight while processing the responses in the order they are sent.
-    this._backendWs.send(payload);
-    // waits for the earlier response to be processed.
-    if (this._ongoingRequest) {
-      await this._ongoingRequest;
-    }
-
-    this._ongoingRequest = new Promise((res) => {
-      this._listenOnce('message', (e) => {
-        this._ongoingRequest = null;
-        res(e);
-      });
-    });
-    return this._ongoingRequest;
-  }
-
-  private _listenOnce<K extends keyof WebSocketEventMap>(
-    event: K,
-    listener: (e: WebSocketEventMap[K]) => unknown,
-  ): void {
-    if (!this._backendWs) return;
-
-    this._backendWs.addEventListener(event, (e) => {
-      if (!this._backendWs) return;
-      this._backendWs.removeEventListener(event, listener);
-      listener(e);
-    });
-  }
-
   private _conflicts: Record<string, NegotiationConflict> = {};
-  private _backendWs?: WebSocket;
-  private _ongoingRequest: Promise<MessageEvent> | null = null;
+  private _webSocket?: WebSocket;
   private _statusUpdateLastTS: number = -1;
 }
-
-type WebSocketSendParam0T = Parameters<WebSocket['send']>[0];

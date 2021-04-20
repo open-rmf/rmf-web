@@ -19,7 +19,7 @@ import {
   TasksContext,
 } from './contexts';
 import { RmfIngress } from './rmf-ingress';
-import { TrajectorySocketContext } from '../app-contexts';
+import { TrajectorySocketContext, AppConfigContext } from '../app-contexts';
 
 function rmfStateContextProviderHOC<TopicT extends Topic>(
   topic: TopicT,
@@ -118,15 +118,17 @@ function NegotiationContextsProvider(props: React.PropsWithChildren<{}>): JSX.El
     negotiationStatusManager.allConflicts(),
   );
 
+  const token = React.useContext(AppConfigContext).authenticator.token;
+
   React.useEffect(() => {
-    negotiationStatusManager.startSubscription();
+    negotiationStatusManager.startSubscription(token);
     const onUpdated = () => setNegotiationStatus(negotiationStatusManager.allConflicts());
     negotiationStatusManager.on('updated', onUpdated);
 
     return () => {
       negotiationStatusManager.off('updated', onUpdated);
     };
-  }, [negotiationStatusManager]);
+  }, [negotiationStatusManager, token]);
 
   return (
     <NegotiationStatusContext.Provider value={negotiationStatus}>

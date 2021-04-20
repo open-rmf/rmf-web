@@ -20,6 +20,7 @@ import { NegotiationColors } from './negotiation-colors';
 import RobotTrajectoriesOverlay from './robot-trajectories-overlay';
 import RobotsOverlay from './robots-overlay';
 import WaypointsOverlay from './waypoints-overlay';
+import { AppConfigContext } from '../app-contexts';
 
 const debug = Debug('ScheduleVisualizer');
 
@@ -64,6 +65,8 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   debug('render');
   const { buildingMap, negotiationTrajStore, mapFloorSort, showTrajectories } = props;
   const negotiationColors = React.useMemo(() => new NegotiationColors(), []);
+
+  const token = React.useContext(AppConfigContext).authenticator.token;
 
   const mapFloorLayerSorted = React.useMemo(
     () =>
@@ -192,7 +195,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
             duration: trajLookahead,
             trim: true,
           },
-          token: '',
+          token: token,
         });
 
         debug('set trajectories');
@@ -210,7 +213,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       interval = window.setInterval(updateTrajectory, trajAnimDuration);
     })();
     return () => clearInterval(interval);
-  }, [trajManager, curMapFloorLayer, trajAnimDuration, showTrajectories]);
+  }, [trajManager, curMapFloorLayer, trajAnimDuration, showTrajectories, token]);
 
   function handleBaseLayerChange(e: L.LayersControlEvent): void {
     debug('set current level name');

@@ -17,6 +17,7 @@ import {
 } from '../../managers/negotiation-status-manager';
 import { colorPalette } from '../../util/css-utils';
 import { SpotlightValue } from '../spotlight-value';
+import { AppConfigContext } from '../app-contexts';
 
 const debug = Debug('OmniPanel:NegotiationsPanel');
 
@@ -93,6 +94,8 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
   const [expanded, setExpanded] = React.useState<string[]>([]);
   const [selected, setSelected] = React.useState<string>('');
   const [conflictIds, setConflictIds] = React.useState<string[]>([]);
+
+  const token = React.useContext(AppConfigContext).authenticator.token;
 
   React.useEffect(() => {
     if (!spotlight) {
@@ -298,7 +301,7 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
       const resp = await negotiationStatusManager.negotiationTrajectory({
         request: 'negotiation_trajectory',
         param: trajParams,
-        token: '',
+        token: token,
       });
       if (resp.values === undefined) console.warn('values undefined!');
       if (resp.response !== 'negotiation_trajectory') {
