@@ -37,7 +37,7 @@ export default function App(): JSX.Element | null {
   const authenticator = appConfig.authenticator;
   const [authInitialized, setAuthInitialized] = React.useState(!!authenticator.user);
   const [user, setUser] = React.useState<User | null>(authenticator.user || null);
-  const appRoutes = [DASHBOARD_ROUTE];
+  const appRoutes = [DASHBOARD_ROUTE, TASKS_ROUTE];
 
   React.useEffect(() => {
     if (user) {
@@ -105,12 +105,7 @@ export default function App(): JSX.Element | null {
                         >
                           <Dashboard />
                         </PrivateRoute>
-                        <PrivateRoute
-                          exact
-                          path={TASKS_ROUTE}
-                          redirectPath={LOGIN_ROUTE}
-                          user={user}
-                        >
+                        <PrivateRoute path={TASKS_ROUTE} redirectPath={LOGIN_ROUTE} user={user}>
                           <TaskPage />
                         </PrivateRoute>
                       </Switch>
