@@ -6,7 +6,7 @@ import { getUrl, LoginHOC, PrivateRouteHOC, User } from 'rmf-auth';
 import 'typeface-roboto';
 import appConfig from '../app-config';
 import ResourceManager from '../managers/resource-manager';
-import { DASHBOARD_ROUTE, LOGIN_ROUTE } from '../util/url';
+import { DASHBOARD_ROUTE, LOGIN_ROUTE, TASKS_ROUTE } from '../util/url';
 import { AppBase } from './app-base';
 import { AppConfigContext, ResourcesContext } from './app-contexts';
 import './app.css';
@@ -104,6 +104,13 @@ export default function App(): JSX.Element | null {
                           user={user}
                         >
                           <Dashboard />
+                        </PrivateRoute>
+                        <PrivateRoute
+                          exact
+                          path={TASKS_ROUTE}
+                          redirectPath={LOGIN_ROUTE}
+                          user={user}
+                        >
                           <TaskPage />
                         </PrivateRoute>
                       </Switch>
