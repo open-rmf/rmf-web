@@ -22,17 +22,17 @@ export interface LoopTaskDescription {
    * @type {number}
    * @memberof LoopTaskDescription
    */
-  numLoops: any;
+  num_loops: any;
   /**
    *
    * @type {string}
    * @memberof LoopTaskDescription
    */
-  startName: any;
+  start_name: any;
   /**
    *
    * @type {string}
    * @memberof LoopTaskDescription
    */
-  finishName: any;
+  finish_name: any;
 }

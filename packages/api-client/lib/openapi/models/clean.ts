@@ -22,5 +22,5 @@ export interface Clean {
    * @type {string}
    * @memberof Clean
    */
-  startWaypoint?: any;
+  start_waypoint?: any;
 }

@@ -22,13 +22,13 @@ export interface TaskProfile {
    * @type {string}
    * @memberof TaskProfile
    */
-  taskId?: any;
+  task_id?: any;
   /**
    *
    * @type {Time}
    * @memberof TaskProfile
    */
-  submissionTime?: any;
+  submission_time?: any;
   /**
    *
    * @type {TaskDescription}

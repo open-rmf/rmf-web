@@ -22,7 +22,7 @@ export interface DispenserRequestItem {
    * @type {string}
    * @memberof DispenserRequestItem
    */
-  typeGuid?: any;
+  type_guid?: any;
   /**
    *
    * @type {number}
@@ -34,5 +34,5 @@ export interface DispenserRequestItem {
    * @type {string}
    * @memberof DispenserRequestItem
    */
-  compartmentName?: any;
+  compartment_name?: any;
 }

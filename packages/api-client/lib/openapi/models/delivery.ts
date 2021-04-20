@@ -22,7 +22,7 @@ export interface Delivery {
    * @type {string}
    * @memberof Delivery
    */
-  taskId?: any;
+  task_id?: any;
   /**
    *
    * @type {Array&lt;DispenserRequestItem&gt;}
@@ -34,35 +34,35 @@ export interface Delivery {
    * @type {string}
    * @memberof Delivery
    */
-  pickupPlaceName?: any;
+  pickup_place_name?: any;
   /**
    *
    * @type {string}
    * @memberof Delivery
    */
-  pickupDispenser?: any;
+  pickup_dispenser?: any;
   /**
    *
    * @type {Behavior}
    * @memberof Delivery
    */
-  pickupBehavior?: any;
+  pickup_behavior?: any;
   /**
    *
    * @type {string}
    * @memberof Delivery
    */
-  dropoffPlaceName?: any;
+  dropoff_place_name?: any;
   /**
    *
    * @type {string}
    * @memberof Delivery
    */
-  dropoffIngestor?: any;
+  dropoff_ingestor?: any;
   /**
    *
    * @type {Behavior}
    * @memberof Delivery
    */
-  dropoffBehavior?: any;
+  dropoff_behavior?: any;
 }

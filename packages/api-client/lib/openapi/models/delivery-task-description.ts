@@ -22,23 +22,23 @@ export interface DeliveryTaskDescription {
    * @type {string}
    * @memberof DeliveryTaskDescription
    */
-  pickupPlaceName: any;
+  pickup_place_name: any;
   /**
    *
    * @type {string}
    * @memberof DeliveryTaskDescription
    */
-  pickupDispenser: any;
+  pickup_dispenser: any;
   /**
    *
    * @type {string}
    * @memberof DeliveryTaskDescription
    */
-  dropoffIngestor: any;
+  dropoff_ingestor: any;
   /**
    *
    * @type {string}
    * @memberof DeliveryTaskDescription
    */
-  dropoffPlaceName: any;
+  dropoff_place_name: any;
 }

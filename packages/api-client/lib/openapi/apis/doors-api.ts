@@ -29,13 +29,13 @@ export const DoorsApiAxiosParamCreator = function (configuration?: Configuration
      *
      * @summary  Post Door Request
      * @param {DoorRequest} body
-     * @param {string} doorName
+     * @param {string} door_name
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postDoorRequestDoorsDoorNameRequestPost: async (
       body: DoorRequest,
-      doorName: string,
+      door_name: string,
       options: any = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'body' is not null or undefined
@@ -45,16 +45,16 @@ export const DoorsApiAxiosParamCreator = function (configuration?: Configuration
           'Required parameter body was null or undefined when calling postDoorRequestDoorsDoorNameRequestPost.',
         );
       }
-      // verify required parameter 'doorName' is not null or undefined
-      if (doorName === null || doorName === undefined) {
+      // verify required parameter 'door_name' is not null or undefined
+      if (door_name === null || door_name === undefined) {
         throw new RequiredError(
-          'doorName',
-          'Required parameter doorName was null or undefined when calling postDoorRequestDoorsDoorNameRequestPost.',
+          'door_name',
+          'Required parameter door_name was null or undefined when calling postDoorRequestDoorsDoorNameRequestPost.',
         );
       }
       const localVarPath = `/doors/{door_name}/request`.replace(
         `{${'door_name'}}`,
-        encodeURIComponent(String(doorName)),
+        encodeURIComponent(String(door_name)),
       );
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, 'https://example.com');
@@ -107,18 +107,18 @@ export const DoorsApiFp = function (configuration?: Configuration) {
      *
      * @summary  Post Door Request
      * @param {DoorRequest} body
-     * @param {string} doorName
+     * @param {string} door_name
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async postDoorRequestDoorsDoorNameRequestPost(
       body: DoorRequest,
-      doorName: string,
+      door_name: string,
       options?: any,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ModelObject>> {
       const localVarAxiosArgs = await DoorsApiAxiosParamCreator(
         configuration,
-      ).postDoorRequestDoorsDoorNameRequestPost(body, doorName, options);
+      ).postDoorRequestDoorsDoorNameRequestPost(body, door_name, options);
       return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
         const axiosRequestArgs = {
           ...localVarAxiosArgs.options,
@@ -144,17 +144,17 @@ export const DoorsApiFactory = function (
      *
      * @summary  Post Door Request
      * @param {DoorRequest} body
-     * @param {string} doorName
+     * @param {string} door_name
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postDoorRequestDoorsDoorNameRequestPost(
       body: DoorRequest,
-      doorName: string,
+      door_name: string,
       options?: any,
     ): AxiosPromise<ModelObject> {
       return DoorsApiFp(configuration)
-        .postDoorRequestDoorsDoorNameRequestPost(body, doorName, options)
+        .postDoorRequestDoorsDoorNameRequestPost(body, door_name, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -171,18 +171,18 @@ export class DoorsApi extends BaseAPI {
    *
    * @summary  Post Door Request
    * @param {DoorRequest} body
-   * @param {string} doorName
+   * @param {string} door_name
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof DoorsApi
    */
   public postDoorRequestDoorsDoorNameRequestPost(
     body: DoorRequest,
-    doorName: string,
+    door_name: string,
     options?: any,
   ) {
     return DoorsApiFp(this.configuration)
-      .postDoorRequestDoorsDoorNameRequestPost(body, doorName, options)
+      .postDoorRequestDoorsDoorNameRequestPost(body, door_name, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }

@@ -25,7 +25,7 @@ fi
 
 swagger_ver=$(java -jar .bin/swagger-codegen-cli.jar version)
 pipenv run python generate-openapi.py
-java -jar .bin/swagger-codegen-cli.jar generate -i'build/openapi.json' -ltypescript-axios -olib/openapi
+java -jar .bin/swagger-codegen-cli.jar generate -i'build/openapi.json' -ltypescript-axios -olib/openapi -cswagger-codegen.json
 # There is a bug with `ModelObject` type being missing, workaround it by adding a type to the generated models.
 echo 'export type ModelObject = Record<string, any>;' >> lib/openapi/models/index.ts
 

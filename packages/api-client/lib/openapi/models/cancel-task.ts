@@ -22,5 +22,5 @@ export interface CancelTask {
    * @type {string}
    * @memberof CancelTask
    */
-  taskId: any;
+  task_id: any;
 }

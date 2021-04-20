@@ -22,7 +22,7 @@ export interface TaskDescription {
    * @type {Time}
    * @memberof TaskDescription
    */
-  startTime?: any;
+  start_time?: any;
   /**
    *
    * @type {Priority}
@@ -34,7 +34,7 @@ export interface TaskDescription {
    * @type {TaskType}
    * @memberof TaskDescription
    */
-  taskType?: any;
+  task_type?: any;
   /**
    *
    * @type {Station}

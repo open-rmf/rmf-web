@@ -22,29 +22,29 @@ export interface Loop {
    * @type {string}
    * @memberof Loop
    */
-  taskId?: any;
+  task_id?: any;
   /**
    *
    * @type {string}
    * @memberof Loop
    */
-  robotType?: any;
+  robot_type?: any;
   /**
    *
    * @type {number}
    * @memberof Loop
    */
-  numLoops?: any;
+  num_loops?: any;
   /**
    *
    * @type {string}
    * @memberof Loop
    */
-  startName?: any;
+  start_name?: any;
   /**
    *
    * @type {string}
    * @memberof Loop
    */
-  finishName?: any;
+  finish_name?: any;
 }

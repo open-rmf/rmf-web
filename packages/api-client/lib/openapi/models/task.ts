@@ -22,7 +22,7 @@ export interface Task {
    * @type {TaskSummary}
    * @memberof Task
    */
-  taskSummary: any;
+  task_summary: any;
   /**
    *
    * @type {string}

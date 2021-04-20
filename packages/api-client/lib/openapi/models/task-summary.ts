@@ -22,19 +22,19 @@ export interface TaskSummary {
    * @type {string}
    * @memberof TaskSummary
    */
-  fleetName?: any;
+  fleet_name?: any;
   /**
    *
    * @type {string}
    * @memberof TaskSummary
    */
-  taskId?: any;
+  task_id?: any;
   /**
    *
    * @type {TaskProfile}
    * @memberof TaskSummary
    */
-  taskProfile?: any;
+  task_profile?: any;
   /**
    *
    * @type {number}
@@ -52,23 +52,23 @@ export interface TaskSummary {
    * @type {Time}
    * @memberof TaskSummary
    */
-  submissionTime?: any;
+  submission_time?: any;
   /**
    *
    * @type {Time}
    * @memberof TaskSummary
    */
-  startTime?: any;
+  start_time?: any;
   /**
    *
    * @type {Time}
    * @memberof TaskSummary
    */
-  endTime?: any;
+  end_time?: any;
   /**
    *
    * @type {string}
    * @memberof TaskSummary
    */
-  robotName?: any;
+  robot_name?: any;
 }

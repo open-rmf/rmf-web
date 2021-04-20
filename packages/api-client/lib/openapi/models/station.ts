@@ -22,17 +22,17 @@ export interface Station {
    * @type {string}
    * @memberof Station
    */
-  taskId?: any;
+  task_id?: any;
   /**
    *
    * @type {string}
    * @memberof Station
    */
-  robotType?: any;
+  robot_type?: any;
   /**
    *
    * @type {string}
    * @memberof Station
    */
-  placeName?: any;
+  place_name?: any;
 }
