@@ -14,8 +14,9 @@ import {
   Toolbar,
   Typography,
 } from '@material-ui/core';
-import AddOutlinedIcon from '@material-ui/icons/AddCircle';
+import { AddOutlined as AddOutlinedIcon, Refresh as RefreshIcon } from '@material-ui/icons';
 import { Alert, AlertProps } from '@material-ui/lab';
+import clsx from 'clsx';
 import { formatDistanceToNow } from 'date-fns';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
@@ -23,7 +24,6 @@ import { rosTimeToJs } from '../utils';
 import { CreateTaskForm, CreateTaskFormProps } from './create-task';
 import { TaskPhases } from './task-phases';
 import { taskStateToStr } from './utils';
-import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
   table: {
@@ -44,24 +44,6 @@ const useStyles = makeStyles((theme) => ({
     padding: `0 ${theme.spacing(1)}px`,
   },
 }));
-
-interface TableToolbarProps {
-  onCreateTaskClick?: React.MouseEventHandler<HTMLButtonElement>;
-}
-
-function TableToolbar({ onCreateTaskClick }: TableToolbarProps) {
-  const classes = useStyles();
-  return (
-    <Toolbar>
-      <Typography className={classes.title} variant="h6">
-        Tasks
-      </Typography>
-      <IconButton onClick={onCreateTaskClick} aria-label="Create Task">
-        <AddOutlinedIcon />
-      </IconButton>
-    </Toolbar>
-  );
-}
 
 interface TaskRowProps {
   task: RmfModels.TaskSummary;
@@ -118,6 +100,7 @@ export interface TaskTableProps {
   paginationOptions?: PaginationOptions;
   submitTask?: CreateTaskFormProps['submitTask'];
   onTaskClick?(ev: React.MouseEvent<HTMLDivElement>, task: RmfModels.TaskSummary): void;
+  onRefreshClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
 export function TaskTable({
@@ -125,6 +108,7 @@ export function TaskTable({
   paginationOptions,
   submitTask,
   onTaskClick,
+  onRefreshClick,
 }: TaskTableProps): JSX.Element {
   const classes = useStyles();
   const [openCreateTaskForm, setOpenCreateTaskForm] = React.useState(false);
@@ -136,7 +120,17 @@ export function TaskTable({
     <>
       <Paper style={{ height: '100%' }}>
         <Grid container direction="column" wrap="nowrap" style={{ height: 'inherit' }}>
-          <TableToolbar onCreateTaskClick={() => setOpenCreateTaskForm(true)} />
+          <Toolbar>
+            <Typography className={classes.title} variant="h6">
+              Tasks
+            </Typography>
+            <IconButton onClick={onRefreshClick} aria-label="Refresh">
+              <RefreshIcon />
+            </IconButton>
+            <IconButton onClick={() => setOpenCreateTaskForm(true)} aria-label="Create Task">
+              <AddOutlinedIcon />
+            </IconButton>
+          </Toolbar>
           <TableContainer style={{ flex: '1 1 auto' }}>
             <Table className={classes.table} stickyHeader size="small">
               <TableHead>

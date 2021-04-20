@@ -1,4 +1,4 @@
-import { Grid, makeStyles, Paper, Typography, GridProps } from '@material-ui/core';
+import { Grid, makeStyles, Paper, Typography } from '@material-ui/core';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { TaskInfo } from './task-info';
