@@ -25,9 +25,15 @@ function NoSelectedTask() {
 export interface TaskPanelProps extends React.HTMLProps<HTMLDivElement> {
   tasks: RmfModels.TaskSummary[];
   submitTask?: TaskTableProps['submitTask'];
+  onRefreshClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
-export function TaskPanel({ tasks, submitTask, ...divProps }: TaskPanelProps): JSX.Element {
+export function TaskPanel({
+  tasks,
+  submitTask,
+  onRefreshClick,
+  ...divProps
+}: TaskPanelProps): JSX.Element {
   const classes = useStyles();
   const [page, setPage] = React.useState(0);
   const [selectedTask, setSelectedTask] = React.useState<RmfModels.TaskSummary | undefined>(
@@ -49,6 +55,7 @@ export function TaskPanel({ tasks, submitTask, ...divProps }: TaskPanelProps): J
             }}
             submitTask={submitTask}
             onTaskClick={(_ev, task) => setSelectedTask(task)}
+            onRefreshClick={onRefreshClick}
           />
         </Grid>
         <Paper className={classes.detailPanelContainer}>

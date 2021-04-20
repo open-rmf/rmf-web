@@ -43,7 +43,12 @@ def convert_to_rmf_time(timestamp: int, ros_node: rclpy.node.Node) -> RosTime:
         return ros_time
     sim_now = ros_node.get_clock().now().to_msg()
     utc_now = py_to_ros_time(datetime.now())
+    sec = ros_time.sec - utc_now.sec + sim_now.sec
+    nanosec = ros_time.nanosec - utc_now.nanosec + sim_now.nanosec
+    if nanosec < 0:
+        sec = sec - 1
+        nanosec = 1000000000 + nanosec
     return RosTime(
-        sec=ros_time.sec - utc_now.sec + sim_now.sec,
-        nanosec=ros_time.nanosec - utc_now.nanosec + sim_now.nanosec,
+        sec=sec,
+        nanosec=nanosec,
     )

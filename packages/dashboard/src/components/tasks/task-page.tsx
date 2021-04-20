@@ -34,23 +34,34 @@ export function TaskPage() {
   const classes = useStyles();
   const { tasksApi } = React.useContext(RmfIngressContext);
   const [taskSummaries, setTaskSummaries] = React.useState<RmfModels.TaskSummary[]>([]);
-  React.useEffect(() => {
-    (async () => {
-      if (!tasksApi) {
-        return;
-      }
-      const tasks = await tasksApi.getTasksTasksGetTasksGet();
-      const getTaskSummaries = tasks.data.map((task) => task.task_summary);
-      sortTasks(getTaskSummaries);
-      setTaskSummaries(getTaskSummaries);
-    })();
+
+  const handleRefresh = React.useCallback(async () => {
+    if (!tasksApi) {
+      return;
+    }
+    const tasks = await tasksApi.getTasksTasksGetTasksGet();
+    const getTaskSummaries = tasks.data.map((task) => task.task_summary);
+    sortTasks(getTaskSummaries);
+    setTaskSummaries(getTaskSummaries);
   }, [tasksApi]);
+
+  React.useEffect(() => {
+    handleRefresh();
+  }, [handleRefresh]);
 
   const submitTask = React.useCallback<Required<TaskPanelProps>['submitTask']>(
     async (body) => {
       await tasksApi?.submitTaskTasksSubmitTaskPost(body);
+      handleRefresh();
     },
-    [tasksApi],
+    [tasksApi, handleRefresh],
   );
-  return <TaskPanel className={classes.taskPanel} tasks={taskSummaries} submitTask={submitTask} />;
+  return (
+    <TaskPanel
+      className={classes.taskPanel}
+      tasks={taskSummaries}
+      submitTask={submitTask}
+      onRefreshClick={handleRefresh}
+    />
+  );
 }
