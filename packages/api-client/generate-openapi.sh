@@ -12,6 +12,7 @@ source ../../scripts/version.sh
 expected_sha='cde6255246cf76b9e4c20e85968d36505930700f8adad68e76c0bc5a6721bfe5'
 
 if [[ ! -f '.bin/swagger-codegen-cli.jar' ]]; then
+  mkdir -p .bin
   wget https://repo1.maven.org/maven2/io/swagger/codegen/v3/swagger-codegen-cli/3.0.25/swagger-codegen-cli-3.0.25.jar -O .bin/swagger-codegen-cli.jar
 fi
 
@@ -23,6 +24,7 @@ if [[ $sha != $expected_sha ]]; then
 fi
 
 swagger_ver=$(java -jar .bin/swagger-codegen-cli.jar version)
+pipenv run python generate-openapi.py
 java -jar .bin/swagger-codegen-cli.jar generate -i'build/openapi.json' -ltypescript-axios -olib/openapi
 # There is a bug with `ModelObject` type being missing, workaround it by adding a type to the generated models.
 echo 'export type ModelObject = Record<string, any>;' >> lib/openapi/models/index.ts

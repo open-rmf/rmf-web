@@ -20,6 +20,7 @@ import { CancelTask } from '../models';
 import { HTTPValidationError } from '../models';
 import { ModelObject } from '../models';
 import { SubmitTask } from '../models';
+import { Task } from '../models';
 /**
  * TasksApi - axios parameter creator
  * @export
@@ -217,7 +218,7 @@ export const TasksApiFp = function (configuration?: Configuration) {
      */
     async getTasksTasksGetTasksGet(
       options?: any,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ModelObject>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Task>>> {
       const localVarAxiosArgs = await TasksApiAxiosParamCreator(
         configuration,
       ).getTasksTasksGetTasksGet(options);
@@ -282,7 +283,7 @@ export const TasksApiFactory = function (
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getTasksTasksGetTasksGet(options?: any): AxiosPromise<ModelObject> {
+    getTasksTasksGetTasksGet(options?: any): AxiosPromise<Array<Task>> {
       return TasksApiFp(configuration)
         .getTasksTasksGetTasksGet(options)
         .then((request) => request(axios, basePath));
