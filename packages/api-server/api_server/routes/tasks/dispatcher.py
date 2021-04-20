@@ -1,6 +1,5 @@
 from typing import List, Sequence, cast
 
-from builtin_interfaces.msg import Time as RosTime
 from rmf_task_msgs.msg import Delivery, Loop, TaskSummary, TaskType
 from rmf_task_msgs.srv import CancelTask, GetTaskList, SubmitTask
 from rosidl_runtime_py.convert import message_to_ordereddict
@@ -8,6 +7,7 @@ from rosidl_runtime_py.convert import message_to_ordereddict
 from ... import models as mdl
 from ...dependencies import ros
 from ...models.tasks import Task
+from ...ros_time import convert_to_rmf_time
 
 
 # dispatcher class
@@ -65,10 +65,8 @@ class DispatcherClient:
         else:
             return None, "Invalid TaskType"
 
-        # Calc start time, convert min to sec: TODO better representation
-        ros_start_time = RosTime()
-        ros_start_time.sec = task_request.start_time
-        req_msg.description.start_time = ros_start_time
+        rmf_start_time = convert_to_rmf_time(task_request.start_time, ros.node)
+        req_msg.description.start_time = rmf_start_time
         return req_msg, ""
 
     async def get_task_status(self) -> List[Task]:

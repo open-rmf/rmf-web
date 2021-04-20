@@ -1,6 +1,7 @@
 # fastapi relies on global variables
 # pylint: disable=global-statement
 
+import os
 import threading
 from typing import Optional
 
@@ -46,7 +47,15 @@ def on_startup():
     """
     Must be called on app startup
     """
-    rclpy.init()
+    use_sim_time_env = os.environ.get("RMF_SERVER_USE_SIM_TIME", None)
+    if use_sim_time_env:
+        use_sim_time = not use_sim_time_env.lower() in ["0", "false"]
+    else:
+        use_sim_time = False
+    if use_sim_time:
+        rclpy.init(args=["--ros-args", "-p", "use_sim_time:=true"])
+    else:
+        rclpy.init()
     global node
     node = RosNode()
 
