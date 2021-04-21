@@ -9,7 +9,7 @@ omit =
     api_server/default_config.py
 
     # generated files
-    api_server/models/tortoise_models/mixins/**
+    api_server/models/ros_pydantic/**
 
     # these files are not used atm
     api_server/models/tortoise_models/pydantic_mixins.py
