@@ -13,7 +13,7 @@ jobs:
     name: Unit Tests
     runs-on: ubuntu-latest
     container:
-      image: ros/foxy
+      image: ros:foxy
     defaults:
       run:
         shell: bash
