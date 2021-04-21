@@ -39,7 +39,6 @@ import MainMenu from './main-menu';
 import NegotiationsPanel from './negotiations-panel';
 import OmniPanelControl_ from './omnipanel-control';
 import { DashboardState, useDashboardReducer } from './reducers/dashboard-reducer';
-import TaskSummaryPanel from './task-summary-panel';
 
 const debug = Debug('Dashboard');
 const DispenserAccordion = React.memo(withSpotlight(DispenserAccordion_));
@@ -56,9 +55,7 @@ export enum OmniPanelViewIndex {
   Lifts,
   Robots,
   Dispensers,
-  Commands,
   Negotiations,
-  Tasks,
 }
 
 export const dashboardInitialValues: DashboardState = {
@@ -395,9 +392,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
               negotiationStatusUpdateTS={statusUpdateTS.current}
               setNegotiationTrajStore={setNegotiationTrajStore}
             />
-          </OmniPanelView>
-          <OmniPanelView viewId={OmniPanelViewIndex.Tasks}>
-            <TaskSummaryPanel tasks={Object.values(tasks)} />
           </OmniPanelView>
         </OmniPanel>
       </Fade>
