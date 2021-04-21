@@ -105,7 +105,12 @@ export default function App(): JSX.Element | null {
                         >
                           <Dashboard />
                         </PrivateRoute>
-                        <PrivateRoute path={TASKS_ROUTE} redirectPath={LOGIN_ROUTE} user={user}>
+                        <PrivateRoute
+                          exact
+                          path={TASKS_ROUTE}
+                          redirectPath={LOGIN_ROUTE}
+                          user={user}
+                        >
                           <TaskPage />
                         </PrivateRoute>
                       </Switch>
