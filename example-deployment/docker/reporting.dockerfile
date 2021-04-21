@@ -1,9 +1,16 @@
 # FIXME: we are importing from builder because we are installing packages related to ros on bootstrap.
-FROM rmf-web/builder
+FROM ros:foxy-ros-base-focal
+
+RUN apt-get update && apt-get install -y curl && \
+  curl -sL https://deb.nodesource.com/setup_12.x | bash - && \
+  apt-get update && apt-get install -y nodejs python3-pip
+
+RUN pip3 install pipenv
+
 COPY . /root/rmf-web
 SHELL ["bash", "-c"]
 
-RUN . /opt/rmf/setup.bash && npm config set unsafe-perm && cd /root/rmf-web && \
+RUN npm config set unsafe-perm && cd /root/rmf-web && \
   CI=1 npm run bootstrap -- packages/reporting
 
 RUN cd /root/rmf-web/packages/reporting && \
