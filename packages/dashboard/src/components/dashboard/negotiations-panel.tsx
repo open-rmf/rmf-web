@@ -303,6 +303,7 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
         param: trajParams,
         token: token,
       });
+      if (resp.error) throw new Error(resp.error);
       if (resp.values === undefined) console.warn('values undefined!');
       if (resp.response !== 'negotiation_trajectory') {
         console.warn('wrong response, ignoring!');

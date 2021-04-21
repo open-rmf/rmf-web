@@ -48,6 +48,7 @@ export interface NegotiationSubscribeUpdateRequest {
 export interface NegotiationTrajectoryResponse {
   response: 'negotiation_trajectory';
   values: Trajectory[];
+  error?: string;
 }
 
 export class NegotiationStatusManager extends TrajectorySocketManager {
