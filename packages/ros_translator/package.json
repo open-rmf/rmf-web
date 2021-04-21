@@ -1,12 +1,18 @@
 {
-  "name": "ros_translator",
+  "name": "typescript-test",
   "version": "0.0.0",
-  "description": "ts_ros generates typescript intefaces from ROS messages.",
+  "private": true,
+  "description": "",
   "main": "index.js",
   "scripts": {
-    "lint": "pipenv run pylint ros_translator",
     "test": "bash -c './test.sh'"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jasmine": "^3.6.9",
+    "jasmine": "^3.7.0",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.2.4"
+  }
 }
