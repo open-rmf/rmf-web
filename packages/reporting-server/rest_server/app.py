@@ -1,10 +1,16 @@
+# conflicts with isort because of local non-relative import
+# pylint: disable=wrong-import-order
+
 import logging
 import os
 import sys
-from fastapi import FastAPI
+
+from dependencies import auth_scheme, logger
+from fastapi import Depends, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from rest_server.routers import log_router, report_router
 from tortoise.contrib.fastapi import register_tortoise
 
-from rest_server.routers import log_router, report_router
 from .app_config import app_config
 
 logger = logging.getLogger("rest_app")
@@ -18,7 +24,17 @@ else:
 
 logger.info("started app")
 
-app = FastAPI()
+app = FastAPI(
+    dependencies=[Depends(auth_scheme)],
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(log_router, prefix="/log", tags=["log"])
 app.include_router(report_router, prefix="/report", tags=["report"])
