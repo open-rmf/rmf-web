@@ -11,7 +11,6 @@ RUN cd /root/rmf-web/packages/dashboard && \
   REACT_APP_RMF_SERVER='https://example.com/rmf/api/v1' \
   REACT_APP_AUTH_PROVIDER='keycloak' \
   REACT_APP_KEYCLOAK_CONFIG='{ "realm": "rmf-web", "clientId": "dashboard", "url": "https://example.com/auth" }' \
-  RMF_API_SERVER_LOG_LEVEL='DEBUG'\
   npm run build
 
 ###
@@ -21,8 +20,8 @@ COPY --from=0 /root/rmf-web/packages/dashboard/build /usr/share/nginx/html/dashb
 SHELL ["bash", "-c"]
 RUN echo -e 'server {\n\
   location / {\n\
-  root /usr/share/nginx/html;\n\
-  index index.html index.htm;\n\
-  try_files $uri /dashboard/index.html;\n\
+    root /usr/share/nginx/html;\n\
+    index index.html index.htm;\n\
+    try_files $uri /dashboard/index.html;\n\
   }\n\
-  }\n' > /etc/nginx/conf.d/dashboard.conf
+}\n' > /etc/nginx/conf.d/dashboard.conf
