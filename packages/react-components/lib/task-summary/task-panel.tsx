@@ -9,6 +9,7 @@ const useStyles = makeStyles((theme) => ({
     width: 350,
     padding: theme.spacing(2),
     marginLeft: theme.spacing(1),
+    flex: '0 0 auto',
   },
 }));
 

@@ -132,7 +132,12 @@ export function TaskTable({
             </IconButton>
           </Toolbar>
           <TableContainer style={{ flex: '1 1 auto' }}>
-            <Table className={classes.table} stickyHeader size="small">
+            <Table
+              className={classes.table}
+              stickyHeader
+              size="small"
+              style={{ tableLayout: 'fixed' }}
+            >
               <TableHead>
                 <TableRow>
                   <TableCell>Task Id</TableCell>

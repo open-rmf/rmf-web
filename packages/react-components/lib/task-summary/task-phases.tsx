@@ -1,7 +1,7 @@
-import { Box, Grid, makeStyles, Theme, Typography, useTheme } from '@material-ui/core';
+import { Box, Grid, makeStyles, Theme, Tooltip, Typography, useTheme } from '@material-ui/core';
+import clsx from 'clsx';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import { joinClasses } from '../css-utils';
 
 const getPhaseColors = (theme: Theme) => ({
   pending: theme.palette.info.light,
@@ -16,6 +16,7 @@ const useStyles = makeStyles((theme) => {
       padding: theme.spacing(1),
       borderRadius: theme.shape.borderRadius,
       flex: '1 1 0',
+      minWidth: 0,
     },
     pendingPhase: {
       background: phaseColors.pending,
@@ -31,6 +32,11 @@ const useStyles = makeStyles((theme) => {
       left: theme.spacing(-1),
       margin: `0 ${theme.spacing(-2)}px 0 0`,
     },
+    phaseStatus: {
+      textOverflow: 'ellipsis',
+      overflow: 'hidden',
+      whiteSpace: 'nowrap',
+    },
   };
 });
 
@@ -38,15 +44,17 @@ interface PhaseProps extends React.HTMLProps<HTMLDivElement> {
   status: string;
 }
 
-function Phase({ status, className, ...divProps }: PhaseProps) {
+function Phase({ status, ...divProps }: PhaseProps) {
   const classes = useStyles();
   const lines = status.split('\n');
   return (
-    <div className={joinClasses(classes.taskPhase, className)} {...divProps}>
+    <div {...divProps}>
       {lines.map((l, idx) => (
-        <Typography key={idx} variant="body1">
-          {l}
-        </Typography>
+        <Tooltip key={idx} title={l}>
+          <Typography key={idx} className={classes.phaseStatus} variant="body1">
+            {l}
+          </Typography>
+        </Tooltip>
       ))}
     </div>
   );
@@ -128,10 +136,10 @@ export function TaskPhases({ taskSummary }: TaskPhasesProps): JSX.Element {
 
   return (
     <Box>
-      <Grid container={true} direction="row" wrap="nowrap">
+      <Grid container={true} wrap="nowrap">
         {phases.map((phase, idx) => (
           <React.Fragment key={idx}>
-            <Phase status={phase} className={phaseProps[idx].className} />
+            <Phase status={phase} className={clsx(classes.taskPhase, phaseProps[idx].className)} />
             {idx != phases.length - 1 && (
               <PhaseSeparator
                 leftColor={phaseProps[idx].color}
