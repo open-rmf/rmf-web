@@ -31,7 +31,6 @@ import {
   LiftStateContext,
   NegotiationStatusContext,
   RmfIngressContext,
-  TasksContext,
 } from '../rmf-app';
 import ScheduleVisualizer, { ScheduleVisualizerProps } from '../schedule-visualizer';
 import { SpotlightValue } from '../spotlight-value';
@@ -233,8 +232,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
   >({});
   const statusUpdateTS = React.useRef<number>();
   statusUpdateTS.current = negotiationStatusManager.getLastUpdateTS();
-
-  const tasks = React.useContext(TasksContext);
 
   const { doorsApi, liftsApi } = React.useContext(RmfIngressContext);
 

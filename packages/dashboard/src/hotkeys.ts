@@ -54,11 +54,6 @@ export const buildHotKeys = (props: HotKeysProps): HotKeysEnabledProps => {
   const { viewStackDispatch } = props;
   const { toggleHotkeysDialog: toggleHotkeys, toggleSettings, toggleHelp } = props.appController;
 
-  const openCommands = () => {
-    setShowOmniPanel(true);
-    viewStackDispatch.push(OmniPanelViewIndex.Commands);
-  };
-
   const openDispensers = () => {
     setShowOmniPanel(true);
     viewStackDispatch.push(OmniPanelViewIndex.Dispensers);
@@ -81,7 +76,6 @@ export const buildHotKeys = (props: HotKeysProps): HotKeysEnabledProps => {
 
   // Keep the same name as the KeyMap
   const handlers = {
-    OPEN_COMMANDS: openCommands,
     OPEN_DISPENSERS: openDispensers,
     OPEN_DOORS: openDoors,
     OPEN_HELP_PANEL: () => toggleHelp(),
