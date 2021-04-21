@@ -14,9 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ros/foxy
-      credentials:
-        username: ${{ github.repository_owner }}
-        password: ${{ secrets.GITHUB_TOKEN }}
     defaults:
       run:
         shell: bash
