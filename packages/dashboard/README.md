@@ -113,4 +113,3 @@ npm run build
 ```
 
 You can then serve the `build` directory using the webserver of your choice.
-

@@ -12,7 +12,6 @@ class AppConfig:
     db_url: str
     public_url: urllib.parse.ParseResult
     static_directory: str
-    proxy_url: str
     log_level: str
     jwt_public_key: Optional[str]
     oidc_url: Optional[str]
