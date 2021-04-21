@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>ts_ros_test_msgs</name>
+  <name>ros_translator_test_msgs</name>
   <version>0.0.0</version>
-  <description>test msgs for ts_ros</description>
+  <description>test msgs for ros_translator</description>
   <maintainer email="nobody@nobody.com">nobody</maintainer>
   <license>Apache License 2.0</license>
 

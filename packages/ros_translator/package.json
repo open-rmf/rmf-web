@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "pipenv run pylint ros_translator",
-    "test": "ros_translator/typescript/test/test.bash"
+    "test": "bash -c './test.sh'"
   },
   "author": "",
   "license": "ISC"

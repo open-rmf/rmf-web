@@ -2,12 +2,8 @@
 set -e
 
 cd $(dirname $0)
-colcon build
-. install/setup.bash
-pushd ..
 rm -rf out
-pipenv run python -m ros_translator -t=typescript -o test/out ts_ros_test_msgs
-popd
+pipenv run python -m ros_translator -t=typescript -o=out ros_translator_test_msgs
 echo 'test build'
 node ./node_modules/.bin/tsc --noEmit
 echo 'ok'

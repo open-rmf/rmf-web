@@ -1,9 +1,8 @@
- 
-name: rmf-models
+name: ros_translator
 on:
   pull_request:
     paths:
-      - 'packages/rmf-models/**'
+      - 'packages/ros_translator/**'
   push:
     branches:
       - main
@@ -14,26 +13,26 @@ jobs:
     name: Unit Tests
     runs-on: ubuntu-latest
     container:
-      image: docker.pkg.github.com/open-rmf/rmf-web/e2e
+      image: ros/foxy
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
     defaults:
       run:
         shell: bash
-        working-directory: packages/rmf-models
+        working-directory: packages/ros_translator
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
       - name: bootstrap
         run: |
-          . /opt/rmf/setup.bash
+          . /opt/ros/foxy/setup.bash
+          apt update && apt install -y python3-pip
+          pip3 install pipenv
           npm config set unsafe-perm
-          npm run bootstrap -- packages/rmf-models
+          npm run bootstrap -- packages/ros_translator
         working-directory: .
       - name: test
-        run: . /opt/rmf/setup.bash && npm test
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          flags: rmf-models
+        run: . /opt/ros/foxy/setup.bash && npm test
