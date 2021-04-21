@@ -2,14 +2,9 @@ import { Authenticator } from 'rmf-auth';
 import KeycloakAuthenticator from 'rmf-auth/lib/keycloak';
 import StubAuthenticator from 'rmf-auth/lib/stub';
 import ResourceManager from './managers/resource-manager';
-import {
-  DefaultTrajectoryManager,
-  RobotTrajectoryManager,
-} from './managers/robot-trajectory-manager';
 
 export interface AppConfig {
   authenticator: Authenticator;
-  trajectoryManagerFactory?: () => Promise<RobotTrajectoryManager>;
   trajServerUrl: string;
   rmfServerUrl: string;
   appResourcesFactory: () => Promise<ResourceManager | undefined>;
@@ -49,7 +44,6 @@ export const appConfig: AppConfig = (() => {
   return {
     authenticator,
     appResourcesFactory: ResourceManager.getResourceConfigurationFile,
-    trajectoryManagerFactory: () => DefaultTrajectoryManager.create(trajServer),
     trajServerUrl: trajServer,
     rmfServerUrl: process.env.REACT_APP_RMF_SERVER,
   };

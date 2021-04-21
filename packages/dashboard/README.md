@@ -1,12 +1,12 @@
-## RoMi-dashboard
+## rmf-dashboard
 
-Hello! `romi-dashboard` is a web application that provides overall visualization and control over the RoMi system.
+Hello! `rmf-dashboard` is a web application that provides overall visualization and control over the RMF system.
 
 ## Setup
 
 Prerequisites:
 
-* nodejs == v12
+* nodejs >= v12
 * docker
 * docker-compose
 * [rmf_core](https://github.com/open-rmf/rmf_core)
@@ -34,7 +34,7 @@ You have two options, import a specific folder with assets from a repository (li
 
 In the case of choosing to obtain the data from a repository, you must define: (1) The repository URL and (2) the folder within the repository. In case of choosing to obtain the data from a local directory, the absolute path must be defined.
 
-This folder obtained must contain at its root a JSON file calling `main.json`, with the _RomiDashboard_ actors (robots, dispensers, etc.) and the path to their corresponding resources. E.g.:
+This folder obtained must contain at its root a JSON file calling `main.json`, with the _RmfDashboard_ actors (robots, dispensers, etc.) and the path to their corresponding resources. E.g.:
 
 ```json
 {
@@ -106,7 +106,7 @@ This is ideal if you are working on individual isolated components.
 
 ## Building for production
 
-Firstly, set up environment variables according to [this](#External-Server), you may also want to install a resource pack as described [here](#Optional-Import-external-resources.). Then build a production version of _RoMi-dashboard_ with
+Firstly, set up environment variables according to [this](#External-Server), you may also want to install a resource pack as described [here](#Optional-Import-external-resources.). Then build a production version of _rmf-dashboard_ with
 
 ```bash
 npm run build

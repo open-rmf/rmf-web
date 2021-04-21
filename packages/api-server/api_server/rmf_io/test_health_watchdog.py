@@ -11,7 +11,7 @@ from rx import Observable
 from rx.scheduler.historicalscheduler import HistoricalScheduler
 
 from ..models import tortoise_models as ttm
-from . import test_data
+from ..test import test_data
 from .gateway import RmfGateway
 from .health_watchdog import HealthWatchdog
 

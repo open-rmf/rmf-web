@@ -1,5 +1,5 @@
 from ..dependencies.ros import rmf_gateway
-from ..rmf_io.test_data import make_building_map
+from ..test.test_data import make_building_map
 from .test_fixtures import RouteFixture
 
 

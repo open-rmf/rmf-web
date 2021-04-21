@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException
 from ..dependencies import ros
 from ..models import BuildingMap
 
-router = APIRouter()
+router = APIRouter(tags=["building"])
 
 
 @router.get("", response_model=BuildingMap)

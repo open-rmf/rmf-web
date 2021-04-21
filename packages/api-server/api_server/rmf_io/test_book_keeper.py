@@ -3,11 +3,11 @@ import logging
 import unittest
 
 from rmf_door_msgs.msg import DoorMode
-from rmf_task_msgs.msg import Tasks, TaskSummary
+from rmf_task_msgs.msg import TaskSummary
 from tortoise import Tortoise
 
 from ..models import tortoise_models as ttm
-from . import test_data
+from ..test import test_data
 from .book_keeper import RmfBookKeeper
 from .gateway import RmfGateway
 
@@ -223,8 +223,7 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
     async def test_write_task_summary(self):
         task = TaskSummary(task_id="test_task")
         task.status = "test_status"
-        tasks = Tasks(tasks=[task])
-        self.rmf.task_summaries.on_next(tasks)
+        self.rmf.task_summaries.on_next(task)
         await asyncio.sleep(0)
         result = await ttm.TaskSummary.get(id_="test_task")
         self.assertIsNotNone(result)
@@ -233,8 +232,7 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
 
         task = TaskSummary(task_id="test_task")
         task.status = "test_status_2"
-        tasks = Tasks(tasks=[task])
-        self.rmf.task_summaries.on_next(tasks)
+        self.rmf.task_summaries.on_next(task)
         await asyncio.sleep(0)
         result = await ttm.TaskSummary.get(id_="test_task")
         self.assertIsNotNone(result)

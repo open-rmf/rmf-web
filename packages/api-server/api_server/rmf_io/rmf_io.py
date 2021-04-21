@@ -12,7 +12,7 @@ from rosidl_runtime_py.convert import message_to_ordereddict
 from rx.core.typing import Disposable
 from rx.operators import map as rx_map
 
-from ..authenticator import AuthenticationError, Authenticator, StubAuthenticator
+from ..authenticator import AuthenticationError, JwtAuthenticator
 from ..repositories import StaticFilesRepository
 from .gateway import RmfGateway
 from .topics import topics
@@ -27,7 +27,7 @@ class RmfIO:
         *,
         logger: logging.Logger = None,
         loop: asyncio.AbstractEventLoop = None,
-        authenticator: Authenticator = StubAuthenticator(),
+        authenticator: Optional[JwtAuthenticator] = None,
     ):
         self.sio = sio
         self.rmf_gateway = rmf_gateway
@@ -235,11 +235,19 @@ class RmfIO:
         await self.sio.emit("subscribe", "ok", to=sid)
 
     def _on_connect(self, sid: str, environ: dict, auth: Optional[dict] = None):
+        self.logger.info(
+            f'[{sid}] new connection from "{environ["REMOTE_ADDR"]}:{environ["REMOTE_PORT"]}"'
+        )
+
+        if not self.authenticator:
+            return True
+
         try:
-            self.authenticator.authenticate(environ, auth)
-            self.logger.info(
-                f'[{sid}] new connection from "{environ["REMOTE_ADDR"]}:{environ["REMOTE_PORT"]}"'
-            )
+            if auth is None:
+                raise AuthenticationError("no auth options provided")
+            if "token" not in auth:
+                raise AuthenticationError("no token provided")
+            self.authenticator.verify_token(auth["token"])
             return True
         except AuthenticationError as e:
             self.logger.error(f"authentication failed: {e}")

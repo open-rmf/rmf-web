@@ -57,7 +57,7 @@ jobs:
           . /opt/rmf/setup.bash
           npm config set unsafe-perm
           npm run bootstrap -- packages/dashboard
-          docker pull quay.io/keycloak/keycloak:11.0.0
+          docker pull quay.io/keycloak/keycloak:12.0.4
           cd packages/dashboard/e2e
           npm ci
         working-directory: .
@@ -69,7 +69,7 @@ jobs:
           E2E_DOCKER_NETWORK: ${{job.container.network}}
           REACT_APP_AUTH_PROVIDER: keycloak
           # need to use the internal port because we are connecting from within the same network
-          REACT_APP_KEYCLOAK_CONFIG: '{ "realm": "master", "clientId": "romi-dashboard", "url": "http://rmf-web_keycloak_1:8080/auth" }'
+          REACT_APP_KEYCLOAK_CONFIG: '{ "realm": "master", "clientId": "rmf-dashboard", "url": "http://rmf-web_keycloak_1:8080/auth" }'
       - name: upload artifacts
         uses: actions/upload-artifact@v2
         if: ${{ always() }}

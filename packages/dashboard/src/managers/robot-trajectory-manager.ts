@@ -67,7 +67,7 @@ interface Response {
 export class DefaultTrajectoryManager {
   static async create(url: string): Promise<DefaultTrajectoryManager> {
     let ws = new WebSocket(url);
-    await new Promise((res, rej) => {
+    await new Promise<void>((res, rej) => {
       ws.addEventListener('open', function listener() {
         ws.removeEventListener('open', listener);
         res();

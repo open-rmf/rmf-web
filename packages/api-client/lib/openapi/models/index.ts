@@ -9,5 +9,4 @@ export * from './loop-task-description';
 export * from './submit-task';
 export * from './task-type-enum';
 export * from './validation-error';
-
 export type ModelObject = Record<string, any>;

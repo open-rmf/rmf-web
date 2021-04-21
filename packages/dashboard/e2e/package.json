@@ -1,5 +1,5 @@
 {
-  "name": "romi-dashboard-e2e",
+  "name": "rmf-dashboard-e2e",
   "description": "",
   "main": "index.js",
   "directories": {
@@ -7,9 +7,9 @@
   },
   "scripts": {
     "start:keycloak": "../scripts/dockert docker-compose -f docker/docker-compose.yml -p rmf-web up keycloak",
-    "start:ros2-bridge": "../node_modules/.bin/ros2-bridge --port 50002 --publicKey certs/keycloak.pub",
+    "start:rmf-server": "scripts/start-rmf-server.sh",
     "test": "node scripts/test-e2e.js",
-    "test:dev": "ROMI_DASHBOARD_PORT=3000 RMF_LAUNCH_MODE=none wdio"
+    "test:dev": "E2E_DASHBOARD_URL=http://localhost:3000 RMF_LAUNCH_MODE=none wdio"
   },
   "dependencies": {
     "@types/mocha": "^8.0.3",

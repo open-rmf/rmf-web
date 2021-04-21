@@ -1,7 +1,7 @@
 import Debug from 'debug';
 import EventEmitter from 'eventemitter3';
 import Keycloak_, { KeycloakInstance } from 'keycloak-js';
-import { Authenticator, AuthConfig, AuthenticatorEventType } from './authenticator';
+import { AuthConfig, Authenticator, AuthenticatorEventType } from './authenticator';
 import { User } from './user';
 import { BASE_PATH, getUrl } from './utils/url';
 
@@ -34,7 +34,9 @@ export default class KeycloakAuthenticator
 
     this._inst.onAuthSuccess = async () => {
       this._user = {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         username: (this._inst.idTokenParsed as any).preferred_username,
+        token: this._inst.idToken || '',
       };
       debug('authenticated as', this._user.username);
       this.emit('userChanged', this._user);
@@ -59,7 +61,9 @@ export default class KeycloakAuthenticator
     }
 
     this._user = this._inst.idTokenParsed && {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       username: (this._inst.idTokenParsed as any).preferred_username,
+      token: this._inst.idToken || '',
     };
     this._initialized = true;
   }

@@ -1,12 +1,12 @@
-from setuptools import setup
+from setuptools import find_packages, setup
 
 package_name = "api_server"
 
 setup(
     name=package_name,
     description="RMF api server",
-    version="0.0.0",
-    packages=["api_server", "cli_client"],
+    version="0.0.1",
+    packages=find_packages(exclude=["tests"]),
     author="Teo Koon Peng",
     author_email="koonpeng@openrobotics.org",
     keywords=["ROS", "RMF"],
@@ -26,10 +26,14 @@ setup(
         "pyjwt[crypto]~=2.0",
         "pydantic~=1.8",
     ],
+    extras_require={
+        "postgres": ["asyncpg~=0.22.0"],
+        "mysql": ["aiomysql~=0.0.21"],
+        "maria": ["aiomysql~=0.0.21"],
+    },
     entry_points={
         "console_scripts": [
             "rmf_api_server=api_server.__main__:main",
-            "rmf_api_cli=cli_client.__main__:main",
         ],
     },
     license="Apache License, Version 2.0",

@@ -1,20 +1,86 @@
 apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rmf-server-db
+  labels:
+    app: rmf-server
+    tier: db
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
 kind: Service
 metadata:
-  name: ros2-bridge
+  name: rmf-server-db
   labels:
-    app: ros2-bridge
+    app: rmf-server
+    tier: db
 spec:
-  type: LoadBalancer
   selector:
-    app: ros2-bridge
+    app: rmf-server
+    tier: db
   ports:
-    - protocol: TCP
-      port: 50002
+    - port: 5432
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  name: rmf-server-db
+  labels:
+    app: rmf-server
+    tier: db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rmf-server
+      tier: db
+  template:
+    metadata:
+      labels:
+        app: rmf-server
+        tier: db
+    spec:
+      containers:
+        - name: postgresql
+          image: postgres:13
+          env:
+            - name: POSTGRES_USER
+              value: rmf-server
+            - name: POSTGRES_PASSWORD
+              value: rmf-server
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: rmf-server-db
+      volumes:
+        - name: rmf-server-db
+          persistentVolumeClaim:
+            claimName: rmf-server-db
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rmf-server
+  labels:
+    app: rmf-server
+    tier: app
+spec:
+  type: LoadBalancer
+  selector:
+    app: rmf-server
+  ports:
+    - protocol: TCP
+      port: 8000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+<<<<<<< HEAD
   name: ros2-bridge
   labels:
     app: ros2-bridge
@@ -40,18 +106,64 @@ spec:
         volumeMounts:
           - mountPath: /configmap
             name: jwt-pub-key
+=======
+  name: rmf-server
+  labels:
+    app: rmf-server
+    tier: app
+spec:
+  selector:
+    matchLabels:
+      app: rmf-server
+  template:
+    metadata:
+      labels:
+        app: rmf-server
+    spec:
+      containers:
+        - name: rmf-server
+          image: rmf-web/rmf-server
+          imagePullPolicy: Never # remove this in a real deployment
+          ports:
+            - containerPort: 8000
+          env:
+            - name: RMF_API_SERVER_CONFIG
+              value: /rmf-server-config/rmf_server_config.py
+          volumeMounts:
+            - mountPath: /jwt-configmap
+              name: jwt-pub-key
+            - mountPath: /rmf-server-config
+              name: rmf-server-config
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+>>>>>>> b126209bc6a32ad384a5978d7b5a2667871d1c32
       volumes:
         - name: jwt-pub-key
           configMap:
             name: jwt-pub-key
+<<<<<<< HEAD
       hostNetwork: true
+=======
+        - name: rmf-server-config
+          configMap:
+            name: rmf-server-config
+>>>>>>> b126209bc6a32ad384a5978d7b5a2667871d1c32
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
+<<<<<<< HEAD
   name: ros2-bridge
   labels:
     app: ros2-bridge
+=======
+  name: rmf-server
+  labels:
+    app: rmf-server
+    tier: app
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+>>>>>>> b126209bc6a32ad384a5978d7b5a2667871d1c32
 spec:
   tls:
     - hosts:
@@ -60,6 +172,7 @@ spec:
     - host: example.com
       http:
         paths:
+<<<<<<< HEAD
           - path: /ros2
             pathType: Prefix
             backend:
@@ -67,3 +180,12 @@ spec:
                 name: ros2-bridge
                 port:
                   number: 50002
+=======
+          - path: /rmf/api/v1(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: rmf-server
+                port:
+                  number: 8000
+>>>>>>> b126209bc6a32ad384a5978d7b5a2667871d1c32
