@@ -6,9 +6,9 @@ from builtin_interfaces.msg import Time as RosTime
 
 def ros_to_py_datetime(ros_time: RosTime) -> datetime:
     """
-    ros_time is assumed to be utc. The resulting datetime instance is naive.
+    The resulting datetime instance is naive.
     """
-    return datetime.utcfromtimestamp(ros_time.sec + ros_time.nanosec / 1000000000)
+    return datetime.fromtimestamp(ros_time.sec + ros_time.nanosec / 1000000000)
 
 
 def py_to_ros_time(py_datetime: datetime) -> RosTime:
