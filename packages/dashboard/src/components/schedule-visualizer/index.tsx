@@ -105,7 +105,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   const fleetStates = React.useContext(FleetStateContext);
   const fleets = React.useMemo(() => Object.values(fleetStates), [fleetStates]);
 
-  const { trajectoryManager: trajManager } = React.useContext(RmfIngressContext);
+  const { trajectoryManager: trajManager } = React.useContext(RmfIngressContext) || {};
 
   const robots = React.useMemo(
     () =>

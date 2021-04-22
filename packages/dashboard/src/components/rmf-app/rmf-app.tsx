@@ -27,7 +27,7 @@ function rmfStateContextProviderHOC<TopicT extends Topic>(
   keyMapper: (msg: MessageType[TopicT]) => string,
 ) {
   return (props: React.PropsWithChildren<{}>) => {
-    const { sioClient } = React.useContext(RmfIngressContext);
+    const { sioClient } = React.useContext(RmfIngressContext) || {};
     const [state, setState] = React.useState<Record<string, MessageType[TopicT]>>({});
 
     React.useEffect(() => {
@@ -47,7 +47,7 @@ function rmfStateContextProviderHOC<TopicT extends Topic>(
 }
 
 function BuildingMapProvider(props: React.PropsWithChildren<{}>): JSX.Element {
-  const { sioClient } = React.useContext(RmfIngressContext);
+  const { sioClient } = React.useContext(RmfIngressContext) || {};
   const [buildingMap, setBuildingMap] = React.useState<RmfModels.BuildingMap | null>(null);
 
   React.useEffect(() => {
@@ -113,12 +113,15 @@ const TaskContextsProvider = rmfStateContextProviderHOC(
 );
 
 function NegotiationContextsProvider(props: React.PropsWithChildren<{}>): JSX.Element {
-  const { negotiationStatusManager } = React.useContext(RmfIngressContext);
+  const { negotiationStatusManager } = React.useContext(RmfIngressContext) || {};
   const [negotiationStatus, setNegotiationStatus] = React.useState(
-    negotiationStatusManager.allConflicts(),
+    negotiationStatusManager?.allConflicts() || {},
   );
 
   React.useEffect(() => {
+    if (!negotiationStatusManager) {
+      return;
+    }
     negotiationStatusManager.startSubscription();
     const onUpdated = () => setNegotiationStatus(negotiationStatusManager.allConflicts());
     negotiationStatusManager.on('updated', onUpdated);
@@ -154,10 +157,7 @@ function RmfIngressProvider(props: React.PropsWithChildren<{}>) {
     })();
   }, []);
 
-  const rmfIngress = React.useMemo(() => new RmfIngress(user || undefined, trajMgr), [
-    user,
-    trajMgr,
-  ]);
+  const rmfIngress = React.useMemo(() => new RmfIngress(user, trajMgr), [user, trajMgr]);
   return (
     <RmfIngressContext.Provider value={rmfIngress}>{props.children}</RmfIngressContext.Provider>
   );

@@ -222,7 +222,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     [robotAccordionRefs, viewStackDispatch, setShowOmniPanel],
   );
 
-  const { negotiationStatusManager } = React.useContext(RmfIngressContext);
+  const { negotiationStatusManager } = React.useContext(RmfIngressContext) || {};
   const negotiationStatus = React.useContext(NegotiationStatusContext);
   const [negotiationSpotlight, setNegotiationSpotlight] = React.useState<
     SpotlightValue<string> | undefined
@@ -231,9 +231,9 @@ export default function Dashboard(_props: {}): React.ReactElement {
     Record<string, NegotiationTrajectoryResponse>
   >({});
   const statusUpdateTS = React.useRef<number>();
-  statusUpdateTS.current = negotiationStatusManager.getLastUpdateTS();
+  statusUpdateTS.current = negotiationStatusManager?.getLastUpdateTS() || -1;
 
-  const { doorsApi, liftsApi } = React.useContext(RmfIngressContext);
+  const { doorsApi, liftsApi } = React.useContext(RmfIngressContext) || {};
 
   const handleOnDoorControlClick = React.useCallback(
     (_ev, door: RmfModels.Door, mode: number) =>

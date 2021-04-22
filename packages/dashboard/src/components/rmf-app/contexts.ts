@@ -36,4 +36,4 @@ export const RmfHealthContext = React.createContext<HealthStatus>({
   },
 });
 
-export const RmfIngressContext = React.createContext(new RmfIngress());
+export const RmfIngressContext = React.createContext<RmfIngress | undefined>(undefined);

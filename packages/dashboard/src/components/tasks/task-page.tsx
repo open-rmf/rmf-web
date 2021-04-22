@@ -32,7 +32,7 @@ function sortTasks(tasks: RmfModels.TaskSummary[]) {
 
 export function TaskPage() {
   const classes = useStyles();
-  const { tasksApi } = React.useContext(RmfIngressContext);
+  const { tasksApi = null } = React.useContext(RmfIngressContext) || {};
   const [taskSummaries, setTaskSummaries] = React.useState<RmfModels.TaskSummary[]>([]);
 
   const handleRefresh = React.useCallback(async () => {
