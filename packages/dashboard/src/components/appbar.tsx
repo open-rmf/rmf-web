@@ -12,6 +12,7 @@ import HelpIcon from '@material-ui/icons/Help';
 import SettingsIcon from '@material-ui/icons/Settings';
 import React from 'react';
 import DashboardTooltip from 'react-components/lib/tooltip';
+import TitleBar from 'react-components/lib/title-bar';
 import { AppControllerContext, TooltipsContext } from './app-contexts';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
 
@@ -42,12 +43,8 @@ export const AppBar = React.memo(
     }
 
     return (
-      <MuiAppBar id="appbar" position="static">
-        <Toolbar>
-          <Typography variant="h6" className={classes.toolbarTitle}>
-            Dashboard
-          </Typography>
-
+      <div>
+        <TitleBar logoPath={'/roshealth-logo-white.png'}>
           <DashboardTooltip
             title="Define dashboard trajectory settings"
             id="setting-tooltip"
@@ -106,8 +103,8 @@ export const AppBar = React.memo(
               <HelpIcon />
             </IconButton>
           </DashboardTooltip>
-        </Toolbar>
-      </MuiAppBar>
+        </TitleBar>
+      </div>
     );
   },
 );
