@@ -2,6 +2,7 @@ import React from 'react';
 import { createStyles, makeStyles, AppBar, Theme, Toolbar, Typography } from '@material-ui/core';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import Badge from '@material-ui/core/Badge';
 
 export interface TitleBarProps {
   logoPath: string;
@@ -11,22 +12,21 @@ export interface TitleBarProps {
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {
-      flexGrow: 1,
-      width: '100%',
-      alignItems: 'center',
-    },
     logo: {
-      maxHeight: 30,
-      marginTop: theme.spacing(1),
-      marginBottom: theme.spacing(1),
+      maxWidth: 120,
+      marginLeft: theme.spacing(2),
+      marginRight: theme.spacing(2),
+      opacity: 1,
     },
     subtitle: {
       textAlign: 'right',
       flexGrow: 1,
     },
     tab: {
-      borderRight: '0.25px solid rgba(251, 252, 255, 0.5)',
+      border: '0.25px solid rgba(251, 252, 255, 0.5)',
+    },
+    toolbar: {
+      flexGrow: 1,
     },
   }),
 );
@@ -50,26 +50,28 @@ const TitleBar = (props: TitleBarProps): React.ReactElement => {
   };
 
   return (
-    <div className={classes.root}>
-      <AppBar id="appbar" position="static">
-        <Toolbar>
-          <img src={logoPath} alt="logo" className={classes.logo} />
-          <Tabs
-            variant="scrollable"
-            scrollButtons="auto"
-            value={value}
-            onChange={handleChange}
-            aria-label="navigation-tabs"
-          >
-            {populateTabs()}
-          </Tabs>
+    <AppBar id="appbar" position="static">
+      <Tabs
+        variant="scrollable"
+        scrollButtons="auto"
+        value={value}
+        onChange={handleChange}
+        aria-label="navigation-tabs"
+      >
+        <Tab
+          label={
+            <Badge badgeContent={<img src={logoPath} alt="logo" className={classes.logo} />} />
+          }
+        />
+        {populateTabs()}
+        <Toolbar className={classes.toolbar}>
           <Typography variant="caption" className={classes.subtitle}>
             Powered by OpenRMF
           </Typography>
           {children}
         </Toolbar>
-      </AppBar>
-    </div>
+      </Tabs>
+    </AppBar>
   );
 };
 

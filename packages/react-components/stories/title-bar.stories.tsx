@@ -10,7 +10,7 @@ export default {
 } as Meta;
 
 export const ExampleTitleBar: Story = (args) => {
-  const tabNames = ['Robots', 'Tasks'];
+  const tabNames = ['Robots', 'Tasks', 'History', 'Admin', 'Settings'];
   return (
     <TitleBar logoPath={'/resources/roshealth-logo-white.png'} tabNames={tabNames} {...args}>
       <IconButton
