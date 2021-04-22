@@ -20,7 +20,7 @@ process.env.E2E_DASHBOARD_URL = process.env.E2E_DASHBOARD_URL || 'http://localho
 
 execSync('WORLD_NAME=office node scripts/get-resources-location.js', { stdio: 'inherit' });
 execSync('cd .. && node ./scripts/setup/get-icons.js', { stdio: 'inherit' });
-// execSync('npm --prefix .. run build', { stdio: 'inherit' });
+execSync('npm --prefix .. run build', { stdio: 'inherit' });
 
 // wrap in double quotes to support args with spaces
 const wdioArgs = process.argv
