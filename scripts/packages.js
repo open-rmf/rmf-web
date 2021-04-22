@@ -1,5 +1,4 @@
 const allPackages = [
-  'packages/ros2-bridge',
   'packages/react-components',
   'packages/rmf-auth',
   'packages/reporting',
