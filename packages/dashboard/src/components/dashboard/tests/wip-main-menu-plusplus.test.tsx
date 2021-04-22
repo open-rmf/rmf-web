@@ -128,7 +128,7 @@ it('should call pushView and setFilter when Details button is clicked', () => {
   expect(mockSetFilter).toBeCalledTimes(4);
 });
 
-it('should call pushView and setFilter when Negotiations and Plans button is clicked', () => {
+it('should call pushView and setFilter when Negotiations button is clicked', () => {
   const mockPushView = jest.fn();
   const mockSetFilter = jest.fn();
 
@@ -139,8 +139,7 @@ it('should call pushView and setFilter when Negotiations and Plans button is cli
   );
 
   userEvent.click(screen.getByTestId('negotiations-tooltip-tooltip'));
-  userEvent.click(screen.getByTestId('plans-tooltip-tooltip'));
 
-  expect(mockPushView).toBeCalledTimes(2);
-  expect(mockSetFilter).toBeCalledTimes(2);
+  expect(mockPushView).toBeCalledTimes(1);
+  expect(mockSetFilter).toBeCalledTimes(1);
 });

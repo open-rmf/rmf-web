@@ -45,14 +45,6 @@ describe('update states correctly', () => {
     });
   });
 
-  test('set commands as current view', () => {
-    act(() => {
-      hotkeys.handlers?.OPEN_COMMANDS();
-    });
-    const viewStack = viewResult.current[0];
-    expect(viewStack[viewStack.length - 1]).toBe(OmniPanelViewIndex.Commands);
-  });
-
   test('set dispensers as current view', () => {
     act(() => {
       hotkeys.handlers?.OPEN_DISPENSERS();
