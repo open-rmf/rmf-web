@@ -7,7 +7,7 @@ import {
   getActorFromStatus,
   sortTasks,
   sortTasksBySubmissionTime,
-} from '../../lib/task-summary/task-summary-utils';
+} from '../../lib/tasks/task-summary-utils';
 
 function getTaskObject(): Record<string, RmfModels.TaskSummary> {
   // Returns a task object with a new memory allocation
