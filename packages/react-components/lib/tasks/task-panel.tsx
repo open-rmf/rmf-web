@@ -32,12 +32,22 @@ function NoSelectedTask() {
 
 export interface TaskPanelProps extends React.HTMLProps<HTMLDivElement> {
   tasks: RmfModels.TaskSummary[];
+  cleaningZones?: string[];
+  loopWaypoints?: string[];
+  deliveryWaypoints?: string[];
+  dispensers?: string[];
+  ingestors?: string[];
   submitTask?: CreateTaskFormProps['submitTask'];
   onRefreshClick?: TaskTableProps['onRefreshClick'];
 }
 
 export function TaskPanel({
   tasks,
+  cleaningZones,
+  loopWaypoints,
+  deliveryWaypoints,
+  dispensers,
+  ingestors,
   submitTask,
   onRefreshClick,
   ...divProps
@@ -76,6 +86,11 @@ export function TaskPanel({
         </Paper>
       </Grid>
       <CreateTaskForm
+        cleaningZones={cleaningZones}
+        loopWaypoints={loopWaypoints}
+        deliveryWaypoints={deliveryWaypoints}
+        dispensers={dispensers}
+        ingestors={ingestors}
         open={openCreateTaskForm}
         onClose={() => setOpenCreateTaskForm(false)}
         submitTask={submitTask}
