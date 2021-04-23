@@ -68,7 +68,7 @@ describe('AppBar', () => {
   test('user button is shown when there is an authenticated user', () => {
     const root = render(
       <Base>
-        <UserContext.Provider value={{ username: 'test' }}>
+        <UserContext.Provider value={{ username: 'test', token: 'test' }}>
           <AppBar />
         </UserContext.Provider>
       </Base>,
@@ -77,12 +77,12 @@ describe('AppBar', () => {
   });
 
   test('logout is triggered when logout button is clicked', () => {
-    const authenticator = new FakeAuthenticator({ username: 'fakeUser' });
+    const authenticator = new FakeAuthenticator({ username: 'fakeUser', token: 'test' });
     const spy = jest.spyOn(authenticator, 'logout').mockImplementation(() => undefined as any);
     const root = render(
       <Base>
         <AuthenticatorContext.Provider value={authenticator}>
-          <UserContext.Provider value={{ username: 'test' }}>
+          <UserContext.Provider value={{ username: 'test', token: 'test' }}>
             <AppBar />
           </UserContext.Provider>
         </AuthenticatorContext.Provider>
