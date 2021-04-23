@@ -3,9 +3,9 @@ config = {
     "host": "127.0.0.1",  # ip or hostname to bind the socket to
     "port": 8002,
     "db_url": "sqlite://:memory:",
-    # url that rmf-server is being served on.
-    # When being a proxy, this must be the url that rmf-server is mounted on.
-    # E.g. https://example.com/rmf/api/v1
+    # url that reporting-server is being served on.
+    # When being a proxy, this must be the url that reporting-server is mounted on.
+    # E.g. https://example.com/logserver/api/v1
     "public_url": "http://localhost:8002",
     # The directory where static files should be stored.
     "static_directory": "static",

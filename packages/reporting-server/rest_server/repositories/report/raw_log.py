@@ -30,7 +30,3 @@ async def get_all_raw_logs(
     return await RawLog_Pydantic.from_queryset(
         RawLog.filter(**query).offset(offset).limit(limit)
     )
-
-
-async def get_doors_state():
-    return "work in progress"

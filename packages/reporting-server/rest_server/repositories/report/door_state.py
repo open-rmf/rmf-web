@@ -24,5 +24,5 @@ async def get_door_state(
         query["created__lt"] = to_log_utc_time
 
     return await DoorState_Pydantic.from_queryset(
-        DoorState.filter(**query).offset(offset).limit(limit)
+        DoorState.filter(**query).offset(offset).limit(limit).order_by("-created")
     )

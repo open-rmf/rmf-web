@@ -24,5 +24,5 @@ async def get_dispenser_state(
         query["created__lt"] = to_log_utc_time
 
     return await DispenserState_Pydantic.from_queryset(
-        DispenserState.filter(**query).offset(offset).limit(limit)
+        DispenserState.filter(**query).offset(offset).limit(limit).order_by("-created")
     )

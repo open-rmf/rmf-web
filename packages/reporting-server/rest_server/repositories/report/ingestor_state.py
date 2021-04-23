@@ -24,5 +24,5 @@ async def get_ingestor_state(
         query["created__lt"] = to_log_utc_time
 
     return await IngestorState_Pydantic.from_queryset(
-        IngestorState.filter(**query).offset(offset).limit(limit)
+        IngestorState.filter(**query).offset(offset).limit(limit).order_by("-created")
     )
