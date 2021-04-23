@@ -2,6 +2,7 @@ import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { NegotiationConflict } from '../../managers/negotiation-status-manager';
 import { HealthStatus } from '../../managers/rmf-health-state-manager';
+import { Place } from './place';
 import { RmfIngress } from './rmf-ingress';
 
 const itemSummary = () => {
@@ -35,5 +36,6 @@ export const RmfHealthContext = React.createContext<HealthStatus>({
     spoiltRobots: [],
   },
 });
+export const PlacesContext = React.createContext<Record<string, Place>>({});
 
 export const RmfIngressContext = React.createContext<RmfIngress | undefined>(undefined);

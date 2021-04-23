@@ -1,8 +1,9 @@
 import { makeStyles } from '@material-ui/core';
+import { Task } from 'api-client';
 import React from 'react';
 import { TaskPanel, TaskPanelProps } from 'react-components';
 import * as RmfModels from 'rmf-models';
-import { RmfIngressContext } from '../rmf-app';
+import { PlacesContext, RmfIngressContext } from '../rmf-app';
 
 const useStyles = makeStyles((theme) => ({
   taskPanel: {
@@ -33,6 +34,7 @@ function sortTasks(tasks: RmfModels.TaskSummary[]) {
 export function TaskPage() {
   const classes = useStyles();
   const { tasksApi = null } = React.useContext(RmfIngressContext) || {};
+  const places = React.useContext(PlacesContext);
   const [taskSummaries, setTaskSummaries] = React.useState<RmfModels.TaskSummary[]>([]);
 
   const handleRefresh = React.useCallback(async () => {
@@ -40,7 +42,7 @@ export function TaskPage() {
       return;
     }
     const tasks = await tasksApi.getTasksTasksGetTasksGet();
-    const getTaskSummaries = tasks.data.map((task) => task.task_summary);
+    const getTaskSummaries = tasks.data.map((task: Task) => task.task_summary);
     sortTasks(getTaskSummaries);
     setTaskSummaries(getTaskSummaries);
   }, [tasksApi]);
@@ -60,6 +62,9 @@ export function TaskPage() {
     <TaskPanel
       className={classes.taskPanel}
       tasks={taskSummaries}
+      cleaningZones={Object.keys(places)}
+      loopWaypoints={Object.keys(places)}
+      deliveryWaypoints={Object.keys(places)}
       submitTask={submitTask}
       onRefreshClick={handleRefresh}
     />

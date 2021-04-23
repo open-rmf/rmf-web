@@ -15,10 +15,12 @@ import {
   FleetStateContext,
   LiftStateContext,
   NegotiationStatusContext,
+  PlacesContext,
   RmfHealthContext,
   RmfIngressContext,
   TasksContext,
 } from './contexts';
+import { Place } from './place';
 import { RmfIngress } from './rmf-ingress';
 
 function rmfStateContextProviderHOC<TopicT extends Topic>(
@@ -44,6 +46,25 @@ function rmfStateContextProviderHOC<TopicT extends Topic>(
 
     return <Context.Provider value={state}>{props.children}</Context.Provider>;
   };
+}
+
+function RmfPlacesContextsProvider({ children }: React.PropsWithChildren<unknown>): JSX.Element {
+  const buildingMap = React.useContext(BuildingMapContext);
+  const places = React.useMemo(() => {
+    if (!buildingMap) {
+      return {};
+    }
+    const navGraphs = buildingMap.levels.flatMap((level) => level.nav_graphs);
+    const vertices = navGraphs.flatMap((graph) => graph.vertices);
+    return vertices.reduce<Record<string, Place>>((obj, v) => {
+      if (v.name) {
+        obj[v.name] = { name: v.name, properties: {} };
+      }
+      return obj;
+    }, {});
+  }, [buildingMap]);
+
+  return <PlacesContext.Provider value={places}>{children}</PlacesContext.Provider>;
 }
 
 function BuildingMapProvider(props: React.PropsWithChildren<{}>): JSX.Element {
@@ -78,7 +99,9 @@ function BuildingMapProvider(props: React.PropsWithChildren<{}>): JSX.Element {
   // }, [buildingMap, transport, downloadingRef, showLoadingScreen]);
 
   return (
-    <BuildingMapContext.Provider value={buildingMap}>{props.children}</BuildingMapContext.Provider>
+    <BuildingMapContext.Provider value={buildingMap}>
+      <RmfPlacesContextsProvider>{props.children}</RmfPlacesContextsProvider>
+    </BuildingMapContext.Provider>
   );
 }
 
