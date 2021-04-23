@@ -15,6 +15,7 @@ import {
   Typography,
   useTheme,
 } from '@material-ui/core';
+import { Autocomplete } from '@material-ui/lab';
 import { KeyboardDateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import type {
   CleanTaskDescription,
@@ -64,29 +65,41 @@ function FormToolbar({ batchMode, onUploadFileClick }: FormToolbarProps) {
 }
 
 interface DeliveryTaskFormProps {
-  value: DeliveryTaskDescription;
+  taskDesc: DeliveryTaskDescription;
+  deliveryWaypoints: string[];
+  dispensers: string[];
+  ingestors: string[];
   onChange(deliveryTaskDescription: DeliveryTaskDescription): void;
 }
 
-function DeliveryTaskForm({ value, onChange }: DeliveryTaskFormProps) {
+function DeliveryTaskForm({
+  taskDesc,
+  deliveryWaypoints,
+  dispensers,
+  ingestors,
+  onChange,
+}: DeliveryTaskFormProps) {
   const theme = useTheme();
 
   return (
     <>
       <Grid container wrap="nowrap">
         <Grid style={{ flex: '1 1 60%' }}>
-          <TextField
+          <Autocomplete
             id="pickup-location"
-            label="Pickup Location"
+            freeSolo
+            autoSelect
             fullWidth
-            margin="normal"
-            value={value.pickup_place_name}
-            onChange={(ev) =>
+            options={deliveryWaypoints}
+            onChange={(_ev, newValue) =>
               onChange({
-                ...value,
-                pickup_place_name: ev.target.value,
+                ...taskDesc,
+                pickup_place_name: newValue,
               })
             }
+            renderInput={(params) => (
+              <TextField {...params} label="Pickup Location" margin="normal" />
+            )}
           />
         </Grid>
         <Grid
@@ -96,35 +109,39 @@ function DeliveryTaskForm({ value, onChange }: DeliveryTaskFormProps) {
             marginRight: theme.spacing(2),
           }}
         >
-          <TextField
+          <Autocomplete
             id="dispenser"
-            label="Dispenser"
+            freeSolo
+            autoSelect
             fullWidth
-            margin="normal"
-            value={value.pickup_dispenser}
-            onChange={(ev) => {
+            options={dispensers}
+            onChange={(_ev, newValue) =>
               onChange({
-                ...value,
-                pickup_dispenser: ev.target.value,
-              });
-            }}
+                ...taskDesc,
+                pickup_dispenser: newValue,
+              })
+            }
+            renderInput={(params) => <TextField {...params} label="Dispenser" margin="normal" />}
           />
         </Grid>
       </Grid>
       <Grid container wrap="nowrap">
         <Grid style={{ flex: '1 1 60%' }}>
-          <TextField
+          <Autocomplete
             id="dropoff-location"
-            label="Dropoff Location"
+            freeSolo
+            autoSelect
             fullWidth
-            margin="normal"
-            value={value.dropoff_place_name}
-            onChange={(ev) =>
+            options={deliveryWaypoints}
+            onChange={(_ev, newValue) =>
               onChange({
-                ...value,
-                dropoff_place_name: ev.target.value,
+                ...taskDesc,
+                dropoff_place_name: newValue,
               })
             }
+            renderInput={(params) => (
+              <TextField {...params} label="Dropoff Location" margin="normal" />
+            )}
           />
         </Grid>
         <Grid
@@ -134,18 +151,19 @@ function DeliveryTaskForm({ value, onChange }: DeliveryTaskFormProps) {
             marginRight: theme.spacing(2),
           }}
         >
-          <TextField
+          <Autocomplete
             id="ingestor"
-            label="Ingestor"
+            freeSolo
+            autoSelect
             fullWidth
-            margin="normal"
-            value={value.dropoff_ingestor}
-            onChange={(ev) => {
+            options={ingestors}
+            onChange={(_ev, newValue) =>
               onChange({
-                ...value,
-                dropoff_ingestor: ev.target.value,
-              });
-            }}
+                ...taskDesc,
+                dropoff_ingestor: newValue,
+              })
+            }
+            renderInput={(params) => <TextField {...params} label="Ingestor" margin="normal" />}
           />
         </Grid>
       </Grid>
@@ -154,42 +172,48 @@ function DeliveryTaskForm({ value, onChange }: DeliveryTaskFormProps) {
 }
 
 interface LoopTaskFormProps {
-  value: LoopTaskDescription;
+  taskDesc: LoopTaskDescription;
+  loopWaypoints: string[];
   onChange(loopTaskDescription: LoopTaskDescription): void;
 }
 
-function LoopTaskForm({ value, onChange }: LoopTaskFormProps) {
+function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) {
   const theme = useTheme();
+  const [numOfLoops, setNumOfLoops] = React.useState(taskDesc.num_loops.toString());
 
   return (
     <>
-      <TextField
+      <Autocomplete
         id="start-location"
-        label="Start Location"
+        freeSolo
+        autoSelect
         fullWidth
-        margin="normal"
-        value={value.start_name}
-        onChange={(ev) =>
+        options={loopWaypoints}
+        onChange={(_ev, newValue) =>
           onChange({
-            ...value,
-            start_name: ev.target.value,
+            ...taskDesc,
+            start_name: newValue,
           })
         }
+        renderInput={(params) => <TextField {...params} label="Start Location" margin="normal" />}
       />
       <Grid container wrap="nowrap">
         <Grid style={{ flex: '1 1 100%' }}>
-          <TextField
+          <Autocomplete
             id="finish-location"
-            label="Finish Location"
+            freeSolo
+            autoSelect
             fullWidth
-            margin="normal"
-            value={value.finish_name}
-            onChange={(ev) =>
+            options={loopWaypoints}
+            onChange={(_ev, newValue) =>
               onChange({
-                ...value,
-                finish_name: ev.target.value,
+                ...taskDesc,
+                finish_name: newValue,
               })
             }
+            renderInput={(params) => (
+              <TextField {...params} label="Finish Location" margin="normal" />
+            )}
           />
         </Grid>
         <Grid
@@ -201,16 +225,15 @@ function LoopTaskForm({ value, onChange }: LoopTaskFormProps) {
         >
           <TextField
             id="loops"
-            error={isNaN(value.num_loops)}
             type="number"
             label="Loops"
-            helperText={isNaN(value.num_loops) && 'Required'}
             margin="normal"
-            value={value.num_loops}
-            onChange={(ev) => {
+            value={numOfLoops}
+            onChange={(ev) => setNumOfLoops(ev.target.value)}
+            onBlur={(ev) => {
               onChange({
-                ...value,
-                num_loops: parseInt(ev.target.value),
+                ...taskDesc,
+                num_loops: parseInt(ev.target.value) || 1,
               });
             }}
           />
@@ -221,44 +244,28 @@ function LoopTaskForm({ value, onChange }: LoopTaskFormProps) {
 }
 
 interface CleanTaskFormProps {
-  value: CleanTaskDescription;
+  taskDesc: CleanTaskDescription;
+  cleaningZones: string[];
   onChange(cleanTaskDescription: CleanTaskDescription): void;
 }
 
-function CleanTaskForm({ value, onChange }: CleanTaskFormProps) {
+function CleanTaskForm({ taskDesc, cleaningZones, onChange }: CleanTaskFormProps) {
   return (
-    <TextField
+    <Autocomplete
       id="cleaning-zone"
-      label="Cleaning Zone"
+      freeSolo
+      autoSelect
       fullWidth
-      margin="normal"
-      value={value.cleaning_zone}
-      onChange={(ev) =>
+      options={cleaningZones}
+      onChange={(_ev, newValue) =>
         onChange({
-          cleaning_zone: ev.target.value,
+          ...taskDesc,
+          cleaning_zone: newValue,
         })
       }
+      renderInput={(params) => <TextField {...params} label="Cleaning Zone" margin="normal" />}
     />
   );
-}
-
-interface TaskDescriptionFormProps {
-  taskType: number;
-  value: TaskDescription;
-  onChange(taskDescription: TaskDescription): void;
-}
-
-function TaskDescriptionForm({ taskType, value, onChange }: TaskDescriptionFormProps) {
-  switch (taskType) {
-    case RmfModels.TaskType.TYPE_CLEAN:
-      return <CleanTaskForm value={value as CleanTaskDescription} onChange={onChange} />;
-    case RmfModels.TaskType.TYPE_LOOP:
-      return <LoopTaskForm value={value as LoopTaskDescription} onChange={onChange} />;
-    case RmfModels.TaskType.TYPE_DELIVERY:
-      return <DeliveryTaskForm value={value as DeliveryTaskDescription} onChange={onChange} />;
-    default:
-      return null;
-  }
 }
 
 function defaultCleanTask(): CleanTaskDescription {
@@ -302,15 +309,25 @@ export interface CreateTaskFormProps extends DialogProps {
    * Shows extra UI elements suitable for submittng batched tasks. Default to 'false'.
    */
   batchMode?: boolean;
+  cleaningZones?: string[];
+  loopWaypoints?: string[];
+  deliveryWaypoints?: string[];
+  dispensers?: string[];
+  ingestors?: string[];
   submitTask?(task: SubmitTask): Promise<void>;
-  onSuccess?(): void;
-  onFail?(error: Error): void;
+  onSuccess?(task: SubmitTask): void;
+  onFail?(error: Error, task: SubmitTask): void;
   onCancelClick?(ev: React.MouseEvent<HTMLButtonElement>): void;
   onUploadFileClick?(ev: React.MouseEvent<HTMLButtonElement>): void;
 }
 
 export function CreateTaskForm({
   batchMode = false,
+  cleaningZones = [],
+  loopWaypoints = [],
+  deliveryWaypoints = [],
+  dispensers = [],
+  ingestors = [],
   submitTask,
   onSuccess,
   onFail,
@@ -322,10 +339,47 @@ export function CreateTaskForm({
   const [taskType, setTaskType] = React.useState<number | undefined>(undefined);
   const [startDate, setStartDate] = React.useState(new Date());
   const [priority, setPriority] = React.useState(0);
+  const [priorityInput, setPriorityInput] = React.useState('0');
   const [taskDescription, setTaskDescrption] = React.useState<TaskDescription | undefined>(() =>
     defaultTaskDescription(taskType),
   );
   const [submitting, setSubmitting] = React.useState(false);
+
+  const renderTaskDescriptionForm = () => {
+    if (!taskType || !taskDescription) {
+      return null;
+    }
+    switch (taskType) {
+      case RmfModels.TaskType.TYPE_CLEAN:
+        return (
+          <CleanTaskForm
+            taskDesc={taskDescription as CleanTaskDescription}
+            cleaningZones={cleaningZones}
+            onChange={setTaskDescrption}
+          />
+        );
+      case RmfModels.TaskType.TYPE_LOOP:
+        return (
+          <LoopTaskForm
+            taskDesc={taskDescription as LoopTaskDescription}
+            loopWaypoints={loopWaypoints}
+            onChange={setTaskDescrption}
+          />
+        );
+      case RmfModels.TaskType.TYPE_DELIVERY:
+        return (
+          <DeliveryTaskForm
+            taskDesc={taskDescription as DeliveryTaskDescription}
+            deliveryWaypoints={deliveryWaypoints}
+            dispensers={dispensers}
+            ingestors={ingestors}
+            onChange={setTaskDescrption}
+          />
+        );
+      default:
+        return null;
+    }
+  };
 
   const handleTaskTypeChange = React.useCallback((ev: React.ChangeEvent<HTMLInputElement>) => {
     const newType = parseInt(ev.target.value);
@@ -336,10 +390,6 @@ export function CreateTaskForm({
   // no memo because deps would likely change
   const handleSubmit: React.MouseEventHandler<HTMLButtonElement> = (ev) => {
     ev.preventDefault();
-    if (!submitTask) {
-      onSuccess && onSuccess();
-      return;
-    }
     (async () => {
       const task: SubmitTask = {
         task_type: taskType,
@@ -347,12 +397,16 @@ export function CreateTaskForm({
         priority,
         description: taskDescription,
       };
+      if (!submitTask) {
+        onSuccess && onSuccess(task);
+        return;
+      }
       try {
         setSubmitting(true);
         await submitTask(task);
-        onSuccess && onSuccess();
+        onSuccess && onSuccess(task);
       } catch (e) {
-        onFail && onFail(e);
+        onFail && onFail(e, task);
       } finally {
         setSubmitting(false);
       }
@@ -402,23 +456,20 @@ export function CreateTaskForm({
               >
                 <TextField
                   id="priority"
-                  error={isNaN(priority)}
                   type="number"
                   label="Priority"
-                  helperText={isNaN(priority) && 'Required'}
                   margin="normal"
-                  value={priority}
-                  onChange={(ev) => setPriority(parseInt(ev.target.value))}
+                  value={priorityInput}
+                  onChange={(ev) => setPriorityInput(ev.target.value)}
+                  onBlur={() => {
+                    const newPriority = parseInt(priorityInput) || 0;
+                    setPriority(newPriority);
+                    setPriorityInput(newPriority.toString());
+                  }}
                 />
               </Grid>
             </Grid>
-            {taskType && taskDescription && (
-              <TaskDescriptionForm
-                taskType={taskType}
-                value={taskDescription}
-                onChange={setTaskDescrption}
-              />
-            )}
+            {renderTaskDescriptionForm()}
           </DialogContent>
           <Divider />
           <DialogActions>
