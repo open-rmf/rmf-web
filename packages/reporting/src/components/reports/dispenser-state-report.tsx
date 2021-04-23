@@ -10,7 +10,6 @@ import appConfig from '../../app-config';
 const DispenserStateReportConfig = () => {
   const getLogs = async (params: DefaultReportQueryPayload): Promise<DispenserStateRowsType> => {
     try {
-      // Gets data served by the project itself
       const response = await axios.get(`${appConfig.reportingServerUrl}/report/dispenser_state/`, {
         params: {
           toLogDate: params.toLogDate ? params.toLogDate.format() : null,
