@@ -12,6 +12,8 @@ pylint = "~=2.7"
 coverage = "~=5.5"
 # api-server
 api-server = {editable = true, path = "./packages/api-server"}
+# reporting-server
+reporting-server = {editable = true, path = "./packages/reporting-server"}
 aiohttp = "~=3.7"
 # rmf-models
 jinja2 = "~=2.11"
