@@ -36,11 +36,9 @@ export default function App(): JSX.Element | null {
   const authenticator = appConfig.authenticator;
   const [authInitialized, setAuthInitialized] = React.useState(!!authenticator.user);
   const [user, setUser] = React.useState<User | null>(authenticator.user || null);
-  const [ws, setWs] = React.useState<WebSocket | undefined>(undefined);
   const appRoutes = [DASHBOARD_ROUTE];
 
   React.useEffect(() => {
-    setWs(new WebSocket(appConfig.trajServerUrl));
     if (user) {
       return;
     }
@@ -82,7 +80,7 @@ export default function App(): JSX.Element | null {
       <ResourcesContext.Provider value={resourceManager.current}>
         <AuthenticatorContext.Provider value={authenticator}>
           <UserContext.Provider value={user}>
-            <TrajectorySocketContext.Provider value={ws}>
+            <TrajectorySocketContext.Provider value={new WebSocket(appConfig.trajServerUrl)}>
               <ThemeProvider theme={theme}>
                 <BrowserRouter>
                   <Switch>
