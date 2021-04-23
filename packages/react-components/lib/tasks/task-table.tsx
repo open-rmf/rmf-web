@@ -1,9 +1,8 @@
 import {
-  Grid,
   IconButton,
   makeStyles,
   Paper,
-  Snackbar,
+  PaperProps,
   Table,
   TableBody,
   TableCell,
@@ -15,13 +14,11 @@ import {
   Typography,
 } from '@material-ui/core';
 import { AddOutlined as AddOutlinedIcon, Refresh as RefreshIcon } from '@material-ui/icons';
-import { Alert, AlertProps } from '@material-ui/lab';
 import clsx from 'clsx';
 import { formatDistanceToNow } from 'date-fns';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { rosTimeToJs } from '../utils';
-import { CreateTaskForm, CreateTaskFormProps } from './create-task';
 import { TaskPhases } from './task-phases';
 import { taskStateToStr } from './utils';
 
@@ -91,14 +88,14 @@ export type PaginationOptions = Omit<
   'component'
 >;
 
-export interface TaskTableProps {
+export interface TaskTableProps extends PaperProps {
   /**
    * The current list of tasks to display, when pagination is enabled, this should only
    * contain the tasks for the current page.
    */
   tasks: RmfModels.TaskSummary[];
   paginationOptions?: PaginationOptions;
-  submitTask?: CreateTaskFormProps['submitTask'];
+  onCreateTaskClick?: React.MouseEventHandler<HTMLButtonElement>;
   onTaskClick?(ev: React.MouseEvent<HTMLDivElement>, task: RmfModels.TaskSummary): void;
   onRefreshClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
@@ -106,87 +103,50 @@ export interface TaskTableProps {
 export function TaskTable({
   tasks,
   paginationOptions,
-  submitTask,
+  onCreateTaskClick,
   onTaskClick,
   onRefreshClick,
+  ...paperProps
 }: TaskTableProps): JSX.Element {
   const classes = useStyles();
-  const [openCreateTaskForm, setOpenCreateTaskForm] = React.useState(false);
-  const [openSubmitResultSnackbar, setOpenSubmitResultSnackbar] = React.useState(false);
-  const [snackbarMessage, setSnackbarMessage] = React.useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = React.useState<AlertProps['severity']>('success');
-
   return (
-    <>
-      <Paper style={{ height: '100%' }}>
-        <Grid container direction="column" wrap="nowrap" style={{ height: 'inherit' }}>
-          <Toolbar>
-            <Typography className={classes.title} variant="h6">
-              Tasks
-            </Typography>
-            <IconButton onClick={onRefreshClick} aria-label="Refresh">
-              <RefreshIcon />
-            </IconButton>
-            <IconButton onClick={() => setOpenCreateTaskForm(true)} aria-label="Create Task">
-              <AddOutlinedIcon />
-            </IconButton>
-          </Toolbar>
-          <TableContainer style={{ flex: '1 1 auto' }}>
-            <Table
-              className={classes.table}
-              stickyHeader
-              size="small"
-              style={{ tableLayout: 'fixed' }}
-            >
-              <TableHead>
-                <TableRow>
-                  <TableCell>Task Id</TableCell>
-                  <TableCell>Assignee</TableCell>
-                  <TableCell>Start Time</TableCell>
-                  <TableCell>End Time</TableCell>
-                  <TableCell>State</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {tasks.map((task) => (
-                  <TaskRow
-                    key={task.task_id}
-                    task={task}
-                    onClick={(ev) => onTaskClick && onTaskClick(ev, task)}
-                  />
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          {paginationOptions && (
-            <TablePagination component="div" {...paginationOptions} style={{ flex: '0 0 auto' }} />
-          )}
-        </Grid>
-      </Paper>
-      <CreateTaskForm
-        open={openCreateTaskForm}
-        onClose={() => setOpenCreateTaskForm(false)}
-        submitTask={submitTask}
-        onCancelClick={() => setOpenCreateTaskForm(false)}
-        onSuccess={() => {
-          setOpenCreateTaskForm(false);
-          setSnackbarSeverity('success');
-          setSnackbarMessage('Successfully created task');
-          setOpenSubmitResultSnackbar(true);
-        }}
-        onFail={(e) => {
-          setSnackbarSeverity('error');
-          setSnackbarMessage(`Failed to create task: ${e.message}`);
-          setOpenSubmitResultSnackbar(true);
-        }}
-      />
-      <Snackbar
-        open={openSubmitResultSnackbar}
-        onClose={() => setOpenSubmitResultSnackbar(false)}
-        autoHideDuration={2000}
-      >
-        <Alert severity={snackbarSeverity}>{snackbarMessage}</Alert>
-      </Snackbar>
-    </>
+    <Paper {...paperProps}>
+      <Toolbar>
+        <Typography className={classes.title} variant="h6">
+          Tasks
+        </Typography>
+        <IconButton onClick={onRefreshClick} aria-label="Refresh">
+          <RefreshIcon />
+        </IconButton>
+        <IconButton onClick={onCreateTaskClick} aria-label="Create Task">
+          <AddOutlinedIcon />
+        </IconButton>
+      </Toolbar>
+      <TableContainer style={{ flex: '1 1 auto' }}>
+        <Table className={classes.table} stickyHeader size="small" style={{ tableLayout: 'fixed' }}>
+          <TableHead>
+            <TableRow>
+              <TableCell>Task Id</TableCell>
+              <TableCell>Assignee</TableCell>
+              <TableCell>Start Time</TableCell>
+              <TableCell>End Time</TableCell>
+              <TableCell>State</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {tasks.map((task) => (
+              <TaskRow
+                key={task.task_id}
+                task={task}
+                onClick={(ev) => onTaskClick && onTaskClick(ev, task)}
+              />
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      {paginationOptions && (
+        <TablePagination component="div" {...paginationOptions} style={{ flex: '0 0 auto' }} />
+      )}
+    </Paper>
   );
 }

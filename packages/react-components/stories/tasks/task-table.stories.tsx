@@ -1,7 +1,9 @@
+import { Snackbar } from '@material-ui/core';
+import { Alert, AlertProps } from '@material-ui/lab';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import { PaginationOptions, TaskTable, TaskTableProps } from '../../lib';
+import { CreateTaskForm, PaginationOptions, TaskTable, TaskTableProps } from '../../lib';
 import { makeTask } from '../../tests/test-data/tasks';
 
 const failedTask = makeTask('failed_task', 3, 3);
@@ -38,6 +40,10 @@ export default {
 } as Meta;
 
 export const Table: Story<TaskTableProps> = (args) => {
+  const [openCreateTaskForm, setOpenCreateTaskForm] = React.useState(false);
+  const [openSnackbar, setOpenSnackbar] = React.useState(false);
+  const [snackbarMessage, setSnackbarMessage] = React.useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = React.useState<AlertProps['severity']>('success');
   const [page, setPage] = React.useState(0);
   const paginationOptions: PaginationOptions = {
     count: args.tasks.length,
@@ -47,14 +53,35 @@ export const Table: Story<TaskTableProps> = (args) => {
     onChangePage: (_ev, newPage) => setPage(newPage),
   };
   return (
-    <div style={{ height: '95vh' }}>
+    <>
       <TaskTable
         {...args}
+        style={{ height: '95vh', display: 'flex', flexDirection: 'column' }}
         tasks={args.tasks.slice(page * 10, (page + 1) * 10)}
         paginationOptions={paginationOptions}
-        submitTask={async () => new Promise((res) => setTimeout(res, 1000))}
+        onCreateTaskClick={() => setOpenCreateTaskForm(true)}
       />
-    </div>
+      <CreateTaskForm
+        open={openCreateTaskForm}
+        onClose={() => setOpenCreateTaskForm(false)}
+        submitTask={async () => new Promise((res) => setTimeout(res, 1000))}
+        onCancelClick={() => setOpenCreateTaskForm(false)}
+        onSuccess={() => {
+          setOpenCreateTaskForm(false);
+          setSnackbarSeverity('success');
+          setSnackbarMessage('Successfully created task');
+          setOpenSnackbar(true);
+        }}
+        onFail={(e) => {
+          setSnackbarSeverity('error');
+          setSnackbarMessage(`Failed to create task: ${e.message}`);
+          setOpenSnackbar(true);
+        }}
+      />
+      <Snackbar open={openSnackbar} onClose={() => setOpenSnackbar(false)} autoHideDuration={2000}>
+        <Alert severity={snackbarSeverity}>{snackbarMessage}</Alert>
+      </Snackbar>
+    </>
   );
 };
 

@@ -1,9 +1,9 @@
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import * as RmfModels from 'rmf-models';
 import { TaskTable } from '../../lib';
 import { makeTask } from '../test-data/tasks';
-import userEvent from '@testing-library/user-event';
-import * as RmfModels from 'rmf-models';
 
 describe('TaskTable', () => {
   it('shows all tasks', () => {
@@ -13,10 +13,18 @@ describe('TaskTable', () => {
     root.getByText('task_1');
   });
 
-  it('clicking on create task button opens the create task form', () => {
-    const root = render(<TaskTable tasks={[]} />);
+  it('clicking on create task button trigger onCreateTaskClick', () => {
+    const spy = jasmine.createSpy();
+    const root = render(<TaskTable tasks={[]} onCreateTaskClick={spy} />);
     userEvent.click(root.getByLabelText('Create Task'));
-    root.getByText('Create Task');
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
+
+  it('clicking on refresh button triggers onRefreshClick', () => {
+    const spy = jasmine.createSpy();
+    const root = render(<TaskTable tasks={[]} onRefreshClick={spy} />);
+    userEvent.click(root.getByLabelText('Refresh'));
+    expect(spy).toHaveBeenCalledTimes(1);
   });
 
   it('smoke test for different task states', () => {
@@ -52,21 +60,5 @@ describe('TaskTable', () => {
       />,
     );
     root.getByText('1-1 of 1');
-  });
-
-  it('success snackbar is shown when successfully created a task', async () => {
-    const spy = jasmine.createSpy().and.resolveTo(undefined);
-    const root = render(<TaskTable tasks={[]} submitTask={spy} />);
-    userEvent.click(root.getByLabelText('Create Task'));
-    userEvent.click(root.getByLabelText('Submit'));
-    await waitFor(() => root.getByText('Successfully created task'));
-  });
-
-  it('failure snackbar is shown when failed to created a task', async () => {
-    const spy = jasmine.createSpy().and.rejectWith(new Error('error!!'));
-    const root = render(<TaskTable tasks={[]} submitTask={spy} />);
-    userEvent.click(root.getByLabelText('Create Task'));
-    userEvent.click(root.getByLabelText('Submit'));
-    await waitFor(() => root.getByText('Failed to create task', { exact: false }));
   });
 });
