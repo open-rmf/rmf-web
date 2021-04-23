@@ -1,12 +1,4 @@
-import {
-  AppBar as MuiAppBar,
-  IconButton,
-  makeStyles,
-  Menu,
-  MenuItem,
-  Toolbar,
-  Typography,
-} from '@material-ui/core';
+import { IconButton, Menu, MenuItem } from '@material-ui/core';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import HelpIcon from '@material-ui/icons/Help';
 import SettingsIcon from '@material-ui/icons/Settings';
@@ -30,7 +22,6 @@ export const AppBar = React.memo(
     );
 
     const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
-    const classes = useStyles();
     const authenticator = React.useContext(AuthenticatorContext);
     const user = React.useContext(UserContext);
     const { showTooltips } = React.useContext(TooltipsContext);
@@ -109,14 +100,5 @@ export const AppBar = React.memo(
     );
   },
 );
-
-const useStyles = makeStyles((_theme) => ({
-  toolbarTitle: {
-    flexGrow: 1,
-  },
-  avatar: {
-    cursor: 'pointer',
-  },
-}));
 
 export default AppBar;
