@@ -19,5 +19,5 @@ config = {
     "oidc_url": None,
     # client id registered with the authentication provider, this will be used to verify the
     # "aud" claim.
-    "client_id": "rmf-reporting-server",
+    "client_id": "reporting",
 }

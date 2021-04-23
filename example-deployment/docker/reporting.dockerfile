@@ -17,7 +17,7 @@ RUN cd /root/rmf-web/packages/reporting && \
   PUBLIC_URL='/reporting' \
   REACT_APP_REPORTING_SERVER='https://example.com/logserver/api/v1' \
   REACT_APP_AUTH_PROVIDER='keycloak' \
-  REACT_APP_KEYCLOAK_CONFIG='{ "realm": "rmf-web", "clientId": "dashboard", "url": "https://example.com/auth" }' \
+  REACT_APP_KEYCLOAK_CONFIG='{ "realm": "rmf-web", "clientId": "reporting", "url": "https://example.com/auth" }' \
   npm run build
 
 ###
@@ -27,8 +27,8 @@ COPY --from=0 /root/rmf-web/packages/reporting/build /usr/share/nginx/html/repor
 SHELL ["bash", "-c"]
 RUN echo -e 'server {\n\
   location / {\n\
-    root /usr/share/nginx/html;\n\
-    index index.html index.htm;\n\
-    try_files $uri /reporting/index.html;\n\
+  root /usr/share/nginx/html;\n\
+  index index.html index.htm;\n\
+  try_files $uri /reporting/index.html;\n\
   }\n\
-}\n' > /etc/nginx/conf.d/reporting.conf
+  }\n' > /etc/nginx/conf.d/reporting.conf

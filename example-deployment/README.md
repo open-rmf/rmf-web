@@ -127,7 +127,7 @@ When keycloak is ready, test it out by going to https://example.com/auth. The su
 For this example, we will
 
 1. Create a `rmf-web` realm.
-1. Create a `dashboard` client.
+1. Create a `dashboard` and `reporting` client.
 1. Add https://example.com to the list of allowed origins.
 1. Create an example user with user=example password=example.
 
