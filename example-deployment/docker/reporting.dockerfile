@@ -1,4 +1,3 @@
-# FIXME: we are importing from builder because we are installing packages related to ros on bootstrap.
 FROM ros:foxy-ros-base-focal
 
 RUN apt-get update && apt-get install -y curl && \
@@ -27,8 +26,8 @@ COPY --from=0 /root/rmf-web/packages/reporting/build /usr/share/nginx/html/repor
 SHELL ["bash", "-c"]
 RUN echo -e 'server {\n\
   location / {\n\
-  root /usr/share/nginx/html;\n\
-  index index.html index.htm;\n\
-  try_files $uri /reporting/index.html;\n\
+    root /usr/share/nginx/html;\n\
+    index index.html index.htm;\n\
+    try_files $uri /reporting/index.html;\n\
   }\n\
-  }\n' > /etc/nginx/conf.d/reporting.conf
+}\n' > /etc/nginx/conf.d/reporting.conf

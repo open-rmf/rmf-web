@@ -13,15 +13,13 @@ interface DefaultDatesFormProps {
 
 export const DefaultDatesForm = (props: DefaultDatesFormProps): React.ReactElement => {
   const { search } = props;
-  // The log contains information from different services, the label help us differentiate the service
+
   const [fromLogDate, setFromLogDate] = React.useState<MaterialUiPickersDate>(moment(new Date()));
   const [toLogDate, setToLogDate] = React.useState<MaterialUiPickersDate>(moment(new Date()));
 
   const classes = useStyles();
 
   const searchQuery = () => {
-    // If there are no dates, the backend will respond with the number of default logs
-    // (the logs could be from previous hours or days)
     search && search({ toLogDate, fromLogDate });
   };
 

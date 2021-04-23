@@ -34,8 +34,6 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
   const classes = useStyles();
 
   const searchQuery = () => {
-    // If there are no dates, the backend will respond with the number of default logs
-    // (the logs could be from previous hours or days)
     search && search({ toLogDate, fromLogDate, logLabel, logLevel });
   };
 

@@ -7,14 +7,12 @@ import { getLiftLogs } from '../utils';
 const getLogsPromise = async () => await getLiftLogs();
 
 it('smoke test', async () => {
-  // Added the waitFor because this component is updating a state inside a useEffect.
   await waitFor(() => {
     render(<LiftStateReport getLogs={getLogsPromise} />);
   });
 });
 
 it('doesn`t shows the table when logs list is empty', async () => {
-  // Added the waitFor because this component is updating a state inside a useEffect.
   await waitFor(() => {
     render(<LiftStateReport getLogs={async () => await []} />);
   });

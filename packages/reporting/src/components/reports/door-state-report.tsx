@@ -6,7 +6,6 @@ import appConfig from '../../app-config';
 const DoorStateReportConfig = () => {
   const getLogs = async (params: DefaultReportQueryPayload): Promise<DoorStateRowsType> => {
     try {
-      // Gets data served by the project itself
       const response = await axios.get(`${appConfig.reportingServerUrl}/report/door_state/`, {
         params: {
           toLogDate: params.toLogDate ? params.toLogDate.format() : null,

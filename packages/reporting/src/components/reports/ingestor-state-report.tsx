@@ -10,7 +10,6 @@ import appConfig from '../../app-config';
 const IngestorStateReportConfig = () => {
   const getLogs = async (params: DefaultReportQueryPayload): Promise<IngestorStateRowsType> => {
     try {
-      // Gets data served by the project itself
       const response = await axios.get(`${appConfig.reportingServerUrl}/report/ingestor_state/`, {
         params: {
           toLogDate: params.toLogDate ? params.toLogDate.format() : null,

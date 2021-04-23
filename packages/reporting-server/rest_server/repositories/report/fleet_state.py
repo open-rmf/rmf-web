@@ -24,9 +24,5 @@ async def get_fleet_state(
         query["created__lt"] = to_log_utc_time
 
     return await FleetState_Pydantic.from_queryset(
-        FleetState.filter(**query)
-        .offset(offset)
-        .limit(limit)
-        .order_by("-created")
-        .order_by("-created")
+        FleetState.filter(**query).offset(offset).limit(limit).order_by("-created")
     )

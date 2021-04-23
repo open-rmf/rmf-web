@@ -45,7 +45,6 @@ export const LogManagement = (props: LogManagementProps): React.ReactElement => 
   };
 
   const getMoreLogs = async () => {
-    console.log({ ...lastSearchParams, offset: logs.length });
     setLogs(logs.concat(await getLogs({ ...lastSearchParams, offset: logs.length })));
   };
 

@@ -15,7 +15,7 @@ to bootstrap only this package.
 # Run the server
 
 ```bash
-rmf_reporting_server
+reporting_server
 ```
 
 ## Configuration
@@ -26,8 +26,45 @@ Configuration is read from the file specified in the env `RMF_REPORT_REST_SERVER
 
 e.g.
 ```bash
-RMF_REPORT_REST_SERVER_CONFIG='my_config.py' rmf_reporting_server
+RMF_REPORT_REST_SERVER_CONFIG='my_config.py' reporting_server
 ```
+
+
+## Supported databases
+
+`reporting-server` uses [tortoise-orm](https://github.com/tortoise/tortoise-orm/) to perform database operations. Currently, the supported databases are
+
+* PostgreSQL
+* SQLite
+* MySQL
+* MariaDB
+
+by default it uses a in-memory sqlite instance, to use other databases, install rmf-server with the relevalent extras
+
+* PostgreSQL - postgres
+* MySQL - mysql
+* MariaDB - maria
+
+.e.g.
+
+```bash
+pip3 install reporting-server[postgres]
+```
+
+Then in your config, set the `db_url` accordingly, the url should be in the form
+
+```
+DB_TYPE://USERNAME:PASSWORD@HOST:PORT/DB_NAME?PARAM1=value&PARAM2=value
+```
+
+for example, to connect to postgres
+
+```
+postgres://<user>:<password>@<host>/<database>
+```
+
+for more information, see https://tortoise-orm.readthedocs.io/en/latest/databases.html.
+
 
 # Developers
 
@@ -39,18 +76,11 @@ RMF_REPORT_REST_SERVER_CONFIG='my_config.py' rmf_reporting_server
 npm run test
 ```
 
-### Running integration tests
-
-```bash
-npm run test:integration
-```
-
 ### Collecting code coverage
 
 ```bash
 npm run test:cov
 ```
-NOTE: This runs both unit and integration tests.
 
 Generate coverage report
 ```bash

@@ -6,7 +6,6 @@ import appConfig from '../../app-config';
 const LiftStateReportConfig = () => {
   const getLogs = async (params: DefaultReportQueryPayload): Promise<LiftStateRowsType> => {
     try {
-      // Gets data served by the project itself
       const response = await axios.get(`${appConfig.reportingServerUrl}/report/lift_state/`, {
         params: {
           toLogDate: params.toLogDate ? params.toLogDate.format() : null,
