@@ -64,7 +64,34 @@ kubectl apply -f k8s/rmf-server.yaml
 
 echo 'building dashboard image...'
 docker build -t rmf-web/dashboard -f docker/dashboard.dockerfile $rmf_web_ws
-echo 'publishing rmf-server image...'
+echo 'publishing dashboard image...'
 docker save rmf-web/dashboard | bash -c 'eval $(.bin/minikube docker-env) && docker load'
 echo 'deploying dashboard...'
 kubectl apply -f k8s/dashboard.yaml
+
+
+echo 'building reporting-server image...'
+docker build -t rmf-web/reporting-server -f docker/reporting-server.dockerfile $rmf_web_ws
+echo 'publishing reporting-server image...'
+docker save rmf-web/reporting-server | bash -c 'eval $(.bin/minikube docker-env) && docker load'
+echo 'deploying reporting-server...'
+kubectl apply -f k8s/reporting-server.yaml
+
+
+echo 'building reporting image...'
+docker build -t rmf-web/reporting -f docker/reporting.dockerfile $rmf_web_ws
+echo 'publishing reporting image...'
+docker save rmf-web/reporting | bash -c 'eval $(.bin/minikube docker-env) && docker load'
+echo 'deploying reporting-server...'
+kubectl apply -f k8s/reporting.yaml
+
+
+echo 'deploying Minio...'
+.bin/minikube kubectl -- apply -f k8s/minio.yaml
+
+echo 'Applying FluentD configmap ...'
+.bin/minikube kubectl -- apply -f k8s/fluentd-configmap.yaml
+echo 'deploying FluentD daemonset...'
+.bin/minikube kubectl -- apply -f k8s/fluentd.yaml
+
+

@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "db6c043be92a0fd9dc794bb3d26ae57cd12c3c93502bcf8ae8936a852e082e60"
+            "sha256": "741f60fe4a5bcf884f9c657426e5a6f70c787f8c63050443c10b3e46ceb5e771"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -88,11 +88,11 @@
         },
         "astroid": {
             "hashes": [
-                "sha256:6b0ed1af831570e500e2437625979eaa3b36011f66ddfc4ce930128610258ca9",
-                "sha256:cd80bf957c49765dce6d92c43163ff9d2abc43132ce64d4b1b47717c6d2522df"
+                "sha256:ad63b8552c70939568966811a088ef0bc880f99a24a00834abd0e3681b514f91",
+                "sha256:bea3f32799fbb8581f58431c12591bc20ce11cbc90ad82e2ea5717d94f2080d5"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==2.5.2"
+            "version": "==2.5.3"
         },
         "async-timeout": {
             "hashes": [
@@ -640,6 +640,10 @@
                 "sha256:fd45ff9293d9274c5008a2054ecef86a9bfe819a67c7be1afb65e69b405b3042"
             ],
             "version": "==2021.4.4"
+        },
+        "reporting-server": {
+            "editable": true,
+            "path": "./packages/reporting-server"
         },
         "rx": {
             "hashes": [
