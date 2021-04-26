@@ -5,8 +5,7 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import React from 'react';
 import DashboardTooltip from 'react-components/lib/tooltip';
 import TitleBar from 'react-components/lib/title-bar';
-import { TAB_NAMES } from '../util/url';
-import { AppControllerContext, TooltipsContext } from './app-contexts';
+import { AppContentContext, AppControllerContext, TooltipsContext } from './app-contexts';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
 
 export interface AppBarProps {
@@ -25,6 +24,7 @@ export const AppBar = React.memo(
     const authenticator = React.useContext(AuthenticatorContext);
     const user = React.useContext(UserContext);
     const { showTooltips } = React.useContext(TooltipsContext);
+    const { tabNames } = React.useContext(AppContentContext);
 
     async function handleLogout(): Promise<void> {
       try {
@@ -36,7 +36,7 @@ export const AppBar = React.memo(
 
     return (
       <div>
-        <TitleBar logoPath={'/roshealth-logo-white.png'} tabNames={TAB_NAMES}>
+        <TitleBar logoPath={'/roshealth-logo-white.png'} tabNames={tabNames}>
           <DashboardTooltip
             title="Define dashboard trajectory settings"
             id="setting-tooltip"

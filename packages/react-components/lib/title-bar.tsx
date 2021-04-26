@@ -37,8 +37,7 @@ const TitleBar = (props: TitleBarProps): React.ReactElement => {
 
   const [value, setValue] = React.useState(0);
 
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+  const handleChange = (event: React.ChangeEvent<unknown>, newValue: number) => {
     setValue(newValue);
   };
 

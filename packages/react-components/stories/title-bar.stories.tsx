@@ -1,6 +1,6 @@
 import React from 'react';
 import { Story, Meta } from '@storybook/react';
-import TitleBar from '../lib/title-bar';
+import TitleBar, { TitleBarProps } from '../lib/title-bar';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import IconButton from '@material-ui/core/IconButton';
 
@@ -9,10 +9,9 @@ export default {
   component: TitleBar,
 } as Meta;
 
-export const ExampleTitleBar: Story = (args) => {
-  const tabNames = ['Robots', 'Tasks', 'History', 'Admin', 'Settings'];
+const Template: Story<TitleBarProps> = (args) => {
   return (
-    <TitleBar logoPath={'/resources/roshealth-logo-white.png'} tabNames={tabNames} {...args}>
+    <TitleBar {...args}>
       <IconButton
         aria-label="account of current user"
         aria-controls="menu-appbar"
@@ -23,4 +22,11 @@ export const ExampleTitleBar: Story = (args) => {
       </IconButton>
     </TitleBar>
   );
+};
+
+export const SimpleTitleBar = Template.bind({});
+
+SimpleTitleBar.args = {
+  tabNames: ['Building', 'Robots', 'Tasks'],
+  logoPath: '/resources/roshealth-logo-white.png',
 };

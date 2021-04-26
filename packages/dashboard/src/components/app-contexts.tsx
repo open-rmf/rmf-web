@@ -54,3 +54,8 @@ export const AppControllerContext = React.createContext<AppController>({
 });
 
 export const AppConfigContext = React.createContext<AppConfig>(appConfig);
+
+export interface AppContent {
+  tabNames: string[];
+}
+export const AppContentContext = React.createContext<AppContent>({ tabNames: ['Building'] });
