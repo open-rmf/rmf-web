@@ -1,5 +1,6 @@
 import { Trajectory } from './robot-trajectory-manager';
 import TrajectorySocketManager from './trajectory-socket-manager';
+import { Authenticator } from 'rmf-auth';
 
 export enum NegotiationState {
   NOT_RESOLVED = 0,
@@ -52,9 +53,10 @@ export interface NegotiationTrajectoryResponse {
 }
 
 export class NegotiationStatusManager extends TrajectorySocketManager {
-  constructor(ws: WebSocket | undefined) {
+  constructor(ws: WebSocket | undefined, authenticator?: Authenticator) {
     super();
     if (ws) this._webSocket = ws;
+    if (authenticator) this._authenticator = authenticator;
   }
 
   allConflicts(): Record<number, NegotiationConflict> {
@@ -136,7 +138,10 @@ export class NegotiationStatusManager extends TrajectorySocketManager {
 
           this.removeOldConflicts();
         } else if (msg.error) {
-          throw new Error(msg.error);
+          if (msg.error === 'token expired') this._authenticator?.logout();
+          else {
+            throw new Error(msg.error);
+          }
         }
       };
     } else {
@@ -177,4 +182,5 @@ export class NegotiationStatusManager extends TrajectorySocketManager {
   private _conflicts: Record<string, NegotiationConflict> = {};
   private _webSocket?: WebSocket;
   private _statusUpdateLastTS: number = -1;
+  private _authenticator?: Authenticator;
 }

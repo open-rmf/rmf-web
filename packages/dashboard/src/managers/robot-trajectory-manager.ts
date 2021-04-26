@@ -1,5 +1,6 @@
 import { Knot } from '../util/cublic-spline';
 import TrajectorySocketManager from './trajectory-socket-manager';
+import { Authenticator } from 'rmf-auth';
 
 // RawVelocity received from server is in this format (x, y, theta)
 export type RawVelocity = [number, number, number];
@@ -69,9 +70,10 @@ interface Response {
 }
 
 export class DefaultTrajectoryManager extends TrajectorySocketManager {
-  constructor(ws: WebSocket) {
+  constructor(ws: WebSocket, authenticator?: Authenticator) {
     super();
     if (ws) this._webSocket = ws;
+    if (authenticator) this._authenticator = authenticator;
   }
 
   async latestTrajectory(request: TrajectoryRequest): Promise<TrajectoryResponse> {
@@ -100,8 +102,12 @@ export class DefaultTrajectoryManager extends TrajectorySocketManager {
   }
 
   private _checkResponse(request: Request, resp: Response): void {
-    if (resp.error) throw new Error(resp.error);
-    else if (request.request !== resp.response) {
+    if (resp.error) {
+      if (resp.error === 'token expired') this._authenticator?.logout();
+      else {
+        throw new Error(resp.error);
+      }
+    } else if (request.request !== resp.response) {
       console.warn(
         `received response for wrong request. Request: ${request.request} Response: ${resp.response}`,
       );
@@ -110,6 +116,7 @@ export class DefaultTrajectoryManager extends TrajectorySocketManager {
   }
 
   private _webSocket: WebSocket | undefined;
+  private _authenticator?: Authenticator;
 }
 
 export function rawKnotsToKnots(rawKnots: RawKnot[]): Knot[] {

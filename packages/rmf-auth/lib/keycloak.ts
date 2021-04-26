@@ -57,7 +57,7 @@ export default class KeycloakAuthenticator
       const refreshed = await this._inst.updateToken(30);
       refreshed && debug('token refreshed');
     } catch {
-      debug('token no refreshed');
+      debug('token not refreshed');
     }
 
     this._user = this._inst.idTokenParsed && {

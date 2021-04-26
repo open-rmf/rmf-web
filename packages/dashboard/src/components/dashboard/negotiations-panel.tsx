@@ -96,6 +96,7 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
   const [conflictIds, setConflictIds] = React.useState<string[]>([]);
 
   const token = React.useContext(AppConfigContext).authenticator.token;
+  const authenticator = React.useContext(AppConfigContext).authenticator;
 
   React.useEffect(() => {
     if (!spotlight) {
@@ -303,7 +304,12 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
         param: trajParams,
         token: token,
       });
-      if (resp.error) throw new Error(resp.error);
+      if (resp.error) {
+        if (resp.error === 'token expired') authenticator.logout();
+        else {
+          throw new Error(resp.error);
+        }
+      }
       if (resp.values === undefined) console.warn('values undefined!');
       if (resp.response !== 'negotiation_trajectory') {
         console.warn('wrong response, ignoring!');

@@ -3,6 +3,7 @@ import { User } from 'rmf-auth';
 import appConfig from '../../app-config';
 import { NegotiationStatusManager } from '../../managers/negotiation-status-manager';
 import { RobotTrajectoryManager } from '../../managers/robot-trajectory-manager';
+import { Authenticator } from 'rmf-auth';
 
 export class RmfIngress {
   sioClient?: SioClient;
@@ -12,8 +13,13 @@ export class RmfIngress {
   negotiationStatusManager: NegotiationStatusManager;
   trajectoryManager?: RobotTrajectoryManager;
 
-  constructor(user?: User, trajMgr?: RobotTrajectoryManager, ws?: WebSocket) {
-    this.negotiationStatusManager = new NegotiationStatusManager(ws);
+  constructor(
+    user?: User,
+    trajMgr?: RobotTrajectoryManager,
+    ws?: WebSocket,
+    authenticator?: Authenticator,
+  ) {
+    this.negotiationStatusManager = new NegotiationStatusManager(ws, authenticator);
     if (!user) {
       return;
     }

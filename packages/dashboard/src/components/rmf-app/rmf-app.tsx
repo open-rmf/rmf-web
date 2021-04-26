@@ -150,13 +150,13 @@ function RmfHealthContextsProvider(props: React.PropsWithChildren<{}>): JSX.Elem
 function RmfIngressProvider(props: React.PropsWithChildren<{}>) {
   const user = React.useContext(UserContext);
   const ws = React.useContext(TrajectorySocketContext);
-
+  const authenticator = React.useContext(AppConfigContext).authenticator;
   const [trajMgr, setTrajMgr] = React.useState<RobotTrajectoryManager | undefined>(undefined);
   React.useEffect(() => {
     (async () => {
-      if (ws) setTrajMgr(new DefaultTrajectoryManager(ws));
+      if (ws) setTrajMgr(new DefaultTrajectoryManager(ws, authenticator));
     })();
-  }, [ws]);
+  }, [ws, authenticator]);
 
   const rmfIngress = React.useMemo(() => new RmfIngress(user || undefined, trajMgr, ws), [
     user,
