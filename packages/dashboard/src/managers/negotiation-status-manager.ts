@@ -53,10 +53,9 @@ export interface NegotiationTrajectoryResponse {
 }
 
 export class NegotiationStatusManager extends TrajectorySocketManager {
-  constructor(ws: WebSocket | undefined, authenticator?: Authenticator) {
+  constructor(ws: WebSocket | undefined) {
     super();
     if (ws) this._webSocket = ws;
-    if (authenticator) this._authenticator = authenticator;
   }
 
   allConflicts(): Record<number, NegotiationConflict> {
@@ -138,10 +137,7 @@ export class NegotiationStatusManager extends TrajectorySocketManager {
 
           this.removeOldConflicts();
         } else if (msg.error) {
-          if (msg.error === 'token expired') this._authenticator?.logout();
-          else {
-            throw new Error(msg.error);
-          }
+          if (msg.error !== 'token expired') throw new Error(msg.error);
         }
       };
     } else {

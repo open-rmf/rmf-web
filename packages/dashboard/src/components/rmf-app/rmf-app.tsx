@@ -118,17 +118,17 @@ function NegotiationContextsProvider(props: React.PropsWithChildren<{}>): JSX.El
     negotiationStatusManager.allConflicts(),
   );
 
-  const token = React.useContext(AppConfigContext).authenticator.token;
+  const authenticator = React.useContext(AppConfigContext).authenticator;
 
   React.useEffect(() => {
-    negotiationStatusManager.startSubscription(token);
+    negotiationStatusManager.startSubscription(authenticator.token);
     const onUpdated = () => setNegotiationStatus(negotiationStatusManager.allConflicts());
     negotiationStatusManager.on('updated', onUpdated);
 
     return () => {
       negotiationStatusManager.off('updated', onUpdated);
     };
-  }, [negotiationStatusManager, token]);
+  }, [negotiationStatusManager, authenticator.token]);
 
   return (
     <NegotiationStatusContext.Provider value={negotiationStatus}>
@@ -150,13 +150,12 @@ function RmfHealthContextsProvider(props: React.PropsWithChildren<{}>): JSX.Elem
 function RmfIngressProvider(props: React.PropsWithChildren<{}>) {
   const user = React.useContext(UserContext);
   const ws = React.useContext(TrajectorySocketContext);
-  const authenticator = React.useContext(AppConfigContext).authenticator;
   const [trajMgr, setTrajMgr] = React.useState<RobotTrajectoryManager | undefined>(undefined);
   React.useEffect(() => {
     (async () => {
-      if (ws) setTrajMgr(new DefaultTrajectoryManager(ws, authenticator));
+      if (ws) setTrajMgr(new DefaultTrajectoryManager(ws));
     })();
-  }, [ws, authenticator]);
+  }, [ws]);
 
   const rmfIngress = React.useMemo(() => new RmfIngress(user || undefined, trajMgr, ws), [
     user,

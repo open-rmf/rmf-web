@@ -95,7 +95,6 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
   const [selected, setSelected] = React.useState<string>('');
   const [conflictIds, setConflictIds] = React.useState<string[]>([]);
 
-  const token = React.useContext(AppConfigContext).authenticator.token;
   const authenticator = React.useContext(AppConfigContext).authenticator;
 
   React.useEffect(() => {
@@ -302,13 +301,10 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
       const resp = await negotiationStatusManager.negotiationTrajectory({
         request: 'negotiation_trajectory',
         param: trajParams,
-        token: token,
+        token: authenticator.token,
       });
       if (resp.error) {
-        if (resp.error === 'token expired') authenticator.logout();
-        else {
-          throw new Error(resp.error);
-        }
+        if (resp.error !== 'token expired') throw new Error(resp.error);
       }
       if (resp.values === undefined) console.warn('values undefined!');
       if (resp.response !== 'negotiation_trajectory') {

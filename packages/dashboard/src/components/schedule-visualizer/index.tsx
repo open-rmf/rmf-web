@@ -66,7 +66,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   const { buildingMap, negotiationTrajStore, mapFloorSort, showTrajectories } = props;
   const negotiationColors = React.useMemo(() => new NegotiationColors(), []);
 
-  const token = React.useContext(AppConfigContext).authenticator.token;
+  const authenticator = React.useContext(AppConfigContext).authenticator;
 
   const mapFloorLayerSorted = React.useMemo(
     () =>
@@ -188,6 +188,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
         if (!curMapFloorLayer || !trajManager) {
           return;
         }
+
         const resp = await trajManager.latestTrajectory({
           request: 'trajectory',
           param: {
@@ -195,7 +196,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
             duration: trajLookahead,
             trim: true,
           },
-          token: token,
+          token: authenticator.token,
         });
 
         debug('set trajectories');
@@ -213,7 +214,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       interval = window.setInterval(updateTrajectory, trajAnimDuration);
     })();
     return () => clearInterval(interval);
-  }, [trajManager, curMapFloorLayer, trajAnimDuration, showTrajectories, token]);
+  }, [trajManager, curMapFloorLayer, trajAnimDuration, showTrajectories, authenticator.token]);
 
   function handleBaseLayerChange(e: L.LayersControlEvent): void {
     debug('set current level name');
