@@ -304,7 +304,10 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
         token: authenticator.token,
       });
       if (resp.error) {
-        if (resp.error !== 'token expired') throw new Error(resp.error);
+        if (resp.error === 'token expired') authenticator?.logout();
+        else {
+          throw new Error(resp.error);
+        }
       }
       if (resp.values === undefined) console.warn('values undefined!');
       if (resp.response !== 'negotiation_trajectory') {

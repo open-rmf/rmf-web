@@ -13,7 +13,7 @@ export class RmfIngress {
   trajectoryManager?: RobotTrajectoryManager;
 
   constructor(user?: User, trajMgr?: RobotTrajectoryManager, ws?: WebSocket) {
-    this.negotiationStatusManager = new NegotiationStatusManager(ws);
+    this.negotiationStatusManager = new NegotiationStatusManager(ws, appConfig.authenticator);
     if (!user) {
       return;
     }
