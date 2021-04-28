@@ -1,6 +1,5 @@
 import { Trajectory } from './robot-trajectory-manager';
 import TrajectorySocketManager from './trajectory-socket-manager';
-import { Authenticator } from 'rmf-auth';
 
 export enum NegotiationState {
   NOT_RESOLVED = 0,
@@ -178,5 +177,4 @@ export class NegotiationStatusManager extends TrajectorySocketManager {
   private _conflicts: Record<string, NegotiationConflict> = {};
   private _webSocket?: WebSocket;
   private _statusUpdateLastTS: number = -1;
-  private _authenticator?: Authenticator;
 }
