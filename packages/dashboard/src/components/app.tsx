@@ -33,10 +33,13 @@ function AppIntrinsics({ children }: React.PropsWithChildren<{}>): JSX.Element |
 }
 
 export default function App(): JSX.Element | null {
-  const authenticator = appConfig.authenticator;
-  const [authInitialized, setAuthInitialized] = React.useState(!!authenticator.user);
-  const [user, setUser] = React.useState<User | null>(authenticator.user || null);
+  const [authInitialized, setAuthInitialized] = React.useState(!!appConfig.authenticator.user);
+  const [authenticator, setAuthenticator] = React.useState(appConfig.authenticator);
+  const [user, setUser] = React.useState<User | null>(appConfig.authenticator.user || null);
   const appRoutes = [DASHBOARD_ROUTE];
+
+  const onTokenExpired = () => setAuthenticator(appConfig.authenticator);
+  authenticator.on('tokenExpired', onTokenExpired);
 
   React.useEffect(() => {
     if (user) {

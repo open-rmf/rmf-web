@@ -48,7 +48,9 @@ export default class KeycloakAuthenticator
       this.emit('userChanged', null);
     };
 
-    this._inst.onTokenExpired = async () => {
+    // token lifespan is one minute
+    // set it to refresh every 55 seconds
+    setInterval(async () => {
       try {
         const refreshed = await this._inst.updateToken(30);
         refreshed && debug('token refreshed');
@@ -57,10 +59,11 @@ export default class KeycloakAuthenticator
           username: (this._inst.idTokenParsed as any).preferred_username,
           token: this._inst.token || '',
         };
+        this.emit('tokenExpired', null);
       } catch {
         debug('token not refreshed');
       }
-    };
+    }, 55000);
 
     await this._inst.init({
       onLoad: 'check-sso',

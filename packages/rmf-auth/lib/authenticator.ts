@@ -4,6 +4,7 @@ import { User } from './user';
 
 export type AuthenticatorEventType = {
   userChanged: [User | null];
+  tokenExpired: null;
 };
 
 export interface Authenticator extends EventEmitter<AuthenticatorEventType> {
