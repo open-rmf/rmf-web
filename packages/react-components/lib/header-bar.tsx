@@ -71,7 +71,7 @@ export const HeaderBar = (props: HeaderBarProps): React.ReactElement => {
           <Tabs
             variant="standard"
             onChange={handleChange}
-            value={value}
+            value={0}
             TabIndicatorProps={{
               style: {
                 display: 'none',
