@@ -45,7 +45,7 @@ class BasicAuthenticator:
                 credentials.username, os.environ["FLUENTD_USER"]
             )
             correct_password = secrets.compare_digest(
-                credentials.password, os.environ["FLUENTD_USER"]
+                credentials.password, os.environ["FLUENTD_PASSWORD"]
             )
         except Exception as e:
             raise AuthenticationError(str(e)) from e
