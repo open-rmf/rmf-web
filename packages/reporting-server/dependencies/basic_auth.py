@@ -4,7 +4,7 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from rest_server.app_config import app_config
 from rest_server.authenticator import AuthenticationError, BasicAuthenticator
 
-if app_config.jwt_public_key:
+if app_config.basic_auth:
     authenticator = BasicAuthenticator()
 
     security = HTTPBasic()

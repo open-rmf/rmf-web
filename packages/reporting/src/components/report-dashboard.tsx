@@ -16,6 +16,9 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
 import { ReportContainer, Reports } from './report-list';
 import { ExpandableMultilevelMenuProps, MultiLevelMenu } from 'react-components';
+import { Menu, MenuItem } from '@material-ui/core';
+import { AuthenticatorContext } from './auth-contexts';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
 const drawerWidth = 240;
 
@@ -74,6 +77,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     }),
     marginLeft: 0,
   },
+  toolbarTitle: {
+    flexGrow: 1,
+  },
 }));
 
 export interface ReportDashboardProps {
@@ -87,6 +93,7 @@ export const ReportDashboard = (props: ReportDashboardProps) => {
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
   const [currentReport, setCurrentReport] = React.useState(Reports.queryAllLogs);
+  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
 
   const setReport = React.useCallback(
     (report: Reports) => {
@@ -102,6 +109,16 @@ export const ReportDashboard = (props: ReportDashboardProps) => {
   const handleDrawerClose = () => {
     setOpen(false);
   };
+
+  const authenticator = React.useContext(AuthenticatorContext);
+
+  async function handleLogout(): Promise<void> {
+    try {
+      await authenticator.logout();
+    } catch (e) {
+      console.error(`error logging out: ${e.message}`);
+    }
+  }
 
   return (
     <div className={classes.root}>
@@ -122,9 +139,39 @@ export const ReportDashboard = (props: ReportDashboardProps) => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap>
+          <Typography variant="h6" className={classes.toolbarTitle}>
             Reports
           </Typography>
+          {authenticator.user && (
+            <>
+              <IconButton
+                id="user-btn"
+                aria-label={'user-btn'}
+                color="inherit"
+                onClick={(event) => setAnchorEl(event.currentTarget)}
+              >
+                <AccountCircleIcon />
+              </IconButton>
+              <Menu
+                anchorEl={anchorEl}
+                getContentAnchorEl={null}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={!!anchorEl}
+                onClose={() => setAnchorEl(null)}
+              >
+                <MenuItem id="logout-btn" onClick={handleLogout}>
+                  Logout
+                </MenuItem>
+              </Menu>
+            </>
+          )}
         </Toolbar>
       </AppBar>
       <Drawer
