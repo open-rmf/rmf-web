@@ -48,7 +48,7 @@ export const HeaderBar = (props: HeaderBarProps): React.ReactElement => {
 
   const populateTabs = () => {
     const tabs = tabNames.map((tabName, index) => (
-      <Tab key={index} label={tabName} value={index} />
+      <Tab key={index} label={tabName} value={index} aria-label={`tab-${index}`} />
     ));
     return tabs;
   };
