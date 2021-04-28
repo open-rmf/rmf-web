@@ -7,11 +7,41 @@ data:
     ################################################################
     # This source gets all logs from local docker host
     @include pods-fluent.conf
-    # @include minio-fluent-dev.conf
+    @include reporting-server.conf
+    @include reporting-server-all-logs.conf
     # Use this configuration for production
     @include minio-fluent.conf
+    # @include minio-fluent-dev.conf
   # This is for running fluentd in the cloud
   pods-fluent.conf: |-
+    <source>
+      @type tail
+      read_from_head true
+      tag rmf.all.*
+      path /var/log/containers/*.log
+      pos_file /var/log/fluent/fluentd-rmf-all.log.pos
+      exclude_path ["/var/log/containers/fluent*"]
+      <parse>
+        @type kubernetes
+        @type "#{ENV['FLUENT_CONTAINER_TAIL_PARSER_TYPE'] || 'json'}"
+        time_format %Y-%m-%dT%H:%M:%S.%NZ
+      </parse>
+    </source>
+
+    <source>
+      @type tail
+      read_from_head true
+      tag rmf.server.*
+      path /var/log/containers/rmf-server*.log
+      pos_file /var/log/fluent/fluentd-rmf-server.log.pos
+      exclude_path ["/var/log/containers/fluent*"]
+      <parse>
+        @type kubernetes
+        @type "#{ENV['FLUENT_CONTAINER_TAIL_PARSER_TYPE'] || 'json'}"
+        time_format %Y-%m-%dT%H:%M:%S.%NZ
+      </parse>
+    </source>
+
     <source>
       @type tail
       read_from_head true
@@ -65,5 +95,36 @@ data:
         timekey_wait 1m             # Wait for 60 seconds before flushing
         timekey_use_utc true        # Use this option if you prefer UTC timestamps
         chunk_limit_size 5mb       # The maximum size of each chunk
+      </buffer>
+    </match>
+
+  reporting-server.conf: |-
+    <match rmf.server.**>
+      @type http
+      endpoint http://reporting-server:8002/log/rmfserver/
+      http_method post
+      open_timeout 3
+      # content_type
+      <format>
+        @type json
+      </format>
+      json_array true
+      <buffer>
+        flush_interval 10s
+      </buffer>
+    </match>
+
+  reporting-server-all-logs.conf: |-
+    <match rmf.all.**>
+      @type http
+      endpoint http://reporting-server:8002/log/all/
+      http_method post
+      open_timeout 3
+      <format>
+        @type json
+      </format>
+      json_array true
+      <buffer>
+        flush_interval 10s
       </buffer>
     </match>

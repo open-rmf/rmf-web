@@ -3,6 +3,7 @@ import KeycloakAuthenticator from 'rmf-auth/lib/keycloak';
 import StubAuthenticator from 'rmf-auth/lib/stub';
 export interface AppConfig {
   authenticator: Authenticator;
+  reportingServerUrl: string;
 }
 
 export const appConfig: AppConfig = (() => {
@@ -27,8 +28,13 @@ export const appConfig: AppConfig = (() => {
     }
   })();
 
+  if (!process.env.REACT_APP_REPORTING_SERVER) {
+    throw new Error('REACT_APP_REPORTING_SERVER is required');
+  }
+
   return {
     authenticator,
+    reportingServerUrl: process.env.REACT_APP_REPORTING_SERVER,
   };
 })();
 

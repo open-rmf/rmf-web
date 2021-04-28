@@ -9,4 +9,5 @@ export enum LogLevel {
   Info = 'info',
   Debug = 'debug',
   Trace = 'trace',
+  All = 'all',
 }

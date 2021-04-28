@@ -38,6 +38,21 @@ function authHeaders(token) {
       },
     );
 
+    await tryRequest(
+      `${baseUrl}/admin/realms/rmf-web/clients`,
+      {
+        method: 'POST',
+        headers: authHeaders(token),
+      },
+      {
+        clientId: 'reporting',
+        rootUrl: 'https://example.com',
+        redirectUris: ['https://example.com/*'],
+        webOrigins: ['https://example.com'],
+        publicClient: true,
+      },
+    );
+
     // create example user
     await tryRequest(
       `${baseUrl}/admin/realms/rmf-web/users`,
