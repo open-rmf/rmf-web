@@ -1,4 +1,8 @@
+import os
+import secrets
+
 import jwt
+from fastapi.security import HTTPBasicCredentials
 
 from .app_config import app_config
 
@@ -27,3 +31,26 @@ class JwtAuthenticator:
             )
         except jwt.InvalidTokenError as e:
             raise AuthenticationError(str(e)) from e
+
+
+class BasicAuthenticator:
+    """
+    Authenticates with a Basic authentication method, the client must send an auth params with
+    a "user" and "password".
+    """
+
+    def verify_credentials(self, credentials: HTTPBasicCredentials):
+        try:
+            correct_username = secrets.compare_digest(
+                credentials.username, os.environ["FLUENTD_USER"]
+            )
+            correct_password = secrets.compare_digest(
+                credentials.password, os.environ["FLUENTD_USER"]
+            )
+        except Exception as e:
+            raise AuthenticationError(str(e)) from e
+
+        if not (correct_username and correct_password):
+            raise AuthenticationError("Incorrect email or password")
+
+        return credentials.username

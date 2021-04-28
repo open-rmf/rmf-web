@@ -5,7 +5,7 @@ import logging
 import os
 import sys
 
-from dependencies import auth_scheme, logger
+from dependencies import auth_scheme, basic_auth_scheme, logger
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from rest_server.routers import log_router, report_router
@@ -24,9 +24,7 @@ else:
 
 logger.info("started app")
 
-app = FastAPI(
-    dependencies=[Depends(auth_scheme)],
-)
+app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
@@ -36,8 +34,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(log_router, prefix="/log", tags=["log"])
-app.include_router(report_router, prefix="/report", tags=["report"])
+app.include_router(
+    log_router, prefix="/log", tags=["log"], dependencies=[Depends(basic_auth_scheme)]
+)
+app.include_router(
+    report_router,
+    prefix="/report",
+    tags=["report"],
+    dependencies=[Depends(auth_scheme)],
+)
 
 register_tortoise(
     app,

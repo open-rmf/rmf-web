@@ -112,6 +112,11 @@ data:
       <buffer>
         flush_interval 10s
       </buffer>
+      <auth>
+        method basic
+        username "#{ENV['FLUENTD_USER']}"
+        password "#{ENV['FLUENTD_PASSWORD']}"
+      </auth>
     </match>
 
   reporting-server-all-logs.conf: |-
@@ -127,4 +132,9 @@ data:
       <buffer>
         flush_interval 10s
       </buffer>
+      <auth>
+        method basic
+        username "#{ENV['FLUENTD_USER']}"
+        password "#{ENV['FLUENTD_PASSWORD']}"
+      </auth>
     </match>
