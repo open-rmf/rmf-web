@@ -59,7 +59,7 @@ export default class KeycloakAuthenticator
           username: (this._inst.idTokenParsed as any).preferred_username,
           token: this._inst.token || '',
         };
-        this.emit('tokenExpired', null);
+        this.emit('tokenRefresh', null);
       } catch {
         debug('token not refreshed');
       }

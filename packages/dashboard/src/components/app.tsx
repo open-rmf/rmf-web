@@ -39,7 +39,7 @@ export default function App(): JSX.Element | null {
   const appRoutes = [DASHBOARD_ROUTE];
 
   const onTokenExpired = () => setAuthenticator(appConfig.authenticator);
-  authenticator.on('tokenExpired', onTokenExpired);
+  authenticator.on('tokenRefresh', onTokenExpired);
 
   React.useEffect(() => {
     if (user) {
