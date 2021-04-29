@@ -2,25 +2,15 @@ import { createMuiTheme } from '@material-ui/core/styles';
 
 declare module '@material-ui/core/styles/createMuiTheme' {
   interface Theme {
-    colors: {
-      black: React.CSSProperties['color'];
-      xanadu: React.CSSProperties['color'];
-      stPatricksBlue: React.CSSProperties['color'];
-      blueYonder: React.CSSProperties['color'];
-      ghostWhite: React.CSSProperties['color'];
-      indianYellow: React.CSSProperties['color'];
-      fireOpal: React.CSSProperties['color'];
+    fontColors: {
+      lightTheme: React.CSSProperties['color'];
+      darkTheme: React.CSSProperties['color'];
     };
   }
   interface ThemeOptions {
-    colors: {
-      black: React.CSSProperties['color'];
-      xanadu: React.CSSProperties['color'];
-      stPatricksBlue: React.CSSProperties['color'];
-      blueYonder: React.CSSProperties['color'];
-      ghostWhite: React.CSSProperties['color'];
-      indianYellow: React.CSSProperties['color'];
-      fireOpal: React.CSSProperties['color'];
+    fontColors: {
+      lightTheme: React.CSSProperties['color'];
+      darkTheme: React.CSSProperties['color'];
     };
   }
 }
@@ -28,25 +18,48 @@ declare module '@material-ui/core/styles/createMuiTheme' {
 export const customTheme = createMuiTheme({
   palette: {
     primary: {
-      // Dark cornflower blue
-      main: '#1F396B',
-      light: '#4B6088',
-      dark: '#15274A',
+      // light theme background - white
+      main: '#FFFFFF',
+      // dark theme background - dark cornflower blue
+      dark: '#1F396B',
     },
+    // used for things like sub-tabs ... etc
     secondary: {
+      // light theme - snow
+      main: '#F9F9F9',
+      // dark theme - st patricks blue
+      dark: '#103375',
+    },
+    success: {
       // Light sea green
       main: '#20A39E',
       light: '#4CB5B1',
       dark: '#16726E',
     },
+    error: {
+      // fireOpal
+      main: '#F25F5C',
+      dark: '#D63F3C',
+      light: '#F0A0A1',
+    },
+    warning: {
+      // indian yellow
+      main: '#DEA54B',
+      dark: '#D4833C',
+      light: '#EBB163',
+    },
+    info: {
+      // wisteria
+      // used in admin/information buttons/indicators
+      main: '#BB86FC',
+      dark: '#8E44EA',
+      light: '#E2CDFD',
+    },
   },
-  colors: {
-    black: '#000000',
-    xanadu: '#6B7D7D',
-    stPatricksBlue: '#103375',
-    blueYonder: '#5873A8',
-    ghostWhite: '#FBFCFF',
-    indianYellow: '#DEA54B',
-    fireOpal: '#F25F5C',
+  fontColors: {
+    // dark cornflower blue
+    lightTheme: '#1F396B',
+    // ghost white
+    darkTheme: '#FBFCFF',
   },
 });
