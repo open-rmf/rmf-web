@@ -114,11 +114,6 @@ spec:
           env:
             - name: RMF_REPORT_REST_SERVER_CONFIG
               value: /reporting-server-config/reporting_server_config.py
-            # FIXME: This should be on k8s secrets.
-            # - name: FLUENTD_USER
-            #   value: "fluentd"
-            # - name: FLUENTD_PASSWORD
-            #   value: "fluentd123"
           volumeMounts:
             - mountPath: /jwt-configmap
               name: jwt-pub-key
