@@ -49,21 +49,27 @@ export default class KeycloakAuthenticator
     };
 
     // token lifespan is one minute
-    // set it to refresh every 55 seconds
-    setInterval(async () => {
-      try {
-        const refreshed = await this._inst.updateToken(30);
-        refreshed && debug('token refreshed');
-        this._user = this._inst.tokenParsed && {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          username: (this._inst.idTokenParsed as any).preferred_username,
-          token: this._inst.token || '',
-        };
-        this.emit('tokenRefresh', null);
-      } catch {
-        debug('token not refreshed');
-      }
-    }, 55000);
+    // set it to refresh every 5 seconds before expiry
+    setInterval(
+      async () => {
+        try {
+          const refreshed = await this._inst.updateToken(30);
+          refreshed && debug('token refreshed');
+          this._user = this._inst.tokenParsed && {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            username: (this._inst.idTokenParsed as any).preferred_username,
+            token: this._inst.token || '',
+          };
+          this.emit('tokenRefresh', null);
+        } catch {
+          debug('token not refreshed');
+        }
+        // assumes that no access token has a shorter lifespan than 5 seconds
+      },
+      this._inst.tokenParsed?.exp && this._inst.tokenParsed?.iat
+        ? (this._inst.tokenParsed?.exp - this._inst.tokenParsed?.iat) * 100 + 5000
+        : 55000,
+    );
 
     await this._inst.init({
       onLoad: 'check-sso',
