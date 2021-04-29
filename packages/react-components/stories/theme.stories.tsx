@@ -38,47 +38,70 @@ const ColorCard = (props: ColorCardProps): JSX.Element => {
 
 const ColorDisplay = (): JSX.Element => {
   const useStyles = makeStyles((theme) => ({
-    main: {
+    lightThemeMain: {
       backgroundColor: theme.palette.primary.main,
     },
-    secondary: {
+    darkThemeMain: {
+      backgroundColor: theme.palette.primary.dark,
+    },
+    lightThemeSecondary: {
       backgroundColor: theme.palette.secondary.main,
     },
-    black: {
-      backgroundColor: theme.colors.black,
+    darkThemeSecondary: {
+      backgroundColor: theme.palette.secondary.dark,
     },
-    xanadu: {
-      backgroundColor: theme.colors.xanadu,
+    success: {
+      backgroundColor: theme.palette.success.main,
     },
-    stPatrickBlue: {
-      backgroundColor: theme.colors.stPatricksBlue,
+    error: {
+      backgroundColor: theme.palette.error.main,
     },
-    blueYonder: {
-      backgroundColor: theme.colors.blueYonder,
+    warning: {
+      backgroundColor: theme.palette.warning.main,
     },
-    ghostWhite: {
-      backgroundColor: theme.colors.ghostWhite,
+    info: {
+      backgroundColor: theme.palette.info.main,
     },
-    indianYellow: {
-      backgroundColor: theme.colors.indianYellow,
+    lightThemeFont: {
+      backgroundColor: theme.fontColors.lightTheme,
     },
-    fireOpal: {
-      backgroundColor: theme.colors.fireOpal,
+    darkThemeFont: {
+      backgroundColor: theme.fontColors.darkTheme,
+    },
+    // non theme related styles
+    header: {
+      marginLeft: '1rem',
     },
   }));
   const classes = useStyles();
 
   return (
-    <div style={{ display: 'flex' }}>
-      <ColorCard color={classes.main} colorName={'Dark Corn Flower Blue (Main)'} />
-      <ColorCard color={classes.secondary} colorName={'Light Sea Green (Secondary)'} />
-      <ColorCard color={classes.black} colorName={'Black'} />
-      <ColorCard color={classes.xanadu} colorName={'Xanadu'} />
-      <ColorCard color={classes.stPatrickBlue} colorName={"St Patrick's Blue"} />
-      <ColorCard color={classes.blueYonder} colorName={'Blue Yonder'} />
-      <ColorCard color={classes.ghostWhite} colorName={'Ghost White'} />
-      <ColorCard color={classes.indianYellow} colorName={'Indian Yellow'} />
-      <ColorCard color={classes.fireOpal} colorName={'Fire Opal'} />
+    <div>
+      <Typography variant="h5" className={classes.header}>
+        Light Theme Colors
+      </Typography>
+      <div style={{ display: 'flex' }}>
+        <ColorCard color={classes.lightThemeMain} colorName={'Main - White'} />
+        <ColorCard color={classes.lightThemeSecondary} colorName={'Secondary - Snow'} />
+        <ColorCard color={classes.lightThemeFont} colorName={'Font - Dark Corn Flower Blue'} />
+      </div>
+      <Typography variant="h5" className={classes.header}>
+        Dark Theme Colors
+      </Typography>
+      <div style={{ display: 'flex' }}>
+        <ColorCard color={classes.darkThemeMain} colorName={'Main - Dark Corn Flower Blue'} />
+        <ColorCard color={classes.darkThemeSecondary} colorName={'Secondary - St Patricks Blue'} />
+        <ColorCard color={classes.darkThemeFont} colorName={'Font - Ghost White'} />
+      </div>
+      <Typography variant="h5" className={classes.header}>
+        Common Theme Colors
+      </Typography>
+      <div style={{ display: 'flex' }}>
+        <ColorCard color={classes.success} colorName={'Success - Light sea green'} />
+        <ColorCard color={classes.error} colorName={'Error - Fire Opal'} />
+        <ColorCard color={classes.warning} colorName={'Warning - Indian Yellow'} />
+        <ColorCard color={classes.info} colorName={'Info - Wisteria'} />
+      </div>
     </div>
   );
 };
