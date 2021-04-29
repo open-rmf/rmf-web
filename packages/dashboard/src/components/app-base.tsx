@@ -2,7 +2,6 @@ import { Grid, makeStyles } from '@material-ui/core';
 import React from 'react';
 import { loadSettings, saveSettings } from '../settings';
 import {
-  AppContentContext,
   AppController,
   AppControllerContext,
   SettingsContext,
