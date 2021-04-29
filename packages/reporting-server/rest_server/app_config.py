@@ -7,7 +7,6 @@ from typing import Optional
 
 @dataclass
 class AppConfig:
-    basic_auth: bool
     host: str
     port: int
     db_url: str

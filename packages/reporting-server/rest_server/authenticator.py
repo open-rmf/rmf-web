@@ -31,20 +31,3 @@ class JwtAuthenticator:
             )
         except jwt.InvalidTokenError as e:
             raise AuthenticationError(str(e)) from e
-
-
-def verify_basic_credentials(credentials: HTTPBasicCredentials):
-    try:
-        correct_username = secrets.compare_digest(
-            credentials.username, os.environ["FLUENTD_USER"]
-        )
-        correct_password = secrets.compare_digest(
-            credentials.password, os.environ["FLUENTD_PASSWORD"]
-        )
-    except Exception as e:
-        raise AuthenticationError(str(e)) from e
-
-    if not (correct_username and correct_password):
-        raise AuthenticationError("Incorrect email or password")
-
-    return credentials.username

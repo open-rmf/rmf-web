@@ -12,8 +12,6 @@ config = {
     "log_level": "INFO",  # https://docs.python.org/3.8/library/logging.html#levels
     # path to a PEM encoded RSA public key which is used to verify JWT tokens, if the path is relative, it is based on the working dir.
     "jwt_public_key": None,
-    # requires basic auth for fluentd endpoints
-    "basic_auth": False,
     # url to the oidc endpoint, used to authenticate rest requests, it should point to the well known endpoint, e.g.
     # http://localhost:8080/auth/realms/rmf-web/.well-known/openid-configuration.
     # NOTE: This is ONLY used for documentation purposes, the "jwt_public_key" will be the
