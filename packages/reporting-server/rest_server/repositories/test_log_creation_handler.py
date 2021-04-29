@@ -1,3 +1,5 @@
+# conflicts with isort because of local non-relative import
+# pylint: disable=wrong-import-order
 import unittest
 
 from fastapi.testclient import TestClient
