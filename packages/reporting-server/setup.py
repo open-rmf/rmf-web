@@ -31,7 +31,6 @@ setup(
     entry_points={
         "console_scripts": [
             "reporting_server=rest_server.__main__:main",
-            "reporting_server_fluentd=rest_server.__main__fluentd__:main",
         ],
     },
     license="Apache License, Version 2.0",

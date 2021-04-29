@@ -1,10 +1,13 @@
 import unittest
+
 from fastapi.testclient import TestClient
+from models import DispenserState, DoorState, RawLog
+from rest_server.app import get_app
 from tortoise import Tortoise
 
-from models import DispenserState, DoorState, RawLog
-from rest_server.app import app
 from .log_creation_handler import create_raw_log, create_rmf_server_log
+
+app = get_app(True)
 
 
 class TestCaseLogRMFServerCreationRepository(unittest.IsolatedAsyncioTestCase):

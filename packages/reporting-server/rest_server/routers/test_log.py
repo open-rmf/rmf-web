@@ -3,7 +3,9 @@ import unittest
 from fastapi.testclient import TestClient
 from tortoise import Tortoise
 
-from ..app import app
+from ..app import get_app
+
+app = get_app(True)
 
 
 class TestRawLogRoute(unittest.IsolatedAsyncioTestCase):

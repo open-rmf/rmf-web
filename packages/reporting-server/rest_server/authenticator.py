@@ -1,8 +1,4 @@
-import os
-import secrets
-
 import jwt
-from fastapi.security import HTTPBasicCredentials
 
 from .app_config import app_config
 

@@ -2,6 +2,7 @@
 config = {
     "host": "127.0.0.1",  # ip or hostname to bind the socket to
     "port": 8002,
+    "port_fluentd": 8003,
     "db_url": "sqlite://:memory:",
     # url that reporting-server is being served on.
     # When being a proxy, this must be the url that reporting-server is mounted on.

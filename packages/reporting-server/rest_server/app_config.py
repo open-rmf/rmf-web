@@ -9,6 +9,7 @@ from typing import Optional
 class AppConfig:
     host: str
     port: int
+    port_fluentd: int
     db_url: str
     public_url: urllib.parse.ParseResult
     static_directory: str

@@ -25,9 +25,5 @@ RUN echo -e '#!/bin/bash\n\
   exec reporting_server "$@"\n\
   ' > /docker-entry-point.sh && chmod +x /docker-entry-point.sh
 
-RUN echo -e '#!/bin/bash\n\
-  exec reporting_server_fluentd "$@"\n\
-  ' > /docker-entry-point.sh && chmod +x /docker-entry-point.sh
-
 ENTRYPOINT ["/docker-entry-point.sh"]
 CMD ["--help"]
