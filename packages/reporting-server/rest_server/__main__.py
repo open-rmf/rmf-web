@@ -3,7 +3,7 @@ import asyncio
 from uvicorn import Config, Server
 
 from .app import get_app
-from .app_config import app_config
+from .app_config import SystemMode, app_config
 
 
 class MyServer(Server):
@@ -16,14 +16,14 @@ class MyServer(Server):
 async def run():
     apps = []
     config1 = Config(
-        get_app(True),
+        get_app(SystemMode.FLUENTD),
         host=app_config.host,
         port=app_config.port_fluentd,
         root_path=app_config.public_url.path,
         log_level=app_config.log_level.lower(),
     )
     config2 = Config(
-        get_app(False),
+        get_app(SystemMode.REPORT),
         host=app_config.host,
         port=app_config.port,
         root_path=app_config.public_url.path,

@@ -11,7 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from rest_server.routers import log_router, report_router
 from tortoise.contrib.fastapi import register_tortoise
 
-from .app_config import app_config
+from .app_config import SystemMode, app_config
 
 logger = logging.getLogger("rest_app")
 handler = logging.StreamHandler(sys.stdout)
@@ -25,7 +25,7 @@ else:
 logger.info("started app")
 
 
-def get_app(fluentd_config=False):
+def get_app(run_config=SystemMode.ALL):
     app = FastAPI()
 
     app.add_middleware(
@@ -36,10 +36,10 @@ def get_app(fluentd_config=False):
         allow_headers=["*"],
     )
 
-    if fluentd_config:
+    if run_config in (SystemMode.ALL, SystemMode.FLUENTD):
         app.include_router(log_router, prefix="/log", tags=["log"])
 
-    if not fluentd_config:
+    if run_config in (SystemMode.ALL, SystemMode.REPORT):
         app.include_router(
             report_router,
             prefix="/report",

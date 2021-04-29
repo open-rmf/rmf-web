@@ -5,7 +5,7 @@ from tortoise import Tortoise
 
 from ..app import get_app
 
-app = get_app(True)
+app = get_app()
 
 
 class TestRawLogRoute(unittest.IsolatedAsyncioTestCase):

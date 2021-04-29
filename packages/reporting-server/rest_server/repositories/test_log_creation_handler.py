@@ -7,7 +7,7 @@ from tortoise import Tortoise
 
 from .log_creation_handler import create_raw_log, create_rmf_server_log
 
-app = get_app(True)
+app = get_app()
 
 
 class TestCaseLogRMFServerCreationRepository(unittest.IsolatedAsyncioTestCase):
