@@ -121,14 +121,17 @@ function NegotiationContextsProvider(props: React.PropsWithChildren<{}>): JSX.El
   const authenticator = React.useContext(AppConfigContext).authenticator;
 
   React.useEffect(() => {
-    negotiationStatusManager.startSubscription(authenticator.token);
-    const onUpdated = () => setNegotiationStatus(negotiationStatusManager.allConflicts());
-    negotiationStatusManager.on('updated', onUpdated);
+    (async () => {
+      await authenticator.refreshToken();
+      negotiationStatusManager.startSubscription(authenticator.token);
+      const onUpdated = () => setNegotiationStatus(negotiationStatusManager.allConflicts());
+      negotiationStatusManager.on('updated', onUpdated);
 
-    return () => {
-      negotiationStatusManager.off('updated', onUpdated);
-    };
-  }, [negotiationStatusManager, authenticator.token]);
+      return () => {
+        negotiationStatusManager.off('updated', onUpdated);
+      };
+    })();
+  }, [negotiationStatusManager, authenticator]);
 
   return (
     <NegotiationStatusContext.Provider value={negotiationStatus}>

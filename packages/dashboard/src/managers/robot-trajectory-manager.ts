@@ -78,11 +78,13 @@ export class DefaultTrajectoryManager extends TrajectorySocketManager {
   }
 
   async latestTrajectory(request: TrajectoryRequest): Promise<TrajectoryResponse> {
+    await this._authenticator?.refreshToken();
     const event = await this._send(JSON.stringify(request), this._webSocket);
     const resp = JSON.parse(event.data);
-    this._checkResponse(request, resp);
-    if (resp.values === null) {
+    const validResp = this._checkResponse(request, resp);
+    if (resp.values === null || !validResp) {
       resp.values = [];
+      resp.conflicts = [];
     }
     return resp as TrajectoryResponse;
   }
@@ -102,7 +104,7 @@ export class DefaultTrajectoryManager extends TrajectorySocketManager {
     return traj?.robot_name;
   }
 
-  private _checkResponse(request: Request, resp: Response): void {
+  private _checkResponse(request: Request, resp: Response): boolean {
     if (resp.error) {
       if (resp.error === 'token expired') this._authenticator?.logout();
       else {
@@ -112,8 +114,9 @@ export class DefaultTrajectoryManager extends TrajectorySocketManager {
       console.warn(
         `received response for wrong request. Request: ${request.request} Response: ${resp.response}`,
       );
-      throw new Error('received response for wrong request');
+      return false;
     }
+    return true;
   }
 
   private _webSocket: WebSocket | undefined;
