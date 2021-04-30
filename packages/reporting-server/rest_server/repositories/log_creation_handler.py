@@ -17,7 +17,7 @@ async def create_raw_log(logs: list):
                 if "log" not in log:
                     continue
 
-                log_level = get_log_type(log["log"])
+                log_level = get_log_type(log["log"], log["stream"])
                 await RawLog.create(level=log_level, payload=log, message=log["log"])
 
             elif isinstance(log, str):

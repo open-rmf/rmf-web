@@ -25,6 +25,11 @@ const getLogs = () => {
       message: 'Test' + i,
       level: 'Debug',
       created: randomDate(new Date(2012, 0, 1), new Date()).toISOString(),
+      payload: {
+        kubernetes: {
+          container_name: 'container_test',
+        },
+      },
     });
   }
   return rows;

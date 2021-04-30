@@ -5,7 +5,12 @@ import { makeStyles, Typography } from '@material-ui/core';
 import moment from 'moment';
 import { materialTableIcons } from '../../material-table-icons';
 
-export type LogRowsType = { level: string; message: string; created: string }[];
+export type LogRowsType = {
+  level: string;
+  message: string;
+  created: string;
+  payload: any;
+}[];
 
 export interface LogTableProps {
   rows: LogRowsType | [];
@@ -95,6 +100,28 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
             return (
               <Typography className={`${getLogLevelStyle(rowData.level)} ${classes.cellContent}`}>
                 {rowData.level}
+              </Typography>
+            );
+          },
+        },
+        {
+          title: <Typography>Container</Typography>,
+          field: 'container',
+          type: 'string',
+          align: 'center',
+          cellStyle: { padding: '0px', width: '2rem', maxWidth: '2rem' },
+          headerStyle: {
+            width: '2rem',
+            maxWidth: '2rem',
+          },
+          filterCellStyle: {
+            maxHeight: '2px',
+          },
+
+          render: (rowData) => {
+            return (
+              <Typography className={classes.cellContent}>
+                {rowData.payload.kubernetes ? rowData.payload.kubernetes.container_name : 'Unknown'}
               </Typography>
             );
           },

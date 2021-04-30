@@ -1,7 +1,8 @@
 from models.raw_log import LogLevel
 
 
-def get_log_type(fullstring):
+def get_log_type(fullstring, stream_type="stdout"):
+
     if "critical" in fullstring.lower():
         return LogLevel.CRITICAL
     elif "error" in fullstring.lower():
@@ -13,4 +14,6 @@ def get_log_type(fullstring):
     elif "debug" in fullstring.lower():
         return LogLevel.DEBUG
     else:
-        return LogLevel.UNKNOWN
+        if stream_type == "stderr":
+            return LogLevel.ERROR
+        return LogLevel.DEBUG

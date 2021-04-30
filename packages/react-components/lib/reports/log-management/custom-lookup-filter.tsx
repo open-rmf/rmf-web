@@ -23,7 +23,7 @@ const MenuProps = {
 
 export interface CustomLookupFilterParserProps {
   // Prop RowData from material-table is not exported so unknown
-  columnDef: Column<{ level: string; message: string; created: string }>;
+  columnDef: Column<{ level: string; message: string; created: string; payload: any }>;
   onFilterChanged: (rowId: string, value: string | number | unknown) => void;
 }
 
