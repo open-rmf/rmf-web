@@ -101,7 +101,7 @@ data:
   reporting-server.conf: |-
     <match rmf.server.**>
       @type http
-      endpoint http://reporting-server:8002/log/rmfserver/
+      endpoint http://reporting-server:8003/log/rmfserver/
       http_method post
       open_timeout 3
       # content_type
@@ -112,12 +112,17 @@ data:
       <buffer>
         flush_interval 10s
       </buffer>
+      <auth>
+        method basic
+        username "#{ENV['FLUENTD_USER']}"
+        password "#{ENV['FLUENTD_PASSWORD']}"
+      </auth>
     </match>
 
   reporting-server-all-logs.conf: |-
     <match rmf.all.**>
       @type http
-      endpoint http://reporting-server:8002/log/all/
+      endpoint http://reporting-server:8003/log/all/
       http_method post
       open_timeout 3
       <format>
@@ -127,4 +132,9 @@ data:
       <buffer>
         flush_interval 10s
       </buffer>
+      <auth>
+        method basic
+        username "#{ENV['FLUENTD_USER']}"
+        password "#{ENV['FLUENTD_PASSWORD']}"
+      </auth>
     </match>

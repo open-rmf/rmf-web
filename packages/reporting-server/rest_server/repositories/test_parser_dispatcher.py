@@ -12,7 +12,7 @@ from models import (
     IngestorState,
     LiftState,
 )
-from rest_server.app import app
+from rest_server.app import get_app
 
 from .parser_dispacher import log_model_dispacher
 
@@ -28,6 +28,8 @@ from .parser_dispacher import log_model_dispacher
 # {'log': 'INFO:app.BookKeeper.ingestor_state:{"time": {"sec": 1600, "nanosec": 0}, "guid": "coke_ingestor", "mode": 0, "request_guid_queue": [], "seconds_remaining": 0.0}\n', 'stream': 'stdout'}
 
 # {'log': 'INFO:app.BookKeeper.lift_state:{"time": {"sec": 1600, "nanosec": 0}, "state": 1, "mode": 0, "request_guid_queue": [], "seconds_remaining": 0.0}\n', 'stream': 'stdout'}
+
+app = get_app()
 
 
 class TestCaseLogParserDispatcher(unittest.IsolatedAsyncioTestCase):

@@ -90,5 +90,5 @@ npm run test:report
 ## Live reload
 
 ```bash
-uvicorn --reload rest_server.app:app
+uvicorn --reload rest_server.app:get_app
 ```

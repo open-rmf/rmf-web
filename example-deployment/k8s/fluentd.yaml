@@ -82,6 +82,10 @@ spec:
           value: "minio"
         - name: MINIO_SECRET_KEY
           value: "minio123"
+        - name: FLUENTD_USER
+          value: "fluentd"
+        - name: FLUENTD_PASSWORD
+          value: "fluentd123"
       terminationGracePeriodSeconds: 30
       volumes:
       - name: fluentd-config
