@@ -6,11 +6,10 @@ from .app import get_app
 from .app_config import SystemMode, app_config
 
 
-class MyServer(Server):
-    # pylint: disable=invalid-overridden-method
-    async def run(self, sockets=None):
+class CustomUvicornServer(Server):
+    def run(self, sockets=None):
         self.config.setup_event_loop()
-        return await self.serve(sockets=sockets)
+        return self.serve(sockets=sockets)
 
 
 async def run():
@@ -30,8 +29,8 @@ async def run():
         log_level=app_config.log_level.lower(),
     )
 
-    server1 = MyServer(config=config1)
-    server2 = MyServer(config=config2)
+    server1 = CustomUvicornServer(config=config1)
+    server2 = CustomUvicornServer(config=config2)
 
     apps.append(server1.run())
     apps.append(server2.run())
