@@ -19,12 +19,15 @@ class JwtAuthenticator:
 
     def verify_token(self, token: str):
         try:
-            jwt.decode(
+            decoded = jwt.decode(
                 token,
                 self._public_key,
                 algorithms=["RS256"],
                 audience=app_config.aud,
                 issuer=app_config.iss,
             )
+            print("hello ...........................")
+            print(decoded)
+            print("hello ...........................")
         except jwt.InvalidTokenError as e:
             raise AuthenticationError(str(e)) from e
