@@ -24,7 +24,7 @@ const getLogs = () => {
     rows.push({
       message: 'Test' + i,
       level: 'Debug',
-      timestamp: randomDate(new Date(2012, 0, 1), new Date()).toISOString(),
+      created: randomDate(new Date(2012, 0, 1), new Date()).toISOString(),
     });
   }
   return rows;
@@ -56,12 +56,12 @@ export const SimpleLogTable: Story = (args) => {
     npm ERR! A complete log of this run can be found in:
     npm ERR!     /home/ekumen/.npm/_logs/2021-01-18T21_20_07_480Z-debug.log`,
     level: 'Error',
-    timestamp: timestamp,
+    created: timestamp,
   });
   logs.unshift({
     message: `long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long msg`,
     level: 'Debug',
-    timestamp: timestamp,
+    created: timestamp,
   });
 
   return <LogTable rows={logs} {...args} />;
