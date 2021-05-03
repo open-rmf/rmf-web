@@ -23,7 +23,7 @@ class JwtAuthenticator:
                 token,
                 self._public_key,
                 algorithms=["RS256"],
-                audience=app_config.client_id,
+                audience=app_config.aud,
             )
         except jwt.InvalidTokenError as e:
             raise AuthenticationError(str(e)) from e

@@ -16,7 +16,6 @@ config = {
     # NOTE: This is ONLY used for documentation purposes, the "jwt_public_key" will be the
     # only key used to verify a token.
     "oidc_url": None,
-    # client id registered with the authentication provider, this will be used to verify the
     # "aud" claim.
-    "client_id": "rmf-server",
+    "aud": "rmf-server",
 }

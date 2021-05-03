@@ -14,4 +14,4 @@ config["jwt_public_key"] = "/jwt-configmap/jwt-pub-key.pub"
 config[
     "oidc_url"
 ] = "https://example.com/auth/realms/rmf-web/.well-known/openid-configuration"
-config["client_id"] = "reporting"
+config["aud"] = "reporting"
