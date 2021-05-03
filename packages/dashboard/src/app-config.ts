@@ -7,6 +7,7 @@ export interface AppConfig {
   authenticator: Authenticator;
   trajServerUrl: string;
   rmfServerUrl: string;
+  isKeycloak: boolean;
   appResourcesFactory: () => Promise<ResourceManager | undefined>;
 }
 
@@ -46,6 +47,7 @@ export const appConfig: AppConfig = (() => {
     appResourcesFactory: ResourceManager.getResourceConfigurationFile,
     trajServerUrl: trajServer,
     rmfServerUrl: process.env.REACT_APP_RMF_SERVER,
+    isKeycloak: process.env.REACT_APP_AUTH_PROVIDER === 'keycloak',
   };
 })();
 

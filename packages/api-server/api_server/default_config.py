@@ -17,5 +17,5 @@ config = {
     # only key used to verify a token.
     "oidc_url": None,
     # "aud" claim.
-    "aud": "rmf-server",
+    "aud": "localhost",
 }

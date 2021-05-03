@@ -119,10 +119,11 @@ function NegotiationContextsProvider(props: React.PropsWithChildren<{}>): JSX.El
   );
 
   const authenticator = React.useContext(AppConfigContext).authenticator;
+  const isKeycloak = React.useContext(AppConfigContext).isKeycloak;
 
   React.useEffect(() => {
     (async () => {
-      await authenticator.refreshToken();
+      if (isKeycloak) await authenticator.refreshToken();
       negotiationStatusManager.startSubscription(authenticator.token);
       const onUpdated = () => setNegotiationStatus(negotiationStatusManager.allConflicts());
       negotiationStatusManager.on('updated', onUpdated);
@@ -131,7 +132,7 @@ function NegotiationContextsProvider(props: React.PropsWithChildren<{}>): JSX.El
         negotiationStatusManager.off('updated', onUpdated);
       };
     })();
-  }, [negotiationStatusManager, authenticator]);
+  }, [negotiationStatusManager, authenticator, isKeycloak]);
 
   return (
     <NegotiationStatusContext.Provider value={negotiationStatus}>
