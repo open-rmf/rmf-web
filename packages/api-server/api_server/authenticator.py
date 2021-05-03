@@ -24,7 +24,7 @@ class JwtAuthenticator:
                 self._public_key,
                 algorithms=["RS256"],
                 audience=app_config.aud,
-                issuer=app_config.iss,
+                # issuer=app_config.iss,
             )
             print("hello ...........................")
             print(decoded)
