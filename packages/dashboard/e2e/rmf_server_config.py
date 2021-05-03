@@ -9,4 +9,4 @@ config[
     "oidc_url"
 ] = "http://localhost:8088/auth/realms/master/.well-known/openid-configuration"
 config["aud"] = "rmf-dashboard"
-config["iss"] = "http://localhost:8088/auth/realms/master"
+config["iss"] = "http://rmf-web_keycloak_1:8080/auth/realms/master"
