@@ -15,3 +15,4 @@ config[
     "oidc_url"
 ] = "https://example.com/auth/realms/rmf-web/.well-known/openid-configuration"
 config["aud"] = "reporting"
+config["iss"] = "https://example.com/auth/realms/rmf-web"

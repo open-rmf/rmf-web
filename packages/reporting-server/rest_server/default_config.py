@@ -20,4 +20,7 @@ config = {
     # client id registered with the authentication provider, this will be used to verify the
     # "aud" claim.
     "aud": "reporting",
+    # url or string that identifies the entity that issued the jwt token
+    # "iss" claim
+    "iss": None,
 }
