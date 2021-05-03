@@ -22,6 +22,10 @@ export class FakeAuthenticator
   logout(): Promise<never> {
     throw new Error('Method not implemented.');
   }
+
+  refreshToken(): Promise<void> {
+    throw new Error('not supported');
+  }
 }
 
 export default FakeAuthenticator;
