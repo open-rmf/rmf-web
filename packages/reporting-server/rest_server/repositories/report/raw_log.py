@@ -30,3 +30,7 @@ async def get_all_raw_logs(
     return await RawLog_Pydantic.from_queryset(
         RawLog.filter(**query).offset(offset).limit(limit).order_by("-created")
     )
+
+
+async def get_containers():
+    return await RawLog.all().distinct().values("container_name")

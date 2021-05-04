@@ -9,7 +9,7 @@ export type LogRowsType = {
   level: string;
   message: string;
   created: string;
-  payload: any;
+  container_name: string;
 }[];
 
 export interface LogTableProps {
@@ -121,7 +121,7 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
           render: (rowData) => {
             return (
               <Typography className={classes.cellContent}>
-                {rowData.payload.kubernetes ? rowData.payload.kubernetes.container_name : 'Unknown'}
+                {rowData.container_name ? rowData.container_name : 'Unknown'}
               </Typography>
             );
           },

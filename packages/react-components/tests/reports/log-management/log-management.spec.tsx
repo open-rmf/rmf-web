@@ -14,6 +14,7 @@ const getLogs = () => {
       message: 'Test' + i,
       level: 'WARN',
       timestamp: new Date('Mon Jan  1 00:00:02 UTC 2001').toISOString(),
+      container_name: 'container',
     });
   }
   return rows;

@@ -20,6 +20,7 @@ class RawLog(models.Model):
     payload = fields.JSONField()
     message = fields.TextField()
     created = fields.DatetimeField(auto_now_add=True)
+    container_name = fields.TextField(null=True)
 
     def __str__(self):
         return str(self.message)
