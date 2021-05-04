@@ -77,6 +77,12 @@ spec:
   ports:
     - protocol: TCP
       port: 8002
+      targetPort: 8002
+      name: report
+    - protocol: TCP
+      port: 8003
+      targetPort: 8003
+      name: fluentd
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -102,6 +108,9 @@ spec:
           imagePullPolicy: Never # remove this in a real deployment
           ports:
             - containerPort: 8002
+              name: report
+            - containerPort: 8003
+              name: fluentd
           env:
             - name: RMF_REPORT_REST_SERVER_CONFIG
               value: /reporting-server-config/reporting_server_config.py

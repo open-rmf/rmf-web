@@ -5,7 +5,7 @@ import { makeStyles, Typography } from '@material-ui/core';
 import moment from 'moment';
 import { materialTableIcons } from '../../material-table-icons';
 
-export type LogRowsType = { level: string; message: string; timestamp: string }[];
+export type LogRowsType = { level: string; message: string; created: string }[];
 
 export interface LogTableProps {
   rows: LogRowsType | [];
@@ -88,7 +88,7 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
           lookup: logLevels as Column<{
             level: string;
             message: string;
-            timestamp: string;
+            created: string;
           }>['lookup'],
           filterComponent: (props) => <CustomLookupFilterParser {...props} />,
           render: (rowData) => {
@@ -114,7 +114,7 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
         },
         {
           title: <Typography>Timestamp</Typography>,
-          field: 'timestamp',
+          field: 'created',
           type: 'datetime',
           filtering: false,
           align: 'center',
@@ -122,7 +122,7 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
           render: (rowData) => {
             return (
               <Typography className={classes.cellContent} data-testid={'log-table-date'}>
-                {moment(rowData.timestamp).format('lll')}
+                {moment(rowData.created).format('lll')}
               </Typography>
             );
           },

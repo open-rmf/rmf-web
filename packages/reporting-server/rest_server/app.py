@@ -11,7 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from rest_server.routers import log_router, report_router
 from tortoise.contrib.fastapi import register_tortoise
 
-from .app_config import app_config
+from .app_config import SystemMode, app_config
 
 logger = logging.getLogger("rest_app")
 handler = logging.StreamHandler(sys.stdout)
@@ -24,25 +24,35 @@ else:
 
 logger.info("started app")
 
-app = FastAPI(
-    dependencies=[Depends(auth_scheme)],
-)
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=False,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+def get_app(run_config=SystemMode.ALL):
+    app = FastAPI()
 
-app.include_router(log_router, prefix="/log", tags=["log"])
-app.include_router(report_router, prefix="/report", tags=["report"])
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=False,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
-register_tortoise(
-    app,
-    db_url=app_config.db_url,
-    modules={"models": ["models"]},
-    generate_schemas=True,
-    add_exception_handlers=True,
-)
+    if run_config in (SystemMode.ALL, SystemMode.FLUENTD):
+        app.include_router(log_router, prefix="/log", tags=["log"])
+
+    if run_config in (SystemMode.ALL, SystemMode.REPORT):
+        app.include_router(
+            report_router,
+            prefix="/report",
+            tags=["report"],
+            dependencies=[Depends(auth_scheme)],
+        )
+
+    register_tortoise(
+        app,
+        db_url=app_config.db_url,
+        modules={"models": ["models"]},
+        generate_schemas=True,
+        add_exception_handlers=True,
+    )
+
+    return app

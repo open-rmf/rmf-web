@@ -24,7 +24,7 @@ const getLogs = () => {
     rows.push({
       message: 'Test' + i,
       level: 'Debug',
-      timestamp: randomDate(new Date(2012, 0, 1), new Date()).toISOString(),
+      created: randomDate(new Date(2012, 0, 1), new Date()).toISOString(),
     });
   }
   return rows;

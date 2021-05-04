@@ -2,13 +2,21 @@ import importlib.util
 import os
 import urllib.parse
 from dataclasses import dataclass
+from enum import Enum
 from typing import Optional
+
+
+class SystemMode(Enum):
+    ALL = 1
+    REPORT = 2
+    FLUENTD = 3
 
 
 @dataclass
 class AppConfig:
     host: str
     port: int
+    port_fluentd: int
     db_url: str
     public_url: urllib.parse.ParseResult
     static_directory: str
