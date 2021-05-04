@@ -4,6 +4,7 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 
 export * from './alert-dialog';
+export * from './banner-tab';
 export * from './color-manager';
 export * from './commands';
 export * from './confirmation-alert-dialog';
@@ -13,8 +14,10 @@ export * from './doors';
 export * from './error-overlay';
 export * from './error-pages';
 export * from './geometry-utils';
+export * from './header-bar';
 export * from './lifts';
 export * from './material-table-icons';
+export * from './navigation-bar';
 export * from './notifications-dialog';
 export * from './omni-panel';
 export * from './omni-panel-view';
