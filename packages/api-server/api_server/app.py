@@ -19,6 +19,10 @@ from .rmf_io import HealthWatchdog, RmfBookKeeper, RmfIO, RmfTransport
 # will be called in reverse order on app shutdown
 shutdown_cbs: List[Callable[[], Union[None, Awaitable[None]]]] = []
 
+
+if "CI" in os.environ:
+    app_config.iss = "http://localhost:8088/auth/realms/master"
+
 app = FastAPI(
     dependencies=[Depends(auth_scheme)],
 )
@@ -132,16 +136,6 @@ async def on_startup():
     # are not captured and the app is not shutdown. Capturing the signal manually makes
     # it work for some reason.
     loop = asyncio.get_event_loop()
-
-    if "CI" in os.environ:
-        print("====================== CI in environment =====================")
-        app_config.iss = "https://example.com/auth/realms/rmf-web"
-        print(app_config)
-        print("====================== CI in environment =====================")
-
-    print("====================== CInot not not in environment =====================")
-    print(app_config)
-    print("====================== CI not not no in environment =====================")
 
     def on_signal(_sig, _frame):
         loop.create_task(on_shutdown())
