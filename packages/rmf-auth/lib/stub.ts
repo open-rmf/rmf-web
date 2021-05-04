@@ -25,6 +25,6 @@ export default class StubAuthenticator
   }
 
   refreshToken(): Promise<void> {
-    throw new Error('not supported');
+    return Promise.resolve();
   }
 }

@@ -1,7 +1,6 @@
 import { Trajectory } from './robot-trajectory-manager';
 import TrajectorySocketManager from './trajectory-socket-manager';
 import { Authenticator } from 'rmf-auth';
-import { appConfig } from '../app-config';
 
 export enum NegotiationState {
   NOT_RESOLVED = 0,
@@ -171,7 +170,7 @@ export class NegotiationStatusManager extends TrajectorySocketManager {
   async negotiationTrajectory(
     request: NegotiationTrajectoryRequest,
   ): Promise<NegotiationTrajectoryResponse> {
-    if (appConfig.isKeycloak) await this._authenticator?.refreshToken();
+    await this._authenticator?.refreshToken();
     const event = await this._send(JSON.stringify(request), this._webSocket);
     const resp = JSON.parse(event.data);
 

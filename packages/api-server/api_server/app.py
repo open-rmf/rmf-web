@@ -133,6 +133,9 @@ async def on_startup():
     # it work for some reason.
     loop = asyncio.get_event_loop()
 
+    if "CI" in os.environ:
+        app_config.iss = "https://example.com/auth/realms/rmf-web"
+
     def on_signal(_sig, _frame):
         loop.create_task(on_shutdown())
 

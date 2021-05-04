@@ -1,7 +1,6 @@
 import { Knot } from '../util/cublic-spline';
 import TrajectorySocketManager from './trajectory-socket-manager';
 import { Authenticator } from 'rmf-auth';
-import { appConfig } from '../app-config';
 
 // RawVelocity received from server is in this format (x, y, theta)
 export type RawVelocity = [number, number, number];
@@ -79,7 +78,7 @@ export class DefaultTrajectoryManager extends TrajectorySocketManager {
   }
 
   async latestTrajectory(request: TrajectoryRequest): Promise<TrajectoryResponse> {
-    if (appConfig.isKeycloak) await this._authenticator?.refreshToken();
+    await this._authenticator?.refreshToken();
     const event = await this._send(JSON.stringify(request), this._webSocket);
     const resp = JSON.parse(event.data);
     const validResp = this._checkResponse(request, resp);

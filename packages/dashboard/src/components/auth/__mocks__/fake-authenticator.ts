@@ -24,7 +24,7 @@ export class FakeAuthenticator
   }
 
   refreshToken(): Promise<void> {
-    throw new Error('not supported');
+    return Promise.resolve();
   }
 }
 
