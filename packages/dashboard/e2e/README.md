@@ -28,8 +28,6 @@ There are also some environment variables the test runner sets by default
 
 You can overwrite them by setting them in your environment variables.
 
-To run the e2e test locally, you need to replace the `iss` config value with this url: `config["iss"] = "http://localhost:8088/auth/realms/master"`
-
 # E2E workflow in CI
 
 NOTE: This section only pertains to running the e2e tests in github workflows.
