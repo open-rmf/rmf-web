@@ -19,10 +19,6 @@ from .rmf_io import HealthWatchdog, RmfBookKeeper, RmfIO, RmfTransport
 # will be called in reverse order on app shutdown
 shutdown_cbs: List[Callable[[], Union[None, Awaitable[None]]]] = []
 
-
-if "CI" in os.environ:
-    app_config.iss = "https://example.com/auth/realms/rmf-web"
-
 app = FastAPI(
     dependencies=[Depends(auth_scheme)],
 )
