@@ -2,7 +2,8 @@ import React from 'react';
 import { render, cleanup, screen } from '@testing-library/react';
 import { HeaderBar } from '../lib/header-bar';
 import { NavigationBar } from '../lib/navigation-bar';
-import Tab from '@material-ui/core/Tab';
+import { IconButton, Tab, Toolbar, Typography } from '@material-ui/core';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
 describe('Header Bar', () => {
   it('renders correctly', () => {
@@ -18,10 +19,18 @@ describe('Header Bar', () => {
           />
           <Tab key={'robots-tab'} label={'Robots'} value={'robots'} aria-label={`building-tab`} />
         </NavigationBar>
+        <Toolbar variant="dense">
+          <Typography variant="caption">Powered by OpenRMF</Typography>
+          <IconButton id="user-btn" aria-label={'user-btn'} color="inherit">
+            <AccountCircleIcon />
+          </IconButton>
+        </Toolbar>
       </HeaderBar>,
     );
     expect(screen.getByText('Building')).toBeTruthy();
     expect(screen.getByText('Robots')).toBeTruthy();
+    expect(screen.getByText('Powered by OpenRMF')).toBeTruthy();
+    expect(screen.getByLabelText('user-btn')).toBeTruthy();
     cleanup();
   });
 });
