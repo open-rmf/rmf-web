@@ -25,7 +25,7 @@ export default class TrajectorySocketManager extends EventEmitter<Events> {
    * resolver and processing each message in an event loop. Advantage of this is that each message
    * processing logic can be self-contained without a need for a switch or if elses.
    */
-  async _send(
+  async send(
     payload: WebSocketSendParam0T,
     _webSocket: WebSocket | undefined,
   ): Promise<MessageEvent> {

@@ -134,7 +134,14 @@ async def on_startup():
     loop = asyncio.get_event_loop()
 
     if "CI" in os.environ:
+        print("====================== CI in environment =====================")
         app_config.iss = "https://example.com/auth/realms/rmf-web"
+        print(app_config)
+        print("====================== CI in environment =====================")
+
+    print("====================== CInot not not in environment =====================")
+    print(app_config)
+    print("====================== CI not not no in environment =====================")
 
     def on_signal(_sig, _frame):
         loop.create_task(on_shutdown())
