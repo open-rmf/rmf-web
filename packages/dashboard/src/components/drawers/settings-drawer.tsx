@@ -12,10 +12,28 @@ import {
   useMediaQuery,
   Typography,
   Grid,
+  Switch,
+  FormGroup,
+  Theme,
+  withStyles,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import React from 'react';
-import { Settings, TrajectoryAnimation } from '../../settings';
+import { Settings, TrajectoryAnimation, ThemeMode } from '../../settings';
+
+const CustomSwitch = withStyles((theme: Theme) => ({
+  switchBase: {
+    color: theme.palette.primary.dark[200],
+    '&$checked': {
+      color: theme.palette.primary.dark,
+    },
+    '&$checked + $track': {
+      backgroundColor: theme.palette.primary.dark,
+    },
+  },
+  checked: {},
+  track: {},
+}))(Switch);
 
 export interface SettingsDrawerProps extends DrawerProps {
   settings: Readonly<Settings>;
@@ -33,6 +51,11 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
     [],
   );
 
+  const themeText = React.useMemo(
+    () => Object.keys(ThemeMode).slice(Object.keys(ThemeMode).length * 0.5),
+    [],
+  );
+
   const drawerAnchor = useMediaQuery('(max-aspect-ratio: 8/10') ? 'bottom' : 'right';
 
   const modalProp = {
@@ -41,6 +64,11 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
 
   function handleTrajectoryAnimationChange(ev: React.ChangeEvent<HTMLInputElement>): void {
     const newSettings: Settings = { ...settings, trajectoryAnimation: Number(ev.target.value) };
+    onSettingsChange && onSettingsChange(newSettings);
+  }
+
+  function handleThemeModeChange(ev: React.ChangeEvent<HTMLInputElement>): void {
+    const newSettings: Settings = { ...settings, themeMode: Number(ev.target.checked) };
     onSettingsChange && onSettingsChange(newSettings);
   }
 
@@ -89,6 +117,17 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
         </RadioGroup>
         <Divider />
       </FormControl>
+      <FormGroup className={classes.formGroup}>
+        <FormLabel component="legend" className={classes.legendLabel}>
+          Theme Mode
+        </FormLabel>
+        <FormControlLabel
+          className={classes.swtichButton}
+          control={<CustomSwitch onChange={handleThemeModeChange} name={'theme switch'} />}
+          label={themeText[settings.themeMode]}
+        />
+        <Divider />
+      </FormGroup>
     </Drawer>
   );
 }
@@ -125,6 +164,10 @@ const useStyles = makeStyles((theme) => ({
       paddingLeft: theme.spacing(8),
     },
   },
+  swtichButton: {
+    margin: '0 auto',
+    marginBottom: '1rem',
+  },
   flexBasis: {
     flexBasis: '40%',
   },
@@ -133,5 +176,8 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     width: '3rem',
+  },
+  formGroup: {
+    marginTop: '1rem',
   },
 }));
