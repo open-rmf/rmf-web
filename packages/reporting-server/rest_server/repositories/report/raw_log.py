@@ -28,5 +28,5 @@ async def get_all_raw_logs(
         query["level__iexact"] = log_level
 
     return await RawLog_Pydantic.from_queryset(
-        RawLog.filter(**query).offset(offset).limit(limit)
+        RawLog.filter(**query).offset(offset).limit(limit).order_by("-created")
     )

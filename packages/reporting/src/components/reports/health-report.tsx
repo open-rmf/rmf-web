@@ -1,24 +1,17 @@
 import React from 'react';
-import axios from 'axios';
 import { DefaultReportQueryPayload, HealthReport, HealthRowsType } from 'react-components';
 import appConfig from '../../app-config';
+import { AuthenticatorContext } from '../auth-contexts';
+import { getLogData } from './utils';
 
 const HealthReportConfig = () => {
+  const authenticator = React.useContext(AuthenticatorContext);
   const getLogs = async (params: DefaultReportQueryPayload): Promise<HealthRowsType> => {
-    try {
-      const response = await axios.get(`${appConfig.reportingServerUrl}/report/health/`, {
-        params: {
-          toLogDate: params.toLogDate ? params.toLogDate.format() : null,
-          fromLogDate: params.fromLogDate ? params.fromLogDate.format() : null,
-          offset: params.offset,
-          limit: params.limit,
-        },
-      });
-      return response.data as HealthRowsType;
-    } catch (error) {
-      console.error(error);
-      return [];
-    }
+    return (await getLogData(
+      `${appConfig.reportingServerUrl}/report/health/`,
+      params,
+      authenticator.token,
+    )) as HealthRowsType;
   };
 
   return <HealthReport getLogs={getLogs} />;

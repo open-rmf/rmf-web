@@ -1,28 +1,21 @@
 import React from 'react';
-import axios from 'axios';
 import {
   DefaultReportQueryPayload,
   DispenserStateReport,
   DispenserStateRowsType,
 } from 'react-components';
 import appConfig from '../../app-config';
+import { AuthenticatorContext } from '../auth-contexts';
+import { getLogData } from './utils';
 
 const DispenserStateReportConfig = () => {
+  const authenticator = React.useContext(AuthenticatorContext);
   const getLogs = async (params: DefaultReportQueryPayload): Promise<DispenserStateRowsType> => {
-    try {
-      const response = await axios.get(`${appConfig.reportingServerUrl}/report/dispenser_state/`, {
-        params: {
-          toLogDate: params.toLogDate ? params.toLogDate.format() : null,
-          fromLogDate: params.fromLogDate ? params.fromLogDate.format() : null,
-          offset: params.offset,
-          limit: params.limit,
-        },
-      });
-      return response.data as DispenserStateRowsType;
-    } catch (error) {
-      console.error(error);
-      return [];
-    }
+    return (await getLogData(
+      `${appConfig.reportingServerUrl}/report/dispenser_state/`,
+      params,
+      authenticator.token,
+    )) as DispenserStateRowsType;
   };
 
   return <DispenserStateReport getLogs={getLogs} />;

@@ -22,7 +22,6 @@ RUN rm -rf /var/lib/apt/lists && \
   npm cache clean --force
 
 RUN echo -e '#!/bin/bash\n\
-  . /opt/rmf/setup.bash\n\
   exec reporting_server "$@"\n\
   ' > /docker-entry-point.sh && chmod +x /docker-entry-point.sh
 

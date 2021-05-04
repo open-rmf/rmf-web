@@ -2,8 +2,10 @@ import React from 'react';
 import axios from 'axios';
 import { LogManagement, LogQueryPayload, LogRowsType } from 'react-components';
 import appConfig from '../../app-config';
+import { AuthenticatorContext } from '../auth-contexts';
 
 const AllLogsReport = () => {
+  const authenticator = React.useContext(AuthenticatorContext);
   const getLogs = async (params: LogQueryPayload): Promise<LogRowsType> => {
     try {
       const response = await axios.get(`${appConfig.reportingServerUrl}/report/raw_logs/`, {
@@ -13,6 +15,9 @@ const AllLogsReport = () => {
           logLabel: params.logLabel,
           logLevel: params.logLevel,
           offset: params.offset,
+        },
+        headers: {
+          Authorization: 'Bearer ' + authenticator.token,
         },
       });
       return response.data as LogRowsType;

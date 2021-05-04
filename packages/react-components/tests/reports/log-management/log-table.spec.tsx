@@ -19,7 +19,7 @@ for (let i = 0; i < 110; i++) {
   rows.push({
     message: 'Test' + i,
     level: getRandomLogLevel().toUpperCase(),
-    timestamp: timestamp,
+    created: timestamp,
   });
 }
 
@@ -86,7 +86,7 @@ describe('Applies styles to labels correctly', () => {
     styleRows.push({
       message: 'Test' + i,
       level: logLevels[i].toUpperCase(),
-      timestamp: timestamp,
+      created: timestamp,
     });
   }
 
