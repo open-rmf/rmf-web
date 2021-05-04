@@ -12,7 +12,7 @@ const AllLogsReport = () => {
         params: {
           toLogDate: params.toLogDate ? params.toLogDate.format() : null,
           fromLogDate: params.fromLogDate ? params.fromLogDate.format() : null,
-          logLabel: params.logLabel,
+          containerLabel: params.logLabel,
           logLevel: params.logLevel,
           offset: params.offset,
         },
@@ -27,10 +27,31 @@ const AllLogsReport = () => {
     }
   };
 
-  const getLogServerLabels = async () => [
-    { label: 'Web Server', value: 'web-server' },
-    { label: 'RMF core', value: 'rmf-core' },
-  ];
+  const getLogServerLabels = async (): Promise<{ label: string; value: string }[]> => {
+    try {
+      const response = await axios.get(
+        `${appConfig.reportingServerUrl}/report/raw_logs/containers`,
+        {
+          headers: {
+            Authorization: 'Bearer ' + authenticator.token,
+          },
+        },
+      );
+      console.log(response);
+      const labelsData = response.data as string[];
+      const labels: { label: string; value: string }[] = [];
+      labelsData.forEach((element) => {
+        labels.push({ label: element, value: element });
+      });
+      // If we want to get results from all labels
+      labels.push({ label: 'All', value: 'all' });
+      return labels;
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  };
+
   return <LogManagement getLogs={getLogs} getLabels={getLogServerLabels} />;
 };
 
