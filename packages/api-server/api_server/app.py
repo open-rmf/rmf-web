@@ -21,7 +21,7 @@ shutdown_cbs: List[Callable[[], Union[None, Awaitable[None]]]] = []
 
 
 if "CI" in os.environ:
-    app_config.iss = "http://localhost:8088/auth/realms/master"
+    app_config.iss = "https://example.com/auth/realms/rmf-web"
 
 app = FastAPI(
     dependencies=[Depends(auth_scheme)],
