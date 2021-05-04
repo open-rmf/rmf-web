@@ -22,6 +22,15 @@ describe('AppBar', () => {
     appController = makeMockAppController();
   });
 
+  test('renders with navigation bar', () => {
+    const root = render(
+      <Base>
+        <AppBar />
+      </Base>,
+    );
+    expect(root.getAllByRole('tablist').length > 0).toBeTruthy();
+  });
+
   test('show settings when settings button is clicked', () => {
     const root = render(
       <Base>
