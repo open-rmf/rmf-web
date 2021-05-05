@@ -58,12 +58,6 @@ export const FullHeaderBar: Story = () => {
         minWidth: theme.spacing(16),
         overflow: 'auto',
       },
-      button: {
-        disabled: {
-          boxShadow: theme.shadows[0],
-          backgroundColor: theme.palette.primary.main,
-        },
-      },
       logo: {
         maxWidth: 120,
         opacity: 1,
@@ -81,9 +75,6 @@ export const FullHeaderBar: Story = () => {
     <>
       <TabContext value={value}>
         <HeaderBar>
-          {/* <Button disableElevation color="primary"variant='contained' size="large" className={classes.button}>
-            <img src='/resources/roshealth-logo-white.png' style={{width: '120px'}}/>
-          </Button> */}
           <LogoButton logoPath="/resources/roshealth-logo-white.png" />
           <NavigationBar onTabChange={onTabChange} value={value}>
             <Tab key="building-tab" label="Building" value="building" aria-label="building-tab" />

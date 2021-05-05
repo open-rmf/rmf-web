@@ -15,6 +15,7 @@ export * from './error-pages';
 export * from './geometry-utils';
 export * from './header-bar';
 export * from './lifts';
+export * from './logo-button';
 export * from './material-table-icons';
 export * from './navigation-bar';
 export * from './notifications-dialog';
