@@ -4,7 +4,6 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 
 export * from './alert-dialog';
-export * from './banner-tab';
 export * from './color-manager';
 export * from './commands';
 export * from './confirmation-alert-dialog';

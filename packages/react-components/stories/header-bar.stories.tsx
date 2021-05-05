@@ -7,7 +7,7 @@ import TabPanel from '@material-ui/lab/TabPanel';
 import TabContext from '@material-ui/lab/TabContext';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import { NavigationBar } from '../lib/navigation-bar';
-import { BannerTab } from '../lib/banner-tab';
+import { LogoButton } from '../lib/logo-button';
 
 export default {
   title: 'Header Bar',
@@ -47,11 +47,26 @@ export const NavBar: Story = () => {
 };
 
 export const FullHeaderBar: Story = () => {
-  const useStyles = makeStyles(() =>
+  const useStyles = makeStyles((theme) =>
     createStyles({
       toolbar: {
         textAlign: 'right',
         flexGrow: -1,
+      },
+      avatar: {
+        flexGrow: 1,
+        minWidth: theme.spacing(16),
+        overflow: 'auto',
+      },
+      button: {
+        disabled: {
+          boxShadow: theme.shadows[0],
+          backgroundColor: theme.palette.primary.main,
+        },
+      },
+      logo: {
+        maxWidth: 120,
+        opacity: 1,
       },
     }),
   );
@@ -66,14 +81,12 @@ export const FullHeaderBar: Story = () => {
     <>
       <TabContext value={value}>
         <HeaderBar>
-          <BannerTab logoPath={'/resources/roshealth-logo-white.png'} />
+          {/* <Button disableElevation color="primary"variant='contained' size="large" className={classes.button}>
+            <img src='/resources/roshealth-logo-white.png' style={{width: '120px'}}/>
+          </Button> */}
+          <LogoButton logoPath="/resources/roshealth-logo-white.png" />
           <NavigationBar onTabChange={onTabChange} value={value}>
-            <Tab
-              key={'building-tab'}
-              label={'Building'}
-              value={'building'}
-              aria-label={`building-tab`}
-            />
+            <Tab key="building-tab" label="Building" value="building" aria-label="building-tab" />
             <Tab key={'robots'} label={'Robots'} value={'robots'} aria-label={`building-tab`} />
           </NavigationBar>
           <Toolbar variant="dense" className={classes.toolbar}>
