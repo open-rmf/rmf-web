@@ -11,7 +11,7 @@ export default {
 export const ClickEnabledLogoButton: Story = () => {
   return (
     <>
-      <Typography variant="h6">This button is disabled</Typography>
+      <Typography variant="h6">Click the button below</Typography>
       <LogoButton
         logoPath="/resources/roshealth-logo-white.png"
         onClick={() => alert('hello world')}
@@ -23,7 +23,7 @@ export const ClickEnabledLogoButton: Story = () => {
 export const DisabledLogoButton: Story = () => {
   return (
     <>
-      <Typography variant="h6">Click the button below</Typography>
+      <Typography variant="h6">This button is disabled</Typography>
       <LogoButton logoPath="/resources/roshealth-logo-white.png" />
     </>
   );
