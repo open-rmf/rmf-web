@@ -81,7 +81,6 @@ export default class KeycloakAuthenticator
         this.emit('tokenRefresh', null);
       } else {
         debug('token not refreshed');
-        throw new Error('token not refreshed');
       }
     }
     return;
