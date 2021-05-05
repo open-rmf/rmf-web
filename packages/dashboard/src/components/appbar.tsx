@@ -15,7 +15,7 @@ import React from 'react';
 import DashboardTooltip from 'react-components/lib/tooltip';
 import { HeaderBar } from 'react-components/lib/header-bar';
 import { NavigationBar } from 'react-components/lib/navigation-bar';
-import { BannerTab } from 'react-components/lib/banner-tab';
+import { LogoButton } from 'react-components/lib/logo-button';
 import { AppControllerContext, TooltipsContext } from './app-contexts';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
 
@@ -62,7 +62,7 @@ export const AppBar = React.memo(
     return (
       <div>
         <HeaderBar>
-          <BannerTab logoPath={'/roshealth-logo-white.png'} />
+          <LogoButton logoPath={'/roshealth-logo-white.png'} />
           <NavigationBar onTabChange={onTabChange} value={value}>
             <Tab
               key={'building-tab'}
