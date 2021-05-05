@@ -9,11 +9,11 @@ export default class TrajectorySocketManager extends EventEmitter<Events> {
 
   private _listenOnce<K extends keyof WebSocketEventMap>(
     event: K,
-    _webSocket: WebSocket,
+    webSocket: WebSocket,
     listener: (e: WebSocketEventMap[K]) => unknown,
   ): void {
-    _webSocket.addEventListener(event, (e) => {
-      _webSocket.removeEventListener(event, listener);
+    webSocket.addEventListener(event, (e) => {
+      webSocket.removeEventListener(event, listener);
       listener(e);
     });
   }
@@ -25,21 +25,21 @@ export default class TrajectorySocketManager extends EventEmitter<Events> {
    * resolver and processing each message in an event loop. Advantage of this is that each message
    * processing logic can be self-contained without a need for a switch or if elses.
    */
-  async send(
+  protected async send(
     payload: WebSocketSendParam0T,
-    _webSocket: WebSocket | undefined,
+    webSocket: WebSocket | undefined,
   ): Promise<MessageEvent> {
-    if (!_webSocket) throw Error('Websocket not initialized!');
+    if (!webSocket) throw Error('Websocket not initialized!');
     // response should come in the order that requests are sent, this should allow multiple messages
     // in-flight while processing the responses in the order they are sent.
-    _webSocket.send(payload);
+    webSocket.send(payload);
     // waits for the earlier response to be processed.
     if (this._ongoingRequest) {
       await this._ongoingRequest;
     }
 
     this._ongoingRequest = new Promise((res) => {
-      this._listenOnce('message', _webSocket, (e) => {
+      this._listenOnce('message', webSocket, (e) => {
         this._ongoingRequest = null;
         res(e);
       });
