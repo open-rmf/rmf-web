@@ -51,9 +51,7 @@ def get_app(run_config=SystemMode.ALL):
         app,
         db_url=app_config.db_url,
         modules={"models": ["models"]},
-        generate_schemas=True
-        if run_config in (SystemMode.ALL, SystemMode.FLUENTD)
-        else False,
+        generate_schemas=run_config in (SystemMode.ALL, SystemMode.FLUENTD),
         add_exception_handlers=True,
     )
 
