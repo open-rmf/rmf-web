@@ -20,6 +20,7 @@ import { NegotiationColors } from './negotiation-colors';
 import RobotTrajectoriesOverlay from './robot-trajectories-overlay';
 import RobotsOverlay from './robots-overlay';
 import WaypointsOverlay from './waypoints-overlay';
+import { AppConfigContext } from '../app-contexts';
 
 const debug = Debug('ScheduleVisualizer');
 
@@ -64,6 +65,8 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   debug('render');
   const { buildingMap, negotiationTrajStore, mapFloorSort, showTrajectories } = props;
   const negotiationColors = React.useMemo(() => new NegotiationColors(), []);
+
+  const authenticator = React.useContext(AppConfigContext).authenticator;
 
   const mapFloorLayerSorted = React.useMemo(
     () =>
@@ -185,6 +188,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
         if (!curMapFloorLayer || !trajManager) {
           return;
         }
+
         const resp = await trajManager.latestTrajectory({
           request: 'trajectory',
           param: {
@@ -192,7 +196,9 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
             duration: trajLookahead,
             trim: true,
           },
+          token: authenticator.token,
         });
+
         debug('set trajectories');
         if (showTrajectories === undefined || showTrajectories) {
           setTrajectories((prev) => ({
@@ -208,7 +214,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       interval = window.setInterval(updateTrajectory, trajAnimDuration);
     })();
     return () => clearInterval(interval);
-  }, [trajManager, curMapFloorLayer, trajAnimDuration, showTrajectories]);
+  }, [trajManager, curMapFloorLayer, trajAnimDuration, showTrajectories, authenticator.token]);
 
   function handleBaseLayerChange(e: L.LayersControlEvent): void {
     debug('set current level name');

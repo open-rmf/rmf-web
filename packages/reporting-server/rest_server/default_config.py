@@ -18,7 +18,11 @@ config = {
     # NOTE: This is ONLY used for documentation purposes, the "jwt_public_key" will be the
     # only key used to verify a token.
     "oidc_url": None,
-    # client id registered with the authentication provider, this will be used to verify the
-    # "aud" claim.
-    "client_id": "reporting",
+    # Audience the access token is meant for. Can also be an array.
+    # Used to verify the "aud" claim.
+    "aud": "localhost",
+    # url or string that identifies the entity that issued the jwt token
+    # Used to verify the "iss" claim
+    # If iss is set to None, it means that authentication should be disabled
+    "iss": None,
 }

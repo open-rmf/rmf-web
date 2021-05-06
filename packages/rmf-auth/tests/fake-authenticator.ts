@@ -23,6 +23,10 @@ export class FakeAuthenticator
   logout(): Promise<never> {
     throw new Error('Method not implemented.');
   }
+
+  refreshToken(): Promise<void> {
+    return Promise.resolve();
+  }
 }
 
 export default FakeAuthenticator;

@@ -239,7 +239,9 @@ class TestRmfIO_JWTAuth(unittest.IsolatedAsyncioTestCase):
         with open(f"{os.path.dirname(__file__)}/test/test.key", "br") as f:
             private_key = f.read()
         token = jwt.encode(
-            {"some": "payload", "aud": "rmf-server"}, private_key, algorithm="RS256"
+            {"some": "payload", "aud": "localhost", "iss": None},
+            private_key,
+            algorithm="RS256",
         )
 
         success = await self.try_connect(token)

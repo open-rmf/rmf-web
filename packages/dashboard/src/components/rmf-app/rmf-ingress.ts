@@ -12,8 +12,8 @@ export class RmfIngress {
   negotiationStatusManager: NegotiationStatusManager;
   trajectoryManager?: RobotTrajectoryManager;
 
-  constructor(user: User | null, trajMgr?: RobotTrajectoryManager) {
-    this.negotiationStatusManager = new NegotiationStatusManager(appConfig.trajServerUrl);
+  constructor(user: User | null, trajMgr?: RobotTrajectoryManager, ws?: WebSocket) {
+    this.negotiationStatusManager = new NegotiationStatusManager(ws, appConfig.authenticator);
     this.sioClient = (() => {
       const token = appConfig.authenticator.token;
       const url = new URL(appConfig.rmfServerUrl);

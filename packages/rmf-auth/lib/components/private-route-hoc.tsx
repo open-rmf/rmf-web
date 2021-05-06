@@ -22,7 +22,7 @@ export const PrivateRouteHOC = (
     unauthorized,
     user,
     ...rest
-  }: PrivateRouteProps) => {
+  }: PrivateRouteProps): JSX.Element => {
     const location = hookUseLocation();
     const redirect = (
       <RedirectComponent to={{ pathname: redirectPath, state: { from: location } }} />

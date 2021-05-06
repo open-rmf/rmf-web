@@ -4,6 +4,7 @@ import { User } from './user';
 
 export type AuthenticatorEventType = {
   userChanged: [User | null];
+  tokenRefresh: null;
 };
 
 export interface Authenticator extends EventEmitter<AuthenticatorEventType> {
@@ -25,6 +26,11 @@ export interface Authenticator extends EventEmitter<AuthenticatorEventType> {
    * Note: This redirects to external logout page so it will never return.
    */
   logout(): Promise<never>;
+
+  /**
+   * Called before each request that requires a token
+   */
+  refreshToken(): Promise<void>;
 }
 
 export type AuthConfig<T = typeof Keycloak_> = T extends (config: infer U) => unknown ? U : never;

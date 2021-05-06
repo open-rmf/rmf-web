@@ -23,4 +23,8 @@ export default class StubAuthenticator
   logout(): Promise<never> {
     throw new Error('not supported');
   }
+
+  refreshToken(): Promise<void> {
+    return Promise.resolve();
+  }
 }

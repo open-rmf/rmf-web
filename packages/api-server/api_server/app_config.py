@@ -15,7 +15,8 @@ class AppConfig:
     log_level: str
     jwt_public_key: Optional[str]
     oidc_url: Optional[str]
-    client_id: str
+    aud: str
+    iss: Optional[str]
 
     def __post_init__(self):
         self.public_url = urllib.parse.urlparse(self.public_url)
