@@ -2,8 +2,6 @@ import json
 
 from models.lift_state import LiftState
 
-from .log_type_parser import get_log_type
-
 
 async def lift_state_parser(fullstring: str):
     modified_string = fullstring.replace("lift_state:", "")

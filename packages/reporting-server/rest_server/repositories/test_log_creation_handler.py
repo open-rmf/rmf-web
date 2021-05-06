@@ -124,3 +124,26 @@ class TestCaseRawLogCreationRepository(unittest.IsolatedAsyncioTestCase):
         await create_raw_log(data)
         dispenser = await RawLog.all()
         self.assertEqual(len(dispenser), 3)
+
+    async def test_raw_log_handle_creation_of_logs_with_container_name(self):
+        data = [
+            {
+                "log": 'INFO:app.BookKeeper.dispenser_state:{"time": {"sec": 1600, "nanosec": 0}, "guid": "coke_dispenser", "mode": 0, "request_guid_queue": [], "seconds_remaining": 0.0}\n',
+                "stream": "stdout",
+                "kubernetes": {
+                    "container_name": "app-that-writes-logs",
+                    "namespace_name": "default",
+                    "pod_name": "app-that-writes-logs",
+                    "container_image": "busybox:latest",
+                    "container_image_id": "docker-pullable://busybox@sha256:ae39a6f5c07297d7ab64dbd4f82c77c874cc6a94cea29fdec309d0992574b4f7",
+                    "pod_id": "978761c6-2a19-422f-b710-d43da2348f1f",
+                    "host": "minikube",
+                    "master_url": "https://10.96.0.1:443/api",
+                    "namespace_id": "e192acd4-e6e7-46c2-8514-44a27a367749",
+                },
+            },
+        ]
+
+        await create_raw_log(data)
+        log = await RawLog.first()
+        self.assertEqual(log.container_name, "app-that-writes-logs")
