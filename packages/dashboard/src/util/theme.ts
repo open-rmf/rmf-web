@@ -10,7 +10,7 @@ const darkThemeStyles = makeStyles((theme) => ({
     color: theme.fontColors.darkTheme,
   },
   background: {
-    backgroundColor: theme.palette.primary.dark,
+    backgroundColor: theme.palette.secondary.dark,
   },
 }));
 
@@ -23,7 +23,7 @@ const lightThemeStyles = makeStyles((theme) => ({
     color: theme.fontColors.lightTheme,
   },
   background: {
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.secondary.main,
   },
 }));
 
