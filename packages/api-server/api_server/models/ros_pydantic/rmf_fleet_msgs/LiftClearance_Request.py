@@ -9,6 +9,9 @@ class LiftClearance_Request(pydantic.BaseModel):
     robot_name: str = ""  # string
     lift_name: str = ""  # string
 
+    class Config:
+        orm_mode = True
+
 
 #
 # # Name of the robot that wants to enter a lift

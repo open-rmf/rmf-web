@@ -14,6 +14,9 @@ class DoorRequest(pydantic.BaseModel):
     door_name: str = ""  # string
     requested_mode: DoorMode = DoorMode()  # rmf_door_msgs/DoorMode
 
+    class Config:
+        orm_mode = True
+
 
 # builtin_interfaces/Time request_time
 # string requester_id

@@ -13,6 +13,9 @@ class DestinationRequest(pydantic.BaseModel):
     destination: Location = Location()  # rmf_fleet_msgs/Location
     task_id: str = ""  # string
 
+    class Config:
+        orm_mode = True
+
 
 # string fleet_name
 # string robot_name

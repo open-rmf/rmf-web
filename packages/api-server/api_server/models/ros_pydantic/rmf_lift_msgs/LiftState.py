@@ -19,6 +19,9 @@ class LiftState(pydantic.BaseModel):
     current_mode: pydantic.conint(ge=0, le=255) = 0  # uint8
     session_id: str = ""  # string
 
+    class Config:
+        orm_mode = True
+
 
 # # lift_time records when the information in this message was generated
 # builtin_interfaces/Time lift_time

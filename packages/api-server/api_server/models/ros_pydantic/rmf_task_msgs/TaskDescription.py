@@ -22,6 +22,9 @@ class TaskDescription(pydantic.BaseModel):
     delivery: Delivery = Delivery()  # rmf_task_msgs/Delivery
     clean: Clean = Clean()  # rmf_task_msgs/Clean
 
+    class Config:
+        orm_mode = True
+
 
 # # Desired start time of a task
 # builtin_interfaces/Time start_time

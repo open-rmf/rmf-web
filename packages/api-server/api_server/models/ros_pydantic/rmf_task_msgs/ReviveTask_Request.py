@@ -9,6 +9,9 @@ class ReviveTask_Request(pydantic.BaseModel):
     requester: str = ""  # string
     task_id: str = ""  # string
 
+    class Config:
+        orm_mode = True
+
 
 # # Revive a previously cancelled or failed task. This will reinitiate
 # # a bidding sequence to reassign this task.

@@ -4,18 +4,18 @@ import rx
 from rx import operators as ops
 from rx.scheduler.historicalscheduler import HistoricalScheduler
 
-from ...models.tortoise_models import BasicHealthModel, HealthStatus
+from ...models import BasicHealth, HealthStatus
 from . import most_critical
 
 
 class TestMostCritical(unittest.TestCase):
     def test_returns_dead_over_unhealthy(self):
         healths = [
-            BasicHealthModel(
+            BasicHealth(
                 name="test",
                 health_status=HealthStatus.DEAD,
             ),
-            BasicHealthModel(
+            BasicHealth(
                 name="test",
                 health_status=HealthStatus.UNHEALTHY,
             ),
@@ -23,7 +23,7 @@ class TestMostCritical(unittest.TestCase):
         obs_a = rx.of(healths[0]).pipe(ops.timestamp(scheduler=HistoricalScheduler(1)))
         obs_b = rx.of(healths[1]).pipe(ops.timestamp(scheduler=HistoricalScheduler(2)))
 
-        result: BasicHealthModel = None
+        result: BasicHealth = None
 
         def assign(v):
             nonlocal result
@@ -34,12 +34,12 @@ class TestMostCritical(unittest.TestCase):
 
     def test_return_most_recent(self):
         healths = [
-            BasicHealthModel(
+            BasicHealth(
                 name="test",
                 health_status=HealthStatus.DEAD,
                 health_message="first",
             ),
-            BasicHealthModel(
+            BasicHealth(
                 name="test",
                 health_status=HealthStatus.DEAD,
                 health_message="second",
@@ -48,7 +48,7 @@ class TestMostCritical(unittest.TestCase):
         obs_a = rx.of(healths[0]).pipe(ops.timestamp(scheduler=HistoricalScheduler(1)))
         obs_b = rx.of(healths[1]).pipe(ops.timestamp(scheduler=HistoricalScheduler(2)))
 
-        result: BasicHealthModel = None
+        result: BasicHealth = None
 
         def assign(v):
             nonlocal result
@@ -57,3 +57,23 @@ class TestMostCritical(unittest.TestCase):
         obs_a.pipe(ops.combine_latest(obs_b), most_critical()).subscribe(assign)
         self.assertEqual(result.health_status, HealthStatus.DEAD)
         self.assertEqual(result.health_message, "second")
+
+    def test_ignore_none_values(self):
+        healths = [
+            BasicHealth(
+                name="test",
+                health_status=HealthStatus.HEALTHY,
+            ),
+            None,
+        ]
+        obs_a = rx.of(healths[0]).pipe(ops.timestamp(scheduler=HistoricalScheduler(1)))
+        obs_b = rx.of(healths[1]).pipe(ops.timestamp(scheduler=HistoricalScheduler(2)))
+
+        result: BasicHealth = None
+
+        def assign(v):
+            nonlocal result
+            result = v
+
+        obs_a.pipe(ops.combine_latest(obs_b), most_critical()).subscribe(assign)
+        self.assertEqual(result.health_status, HealthStatus.HEALTHY)

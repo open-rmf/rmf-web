@@ -11,6 +11,9 @@ class Dock(pydantic.BaseModel):
     fleet_name: str = ""  # string
     params: List[DockParameter] = []  # rmf_fleet_msgs/DockParameter
 
+    class Config:
+        orm_mode = True
+
 
 # string fleet_name
 # DockParameter[] params

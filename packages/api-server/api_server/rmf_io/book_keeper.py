@@ -2,25 +2,35 @@ import asyncio
 import json
 import logging
 from collections import namedtuple
-from typing import Any, Awaitable, List
+from typing import Coroutine, List
 
-from rmf_dispenser_msgs.msg import DispenserState
-from rmf_door_msgs.msg import DoorState
-from rmf_fleet_msgs.msg import FleetState
-from rmf_ingestor_msgs.msg import IngestorState
-from rmf_lift_msgs.msg import LiftState
-from rmf_task_msgs.msg import TaskSummary
-from rosidl_runtime_py.convert import message_to_ordereddict
 from rx.core.typing import Disposable
 
-from ..models import tortoise_models as ttm
-from .gateway import RmfGateway
+from ..models import (
+    BasicHealth,
+    BuildingMap,
+    DispenserHealth,
+    DispenserState,
+    DoorHealth,
+    DoorState,
+    FleetState,
+    HealthStatus,
+    IngestorHealth,
+    IngestorState,
+    LiftHealth,
+    LiftState,
+    RobotHealth,
+    TaskSummary,
+)
+from ..repositories import RmfRepository
+from .events import RmfEvents
 
 
 class RmfBookKeeper:
     _ChildLoggers = namedtuple(
         "_ChildLoggers",
         [
+            "building_map",
             "door_state",
             "door_health",
             "lift_state",
@@ -37,17 +47,19 @@ class RmfBookKeeper:
 
     def __init__(
         self,
-        rmf_gateway: RmfGateway,
+        rmf_repo: RmfRepository,
+        rmf_events: RmfEvents,
         *,
-        loop: asyncio.AbstractEventLoop = None,
         logger: logging.Logger = None,
     ):
-        self.rmf = rmf_gateway
-        self.loop: asyncio.AbstractEventLoop = loop or asyncio.get_event_loop()
+        self.repo = rmf_repo
+        self.rmf = rmf_events
+        self._loop: asyncio.AbstractEventLoop = None
         self._main_logger = logger or logging.getLogger(self.__class__.__name__)
         self._pending_tasks = set()
 
         self._loggers = self._ChildLoggers(
+            self._main_logger.getChild("building_map"),
             self._main_logger.getChild("door_state"),
             self._main_logger.getChild("door_health"),
             self._main_logger.getChild("lift_state"),
@@ -74,11 +86,10 @@ class RmfBookKeeper:
         self._loggers.task_summary.parent = self._main_logger
 
         self._subscriptions: List[Disposable] = []
-        self._started = False
 
-    def start(self):
-        if self._started:
-            return
+    async def start(self):
+        self._loop = asyncio.get_event_loop()
+        self._record_building_map()
         self._record_door_state()
         self._record_door_health()
         self._record_lift_state()
@@ -90,56 +101,52 @@ class RmfBookKeeper:
         self._record_fleet_state()
         self._record_robot_health()
         self._record_task_summary()
-        self._started = True
 
     async def stop(self):
         for sub in self._subscriptions:
             sub.dispose()
         self._subscriptions.clear()
-        self._started = False
-        await asyncio.gather(*self._pending_tasks)
+        if len(self._pending_tasks) > 0:
+            await asyncio.wait(self._pending_tasks)
 
-    def _create_task(self, awaitable: Awaitable[Any]):
-        task = self.loop.create_task(awaitable)
+    def _create_task(self, coro: Coroutine):
+        task = self._loop.create_task(coro)
         task.add_done_callback(self._pending_tasks.remove)
         self._pending_tasks.add(task)
 
     @staticmethod
-    def _report_health(health: ttm.BasicHealthModel, logger: logging.Logger):
-        message = json.dumps(
-            {
-                "id": health.id_,
-                "health_status": str(health.health_status),
-                "health_message": health.health_message,
-            }
-        )
-        if health.health_status == ttm.HealthStatus.UNHEALTHY:
+    def _report_health(health: BasicHealth, logger: logging.Logger):
+        message = health.get_pydantic().json()
+        if health.health_status == HealthStatus.UNHEALTHY:
             logger.warning(message)
-        elif health.health_status == ttm.HealthStatus.DEAD:
+        elif health.health_status == HealthStatus.DEAD:
             logger.error(message)
         else:
             logger.info(message)
 
+    def _record_building_map(self):
+        async def update(building_map: BuildingMap):
+            if not building_map:
+                return
+            await self.repo.save_building_map(building_map)
+            self._loggers.building_map.info(json.dumps(building_map.dict()))
+
+        self._subscriptions.append(
+            self.rmf.building_map.subscribe(lambda x: self._create_task(update(x)))
+        )
+
     def _record_door_state(self):
         async def update(door_state: DoorState):
-            await ttm.DoorState.update_or_create_from_rmf(door_state)
-            self._loggers.door_state.info(
-                json.dumps(message_to_ordereddict(door_state))
-            )
+            await self.repo.save_door_state(door_state)
+            self._loggers.door_state.info(json.dumps(door_state.dict()))
 
         self._subscriptions.append(
             self.rmf.door_states.subscribe(lambda x: self._create_task(update(x)))
         )
 
     def _record_door_health(self):
-        async def update(health: ttm.DoorHealth):
-            await ttm.DoorHealth.update_or_create(
-                {
-                    "health_status": health.health_status,
-                    "health_message": health.health_message,
-                },
-                id_=health.id_,
-            )
+        async def update(health: DoorHealth):
+            await self.repo.save_door_health(health)
             self._report_health(health, self._loggers.door_health)
 
         self._subscriptions.append(
@@ -148,24 +155,16 @@ class RmfBookKeeper:
 
     def _record_lift_state(self):
         async def update(lift_state: LiftState):
-            await ttm.LiftState.update_or_create_from_rmf(lift_state)
-            self._loggers.lift_state.info(
-                json.dumps(message_to_ordereddict(lift_state))
-            )
+            await self.repo.save_lift_state(lift_state)
+            self._loggers.lift_state.info(lift_state.json())
 
         self._subscriptions.append(
             self.rmf.lift_states.subscribe(lambda x: self._create_task(update(x)))
         )
 
     def _record_lift_health(self):
-        async def update(health: ttm.LiftHealth):
-            await ttm.LiftHealth.update_or_create(
-                {
-                    "health_status": health.health_status,
-                    "health_message": health.health_message,
-                },
-                id_=health.id_,
-            )
+        async def update(health: LiftHealth):
+            await self.repo.save_lift_health(health)
             self._report_health(health, self._loggers.lift_health)
 
         self._subscriptions.append(
@@ -174,24 +173,16 @@ class RmfBookKeeper:
 
     def _record_dispenser_state(self):
         async def update(dispenser_state: DispenserState):
-            await ttm.DispenserState.update_or_create_from_rmf(dispenser_state)
-            self._loggers.dispenser_state.info(
-                json.dumps(message_to_ordereddict(dispenser_state))
-            )
+            await self.repo.save_dispenser_state(dispenser_state)
+            self._loggers.dispenser_state.info(dispenser_state.json())
 
         self._subscriptions.append(
             self.rmf.dispenser_states.subscribe(lambda x: self._create_task(update(x)))
         )
 
     def _record_dispenser_health(self):
-        async def update(health: ttm.DispenserHealth):
-            await ttm.DispenserHealth.update_or_create(
-                {
-                    "health_status": health.health_status,
-                    "health_message": health.health_message,
-                },
-                id_=health.id_,
-            )
+        async def update(health: DispenserHealth):
+            await self.repo.save_dispenser_health(health)
             self._report_health(health, self._loggers.dispenser_health)
 
         self._subscriptions.append(
@@ -200,24 +191,16 @@ class RmfBookKeeper:
 
     def _record_ingestor_state(self):
         async def update(ingestor_state: IngestorState):
-            await ttm.IngestorState.update_or_create_from_rmf(ingestor_state)
-            self._loggers.ingestor_state.info(
-                json.dumps(message_to_ordereddict(ingestor_state))
-            )
+            await self.repo.save_ingestor_state(ingestor_state)
+            self._loggers.ingestor_state.info(ingestor_state.json())
 
         self._subscriptions.append(
             self.rmf.ingestor_states.subscribe(lambda x: self._create_task(update(x)))
         )
 
     def _record_ingestor_health(self):
-        async def update(health: ttm.IngestorHealth):
-            await ttm.IngestorHealth.update_or_create(
-                {
-                    "health_status": health.health_status,
-                    "health_message": health.health_message,
-                },
-                id_=health.id_,
-            )
+        async def update(health: IngestorHealth):
+            await self.repo.save_ingestor_health(health)
             self._report_health(health, self._loggers.ingestor_health)
 
         self._subscriptions.append(
@@ -226,24 +209,16 @@ class RmfBookKeeper:
 
     def _record_fleet_state(self):
         async def update(fleet_state: FleetState):
-            await ttm.FleetState.update_or_create_from_rmf(fleet_state)
-            self._loggers.fleet_state.info(
-                json.dumps(message_to_ordereddict(fleet_state))
-            )
+            await self.repo.save_fleet_state(fleet_state)
+            self._loggers.fleet_state.info(fleet_state.json())
 
         self._subscriptions.append(
             self.rmf.fleet_states.subscribe(lambda x: self._create_task(update(x)))
         )
 
     def _record_robot_health(self):
-        async def update(health: ttm.RobotHealth):
-            await ttm.RobotHealth.update_or_create(
-                {
-                    "health_status": health.health_status,
-                    "health_message": health.health_message,
-                },
-                id_=health.id_,
-            )
+        async def update(health: RobotHealth):
+            await self.repo.save_robot_health(health)
             self._report_health(health, self._loggers.robot_health)
 
         self._subscriptions.append(
@@ -251,9 +226,9 @@ class RmfBookKeeper:
         )
 
     def _record_task_summary(self):
-        async def update(task: TaskSummary):
-            await ttm.TaskSummary.update_or_create_from_rmf(task)
-            self._loggers.task_summary.info(json.dumps(message_to_ordereddict(task)))
+        async def update(summary: TaskSummary):
+            await self.repo.save_task_summary(summary)
+            self._loggers.task_summary.info(summary.json())
 
         self._subscriptions.append(
             self.rmf.task_summaries.subscribe(lambda x: self._create_task(update(x)))

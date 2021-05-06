@@ -5,9 +5,6 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-/**
- * HEALTHY: Healthy<br/>UNHEALTHY: Unhealthy<br/>DEAD: Dead
- */
 export type HealthStatus = string;
 export type HealthMessage = string;
 export type Id = string;

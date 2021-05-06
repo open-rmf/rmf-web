@@ -14,6 +14,9 @@ class Tow(pydantic.BaseModel):
     is_dropoff_place_known: bool = False  # bool
     dropoff_place_name: str = ""  # string
 
+    class Config:
+        orm_mode = True
+
 
 # # task_id is intended to be a pseudo-random string generated
 # # by the caller which can be used to identify this task as it

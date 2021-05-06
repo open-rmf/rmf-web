@@ -1,47 +1,18 @@
-import unittest
+# import unittest
 
-from rmf_task_msgs.msg import TaskSummary
+# from rmf_building_map_msgs.msg import AffineImage as RmfAffineImage
+# from rmf_building_map_msgs.msg import BuildingMap as RmfBuildingMap
+# from rmf_building_map_msgs.msg import Level as RmfLevel
 
-from . import RmfGateway
+# from .gateway import process_building_map
 
 
-class TestRmfGateway_TaskSummaries(unittest.TestCase):
-    def setUp(self):
-        self.rmf = RmfGateway()
-
-    def test_keep_states(self):
-        queued = TaskSummary(task_id="queued_task", state=TaskSummary.STATE_QUEUED)
-        self.rmf.task_summaries.on_next(queued)
-        active = TaskSummary(task_id="active_task", state=TaskSummary.STATE_ACTIVE)
-        self.rmf.task_summaries.on_next(active)
-        pending = TaskSummary(task_id="pending_task", state=TaskSummary.STATE_PENDING)
-        self.rmf.task_summaries.on_next(pending)
-
-        self.assertEqual(len(self.rmf.current_task_summaries), 3)
-
-    def test_remove_completed_tasks(self):
-        task = TaskSummary(task_id="test_task", state=TaskSummary.STATE_ACTIVE)
-        self.rmf.task_summaries.on_next(task)
-        self.assertEqual(len(self.rmf.current_task_summaries), 1)
-
-        task = TaskSummary(task_id="test_task", state=TaskSummary.STATE_COMPLETED)
-        self.rmf.task_summaries.on_next(task)
-        self.assertEqual(len(self.rmf.current_task_summaries), 0)
-
-    def test_remove_failed_tasks(self):
-        task = TaskSummary(task_id="test_task", state=TaskSummary.STATE_ACTIVE)
-        self.rmf.task_summaries.on_next(task)
-        self.assertEqual(len(self.rmf.current_task_summaries), 1)
-
-        task = TaskSummary(task_id="test_task", state=TaskSummary.STATE_FAILED)
-        self.rmf.task_summaries.on_next(task)
-        self.assertEqual(len(self.rmf.current_task_summaries), 0)
-
-    def test_remove_cancelled_tasks(self):
-        task = TaskSummary(task_id="test_task", state=TaskSummary.STATE_ACTIVE)
-        self.rmf.task_summaries.on_next(task)
-        self.assertEqual(len(self.rmf.current_task_summaries), 1)
-
-        task = TaskSummary(task_id="test_task", state=TaskSummary.STATE_CANCELED)
-        self.rmf.task_summaries.on_next(task)
-        self.assertEqual(len(self.rmf.current_task_summaries), 0)
+# class TestProcessBuildingMap(unittest.TestCase):
+#     def test_convert_building_map(self):
+#         rmf_building_map = RmfBuildingMap(
+#             name="test_map", levels=[RmfLevel(images=[RmfAffineImage(data=b"test")])]
+#         )
+#         static_files = unittest.mock.Mock()
+#         static_files.add_file.return_value = "test_url"
+#         building_map = process_building_map(rmf_building_map, static_files)
+#         self.assertEqual(building_map.levels[0].images[0].data, "test_url")

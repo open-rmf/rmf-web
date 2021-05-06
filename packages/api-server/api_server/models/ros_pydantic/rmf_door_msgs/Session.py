@@ -11,6 +11,9 @@ class Session(pydantic.BaseModel):
     request_time: Time = Time()  # builtin_interfaces/Time
     requester_id: str = ""  # string
 
+    class Config:
+        orm_mode = True
+
 
 #
 # builtin_interfaces/Time request_time

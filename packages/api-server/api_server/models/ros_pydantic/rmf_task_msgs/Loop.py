@@ -12,6 +12,9 @@ class Loop(pydantic.BaseModel):
     start_name: str = ""  # string
     finish_name: str = ""  # string
 
+    class Config:
+        orm_mode = True
+
 
 # # task_id is intended to be a pseudo-random string generated
 # # by the caller which can be used to identify this task as it

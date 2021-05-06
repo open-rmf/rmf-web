@@ -12,6 +12,9 @@ class GetTaskList_Response(pydantic.BaseModel):
     active_tasks: List[TaskSummary] = []  # rmf_task_msgs/TaskSummary
     terminated_tasks: List[TaskSummary] = []  # rmf_task_msgs/TaskSummary
 
+    class Config:
+        orm_mode = True
+
 
 #
 #

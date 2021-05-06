@@ -1,7 +1,7 @@
-from rmf_ingestor_msgs.msg import IngestorState as RmfIngestorState
+from tortoise import Model
 
-from .json_model import json_model
+from .json_mixin import JsonMixin
 
 
-class IngestorState(json_model(RmfIngestorState, lambda x: x.guid)):
+class IngestorState(Model, JsonMixin):
     pass

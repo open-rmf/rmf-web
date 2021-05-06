@@ -15,6 +15,9 @@ class IngestorRequest(pydantic.BaseModel):
     transporter_type: str = ""  # string
     items: List[IngestorRequestItem] = []  # rmf_ingestor_msgs/IngestorRequestItem
 
+    class Config:
+        orm_mode = True
+
 
 # builtin_interfaces/Time time
 #

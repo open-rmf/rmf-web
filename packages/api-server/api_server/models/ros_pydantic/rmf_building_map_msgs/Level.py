@@ -19,6 +19,9 @@ class Level(pydantic.BaseModel):
     nav_graphs: List[Graph] = []  # rmf_building_map_msgs/Graph
     wall_graph: Graph = Graph()  # rmf_building_map_msgs/Graph
 
+    class Config:
+        orm_mode = True
+
 
 # string name
 # float32 elevation

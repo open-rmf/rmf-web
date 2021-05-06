@@ -11,6 +11,9 @@ class Behavior(pydantic.BaseModel):
     name: str = ""  # string
     parameters: List[BehaviorParameter] = []  # rmf_task_msgs/BehaviorParameter
 
+    class Config:
+        orm_mode = True
+
 
 # string name
 # BehaviorParameter[] parameters

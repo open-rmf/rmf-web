@@ -1,5 +1,5 @@
 import { makeStyles } from '@material-ui/core';
-import { Task } from 'api-client';
+import { TaskProgress } from 'api-client';
 import React from 'react';
 import { TaskPanel, TaskPanelProps } from 'react-components';
 import * as RmfModels from 'rmf-models';
@@ -42,7 +42,7 @@ export function TaskPage() {
       return;
     }
     const tasks = await tasksApi.getTasksTasksGetTasksGet();
-    const getTaskSummaries = tasks.data.map((task: Task) => task.task_summary);
+    const getTaskSummaries = tasks.data.map((task: TaskProgress) => task.task_summary);
     sortTasks(getTaskSummaries);
     setTaskSummaries(getTaskSummaries);
   }, [tasksApi]);

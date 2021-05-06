@@ -15,6 +15,9 @@ class DispenserRequest(pydantic.BaseModel):
     transporter_type: str = ""  # string
     items: List[DispenserRequestItem] = []  # rmf_dispenser_msgs/DispenserRequestItem
 
+    class Config:
+        orm_mode = True
+
 
 # builtin_interfaces/Time time
 #
