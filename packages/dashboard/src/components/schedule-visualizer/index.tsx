@@ -20,6 +20,8 @@ import { NegotiationColors } from './negotiation-colors';
 import RobotTrajectoriesOverlay from './robot-trajectories-overlay';
 import RobotsOverlay from './robots-overlay';
 import WaypointsOverlay from './waypoints-overlay';
+import { SettingsContext } from '../app-contexts';
+import { decideThemeStyle } from '../../util/theme';
 
 const debug = Debug('ScheduleVisualizer');
 
@@ -74,6 +76,9 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   );
 
   const classes = useStyles();
+
+  const themeContext = React.useContext(SettingsContext).themeMode;
+  const themeClasses = decideThemeStyle(themeContext);
 
   const [mapFloorLayers, setMapFloorLayers] = React.useState<
     Readonly<Record<string, MapFloorLayer>>
@@ -271,7 +276,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   return (
     <LMap
       id="ScheduleVisualizer" // # data-* attrs are not set on the leaflet container
-      className={classes.map}
+      className={`${classes.map} ${themeClasses.background}`}
       attributionControl={false}
       crs={L.CRS.Simple}
       minZoom={0}

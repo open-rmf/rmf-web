@@ -44,7 +44,7 @@ export interface SettingsDrawerProps extends DrawerProps {
 export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactElement {
   const classes = useStyles();
   const { settings, onSettingsChange, handleCloseButton, ...otherProps } = props;
-  const { trajectoryAnimation } = settings;
+  const { trajectoryAnimation, themeMode } = settings;
 
   const trajAnimsText = React.useMemo(
     () => Object.keys(TrajectoryAnimation).slice(Object.keys(TrajectoryAnimation).length * 0.5),
@@ -123,7 +123,13 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
         </FormLabel>
         <FormControlLabel
           className={classes.swtichButton}
-          control={<CustomSwitch onChange={handleThemeModeChange} name={'theme switch'} />}
+          control={
+            <CustomSwitch
+              onChange={handleThemeModeChange}
+              name={'theme switch'}
+              checked={themeMode === ThemeMode.Dark}
+            />
+          }
           label={themeText[settings.themeMode]}
         />
         <Divider />
