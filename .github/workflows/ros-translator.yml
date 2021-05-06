@@ -2,7 +2,7 @@ name: ros_translator
 on:
   pull_request:
     paths:
-      - 'packages/ros_translator/**'
+      - 'packages/ros-translator/**'
   push:
     branches:
       - main
