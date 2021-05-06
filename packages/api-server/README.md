@@ -70,6 +70,10 @@ When running behind a reverse proxy like nginx, you need to set the `public_url`
 
 For example, if rmf-server is served on https://example.com/rmf/api/v1, `public_url` must be set to `https://example.com/rmf/api/v1` and your reverse proxy must be configured to strip the prefix such that it forwards requests from `/rmf/api/v1/something` to `/something`.
 
+## Running with RMF simulations
+
+When running with rmf simulations, you need to set the env `RMF_SERVER_USE_SIM_TIME=true`. This is needed to ensure that times from the client are correctly converted to RMF's simulation time.
+
 # Developers
 
 ## Running tests

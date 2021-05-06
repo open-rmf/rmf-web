@@ -20,6 +20,7 @@ from .rmf_io import HealthWatchdog, RmfBookKeeper, RmfIO, RmfTransport
 shutdown_cbs: List[Callable[[], Union[None, Awaitable[None]]]] = []
 
 app = FastAPI(
+    title="RMF API Server",
     dependencies=[Depends(auth_scheme)],
 )
 app.add_middleware(

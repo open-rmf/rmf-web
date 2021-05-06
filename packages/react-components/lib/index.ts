@@ -30,7 +30,7 @@ export * from './stack-navigator';
 export * from './status-label';
 export * from './svg-text';
 export * from './systems-summary';
-export * from './task-summary';
+export * from './tasks';
 export * from './tooltip';
 export * from './trashbin-control-button-group';
 export * from './trashbin-control-button-group-reducer';

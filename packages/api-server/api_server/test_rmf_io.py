@@ -185,6 +185,7 @@ class TestRmfIO(RosFixture):
         image_data = result["levels"][0]["images"][0]["data"]
         self.assertEqual(type(image_data), str)
 
+        # pylint: disable=consider-using-with
         resp = urllib.request.urlopen(image_data)
         self.assertEqual(resp.status, 200)
 

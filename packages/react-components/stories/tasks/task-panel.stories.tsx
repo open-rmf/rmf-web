@@ -11,10 +11,13 @@ export default {
 
 export const TaskPanel: Story<TaskPanelProps> = (args) => {
   return (
-    <TaskPanel_
-      {...args}
-      submitTask={() => new Promise((res) => setTimeout(res, 1000))}
-    ></TaskPanel_>
+    <>
+      <TaskPanel_
+        {...args}
+        style={{ height: '95vh', margin: 'auto', maxWidth: 1600 }}
+        submitTask={() => new Promise((res) => setTimeout(res, 1000))}
+      ></TaskPanel_>
+    </>
   );
 };
 
@@ -36,4 +39,9 @@ const tasks = [
 
 TaskPanel.args = {
   tasks,
+  cleaningZones: ['test_zone_0', 'test_zone_1'],
+  loopWaypoints: ['test_waypoint_0', 'test_waypoint_1'],
+  deliveryWaypoints: ['test_waypoint_0', 'test_waypoint_1'],
+  dispensers: ['test_dispenser_0', 'test_dispenser_1'],
+  ingestors: ['test_ingestor_0', 'test_ingestor_1'],
 };

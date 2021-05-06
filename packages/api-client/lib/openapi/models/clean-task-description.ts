@@ -22,5 +22,5 @@ export interface CleanTaskDescription {
    * @type {string}
    * @memberof CleanTaskDescription
    */
-  cleaningZone: any;
+  cleaning_zone: any;
 }

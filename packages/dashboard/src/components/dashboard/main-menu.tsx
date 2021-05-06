@@ -53,11 +53,6 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
     setFilter && setFilter();
   }, [pushView, setFilter]);
 
-  const handleMainMenuTasksClick = React.useCallback(() => {
-    pushView(OmniPanelViewIndex.Tasks);
-    setFilter && setFilter();
-  }, [pushView, setFilter]);
-
   return (
     <List className={classes.root} data-component="MainMenu">
       <ListItem data-item="Doors" button={true} onClick={handleMainMenuDoorsClick}>
@@ -88,11 +83,6 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
         >
           <Typography variant="h5">Negotiations</Typography>
         </DashboardTooltip>
-      </ListItem>
-      <Divider />
-
-      <ListItem data-item="Plans" button={true} onClick={handleMainMenuTasksClick}>
-        <Typography variant="h5">Plans</Typography>
       </ListItem>
       <Divider />
     </List>

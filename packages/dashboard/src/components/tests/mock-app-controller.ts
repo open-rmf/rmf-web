@@ -6,7 +6,6 @@ export function makeMockAppController(): AppController {
     setSettings: jest.fn(),
     showHelp: jest.fn(),
     showHotkeysDialog: jest.fn(),
-    showLoadingScreen: jest.fn(),
     showSettings: jest.fn(),
     showTooltips: jest.fn(),
     toggleHelp: jest.fn(),

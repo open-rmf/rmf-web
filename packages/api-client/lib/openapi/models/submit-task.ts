@@ -22,13 +22,13 @@ export interface SubmitTask {
    * @type {TaskTypeEnum}
    * @memberof SubmitTask
    */
-  taskType: any;
+  task_type: any;
   /**
    *
    * @type {number}
    * @memberof SubmitTask
    */
-  startTime: any;
+  start_time: any;
   /**
    *
    * @type {number}

@@ -2,6 +2,9 @@ from enum import Enum
 from typing import Optional, Union
 
 from pydantic import BaseModel, validator
+from rmf_task_msgs.msg import TaskType as RmfTaskType
+
+from .ros_pydantic.rmf_task_msgs.TaskSummary import TaskSummary as PydanticTaskSummary
 
 
 class CleanTaskDescription(BaseModel):
@@ -26,10 +29,15 @@ TaskDescriptionT = Union[
 ]
 
 
-class TaskTypeEnum(str, Enum):
-    CLEAN = "clean"
-    LOOP = "loop"
-    DELIVERY = "delivery"
+class TaskTypeEnum(Enum):
+    CLEAN = RmfTaskType.TYPE_CLEAN
+    LOOP = RmfTaskType.TYPE_LOOP
+    DELIVERY = RmfTaskType.TYPE_DELIVERY
+
+
+class Task(BaseModel):
+    task_summary: PydanticTaskSummary
+    progress: str
 
 
 class SubmitTask(BaseModel):
@@ -43,7 +51,7 @@ class SubmitTask(BaseModel):
     def description_matches_task_type(cls, description, values):
         if not "task_type" in values:
             return None
-        task_type: str = values["task_type"].lower()
+        task_type: TaskTypeEnum = values["task_type"]
         if task_type == TaskTypeEnum.CLEAN:
             if not isinstance(description, CleanTaskDescription):
                 return CleanTaskDescription.validate(description)
@@ -54,6 +62,10 @@ class SubmitTask(BaseModel):
             if not isinstance(description, DeliveryTaskDescription):
                 raise TypeError("expected description to be DeliveryTaskDescription")
         return description
+
+
+class SubmitTaskResponse(BaseModel):
+    task_id: str
 
 
 class CancelTask(BaseModel):

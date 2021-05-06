@@ -1,6 +1,6 @@
-import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core';
 import Tabs from '@material-ui/core/Tabs';
+import React from 'react';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -12,9 +12,9 @@ const useStyles = makeStyles(() =>
   }),
 );
 
-interface NavigationBarProps {
+export interface NavigationBarProps {
   value?: string;
-  onTabChange?: (event: React.ChangeEvent<unknown>, newValue: string) => void;
+  onTabChange?(event: React.ChangeEvent<unknown>, newValue: unknown): void;
   children?: React.ReactNode;
 }
 
