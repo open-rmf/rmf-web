@@ -12,6 +12,9 @@ const darkThemeStyles = makeStyles((theme) => ({
   background: {
     backgroundColor: theme.palette.secondary.dark,
   },
+  logoButton: {
+    backgroundColor: theme.palette.secondary.dark,
+  },
 }));
 
 const lightThemeStyles = makeStyles((theme) => ({
@@ -24,6 +27,9 @@ const lightThemeStyles = makeStyles((theme) => ({
   },
   background: {
     backgroundColor: theme.palette.secondary.main,
+  },
+  logoButton: {
+    backgroundColor: theme.palette.primary.dark,
   },
 }));
 
