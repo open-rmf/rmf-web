@@ -1,4 +1,4 @@
-name: ros_translator
+name: ros-translator
 on:
   pull_request:
     paths:
