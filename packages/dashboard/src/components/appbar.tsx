@@ -12,8 +12,9 @@ import HelpIcon from '@material-ui/icons/Help';
 import SettingsIcon from '@material-ui/icons/Settings';
 import React from 'react';
 import DashboardTooltip from 'react-components/lib/tooltip';
-import { AppControllerContext, TooltipsContext } from './app-contexts';
+import { AppControllerContext, TooltipsContext, SettingsContext } from './app-contexts';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
+import { decideThemeStyle } from '../util/theme';
 
 export interface AppBarProps {
   // TODO: change the alarm status to required when we have an alarm
@@ -33,6 +34,9 @@ export const AppBar = React.memo(
     const user = React.useContext(UserContext);
     const { showTooltips } = React.useContext(TooltipsContext);
 
+    const themeContext = React.useContext(SettingsContext).themeMode;
+    const themeClasses = decideThemeStyle(themeContext);
+
     async function handleLogout(): Promise<void> {
       try {
         await authenticator.logout();
@@ -42,7 +46,7 @@ export const AppBar = React.memo(
     }
 
     return (
-      <MuiAppBar id="appbar" position="static">
+      <MuiAppBar className={themeClasses.appBar} id="appbar" position="static">
         <Toolbar>
           <Typography variant="h6" className={classes.toolbarTitle}>
             Dashboard
@@ -59,7 +63,7 @@ export const AppBar = React.memo(
               color="inherit"
               onClick={() => setShowSettings(true)}
             >
-              <SettingsIcon />
+              <SettingsIcon className={themeClasses.appBarIcons} />
             </IconButton>
           </DashboardTooltip>
           {user && (
@@ -70,7 +74,7 @@ export const AppBar = React.memo(
                 color="inherit"
                 onClick={(event) => setAnchorEl(event.currentTarget)}
               >
-                <AccountCircleIcon />
+                <AccountCircleIcon className={themeClasses.appBarIcons} />
               </IconButton>
               <Menu
                 anchorEl={anchorEl}
@@ -102,6 +106,7 @@ export const AppBar = React.memo(
               aria-label="help"
               color="inherit"
               onClick={() => setShowHelp(true)}
+              className={themeClasses.appBarIcons}
             >
               <HelpIcon />
             </IconButton>
