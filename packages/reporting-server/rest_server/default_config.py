@@ -23,6 +23,6 @@ config = {
     "aud": "localhost",
     # url or string that identifies the entity that issued the jwt token
     # Used to verify the "iss" claim
-    # If iss is set to None, it means that keycloak authentication should be disabled
+    # If iss is set to None, it means that authentication should be disabled
     "iss": None,
 }
