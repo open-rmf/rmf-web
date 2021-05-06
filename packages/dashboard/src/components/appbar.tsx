@@ -16,8 +16,9 @@ import { HeaderBar } from 'react-components/lib/header-bar';
 import { LogoButton } from 'react-components/lib/logo-button';
 import { NavigationBar } from 'react-components/lib/navigation-bar';
 import DashboardTooltip from 'react-components/lib/tooltip';
-import { AppControllerContext, TooltipsContext } from './app-contexts';
+import { AppControllerContext, TooltipsContext, SettingsContext } from './app-contexts';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
+import { decideThemeStyle } from '../util/theme';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -49,6 +50,9 @@ export const AppBar = React.memo(
     const authenticator = React.useContext(AuthenticatorContext);
     const user = React.useContext(UserContext);
     const { showTooltips } = React.useContext(TooltipsContext);
+
+    const themeContext = React.useContext(SettingsContext).themeMode;
+    const themeClasses = decideThemeStyle(themeContext);
 
     async function handleLogout(): Promise<void> {
       try {
