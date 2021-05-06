@@ -9,7 +9,7 @@ import {
   TooltipsContext,
 } from './app-contexts';
 import { AppDrawers } from './app-drawers';
-import AppBar from './appbar';
+import AppBar, { AppBarProps } from './appbar';
 
 const useStyles = makeStyles((theme) => ({
   appBase: {
@@ -18,6 +18,10 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.default,
   },
 }));
+
+export interface AppBaseProps {
+  appbarProps: AppBarProps;
+}
 
 /**
  * Contains various components that are essential to the app and provides contexts to control them.
@@ -31,7 +35,10 @@ const useStyles = makeStyles((theme) => ({
  *
  * Also provides `AppControllerContext` to allow children components to control them.
  */
-export function AppBase(props: React.PropsWithChildren<{}>): JSX.Element | null {
+export function AppBase({
+  appbarProps,
+  children,
+}: React.PropsWithChildren<AppBaseProps>): JSX.Element | null {
   const classes = useStyles();
 
   const [settings, setSettings] = React.useState(() => loadSettings());
@@ -71,8 +78,8 @@ export function AppBase(props: React.PropsWithChildren<{}>): JSX.Element | null 
       <TooltipsContext.Provider value={tooltips}>
         <AppControllerContext.Provider value={appController}>
           <Grid container direction="column" className={classes.appBase} wrap="nowrap">
-            <AppBar />
-            {props.children}
+            <AppBar {...appbarProps} />
+            {children}
             <AppDrawers
               settings={settings}
               showHelp={showHelp}

@@ -12,10 +12,10 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import HelpIcon from '@material-ui/icons/Help';
 import SettingsIcon from '@material-ui/icons/Settings';
 import React from 'react';
-import DashboardTooltip from 'react-components/lib/tooltip';
 import { HeaderBar } from 'react-components/lib/header-bar';
-import { NavigationBar } from 'react-components/lib/navigation-bar';
 import { LogoButton } from 'react-components/lib/logo-button';
+import { NavigationBar } from 'react-components/lib/navigation-bar';
+import DashboardTooltip from 'react-components/lib/tooltip';
 import { AppControllerContext, TooltipsContext } from './app-contexts';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
 
@@ -28,28 +28,27 @@ const useStyles = makeStyles(() =>
   }),
 );
 
+export type TabValue = 'building' | 'tasks';
+
 export interface AppBarProps {
+  tabValue: TabValue;
+  onTabChange?(event: React.ChangeEvent<unknown>, newValue: TabValue): void;
   // TODO: change the alarm status to required when we have an alarm
   // service working properly in the backend
   alarmState?: boolean | null;
 }
 
 export const AppBar = React.memo(
-  (_props: AppBarProps): React.ReactElement => {
+  ({ tabValue, onTabChange }: AppBarProps): React.ReactElement => {
     const { showHelp: setShowHelp, showSettings: setShowSettings } = React.useContext(
       AppControllerContext,
     );
 
     const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
-    const [value, setValue] = React.useState('building');
     const classes = useStyles();
     const authenticator = React.useContext(AuthenticatorContext);
     const user = React.useContext(UserContext);
     const { showTooltips } = React.useContext(TooltipsContext);
-
-    const onTabChange = (event: React.ChangeEvent<unknown>, newValue: string) => {
-      setValue(newValue);
-    };
 
     async function handleLogout(): Promise<void> {
       try {
@@ -63,13 +62,9 @@ export const AppBar = React.memo(
       <div>
         <HeaderBar>
           <LogoButton logoPath={'/roshealth-logo-white.png'} />
-          <NavigationBar onTabChange={onTabChange} value={value}>
-            <Tab
-              key={'building-tab'}
-              label={'Building'}
-              value={'building'}
-              aria-label={`building-tab`}
-            />
+          <NavigationBar onTabChange={onTabChange} value={tabValue}>
+            <Tab label="Building" value="building" aria-label="Building" />
+            <Tab label="Tasks" value="tasks" aria-label="Tasks" />
           </NavigationBar>
           <Toolbar variant="dense" className={classes.toolbar}>
             <Typography variant="caption">Powered by OpenRMF</Typography>
