@@ -31,7 +31,6 @@ import {
   LiftStateContext,
   NegotiationStatusContext,
   RmfIngressContext,
-  TasksContext,
 } from '../rmf-app';
 import ScheduleVisualizer, { ScheduleVisualizerProps } from '../schedule-visualizer';
 import { SpotlightValue } from '../spotlight-value';
@@ -39,7 +38,6 @@ import MainMenu from './main-menu';
 import NegotiationsPanel from './negotiations-panel';
 import OmniPanelControl_ from './omnipanel-control';
 import { DashboardState, useDashboardReducer } from './reducers/dashboard-reducer';
-import TaskSummaryPanel from './task-summary-panel';
 
 const debug = Debug('Dashboard');
 const DispenserAccordion = React.memo(withSpotlight(DispenserAccordion_));
@@ -56,9 +54,7 @@ export enum OmniPanelViewIndex {
   Lifts,
   Robots,
   Dispensers,
-  Commands,
   Negotiations,
-  Tasks,
 }
 
 export const dashboardInitialValues: DashboardState = {
@@ -226,7 +222,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     [robotAccordionRefs, viewStackDispatch, setShowOmniPanel],
   );
 
-  const { negotiationStatusManager } = React.useContext(RmfIngressContext);
+  const { negotiationStatusManager } = React.useContext(RmfIngressContext) || {};
   const negotiationStatus = React.useContext(NegotiationStatusContext);
   const [negotiationSpotlight, setNegotiationSpotlight] = React.useState<
     SpotlightValue<string> | undefined
@@ -235,11 +231,9 @@ export default function Dashboard(_props: {}): React.ReactElement {
     Record<string, NegotiationTrajectoryResponse>
   >({});
   const statusUpdateTS = React.useRef<number>();
-  statusUpdateTS.current = negotiationStatusManager.getLastUpdateTS();
+  statusUpdateTS.current = negotiationStatusManager?.getLastUpdateTS() || -1;
 
-  const tasks = React.useContext(TasksContext);
-
-  const { doorsApi, liftsApi } = React.useContext(RmfIngressContext);
+  const { doorsApi, liftsApi } = React.useContext(RmfIngressContext) || {};
 
   const handleOnDoorControlClick = React.useCallback(
     (_ev, door: RmfModels.Door, mode: number) =>
@@ -259,8 +253,8 @@ export default function Dashboard(_props: {}): React.ReactElement {
       liftsApi?.postLiftRequestLiftsLiftNameRequestPost(
         {
           destination,
-          requestType,
-          doorMode: doorState,
+          request_type: requestType,
+          door_mode: doorState,
         },
         lift.name,
       ),
@@ -395,9 +389,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
               negotiationStatusUpdateTS={statusUpdateTS.current}
               setNegotiationTrajStore={setNegotiationTrajStore}
             />
-          </OmniPanelView>
-          <OmniPanelView viewId={OmniPanelViewIndex.Tasks}>
-            <TaskSummaryPanel tasks={Object.values(tasks)} />
           </OmniPanelView>
         </OmniPanel>
       </Fade>

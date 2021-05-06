@@ -9,19 +9,19 @@ import {
   TooltipsContext,
 } from './app-contexts';
 import { AppDrawers } from './app-drawers';
-import AppBar from './appbar';
-import LoadingScreen, { LoadingScreenProps } from './loading-screen';
+import AppBar, { AppBarProps } from './appbar';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   appBase: {
     width: '100%',
     height: '100%',
+    backgroundColor: theme.palette.background.default,
   },
-  appContent: {
-    position: 'relative',
-    flexGrow: 1,
-  },
-});
+}));
+
+export interface AppBaseProps {
+  appbarProps: AppBarProps;
+}
 
 /**
  * Contains various components that are essential to the app and provides contexts to control them.
@@ -35,7 +35,10 @@ const useStyles = makeStyles({
  *
  * Also provides `AppControllerContext` to allow children components to control them.
  */
-export function AppBase(props: React.PropsWithChildren<{}>): JSX.Element | null {
+export function AppBase({
+  appbarProps,
+  children,
+}: React.PropsWithChildren<AppBaseProps>): JSX.Element | null {
   const classes = useStyles();
 
   const [settings, setSettings] = React.useState(() => loadSettings());
@@ -44,8 +47,6 @@ export function AppBase(props: React.PropsWithChildren<{}>): JSX.Element | null 
   const [showHelp, setShowHelp] = React.useState(false);
 
   const [showHotkeysDialog, setShowHotkeysDialog] = React.useState(false);
-
-  const [loadingScreenProps, setLoadingScreenProps] = React.useState<LoadingScreenProps>({});
 
   const [showTooltips, setShowTooltips] = React.useState(false);
 
@@ -68,7 +69,6 @@ export function AppBase(props: React.PropsWithChildren<{}>): JSX.Element | null 
       toggleHotkeysDialog: () => setShowHotkeysDialog((prev) => !prev),
       showTooltips: setShowTooltips,
       toggleTooltips: () => setShowTooltips((prev) => !prev),
-      showLoadingScreen: setLoadingScreenProps,
     }),
     [],
   );
@@ -77,11 +77,9 @@ export function AppBase(props: React.PropsWithChildren<{}>): JSX.Element | null 
     <SettingsContext.Provider value={settings}>
       <TooltipsContext.Provider value={tooltips}>
         <AppControllerContext.Provider value={appController}>
-          <Grid container direction="column" className={classes.appBase}>
-            <AppBar />
-            <Grid className={classes.appContent}>
-              <LoadingScreen {...loadingScreenProps}>{props.children}</LoadingScreen>
-            </Grid>
+          <Grid container direction="column" className={classes.appBase} wrap="nowrap">
+            <AppBar {...appbarProps} />
+            {children}
             <AppDrawers
               settings={settings}
               showHelp={showHelp}

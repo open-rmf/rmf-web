@@ -94,11 +94,6 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
     setFilter && setFilter();
   }, [pushView, setFilter]);
 
-  const handleMainMenuTasksClick = React.useCallback(() => {
-    pushView(OmniPanelViewIndex.Tasks);
-    setFilter && setFilter();
-  }, [pushView, setFilter]);
-
   const [allNotifications, setAllNotifications] = React.useState(notifications);
 
   const handleDismissNotification = (id: number) => {
@@ -166,7 +161,7 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
         <Divider className={classes.divider} />
 
         <Typography variant="h6">Task Statuses</Typography>
-        <SystemSummaryTaskState tasks={tasks} onClick={handleMainMenuTasksClick} />
+        <SystemSummaryTaskState tasks={tasks} />
         <Button
           color="primary"
           className={classes.buttons}
@@ -181,12 +176,7 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
             <Typography variant="body1">Negotiations</Typography>
           </DashboardTooltip>
         </Button>
-        <Button
-          color="primary"
-          className={classes.buttons}
-          variant="contained"
-          onClick={handleMainMenuTasksClick}
-        >
+        <Button color="primary" className={classes.buttons} variant="contained">
           <DashboardTooltip
             title="This panel shows the plans of robots that has received instructions to perform a task"
             id="plans-tooltip"

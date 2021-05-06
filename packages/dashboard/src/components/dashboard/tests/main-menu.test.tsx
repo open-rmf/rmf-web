@@ -18,8 +18,7 @@ it('should call pushView and setFilter when buttons are clicked', () => {
   userEvent.click(screen.getByText('Robots'));
   userEvent.click(screen.getByText('Dispensers'));
   userEvent.click(screen.getByText('Negotiations'));
-  userEvent.click(screen.getByText('Plans'));
 
-  expect(mockPushView).toBeCalledTimes(6);
-  expect(mockSetFilter).toBeCalledTimes(6);
+  expect(mockPushView).toBeCalledTimes(5);
+  expect(mockSetFilter).toBeCalledTimes(5);
 });

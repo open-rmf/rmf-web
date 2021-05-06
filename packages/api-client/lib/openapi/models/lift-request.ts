@@ -22,13 +22,13 @@ export interface LiftRequest {
    * @type {number}
    * @memberof LiftRequest
    */
-  requestType: any;
+  request_type: any;
   /**
    * https://github.com/open-rmf/rmf_internal_msgs/blob/main/rmf_lift_msgs/msg/LiftRequest.msg
    * @type {number}
    * @memberof LiftRequest
    */
-  doorMode: any;
+  door_mode: any;
   /**
    *
    * @type {string}

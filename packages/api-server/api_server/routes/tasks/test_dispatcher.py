@@ -1,20 +1,18 @@
-from unittest.mock import MagicMock
-
-from rclpy.node import Client
-from rmf_task_msgs.srv import CancelTask, SubmitTask
+from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
+from rmf_task_msgs.msg import TaskType as RmfTaskType
+from rmf_task_msgs.srv import CancelTask, GetTaskList, SubmitTask
 
 from ... import models as mdl
 from ..test_fixtures import RouteFixture
 from .dispatcher import DispatcherClient
 
-Client.wait_for_service = MagicMock(return_value=True)
 dispatcher_client = DispatcherClient()
 
 
 class TestDispatcherClient(RouteFixture):
     def test_convert_task_request(self):
         task = mdl.SubmitTask(
-            task_type="clean",
+            task_type=RmfTaskType.TYPE_CLEAN,
             start_time=0,
             description=mdl.CleanTaskDescription(cleaning_zone="zone_2"),
         )
@@ -23,7 +21,7 @@ class TestDispatcherClient(RouteFixture):
         self.assertIsNotNone(result)
 
         task = mdl.SubmitTask(
-            task_type="loop",
+            task_type=RmfTaskType.TYPE_LOOP,
             start_time=0,
             description=mdl.LoopTaskDescription(
                 num_loops=1, start_name="start", finish_name="finish"
@@ -34,7 +32,7 @@ class TestDispatcherClient(RouteFixture):
         self.assertIsNotNone(result)
 
         task = mdl.SubmitTask(
-            task_type="delivery",
+            task_type=RmfTaskType.TYPE_DELIVERY,
             start_time=0,
             description=mdl.DeliveryTaskDescription(
                 pickup_place_name="coe",
@@ -50,7 +48,7 @@ class TestDispatcherClient(RouteFixture):
     async def test_submit_task_request(self):
         # create a submit task request message
         task = mdl.SubmitTask(
-            task_type="clean",
+            task_type=RmfTaskType.TYPE_CLEAN,
             start_time=0,
             description=mdl.CleanTaskDescription(cleaning_zone="zone_2"),
             priority=0,
@@ -67,3 +65,12 @@ class TestDispatcherClient(RouteFixture):
         # checks that a service request is received
         received: CancelTask.Request = await fut
         self.assertEqual(received.task_id, "test_task")
+
+    async def test_get_task_status(self):
+        self.host_service_one(
+            GetTaskList,
+            "get_tasks",
+            GetTaskList.Response(active_tasks=[RmfTaskSummary(task_id="test_task")]),
+        )
+        result = await dispatcher_client.get_task_status()
+        self.assertTrue(isinstance(result, list))

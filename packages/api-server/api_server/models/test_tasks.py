@@ -1,13 +1,14 @@
 import unittest
 
 from pydantic import ValidationError
+from rmf_task_msgs.msg import TaskType as RmfTaskType
 
 from .tasks import SubmitTask
 
 
 class TestSubmitTask(unittest.TestCase):
     @staticmethod
-    def validate_task(task_type: str, desc):
+    def validate_task(task_type: int, desc):
         SubmitTask.validate(
             {
                 "task_type": task_type,
@@ -31,9 +32,9 @@ class TestSubmitTask(unittest.TestCase):
         }
 
         task_types = {
-            "clean": clean_desc,
-            "loop": loop_desc,
-            "delivery": delivery_desc,
+            RmfTaskType.TYPE_CLEAN: clean_desc,
+            RmfTaskType.TYPE_LOOP: loop_desc,
+            RmfTaskType.TYPE_DELIVERY: delivery_desc,
         }
 
         for task_type in task_types:

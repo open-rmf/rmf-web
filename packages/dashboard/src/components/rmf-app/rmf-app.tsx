@@ -14,10 +14,12 @@ import {
   FleetStateContext,
   LiftStateContext,
   NegotiationStatusContext,
+  PlacesContext,
   RmfHealthContext,
   RmfIngressContext,
   TasksContext,
 } from './contexts';
+import { Place } from './place';
 import { RmfIngress } from './rmf-ingress';
 import { TrajectorySocketContext, AppConfigContext } from '../app-contexts';
 
@@ -27,7 +29,7 @@ function rmfStateContextProviderHOC<TopicT extends Topic>(
   keyMapper: (msg: MessageType[TopicT]) => string,
 ) {
   return (props: React.PropsWithChildren<{}>) => {
-    const { sioClient } = React.useContext(RmfIngressContext);
+    const { sioClient } = React.useContext(RmfIngressContext) || {};
     const [state, setState] = React.useState<Record<string, MessageType[TopicT]>>({});
 
     React.useEffect(() => {
@@ -46,8 +48,27 @@ function rmfStateContextProviderHOC<TopicT extends Topic>(
   };
 }
 
+function RmfPlacesContextsProvider({ children }: React.PropsWithChildren<unknown>): JSX.Element {
+  const buildingMap = React.useContext(BuildingMapContext);
+  const places = React.useMemo(() => {
+    if (!buildingMap) {
+      return {};
+    }
+    const navGraphs = buildingMap.levels.flatMap((level) => level.nav_graphs);
+    const vertices = navGraphs.flatMap((graph) => graph.vertices);
+    return vertices.reduce<Record<string, Place>>((obj, v) => {
+      if (v.name) {
+        obj[v.name] = { name: v.name, properties: {} };
+      }
+      return obj;
+    }, {});
+  }, [buildingMap]);
+
+  return <PlacesContext.Provider value={places}>{children}</PlacesContext.Provider>;
+}
+
 function BuildingMapProvider(props: React.PropsWithChildren<{}>): JSX.Element {
-  const { sioClient } = React.useContext(RmfIngressContext);
+  const { sioClient } = React.useContext(RmfIngressContext) || {};
   const [buildingMap, setBuildingMap] = React.useState<RmfModels.BuildingMap | null>(null);
 
   React.useEffect(() => {
@@ -78,7 +99,9 @@ function BuildingMapProvider(props: React.PropsWithChildren<{}>): JSX.Element {
   // }, [buildingMap, transport, downloadingRef, showLoadingScreen]);
 
   return (
-    <BuildingMapContext.Provider value={buildingMap}>{props.children}</BuildingMapContext.Provider>
+    <BuildingMapContext.Provider value={buildingMap}>
+      <RmfPlacesContextsProvider>{props.children}</RmfPlacesContextsProvider>
+    </BuildingMapContext.Provider>
   );
 }
 
@@ -113,14 +136,17 @@ const TaskContextsProvider = rmfStateContextProviderHOC(
 );
 
 function NegotiationContextsProvider(props: React.PropsWithChildren<{}>): JSX.Element {
-  const { negotiationStatusManager } = React.useContext(RmfIngressContext);
+  const { negotiationStatusManager } = React.useContext(RmfIngressContext) || {};
   const [negotiationStatus, setNegotiationStatus] = React.useState(
-    negotiationStatusManager.allConflicts(),
+    negotiationStatusManager?.allConflicts() || {},
   );
 
   const authenticator = React.useContext(AppConfigContext).authenticator;
 
   React.useEffect(() => {
+    if (!negotiationStatusManager) {
+      return;
+    }
     negotiationStatusManager.startSubscription(authenticator.token);
     const onUpdated = () => setNegotiationStatus(negotiationStatusManager.allConflicts());
     negotiationStatusManager.on('updated', onUpdated);
@@ -158,11 +184,7 @@ function RmfIngressProvider(props: React.PropsWithChildren<{}>) {
     })();
   }, [ws, authenticator]);
 
-  const rmfIngress = React.useMemo(() => new RmfIngress(user || undefined, trajMgr, ws), [
-    user,
-    trajMgr,
-    ws,
-  ]);
+  const rmfIngress = React.useMemo(() => new RmfIngress(user, trajMgr, ws), [user, trajMgr, ws]);
   return (
     <RmfIngressContext.Provider value={rmfIngress}>{props.children}</RmfIngressContext.Provider>
   );

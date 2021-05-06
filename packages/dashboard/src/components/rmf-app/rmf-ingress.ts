@@ -5,18 +5,15 @@ import { NegotiationStatusManager } from '../../managers/negotiation-status-mana
 import { RobotTrajectoryManager } from '../../managers/robot-trajectory-manager';
 
 export class RmfIngress {
-  sioClient?: SioClient;
-  doorsApi?: DoorsApi;
-  liftsApi?: LiftsApi;
-  tasksApi?: TasksApi;
+  sioClient: SioClient;
+  doorsApi: DoorsApi;
+  liftsApi: LiftsApi;
+  tasksApi: TasksApi;
   negotiationStatusManager: NegotiationStatusManager;
   trajectoryManager?: RobotTrajectoryManager;
 
-  constructor(user?: User, trajMgr?: RobotTrajectoryManager, ws?: WebSocket) {
+  constructor(user: User | null, trajMgr?: RobotTrajectoryManager, ws?: WebSocket) {
     this.negotiationStatusManager = new NegotiationStatusManager(ws, appConfig.authenticator);
-    if (!user) {
-      return;
-    }
     this.sioClient = (() => {
       const token = appConfig.authenticator.token;
       const url = new URL(appConfig.rmfServerUrl);

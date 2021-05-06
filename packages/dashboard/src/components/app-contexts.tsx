@@ -2,7 +2,6 @@ import React from 'react';
 import appConfig, { AppConfig } from '../app-config';
 import ResourceManager from '../managers/resource-manager';
 import { defaultSettings, Settings } from '../settings';
-import { LoadingScreenProps } from './loading-screen';
 
 /* Declares the ResourcesContext which contains the resources used on the app*/
 export const ResourcesContext = React.createContext<ResourceManager | undefined>(undefined);
@@ -28,7 +27,6 @@ export interface AppController {
    * a tooltip to show.
    */
   toggleTooltips(): void;
-  showLoadingScreen: React.Dispatch<React.SetStateAction<LoadingScreenProps>>;
 }
 
 export interface Tooltips {
@@ -50,9 +48,13 @@ export const AppControllerContext = React.createContext<AppController>({
   toggleHotkeysDialog: () => {},
   showTooltips: () => {},
   toggleTooltips: () => {},
-  showLoadingScreen: () => {},
 });
 
 export const AppConfigContext = React.createContext<AppConfig>(appConfig);
+
+export interface AppContent {
+  tabNames: string[];
+}
+export const AppContentContext = React.createContext<AppContent>({ tabNames: ['Building'] });
 
 export const TrajectorySocketContext = React.createContext<WebSocket | undefined>(undefined);

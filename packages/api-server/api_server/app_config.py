@@ -31,7 +31,10 @@ def _load_config() -> AppConfig:
     spec = importlib.util.spec_from_file_location("config", config_file)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    return AppConfig(**module.config)
+    config = AppConfig(**module.config)
+    if "RMF_API_SERVER_LOG_LEVEL" in os.environ:
+        config.log_level = os.environ["RMF_API_SERVER_LOG_LEVEL"]
+    return config
 
 
 app_config = _load_config()

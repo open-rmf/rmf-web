@@ -7,6 +7,7 @@ const allPackages = [
   'packages/api-server',
   'packages/api-client',
   'packages/rmf-models',
+  'packages/ros-translator',
 ];
 
 // hardcoded for now

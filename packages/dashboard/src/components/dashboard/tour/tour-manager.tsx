@@ -206,27 +206,6 @@ export const createTourSteps = (props: createTourProps) => {
         </Box>
       ),
     },
-    settingsButton: {
-      selector: '[id="show-settings-btn"]',
-      content: ({ goTo, step }) => (
-        <Box data-testid="stepBox">
-          <Typography variant="h6" data-testid="step11">
-            {tourText.Settings.text}
-          </Typography>
-          <NavButtons
-            goTo={goTo}
-            step={step}
-            handleNextClick={() =>
-              showSettingsOmniPanelHelpClearSpotlight(true, false, false, false)
-            }
-            handleBackClick={() => {
-              showSettingsOmniPanelHelpClearSpotlight(false, true, false, false);
-              setCurrentView(OmniPanelViewIndex.Commands);
-            }}
-          />
-        </Box>
-      ),
-    },
     trajAnim: {
       selector: '.MuiDrawer-paper',
       content: ({ goTo, step }) => (

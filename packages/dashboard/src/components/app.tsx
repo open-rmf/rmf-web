@@ -6,13 +6,18 @@ import { getUrl, LoginHOC, PrivateRouteHOC, User } from 'rmf-auth';
 import 'typeface-roboto';
 import appConfig from '../app-config';
 import ResourceManager from '../managers/resource-manager';
-import { DASHBOARD_ROUTE, LOGIN_ROUTE } from '../util/url';
+import { DASHBOARD_ROUTE, LOGIN_ROUTE, TASKS_ROUTE } from '../util/url';
 import { AppBase } from './app-base';
 import { AppConfigContext, ResourcesContext, TrajectorySocketContext } from './app-contexts';
 import './app.css';
+import { TabValue } from './appbar';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
 import Dashboard from './dashboard/dashboard';
 import { RmfApp } from './rmf-app';
+import { TaskPage } from './tasks';
+
+const PrivateRoute = PrivateRouteHOC(Route, Redirect, useLocation);
+const Login = LoginHOC(Redirect);
 
 const theme = createMuiTheme({
   palette: {
@@ -24,19 +29,30 @@ const theme = createMuiTheme({
   },
 });
 
-function AppIntrinsics({ children }: React.PropsWithChildren<{}>): JSX.Element | null {
-  return (
-    <AppBase>
-      <RmfApp>{children}</RmfApp>
-    </AppBase>
-  );
+function locationToTabValue(pathname: string): TabValue | null {
+  switch (pathname) {
+    case DASHBOARD_ROUTE:
+      return 'building';
+    case TASKS_ROUTE:
+      return 'tasks';
+    default:
+      return null;
+  }
 }
 
 export default function App(): JSX.Element | null {
   const [authInitialized, setAuthInitialized] = React.useState(!!appConfig.authenticator.user);
   const [authenticator, setAuthenticator] = React.useState(appConfig.authenticator);
   const [user, setUser] = React.useState<User | null>(appConfig.authenticator.user || null);
-  const appRoutes = [DASHBOARD_ROUTE];
+  const appRoutes = [DASHBOARD_ROUTE, TASKS_ROUTE];
+  const [tabValue, setTabValue] = React.useState<TabValue | null>(() =>
+    locationToTabValue(window.location.pathname),
+  );
+
+  const onTabChange = React.useCallback(
+    (_ev: React.ChangeEvent<unknown>, newValue: TabValue) => setTabValue(newValue),
+    [],
+  );
 
   const onTokenExpired = () => setAuthenticator(appConfig.authenticator);
   authenticator.on('tokenRefresh', onTokenExpired);
@@ -75,9 +91,6 @@ export default function App(): JSX.Element | null {
     })();
   }, []);
 
-  const PrivateRoute = PrivateRouteHOC(Route, Redirect, useLocation);
-  const Login = LoginHOC(Redirect);
-
   return authInitialized && appReady ? (
     <AppConfigContext.Provider value={appConfig}>
       <ResourcesContext.Provider value={resourceManager.current}>
@@ -95,27 +108,45 @@ export default function App(): JSX.Element | null {
                         successRedirectUri={getUrl(DASHBOARD_ROUTE)}
                       />
                     </Route>
-                    {/* we need this because we don't want to re-mount `AppIntrinsics` when just moving
-                    from one route to another, but we want to unmount it when going "outside" the app. */}
-                    <PrivateRoute exact path={appRoutes} redirectPath={LOGIN_ROUTE} user={user}>
-                      <AppIntrinsics>
-                        <Switch>
-                          <PrivateRoute
-                            exact
-                            path={DASHBOARD_ROUTE}
-                            redirectPath={LOGIN_ROUTE}
-                            user={user}
-                          >
-                            <Dashboard />
-                          </PrivateRoute>
-                        </Switch>
-                      </AppIntrinsics>
-                    </PrivateRoute>
-                    <Route>
-                      <NotFoundPage
-                        routeLinkComponent={<Link to={LOGIN_ROUTE}>Go to Login</Link>}
-                      />
-                    </Route>
+                    {/* FIXME: Might not need this anymore after we changed to let each page control
+                  which topics to subscribe instead of a global context subscribing to everything.
+
+                  we need this because we don't want to re-mount `AppIntrinsics` when just moving
+                  from one route to another, but we want to unmount it when going "outside" the app. */}
+                    {tabValue ? (
+                      <PrivateRoute exact path={appRoutes} redirectPath={LOGIN_ROUTE} user={user}>
+                        <RmfApp>
+                          <AppBase appbarProps={{ tabValue, onTabChange }}>
+                            <Switch>
+                              <PrivateRoute
+                                exact
+                                path={DASHBOARD_ROUTE}
+                                redirectPath={LOGIN_ROUTE}
+                                user={user}
+                              >
+                                <Dashboard />
+                              </PrivateRoute>
+                              <PrivateRoute
+                                exact
+                                path={TASKS_ROUTE}
+                                redirectPath={LOGIN_ROUTE}
+                                user={user}
+                              >
+                                <TaskPage />
+                              </PrivateRoute>
+                            </Switch>
+                            {tabValue === 'building' && <Redirect to={DASHBOARD_ROUTE} />}
+                            {tabValue === 'tasks' && <Redirect to={TASKS_ROUTE} />}
+                          </AppBase>
+                        </RmfApp>
+                      </PrivateRoute>
+                    ) : (
+                      <Route>
+                        <NotFoundPage
+                          routeLinkComponent={<Link to={LOGIN_ROUTE}>Go to Login</Link>}
+                        />
+                      </Route>
+                    )}
                   </Switch>
                 </BrowserRouter>
               </ThemeProvider>

@@ -1,6 +1,8 @@
 # fastapi relies on global variables
 # pylint: disable=global-statement
 
+import asyncio
+import os
 import threading
 from typing import Optional
 
@@ -46,7 +48,15 @@ def on_startup():
     """
     Must be called on app startup
     """
-    rclpy.init()
+    use_sim_time_env = os.environ.get("RMF_SERVER_USE_SIM_TIME", None)
+    if use_sim_time_env:
+        use_sim_time = not use_sim_time_env.lower() in ["0", "false"]
+    else:
+        use_sim_time = False
+    if use_sim_time:
+        rclpy.init(args=["--ros-args", "-p", "use_sim_time:=true"])
+    else:
+        rclpy.init()
     global node
     node = RosNode()
 
@@ -78,13 +88,8 @@ async def call_service(client: rclpy.client.Client, req, timeout=1):
     Raises HTTPException if service call fails
     """
     fut = client.call_async(req)
-
-    def on_timeout():
-        fut.set_exception(HTTPException(503, "ros service call timed out"))
-        node.destroy_timer(timer)
-
     try:
-        timer = node.create_timer(timeout, on_timeout)
-        return await fut
-    finally:
-        node.destroy_timer(timer)
+        result = await asyncio.wait_for(fut, timeout=timeout)
+        return result
+    except asyncio.TimeoutError as e:
+        raise HTTPException(503, "ros service call timed out") from e

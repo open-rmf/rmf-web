@@ -108,7 +108,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   const fleetStates = React.useContext(FleetStateContext);
   const fleets = React.useMemo(() => Object.values(fleetStates), [fleetStates]);
 
-  const { trajectoryManager: trajManager } = React.useContext(RmfIngressContext);
+  const { trajectoryManager: trajManager } = React.useContext(RmfIngressContext) || {};
 
   const robots = React.useMemo(
     () =>
@@ -274,6 +274,11 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     }
   }, [curMapFloorLayer, trajectories]);
 
+  const negoTrajs = React.useMemo(
+    () => (negotiationTrajStore[curLevelName] ? negotiationTrajStore[curLevelName].values : []),
+    [negotiationTrajStore, curLevelName],
+  );
+
   return (
     <LMap
       id="ScheduleVisualizer" // # data-* attrs are not set on the leaflet container
@@ -321,11 +326,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
               <RobotTrajectoriesOverlay
                 bounds={curMapFloorLayer.bounds}
                 robots={robots}
-                trajectories={
-                  negotiationTrajStore[curLevelName]
-                    ? props.negotiationTrajStore[curLevelName].values
-                    : []
-                }
+                trajectories={negoTrajs}
                 conflicts={getConflicts(curLevelName)}
               />
             </ColorContext.Provider>

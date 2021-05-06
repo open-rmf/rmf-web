@@ -119,16 +119,6 @@ exports[`Dashboard Tour renders without crashing 1`] = `
       Object {
         "action": undefined,
         "content": [Function],
-        "selector": "[id=\\"show-settings-btn\\"]",
-        "style": Object {
-          "backgroundColor": "#7986cb",
-          "borderRadius": "5px",
-          "color": "#fff",
-        },
-      },
-      Object {
-        "action": undefined,
-        "content": [Function],
         "selector": ".MuiDrawer-paper",
         "style": Object {
           "backgroundColor": "#7986cb",

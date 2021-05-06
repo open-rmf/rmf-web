@@ -29,13 +29,13 @@ export const LiftsApiAxiosParamCreator = function (configuration?: Configuration
      *
      * @summary  Post Lift Request
      * @param {LiftRequest} body
-     * @param {string} liftName
+     * @param {string} lift_name
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postLiftRequestLiftsLiftNameRequestPost: async (
       body: LiftRequest,
-      liftName: string,
+      lift_name: string,
       options: any = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'body' is not null or undefined
@@ -45,16 +45,16 @@ export const LiftsApiAxiosParamCreator = function (configuration?: Configuration
           'Required parameter body was null or undefined when calling postLiftRequestLiftsLiftNameRequestPost.',
         );
       }
-      // verify required parameter 'liftName' is not null or undefined
-      if (liftName === null || liftName === undefined) {
+      // verify required parameter 'lift_name' is not null or undefined
+      if (lift_name === null || lift_name === undefined) {
         throw new RequiredError(
-          'liftName',
-          'Required parameter liftName was null or undefined when calling postLiftRequestLiftsLiftNameRequestPost.',
+          'lift_name',
+          'Required parameter lift_name was null or undefined when calling postLiftRequestLiftsLiftNameRequestPost.',
         );
       }
       const localVarPath = `/lifts/{lift_name}/request`.replace(
         `{${'lift_name'}}`,
-        encodeURIComponent(String(liftName)),
+        encodeURIComponent(String(lift_name)),
       );
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, 'https://example.com');
@@ -107,18 +107,18 @@ export const LiftsApiFp = function (configuration?: Configuration) {
      *
      * @summary  Post Lift Request
      * @param {LiftRequest} body
-     * @param {string} liftName
+     * @param {string} lift_name
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async postLiftRequestLiftsLiftNameRequestPost(
       body: LiftRequest,
-      liftName: string,
+      lift_name: string,
       options?: any,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ModelObject>> {
       const localVarAxiosArgs = await LiftsApiAxiosParamCreator(
         configuration,
-      ).postLiftRequestLiftsLiftNameRequestPost(body, liftName, options);
+      ).postLiftRequestLiftsLiftNameRequestPost(body, lift_name, options);
       return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
         const axiosRequestArgs = {
           ...localVarAxiosArgs.options,
@@ -144,17 +144,17 @@ export const LiftsApiFactory = function (
      *
      * @summary  Post Lift Request
      * @param {LiftRequest} body
-     * @param {string} liftName
+     * @param {string} lift_name
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postLiftRequestLiftsLiftNameRequestPost(
       body: LiftRequest,
-      liftName: string,
+      lift_name: string,
       options?: any,
     ): AxiosPromise<ModelObject> {
       return LiftsApiFp(configuration)
-        .postLiftRequestLiftsLiftNameRequestPost(body, liftName, options)
+        .postLiftRequestLiftsLiftNameRequestPost(body, lift_name, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -171,18 +171,18 @@ export class LiftsApi extends BaseAPI {
    *
    * @summary  Post Lift Request
    * @param {LiftRequest} body
-   * @param {string} liftName
+   * @param {string} lift_name
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof LiftsApi
    */
   public postLiftRequestLiftsLiftNameRequestPost(
     body: LiftRequest,
-    liftName: string,
+    lift_name: string,
     options?: any,
   ) {
     return LiftsApiFp(this.configuration)
-      .postLiftRequestLiftsLiftNameRequestPost(body, liftName, options)
+      .postLiftRequestLiftsLiftNameRequestPost(body, lift_name, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }

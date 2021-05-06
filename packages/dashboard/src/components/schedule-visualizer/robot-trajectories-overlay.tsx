@@ -47,6 +47,7 @@ export const RobotTrajectoriesOverlay = (props: RobotTrajectoriesOverlayProps) =
   const viewBox = `0 0 ${width} ${height}`;
 
   React.useEffect(() => {
+    let cancel = false;
     (async () => {
       const newColors: Record<string, string> = {};
       await Promise.all(
@@ -69,8 +70,13 @@ export const RobotTrajectoriesOverlay = (props: RobotTrajectoriesOverlayProps) =
           );
         }),
       );
-      setColors(newColors);
+      if (!cancel) {
+        setColors(newColors);
+      }
     })();
+    return () => {
+      cancel = true;
+    };
   }, [trajectories, colorManager, robots]);
 
   const settings = React.useContext(SettingsContext);
