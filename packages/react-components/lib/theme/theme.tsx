@@ -6,11 +6,21 @@ declare module '@material-ui/core/styles/createMuiTheme' {
       lightTheme: React.CSSProperties['color'];
       darkTheme: React.CSSProperties['color'];
     };
+    pending: {
+      main: React.CSSProperties['color'];
+      dark: React.CSSProperties['color'];
+      light: React.CSSProperties['color'];
+    };
   }
   interface ThemeOptions {
     fontColors: {
       lightTheme: React.CSSProperties['color'];
       darkTheme: React.CSSProperties['color'];
+    };
+    pending: {
+      main: React.CSSProperties['color'];
+      dark: React.CSSProperties['color'];
+      light: React.CSSProperties['color'];
     };
   }
 }
@@ -26,7 +36,7 @@ export const customTheme = createMuiTheme({
     // used for things like sub-tabs ... etc
     secondary: {
       // light theme - snow
-      main: '#F9F9F9',
+      main: '#F3F3F3',
       // dark theme - st patricks blue
       dark: '#103375',
     },
@@ -61,5 +71,11 @@ export const customTheme = createMuiTheme({
     lightTheme: '#1F396B',
     // ghost white
     darkTheme: '#FBFCFF',
+  },
+  pending: {
+    // scampi - used to represent tabs in a timeline that are awaiting execution
+    main: '#5873A8',
+    dark: '#3d5075',
+    light: '#798fb9',
   },
 });
