@@ -2,7 +2,7 @@ import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 import React from 'react';
 import { NotFoundPage } from 'react-components';
 import { BrowserRouter, Link, Redirect, Route, Switch, useLocation } from 'react-router-dom';
-import { LoginHOC, PrivateRouteHOC, User } from 'rmf-auth';
+import { getUrl, LoginHOC, PrivateRouteHOC, User } from 'rmf-auth';
 import 'typeface-roboto';
 import appConfig from '../app-config';
 import { DASHBOARD_ROUTE, LOGIN_ROUTE } from '../util/url';
@@ -57,7 +57,7 @@ export default function App(): JSX.Element | null {
                     user={user}
                     title={'Reporting'}
                     authenticator={authenticator}
-                    successRedirectUri={DASHBOARD_ROUTE}
+                    successRedirectUri={getUrl(DASHBOARD_ROUTE)}
                   />
                 </Route>
                 <PrivateRoute exact path={appRoutes} redirectPath={LOGIN_ROUTE} user={user}>

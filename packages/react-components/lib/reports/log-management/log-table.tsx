@@ -1,15 +1,16 @@
 import React from 'react';
-import MaterialTable from 'material-table';
+import MaterialTable, { Column } from 'material-table';
 import { CustomLookupFilterParser, LogLevel } from '.';
 import { makeStyles, Typography } from '@material-ui/core';
 import moment from 'moment';
 import { materialTableIcons } from '../../material-table-icons';
 
-export type LogRowsType = { level: string; message: string; timestamp: string }[];
+export type LogRowsType = { level: string; message: string; created: string }[];
 
 export interface LogTableProps {
   rows: LogRowsType | [];
   tableSize?: string; // units vh or rem
+  addMoreRows?(): void;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -35,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const LogTable = (props: LogTableProps): React.ReactElement => {
-  const { rows, tableSize } = props;
+  const { rows, tableSize, addMoreRows } = props;
   const classes = useStyles();
 
   const getLogLevelStyle = (level: string): string | undefined => {
@@ -56,6 +57,16 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
     }
   };
 
+  // FIXME: we cannot copy the LogLevel Enum directly and remove the all attribute because it has a protected attribute.
+  const logLevels = React.useMemo(() => {
+    const logLevelCopy: Record<string, string> = {};
+    Object.keys(LogLevel).forEach((element: string) => {
+      logLevelCopy[element] = LogLevel[element as keyof typeof LogLevel];
+    });
+    delete logLevelCopy['All'];
+    return logLevelCopy;
+  }, []);
+
   return (
     <MaterialTable
       title="Log Result"
@@ -74,7 +85,11 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
           filterCellStyle: {
             maxHeight: '2px',
           },
-          lookup: LogLevel,
+          lookup: logLevels as Column<{
+            level: string;
+            message: string;
+            created: string;
+          }>['lookup'],
           filterComponent: (props) => <CustomLookupFilterParser {...props} />,
           render: (rowData) => {
             return (
@@ -99,7 +114,7 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
         },
         {
           title: <Typography>Timestamp</Typography>,
-          field: 'timestamp',
+          field: 'created',
           type: 'datetime',
           filtering: false,
           align: 'center',
@@ -107,7 +122,7 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
           render: (rowData) => {
             return (
               <Typography className={classes.cellContent} data-testid={'log-table-date'}>
-                {moment(rowData.timestamp).format('lll')}
+                {moment(rowData.created).format('lll')}
               </Typography>
             );
           },
@@ -120,6 +135,11 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
         pageSize: 100,
         pageSizeOptions: [50, 100, 200],
         maxBodyHeight: tableSize ? tableSize : '80vh',
+      }}
+      onChangePage={(page, pageSize) => {
+        if (addMoreRows) {
+          rows.length / pageSize - 1 === page && addMoreRows();
+        }
       }}
     />
   );

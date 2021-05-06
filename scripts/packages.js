@@ -1,6 +1,7 @@
 const allPackages = [
   'packages/react-components',
   'packages/rmf-auth',
+  'packages/reporting-server',
   'packages/reporting',
   'packages/dashboard',
   'packages/api-server',
@@ -18,7 +19,11 @@ const packageDeps = {
     'packages/rmf-models',
   ],
   'packages/react-components': ['packages/api-client', 'packages/rmf-models'],
-  'packages/reporting': ['packages/react-components', 'packages/rmf-auth'],
+  'packages/reporting': [
+    'packages/react-components',
+    'packages/rmf-auth',
+    'packages/reporting-server',
+  ],
   'packages/api-client': ['packages/rmf-models'],
 };
 

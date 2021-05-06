@@ -13,7 +13,10 @@ coverage = "~=5.5"
 # api-server
 api-server = {editable = true, path = "./packages/api-server"}
 aiohttp = "~=3.7"
-ros-translator = {editable = true, path = "./packages/ros_translator"}
+# reporting-server
+reporting-server = {editable = true, path = "./packages/reporting-server"}
+# ros-translator
+ros-translator = {editable = true, path = "./packages/ros-translator"}
 
 [requires]
 python_version = "3.8"
