@@ -73,6 +73,7 @@ spec:
   type: LoadBalancer
   selector:
     app: rmf-server
+    tier: app
   ports:
     - protocol: TCP
       port: 8000
@@ -88,10 +89,12 @@ spec:
   selector:
     matchLabels:
       app: rmf-server
+      tier: app
   template:
     metadata:
       labels:
         app: rmf-server
+        tier: app
     spec:
       containers:
         - name: rmf-server
