@@ -1,12 +1,5 @@
-FROM quay.io/keycloak/keycloak:11.0.0
+FROM quay.io/keycloak/keycloak:12.0.4
 
-COPY dp3-realm.json /
+# COPY ./jsonlog-event-listener.jar /opt/jboss/keycloak/standalone/deployments/jsonlog-event-listener.jar
 
-CMD [ \
-  "-Dkeycloak.migration.action=import", \
-  "-Dkeycloak.migration.provider=singleFile", \
-  "-Dkeycloak.migration.file=/dp3-realm.json", \
-  "-Dkeycloak.migration.realmName=dp3", \
-  "-Dkeycloak.migration.strategy=IGNORE_EXISTING", \
-  "-b", "0.0.0.0" \
-]
+COPY ${PWD}/packages/keycloak/startup-script/ /opt/jboss/startup-scripts/

@@ -85,6 +85,17 @@ function authHeaders(token) {
         temporary: false,
       },
     );
+
+    await tryRequest(
+      `${baseUrl}/admin/realms/rmf-web/events/config`,
+      {
+        method: 'PUT',
+        headers: authHeaders(token),
+      },
+      {
+        eventsEnabled: true,
+      },
+    );
   } catch (e) {
     process.exitCode = 1;
   }
