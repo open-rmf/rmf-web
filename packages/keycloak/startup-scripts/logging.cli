@@ -1,1 +1,4 @@
+embed-server --std-out=echo
 /subsystem=logging/logger=org.keycloak.events/:add(category=org.keycloak.events,level=DEBUG)
+
+stop-embedded-server
