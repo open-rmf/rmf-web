@@ -32,7 +32,7 @@ export default class TrajectorySocketManager extends EventEmitter<Events> {
     if (!webSocket) throw Error('Websocket not initialized!');
     // response should come in the order that requests are sent, this should allow multiple messages
     // in-flight while processing the responses in the order they are sent.
-    webSocket.send(payload);
+    if (webSocket.readyState === WebSocket.OPEN) webSocket.send(payload);
     // waits for the earlier response to be processed.
     if (this._ongoingRequest) {
       await this._ongoingRequest;
