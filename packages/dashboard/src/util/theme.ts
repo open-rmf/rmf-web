@@ -2,11 +2,8 @@ import { makeStyles } from '@material-ui/core';
 import { ThemeMode } from '../settings';
 
 const darkThemeStyles = makeStyles((theme) => ({
-  appBar: {
+  components: {
     backgroundColor: theme.palette.primary.dark,
-    color: theme.fontColors.darkTheme,
-  },
-  appBarIcons: {
     color: theme.fontColors.darkTheme,
   },
   background: {
@@ -15,11 +12,8 @@ const darkThemeStyles = makeStyles((theme) => ({
 }));
 
 const lightThemeStyles = makeStyles((theme) => ({
-  appBar: {
+  components: {
     backgroundColor: theme.palette.primary.main,
-    color: theme.fontColors.lightTheme,
-  },
-  appBarIcons: {
     color: theme.fontColors.lightTheme,
   },
   background: {

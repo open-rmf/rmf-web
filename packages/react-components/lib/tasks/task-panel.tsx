@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme) => ({
   detailPanelContainer: {
     width: 350,
     padding: theme.spacing(2),
-    marginLeft: theme.spacing(1),
+    marginLeft: theme.spacing(2),
     flex: '0 0 auto',
   },
   taskTable: {
@@ -37,6 +37,7 @@ export interface TaskPanelProps extends React.HTMLProps<HTMLDivElement> {
   deliveryWaypoints?: string[];
   dispensers?: string[];
   ingestors?: string[];
+  componentTheme?: string;
   submitTask?: CreateTaskFormProps['submitTask'];
   onRefreshClick?: TaskTableProps['onRefreshClick'];
 }
@@ -48,6 +49,7 @@ export function TaskPanel({
   deliveryWaypoints,
   dispensers,
   ingestors,
+  componentTheme,
   submitTask,
   onRefreshClick,
   ...divProps
@@ -67,7 +69,8 @@ export function TaskPanel({
       <Grid container wrap="nowrap" justify="center" style={{ height: 'inherit' }}>
         <Grid style={{ flex: '1 1 auto' }}>
           <TaskTable
-            className={classes.taskTable}
+            elevation={6}
+            className={`${classes.taskTable} ${componentTheme}`}
             tasks={tasks.slice(page * 10, (page + 1) * 10)}
             paginationOptions={{
               count: tasks.length,
@@ -79,9 +82,10 @@ export function TaskPanel({
             onCreateTaskClick={() => setOpenCreateTaskForm(true)}
             onTaskClick={(_ev, task) => setSelectedTask(task)}
             onRefreshClick={onRefreshClick}
+            componentTheme={componentTheme}
           />
         </Grid>
-        <Paper className={classes.detailPanelContainer}>
+        <Paper elevation={6} className={`${classes.detailPanelContainer} ${componentTheme}`}>
           {selectedTask ? <TaskInfo task={selectedTask} /> : <NoSelectedTask />}
         </Paper>
       </Grid>

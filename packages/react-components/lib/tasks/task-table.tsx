@@ -39,15 +39,20 @@ const useStyles = makeStyles((theme) => ({
   },
   phasesCell: {
     padding: `0 ${theme.spacing(1)}px`,
+    borderBottom: 'none',
+  },
+  tablePagination: {
+    flex: '0 0 auto',
   },
 }));
 
 interface TaskRowProps {
   task: RmfModels.TaskSummary;
+  componentTheme?: string;
   onClick: React.MouseEventHandler<HTMLTableRowElement>;
 }
 
-function TaskRow({ task, onClick }: TaskRowProps) {
+function TaskRow({ task, onClick, componentTheme }: TaskRowProps) {
   const classes = useStyles();
   const [hover, setHover] = React.useState(false);
 
@@ -59,11 +64,11 @@ function TaskRow({ task, onClick }: TaskRowProps) {
         onMouseOver={() => setHover(true)}
         onMouseOut={() => setHover(false)}
       >
-        <TableCell>{task.task_id}</TableCell>
-        <TableCell>{task.robot_name}</TableCell>
-        <TableCell>{toRelativeDate(task.start_time)}</TableCell>
-        <TableCell>{toRelativeDate(task.end_time)}</TableCell>
-        <TableCell>{taskStateToStr(task.state)}</TableCell>
+        <TableCell className={componentTheme}>{task.task_id}</TableCell>
+        <TableCell className={componentTheme}>{task.robot_name}</TableCell>
+        <TableCell className={componentTheme}>{toRelativeDate(task.start_time)}</TableCell>
+        <TableCell className={componentTheme}>{toRelativeDate(task.end_time)}</TableCell>
+        <TableCell className={componentTheme}>{taskStateToStr(task.state)}</TableCell>
       </TableRow>
       <TableRow
         className={clsx(hover && classes.taskRowHover)}
@@ -95,6 +100,7 @@ export interface TaskTableProps extends PaperProps {
    */
   tasks: RmfModels.TaskSummary[];
   paginationOptions?: PaginationOptions;
+  componentTheme?: string;
   onCreateTaskClick?: React.MouseEventHandler<HTMLButtonElement>;
   onTaskClick?(ev: React.MouseEvent<HTMLDivElement>, task: RmfModels.TaskSummary): void;
   onRefreshClick?: React.MouseEventHandler<HTMLButtonElement>;
@@ -106,6 +112,7 @@ export function TaskTable({
   onCreateTaskClick,
   onTaskClick,
   onRefreshClick,
+  componentTheme,
   ...paperProps
 }: TaskTableProps): JSX.Element {
   const classes = useStyles();
@@ -116,10 +123,10 @@ export function TaskTable({
           Tasks
         </Typography>
         <IconButton onClick={onRefreshClick} aria-label="Refresh">
-          <RefreshIcon />
+          <RefreshIcon className={componentTheme} />
         </IconButton>
         <IconButton onClick={onCreateTaskClick} aria-label="Create Task">
-          <AddOutlinedIcon />
+          <AddOutlinedIcon className={componentTheme} />
         </IconButton>
       </Toolbar>
       <TableContainer style={{ flex: '1 1 auto' }}>
@@ -139,13 +146,18 @@ export function TaskTable({
                 key={task.task_id}
                 task={task}
                 onClick={(ev) => onTaskClick && onTaskClick(ev, task)}
+                componentTheme={componentTheme}
               />
             ))}
           </TableBody>
         </Table>
       </TableContainer>
       {paginationOptions && (
-        <TablePagination component="div" {...paginationOptions} style={{ flex: '0 0 auto' }} />
+        <TablePagination
+          component="div"
+          {...paginationOptions}
+          className={`${classes.tablePagination} ${componentTheme}`}
+        />
       )}
     </Paper>
   );

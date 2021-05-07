@@ -2,12 +2,15 @@ import { createStyles, makeStyles } from '@material-ui/core';
 import Tabs from '@material-ui/core/Tabs';
 import React from 'react';
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     tabsContainer: {
       borderRight: '0.25px solid rgba(251, 252, 255, 0.5)',
       borderLeft: '0.25px solid rgba(251, 252, 255, 0.5)',
       flexGrow: 4,
+    },
+    indicator: {
+      backgroundColor: theme.palette.success.main,
     },
   }),
 );
@@ -29,6 +32,7 @@ export const NavigationBar = (props: NavigationBarProps): JSX.Element => {
       value={value}
       onChange={onTabChange}
       className={classes.tabsContainer}
+      classes={{ indicator: classes.indicator }}
     >
       {children}
     </Tabs>

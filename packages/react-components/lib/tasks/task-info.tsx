@@ -125,7 +125,7 @@ export function TaskInfo({ task }: TaskInfoProps): JSX.Element {
       <Typography variant="h6" style={{ textAlign: 'center' }} gutterBottom>
         {task.task_id}
       </Typography>
-      <Divider />
+      <Divider style={{ backgroundColor: theme.palette.success.main }} />
       <div style={{ marginBottom: theme.spacing(1) }}></div>
       <InfoLine>
         <span>Task Type:</span>

@@ -4,13 +4,13 @@ import React from 'react';
 import { TaskPanel, TaskPanelProps } from 'react-components';
 import * as RmfModels from 'rmf-models';
 import { PlacesContext, RmfIngressContext } from '../rmf-app';
+import { decideThemeStyle } from '../../util/theme';
+import { SettingsContext } from '../app-contexts';
 
 const useStyles = makeStyles((theme) => ({
   taskPanel: {
-    margin: `${theme.spacing(4)}px auto`,
-    width: '100%',
-    height: '100%',
-    maxWidth: 1600,
+    padding: `${theme.spacing(4)}px`,
+    height: '100vh',
   },
 }));
 
@@ -37,6 +37,11 @@ export function TaskPage() {
   const places = React.useContext(PlacesContext);
   const [taskSummaries, setTaskSummaries] = React.useState<RmfModels.TaskSummary[]>([]);
 
+  const themeContext = React.useContext(SettingsContext).themeMode;
+  const theme = decideThemeStyle(themeContext);
+  const taskPanelStyle = `${classes.taskPanel} ${theme.background}`;
+  const componentTheme = theme.components;
+
   const handleRefresh = React.useCallback(async () => {
     if (!tasksApi) {
       return;
@@ -60,13 +65,14 @@ export function TaskPage() {
   );
   return (
     <TaskPanel
-      className={classes.taskPanel}
+      className={taskPanelStyle}
       tasks={taskSummaries}
       cleaningZones={Object.keys(places)}
       loopWaypoints={Object.keys(places)}
       deliveryWaypoints={Object.keys(places)}
       submitTask={submitTask}
       onRefreshClick={handleRefresh}
+      componentTheme={componentTheme}
     />
   );
 }

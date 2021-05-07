@@ -5,15 +5,12 @@ const useStyles = makeStyles((theme) =>
   createStyles({
     root: {
       '&$disabled': {
-        backgroundColor: theme.palette.primary.main,
-        color: theme.palette.primary.main,
+        backgroundColor: theme.palette.primary.dark,
+        color: theme.palette.primary.dark,
+        borderRadius: 0,
       },
     },
     disabled: {},
-    logo: {
-      maxWidth: 120,
-      opacity: 1,
-    },
   }),
 );
 
@@ -36,7 +33,6 @@ export const LogoButton = (props: LogoButtonProps): JSX.Element => {
     return (
       <Button
         disableElevation
-        color="primary"
         variant="contained"
         classes={{
           root: classes.root,
