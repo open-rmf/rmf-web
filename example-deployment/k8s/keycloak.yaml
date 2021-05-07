@@ -125,6 +125,10 @@ spec:
       containers:
         - name: keycloak
           image: quay.io/keycloak/keycloak:12.0.4
+          args: ["-c", "standalone.xml"]
+          volumeMounts:
+            - name: keycloak-startup-script
+              mountPath: /opt/jboss/startup-scripts
           env:
           - name: KEYCLOAK_USER
             value: admin
@@ -149,3 +153,7 @@ spec:
             httpGet:
               path: /auth/realms/master
               port: 8080
+      volumes:
+        - name: keycloak-startup-script
+          configMap:
+            name: keycloak-startup-script

@@ -91,6 +91,11 @@ In this example, we will be using [Keycloak](https://www.keycloak.org/) to do us
 
 There is a kubernetes resource file to deploy keycloak along with postgres for its database.
 
+```
+kubectl create configmap keycloak-startup-script --from-file=keycloak-startup-script.cli  -o=yaml --dry-run=client | kubectl apply -f -
+```
+
+
 ```bash
 .bin/minikube kubectl -- apply -f k8s/keycloak.yaml
 ```
@@ -167,6 +172,7 @@ In order to use the cert, we will add it as a configmap to kubernetes
 
 ```bash
 kubectl create configmap jwt-pub-key --from-file=jwt-pub-key.pub -o=yaml --dry-run=client | kubectl apply -f -
+
 ```
 
 ## rmf-server
