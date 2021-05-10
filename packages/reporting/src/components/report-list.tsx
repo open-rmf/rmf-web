@@ -40,6 +40,9 @@ export const ReportContainer: Record<string, React.ReactElement> = {
   [Reports.showHealthReport]: <HealthReportConfig />,
   [Reports.showIngestorStateReport]: <IngestorStateReportConfig />,
   [Reports.showLiftStateReport]: <LiftStateReportConfig />,
+  [Reports.showLoginsReport]: <h1>Still not implemented</h1>,
+  [Reports.showLogoutsReport]: <h1>Still not implemented</h1>,
+  [Reports.showLoginFailuresReport]: <h1>Still not implemented</h1>,
 };
 
 // To be implemented
@@ -50,7 +53,5 @@ export const ReportContainer: Record<string, React.ReactElement> = {
 // [Reports.showRobotMotionPlansReport]: <h1>Still not implemented</h1>,
 // [Reports.showRobotActionReport]: <h1>Still not implemented</h1>,
 // [Reports.showUserActionsReport]: <h1>Still not implemented</h1>,
-// [Reports.showLoginsReport]: <h1>Still not implemented</h1>,
-// [Reports.showLogoutsReport]: <h1>Still not implemented</h1>,
-// [Reports.showLoginFailuresReport]: <h1>Still not implemented</h1>,
+
 // [Reports.showWorkCellStatesReport]: <h1>Still not implemented</h1>,
