@@ -94,6 +94,7 @@ function authHeaders(token) {
       },
       {
         eventsEnabled: true,
+        eventsListeners: ['jsonlog_event_listener'],
       },
     );
   } catch (e) {

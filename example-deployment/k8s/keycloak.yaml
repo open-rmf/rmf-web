@@ -125,10 +125,9 @@ spec:
       containers:
         - name: keycloak
           image: quay.io/keycloak/keycloak:12.0.4
-          args: ["-c", "standalone.xml"]
           volumeMounts:
-            - name: keycloak-startup-script
-              mountPath: /opt/jboss/startup-scripts
+            - name: jsonlog-event-listener
+              mountPath: /opt/jboss/keycloak/standalone/deployments/jsonlog-event-listener.jar
           env:
           - name: KEYCLOAK_USER
             value: admin
@@ -154,6 +153,6 @@ spec:
               path: /auth/realms/master
               port: 8080
       volumes:
-        - name: keycloak-startup-script
+        - name: jsonlog-event-listener
           configMap:
-            name: keycloak-startup-script
+            name: jsonlog-event-listener

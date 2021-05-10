@@ -92,7 +92,7 @@ In this example, we will be using [Keycloak](https://www.keycloak.org/) to do us
 There is a kubernetes resource file to deploy keycloak along with postgres for its database.
 
 ```
-kubectl create configmap keycloak-startup-script --from-file=keycloak-startup-script.cli  -o=yaml --dry-run=client | kubectl apply -f -
+kubectl create configmap jsonlog-event-listener --from-file=jsonlog-event-listener.jar  -o=yaml --dry-run=client | kubectl apply -f -
 ```
 
 
