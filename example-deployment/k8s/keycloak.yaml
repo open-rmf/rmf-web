@@ -125,6 +125,8 @@ spec:
       containers:
         - name: keycloak
           image: rmf-web/keycloak
+          imagePullPolicy: Never # remove this in a real deployment
+
           env:
           - name: KEYCLOAK_USER
             value: admin
@@ -149,4 +151,3 @@ spec:
             httpGet:
               path: /auth/realms/master
               port: 8080
-              

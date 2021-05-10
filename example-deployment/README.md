@@ -91,30 +91,33 @@ In this example, we will be using [Keycloak](https://www.keycloak.org/) to do us
 
 There is a kubernetes resource file to deploy keycloak along with postgres for its database.
 
-build the image
-
-```bash
-docker build -t rmf-web/keycloak -f docker/keycloak/keycloak.dockerfile ws/rmf-web
-```
-
-"publish" the image
-
-```bash
-docker save rmf-web/keycloak | bash -c 'eval $(.bin/minikube docker-env) && docker load'
-```
-
 ```bash
 .bin/minikube kubectl -- apply -f k8s/keycloak.yaml
 ```
 
 This requires internet connection, see [Deploying in an airgapped network](#deploying-in-an-airgapped-network) if you are in an airgap network. tldr:
 
-```bash
-# connected to internet
-docker pull quay.io/keycloak/keycloak:12.0.4
+### connected to internet
 
-# connected to airgap network
-docker save quay.io/keycloak/keycloak:12.0.4 | bash -c 'eval $(.bin/minikube docker-env) && docker load'
+```bash
+docker pull quay.io/keycloak/keycloak:12.0.4
+```
+
+### connected to airgap network
+
+build the image
+
+``` bash
+docker build -t rmf-web/keycloak -f docker/keycloak/keycloak.dockerfile docker/keycloak/
+```
+
+"publish" the image
+
+``` bash
+docker save rmf-web/keycloak | bash -c 'eval $(.bin/minikube docker-env) && docker load'
+```
+
+```
 .bin/minikube kubectl -- apply -f k8s/keycloak.yaml
 ```
 
