@@ -12,6 +12,7 @@ import {
   TableRow,
   Toolbar,
   Typography,
+  withStyles,
 } from '@material-ui/core';
 import { AddOutlined as AddOutlinedIcon, Refresh as RefreshIcon } from '@material-ui/icons';
 import clsx from 'clsx';
@@ -45,6 +46,14 @@ const useStyles = makeStyles((theme) => ({
     flex: '0 0 auto',
   },
 }));
+
+const TablePaginationTheme = withStyles({
+  actions: {
+    '& .Mui-disabled': {
+      color: '#A8A8A8',
+    },
+  },
+})(TablePagination);
 
 interface TaskRowProps {
   task: RmfModels.TaskSummary;
@@ -153,8 +162,7 @@ export function TaskTable({
         </Table>
       </TableContainer>
       {paginationOptions && (
-        <TablePagination
-          component="div"
+        <TablePaginationTheme
           {...paginationOptions}
           className={`${classes.tablePagination} ${componentTheme}`}
         />
