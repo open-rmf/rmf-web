@@ -91,10 +91,17 @@ In this example, we will be using [Keycloak](https://www.keycloak.org/) to do us
 
 There is a kubernetes resource file to deploy keycloak along with postgres for its database.
 
-```
-kubectl create configmap jsonlog-event-listener --from-file=jsonlog-event-listener.jar  -o=yaml --dry-run=client | kubectl apply -f -
+build the image
+
+```bash
+docker build -t rmf-web/keycloak -f docker/keycloak/keycloak.dockerfile ws/rmf-web
 ```
 
+"publish" the image
+
+```bash
+docker save rmf-web/keycloak | bash -c 'eval $(.bin/minikube docker-env) && docker load'
+```
 
 ```bash
 .bin/minikube kubectl -- apply -f k8s/keycloak.yaml

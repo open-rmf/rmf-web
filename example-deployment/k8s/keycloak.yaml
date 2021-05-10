@@ -124,10 +124,7 @@ spec:
     spec:
       containers:
         - name: keycloak
-          image: quay.io/keycloak/keycloak:12.0.4
-          volumeMounts:
-            - name: jsonlog-event-listener
-              mountPath: /opt/jboss/keycloak/standalone/deployments/jsonlog-event-listener.jar
+          image: rmf-web/keycloak
           env:
           - name: KEYCLOAK_USER
             value: admin
@@ -152,7 +149,4 @@ spec:
             httpGet:
               path: /auth/realms/master
               port: 8080
-      volumes:
-        - name: jsonlog-event-listener
-          configMap:
-            name: jsonlog-event-listener
+              
