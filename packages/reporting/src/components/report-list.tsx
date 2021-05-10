@@ -6,6 +6,9 @@ import FleetStateReportConfig from './reports/fleet-state-report';
 import HealthReportConfig from './reports/health-report';
 import IngestorStateReportConfig from './reports/ingestor-state-report';
 import LiftStateReportConfig from './reports/lift-state-report';
+import UserLoginFailureReportConfig from './reports/user-login-failure-report';
+import UserLoginReportConfig from './reports/user-login-report';
+import UserLogoutReportConfig from './reports/user-logout-report';
 
 export enum Reports {
   queryAllLogs = 'queryAllLogs',
@@ -40,9 +43,9 @@ export const ReportContainer: Record<string, React.ReactElement> = {
   [Reports.showHealthReport]: <HealthReportConfig />,
   [Reports.showIngestorStateReport]: <IngestorStateReportConfig />,
   [Reports.showLiftStateReport]: <LiftStateReportConfig />,
-  [Reports.showLoginsReport]: <h1>Still not implemented</h1>,
-  [Reports.showLogoutsReport]: <h1>Still not implemented</h1>,
-  [Reports.showLoginFailuresReport]: <h1>Still not implemented</h1>,
+  [Reports.showLoginsReport]: <UserLoginReportConfig />,
+  [Reports.showLogoutsReport]: <UserLogoutReportConfig />,
+  [Reports.showLoginFailuresReport]: <UserLoginFailureReportConfig />,
 };
 
 // To be implemented

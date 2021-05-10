@@ -22,7 +22,7 @@ export const UserLogoutReportTable = (props: UserLogoutReportTable): React.React
 
   return (
     <MaterialTable
-      title="Login Report"
+      title="Logout Report"
       icons={materialTableIcons}
       columns={[
         {
@@ -41,7 +41,7 @@ export const UserLogoutReportTable = (props: UserLogoutReportTable): React.React
           align: 'center',
           render: (rowData) => {
             return (
-              <Typography data-testid={'user-login-table-date'}>
+              <Typography data-testid={'user-logout-table-date'}>
                 {moment(rowData.created).format('lll')}
               </Typography>
             );

@@ -1,7 +1,7 @@
 import React from 'react';
 import { DefaultReportQueryPayload, defaultReportStyles } from '../default-report-interface';
 import { DefaultDatesForm } from '../default-dates-form';
-import { UserLogoutReportTable, UserLogoutRowsType } from './user-login-report-table';
+import { UserLogoutReportTable, UserLogoutRowsType } from './user-logout-report-table';
 
 export interface UserLogoutReportProps {
   getLogs: (data: DefaultReportQueryPayload) => Promise<UserLogoutRowsType>;
