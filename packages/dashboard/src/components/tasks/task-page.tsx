@@ -10,7 +10,7 @@ import { SettingsContext } from '../app-contexts';
 const useStyles = makeStyles((theme) => ({
   taskPanel: {
     padding: `${theme.spacing(4)}px`,
-    height: '100vh',
+    height: '100%',
   },
 }));
 
