@@ -56,7 +56,8 @@ jobs:
         run: |
           . /opt/rmf/setup.bash
           npm config set unsafe-perm
-          npm run bootstrap -- packages/dashboard
+          npm install -g lerna@4
+          lerna bootstrap --hoist --include-dependencies --scope=rmf-dashboard-e2e
           docker pull quay.io/keycloak/keycloak:12.0.4
           cd packages/dashboard/e2e
           npm ci

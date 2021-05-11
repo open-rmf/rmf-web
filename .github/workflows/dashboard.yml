@@ -31,7 +31,8 @@ jobs:
         run: |
           . /opt/rmf/setup.bash
           npm config set unsafe-perm
-          npm run bootstrap -- packages/dashboard
+          npm install -g lerna@4
+          lerna bootstrap --hoist --include-dependencies --scope=rmf-dashboard
         working-directory: .
       - name: unit test
         run: . /opt/rmf/setup.bash && npm run test:coverage
