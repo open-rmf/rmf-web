@@ -1,7 +1,6 @@
 {
   "name": "root",
   "private": true,
-  "scripts": {},
   "devDependencies": {
     "husky": "^4.3.0",
     "lerna": "^4.0.0",

@@ -17,7 +17,7 @@ test('can show and hide settings', async () => {
   };
 
   const root = await renderAct(
-    <AppBase>
+    <AppBase appbarProps={{ tabValue: 'building' }}>
       <TestComponent />
     </AppBase>,
   );
@@ -41,7 +41,7 @@ test('can toggle settings', async () => {
   };
 
   const root = await renderAct(
-    <AppBase>
+    <AppBase appbarProps={{ tabValue: 'building' }}>
       <TestComponent />
     </AppBase>,
   );
@@ -66,7 +66,7 @@ test('can show and hide settings', async () => {
   };
 
   const root = await renderAct(
-    <AppBase>
+    <AppBase appbarProps={{ tabValue: 'building' }}>
       <TestComponent />
     </AppBase>,
   );
@@ -90,7 +90,7 @@ test('can toggle help', async () => {
   };
 
   const root = await renderAct(
-    <AppBase>
+    <AppBase appbarProps={{ tabValue: 'building' }}>
       <TestComponent />
     </AppBase>,
   );
@@ -115,7 +115,7 @@ test('can show and hide hotkeys dialog', async () => {
   };
 
   const root = await renderAct(
-    <AppBase>
+    <AppBase appbarProps={{ tabValue: 'building' }}>
       <TestComponent />
     </AppBase>,
   );
@@ -138,7 +138,7 @@ test('can toggle hotkeys dialog', async () => {
   };
 
   const root = await renderAct(
-    <AppBase>
+    <AppBase appbarProps={{ tabValue: 'building' }}>
       <TestComponent />
     </AppBase>,
   );

@@ -25,7 +25,7 @@ describe('AppBar', () => {
   test('renders with navigation bar', () => {
     const root = render(
       <Base>
-        <AppBar />
+        <AppBar tabValue="building" />
       </Base>,
     );
     expect(root.getAllByRole('tablist').length > 0).toBeTruthy();
@@ -34,7 +34,7 @@ describe('AppBar', () => {
   test('show settings when settings button is clicked', () => {
     const root = render(
       <Base>
-        <AppBar />
+        <AppBar tabValue="building" />
       </Base>,
     );
     act(() => {
@@ -49,7 +49,7 @@ describe('AppBar', () => {
   test('shows help when help button is clicked', () => {
     const root = render(
       <Base>
-        <AppBar />
+        <AppBar tabValue="building" />
       </Base>,
     );
     act(() => {
@@ -64,7 +64,7 @@ describe('AppBar', () => {
   test('renders tooltips when it is enabled', async () => {
     const root = render(
       <Base>
-        <AppBar />
+        <AppBar tabValue="building" />
       </Base>,
     );
     userEvent.hover(root.getByTestId('help-tooltip-tooltip'));
@@ -78,7 +78,7 @@ describe('AppBar', () => {
     const root = render(
       <Base>
         <UserContext.Provider value={{ username: 'test', token: 'test' }}>
-          <AppBar />
+          <AppBar tabValue="building" />
         </UserContext.Provider>
       </Base>,
     );
@@ -92,7 +92,7 @@ describe('AppBar', () => {
       <Base>
         <AuthenticatorContext.Provider value={authenticator}>
           <UserContext.Provider value={{ username: 'test', token: 'test' }}>
-            <AppBar />
+            <AppBar tabValue="building" />
           </UserContext.Provider>
         </AuthenticatorContext.Provider>
       </Base>,
