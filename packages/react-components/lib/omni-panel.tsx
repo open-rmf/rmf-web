@@ -24,7 +24,10 @@ const useStyles = makeStyles((theme) => ({
   },
   navigationButton: {
     borderRadius: 'inherit',
-    borderColor: theme.palette.divider,
+    borderBottom: `1px ${theme.palette.success.main} solid`,
+  },
+  navigationButtonLeftBorder: {
+    borderLeftColor: theme.palette.success.main,
   },
   navigationButtonGroup: {
     borderRadius: 'inherit',
@@ -46,6 +49,7 @@ export interface OmniPanelProps extends React.HTMLProps<HTMLDivElement> {
   timeout?: number;
   mountOnEnter?: boolean;
   unmountOnExit?: boolean;
+  componentTheme?: string;
   onBack?: React.MouseEventHandler<HTMLButtonElement>;
   onHome?: React.MouseEventHandler<HTMLButtonElement>;
   onClose?: React.MouseEventHandler<HTMLButtonElement>;
@@ -59,6 +63,7 @@ export const OmniPanel = (props: OmniPanelProps): JSX.Element => {
     timeout,
     mountOnEnter,
     unmountOnExit = true,
+    componentTheme,
     onBack,
     onHome,
     onClose,
@@ -87,14 +92,14 @@ export const OmniPanel = (props: OmniPanelProps): JSX.Element => {
       <div className={classes_.mainContainer}>
         <ButtonGroup fullWidth className={classes_.navigationButtonGroup}>
           <Button
-            className={classes_.navigationButton}
+            className={`${classes_.navigationButton} ${componentTheme}`}
             onClick={onBack}
             aria-label="Back"
             startIcon={<BackIcon />}
             size="large"
           />
           <Button
-            className={classes_.navigationButton}
+            className={`${classes_.navigationButton} ${classes_.navigationButtonLeftBorder} ${componentTheme}`}
             onClick={onHome}
             aria-label="Home"
             startIcon={<HomeIcon />}
@@ -102,7 +107,7 @@ export const OmniPanel = (props: OmniPanelProps): JSX.Element => {
           />
           {variant === 'backHomeClose' && (
             <Button
-              className={classes_.navigationButton}
+              className={`${classes_.navigationButton} ${classes_.navigationButtonLeftBorder} ${componentTheme}`}
               onClick={onClose}
               aria-label="Close"
               startIcon={<CloseIcon />}

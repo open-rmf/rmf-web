@@ -10,7 +10,9 @@ const debug = Debug('MainMenu');
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: 0,
-    backgroundColor: theme.palette.background.paper,
+  },
+  divider: {
+    backgroundColor: theme.palette.success.main,
   },
 }));
 
@@ -20,11 +22,12 @@ export interface MainMenuProps {
    * resets the filter term once called
    */
   setFilter?: () => void;
+  componentTheme?: string;
 }
 
 export const MainMenu = React.memo((props: MainMenuProps) => {
   const { showTooltips } = React.useContext(TooltipsContext);
-  const { pushView, setFilter } = props;
+  const { pushView, setFilter, componentTheme } = props;
   debug('render');
   const classes = useStyles();
 
@@ -54,26 +57,26 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
   }, [pushView, setFilter]);
 
   return (
-    <List className={classes.root} data-component="MainMenu">
+    <List className={`${classes.root} ${componentTheme}`} data-component="MainMenu">
       <ListItem data-item="Doors" button={true} onClick={handleMainMenuDoorsClick}>
         <Typography variant="h5">Doors</Typography>
       </ListItem>
-      <Divider />
+      <Divider className={classes.divider} />
 
       <ListItem data-item="Lifts" button={true} onClick={handleMainMenuLiftsClick}>
         <Typography variant="h5">Lifts</Typography>
       </ListItem>
-      <Divider />
+      <Divider className={classes.divider} />
 
       <ListItem data-item="Robots" button={true} onClick={handleMainMenuRobotsClick}>
         <Typography variant="h5">Robots</Typography>
       </ListItem>
-      <Divider />
+      <Divider className={classes.divider} />
 
       <ListItem data-item="Dispensers" button={true} onClick={handleMainMenuDispensersClick}>
         <Typography variant="h5">Dispensers</Typography>
       </ListItem>
-      <Divider />
+      <Divider className={classes.divider} />
 
       <ListItem data-item="Negotiations" button={true} onClick={handleMainMenuNegotiationsClick}>
         <DashboardTooltip
@@ -84,7 +87,7 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
           <Typography variant="h5">Negotiations</Typography>
         </DashboardTooltip>
       </ListItem>
-      <Divider />
+      <Divider className={classes.divider} />
     </List>
   );
 });

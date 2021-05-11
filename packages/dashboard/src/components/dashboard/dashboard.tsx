@@ -22,7 +22,7 @@ import 'typeface-roboto';
 import { buildHotKeys } from '../../hotkeys';
 import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
 import { DispenserResource } from '../../managers/resource-manager-dispensers';
-import { AppControllerContext, ResourcesContext } from '../app-contexts';
+import { AppControllerContext, ResourcesContext, SettingsContext } from '../app-contexts';
 import {
   BuildingMapContext,
   DispenserStateContext,
@@ -38,6 +38,7 @@ import MainMenu from './main-menu';
 import NegotiationsPanel from './negotiations-panel';
 import OmniPanelControl_ from './omnipanel-control';
 import { DashboardState, useDashboardReducer } from './reducers/dashboard-reducer';
+import { decideThemeStyle } from '../../util/theme';
 
 const debug = Debug('Dashboard');
 const DispenserAccordion = React.memo(withSpotlight(DispenserAccordion_));
@@ -72,7 +73,6 @@ const useStyles = makeStyles((theme) => ({
       top: 80,
       right: '1%',
       bottom: '2%',
-      backgroundColor: theme.palette.background.default,
       // put it above leaflet panes, https://leafletjs.com/reference-1.6.0.html#map-pane
       zIndex: 610,
       borderTopLeftRadius: borderRadius,
@@ -84,7 +84,6 @@ const useStyles = makeStyles((theme) => ({
       width: '100%',
       height: '35%',
       top: '65%',
-      backgroundColor: theme.palette.background.default,
       // put it above leaflet panes, https://leafletjs.com/reference-1.6.0.html#map-pane
       zIndex: 610,
       borderTopLeftRadius: borderRadius,
@@ -107,6 +106,9 @@ export default function Dashboard(_props: {}): React.ReactElement {
 
   const buildingMap = React.useContext(BuildingMapContext);
   const resourceManager = React.useContext(ResourcesContext);
+
+  const themeContext = React.useContext(SettingsContext).themeMode;
+  const themeClasses = decideThemeStyle(themeContext);
 
   const { state: dashboardState, dispatch: dashboardDispatch } = useDashboardReducer(
     dashboardInitialValues,
@@ -301,16 +303,21 @@ export default function Dashboard(_props: {}): React.ReactElement {
       )}
       <Fade in={showOmniPanel}>
         <OmniPanel
-          className={classes.omniPanel}
+          className={`${classes.omniPanel} ${themeClasses.components}`}
           stack={viewStack}
           variant="backHomeClose"
+          componentTheme={themeClasses.components}
           onBack={handleOmniPanelBack}
           onHome={handleOmniPanelHome}
           onClose={handleOmniPanelClose}
           id="omnipanel"
         >
           <OmniPanelView viewId={OmniPanelViewIndex.MainMenu}>
-            <MainMenu pushView={viewStackDispatch.push} setFilter={() => setFilter('')} />
+            <MainMenu
+              componentTheme={themeClasses.components}
+              pushView={viewStackDispatch.push}
+              setFilter={() => setFilter('')}
+            />
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Doors}>
             <SimpleFilter onChange={onChange} value={filter} />
