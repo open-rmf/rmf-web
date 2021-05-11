@@ -68,9 +68,6 @@ const ColorDisplay = (): JSX.Element => {
     darkThemeFont: {
       backgroundColor: theme.fontColors.darkTheme,
     },
-    pending: {
-      backgroundColor: theme.pending.main,
-    },
     // non theme related styles
     header: {
       marginLeft: '1rem',
@@ -104,12 +101,6 @@ const ColorDisplay = (): JSX.Element => {
         <ColorCard color={classes.error} colorName={'Error - Fire Opal'} />
         <ColorCard color={classes.warning} colorName={'Warning - Indian Yellow'} />
         <ColorCard color={classes.info} colorName={'Info - Wisteria'} />
-      </div>
-      <Typography variant="h5" className={classes.header}>
-        Other Colors
-      </Typography>
-      <div style={{ display: 'flex' }}>
-        <ColorCard color={classes.pending} colorName={'Pending - Scampi'} />
       </div>
     </div>
   );
