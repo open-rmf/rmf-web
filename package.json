@@ -1,14 +1,10 @@
 {
   "name": "root",
   "private": true,
-  "workspaces": [
-    "packages/api-client",
-    "packages/react-components",
-    "packages/rmf-models"
-  ],
   "scripts": {},
   "devDependencies": {
     "husky": "^4.3.0",
+    "lerna": "^4.0.0",
     "lint-staged": "^10.4.0",
     "prettier": "^2.1.2"
   },
@@ -25,8 +21,5 @@
       "python3 -m pipenv run isort",
       "python3 -m pipenv run black"
     ]
-  },
-  "dependencies": {
-    "socket.io-client": "^3.1.3"
   }
 }

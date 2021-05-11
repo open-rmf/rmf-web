@@ -1,8 +1,8 @@
 {
-  "name": "typescript-test",
+  "name": "ros-translator",
   "version": "0.0.0",
   "private": true,
-  "description": "",
+  "description": "dummy package",
   "main": "index.js",
   "scripts": {
     "test": "bash -c './test.sh'"
