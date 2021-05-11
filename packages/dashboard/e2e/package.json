@@ -19,6 +19,7 @@
     "@wdio/spec-reporter": "^6.4.7",
     "@wdio/sync": "^6.5.0",
     "chromedriver": "^85",
+    "rmf-dashboard": "*",
     "serve": "^11.3.2",
     "wdio-chromedriver-service": "^6.0.4"
   }
