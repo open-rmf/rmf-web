@@ -3,6 +3,7 @@
     "packages/api-client",
     "packages/api-server",
     "packages/dashboard",
+    "packages/dashboard/e2e",
     "packages/react-components",
     "packages/reporting",
     "packages/reporting-server",
