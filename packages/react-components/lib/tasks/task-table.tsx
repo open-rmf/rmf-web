@@ -44,6 +44,7 @@ const useStyles = makeStyles((theme) => ({
   },
   tablePagination: {
     flex: '0 0 auto',
+    borderBottom: 'none',
   },
 }));
 

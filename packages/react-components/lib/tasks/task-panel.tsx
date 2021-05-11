@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
 function NoSelectedTask() {
   return (
     <Grid container wrap="nowrap" alignItems="center" style={{ height: '100%' }}>
-      <Typography variant="h6" align="center" color="textSecondary">
+      <Typography variant="h6" align="center">
         Click on a task to view more information
       </Typography>
     </Grid>
