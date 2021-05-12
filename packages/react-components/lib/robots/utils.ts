@@ -29,3 +29,48 @@ export function robotModeToString(robotMode: RmfModels.RobotMode): string {
       return `Unknown (${robotMode.mode})`;
   }
 }
+
+export interface VerboseRobot {
+  name: string;
+  model: string;
+  task_id: string;
+  seq: number;
+  mode: RmfModels.RobotMode;
+  battery_percent: number;
+  location: RmfModels.Location;
+  path: RmfModels.Location[];
+  assigned_tasks: RmfModels.TaskSummary[];
+}
+
+function makeVerboseRobot(
+  robot: RmfModels.RobotState,
+  assignedTasks: RmfModels.TaskSummary[],
+): VerboseRobot {
+  const { name, model, task_id, seq, mode, battery_percent, location, path } = robot;
+  return {
+    name,
+    model,
+    task_id,
+    seq,
+    mode,
+    battery_percent,
+    location,
+    path,
+    assigned_tasks: assignedTasks,
+  };
+}
+
+export function allocateTasksToRobots(
+  robots: RmfModels.RobotState[],
+  tasks: RmfModels.TaskSummary[],
+): VerboseRobot[] {
+  const robotsWithAssignedTasks = robots.map((robot) => {
+    const assignedTasks = tasks.filter((task) => {
+      if (task.robot_name == robot.name) {
+        return task;
+      }
+    });
+    return makeVerboseRobot(robot, assignedTasks);
+  });
+  return robotsWithAssignedTasks;
+}

@@ -30,6 +30,38 @@ export function makeRobot(robotState?: Partial<RmfModels.RobotState>): RmfModels
   };
 }
 
+function randomNumber(decimal: number): number {
+  const r = Math.round(Math.random() * decimal);
+  return r;
+}
+
+export function createLocation(level_name: string): RmfModels.Location {
+  return {
+    t: { sec: 0, nanosec: 0 },
+    x: randomNumber(10),
+    y: randomNumber(10),
+    yaw: randomNumber(10),
+    level_name: level_name,
+    index: randomNumber(10),
+  };
+}
+
+export function makeRandomRobot(name: string, model: string, mode: number): RmfModels.RobotState {
+  const task_id = randomNumber(1000);
+  const battery_percent = randomNumber(100);
+
+  return {
+    name: name,
+    model: model,
+    task_id: task_id.toString(),
+    seq: 1,
+    mode: { mode: mode, mode_request_id: 0 },
+    battery_percent: battery_percent,
+    location: createLocation('Level_1'),
+    path: [],
+  };
+}
+
 export function makeTrajectory(traj?: Partial<Trajectory>): Trajectory {
   return {
     id: 0,
