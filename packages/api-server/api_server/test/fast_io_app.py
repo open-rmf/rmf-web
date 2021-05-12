@@ -1,6 +1,7 @@
 import pydantic
-from api_server.fast_io import FastIO, FastIORouter
 from rx.subject import Subject
+
+from api_server.fast_io import FastIO, FastIORouter
 
 app = FastIO()
 router = FastIORouter()
@@ -8,6 +9,7 @@ router_with_prefix = FastIORouter(prefix="/router_with_prefix")
 router_include_with_prefix = FastIORouter()
 router_both_prefix = FastIORouter(prefix="/router_both_prefix")
 target = Subject()
+target_no_sticky = Subject()
 target_with_prefix = Subject()
 target_include_with_prefix = Subject()
 target_both_prefix = Subject()
@@ -25,6 +27,18 @@ def router_watch_availability(rental: dict):
 @router.post("/video_rental/return_video")
 def router_post_return_video(return_video: ReturnVideo):
     target.on_next({"film": return_video.film_title, "available": True})
+
+
+@router.watch(
+    "/no_sticky/video_rental/{film_title}/available", target_no_sticky, sticky=False
+)
+def router_no_sticky_watch_availability(rental: dict):
+    return {"film_title": rental["film"]}, rental
+
+
+@router.post("/no_sticky/video_rental/return_video")
+def router_post_return_video(return_video: ReturnVideo):
+    target_no_sticky.on_next({"film": return_video.film_title, "available": True})
 
 
 @router_with_prefix.watch("/video_rental/{film_title}/available", target_with_prefix)

@@ -22,6 +22,7 @@ class Watch:
     target: Observable
     prefix: str
     path: str
+    sticky: bool
     on_subscribe: Callable[[str], Any]
     on_data: Callable[[Any], Any]
 
@@ -83,12 +84,24 @@ class FastIORouter(APIRouter):
                     target=watch.target,
                     prefix=prefix + watch.prefix,
                     path=prefix + watch.path,
+                    sticky=watch.sticky,
                     on_subscribe=watch.on_subscribe,
                     on_data=watch.on_data,
                 )
             )
 
-    def watch(self, path: str, target: Observable, *args, **kwargs):
+    def watch(self, path: str, target: Observable, *args, sticky=True, **kwargs):
+        """
+        Registers a socket.io and rest GET endpoint. The decorated function should
+        take in the event from the target observable and returns either `None` or a
+        tuple containing a dict of the path parameters that the event should be
+        bind to and the response. The response must be a dict or a pydantic model.
+
+        :param sticky: If true, the socket.io endpoint will automatically send the
+        latest event to new clients and the generated GET endpoint will return the
+        latest event. If false, a GET endpoint will still be generated but it will
+        always return 422 error, this is useful for documentation purposes.
+        """
         get_deco = super().get(path, *args, **kwargs)
 
         def decorator(func: DecoratedCallable) -> DecoratedCallable:
@@ -117,12 +130,15 @@ class FastIORouter(APIRouter):
                 target=target,
                 prefix=self.prefix,
                 path=self.prefix + path,
+                sticky=sticky,
                 on_subscribe=on_subscribe,
                 on_data=on_data,
             )
             self.watches.append(watch)
 
             def get_func(**path_params):
+                if not sticky:
+                    raise HTTPException(422, "only available in socket.io")
                 room_id, _ = replace_params(path, convertors, path_params)
                 try:
                     return room_data[room_id]
@@ -130,7 +146,12 @@ class FastIORouter(APIRouter):
                     raise HTTPException(404) from e
 
             get_func.__name__ = func.__name__
-            get_func.__doc__ = "available in socket.io\n\n" + (func.__doc__ or "")
+            if sticky:
+                get_func.__doc__ = "Available in socket.io.\n\n" + (func.__doc__ or "")
+            else:
+                get_func.__doc__ = "ONLY available in socket.io.\n\n" + (
+                    func.__doc__ or ""
+                )
             params = [
                 inspect.Parameter(
                     "req", inspect.Parameter.KEYWORD_ONLY, annotation=Request
@@ -242,6 +263,8 @@ class FastIO(socketio.ASGIApp):
             return
 
         await self.sio.emit("subscribe", {"success": True}, sid)
+        if not watch.sticky:
+            return
         stripped_path = path[len(watch.prefix) :]
         current = watch.on_subscribe(stripped_path)
         if current is None:
