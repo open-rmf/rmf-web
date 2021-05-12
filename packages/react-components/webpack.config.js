@@ -16,6 +16,7 @@ const coverageRule = {
 module.exports = (options) => {
   return {
     mode: options.env,
+    devtool: 'inline-source-map',
 
     /**
      * Options affecting the resolving of modules.
@@ -39,6 +40,11 @@ module.exports = (options) => {
         {
           test: /\.(tsx|ts)$/,
           loader: 'ts-loader',
+          options: {
+            compilerOptions: {
+              sourceMap: true,
+            },
+          },
         },
         {
           test: /\.(woff|woff2|eot|ttf|otf|svg)$/,
