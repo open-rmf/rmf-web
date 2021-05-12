@@ -68,6 +68,8 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   const negotiationColors = React.useMemo(() => new NegotiationColors(), []);
 
   const authenticator = React.useContext(AppConfigContext).authenticator;
+  const themeContext = React.useContext(SettingsContext).themeMode;
+  const themeClasses = decideThemeStyle(themeContext);
 
   const mapFloorLayerSorted = React.useMemo(
     () =>
@@ -78,9 +80,6 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   );
 
   const classes = useStyles();
-
-  const themeContext = React.useContext(SettingsContext).themeMode;
-  const themeClasses = decideThemeStyle(themeContext);
 
   const [mapFloorLayers, setMapFloorLayers] = React.useState<
     Readonly<Record<string, MapFloorLayer>>
@@ -237,6 +236,8 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
 
   if (ref.current) {
     ref.current.leafletElement.setZIndex(0);
+    const img = ref.current.leafletElement.getElement();
+    img?.classList.add(themeClasses.map);
   }
 
   React.useEffect(() => {

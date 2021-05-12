@@ -9,6 +9,10 @@ const darkThemeStyles = makeStyles((theme) => ({
   background: {
     backgroundColor: theme.palette.secondary.dark,
   },
+  map: {
+    filter:
+      'invert(90%) sepia(12%) saturate(5773%) hue-rotate(193deg) brightness(92%) contrast(92%)',
+  },
 }));
 
 const lightThemeStyles = makeStyles((theme) => ({
@@ -18,6 +22,9 @@ const lightThemeStyles = makeStyles((theme) => ({
   },
   background: {
     backgroundColor: theme.palette.secondary.main,
+  },
+  map: {
+    // use original img
   },
 }));
 
