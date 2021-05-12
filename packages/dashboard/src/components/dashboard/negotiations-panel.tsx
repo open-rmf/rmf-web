@@ -57,6 +57,15 @@ const useStyles = makeStyles((theme) => ({
   buttonGroupDiv: {
     padding: '0.5rem 1rem',
   },
+  button: {
+    borderColor: theme.palette.success.main,
+  },
+  disabledButton: {
+    '&.Mui-disabled': {
+      color: colorPalette.disabled,
+      borderColor: colorPalette.disabled,
+    },
+  },
 }));
 
 interface Parameter {
@@ -67,6 +76,7 @@ interface Parameter {
 
 export interface NegotiationsPanelProps {
   conflicts: Record<string, NegotiationConflict>;
+  componentTheme?: string;
   spotlight?: SpotlightValue<string>;
   mapFloorLayerSorted?: string[];
   negotiationStatusManager?: Readonly<NegotiationStatusManager>;
@@ -81,6 +91,7 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
   debug('negotiation status panel render');
   const {
     conflicts,
+    componentTheme,
     spotlight,
     mapFloorLayerSorted,
     negotiationStatusManager,
@@ -360,6 +371,8 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
             id="reset-button"
             disabled={conflicts && Object.keys(conflicts).length === 0}
             onClick={handleResetNegotiations}
+            className={`${componentTheme} ${classes.button}`}
+            classes={{ disabled: classes.disabledButton }}
           >
             <RestoreIcon />
             Reset
@@ -368,6 +381,8 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
             id="clear-button"
             disabled={conflicts && Object.keys(conflicts).length === 0}
             onClick={handleClearAllCurrNegotiations}
+            className={`${componentTheme} ${classes.button}`}
+            classes={{ disabled: classes.disabledButton }}
           >
             <ClearAllIcon />
             Clear
@@ -376,6 +391,8 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
             id="restore-button"
             disabled={conflicts && Object.keys(conflicts).length === 0}
             onClick={handleRestoreNegotiations}
+            className={`${componentTheme} ${classes.button}`}
+            classes={{ disabled: classes.disabledButton }}
           >
             <RestoreFromTrashIcon />
             Restore

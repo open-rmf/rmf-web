@@ -389,6 +389,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
           <OmniPanelView viewId={OmniPanelViewIndex.Negotiations}>
             <NegotiationsPanel
               conflicts={negotiationStatus}
+              componentTheme={themeClasses.components}
               spotlight={negotiationSpotlight}
               mapFloorLayerSorted={mapFloorLayerSorted}
               negotiationStatusManager={negotiationStatusManager}
