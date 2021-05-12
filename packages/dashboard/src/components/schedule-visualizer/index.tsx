@@ -278,10 +278,9 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     }
   }, [curMapFloorLayer, trajectories]);
 
-  const negoTrajs = React.useMemo(
-    () => (negotiationTrajStore[curLevelName] ? negotiationTrajStore[curLevelName].values : []),
-    [negotiationTrajStore, curLevelName],
-  );
+  const negoTrajs = negotiationTrajStore[curLevelName]
+    ? negotiationTrajStore[curLevelName].values
+    : [];
 
   return (
     <LMap
