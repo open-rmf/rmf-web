@@ -44,6 +44,7 @@ export default function App(): JSX.Element | null {
   const [authInitialized, setAuthInitialized] = React.useState(!!appConfig.authenticator.user);
   const [authenticator, setAuthenticator] = React.useState(appConfig.authenticator);
   const [user, setUser] = React.useState<User | null>(appConfig.authenticator.user || null);
+  const [ws, setWs] = React.useState<WebSocket>(new WebSocket(appConfig.trajServerUrl));
   const appRoutes = [DASHBOARD_ROUTE, TASKS_ROUTE];
   const [tabValue, setTabValue] = React.useState<TabValue | null>(() =>
     locationToTabValue(window.location.pathname),
@@ -56,6 +57,10 @@ export default function App(): JSX.Element | null {
 
   const onTokenExpired = () => setAuthenticator(appConfig.authenticator);
   authenticator.on('tokenRefresh', onTokenExpired);
+
+  React.useEffect(() => {
+    setWs(new WebSocket(appConfig.trajServerUrl));
+  }, [setWs]);
 
   React.useEffect(() => {
     if (user) {
@@ -96,7 +101,7 @@ export default function App(): JSX.Element | null {
       <ResourcesContext.Provider value={resourceManager.current}>
         <AuthenticatorContext.Provider value={authenticator}>
           <UserContext.Provider value={user}>
-            <TrajectorySocketContext.Provider value={new WebSocket(appConfig.trajServerUrl)}>
+            <TrajectorySocketContext.Provider value={ws}>
               <ThemeProvider theme={theme}>
                 <BrowserRouter>
                   <Switch>
