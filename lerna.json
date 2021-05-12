@@ -16,7 +16,7 @@
   "command": {
     "bootstrap": {
       "hoist": true,
-      "include-dependencies": true
+      "includeDependencies": true
     }
   }
 }
