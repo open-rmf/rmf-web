@@ -28,7 +28,7 @@ jobs:
           npm config set unsafe-perm
           . /opt/rmf/setup.bash
           npm install -g lerna@4
-          lerna bootstrap --hoist --include-dependencies --scope=api-server
+          lerna bootstrap --scope=api-server
         working-directory: .
       - name: tests
         run: |

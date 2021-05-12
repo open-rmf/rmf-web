@@ -30,7 +30,7 @@ jobs:
           pip3 install pipenv
           npm config set unsafe-perm
           npm install -g lerna@4
-          lerna bootstrap --hoist --include-dependencies --scope=ros-translator
+          lerna bootstrap --scope=ros-translator
         working-directory: .
       - name: test
         run: . /opt/ros/foxy/setup.bash && npm test

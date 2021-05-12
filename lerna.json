@@ -1,4 +1,5 @@
 {
+  "version": "0.0.0",
   "packages": [
     "packages/api-client",
     "packages/api-server",
@@ -12,5 +13,10 @@
     "packages/ros-translator",
     "pipenv-install"
   ],
-  "version": "0.0.0"
+  "command": {
+    "bootstrap": {
+      "hoist": true,
+      "include-dependencies": true
+    }
+  }
 }

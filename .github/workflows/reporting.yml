@@ -31,7 +31,7 @@ jobs:
           . /opt/rmf/setup.bash
           npm config set unsafe-perm
           npm install -g lerna@4
-          lerna bootstrap --hoist --include-dependencies --scope=reporting
+          lerna bootstrap --scope=reporting
         working-directory: .
       - name: build
         run: npm run build:storybook && npm run build

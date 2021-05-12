@@ -27,7 +27,7 @@ jobs:
           pip3 install pipenv
           npm config set unsafe-perm
           npm install -g lerna@4
-          lerna bootstrap --hoist --include-dependencies --scope=react-components
+          lerna bootstrap --scope=react-components
         working-directory: .
       - name: test build storybook
         run: npm run build:storybook
