@@ -10,6 +10,7 @@ from models.lift_state import LiftState_Pydantic
 from models.raw_log import RawLog_Pydantic
 from rest_server.repositories.report import (
     get_all_raw_logs,
+    get_containers,
     get_dispenser_state,
     get_door_state,
     get_fleet_state,
@@ -28,11 +29,19 @@ async def raw_logs_report(
     toLogDate: Optional[str] = None,
     fromLogDate: Optional[str] = None,
     logLevel: Optional[str] = None,
+    containerLabel: Optional[str] = None,
     offset: Optional[int] = 0,
     limit: Optional[int] = LIMIT,
 ):
 
-    return await get_all_raw_logs(offset, limit, toLogDate, fromLogDate, logLevel)
+    return await get_all_raw_logs(
+        offset, limit, toLogDate, fromLogDate, logLevel, containerLabel
+    )
+
+
+@router.get("/raw_logs/containers", tags=["raw_logs_get_containers"])
+async def raw_logs_get_containers():
+    return await get_containers()
 
 
 @router.get(

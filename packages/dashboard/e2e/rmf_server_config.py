@@ -8,4 +8,8 @@ config["jwt_public_key"] = "certs/keycloak.pub"
 config[
     "oidc_url"
 ] = "http://localhost:8088/auth/realms/master/.well-known/openid-configuration"
-config["client_id"] = "rmf-dashboard"
+config["aud"] = "rmf-dashboard"
+if "CI" in os.environ:
+    config["iss"] = "http://rmf-web_keycloak_1:8080/auth/realms/master"
+else:
+    config["iss"] = "http://localhost:8088/auth/realms/master"

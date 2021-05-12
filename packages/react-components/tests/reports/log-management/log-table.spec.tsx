@@ -20,6 +20,7 @@ for (let i = 0; i < 110; i++) {
     message: 'Test' + i,
     level: getRandomLogLevel().toUpperCase(),
     created: timestamp,
+    container_name: 'container',
   });
 }
 

@@ -56,3 +56,5 @@ export interface AppContent {
   tabNames: string[];
 }
 export const AppContentContext = React.createContext<AppContent>({ tabNames: ['Building'] });
+
+export const TrajectorySocketContext = React.createContext<WebSocket | undefined>(undefined);

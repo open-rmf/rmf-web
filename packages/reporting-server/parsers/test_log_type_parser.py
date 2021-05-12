@@ -10,22 +10,28 @@ class TestCaseLogTypeParserCase(unittest.TestCase):
         pass
 
     def test_warning_messages(self):
-        self.assertEqual(get_log_type("this is a Warn"), LogLevel.WARN)
-        self.assertEqual(get_log_type("WARN:"), LogLevel.WARN)
-        self.assertEqual(get_log_type("WARNING:"), LogLevel.WARN)
-        self.assertEqual(get_log_type("warn"), LogLevel.WARN)
+        self.assertEqual(get_log_type("this is a Warn", "stdout"), LogLevel.WARN)
+        self.assertEqual(get_log_type("WARN:", "stdout"), LogLevel.WARN)
+        self.assertEqual(get_log_type("WARNING:", "stdout"), LogLevel.WARN)
+        self.assertEqual(get_log_type("warn", "stdout"), LogLevel.WARN)
 
     def test_error_messages(self):
-        self.assertEqual(get_log_type("this is an Error"), LogLevel.ERROR)
-        self.assertEqual(get_log_type("ERROR:"), LogLevel.ERROR)
-        self.assertEqual(get_log_type("error"), LogLevel.ERROR)
+        self.assertEqual(get_log_type("this is an Error", "stdout"), LogLevel.ERROR)
+        self.assertEqual(get_log_type("ERROR:", "stdout"), LogLevel.ERROR)
+        self.assertEqual(get_log_type("error", "stdout"), LogLevel.ERROR)
+        self.assertEqual(
+            get_log_type("normal test with problems", "stderr"), LogLevel.ERROR
+        )
 
     def test_debug_messages(self):
-        self.assertEqual(get_log_type("this is a Debug msg"), LogLevel.DEBUG)
-        self.assertEqual(get_log_type("DEBUG:"), LogLevel.DEBUG)
-        self.assertEqual(get_log_type("debug"), LogLevel.DEBUG)
+        self.assertEqual(get_log_type("this is a Debug msg", "stdout"), LogLevel.DEBUG)
+        self.assertEqual(get_log_type("DEBUG:", "stdout"), LogLevel.DEBUG)
+        self.assertEqual(get_log_type("debug", "stdout"), LogLevel.DEBUG)
+        self.assertEqual(
+            get_log_type("This is a random text", "stdout"), LogLevel.DEBUG
+        )
 
     def test_info_messages(self):
-        self.assertEqual(get_log_type("this is an Info msg"), LogLevel.INFO)
-        self.assertEqual(get_log_type("INFO:"), LogLevel.INFO)
-        self.assertEqual(get_log_type("info"), LogLevel.INFO)
+        self.assertEqual(get_log_type("this is an Info msg", "stdout"), LogLevel.INFO)
+        self.assertEqual(get_log_type("INFO:", "stdout"), LogLevel.INFO)
+        self.assertEqual(get_log_type("info", "stdout"), LogLevel.INFO)

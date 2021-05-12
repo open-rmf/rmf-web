@@ -1,7 +1,6 @@
 import { MessageType, Topic } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import appConfig from '../../app-config';
 import RmfHealthStateManager from '../../managers/rmf-health-state-manager';
 import {
   DefaultTrajectoryManager,
@@ -22,6 +21,7 @@ import {
 } from './contexts';
 import { Place } from './place';
 import { RmfIngress } from './rmf-ingress';
+import { TrajectorySocketContext, AppConfigContext } from '../app-contexts';
 
 function rmfStateContextProviderHOC<TopicT extends Topic>(
   topic: TopicT,
@@ -141,18 +141,20 @@ function NegotiationContextsProvider(props: React.PropsWithChildren<{}>): JSX.El
     negotiationStatusManager?.allConflicts() || {},
   );
 
+  const authenticator = React.useContext(AppConfigContext).authenticator;
+
   React.useEffect(() => {
     if (!negotiationStatusManager) {
       return;
     }
-    negotiationStatusManager.startSubscription();
+    negotiationStatusManager.startSubscription(authenticator.token);
     const onUpdated = () => setNegotiationStatus(negotiationStatusManager.allConflicts());
     negotiationStatusManager.on('updated', onUpdated);
 
     return () => {
       negotiationStatusManager.off('updated', onUpdated);
     };
-  }, [negotiationStatusManager]);
+  }, [negotiationStatusManager, authenticator]);
 
   return (
     <NegotiationStatusContext.Provider value={negotiationStatus}>
@@ -173,14 +175,16 @@ function RmfHealthContextsProvider(props: React.PropsWithChildren<{}>): JSX.Elem
 
 function RmfIngressProvider(props: React.PropsWithChildren<{}>) {
   const user = React.useContext(UserContext);
+  const ws = React.useContext(TrajectorySocketContext);
+  const authenticator = React.useContext(AppConfigContext).authenticator;
   const [trajMgr, setTrajMgr] = React.useState<RobotTrajectoryManager | undefined>(undefined);
   React.useEffect(() => {
     (async () => {
-      setTrajMgr(await DefaultTrajectoryManager.create(appConfig.trajServerUrl));
+      if (ws) setTrajMgr(new DefaultTrajectoryManager(ws, authenticator));
     })();
-  }, []);
+  }, [ws, authenticator]);
 
-  const rmfIngress = React.useMemo(() => new RmfIngress(user, trajMgr), [user, trajMgr]);
+  const rmfIngress = React.useMemo(() => new RmfIngress(user, trajMgr, ws), [user, trajMgr, ws]);
   return (
     <RmfIngressContext.Provider value={rmfIngress}>{props.children}</RmfIngressContext.Provider>
   );

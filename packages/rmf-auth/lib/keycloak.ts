@@ -15,7 +15,7 @@ export default class KeycloakAuthenticator
   }
 
   get token(): string | undefined {
-    return this._inst.idToken;
+    return this._inst.token;
   }
 
   constructor(config: AuthConfig, redirectUri?: string) {
@@ -36,7 +36,7 @@ export default class KeycloakAuthenticator
       this._user = {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         username: (this._inst.idTokenParsed as any).preferred_username,
-        token: this._inst.idToken || '',
+        token: this._inst.token || '',
       };
       debug('authenticated as', this._user.username);
       this.emit('userChanged', this._user);
@@ -57,15 +57,33 @@ export default class KeycloakAuthenticator
       const refreshed = await this._inst.updateToken(30);
       refreshed && debug('token refreshed');
     } catch {
-      debug('token no refreshed');
+      debug('token not refreshed');
     }
 
-    this._user = this._inst.idTokenParsed && {
+    this._user = this._inst.tokenParsed && {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       username: (this._inst.idTokenParsed as any).preferred_username,
-      token: this._inst.idToken || '',
+      token: this._inst.token || '',
     };
     this._initialized = true;
+  }
+
+  async refreshToken(): Promise<void> {
+    // check and update the token 5 seconds prior to expiry
+    if (this._initialized) {
+      const refreshed = await this._inst.updateToken(5);
+      if (refreshed) {
+        this._user = {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          username: (this._inst.idTokenParsed as any).preferred_username,
+          token: this._inst.token || '',
+        };
+        this.emit('tokenRefresh', null);
+      } else {
+        debug('token not refreshed');
+      }
+    }
+    return;
   }
 
   async login(successRedirectUri: string): Promise<never> {

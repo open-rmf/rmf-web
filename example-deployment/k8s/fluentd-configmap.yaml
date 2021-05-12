@@ -21,12 +21,13 @@ data:
       path /var/log/containers/*.log
       pos_file /var/log/fluent/fluentd-rmf-all.log.pos
       exclude_path ["/var/log/containers/fluent*"]
-      <parse>
-        @type kubernetes
-        @type "#{ENV['FLUENT_CONTAINER_TAIL_PARSER_TYPE'] || 'json'}"
-        time_format %Y-%m-%dT%H:%M:%S.%NZ
-      </parse>
+      format json
+      time_format %Y-%m-%dT%H:%M:%S.%NZ
     </source>
+
+    <filter rmf.all.**>
+      @type kubernetes_metadata
+    </filter>
 
     <source>
       @type tail
@@ -132,9 +133,5 @@ data:
       <buffer>
         flush_interval 10s
       </buffer>
-      <auth>
-        method basic
-        username "#{ENV['FLUENTD_USER']}"
-        password "#{ENV['FLUENTD_PASSWORD']}"
-      </auth>
     </match>
+    

@@ -17,8 +17,19 @@ async def create_raw_log(logs: list):
                 if "log" not in log:
                     continue
 
-                log_level = get_log_type(log["log"])
-                await RawLog.create(level=log_level, payload=log, message=log["log"])
+                log_level = get_log_type(log["log"], log["stream"])
+
+                if "kubernetes" in log and "container_name" in log["kubernetes"]:
+                    await RawLog.create(
+                        level=log_level,
+                        payload=log,
+                        message=log["log"],
+                        container_name=log["kubernetes"]["container_name"],
+                    )
+                else:
+                    await RawLog.create(
+                        level=log_level, payload=log, message=log["log"]
+                    )
 
             elif isinstance(log, str):
                 if log.isspace():

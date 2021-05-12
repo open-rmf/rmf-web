@@ -15,7 +15,7 @@ export interface LoginBaseProps {
 export const LoginBase = (props: LoginBaseProps): JSX.Element => {
   const { successRedirectUri, authenticator, title } = props;
 
-  async function handleRmfLogin(_event: React.MouseEvent): Promise<void> {
+  async function handleRmfLogin(): Promise<void> {
     authenticator.login(successRedirectUri);
   }
 

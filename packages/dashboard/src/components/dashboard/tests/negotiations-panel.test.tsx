@@ -179,7 +179,7 @@ it('should set disabled to true on buttons when empty conflicts is provided', ()
 
 it('tests negotiation status manager', () => {
   let negotiationStatusManager: NegotiationStatusManager;
-  negotiationStatusManager = new NegotiationStatusManager('');
+  negotiationStatusManager = new NegotiationStatusManager(undefined);
 
   let conflicts = negotiationStatusManager.allConflicts();
   expect(conflicts).toBeDefined();

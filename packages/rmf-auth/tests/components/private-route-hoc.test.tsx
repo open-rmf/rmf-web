@@ -2,7 +2,7 @@ import { cleanup, render, waitFor } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
 import { BrowserRouter, Redirect, Route, Router, Switch, useLocation } from 'react-router-dom';
-import { Authenticator, PrivateRouteHOC, User } from '../../lib';
+import { PrivateRouteHOC, User } from '../../lib';
 
 describe('PrivateRoute', () => {
   let history: MemoryHistory;
