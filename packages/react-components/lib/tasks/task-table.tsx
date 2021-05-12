@@ -143,11 +143,11 @@ export function TaskTable({
         <Table className={classes.table} stickyHeader size="small" style={{ tableLayout: 'fixed' }}>
           <TableHead>
             <TableRow>
-              <TableCell>Task Id</TableCell>
-              <TableCell>Assignee</TableCell>
-              <TableCell>Start Time</TableCell>
-              <TableCell>End Time</TableCell>
-              <TableCell>State</TableCell>
+              <TableCell className={componentTheme}>Task Id</TableCell>
+              <TableCell className={componentTheme}>Assignee</TableCell>
+              <TableCell className={componentTheme}>Start Time</TableCell>
+              <TableCell className={componentTheme}>End Time</TableCell>
+              <TableCell className={componentTheme}>State</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
