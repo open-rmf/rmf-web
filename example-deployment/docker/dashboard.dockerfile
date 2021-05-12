@@ -3,7 +3,7 @@ COPY . /root/rmf-web
 SHELL ["bash", "-c"]
 
 RUN . /opt/rmf/setup.bash && npm config set unsafe-perm && cd /root/rmf-web && \
-  CI=1 npm run bootstrap -- packages/dashboard
+  CI=1 npm install -g lerna@4 && lerna bootstrap --scope=rmf-dashboard
 
 RUN cd /root/rmf-web/packages/dashboard && \
   PUBLIC_URL='/dashboard' \

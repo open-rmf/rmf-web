@@ -10,7 +10,7 @@ COPY . /root/rmf-web
 SHELL ["bash", "-c"]
 
 RUN npm config set unsafe-perm && cd /root/rmf-web && \
-  CI=1 npm run bootstrap -- packages/reporting
+  CI=1 npm install -g lerna@4 && lerna bootstrap --scope=reporting
 
 RUN cd /root/rmf-web/packages/reporting && \
   PUBLIC_URL='/reporting' \
