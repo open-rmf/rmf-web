@@ -42,12 +42,12 @@ module.exports = (config) => {
     webpack: testWebpackConfig,
 
     // Webpack please don't spam the console when running in karma!
-    // webpackMiddleware: {
-    //   quiet: true,
-    //   stats: {
-    //     colors: true,
-    //   },
-    // },
+    webpackMiddleware: {
+      quiet: true,
+      stats: {
+        colors: true,
+      },
+    },
 
     coverageReporter: {
       dir: '.',
