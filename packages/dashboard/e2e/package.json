@@ -11,16 +11,17 @@
     "test": "node scripts/test-e2e.js",
     "test:dev": "E2E_DASHBOARD_URL=http://localhost:3000 RMF_LAUNCH_MODE=none wdio"
   },
-  "dependencies": {
+  "devDependencies": {
     "@types/mocha": "^8.0.3",
-    "@wdio/cli": "^6.5.2",
-    "@wdio/local-runner": "^6.5.2",
-    "@wdio/mocha-framework": "^6.5.0",
-    "@wdio/spec-reporter": "^6.4.7",
-    "@wdio/sync": "^6.5.0",
-    "chromedriver": "^85",
+    "@wdio/cli": "6.12.1",
+    "@wdio/local-runner": "6.12.1",
+    "@wdio/mocha-framework": "6.11.0",
+    "@wdio/spec-reporter": "6.11.0",
+    "@wdio/sync": "6.11.0",
+    "chromedriver": "*",
     "rmf-dashboard": "*",
     "serve": "^11.3.2",
+    "ts-node": "^9.1.1",
     "wdio-chromedriver-service": "^6.0.4"
   }
 }
