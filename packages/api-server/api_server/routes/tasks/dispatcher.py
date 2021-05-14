@@ -1,25 +1,28 @@
-from typing import List, Sequence
+from typing import List, Optional
 
 from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
-from rmf_task_msgs.srv import CancelTask, GetTaskList, SubmitTask
-from rosidl_runtime_py.convert import message_to_ordereddict
+from rmf_task_msgs.srv import CancelTask as RmfCancelTask
+from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
+
+from api_server.repositories.rmf import RmfRepository
 
 from ... import models as mdl
 from ...gateway import RmfGateway
-from ...models.tasks import TaskProgress
+from ...models.tasks import TaskProgress, TaskSummary
 
 
 class DispatcherClient:
-    def __init__(self, rmf_gateway: RmfGateway):
+    def __init__(self, rmf_repo: RmfRepository, rmf_gateway: RmfGateway):
+        self.rmf_repo = rmf_repo
         self.rmf_gateway = rmf_gateway
 
-    async def submit_task_request(self, req_msg: SubmitTask.Request):
+    async def submit_task_request(self, req_msg: RmfSubmitTask.Request):
         """
         Task Submission - This function will trigger a ros srv call to the
         dispatcher node, and return a response. Function will return a Task ID.
         Raises "HTTPException" if service call fails.
         """
-        resp: SubmitTask.Response = await self.rmf_gateway.call_service(
+        resp: RmfSubmitTask.Response = await self.rmf_gateway.call_service(
             self.rmf_gateway.submit_task_srv, req_msg
         )
         return resp
@@ -31,60 +34,38 @@ class DispatcherClient:
             sim_time = None
         return sim_time
 
-    async def get_task_status(self) -> List[TaskProgress]:
-        """
-        Get all task status - This fn will trigger a ros srv call to acquire
-        all submitted tasks to dispatcher node. Fn returns an object of tasks.
-        Raises "HTTPException" if service call fails.
-        """
-        req = GetTaskList.Request()
-        response = await self.rmf_gateway.call_service(
-            self.rmf_gateway.get_tasks_srv, req
-        )
-        return [
-            *self.__convert_task_status_msg(response.active_tasks),
-            *self.__convert_task_status_msg(response.terminated_tasks),
-        ]
-
     async def cancel_task_request(self, task: mdl.CancelTask) -> bool:
         """
         Cancel Task - This function will trigger a ros srv call to the
         dispatcher node, and return a response.
         Raises "HTTPException" if service call fails.
         """
-        req = CancelTask.Request()
+        req = RmfCancelTask.Request()
         req.task_id = task.task_id
         response = await self.rmf_gateway.call_service(
             self.rmf_gateway.cancel_task_srv, req
         )
         return response.success
 
-    def __convert_task_status_msg(self, task_summaries: Sequence[RmfTaskSummary]):
+    def convert_task_status_msg(self, task_summary: TaskSummary) -> TaskProgress:
         """
         convert rmf task summary msg to a task
         """
-        tasks = []
         now = self.rmf_gateway.get_clock().now().to_msg().sec  # only use sec
-        for rmf_task in task_summaries:
-            # Generate a progress percentage
-            duration = abs(rmf_task.end_time.sec - rmf_task.start_time.sec)
-            # check if is completed
-            if rmf_task.state == RmfTaskSummary.STATE_COMPLETED:
-                progress = "100%"
-            # check if it state is queued/cancelled
-            elif duration == 0 or (rmf_task.state in [0, 4]):
+        # Generate a progress percentage
+        duration = abs(task_summary.end_time.sec - task_summary.start_time.sec)
+        # check if is completed
+        if task_summary.state == RmfTaskSummary.STATE_COMPLETED:
+            progress = "100%"
+        # check if it state is queued/cancelled
+        elif duration == 0 or (task_summary.state in [0, 4]):
+            progress = "0%"
+        else:
+            percent = int(100 * (now - task_summary.start_time.sec) / float(duration))
+            if percent < 0:
                 progress = "0%"
+            elif percent > 100:
+                progress = "Delayed"
             else:
-                percent = int(100 * (now - rmf_task.start_time.sec) / float(duration))
-                if percent < 0:
-                    progress = "0%"
-                elif percent > 100:
-                    progress = "Delayed"
-                else:
-                    progress = f"{percent}%"
-            tasks.append(
-                TaskProgress(
-                    task_summary=message_to_ordereddict(rmf_task), progress=progress
-                )
-            )
-        return tasks
+                progress = f"{percent}%"
+        return TaskProgress(task_summary=task_summary, progress=progress)

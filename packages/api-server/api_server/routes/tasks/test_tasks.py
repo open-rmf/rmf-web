@@ -1,8 +1,10 @@
-from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
+import asyncio
+
 from rmf_task_msgs.msg import TaskType as RmfTaskType
 from rmf_task_msgs.srv import CancelTask as RmfCancelTask
-from rmf_task_msgs.srv import GetTaskList as RmfGetTaskList
 from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
+
+from api_server.models.tasks import TaskSummary
 
 from ...models import CancelTask, CleanTaskDescription, SubmitTask
 from ..test_fixtures import RouteFixture
@@ -37,13 +39,11 @@ class TestTasksRoute(RouteFixture):
         received: RmfCancelTask.Request = fut.result(3)
         self.assertEqual(received.task_id, "test_task")
 
-    def test_get_task_status(self):
-        self.host_service_one(
-            RmfGetTaskList,
-            "get_tasks",
-            RmfGetTaskList.Response(active_tasks=[RmfTaskSummary(task_id="test_task")]),
+    def test_get_tasks(self):
+        asyncio.get_event_loop().run_until_complete(
+            self.app.rmf_repo.save_task_summary(TaskSummary(task_id="test_task"))
         )
-        resp = self.session.get(f"{self.base_url}/tasks/get_tasks")
+        resp = self.session.get(f"{self.base_url}/tasks")
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
         self.assertEqual(len(resp_json), 1)

@@ -3,6 +3,8 @@ from typing import Callable, List, Optional
 from fastapi import Depends, HTTPException
 from fastapi.responses import JSONResponse
 
+from api_server.repositories.rmf import RmfRepository
+
 from ...fast_io import FastIORouter
 from ...gateway import RmfGateway
 from ...models import CancelTask, SubmitTask, SubmitTaskResponse, TaskProgress
@@ -13,6 +15,7 @@ from .dispatcher import DispatcherClient
 class TasksRouter(FastIORouter):
     def __init__(
         self,
+        rmf_repo: RmfRepository,
         rmf_gateway_dep: Callable[[], RmfGateway],
     ):
         super().__init__(tags=["Tasks"])
@@ -21,15 +24,23 @@ class TasksRouter(FastIORouter):
         def dispatcher_client_dep():
             nonlocal _dispatcher_client
             if _dispatcher_client is None:
-                _dispatcher_client = DispatcherClient(rmf_gateway_dep())
+                _dispatcher_client = DispatcherClient(rmf_repo, rmf_gateway_dep())
             return _dispatcher_client
 
-        @self.get("/get_tasks", response_model=List[TaskProgress])
+        @self.get("", response_model=List[TaskProgress])
         async def get_tasks(
             dispatcher_client: DispatcherClient = Depends(dispatcher_client_dep),
+            task_id: Optional[str] = None,
+            state: Optional[str] = None,
+            offset: int = 0,
         ):
-            tasks = await dispatcher_client.get_task_status()
-            return tasks
+            task_summaries = await rmf_repo.query_task_summaries(
+                task_id=task_id, state=state, offset=offset
+            )
+            return [
+                dispatcher_client.convert_task_status_msg(summary)
+                for summary in task_summaries
+            ]
 
         @self.post("/submit_task", response_model=SubmitTaskResponse)
         async def submit_task(

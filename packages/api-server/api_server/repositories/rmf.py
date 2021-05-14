@@ -28,6 +28,14 @@ class RmfRepository:
     tortoise-orm must be initialized before using any of the methods in this class.
     """
 
+    @staticmethod
+    def _build_filter_params(**queries: dict):
+        filter_params = {}
+        for k, v in queries.items():
+            if v is not None:
+                filter_params[k] = v
+        return filter_params
+
     async def get_bulding_map(self) -> Optional[BuildingMap]:
         building_map = await ttm.BuildingMap.first()
         if building_map is None:
@@ -221,10 +229,20 @@ class RmfRepository:
             return None
         return TaskSummary(**task_summary.data)
 
-    async def query_task_summaries(self, **queries) -> List[TaskSummary]:
+    async def query_task_summaries(
+        self,
+        *,
+        task_id: Optional[str] = None,
+        state: Optional[int] = None,
+        limit=100,
+        offset=0,
+    ) -> List[TaskSummary]:
+        filter_params = self._build_filter_params(task_id=task_id, state=state)
         return [
             TaskSummary(**task_summary.data)
-            for task_summary in await ttm.TaskSummary.filter(**queries)
+            for task_summary in await ttm.TaskSummary.filter(**filter_params)
+            .offset(offset)
+            .limit(limit)
         ]
 
     async def save_task_summary(self, task_summary: TaskSummary):

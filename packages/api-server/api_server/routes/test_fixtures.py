@@ -18,8 +18,8 @@ from ..test.server import BackgroundServer
 class RouteFixture(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        app = App(load_config(f"{os.path.dirname(__file__)}/test_config.py"))
-        cls.server = BackgroundServer(app)
+        cls.app = App(load_config(f"{os.path.dirname(__file__)}/test_config.py"))
+        cls.server = BackgroundServer(cls.app)
         cls.server.start()
         cls.base_url = cls.server.base_url
 
