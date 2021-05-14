@@ -66,7 +66,11 @@ export const AppBar = React.memo(
       <div>
         <HeaderBar theme={themeClasses.components}>
           <LogoButton logoPath={'/roshealth-logo-white.png'} />
-          <NavigationBar onTabChange={onTabChange} value={tabValue}>
+          <NavigationBar
+            onTabChange={onTabChange}
+            value={tabValue}
+            navBarTheme={themeClasses.headerTab}
+          >
             <Tab label="Building" value="building" aria-label="Building" />
             <Tab label="Tasks" value="tasks" aria-label="Tasks" />
           </NavigationBar>

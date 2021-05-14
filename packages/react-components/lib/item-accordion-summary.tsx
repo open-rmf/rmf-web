@@ -14,7 +14,7 @@ export interface ItemAccordionSummaryProps {
   statusProps?: StatusLabelProps;
 }
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   content: {
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -25,14 +25,20 @@ const useStyles = makeStyles({
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
   },
-});
+  expandIcon: {
+    color: theme.palette.success.main,
+  },
+}));
 
 export const ItemAccordionSummary = (props: ItemAccordionSummaryProps): JSX.Element => {
   const classes_ = useStyles();
   const { title, classes, statusProps } = props;
 
   return (
-    <AccordionSummary classes={{ content: classes_.content }} expandIcon={<ExpandMoreIcon />}>
+    <AccordionSummary
+      classes={{ content: classes_.content }}
+      expandIcon={<ExpandMoreIcon className={classes_.expandIcon} />}
+    >
       <Typography variant="h6" className={joinClasses(classes_.hideText, classes?.title)}>
         {title}
       </Typography>

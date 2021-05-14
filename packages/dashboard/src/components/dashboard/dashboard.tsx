@@ -331,6 +331,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                   doorState={doorStates[door.name]}
                   onDoorControlClick={handleOnDoorControlClick}
                   data-name={door.name}
+                  accordianTheme={themeClasses.accordian}
                 />
               ) : null;
             })}
@@ -346,6 +347,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                   lift={lift}
                   liftState={liftStates[lift.name]}
                   onRequestSubmit={handleLiftRequestSubmit}
+                  accordianTheme={themeClasses.accordian}
                 />
               ) : null;
             })}
@@ -362,6 +364,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                     robot={robot}
                     fleetName={fleet.name}
                     data-component="RobotAccordion"
+                    accordianTheme={themeClasses.accordian}
                   />
                 ) : null;
               }),
@@ -381,6 +384,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                       }
                       data-component="DispenserAccordion"
                       dispenser={dispenser}
+                      accordianTheme={themeClasses.accordian}
                     />
                   ) : null;
                 })

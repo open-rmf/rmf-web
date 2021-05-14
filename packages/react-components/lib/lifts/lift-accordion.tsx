@@ -80,11 +80,12 @@ export interface LiftAccordionProps extends Omit<AccordionProps, 'children'> {
     requestType: number,
     destination: string,
   ): void;
+  accordianTheme?: string;
 }
 
 export const LiftAccordion = React.forwardRef(
   (props: LiftAccordionProps, ref: React.Ref<HTMLElement>) => {
-    const { lift, liftState, onRequestSubmit, ...otherProps } = props;
+    const { lift, liftState, onRequestSubmit, accordianTheme, ...otherProps } = props;
     debug(`render ${lift.name}`);
     const [tabValue, setTabValue] = React.useState(0);
     const classes = useStyles();
@@ -117,7 +118,7 @@ export const LiftAccordion = React.forwardRef(
     const liftStatusClass = liftFloorLabelClass(liftState);
 
     return (
-      <Accordion ref={ref} {...otherProps}>
+      <Accordion ref={ref} {...otherProps} className={accordianTheme}>
         <ItemAccordionSummary
           title={lift.name}
           statusProps={{

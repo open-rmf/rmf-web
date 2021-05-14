@@ -46,6 +46,10 @@ const useStyles = makeStyles((theme) => ({
     flex: '0 0 auto',
     borderBottom: 'none',
   },
+  tableHeadCell: {
+    background: 'rgba(0, 0, 0, 0.1)',
+    borderBottom: 'none',
+  },
 }));
 
 const TablePaginationTheme = withStyles({
@@ -143,11 +147,19 @@ export function TaskTable({
         <Table className={classes.table} stickyHeader size="small" style={{ tableLayout: 'fixed' }}>
           <TableHead>
             <TableRow>
-              <TableCell className={componentTheme}>Task Id</TableCell>
-              <TableCell className={componentTheme}>Assignee</TableCell>
-              <TableCell className={componentTheme}>Start Time</TableCell>
-              <TableCell className={componentTheme}>End Time</TableCell>
-              <TableCell className={componentTheme}>State</TableCell>
+              <TableCell className={`${componentTheme} ${classes.tableHeadCell}`}>
+                Task Id
+              </TableCell>
+              <TableCell className={`${componentTheme} ${classes.tableHeadCell}`}>
+                Assignee
+              </TableCell>
+              <TableCell className={`${componentTheme} ${classes.tableHeadCell}`}>
+                Start Time
+              </TableCell>
+              <TableCell className={`${componentTheme} ${classes.tableHeadCell}`}>
+                End Time
+              </TableCell>
+              <TableCell className={`${componentTheme} ${classes.tableHeadCell}`}>State</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

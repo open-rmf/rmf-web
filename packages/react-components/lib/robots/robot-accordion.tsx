@@ -44,16 +44,17 @@ const RobotInfo = (props: RobotInfoProps) => {
 export interface RobotAccordionProps extends Omit<AccordionProps, 'children'> {
   fleetName: string;
   robot: RmfModels.RobotState;
+  accordianTheme?: string;
 }
 
 export const RobotAccordion = React.forwardRef(
   (props: RobotAccordionProps, ref: React.Ref<HTMLElement>) => {
-    const { fleetName, robot, ...otherProps } = props;
+    const { fleetName, robot, accordianTheme, ...otherProps } = props;
     debug(`render ${robot.name}`);
     const classes = useStyles();
 
     return (
-      <Accordion ref={ref} {...otherProps}>
+      <Accordion ref={ref} {...otherProps} className={accordianTheme}>
         <ItemAccordionSummary
           title={robot.name}
           statusProps={{

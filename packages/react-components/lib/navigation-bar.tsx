@@ -5,8 +5,6 @@ import React from 'react';
 const useStyles = makeStyles((theme) =>
   createStyles({
     tabsContainer: {
-      borderRight: '0.25px solid rgba(251, 252, 255, 0.5)',
-      borderLeft: '0.25px solid rgba(251, 252, 255, 0.5)',
       flexGrow: 4,
     },
     indicator: {
@@ -19,10 +17,11 @@ export interface NavigationBarProps {
   value?: string;
   onTabChange?(event: React.ChangeEvent<unknown>, newValue: unknown): void;
   children?: React.ReactNode;
+  navBarTheme?: string;
 }
 
 export const NavigationBar = (props: NavigationBarProps): JSX.Element => {
-  const { value, onTabChange, children } = props;
+  const { value, onTabChange, children, navBarTheme } = props;
   const classes = useStyles();
 
   return (
@@ -31,7 +30,7 @@ export const NavigationBar = (props: NavigationBarProps): JSX.Element => {
       scrollButtons="auto"
       value={value}
       onChange={onTabChange}
-      className={classes.tabsContainer}
+      className={`${classes.tabsContainer} ${navBarTheme}`}
       classes={{ indicator: classes.indicator }}
     >
       {children}
