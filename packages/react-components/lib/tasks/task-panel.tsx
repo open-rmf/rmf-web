@@ -4,7 +4,7 @@ import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { CreateTaskForm, CreateTaskFormProps } from './create-task';
 import { TaskInfo } from './task-info';
-import { TaskTable, TaskTableProps } from './task-table';
+import { TaskTable, TaskTableProps, TaskTableThemeProps } from './task-table';
 
 const useStyles = makeStyles((theme) => ({
   detailPanelContainer: {
@@ -37,7 +37,7 @@ export interface TaskPanelProps extends React.HTMLProps<HTMLDivElement> {
   deliveryWaypoints?: string[];
   dispensers?: string[];
   ingestors?: string[];
-  componentTheme?: string;
+  taskTableTheme?: TaskTableThemeProps;
   submitTask?: CreateTaskFormProps['submitTask'];
   onRefreshClick?: TaskTableProps['onRefreshClick'];
 }
@@ -49,7 +49,7 @@ export function TaskPanel({
   deliveryWaypoints,
   dispensers,
   ingestors,
-  componentTheme,
+  taskTableTheme,
   submitTask,
   onRefreshClick,
   ...divProps
@@ -70,7 +70,7 @@ export function TaskPanel({
         <Grid style={{ flex: '1 1 auto' }}>
           <TaskTable
             elevation={6}
-            className={`${classes.taskTable} ${componentTheme}`}
+            className={`${classes.taskTable} ${taskTableTheme?.componentTheme}`}
             tasks={tasks.slice(page * 10, (page + 1) * 10)}
             paginationOptions={{
               count: tasks.length,
@@ -82,10 +82,13 @@ export function TaskPanel({
             onCreateTaskClick={() => setOpenCreateTaskForm(true)}
             onTaskClick={(_ev, task) => setSelectedTask(task)}
             onRefreshClick={onRefreshClick}
-            componentTheme={componentTheme}
+            taskTableTheme={taskTableTheme}
           />
         </Grid>
-        <Paper elevation={6} className={`${classes.detailPanelContainer} ${componentTheme}`}>
+        <Paper
+          elevation={6}
+          className={`${classes.detailPanelContainer} ${taskTableTheme?.componentTheme}`}
+        >
           {selectedTask ? <TaskInfo task={selectedTask} /> : <NoSelectedTask />}
         </Paper>
       </Grid>

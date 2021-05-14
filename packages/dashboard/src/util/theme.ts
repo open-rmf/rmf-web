@@ -21,6 +21,9 @@ const darkThemeStyles = makeStyles((theme) => ({
     borderRight: `0.25px solid ${theme.fontColors.darkTheme}`,
     borderLeft: `0.25px solid ${theme.fontColors.darkTheme}`,
   },
+  font: {
+    color: theme.fontColors.darkTheme,
+  },
 }));
 
 const lightThemeStyles = makeStyles((theme) => ({
@@ -41,6 +44,9 @@ const lightThemeStyles = makeStyles((theme) => ({
   headerTab: {
     borderRight: `0.25px solid ${theme.fontColors.lightTheme}`,
     borderLeft: `0.25px solid ${theme.fontColors.lightTheme}`,
+  },
+  font: {
+    color: theme.fontColors.lightTheme,
   },
 }));
 

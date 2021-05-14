@@ -1,7 +1,7 @@
 import { makeStyles } from '@material-ui/core';
 import { Task } from 'api-client';
 import React from 'react';
-import { TaskPanel, TaskPanelProps } from 'react-components';
+import { TaskPanel, TaskPanelProps, TaskTableThemeProps } from 'react-components';
 import * as RmfModels from 'rmf-models';
 import { PlacesContext, RmfIngressContext } from '../rmf-app';
 import { decideThemeStyle } from '../../util/theme';
@@ -40,7 +40,10 @@ export function TaskPage() {
   const themeContext = React.useContext(SettingsContext).themeMode;
   const theme = decideThemeStyle(themeContext);
   const taskPanelStyle = `${classes.taskPanel} ${theme.background}`;
-  const componentTheme = theme.components;
+  const componentTheme: TaskTableThemeProps = {
+    componentTheme: theme.components,
+    fontTheme: theme.font,
+  };
 
   const handleRefresh = React.useCallback(async () => {
     if (!tasksApi) {
@@ -72,7 +75,7 @@ export function TaskPage() {
       deliveryWaypoints={Object.keys(places)}
       submitTask={submitTask}
       onRefreshClick={handleRefresh}
-      componentTheme={componentTheme}
+      taskTableTheme={componentTheme}
     />
   );
 }
