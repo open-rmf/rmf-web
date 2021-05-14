@@ -1,6 +1,5 @@
 from typing import Callable, List, Optional
 
-import socketio
 from fastapi import Depends, HTTPException
 from fastapi.responses import JSONResponse
 

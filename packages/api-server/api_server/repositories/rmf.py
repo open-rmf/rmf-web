@@ -79,7 +79,7 @@ class RmfRepository:
         building_map = await self.get_bulding_map()
         if building_map is None:
             return []
-        return [lift for lift in building_map.lifts]
+        return building_map.lifts
 
     async def get_lift_state(self, lift_name: str) -> Optional[LiftState]:
         lift_state = await ttm.LiftState.get_or_none(id_=lift_name)

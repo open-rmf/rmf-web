@@ -1,6 +1,7 @@
+import concurrent.futures
 import time
 import unittest
-from concurrent.futures import Future, TimeoutError
+from concurrent.futures import Future
 
 import requests
 import socketio
@@ -86,7 +87,7 @@ class TestFastIO(unittest.TestCase):
         self.client.on(
             "/no_sticky/video_rental/aegis rim/available", event_fut.set_result
         )
-        self.assertRaises(TimeoutError, lambda: event_fut.result(1))
+        self.assertRaises(concurrent.futures.TimeoutError, lambda: event_fut.result(1))
         event_fut.cancel()
 
     def test_non_sticky_watch_sends_new_events(self):

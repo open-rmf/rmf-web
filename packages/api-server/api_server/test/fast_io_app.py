@@ -37,7 +37,7 @@ def router_no_sticky_watch_availability(rental: dict):
 
 
 @router.post("/no_sticky/video_rental/return_video")
-def router_post_return_video(return_video: ReturnVideo):
+def router_no_sticky_post_return_video(return_video: ReturnVideo):
     target_no_sticky.on_next({"film": return_video.film_title, "available": True})
 
 
