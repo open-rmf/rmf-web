@@ -46,25 +46,29 @@ class FastIORouter(APIRouter):
 
     .. code-block::
         import rx.subject
-        import socketio
         import uvicorn
-        from fastapi import FastAPI
 
         from api_server.fast_io import FastIORouter
 
-        app = FastAPI()
-        sio = socketio.AsyncServer(async_mode="asgi")
-        sio_app = socketio.ASGIApp(sio, other_asgi_app=app)
-        fastio = FastIORouter(sio)
+        class ReturnVideo(pydantic.BaseModel):
+            film_title: str
+
+        app = FastIO()
+        router = FastIORouter()
         target = rx.subject.Subject()
 
 
-        @fastio.watch("/video_rental/{film_title}/available", target)
-        def _watch_availability(rental: dict):
-            return {"film_title": rental["film"]}
+        @router.watch("/video_rental/{film_title}/available", target)
+        def watch_availability(rental: dict):
+            return {"film_title": rental["film"]}, rental
 
 
-        app.include_router(fastio)
+        @router.post("/video_rental/return_video")
+        def post_return_video(return_video: ReturnVideo):
+            target.on_next({"film": return_video.film_title, "available": True})
+
+
+        app.include_router(router)
 
         uvicorn.run(app)
     """
