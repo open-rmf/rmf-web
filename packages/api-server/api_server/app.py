@@ -7,7 +7,7 @@ import threading
 from typing import Awaitable, Callable, List, Union
 
 import rclpy
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from tortoise import Tortoise
@@ -61,8 +61,9 @@ class App(FastIO):
             name="static",
         )
 
-        async def load_states(rmf_events: RmfEvents, rmf_repo: RmfRepository):
+        async def load_states(rmf_events: RmfGateway, rmf_repo: RmfRepository):
             logger.info("loading states from database...")
+            rmf_events = rmf_gateway.rmf_events
 
             door_states = await rmf_repo.query_door_states()
             for state in door_states:
@@ -118,6 +119,12 @@ class App(FastIO):
             for summary in task_summaries:
                 rmf_events.task_summaries.on_next(summary)
             logger.info(f"loaded {len(task_summaries)} tasks")
+
+            logger.info("updating tasks from RMF")
+            try:
+                await rmf_gateway.update_tasks(rmf_repo)
+            except HTTPException as e:
+                logger.error(f"failed to update tasks from RMF ({e.detail})")
 
             logger.info("successfully loaded all states")
 
@@ -205,7 +212,7 @@ class App(FastIO):
 
             # Order is important here
             # 1. load states from db, this populate the sio/fast_io rooms with the latest data
-            await load_states(rmf_events, rmf_repo)
+            await load_states(rmf_gateway, rmf_repo)
 
             # 2. start the services after loading states so that the loaded states are not
             # used. Failing to do so will cause for example, book keeper to save the loaded states
