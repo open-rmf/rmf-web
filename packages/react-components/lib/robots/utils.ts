@@ -42,7 +42,7 @@ export interface VerboseRobot {
   assigned_tasks: RmfModels.TaskSummary[];
 }
 
-function makeVerboseRobot(
+export function makeVerboseRobot(
   robot: RmfModels.RobotState,
   assignedTasks: RmfModels.TaskSummary[],
 ): VerboseRobot {
