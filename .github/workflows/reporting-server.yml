@@ -26,7 +26,9 @@ jobs:
       - name: bootstrap
         run: |
           npm config set unsafe-perm
-          . /opt/rmf/setup.bash && npm run bootstrap -- packages/reporting-server
+          . /opt/rmf/setup.bash
+          npm install -g lerna@4
+          lerna bootstrap --scope=reporting-server
         working-directory: .
       - name: tests
         run: |

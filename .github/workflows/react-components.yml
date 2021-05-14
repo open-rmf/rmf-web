@@ -19,11 +19,15 @@ jobs:
         working-directory: packages/react-components
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
       - name: bootstrap
         run: |
           pip3 install pipenv
           npm config set unsafe-perm
-          npm run bootstrap -- packages/react-components
+          npm install -g lerna@4
+          lerna bootstrap --scope=react-components
         working-directory: .
       - name: test build storybook
         run: npm run build:storybook

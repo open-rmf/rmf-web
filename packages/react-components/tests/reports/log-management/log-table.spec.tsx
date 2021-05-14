@@ -88,6 +88,7 @@ describe('Applies styles to labels correctly', () => {
       message: 'Test' + i,
       level: logLevels[i].toUpperCase(),
       created: timestamp,
+      container_name: 'test_container',
     });
   }
 

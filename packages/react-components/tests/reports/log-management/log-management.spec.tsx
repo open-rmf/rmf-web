@@ -1,6 +1,6 @@
 import { render, waitFor } from '@testing-library/react';
 import React from 'react';
-import { LogManagement } from '../../../lib';
+import { LogManagement, LogRowsType } from '../../../lib';
 
 const getLogLabels = () => [
   { label: 'Web Server', value: 'web-server' },
@@ -8,12 +8,12 @@ const getLogLabels = () => [
 ];
 
 const getLogs = () => {
-  const rows = [];
+  const rows: LogRowsType = [];
   for (let i = 0; i < 200; i++) {
     rows.push({
       message: 'Test' + i,
       level: 'WARN',
-      timestamp: new Date('Mon Jan  1 00:00:02 UTC 2001').toISOString(),
+      created: new Date('Mon Jan  1 00:00:02 UTC 2001').toISOString(),
       container_name: 'container',
     });
   }

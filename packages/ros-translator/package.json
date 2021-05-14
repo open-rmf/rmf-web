@@ -1,8 +1,8 @@
 {
-  "name": "typescript-test",
+  "name": "ros-translator",
   "version": "0.0.0",
   "private": true,
-  "description": "",
+  "description": "dummy package",
   "main": "index.js",
   "scripts": {
     "test": "bash -c './test.sh'"
@@ -10,9 +10,10 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/jasmine": "^3.6.9",
-    "jasmine": "^3.7.0",
+    "@types/jasmine": "^3.6.6",
+    "jasmine": "^3.6.6",
+    "pipenv-install": "*",
     "ts-node": "^9.1.1",
-    "typescript": "^4.2.4"
+    "typescript": "4.2.4"
   }
 }

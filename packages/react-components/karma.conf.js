@@ -4,9 +4,9 @@ const chromeFlags = process.env.CHROME_FLAGS ? JSON.parse(process.env.CHROME_FLA
 
 module.exports = (config) => {
   const isCoverage = config.coverage ? true : false;
-  const testWebpackConfig = require('./karma-config/webpack.test.js')({
+  const testWebpackConfig = require('./webpack.config.js')({
     env: 'development',
-    coverage: true,
+    coverage: isCoverage,
   });
 
   config.set({
@@ -15,7 +15,7 @@ module.exports = (config) => {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine', 'webpack'],
+    frameworks: ['jasmine'],
 
     // list of files / patterns to load in the browser
     files: [
@@ -33,25 +33,13 @@ module.exports = (config) => {
     ],
 
     // list of files / patterns to exclude
-    exclude: ['**/*.d.ts', '**/*.stories.ts'],
+    // exclude: [],
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-    preprocessors: isCoverage
-      ? {
-          // add webpack as preprocessor
-          'lib/**/**.+(ts|tsx)': ['sourcemap', 'coverage'],
-          'tests/**/*spec.+(ts|tsx)': ['webpack', 'sourcemap'],
-        }
-      : { 'tests/**/*spec.+(ts|tsx)': ['webpack'] },
+    preprocessors: { 'tests/**/*spec.+(ts|tsx)': ['webpack'] },
 
     webpack: testWebpackConfig,
-
-    coverageReporter: {
-      dir: '.',
-      subdir: '.',
-      reporters: [{ type: 'text' }, { type: 'text-summary' }, { type: 'lcovonly' }],
-    },
 
     // Webpack please don't spam the console when running in karma!
     webpackMiddleware: {
@@ -59,6 +47,12 @@ module.exports = (config) => {
       stats: {
         colors: true,
       },
+    },
+
+    coverageReporter: {
+      dir: '.',
+      subdir: '.',
+      reporters: [{ type: 'text' }, { type: 'text-summary' }, { type: 'lcovonly' }],
     },
 
     // List of plugins to load. A plugin can be a string (in which case it will be required by
