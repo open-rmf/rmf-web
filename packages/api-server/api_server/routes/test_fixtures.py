@@ -15,7 +15,7 @@ from ..app_config import load_config
 from ..test.server import BackgroundServer
 
 
-class RouteFixture(unittest.TestCase):
+class RouteFixture(unittest.IsolatedAsyncioTestCase):
     @classmethod
     def setUpClass(cls):
         cls.app = App(load_config(f"{os.path.dirname(__file__)}/test_config.py"))
