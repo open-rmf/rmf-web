@@ -1,9 +1,10 @@
 module.exports = {
   env: {
+    node: false,
     browser: true,
     es2021: true,
   },
-  extends: ['../../.eslintrc.js', 'plugin:react/recommended', 'plugin:react-hooks/recommended'],
+  extends: ['plugin:react/recommended', 'plugin:react-hooks/recommended'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaFeatures: {
@@ -22,18 +23,4 @@ module.exports = {
     'react/display-name': 'off',
     'react/prop-types': 'off',
   },
-  overrides: [
-    {
-      files: ['lib/**', 'stories/**', 'tests/**'],
-      env: {
-        node: false,
-      },
-    },
-    {
-      files: 'tests/**',
-      rules: {
-        '@typescript-eslint/no-non-null-assertion': 'off',
-      },
-    },
-  ],
 };

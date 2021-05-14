@@ -20,7 +20,7 @@ test('can show and hide settings', async () => {
 
   const root = await renderAct(
     <ThemeProvider theme={customTheme}>
-      <AppBase>
+      <AppBase appbarProps={{ tabValue: 'building' }}>
         <TestComponent />
       </AppBase>
     </ThemeProvider>,
@@ -46,7 +46,7 @@ test('can toggle settings', async () => {
 
   const root = await renderAct(
     <ThemeProvider theme={customTheme}>
-      <AppBase>
+      <AppBase appbarProps={{ tabValue: 'building' }}>
         <TestComponent />
       </AppBase>
     </ThemeProvider>,
@@ -73,7 +73,7 @@ test('can show and hide settings', async () => {
 
   const root = await renderAct(
     <ThemeProvider theme={customTheme}>
-      <AppBase>
+      <AppBase appbarProps={{ tabValue: 'building' }}>
         <TestComponent />
       </AppBase>
     </ThemeProvider>,
@@ -99,7 +99,7 @@ test('can toggle help', async () => {
 
   const root = await renderAct(
     <ThemeProvider theme={customTheme}>
-      <AppBase>
+      <AppBase appbarProps={{ tabValue: 'building' }}>
         <TestComponent />
       </AppBase>
     </ThemeProvider>,
@@ -126,7 +126,7 @@ test('can show and hide hotkeys dialog', async () => {
 
   const root = await renderAct(
     <ThemeProvider theme={customTheme}>
-      <AppBase>
+      <AppBase appbarProps={{ tabValue: 'building' }}>
         <TestComponent />
       </AppBase>
     </ThemeProvider>,
@@ -151,7 +151,7 @@ test('can toggle hotkeys dialog', async () => {
 
   const root = await renderAct(
     <ThemeProvider theme={customTheme}>
-      <AppBase>
+      <AppBase appbarProps={{ tabValue: 'building' }}>
         <TestComponent />
       </AppBase>
     </ThemeProvider>,

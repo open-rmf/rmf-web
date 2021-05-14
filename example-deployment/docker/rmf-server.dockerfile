@@ -5,7 +5,7 @@ COPY . /root/rmf-web
 RUN . /opt/rmf/setup.bash && \
   npm config set unsafe-perm && \
   cd /root/rmf-web && \
-  CI=1 npm run bootstrap -- packages/api-server && \
+  CI=1 npm install -g lerna@4 && lerna bootstrap --scope=api-server && \
   cd packages/api-server && \
   npm run prepack
 

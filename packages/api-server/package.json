@@ -13,6 +13,7 @@
     "lint": "pipenv run pylint api_server --ignore=ros_pydantic"
   },
   "devDependencies": {
+    "pipenv-install": "*",
     "socket.io-client": "^3.1.3"
   }
 }

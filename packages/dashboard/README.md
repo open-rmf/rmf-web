@@ -2,25 +2,11 @@
 
 Hello! `rmf-dashboard` is a web application that provides overall visualization and control over the RMF system.
 
-## Setup
+## Building
 
-Prerequisites:
+Follow the build instructions [here](../../README.md#building-the-dashboard).
 
-* nodejs >= v12
-* docker
-* docker-compose
-* [rmf_core](https://github.com/open-rmf/rmf_core)
-* [traffic_editor](https://github.com/open-rmf/traffic_editor)
-* [rmf_schedule_visualizer](https://github.com/open-rmf/rmf_schedule_visualizer)
-* [rmf_demos](https://github.com/open-rmf/rmf_demos)
-
-Refer to the various repository for instructions to set them up.
-
-```bash
-git clone https://github.com/open-rmf/rmf-web
-cd rmf-web
-npm run bootstrap
-```
+## Configuration
 
 ### (Optional) Import external resources.
 
@@ -62,24 +48,11 @@ In case you want to modify the source of your resources. You can rerun the comma
 npm run setup
 ```
 
-## Launching
+### Environment Variables
 
-### Local Dev Server
+The default launch script with `npm start` automatically launches an instance of `rmf_demos` and all the backend servers, this is good for local development, but in production you would need to configure the dashboard so that it knows where to find the various services.
 
-```bash
-npm start
-```
-
-This will start all the necessary backends, a browser window should open up pointing to the local dev server. When prompted with an user/password, use this:
-
-```
-user: admin
-password: admin
-```
-
-### External Server
-
-Alternatively, if you want to connect to an existing rmf deployment, set the following environment variables:
+Here are the environment variables that you can set before you build the dashboard:
 
 * _PUBLIC_URL_: Url that the app is hosted. Defaults to '/'.
 * _REACT_APP_TRAJECTORY_SERVER_: **Required** URL to the trajectory server.
@@ -92,7 +65,7 @@ Supported auth providers are
 | stub | N/A |
 | keycloak | _REACT_APP_KEYCLOAK_CONFIG_: a json string with the keys _realm_, _clientId_ and _url_ |
 
-### Storybook
+## Storybook
 
 **Many of the components are reused from `react-components`, you may want to run storybook on `react-components` instead.**
 
@@ -103,14 +76,3 @@ npm run storybook
 ```
 
 This is ideal if you are working on individual isolated components.
-
-## Building for production
-
-Firstly, set up environment variables according to [this](#External-Server), you may also want to install a resource pack as described [here](#Optional-Import-external-resources.). Then build a production version of _rmf-dashboard_ with
-
-```bash
-npm run build
-```
-
-You can then serve the `build` directory using the webserver of your choice.
-
