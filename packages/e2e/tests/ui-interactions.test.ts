@@ -1,4 +1,4 @@
-import { makeLauncher } from '../../rmf-launcher';
+import { makeLauncher } from '../../dashboard/rmf-launcher';
 import { login, overwriteClick } from './utils';
 
 describe('ui interactions', () => {

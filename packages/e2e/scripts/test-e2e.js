@@ -19,8 +19,8 @@ process.env.E2E_PASSWORD = process.env.E2E_PASSWORD || 'admin';
 process.env.E2E_DASHBOARD_URL = process.env.E2E_DASHBOARD_URL || 'http://localhost:5000';
 
 execSync('WORLD_NAME=office node scripts/get-resources-location.js', { stdio: 'inherit' });
-execSync('cd .. && node ./scripts/setup/get-icons.js', { stdio: 'inherit' });
-execSync('npm --prefix .. run build', { stdio: 'inherit' });
+execSync('cd .. && node ./dashboard/scripts/setup/get-icons.js', { stdio: 'inherit' });
+execSync('npm --prefix ../dashboard run build', { stdio: 'inherit' });
 
 // wrap in double quotes to support args with spaces
 const wdioArgs = process.argv

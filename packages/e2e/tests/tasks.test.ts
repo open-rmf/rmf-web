@@ -1,4 +1,4 @@
-import { makeLauncher } from '../../rmf-launcher';
+import { makeLauncher } from '../../dashboard/rmf-launcher';
 import { login } from './utils';
 
 describe('tasks', () => {
