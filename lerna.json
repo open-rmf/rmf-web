@@ -1,0 +1,22 @@
+{
+  "version": "0.0.0",
+  "packages": [
+    "packages/api-client",
+    "packages/api-server",
+    "packages/dashboard",
+    "packages/dashboard/e2e",
+    "packages/react-components",
+    "packages/reporting",
+    "packages/reporting-server",
+    "packages/rmf-auth",
+    "packages/rmf-models",
+    "packages/ros-translator",
+    "pipenv-install"
+  ],
+  "command": {
+    "bootstrap": {
+      "hoist": true,
+      "includeDependencies": true
+    }
+  }
+}

@@ -148,8 +148,8 @@ exports.config = {
   // Options to be passed to Mocha.
   // See the full list at http://mochajs.org/
   mochaOpts: {
-    // TypeScript setup
-    require: ['ts-node/register'],
+    // as of wdio 6.12.1, it automatically registers ts-node, registering it again would cause conflict
+    // require: ['ts-node/register'],
     ui: 'bdd',
     timeout: 60000,
   },
