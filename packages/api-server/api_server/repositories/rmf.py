@@ -224,32 +224,10 @@ class RmfRepository:
         await ttm.RobotHealth.update_or_create(dic, id_=robot_health.id_)
 
     async def get_task_summary(self, task_id: str):
-        task_summary = await ttm.TaskSummary.get_or_none(id_=task_id)
-        if task_summary is None:
+        task_summary = await ttm.TaskSummary.get_or_none(id_=task_id).values("data")
+        if not task_summary:
             return None
-        return TaskSummary(**task_summary.data)
-
-    async def query_task_summaries(
-        self,
-        *,
-        task_id: Optional[str] = None,
-        state: Optional[int] = None,
-        limit=100,
-        offset=0,
-    ) -> List[TaskSummary]:
-        filter_params = self._build_filter_params(task_id=task_id, state=state)
-        return [
-            TaskSummary(**task_summary.data)
-            for task_summary in await ttm.TaskSummary.filter(**filter_params)
-            .offset(offset)
-            .limit(limit)
-        ]
-
-    async def save_task_summary(self, task_summary: TaskSummary):
-        await ttm.TaskSummary.update_or_create(
-            {"data": task_summary.dict(), "state": task_summary.state},
-            id_=task_summary.task_id,
-        )
+        return TaskSummary(**task_summary[0]["data"])
 
     async def get_tasks(self):
         task_summaries = await ttm.TaskSummary.all()

@@ -24,6 +24,7 @@ from .rmf_io import HealthWatchdog, RmfBookKeeper, RmfEvents
 
 class App(FastIO):
     def __init__(self, app_config: AppConfig):
+        self.loop: asyncio.AbstractEventLoop = None
         logger = logging.getLogger("app")
         handler = logging.StreamHandler(sys.stdout)
         handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
@@ -115,11 +116,6 @@ class App(FastIO):
                 rmf_events.robot_health.on_next(health)
             logger.info(f"loaded {len(robot_health)} robot health")
 
-            task_summaries = await rmf_repo.query_task_summaries()
-            for summary in task_summaries:
-                rmf_events.task_summaries.on_next(summary)
-            logger.info(f"loaded {len(task_summaries)} tasks")
-
             logger.info("updating tasks from RMF")
             try:
                 await self.rmf_gateway.update_tasks(rmf_repo)
@@ -150,9 +146,7 @@ class App(FastIO):
             routes.LiftsRouter(self.rmf_events, rmf_gateway_dep, self.rmf_repo),
             prefix="/lifts",
         )
-        self.include_router(
-            routes.TasksRouter(self.rmf_repo, rmf_gateway_dep), prefix="/tasks"
-        )
+        self.include_router(routes.TasksRouter(rmf_gateway_dep), prefix="/tasks")
         self.include_router(
             routes.DispensersRouter(self.rmf_events, self.rmf_repo),
             prefix="/dispensers",
@@ -173,15 +167,15 @@ class App(FastIO):
             if started:
                 raise RuntimeError("starting the app multiple times is not supported")
 
-            loop = asyncio.get_event_loop()
+            self.loop = asyncio.get_event_loop()
 
             # shutdown event is not called when the app crashes, this can cause the app to be
             # "locked up" as some dependencies like tortoise does not allow python to exit until
             # it is closed "gracefully".
             def on_signal(sig, frame):
-                task = loop.create_task(on_shutdown())
-                if not loop.is_running():
-                    loop.run_until_complete(task)
+                task = self.loop.create_task(on_shutdown())
+                if not self.loop.is_running():
+                    self.loop.run_until_complete(task)
                 if sig == signal.SIGINT and prev_sigint:
                     prev_sigint(sig, frame)
                 elif sig == signal.SIGTERM and prev_sigterm:

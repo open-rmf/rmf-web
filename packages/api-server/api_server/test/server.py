@@ -7,9 +7,15 @@ import uvicorn
 
 class BackgroundServer:
     def __init__(self, app):
+        self.app = app
         self.port = os.environ.get("RMF_SERVER_TEST_PORT", "8000")
+        self.loop: asyncio.AbstractEventLoop = None
         uvicorn_config = uvicorn.Config(
-            app, "127.0.0.1", port=int(self.port), loop="asyncio", log_level="critical"
+            self.app,
+            "127.0.0.1",
+            port=int(self.port),
+            loop="asyncio",
+            log_level="error",
         )
         self.server = uvicorn.Server(uvicorn_config)
         self.server_thread = threading.Thread(target=self._run_server)

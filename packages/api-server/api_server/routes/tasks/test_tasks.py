@@ -1,3 +1,7 @@
+import asyncio
+import concurrent.futures
+
+from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
 from rmf_task_msgs.msg import TaskType as RmfTaskType
 from rmf_task_msgs.srv import CancelTask as RmfCancelTask
 from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
@@ -5,6 +9,7 @@ from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
 from api_server.models.tasks import TaskSummary
 
 from ...models import CancelTask, CleanTaskDescription, SubmitTask
+from ...models import tortoise_models as ttm
 from ..test_fixtures import RouteFixture
 
 
@@ -37,10 +42,103 @@ class TestTasksRoute(RouteFixture):
         received: RmfCancelTask.Request = fut.result(3)
         self.assertEqual(received.task_id, "test_task")
 
-    async def test_get_tasks(self):
-        await self.app.rmf_repo.save_task_summary(TaskSummary(task_id="test_task"))
-        resp = self.session.get(f"{self.base_url}/tasks")
+    def test_query_tasks(self):
+        dataset = [
+            TaskSummary(
+                task_id="task_1",
+                fleet_name="fleet_1",
+                submission_time={"sec": 1000, "nanosec": 0},
+                start_time={"sec": 2000, "nanosec": 0},
+                end_time={"sec": 3000, "nanosec": 0},
+                robot_name="robot_1",
+                state=RmfTaskSummary.STATE_COMPLETED,
+                task_profile={
+                    "description": {"task_type": {"type": RmfTaskType.TYPE_LOOP}}
+                },
+            ),
+            TaskSummary(
+                task_id="task_2",
+                fleet_name="fleet_2",
+                submission_time={"sec": 4000, "nanosec": 0},
+                start_time={"sec": 5000, "nanosec": 0},
+                end_time={"sec": 6000, "nanosec": 0},
+                robot_name="robot_2",
+                state=RmfTaskSummary.STATE_ACTIVE,
+                task_profile={
+                    "description": {"task_type": {"type": RmfTaskType.TYPE_DELIVERY}}
+                },
+            ),
+        ]
+
+        fut = concurrent.futures.Future()
+
+        async def save_data():
+            fut.set_result(
+                await asyncio.gather(
+                    *(ttm.TaskSummary.save_pydantic(data) for data in dataset)
+                )
+            )
+
+        self.server.app.loop.create_task(save_data())
+        fut.result()
+
+        resp = self.session.get(f"{self.base_url}/tasks?fleet_name=fleet_1")
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
         self.assertEqual(len(resp_json), 1)
-        self.assertEqual(resp_json[0]["task_summary"]["task_id"], "test_task")
+        self.assertEqual(resp_json[0]["task_summary"]["task_id"], "task_1")
+        self.assertEqual(resp_json[0]["task_summary"]["fleet_name"], "fleet_1")
+
+        resp = self.session.get(f"{self.base_url}/tasks?robot_name=robot_1")
+        self.assertEqual(resp.status_code, 200)
+        resp_json = resp.json()
+        self.assertEqual(len(resp_json), 1)
+        self.assertEqual(resp_json[0]["task_summary"]["task_id"], "task_1")
+        self.assertEqual(resp_json[0]["task_summary"]["robot_name"], "robot_1")
+
+        resp = self.session.get(f"{self.base_url}/tasks?state=completed")
+        self.assertEqual(resp.status_code, 200)
+        resp_json = resp.json()
+        self.assertEqual(len(resp_json), 1)
+        self.assertEqual(resp_json[0]["task_summary"]["task_id"], "task_1")
+        self.assertEqual(
+            resp_json[0]["task_summary"]["state"], RmfTaskSummary.STATE_COMPLETED
+        )
+
+        resp = self.session.get(f"{self.base_url}/tasks?task_type=loop")
+        self.assertEqual(resp.status_code, 200)
+        resp_json = resp.json()
+        self.assertEqual(len(resp_json), 1)
+        self.assertEqual(resp_json[0]["task_summary"]["task_id"], "task_1")
+        self.assertEqual(
+            resp_json[0]["task_summary"]["task_profile"]["description"]["task_type"][
+                "type"
+            ],
+            RmfTaskType.TYPE_LOOP,
+        )
+
+        resp = self.session.get(f"{self.base_url}/tasks?submission_time_since=4000")
+        self.assertEqual(resp.status_code, 200)
+        resp_json = resp.json()
+        self.assertEqual(len(resp_json), 1)
+        self.assertEqual(resp_json[0]["task_summary"]["task_id"], "task_2")
+
+        resp = self.session.get(f"{self.base_url}/tasks?start_time_since=5000")
+        self.assertEqual(resp.status_code, 200)
+        resp_json = resp.json()
+        self.assertEqual(len(resp_json), 1)
+        self.assertEqual(resp_json[0]["task_summary"]["task_id"], "task_2")
+
+        resp = self.session.get(f"{self.base_url}/tasks?end_time_since=6000")
+        self.assertEqual(resp.status_code, 200)
+        resp_json = resp.json()
+        self.assertEqual(len(resp_json), 1)
+        self.assertEqual(resp_json[0]["task_summary"]["task_id"], "task_2")
+
+        # test no match
+        resp = self.session.get(
+            f"{self.base_url}/tasks?fleet_name=fleet_1&start_time_since=5000"
+        )
+        self.assertEqual(resp.status_code, 200)
+        resp_json = resp.json()
+        self.assertEqual(len(resp_json), 0)

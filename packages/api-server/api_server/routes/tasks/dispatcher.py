@@ -2,16 +2,13 @@ from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
 from rmf_task_msgs.srv import CancelTask as RmfCancelTask
 from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
 
-from api_server.repositories.rmf import RmfRepository
-
 from ... import models as mdl
 from ...gateway import RmfGateway
 from ...models.tasks import TaskProgress, TaskSummary
 
 
 class DispatcherClient:
-    def __init__(self, rmf_repo: RmfRepository, rmf_gateway: RmfGateway):
-        self.rmf_repo = rmf_repo
+    def __init__(self, rmf_gateway: RmfGateway):
         self.rmf_gateway = rmf_gateway
 
     async def submit_task_request(self, req_msg: RmfSubmitTask.Request):
