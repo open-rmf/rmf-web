@@ -24,6 +24,10 @@ const darkThemeStyles = makeStyles((theme) => ({
   font: {
     color: theme.fontColors.darkTheme,
   },
+  leafletControl: {
+    color: `${theme.fontColors.darkTheme} !important`,
+    backgroundColor: `${theme.palette.primary.dark} !important`,
+  },
 }));
 
 const lightThemeStyles = makeStyles((theme) => ({
@@ -47,6 +51,10 @@ const lightThemeStyles = makeStyles((theme) => ({
   },
   font: {
     color: theme.fontColors.lightTheme,
+  },
+  leafletControl: {
+    color: `${theme.fontColors.lightTheme} !important`,
+    backgroundColor: `${theme.palette.primary.light} !important`,
   },
 }));
 

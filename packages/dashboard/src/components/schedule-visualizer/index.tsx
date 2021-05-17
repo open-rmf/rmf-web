@@ -3,7 +3,14 @@ import Debug from 'debug';
 import * as L from 'leaflet';
 import React from 'react';
 import { ColorContext, robotHash } from 'react-components';
-import { AttributionControl, ImageOverlay, LayersControl, Map as LMap, Pane } from 'react-leaflet';
+import {
+  AttributionControl,
+  ImageOverlay,
+  LayersControl,
+  Map as LMap,
+  Pane,
+  ZoomControl,
+} from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
 import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
 import {
@@ -70,6 +77,9 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   const authenticator = React.useContext(AppConfigContext).authenticator;
   const themeContext = React.useContext(SettingsContext).themeMode;
   const themeClasses = decideThemeStyle(themeContext);
+
+  const [curMapTheme, setCurMapTheme] = React.useState(themeClasses.map);
+  const [curLayerTheme, setCurLayerTheme] = React.useState(themeClasses.leafletControl);
 
   const mapFloorLayerSorted = React.useMemo(
     () =>
@@ -233,11 +243,42 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   const sortedMapFloorLayers = mapFloorLayerSorted.map((x) => mapFloorLayers[x]);
   const ref = React.useRef<ImageOverlay>(null);
   const mapRef = React.useRef<LMap>(null);
+  const zoomRef = React.useRef<ZoomControl>(null);
+  const layerRef = React.useRef<LayersControl>(null);
 
   if (ref.current) {
     ref.current.leafletElement.setZIndex(0);
     const img = ref.current.leafletElement.getElement();
+    // remove previous class only if classlist contains existing class
+    // and when a new theme class is rendered
+    if (img?.classList.contains(curMapTheme) && curMapTheme !== themeClasses.map)
+      img?.classList.remove(curMapTheme);
     img?.classList.add(themeClasses.map);
+    // update current theme when a new theme is rendered
+    if (curMapTheme !== themeClasses.map) setCurMapTheme(themeClasses.map);
+  }
+
+  if (zoomRef.current) {
+    const zoomButtons = zoomRef.current.leafletElement.getContainer();
+    if (zoomButtons) {
+      Array.from(zoomButtons.children).forEach((child) => {
+        if (
+          child.classList.contains(curLayerTheme) &&
+          curLayerTheme !== themeClasses.leafletControl
+        )
+          child.classList.remove(curLayerTheme);
+        child.classList.add(themeClasses.leafletControl);
+      });
+    }
+  }
+
+  if (layerRef.current) {
+    const layer = layerRef.current.leafletElement.getContainer();
+    if (layer?.classList.contains(curLayerTheme) && curLayerTheme !== themeClasses.leafletControl)
+      layer?.classList.remove(curLayerTheme);
+    layer?.classList.add(themeClasses.leafletControl);
+    if (curLayerTheme !== themeClasses.leafletControl)
+      setCurLayerTheme(themeClasses.leafletControl);
   }
 
   React.useEffect(() => {
@@ -297,9 +338,11 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       maxBounds={maxBounds}
       onbaselayerchange={handleBaseLayerChange}
       ref={mapRef}
+      zoomControl={false}
     >
+      <ZoomControl position={'topleft'} ref={zoomRef} />
       <AttributionControl position="bottomright" prefix="OSRC-SG" />
-      <LayersControl position="topleft">
+      <LayersControl position="topleft" ref={layerRef}>
         {sortedMapFloorLayers.every((x) => x) &&
           sortedMapFloorLayers.map((floorLayer, i) => (
             <LayersControl.BaseLayer
