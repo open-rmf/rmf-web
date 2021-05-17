@@ -254,7 +254,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     if (img?.classList.contains(curMapTheme) && curMapTheme !== themeClasses.map)
       img?.classList.remove(curMapTheme);
     img?.classList.add(themeClasses.map);
-    // update current theme when a new theme is rendered
+    // update current map theme when a new theme is rendered
     if (curMapTheme !== themeClasses.map) setCurMapTheme(themeClasses.map);
   }
 
@@ -262,6 +262,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     const zoomButtons = zoomRef.current.leafletElement.getContainer();
     if (zoomButtons) {
       Array.from(zoomButtons.children).forEach((child) => {
+        // remove previous theme class in zoom control
         if (
           child.classList.contains(curLayerTheme) &&
           curLayerTheme !== themeClasses.leafletControl
@@ -274,9 +275,11 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
 
   if (layerRef.current) {
     const layer = layerRef.current.leafletElement.getContainer();
+    // remove previous theme class in control layer
     if (layer?.classList.contains(curLayerTheme) && curLayerTheme !== themeClasses.leafletControl)
       layer?.classList.remove(curLayerTheme);
     layer?.classList.add(themeClasses.leafletControl);
+    // update current control theme when a new theme is rendered
     if (curLayerTheme !== themeClasses.leafletControl)
       setCurLayerTheme(themeClasses.leafletControl);
   }

@@ -54,7 +54,7 @@ const lightThemeStyles = makeStyles((theme) => ({
   },
   leafletControl: {
     color: `${theme.fontColors.lightTheme} !important`,
-    backgroundColor: `${theme.palette.primary.light} !important`,
+    backgroundColor: `${theme.palette.primary.main} !important`,
   },
 }));
 
