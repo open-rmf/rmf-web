@@ -14,6 +14,7 @@ class TaskSummary(Model, JsonMixin):
     robot_name = fields.CharField(255, null=True, index=True)
     state = fields.IntField(null=True, index=True)
     task_type = fields.IntField(null=True, index=True)
+    priority = fields.IntField(null=True, index=True)
 
     ACTIVE_STATES = [
         RmfTaskSummary.STATE_ACTIVE,
@@ -35,6 +36,7 @@ class TaskSummary(Model, JsonMixin):
                 "robot_name": task_summary.robot_name,
                 "state": task_summary.state,
                 "task_type": task_summary.task_profile.description.task_type.type,
+                "priority": task_summary.task_profile.description.priority.value,
                 "data": task_summary.dict(),
             },
             id_=task_summary.task_id,

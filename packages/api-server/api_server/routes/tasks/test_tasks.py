@@ -53,7 +53,10 @@ class TestTasksRoute(RouteFixture):
                 robot_name="robot_1",
                 state=RmfTaskSummary.STATE_COMPLETED,
                 task_profile={
-                    "description": {"task_type": {"type": RmfTaskType.TYPE_LOOP}}
+                    "description": {
+                        "task_type": {"type": RmfTaskType.TYPE_LOOP},
+                        "priority": {"value": 0},
+                    }
                 },
             ),
             TaskSummary(
@@ -65,7 +68,10 @@ class TestTasksRoute(RouteFixture):
                 robot_name="robot_2",
                 state=RmfTaskSummary.STATE_ACTIVE,
                 task_profile={
-                    "description": {"task_type": {"type": RmfTaskType.TYPE_DELIVERY}}
+                    "description": {
+                        "task_type": {"type": RmfTaskType.TYPE_DELIVERY},
+                        "priority": {"value": 1},
+                    }
                 },
             ),
         ]
@@ -117,6 +123,12 @@ class TestTasksRoute(RouteFixture):
             RmfTaskType.TYPE_LOOP,
         )
 
+        resp = self.session.get(f"{self.base_url}/tasks?priority=0")
+        self.assertEqual(resp.status_code, 200)
+        resp_json = resp.json()
+        self.assertEqual(len(resp_json), 1)
+        self.assertEqual(resp_json[0]["task_summary"]["task_id"], "task_1")
+
         resp = self.session.get(f"{self.base_url}/tasks?submission_time_since=4000")
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
@@ -142,3 +154,9 @@ class TestTasksRoute(RouteFixture):
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
         self.assertEqual(len(resp_json), 0)
+
+        # no query returns everything
+        resp = self.session.get(f"{self.base_url}/tasks")
+        self.assertEqual(resp.status_code, 200)
+        resp_json = resp.json()
+        self.assertEqual(len(resp_json), 2)

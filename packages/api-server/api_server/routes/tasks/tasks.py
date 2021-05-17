@@ -6,6 +6,7 @@ from fastapi.responses import JSONResponse
 
 from api_server.models.tasks import TaskStateEnum, TaskTypeEnum
 
+from ...dependencies import WithBaseQuery, base_query_params
 from ...fast_io import FastIORouter
 from ...gateway import RmfGateway
 from ...models import CancelTask, SubmitTask, SubmitTaskResponse, TaskProgress
@@ -31,6 +32,9 @@ class TasksRouter(FastIORouter):
         @self.get("", response_model=List[TaskProgress])
         async def get_tasks(
             dispatcher_client: DispatcherClient = Depends(dispatcher_client_dep),
+            with_base_query: WithBaseQuery = Depends(
+                base_query_params({"task_id": "id_"})
+            ),
             task_id: Optional[str] = None,
             fleet_name: Optional[str] = None,
             submission_time_since: Optional[datetime] = None,
@@ -39,11 +43,11 @@ class TasksRouter(FastIORouter):
             robot_name: Optional[str] = None,
             state: Optional[str] = None,
             task_type: Optional[str] = None,
-            offset: int = 0,
+            priority: Optional[int] = None,
         ):
             filter_params = {}
             if task_id is not None:
-                filter_params["task_id"] = task_id
+                filter_params["id_"] = task_id
             if fleet_name is not None:
                 filter_params["fleet_name"] = fleet_name
             if submission_time_since is not None:
@@ -64,13 +68,11 @@ class TasksRouter(FastIORouter):
                     filter_params["task_type"] = TaskTypeEnum[task_type.upper()].value
                 except KeyError as e:
                     raise HTTPException(422, "unknown task type") from e
+            if priority is not None:
+                filter_params["priority"] = priority
 
-            task_summaries = [
-                result.to_pydantic()
-                for result in await ttm.TaskSummary.filter(**filter_params)
-                .limit(100)
-                .offset(offset)
-            ]
+            query = with_base_query(ttm.TaskSummary.filter(**filter_params))
+            task_summaries = [result.to_pydantic() for result in await query]
             return [
                 dispatcher_client.convert_task_status_msg(summary)
                 for summary in task_summaries
