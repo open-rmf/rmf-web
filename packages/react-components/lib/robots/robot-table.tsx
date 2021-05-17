@@ -172,8 +172,7 @@ export function RobotTable({
                   robot={robot}
                   onClick={(ev) => onRobotClick && onRobotClick(ev, robot)}
                 />
-              ))}{' '}
-            ,
+              ))}
           </TableBody>
         </Table>
       </TableContainer>
