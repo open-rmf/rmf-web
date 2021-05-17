@@ -38,7 +38,7 @@ async def write_rmf_server_logs(body: list):
 # Will receive information from keacloak only
 
 
-@router.post("/keacloak/", tags=["keycloak_logs"], status_code=status.HTTP_201_CREATED)
+@router.post("/keycloak/", tags=["keycloak_logs"], status_code=status.HTTP_201_CREATED)
 async def write_keycloak_logs(body: list):
     try:
         response = await create_keycloak_log(body)

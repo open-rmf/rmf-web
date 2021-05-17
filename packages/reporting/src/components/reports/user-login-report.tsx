@@ -8,7 +8,7 @@ const UserLoginReportConfig = () => {
   const authenticator = React.useContext(AuthenticatorContext);
   const getLogs = async (params: DefaultReportQueryPayload): Promise<UserLoginRowsType> => {
     return (await getLogData(
-      `${appConfig.reportingServerUrl}/report/user_login_failure/`,
+      `${appConfig.reportingServerUrl}/report/user/login/`,
       params,
       authenticator.token,
     )) as UserLoginRowsType;

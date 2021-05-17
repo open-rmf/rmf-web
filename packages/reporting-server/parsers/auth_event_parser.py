@@ -10,8 +10,8 @@ async def auth_event_parser(fullstring: str):
         "username": state_json.get("username", None),
         "user_keycloak_id": state_json.get("userId", None),
         "event_type": state_json["type"],
-        "realm_id": state_json["realmId"],
-        "client_id": state_json["clientId"],
+        "realm_id": state_json.get("realmId", None),
+        "client_id": state_json.get("clientId", None),
         "ip_address": state_json["ipAddress"],
         "payload": modified_string,
     }
