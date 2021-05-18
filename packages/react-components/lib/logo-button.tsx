@@ -1,12 +1,12 @@
 import React from 'react';
 import { Button, createStyles, makeStyles } from '@material-ui/core';
 
-const useStyles = makeStyles((theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     root: {
       '&$disabled': {
-        backgroundColor: theme.palette.primary.dark,
-        color: theme.palette.primary.dark,
+        backgroundColor: '#1F396B',
+        color: '#1F396B',
         borderRadius: 0,
       },
     },

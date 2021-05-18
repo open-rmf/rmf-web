@@ -10,6 +10,8 @@ const debug = Debug('MainMenu');
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: 0,
+    backgroundColor: theme.palette.primary.main,
+    color: theme.fontColors,
   },
   divider: {
     backgroundColor: theme.palette.success.main,
@@ -22,12 +24,11 @@ export interface MainMenuProps {
    * resets the filter term once called
    */
   setFilter?: () => void;
-  componentTheme?: string;
 }
 
 export const MainMenu = React.memo((props: MainMenuProps) => {
   const { showTooltips } = React.useContext(TooltipsContext);
-  const { pushView, setFilter, componentTheme } = props;
+  const { pushView, setFilter } = props;
   debug('render');
   const classes = useStyles();
 
@@ -57,7 +58,7 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
   }, [pushView, setFilter]);
 
   return (
-    <List className={`${classes.root} ${componentTheme}`} data-component="MainMenu">
+    <List className={classes.root} data-component="MainMenu">
       <ListItem data-item="Doors" button={true} onClick={handleMainMenuDoorsClick}>
         <Typography variant="h5">Doors</Typography>
       </ListItem>

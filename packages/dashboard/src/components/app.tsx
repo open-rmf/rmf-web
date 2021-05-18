@@ -1,6 +1,5 @@
-import { ThemeProvider } from '@material-ui/core';
 import React from 'react';
-import { NotFoundPage, customTheme } from 'react-components';
+import { NotFoundPage } from 'react-components';
 import { BrowserRouter, Link, Redirect, Route, Switch, useLocation } from 'react-router-dom';
 import { getUrl, LoginHOC, PrivateRouteHOC, User } from 'rmf-auth';
 import 'typeface-roboto';
@@ -92,59 +91,57 @@ export default function App(): JSX.Element | null {
         <AuthenticatorContext.Provider value={authenticator}>
           <UserContext.Provider value={user}>
             <TrajectorySocketContext.Provider value={ws}>
-              <ThemeProvider theme={customTheme}>
-                <BrowserRouter>
-                  <Switch>
-                    <Route exact path={LOGIN_ROUTE}>
-                      <Login
-                        user={user}
-                        title={'Dashboard'}
-                        authenticator={authenticator}
-                        successRedirectUri={getUrl(DASHBOARD_ROUTE)}
-                      />
-                    </Route>
-                    {/* FIXME: Might not need this anymore after we changed to let each page control
+              <BrowserRouter>
+                <Switch>
+                  <Route exact path={LOGIN_ROUTE}>
+                    <Login
+                      user={user}
+                      title={'Dashboard'}
+                      authenticator={authenticator}
+                      successRedirectUri={getUrl(DASHBOARD_ROUTE)}
+                    />
+                  </Route>
+                  {/* FIXME: Might not need this anymore after we changed to let each page control
                   which topics to subscribe instead of a global context subscribing to everything.
 
                   we need this because we don't want to re-mount `AppIntrinsics` when just moving
                   from one route to another, but we want to unmount it when going "outside" the app. */}
-                    {tabValue ? (
-                      <PrivateRoute exact path={appRoutes} redirectPath={LOGIN_ROUTE} user={user}>
-                        <RmfApp>
-                          <AppBase appbarProps={{ tabValue, onTabChange }}>
-                            <Switch>
-                              <PrivateRoute
-                                exact
-                                path={DASHBOARD_ROUTE}
-                                redirectPath={LOGIN_ROUTE}
-                                user={user}
-                              >
-                                <Dashboard />
-                              </PrivateRoute>
-                              <PrivateRoute
-                                exact
-                                path={TASKS_ROUTE}
-                                redirectPath={LOGIN_ROUTE}
-                                user={user}
-                              >
-                                <TaskPage />
-                              </PrivateRoute>
-                            </Switch>
-                            {tabValue === 'building' && <Redirect to={DASHBOARD_ROUTE} />}
-                            {tabValue === 'tasks' && <Redirect to={TASKS_ROUTE} />}
-                          </AppBase>
-                        </RmfApp>
-                      </PrivateRoute>
-                    ) : (
-                      <Route>
-                        <NotFoundPage
-                          routeLinkComponent={<Link to={LOGIN_ROUTE}>Go to Login</Link>}
-                        />
-                      </Route>
-                    )}
-                  </Switch>
-                </BrowserRouter>
-              </ThemeProvider>
+                  {tabValue ? (
+                    <PrivateRoute exact path={appRoutes} redirectPath={LOGIN_ROUTE} user={user}>
+                      <RmfApp>
+                        <AppBase appbarProps={{ tabValue, onTabChange }}>
+                          <Switch>
+                            <PrivateRoute
+                              exact
+                              path={DASHBOARD_ROUTE}
+                              redirectPath={LOGIN_ROUTE}
+                              user={user}
+                            >
+                              <Dashboard />
+                            </PrivateRoute>
+                            <PrivateRoute
+                              exact
+                              path={TASKS_ROUTE}
+                              redirectPath={LOGIN_ROUTE}
+                              user={user}
+                            >
+                              <TaskPage />
+                            </PrivateRoute>
+                          </Switch>
+                          {tabValue === 'building' && <Redirect to={DASHBOARD_ROUTE} />}
+                          {tabValue === 'tasks' && <Redirect to={TASKS_ROUTE} />}
+                        </AppBase>
+                      </RmfApp>
+                    </PrivateRoute>
+                  ) : (
+                    <Route>
+                      <NotFoundPage
+                        routeLinkComponent={<Link to={LOGIN_ROUTE}>Go to Login</Link>}
+                      />
+                    </Route>
+                  )}
+                </Switch>
+              </BrowserRouter>
             </TrajectorySocketContext.Provider>
           </UserContext.Provider>
         </AuthenticatorContext.Provider>

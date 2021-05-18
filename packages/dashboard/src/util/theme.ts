@@ -4,7 +4,7 @@ import { ThemeMode } from '../settings';
 const darkThemeStyles = makeStyles((theme) => ({
   components: {
     backgroundColor: theme.palette.primary.dark,
-    color: theme.fontColors.darkTheme,
+    color: theme.fontColors,
   },
   background: {
     backgroundColor: theme.palette.secondary.dark,
@@ -14,18 +14,18 @@ const darkThemeStyles = makeStyles((theme) => ({
       'invert(90%) sepia(12%) saturate(5773%) hue-rotate(193deg) brightness(92%) contrast(92%)',
   },
   accordian: {
-    backgroundColor: theme.palette.secondary.dark,
-    color: theme.fontColors.darkTheme,
+    backgroundColor: theme.palette.secondary.main,
+    color: theme.fontColors,
   },
   headerTab: {
-    borderRight: `0.25px solid ${theme.fontColors.darkTheme}`,
-    borderLeft: `0.25px solid ${theme.fontColors.darkTheme}`,
+    borderRight: `0.25px solid ${theme.fontColors}`,
+    borderLeft: `0.25px solid ${theme.fontColors}`,
   },
   font: {
-    color: theme.fontColors.darkTheme,
+    color: theme.fontColors,
   },
   leafletControl: {
-    color: `${theme.fontColors.darkTheme} !important`,
+    color: `${theme.fontColors} !important`,
     backgroundColor: `${theme.palette.primary.dark} !important`,
   },
 }));
@@ -33,7 +33,7 @@ const darkThemeStyles = makeStyles((theme) => ({
 const lightThemeStyles = makeStyles((theme) => ({
   components: {
     backgroundColor: theme.palette.primary.main,
-    color: theme.fontColors.lightTheme,
+    color: theme.fontColors,
   },
   background: {
     backgroundColor: theme.palette.secondary.main,
@@ -43,17 +43,17 @@ const lightThemeStyles = makeStyles((theme) => ({
   },
   accordian: {
     backgroundColor: theme.palette.secondary.main,
-    color: theme.fontColors.lightTheme,
+    color: theme.fontColors,
   },
   headerTab: {
-    borderRight: `0.25px solid ${theme.fontColors.lightTheme}`,
-    borderLeft: `0.25px solid ${theme.fontColors.lightTheme}`,
+    borderRight: `0.25px solid ${theme.fontColors}`,
+    borderLeft: `0.25px solid ${theme.fontColors}`,
   },
   font: {
-    color: theme.fontColors.lightTheme,
+    color: theme.fontColors,
   },
   leafletControl: {
-    color: `${theme.fontColors.lightTheme} !important`,
+    color: `${theme.fontColors} !important`,
     backgroundColor: `${theme.palette.primary.main} !important`,
   },
 }));

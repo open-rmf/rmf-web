@@ -22,7 +22,7 @@ import 'typeface-roboto';
 import { buildHotKeys } from '../../hotkeys';
 import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
 import { DispenserResource } from '../../managers/resource-manager-dispensers';
-import { AppControllerContext, ResourcesContext, SettingsContext } from '../app-contexts';
+import { AppControllerContext, ResourcesContext } from '../app-contexts';
 import {
   BuildingMapContext,
   DispenserStateContext,
@@ -38,7 +38,6 @@ import MainMenu from './main-menu';
 import NegotiationsPanel from './negotiations-panel';
 import OmniPanelControl_ from './omnipanel-control';
 import { DashboardState, useDashboardReducer } from './reducers/dashboard-reducer';
-import { decideThemeStyle } from '../../util/theme';
 
 const debug = Debug('Dashboard');
 const DispenserAccordion = React.memo(withSpotlight(DispenserAccordion_));
@@ -90,6 +89,8 @@ const useStyles = makeStyles((theme) => ({
       borderTopRightRadius: borderRadius,
       boxShadow: theme.shadows[12],
     },
+    backgroundColor: theme.palette.primary.main,
+    color: theme.fontColors,
   },
 }));
 
@@ -106,9 +107,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
 
   const buildingMap = React.useContext(BuildingMapContext);
   const resourceManager = React.useContext(ResourcesContext);
-
-  const themeContext = React.useContext(SettingsContext).themeMode;
-  const themeClasses = decideThemeStyle(themeContext);
 
   const { state: dashboardState, dispatch: dashboardDispatch } = useDashboardReducer(
     dashboardInitialValues,
@@ -303,21 +301,16 @@ export default function Dashboard(_props: {}): React.ReactElement {
       )}
       <Fade in={showOmniPanel}>
         <OmniPanel
-          className={`${classes.omniPanel} ${themeClasses.components}`}
+          className={classes.omniPanel}
           stack={viewStack}
           variant="backHomeClose"
-          componentTheme={themeClasses.components}
           onBack={handleOmniPanelBack}
           onHome={handleOmniPanelHome}
           onClose={handleOmniPanelClose}
           id="omnipanel"
         >
           <OmniPanelView viewId={OmniPanelViewIndex.MainMenu}>
-            <MainMenu
-              componentTheme={themeClasses.components}
-              pushView={viewStackDispatch.push}
-              setFilter={() => setFilter('')}
-            />
+            <MainMenu pushView={viewStackDispatch.push} setFilter={() => setFilter('')} />
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Doors}>
             <SimpleFilter onChange={onChange} value={filter} />
@@ -331,7 +324,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
                   doorState={doorStates[door.name]}
                   onDoorControlClick={handleOnDoorControlClick}
                   data-name={door.name}
-                  accordianTheme={themeClasses.accordian}
                 />
               ) : null;
             })}
@@ -347,7 +339,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
                   lift={lift}
                   liftState={liftStates[lift.name]}
                   onRequestSubmit={handleLiftRequestSubmit}
-                  accordianTheme={themeClasses.accordian}
                 />
               ) : null;
             })}
@@ -364,7 +355,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
                     robot={robot}
                     fleetName={fleet.name}
                     data-component="RobotAccordion"
-                    accordianTheme={themeClasses.accordian}
                   />
                 ) : null;
               }),
@@ -384,7 +374,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
                       }
                       data-component="DispenserAccordion"
                       dispenser={dispenser}
-                      accordianTheme={themeClasses.accordian}
                     />
                   ) : null;
                 })
@@ -393,7 +382,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
           <OmniPanelView viewId={OmniPanelViewIndex.Negotiations}>
             <NegotiationsPanel
               conflicts={negotiationStatus}
-              componentTheme={themeClasses.components}
               spotlight={negotiationSpotlight}
               mapFloorLayerSorted={mapFloorLayerSorted}
               negotiationStatusManager={negotiationStatusManager}

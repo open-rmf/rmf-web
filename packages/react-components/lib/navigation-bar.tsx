@@ -6,6 +6,8 @@ const useStyles = makeStyles((theme) =>
   createStyles({
     tabsContainer: {
       flexGrow: 4,
+      borderRight: `0.25px solid ${theme.fontColors}`,
+      borderLeft: `0.25px solid ${theme.fontColors}`,
     },
     indicator: {
       backgroundColor: theme.palette.success.main,
@@ -21,7 +23,7 @@ export interface NavigationBarProps {
 }
 
 export const NavigationBar = (props: NavigationBarProps): JSX.Element => {
-  const { value, onTabChange, children, navBarTheme } = props;
+  const { value, onTabChange, children } = props;
   const classes = useStyles();
 
   return (
@@ -30,7 +32,7 @@ export const NavigationBar = (props: NavigationBarProps): JSX.Element => {
       scrollButtons="auto"
       value={value}
       onChange={onTabChange}
-      className={`${classes.tabsContainer} ${navBarTheme}`}
+      className={classes.tabsContainer}
       classes={{ indicator: classes.indicator }}
     >
       {children}

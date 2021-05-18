@@ -26,6 +26,12 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     borderColor: theme.palette.success.main,
+    backgroundColor: theme.palette.secondary.main,
+    color: theme.fontColors,
+  },
+  root: {
+    backgroundColor: theme.palette.secondary.main,
+    color: theme.fontColors,
   },
 }));
 
@@ -97,12 +103,11 @@ export interface DoorAccordionProps extends Omit<AccordionProps, 'children'> {
   door: RmfModels.Door;
   doorState?: RmfModels.DoorState;
   onDoorControlClick?(event: React.MouseEvent, door: RmfModels.Door, mode: number): void;
-  accordianTheme?: string;
 }
 
 export const DoorAccordion = React.forwardRef(
   (props: DoorAccordionProps, ref: React.Ref<HTMLElement>) => {
-    const { door, doorState, onDoorControlClick, accordianTheme, ...otherProps } = props;
+    const { door, doorState, onDoorControlClick, ...otherProps } = props;
     debug(`render ${door.name}`);
     const classes = useStyles();
 
@@ -128,7 +133,7 @@ export const DoorAccordion = React.forwardRef(
     const doorStatusClass = doorModeLabelClasses(doorState);
 
     return (
-      <Accordion ref={ref} {...otherProps} className={accordianTheme}>
+      <Accordion ref={ref} {...otherProps} className={classes.root}>
         <ItemAccordionSummary
           title={door.name}
           statusProps={{
@@ -142,13 +147,13 @@ export const DoorAccordion = React.forwardRef(
           {onDoorControlClick && (
             <ButtonGroup className={classes.controlButtonGroup} fullWidth>
               <Button
-                className={`${accordianTheme} ${classes.button}`}
+                className={classes.button}
                 onClick={(ev) => onDoorControlClick(ev, door, RmfModels.DoorMode.MODE_CLOSED)}
               >
                 Close
               </Button>
               <Button
-                className={`${accordianTheme} ${classes.button}`}
+                className={classes.button}
                 onClick={(ev) => onDoorControlClick(ev, door, RmfModels.DoorMode.MODE_OPEN)}
               >
                 Open

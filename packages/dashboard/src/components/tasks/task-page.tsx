@@ -1,16 +1,15 @@
 import { makeStyles } from '@material-ui/core';
 import { Task } from 'api-client';
 import React from 'react';
-import { TaskPanel, TaskPanelProps, TaskTableThemeProps } from 'react-components';
+import { TaskPanel, TaskPanelProps } from 'react-components';
 import * as RmfModels from 'rmf-models';
 import { PlacesContext, RmfIngressContext } from '../rmf-app';
-import { decideThemeStyle } from '../../util/theme';
-import { SettingsContext } from '../app-contexts';
 
 const useStyles = makeStyles((theme) => ({
   taskPanel: {
     padding: `${theme.spacing(4)}px`,
     height: '100%',
+    backgroundColor: theme.palette.secondary.main,
   },
 }));
 
@@ -37,14 +36,6 @@ export function TaskPage() {
   const places = React.useContext(PlacesContext);
   const [taskSummaries, setTaskSummaries] = React.useState<RmfModels.TaskSummary[]>([]);
 
-  const themeContext = React.useContext(SettingsContext).themeMode;
-  const theme = decideThemeStyle(themeContext);
-  const taskPanelStyle = `${classes.taskPanel} ${theme.background}`;
-  const componentTheme: TaskTableThemeProps = {
-    componentTheme: theme.components,
-    fontTheme: theme.font,
-  };
-
   const handleRefresh = React.useCallback(async () => {
     if (!tasksApi) {
       return;
@@ -68,14 +59,13 @@ export function TaskPage() {
   );
   return (
     <TaskPanel
-      className={taskPanelStyle}
+      className={classes.taskPanel}
       tasks={taskSummaries}
       cleaningZones={Object.keys(places)}
       loopWaypoints={Object.keys(places)}
       deliveryWaypoints={Object.keys(places)}
       submitTask={submitTask}
       onRefreshClick={handleRefresh}
-      taskTableTheme={componentTheme}
     />
   );
 }

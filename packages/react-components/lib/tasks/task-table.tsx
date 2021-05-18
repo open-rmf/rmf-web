@@ -45,10 +45,17 @@ const useStyles = makeStyles((theme) => ({
   tablePagination: {
     flex: '0 0 auto',
     borderBottom: 'none',
+    backgroundColor: theme.palette.primary.main,
+    color: theme.fontColors,
   },
   tableHeadCell: {
     background: 'rgba(0, 0, 0, 0.1)',
     borderBottom: 'none',
+    color: theme.fontColors,
+  },
+  taskRowAndIcons: {
+    backgroundColor: theme.palette.primary.main,
+    color: theme.fontColors,
   },
 }));
 
@@ -62,11 +69,10 @@ const TablePaginationTheme = withStyles({
 
 interface TaskRowProps {
   task: RmfModels.TaskSummary;
-  componentTheme?: string;
   onClick: React.MouseEventHandler<HTMLTableRowElement>;
 }
 
-function TaskRow({ task, onClick, componentTheme }: TaskRowProps) {
+function TaskRow({ task, onClick }: TaskRowProps) {
   const classes = useStyles();
   const [hover, setHover] = React.useState(false);
 
@@ -78,11 +84,11 @@ function TaskRow({ task, onClick, componentTheme }: TaskRowProps) {
         onMouseOver={() => setHover(true)}
         onMouseOut={() => setHover(false)}
       >
-        <TableCell className={componentTheme}>{task.task_id}</TableCell>
-        <TableCell className={componentTheme}>{task.robot_name}</TableCell>
-        <TableCell className={componentTheme}>{toRelativeDate(task.start_time)}</TableCell>
-        <TableCell className={componentTheme}>{toRelativeDate(task.end_time)}</TableCell>
-        <TableCell className={componentTheme}>{taskStateToStr(task.state)}</TableCell>
+        <TableCell className={classes.taskRowAndIcons}>{task.task_id}</TableCell>
+        <TableCell className={classes.taskRowAndIcons}>{task.robot_name}</TableCell>
+        <TableCell className={classes.taskRowAndIcons}>{toRelativeDate(task.start_time)}</TableCell>
+        <TableCell className={classes.taskRowAndIcons}>{toRelativeDate(task.end_time)}</TableCell>
+        <TableCell className={classes.taskRowAndIcons}>{taskStateToStr(task.state)}</TableCell>
       </TableRow>
       <TableRow
         className={clsx(hover && classes.taskRowHover)}
@@ -107,11 +113,6 @@ export type PaginationOptions = Omit<
   'component'
 >;
 
-export interface TaskTableThemeProps {
-  componentTheme: string;
-  fontTheme: string;
-}
-
 export interface TaskTableProps extends PaperProps {
   /**
    * The current list of tasks to display, when pagination is enabled, this should only
@@ -119,7 +120,6 @@ export interface TaskTableProps extends PaperProps {
    */
   tasks: RmfModels.TaskSummary[];
   paginationOptions?: PaginationOptions;
-  taskTableTheme?: TaskTableThemeProps;
   onCreateTaskClick?: React.MouseEventHandler<HTMLButtonElement>;
   onTaskClick?(ev: React.MouseEvent<HTMLDivElement>, task: RmfModels.TaskSummary): void;
   onRefreshClick?: React.MouseEventHandler<HTMLButtonElement>;
@@ -131,7 +131,6 @@ export function TaskTable({
   onCreateTaskClick,
   onTaskClick,
   onRefreshClick,
-  taskTableTheme,
   ...paperProps
 }: TaskTableProps): JSX.Element {
   const classes = useStyles();
@@ -142,31 +141,21 @@ export function TaskTable({
           Tasks
         </Typography>
         <IconButton onClick={onRefreshClick} aria-label="Refresh">
-          <RefreshIcon className={taskTableTheme?.componentTheme} />
+          <RefreshIcon className={classes.taskRowAndIcons} />
         </IconButton>
         <IconButton onClick={onCreateTaskClick} aria-label="Create Task">
-          <AddOutlinedIcon className={taskTableTheme?.componentTheme} />
+          <AddOutlinedIcon className={classes.taskRowAndIcons} />
         </IconButton>
       </Toolbar>
       <TableContainer style={{ flex: '1 1 auto' }}>
         <Table className={classes.table} stickyHeader size="small" style={{ tableLayout: 'fixed' }}>
           <TableHead>
             <TableRow>
-              <TableCell className={`${classes.tableHeadCell} ${taskTableTheme?.fontTheme}`}>
-                Task Id
-              </TableCell>
-              <TableCell className={`${classes.tableHeadCell} ${taskTableTheme?.fontTheme}`}>
-                Assignee
-              </TableCell>
-              <TableCell className={`${classes.tableHeadCell} ${taskTableTheme?.fontTheme}`}>
-                Start Time
-              </TableCell>
-              <TableCell className={`${classes.tableHeadCell} ${taskTableTheme?.fontTheme}`}>
-                End Time
-              </TableCell>
-              <TableCell className={`${classes.tableHeadCell} ${taskTableTheme?.fontTheme}`}>
-                State
-              </TableCell>
+              <TableCell className={classes.tableHeadCell}>Task Id</TableCell>
+              <TableCell className={classes.tableHeadCell}>Assignee</TableCell>
+              <TableCell className={classes.tableHeadCell}>Start Time</TableCell>
+              <TableCell className={classes.tableHeadCell}>End Time</TableCell>
+              <TableCell className={classes.tableHeadCell}>State</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -175,17 +164,13 @@ export function TaskTable({
                 key={task.task_id}
                 task={task}
                 onClick={(ev) => onTaskClick && onTaskClick(ev, task)}
-                componentTheme={taskTableTheme?.componentTheme}
               />
             ))}
           </TableBody>
         </Table>
       </TableContainer>
       {paginationOptions && (
-        <TablePaginationTheme
-          {...paginationOptions}
-          className={`${classes.tablePagination} ${taskTableTheme?.componentTheme}`}
-        />
+        <TablePaginationTheme {...paginationOptions} className={classes.tablePagination} />
       )}
     </Paper>
   );

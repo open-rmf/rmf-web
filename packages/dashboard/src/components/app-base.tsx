@@ -1,6 +1,8 @@
+import { ThemeProvider } from '@material-ui/core';
+import { lightTheme, darkTheme } from 'react-components';
 import { Grid, makeStyles } from '@material-ui/core';
 import React from 'react';
-import { loadSettings, saveSettings } from '../settings';
+import { loadSettings, saveSettings, ThemeMode } from '../settings';
 import {
   AppController,
   AppControllerContext,
@@ -50,6 +52,8 @@ export function AppBase({
 
   const [showTooltips, setShowTooltips] = React.useState(false);
 
+  const preferDarkMode = settings.themeMode === ThemeMode.Dark;
+
   const tooltips = React.useMemo<Tooltips>(
     () => ({
       showTooltips,
@@ -74,21 +78,23 @@ export function AppBase({
   );
 
   return (
-    <SettingsContext.Provider value={settings}>
-      <TooltipsContext.Provider value={tooltips}>
-        <AppControllerContext.Provider value={appController}>
-          <Grid container direction="column" className={classes.appBase} wrap="nowrap">
-            <AppBar {...appbarProps} />
-            {children}
-            <AppDrawers
-              settings={settings}
-              showHelp={showHelp}
-              showHotkeysDialog={showHotkeysDialog}
-              showSettings={showSettings}
-            />
-          </Grid>
-        </AppControllerContext.Provider>
-      </TooltipsContext.Provider>
-    </SettingsContext.Provider>
+    <ThemeProvider theme={preferDarkMode ? darkTheme : lightTheme}>
+      <SettingsContext.Provider value={settings}>
+        <TooltipsContext.Provider value={tooltips}>
+          <AppControllerContext.Provider value={appController}>
+            <Grid container direction="column" className={classes.appBase} wrap="nowrap">
+              <AppBar {...appbarProps} />
+              {children}
+              <AppDrawers
+                settings={settings}
+                showHelp={showHelp}
+                showHotkeysDialog={showHotkeysDialog}
+                showSettings={showSettings}
+              />
+            </Grid>
+          </AppControllerContext.Provider>
+        </TooltipsContext.Provider>
+      </SettingsContext.Provider>
+    </ThemeProvider>
   );
 }

@@ -53,6 +53,7 @@ const useStyles = makeStyles((theme) => ({
   },
   expanded: {
     borderLeft: `0.1rem solid ${colorPalette.unknown}`,
+    color: theme.fontColors,
   },
   buttonGroupDiv: {
     padding: '0.5rem 1rem',
@@ -76,7 +77,6 @@ interface Parameter {
 
 export interface NegotiationsPanelProps {
   conflicts: Record<string, NegotiationConflict>;
-  componentTheme?: string;
   spotlight?: SpotlightValue<string>;
   mapFloorLayerSorted?: string[];
   negotiationStatusManager?: Readonly<NegotiationStatusManager>;
@@ -91,7 +91,6 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
   debug('negotiation status panel render');
   const {
     conflicts,
-    componentTheme,
     spotlight,
     mapFloorLayerSorted,
     negotiationStatusManager,
@@ -371,7 +370,7 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
             id="reset-button"
             disabled={conflicts && Object.keys(conflicts).length === 0}
             onClick={handleResetNegotiations}
-            className={`${componentTheme} ${classes.button}`}
+            className={classes.button}
             classes={{ disabled: classes.disabledButton }}
           >
             <RestoreIcon />
@@ -381,7 +380,7 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
             id="clear-button"
             disabled={conflicts && Object.keys(conflicts).length === 0}
             onClick={handleClearAllCurrNegotiations}
-            className={`${componentTheme} ${classes.button}`}
+            className={classes.button}
             classes={{ disabled: classes.disabledButton }}
           >
             <ClearAllIcon />
@@ -391,7 +390,7 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
             id="restore-button"
             disabled={conflicts && Object.keys(conflicts).length === 0}
             onClick={handleRestoreNegotiations}
-            className={`${componentTheme} ${classes.button}`}
+            className={classes.button}
             classes={{ disabled: classes.disabledButton }}
           >
             <RestoreFromTrashIcon />

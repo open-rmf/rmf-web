@@ -51,6 +51,10 @@ const useStyles = makeStyles((theme) => ({
   typography: {
     padding: '1rem',
   },
+  root: {
+    backgroundColor: theme.palette.secondary.main,
+    color: theme.fontColors,
+  },
 }));
 
 const overrideStyles = makeStyles(() => ({
@@ -69,12 +73,11 @@ export interface DispenserAccordionProps extends Omit<AccordionProps, 'children'
    */
   dispenserState: RmfModels.DispenserState | null;
   dispenser: string;
-  accordianTheme?: string;
 }
 
 export const DispenserAccordion = React.forwardRef(
   (props: DispenserAccordionProps, ref: React.Ref<HTMLElement>) => {
-    const { dispenserState, dispenser, accordianTheme, ...otherProps } = props;
+    const { dispenserState, dispenser, ...otherProps } = props;
     debug(`render ${dispenser}`);
     const classes = useStyles();
     const overrideClasses = overrideStyles();
@@ -109,7 +112,7 @@ export const DispenserAccordion = React.forwardRef(
     const statusLabelClass = getStatusLabelClass();
 
     return (
-      <Accordion ref={ref} {...otherProps} className={accordianTheme}>
+      <Accordion ref={ref} {...otherProps} className={classes.root}>
         <ItemAccordionSummary
           title={dispenserState ? dispenserState.guid : dispenser}
           statusProps={{

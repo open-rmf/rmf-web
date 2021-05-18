@@ -3,7 +3,6 @@ import { createStyles, makeStyles, AppBar } from '@material-ui/core';
 
 interface HeaderBarProps {
   children?: React.ReactNode;
-  theme?: string;
 }
 
 const useStyles = makeStyles(() =>
@@ -17,11 +16,11 @@ const useStyles = makeStyles(() =>
 );
 
 export const HeaderBar = (props: HeaderBarProps): React.ReactElement => {
-  const { children, theme } = props;
+  const { children } = props;
   const classes = useStyles();
 
   return (
-    <AppBar id="appbar" position="relative" className={`${classes.root} ${theme}`}>
+    <AppBar id="appbar" position="relative" className={classes.root} color="primary">
       {children}
     </AppBar>
   );

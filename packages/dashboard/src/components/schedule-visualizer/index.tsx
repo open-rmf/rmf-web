@@ -32,12 +32,17 @@ import { decideThemeStyle } from '../../util/theme';
 
 const debug = Debug('ScheduleVisualizer');
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   map: {
     height: '100%',
     width: '100%',
     margin: 0,
     padding: 0,
+    backgroundColor: theme.palette.secondary.main,
+  },
+  leafletControl: {
+    color: `${theme.fontColors} !important`,
+    backgroundColor: `${theme.palette.primary.main} !important`,
   },
 }));
 
@@ -71,6 +76,7 @@ export function calcMaxBounds(
 
 export default function ScheduleVisualizer(props: ScheduleVisualizerProps): React.ReactElement {
   debug('render');
+  const classes = useStyles();
   const { buildingMap, negotiationTrajStore, mapFloorSort, showTrajectories } = props;
   const negotiationColors = React.useMemo(() => new NegotiationColors(), []);
 
@@ -79,7 +85,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   const themeClasses = decideThemeStyle(themeContext);
 
   const [curMapTheme, setCurMapTheme] = React.useState(themeClasses.map);
-  const [curLayerTheme, setCurLayerTheme] = React.useState(themeClasses.leafletControl);
+  const [curLayerTheme, setCurLayerTheme] = React.useState(classes.leafletControl);
 
   const mapFloorLayerSorted = React.useMemo(
     () =>
@@ -88,8 +94,6 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
         : buildingMap.levels.map((level) => level.name),
     [mapFloorSort, buildingMap.levels],
   );
-
-  const classes = useStyles();
 
   const [mapFloorLayers, setMapFloorLayers] = React.useState<
     Readonly<Record<string, MapFloorLayer>>
@@ -330,7 +334,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   return (
     <LMap
       id="ScheduleVisualizer" // # data-* attrs are not set on the leaflet container
-      className={`${classes.map} ${themeClasses.background}`}
+      className={classes.map}
       attributionControl={false}
       crs={L.CRS.Simple}
       minZoom={0}
