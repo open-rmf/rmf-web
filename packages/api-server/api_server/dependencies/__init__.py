@@ -9,6 +9,11 @@ WithBaseQuery = Callable[[QuerySet], QuerySet]
 
 
 def base_query_params(field_mapping: Dict[str, str] = None):
+    """
+    :param field_mapping: A dict mapping the order fields to the fields used to build the
+        query. e.g. a url of `?order_by=order_field` and a field mapping of `{"order_field": "db_field"}`
+        will order the query result according to `db_field`.
+    """
     field_mapping = field_mapping or {}
 
     def dep(
