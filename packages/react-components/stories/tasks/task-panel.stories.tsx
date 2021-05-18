@@ -1,12 +1,19 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import { TaskPanel as TaskPanel_, TaskPanelProps } from '../../lib';
+import { FetchTasksResult, TaskPanel as TaskPanel_, TaskPanelProps } from '../../lib';
 import { makeTask } from '../../tests/test-data/tasks';
 
 export default {
   title: 'Tasks/Task Panel',
   component: TaskPanel_,
+  argTypes: {
+    fetchTasks: {
+      table: {
+        disable: true,
+      },
+    },
+  },
 } as Meta;
 
 const failedTask = makeTask('failed_task', 3, 3);
@@ -30,7 +37,6 @@ export const TaskPanel: Story<TaskPanelProps> = (args) => {
     <>
       <TaskPanel_
         {...args}
-        totalCount={tasks.length}
         style={{ height: '95vh', margin: 'auto', maxWidth: 1600 }}
         submitTask={() => new Promise((res) => setTimeout(res, 1000))}
       ></TaskPanel_>
@@ -38,8 +44,11 @@ export const TaskPanel: Story<TaskPanelProps> = (args) => {
   );
 };
 
-async function fetchTasks(limit: number, offset: number) {
-  return tasks.slice(offset, offset + limit);
+async function fetchTasks(limit: number, offset: number): Promise<FetchTasksResult> {
+  return {
+    tasks: tasks.slice(offset, offset + limit),
+    totalCount: tasks.length,
+  };
 }
 
 TaskPanel.args = {
