@@ -10,7 +10,7 @@ export function ProgressBar(props: LinearProgressProps & { value: number }): JSX
         <LinearProgress variant="determinate" {...props} />
       </Box>
       <Box minWidth={35}>
-        <Typography variant="body2" color="textSecondary">{`${Math.round(
+        <Typography variant="body2" color="textSecondary">{`${Math.floor(
           props.value,
         )}%`}</Typography>
       </Box>

@@ -64,9 +64,14 @@ export function allocateTasksToRobots(
   robots: RmfModels.RobotState[],
   tasks: RmfModels.TaskSummary[],
 ): VerboseRobot[] {
+  const removableTaskStates = [
+    RmfModels.TaskSummary.STATE_ACTIVE,
+    RmfModels.TaskSummary.STATE_PENDING,
+    RmfModels.TaskSummary.STATE_QUEUED,
+  ];
   const robotsWithAssignedTasks = robots.map((robot) => {
     const assignedTasks = tasks.filter((task) => {
-      if (task.robot_name == robot.name) {
+      if (task.robot_name == robot.name && removableTaskStates.indexOf(task.state) != -1) {
         return task;
       }
     });
