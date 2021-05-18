@@ -68,8 +68,5 @@ class TestBaseQuery(RouteFixture):
         self.assertEqual(len(resp_json["items"]), 10)
 
     def test_max_limit(self):
-        resp = self.session.get(f"{self.base_url}/tasks?limit=99999999")
-        self.assertEqual(resp.status_code, 200)
-        resp_json = resp.json()
-        self.assertEqual(resp_json["total_count"], 200)
-        self.assertEqual(len(resp_json["items"]), 100)
+        resp = self.session.get(f"{self.base_url}/tasks?limit=101")
+        self.assertEqual(resp.status_code, 422)
