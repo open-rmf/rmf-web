@@ -29,7 +29,7 @@ import { ModelObject } from '../models';
 export const LiftsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     * available in socket.io
+     * Available in socket.io.
      * @summary Get Lift Health
      * @param {string} lift_name
      * @param {*} [options] Override http request option.
@@ -47,6 +47,58 @@ export const LiftsApiAxiosParamCreator = function (configuration?: Configuration
         );
       }
       const localVarPath = `/lifts/{lift_name}/health`.replace(
+        `{${'lift_name'}}`,
+        encodeURIComponent(String(lift_name)),
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, 'https://example.com');
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      const query = new URLSearchParams(localVarUrlObj.search);
+      for (const key in localVarQueryParameter) {
+        query.set(key, localVarQueryParameter[key]);
+      }
+      for (const key in options.query) {
+        query.set(key, options.query[key]);
+      }
+      localVarUrlObj.search = new URLSearchParams(query).toString();
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: localVarUrlObj.pathname + localVarUrlObj.search + localVarUrlObj.hash,
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Available in socket.io.
+     * @summary Get Lift State
+     * @param {string} lift_name
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getLiftStateLiftsLiftNameStateGet: async (
+      lift_name: string,
+      options: any = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'lift_name' is not null or undefined
+      if (lift_name === null || lift_name === undefined) {
+        throw new RequiredError(
+          'lift_name',
+          'Required parameter lift_name was null or undefined when calling getLiftStateLiftsLiftNameStateGet.',
+        );
+      }
+      const localVarPath = `/lifts/{lift_name}/state`.replace(
         `{${'lift_name'}}`,
         encodeURIComponent(String(lift_name)),
       );
@@ -187,58 +239,6 @@ export const LiftsApiAxiosParamCreator = function (configuration?: Configuration
         options: localVarRequestOptions,
       };
     },
-    /**
-     * available in socket.io
-     * @summary Watch Lift State
-     * @param {string} lift_name
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    watchLiftStateLiftsLiftNameStateGet: async (
-      lift_name: string,
-      options: any = {},
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'lift_name' is not null or undefined
-      if (lift_name === null || lift_name === undefined) {
-        throw new RequiredError(
-          'lift_name',
-          'Required parameter lift_name was null or undefined when calling watchLiftStateLiftsLiftNameStateGet.',
-        );
-      }
-      const localVarPath = `/lifts/{lift_name}/state`.replace(
-        `{${'lift_name'}}`,
-        encodeURIComponent(String(lift_name)),
-      );
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, 'https://example.com');
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      const query = new URLSearchParams(localVarUrlObj.search);
-      for (const key in localVarQueryParameter) {
-        query.set(key, localVarQueryParameter[key]);
-      }
-      for (const key in options.query) {
-        query.set(key, options.query[key]);
-      }
-      localVarUrlObj.search = new URLSearchParams(query).toString();
-      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers,
-      };
-
-      return {
-        url: localVarUrlObj.pathname + localVarUrlObj.search + localVarUrlObj.hash,
-        options: localVarRequestOptions,
-      };
-    },
   };
 };
 
@@ -249,7 +249,7 @@ export const LiftsApiAxiosParamCreator = function (configuration?: Configuration
 export const LiftsApiFp = function (configuration?: Configuration) {
   return {
     /**
-     * available in socket.io
+     * Available in socket.io.
      * @summary Get Lift Health
      * @param {string} lift_name
      * @param {*} [options] Override http request option.
@@ -267,6 +267,28 @@ export const LiftsApiFp = function (configuration?: Configuration) {
       const localVarAxiosArgs = await LiftsApiAxiosParamCreator(
         configuration,
       ).getLiftHealthLiftsLiftNameHealthGet(lift_name, options);
+      return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
+        const axiosRequestArgs = {
+          ...localVarAxiosArgs.options,
+          url: basePath + localVarAxiosArgs.url,
+        };
+        return axios.request(axiosRequestArgs);
+      };
+    },
+    /**
+     * Available in socket.io.
+     * @summary Get Lift State
+     * @param {string} lift_name
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async getLiftStateLiftsLiftNameStateGet(
+      lift_name: string,
+      options?: any,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<LiftState>> {
+      const localVarAxiosArgs = await LiftsApiAxiosParamCreator(
+        configuration,
+      ).getLiftStateLiftsLiftNameStateGet(lift_name, options);
       return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
         const axiosRequestArgs = {
           ...localVarAxiosArgs.options,
@@ -319,28 +341,6 @@ export const LiftsApiFp = function (configuration?: Configuration) {
         return axios.request(axiosRequestArgs);
       };
     },
-    /**
-     * available in socket.io
-     * @summary Watch Lift State
-     * @param {string} lift_name
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async watchLiftStateLiftsLiftNameStateGet(
-      lift_name: string,
-      options?: any,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<LiftState>> {
-      const localVarAxiosArgs = await LiftsApiAxiosParamCreator(
-        configuration,
-      ).watchLiftStateLiftsLiftNameStateGet(lift_name, options);
-      return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
-        const axiosRequestArgs = {
-          ...localVarAxiosArgs.options,
-          url: basePath + localVarAxiosArgs.url,
-        };
-        return axios.request(axiosRequestArgs);
-      };
-    },
   };
 };
 
@@ -355,7 +355,7 @@ export const LiftsApiFactory = function (
 ) {
   return {
     /**
-     * available in socket.io
+     * Available in socket.io.
      * @summary Get Lift Health
      * @param {string} lift_name
      * @param {*} [options] Override http request option.
@@ -367,6 +367,18 @@ export const LiftsApiFactory = function (
     ): AxiosPromise<ApiServerModelsTortoiseModelsHealthBasicHealthModelLeaf> {
       return LiftsApiFp(configuration)
         .getLiftHealthLiftsLiftNameHealthGet(lift_name, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     * Available in socket.io.
+     * @summary Get Lift State
+     * @param {string} lift_name
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getLiftStateLiftsLiftNameStateGet(lift_name: string, options?: any): AxiosPromise<LiftState> {
+      return LiftsApiFp(configuration)
+        .getLiftStateLiftsLiftNameStateGet(lift_name, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -397,18 +409,6 @@ export const LiftsApiFactory = function (
         .postLiftRequestLiftsLiftNameRequestPost(body, lift_name, options)
         .then((request) => request(axios, basePath));
     },
-    /**
-     * available in socket.io
-     * @summary Watch Lift State
-     * @param {string} lift_name
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    watchLiftStateLiftsLiftNameStateGet(lift_name: string, options?: any): AxiosPromise<LiftState> {
-      return LiftsApiFp(configuration)
-        .watchLiftStateLiftsLiftNameStateGet(lift_name, options)
-        .then((request) => request(axios, basePath));
-    },
   };
 };
 
@@ -420,7 +420,7 @@ export const LiftsApiFactory = function (
  */
 export class LiftsApi extends BaseAPI {
   /**
-   * available in socket.io
+   * Available in socket.io.
    * @summary Get Lift Health
    * @param {string} lift_name
    * @param {*} [options] Override http request option.
@@ -430,6 +430,19 @@ export class LiftsApi extends BaseAPI {
   public getLiftHealthLiftsLiftNameHealthGet(lift_name: string, options?: any) {
     return LiftsApiFp(this.configuration)
       .getLiftHealthLiftsLiftNameHealthGet(lift_name, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+  /**
+   * Available in socket.io.
+   * @summary Get Lift State
+   * @param {string} lift_name
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof LiftsApi
+   */
+  public getLiftStateLiftsLiftNameStateGet(lift_name: string, options?: any) {
+    return LiftsApiFp(this.configuration)
+      .getLiftStateLiftsLiftNameStateGet(lift_name, options)
       .then((request) => request(this.axios, this.basePath));
   }
   /**
@@ -460,19 +473,6 @@ export class LiftsApi extends BaseAPI {
   ) {
     return LiftsApiFp(this.configuration)
       .postLiftRequestLiftsLiftNameRequestPost(body, lift_name, options)
-      .then((request) => request(this.axios, this.basePath));
-  }
-  /**
-   * available in socket.io
-   * @summary Watch Lift State
-   * @param {string} lift_name
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof LiftsApi
-   */
-  public watchLiftStateLiftsLiftNameStateGet(lift_name: string, options?: any) {
-    return LiftsApiFp(this.configuration)
-      .watchLiftStateLiftsLiftNameStateGet(lift_name, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }

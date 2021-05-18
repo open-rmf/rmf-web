@@ -33,6 +33,7 @@ export * from './loop-task-description';
 export * from './param';
 export * from './place';
 export * from './priority';
+export * from './response-model';
 export * from './robot-mode';
 export * from './robot-state';
 export * from './station';
