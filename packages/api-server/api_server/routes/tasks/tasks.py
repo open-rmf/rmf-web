@@ -30,7 +30,10 @@ class TasksRouter(FastIORouter):
                 _dispatcher_client = DispatcherClient(rmf_gateway_dep())
             return _dispatcher_client
 
-        @self.get("", response_model=Pagination.response_model(TaskProgress))
+        class GetTasksResponse(Pagination.response_model(TaskProgress)):
+            pass
+
+        @self.get("", response_model=GetTasksResponse)
         async def get_tasks(
             dispatcher_client: DispatcherClient = Depends(dispatcher_client_dep),
             with_base_query: WithBaseQuery[ttm.TaskSummary] = Depends(

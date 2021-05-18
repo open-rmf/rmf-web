@@ -17,9 +17,9 @@ import { Configuration } from '../configuration';
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 import { CancelTask } from '../models';
+import { GetTasksResponse } from '../models';
 import { HTTPValidationError } from '../models';
 import { ModelObject } from '../models';
-import { ResponseModel } from '../models';
 import { SubmitTask } from '../models';
 import { SubmitTaskResponse } from '../models';
 /**
@@ -326,7 +326,7 @@ export const TasksApiFp = function (configuration?: Configuration) {
       offset?: number,
       order_by?: string,
       options?: any,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResponseModel>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetTasksResponse>> {
       const localVarAxiosArgs = await TasksApiAxiosParamCreator(configuration).getTasksTasksGet(
         task_id,
         fleet_name,
@@ -429,7 +429,7 @@ export const TasksApiFactory = function (
       offset?: number,
       order_by?: string,
       options?: any,
-    ): AxiosPromise<ResponseModel> {
+    ): AxiosPromise<GetTasksResponse> {
       return TasksApiFp(configuration)
         .getTasksTasksGet(
           task_id,

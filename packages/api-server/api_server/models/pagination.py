@@ -9,13 +9,15 @@ class Pagination(Generic[ItemT], BaseModel):
     items: List[ItemT]
     total_count: int
 
-    @classmethod
-    def response_model(cls, ResponseItemT):
+    @staticmethod
+    def response_model(ResponseItemT):
         """
         Creates a response model that can be used in FastAPI to generate correct docs.
+        In order to prevent class name conflicts, this should not be used directly,
+        it should be used as a super class.
         """
 
-        class ResponseModel(cls):
+        class ResponseModel(Pagination):
             items: List[ResponseItemT]
 
         return ResponseModel
