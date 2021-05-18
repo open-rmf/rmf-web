@@ -33,25 +33,43 @@ class TestBaseQuery(RouteFixture):
         resp = self.session.get(f"{self.base_url}/tasks")
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
-        self.assertEqual(len(resp_json), 100)
+        self.assertEqual(resp_json["total_count"], 200)
+        self.assertEqual(len(resp_json["items"]), 100)
 
     def test_offset(self):
         resp = self.session.get(f"{self.base_url}/tasks?offset=150")
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
-        self.assertEqual(len(resp_json), 50)
-        self.assertEqual(resp_json[0]["task_summary"]["task_id"], "task_150")
+        self.assertEqual(resp_json["total_count"], 200)
+        self.assertEqual(len(resp_json["items"]), 50)
+        self.assertEqual(resp_json["items"][0]["task_summary"]["task_id"], "task_150")
 
     def test_order_by(self):
         resp = self.session.get(f"{self.base_url}/tasks?order_by=-priority")
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
-        self.assertEqual(len(resp_json), 100)
-        self.assertEqual(resp_json[0]["task_summary"]["task_id"], "task_199")
+        self.assertEqual(resp_json["total_count"], 200)
+        self.assertEqual(len(resp_json["items"]), 100)
+        self.assertEqual(resp_json["items"][0]["task_summary"]["task_id"], "task_199")
 
     def test_order_by_mapped_fields(self):
         resp = self.session.get(f"{self.base_url}/tasks?order_by=-task_id")
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
-        self.assertEqual(len(resp_json), 100)
-        self.assertEqual(resp_json[0]["task_summary"]["task_id"], "task_99")
+        self.assertEqual(resp_json["total_count"], 200)
+        self.assertEqual(len(resp_json["items"]), 100)
+        self.assertEqual(resp_json["items"][0]["task_summary"]["task_id"], "task_99")
+
+    def test_limit(self):
+        resp = self.session.get(f"{self.base_url}/tasks?limit=10")
+        self.assertEqual(resp.status_code, 200)
+        resp_json = resp.json()
+        self.assertEqual(resp_json["total_count"], 200)
+        self.assertEqual(len(resp_json["items"]), 10)
+
+    def test_max_limit(self):
+        resp = self.session.get(f"{self.base_url}/tasks?limit=99999999")
+        self.assertEqual(resp.status_code, 200)
+        resp_json = resp.json()
+        self.assertEqual(resp_json["total_count"], 200)
+        self.assertEqual(len(resp_json["items"]), 100)

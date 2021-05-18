@@ -1,9 +1,10 @@
 from datetime import datetime
-from typing import Callable, List, Optional
+from typing import Callable, Optional
 
 from fastapi import Depends, HTTPException
 from fastapi.responses import JSONResponse
 
+from api_server.models.pagination import Pagination
 from api_server.models.tasks import TaskStateEnum, TaskTypeEnum
 
 from ...dependencies import WithBaseQuery, base_query_params
@@ -29,10 +30,10 @@ class TasksRouter(FastIORouter):
                 _dispatcher_client = DispatcherClient(rmf_gateway_dep())
             return _dispatcher_client
 
-        @self.get("", response_model=List[TaskProgress])
+        @self.get("", response_model=Pagination.response_model(TaskProgress))
         async def get_tasks(
             dispatcher_client: DispatcherClient = Depends(dispatcher_client_dep),
-            with_base_query: WithBaseQuery = Depends(
+            with_base_query: WithBaseQuery[ttm.TaskSummary] = Depends(
                 base_query_params({"task_id": "id_"})
             ),
             task_id: Optional[str] = None,
@@ -71,12 +72,12 @@ class TasksRouter(FastIORouter):
             if priority is not None:
                 filter_params["priority"] = priority
 
-            query = with_base_query(ttm.TaskSummary.filter(**filter_params))
-            task_summaries = [result.to_pydantic() for result in await query]
-            return [
-                dispatcher_client.convert_task_status_msg(summary)
-                for summary in task_summaries
+            results = await with_base_query(ttm.TaskSummary.filter(**filter_params))
+            results.items = [
+                dispatcher_client.convert_task_status_msg(item.to_pydantic())
+                for item in results.items
             ]
+            return results
 
         @self.post("/submit_task", response_model=SubmitTaskResponse)
         async def submit_task(
