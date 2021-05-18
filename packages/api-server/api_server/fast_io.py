@@ -151,9 +151,11 @@ class FastIORouter(APIRouter):
 
             get_func.__name__ = func.__name__
             if sticky:
-                get_func.__doc__ = "Available in socket.io.\n\n" + (func.__doc__ or "")
+                get_func.__doc__ = "**Available in socket.io**\n\n" + (
+                    func.__doc__ or ""
+                )
             else:
-                get_func.__doc__ = "ONLY available in socket.io.\n\n" + (
+                get_func.__doc__ = "**ONLY available in socket.io**\n\n" + (
                     func.__doc__ or ""
                 )
             params = [
