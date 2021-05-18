@@ -9,18 +9,6 @@ export default {
   component: TaskPanel_,
 } as Meta;
 
-export const TaskPanel: Story<TaskPanelProps> = (args) => {
-  return (
-    <>
-      <TaskPanel_
-        {...args}
-        style={{ height: '95vh', margin: 'auto', maxWidth: 1600 }}
-        submitTask={() => new Promise((res) => setTimeout(res, 1000))}
-      ></TaskPanel_>
-    </>
-  );
-};
-
 const failedTask = makeTask('failed_task', 3, 3);
 failedTask.state = RmfModels.TaskSummary.STATE_FAILED;
 
@@ -37,8 +25,25 @@ const tasks = [
   ...completedtasks,
 ];
 
+export const TaskPanel: Story<TaskPanelProps> = (args) => {
+  return (
+    <>
+      <TaskPanel_
+        {...args}
+        totalCount={tasks.length}
+        style={{ height: '95vh', margin: 'auto', maxWidth: 1600 }}
+        submitTask={() => new Promise((res) => setTimeout(res, 1000))}
+      ></TaskPanel_>
+    </>
+  );
+};
+
+async function fetchTasks(limit: number, offset: number) {
+  return tasks.slice(offset, offset + limit);
+}
+
 TaskPanel.args = {
-  tasks,
+  fetchTasks,
   cleaningZones: ['test_zone_0', 'test_zone_1'],
   loopWaypoints: ['test_waypoint_0', 'test_waypoint_1'],
   deliveryWaypoints: ['test_waypoint_0', 'test_waypoint_1'],

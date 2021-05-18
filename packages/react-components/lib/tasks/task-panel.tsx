@@ -31,7 +31,8 @@ function NoSelectedTask() {
 }
 
 export interface TaskPanelProps extends React.HTMLProps<HTMLDivElement> {
-  tasks: RmfModels.TaskSummary[];
+  totalCount: number;
+  fetchTasks: (limit: number, offset: number) => Promise<RmfModels.TaskSummary[]>;
   cleaningZones?: string[];
   loopWaypoints?: string[];
   deliveryWaypoints?: string[];
@@ -42,7 +43,8 @@ export interface TaskPanelProps extends React.HTMLProps<HTMLDivElement> {
 }
 
 export function TaskPanel({
-  tasks,
+  totalCount,
+  fetchTasks,
   cleaningZones,
   loopWaypoints,
   deliveryWaypoints,
@@ -53,6 +55,7 @@ export function TaskPanel({
   ...divProps
 }: TaskPanelProps): JSX.Element {
   const classes = useStyles();
+  const [tasks, setTasks] = React.useState<RmfModels.TaskSummary[]>([]);
   const [page, setPage] = React.useState(0);
   const [selectedTask, setSelectedTask] = React.useState<RmfModels.TaskSummary | undefined>(
     undefined,
@@ -62,15 +65,21 @@ export function TaskPanel({
   const [snackbarMessage, setSnackbarMessage] = React.useState('');
   const [snackbarSeverity, setSnackbarSeverity] = React.useState<AlertProps['severity']>('success');
 
+  React.useEffect(() => {
+    (async () => {
+      setTasks(await fetchTasks(10, page * 10));
+    })();
+  }, [fetchTasks, page]);
+
   return (
     <div {...divProps}>
       <Grid container wrap="nowrap" justify="center" style={{ height: 'inherit' }}>
         <Grid style={{ flex: '1 1 auto' }}>
           <TaskTable
             className={classes.taskTable}
-            tasks={tasks.slice(page * 10, (page + 1) * 10)}
+            tasks={tasks}
             paginationOptions={{
-              count: tasks.length,
+              count: totalCount,
               rowsPerPage: 10,
               rowsPerPageOptions: [10],
               page,
