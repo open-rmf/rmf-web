@@ -41,7 +41,7 @@ if (!eval(process.env.E2E_NO_AUTH)) {
 }
 // eslint-disable-next-line no-eval
 if (!eval(process.env.E2E_NO_DASHBOARD)) {
-  services.push('serve -c ../e2e/serve.json ../build');
+  services.push('serve -c ../serve.json build');
 }
 // eslint-disable-next-line no-eval
 if (!eval(process.env.E2E_NO_RMF_SERVER)) {
