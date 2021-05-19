@@ -52,7 +52,6 @@ export function RobotPage() {
     const getTaskSummaries = tasks.data.map((task: Task) => task.task_summary);
     sortTasks(getTaskSummaries);
     setTaskSummaries(getTaskSummaries);
-    console.log('new task summaries', getTaskSummaries);
   }, [tasksApi]);
 
   React.useEffect(() => {
