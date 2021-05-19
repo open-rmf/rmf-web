@@ -1,6 +1,7 @@
 from typing import List, Optional
 
 from fastapi import APIRouter
+from models.auth_events import AuthEvents_Pydantic
 from models.dispenser_state import DispenserState_Pydantic
 from models.door_state import DoorState_Pydantic
 from models.fleet_state import FleetState_Pydantic
@@ -17,6 +18,11 @@ from rest_server.repositories.report import (
     get_health,
     get_ingestor_state,
     get_lift_state,
+)
+from rest_server.repositories.report.auth_event_report import (
+    get_user_login_failure_report,
+    get_user_login_report,
+    get_user_logout_report,
 )
 
 router = APIRouter()
@@ -120,3 +126,44 @@ async def health_report(
 ):
 
     return await get_health(offset, limit, toLogDate, fromLogDate)
+
+
+@router.get(
+    "/user/login/", tags=["user_login"], response_model=List[AuthEvents_Pydantic]
+)
+async def user_login_report(
+    toLogDate: Optional[str] = None,
+    fromLogDate: Optional[str] = None,
+    offset: Optional[int] = 0,
+    limit: Optional[int] = LIMIT,
+):
+
+    return await get_user_login_report(offset, limit, toLogDate, fromLogDate)
+
+
+@router.get(
+    "/user/logout/", tags=["user_logout"], response_model=List[AuthEvents_Pydantic]
+)
+async def user_logout_report(
+    toLogDate: Optional[str] = None,
+    fromLogDate: Optional[str] = None,
+    offset: Optional[int] = 0,
+    limit: Optional[int] = LIMIT,
+):
+
+    return await get_user_logout_report(offset, limit, toLogDate, fromLogDate)
+
+
+@router.get(
+    "/user/loginfailure/",
+    tags=["user_login_failure"],
+    response_model=List[AuthEvents_Pydantic],
+)
+async def user_login_failure_report(
+    toLogDate: Optional[str] = None,
+    fromLogDate: Optional[str] = None,
+    offset: Optional[int] = 0,
+    limit: Optional[int] = LIMIT,
+):
+
+    return await get_user_login_failure_report(offset, limit, toLogDate, fromLogDate)

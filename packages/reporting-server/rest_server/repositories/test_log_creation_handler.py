@@ -4,10 +4,15 @@ import unittest
 
 from fastapi.testclient import TestClient
 from models import DispenserState, DoorState, RawLog
+from models.auth_events import AuthEvents
 from rest_server.app import get_app
 from tortoise import Tortoise
 
-from .log_creation_handler import create_raw_log, create_rmf_server_log
+from .log_creation_handler import (
+    create_keycloak_log,
+    create_raw_log,
+    create_rmf_server_log,
+)
 
 app = get_app()
 
@@ -147,3 +152,34 @@ class TestCaseRawLogCreationRepository(unittest.IsolatedAsyncioTestCase):
         await create_raw_log(data)
         log = await RawLog.first()
         self.assertEqual(log.container_name, "app-that-writes-logs")
+
+    async def test_keycloak_log_creation(self):
+        data = [
+            {
+                "log": '[0m[0m20:41:54,721 INFO  [org.keycloak.events] (default task-2) JSON_EVENT::{"type":"LOGIN_ERROR","realmId":"579ce396-83c7-4094-964d-7ea07553089f","clientId":"reporting","ipAddress":"192.168.49.1","error":"user_not_found","auth_method":"openid-connect","auth_type":"code","redirect_uri":"https://example.com/reporting","code_id":"f813403c-2732-4062-9911-cf65b89a2278","username":"test"}',
+                "stream": "stdout",
+                "kubernetes": {
+                    "container_name": "app-that-writes-logs",
+                },
+            },
+            {
+                "log": '19:47:08,004 INFO  [org.keycloak.events] (default task-3) JSON_EVENT::{"type":"LOGIN","realmId":"master","clientId":"security-admin-console","userId":"7d2f3cdd-9778-4847-ab9d-db68f70f043f","ipAddress":"172.22.0.1","auth_method":"openid-connect","auth_type":"code","redirect_uri":"http://localhost:8080/auth/admin/master/console/","consent":"no_consent_required","code_id":"ac8c82d7-45ac-4227-86d3-e167b176e26f","username":"admin"}',
+                "stream": "stdout",
+            },
+        ]
+
+        await create_keycloak_log(data)
+        logs = await AuthEvents.all()
+        self.assertEqual(len(logs), 2)
+
+    async def test_keycloak_logout_creation(self):
+        data = [
+            {
+                "log": '19:47:20,649 INFO  [org.keycloak.events] (default task-6) JSON_EVENT::{"type":"LOGOUT","realmId":"master","userId":"7d2f3cdd-9778-4847-ab9d-db68f70f043f","ipAddress":"172.22.0.1","redirect_uri":"http://localhost:8080/auth/admin/master/console/#/realms/master"}',
+                "stream": "stdout",
+            },
+        ]
+
+        await create_keycloak_log(data)
+        logs = await AuthEvents.all()
+        self.assertEqual(len(logs), 1)
