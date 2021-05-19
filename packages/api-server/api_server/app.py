@@ -4,6 +4,7 @@ import os
 import signal
 import sys
 import threading
+import time
 from typing import Awaitable, Callable, List, Optional, Union
 
 import rclpy
@@ -268,10 +269,10 @@ class App(FastIO):
 
             logger.info("shutdown app")
 
-    async def wait_ready(self):
-        while self._started is None:
-            await asyncio.sleep(0.1)
-        return self._started
+    def wait_ready(self):
+        while self._started is None or not self._started.done():
+            time.sleep(0.1)
+        return True
 
 
 app = App(default_config)
