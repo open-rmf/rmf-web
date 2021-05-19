@@ -236,6 +236,8 @@ exports.config = {
     const artifactDir = `artifacts/${testPath}/${test.title}`;
     fs.mkdirSync(artifactDir, { recursive: true });
     browser.saveScreenshot(`${artifactDir}/end.png`);
+    const logs = JSON.stringify(browser.getLogs('browser'), undefined, 2);
+    fs.writeFileSync(`${artifactDir}/logs.json`, logs);
   },
 
   /**
