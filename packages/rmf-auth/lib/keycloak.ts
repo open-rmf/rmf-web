@@ -65,9 +65,6 @@ export default class KeycloakAuthenticator
       username: (this._inst.idTokenParsed as any).preferred_username,
       token: this._inst.token || '',
     };
-    console.log('========================================================');
-    console.log(this._inst.tokenParsed);
-    console.log('========================================================');
     this._initialized = true;
   }
 
