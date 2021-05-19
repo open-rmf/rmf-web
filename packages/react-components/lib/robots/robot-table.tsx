@@ -95,7 +95,7 @@ function RobotRow({ robot, onClick }: RobotRowProps) {
           <TableCell>{'-'}</TableCell>
           <TableCell>{'-'}</TableCell>
           <TableCell>{'-'}</TableCell>
-          <TableCell>{robot.battery_percent}%</TableCell>
+          <TableCell>{robot.battery_percent.toFixed(2)}%</TableCell>
           <TableCell>{robotModeToString(robot.mode)}</TableCell>
         </TableRow>
       </>
