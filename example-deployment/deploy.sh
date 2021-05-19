@@ -38,7 +38,7 @@ cd $(dirname $0)
 
 kubectl apply -f k8s/keycloak.yaml
 echo 'waiting for keycloak to be ready...'
-kubectl wait --for=condition=available deployment/keycloak
+kubectl wait --for=condition=available deployment/keycloak --timeout=2m
 
 echo 'creating jwt configmap...'
 function try() {
