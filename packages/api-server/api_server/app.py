@@ -4,7 +4,7 @@ import os
 import signal
 import sys
 import threading
-from typing import Awaitable, Callable, List, Union
+from typing import Awaitable, Callable, List, Optional, Union
 
 import rclpy
 from fastapi import Depends, HTTPException
@@ -31,8 +31,7 @@ class App(FastIO):
         logger.addHandler(handler)
         logger.setLevel(app_config.log_level)
 
-        self._started = False
-        self._ready = asyncio.Future()
+        self._started: Optional[asyncio.Future] = None
 
         authenticator = (
             JwtAuthenticator(
@@ -162,15 +161,14 @@ class App(FastIO):
 
         @self.fapi.on_event("startup")
         async def on_startup():
-            if self._started:
+            if self._started is not None:
                 raise RuntimeError("starting the app multiple times is not supported")
 
-            self._started = True
+            self.loop = asyncio.get_event_loop()
+            self._started = asyncio.Future()
 
             if authenticator is None:
                 logger.warning("authentication is disabled")
-
-            self.loop = asyncio.get_event_loop()
 
             # shutdown event is not called when the app crashes, this can cause the app to be
             # "locked up" as some dependencies like tortoise does not allow python to exit until
@@ -256,7 +254,7 @@ class App(FastIO):
 
             shutdown_cbs.append(stop_spinning)
 
-            self._ready.set_result(True)
+            self._started.set_result(True)
             logger.info("started app")
 
         @self.fapi.on_event("shutdown")
@@ -271,7 +269,9 @@ class App(FastIO):
             logger.info("shutdown app")
 
     async def wait_ready(self):
-        return self._ready
+        while self._started is None:
+            await asyncio.sleep(0.1)
+        return self._started
 
 
 app = App(default_config)
