@@ -20,7 +20,12 @@ describe('tasks', () => {
     $('#start-location').setValue('coe');
     $('#finish-location').setValue('pantry');
 
-    $('button[aria-label="Submit"]').click();
-    $('div=Successfully created task').waitForDisplayed();
+    browser.waitUntil(
+      () => {
+        $('button[aria-label="Submit"]').click();
+        return $('div=Successfully created task').isDisplayed();
+      },
+      { timeout: 10, interval: 1 },
+    );
   });
 });
