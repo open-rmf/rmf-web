@@ -252,21 +252,28 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   }
 
   const sortedMapFloorLayers = mapFloorLayerSorted.map((x) => mapFloorLayers[x]);
-  const ref = React.useRef<ImageOverlay>(null);
+  const refs = React.useRef(
+    [...Array(sortedMapFloorLayers.length)].map(() => React.createRef<ImageOverlay>()),
+  );
   const mapRef = React.useRef<LMap>(null);
   const zoomRef = React.useRef<ZoomControl>(null);
   const layerRef = React.useRef<LayersControl>(null);
 
-  if (ref.current) {
-    ref.current.leafletElement.setZIndex(0);
-    const img = ref.current.leafletElement.getElement();
-    // remove previous class only if classlist contains existing class
-    // and when a new theme class is rendered
-    if (img?.classList.contains(curMapTheme) && curMapTheme !== mapClass)
-      img?.classList.remove(curMapTheme);
-    img?.classList.add(mapClass);
-    // update current map theme when a new theme is rendered
-    if (curMapTheme !== mapClass) setCurMapTheme(mapClass);
+  if (refs.current) {
+    sortedMapFloorLayers.forEach((map, i) => {
+      if (sortedMapFloorLayers.every((x) => x) && map.level.name === curLevelName) {
+        const ref = refs.current[i];
+        ref.current?.leafletElement.setZIndex(0);
+        const img = ref.current?.leafletElement.getElement();
+        // remove previous class only if classlist contains existing class
+        // and when a new theme class is rendered
+        if (img?.classList.contains(curMapTheme) && curMapTheme !== mapClass)
+          img?.classList.remove(curMapTheme);
+        img?.classList.add(mapClass);
+        // update current map theme when a new theme is rendered
+        if (curMapTheme !== mapClass) setCurMapTheme(mapClass);
+      }
+    });
   }
 
   if (zoomRef.current) {
@@ -360,7 +367,11 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
               name={floorLayer.level.name}
               key={floorLayer.level.name}
             >
-              <ImageOverlay bounds={floorLayer.bounds} url={floorLayer.imageUrl} ref={ref} />
+              <ImageOverlay
+                bounds={floorLayer.bounds}
+                url={floorLayer.imageUrl}
+                ref={refs.current[i]}
+              />
             </LayersControl.BaseLayer>
           ))}
 
