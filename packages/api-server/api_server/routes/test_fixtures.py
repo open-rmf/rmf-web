@@ -61,7 +61,7 @@ class RouteFixture(unittest.TestCase):
         resp: Response
         while time.time() < end_time:
             resp = self.session.get(url)
-            if resp == expected_response:
+            if resp.status_code == expected_response:
                 return resp
             time.sleep(interval)
         return resp
