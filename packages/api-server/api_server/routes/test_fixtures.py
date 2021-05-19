@@ -52,7 +52,7 @@ class RouteFixture(unittest.TestCase):
 
         cls.server.stop()
 
-    def try_get(self, url: str, expected_response=200, timeout=1, interval=0.1):
+    def try_get(self, url: str, expected_response=200, timeout=5, interval=0.5):
         """
         Do GET requests until an expected response code is received.
         Returns the last response received.
