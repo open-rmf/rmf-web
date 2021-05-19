@@ -153,7 +153,7 @@ class TestCaseRawLogCreationRepository(unittest.IsolatedAsyncioTestCase):
         log = await RawLog.first()
         self.assertEqual(log.container_name, "app-that-writes-logs")
 
-    async def test_keacloak_log_creation(self):
+    async def test_keycloak_log_creation(self):
         data = [
             {
                 "log": '[0m[0m20:41:54,721 INFO  [org.keycloak.events] (default task-2) JSON_EVENT::{"type":"LOGIN_ERROR","realmId":"579ce396-83c7-4094-964d-7ea07553089f","clientId":"reporting","ipAddress":"192.168.49.1","error":"user_not_found","auth_method":"openid-connect","auth_type":"code","redirect_uri":"https://example.com/reporting","code_id":"f813403c-2732-4062-9911-cf65b89a2278","username":"test"}',
@@ -172,7 +172,7 @@ class TestCaseRawLogCreationRepository(unittest.IsolatedAsyncioTestCase):
         logs = await AuthEvents.all()
         self.assertEqual(len(logs), 2)
 
-    async def test_keacloak_logout_creation(self):
+    async def test_keycloak_logout_creation(self):
         data = [
             {
                 "log": '19:47:20,649 INFO  [org.keycloak.events] (default task-6) JSON_EVENT::{"type":"LOGOUT","realmId":"master","userId":"7d2f3cdd-9778-4847-ab9d-db68f70f043f","ipAddress":"172.22.0.1","redirect_uri":"http://localhost:8080/auth/admin/master/console/#/realms/master"}',

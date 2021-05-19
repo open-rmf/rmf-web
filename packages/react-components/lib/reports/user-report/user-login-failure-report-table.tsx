@@ -15,7 +15,7 @@ export type UserLoginFailureRowsType = {
 }[];
 
 export interface UserLoginFailureReportTable extends DefaultLogTableProps {
-  rows: UserLoginFailureRowsType | [];
+  rows: UserLoginFailureRowsType;
 }
 
 export const UserLoginFailureReportTable = (

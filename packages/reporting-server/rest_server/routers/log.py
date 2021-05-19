@@ -35,9 +35,7 @@ async def write_rmf_server_logs(body: list):
         raise HTTPException(503, "cannot create the rmfserver log" + str(e)) from e
 
 
-# Will receive information from keacloak only
-
-
+# Will receive information from keycloak only
 @router.post("/keycloak/", tags=["keycloak_logs"], status_code=status.HTTP_201_CREATED)
 async def write_keycloak_logs(body: list):
     try:

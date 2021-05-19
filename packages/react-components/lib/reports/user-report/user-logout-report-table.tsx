@@ -14,7 +14,7 @@ export type UserLogoutRowsType = {
 }[];
 
 export interface UserLogoutReportTable extends DefaultLogTableProps {
-  rows: UserLogoutRowsType | [];
+  rows: UserLogoutRowsType;
 }
 
 export const UserLogoutReportTable = (props: UserLogoutReportTable): React.ReactElement => {
