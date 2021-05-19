@@ -20,6 +20,7 @@ class TestBaseQuery(RouteFixture):
         fut = concurrent.futures.Future()
 
         async def save_data():
+            await cls.server.app.wait_ready()
             fut.set_result(
                 await asyncio.gather(
                     *(ttm.TaskSummary.save_pydantic(data) for data in dataset)

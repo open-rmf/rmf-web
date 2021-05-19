@@ -31,6 +31,9 @@ class App(FastIO):
         logger.addHandler(handler)
         logger.setLevel(app_config.log_level)
 
+        self._started = False
+        self._ready = asyncio.Future()
+
         authenticator = (
             JwtAuthenticator(
                 app_config.jwt_public_key,
@@ -126,7 +129,6 @@ class App(FastIO):
 
         # will be called in reverse order on app shutdown
         shutdown_cbs: List[Callable[[], Union[None, Awaitable[None]]]] = []
-        started = False
 
         self.rmf_events = RmfEvents()
         self.rmf_repo = RmfRepository()
@@ -160,12 +162,13 @@ class App(FastIO):
 
         @self.fapi.on_event("startup")
         async def on_startup():
+            if self._started:
+                raise RuntimeError("starting the app multiple times is not supported")
+
+            self._started = True
+
             if authenticator is None:
                 logger.warning("authentication is disabled")
-
-            nonlocal started
-            if started:
-                raise RuntimeError("starting the app multiple times is not supported")
 
             self.loop = asyncio.get_event_loop()
 
@@ -253,7 +256,7 @@ class App(FastIO):
 
             shutdown_cbs.append(stop_spinning)
 
-            started = True
+            self._ready.set_result(True)
             logger.info("started app")
 
         @self.fapi.on_event("shutdown")
@@ -266,6 +269,9 @@ class App(FastIO):
                     cb()
 
             logger.info("shutdown app")
+
+    async def wait_ready(self):
+        return self._ready
 
 
 app = App(default_config)
