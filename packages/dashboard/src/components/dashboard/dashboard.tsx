@@ -18,7 +18,6 @@ import {
 } from 'react-components';
 import { GlobalHotKeys } from 'react-hotkeys';
 import * as RmfModels from 'rmf-models';
-import 'typeface-roboto';
 import { buildHotKeys } from '../../hotkeys';
 import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
 import { DispenserResource } from '../../managers/resource-manager-dispensers';
