@@ -28,7 +28,7 @@ import RobotTrajectoriesOverlay from './robot-trajectories-overlay';
 import RobotsOverlay from './robots-overlay';
 import WaypointsOverlay from './waypoints-overlay';
 import { AppConfigContext, SettingsContext } from '../app-contexts';
-import { decideThemeStyle } from '../../util/theme';
+import { ThemeMode } from '../../settings';
 
 const debug = Debug('ScheduleVisualizer');
 
@@ -43,6 +43,13 @@ const useStyles = makeStyles((theme) => ({
   leafletControl: {
     color: `${theme.fontColors} !important`,
     backgroundColor: `${theme.palette.primary.main} !important`,
+  },
+  mapImgDark: {
+    filter:
+      'invert(90%) sepia(12%) saturate(5773%) hue-rotate(193deg) brightness(92%) contrast(92%)',
+  },
+  mapImgLight: {
+    // use original color
   },
 }));
 
@@ -82,9 +89,9 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
 
   const authenticator = React.useContext(AppConfigContext).authenticator;
   const themeContext = React.useContext(SettingsContext).themeMode;
-  const themeClasses = decideThemeStyle(themeContext);
+  const mapClass = themeContext === ThemeMode.Dark ? classes.mapImgDark : classes.mapImgLight;
 
-  const [curMapTheme, setCurMapTheme] = React.useState(themeClasses.map);
+  const [curMapTheme, setCurMapTheme] = React.useState(mapClass);
   const [curLayerTheme, setCurLayerTheme] = React.useState(classes.leafletControl);
 
   const mapFloorLayerSorted = React.useMemo(
@@ -255,11 +262,11 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     const img = ref.current.leafletElement.getElement();
     // remove previous class only if classlist contains existing class
     // and when a new theme class is rendered
-    if (img?.classList.contains(curMapTheme) && curMapTheme !== themeClasses.map)
+    if (img?.classList.contains(curMapTheme) && curMapTheme !== mapClass)
       img?.classList.remove(curMapTheme);
-    img?.classList.add(themeClasses.map);
+    img?.classList.add(mapClass);
     // update current map theme when a new theme is rendered
-    if (curMapTheme !== themeClasses.map) setCurMapTheme(themeClasses.map);
+    if (curMapTheme !== mapClass) setCurMapTheme(mapClass);
   }
 
   if (zoomRef.current) {
@@ -267,12 +274,9 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     if (zoomButtons) {
       Array.from(zoomButtons.children).forEach((child) => {
         // remove previous theme class in zoom control
-        if (
-          child.classList.contains(curLayerTheme) &&
-          curLayerTheme !== themeClasses.leafletControl
-        )
+        if (child.classList.contains(curLayerTheme) && curLayerTheme !== classes.leafletControl)
           child.classList.remove(curLayerTheme);
-        child.classList.add(themeClasses.leafletControl);
+        child.classList.add(classes.leafletControl);
       });
     }
   }
@@ -280,12 +284,11 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   if (layerRef.current) {
     const layer = layerRef.current.leafletElement.getContainer();
     // remove previous theme class in control layer
-    if (layer?.classList.contains(curLayerTheme) && curLayerTheme !== themeClasses.leafletControl)
+    if (layer?.classList.contains(curLayerTheme) && curLayerTheme !== classes.leafletControl)
       layer?.classList.remove(curLayerTheme);
-    layer?.classList.add(themeClasses.leafletControl);
+    layer?.classList.add(classes.leafletControl);
     // update current control theme when a new theme is rendered
-    if (curLayerTheme !== themeClasses.leafletControl)
-      setCurLayerTheme(themeClasses.leafletControl);
+    if (curLayerTheme !== classes.leafletControl) setCurLayerTheme(classes.leafletControl);
   }
 
   React.useEffect(() => {
