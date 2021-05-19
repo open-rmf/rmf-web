@@ -12,5 +12,5 @@ class TestIngestorsRoute(RouteFixture):
         pub = self.node.create_publisher(RmfIngestorState, "ingestor_states", 10)
         rmf_ingestor_state = RmfIngestorState(guid="test_ingestor")
         pub.publish(rmf_ingestor_state)
-        resp = self.session.get(f"{self.base_url}/ingestors/test_ingestor/state")
+        resp = self.try_get(f"{self.base_url}/ingestors/test_ingestor/state")
         self.assertEqual(resp.status_code, 200)

@@ -8,6 +8,7 @@ from concurrent.futures import Future
 import rclpy
 import rclpy.node
 import requests
+from requests.adapters import Response
 from urllib3.util.retry import Retry
 
 from ..app import App
@@ -50,6 +51,20 @@ class RouteFixture(unittest.TestCase):
         rclpy.shutdown(context=cls.rcl_ctx)
 
         cls.server.stop()
+
+    def try_get(self, url: str, expected_response=200, timeout=1, interval=0.1):
+        """
+        Do GET requests until an expected response code is received.
+        Returns the last response received.
+        """
+        end_time = time.time() + timeout
+        resp: Response
+        while time.time() < end_time:
+            resp = self.session.get(url)
+            if resp == expected_response:
+                return resp
+            time.sleep(interval)
+        return resp
 
     def subscribe_one(self, Message, topic: str) -> Future:
         """

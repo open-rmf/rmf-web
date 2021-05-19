@@ -10,7 +10,7 @@ class TestLiftsRoute(RouteFixture):
         rmf_lift_state = RmfLiftState(lift_name="test_lift")
         rmf_lift_state.current_mode = RmfLiftState.MODE_AGV
         pub.publish(rmf_lift_state)
-        resp = self.session.get(f"{self.base_url}/lifts/test_lift/state")
+        resp = self.try_get(f"{self.base_url}/lifts/test_lift/state")
         self.assertEqual(resp.status_code, 200)
 
     def test_lift_request(self):

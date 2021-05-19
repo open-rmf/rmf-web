@@ -12,5 +12,5 @@ class TestDispensersRoute(RouteFixture):
         pub = self.node.create_publisher(RmfDispenserState, "dispenser_states", 10)
         rmf_dispenser_state = RmfDispenserState(guid="test_dispenser")
         pub.publish(rmf_dispenser_state)
-        resp = self.session.get(f"{self.base_url}/dispensers/test_dispenser/state")
+        resp = self.try_get(f"{self.base_url}/dispensers/test_dispenser/state")
         self.assertEqual(resp.status_code, 200)

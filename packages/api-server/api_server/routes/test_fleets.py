@@ -12,5 +12,5 @@ class TestFleetsRoute(RouteFixture):
         pub = self.node.create_publisher(RmfFleetState, "fleet_states", 10)
         rmf_ingestor_state = RmfFleetState(name="test_fleet")
         pub.publish(rmf_ingestor_state)
-        resp = self.session.get(f"{self.base_url}/fleets/test_fleet/state")
+        resp = self.try_get(f"{self.base_url}/fleets/test_fleet/state")
         self.assertEqual(resp.status_code, 200)

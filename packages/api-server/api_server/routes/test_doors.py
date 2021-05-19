@@ -10,7 +10,7 @@ class TestDoorsRoute(RouteFixture):
         pub = self.node.create_publisher(RmfDoorState, "door_states", 10)
         rmf_door_state = RmfDoorState(door_name="test_door")
         pub.publish(rmf_door_state)
-        resp = self.session.get(f"{self.base_url}/doors/test_door/state")
+        resp = self.try_get(f"{self.base_url}/doors/test_door/state")
         self.assertEqual(resp.status_code, 200)
 
     def test_door_request(self):

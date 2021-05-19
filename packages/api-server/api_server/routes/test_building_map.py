@@ -18,5 +18,5 @@ class TestBuildingMapRoute(RouteFixture):
             ),
         )
         pub.publish(rmf_building_map)
-        resp = self.session.get(f"{self.base_url}/building_map")
+        resp = self.try_get(f"{self.base_url}/building_map")
         self.assertEqual(resp.status_code, 200)
