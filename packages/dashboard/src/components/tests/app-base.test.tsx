@@ -2,7 +2,7 @@ import { ThemeProvider } from '@material-ui/core';
 import { waitForElementToBeRemoved } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { customTheme } from 'react-components';
+import { lightTheme } from 'react-components';
 import { AppBase } from '../app-base';
 import { AppControllerContext } from '../app-contexts';
 import { renderAct } from './test-utils';
@@ -19,7 +19,7 @@ test('can show and hide settings', async () => {
   };
 
   const root = await renderAct(
-    <ThemeProvider theme={customTheme}>
+    <ThemeProvider theme={lightTheme}>
       <AppBase appbarProps={{ tabValue: 'building' }}>
         <TestComponent />
       </AppBase>
@@ -45,7 +45,7 @@ test('can toggle settings', async () => {
   };
 
   const root = await renderAct(
-    <ThemeProvider theme={customTheme}>
+    <ThemeProvider theme={lightTheme}>
       <AppBase appbarProps={{ tabValue: 'building' }}>
         <TestComponent />
       </AppBase>
@@ -72,7 +72,7 @@ test('can show and hide settings', async () => {
   };
 
   const root = await renderAct(
-    <ThemeProvider theme={customTheme}>
+    <ThemeProvider theme={lightTheme}>
       <AppBase appbarProps={{ tabValue: 'building' }}>
         <TestComponent />
       </AppBase>
@@ -98,7 +98,7 @@ test('can toggle help', async () => {
   };
 
   const root = await renderAct(
-    <ThemeProvider theme={customTheme}>
+    <ThemeProvider theme={lightTheme}>
       <AppBase appbarProps={{ tabValue: 'building' }}>
         <TestComponent />
       </AppBase>
@@ -125,7 +125,7 @@ test('can show and hide hotkeys dialog', async () => {
   };
 
   const root = await renderAct(
-    <ThemeProvider theme={customTheme}>
+    <ThemeProvider theme={lightTheme}>
       <AppBase appbarProps={{ tabValue: 'building' }}>
         <TestComponent />
       </AppBase>
@@ -150,7 +150,7 @@ test('can toggle hotkeys dialog', async () => {
   };
 
   const root = await renderAct(
-    <ThemeProvider theme={customTheme}>
+    <ThemeProvider theme={lightTheme}>
       <AppBase appbarProps={{ tabValue: 'building' }}>
         <TestComponent />
       </AppBase>

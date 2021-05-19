@@ -2,7 +2,7 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import ScheduleVisualizer from '../index';
 import { ThemeProvider } from '@material-ui/core';
-import { customTheme } from 'react-components';
+import { lightTheme } from 'react-components';
 
 const mockBuildingMap = {
   name: 'name',
@@ -25,7 +25,7 @@ it('renders well with the appropriate data', async () => {
 
   await waitFor(() => {
     const root = render(
-      <ThemeProvider theme={customTheme}>
+      <ThemeProvider theme={lightTheme}>
         <ScheduleVisualizer negotiationTrajStore={{}} buildingMap={mockBuildingMap} />
       </ThemeProvider>,
     );

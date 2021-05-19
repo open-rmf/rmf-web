@@ -1,6 +1,6 @@
 import { ThemeProvider } from '@material-ui/core';
 import React from 'react';
-import { NotFoundPage, customTheme } from 'react-components';
+import { NotFoundPage, lightTheme } from 'react-components';
 import { BrowserRouter, Link, Redirect, Route, Switch, useLocation } from 'react-router-dom';
 import { getUrl, LoginHOC, PrivateRouteHOC, User } from 'rmf-auth';
 import 'typeface-roboto';
@@ -39,7 +39,7 @@ export default function App(): JSX.Element | null {
     <AppConfigContext.Provider value={appConfig}>
       <AuthenticatorContext.Provider value={authenticator}>
         <UserContext.Provider value={user}>
-          <ThemeProvider theme={customTheme}>
+          <ThemeProvider theme={lightTheme}>
             <BrowserRouter>
               <Switch>
                 <Route exact path={LOGIN_ROUTE}>
