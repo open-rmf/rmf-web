@@ -1,9 +1,12 @@
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 import React from 'react';
 import { NotFoundPage } from 'react-components';
 import { BrowserRouter, Link, Redirect, Route, Switch, useLocation } from 'react-router-dom';
 import { getUrl, LoginHOC, PrivateRouteHOC, User } from 'rmf-auth';
-import 'typeface-roboto';
 import appConfig from '../app-config';
 import ResourceManager from '../managers/resource-manager';
 import { DASHBOARD_ROUTE, LOGIN_ROUTE, TASKS_ROUTE } from '../util/url';
