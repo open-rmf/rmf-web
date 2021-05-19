@@ -1,7 +1,7 @@
 from rmf_lift_msgs.msg import LiftRequest as RmfLiftRequest
 from rmf_lift_msgs.msg import LiftState as RmfLiftState
 
-from .test_fixtures import RouteFixture
+from .test_fixtures import RouteFixture, try_until
 
 
 class TestLiftsRoute(RouteFixture):
@@ -9,8 +9,15 @@ class TestLiftsRoute(RouteFixture):
         pub = self.node.create_publisher(RmfLiftState, "lift_states", 10)
         rmf_lift_state = RmfLiftState(lift_name="test_lift")
         rmf_lift_state.current_mode = RmfLiftState.MODE_AGV
-        pub.publish(rmf_lift_state)
-        resp = self.try_get(f"{self.base_url}/lifts/test_lift/state")
+
+        def try_get():
+            pub.publish(rmf_lift_state)
+            return self.session.get(f"{self.base_url}/lifts/test_lift/state")
+
+        resp = try_until(
+            try_get,
+            lambda x: x.status_code == 200,
+        )
         self.assertEqual(resp.status_code, 200)
 
     def test_lift_request(self):

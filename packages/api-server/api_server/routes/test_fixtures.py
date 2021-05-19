@@ -4,16 +4,38 @@ import threading
 import time
 import unittest
 from concurrent.futures import Future
+from typing import Any, Callable, TypeVar
 
 import rclpy
 import rclpy.node
 import requests
-from requests.adapters import Response
 from urllib3.util.retry import Retry
 
 from ..app import App
 from ..app_config import load_config
 from ..test.server import BackgroundServer
+
+T = TypeVar("T")
+
+
+def try_until(
+    action: Callable[[], T],
+    predicate: Callable[[T], bool],
+    timeout=5,
+    interval=0.5,
+):
+    """
+    Do action until an expected result is received.
+    Returns the last result.
+    """
+    end_time = time.time() + timeout
+    while time.time() < end_time:
+        result = action()
+        success = predicate(result)
+        if success:
+            return result
+        time.sleep(interval)
+    return result
 
 
 class RouteFixture(unittest.TestCase):
@@ -40,8 +62,6 @@ class RouteFixture(unittest.TestCase):
             if tries >= 10:
                 raise TimeoutError("cannot discover rmf_api_server node")
             time.sleep(0.5)
-        # give ros more time, tests are very flaky when discovery is not finished
-        time.sleep(1)
 
     @classmethod
     def tearDownClass(cls):
@@ -51,20 +71,6 @@ class RouteFixture(unittest.TestCase):
         rclpy.shutdown(context=cls.rcl_ctx)
 
         cls.server.stop()
-
-    def try_get(self, url: str, expected_response=200, timeout=5, interval=0.5):
-        """
-        Do GET requests until an expected response code is received.
-        Returns the last response received.
-        """
-        end_time = time.time() + timeout
-        resp: Response
-        while time.time() < end_time:
-            resp = self.session.get(url)
-            if resp.status_code == expected_response:
-                return resp
-            time.sleep(interval)
-        return resp
 
     def subscribe_one(self, Message, topic: str) -> Future:
         """
