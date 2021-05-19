@@ -81,7 +81,6 @@
     "reactour": "^1.18.0",
     "rmf-auth": "*",
     "rmf-models": "*",
-    "styled-components": "^4.4.1",
     "ts-node": "^9.1.1",
     "typescript": "4.2.4"
   },
