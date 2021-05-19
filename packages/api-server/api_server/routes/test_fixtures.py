@@ -4,7 +4,7 @@ import threading
 import time
 import unittest
 from concurrent.futures import Future
-from typing import Any, Callable, TypeVar
+from typing import Callable, TypeVar
 
 import rclpy
 import rclpy.node
