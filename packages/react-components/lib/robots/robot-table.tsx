@@ -95,7 +95,7 @@ function RobotRow({ robot, onClick }: RobotRowProps) {
           <TableCell>{'-'}</TableCell>
           <TableCell>{'-'}</TableCell>
           <TableCell>{'-'}</TableCell>
-          <TableCell>{robot.battery_percent}%</TableCell>
+          <TableCell>{robot.battery_percent.toFixed(2)}%</TableCell>
           <TableCell>{robotModeToString(robot.mode)}</TableCell>
         </TableRow>
       </>
@@ -111,7 +111,7 @@ function RobotRow({ robot, onClick }: RobotRowProps) {
               ? robot.assigned_tasks[0].end_time.sec - robot.assigned_tasks[0].start_time.sec
               : '-'}
           </TableCell>
-          <TableCell>{robot.battery_percent}%</TableCell>
+          <TableCell>{robot.battery_percent.toFixed(2)}%</TableCell>
           <TableCell>{robotModeToString(robot.mode)}</TableCell>
         </TableRow>
       </>
@@ -140,7 +140,13 @@ export function RobotTable({
   ...paperProps
 }: RobotTableProps): JSX.Element {
   const classes = useStyles();
-  const robotsWithAssignedTasks = allocateTasksToRobots(robots, tasks);
+  const [robotsWithTasks, setRobotsWithTasks] = React.useState(
+    allocateTasksToRobots(robots, tasks),
+  );
+
+  React.useEffect(() => {
+    setRobotsWithTasks(allocateTasksToRobots(robots, tasks));
+  }, [robots, tasks]);
 
   return (
     <Paper {...paperProps}>
@@ -159,14 +165,14 @@ export function RobotTable({
               <TableCell>Robot Name</TableCell>
               <TableCell>Start Location</TableCell>
               <TableCell>Destination</TableCell>
-              <TableCell>ETA</TableCell>
+              <TableCell>End Time</TableCell>
               <TableCell>Battery</TableCell>
               <TableCell>State</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {robotsWithAssignedTasks &&
-              robotsWithAssignedTasks.map((robot, robot_id) => (
+            {robotsWithTasks &&
+              robotsWithTasks.map((robot, robot_id) => (
                 <RobotRow
                   key={robot_id}
                   robot={robot}

@@ -9,8 +9,10 @@ import {
   useTheme,
 } from '@material-ui/core';
 import { ProgressBar } from '../progressbar';
+import * as RmfModels from 'rmf-models';
 import { taskTypeToStr } from '../tasks/utils';
 import { VerboseRobot } from './utils';
+import { rosTimeToJs } from '../utils';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -39,104 +41,55 @@ export interface RobotInfoProps {
 export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
   const theme = useTheme();
   const classes = useStyles();
-  const currentTask = robot.assigned_tasks[0];
-  const currentTaskType = currentTask.task_profile.description.task_type.type;
+  let currentTask: RmfModels.TaskSummary | undefined = undefined;
+  let hasConcreteEndTime = false;
 
-  const assignedTasksToStr = robot.assigned_tasks
-    .map((task, index) => {
-      if (index != robot.assigned_tasks.length - 1) {
-        return task.task_id + ' → ';
-      } else {
-        return task.task_id;
-      }
-    })
-    .join('');
-
-  function returnTaskLocations() {
-    switch (taskTypeToStr(currentTaskType)) {
+  function returnTaskLocations(task: RmfModels.TaskSummary): string {
+    switch (taskTypeToStr(task.task_profile.description.task_type.type)) {
       case 'Loop':
-        return (
-          <Button
-            disableElevation
-            variant="outlined"
-            classes={{ root: classes.root, disabled: classes.disabled }}
-            disabled
-          >
-            {currentTask.task_profile.description.loop.start_name}
-          </Button>
-        );
+        return task.task_profile.description.loop.start_name;
       case 'Delivery':
-        return (
-          <Button
-            disableElevation
-            variant="outlined"
-            classes={{ root: classes.root, disabled: classes.disabled }}
-            disabled
-          >
-            {currentTask.task_profile.description.delivery.pickup_place_name}
-          </Button>
-        );
+        return task.task_profile.description.delivery.pickup_place_name;
       default:
-        return (
-          <Button
-            disableElevation
-            variant="outlined"
-            classes={{ root: classes.root, disabled: classes.disabled }}
-            disabled
-          >
-            -
-          </Button>
-        );
+        return '-';
     }
   }
 
-  function returnTaskDestinations() {
-    switch (taskTypeToStr(currentTaskType)) {
+  function returnTaskDestinations(task: RmfModels.TaskSummary): string {
+    switch (taskTypeToStr(task.task_profile.description.task_type.type)) {
       case 'Loop':
-        return (
-          <Button
-            disableElevation
-            variant="outlined"
-            classes={{ root: classes.root, disabled: classes.disabled }}
-            disabled
-          >
-            {currentTask.task_profile.description.loop.finish_name}
-          </Button>
-        );
+        return task.task_profile.description.loop.finish_name;
       case 'Delivery':
-        return (
-          <Button
-            disableElevation
-            variant="outlined"
-            classes={{ root: classes.root, disabled: classes.disabled }}
-            disabled
-          >
-            {currentTask.task_profile.description.delivery.dropoff_place_name}
-          </Button>
-        );
+        return task.task_profile.description.delivery.dropoff_place_name;
       case 'Clean':
-        return (
-          <Button
-            disableElevation
-            variant="outlined"
-            classes={{ root: classes.root, disabled: classes.disabled }}
-            disabled
-          >
-            {currentTask.task_profile.description.clean.start_waypoint}
-          </Button>
-        );
+        return task.task_profile.description.clean.start_waypoint;
       default:
-        return (
-          <Button
-            disableElevation
-            variant="outlined"
-            classes={{ root: classes.root, disabled: classes.disabled }}
-            disabled
-          >
-            -
-          </Button>
-        );
+        return '-';
     }
+  }
+
+  function assignedTasksToStr(robot: VerboseRobot): string {
+    return robot.assigned_tasks
+      .map((task, index) => {
+        if (index != robot.assigned_tasks.length - 1) {
+          return task.task_id + ' → ';
+        } else {
+          return task.task_id;
+        }
+      })
+      .join('');
+  }
+
+  if (robot.assigned_tasks.length > 0) {
+    currentTask = robot.assigned_tasks[0];
+    hasConcreteEndTime = [
+      RmfModels.TaskSummary.STATE_CANCELED,
+      RmfModels.TaskSummary.STATE_COMPLETED,
+      RmfModels.TaskSummary.STATE_FAILED,
+    ].includes(currentTask.state);
+  } else {
+    currentTask = undefined;
+    hasConcreteEndTime = false;
   }
 
   return (
@@ -167,7 +120,7 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
             classes={{ root: classes.root, disabled: classes.disabled }}
             disabled
           >
-            {assignedTasksToStr}
+            {currentTask ? assignedTasksToStr(robot) : '-'}
           </Button>
         </Grid>
         <Grid item xs={6}>
@@ -181,10 +134,26 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
           </Typography>
         </Grid>
         <Grid item xs={6}>
-          {returnTaskLocations()}
+          <Button
+            size="small"
+            disableElevation
+            variant="outlined"
+            classes={{ root: classes.root, disabled: classes.disabled }}
+            disabled
+          >
+            {currentTask ? returnTaskLocations(currentTask) : '-'}
+          </Button>
         </Grid>
         <Grid item xs={6}>
-          {returnTaskDestinations()}
+          <Button
+            size="small"
+            disableElevation
+            variant="outlined"
+            classes={{ root: classes.root, disabled: classes.disabled }}
+            disabled
+          >
+            {currentTask ? returnTaskDestinations(currentTask) : '-'}
+          </Button>
         </Grid>
         <Grid item xs={6}>
           <Typography variant="h6" align="left">
@@ -193,14 +162,22 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
         </Grid>
         <Grid item xs={6}>
           <Typography variant="h6" align="left">
-            Est. End Time
+            <span>{!hasConcreteEndTime && 'Est. '}End Time</span>
           </Typography>
         </Grid>
         <Grid item xs={6}>
           <Typography variant="h6">-</Typography>
         </Grid>
         <Grid item xs={6}>
-          <Typography variant="h6">-</Typography>
+          <Button
+            size="small"
+            disableElevation
+            variant="outlined"
+            classes={{ root: classes.root, disabled: classes.disabled }}
+            disabled
+          >
+            {currentTask ? rosTimeToJs(currentTask.end_time).toLocaleTimeString() : '-'}
+          </Button>
         </Grid>
       </Grid>
     </div>
