@@ -11,6 +11,9 @@ class DoorSessions(pydantic.BaseModel):
     door_name: str = ""  # string
     sessions: List[Session] = []  # rmf_door_msgs/Session
 
+    class Config:
+        orm_mode = True
+
 
 #
 # string door_name

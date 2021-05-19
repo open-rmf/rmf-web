@@ -1,33 +1,38 @@
+import asyncio
 import os
-import subprocess
-from typing import Optional
+import threading
+
+import uvicorn
 
 
-def launch_server(config: Optional[str] = None):
-    if "RMF_API_SERVER_TEST_NO_LAUNCH" in os.environ and (
-        os.environ["RMF_API_SERVER_TEST_NO_LAUNCH"].lower() == "true"
-        or os.environ["RMF_API_SERVER_TEST_NO_LAUNCH"] != "0"
-    ):
-        return None
-    env = os.environ.copy()
-    if config:
-        env["RMF_API_SERVER_CONFIG"] = config
-    if "RMF_API_SERVER_TEST_COVERAGE" in os.environ and (
-        os.environ["RMF_API_SERVER_TEST_COVERAGE"].lower() == "true"
-        or os.environ["RMF_API_SERVER_TEST_COVERAGE"] != "0"
-    ):
-        proc = subprocess.Popen(
-            ["python", "-m", "coverage", "run", "-p", "-m", "api_server"], env=env
+class BackgroundServer:
+    def __init__(self, app):
+        self.port = os.environ.get("RMF_SERVER_TEST_PORT", "8000")
+        uvicorn_config = uvicorn.Config(
+            app, "127.0.0.1", port=int(self.port), loop="asyncio", log_level="critical"
         )
-    else:
-        proc = subprocess.Popen(["python", "-m", "api_server"], env=env)
-    return proc
+        self.server = uvicorn.Server(uvicorn_config)
+        self.server_thread = threading.Thread(target=self._run_server)
+        self.base_url = f"http://127.0.0.1:{self.port}"
 
+    def start(self):
+        self.server_thread.start()
 
-def terminate_server(server_proc: subprocess.Popen):
-    try:
-        server_proc.terminate()
-        server_proc.wait(5)
-    except subprocess.TimeoutExpired:
-        server_proc.kill()
-        server_proc.wait()
+    def stop(self):
+        if self.server_thread:
+            self.server.should_exit = True
+            self.server_thread.join()
+
+    def _run_server(self):
+        self.server.run()
+        loop = asyncio.get_event_loop()
+        tasks = asyncio.all_tasks(loop=loop)
+
+        async def cleanup():
+            if len(tasks) == 0:
+                return
+            for task in tasks:
+                task.cancel()
+            await asyncio.wait(tasks)
+
+        loop.run_until_complete(cleanup())

@@ -7,3 +7,6 @@ import pydantic
 
 class GetBuildingMap_Request(pydantic.BaseModel):
     pass
+
+    class Config:
+        orm_mode = True

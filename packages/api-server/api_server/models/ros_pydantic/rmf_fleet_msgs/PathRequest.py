@@ -13,6 +13,9 @@ class PathRequest(pydantic.BaseModel):
     path: List[Location] = []  # rmf_fleet_msgs/Location
     task_id: str = ""  # string
 
+    class Config:
+        orm_mode = True
+
 
 # string fleet_name
 # string robot_name

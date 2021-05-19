@@ -17,6 +17,9 @@ const initializeItemSummary = itemSummary();
 export const DispenserStateContext = React.createContext<Record<string, RmfModels.DispenserState>>(
   {},
 );
+export const IngestorStateContext = React.createContext<Record<string, RmfModels.IngestorState>>(
+  {},
+);
 export const DoorStateContext = React.createContext<Record<string, RmfModels.DoorState>>({});
 export const FleetStateContext = React.createContext<Record<string, RmfModels.FleetState>>({});
 export const LiftStateContext = React.createContext<Record<string, RmfModels.LiftState>>({});

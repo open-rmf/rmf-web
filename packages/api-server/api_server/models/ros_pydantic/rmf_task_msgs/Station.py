@@ -10,6 +10,9 @@ class Station(pydantic.BaseModel):
     robot_type: str = ""  # string
     place_name: str = ""  # string
 
+    class Config:
+        orm_mode = True
+
 
 # # task_id is intended to be a pseudo-random string generated
 # # by the caller which can be used to identify this task as it

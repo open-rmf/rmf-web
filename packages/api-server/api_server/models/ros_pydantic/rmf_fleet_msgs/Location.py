@@ -15,6 +15,9 @@ class Location(pydantic.BaseModel):
     level_name: str = ""  # string
     index: pydantic.conint(ge=0, le=18446744073709551615) = 0  # uint64
 
+    class Config:
+        orm_mode = True
+
 
 # builtin_interfaces/Time t
 # float32 x

@@ -1,19 +1,28 @@
-from rmf_lift_msgs.msg import LiftRequest
+from rmf_lift_msgs.msg import LiftRequest as RmfLiftRequest
+from rmf_lift_msgs.msg import LiftState as RmfLiftState
 
 from .test_fixtures import RouteFixture
 
 
 class TestLiftsRoute(RouteFixture):
+    def test_lift_state(self):
+        pub = self.node.create_publisher(RmfLiftState, "lift_states", 10)
+        rmf_lift_state = RmfLiftState(lift_name="test_lift")
+        rmf_lift_state.current_mode = RmfLiftState.MODE_AGV
+        pub.publish(rmf_lift_state)
+        resp = self.session.get(f"{self.base_url}/lifts/test_lift/state")
+        self.assertEqual(resp.status_code, 200)
+
     def test_lift_request(self):
-        fut = self.subscribe_one(LiftRequest, "adapter_lift_requests")
-        resp = self.client.post(
-            "/lifts/test_lift/request",
+        fut = self.subscribe_one(RmfLiftRequest, "adapter_lift_requests")
+        resp = self.session.post(
+            f"{self.base_url}/lifts/test_lift/request",
             json={
-                "request_type": LiftRequest.REQUEST_AGV_MODE,
-                "door_mode": LiftRequest.DOOR_OPEN,
+                "request_type": RmfLiftRequest.REQUEST_AGV_MODE,
+                "door_mode": RmfLiftRequest.DOOR_OPEN,
                 "destination": "L1",
             },
         )
         self.assertEqual(resp.status_code, 200)
-        received: LiftRequest = self.spin_until(fut)
-        self.assertEqual(received.lift_name, "test_lift")
+        lift_request: RmfLiftRequest = self.spin_until(fut, 3)
+        self.assertEqual(lift_request.lift_name, "test_lift")

@@ -12,6 +12,9 @@ class BidNotice(pydantic.BaseModel):
     task_profile: TaskProfile = TaskProfile()  # rmf_task_msgs/TaskProfile
     time_window: Duration = Duration()  # builtin_interfaces/Duration
 
+    class Config:
+        orm_mode = True
+
 
 # # This message is published by the Task Dispatcher node to notify all
 # # Fleet Adapters to participate in a bidding process for a new task.

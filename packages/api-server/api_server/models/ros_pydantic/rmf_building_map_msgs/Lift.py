@@ -19,6 +19,9 @@ class Lift(pydantic.BaseModel):
     width: float = 0  # float32
     depth: float = 0  # float32
 
+    class Config:
+        orm_mode = True
+
 
 # string name
 # string[] levels
