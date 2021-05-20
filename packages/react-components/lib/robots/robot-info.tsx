@@ -9,6 +9,7 @@ import {
   useTheme,
 } from '@material-ui/core';
 import { ProgressBar } from '../progressbar';
+import { CircularProgressBar } from '../circular-progress-bar';
 import * as RmfModels from 'rmf-models';
 import { taskTypeToStr } from '../tasks/utils';
 import { VerboseRobot } from './utils';
@@ -30,6 +31,17 @@ const useStyles = makeStyles((theme) =>
     infoValue: {
       float: 'right',
       textAlign: 'right',
+    },
+    indicator: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      textAlign: 'center',
+      position: 'absolute',
+      top: 0,
+      width: '100%',
+      height: '100%',
+      margin: '0 auto',
     },
   }),
 );
@@ -166,7 +178,11 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
           </Typography>
         </Grid>
         <Grid item xs={6}>
-          <Typography variant="h6">-</Typography>
+          <CircularProgressBar progress={90} strokeColor="#5CCDBA">
+            <div className={classes.indicator}>
+              <Typography variant="h6">90%</Typography>
+            </div>
+          </CircularProgressBar>
         </Grid>
         <Grid item xs={6}>
           <Button
