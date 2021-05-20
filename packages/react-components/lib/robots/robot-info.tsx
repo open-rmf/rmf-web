@@ -11,7 +11,7 @@ import {
 import { ProgressBar } from '../progressbar';
 import { CircularProgressBar } from '../circular-progress-bar';
 import * as RmfModels from 'rmf-models';
-import { taskTypeToStr } from '../tasks/utils';
+import { taskTypeToStr, taskStateToStr } from '../tasks/utils';
 import { VerboseRobot } from './utils';
 import { rosTimeToJs } from '../utils';
 
@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) =>
     },
     indicator: {
       display: 'flex',
-      alignItems: 'center',
+      flexDirection: 'column',
       justifyContent: 'center',
       textAlign: 'center',
       position: 'absolute',
@@ -178,9 +178,12 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
           </Typography>
         </Grid>
         <Grid item xs={6}>
-          <CircularProgressBar progress={90} strokeColor="#5CCDBA">
+          <CircularProgressBar progress={90} strokeColor="#20a39e">
             <div className={classes.indicator}>
               <Typography variant="h6">90%</Typography>
+              <Typography variant="h6">
+                {currentTask ? taskStateToStr(currentTask.state) : '-'}
+              </Typography>
             </div>
           </CircularProgressBar>
         </Grid>

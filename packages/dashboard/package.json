@@ -61,6 +61,7 @@
     "react": "^16.13.1",
     "react-async": "^10.0.0",
     "react-components": "*",
+    "react-customizable-progressbar": "^1.0.3",
     "react-dom": "^16.13.1",
     "react-hotkeys": "^2.0.0",
     "react-leaflet": "^2.7.0",
