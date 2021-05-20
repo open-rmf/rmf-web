@@ -25,7 +25,7 @@ describe('tasks', () => {
         $('button[aria-label="Submit"]').click();
         return $('div=Successfully created task').isDisplayed();
       },
-      { timeout: 10, interval: 1 },
+      { timeout: 5000, interval: 500 },
     );
   });
 });

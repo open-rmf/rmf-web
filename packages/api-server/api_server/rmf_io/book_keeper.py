@@ -22,6 +22,7 @@ from ..models import (
     RobotHealth,
     TaskSummary,
 )
+from ..models import tortoise_models as ttm
 from ..repositories import RmfRepository
 from .events import RmfEvents
 
@@ -227,7 +228,7 @@ class RmfBookKeeper:
 
     def _record_task_summary(self):
         async def update(summary: TaskSummary):
-            await self.repo.save_task_summary(summary)
+            await ttm.TaskSummary.save_pydantic(summary)
             self._loggers.task_summary.info(summary.json())
 
         self._subscriptions.append(

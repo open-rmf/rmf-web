@@ -4,7 +4,7 @@ import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { CreateTaskForm, CreateTaskFormProps } from './create-task';
 import { TaskInfo } from './task-info';
-import { TaskTable, TaskTableProps } from './task-table';
+import { TaskTable } from './task-table';
 
 const useStyles = makeStyles((theme) => ({
   detailPanelContainer: {
@@ -30,29 +30,34 @@ function NoSelectedTask() {
   );
 }
 
-export interface TaskPanelProps extends React.HTMLProps<HTMLDivElement> {
+export interface FetchTasksResult {
   tasks: RmfModels.TaskSummary[];
+  totalCount: number;
+}
+
+export interface TaskPanelProps extends React.HTMLProps<HTMLDivElement> {
+  fetchTasks: (limit: number, offset: number) => Promise<FetchTasksResult>;
   cleaningZones?: string[];
   loopWaypoints?: string[];
   deliveryWaypoints?: string[];
   dispensers?: string[];
   ingestors?: string[];
   submitTask?: CreateTaskFormProps['submitTask'];
-  onRefreshClick?: TaskTableProps['onRefreshClick'];
 }
 
 export function TaskPanel({
-  tasks,
+  fetchTasks,
   cleaningZones,
   loopWaypoints,
   deliveryWaypoints,
   dispensers,
   ingestors,
   submitTask,
-  onRefreshClick,
   ...divProps
 }: TaskPanelProps): JSX.Element {
   const classes = useStyles();
+  const [tasks, setTasks] = React.useState<RmfModels.TaskSummary[]>([]);
+  const [totalCount, setTotalCount] = React.useState(-1);
   const [page, setPage] = React.useState(0);
   const [selectedTask, setSelectedTask] = React.useState<RmfModels.TaskSummary | undefined>(
     undefined,
@@ -62,15 +67,27 @@ export function TaskPanel({
   const [snackbarMessage, setSnackbarMessage] = React.useState('');
   const [snackbarSeverity, setSnackbarSeverity] = React.useState<AlertProps['severity']>('success');
 
+  const handleRefresh = React.useCallback(async () => {
+    (async () => {
+      const result = await fetchTasks(10, page * 10);
+      setTasks(result.tasks);
+      setTotalCount(result.totalCount);
+    })();
+  }, [fetchTasks, page]);
+
+  React.useEffect(() => {
+    handleRefresh();
+  }, [handleRefresh]);
+
   return (
     <div {...divProps}>
       <Grid container wrap="nowrap" justify="center" style={{ height: 'inherit' }}>
         <Grid style={{ flex: '1 1 auto' }}>
           <TaskTable
             className={classes.taskTable}
-            tasks={tasks.slice(page * 10, (page + 1) * 10)}
+            tasks={tasks}
             paginationOptions={{
-              count: tasks.length,
+              count: totalCount,
               rowsPerPage: 10,
               rowsPerPageOptions: [10],
               page,
@@ -78,7 +95,7 @@ export function TaskPanel({
             }}
             onCreateTaskClick={() => setOpenCreateTaskForm(true)}
             onTaskClick={(_ev, task) => setSelectedTask(task)}
-            onRefreshClick={onRefreshClick}
+            onRefreshClick={handleRefresh}
           />
         </Grid>
         <Paper className={classes.detailPanelContainer}>
@@ -100,6 +117,7 @@ export function TaskPanel({
           setSnackbarSeverity('success');
           setSnackbarMessage('Successfully created task');
           setOpenSnackbar(true);
+          handleRefresh();
         }}
         onFail={(e) => {
           setSnackbarSeverity('error');

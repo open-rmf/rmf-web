@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from builtin_interfaces.msg import Time as RosTime
@@ -6,9 +6,11 @@ from builtin_interfaces.msg import Time as RosTime
 
 def ros_to_py_datetime(ros_time: RosTime) -> datetime:
     """
-    The resulting datetime instance is naive.
+    The resulting datetime instance is utc.
     """
-    return datetime.fromtimestamp(ros_time.sec + ros_time.nanosec / 1000000000)
+    return datetime.fromtimestamp(
+        ros_time.sec + ros_time.nanosec / 1000000000, timezone.utc
+    )
 
 
 def py_to_ros_time(py_datetime: datetime) -> RosTime:
