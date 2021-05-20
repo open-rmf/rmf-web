@@ -32,7 +32,7 @@ class LiftsRouter(FastIORouter):
         @self.watch(
             "/{lift_name}/health",
             rmf_events.lift_health,
-            response_model=LiftHealth.PydanticModel,  # pylint: disable=no-member
+            response_model=LiftHealth,
         )
         def get_lift_health(lift_health: LiftHealth):
             return {"lift_name": lift_health.id_}, lift_health.get_pydantic()
