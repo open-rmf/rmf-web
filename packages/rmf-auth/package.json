@@ -22,12 +22,11 @@
   "author": "matiasbavera@gmail.com",
   "license": "Apache-2.0",
   "dependencies": {
+    "@fontsource/roboto": "^4.3.0",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.56",
     "eventemitter3": "^4.0.7",
-    "keycloak-js": "^11.0.2",
-    "styled-components": "^4.4.1",
-    "typeface-roboto": "0.0.75"
+    "keycloak-js": "^11.0.2"
   },
   "devDependencies": {
     "@material-ui/core": "^4.11.0",
@@ -49,7 +48,6 @@
     "eslint": "^7.26.0",
     "eslint-plugin-react": "^7.21.4",
     "eslint-plugin-react-hooks": "^4.1.2",
-    "gh-pages": "^3.1.0",
     "jest": "^26.5.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
