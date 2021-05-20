@@ -9,6 +9,7 @@ data:
     @include pods-fluent.conf
     @include reporting-server.conf
     @include reporting-server-all-logs.conf
+    @include keycloak-logs.conf
     # Use this configuration for production
     @include minio-fluent.conf
     # @include minio-fluent-dev.conf
@@ -36,6 +37,20 @@ data:
       path /var/log/containers/rmf-server*.log
       pos_file /var/log/fluent/fluentd-rmf-server.log.pos
       exclude_path ["/var/log/containers/fluent*"]
+      <parse>
+        @type kubernetes
+        @type "#{ENV['FLUENT_CONTAINER_TAIL_PARSER_TYPE'] || 'json'}"
+        time_format %Y-%m-%dT%H:%M:%S.%NZ
+      </parse>
+    </source>
+
+    <source>
+      @type tail
+      read_from_head true
+      tag keycloak.*
+      path /var/log/containers/keycloak*.log
+      pos_file /var/log/fluent/fluentd-keycloak.log.pos
+      exclude_path ["/var/log/containers/keycloak-db*"]
       <parse>
         @type kubernetes
         @type "#{ENV['FLUENT_CONTAINER_TAIL_PARSER_TYPE'] || 'json'}"
@@ -124,6 +139,21 @@ data:
     <match rmf.all.**>
       @type http
       endpoint http://reporting-server:8003/log/all/
+      http_method post
+      open_timeout 3
+      <format>
+        @type json
+      </format>
+      json_array true
+      <buffer>
+        flush_interval 10s
+      </buffer>
+    </match>
+
+  keycloak-logs.conf: |-
+    <match keycloak**>
+      @type http
+      endpoint http://reporting-server:8003/log/keycloak/
       http_method post
       open_timeout 3
       <format>
