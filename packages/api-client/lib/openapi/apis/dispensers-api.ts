@@ -27,7 +27,7 @@ import { HTTPValidationError } from '../models';
 export const DispensersApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     * available in socket.io
+     * Available in socket.io.
      * @summary Get Dispenser Health
      * @param {string} guid
      * @param {*} [options] Override http request option.
@@ -79,7 +79,7 @@ export const DispensersApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     * available in socket.io
+     * Available in socket.io.
      * @summary Get Dispenser State
      * @param {string} guid
      * @param {*} [options] Override http request option.
@@ -178,7 +178,7 @@ export const DispensersApiAxiosParamCreator = function (configuration?: Configur
 export const DispensersApiFp = function (configuration?: Configuration) {
   return {
     /**
-     * available in socket.io
+     * Available in socket.io.
      * @summary Get Dispenser Health
      * @param {string} guid
      * @param {*} [options] Override http request option.
@@ -205,7 +205,7 @@ export const DispensersApiFp = function (configuration?: Configuration) {
       };
     },
     /**
-     * available in socket.io
+     * Available in socket.io.
      * @summary Get Dispenser State
      * @param {string} guid
      * @param {*} [options] Override http request option.
@@ -260,7 +260,7 @@ export const DispensersApiFactory = function (
 ) {
   return {
     /**
-     * available in socket.io
+     * Available in socket.io.
      * @summary Get Dispenser Health
      * @param {string} guid
      * @param {*} [options] Override http request option.
@@ -275,7 +275,7 @@ export const DispensersApiFactory = function (
         .then((request) => request(axios, basePath));
     },
     /**
-     * available in socket.io
+     * Available in socket.io.
      * @summary Get Dispenser State
      * @param {string} guid
      * @param {*} [options] Override http request option.
@@ -311,7 +311,7 @@ export const DispensersApiFactory = function (
  */
 export class DispensersApi extends BaseAPI {
   /**
-   * available in socket.io
+   * Available in socket.io.
    * @summary Get Dispenser Health
    * @param {string} guid
    * @param {*} [options] Override http request option.
@@ -324,7 +324,7 @@ export class DispensersApi extends BaseAPI {
       .then((request) => request(this.axios, this.basePath));
   }
   /**
-   * available in socket.io
+   * Available in socket.io.
    * @summary Get Dispenser State
    * @param {string} guid
    * @param {*} [options] Override http request option.

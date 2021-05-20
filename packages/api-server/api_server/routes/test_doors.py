@@ -2,15 +2,22 @@ from rmf_door_msgs.msg import DoorMode as RmfDoorMode
 from rmf_door_msgs.msg import DoorRequest as RmfDoorRequest
 from rmf_door_msgs.msg import DoorState as RmfDoorState
 
-from .test_fixtures import RouteFixture
+from .test_fixtures import RouteFixture, try_until
 
 
 class TestDoorsRoute(RouteFixture):
     def test_door_state(self):
         pub = self.node.create_publisher(RmfDoorState, "door_states", 10)
         rmf_door_state = RmfDoorState(door_name="test_door")
-        pub.publish(rmf_door_state)
-        resp = self.session.get(f"{self.base_url}/doors/test_door/state")
+
+        def try_get():
+            pub.publish(rmf_door_state)
+            return self.session.get(f"{self.base_url}/doors/test_door/state")
+
+        resp = try_until(
+            try_get,
+            lambda x: x.status_code == 200,
+        )
         self.assertEqual(resp.status_code, 200)
 
     def test_door_request(self):

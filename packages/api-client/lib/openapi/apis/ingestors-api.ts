@@ -27,7 +27,7 @@ import { IngestorState } from '../models';
 export const IngestorsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     * available in socket.io
+     * Available in socket.io.
      * @summary Get Ingestor Health
      * @param {string} guid
      * @param {*} [options] Override http request option.
@@ -79,7 +79,7 @@ export const IngestorsApiAxiosParamCreator = function (configuration?: Configura
       };
     },
     /**
-     * available in socket.io
+     * Available in socket.io.
      * @summary Get Ingestor State
      * @param {string} guid
      * @param {*} [options] Override http request option.
@@ -178,7 +178,7 @@ export const IngestorsApiAxiosParamCreator = function (configuration?: Configura
 export const IngestorsApiFp = function (configuration?: Configuration) {
   return {
     /**
-     * available in socket.io
+     * Available in socket.io.
      * @summary Get Ingestor Health
      * @param {string} guid
      * @param {*} [options] Override http request option.
@@ -205,7 +205,7 @@ export const IngestorsApiFp = function (configuration?: Configuration) {
       };
     },
     /**
-     * available in socket.io
+     * Available in socket.io.
      * @summary Get Ingestor State
      * @param {string} guid
      * @param {*} [options] Override http request option.
@@ -260,7 +260,7 @@ export const IngestorsApiFactory = function (
 ) {
   return {
     /**
-     * available in socket.io
+     * Available in socket.io.
      * @summary Get Ingestor Health
      * @param {string} guid
      * @param {*} [options] Override http request option.
@@ -275,7 +275,7 @@ export const IngestorsApiFactory = function (
         .then((request) => request(axios, basePath));
     },
     /**
-     * available in socket.io
+     * Available in socket.io.
      * @summary Get Ingestor State
      * @param {string} guid
      * @param {*} [options] Override http request option.
@@ -311,7 +311,7 @@ export const IngestorsApiFactory = function (
  */
 export class IngestorsApi extends BaseAPI {
   /**
-   * available in socket.io
+   * Available in socket.io.
    * @summary Get Ingestor Health
    * @param {string} guid
    * @param {*} [options] Override http request option.
@@ -324,7 +324,7 @@ export class IngestorsApi extends BaseAPI {
       .then((request) => request(this.axios, this.basePath));
   }
   /**
-   * available in socket.io
+   * Available in socket.io.
    * @summary Get Ingestor State
    * @param {string} guid
    * @param {*} [options] Override http request option.

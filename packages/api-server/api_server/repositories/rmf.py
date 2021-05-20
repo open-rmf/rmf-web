@@ -28,6 +28,14 @@ class RmfRepository:
     tortoise-orm must be initialized before using any of the methods in this class.
     """
 
+    @staticmethod
+    def _build_filter_params(**queries: dict):
+        filter_params = {}
+        for k, v in queries.items():
+            if v is not None:
+                filter_params[k] = v
+        return filter_params
+
     async def get_bulding_map(self) -> Optional[BuildingMap]:
         building_map = await ttm.BuildingMap.first()
         if building_map is None:
@@ -216,22 +224,10 @@ class RmfRepository:
         await ttm.RobotHealth.update_or_create(dic, id_=robot_health.id_)
 
     async def get_task_summary(self, task_id: str):
-        task_summary = await ttm.TaskSummary.get_or_none(id_=task_id)
-        if task_summary is None:
+        task_summary = await ttm.TaskSummary.get_or_none(id_=task_id).values("data")
+        if not task_summary:
             return None
-        return TaskSummary(**task_summary.data)
-
-    async def query_task_summaries(self, **queries) -> List[TaskSummary]:
-        return [
-            TaskSummary(**task_summary.data)
-            for task_summary in await ttm.TaskSummary.filter(**queries)
-        ]
-
-    async def save_task_summary(self, task_summary: TaskSummary):
-        await ttm.TaskSummary.update_or_create(
-            {"data": task_summary.dict(), "state": task_summary.state},
-            id_=task_summary.task_id,
-        )
+        return TaskSummary(**task_summary[0]["data"])
 
     async def get_tasks(self):
         task_summaries = await ttm.TaskSummary.all()

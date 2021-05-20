@@ -1,7 +1,7 @@
 import rclpy.qos
 from rmf_building_map_msgs.msg import BuildingMap as RmfBuildingMap
 
-from .test_fixtures import RouteFixture
+from .test_fixtures import RouteFixture, try_until
 
 
 class TestBuildingMapRoute(RouteFixture):
@@ -17,6 +17,13 @@ class TestBuildingMapRoute(RouteFixture):
                 durability=rclpy.qos.DurabilityPolicy.TRANSIENT_LOCAL,
             ),
         )
-        pub.publish(rmf_building_map)
-        resp = self.session.get(f"{self.base_url}/building_map")
+
+        def try_get():
+            pub.publish(rmf_building_map)
+            return self.session.get(f"{self.base_url}/building_map")
+
+        resp = try_until(
+            try_get,
+            lambda x: x.status_code == 200,
+        )
         self.assertEqual(resp.status_code, 200)
