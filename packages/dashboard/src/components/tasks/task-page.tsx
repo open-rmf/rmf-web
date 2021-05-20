@@ -38,7 +38,7 @@ export function TaskPage() {
         undefined,
         limit,
         offset,
-        'priority,-start_time',
+        '-priority,-start_time',
       );
       const taskProgresses: TaskProgress[] = resp.data.items;
       const task_summaries = taskProgresses.map((t) => t.task_summary);
