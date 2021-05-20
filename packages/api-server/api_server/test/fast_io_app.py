@@ -1,6 +1,7 @@
 import pydantic
-from api_server.fast_io import FastIO, FastIORouter
 from rx.subject import Subject
+
+from api_server.fast_io import FastIO, FastIORouter
 
 app = FastIO()
 router = FastIORouter()

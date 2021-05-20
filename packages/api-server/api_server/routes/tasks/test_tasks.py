@@ -1,11 +1,12 @@
 import asyncio
 import concurrent.futures
 
-from api_server.models.tasks import TaskSummary
 from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
 from rmf_task_msgs.msg import TaskType as RmfTaskType
 from rmf_task_msgs.srv import CancelTask as RmfCancelTask
 from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
+
+from api_server.models.tasks import TaskSummary
 
 from ...models import CancelTask, CleanTaskDescription, SubmitTask
 from ...models import tortoise_models as ttm
