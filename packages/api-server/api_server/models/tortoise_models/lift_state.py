@@ -1,7 +1,7 @@
-from rmf_lift_msgs.msg import LiftState as RmfLiftState
+from tortoise import Model
 
-from .json_model import json_model
+from .json_mixin import JsonMixin
 
 
-class LiftState(json_model(RmfLiftState, lambda x: x.lift_name)):
+class LiftState(Model, JsonMixin):
     pass

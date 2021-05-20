@@ -1,10 +1,26 @@
-from enum import Enum
+from enum import IntEnum
 from typing import Optional, Union
 
 from pydantic import BaseModel, validator
+from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
 from rmf_task_msgs.msg import TaskType as RmfTaskType
 
-from .ros_pydantic.rmf_task_msgs.TaskSummary import TaskSummary as PydanticTaskSummary
+from .ros_pydantic import rmf_task_msgs
+
+TaskSummary = rmf_task_msgs.TaskSummary
+
+
+class TaskStateEnum(IntEnum):
+    ACTIVE = RmfTaskSummary.STATE_ACTIVE
+    CANCELLED = RmfTaskSummary.STATE_CANCELED
+    COMPLETED = RmfTaskSummary.STATE_COMPLETED
+    FAILED = RmfTaskSummary.STATE_FAILED
+    PENDING = RmfTaskSummary.STATE_PENDING
+    QUEUED = RmfTaskSummary.STATE_QUEUED
+
+
+class Task(BaseModel):
+    task_id: str
 
 
 class CleanTaskDescription(BaseModel):
@@ -29,14 +45,14 @@ TaskDescriptionT = Union[
 ]
 
 
-class TaskTypeEnum(Enum):
+class TaskTypeEnum(IntEnum):
     CLEAN = RmfTaskType.TYPE_CLEAN
     LOOP = RmfTaskType.TYPE_LOOP
     DELIVERY = RmfTaskType.TYPE_DELIVERY
 
 
-class Task(BaseModel):
-    task_summary: PydanticTaskSummary
+class TaskProgress(BaseModel):
+    task_summary: TaskSummary
     progress: str
 
 

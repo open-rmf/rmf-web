@@ -14,6 +14,9 @@ class AffineImage(pydantic.BaseModel):
     encoding: str = ""  # string
     data: bytes = bytes()  # uint8
 
+    class Config:
+        orm_mode = True
+
 
 # string name
 # float32 x_offset

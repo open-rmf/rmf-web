@@ -19,6 +19,9 @@ class TaskSummary(pydantic.BaseModel):
     end_time: Time = Time()  # builtin_interfaces/Time
     robot_name: str = ""  # string
 
+    class Config:
+        orm_mode = True
+
 
 # # Publish by Fleet Adapter (aka DispatchStatus)
 #

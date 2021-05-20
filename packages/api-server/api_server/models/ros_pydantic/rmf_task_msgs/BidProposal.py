@@ -16,6 +16,9 @@ class BidProposal(pydantic.BaseModel):
     finish_time: Time = Time()  # builtin_interfaces/Time
     robot_name: str = ""  # string
 
+    class Config:
+        orm_mode = True
+
 
 # # This message is published by a Fleet Adapter in response to a BidNotice
 # # message.

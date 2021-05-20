@@ -1,4 +1,7 @@
-from .building_map import router as building_map_router
-from .doors import router as doors_router
-from .lifts import router as lifts_router
-from .tasks import tasks_router
+from .building_map import BuildingMapRouter
+from .dispensers import DispensersRouter
+from .doors import DoorsRouter
+from .fleets import FleetsRouter
+from .ingestors import IngestorsRouter
+from .lifts import LiftsRouter
+from .tasks import TasksRouter

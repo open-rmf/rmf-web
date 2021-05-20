@@ -15,6 +15,9 @@ class Door(pydantic.BaseModel):
     motion_range: float = 0  # float32
     motion_direction: pydantic.conint(ge=-2147483648, le=2147483647) = 0  # int32
 
+    class Config:
+        orm_mode = True
+
 
 # string name
 #

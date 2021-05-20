@@ -6,6 +6,8 @@ import KitchenIcon from '@material-ui/icons/Kitchen';
 import LocalHospitalIcon from '@material-ui/icons/LocalHospital';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+
 import { Reports } from './report-list';
 import { ExpandableMultilevelMenuProps } from 'react-components';
 
@@ -55,6 +57,27 @@ export const buildReportMenuStructure = (
       icon: <ArrowDropUpIcon />,
       title: 'Lifts',
       onClick: () => setCurrentReport(Reports.showLiftStateReport),
+    },
+    {
+      icon: <AccountCircleIcon />,
+      title: 'Users',
+      items: [
+        {
+          title: 'Logins',
+          items: [],
+          onClick: () => setCurrentReport(Reports.showLoginsReport),
+        },
+        {
+          title: 'Logouts',
+          items: [],
+          onClick: () => setCurrentReport(Reports.showLogoutsReport),
+        },
+        {
+          title: 'Login failures',
+          items: [],
+          onClick: () => setCurrentReport(Reports.showLoginFailuresReport),
+        },
+      ],
     },
   ] as ExpandableMultilevelMenuProps[];
 };

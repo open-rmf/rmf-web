@@ -1,21 +1,34 @@
 import logging
-from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple
+from typing import Any, Callable, Dict, List, Optional, Sequence
 
 import rx
-from rmf_building_map_msgs.msg import BuildingMap, Door, Level, Lift
-from rmf_dispenser_msgs.msg import DispenserState
-from rmf_door_msgs.msg import DoorMode, DoorState
-from rmf_fleet_msgs.msg import FleetState, RobotMode, RobotState
-from rmf_ingestor_msgs.msg import IngestorState
-from rmf_lift_msgs.msg import LiftState
+from rmf_dispenser_msgs.msg import DispenserState as RmfDispenserState
+from rmf_door_msgs.msg import DoorMode as RmfDoorMode
+from rmf_fleet_msgs.msg import RobotMode as RmfRobotMode
+from rmf_ingestor_msgs.msg import IngestorState as RmfIngestorState
+from rmf_lift_msgs.msg import LiftState as RmfLiftState
 from rx import Observable
 from rx import operators as ops
 from rx.core.typing import Disposable
 from rx.scheduler.scheduler import Scheduler
-from rx.subject import Subject
+from rx.subject import BehaviorSubject, Subject
 
-from ..models import tortoise_models as ttm
-from .gateway import RmfGateway
+from ..models import (
+    DispenserHealth,
+    DispenserState,
+    DoorHealth,
+    DoorState,
+    FleetState,
+    HealthStatus,
+    IngestorHealth,
+    IngestorState,
+    LiftHealth,
+    LiftState,
+    RobotHealth,
+    RobotState,
+)
+from ..repositories import RmfRepository
+from .events import RmfEvents
 from .operators import heartbeat, most_critical
 
 
@@ -24,45 +37,24 @@ class HealthWatchdog:
 
     def __init__(
         self,
-        rmf_gateway: RmfGateway,
+        rmf_events: RmfEvents,
         *,
+        rmf_repo: Optional[RmfRepository] = None,
         scheduler: Optional[Scheduler] = None,
         logger: logging.Logger = None,
     ):
-        self.rmf = rmf_gateway
+        self.rmf = rmf_events
+        self.repo = rmf_repo
         self.scheduler = scheduler
         self.logger = logger or logging.getLogger(self.__class__.__name__)
-        self._watchers: List[Disposable] = []
         self._building_watchers: List[Disposable] = []
-        self._started = False
 
-    def start(self):
-        if self._started:
-            return
-
-        def on_building_map(building_map: Optional[BuildingMap]):
-            for sub in self._building_watchers:
-                sub.dispose()
-            self._building_watchers.clear()
-            self._watch_door_health(building_map)
-            self._watch_lift_health(building_map)
-
-        self.rmf.rmf_building_map.subscribe(on_building_map)
-
-        self._watch_dispenser_health()
-        self._watch_ingestor_health()
-        self._watch_robot_health()
-        self._started = True
-
-    def stop(self):
-        for sub in self._watchers:
-            sub.dispose()
-        self._watchers.clear()
-        for sub in self._building_watchers:
-            sub.dispose()
-        self._building_watchers.clear()
-
-        self._started = False
+    async def start(self):
+        await self._watch_door_health()
+        await self._watch_lift_health()
+        await self._watch_dispenser_health()
+        await self._watch_ingestor_health()
+        await self._watch_robot_health()
 
     def _watch_heartbeat(
         self,
@@ -98,316 +90,321 @@ class HealthWatchdog:
         )
 
     @staticmethod
-    def _door_mode_to_health(data: Tuple[str, DoorState]):
-        state = data[1]
+    def door_mode_to_health(state: Optional[DoorState]):
         if state is None:
-            return ttm.DoorHealth(
-                id_=data[0],
-                health_status=ttm.HealthStatus.UNHEALTHY,
-                health_message="no state available",
-            )
+            return None
+
         if state.current_mode.value in (
-            DoorMode.MODE_CLOSED,
-            DoorMode.MODE_MOVING,
-            DoorMode.MODE_OPEN,
+            RmfDoorMode.MODE_CLOSED,
+            RmfDoorMode.MODE_MOVING,
+            RmfDoorMode.MODE_OPEN,
         ):
-            return ttm.DoorHealth(
+            return DoorHealth(
                 id_=state.door_name,
-                health_status=ttm.HealthStatus.HEALTHY,
+                health_status=HealthStatus.HEALTHY,
             )
-        if state.current_mode.value == DoorMode.MODE_OFFLINE:
-            return ttm.DoorHealth(
+        if state.current_mode.value == RmfDoorMode.MODE_OFFLINE:
+            return DoorHealth(
                 id_=state.door_name,
-                health_status=ttm.HealthStatus.UNHEALTHY,
+                health_status=HealthStatus.UNHEALTHY,
                 health_message="door is OFFLINE",
             )
-        return ttm.DoorHealth(
+        return DoorHealth(
             id_=state.door_name,
-            health_status=ttm.HealthStatus.UNHEALTHY,
+            health_status=HealthStatus.UNHEALTHY,
             health_message="door is in an unknown mode",
         )
 
-    def _watch_door_health(self, building_map):
-        doors: List[Door] = []
-        if building_map:
-            for level in building_map.levels:
-                level: Level
-                for door in level.doors:
-                    doors.append(door)
-
-        def to_door_health(data: Tuple[str, bool]):
-            id_ = data[0]
-            has_heartbeat = data[1]
+    async def _watch_door_health(self):
+        def to_door_health(id_: str, has_heartbeat: bool):
             if has_heartbeat:
-                return ttm.DoorHealth(id_=id_, health_status=ttm.HealthStatus.HEALTHY)
-            return ttm.DoorHealth(
+                return DoorHealth(id_=id_, health_status=HealthStatus.HEALTHY)
+            return DoorHealth(
                 id_=id_,
-                health_status=ttm.HealthStatus.DEAD,
+                health_status=HealthStatus.DEAD,
                 health_message="heartbeat failed",
             )
 
-        keys = [x.name for x in doors]
-        initial_values: Sequence[Tuple[str, Any]] = [(k, None) for k in keys]
-        obs = rx.merge(
-            rx.of(*initial_values),
-            self.rmf.door_states.pipe(ops.map(lambda x: (x.door_name, x))),
-        )
+        def watch(id_: str, obs: Observable):
+            door_mode_health = obs.pipe(
+                ops.map(self.door_mode_to_health), ops.distinct_until_changed()
+            )
+            obs.pipe(
+                heartbeat(self.LIVELINESS),
+                ops.map(lambda has_heartbeat: to_door_health(id_, has_heartbeat)),
+                self._combine_most_critical(door_mode_health),
+            ).subscribe(self.rmf.door_health.on_next, scheduler=self.scheduler)
 
-        door_mode_health = obs.pipe(ops.map(self._door_mode_to_health))
+        doors = await self.repo.get_doors() if self.repo else []
+        states_list = await self.repo.query_door_states() if self.repo else []
+        door_states = {state.door_name: state for state in states_list}
+        initial_states = {door.name: door_states.get(door.name, None) for door in doors}
 
-        heartbeat_health = obs.pipe(
-            self._watch_heartbeat(lambda x: x[0]),
-            ops.map(to_door_health),
-        )
+        subjects = {
+            id_: BehaviorSubject(state) for id_, state in initial_states.items()
+        }
+        for id_, subject in subjects.items():
+            watch(id_, subject)
 
-        sub = heartbeat_health.pipe(
-            self._combine_most_critical(door_mode_health),
-        ).subscribe(self.rmf.door_health.on_next, scheduler=self.scheduler)
-        self._building_watchers.append(sub)
+        def on_state(state: DoorState):
+            if state.door_name not in subjects:
+                subjects[state.door_name] = BehaviorSubject(state)
+                watch(state.door_name, subjects[state.door_name])
+            else:
+                subjects[state.door_name].on_next(state)
+
+        self.rmf.door_states.subscribe(on_state)
 
     @staticmethod
-    def _lift_mode_to_health(data: Tuple[str, LiftState]):
-        state = data[1]
+    def lift_mode_to_health(state: Optional[LiftState]):
         if state is None:
-            return ttm.LiftHealth(
-                id_=data[0],
-                health_status=ttm.HealthStatus.UNHEALTHY,
-                health_message="no state available",
-            )
+            return None
+
         if state.current_mode in (
-            LiftState.MODE_HUMAN,
-            LiftState.MODE_AGV,
+            RmfLiftState.MODE_HUMAN,
+            RmfLiftState.MODE_AGV,
         ):
-            return ttm.LiftHealth(
+            return LiftHealth(
                 id_=state.lift_name,
-                health_status=ttm.HealthStatus.HEALTHY,
+                health_status=HealthStatus.HEALTHY,
             )
-        if state.current_mode == LiftState.MODE_FIRE:
-            return ttm.LiftHealth(
+        if state.current_mode == RmfLiftState.MODE_FIRE:
+            return LiftHealth(
                 id_=state.lift_name,
-                health_status=ttm.HealthStatus.UNHEALTHY,
+                health_status=HealthStatus.UNHEALTHY,
                 health_message="lift is in FIRE mode",
             )
-        if state.current_mode == LiftState.MODE_EMERGENCY:
-            return ttm.LiftHealth(
+        if state.current_mode == RmfLiftState.MODE_EMERGENCY:
+            return LiftHealth(
                 id_=state.lift_name,
-                health_status=ttm.HealthStatus.UNHEALTHY,
+                health_status=HealthStatus.UNHEALTHY,
                 health_message="lift is in EMERGENCY mode",
             )
-        return ttm.LiftHealth(
+        return LiftHealth(
             id_=state.lift_name,
-            health_status=ttm.HealthStatus.UNHEALTHY,
+            health_status=HealthStatus.UNHEALTHY,
             health_message="lift is in an unknown mode",
         )
 
-    def _watch_lift_health(self, building_map):
-        lifts: Sequence[Lift] = building_map.lifts if building_map else []
-
-        def to_lift_health(data: Tuple[str, bool]):
-            id_ = data[0]
-            has_heartbeat = data[1]
+    async def _watch_lift_health(self):
+        def to_lift_health(id_: str, has_heartbeat: bool):
             if has_heartbeat:
-                return ttm.LiftHealth(id_=id_, health_status=ttm.HealthStatus.HEALTHY)
-            return ttm.LiftHealth(
+                return LiftHealth(id_=id_, health_status=HealthStatus.HEALTHY)
+            return LiftHealth(
                 id_=id_,
-                health_status=ttm.HealthStatus.DEAD,
+                health_status=HealthStatus.DEAD,
                 health_message="heartbeat failed",
             )
 
-        keys = [x.name for x in lifts]
-        initial_values: Sequence[Tuple[str, Any]] = [(k, None) for k in keys]
-        obs = rx.merge(
-            rx.of(*initial_values),
-            self.rmf.lift_states.pipe(ops.map(lambda x: (x.lift_name, x))),
-        )
+        def watch(id_: str, obs: Observable):
+            lift_mode_health = obs.pipe(
+                ops.map(self.lift_mode_to_health), ops.distinct_until_changed()
+            )
+            obs.pipe(
+                heartbeat(self.LIVELINESS),
+                ops.map(lambda has_heartbeat: to_lift_health(id_, has_heartbeat)),
+                self._combine_most_critical(lift_mode_health),
+            ).subscribe(self.rmf.lift_health.on_next, scheduler=self.scheduler)
 
-        lift_mode_health = obs.pipe(ops.map(self._lift_mode_to_health))
-        heartbeat_health = obs.pipe(
-            self._watch_heartbeat(lambda x: x[0]),
-            ops.map(to_lift_health),
-        )
-        sub = heartbeat_health.pipe(
-            self._combine_most_critical(lift_mode_health)
-        ).subscribe(self.rmf.lift_health.on_next, scheduler=self.scheduler)
-        self._building_watchers.append(sub)
+        lifts = await self.repo.get_lifts() if self.repo else []
+        states_list = await self.repo.query_lift_states() if self.repo else []
+        lift_states = {state.lift_name: state for state in states_list}
+        initial_states = {lift.name: lift_states.get(lift.name, None) for lift in lifts}
+
+        subjects = {
+            id_: BehaviorSubject(state) for id_, state in initial_states.items()
+        }
+        for id_, subject in subjects.items():
+            watch(id_, subject)
+
+        def on_state(state: LiftState):
+            if state.lift_name not in subjects:
+                subjects[state.lift_name] = BehaviorSubject(state)
+                watch(state.lift_name, subjects[state.lift_name])
+            else:
+                subjects[state.lift_name].on_next(state)
+
+        self.rmf.lift_states.subscribe(on_state)
 
     @staticmethod
-    def _dispenser_mode_to_health(id_: str, state: DispenserState):
+    def dispenser_mode_to_health(state: Optional[DispenserState]):
         if state is None:
-            return ttm.DispenserHealth(
-                id_=id_,
-                health_status=ttm.HealthStatus.UNHEALTHY,
-                health_message="no state available",
-            )
+            return None
         if state.mode in (
-            DispenserState.IDLE,
-            DispenserState.BUSY,
+            RmfDispenserState.IDLE,
+            RmfDispenserState.BUSY,
         ):
-            return ttm.DispenserHealth(
-                id_=id_,
-                health_status=ttm.HealthStatus.HEALTHY,
+            return DispenserHealth(
+                id_=state.guid,
+                health_status=HealthStatus.HEALTHY,
             )
-        if state.mode == DispenserState.OFFLINE:
-            return ttm.DispenserHealth(
-                id_=id_,
-                health_status=ttm.HealthStatus.UNHEALTHY,
+        if state.mode == RmfDispenserState.OFFLINE:
+            return DispenserHealth(
+                id_=state.guid,
+                health_status=HealthStatus.UNHEALTHY,
                 health_message="dispenser is OFFLINE",
             )
-        return ttm.DispenserHealth(
-            id_=id_,
-            health_status=ttm.HealthStatus.UNHEALTHY,
+        return DispenserHealth(
+            id_=state.guid,
+            health_status=HealthStatus.UNHEALTHY,
             health_message="dispenser is in an unknown mode",
         )
 
-    def _watch_dispenser_health(self):
+    async def _watch_dispenser_health(self):
         def to_dispenser_health(id_: str, has_heartbeat: bool):
             if has_heartbeat:
-                return ttm.DispenserHealth(
-                    id_=id_, health_status=ttm.HealthStatus.HEALTHY
-                )
-            return ttm.DispenserHealth(
+                return DispenserHealth(id_=id_, health_status=HealthStatus.HEALTHY)
+            return DispenserHealth(
                 id_=id_,
-                health_status=ttm.HealthStatus.DEAD,
+                health_status=HealthStatus.DEAD,
                 health_message="heartbeat failed",
             )
 
         def watch(id_: str, obs: Observable):
             dispenser_mode_health = obs.pipe(
-                ops.map(lambda x: self._dispenser_mode_to_health(id_, x))
+                ops.map(self.dispenser_mode_to_health), ops.distinct_until_changed()
             )
             obs.pipe(
                 heartbeat(self.LIVELINESS),
-                ops.map(lambda x: to_dispenser_health(id_, x)),
+                ops.map(lambda has_heartbeat: to_dispenser_health(id_, has_heartbeat)),
                 self._combine_most_critical(dispenser_mode_health),
             ).subscribe(self.rmf.dispenser_health.on_next, scheduler=self.scheduler)
 
-        subjects = {
-            x.guid: Subject() for x in self.rmf.current_dispenser_states.values()
+        dispensers = await self.repo.query_dispensers() if self.repo else []
+        states_list = await self.repo.query_dispenser_states() if self.repo else []
+        dispenser_states = {state.guid: state for state in states_list}
+        initial_states = {
+            dispenser.guid: dispenser_states.get(dispenser.guid, None)
+            for dispenser in dispensers
         }
-        for guid, subject in subjects.items():
-            watch(guid, subject)
+
+        subjects = {
+            id_: BehaviorSubject(state) for id_, state in initial_states.items()
+        }
+        for id_, subject in subjects.items():
+            watch(id_, subject)
 
         def on_state(state: DispenserState):
             if state.guid not in subjects:
-                subjects[state.guid] = Subject()
+                subjects[state.guid] = BehaviorSubject(state)
                 watch(state.guid, subjects[state.guid])
-            subjects[state.guid].on_next(state)
+            else:
+                subjects[state.guid].on_next(state)
 
         self.rmf.dispenser_states.subscribe(on_state)
 
     @staticmethod
-    def _ingestor_mode_to_health(id_: str, state: IngestorState):
-        if state is None:
-            return ttm.IngestorHealth(
-                id_=id_,
-                health_status=ttm.HealthStatus.UNHEALTHY,
-                health_message="no state available",
-            )
+    def ingestor_mode_to_health(state: IngestorState):
         if state.mode in (
-            IngestorState.IDLE,
-            IngestorState.BUSY,
+            RmfIngestorState.IDLE,
+            RmfIngestorState.BUSY,
         ):
-            return ttm.IngestorHealth(
-                id_=id_,
-                health_status=ttm.HealthStatus.HEALTHY,
+            return IngestorHealth(
+                id_=state.guid,
+                health_status=HealthStatus.HEALTHY,
             )
-        if state.mode == IngestorState.OFFLINE:
-            return ttm.IngestorHealth(
-                id_=id_,
-                health_status=ttm.HealthStatus.UNHEALTHY,
+        if state.mode == RmfIngestorState.OFFLINE:
+            return IngestorHealth(
+                id_=state.guid,
+                health_status=HealthStatus.UNHEALTHY,
                 health_message="ingestor is OFFLINE",
             )
-        return ttm.IngestorHealth(
-            id_=id_,
-            health_status=ttm.HealthStatus.UNHEALTHY,
+        return IngestorHealth(
+            id_=state.guid,
+            health_status=HealthStatus.UNHEALTHY,
             health_message="ingestor is in an unknown mode",
         )
 
-    def _watch_ingestor_health(self):
+    async def _watch_ingestor_health(self):
         def to_ingestor_health(id_: str, has_heartbeat: bool):
             if has_heartbeat:
-                return ttm.IngestorHealth(
-                    id_=id_, health_status=ttm.HealthStatus.HEALTHY
-                )
-            return ttm.IngestorHealth(
+                return IngestorHealth(id_=id_, health_status=HealthStatus.HEALTHY)
+            return IngestorHealth(
                 id_=id_,
-                health_status=ttm.HealthStatus.DEAD,
+                health_status=HealthStatus.DEAD,
                 health_message="heartbeat failed",
             )
 
         def watch(id_: str, obs: Observable):
             ingestor_mode_health = obs.pipe(
-                ops.map(lambda x: self._ingestor_mode_to_health(id_, x))
+                ops.map(self.ingestor_mode_to_health),
+                ops.distinct_until_changed(),
             )
             obs.pipe(
                 heartbeat(self.LIVELINESS),
-                ops.map(lambda x: to_ingestor_health(id_, x)),
+                ops.map(lambda has_heartbeat: to_ingestor_health(id_, has_heartbeat)),
                 self._combine_most_critical(ingestor_mode_health),
             ).subscribe(self.rmf.ingestor_health.on_next, scheduler=self.scheduler)
 
-        subjects = {
-            x.guid: Subject() for x in self.rmf.current_ingestor_states.values()
+        ingestors = await self.repo.query_ingestors() if self.repo else []
+        states_list = await self.repo.query_ingestor_states() if self.repo else []
+        ingestor_states = {state.guid: state for state in states_list}
+        initial_states = {
+            ingestor.guid: ingestor_states.get(ingestor.guid, None)
+            for ingestor in ingestors
         }
-        for guid, subject in subjects.items():
-            watch(guid, subject)
+
+        subjects = {
+            id_: BehaviorSubject(state) for id_, state in initial_states.items()
+        }
+        for id_, subject in subjects.items():
+            watch(id_, subject)
 
         def on_state(state: IngestorState):
             if state.guid not in subjects:
-                subjects[state.guid] = Subject()
+                subjects[state.guid] = BehaviorSubject(state)
                 watch(state.guid, subjects[state.guid])
-            subjects[state.guid].on_next(state)
+            else:
+                subjects[state.guid].on_next(state)
 
         self.rmf.ingestor_states.subscribe(on_state)
 
     @staticmethod
-    def _robot_mode_to_health(id_: str, state: RobotState):
-        if state is None:
-            return ttm.RobotHealth(
-                id_=id_,
-                health_status=ttm.HealthStatus.UNHEALTHY,
-                health_message="no state available",
-            )
+    def robot_mode_to_health(id_: Optional[str], state: Optional[RobotState]):
+        if id_ is None or state is None:
+            return None
+
         if state.mode.mode in (
-            RobotMode.MODE_IDLE,
-            RobotMode.MODE_CHARGING,
-            RobotMode.MODE_MOVING,
-            RobotMode.MODE_PAUSED,
-            RobotMode.MODE_WAITING,
-            RobotMode.MODE_GOING_HOME,
-            RobotMode.MODE_DOCKING,
+            RmfRobotMode.MODE_IDLE,
+            RmfRobotMode.MODE_CHARGING,
+            RmfRobotMode.MODE_MOVING,
+            RmfRobotMode.MODE_PAUSED,
+            RmfRobotMode.MODE_WAITING,
+            RmfRobotMode.MODE_GOING_HOME,
+            RmfRobotMode.MODE_DOCKING,
         ):
-            return ttm.RobotHealth(
+            return RobotHealth(
                 id_=id_,
-                health_status=ttm.HealthStatus.HEALTHY,
+                health_status=HealthStatus.HEALTHY,
             )
-        if state.mode.mode == RobotMode.MODE_EMERGENCY:
-            return ttm.RobotHealth(
+        if state.mode.mode == RmfRobotMode.MODE_EMERGENCY:
+            return RobotHealth(
                 id_=id_,
-                health_status=ttm.HealthStatus.UNHEALTHY,
+                health_status=HealthStatus.UNHEALTHY,
                 health_message="robot is in EMERGENCY mode",
             )
-        if state.mode.mode == RobotMode.MODE_ADAPTER_ERROR:
-            return ttm.RobotHealth(
+        if state.mode.mode == RmfRobotMode.MODE_ADAPTER_ERROR:
+            return RobotHealth(
                 id_=id_,
-                health_status=ttm.HealthStatus.UNHEALTHY,
+                health_status=HealthStatus.UNHEALTHY,
                 health_message="error in fleet adapter",
             )
-        return ttm.RobotHealth(
+        return RobotHealth(
             id_=id_,
-            health_status=ttm.HealthStatus.UNHEALTHY,
+            health_status=HealthStatus.UNHEALTHY,
             health_message="robot is in an unknown mode",
         )
 
-    def _watch_robot_health(self):
+    async def _watch_robot_health(self):
         def to_robot_health(id_: str, has_heartbeat: bool):
             if has_heartbeat:
-                return ttm.RobotHealth(
+                return RobotHealth(
                     id_=id_,
-                    health_status=ttm.HealthStatus.HEALTHY,
+                    health_status=HealthStatus.HEALTHY,
                 )
-            return ttm.RobotHealth(
+            return RobotHealth(
                 id_=id_,
-                health_status=ttm.HealthStatus.DEAD,
+                health_status=HealthStatus.DEAD,
                 health_message="heartbeat failed",
             )
 
@@ -416,7 +413,8 @@ class HealthWatchdog:
             :param obs: Observable[RobotState]
             """
             robot_mode_health = obs.pipe(
-                ops.map(lambda x: self._robot_mode_to_health(id_, x))
+                ops.map(lambda state: self.robot_mode_to_health(id_, state)),
+                ops.distinct_until_changed(),
             )
             obs.pipe(
                 heartbeat(self.LIVELINESS),
@@ -424,13 +422,21 @@ class HealthWatchdog:
                 self._combine_most_critical(robot_mode_health),
             ).subscribe(self.rmf.robot_health.on_next, scheduler=self.scheduler)
 
+        fleets = await self.repo.query_fleets() if self.repo else []
+        states_list = await self.repo.query_fleet_states() if self.repo else []
+        fleet_states = {state.name: state for state in states_list}
+        initial_states = {
+            fleet.name: fleet_states.get(fleet.name, None) for fleet in fleets
+        }
+
+        fleet_states = await self.repo.query_fleet_states() if self.repo else []
         subjects: Dict[str, Subject] = {}
-        for fleet_state in self.rmf.current_fleet_states.values():
+        for fleet_state in initial_states.values():
             fleet_state: FleetState
             for robot_state in fleet_state.robots:
                 robot_state: RobotState
-                robot_id = ttm.get_robot_id(fleet_state.name, robot_state.name)
-                subjects[robot_id] = Subject()
+                robot_id = f"{fleet_state.name}/{robot_state.name}"
+                subjects[robot_id] = BehaviorSubject(None)
 
         for id_, subject in subjects.items():
             watch(id_, subject)
@@ -438,11 +444,12 @@ class HealthWatchdog:
         def on_state(fleet_state: FleetState):
             for robot_state in fleet_state.robots:
                 robot_state: RobotState
-                robot_id = ttm.get_robot_id(fleet_state.name, robot_state.name)
+                robot_id = f"{fleet_state.name}/{robot_state.name}"
 
                 if robot_id not in subjects:
-                    subjects[robot_id] = Subject()
+                    subjects[robot_id] = BehaviorSubject(robot_state)
                     watch(robot_id, subjects[robot_id])
-                subjects[robot_id].on_next(robot_state)
+                else:
+                    subjects[robot_id].on_next(robot_state)
 
         self.rmf.fleet_states.subscribe(on_state)

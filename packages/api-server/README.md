@@ -77,6 +77,58 @@ When running with rmf simulations, you need to set the env `RMF_SERVER_USE_SIM_T
 
 # Developers
 
+## About FastIO
+
+FastIO is a wrapper between socket.io and fastapi to automatically unify the endpoints. It adds a new asgi app class `FastIO` which contains both a FastAPI app and socket.io app inside. A new `FastIORouter` is also added that can be used with the new `FastIO` app similar to the default FastAPI router. The main functionality `FastIORouter` adds is a new `watch` method, registering an endpoint with the `watch` method automatically adds both a socket.io endpoint and a rest GET endpoint. The GET endpoint will automatically returns the latest response from the socket.io endpoint.
+
+Here is an example of how the FastIO works
+
+```python
+        import rx.subject
+        import uvicorn
+
+        from api_server.fast_io import FastIORouter
+
+        class ReturnVideo(pydantic.BaseModel):
+            film_title: str
+
+        app = FastIO()
+        router = FastIORouter()
+        target = rx.subject.Subject()
+
+
+        @router.watch("/video_rental/{film_title}/available", target)
+        def watch_availability(rental: dict):
+            return {"film_title": rental["film"]}, rental
+
+
+        @router.post("/video_rental/return_video")
+        def post_return_video(return_video: ReturnVideo):
+            target.on_next({"film": return_video.film_title, "available": True})
+
+
+        app.include_router(router)
+
+        uvicorn.run(app)
+```
+
+This registers a socket.io endpoint, a GET endpoint at `/video_rental/{film_title}/available` and a POST endpoint at `/video_rental/return_video`. When a request is received in the POST endpoint, it triggers an event in the target observable, when this happens, FastIO will call the function registered in the watch decorator (`watch_availability` in this case), the function should return a tuple containing a dict mapping the path parameters and the response to send. FastIO uses this to map the event into a socket.io room and automatically sends a message to it, it also remembers the last message sent, requests to the GET endpoint will automatically return the last event sent.
+
+An example flow:
+1. Received a POST request at `/video_rental/return_video`, containing body `{"film_title": "inception"}`.
+2. Triggers an event in the target observable, containing the returned film title.
+3. FastIO calls `watch_availability` to get the path mapping, in this case, the path param `film_title` is mapped to `inception`.
+4. FastIO uses the path param mappings to send an event to the room `/video_rental/inception/available`. It also remembers the last event sent to each room.
+5. When a GET request is received at `/video_rental/inception/available`, FastIO looks at the last sent event and automatically response with that.
+
+In order to keep the bandwidth down, FastIO will not automatically add a client to any room, the client have to send an event to the `subscribe` room first.
+
+e.g.
+```js
+sio.emit('subscribe', { path: '/video_rental/inception/available' });
+sio.on('/video_rental/inception/available', console.log);
+```
+
 ## Running tests
 
 ### Running unit tests

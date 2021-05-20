@@ -1,4 +1,13 @@
-import { Configuration, DoorsApi, io, LiftsApi, SioClient, TasksApi } from 'api-client';
+import {
+  Configuration,
+  DispensersApi,
+  DoorsApi,
+  FleetsApi,
+  IngestorsApi,
+  LiftsApi,
+  SioClient,
+  TasksApi,
+} from 'api-client';
 import { User } from 'rmf-auth';
 import appConfig from '../../app-config';
 import { NegotiationStatusManager } from '../../managers/negotiation-status-manager';
@@ -8,6 +17,9 @@ export class RmfIngress {
   sioClient: SioClient;
   doorsApi: DoorsApi;
   liftsApi: LiftsApi;
+  dispensersApi: DispensersApi;
+  ingestorsApi: IngestorsApi;
+  fleetsApi: FleetsApi;
   tasksApi: TasksApi;
   negotiationStatusManager: NegotiationStatusManager;
   trajectoryManager?: RobotTrajectoryManager;
@@ -18,15 +30,16 @@ export class RmfIngress {
       const token = appConfig.authenticator.token;
       const url = new URL(appConfig.rmfServerUrl);
       const path = url.pathname === '/' ? '' : url.pathname;
-      const options: Parameters<typeof io>[1] = {
+
+      const options: ConstructorParameters<typeof SioClient>[1] = {
         path: `${path}/socket.io`,
       };
       if (token) {
         options.auth = { token };
       }
-      return io(url.origin, options);
+      return new SioClient(url.origin, options);
     })();
-    this.sioClient.on('error', console.error);
+    this.sioClient.sio.on('error', console.error);
 
     const axiosOptions = (() => {
       if (user) {
@@ -42,6 +55,9 @@ export class RmfIngress {
 
     this.doorsApi = new DoorsApi(apiConfig);
     this.liftsApi = new LiftsApi(apiConfig);
+    this.dispensersApi = new DispensersApi(apiConfig);
+    this.ingestorsApi = new IngestorsApi(apiConfig);
+    this.fleetsApi = new FleetsApi(apiConfig);
     this.tasksApi = new TasksApi(apiConfig);
     this.trajectoryManager = trajMgr;
   }

@@ -1,3 +1,8 @@
+from .auth_event_report import (
+    get_user_login_failure_report,
+    get_user_login_report,
+    get_user_logout_report,
+)
 from .dispenser_state import get_dispenser_state
 from .door_state import get_door_state
 from .fleet_state import get_fleet_state

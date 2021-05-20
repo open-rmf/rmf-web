@@ -13,6 +13,9 @@ class DoorState(pydantic.BaseModel):
     door_name: str = ""  # string
     current_mode: DoorMode = DoorMode()  # rmf_door_msgs/DoorMode
 
+    class Config:
+        orm_mode = True
+
 
 # builtin_interfaces/Time door_time
 # string door_name

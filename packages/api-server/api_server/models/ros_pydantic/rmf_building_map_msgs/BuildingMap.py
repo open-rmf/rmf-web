@@ -13,6 +13,9 @@ class BuildingMap(pydantic.BaseModel):
     levels: List[Level] = []  # rmf_building_map_msgs/Level
     lifts: List[Lift] = []  # rmf_building_map_msgs/Lift
 
+    class Config:
+        orm_mode = True
+
 
 # string name
 # Level[] levels

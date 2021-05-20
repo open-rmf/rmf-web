@@ -15,6 +15,9 @@ class LiftRequest(pydantic.BaseModel):
     destination_floor: str = ""  # string
     door_state: pydantic.conint(ge=0, le=255) = 0  # uint8
 
+    class Config:
+        orm_mode = True
+
 
 # string lift_name
 # builtin_interfaces/Time request_time
