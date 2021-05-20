@@ -85,6 +85,7 @@ class TestTasksRoute(RouteFixture):
                 )
             )
 
+        self.server.app.wait_ready()
         self.server.app.loop.create_task(save_data())
         fut.result()
 
