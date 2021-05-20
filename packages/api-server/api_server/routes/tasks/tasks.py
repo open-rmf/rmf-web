@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Callable, Optional
 
 from fastapi import Depends, HTTPException
+from fastapi.param_functions import Query
 from fastapi.responses import JSONResponse
 
 from api_server.models.pagination import Pagination
@@ -39,21 +40,31 @@ class TasksRouter(FastIORouter):
             with_base_query: WithBaseQuery[ttm.TaskSummary] = Depends(
                 base_query_params({"task_id": "id_"})
             ),
-            task_id: Optional[str] = None,
-            fleet_name: Optional[str] = None,
+            task_id: Optional[str] = Query(
+                None, description="comma separated list of task ids"
+            ),
+            fleet_name: Optional[str] = Query(
+                None, description="comma separated list of fleet names"
+            ),
             submission_time_since: Optional[datetime] = None,
             start_time_since: Optional[datetime] = None,
             end_time_since: Optional[datetime] = None,
-            robot_name: Optional[str] = None,
-            state: Optional[str] = None,
-            task_type: Optional[str] = None,
+            robot_name: Optional[str] = Query(
+                None, description="comma separated list of robot names"
+            ),
+            state: Optional[str] = Query(
+                None, description="comma separated list of states"
+            ),
+            task_type: Optional[str] = Query(
+                None, description="comma separated list of task types"
+            ),
             priority: Optional[int] = None,
         ):
             filter_params = {}
             if task_id is not None:
-                filter_params["id_"] = task_id
+                filter_params["id___in"] = task_id.split(",")
             if fleet_name is not None:
-                filter_params["fleet_name"] = fleet_name
+                filter_params["fleet_name__in"] = fleet_name.split(",")
             if submission_time_since is not None:
                 filter_params["submission_time__gte"] = submission_time_since
             if start_time_since is not None:
@@ -61,15 +72,19 @@ class TasksRouter(FastIORouter):
             if end_time_since is not None:
                 filter_params["end_time__gte"] = end_time_since
             if robot_name is not None:
-                filter_params["robot_name"] = robot_name
+                filter_params["robot_name__in"] = robot_name.split(",")
             if state is not None:
                 try:
-                    filter_params["state"] = TaskStateEnum[state.upper()].value
+                    filter_params["state__in"] = [
+                        TaskStateEnum[s.upper()].value for s in state.split(",")
+                    ]
                 except KeyError as e:
                     raise HTTPException(422, "unknown state") from e
             if task_type is not None:
                 try:
-                    filter_params["task_type"] = TaskTypeEnum[task_type.upper()].value
+                    filter_params["task_type__in"] = [
+                        TaskTypeEnum[t.upper()].value for t in task_type.split(",")
+                    ]
                 except KeyError as e:
                     raise HTTPException(422, "unknown task type") from e
             if priority is not None:
