@@ -13,6 +13,9 @@ class Param(pydantic.BaseModel):
     value_string: str = ""  # string
     value_bool: bool = False  # bool
 
+    class Config:
+        orm_mode = True
+
 
 # string name
 #

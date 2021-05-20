@@ -14,6 +14,9 @@ class ChargerRequest(pydantic.BaseModel):
     start_timeout: Duration = Duration()  # builtin_interfaces/Duration
     request_id: str = ""  # string
 
+    class Config:
+        orm_mode = True
+
 
 # # The name of the charger that should process this message
 # string charger_name

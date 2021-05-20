@@ -1,14 +1,17 @@
-from fastapi import APIRouter, HTTPException
-
-from ..dependencies import ros
+from ..fast_io import FastIORouter
 from ..models import BuildingMap
+from ..rmf_io import RmfEvents
 
-router = APIRouter(tags=["building"])
 
+class BuildingMapRouter(FastIORouter):
+    def __init__(
+        self,
+        rmf_events: RmfEvents,
+    ):
+        super().__init__(tags=["Building"])
 
-@router.get("", response_model=BuildingMap)
-async def _get_building_map():
-    building_map = ros.rmf_gateway.building_map.value
-    if not building_map:
-        raise HTTPException(503, "map unavailable")
-    return building_map
+        @self.watch("", rmf_events.building_map, response_model=BuildingMap)
+        def watch_building_map(building_map: BuildingMap):
+            if building_map is None:
+                return None
+            return {}, building_map

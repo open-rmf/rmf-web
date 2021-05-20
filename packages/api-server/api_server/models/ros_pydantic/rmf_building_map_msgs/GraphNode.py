@@ -13,6 +13,9 @@ class GraphNode(pydantic.BaseModel):
     name: str = ""  # string
     params: List[Param] = []  # rmf_building_map_msgs/Param
 
+    class Config:
+        orm_mode = True
+
 
 # float32 x
 # float32 y

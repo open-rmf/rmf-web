@@ -1,16 +1,12 @@
-from typing import Optional
-
+from pydantic import BaseModel
 from tortoise.contrib.pydantic import pydantic_model_creator
 
 
-def with_pydantic(Model: "tortoise.Model"):
-    class WithPydantic(Model):
-        _pydantic_model = pydantic_model_creator(Model)
+def with_pydantic(Base):
+    class WithPydantic(Base):
+        PydanticModel = pydantic_model_creator(Base)
 
-        async def to_pydantic(self):
-            return await self._pydantic_model.from_tortoise_orm(self)
-
-        async def to_json(self, indent: Optional[int] = None):
-            return (await self.to_pydantic()).json(indent)
+        def get_pydantic(self) -> BaseModel:
+            return self.PydanticModel.from_orm(self)
 
     return WithPydantic

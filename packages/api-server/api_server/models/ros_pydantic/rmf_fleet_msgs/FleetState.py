@@ -11,6 +11,9 @@ class FleetState(pydantic.BaseModel):
     name: str = ""  # string
     robots: List[RobotState] = []  # rmf_fleet_msgs/RobotState
 
+    class Config:
+        orm_mode = True
+
 
 # string name
 # RobotState[] robots

@@ -8,6 +8,9 @@ import pydantic
 class TaskType(pydantic.BaseModel):
     type: pydantic.conint(ge=0, le=4294967295) = 0  # uint32
 
+    class Config:
+        orm_mode = True
+
 
 # uint32 type
 # uint32 TYPE_STATION=0

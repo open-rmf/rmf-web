@@ -12,7 +12,7 @@ pylint = "~=2.7"
 coverage = "~=5.5"
 # api-server
 api-server = {editable = true, path = "./packages/api-server"}
-aiohttp = "~=3.7"
+requests = "~=2.25"
 # reporting-server
 reporting-server = {editable = true, path = "./packages/reporting-server"}
 # ros-translator

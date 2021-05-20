@@ -1,8 +1,15 @@
-from pydantic import BaseModel
+from typing import List
+
+from .ros_pydantic import rmf_building_map_msgs
 
 
-class BuildingMap(BaseModel):
-    """
-    Schema is based on rmf building map, but with the image data changed to an url.
-    See https://github.com/open-rmf/rmf_building_map_msgs/blob/main/rmf_building_map_msgs/msg/BuildingMap.msg
-    """
+class AffineImage(rmf_building_map_msgs.AffineImage):
+    data: str
+
+
+class Level(rmf_building_map_msgs.Level):
+    images: List[AffineImage]
+
+
+class BuildingMap(rmf_building_map_msgs.BuildingMap):
+    levels: List[Level]

@@ -13,6 +13,9 @@ class TaskProfile(pydantic.BaseModel):
     submission_time: Time = Time()  # builtin_interfaces/Time
     description: TaskDescription = TaskDescription()  # rmf_task_msgs/TaskDescription
 
+    class Config:
+        orm_mode = True
+
 
 # # Unique ID assigned to this task
 # string task_id

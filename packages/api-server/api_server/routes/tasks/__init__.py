@@ -1,1 +1,1 @@
-from .tasks import router as tasks_router
+from .tasks import TasksRouter

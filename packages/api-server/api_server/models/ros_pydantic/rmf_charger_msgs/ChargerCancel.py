@@ -9,6 +9,9 @@ class ChargerCancel(pydantic.BaseModel):
     charger_name: str = ""  # string
     request_id: str = ""  # string
 
+    class Config:
+        orm_mode = True
+
 
 # string charger_name  # the charger that should process this message
 #

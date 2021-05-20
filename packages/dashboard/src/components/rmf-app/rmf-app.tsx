@@ -1,4 +1,3 @@
-import { MessageType, Topic } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import RmfHealthStateManager from '../../managers/rmf-health-state-manager';
@@ -12,41 +11,16 @@ import {
   DispenserStateContext,
   DoorStateContext,
   FleetStateContext,
+  IngestorStateContext,
   LiftStateContext,
   NegotiationStatusContext,
   PlacesContext,
   RmfHealthContext,
   RmfIngressContext,
-  TasksContext,
 } from './contexts';
 import { Place } from './place';
 import { RmfIngress } from './rmf-ingress';
 import { TrajectorySocketContext, AppConfigContext } from '../app-contexts';
-
-function rmfStateContextProviderHOC<TopicT extends Topic>(
-  topic: TopicT,
-  Context: React.Context<Record<string, MessageType[TopicT]>>,
-  keyMapper: (msg: MessageType[TopicT]) => string,
-) {
-  return (props: React.PropsWithChildren<{}>) => {
-    const { sioClient } = React.useContext(RmfIngressContext) || {};
-    const [state, setState] = React.useState<Record<string, MessageType[TopicT]>>({});
-
-    React.useEffect(() => {
-      if (!sioClient) {
-        return;
-      }
-      sioClient.emit('subscribe', topic);
-      sioClient.on(topic, (msg: MessageType[TopicT]) =>
-        setState((prev) => ({ ...prev, [keyMapper(msg)]: msg })),
-      );
-
-      // TODO: unsubscribe
-    }, [sioClient]);
-
-    return <Context.Provider value={state}>{props.children}</Context.Provider>;
-  };
-}
 
 function RmfPlacesContextsProvider({ children }: React.PropsWithChildren<unknown>): JSX.Element {
   const buildingMap = React.useContext(BuildingMapContext);
@@ -75,28 +49,10 @@ function BuildingMapProvider(props: React.PropsWithChildren<{}>): JSX.Element {
     if (!sioClient) {
       return;
     }
-    sioClient.emit('subscribe', 'building_map');
-    sioClient.on('building_map', setBuildingMap);
+    sioClient.subscribeBuildingMap(setBuildingMap);
 
     // TODO: unsubscribe
   }, [sioClient]);
-
-  // TODO:
-  // const { showLoadingScreen } = React.useContext(AppControllerContext);
-  // const downloadingRef = React.useRef(false);
-  // React.useEffect(() => {
-  //   if (buildingMap || downloadingRef.current) {
-  //     return;
-  //   }
-  //   (async () => {
-  //     downloadingRef.current = true;
-  //     showLoadingScreen({ caption: 'Downloading building map...' });
-  //     const resp = await transport.call(buildingMapService, {});
-  //     downloadingRef.current = false;
-  //     showLoadingScreen({});
-  //     setBuildingMap(resp.building_map);
-  //   })();
-  // }, [buildingMap, transport, downloadingRef, showLoadingScreen]);
 
   return (
     <BuildingMapContext.Provider value={buildingMap}>
@@ -105,35 +61,134 @@ function BuildingMapProvider(props: React.PropsWithChildren<{}>): JSX.Element {
   );
 }
 
-const DispenserContextsProvider = rmfStateContextProviderHOC(
-  'dispenser_states',
-  DispenserStateContext,
-  (msg) => msg.guid,
-);
+function DoorContextsProvider(props: React.PropsWithChildren<{}>): JSX.Element {
+  const { sioClient, doorsApi } = React.useContext(RmfIngressContext) || {};
+  const [doorStates, setDoorStates] = React.useState<Record<string, RmfModels.DoorState>>({});
 
-const DoorContextsProvider = rmfStateContextProviderHOC(
-  'door_states',
-  DoorStateContext,
-  (msg) => msg.door_name,
-);
+  React.useEffect(() => {
+    (async () => {
+      if (!sioClient || !doorsApi) {
+        return;
+      }
+      const doors = (await doorsApi.getDoorsDoorsGet()).data;
+      doors.forEach((door) => {
+        sioClient.subscribeDoorState(door.name, (state) =>
+          setDoorStates((prev) => ({ ...prev, [state.door_name]: state })),
+        );
+      });
+    })();
 
-const LiftContextsProvider = rmfStateContextProviderHOC(
-  'lift_states',
-  LiftStateContext,
-  (msg) => msg.lift_name,
-);
+    // TODO: unsubscribe
+  }, [sioClient, doorsApi]);
 
-const FleetContextsProvider = rmfStateContextProviderHOC(
-  'fleet_states',
-  FleetStateContext,
-  (msg) => msg.name,
-);
+  return <DoorStateContext.Provider value={doorStates}>{props.children}</DoorStateContext.Provider>;
+}
 
-const TaskContextsProvider = rmfStateContextProviderHOC(
-  'task_summaries',
-  TasksContext,
-  (msg) => msg.task_id,
-);
+function LiftContextsProvider(props: React.PropsWithChildren<{}>): JSX.Element {
+  const { sioClient, liftsApi } = React.useContext(RmfIngressContext) || {};
+  const [liftStates, setLiftStates] = React.useState<Record<string, RmfModels.LiftState>>({});
+
+  React.useEffect(() => {
+    (async () => {
+      if (!sioClient || !liftsApi) {
+        return;
+      }
+      const lifts = (await liftsApi.getLiftsLiftsGet()).data;
+      lifts.forEach((lift) => {
+        sioClient.subscribeLiftState(lift.name, (state) =>
+          setLiftStates((prev) => ({ ...prev, [state.lift_name]: state })),
+        );
+      });
+    })();
+
+    // TODO: unsubscribe
+  }, [sioClient, liftsApi]);
+
+  return <LiftStateContext.Provider value={liftStates}>{props.children}</LiftStateContext.Provider>;
+}
+
+function DispenserContextsProvider(props: React.PropsWithChildren<{}>): JSX.Element {
+  const { sioClient, dispensersApi } = React.useContext(RmfIngressContext) || {};
+  const [dispenserStates, setDispenserStates] = React.useState<
+    Record<string, RmfModels.DispenserState>
+  >({});
+
+  React.useEffect(() => {
+    (async () => {
+      if (!sioClient || !dispensersApi) {
+        return;
+      }
+      const dispensers = (await dispensersApi.getDispensersDispensersGet()).data;
+      dispensers.forEach((dispenser) => {
+        sioClient.subscribeDispenserState(dispenser.guid, (state) =>
+          setDispenserStates((prev) => ({ ...prev, [state.guid]: state })),
+        );
+      });
+    })();
+
+    // TODO: unsubscribe
+  }, [sioClient, dispensersApi]);
+
+  return (
+    <DispenserStateContext.Provider value={dispenserStates}>
+      {props.children}
+    </DispenserStateContext.Provider>
+  );
+}
+
+function IngestorContextsProvider(props: React.PropsWithChildren<{}>): JSX.Element {
+  const { sioClient, ingestorsApi } = React.useContext(RmfIngressContext) || {};
+  const [ingestorStates, setIngestorStates] = React.useState<
+    Record<string, RmfModels.IngestorState>
+  >({});
+
+  React.useEffect(() => {
+    (async () => {
+      if (!sioClient || !ingestorsApi) {
+        return;
+      }
+      const ingestors = (await ingestorsApi.getIngestorsIngestorsGet()).data;
+      ingestors.forEach((ingestor) => {
+        sioClient.subscribeIngestorState(ingestor.guid, (state) =>
+          setIngestorStates((prev) => ({ ...prev, [state.guid]: state })),
+        );
+      });
+    })();
+
+    // TODO: unsubscribe
+  }, [sioClient, ingestorsApi]);
+
+  return (
+    <IngestorStateContext.Provider value={ingestorStates}>
+      {props.children}
+    </IngestorStateContext.Provider>
+  );
+}
+
+function FleetContextsProvider(props: React.PropsWithChildren<{}>): JSX.Element {
+  const { sioClient, fleetsApi } = React.useContext(RmfIngressContext) || {};
+  const [fleetStates, setFleetStates] = React.useState<Record<string, RmfModels.FleetState>>({});
+
+  React.useEffect(() => {
+    (async () => {
+      if (!sioClient || !fleetsApi) {
+        return;
+      }
+      const fleets = (await fleetsApi.getFleetsFleetsGet()).data;
+      fleets.forEach((fleet) => {
+        sioClient.subscribeFleetState(fleet.name, (state) =>
+          setFleetStates((prev) => ({ ...prev, [state.name]: state })),
+        );
+      });
+    })();
+
+    // TODO: unsubscribe
+  }, [sioClient, fleetsApi]);
+
+  return (
+    <FleetStateContext.Provider value={fleetStates}>{props.children}</FleetStateContext.Provider>
+  );
+}
 
 function NegotiationContextsProvider(props: React.PropsWithChildren<{}>): JSX.Element {
   const { negotiationStatusManager } = React.useContext(RmfIngressContext) || {};
@@ -212,13 +267,13 @@ export function RmfApp(props: RmfAppProps): JSX.Element {
         <DoorContextsProvider>
           <LiftContextsProvider>
             <DispenserContextsProvider>
-              <FleetContextsProvider>
-                <NegotiationContextsProvider>
-                  <RmfHealthContextsProvider>
-                    <TaskContextsProvider>{props.children}</TaskContextsProvider>
-                  </RmfHealthContextsProvider>
-                </NegotiationContextsProvider>
-              </FleetContextsProvider>
+              <IngestorContextsProvider>
+                <FleetContextsProvider>
+                  <NegotiationContextsProvider>
+                    <RmfHealthContextsProvider>{props.children}</RmfHealthContextsProvider>
+                  </NegotiationContextsProvider>
+                </FleetContextsProvider>
+              </IngestorContextsProvider>
             </DispenserContextsProvider>
           </LiftContextsProvider>
         </DoorContextsProvider>

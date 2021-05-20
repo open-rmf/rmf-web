@@ -12,11 +12,14 @@ const getPhaseColors = (theme: Theme) => ({
 const useStyles = makeStyles((theme) => {
   const phaseColors = getPhaseColors(theme);
   return {
+    taskPhasesContainer: {
+      overflowX: 'auto',
+    },
     taskPhase: {
       padding: theme.spacing(1),
       borderRadius: theme.shape.borderRadius,
       flex: '1 1 0',
-      minWidth: 0,
+      minWidth: 100,
     },
     pendingPhase: {
       background: phaseColors.pending,
@@ -136,7 +139,7 @@ export function TaskPhases({ taskSummary }: TaskPhasesProps): JSX.Element {
 
   return (
     <Box>
-      <Grid container={true} wrap="nowrap">
+      <Grid container={true} wrap="nowrap" className={classes.taskPhasesContainer}>
         {phases.map((phase, idx) => (
           <React.Fragment key={idx}>
             <Phase status={phase} className={clsx(classes.taskPhase, phaseProps[idx].className)} />

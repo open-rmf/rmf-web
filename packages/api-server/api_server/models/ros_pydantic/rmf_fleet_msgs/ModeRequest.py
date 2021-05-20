@@ -15,6 +15,9 @@ class ModeRequest(pydantic.BaseModel):
     task_id: str = ""  # string
     parameters: List[ModeParameter] = []  # rmf_fleet_msgs/ModeParameter
 
+    class Config:
+        orm_mode = True
+
 
 # string fleet_name
 # string robot_name
