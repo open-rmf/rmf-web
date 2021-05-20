@@ -30,4 +30,4 @@ class IngestorsRouter(FastIORouter):
             response_model=IngestorHealth,
         )
         def get_ingestor_health(ingestor_health: IngestorHealth):
-            return {"guid": ingestor_health.id_}, ingestor_health.get_pydantic()
+            return {"guid": ingestor_health.id_}, ingestor_health

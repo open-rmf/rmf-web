@@ -88,6 +88,12 @@ class TestTasksRoute(RouteFixture):
         self.server.app.loop.create_task(save_data())
         fut.result()
 
+        resp = self.session.get(f"{self.base_url}/tasks?task_id=task_1,task_2")
+        self.assertEqual(resp.status_code, 200)
+        resp_json = resp.json()
+        items = resp_json["items"]
+        self.assertEqual(len(items), 2)
+
         resp = self.session.get(f"{self.base_url}/tasks?fleet_name=fleet_1")
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()

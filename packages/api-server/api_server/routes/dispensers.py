@@ -30,4 +30,4 @@ class DispensersRouter(FastIORouter):
             response_model=DispenserHealth,
         )
         def get_dispenser_health(dispenser_health: DispenserHealth):
-            return {"guid": dispenser_health.id_}, dispenser_health.get_pydantic()
+            return {"guid": dispenser_health.id_}, dispenser_health
