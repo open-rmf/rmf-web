@@ -24,7 +24,7 @@ import { BuildingMap } from '../models';
 export const BuildingApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     * Available in socket.io.
+     * **Available in socket.io**
      * @summary Watch Building Map
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -71,7 +71,7 @@ export const BuildingApiAxiosParamCreator = function (configuration?: Configurat
 export const BuildingApiFp = function (configuration?: Configuration) {
   return {
     /**
-     * Available in socket.io.
+     * **Available in socket.io**
      * @summary Watch Building Map
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -104,7 +104,7 @@ export const BuildingApiFactory = function (
 ) {
   return {
     /**
-     * Available in socket.io.
+     * **Available in socket.io**
      * @summary Watch Building Map
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -125,7 +125,7 @@ export const BuildingApiFactory = function (
  */
 export class BuildingApi extends BaseAPI {
   /**
-   * Available in socket.io.
+   * **Available in socket.io**
    * @summary Watch Building Map
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
