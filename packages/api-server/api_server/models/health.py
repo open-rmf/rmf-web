@@ -1,9 +1,15 @@
-from . import tortoise_models as ttm
+from typing import Optional
 
-BasicHealth = ttm.BasicHealthModel
+from pydantic import BaseModel
 
 
 class HealthStatus:
     HEALTHY = "Healthy"
     UNHEALTHY = "Unhealthy"
     DEAD = "Dead"
+
+
+class BasicHealth(BaseModel):
+    id_: str
+    health_status: str
+    health_message: Optional[str]
