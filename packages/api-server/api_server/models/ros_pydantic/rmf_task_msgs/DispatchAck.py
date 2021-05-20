@@ -13,6 +13,9 @@ class DispatchAck(pydantic.BaseModel):
     )  # rmf_task_msgs/DispatchRequest
     success: bool = False  # bool
 
+    class Config:
+        orm_mode = True
+
 
 # # This message is published by the fleet adapter in response to a
 # # DispatchRequest message. It indicates whether the requested task addition or

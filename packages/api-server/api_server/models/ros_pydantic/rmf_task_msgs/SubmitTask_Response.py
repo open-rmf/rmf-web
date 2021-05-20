@@ -10,6 +10,9 @@ class SubmitTask_Response(pydantic.BaseModel):
     task_id: str = ""  # string
     message: str = ""  # string
 
+    class Config:
+        orm_mode = True
+
 
 #
 #

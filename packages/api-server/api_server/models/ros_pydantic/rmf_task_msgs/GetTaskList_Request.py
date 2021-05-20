@@ -9,6 +9,9 @@ class GetTaskList_Request(pydantic.BaseModel):
     requester: str = ""  # string
     task_id: List[str] = []  # string
 
+    class Config:
+        orm_mode = True
+
 
 # # Query list of submitted tasks | Get service call
 #

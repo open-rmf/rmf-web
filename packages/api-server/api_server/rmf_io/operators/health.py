@@ -4,7 +4,7 @@ import rx
 from rx import operators as ops
 from rx.core.operators.timestamp import Timestamp
 
-from ...models.tortoise_models import HealthStatus
+from ...models import HealthStatus
 
 
 def most_critical():
@@ -31,6 +31,9 @@ def most_critical():
         """
         :param health_status: Sequence[Timestamp[HealthStatus]]
         """
+        health_statuses = [x for x in health_statuses if x.value is not None]
+        if len(health_statuses) == 0:
+            return None
         most_crit = health_statuses[0]
         for health in health_statuses:
             cur = criticality(most_crit.value.health_status)

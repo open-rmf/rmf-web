@@ -12,6 +12,9 @@ class PauseRequest(pydantic.BaseModel):
     type: pydantic.conint(ge=0, le=4294967295) = 0  # uint32
     at_checkpoint: pydantic.conint(ge=0, le=4294967295) = 0  # uint32
 
+    class Config:
+        orm_mode = True
+
 
 # string fleet_name
 # string robot_name

@@ -36,9 +36,15 @@ fi
 
 cd $(dirname $0)
 
+echo 'building base keycloak image...'
+docker build -t rmf-web/keycloak -f docker/keycloak/keycloak.dockerfile docker/keycloak/
+echo 'publishing keycloak image...'
+docker save rmf-web/keycloak | bash -c 'eval $(.bin/minikube docker-env) && docker load'
+echo 'deploying keycloak...'
+
 kubectl apply -f k8s/keycloak.yaml
 echo 'waiting for keycloak to be ready...'
-kubectl wait --for=condition=available deployment/keycloak
+kubectl wait --for=condition=available deployment/keycloak --timeout=2m
 
 echo 'creating jwt configmap...'
 function try() {

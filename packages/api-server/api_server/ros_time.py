@@ -1,6 +1,6 @@
 from datetime import datetime
+from typing import Optional
 
-import rclpy.node
 from builtin_interfaces.msg import Time as RosTime
 
 
@@ -21,7 +21,7 @@ def py_to_ros_time(py_datetime: datetime) -> RosTime:
     )
 
 
-def convert_to_rmf_time(timestamp: int, ros_node: rclpy.node.Node) -> RosTime:
+def convert_to_rmf_time(timestamp: int, sim_time: Optional[RosTime]) -> RosTime:
     """
     Given a timestamp (in seconds), convert it to rmf time. If rmf is not using simulation time,
     this simply converts to to ros time format.
@@ -39,9 +39,9 @@ def convert_to_rmf_time(timestamp: int, ros_node: rclpy.node.Node) -> RosTime:
         sec=timestamp,
         nanosec=0,
     )
-    if not ros_node.get_parameter("use_sim_time").value:
+    if sim_time is None:
         return ros_time
-    sim_now = ros_node.get_clock().now().to_msg()
+    sim_now = sim_time
     utc_now = py_to_ros_time(datetime.now())
     sec = ros_time.sec - utc_now.sec + sim_now.sec
     nanosec = ros_time.nanosec - utc_now.nanosec + sim_now.nanosec

@@ -8,3 +8,4 @@ export * from './fleet-state';
 export * from './health';
 export * from './ingestor-state';
 export * from './lift-state';
+export * from './user-report';

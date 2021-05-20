@@ -18,6 +18,9 @@ class ChargerState(pydantic.BaseModel):
     robot_name: str = ""  # string
     time_to_fully_charged: Duration = Duration()  # builtin_interfaces/Duration
 
+    class Config:
+        orm_mode = True
+
 
 # # Time when this state message was created
 # builtin_interfaces/Time charger_time

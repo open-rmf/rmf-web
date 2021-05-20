@@ -18,6 +18,9 @@ class Delivery(pydantic.BaseModel):
     dropoff_ingestor: str = ""  # string
     dropoff_behavior: Behavior = Behavior()  # rmf_task_msgs/Behavior
 
+    class Config:
+        orm_mode = True
+
 
 # # task_id is intended to be a pseudo-random string generated
 # # by the caller which can be used to identify this task as it

@@ -16,5 +16,8 @@ class {{ msg.spec.base_type.type }}(pydantic.BaseModel):
     pass
 {% endif %}
 
+    class Config:
+        orm_mode = True
+
 
 {{ msg.commented_raw }}

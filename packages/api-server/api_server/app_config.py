@@ -22,12 +22,7 @@ class AppConfig:
         self.public_url = urllib.parse.urlparse(self.public_url)
 
 
-def _load_config() -> AppConfig:
-    if "RMF_API_SERVER_CONFIG" in os.environ:
-        config_file = os.environ["RMF_API_SERVER_CONFIG"]
-    else:
-        config_file = f"{os.path.dirname(__file__)}/default_config.py"
-
+def load_config(config_file: str) -> AppConfig:
     spec = importlib.util.spec_from_file_location("config", config_file)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -37,4 +32,9 @@ def _load_config() -> AppConfig:
     return config
 
 
-app_config = _load_config()
+# The default config automatically loaded as a singleton
+if "RMF_API_SERVER_CONFIG" in os.environ:
+    default_config_file = os.environ["RMF_API_SERVER_CONFIG"]
+else:
+    default_config_file = f"{os.path.dirname(__file__)}/default_config.py"
+default_config = load_config(default_config_file)

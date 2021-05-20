@@ -9,6 +9,9 @@ class RobotMode(pydantic.BaseModel):
     mode: pydantic.conint(ge=0, le=4294967295) = 0  # uint32
     mode_request_id: pydantic.conint(ge=0, le=18446744073709551615) = 0  # uint64
 
+    class Config:
+        orm_mode = True
+
 
 # uint32 mode
 # uint32 MODE_IDLE=0

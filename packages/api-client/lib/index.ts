@@ -1,45 +1,77 @@
-import * as RmfModels from 'rmf-models';
-import { io as _io, Socket } from 'socket.io-client';
+import {
+  BuildingMap,
+  DispenserHealth,
+  DispenserState,
+  DoorHealth,
+  DoorState,
+  FleetState,
+  IngestorHealth,
+  IngestorState,
+  LiftHealth,
+  LiftState,
+  RobotHealth,
+} from 'rmf-models';
+import { io, Socket } from 'socket.io-client';
 
-export type MessageType = {
-  door_states: RmfModels.DoorState;
-  door_health: RmfModels.DoorHealth;
-  lift_states: RmfModels.LiftState;
-  lift_health: RmfModels.LiftHealth;
-  dispenser_states: RmfModels.DispenserState;
-  dispenser_health: RmfModels.DispenserHealth;
-  ingestor_states: RmfModels.IngestorState;
-  ingestor_health: RmfModels.IngestorHealth;
-  fleet_states: RmfModels.FleetState;
-  robot_health: RmfModels.RobotHealth;
-  task_summaries: RmfModels.TaskSummary;
-  building_map: RmfModels.BuildingMap;
-};
+export class SioClient {
+  public sio: Socket;
 
-export type Topic = keyof MessageType;
+  constructor(...args: Parameters<typeof io>) {
+    this.sio = io(...args);
+  }
 
-export interface SioClient extends Socket {
-  on(event: 'subscribe', listener: (resp: string) => void): this;
-  on(event: 'door_states', listener: (resp: MessageType['door_states']) => void): this;
-  on(event: 'door_health', listener: (resp: MessageType['door_health']) => void): this;
-  on(event: 'lift_states', listener: (resp: MessageType['lift_states']) => void): this;
-  on(event: 'lift_health', listener: (resp: MessageType['lift_health']) => void): this;
-  on(event: 'dispenser_states', listener: (resp: MessageType['dispenser_states']) => void): this;
-  on(event: 'dispenser_health', listener: (resp: MessageType['dispenser_health']) => void): this;
-  on(event: 'ingestor_states', listener: (resp: MessageType['ingestor_states']) => void): this;
-  on(event: 'ingestor_health', listener: (resp: MessageType['ingestor_health']) => void): this;
-  on(event: 'fleet_states', listener: (resp: MessageType['fleet_states']) => void): this;
-  on(event: 'robot_health', listener: (resp: MessageType['robot_health']) => void): this;
-  on(event: 'task_summaries', listener: (resp: MessageType['task_summaries']) => void): this;
-  on(event: 'building_map', listener: (resp: MessageType['building_map']) => void): this;
-  on(event: string, listener: Function): this; // eslint-disable-line @typescript-eslint/ban-types
+  subscribe<T>(path: string, cb: (resp: T) => void): void {
+    this.sio.emit('subscribe', { path });
+    this.sio.on(path, (msg: T) => cb(msg));
+  }
 
-  emit(event: 'subscribe', topic: Topic): this;
-  emit(event: string, ...args: any[]): this; // eslint-disable-line @typescript-eslint/no-explicit-any
-}
+  subscribeBuildingMap(cb: (buildingMap: BuildingMap) => void): void {
+    return this.subscribe<BuildingMap>(`/building_map`, cb);
+  }
 
-export function io(...args: Parameters<typeof _io>): SioClient {
-  return _io(...args) as SioClient;
+  subscribeDoorState(doorName: string, cb: (doorState: DoorState) => void): void {
+    return this.subscribe<DoorState>(`/doors/${doorName}/state`, cb);
+  }
+
+  subscribeDoorHealth(doorName: string, cb: (doorHealth: DoorHealth) => void): void {
+    return this.subscribe<DoorHealth>(`/doors/${doorName}/health`, cb);
+  }
+
+  subscribeLiftState(liftName: string, cb: (liftState: LiftState) => void): void {
+    return this.subscribe<LiftState>(`/lifts/${liftName}/state`, cb);
+  }
+
+  subscribeLiftHealth(liftName: string, cb: (liftHealth: LiftHealth) => void): void {
+    return this.subscribe<LiftHealth>(`/doors/${liftName}/health`, cb);
+  }
+
+  subscribeDispenserState(guid: string, cb: (dispenserState: DispenserState) => void): void {
+    return this.subscribe<DispenserState>(`/dispensers/${guid}/state`, cb);
+  }
+
+  subscribeDispenserHealth(guid: string, cb: (dispenserHealth: DispenserHealth) => void): void {
+    return this.subscribe<DispenserHealth>(`/dispensers/${guid}/health`, cb);
+  }
+
+  subscribeIngestorState(guid: string, cb: (ingestorState: IngestorState) => void): void {
+    return this.subscribe<IngestorState>(`/ingestors/${guid}/state`, cb);
+  }
+
+  subscribeIngestorHealth(guid: string, cb: (ingestorHealth: IngestorHealth) => void): void {
+    return this.subscribe<IngestorHealth>(`/ingestors/${guid}/health`, cb);
+  }
+
+  subscribeFleetState(name: string, cb: (fleetState: FleetState) => void): void {
+    return this.subscribe<FleetState>(`/fleets/${name}/state`, cb);
+  }
+
+  subscribeRobotHealth(
+    fleetName: string,
+    robotName: string,
+    cb: (robotHealth: RobotHealth) => void,
+  ): void {
+    return this.subscribe<RobotHealth>(`/fleets/${fleetName}/${robotName}/health`, cb);
+  }
 }
 
 export * from './openapi';

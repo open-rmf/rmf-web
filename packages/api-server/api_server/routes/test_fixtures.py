@@ -1,36 +1,55 @@
-import asyncio
+import os
+import os.path
+import threading
+import time
 import unittest
 from concurrent.futures import Future
-from threading import Thread
 
 import rclpy
 import rclpy.node
-from fastapi.testclient import TestClient
+import requests
+from urllib3.util.retry import Retry
 
-from ..app import app
+from ..app import App
+from ..app_config import load_config
+from ..test.server import BackgroundServer
 
 
-class RouteFixture(unittest.IsolatedAsyncioTestCase):
+class RouteFixture(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.asd = []
+        app = App(load_config(f"{os.path.dirname(__file__)}/test_config.py"))
+        cls.server = BackgroundServer(app)
+        cls.server.start()
+        cls.base_url = cls.server.base_url
+
+        retry = Retry(total=5, backoff_factor=0.1)
+        adapter = requests.adapters.HTTPAdapter(max_retries=retry)
+        cls.session = requests.Session()
+        cls.session.mount("http://", adapter)
+
         cls.rcl_ctx = rclpy.Context()
         rclpy.init(context=cls.rcl_ctx)
         cls.rcl_executor = rclpy.executors.SingleThreadedExecutor(context=cls.rcl_ctx)
-
-        cls.loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(cls.loop)
-        cls.client = TestClient(app)
-        cls.client.__enter__()
-
         cls.node = rclpy.node.Node("test_node", context=cls.rcl_ctx)
+
+        tries = 0
+        while "rmf_api_server" not in cls.node.get_node_names():
+            tries += 1
+            if tries >= 10:
+                raise TimeoutError("cannot discover rmf_api_server node")
+            time.sleep(0.5)
+        # give ros more time, tests are very flaky when discovery is not finished
+        time.sleep(1)
 
     @classmethod
     def tearDownClass(cls):
+        cls.session.close()
+
         cls.node.destroy_node()
         rclpy.shutdown(context=cls.rcl_ctx)
-        asyncio.set_event_loop(cls.loop)
-        cls.client.__exit__()
+
+        cls.server.stop()
 
     def subscribe_one(self, Message, topic: str) -> Future:
         """
@@ -51,27 +70,23 @@ class RouteFixture(unittest.IsolatedAsyncioTestCase):
         Hosts a service until a request is received. Returns a future that is set when
         the first request is received. The node is spun in a background thread.
         """
-        ros_fut = rclpy.task.Future(executor=self.rcl_executor)
-        loop = asyncio.get_event_loop()
-        fut = asyncio.Future()
+        fut = Future()
 
         def on_request(request, _resp):
-            ros_fut.set_result(request)
+            fut.set_result(request)
             return response
 
         srv = self.node.create_service(Service, srv_name, on_request)
 
         def spin():
-            rclpy.spin_until_future_complete(self.node, ros_fut, self.rcl_executor, 1)
+            rclpy.spin_until_future_complete(self.node, fut, self.rcl_executor, 1)
             self.node.destroy_service(srv)
-            loop.call_soon_threadsafe(fut.set_result, ros_fut.result())
 
-        Thread(target=spin).start()
-        cli = self.node.create_client(Service, srv_name)
-        if not cli.wait_for_service(1):
-            raise RuntimeError("fail to create service")
+        threading.Thread(target=spin).start()
         return fut
 
-    def spin_until(self, fut: rclpy.task.Future):
-        rclpy.spin_until_future_complete(self.node, fut, self.rcl_executor)
-        return fut.result()
+    def spin_until(self, fut: rclpy.task.Future, timeout: float):
+        rclpy.spin_until_future_complete(
+            self.node, fut, self.rcl_executor, timeout_sec=timeout
+        )
+        return fut.result(0)

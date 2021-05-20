@@ -13,6 +13,9 @@ class GraphEdge(pydantic.BaseModel):
     params: List[Param] = []  # rmf_building_map_msgs/Param
     edge_type: pydantic.conint(ge=0, le=255) = 0  # uint8
 
+    class Config:
+        orm_mode = True
+
 
 # uint32 v1_idx
 # uint32 v2_idx

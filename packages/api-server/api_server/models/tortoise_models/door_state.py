@@ -1,7 +1,7 @@
-from rmf_door_msgs.msg import DoorState as RmfDoorState
+from tortoise import Model
 
-from .json_model import json_model
+from .json_mixin import JsonMixin
 
 
-class DoorState(json_model(RmfDoorState, lambda x: x.door_name)):
+class DoorState(Model, JsonMixin):
     pass

@@ -4,7 +4,13 @@ from typing import Optional, Union
 from pydantic import BaseModel, validator
 from rmf_task_msgs.msg import TaskType as RmfTaskType
 
-from .ros_pydantic.rmf_task_msgs.TaskSummary import TaskSummary as PydanticTaskSummary
+from .ros_pydantic import rmf_task_msgs
+
+TaskSummary = rmf_task_msgs.TaskSummary
+
+
+class Task(BaseModel):
+    task_id: str
 
 
 class CleanTaskDescription(BaseModel):
@@ -35,8 +41,8 @@ class TaskTypeEnum(Enum):
     DELIVERY = RmfTaskType.TYPE_DELIVERY
 
 
-class Task(BaseModel):
-    task_summary: PydanticTaskSummary
+class TaskProgress(BaseModel):
+    task_summary: TaskSummary
     progress: str
 
 

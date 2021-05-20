@@ -10,6 +10,9 @@ class IngestorRequestItem(pydantic.BaseModel):
     quantity: pydantic.conint(ge=-2147483648, le=2147483647) = 0  # int32
     compartment_name: str = ""  # string
 
+    class Config:
+        orm_mode = True
+
 
 # string type_guid
 # int32 quantity

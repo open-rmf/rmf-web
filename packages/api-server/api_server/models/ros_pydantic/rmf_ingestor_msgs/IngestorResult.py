@@ -13,6 +13,9 @@ class IngestorResult(pydantic.BaseModel):
     source_guid: str = ""  # string
     status: pydantic.conint(ge=0, le=255) = 0  # uint8
 
+    class Config:
+        orm_mode = True
+
 
 # builtin_interfaces/Time time
 #
