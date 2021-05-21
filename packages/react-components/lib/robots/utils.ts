@@ -1,3 +1,4 @@
+import { Task } from 'api-client';
 import * as RmfModels from 'rmf-models';
 
 /**
@@ -39,13 +40,10 @@ export interface VerboseRobot {
   battery_percent: number;
   location: RmfModels.Location;
   path: RmfModels.Location[];
-  assigned_tasks: RmfModels.TaskSummary[];
+  assigned_tasks: Task[];
 }
 
-export function makeVerboseRobot(
-  robot: RmfModels.RobotState,
-  assignedTasks: RmfModels.TaskSummary[],
-): VerboseRobot {
+export function makeVerboseRobot(robot: RmfModels.RobotState, assignedTasks: Task[]): VerboseRobot {
   const { name, model, task_id, seq, mode, battery_percent, location, path } = robot;
   return {
     name,
@@ -62,7 +60,7 @@ export function makeVerboseRobot(
 
 export function allocateTasksToRobots(
   robots: RmfModels.RobotState[],
-  tasks: RmfModels.TaskSummary[],
+  tasks: Task[],
 ): VerboseRobot[] {
   const removableTaskStates = [
     RmfModels.TaskSummary.STATE_ACTIVE,
@@ -71,7 +69,10 @@ export function allocateTasksToRobots(
   ];
   const robotsWithAssignedTasks = robots.map((robot) => {
     const assignedTasks = tasks.filter((task) => {
-      if (task.robot_name == robot.name && removableTaskStates.indexOf(task.state) != -1) {
+      if (
+        task.task_summary.robot_name == robot.name &&
+        removableTaskStates.indexOf(task.task_summary.state) != -1
+      ) {
         return task;
       }
     });

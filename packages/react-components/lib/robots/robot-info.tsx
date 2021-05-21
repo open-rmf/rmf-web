@@ -14,6 +14,7 @@ import * as RmfModels from 'rmf-models';
 import { taskTypeToStr, taskStateToStr } from '../tasks/utils';
 import { VerboseRobot } from './utils';
 import { rosTimeToJs } from '../utils';
+import { Task } from 'api-client';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -53,7 +54,7 @@ export interface RobotInfoProps {
 export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
   const theme = useTheme();
   const classes = useStyles();
-  let currentTask: RmfModels.TaskSummary | undefined = undefined;
+  let currentTask: Task | undefined = undefined;
   let hasConcreteEndTime = false;
 
   function returnTaskLocations(task: RmfModels.TaskSummary): string {
@@ -84,9 +85,9 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
     return robot.assigned_tasks
       .map((task, index) => {
         if (index != robot.assigned_tasks.length - 1) {
-          return task.task_id + ' → ';
+          return task.task_summary.task_id + ' → ';
         } else {
-          return task.task_id;
+          return task.task_summary.task_id;
         }
       })
       .join('');
@@ -94,11 +95,13 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
 
   if (robot.assigned_tasks.length > 0) {
     currentTask = robot.assigned_tasks[0];
-    hasConcreteEndTime = [
-      RmfModels.TaskSummary.STATE_CANCELED,
-      RmfModels.TaskSummary.STATE_COMPLETED,
-      RmfModels.TaskSummary.STATE_FAILED,
-    ].includes(currentTask.state);
+    if (currentTask) {
+      hasConcreteEndTime = [
+        RmfModels.TaskSummary.STATE_CANCELED,
+        RmfModels.TaskSummary.STATE_COMPLETED,
+        RmfModels.TaskSummary.STATE_FAILED,
+      ].includes(currentTask.task_summary.state);
+    }
   } else {
     currentTask = undefined;
     hasConcreteEndTime = false;
@@ -112,20 +115,21 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
       <Divider />
       <div style={{ marginBottom: theme.spacing(1) }}></div>
       <Grid container>
-        <Grid item xs={12}>
-          <Typography variant="h6" style={{ textAlign: 'left' }} gutterBottom>
+        <Grid container item xs={12} justify="center">
+          <Typography variant="h6" gutterBottom>
             Battery
           </Typography>
         </Grid>
         <Grid item xs={12}>
           <ProgressBar value={robot.battery_percent} />
         </Grid>
-        <Grid item xs={12}>
-          <Typography variant="h6" style={{ textAlign: 'left' }} gutterBottom>
+        <Grid container item xs={12} justify="center">
+          {/* direction="column" justify="center" alignItems="center" */}
+          <Typography variant="h6" gutterBottom>
             Assigned Tasks
           </Typography>
         </Grid>
-        <Grid item xs={12}>
+        <Grid container item xs={12} justify="center">
           <Button
             disableElevation
             variant="outlined"
@@ -153,7 +157,7 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
             classes={{ root: classes.root, disabled: classes.disabled }}
             disabled
           >
-            {currentTask ? returnTaskLocations(currentTask) : '-'}
+            {currentTask ? returnTaskLocations(currentTask.task_summary) : '-'}
           </Button>
         </Grid>
         <Grid item xs={6}>
@@ -164,7 +168,7 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
             classes={{ root: classes.root, disabled: classes.disabled }}
             disabled
           >
-            {currentTask ? returnTaskDestinations(currentTask) : '-'}
+            {currentTask ? returnTaskDestinations(currentTask.task_summary) : '-'}
           </Button>
         </Grid>
         <Grid item xs={6}>
@@ -178,14 +182,27 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
           </Typography>
         </Grid>
         <Grid item xs={6}>
-          <CircularProgressBar progress={90} strokeColor="#20a39e">
-            <div className={classes.indicator}>
-              <Typography variant="h6">90%</Typography>
-              <Typography variant="h6">
-                {currentTask ? taskStateToStr(currentTask.state) : '-'}
-              </Typography>
-            </div>
-          </CircularProgressBar>
+          {currentTask && (
+            <CircularProgressBar progress={parseInt(currentTask.progress)} strokeColor="#20a39e">
+              <div className={classes.indicator}>
+                <Typography variant="h6">{currentTask.progress}%</Typography>
+                <Typography variant="h6">
+                  {currentTask ? taskStateToStr(currentTask.task_summary.state) : '-'}
+                </Typography>
+              </div>
+            </CircularProgressBar>
+          )}
+          {!currentTask && (
+            <Button
+              size="small"
+              disableElevation
+              variant="outlined"
+              classes={{ root: classes.root, disabled: classes.disabled }}
+              disabled
+            >
+              -
+            </Button>
+          )}
         </Grid>
         <Grid item xs={6}>
           <Button
@@ -195,7 +212,9 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
             classes={{ root: classes.root, disabled: classes.disabled }}
             disabled
           >
-            {currentTask ? rosTimeToJs(currentTask.end_time).toLocaleTimeString() : '-'}
+            {currentTask
+              ? rosTimeToJs(currentTask.task_summary.end_time).toLocaleTimeString()
+              : '-'}
           </Button>
         </Grid>
       </Grid>

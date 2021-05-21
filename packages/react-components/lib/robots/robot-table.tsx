@@ -19,6 +19,7 @@ import * as RmfModels from 'rmf-models';
 import { taskTypeToStr } from '../tasks/utils';
 import { robotModeToString, allocateTasksToRobots, VerboseRobot } from './utils';
 import { PaginationOptions } from '../tasks/task-table';
+import { Task } from 'api-client';
 
 const useStyles = makeStyles((theme) => ({
   table: {
@@ -46,32 +47,27 @@ interface RobotRowProps {
 }
 
 const returnLocationCells = (robot: VerboseRobot) => {
-  switch (taskTypeToStr(robot.assigned_tasks[0].task_profile.description.task_type.type)) {
+  const taskDescription = robot.assigned_tasks[0].task_summary.task_profile.description;
+  switch (taskTypeToStr(taskDescription.task_type.type)) {
     case 'Loop':
       return (
         <>
-          <TableCell>{robot.assigned_tasks[0].task_profile.description.loop.start_name}</TableCell>
-          <TableCell>{robot.assigned_tasks[0].task_profile.description.loop.finish_name}</TableCell>
+          <TableCell>{taskDescription.loop.start_name}</TableCell>
+          <TableCell>{taskDescription.loop.finish_name}</TableCell>
         </>
       );
     case 'Delivery':
       return (
         <>
-          <TableCell>
-            {robot.assigned_tasks[0].task_profile.description.delivery.pickup_place_name}
-          </TableCell>
-          <TableCell>
-            {robot.assigned_tasks[0].task_profile.description.delivery.dropoff_place_name}
-          </TableCell>
+          <TableCell>{taskDescription.delivery.pickup_place_name}</TableCell>
+          <TableCell>{taskDescription.delivery.dropoff_place_name}</TableCell>
         </>
       );
     case 'Clean':
       return (
         <>
           <TableCell>-</TableCell>
-          <TableCell>
-            {robot.assigned_tasks[0].task_profile.description.clean.start_waypoint}
-          </TableCell>
+          <TableCell>{taskDescription.clean.start_waypoint}</TableCell>
         </>
       );
     default:
@@ -108,7 +104,8 @@ function RobotRow({ robot, onClick }: RobotRowProps) {
           {returnLocationCells(robot)}
           <TableCell>
             {robot.assigned_tasks
-              ? robot.assigned_tasks[0].end_time.sec - robot.assigned_tasks[0].start_time.sec
+              ? robot.assigned_tasks[0].task_summary.end_time.sec -
+                robot.assigned_tasks[0].task_summary.start_time.sec
               : '-'}
           </TableCell>
           <TableCell>{robot.battery_percent.toFixed(2)}%</TableCell>
@@ -124,7 +121,7 @@ export interface RobotTableProps extends PaperProps {
    * The current list of robots to display, when pagination is enabled, this should only
    * contain the robots for the current page.
    */
-  tasks: RmfModels.TaskSummary[];
+  tasks: Task[];
   robots: RmfModels.RobotState[];
   paginationOptions?: PaginationOptions;
   onRefreshClick?: React.MouseEventHandler<HTMLButtonElement>;
