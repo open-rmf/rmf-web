@@ -28,7 +28,7 @@
     "@material-ui/pickers": "^3.2.10",
     "api-client": "*",
     "clsx": "^1.1.1",
-    "date-fns": "^2.20.2",
+    "date-fns": "^2.21.3",
     "debug": "^4.2.0",
     "material-table": "^1.69.2",
     "moment": "^2.29.1",
