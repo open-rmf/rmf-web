@@ -14,7 +14,7 @@ import * as RmfModels from 'rmf-models';
 import { taskTypeToStr, taskStateToStr } from '../tasks/utils';
 import { VerboseRobot } from './utils';
 import { rosTimeToJs } from '../utils';
-import { Task } from 'api-client';
+import { TaskProgress } from 'api-client';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -43,7 +43,7 @@ export interface RobotInfoProps {
 export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
   const theme = useTheme();
   const classes = useStyles();
-  let currentTask: Task | undefined = undefined;
+  let currentTask: TaskProgress | undefined = undefined;
   let hasConcreteEndTime = false;
 
   function returnTaskLocations(task: RmfModels.TaskSummary): string {

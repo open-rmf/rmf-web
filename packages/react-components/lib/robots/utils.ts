@@ -1,4 +1,4 @@
-import { Task } from 'api-client';
+import { TaskProgress } from 'api-client';
 import * as RmfModels from 'rmf-models';
 
 /**
@@ -40,10 +40,13 @@ export interface VerboseRobot {
   battery_percent: number;
   location: RmfModels.Location;
   path: RmfModels.Location[];
-  assigned_tasks: Task[];
+  assigned_tasks: TaskProgress[];
 }
 
-export function makeVerboseRobot(robot: RmfModels.RobotState, assignedTasks: Task[]): VerboseRobot {
+export function makeVerboseRobot(
+  robot: RmfModels.RobotState,
+  assignedTasks: TaskProgress[],
+): VerboseRobot {
   const { name, model, task_id, seq, mode, battery_percent, location, path } = robot;
   return {
     name,
@@ -60,7 +63,7 @@ export function makeVerboseRobot(robot: RmfModels.RobotState, assignedTasks: Tas
 
 export function allocateTasksToRobots(
   robots: RmfModels.RobotState[],
-  tasks: Task[],
+  tasks: TaskProgress[],
 ): VerboseRobot[] {
   const removableTaskStates = [
     RmfModels.TaskSummary.STATE_ACTIVE,

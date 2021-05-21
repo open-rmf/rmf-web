@@ -4,7 +4,7 @@ import * as RmfModels from 'rmf-models';
 import { RobotInfo } from './robot-info';
 import { RobotTable, RobotTableProps } from './robot-table';
 import { VerboseRobot } from './utils';
-import { Task } from 'api-client';
+import { TaskProgress } from 'api-client';
 
 const useStyles = makeStyles((theme) => ({
   detailPanelContainer: {
@@ -31,7 +31,7 @@ function NoSelectedRobot() {
 }
 
 export interface RobotPanelProps extends React.HTMLProps<HTMLDivElement> {
-  tasks: Task[];
+  tasks: TaskProgress[];
   robots: RmfModels.RobotState[];
   onRefreshClick?: RobotTableProps['onRefreshClick'];
 }

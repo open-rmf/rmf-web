@@ -19,7 +19,7 @@ import * as RmfModels from 'rmf-models';
 import { taskTypeToStr } from '../tasks/utils';
 import { robotModeToString, allocateTasksToRobots, VerboseRobot } from './utils';
 import { PaginationOptions } from '../tasks/task-table';
-import { Task } from 'api-client';
+import { TaskProgress } from 'api-client';
 
 const useStyles = makeStyles((theme) => ({
   table: {
@@ -121,7 +121,7 @@ export interface RobotTableProps extends PaperProps {
    * The current list of robots to display, when pagination is enabled, this should only
    * contain the robots for the current page.
    */
-  tasks: Task[];
+  tasks: TaskProgress[];
   robots: RmfModels.RobotState[];
   paginationOptions?: PaginationOptions;
   onRefreshClick?: React.MouseEventHandler<HTMLButtonElement>;
