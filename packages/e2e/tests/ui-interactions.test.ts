@@ -27,6 +27,7 @@ describe('ui interactions', () => {
     doorAccordion.click();
   }
 
+  // interactive item tests
   it('clicking a door on the map focuses it on the panel', () => {
     closeOmniPanel();
     const door = $(`[data-component=DoorMarker]`);
@@ -55,6 +56,7 @@ describe('ui interactions', () => {
     expect($(`.MuiAccordion-root*=${robotName}`).$('.MuiAccordionDetails-root')).toBeVisible();
   });
 
+  // filter test
   it('Clicking on an equipment on the map resets the filter', () => {
     omniPanelMainMenu();
     $('[data-component=MainMenu] [data-item=Doors]').click();
@@ -74,6 +76,7 @@ describe('ui interactions', () => {
     expect($(`.MuiAccordion-root*=${doorName}`).$('.MuiAccordionDetails-root')).toBeVisible();
   });
 
+  // door interaction test
   it('clicking on open button opens the door', () => {
     openDoorAccordian();
     doorAccordion.$('button=Open').click();
@@ -84,5 +87,27 @@ describe('ui interactions', () => {
     openDoorAccordian();
     doorAccordion.$('button=Close').click();
     expect(doorAccordion.$('[role=status]')).toHaveText('CLOSED');
+  });
+
+  // submit task test
+  it('can submit loop task', () => {
+    browser.url('/tasks');
+    $('button[aria-label="Create Task"]').click();
+    $('#task-type').click();
+    const getLoopOption = () => $$('[role=option]').find((elem) => elem.getText() === 'Loop');
+    browser.waitUntil(() => !!getLoopOption());
+    const loopOption = getLoopOption()!;
+    loopOption.click();
+
+    $('#start-location').setValue('coe');
+    $('#finish-location').setValue('pantry');
+
+    browser.waitUntil(
+      () => {
+        $('button[aria-label="Submit"]').click();
+        return $('div=Successfully created task').isDisplayed();
+      },
+      { timeout: 5000, interval: 500 },
+    );
   });
 });
