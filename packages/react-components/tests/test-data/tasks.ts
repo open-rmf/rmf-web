@@ -1,4 +1,4 @@
-import { Task } from 'api-client';
+import { TaskProgress } from 'api-client';
 import * as RmfModels from 'rmf-models';
 
 export function makeTask(
@@ -32,7 +32,7 @@ export function makeDefinedTask(
   id: string,
   numberOfPhases: number,
   currentPhase: number,
-): Task {
+): TaskProgress {
   let status = '';
   for (let i = 0; i < numberOfPhases; i++) {
     if (currentPhase === i + 1) {

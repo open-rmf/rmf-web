@@ -5,7 +5,6 @@ import { RobotInfo } from './robot-info';
 import { RobotTable } from './robot-table';
 import { VerboseRobot } from './utils';
 import { TaskProgress } from 'api-client';
-import { FetchTasksResult } from '../tasks';
 
 const useStyles = makeStyles((theme) => ({
   detailPanelContainer: {

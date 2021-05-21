@@ -43,7 +43,7 @@ export function RobotPage() {
   }
   const [robotStates, setRobotStates] = React.useState<RmfModels.RobotState[]>([]);
 
-  const fetchTasks = React.useCallback<TaskPanelProps['fetchTasks']>(
+  const fetchTasks = React.useCallback(
     async (limit: number, offset: number) => {
       if (!tasksApi) {
         return {
