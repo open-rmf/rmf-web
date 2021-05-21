@@ -14,8 +14,9 @@ describe('RobotInfo', () => {
     deliveryTask.task_profile.description.delivery.pickup_dispenser = 'test_dispenser';
     deliveryTask.task_profile.description.delivery.dropoff_place_name = 'test_waypoint_2';
     deliveryTask.task_profile.description.delivery.dropoff_ingestor = 'test_ingestor';
+    const task = { task_summary: deliveryTask, progress: 10 };
 
-    const robot1 = makeVerboseRobot(robot, [deliveryTask]);
+    const robot1 = makeVerboseRobot(robot, [task]);
 
     render(
       <>

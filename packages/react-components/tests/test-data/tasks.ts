@@ -1,3 +1,4 @@
+import { Task } from 'api-client';
 import * as RmfModels from 'rmf-models';
 
 export function makeTask(
@@ -31,7 +32,7 @@ export function makeDefinedTask(
   id: string,
   numberOfPhases: number,
   currentPhase: number,
-): RmfModels.TaskSummary {
+): Task {
   let status = '';
   for (let i = 0; i < numberOfPhases; i++) {
     if (currentPhase === i + 1) {
@@ -99,7 +100,7 @@ export function makeDefinedTask(
     }
   }
 
-  return new RmfModels.TaskSummary({
+  const taskSummary = new RmfModels.TaskSummary({
     task_id: id,
     task_profile: {
       task_id: id,
@@ -114,4 +115,8 @@ export function makeDefinedTask(
     fleet_name: 'test_fleet',
     robot_name: robot_name,
   });
+
+  const progress = Math.floor(Math.random() * 100);
+
+  return { task_summary: taskSummary, progress: progress };
 }

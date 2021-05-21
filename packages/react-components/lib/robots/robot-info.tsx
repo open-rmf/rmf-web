@@ -33,17 +33,6 @@ const useStyles = makeStyles((theme) =>
       float: 'right',
       textAlign: 'right',
     },
-    indicator: {
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      textAlign: 'center',
-      position: 'absolute',
-      top: 0,
-      width: '100%',
-      height: '100%',
-      margin: '0 auto',
-    },
   }),
 );
 
@@ -124,7 +113,6 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
           <ProgressBar value={robot.battery_percent} />
         </Grid>
         <Grid container item xs={12} justify="center">
-          {/* direction="column" justify="center" alignItems="center" */}
           <Typography variant="h6" gutterBottom>
             Assigned Tasks
           </Typography>
@@ -184,12 +172,10 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
         <Grid item xs={6}>
           {currentTask && (
             <CircularProgressBar progress={parseInt(currentTask.progress)} strokeColor="#20a39e">
-              <div className={classes.indicator}>
-                <Typography variant="h6">{currentTask.progress}%</Typography>
-                <Typography variant="h6">
-                  {currentTask ? taskStateToStr(currentTask.task_summary.state) : '-'}
-                </Typography>
-              </div>
+              <Typography variant="h6">{currentTask.progress}</Typography>
+              <Typography variant="h6">
+                {currentTask ? taskStateToStr(currentTask.task_summary.state) : '-'}
+              </Typography>
             </CircularProgressBar>
           )}
           {!currentTask && (

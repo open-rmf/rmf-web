@@ -41,17 +41,17 @@ export function RobotPage() {
   if (newFleetNames.some((fleetName) => !fleetNames.current.includes(fleetName))) {
     fleetNames.current = newFleetNames;
   }
-  const [taskSummaries, setTaskSummaries] = React.useState<RmfModels.TaskSummary[]>([]);
+  const [tasks, setTasks] = React.useState<Task[]>([]);
   const [robotStates, setRobotStates] = React.useState<RmfModels.RobotState[]>([]);
 
   const handleRefresh = React.useCallback(async () => {
     if (!tasksApi) {
       return;
     }
-    const tasks = await tasksApi.getTasksTasksGetTasksGet();
-    const getTaskSummaries = tasks.data.map((task: Task) => task.task_summary);
+    const allTasks = await tasksApi.getTasksTasksGetTasksGet();
+    const getTaskSummaries = allTasks.data.map((task: Task) => task.task_summary);
     sortTasks(getTaskSummaries);
-    setTaskSummaries(getTaskSummaries);
+    setTasks(allTasks.data);
   }, [tasksApi]);
 
   React.useEffect(() => {
@@ -68,7 +68,7 @@ export function RobotPage() {
   return (
     <RobotPanel
       className={classes.robotPanel}
-      tasks={taskSummaries}
+      tasks={tasks}
       robots={robotStates}
       onRefreshClick={handleRefresh}
     />
