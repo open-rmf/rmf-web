@@ -18,6 +18,9 @@ class RobotState(pydantic.BaseModel):
     location: Location = Location()  # rmf_fleet_msgs/Location
     path: List[Location] = []  # rmf_fleet_msgs/Location
 
+    class Config:
+        orm_mode = True
+
 
 # string name
 # string model

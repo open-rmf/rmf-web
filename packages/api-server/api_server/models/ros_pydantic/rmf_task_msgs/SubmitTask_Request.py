@@ -11,6 +11,9 @@ class SubmitTask_Request(pydantic.BaseModel):
     requester: str = ""  # string
     description: TaskDescription = TaskDescription()  # rmf_task_msgs/TaskDescription
 
+    class Config:
+        orm_mode = True
+
 
 # # Submit Task | POST service call
 #

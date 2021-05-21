@@ -124,7 +124,9 @@ spec:
     spec:
       containers:
         - name: keycloak
-          image: quay.io/keycloak/keycloak:12.0.4
+          image: rmf-web/keycloak
+          imagePullPolicy: Never # remove this in a real deployment
+
           env:
           - name: KEYCLOAK_USER
             value: admin

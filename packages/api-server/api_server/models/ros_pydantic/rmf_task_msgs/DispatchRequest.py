@@ -12,6 +12,9 @@ class DispatchRequest(pydantic.BaseModel):
     task_profile: TaskProfile = TaskProfile()  # rmf_task_msgs/TaskProfile
     method: pydantic.conint(ge=0, le=255) = 0  # uint8
 
+    class Config:
+        orm_mode = True
+
 
 # # This message is published by Task Dispatcher Node to either award or cancel a
 # # task for a Fleet Adapter

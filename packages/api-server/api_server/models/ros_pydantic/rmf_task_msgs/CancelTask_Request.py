@@ -9,6 +9,9 @@ class CancelTask_Request(pydantic.BaseModel):
     requester: str = ""  # string
     task_id: str = ""  # string
 
+    class Config:
+        orm_mode = True
+
 
 # # Cancel Task | "Delete" service call
 #

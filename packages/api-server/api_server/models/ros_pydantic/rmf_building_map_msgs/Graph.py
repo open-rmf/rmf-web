@@ -15,6 +15,9 @@ class Graph(pydantic.BaseModel):
     edges: List[GraphEdge] = []  # rmf_building_map_msgs/GraphEdge
     params: List[Param] = []  # rmf_building_map_msgs/Param
 
+    class Config:
+        orm_mode = True
+
 
 # string name
 # GraphNode[] vertices

@@ -1,7 +1,7 @@
-from rmf_fleet_msgs.msg import FleetState as RmfFleetState
+from tortoise import Model
 
-from .json_model import json_model
+from .json_mixin import JsonMixin
 
 
-class FleetState(json_model(RmfFleetState, lambda x: x.name)):
+class FleetState(Model, JsonMixin):
     pass

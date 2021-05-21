@@ -9,6 +9,9 @@ class CancelTask_Response(pydantic.BaseModel):
     success: bool = False  # bool
     message: str = ""  # string
 
+    class Config:
+        orm_mode = True
+
 
 #
 #

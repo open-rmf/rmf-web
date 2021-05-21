@@ -97,12 +97,27 @@ There is a kubernetes resource file to deploy keycloak along with postgres for i
 
 This requires internet connection, see [Deploying in an airgapped network](#deploying-in-an-airgapped-network) if you are in an airgap network. tldr:
 
-```bash
-# connected to internet
-docker pull quay.io/keycloak/keycloak:12.0.4
+### connected to internet
 
-# connected to airgap network
-docker save quay.io/keycloak/keycloak:12.0.4 | bash -c 'eval $(.bin/minikube docker-env) && docker load'
+```bash
+docker pull quay.io/keycloak/keycloak:12.0.4
+```
+
+### connected to airgap network
+
+build the image
+
+``` bash
+docker build -t rmf-web/keycloak -f docker/keycloak/keycloak.dockerfile docker/keycloak/
+```
+
+"publish" the image
+
+``` bash
+docker save rmf-web/keycloak | bash -c 'eval $(.bin/minikube docker-env) && docker load'
+```
+
+```
 .bin/minikube kubectl -- apply -f k8s/keycloak.yaml
 ```
 
@@ -167,6 +182,7 @@ In order to use the cert, we will add it as a configmap to kubernetes
 
 ```bash
 kubectl create configmap jwt-pub-key --from-file=jwt-pub-key.pub -o=yaml --dry-run=client | kubectl apply -f -
+
 ```
 
 ## rmf-server

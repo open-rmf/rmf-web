@@ -1,4 +1,6 @@
+from models.auth_events import AuthEvents
 from models.raw_log import RawLog
+from parsers.auth_event_parser import auth_event_parser
 from parsers.log_type_parser import get_log_type
 
 from .parser_dispacher import log_model_dispacher
@@ -57,6 +59,25 @@ async def create_rmf_server_log(logs: list):
                 continue
             modified_log = log["log"].replace("INFO:app.BookKeeper.", "")
             await log_model_dispacher(modified_log)
+
+        except (SyntaxError, ValueError, KeyError) as e:
+            error_logs.append("Error:" + str(e) + "Log:" + str(log))
+
+    return error_logs if len(error_logs) > 0 else "Logs were saved correctly"
+
+
+async def create_keycloak_log(logs: list):
+    if len(logs) == 0:
+        return "No data received"
+    error_logs = []
+
+    for log in logs:
+        try:
+            # If it not data app, we will skip it because the create_raw_log in theory will register that log
+            if "JSON_EVENT::" not in log["log"]:
+                continue
+            auth_event = await auth_event_parser(log["log"])
+            await AuthEvents.create(**auth_event)
 
         except (SyntaxError, ValueError, KeyError) as e:
             error_logs.append("Error:" + str(e) + "Log:" + str(log))

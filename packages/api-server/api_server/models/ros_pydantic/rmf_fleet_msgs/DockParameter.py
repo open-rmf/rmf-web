@@ -12,6 +12,9 @@ class DockParameter(pydantic.BaseModel):
     finish: str = ""  # string
     path: List[Location] = []  # rmf_fleet_msgs/Location
 
+    class Config:
+        orm_mode = True
+
 
 # # The name of the waypoint where the docking begins
 # string start

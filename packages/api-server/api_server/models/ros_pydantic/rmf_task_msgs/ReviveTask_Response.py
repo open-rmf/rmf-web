@@ -8,6 +8,9 @@ import pydantic
 class ReviveTask_Response(pydantic.BaseModel):
     success: bool = False  # bool
 
+    class Config:
+        orm_mode = True
+
 
 #
 #

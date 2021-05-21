@@ -14,6 +14,9 @@ class DispenserState(pydantic.BaseModel):
     request_guid_queue: List[str] = []  # string
     seconds_remaining: float = 0  # float32
 
+    class Config:
+        orm_mode = True
+
 
 # builtin_interfaces/Time time
 #

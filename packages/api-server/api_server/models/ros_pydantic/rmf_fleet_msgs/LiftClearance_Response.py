@@ -8,6 +8,9 @@ import pydantic
 class LiftClearance_Response(pydantic.BaseModel):
     decision: pydantic.conint(ge=0, le=4294967295) = 0  # uint32
 
+    class Config:
+        orm_mode = True
+
 
 #
 #

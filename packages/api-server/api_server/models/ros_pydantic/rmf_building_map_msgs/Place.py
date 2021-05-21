@@ -13,6 +13,9 @@ class Place(pydantic.BaseModel):
     position_tolerance: float = 0  # float32
     yaw_tolerance: float = 0  # float32
 
+    class Config:
+        orm_mode = True
+
 
 # string name
 # float32 x

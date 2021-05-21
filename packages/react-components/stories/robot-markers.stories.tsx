@@ -32,11 +32,11 @@ const robots: Record<string, RobotMarkerProps> = {
   'Name With Space': makeRobotProps({ name: 'I have spaces' }),
   'With Icon': makeRobotProps(
     { name: 'RobotWithIcon', model: 'fleetWithIcon' },
-    { fleetName: 'fleetWithIcon', iconPath: '/resources/tinyRobot.png' },
+    { fleetName: 'fleetWithIcon', iconPath: '/assets/tinyRobot.png' },
   ),
   'With Icon, In Conflict': makeRobotProps(
     { name: 'RobotWithIcon', model: 'fleetWithIcon' },
-    { fleetName: 'fleetWithIcon', iconPath: '/resources/tinyRobot.png', variant: 'inConflict' },
+    { fleetName: 'fleetWithIcon', iconPath: '/assets/tinyRobot.png', variant: 'inConflict' },
   ),
 };
 
