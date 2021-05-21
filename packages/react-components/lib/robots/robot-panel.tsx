@@ -2,9 +2,10 @@ import React from 'react';
 import { Grid, makeStyles, Paper, Typography } from '@material-ui/core';
 import * as RmfModels from 'rmf-models';
 import { RobotInfo } from './robot-info';
-import { RobotTable, RobotTableProps } from './robot-table';
+import { RobotTable } from './robot-table';
 import { VerboseRobot } from './utils';
 import { TaskProgress } from 'api-client';
+import { FetchTasksResult } from '../tasks';
 
 const useStyles = makeStyles((theme) => ({
   detailPanelContainer: {
@@ -31,20 +32,28 @@ function NoSelectedRobot() {
 }
 
 export interface RobotPanelProps extends React.HTMLProps<HTMLDivElement> {
-  tasks: TaskProgress[];
   robots: RmfModels.RobotState[];
-  onRefreshClick?: RobotTableProps['onRefreshClick'];
+  fetchTasks: (limit: number, offset: number) => Promise<TaskProgress[]>;
 }
 
-export function RobotPanel({
-  tasks,
-  robots,
-  onRefreshClick,
-  ...divProps
-}: RobotPanelProps): JSX.Element {
+export function RobotPanel({ robots, fetchTasks, ...divProps }: RobotPanelProps): JSX.Element {
   const classes = useStyles();
+  const [tasks, setTasks] = React.useState<TaskProgress[]>([]);
+  const [totalCount, setTotalCount] = React.useState(-1);
   const [page, setPage] = React.useState(0);
   const [selectedRobot, setSelectedRobot] = React.useState<VerboseRobot | undefined>(undefined);
+
+  const handleRefresh = React.useCallback(async () => {
+    (async () => {
+      const result = await fetchTasks(10, page * 10);
+      setTasks(result);
+    })();
+  }, [fetchTasks, page]);
+
+  React.useEffect(() => {
+    setTotalCount(robots.length);
+    handleRefresh();
+  }, [handleRefresh, robots]);
 
   return (
     <div {...divProps}>
@@ -55,14 +64,14 @@ export function RobotPanel({
             tasks={tasks}
             robots={robots.slice(page * 10, (page + 1) * 10)}
             paginationOptions={{
-              count: tasks.length,
+              count: totalCount,
               rowsPerPage: 10,
               rowsPerPageOptions: [10],
               page,
               onChangePage: (_ev, newPage) => setPage(newPage),
             }}
             onRobotClick={(_ev, robot) => setSelectedRobot(robot)}
-            onRefreshClick={onRefreshClick}
+            onRefreshClick={handleRefresh}
           />
         </Grid>
         <Paper className={classes.detailPanelContainer}>

@@ -137,9 +137,7 @@ export function RobotTable({
   ...paperProps
 }: RobotTableProps): JSX.Element {
   const classes = useStyles();
-  const [robotsWithTasks, setRobotsWithTasks] = React.useState(
-    allocateTasksToRobots(robots, tasks),
-  );
+  const [robotsWithTasks, setRobotsWithTasks] = React.useState<VerboseRobot[]>([]);
 
   React.useEffect(() => {
     setRobotsWithTasks(allocateTasksToRobots(robots, tasks));

@@ -1,7 +1,7 @@
 import { makeStyles } from '@material-ui/core';
-import { Task } from 'api-client';
+import { TaskProgress } from 'api-client';
 import React from 'react';
-import { RobotPanel } from 'react-components';
+import { RobotPanel, TaskPanelProps } from 'react-components';
 import * as RmfModels from 'rmf-models';
 import { FleetStateContext, RmfIngressContext } from '../rmf-app';
 
@@ -41,18 +41,35 @@ export function RobotPage() {
   if (newFleetNames.some((fleetName) => !fleetNames.current.includes(fleetName))) {
     fleetNames.current = newFleetNames;
   }
-  const [tasks, setTasks] = React.useState<Task[]>([]);
   const [robotStates, setRobotStates] = React.useState<RmfModels.RobotState[]>([]);
 
-  const handleRefresh = React.useCallback(async () => {
-    if (!tasksApi) {
-      return;
-    }
-    const allTasks = await tasksApi.getTasksTasksGetTasksGet();
-    const getTaskSummaries = allTasks.data.map((task: Task) => task.task_summary);
-    sortTasks(getTaskSummaries);
-    setTasks(allTasks.data);
-  }, [tasksApi]);
+  const fetchTasks = React.useCallback<TaskPanelProps['fetchTasks']>(
+    async (limit: number, offset: number) => {
+      if (!tasksApi) {
+        return {
+          tasks: [],
+          totalCount: 0,
+        };
+      }
+      const resp = await tasksApi.getTasksTasksGet(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        limit,
+        offset,
+        '-priority,-start_time',
+      );
+      const taskProgresses = resp.data.items;
+      return taskProgresses;
+    },
+    [tasksApi],
+  );
 
   React.useEffect(() => {
     const robotsStatesArray = fleets.flatMap((fleet, index) => {
@@ -61,16 +78,5 @@ export function RobotPage() {
     setRobotStates(robotsStatesArray);
   }, [fleets]);
 
-  React.useEffect(() => {
-    handleRefresh();
-  }, [handleRefresh]);
-
-  return (
-    <RobotPanel
-      className={classes.robotPanel}
-      tasks={tasks}
-      robots={robotStates}
-      onRefreshClick={handleRefresh}
-    />
-  );
+  return <RobotPanel className={classes.robotPanel} fetchTasks={fetchTasks} robots={robotStates} />;
 }
