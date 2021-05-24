@@ -2,9 +2,8 @@ import asyncio
 import concurrent.futures
 
 from rmf_fleet_msgs.msg import FleetState as RmfFleetState
-
-from api_server.models.fleets import FleetState, RobotState
-from api_server.models.tasks import TaskStateEnum, TaskSummary
+from rmf_fleet_msgs.msg import RobotState as RmfRobotState
+from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
 
 from ..models import tortoise_models as ttm
 from .test_fixtures import RouteFixture, try_until
@@ -15,49 +14,61 @@ class TestFleetsRoute(RouteFixture):
     def setUpClass(cls):
         super().setUpClass()
         fleet_states = [
-            FleetState(
+            RmfFleetState(
                 name="fleet_1",
-                robots=[RobotState(name="robot_1"), RobotState(name="robot_2")],
+                robots=[RmfRobotState(name="robot_1"), RmfRobotState(name="robot_2")],
             ),
-            FleetState(
+            RmfFleetState(
                 name="fleet_2",
-                robots=[RobotState(name="robot_3")],
+                robots=[RmfRobotState(name="robot_3")],
             ),
         ]
         tasks = [
-            TaskSummary(
+            RmfTaskSummary(
                 task_id="task_1",
                 fleet_name="fleet_1",
                 robot_name="robot_1",
-                state=TaskStateEnum.ACTIVE.value,
+                state=RmfTaskSummary.STATE_ACTIVE,
             ),
-            TaskSummary(
+            RmfTaskSummary(
                 task_id="task_2",
                 fleet_name="fleet_1",
                 robot_name="robot_1",
-                state=TaskStateEnum.PENDING.value,
+                state=RmfTaskSummary.STATE_PENDING,
             ),
         ]
 
         fut = concurrent.futures.Future()
+        fleet_states_pub = cls.node.create_publisher(RmfFleetState, "fleet_states", 10)
+        task_summaries_pub = cls.node.create_publisher(
+            RmfTaskSummary, "task_summaries", 10
+        )
 
-        async def save_data():
-            await asyncio.gather(
-                *[ttm.FleetState.save_pydantic(s) for s in fleet_states]
-            )
-            await asyncio.gather(
-                *[
-                    ttm.RobotState.save_pydantic(f.name, r)
-                    for f in fleet_states
-                    for r in f.robots
-                ]
-            )
-            await asyncio.gather(*[ttm.TaskSummary.save_pydantic(t) for t in tasks])
-            fut.set_result(True)
+        async def wait():
+            timeout = asyncio.create_task(asyncio.sleep(5))
+            while not timeout.done():
+                for f in fleet_states:
+                    fleet_states_pub.publish(f)
+                for t in tasks:
+                    task_summaries_pub.publish(t)
+                if (
+                    await ttm.FleetState.all().count() >= 2
+                    and await ttm.RobotState.all().count() >= 3
+                    and await ttm.TaskSummary.all().count() >= 2
+                ):
+                    timeout.cancel()
+                    fut.set_result(True)
+                    return
+                await asyncio.sleep(0.5)
+            fut.set_exception(TimeoutError())
 
         cls.server.app.wait_ready()
-        cls.server.app.loop.create_task(save_data())
-        fut.result()
+        cls.server.app.loop.create_task(wait())
+        try:
+            fut.result()
+        except TimeoutError:
+            cls.tearDownClass()
+            raise
 
     def test_get_fleets(self):
         resp = self.session.get(f"{self.base_url}/fleets?fleet_name=fleet_1")
