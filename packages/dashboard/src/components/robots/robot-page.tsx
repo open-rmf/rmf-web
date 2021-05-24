@@ -1,7 +1,7 @@
 import { makeStyles } from '@material-ui/core';
 import { TaskProgress } from 'api-client';
 import React from 'react';
-import { RobotPanel, TaskPanelProps } from 'react-components';
+import { RobotPanel, RobotPanelProps } from 'react-components';
 import * as RmfModels from 'rmf-models';
 import { FleetStateContext, RmfIngressContext } from '../rmf-app';
 
@@ -13,23 +13,6 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: 1600,
   },
 }));
-
-/**
- * Sort tasks in place, by priority, then by start time.
- */
-function sortTasks(tasks: RmfModels.TaskSummary[]) {
-  tasks.sort((a, b) => {
-    const aPriority = a.task_profile.description.priority.value;
-    const bPriority = b.task_profile.description.priority.value;
-    if (aPriority === bPriority) {
-      const aStartTime = a.start_time.sec;
-      const bStartTime = b.start_time.sec;
-      return aStartTime - bStartTime;
-    }
-    return aPriority - bPriority;
-  });
-  return tasks;
-}
 
 export function RobotPage() {
   const classes = useStyles();
@@ -43,13 +26,10 @@ export function RobotPage() {
   }
   const [robotStates, setRobotStates] = React.useState<RmfModels.RobotState[]>([]);
 
-  const fetchTasks = React.useCallback(
+  const fetchTasks = React.useCallback<RobotPanelProps['fetchTasks']>(
     async (limit: number, offset: number) => {
       if (!tasksApi) {
-        return {
-          tasks: [],
-          totalCount: 0,
-        };
+        return [];
       }
       const resp = await tasksApi.getTasksTasksGet(
         undefined,
@@ -65,7 +45,7 @@ export function RobotPage() {
         offset,
         '-priority,-start_time',
       );
-      const taskProgresses = resp.data.items;
+      const taskProgresses: TaskProgress[] = resp.data.items;
       return taskProgresses;
     },
     [tasksApi],

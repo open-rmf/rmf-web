@@ -1,4 +1,5 @@
 import { Meta, Story } from '@storybook/react';
+import { TaskProgress } from 'api-client';
 import React from 'react';
 import { RobotPanel as RobotPanel_, RobotPanelProps } from '../../lib';
 import { makeRandomRobot } from '../../tests/robots/test-utils';
@@ -7,6 +8,13 @@ import { makeDefinedTask } from '../../tests/test-data/tasks';
 export default {
   title: 'Robots/Robot Panel',
   component: RobotPanel_,
+  argTypes: {
+    fetchTasks: {
+      table: {
+        disable: true,
+      },
+    },
+  },
 } as Meta;
 
 export const RobotPanel: Story<RobotPanelProps> = (args) => {
@@ -34,7 +42,11 @@ const tasks = [
   makeDefinedTask('Loop', 'test_robot4', 'active_task_4', 4, 3),
 ];
 
+async function fetchTasks(): Promise<TaskProgress[]> {
+  return tasks;
+}
+
 RobotPanel.args = {
-  tasks,
+  fetchTasks,
   robots,
 };

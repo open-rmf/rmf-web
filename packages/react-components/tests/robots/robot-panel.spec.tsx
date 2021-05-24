@@ -17,17 +17,16 @@ describe('RobotPanel', () => {
     const robots = [makeRandomRobot('test_robot1', 'test_fleet', 2)];
     const root = render(<RobotPanel robots={robots} fetchTasks={makeFetchTasks([])} />);
     userEvent.click(root.getByText('test_robot1'));
-    root.getByRole('heading', { name: 'test_robot1' });
+    expect(root.getByRole('heading', { name: 'test_robot1' })).toBeTruthy();
     expect(root.getAllByRole('button', { name: '-' }).length).toBe(5);
   });
 
   it('shows detailed information when robot is clicked', () => {
-    const tasks = [makeDefinedTask('Delivery', 'test_robot1', 'active_task_1', 3, 3)];
+    const tasks = [makeDefinedTask('Loop', 'test_robot1', 'task_1', 3, 3)];
     const robots = [makeRandomRobot('test_robot1', 'test_fleet', 2)];
     const root = render(<RobotPanel robots={robots} fetchTasks={makeFetchTasks(tasks)} />);
     root.debug();
     userEvent.click(root.getByText('test_robot1'));
-    root.getByRole('heading', { name: 'test_robot1' });
-    root.getByRole('button', { name: 'active_task_1' });
+    expect(root.getByRole('progressbar')).toBeTruthy();
   });
 });
