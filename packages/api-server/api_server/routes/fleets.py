@@ -1,11 +1,14 @@
-from typing import List
+from typing import List, Optional
+
+from fastapi import Depends, Query
 
 from api_server.models.fleets import Robot
+from api_server.models.pagination import Pagination
 
+from ..dependencies import WithBaseQuery, base_query_params
 from ..fast_io import FastIORouter
 from ..models import Fleet, FleetState, RobotHealth
 from ..models import tortoise_models as ttm
-from ..repositories import RmfRepository
 from ..rmf_io import RmfEvents
 
 
@@ -13,13 +16,30 @@ class FleetsRouter(FastIORouter):
     def __init__(
         self,
         rmf_events: RmfEvents,
-        rmf_repo: RmfRepository,
     ):
         super().__init__(tags=["Fleets"])
 
-        @self.get("", response_model=List[Fleet])
-        async def get_fleets():
-            return await rmf_repo.query_fleets()
+        class GetFleetsResponse(Pagination.response_model(Fleet)):
+            pass
+
+        @self.get("", response_model=GetFleetsResponse)
+        async def get_fleets(
+            with_base_query: WithBaseQuery[ttm.FleetState] = Depends(
+                base_query_params({"fleet_name": "id_"})
+            ),
+            fleet_name: Optional[str] = Query(
+                None, description="comma separated list of fleet names"
+            ),
+        ):
+            filter_params = {}
+            if fleet_name is not None:
+                filter_params["id___in"] = fleet_name.split(",")
+            states = await with_base_query(ttm.FleetState.filter(**filter_params))
+            results: Pagination[Fleet] = Pagination(
+                total_count=states.total_count,
+                items=[Fleet(name=s.id_, state=s.data) for s in states.items],
+            )
+            return results
 
         @self.get("/robots", response_model=List[Robot])
         async def get_robots():
