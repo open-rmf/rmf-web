@@ -1,9 +1,10 @@
-from typing import List, Optional
+from typing import Optional
 
 from fastapi import Depends, Query
 
 from api_server.models.fleets import Robot
 from api_server.models.pagination import Pagination
+from api_server.models.tasks import TaskStateEnum, TaskSummary
 
 from ..dependencies import WithBaseQuery, base_query_params
 from ..fast_io import FastIORouter
@@ -41,16 +42,53 @@ class FleetsRouter(FastIORouter):
             )
             return results
 
-        @self.get("/robots", response_model=List[Robot])
-        async def get_robots():
-            fleet_states = [f.to_pydantic() for f in await ttm.FleetState.all()]
-            robots = []
-            for fleet_state in fleet_states:
-                robots.extend(
-                    Robot(fleet=fleet_state.name, name=r.name)
-                    for r in fleet_state.robots
+        class GetRobotsResponse(Pagination.response_model(Robot)):
+            pass
+
+        @self.get("/robots", response_model=GetRobotsResponse)
+        async def get_robots(
+            with_base_query: WithBaseQuery[ttm.RobotState] = Depends(
+                base_query_params()
+            ),
+            fleet_name: Optional[str] = Query(
+                None, description="comma separated list of fleet names"
+            ),
+            robot_name: Optional[str] = Query(
+                None, description="comma separated list of robot names"
+            ),
+        ):
+            filter_params = {}
+            if fleet_name is not None:
+                filter_params["fleet_name__in"] = fleet_name.split(",")
+            if robot_name is not None:
+                filter_params["robot_name__in"] = robot_name.split(",")
+
+            robot_states = await with_base_query(ttm.RobotState.filter(**filter_params))
+            robots = {
+                f"{q.fleet_name}/{q.robot_name}": Robot(
+                    fleet=q.fleet_name, name=q.robot_name, state=q.data
                 )
-            return robots
+                for q in robot_states.items
+            }
+
+            filter_states = [
+                TaskStateEnum.ACTIVE.value,
+                TaskStateEnum.PENDING.value,
+                TaskStateEnum.QUEUED.value,
+            ]
+            tasks = await ttm.TaskSummary.filter(
+                state__in=filter_states, **filter_params
+            )
+            for t in tasks:
+                r = robots.get(f"{t.fleet_name}/{t.robot_name}", None)
+                if r is None:
+                    # TODO: Logging
+                    continue
+                r.tasks.append(TaskSummary(**t.data))
+
+            return Pagination(
+                total_count=robot_states.total_count, items=list(robots.values())
+            )
 
         @self.watch("/{name}/state", rmf_events.fleet_states, response_model=FleetState)
         def get_fleet_state(fleet_state: FleetState):

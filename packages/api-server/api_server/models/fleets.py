@@ -23,4 +23,4 @@ class Robot(BaseModel):
     fleet: str
     name: str
     state: RobotState
-    tasks: List[TaskSummary]
+    tasks: List[TaskSummary] = []
