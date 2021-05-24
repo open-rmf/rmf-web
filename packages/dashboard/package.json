@@ -7,7 +7,7 @@
     "start:react": "react-scripts start",
     "start:rmf": "ts-node -P scripts/tsconfig.json -T scripts/start-rmf.ts",
     "start:rmf-server": "RMF_SERVER_USE_SIM_TIME=true npm --prefix ../api-server start",
-    "build": "react-scripts build && cp -R build ../e2e",
+    "build": "react-scripts build && cp -R build ../dashboard-e2e",
     "test": "react-scripts test",
     "test:coverage": "npm run test -- --coverage --watchAll=false",
     "test:e2e": "cd e2e && npm test",
