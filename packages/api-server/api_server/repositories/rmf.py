@@ -8,7 +8,6 @@ from ..models import (
     Door,
     DoorHealth,
     DoorState,
-    Fleet,
     FleetState,
     Ingestor,
     IngestorHealth,
@@ -187,10 +186,6 @@ class RmfRepository:
         dic = ingestor_health.dict()
         del dic["id_"]
         await ttm.IngestorHealth.update_or_create(dic, id_=ingestor_health.id_)
-
-    async def query_fleets(self, **queries) -> List[Fleet]:
-        states = await ttm.FleetState.filter(**queries)
-        return [Fleet(name=state.data["name"]) for state in states]
 
     async def get_fleet_state(self, fleet_name: str) -> Optional[FleetState]:
         fleet_state = await ttm.FleetState.get_or_none(id_=fleet_name)
