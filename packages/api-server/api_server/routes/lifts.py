@@ -35,7 +35,7 @@ class LiftsRouter(FastIORouter):
             response_model=LiftHealth,
         )
         def get_lift_health(lift_health: LiftHealth):
-            return {"lift_name": lift_health.id_}, lift_health
+            return {"lift_name": lift_health.id_}, lift_health.get_pydantic()
 
         @self.post("/{lift_name}/request")
         async def _post_lift_request(

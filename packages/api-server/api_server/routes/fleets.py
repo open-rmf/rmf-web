@@ -29,4 +29,4 @@ class FleetsRouter(FastIORouter):
         )
         def get_robot_health(robot_health: RobotHealth):
             fleet, robot = robot_health.id_.split("/")
-            return {"fleet": fleet, "robot": robot}, robot_health
+            return {"fleet": fleet, "robot": robot}, robot_health.get_pydantic()
