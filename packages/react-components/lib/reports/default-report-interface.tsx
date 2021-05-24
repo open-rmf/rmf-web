@@ -8,8 +8,8 @@ export const defaultReportStyles = makeStyles(() => ({
 }));
 
 export interface DefaultReportQueryPayload {
-  toLogDate?: moment.Moment | null;
-  fromLogDate?: moment.Moment | null;
+  toLogDate?: Date | null;
+  fromLogDate?: Date | null;
   offset?: number | null;
   limit?: number | null;
 }
