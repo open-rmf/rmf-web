@@ -1,3 +1,4 @@
+import logging
 from typing import Optional
 
 from fastapi import Depends, Query
@@ -14,10 +15,7 @@ from ..rmf_io import RmfEvents
 
 
 class FleetsRouter(FastIORouter):
-    def __init__(
-        self,
-        rmf_events: RmfEvents,
-    ):
+    def __init__(self, rmf_events: RmfEvents, *, logger: logging.Logger):
         super().__init__(tags=["Fleets"])
 
         class GetFleetsResponse(Pagination.response_model(Fleet)):
@@ -81,9 +79,14 @@ class FleetsRouter(FastIORouter):
             )
             for t in tasks:
                 r = robots.get(f"{t.fleet_name}/{t.robot_name}", None)
+                # This should only happen under very rare scenarios, when there are
+                # multiple fleets with the same robot name and there are active tasks
+                # assigned to those robots and the robot states are not synced to the
+                # tasks summaries.
                 if r is None:
-                    # TODO: Logging
-                    continue
+                    logger.warn(
+                        f'task "{t.id_}" is assigned to an known fleet/robot ({t.fleet_name}/{t.robot_name}'
+                    )
                 r.tasks.append(TaskSummary(**t.data))
 
             return Pagination(
