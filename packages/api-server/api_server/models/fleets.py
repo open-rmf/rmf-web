@@ -12,8 +12,3 @@ Location = rmf_fleet_msgs.Location
 
 class Fleet(BaseModel):
     name: str
-
-
-class Robot(BaseModel):
-    fleet: str
-    name: str
