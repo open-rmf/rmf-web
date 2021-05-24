@@ -4,10 +4,8 @@ const fs = require('fs');
 const chalk = require('chalk');
 const path = require('path');
 
-const curWorkingDir = process.cwd();
-let file = curWorkingDir.includes('dashboard')
-  ? './.resources.json'
-  : './dashboard/.resources.json';
+const basePath = __dirname.slice(0, __dirname.length - 'scripts/setup'.length);
+let file = basePath + '.resources.json';
 if (process.env.RESOURCE_FILE) {
   file = process.env.RESOURCE_FILE;
 }
@@ -21,7 +19,7 @@ if (!fileExists) {
 const resourcesData = JSON.parse(fs.readFileSync(file));
 
 const iconPath = 'public/assets/icons/';
-const iconFolder = curWorkingDir.includes('dashboard') ? iconPath : `./dashboard/${iconPath}`;
+const iconFolder = basePath + iconPath;
 
 if (!resourcesData.hasOwnProperty('repoUrl') && !resourcesData.hasOwnProperty('path')) {
   return;
