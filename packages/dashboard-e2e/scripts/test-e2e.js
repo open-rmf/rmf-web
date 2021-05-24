@@ -1,6 +1,7 @@
 const concurrently = require('concurrently');
 const { execSync } = require('child_process');
 
+process.env.BUILD_PATH = process.env.BUILD_PATH || '../dashboard-e2e/build';
 process.env.REACT_APP_AUTH_PROVIDER = process.env.REACT_APP_AUTH_PROVIDER || 'keycloak';
 if (process.env.REACT_APP_AUTH_PROVIDER === 'keycloak') {
   process.env.REACT_APP_KEYCLOAK_CONFIG =

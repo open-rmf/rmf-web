@@ -7,5 +7,6 @@ declare namespace NodeJS {
     readonly REACT_APP_KEYCLOAK_CONFIG?: string;
     readonly REACT_APP_RMF_SERVER?: string; // socket.io server address, defaults to "<host>/socket.io"
     readonly PUBLIC_URL?: string;
+    readonly BUILD_PATH?: string;
   }
 }
