@@ -14,25 +14,25 @@
 /**
  *
  * @export
- * @interface ApiServerModelsTortoiseModelsHealthLiftHealthLeaf
+ * @interface ApiServerModelsTortoiseModelsHealthBasicHealthModelLeaf
  */
-export interface ApiServerModelsTortoiseModelsHealthLiftHealthLeaf {
+export interface ApiServerModelsTortoiseModelsHealthBasicHealthModelLeaf {
   /**
    *
    * @type {string}
-   * @memberof ApiServerModelsTortoiseModelsHealthLiftHealthLeaf
+   * @memberof ApiServerModelsTortoiseModelsHealthBasicHealthModelLeaf
    */
   health_status?: any | null;
   /**
    *
    * @type {string}
-   * @memberof ApiServerModelsTortoiseModelsHealthLiftHealthLeaf
+   * @memberof ApiServerModelsTortoiseModelsHealthBasicHealthModelLeaf
    */
   health_message?: any | null;
   /**
    *
    * @type {string}
-   * @memberof ApiServerModelsTortoiseModelsHealthLiftHealthLeaf
+   * @memberof ApiServerModelsTortoiseModelsHealthBasicHealthModelLeaf
    */
   id_: any;
 }

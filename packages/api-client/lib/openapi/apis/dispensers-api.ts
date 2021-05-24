@@ -16,7 +16,7 @@ import { Configuration } from '../configuration';
 // Some imports not used depending on template conditions
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-import { BasicHealth } from '../models';
+import { ApiServerModelsTortoiseModelsHealthBasicHealthModelLeaf } from '../models';
 import { Dispenser } from '../models';
 import { DispenserState } from '../models';
 import { HTTPValidationError } from '../models';
@@ -27,7 +27,7 @@ import { HTTPValidationError } from '../models';
 export const DispensersApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     * **Available in socket.io**
+     * Available in socket.io.
      * @summary Get Dispenser Health
      * @param {string} guid
      * @param {*} [options] Override http request option.
@@ -79,7 +79,7 @@ export const DispensersApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     * **Available in socket.io**
+     * Available in socket.io.
      * @summary Get Dispenser State
      * @param {string} guid
      * @param {*} [options] Override http request option.
@@ -178,7 +178,7 @@ export const DispensersApiAxiosParamCreator = function (configuration?: Configur
 export const DispensersApiFp = function (configuration?: Configuration) {
   return {
     /**
-     * **Available in socket.io**
+     * Available in socket.io.
      * @summary Get Dispenser Health
      * @param {string} guid
      * @param {*} [options] Override http request option.
@@ -187,7 +187,12 @@ export const DispensersApiFp = function (configuration?: Configuration) {
     async getDispenserHealthDispensersGuidHealthGet(
       guid: string,
       options?: any,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BasicHealth>> {
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<ApiServerModelsTortoiseModelsHealthBasicHealthModelLeaf>
+    > {
       const localVarAxiosArgs = await DispensersApiAxiosParamCreator(
         configuration,
       ).getDispenserHealthDispensersGuidHealthGet(guid, options);
@@ -200,7 +205,7 @@ export const DispensersApiFp = function (configuration?: Configuration) {
       };
     },
     /**
-     * **Available in socket.io**
+     * Available in socket.io.
      * @summary Get Dispenser State
      * @param {string} guid
      * @param {*} [options] Override http request option.
@@ -255,7 +260,7 @@ export const DispensersApiFactory = function (
 ) {
   return {
     /**
-     * **Available in socket.io**
+     * Available in socket.io.
      * @summary Get Dispenser Health
      * @param {string} guid
      * @param {*} [options] Override http request option.
@@ -264,13 +269,13 @@ export const DispensersApiFactory = function (
     getDispenserHealthDispensersGuidHealthGet(
       guid: string,
       options?: any,
-    ): AxiosPromise<BasicHealth> {
+    ): AxiosPromise<ApiServerModelsTortoiseModelsHealthBasicHealthModelLeaf> {
       return DispensersApiFp(configuration)
         .getDispenserHealthDispensersGuidHealthGet(guid, options)
         .then((request) => request(axios, basePath));
     },
     /**
-     * **Available in socket.io**
+     * Available in socket.io.
      * @summary Get Dispenser State
      * @param {string} guid
      * @param {*} [options] Override http request option.
@@ -306,7 +311,7 @@ export const DispensersApiFactory = function (
  */
 export class DispensersApi extends BaseAPI {
   /**
-   * **Available in socket.io**
+   * Available in socket.io.
    * @summary Get Dispenser Health
    * @param {string} guid
    * @param {*} [options] Override http request option.
@@ -319,7 +324,7 @@ export class DispensersApi extends BaseAPI {
       .then((request) => request(this.axios, this.basePath));
   }
   /**
-   * **Available in socket.io**
+   * Available in socket.io.
    * @summary Get Dispenser State
    * @param {string} guid
    * @param {*} [options] Override http request option.

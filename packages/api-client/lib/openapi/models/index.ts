@@ -1,7 +1,5 @@
 export * from './affine-image';
-export * from './api-server-models-tortoise-models-health-door-health-leaf';
-export * from './api-server-models-tortoise-models-health-lift-health-leaf';
-export * from './basic-health';
+export * from './api-server-models-tortoise-models-health-basic-health-model-leaf';
 export * from './behavior';
 export * from './behavior-parameter';
 export * from './building-map';
@@ -36,7 +34,6 @@ export * from './loop-task-description';
 export * from './param';
 export * from './place';
 export * from './priority';
-export * from './robot';
 export * from './robot-mode';
 export * from './robot-state';
 export * from './station';

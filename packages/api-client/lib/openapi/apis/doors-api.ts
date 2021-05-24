@@ -16,7 +16,7 @@ import { Configuration } from '../configuration';
 // Some imports not used depending on template conditions
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-import { ApiServerModelsTortoiseModelsHealthDoorHealthLeaf } from '../models';
+import { ApiServerModelsTortoiseModelsHealthBasicHealthModelLeaf } from '../models';
 import { Door } from '../models';
 import { DoorRequest } from '../models';
 import { DoorState } from '../models';
@@ -29,7 +29,7 @@ import { ModelObject } from '../models';
 export const DoorsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     * **Available in socket.io**
+     * Available in socket.io.
      * @summary Get Door Health
      * @param {string} door_name
      * @param {*} [options] Override http request option.
@@ -81,7 +81,7 @@ export const DoorsApiAxiosParamCreator = function (configuration?: Configuration
       };
     },
     /**
-     * **Available in socket.io**
+     * Available in socket.io.
      * @summary Get Door State
      * @param {string} door_name
      * @param {*} [options] Override http request option.
@@ -249,7 +249,7 @@ export const DoorsApiAxiosParamCreator = function (configuration?: Configuration
 export const DoorsApiFp = function (configuration?: Configuration) {
   return {
     /**
-     * **Available in socket.io**
+     * Available in socket.io.
      * @summary Get Door Health
      * @param {string} door_name
      * @param {*} [options] Override http request option.
@@ -262,7 +262,7 @@ export const DoorsApiFp = function (configuration?: Configuration) {
       (
         axios?: AxiosInstance,
         basePath?: string,
-      ) => AxiosPromise<ApiServerModelsTortoiseModelsHealthDoorHealthLeaf>
+      ) => AxiosPromise<ApiServerModelsTortoiseModelsHealthBasicHealthModelLeaf>
     > {
       const localVarAxiosArgs = await DoorsApiAxiosParamCreator(
         configuration,
@@ -276,7 +276,7 @@ export const DoorsApiFp = function (configuration?: Configuration) {
       };
     },
     /**
-     * **Available in socket.io**
+     * Available in socket.io.
      * @summary Get Door State
      * @param {string} door_name
      * @param {*} [options] Override http request option.
@@ -355,7 +355,7 @@ export const DoorsApiFactory = function (
 ) {
   return {
     /**
-     * **Available in socket.io**
+     * Available in socket.io.
      * @summary Get Door Health
      * @param {string} door_name
      * @param {*} [options] Override http request option.
@@ -364,13 +364,13 @@ export const DoorsApiFactory = function (
     getDoorHealthDoorsDoorNameHealthGet(
       door_name: string,
       options?: any,
-    ): AxiosPromise<ApiServerModelsTortoiseModelsHealthDoorHealthLeaf> {
+    ): AxiosPromise<ApiServerModelsTortoiseModelsHealthBasicHealthModelLeaf> {
       return DoorsApiFp(configuration)
         .getDoorHealthDoorsDoorNameHealthGet(door_name, options)
         .then((request) => request(axios, basePath));
     },
     /**
-     * **Available in socket.io**
+     * Available in socket.io.
      * @summary Get Door State
      * @param {string} door_name
      * @param {*} [options] Override http request option.
@@ -420,7 +420,7 @@ export const DoorsApiFactory = function (
  */
 export class DoorsApi extends BaseAPI {
   /**
-   * **Available in socket.io**
+   * Available in socket.io.
    * @summary Get Door Health
    * @param {string} door_name
    * @param {*} [options] Override http request option.
@@ -433,7 +433,7 @@ export class DoorsApi extends BaseAPI {
       .then((request) => request(this.axios, this.basePath));
   }
   /**
-   * **Available in socket.io**
+   * Available in socket.io.
    * @summary Get Door State
    * @param {string} door_name
    * @param {*} [options] Override http request option.

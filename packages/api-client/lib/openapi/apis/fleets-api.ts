@@ -16,11 +16,10 @@ import { Configuration } from '../configuration';
 // Some imports not used depending on template conditions
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-import { BasicHealth } from '../models';
+import { ApiServerModelsTortoiseModelsHealthBasicHealthModelLeaf } from '../models';
 import { Fleet } from '../models';
 import { FleetState } from '../models';
 import { HTTPValidationError } from '../models';
-import { Robot } from '../models';
 /**
  * FleetsApi - axios parameter creator
  * @export
@@ -28,7 +27,7 @@ import { Robot } from '../models';
 export const FleetsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     * **Available in socket.io**
+     * Available in socket.io.
      * @summary Get Fleet State
      * @param {string} name
      * @param {*} [options] Override http request option.
@@ -118,7 +117,7 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
       };
     },
     /**
-     * **Available in socket.io**
+     * Available in socket.io.
      * @summary Get Robot Health
      * @param {string} fleet
      * @param {string} robot
@@ -177,44 +176,6 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
         options: localVarRequestOptions,
       };
     },
-    /**
-     *
-     * @summary Get Robots
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    getRobotsFleetsRobotsGet: async (options: any = {}): Promise<RequestArgs> => {
-      const localVarPath = `/fleets/robots`;
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, 'https://example.com');
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      const query = new URLSearchParams(localVarUrlObj.search);
-      for (const key in localVarQueryParameter) {
-        query.set(key, localVarQueryParameter[key]);
-      }
-      for (const key in options.query) {
-        query.set(key, options.query[key]);
-      }
-      localVarUrlObj.search = new URLSearchParams(query).toString();
-      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers,
-      };
-
-      return {
-        url: localVarUrlObj.pathname + localVarUrlObj.search + localVarUrlObj.hash,
-        options: localVarRequestOptions,
-      };
-    },
   };
 };
 
@@ -225,7 +186,7 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
 export const FleetsApiFp = function (configuration?: Configuration) {
   return {
     /**
-     * **Available in socket.io**
+     * Available in socket.io.
      * @summary Get Fleet State
      * @param {string} name
      * @param {*} [options] Override http request option.
@@ -267,7 +228,7 @@ export const FleetsApiFp = function (configuration?: Configuration) {
       };
     },
     /**
-     * **Available in socket.io**
+     * Available in socket.io.
      * @summary Get Robot Health
      * @param {string} fleet
      * @param {string} robot
@@ -278,30 +239,15 @@ export const FleetsApiFp = function (configuration?: Configuration) {
       fleet: string,
       robot: string,
       options?: any,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BasicHealth>> {
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<ApiServerModelsTortoiseModelsHealthBasicHealthModelLeaf>
+    > {
       const localVarAxiosArgs = await FleetsApiAxiosParamCreator(
         configuration,
       ).getRobotHealthFleetsFleetRobotHealthGet(fleet, robot, options);
-      return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
-        const axiosRequestArgs = {
-          ...localVarAxiosArgs.options,
-          url: basePath + localVarAxiosArgs.url,
-        };
-        return axios.request(axiosRequestArgs);
-      };
-    },
-    /**
-     *
-     * @summary Get Robots
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async getRobotsFleetsRobotsGet(
-      options?: any,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Robot>>> {
-      const localVarAxiosArgs = await FleetsApiAxiosParamCreator(
-        configuration,
-      ).getRobotsFleetsRobotsGet(options);
       return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
         const axiosRequestArgs = {
           ...localVarAxiosArgs.options,
@@ -324,7 +270,7 @@ export const FleetsApiFactory = function (
 ) {
   return {
     /**
-     * **Available in socket.io**
+     * Available in socket.io.
      * @summary Get Fleet State
      * @param {string} name
      * @param {*} [options] Override http request option.
@@ -347,7 +293,7 @@ export const FleetsApiFactory = function (
         .then((request) => request(axios, basePath));
     },
     /**
-     * **Available in socket.io**
+     * Available in socket.io.
      * @summary Get Robot Health
      * @param {string} fleet
      * @param {string} robot
@@ -358,20 +304,9 @@ export const FleetsApiFactory = function (
       fleet: string,
       robot: string,
       options?: any,
-    ): AxiosPromise<BasicHealth> {
+    ): AxiosPromise<ApiServerModelsTortoiseModelsHealthBasicHealthModelLeaf> {
       return FleetsApiFp(configuration)
         .getRobotHealthFleetsFleetRobotHealthGet(fleet, robot, options)
-        .then((request) => request(axios, basePath));
-    },
-    /**
-     *
-     * @summary Get Robots
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    getRobotsFleetsRobotsGet(options?: any): AxiosPromise<Array<Robot>> {
-      return FleetsApiFp(configuration)
-        .getRobotsFleetsRobotsGet(options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -385,7 +320,7 @@ export const FleetsApiFactory = function (
  */
 export class FleetsApi extends BaseAPI {
   /**
-   * **Available in socket.io**
+   * Available in socket.io.
    * @summary Get Fleet State
    * @param {string} name
    * @param {*} [options] Override http request option.
@@ -410,7 +345,7 @@ export class FleetsApi extends BaseAPI {
       .then((request) => request(this.axios, this.basePath));
   }
   /**
-   * **Available in socket.io**
+   * Available in socket.io.
    * @summary Get Robot Health
    * @param {string} fleet
    * @param {string} robot
@@ -421,18 +356,6 @@ export class FleetsApi extends BaseAPI {
   public getRobotHealthFleetsFleetRobotHealthGet(fleet: string, robot: string, options?: any) {
     return FleetsApiFp(this.configuration)
       .getRobotHealthFleetsFleetRobotHealthGet(fleet, robot, options)
-      .then((request) => request(this.axios, this.basePath));
-  }
-  /**
-   *
-   * @summary Get Robots
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof FleetsApi
-   */
-  public getRobotsFleetsRobotsGet(options?: any) {
-    return FleetsApiFp(this.configuration)
-      .getRobotsFleetsRobotsGet(options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
