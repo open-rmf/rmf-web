@@ -31,7 +31,9 @@ class DoorsRouter(FastIORouter):
             return {"door_name": door_state.door_name}, door_state
 
         @self.watch(
-            "/{door_name}/health", rmf_events.door_health, response_model=DoorHealth
+            "/{door_name}/health",
+            rmf_events.door_health,
+            response_model=DoorHealth.PydanticModel,  # pylint: disable=no-member
         )
         def get_door_health(door_health: DoorHealth):
             return {"door_name": door_health.id_}, door_health.get_pydantic()

@@ -117,7 +117,7 @@ class RmfBookKeeper:
 
     @staticmethod
     def _report_health(health: BasicHealth, logger: logging.Logger):
-        message = health.json()
+        message = health.get_pydantic().json()
         if health.health_status == HealthStatus.UNHEALTHY:
             logger.warning(message)
         elif health.health_status == HealthStatus.DEAD:

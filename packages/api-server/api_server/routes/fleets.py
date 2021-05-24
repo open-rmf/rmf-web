@@ -25,7 +25,7 @@ class FleetsRouter(FastIORouter):
         @self.watch(
             "/{fleet}/{robot}/health",
             rmf_events.robot_health,
-            response_model=RobotHealth,
+            response_model=RobotHealth.PydanticModel,  # pylint: disable=no-member
         )
         def get_robot_health(robot_health: RobotHealth):
             fleet, robot = robot_health.id_.split("/")

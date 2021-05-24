@@ -79,7 +79,7 @@ class RmfRepository:
         return await ttm.DoorHealth.filter(**queries)
 
     async def save_door_health(self, door_health: DoorHealth):
-        dic = door_health.dict()
+        dic = door_health.get_pydantic().dict()
         del dic["id_"]
         await ttm.DoorHealth.update_or_create(dic, id_=door_health.id_)
 
@@ -114,7 +114,7 @@ class RmfRepository:
         return await ttm.LiftHealth.filter(**queries)
 
     async def save_lift_health(self, lift_health: LiftHealth):
-        dic = lift_health.dict()
+        dic = lift_health.get_pydantic().dict()
         del dic["id_"]
         await ttm.LiftHealth.update_or_create(dic, id_=lift_health.id_)
 
@@ -149,7 +149,7 @@ class RmfRepository:
         return await ttm.DispenserHealth.filter(**queries)
 
     async def save_dispenser_health(self, dispenser_health: DispenserHealth):
-        dic = dispenser_health.dict()
+        dic = dispenser_health.get_pydantic().dict()
         del dic["id_"]
         await ttm.DispenserHealth.update_or_create(dic, id_=dispenser_health.id_)
 
@@ -184,7 +184,7 @@ class RmfRepository:
         return await ttm.IngestorHealth.filter(**queries)
 
     async def save_ingestor_health(self, ingestor_health: IngestorHealth):
-        dic = ingestor_health.dict()
+        dic = ingestor_health.get_pydantic().dict()
         del dic["id_"]
         await ttm.IngestorHealth.update_or_create(dic, id_=ingestor_health.id_)
 
@@ -219,7 +219,7 @@ class RmfRepository:
         return await ttm.DoorHealth.filter(**queries)
 
     async def save_robot_health(self, robot_health: RobotHealth):
-        dic = robot_health.dict()
+        dic = robot_health.get_pydantic().dict()
         del dic["id_"]
         await ttm.RobotHealth.update_or_create(dic, id_=robot_health.id_)
 

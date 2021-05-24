@@ -1,10 +1,10 @@
 from pydantic import BaseModel
 
-from .health import BasicHealth
+from . import tortoise_models as ttm
 from .ros_pydantic import rmf_dispenser_msgs
 
 DispenserState = rmf_dispenser_msgs.DispenserState
-DispenserHealth = BasicHealth
+DispenserHealth = ttm.DispenserHealth
 
 
 class Dispenser(BaseModel):

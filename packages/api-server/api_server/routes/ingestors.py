@@ -27,7 +27,7 @@ class IngestorsRouter(FastIORouter):
         @self.watch(
             "/{guid}/health",
             rmf_events.ingestor_health,
-            response_model=IngestorHealth,
+            response_model=IngestorHealth.PydanticModel,  # pylint: disable=no-member
         )
         def get_ingestor_health(ingestor_health: IngestorHealth):
             return {"guid": ingestor_health.id_}, ingestor_health.get_pydantic()
