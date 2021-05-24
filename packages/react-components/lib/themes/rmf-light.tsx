@@ -10,7 +10,7 @@ declare module '@material-ui/core/styles/createMuiTheme' {
   }
 }
 
-export const lightTheme = createMuiTheme({
+export const rmfLight = createMuiTheme({
   palette: {
     primary: {
       // light theme background - white
