@@ -23,4 +23,10 @@ export interface Fleet {
    * @memberof Fleet
    */
   name: any;
+  /**
+   *
+   * @type {FleetState}
+   * @memberof Fleet
+   */
+  state: any;
 }

@@ -19,6 +19,8 @@ export * from './door-request';
 export * from './door-state';
 export * from './fleet';
 export * from './fleet-state';
+export * from './get-fleets-response';
+export * from './get-robots-response';
 export * from './get-tasks-response';
 export * from './graph';
 export * from './graph-edge';

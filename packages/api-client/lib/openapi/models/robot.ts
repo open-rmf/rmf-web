@@ -29,4 +29,16 @@ export interface Robot {
    * @memberof Robot
    */
   name: any;
+  /**
+   *
+   * @type {RobotState}
+   * @memberof Robot
+   */
+  state: any;
+  /**
+   *
+   * @type {Array&lt;TaskSummary&gt;}
+   * @memberof Robot
+   */
+  tasks?: any;
 }
