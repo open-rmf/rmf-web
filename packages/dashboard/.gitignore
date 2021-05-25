@@ -26,7 +26,4 @@ web_server.log
 yarn-debug.log*
 yarn-error.log*
 
-# test artifacts
-/e2e/artifacts
-
 /.rmf
