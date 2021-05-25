@@ -42,7 +42,7 @@ export interface TaskPanelProps extends React.HTMLProps<HTMLDivElement> {
   deliveryWaypoints?: string[];
   dispensers?: string[];
   ingestors?: string[];
-  submitTask?: CreateTaskFormProps['submitTask'];
+  submitTasks?: CreateTaskFormProps['submitTasks'];
 }
 
 export function TaskPanel({
@@ -52,7 +52,7 @@ export function TaskPanel({
   deliveryWaypoints,
   dispensers,
   ingestors,
-  submitTask,
+  submitTasks,
   ...divProps
 }: TaskPanelProps): JSX.Element {
   const classes = useStyles();
@@ -110,7 +110,7 @@ export function TaskPanel({
         ingestors={ingestors}
         open={openCreateTaskForm}
         onClose={() => setOpenCreateTaskForm(false)}
-        submitTask={submitTask}
+        submitTasks={submitTasks}
         onCancelClick={() => setOpenCreateTaskForm(false)}
         onSuccess={() => {
           setOpenCreateTaskForm(false);

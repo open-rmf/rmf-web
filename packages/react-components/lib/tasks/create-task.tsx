@@ -9,6 +9,9 @@ import {
   DialogTitle,
   Divider,
   Grid,
+  List,
+  ListItem,
+  ListItemText,
   makeStyles,
   MenuItem,
   TextField,
@@ -32,14 +35,44 @@ const useStyles = makeStyles((theme) => ({
   uploadFileBtn: {
     marginBottom: theme.spacing(1),
   },
+  taskList: {
+    flex: '1 1 auto',
+    minHeight: 400,
+    maxHeight: '50vh',
+    overflow: 'auto',
+  },
+  selectedTask: {
+    background: theme.palette.action.focus,
+  },
 }));
 
-interface FormToolbarProps {
-  batchMode: boolean;
-  onUploadFileClick?(ev: React.MouseEvent<HTMLButtonElement>): void;
+function getShortDescription(task: SubmitTask): string {
+  switch (task.task_type) {
+    case RmfModels.TaskType.TYPE_CLEAN: {
+      const desc: CleanTaskDescription = task.description;
+      return `[Clean] zone [${desc.cleaning_zone}]`;
+    }
+    case RmfModels.TaskType.TYPE_DELIVERY: {
+      const desc: DeliveryTaskDescription = task.description;
+      return `[Delivery] from [${desc.pickup_place_name}] to [${desc.dropoff_place_name}]`;
+    }
+    case RmfModels.TaskType.TYPE_LOOP: {
+      const desc: LoopTaskDescription = task.description;
+      return `[Loop] from [${desc.start_name}] to [${desc.finish_name}]`;
+    }
+    default:
+      return `[Unknown] type ${task.task_type}`;
+  }
 }
 
-function FormToolbar({ batchMode, onUploadFileClick }: FormToolbarProps) {
+interface FormToolbarProps {
+  /**
+   * If provided, will show an upload file button.
+   */
+  onUploadFileClick?: React.MouseEventHandler<HTMLButtonElement>;
+}
+
+function FormToolbar({ onUploadFileClick }: FormToolbarProps) {
   const classes = useStyles();
 
   return (
@@ -47,7 +80,7 @@ function FormToolbar({ batchMode, onUploadFileClick }: FormToolbarProps) {
       <Grid style={{ flexGrow: 1 }}>
         <Typography variant="h6">Create Task</Typography>
       </Grid>
-      {batchMode && (
+      {onUploadFileClick && (
         <Grid>
           <Button
             aria-label="Upload File"
@@ -304,76 +337,101 @@ function defaultTaskDescription(taskType?: number): TaskDescription | undefined 
   }
 }
 
+function defaultTask(): SubmitTask {
+  return {
+    description: -1,
+    start_time: Math.floor(Date.now() / 1000),
+    task_type: -1,
+    priority: 0,
+  };
+}
+
 export interface CreateTaskFormProps extends DialogProps {
+  tasks?: SubmitTask[];
   /**
    * Shows extra UI elements suitable for submittng batched tasks. Default to 'false'.
    */
-  batchMode?: boolean;
+  allowBatch?: boolean;
   cleaningZones?: string[];
   loopWaypoints?: string[];
   deliveryWaypoints?: string[];
   dispensers?: string[];
   ingestors?: string[];
-  submitTask?(task: SubmitTask): Promise<void>;
-  onSuccess?(task: SubmitTask): void;
-  onFail?(error: Error, task: SubmitTask): void;
-  onCancelClick?(ev: React.MouseEvent<HTMLButtonElement>): void;
-  onUploadFileClick?(ev: React.MouseEvent<HTMLButtonElement>): void;
+  submitTasks?(tasks: SubmitTask[]): Promise<void>;
+  onTasksChange?(tasks: SubmitTask[]): void;
+  onSuccess?(tasks: SubmitTask[]): void;
+  onFail?(error: Error, tasks: SubmitTask[]): void;
+  onCancelClick?: React.MouseEventHandler<HTMLButtonElement>;
+  onUploadFileClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
 export function CreateTaskForm({
-  batchMode = false,
+  tasks: tasks_,
   cleaningZones = [],
   loopWaypoints = [],
   deliveryWaypoints = [],
   dispensers = [],
   ingestors = [],
-  submitTask,
+  submitTasks,
+  onTasksChange,
   onSuccess,
   onFail,
   onCancelClick,
+  /**
+   * If provided, will show an upload file button.
+   */
   onUploadFileClick,
   ...dialogProps
 }: CreateTaskFormProps): JSX.Element {
   const theme = useTheme();
-  const [taskType, setTaskType] = React.useState<number | undefined>(undefined);
-  const [startDate, setStartDate] = React.useState(new Date());
-  const [priority, setPriority] = React.useState(0);
+  const classes = useStyles();
+  const tasks = React.useMemo(() => (tasks_ && tasks_.length > 0 ? tasks_ : [defaultTask()]), [
+    tasks_,
+  ]);
   const [priorityInput, setPriorityInput] = React.useState('0');
-  const [taskDescription, setTaskDescrption] = React.useState<TaskDescription | undefined>(() =>
-    defaultTaskDescription(taskType),
+  const taskTitles = React.useMemo(
+    () => tasks && tasks.map((t, i) => `${i + 1}: ${getShortDescription(t)}`),
+    [tasks],
   );
+  const [currentIdx, setCurentIdx] = React.useState<number>(0);
   const [submitting, setSubmitting] = React.useState(false);
+  const task = tasks[currentIdx];
+
+  const handleTaskDescriptionChange = (newType: number, newDesc: TaskDescription) => {
+    task.task_type = newType;
+    task.description = newDesc;
+    onTasksChange && onTasksChange([...tasks]);
+  };
 
   const renderTaskDescriptionForm = () => {
-    if (!taskType || !taskDescription) {
+    if (!tasks) {
       return null;
     }
-    switch (taskType) {
+    switch (task.task_type) {
       case RmfModels.TaskType.TYPE_CLEAN:
         return (
           <CleanTaskForm
-            taskDesc={taskDescription as CleanTaskDescription}
+            taskDesc={task.description as CleanTaskDescription}
             cleaningZones={cleaningZones}
-            onChange={setTaskDescrption}
+            onChange={(desc) => handleTaskDescriptionChange(RmfModels.TaskType.TYPE_CLEAN, desc)}
           />
         );
       case RmfModels.TaskType.TYPE_LOOP:
         return (
           <LoopTaskForm
-            taskDesc={taskDescription as LoopTaskDescription}
+            taskDesc={task.description as LoopTaskDescription}
             loopWaypoints={loopWaypoints}
-            onChange={setTaskDescrption}
+            onChange={(desc) => handleTaskDescriptionChange(RmfModels.TaskType.TYPE_LOOP, desc)}
           />
         );
       case RmfModels.TaskType.TYPE_DELIVERY:
         return (
           <DeliveryTaskForm
-            taskDesc={taskDescription as DeliveryTaskDescription}
+            taskDesc={task.description as DeliveryTaskDescription}
             deliveryWaypoints={deliveryWaypoints}
             dispensers={dispensers}
             ingestors={ingestors}
-            onChange={setTaskDescrption}
+            onChange={(desc) => handleTaskDescriptionChange(RmfModels.TaskType.TYPE_DELIVERY, desc)}
           />
         );
       default:
@@ -381,32 +439,32 @@ export function CreateTaskForm({
     }
   };
 
-  const handleTaskTypeChange = React.useCallback((ev: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTaskTypeChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
     const newType = parseInt(ev.target.value);
-    setTaskDescrption(defaultTaskDescription(newType));
-    setTaskType(newType);
-  }, []);
+    const newDesc = defaultTaskDescription(newType);
+    if (newDesc === undefined) {
+      return;
+    }
+    task.description = newDesc;
+    task.task_type = newType;
+    onTasksChange && onTasksChange([...tasks]);
+  };
 
   // no memo because deps would likely change
   const handleSubmit: React.MouseEventHandler<HTMLButtonElement> = (ev) => {
     ev.preventDefault();
     (async () => {
-      const task: SubmitTask = {
-        task_type: taskType,
-        start_time: Math.floor(startDate.valueOf() / 1000),
-        priority,
-        description: taskDescription,
-      };
-      if (!submitTask) {
-        onSuccess && onSuccess(task);
+      if (!submitTasks) {
+        onSuccess && onSuccess(tasks);
         return;
       }
+      setSubmitting(true);
       try {
         setSubmitting(true);
-        await submitTask(task);
-        onSuccess && onSuccess(task);
+        await submitTasks(tasks);
+        onSuccess && onSuccess(tasks);
       } catch (e) {
-        onFail && onFail(e, task);
+        onFail && onFail(e, tasks);
       } finally {
         setSubmitting(false);
       }
@@ -415,61 +473,94 @@ export function CreateTaskForm({
 
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <Dialog {...dialogProps}>
+      <Dialog {...dialogProps} maxWidth="md" fullWidth={tasks.length > 1}>
         <form>
           <DialogTitle>
-            <FormToolbar batchMode={batchMode} onUploadFileClick={onUploadFileClick} />
+            <FormToolbar onUploadFileClick={onUploadFileClick} />
           </DialogTitle>
           <Divider />
           <DialogContent>
-            <TextField
-              select
-              id="task-type"
-              label="Task Type"
-              variant="outlined"
-              fullWidth
-              margin="normal"
-              value={taskType || ''}
-              onChange={handleTaskTypeChange}
-            >
-              <MenuItem value={RmfModels.TaskType.TYPE_CLEAN}>Clean</MenuItem>
-              <MenuItem value={RmfModels.TaskType.TYPE_LOOP}>Loop</MenuItem>
-              <MenuItem value={RmfModels.TaskType.TYPE_DELIVERY}>Delivery</MenuItem>
-            </TextField>
-            <Grid container wrap="nowrap">
-              <Grid style={{ flexGrow: 1 }}>
-                <KeyboardDateTimePicker
-                  id="start-time"
-                  value={startDate}
-                  onChange={(date) => date && setStartDate((date as unknown) as Date)}
-                  label="Start Time"
-                  margin="normal"
-                  fullWidth
-                />
-              </Grid>
-              <Grid
-                style={{
-                  flex: '0 1 5em',
-                  marginLeft: theme.spacing(2),
-                  marginRight: theme.spacing(2),
-                }}
-              >
+            <Grid container direction="row" wrap="nowrap">
+              <Grid>
                 <TextField
-                  id="priority"
-                  type="number"
-                  label="Priority"
+                  select
+                  id="task-type"
+                  label="Task Type"
+                  variant="outlined"
+                  fullWidth
                   margin="normal"
-                  value={priorityInput}
-                  onChange={(ev) => setPriorityInput(ev.target.value)}
-                  onBlur={() => {
-                    const newPriority = parseInt(priorityInput) || 0;
-                    setPriority(newPriority);
-                    setPriorityInput(newPriority.toString());
-                  }}
-                />
+                  value={task.task_type !== -1 ? task.task_type : ''}
+                  onChange={handleTaskTypeChange}
+                >
+                  <MenuItem value={RmfModels.TaskType.TYPE_CLEAN}>Clean</MenuItem>
+                  <MenuItem value={RmfModels.TaskType.TYPE_LOOP}>Loop</MenuItem>
+                  <MenuItem value={RmfModels.TaskType.TYPE_DELIVERY}>Delivery</MenuItem>
+                </TextField>
+                <Grid container wrap="nowrap">
+                  <Grid style={{ flexGrow: 1 }}>
+                    <KeyboardDateTimePicker
+                      id="start-time"
+                      value={new Date(task.start_time * 1000)}
+                      onChange={(date) => {
+                        if (!date) {
+                          return;
+                        }
+                        // FIXME: needed because dateio typings default to moment
+                        task.start_time = Math.floor(((date as unknown) as Date).getTime() / 1000);
+                        onTasksChange && onTasksChange([...tasks]);
+                      }}
+                      label="Start Time"
+                      margin="normal"
+                      fullWidth
+                    />
+                  </Grid>
+                  <Grid
+                    style={{
+                      flex: '0 1 5em',
+                      marginLeft: theme.spacing(2),
+                      marginRight: theme.spacing(2),
+                    }}
+                  >
+                    <TextField
+                      id="priority"
+                      type="number"
+                      label="Priority"
+                      margin="normal"
+                      value={priorityInput}
+                      onChange={(ev) => setPriorityInput(ev.target.value)}
+                      onBlur={() => {
+                        const newPriority = parseInt(priorityInput) || 0;
+                        task.priority = newPriority;
+                        onTasksChange && onTasksChange([...tasks]);
+                        setPriorityInput(newPriority.toString());
+                      }}
+                    />
+                  </Grid>
+                </Grid>
+                {renderTaskDescriptionForm()}
               </Grid>
+              {taskTitles.length > 1 && (
+                <>
+                  <Divider
+                    orientation="vertical"
+                    flexItem
+                    style={{ marginLeft: theme.spacing(2), marginRight: theme.spacing(2) }}
+                  />
+                  <List dense className={classes.taskList} aria-label="uploaded tasks">
+                    {taskTitles.map((title, idx) => (
+                      <ListItem
+                        key={idx}
+                        button
+                        onClick={() => setCurentIdx(idx)}
+                        className={currentIdx === idx ? classes.selectedTask : undefined}
+                      >
+                        <ListItemText primary={title} />
+                      </ListItem>
+                    ))}
+                  </List>
+                </>
+              )}
             </Grid>
-            {renderTaskDescriptionForm()}
           </DialogContent>
           <Divider />
           <DialogActions>

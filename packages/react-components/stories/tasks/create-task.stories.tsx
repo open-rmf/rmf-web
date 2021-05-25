@@ -1,5 +1,7 @@
 import { Meta, Story } from '@storybook/react';
+import type { SubmitTask } from 'api-client';
 import React from 'react';
+import * as RmfModels from 'rmf-models';
 import { CreateTaskForm, CreateTaskFormProps } from '../../lib';
 
 export default {
@@ -7,12 +9,55 @@ export default {
   component: CreateTaskForm,
 } as Meta;
 
+function makeTask() {
+  return {
+    description: {
+      cleaning_zone: 'zone',
+    },
+    start_time: Math.floor(Date.now() / 1000),
+    task_type: RmfModels.TaskType.TYPE_CLEAN,
+    priority: 0,
+  };
+}
+
 export const CreateTask: Story<CreateTaskFormProps> = (args) => {
-  return <CreateTaskForm {...args} open></CreateTaskForm>;
+  const [tasks, setTasks] = React.useState<SubmitTask[]>([]);
+  const handleUploadFileClick: CreateTaskFormProps['onUploadFileClick'] = () => {
+    const uploadedTasks: SubmitTask[] = [];
+    for (let i = 0; i < 100; i++) {
+      uploadedTasks.push(makeTask());
+    }
+    setTasks(uploadedTasks);
+  };
+  return (
+    <CreateTaskForm
+      {...args}
+      open
+      tasks={tasks}
+      onTasksChange={setTasks}
+      onUploadFileClick={handleUploadFileClick}
+    ></CreateTaskForm>
+  );
 };
 
+// function parseTasksFile(contents: string): SubmitTask[] {
+//   const tasks = JSON.parse(contents);
+//   return tasks;
+// }
+
+// const handleFileInput: React.FormEventHandler<HTMLInputElement> = (ev) => {
+//   if (!ev.currentTarget.files || !onUploadFile) {
+//     return;
+//   }
+//   const selectedFile = ev.currentTarget.files[0];
+//   ev.currentTarget.value = '';
+//   (async () => {
+//     onUploadFile(await selectedFile.text());
+//   })();
+// };
+
 CreateTask.args = {
-  submitTask: async () => new Promise((res) => setTimeout(res, 1000)),
+  submitTasks: async () => new Promise((res) => setTimeout(res, 1000)),
   cleaningZones: ['test_zone_0', 'test_zone_1'],
   loopWaypoints: ['test_waypoint_0', 'test_waypoint_1'],
   deliveryWaypoints: ['test_waypoint_0', 'test_waypoint_1'],
