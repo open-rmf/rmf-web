@@ -14,7 +14,7 @@ import {
   Input,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
-import moment from 'moment';
+import { formatDistance } from 'date-fns';
 
 export interface Notification {
   id: number;
@@ -165,6 +165,10 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
     }
   };
 
+  const timeDistance = (time: string) => {
+    return formatDistance(new Date(), new Date(time));
+  };
+
   return (
     <Dialog
       open={showNotificationsDialog}
@@ -208,7 +212,7 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
                     severity={notification.severity}
                   />
                   <Typography variant="body1" align="left">
-                    {moment(notification.time, 'MMMM Do YYYY, h:mm:ss').fromNow()}
+                    {timeDistance(notification.time)}
                   </Typography>
                   <Typography variant="body1" align="left">
                     {notification.error}
