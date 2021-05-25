@@ -145,7 +145,6 @@ function authHeaders(token) {
     const client_scope_id = client_scopes_array.filter(function(item){
 	    return item.name == "dashboard";
     })[0].id
-    console.log(client_scope_id)
 
     // set client with client scope
     await request(
