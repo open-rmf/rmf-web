@@ -5,6 +5,7 @@ import {
   MuiPickersUtilsProvider,
 } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
+import { format } from 'date-fns';
 
 export default function DateAndTimePickers(props: DateTimePickerProps): React.ReactElement {
   const { name, label, value, ...rest } = props;
@@ -12,7 +13,7 @@ export default function DateAndTimePickers(props: DateTimePickerProps): React.Re
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <KeyboardDateTimePicker
         id={`${name}-datetime-local`}
-        value={value ? value : new Date().toISOString().substr(0, 16)}
+        value={value ? value : format(new Date(), 'MM/dd/yyyy HH:mm')}
         label={label}
         format="MM/dd/yyyy HH:mm"
         inputVariant="outlined"

@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import DateAndTimePickers from '../lib/date-time-picker';
-import moment from 'moment';
+import { format } from 'date-fns';
 
 describe('date time picker', () => {
   it('shows the correct Label', async () => {
@@ -20,7 +20,7 @@ describe('date time picker', () => {
 
   it('shows the current date if `date` parameter is undefined', () => {
     const handleDateChange = jasmine.createSpy();
-    const currentDate = moment(new Date().toISOString().substr(0, 16)).format('MM/DD/yyyy HH:mm');
+    const currentDate = format(new Date(), 'MM/dd/yyyy HH:mm');
 
     const root = render(
       <DateAndTimePickers
