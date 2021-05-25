@@ -5,12 +5,14 @@ interface HeaderBarProps {
   children?: React.ReactNode;
 }
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     root: {
       display: 'flex',
       flexDirection: 'row',
       width: '100%',
+      backgroundColor: theme.mainBackground,
+      color: theme.fontColors,
     },
   }),
 );
@@ -20,7 +22,7 @@ export const HeaderBar = (props: HeaderBarProps): React.ReactElement => {
   const classes = useStyles();
 
   return (
-    <AppBar id="appbar" position="relative" className={classes.root} color="primary">
+    <AppBar id="appbar" position="relative" className={classes.root}>
       {children}
     </AppBar>
   );

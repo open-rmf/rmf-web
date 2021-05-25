@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
     borderColor: theme.palette.info.main,
   },
   root: {
-    backgroundColor: theme.palette.secondary.main,
+    backgroundColor: theme.secondaryBackground,
     color: theme.fontColors,
   },
 }));

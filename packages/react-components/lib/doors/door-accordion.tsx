@@ -26,11 +26,11 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     borderColor: theme.palette.success.main,
-    backgroundColor: theme.palette.secondary.main,
+    backgroundColor: theme.secondaryBackground,
     color: theme.fontColors,
   },
   root: {
-    backgroundColor: theme.palette.secondary.main,
+    backgroundColor: theme.secondaryBackground,
     color: theme.fontColors,
   },
 }));

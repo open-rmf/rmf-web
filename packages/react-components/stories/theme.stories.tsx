@@ -39,10 +39,10 @@ const ColorCard = (props: ColorCardProps): JSX.Element => {
 const LightThemeDisplay = (): JSX.Element => {
   const useStyles = makeStyles((theme) => ({
     lightThemeMain: {
-      backgroundColor: theme.palette.primary.main,
+      backgroundColor: theme.mainBackground,
     },
     lightThemeSecondary: {
-      backgroundColor: theme.palette.secondary.main,
+      backgroundColor: theme.secondaryBackground,
     },
     lightThemeFont: {
       backgroundColor: theme.fontColors,
@@ -71,10 +71,10 @@ const LightThemeDisplay = (): JSX.Element => {
 const DarkThemeDisplay = (): JSX.Element => {
   const useStyles = makeStyles((theme) => ({
     darkThemeMain: {
-      backgroundColor: theme.palette.primary.main,
+      backgroundColor: theme.mainBackground,
     },
     darkThemeSecondary: {
-      backgroundColor: theme.palette.secondary.main,
+      backgroundColor: theme.secondaryBackground,
     },
     darkThemeFont: {
       backgroundColor: theme.fontColors,

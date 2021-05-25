@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
   tablePagination: {
     flex: '0 0 auto',
     borderBottom: 'none',
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme.mainBackground,
     color: theme.fontColors,
   },
   tableHeadCell: {
@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
     color: theme.fontColors,
   },
   taskRowAndIcons: {
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme.mainBackground,
     color: theme.fontColors,
   },
 }));
