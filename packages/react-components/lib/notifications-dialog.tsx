@@ -212,7 +212,6 @@ export const NotificationsDialog = (props: NotificationDialogProps): JSX.Element
                     severity={notification.severity}
                   />
                   <Typography variant="body1" align="left">
-                    {/* {moment(notification.time, 'MMMM Do YYYY, h:mm:ss').fromNow()} */}
                     {timeDistance(notification.time)}
                   </Typography>
                   <Typography variant="body1" align="left">
