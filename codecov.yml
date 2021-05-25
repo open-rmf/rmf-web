@@ -27,3 +27,6 @@ flags:
     paths:
       - packages/rmf-auth
     carryforward: true
+ignore:
+  - 'src/rmf-web/packages/react-components/tests/test-data'
+  - 'src/rmf-web/packages/react-components/tests/robots/test-utils.ts'
