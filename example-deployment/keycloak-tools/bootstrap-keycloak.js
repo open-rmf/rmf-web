@@ -132,7 +132,7 @@ function authHeaders(token) {
 
     const client_array = JSON.parse(resp.body);
     const dashboard_id = client_array.filter(function(item){
-	    return item.clientId == "dashboard";
+	    return item.clientId === "dashboard";
     })[0].id
 
     // get client scope id 
