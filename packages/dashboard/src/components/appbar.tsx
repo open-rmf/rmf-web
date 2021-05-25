@@ -16,8 +16,9 @@ import { HeaderBar } from 'react-components/lib/header-bar';
 import { LogoButton } from 'react-components/lib/logo-button';
 import { NavigationBar } from 'react-components/lib/navigation-bar';
 import DashboardTooltip from 'react-components/lib/tooltip';
-import { AppControllerContext, TooltipsContext } from './app-contexts';
+import { AppControllerContext, TooltipsContext, SettingsContext } from './app-contexts';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
+import { ThemeMode } from '../settings';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -50,6 +51,10 @@ export const AppBar = React.memo(
     const user = React.useContext(UserContext);
     const { showTooltips } = React.useContext(TooltipsContext);
 
+    const curTheme = React.useContext(SettingsContext).themeMode;
+    const logoUrl =
+      curTheme === ThemeMode.Dark ? '/roshealth-logo-white.png' : '/roshealth-logo-blue.png';
+
     async function handleLogout(): Promise<void> {
       try {
         await authenticator.logout();
@@ -61,7 +66,7 @@ export const AppBar = React.memo(
     return (
       <div>
         <HeaderBar>
-          <LogoButton logoPath={'/roshealth-logo-white.png'} />
+          <LogoButton logoPath={logoUrl} />
           <NavigationBar onTabChange={onTabChange} value={tabValue}>
             <Tab label="Building" value="building" aria-label="Building" />
             <Tab label="Tasks" value="tasks" aria-label="Tasks" />
