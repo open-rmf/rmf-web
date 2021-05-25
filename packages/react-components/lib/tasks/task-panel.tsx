@@ -1,5 +1,6 @@
 import { Grid, makeStyles, Paper, Snackbar, Typography } from '@material-ui/core';
 import { Alert, AlertProps } from '@material-ui/lab';
+import type { SubmitTask } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { CreateTaskForm, CreateTaskFormProps } from './create-task';
@@ -35,6 +36,49 @@ export interface FetchTasksResult {
   totalCount: number;
 }
 
+function checkField(obj: Record<string, unknown>, field: string, type: string): void {
+  if (!Object.prototype.hasOwnProperty.call(obj, field) || typeof obj[field] !== type) {
+    throw new TypeError(`expected [${field}] to be [${type}]`);
+  }
+}
+
+function parseTasksFile(contents: string): SubmitTask[] {
+  // TODO: See if we can generate validators from the schema.
+  const tasks = JSON.parse(contents);
+  if (!Array.isArray(tasks)) {
+    throw new TypeError('expected an array');
+  }
+  for (const t of tasks) {
+    if (typeof t !== 'object') {
+      throw new TypeError('expected object');
+    }
+    checkField(t, 'task_type', 'number');
+    checkField(t, 'start_time', 'number');
+    checkField(t, 'priority', 'number');
+    checkField(t, 'description', 'object');
+    const desc = t['description'];
+    switch (t['task_type']) {
+      case RmfModels.TaskType.TYPE_CLEAN:
+        checkField(desc, 'cleaning_zone', 'string');
+        break;
+      case RmfModels.TaskType.TYPE_DELIVERY:
+        checkField(desc, 'pickup_place_name', 'string');
+        checkField(desc, 'pickup_dispenser', 'string');
+        checkField(desc, 'dropoff_ingestor', 'string');
+        checkField(desc, 'dropoff_place_name', 'string');
+        break;
+      case RmfModels.TaskType.TYPE_LOOP:
+        checkField(desc, 'num_loops', 'string');
+        checkField(desc, 'start_name', 'string');
+        checkField(desc, 'finish_name', 'string');
+        break;
+      default:
+        throw new TypeError('unknown task_type');
+    }
+  }
+  return tasks;
+}
+
 export interface TaskPanelProps extends React.HTMLProps<HTMLDivElement> {
   fetchTasks: (limit: number, offset: number) => Promise<FetchTasksResult>;
   cleaningZones?: string[];
@@ -57,11 +101,14 @@ export function TaskPanel({
 }: TaskPanelProps): JSX.Element {
   const classes = useStyles();
   const [tasks, setTasks] = React.useState<RmfModels.TaskSummary[]>([]);
+  const [createTasks, setCreateTasks] = React.useState<SubmitTask[]>([]);
+  const [selectedCreateTask, setSelectedCreateTask] = React.useState(0);
   const [totalCount, setTotalCount] = React.useState(-1);
   const [page, setPage] = React.useState(0);
   const [selectedTask, setSelectedTask] = React.useState<RmfModels.TaskSummary | undefined>(
     undefined,
   );
+  const uploadFileInputRef = React.useRef<HTMLInputElement>(null);
   const [openCreateTaskForm, setOpenCreateTaskForm] = React.useState(false);
   const [openSnackbar, setOpenSnackbar] = React.useState(false);
   const [snackbarMessage, setSnackbarMessage] = React.useState('');
@@ -74,6 +121,25 @@ export function TaskPanel({
       setTotalCount(result.totalCount);
     })();
   }, [fetchTasks, page]);
+
+  const handleUploadFileClick = () => {
+    if (!uploadFileInputRef.current) {
+      return;
+    }
+    uploadFileInputRef.current.click();
+  };
+
+  const handleFileInput: React.FormEventHandler<HTMLInputElement> = (ev) => {
+    if (!ev.currentTarget.files) {
+      return;
+    }
+    const selectedFile = ev.currentTarget.files[0];
+    ev.currentTarget.value = '';
+    (async () => {
+      setCreateTasks(parseTasksFile(await selectedFile.text()));
+      setSelectedCreateTask(0);
+    })();
+  };
 
   React.useEffect(() => {
     handleRefresh();
@@ -103,12 +169,16 @@ export function TaskPanel({
         </Paper>
       </Grid>
       <CreateTaskForm
+        tasks={createTasks}
+        selectedTaskIdx={selectedCreateTask}
+        onSelectTask={setSelectedCreateTask}
         cleaningZones={cleaningZones}
         loopWaypoints={loopWaypoints}
         deliveryWaypoints={deliveryWaypoints}
         dispensers={dispensers}
         ingestors={ingestors}
         open={openCreateTaskForm}
+        onTasksChange={setCreateTasks}
         onClose={() => setOpenCreateTaskForm(false)}
         submitTasks={submitTasks}
         onCancelClick={() => setOpenCreateTaskForm(false)}
@@ -124,6 +194,13 @@ export function TaskPanel({
           setSnackbarMessage(`Failed to create task: ${e.message}`);
           setOpenSnackbar(true);
         }}
+        onUploadFileClick={handleUploadFileClick}
+      />
+      <input
+        type="file"
+        style={{ display: 'none' }}
+        ref={uploadFileInputRef}
+        onInput={handleFileInput}
       />
       <Snackbar open={openSnackbar} onClose={() => setOpenSnackbar(false)} autoHideDuration={2000}>
         <Alert severity={snackbarSeverity}>{snackbarMessage}</Alert>

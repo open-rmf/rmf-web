@@ -22,6 +22,7 @@ function makeTask() {
 
 export const CreateTask: Story<CreateTaskFormProps> = (args) => {
   const [tasks, setTasks] = React.useState<SubmitTask[]>([]);
+  const [selectedTask, setSelectedTask] = React.useState(0);
   const handleUploadFileClick: CreateTaskFormProps['onUploadFileClick'] = () => {
     const uploadedTasks: SubmitTask[] = [];
     for (let i = 0; i < 100; i++) {
@@ -34,27 +35,13 @@ export const CreateTask: Story<CreateTaskFormProps> = (args) => {
       {...args}
       open
       tasks={tasks}
+      selectedTaskIdx={selectedTask}
       onTasksChange={setTasks}
       onUploadFileClick={handleUploadFileClick}
+      onSelectTask={setSelectedTask}
     ></CreateTaskForm>
   );
 };
-
-// function parseTasksFile(contents: string): SubmitTask[] {
-//   const tasks = JSON.parse(contents);
-//   return tasks;
-// }
-
-// const handleFileInput: React.FormEventHandler<HTMLInputElement> = (ev) => {
-//   if (!ev.currentTarget.files || !onUploadFile) {
-//     return;
-//   }
-//   const selectedFile = ev.currentTarget.files[0];
-//   ev.currentTarget.value = '';
-//   (async () => {
-//     onUploadFile(await selectedFile.text());
-//   })();
-// };
 
 CreateTask.args = {
   submitTasks: async () => new Promise((res) => setTimeout(res, 1000)),

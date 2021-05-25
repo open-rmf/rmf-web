@@ -348,6 +348,7 @@ function defaultTask(): SubmitTask {
 
 export interface CreateTaskFormProps extends DialogProps {
   tasks?: SubmitTask[];
+  selectedTaskIdx?: number;
   /**
    * Shows extra UI elements suitable for submittng batched tasks. Default to 'false'.
    */
@@ -359,6 +360,7 @@ export interface CreateTaskFormProps extends DialogProps {
   ingestors?: string[];
   submitTasks?(tasks: SubmitTask[]): Promise<void>;
   onTasksChange?(tasks: SubmitTask[]): void;
+  onSelectTask?(index: number): void;
   onSuccess?(tasks: SubmitTask[]): void;
   onFail?(error: Error, tasks: SubmitTask[]): void;
   onCancelClick?: React.MouseEventHandler<HTMLButtonElement>;
@@ -367,6 +369,7 @@ export interface CreateTaskFormProps extends DialogProps {
 
 export function CreateTaskForm({
   tasks: tasks_,
+  selectedTaskIdx = 0,
   cleaningZones = [],
   loopWaypoints = [],
   deliveryWaypoints = [],
@@ -374,6 +377,7 @@ export function CreateTaskForm({
   ingestors = [],
   submitTasks,
   onTasksChange,
+  onSelectTask,
   onSuccess,
   onFail,
   onCancelClick,
@@ -393,9 +397,8 @@ export function CreateTaskForm({
     () => tasks && tasks.map((t, i) => `${i + 1}: ${getShortDescription(t)}`),
     [tasks],
   );
-  const [currentIdx, setCurentIdx] = React.useState<number>(0);
   const [submitting, setSubmitting] = React.useState(false);
-  const task = tasks[currentIdx];
+  const task = tasks[selectedTaskIdx];
 
   const handleTaskDescriptionChange = (newType: number, newDesc: TaskDescription) => {
     task.task_type = newType;
@@ -551,8 +554,8 @@ export function CreateTaskForm({
                       <ListItem
                         key={idx}
                         button
-                        onClick={() => setCurentIdx(idx)}
-                        className={currentIdx === idx ? classes.selectedTask : undefined}
+                        onClick={() => onSelectTask && onSelectTask(idx)}
+                        className={selectedTaskIdx === idx ? classes.selectedTask : undefined}
                       >
                         <ListItemText primary={title} />
                       </ListItem>
