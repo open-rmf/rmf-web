@@ -31,6 +31,7 @@ export function robotModeToString(robotMode: RmfModels.RobotMode): string {
   }
 }
 
+//TODO: endpoint should return the equivalent of this
 export interface VerboseRobot {
   name: string;
   model: string;
@@ -61,6 +62,7 @@ export function makeVerboseRobot(
   };
 }
 
+//TODO: add this functionality into the server
 export function allocateTasksToRobots(
   robots: RmfModels.RobotState[],
   tasks: TaskProgress[],
