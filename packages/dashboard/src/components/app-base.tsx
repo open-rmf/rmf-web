@@ -1,7 +1,6 @@
-import { ThemeProvider } from '@material-ui/core';
-import { lightTheme, darkTheme } from 'react-components';
-import { Grid, makeStyles } from '@material-ui/core';
+import { Grid, makeStyles, ThemeProvider } from '@material-ui/core';
 import React from 'react';
+import { rmfDark, rmfLight } from 'react-components';
 import { loadSettings, saveSettings, ThemeMode } from '../settings';
 import {
   AppController,
@@ -78,7 +77,7 @@ export function AppBase({
   );
 
   return (
-    <ThemeProvider theme={preferDarkMode ? darkTheme : lightTheme}>
+    <ThemeProvider theme={preferDarkMode ? rmfDark : rmfLight}>
       <SettingsContext.Provider value={settings}>
         <TooltipsContext.Provider value={tooltips}>
           <AppControllerContext.Provider value={appController}>

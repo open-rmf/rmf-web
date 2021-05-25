@@ -10,7 +10,7 @@ declare module '@material-ui/core/styles/createMuiTheme' {
   }
 }
 
-export const darkTheme = createMuiTheme({
+export const rmfDark = createMuiTheme({
   palette: {
     primary: {
       // dark theme background - dark cornflower blue

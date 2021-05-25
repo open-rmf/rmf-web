@@ -1,8 +1,8 @@
+import { makeStyles, Paper, Typography } from '@material-ui/core';
+import { ThemeProvider } from '@material-ui/styles';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
-import { lightTheme, darkTheme } from '../lib';
-import { Typography, makeStyles, Paper } from '@material-ui/core';
-import { ThemeProvider } from '@material-ui/styles';
+import { rmfDark, rmfLight } from '../lib';
 
 export default {
   title: 'Theme',
@@ -139,7 +139,7 @@ const CommonThemeDisplay = (): JSX.Element => {
 // demonstration of how to inject custom theme
 export const LightThemeStory: Story = (args) => {
   return (
-    <ThemeProvider theme={lightTheme}>
+    <ThemeProvider theme={rmfLight}>
       <LightThemeDisplay {...args} />
     </ThemeProvider>
   );
@@ -147,7 +147,7 @@ export const LightThemeStory: Story = (args) => {
 
 export const DarkThemeStory: Story = (args) => {
   return (
-    <ThemeProvider theme={darkTheme}>
+    <ThemeProvider theme={rmfDark}>
       <DarkThemeDisplay {...args} />
     </ThemeProvider>
   );
@@ -155,7 +155,7 @@ export const DarkThemeStory: Story = (args) => {
 
 export const CommonThemeStory: Story = (args) => {
   return (
-    <ThemeProvider theme={lightTheme}>
+    <ThemeProvider theme={rmfLight}>
       <CommonThemeDisplay {...args} />
     </ThemeProvider>
   );
