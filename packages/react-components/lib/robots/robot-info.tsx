@@ -43,8 +43,8 @@ export interface RobotInfoProps {
 export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
   const theme = useTheme();
   const classes = useStyles();
-  let currentTask: TaskProgress | undefined = undefined;
-  let hasConcreteEndTime = false;
+  const [currentTask, setCurrentTask] = React.useState<TaskProgress | undefined>();
+  const [hasConcreteEndTime, setHasConcreteEndTime] = React.useState<boolean>(false);
 
   function returnTaskLocations(task: RmfModels.TaskSummary): string {
     switch (taskTypeToStr(task.task_profile.description.task_type.type)) {
@@ -82,19 +82,32 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
       .join('');
   }
 
-  if (robot.assigned_tasks.length > 0) {
-    currentTask = robot.assigned_tasks[0];
-    if (currentTask) {
-      hasConcreteEndTime = [
-        RmfModels.TaskSummary.STATE_CANCELED,
-        RmfModels.TaskSummary.STATE_COMPLETED,
-        RmfModels.TaskSummary.STATE_FAILED,
-      ].includes(currentTask.task_summary.state);
+  React.useEffect(() => {
+    const concreteTasks = [
+      RmfModels.TaskSummary.STATE_CANCELED,
+      RmfModels.TaskSummary.STATE_COMPLETED,
+      RmfModels.TaskSummary.STATE_FAILED,
+    ];
+
+    if (robot.assigned_tasks.length > 0) {
+      setCurrentTask(robot.assigned_tasks[0]);
+      if (currentTask) {
+        setHasConcreteEndTime(concreteTasks.includes(currentTask.task_summary.state));
+      }
+    } else {
+      setCurrentTask(undefined);
+      setHasConcreteEndTime(false);
     }
-  } else {
-    currentTask = undefined;
-    hasConcreteEndTime = false;
-  }
+  }, [currentTask, robot, setCurrentTask]);
+
+  const taskDetails = React.useMemo(() => {
+    if (currentTask) {
+      const location = returnTaskLocations(currentTask.task_summary);
+      const destination = returnTaskDestinations(currentTask.task_summary);
+      const assignedTasks = assignedTasksToStr(robot);
+      return { location, destination, assignedTasks };
+    }
+  }, [currentTask, robot]);
 
   return (
     <div>
@@ -124,7 +137,7 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
             classes={{ root: classes.root, disabled: classes.disabled }}
             disabled
           >
-            {currentTask ? assignedTasksToStr(robot) : '-'}
+            {taskDetails ? taskDetails.assignedTasks : '-'}
           </Button>
         </Grid>
         <Grid item xs={6}>
@@ -145,7 +158,7 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
             classes={{ root: classes.root, disabled: classes.disabled }}
             disabled
           >
-            {currentTask ? returnTaskLocations(currentTask.task_summary) : '-'}
+            {taskDetails ? taskDetails.location : '-'}
           </Button>
         </Grid>
         <Grid item xs={6}>
@@ -156,7 +169,7 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
             classes={{ root: classes.root, disabled: classes.disabled }}
             disabled
           >
-            {currentTask ? returnTaskDestinations(currentTask.task_summary) : '-'}
+            {taskDetails ? taskDetails.destination : '-'}
           </Button>
         </Grid>
         <Grid item xs={6}>
