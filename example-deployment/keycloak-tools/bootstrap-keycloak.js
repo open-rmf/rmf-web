@@ -31,9 +31,9 @@ function authHeaders(token) {
       },
       {
         clientId: 'dashboard',
-        rootUrl: 'https://openrobotics.demo.open-rmf.org',
-        redirectUris: ['https://openrobotics.demo.open-rmf.org/*'],
-        webOrigins: ['https://openrobotics.demo.open-rmf.org'],
+        rootUrl: 'https://example.com',
+        redirectUris: ['https://example.com/*'],
+        webOrigins: ['https://example.com'],
         publicClient: true,
       },
     );
@@ -46,9 +46,9 @@ function authHeaders(token) {
       },
       {
         clientId: 'reporting',
-        rootUrl: 'https://openrobotics.demo.open-rmf.org',
-        redirectUris: ['https://openrobotics.demo.open-rmf.org/*'],
-        webOrigins: ['https://openrobotics.demo.open-rmf.org'],
+        rootUrl: 'https://example.com',
+        redirectUris: ['https://example.com/*'],
+        webOrigins: ['https://example.com'],
         publicClient: true,
       },
     );
