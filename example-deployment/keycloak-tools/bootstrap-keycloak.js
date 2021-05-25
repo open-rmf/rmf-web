@@ -107,20 +107,20 @@ function authHeaders(token) {
       },
       {
         name: 'dashboard',
-	protocol: 'openid-connect',
-	description: 'dashboard scope',
-	protocolMappers: [
-	  {
-	    config: {
-	      "access.token.claim": "true",
-	      "id.token.claim": "false",
-	      "included.client.audience": "dashboard"
-	    },
-	    name: 'rmf-audience',
- 	    protocol: 'openid-connect',
+	      protocol: 'openid-connect',
+	      description: 'dashboard scope',
+	      protocolMappers: [
+	      {
+	        config: {
+	          "access.token.claim": "true",
+	          "id.token.claim": "false",
+	          "included.client.audience": "dashboard"
+	      },
+	      name: 'rmf-audience',
+ 	      protocol: 'openid-connect',
   	    protocolMapper: 'oidc-audience-mapper'
-	  }
-	]
+	    }
+	    ]
       },
     );
 
@@ -130,8 +130,8 @@ function authHeaders(token) {
       headers: authHeaders(token),
     });
 
-    const client_array = JSON.parse(resp.body);
-    const dashboard_id = client_array.filter(function(item){
+    const clientArray = JSON.parse(resp.body);
+    const dashboardId = clientArray.filter(function(item){
 	    return item.clientId === "dashboard";
     })[0].id
 
@@ -141,14 +141,14 @@ function authHeaders(token) {
       headers: authHeaders(token),
     });
 
-    const client_scopes_array = JSON.parse(resp.body);
-    const client_scope_id = client_scopes_array.filter(function(item){
+    const clientScopesArray = JSON.parse(resp.body);
+    const clientScopeId = clientScopesArray.filter(function(item){
 	    return item.name == "dashboard";
     })[0].id
 
     // set client with client scope
     await request(
-      `${baseUrl}/admin/realms/rmf-web/clients/${dashboard_id}/default-client-scopes/${client_scope_id}`,
+      `${baseUrl}/admin/realms/rmf-web/clients/${dashboardId}/default-client-scopes/${clientScopeId}`,
       {
         method: 'PUT',
         headers: authHeaders(token),
