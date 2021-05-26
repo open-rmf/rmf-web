@@ -14,6 +14,7 @@ async function setClientScopeToClient(headers, clientId, clientScopeId) {
     },
   );
 }
+
 async function createAudienceClientScope(headers, name, description, audience) {
   // set client with client scope
   return await request(
@@ -185,7 +186,6 @@ async function createAudienceClientScope(headers, name, description, audience) {
     await setClientScopeToClient(authHeaders(token), dashboardId, clientScopeDashboardId);
     await setClientScopeToClient(authHeaders(token), reportingId, clientScopeReportingId);
   } catch (e) {
-    console.error(e);
     process.exitCode = 1;
   }
 })();
