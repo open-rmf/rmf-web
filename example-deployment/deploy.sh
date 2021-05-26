@@ -80,6 +80,8 @@ echo 'building reporting-server image...'
 docker build -t rmf-web/reporting-server -f docker/reporting-server.dockerfile $rmf_web_ws
 echo 'publishing reporting-server image...'
 docker save rmf-web/reporting-server | bash -c 'eval $(.bin/minikube docker-env) && docker load'
+echo 'creating reporting-server configmap...'
+kubectl create configmap reporting-server-config --from-file=reporting_server_config.py -o=yaml --dry-run=client | kubectl apply -f -
 echo 'deploying reporting-server...'
 kubectl apply -f k8s/reporting-server.yaml
 
