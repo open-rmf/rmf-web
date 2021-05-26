@@ -4,6 +4,44 @@ function authHeaders(token) {
   return { Authorization: `bearer ${token}` };
 }
 
+async function setClientScopeToClient(headers, clientId, clientScopeId) {
+  // set client with client scope
+  await request(
+    `${baseUrl}/admin/realms/rmf-web/clients/${clientId}/default-client-scopes/${clientScopeId}`,
+    {
+      method: 'PUT',
+      headers: headers,
+    },
+  );
+}
+async function createAudienceClientScope(headers, name, description, audience) {
+  // set client with client scope
+  return await request(
+    `${baseUrl}/admin/realms/rmf-web/client-scopes`,
+    {
+      method: 'POST',
+      headers: headers,
+    },
+    {
+      name: name,
+      protocol: 'openid-connect',
+      description: description,
+      protocolMappers: [
+        {
+          config: {
+            'access.token.claim': 'true',
+            'id.token.claim': 'false',
+            'included.client.audience': audience,
+          },
+          name: 'rmf-audience',
+          protocol: 'openid-connect',
+          protocolMapper: 'oidc-audience-mapper',
+        },
+      ],
+    },
+  );
+}
+
 (async () => {
   try {
     const token = await getToken();
@@ -99,66 +137,55 @@ function authHeaders(token) {
     );
 
     // create audience client scope
-    await request(
-      `${baseUrl}/admin/realms/rmf-web/client-scopes`,
-      {
-        method: 'POST',
-        headers: authHeaders(token),
-      },
-      {
-        name: 'dashboard',
-	      protocol: 'openid-connect',
-	      description: 'dashboard scope',
-	      protocolMappers: [
-	      {
-	        config: {
-	          "access.token.claim": "true",
-	          "id.token.claim": "false",
-	          "included.client.audience": "dashboard"
-	      },
-	      name: 'rmf-audience',
- 	      protocol: 'openid-connect',
-  	    protocolMapper: 'oidc-audience-mapper'
-	    }
-	    ]
-      },
+    await createAudienceClientScope(
+      authHeaders(token),
+      'dashboard',
+      'dashboard scope',
+      'dashboard',
     );
 
-    // get dashboard id ( not clientid )
-    resp = await request(`${baseUrl}/admin/realms/rmf-web/clients`, {
+    await createAudienceClientScope(
+      authHeaders(token),
+      'reporting',
+      'reporting scope',
+      'reporting',
+    );
+
+    // get existing clients (dashboard and reporting)
+    const clientsRaw = await request(`${baseUrl}/admin/realms/rmf-web/clients`, {
       method: 'GET',
       headers: authHeaders(token),
     });
 
-    const clientArray = JSON.parse(resp.body);
-    const dashboardId = clientArray.filter(function(item){
-	    return item.clientId === "dashboard";
-    })[0].id
+    const clientArray = JSON.parse(clientsRaw.body);
 
-    // get client scope id 
-    resp = await request(`${baseUrl}/admin/realms/rmf-web/client-scopes`, {
+    const dashboardId = clientArray.filter(function (item) {
+      return item.clientId === 'dashboard';
+    })[0].id;
+
+    const reportingId = clientArray.filter(function (item) {
+      return item.clientId === 'reporting';
+    })[0].id;
+
+    // get existing clients (dashboard and reporting)
+    const clientsScopeRaw = await request(`${baseUrl}/admin/realms/rmf-web/client-scopes`, {
       method: 'GET',
       headers: authHeaders(token),
     });
 
-    const clientScopesArray = JSON.parse(resp.body);
-    const clientScopeId = clientScopesArray.filter(function(item){
-	    return item.name == "dashboard";
-    })[0].id
+    const clientScopesArray = JSON.parse(clientsScopeRaw.body);
+    const clientScopeDashboardId = clientScopesArray.filter(function (item) {
+      return item.name == 'dashboard';
+    })[0].id;
 
-    // set client with client scope
-    await request(
-      `${baseUrl}/admin/realms/rmf-web/clients/${dashboardId}/default-client-scopes/${clientScopeId}`,
-      {
-        method: 'PUT',
-        headers: authHeaders(token),
-      }
-    );
-   
+    const clientScopeReportingId = clientScopesArray.filter(function (item) {
+      return item.name == 'reporting';
+    })[0].id;
 
+    await setClientScopeToClient(authHeaders(token), dashboardId, clientScopeDashboardId);
+    await setClientScopeToClient(authHeaders(token), reportingId, clientScopeReportingId);
   } catch (e) {
+    console.error(e);
     process.exitCode = 1;
   }
 })();
-
-
