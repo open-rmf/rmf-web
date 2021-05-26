@@ -20,27 +20,16 @@ function makeTask() {
   };
 }
 
+function makeTasks(): SubmitTask[] {
+  const tasks = [];
+  for (let i = 0; i < 100; i++) {
+    tasks.push(makeTask());
+  }
+  return tasks;
+}
+
 export const CreateTask: Story<CreateTaskFormProps> = (args) => {
-  const [tasks, setTasks] = React.useState<SubmitTask[]>([]);
-  const [selectedTask, setSelectedTask] = React.useState(0);
-  const handleUploadFileClick: CreateTaskFormProps['onUploadFileClick'] = () => {
-    const uploadedTasks: SubmitTask[] = [];
-    for (let i = 0; i < 100; i++) {
-      uploadedTasks.push(makeTask());
-    }
-    setTasks(uploadedTasks);
-  };
-  return (
-    <CreateTaskForm
-      {...args}
-      open
-      tasks={tasks}
-      selectedTaskIdx={selectedTask}
-      onTasksChange={setTasks}
-      onUploadFileClick={handleUploadFileClick}
-      onSelectTask={setSelectedTask}
-    ></CreateTaskForm>
-  );
+  return <CreateTaskForm {...args} open tasksFromFile={makeTasks}></CreateTaskForm>;
 };
 
 CreateTask.args = {

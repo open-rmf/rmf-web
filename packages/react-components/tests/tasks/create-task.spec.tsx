@@ -42,7 +42,7 @@ describe('CreateTaskForm', () => {
 
   it('submitTask is called when form is submitted', () => {
     const spy = jasmine.createSpy().and.resolveTo(undefined);
-    const root = render(<CreateTaskForm open submitTask={spy} />);
+    const root = render(<CreateTaskForm open submitTasks={spy} />);
     userEvent.click(root.getByLabelText('Submit'));
     expect(spy).toHaveBeenCalledTimes(1);
   });
@@ -50,16 +50,16 @@ describe('CreateTaskForm', () => {
   it('onFail is called when submitTask fails', async () => {
     const submitSpy = jasmine.createSpy().and.rejectWith(new Error('error!!'));
     const failSpy = jasmine.createSpy();
-    const root = render(<CreateTaskForm open submitTask={submitSpy} onFail={failSpy} />);
+    const root = render(<CreateTaskForm open submitTasks={submitSpy} onFail={failSpy} />);
     userEvent.click(root.getByLabelText('Submit'));
     await new Promise((res) => setTimeout(res, 0));
     expect(failSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('onUploadFileClick is called when upload file button is clicked', () => {
-    const spy = jasmine.createSpy();
-    const root = render(<CreateTaskForm open batchMode onUploadFileClick={spy} />);
-    userEvent.click(root.getByLabelText('Upload File'));
+  it('tasksFromFile is called when select file button is clicked', () => {
+    const spy = jasmine.createSpy().and.resolveTo([]);
+    const root = render(<CreateTaskForm open tasksFromFile={spy} />);
+    userEvent.click(root.getByLabelText('Select File'));
     expect(spy).toHaveBeenCalledTimes(1);
   });
 });

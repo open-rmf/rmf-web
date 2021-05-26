@@ -101,8 +101,6 @@ export function TaskPanel({
 }: TaskPanelProps): JSX.Element {
   const classes = useStyles();
   const [tasks, setTasks] = React.useState<RmfModels.TaskSummary[]>([]);
-  const [createTasks, setCreateTasks] = React.useState<SubmitTask[]>([]);
-  const [selectedCreateTask, setSelectedCreateTask] = React.useState(0);
   const [totalCount, setTotalCount] = React.useState(-1);
   const [page, setPage] = React.useState(0);
   const [selectedTask, setSelectedTask] = React.useState<RmfModels.TaskSummary | undefined>(
@@ -122,23 +120,25 @@ export function TaskPanel({
     })();
   }, [fetchTasks, page]);
 
-  const handleUploadFileClick = () => {
-    if (!uploadFileInputRef.current) {
-      return;
-    }
-    uploadFileInputRef.current.click();
-  };
-
-  const handleFileInput: React.FormEventHandler<HTMLInputElement> = (ev) => {
-    if (!ev.currentTarget.files) {
-      return;
-    }
-    const selectedFile = ev.currentTarget.files[0];
-    ev.currentTarget.value = '';
-    (async () => {
-      setCreateTasks(parseTasksFile(await selectedFile.text()));
-      setSelectedCreateTask(0);
-    })();
+  const tasksFromFile = (): Promise<SubmitTask[]> => {
+    return new Promise((res) => {
+      const fileInputEl = uploadFileInputRef.current;
+      if (!fileInputEl) {
+        return [];
+      }
+      const listener = async () => {
+        try {
+          if (!fileInputEl.files) {
+            return res([]);
+          }
+          return res(parseTasksFile(await fileInputEl.files[0].text()));
+        } finally {
+          fileInputEl.removeEventListener('input', listener);
+        }
+      };
+      fileInputEl.addEventListener('input', listener);
+      fileInputEl.click();
+    });
   };
 
   React.useEffect(() => {
@@ -169,18 +169,15 @@ export function TaskPanel({
         </Paper>
       </Grid>
       <CreateTaskForm
-        tasks={createTasks}
-        selectedTaskIdx={selectedCreateTask}
-        onSelectTask={setSelectedCreateTask}
         cleaningZones={cleaningZones}
         loopWaypoints={loopWaypoints}
         deliveryWaypoints={deliveryWaypoints}
         dispensers={dispensers}
         ingestors={ingestors}
         open={openCreateTaskForm}
-        onTasksChange={setCreateTasks}
         onClose={() => setOpenCreateTaskForm(false)}
         submitTasks={submitTasks}
+        tasksFromFile={tasksFromFile}
         onCancelClick={() => setOpenCreateTaskForm(false)}
         onSuccess={() => {
           setOpenCreateTaskForm(false);
@@ -194,14 +191,8 @@ export function TaskPanel({
           setSnackbarMessage(`Failed to create task: ${e.message}`);
           setOpenSnackbar(true);
         }}
-        onUploadFileClick={handleUploadFileClick}
       />
-      <input
-        type="file"
-        style={{ display: 'none' }}
-        ref={uploadFileInputRef}
-        onInput={handleFileInput}
-      />
+      <input type="file" style={{ display: 'none' }} ref={uploadFileInputRef} />
       <Snackbar open={openSnackbar} onClose={() => setOpenSnackbar(false)} autoHideDuration={2000}>
         <Alert severity={snackbarSeverity}>{snackbarMessage}</Alert>
       </Snackbar>
