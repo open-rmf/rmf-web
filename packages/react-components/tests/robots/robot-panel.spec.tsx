@@ -25,7 +25,6 @@ describe('RobotPanel', () => {
     const tasks = [makeDefinedTask('Loop', 'test_robot1', 'task_1', 3, 3)];
     const robots = [makeRandomRobot('test_robot1', 'test_fleet', 2)];
     const root = render(<RobotPanel robots={robots} fetchTasks={makeFetchTasks(tasks)} />);
-    root.debug();
     userEvent.click(root.getByText('test_robot1'));
     expect(root.getByRole('progressbar')).toBeTruthy();
   });

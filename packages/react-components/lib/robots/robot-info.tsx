@@ -8,8 +8,8 @@ import {
   Typography,
   useTheme,
 } from '@material-ui/core';
-import { ProgressBar } from '../progressbar';
-import { CircularProgressBar } from '../circular-progress-bar';
+import { ProgressBar } from './progressbar';
+import { CircularProgressBar } from './circular-progress-bar';
 import * as RmfModels from 'rmf-models';
 import { taskTypeToStr, taskStateToStr } from '../tasks/utils';
 import { VerboseRobot } from './utils';
@@ -71,10 +71,10 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
   }
 
   function assignedTasksToStr(robot: VerboseRobot): string {
-    return robot.assigned_tasks
+    return robot.assignedTasks
       .map((task, index) => {
-        if (index != robot.assigned_tasks.length - 1) {
-          return task.task_summary.task_id + ' → ';
+        if (index != robot.assignedTasks.length - 1) {
+          return task.task_summary.task_id.concat(' → ');
         } else {
           return task.task_summary.task_id;
         }
@@ -89,8 +89,8 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
       RmfModels.TaskSummary.STATE_FAILED,
     ];
 
-    if (robot.assigned_tasks.length > 0) {
-      setCurrentTask(robot.assigned_tasks[0]);
+    if (robot.assignedTasks.length > 0) {
+      setCurrentTask(robot.assignedTasks[0]);
       if (currentTask) {
         setHasConcreteEndTime(concreteTasks.includes(currentTask.task_summary.state));
       }

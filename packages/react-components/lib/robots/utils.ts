@@ -32,33 +32,17 @@ export function robotModeToString(robotMode: RmfModels.RobotMode): string {
 }
 
 //TODO: endpoint should return the equivalent of this
-export interface VerboseRobot {
-  name: string;
-  model: string;
-  task_id: string;
-  seq: number;
-  mode: RmfModels.RobotMode;
-  battery_percent: number;
-  location: RmfModels.Location;
-  path: RmfModels.Location[];
-  assigned_tasks: TaskProgress[];
+export interface VerboseRobot extends RmfModels.RobotState {
+  assignedTasks: TaskProgress[];
 }
 
 export function makeVerboseRobot(
   robot: RmfModels.RobotState,
   assignedTasks: TaskProgress[],
 ): VerboseRobot {
-  const { name, model, task_id, seq, mode, battery_percent, location, path } = robot;
   return {
-    name,
-    model,
-    task_id,
-    seq,
-    mode,
-    battery_percent,
-    location,
-    path,
-    assigned_tasks: assignedTasks,
+    ...robot,
+    assignedTasks: assignedTasks,
   };
 }
 
