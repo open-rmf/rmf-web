@@ -1,3 +1,4 @@
+import { TaskProgress } from 'api-client';
 import * as RmfModels from 'rmf-models';
 
 /**
@@ -28,4 +29,43 @@ export function robotModeToString(robotMode: RmfModels.RobotMode): string {
     default:
       return `Unknown (${robotMode.mode})`;
   }
+}
+
+//TODO: endpoint should return the equivalent of this
+export interface VerboseRobot extends RmfModels.RobotState {
+  assignedTasks: TaskProgress[];
+}
+
+export function makeVerboseRobot(
+  robot: RmfModels.RobotState,
+  assignedTasks: TaskProgress[],
+): VerboseRobot {
+  return {
+    ...robot,
+    assignedTasks: assignedTasks,
+  };
+}
+
+//TODO: add this functionality into the server
+export function allocateTasksToRobots(
+  robots: RmfModels.RobotState[],
+  tasks: TaskProgress[],
+): VerboseRobot[] {
+  const removableTaskStates = [
+    RmfModels.TaskSummary.STATE_ACTIVE,
+    RmfModels.TaskSummary.STATE_PENDING,
+    RmfModels.TaskSummary.STATE_QUEUED,
+  ];
+  const robotsWithAssignedTasks = robots.map((robot) => {
+    const assignedTasks = tasks.filter((task) => {
+      if (
+        task.task_summary.robot_name == robot.name &&
+        removableTaskStates.indexOf(task.task_summary.state) != -1
+      ) {
+        return task;
+      }
+    });
+    return makeVerboseRobot(robot, assignedTasks);
+  });
+  return robotsWithAssignedTasks;
 }
