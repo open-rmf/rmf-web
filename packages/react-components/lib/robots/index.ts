@@ -1,5 +1,5 @@
 export * from './circular-progress-bar';
-export * from './progressbar';
+export * from './linear-progress-bar';
 export * from './robot-accordion';
 export * from './robot-info';
 export * from './robot-marker';

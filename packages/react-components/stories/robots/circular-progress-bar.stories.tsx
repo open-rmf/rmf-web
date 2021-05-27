@@ -1,17 +1,14 @@
 import React from 'react';
 import { Story, Meta } from '@storybook/react';
-import {
-  CircularProgressBar,
-  CircularProgressBarProps,
-} from '../../lib/robots/circular-progress-bar';
+import { CircularProgressBar as CircularProgressBar_, CircularProgressBarProps } from '../../lib';
 import { Typography } from '@material-ui/core';
 
 export default {
-  title: 'Circular Progress Bar',
-  component: CircularProgressBar,
+  title: 'Robots/Circular Progress Bar',
+  component: CircularProgressBar_,
 } as Meta;
 
-export const ActiveProgressBar: Story<CircularProgressBarProps> = (args) => {
+export const CircularProgressBar: Story<CircularProgressBarProps> = (args) => {
   return (
     <>
       <CircularProgressBar {...args}>
@@ -21,7 +18,7 @@ export const ActiveProgressBar: Story<CircularProgressBarProps> = (args) => {
   );
 };
 
-ActiveProgressBar.args = {
+CircularProgressBar.args = {
   progress: 70,
   strokeColor: 'green',
 };

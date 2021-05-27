@@ -8,7 +8,7 @@ import {
   Typography,
   useTheme,
 } from '@material-ui/core';
-import { ProgressBar } from './progressbar';
+import { LinearProgressBar } from './linear-progress-bar';
 import { CircularProgressBar } from './circular-progress-bar';
 import * as RmfModels from 'rmf-models';
 import { taskTypeToStr, taskStateToStr } from '../tasks/utils';
@@ -123,7 +123,7 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
           </Typography>
         </Grid>
         <Grid item xs={12}>
-          <ProgressBar value={robot.battery_percent} />
+          <LinearProgressBar value={robot.battery_percent} />
         </Grid>
         <Grid container item xs={12} justify="center">
           <Typography variant="h6" gutterBottom>
