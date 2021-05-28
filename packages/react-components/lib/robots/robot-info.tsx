@@ -45,7 +45,6 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
   const classes = useStyles();
   let currentTask: TaskProgress | undefined = undefined;
   let hasConcreteEndTime = false;
-
   function returnTaskLocations(task: RmfModels.TaskSummary): string {
     switch (taskTypeToStr(task.task_profile.description.task_type.type)) {
       case 'Loop':
@@ -84,14 +83,20 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
   }
 
   if (robot.assigned_tasks.length > 0) {
-    currentTask = robot.assigned_tasks[0];
-    if (currentTask) {
-      hasConcreteEndTime = [
-        RmfModels.TaskSummary.STATE_CANCELED,
-        RmfModels.TaskSummary.STATE_COMPLETED,
-        RmfModels.TaskSummary.STATE_FAILED,
-      ].includes(currentTask.task_summary.state);
-    }
+    const tasks = robot.assigned_tasks;
+    if (tasks.length > 1) {
+      for (let i = 0; i < tasks.length; i++) {
+        if (tasks[i].progress !== '0%') currentTask = tasks[i];
+        if (currentTask) {
+          hasConcreteEndTime = [
+            RmfModels.TaskSummary.STATE_CANCELED,
+            RmfModels.TaskSummary.STATE_COMPLETED,
+            RmfModels.TaskSummary.STATE_FAILED,
+          ].includes(currentTask.task_summary.state);
+          break;
+        }
+      }
+    } else if (tasks.length === 1) currentTask = robot.assigned_tasks[0];
   } else {
     currentTask = undefined;
     hasConcreteEndTime = false;
