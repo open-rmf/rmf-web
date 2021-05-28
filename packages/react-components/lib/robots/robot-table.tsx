@@ -124,24 +124,54 @@ export interface RobotTableProps extends PaperProps {
   tasks: TaskProgress[];
   robots: RmfModels.RobotState[];
   paginationOptions?: PaginationOptions;
-  onRefreshClick?: React.MouseEventHandler<HTMLButtonElement>;
-  onRobotClick?(ev: React.MouseEvent<HTMLDivElement>, robot: VerboseRobot): void;
+  onRefreshTasks?: React.MouseEventHandler<HTMLButtonElement> | (() => void);
+  onRobotClickAndRefresh?(robot: VerboseRobot, ev?: React.MouseEvent<HTMLDivElement>): void;
 }
 
 export function RobotTable({
   tasks,
   robots,
   paginationOptions,
-  onRefreshClick,
-  onRobotClick,
+  onRefreshTasks,
+  onRobotClickAndRefresh,
   ...paperProps
 }: RobotTableProps): JSX.Element {
   const classes = useStyles();
   const [robotsWithTasks, setRobotsWithTasks] = React.useState<VerboseRobot[]>([]);
+  const [selectedRobot, setSelectedRobot] = React.useState<VerboseRobot | undefined>(undefined);
 
   React.useEffect(() => {
     setRobotsWithTasks(allocateTasksToRobots(robots, tasks));
   }, [robots, tasks]);
+
+  const useInterval = (callback: () => void, delay: number) => {
+    const savedCallback = React.useRef<() => void>();
+
+    React.useEffect(() => {
+      savedCallback.current = callback;
+    }, [callback]);
+
+    React.useEffect(() => {
+      const tick = () => {
+        savedCallback.current && savedCallback.current();
+      };
+      const id = setInterval(tick, delay);
+      return () => clearInterval(id);
+    }, [delay]);
+  };
+
+  const updateRobotWithTask = () => {
+    onRefreshTasks && onRefreshTasks;
+    setRobotsWithTasks(allocateTasksToRobots(robots, tasks));
+    if (robotsWithTasks.length > 0) {
+      robotsWithTasks.forEach((robot) => {
+        if (robot.name === selectedRobot?.name)
+          onRobotClickAndRefresh && onRobotClickAndRefresh(robot);
+      });
+    }
+  };
+
+  useInterval(updateRobotWithTask, 3000);
 
   return (
     <Paper {...paperProps}>
@@ -149,7 +179,7 @@ export function RobotTable({
         <Typography className={classes.title} variant="h6">
           Robots
         </Typography>
-        <IconButton onClick={onRefreshClick} aria-label="Refresh">
+        <IconButton onClick={onRefreshTasks} aria-label="Refresh">
           <RefreshIcon />
         </IconButton>
       </Toolbar>
@@ -171,7 +201,10 @@ export function RobotTable({
                 <RobotRow
                   key={robot_id}
                   robot={robot}
-                  onClick={(ev) => onRobotClick && onRobotClick(ev, robot)}
+                  onClick={(ev) => {
+                    setSelectedRobot(robot);
+                    onRobotClickAndRefresh && onRobotClickAndRefresh(robot, ev);
+                  }}
                 />
               ))}
           </TableBody>

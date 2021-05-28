@@ -69,8 +69,8 @@ export function RobotPanel({ robots, fetchTasks, ...divProps }: RobotPanelProps)
               page,
               onChangePage: (_ev, newPage) => setPage(newPage),
             }}
-            onRobotClick={(_ev, robot) => setSelectedRobot(robot)}
-            onRefreshClick={handleRefresh}
+            onRobotClickAndRefresh={(robot, _ev) => setSelectedRobot(robot)}
+            onRefreshTasks={handleRefresh}
           />
         </Grid>
         <Paper className={classes.detailPanelContainer}>
