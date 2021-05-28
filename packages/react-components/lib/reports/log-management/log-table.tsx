@@ -2,8 +2,8 @@ import React from 'react';
 import MaterialTable, { Column } from 'material-table';
 import { CustomLookupFilterParser, LogLevel } from '.';
 import { makeStyles, Typography } from '@material-ui/core';
-import moment from 'moment';
 import { materialTableIcons } from '../../material-table-icons';
+import { format } from 'date-fns';
 
 export type LogRowsType = {
   level: string;
@@ -149,7 +149,7 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
           render: (rowData) => {
             return (
               <Typography className={classes.cellContent} data-testid={'log-table-date'}>
-                {moment(rowData.created).format('lll')}
+                {format(new Date(rowData.created), 'MMM dd yyyy hh:mm aaa')}
               </Typography>
             );
           },

@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from '@material-ui/core';
 import { NotificationsDialog, Notification, Severity } from '../lib';
 import { Meta, Story } from '@storybook/react';
-import moment from 'moment';
+import { format } from 'date-fns';
 
 export default {
   title: 'Notifications Dialogue',
@@ -15,7 +15,7 @@ interface NotificationDialogHandlerProps {
 
 // temp data for display
 const getDate = () => {
-  return moment().format('MMMM Do YYYY, h:mm:ss');
+  return format(new Date(), 'MMM dd yyyy, h:mm:ss aaa');
 };
 
 const makeNotifications = (): Notification[] => {

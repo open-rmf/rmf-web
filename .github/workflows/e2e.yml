@@ -24,7 +24,7 @@ jobs:
           registry: docker.pkg.github.com
           repository: ${{ github.repository }}/rmf
           tags: nightly
-          path: packages/dashboard/e2e/docker/rmf
+          path: packages/dashboard-e2e/docker/rmf
       - name: Push e2e image to GitHub Packages
         uses: docker/build-push-action@v1
         with:
@@ -34,7 +34,7 @@ jobs:
           repository: ${{ github.repository }}/e2e
           tags: latest
           build_args: BASE_IMAGE=docker.pkg.github.com/open-rmf/rmf-web/rmf:nightly
-          path: packages/dashboard/e2e/docker/e2e
+          path: packages/dashboard-e2e/docker/e2e
   e2e-tests:
     name: End-to-End Tests
     runs-on: ubuntu-latest
@@ -49,7 +49,7 @@ jobs:
     defaults: 
       run:
         shell: bash
-        working-directory: packages/dashboard
+        working-directory: packages/dashboard-e2e
     steps:
       - uses: actions/checkout@v2
       - name: bootstrap
@@ -63,7 +63,7 @@ jobs:
       - name: e2e test
         run: |
           . /opt/rmf/setup.bash
-          cd e2e && (npm test || npm test)
+          npm test || npm test
         env:
           E2E_DOCKER_NETWORK: ${{job.container.network}}
           REACT_APP_AUTH_PROVIDER: keycloak
@@ -74,4 +74,4 @@ jobs:
         if: ${{ always() }}
         with:
           name: screenshots
-          path: packages/dashboard/e2e/artifacts
+          path: packages/dashboard-e2e/artifacts

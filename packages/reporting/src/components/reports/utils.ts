@@ -9,8 +9,8 @@ export const getLogData = async (
   try {
     const response = await axios.get(url, {
       params: {
-        toLogDate: params.toLogDate ? params.toLogDate.format() : null,
-        fromLogDate: params.fromLogDate ? params.fromLogDate.format() : null,
+        toLogDate: params.toLogDate ? params.toLogDate : null,
+        fromLogDate: params.fromLogDate ? params.fromLogDate : null,
         offset: params.offset,
         limit: params.limit,
       },

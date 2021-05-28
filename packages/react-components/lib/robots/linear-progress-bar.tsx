@@ -3,7 +3,7 @@ import LinearProgress, { LinearProgressProps } from '@material-ui/core/LinearPro
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 
-export function ProgressBar(props: LinearProgressProps & { value: number }): JSX.Element {
+export function LinearProgressBar(props: LinearProgressProps & { value: number }): JSX.Element {
   return (
     <Box display="flex" alignItems="center">
       <Box width="100%" mr={1}>
