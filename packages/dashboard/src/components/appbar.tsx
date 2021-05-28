@@ -16,7 +16,7 @@ import { HeaderBar } from 'react-components/lib/header-bar';
 import { LogoButton } from 'react-components/lib/logo-button';
 import { NavigationBar } from 'react-components/lib/navigation-bar';
 import DashboardTooltip from 'react-components/lib/tooltip';
-import { AppControllerContext, TooltipsContext } from './app-contexts';
+import { AppControllerContext, ResourcesContext, TooltipsContext } from './app-contexts';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
 
 const useStyles = makeStyles(() =>
@@ -43,7 +43,7 @@ export const AppBar = React.memo(
     const { showHelp: setShowHelp, showSettings: setShowSettings } = React.useContext(
       AppControllerContext,
     );
-
+    const logoResourcesContext = React.useContext(ResourcesContext)?.logos;
     const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
     const classes = useStyles();
     const authenticator = React.useContext(AuthenticatorContext);
@@ -58,7 +58,14 @@ export const AppBar = React.memo(
       }
     }
 
-    const brandingIconPath = 'assets/icons/branding/demo/logo.png';
+    const brandingIconPath = React.useMemo(() => {
+      const defaultIcon = 'assets/icons/branding/demo/logo.png';
+      if (!logoResourcesContext) {
+        return defaultIcon;
+      }
+      const iconPath = logoResourcesContext.getIconPath('headerLogo');
+      return iconPath ? iconPath : defaultIcon;
+    }, [logoResourcesContext]);
 
     return (
       <div>
