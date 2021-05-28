@@ -35,5 +35,6 @@ export default function fakeResources(): ResourceConfigurationsType {
         places: {},
       },
     },
+    logos: { headerLogo: { icons: { headerLogo: '/logos/header/headerLogo.png' } } },
   };
 }
