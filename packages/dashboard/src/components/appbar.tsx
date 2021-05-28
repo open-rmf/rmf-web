@@ -58,10 +58,12 @@ export const AppBar = React.memo(
       }
     }
 
+    const brandingIconPath = 'assets/icons/branding/demo/logo.png';
+
     return (
       <div>
         <HeaderBar>
-          <LogoButton logoPath={'/roshealth-logo-white.png'} />
+          <LogoButton logoPath={brandingIconPath} />
           <NavigationBar onTabChange={onTabChange} value={tabValue}>
             <Tab label="Building" value="building" aria-label="Building" />
             <Tab label="Robots" value="robots" aria-label="Robots" />
