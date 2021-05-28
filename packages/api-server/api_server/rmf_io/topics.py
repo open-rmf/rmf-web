@@ -9,7 +9,7 @@ class RmfTopics:
     ingestor_health = "ingestor_health"
     fleet_states = "fleet_states"
     robot_health = "robot_health"
-    task_summaries = "task_summaries"
+    task_summaries = "filtered_task_summaries"
     building_map = "building_map"
 
 
