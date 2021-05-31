@@ -59,7 +59,7 @@ export const AppBar = React.memo(
     }
 
     const brandingIconPath = React.useMemo(() => {
-      const defaultIcon = 'assets/icons/branding/demo/logo.png';
+      const defaultIcon = 'defaultLogo.png';
       if (!logoResourcesContext) {
         return defaultIcon;
       }
