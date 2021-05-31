@@ -44,7 +44,6 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
   const theme = useTheme();
   const classes = useStyles();
   const [currentTask, setCurrentTask] = React.useState<TaskProgress | undefined>();
-  const [timeNow, setTimeNow] = React.useState<number | undefined>();
   const [hasConcreteEndTime, setHasConcreteEndTime] = React.useState<boolean>(false);
 
   function returnTaskLocations(task: RmfModels.TaskSummary): string {
@@ -98,9 +97,6 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
         if (tasks[i].progress !== '0%') {
           isActive = true;
           setCurrentTask(robot.assignedTasks[i]);
-          if (currentTask?.task_summary.task_id !== tasks[i].task_summary.task_id) {
-            setTimeNow(Date.now());
-          }
         }
         break;
       }
@@ -228,7 +224,7 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
             disabled
           >
             {currentTask
-              ? rosTimeToJs(currentTask.task_summary.end_time, timeNow).toLocaleTimeString()
+              ? rosTimeToJs(currentTask.task_summary.end_time).toLocaleTimeString()
               : '-'}
           </Button>
         </Grid>

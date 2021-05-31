@@ -23,7 +23,10 @@ class DispatcherClient:
         return resp
 
     def get_sim_time(self):
-        sim_time = self.rmf_gateway.get_clock().now().to_msg()
+        if self.rmf_gateway.get_parameter("use_sim_time").value:
+            sim_time = self.rmf_gateway.get_clock().now().to_msg()
+        else:
+            sim_time = None
         return sim_time
 
     async def cancel_task_request(self, task: mdl.CancelTask) -> bool:

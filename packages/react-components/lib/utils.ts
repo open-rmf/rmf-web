@@ -21,10 +21,6 @@ export function defaultDict<T>(factory: (key: any) => T): Record<any, T> {
  * The timezone is assumed to be UTC.
  * The precision will be reduced to milliseconds.
  */
-export function rosTimeToJs(rosTime: RmfModels.Time, timeNow?: number): Date {
-  let estTime;
-  if (timeNow) {
-    estTime = rosTime.sec * 1000 + Math.floor(rosTime.nanosec / 1000000) + timeNow;
-  }
-  return new Date(estTime ? estTime : rosTime.sec * 1000 + Math.floor(rosTime.nanosec / 1000000));
+export function rosTimeToJs(rosTime: RmfModels.Time): Date {
+  return new Date(rosTime.sec * 1000 + Math.floor(rosTime.nanosec / 1000000));
 }
