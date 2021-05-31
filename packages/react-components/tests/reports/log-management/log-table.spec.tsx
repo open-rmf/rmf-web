@@ -1,8 +1,8 @@
 import { screen, render, RenderResult, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import moment from 'moment';
 import { LogRowsType, LogLevel, LogTable } from '../../../lib';
+import { format } from 'date-fns';
 
 const rows = [] as LogRowsType;
 
@@ -13,13 +13,13 @@ const getRandomLogLevel = () => {
   return logLevels[number];
 };
 
-const timestamp = new Date('Mon Jan  1 00:00:02 UTC 2001').toISOString();
+const timestamp = new Date('Mon Jan  1 00:00:02 UTC 2001');
 
 for (let i = 0; i < 110; i++) {
   rows.push({
     message: 'Test' + i,
     level: getRandomLogLevel().toUpperCase(),
-    created: timestamp,
+    created: format(timestamp, 'MMM dd yyyy hh:mm aaa'),
     container_name: 'container',
   });
 }
@@ -34,7 +34,7 @@ describe('Log table test', () => {
 
   it('formats dates correctly', async () => {
     const tableFirstDateElement = (await root.getAllByTestId('log-table-date'))[0];
-    expect(tableFirstDateElement.innerHTML).toBe(moment(timestamp).format('lll'));
+    expect(tableFirstDateElement.innerHTML).toBe(format(timestamp, 'MMM dd yyyy hh:mm aaa'));
   });
 
   it('shows the correct number of rows', () => {
@@ -87,7 +87,7 @@ describe('Applies styles to labels correctly', () => {
     styleRows.push({
       message: 'Test' + i,
       level: logLevels[i].toUpperCase(),
-      created: timestamp,
+      created: format(timestamp, 'MMM dd yyyy hh:mm aaa'),
       container_name: 'test_container',
     });
   }

@@ -1,6 +1,7 @@
 const concurrently = require('concurrently');
 const { execSync } = require('child_process');
 
+process.env.BUILD_PATH = process.env.BUILD_PATH || '../dashboard-e2e/build';
 process.env.REACT_APP_AUTH_PROVIDER = process.env.REACT_APP_AUTH_PROVIDER || 'keycloak';
 if (process.env.REACT_APP_AUTH_PROVIDER === 'keycloak') {
   process.env.REACT_APP_KEYCLOAK_CONFIG =
@@ -19,8 +20,8 @@ process.env.E2E_PASSWORD = process.env.E2E_PASSWORD || 'admin';
 process.env.E2E_DASHBOARD_URL = process.env.E2E_DASHBOARD_URL || 'http://localhost:5000';
 
 execSync('WORLD_NAME=office node scripts/get-resources-location.js', { stdio: 'inherit' });
-execSync('cd .. && node ./scripts/setup/get-icons.js', { stdio: 'inherit' });
-execSync('npm --prefix .. run build', { stdio: 'inherit' });
+execSync('cd ../dashboard && node scripts/setup/get-icons.js', { stdio: 'inherit' });
+execSync('npm --prefix ../dashboard run build', { stdio: 'inherit' });
 
 // wrap in double quotes to support args with spaces
 const wdioArgs = process.argv
@@ -41,7 +42,7 @@ if (!eval(process.env.E2E_NO_AUTH)) {
 }
 // eslint-disable-next-line no-eval
 if (!eval(process.env.E2E_NO_DASHBOARD)) {
-  services.push('serve -c ../e2e/serve.json ../build');
+  services.push('serve -c ../serve.json build');
 }
 // eslint-disable-next-line no-eval
 if (!eval(process.env.E2E_NO_RMF_SERVER)) {

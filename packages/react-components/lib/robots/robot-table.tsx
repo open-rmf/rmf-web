@@ -47,7 +47,7 @@ interface RobotRowProps {
 }
 
 const returnLocationCells = (robot: VerboseRobot) => {
-  const taskDescription = robot.assigned_tasks[0].task_summary.task_profile.description;
+  const taskDescription = robot.assignedTasks[0].task_summary.task_profile.description;
   switch (taskTypeToStr(taskDescription.task_type.type)) {
     case 'Loop':
       return (
@@ -83,7 +83,7 @@ const returnLocationCells = (robot: VerboseRobot) => {
 function RobotRow({ robot, onClick }: RobotRowProps) {
   const classes = useStyles();
 
-  if (robot.assigned_tasks.length == 0) {
+  if (robot.assignedTasks.length == 0) {
     return (
       <>
         <TableRow className={classes.infoRow} onClick={onClick}>
@@ -103,9 +103,9 @@ function RobotRow({ robot, onClick }: RobotRowProps) {
           <TableCell>{robot.name}</TableCell>
           {returnLocationCells(robot)}
           <TableCell>
-            {robot.assigned_tasks
-              ? robot.assigned_tasks[0].task_summary.end_time.sec -
-                robot.assigned_tasks[0].task_summary.start_time.sec
+            {robot.assignedTasks
+              ? robot.assignedTasks[0].task_summary.end_time.sec -
+                robot.assignedTasks[0].task_summary.start_time.sec
               : '-'}
           </TableCell>
           <TableCell>{robot.battery_percent.toFixed(2)}%</TableCell>

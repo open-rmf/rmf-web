@@ -6,7 +6,7 @@ import { makeTask } from '../test-data/tasks';
 import { makeRandomRobot } from './test-utils';
 
 describe('RobotInfo', () => {
-  it('smoke test', () => {
+  it('information renders correctly', () => {
     const robot = makeRandomRobot('test_robot', 'test_fleet', 1);
     const deliveryTask = makeTask('delivery_task', 1, 1);
     deliveryTask.task_profile.description.task_type.type = RmfModels.TaskType.TYPE_DELIVERY;
@@ -18,10 +18,15 @@ describe('RobotInfo', () => {
 
     const robot1 = makeVerboseRobot(robot, [task]);
 
-    render(
+    const root = render(
       <>
         <RobotInfo robot={robot1} />
       </>,
     );
+
+    expect(root.getByRole('heading', { name: 'test_robot' })).toBeTruthy();
+    expect(root.getByRole('button', { name: 'delivery_task' })).toBeTruthy();
+    expect(root.getByRole('button', { name: 'test_waypoint_1' })).toBeTruthy();
+    expect(root.getByRole('button', { name: 'test_waypoint_2' })).toBeTruthy();
   });
 });

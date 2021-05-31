@@ -1,5 +1,6 @@
 import * as RmfModels from 'rmf-models';
 import { ItemSummary, Notification, RobotSummary, Severity } from '../../lib';
+import { format } from 'date-fns';
 
 export const itemSummary: ItemSummary = {
   operational: 0,
@@ -14,7 +15,12 @@ export const robotSummary: RobotSummary = {
 };
 
 export const notifications: Notification[] = [
-  { id: 1, time: 'time', error: 'message', severity: Severity.High },
+  {
+    id: 1,
+    time: format(new Date(), 'MM/dd/yyyy HH:mm'),
+    error: 'message',
+    severity: Severity.High,
+  },
 ];
 
 export const tasks: RmfModels.TaskSummary[] = [

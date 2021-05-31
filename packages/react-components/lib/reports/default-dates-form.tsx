@@ -3,7 +3,6 @@ import { makeStyles } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import DateAndTimePickers from '../date-time-picker';
 
-import moment from 'moment';
 import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 import { LogQueryPayload } from '.';
 
@@ -14,8 +13,8 @@ interface DefaultDatesFormProps {
 export const DefaultDatesForm = (props: DefaultDatesFormProps): React.ReactElement => {
   const { search } = props;
 
-  const [fromLogDate, setFromLogDate] = React.useState<MaterialUiPickersDate>(moment(new Date()));
-  const [toLogDate, setToLogDate] = React.useState<MaterialUiPickersDate>(moment(new Date()));
+  const [fromLogDate, setFromLogDate] = React.useState<MaterialUiPickersDate>(new Date());
+  const [toLogDate, setToLogDate] = React.useState<MaterialUiPickersDate>(new Date());
 
   const classes = useStyles();
 

@@ -28,7 +28,7 @@ export function makeTask(
 
 export function makeDefinedTask(
   type: string,
-  robot_name: string,
+  robotName: string,
   id: string,
   numberOfPhases: number,
   currentPhase: number,
@@ -113,7 +113,7 @@ export function makeDefinedTask(
     state: RmfModels.TaskSummary.STATE_ACTIVE,
     status: status,
     fleet_name: 'test_fleet',
-    robot_name: robot_name,
+    robot_name: robotName,
   });
 
   const progress = Math.floor(Math.random() * 100);

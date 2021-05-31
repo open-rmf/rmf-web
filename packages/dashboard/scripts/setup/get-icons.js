@@ -4,7 +4,8 @@ const fs = require('fs');
 const chalk = require('chalk');
 const path = require('path');
 
-let file = './.resources.json';
+const basePath = __dirname.slice(0, __dirname.length - 'scripts/setup'.length);
+let file = basePath + '.resources.json';
 if (process.env.RESOURCE_FILE) {
   file = process.env.RESOURCE_FILE;
 }
@@ -17,7 +18,8 @@ if (!fileExists) {
 
 const resourcesData = JSON.parse(fs.readFileSync(file));
 
-const iconFolder = 'public/assets/icons/';
+const iconPath = 'public/assets/icons/';
+const iconFolder = basePath + iconPath;
 
 if (!resourcesData.hasOwnProperty('repoUrl') && !resourcesData.hasOwnProperty('path')) {
   return;
@@ -159,7 +161,7 @@ class IconManager extends IconManagerBase {
 
       console.log(`stdout: ${stdout}`);
       console.log(
-        chalk`{green The icons have been successfully obtained. Check public/assets/icons/}`,
+        chalk`{green The icons have been successfully obtained. Check ${this.iconFolder}}`,
       );
     });
   };

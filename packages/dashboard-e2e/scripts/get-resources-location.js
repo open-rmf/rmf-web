@@ -43,9 +43,13 @@ class Ament {
 const ament = new Ament();
 const rmfDashboardResources = `${ament.findPackage('rmf_demos_dashboard_resources')}${worldName}/`;
 
-fs.writeFile('../.resources.json', `{"path": "${rmfDashboardResources}"}`, function (err) {
-  if (err) {
-    throw err;
-  }
-  console.log(`File .resources.json was created successfully.`);
-});
+fs.writeFile(
+  '../dashboard/.resources.json',
+  `{"path": "${rmfDashboardResources}"}`,
+  function (err) {
+    if (err) {
+      throw err;
+    }
+    console.log(`File .resources.json was created successfully.`);
+  },
+);

@@ -11,8 +11,8 @@ const useStyles = makeStyles(() => ({
 }));
 
 export interface LogQueryPayload {
-  toLogDate?: moment.Moment | null;
-  fromLogDate?: moment.Moment | null;
+  toLogDate?: Date | null;
+  fromLogDate?: Date | null;
   logLabel?: string | null;
   logLevel?: string | null;
   offset?: number | null;
