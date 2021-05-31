@@ -128,7 +128,7 @@ export function TaskPanel({
       }
       const listener = async () => {
         try {
-          if (!fileInputEl.files) {
+          if (!fileInputEl.files || fileInputEl.files.length === 0) {
             return res([]);
           }
           return res(parseTasksFile(await fileInputEl.files[0].text()));
