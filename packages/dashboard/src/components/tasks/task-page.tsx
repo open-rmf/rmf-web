@@ -50,9 +50,14 @@ export function TaskPage() {
     [tasksApi],
   );
 
-  const submitTask = React.useCallback<Required<TaskPanelProps>['submitTask']>(
-    async (body) => {
-      await tasksApi?.submitTaskTasksSubmitTaskPost(body);
+  const submitTasks = React.useCallback<Required<TaskPanelProps>['submitTasks']>(
+    async (tasks) => {
+      if (!tasksApi) {
+        throw new Error('tasks api not available');
+      }
+      for (const t of tasks) {
+        await tasksApi.submitTaskTasksSubmitTaskPost(t);
+      }
     },
     [tasksApi],
   );
@@ -64,7 +69,7 @@ export function TaskPage() {
       cleaningZones={Object.keys(places)}
       loopWaypoints={Object.keys(places)}
       deliveryWaypoints={Object.keys(places)}
-      submitTask={submitTask}
+      submitTasks={submitTasks}
     />
   );
 }
