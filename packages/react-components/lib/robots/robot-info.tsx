@@ -89,9 +89,14 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
       RmfModels.TaskSummary.STATE_COMPLETED,
       RmfModels.TaskSummary.STATE_FAILED,
     ];
-    console.log(robot.assignedTasks);
+
     if (robot.assignedTasks.length > 0) {
-      setCurrentTask(robot.assignedTasks[0]);
+      const tasks = robot.assignedTasks;
+      console.log(tasks);
+      for (let i = 0; i < tasks.length; i++) {
+        if (tasks[i].progress !== '0%') setCurrentTask(robot.assignedTasks[i]);
+      }
+
       if (currentTask) {
         setHasConcreteEndTime(concreteTasks.includes(currentTask.task_summary.state));
       }
