@@ -83,7 +83,7 @@ export function TaskPanel({
         return;
       }
       try {
-        cancelTask(task);
+        await cancelTask(task);
         setSnackbarMessage('Successfully cancelled task');
         setSnackbarSeverity('success');
         setOpenSnackbar(true);
