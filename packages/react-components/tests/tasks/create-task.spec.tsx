@@ -1,7 +1,12 @@
-import { render, waitForElementToBeRemoved } from '@testing-library/react';
+import { render, RenderResult, waitForElementToBeRemoved, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { CleanTaskDescription, LoopTaskDescription } from 'api-client';
 import React from 'react';
+import * as RmfModels from 'rmf-models';
 import { CreateTaskForm } from '../../lib';
+import { makeSubmitTask } from './utils';
+
+const getTaskTypeEl = (root: RenderResult) => root.getByLabelText('Task Type');
 
 describe('CreateTaskForm', () => {
   it('check fields are present', async () => {
@@ -10,7 +15,7 @@ describe('CreateTaskForm', () => {
     root.getByLabelText('Priority');
 
     // check fields are present in clean form
-    userEvent.click(root.getByLabelText('Task Type'));
+    userEvent.click(getTaskTypeEl(root));
     userEvent.click(root.getByRole('option', { name: 'Clean' }));
     await waitForElementToBeRemoved(() => root.getByRole('option', { name: 'Clean' }));
     root.getByLabelText('Cleaning Zone');
@@ -61,5 +66,50 @@ describe('CreateTaskForm', () => {
     const root = render(<CreateTaskForm open tasksFromFile={spy} />);
     userEvent.click(root.getByLabelText('Select File'));
     expect(spy).toHaveBeenCalledTimes(1);
+  });
+
+  describe('task list', () => {
+    const mount = () => {
+      const task1 = makeSubmitTask();
+      task1.description = { cleaning_zone: 'clean' } as CleanTaskDescription;
+      task1.task_type = RmfModels.TaskType.TYPE_CLEAN;
+      const task2 = makeSubmitTask();
+      task2.description = {
+        start_name: 'start',
+        finish_name: 'finish',
+        num_loops: 2,
+      } as LoopTaskDescription;
+      task2.task_type = RmfModels.TaskType.TYPE_LOOP;
+      const tasksFromFile = () => Promise.resolve([task1, task2]);
+      const root = render(<CreateTaskForm open tasksFromFile={tasksFromFile} />);
+      userEvent.click(root.getByLabelText('Select File'));
+
+      const getTaskList = async () => root.findByLabelText('Tasks List');
+      const getTaskItems = async () => within(await getTaskList()).getAllByRole('listitem');
+
+      return {
+        root,
+        q: {
+          getTaskList,
+          getTaskItems,
+        },
+      };
+    };
+
+    it('is shown when file is imported', async () => {
+      const { q } = mount();
+      const taskItems = await q.getTaskItems();
+      expect(taskItems.length).toBe(2);
+    });
+
+    it('clicking on item updates the form', async () => {
+      const { root, q } = mount();
+      const tasks = await q.getTaskItems();
+      expect(tasks.length).toBeGreaterThan(0);
+      userEvent.click(tasks[0]);
+      within(getTaskTypeEl(root)).getByText('Clean');
+      userEvent.click(tasks[1]);
+      within(getTaskTypeEl(root)).getByText('Loop');
+    });
   });
 });

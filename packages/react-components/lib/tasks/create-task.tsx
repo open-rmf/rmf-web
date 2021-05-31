@@ -553,13 +553,14 @@ export function CreateTaskForm({
                     flexItem
                     style={{ marginLeft: theme.spacing(2), marginRight: theme.spacing(2) }}
                   />
-                  <List dense className={classes.taskList} aria-label="batch tasks">
+                  <List dense className={classes.taskList} aria-label="Tasks List">
                     {taskTitles.map((title, idx) => (
                       <ListItem
                         key={idx}
                         button
                         onClick={() => setSelectedTaskIdx(idx)}
                         className={selectedTaskIdx === idx ? classes.selectedTask : undefined}
+                        role="listitem button"
                       >
                         <ListItemText primary={title} />
                       </ListItem>

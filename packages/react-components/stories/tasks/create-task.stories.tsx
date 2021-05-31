@@ -1,29 +1,18 @@
 import { Meta, Story } from '@storybook/react';
 import type { SubmitTask } from 'api-client';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
 import { CreateTaskForm, CreateTaskFormProps } from '../../lib';
+import { makeSubmitTask } from '../../tests/tasks/utils';
 
 export default {
   title: 'Tasks/Create Task',
   component: CreateTaskForm,
 } as Meta;
 
-function makeTask() {
-  return {
-    description: {
-      cleaning_zone: 'zone',
-    },
-    start_time: Math.floor(Date.now() / 1000),
-    task_type: RmfModels.TaskType.TYPE_CLEAN,
-    priority: 0,
-  };
-}
-
 function makeTasks(): SubmitTask[] {
   const tasks = [];
   for (let i = 0; i < 100; i++) {
-    tasks.push(makeTask());
+    tasks.push(makeSubmitTask());
   }
   return tasks;
 }
