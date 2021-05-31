@@ -229,8 +229,8 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
             label="Loops"
             margin="normal"
             value={numOfLoops}
-            onChange={(ev) => setNumOfLoops(ev.target.value)}
-            onBlur={(ev) => {
+            onChange={(ev) => {
+              setNumOfLoops(ev.target.value);
               onChange({
                 ...taskDesc,
                 num_loops: parseInt(ev.target.value) || 1,
