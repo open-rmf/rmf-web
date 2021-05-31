@@ -499,6 +499,8 @@ export function CreateTaskForm({
     })();
   };
 
+  const submitText = tasks.length > 1 ? 'Submit All' : 'Submit';
+
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <Dialog {...dialogProps} maxWidth="md" fullWidth={tasks.length > 1}>
@@ -607,13 +609,13 @@ export function CreateTaskForm({
               color="primary"
               disabled={submitting}
               onClick={handleSubmit}
-              aria-label="Submit"
+              aria-label={submitText}
             >
               <Typography
                 style={{ visibility: submitting ? 'hidden' : 'visible' }}
                 variant="button"
               >
-                Submit
+                {submitText}
               </Typography>
               <CircularProgress
                 style={{ position: 'absolute', visibility: submitting ? 'visible' : 'hidden' }}
