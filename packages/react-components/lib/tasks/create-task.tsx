@@ -116,15 +116,18 @@ function DeliveryTaskForm({
           <Autocomplete
             id="pickup-location"
             freeSolo
-            autoSelect
             fullWidth
             options={deliveryWaypoints}
+            value={taskDesc.pickup_place_name}
             onChange={(_ev, newValue) =>
               onChange({
                 ...taskDesc,
                 pickup_place_name: newValue,
               })
             }
+            onBlur={(ev) => {
+              onChange({ ...taskDesc, pickup_place_name: (ev.target as HTMLInputElement).value });
+            }}
             renderInput={(params) => (
               <TextField {...params} label="Pickup Location" margin="normal" />
             )}
@@ -140,15 +143,18 @@ function DeliveryTaskForm({
           <Autocomplete
             id="dispenser"
             freeSolo
-            autoSelect
             fullWidth
             options={dispensers}
+            value={taskDesc.pickup_dispenser}
             onChange={(_ev, newValue) =>
               onChange({
                 ...taskDesc,
                 pickup_dispenser: newValue,
               })
             }
+            onBlur={(ev) => {
+              onChange({ ...taskDesc, pickup_dispenser: (ev.target as HTMLInputElement).value });
+            }}
             renderInput={(params) => <TextField {...params} label="Dispenser" margin="normal" />}
           />
         </Grid>
@@ -158,15 +164,18 @@ function DeliveryTaskForm({
           <Autocomplete
             id="dropoff-location"
             freeSolo
-            autoSelect
             fullWidth
             options={deliveryWaypoints}
+            value={taskDesc.dropoff_place_name}
             onChange={(_ev, newValue) =>
               onChange({
                 ...taskDesc,
                 dropoff_place_name: newValue,
               })
             }
+            onBlur={(ev) => {
+              onChange({ ...taskDesc, dropoff_place_name: (ev.target as HTMLInputElement).value });
+            }}
             renderInput={(params) => (
               <TextField {...params} label="Dropoff Location" margin="normal" />
             )}
@@ -182,15 +191,18 @@ function DeliveryTaskForm({
           <Autocomplete
             id="ingestor"
             freeSolo
-            autoSelect
             fullWidth
             options={ingestors}
+            value={taskDesc.dropoff_ingestor}
             onChange={(_ev, newValue) =>
               onChange({
                 ...taskDesc,
                 dropoff_ingestor: newValue,
               })
             }
+            onBlur={(ev) => {
+              onChange({ ...taskDesc, dropoff_ingestor: (ev.target as HTMLInputElement).value });
+            }}
             renderInput={(params) => <TextField {...params} label="Ingestor" margin="normal" />}
           />
         </Grid>
@@ -214,15 +226,18 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
       <Autocomplete
         id="start-location"
         freeSolo
-        autoSelect
         fullWidth
         options={loopWaypoints}
+        value={taskDesc.start_name}
         onChange={(_ev, newValue) =>
           onChange({
             ...taskDesc,
             start_name: newValue,
           })
         }
+        onBlur={(ev) => {
+          onChange({ ...taskDesc, start_name: (ev.target as HTMLInputElement).value });
+        }}
         renderInput={(params) => <TextField {...params} label="Start Location" margin="normal" />}
       />
       <Grid container wrap="nowrap">
@@ -230,15 +245,18 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
           <Autocomplete
             id="finish-location"
             freeSolo
-            autoSelect
             fullWidth
             options={loopWaypoints}
+            value={taskDesc.finish_name}
             onChange={(_ev, newValue) =>
               onChange({
                 ...taskDesc,
                 finish_name: newValue,
               })
             }
+            onBlur={(ev) => {
+              onChange({ ...taskDesc, finish_name: (ev.target as HTMLInputElement).value });
+            }}
             renderInput={(params) => (
               <TextField {...params} label="Finish Location" margin="normal" />
             )}
@@ -282,15 +300,18 @@ function CleanTaskForm({ taskDesc, cleaningZones, onChange }: CleanTaskFormProps
     <Autocomplete
       id="cleaning-zone"
       freeSolo
-      autoSelect
       fullWidth
       options={cleaningZones}
+      value={taskDesc.cleaning_zone}
       onChange={(_ev, newValue) =>
         onChange({
           ...taskDesc,
           cleaning_zone: newValue,
         })
       }
+      onBlur={(ev) => {
+        onChange({ ...taskDesc, cleaning_zone: (ev.target as HTMLInputElement).value });
+      }}
       renderInput={(params) => <TextField {...params} label="Cleaning Zone" margin="normal" />}
     />
   );
