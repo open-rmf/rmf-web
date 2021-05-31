@@ -68,7 +68,7 @@ function parseTasksFile(contents: string): SubmitTask[] {
         checkField(desc, 'dropoff_place_name', 'string');
         break;
       case RmfModels.TaskType.TYPE_LOOP:
-        checkField(desc, 'num_loops', 'string');
+        checkField(desc, 'num_loops', 'number');
         checkField(desc, 'start_name', 'string');
         checkField(desc, 'finish_name', 'string');
         break;
