@@ -39,6 +39,7 @@ export const TaskPanel: Story<TaskPanelProps> = (args) => {
         {...args}
         style={{ height: '95vh', margin: 'auto', maxWidth: 1600 }}
         submitTask={() => new Promise((res) => setTimeout(res, 1000))}
+        cancelTask={() => new Promise((res) => setTimeout(res, 1000))}
       ></TaskPanel_>
     </>
   );

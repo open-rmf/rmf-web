@@ -57,6 +57,13 @@ export function TaskPage() {
     [tasksApi],
   );
 
+  const cancelTask = React.useCallback<Required<TaskPanelProps>['cancelTask']>(
+    async (task) => {
+      await tasksApi?.cancelTaskTasksCancelTaskPost({ task_id: task.task_id });
+    },
+    [tasksApi],
+  );
+
   return (
     <TaskPanel
       className={classes.taskPanel}
@@ -65,6 +72,7 @@ export function TaskPage() {
       loopWaypoints={Object.keys(places)}
       deliveryWaypoints={Object.keys(places)}
       submitTask={submitTask}
+      cancelTask={cancelTask}
     />
   );
 }

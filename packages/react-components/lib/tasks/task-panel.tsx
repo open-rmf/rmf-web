@@ -43,6 +43,7 @@ export interface TaskPanelProps extends React.HTMLProps<HTMLDivElement> {
   dispensers?: string[];
   ingestors?: string[];
   submitTask?: CreateTaskFormProps['submitTask'];
+  cancelTask?: (task: RmfModels.TaskSummary) => Promise<void>;
 }
 
 export function TaskPanel({
@@ -53,6 +54,7 @@ export function TaskPanel({
   dispensers,
   ingestors,
   submitTask,
+  cancelTask,
   ...divProps
 }: TaskPanelProps): JSX.Element {
   const classes = useStyles();
@@ -74,6 +76,27 @@ export function TaskPanel({
       setTotalCount(result.totalCount);
     })();
   }, [fetchTasks, page]);
+
+  const handleCancelTask = React.useCallback(
+    async (task: RmfModels.TaskSummary) => {
+      if (!cancelTask) {
+        return;
+      }
+      try {
+        cancelTask(task);
+        setSnackbarMessage('Successfully cancelled task');
+        setSnackbarSeverity('success');
+        setOpenSnackbar(true);
+        setSelectedTask(undefined);
+        await handleRefresh();
+      } catch (e) {
+        setSnackbarMessage(`Failed to cancel task: ${e.message}`);
+        setSnackbarSeverity('error');
+        setOpenSnackbar(true);
+      }
+    },
+    [cancelTask, handleRefresh],
+  );
 
   React.useEffect(() => {
     handleRefresh();
@@ -99,7 +122,14 @@ export function TaskPanel({
           />
         </Grid>
         <Paper className={classes.detailPanelContainer}>
-          {selectedTask ? <TaskInfo task={selectedTask} /> : <NoSelectedTask />}
+          {selectedTask ? (
+            <TaskInfo
+              task={selectedTask}
+              onCancelTaskClick={() => handleCancelTask(selectedTask)}
+            />
+          ) : (
+            <NoSelectedTask />
+          )}
         </Paper>
       </Grid>
       <CreateTaskForm
