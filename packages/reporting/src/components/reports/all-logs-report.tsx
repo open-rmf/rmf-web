@@ -10,8 +10,8 @@ const AllLogsReport = () => {
     try {
       const response = await axios.get(`${appConfig.reportingServerUrl}/report/raw_logs/`, {
         params: {
-          toLogDate: params.toLogDate ? params.toLogDate.format() : null,
-          fromLogDate: params.fromLogDate ? params.fromLogDate.format() : null,
+          toLogDate: params.toLogDate ? params.toLogDate : null,
+          fromLogDate: params.fromLogDate ? params.fromLogDate : null,
           containerLabel: params.logLabel,
           logLevel: params.logLevel,
           offset: params.offset,

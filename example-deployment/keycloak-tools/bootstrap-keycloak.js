@@ -4,6 +4,45 @@ function authHeaders(token) {
   return { Authorization: `bearer ${token}` };
 }
 
+async function setClientScopeToClient(headers, clientId, clientScopeId) {
+  // set client with client scope
+  await request(
+    `${baseUrl}/admin/realms/rmf-web/clients/${clientId}/default-client-scopes/${clientScopeId}`,
+    {
+      method: 'PUT',
+      headers: headers,
+    },
+  );
+}
+
+async function createAudienceClientScope(headers, name, description, audience) {
+  // set client with client scope
+  return await request(
+    `${baseUrl}/admin/realms/rmf-web/client-scopes`,
+    {
+      method: 'POST',
+      headers: headers,
+    },
+    {
+      name: name,
+      protocol: 'openid-connect',
+      description: description,
+      protocolMappers: [
+        {
+          config: {
+            'access.token.claim': 'true',
+            'id.token.claim': 'false',
+            'included.client.audience': audience,
+          },
+          name: 'rmf-audience',
+          protocol: 'openid-connect',
+          protocolMapper: 'oidc-audience-mapper',
+        },
+      ],
+    },
+  );
+}
+
 (async () => {
   try {
     const token = await getToken();
@@ -97,6 +136,55 @@ function authHeaders(token) {
         eventsListeners: ['jsonlog_event_listener'],
       },
     );
+
+    // create audience client scope
+    await createAudienceClientScope(
+      authHeaders(token),
+      'dashboard',
+      'dashboard scope',
+      'dashboard',
+    );
+
+    await createAudienceClientScope(
+      authHeaders(token),
+      'reporting',
+      'reporting scope',
+      'reporting',
+    );
+
+    // get existing clients (dashboard and reporting)
+    const clientsRaw = await request(`${baseUrl}/admin/realms/rmf-web/clients`, {
+      method: 'GET',
+      headers: authHeaders(token),
+    });
+
+    const clientArray = JSON.parse(clientsRaw.body);
+
+    const dashboardId = clientArray.filter(function (item) {
+      return item.clientId === 'dashboard';
+    })[0].id;
+
+    const reportingId = clientArray.filter(function (item) {
+      return item.clientId === 'reporting';
+    })[0].id;
+
+    // get existing clients (dashboard and reporting)
+    const clientsScopeRaw = await request(`${baseUrl}/admin/realms/rmf-web/client-scopes`, {
+      method: 'GET',
+      headers: authHeaders(token),
+    });
+
+    const clientScopesArray = JSON.parse(clientsScopeRaw.body);
+    const clientScopeDashboardId = clientScopesArray.filter(function (item) {
+      return item.name == 'dashboard';
+    })[0].id;
+
+    const clientScopeReportingId = clientScopesArray.filter(function (item) {
+      return item.name == 'reporting';
+    })[0].id;
+
+    await setClientScopeToClient(authHeaders(token), dashboardId, clientScopeDashboardId);
+    await setClientScopeToClient(authHeaders(token), reportingId, clientScopeReportingId);
   } catch (e) {
     process.exitCode = 1;
   }

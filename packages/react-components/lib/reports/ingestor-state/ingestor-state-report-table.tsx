@@ -1,9 +1,9 @@
 import React from 'react';
 import MaterialTable from 'material-table';
 import { Typography } from '@material-ui/core';
-import moment from 'moment';
 import { materialTableIcons } from '../../material-table-icons';
 import { DefaultLogTableProps } from '../default-report-interface';
+import { format } from 'date-fns';
 
 export type IngestorStateRowsType = {
   created: string; //date
@@ -49,7 +49,7 @@ export const IngestorStateReportTable = (props: IngestorStateReportTable): React
           render: (rowData) => {
             return (
               <Typography data-testid={'ingestor-table-date'}>
-                {moment(rowData.created).format('lll')}
+                {format(new Date(rowData.created), 'MMM dd yyyy hh:mm aaa')}
               </Typography>
             );
           },

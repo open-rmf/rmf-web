@@ -3,11 +3,22 @@ import { NotificationsDialog } from '../lib';
 import { render, screen } from '@testing-library/react';
 import userEvent, { TargetElement } from '@testing-library/user-event';
 import { Notification, Severity } from '../lib';
+import { format } from 'date-fns';
 
 const notifications: Notification[] = [
-  { id: 1, time: 'time', error: 'message', severity: Severity.High },
-  { id: 2, time: 'time', error: 'message', severity: Severity.Medium },
-  { id: 3, time: 'time', error: 'message', severity: Severity.Low },
+  {
+    id: 1,
+    time: format(new Date(), 'MM/dd/yyyy HH:mm'),
+    error: 'message',
+    severity: Severity.High,
+  },
+  {
+    id: 2,
+    time: format(new Date(), 'MM/dd/yyyy HH:mm'),
+    error: 'message',
+    severity: Severity.Medium,
+  },
+  { id: 3, time: format(new Date(), 'MM/dd/yyyy HH:mm'), error: 'message', severity: Severity.Low },
 ];
 
 it('should call onClose when close button is clicked', () => {
@@ -64,7 +75,12 @@ it('should update rmfNotifications state when props are updated', () => {
   // add one more notification
   const updatedNotifications: Notification[] = [
     ...notifications,
-    { id: 4, time: 'time', error: 'message', severity: Severity.Low },
+    {
+      id: 4,
+      time: format(new Date(), 'MM/dd/yyyy HH:mm'),
+      error: 'message',
+      severity: Severity.Low,
+    },
   ];
 
   const { rerender } = render(
