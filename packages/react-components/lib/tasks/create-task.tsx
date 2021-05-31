@@ -125,9 +125,9 @@ function DeliveryTaskForm({
                 pickup_place_name: newValue,
               })
             }
-            onBlur={(ev) => {
-              onChange({ ...taskDesc, pickup_place_name: (ev.target as HTMLInputElement).value });
-            }}
+            onBlur={(ev) =>
+              onChange({ ...taskDesc, pickup_place_name: (ev.target as HTMLInputElement).value })
+            }
             renderInput={(params) => (
               <TextField {...params} label="Pickup Location" margin="normal" />
             )}
@@ -152,9 +152,9 @@ function DeliveryTaskForm({
                 pickup_dispenser: newValue,
               })
             }
-            onBlur={(ev) => {
-              onChange({ ...taskDesc, pickup_dispenser: (ev.target as HTMLInputElement).value });
-            }}
+            onBlur={(ev) =>
+              onChange({ ...taskDesc, pickup_dispenser: (ev.target as HTMLInputElement).value })
+            }
             renderInput={(params) => <TextField {...params} label="Dispenser" margin="normal" />}
           />
         </Grid>
@@ -173,9 +173,9 @@ function DeliveryTaskForm({
                 dropoff_place_name: newValue,
               })
             }
-            onBlur={(ev) => {
-              onChange({ ...taskDesc, dropoff_place_name: (ev.target as HTMLInputElement).value });
-            }}
+            onBlur={(ev) =>
+              onChange({ ...taskDesc, dropoff_place_name: (ev.target as HTMLInputElement).value })
+            }
             renderInput={(params) => (
               <TextField {...params} label="Dropoff Location" margin="normal" />
             )}
@@ -200,9 +200,9 @@ function DeliveryTaskForm({
                 dropoff_ingestor: newValue,
               })
             }
-            onBlur={(ev) => {
-              onChange({ ...taskDesc, dropoff_ingestor: (ev.target as HTMLInputElement).value });
-            }}
+            onBlur={(ev) =>
+              onChange({ ...taskDesc, dropoff_ingestor: (ev.target as HTMLInputElement).value })
+            }
             renderInput={(params) => <TextField {...params} label="Ingestor" margin="normal" />}
           />
         </Grid>
@@ -235,9 +235,9 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
             start_name: newValue,
           })
         }
-        onBlur={(ev) => {
-          onChange({ ...taskDesc, start_name: (ev.target as HTMLInputElement).value });
-        }}
+        onBlur={(ev) =>
+          onChange({ ...taskDesc, start_name: (ev.target as HTMLInputElement).value })
+        }
         renderInput={(params) => <TextField {...params} label="Start Location" margin="normal" />}
       />
       <Grid container wrap="nowrap">
@@ -254,9 +254,9 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
                 finish_name: newValue,
               })
             }
-            onBlur={(ev) => {
-              onChange({ ...taskDesc, finish_name: (ev.target as HTMLInputElement).value });
-            }}
+            onBlur={(ev) =>
+              onChange({ ...taskDesc, finish_name: (ev.target as HTMLInputElement).value })
+            }
             renderInput={(params) => (
               <TextField {...params} label="Finish Location" margin="normal" />
             )}
@@ -309,9 +309,9 @@ function CleanTaskForm({ taskDesc, cleaningZones, onChange }: CleanTaskFormProps
           cleaning_zone: newValue,
         })
       }
-      onBlur={(ev) => {
-        onChange({ ...taskDesc, cleaning_zone: (ev.target as HTMLInputElement).value });
-      }}
+      onBlur={(ev) =>
+        onChange({ ...taskDesc, cleaning_zone: (ev.target as HTMLInputElement).value })
+      }
       renderInput={(params) => <TextField {...params} label="Cleaning Zone" margin="normal" />}
     />
   );
@@ -555,12 +555,10 @@ export function CreateTaskForm({
                       label="Priority"
                       margin="normal"
                       value={priorityInput}
-                      onChange={(ev) => setPriorityInput(ev.target.value)}
-                      onBlur={() => {
-                        const newPriority = parseInt(priorityInput) || 0;
-                        task.priority = newPriority;
+                      onChange={(ev) => {
+                        task.priority = parseInt(ev.target.value) || 0;
                         updateTasks();
-                        setPriorityInput(newPriority.toString());
+                        setPriorityInput(ev.target.value);
                       }}
                     />
                   </Grid>
