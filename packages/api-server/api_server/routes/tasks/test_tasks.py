@@ -31,7 +31,7 @@ class TestTasksRoute(RouteFixture):
     def test_cancel_task_request(self):
         cancel_task = CancelTask(task_id="test_task")
         fut = self.host_service_one(
-            RmfCancelTask, "cancel_task", RmfCancelTask.Response()
+            RmfCancelTask, "cancel_task", RmfCancelTask.Response(success=True)
         )
         resp = self.session.post(
             f"{self.base_url}/tasks/cancel_task", data=cancel_task.json()
