@@ -6,7 +6,7 @@
     "start": "concurrently npm:start:rmf-server npm:start:rmf npm:start:react",
     "start:react": "react-scripts start",
     "start:rmf": "ts-node -P scripts/tsconfig.json -T scripts/start-rmf.ts",
-    "start:rmf-server": "RMF_SERVER_USE_SIM_TIME=true npm --prefix ../api-server start",
+    "start:rmf-server": "RMF_SERVER_USE_SIM_TIME=false npm --prefix ../api-server start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "test:coverage": "npm run test -- --coverage --watchAll=false",

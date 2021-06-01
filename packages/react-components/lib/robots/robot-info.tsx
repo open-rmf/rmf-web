@@ -71,7 +71,8 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
   }
 
   function assignedTasksToStr(robot: VerboseRobot): string {
-    return robot.assignedTasks
+    return [...robot.assignedTasks]
+      .reverse()
       .map((task, index) => {
         if (index != robot.assignedTasks.length - 1) {
           return task.task_summary.task_id.concat(' → ');
@@ -90,7 +91,18 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
     ];
 
     if (robot.assignedTasks.length > 0) {
-      setCurrentTask(robot.assignedTasks[0]);
+      const tasks = robot.assignedTasks;
+      let isActive: boolean = false;
+      for (let i = 0; i < tasks.length; i++) {
+        if (tasks[i].progress !== '0%') {
+          isActive = true;
+          setCurrentTask(robot.assignedTasks[i]);
+          break;
+        }
+      }
+
+      if (!isActive) setCurrentTask(robot.assignedTasks[0]);
+
       if (currentTask) {
         setHasConcreteEndTime(concreteTasks.includes(currentTask.task_summary.state));
       }
