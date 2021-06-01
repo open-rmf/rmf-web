@@ -2,6 +2,7 @@
 
 import { makeStyles } from '@material-ui/core';
 import type { TaskProgress } from 'api-client';
+import type { AxiosError } from 'axios';
 import React from 'react';
 import { TaskPanel, TaskPanelProps } from 'react-components';
 import { PlacesContext, RmfIngressContext } from '../rmf-app';
@@ -66,12 +67,19 @@ export function TaskPage() {
 
   const cancelTask = React.useCallback<Required<TaskPanelProps>['cancelTask']>(
     async (task) => {
-      const resp = await tasksApi?.cancelTaskTasksCancelTaskPost({ task_id: task.task_id });
-      if (!resp) {
-        throw new Error('unexpected error (missing response)');
-      }
-      if (resp.status !== 200) {
-        throw new Error(resp.data.detail.msg);
+      try {
+        await tasksApi?.cancelTaskTasksCancelTaskPost({ task_id: task.task_id });
+      } catch (e) {
+        const axiosErr = e as AxiosError;
+        let errMsg = 'unspecified error';
+        if (
+          axiosErr.response &&
+          typeof axiosErr.response.data.detail === 'string' &&
+          axiosErr.response.data.detail.length > 0
+        ) {
+          errMsg = axiosErr.response.data.detail;
+        }
+        throw new Error(errMsg);
       }
     },
     [tasksApi],
