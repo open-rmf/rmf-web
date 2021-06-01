@@ -14,19 +14,31 @@
 /**
  *
  * @export
- * @interface Fleet
+ * @interface Robot
  */
-export interface Fleet {
+export interface Robot {
   /**
    *
    * @type {string}
-   * @memberof Fleet
+   * @memberof Robot
+   */
+  fleet: any;
+  /**
+   *
+   * @type {string}
+   * @memberof Robot
    */
   name: any;
   /**
    *
-   * @type {FleetState}
-   * @memberof Fleet
+   * @type {RobotState}
+   * @memberof Robot
    */
   state: any;
+  /**
+   *
+   * @type {Array&lt;TaskSummary&gt;}
+   * @memberof Robot
+   */
+  tasks?: any;
 }

@@ -4,6 +4,7 @@ import logging
 from collections import namedtuple
 from typing import Coroutine, List
 
+import tortoise.transactions
 from rx.core.typing import Disposable
 
 from ..models import (
@@ -117,7 +118,7 @@ class RmfBookKeeper:
 
     @staticmethod
     def _report_health(health: BasicHealth, logger: logging.Logger):
-        message = health.get_pydantic().json()
+        message = health.json()
         if health.health_status == HealthStatus.UNHEALTHY:
             logger.warning(message)
         elif health.health_status == HealthStatus.DEAD:
@@ -210,7 +211,19 @@ class RmfBookKeeper:
 
     def _record_fleet_state(self):
         async def update(fleet_state: FleetState):
-            await self.repo.save_fleet_state(fleet_state)
+            tasks = [
+                ttm.RobotState.update_or_create(
+                    {
+                        "data": r.dict(),
+                    },
+                    fleet_name=fleet_state.name,
+                    robot_name=r.name,
+                )
+                for r in fleet_state.robots
+            ]
+            async with tortoise.transactions.in_transaction():
+                await asyncio.gather(self.repo.save_fleet_state(fleet_state), *tasks)
+
             self._loggers.fleet_state.info(fleet_state.json())
 
         self._subscriptions.append(

@@ -1,10 +1,12 @@
 import axios from 'axios';
 import { DispenserResourceManager, RawDispenserResource } from './resource-manager-dispensers';
+import { LogoResourceManager, LogoResource } from './resource-manager-logos';
 import { RobotResource, RobotResourceManager } from './resource-manager-robots';
 
 export interface ResourceConfigurationsType {
   robots?: Record<string, RobotResource>; // Record<FleetName, RobotResource>
   dispensers?: Record<string, RawDispenserResource>; // Record<DispenserName, DispenserResource>
+  logos?: Record<string, LogoResource>;
 }
 
 interface ResourceManagersProps extends ResourceConfigurationsType {
@@ -14,6 +16,7 @@ interface ResourceManagersProps extends ResourceConfigurationsType {
 export default class ResourceManager {
   robots: RobotResourceManager;
   dispensers: DispenserResourceManager | undefined;
+  logos: LogoResourceManager | undefined;
 
   static getResourceConfigurationFile = async (): Promise<ResourceManager | undefined> => {
     try {
@@ -44,6 +47,12 @@ export default class ResourceManager {
       return new ResourceManager(data as ResourceManagersProps);
     }
 
+    if (resources?.logos && !Object.keys(resources.logos).length) {
+      const data = Object.assign({}, resources);
+      delete data['logos'];
+      return new ResourceManager(data as ResourceManagersProps);
+    }
+
     return new ResourceManager(resources as ResourceManagersProps);
   };
 
@@ -51,6 +60,9 @@ export default class ResourceManager {
     this.robots = new RobotResourceManager(resources.robots || {});
     if (resources.dispensers) {
       this.dispensers = new DispenserResourceManager(resources.dispensers);
+    }
+    if (resources.logos) {
+      this.logos = new LogoResourceManager(resources.logos);
     }
   }
 }

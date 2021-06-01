@@ -25,7 +25,7 @@ def base_query_params(field_mapping: Dict[str, str] = None) -> WithBaseQuery[Res
             None,
             description="common separated list of fields to order by, prefix with '-' to sort descendingly.",
         ),
-    ) -> WithBaseQuery:
+    ) -> WithBaseQuery[ResultT]:
         async def do_query(query: QuerySet):
             count = await query.count()
             query = query.limit(limit).offset(offset)

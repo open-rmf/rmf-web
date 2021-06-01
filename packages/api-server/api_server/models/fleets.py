@@ -1,14 +1,26 @@
+from typing import List
+
 from pydantic import BaseModel
 
-from . import tortoise_models as ttm
+from api_server.models.tasks import TaskSummary
+
+from .health import BasicHealth
 from .ros_pydantic import rmf_fleet_msgs
 
 FleetState = rmf_fleet_msgs.FleetState
 RobotState = rmf_fleet_msgs.RobotState
 RobotMode = rmf_fleet_msgs.RobotMode
-RobotHealth = ttm.RobotHealth
+RobotHealth = BasicHealth
 Location = rmf_fleet_msgs.Location
 
 
 class Fleet(BaseModel):
     name: str
+    state: FleetState
+
+
+class Robot(BaseModel):
+    fleet: str
+    name: str
+    state: RobotState
+    tasks: List[TaskSummary] = []
