@@ -97,8 +97,8 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
         if (tasks[i].progress !== '0%') {
           isActive = true;
           setCurrentTask(robot.assignedTasks[i]);
+          break;
         }
-        break;
       }
 
       if (!isActive) setCurrentTask(robot.assignedTasks[0]);
