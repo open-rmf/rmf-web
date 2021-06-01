@@ -121,6 +121,12 @@ export function TaskInfo({ task, onCancelTaskClick }: TaskInfoProps): JSX.Elemen
         return null;
     }
   })();
+
+  const taskCancellable =
+    task.state === RmfModels.TaskSummary.STATE_ACTIVE ||
+    task.state === RmfModels.TaskSummary.STATE_PENDING ||
+    task.state === RmfModels.TaskSummary.STATE_QUEUED;
+
   return (
     <div>
       <Typography variant="h6" style={{ textAlign: 'center' }} gutterBottom>
@@ -160,6 +166,7 @@ export function TaskInfo({ task, onCancelTaskClick }: TaskInfoProps): JSX.Elemen
         color="secondary"
         aria-label="Cancel Task"
         onClick={onCancelTaskClick}
+        disabled={!taskCancellable}
       >
         Cancel Task
       </Button>
