@@ -2,7 +2,7 @@ import { Meta, Story } from '@storybook/react';
 import type { SubmitTask } from 'api-client';
 import React from 'react';
 import { CreateTaskForm, CreateTaskFormProps } from '../../lib';
-import { makeSubmitTask } from '../../tests/tasks/utils';
+import { makeSubmitTask } from '../../tests/test-data/tasks';
 
 export default {
   title: 'Tasks/Create Task',

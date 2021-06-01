@@ -15,13 +15,36 @@ function makeFetchTasks(tasks: RmfModels.TaskSummary[]): TaskPanelProps['fetchTa
 }
 
 describe('TaskPanel', () => {
-  it('shows detailed information when task is clicked', async () => {
-    const task = makeTask('test_task', 3, 3);
-    task.task_profile.description.task_type.type = RmfModels.TaskType.TYPE_CLEAN;
-    task.task_profile.description.clean.start_waypoint = 'test_waypoint';
-    const root = render(<TaskPanel fetchTasks={makeFetchTasks([task])} />);
-    userEvent.click(await root.findByText('test_task'));
-    root.getByText('test_waypoint');
+  describe('task detail', () => {
+    const mount = async (cancelTask?: TaskPanelProps['cancelTask']) => {
+      const task = makeTask('test_task', 3, 3);
+      task.task_profile.description.task_type.type = RmfModels.TaskType.TYPE_CLEAN;
+      task.task_profile.description.clean.start_waypoint = 'test_waypoint';
+      const root = render(
+        <TaskPanel fetchTasks={makeFetchTasks([task])} cancelTask={cancelTask} />,
+      );
+      userEvent.click(await root.findByText('test_task'));
+      return root;
+    };
+
+    it('is shown when task is clicked', async () => {
+      const root = await mount();
+      root.getByText('test_waypoint');
+    });
+
+    it('success snackbar is shown when task is successfully cancelled', async () => {
+      const cancelTask = () => Promise.resolve(undefined);
+      const root = await mount(cancelTask);
+      userEvent.click(root.getByLabelText('Cancel Task'));
+      await waitFor(() => root.getByText('Successfully cancelled task'));
+    });
+
+    it('error snackbar is shown when task failed to cancel', async () => {
+      const cancelTask = () => Promise.reject(new Error('test error'));
+      const root = await mount(cancelTask);
+      userEvent.click(root.getByLabelText('Cancel Task'));
+      await waitFor(() => root.getByText('Failed to cancel task: test error'));
+    });
   });
 
   it('clicking on create task button opens the create task form', () => {
