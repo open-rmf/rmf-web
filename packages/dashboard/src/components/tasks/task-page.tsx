@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { makeStyles } from '@material-ui/core';
 import type { TaskProgress } from 'api-client';
 import React from 'react';
@@ -50,9 +52,14 @@ export function TaskPage() {
     [tasksApi],
   );
 
-  const submitTask = React.useCallback<Required<TaskPanelProps>['submitTask']>(
-    async (body) => {
-      await tasksApi?.submitTaskTasksSubmitTaskPost(body);
+  const submitTasks = React.useCallback<Required<TaskPanelProps>['submitTasks']>(
+    async (tasks) => {
+      if (!tasksApi) {
+        throw new Error('tasks api not available');
+      }
+      for (const t of tasks) {
+        await tasksApi.submitTaskTasksSubmitTaskPost(t);
+      }
     },
     [tasksApi],
   );
@@ -64,7 +71,7 @@ export function TaskPage() {
       cleaningZones={Object.keys(places)}
       loopWaypoints={Object.keys(places)}
       deliveryWaypoints={Object.keys(places)}
-      submitTask={submitTask}
+      submitTasks={submitTasks}
     />
   );
 }

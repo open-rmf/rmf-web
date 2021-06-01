@@ -5,7 +5,6 @@ import { SearchFilter } from './search-filter';
 import DateAndTimePickers from '../../date-time-picker';
 import { LogLevel } from './log-level';
 
-import moment from 'moment';
 import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 import { LogQueryPayload } from '.';
 
@@ -28,8 +27,8 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
   // The log contains information from different services, the label help us differentiate the service
   const [logLabel, setLogLabel] = React.useState('');
   const [logLevel, setLogLevel] = React.useState(LogLevel.All);
-  const [fromLogDate, setFromLogDate] = React.useState<MaterialUiPickersDate>(moment(new Date()));
-  const [toLogDate, setToLogDate] = React.useState<MaterialUiPickersDate>(moment(new Date()));
+  const [fromLogDate, setFromLogDate] = React.useState<MaterialUiPickersDate>(new Date());
+  const [toLogDate, setToLogDate] = React.useState<MaterialUiPickersDate>(new Date());
 
   const classes = useStyles();
 
