@@ -9,7 +9,7 @@ import type {
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { CreateTaskForm } from '../../lib';
-import { makeSubmitTask } from './utils';
+import { makeSubmitTask } from '../test-data/tasks';
 
 const getTaskTypeEl = (root: RenderResult) => root.getByLabelText('Task Type');
 
