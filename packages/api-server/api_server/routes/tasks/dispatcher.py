@@ -37,6 +37,7 @@ class DispatcherClient:
         Raises "HTTPException" if service call fails.
         """
         req = RmfCancelTask.Request()
+        req.requester = "rmf-server"
         req.task_id = task.task_id
         response: RmfCancelTask.Response = await self.rmf_gateway.call_service(
             self.rmf_gateway.cancel_task_srv, req
