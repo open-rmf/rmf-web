@@ -57,7 +57,7 @@ export function RobotPanel({ robots, fetchTasks, ...divProps }: RobotPanelProps)
   }, [robots]);
 
   React.useEffect(() => {
-    handleRefresh(10, page * 10);
+    handleRefresh();
   }, [handleRefresh]);
 
   return (
