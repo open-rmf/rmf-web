@@ -85,7 +85,7 @@ class FleetsRouter(FastIORouter):
                 # tasks summaries.
                 if r is None:
                     logger.warn(
-                        f'task "{t.id_}" is assigned to an known fleet/robot ({t.fleet_name}/{t.robot_name}'
+                        f'task "{t.id_}" is assigned to an unknown fleet/robot ({t.fleet_name}/{t.robot_name}'
                     )
                 r.tasks.append(TaskSummary(**t.data))
 
