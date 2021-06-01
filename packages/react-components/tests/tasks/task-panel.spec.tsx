@@ -32,7 +32,7 @@ describe('TaskPanel', () => {
 
   it('success snackbar is shown when successfully created a task', async () => {
     const spy = jasmine.createSpy().and.resolveTo(undefined);
-    const root = render(<TaskPanel fetchTasks={makeFetchTasks([])} submitTask={spy} />);
+    const root = render(<TaskPanel fetchTasks={makeFetchTasks([])} submitTasks={spy} />);
     userEvent.click(root.getByLabelText('Create Task'));
     userEvent.click(root.getByLabelText('Submit'));
     await waitFor(() => root.getByText('Successfully created task'));
@@ -40,7 +40,7 @@ describe('TaskPanel', () => {
 
   it('failure snackbar is shown when failed to created a task', async () => {
     const spy = jasmine.createSpy().and.rejectWith(new Error('error!!'));
-    const root = render(<TaskPanel fetchTasks={makeFetchTasks([])} submitTask={spy} />);
+    const root = render(<TaskPanel fetchTasks={makeFetchTasks([])} submitTasks={spy} />);
     userEvent.click(root.getByLabelText('Create Task'));
     userEvent.click(root.getByLabelText('Submit'));
     await waitFor(() => root.getByText('Failed to create task', { exact: false }));

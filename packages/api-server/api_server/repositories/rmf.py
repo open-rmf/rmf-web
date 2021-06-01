@@ -8,7 +8,6 @@ from ..models import (
     Door,
     DoorHealth,
     DoorState,
-    Fleet,
     FleetState,
     Ingestor,
     IngestorHealth,
@@ -79,7 +78,7 @@ class RmfRepository:
         return await ttm.DoorHealth.filter(**queries)
 
     async def save_door_health(self, door_health: DoorHealth):
-        dic = door_health.get_pydantic().dict()
+        dic = door_health.dict()
         del dic["id_"]
         await ttm.DoorHealth.update_or_create(dic, id_=door_health.id_)
 
@@ -114,7 +113,7 @@ class RmfRepository:
         return await ttm.LiftHealth.filter(**queries)
 
     async def save_lift_health(self, lift_health: LiftHealth):
-        dic = lift_health.get_pydantic().dict()
+        dic = lift_health.dict()
         del dic["id_"]
         await ttm.LiftHealth.update_or_create(dic, id_=lift_health.id_)
 
@@ -149,7 +148,7 @@ class RmfRepository:
         return await ttm.DispenserHealth.filter(**queries)
 
     async def save_dispenser_health(self, dispenser_health: DispenserHealth):
-        dic = dispenser_health.get_pydantic().dict()
+        dic = dispenser_health.dict()
         del dic["id_"]
         await ttm.DispenserHealth.update_or_create(dic, id_=dispenser_health.id_)
 
@@ -184,13 +183,9 @@ class RmfRepository:
         return await ttm.IngestorHealth.filter(**queries)
 
     async def save_ingestor_health(self, ingestor_health: IngestorHealth):
-        dic = ingestor_health.get_pydantic().dict()
+        dic = ingestor_health.dict()
         del dic["id_"]
         await ttm.IngestorHealth.update_or_create(dic, id_=ingestor_health.id_)
-
-    async def query_fleets(self, **queries) -> List[Fleet]:
-        states = await ttm.FleetState.filter(**queries)
-        return [Fleet(name=state.data["name"]) for state in states]
 
     async def get_fleet_state(self, fleet_name: str) -> Optional[FleetState]:
         fleet_state = await ttm.FleetState.get_or_none(id_=fleet_name)
@@ -219,7 +214,7 @@ class RmfRepository:
         return await ttm.DoorHealth.filter(**queries)
 
     async def save_robot_health(self, robot_health: RobotHealth):
-        dic = robot_health.get_pydantic().dict()
+        dic = robot_health.dict()
         del dic["id_"]
         await ttm.RobotHealth.update_or_create(dic, id_=robot_health.id_)
 

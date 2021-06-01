@@ -12,11 +12,11 @@ class TestMostCritical(unittest.TestCase):
     def test_returns_dead_over_unhealthy(self):
         healths = [
             BasicHealth(
-                name="test",
+                id_="test",
                 health_status=HealthStatus.DEAD,
             ),
             BasicHealth(
-                name="test",
+                id_="test",
                 health_status=HealthStatus.UNHEALTHY,
             ),
         ]
@@ -35,12 +35,12 @@ class TestMostCritical(unittest.TestCase):
     def test_return_most_recent(self):
         healths = [
             BasicHealth(
-                name="test",
+                id_="test",
                 health_status=HealthStatus.DEAD,
                 health_message="first",
             ),
             BasicHealth(
-                name="test",
+                id_="test",
                 health_status=HealthStatus.DEAD,
                 health_message="second",
             ),
@@ -61,7 +61,7 @@ class TestMostCritical(unittest.TestCase):
     def test_ignore_none_values(self):
         healths = [
             BasicHealth(
-                name="test",
+                id_="test",
                 health_status=HealthStatus.HEALTHY,
             ),
             None,
