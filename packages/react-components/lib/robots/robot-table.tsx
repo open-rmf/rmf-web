@@ -208,6 +208,7 @@ export function RobotTable({
                   robot={robot}
                   onClick={(ev) => {
                     setSelectedRobot(robot);
+                    onRefreshTasks && onRefreshTasks(undefined, undefined, robot.name);
                     onRobotClickAndRefresh && onRobotClickAndRefresh(robot, ev);
                   }}
                 />
