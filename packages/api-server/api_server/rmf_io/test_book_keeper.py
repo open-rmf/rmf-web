@@ -14,6 +14,7 @@ from ..models import (
     RobotHealth,
     TaskSummary,
 )
+from ..models import tortoise_models as ttm
 from ..repositories import RmfRepository
 from ..rmf_io import RmfEvents
 from ..test import test_data
@@ -106,7 +107,7 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
             )
         )
         await asyncio.sleep(0)
-        health = await LiftHealth.get(id_="test_lift")
+        health = await (await ttm.LiftHealth.get(id_="test_lift")).to_pydantic()
         self.assertIsNotNone(health)
         self.assertEqual(health.health_status, HealthStatus.HEALTHY)
 
@@ -117,7 +118,7 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
             )
         )
         await asyncio.sleep(0)
-        health = await LiftHealth.get(id_="test_lift")
+        health = await (await ttm.LiftHealth.get(id_="test_lift")).to_pydantic()
         self.assertIsNotNone(health)
         self.assertEqual(health.health_status, HealthStatus.UNHEALTHY)
 
@@ -146,7 +147,9 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
             )
         )
         await asyncio.sleep(0)
-        health = await DispenserHealth.get(id_="test_dispenser")
+        health = await (
+            await ttm.DispenserHealth.get(id_="test_dispenser")
+        ).to_pydantic()
         self.assertIsNotNone(health)
         self.assertEqual(health.health_status, HealthStatus.HEALTHY)
 
@@ -157,7 +160,9 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
             )
         )
         await asyncio.sleep(0)
-        health = await DispenserHealth.get(id_="test_dispenser")
+        health = await (
+            await ttm.DispenserHealth.get(id_="test_dispenser")
+        ).to_pydantic()
         self.assertIsNotNone(health)
         self.assertEqual(health.health_status, HealthStatus.UNHEALTHY)
 
@@ -186,7 +191,7 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
             )
         )
         await asyncio.sleep(0)
-        health = await IngestorHealth.get(id_="test_ingestor")
+        health = await (await ttm.IngestorHealth.get(id_="test_ingestor")).to_pydantic()
         self.assertIsNotNone(health)
         self.assertEqual(health.health_status, HealthStatus.HEALTHY)
 
@@ -197,7 +202,7 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
             )
         )
         await asyncio.sleep(0)
-        health = await IngestorHealth.get(id_="test_ingestor")
+        health = await (await ttm.IngestorHealth.get(id_="test_ingestor")).to_pydantic()
         self.assertIsNotNone(health)
         self.assertEqual(health.health_status, HealthStatus.UNHEALTHY)
 
@@ -226,7 +231,9 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
             )
         )
         await asyncio.sleep(0)
-        health = await RobotHealth.get(id_="test_fleet/test_robot")
+        health = await (
+            await ttm.RobotHealth.get(id_="test_fleet/test_robot")
+        ).to_pydantic()
         self.assertIsNotNone(health)
         self.assertEqual(health.health_status, HealthStatus.HEALTHY)
 
@@ -237,7 +244,7 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
             )
         )
         await asyncio.sleep(0)
-        health = await RobotHealth.get(id_="test_fleet/test_robot")
+        health = await ttm.RobotHealth.get(id_="test_fleet/test_robot")
         self.assertIsNotNone(health)
         self.assertEqual(health.health_status, HealthStatus.UNHEALTHY)
 

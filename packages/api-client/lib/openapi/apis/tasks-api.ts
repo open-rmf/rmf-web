@@ -88,14 +88,14 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
     /**
      *
      * @summary Get Tasks
-     * @param {string} [task_id]
-     * @param {string} [fleet_name]
+     * @param {string} [task_id] comma separated list of task ids
+     * @param {string} [fleet_name] comma separated list of fleet names
      * @param {Date} [submission_time_since]
      * @param {Date} [start_time_since]
      * @param {Date} [end_time_since]
-     * @param {string} [robot_name]
-     * @param {string} [state]
-     * @param {string} [task_type]
+     * @param {string} [robot_name] comma separated list of robot names
+     * @param {string} [state] comma separated list of states
+     * @param {string} [task_type] comma separated list of task types
      * @param {number} [priority]
      * @param {number} [limit]
      * @param {number} [offset]
@@ -297,14 +297,14 @@ export const TasksApiFp = function (configuration?: Configuration) {
     /**
      *
      * @summary Get Tasks
-     * @param {string} [task_id]
-     * @param {string} [fleet_name]
+     * @param {string} [task_id] comma separated list of task ids
+     * @param {string} [fleet_name] comma separated list of fleet names
      * @param {Date} [submission_time_since]
      * @param {Date} [start_time_since]
      * @param {Date} [end_time_since]
-     * @param {string} [robot_name]
-     * @param {string} [state]
-     * @param {string} [task_type]
+     * @param {string} [robot_name] comma separated list of robot names
+     * @param {string} [state] comma separated list of states
+     * @param {string} [task_type] comma separated list of task types
      * @param {number} [priority]
      * @param {number} [limit]
      * @param {number} [offset]
@@ -400,14 +400,14 @@ export const TasksApiFactory = function (
     /**
      *
      * @summary Get Tasks
-     * @param {string} [task_id]
-     * @param {string} [fleet_name]
+     * @param {string} [task_id] comma separated list of task ids
+     * @param {string} [fleet_name] comma separated list of fleet names
      * @param {Date} [submission_time_since]
      * @param {Date} [start_time_since]
      * @param {Date} [end_time_since]
-     * @param {string} [robot_name]
-     * @param {string} [state]
-     * @param {string} [task_type]
+     * @param {string} [robot_name] comma separated list of robot names
+     * @param {string} [state] comma separated list of states
+     * @param {string} [task_type] comma separated list of task types
      * @param {number} [priority]
      * @param {number} [limit]
      * @param {number} [offset]
@@ -489,14 +489,14 @@ export class TasksApi extends BaseAPI {
   /**
    *
    * @summary Get Tasks
-   * @param {string} [task_id]
-   * @param {string} [fleet_name]
+   * @param {string} [task_id] comma separated list of task ids
+   * @param {string} [fleet_name] comma separated list of fleet names
    * @param {Date} [submission_time_since]
    * @param {Date} [start_time_since]
    * @param {Date} [end_time_since]
-   * @param {string} [robot_name]
-   * @param {string} [state]
-   * @param {string} [task_type]
+   * @param {string} [robot_name] comma separated list of robot names
+   * @param {string} [state] comma separated list of states
+   * @param {string} [task_type] comma separated list of task types
    * @param {number} [priority]
    * @param {number} [limit]
    * @param {number} [offset]

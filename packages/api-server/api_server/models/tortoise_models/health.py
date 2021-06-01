@@ -1,17 +1,20 @@
 from tortoise import Model, fields
+from tortoise.contrib.pydantic.base import PydanticModel
+from tortoise.contrib.pydantic.creator import pydantic_model_creator
 
 from .health_status_mixin import HealthStatusMixin
-from .pydantic_mixins import with_pydantic
 
 
-@with_pydantic
 class BasicHealthModel(Model, HealthStatusMixin):
+    PydanticModel: PydanticModel
+
     id_ = fields.CharField(255, pk=True, source_field="id")
 
-    def to_dict(self):
-        result = super().to_dict()
-        result.update({"id": self.id_})
-        return result
+    async def to_pydantic(self):
+        return await self.PydanticModel.from_tortoise_orm(self)
+
+
+BasicHealthModel.PydanticModel = pydantic_model_creator(BasicHealthModel)
 
 
 class DoorHealth(BasicHealthModel):

@@ -16,9 +16,10 @@ import { Configuration } from '../configuration';
 // Some imports not used depending on template conditions
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-import { ApiServerModelsTortoiseModelsHealthBasicHealthModelLeaf } from '../models';
-import { Fleet } from '../models';
+import { BasicHealth } from '../models';
 import { FleetState } from '../models';
+import { GetFleetsResponse } from '../models';
+import { GetRobotsResponse } from '../models';
 import { HTTPValidationError } from '../models';
 /**
  * FleetsApi - axios parameter creator
@@ -27,7 +28,7 @@ import { HTTPValidationError } from '../models';
 export const FleetsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     * Available in socket.io.
+     * **Available in socket.io**
      * @summary Get Fleet State
      * @param {string} name
      * @param {*} [options] Override http request option.
@@ -81,10 +82,20 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
     /**
      *
      * @summary Get Fleets
+     * @param {string} [fleet_name] comma separated list of fleet names
+     * @param {number} [limit]
+     * @param {number} [offset]
+     * @param {string} [order_by] common separated list of fields to order by, prefix with &#x27;-&#x27; to sort descendingly.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getFleetsFleetsGet: async (options: any = {}): Promise<RequestArgs> => {
+    getFleetsFleetsGet: async (
+      fleet_name?: string,
+      limit?: number,
+      offset?: number,
+      order_by?: string,
+      options: any = {},
+    ): Promise<RequestArgs> => {
       const localVarPath = `/fleets`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, 'https://example.com');
@@ -95,6 +106,22 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
       const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
+
+      if (fleet_name !== undefined) {
+        localVarQueryParameter['fleet_name'] = fleet_name;
+      }
+
+      if (limit !== undefined) {
+        localVarQueryParameter['limit'] = limit;
+      }
+
+      if (offset !== undefined) {
+        localVarQueryParameter['offset'] = offset;
+      }
+
+      if (order_by !== undefined) {
+        localVarQueryParameter['order_by'] = order_by;
+      }
 
       const query = new URLSearchParams(localVarUrlObj.search);
       for (const key in localVarQueryParameter) {
@@ -117,7 +144,7 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
       };
     },
     /**
-     * Available in socket.io.
+     * **Available in socket.io**
      * @summary Get Robot Health
      * @param {string} fleet
      * @param {string} robot
@@ -176,6 +203,76 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
         options: localVarRequestOptions,
       };
     },
+    /**
+     *
+     * @summary Get Robots
+     * @param {string} [fleet_name] comma separated list of fleet names
+     * @param {string} [robot_name] comma separated list of robot names
+     * @param {number} [limit]
+     * @param {number} [offset]
+     * @param {string} [order_by] common separated list of fields to order by, prefix with &#x27;-&#x27; to sort descendingly.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getRobotsFleetsRobotsGet: async (
+      fleet_name?: string,
+      robot_name?: string,
+      limit?: number,
+      offset?: number,
+      order_by?: string,
+      options: any = {},
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/fleets/robots`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, 'https://example.com');
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      if (fleet_name !== undefined) {
+        localVarQueryParameter['fleet_name'] = fleet_name;
+      }
+
+      if (robot_name !== undefined) {
+        localVarQueryParameter['robot_name'] = robot_name;
+      }
+
+      if (limit !== undefined) {
+        localVarQueryParameter['limit'] = limit;
+      }
+
+      if (offset !== undefined) {
+        localVarQueryParameter['offset'] = offset;
+      }
+
+      if (order_by !== undefined) {
+        localVarQueryParameter['order_by'] = order_by;
+      }
+
+      const query = new URLSearchParams(localVarUrlObj.search);
+      for (const key in localVarQueryParameter) {
+        query.set(key, localVarQueryParameter[key]);
+      }
+      for (const key in options.query) {
+        query.set(key, options.query[key]);
+      }
+      localVarUrlObj.search = new URLSearchParams(query).toString();
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: localVarUrlObj.pathname + localVarUrlObj.search + localVarUrlObj.hash,
+        options: localVarRequestOptions,
+      };
+    },
   };
 };
 
@@ -186,7 +283,7 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
 export const FleetsApiFp = function (configuration?: Configuration) {
   return {
     /**
-     * Available in socket.io.
+     * **Available in socket.io**
      * @summary Get Fleet State
      * @param {string} name
      * @param {*} [options] Override http request option.
@@ -210,13 +307,25 @@ export const FleetsApiFp = function (configuration?: Configuration) {
     /**
      *
      * @summary Get Fleets
+     * @param {string} [fleet_name] comma separated list of fleet names
+     * @param {number} [limit]
+     * @param {number} [offset]
+     * @param {string} [order_by] common separated list of fields to order by, prefix with &#x27;-&#x27; to sort descendingly.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getFleetsFleetsGet(
+      fleet_name?: string,
+      limit?: number,
+      offset?: number,
+      order_by?: string,
       options?: any,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Fleet>>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetFleetsResponse>> {
       const localVarAxiosArgs = await FleetsApiAxiosParamCreator(configuration).getFleetsFleetsGet(
+        fleet_name,
+        limit,
+        offset,
+        order_by,
         options,
       );
       return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
@@ -228,7 +337,7 @@ export const FleetsApiFp = function (configuration?: Configuration) {
       };
     },
     /**
-     * Available in socket.io.
+     * **Available in socket.io**
      * @summary Get Robot Health
      * @param {string} fleet
      * @param {string} robot
@@ -239,15 +348,40 @@ export const FleetsApiFp = function (configuration?: Configuration) {
       fleet: string,
       robot: string,
       options?: any,
-    ): Promise<
-      (
-        axios?: AxiosInstance,
-        basePath?: string,
-      ) => AxiosPromise<ApiServerModelsTortoiseModelsHealthBasicHealthModelLeaf>
-    > {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BasicHealth>> {
       const localVarAxiosArgs = await FleetsApiAxiosParamCreator(
         configuration,
       ).getRobotHealthFleetsFleetRobotHealthGet(fleet, robot, options);
+      return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
+        const axiosRequestArgs = {
+          ...localVarAxiosArgs.options,
+          url: basePath + localVarAxiosArgs.url,
+        };
+        return axios.request(axiosRequestArgs);
+      };
+    },
+    /**
+     *
+     * @summary Get Robots
+     * @param {string} [fleet_name] comma separated list of fleet names
+     * @param {string} [robot_name] comma separated list of robot names
+     * @param {number} [limit]
+     * @param {number} [offset]
+     * @param {string} [order_by] common separated list of fields to order by, prefix with &#x27;-&#x27; to sort descendingly.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async getRobotsFleetsRobotsGet(
+      fleet_name?: string,
+      robot_name?: string,
+      limit?: number,
+      offset?: number,
+      order_by?: string,
+      options?: any,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetRobotsResponse>> {
+      const localVarAxiosArgs = await FleetsApiAxiosParamCreator(
+        configuration,
+      ).getRobotsFleetsRobotsGet(fleet_name, robot_name, limit, offset, order_by, options);
       return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
         const axiosRequestArgs = {
           ...localVarAxiosArgs.options,
@@ -270,7 +404,7 @@ export const FleetsApiFactory = function (
 ) {
   return {
     /**
-     * Available in socket.io.
+     * **Available in socket.io**
      * @summary Get Fleet State
      * @param {string} name
      * @param {*} [options] Override http request option.
@@ -284,16 +418,26 @@ export const FleetsApiFactory = function (
     /**
      *
      * @summary Get Fleets
+     * @param {string} [fleet_name] comma separated list of fleet names
+     * @param {number} [limit]
+     * @param {number} [offset]
+     * @param {string} [order_by] common separated list of fields to order by, prefix with &#x27;-&#x27; to sort descendingly.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getFleetsFleetsGet(options?: any): AxiosPromise<Array<Fleet>> {
+    getFleetsFleetsGet(
+      fleet_name?: string,
+      limit?: number,
+      offset?: number,
+      order_by?: string,
+      options?: any,
+    ): AxiosPromise<GetFleetsResponse> {
       return FleetsApiFp(configuration)
-        .getFleetsFleetsGet(options)
+        .getFleetsFleetsGet(fleet_name, limit, offset, order_by, options)
         .then((request) => request(axios, basePath));
     },
     /**
-     * Available in socket.io.
+     * **Available in socket.io**
      * @summary Get Robot Health
      * @param {string} fleet
      * @param {string} robot
@@ -304,9 +448,32 @@ export const FleetsApiFactory = function (
       fleet: string,
       robot: string,
       options?: any,
-    ): AxiosPromise<ApiServerModelsTortoiseModelsHealthBasicHealthModelLeaf> {
+    ): AxiosPromise<BasicHealth> {
       return FleetsApiFp(configuration)
         .getRobotHealthFleetsFleetRobotHealthGet(fleet, robot, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Get Robots
+     * @param {string} [fleet_name] comma separated list of fleet names
+     * @param {string} [robot_name] comma separated list of robot names
+     * @param {number} [limit]
+     * @param {number} [offset]
+     * @param {string} [order_by] common separated list of fields to order by, prefix with &#x27;-&#x27; to sort descendingly.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getRobotsFleetsRobotsGet(
+      fleet_name?: string,
+      robot_name?: string,
+      limit?: number,
+      offset?: number,
+      order_by?: string,
+      options?: any,
+    ): AxiosPromise<GetRobotsResponse> {
+      return FleetsApiFp(configuration)
+        .getRobotsFleetsRobotsGet(fleet_name, robot_name, limit, offset, order_by, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -320,7 +487,7 @@ export const FleetsApiFactory = function (
  */
 export class FleetsApi extends BaseAPI {
   /**
-   * Available in socket.io.
+   * **Available in socket.io**
    * @summary Get Fleet State
    * @param {string} name
    * @param {*} [options] Override http request option.
@@ -335,17 +502,27 @@ export class FleetsApi extends BaseAPI {
   /**
    *
    * @summary Get Fleets
+   * @param {string} [fleet_name] comma separated list of fleet names
+   * @param {number} [limit]
+   * @param {number} [offset]
+   * @param {string} [order_by] common separated list of fields to order by, prefix with &#x27;-&#x27; to sort descendingly.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof FleetsApi
    */
-  public getFleetsFleetsGet(options?: any) {
+  public getFleetsFleetsGet(
+    fleet_name?: string,
+    limit?: number,
+    offset?: number,
+    order_by?: string,
+    options?: any,
+  ) {
     return FleetsApiFp(this.configuration)
-      .getFleetsFleetsGet(options)
+      .getFleetsFleetsGet(fleet_name, limit, offset, order_by, options)
       .then((request) => request(this.axios, this.basePath));
   }
   /**
-   * Available in socket.io.
+   * **Available in socket.io**
    * @summary Get Robot Health
    * @param {string} fleet
    * @param {string} robot
@@ -356,6 +533,30 @@ export class FleetsApi extends BaseAPI {
   public getRobotHealthFleetsFleetRobotHealthGet(fleet: string, robot: string, options?: any) {
     return FleetsApiFp(this.configuration)
       .getRobotHealthFleetsFleetRobotHealthGet(fleet, robot, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+  /**
+   *
+   * @summary Get Robots
+   * @param {string} [fleet_name] comma separated list of fleet names
+   * @param {string} [robot_name] comma separated list of robot names
+   * @param {number} [limit]
+   * @param {number} [offset]
+   * @param {string} [order_by] common separated list of fields to order by, prefix with &#x27;-&#x27; to sort descendingly.
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof FleetsApi
+   */
+  public getRobotsFleetsRobotsGet(
+    fleet_name?: string,
+    robot_name?: string,
+    limit?: number,
+    offset?: number,
+    order_by?: string,
+    options?: any,
+  ) {
+    return FleetsApiFp(this.configuration)
+      .getRobotsFleetsRobotsGet(fleet_name, robot_name, limit, offset, order_by, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }

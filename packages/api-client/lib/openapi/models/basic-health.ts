@@ -14,19 +14,25 @@
 /**
  *
  * @export
- * @interface Fleet
+ * @interface BasicHealth
  */
-export interface Fleet {
+export interface BasicHealth {
   /**
    *
    * @type {string}
-   * @memberof Fleet
+   * @memberof BasicHealth
    */
-  name: any;
+  id_: any;
   /**
    *
-   * @type {FleetState}
-   * @memberof Fleet
+   * @type {string}
+   * @memberof BasicHealth
    */
-  state: any;
+  health_status: any;
+  /**
+   *
+   * @type {string}
+   * @memberof BasicHealth
+   */
+  health_message?: any;
 }

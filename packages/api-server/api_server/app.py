@@ -157,7 +157,7 @@ class App(FastIO):
             routes.IngestorsRouter(self.rmf_events, self.rmf_repo), prefix="/ingestors"
         )
         self.include_router(
-            routes.FleetsRouter(self.rmf_events, self.rmf_repo), prefix="/fleets"
+            routes.FleetsRouter(self.rmf_events, logger=logger), prefix="/fleets"
         )
 
         @self.fapi.on_event("startup")

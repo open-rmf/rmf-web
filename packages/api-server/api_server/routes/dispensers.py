@@ -27,7 +27,7 @@ class DispensersRouter(FastIORouter):
         @self.watch(
             "/{guid}/health",
             rmf_events.dispenser_health,
-            response_model=DispenserHealth.PydanticModel,  # pylint: disable=no-member
+            response_model=DispenserHealth,
         )
         def get_dispenser_health(dispenser_health: DispenserHealth):
-            return {"guid": dispenser_health.id_}, dispenser_health.get_pydantic()
+            return {"guid": dispenser_health.id_}, dispenser_health
