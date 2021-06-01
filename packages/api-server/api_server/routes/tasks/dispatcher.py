@@ -1,3 +1,4 @@
+from fastapi.exceptions import HTTPException
 from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
 from rmf_task_msgs.srv import CancelTask as RmfCancelTask
 from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
@@ -37,9 +38,11 @@ class DispatcherClient:
         """
         req = RmfCancelTask.Request()
         req.task_id = task.task_id
-        response = await self.rmf_gateway.call_service(
+        response: RmfCancelTask.Response = await self.rmf_gateway.call_service(
             self.rmf_gateway.cancel_task_srv, req
         )
+        if not response.success:
+            raise HTTPException(500, response.message)
         return response.success
 
     def convert_task_status_msg(self, task_summary: TaskSummary) -> TaskProgress:

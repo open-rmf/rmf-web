@@ -66,7 +66,13 @@ export function TaskPage() {
 
   const cancelTask = React.useCallback<Required<TaskPanelProps>['cancelTask']>(
     async (task) => {
-      await tasksApi?.cancelTaskTasksCancelTaskPost({ task_id: task.task_id });
+      const resp = await tasksApi?.cancelTaskTasksCancelTaskPost({ task_id: task.task_id });
+      if (!resp) {
+        throw new Error('unexpected error (missing response)');
+      }
+      if (resp.status !== 200) {
+        throw new Error(resp.data.detail.msg);
+      }
     },
     [tasksApi],
   );
