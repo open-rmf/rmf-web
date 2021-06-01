@@ -69,7 +69,7 @@ export const Table: Story<TaskTableProps> = (args) => {
         ingestors={['test_ingestor_0', 'test_ingestor_1']}
         open={openCreateTaskForm}
         onClose={() => setOpenCreateTaskForm(false)}
-        submitTask={async () => new Promise((res) => setTimeout(res, 1000))}
+        submitTasks={async () => new Promise((res) => setTimeout(res, 1000))}
         onCancelClick={() => setOpenCreateTaskForm(false)}
         onSuccess={() => {
           setOpenCreateTaskForm(false);
