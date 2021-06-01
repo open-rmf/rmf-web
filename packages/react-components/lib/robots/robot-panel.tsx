@@ -32,7 +32,7 @@ function NoSelectedRobot() {
 
 export interface RobotPanelProps extends React.HTMLProps<HTMLDivElement> {
   robots: RmfModels.RobotState[];
-  fetchTasks: (limit: number, offset: number) => Promise<TaskProgress[]>;
+  fetchTasks: (limit?: number, offset?: number, robotName?: string) => Promise<TaskProgress[]>;
 }
 
 export function RobotPanel({ robots, fetchTasks, ...divProps }: RobotPanelProps): JSX.Element {
@@ -42,17 +42,23 @@ export function RobotPanel({ robots, fetchTasks, ...divProps }: RobotPanelProps)
   const [page, setPage] = React.useState(0);
   const [selectedRobot, setSelectedRobot] = React.useState<VerboseRobot | undefined>(undefined);
 
-  const handleRefresh = React.useCallback(async () => {
-    (async () => {
-      const result = await fetchTasks(10, page * 10);
-      setTasks(result);
-    })();
-  }, [fetchTasks, page]);
+  const handleRefresh = React.useCallback(
+    async (limit?: number, offset?: number, robotName?: string) => {
+      (async () => {
+        const result = await fetchTasks(limit, offset, robotName);
+        setTasks(result);
+      })();
+    },
+    [fetchTasks, page],
+  );
 
   React.useEffect(() => {
     setTotalCount(robots.length);
-    handleRefresh();
-  }, [handleRefresh, robots]);
+  }, [robots]);
+
+  React.useEffect(() => {
+    handleRefresh(10, page * 10);
+  }, [handleRefresh]);
 
   return (
     <div {...divProps}>

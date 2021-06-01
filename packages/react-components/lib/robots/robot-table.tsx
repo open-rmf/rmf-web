@@ -124,7 +124,7 @@ export interface RobotTableProps extends PaperProps {
   tasks: TaskProgress[];
   robots: RmfModels.RobotState[];
   paginationOptions?: PaginationOptions;
-  onRefreshTasks?: React.MouseEventHandler<HTMLButtonElement> | (() => void);
+  onRefreshTasks?: (limt?: number, offset?: number, robotName?: string) => void;
   onRobotClickAndRefresh?(robot: VerboseRobot, ev?: React.MouseEvent<HTMLDivElement>): void;
 }
 
@@ -161,7 +161,7 @@ export function RobotTable({
   };
 
   const updateRobotWithTask = () => {
-    onRefreshTasks && onRefreshTasks;
+    onRefreshTasks && onRefreshTasks(undefined, undefined, selectedRobot?.name);
     setRobotsWithTasks(allocateTasksToRobots(robots, tasks));
     if (robotsWithTasks.length > 0) {
       robotsWithTasks.forEach((robot) => {
@@ -179,7 +179,12 @@ export function RobotTable({
         <Typography className={classes.title} variant="h6">
           Robots
         </Typography>
-        <IconButton onClick={onRefreshTasks} aria-label="Refresh">
+        <IconButton
+          onClick={() => {
+            onRefreshTasks;
+          }}
+          aria-label="Refresh"
+        >
           <RefreshIcon />
         </IconButton>
       </Toolbar>
