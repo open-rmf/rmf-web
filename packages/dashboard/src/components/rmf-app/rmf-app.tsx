@@ -21,6 +21,7 @@ import {
   RmfIngressContext,
 } from './contexts';
 import { RmfIngress } from './rmf-ingress';
+import { getPlaces } from './utils';
 
 function RmfPlacesContextsProvider({ children }: React.PropsWithChildren<unknown>): JSX.Element {
   const buildingMap = React.useContext(BuildingMapContext);
@@ -28,14 +29,7 @@ function RmfPlacesContextsProvider({ children }: React.PropsWithChildren<unknown
     if (!buildingMap) {
       return {};
     }
-    const navGraphs = buildingMap.levels.flatMap((level) => level.nav_graphs);
-    const vertices = navGraphs.flatMap((graph) => graph.vertices);
-    return vertices.reduce<Record<string, RmfModels.GraphNode>>((obj, v) => {
-      if (v.name) {
-        obj[v.name] = v;
-      }
-      return obj;
-    }, {});
+    return getPlaces(buildingMap);
   }, [buildingMap]);
 
   return <PlacesContext.Provider value={places}>{children}</PlacesContext.Provider>;
