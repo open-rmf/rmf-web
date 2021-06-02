@@ -9,8 +9,14 @@ const getPhaseColors = (theme: Theme) => ({
   failed: theme.palette.error.light,
 });
 
+const noPhaseColors = (theme: Theme) => ({
+  pending: theme.palette.background.paper,
+  completed: theme.palette.background.paper,
+  failed: theme.palette.background.paper,
+});
+
 const useStyles = makeStyles((theme) => {
-  const phaseColors = getPhaseColors(theme);
+  const phaseColors = noPhaseColors(theme);
   return {
     taskPhasesContainer: {
       overflowX: 'auto',
@@ -54,7 +60,7 @@ function Phase({ status, ...divProps }: PhaseProps) {
     <div {...divProps}>
       {lines.map((l, idx) => (
         <Tooltip key={idx} title={l}>
-          <Typography key={idx} className={classes.phaseStatus} variant="body1">
+          <Typography key={idx} className={classes.phaseStatus} variant="caption">
             {l}
           </Typography>
         </Tooltip>
@@ -99,7 +105,7 @@ export interface TaskPhasesProps {
 export function TaskPhases({ taskSummary }: TaskPhasesProps): JSX.Element {
   const classes = useStyles();
   const theme = useTheme();
-  const phaseColors = getPhaseColors(theme);
+  const phaseColors = noPhaseColors(theme);
 
   const phases = taskSummary.status.split('\n\n');
   const currentPhaseIdx = phases.findIndex((msg) => msg.startsWith('*'));
