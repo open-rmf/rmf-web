@@ -32,12 +32,10 @@ const useStyles = makeStyles((theme) => ({
     background: theme.palette.action.hover,
   },
   infoRow: {
+    boxShadow: `${theme.shadows[1]}`,
     '& > *': {
       borderBottom: 'unset',
     },
-  },
-  phasesCell: {
-    padding: `0 ${theme.spacing(1)}px`,
   },
 }));
 
