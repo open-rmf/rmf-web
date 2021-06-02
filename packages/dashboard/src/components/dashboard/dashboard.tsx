@@ -97,6 +97,8 @@ function robotKey(fleet: string, robot: RmfModels.RobotState): string {
   return `${fleet}-${robot.name}`;
 }
 
+const initialStack = [OmniPanelViewIndex.MainMenu];
+
 export default function Dashboard(_props: {}): React.ReactElement {
   debug('render');
 
@@ -112,7 +114,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   );
 
   const [viewStack, viewStackDispatch] = useStackNavigator<OmniPanelViewIndex>(
-    [OmniPanelViewIndex.MainMenu],
+    initialStack,
     OmniPanelViewIndex.MainMenu,
   );
   const currentView = viewStack[viewStack.length - 1];
