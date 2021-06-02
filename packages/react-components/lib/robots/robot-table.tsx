@@ -14,6 +14,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import { Refresh as RefreshIcon } from '@material-ui/icons';
+import clsx from 'clsx';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { taskTypeToStr } from '../tasks/utils';
@@ -80,11 +81,17 @@ const returnLocationCells = (robot: VerboseRobot) => {
 
 function RobotRow({ robot, onClick }: RobotRowProps) {
   const classes = useStyles();
+  const [hover, setHover] = React.useState(false);
 
   if (robot.assignedTasks.length == 0) {
     return (
       <>
-        <TableRow className={classes.infoRow} onClick={onClick}>
+        <TableRow
+          className={clsx(classes.infoRow, hover && classes.taskRowHover)}
+          onClick={onClick}
+          onMouseOver={() => setHover(true)}
+          onMouseOut={() => setHover(false)}
+        >
           <TableCell>{robot.name}</TableCell>
           <TableCell>{'-'}</TableCell>
           <TableCell>{'-'}</TableCell>
@@ -97,7 +104,12 @@ function RobotRow({ robot, onClick }: RobotRowProps) {
   } else {
     return (
       <>
-        <TableRow className={classes.infoRow} onClick={onClick}>
+        <TableRow
+          className={clsx(classes.infoRow, hover && classes.taskRowHover)}
+          onClick={onClick}
+          onMouseOver={() => setHover(true)}
+          onMouseOut={() => setHover(false)}
+        >
           <TableCell>{robot.name}</TableCell>
           {returnLocationCells(robot)}
           <TableCell>
