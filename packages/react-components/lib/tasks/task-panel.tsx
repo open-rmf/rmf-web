@@ -75,15 +75,7 @@ export function TaskPanel({
   const handleRefresh = React.useCallback(async () => {
     (async () => {
       const result = await fetchTasks(20, page * 20);
-      let cancelledTask: RmfModels.TaskSummary[] = [];
-      let otherTasks: RmfModels.TaskSummary[] = [];
-      result.tasks.forEach((task) => {
-        if (task.state === RmfModels.TaskSummary.STATE_CANCELED) cancelledTask.push(task);
-        else {
-          otherTasks.push(task);
-        }
-      });
-      setTasks(otherTasks.concat(cancelledTask));
+      setTasks(result.tasks);
       setTotalCount(result.totalCount);
     })();
   }, [fetchTasks, page]);
