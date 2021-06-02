@@ -74,7 +74,7 @@ export function TaskPanel({
 
   const handleRefresh = React.useCallback(async () => {
     (async () => {
-      const result = await fetchTasks(10, page * 10);
+      const result = await fetchTasks(20, page * 20);
       setTasks(result.tasks);
       setTotalCount(result.totalCount);
     })();
@@ -137,8 +137,8 @@ export function TaskPanel({
             tasks={tasks}
             paginationOptions={{
               count: totalCount,
-              rowsPerPage: 10,
-              rowsPerPageOptions: [10],
+              rowsPerPage: 20,
+              rowsPerPageOptions: [20],
               page,
               onChangePage: (_ev, newPage) => setPage(newPage),
             }}
