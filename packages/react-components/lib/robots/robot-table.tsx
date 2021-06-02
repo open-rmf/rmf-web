@@ -17,7 +17,7 @@ import { Refresh as RefreshIcon } from '@material-ui/icons';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { taskTypeToStr } from '../tasks/utils';
-import { robotModeToString, allocateTasksToRobots, VerboseRobot } from './utils';
+import { robotModeToString, VerboseRobot } from './utils';
 import { PaginationOptions } from '../tasks/task-table';
 import { TaskProgress } from 'api-client';
 
@@ -124,6 +124,7 @@ export interface RobotTableProps extends PaperProps {
   tasks: TaskProgress[];
   robots: RmfModels.RobotState[];
   paginationOptions?: PaginationOptions;
+  robotsWithTasks?: VerboseRobot[];
   onRefreshTasks?: (limt?: number, offset?: number, robotName?: string) => void;
   onRobotClickAndRefresh?(robot: VerboseRobot, ev?: React.MouseEvent<HTMLDivElement>): void;
 }
@@ -132,46 +133,12 @@ export function RobotTable({
   tasks,
   robots,
   paginationOptions,
+  robotsWithTasks,
   onRefreshTasks,
   onRobotClickAndRefresh,
   ...paperProps
 }: RobotTableProps): JSX.Element {
   const classes = useStyles();
-  const [robotsWithTasks, setRobotsWithTasks] = React.useState<VerboseRobot[]>([]);
-  const [selectedRobot, setSelectedRobot] = React.useState<VerboseRobot | undefined>(undefined);
-
-  React.useEffect(() => {
-    setRobotsWithTasks(allocateTasksToRobots(robots, tasks));
-  }, [robots, tasks]);
-
-  const useInterval = (callback: () => void, delay: number) => {
-    const savedCallback = React.useRef<() => void>();
-
-    React.useEffect(() => {
-      savedCallback.current = callback;
-    }, [callback]);
-
-    React.useEffect(() => {
-      const tick = () => {
-        savedCallback.current && savedCallback.current();
-      };
-      const id = setInterval(tick, delay);
-      return () => clearInterval(id);
-    }, [delay]);
-  };
-
-  const updateRobotWithTask = () => {
-    onRefreshTasks && onRefreshTasks(undefined, undefined, selectedRobot?.name);
-    setRobotsWithTasks(allocateTasksToRobots(robots, tasks));
-    if (robotsWithTasks.length > 0) {
-      robotsWithTasks.forEach((robot) => {
-        if (robot.name === selectedRobot?.name)
-          onRobotClickAndRefresh && onRobotClickAndRefresh(robot);
-      });
-    }
-  };
-
-  useInterval(updateRobotWithTask, 3000);
 
   return (
     <Paper {...paperProps}>
@@ -207,8 +174,6 @@ export function RobotTable({
                   key={robot_id}
                   robot={robot}
                   onClick={(ev) => {
-                    setSelectedRobot(robot);
-                    onRefreshTasks && onRefreshTasks(undefined, undefined, robot.name);
                     onRobotClickAndRefresh && onRobotClickAndRefresh(robot, ev);
                   }}
                 />
