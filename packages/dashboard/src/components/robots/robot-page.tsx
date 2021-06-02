@@ -29,7 +29,7 @@ export function RobotPage() {
   const [robotStates, setRobotStates] = React.useState<RmfModels.RobotState[]>([]);
 
   const fetchTasks = React.useCallback<RobotPanelProps['fetchTasks']>(
-    async (limit: number, offset: number) => {
+    async (limit?: number, offset?: number, robotName?: string) => {
       if (!tasksApi) {
         return [];
       }
@@ -39,13 +39,13 @@ export function RobotPage() {
         undefined,
         undefined,
         undefined,
-        undefined,
+        robotName,
         undefined,
         undefined,
         undefined,
         limit,
         offset,
-        '-priority,-start_time',
+        'start_time',
       );
       const taskProgresses: TaskProgress[] = resp.data.items;
       return taskProgresses;

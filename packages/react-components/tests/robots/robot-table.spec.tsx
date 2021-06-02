@@ -9,7 +9,12 @@ describe('RobotTable', () => {
       makeRandomRobot('test_robot1', 'test_fleet', 2),
       makeRandomRobot('test_robot2', 'test_fleet', 1),
     ];
-    const root = render(<RobotTable robots={robots} tasks={[]} />);
+
+    const verboseRobots = robots.map((robot) => {
+      return { ...robot, assignedTasks: [] };
+    });
+    const root = render(<RobotTable robots={robots} tasks={[]} robotsWithTasks={verboseRobots} />);
+
     expect(root.getByText('test_robot1')).toBeTruthy();
     expect(root.getByText('test_robot2')).toBeTruthy();
   });

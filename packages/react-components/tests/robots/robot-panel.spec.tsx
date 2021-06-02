@@ -8,7 +8,10 @@ import { makeDefinedTask } from '../test-data/tasks';
 
 function makeFetchTasks(tasks: TaskProgress[]): RobotPanelProps['fetchTasks'] {
   return async (limit, offset) => {
-    return tasks.slice(offset, offset + limit);
+    if (limit && offset) return tasks.slice(offset, offset + limit);
+    else {
+      return tasks;
+    }
   };
 }
 

@@ -3,7 +3,7 @@ import { Grid, makeStyles, Paper, Typography } from '@material-ui/core';
 import * as RmfModels from 'rmf-models';
 import { RobotInfo } from './robot-info';
 import { RobotTable } from './robot-table';
-import { VerboseRobot } from './utils';
+import { VerboseRobot, allocateTasksToRobots } from './utils';
 import { TaskProgress } from 'api-client';
 
 const useStyles = makeStyles((theme) => ({
@@ -32,7 +32,7 @@ function NoSelectedRobot() {
 
 export interface RobotPanelProps extends React.HTMLProps<HTMLDivElement> {
   robots: RmfModels.RobotState[];
-  fetchTasks: (limit: number, offset: number) => Promise<TaskProgress[]>;
+  fetchTasks: (limit?: number, offset?: number, robotName?: string) => Promise<TaskProgress[]>;
 }
 
 export function RobotPanel({ robots, fetchTasks, ...divProps }: RobotPanelProps): JSX.Element {
@@ -41,18 +41,28 @@ export function RobotPanel({ robots, fetchTasks, ...divProps }: RobotPanelProps)
   const [totalCount, setTotalCount] = React.useState(-1);
   const [page, setPage] = React.useState(0);
   const [selectedRobot, setSelectedRobot] = React.useState<VerboseRobot | undefined>(undefined);
+  const [robotsWithTasks, setRobotsWithTasks] = React.useState<VerboseRobot[]>([]);
 
-  const handleRefresh = React.useCallback(async () => {
-    (async () => {
-      const result = await fetchTasks(10, page * 10);
-      setTasks(result);
-    })();
-  }, [fetchTasks, page]);
+  const handleRefresh = React.useCallback(
+    async (limit?: number, offset?: number, robotName?: string) => {
+      (async () => {
+        const result = await fetchTasks(limit, offset, robotName);
+        setTasks(result);
+      })();
+    },
+    [fetchTasks, page],
+  );
 
   React.useEffect(() => {
-    setTotalCount(robots.length);
     handleRefresh();
-  }, [handleRefresh, robots]);
+    setTotalCount(robots.length);
+    setRobotsWithTasks(allocateTasksToRobots(robots, tasks));
+    if (robotsWithTasks.length > 0) {
+      robotsWithTasks.forEach((robot) => {
+        if (robot.name === selectedRobot?.name) setSelectedRobot(robot);
+      });
+    }
+  }, [robots, handleRefresh]);
 
   return (
     <div {...divProps}>
@@ -69,6 +79,7 @@ export function RobotPanel({ robots, fetchTasks, ...divProps }: RobotPanelProps)
               page,
               onChangePage: (_ev, newPage) => setPage(newPage),
             }}
+            robotsWithTasks={robotsWithTasks}
             onRobotClickAndRefresh={(robot, _ev) => setSelectedRobot(robot)}
             onRefreshTasks={handleRefresh}
           />
