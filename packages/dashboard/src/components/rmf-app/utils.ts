@@ -1,12 +1,16 @@
 import * as RmfModels from 'rmf-models';
+import { Place } from './place';
 
-export function getPlaces(buildingMap: RmfModels.BuildingMap): Record<string, RmfModels.GraphNode> {
-  const navGraphs = buildingMap.levels.flatMap((level) => level.nav_graphs);
-  const vertices = navGraphs.flatMap((graph) => graph.vertices);
-  return vertices.reduce<Record<string, RmfModels.GraphNode>>((obj, v) => {
-    if (v.name) {
-      obj[v.name] = v;
+export function getPlaces(buildingMap: RmfModels.BuildingMap): Record<string, Place> {
+  const places: Record<string, Place> = {};
+  for (const level of buildingMap.levels) {
+    for (const graphs of level.nav_graphs) {
+      for (const vertex of graphs.vertices) {
+        if (vertex.name) {
+          places[vertex.name] = { level: level.name, vertex };
+        }
+      }
     }
-    return obj;
-  }, {});
+  }
+  return places;
 }
