@@ -20,7 +20,6 @@ import {
   RmfHealthContext,
   RmfIngressContext,
 } from './contexts';
-import { Place } from './place';
 import { RmfIngress } from './rmf-ingress';
 
 function RmfPlacesContextsProvider({ children }: React.PropsWithChildren<unknown>): JSX.Element {
@@ -31,9 +30,9 @@ function RmfPlacesContextsProvider({ children }: React.PropsWithChildren<unknown
     }
     const navGraphs = buildingMap.levels.flatMap((level) => level.nav_graphs);
     const vertices = navGraphs.flatMap((graph) => graph.vertices);
-    return vertices.reduce<Record<string, Place>>((obj, v) => {
+    return vertices.reduce<Record<string, RmfModels.GraphNode>>((obj, v) => {
       if (v.name) {
-        obj[v.name] = { name: v.name, properties: {} };
+        obj[v.name] = v;
       }
       return obj;
     }, {});
