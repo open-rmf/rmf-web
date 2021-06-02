@@ -1,12 +1,14 @@
 from datetime import datetime
-from typing import Callable, Optional
+from typing import Callable, Dict, Optional
 
 from fastapi import Depends, HTTPException
 from fastapi.param_functions import Query
 from fastapi.responses import JSONResponse
 
+from api_server.models.tasks import TaskSummary
+
 from ...dependencies import WithBaseQuery, base_query_params
-from ...fast_io import FastIORouter
+from ...fast_io import DataStore, FastIORouter
 from ...gateway import RmfGateway
 from ...models import (
     CancelTask,
@@ -18,6 +20,7 @@ from ...models import (
     TaskTypeEnum,
 )
 from ...models import tortoise_models as ttm
+from ...rmf_io import RmfEvents
 from ...services.tasks import convert_task_request
 from .dispatcher import DispatcherClient
 
@@ -25,6 +28,7 @@ from .dispatcher import DispatcherClient
 class TasksRouter(FastIORouter):
     def __init__(
         self,
+        rmf_events: RmfEvents,
         rmf_gateway_dep: Callable[[], RmfGateway],
     ):
         super().__init__(tags=["Tasks"])
@@ -35,6 +39,35 @@ class TasksRouter(FastIORouter):
             if _dispatcher_client is None:
                 _dispatcher_client = DispatcherClient(rmf_gateway_dep())
             return _dispatcher_client
+
+        class TaskSummaryDataStore(DataStore[TaskSummary]):
+            async def get(
+                self,
+                key: str,
+                path_params: Dict[str, str],
+            ):
+                # FIXME: This would fail if task_id contains "_/"
+                task_id = path_params["task_id"].replace("__", "/")
+                data = await ttm.TaskSummary.get_or_none(id_=task_id)
+                if data is None:
+                    return None
+                return TaskSummary(**data.data)
+
+            async def set(
+                self, key: str, path_params: Dict[str, str], data: TaskSummary
+            ):
+                # RmfBookKeeper will handle writing to db
+                pass
+
+        @self.watch(
+            "/{task_id}/summary",
+            target=rmf_events.task_summaries,
+            response_model=TaskSummary,
+            data_store=TaskSummaryDataStore(),
+            param_docs={"task_id": "task_id with '/' replaced with '__'"},
+        )
+        async def get_task_summary(task_summary: TaskSummary):
+            return {"task_id": task_summary.task_id.replace("/", "__")}, task_summary
 
         class GetTasksResponse(Pagination.response_model(TaskProgress)):
             pass
