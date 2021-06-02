@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { makeStyles } from '@material-ui/core';
 import { TaskProgress } from 'api-client';
 import React from 'react';
