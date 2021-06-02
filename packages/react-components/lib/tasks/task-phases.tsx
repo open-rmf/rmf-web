@@ -4,19 +4,13 @@ import React from 'react';
 import * as RmfModels from 'rmf-models';
 
 const getPhaseColors = (theme: Theme) => ({
-  pending: theme.palette.info.light,
+  pending: theme.palette.background.paper,
   completed: theme.palette.success.light,
   failed: theme.palette.error.light,
 });
 
-const noPhaseColors = (theme: Theme) => ({
-  pending: theme.palette.background.paper,
-  completed: theme.palette.background.paper,
-  failed: theme.palette.background.paper,
-});
-
 const useStyles = makeStyles((theme) => {
-  const phaseColors = noPhaseColors(theme);
+  const phaseColors = getPhaseColors(theme);
   return {
     taskPhasesContainer: {
       overflowX: 'auto',
@@ -105,7 +99,7 @@ export interface TaskPhasesProps {
 export function TaskPhases({ taskSummary }: TaskPhasesProps): JSX.Element {
   const classes = useStyles();
   const theme = useTheme();
-  const phaseColors = noPhaseColors(theme);
+  const phaseColors = getPhaseColors(theme);
 
   const phases = taskSummary.status.split('\n\n');
   const currentPhaseIdx = phases.findIndex((msg) => msg.startsWith('*'));
