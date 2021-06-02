@@ -43,7 +43,7 @@ export function RobotPage() {
         undefined,
         limit,
         offset,
-        '-priority,start_time',
+        'start_time',
       );
       const taskProgresses: TaskProgress[] = resp.data.items;
       return taskProgresses;
