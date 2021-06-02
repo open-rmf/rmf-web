@@ -1,4 +1,6 @@
+import * as RmfModels from 'rmf-models';
+
 export interface Place {
-  name: string;
-  properties: Record<string, string>;
+  level: string;
+  vertex: RmfModels.GraphNode;
 }
