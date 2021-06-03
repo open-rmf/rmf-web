@@ -5,7 +5,7 @@ import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { CreateTaskForm, CreateTaskFormProps } from './create-task';
 import { TaskInfo } from './task-info';
-import { TaskTable } from './task-table';
+import { TaskTable, TaskTableProps } from './task-table';
 import { parseTasksFile } from './utils';
 
 const useStyles = makeStyles((theme) => ({
@@ -38,7 +38,11 @@ export interface FetchTasksResult {
 }
 
 export interface TaskPanelProps extends React.HTMLProps<HTMLDivElement> {
-  fetchTasks: (limit: number, offset: number) => Promise<FetchTasksResult>;
+  /**
+   * Should only contain the tasks of the current page.
+   */
+  tasks: RmfModels.TaskSummary[];
+  paginationOptions: TaskTableProps['paginationOptions'];
   cleaningZones?: string[];
   loopWaypoints?: string[];
   deliveryWaypoints?: string[];
@@ -46,10 +50,12 @@ export interface TaskPanelProps extends React.HTMLProps<HTMLDivElement> {
   ingestors?: string[];
   submitTasks?: CreateTaskFormProps['submitTasks'];
   cancelTask?: (task: RmfModels.TaskSummary) => Promise<void>;
+  onRefresh?: () => void;
 }
 
 export function TaskPanel({
-  fetchTasks,
+  tasks,
+  paginationOptions,
   cleaningZones,
   loopWaypoints,
   deliveryWaypoints,
@@ -57,12 +63,10 @@ export function TaskPanel({
   ingestors,
   submitTasks,
   cancelTask,
+  onRefresh,
   ...divProps
 }: TaskPanelProps): JSX.Element {
   const classes = useStyles();
-  const [tasks, setTasks] = React.useState<RmfModels.TaskSummary[]>([]);
-  const [totalCount, setTotalCount] = React.useState(-1);
-  const [page, setPage] = React.useState(0);
   const [selectedTask, setSelectedTask] = React.useState<RmfModels.TaskSummary | undefined>(
     undefined,
   );
@@ -71,14 +75,6 @@ export function TaskPanel({
   const [openSnackbar, setOpenSnackbar] = React.useState(false);
   const [snackbarMessage, setSnackbarMessage] = React.useState('');
   const [snackbarSeverity, setSnackbarSeverity] = React.useState<AlertProps['severity']>('success');
-
-  const handleRefresh = React.useCallback(async () => {
-    (async () => {
-      const result = await fetchTasks(10, page * 10);
-      setTasks(result.tasks);
-      setTotalCount(result.totalCount);
-    })();
-  }, [fetchTasks, page]);
 
   const handleCancelTask = React.useCallback(
     async (task: RmfModels.TaskSummary) => {
@@ -91,14 +87,13 @@ export function TaskPanel({
         setSnackbarSeverity('success');
         setOpenSnackbar(true);
         setSelectedTask(undefined);
-        await handleRefresh();
       } catch (e) {
         setSnackbarMessage(`Failed to cancel task: ${e.message}`);
         setSnackbarSeverity('error');
         setOpenSnackbar(true);
       }
     },
-    [cancelTask, handleRefresh],
+    [cancelTask],
   );
 
   /* istanbul ignore next */
@@ -123,10 +118,6 @@ export function TaskPanel({
     });
   };
 
-  React.useEffect(() => {
-    handleRefresh();
-  }, [handleRefresh]);
-
   return (
     <div {...divProps}>
       <Grid container wrap="nowrap" justify="center" style={{ height: 'inherit' }}>
@@ -134,16 +125,10 @@ export function TaskPanel({
           <TaskTable
             className={classes.taskTable}
             tasks={tasks}
-            paginationOptions={{
-              count: totalCount,
-              rowsPerPage: 10,
-              rowsPerPageOptions: [10],
-              page,
-              onChangePage: (_ev, newPage) => setPage(newPage),
-            }}
+            paginationOptions={paginationOptions}
             onCreateTaskClick={() => setOpenCreateTaskForm(true)}
             onTaskClick={(_ev, task) => setSelectedTask(task)}
-            onRefreshClick={handleRefresh}
+            onRefreshClick={() => onRefresh && onRefresh()}
           />
         </Grid>
         <Paper className={classes.detailPanelContainer}>
@@ -173,7 +158,6 @@ export function TaskPanel({
           setSnackbarSeverity('success');
           setSnackbarMessage('Successfully created task');
           setOpenSnackbar(true);
-          handleRefresh();
         }}
         onFail={(e) => {
           setSnackbarSeverity('error');

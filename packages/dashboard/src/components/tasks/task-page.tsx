@@ -5,6 +5,7 @@ import type { TaskProgress } from 'api-client';
 import type { AxiosError } from 'axios';
 import React from 'react';
 import { TaskPanel, TaskPanelProps } from 'react-components';
+import * as RmfModels from 'rmf-models';
 import { PlacesContext, RmfIngressContext } from '../rmf-app';
 
 const useStyles = makeStyles((theme) => ({
@@ -18,16 +19,17 @@ const useStyles = makeStyles((theme) => ({
 
 export function TaskPage() {
   const classes = useStyles();
+  const [tasks, setTasks] = React.useState<RmfModels.TaskSummary[]>([]);
+  const [page, setPage] = React.useState(0);
+  const [totalCount, setTotalCount] = React.useState(0);
   const { tasksApi = null } = React.useContext(RmfIngressContext) || {};
   const places = React.useContext(PlacesContext);
 
-  const fetchTasks = React.useCallback<TaskPanelProps['fetchTasks']>(
-    async (limit: number, offset: number) => {
+  const fetchTasks = React.useCallback(
+    async (page: number) => {
       if (!tasksApi) {
-        return {
-          tasks: [],
-          totalCount: 0,
-        };
+        setTotalCount(0);
+        return [];
       }
       const resp = await tasksApi.getTasksTasksGet(
         undefined,
@@ -39,19 +41,22 @@ export function TaskPage() {
         undefined,
         undefined,
         undefined,
-        limit,
-        offset,
+        10,
+        page * 10,
         '-priority,-start_time',
       );
+      setTotalCount(resp.data.total_count);
       const taskProgresses: TaskProgress[] = resp.data.items;
-      const task_summaries = taskProgresses.map((t) => t.task_summary);
-      return {
-        tasks: task_summaries,
-        totalCount: resp.data.total_count,
-      };
+      return taskProgresses.map((t) => t.task_summary);
     },
     [tasksApi],
   );
+
+  React.useEffect(() => {
+    (async () => {
+      setTasks(await fetchTasks(page));
+    })();
+  }, [fetchTasks, page]);
 
   const submitTasks = React.useCallback<Required<TaskPanelProps>['submitTasks']>(
     async (tasks) => {
@@ -88,7 +93,14 @@ export function TaskPage() {
   return (
     <TaskPanel
       className={classes.taskPanel}
-      fetchTasks={fetchTasks}
+      tasks={tasks}
+      paginationOptions={{
+        page,
+        count: totalCount,
+        rowsPerPage: 10,
+        rowsPerPageOptions: [10],
+        onChangePage: (_ev, newPage) => setPage(newPage),
+      }}
       cleaningZones={Object.keys(places)}
       loopWaypoints={Object.keys(places)}
       deliveryWaypoints={Object.keys(places)}
