@@ -39,6 +39,6 @@ export const RmfHealthContext = React.createContext<HealthStatus>({
     spoiltRobots: [],
   },
 });
-export const PlacesContext = React.createContext<Record<string, Place>>({});
+export const PlacesContext = React.createContext<Place[]>([]);
 
 export const RmfIngressContext = React.createContext<RmfIngress | undefined>(undefined);

@@ -6,9 +6,7 @@ from rmf_task_msgs.msg import TaskType as RmfTaskType
 from rmf_task_msgs.srv import CancelTask as RmfCancelTask
 from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
 
-from api_server.models.tasks import TaskSummary
-
-from ...models import CancelTask, CleanTaskDescription, SubmitTask
+from ...models import CancelTask, CleanTaskDescription, SubmitTask, TaskSummary
 from ...models import tortoise_models as ttm
 from ..test_fixtures import RouteFixture
 
@@ -33,7 +31,7 @@ class TestTasksRoute(RouteFixture):
     def test_cancel_task_request(self):
         cancel_task = CancelTask(task_id="test_task")
         fut = self.host_service_one(
-            RmfCancelTask, "cancel_task", RmfCancelTask.Response()
+            RmfCancelTask, "cancel_task", RmfCancelTask.Response(success=True)
         )
         resp = self.session.post(
             f"{self.base_url}/tasks/cancel_task", data=cancel_task.json()
@@ -41,6 +39,20 @@ class TestTasksRoute(RouteFixture):
         self.assertEqual(resp.status_code, 200)
         received: RmfCancelTask.Request = fut.result(3)
         self.assertEqual(received.task_id, "test_task")
+
+    def test_cancel_task_failure(self):
+        cancel_task = CancelTask(task_id="test_task")
+        fut = self.host_service_one(
+            RmfCancelTask,
+            "cancel_task",
+            RmfCancelTask.Response(success=False, message="test error"),
+        )
+        resp = self.session.post(
+            f"{self.base_url}/tasks/cancel_task", data=cancel_task.json()
+        )
+        self.assertEqual(resp.status_code, 500)
+        fut.result(3)
+        self.assertEqual(resp.json()["detail"], "test error")
 
     def test_query_tasks(self):
         dataset = [
@@ -85,8 +97,15 @@ class TestTasksRoute(RouteFixture):
                 )
             )
 
+        self.server.app.wait_ready()
         self.server.app.loop.create_task(save_data())
         fut.result()
+
+        resp = self.session.get(f"{self.base_url}/tasks?task_id=task_1,task_2")
+        self.assertEqual(resp.status_code, 200)
+        resp_json = resp.json()
+        items = resp_json["items"]
+        self.assertEqual(len(items), 2)
 
         resp = self.session.get(f"{self.base_url}/tasks?fleet_name=fleet_1")
         self.assertEqual(resp.status_code, 200)

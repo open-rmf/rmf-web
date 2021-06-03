@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "concurrently npm:start:rmf-server npm:start:rmf npm:start:react",
+    "start:clinic": "RMF_DASHBOARD_DEMO_MAP=clinic.launch.xml npm start",
     "start:react": "react-scripts start",
     "start:rmf": "ts-node -P scripts/tsconfig.json -T scripts/start-rmf.ts",
     "start:rmf-server": "RMF_SERVER_USE_SIM_TIME=true npm --prefix ../api-server start",
@@ -71,6 +72,7 @@
     "node-vibrant": "^3.1.6",
     "react": "^16.13.1",
     "react-components": "*",
+    "react-customizable-progressbar": "^1.0.3",
     "react-dom": "^16.13.1",
     "react-hotkeys": "^2.0.0",
     "react-leaflet": "^2.7.0",

@@ -1,4 +1,4 @@
-import { Divider, makeStyles, Typography, useTheme } from '@material-ui/core';
+import { Button, Divider, makeStyles, Typography, useTheme } from '@material-ui/core';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { rosTimeToJs } from '../utils';
@@ -97,9 +97,10 @@ function DeliveryTaskInfoProps({ task }: DeliveryTaskInfoProps) {
 
 export interface TaskInfoProps {
   task: RmfModels.TaskSummary;
+  onCancelTaskClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
-export function TaskInfo({ task }: TaskInfoProps): JSX.Element {
+export function TaskInfo({ task, onCancelTaskClick }: TaskInfoProps): JSX.Element {
   const theme = useTheme();
   const taskType = task.task_profile.description.task_type.type;
   const hasConcreteEndTime = [
@@ -120,6 +121,12 @@ export function TaskInfo({ task }: TaskInfoProps): JSX.Element {
         return null;
     }
   })();
+
+  const taskCancellable =
+    task.state === RmfModels.TaskSummary.STATE_ACTIVE ||
+    task.state === RmfModels.TaskSummary.STATE_PENDING ||
+    task.state === RmfModels.TaskSummary.STATE_QUEUED;
+
   return (
     <div>
       <Typography variant="h6" style={{ textAlign: 'center' }} gutterBottom>
@@ -152,6 +159,17 @@ export function TaskInfo({ task }: TaskInfoProps): JSX.Element {
         <InfoValue>{taskStateToStr(task.state)}</InfoValue>
       </InfoLine>
       {detailInfo}
+      <Button
+        style={{ marginTop: theme.spacing(1) }}
+        fullWidth
+        variant="contained"
+        color="secondary"
+        aria-label="Cancel Task"
+        onClick={onCancelTaskClick}
+        disabled={!taskCancellable}
+      >
+        Cancel Task
+      </Button>
     </div>
   );
 }

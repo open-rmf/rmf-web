@@ -1,11 +1,11 @@
 import { screen, render, RenderResult, cleanup } from '@testing-library/react';
 import React from 'react';
-import moment from 'moment';
 import { IngestorStateReportTable } from '../../../lib';
 import { getIngestorLogs } from '../utils';
 import userEvent from '@testing-library/user-event';
+import { format } from 'date-fns';
 
-const timestamp = new Date('Mon Jan  1 00:00:02 UTC 2001').toISOString();
+const timestamp = new Date('Mon Jan  1 00:00:02 UTC 2001');
 
 describe('Ingestor table test', () => {
   let root: RenderResult;
@@ -22,7 +22,7 @@ describe('Ingestor table test', () => {
 
   it('formats dates correctly', async () => {
     const tableFirstDateElement = (await root.getAllByTestId('ingestor-table-date'))[0];
-    expect(tableFirstDateElement.innerHTML).toBe(moment(timestamp).format('lll'));
+    expect(tableFirstDateElement.innerHTML).toBe(format(timestamp, 'MMM dd yyyy hh:mm aaa'));
   });
 
   it('shows the correct number of rows', () => {

@@ -29,7 +29,7 @@ const useStyles = makeStyles(() =>
   }),
 );
 
-export type TabValue = 'building' | 'tasks';
+export type TabValue = 'building' | 'robots' | 'tasks';
 
 export interface AppBarProps {
   tabValue: TabValue;
@@ -69,6 +69,7 @@ export const AppBar = React.memo(
           <LogoButton logoPath={logoUrl} />
           <NavigationBar onTabChange={onTabChange} value={tabValue}>
             <Tab label="Building" value="building" aria-label="Building" />
+            <Tab label="Robots" value="robots" aria-label="Robots" />
             <Tab label="Tasks" value="tasks" aria-label="Tasks" />
           </NavigationBar>
           <Toolbar variant="dense" className={classes.toolbar}>

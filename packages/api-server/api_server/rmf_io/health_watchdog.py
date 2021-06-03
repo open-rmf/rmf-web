@@ -27,6 +27,7 @@ from ..models import (
     RobotHealth,
     RobotState,
 )
+from ..models import tortoise_models as ttm
 from ..repositories import RmfRepository
 from .events import RmfEvents
 from .operators import heartbeat, most_critical
@@ -422,12 +423,8 @@ class HealthWatchdog:
                 self._combine_most_critical(robot_mode_health),
             ).subscribe(self.rmf.robot_health.on_next, scheduler=self.scheduler)
 
-        fleets = await self.repo.query_fleets() if self.repo else []
-        states_list = await self.repo.query_fleet_states() if self.repo else []
-        fleet_states = {state.name: state for state in states_list}
-        initial_states = {
-            fleet.name: fleet_states.get(fleet.name, None) for fleet in fleets
-        }
+        fleet_states = [q.to_pydantic() for q in await ttm.FleetState.all()]
+        initial_states = {s.name: s for s in fleet_states}
 
         fleet_states = await self.repo.query_fleet_states() if self.repo else []
         subjects: Dict[str, Subject] = {}

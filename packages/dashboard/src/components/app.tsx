@@ -8,7 +8,7 @@ import { BrowserRouter, Link, Redirect, Route, Switch, useLocation } from 'react
 import { getUrl, LoginHOC, PrivateRouteHOC, User } from 'rmf-auth';
 import appConfig from '../app-config';
 import ResourceManager from '../managers/resource-manager';
-import { DASHBOARD_ROUTE, LOGIN_ROUTE, TASKS_ROUTE } from '../util/url';
+import { DASHBOARD_ROUTE, LOGIN_ROUTE, TASKS_ROUTE, ROBOTS_ROUTE } from '../util/url';
 import { AppBase } from './app-base';
 import { AppConfigContext, ResourcesContext, TrajectorySocketContext } from './app-contexts';
 import './app.css';
@@ -16,6 +16,7 @@ import { TabValue } from './appbar';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
 import Dashboard from './dashboard/dashboard';
 import { RmfApp } from './rmf-app';
+import { RobotPage } from './robots';
 import { TaskPage } from './tasks';
 
 const PrivateRoute = PrivateRouteHOC(Route, Redirect, useLocation);
@@ -27,6 +28,8 @@ function locationToTabValue(pathname: string): TabValue | null {
       return 'building';
     case TASKS_ROUTE:
       return 'tasks';
+    case ROBOTS_ROUTE:
+      return 'robots';
     default:
       return null;
   }
@@ -37,7 +40,7 @@ export default function App(): JSX.Element | null {
   const [authenticator, setAuthenticator] = React.useState(appConfig.authenticator);
   const [user, setUser] = React.useState<User | null>(appConfig.authenticator.user || null);
   const [ws, setWs] = React.useState<WebSocket>(new WebSocket(appConfig.trajServerUrl));
-  const appRoutes = [DASHBOARD_ROUTE, TASKS_ROUTE];
+  const appRoutes = [DASHBOARD_ROUTE, TASKS_ROUTE, ROBOTS_ROUTE];
   const [tabValue, setTabValue] = React.useState<TabValue | null>(() =>
     locationToTabValue(window.location.pathname),
   );
@@ -124,6 +127,14 @@ export default function App(): JSX.Element | null {
                             </PrivateRoute>
                             <PrivateRoute
                               exact
+                              path={ROBOTS_ROUTE}
+                              redirectPath={LOGIN_ROUTE}
+                              user={user}
+                            >
+                              <RobotPage />
+                            </PrivateRoute>
+                            <PrivateRoute
+                              exact
                               path={TASKS_ROUTE}
                               redirectPath={LOGIN_ROUTE}
                               user={user}
@@ -132,6 +143,7 @@ export default function App(): JSX.Element | null {
                             </PrivateRoute>
                           </Switch>
                           {tabValue === 'building' && <Redirect to={DASHBOARD_ROUTE} />}
+                          {tabValue === 'robots' && <Redirect to={ROBOTS_ROUTE} />}
                           {tabValue === 'tasks' && <Redirect to={TASKS_ROUTE} />}
                         </AppBase>
                       </RmfApp>

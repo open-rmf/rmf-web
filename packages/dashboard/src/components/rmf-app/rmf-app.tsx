@@ -1,3 +1,4 @@
+import { Fleet } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import RmfHealthStateManager from '../../managers/rmf-health-state-manager';
@@ -5,6 +6,7 @@ import {
   DefaultTrajectoryManager,
   RobotTrajectoryManager,
 } from '../../managers/robot-trajectory-manager';
+import { AppConfigContext, TrajectorySocketContext } from '../app-contexts';
 import { UserContext } from '../auth/contexts';
 import {
   BuildingMapContext,
@@ -18,24 +20,16 @@ import {
   RmfHealthContext,
   RmfIngressContext,
 } from './contexts';
-import { Place } from './place';
 import { RmfIngress } from './rmf-ingress';
-import { TrajectorySocketContext, AppConfigContext } from '../app-contexts';
+import { getPlaces } from './utils';
 
 function RmfPlacesContextsProvider({ children }: React.PropsWithChildren<unknown>): JSX.Element {
   const buildingMap = React.useContext(BuildingMapContext);
   const places = React.useMemo(() => {
     if (!buildingMap) {
-      return {};
+      return [];
     }
-    const navGraphs = buildingMap.levels.flatMap((level) => level.nav_graphs);
-    const vertices = navGraphs.flatMap((graph) => graph.vertices);
-    return vertices.reduce<Record<string, Place>>((obj, v) => {
-      if (v.name) {
-        obj[v.name] = { name: v.name, properties: {} };
-      }
-      return obj;
-    }, {});
+    return getPlaces(buildingMap);
   }, [buildingMap]);
 
   return <PlacesContext.Provider value={places}>{children}</PlacesContext.Provider>;
@@ -175,7 +169,7 @@ function FleetContextsProvider(props: React.PropsWithChildren<{}>): JSX.Element 
         return;
       }
       const fleets = (await fleetsApi.getFleetsFleetsGet()).data;
-      fleets.forEach((fleet) => {
+      fleets.items.forEach((fleet: Fleet) => {
         sioClient.subscribeFleetState(fleet.name, (state) =>
           setFleetStates((prev) => ({ ...prev, [state.name]: state })),
         );
