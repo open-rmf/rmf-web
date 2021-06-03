@@ -41,7 +41,7 @@ class TestFleetsRoute(RouteFixture):
         fut = concurrent.futures.Future()
         fleet_states_pub = cls.node.create_publisher(RmfFleetState, "fleet_states", 10)
         task_summaries_pub = cls.node.create_publisher(
-            RmfTaskSummary, "task_summaries", 10
+            RmfTaskSummary, "filtered_task_summaries", 10
         )
 
         async def wait():
