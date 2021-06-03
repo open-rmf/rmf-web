@@ -20,7 +20,9 @@ export function TaskPage() {
   const classes = useStyles();
   const { tasksApi = null } = React.useContext(RmfIngressContext) || {};
   const places = React.useContext(PlacesContext);
-  const placeNames = places.map((p) => p.vertex.name);
+
+  // Note: This is replaced by filetered waypoints below
+  // const placeNames = places.map((p) => p.vertex.name);
 
   const clean_zones = Object.values(places).reduce<string[]>((place, it) => {
     for (const param of it.vertex.params){
