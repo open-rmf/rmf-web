@@ -8,7 +8,7 @@ it('smoke test with different door modes', () => {
   allDoorModes().forEach((mode) => {
     render(
       <svg>
-        <DoorMarker door={makeDoor()} doorMode={mode} />
+        <DoorMarker door={makeDoor()} doorMode={mode.value} />
       </svg>,
     );
     cleanup();
