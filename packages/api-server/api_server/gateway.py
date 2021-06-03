@@ -148,7 +148,7 @@ class RmfGateway(rclpy.node.Node):
             RmfFleetState,
             "fleet_states",
             lambda msg: self.rmf_events.fleet_states.on_next(FleetState.from_orm(msg)),
-            10,
+            20,
         )
         self._subscriptions.append(fleet_states_sub)
 
@@ -158,7 +158,7 @@ class RmfGateway(rclpy.node.Node):
             lambda msg: self.rmf_events.task_summaries.on_next(
                 TaskSummary.from_orm(msg)
             ),
-            10,
+            40,
         )
         self._subscriptions.append(task_summaries_sub)
 
