@@ -42,7 +42,7 @@ export interface TaskPanelProps extends React.HTMLProps<HTMLDivElement> {
    * Should only contain the tasks of the current page.
    */
   tasks: RmfModels.TaskSummary[];
-  paginationOptions: TaskTableProps['paginationOptions'];
+  paginationOptions?: TaskTableProps['paginationOptions'];
   cleaningZones?: string[];
   loopWaypoints?: string[];
   deliveryWaypoints?: string[];
