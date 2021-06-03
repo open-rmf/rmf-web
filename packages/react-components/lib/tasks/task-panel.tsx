@@ -1,24 +1,37 @@
-import { Grid, makeStyles, Paper, Snackbar, Typography } from '@material-ui/core';
+import {
+  Grid,
+  IconButton,
+  makeStyles,
+  Paper,
+  Snackbar,
+  TableContainer,
+  TablePagination,
+  Toolbar,
+  Typography,
+} from '@material-ui/core';
+import { AddOutlined as AddOutlinedIcon, Refresh as RefreshIcon } from '@material-ui/icons';
 import { Alert, AlertProps } from '@material-ui/lab';
 import type { SubmitTask } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { CreateTaskForm, CreateTaskFormProps } from './create-task';
 import { TaskInfo } from './task-info';
-import { TaskTable, TaskTableProps } from './task-table';
+import { TaskTable } from './task-table';
 import { parseTasksFile } from './utils';
 
 const useStyles = makeStyles((theme) => ({
+  tableContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  tableTitle: {
+    flex: '1 1 100%',
+  },
   detailPanelContainer: {
     width: 350,
     padding: theme.spacing(2),
     marginLeft: theme.spacing(1),
     flex: '0 0 auto',
-  },
-  taskTable: {
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column',
   },
 }));
 
@@ -42,7 +55,7 @@ export interface TaskPanelProps extends React.HTMLProps<HTMLDivElement> {
    * Should only contain the tasks of the current page.
    */
   tasks: RmfModels.TaskSummary[];
-  paginationOptions?: TaskTableProps['paginationOptions'];
+  paginationOptions?: Omit<React.ComponentPropsWithoutRef<typeof TablePagination>, 'component'>;
   cleaningZones?: string[];
   loopWaypoints?: string[];
   deliveryWaypoints?: string[];
@@ -121,16 +134,25 @@ export function TaskPanel({
   return (
     <div {...divProps}>
       <Grid container wrap="nowrap" justify="center" style={{ height: 'inherit' }}>
-        <Grid style={{ flex: '1 1 auto' }}>
-          <TaskTable
-            className={classes.taskTable}
-            tasks={tasks}
-            paginationOptions={paginationOptions}
-            onCreateTaskClick={() => setOpenCreateTaskForm(true)}
-            onTaskClick={(_ev, task) => setSelectedTask(task)}
-            onRefreshClick={() => onRefresh && onRefresh()}
-          />
-        </Grid>
+        <Paper className={classes.tableContainer}>
+          <Toolbar>
+            <Typography className={classes.tableTitle} variant="h6">
+              Tasks
+            </Typography>
+            <IconButton onClick={() => onRefresh && onRefresh()} aria-label="Refresh">
+              <RefreshIcon />
+            </IconButton>
+            <IconButton onClick={() => setOpenCreateTaskForm(true)} aria-label="Create Task">
+              <AddOutlinedIcon />
+            </IconButton>
+          </Toolbar>
+          <TableContainer>
+            <TaskTable tasks={tasks} onTaskClick={(_ev, task) => setSelectedTask(task)} />
+          </TableContainer>
+          {paginationOptions && (
+            <TablePagination component="div" {...paginationOptions} style={{ flex: '0 0 auto' }} />
+          )}
+        </Paper>
         <Paper className={classes.detailPanelContainer}>
           {selectedTask ? (
             <TaskInfo
