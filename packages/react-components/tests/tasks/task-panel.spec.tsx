@@ -57,4 +57,39 @@ describe('TaskPanel', () => {
     userEvent.click(root.getByLabelText('Submit'));
     await waitFor(() => root.getByText('Failed to create task', { exact: false }));
   });
+
+  it('pagination is shown when pagination option is provided', () => {
+    const spy = jasmine.createSpy();
+    const root = render(
+      <TaskPanel
+        tasks={[makeTask('test', 1, 1)]}
+        paginationOptions={{
+          count: 1,
+          page: 0,
+          rowsPerPage: 10,
+          rowsPerPageOptions: [10],
+          onChangePage: spy,
+        }}
+      />,
+    );
+    root.getByText('1-1 of 1');
+  });
+
+  it('clicking on auto refresh button toggles auto refresh', () => {
+    const spy = jasmine.createSpy();
+    const root = render(<TaskPanel tasks={[]} onAutoRefresh={spy} />);
+    userEvent.click(root.getByLabelText('Enable auto refresh'));
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy.calls.mostRecent().args[0]).toBe(true);
+    userEvent.click(root.getByLabelText('Disable auto refresh'));
+    expect(spy).toHaveBeenCalledTimes(2);
+    expect(spy.calls.mostRecent().args[0]).toBe(false);
+  });
+
+  it('clicking on refresh button triggers onRefresh', () => {
+    const spy = jasmine.createSpy();
+    const root = render(<TaskPanel tasks={[]} onRefresh={spy} />);
+    userEvent.click(root.getByLabelText('Refresh'));
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
 });

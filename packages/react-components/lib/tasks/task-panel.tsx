@@ -7,9 +7,14 @@ import {
   TableContainer,
   TablePagination,
   Toolbar,
+  Tooltip,
   Typography,
 } from '@material-ui/core';
-import { AddOutlined as AddOutlinedIcon, Refresh as RefreshIcon } from '@material-ui/icons';
+import {
+  AddOutlined as AddOutlinedIcon,
+  Autorenew as AutorenewIcon,
+  Refresh as RefreshIcon,
+} from '@material-ui/icons';
 import { Alert, AlertProps } from '@material-ui/lab';
 import type { SubmitTask } from 'api-client';
 import React from 'react';
@@ -32,6 +37,9 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
     marginLeft: theme.spacing(1),
     flex: '0 0 auto',
+  },
+  enabledToggleButton: {
+    background: theme.palette.action.selected,
   },
 }));
 
@@ -64,6 +72,7 @@ export interface TaskPanelProps extends React.HTMLProps<HTMLDivElement> {
   submitTasks?: CreateTaskFormProps['submitTasks'];
   cancelTask?: (task: RmfModels.TaskSummary) => Promise<void>;
   onRefresh?: () => void;
+  onAutoRefresh?: (enabled: boolean) => void;
 }
 
 export function TaskPanel({
@@ -77,6 +86,7 @@ export function TaskPanel({
   submitTasks,
   cancelTask,
   onRefresh,
+  onAutoRefresh,
   ...divProps
 }: TaskPanelProps): JSX.Element {
   const classes = useStyles();
@@ -88,6 +98,7 @@ export function TaskPanel({
   const [openSnackbar, setOpenSnackbar] = React.useState(false);
   const [snackbarMessage, setSnackbarMessage] = React.useState('');
   const [snackbarSeverity, setSnackbarSeverity] = React.useState<AlertProps['severity']>('success');
+  const [autoRefresh, setAutoRefresh] = React.useState(false);
 
   const handleCancelTask = React.useCallback(
     async (task: RmfModels.TaskSummary) => {
@@ -131,6 +142,8 @@ export function TaskPanel({
     });
   };
 
+  const autoRefreshTooltipPrefix = autoRefresh ? 'Disable' : 'Enable';
+
   return (
     <div {...divProps}>
       <Grid container wrap="nowrap" justify="center" style={{ height: 'inherit' }}>
@@ -139,12 +152,28 @@ export function TaskPanel({
             <Typography className={classes.tableTitle} variant="h6">
               Tasks
             </Typography>
-            <IconButton onClick={() => onRefresh && onRefresh()} aria-label="Refresh">
-              <RefreshIcon />
-            </IconButton>
-            <IconButton onClick={() => setOpenCreateTaskForm(true)} aria-label="Create Task">
-              <AddOutlinedIcon />
-            </IconButton>
+            <Tooltip title={`${autoRefreshTooltipPrefix} auto refresh`}>
+              <IconButton
+                className={autoRefresh ? classes.enabledToggleButton : undefined}
+                onClick={() => {
+                  setAutoRefresh((prev) => !prev);
+                  onAutoRefresh && onAutoRefresh(!autoRefresh);
+                }}
+                aria-label={`${autoRefreshTooltipPrefix} auto refresh`}
+              >
+                <AutorenewIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Refersh">
+              <IconButton onClick={() => onRefresh && onRefresh()} aria-label="Refresh">
+                <RefreshIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Create task">
+              <IconButton onClick={() => setOpenCreateTaskForm(true)} aria-label="Create Task">
+                <AddOutlinedIcon />
+              </IconButton>
+            </Tooltip>
           </Toolbar>
           <TableContainer>
             <TaskTable tasks={tasks} onTaskClick={(_ev, task) => setSelectedTask(task)} />
