@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "concurrently npm:start:rmf-server npm:start:rmf npm:start:react",
+    "start": "concurrently npm:start:rmf-server npm:start:react",
     "start:clinic": "RMF_DASHBOARD_DEMO_MAP=clinic.launch.xml npm start",
     "start:react": "react-scripts start",
     "start:rmf": "ts-node -P scripts/tsconfig.json -T scripts/start-rmf.ts",
