@@ -20,7 +20,37 @@ export function TaskPage() {
   const classes = useStyles();
   const { tasksApi = null } = React.useContext(RmfIngressContext) || {};
   const places = React.useContext(PlacesContext);
-  const placeNames = places.map((p) => p.vertex.name);
+
+  // Note: This is replaced by filetered waypoints below
+  // const placeNames = places.map((p) => p.vertex.name);
+
+  const clean_zones = Object.values(places).reduce<string[]>((place, it) => {
+    for (const param of it.vertex.params){
+      if (param.name === "is_cleaning_zone" && param.value_bool){
+        place.push(it.vertex.name);
+        break;
+      }
+    }
+    return place
+  }, []);
+
+  // TODO should retain workcell name, and parse it to TaskPanel
+  const delivery_places = Object.values(places).reduce<string[]>((place, it) => {
+    const param_names = it.vertex.params.map((param) => param.name);
+    if (param_names.includes("pickup_dispenser") || param_names.includes("dropoff_ingestor"))
+      place.push(it.vertex.name);
+    return place
+  }, []);
+
+  // TODO This is custom to the throwaway demo. We are not showing any
+  // charging waypoints and cleaning waypoints on loop request. dock_name is valid
+  // for charging and cleaning waypoints
+  const loop_places = Object.values(places).reduce<string[]>((place, it) => {
+    const param_names = it.vertex.params.map((param) => param.name);
+    if (!param_names.includes('dock_name'))
+      place.push(it.vertex.name);
+    return place
+  }, []);
 
   const fetchTasks = React.useCallback<TaskPanelProps['fetchTasks']>(
     async (limit: number, offset: number) => {
@@ -42,7 +72,7 @@ export function TaskPage() {
         undefined,
         limit,
         offset,
-        'state,-priority,-start_time',
+        '-priority,-start_time',
       );
       const taskProgresses: TaskProgress[] = resp.data.items;
       const task_summaries = taskProgresses.map((t) => t.task_summary);
@@ -90,9 +120,9 @@ export function TaskPage() {
     <TaskPanel
       className={classes.taskPanel}
       fetchTasks={fetchTasks}
-      cleaningZones={placeNames}
-      loopWaypoints={placeNames}
-      deliveryWaypoints={placeNames}
+      cleaningZones={clean_zones}
+      loopWaypoints={loop_places}
+      deliveryWaypoints={delivery_places}
       submitTasks={submitTasks}
       cancelTask={cancelTask}
     />
