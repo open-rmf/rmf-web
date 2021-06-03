@@ -1,5 +1,5 @@
 import logging
-from typing import Optional
+from typing import Callable, Optional
 
 from fastapi import Depends, Query
 
@@ -9,17 +9,32 @@ from api_server.models.tasks import TaskStateEnum, TaskSummary
 
 from ..dependencies import WithBaseQuery, base_query_params
 from ..fast_io import FastIORouter
+from ..gateway import RmfGateway
 from ..models import Fleet, FleetState, RobotHealth
 from ..models import tortoise_models as ttm
 from ..rmf_io import RmfEvents
+from .tasks.dispatcher import DispatcherClient
 
 
 class FleetsRouter(FastIORouter):
-    def __init__(self, rmf_events: RmfEvents, *, logger: logging.Logger):
+    def __init__(
+        self,
+        rmf_events: RmfEvents,
+        rmf_gateway_dep: Callable[[], RmfGateway],
+        *,
+        logger: logging.Logger,
+    ):
         super().__init__(tags=["Fleets"])
+        _dispatcher_client: Optional[DispatcherClient] = None
 
         class GetFleetsResponse(Pagination.response_model(Fleet)):
             pass
+
+        def dispatcher_client_dep():
+            nonlocal _dispatcher_client
+            if _dispatcher_client is None:
+                _dispatcher_client = DispatcherClient(rmf_gateway_dep())
+            return _dispatcher_client
 
         @self.get("", response_model=GetFleetsResponse)
         async def get_fleets(
@@ -45,6 +60,7 @@ class FleetsRouter(FastIORouter):
 
         @self.get("/robots", response_model=GetRobotsResponse)
         async def get_robots(
+            dispatcher_client: DispatcherClient = Depends(dispatcher_client_dep),
             with_base_query: WithBaseQuery[ttm.RobotState] = Depends(
                 base_query_params()
             ),
@@ -87,7 +103,9 @@ class FleetsRouter(FastIORouter):
                     logger.warn(
                         f'task "{t.id_}" is assigned to an unknown fleet/robot ({t.fleet_name}/{t.robot_name}'
                     )
-                r.tasks.append(TaskSummary(**t.data))
+                r.tasks.append(
+                    dispatcher_client.convert_task_status_msg(t.to_pydantic())
+                )
 
             return Pagination(
                 total_count=robot_states.total_count, items=list(robots.values())
