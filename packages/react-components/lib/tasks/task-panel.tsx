@@ -75,7 +75,23 @@ export function TaskPanel({
   const handleRefresh = React.useCallback(async () => {
     (async () => {
       const result = await fetchTasks(20, page * 20);
-      setTasks(result.tasks);
+      // TODO: remove this as an ugly hack to settle custom sorting on client side, should use
+      // api server /tasks endpoint, "order_by" feature
+      let cancelledTask: RmfModels.TaskSummary[] = [];
+      let activeTask: RmfModels.TaskSummary[] = [];
+      let pendingTask: RmfModels.TaskSummary[] = [];
+      let completedTask: RmfModels.TaskSummary[] = [];
+      let failedTask: RmfModels.TaskSummary[] = [];
+      let queuedTask: RmfModels.TaskSummary[] = [];
+      result.tasks.forEach((task) => {
+        if (task.state === RmfModels.TaskSummary.STATE_CANCELED) cancelledTask.push(task);
+        else if (task.state === RmfModels.TaskSummary.STATE_ACTIVE) activeTask.push(task);
+        else if (task.state === RmfModels.TaskSummary.STATE_QUEUED) queuedTask.push(task);
+        else if (task.state === RmfModels.TaskSummary.STATE_COMPLETED) completedTask.push(task);
+        else if (task.state === RmfModels.TaskSummary.STATE_FAILED) failedTask.push(task);
+        else if (task.state === RmfModels.TaskSummary.STATE_PENDING) pendingTask.push(task);
+      });
+      setTasks(activeTask.concat(queuedTask, pendingTask, completedTask, failedTask, cancelledTask));
       setTotalCount(result.totalCount);
     })();
   }, [fetchTasks, page]);
