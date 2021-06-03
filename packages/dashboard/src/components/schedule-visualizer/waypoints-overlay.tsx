@@ -20,19 +20,14 @@ export const WaypointsOverlay = (props: WaypointsOverlayProps) => {
   const viewBox = viewBoxFromLeafletBounds(props.bounds);
   // Set the size of the waypoint. At least for now we don't want for this to change. We left this here in case we want for this to change in the future.
   const size = 0.1;
-  const places = Object.values(React.useContext(PlacesContext));
+  const places = React.useContext(PlacesContext);
   const waypoints = places.filter((p) => p.level === currentLevel.name).map((p) => p.vertex);
 
   return (
     <SVGOverlay {...otherProps}>
       <svg viewBox={viewBox}>
-        {waypoints.map((waypoint) => (
-          <WaypointMarker
-            key={waypoint.name}
-            waypoint={waypoint}
-            size={size}
-            data-testid="waypointMarker"
-          />
+        {waypoints.map((waypoint, idx) => (
+          <WaypointMarker key={idx} waypoint={waypoint} size={size} data-testid="waypointMarker" />
         ))}
       </svg>
     </SVGOverlay>

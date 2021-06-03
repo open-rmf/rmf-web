@@ -27,7 +27,7 @@ function RmfPlacesContextsProvider({ children }: React.PropsWithChildren<unknown
   const buildingMap = React.useContext(BuildingMapContext);
   const places = React.useMemo(() => {
     if (!buildingMap) {
-      return {};
+      return [];
     }
     return getPlaces(buildingMap);
   }, [buildingMap]);

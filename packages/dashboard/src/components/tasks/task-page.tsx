@@ -20,6 +20,7 @@ export function TaskPage() {
   const classes = useStyles();
   const { tasksApi = null } = React.useContext(RmfIngressContext) || {};
   const places = React.useContext(PlacesContext);
+  const placeNames = places.map((p) => p.vertex.name);
 
   const fetchTasks = React.useCallback<TaskPanelProps['fetchTasks']>(
     async (limit: number, offset: number) => {
@@ -89,9 +90,9 @@ export function TaskPage() {
     <TaskPanel
       className={classes.taskPanel}
       fetchTasks={fetchTasks}
-      cleaningZones={Object.keys(places)}
-      loopWaypoints={Object.keys(places)}
-      deliveryWaypoints={Object.keys(places)}
+      cleaningZones={placeNames}
+      loopWaypoints={placeNames}
+      deliveryWaypoints={placeNames}
       submitTasks={submitTasks}
       cancelTask={cancelTask}
     />
