@@ -53,12 +53,10 @@ function useDoorStyle(doorMode?: number): string {
   }
 }
 
-function getDoorCenter(
-  v1: [number, number],
-  v2: [number, number],
-  doorType: number,
-): [number, number] {
-  switch (doorType) {
+function getDoorCenter(door: RmfModels.Door): [number, number] {
+  const v1 = [door.v1_x, door.v1_y];
+  const v2 = [door.v2_x, door.v2_y];
+  switch (door.door_type) {
     case RmfModels.Door.DOOR_TYPE_SINGLE_SLIDING:
     case RmfModels.Door.DOOR_TYPE_SINGLE_SWING:
     case RmfModels.Door.DOOR_TYPE_SINGLE_TELESCOPE:
@@ -131,7 +129,7 @@ const DummyDoor = (props: DummyDoorProps) => {
   );
 };
 
-type DoorMarkerImplProps = Omit<DoorMarkerProps, 'onClick' | 'doorType'>;
+type DoorMarkerImplProps = Omit<DoorMarkerProps, 'onClick'>;
 
 /*
  * Single swing doors:
@@ -142,13 +140,13 @@ type DoorMarkerImplProps = Omit<DoorMarkerProps, 'onClick' | 'doorType'>;
  *  - selected by the motion_direction parameter, which is +1 or -1
  */
 const SingleSwingDoor = (props: DoorMarkerImplProps) => {
-  const { v1, v2, doorMode } = props;
+  const { door, doorMode } = props;
   const doorStyle = useDoorStyle(doorMode);
 
   return (
     <>
-      <BaseDoor v1={v1} v2={v2} className={doorStyle} />
-      <DummyDoor v1={v1} v2={v2} />
+      <BaseDoor v1={[door.v1_x, door.v1_y]} v2={[door.v2_x, door.v2_y]} className={doorStyle} />
+      <DummyDoor v1={[door.v1_x, door.v1_y]} v2={[door.v2_x, door.v2_y]} />
     </>
   );
 };
@@ -174,9 +172,12 @@ const SingleTelescopeDoor = SingleSlidingDoor;
  * - same motion-direction selection as single hinge
  */
 const DoubleSwingDoor = (props: DoorMarkerImplProps) => {
-  const { v1, v2, doorMode } = props;
-  const [hingeX1, hingeY1, hingeX2, hingeY2] = [v1[0], v1[1], v2[0], v2[1]];
-  const [extendX1, extendY1] = [hingeX1 + (v2[0] - v1[0]) / 2, hingeY1 + (v2[1] - v1[1]) / 2];
+  const { door, doorMode } = props;
+  const [hingeX1, hingeY1, hingeX2, hingeY2] = [door.v1_x, door.v1_y, door.v2_x, door.v2_y];
+  const [extendX1, extendY1] = [
+    hingeX1 + (door.v2_x - door.v1_x) / 2,
+    hingeY1 + (door.v2_y - door.v1_y) / 2,
+  ];
   const doorStyle = useDoorStyle(doorMode);
   return (
     <>
@@ -207,9 +208,7 @@ const DoubleTelescopeDoor = DoubleSlidingDoor;
  * onClick: Action to trigger on click.
  */
 export interface DoorMarkerProps extends Omit<React.SVGProps<SVGGElement>, 'onClick'> {
-  v1: [number, number];
-  v2: [number, number];
-  doorType: number;
+  door: RmfModels.Door;
   doorMode?: number;
   /**
    * Whether the component should perform a translate transform to put it inline with the position
@@ -218,38 +217,38 @@ export interface DoorMarkerProps extends Omit<React.SVGProps<SVGGElement>, 'onCl
    * default: true
    */
   translate?: boolean;
-  onClick?: React.MouseEventHandler;
+  onClick?(event: React.MouseEvent, door: RmfModels.Door): void;
 }
 
 export const DoorMarker = React.forwardRef(
   (props: DoorMarkerProps, ref: React.Ref<SVGGElement>) => {
-    const { v1, v2, doorType, doorMode, translate = true, onClick, ...otherProps } = props;
-    debug('render');
+    const { door, doorMode, translate = true, onClick, ...otherProps } = props;
+    debug(`render ${door.name}`);
     const classes = useDoorStyles();
 
     const renderDoor = () => {
-      switch (doorType) {
+      switch (door.door_type) {
         case RmfModels.Door.DOOR_TYPE_SINGLE_SWING:
-          return <SingleSwingDoor v1={v1} v2={v2} doorMode={doorMode} />;
+          return <SingleSwingDoor door={door} doorMode={doorMode} />;
         case RmfModels.Door.DOOR_TYPE_SINGLE_SLIDING:
-          return <SingleSlidingDoor v1={v1} v2={v2} doorMode={doorMode} />;
+          return <SingleSlidingDoor door={door} doorMode={doorMode} />;
         case RmfModels.Door.DOOR_TYPE_SINGLE_TELESCOPE:
-          return <SingleTelescopeDoor v1={v1} v2={v2} doorMode={doorMode} />;
+          return <SingleTelescopeDoor door={door} doorMode={doorMode} />;
         case RmfModels.Door.DOOR_TYPE_DOUBLE_SWING:
-          return <DoubleSwingDoor v1={v1} v2={v2} doorMode={doorMode} />;
+          return <DoubleSwingDoor door={door} doorMode={doorMode} />;
         case RmfModels.Door.DOOR_TYPE_DOUBLE_SLIDING:
-          return <DoubleSlidingDoor v1={v1} v2={v2} doorMode={doorMode} />;
+          return <DoubleSlidingDoor door={door} doorMode={doorMode} />;
         case RmfModels.Door.DOOR_TYPE_DOUBLE_TELESCOPE:
-          return <DoubleTelescopeDoor v1={v1} v2={v2} doorMode={doorMode} />;
+          return <DoubleTelescopeDoor door={door} doorMode={doorMode} />;
         default:
           return null;
       }
     };
 
     try {
-      const center = React.useMemo(() => getDoorCenter(v1, v2, doorType), [v1, v2, doorType]);
+      const center = getDoorCenter(door);
       return (
-        <g ref={ref} onClick={onClick} {...otherProps}>
+        <g ref={ref} onClick={(ev) => onClick && onClick(ev, door)} {...otherProps}>
           <g
             className={onClick ? classes.marker : undefined}
             transform={!translate ? `translate(${-center[0]} ${center[1]})` : undefined}

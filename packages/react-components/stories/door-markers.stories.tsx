@@ -12,13 +12,7 @@ export default {
 function makeStory(door: RmfModels.Door, doorState?: RmfModels.DoorState): Story {
   return (args) => (
     <svg viewBox="-2 -2 4 4" width={400} height={400}>
-      <DoorMarker
-        v1={[door.v1_x, door.v1_y]}
-        v2={[door.v2_x, door.v2_y]}
-        doorType={door.door_type}
-        doorMode={doorState?.current_mode.value || undefined}
-        {...args}
-      />
+      <DoorMarker door={door} doorMode={doorState?.current_mode.value || undefined} {...args} />
     </svg>
   );
 }
@@ -63,13 +57,7 @@ export const NoTranslate: Story = (args) => {
   const door = makeDoor({ v1_x: 10, v1_y: 10, v2_x: 11, v2_y: 11 });
   return (
     <svg viewBox="-2 -2 4 4" width={400} height={400}>
-      <DoorMarker
-        v1={[door.v1_x, door.v1_y]}
-        v2={[door.v2_x, door.v2_y]}
-        doorType={door.door_type}
-        translate={false}
-        {...args}
-      />
+      <DoorMarker door={door} translate={false} {...args} />
     </svg>
   );
 };
