@@ -41,7 +41,6 @@ class TasksRouter(FastIORouter):
 
         @self.get("", response_model=GetTasksResponse)
         async def get_tasks(
-            dispatcher_client: DispatcherClient = Depends(dispatcher_client_dep),
             with_base_query: WithBaseQuery[ttm.TaskSummary] = Depends(
                 base_query_params({"task_id": "id_"})
             ),
