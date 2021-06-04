@@ -158,7 +158,7 @@ class RmfGateway(rclpy.node.Node):
             lambda msg: self.rmf_events.task_summaries.on_next(
                 TaskSummary.from_orm(msg)
             ),
-            40,
+            100,
         )
         self._subscriptions.append(task_summaries_sub)
 
