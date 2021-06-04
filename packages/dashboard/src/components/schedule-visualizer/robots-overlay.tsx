@@ -77,7 +77,7 @@ export const RobotsOverlay = (props: RobotsOverlayProps) => {
               key={robot.name}
               name={robot.name}
               model={robot.model}
-              // Round to 2 decmial places (1cm) to prevent extra rendering when robot is idle
+              // Round to 2 decimal places (1cm) to prevent extra rendering when robot is idle
               x={Math.round(robot.location.x * 100) / 100}
               y={Math.round(robot.location.y * 100) / 100}
               yaw={Math.round(robot.location.yaw * 100) / 100}
