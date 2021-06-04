@@ -13,6 +13,7 @@ export function PositiveIntField(props: PositiveIntField): JSX.Element {
         if ('-+.'.indexOf(ev.key) >= 0) {
           ev.preventDefault();
         }
+        props.onKeyDown && props.onKeyDown(ev);
       }}
     />
   );
