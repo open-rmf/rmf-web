@@ -1,3 +1,5 @@
+import { RESOURCE_PREFIX } from './resource-manager';
+
 export interface LogoResource {
   icons: Record<string, string>;
 }
@@ -16,7 +18,7 @@ export class LogoResourceManager {
     if (!this.logos[logoName].hasOwnProperty('icons')) {
       return null;
     }
-    const rootIconPath = '/assets/icons';
+    const rootIconPath = RESOURCE_PREFIX + '/assets/icons';
     const logoIcon = this.logos[logoName].icons[logoName];
 
     return logoIcon ? `${rootIconPath}${logoIcon}` : null;

@@ -3,6 +3,8 @@ import { DispenserResourceManager, RawDispenserResource } from './resource-manag
 import { LogoResourceManager, LogoResource } from './resource-manager-logos';
 import { RobotResource, RobotResourceManager } from './resource-manager-robots';
 
+export const RESOURCE_PREFIX = process.env.PUBLIC_URL || '';
+
 export interface ResourceConfigurationsType {
   robots?: Record<string, RobotResource>; // Record<FleetName, RobotResource>
   dispensers?: Record<string, RawDispenserResource>; // Record<DispenserName, DispenserResource>
@@ -21,7 +23,7 @@ export default class ResourceManager {
   static getResourceConfigurationFile = async (): Promise<ResourceManager | undefined> => {
     try {
       // Gets data served by the project itself
-      const response = await axios.get('/assets/icons/main.json');
+      const response = await axios.get(RESOURCE_PREFIX + '/assets/icons/main.json');
       const resources = response.data as ResourceConfigurationsType;
       return ResourceManager.resourceManagerFactory(resources);
     } catch (error) {
