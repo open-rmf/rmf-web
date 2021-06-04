@@ -28,6 +28,7 @@ import type {
 } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
+import { PositiveIntField } from '../form-inputs';
 
 type TaskDescription = CleanTaskDescription | LoopTaskDescription | DeliveryTaskDescription;
 
@@ -219,7 +220,7 @@ interface LoopTaskFormProps {
 
 function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) {
   const theme = useTheme();
-  const [numOfLoops, setNumOfLoops] = React.useState(taskDesc.num_loops.toString());
+  const [numOfLoopsInput, setNumOfLoopsInput] = React.useState(taskDesc.num_loops.toString());
 
   return (
     <>
@@ -269,18 +270,17 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
             marginRight: theme.spacing(2),
           }}
         >
-          <TextField
+          <PositiveIntField
             id="loops"
-            type="number"
             label="Loops"
             margin="normal"
-            value={numOfLoops}
+            value={numOfLoopsInput}
             onChange={(ev) => {
-              setNumOfLoops(ev.target.value);
               onChange({
                 ...taskDesc,
-                num_loops: parseInt(ev.target.value) || 1,
+                num_loops: parseInt(ev.target.value) || 0,
               });
+              setNumOfLoopsInput(ev.target.value);
             }}
           />
         </Grid>
@@ -360,10 +360,6 @@ function defaultTask(): SubmitTask {
     task_type: -1,
     priority: 0,
   };
-}
-
-function getTaskPriority(s: string) {
-  return Math.max(parseInt(s) || 0, 0);
 }
 
 export interface CreateTaskFormProps extends DialogProps {
@@ -555,26 +551,15 @@ export function CreateTaskForm({
                       marginRight: theme.spacing(2),
                     }}
                   >
-                    <TextField
+                    <PositiveIntField
                       id="priority"
-                      type="number"
                       label="Priority"
                       margin="normal"
                       value={priorityInput}
-                      inputProps={{ min: 0 }}
                       onChange={(ev) => {
-                        task.priority = getTaskPriority(ev.target.value);
+                        task.priority = parseInt(ev.target.value) || 0;
                         updateTasks();
-                        // Set the value "as is" to allow "partial input" like "-" or "".
-                        // Without this, user will not be able to do some things like clearing the field.
                         setPriorityInput(ev.target.value);
-                      }}
-                      onBlur={(ev) => {
-                        const newPriority = getTaskPriority(ev.target.value);
-                        task.priority = newPriority;
-                        updateTasks();
-                        // Unlike onChange, only allow valid values here.
-                        setPriorityInput(newPriority.toString());
                       }}
                     />
                   </Grid>

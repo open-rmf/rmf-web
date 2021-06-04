@@ -95,15 +95,6 @@ describe('CreateTaskForm', () => {
     expect(spy).toHaveBeenCalledTimes(1);
   });
 
-  it('priority must be >= 0', () => {
-    const root = render(<CreateTaskForm open />);
-    const priorityEl = root.getByLabelText('Priority') as HTMLInputElement;
-    userEvent.clear(priorityEl);
-    userEvent.type(priorityEl, '-1');
-    userEvent.click(root.getByText('Create Task'));
-    expect(priorityEl.value).toBe('0');
-  });
-
   describe('task list', () => {
     const mount = () => {
       const task1 = makeSubmitTask();
