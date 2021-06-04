@@ -362,6 +362,10 @@ function defaultTask(): SubmitTask {
   };
 }
 
+function getTaskPriority(s: string) {
+  return Math.max(parseInt(s) || 0, 0);
+}
+
 export interface CreateTaskFormProps extends DialogProps {
   /**
    * Shows extra UI elements suitable for submittng batched tasks. Default to 'false'.
@@ -557,10 +561,20 @@ export function CreateTaskForm({
                       label="Priority"
                       margin="normal"
                       value={priorityInput}
+                      inputProps={{ min: 0 }}
                       onChange={(ev) => {
-                        task.priority = parseInt(ev.target.value) || 0;
+                        task.priority = getTaskPriority(ev.target.value);
                         updateTasks();
+                        // Set the value "as is" to allow "partial input" like "-" or "".
+                        // Without this, user will not be able to do some things like clearing the field.
                         setPriorityInput(ev.target.value);
+                      }}
+                      onBlur={(ev) => {
+                        const newPriority = getTaskPriority(ev.target.value);
+                        task.priority = newPriority;
+                        updateTasks();
+                        // Unlike onChange, only allow valid values here.
+                        setPriorityInput(newPriority.toString());
                       }}
                     />
                   </Grid>
