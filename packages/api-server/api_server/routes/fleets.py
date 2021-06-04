@@ -5,7 +5,7 @@ from fastapi import Depends, Query
 
 from api_server.models.fleets import Robot
 from api_server.models.pagination import Pagination
-from api_server.models.tasks import TaskStateEnum, TaskSummary
+from api_server.models.tasks import TaskStateEnum
 
 from ..dependencies import WithBaseQuery, base_query_params
 from ..fast_io import FastIORouter
