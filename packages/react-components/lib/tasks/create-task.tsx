@@ -28,6 +28,7 @@ import type {
 } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
+import { PositiveIntField } from '../form-inputs';
 
 type TaskDescription = CleanTaskDescription | LoopTaskDescription | DeliveryTaskDescription;
 
@@ -219,7 +220,7 @@ interface LoopTaskFormProps {
 
 function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) {
   const theme = useTheme();
-  const [numOfLoops, setNumOfLoops] = React.useState(taskDesc.num_loops.toString());
+  const [numOfLoopsInput, setNumOfLoopsInput] = React.useState(taskDesc.num_loops.toString());
 
   return (
     <>
@@ -269,18 +270,17 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
             marginRight: theme.spacing(2),
           }}
         >
-          <TextField
+          <PositiveIntField
             id="loops"
-            type="number"
             label="Loops"
             margin="normal"
-            value={numOfLoops}
+            value={numOfLoopsInput}
             onChange={(ev) => {
-              setNumOfLoops(ev.target.value);
               onChange({
                 ...taskDesc,
-                num_loops: parseInt(ev.target.value) || 1,
+                num_loops: parseInt(ev.target.value) || 0,
               });
+              setNumOfLoopsInput(ev.target.value);
             }}
           />
         </Grid>
@@ -551,9 +551,8 @@ export function CreateTaskForm({
                       marginRight: theme.spacing(2),
                     }}
                   >
-                    <TextField
+                    <PositiveIntField
                       id="priority"
-                      type="number"
                       label="Priority"
                       margin="normal"
                       value={priorityInput}
