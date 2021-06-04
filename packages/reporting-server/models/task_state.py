@@ -1,0 +1,48 @@
+from enum import Enum
+
+from tortoise import fields, models
+from tortoise.contrib.pydantic import pydantic_model_creator
+
+
+class TaskStateEnum(str, Enum):
+    STATE_ACTIVE = "active"
+    STATE_CANCELLED = "cancelled"
+    STATE_COMPLETED = "completed"
+    STATE_FAILED = "failed"
+    STATE_PENDING = "pending"
+    STATE_QUEUED = "queued"
+
+
+class TaskStateService:
+    def get_task_state_name(self, state: int):
+        if state == 0:
+            return TaskStateEnum.STATE_ACTIVE
+        elif state == 1:
+            return TaskStateEnum.STATE_CANCELLED
+        elif state == 2:
+            return TaskStateEnum.STATE_COMPLETED
+        elif state == 3:
+            return TaskStateEnum.STATE_FAILED
+        elif state == 4:
+            return TaskStateEnum.STATE_PENDING
+        elif state == 5:
+            return TaskStateEnum.STATE_QUEUED
+
+
+class TaskState(models.Model):
+    id = fields.IntField(pk=True)
+    created = fields.DatetimeField(auto_now_add=True)
+    fleet_name = fields.CharField(max_length=100)
+    payload = fields.JSONField()
+    task_id = fields.CharField(max_length=100)
+    task_state = fields.CharField(max_length=100)
+    status: fields.CharField(max_length=100)
+    submission_time = fields.CharField(max_length=100)
+    start_time = fields.CharField(max_length=100)
+    end_time = fields.IntField()
+    robot_task_id = fields.CharField(max_length=100)
+
+    service = TaskStateService()
+
+
+TaskState_Pydantic = pydantic_model_creator(TaskState, name="TaskState")
