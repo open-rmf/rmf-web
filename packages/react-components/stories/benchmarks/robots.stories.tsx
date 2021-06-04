@@ -1,6 +1,6 @@
-import * as RmfModels from 'rmf-models';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
+import * as RmfModels from 'rmf-models';
 import { RobotMarker } from '../../lib';
 import { makeRobot } from '../../tests/robots/test-utils';
 
@@ -105,7 +105,11 @@ export const RobotMarkers: Story<RobotMarkerArgs> = ({ count, ...args }) => {
       {animationStates.map(({ robot }) => (
         <RobotMarker
           key={robot.name}
-          robot={robot}
+          name={robot.name}
+          model={robot.model}
+          x={robot.location.x}
+          y={robot.location.y}
+          yaw={robot.location.yaw}
           fleetName="test_fleet"
           footprint={1}
           {...args}
