@@ -13,7 +13,7 @@ from ..gateway import RmfGateway
 from ..models import Fleet, FleetState, RobotHealth
 from ..models import tortoise_models as ttm
 from ..rmf_io import RmfEvents
-from .tasks.dispatcher import DispatcherClient
+from .tasks.dispatcher import convert_task_status_msg
 
 
 class FleetsRouter(FastIORouter):
@@ -25,16 +25,9 @@ class FleetsRouter(FastIORouter):
         logger: logging.Logger,
     ):
         super().__init__(tags=["Fleets"])
-        _dispatcher_client: Optional[DispatcherClient] = None
 
         class GetFleetsResponse(Pagination.response_model(Fleet)):
             pass
-
-        def dispatcher_client_dep():
-            nonlocal _dispatcher_client
-            if _dispatcher_client is None:
-                _dispatcher_client = DispatcherClient(rmf_gateway_dep())
-            return _dispatcher_client
 
         @self.get("", response_model=GetFleetsResponse)
         async def get_fleets(
@@ -60,7 +53,6 @@ class FleetsRouter(FastIORouter):
 
         @self.get("/robots", response_model=GetRobotsResponse)
         async def get_robots(
-            dispatcher_client: DispatcherClient = Depends(dispatcher_client_dep),
             with_base_query: WithBaseQuery[ttm.RobotState] = Depends(
                 base_query_params()
             ),
@@ -104,7 +96,7 @@ class FleetsRouter(FastIORouter):
                         f'task "{t.id_}" is assigned to an unknown fleet/robot ({t.fleet_name}/{t.robot_name}'
                     )
                 r.tasks.append(
-                    dispatcher_client.convert_task_status_msg(t.to_pydantic())
+                    convert_task_status_msg(t.to_pydantic(), rmf_gateway_dep())
                 )
 
             return Pagination(
