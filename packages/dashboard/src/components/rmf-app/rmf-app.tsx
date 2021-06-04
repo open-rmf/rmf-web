@@ -20,23 +20,16 @@ import {
   RmfHealthContext,
   RmfIngressContext,
 } from './contexts';
-import { Place } from './place';
 import { RmfIngress } from './rmf-ingress';
+import { getPlaces } from './utils';
 
 function RmfPlacesContextsProvider({ children }: React.PropsWithChildren<unknown>): JSX.Element {
   const buildingMap = React.useContext(BuildingMapContext);
   const places = React.useMemo(() => {
     if (!buildingMap) {
-      return {};
+      return [];
     }
-    const navGraphs = buildingMap.levels.flatMap((level) => level.nav_graphs);
-    const vertices = navGraphs.flatMap((graph) => graph.vertices);
-    return vertices.reduce<Record<string, Place>>((obj, v) => {
-      if (v.name) {
-        obj[v.name] = { name: v.name, properties: {} };
-      }
-      return obj;
-    }, {});
+    return getPlaces(buildingMap);
   }, [buildingMap]);
 
   return <PlacesContext.Provider value={places}>{children}</PlacesContext.Provider>;

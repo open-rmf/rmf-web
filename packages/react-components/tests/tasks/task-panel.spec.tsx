@@ -36,10 +36,26 @@ describe('TaskPanel', () => {
     });
   });
 
-  it('clicking on create task button opens the create task form', () => {
-    const root = render(<TaskPanel tasks={[]} />);
-    userEvent.click(root.getByLabelText('Create Task'));
-    root.getByText('Create Task');
+  describe('create task', () => {
+    it('clicking on create task button opens the create task form', () => {
+      const root = render(<TaskPanel tasks={[]} />);
+      userEvent.click(root.getByLabelText('Create Task'));
+      root.getByText('Create Task');
+    });
+
+    it('closing the create task form reset its states', () => {
+      const root = render(<TaskPanel tasks={[]} />);
+      userEvent.click(root.getByLabelText('Create Task'));
+      let priorityEl = root.getByLabelText('Priority') as HTMLInputElement;
+      userEvent.clear(priorityEl);
+      userEvent.type(priorityEl, '2');
+      expect(priorityEl.value).toBe('2');
+
+      userEvent.click(root.getByLabelText('Cancel'));
+      userEvent.click(root.getByLabelText('Create Task'));
+      priorityEl = root.getByLabelText('Priority') as HTMLInputElement;
+      expect(priorityEl.value).toBe('0');
+    });
   });
 
   it('success snackbar is shown when successfully created a task', async () => {

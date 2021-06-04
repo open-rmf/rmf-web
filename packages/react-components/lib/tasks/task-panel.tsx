@@ -135,6 +135,7 @@ export function TaskPanel({
           return res(parseTasksFile(await fileInputEl.files[0].text()));
         } finally {
           fileInputEl.removeEventListener('input', listener);
+          fileInputEl.value = '';
         }
       };
       fileInputEl.addEventListener('input', listener);

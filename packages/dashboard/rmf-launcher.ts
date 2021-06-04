@@ -77,12 +77,13 @@ export class LocalLauncher {
     }
 
     const headless = !process.env.RMF_DASHBOARD_NO_HEADLESS;
-    const officeDemoArgs = ['launch', 'rmf_demos', 'office.launch.xml'];
+    const demoMap = process.env.RMF_DASHBOARD_DEMO_MAP || 'office.launch.xml';
+    const demoArgs = ['launch', 'rmf_demos', demoMap];
     if (headless) {
-      officeDemoArgs.push('headless:=true');
+      demoArgs.push('headless:=true');
     }
     mkdirSync(`${__dirname}/.rmf`, { recursive: true });
-    this._officeDemo = new ManagedProcess('ros2', officeDemoArgs, {
+    this._rmfDemo = new ManagedProcess('ros2', demoArgs, {
       stdio: 'inherit',
       cwd: `${__dirname}/.rmf`,
     });
@@ -96,13 +97,13 @@ export class LocalLauncher {
   }
 
   async kill(): Promise<void> {
-    await Promise.all([this._officeDemo?.kill('SIGINT')]);
-    this._officeDemo = undefined;
+    await Promise.all([this._rmfDemo?.kill('SIGINT')]);
+    this._rmfDemo = undefined;
     this._launched = false;
   }
 
   private _launched = false;
-  private _officeDemo?: ManagedProcess;
+  private _rmfDemo?: ManagedProcess;
 
   private async _rmfReady(timeout: number = 30000): Promise<boolean> {
     const ros2Echo = ChildProcess.spawn('ros2', [

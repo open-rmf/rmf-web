@@ -24,6 +24,7 @@ export function TaskPage() {
   const [totalCount, setTotalCount] = React.useState(0);
   const { tasksApi = null } = React.useContext(RmfIngressContext) || {};
   const places = React.useContext(PlacesContext);
+  const placeNames = places.map((p) => p.vertex.name);
 
   const fetchTasks = React.useCallback(
     async (page: number) => {
@@ -101,9 +102,9 @@ export function TaskPage() {
         rowsPerPageOptions: [10],
         onChangePage: (_ev, newPage) => setPage(newPage),
       }}
-      cleaningZones={Object.keys(places)}
-      loopWaypoints={Object.keys(places)}
-      deliveryWaypoints={Object.keys(places)}
+      cleaningZones={placeNames}
+      loopWaypoints={placeNames}
+      deliveryWaypoints={placeNames}
       submitTasks={submitTasks}
       cancelTask={cancelTask}
     />
