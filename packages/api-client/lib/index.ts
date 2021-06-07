@@ -14,7 +14,9 @@ import {
 } from 'rmf-models';
 import { io, Socket } from 'socket.io-client';
 
-export type Listener<T = unknown> = (resp: T) => void;
+// https://stackoverflow.com/questions/52667959/what-is-the-purpose-of-bivariancehack-in-typescript-types
+export type Listener<T = unknown> = { bivarianceHack(resp: T): void }['bivarianceHack'];
+export type Subscription = Listener;
 
 export class SioClient {
   public sio: Socket;
