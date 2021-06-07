@@ -1,6 +1,7 @@
 import time
 import unittest
-from concurrent.futures import Future, TimeoutError
+from concurrent import futures
+from concurrent.futures import Future
 
 import requests
 import socketio
@@ -98,4 +99,4 @@ class TestFastIO(unittest.TestCase):
             json={"film_title": "aegis rim"},
         )
         self.assertEqual(200, resp.status_code)
-        self.assertRaises(TimeoutError, lambda: fut.result(1))
+        self.assertRaises(futures.TimeoutError, lambda: fut.result(1))
