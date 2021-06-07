@@ -7,6 +7,7 @@ import React from 'react';
 import { TaskPanel, TaskPanelProps } from 'react-components';
 import * as RmfModels from 'rmf-models';
 import { PlacesContext, RmfIngressContext } from '../rmf-app';
+import { useAutoRefresh } from './auto-refresh';
 
 const useStyles = makeStyles((theme) => ({
   taskPanel: {
@@ -19,10 +20,10 @@ const useStyles = makeStyles((theme) => ({
 
 export function TaskPage() {
   const classes = useStyles();
-  const [tasks, setTasks] = React.useState<RmfModels.TaskSummary[]>([]);
+  const { tasksApi, sioClient } = React.useContext(RmfIngressContext) || {};
+  const [autoRefreshState, autoRefreshDispatcher] = useAutoRefresh(sioClient);
   const [page, setPage] = React.useState(0);
   const [totalCount, setTotalCount] = React.useState(0);
-  const { tasksApi = null } = React.useContext(RmfIngressContext) || {};
   const places = React.useContext(PlacesContext);
   const placeNames = places.map((p) => p.vertex.name);
 
@@ -48,16 +49,16 @@ export function TaskPage() {
       );
       setTotalCount(resp.data.total_count);
       const taskProgresses: TaskProgress[] = resp.data.items;
-      return taskProgresses.map((t) => t.task_summary);
+      return taskProgresses.map((t) => t.task_summary) as RmfModels.TaskSummary[];
     },
     [tasksApi],
   );
 
   React.useEffect(() => {
     (async () => {
-      setTasks(await fetchTasks(page));
+      autoRefreshDispatcher.setTasks(await fetchTasks(page));
     })();
-  }, [fetchTasks, page]);
+  }, [fetchTasks, page, autoRefreshDispatcher]);
 
   const submitTasks = React.useCallback<Required<TaskPanelProps>['submitTasks']>(
     async (tasks) => {
@@ -94,7 +95,7 @@ export function TaskPage() {
   return (
     <TaskPanel
       className={classes.taskPanel}
-      tasks={tasks}
+      tasks={autoRefreshState.tasks}
       paginationOptions={{
         page,
         count: totalCount,
@@ -107,6 +108,7 @@ export function TaskPage() {
       deliveryWaypoints={placeNames}
       submitTasks={submitTasks}
       cancelTask={cancelTask}
+      onAutoRefresh={autoRefreshDispatcher.setEnabled}
     />
   );
 }
