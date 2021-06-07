@@ -94,5 +94,8 @@ describe('auto refresh hook', () => {
     const state = result.current[0];
     expect(state.tasks).toHaveLength(1);
     expect(state.tasks[0].state).toBe(RmfModels.TaskSummary.STATE_QUEUED);
+    // check that no extra subscribe/unsubscribe is made when task is updated.
+    expect(mockSubscribe).toHaveBeenCalledTimes(1);
+    expect(mockUnsub).not.toHaveBeenCalled();
   });
 });

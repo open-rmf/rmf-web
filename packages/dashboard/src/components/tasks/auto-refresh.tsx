@@ -12,11 +12,25 @@ export interface AutoRefreshDispatcher {
   setEnabled: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+/**
+ * Helper hook to implement auto refresh feature of for task summaries. This helps to manage the
+ * tasks list state so that task events are only subscribed for the current list of tasks, and no
+ * extra subscribe/unsubscribe are made when a new task update comes in.
+ *
+ * task summaries event for a task is subscribed when:
+ *   1. auto refresh is enabled.
+ *   2. task is in the current set of tracked tasks.
+ *
+ * When the task list is change via the `setTasks` dispatch function, all current subscriptions are
+ * unsubscribed and the new tasks are subscribed.
+ */
 export function useAutoRefresh(
   sioClient?: SioClient,
   initalTasks: RmfModels.TaskSummary[] | (() => RmfModels.TaskSummary[]) = [],
   initialAutoRefresh: boolean | (() => boolean) = false,
 ): [AutoRefreshState, AutoRefreshDispatcher] {
+  //TODO: See if it is possible to refactor this to be item agnostic, so it can be used for other components.
+
   const [tasks, setTasks] = React.useState<RmfModels.TaskSummary[]>(initalTasks);
   const [taskIds, setTaskIds] = React.useState<string[]>(() => tasks.map((t) => t.task_id));
   const [enabled, setEnabled] = React.useState(initialAutoRefresh);
