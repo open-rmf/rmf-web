@@ -5,7 +5,6 @@ from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
 
 from ... import models as mdl
 from ...gateway import RmfGateway
-from ...models.tasks import TaskProgress, TaskSummary
 
 
 class DispatcherClient:
