@@ -19,7 +19,8 @@ from ...models import (
 )
 from ...models import tortoise_models as ttm
 from ...services.tasks import convert_task_request
-from .dispatcher import DispatcherClient, convert_task_status_msg
+from .dispatcher import DispatcherClient
+from .utils import convert_task_status_msg
 
 
 class TasksRouter(FastIORouter):

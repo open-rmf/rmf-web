@@ -13,7 +13,7 @@ from ..gateway import RmfGateway
 from ..models import Fleet, FleetState, RobotHealth
 from ..models import tortoise_models as ttm
 from ..rmf_io import RmfEvents
-from .tasks.dispatcher import convert_task_status_msg
+from .tasks.utils import convert_task_status_msg
 
 
 class FleetsRouter(FastIORouter):
