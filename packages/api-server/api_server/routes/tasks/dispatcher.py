@@ -1,5 +1,4 @@
 from fastapi.exceptions import HTTPException
-from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
 from rmf_task_msgs.srv import CancelTask as RmfCancelTask
 from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
 
