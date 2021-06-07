@@ -1,5 +1,5 @@
 import { act, renderHook } from '@testing-library/react-hooks';
-import { SioClient } from 'api-client';
+import { Listener, SioClient } from 'api-client';
 import * as RmfModels from 'rmf-models';
 import { useAutoRefresh } from '../auto-refresh';
 
@@ -77,5 +77,22 @@ describe('auto refresh hook', () => {
     expect(mockUnsub).toHaveBeenCalledTimes(2);
     expect(mockUnsub).toHaveBeenCalledWith(subscriptions[0]);
     expect(mockUnsub).toHaveBeenCalledWith(subscriptions[1]);
+  });
+
+  it('update tasks when on new task summary', () => {
+    const task = new RmfModels.TaskSummary({
+      task_id: 'task1',
+      state: RmfModels.TaskSummary.STATE_PENDING,
+    });
+
+    mockSubscribe = jest.fn().mockImplementation((_, listener: Listener<RmfModels.TaskSummary>) => {
+      listener({ ...task, state: RmfModels.TaskSummary.STATE_QUEUED });
+    });
+    sioClient.subscribeTaskSummary = mockSubscribe;
+
+    const { result } = renderHook(() => useAutoRefresh(sioClient, [task], true));
+    const state = result.current[0];
+    expect(state.tasks).toHaveLength(1);
+    expect(state.tasks[0].state).toBe(RmfModels.TaskSummary.STATE_QUEUED);
   });
 });
