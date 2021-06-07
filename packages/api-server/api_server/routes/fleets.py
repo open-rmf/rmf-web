@@ -83,8 +83,9 @@ class FleetsRouter(FastIORouter):
                 TaskStateEnum.QUEUED.value,
             ]
             tasks = await ttm.TaskSummary.filter(
-                state__in=filter_states, **filter_params
-            )
+                state__in=filter_states,
+                **filter_params,
+            ).order_by("start_time")
             for t in tasks:
                 r = robots.get(f"{t.fleet_name}/{t.robot_name}", None)
                 # This should only happen under very rare scenarios, when there are
