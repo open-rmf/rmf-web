@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
 
 export function RobotPage() {
   const classes = useStyles();
-  const { tasksApi = null } = React.useContext(RmfIngressContext) || {};
+  const { tasksApi = null, fleetsApi } = React.useContext(RmfIngressContext) || {};
   const fleetStates = React.useContext(FleetStateContext);
   const fleets = React.useMemo(() => Object.values(fleetStates), [fleetStates]);
   const fleetNames = React.useRef<string[]>([]);
@@ -27,6 +27,20 @@ export function RobotPage() {
     fleetNames.current = newFleetNames;
   }
   const [robotStates, setRobotStates] = React.useState<RmfModels.RobotState[]>([]);
+
+  const test = async () => {
+    const resp = await fleetsApi?.getRobotsFleetsRobotsGet(
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      'start_time',
+    );
+    console.log(resp?.data.items);
+  };
+
+  test();
 
   const fetchTasks = React.useCallback<RobotPanelProps['fetchTasks']>(
     async (limit: number, offset: number) => {
@@ -54,6 +68,7 @@ export function RobotPage() {
   );
 
   React.useEffect(() => {
+    console.log('is this ever changing??????');
     const robotsStatesArray = fleets.flatMap((fleet, index) => {
       return fleet.robots;
     });

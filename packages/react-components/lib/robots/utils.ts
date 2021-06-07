@@ -31,9 +31,8 @@ export function robotModeToString(robotMode: RmfModels.RobotMode): string {
   }
 }
 
-//TODO: endpoint should return the equivalent of this
 export interface VerboseRobot extends RmfModels.RobotState {
-  assignedTasks: TaskProgress[];
+  tasks: TaskProgress[];
 }
 
 export function makeVerboseRobot(
@@ -42,7 +41,7 @@ export function makeVerboseRobot(
 ): VerboseRobot {
   return {
     ...robot,
-    assignedTasks: assignedTasks,
+    tasks: assignedTasks,
   };
 }
 
