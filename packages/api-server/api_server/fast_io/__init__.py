@@ -27,7 +27,8 @@ from fastapi.types import DecoratedCallable
 from rx import Observable
 from starlette.routing import compile_path, replace_params
 
-from .authenticator import AuthenticationError, JwtAuthenticator
+from ..authenticator import AuthenticationError, JwtAuthenticator
+from .errors import *
 
 T = TypeVar("T")
 
@@ -40,6 +41,11 @@ class DataStore(ABC, Generic[T]):
     @abstractmethod
     async def set(self, key: str, path_params: Dict[str, str], data: T) -> None:
         pass
+
+
+@dataclass
+class Subscription:
+    path: str
 
 
 @dataclass
@@ -269,6 +275,7 @@ class FastIO(socketio.ASGIApp):
         self._patterns = cast(Dict[Pattern, Watch], {})
 
         self.sio.on("subscribe", self._on_subscribe)
+        self.sio.on("unsubscribe", self._on_unsubscribe)
         self.fapi.add_event_handler("startup", self._on_startup)
 
     def include_router(self, router: FastIORouter, prefix: str = "", **kwargs):
@@ -293,16 +300,23 @@ class FastIO(socketio.ASGIApp):
                 lambda data, on_next=on_next: loop.create_task(on_next(data))
             )
 
-    async def _on_subscribe(self, sid: str, data: dict):
+    @staticmethod
+    def _parse_sub_data(data: dict) -> Subscription:
         if "path" not in data:
-            await self.sio.emit(
-                "subscribe", {"success": False, "error": "missing 'path'"}
-            )
+            raise SubscribeError("missing 'path'")
+        path = url_unquote(data["path"])
+        return Subscription(path=path)
+
+    async def _on_subscribe(self, sid: str, data: dict):
+        try:
+            sub = self._parse_sub_data(data)
+        except SubscribeError as e:
+            await self.sio.emit("subscribe", {"success": False, "error": str(e)})
             return
 
-        path = url_unquote(data["path"])
         matches = (
-            (watch, pattern.match(path)) for pattern, watch in self._patterns.items()
+            (watch, pattern.match(sub.path))
+            for pattern, watch in self._patterns.items()
         )
         try:
             watch, path_params = next(
@@ -315,10 +329,19 @@ class FastIO(socketio.ASGIApp):
             return
 
         await self.sio.emit("subscribe", {"success": True}, sid)
-        stripped_path = path[len(watch.prefix) :]
+        stripped_path = sub.path[len(watch.prefix) :]
         current = await watch.on_subscribe(stripped_path, path_params)
         if current is None:
             return
         if isinstance(current, pydantic.BaseModel):
             current = current.dict()
-        await self.sio.emit(path, current, to=sid)
+        await self.sio.emit(sub.path, current, to=sid)
+
+    async def _on_unsubscribe(self, sid: str, data: dict):
+        try:
+            sub = self._parse_sub_data(data)
+        except SubscribeError as e:
+            await self.sio.emit("unsubscribe", {"success": False, "error": str(e)})
+
+        self.sio.leave_room(sid, sub.path)
+        await self.sio.emit("unsubscribe", {"success": True})

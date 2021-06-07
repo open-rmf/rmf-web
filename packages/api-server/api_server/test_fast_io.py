@@ -1,6 +1,6 @@
 import time
 import unittest
-from concurrent.futures import Future
+from concurrent.futures import Future, TimeoutError
 
 import requests
 import socketio
@@ -75,3 +75,27 @@ class TestFastIO(unittest.TestCase):
 
     def test_receive_events_router_both_prefix(self):
         self.check_events("/include_prefix/router_both_prefix")
+
+    def test_unsubscribe(self):
+        path = "/video_rental/aegis rim/available"
+
+        fut = Future()
+        self.client.on("subscribe", fut.set_result)
+        self.client.emit("subscribe", {"path": path})
+        resp = fut.result(1)
+        self.assertTrue(resp["success"])
+
+        fut = Future()
+        self.client.on("unsubscribe", fut.set_result)
+        self.client.emit("unsubscribe", {"path": path})
+        resp = fut.result(1)
+        self.assertTrue(resp["success"])
+
+        fut = Future()
+        self.client.on("subscribe", fut.set_result)
+        resp = requests.post(
+            f"{self.base_url}/video_rental/return_video",
+            json={"film_title": "aegis rim"},
+        )
+        self.assertEqual(200, resp.status_code)
+        self.assertRaises(TimeoutError, lambda: fut.result(1))
