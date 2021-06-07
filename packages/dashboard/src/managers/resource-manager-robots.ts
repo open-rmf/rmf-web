@@ -1,3 +1,5 @@
+import { RESOURCE_PREFIX } from './resource-manager';
+
 export interface RobotResource {
   icons: Record<string, string>; // Record<ModelName|FleetName, IconPath>
   places: Record<string, string[]>; // Record<Places, Dispensers[]>
@@ -24,7 +26,7 @@ export class RobotResourceManager {
     if (!this.robots[fleetName].hasOwnProperty('icons')) {
       return null;
     }
-    const rootIconPath = '/assets/icons';
+    const rootIconPath = RESOURCE_PREFIX + '/assets/icons';
     const robotIcons = this.robots[fleetName].icons;
     // In case the fleet has different models
     if (!!robotModel && robotIcons.hasOwnProperty(robotModel)) {
