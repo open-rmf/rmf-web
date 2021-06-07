@@ -104,8 +104,10 @@ function RobotRow({ robot, onClick }: RobotRowProps) {
           {returnLocationCells(robot)}
           <TableCell>
             {robot.assignedTasks
-              ? robot.assignedTasks[0].task_summary.end_time.sec -
-                robot.assignedTasks[0].task_summary.start_time.sec
+              ? `${
+                  robot.assignedTasks[0].task_summary.end_time.sec -
+                  robot.assignedTasks[0].task_summary.start_time.sec
+                }s`
               : '-'}
           </TableCell>
           <TableCell>{robot.battery_percent.toFixed(2)}%</TableCell>
