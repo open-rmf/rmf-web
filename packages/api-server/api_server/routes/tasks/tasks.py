@@ -20,6 +20,7 @@ from ...models import (
 from ...models import tortoise_models as ttm
 from ...services.tasks import convert_task_request
 from .dispatcher import DispatcherClient
+from .utils import convert_task_status_msg
 
 
 class TasksRouter(FastIORouter):
@@ -41,7 +42,6 @@ class TasksRouter(FastIORouter):
 
         @self.get("", response_model=GetTasksResponse)
         async def get_tasks(
-            dispatcher_client: DispatcherClient = Depends(dispatcher_client_dep),
             with_base_query: WithBaseQuery[ttm.TaskSummary] = Depends(
                 base_query_params({"task_id": "id_"})
             ),
@@ -97,7 +97,7 @@ class TasksRouter(FastIORouter):
 
             results = await with_base_query(ttm.TaskSummary.filter(**filter_params))
             results.items = [
-                dispatcher_client.convert_task_status_msg(item.to_pydantic())
+                convert_task_status_msg(item.to_pydantic(), rmf_gateway_dep())
                 for item in results.items
             ]
             return results
