@@ -162,7 +162,7 @@ export function RobotTable({
               <TableCell>Robot Name</TableCell>
               <TableCell>Start Location</TableCell>
               <TableCell>Destination</TableCell>
-              <TableCell>Duration</TableCell>
+              <TableCell>Active Task Duration</TableCell>
               <TableCell>Battery</TableCell>
               <TableCell>State</TableCell>
             </TableRow>
