@@ -67,11 +67,10 @@ export function TaskPage() {
       if (!tasksApi) {
         throw new Error('tasks api not available');
       }
-      for (const t of tasks) {
-        await tasksApi.submitTaskTasksSubmitTaskPost(t);
-      }
+      await Promise.all(tasks.map((t) => tasksApi.submitTaskTasksSubmitTaskPost(t)));
+      handleRefresh();
     },
-    [tasksApi],
+    [tasksApi, handleRefresh],
   );
 
   const cancelTask = React.useCallback<Required<TaskPanelProps>['cancelTask']>(
