@@ -140,6 +140,9 @@ class App(FastIO):
         self.rmf_events = RmfEvents()
         self.rmf_repo = RmfRepository()
         self.rmf_gateway: RmfGateway = None
+        rmf_bookkeeper = RmfBookKeeper(
+            self.rmf_repo, self.rmf_events, logger=logger.getChild("BookKeeper")
+        )
 
         def rmf_gateway_dep():
             return self.rmf_gateway
@@ -156,7 +159,10 @@ class App(FastIO):
             prefix="/lifts",
         )
         self.include_router(
-            routes.TasksRouter(self.rmf_events, rmf_gateway_dep), prefix="/tasks"
+            routes.TasksRouter(
+                self.rmf_events, rmf_bookkeeper.bookkeeper_events, rmf_gateway_dep
+            ),
+            prefix="/tasks",
         )
         self.include_router(
             routes.DispensersRouter(self.rmf_events, self.rmf_repo),
@@ -251,9 +257,6 @@ class App(FastIO):
             # back into the db and mess up health watchdog's heartbeat system.
             self.rmf_gateway.subscribe_all()
             shutdown_cbs.append(self.rmf_gateway.unsubscribe_all)
-            rmf_bookkeeper = RmfBookKeeper(
-                self.rmf_repo, self.rmf_events, logger=logger.getChild("BookKeeper")
-            )
             await rmf_bookkeeper.start()
             shutdown_cbs.append(rmf_bookkeeper.stop())
             health_watchdog = HealthWatchdog(

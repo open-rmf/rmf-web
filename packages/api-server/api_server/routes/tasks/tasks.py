@@ -1,11 +1,11 @@
+import asyncio
 from datetime import datetime
 from typing import Callable, Dict, Optional
 
 from fastapi import Depends, HTTPException
 from fastapi.param_functions import Query
 from fastapi.responses import JSONResponse
-
-from api_server.models.tasks import TaskSummary
+from rx import operators as rx_ops
 
 from ...dependencies import WithBaseQuery, base_query_params
 from ...fast_io import DataStore, FastIORouter
@@ -20,7 +20,8 @@ from ...models import (
     TaskTypeEnum,
 )
 from ...models import tortoise_models as ttm
-from ...rmf_io import RmfEvents
+from ...models.tasks import TaskSummary
+from ...rmf_io import RmfBookKeeperEvents, RmfEvents
 from ...services.tasks import convert_task_request
 from .dispatcher import DispatcherClient
 from .utils import convert_task_status_msg
@@ -30,6 +31,7 @@ class TasksRouter(FastIORouter):
     def __init__(
         self,
         rmf_events: RmfEvents,
+        bookkeeper_events: RmfBookKeeperEvents,
         rmf_gateway_dep: Callable[[], RmfGateway],
     ):
         super().__init__(tags=["Tasks"])
@@ -150,6 +152,22 @@ class TasksRouter(FastIORouter):
             rmf_resp = await dispatcher_client.submit_task_request(req_msg)
             if not rmf_resp.success:
                 raise HTTPException(422, rmf_resp.message)
+
+            # wait for the new task summary to be written to db so that subsequent calls
+            # to `/tasks` will include the new task.
+            fut = asyncio.Future()
+            sub = bookkeeper_events.task_summary_written.pipe(
+                rx_ops.filter(lambda t: sub.dispose() or t.task_id == rmf_resp.task_id)
+            ).subscribe(fut.set_result)
+            try:
+                # there is a slight chance that the new task is written to db before
+                # the ros service call returns. So we put a timeout and ignore the error.
+                await asyncio.wait_for(fut, 5)
+            except asyncio.TimeoutError:
+                pass
+            finally:
+                sub.dispose()
+
             return {"task_id": rmf_resp.task_id}
 
         @self.post("/cancel_task")
