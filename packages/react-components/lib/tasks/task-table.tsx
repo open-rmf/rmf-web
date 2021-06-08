@@ -21,6 +21,9 @@ const useStyles = makeStyles((theme) => ({
   phasesCell: {
     padding: `0 ${theme.spacing(1)}px`,
   },
+  phasesRow: {
+    marginBottom: theme.spacing(1),
+  },
 }));
 
 interface TaskRowProps {
@@ -53,7 +56,7 @@ function TaskRow({ task, onClick }: TaskRowProps) {
         onMouseOut={() => setHover(false)}
       >
         <TableCell className={classes.phasesCell} colSpan={5}>
-          <TaskPhases taskSummary={task}></TaskPhases>
+          <TaskPhases className={classes.phasesRow} taskSummary={task}></TaskPhases>
         </TableCell>
       </TableRow>
     </>
