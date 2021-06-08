@@ -43,10 +43,14 @@ export function RobotPanel({
   const [page, setPage] = React.useState(0);
   const [selectedRobot, setSelectedRobot] = React.useState<VerboseRobot | undefined>(undefined);
 
-  // TODO - comeback and check if useCallback is needed
-  const handleRefresh = React.useCallback(async () => {
-    await fetchVerboseRobots();
-  }, [fetchVerboseRobots]);
+  const handleRefresh = (selectedRobot?: VerboseRobot) => {
+    fetchVerboseRobots();
+    verboseRobots.forEach((robot) => {
+      if (selectedRobot && robot.name === selectedRobot.name) {
+        setSelectedRobot(robot);
+      }
+    });
+  };
 
   React.useEffect(() => {
     setTotalCount(verboseRobots.length);
@@ -67,7 +71,7 @@ export function RobotPanel({
               onChangePage: (_ev, newPage) => setPage(newPage),
             }}
             onRobotClick={(_ev, robot) => setSelectedRobot(robot)}
-            onRefreshClick={handleRefresh}
+            onRefreshClick={() => handleRefresh(selectedRobot)}
           />
         </Grid>
         <Paper className={classes.detailPanelContainer}>
