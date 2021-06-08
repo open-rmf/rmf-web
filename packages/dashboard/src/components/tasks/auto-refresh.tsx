@@ -27,7 +27,7 @@ export interface AutoRefreshDispatcher {
 export function useAutoRefresh(
   sioClient?: SioClient,
   initalTasks: RmfModels.TaskSummary[] | (() => RmfModels.TaskSummary[]) = [],
-  initialAutoRefresh: boolean | (() => boolean) = false,
+  initialAutoRefresh: boolean | (() => boolean) = true,
 ): [AutoRefreshState, AutoRefreshDispatcher] {
   //TODO: See if it is possible to refactor this to be item agnostic, so it can be used for other components.
 

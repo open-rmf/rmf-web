@@ -22,7 +22,7 @@ describe('auto refresh hook', () => {
   });
 
   it('smoke test', () => {
-    const { result } = renderHook(() => useAutoRefresh(sioClient));
+    const { result } = renderHook(() => useAutoRefresh(sioClient, undefined, false));
     let [state, dispatch] = result.current;
 
     // mockSubscribe not called because auto refresh is disabled

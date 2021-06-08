@@ -98,7 +98,7 @@ export function TaskPanel({
   const [openSnackbar, setOpenSnackbar] = React.useState(false);
   const [snackbarMessage, setSnackbarMessage] = React.useState('');
   const [snackbarSeverity, setSnackbarSeverity] = React.useState<AlertProps['severity']>('success');
-  const [autoRefresh, setAutoRefresh] = React.useState(false);
+  const [autoRefresh, setAutoRefresh] = React.useState(true);
 
   const handleCancelTask = React.useCallback(
     async (task: RmfModels.TaskSummary) => {
