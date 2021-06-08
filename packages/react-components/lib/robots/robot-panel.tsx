@@ -30,7 +30,7 @@ function NoSelectedRobot() {
 
 export interface RobotPanelProps extends React.HTMLProps<HTMLDivElement> {
   verboseRobots: VerboseRobot[];
-  fetchVerboseRobots: () => void;
+  fetchVerboseRobots: () => Promise<VerboseRobot[]>;
 }
 
 export function RobotPanel({
@@ -43,14 +43,19 @@ export function RobotPanel({
   const [page, setPage] = React.useState(0);
   const [selectedRobot, setSelectedRobot] = React.useState<VerboseRobot | undefined>(undefined);
 
-  const handleRefresh = (selectedRobot?: VerboseRobot) => {
-    fetchVerboseRobots();
-    verboseRobots.forEach((robot) => {
-      if (selectedRobot && robot.name === selectedRobot.name) {
-        setSelectedRobot(robot);
-      }
-    });
-  };
+  const handleRefresh = React.useCallback(
+    async (selectedRobot?: VerboseRobot) => {
+      (async () => {
+        const result = await fetchVerboseRobots();
+        result.forEach((robot) => {
+          if (selectedRobot && robot.name === selectedRobot.name) {
+            setSelectedRobot(robot);
+          }
+        });
+      })();
+    },
+    [fetchVerboseRobots],
+  );
 
   React.useEffect(() => {
     setTotalCount(verboseRobots.length);

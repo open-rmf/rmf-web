@@ -3,8 +3,7 @@
 import { makeStyles } from '@material-ui/core';
 import React from 'react';
 import { RobotPanel, VerboseRobot } from 'react-components';
-import * as RmfModels from 'rmf-models';
-import { FleetStateContext, RmfIngressContext } from '../rmf-app';
+import { RmfIngressContext } from '../rmf-app';
 
 const useStyles = makeStyles((theme) => ({
   robotPanel: {
@@ -21,6 +20,7 @@ export function RobotPage() {
 
   const [verboseRobots, setVerboseRobots] = React.useState<VerboseRobot[]>([]);
   const fetchVerboseRobots = React.useCallback(async () => {
+    if (!fleetsApi) return [];
     const resp = await fleetsApi?.getRobotsFleetsRobotsGet(
       undefined,
       undefined,
@@ -28,9 +28,8 @@ export function RobotPage() {
       undefined,
       'fleet_name,robot_name',
     );
-    if (resp) {
-      setVerboseRobots(resp.data.items);
-    }
+    setVerboseRobots(resp.data.items);
+    return resp.data.items;
   }, [fleetsApi]);
 
   React.useEffect(() => {
