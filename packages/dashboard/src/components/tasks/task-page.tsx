@@ -54,11 +54,13 @@ export function TaskPage() {
     [tasksApi],
   );
 
-  React.useEffect(() => {
-    (async () => {
-      autoRefreshDispatcher.setTasks(await fetchTasks(page));
-    })();
+  const handleRefresh = React.useCallback<Required<TaskPanelProps>['onRefresh']>(async () => {
+    autoRefreshDispatcher.setTasks(await fetchTasks(page));
   }, [fetchTasks, page, autoRefreshDispatcher]);
+
+  React.useEffect(() => {
+    handleRefresh();
+  }, [handleRefresh]);
 
   const submitTasks = React.useCallback<Required<TaskPanelProps>['submitTasks']>(
     async (tasks) => {
@@ -108,6 +110,7 @@ export function TaskPage() {
       deliveryWaypoints={placeNames}
       submitTasks={submitTasks}
       cancelTask={cancelTask}
+      onRefresh={handleRefresh}
       onAutoRefresh={autoRefreshDispatcher.setEnabled}
     />
   );

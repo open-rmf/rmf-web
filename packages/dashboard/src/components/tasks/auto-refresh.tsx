@@ -69,7 +69,7 @@ export function useAutoRefresh(
         } else {
           const newTasks = value;
           setTaskIds(newTasks.map((t) => t.task_id));
-          setTasks(value);
+          setTasks(newTasks);
         }
       },
     }),
