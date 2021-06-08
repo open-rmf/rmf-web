@@ -94,12 +94,12 @@ describe('TaskPanel', () => {
   it('clicking on auto refresh button toggles auto refresh', () => {
     const spy = jasmine.createSpy();
     const root = render(<TaskPanel tasks={[]} onAutoRefresh={spy} />);
-    userEvent.click(root.getByLabelText('Enable auto refresh'));
-    expect(spy).toHaveBeenCalledTimes(1);
-    expect(spy.calls.mostRecent().args[0]).toBe(true);
     userEvent.click(root.getByLabelText('Disable auto refresh'));
-    expect(spy).toHaveBeenCalledTimes(2);
+    expect(spy).toHaveBeenCalledTimes(1);
     expect(spy.calls.mostRecent().args[0]).toBe(false);
+    userEvent.click(root.getByLabelText('Enable auto refresh'));
+    expect(spy).toHaveBeenCalledTimes(2);
+    expect(spy.calls.mostRecent().args[0]).toBe(true);
   });
 
   it('clicking on refresh button triggers onRefresh', () => {

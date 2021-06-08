@@ -194,29 +194,31 @@ export function TaskPanel({
           )}
         </Paper>
       </Grid>
-      <CreateTaskForm
-        cleaningZones={cleaningZones}
-        loopWaypoints={loopWaypoints}
-        deliveryWaypoints={deliveryWaypoints}
-        dispensers={dispensers}
-        ingestors={ingestors}
-        open={openCreateTaskForm}
-        onClose={() => setOpenCreateTaskForm(false)}
-        submitTasks={submitTasks}
-        tasksFromFile={tasksFromFile}
-        onCancelClick={() => setOpenCreateTaskForm(false)}
-        onSuccess={() => {
-          setOpenCreateTaskForm(false);
-          setSnackbarSeverity('success');
-          setSnackbarMessage('Successfully created task');
-          setOpenSnackbar(true);
-        }}
-        onFail={(e) => {
-          setSnackbarSeverity('error');
-          setSnackbarMessage(`Failed to create task: ${e.message}`);
-          setOpenSnackbar(true);
-        }}
-      />
+      {openCreateTaskForm && (
+        <CreateTaskForm
+          cleaningZones={cleaningZones}
+          loopWaypoints={loopWaypoints}
+          deliveryWaypoints={deliveryWaypoints}
+          dispensers={dispensers}
+          ingestors={ingestors}
+          open={openCreateTaskForm}
+          onClose={() => setOpenCreateTaskForm(false)}
+          submitTasks={submitTasks}
+          tasksFromFile={tasksFromFile}
+          onCancelClick={() => setOpenCreateTaskForm(false)}
+          onSuccess={() => {
+            setOpenCreateTaskForm(false);
+            setSnackbarSeverity('success');
+            setSnackbarMessage('Successfully created task');
+            setOpenSnackbar(true);
+          }}
+          onFail={(e) => {
+            setSnackbarSeverity('error');
+            setSnackbarMessage(`Failed to create task: ${e.message}`);
+            setOpenSnackbar(true);
+          }}
+        />
+      )}
       <input type="file" style={{ display: 'none' }} ref={uploadFileInputRef} />
       <Snackbar open={openSnackbar} onClose={() => setOpenSnackbar(false)} autoHideDuration={2000}>
         <Alert severity={snackbarSeverity}>{snackbarMessage}</Alert>
