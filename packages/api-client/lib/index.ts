@@ -23,6 +23,7 @@ export type Subscription = Listener;
 
 export class SioClient {
   public sio: Socket;
+  private _subscriptions = new Map<Listener, string>();
 
   constructor(...args: Parameters<typeof io>) {
     this.sio = io(...args);
@@ -30,14 +31,22 @@ export class SioClient {
 
   subscribe<T>(path: string, listener: Listener<T>): Listener<T> {
     this.sio.emit('subscribe', { path });
-    this.sio.on(path, (msg: T) => listener(msg));
+    this.sio.on(path, listener);
+    this._subscriptions.set(listener, path);
     debug(`subscribed to ${path}`);
     return listener;
   }
 
   unsubscribe(listener: Listener): void {
-    this.sio.offAny(listener);
-    debug(`unsubscribed listener\n${listener}`);
+    const path = this._subscriptions.get(listener);
+    if (path) {
+      this.sio.emit('unsubscribe', { path });
+      this.sio.off(path, listener);
+      this._subscriptions.delete(listener);
+      debug(`unsubscribed to ${path}`);
+    } else {
+      debug('fail to unsubscribe, listener not found in list of subscriptions');
+    }
   }
 
   subscribeBuildingMap(listener: Listener<BuildingMap>): Listener<BuildingMap> {
@@ -98,7 +107,8 @@ export class SioClient {
   }
 
   subscribeTaskSummary(taskId: string, listener: Listener<TaskSummary>): Listener<TaskSummary> {
-    return this.subscribe<TaskSummary>(`/tasks/${taskId}/summary`, listener);
+    const encoded = taskId.replace('/', '__');
+    return this.subscribe<TaskSummary>(`/tasks/${encoded}/summary`, listener);
   }
 }
 
