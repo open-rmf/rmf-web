@@ -1,10 +1,8 @@
 import React from 'react';
 import { Grid, makeStyles, Paper, Typography } from '@material-ui/core';
-import * as RmfModels from 'rmf-models';
 import { RobotInfo } from './robot-info';
 import { RobotTable } from './robot-table';
 import { VerboseRobot } from './utils';
-import { TaskProgress } from 'api-client';
 
 const useStyles = makeStyles((theme) => ({
   detailPanelContainer: {
@@ -31,34 +29,28 @@ function NoSelectedRobot() {
 }
 
 export interface RobotPanelProps extends React.HTMLProps<HTMLDivElement> {
-  robots: RmfModels.RobotState[];
   verboseRobots: VerboseRobot[];
-  fetchTasks: (limit: number, offset: number) => Promise<TaskProgress[]>;
+  fetchVerboseRobots: () => void;
 }
 
 export function RobotPanel({
-  robots,
   verboseRobots,
-  fetchTasks,
+  fetchVerboseRobots,
   ...divProps
 }: RobotPanelProps): JSX.Element {
   const classes = useStyles();
-  const [tasks, setTasks] = React.useState<TaskProgress[]>([]);
   const [totalCount, setTotalCount] = React.useState(-1);
   const [page, setPage] = React.useState(0);
   const [selectedRobot, setSelectedRobot] = React.useState<VerboseRobot | undefined>(undefined);
 
+  // TODO - comeback and check if useCallback is needed
   const handleRefresh = React.useCallback(async () => {
-    (async () => {
-      const result = await fetchTasks(10, page * 10);
-      setTasks(result);
-    })();
-  }, [fetchTasks, page]);
+    await fetchVerboseRobots();
+  }, [fetchVerboseRobots]);
 
   React.useEffect(() => {
-    setTotalCount(robots.length);
-    handleRefresh();
-  }, [handleRefresh, robots]);
+    setTotalCount(verboseRobots.length);
+  }, [verboseRobots]);
 
   return (
     <div {...divProps}>
