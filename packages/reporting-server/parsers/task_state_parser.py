@@ -1,6 +1,6 @@
 import json
 
-from models import TaskState
+from models.task_state import TaskState
 
 
 async def task_state_parser(fullstring: str) -> list:
@@ -16,9 +16,12 @@ async def task_state_parser(fullstring: str) -> list:
         task_list.append(
             {
                 "payload": modified_string,
+                "fleet_name": task["fleet_name"],
+                "robot_name": task["robot_name"],
                 "task_id": task["task_id"],
-                "task_state": task["task_state"],
-                "status": task["status"],
+                "state": TaskState.service.get_task_state_name(task["state"]),
+                "task_type": TaskState.service.get_task_type_name(task["task_type"]),
+                "priority": task["priority"],
                 "submission_time": task["submission_time"],
                 "start_time": task["start_time"],
                 "end_time": task["end_time"],

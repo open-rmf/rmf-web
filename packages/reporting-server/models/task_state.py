@@ -13,6 +13,12 @@ class TaskStateEnum(str, Enum):
     STATE_QUEUED = "queued"
 
 
+class TaskTypeEnum(str, Enum):
+    CLEAN = "clean"
+    LOOP = "loop"
+    DELIVERY = "delivery"
+
+
 class TaskStateService:
     def get_task_state_name(self, state: int):
         if state == 0:
@@ -28,6 +34,14 @@ class TaskStateService:
         elif state == 5:
             return TaskStateEnum.STATE_QUEUED
 
+    def get_task_type_name(self, type: int):
+        if type == 0:
+            return TaskTypeEnum.CLEAN
+        elif type == 1:
+            return TaskTypeEnum.LOOP
+        elif type == 2:
+            return TaskTypeEnum.DELIVERY
+
 
 class TaskState(models.Model):
     id = fields.IntField(pk=True)
@@ -35,7 +49,10 @@ class TaskState(models.Model):
     fleet_name = fields.CharField(max_length=100)
     payload = fields.JSONField()
     task_id = fields.CharField(max_length=100)
-    task_state = fields.CharField(max_length=100)
+    task_state: TaskStateEnum = fields.CharEnumField(
+        TaskStateEnum, default=TaskStateEnum.STATE_PENDING
+    )
+    task_type: TaskTypeEnum = fields.CharEnumField(TaskTypeEnum)
     status: fields.CharField(max_length=100)
     submission_time = fields.CharField(max_length=100)
     start_time = fields.CharField(max_length=100)
