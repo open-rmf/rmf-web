@@ -66,7 +66,6 @@ export function RobotPanel({
         <Grid style={{ flex: '1 1 auto' }}>
           <RobotTable
             className={classes.robotTable}
-            tasks={tasks}
             robots={verboseRobots.slice(page * 10, (page + 1) * 10)}
             paginationOptions={{
               count: totalCount,

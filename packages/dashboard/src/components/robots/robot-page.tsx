@@ -47,8 +47,6 @@ export function RobotPage() {
     }
   }, [fleetsApi]);
 
-  fetchVerboseRobots();
-
   // TODO - remove fetch tasks
   const fetchTasks = React.useCallback<RobotPanelProps['fetchTasks']>(
     async (limit: number, offset: number) => {
@@ -76,12 +74,8 @@ export function RobotPage() {
   );
 
   React.useEffect(() => {
-    // TODO - remove during clean up
-    const robotsStatesArray = fleets.flatMap((fleet, index) => {
-      return fleet.robots;
-    });
-    setRobotStates(robotsStatesArray);
-  }, [fleets]);
+    fetchVerboseRobots();
+  }, [fetchVerboseRobots]);
 
   return (
     <RobotPanel

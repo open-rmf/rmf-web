@@ -37,37 +37,3 @@ export interface VerboseRobot {
   state: RmfModels.RobotState;
   tasks: TaskProgress[];
 }
-
-// export function makeVerboseRobot(
-//   robot: RmfModels.RobotState,
-//   assignedTasks: TaskProgress[],
-// ): VerboseRobot {
-//   return {
-//     ...robot,
-//     tasks: assignedTasks,
-//   };
-// }
-
-//TODO: add this functionality into the server
-// export function allocateTasksToRobots(
-//   robots: RmfModels.RobotState[],
-//   tasks: TaskProgress[],
-// ): VerboseRobot[] {
-//   const removableTaskStates = [
-//     RmfModels.TaskSummary.STATE_ACTIVE,
-//     RmfModels.TaskSummary.STATE_PENDING,
-//     RmfModels.TaskSummary.STATE_QUEUED,
-//   ];
-//   const robotsWithAssignedTasks = robots.map((robot) => {
-//     const assignedTasks = tasks.filter((task) => {
-//       if (
-//         task.task_summary.robot_name == robot.name &&
-//         removableTaskStates.indexOf(task.task_summary.state) != -1
-//       ) {
-//         return task;
-//       }
-//     });
-//     return makeVerboseRobot(robot, assignedTasks);
-//   });
-//   return robotsWithAssignedTasks;
-// }

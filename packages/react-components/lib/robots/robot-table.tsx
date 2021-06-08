@@ -121,7 +121,6 @@ export interface RobotTableProps extends PaperProps {
    * The current list of robots to display, when pagination is enabled, this should only
    * contain the robots for the current page.
    */
-  tasks: TaskProgress[];
   robots: VerboseRobot[];
   paginationOptions?: PaginationOptions;
   onRefreshClick?: React.MouseEventHandler<HTMLButtonElement>;
@@ -129,7 +128,6 @@ export interface RobotTableProps extends PaperProps {
 }
 
 export function RobotTable({
-  tasks,
   robots,
   paginationOptions,
   onRefreshClick,
@@ -137,9 +135,6 @@ export function RobotTable({
   ...paperProps
 }: RobotTableProps): JSX.Element {
   const classes = useStyles();
-  // React.useEffect(() => {
-  //   setRobotsWithTasks(allocateTasksToRobots(robots, tasks));
-  // }, [robots, tasks]);
 
   return (
     <Paper {...paperProps}>
