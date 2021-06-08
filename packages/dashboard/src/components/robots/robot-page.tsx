@@ -41,11 +41,10 @@ export function RobotPage() {
       undefined,
       'fleet_name,robot_name',
     );
-    const verboseRobotsHolder = [];
+
     if (resp) {
-      verboseRobotsHolder.push(resp.data.items);
+      setVerboseRobots(resp.data.items);
     }
-    setVerboseRobots(verboseRobotsHolder);
   }, [fleetsApi]);
 
   fetchVerboseRobots();

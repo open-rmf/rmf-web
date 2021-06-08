@@ -36,7 +36,12 @@ export interface RobotPanelProps extends React.HTMLProps<HTMLDivElement> {
   fetchTasks: (limit: number, offset: number) => Promise<TaskProgress[]>;
 }
 
-export function RobotPanel({ robots, fetchTasks, ...divProps }: RobotPanelProps): JSX.Element {
+export function RobotPanel({
+  robots,
+  verboseRobots,
+  fetchTasks,
+  ...divProps
+}: RobotPanelProps): JSX.Element {
   const classes = useStyles();
   const [tasks, setTasks] = React.useState<TaskProgress[]>([]);
   const [totalCount, setTotalCount] = React.useState(-1);
@@ -62,7 +67,7 @@ export function RobotPanel({ robots, fetchTasks, ...divProps }: RobotPanelProps)
           <RobotTable
             className={classes.robotTable}
             tasks={tasks}
-            robots={robots.slice(page * 10, (page + 1) * 10)}
+            robots={verboseRobots.slice(page * 10, (page + 1) * 10)}
             paginationOptions={{
               count: totalCount,
               rowsPerPage: 10,

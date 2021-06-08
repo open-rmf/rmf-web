@@ -122,7 +122,7 @@ export interface RobotTableProps extends PaperProps {
    * contain the robots for the current page.
    */
   tasks: TaskProgress[];
-  robots: RmfModels.RobotState[];
+  robots: VerboseRobot[];
   paginationOptions?: PaginationOptions;
   onRefreshClick?: React.MouseEventHandler<HTMLButtonElement>;
   onRobotClick?(ev: React.MouseEvent<HTMLDivElement>, robot: VerboseRobot): void;
@@ -137,8 +137,6 @@ export function RobotTable({
   ...paperProps
 }: RobotTableProps): JSX.Element {
   const classes = useStyles();
-  const [robotsWithTasks, setRobotsWithTasks] = React.useState<VerboseRobot[]>([]);
-
   // React.useEffect(() => {
   //   setRobotsWithTasks(allocateTasksToRobots(robots, tasks));
   // }, [robots, tasks]);
@@ -166,8 +164,8 @@ export function RobotTable({
             </TableRow>
           </TableHead>
           <TableBody>
-            {robotsWithTasks &&
-              robotsWithTasks.map((robot, robot_id) => (
+            {robots &&
+              robots.map((robot, robot_id) => (
                 <RobotRow
                   key={robot_id}
                   robot={robot}
