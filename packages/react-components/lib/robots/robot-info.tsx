@@ -123,7 +123,7 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
           </Typography>
         </Grid>
         <Grid item xs={12}>
-          <LinearProgressBar value={robot.battery_percent} />
+          <LinearProgressBar value={robot.state.battery_percent} />
         </Grid>
         <Grid container item xs={12} justify="center">
           <Typography variant="h6" gutterBottom>

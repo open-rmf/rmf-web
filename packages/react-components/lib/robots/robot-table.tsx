@@ -17,7 +17,7 @@ import { Refresh as RefreshIcon } from '@material-ui/icons';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { taskTypeToStr } from '../tasks/utils';
-import { robotModeToString, allocateTasksToRobots, VerboseRobot } from './utils';
+import { robotModeToString, VerboseRobot } from './utils';
 import { PaginationOptions } from '../tasks/task-table';
 import { TaskProgress } from 'api-client';
 
@@ -91,8 +91,8 @@ function RobotRow({ robot, onClick }: RobotRowProps) {
           <TableCell>{'-'}</TableCell>
           <TableCell>{'-'}</TableCell>
           <TableCell>{'-'}</TableCell>
-          <TableCell>{robot.battery_percent.toFixed(2)}%</TableCell>
-          <TableCell>{robotModeToString(robot.mode)}</TableCell>
+          <TableCell>{robot.state.battery_percent.toFixed(2)}%</TableCell>
+          <TableCell>{robotModeToString(robot.state.mode)}</TableCell>
         </TableRow>
       </>
     );
@@ -108,8 +108,8 @@ function RobotRow({ robot, onClick }: RobotRowProps) {
                 robot.tasks[0].task_summary.start_time.sec
               : '-'}
           </TableCell>
-          <TableCell>{robot.battery_percent.toFixed(2)}%</TableCell>
-          <TableCell>{robotModeToString(robot.mode)}</TableCell>
+          <TableCell>{robot.state.battery_percent.toFixed(2)}%</TableCell>
+          <TableCell>{robotModeToString(robot.state.mode)}</TableCell>
         </TableRow>
       </>
     );
@@ -139,9 +139,9 @@ export function RobotTable({
   const classes = useStyles();
   const [robotsWithTasks, setRobotsWithTasks] = React.useState<VerboseRobot[]>([]);
 
-  React.useEffect(() => {
-    setRobotsWithTasks(allocateTasksToRobots(robots, tasks));
-  }, [robots, tasks]);
+  // React.useEffect(() => {
+  //   setRobotsWithTasks(allocateTasksToRobots(robots, tasks));
+  // }, [robots, tasks]);
 
   return (
     <Paper {...paperProps}>

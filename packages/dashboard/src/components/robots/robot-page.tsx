@@ -3,7 +3,7 @@
 import { makeStyles } from '@material-ui/core';
 import { TaskProgress } from 'api-client';
 import React from 'react';
-import { RobotPanel, RobotPanelProps } from 'react-components';
+import { RobotPanel, RobotPanelProps, VerboseRobot } from 'react-components';
 import * as RmfModels from 'rmf-models';
 import { FleetStateContext, RmfIngressContext } from '../rmf-app';
 
@@ -19,6 +19,8 @@ const useStyles = makeStyles((theme) => ({
 export function RobotPage() {
   const classes = useStyles();
   const { tasksApi = null, fleetsApi } = React.useContext(RmfIngressContext) || {};
+
+  // TODO - remove during clean up
   const fleetStates = React.useContext(FleetStateContext);
   const fleets = React.useMemo(() => Object.values(fleetStates), [fleetStates]);
   const fleetNames = React.useRef<string[]>([]);
@@ -27,21 +29,28 @@ export function RobotPage() {
     fleetNames.current = newFleetNames;
   }
   const [robotStates, setRobotStates] = React.useState<RmfModels.RobotState[]>([]);
+  // end of remove
 
-  const test = async () => {
+  const [verboseRobots, setVerboseRobots] = React.useState<VerboseRobot[]>([]);
+
+  const fetchVerboseRobots = React.useCallback(async () => {
     const resp = await fleetsApi?.getRobotsFleetsRobotsGet(
       undefined,
       undefined,
       undefined,
       undefined,
-      undefined,
-      'start_time',
+      'fleet_name,robot_name',
     );
-    console.log(resp?.data.items);
-  };
+    const verboseRobotsHolder = [];
+    if (resp) {
+      verboseRobotsHolder.push(resp.data.items);
+    }
+    setVerboseRobots(verboseRobotsHolder);
+  }, [fleetsApi]);
 
-  test();
+  fetchVerboseRobots();
 
+  // TODO - remove fetch tasks
   const fetchTasks = React.useCallback<RobotPanelProps['fetchTasks']>(
     async (limit: number, offset: number) => {
       if (!tasksApi) {
@@ -68,12 +77,19 @@ export function RobotPage() {
   );
 
   React.useEffect(() => {
-    console.log('is this ever changing??????');
+    // TODO - remove during clean up
     const robotsStatesArray = fleets.flatMap((fleet, index) => {
       return fleet.robots;
     });
     setRobotStates(robotsStatesArray);
   }, [fleets]);
 
-  return <RobotPanel className={classes.robotPanel} fetchTasks={fetchTasks} robots={robotStates} />;
+  return (
+    <RobotPanel
+      className={classes.robotPanel}
+      fetchTasks={fetchTasks}
+      robots={robotStates}
+      verboseRobots={verboseRobots}
+    />
+  );
 }

@@ -32,7 +32,7 @@ function NoSelectedRobot() {
 
 export interface RobotPanelProps extends React.HTMLProps<HTMLDivElement> {
   robots: RmfModels.RobotState[];
-  verboseRobots?: VerboseRobot[];
+  verboseRobots: VerboseRobot[];
   fetchTasks: (limit: number, offset: number) => Promise<TaskProgress[]>;
 }
 
