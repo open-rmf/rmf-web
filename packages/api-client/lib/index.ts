@@ -1,3 +1,4 @@
+import Debug from 'debug';
 import {
   BuildingMap,
   DispenserHealth,
@@ -14,6 +15,8 @@ import {
 } from 'rmf-models';
 import { io, Socket } from 'socket.io-client';
 
+const debug = Debug('rmf-client');
+
 // https://stackoverflow.com/questions/52667959/what-is-the-purpose-of-bivariancehack-in-typescript-types
 export type Listener<T = unknown> = { bivarianceHack(resp: T): void }['bivarianceHack'];
 export type Subscription = Listener;
@@ -28,11 +31,13 @@ export class SioClient {
   subscribe<T>(path: string, listener: Listener<T>): Listener<T> {
     this.sio.emit('subscribe', { path });
     this.sio.on(path, (msg: T) => listener(msg));
+    debug(`subscribed to ${path}`);
     return listener;
   }
 
   unsubscribe(listener: Listener): void {
     this.sio.offAny(listener);
+    debug(`unsubscribed listener\n${listener}`);
   }
 
   subscribeBuildingMap(listener: Listener<BuildingMap>): Listener<BuildingMap> {
