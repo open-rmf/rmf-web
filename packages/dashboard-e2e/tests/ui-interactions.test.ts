@@ -107,7 +107,7 @@ describe('ui interactions', () => {
         $('button[aria-label="Submit"]').click();
         return $('div=Successfully created task').isDisplayed();
       },
-      { timeout: 5000, interval: 500 },
+      { timeout: 15000, interval: 500 },
     );
-  });
+  }).timeout(20000);
 });
