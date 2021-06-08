@@ -59,6 +59,11 @@ export const buildReportMenuStructure = (
       onClick: () => setCurrentReport(Reports.showLiftStateReport),
     },
     {
+      icon: <ArrowDropUpIcon />,
+      title: 'Tasks',
+      onClick: () => setCurrentReport(Reports.showTasksReport),
+    },
+    {
       icon: <AccountCircleIcon />,
       title: 'Users',
       items: [
