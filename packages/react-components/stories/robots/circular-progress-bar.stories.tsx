@@ -11,9 +11,9 @@ export default {
 export const CircularProgressBar: Story<CircularProgressBarProps> = (args) => {
   return (
     <>
-      <CircularProgressBar {...args}>
+      <CircularProgressBar_ {...args}>
         <Typography variant="h6">{args.progress}%</Typography>
-      </CircularProgressBar>
+      </CircularProgressBar_>
     </>
   );
 };

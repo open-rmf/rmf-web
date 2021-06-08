@@ -6,12 +6,17 @@ import { makeRobot } from './test-utils';
 
 it('smoke test with different variants', () => {
   const variants: RobotMarkerProps['variant'][] = ['inConflict', 'normal', undefined];
+  const robot = makeRobot();
   variants.forEach((v) => {
     render(
       <svg>
         <DefaultMarker
           color="blue"
-          robot={makeRobot()}
+          name={robot.name}
+          model={robot.model}
+          x={robot.location.x}
+          y={robot.location.y}
+          yaw={robot.location.yaw}
           fleetName="test_fleet"
           footprint={1}
           variant={v}

@@ -28,18 +28,33 @@ describe('robot-markers', () => {
 
   it('smoke test with different variant', async () => {
     const variants: RobotMarkerProps['variant'][] = ['inConflict', 'normal', undefined];
+    const robot = makeRobot();
     for (const v of variants) {
       await render(
-        <RobotMarker robot={makeRobot()} fleetName="test_fleet" footprint={1} variant={v} />,
+        <RobotMarker
+          name={robot.name}
+          model={robot.model}
+          x={robot.location.x}
+          y={robot.location.y}
+          yaw={robot.location.yaw}
+          fleetName="test_fleet"
+          footprint={1}
+          variant={v}
+        />,
       );
       cleanup();
     }
   });
 
   it('trigger onClick event', async () => {
+    const robot = makeRobot();
     const root = await render(
       <RobotMarker
-        robot={makeRobot()}
+        name={robot.name}
+        model={robot.model}
+        x={robot.location.x}
+        y={robot.location.y}
+        yaw={robot.location.yaw}
         fleetName="test_fleet"
         footprint={1}
         onClick={fakeOnClick}
@@ -51,8 +66,18 @@ describe('robot-markers', () => {
   });
 
   it('providing iconPath renders an image', async () => {
+    const robot = makeRobot();
     const root = await render(
-      <RobotMarker robot={makeRobot()} fleetName="test_fleet" footprint={1} iconPath="test_icon" />,
+      <RobotMarker
+        name={robot.name}
+        model={robot.model}
+        x={robot.location.x}
+        y={robot.location.y}
+        yaw={robot.location.yaw}
+        fleetName="test_fleet"
+        footprint={1}
+        iconPath="test_icon"
+      />,
     );
     expect(root.container.querySelector('image')).not.toBeNull();
   });

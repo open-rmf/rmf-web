@@ -8,33 +8,39 @@ import { makeRobot } from '../tests/robots/test-utils';
 export default {
   title: 'Robot Markers',
   component: RobotMarker,
+  parameters: { controls: { include: ['onClick'], hideNoControlsWarning: true } },
 } as Meta;
 
-function makeRobotProps(
-  robot?: Partial<RmfModels.RobotState>,
+function makeRobotMarkerProps(
+  robotState?: Partial<RmfModels.RobotState>,
   props?: Partial<Omit<RobotMarkerProps, 'robot'>>,
 ): RobotMarkerProps {
   props = props || {};
+  const robot = makeRobot(robotState);
   return {
-    robot: makeRobot(robot),
+    name: robot.name,
+    model: robot.model,
+    x: robot.location.x,
+    y: robot.location.y,
+    yaw: robot.location.yaw,
     fleetName: 'testFleet',
     footprint: 1,
     ...props,
   };
 }
 
-const robots: Record<string, RobotMarkerProps> = {
-  Basic: makeRobotProps({ name: 'BasicRobot' }),
-  'Really Really Loooonnnnnggggg Name': makeRobotProps({
+const robotMarkerProps: Record<string, RobotMarkerProps> = {
+  Basic: makeRobotMarkerProps({ name: 'BasicRobot' }),
+  'Really Really Loooonnnnnggggg Name': makeRobotMarkerProps({
     name: 'I have a really really loooonnnnnggggg name',
   }),
-  'In Conflict': makeRobotProps({ name: 'ConflictingRobot' }, { variant: 'inConflict' }),
-  'Name With Space': makeRobotProps({ name: 'I have spaces' }),
-  'With Icon': makeRobotProps(
+  'In Conflict': makeRobotMarkerProps({ name: 'ConflictingRobot' }, { variant: 'inConflict' }),
+  'Name With Space': makeRobotMarkerProps({ name: 'I have spaces' }),
+  'With Icon': makeRobotMarkerProps(
     { name: 'RobotWithIcon', model: 'fleetWithIcon' },
     { fleetName: 'fleetWithIcon', iconPath: '/assets/tinyRobot.png' },
   ),
-  'With Icon, In Conflict': makeRobotProps(
+  'With Icon, In Conflict': makeRobotMarkerProps(
     { name: 'RobotWithIcon', model: 'fleetWithIcon' },
     { fleetName: 'fleetWithIcon', iconPath: '/assets/tinyRobot.png', variant: 'inConflict' },
   ),
@@ -43,7 +49,7 @@ const robots: Record<string, RobotMarkerProps> = {
 export const Gallery: Story = (args) => {
   return (
     <Grid container spacing={2}>
-      {Object.keys(robots).map((k) => (
+      {Object.keys(robotMarkerProps).map((k) => (
         <Grid item key={k}>
           <Paper>
             <Grid container direction="column" alignItems="center">
@@ -52,7 +58,7 @@ export const Gallery: Story = (args) => {
               </Grid>
               <Grid item>
                 <svg viewBox="-2 -2 4 4" style={{ minWidth: 200 }}>
-                  <RobotMarker {...robots[k]} {...args} />
+                  <RobotMarker {...robotMarkerProps[k]} {...args} />
                 </svg>
               </Grid>
             </Grid>
@@ -64,24 +70,20 @@ export const Gallery: Story = (args) => {
 };
 
 export const NoTranslate: Story = (args) => {
+  const robotMarkerProps = makeRobotMarkerProps({
+    location: {
+      level_name: 'test',
+      x: 10,
+      y: 10,
+      yaw: 0,
+      t: { sec: 0, nanosec: 0 },
+      index: 0,
+    },
+  });
+
   return (
     <svg viewBox="-2 -2 4 4" width={400} height={400}>
-      <RobotMarker
-        robot={makeRobot({
-          location: {
-            level_name: 'test',
-            x: 10,
-            y: 10,
-            yaw: 0,
-            t: { sec: 0, nanosec: 0 },
-            index: 0,
-          },
-        })}
-        fleetName="test_fleet"
-        footprint={1}
-        translate={false}
-        {...args}
-      />
+      <RobotMarker {...robotMarkerProps} translate={false} {...args} />
     </svg>
   );
 };

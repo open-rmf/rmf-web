@@ -1,6 +1,6 @@
-import * as RmfModels from 'rmf-models';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
+import * as RmfModels from 'rmf-models';
 import { DoorMarker } from '../lib';
 import { makeDoor, makeDoorState } from '../tests/doors/test-utils';
 
@@ -12,7 +12,7 @@ export default {
 function makeStory(door: RmfModels.Door, doorState?: RmfModels.DoorState): Story {
   return (args) => (
     <svg viewBox="-2 -2 4 4" width={400} height={400}>
-      <DoorMarker door={door} doorMode={doorState?.current_mode || undefined} {...args} />
+      <DoorMarker door={door} doorMode={doorState?.current_mode.value || undefined} {...args} />
     </svg>
   );
 }

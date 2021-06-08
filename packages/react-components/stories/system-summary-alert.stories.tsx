@@ -1,6 +1,7 @@
 import React from 'react';
 import { SystemSummaryAlertProps, SystemSummaryAlert, Severity } from '../lib';
 import { Meta, Story } from '@storybook/react';
+import { format } from 'date-fns';
 
 export default {
   title: 'Systems summary alert',
@@ -9,7 +10,12 @@ export default {
 
 const systemSummaryAlert: SystemSummaryAlertProps = {
   notifications: [
-    { id: 1, severity: Severity.High, time: 'January 29th 2021, 8:20:50', error: 'hello world' },
+    {
+      id: 1,
+      severity: Severity.High,
+      time: format(new Date(), 'MM/dd/yyyy HH:mm'),
+      error: 'hello world',
+    },
   ],
   onNotificationsDismiss: () => {
     /**filler */

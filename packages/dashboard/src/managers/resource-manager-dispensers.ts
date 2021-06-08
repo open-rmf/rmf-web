@@ -1,3 +1,5 @@
+import { RESOURCE_PREFIX } from './resource-manager';
+
 interface Location {
   x: number;
   y: number;
@@ -28,7 +30,7 @@ export class DispenserResourceManager {
     if (!this.dispensers[dispenserName].hasOwnProperty('icons')) {
       return null;
     }
-    const rootIconPath = '/assets/icons';
+    const rootIconPath = RESOURCE_PREFIX + '/assets/icons';
     const dispenserIcon = this.dispensers[dispenserName].icons[dispenserName];
 
     return dispenserIcon ? `${rootIconPath}${dispenserIcon}` : null;
