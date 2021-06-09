@@ -4,18 +4,23 @@ from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
 
 from ... import models as mdl
 from ...gateway import RmfGateway
+from ...permissions import Enforcer
 
 
 class DispatcherClient:
-    def __init__(self, rmf_gateway: RmfGateway):
+    def __init__(self, rmf_gateway: RmfGateway, enforcer: Enforcer):
         self.rmf_gateway = rmf_gateway
+        self.enforcer = enforcer
 
-    async def submit_task_request(self, req_msg: RmfSubmitTask.Request):
+    async def submit_task_request(self, user: mdl.User, req_msg: RmfSubmitTask.Request):
         """
         Task Submission - This function will trigger a ros srv call to the
         dispatcher node, and return a response. Function will return a Task ID.
         Raises "HTTPException" if service call fails.
         """
+        if not self.enforcer.can_submit_task(user):
+            raise HTTPException(401)
+
         resp: RmfSubmitTask.Response = await self.rmf_gateway.call_service(
             self.rmf_gateway.submit_task_srv, req_msg
         )

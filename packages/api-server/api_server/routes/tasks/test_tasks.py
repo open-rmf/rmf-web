@@ -1,5 +1,6 @@
 import asyncio
 import concurrent.futures
+from typing import Optional
 
 from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
 from rmf_task_msgs.msg import TaskType as RmfTaskType
@@ -12,22 +13,6 @@ from ..test_fixtures import RouteFixture
 
 
 class TestTasksRoute(RouteFixture):
-    def test_submit_task_request(self):
-        # create a submit task request message
-        task = SubmitTask(
-            task_type=RmfTaskType.TYPE_CLEAN,
-            start_time=0,
-            description=CleanTaskDescription(cleaning_zone="zone_2"),
-            priority=0,
-        )
-        fut = self.host_service_one(
-            RmfSubmitTask, "submit_task", RmfSubmitTask.Response(success=True)
-        )
-        resp = self.session.post(f"{self.base_url}/tasks/submit_task", data=task.json())
-        self.assertEqual(resp.status_code, 200)
-        ros_received: RmfSubmitTask.Request = fut.result(3)
-        self.assertEqual(ros_received.requester, "rmf_server")
-
     def test_cancel_task_request(self):
         cancel_task = CancelTask(task_id="test_task")
         fut = self.host_service_one(
@@ -189,3 +174,38 @@ class TestTasksRoute(RouteFixture):
         resp_json = resp.json()
         items = resp_json["items"]
         self.assertEqual(len(items), 2)
+
+
+class TestSubmitTaskRoute(RouteFixture):
+    def host_submit_service(self, resp: Optional[RmfSubmitTask.Response] = None):
+        resp = resp or RmfSubmitTask.Response(success=True, task_id="test_task")
+        return self.host_service_one(
+            RmfSubmitTask,
+            "submit_task",
+            resp,
+        )
+
+    def test_smoke(self):
+        # create a submit task request message
+        task = SubmitTask(
+            task_type=RmfTaskType.TYPE_CLEAN,
+            start_time=0,
+            description=CleanTaskDescription(cleaning_zone="zone_2"),
+            priority=0,
+        )
+        fut = self.host_submit_service()
+        resp = self.session.post(f"{self.base_url}/tasks/submit_task", data=task.json())
+        self.assertEqual(resp.status_code, 200)
+        ros_received: RmfSubmitTask.Request = fut.result(3)
+        self.assertEqual(ros_received.requester, "rmf_server")
+
+    def test_users_without_permissions_cannot_submit_task(self):
+        task = SubmitTask(
+            task_type=RmfTaskType.TYPE_CLEAN,
+            start_time=0,
+            description=CleanTaskDescription(cleaning_zone="zone_2"),
+            priority=0,
+        )
+        self.with_roles()  # no roles
+        resp = self.session.post(f"{self.base_url}/tasks/submit_task", data=task.json())
+        self.assertEqual(resp.status_code, 401)

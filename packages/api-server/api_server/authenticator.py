@@ -1,3 +1,5 @@
+from typing import Dict
+
 import jwt
 
 
@@ -17,9 +19,9 @@ class JwtAuthenticator:
         with open(pem_file, "br") as f:
             self._public_key = f.read()
 
-    def verify_token(self, token: str):
+    def verify_token(self, token: str) -> Dict:
         try:
-            jwt.decode(
+            return jwt.decode(
                 token,
                 self._public_key,
                 algorithms=["RS256"],

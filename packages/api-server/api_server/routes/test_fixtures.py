@@ -4,8 +4,9 @@ import threading
 import time
 import unittest
 from concurrent.futures import Future
-from typing import Callable, TypeVar
+from typing import Callable, Sequence, TypeVar
 
+import jwt
 import rclpy
 import rclpy.node
 import requests
@@ -38,6 +39,11 @@ def try_until(
     return result
 
 
+here = os.path.dirname(__file__)
+with open(f"{here}/../test/test.key", "br") as f:
+    jwt_key = f.read()
+
+
 class RouteFixture(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -49,6 +55,7 @@ class RouteFixture(unittest.TestCase):
         retry = Retry(total=5, backoff_factor=0.1)
         adapter = requests.adapters.HTTPAdapter(max_retries=retry)
         cls.session = requests.Session()
+        cls.with_roles("_rmf_superadmin")
         cls.session.mount("http://", adapter)
 
         cls.rcl_ctx = rclpy.Context()
@@ -71,6 +78,20 @@ class RouteFixture(unittest.TestCase):
         rclpy.shutdown(context=cls.rcl_ctx)
 
         cls.server.stop()
+
+    @classmethod
+    def with_roles(cls, *roles: Sequence[str]):
+        token = jwt.encode(
+            {
+                "aud": "test",
+                "iss": "test",
+                "preferred_username": "test_user",
+                "resource_access": {"test": {"roles": list(roles)}},
+            },
+            jwt_key,
+            "RS256",
+        )
+        cls.session.headers["Authorization"] = f"bearer {token}"
 
     def subscribe_one(self, Message, topic: str) -> Future:
         """

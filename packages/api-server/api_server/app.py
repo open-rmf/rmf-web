@@ -19,6 +19,7 @@ from .authenticator import JwtAuthenticator
 from .dependencies import auth_scheme
 from .fast_io import FastIO
 from .gateway import RmfGateway
+from .permissions import Enforcer
 from .repositories import RmfRepository, StaticFilesRepository
 from .rmf_io import HealthWatchdog, RmfBookKeeper, RmfEvents
 
@@ -44,11 +45,13 @@ class App(FastIO):
             else None
         )
 
+        auth_dep = auth_scheme(app_config.client_id, authenticator, app_config.oidc_url)
+        enforcer = Enforcer()
         super().__init__(
             authenticator=authenticator,
             logger=logger,
             title="RMF API Server",
-            dependencies=[Depends(auth_scheme(authenticator, app_config.oidc_url))],
+            dependencies=[Depends(auth_dep)],
         )
 
         self.fapi.add_middleware(
@@ -148,7 +151,9 @@ class App(FastIO):
             routes.LiftsRouter(self.rmf_events, rmf_gateway_dep, self.rmf_repo),
             prefix="/lifts",
         )
-        self.include_router(routes.TasksRouter(rmf_gateway_dep), prefix="/tasks")
+        self.include_router(
+            routes.TasksRouter(auth_dep, rmf_gateway_dep, enforcer), prefix="/tasks"
+        )
         self.include_router(
             routes.DispensersRouter(self.rmf_events, self.rmf_repo),
             prefix="/dispensers",

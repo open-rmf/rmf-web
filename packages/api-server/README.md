@@ -85,7 +85,7 @@ rmf-server does not manage user identities and access levels by itself, it uses 
 
 ### Format
 
-OpenID Connect does not define the format of the access token, the canonical way for a resource server to validate an access token is to use the token introspection endpoint of the authentication server. If order to not have to connect to the authentication server for every request, rmf-server assumes the convention that the access token is a JWT that can be verified independently. Most modern authentication server and services like keycloak and auth0 follows this convention.
+OpenID Connect does not define the format of the access token, the canonical way for a resource server to validate an access token is to use the token introspection endpoint of the authentication server. In order to not have to connect to the authentication server for every request, rmf-server assumes the convention that the access token is a JWT that can be verified independently. Most modern authentication server and services like keycloak and auth0 follows this convention.
 
 ### Claims
 
@@ -114,7 +114,7 @@ While authentication and managing user access is done in the authentication serv
 | _rmf_task_admin | Able to manage tasks created by anyone |
 | _rmf_superadmin | Superset of all roles |
 
-On top of the builtin roles, user's can be assigned to by roles that begins with `rmf_`, rmf-server will attach these roles to any resources they create, any users with any of the roles will have read access to these resources. Each resource also has an owner, the owner will always have full control over the resource.
+On top of the builtin roles, user's can be assigned to any roles that begins with `rmf_`, rmf-server will attach these roles to any resources they create, any users with any of the roles will have read access to these resources. Each resource also has an owner, the owner will always have full control over the resource.
 
 For example, given an user alice, which has the roles `["rmf_kitchen", "_rmf_task_submit"]` and bob which has the roles `["rmf_kitchen"]`. Alice will be able to submit a new task, since alice is the owner of the task, she will be able to cancel it even though she doesn't have the `_rmf_task_cancel` role. Bob on the other hand will not be able to cancel the task unless he has the `_rmf_task_cancel` role. Bob also cannot submit new tasks because he does not have the `_rmf_task_submit` role, however, he will be able to see the tasks created by alice because he has the same `rmf_kitchen` role as alice.
 
