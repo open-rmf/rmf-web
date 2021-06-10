@@ -135,7 +135,7 @@ async def health_report(
 @router.get(
     "/task_state/", tags=["task_state"], response_model=List[TaskState_Pydantic]
 )
-async def health_report(
+async def task_report(
     toLogDate: Optional[str] = None,
     fromLogDate: Optional[str] = None,
     offset: Optional[int] = 0,

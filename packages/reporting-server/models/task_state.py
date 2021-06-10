@@ -53,11 +53,9 @@ class TaskState(models.Model):
         TaskStateEnum, default=TaskStateEnum.STATE_PENDING
     )
     task_type: TaskTypeEnum = fields.CharEnumField(TaskTypeEnum)
-    status: fields.CharField(max_length=100)
-    submission_time = fields.CharField(max_length=100)
-    start_time = fields.CharField(max_length=100)
-    end_time = fields.IntField()
-    robot_task_id = fields.CharField(max_length=100)
+    submission_time = fields.CharField(max_length=200)
+    start_time = fields.CharField(max_length=200)
+    end_time = fields.CharField(max_length=200)
 
     service = TaskStateService()
 
