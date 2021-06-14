@@ -5,7 +5,7 @@ from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
 from ... import models as mdl
 from ...gateway import RmfGateway
 from ...models import tortoise_models as ttm
-from ...permissions import Enforcer
+from ...permissions import Enforcer, Permission
 
 
 class DispatcherClient:
@@ -24,6 +24,15 @@ class DispatcherClient:
         resp: RmfSubmitTask.Response = await self.rmf_gateway.call_service(
             self.rmf_gateway.submit_task_srv, req_msg
         )
+
+        new_task = (
+            await ttm.TaskSummary.update_or_create(
+                {"owner": user.username, "data": {"task_id": resp.task_id}},
+                id_=resp.task_id,
+            )
+        )[0]
+        await Enforcer.save_permissions(new_task, user.groups, [Permission.Read])
+
         return resp
 
     def get_sim_time(self):
@@ -45,7 +54,7 @@ class DispatcherClient:
         if find_task is None:
             raise HTTPException(404)
 
-        if not Enforcer.can_cancel_task(user):
+        if find_task.owner != user.username and not Enforcer.can_cancel_task(user):
             raise HTTPException(401)
 
         req = RmfCancelTask.Request()

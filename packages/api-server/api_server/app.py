@@ -37,6 +37,7 @@ class App(FastIO):
         authenticator = (
             JwtAuthenticator(
                 app_config.jwt_public_key,
+                app_config.client_id,
                 app_config.aud,
                 app_config.iss,
             )
@@ -44,7 +45,7 @@ class App(FastIO):
             else None
         )
 
-        auth_dep = auth_scheme(app_config.client_id, authenticator, app_config.oidc_url)
+        auth_dep = auth_scheme(authenticator, app_config.oidc_url)
         super().__init__(
             authenticator=authenticator,
             logger=logger,
@@ -163,7 +164,6 @@ class App(FastIO):
             routes.TasksRouter(
                 auth_dep,
                 self.rmf_events,
-                rmf_bookkeeper.bookkeeper_events,
                 rmf_gateway_dep,
             ),
             prefix="/tasks",

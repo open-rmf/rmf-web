@@ -1,14 +1,11 @@
-from typing import List, Optional
+from typing import Optional
 
-from fastapi import Depends, HTTPException
-from fastapi.security import OpenIdConnect
-
-from ..authenticator import AuthenticationError, JwtAuthenticator
+from ..authenticator import JwtAuthenticator
 from ..models import User
+from ..permissions import RmfRole
 
 
 def auth_scheme(
-    client_id: str,
     authenticator: Optional[JwtAuthenticator] = None,
     oidc_url: Optional[str] = None,
 ):
@@ -19,46 +16,8 @@ def auth_scheme(
     """
     if not authenticator:
         # no authentication
-        return lambda: User(username="stub", roles=["_rmf_superadmin"])
+        return lambda: User(username="stub", roles=[RmfRole.SuperAdmin.value])
 
     oidc_url = oidc_url or ""
 
-    security_scheme = OpenIdConnect(openIdConnectUrl=oidc_url)
-
-    def get_user(claims: dict):
-        def get_roles_groups(claims: dict):
-            roles = set()
-            groups = set()
-            if "resource_access" not in claims:
-                return roles, groups
-            resource_access = claims["resource_access"]
-            if client_id not in resource_access:
-                return roles, groups
-
-            jwt_roles: List[str] = resource_access[client_id]["roles"] or []
-            for r in jwt_roles:
-                if r.startswith("_rmf_"):
-                    roles.add(r)
-                elif r.startswith("rmf_"):
-                    groups.add(r)
-            return roles, groups
-
-        if not "preferred_username" in claims:
-            raise AuthenticationError(
-                "expected 'preferred_username' username claim to be present"
-            )
-
-        roles, groups = get_roles_groups(claims)
-        return User(username=claims["preferred_username"], roles=roles, groups=groups)
-
-    def dep(auth_header: str = Depends(security_scheme)):
-        parts = auth_header.split(" ")
-        if len(parts) != 2 or parts[0].lower() != "bearer":
-            raise HTTPException(401, "invalid bearer format")
-        try:
-            claims = authenticator.verify_token(parts[1])
-            return get_user(claims)
-        except AuthenticationError as e:
-            raise HTTPException(401, str(e)) from e
-
-    return dep
+    return authenticator.fastapi_dep(oidc_url)

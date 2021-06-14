@@ -1,5 +1,5 @@
 import asyncio
-from typing import Optional, Sequence
+from typing import Sequence
 
 from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
 from rmf_task_msgs.msg import TaskType as RmfTaskType
@@ -9,7 +9,7 @@ from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
 from ...models import CancelTask, CleanTaskDescription, SubmitTask, TaskSummary, User
 from ...models import tortoise_models as ttm
 from ...permissions import Enforcer, Permission, RmfRole
-from ..test_fixtures import RouteFixture
+from ..test_fixtures import RouteFixture, RouteFixture2
 
 
 def save_tasks(fixture: RouteFixture, tasks: Sequence[TaskSummary], user: User):
@@ -27,7 +27,158 @@ def save_tasks(fixture: RouteFixture, tasks: Sequence[TaskSummary], user: User):
     fixture.run_in_app_loop(save_data())
 
 
-class TestTasksRoute(RouteFixture):
+class TestTasksRoute(RouteFixture2):
+    def test_smoke(self):
+        #
+        # setup mock rmf services
+        #
+        counter = 0
+
+        def rmf_submit_task(
+            _request: RmfSubmitTask.Request, response: RmfSubmitTask.Response
+        ):
+            nonlocal counter
+            counter += 1
+            response.success = True
+            response.task_id = f"task_{counter}"
+            return response
+
+        submit_task_srv = self.node.create_service(
+            RmfSubmitTask, "submit_task", rmf_submit_task
+        )
+
+        def rmf_cancel_task(
+            _request: RmfCancelTask.Request, response: RmfCancelTask.Response
+        ):
+            response.success = True
+            return response
+
+        cancel_task_srv = self.node.create_service(
+            RmfCancelTask, "cancel_task", rmf_cancel_task
+        )
+
+        user1 = User(username="user1", roles={RmfRole.SuperAdmin.value})
+        user2 = User(
+            username="user2", roles={RmfRole.TaskSubmit.value}, groups={"rmf_group1"}
+        )
+        user3 = User(username="user3", groups={"rmf_group1"})
+        user4 = User(username="user4")
+        user5 = User(
+            username="user5", roles={RmfRole.TaskCancel.value}, groups={"rmf_group2"}
+        )
+        self.set_user(user1)
+
+        # super admin can submit tasks
+        submit_task = SubmitTask(
+            task_type=RmfTaskType.TYPE_CLEAN,
+            start_time=0,
+            description=CleanTaskDescription(cleaning_zone="zone_1"),
+            priority=0,
+        )
+        resp = self.session.post(
+            f"{self.base_url}/tasks/submit_task", data=submit_task.json()
+        )
+        self.assertEqual(200, resp.status_code)
+        submitted_task_1 = resp.json()["task_id"]
+
+        # super admin can see submitted task
+        resp = self.session.get(f"{self.base_url}/tasks")
+        tasks = resp.json()["items"]
+        self.assertEqual(1, len(tasks))
+        resp = self.session.get(f"{self.base_url}/tasks/{submitted_task_1}/summary")
+        self.assertEqual(200, resp.status_code)
+
+        # another user cannot see submitted task
+        self.set_user(user2)
+        resp = self.session.get(f"{self.base_url}/tasks")
+        tasks = resp.json()["items"]
+        self.assertEqual(0, len(tasks))
+        resp = self.session.get(f"{self.base_url}/tasks/{submitted_task_1}/summary")
+        self.assertEqual(404, resp.status_code)
+
+        # user without task submit role cannot submit task
+        self.set_user(user3)
+        resp = self.session.post(
+            f"{self.base_url}/tasks/submit_task", data=submit_task.json()
+        )
+        self.assertEqual(401, resp.status_code)
+
+        # user with task submit role can submit task
+        self.set_user(user2)
+        resp = self.session.post(
+            f"{self.base_url}/tasks/submit_task", data=submit_task.json()
+        )
+        self.assertEqual(200, resp.status_code)
+        submitted_task_2 = resp.json()["task_id"]
+
+        # super admin can see task submitted by another user
+        self.set_user(user1)
+        resp = self.session.get(f"{self.base_url}/tasks")
+        tasks = resp.json()["items"]
+        self.assertEqual(2, len(tasks))
+        resp = self.session.get(f"{self.base_url}/tasks/{submitted_task_2}/summary")
+        self.assertEqual(200, resp.status_code)
+
+        # user in same groups can see submitted task
+        self.set_user(user3)
+        resp = self.session.get(f"{self.base_url}/tasks")
+        tasks = resp.json()["items"]
+        self.assertEqual(1, len(tasks))
+        self.assertEqual(submitted_task_2, tasks[0]["task_summary"]["task_id"])
+        resp = self.session.get(f"{self.base_url}/tasks/{submitted_task_2}/summary")
+        self.assertEqual(200, resp.status_code)
+
+        # user in other groups cannot see submitted task
+        self.set_user(user4)
+        resp = self.session.get(f"{self.base_url}/tasks")
+        tasks = resp.json()["items"]
+        self.assertEqual(0, len(tasks))
+        resp = self.session.get(f"{self.base_url}/tasks/{submitted_task_2}/summary")
+        self.assertEqual(404, resp.status_code)
+
+        #
+        # Cancelling tasks
+        #
+
+        # users without task cancel role cannot cancel task
+        self.set_user(user3)
+        resp = self.session.post(
+            f"{self.base_url}/tasks/cancel_task",
+            data=CancelTask(task_id=submitted_task_2).json(),
+        )
+        self.assertEqual(401, resp.status_code)
+
+        # users with task_cancel role but in different groups cannot cancel task
+        self.set_user(user5)
+        resp = self.session.post(
+            f"{self.base_url}/tasks/cancel_task",
+            data=CancelTask(task_id=submitted_task_2).json(),
+        )
+        # 404 because user shouldn't be able to see the task
+        self.assertEqual(404, resp.status_code)
+
+        # user can cancel own task even without task cancel role
+        self.set_user(user2)
+        resp = self.session.post(
+            f"{self.base_url}/tasks/cancel_task",
+            data=CancelTask(task_id=submitted_task_2).json(),
+        )
+        self.assertEqual(200, resp.status_code)
+
+        # super admin can cancel other user's task
+        self.set_user(user1)
+        resp = self.session.post(
+            f"{self.base_url}/tasks/cancel_task",
+            data=CancelTask(task_id=submitted_task_2).json(),
+        )
+        self.assertEqual(200, resp.status_code)
+
+        #
+        # Clean up
+        #
+        cancel_task_srv.destroy()
+        submit_task_srv.destroy()
+
     def test_query_tasks(self):
         dataset = (
             TaskSummary(
@@ -152,146 +303,3 @@ class TestTasksRoute(RouteFixture):
         resp_json = resp.json()
         items = resp_json["items"]
         self.assertEqual(len(items), 2)
-
-    def test_user_outside_groups_cannot_see_tasks(self):
-        user = User(
-            username="test_user",
-            roles={RmfRole.TaskSubmit.value},
-            groups={"rmf_test_group"},
-        )
-
-        save_tasks(self, [TaskSummary(task_id="task1")], user)
-
-        user2 = User(
-            username="test_user2",
-        )
-        self.set_user(user2)
-        resp = self.session.get(f"{self.base_url}/tasks")
-        self.assertEqual(200, resp.status_code)
-        resp_json = resp.json()
-        self.assertEqual(0, resp_json["total_count"])
-        self.assertEqual(0, len(resp_json["items"]))
-
-    def test_get_task_summary(self):
-        dataset = [
-            TaskSummary(
-                task_id="task_1",
-                fleet_name="fleet_1",
-                submission_time={"sec": 1000, "nanosec": 0},
-                start_time={"sec": 2000, "nanosec": 0},
-                end_time={"sec": 3000, "nanosec": 0},
-                robot_name="robot_1",
-                state=RmfTaskSummary.STATE_COMPLETED,
-                task_profile={
-                    "description": {
-                        "task_type": {"type": RmfTaskType.TYPE_LOOP},
-                        "priority": {"value": 0},
-                    }
-                },
-            ),
-        ]
-        save_tasks(self, dataset, self.user)
-
-        resp = self.session.get(f"{self.base_url}/tasks/task_1/summary")
-        self.assertEqual(200, resp.status_code)
-        resp_json = resp.json()
-        self.assertEqual("task_1", resp_json["task_id"])
-
-
-class TestSubmitTaskRoute(RouteFixture):
-    def host_submit_service(self, resp: Optional[RmfSubmitTask.Response] = None):
-        resp = resp or RmfSubmitTask.Response(success=True, task_id="test_task")
-        return self.host_service_one(
-            RmfSubmitTask,
-            "submit_task",
-            resp,
-        )
-
-    def test_smoke(self):
-        # create a submit task request message
-        task = SubmitTask(
-            task_type=RmfTaskType.TYPE_CLEAN,
-            start_time=0,
-            description=CleanTaskDescription(cleaning_zone="zone_2"),
-            priority=0,
-        )
-        fut = self.host_submit_service()
-        resp = self.session.post(f"{self.base_url}/tasks/submit_task", data=task.json())
-        self.assertEqual(resp.status_code, 200)
-        ros_received: RmfSubmitTask.Request = fut.result(3)
-        self.assertEqual(ros_received.requester, "rmf_server")
-
-    def test_users_without_permissions_cannot_submit_task(self):
-        task = SubmitTask(
-            task_type=RmfTaskType.TYPE_CLEAN,
-            start_time=0,
-            description=CleanTaskDescription(cleaning_zone="zone_2"),
-            priority=0,
-        )
-        self.set_user(User(username="user_with_no_roles"))
-        resp = self.session.post(f"{self.base_url}/tasks/submit_task", data=task.json())
-        self.assertEqual(resp.status_code, 401)
-
-
-class TestCancelTaskRoute(RouteFixture):
-    def test_smoke(self):
-        save_tasks(self, [TaskSummary(task_id="test_task")], self.user)
-
-        cancel_task = CancelTask(task_id="test_task")
-        fut = self.host_service_one(
-            RmfCancelTask, "cancel_task", RmfCancelTask.Response(success=True)
-        )
-        resp = self.session.post(
-            f"{self.base_url}/tasks/cancel_task", data=cancel_task.json()
-        )
-        self.assertEqual(resp.status_code, 200)
-        received: RmfCancelTask.Request = fut.result(3)
-        self.assertEqual(received.task_id, "test_task")
-
-    def test_cancel_task_failure(self):
-        save_tasks(self, [TaskSummary(task_id="test_task")], self.user)
-
-        cancel_task = CancelTask(task_id="test_task")
-        fut = self.host_service_one(
-            RmfCancelTask,
-            "cancel_task",
-            RmfCancelTask.Response(success=False, message="test error"),
-        )
-        resp = self.session.post(
-            f"{self.base_url}/tasks/cancel_task", data=cancel_task.json()
-        )
-        self.assertEqual(500, resp.status_code)
-        fut.result(3)
-        self.assertEqual(resp.json()["detail"], "test error")
-
-    def test_user_without_role_cannot_cancel_task(self):
-        user = User(username="user_with_no_roles")
-        self.set_user(user)
-
-        save_tasks(self, [TaskSummary(task_id="test_task")], user)
-
-        cancel_task = CancelTask(task_id="test_task")
-        resp = self.session.post(
-            f"{self.base_url}/tasks/cancel_task", data=cancel_task.json()
-        )
-        self.assertEqual(401, resp.status_code)
-
-    def test_user_with_role_but_no_groups_cannot_cancel_task(self):
-        user = User(
-            username="test_user",
-            roles={RmfRole.TaskSubmit.value},
-            groups={"rmf_test_group"},
-        )
-
-        save_tasks(self, [TaskSummary(task_id="test_task")], user)
-
-        user2 = User(
-            username="test_user2",
-            roles={RmfRole.TaskCancel.value},
-        )
-        self.set_user(user2)
-        cancel_task = CancelTask(task_id="test_task")
-        resp = self.session.post(
-            f"{self.base_url}/tasks/cancel_task", data=cancel_task.json()
-        )
-        self.assertEqual(404, resp.status_code)

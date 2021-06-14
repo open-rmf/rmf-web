@@ -1,11 +1,9 @@
-import asyncio
 from datetime import datetime
 from typing import Callable, Dict, Optional
 
 from fastapi import Depends, HTTPException
 from fastapi.param_functions import Query
 from fastapi.responses import JSONResponse
-from rx import operators as rx_ops
 
 from ...dependencies import WithBaseQuery, base_query_params
 from ...fast_io import DataStore, FastIORouter
@@ -23,7 +21,7 @@ from ...models import (
 )
 from ...models import tortoise_models as ttm
 from ...permissions import Enforcer
-from ...rmf_io import RmfBookKeeperEvents, RmfEvents
+from ...rmf_io import RmfEvents
 from ...services.tasks import convert_task_request
 from .dispatcher import DispatcherClient
 from .utils import convert_task_status_msg
@@ -32,12 +30,11 @@ from .utils import convert_task_status_msg
 class TasksRouter(FastIORouter):
     def __init__(
         self,
-        auth_dep: Callable[[], User],
+        user_dep: Callable[[], User],
         rmf_events: RmfEvents,
-        bookkeeper_events: RmfBookKeeperEvents,
         rmf_gateway_dep: Callable[[], RmfGateway],
     ):
-        super().__init__(tags=["Tasks"])
+        super().__init__(tags=["Tasks"], user_dep=user_dep)
         _dispatcher_client: Optional[DispatcherClient] = None
 
         def dispatcher_client_dep():
@@ -51,10 +48,13 @@ class TasksRouter(FastIORouter):
                 self,
                 key: str,
                 path_params: Dict[str, str],
+                user: User,
             ):
                 # FIXME: This would fail if task_id contains "_/"
                 task_id = path_params["task_id"].replace("__", "/")
-                data = await ttm.TaskSummary.get_or_none(id_=task_id)
+                data = await Enforcer.query(user, ttm.TaskSummary).get_or_none(
+                    id_=task_id
+                )
                 if data is None:
                     return None
                 return TaskSummary(**data.data)
@@ -80,7 +80,7 @@ class TasksRouter(FastIORouter):
 
         @self.get("", response_model=GetTasksResponse)
         async def get_tasks(
-            user: User = Depends(auth_dep),
+            user: User = Depends(user_dep),
             with_base_query: WithBaseQuery[ttm.TaskSummary] = Depends(
                 base_query_params({"task_id": "id_"})
             ),
@@ -145,7 +145,7 @@ class TasksRouter(FastIORouter):
         @self.post("/submit_task", response_model=SubmitTaskResponse)
         async def submit_task(
             submit_task_params: SubmitTask,
-            user: User = Depends(auth_dep),
+            user: User = Depends(user_dep),
             dispatcher_client: DispatcherClient = Depends(dispatcher_client_dep),
         ):
             req_msg, err_msg = convert_task_request(
@@ -159,27 +159,12 @@ class TasksRouter(FastIORouter):
             if not rmf_resp.success:
                 raise HTTPException(422, rmf_resp.message)
 
-            # wait for the new task summary to be written to db so that subsequent calls
-            # to `/tasks` will include the new task.
-            fut = asyncio.Future()
-            sub = bookkeeper_events.task_summary_written.pipe(
-                rx_ops.filter(lambda t: sub.dispose() or t.task_id == rmf_resp.task_id)
-            ).subscribe(fut.set_result)
-            try:
-                # there is a slight chance that the new task is written to db before
-                # the ros service call returns. So we put a timeout and ignore the error.
-                await asyncio.wait_for(fut, 5)
-            except asyncio.TimeoutError:
-                pass
-            finally:
-                sub.dispose()
-
             return {"task_id": rmf_resp.task_id}
 
         @self.post("/cancel_task")
         async def cancel_task(
             task: CancelTask,
-            user: User = Depends(auth_dep),
+            user: User = Depends(user_dep),
             dispatcher_client: DispatcherClient = Depends(dispatcher_client_dep),
         ):
             cancel_status = await dispatcher_client.cancel_task_request(task, user)

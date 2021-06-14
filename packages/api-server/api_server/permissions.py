@@ -78,6 +78,3 @@ class Enforcer:
                     await r.permissions.remote_model.update_or_create(
                         resource=r, group=group, permission=perm
                     )
-                    # await r.permissions.remote_model(
-                    #     resource=r, group=group, permission=perm
-                    # ).save()
