@@ -27,14 +27,15 @@ def auth_scheme(
 
     def get_user(claims: dict):
         def get_roles_groups(claims: dict):
-            if "resource_access" not in claims:
-                return set()
-            resource_access = claims["resource_access"]
-            if client_id not in resource_access:
-                return set()
-            jwt_roles: List[str] = resource_access[client_id]["roles"]
             roles = set()
             groups = set()
+            if "resource_access" not in claims:
+                return roles, groups
+            resource_access = claims["resource_access"]
+            if client_id not in resource_access:
+                return roles, groups
+
+            jwt_roles: List[str] = resource_access[client_id]["roles"] or []
             for r in jwt_roles:
                 if r.startswith("_rmf_"):
                     roles.add(r)

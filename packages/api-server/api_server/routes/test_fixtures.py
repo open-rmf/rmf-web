@@ -4,7 +4,7 @@ import threading
 import time
 import unittest
 from concurrent.futures import Future
-from typing import Callable, Sequence, TypeVar
+from typing import Callable, TypeVar
 
 import jwt
 import rclpy
@@ -14,6 +14,8 @@ from urllib3.util.retry import Retry
 
 from ..app import App
 from ..app_config import load_config
+from ..models import User
+from ..permissions import RmfRoles
 from ..test.server import BackgroundServer
 
 T = TypeVar("T")
@@ -55,7 +57,8 @@ class RouteFixture(unittest.TestCase):
         retry = Retry(total=5, backoff_factor=0.1)
         adapter = requests.adapters.HTTPAdapter(max_retries=retry)
         cls.session = requests.Session()
-        cls.with_roles("_rmf_superadmin")
+        cls.user = User(username="test_user", roles=[RmfRoles.SuperAdmin.value])
+        cls.set_user(cls.user)
         cls.session.mount("http://", adapter)
 
         cls.rcl_ctx = rclpy.Context()
@@ -80,13 +83,16 @@ class RouteFixture(unittest.TestCase):
         cls.server.stop()
 
     @classmethod
-    def with_roles(cls, *roles: Sequence[str]):
+    def set_user(cls, user: User):
+        cls.user = user
+        jwt_roles = list(user.roles)
+        jwt_roles.extend(user.groups)
         token = jwt.encode(
             {
                 "aud": "test",
                 "iss": "test",
                 "preferred_username": "test_user",
-                "resource_access": {"test": {"roles": list(roles)}},
+                "resource_access": {"test": {"roles": jwt_roles}},
             },
             jwt_key,
             "RS256",

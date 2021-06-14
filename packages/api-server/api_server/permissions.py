@@ -41,7 +41,7 @@ class Enforcer:
 
     @staticmethod
     def can_submit_task(user: User):
-        return Enforcer._is_superadmin(user) or "_rmf_task_submit" in user.groups
+        return Enforcer._is_superadmin(user) or RmfRoles.TaskSubmit.value in user.roles
 
     @staticmethod
     def query(

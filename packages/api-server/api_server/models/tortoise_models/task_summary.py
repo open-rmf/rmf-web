@@ -1,8 +1,11 @@
+from typing import Optional
+
 from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
 from tortoise import Model, fields
 
 from ...ros_time import ros_to_py_datetime
 from ..tasks import TaskSummary as PydanticTaskSummary
+from ..user import User
 from .json_mixin import JsonMixin
 from .resource import ProtectedResource, ResourcePermission
 
@@ -33,8 +36,11 @@ class TaskSummary(Model, JsonMixin, ProtectedResource):
         return PydanticTaskSummary(**self.data)
 
     @staticmethod
-    async def from_pydantic(task_summary: PydanticTaskSummary):
+    def from_pydantic(task_summary: PydanticTaskSummary, owner: Optional[User] = None):
+        owner_username = owner.username if owner else None
         return TaskSummary(
+            owner=owner_username,
+            id_=task_summary.task_id,
             fleet_name=task_summary.fleet_name,
             submission_time=ros_to_py_datetime(task_summary.submission_time),
             start_time=ros_to_py_datetime(task_summary.start_time),
@@ -44,21 +50,4 @@ class TaskSummary(Model, JsonMixin, ProtectedResource):
             task_type=task_summary.task_profile.description.task_type.type,
             priority=task_summary.task_profile.description.priority.value,
             data=task_summary.dict(),
-        )
-
-    @staticmethod
-    async def save_pydantic(task_summary: PydanticTaskSummary):
-        await TaskSummary.update_or_create(
-            {
-                "fleet_name": task_summary.fleet_name,
-                "submission_time": ros_to_py_datetime(task_summary.submission_time),
-                "start_time": ros_to_py_datetime(task_summary.start_time),
-                "end_time": ros_to_py_datetime(task_summary.end_time),
-                "robot_name": task_summary.robot_name,
-                "state": task_summary.state,
-                "task_type": task_summary.task_profile.description.task_type.type,
-                "priority": task_summary.task_profile.description.priority.value,
-                "data": task_summary.dict(),
-            },
-            id_=task_summary.task_id,
         )

@@ -7,7 +7,7 @@ from rmf_task_msgs.msg import TaskType as RmfTaskType
 from rmf_task_msgs.srv import CancelTask as RmfCancelTask
 from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
 
-from ...models import CancelTask, CleanTaskDescription, SubmitTask, TaskSummary
+from ...models import CancelTask, CleanTaskDescription, SubmitTask, TaskSummary, User
 from ...models import tortoise_models as ttm
 from ..test_fixtures import RouteFixture
 
@@ -40,7 +40,7 @@ class TestTasksRoute(RouteFixture):
         self.assertEqual(resp.json()["detail"], "test error")
 
     def test_query_tasks(self):
-        dataset = [
+        task_summaries = (
             TaskSummary(
                 task_id="task_1",
                 fleet_name="fleet_1",
@@ -71,16 +71,13 @@ class TestTasksRoute(RouteFixture):
                     }
                 },
             ),
-        ]
+        )
+        dataset = [ttm.TaskSummary.from_pydantic(t, self.user) for t in task_summaries]
 
         fut = concurrent.futures.Future()
 
         async def save_data():
-            fut.set_result(
-                await asyncio.gather(
-                    *(ttm.TaskSummary.save_pydantic(data) for data in dataset)
-                )
-            )
+            fut.set_result(await asyncio.gather(*(t.save() for t in dataset)))
 
         self.server.app.wait_ready()
         self.server.app.loop.create_task(save_data())
@@ -206,6 +203,6 @@ class TestSubmitTaskRoute(RouteFixture):
             description=CleanTaskDescription(cleaning_zone="zone_2"),
             priority=0,
         )
-        self.with_roles()  # no roles
+        self.set_user(User(username="user_with_no_roles"))
         resp = self.session.post(f"{self.base_url}/tasks/submit_task", data=task.json())
         self.assertEqual(resp.status_code, 401)
