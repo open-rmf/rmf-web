@@ -18,4 +18,4 @@ from .resource import (
     ResourcePermission,
     ResourcePermissionModel,
 )
-from .task_summary import TaskSummary
+from .task_summary import TaskSummary, TaskSummaryPermission

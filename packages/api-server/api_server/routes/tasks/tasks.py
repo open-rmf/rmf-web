@@ -46,6 +46,7 @@ class TasksRouter(FastIORouter):
 
         @self.get("", response_model=GetTasksResponse)
         async def get_tasks(
+            user: User = Depends(auth_dep),
             with_base_query: WithBaseQuery[ttm.TaskSummary] = Depends(
                 base_query_params({"task_id": "id_"})
             ),
@@ -99,7 +100,8 @@ class TasksRouter(FastIORouter):
             if priority is not None:
                 filter_params["priority"] = priority
 
-            results = await with_base_query(ttm.TaskSummary.filter(**filter_params))
+            q = Enforcer.query(user, ttm.TaskSummary.filter(**filter_params))
+            results = await with_base_query(q)
             results.items = [
                 convert_task_status_msg(item.to_pydantic(), rmf_gateway_dep())
                 for item in results.items

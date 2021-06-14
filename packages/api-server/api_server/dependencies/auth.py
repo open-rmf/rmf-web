@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from fastapi import Depends, HTTPException
 from fastapi.security import OpenIdConnect
@@ -26,19 +26,29 @@ def auth_scheme(
     security_scheme = OpenIdConnect(openIdConnectUrl=oidc_url)
 
     def get_user(claims: dict):
-        def _get_roles(claims: dict):
+        def get_roles_groups(claims: dict):
             if "resource_access" not in claims:
                 return set()
             resource_access = claims["resource_access"]
             if client_id not in resource_access:
                 return set()
-            return set(resource_access[client_id]["roles"])
+            jwt_roles: List[str] = resource_access[client_id]["roles"]
+            roles = set()
+            groups = set()
+            for r in jwt_roles:
+                if r.startswith("_rmf_"):
+                    roles.add(r)
+                elif r.startswith("rmf_"):
+                    groups.add(r)
+            return roles, groups
 
         if not "preferred_username" in claims:
             raise AuthenticationError(
                 "expected 'preferred_username' username claim to be present"
             )
-        return User(username=claims["preferred_username"], roles=_get_roles(claims))
+
+        roles, groups = get_roles_groups(claims)
+        return User(username=claims["preferred_username"], roles=roles, groups=groups)
 
     def dep(auth_header: str = Depends(security_scheme)):
         parts = auth_header.split(" ")

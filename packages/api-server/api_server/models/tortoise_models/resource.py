@@ -8,7 +8,7 @@ ModelT = TypeVar("ModelT", bound=Model)
 
 class ResourcePermission:
     resource: ForeignKeyRelation["ProtectedResourceModel"]
-    role = CharField(255)
+    group = CharField(255)
     permission = CharField(255)
 
 

@@ -5,4 +5,5 @@ from pydantic import BaseModel
 
 class User(BaseModel):
     username: str
-    roles: Set[str]
+    groups: Set[str] = set()
+    roles: Set[str] = set()
