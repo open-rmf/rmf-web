@@ -11,7 +11,7 @@ from .resource import ProtectedResource, ResourcePermission
 
 
 class TaskSummaryPermission(Model, ResourcePermission):
-    task_summary: fields.ForeignKeyRelation["TaskSummary"] = fields.ForeignKeyField(
+    resource: fields.ForeignKeyRelation["TaskSummary"] = fields.ForeignKeyField(
         "models.TaskSummary", "permissions"
     )
 

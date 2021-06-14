@@ -4,6 +4,7 @@ from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
 
 from ... import models as mdl
 from ...gateway import RmfGateway
+from ...models import tortoise_models as ttm
 from ...permissions import Enforcer
 
 
@@ -38,6 +39,12 @@ class DispatcherClient:
         dispatcher node, and return a response.
         Raises "HTTPException" if service call fails.
         """
+        find_task = (
+            await Enforcer.query(user, ttm.TaskSummary).filter(id_=task.task_id).first()
+        )
+        if find_task is None:
+            raise HTTPException(404)
+
         if not Enforcer.can_cancel_task(user):
             raise HTTPException(401)
 

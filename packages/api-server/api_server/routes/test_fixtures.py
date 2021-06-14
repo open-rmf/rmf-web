@@ -1,10 +1,11 @@
+import concurrent.futures
 import os
 import os.path
 import threading
 import time
 import unittest
 from concurrent.futures import Future
-from typing import Callable, TypeVar
+from typing import Awaitable, Callable, Optional, TypeVar
 
 import jwt
 import rclpy
@@ -91,13 +92,24 @@ class RouteFixture(unittest.TestCase):
             {
                 "aud": "test",
                 "iss": "test",
-                "preferred_username": "test_user",
+                "preferred_username": user.username,
                 "resource_access": {"test": {"roles": jwt_roles}},
             },
             jwt_key,
             "RS256",
         )
         cls.session.headers["Authorization"] = f"bearer {token}"
+
+    @classmethod
+    def run_in_app_loop(cls, work: Awaitable, timeout: Optional[float] = None):
+        cls.server.app.wait_ready()
+        fut = concurrent.futures.Future()
+
+        async def task():
+            fut.set_result(await work)
+
+        cls.server.app.loop.create_task(task())
+        return fut.result(timeout)
 
     def subscribe_one(self, Message, topic: str) -> Future:
         """

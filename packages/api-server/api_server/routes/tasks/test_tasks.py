@@ -1,5 +1,4 @@
 import asyncio
-import concurrent.futures
 from typing import Optional
 
 from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
@@ -9,6 +8,7 @@ from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
 
 from ...models import CancelTask, CleanTaskDescription, SubmitTask, TaskSummary, User
 from ...models import tortoise_models as ttm
+from ...permissions import Enforcer, RmfRole
 from ..test_fixtures import RouteFixture
 
 
@@ -48,14 +48,10 @@ class TestTasksRoute(RouteFixture):
         )
         dataset = [ttm.TaskSummary.from_pydantic(t, self.user) for t in task_summaries]
 
-        fut = concurrent.futures.Future()
-
         async def save_data():
-            fut.set_result(await asyncio.gather(*(t.save() for t in dataset)))
+            await asyncio.gather(*(t.save() for t in dataset))
 
-        self.server.app.wait_ready()
-        self.server.app.loop.create_task(save_data())
-        fut.result()
+        self.run_in_app_loop(save_data())
 
         resp = self.session.get(f"{self.base_url}/tasks?task_id=task_1,task_2")
         self.assertEqual(resp.status_code, 200)
@@ -146,6 +142,30 @@ class TestTasksRoute(RouteFixture):
         items = resp_json["items"]
         self.assertEqual(len(items), 2)
 
+    def test_user_outside_groups_cannot_see_tasks(self):
+        user = User(
+            username="test_user",
+            roles={RmfRole.TaskSubmit.value},
+            groups={"rmf_test_group"},
+        )
+
+        async def save_data():
+            ttm_task = ttm.TaskSummary.from_pydantic(TaskSummary(task_id="task1"), user)
+            await ttm_task.save()
+            await Enforcer.save_permissions(ttm_task, user.groups)
+
+        self.run_in_app_loop(save_data())
+
+        user2 = User(
+            username="test_user2",
+        )
+        self.set_user(user2)
+        resp = self.session.get(f"{self.base_url}/tasks")
+        self.assertEqual(200, resp.status_code)
+        resp_json = resp.json()
+        self.assertEqual(0, resp_json["total_count"])
+        self.assertEqual(0, len(resp_json["items"]))
+
 
 class TestSubmitTaskRoute(RouteFixture):
     def host_submit_service(self, resp: Optional[RmfSubmitTask.Response] = None):
@@ -218,3 +238,28 @@ class TestCancelTaskRoute(RouteFixture):
             f"{self.base_url}/tasks/cancel_task", data=cancel_task.json()
         )
         self.assertEqual(resp.status_code, 401)
+
+    def test_user_with_role_but_no_groups_cannot_cancel_task(self):
+        user = User(
+            username="test_user",
+            roles={RmfRole.TaskSubmit.value},
+            groups={"rmf_test_group"},
+        )
+
+        async def save_data():
+            ttm_task = ttm.TaskSummary.from_pydantic(TaskSummary(task_id="task1"), user)
+            await ttm_task.save()
+            await Enforcer.save_permissions(ttm_task, user.groups)
+
+        self.run_in_app_loop(save_data())
+
+        user2 = User(
+            username="test_user2",
+            roles={RmfRole.TaskCancel.value},
+        )
+        self.set_user(user2)
+        cancel_task = CancelTask(task_id="task1")
+        resp = self.session.post(
+            f"{self.base_url}/tasks/cancel_task", data=cancel_task.json()
+        )
+        self.assertEqual(404, resp.status_code)

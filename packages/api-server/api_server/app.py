@@ -19,7 +19,6 @@ from .authenticator import JwtAuthenticator
 from .dependencies import auth_scheme
 from .fast_io import FastIO
 from .gateway import RmfGateway
-from .permissions import Enforcer
 from .repositories import RmfRepository, StaticFilesRepository
 from .rmf_io import HealthWatchdog, RmfBookKeeper, RmfEvents
 
