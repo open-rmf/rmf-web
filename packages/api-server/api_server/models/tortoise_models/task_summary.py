@@ -36,18 +36,22 @@ class TaskSummary(Model, JsonMixin, ProtectedResource):
         return PydanticTaskSummary(**self.data)
 
     @staticmethod
-    def from_pydantic(task_summary: PydanticTaskSummary, owner: Optional[User] = None):
+    async def save_pydantic(
+        task_summary: PydanticTaskSummary, owner: Optional[User] = None
+    ) -> "TaskSummary":
+        defaults = {
+            "fleet_name": task_summary.fleet_name,
+            "submission_time": ros_to_py_datetime(task_summary.submission_time),
+            "start_time": ros_to_py_datetime(task_summary.start_time),
+            "end_time": ros_to_py_datetime(task_summary.end_time),
+            "robot_name": task_summary.robot_name,
+            "state": task_summary.state,
+            "task_type": task_summary.task_profile.description.task_type.type,
+            "priority": task_summary.task_profile.description.priority.value,
+            "data": task_summary.dict(),
+        }
         owner_username = owner.username if owner else None
-        return TaskSummary(
-            owner=owner_username,
-            id_=task_summary.task_id,
-            fleet_name=task_summary.fleet_name,
-            submission_time=ros_to_py_datetime(task_summary.submission_time),
-            start_time=ros_to_py_datetime(task_summary.start_time),
-            end_time=ros_to_py_datetime(task_summary.end_time),
-            robot_name=task_summary.robot_name,
-            state=task_summary.state,
-            task_type=task_summary.task_profile.description.task_type.type,
-            priority=task_summary.task_profile.description.priority.value,
-            data=task_summary.dict(),
-        )
+        if owner_username:
+            defaults["owner"] = owner_username
+        result = await TaskSummary.update_or_create(defaults, id_=task_summary.task_id)
+        return result[0]

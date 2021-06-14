@@ -75,6 +75,9 @@ class Enforcer:
         async with in_transaction():
             for group in groups:
                 for perm in permissions:
-                    await r.permissions.remote_model(
+                    await r.permissions.remote_model.update_or_create(
                         resource=r, group=group, permission=perm
-                    ).save()
+                    )
+                    # await r.permissions.remote_model(
+                    #     resource=r, group=group, permission=perm
+                    # ).save()

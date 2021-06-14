@@ -1,5 +1,4 @@
 import asyncio
-import concurrent.futures
 
 from ..models import TaskSummary
 from ..models import tortoise_models as ttm
@@ -17,18 +16,13 @@ class TestBaseQuery(RouteFixture):
             )
             for i in range(200)
         ]
-        fut = concurrent.futures.Future()
 
         async def save_data():
-            fut.set_result(
-                await asyncio.gather(
-                    *(ttm.TaskSummary.save_pydantic(data) for data in dataset)
-                )
+            await asyncio.gather(
+                *(ttm.TaskSummary.save_pydantic(t, cls.user) for t in dataset)
             )
 
-        cls.server.app.wait_ready()
-        cls.server.app.loop.create_task(save_data())
-        fut.result()
+        cls.run_in_app_loop(save_data())
 
     def test_limit_results(self):
         resp = self.session.get(f"{self.base_url}/tasks")
