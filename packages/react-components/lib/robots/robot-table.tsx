@@ -14,12 +14,11 @@ import {
   Typography,
 } from '@material-ui/core';
 import { Refresh as RefreshIcon } from '@material-ui/icons';
+import { TaskProgress } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { taskTypeToStr } from '../tasks/utils';
-import { robotModeToString, allocateTasksToRobots, VerboseRobot } from './utils';
-import { PaginationOptions } from '../tasks/task-table';
-import { TaskProgress } from 'api-client';
+import { allocateTasksToRobots, robotModeToString, VerboseRobot } from './utils';
 
 const useStyles = makeStyles((theme) => ({
   table: {
@@ -117,6 +116,11 @@ function RobotRow({ robot, onClick }: RobotRowProps) {
     );
   }
 }
+
+export type PaginationOptions = Omit<
+  React.ComponentPropsWithoutRef<typeof TablePagination>,
+  'component'
+>;
 
 export interface RobotTableProps extends PaperProps {
   /**

@@ -1,20 +1,51 @@
 import asyncio
 import inspect
 import logging
+from abc import ABC, abstractmethod
+from copy import copy
 from dataclasses import dataclass
 from re import Pattern
-from typing import Any, Callable, Dict, List, Optional, cast
+from typing import (
+    Any,
+    Awaitable,
+    Callable,
+    Dict,
+    Generic,
+    List,
+    Optional,
+    TypeVar,
+    Union,
+    cast,
+)
 from urllib.parse import unquote as url_unquote
 
 import pydantic
 import socketio
-from fastapi import APIRouter, FastAPI, Request
+from fastapi import APIRouter, FastAPI, Path, Request
 from fastapi.exceptions import HTTPException
 from fastapi.types import DecoratedCallable
 from rx import Observable
 from starlette.routing import compile_path, replace_params
 
-from .authenticator import AuthenticationError, JwtAuthenticator
+from ..authenticator import AuthenticationError, JwtAuthenticator
+from .errors import *
+
+T = TypeVar("T")
+
+
+class DataStore(ABC, Generic[T]):
+    @abstractmethod
+    async def get(self, key: str, path_params: Dict[str, str]) -> Union[T, None]:
+        pass
+
+    @abstractmethod
+    async def set(self, key: str, path_params: Dict[str, str], data: T) -> None:
+        pass
+
+
+@dataclass
+class Subscription:
+    path: str
 
 
 @dataclass
@@ -22,9 +53,20 @@ class Watch:
     target: Observable
     prefix: str
     path: str
-    sticky: bool
-    on_subscribe: Callable[[str], Any]
-    on_data: Callable[[Any], Any]
+    data_store: DataStore
+    on_subscribe: Callable[[str, Dict[str, str]], Awaitable[Any]]
+    on_data: Callable[[Any], Awaitable[Any]]
+
+
+class MemoryDataStore(DataStore[T]):
+    def __init__(self):
+        self._store = {}
+
+    async def get(self, key: str, path_params: Dict[str, str]):
+        return self._store.get(key, None)
+
+    async def set(self, key: str, path_params: Dict[str, str], data: T):
+        self._store[key] = data
 
 
 class FastIORouter(APIRouter):
@@ -88,33 +130,39 @@ class FastIORouter(APIRouter):
                     target=watch.target,
                     prefix=prefix + watch.prefix,
                     path=prefix + watch.path,
-                    sticky=watch.sticky,
+                    data_store=watch.data_store,
                     on_subscribe=watch.on_subscribe,
                     on_data=watch.on_data,
                 )
             )
 
-    def watch(self, path: str, target: Observable, *args, sticky=True, **kwargs):
+    def watch(
+        self,
+        path: str,
+        target: Observable,
+        *args,
+        data_store: Optional[DataStore] = None,
+        param_docs: Optional[Dict[str, str]] = None,
+        **kwargs,
+    ):
         """
         Registers a socket.io and rest GET endpoint. The decorated function should
         take in the event from the target observable and returns either `None` or a
         tuple containing a dict of the path parameters that the event should be
         bind to and the response. The response must be a dict or a pydantic model.
 
-        :param sticky: If true, the socket.io endpoint will automatically send the
-        latest event to new clients and the generated GET endpoint will return the
-        latest event. If false, a GET endpoint will still be generated but it will
-        always return 422 error, this is useful for documentation purposes.
+        :param data_store: default is `MemoryDataStore`.
         """
+        data_store = data_store or MemoryDataStore()
+        param_docs = param_docs or {}
         get_deco = super().get(path, *args, **kwargs)
 
         def decorator(func: DecoratedCallable) -> DecoratedCallable:
             prefixed_path = self.prefix + path
             _, _, convertors = compile_path(prefixed_path)
-            room_data = {}
 
-            def on_subscribe(path: str):
-                return room_data.get(path, None)
+            async def on_subscribe(path: str, path_params: Dict[str, str]):
+                return await data_store.get(path, path_params)
 
             async def on_data(data):
                 if asyncio.iscoroutinefunction(func):
@@ -127,48 +175,51 @@ class FastIORouter(APIRouter):
                 room_id, _ = replace_params(path, convertors, path_params)
                 if isinstance(resp, pydantic.BaseModel):
                     resp = resp.dict()
-                room_data[room_id] = resp
+                await data_store.set(room_id, path_params, resp)
                 return room_id, resp
 
             watch = Watch(
                 target=target,
                 prefix=self.prefix,
                 path=self.prefix + path,
-                sticky=sticky,
+                data_store=data_store,
                 on_subscribe=on_subscribe,
                 on_data=on_data,
             )
             self.watches.append(watch)
 
-            def get_func(**path_params):
-                if not sticky:
-                    raise HTTPException(422, "only available in socket.io")
+            async def get_func(**path_params):
+                orig_path_params = copy(path_params)
                 room_id, _ = replace_params(path, convertors, path_params)
-                try:
-                    return room_data[room_id]
-                except KeyError as e:
-                    raise HTTPException(404) from e
+                data = await data_store.get(room_id, orig_path_params)
+                if data is None:
+                    raise HTTPException(404)
+                return data
 
             get_func.__name__ = func.__name__
-            if sticky:
-                get_func.__doc__ = "**Available in socket.io**\n\n" + (
-                    func.__doc__ or ""
-                )
-            else:
-                get_func.__doc__ = "**ONLY available in socket.io**\n\n" + (
-                    func.__doc__ or ""
-                )
+            get_func.__doc__ = "**Available in socket.io**\n\n" + (func.__doc__ or "")
             params = [
                 inspect.Parameter(
                     "req", inspect.Parameter.KEYWORD_ONLY, annotation=Request
                 )
             ]
-            params.extend(
-                [
-                    inspect.Parameter(k, inspect.Parameter.KEYWORD_ONLY, annotation=str)
-                    for k in convertors
-                ]
-            )
+
+            def make_param(name: str):
+                docs = param_docs.get(name, None)
+                if docs:
+                    return inspect.Parameter(
+                        name,
+                        inspect.Parameter.KEYWORD_ONLY,
+                        annotation=str,
+                        default=Path(..., description=docs),
+                    )
+                return inspect.Parameter(
+                    name,
+                    inspect.Parameter.KEYWORD_ONLY,
+                    annotation=str,
+                )
+
+            params.extend([make_param(k) for k in convertors])
             get_func.__signature__ = inspect.Signature(params)
 
             get_deco(get_func)
@@ -224,6 +275,7 @@ class FastIO(socketio.ASGIApp):
         self._patterns = cast(Dict[Pattern, Watch], {})
 
         self.sio.on("subscribe", self._on_subscribe)
+        self.sio.on("unsubscribe", self._on_unsubscribe)
         self.fapi.add_event_handler("startup", self._on_startup)
 
     def include_router(self, router: FastIORouter, prefix: str = "", **kwargs):
@@ -248,19 +300,27 @@ class FastIO(socketio.ASGIApp):
                 lambda data, on_next=on_next: loop.create_task(on_next(data))
             )
 
-    async def _on_subscribe(self, sid: str, data: dict):
+    @staticmethod
+    def _parse_sub_data(data: dict) -> Subscription:
         if "path" not in data:
-            await self.sio.emit(
-                "subscribe", {"success": False, "error": "missing 'path'"}
-            )
+            raise SubscribeError("missing 'path'")
+        path = url_unquote(data["path"])
+        return Subscription(path=path)
+
+    async def _on_subscribe(self, sid: str, data: dict):
+        try:
+            sub = self._parse_sub_data(data)
+        except SubscribeError as e:
+            await self.sio.emit("subscribe", {"success": False, "error": str(e)})
             return
 
-        path = url_unquote(data["path"])
+        matches = (
+            (watch, pattern.match(sub.path))
+            for pattern, watch in self._patterns.items()
+        )
         try:
-            watch = next(
-                watch
-                for pattern, watch in self._patterns.items()
-                if pattern.match(path)
+            watch, path_params = next(
+                (watch, match.groupdict()) for watch, match in matches if match
             )
         except StopIteration:
             await self.sio.emit(
@@ -269,12 +329,19 @@ class FastIO(socketio.ASGIApp):
             return
 
         await self.sio.emit("subscribe", {"success": True}, sid)
-        if not watch.sticky:
-            return
-        stripped_path = path[len(watch.prefix) :]
-        current = watch.on_subscribe(stripped_path)
+        stripped_path = sub.path[len(watch.prefix) :]
+        current = await watch.on_subscribe(stripped_path, path_params)
         if current is None:
             return
         if isinstance(current, pydantic.BaseModel):
             current = current.dict()
-        await self.sio.emit(path, current, to=sid)
+        await self.sio.emit(sub.path, current, to=sid)
+
+    async def _on_unsubscribe(self, sid: str, data: dict):
+        try:
+            sub = self._parse_sub_data(data)
+        except SubscribeError as e:
+            await self.sio.emit("unsubscribe", {"success": False, "error": str(e)})
+
+        self.sio.leave_room(sid, sub.path)
+        await self.sio.emit("unsubscribe", {"success": True})

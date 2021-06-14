@@ -172,6 +172,31 @@ class TestTasksRoute(RouteFixture):
         self.assertEqual(0, resp_json["total_count"])
         self.assertEqual(0, len(resp_json["items"]))
 
+    def test_get_task_summary(self):
+        dataset = [
+            TaskSummary(
+                task_id="task_1",
+                fleet_name="fleet_1",
+                submission_time={"sec": 1000, "nanosec": 0},
+                start_time={"sec": 2000, "nanosec": 0},
+                end_time={"sec": 3000, "nanosec": 0},
+                robot_name="robot_1",
+                state=RmfTaskSummary.STATE_COMPLETED,
+                task_profile={
+                    "description": {
+                        "task_type": {"type": RmfTaskType.TYPE_LOOP},
+                        "priority": {"value": 0},
+                    }
+                },
+            ),
+        ]
+        save_tasks(self, dataset, self.user)
+
+        resp = self.session.get(f"{self.base_url}/tasks/task_1/summary")
+        self.assertEqual(200, resp.status_code)
+        resp_json = resp.json()
+        self.assertEqual("task_1", resp_json["task_id"])
+
 
 class TestSubmitTaskRoute(RouteFixture):
     def host_submit_service(self, resp: Optional[RmfSubmitTask.Response] = None):
