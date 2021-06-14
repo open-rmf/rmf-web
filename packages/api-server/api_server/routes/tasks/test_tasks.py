@@ -283,14 +283,14 @@ class TestCancelTaskRoute(RouteFixture):
             groups={"rmf_test_group"},
         )
 
-        save_tasks(self, [TaskSummary(task_id="task1")], user)
+        save_tasks(self, [TaskSummary(task_id="test_task")], user)
 
         user2 = User(
             username="test_user2",
             roles={RmfRole.TaskCancel.value},
         )
         self.set_user(user2)
-        cancel_task = CancelTask(task_id="task1")
+        cancel_task = CancelTask(task_id="test_task")
         resp = self.session.post(
             f"{self.base_url}/tasks/cancel_task", data=cancel_task.json()
         )
