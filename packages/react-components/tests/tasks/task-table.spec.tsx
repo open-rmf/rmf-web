@@ -1,5 +1,4 @@
 import { render } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { TaskTable } from '../../lib';
@@ -11,20 +10,6 @@ describe('TaskTable', () => {
     const root = render(<TaskTable tasks={tasks} />);
     root.getByText('task_0');
     root.getByText('task_1');
-  });
-
-  it('clicking on create task button trigger onCreateTaskClick', () => {
-    const spy = jasmine.createSpy();
-    const root = render(<TaskTable tasks={[]} onCreateTaskClick={spy} />);
-    userEvent.click(root.getByLabelText('Create Task'));
-    expect(spy).toHaveBeenCalledTimes(1);
-  });
-
-  it('clicking on refresh button triggers onRefreshClick', () => {
-    const spy = jasmine.createSpy();
-    const root = render(<TaskTable tasks={[]} onRefreshClick={spy} />);
-    userEvent.click(root.getByLabelText('Refresh'));
-    expect(spy).toHaveBeenCalledTimes(1);
   });
 
   it('smoke test for different task states', () => {
@@ -43,22 +28,5 @@ describe('TaskTable', () => {
 
     const tasks = [activeTask, cancelledTask, completedTask, failedTask, pendingTask, queuedTask];
     render(<TaskTable tasks={tasks} />);
-  });
-
-  it('pagination is shown when pagination option is provided', () => {
-    const spy = jasmine.createSpy();
-    const root = render(
-      <TaskTable
-        tasks={[makeTask('test', 1, 1)]}
-        paginationOptions={{
-          count: 1,
-          page: 0,
-          rowsPerPage: 10,
-          rowsPerPageOptions: [10],
-          onChangePage: spy,
-        }}
-      />,
-    );
-    root.getByText('1-1 of 1');
   });
 });
