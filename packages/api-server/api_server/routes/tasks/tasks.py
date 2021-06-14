@@ -30,7 +30,6 @@ class TasksRouter(FastIORouter):
         self,
         auth_dep: Callable[[], User],
         rmf_gateway_dep: Callable[[], RmfGateway],
-        enforcer: Enforcer,
     ):
         super().__init__(tags=["Tasks"])
         _dispatcher_client: Optional[DispatcherClient] = None
@@ -38,7 +37,7 @@ class TasksRouter(FastIORouter):
         def dispatcher_client_dep():
             nonlocal _dispatcher_client
             if _dispatcher_client is None:
-                _dispatcher_client = DispatcherClient(rmf_gateway_dep(), enforcer)
+                _dispatcher_client = DispatcherClient(rmf_gateway_dep())
             return _dispatcher_client
 
         class GetTasksResponse(Pagination.response_model(TaskProgress)):
@@ -129,7 +128,8 @@ class TasksRouter(FastIORouter):
         @self.post("/cancel_task")
         async def cancel_task(
             task: CancelTask,
+            user: User = Depends(auth_dep),
             dispatcher_client: DispatcherClient = Depends(dispatcher_client_dep),
         ):
-            cancel_status = await dispatcher_client.cancel_task_request(task)
+            cancel_status = await dispatcher_client.cancel_task_request(task, user)
             return JSONResponse(content={"success": cancel_status})

@@ -13,32 +13,6 @@ from ..test_fixtures import RouteFixture
 
 
 class TestTasksRoute(RouteFixture):
-    def test_cancel_task_request(self):
-        cancel_task = CancelTask(task_id="test_task")
-        fut = self.host_service_one(
-            RmfCancelTask, "cancel_task", RmfCancelTask.Response(success=True)
-        )
-        resp = self.session.post(
-            f"{self.base_url}/tasks/cancel_task", data=cancel_task.json()
-        )
-        self.assertEqual(resp.status_code, 200)
-        received: RmfCancelTask.Request = fut.result(3)
-        self.assertEqual(received.task_id, "test_task")
-
-    def test_cancel_task_failure(self):
-        cancel_task = CancelTask(task_id="test_task")
-        fut = self.host_service_one(
-            RmfCancelTask,
-            "cancel_task",
-            RmfCancelTask.Response(success=False, message="test error"),
-        )
-        resp = self.session.post(
-            f"{self.base_url}/tasks/cancel_task", data=cancel_task.json()
-        )
-        self.assertEqual(resp.status_code, 500)
-        fut.result(3)
-        self.assertEqual(resp.json()["detail"], "test error")
-
     def test_query_tasks(self):
         task_summaries = (
             TaskSummary(
@@ -205,4 +179,42 @@ class TestSubmitTaskRoute(RouteFixture):
         )
         self.set_user(User(username="user_with_no_roles"))
         resp = self.session.post(f"{self.base_url}/tasks/submit_task", data=task.json())
+        self.assertEqual(resp.status_code, 401)
+
+
+class TestCancelTaskRoute(RouteFixture):
+    def test_smoke(self):
+        cancel_task = CancelTask(task_id="test_task")
+        fut = self.host_service_one(
+            RmfCancelTask, "cancel_task", RmfCancelTask.Response(success=True)
+        )
+        resp = self.session.post(
+            f"{self.base_url}/tasks/cancel_task", data=cancel_task.json()
+        )
+        self.assertEqual(resp.status_code, 200)
+        received: RmfCancelTask.Request = fut.result(3)
+        self.assertEqual(received.task_id, "test_task")
+
+    def test_cancel_task_failure(self):
+        cancel_task = CancelTask(task_id="test_task")
+        fut = self.host_service_one(
+            RmfCancelTask,
+            "cancel_task",
+            RmfCancelTask.Response(success=False, message="test error"),
+        )
+        resp = self.session.post(
+            f"{self.base_url}/tasks/cancel_task", data=cancel_task.json()
+        )
+        self.assertEqual(resp.status_code, 500)
+        fut.result(3)
+        self.assertEqual(resp.json()["detail"], "test error")
+
+    def test_user_without_role_cannot_cancel_task(self):
+        user = User(username="user_with_no_roles")
+        self.set_user(user)
+
+        cancel_task = CancelTask(task_id="test_task")
+        resp = self.session.post(
+            f"{self.base_url}/tasks/cancel_task", data=cancel_task.json()
+        )
         self.assertEqual(resp.status_code, 401)

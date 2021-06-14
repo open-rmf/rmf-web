@@ -46,7 +46,6 @@ class App(FastIO):
         )
 
         auth_dep = auth_scheme(app_config.client_id, authenticator, app_config.oidc_url)
-        enforcer = Enforcer()
         super().__init__(
             authenticator=authenticator,
             logger=logger,
@@ -152,7 +151,7 @@ class App(FastIO):
             prefix="/lifts",
         )
         self.include_router(
-            routes.TasksRouter(auth_dep, rmf_gateway_dep, enforcer), prefix="/tasks"
+            routes.TasksRouter(auth_dep, rmf_gateway_dep), prefix="/tasks"
         )
         self.include_router(
             routes.DispensersRouter(self.rmf_events, self.rmf_repo),

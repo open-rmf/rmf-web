@@ -16,17 +16,13 @@ class Permission(Enum):
     Write = "write"
 
 
-class RmfRoles(Enum):
+class RmfRole(Enum):
     SuperAdmin = "_rmf_superadmin"
     TaskSubmit = "_rmf_task_submit"
     TaskCancel = "_rmf_task_cancel"
 
 
 class Enforcer:
-    @staticmethod
-    def _is_superadmin(user: User):
-        return "_rmf_superadmin" in user.roles
-
     @staticmethod
     async def is_authorized(
         r: ProtectedResourceModel, user: User, permission: Permission
@@ -40,14 +36,22 @@ class Enforcer:
         return perm is not None
 
     @staticmethod
-    def can_submit_task(user: User):
-        return Enforcer._is_superadmin(user) or RmfRoles.TaskSubmit.value in user.roles
+    def _has_role(user: User, role: RmfRole) -> bool:
+        return any((r in [RmfRole.SuperAdmin.value, role.value] for r in user.roles))
+
+    @staticmethod
+    def can_submit_task(user: User) -> bool:
+        return Enforcer._has_role(user, RmfRole.TaskSubmit)
+
+    @staticmethod
+    def can_cancel_task(user: User):
+        return Enforcer._has_role(user, RmfRole.TaskCancel)
 
     @staticmethod
     def query(
         user: User, r: QuerySet[ProtectedResource]
     ) -> QuerySet[ProtectedResourceModel]:
-        if RmfRoles.SuperAdmin.value in user.roles:
+        if RmfRole.SuperAdmin.value in user.roles:
             return r.all()
         return r.filter(
             Q(

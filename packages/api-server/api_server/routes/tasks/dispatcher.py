@@ -8,9 +8,8 @@ from ...permissions import Enforcer
 
 
 class DispatcherClient:
-    def __init__(self, rmf_gateway: RmfGateway, enforcer: Enforcer):
+    def __init__(self, rmf_gateway: RmfGateway):
         self.rmf_gateway = rmf_gateway
-        self.enforcer = enforcer
 
     async def submit_task_request(self, user: mdl.User, req_msg: RmfSubmitTask.Request):
         """
@@ -18,7 +17,7 @@ class DispatcherClient:
         dispatcher node, and return a response. Function will return a Task ID.
         Raises "HTTPException" if service call fails.
         """
-        if not self.enforcer.can_submit_task(user):
+        if not Enforcer.can_submit_task(user):
             raise HTTPException(401)
 
         resp: RmfSubmitTask.Response = await self.rmf_gateway.call_service(
@@ -33,12 +32,15 @@ class DispatcherClient:
             sim_time = None
         return sim_time
 
-    async def cancel_task_request(self, task: mdl.CancelTask) -> bool:
+    async def cancel_task_request(self, task: mdl.CancelTask, user: mdl.User) -> bool:
         """
         Cancel Task - This function will trigger a ros srv call to the
         dispatcher node, and return a response.
         Raises "HTTPException" if service call fails.
         """
+        if not Enforcer.can_cancel_task(user):
+            raise HTTPException(401)
+
         req = RmfCancelTask.Request()
         req.requester = "rmf-server"
         req.task_id = task.task_id

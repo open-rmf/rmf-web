@@ -15,7 +15,7 @@ from urllib3.util.retry import Retry
 from ..app import App
 from ..app_config import load_config
 from ..models import User
-from ..permissions import RmfRoles
+from ..permissions import RmfRole
 from ..test.server import BackgroundServer
 
 T = TypeVar("T")
@@ -57,7 +57,7 @@ class RouteFixture(unittest.TestCase):
         retry = Retry(total=5, backoff_factor=0.1)
         adapter = requests.adapters.HTTPAdapter(max_retries=retry)
         cls.session = requests.Session()
-        cls.user = User(username="test_user", roles=[RmfRoles.SuperAdmin.value])
+        cls.user = User(username="test_user", roles=[RmfRole.SuperAdmin.value])
         cls.set_user(cls.user)
         cls.session.mount("http://", adapter)
 

@@ -6,7 +6,7 @@ from tortoise.models import Model as TortoiseModel
 
 from .models import User
 from .models.tortoise_models import ProtectedResource, ResourcePermission
-from .permissions import Enforcer, Permission, RmfRoles
+from .permissions import Enforcer, Permission, RmfRole
 
 
 class GreetingPermission(TortoiseModel, ResourcePermission):
@@ -84,6 +84,6 @@ class TestPermissions(unittest.IsolatedAsyncioTestCase):
     async def test_superadmin_can_see_resource_with_no_owner(self):
         greeting = Greeting(message="hello")
         await greeting.save()
-        user = User(username="test_superadmin", roles=[RmfRoles.SuperAdmin.value])
+        user = User(username="test_superadmin", roles=[RmfRole.SuperAdmin.value])
         count = await Enforcer.query(user, Greeting).count()
         self.assertEqual(1, count)
