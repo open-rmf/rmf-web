@@ -6,7 +6,7 @@ import FleetStateReportConfig from './reports/fleet-state-report';
 import HealthReportConfig from './reports/health-report';
 import IngestorStateReportConfig from './reports/ingestor-state-report';
 import LiftStateReportConfig from './reports/lift-state-report';
-import TaskStateReportConfig from './reports/task-state-report';
+import TaskSummaryReportConfig from './reports/task-summary-report';
 import UserLoginFailureReportConfig from './reports/user-login-failure-report';
 import UserLoginReportConfig from './reports/user-login-report';
 import UserLogoutReportConfig from './reports/user-logout-report';
@@ -47,7 +47,7 @@ export const ReportContainer: Record<string, React.ReactElement> = {
   [Reports.showLoginsReport]: <UserLoginReportConfig />,
   [Reports.showLogoutsReport]: <UserLogoutReportConfig />,
   [Reports.showLoginFailuresReport]: <UserLoginFailureReportConfig />,
-  [Reports.showTasksReport]: <TaskStateReportConfig />,
+  [Reports.showTasksReport]: <TaskSummaryReportConfig />,
 };
 
 // To be implemented

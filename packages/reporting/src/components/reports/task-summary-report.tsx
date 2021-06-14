@@ -4,11 +4,11 @@ import appConfig from '../../app-config';
 import { AuthenticatorContext } from '../auth-contexts';
 import { getLogData } from './utils';
 
-const TaskStateReportConfig = () => {
+const TaskSummaryReportConfig = () => {
   const authenticator = React.useContext(AuthenticatorContext);
   const getLogs = async (params: DefaultReportQueryPayload): Promise<TaskStateRowsType> => {
     return (await getLogData(
-      `${appConfig.reportingServerUrl}/report/task_state/`,
+      `${appConfig.reportingServerUrl}/report/task_summary/`,
       params,
       authenticator.token,
     )) as TaskStateRowsType;
@@ -17,4 +17,4 @@ const TaskStateReportConfig = () => {
   return <TaskStateReport getLogs={getLogs} />;
 };
 
-export default TaskStateReportConfig;
+export default TaskSummaryReportConfig;
