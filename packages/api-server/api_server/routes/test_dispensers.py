@@ -1,6 +1,6 @@
 from rmf_dispenser_msgs.msg import DispenserState as RmfDispenserState
 
-from .test_fixtures import RouteFixture, try_until
+from ..test.test_fixtures import RouteFixture, try_until
 
 
 class TestDispensersRoute(RouteFixture):

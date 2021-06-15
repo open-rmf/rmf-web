@@ -1,6 +1,6 @@
 from rmf_ingestor_msgs.msg import IngestorState as RmfIngestorState
 
-from .test_fixtures import RouteFixture, try_until
+from ..test.test_fixtures import RouteFixture, try_until
 
 
 class TestIngestorsRoute(RouteFixture):

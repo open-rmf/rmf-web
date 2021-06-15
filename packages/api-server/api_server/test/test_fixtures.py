@@ -43,8 +43,24 @@ def try_until(
 
 
 here = os.path.dirname(__file__)
-with open(f"{here}/../test/test.key", "br") as f:
+with open(f"{here}/test.key", "br") as f:
     jwt_key = f.read()
+
+
+def generate_token(user: User):
+    jwt_roles = list(user.roles)
+    jwt_roles.extend(list(user.groups))
+    return jwt.encode(
+        {
+            "client_id": "test",
+            "aud": "test",
+            "iss": "test",
+            "preferred_username": user.username,
+            "resource_access": {"test": {"roles": jwt_roles}},
+        },
+        jwt_key,
+        "RS256",
+    )
 
 
 class RouteFixture2(unittest.TestCase):
@@ -86,18 +102,7 @@ class RouteFixture2(unittest.TestCase):
 
     def set_user(self, user: User):
         self.user = user
-        jwt_roles = list(user.roles)
-        jwt_roles.extend(list(user.groups))
-        token = jwt.encode(
-            {
-                "aud": "test",
-                "iss": "test",
-                "preferred_username": user.username,
-                "resource_access": {"test": {"roles": jwt_roles}},
-            },
-            jwt_key,
-            "RS256",
-        )
+        token = generate_token(self.user)
         self.session.headers["Authorization"] = f"bearer {token}"
 
     def run_in_app_loop(self, work: Awaitable, timeout: Optional[float] = None):

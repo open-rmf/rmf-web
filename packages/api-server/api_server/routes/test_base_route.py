@@ -2,7 +2,7 @@ import asyncio
 
 from ..models import TaskSummary
 from ..models import tortoise_models as ttm
-from .test_fixtures import RouteFixture
+from ..test.test_fixtures import RouteFixture
 
 
 class TestBaseQuery(RouteFixture):

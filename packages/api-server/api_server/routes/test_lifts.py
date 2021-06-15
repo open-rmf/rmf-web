@@ -1,7 +1,7 @@
 from rmf_lift_msgs.msg import LiftRequest as RmfLiftRequest
 from rmf_lift_msgs.msg import LiftState as RmfLiftState
 
-from .test_fixtures import RouteFixture, try_until
+from ..test.test_fixtures import RouteFixture, try_until
 
 
 class TestLiftsRoute(RouteFixture):

@@ -9,7 +9,7 @@ from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
 from ...models import CancelTask, CleanTaskDescription, SubmitTask, TaskSummary, User
 from ...models import tortoise_models as ttm
 from ...permissions import Enforcer, Permission, RmfRole
-from ..test_fixtures import RouteFixture, RouteFixture2
+from ...test.test_fixtures import RouteFixture, RouteFixture2
 
 
 def save_tasks(fixture: RouteFixture, tasks: Sequence[TaskSummary], user: User):

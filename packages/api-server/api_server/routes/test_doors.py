@@ -2,7 +2,7 @@ from rmf_door_msgs.msg import DoorMode as RmfDoorMode
 from rmf_door_msgs.msg import DoorRequest as RmfDoorRequest
 from rmf_door_msgs.msg import DoorState as RmfDoorState
 
-from .test_fixtures import RouteFixture, try_until
+from ..test.test_fixtures import RouteFixture, try_until
 
 
 class TestDoorsRoute(RouteFixture):
