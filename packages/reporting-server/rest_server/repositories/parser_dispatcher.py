@@ -15,7 +15,7 @@ from parsers.task_summary_parser import task_summary_parser
 
 
 # This function dispatchs to the correct handler dependending on the text content.
-async def log_model_dispacher(fullstring: str):
+async def log_model_dispatcher(fullstring: str):
     if "dispenser_state:" in fullstring.lower():
         data = await dispenser_state_parser(fullstring)
         await DispenserState.create(**data)

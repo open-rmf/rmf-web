@@ -6,11 +6,11 @@ from models.raw_log import RawLog
 from parsers.auth_event_parser import auth_event_parser
 from parsers.log_type_parser import get_log_type
 
-from .parser_dispacher import log_model_dispacher
+from .parser_dispatcher import log_model_dispatcher
 
 # Function that receives all the logs and store them on the database
 
-logger = logging.getLogger("rest_app")
+logger = logging.getLogger("rest_app:log_creation_handler")
 
 """
 Formats support:
@@ -79,7 +79,7 @@ async def create_rmf_server_log(logs: list):
             if "INFO:app.BookKeeper." not in log["log"]:
                 continue
             modified_log = log["log"].replace("INFO:app.BookKeeper.", "")
-            await log_model_dispacher(modified_log)
+            await log_model_dispatcher(modified_log)
 
         except (SyntaxError, ValueError, KeyError) as e:
             error_logs.append("Error:" + str(e) + "Log:" + str(log))

@@ -7,6 +7,7 @@ import LocalHospitalIcon from '@material-ui/icons/LocalHospital';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import PlaylistAddCheckIcon from '@material-ui/icons/PlaylistAddCheck';
 
 import { Reports } from './report-list';
 import { ExpandableMultilevelMenuProps } from 'react-components';
@@ -59,7 +60,7 @@ export const buildReportMenuStructure = (
       onClick: () => setCurrentReport(Reports.showLiftStateReport),
     },
     {
-      icon: <ArrowDropUpIcon />,
+      icon: <PlaylistAddCheckIcon />,
       title: 'Tasks',
       onClick: () => setCurrentReport(Reports.showTasksReport),
     },

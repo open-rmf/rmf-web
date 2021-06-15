@@ -10,7 +10,7 @@ export type TaskSummaryRowsType = {
   payload: string | unknown;
   fleet_name: string;
   task_id: string;
-  task_profile: string;
+  task_profile: Record<string, unknown>;
   state: string;
   status: string;
   submission_time: string;
@@ -28,7 +28,7 @@ export const TaskSummaryReportTable = (props: TaskSummaryReportTable): React.Rea
 
   return (
     <MaterialTable
-      title="Task State"
+      title="Task Summary"
       icons={materialTableIcons}
       columns={[
         {
@@ -48,35 +48,45 @@ export const TaskSummaryReportTable = (props: TaskSummaryReportTable): React.Rea
           },
         },
         {
-          title: <Typography>Task State</Typography>,
-          field: 'task_profile',
-          type: 'string',
-          render: (rowData) => {
-            return <Typography>{rowData.task_profile}</Typography>;
-          },
-        },
-        {
-          title: <Typography>Status</Typography>,
-          field: 'status',
-          type: 'string',
-          render: (rowData) => {
-            return <Typography>{rowData.status}</Typography>;
-          },
-        },
-        {
-          title: <Typography>Submission Time</Typography>,
-          field: 'submission_time',
-          type: 'string',
-          render: (rowData) => {
-            return <Typography>{rowData.submission_time}</Typography>;
-          },
-        },
-        {
           title: <Typography>Assigned Robot</Typography>,
           field: 'robot_name',
           type: 'string',
           render: (rowData) => {
             return <Typography>{rowData.robot_name}</Typography>;
+          },
+        },
+        {
+          title: <Typography>Task Description</Typography>,
+          field: 'description',
+          type: 'string',
+          render: (rowData) => {
+            const task_description = JSON.stringify(rowData.task_profile.description);
+            return <Typography>{task_description}</Typography>;
+          },
+        },
+        {
+          title: <Typography>State</Typography>,
+          field: 'state',
+          type: 'string',
+          render: (rowData) => {
+            return <Typography>{rowData.state}</Typography>;
+          },
+        },
+        {
+          title: <Typography>Time</Typography>,
+          field: 'time_information',
+          type: 'string',
+          render: (rowData) => {
+            const submissionTime = JSON.stringify(rowData.submission_time);
+            const startTime = JSON.stringify(rowData.start_time);
+            const endTime = JSON.stringify(rowData.end_time);
+            return (
+              <>
+                <Typography>Submitted: {submissionTime}</Typography>
+                <Typography>Start: {startTime}</Typography>
+                <Typography>End: {endTime}</Typography>
+              </>
+            );
           },
         },
         {
