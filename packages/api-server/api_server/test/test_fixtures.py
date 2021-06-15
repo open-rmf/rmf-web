@@ -4,7 +4,6 @@ import os.path
 import threading
 import time
 import unittest
-from concurrent.futures import Future
 from typing import Awaitable, Callable, Optional, TypeVar
 
 import jwt
@@ -63,59 +62,6 @@ def generate_token(user: User):
     )
 
 
-class RouteFixture2(unittest.TestCase):
-    def setUp(self):
-        self.app = App(load_config(f"{os.path.dirname(__file__)}/test_config.py"))
-        self.server = BackgroundServer(self.app)
-        self.server.start()
-        self.base_url = self.server.base_url
-
-        retry = Retry(total=5, backoff_factor=0.1)
-        adapter = requests.adapters.HTTPAdapter(max_retries=retry)
-        self.session = requests.Session()
-        self.user = User(username="test_user", roles=[RmfRole.SuperAdmin.value])
-        self.set_user(self.user)
-        self.session.mount("http://", adapter)
-
-        self.rcl_ctx = rclpy.Context()
-        rclpy.init(context=self.rcl_ctx)
-        self.rcl_executor = rclpy.executors.SingleThreadedExecutor(context=self.rcl_ctx)
-        self.node = rclpy.node.Node("test_node", context=self.rcl_ctx)
-        self.spinning = True
-
-        def spin():
-            while self.spinning:
-                rclpy.spin_once(self.node, executor=self.rcl_executor, timeout_sec=0.1)
-
-        self.spin_thread = threading.Thread(target=spin)
-        self.spin_thread.start()
-
-    def tearDown(self):
-        self.spinning = False
-        self.spin_thread.join()
-        self.node.destroy_node()
-        rclpy.shutdown(context=self.rcl_ctx)
-
-        self.session.close()
-
-        self.server.stop()
-
-    def set_user(self, user: User):
-        self.user = user
-        token = generate_token(self.user)
-        self.session.headers["Authorization"] = f"bearer {token}"
-
-    def run_in_app_loop(self, work: Awaitable, timeout: Optional[float] = None):
-        self.server.app.wait_ready()
-        fut = concurrent.futures.Future()
-
-        async def task():
-            fut.set_result(await work)
-
-        self.server.app.loop.create_task(task())
-        return fut.result(timeout)
-
-
 class RouteFixture(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -135,40 +81,30 @@ class RouteFixture(unittest.TestCase):
         rclpy.init(context=cls.rcl_ctx)
         cls.rcl_executor = rclpy.executors.SingleThreadedExecutor(context=cls.rcl_ctx)
         cls.node = rclpy.node.Node("test_node", context=cls.rcl_ctx)
-        cls._stop_spinning = True
-        cls.spin_thread: Optional[threading.Thread] = None
+        cls.spinning = True
 
-        tries = 0
-        while "rmf_api_server" not in cls.node.get_node_names():
-            tries += 1
-            if tries >= 10:
-                raise TimeoutError("cannot discover rmf_api_server node")
-            time.sleep(0.5)
+        def spin():
+            while cls.spinning:
+                rclpy.spin_once(cls.node, executor=cls.rcl_executor, timeout_sec=0.1)
+
+        cls.spin_thread = threading.Thread(target=spin)
+        cls.spin_thread.start()
 
     @classmethod
     def tearDownClass(cls):
-        cls.session.close()
-
+        cls.spinning = False
+        cls.spin_thread.join()
         cls.node.destroy_node()
         rclpy.shutdown(context=cls.rcl_ctx)
+
+        cls.session.close()
 
         cls.server.stop()
 
     @classmethod
     def set_user(cls, user: User):
         cls.user = user
-        jwt_roles = list(user.roles)
-        jwt_roles.extend(user.groups)
-        token = jwt.encode(
-            {
-                "aud": "test",
-                "iss": "test",
-                "preferred_username": user.username,
-                "resource_access": {"test": {"roles": jwt_roles}},
-            },
-            jwt_key,
-            "RS256",
-        )
+        token = generate_token(cls.user)
         cls.session.headers["Authorization"] = f"bearer {token}"
 
     @classmethod
@@ -181,57 +117,3 @@ class RouteFixture(unittest.TestCase):
 
         cls.server.app.loop.create_task(task())
         return fut.result(timeout)
-
-    def subscribe_one(self, Message, topic: str) -> Future:
-        """
-        Returns a future that is set when the first subscription message is received.
-        Need to call "spin_until" to start the subscription.
-        """
-        fut = Future()
-
-        def on_msg(msg):
-            self.node.destroy_subscription(sub)
-            fut.set_result(msg)
-
-        sub = self.node.create_subscription(Message, topic, on_msg, 1)
-        return fut
-
-    def host_service_one(self, Service, srv_name: str, response):
-        """
-        Hosts a service until a request is received. Returns a future that is set when
-        the first request is received. The node is spun in a background thread.
-        """
-        fut = Future()
-
-        def on_request(request, _resp):
-            fut.set_result(request)
-            return response
-
-        srv = self.node.create_service(Service, srv_name, on_request)
-
-        def spin():
-            rclpy.spin_until_future_complete(self.node, fut, self.rcl_executor, 1)
-            self.node.destroy_service(srv)
-
-        threading.Thread(target=spin).start()
-        return fut
-
-    def spin_until(self, fut: rclpy.task.Future, timeout: float):
-        rclpy.spin_until_future_complete(
-            self.node, fut, self.rcl_executor, timeout_sec=timeout
-        )
-        return fut.result(0)
-
-    @classmethod
-    def spin_background(cls):
-        def spin():
-            while not cls._stop_spinning:
-                rclpy.spin_once(cls.node, executor=cls.rcl_executor, timeout_sec=0.1)
-
-        cls._stop_spinning = False
-        cls.spin_thread = threading.Thread(target=spin)
-
-    @classmethod
-    def stop_spinning(cls):
-        cls._stop_spinning = True
-        cls.spin_thread.join()

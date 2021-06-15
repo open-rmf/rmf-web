@@ -9,25 +9,26 @@ from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
 from ...models import CancelTask, CleanTaskDescription, SubmitTask, TaskSummary, User
 from ...models import tortoise_models as ttm
 from ...permissions import Enforcer, Permission, RmfRole
-from ...test.test_fixtures import RouteFixture, RouteFixture2
+from ...test.test_fixtures import RouteFixture
 
 
-def save_tasks(fixture: RouteFixture, tasks: Sequence[TaskSummary], user: User):
-    async def save_data():
-        ttm_tasks = await asyncio.gather(
-            *(ttm.TaskSummary.save_pydantic(t, user) for t in tasks)
-        )
-        await asyncio.gather(
-            *(
-                Enforcer.save_permissions(t, user.groups, [Permission.Read])
-                for t in ttm_tasks
+class TasksFixture(RouteFixture):
+    def save_tasks(self, tasks: Sequence[TaskSummary], user: User):
+        async def save_data():
+            ttm_tasks = await asyncio.gather(
+                *(ttm.TaskSummary.save_pydantic(t, user) for t in tasks)
             )
-        )
+            await asyncio.gather(
+                *(
+                    Enforcer.save_permissions(t, user.groups, [Permission.Read])
+                    for t in ttm_tasks
+                )
+            )
 
-    fixture.run_in_app_loop(save_data())
+        self.run_in_app_loop(save_data())
 
 
-class TestTasksRoute(RouteFixture2):
+class TestTasksRoute(TasksFixture):
     def test_smoke(self):
         #
         # setup mock rmf services
@@ -179,6 +180,8 @@ class TestTasksRoute(RouteFixture2):
         cancel_task_srv.destroy()
         submit_task_srv.destroy()
 
+
+class TestTasksQuery(TasksFixture):
     def test_query_tasks(self):
         dataset = (
             TaskSummary(
@@ -213,7 +216,7 @@ class TestTasksRoute(RouteFixture2):
             ),
         )
 
-        save_tasks(self, dataset, self.user)
+        self.save_tasks(dataset, self.user)
 
         resp = self.session.get(f"{self.base_url}/tasks?task_id=task_1,task_2")
         self.assertEqual(resp.status_code, 200)

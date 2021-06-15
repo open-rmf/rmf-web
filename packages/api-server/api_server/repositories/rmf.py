@@ -1,7 +1,5 @@
 from typing import List, Optional
 
-from tortoise.queryset import QuerySet
-
 from ..models import (
     BuildingMap,
     Dispenser,
