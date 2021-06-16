@@ -5,6 +5,7 @@ import {
   HealthRowsType,
   IngestorStateRowsType,
   LiftStateRowsType,
+  TaskSummaryRowsType,
 } from '../../lib';
 
 const timestamp = new Date('Mon Jan  1 00:00:02 UTC 2001').toISOString();
@@ -86,6 +87,26 @@ export const getLiftLogs = (): LiftStateRowsType => {
       session_id: 'session',
       created: timestamp,
       payload: 'Test' + i,
+    });
+  }
+  return rows;
+};
+
+export const getTaskSummaryLogs = (): TaskSummaryRowsType => {
+  const rows = [];
+  for (let i = 0; i < 200; i++) {
+    rows.push({
+      created: timestamp,
+      payload: 'Test' + i,
+      fleet_name: 'Test',
+      task_id: i.toString(),
+      task_profile: { test: 'test' },
+      state: 'test',
+      status: 'test',
+      submission_time: 'test',
+      start_time: 'test',
+      end_time: 'test',
+      robot_name: 'test',
     });
   }
   return rows;
