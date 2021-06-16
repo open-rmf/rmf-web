@@ -4,18 +4,21 @@ import { Typography } from '@material-ui/core';
 import { materialTableIcons } from '../../material-table-icons';
 import { DefaultLogTableProps } from '../default-report-interface';
 import { format } from 'date-fns';
+import { returnTaskDetails } from './utils';
+import { rosTimeToJs } from '../../utils';
+import * as RmfModels from 'rmf-models';
 
 export type TaskSummaryRowsType = {
   created: string; //date
   payload: string | unknown;
   fleet_name: string;
   task_id: string;
-  task_profile: Record<string, unknown>;
+  task_profile: RmfModels.TaskProfile;
   state: string;
   status: string;
-  submission_time: string;
-  start_time: string;
-  end_time: string;
+  submission_time: RmfModels.Time;
+  start_time: RmfModels.Time;
+  end_time: RmfModels.Time;
   robot_name: string;
 }[];
 
@@ -48,7 +51,7 @@ export const TaskSummaryReportTable = (props: TaskSummaryReportTable): React.Rea
           },
         },
         {
-          title: <Typography>Assigned Robot</Typography>,
+          title: <Typography>Robot</Typography>,
           field: 'robot_name',
           type: 'string',
           render: (rowData) => {
@@ -60,8 +63,11 @@ export const TaskSummaryReportTable = (props: TaskSummaryReportTable): React.Rea
           field: 'description',
           type: 'string',
           render: (rowData) => {
-            const task_description = JSON.stringify(rowData.task_profile.description);
-            return <Typography>{task_description}</Typography>;
+            const taskTypeDetails = returnTaskDetails(
+              rowData.task_id,
+              rowData.task_profile.description,
+            );
+            return taskTypeDetails;
           },
         },
         {
@@ -77,9 +83,11 @@ export const TaskSummaryReportTable = (props: TaskSummaryReportTable): React.Rea
           field: 'time_information',
           type: 'string',
           render: (rowData) => {
-            const submissionTime = JSON.stringify(rowData.submission_time);
-            const startTime = JSON.stringify(rowData.start_time);
-            const endTime = JSON.stringify(rowData.end_time);
+            const submissionTime = rosTimeToJs(
+              rowData.task_profile.submission_time,
+            ).toLocaleTimeString();
+            const startTime = rosTimeToJs(rowData.start_time).toLocaleTimeString();
+            const endTime = rosTimeToJs(rowData.end_time).toLocaleTimeString();
             return (
               <>
                 <Typography>Submitted: {submissionTime}</Typography>
