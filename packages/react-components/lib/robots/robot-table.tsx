@@ -18,7 +18,6 @@ import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { taskTypeToStr } from '../tasks/utils';
 import { robotModeToString, VerboseRobot } from './utils';
-import { PaginationOptions } from '../tasks/task-table';
 import { TaskProgress } from 'api-client';
 
 const useStyles = makeStyles((theme) => ({
@@ -116,6 +115,11 @@ function RobotRow({ robot, onClick }: RobotRowProps) {
   }
 }
 
+export type PaginationOptions = Omit<
+  React.ComponentPropsWithoutRef<typeof TablePagination>,
+  'component'
+>;
+
 export interface RobotTableProps extends PaperProps {
   /**
    * The current list of robots to display, when pagination is enabled, this should only
@@ -153,7 +157,7 @@ export function RobotTable({
               <TableCell>Robot Name</TableCell>
               <TableCell>Start Location</TableCell>
               <TableCell>Destination</TableCell>
-              <TableCell>End Time</TableCell>
+              <TableCell>Active Task Duration</TableCell>
               <TableCell>Battery</TableCell>
               <TableCell>State</TableCell>
             </TableRow>
