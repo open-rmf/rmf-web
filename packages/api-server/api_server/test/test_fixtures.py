@@ -75,6 +75,7 @@ class RouteFixture(unittest.TestCase):
         cls.session = requests.Session()
         cls.user = User(username="test_user", roles=[RmfRole.SuperAdmin.value])
         cls.set_user(cls.user)
+        cls.session.headers["Content-Type"] = "application/json"
         cls.session.mount("http://", adapter)
 
         cls.rcl_ctx = rclpy.Context()
