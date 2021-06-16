@@ -47,7 +47,6 @@ const useStyles = makeStyles((theme) => ({
   },
   divider: {
     margin: '1.5rem 0',
-    backgroundColor: theme.palette.success.main,
   },
 }));
 

@@ -13,9 +13,6 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.mainBackground,
     color: theme.fontColors,
   },
-  divider: {
-    backgroundColor: theme.palette.success.main,
-  },
 }));
 
 export interface MainMenuProps {
@@ -62,22 +59,22 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
       <ListItem data-item="Doors" button={true} onClick={handleMainMenuDoorsClick}>
         <Typography variant="h5">Doors</Typography>
       </ListItem>
-      <Divider className={classes.divider} />
+      <Divider />
 
       <ListItem data-item="Lifts" button={true} onClick={handleMainMenuLiftsClick}>
         <Typography variant="h5">Lifts</Typography>
       </ListItem>
-      <Divider className={classes.divider} />
+      <Divider />
 
       <ListItem data-item="Robots" button={true} onClick={handleMainMenuRobotsClick}>
         <Typography variant="h5">Robots</Typography>
       </ListItem>
-      <Divider className={classes.divider} />
+      <Divider />
 
       <ListItem data-item="Dispensers" button={true} onClick={handleMainMenuDispensersClick}>
         <Typography variant="h5">Dispensers</Typography>
       </ListItem>
-      <Divider className={classes.divider} />
+      <Divider />
 
       <ListItem data-item="Negotiations" button={true} onClick={handleMainMenuNegotiationsClick}>
         <DashboardTooltip
@@ -88,7 +85,7 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
           <Typography variant="h5">Negotiations</Typography>
         </DashboardTooltip>
       </ListItem>
-      <Divider className={classes.divider} />
+      <Divider />
     </List>
   );
 });

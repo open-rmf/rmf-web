@@ -132,7 +132,7 @@ export function TaskInfo({ task, onCancelTaskClick }: TaskInfoProps): JSX.Elemen
       <Typography variant="h6" style={{ textAlign: 'center' }} gutterBottom>
         {task.task_id}
       </Typography>
-      <Divider style={{ backgroundColor: theme.palette.success.main }} />
+      <Divider />
       <div style={{ marginBottom: theme.spacing(1) }}></div>
       <InfoLine>
         <span>Task Type:</span>

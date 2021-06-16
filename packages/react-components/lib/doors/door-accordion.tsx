@@ -25,7 +25,6 @@ const useStyles = makeStyles((theme) => ({
     borderColor: theme.palette.warning.main,
   },
   button: {
-    // borderColor: theme.palette.success.main,
     backgroundColor: theme.secondaryBackground,
     color: theme.fontColors,
   },
