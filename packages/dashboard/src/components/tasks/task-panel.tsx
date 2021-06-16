@@ -18,10 +18,10 @@ import {
 import { Alert, AlertProps } from '@material-ui/lab';
 import type { SubmitTask } from 'api-client';
 import React from 'react';
+import { CreateTaskForm, CreateTaskFormProps, TaskInfo, TaskTable } from 'react-components';
 import * as RmfModels from 'rmf-models';
-import { CreateTaskForm, CreateTaskFormProps } from './create-task';
-import { TaskInfo } from './task-info';
-import { TaskTable } from './task-table';
+import { UserContext } from '../auth/contexts';
+import { canSubmitTask } from '../permissions';
 import { parseTasksFile } from './utils';
 
 const useStyles = makeStyles((theme) => ({
@@ -99,6 +99,7 @@ export function TaskPanel({
   const [snackbarMessage, setSnackbarMessage] = React.useState('');
   const [snackbarSeverity, setSnackbarSeverity] = React.useState<AlertProps['severity']>('success');
   const [autoRefresh, setAutoRefresh] = React.useState(true);
+  const user = React.useContext(UserContext);
 
   const handleCancelTask = React.useCallback(
     async (task: RmfModels.TaskSummary) => {
@@ -170,11 +171,13 @@ export function TaskPanel({
                 <RefreshIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Create task">
-              <IconButton onClick={() => setOpenCreateTaskForm(true)} aria-label="Create Task">
-                <AddOutlinedIcon />
-              </IconButton>
-            </Tooltip>
+            {user && canSubmitTask(user) && (
+              <Tooltip title="Create task">
+                <IconButton onClick={() => setOpenCreateTaskForm(true)} aria-label="Create Task">
+                  <AddOutlinedIcon />
+                </IconButton>
+              </Tooltip>
+            )}
           </Toolbar>
           <TableContainer>
             <TaskTable tasks={tasks} onTaskClick={(_ev, task) => setSelectedTask(task)} />

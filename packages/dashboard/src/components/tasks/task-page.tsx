@@ -4,10 +4,10 @@ import { makeStyles } from '@material-ui/core';
 import type { TaskProgress } from 'api-client';
 import type { AxiosError } from 'axios';
 import React from 'react';
-import { TaskPanel, TaskPanelProps } from 'react-components';
 import * as RmfModels from 'rmf-models';
 import { PlacesContext, RmfIngressContext } from '../rmf-app';
 import { useAutoRefresh } from './auto-refresh';
+import { TaskPanel, TaskPanelProps } from './task-panel';
 
 const useStyles = makeStyles((theme) => ({
   taskPanel: {

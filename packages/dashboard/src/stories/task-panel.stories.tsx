@@ -1,23 +1,29 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import { TaskPanel as TaskPanel_, TaskPanelProps } from '../../lib';
-import { makeTask } from '../../tests/test-data/tasks';
+import { UserContext } from '../components/auth/contexts';
+import { RmfRole } from '../components/permissions';
+import { TaskPanel } from '../components/tasks/task-panel';
+import { makeTask } from '../components/tasks/tests/make-tasks';
 
 export default {
   title: 'Tasks/Task Panel',
-  component: TaskPanel_,
+  component: TaskPanel,
   argTypes: {
-    tasks: {
-      table: {
-        disable: true,
+    roles: {
+      name: 'roles',
+      control: {
+        type: 'object',
       },
     },
-    paginationOptions: {
-      table: {
-        disable: true,
-      },
+  },
+  parameters: {
+    controls: {
+      include: [],
     },
+  },
+  args: {
+    roles: [RmfRole.SuperAdmin],
   },
 } as Meta;
 
@@ -37,12 +43,20 @@ const tasks = [
   ...completedtasks,
 ];
 
-export const TaskPanel: Story<TaskPanelProps> = (args) => {
+interface StoryArgs {
+  roles: string[];
+}
+
+export const ExampleTaskPanel: Story<StoryArgs> = (args) => {
   const [page, setPage] = React.useState(0);
   return (
-    <>
-      <TaskPanel_
-        {...args}
+    <UserContext.Provider value={{ username: 'story', token: '', roles: args.roles, groups: [] }}>
+      <TaskPanel
+        cleaningZones={['test_zone_0', 'test_zone_1']}
+        loopWaypoints={['test_waypoint_0', 'test_waypoint_1']}
+        deliveryWaypoints={['test_waypoint_0', 'test_waypoint_1']}
+        dispensers={['test_dispenser_0', 'test_dispenser_1']}
+        ingestors={['test_ingestor_0', 'test_ingestor_1']}
         tasks={tasks.slice(page * 10, page * 10 + 10)}
         paginationOptions={{
           page,
@@ -54,15 +68,7 @@ export const TaskPanel: Story<TaskPanelProps> = (args) => {
         style={{ height: '95vh', margin: 'auto', maxWidth: 1600 }}
         submitTasks={() => new Promise((res) => setTimeout(res, 1000))}
         cancelTask={() => new Promise((res) => setTimeout(res, 1000))}
-      ></TaskPanel_>
-    </>
+      />
+    </UserContext.Provider>
   );
-};
-
-TaskPanel.args = {
-  cleaningZones: ['test_zone_0', 'test_zone_1'],
-  loopWaypoints: ['test_waypoint_0', 'test_waypoint_1'],
-  deliveryWaypoints: ['test_waypoint_0', 'test_waypoint_1'],
-  dispensers: ['test_dispenser_0', 'test_dispenser_1'],
-  ingestors: ['test_ingestor_0', 'test_ingestor_1'],
 };

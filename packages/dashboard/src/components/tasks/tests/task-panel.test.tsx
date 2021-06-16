@@ -2,8 +2,10 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import { TaskPanel, TaskPanelProps } from '../../lib';
-import { makeTask } from '../test-data/tasks';
+import { User } from '../../../../../rmf-auth/lib';
+import { mountAsUser, superUser } from '../../tests/test-utils';
+import { TaskPanel, TaskPanelProps } from '../task-panel';
+import { makeTask } from './make-tasks';
 
 describe('TaskPanel', () => {
   describe('task detail', () => {
@@ -38,13 +40,13 @@ describe('TaskPanel', () => {
 
   describe('create task', () => {
     it('clicking on create task button opens the create task form', () => {
-      const root = render(<TaskPanel tasks={[]} />);
+      const root = mountAsUser(superUser, <TaskPanel tasks={[]} />);
       userEvent.click(root.getByLabelText('Create Task'));
       root.getByText('Create Task');
     });
 
     it('closing the create task form reset its states', () => {
-      const root = render(<TaskPanel tasks={[]} />);
+      const root = mountAsUser(superUser, <TaskPanel tasks={[]} />);
       userEvent.click(root.getByLabelText('Create Task'));
       let priorityEl = root.getByLabelText('Priority') as HTMLInputElement;
       userEvent.clear(priorityEl);
@@ -58,24 +60,31 @@ describe('TaskPanel', () => {
     });
   });
 
+  it('create task button is hidden if user cannot submit tasks', () => {
+    const user: User = { username: 'test', token: '', roles: [], groups: [] };
+    const root = mountAsUser(user, <TaskPanel tasks={[]} />);
+    const button = root.queryByLabelText('Create Task');
+    expect(button).toBe(null);
+  });
+
   it('success snackbar is shown when successfully created a task', async () => {
-    const spy = jasmine.createSpy().and.resolveTo(undefined);
-    const root = render(<TaskPanel tasks={[]} submitTasks={spy} />);
+    const spy = jest.fn(() => Promise.resolve(undefined));
+    const root = mountAsUser(superUser, <TaskPanel tasks={[]} submitTasks={spy} />);
     userEvent.click(root.getByLabelText('Create Task'));
     userEvent.click(root.getByLabelText('Submit'));
     await waitFor(() => root.getByText('Successfully created task'));
   });
 
   it('failure snackbar is shown when failed to created a task', async () => {
-    const spy = jasmine.createSpy().and.rejectWith(new Error('error!!'));
-    const root = render(<TaskPanel tasks={[]} submitTasks={spy} />);
+    const spy = jest.fn(() => Promise.reject('error!!'));
+    const root = mountAsUser(superUser, <TaskPanel tasks={[]} submitTasks={spy} />);
     userEvent.click(root.getByLabelText('Create Task'));
     userEvent.click(root.getByLabelText('Submit'));
     await waitFor(() => root.getByText('Failed to create task', { exact: false }));
   });
 
   it('pagination is shown when pagination option is provided', () => {
-    const spy = jasmine.createSpy();
+    const spy = jest.fn();
     const root = render(
       <TaskPanel
         tasks={[makeTask('test', 1, 1)]}
@@ -92,18 +101,18 @@ describe('TaskPanel', () => {
   });
 
   it('clicking on auto refresh button toggles auto refresh', () => {
-    const spy = jasmine.createSpy();
+    const spy = jest.fn();
     const root = render(<TaskPanel tasks={[]} onAutoRefresh={spy} />);
     userEvent.click(root.getByLabelText('Disable auto refresh'));
     expect(spy).toHaveBeenCalledTimes(1);
-    expect(spy.calls.mostRecent().args[0]).toBe(false);
+    expect(spy.mock.calls[0][0]).toBe(false);
     userEvent.click(root.getByLabelText('Enable auto refresh'));
     expect(spy).toHaveBeenCalledTimes(2);
-    expect(spy.calls.mostRecent().args[0]).toBe(true);
+    expect(spy.mock.calls[1][0]).toBe(true);
   });
 
   it('clicking on refresh button triggers onRefresh', () => {
-    const spy = jasmine.createSpy();
+    const spy = jest.fn();
     const root = render(<TaskPanel tasks={[]} onRefresh={spy} />);
     userEvent.click(root.getByLabelText('Refresh'));
     expect(spy).toHaveBeenCalledTimes(1);
