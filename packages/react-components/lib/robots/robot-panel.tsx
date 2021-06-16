@@ -10,20 +10,24 @@ const useStyles = makeStyles((theme) => ({
   detailPanelContainer: {
     width: 350,
     padding: theme.spacing(2),
-    marginLeft: theme.spacing(1),
+    marginLeft: theme.spacing(2),
     flex: '0 0 auto',
+    backgroundColor: theme.mainBackground,
+    color: theme.fontColors,
   },
   robotTable: {
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
+    backgroundColor: theme.mainBackground,
+    color: theme.fontColors,
   },
 }));
 
 function NoSelectedRobot() {
   return (
     <Grid container wrap="nowrap" alignItems="center" style={{ height: '100%' }}>
-      <Typography variant="h6" align="center" color="textSecondary">
+      <Typography variant="h6" align="center">
         Click on a robot to view more information
       </Typography>
     </Grid>

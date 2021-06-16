@@ -24,12 +24,8 @@ const useStyles = makeStyles((theme) => ({
   },
   navigationButton: {
     borderRadius: 'inherit',
-    borderBottom: `1px ${theme.palette.success.main} solid`,
     backgroundColor: theme.mainBackground,
     color: theme.fontColors,
-  },
-  navigationButtonLeftBorder: {
-    borderLeftColor: theme.palette.success.main,
   },
   navigationButtonGroup: {
     borderRadius: 'inherit',
@@ -99,7 +95,7 @@ export const OmniPanel = (props: OmniPanelProps): JSX.Element => {
             size="large"
           />
           <Button
-            className={`${classes_.navigationButton} ${classes_.navigationButtonLeftBorder}`}
+            className={classes_.navigationButton}
             onClick={onHome}
             aria-label="Home"
             startIcon={<HomeIcon />}
@@ -107,7 +103,7 @@ export const OmniPanel = (props: OmniPanelProps): JSX.Element => {
           />
           {variant === 'backHomeClose' && (
             <Button
-              className={`${classes_.navigationButton} ${classes_.navigationButtonLeftBorder}`}
+              className={classes_.navigationButton}
               onClick={onClose}
               aria-label="Close"
               startIcon={<CloseIcon />}

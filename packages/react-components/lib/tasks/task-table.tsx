@@ -98,11 +98,11 @@ export function TaskTable({ tasks, onTaskClick }: TaskTableProps): JSX.Element {
     <Table className={classes.table} stickyHeader size="small" style={{ tableLayout: 'fixed' }}>
       <TableHead>
         <TableRow>
-          <TableCell>Task Id</TableCell>
-          <TableCell>Assignee</TableCell>
-          <TableCell>Start Time</TableCell>
-          <TableCell>End Time</TableCell>
-          <TableCell>State</TableCell>
+          <TableCell className={classes.tableHeadCell}>Task Id</TableCell>
+          <TableCell className={classes.tableHeadCell}>Assignee</TableCell>
+          <TableCell className={classes.tableHeadCell}>Start Time</TableCell>
+          <TableCell className={classes.tableHeadCell}>End Time</TableCell>
+          <TableCell className={classes.tableHeadCell}>State</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
