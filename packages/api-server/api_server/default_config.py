@@ -17,7 +17,7 @@ config = {
     # only key used to verify a token.
     "oidc_url": None,
     # Client id registers in the authentication provider.
-    "client_id": "rmf-server",
+    "client_id": "dashboard",
     # Audience the access token is meant for. Can also be an array.
     # Used to verify the "aud" claim.
     "aud": "localhost",
