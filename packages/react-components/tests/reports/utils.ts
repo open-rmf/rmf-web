@@ -93,19 +93,41 @@ export const getLiftLogs = (): LiftStateRowsType => {
 };
 
 export const getTaskSummaryLogs = (): TaskSummaryRowsType => {
+  const exampleData = {
+    task_id: 'test',
+    submission_time: { sec: 131, nanosec: 553000000 },
+    description: {
+      start_time: { sec: 1623383402, nanosec: 0 },
+      priority: { value: 0 },
+      task_type: { type: 1 },
+      station: { task_id: '', robot_type: '', place_name: '' },
+      loop: { task_id: '', robot_type: '', num_loops: 1, start_name: '', finish_name: '' },
+      delivery: {
+        task_id: '',
+        items: [],
+        pickup_place_name: '',
+        pickup_dispenser: '',
+        pickup_behavior: { name: '', parameters: [] },
+        dropoff_place_name: '',
+        dropoff_ingestor: '',
+        dropoff_behavior: { name: '', parameters: [] },
+      },
+      clean: { start_waypoint: '' },
+    },
+  };
   const rows = [];
   for (let i = 0; i < 200; i++) {
     rows.push({
       created: timestamp,
-      payload: 'Test' + i,
+      payload: 'Test',
       fleet_name: 'Test',
       task_id: i.toString(),
-      task_profile: { test: 'test' },
+      task_profile: exampleData,
       state: 'test',
       status: 'test',
-      submission_time: 'test',
-      start_time: 'test',
-      end_time: 'test',
+      submission_time: { sec: 131, nanosec: 553000000 },
+      start_time: { sec: 131, nanosec: 553000000 },
+      end_time: { sec: 131, nanosec: 553000000 },
       robot_name: 'test',
     });
   }

@@ -34,7 +34,7 @@ describe('Task Summary Table Test', () => {
   it('shows the correct headers', () => {
     expect(screen.queryByText('Task ID')).toBeTruthy();
     expect(screen.queryByText('Fleet')).toBeTruthy();
-    expect(screen.queryByText('Assigned Robot')).toBeTruthy();
+    expect(screen.queryByText('Robot')).toBeTruthy();
     expect(screen.queryByText('Task Description')).toBeTruthy();
     expect(screen.queryByText('State')).toBeTruthy();
     expect(screen.queryByText('Time')).toBeTruthy();
