@@ -20,7 +20,7 @@ from ...models import (
     User,
 )
 from ...models import tortoise_models as ttm
-from ...permissions import Enforcer
+from ...repositories import RmfRepository
 from ...rmf_io import RmfEvents
 from ...services.tasks import convert_task_request
 from .dispatcher import DispatcherClient
@@ -31,6 +31,7 @@ class TasksRouter(FastIORouter):
     def __init__(
         self,
         user_dep: Callable[[], User],
+        rmf_repo: RmfRepository,
         rmf_events: RmfEvents,
         rmf_gateway_dep: Callable[[], RmfGateway],
     ):
@@ -52,9 +53,7 @@ class TasksRouter(FastIORouter):
             ):
                 # FIXME: This would fail if task_id contains "_/"
                 task_id = path_params["task_id"].replace("__", "/")
-                data = await Enforcer.query(user, ttm.TaskSummary).get_or_none(
-                    id_=task_id
-                )
+                data = await rmf_repo.query_tasks(user).get_or_none(id_=task_id)
                 if data is None:
                     return None
                 return TaskSummary(**data.data)
@@ -134,7 +133,7 @@ class TasksRouter(FastIORouter):
             if priority is not None:
                 filter_params["priority"] = priority
 
-            q = Enforcer.query(user, ttm.TaskSummary.filter(**filter_params))
+            q = rmf_repo.query_tasks(user).filter(**filter_params)
             results = await with_base_query(q)
             results.items = [
                 convert_task_status_msg(item.to_pydantic(), rmf_gateway_dep())

@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Sequence, TypeVar
+from typing import Optional, Sequence, TypeVar
 
 from tortoise.query_utils import Q
 from tortoise.queryset import QuerySet
@@ -20,6 +20,7 @@ class RmfRole(Enum):
     SuperAdmin = "_rmf_superadmin"
     TaskSubmit = "_rmf_task_submit"
     TaskCancel = "_rmf_task_cancel"
+    TaskAdmin = "_rmf_task_admin"
 
 
 class Enforcer:
@@ -49,10 +50,22 @@ class Enforcer:
 
     @staticmethod
     def query(
-        user: User, r: QuerySet[ProtectedResource]
+        user: User,
+        r: QuerySet[ProtectedResource],
+        admin_roles: Optional[Sequence[str]] = None,
     ) -> QuerySet[ProtectedResourceModel]:
-        if RmfRole.SuperAdmin.value in user.roles:
-            return r.all()
+        """
+        Augments a query with the read permissions of an user, this returns a query
+        that only returns results that the user can see.
+
+        :param admin_roles: A list of roles to be considered admins, an admin will be
+        able to see all of the resources regardless of their groups. The SuperAdmin role
+        is always an admin.
+        """
+        admin_roles = admin_roles or []
+        for role in user.roles:
+            if role == RmfRole.SuperAdmin.value or role in admin_roles:
+                return r.all()
         return r.filter(
             Q(
                 permissions__group__in=user.groups,

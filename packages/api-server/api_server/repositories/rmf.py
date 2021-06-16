@@ -1,5 +1,7 @@
 from typing import List, Optional
 
+from tortoise.queryset import QuerySet
+
 from ..models import (
     BuildingMap,
     Dispenser,
@@ -18,8 +20,10 @@ from ..models import (
     RobotHealth,
     Task,
     TaskSummary,
+    User,
 )
 from ..models import tortoise_models as ttm
+from ..permissions import Enforcer, RmfRole
 
 
 class RmfRepository:
@@ -227,3 +231,7 @@ class RmfRepository:
     async def get_tasks(self) -> List[Task]:
         task_summaries = await ttm.TaskSummary.all()
         return [Task(task_id=ts.data["task_id"]) for ts in task_summaries]
+
+    @staticmethod
+    def query_tasks(user: User) -> QuerySet[ttm.TaskSummary]:
+        return Enforcer.query(user, ttm.TaskSummary, RmfRole.TaskAdmin.value)

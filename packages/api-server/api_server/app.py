@@ -163,6 +163,7 @@ class App(FastIO):
         self.include_router(
             routes.TasksRouter(
                 auth_dep,
+                self.rmf_repo,
                 self.rmf_events,
                 rmf_gateway_dep,
             ),

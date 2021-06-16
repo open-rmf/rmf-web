@@ -67,6 +67,7 @@ class TestTasksRoute(TasksFixture):
         user5 = User(
             username="user5", roles={RmfRole.TaskCancel.value}, groups={"rmf_group2"}
         )
+        user6 = User(username="user6", roles={RmfRole.TaskAdmin.value})
         self.set_user(user1)
 
         # super admin can submit tasks
@@ -83,6 +84,14 @@ class TestTasksRoute(TasksFixture):
         submitted_task_1 = resp.json()["task_id"]
 
         # super admin can see submitted task
+        self.set_user(user6)
+        resp = self.session.get(f"{self.base_url}/tasks")
+        tasks = resp.json()["items"]
+        self.assertEqual(1, len(tasks))
+        resp = self.session.get(f"{self.base_url}/tasks/{submitted_task_1}/summary")
+        self.assertEqual(200, resp.status_code)
+
+        # task admin can see submitted task
         resp = self.session.get(f"{self.base_url}/tasks")
         tasks = resp.json()["items"]
         self.assertEqual(1, len(tasks))
