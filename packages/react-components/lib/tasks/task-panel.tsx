@@ -1,4 +1,20 @@
-import { Grid, makeStyles, Paper, Snackbar, Typography } from '@material-ui/core';
+import {
+  Grid,
+  IconButton,
+  makeStyles,
+  Paper,
+  Snackbar,
+  TableContainer,
+  TablePagination,
+  Toolbar,
+  Tooltip,
+  Typography,
+} from '@material-ui/core';
+import {
+  AddOutlined as AddOutlinedIcon,
+  Autorenew as AutorenewIcon,
+  Refresh as RefreshIcon,
+} from '@material-ui/icons';
 import { Alert, AlertProps } from '@material-ui/lab';
 import type { SubmitTask } from 'api-client';
 import React from 'react';
@@ -9,6 +25,13 @@ import { TaskTable } from './task-table';
 import { parseTasksFile } from './utils';
 
 const useStyles = makeStyles((theme) => ({
+  tableContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  tableTitle: {
+    flex: '1 1 100%',
+  },
   detailPanelContainer: {
     width: 350,
     padding: theme.spacing(2),
@@ -17,12 +40,8 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.mainBackground,
     color: theme.fontColors,
   },
-  taskTable: {
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    backgroundColor: theme.mainBackground,
-    color: theme.fontColors,
+  enabledToggleButton: {
+    background: theme.palette.action.selected,
   },
 }));
 
@@ -42,7 +61,11 @@ export interface FetchTasksResult {
 }
 
 export interface TaskPanelProps extends React.HTMLProps<HTMLDivElement> {
-  fetchTasks: (limit: number, offset: number) => Promise<FetchTasksResult>;
+  /**
+   * Should only contain the tasks of the current page.
+   */
+  tasks: RmfModels.TaskSummary[];
+  paginationOptions?: Omit<React.ComponentPropsWithoutRef<typeof TablePagination>, 'component'>;
   cleaningZones?: string[];
   loopWaypoints?: string[];
   deliveryWaypoints?: string[];
@@ -50,10 +73,13 @@ export interface TaskPanelProps extends React.HTMLProps<HTMLDivElement> {
   ingestors?: string[];
   submitTasks?: CreateTaskFormProps['submitTasks'];
   cancelTask?: (task: RmfModels.TaskSummary) => Promise<void>;
+  onRefresh?: () => void;
+  onAutoRefresh?: (enabled: boolean) => void;
 }
 
 export function TaskPanel({
-  fetchTasks,
+  tasks,
+  paginationOptions,
   cleaningZones,
   loopWaypoints,
   deliveryWaypoints,
@@ -61,12 +87,11 @@ export function TaskPanel({
   ingestors,
   submitTasks,
   cancelTask,
+  onRefresh,
+  onAutoRefresh,
   ...divProps
 }: TaskPanelProps): JSX.Element {
   const classes = useStyles();
-  const [tasks, setTasks] = React.useState<RmfModels.TaskSummary[]>([]);
-  const [totalCount, setTotalCount] = React.useState(-1);
-  const [page, setPage] = React.useState(0);
   const [selectedTask, setSelectedTask] = React.useState<RmfModels.TaskSummary | undefined>(
     undefined,
   );
@@ -75,14 +100,7 @@ export function TaskPanel({
   const [openSnackbar, setOpenSnackbar] = React.useState(false);
   const [snackbarMessage, setSnackbarMessage] = React.useState('');
   const [snackbarSeverity, setSnackbarSeverity] = React.useState<AlertProps['severity']>('success');
-
-  const handleRefresh = React.useCallback(async () => {
-    (async () => {
-      const result = await fetchTasks(10, page * 10);
-      setTasks(result.tasks);
-      setTotalCount(result.totalCount);
-    })();
-  }, [fetchTasks, page]);
+  const [autoRefresh, setAutoRefresh] = React.useState(true);
 
   const handleCancelTask = React.useCallback(
     async (task: RmfModels.TaskSummary) => {
@@ -95,14 +113,13 @@ export function TaskPanel({
         setSnackbarSeverity('success');
         setOpenSnackbar(true);
         setSelectedTask(undefined);
-        await handleRefresh();
       } catch (e) {
         setSnackbarMessage(`Failed to cancel task: ${e.message}`);
         setSnackbarSeverity('error');
         setOpenSnackbar(true);
       }
     },
-    [cancelTask, handleRefresh],
+    [cancelTask],
   );
 
   /* istanbul ignore next */
@@ -128,31 +145,47 @@ export function TaskPanel({
     });
   };
 
-  React.useEffect(() => {
-    handleRefresh();
-  }, [handleRefresh]);
+  const autoRefreshTooltipPrefix = autoRefresh ? 'Disable' : 'Enable';
 
   return (
     <div {...divProps}>
       <Grid container wrap="nowrap" justify="center" style={{ height: 'inherit' }}>
-        <Grid style={{ flex: '1 1 auto' }}>
-          <TaskTable
-            elevation={6}
-            className={classes.taskTable}
-            tasks={tasks}
-            paginationOptions={{
-              count: totalCount,
-              rowsPerPage: 10,
-              rowsPerPageOptions: [10],
-              page,
-              onChangePage: (_ev, newPage) => setPage(newPage),
-            }}
-            onCreateTaskClick={() => setOpenCreateTaskForm(true)}
-            onTaskClick={(_ev, task) => setSelectedTask(task)}
-            onRefreshClick={handleRefresh}
-          />
-        </Grid>
-        <Paper elevation={6} className={classes.detailPanelContainer}>
+        <Paper className={classes.tableContainer}>
+          <Toolbar>
+            <Typography className={classes.tableTitle} variant="h6">
+              Tasks
+            </Typography>
+            <Tooltip title={`${autoRefreshTooltipPrefix} auto refresh`}>
+              <IconButton
+                className={autoRefresh ? classes.enabledToggleButton : undefined}
+                onClick={() => {
+                  setAutoRefresh((prev) => !prev);
+                  onAutoRefresh && onAutoRefresh(!autoRefresh);
+                }}
+                aria-label={`${autoRefreshTooltipPrefix} auto refresh`}
+              >
+                <AutorenewIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Refersh">
+              <IconButton onClick={() => onRefresh && onRefresh()} aria-label="Refresh">
+                <RefreshIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Create task">
+              <IconButton onClick={() => setOpenCreateTaskForm(true)} aria-label="Create Task">
+                <AddOutlinedIcon />
+              </IconButton>
+            </Tooltip>
+          </Toolbar>
+          <TableContainer>
+            <TaskTable tasks={tasks} onTaskClick={(_ev, task) => setSelectedTask(task)} />
+          </TableContainer>
+          {paginationOptions && (
+            <TablePagination component="div" {...paginationOptions} style={{ flex: '0 0 auto' }} />
+          )}
+        </Paper>
+        <Paper className={classes.detailPanelContainer}>
           {selectedTask ? (
             <TaskInfo
               task={selectedTask}
@@ -180,7 +213,6 @@ export function TaskPanel({
             setSnackbarSeverity('success');
             setSnackbarMessage('Successfully created task');
             setOpenSnackbar(true);
-            handleRefresh();
           }}
           onFail={(e) => {
             setSnackbarSeverity('error');

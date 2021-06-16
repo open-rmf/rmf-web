@@ -19,15 +19,15 @@ import {
   Trajectory,
   TrajectoryResponse,
 } from '../../managers/robot-trajectory-manager';
+import { AppConfigContext, SettingsContext } from '../app-contexts';
 import { FleetStateContext, RmfIngressContext } from '../rmf-app';
 import DispensersOverlay from './dispensers-overlay';
 import DoorsOverlay from './doors-overlay';
 import LiftsOverlay from './lift-overlay';
 import { NegotiationColors } from './negotiation-colors';
 import RobotTrajectoriesOverlay from './robot-trajectories-overlay';
-import RobotsOverlay from './robots-overlay';
+import RobotsOverlay, { RobotsOverlayProps } from './robots-overlay';
 import WaypointsOverlay from './waypoints-overlay';
-import { AppConfigContext, SettingsContext } from '../app-contexts';
 import { ThemeMode } from '../../settings';
 
 const debug = Debug('ScheduleVisualizer');
@@ -66,7 +66,7 @@ export interface ScheduleVisualizerProps extends React.PropsWithChildren<{}> {
   mapFloorSort?(levels: RmfModels.Level[]): string[];
   onDoorClick?(door: RmfModels.Door): void;
   onLiftClick?(lift: RmfModels.Lift): void;
-  onRobotClick?(fleet: string, robot: RmfModels.RobotState): void;
+  onRobotClick?: RobotsOverlayProps['onRobotClick'];
   onDispenserClick?(event: React.MouseEvent, guid: string): void;
 }
 
