@@ -116,7 +116,8 @@ class TaskSummary(models.Model):
     state: TaskStateEnum = fields.CharEnumField(
         TaskStateEnum, default=TaskStateEnum.STATE_PENDING
     )
-    status: fields.CharField(max_length=100)
+    fleet_name = fields.CharField(max_length=50)
+    status = fields.CharField(max_length=50, null=True)
     submission_time: Time = fields.JSONField()
     start_time: Time = fields.JSONField()
     end_time: Time = fields.JSONField()
