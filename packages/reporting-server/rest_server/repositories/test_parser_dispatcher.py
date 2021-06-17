@@ -76,6 +76,7 @@ class TestCaseLogParserDispatcher(unittest.IsolatedAsyncioTestCase):
         await log_model_dispatcher(data)
         instance = await TaskSummary.first()
         self.assertEqual(instance.task_id, "Loop0")
+        self.assertEqual(instance.status, None)
 
     async def test_door_health_created(self):
         data = 'door_health:{"id": "hardware_door", "health_status": "HealthStatus.HEALTHY", "health_message": null}\n'

@@ -8,13 +8,17 @@ async def task_summary_parser(fullstring: str):
     state_json = json.loads(modified_string)
 
     if len(state_json) > 0:
+        if len(state_json["status"]) <= 0:
+            status = None
+        else:
+            status = state_json["status"]
         return {
             "payload": modified_string,
             "fleet_name": state_json["fleet_name"],
             "task_id": state_json["task_id"],
             "task_profile": state_json["task_profile"],
             "state": TaskSummary.service.get_task_state_name(state_json["state"]),
-            "status": state_json["status"],
+            "status": status,
             "submission_time": state_json["submission_time"],
             "start_time": state_json["start_time"],
             "end_time": state_json["end_time"],
