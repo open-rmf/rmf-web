@@ -17,7 +17,7 @@ setup(
         "Topic :: Software Development",
     ],
     install_requires=[
-        "fastapi~=0.63.0",
+        "fastapi~=0.65.2",
         "uvicorn[standard]~=0.13.4",
         "tortoise-orm~=0.16.21",
         "pyjwt[crypto]~=2.0",
