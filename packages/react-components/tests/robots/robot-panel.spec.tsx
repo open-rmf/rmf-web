@@ -1,12 +1,12 @@
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { TaskProgress } from 'api-client';
+import { Task } from 'api-client';
 import React from 'react';
 import { RobotPanel, RobotPanelProps } from '../../lib';
 import { makeRandomRobot } from '../../tests/robots/test-utils';
 import { makeDefinedTask } from '../test-data/tasks';
 
-function makeFetchTasks(tasks: TaskProgress[]): RobotPanelProps['fetchTasks'] {
+function makeFetchTasks(tasks: Task[]): RobotPanelProps['fetchTasks'] {
   return async (limit, offset) => {
     return tasks.slice(offset, offset + limit);
   };

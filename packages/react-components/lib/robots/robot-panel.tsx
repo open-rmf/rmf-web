@@ -1,10 +1,10 @@
-import React from 'react';
 import { Grid, makeStyles, Paper, Typography } from '@material-ui/core';
+import { Task } from 'api-client';
+import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { RobotInfo } from './robot-info';
 import { RobotTable } from './robot-table';
 import { VerboseRobot } from './utils';
-import { TaskProgress } from 'api-client';
 
 const useStyles = makeStyles((theme) => ({
   detailPanelContainer: {
@@ -32,12 +32,12 @@ function NoSelectedRobot() {
 
 export interface RobotPanelProps extends React.HTMLProps<HTMLDivElement> {
   robots: RmfModels.RobotState[];
-  fetchTasks: (limit: number, offset: number) => Promise<TaskProgress[]>;
+  fetchTasks: (limit: number, offset: number) => Promise<Task[]>;
 }
 
 export function RobotPanel({ robots, fetchTasks, ...divProps }: RobotPanelProps): JSX.Element {
   const classes = useStyles();
-  const [tasks, setTasks] = React.useState<TaskProgress[]>([]);
+  const [tasks, setTasks] = React.useState<Task[]>([]);
   const [totalCount, setTotalCount] = React.useState(-1);
   const [page, setPage] = React.useState(0);
   const [selectedRobot, setSelectedRobot] = React.useState<VerboseRobot | undefined>(undefined);

@@ -14,7 +14,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import { Refresh as RefreshIcon } from '@material-ui/icons';
-import { TaskProgress } from 'api-client';
+import { Task } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { taskTypeToStr } from '../tasks/utils';
@@ -46,7 +46,7 @@ interface RobotRowProps {
 }
 
 const returnLocationCells = (robot: VerboseRobot) => {
-  const taskDescription = robot.assignedTasks[0].task_summary.task_profile.description;
+  const taskDescription = robot.assignedTasks[0].summary.task_profile.description;
   switch (taskTypeToStr(taskDescription.task_type.type)) {
     case 'Loop':
       return (
@@ -104,8 +104,8 @@ function RobotRow({ robot, onClick }: RobotRowProps) {
           <TableCell>
             {robot.assignedTasks
               ? `${
-                  robot.assignedTasks[0].task_summary.end_time.sec -
-                  robot.assignedTasks[0].task_summary.start_time.sec
+                  robot.assignedTasks[0].summary.end_time.sec -
+                  robot.assignedTasks[0].summary.start_time.sec
                 }s`
               : '-'}
           </TableCell>
@@ -127,7 +127,7 @@ export interface RobotTableProps extends PaperProps {
    * The current list of robots to display, when pagination is enabled, this should only
    * contain the robots for the current page.
    */
-  tasks: TaskProgress[];
+  tasks: Task[];
   robots: RmfModels.RobotState[];
   paginationOptions?: PaginationOptions;
   onRefreshClick?: React.MouseEventHandler<HTMLButtonElement>;

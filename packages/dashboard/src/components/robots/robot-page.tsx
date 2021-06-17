@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 
 import { makeStyles } from '@material-ui/core';
-import { TaskProgress } from 'api-client';
+import { Task } from 'api-client';
 import React from 'react';
 import { RobotPanel, RobotPanelProps } from 'react-components';
 import * as RmfModels from 'rmf-models';
@@ -47,7 +47,7 @@ export function RobotPage() {
         offset,
         '-priority,-start_time',
       );
-      const taskProgresses: TaskProgress[] = resp.data.items;
+      const taskProgresses: Task[] = resp.data.items;
       return taskProgresses;
     },
     [tasksApi],

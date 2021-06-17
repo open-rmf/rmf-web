@@ -13,7 +13,7 @@ from ...models import (
     Pagination,
     SubmitTask,
     SubmitTaskResponse,
-    TaskProgress,
+    Task,
     TaskStateEnum,
     TaskSummary,
     TaskTypeEnum,
@@ -24,7 +24,7 @@ from ...repositories import RmfRepository
 from ...rmf_io import RmfEvents
 from ...services.tasks import convert_task_request
 from .dispatcher import DispatcherClient
-from .utils import convert_task_status_msg
+from .utils import get_task_progress
 
 
 class TasksRouter(FastIORouter):
@@ -74,7 +74,19 @@ class TasksRouter(FastIORouter):
         async def get_task_summary(task_summary: TaskSummary):
             return {"task_id": task_summary.task_id.replace("/", "__")}, task_summary
 
-        class GetTasksResponse(Pagination.response_model(TaskProgress)):
+        def to_task(tt_summary: ttm.TaskSummary):
+            py_summary = tt_summary.to_pydantic()
+            return Task.construct(
+                task_id=py_summary.task_id,
+                owner=tt_summary.owner,
+                progress=get_task_progress(
+                    py_summary,
+                    rmf_gateway_dep(),
+                ),
+                summary=py_summary,
+            )
+
+        class GetTasksResponse(Pagination.response_model(Task)):
             pass
 
         @self.get("", response_model=GetTasksResponse)
@@ -135,10 +147,7 @@ class TasksRouter(FastIORouter):
 
             q = rmf_repo.query_tasks(user).filter(**filter_params)
             results = await with_base_query(q)
-            results.items = [
-                convert_task_status_msg(item.to_pydantic(), rmf_gateway_dep())
-                for item in results.items
-            ]
+            results.items = [to_task(item) for item in results.items]
             return results
 
         @self.post("/submit_task", response_model=SubmitTaskResponse)

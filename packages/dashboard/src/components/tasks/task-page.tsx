@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 
 import { makeStyles } from '@material-ui/core';
-import type { TaskProgress } from 'api-client';
+import type { Task } from 'api-client';
 import type { AxiosError } from 'axios';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
@@ -48,8 +48,8 @@ export function TaskPage() {
         '-priority,-start_time',
       );
       setTotalCount(resp.data.total_count);
-      const taskProgresses: TaskProgress[] = resp.data.items;
-      return taskProgresses.map((t) => t.task_summary) as RmfModels.TaskSummary[];
+      const taskProgresses: Task[] = resp.data.items;
+      return taskProgresses.map((t) => t.summary) as RmfModels.TaskSummary[];
     },
     [tasksApi],
   );

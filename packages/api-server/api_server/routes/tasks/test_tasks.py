@@ -134,7 +134,7 @@ class TestTasksRoute(TasksFixture):
         resp = self.session.get(f"{self.base_url}/tasks")
         tasks = resp.json()["items"]
         self.assertEqual(1, len(tasks))
-        self.assertEqual(submitted_task_2, tasks[0]["task_summary"]["task_id"])
+        self.assertEqual(submitted_task_2, tasks[0]["summary"]["task_id"])
         resp = self.session.get(f"{self.base_url}/tasks/{submitted_task_2}/summary")
         self.assertEqual(200, resp.status_code)
 
@@ -238,37 +238,33 @@ class TestTasksQuery(TasksFixture):
         resp_json = resp.json()
         items = resp_json["items"]
         self.assertEqual(len(items), 1)
-        self.assertEqual(items[0]["task_summary"]["task_id"], "task_1")
-        self.assertEqual(items[0]["task_summary"]["fleet_name"], "fleet_1")
+        self.assertEqual(items[0]["summary"]["task_id"], "task_1")
+        self.assertEqual(items[0]["summary"]["fleet_name"], "fleet_1")
 
         resp = self.session.get(f"{self.base_url}/tasks?robot_name=robot_1")
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
         items = resp_json["items"]
         self.assertEqual(len(items), 1)
-        self.assertEqual(items[0]["task_summary"]["task_id"], "task_1")
-        self.assertEqual(items[0]["task_summary"]["robot_name"], "robot_1")
+        self.assertEqual(items[0]["summary"]["task_id"], "task_1")
+        self.assertEqual(items[0]["summary"]["robot_name"], "robot_1")
 
         resp = self.session.get(f"{self.base_url}/tasks?state=completed")
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
         items = resp_json["items"]
         self.assertEqual(len(items), 1)
-        self.assertEqual(items[0]["task_summary"]["task_id"], "task_1")
-        self.assertEqual(
-            items[0]["task_summary"]["state"], RmfTaskSummary.STATE_COMPLETED
-        )
+        self.assertEqual(items[0]["summary"]["task_id"], "task_1")
+        self.assertEqual(items[0]["summary"]["state"], RmfTaskSummary.STATE_COMPLETED)
 
         resp = self.session.get(f"{self.base_url}/tasks?task_type=loop")
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
         items = resp_json["items"]
         self.assertEqual(len(items), 1)
-        self.assertEqual(items[0]["task_summary"]["task_id"], "task_1")
+        self.assertEqual(items[0]["summary"]["task_id"], "task_1")
         self.assertEqual(
-            items[0]["task_summary"]["task_profile"]["description"]["task_type"][
-                "type"
-            ],
+            items[0]["summary"]["task_profile"]["description"]["task_type"]["type"],
             RmfTaskType.TYPE_LOOP,
         )
 
@@ -277,28 +273,28 @@ class TestTasksQuery(TasksFixture):
         resp_json = resp.json()
         items = resp_json["items"]
         self.assertEqual(len(items), 1)
-        self.assertEqual(items[0]["task_summary"]["task_id"], "task_1")
+        self.assertEqual(items[0]["summary"]["task_id"], "task_1")
 
         resp = self.session.get(f"{self.base_url}/tasks?submission_time_since=4000")
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
         items = resp_json["items"]
         self.assertEqual(len(items), 1)
-        self.assertEqual(items[0]["task_summary"]["task_id"], "task_2")
+        self.assertEqual(items[0]["summary"]["task_id"], "task_2")
 
         resp = self.session.get(f"{self.base_url}/tasks?start_time_since=5000")
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
         items = resp_json["items"]
         self.assertEqual(len(items), 1)
-        self.assertEqual(items[0]["task_summary"]["task_id"], "task_2")
+        self.assertEqual(items[0]["summary"]["task_id"], "task_2")
 
         resp = self.session.get(f"{self.base_url}/tasks?end_time_since=6000")
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
         items = resp_json["items"]
         self.assertEqual(len(items), 1)
-        self.assertEqual(items[0]["task_summary"]["task_id"], "task_2")
+        self.assertEqual(items[0]["summary"]["task_id"], "task_2")
 
         # test no match
         resp = self.session.get(
