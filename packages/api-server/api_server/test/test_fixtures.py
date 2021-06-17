@@ -1,10 +1,12 @@
+import asyncio
 import concurrent.futures
+import inspect
 import os
 import os.path
 import threading
 import time
 import unittest
-from typing import Awaitable, Callable, Optional, TypeVar
+from typing import Awaitable, Callable, Optional, TypeVar, Union
 
 import jwt
 import rclpy
@@ -26,7 +28,7 @@ def try_until(
     predicate: Callable[[T], bool],
     timeout=5,
     interval=0.5,
-):
+) -> T:
     """
     Do action until an expected result is received.
     Returns the last result.
@@ -38,6 +40,28 @@ def try_until(
         if success:
             return result
         time.sleep(interval)
+    return result
+
+
+async def async_try_until(
+    action: Callable[[], Awaitable[T]],
+    predicate: Union[Callable[[T], Awaitable[bool]], Callable[[T], bool]],
+    timeout=5,
+    interval=0.5,
+) -> Awaitable[T]:
+    """
+    Do action until an expected result is received.
+    Returns the last result.
+    """
+    end_time = time.time() + timeout
+    while time.time() < end_time:
+        result = await action()
+        success = predicate(result)
+        if inspect.isawaitable(success):
+            success = await success
+        if success:
+            return result
+        await asyncio.sleep(interval)
     return result
 
 
