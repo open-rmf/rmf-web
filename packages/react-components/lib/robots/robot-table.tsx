@@ -15,10 +15,8 @@ import {
 } from '@material-ui/core';
 import { Refresh as RefreshIcon } from '@material-ui/icons';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
 import { taskTypeToStr } from '../tasks/utils';
 import { robotModeToString, VerboseRobot } from './utils';
-import { TaskProgress } from 'api-client';
 
 const useStyles = makeStyles((theme) => ({
   table: {

@@ -1,5 +1,5 @@
 import * as RmfModels from 'rmf-models';
-import { RawKnot, RawVelocity, Trajectory } from '../../lib';
+import { RawKnot, RawVelocity, Trajectory, VerboseRobot } from '../../lib';
 
 export function allRobotModes(): RmfModels.RobotMode[] {
   return [
@@ -46,19 +46,24 @@ export function createLocation(level_name: string): RmfModels.Location {
   };
 }
 
-export function makeRandomRobot(name: string, model: string, mode: number): RmfModels.RobotState {
+export function makeRandomRobot(name: string, model: string, mode: number): VerboseRobot {
   const task_id = randomNumber(1000);
   const battery_percent = randomNumber(100);
 
   return {
+    fleet: 'fleet',
     name: name,
-    model: model,
-    task_id: task_id.toString(),
-    seq: 1,
-    mode: { mode: mode, mode_request_id: 0 },
-    battery_percent: battery_percent,
-    location: createLocation('Level_1'),
-    path: [],
+    state: {
+      name: name,
+      model: model,
+      task_id: task_id.toString(),
+      seq: 1,
+      mode: { mode: mode, mode_request_id: 0 },
+      battery_percent: battery_percent,
+      location: createLocation('Level_1'),
+      path: [],
+    },
+    tasks: [],
   };
 }
 

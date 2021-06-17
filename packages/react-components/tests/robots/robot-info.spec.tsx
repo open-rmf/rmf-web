@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import { makeVerboseRobot, RobotInfo } from '../../lib';
+import { RobotInfo } from '../../lib';
 import { makeTask } from '../test-data/tasks';
 import { makeRandomRobot } from './test-utils';
 
@@ -16,7 +16,7 @@ describe('RobotInfo', () => {
     deliveryTask.task_profile.description.delivery.dropoff_ingestor = 'test_ingestor';
     const task = { task_summary: deliveryTask, progress: 10 };
 
-    const robot1 = makeVerboseRobot(robot, [task]);
+    const robot1 = { ...robot, tasks: [task] };
 
     const root = render(
       <>
