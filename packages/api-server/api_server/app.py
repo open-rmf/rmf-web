@@ -130,7 +130,7 @@ class App(FastIO):
                 ready = self.rmf_gateway.get_tasks_srv.wait_for_service(1)
                 if not ready:
                     raise HTTPException(503, "ros service not ready")
-                await self.rmf_gateway.update_tasks(rmf_repo)
+                await self.rmf_gateway.update_tasks()
             except HTTPException as e:
                 logger.error(f"failed to update tasks from RMF ({e.detail})")
 
