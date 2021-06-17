@@ -4,7 +4,6 @@ config = {
     "port": 8002,
     "port_fluentd": 8003,
     "db_url": "sqlite://:memory:",
-    # Adding this for development
     # url that reporting-server is being served on.
     # When being a proxy, this must be the url that reporting-server is mounted on.
     # E.g. https://example.com/logserver/api/v1
