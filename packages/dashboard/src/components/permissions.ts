@@ -7,6 +7,12 @@ export class RmfRole {
   static TaskAdmin = '_rmf_task_admin';
 }
 
-export function canSubmitTask(user: User): boolean {
-  return !!user.roles.find((r) => [RmfRole.SuperAdmin].includes(r));
+export class Enforcer {
+  static canSubmitTask(user: User): boolean {
+    return !!user.roles.find((r) => [RmfRole.SuperAdmin, RmfRole.TaskSubmit].includes(r));
+  }
+
+  static canCancelTask(user: User): boolean {
+    return !!user.roles.find((r) => [RmfRole.SuperAdmin, RmfRole.TaskCancel].includes(r));
+  }
 }

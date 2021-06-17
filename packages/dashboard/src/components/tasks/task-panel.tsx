@@ -23,7 +23,7 @@ import React from 'react';
 import { CreateTaskForm, CreateTaskFormProps, TaskInfo, TaskTable } from 'react-components';
 import * as RmfModels from 'rmf-models';
 import { UserContext } from '../auth/contexts';
-import { canSubmitTask } from '../permissions';
+import { Enforcer } from '../permissions';
 import { parseTasksFile } from './utils';
 
 const useStyles = makeStyles((theme) => ({
@@ -148,6 +148,8 @@ export function TaskPanel({
 
   const taskCancellable =
     selectedTask &&
+    user &&
+    Enforcer.canCancelTask(user) &&
     (selectedTask.state === RmfModels.TaskSummary.STATE_ACTIVE ||
       selectedTask.state === RmfModels.TaskSummary.STATE_PENDING ||
       selectedTask.state === RmfModels.TaskSummary.STATE_QUEUED);
@@ -177,7 +179,7 @@ export function TaskPanel({
                 <RefreshIcon />
               </IconButton>
             </Tooltip>
-            {user && canSubmitTask(user) && (
+            {user && Enforcer.canSubmitTask(user) && (
               <Tooltip title="Create task">
                 <IconButton onClick={() => setOpenCreateTaskForm(true)} aria-label="Create Task">
                   <AddOutlinedIcon />

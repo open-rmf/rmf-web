@@ -13,7 +13,7 @@ describe('TaskPanel', () => {
       const task = makeTask('test_task', 3, 3);
       task.task_profile.description.task_type.type = RmfModels.TaskType.TYPE_CLEAN;
       task.task_profile.description.clean.start_waypoint = 'test_waypoint';
-      const root = render(<TaskPanel tasks={[task]} cancelTask={cancelTask} />);
+      const root = mountAsUser(superUser, <TaskPanel tasks={[task]} cancelTask={cancelTask} />);
       userEvent.click(await root.findByText('test_task'));
       return root;
     };
@@ -35,6 +35,55 @@ describe('TaskPanel', () => {
       const root = await mount(cancelTask);
       userEvent.click(root.getByLabelText('Cancel Task'));
       await waitFor(() => root.getByText('Failed to cancel task: test error'));
+    });
+
+    it('clicking on cancel button triggers callback', async () => {
+      const cancelTask = jest.fn();
+      const root = mountAsUser(
+        superUser,
+        <TaskPanel tasks={[makeTask('task1', 1, 1)]} cancelTask={cancelTask} />,
+      );
+      userEvent.click(root.getByText('task1'));
+      userEvent.click(root.getByLabelText('Cancel Task'));
+      expect(cancelTask).toHaveBeenCalledTimes(1);
+      await waitFor(() => root.getByText('Successfully cancelled task'));
+    });
+
+    it('cancel task button is disabled for user without required permission', () => {
+      const root = mountAsUser(
+        { username: 'test', token: '', roles: [], groups: [] },
+        <TaskPanel tasks={[makeTask('task1', 1, 1)]} />,
+      );
+      userEvent.click(root.getByText('task1'));
+      const button = root.getByLabelText('Cancel Task');
+      expect(button).toHaveClass('Mui-disabled');
+    });
+
+    it('cancel task button is disabled for completed task', () => {
+      const task = makeTask('task1', 1, 1);
+      task.state = RmfModels.TaskSummary.STATE_COMPLETED;
+      const root = mountAsUser(superUser, <TaskPanel tasks={[task]} />);
+      userEvent.click(root.getByText('task1'));
+      const button = root.getByLabelText('Cancel Task');
+      expect(button).toHaveClass('Mui-disabled');
+    });
+
+    it('cancel task button is disabled for failed task', () => {
+      const task = makeTask('task1', 1, 1);
+      task.state = RmfModels.TaskSummary.STATE_FAILED;
+      const root = mountAsUser(superUser, <TaskPanel tasks={[task]} />);
+      userEvent.click(root.getByText('task1'));
+      const button = root.getByLabelText('Cancel Task');
+      expect(button).toHaveClass('Mui-disabled');
+    });
+
+    it('cancel task button is disabled for cancelled task', () => {
+      const task = makeTask('task1', 1, 1);
+      task.state = RmfModels.TaskSummary.STATE_CANCELED;
+      const root = mountAsUser(superUser, <TaskPanel tasks={[task]} />);
+      userEvent.click(root.getByText('task1'));
+      const button = root.getByLabelText('Cancel Task');
+      expect(button).toHaveClass('Mui-disabled');
     });
   });
 
@@ -116,17 +165,5 @@ describe('TaskPanel', () => {
     const root = render(<TaskPanel tasks={[]} onRefresh={spy} />);
     userEvent.click(root.getByLabelText('Refresh'));
     expect(spy).toHaveBeenCalledTimes(1);
-  });
-
-  it('clicking on cancel button triggers callback', async () => {
-    const cancelTask = jest.fn();
-    const root = mountAsUser(
-      superUser,
-      <TaskPanel tasks={[makeTask('task1', 1, 1)]} cancelTask={cancelTask} />,
-    );
-    userEvent.click(root.getByText('task1'));
-    userEvent.click(root.getByLabelText('Cancel Task'));
-    expect(cancelTask).toHaveBeenCalledTimes(1);
-    await waitFor(() => root.getByText('Successfully cancelled task'));
   });
 });
