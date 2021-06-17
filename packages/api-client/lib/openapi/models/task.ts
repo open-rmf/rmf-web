@@ -28,7 +28,7 @@ export interface Task {
    * @type {string}
    * @memberof Task
    */
-  owner: any;
+  owner?: any;
   /**
    *
    * @type {TaskSummary}
