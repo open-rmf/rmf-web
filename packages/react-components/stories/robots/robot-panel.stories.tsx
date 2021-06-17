@@ -1,7 +1,7 @@
 import { Meta, Story } from '@storybook/react';
 import { TaskProgress } from 'api-client';
 import React from 'react';
-import { RobotPanel as RobotPanel_, RobotPanelProps } from '../../lib';
+import { RobotPanel as RobotPanel_, RobotPanelProps, VerboseRobot } from '../../lib';
 import { makeRandomRobot } from '../../tests/robots/test-utils';
 import { makeDefinedTask } from '../../tests/test-data/tasks';
 
@@ -28,25 +28,30 @@ export const RobotPanel: Story<RobotPanelProps> = (args) => {
   );
 };
 
-const robots = [
-  makeRandomRobot('test_robot1', 'test_fleet', 2),
-  makeRandomRobot('test_robot2', 'test_fleet', 1),
-  makeRandomRobot('test_robot3', 'test_fleet', 3),
-  makeRandomRobot('test_robot4', 'test_fleet', 4),
+const verboseRobots: VerboseRobot[] = [
+  {
+    ...makeRandomRobot('test_robot1', 'test_fleet', 2),
+    tasks: [makeDefinedTask('Delivery', 'test_robot1', 'active_task_1', 3, 3)],
+  },
+  {
+    ...makeRandomRobot('test_robot2', 'test_fleet', 1),
+    tasks: [makeDefinedTask('Loop', 'test_robot2', 'active_task_2', 4, 3)],
+  },
+  {
+    ...makeRandomRobot('test_robot3', 'test_fleet', 3),
+    tasks: [makeDefinedTask('Clean', 'test_robot3', 'active_task_3', 4, 3)],
+  },
+  {
+    ...makeRandomRobot('test_robot4', 'test_fleet', 4),
+    tasks: [makeDefinedTask('Loop', 'test_robot4', 'active_task_4', 4, 3)],
+  },
 ];
 
-const tasks = [
-  makeDefinedTask('Delivery', 'test_robot1', 'active_task_1', 3, 3),
-  makeDefinedTask('Loop', 'test_robot2', 'active_task_2', 4, 3),
-  makeDefinedTask('Clean', 'test_robot3', 'active_task_3', 4, 3),
-  makeDefinedTask('Loop', 'test_robot4', 'active_task_4', 4, 3),
-];
-
-async function fetchTasks(): Promise<TaskProgress[]> {
-  return tasks;
+async function fetchVerboseRobots(): Promise<VerboseRobot[]> {
+  return verboseRobots;
 }
 
 RobotPanel.args = {
-  fetchTasks,
-  robots,
+  fetchVerboseRobots,
+  verboseRobots,
 };
