@@ -12,15 +12,11 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
     marginLeft: theme.spacing(2),
     flex: '0 0 auto',
-    backgroundColor: theme.mainBackground,
-    color: theme.fontColors,
   },
   robotTable: {
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
-    backgroundColor: theme.mainBackground,
-    color: theme.fontColors,
   },
 }));
 

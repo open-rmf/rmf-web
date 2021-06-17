@@ -1,5 +1,3 @@
-import { withStyles } from '@material-ui/core/styles';
-
 export enum TrajectoryAnimation {
   None,
   Follow,
@@ -33,14 +31,3 @@ export function defaultSettings(): Settings {
     themeMode: ThemeMode.Light,
   };
 }
-
-export const GlobalCss = withStyles((theme) => ({
-  '@global': {
-    '.MuiDivider-root': {
-      backgroundColor: theme.palette.success.main,
-    },
-    '.MuiAccordionSummary-expandIcon': {
-      color: theme.fontColors,
-    },
-  },
-}))(() => null);

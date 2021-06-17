@@ -1,7 +1,7 @@
 import { Grid, makeStyles, ThemeProvider } from '@material-ui/core';
 import React from 'react';
-import { rmfDark, rmfLight } from 'react-components';
-import { loadSettings, saveSettings, ThemeMode, GlobalCss } from '../settings';
+import { rmfDark, rmfLight, GlobalCss } from 'react-components';
+import { loadSettings, saveSettings, ThemeMode } from '../settings';
 import {
   AppController,
   AppControllerContext,

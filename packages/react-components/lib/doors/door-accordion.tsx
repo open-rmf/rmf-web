@@ -24,14 +24,6 @@ const useStyles = makeStyles((theme) => ({
   doorLabelMoving: {
     borderColor: theme.palette.warning.main,
   },
-  button: {
-    backgroundColor: theme.secondaryBackground,
-    color: theme.fontColors,
-  },
-  root: {
-    backgroundColor: theme.secondaryBackground,
-    color: theme.fontColors,
-  },
 }));
 
 function doorTypeToString(doorType: number): string {
@@ -132,7 +124,7 @@ export const DoorAccordion = React.forwardRef(
     const doorStatusClass = doorModeLabelClasses(doorState);
 
     return (
-      <Accordion ref={ref} {...otherProps} className={classes.root}>
+      <Accordion ref={ref} {...otherProps}>
         <ItemAccordionSummary
           title={door.name}
           statusProps={{
@@ -146,15 +138,11 @@ export const DoorAccordion = React.forwardRef(
           {onDoorControlClick && (
             <ButtonGroup className={classes.controlButtonGroup} fullWidth>
               <Button
-                className={classes.button}
                 onClick={(ev) => onDoorControlClick(ev, door, RmfModels.DoorMode.MODE_CLOSED)}
               >
                 Close
               </Button>
-              <Button
-                className={classes.button}
-                onClick={(ev) => onDoorControlClick(ev, door, RmfModels.DoorMode.MODE_OPEN)}
-              >
+              <Button onClick={(ev) => onDoorControlClick(ev, door, RmfModels.DoorMode.MODE_OPEN)}>
                 Open
               </Button>
             </ButtonGroup>

@@ -9,9 +9,6 @@ const useStyles = makeStyles((theme) =>
       borderRight: `0.25px solid ${theme.fontColors}`,
       borderLeft: `0.25px solid ${theme.fontColors}`,
     },
-    indicator: {
-      backgroundColor: theme.palette.success.main,
-    },
   }),
 );
 
@@ -33,7 +30,6 @@ export const NavigationBar = (props: NavigationBarProps): JSX.Element => {
       value={value}
       onChange={onTabChange}
       className={classes.tabsContainer}
-      classes={{ indicator: classes.indicator }}
     >
       {children}
     </Tabs>

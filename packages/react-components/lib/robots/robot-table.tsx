@@ -38,18 +38,6 @@ const useStyles = makeStyles((theme) => ({
   phasesCell: {
     padding: `0 ${theme.spacing(1)}px`,
   },
-  tableIcons: {
-    color: theme.fontColors,
-  },
-  tableHeadCell: {
-    background: 'rgba(0, 0, 0, 0.1)',
-    borderBottom: 'none',
-    color: theme.fontColors,
-  },
-  taskCell: {
-    backgroundColor: theme.mainBackground,
-    color: theme.fontColors,
-  },
 }));
 
 interface RobotRowProps {
@@ -57,35 +45,35 @@ interface RobotRowProps {
   onClick: React.MouseEventHandler<HTMLTableRowElement>;
 }
 
-const returnLocationCells = (robot: VerboseRobot, taskTheme: string) => {
+const returnLocationCells = (robot: VerboseRobot) => {
   const taskDescription = robot.assignedTasks[0].task_summary.task_profile.description;
   switch (taskTypeToStr(taskDescription.task_type.type)) {
     case 'Loop':
       return (
         <>
-          <TableCell className={taskTheme}>{taskDescription.loop.start_name}</TableCell>
-          <TableCell className={taskTheme}>{taskDescription.loop.finish_name}</TableCell>
+          <TableCell>{taskDescription.loop.start_name}</TableCell>
+          <TableCell>{taskDescription.loop.finish_name}</TableCell>
         </>
       );
     case 'Delivery':
       return (
         <>
-          <TableCell className={taskTheme}>{taskDescription.delivery.pickup_place_name}</TableCell>
-          <TableCell className={taskTheme}>{taskDescription.delivery.dropoff_place_name}</TableCell>
+          <TableCell>{taskDescription.delivery.pickup_place_name}</TableCell>
+          <TableCell>{taskDescription.delivery.dropoff_place_name}</TableCell>
         </>
       );
     case 'Clean':
       return (
         <>
-          <TableCell className={taskTheme}>-</TableCell>
-          <TableCell className={taskTheme}>{taskDescription.clean.start_waypoint}</TableCell>
+          <TableCell>-</TableCell>
+          <TableCell>{taskDescription.clean.start_waypoint}</TableCell>
         </>
       );
     default:
       return (
         <>
-          <TableCell className={taskTheme}>-</TableCell>
-          <TableCell className={taskTheme}>-</TableCell>
+          <TableCell>-</TableCell>
+          <TableCell>-</TableCell>
         </>
       );
   }
@@ -97,13 +85,13 @@ function RobotRow({ robot, onClick }: RobotRowProps) {
   if (robot.assignedTasks.length === 0) {
     return (
       <>
-        <TableRow className={classes.taskCell} onClick={onClick}>
-          <TableCell className={classes.taskCell}>{robot.name}</TableCell>
-          <TableCell className={classes.taskCell}>{'-'}</TableCell>
-          <TableCell className={classes.taskCell}>{'-'}</TableCell>
-          <TableCell className={classes.taskCell}>{'-'}</TableCell>
-          <TableCell className={classes.taskCell}>{robot.battery_percent.toFixed(2)}%</TableCell>
-          <TableCell className={classes.taskCell}>{robotModeToString(robot.mode)}</TableCell>
+        <TableRow onClick={onClick}>
+          <TableCell>{robot.name}</TableCell>
+          <TableCell>{'-'}</TableCell>
+          <TableCell>{'-'}</TableCell>
+          <TableCell>{'-'}</TableCell>
+          <TableCell>{robot.battery_percent.toFixed(2)}%</TableCell>
+          <TableCell>{robotModeToString(robot.mode)}</TableCell>
         </TableRow>
       </>
     );
@@ -111,9 +99,9 @@ function RobotRow({ robot, onClick }: RobotRowProps) {
     return (
       <>
         <TableRow className={classes.infoRow} onClick={onClick}>
-          <TableCell className={classes.taskCell}>{robot.name}</TableCell>
-          {returnLocationCells(robot, classes.taskCell)}
-          <TableCell className={classes.taskCell}>
+          <TableCell>{robot.name}</TableCell>
+          {returnLocationCells(robot)}
+          <TableCell>
             {robot.assignedTasks
               ? `${
                   robot.assignedTasks[0].task_summary.end_time.sec -
@@ -121,8 +109,8 @@ function RobotRow({ robot, onClick }: RobotRowProps) {
                 }s`
               : '-'}
           </TableCell>
-          <TableCell className={classes.taskCell}>{robot.battery_percent.toFixed(2)}%</TableCell>
-          <TableCell className={classes.taskCell}>{robotModeToString(robot.mode)}</TableCell>
+          <TableCell>{robot.battery_percent.toFixed(2)}%</TableCell>
+          <TableCell>{robotModeToString(robot.mode)}</TableCell>
         </TableRow>
       </>
     );
@@ -168,19 +156,19 @@ export function RobotTable({
           Robots
         </Typography>
         <IconButton onClick={onRefreshClick} aria-label="Refresh">
-          <RefreshIcon className={classes.tableIcons} />
+          <RefreshIcon />
         </IconButton>
       </Toolbar>
       <TableContainer style={{ flex: '1 1 auto' }}>
         <Table className={classes.table} stickyHeader size="small" style={{ tableLayout: 'fixed' }}>
           <TableHead>
             <TableRow>
-              <TableCell className={classes.tableHeadCell}>Robot Name</TableCell>
-              <TableCell className={classes.tableHeadCell}>Start Location</TableCell>
-              <TableCell className={classes.tableHeadCell}>Destination</TableCell>
-              <TableCell className={classes.tableHeadCell}>Active Task Duration</TableCell>
-              <TableCell className={classes.tableHeadCell}>Battery</TableCell>
-              <TableCell className={classes.tableHeadCell}>State</TableCell>
+              <TableCell>Robot Name</TableCell>
+              <TableCell>Start Location</TableCell>
+              <TableCell>Destination</TableCell>
+              <TableCell>Active Task Duration</TableCell>
+              <TableCell>Battery</TableCell>
+              <TableCell>State</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

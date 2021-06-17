@@ -13,10 +13,6 @@ const useStyles = makeStyles((theme) => ({
   robotStatusLabel: {
     borderColor: theme.palette.info.main,
   },
-  root: {
-    backgroundColor: theme.secondaryBackground,
-    color: theme.fontColors,
-  },
 }));
 
 interface RobotInfoProps {
@@ -57,7 +53,7 @@ export const RobotAccordion = React.forwardRef(
     const classes = useStyles();
 
     return (
-      <Accordion ref={ref} {...otherProps} className={classes.root}>
+      <Accordion ref={ref} {...otherProps}>
         <ItemAccordionSummary
           title={robot.name}
           statusProps={{

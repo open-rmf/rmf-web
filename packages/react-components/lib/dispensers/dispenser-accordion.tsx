@@ -51,10 +51,6 @@ const useStyles = makeStyles((theme) => ({
   typography: {
     padding: '1rem',
   },
-  root: {
-    backgroundColor: theme.secondaryBackground,
-    color: theme.fontColors,
-  },
 }));
 
 const overrideStyles = makeStyles(() => ({
@@ -111,7 +107,7 @@ export const DispenserAccordion = React.forwardRef(
     const statusLabelClass = getStatusLabelClass();
 
     return (
-      <Accordion ref={ref} {...otherProps} className={classes.root}>
+      <Accordion ref={ref} {...otherProps}>
         <ItemAccordionSummary
           title={dispenserState ? dispenserState.guid : dispenser}
           statusProps={{

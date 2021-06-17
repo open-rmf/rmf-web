@@ -28,10 +28,6 @@ const useStyles = makeStyles((theme) => ({
   noPadding: {
     padding: 0,
   },
-  root: {
-    backgroundColor: theme.secondaryBackground,
-    color: theme.fontColors,
-  },
 }));
 
 export interface LiftInfoProps extends React.HTMLProps<HTMLDivElement> {
@@ -121,7 +117,7 @@ export const LiftAccordion = React.forwardRef(
     const liftStatusClass = liftFloorLabelClass(liftState);
 
     return (
-      <Accordion ref={ref} {...otherProps} className={classes.root}>
+      <Accordion ref={ref} {...otherProps}>
         <ItemAccordionSummary
           title={lift.name}
           statusProps={{

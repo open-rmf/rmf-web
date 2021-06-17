@@ -28,8 +28,6 @@ const useStyles = makeStyles((theme) => ({
   tableContainer: {
     display: 'flex',
     flexDirection: 'column',
-    backgroundColor: theme.mainBackground,
-    color: theme.fontColors,
   },
   tableTitle: {
     flex: '1 1 100%',
@@ -39,14 +37,9 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
     marginLeft: theme.spacing(2),
     flex: '0 0 auto',
-    backgroundColor: theme.mainBackground,
-    color: theme.fontColors,
   },
   enabledToggleButton: {
     background: theme.palette.action.selected,
-  },
-  tableIcons: {
-    color: theme.fontColors,
   },
 }));
 
@@ -169,17 +162,17 @@ export function TaskPanel({
                 }}
                 aria-label={`${autoRefreshTooltipPrefix} auto refresh`}
               >
-                <AutorenewIcon className={classes.tableIcons} />
+                <AutorenewIcon />
               </IconButton>
             </Tooltip>
             <Tooltip title="Refersh">
               <IconButton onClick={() => onRefresh && onRefresh()} aria-label="Refresh">
-                <RefreshIcon className={classes.tableIcons} />
+                <RefreshIcon />
               </IconButton>
             </Tooltip>
             <Tooltip title="Create task">
               <IconButton onClick={() => setOpenCreateTaskForm(true)} aria-label="Create Task">
-                <AddOutlinedIcon className={classes.tableIcons} />
+                <AddOutlinedIcon />
               </IconButton>
             </Tooltip>
           </Toolbar>

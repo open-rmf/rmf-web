@@ -5,14 +5,12 @@ interface HeaderBarProps {
   children?: React.ReactNode;
 }
 
-const useStyles = makeStyles((theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     root: {
       display: 'flex',
       flexDirection: 'row',
       width: '100%',
-      backgroundColor: theme.mainBackground,
-      color: theme.fontColors,
     },
   }),
 );

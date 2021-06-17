@@ -90,7 +90,6 @@ const useStyles = makeStyles((theme) => ({
       boxShadow: theme.shadows[12],
     },
     backgroundColor: theme.mainBackground,
-    color: theme.fontColors,
   },
 }));
 
