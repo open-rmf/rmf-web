@@ -117,4 +117,16 @@ describe('TaskPanel', () => {
     userEvent.click(root.getByLabelText('Refresh'));
     expect(spy).toHaveBeenCalledTimes(1);
   });
+
+  it('clicking on cancel button triggers callback', async () => {
+    const cancelTask = jest.fn();
+    const root = mountAsUser(
+      superUser,
+      <TaskPanel tasks={[makeTask('task1', 1, 1)]} cancelTask={cancelTask} />,
+    );
+    userEvent.click(root.getByText('task1'));
+    userEvent.click(root.getByLabelText('Cancel Task'));
+    expect(cancelTask).toHaveBeenCalledTimes(1);
+    await waitFor(() => root.getByText('Successfully cancelled task'));
+  });
 });

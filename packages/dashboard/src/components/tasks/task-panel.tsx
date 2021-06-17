@@ -1,4 +1,5 @@
 import {
+  Button,
   Grid,
   IconButton,
   makeStyles,
@@ -9,6 +10,7 @@ import {
   Toolbar,
   Tooltip,
   Typography,
+  useTheme,
 } from '@material-ui/core';
 import {
   AddOutlined as AddOutlinedIcon,
@@ -90,6 +92,7 @@ export function TaskPanel({
   ...divProps
 }: TaskPanelProps): JSX.Element {
   const classes = useStyles();
+  const theme = useTheme();
   const [selectedTask, setSelectedTask] = React.useState<RmfModels.TaskSummary | undefined>(
     undefined,
   );
@@ -101,25 +104,22 @@ export function TaskPanel({
   const [autoRefresh, setAutoRefresh] = React.useState(true);
   const user = React.useContext(UserContext);
 
-  const handleCancelTask = React.useCallback(
-    async (task: RmfModels.TaskSummary) => {
-      if (!cancelTask) {
-        return;
-      }
-      try {
-        await cancelTask(task);
-        setSnackbarMessage('Successfully cancelled task');
-        setSnackbarSeverity('success');
-        setOpenSnackbar(true);
-        setSelectedTask(undefined);
-      } catch (e) {
-        setSnackbarMessage(`Failed to cancel task: ${e.message}`);
-        setSnackbarSeverity('error');
-        setOpenSnackbar(true);
-      }
-    },
-    [cancelTask],
-  );
+  const handleCancelTaskClick = React.useCallback<React.MouseEventHandler>(async () => {
+    if (!cancelTask || !selectedTask) {
+      return;
+    }
+    try {
+      await cancelTask(selectedTask);
+      setSnackbarMessage('Successfully cancelled task');
+      setSnackbarSeverity('success');
+      setOpenSnackbar(true);
+      setSelectedTask(undefined);
+    } catch (e) {
+      setSnackbarMessage(`Failed to cancel task: ${e.message}`);
+      setSnackbarSeverity('error');
+      setOpenSnackbar(true);
+    }
+  }, [cancelTask, selectedTask]);
 
   /* istanbul ignore next */
   const tasksFromFile = (): Promise<SubmitTask[]> => {
@@ -145,6 +145,12 @@ export function TaskPanel({
   };
 
   const autoRefreshTooltipPrefix = autoRefresh ? 'Disable' : 'Enable';
+
+  const taskCancellable =
+    selectedTask &&
+    (selectedTask.state === RmfModels.TaskSummary.STATE_ACTIVE ||
+      selectedTask.state === RmfModels.TaskSummary.STATE_PENDING ||
+      selectedTask.state === RmfModels.TaskSummary.STATE_QUEUED);
 
   return (
     <div {...divProps}>
@@ -188,10 +194,20 @@ export function TaskPanel({
         </Paper>
         <Paper className={classes.detailPanelContainer}>
           {selectedTask ? (
-            <TaskInfo
-              task={selectedTask}
-              onCancelTaskClick={() => handleCancelTask(selectedTask)}
-            />
+            <>
+              <TaskInfo task={selectedTask} />
+              <Button
+                style={{ marginTop: theme.spacing(1) }}
+                fullWidth
+                variant="contained"
+                color="secondary"
+                aria-label="Cancel Task"
+                disabled={!taskCancellable}
+                onClick={handleCancelTaskClick}
+              >
+                Cancel Task
+              </Button>
+            </>
           ) : (
             <NoSelectedTask />
           )}
