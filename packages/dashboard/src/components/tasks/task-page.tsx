@@ -4,7 +4,6 @@ import { makeStyles } from '@material-ui/core';
 import type { Task } from 'api-client';
 import type { AxiosError } from 'axios';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
 import { PlacesContext, RmfIngressContext } from '../rmf-app';
 import { useAutoRefresh } from './auto-refresh';
 import { TaskPanel, TaskPanelProps } from './task-panel';
@@ -48,8 +47,7 @@ export function TaskPage() {
         '-priority,-start_time',
       );
       setTotalCount(resp.data.total_count);
-      const taskProgresses: Task[] = resp.data.items;
-      return taskProgresses.map((t) => t.summary) as RmfModels.TaskSummary[];
+      return resp.data.items as Task[];
     },
     [tasksApi],
   );

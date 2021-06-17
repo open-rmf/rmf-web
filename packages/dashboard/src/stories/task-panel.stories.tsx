@@ -28,11 +28,11 @@ export default {
 } as Meta;
 
 const failedTask = makeTask('failed_task', 3, 3);
-failedTask.state = RmfModels.TaskSummary.STATE_FAILED;
+failedTask.summary.state = RmfModels.TaskSummary.STATE_FAILED;
 
 const completedtasks = Array.from(Array(100)).map((_, idx) => {
   const task = makeTask(`completed_task_${idx}`, 3, 3);
-  task.state = RmfModels.TaskSummary.STATE_COMPLETED;
+  task.summary.state = RmfModels.TaskSummary.STATE_COMPLETED;
   return task;
 });
 

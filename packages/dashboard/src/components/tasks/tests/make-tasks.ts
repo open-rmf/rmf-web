@@ -1,6 +1,7 @@
+import { Task } from 'api-client';
 import * as RmfModels from 'rmf-models';
 
-export function makeTask(
+export function makeTaskSummary(
   id: string,
   numberOfPhases: number,
   currentPhase: number,
@@ -23,4 +24,14 @@ export function makeTask(
     fleet_name: 'test_fleet',
     robot_name: 'test_robot',
   });
+}
+
+export function makeTask(taskId: string, numberOfPhases: number, currentPhase: number): Task {
+  const taskSummary = makeTaskSummary(taskId, numberOfPhases, currentPhase);
+  return {
+    owner: 'test',
+    task_id: taskId,
+    progress: '',
+    summary: taskSummary,
+  };
 }

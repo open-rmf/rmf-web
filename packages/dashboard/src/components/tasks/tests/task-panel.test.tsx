@@ -11,8 +11,8 @@ describe('TaskPanel', () => {
   describe('task detail', () => {
     const mount = async (cancelTask?: TaskPanelProps['cancelTask']) => {
       const task = makeTask('test_task', 3, 3);
-      task.task_profile.description.task_type.type = RmfModels.TaskType.TYPE_CLEAN;
-      task.task_profile.description.clean.start_waypoint = 'test_waypoint';
+      task.summary.task_profile.description.task_type.type = RmfModels.TaskType.TYPE_CLEAN;
+      task.summary.task_profile.description.clean.start_waypoint = 'test_waypoint';
       const root = mountAsUser(superUser, <TaskPanel tasks={[task]} cancelTask={cancelTask} />);
       userEvent.click(await root.findByText('test_task'));
       return root;
@@ -51,7 +51,7 @@ describe('TaskPanel', () => {
 
     it('cancel task button is disabled for user without required permission', () => {
       const root = mountAsUser(
-        { username: 'test', token: '', roles: [], groups: [] },
+        { username: 'test2', token: '', roles: [], groups: [] },
         <TaskPanel tasks={[makeTask('task1', 1, 1)]} />,
       );
       userEvent.click(root.getByText('task1'));
@@ -61,7 +61,7 @@ describe('TaskPanel', () => {
 
     it('cancel task button is disabled for completed task', () => {
       const task = makeTask('task1', 1, 1);
-      task.state = RmfModels.TaskSummary.STATE_COMPLETED;
+      task.summary.state = RmfModels.TaskSummary.STATE_COMPLETED;
       const root = mountAsUser(superUser, <TaskPanel tasks={[task]} />);
       userEvent.click(root.getByText('task1'));
       const button = root.getByLabelText('Cancel Task');
@@ -70,7 +70,7 @@ describe('TaskPanel', () => {
 
     it('cancel task button is disabled for failed task', () => {
       const task = makeTask('task1', 1, 1);
-      task.state = RmfModels.TaskSummary.STATE_FAILED;
+      task.summary.state = RmfModels.TaskSummary.STATE_FAILED;
       const root = mountAsUser(superUser, <TaskPanel tasks={[task]} />);
       userEvent.click(root.getByText('task1'));
       const button = root.getByLabelText('Cancel Task');
@@ -79,7 +79,7 @@ describe('TaskPanel', () => {
 
     it('cancel task button is disabled for cancelled task', () => {
       const task = makeTask('task1', 1, 1);
-      task.state = RmfModels.TaskSummary.STATE_CANCELED;
+      task.summary.state = RmfModels.TaskSummary.STATE_CANCELED;
       const root = mountAsUser(superUser, <TaskPanel tasks={[task]} />);
       userEvent.click(root.getByText('task1'));
       const button = root.getByLabelText('Cancel Task');
