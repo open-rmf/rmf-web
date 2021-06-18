@@ -80,7 +80,7 @@ const returnLocationCells = (robot: VerboseRobot) => {
 function RobotRow({ robot, onClick }: RobotRowProps) {
   const classes = useStyles();
 
-  if (robot.tasks.length == 0) {
+  if (robot.tasks.length === 0) {
     return (
       <>
         <TableRow className={classes.infoRow} onClick={onClick}>

@@ -73,7 +73,7 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
   function assignedTasksToStr(robot: VerboseRobot): string {
     return robot.tasks
       .map((task, index) => {
-        if (index != robot.tasks.length - 1) {
+        if (index !== robot.tasks.length - 1) {
           return task.task_summary.task_id.concat(' → ');
         } else {
           return task.task_summary.task_id;
