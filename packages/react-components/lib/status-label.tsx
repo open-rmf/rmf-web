@@ -4,7 +4,7 @@ import { joinClasses } from './css-utils';
 
 const useStyles = makeStyles((theme) => ({
   status: {
-    borderColor: theme.palette.background.default,
+    borderColor: theme.palette.background.paper,
     borderRadius: theme.shape.borderRadius,
     borderStyle: 'solid',
     border: 2,

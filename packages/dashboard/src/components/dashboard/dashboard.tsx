@@ -89,7 +89,7 @@ const useStyles = makeStyles((theme) => ({
       borderTopRightRadius: borderRadius,
       boxShadow: theme.shadows[12],
     },
-    backgroundColor: theme.palette.background.default,
+    backgroundColor: theme.palette.background.paper,
   },
 }));
 

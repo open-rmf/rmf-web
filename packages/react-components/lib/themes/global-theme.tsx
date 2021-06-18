@@ -6,7 +6,7 @@ export const GlobalCss = withStyles((theme) => ({
       backgroundColor: theme.palette.success.main,
     },
     '.MuiAccordion-root': {
-      backgroundColor: theme.palette.background.paper,
+      backgroundColor: theme.palette.background.default,
     },
     '.MuiSvgIcon-root': {
       color: theme.palette.text.primary,
@@ -17,14 +17,8 @@ export const GlobalCss = withStyles((theme) => ({
     '.MuiButtonBase-root.Mui-disabled': {
       color: theme.palette.text.primary,
     },
-    '.MuiTableCell-root': {
-      backgroundColor: theme.palette.background.default,
-    },
     '.MuiToolbar-root': {
-      backgroundColor: theme.palette.background.default,
-    },
-    '.MuiPaper-root': {
-      backgroundColor: theme.palette.background.default,
+      backgroundColor: theme.palette.background.paper,
     },
     '.MuiTableCell-head': {
       background: 'rgba(0, 0, 0, 0.1)',
@@ -32,6 +26,11 @@ export const GlobalCss = withStyles((theme) => ({
     },
     '.MuiTabs-indicator': {
       backgroundColor: theme.palette.success.main,
+    },
+    '.MuiTabs-root': {
+      backgroundColor: theme.palette.background.paper,
+      borderRight: `0.25px solid ${theme.palette.text.primary}`,
+      borderLeft: `0.25px solid ${theme.palette.text.primary}`,
     },
   },
 }))(() => null);

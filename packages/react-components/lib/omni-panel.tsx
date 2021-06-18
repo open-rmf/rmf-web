@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
   },
   navigationButton: {
     borderRadius: 'inherit',
-    backgroundColor: theme.palette.background.default,
+    backgroundColor: theme.palette.background.paper,
   },
   navigationButtonGroup: {
     borderRadius: 'inherit',

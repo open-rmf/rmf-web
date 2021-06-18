@@ -10,7 +10,7 @@ const debug = Debug('MainMenu');
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: 0,
-    backgroundColor: theme.palette.background.default,
+    backgroundColor: theme.palette.background.paper,
   },
 }));
 

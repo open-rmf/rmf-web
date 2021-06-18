@@ -1,15 +1,6 @@
 import { createMuiTheme } from '@material-ui/core/styles';
 import commonTheme from './common-theme';
 
-declare module '@material-ui/core/styles/createMuiTheme' {
-  interface Theme {
-    secondaryBackground: React.CSSProperties['color'];
-  }
-  interface ThemeOptions {
-    secondaryBackground: React.CSSProperties['color'];
-  }
-}
-
 export const rmfLight = createMuiTheme({
   palette: {
     ...commonTheme,
@@ -17,10 +8,8 @@ export const rmfLight = createMuiTheme({
       primary: '#1F396B',
     },
     background: {
-      default: '#FFFFFF',
-      paper: '#F3F3F3',
+      default: '#F3F3F3',
+      paper: '#FFFFFF',
     },
   },
-  // light theme - snow
-  secondaryBackground: '#F3F3F3',
 });
