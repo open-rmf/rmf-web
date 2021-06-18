@@ -5,6 +5,8 @@ import React from 'react';
 const useStyles = makeStyles(() =>
   createStyles({
     tabsContainer: {
+      borderRight: '0.25px solid rgba(169,169,169, 0.5)',
+      borderLeft: '0.25px solid rgba(169,169,169, 0.5)',
       flexGrow: 4,
     },
   }),
@@ -14,7 +16,6 @@ export interface NavigationBarProps {
   value?: string;
   onTabChange?(event: React.ChangeEvent<unknown>, newValue: unknown): void;
   children?: React.ReactNode;
-  navBarTheme?: string;
 }
 
 export const NavigationBar = (props: NavigationBarProps): JSX.Element => {

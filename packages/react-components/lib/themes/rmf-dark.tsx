@@ -4,6 +4,9 @@ import commonTheme from './common-theme';
 export const rmfDark = createMuiTheme({
   palette: {
     ...commonTheme,
+    primary: {
+      main: '#1F396B',
+    },
     text: {
       primary: '#FBFCFF',
     },
@@ -11,5 +14,6 @@ export const rmfDark = createMuiTheme({
       default: '#103375',
       paper: '#1F396B',
     },
+    divider: '#20A39E',
   },
 });

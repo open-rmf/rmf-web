@@ -4,6 +4,9 @@ import commonTheme from './common-theme';
 export const rmfLight = createMuiTheme({
   palette: {
     ...commonTheme,
+    primary: {
+      main: '#FFFFFF',
+    },
     text: {
       primary: '#1F396B',
     },
@@ -11,5 +14,6 @@ export const rmfLight = createMuiTheme({
       default: '#F3F3F3',
       paper: '#FFFFFF',
     },
+    divider: '#20A39E',
   },
 });

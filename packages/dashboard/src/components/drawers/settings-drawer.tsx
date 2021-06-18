@@ -23,12 +23,12 @@ import { Settings, TrajectoryAnimation, ThemeMode } from '../../settings';
 
 const CustomSwitch = withStyles((theme: Theme) => ({
   switchBase: {
-    color: theme.palette.primary.dark[200],
+    color: theme.palette.text.primary,
     '&$checked': {
-      color: theme.palette.primary.dark,
+      color: theme.palette.text.primary,
     },
     '&$checked + $track': {
-      backgroundColor: theme.palette.primary.dark,
+      backgroundColor: theme.palette.text.primary,
     },
   },
   checked: {},
