@@ -7,7 +7,7 @@ export function LinearProgressBar(props: LinearProgressProps & { value: number }
   return (
     <Box display="flex" alignItems="center">
       <Box width="100%" mr={1}>
-        <LinearProgress variant="determinate" {...props} />
+        <LinearProgress color="secondary" variant="determinate" {...props} />
       </Box>
       <Box minWidth={35}>
         <Typography variant="body2">{`${Math.floor(props.value)}%`}</Typography>

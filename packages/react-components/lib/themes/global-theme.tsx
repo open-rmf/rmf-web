@@ -13,6 +13,7 @@ export const GlobalCss = withStyles((theme) => ({
     },
     '.MuiButtonBase-root.Mui-disabled': {
       color: theme.palette.text.primary,
+      backgroundColor: theme.palette.background.paper,
     },
     '.MuiToolbar-root': {
       backgroundColor: theme.palette.background.paper,

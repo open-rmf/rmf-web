@@ -22,10 +22,6 @@ const useStyles = makeStyles((theme) => ({
     padding: `0 ${theme.spacing(1)}px`,
     borderBottom: 'none',
   },
-  tablePagination: {
-    flex: '0 0 auto',
-    borderBottom: 'none',
-  },
   phasesRow: {
     marginBottom: theme.spacing(1),
   },

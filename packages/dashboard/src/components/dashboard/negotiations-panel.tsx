@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
     padding: '0.5rem 1rem',
   },
   button: {
-    borderColor: theme.palette.success.main,
+    borderColor: theme.palette.divider,
   },
   disabledButton: {
     '&.Mui-disabled': {
