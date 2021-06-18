@@ -53,7 +53,6 @@ const useStyles = makeStyles((theme) => ({
   },
   expanded: {
     borderLeft: `0.1rem solid ${colorPalette.unknown}`,
-    color: theme.fontColors,
   },
   buttonGroupDiv: {
     padding: '0.5rem 1rem',

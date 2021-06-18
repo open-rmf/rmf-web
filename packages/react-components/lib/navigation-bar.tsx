@@ -6,8 +6,8 @@ const useStyles = makeStyles((theme) =>
   createStyles({
     tabsContainer: {
       flexGrow: 4,
-      borderRight: `0.25px solid ${theme.fontColors}`,
-      borderLeft: `0.25px solid ${theme.fontColors}`,
+      borderRight: `0.25px solid ${theme.palette.text.primary}`,
+      borderLeft: `0.25px solid ${theme.palette.text.primary}`,
     },
   }),
 );

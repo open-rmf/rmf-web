@@ -6,23 +6,25 @@ export const GlobalCss = withStyles((theme) => ({
       backgroundColor: theme.palette.success.main,
     },
     '.MuiAccordion-root': {
-      backgroundColor: theme.secondaryBackground,
-      color: theme.fontColors,
+      backgroundColor: theme.palette.background.paper,
+    },
+    '.MuiSvgIcon-root': {
+      color: theme.palette.text.primary,
     },
     '.MuiButtonBase-root': {
-      color: theme.fontColors,
+      color: theme.palette.text.primary,
+    },
+    '.MuiButtonBase-root.Mui-disabled': {
+      color: theme.palette.text.primary,
     },
     '.MuiTableCell-root': {
-      backgroundColor: theme.mainBackground,
-      color: theme.fontColors,
+      backgroundColor: theme.palette.background.default,
     },
     '.MuiToolbar-root': {
-      backgroundColor: theme.mainBackground,
-      color: theme.fontColors,
+      backgroundColor: theme.palette.background.default,
     },
     '.MuiPaper-root': {
-      backgroundColor: theme.mainBackground,
-      color: theme.fontColors,
+      backgroundColor: theme.palette.background.default,
     },
     '.MuiTableCell-head': {
       background: 'rgba(0, 0, 0, 0.1)',

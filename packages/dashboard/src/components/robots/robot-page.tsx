@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
   robotPanel: {
     padding: `${theme.spacing(4)}px`,
     height: '100%',
-    backgroundColor: theme.secondaryBackground,
+    backgroundColor: theme.palette.background.paper,
   },
 }));
 

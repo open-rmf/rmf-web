@@ -5,7 +5,7 @@ const useStyles = makeStyles((theme) =>
   createStyles({
     root: {
       '&$disabled': {
-        backgroundColor: theme.mainBackground,
+        backgroundColor: theme.palette.background.default,
         borderRadius: 0,
       },
     },

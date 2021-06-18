@@ -38,11 +38,11 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
     margin: 0,
     padding: 0,
-    backgroundColor: theme.secondaryBackground,
+    backgroundColor: theme.palette.background.paper,
   },
   leafletControl: {
-    color: `${theme.fontColors} !important`,
-    backgroundColor: `${theme.mainBackground} !important`,
+    color: `${theme.palette.text.primary} !important`,
+    backgroundColor: `${theme.palette.background.default} !important`,
   },
   mapImgDark: {
     filter:
