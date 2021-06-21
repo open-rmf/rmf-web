@@ -14,6 +14,5 @@ export const rmfDark = createMuiTheme({
       default: '#103375',
       paper: '#1F396B',
     },
-    divider: '#20A39E',
   },
 });

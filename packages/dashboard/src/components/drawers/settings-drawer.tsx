@@ -24,6 +24,7 @@ import { Settings, TrajectoryAnimation, ThemeMode } from '../../settings';
 const CustomSwitch = withStyles((theme: Theme) => ({
   switchBase: {
     color: theme.palette.text.primary,
+    backgroundColor: 'rgba(0, 0, 0, 0)',
     '&$checked': {
       color: theme.palette.text.primary,
     },

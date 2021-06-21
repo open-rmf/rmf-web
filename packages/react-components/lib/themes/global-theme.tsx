@@ -10,6 +10,7 @@ export const GlobalCss = withStyles((theme) => ({
     },
     '.MuiButtonBase-root': {
       color: theme.palette.text.primary,
+      backgroundColor: theme.palette.background.paper,
     },
     '.MuiButtonBase-root.Mui-disabled': {
       color: theme.palette.text.primary,
@@ -28,6 +29,12 @@ export const GlobalCss = withStyles((theme) => ({
     },
     '.MuiTabs-root': {
       backgroundColor: theme.palette.background.paper,
+    },
+    '.MuiFormLabel-root': {
+      color: theme.palette.text.primary,
+    },
+    '.MuiFormLabel-root.Mui-focused': {
+      color: '#A8A8A8',
     },
   },
 }))(() => null);
