@@ -49,9 +49,8 @@ reportingModels = [
 number_of_days_to_keep_logs = app_config.log_storage_time + 60
 
 logger.info(
-    "You are about to delete all the logs older than "
-    + str(app_config.log_storage_time)
-    + " days"
+    "You are about to delete all the logs older than %s days",
+    str(app_config.log_storage_time),
 )
 
 
@@ -62,7 +61,7 @@ async def delete_logs():
             created__lt=datetime.now() - timedelta(days=number_of_days_to_keep_logs)
         )
 
-        logger.info(str(model.__module__) + " has " + str(len(rows)) + " rows > 7 days")
+        logger.info("%s has %s rows > 7 days", str(model.__module__), str(len(rows)))
 
         await model.filter(
             created__lt=datetime.now() - timedelta(days=number_of_days_to_keep_logs)
