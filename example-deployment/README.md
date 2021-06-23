@@ -350,6 +350,14 @@ deploy it
 .bin/minikube kubectl -- apply -f k8s/reporting.yaml
 ```
 
+## CronJobs
+
+deploy cronjobs
+
+```bash
+.bin/minikube kubectl -- apply -f k8s/cronjobs.yaml
+```
+
 ## Test the deployment
 
 If not done so already, launch the office demo
