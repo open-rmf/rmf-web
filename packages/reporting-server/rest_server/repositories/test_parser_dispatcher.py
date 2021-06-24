@@ -39,7 +39,6 @@ class TestCaseLogParserDispatcher(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(instance.guid, "coke_dispenser")
 
     async def test_door_state_created(self):
-        print(parsed_data.mock_door_state)
         await log_model_dispatcher(parsed_data.mock_door_state)
         instance = await DoorState.first()
         self.assertEqual(instance.name, "hardware_door")
