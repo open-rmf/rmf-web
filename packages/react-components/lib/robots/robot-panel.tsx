@@ -43,19 +43,16 @@ export function RobotPanel({
   const [page, setPage] = React.useState(0);
   const [selectedRobot, setSelectedRobot] = React.useState<VerboseRobot | undefined>(undefined);
 
-  const handleRefresh = React.useCallback(
-    async (selectedRobot?: VerboseRobot) => {
-      (async () => {
-        const result = await fetchVerboseRobots();
-        result.forEach((robot) => {
-          if (selectedRobot && robot.name === selectedRobot.name) {
-            setSelectedRobot(robot);
-          }
-        });
-      })();
-    },
-    [fetchVerboseRobots],
-  );
+  const handleRefresh = async (selectedRobot?: VerboseRobot) => {
+    (async () => {
+      const result = await fetchVerboseRobots();
+      result.forEach((robot) => {
+        if (selectedRobot && robot.name === selectedRobot.name) {
+          setSelectedRobot(robot);
+        }
+      });
+    })();
+  };
 
   React.useEffect(() => {
     setTotalCount(verboseRobots.length);
