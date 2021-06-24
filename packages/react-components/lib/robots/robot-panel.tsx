@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, makeStyles, Paper, Typography } from '@material-ui/core';
+import { Grid, makeStyles, Paper, Typography, TablePagination } from '@material-ui/core';
 import { RobotInfo } from './robot-info';
 import { RobotTable } from './robot-table';
 import { VerboseRobot } from './utils';
@@ -29,18 +29,18 @@ function NoSelectedRobot() {
 }
 
 export interface RobotPanelProps extends React.HTMLProps<HTMLDivElement> {
+  paginationOptions?: Omit<React.ComponentPropsWithoutRef<typeof TablePagination>, 'component'>;
   verboseRobots: VerboseRobot[];
   fetchVerboseRobots: () => Promise<VerboseRobot[]>;
 }
 
 export function RobotPanel({
+  paginationOptions,
   verboseRobots,
   fetchVerboseRobots,
   ...divProps
 }: RobotPanelProps): JSX.Element {
   const classes = useStyles();
-  const [totalCount, setTotalCount] = React.useState(-1);
-  const [page, setPage] = React.useState(0);
   const [selectedRobot, setSelectedRobot] = React.useState<VerboseRobot | undefined>(undefined);
 
   const handleRefresh = async (selectedRobot?: VerboseRobot) => {
@@ -54,24 +54,14 @@ export function RobotPanel({
     })();
   };
 
-  React.useEffect(() => {
-    setTotalCount(verboseRobots.length);
-  }, [verboseRobots]);
-
   return (
     <div {...divProps}>
       <Grid container wrap="nowrap" justify="center" style={{ height: 'inherit' }}>
         <Grid style={{ flex: '1 1 auto' }}>
           <RobotTable
             className={classes.robotTable}
-            robots={verboseRobots.slice(page * 10, (page + 1) * 10)}
-            paginationOptions={{
-              count: totalCount,
-              rowsPerPage: 10,
-              rowsPerPageOptions: [10],
-              page,
-              onChangePage: (_ev, newPage) => setPage(newPage),
-            }}
+            robots={verboseRobots}
+            paginationOptions={paginationOptions}
             onRobotClick={(_ev, robot) => setSelectedRobot(robot)}
             onRefreshClick={() => handleRefresh(selectedRobot)}
           />
