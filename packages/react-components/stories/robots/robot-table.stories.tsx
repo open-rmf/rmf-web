@@ -1,21 +1,26 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
-import { RobotTable, RobotTableProps, PaginationOptions } from '../../lib';
+import { RobotTable, RobotTableProps, PaginationOptions, VerboseRobot } from '../../lib';
 import { makeRandomRobot } from '../../tests/robots/test-utils';
 import { makeDefinedTask } from '../../tests/test-data/tasks';
 
-const robots = [
-  makeRandomRobot('test_robot1', 'test_fleet', 2),
-  makeRandomRobot('test_robot2', 'test_fleet', 1),
-  makeRandomRobot('test_robot3', 'test_fleet', 3),
-  makeRandomRobot('test_robot4', 'test_fleet', 4),
-];
-
-const tasks = [
-  makeDefinedTask('Delivery', 'test_robot1', 'active_task_1', 3, 3),
-  makeDefinedTask('Loop', 'test_robot2', 'active_task_2', 4, 3),
-  makeDefinedTask('Clean', 'test_robot3', 'active_task_3', 4, 3),
-  makeDefinedTask('Loop', 'test_robot4', 'active_task_4', 4, 3),
+const verboseRobots: VerboseRobot[] = [
+  {
+    ...makeRandomRobot('test_robot1', 'test_fleet', 2),
+    tasks: [makeDefinedTask('Delivery', 'test_robot1', 'active_task_1', 3, 3)],
+  },
+  {
+    ...makeRandomRobot('test_robot2', 'test_fleet', 1),
+    tasks: [makeDefinedTask('Loop', 'test_robot2', 'active_task_2', 4, 3)],
+  },
+  {
+    ...makeRandomRobot('test_robot3', 'test_fleet', 3),
+    tasks: [makeDefinedTask('Clean', 'test_robot3', 'active_task_3', 4, 3)],
+  },
+  {
+    ...makeRandomRobot('test_robot4', 'test_fleet', 4),
+    tasks: [makeDefinedTask('Loop', 'test_robot4', 'active_task_4', 4, 3)],
+  },
 ];
 
 export default {
@@ -53,6 +58,5 @@ export const Table: Story<RobotTableProps> = (args) => {
 };
 
 Table.args = {
-  robots,
-  tasks,
+  robots: verboseRobots,
 };

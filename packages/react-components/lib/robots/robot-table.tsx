@@ -14,12 +14,10 @@ import {
   Typography,
 } from '@material-ui/core';
 import { Refresh as RefreshIcon } from '@material-ui/icons';
-import { TaskProgress } from 'api-client';
-import clsx from 'clsx';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
+import clsx from 'clsx';
 import { taskTypeToStr } from '../tasks/utils';
-import { allocateTasksToRobots, robotModeToString, VerboseRobot } from './utils';
+import { robotModeToString, VerboseRobot } from './utils';
 
 const useStyles = makeStyles((theme) => ({
   table: {
@@ -45,7 +43,7 @@ interface RobotRowProps {
 }
 
 const returnLocationCells = (robot: VerboseRobot) => {
-  const taskDescription = robot.assignedTasks[0].task_summary.task_profile.description;
+  const taskDescription = robot.tasks[0].task_summary.task_profile.description;
   switch (taskTypeToStr(taskDescription.task_type.type)) {
     case 'Loop':
       return (
@@ -82,7 +80,7 @@ function RobotRow({ robot, onClick }: RobotRowProps) {
   const classes = useStyles();
   const [hover, setHover] = React.useState(false);
 
-  if (robot.assignedTasks.length == 0) {
+  if (robot.tasks.length === 0) {
     return (
       <>
         <TableRow
@@ -95,8 +93,8 @@ function RobotRow({ robot, onClick }: RobotRowProps) {
           <TableCell>{'-'}</TableCell>
           <TableCell>{'-'}</TableCell>
           <TableCell>{'-'}</TableCell>
-          <TableCell>{robot.battery_percent.toFixed(2)}%</TableCell>
-          <TableCell>{robotModeToString(robot.mode)}</TableCell>
+          <TableCell>{robot.state.battery_percent.toFixed(2)}%</TableCell>
+          <TableCell>{robotModeToString(robot.state.mode)}</TableCell>
         </TableRow>
       </>
     );
@@ -112,15 +110,13 @@ function RobotRow({ robot, onClick }: RobotRowProps) {
           <TableCell>{robot.name}</TableCell>
           {returnLocationCells(robot)}
           <TableCell>
-            {robot.assignedTasks
-              ? `${
-                  robot.assignedTasks[0].task_summary.end_time.sec -
-                  robot.assignedTasks[0].task_summary.start_time.sec
-                }s`
+            {robot.tasks
+              ? robot.tasks[0].task_summary.end_time.sec -
+                robot.tasks[0].task_summary.start_time.sec
               : '-'}
           </TableCell>
-          <TableCell>{robot.battery_percent.toFixed(2)}%</TableCell>
-          <TableCell>{robotModeToString(robot.mode)}</TableCell>
+          <TableCell>{robot.state.battery_percent.toFixed(2)}%</TableCell>
+          <TableCell>{robotModeToString(robot.state.mode)}</TableCell>
         </TableRow>
       </>
     );
@@ -137,15 +133,13 @@ export interface RobotTableProps extends PaperProps {
    * The current list of robots to display, when pagination is enabled, this should only
    * contain the robots for the current page.
    */
-  tasks: TaskProgress[];
-  robots: RmfModels.RobotState[];
+  robots: VerboseRobot[];
   paginationOptions?: PaginationOptions;
   onRefreshClick?: React.MouseEventHandler<HTMLButtonElement>;
   onRobotClick?(ev: React.MouseEvent<HTMLDivElement>, robot: VerboseRobot): void;
 }
 
 export function RobotTable({
-  tasks,
   robots,
   paginationOptions,
   onRefreshClick,
@@ -153,11 +147,6 @@ export function RobotTable({
   ...paperProps
 }: RobotTableProps): JSX.Element {
   const classes = useStyles();
-  const [robotsWithTasks, setRobotsWithTasks] = React.useState<VerboseRobot[]>([]);
-
-  React.useEffect(() => {
-    setRobotsWithTasks(allocateTasksToRobots(robots, tasks));
-  }, [robots, tasks]);
 
   return (
     <Paper {...paperProps}>
@@ -182,8 +171,8 @@ export function RobotTable({
             </TableRow>
           </TableHead>
           <TableBody>
-            {robotsWithTasks &&
-              robotsWithTasks.map((robot, robot_id) => (
+            {robots &&
+              robots.map((robot, robot_id) => (
                 <RobotRow
                   key={robot_id}
                   robot={robot}
