@@ -2,7 +2,7 @@ import { render } from '@testing-library/react';
 import type { Task } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import { makeVerboseRobot, RobotInfo } from '../../lib';
+import { RobotInfo } from '../../lib';
 import { makeTask } from '../test-data/tasks';
 import { makeRandomRobot } from './test-utils';
 
@@ -22,7 +22,7 @@ describe('RobotInfo', () => {
       task_id: 'delivery_task',
     };
 
-    const robot1 = makeVerboseRobot(robot, [task]);
+    const robot1 = { ...robot, tasks: [task] };
 
     const root = render(
       <>

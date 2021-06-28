@@ -9,7 +9,7 @@ describe('RobotTable', () => {
       makeRandomRobot('test_robot1', 'test_fleet', 2),
       makeRandomRobot('test_robot2', 'test_fleet', 1),
     ];
-    const root = render(<RobotTable robots={robots} tasks={[]} />);
+    const root = render(<RobotTable robots={robots} />);
     expect(root.getByText('test_robot1')).toBeTruthy();
     expect(root.getByText('test_robot2')).toBeTruthy();
   });
@@ -36,7 +36,7 @@ describe('RobotTable', () => {
       dockingRobot,
       errorRobot,
     ];
-    render(<RobotTable robots={robots} tasks={[]} />);
+    render(<RobotTable robots={robots} />);
   });
 
   it('pagination is shown when pagination option is provided', () => {
@@ -44,7 +44,6 @@ describe('RobotTable', () => {
     const root = render(
       <RobotTable
         robots={[makeRandomRobot('test_robot1', 'test_fleet', 2)]}
-        tasks={[]}
         paginationOptions={{
           count: 1,
           page: 0,
@@ -58,9 +57,7 @@ describe('RobotTable', () => {
   });
 
   it('pagination is not shown when no pagination option is provided', () => {
-    const root = render(
-      <RobotTable robots={[makeRandomRobot('test_robot1', 'test_fleet', 2)]} tasks={[]} />,
-    );
+    const root = render(<RobotTable robots={[makeRandomRobot('test_robot1', 'test_fleet', 2)]} />);
     expect(root.queryByText('1-1 of 1')).toBeNull();
   });
 });

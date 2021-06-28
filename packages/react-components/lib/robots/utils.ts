@@ -31,38 +31,9 @@ export function robotModeToString(robotMode: RmfModels.RobotMode): string {
   }
 }
 
-//TODO: endpoint should return the equivalent of this
-export interface VerboseRobot extends RmfModels.RobotState {
-  assignedTasks: Task[];
-}
-
-export function makeVerboseRobot(robot: RmfModels.RobotState, assignedTasks: Task[]): VerboseRobot {
-  return {
-    ...robot,
-    assignedTasks: assignedTasks,
-  };
-}
-
-//TODO: add this functionality into the server
-export function allocateTasksToRobots(
-  robots: RmfModels.RobotState[],
-  tasks: Task[],
-): VerboseRobot[] {
-  const removableTaskStates = [
-    RmfModels.TaskSummary.STATE_ACTIVE,
-    RmfModels.TaskSummary.STATE_PENDING,
-    RmfModels.TaskSummary.STATE_QUEUED,
-  ];
-  const robotsWithAssignedTasks = robots.map((robot) => {
-    const assignedTasks = tasks.filter((task) => {
-      if (
-        task.summary.robot_name == robot.name &&
-        removableTaskStates.indexOf(task.summary.state) != -1
-      ) {
-        return task;
-      }
-    });
-    return makeVerboseRobot(robot, assignedTasks);
-  });
-  return robotsWithAssignedTasks;
+export interface VerboseRobot {
+  fleet: string;
+  name: string;
+  state: RmfModels.RobotState;
+  tasks: Task[];
 }

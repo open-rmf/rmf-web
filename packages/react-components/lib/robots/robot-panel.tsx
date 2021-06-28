@@ -1,7 +1,5 @@
-import { Grid, makeStyles, Paper, Typography } from '@material-ui/core';
-import { Task } from 'api-client';
+import { Grid, makeStyles, Paper, TablePagination, Typography } from '@material-ui/core';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
 import { RobotInfo } from './robot-info';
 import { RobotTable } from './robot-table';
 import { VerboseRobot } from './utils';
@@ -31,28 +29,30 @@ function NoSelectedRobot() {
 }
 
 export interface RobotPanelProps extends React.HTMLProps<HTMLDivElement> {
-  robots: RmfModels.RobotState[];
-  fetchTasks: (limit: number, offset: number) => Promise<Task[]>;
+  paginationOptions?: Omit<React.ComponentPropsWithoutRef<typeof TablePagination>, 'component'>;
+  verboseRobots: VerboseRobot[];
+  fetchVerboseRobots: () => Promise<VerboseRobot[]>;
 }
 
-export function RobotPanel({ robots, fetchTasks, ...divProps }: RobotPanelProps): JSX.Element {
+export function RobotPanel({
+  paginationOptions,
+  verboseRobots,
+  fetchVerboseRobots,
+  ...divProps
+}: RobotPanelProps): JSX.Element {
   const classes = useStyles();
-  const [tasks, setTasks] = React.useState<Task[]>([]);
-  const [totalCount, setTotalCount] = React.useState(-1);
-  const [page, setPage] = React.useState(0);
   const [selectedRobot, setSelectedRobot] = React.useState<VerboseRobot | undefined>(undefined);
 
-  const handleRefresh = React.useCallback(async () => {
+  const handleRefresh = async (selectedRobot?: VerboseRobot) => {
     (async () => {
-      const result = await fetchTasks(10, page * 10);
-      setTasks(result);
+      const result = await fetchVerboseRobots();
+      result.forEach((robot) => {
+        if (selectedRobot && robot.name === selectedRobot.name) {
+          setSelectedRobot(robot);
+        }
+      });
     })();
-  }, [fetchTasks, page]);
-
-  React.useEffect(() => {
-    setTotalCount(robots.length);
-    handleRefresh();
-  }, [handleRefresh, robots]);
+  };
 
   return (
     <div {...divProps}>
@@ -60,17 +60,10 @@ export function RobotPanel({ robots, fetchTasks, ...divProps }: RobotPanelProps)
         <Grid style={{ flex: '1 1 auto' }}>
           <RobotTable
             className={classes.robotTable}
-            tasks={tasks}
-            robots={robots.slice(page * 10, (page + 1) * 10)}
-            paginationOptions={{
-              count: totalCount,
-              rowsPerPage: 10,
-              rowsPerPageOptions: [10],
-              page,
-              onChangePage: (_ev, newPage) => setPage(newPage),
-            }}
+            robots={verboseRobots}
+            paginationOptions={paginationOptions}
             onRobotClick={(_ev, robot) => setSelectedRobot(robot)}
-            onRefreshClick={handleRefresh}
+            onRefreshClick={() => handleRefresh(selectedRobot)}
           />
         </Grid>
         <Paper className={classes.detailPanelContainer}>
