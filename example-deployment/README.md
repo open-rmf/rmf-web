@@ -352,6 +352,8 @@ deploy it
 
 ## CronJobs
 
+Cronjobs are jobs that run periodically on a given schedule. You can configure the schedule following this [cron schedule syntax](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/#cron-schedule-syntax)
+
 deploy cronjobs
 
 ```bash
