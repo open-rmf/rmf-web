@@ -1,7 +1,7 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: clean-logs
+  name: reporting-server-clean-logs
 spec:
   # Once a day
   schedule: "4 0 * * *"
