@@ -17,7 +17,7 @@ spec:
               command:
                 - /bin/sh
                 - -c
-                - clean_logs
+                - reporting_server_clean_logs
               env:
                 - name: RMF_REPORT_REST_SERVER_CONFIG
                   value: /reporting-server-config/reporting_server_config.py
