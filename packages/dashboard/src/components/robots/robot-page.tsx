@@ -14,6 +14,28 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+// custom hook for auto refresh
+function useAutoRefresh(callback: () => Promise<any>, delay: number, autoRefresh: boolean) {
+  const savedCallback = React.useRef<() => Promise<any>>();
+
+  React.useEffect(() => {
+    savedCallback.current = callback;
+  }, [callback]);
+
+  React.useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+    const ticker = () => {
+      savedCallback.current && savedCallback.current();
+    };
+    if (autoRefresh) {
+      intervalId = setInterval(ticker, delay);
+      return () => clearInterval(intervalId);
+    } else {
+      return;
+    }
+  }, [delay, autoRefresh]);
+}
+
 export function RobotPage() {
   const classes = useStyles();
   const { fleetsApi } = React.useContext(RmfIngressContext) || {};
@@ -21,6 +43,8 @@ export function RobotPage() {
   const [totalCount, setTotalCount] = React.useState(0);
   const [page, setPage] = React.useState(0);
   const [verboseRobots, setVerboseRobots] = React.useState<VerboseRobot[]>([]);
+  const [autoRefresh, setAutoRefresh] = React.useState(true);
+
   const fetchVerboseRobots = React.useCallback(async () => {
     if (!fleetsApi) {
       setTotalCount(0);
@@ -38,14 +62,14 @@ export function RobotPage() {
     return resp.data.items;
   }, [fleetsApi, page]);
 
-  React.useEffect(() => {
-    fetchVerboseRobots();
-  }, [fetchVerboseRobots]);
+  useAutoRefresh(fetchVerboseRobots, 2000, autoRefresh);
 
   return (
     <RobotPanel
+      autoRefresh={autoRefresh}
       className={classes.robotPanel}
       fetchVerboseRobots={fetchVerboseRobots}
+      onAutoRefresh={setAutoRefresh}
       paginationOptions={{
         count: totalCount,
         rowsPerPage: 10,

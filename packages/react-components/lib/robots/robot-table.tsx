@@ -1,7 +1,5 @@
 import {
-  IconButton,
   makeStyles,
-  Paper,
   PaperProps,
   Table,
   TableBody,
@@ -10,10 +8,7 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Toolbar,
-  Typography,
 } from '@material-ui/core';
-import { Refresh as RefreshIcon } from '@material-ui/icons';
 import React from 'react';
 import clsx from 'clsx';
 import { taskTypeToStr } from '../tasks/utils';
@@ -135,29 +130,18 @@ export interface RobotTableProps extends PaperProps {
    */
   robots: VerboseRobot[];
   paginationOptions?: PaginationOptions;
-  onRefreshClick?: React.MouseEventHandler<HTMLButtonElement>;
   onRobotClick?(ev: React.MouseEvent<HTMLDivElement>, robot: VerboseRobot): void;
 }
 
 export function RobotTable({
   robots,
   paginationOptions,
-  onRefreshClick,
   onRobotClick,
-  ...paperProps
 }: RobotTableProps): JSX.Element {
   const classes = useStyles();
 
   return (
-    <Paper {...paperProps}>
-      <Toolbar>
-        <Typography className={classes.title} variant="h6">
-          Robots
-        </Typography>
-        <IconButton onClick={onRefreshClick} aria-label="Refresh">
-          <RefreshIcon />
-        </IconButton>
-      </Toolbar>
+    <React.Fragment>
       <TableContainer style={{ flex: '1 1 auto' }}>
         <Table className={classes.table} stickyHeader size="small" style={{ tableLayout: 'fixed' }}>
           <TableHead>
@@ -185,6 +169,6 @@ export function RobotTable({
       {paginationOptions && (
         <TablePagination component="div" {...paginationOptions} style={{ flex: '0 0 auto' }} />
       )}
-    </Paper>
+    </React.Fragment>
   );
 }
