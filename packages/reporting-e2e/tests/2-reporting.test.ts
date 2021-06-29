@@ -47,18 +47,6 @@ describe('reporting interactions', () => {
   });
 
   it('retrieve task report', async () => {
-    // await fetch(`http://localhost:8002/report/task_summary`).then((response) => {
-    //     if (response.status >= 400 && response.status < 600) {
-    //       throw new Error("Bad response from server");
-    //     }
-    //     return response;
-    //   }).then((res) => {
-    //     return res.json();
-    //   }).then((res) => {
-    //     console.log(res);
-    //   }).catch((error) => {
-    //     console.log(error)
-    //   });
     const taskButton = $('.MuiList-root .MuiListItem-root:nth-child(8)').$('div*=Tasks');
     taskButton.click();
     const from = $('#fromLogDate-datetime-local');
@@ -68,7 +56,6 @@ describe('reporting interactions', () => {
     to.clearValue();
     to.setValue('06/22/2021 23:59');
     $('button=Retrieve Logs').click();
-    browser.debug();
     expect($('h6=Task Summary')).toBeVisible();
     expect(browser.react$('TaskSummaryReportTable')).toBeVisible();
   });
