@@ -2,6 +2,8 @@
 
 This project is about a server that exposes two APIs, one for writing logs to a persistent storage and the other for generate reports. As the project's name says, the idea is to work as a report server. This report server is designed to receive data from different pods within a Kubernetes cluster. The data is received through a data collection tool called Fluentd. Because fluentD is used, this project uses a parser for that format. You can find the log formats [here](https://github.com/open-rmf/rmf-web/blob/main/packages/reporting-server/rest_server/__mocks__/raw_data.py).
 
+In the following image, we can observe how all the pods interact with the reporting server
+![reporting-server](https://user-images.githubusercontent.com/11761240/123880883-9147b800-d911-11eb-88e8-f771914089ae.png)
 
 # Setup
 
@@ -22,6 +24,11 @@ to bootstrap only this package.
 ```bash
 reporting_server
 ```
+
+When you run this command, two instances of the reporting server will run. One on port 8002 where the endpoints will be enabled to ask for reports and 8003 where the endpoints will be enabled to send logs to the reporting server.
+
+![image](https://user-images.githubusercontent.com/11761240/123881439-b12bab80-d912-11eb-987a-77591add6c5d.png)
+
 
 ## Configuration
 
