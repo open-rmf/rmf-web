@@ -1,3 +1,8 @@
+# Description
+
+This project is about a server that exposes two APIs, one for writing logs to a persistent storage and the other for generate reports. As the project's name says, the idea is to work as a report server. This report server is designed to receive data from different pods within a Kubernetes cluster. The data is received through a data collection tool called Fluentd. Because fluentD is used, this project uses a parser for that format. You can find the log formats [here](https://github.com/open-rmf/rmf-web/blob/main/packages/reporting-server/rest_server/__mocks__/raw_data.py).
+
+
 # Setup
 
 Install pipenv
