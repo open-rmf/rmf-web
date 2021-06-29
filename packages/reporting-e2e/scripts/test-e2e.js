@@ -8,20 +8,17 @@ if (process.env.REACT_APP_AUTH_PROVIDER === 'keycloak') {
     process.env.REACT_APP_KEYCLOAK_CONFIG ||
     JSON.stringify({
       realm: 'master',
-      clientId: 'reporting',
+      clientId: 'rmf-dashboard',
       url: 'http://localhost:8088/auth',
     });
 }
-// process.env.REACT_APP_TRAJECTORY_SERVER =
-//   process.env.REACT_APP_TRAJECTORY_SERVER || 'ws://localhost:8006';
 process.env.REACT_APP_REPORTING_SERVER =
   process.env.REACT_APP_REPORTING_SERVER || 'http://localhost:8000';
-// process.env.E2E_USER = process.env.E2E_USER || 'admin';
-// process.env.E2E_PASSWORD = process.env.E2E_PASSWORD || 'admin';
-process.env.E2E_REPORTING_URL = process.env.E2E_REPORTING_URL || 'http://localhost:3000';
+process.env.E2E_REPORTING_SERVER = process.env.E2E_REPORTING_SERVER || 'http://localhost:8003';
+process.env.E2E_REPORTING_URL = process.env.E2E_REPORTING_URL || 'http://localhost:5000';
+process.env.E2E_USER = process.env.E2E_USER || 'admin';
+process.env.E2E_PASSWORD = process.env.E2E_PASSWORD || 'admin';
 
-// execSync('WORLD_NAME=office node scripts/get-resources-location.js', { stdio: 'inherit' });
-// execSync('cd ../dashboard && node scripts/setup/get-icons.js', { stdio: 'inherit' });
 execSync('npm --prefix ../reporting run build', { stdio: 'inherit' });
 
 // wrap in double quotes to support args with spaces
