@@ -1,8 +1,6 @@
 import { makeStyles, Paper, Typography } from '@material-ui/core';
-// import { ThemeProvider } from '@material-ui/styles';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
-// import { rmfDark, rmfLight } from '../lib';
 
 export default {
   title: 'Theme',
