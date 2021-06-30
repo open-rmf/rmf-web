@@ -4,16 +4,18 @@ from models.fleet_state import FleetState
 from models.health import HealthStatus
 from models.ingestor_state import IngestorState
 from models.lift_state import LiftState
+from models.task_summary import TaskSummary
 from parsers.dispenser_state_parser import dispenser_state_parser
 from parsers.doors_state_parser import doors_state_parser
 from parsers.fleet_state_parser import fleet_state_parser
 from parsers.health_parser import health_status_parser
 from parsers.ingestor_state_parser import ingestor_state_parser
 from parsers.lift_state_parser import lift_state_parser
+from parsers.task_summary_parser import task_summary_parser
 
 
 # This function dispatchs to the correct handler dependending on the text content.
-async def log_model_dispacher(fullstring: str):
+async def log_model_dispatcher(fullstring: str):
     if "dispenser_state:" in fullstring.lower():
         data = await dispenser_state_parser(fullstring)
         await DispenserState.create(**data)
@@ -38,8 +40,9 @@ async def log_model_dispacher(fullstring: str):
         data = await ingestor_state_parser(fullstring)
         await IngestorState.create(**data)
 
-    elif "tasks:" in fullstring.lower():
-        print("not implemented")
+    elif "task_summary:" in fullstring.lower():
+        data = await task_summary_parser(fullstring)
+        await TaskSummary.create(**data)
 
     # Health
     elif "dispenser_health:" in fullstring.lower():

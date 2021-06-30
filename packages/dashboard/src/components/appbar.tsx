@@ -16,7 +16,12 @@ import { HeaderBar } from 'react-components/lib/header-bar';
 import { LogoButton } from 'react-components/lib/logo-button';
 import { NavigationBar } from 'react-components/lib/navigation-bar';
 import DashboardTooltip from 'react-components/lib/tooltip';
-import { AppControllerContext, TooltipsContext, SettingsContext } from './app-contexts';
+import {
+  AppControllerContext,
+  ResourcesContext,
+  TooltipsContext,
+  SettingsContext,
+} from './app-contexts';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
 import { ThemeMode } from '../settings';
 
@@ -44,7 +49,7 @@ export const AppBar = React.memo(
     const { showHelp: setShowHelp, showSettings: setShowSettings } = React.useContext(
       AppControllerContext,
     );
-
+    const logoResourcesContext = React.useContext(ResourcesContext)?.logos;
     const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
     const classes = useStyles();
     const authenticator = React.useContext(AuthenticatorContext);
@@ -63,10 +68,19 @@ export const AppBar = React.memo(
       }
     }
 
+    const brandingIconPath = React.useMemo(() => {
+      const defaultIcon = 'defaultLogo.png';
+      if (!logoResourcesContext) {
+        return defaultIcon;
+      }
+      const iconPath = logoResourcesContext.getIconPath('headerLogo');
+      return iconPath ? iconPath : defaultIcon;
+    }, [logoResourcesContext]);
+
     return (
       <div>
         <HeaderBar>
-          <LogoButton logoPath={logoUrl} />
+          <LogoButton logoPath={brandingIconPath} />
           <NavigationBar onTabChange={onTabChange} value={tabValue}>
             <Tab label="Building" value="building" aria-label="Building" />
             <Tab label="Robots" value="robots" aria-label="Robots" />
