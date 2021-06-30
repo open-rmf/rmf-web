@@ -22,3 +22,5 @@ RUN . /opt/ros/foxy/setup.bash && cd /root/rmf_ws && \
   colcon build --merge-install --install-base /opt/rmf --cmake-args -DCMAKE_BUILD_TYPE=Release
 
 RUN rm -rf /root/rmf_ws
+
+ENV RMF_SERVER_USE_SIM_TIME=true # Set this based on your use_sim_time configuration when launching the backend
