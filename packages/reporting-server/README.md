@@ -15,9 +15,11 @@ pip3 install pipenv
 ```
 
 If not already done so, [bootstrap](../../README.md#bootstrap) the project, you can use
+
 ```bash
-npm run bootstrap -- packages/reporting-server
+lerna bootstrap --scope=reporting-server
 ```
+
 to bootstrap only this package.
 
 # Run the server
@@ -30,6 +32,13 @@ When you run this command, two instances of the reporting server will run. One o
 
 ![image](https://user-images.githubusercontent.com/11761240/123881439-b12bab80-d912-11eb-987a-77591add6c5d.png)
 
+For development we recommend running this command:
+
+```bash
+uvicorn --reload rest_server.app:get_app
+```
+
+This would only create one instance of the reporting-server and it'll serve on the default port.
 
 ## Configuration
 
@@ -105,3 +114,9 @@ npm run test:report
 ```bash
 uvicorn --reload rest_server.app:get_app
 ```
+
+## QA
+
+*  I have a zombie process running either on port 8002 or 8003?
+
+   The `reporting_server` runs two instances of the app on the same process. So, sometimes when you shut down one of the reporting-server instances, the other stay alive, resulting in a zombie process. You can kill it by running this command `kill -9 <process id>` (on Linux based OS). That's why we recommend using `uvicorn --reload rest_server.app:get_app` for development purposes.
