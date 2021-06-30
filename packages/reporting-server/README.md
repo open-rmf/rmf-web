@@ -1,9 +1,10 @@
 # Description
 
-This project is about a server that exposes two APIs, one for writing logs to a persistent storage and the other for generate reports. As the project's name says, the idea is to work as a report server. This report server is designed to receive data from different pods within a Kubernetes cluster. The data is received through a data collection tool called Fluentd. Because fluentD is used, this project uses a parser for that format. You can find the log formats [here](https://github.com/open-rmf/rmf-web/blob/main/packages/reporting-server/rest_server/__mocks__/raw_data.py).
+This project is about a server that exposes two APIs, one for writing logs to a persistent storage and the other for generating reports. As the project's name says, the idea is to work as a reporting server. The reporting server is designed to receive data through [Fluentd](https://www.fluentd.org/) (a data collection tool) from different pods within a Kubernetes cluster. Log data is transformed via a parser from the format that Fluentd uses for storage in the server. You can find the log formats [here](https://github.com/open-rmf/rmf-web/blob/main/packages/reporting-server/rest_server/__mocks__/raw_data.py).
 
 In the following image, we can observe how all the pods interact with the reporting server
-![reporting-server](https://user-images.githubusercontent.com/11761240/123880883-9147b800-d911-11eb-88e8-f771914089ae.png)
+![rmf-web kubernetes cluster diagram](https://user-images.githubusercontent.com/28668944/123916706-8b56e300-d9b4-11eb-990f-69e717f87b38.png)
+
 
 # Setup
 
