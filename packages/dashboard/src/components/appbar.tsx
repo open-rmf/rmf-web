@@ -57,8 +57,6 @@ export const AppBar = React.memo(
     const { showTooltips } = React.useContext(TooltipsContext);
 
     const curTheme = React.useContext(SettingsContext).themeMode;
-    const logoUrl =
-      curTheme === ThemeMode.Dark ? '/roshealth-logo-white.png' : '/roshealth-logo-blue.png';
 
     async function handleLogout(): Promise<void> {
       try {
@@ -69,18 +67,19 @@ export const AppBar = React.memo(
     }
 
     const brandingIconPath = React.useMemo(() => {
+      const defaultIcon = 'defaultLogo.png';
       if (!logoResourcesContext) {
-        return logoUrl;
+        return defaultIcon;
       }
-      // TODO - change get icon path once assets are uploaded to rmf demos
       const iconPath = logoResourcesContext.getIconPath('headerLogo');
-      return iconPath ? iconPath : logoUrl;
-    }, [logoResourcesContext, logoUrl]);
+      const logoUrl = curTheme === ThemeMode.Dark ? iconPath : '/roshealth-logo-blue.png';
+      return logoUrl;
+    }, [logoResourcesContext, curTheme]);
 
     return (
       <div>
         <HeaderBar>
-          <LogoButton logoPath={brandingIconPath} />
+          <LogoButton logoPath={brandingIconPath ? brandingIconPath : undefined} />
           <NavigationBar onTabChange={onTabChange} value={tabValue}>
             <Tab label="Building" value="building" aria-label="Building" />
             <Tab label="Robots" value="robots" aria-label="Robots" />
