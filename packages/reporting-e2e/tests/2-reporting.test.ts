@@ -1,10 +1,13 @@
-import { login } from './utils';
+import { login, overwriteClick } from './utils';
 import fetch from 'node-fetch';
 
 describe('reporting interactions', () => {
+  before(() => overwriteClick());
   before(() => browser.url('/'));
+
   before(login);
-  before(async () => {
+
+  it('populate database', async () => {
     const rmfServerData = [
       {
         log:
@@ -28,35 +31,35 @@ describe('reporting interactions', () => {
       body: JSON.stringify(rmfServerData),
       headers: {
         'Content-Type': 'application/json',
-        credentials: 'include',
-        'Allow-Cross-Origin-Headers': 'true',
       },
     };
 
     try {
       const res = await fetch(`http://localhost:8003/log/rmfserver`, options);
-      return await res.text();
+      return await res.json();
     } catch (error) {
       console.log(error);
     }
-  });
-
-  it('header bar is present', async () => {
     const title = $('h6=Reports');
     expect(title).toBeVisible();
   });
 
-  it('retrieve task report', async () => {
+  it('retrieves task summary report', async () => {
+    browser.waitUntil(() => $('.MuiList-root').waitForDisplayed() === true);
     const taskButton = $('.MuiList-root .MuiListItem-root:nth-child(8)').$('div*=Tasks');
     taskButton.click();
-    const from = $('#fromLogDate-datetime-local');
-    const to = $('#toLogDate-datetime-local');
-    from.clearValue();
-    from.setValue('06/01/2021 16:43');
-    to.clearValue();
-    to.setValue('06/22/2021 23:59');
+
+    //click on the from date picker, move back to the previous month, select 01/MM/2021
+    const datePickerIconButton = $('.MuiInputBase-root').$('.MuiIconButton-root');
+    datePickerIconButton.click();
+    const prevMonthButton = $$('.MuiPickersCalendarHeader-iconButton')[0];
+    prevMonthButton.click();
+    const dayOneButton = $('button=1');
+    dayOneButton.click();
+
+    $('body').click();
     $('button=Retrieve Logs').click();
+    browser.waitUntil(() => $('h6=Task Summary').waitForDisplayed({ timeout: 10000 }) === true);
     expect($('h6=Task Summary')).toBeVisible();
-    expect(browser.react$('TaskSummaryReportTable')).toBeVisible();
   });
 });
