@@ -1,7 +1,7 @@
 import { Grid, makeStyles, ThemeProvider } from '@material-ui/core';
 import React from 'react';
-import { rmfDark, rmfLight, GlobalCss } from 'react-components';
-import { loadSettings, saveSettings, ThemeMode } from '../settings';
+import { rmfDark, rmfLight, GlobalCss, defaultTheme } from 'react-components';
+import { loadSettings, saveSettings, ThemeMode, UseTheme } from '../settings';
 import {
   AppController,
   AppControllerContext,
@@ -50,7 +50,11 @@ export function AppBase({
 
   const [showTooltips, setShowTooltips] = React.useState(false);
 
-  const preferDarkMode = settings.themeMode === ThemeMode.Dark;
+  const theme = React.useMemo(() => {
+    if (settings.useTheme === UseTheme.False) return defaultTheme;
+    const preferDarkMode = settings.themeMode === ThemeMode.Dark;
+    return preferDarkMode ? rmfDark : rmfLight;
+  }, [settings.useTheme, settings.themeMode]);
 
   const tooltips = React.useMemo<Tooltips>(
     () => ({
@@ -76,7 +80,7 @@ export function AppBase({
   );
 
   return (
-    <ThemeProvider theme={preferDarkMode ? rmfDark : rmfLight}>
+    <ThemeProvider theme={theme}>
       <GlobalCss />
       <SettingsContext.Provider value={settings}>
         <TooltipsContext.Provider value={tooltips}>

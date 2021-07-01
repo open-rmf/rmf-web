@@ -33,6 +33,9 @@ const useStyles = makeStyles((theme) => ({
       borderBottom: 'unset',
     },
   },
+  icons: {
+    color: theme.palette.text.primary,
+  },
   phasesCell: {
     padding: `0 ${theme.spacing(1)}px`,
   },
@@ -145,7 +148,7 @@ export function RobotTable({
           Robots
         </Typography>
         <IconButton onClick={onRefreshClick} aria-label="Refresh">
-          <RefreshIcon />
+          <RefreshIcon className={classes.icons} />
         </IconButton>
       </Toolbar>
       <TableContainer style={{ flex: '1 1 auto' }}>

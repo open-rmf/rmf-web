@@ -5,30 +5,15 @@ export const GlobalCss = withStyles((theme) => ({
     '.MuiAccordion-root': {
       backgroundColor: theme.palette.background.default,
     },
-    '.MuiSvgIcon-root': {
-      color: theme.palette.text.primary,
-    },
-    '.MuiButtonBase-root': {
-      color: theme.palette.text.primary,
-      backgroundColor: theme.palette.background.paper,
-    },
     '.MuiButtonBase-root.Mui-disabled': {
       color: theme.palette.text.primary,
-      backgroundColor: theme.palette.background.paper,
     },
-    '.MuiToolbar-root': {
-      backgroundColor: theme.palette.background.paper,
-      color: theme.palette.text.primary,
+    '.MuiAppBar-root': {
+      backgroundColor: theme.palette.primary.main,
     },
     '.MuiTableCell-head': {
       background: 'rgba(0, 0, 0, 0.1)',
       borderBottom: 'none',
-    },
-    '.MuiTabs-indicator': {
-      backgroundColor: theme.palette.success.main,
-    },
-    '.MuiTabs-root': {
-      backgroundColor: theme.palette.background.paper,
     },
     '.MuiFormLabel-root': {
       color: theme.palette.text.primary,

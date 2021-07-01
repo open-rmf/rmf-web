@@ -8,9 +8,15 @@ export enum ThemeMode {
   Dark,
 }
 
+export enum UseTheme {
+  True,
+  False,
+}
+
 export interface Settings {
   trajectoryAnimation: TrajectoryAnimation;
   themeMode: ThemeMode;
+  useTheme: UseTheme;
 }
 
 export function saveSettings(settings: Settings): void {
@@ -29,5 +35,6 @@ export function defaultSettings(): Settings {
   return {
     trajectoryAnimation: TrajectoryAnimation.Follow,
     themeMode: ThemeMode.Light,
+    useTheme: UseTheme.False,
   };
 }

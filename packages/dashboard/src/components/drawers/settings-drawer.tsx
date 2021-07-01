@@ -14,27 +14,10 @@ import {
   Grid,
   Switch,
   FormGroup,
-  Theme,
-  withStyles,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import React from 'react';
-import { Settings, TrajectoryAnimation, ThemeMode } from '../../settings';
-
-const CustomSwitch = withStyles((theme: Theme) => ({
-  switchBase: {
-    color: theme.palette.text.primary,
-    backgroundColor: 'rgba(0, 0, 0, 0)',
-    '&$checked': {
-      color: theme.palette.text.primary,
-    },
-    '&$checked + $track': {
-      backgroundColor: theme.palette.text.primary,
-    },
-  },
-  checked: {},
-  track: {},
-}))(Switch);
+import { Settings, TrajectoryAnimation, ThemeMode, UseTheme } from '../../settings';
 
 export interface SettingsDrawerProps extends DrawerProps {
   settings: Readonly<Settings>;
@@ -45,7 +28,7 @@ export interface SettingsDrawerProps extends DrawerProps {
 export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactElement {
   const classes = useStyles();
   const { settings, onSettingsChange, handleCloseButton, ...otherProps } = props;
-  const { trajectoryAnimation, themeMode } = settings;
+  const { trajectoryAnimation, themeMode, useTheme } = settings;
 
   const trajAnimsText = React.useMemo(
     () => Object.keys(TrajectoryAnimation).slice(Object.keys(TrajectoryAnimation).length * 0.5),
@@ -54,6 +37,11 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
 
   const themeText = React.useMemo(
     () => Object.keys(ThemeMode).slice(Object.keys(ThemeMode).length * 0.5),
+    [],
+  );
+
+  const useThemeText = React.useMemo(
+    () => Object.keys(UseTheme).slice(Object.keys(UseTheme).length * 0.5),
     [],
   );
 
@@ -70,6 +58,11 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
 
   function handleThemeModeChange(ev: React.ChangeEvent<HTMLInputElement>): void {
     const newSettings: Settings = { ...settings, themeMode: Number(ev.target.checked) };
+    onSettingsChange && onSettingsChange(newSettings);
+  }
+
+  function handleUseThemeChange(ev: React.ChangeEvent<HTMLInputElement>): void {
+    const newSettings: Settings = { ...settings, useTheme: Number(ev.target.value) };
     onSettingsChange && onSettingsChange(newSettings);
   }
 
@@ -122,17 +115,31 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
         <FormLabel component="legend" className={classes.legendLabel}>
           Theme Mode
         </FormLabel>
-        <FormControlLabel
-          className={classes.swtichButton}
-          control={
-            <CustomSwitch
-              onChange={handleThemeModeChange}
-              name={'theme switch'}
-              checked={themeMode === ThemeMode.Dark}
+        <RadioGroup className={classes.trajGroup} value={useTheme} onChange={handleUseThemeChange}>
+          {useThemeText.map((text, i) => (
+            <FormControlLabel
+              key={i}
+              className={classes.flexBasis}
+              value={i}
+              control={<Radio />}
+              label={text}
+              name={text}
             />
-          }
-          label={themeText[settings.themeMode]}
-        />
+          ))}
+        </RadioGroup>
+        {useTheme === UseTheme.True ? (
+          <FormControlLabel
+            className={classes.swtichButton}
+            control={
+              <Switch
+                onChange={handleThemeModeChange}
+                name={'theme switch'}
+                checked={themeMode === ThemeMode.Dark}
+              />
+            }
+            label={themeText[settings.themeMode]}
+          />
+        ) : null}
         <Divider />
       </FormGroup>
     </Drawer>

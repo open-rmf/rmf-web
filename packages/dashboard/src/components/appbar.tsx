@@ -69,13 +69,13 @@ export const AppBar = React.memo(
     }
 
     const brandingIconPath = React.useMemo(() => {
-      const defaultIcon = 'defaultLogo.png';
       if (!logoResourcesContext) {
-        return defaultIcon;
+        return logoUrl;
       }
+      // TODO - change get icon path once assets are uploaded to rmf demos
       const iconPath = logoResourcesContext.getIconPath('headerLogo');
-      return iconPath ? iconPath : defaultIcon;
-    }, [logoResourcesContext]);
+      return iconPath ? iconPath : logoUrl;
+    }, [logoResourcesContext, logoUrl]);
 
     return (
       <div>

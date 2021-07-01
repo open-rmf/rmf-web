@@ -28,7 +28,7 @@ import { NegotiationColors } from './negotiation-colors';
 import RobotTrajectoriesOverlay from './robot-trajectories-overlay';
 import RobotsOverlay, { RobotsOverlayProps } from './robots-overlay';
 import WaypointsOverlay from './waypoints-overlay';
-import { ThemeMode } from '../../settings';
+import { ThemeMode, UseTheme } from '../../settings';
 
 const debug = Debug('ScheduleVisualizer');
 
@@ -89,7 +89,11 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
 
   const authenticator = React.useContext(AppConfigContext).authenticator;
   const themeContext = React.useContext(SettingsContext).themeMode;
-  const mapClass = themeContext === ThemeMode.Dark ? classes.mapImgDark : classes.mapImgLight;
+  const useThemeContext = React.useContext(SettingsContext).useTheme;
+  const mapClass =
+    themeContext === ThemeMode.Dark && useThemeContext === UseTheme.True
+      ? classes.mapImgDark
+      : classes.mapImgLight;
 
   const [curMapTheme, setCurMapTheme] = React.useState(mapClass);
   const [curLayerTheme, setCurLayerTheme] = React.useState(classes.leafletControl);
