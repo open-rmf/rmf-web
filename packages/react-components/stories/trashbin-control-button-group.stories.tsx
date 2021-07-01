@@ -11,5 +11,7 @@ export default {
 } as Meta;
 
 export const SimpleTrashBinControlButtonGroup: Story = (args) => (
-  <TrashBinControlButtonGroup {...args} />
+  <div style={{ backgroundColor: '#A8A8A8', padding: '1rem' }}>
+    <TrashBinControlButtonGroup {...args} />
+  </div>
 );

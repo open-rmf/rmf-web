@@ -78,9 +78,11 @@ const SimpleOmniPanel = (props: SimpleOmniPanelProps): JSX.Element => {
 };
 
 export const SimplePanelFixedSize: Story = (args) => {
-  return <SimpleOmniPanel style={{ width: 500, height: 200 }} {...args} />;
+  return (
+    <SimpleOmniPanel style={{ width: 500, height: 200, backgroundColor: '#A8A8A8' }} {...args} />
+  );
 };
 
 export const SimplePanelAutoSize: Story = (args) => {
-  return <SimpleOmniPanel {...args} />;
+  return <SimpleOmniPanel style={{ backgroundColor: '#A8A8A8' }} {...args} />;
 };

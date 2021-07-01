@@ -36,10 +36,13 @@ const ColorCard = (props: ColorCardProps): JSX.Element => {
 
 const ThemeDisplay = (): JSX.Element => {
   const useStyles = makeStyles((theme) => ({
-    themeMain: {
+    main: {
+      backgroundColor: theme.palette.primary.main,
+    },
+    themedefault: {
       backgroundColor: theme.palette.background.default,
     },
-    themeSecondary: {
+    themePaper: {
       backgroundColor: theme.palette.background.paper,
     },
     themeFont: {
@@ -73,8 +76,9 @@ const ThemeDisplay = (): JSX.Element => {
         Theme Colors
       </Typography>
       <div style={{ display: 'flex' }}>
-        <ColorCard color={classes.themeMain} colorName={'Default'} />
-        <ColorCard color={classes.themeSecondary} colorName={'Paper/Primary'} />
+        <ColorCard color={classes.themedefault} colorName={'Main'} />
+        <ColorCard color={classes.themedefault} colorName={'Default'} />
+        <ColorCard color={classes.themePaper} colorName={'Paper'} />
         <ColorCard color={classes.themeFont} colorName={'Font'} />
         <ColorCard color={classes.success} colorName={'Success'} />
         <ColorCard color={classes.error} colorName={'Error'} />
