@@ -1,13 +1,14 @@
 import unittest
 
 from models.task_summary import TaskSummary
+from rest_server.__mocks__.parsed_data import mock_task_summary
 
 from .task_summary_parser import task_summary_parser
 
 
 class TestCaseTaskSummary(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
-        self.data = 'task_summary:{"fleet_name": "tinyRobot", "task_id": "Loop0", "task_profile": {"task_id": "Loop0", "submission_time": {"sec": 131, "nanosec": 553000000}, "description": {"start_time": {"sec": 1623383402, "nanosec": 0}, "priority": {"value": 0}, "task_type": {"type": 1}, "station": {"task_id": "", "robot_type": "", "place_name": ""}, "loop": {"task_id": "", "robot_type": "", "num_loops": 1, "start_name": "supplies", "finish_name": "coe"}, "delivery": {"task_id": "", "items": [], "pickup_place_name": "", "pickup_dispenser": "", "pickup_behavior": {"name": "", "parameters": []}, "dropoff_place_name": "", "dropoff_ingestor": "", "dropoff_behavior": {"name": "", "parameters": []}}, "clean": {"start_waypoint": ""}}}, "state": 0, "status": "", "submission_time": {"sec": 0, "nanosec": 0}, "start_time": {"sec": 1623383362, "nanosec": 348338289}, "end_time": {"sec": 1623383449, "nanosec": 79154833}, "robot_name": "tinyRobot2"}\n'
+        self.data = mock_task_summary
 
     async def test_parse_and_get_values(self):
         parsed_values = await task_summary_parser(self.data)

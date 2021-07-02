@@ -101,4 +101,5 @@ echo 'Applying FluentD configmap ...'
 echo 'deploying FluentD daemonset...'
 .bin/minikube kubectl -- apply -f k8s/fluentd.yaml
 
-
+echo 'deploying cronjobs ...'
+.bin/minikube kubectl -- apply -f k8s/cronjobs.yaml
