@@ -71,8 +71,10 @@ export const AppBar = React.memo(
       if (!logoResourcesContext) {
         return defaultIcon;
       }
-      const iconPath = logoResourcesContext.getIconPath('headerLogo');
-      const logoUrl = curTheme === ThemeMode.Dark ? iconPath : '/roshealth-logo-blue.png';
+      // Pending pr on rmf demos
+      const logoPath = logoResourcesContext.getIconPath('headerLogo');
+      const blueLogoPath = logoResourcesContext.getIconPath('darkThemeLogo');
+      const logoUrl = curTheme === ThemeMode.Dark ? logoPath : blueLogoPath;
       return logoUrl;
     }, [logoResourcesContext, curTheme]);
 
