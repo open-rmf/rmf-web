@@ -76,7 +76,7 @@ const ThemeDisplay = (): JSX.Element => {
         Theme Colors
       </Typography>
       <div style={{ display: 'flex' }}>
-        <ColorCard color={classes.themedefault} colorName={'Main'} />
+        <ColorCard color={classes.main} colorName={'Main'} />
         <ColorCard color={classes.themedefault} colorName={'Default'} />
         <ColorCard color={classes.themePaper} colorName={'Paper'} />
         <ColorCard color={classes.themeFont} colorName={'Font'} />
