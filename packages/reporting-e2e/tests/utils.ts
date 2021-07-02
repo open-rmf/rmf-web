@@ -1,4 +1,5 @@
 import { Element } from '@wdio/sync';
+import fetch from 'node-fetch';
 
 /**
  * Overwrites the default click command to wait for animation to finish before attempting to click,
@@ -60,3 +61,31 @@ export function login(): void {
   $('#password').setValue(process.env.E2E_PASSWORD);
   $('#kc-login').click();
 }
+
+export const populateDatabase = async (data: { log: string; stream: string }[]): Promise<void> => {
+  const options = {
+    method: 'POST',
+    body: JSON.stringify(data),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
+
+  try {
+    const res = await fetch('http:localhost:8003/log/rmfserver', options);
+    return await res.json();
+  } catch (error) {
+    return error;
+  }
+};
+
+export const selectDateAndRetrieveLogs = (): void => {
+  const datePickerIconButton = $('.MuiInputBase-root').$('.MuiIconButton-root');
+  datePickerIconButton.click();
+  const prevMonthButton = $$('.MuiPickersCalendarHeader-iconButton')[0];
+  prevMonthButton.click();
+  const dayOneButton = $('button=1');
+  dayOneButton.click();
+  $('body').click();
+  $('button=Retrieve Logs').click();
+};
