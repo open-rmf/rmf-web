@@ -23,7 +23,7 @@ import {
   SettingsContext,
 } from './app-contexts';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
-import { ThemeMode } from '../settings';
+import { ThemeMode, UseTheme } from '../settings';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -57,6 +57,7 @@ export const AppBar = React.memo(
     const { showTooltips } = React.useContext(TooltipsContext);
 
     const curTheme = React.useContext(SettingsContext).themeMode;
+    const isUseTheme = React.useContext(SettingsContext).useTheme;
 
     async function handleLogout(): Promise<void> {
       try {
@@ -68,15 +69,17 @@ export const AppBar = React.memo(
 
     const brandingIconPath = React.useMemo(() => {
       const defaultIcon = 'defaultLogo.png';
+      let logoUrl: string | null;
       if (!logoResourcesContext) {
         return defaultIcon;
       }
-      // Pending pr on rmf demos
       const logoPath = logoResourcesContext.getIconPath('headerLogo');
       const blueLogoPath = logoResourcesContext.getIconPath('darkThemeLogo');
-      const logoUrl = curTheme === ThemeMode.Dark ? logoPath : blueLogoPath;
+
+      if (isUseTheme === UseTheme.False) return logoPath;
+      logoUrl = curTheme === ThemeMode.Dark ? logoPath : blueLogoPath;
       return logoUrl;
-    }, [logoResourcesContext, curTheme]);
+    }, [logoResourcesContext, curTheme, isUseTheme]);
 
     return (
       <div>
