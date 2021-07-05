@@ -6,17 +6,17 @@ from tortoise.models import Model as TortoiseModel
 
 from .models import User
 from .models.tortoise_models import ProtectedResource, ResourcePermission
-from .permissions import Enforcer, Permission, RmfRole
-
-
-class GreetingPermission(TortoiseModel, ResourcePermission):
-    resource: ForeignKeyRelation["Greeting"] = ForeignKeyField(
-        "models.Greeting", "permissions"
-    )
+from .permissions import BasicAction, Enforcer, RmfRole
 
 
 class Greeting(TortoiseModel, ProtectedResource):
     message = CharField(255, pk=True)
+
+
+class GreetingPermission(TortoiseModel, ResourcePermission):
+    obj: ForeignKeyRelation[Greeting] = ForeignKeyField(
+        "models.Greeting", "permissions"
+    )
 
 
 class TestPermissions(unittest.IsolatedAsyncioTestCase):
@@ -34,7 +34,7 @@ class TestPermissions(unittest.IsolatedAsyncioTestCase):
         owner = User(username="test_owner", groups=["greeter"])
         greeting = Greeting(message="hello", owner=owner.username)
         await greeting.save()
-        await Enforcer.save_permissions(greeting, owner.groups)
+        await Enforcer.save_permissions(greeting, owner.groups, [BasicAction.Read])
 
         q = Enforcer.query(owner, Greeting).count()
         self.assertEqual(1, await q)
@@ -54,36 +54,36 @@ class TestPermissions(unittest.IsolatedAsyncioTestCase):
         greeting = Greeting(message="hello", owner=owner.username)
         await greeting.save()
         await Enforcer.save_permissions(
-            greeting, owner.groups, [Permission.Read, Permission.Write]
+            greeting, owner.groups, [BasicAction.Read, BasicAction.Write]
         )
 
         user = User(username="test_user", groups=["greeter"])
-        authorized = await Enforcer.is_authorized(greeting, user, Permission.Write)
+        authorized = await Enforcer.is_authorized(greeting, user, BasicAction.Write)
         self.assertTrue(authorized)
 
         user2 = User(username="test_user2")
-        authorized = await Enforcer.is_authorized(greeting, user2, Permission.Write)
+        authorized = await Enforcer.is_authorized(greeting, user2, BasicAction.Write)
         self.assertFalse(authorized)
 
     async def test_owner_has_full_access(self):
         owner = User(username="test_owner", groups=["greeter"])
         greeting = Greeting(message="hello", owner=owner.username)
         await greeting.save()
-        await Enforcer.save_permissions(greeting, owner.groups, [Permission.Read])
-        authorized = await Enforcer.is_authorized(greeting, owner, Permission.Write)
+        await Enforcer.save_permissions(greeting, owner.groups, [BasicAction.Read])
+        authorized = await Enforcer.is_authorized(greeting, owner, BasicAction.Write)
         self.assertTrue(authorized)
 
     async def test_user_without_groups_can_see_own_resources(self):
         owner = User(username="test_owner")
         greeting = Greeting(message="hello", owner=owner.username)
         await greeting.save()
-        await Enforcer.save_permissions(greeting, owner.groups)
+        await Enforcer.save_permissions(greeting, owner.groups, [BasicAction.Read])
         count = await Enforcer.query(owner, Greeting).count()
         self.assertEqual(1, count)
 
     async def test_superadmin_can_see_resource_with_no_owner(self):
         greeting = Greeting(message="hello")
         await greeting.save()
-        user = User(username="test_superadmin", roles=[RmfRole.SuperAdmin.value])
+        user = User(username="test_superadmin", roles=[RmfRole.Admin])
         count = await Enforcer.query(user, Greeting).count()
         self.assertEqual(1, count)

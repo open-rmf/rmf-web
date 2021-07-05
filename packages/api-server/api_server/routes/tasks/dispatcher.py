@@ -1,11 +1,12 @@
 from fastapi.exceptions import HTTPException
 from rmf_task_msgs.srv import CancelTask as RmfCancelTask
 from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
+from tortoise.transactions import in_transaction
 
 from ... import models as mdl
 from ...gateway import RmfGateway
 from ...models import tortoise_models as ttm
-from ...permissions import Enforcer, Permission
+from ...permissions import BasicAction, Enforcer
 
 
 class DispatcherClient:
@@ -25,13 +26,14 @@ class DispatcherClient:
             self.rmf_gateway.submit_task_srv, req_msg
         )
 
-        new_task = (
-            await ttm.TaskSummary.update_or_create(
-                {"owner": user.username, "data": {"task_id": resp.task_id}},
-                id_=resp.task_id,
-            )
-        )[0]
-        await Enforcer.save_permissions(new_task, user.groups, [Permission.Read])
+        async with in_transaction():
+            new_task = (
+                await ttm.TaskSummary.update_or_create(
+                    {"owner": user.username, "data": {"task_id": resp.task_id}},
+                    id_=resp.task_id,
+                )
+            )[0]
+            await Enforcer.save_permissions(new_task, user.groups, [BasicAction.Read])
 
         return resp
 

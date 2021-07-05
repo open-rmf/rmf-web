@@ -8,7 +8,7 @@ from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
 
 from ...models import CancelTask, CleanTaskDescription, SubmitTask, TaskSummary, User
 from ...models import tortoise_models as ttm
-from ...permissions import Enforcer, Permission, RmfRole
+from ...permissions import BasicAction, Enforcer, RmfRole
 from ...test.test_fixtures import RouteFixture
 
 
@@ -20,7 +20,7 @@ class TasksFixture(RouteFixture):
             )
             await asyncio.gather(
                 *(
-                    Enforcer.save_permissions(t, user.groups, [Permission.Read])
+                    Enforcer.save_permissions(t, user.groups, [BasicAction.Read])
                     for t in ttm_tasks
                 )
             )
@@ -58,19 +58,18 @@ class TestTasksRoute(TasksFixture):
             RmfCancelTask, "cancel_task", rmf_cancel_task
         )
 
-        user1 = User(username="user1", roles={RmfRole.SuperAdmin.value})
+        user1 = User(username="user1", roles={RmfRole.Admin})
         user2 = User(
-            username="user2", roles={RmfRole.TaskSubmit.value}, groups={"rmf_group1"}
+            username="user2", roles={RmfRole.TaskSubmit}, groups={"rmf_group1"}
         )
         user3 = User(username="user3", groups={"rmf_group1"})
         user4 = User(username="user4")
         user5 = User(
-            username="user5", roles={RmfRole.TaskCancel.value}, groups={"rmf_group2"}
+            username="user5", roles={RmfRole.TaskCancel}, groups={"rmf_group2"}
         )
-        user6 = User(username="user6", roles={RmfRole.TaskAdmin.value})
         self.set_user(user1)
 
-        # super admin can submit tasks
+        # admin can submit tasks
         submit_task = SubmitTask(
             task_type=RmfTaskType.TYPE_CLEAN,
             start_time=0,
@@ -83,15 +82,8 @@ class TestTasksRoute(TasksFixture):
         self.assertEqual(200, resp.status_code)
         submitted_task_1 = resp.json()["task_id"]
 
-        # super admin can see submitted task
-        self.set_user(user6)
-        resp = self.session.get(f"{self.base_url}/tasks")
-        tasks = resp.json()["items"]
-        self.assertEqual(1, len(tasks))
-        resp = self.session.get(f"{self.base_url}/tasks/{submitted_task_1}/summary")
-        self.assertEqual(200, resp.status_code)
-
-        # task admin can see submitted task
+        # admin can see submitted task
+        self.set_user(user1)
         resp = self.session.get(f"{self.base_url}/tasks")
         tasks = resp.json()["items"]
         self.assertEqual(1, len(tasks))
@@ -121,7 +113,7 @@ class TestTasksRoute(TasksFixture):
         self.assertEqual(200, resp.status_code)
         submitted_task_2 = resp.json()["task_id"]
 
-        # super admin can see task submitted by another user
+        # admin can see task submitted by another user
         self.set_user(user1)
         resp = self.session.get(f"{self.base_url}/tasks")
         tasks = resp.json()["items"]
@@ -175,7 +167,7 @@ class TestTasksRoute(TasksFixture):
         )
         self.assertEqual(200, resp.status_code)
 
-        # super admin can cancel other user's task
+        # admin can cancel other user's task
         self.set_user(user1)
         resp = self.session.post(
             f"{self.base_url}/tasks/cancel_task",

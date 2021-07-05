@@ -16,7 +16,7 @@ def auth_scheme(
     """
     if not authenticator:
         # no authentication
-        return lambda: User(username="stub", roles=[RmfRole.SuperAdmin.value])
+        return lambda: User(username="stub", roles=[RmfRole.Admin])
 
     oidc_url = oidc_url or ""
 

@@ -10,12 +10,6 @@ from .json_mixin import JsonMixin
 from .resource import ProtectedResource, ResourcePermission
 
 
-class TaskSummaryPermission(Model, ResourcePermission):
-    resource: fields.ForeignKeyRelation["TaskSummary"] = fields.ForeignKeyField(
-        "models.TaskSummary", "permissions"
-    )
-
-
 class TaskSummary(Model, JsonMixin, ProtectedResource):
     fleet_name = fields.CharField(255, null=True, index=True)
     submission_time = fields.DatetimeField(null=True, index=True)
@@ -55,3 +49,9 @@ class TaskSummary(Model, JsonMixin, ProtectedResource):
             defaults["owner"] = owner_username
         result = await TaskSummary.update_or_create(defaults, id_=task_summary.task_id)
         return result[0]
+
+
+class TaskSummaryPermission(Model, ResourcePermission):
+    obj: fields.ForeignKeyRelation[TaskSummary] = fields.ForeignKeyField(
+        "models.TaskSummary", "permissions"
+    )

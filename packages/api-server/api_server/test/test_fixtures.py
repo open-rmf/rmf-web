@@ -97,7 +97,7 @@ class RouteFixture(unittest.TestCase):
         retry = Retry(total=5, backoff_factor=0.1)
         adapter = requests.adapters.HTTPAdapter(max_retries=retry)
         cls.session = requests.Session()
-        cls.user = User(username="test_user", roles=[RmfRole.SuperAdmin.value])
+        cls.user = User(username="test_user", roles=[RmfRole.Admin])
         cls.set_user(cls.user)
         cls.session.headers["Content-Type"] = "application/json"
         cls.session.mount("http://", adapter)

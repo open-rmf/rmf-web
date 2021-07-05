@@ -1,44 +1,51 @@
-from enum import Enum
-from typing import Optional, Sequence, TypeVar
+from typing import Sequence, TypeVar
 
 from tortoise.query_utils import Q
 from tortoise.queryset import QuerySet
 from tortoise.transactions import in_transaction
 
 from .models import User
-from .models.tortoise_models import ProtectedResource, ProtectedResourceModel
+from .models.tortoise_models import ProtectedResource, Types
 
-ProtectedResourceT = TypeVar("ProtectedResourceT", bound=ProtectedResourceModel)
+ProtectedResourceT = TypeVar("ProtectedResourceT", bound=Types.ProtectedResourceModel)
 
 
-class Permission(Enum):
+Action = str
+
+
+class BasicAction:
     Read = "read"
     Write = "write"
 
 
-class RmfRole(Enum):
-    SuperAdmin = "_rmf_superadmin"
+class RmfRole:
+    Admin = "_rmf_superadmin"
     TaskSubmit = "_rmf_task_submit"
     TaskCancel = "_rmf_task_cancel"
-    TaskAdmin = "_rmf_task_admin"
 
 
 class Enforcer:
     @staticmethod
     async def is_authorized(
-        r: ProtectedResourceModel, user: User, permission: Permission
+        r: Types.ProtectedResourceModel, user: User, action: Action
     ):
-        if r.owner == user.username:
+        """
+        Checks if an user has permission to perform an action, the owner of a resource
+        and the users with the admin role can always permission any actions on it.
+        """
+        if r.owner == user.username or RmfRole.Admin in user.roles:
             return True
 
+        subjects = [user.username]
+        subjects.extend(user.groups)
         perm = await r.permissions.remote_model.filter(
-            group__in=user.groups, permission=permission
+            sub__in=subjects, act=action
         ).first()
         return perm is not None
 
     @staticmethod
     def _has_role(user: User, role: RmfRole) -> bool:
-        return any((r in [RmfRole.SuperAdmin.value, role.value] for r in user.roles))
+        return any((r in [RmfRole.Admin, role] for r in user.roles))
 
     @staticmethod
     def can_submit_task(user: User) -> bool:
@@ -52,42 +59,37 @@ class Enforcer:
     def query(
         user: User,
         r: QuerySet[ProtectedResource],
-        admin_roles: Optional[Sequence[str]] = None,
-    ) -> QuerySet[ProtectedResourceModel]:
+    ) -> QuerySet[Types.ProtectedResourceModel]:
         """
         Augments a query with the read permissions of an user, this returns a query
-        that only returns results that the user can see.
-
-        :param admin_roles: A list of roles to be considered admins, an admin will be
-        able to see all of the resources regardless of their groups. The SuperAdmin role
-        is always an admin.
+        that only returns results that the user can see. The admin roles can always see
+        all resources.
         """
-        admin_roles = admin_roles or []
-        for role in user.roles:
-            if role == RmfRole.SuperAdmin.value or role in admin_roles:
-                return r.all()
+        if RmfRole.Admin in user.roles:
+            return r.all()
+        subjects = [user.username]
+        subjects.extend(user.groups)
         return r.filter(
             Q(
-                permissions__group__in=user.groups,
-                permissions__permission=Permission.Read,
+                permissions__sub__in=user.groups,
+                permissions__act=BasicAction.Read,
             )
             | Q(owner=user.username)
         )
 
     @staticmethod
     async def save_permissions(
-        r: ProtectedResourceModel,
-        groups: Sequence[str],
-        permissions: Sequence[Permission] = None,
+        r: Types.ProtectedResourceModel,
+        subjects: Sequence[str],
+        actions: Sequence[Action],
     ):
         """
-        Saves the permissions of a protected resource into the database.
-        All the groups will be given the same set of permissions.
+        Helper function to save the permissions for a group of subjects. All subjects
+        will be given the same permissions.
         """
-        permissions = permissions or [Permission.Read]
         async with in_transaction():
-            for group in groups:
-                for perm in permissions:
+            for sub in subjects:
+                for act in actions:
                     await r.permissions.remote_model.update_or_create(
-                        resource=r, group=group, permission=perm
+                        obj=r, sub=sub, act=act
                     )

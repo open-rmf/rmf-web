@@ -1,33 +1,22 @@
-from typing import TypeVar
-
-from tortoise.fields import CharField, ForeignKeyRelation, ReverseRelation
+from tortoise.fields import ForeignKeyRelation, ReverseRelation, TextField
 from tortoise.models import Model
-
-ModelT = TypeVar("ModelT", bound=Model)
 
 
 class ResourcePermission:
-    resource: ForeignKeyRelation["ProtectedResourceModel"]
-    group = CharField(255)
-    permission = CharField(255)
-
-
-class ResourcePermissionModel(Model, ResourcePermission):
-    pass
-
-
-# hack so that tortoise does not generate a schema
-ResourcePermissionModel = None
+    obj: ForeignKeyRelation["Types.ProtectedResourceModel"]
+    sub = TextField()
+    act = TextField()
 
 
 class ProtectedResource:
-    owner = CharField(255, null=True)
-    permissions: ReverseRelation[ResourcePermissionModel]
+    owner = TextField(null=True)
+    permissions: ReverseRelation["Types.ResourcePermissionModel"]
 
 
-class ProtectedResourceModel(Model, ProtectedResource):
-    pass
+# Nest the type definitions in a container class to prevent tortoise from generating schemas for them.
+class Types:
+    class ResourcePermissionModel(Model, ResourcePermission):
+        pass
 
-
-# hack so that tortoise does not generate a schema
-ProtectedResourceModel = None
+    class ProtectedResourceModel(Model, ProtectedResource):
+        pass

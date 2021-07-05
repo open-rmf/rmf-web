@@ -122,7 +122,7 @@ class FastIORouter(APIRouter):
     def __init__(self, *args, user_dep: Optional[Callable[..., User]] = None, **kwargs):
         super().__init__(*args, **kwargs)
         self.user_dep = user_dep or (
-            lambda: User(username="stub", roles={RmfRole.SuperAdmin.value})
+            lambda: User(username="stub", roles={RmfRole.Admin})
         )
         self.watches = cast(List[Watch], [])
         self._loop: Optional[asyncio.AbstractEventLoop] = None
@@ -256,7 +256,7 @@ def make_sio(authenticator: Optional[JwtAuthenticator], logger: logging.Logger):
 
         if not authenticator:
             await sio.save_session(
-                sid, {"user": User(username="stub", roles={RmfRole.SuperAdmin.value})}
+                sid, {"user": User(username="stub", roles={RmfRole.Admin})}
             )
             return True
 
