@@ -10,7 +10,7 @@ config.update(
     {
         "jwt_public_key": "certs/keycloak.pub",
         "oidc_url": "http://localhost:8088/auth/realms/master/.well-known/openid-configuration",
-        "aud": "rmf-dashboard",
+        "aud": "reporting",
         "iss": iss,
     }
 )

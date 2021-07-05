@@ -8,7 +8,7 @@ if (process.env.REACT_APP_AUTH_PROVIDER === 'keycloak') {
     process.env.REACT_APP_KEYCLOAK_CONFIG ||
     JSON.stringify({
       realm: 'master',
-      clientId: 'rmf-dashboard',
+      clientId: 'reporting',
       url: 'http://localhost:8088/auth',
     });
 }

@@ -35,11 +35,11 @@ There are some environment variables that control how the test runs.
 |---|---|
 | E2E_DOCKER_NETWORK | _(string)_ The network that services uses, defaults to `rmf-web_default` |
 | E2E_NO_AUTH | _(bool)_ Do not launch the authentication provider service |
-| E2E_NO_DASHBOARD | _(bool)_ Do not launch the dashboard server |
-| E2E_NO_RMF_SERVER | _(bool)_ Do not launch the rmf api server |
+| E2E_NO_REPORTING | _(bool)_ Do not launch the reporting ui server |
+| E2E_NO_REPORTING_SERVER | _(bool)_ Do not launch the reporting server |
 | E2E_USER | _(string)_ The user to login with |
 | E2E_PASSWORD | _(string)_ The password to login with |
-| E2E_DASHBOARD_URL | _(string)_ Base url where the dashboard is hosted |
+| E2E_REPORTING_URL | _(string)_ Base url where the dashboard is hosted |
 
 Boolean values can be 0/1/true/false.
 
@@ -48,9 +48,7 @@ There are also some environment variables the test runner sets by default
 | Key | Default Value |
 |---|---|
 | REACT_APP_AUTH_PROVIDER | keycloak |
-| REACT_APP_KEYCLOAK_CONFIG | { "realm": "master", "clientId": "rmf-dashboard", "url": "http://localhost:8088/auth" } |
-| REACT_APP_TRAJECTORY_SERVER | ws://localhost:8006 |
-| REACT_APP_ROS2_BRIDGE_SERVER | ws://localhost:50002 |
+| REACT_APP_KEYCLOAK_CONFIG | { "realm": "master", "clientId": "reporting", "url": "http://localhost:8088/auth" } |
 | E2E_USER | admin |
 | E2E_PASSWORD | admin |
 | E2E_REPORTING_URL | http://localhost:5000 |

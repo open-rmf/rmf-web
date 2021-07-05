@@ -1,4 +1,4 @@
-import { getReport, login, overwriteClick, selectDateAndRetrieveLogs } from './utils';
+import { getReport, login, overwriteClick } from './utils';
 import { rmfData } from './mock-data';
 import fetch from 'node-fetch';
 
