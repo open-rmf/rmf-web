@@ -1,10 +1,6 @@
 import unittest
 
-from models.health import HealthStatus
-
 from .health_parser import health_status_parser
-
-# {'log': 'INFO:app.BookKeeper.door_health:{"id": "hardware_door", "health_status": "HealthStatus.HEALTHY", "health_message": null}\n', 'stream': 'stdout'}
 
 
 class TestCaseHealth(unittest.IsolatedAsyncioTestCase):
