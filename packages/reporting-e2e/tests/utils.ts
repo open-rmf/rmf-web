@@ -89,3 +89,17 @@ export const selectDateAndRetrieveLogs = (): void => {
   $('body').click();
   $('button=Retrieve Logs').click();
 };
+
+export const getReport = (options: {
+  listOrder: number;
+  elemName: string;
+  reportTitle: string;
+}): void => {
+  browser.waitUntil(() => $('.MuiList-root').waitForDisplayed() === true);
+  const targetButton = $(`.MuiList-root .MuiListItem-root:nth-child(${options.listOrder})`).$(
+    options.elemName,
+  );
+  targetButton.click();
+  selectDateAndRetrieveLogs();
+  browser.waitUntil(() => $(options.reportTitle).waitForDisplayed({ timeout: 5000 }) === true);
+};

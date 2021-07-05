@@ -1,4 +1,4 @@
-import { login, overwriteClick, selectDateAndRetrieveLogs } from './utils';
+import { getReport, login, overwriteClick, selectDateAndRetrieveLogs } from './utils';
 import { rmfData } from './mock-data';
 import fetch from 'node-fetch';
 
@@ -7,7 +7,8 @@ describe('reporting interactions', () => {
   before(() => browser.url('/'));
 
   before(login);
-  before(async () => {
+
+  it('should populate the database', async () => {
     const options = {
       method: 'POST',
       body: JSON.stringify(rmfData),
@@ -16,73 +17,83 @@ describe('reporting interactions', () => {
       },
     };
 
+    let response;
     try {
       const res = await fetch(`http://localhost:8003/log/rmfserver`, options);
-      return await res.json();
+      response = await res.text();
     } catch (error) {
       console.log(error);
     }
+
+    expect(response).toBe('"Logs were saved correctly"');
   });
 
   it('should retrieve dispenser state report', async () => {
-    browser.waitUntil(() => $('.MuiList-root').waitForDisplayed() === true);
-    const dispenserButton = $('.MuiList-root .MuiListItem-root:nth-child(2)').$('div*=Dispensers');
-    dispenserButton.click();
-    selectDateAndRetrieveLogs();
-    browser.waitUntil(() => $('h6=Dispenser State').waitForDisplayed({ timeout: 5000 }) === true);
+    const options = {
+      listOrder: 2,
+      elemName: 'div*=Dispensers',
+      reportTitle: 'h6=Dispenser State',
+    };
+    getReport(options);
     expect($('h6=Dispenser State')).toBeVisible();
   });
   it('should retrieve door state report', async () => {
-    browser.waitUntil(() => $('.MuiList-root').waitForDisplayed() === true);
-    const dispenserButton = $('.MuiList-root .MuiListItem-root:nth-child(3)').$('div*=Doors');
-    dispenserButton.click();
-    selectDateAndRetrieveLogs();
-    browser.waitUntil(() => $('h6=Door State').waitForDisplayed({ timeout: 5000 }) === true);
+    const options = {
+      listOrder: 3,
+      elemName: 'div*=Doors',
+      reportTitle: 'h6=Door State',
+    };
+    getReport(options);
     expect($('h6=Door State')).toBeVisible();
   });
 
   it('should retrieve the fleet state report', async () => {
-    browser.waitUntil(() => $('.MuiList-root').waitForDisplayed() === true);
-    const fleetsButton = $('.MuiList-root .MuiListItem-root:nth-child(4)').$('div*=Fleets');
-    fleetsButton.click();
-    selectDateAndRetrieveLogs();
-    browser.waitUntil(() => $('h6=Fleet State').waitForDisplayed({ timeout: 10000 }) === true);
+    const options = {
+      listOrder: 4,
+      elemName: 'div*=Fleets',
+      reportTitle: 'h6=Fleet State',
+    };
+    getReport(options);
     expect($('h6=Fleet State')).toBeVisible();
   });
 
-  it('should health report', async () => {
-    browser.waitUntil(() => $('.MuiList-root').waitForDisplayed() === true);
-    const healthButton = $('.MuiList-root .MuiListItem-root:nth-child(5)').$('div*=Health');
-    healthButton.click();
-    selectDateAndRetrieveLogs();
-    browser.waitUntil(() => $('h6=Health').waitForDisplayed({ timeout: 5000 }) === true);
+  it('should retrieve the health report', async () => {
+    const options = {
+      listOrder: 5,
+      elemName: 'div*=Health',
+      reportTitle: 'h6=Health',
+    };
+    getReport(options);
     expect($('h6=Health')).toBeVisible();
   });
 
   it('should retrieve ingestor state report', async () => {
-    browser.waitUntil(() => $('.MuiList-root').waitForDisplayed() === true);
-    const ingestorButton = $('.MuiList-root .MuiListItem-root:nth-child(6)').$('div*=Ingestor');
-    ingestorButton.click();
-    selectDateAndRetrieveLogs();
-    browser.waitUntil(() => $('h6=Ingestor State').waitForDisplayed({ timeout: 5000 }) === true);
+    const options = {
+      listOrder: 6,
+      elemName: 'div*=Ingestor',
+      reportTitle: 'h6=Ingestor State',
+    };
+    getReport(options);
     expect($('h6=Ingestor State')).toBeVisible();
   });
 
   it('should retrieve lift state report', async () => {
-    browser.waitUntil(() => $('.MuiList-root').waitForDisplayed() === true);
-    const liftButton = $('.MuiList-root .MuiListItem-root:nth-child(7)').$('div*=Lifts');
-    liftButton.click();
-    selectDateAndRetrieveLogs();
-    browser.waitUntil(() => $('h6=Lift State').waitForDisplayed({ timeout: 5000 }) === true);
+    const options = {
+      listOrder: 7,
+      elemName: 'div*=Lifts',
+      reportTitle: 'h6=Lift State',
+    };
+    getReport(options);
     expect($('h6=Lift State')).toBeVisible();
   });
 
   it('should retrieve the task summary report', async () => {
-    browser.waitUntil(() => $('.MuiList-root').waitForDisplayed() === true);
-    const taskButton = $('.MuiList-root .MuiListItem-root:nth-child(8)').$('div*=Tasks');
-    taskButton.click();
-    selectDateAndRetrieveLogs();
-    browser.waitUntil(() => $('h6=Task Summary').waitForDisplayed({ timeout: 10000 }) === true);
+    const options = {
+      listOrder: 8,
+      elemName: 'div*=Tasks',
+      reportTitle: 'h6=Task Summary',
+    };
+    getReport(options);
     expect($('h6=Task Summary')).toBeVisible();
   });
 });
