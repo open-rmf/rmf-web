@@ -31,6 +31,7 @@ setup(
     entry_points={
         "console_scripts": [
             "reporting_server=rest_server.__main__:main",
+            "reporting_server_clean_logs=rest_server.clean_logs:main",
         ],
     },
     license="Apache License, Version 2.0",
