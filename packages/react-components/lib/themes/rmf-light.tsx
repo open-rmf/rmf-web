@@ -1,6 +1,15 @@
 import { createMuiTheme } from '@material-ui/core/styles';
 import commonTheme from './common-theme';
 
+declare module '@material-ui/core/styles/createMuiTheme' {
+  interface Theme {
+    mapClass: string;
+  }
+  interface ThemeOptions {
+    mapClass: string;
+  }
+}
+
 export const rmfLight = createMuiTheme({
   palette: {
     ...commonTheme,
@@ -15,4 +24,5 @@ export const rmfLight = createMuiTheme({
       paper: '#FFFFFF',
     },
   },
+  mapClass: '',
 });

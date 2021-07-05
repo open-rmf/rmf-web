@@ -19,7 +19,7 @@ import {
   Trajectory,
   TrajectoryResponse,
 } from '../../managers/robot-trajectory-manager';
-import { AppConfigContext, SettingsContext } from '../app-contexts';
+import { AppConfigContext } from '../app-contexts';
 import { FleetStateContext, RmfIngressContext } from '../rmf-app';
 import DispensersOverlay from './dispensers-overlay';
 import DoorsOverlay from './doors-overlay';
@@ -28,7 +28,6 @@ import { NegotiationColors } from './negotiation-colors';
 import RobotTrajectoriesOverlay from './robot-trajectories-overlay';
 import RobotsOverlay, { RobotsOverlayProps } from './robots-overlay';
 import WaypointsOverlay from './waypoints-overlay';
-import { ThemeMode, UseTheme } from '../../settings';
 
 const debug = Debug('ScheduleVisualizer');
 
@@ -44,12 +43,8 @@ const useStyles = makeStyles((theme) => ({
     color: `${theme.palette.text.primary} !important`,
     backgroundColor: `${theme.palette.background.paper} !important`,
   },
-  mapImgDark: {
-    filter:
-      'invert(90%) sepia(12%) saturate(5773%) hue-rotate(193deg) brightness(92%) contrast(92%)',
-  },
-  mapImgLight: {
-    // use original color
+  mapImg: {
+    filter: theme.mapClass,
   },
 }));
 
@@ -88,14 +83,8 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   const negotiationColors = React.useMemo(() => new NegotiationColors(), []);
 
   const authenticator = React.useContext(AppConfigContext).authenticator;
-  const themeContext = React.useContext(SettingsContext).themeMode;
-  const useThemeContext = React.useContext(SettingsContext).useTheme;
-  const mapClass =
-    themeContext === ThemeMode.Dark && useThemeContext === UseTheme.True
-      ? classes.mapImgDark
-      : classes.mapImgLight;
 
-  const [curMapTheme, setCurMapTheme] = React.useState(mapClass);
+  const [curMapTheme, setCurMapTheme] = React.useState(classes.mapImg);
   const [curLayerTheme, setCurLayerTheme] = React.useState(classes.leafletControl);
 
   const mapFloorLayerSorted = React.useMemo(
@@ -271,11 +260,11 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
         const img = ref.current?.leafletElement.getElement();
         // remove previous class only if classlist contains existing class
         // and when a new theme class is rendered
-        if (img?.classList.contains(curMapTheme) && curMapTheme !== mapClass)
+        if (img?.classList.contains(curMapTheme) && curMapTheme !== classes.mapImg)
           img?.classList.remove(curMapTheme);
-        img?.classList.add(mapClass);
+        img?.classList.add(classes.mapImg);
         // update current map theme when a new theme is rendered
-        if (curMapTheme !== mapClass) setCurMapTheme(mapClass);
+        if (curMapTheme !== classes.mapImg) setCurMapTheme(classes.mapImg);
       }
     });
   }

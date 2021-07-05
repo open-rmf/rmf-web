@@ -1,6 +1,6 @@
-import { Grid, makeStyles, ThemeProvider } from '@material-ui/core';
+import { Grid, makeStyles, ThemeProvider, createMuiTheme } from '@material-ui/core';
 import React from 'react';
-import { rmfDark, rmfLight, GlobalCss, defaultTheme } from 'react-components';
+import { rmfDark, rmfLight, GlobalCss } from 'react-components';
 import { loadSettings, saveSettings, ThemeMode, UseTheme } from '../settings';
 import {
   AppController,
@@ -18,6 +18,8 @@ const useStyles = makeStyles((theme) => ({
     height: '100%',
   },
 }));
+
+export const defaultTheme = createMuiTheme();
 
 export interface AppBaseProps {
   appbarProps: AppBarProps;
