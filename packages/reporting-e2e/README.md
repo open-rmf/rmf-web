@@ -1,6 +1,6 @@
 # Running with Keycloak
 
-By default, the tests are ran using keycloak as the authentication server, docker and docker-compose it used to simplify the set up of keycloak.
+The tests are run with keycloak as the authentication server and we use docker and docker-compose to simplify the setup of keycloak.
 
 ## Ubuntu 20.04
 
@@ -68,7 +68,7 @@ This is to document the flow and interaction of the e2e services in the github e
 
 Below is a diagram representing the flow of commands when running `npm run test:e2e`
 
-![Flow of commands diagram](docs/resources/e2e-E2e-start-process.png)
+![Flow of commands diagram](docs/resources/reporting-e2e-process.png)
 
 ## Container and network interactions
 
