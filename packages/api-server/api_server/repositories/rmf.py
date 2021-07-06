@@ -23,7 +23,7 @@ from ..models import (
     User,
 )
 from ..models import tortoise_models as ttm
-from ..permissions import Enforcer
+from ..permissions import Enforcer, RmfAction
 
 
 class RmfRepository:
@@ -234,4 +234,4 @@ class RmfRepository:
 
     @staticmethod
     def query_tasks(user: User) -> QuerySet[ttm.TaskSummary]:
-        return Enforcer.query(user, ttm.TaskSummary)
+        return Enforcer.query(user, ttm.TaskSummary, RmfAction.TaskRead)

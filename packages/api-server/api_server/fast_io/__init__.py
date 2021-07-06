@@ -29,7 +29,6 @@ from starlette.routing import compile_path, replace_params
 
 from ..authenticator import AuthenticationError, JwtAuthenticator
 from ..models import User
-from ..permissions import RmfRole
 from .errors import *
 
 T = TypeVar("T")

@@ -53,7 +53,6 @@ class TaskProgress(BaseModel):
 
 class Task(BaseModel):
     task_id: str
-    owner: Optional[str]
     summary: TaskSummary
     progress: TaskProgress
 

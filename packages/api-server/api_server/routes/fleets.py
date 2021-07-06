@@ -43,7 +43,6 @@ class FleetsRouter(FastIORouter):
                 filter_params["id___in"] = fleet_name.split(",")
             states = await with_base_query(ttm.FleetState.filter(**filter_params))
             results: Pagination[Fleet] = Pagination(
-                total_count=states.total_count,
                 items=[Fleet(name=s.id_, state=s.data) for s in states.items],
             )
             return results
@@ -98,9 +97,7 @@ class FleetsRouter(FastIORouter):
                     )
                 r.tasks.append(get_task_progress(t.to_pydantic(), rmf_gateway_dep()))
 
-            return Pagination(
-                total_count=robot_states.total_count, items=list(robots.values())
-            )
+            return Pagination(items=list(robots.values()))
 
         @self.watch("/{name}/state", rmf_events.fleet_states, response_model=FleetState)
         def get_fleet_state(fleet_state: FleetState):

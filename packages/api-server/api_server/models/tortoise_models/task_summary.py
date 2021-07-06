@@ -5,9 +5,8 @@ from tortoise import Model, fields
 
 from ...ros_time import ros_to_py_datetime
 from ..tasks import TaskSummary as PydanticTaskSummary
-from ..user import User
+from .authorization import ProtectedResource
 from .json_mixin import JsonMixin
-from .resource import ProtectedResource, ResourcePermission
 
 
 class TaskSummary(Model, JsonMixin, ProtectedResource):
@@ -31,9 +30,10 @@ class TaskSummary(Model, JsonMixin, ProtectedResource):
 
     @staticmethod
     async def save_pydantic(
-        task_summary: PydanticTaskSummary, owner: Optional[User] = None
+        task_summary: PydanticTaskSummary, authz_grp: Optional[str] = None
     ) -> "TaskSummary":
         defaults = {
+            "authz_grp": authz_grp,
             "fleet_name": task_summary.fleet_name,
             "submission_time": ros_to_py_datetime(task_summary.submission_time),
             "start_time": ros_to_py_datetime(task_summary.start_time),
@@ -44,14 +44,5 @@ class TaskSummary(Model, JsonMixin, ProtectedResource):
             "priority": task_summary.task_profile.description.priority.value,
             "data": task_summary.dict(),
         }
-        owner_username = owner.username if owner else None
-        if owner_username:
-            defaults["owner"] = owner_username
         result = await TaskSummary.update_or_create(defaults, id_=task_summary.task_id)
         return result[0]
-
-
-class TaskSummaryPermission(Model, ResourcePermission):
-    obj: fields.ForeignKeyRelation[TaskSummary] = fields.ForeignKeyField(
-        "models.TaskSummary", "permissions"
-    )

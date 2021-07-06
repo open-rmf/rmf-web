@@ -2,7 +2,6 @@ from typing import Optional
 
 from ..authenticator import JwtAuthenticator
 from ..models import User
-from ..permissions import RmfRole
 
 
 def auth_scheme(
@@ -16,7 +15,7 @@ def auth_scheme(
     """
     if not authenticator:
         # no authentication
-        return lambda: User(username="stub", roles=[RmfRole.Admin])
+        return lambda: User(username="stub", is_admin=True)
 
     oidc_url = oidc_url or ""
 

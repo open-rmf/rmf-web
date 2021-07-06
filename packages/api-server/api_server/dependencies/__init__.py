@@ -27,7 +27,6 @@ def base_query_params(field_mapping: Dict[str, str] = None) -> WithBaseQuery[Res
         ),
     ) -> WithBaseQuery[ResultT]:
         async def do_query(query: QuerySet):
-            count = await query.count()
             query = query.limit(limit).offset(offset)
             if order_by is not None:
                 order_fields = []
@@ -42,7 +41,7 @@ def base_query_params(field_mapping: Dict[str, str] = None) -> WithBaseQuery[Res
                         order_fields.append(field_mapping.get(v, v))
                 query = query.order_by(*order_fields)
             items = await query
-            return Pagination.construct(total_count=count, items=items)
+            return Pagination.construct(items=items)
 
         return do_query
 

@@ -28,14 +28,12 @@ class TestBaseQuery(RouteFixture):
         resp = self.session.get(f"{self.base_url}/tasks")
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
-        self.assertEqual(resp_json["total_count"], 200)
         self.assertEqual(len(resp_json["items"]), 100)
 
     def test_offset(self):
         resp = self.session.get(f"{self.base_url}/tasks?offset=150")
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
-        self.assertEqual(resp_json["total_count"], 200)
         self.assertEqual(len(resp_json["items"]), 50)
         self.assertEqual(resp_json["items"][0]["summary"]["task_id"], "task_150")
 
@@ -43,7 +41,6 @@ class TestBaseQuery(RouteFixture):
         resp = self.session.get(f"{self.base_url}/tasks?order_by=-priority")
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
-        self.assertEqual(resp_json["total_count"], 200)
         self.assertEqual(len(resp_json["items"]), 100)
         self.assertEqual(resp_json["items"][0]["summary"]["task_id"], "task_199")
 
@@ -51,7 +48,6 @@ class TestBaseQuery(RouteFixture):
         resp = self.session.get(f"{self.base_url}/tasks?order_by=-task_id")
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
-        self.assertEqual(resp_json["total_count"], 200)
         self.assertEqual(len(resp_json["items"]), 100)
         self.assertEqual(resp_json["items"][0]["summary"]["task_id"], "task_99")
 
@@ -59,7 +55,6 @@ class TestBaseQuery(RouteFixture):
         resp = self.session.get(f"{self.base_url}/tasks?limit=10")
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
-        self.assertEqual(resp_json["total_count"], 200)
         self.assertEqual(len(resp_json["items"]), 10)
 
     def test_max_limit(self):

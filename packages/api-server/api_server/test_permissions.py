@@ -1,89 +1,84 @@
 import unittest
 
 from tortoise import Tortoise
-from tortoise.fields import CharField, ForeignKeyField, ForeignKeyRelation
+from tortoise.fields import CharField
 from tortoise.models import Model as TortoiseModel
 
 from .models import User
-from .models.tortoise_models import ProtectedResource, ResourcePermission
-from .permissions import BasicAction, Enforcer, RmfRole
+from .models.tortoise_models import ProtectedResource, ResourcePermission, Role
+from .permissions import Enforcer
 
 
 class Greeting(TortoiseModel, ProtectedResource):
     message = CharField(255, pk=True)
 
 
-class GreetingPermission(TortoiseModel, ResourcePermission):
-    obj: ForeignKeyRelation[Greeting] = ForeignKeyField(
-        "models.Greeting", "permissions"
-    )
-
-
 class TestPermissions(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         await Tortoise.init(
             db_url="sqlite://:memory:",
-            modules={"models": ["api_server.test_permissions"]},
+            modules={
+                "models": [
+                    "api_server.test_permissions",
+                    "api_server.models.tortoise_models.authorization",
+                ]
+            },
         )
         await Tortoise.generate_schemas()
 
     async def asyncTearDown(self):
         await Tortoise.close_connections()
 
-    async def test_user_outside_group_cannot_see_resource(self):
-        owner = User(username="test_owner", groups=["greeter"])
-        greeting = Greeting(message="hello", owner=owner.username)
-        await greeting.save()
-        await Enforcer.save_permissions(greeting, owner.groups, [BasicAction.Read])
-
-        q = Enforcer.query(owner, Greeting).count()
-        self.assertEqual(1, await q)
-
-        # unrelated user cannot see the resource
-        user = User(username="test_user")
-        q = Enforcer.query(user, Greeting).count()
-        self.assertEqual(0, await q)
-
-        # users with the same groups can see the resource
-        user2 = User(username="test_user2", groups=["greeter"])
-        q = Enforcer.query(user2, Greeting).count()
-        self.assertEqual(1, await q)
-
-    async def test_user_authorization(self):
-        owner = User(username="test_owner", groups=["greeter"])
-        greeting = Greeting(message="hello", owner=owner.username)
-        await greeting.save()
-        await Enforcer.save_permissions(
-            greeting, owner.groups, [BasicAction.Read, BasicAction.Write]
+    async def test_user_without_permissions_cannot_query_resources(self):
+        role = await Role.create(name="test_role")
+        await ResourcePermission.create(
+            authz_grp="test_group", role=role, action="test_action"
         )
 
-        user = User(username="test_user", groups=["greeter"])
-        authorized = await Enforcer.is_authorized(greeting, user, BasicAction.Write)
+        user = User(username="test_user", roles=["test_role"])
+        await Greeting.create(message="hello", authz_grp="test_group")
+
+        # user with permission can see resource
+        q = Enforcer.query(user, Greeting, "test_action").count()
+        self.assertEqual(1, await q)
+
+        # user without permission cannot see the resource
+        user2 = User(username="test_user2")
+        q = Enforcer.query(user2, Greeting, "test_action").count()
+        self.assertEqual(0, await q)
+
+    async def test_resources_without_authorization_can_be_queried_without_permissions(
+        self,
+    ):
+        await Greeting.create(message="hello")
+        user = User(username="test_user")
+        q = Enforcer.query(user, Greeting, "test_action").count()
+        self.assertEqual(1, await q)
+
+    async def test_user_without_permissions_is_not_authorized_to_perform_action(self):
+        role = await Role.create(name="test_role")
+        await ResourcePermission.create(
+            authz_grp="test_group", role=role, action="test_action"
+        )
+
+        user = User(username="test_user", roles=["test_role"])
+        greeting = await Greeting.create(message="hello", authz_grp="test_group")
+
+        authorized = await Enforcer.is_authorized(
+            user, greeting.authz_grp, "test_action"
+        )
         self.assertTrue(authorized)
 
         user2 = User(username="test_user2")
-        authorized = await Enforcer.is_authorized(greeting, user2, BasicAction.Write)
+        authorized = await Enforcer.is_authorized(
+            user2, greeting.authz_grp, "test_action"
+        )
         self.assertFalse(authorized)
 
-    async def test_owner_has_full_access(self):
-        owner = User(username="test_owner", groups=["greeter"])
-        greeting = Greeting(message="hello", owner=owner.username)
-        await greeting.save()
-        await Enforcer.save_permissions(greeting, owner.groups, [BasicAction.Read])
-        authorized = await Enforcer.is_authorized(greeting, owner, BasicAction.Write)
+    async def test_actions_on_resources_without_authorization_does_not_need_permissions(
+        self,
+    ):
+        await Greeting.create(message="hello")
+        user = User(username="test_user")
+        authorized = await Enforcer.is_authorized(user, None, "test_action")
         self.assertTrue(authorized)
-
-    async def test_user_without_groups_can_see_own_resources(self):
-        owner = User(username="test_owner")
-        greeting = Greeting(message="hello", owner=owner.username)
-        await greeting.save()
-        await Enforcer.save_permissions(greeting, owner.groups, [BasicAction.Read])
-        count = await Enforcer.query(owner, Greeting).count()
-        self.assertEqual(1, count)
-
-    async def test_superadmin_can_see_resource_with_no_owner(self):
-        greeting = Greeting(message="hello")
-        await greeting.save()
-        user = User(username="test_superadmin", roles=[RmfRole.Admin])
-        count = await Enforcer.query(user, Greeting).count()
-        self.assertEqual(1, count)

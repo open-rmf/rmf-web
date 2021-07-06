@@ -7,7 +7,6 @@ ItemT = TypeVar("ItemT")
 
 class Pagination(Generic[ItemT], BaseModel):
     items: List[ItemT]
-    total_count: int
 
     @staticmethod
     def response_model(ResponseItemT):

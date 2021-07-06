@@ -17,7 +17,6 @@ from urllib3.util.retry import Retry
 from ..app import App
 from ..app_config import load_config
 from ..models import User
-from ..permissions import RmfRole
 from ..test.server import BackgroundServer
 
 T = TypeVar("T")
@@ -71,8 +70,7 @@ with open(f"{here}/test.key", "br") as f:
 
 
 def generate_token(user: User):
-    jwt_roles = list(user.roles)
-    jwt_roles.extend(list(user.groups))
+    jwt_roles = ["admin"] if user.is_admin else []
     return jwt.encode(
         {
             "client_id": "test",
@@ -97,7 +95,7 @@ class RouteFixture(unittest.TestCase):
         retry = Retry(total=5, backoff_factor=0.1)
         adapter = requests.adapters.HTTPAdapter(max_retries=retry)
         cls.session = requests.Session()
-        cls.user = User(username="test_user", roles=[RmfRole.Admin])
+        cls.user = User(username="test_user", is_admin=True)
         cls.set_user(cls.user)
         cls.session.headers["Content-Type"] = "application/json"
         cls.session.mount("http://", adapter)
