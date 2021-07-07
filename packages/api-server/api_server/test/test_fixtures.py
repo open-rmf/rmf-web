@@ -7,6 +7,7 @@ import threading
 import time
 import unittest
 from typing import Awaitable, Callable, Optional, TypeVar, Union
+from uuid import uuid4
 
 import jwt
 import rclpy
@@ -16,7 +17,6 @@ from urllib3.util.retry import Retry
 
 from ..app import App
 from ..app_config import load_config
-from ..models import User
 from ..test.server import BackgroundServer
 
 T = TypeVar("T")
@@ -137,3 +137,33 @@ class RouteFixture(unittest.TestCase):
 
         cls.server.app.loop.create_task(task())
         return fut.result(timeout)
+
+    def create_user(self, admin: bool = False):
+        username = f"user_{uuid4().hex}"
+        resp = self.session.post(
+            f"{self.base_url}/admin/users",
+            json={"username": username, "is_admin": admin},
+        )
+        self.assertEqual(200, resp.status_code)
+        return username
+
+    def create_role(self):
+        role_name = f"role_{uuid4().hex}"
+        resp = self.session.post(
+            f"{self.base_url}/admin/roles", json={"name": role_name}
+        )
+        self.assertEqual(200, resp.status_code)
+        return role_name
+
+    def add_permission(self, role: str, action: str, authz_grp: Optional[str] = ""):
+        resp = self.session.post(
+            f"{self.base_url}/admin/roles/{role}/permissions",
+            json={"action": action, "authz_grp": authz_grp},
+        )
+        self.assertEqual(200, resp.status_code)
+
+    def assign_role(self, username: str, role: str):
+        resp = self.session.post(
+            f"{self.base_url}/admin/users/{username}/roles", json={"name": role}
+        )
+        self.assertEqual(200, resp.status_code)

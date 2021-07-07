@@ -1,19 +1,19 @@
 import asyncio
-from typing import Optional, Sequence
+from typing import Sequence
 
 from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
 from rmf_task_msgs.msg import TaskType as RmfTaskType
 from rmf_task_msgs.srv import CancelTask as RmfCancelTask
 from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
 
-from ...models import CancelTask, CleanTaskDescription, SubmitTask, TaskSummary, User
+from ...models import CancelTask, CleanTaskDescription, SubmitTask, TaskSummary
 from ...models import tortoise_models as ttm
 from ...permissions import RmfAction
 from ...test.test_fixtures import RouteFixture
 
 
 class TasksFixture(RouteFixture):
-    def save_tasks(self, tasks: Sequence[TaskSummary], authz_grp: Optional[str] = None):
+    def save_tasks(self, tasks: Sequence[TaskSummary], authz_grp: str):
         async def save_data():
             await asyncio.gather(
                 *(ttm.TaskSummary.save_pydantic(t, authz_grp) for t in tasks)
@@ -52,35 +52,43 @@ class TestTasksRoute(TasksFixture):
             RmfCancelTask, "cancel_task", rmf_cancel_task
         )
 
-        async def populate_db():
-            role1 = await ttm.Role.create(name="role1")
-            await ttm.ResourcePermission.create(
-                authz_grp="group1", role=role1, action=RmfAction.TaskRead
-            )
-            await ttm.ResourcePermission.create(
-                authz_grp="group1", role=role1, action=RmfAction.TaskSubmit
-            )
-            await ttm.ResourcePermission.create(
-                authz_grp="group1", role=role1, action=RmfAction.TaskCancel
-            )
-            role2 = await ttm.Role.create(name="role2")
-            await ttm.ResourcePermission.create(
-                authz_grp="group1", role=role2, action=RmfAction.TaskRead
-            )
+        # async def populate_db():
+        #     role1 = await ttm.Role.create(name="role1")
+        #     await ttm.ResourcePermission.create(
+        #         authz_grp="group1", role=role1, action=RmfAction.TaskRead
+        #     )
+        #     await ttm.ResourcePermission.create(
+        #         authz_grp="group1", role=role1, action=RmfAction.TaskSubmit
+        #     )
+        #     await ttm.ResourcePermission.create(
+        #         authz_grp="group1", role=role1, action=RmfAction.TaskCancel
+        #     )
+        #     role2 = await ttm.Role.create(name="role2")
+        #     await ttm.ResourcePermission.create(
+        #         authz_grp="group1", role=role2, action=RmfAction.TaskRead
+        #     )
 
-            await ttm.User.create(username="user1", is_admin=True)
-            user2 = await ttm.User.create(username="user2", is_admin=False)
-            await user2.roles.add(role1)
-            await ttm.User.create(username="user3", is_admin=False)
-            user4 = await ttm.User.create(username="user4", is_admin=False)
-            await user4.roles.add(role2)
+        #     await ttm.User.create(username="user1", is_admin=True)
+        #     user2 = await ttm.User.create(username="user2", is_admin=False)
+        #     await user2.roles.add(role1)
+        #     await ttm.User.create(username="user3", is_admin=False)
+        #     user4 = await ttm.User.create(username="user4", is_admin=False)
+        #     await user4.roles.add(role2)
 
-        self.run_in_app_loop(populate_db())
+        # self.run_in_app_loop(populate_db())
 
-        user1 = User(username="user1", is_admin=True)
-        user2 = User(username="user2", roles=["role1"])
-        user3 = User(username="user3")
-        user4 = User(username="user4", roles=["role2"])
+        user1 = self.create_user(True)
+        user2 = self.create_user()
+        role1 = self.create_role()
+        self.add_permission(role1, RmfAction.TaskRead)
+        self.add_permission(role1, RmfAction.TaskSubmit)
+        self.add_permission(role1, RmfAction.TaskCancel)
+        self.assign_role(user2, role1)
+        user3 = self.create_user()
+        user4 = self.create_user()
+        role2 = self.create_role()
+        self.add_permission(role2, RmfAction.TaskRead, "group1")
+        self.assign_role(user4, role2)
         self.set_user(user1)
 
         # admin can submit tasks
@@ -104,13 +112,12 @@ class TestTasksRoute(TasksFixture):
         self.assertEqual(200, resp.status_code)
         submitted_task_2 = resp.json()["task_id"]
 
-        # FIXME: There is no way to set task authz grp yet so this test can't pass.
         # user without permission cannot submit task
-        # self.set_user(user3)
-        # resp = self.session.post(
-        #     f"{self.base_url}/tasks/submit_task", data=submit_task.json()
-        # )
-        # self.assertEqual(401, resp.status_code)
+        self.set_user(user3)
+        resp = self.session.post(
+            f"{self.base_url}/tasks/submit_task", data=submit_task.json()
+        )
+        self.assertEqual(403, resp.status_code)
 
         # admin can see submitted task
         self.set_user(user1)
@@ -128,36 +135,25 @@ class TestTasksRoute(TasksFixture):
         resp = self.session.get(f"{self.base_url}/tasks/{submitted_task_1}/summary")
         self.assertEqual(200, resp.status_code)
 
-        # FIXME: There is no way to set task authz grp yet so this test can't pass.
         # user without permission cannot see submitted task
-        # self.set_user(user3)
-        # resp = self.session.get(f"{self.base_url}/tasks")
-        # tasks = resp.json()["items"]
-        # self.assertEqual(0, len(tasks))
-        # resp = self.session.get(f"{self.base_url}/tasks/{submitted_task_1}/summary")
-        # self.assertEqual(404, resp.status_code)
+        self.set_user(user3)
+        resp = self.session.get(f"{self.base_url}/tasks")
+        tasks = resp.json()["items"]
+        self.assertEqual(0, len(tasks))
+        resp = self.session.get(f"{self.base_url}/tasks/{submitted_task_1}/summary")
+        self.assertEqual(404, resp.status_code)
 
         #
         # Cancelling tasks
         #
 
-        # FIXME: There is no way to set task authz grp yet so this test can't pass.
         # user without permission cannot cancel task
-        # self.set_user(user4)
-        # resp = self.session.post(
-        #     f"{self.base_url}/tasks/cancel_task",
-        #     data=CancelTask(task_id=submitted_task_2).json(),
-        # )
-        # self.assertEqual(401, resp.status_code)
-
-        # FIXME: There is no way to set task authz grp yet so this test can't pass.
-        # user without read permission gets 404 error
-        # self.set_user(user3)
-        # resp = self.session.post(
-        #     f"{self.base_url}/tasks/cancel_task",
-        #     data=CancelTask(task_id=submitted_task_2).json(),
-        # )
-        # self.assertEqual(401, resp.status_code)
+        self.set_user(user4)
+        resp = self.session.post(
+            f"{self.base_url}/tasks/cancel_task",
+            data=CancelTask(task_id=submitted_task_2).json(),
+        )
+        self.assertEqual(403, resp.status_code)
 
         # user with permission can cancel task
         self.set_user(user2)
@@ -217,7 +213,7 @@ class TestTasksQuery(TasksFixture):
             ),
         )
 
-        self.save_tasks(dataset)
+        self.save_tasks(dataset, "test_group")
 
         resp = self.session.get(f"{self.base_url}/tasks?task_id=task_1,task_2")
         self.assertEqual(resp.status_code, 200)

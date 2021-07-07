@@ -150,6 +150,7 @@ class App(FastIO):
         def rmf_gateway_dep():
             return self.rmf_gateway
 
+        self.fapi.include_router(routes.main_router(auth_dep))
         self.include_router(
             routes.BuildingMapRouter(self.rmf_events), prefix="/building_map"
         )

@@ -15,7 +15,7 @@ class DispatcherClient:
     @staticmethod
     async def _get_submit_task_authz_grp(task: RmfSubmitTask.Request):
         # TODO
-        return None
+        return ""
 
     async def submit_task_request(self, user: mdl.User, req_msg: RmfSubmitTask.Request):
         """
@@ -25,7 +25,7 @@ class DispatcherClient:
         """
         authz_grp = await DispatcherClient._get_submit_task_authz_grp(req_msg)
         if not await Enforcer.is_authorized(user, authz_grp, RmfAction.TaskSubmit):
-            raise HTTPException(401)
+            raise HTTPException(403)
 
         resp: RmfSubmitTask.Response = await self.rmf_gateway.call_service(
             self.rmf_gateway.submit_task_srv, req_msg
@@ -48,7 +48,7 @@ class DispatcherClient:
     @staticmethod
     async def _get_cancel_task_authz_grp(task: mdl.CancelTask):
         # TODO
-        return None
+        return ""
 
     async def cancel_task_request(self, task: mdl.CancelTask, user: mdl.User) -> bool:
         """
@@ -59,7 +59,7 @@ class DispatcherClient:
         authz_grp = await DispatcherClient._get_cancel_task_authz_grp(task)
         authorized = await Enforcer.is_authorized(user, authz_grp, RmfAction.TaskRead)
         if not authorized:
-            raise HTTPException(401)
+            raise HTTPException(403)
 
         req = RmfCancelTask.Request()
         req.requester = "rmf-server"

@@ -1,7 +1,6 @@
 import unittest
 
 from tortoise import Tortoise
-from tortoise.exceptions import DoesNotExist
 
 from . import User
 from . import tortoise_models as ttm
@@ -28,11 +27,8 @@ class TestUser(unittest.IsolatedAsyncioTestCase):
         self.assertEqual("test_user", user.username)
         self.assertTrue(user.is_admin)
 
-    async def test_load_from_db_raises_error_for_non_existing_user(self):
-        try:
-            await User.load_from_db("test_user")
-            self.fail("expected DoesNotExist error")
-        except DoesNotExist:
-            pass
-        except:  # pylint: disable=bare-except
-            self.fail("expected DoesNotExist error")
+        # automatically creates an user if it does not exist
+        user = await User.load_from_db("test_user2")
+        self.assertEqual("test_user2", user.username)
+        self.assertFalse(user.is_admin)
+        self.assertEqual(0, len(user.roles))

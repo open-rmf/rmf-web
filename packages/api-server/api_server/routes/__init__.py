@@ -5,4 +5,5 @@ from .doors import DoorsRouter
 from .fleets import FleetsRouter
 from .ingestors import IngestorsRouter
 from .lifts import LiftsRouter
+from .main import main_router
 from .tasks import TasksRouter

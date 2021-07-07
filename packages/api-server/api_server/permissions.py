@@ -1,7 +1,6 @@
-from typing import List, Optional
+from typing import List
 
 from tortoise.expressions import Subquery
-from tortoise.query_utils import Q
 from tortoise.queryset import QuerySet
 
 from .models import User
@@ -16,11 +15,11 @@ class RmfAction:
 
 class Enforcer:
     @staticmethod
-    async def is_authorized(user: User, authz_grp: Optional[str], action: str):
+    async def is_authorized(user: User, authz_grp: str, action: str):
         """
         Checks if an user has permission to perform an action.
         """
-        if authz_grp is None:
+        if user.is_admin:
             return True
         perm = await ttm.ResourcePermission.filter(
             authz_grp=authz_grp, role__name__in=user.roles, action=action
@@ -43,14 +42,10 @@ class Enforcer:
         permissions = ttm.ResourcePermission.filter(
             action=action, role__name__in=user.roles
         ).values("authz_grp")
-        return resource.filter(
-            Q(authz_grp__in=Subquery(permissions)) | Q(authz_grp=None)
-        )
+        return resource.filter(authz_grp__in=Subquery(permissions))
 
     @staticmethod
-    async def get_effective_permissions(
-        user: User, authz_grp: Optional[str]
-    ) -> List[str]:
+    async def get_effective_permissions(user: User, authz_grp: str) -> List[str]:
         return await ttm.ResourcePermission.filter(
             authz_grp=authz_grp, role__name__in=user.roles
         ).values_list("action", flat=True)

@@ -1,4 +1,4 @@
-from typing import Any, Callable, List, Optional
+from typing import Callable, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
@@ -21,11 +21,11 @@ class PostRoles(BaseModel):
 
 class PostRolePermissions(BaseModel):
     action: str
-    authz_grp: Optional[str] = None
+    authz_grp: Optional[str] = ""
 
 
 class GetRolePermission(BaseModel):
-    authz_grp: Optional[str]
+    authz_grp: Optional[str] = ""
     role: str
     action: str
 
@@ -44,14 +44,12 @@ async def _get_db_user(username: str) -> ttm.User:
     return user
 
 
-def admin_router(user_dep: Callable[..., User], **kwargs):
+def admin_router(user_dep: Callable[..., User]):
     def admin_dep(user: User = Depends(user_dep)):
         if not user.is_admin:
             raise HTTPException(403)
 
-    dependencies: List[Callable[..., Any]] = kwargs.setdefault("dependencies", [])
-    dependencies.append(Depends(admin_dep))
-    router = APIRouter(tags=["Admin"], **kwargs)
+    router = APIRouter(tags=["Admin"], dependencies=[Depends(admin_dep)])
 
     @router.get("/users", response_model=Pagination[str])
     async def get_users(

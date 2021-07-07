@@ -47,14 +47,6 @@ class TestPermissions(unittest.IsolatedAsyncioTestCase):
         q = Enforcer.query(user2, Greeting, "test_action").count()
         self.assertEqual(0, await q)
 
-    async def test_resources_without_authorization_can_be_queried_without_permissions(
-        self,
-    ):
-        await Greeting.create(message="hello")
-        user = User(username="test_user")
-        q = Enforcer.query(user, Greeting, "test_action").count()
-        self.assertEqual(1, await q)
-
     async def test_user_without_permissions_is_not_authorized_to_perform_action(self):
         role = await Role.create(name="test_role")
         await ResourcePermission.create(
@@ -74,11 +66,3 @@ class TestPermissions(unittest.IsolatedAsyncioTestCase):
             user2, greeting.authz_grp, "test_action"
         )
         self.assertFalse(authorized)
-
-    async def test_actions_on_resources_without_authorization_does_not_need_permissions(
-        self,
-    ):
-        await Greeting.create(message="hello")
-        user = User(username="test_user")
-        authorized = await Enforcer.is_authorized(user, None, "test_action")
-        self.assertTrue(authorized)

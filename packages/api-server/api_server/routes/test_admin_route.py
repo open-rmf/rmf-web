@@ -1,25 +1,7 @@
-from uuid import uuid4
-
 from ..test.test_fixtures import RouteFixture
 
 
 class TestAdminRoute(RouteFixture):
-    def create_user(self):
-        username = f"user_{uuid4().hex}"
-        resp = self.session.post(
-            f"{self.base_url}/admin/users", json={"username": username}
-        )
-        self.assertEqual(200, resp.status_code)
-        return username
-
-    def create_role(self):
-        role_name = f"role_{uuid4().hex}"
-        resp = self.session.post(
-            f"{self.base_url}/admin/roles", json={"name": role_name}
-        )
-        self.assertEqual(200, resp.status_code)
-        return role_name
-
     def test_crud_user(self):
         username = self.create_user()
 
@@ -51,12 +33,7 @@ class TestAdminRoute(RouteFixture):
 
     def test_crud_role_permissions(self):
         role = self.create_role()
-
-        resp = self.session.post(
-            f"{self.base_url}/admin/roles/{role}/permissions",
-            json={"action": "test_action", "authz_grp": "test_group"},
-        )
-        self.assertEqual(200, resp.status_code)
+        self.add_permission(role, "test_action", "test_group")
 
         resp = self.session.get(
             f"{self.base_url}/admin/roles/{role}/permissions",
@@ -83,11 +60,7 @@ class TestAdminRoute(RouteFixture):
     def test_crud_user_roles(self):
         username = self.create_user()
         role = self.create_role()
-
-        resp = self.session.post(
-            f"{self.base_url}/admin/users/{username}/roles", json={"name": role}
-        )
-        self.assertEqual(200, resp.status_code)
+        self.assign_role(username, role)
 
         resp = self.session.get(f"{self.base_url}/admin/users/{username}")
         self.assertEqual(200, resp.status_code)

@@ -15,7 +15,7 @@ class Role(Model):
 class ResourcePermission(Model):
     # "obj" in casbin speak
     # This has no foreign key because resources can be given any arbitrary group, sometimes even dynamicly.
-    authz_grp = CharField(255, null=True, index=True)
+    authz_grp = CharField(255, index=True)
     # "sub" in casbin speak
     role: ForeignKeyRelation[Role] = ForeignKeyField("models.Role")
     action = CharField(255)
