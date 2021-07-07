@@ -2,6 +2,20 @@ from ..test.test_fixtures import RouteFixture
 
 
 class TestAdminRoute(RouteFixture):
+    def test_query_users(self):
+        # query usernames
+        user = self.create_user()
+        resp = self.session.get(f"{self.base_url}/admin/users?username={user}")
+        self.assertEqual(200, resp.status_code)
+        users = resp.json()["items"]
+        self.assertIn(user, users)
+
+        # query admins
+        resp = self.session.get(f"{self.base_url}/admin/users?is_admin=true")
+        self.assertEqual(200, resp.status_code)
+        users = resp.json()["items"]
+        self.assertIn("admin", users)
+
     def test_crud_user(self):
         username = self.create_user()
 

@@ -1,6 +1,6 @@
 from typing import Callable, List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 
 from api_server.models.pagination import Pagination
@@ -54,11 +54,22 @@ def admin_router(user_dep: Callable[..., User]):
     @router.get("/users", response_model=Pagination[str])
     async def get_users(
         add_pagination: AddPaginationQuery[ttm.User] = Depends(pagination_query()),
+        username: Optional[str] = Query(
+            None, description="filters username that starts with the value"
+        ),
+        is_admin: Optional[bool] = Query(None),
     ):
         """
-        Get a list of all users
+        Search users
         """
-        q = add_pagination(ttm.User.all()).values_list("username", flat=True)
+        filter_params = {}
+        if username is not None:
+            filter_params["username__istartswith"] = username
+        if is_admin is not None:
+            filter_params["is_admin"] = is_admin
+        q = add_pagination(ttm.User.filter(**filter_params)).values_list(
+            "username", flat=True
+        )
         return Pagination.construct(items=await q)
 
     @router.post("/users")
