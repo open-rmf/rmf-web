@@ -52,7 +52,7 @@ class FleetsRouter(FastIORouter):
 
         @self.get("/robots", response_model=GetRobotsResponse)
         async def get_robots(
-            with_base_query: AddPaginationQuery[ttm.RobotState] = Depends(
+            add_pagination: AddPaginationQuery[ttm.RobotState] = Depends(
                 pagination_query()
             ),
             fleet_name: Optional[str] = Query(
@@ -68,12 +68,12 @@ class FleetsRouter(FastIORouter):
             if robot_name is not None:
                 filter_params["robot_name__in"] = robot_name.split(",")
 
-            robot_states = await with_base_query(ttm.RobotState.filter(**filter_params))
+            robot_states = await add_pagination(ttm.RobotState.filter(**filter_params))
             robots = {
                 f"{q.fleet_name}/{q.robot_name}": Robot(
                     fleet=q.fleet_name, name=q.robot_name, state=q.data
                 )
-                for q in robot_states.items
+                for q in robot_states
             }
 
             filter_states = [

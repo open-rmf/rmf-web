@@ -5,7 +5,7 @@ from ..models import tortoise_models as ttm
 from ..test.test_fixtures import RouteFixture
 
 
-class TestBaseQuery(RouteFixture):
+class TestPaginationQuery(RouteFixture):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -19,7 +19,7 @@ class TestBaseQuery(RouteFixture):
 
         async def save_data():
             await asyncio.gather(
-                *(ttm.TaskSummary.save_pydantic(t, cls.user) for t in dataset)
+                *(ttm.TaskSummary.save_pydantic(t, "test_group") for t in dataset)
             )
 
         cls.run_in_app_loop(save_data())

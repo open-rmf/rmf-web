@@ -7,7 +7,6 @@ import socketio
 
 from .app import App
 from .app_config import load_config
-from .models import User
 from .test.server import BackgroundServer
 from .test.test_fixtures import generate_token
 
@@ -53,5 +52,5 @@ class TestSioAuth(unittest.TestCase):
         self.assertFalse(self.try_connect("invalid"))
 
     def test_success_with_valid_token(self):
-        token = generate_token(User(username="test"))
+        token = generate_token("test_user")
         self.assertTrue(self.try_connect(token))

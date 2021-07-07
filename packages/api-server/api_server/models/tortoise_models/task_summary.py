@@ -30,7 +30,7 @@ class TaskSummary(Model, JsonMixin, ProtectedResource):
 
     @staticmethod
     async def save_pydantic(
-        task_summary: PydanticTaskSummary, authz_grp: Optional[str] = None
+        task_summary: PydanticTaskSummary, authz_grp: Optional[str] = ""
     ) -> "TaskSummary":
         defaults = {
             "authz_grp": authz_grp,

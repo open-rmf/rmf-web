@@ -120,9 +120,7 @@ class FastIORouter(APIRouter):
 
     def __init__(self, *args, user_dep: Optional[Callable[..., User]] = None, **kwargs):
         super().__init__(*args, **kwargs)
-        self.user_dep = user_dep or (
-            lambda: User(username="stub", roles={RmfRole.Admin})
-        )
+        self.user_dep = user_dep or (lambda: User(username="stub", is_admin=True))
         self.watches = cast(List[Watch], [])
         self._loop: Optional[asyncio.AbstractEventLoop] = None
 
@@ -254,9 +252,7 @@ def make_sio(authenticator: Optional[JwtAuthenticator], logger: logging.Logger):
         )
 
         if not authenticator:
-            await sio.save_session(
-                sid, {"user": User(username="stub", roles={RmfRole.Admin})}
-            )
+            await sio.save_session(sid, {"user": User(username="stub", is_admin=True)})
             return True
 
         try:
@@ -264,7 +260,7 @@ def make_sio(authenticator: Optional[JwtAuthenticator], logger: logging.Logger):
                 raise AuthenticationError("no auth options provided")
             if "token" not in auth:
                 raise AuthenticationError("no token provided")
-            user = authenticator.verify_token(auth["token"])
+            user = await authenticator.verify_token(auth["token"])
             await sio.save_session(sid, {"user": user})
             return True
         except AuthenticationError as e:
