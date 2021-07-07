@@ -3,7 +3,6 @@ from typing import Awaitable, Callable
 import jwt
 from fastapi import Depends, HTTPException
 from fastapi.security import OpenIdConnect
-from tortoise.exceptions import DoesNotExist
 
 from .models import User
 
@@ -32,11 +31,7 @@ class JwtAuthenticator:
             )
 
         username = claims["preferred_username"]
-        try:
-            user = await User.load_from_db(username)
-        except DoesNotExist:
-            user = User(username=username)
-        return user
+        return await User.load_from_db(username)
 
     async def verify_token(self, token: str) -> User:
         try:

@@ -19,6 +19,7 @@ from .authenticator import JwtAuthenticator
 from .dependencies import auth_scheme
 from .fast_io import FastIO
 from .gateway import RmfGateway
+from .models import tortoise_models as ttm
 from .repositories import RmfRepository, StaticFilesRepository
 from .rmf_io import HealthWatchdog, RmfBookKeeper, RmfEvents
 
@@ -180,6 +181,7 @@ class App(FastIO):
             routes.FleetsRouter(self.rmf_events, rmf_gateway_dep, logger=logger),
             prefix="/fleets",
         )
+        self.fapi.include_router(routes.admin_router(auth_dep), prefix="/admin")
 
         @self.fapi.on_event("startup")
         async def on_startup():
@@ -214,6 +216,10 @@ class App(FastIO):
             )
             await Tortoise.generate_schemas()
             shutdown_cbs.append(Tortoise.close_connections())
+
+            await ttm.User.update_or_create(
+                {"is_admin": True}, username=app_config.builtin_admin
+            )
 
             use_sim_time_env = os.environ.get("RMF_SERVER_USE_SIM_TIME", None)
             if use_sim_time_env:

@@ -7,7 +7,7 @@ from api_server.models.fleets import Robot
 from api_server.models.pagination import Pagination
 from api_server.models.tasks import TaskStateEnum
 
-from ..dependencies import WithBaseQuery, base_query_params
+from ..dependencies import AddPaginationQuery, pagination_query
 from ..fast_io import FastIORouter
 from ..gateway import RmfGateway
 from ..models import Fleet, FleetState, RobotHealth
@@ -31,8 +31,8 @@ class FleetsRouter(FastIORouter):
 
         @self.get("", response_model=GetFleetsResponse)
         async def get_fleets(
-            with_base_query: WithBaseQuery[ttm.FleetState] = Depends(
-                base_query_params({"fleet_name": "id_"})
+            add_pagination: AddPaginationQuery[ttm.FleetState] = Depends(
+                pagination_query({"fleet_name": "id_"})
             ),
             fleet_name: Optional[str] = Query(
                 None, description="comma separated list of fleet names"
@@ -41,9 +41,9 @@ class FleetsRouter(FastIORouter):
             filter_params = {}
             if fleet_name is not None:
                 filter_params["id___in"] = fleet_name.split(",")
-            states = await with_base_query(ttm.FleetState.filter(**filter_params))
+            states = await add_pagination(ttm.FleetState.filter(**filter_params))
             results: Pagination[Fleet] = Pagination(
-                items=[Fleet(name=s.id_, state=s.data) for s in states.items],
+                items=[Fleet(name=s.id_, state=s.data) for s in states],
             )
             return results
 
@@ -52,8 +52,8 @@ class FleetsRouter(FastIORouter):
 
         @self.get("/robots", response_model=GetRobotsResponse)
         async def get_robots(
-            with_base_query: WithBaseQuery[ttm.RobotState] = Depends(
-                base_query_params()
+            with_base_query: AddPaginationQuery[ttm.RobotState] = Depends(
+                pagination_query()
             ),
             fleet_name: Optional[str] = Query(
                 None, description="comma separated list of fleet names"

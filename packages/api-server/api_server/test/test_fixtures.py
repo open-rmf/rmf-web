@@ -69,15 +69,13 @@ with open(f"{here}/test.key", "br") as f:
     jwt_key = f.read()
 
 
-def generate_token(user: User):
-    jwt_roles = ["admin"] if user.is_admin else []
+def generate_token(username: str):
     return jwt.encode(
         {
             "client_id": "test",
             "aud": "test",
             "iss": "test",
-            "preferred_username": user.username,
-            "resource_access": {"test": {"roles": jwt_roles}},
+            "preferred_username": username,
         },
         jwt_key,
         "RS256",
@@ -95,8 +93,8 @@ class RouteFixture(unittest.TestCase):
         retry = Retry(total=5, backoff_factor=0.1)
         adapter = requests.adapters.HTTPAdapter(max_retries=retry)
         cls.session = requests.Session()
-        cls.user = User(username="test_user", is_admin=True)
-        cls.set_user(cls.user)
+
+        cls.set_user("admin")
         cls.session.headers["Content-Type"] = "application/json"
         cls.session.mount("http://", adapter)
 
@@ -125,9 +123,8 @@ class RouteFixture(unittest.TestCase):
         cls.server.stop()
 
     @classmethod
-    def set_user(cls, user: User):
-        cls.user = user
-        token = generate_token(cls.user)
+    def set_user(cls, username: str):
+        token = generate_token(username)
         cls.session.headers["Authorization"] = f"bearer {token}"
 
     @classmethod

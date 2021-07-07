@@ -5,7 +5,7 @@ from fastapi import Depends, HTTPException
 from fastapi.param_functions import Query
 from fastapi.responses import JSONResponse
 
-from ...dependencies import WithBaseQuery, base_query_params
+from ...dependencies import AddPaginationQuery, pagination_query
 from ...fast_io import DataStore, FastIORouter
 from ...gateway import RmfGateway
 from ...models import (
@@ -91,8 +91,8 @@ class TasksRouter(FastIORouter):
         @self.get("", response_model=GetTasksResponse)
         async def get_tasks(
             user: User = Depends(user_dep),
-            with_base_query: WithBaseQuery[ttm.TaskSummary] = Depends(
-                base_query_params({"task_id": "id_"})
+            add_pagination: AddPaginationQuery[ttm.TaskSummary] = Depends(
+                pagination_query({"task_id": "id_"})
             ),
             task_id: Optional[str] = Query(
                 None, description="comma separated list of task ids"
@@ -145,9 +145,8 @@ class TasksRouter(FastIORouter):
                 filter_params["priority"] = priority
 
             q = rmf_repo.query_tasks(user).filter(**filter_params)
-            results = await with_base_query(q)
-            results.items = [to_task(item) for item in results.items]
-            return results
+            task_summaries = await add_pagination(q)
+            return Pagination.construct(items=[to_task(ts) for ts in task_summaries])
 
         @self.post("/submit_task", response_model=SubmitTaskResponse)
         async def submit_task(
