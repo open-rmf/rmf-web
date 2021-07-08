@@ -169,7 +169,7 @@ function FleetContextsProvider(props: React.PropsWithChildren<{}>): JSX.Element 
         return;
       }
       const fleets = (await fleetsApi.getFleetsFleetsGet()).data;
-      fleets.items.forEach((fleet: Fleet) => {
+      fleets.forEach((fleet: Fleet) => {
         sioClient.subscribeFleetState(fleet.name, (state) =>
           setFleetStates((prev) => ({ ...prev, [state.name]: state })),
         );

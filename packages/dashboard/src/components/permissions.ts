@@ -14,9 +14,11 @@ export class Enforcer {
   }
 
   static canCancelTask(user: User, task: Task): boolean {
-    return (
-      task.owner === user.username ||
-      !!user.roles.find((r) => [RmfRole.SuperAdmin, RmfRole.TaskCancel].includes(r))
-    );
+    // FIXME: Update logic for new authz system
+    return true;
+    // return (
+    //   task.owner === user.username ||
+    //   !!user.roles.find((r) => [RmfRole.SuperAdmin, RmfRole.TaskCancel].includes(r))
+    // );
   }
 }

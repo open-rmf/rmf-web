@@ -29,7 +29,6 @@ export function makeTaskSummary(
 export function makeTask(taskId: string, numberOfPhases: number, currentPhase: number): Task {
   const taskSummary = makeTaskSummary(taskId, numberOfPhases, currentPhase);
   return {
-    owner: 'test',
     task_id: taskId,
     progress: '',
     summary: taskSummary,
