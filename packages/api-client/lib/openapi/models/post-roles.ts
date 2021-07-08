@@ -14,25 +14,13 @@
 /**
  *
  * @export
- * @interface Task
+ * @interface PostRoles
  */
-export interface Task {
+export interface PostRoles {
   /**
    *
    * @type {string}
-   * @memberof Task
+   * @memberof PostRoles
    */
-  task_id: any;
-  /**
-   *
-   * @type {TaskSummary}
-   * @memberof Task
-   */
-  summary: any;
-  /**
-   *
-   * @type {TaskProgress}
-   * @memberof Task
-   */
-  progress: any;
+  name: any;
 }

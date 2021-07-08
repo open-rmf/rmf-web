@@ -9,7 +9,7 @@ from api_server.models.tasks import TaskStateEnum
 from ..dependencies import AddPaginationQuery, pagination_query
 from ..fast_io import FastIORouter
 from ..gateway import RmfGateway
-from ..models import Fleet, FleetState, RobotHealth
+from ..models import Fleet, FleetState, RobotHealth, Task
 from ..models import tortoise_models as ttm
 from ..rmf_io import RmfEvents
 from .tasks.utils import get_task_progress
@@ -86,7 +86,14 @@ class FleetsRouter(FastIORouter):
                     logger.warn(
                         f'task "{t.id_}" is assigned to an unknown fleet/robot ({t.fleet_name}/{t.robot_name}'
                     )
-                r.tasks.append(get_task_progress(t.to_pydantic(), rmf_gateway_dep()))
+                ts = t.to_pydantic()
+                r.tasks.append(
+                    Task(
+                        task_id=ts.task_id,
+                        summary=ts,
+                        progress=get_task_progress(t.to_pydantic(), rmf_gateway_dep()),
+                    )
+                )
 
             return list(robots.values())
 

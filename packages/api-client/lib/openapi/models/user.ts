@@ -14,25 +14,25 @@
 /**
  *
  * @export
- * @interface Task
+ * @interface User
  */
-export interface Task {
+export interface User {
   /**
    *
    * @type {string}
-   * @memberof Task
+   * @memberof User
    */
-  task_id: any;
+  username: any;
   /**
    *
-   * @type {TaskSummary}
-   * @memberof Task
+   * @type {boolean}
+   * @memberof User
    */
-  summary: any;
+  is_admin?: any;
   /**
    *
-   * @type {TaskProgress}
-   * @memberof Task
+   * @type {Array&lt;string&gt;}
+   * @memberof User
    */
-  progress: any;
+  roles?: any;
 }

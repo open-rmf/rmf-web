@@ -129,5 +129,5 @@ export function makeDefinedTask(
 
   const progress = Math.floor(Math.random() * 100);
 
-  return { owner: 'test', task_id: id, summary: taskSummary, progress: progress };
+  return { task_id: id, summary: taskSummary, progress: progress };
 }

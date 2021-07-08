@@ -14,25 +14,19 @@
 /**
  *
  * @export
- * @interface Task
+ * @interface PostRolePermissions
  */
-export interface Task {
+export interface PostRolePermissions {
   /**
    *
    * @type {string}
-   * @memberof Task
+   * @memberof PostRolePermissions
    */
-  task_id: any;
+  action: any;
   /**
    *
-   * @type {TaskSummary}
-   * @memberof Task
+   * @type {string}
+   * @memberof PostRolePermissions
    */
-  summary: any;
-  /**
-   *
-   * @type {TaskProgress}
-   * @memberof Task
-   */
-  progress: any;
+  authz_grp?: any;
 }

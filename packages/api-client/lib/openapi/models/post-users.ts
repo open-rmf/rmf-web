@@ -14,25 +14,19 @@
 /**
  *
  * @export
- * @interface Task
+ * @interface PostUsers
  */
-export interface Task {
+export interface PostUsers {
   /**
    *
    * @type {string}
-   * @memberof Task
+   * @memberof PostUsers
    */
-  task_id: any;
+  username: any;
   /**
    *
-   * @type {TaskSummary}
-   * @memberof Task
+   * @type {boolean}
+   * @memberof PostUsers
    */
-  summary: any;
-  /**
-   *
-   * @type {TaskProgress}
-   * @memberof Task
-   */
-  progress: any;
+  is_admin?: any;
 }
