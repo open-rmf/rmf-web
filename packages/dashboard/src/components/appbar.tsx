@@ -11,7 +11,9 @@ import {
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import HelpIcon from '@material-ui/icons/Help';
 import SettingsIcon from '@material-ui/icons/Settings';
+import PagesIcon from '@material-ui/icons/Pages';
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { HeaderBar } from 'react-components/lib/header-bar';
 import { LogoButton } from 'react-components/lib/logo-button';
 import { NavigationBar } from 'react-components/lib/navigation-bar';
@@ -19,11 +21,15 @@ import DashboardTooltip from 'react-components/lib/tooltip';
 import { AppControllerContext, ResourcesContext, TooltipsContext } from './app-contexts';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     toolbar: {
       textAlign: 'right',
       flexGrow: -1,
+    },
+    link: {
+      textDecoration: 'none',
+      color: '#000',
     },
   }),
 );
@@ -136,6 +142,34 @@ export const AppBar = React.memo(
                 <HelpIcon />
               </IconButton>
             </DashboardTooltip>
+            <IconButton
+              id="show-pages-btn"
+              aria-label="pages"
+              color="inherit"
+              onClick={(event) => setAnchorEl(event.currentTarget)}
+            >
+              <PagesIcon />
+            </IconButton>
+            <Menu
+              anchorEl={anchorEl}
+              getContentAnchorEl={null}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={!!anchorEl}
+              onClose={() => setAnchorEl(null)}
+            >
+              <MenuItem id="beverage-station">
+                <Link className={classes.link} to="/bev-station">
+                  Beverage Station
+                </Link>
+              </MenuItem>
+            </Menu>
           </Toolbar>
         </HeaderBar>
       </div>

@@ -9,7 +9,13 @@ import { BrowserRouter, Link, Redirect, Route, Switch, useLocation } from 'react
 import { getUrl, LoginHOC, PrivateRouteHOC, User } from 'rmf-auth';
 import appConfig from '../app-config';
 import ResourceManager from '../managers/resource-manager';
-import { DASHBOARD_ROUTE, LOGIN_ROUTE, TASKS_ROUTE, ROBOTS_ROUTE } from '../util/url';
+import {
+  DASHBOARD_ROUTE,
+  LOGIN_ROUTE,
+  TASKS_ROUTE,
+  ROBOTS_ROUTE,
+  BEV_STATION_ROUTE,
+} from '../util/url';
 import { AppBase } from './app-base';
 import { AppConfigContext, ResourcesContext, TrajectorySocketContext } from './app-contexts';
 import './app.css';
@@ -18,6 +24,7 @@ import { AuthenticatorContext, UserContext } from './auth/contexts';
 import Dashboard from './dashboard/dashboard';
 import { RmfApp } from './rmf-app';
 import { RobotPage } from './robots';
+import BeverageStationPage from './single-responsibility-pages/bev-station-page';
 import { TaskPage } from './tasks';
 
 const PrivateRoute = PrivateRouteHOC(Route, Redirect, useLocation);
@@ -51,7 +58,7 @@ export default function App(): JSX.Element | null {
   const [authenticator, setAuthenticator] = React.useState(appConfig.authenticator);
   const [user, setUser] = React.useState<User | null>(appConfig.authenticator.user || null);
   const [ws, setWs] = React.useState<WebSocket>(new WebSocket(appConfig.trajServerUrl));
-  const appRoutes = [DASHBOARD_ROUTE, TASKS_ROUTE, ROBOTS_ROUTE];
+  const appRoutes = [DASHBOARD_ROUTE, TASKS_ROUTE, ROBOTS_ROUTE, BEV_STATION_ROUTE];
   const [tabValue, setTabValue] = React.useState<TabValue | null>(() =>
     locationToTabValue(window.location.pathname),
   );
@@ -152,6 +159,14 @@ export default function App(): JSX.Element | null {
                                 user={user}
                               >
                                 <TaskPage />
+                              </PrivateRoute>
+                              <PrivateRoute
+                                exact
+                                path={BEV_STATION_ROUTE}
+                                redirectPath={LOGIN_ROUTE}
+                                user={user}
+                              >
+                                <BeverageStationPage />
                               </PrivateRoute>
                             </Switch>
                             {tabValue === 'building' && <Redirect to={DASHBOARD_ROUTE} />}
