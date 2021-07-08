@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   phasesCell: {
-    padding: `0 ${theme.spacing(1)}px ${theme.spacing(1)}px ${theme.spacing(1)}px`,
+    padding: `0 ${theme.spacing(1)}px`,
     boxShadow: `${theme.shadows[1]}`,
     '&:last-child': {
       paddingRight: `${theme.spacing(1)}px`,

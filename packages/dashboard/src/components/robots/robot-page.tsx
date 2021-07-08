@@ -2,8 +2,9 @@
 
 import { makeStyles } from '@material-ui/core';
 import React from 'react';
-import { RobotPanel, VerboseRobot } from 'react-components';
+import { RobotPanel, RobotPanelProps } from 'react-components';
 import { RmfIngressContext } from '../rmf-app';
+import { useAutoRefresh } from './auto-refresh';
 
 const useStyles = makeStyles((theme) => ({
   robotPanel: {
@@ -14,36 +15,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// custom hook for auto refresh
-function useAutoRefresh(callback: () => Promise<any>, delay: number, autoRefresh: boolean) {
-  const savedCallback = React.useRef<() => Promise<any>>();
-
-  React.useEffect(() => {
-    savedCallback.current = callback;
-  }, [callback]);
-
-  React.useEffect(() => {
-    let intervalId: NodeJS.Timeout;
-    const ticker = () => {
-      savedCallback.current && savedCallback.current();
-    };
-    if (autoRefresh) {
-      intervalId = setInterval(ticker, delay);
-      return () => clearInterval(intervalId);
-    } else {
-      return;
-    }
-  }, [delay, autoRefresh]);
-}
-
 export function RobotPage() {
   const classes = useStyles();
-  const { fleetsApi } = React.useContext(RmfIngressContext) || {};
+  const { fleetsApi, sioClient } = React.useContext(RmfIngressContext) || {};
 
   const [totalCount, setTotalCount] = React.useState(0);
   const [page, setPage] = React.useState(0);
-  const [verboseRobots, setVerboseRobots] = React.useState<VerboseRobot[]>([]);
   const [autoRefresh, setAutoRefresh] = React.useState(true);
+  const [autoRefreshState, autoRefreshDispatcher] = useAutoRefresh(sioClient);
 
   const fetchVerboseRobots = React.useCallback(async () => {
     if (!fleetsApi) {
@@ -57,12 +36,18 @@ export function RobotPage() {
       page * 10,
       'fleet_name,robot_name',
     );
+
     setTotalCount(resp.data.total_count);
-    setVerboseRobots(resp.data.items);
     return resp.data.items;
   }, [fleetsApi, page]);
 
-  useAutoRefresh(fetchVerboseRobots, 2000, autoRefresh);
+  const handleRefresh = React.useCallback<Required<RobotPanelProps>['onRefresh']>(async () => {
+    autoRefreshDispatcher.setVerboseRobots(await fetchVerboseRobots());
+  }, [fetchVerboseRobots, autoRefreshDispatcher]);
+
+  React.useEffect(() => {
+    handleRefresh();
+  }, [handleRefresh]);
 
   return (
     <RobotPanel
@@ -77,7 +62,7 @@ export function RobotPage() {
         page,
         onChangePage: (_ev, newPage) => setPage(newPage),
       }}
-      verboseRobots={verboseRobots}
+      verboseRobots={autoRefreshState.verboseRobots}
     />
   );
 }

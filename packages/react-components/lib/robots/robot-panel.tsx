@@ -49,6 +49,7 @@ export interface RobotPanelProps extends React.HTMLProps<HTMLDivElement> {
   verboseRobots: VerboseRobot[];
   fetchVerboseRobots: () => Promise<VerboseRobot[]>;
   onAutoRefresh?: React.Dispatch<React.SetStateAction<boolean>>;
+  onRefresh?: () => void;
 }
 
 export function RobotPanel({
@@ -79,7 +80,8 @@ export function RobotPanel({
         setSelectedRobot(robot);
       }
     });
-  });
+  }),
+    [selectedRobot, verboseRobots];
 
   return (
     <div {...divProps}>
