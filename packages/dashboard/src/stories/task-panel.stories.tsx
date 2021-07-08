@@ -1,8 +1,7 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import { UserContext } from '../components/auth/contexts';
-import { RmfRole } from '../components/permissions';
+import { UserProfileContext } from '../components/auth/contexts';
 import { TaskPanel } from '../components/tasks/task-panel';
 import { makeTask } from '../components/tasks/tests/make-tasks';
 
@@ -21,9 +20,6 @@ export default {
     controls: {
       include: [],
     },
-  },
-  args: {
-    roles: [RmfRole.SuperAdmin],
   },
 } as Meta;
 
@@ -50,7 +46,9 @@ interface StoryArgs {
 export const ExampleTaskPanel: Story<StoryArgs> = (args) => {
   const [page, setPage] = React.useState(0);
   return (
-    <UserContext.Provider value={{ username: 'story', token: '', roles: args.roles, groups: [] }}>
+    <UserProfileContext.Provider
+      value={{ user: { username: 'story', is_admin: true, roles: [] }, permissions: [] }}
+    >
       <TaskPanel
         cleaningZones={['test_zone_0', 'test_zone_1']}
         loopWaypoints={['test_waypoint_0', 'test_waypoint_1']}
@@ -69,6 +67,6 @@ export const ExampleTaskPanel: Story<StoryArgs> = (args) => {
         submitTasks={() => new Promise((res) => setTimeout(res, 1000))}
         cancelTask={() => new Promise((res) => setTimeout(res, 1000))}
       />
-    </UserContext.Provider>
+    </UserProfileContext.Provider>
   );
 };

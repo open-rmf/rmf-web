@@ -2,7 +2,6 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import { User } from '../../../../../rmf-auth/lib';
 import { mountAsUser, superUser } from '../../tests/test-utils';
 import { TaskPanel, TaskPanelProps } from '../task-panel';
 import { makeTask } from './make-tasks';
@@ -51,7 +50,7 @@ describe('TaskPanel', () => {
 
     it('cancel task button is disabled for user without required permission', () => {
       const root = mountAsUser(
-        { username: 'test2', token: '', roles: [], groups: [] },
+        { user: { username: 'test2', is_admin: false, roles: [] }, permissions: [] },
         <TaskPanel tasks={[makeTask('task1', 1, 1)]} />,
       );
       userEvent.click(root.getByText('task1'));
@@ -107,13 +106,6 @@ describe('TaskPanel', () => {
       priorityEl = root.getByLabelText('Priority') as HTMLInputElement;
       expect(priorityEl.value).toBe('0');
     });
-  });
-
-  it('create task button is hidden if user cannot submit tasks', () => {
-    const user: User = { username: 'test', token: '', roles: [], groups: [] };
-    const root = mountAsUser(user, <TaskPanel tasks={[]} />);
-    const button = root.queryByLabelText('Create Task');
-    expect(button).toBe(null);
   });
 
   it('success snackbar is shown when successfully created a task', async () => {

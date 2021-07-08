@@ -4,9 +4,10 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { AppController, AppControllerContext } from '../app-contexts';
 import AppBar from '../appbar';
-import { AuthenticatorContext, UserContext } from '../auth/contexts';
+import { AuthenticatorContext, UserProfile, UserProfileContext } from '../auth/contexts';
 import FakeAuthenticator from '../auth/__mocks__/fake-authenticator';
 import { makeMockAppController } from './mock-app-controller';
+import { mountAsUser } from './test-utils';
 
 describe('AppBar', () => {
   let appController: AppController;
@@ -75,25 +76,32 @@ describe('AppBar', () => {
   });
 
   test('user button is shown when there is an authenticated user', () => {
-    const root = render(
+    const user: UserProfile = {
+      user: { username: 'test', is_admin: false, roles: [] },
+      permissions: [],
+    };
+    const root = mountAsUser(
+      user,
       <Base>
-        <UserContext.Provider value={{ username: 'test', token: 'test' }}>
-          <AppBar tabValue="building" />
-        </UserContext.Provider>
+        <AppBar tabValue="building" />
       </Base>,
     );
     expect(root.getByLabelText('user-btn')).toBeTruthy();
   });
 
   test('logout is triggered when logout button is clicked', () => {
-    const authenticator = new FakeAuthenticator({ username: 'fakeUser', token: 'test' });
+    const authenticator = new FakeAuthenticator({ username: 'test', token: 'test' });
     const spy = jest.spyOn(authenticator, 'logout').mockImplementation(() => undefined as any);
+    const user: UserProfile = {
+      user: { username: 'test', is_admin: false, roles: [] },
+      permissions: [],
+    };
     const root = render(
       <Base>
         <AuthenticatorContext.Provider value={authenticator}>
-          <UserContext.Provider value={{ username: 'test', token: 'test' }}>
+          <UserProfileContext.Provider value={user}>
             <AppBar tabValue="building" />
-          </UserContext.Provider>
+          </UserProfileContext.Provider>
         </AuthenticatorContext.Provider>
       </Base>,
     );

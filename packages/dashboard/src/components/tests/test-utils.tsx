@@ -1,8 +1,6 @@
 import { act, render, RenderResult } from '@testing-library/react';
 import React from 'react';
-import { User } from 'rmf-auth';
-import { UserContext } from '../auth/contexts';
-import { RmfRole } from '../permissions';
+import { UserProfile, UserProfileContext } from '../auth/contexts';
 
 /**
  * Wraps a `render` in a `act`.
@@ -15,13 +13,17 @@ export async function renderAct(ui: React.ReactElement): Promise<RenderResult> {
   return root!;
 }
 
-export const superUser: User = {
-  username: 'test',
-  token: '',
-  roles: [RmfRole.SuperAdmin],
-  groups: [],
+export const superUser: UserProfile = {
+  user: {
+    username: 'test',
+    is_admin: true,
+    roles: [],
+  },
+  permissions: [],
 };
 
-export function mountAsUser(user: User, component: React.ReactElement) {
-  return render(<UserContext.Provider value={user}>{component}</UserContext.Provider>);
+export function mountAsUser(user: UserProfile, component: React.ReactElement) {
+  return render(
+    <UserProfileContext.Provider value={user}>{component}</UserProfileContext.Provider>,
+  );
 }

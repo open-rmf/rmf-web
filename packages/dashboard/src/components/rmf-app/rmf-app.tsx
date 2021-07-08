@@ -1,4 +1,4 @@
-import { Fleet } from 'api-client';
+import { Fleet, Permission, User } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import RmfHealthStateManager from '../../managers/rmf-health-state-manager';
@@ -7,6 +7,7 @@ import {
   RobotTrajectoryManager,
 } from '../../managers/robot-trajectory-manager';
 import { AppConfigContext, TrajectorySocketContext } from '../app-contexts';
+import { UserProfile, UserProfileContext } from '../auth/contexts';
 import {
   BuildingMapContext,
   DispenserStateContext,
@@ -241,11 +242,42 @@ function RmfIngressProvider(props: React.PropsWithChildren<{}>) {
   );
 }
 
+function UserProfileProvider(props: React.PropsWithChildren<{}>) {
+  const rmfIngress = React.useContext(RmfIngressContext);
+  const [userProfile, setUserProfile] = React.useState<UserProfile | null>(null);
+
+  React.useEffect(() => {
+    if (!rmfIngress) {
+      return;
+    }
+    let cancel = false;
+    (async () => {
+      const user = await rmfIngress.defaultApi.getUserUserGet();
+      const permissions = await rmfIngress.defaultApi.getEffectivePermissionsPermissionsGet();
+      if (cancel) {
+        return;
+      }
+      setUserProfile({
+        user: user.data as User,
+        permissions: permissions.data as Permission[],
+      });
+    })();
+    return () => {
+      cancel = true;
+    };
+  });
+
+  return (
+    <UserProfileContext.Provider value={userProfile}>{props.children}</UserProfileContext.Provider>
+  );
+}
+
 export interface RmfAppProps extends React.PropsWithChildren<{}> {}
 
 /**
  * Provides the following contexts:
  *
+ * - UserProfileContext
  * - BuildingMapContext
  * - DispenserStateContext
  * - DoorStateContext
@@ -259,21 +291,23 @@ export interface RmfAppProps extends React.PropsWithChildren<{}> {}
 export function RmfApp(props: RmfAppProps): JSX.Element {
   return (
     <RmfIngressProvider>
-      <BuildingMapProvider>
-        <DoorContextsProvider>
-          <LiftContextsProvider>
-            <DispenserContextsProvider>
-              <IngestorContextsProvider>
-                <FleetContextsProvider>
-                  <NegotiationContextsProvider>
-                    <RmfHealthContextsProvider>{props.children}</RmfHealthContextsProvider>
-                  </NegotiationContextsProvider>
-                </FleetContextsProvider>
-              </IngestorContextsProvider>
-            </DispenserContextsProvider>
-          </LiftContextsProvider>
-        </DoorContextsProvider>
-      </BuildingMapProvider>
+      <UserProfileProvider>
+        <BuildingMapProvider>
+          <DoorContextsProvider>
+            <LiftContextsProvider>
+              <DispenserContextsProvider>
+                <IngestorContextsProvider>
+                  <FleetContextsProvider>
+                    <NegotiationContextsProvider>
+                      <RmfHealthContextsProvider>{props.children}</RmfHealthContextsProvider>
+                    </NegotiationContextsProvider>
+                  </FleetContextsProvider>
+                </IngestorContextsProvider>
+              </DispenserContextsProvider>
+            </LiftContextsProvider>
+          </DoorContextsProvider>
+        </BuildingMapProvider>
+      </UserProfileProvider>
     </RmfIngressProvider>
   );
 }

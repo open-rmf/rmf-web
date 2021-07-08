@@ -30,6 +30,7 @@ export function makeTask(taskId: string, numberOfPhases: number, currentPhase: n
   const taskSummary = makeTaskSummary(taskId, numberOfPhases, currentPhase);
   return {
     task_id: taskId,
+    authz_grp: 'test_group',
     progress: '',
     summary: taskSummary,
   };

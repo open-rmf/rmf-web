@@ -17,7 +17,7 @@ import { LogoButton } from 'react-components/lib/logo-button';
 import { NavigationBar } from 'react-components/lib/navigation-bar';
 import DashboardTooltip from 'react-components/lib/tooltip';
 import { AppControllerContext, ResourcesContext, TooltipsContext } from './app-contexts';
-import { AuthenticatorContext, UserContext } from './auth/contexts';
+import { AuthenticatorContext, UserProfileContext } from './auth/contexts';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -47,7 +47,7 @@ export const AppBar = React.memo(
     const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
     const classes = useStyles();
     const authenticator = React.useContext(AuthenticatorContext);
-    const user = React.useContext(UserContext);
+    const user = React.useContext(UserProfileContext);
     const { showTooltips } = React.useContext(TooltipsContext);
 
     async function handleLogout(): Promise<void> {

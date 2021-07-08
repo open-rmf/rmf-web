@@ -1,24 +1,19 @@
-import { Task } from 'api-client';
-import { User } from '../../../rmf-auth/lib';
+import { Permission, Task, User } from 'api-client';
 
-export class RmfRole {
-  static SuperAdmin = '_rmf_superadmin';
-  static TaskSubmit = '_rmf_task_submit';
-  static TaskCancel = '_rmf_task_cancel';
-  static TaskAdmin = '_rmf_task_admin';
+export class RmfAction {
+  static TaskCancel = 'task_cancel';
 }
 
 export class Enforcer {
-  static canSubmitTask(user: User): boolean {
-    return !!user.roles.find((r) => [RmfRole.SuperAdmin, RmfRole.TaskSubmit].includes(r));
-  }
-
-  static canCancelTask(user: User, task: Task): boolean {
-    // FIXME: Update logic for new authz system
-    return true;
-    // return (
-    //   task.owner === user.username ||
-    //   !!user.roles.find((r) => [RmfRole.SuperAdmin, RmfRole.TaskCancel].includes(r))
-    // );
+  static canCancelTask(user: User, permissions: Permission[], task: Task): boolean {
+    if (user.is_admin) {
+      return true;
+    }
+    for (const p of permissions) {
+      if (p.authz_grp === task.authz_grp && p.action === 'task_cancel') {
+        return true;
+      }
+    }
+    return false;
   }
 }

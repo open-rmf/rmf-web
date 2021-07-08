@@ -1,6 +1,11 @@
+import { Permission, User } from 'api-client';
 import React from 'react';
-import { User } from 'rmf-auth';
 import appConfig from '../../app-config';
 
+export interface UserProfile {
+  user: User;
+  permissions: Permission[];
+}
+
 export const AuthenticatorContext = React.createContext(appConfig.authenticator);
-export const UserContext = React.createContext<User | null>(null);
+export const UserProfileContext = React.createContext<UserProfile | null>(null);

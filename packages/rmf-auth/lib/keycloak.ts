@@ -2,7 +2,6 @@ import Debug from 'debug';
 import EventEmitter from 'eventemitter3';
 import Keycloak_, { KeycloakInstance } from 'keycloak-js';
 import { AuthConfig, Authenticator, AuthenticatorEventType } from './authenticator';
-import { User } from './user';
 import { BASE_PATH, getUrl } from './utils/url';
 
 const debug = Debug('authenticator');
@@ -10,7 +9,7 @@ const debug = Debug('authenticator');
 export default class KeycloakAuthenticator
   extends EventEmitter<AuthenticatorEventType>
   implements Authenticator {
-  get user(): User | undefined {
+  get user(): string | undefined {
     return this._user;
   }
 
@@ -24,7 +23,7 @@ export default class KeycloakAuthenticator
     this._redirectUri = redirectUri;
   }
 
-  private _getUser(): User {
+  private _getUser(): string {
     const tokenRoles =
       this._inst.clientId &&
       this._inst.resourceAccess &&
@@ -41,13 +40,8 @@ export default class KeycloakAuthenticator
         groups.push(role);
       }
     });
-    return {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      username: (this._inst.idTokenParsed as any).preferred_username,
-      token: this._inst.token || '',
-      roles,
-      groups,
-    };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (this._inst.idTokenParsed as any).preferred_username;
   }
 
   async init(): Promise<void> {
@@ -60,7 +54,7 @@ export default class KeycloakAuthenticator
 
     this._inst.onAuthSuccess = async () => {
       this._user = this._getUser();
-      debug('authenticated as', this._user.username);
+      debug('authenticated as', this._user);
       this.emit('userChanged', this._user);
     };
 
@@ -115,5 +109,5 @@ export default class KeycloakAuthenticator
   private _initialized = false;
   private _inst: KeycloakInstance;
   private _redirectUri?: string;
-  private _user?: User;
+  private _user?: string;
 }
