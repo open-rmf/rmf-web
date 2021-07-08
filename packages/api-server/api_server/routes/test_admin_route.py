@@ -7,13 +7,13 @@ class TestAdminRoute(RouteFixture):
         user = self.create_user()
         resp = self.session.get(f"{self.base_url}/admin/users?username={user}")
         self.assertEqual(200, resp.status_code)
-        users = resp.json()["items"]
+        users = resp.json()
         self.assertIn(user, users)
 
         # query admins
         resp = self.session.get(f"{self.base_url}/admin/users?is_admin=true")
         self.assertEqual(200, resp.status_code)
-        users = resp.json()["items"]
+        users = resp.json()
         self.assertIn("admin", users)
 
     def test_crud_user(self):

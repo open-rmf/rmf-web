@@ -74,7 +74,7 @@ class TestFleetsRoute(RouteFixture):
         resp = self.session.get(f"{self.base_url}/fleets?fleet_name=fleet_1")
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
-        self.assertEqual(len(resp_json["items"]), 1)
+        self.assertEqual(len(resp_json), 1)
 
     def test_get_robots(self):
         resp = self.session.get(
@@ -82,8 +82,8 @@ class TestFleetsRoute(RouteFixture):
         )
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
-        self.assertEqual(len(resp_json["items"]), 1)
-        self.assertEqual(len(resp_json["items"][0]["tasks"]), 2)
+        self.assertEqual(len(resp_json), 1)
+        self.assertEqual(len(resp_json[0]["tasks"]), 2)
 
 
 class TestFleetsRoute_RMF(RouteFixture):

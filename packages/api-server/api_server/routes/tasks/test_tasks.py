@@ -122,7 +122,7 @@ class TestTasksRoute(TasksFixture):
         # admin can see submitted task
         self.set_user(user1)
         resp = self.session.get(f"{self.base_url}/tasks")
-        tasks = resp.json()["items"]
+        tasks = resp.json()
         self.assertEqual(2, len(tasks))
         resp = self.session.get(f"{self.base_url}/tasks/{submitted_task_1}/summary")
         self.assertEqual(200, resp.status_code)
@@ -130,7 +130,7 @@ class TestTasksRoute(TasksFixture):
         # user with permission can see submitted task
         self.set_user(user2)
         resp = self.session.get(f"{self.base_url}/tasks")
-        tasks = resp.json()["items"]
+        tasks = resp.json()
         self.assertEqual(2, len(tasks))
         resp = self.session.get(f"{self.base_url}/tasks/{submitted_task_1}/summary")
         self.assertEqual(200, resp.status_code)
@@ -138,7 +138,7 @@ class TestTasksRoute(TasksFixture):
         # user without permission cannot see submitted task
         self.set_user(user3)
         resp = self.session.get(f"{self.base_url}/tasks")
-        tasks = resp.json()["items"]
+        tasks = resp.json()
         self.assertEqual(0, len(tasks))
         resp = self.session.get(f"{self.base_url}/tasks/{submitted_task_1}/summary")
         self.assertEqual(404, resp.status_code)
@@ -218,13 +218,13 @@ class TestTasksQuery(TasksFixture):
         resp = self.session.get(f"{self.base_url}/tasks?task_id=task_1,task_2")
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
-        items = resp_json["items"]
+        items = resp_json
         self.assertEqual(len(items), 2)
 
         resp = self.session.get(f"{self.base_url}/tasks?fleet_name=fleet_1")
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
-        items = resp_json["items"]
+        items = resp_json
         self.assertEqual(len(items), 1)
         self.assertEqual(items[0]["summary"]["task_id"], "task_1")
         self.assertEqual(items[0]["summary"]["fleet_name"], "fleet_1")
@@ -232,7 +232,7 @@ class TestTasksQuery(TasksFixture):
         resp = self.session.get(f"{self.base_url}/tasks?robot_name=robot_1")
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
-        items = resp_json["items"]
+        items = resp_json
         self.assertEqual(len(items), 1)
         self.assertEqual(items[0]["summary"]["task_id"], "task_1")
         self.assertEqual(items[0]["summary"]["robot_name"], "robot_1")
@@ -240,7 +240,7 @@ class TestTasksQuery(TasksFixture):
         resp = self.session.get(f"{self.base_url}/tasks?state=completed")
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
-        items = resp_json["items"]
+        items = resp_json
         self.assertEqual(len(items), 1)
         self.assertEqual(items[0]["summary"]["task_id"], "task_1")
         self.assertEqual(items[0]["summary"]["state"], RmfTaskSummary.STATE_COMPLETED)
@@ -248,7 +248,7 @@ class TestTasksQuery(TasksFixture):
         resp = self.session.get(f"{self.base_url}/tasks?task_type=loop")
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
-        items = resp_json["items"]
+        items = resp_json
         self.assertEqual(len(items), 1)
         self.assertEqual(items[0]["summary"]["task_id"], "task_1")
         self.assertEqual(
@@ -259,28 +259,28 @@ class TestTasksQuery(TasksFixture):
         resp = self.session.get(f"{self.base_url}/tasks?priority=0")
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
-        items = resp_json["items"]
+        items = resp_json
         self.assertEqual(len(items), 1)
         self.assertEqual(items[0]["summary"]["task_id"], "task_1")
 
         resp = self.session.get(f"{self.base_url}/tasks?submission_time_since=4000")
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
-        items = resp_json["items"]
+        items = resp_json
         self.assertEqual(len(items), 1)
         self.assertEqual(items[0]["summary"]["task_id"], "task_2")
 
         resp = self.session.get(f"{self.base_url}/tasks?start_time_since=5000")
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
-        items = resp_json["items"]
+        items = resp_json
         self.assertEqual(len(items), 1)
         self.assertEqual(items[0]["summary"]["task_id"], "task_2")
 
         resp = self.session.get(f"{self.base_url}/tasks?end_time_since=6000")
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
-        items = resp_json["items"]
+        items = resp_json
         self.assertEqual(len(items), 1)
         self.assertEqual(items[0]["summary"]["task_id"], "task_2")
 
@@ -290,12 +290,12 @@ class TestTasksQuery(TasksFixture):
         )
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
-        items = resp_json["items"]
+        items = resp_json
         self.assertEqual(len(items), 0)
 
         # no query returns everything
         resp = self.session.get(f"{self.base_url}/tasks")
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
-        items = resp_json["items"]
+        items = resp_json
         self.assertEqual(len(items), 2)

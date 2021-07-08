@@ -1,10 +1,9 @@
 import logging
-from typing import Callable, Optional
+from typing import Callable, List, Optional
 
 from fastapi import Depends, Query
 
 from api_server.models.fleets import Robot
-from api_server.models.pagination import Pagination
 from api_server.models.tasks import TaskStateEnum
 
 from ..dependencies import AddPaginationQuery, pagination_query
@@ -26,10 +25,7 @@ class FleetsRouter(FastIORouter):
     ):
         super().__init__(tags=["Fleets"])
 
-        class GetFleetsResponse(Pagination.response_model(Fleet)):
-            pass
-
-        @self.get("", response_model=GetFleetsResponse)
+        @self.get("", response_model=List[Fleet])
         async def get_fleets(
             add_pagination: AddPaginationQuery[ttm.FleetState] = Depends(
                 pagination_query({"fleet_name": "id_"})
@@ -42,15 +38,10 @@ class FleetsRouter(FastIORouter):
             if fleet_name is not None:
                 filter_params["id___in"] = fleet_name.split(",")
             states = await add_pagination(ttm.FleetState.filter(**filter_params))
-            results: Pagination[Fleet] = Pagination(
-                items=[Fleet(name=s.id_, state=s.data) for s in states],
-            )
-            return results
+            states = [s.to_pydantic() for s in states]
+            return [Fleet(name=s.name, state=s) for s in states]
 
-        class GetRobotsResponse(Pagination.response_model(Robot)):
-            pass
-
-        @self.get("/robots", response_model=GetRobotsResponse)
+        @self.get("/robots", response_model=List[Robot])
         async def get_robots(
             add_pagination: AddPaginationQuery[ttm.RobotState] = Depends(
                 pagination_query()
@@ -97,7 +88,7 @@ class FleetsRouter(FastIORouter):
                     )
                 r.tasks.append(get_task_progress(t.to_pydantic(), rmf_gateway_dep()))
 
-            return Pagination(items=list(robots.values()))
+            return list(robots.values())
 
         @self.watch("/{name}/state", rmf_events.fleet_states, response_model=FleetState)
         def get_fleet_state(fleet_state: FleetState):

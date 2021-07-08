@@ -3,8 +3,6 @@ from typing import Callable, List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 
-from api_server.models.pagination import Pagination
-
 from ..dependencies import AddPaginationQuery, pagination_query
 from ..models import User
 from ..models import tortoise_models as ttm
@@ -51,7 +49,7 @@ def admin_router(user_dep: Callable[..., User]):
 
     router = APIRouter(tags=["Admin"], dependencies=[Depends(admin_dep)])
 
-    @router.get("/users", response_model=Pagination[str])
+    @router.get("/users", response_model=List[str])
     async def get_users(
         add_pagination: AddPaginationQuery[ttm.User] = Depends(pagination_query()),
         username: Optional[str] = Query(
@@ -70,7 +68,7 @@ def admin_router(user_dep: Callable[..., User]):
         q = add_pagination(ttm.User.filter(**filter_params)).values_list(
             "username", flat=True
         )
-        return Pagination.construct(items=await q)
+        return await q
 
     @router.post("/users")
     async def create_user(body: PostUsers):

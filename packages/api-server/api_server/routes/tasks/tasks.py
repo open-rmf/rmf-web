@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Callable, Dict, Optional
+from typing import Callable, Dict, List, Optional
 
 from fastapi import Depends, HTTPException
 from fastapi.param_functions import Query
@@ -10,7 +10,6 @@ from ...fast_io import DataStore, FastIORouter
 from ...gateway import RmfGateway
 from ...models import (
     CancelTask,
-    Pagination,
     SubmitTask,
     SubmitTaskResponse,
     Task,
@@ -85,10 +84,7 @@ class TasksRouter(FastIORouter):
                 summary=py_summary,
             )
 
-        class GetTasksResponse(Pagination.response_model(Task)):
-            pass
-
-        @self.get("", response_model=GetTasksResponse)
+        @self.get("", response_model=List[Task])
         async def get_tasks(
             user: User = Depends(user_dep),
             add_pagination: AddPaginationQuery[ttm.TaskSummary] = Depends(
@@ -146,7 +142,7 @@ class TasksRouter(FastIORouter):
 
             q = rmf_repo.query_tasks(user).filter(**filter_params)
             task_summaries = await add_pagination(q)
-            return Pagination.construct(items=[to_task(ts) for ts in task_summaries])
+            return [to_task(ts) for ts in task_summaries]
 
         @self.post("/submit_task", response_model=SubmitTaskResponse)
         async def submit_task(

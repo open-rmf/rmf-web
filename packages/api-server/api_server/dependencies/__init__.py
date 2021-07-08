@@ -1,9 +1,8 @@
-from typing import Awaitable, Callable, Dict, Optional, TypeVar
+from typing import Callable, Dict, Optional, TypeVar
 
 from fastapi import Query
 from tortoise.queryset import QuerySet
 
-from ..models import Pagination
 from .auth import auth_scheme
 
 ResultT = TypeVar("ResultT")
