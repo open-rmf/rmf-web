@@ -18,7 +18,6 @@ from ..models import (
     LiftHealth,
     LiftState,
     RobotHealth,
-    Task,
     TaskSummary,
     User,
 )
@@ -227,10 +226,6 @@ class RmfRepository:
         if not task_summary:
             return None
         return TaskSummary(**task_summary[0]["data"])
-
-    async def get_tasks(self) -> List[Task]:
-        task_summaries = await ttm.TaskSummary.all()
-        return [Task(task_id=ts.data["task_id"]) for ts in task_summaries]
 
     @staticmethod
     def query_tasks(user: User) -> QuerySet[ttm.TaskSummary]:

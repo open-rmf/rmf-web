@@ -1,3 +1,4 @@
+from .authz import *
 from .building_map import *
 from .dispensers import *
 from .doors import *

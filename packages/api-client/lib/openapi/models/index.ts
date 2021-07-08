@@ -34,6 +34,7 @@ export * from './location';
 export * from './loop';
 export * from './loop-task-description';
 export * from './param';
+export * from './permission';
 export * from './place';
 export * from './post-role-permissions';
 export * from './post-roles';

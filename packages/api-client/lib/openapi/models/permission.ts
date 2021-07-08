@@ -14,31 +14,19 @@
 /**
  *
  * @export
- * @interface Robot
+ * @interface Permission
  */
-export interface Robot {
+export interface Permission {
   /**
    *
    * @type {string}
-   * @memberof Robot
+   * @memberof Permission
    */
-  fleet: any;
+  authz_grp: any;
   /**
    *
    * @type {string}
-   * @memberof Robot
+   * @memberof Permission
    */
-  name: any;
-  /**
-   *
-   * @type {RobotState}
-   * @memberof Robot
-   */
-  state: any;
-  /**
-   *
-   * @type {Array&lt;Task&gt;}
-   * @memberof Robot
-   */
-  tasks?: any;
+  action: any;
 }

@@ -16,6 +16,7 @@ import { Configuration } from '../configuration';
 // Some imports not used depending on template conditions
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
+import { Permission } from '../models';
 import { User } from '../models';
 /**
  * DefaultApi - axios parameter creator
@@ -23,6 +24,44 @@ import { User } from '../models';
  */
 export const DefaultApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
+    /**
+     * Get the effective permissions of the current user
+     * @summary Get Effective Permissions
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getEffectivePermissionsPermissionsGet: async (options: any = {}): Promise<RequestArgs> => {
+      const localVarPath = `/permissions`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, 'https://example.com');
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      const query = new URLSearchParams(localVarUrlObj.search);
+      for (const key in localVarQueryParameter) {
+        query.set(key, localVarQueryParameter[key]);
+      }
+      for (const key in options.query) {
+        query.set(key, options.query[key]);
+      }
+      localVarUrlObj.search = new URLSearchParams(query).toString();
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: localVarUrlObj.pathname + localVarUrlObj.search + localVarUrlObj.hash,
+        options: localVarRequestOptions,
+      };
+    },
     /**
      * Get the currently logged in user
      * @summary Get User
@@ -71,6 +110,26 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 export const DefaultApiFp = function (configuration?: Configuration) {
   return {
     /**
+     * Get the effective permissions of the current user
+     * @summary Get Effective Permissions
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async getEffectivePermissionsPermissionsGet(
+      options?: any,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Permission>>> {
+      const localVarAxiosArgs = await DefaultApiAxiosParamCreator(
+        configuration,
+      ).getEffectivePermissionsPermissionsGet(options);
+      return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
+        const axiosRequestArgs = {
+          ...localVarAxiosArgs.options,
+          url: basePath + localVarAxiosArgs.url,
+        };
+        return axios.request(axiosRequestArgs);
+      };
+    },
+    /**
      * Get the currently logged in user
      * @summary Get User
      * @param {*} [options] Override http request option.
@@ -104,6 +163,17 @@ export const DefaultApiFactory = function (
 ) {
   return {
     /**
+     * Get the effective permissions of the current user
+     * @summary Get Effective Permissions
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getEffectivePermissionsPermissionsGet(options?: any): AxiosPromise<Array<Permission>> {
+      return DefaultApiFp(configuration)
+        .getEffectivePermissionsPermissionsGet(options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
      * Get the currently logged in user
      * @summary Get User
      * @param {*} [options] Override http request option.
@@ -124,6 +194,18 @@ export const DefaultApiFactory = function (
  * @extends {BaseAPI}
  */
 export class DefaultApi extends BaseAPI {
+  /**
+   * Get the effective permissions of the current user
+   * @summary Get Effective Permissions
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof DefaultApi
+   */
+  public getEffectivePermissionsPermissionsGet(options?: any) {
+    return DefaultApiFp(this.configuration)
+      .getEffectivePermissionsPermissionsGet(options)
+      .then((request) => request(this.axios, this.basePath));
+  }
   /**
    * Get the currently logged in user
    * @summary Get User
