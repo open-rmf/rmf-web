@@ -3,22 +3,22 @@ import React from 'react';
 
 export interface PositiveIntField
   extends Omit<TextFieldProps, 'type' | 'value' | 'inputProps' | 'onChange'> {
-  value: number;
+  value?: number;
   onChange?(ev: React.ChangeEvent, int: number): void;
 }
 
-export function PositiveIntField(props: PositiveIntField): JSX.Element {
-  const [value, setValue] = React.useState(props.value.toString());
+export function PositiveIntField({ value = 0, onChange, ...props }: PositiveIntField): JSX.Element {
+  const [valueInput, setValueInput] = React.useState(value.toString());
 
   React.useEffect(() => {
-    setValue(props.value.toString());
-  }, [props.value]);
+    setValueInput(value.toString());
+  }, [value]);
 
   return (
     <TextField
       {...props}
       type="number"
-      value={value}
+      value={valueInput}
       inputProps={{ min: 0 }}
       onKeyDown={(ev) => {
         if ('-+.'.indexOf(ev.key) >= 0) {
@@ -29,9 +29,9 @@ export function PositiveIntField(props: PositiveIntField): JSX.Element {
       onChange={(ev) => {
         const int = parseInt(ev.target.value);
         if (int > 0) {
-          props.onChange && props.onChange(ev, int);
+          onChange && onChange(ev, int);
         }
-        setValue(ev.target.value);
+        setValueInput(ev.target.value);
       }}
     />
   );
