@@ -63,7 +63,7 @@ function Phase({ status, ...divProps }: PhaseProps) {
     <div {...divProps}>
       {lines.map((l, idx) => (
         <Tooltip key={idx} title={l}>
-          <Typography key={idx} className={classes.phaseStatus} variant="body1">
+          <Typography key={idx} className={classes.phaseStatus} variant="caption">
             {l}
           </Typography>
         </Tooltip>
