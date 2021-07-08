@@ -77,6 +77,7 @@ class TasksRouter(FastIORouter):
             py_summary = tt_summary.to_pydantic()
             return Task.construct(
                 task_id=py_summary.task_id,
+                authz_grp=tt_summary.authz_grp,
                 progress=get_task_progress(
                     py_summary,
                     rmf_gateway_dep(),

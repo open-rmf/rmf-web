@@ -25,6 +25,12 @@ export interface Task {
   task_id: any;
   /**
    *
+   * @type {string}
+   * @memberof Task
+   */
+  authz_grp: any;
+  /**
+   *
    * @type {TaskSummary}
    * @memberof Task
    */

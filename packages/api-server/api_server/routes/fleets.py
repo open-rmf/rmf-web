@@ -90,6 +90,7 @@ class FleetsRouter(FastIORouter):
                 r.tasks.append(
                     Task(
                         task_id=ts.task_id,
+                        authz_grp=t.authz_grp,
                         summary=ts,
                         progress=get_task_progress(t.to_pydantic(), rmf_gateway_dep()),
                     )

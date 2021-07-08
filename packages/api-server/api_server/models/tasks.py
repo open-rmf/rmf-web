@@ -53,6 +53,7 @@ class TaskProgress(BaseModel):
 
 class Task(BaseModel):
     task_id: str
+    authz_grp: str
     summary: TaskSummary
     progress: TaskProgress
 
