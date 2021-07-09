@@ -96,7 +96,7 @@ function RobotRow({ robot, onClick }: RobotRowProps) {
           <TableCell>{'-'}</TableCell>
           <TableCell>{'-'}</TableCell>
           <TableCell>{'-'}</TableCell>
-          <TableCell>{robot.battery_percent.toFixed(2)}%</TableCell>
+          <TableCell>{Math.round(robot.battery_percent)}%</TableCell>
           <TableCell>{robotModeToString(robot.mode)}</TableCell>
         </TableRow>
       </>
@@ -117,10 +117,10 @@ function RobotRow({ robot, onClick }: RobotRowProps) {
               ? `${
                   robot.assignedTasks[0].task_summary.end_time.sec -
                   robot.assignedTasks[0].task_summary.start_time.sec
-                }S`
+                }s`
               : '-'}
           </TableCell>
-          <TableCell>{robot.battery_percent.toFixed(2)}%</TableCell>
+          <TableCell>{Math.round(robot.battery_percent)}%</TableCell>
           <TableCell>{robotModeToString(robot.mode)}</TableCell>
         </TableRow>
       </>
