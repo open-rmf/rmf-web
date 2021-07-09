@@ -1,9 +1,9 @@
-import { Divider, Typography, Button } from '@material-ui/core';
-import * as RmfModels from 'rmf-models';
+import { Button, Divider, Typography } from '@material-ui/core';
 import { Story } from '@storybook/react';
 import React from 'react';
+import * as RmfModels from 'rmf-models';
 import { DispenserAccordion, StatusLabel } from '../lib';
-import { makeDispenserState } from '../tests/dispensers/test-utils';
+import { makeDispenserState } from '../lib/dispensers/test-utils.spec';
 
 export default {
   title: 'Design Decisions',

@@ -1,8 +1,8 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { RobotInfo, RobotInfoProps } from '../../lib';
-import { makeRobot } from '../../tests/robots/test-utils';
-import { makeDefinedTask } from '../../tests/test-data/tasks';
+import { makeRobot } from '../../lib/robots/test-utils.spec';
+import { makeDefinedTask } from '../../lib/tasks/test-data.spec';
 
 export default {
   title: 'Robots/Info',

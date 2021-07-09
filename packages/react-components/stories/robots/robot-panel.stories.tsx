@@ -1,8 +1,8 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { RobotPanel as RobotPanel_, RobotPanelProps, VerboseRobot } from '../../lib';
-import { makeRandomRobot } from '../../tests/robots/test-utils';
-import { makeDefinedTask } from '../../tests/test-data/tasks';
+import { makeRandomRobot } from '../../lib/robots/test-utils.spec';
+import { makeDefinedTask } from '../../lib/tasks/test-data.spec';
 
 export default {
   title: 'Robots/Robot Panel',

@@ -1,8 +1,8 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
-import { TaskInfo, TaskInfoProps } from '../../lib';
-import { makeTask } from '../../tests/test-data/tasks';
 import * as RmfModels from 'rmf-models';
+import { TaskInfo, TaskInfoProps } from '../../lib';
+import { makeTask } from '../../lib/tasks/test-data.spec';
 
 export default {
   title: 'Tasks/Task Infos',

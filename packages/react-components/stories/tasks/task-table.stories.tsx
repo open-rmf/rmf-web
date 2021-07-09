@@ -3,7 +3,7 @@ import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { TaskTable, TaskTableProps } from '../../lib';
-import { makeTask } from '../../tests/test-data/tasks';
+import { makeTask } from '../../lib/tasks/test-data.spec';
 
 const failedTask = makeTask('failed_task', 3, 3);
 failedTask.state = RmfModels.TaskSummary.STATE_FAILED;

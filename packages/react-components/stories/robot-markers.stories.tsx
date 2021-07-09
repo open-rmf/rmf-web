@@ -3,7 +3,7 @@ import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { RobotMarker, RobotMarkerProps } from '../lib';
-import { makeRobot } from '../tests/robots/test-utils';
+import { makeRobot } from '../lib/robots/test-utils.spec';
 
 export default {
   title: 'Robot Markers',

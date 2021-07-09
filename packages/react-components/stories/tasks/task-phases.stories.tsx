@@ -1,7 +1,7 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { TaskPhases, TaskPhasesProps } from '../../lib';
-import { makeTask } from '../../tests/test-data/tasks';
+import { makeTask } from '../../lib/tasks/test-data.spec';
 
 const task = makeTask('test_task', 3, 3);
 

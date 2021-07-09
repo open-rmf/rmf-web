@@ -1,8 +1,8 @@
-import * as RmfModels from 'rmf-models';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
+import * as RmfModels from 'rmf-models';
 import { LiftMarker, LiftMarkerProps } from '../lib';
-import { makeLift, makeLiftState } from '../tests/lifts/test-utils';
+import { makeLift, makeLiftState } from '../lib/lifts/test-utils.spec';
 
 export default {
   title: 'Lift Markers',

@@ -1,7 +1,7 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { TrajectoryMarker, TrajectoryMarkerProps } from '../lib';
-import { makeTrajectory } from '../tests/robots/test-utils';
+import { makeTrajectory } from '../lib/robots/test-utils.spec';
 
 export default {
   title: 'Trajectory Markers',

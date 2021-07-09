@@ -1,8 +1,8 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
-import { RobotTable, RobotTableProps, PaginationOptions, VerboseRobot } from '../../lib';
-import { makeRandomRobot } from '../../tests/robots/test-utils';
-import { makeDefinedTask } from '../../tests/test-data/tasks';
+import { PaginationOptions, RobotTable, RobotTableProps, VerboseRobot } from '../../lib';
+import { makeRandomRobot } from '../../lib/robots/test-utils.spec';
+import { makeDefinedTask } from '../../lib/tasks/test-data.spec';
 
 const verboseRobots: VerboseRobot[] = [
   {

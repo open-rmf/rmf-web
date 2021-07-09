@@ -1,8 +1,8 @@
-import * as RmfModels from 'rmf-models';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
+import * as RmfModels from 'rmf-models';
 import { DoorAccordion, DoorMode, DoorMotion, DoorType } from '../lib';
-import { makeDoor, makeDoorState } from '../tests/doors/test-utils';
+import { makeDoor, makeDoorState } from '../lib/doors/test-utils.spec';
 
 export default {
   title: 'Door Accordion',
