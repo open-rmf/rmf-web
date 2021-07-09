@@ -1,14 +1,14 @@
 import { Typography } from '@material-ui/core';
 import { fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
-import DashboardTooltip from './tooltip';
+import Tooltip from './tooltip';
 
-describe('Dashboard Tooltip', () => {
+describe('Tooltip', () => {
   it('renders the tooltip', () => {
     render(
-      <DashboardTooltip title="test" id="test" enabled={true}>
+      <Tooltip title="test" id="test" enabled={true}>
         <Typography variant="h5">Tooltip is enabled</Typography>
-      </DashboardTooltip>,
+      </Tooltip>,
     );
 
     fireEvent.mouseEnter(screen.getByRole('heading'));
@@ -18,9 +18,9 @@ describe('Dashboard Tooltip', () => {
 
   it('does not render the tooltip when disabled', () => {
     render(
-      <DashboardTooltip title="test" id="test" enabled={false}>
+      <Tooltip title="test" id="test" enabled={false}>
         <Typography variant="h5">Tooltip is disabled</Typography>
-      </DashboardTooltip>,
+      </Tooltip>,
     );
 
     fireEvent.mouseEnter(screen.getByRole('heading'));
