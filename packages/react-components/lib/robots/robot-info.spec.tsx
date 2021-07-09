@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import { makeTask } from '../test-data/tasks';
+import { makeTask } from '../tasks/test-data.spec';
 import { RobotInfo } from './robot-info';
 import { makeRandomRobot } from './test-utils.spec';
 

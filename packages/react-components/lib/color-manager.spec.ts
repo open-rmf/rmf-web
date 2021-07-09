@@ -11,7 +11,7 @@ it('snapshot - get color based on image', async () => {
     'test_fleet',
     'test_robot',
     'test_model',
-    '/base/tests/assets/tiny-robot.png',
+    '/base/test-data/assets/tiny-robot.png',
   );
   const values = color.slice(color.indexOf('(') + 1, color.lastIndexOf(')'));
   const rgb = values.split(',').map((v) => parseInt(v));

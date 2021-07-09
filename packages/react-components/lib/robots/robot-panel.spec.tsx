@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { makeDefinedTask } from '../test-data/tasks';
+import { makeDefinedTask } from '../tasks/test-data.spec';
 import { RobotPanel, RobotPanelProps } from './robot-panel';
 import { makeRandomRobot } from './test-utils.spec';
 import { VerboseRobot } from './utils';
