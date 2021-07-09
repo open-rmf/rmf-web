@@ -17,6 +17,7 @@
     "jsx": "react"
   },
   "include": ["lib/"],
+  "exclude": ["**/*.spec.*"],
   "ts-node": {
     "preferTsExts": true
   }
