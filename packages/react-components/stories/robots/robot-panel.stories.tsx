@@ -1,5 +1,4 @@
 import { Meta, Story } from '@storybook/react';
-import { TaskProgress } from 'api-client';
 import React from 'react';
 import { RobotPanel as RobotPanel_, RobotPanelProps, VerboseRobot } from '../../lib';
 import { makeRandomRobot } from '../../tests/robots/test-utils';
