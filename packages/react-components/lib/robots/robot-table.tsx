@@ -65,7 +65,7 @@ const returnLocationCells = (robot: VerboseRobot) => {
     case 'Clean':
       return (
         <>
-          <TableCell>-</TableCell>
+          <TableCell>NA</TableCell>
           <TableCell>{taskDescription.clean.start_waypoint}</TableCell>
         </>
       );
@@ -114,8 +114,10 @@ function RobotRow({ robot, onClick }: RobotRowProps) {
           {returnLocationCells(robot)}
           <TableCell>
             {robot.assignedTasks
-              ? robot.assignedTasks[0].task_summary.end_time.sec -
-                robot.assignedTasks[0].task_summary.start_time.sec
+              ? `${
+                  robot.assignedTasks[0].task_summary.end_time.sec -
+                  robot.assignedTasks[0].task_summary.start_time.sec
+                }S`
               : '-'}
           </TableCell>
           <TableCell>{robot.battery_percent.toFixed(2)}%</TableCell>
@@ -172,7 +174,7 @@ export function RobotTable({
               <TableCell>Robot Name</TableCell>
               <TableCell>Start Location</TableCell>
               <TableCell>Destination</TableCell>
-              <TableCell>End Time</TableCell>
+              <TableCell>Active Duration</TableCell>
               <TableCell>Battery</TableCell>
               <TableCell>State</TableCell>
             </TableRow>
