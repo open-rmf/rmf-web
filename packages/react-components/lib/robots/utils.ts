@@ -13,7 +13,7 @@ export function robotModeToString(robotMode: RmfModels.RobotMode): string {
     case RmfModels.RobotMode.MODE_CHARGING:
       return 'Charging';
     case RmfModels.RobotMode.MODE_DOCKING:
-      return 'Docking';
+      return 'Cleaning';
     case RmfModels.RobotMode.MODE_EMERGENCY:
       return 'Emergency';
     case RmfModels.RobotMode.MODE_GOING_HOME:
