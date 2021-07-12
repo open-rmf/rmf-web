@@ -17,7 +17,7 @@
     "jsx": "react"
   },
   "include": ["lib/"],
-  "exclude": ["**/*.spec.*"],
+  "exclude": ["**/*.spec.*", "**/*.stories.*"],
   "ts-node": {
     "preferTsExts": true
   }
