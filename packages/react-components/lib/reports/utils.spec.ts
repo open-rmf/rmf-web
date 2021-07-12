@@ -14,7 +14,6 @@ export const getDispenserLogs = (): DispenserStateRowsType => {
   const rows = [];
   for (let i = 0; i < 200; i++) {
     rows.push({
-      payload: 'Test' + i,
       state: 'OPEN',
       guid: 'dispenser_test',
       created: timestamp,
@@ -28,7 +27,6 @@ export const getDoorLogs = (): DoorStateRowsType => {
   for (let i = 0; i < 200; i++) {
     rows.push({
       created: timestamp,
-      payload: 'Test' + i,
       state: 'OPEN',
       name: 'door_test',
     });
@@ -41,7 +39,6 @@ export const getFleetLogs = (): FleetStateRowsType => {
   for (let i = 0; i < 200; i++) {
     rows.push({
       created: timestamp,
-      payload: 'Test' + i,
       name: 'fleet_test',
       fleet_name: 'test',
       robots: 'test',
@@ -66,7 +63,6 @@ export const getHealthLogs = (): HealthRowsType => {
       health_status: 'DEAD',
       health_message: 'this is a message',
       created: timestamp,
-      payload: 'Test' + i,
     });
   }
   return rows;
@@ -86,7 +82,6 @@ export const getLiftLogs = (): LiftStateRowsType => {
       current_floor: 'L2',
       session_id: 'session',
       created: timestamp,
-      payload: 'Test' + i,
     });
   }
   return rows;
@@ -119,7 +114,6 @@ export const getTaskSummaryLogs = (): TaskSummaryRowsType => {
   for (let i = 0; i < 200; i++) {
     rows.push({
       created: timestamp,
-      payload: 'Test',
       fleet_name: 'Test',
       task_id: i.toString(),
       task_profile: exampleData,
