@@ -220,7 +220,6 @@ interface LoopTaskFormProps {
 
 function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) {
   const theme = useTheme();
-  const [numOfLoopsInput, setNumOfLoopsInput] = React.useState(taskDesc.num_loops.toString());
 
   return (
     <>
@@ -274,13 +273,12 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
             id="loops"
             label="Loops"
             margin="normal"
-            value={numOfLoopsInput}
-            onChange={(ev) => {
+            value={taskDesc.num_loops}
+            onChange={(_ev, val) => {
               onChange({
                 ...taskDesc,
-                num_loops: parseInt(ev.target.value) || 0,
+                num_loops: val,
               });
-              setNumOfLoopsInput(ev.target.value);
             }}
           />
         </Grid>
@@ -396,7 +394,6 @@ export function CreateTaskForm({
   const classes = useStyles();
   const [tasks, setTasks] = React.useState<SubmitTask[]>(() => [defaultTask()]);
   const [selectedTaskIdx, setSelectedTaskIdx] = React.useState(0);
-  const [priorityInput, setPriorityInput] = React.useState('0');
   const taskTitles = React.useMemo(
     () => tasks && tasks.map((t, i) => `${i + 1}: ${getShortDescription(t)}`),
     [tasks],
@@ -555,11 +552,10 @@ export function CreateTaskForm({
                       id="priority"
                       label="Priority"
                       margin="normal"
-                      value={priorityInput}
-                      onChange={(ev) => {
-                        task.priority = parseInt(ev.target.value) || 0;
+                      value={task.priority || 0}
+                      onChange={(_ev, val) => {
+                        task.priority = val;
                         updateTasks();
-                        setPriorityInput(ev.target.value);
                       }}
                     />
                   </Grid>

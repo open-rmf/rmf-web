@@ -26,10 +26,6 @@ class TestCaseLiftState(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(parsed_values["session_id"], "test_session")
 
         self.assertEqual(parsed_values["state"], LiftState.service.get_state_name(0))
-        self.assertEqual(
-            parsed_values["payload"],
-            ' {"lift_name": "test_lift", "lift_time": 0, "available_floors": ["L1", "L2"], "current_floor": "L1", "destination_floor": "L2", "door_state": 0, "motion_state": 0, "available_modes": [0], "current_mode": 0, "session_id": "test_session"}\n',
-        )
 
     async def test_parse_and_get_values_with_dict_states(self):
         parsed_values = await lift_state_parser(self.data_with_dict_states)
