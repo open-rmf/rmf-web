@@ -4,15 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "start-storybook -p 6006 -s stories",
+    "start": "start-storybook -p 6006 -s test-data",
     "prepare": "npm run build",
     "build": "node scripts/build.js",
-    "build:storybook": "build-storybook -s stories",
+    "build:storybook": "build-storybook -s test-data",
     "build:watch": "tsc --build --watch",
     "clean": "tsc --build --clean",
     "test": "karma start karma.conf.js",
     "test:coverage": "karma start karma.conf.js --coverage",
-    "lint": "eslint --ext ts,tsx, lib stories tests"
+    "lint": "eslint --ext ts,tsx, lib"
   },
   "author": "koonpeng@openrobotics.org",
   "license": "Apache-2.0",
