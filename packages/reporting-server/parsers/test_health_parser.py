@@ -13,7 +13,3 @@ class TestCaseHealth(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(parsed_values["actor_id"], "hardware_door")
         self.assertEqual(parsed_values["health_status"], "HealthStatus.HEALTHY")
         self.assertEqual(parsed_values["health_message"], None)
-        self.assertEqual(
-            parsed_values["payload"],
-            '{"id": "hardware_door", "health_status": "HealthStatus.HEALTHY", "health_message": null}\n',
-        )
