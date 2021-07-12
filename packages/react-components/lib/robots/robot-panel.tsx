@@ -54,6 +54,14 @@ export function RobotPanel({
     })();
   };
 
+  React.useEffect(() => {
+    fetchVerboseRobots();
+    verboseRobots.forEach((robot) => {
+      if (selectedRobot && robot.fleet + robot.name === selectedRobot.fleet + selectedRobot.name)
+        setSelectedRobot(robot);
+    });
+  }, [verboseRobots, fetchVerboseRobots]);
+
   return (
     <div {...divProps}>
       <Grid container wrap="nowrap" justify="center" style={{ height: 'inherit' }}>
