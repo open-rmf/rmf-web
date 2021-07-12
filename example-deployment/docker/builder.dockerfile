@@ -21,4 +21,5 @@ SHELL ["bash", "-c"]
 RUN . /opt/ros/foxy/setup.bash && cd /root/rmf_ws && \
   colcon build --merge-install --install-base /opt/rmf --cmake-args -DCMAKE_BUILD_TYPE=Release
 
+RUN apt install ros-foxy-rmw-cyclonedds-cpp -y
 RUN rm -rf /root/rmf_ws
