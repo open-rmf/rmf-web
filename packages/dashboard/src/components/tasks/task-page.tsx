@@ -45,7 +45,7 @@ export function TaskPage() {
         undefined,
         10,
         page * 10,
-        'state,-priority,-start_time',
+        '-priority,-start_time',
       );
       setTotalCount(resp.data.total_count);
       const taskProgresses: TaskProgress[] = resp.data.items;

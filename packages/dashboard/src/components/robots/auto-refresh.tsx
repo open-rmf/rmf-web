@@ -19,14 +19,18 @@ interface RobotStore extends RmfModels.RobotState {
   fleetName: string;
 }
 
-export function useAutoRefresh(sioClient?: SioClient): [AutoRefreshState, AutoRefreshDispatcher] {
+export function useAutoRefresh(
+  sioClient?: SioClient,
+  initalRobots: VerboseRobot[] | (() => VerboseRobot[]) = [],
+  initialAutoRefresh: boolean | (() => boolean) = true,
+): [AutoRefreshState, AutoRefreshDispatcher] {
   const [tasks, setTasks] = React.useState<TaskProgress[]>([]);
   const [taskIds, setTaskIds] = React.useState<string[]>(() =>
     tasks.map((t) => t.task_summary.task_id),
   );
   const [robots, setRobots] = React.useState<RobotStore[]>([]);
-  const [enabled, setEnabled] = React.useState(true);
-  const [verboseRobots, setVerboseRobots] = React.useState<VerboseRobot[]>([]);
+  const [enabled, setEnabled] = React.useState(initialAutoRefresh);
+  const [verboseRobots, setVerboseRobots] = React.useState<VerboseRobot[]>(initalRobots);
   const fleets = React.useContext(FleetStateContext);
 
   React.useEffect(() => {
@@ -45,12 +49,12 @@ export function useAutoRefresh(sioClient?: SioClient): [AutoRefreshState, AutoRe
     if (!enabled || !sioClient) {
       return;
     }
-
     const subscriptions: Subscription[] = [];
     taskIds.forEach((taskId, idx) => {
       subscriptions.push(
         sioClient.subscribeTaskProgress(taskId, (newTask) => {
           let taskProgressConverter: TaskProgress;
+          // initialize task progress if task summary is returned
           if (!newTask.task_summary)
             taskProgressConverter = { task_summary: newTask, progress: '0%' };
           else {
@@ -68,8 +72,10 @@ export function useAutoRefresh(sioClient?: SioClient): [AutoRefreshState, AutoRe
 
   // combine all robots and tasks and sort them
   React.useEffect(() => {
-    if (robots && tasks) setVerboseRobots(allocateTasksToRobots(robots, tasks));
-  }, [tasks, robots]);
+    if (enabled && robots && tasks) {
+      setVerboseRobots(allocateTasksToRobots(robots, tasks));
+    }
+  }, [enabled, tasks, robots]);
 
   const autoRefreshState = React.useMemo(() => ({ verboseRobots, enabled }), [
     verboseRobots,
@@ -83,12 +89,14 @@ export function useAutoRefresh(sioClient?: SioClient): [AutoRefreshState, AutoRe
           setVerboseRobots((prev) => {
             const newRobots = value(prev);
             const tasks = getTasksProgress(newRobots);
+            setTasks(tasks);
             setTaskIds(tasks.map((t) => t.task_summary.task_id));
             return newRobots;
           });
         } else {
           const newRobots = value;
           const tasks = getTasksProgress(newRobots);
+          setTasks(tasks);
           setTaskIds(tasks.map((t) => t.task_summary.task_id));
           setVerboseRobots(newRobots);
         }

@@ -44,29 +44,27 @@ function NoSelectedRobot() {
 }
 
 export interface RobotPanelProps extends React.HTMLProps<HTMLDivElement> {
-  autoRefresh: boolean;
   paginationOptions?: Omit<React.ComponentPropsWithoutRef<typeof TablePagination>, 'component'>;
   verboseRobots: VerboseRobot[];
-  fetchVerboseRobots: () => Promise<VerboseRobot[]>;
   onAutoRefresh?: React.Dispatch<React.SetStateAction<boolean>>;
-  onRefresh?: () => void;
+  onRefresh?: () => Promise<VerboseRobot[]>;
 }
 
 export function RobotPanel({
-  autoRefresh,
   paginationOptions,
   verboseRobots,
-  fetchVerboseRobots,
+  onRefresh,
   onAutoRefresh,
   ...divProps
 }: RobotPanelProps): JSX.Element {
   const classes = useStyles();
   const [selectedRobot, setSelectedRobot] = React.useState<VerboseRobot | undefined>(undefined);
+  const [autoRefresh, setAutoRefresh] = React.useState(true);
 
   const handleRefresh = async (selectedRobot?: VerboseRobot) => {
     (async () => {
-      const result = await fetchVerboseRobots();
-      result.forEach((robot) => {
+      const result = await (onRefresh && onRefresh());
+      result?.forEach((robot) => {
         if (selectedRobot && robot.name === selectedRobot.name) {
           setSelectedRobot(robot);
         }
@@ -94,7 +92,10 @@ export function RobotPanel({
               </Typography>
               <IconButton
                 className={autoRefresh ? classes.enabledToggleButton : undefined}
-                onClick={() => onAutoRefresh && onAutoRefresh(!autoRefresh)}
+                onClick={() => {
+                  setAutoRefresh((prev) => !prev);
+                  onAutoRefresh && onAutoRefresh(!autoRefresh);
+                }}
               >
                 <AutorenewIcon />
               </IconButton>

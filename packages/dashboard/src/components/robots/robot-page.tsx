@@ -21,7 +21,6 @@ export function RobotPage() {
 
   const [totalCount, setTotalCount] = React.useState(0);
   const [page, setPage] = React.useState(0);
-  const [autoRefresh, setAutoRefresh] = React.useState(true);
   const [autoRefreshState, autoRefreshDispatcher] = useAutoRefresh(sioClient);
 
   const fetchVerboseRobots = React.useCallback(async () => {
@@ -42,7 +41,9 @@ export function RobotPage() {
   }, [fleetsApi, page]);
 
   const handleRefresh = React.useCallback<Required<RobotPanelProps>['onRefresh']>(async () => {
-    autoRefreshDispatcher.setVerboseRobots(await fetchVerboseRobots());
+    const verboseRobots = await fetchVerboseRobots();
+    autoRefreshDispatcher.setVerboseRobots(verboseRobots);
+    return verboseRobots;
   }, [fetchVerboseRobots, autoRefreshDispatcher]);
 
   React.useEffect(() => {
@@ -51,10 +52,9 @@ export function RobotPage() {
 
   return (
     <RobotPanel
-      autoRefresh={autoRefresh}
       className={classes.robotPanel}
-      fetchVerboseRobots={fetchVerboseRobots}
-      onAutoRefresh={setAutoRefresh}
+      onRefresh={handleRefresh}
+      onAutoRefresh={autoRefreshDispatcher.setEnabled}
       paginationOptions={{
         count: totalCount,
         rowsPerPage: 10,
