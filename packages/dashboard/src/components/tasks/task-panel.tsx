@@ -142,7 +142,7 @@ export function TaskPanel({
   const taskCancellable =
     selectedTask &&
     profile &&
-    Enforcer.canCancelTask(profile.user, profile.permissions, selectedTask) &&
+    Enforcer.canCancelTask(profile, selectedTask) &&
     (selectedTask.summary.state === RmfModels.TaskSummary.STATE_ACTIVE ||
       selectedTask.summary.state === RmfModels.TaskSummary.STATE_PENDING ||
       selectedTask.summary.state === RmfModels.TaskSummary.STATE_QUEUED);
