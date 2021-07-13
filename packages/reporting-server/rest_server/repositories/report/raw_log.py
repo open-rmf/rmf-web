@@ -33,7 +33,7 @@ async def get_all_raw_logs(
     if log_level and log_level != "all":
         query["level__iexact"] = log_level
 
-    filter = (
+    rawlog_queryset = (
         RawLog.filter(**query)
         .prefetch_related("container")
         .offset(offset)
@@ -41,7 +41,7 @@ async def get_all_raw_logs(
         .order_by("-created")
     )
 
-    return await RawLog_Pydantic.from_queryset(filter)
+    return await RawLog_Pydantic.from_queryset(rawlog_queryset)
 
 
 async def get_containers():

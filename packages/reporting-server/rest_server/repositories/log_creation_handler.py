@@ -7,8 +7,6 @@ from models.tortoise_models.raw_log import RawLog
 from parsers.auth_event_parser import auth_event_parser
 from parsers.log_type_parser import get_log_type
 
-from .parser_dispatcher import log_model_dispatcher
-
 # Function that receives all the logs and store them on the database
 
 logger = logging.getLogger("rest_app:log_creation_handler")

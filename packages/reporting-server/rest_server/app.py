@@ -10,9 +10,8 @@ from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from rest_server.database import setup_database
 from rest_server.routers import log_router, report_router
-from tortoise.contrib.fastapi import register_tortoise
 
-from .app_config import SystemMode, app_config
+from .app_config import SystemMode
 
 logger = logging.getLogger("rest_app")
 handler = logging.StreamHandler(sys.stdout)

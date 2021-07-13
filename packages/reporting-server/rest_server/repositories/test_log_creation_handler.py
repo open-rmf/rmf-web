@@ -5,7 +5,6 @@ import unittest
 from fastapi.testclient import TestClient
 from models.tortoise_models import RawLog
 from models.tortoise_models.auth_events import AuthEvents
-from models.tortoise_models.container import Container
 from rest_server.__mocks__ import raw_data
 from rest_server.app import get_app
 from rest_server.test_utils import start_test_database

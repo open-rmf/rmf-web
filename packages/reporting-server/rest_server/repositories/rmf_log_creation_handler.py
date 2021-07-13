@@ -1,8 +1,5 @@
 import logging
 
-from dependencies import logger
-from parsers.log_type_parser import get_log_type
-
 from .parser_dispatcher import log_model_dispatcher
 
 # Function that receives all the logs and store them on the database
