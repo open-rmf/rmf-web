@@ -24,5 +24,3 @@ IngestorState_Pydantic = pydantic_model_creator(IngestorState, name="IngestorSta
 LiftState_Pydantic = pydantic_model_creator(LiftState, name="LiftStates")
 RawLog_Pydantic = pydantic_model_creator(RawLog, name="RawLog")
 TaskSummary_Pydantic = pydantic_model_creator(TaskSummary, name="TaskSummary")
-
-print(RawLog_Pydantic.schema_json(indent=4))
