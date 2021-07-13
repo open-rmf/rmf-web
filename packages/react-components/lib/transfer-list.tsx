@@ -82,33 +82,31 @@ function CustomList({ title, items, checked, setChecked }: CustomListProps) {
             const labelId = `transfer-list-all-item-${idx}-label`;
 
             return (
-              <>
-                <ListItem
-                  key={idx}
-                  role="listitem"
-                  button
-                  onClick={() =>
-                    setChecked((prev) => {
-                      if (prev.has(item)) {
-                        prev.delete(item);
-                      } else {
-                        prev.add(item);
-                      }
-                      return new Set(prev);
-                    })
-                  }
-                >
-                  <ListItemIcon>
-                    <Checkbox
-                      checked={checked.has(item)}
-                      tabIndex={-1}
-                      disableRipple
-                      inputProps={{ 'aria-labelledby': labelId }}
-                    />
-                  </ListItemIcon>
-                  <ListItemText id={labelId} primary={item} />
-                </ListItem>
-              </>
+              <ListItem
+                key={item}
+                role="listitem"
+                button
+                onClick={() =>
+                  setChecked((prev) => {
+                    if (prev.has(item)) {
+                      prev.delete(item);
+                    } else {
+                      prev.add(item);
+                    }
+                    return new Set(prev);
+                  })
+                }
+              >
+                <ListItemIcon>
+                  <Checkbox
+                    checked={checked.has(item)}
+                    tabIndex={-1}
+                    disableRipple
+                    inputProps={{ 'aria-labelledby': labelId }}
+                  />
+                </ListItemIcon>
+                <ListItemText id={labelId} primary={item} />
+              </ListItem>
             );
           })}
           <ListItem />
@@ -123,7 +121,7 @@ export interface TransferListProps {
   rightItems: string[];
   leftTitle?: React.ReactNode;
   rightTitle?: React.ReactNode;
-  onTransfer: (leftItems: string[], rightItems: string[]) => void;
+  onTransfer?: (leftItems: string[], rightItems: string[]) => void;
 }
 
 export function TransferList({
