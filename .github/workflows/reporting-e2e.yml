@@ -1,4 +1,4 @@
-name: End-to-End
+name: Reporting End-to-End
 on:
   pull_request:
   push:
@@ -14,7 +14,6 @@ jobs:
     name: End-to-End Tests
     runs-on: ubuntu-latest
     if: always()
-    needs: build-docker-images
     container:
       image: docker.pkg.github.com/open-rmf/rmf-web/e2e
       credentials:
