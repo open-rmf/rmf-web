@@ -1,6 +1,6 @@
 import json
 
-from models import FleetState
+from models.tortoise_models import FleetState
 
 
 async def fleet_state_parser(fullstring: str) -> list:

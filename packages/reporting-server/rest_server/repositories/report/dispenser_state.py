@@ -2,7 +2,8 @@ from datetime import timezone
 from typing import Optional
 
 from dateutil import parser
-from models.dispenser_state import DispenserState, DispenserState_Pydantic
+from models.pydantic_models import DispenserState_Pydantic
+from models.tortoise_models.dispenser_state import DispenserState
 
 
 async def get_dispenser_state(

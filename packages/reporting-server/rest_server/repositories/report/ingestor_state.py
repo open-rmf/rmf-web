@@ -2,7 +2,8 @@ from datetime import timezone
 from typing import Optional
 
 from dateutil import parser
-from models.ingestor_state import IngestorState, IngestorState_Pydantic
+from models.pydantic_models import IngestorState_Pydantic
+from models.tortoise_models.ingestor_state import IngestorState
 
 
 async def get_ingestor_state(

@@ -16,7 +16,7 @@ class TestRmfServerLogRoute(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         await Tortoise.init(
             db_url="sqlite://:memory:",
-            modules={"models": ["models"]},
+            modules={"models": ["models.tortoise_models"]},
         )
         await Tortoise.generate_schemas()
         self.client = TestClient(app)

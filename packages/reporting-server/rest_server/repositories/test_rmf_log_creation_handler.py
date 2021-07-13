@@ -3,7 +3,7 @@
 import unittest
 
 from fastapi.testclient import TestClient
-from models import DispenserState, DoorState
+from models.tortoise_models import DispenserState, DoorState
 from rest_server.__mocks__ import raw_data
 from rest_server.app import get_app
 from rest_server.repositories.rmf_log_creation_handler import create_rmf_server_log

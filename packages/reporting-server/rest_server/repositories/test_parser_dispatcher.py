@@ -4,7 +4,7 @@ import unittest
 # and because of that the lint is failing
 import tortoise
 from fastapi.testclient import TestClient
-from models import (
+from models.tortoise_models import (
     DispenserState,
     DoorState,
     FleetState,

@@ -1,7 +1,6 @@
 from enum import Enum
 
 from tortoise import fields, models
-from tortoise.contrib.pydantic import pydantic_model_creator
 
 from .door_state import DoorStateEnum
 
@@ -81,6 +80,3 @@ class LiftState(models.Model):
     created = fields.DatetimeField(auto_now_add=True)
 
     service = LiftStateService()
-
-
-LiftState_Pydantic = pydantic_model_creator(LiftState, name="LiftStates")

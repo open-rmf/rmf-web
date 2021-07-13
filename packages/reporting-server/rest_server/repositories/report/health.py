@@ -2,7 +2,8 @@ from datetime import timezone
 from typing import Optional
 
 from dateutil import parser
-from models.health import HealthStatus, HealthStatus_Pydantic
+from models.pydantic_models import HealthStatus_Pydantic
+from models.tortoise_models.health import HealthStatus
 
 
 async def get_health(

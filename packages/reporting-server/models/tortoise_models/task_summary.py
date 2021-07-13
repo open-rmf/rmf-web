@@ -123,6 +123,3 @@ class TaskSummary(models.Model):
     robot_name = fields.CharField(max_length=50)
 
     service = TaskSummaryService()
-
-
-TaskSummary_Pydantic = pydantic_model_creator(TaskSummary, name="TaskSummary")

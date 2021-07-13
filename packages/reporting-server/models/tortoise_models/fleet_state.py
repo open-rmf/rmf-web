@@ -1,7 +1,6 @@
 from enum import Enum
 
 from tortoise import fields, models
-from tortoise.contrib.pydantic import pydantic_model_creator
 
 
 class RobotStateEnum(str, Enum):
@@ -54,6 +53,3 @@ class FleetState(models.Model):
     robots = fields.JSONField()
 
     service = RobotStateService()
-
-
-FleetState_Pydantic = pydantic_model_creator(FleetState, name="FleetState")

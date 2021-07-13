@@ -2,7 +2,8 @@ from datetime import timezone
 from typing import Optional
 
 from dateutil import parser
-from models.lift_state import LiftState, LiftState_Pydantic
+from models.pydantic_models import LiftState_Pydantic
+from models.tortoise_models.lift_state import LiftState
 
 
 async def get_lift_state(

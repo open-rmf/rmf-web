@@ -2,8 +2,9 @@ from datetime import timezone
 from typing import Optional
 
 from dateutil import parser
-from models.container import Container
-from models.raw_log import RawLog, RawLog_Pydantic
+from models.pydantic_models import RawLog_Pydantic
+from models.tortoise_models.container import Container
+from models.tortoise_models.raw_log import RawLog
 
 
 async def get_all_raw_logs(

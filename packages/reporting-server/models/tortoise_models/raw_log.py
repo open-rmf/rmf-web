@@ -1,7 +1,6 @@
 from enum import Enum
 
 from tortoise import fields, models
-from tortoise.contrib.pydantic import pydantic_model_creator
 
 
 class LogLevel(str, Enum):
@@ -24,6 +23,3 @@ class RawLog(models.Model):
 
     def __str__(self):
         return str(self.message)
-
-
-RawLog_Pydantic = pydantic_model_creator(RawLog, name="RawLog")

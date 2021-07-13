@@ -2,7 +2,8 @@ from datetime import timezone
 from typing import Optional
 
 from dateutil import parser
-from models.task_summary import TaskSummary, TaskSummary_Pydantic
+from models.pydantic_models import TaskSummary_Pydantic
+from models.tortoise_models.task_summary import TaskSummary
 
 
 async def get_task_summary(

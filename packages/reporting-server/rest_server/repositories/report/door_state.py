@@ -2,7 +2,8 @@ from datetime import timezone
 from typing import Optional
 
 from dateutil import parser
-from models.door_state import DoorState, DoorState_Pydantic
+from models.pydantic_models import DoorState_Pydantic
+from models.tortoise_models.door_state import DoorState
 
 
 async def get_door_state(
