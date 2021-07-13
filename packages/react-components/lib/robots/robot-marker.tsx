@@ -1,4 +1,4 @@
-import { makeStyles } from '@material-ui/core';
+import { makeStyles, Tooltip } from '@material-ui/core';
 import Debug from 'debug';
 import React from 'react';
 import { ColorContext, SvgText } from '..';
@@ -80,22 +80,24 @@ export const RobotMarker = React.forwardRef(
     }, [name, model, colorManager, fleetName, useImageMarker]);
 
     return (
-      <g ref={ref} onClick={(ev) => onClick && onClick(ev, fleetName, name)} {...otherProps}>
-        <g transform={translateTransform}>
-          <g className={classes.clickable} aria-label={name} transform={`rotate(${yaw})`}>
-            {useImageMarker && iconPath ? (
-              <ImageMarker
-                {...props}
-                iconPath={iconPath}
-                onError={() => setUseImageMarker(false)}
-              />
-            ) : robotColor ? (
-              <DefaultMarker color={robotColor} {...props} />
-            ) : null}
+      <Tooltip title={name}>
+        <g ref={ref} onClick={(ev) => onClick && onClick(ev, fleetName, name)} {...otherProps}>
+          <g transform={translateTransform}>
+            <g className={classes.clickable} aria-label={name} transform={`rotate(${yaw})`}>
+              {useImageMarker && iconPath ? (
+                <ImageMarker
+                  {...props}
+                  iconPath={iconPath}
+                  onError={() => setUseImageMarker(false)}
+                />
+              ) : robotColor ? (
+                <DefaultMarker color={robotColor} {...props} />
+              ) : null}
+            </g>
+            <SvgText text={name} targetWidth={footprint * 1.9} className={classes.text} />
           </g>
-          <SvgText text={name} targetWidth={footprint * 1.9} className={classes.text} />
         </g>
-      </g>
+      </Tooltip>
     );
   },
 );
