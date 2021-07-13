@@ -7,6 +7,7 @@ from models.tortoise_models import DispenserState, DoorState
 from rest_server.__mocks__ import raw_data
 from rest_server.app import get_app
 from rest_server.repositories.rmf_log_creation_handler import create_rmf_server_log
+from rest_server.test_utils import start_test_database
 from tortoise import Tortoise
 
 app = get_app()
@@ -14,11 +15,7 @@ app = get_app()
 
 class TestCaseLogRMFServerCreationRepository(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
-        await Tortoise.init(
-            db_url="sqlite://:memory:",
-            modules={"models": ["models"]},
-        )
-        await Tortoise.generate_schemas()
+        await start_test_database()
         self.client = TestClient(app)
 
     async def asyncTearDown(self):

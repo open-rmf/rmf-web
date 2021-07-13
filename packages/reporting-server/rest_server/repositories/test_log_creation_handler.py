@@ -8,6 +8,7 @@ from models.tortoise_models.auth_events import AuthEvents
 from models.tortoise_models.container import Container
 from rest_server.__mocks__ import raw_data
 from rest_server.app import get_app
+from rest_server.test_utils import start_test_database
 from tortoise import Tortoise
 
 from .log_creation_handler import RawLogHandler, create_keycloak_log
@@ -17,11 +18,7 @@ app = get_app()
 
 class TestCaseRawLogCreationRepository(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
-        await Tortoise.init(
-            db_url="sqlite://:memory:",
-            modules={"models": ["models"]},
-        )
-        await Tortoise.generate_schemas()
+        await start_test_database()
         self.client = TestClient(app)
         self.RawLogHandler = RawLogHandler()
 
@@ -59,11 +56,7 @@ class TestCaseRawLogCreationRepository(unittest.IsolatedAsyncioTestCase):
 
 class TestCaseKeycloakCreationRepository(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
-        await Tortoise.init(
-            db_url="sqlite://:memory:",
-            modules={"models": ["models"]},
-        )
-        await Tortoise.generate_schemas()
+        await start_test_database()
         self.client = TestClient(app)
         self.RawLogHandler = RawLogHandler()
 

@@ -15,6 +15,7 @@ from models.tortoise_models import (
 )
 from rest_server.__mocks__ import parsed_data
 from rest_server.app import get_app
+from rest_server.test_utils import start_test_database
 
 from .parser_dispatcher import log_model_dispatcher
 
@@ -23,11 +24,7 @@ app = get_app()
 
 class TestCaseLogParserDispatcher(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
-        await tortoise.Tortoise.init(
-            db_url="sqlite://:memory:",
-            modules={"models": ["models"]},
-        )
-        await tortoise.Tortoise.generate_schemas()
+        await start_test_database()
         self.client = TestClient(app)
 
     async def asyncTearDown(self):
