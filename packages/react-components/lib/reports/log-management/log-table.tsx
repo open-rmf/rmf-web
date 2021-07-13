@@ -5,11 +5,16 @@ import { makeStyles, Typography } from '@material-ui/core';
 import { materialTableIcons } from '../../material-table-icons';
 import { format } from 'date-fns';
 
+export type ContainerType = {
+  id: number;
+  name: string;
+};
+
 export type LogRowsType = {
   level: string;
   message: string;
   created: string;
-  container_name: string;
+  container: ContainerType;
 }[];
 
 export interface LogTableProps {
@@ -120,7 +125,7 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
           render: (rowData) => {
             return (
               <Typography className={classes.cellContent}>
-                {rowData.container_name ? rowData.container_name : 'Unknown'}
+                {rowData.container ? rowData.container.name : 'Unknown'}
               </Typography>
             );
           },
