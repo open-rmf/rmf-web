@@ -10,10 +10,27 @@ on:
 env:
   CI: true
 jobs:
+  build-docker-images:
+    name: Push Docker images to GitHub Packages
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    steps:
+      - uses: actions/checkout@v2
+      - name: Push e2e image to GitHub Packages
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          repository: ${{ github.repository }}/e2e
+          tags: latest
+          build_args: BASE_IMAGE=docker.pkg.github.com/open-rmf/rmf-web/rmf:nightly
+          path: packages/reporting-e2e/docker/e2e
   e2e-tests:
     name: End-to-End Tests
     runs-on: ubuntu-latest
     if: always()
+    needs: build-docker-images
     container:
       image: docker.pkg.github.com/open-rmf/rmf-web/e2e
       credentials:
