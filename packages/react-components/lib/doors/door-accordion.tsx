@@ -8,6 +8,7 @@ import * as RmfModels from 'rmf-models';
 import ItemAccordionDetails from '../item-accordion-details';
 import ItemAccordionSummary from '../item-accordion-summary';
 import { SimpleInfo, SimpleInfoData } from '../simple-info';
+import { Map as LMap } from 'react-leaflet';
 
 const debug = Debug('Doors:DoorAccordion');
 
@@ -72,6 +73,22 @@ function motionDirectionToString(motionDirection: number): string {
   }
 }
 
+function getDoorCenter(door: RmfModels.Door): [number, number] {
+  const v1 = [door.v1_x, door.v1_y];
+  const v2 = [door.v2_x, door.v2_y];
+  switch (door.door_type) {
+    case RmfModels.Door.DOOR_TYPE_SINGLE_SLIDING:
+    case RmfModels.Door.DOOR_TYPE_SINGLE_SWING:
+    case RmfModels.Door.DOOR_TYPE_SINGLE_TELESCOPE:
+    case RmfModels.Door.DOOR_TYPE_DOUBLE_SLIDING:
+    case RmfModels.Door.DOOR_TYPE_DOUBLE_SWING:
+    case RmfModels.Door.DOOR_TYPE_DOUBLE_TELESCOPE:
+      return [(v1[0] + v2[0]) / 2, (v2[1] + v1[1]) / 2];
+    default:
+      throw new Error('unknown door type');
+  }
+}
+
 interface DoorInfoProps {
   door: RmfModels.Door;
 }
@@ -94,13 +111,30 @@ export interface DoorAccordionProps extends Omit<AccordionProps, 'children'> {
   door: RmfModels.Door;
   doorState?: RmfModels.DoorState;
   onDoorControlClick?(event: React.MouseEvent, door: RmfModels.Door, mode: number): void;
+  mapRef?: React.RefObject<LMap>;
 }
 
 export const DoorAccordion = React.forwardRef(
   (props: DoorAccordionProps, ref: React.Ref<HTMLElement>) => {
-    const { door, doorState, onDoorControlClick, ...otherProps } = props;
+    const { door, doorState, onDoorControlClick, mapRef, ...otherProps } = props;
     debug(`render ${door.name}`);
     const classes = useStyles();
+    const [expanded, setExpanded] = React.useState(false);
+
+    function onAccordianClick(door: RmfModels.Door, mapRef?: React.RefObject<LMap>) {
+      // const doorCenter = getDoorCenter(door);
+      // const getLatLngPt = mapRef?.current?.leafletElement.layerPointToLatLng([104.0037612915039, -44.18611717224121]);
+      // const toggleExpand = !expanded
+      // setExpanded(toggleExpand)
+      // if (!toggleExpand) {
+      //   mapRef?.current?.leafletElement.setZoom(2)
+      // } else {
+      // mapRef?.current?.leafletElement.zoomIn(2);
+      // mapRef?.current?.leafletElement.panTo(doorCenter);
+      // console.log("zooming in..")
+      // if (getLatLngPt !== undefined) mapRef?.current?.leafletElement.setView([getLatLngPt?.lat, getLatLngPt?.lng],3);
+      // }
+    }
 
     const doorModeLabelClasses = React.useCallback(
       (doorState?: RmfModels.DoorState): string | null => {
@@ -132,6 +166,7 @@ export const DoorAccordion = React.forwardRef(
             text: doorModeToString(doorState),
             variant: doorState ? 'normal' : 'unknown',
           }}
+          onAccordianClick={() => onAccordianClick(door, mapRef)}
         />
         <ItemAccordionDetails>
           <DoorInfo door={door} />
