@@ -50,7 +50,7 @@ describe('TaskPanel', () => {
 
     it('cancel task button is disabled for user without required permission', () => {
       const root = mountAsUser(
-        { user: { username: 'test2', is_admin: false, roles: [] }, permissions: [] },
+        { profile: { username: 'test2', is_admin: false, roles: [] }, permissions: [] },
         <TaskPanel tasks={[makeTask('task1', 1, 1)]} />,
       );
       userEvent.click(root.getByText('task1'));

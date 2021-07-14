@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { AppController, AppControllerContext } from '../app-contexts';
 import AppBar from '../appbar';
-import { AuthenticatorContext, UserProfile, UserProfileContext } from '../auth/contexts';
+import { AuthenticatorContext, User, UserContext } from '../auth/contexts';
 import FakeAuthenticator from '../auth/__mocks__/fake-authenticator';
 import { makeMockAppController } from './mock-app-controller';
 import { mountAsUser } from './test-utils';
@@ -76,8 +76,8 @@ describe('AppBar', () => {
   });
 
   test('user button is shown when there is an authenticated user', () => {
-    const user: UserProfile = {
-      user: { username: 'test', is_admin: false, roles: [] },
+    const user: User = {
+      profile: { username: 'test', is_admin: false, roles: [] },
       permissions: [],
     };
     const root = mountAsUser(
@@ -90,18 +90,18 @@ describe('AppBar', () => {
   });
 
   test('logout is triggered when logout button is clicked', () => {
-    const authenticator = new FakeAuthenticator({ username: 'test', token: 'test' });
+    const authenticator = new FakeAuthenticator('test');
     const spy = jest.spyOn(authenticator, 'logout').mockImplementation(() => undefined as any);
-    const user: UserProfile = {
-      user: { username: 'test', is_admin: false, roles: [] },
+    const user: User = {
+      profile: { username: 'test', is_admin: false, roles: [] },
       permissions: [],
     };
     const root = render(
       <Base>
         <AuthenticatorContext.Provider value={authenticator}>
-          <UserProfileContext.Provider value={user}>
+          <UserContext.Provider value={user}>
             <AppBar tabValue="building" />
-          </UserProfileContext.Provider>
+          </UserContext.Provider>
         </AuthenticatorContext.Provider>
       </Base>,
     );

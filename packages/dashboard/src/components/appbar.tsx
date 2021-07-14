@@ -14,7 +14,7 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import React from 'react';
 import { HeaderBar, LogoButton, NavigationBar, Tooltip } from 'react-components';
 import { AppControllerContext, ResourcesContext, TooltipsContext } from './app-contexts';
-import { AuthenticatorContext, UserProfileContext } from './auth/contexts';
+import { AuthenticatorContext, UserContext } from './auth/contexts';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -44,7 +44,7 @@ export const AppBar = React.memo(
     const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
     const classes = useStyles();
     const authenticator = React.useContext(AuthenticatorContext);
-    const user = React.useContext(UserProfileContext);
+    const user = React.useContext(UserContext);
     const { showTooltips } = React.useContext(TooltipsContext);
 
     async function handleLogout(): Promise<void> {

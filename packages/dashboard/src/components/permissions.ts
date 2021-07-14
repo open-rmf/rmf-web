@@ -1,16 +1,16 @@
 import { Task } from 'api-client';
-import { UserProfile } from './auth/contexts';
+import { User } from './auth/contexts';
 
 export class RmfAction {
   static TaskCancel = 'task_cancel';
 }
 
 export class Enforcer {
-  static canCancelTask(profile: UserProfile, task: Task): boolean {
-    if (profile.user.is_admin) {
+  static canCancelTask(user: User, task: Task): boolean {
+    if (user.profile.is_admin) {
       return true;
     }
-    for (const p of profile.permissions) {
+    for (const p of user.permissions) {
       if (p.authz_grp === task.authz_grp && p.action === 'task_cancel') {
         return true;
       }

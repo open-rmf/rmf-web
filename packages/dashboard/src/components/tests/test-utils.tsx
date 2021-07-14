@@ -1,6 +1,6 @@
 import { act, render, RenderResult } from '@testing-library/react';
 import React from 'react';
-import { UserProfile, UserProfileContext } from '../auth/contexts';
+import { User, UserContext } from '../auth/contexts';
 
 /**
  * Wraps a `render` in a `act`.
@@ -13,8 +13,8 @@ export async function renderAct(ui: React.ReactElement): Promise<RenderResult> {
   return root!;
 }
 
-export const superUser: UserProfile = {
-  user: {
+export const superUser: User = {
+  profile: {
     username: 'test',
     is_admin: true,
     roles: [],
@@ -22,8 +22,6 @@ export const superUser: UserProfile = {
   permissions: [],
 };
 
-export function mountAsUser(user: UserProfile, component: React.ReactElement) {
-  return render(
-    <UserProfileContext.Provider value={user}>{component}</UserProfileContext.Provider>,
-  );
+export function mountAsUser(user: User, component: React.ReactElement) {
+  return render(<UserContext.Provider value={user}>{component}</UserContext.Provider>);
 }
