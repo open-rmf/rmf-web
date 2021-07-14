@@ -2,8 +2,6 @@ from enum import Enum
 
 from tortoise import fields, models
 
-from .door_state import DoorStateEnum
-
 
 class LiftStateEnum(str, Enum):
     MODE_AGV = "avg"

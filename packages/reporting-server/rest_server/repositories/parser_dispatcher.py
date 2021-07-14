@@ -1,7 +1,7 @@
 from models.tortoise_models.dispenser_state import DispenserState
 from models.tortoise_models.door_state import DoorState
 from models.tortoise_models.fleet_state import FleetState
-from models.tortoise_models.health import HealthStatus
+from models.tortoise_models.health import Device, HealthStatus
 from models.tortoise_models.ingestor_state import IngestorState
 from models.tortoise_models.lift_state import LiftState
 from models.tortoise_models.task_summary import TaskSummary
@@ -14,7 +14,18 @@ from parsers.lift_state_parser import lift_state_parser
 from parsers.task_summary_parser import task_summary_parser
 
 
+async def create_health_status(data):
+    device = await Device.get_or_create(actor=data["actor_id"], type=data["device"])
+    await HealthStatus.create(
+        device=device[0],
+        health_status=data["health_status"],
+        health_message=data["health_message"],
+    )
+
+
 # This function dispatchs to the correct handler dependending on the text content.
+
+
 async def log_model_dispatcher(fullstring: str):
     if "dispenser_state:" in fullstring.lower():
         data = await dispenser_state_parser(fullstring)
@@ -47,20 +58,21 @@ async def log_model_dispatcher(fullstring: str):
     # Health
     elif "dispenser_health:" in fullstring.lower():
         data = await health_status_parser(fullstring, "dispenser_health")
-        await HealthStatus.create(**data)
+        await create_health_status(data)
 
     elif "door_health:" in fullstring.lower():
         data = await health_status_parser(fullstring, "door_health")
-        await HealthStatus.create(**data)
+
+        await create_health_status(data)
 
     elif "ingestor_health:" in fullstring.lower():
         data = await health_status_parser(fullstring, "ingestor_health")
-        await HealthStatus.create(**data)
+        await create_health_status(data)
 
     elif "lift_health:" in fullstring.lower():
         data = await health_status_parser(fullstring, "lift_health")
-        await HealthStatus.create(**data)
+        await create_health_status(data)
 
     elif "robot_health:" in fullstring.lower():
         data = await health_status_parser(fullstring, "robot_health")
-        await HealthStatus.create(**data)
+        await create_health_status(data)

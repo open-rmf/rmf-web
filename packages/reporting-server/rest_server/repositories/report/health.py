@@ -24,6 +24,12 @@ async def get_health(
         to_log_utc_time = to_log_local_time.astimezone(timezone.utc)
         query["created__lt"] = to_log_utc_time
 
-    return await HealthStatus_Pydantic.from_queryset(
-        HealthStatus.filter(**query).offset(offset).limit(limit).order_by("-created")
+    queryset = (
+        HealthStatus.filter(**query)
+        .prefetch_related("device")
+        .offset(offset)
+        .limit(limit)
+        .order_by("-created")
     )
+
+    return await HealthStatus_Pydantic.from_queryset(queryset)

@@ -58,8 +58,7 @@ export const getHealthLogs = (): HealthRowsType => {
   const rows = [];
   for (let i = 0; i < 200; i++) {
     rows.push({
-      device: 'door',
-      actor_id: 'door-1',
+      device: { id: 1, type: 'door', actor: 'door-1' },
       health_status: 'DEAD',
       health_message: 'this is a message',
       created: timestamp,
