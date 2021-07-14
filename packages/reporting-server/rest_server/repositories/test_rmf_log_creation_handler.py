@@ -3,7 +3,7 @@
 import unittest
 
 from fastapi.testclient import TestClient
-from models.tortoise_models import DispenserState, DoorState
+from models.tortoise_models import DispenserState, Door, DoorState
 from rest_server.__mocks__ import raw_data
 from rest_server.app import get_app
 from rest_server.repositories.rmf_log_creation_handler import create_rmf_server_log
@@ -46,7 +46,9 @@ class TestCaseLogRMFServerCreationRepository(unittest.IsolatedAsyncioTestCase):
         await create_rmf_server_log(
             [raw_data.mock_dispenser_state, raw_data.mock_door_state]
         )
-        dispenser = await DispenserState.first()
-        door = await DoorState.first()
-        self.assertEqual(dispenser.guid, "coke_dispenser")
+        dispenser_state = await DispenserState.first()
+        door_state = await DoorState.first()
+        door = await Door.first()
+        self.assertEqual(dispenser_state.guid, "coke_dispenser")
         self.assertEqual(door.name, "hardware_door")
+        self.assertIsNotNone(door_state)

@@ -7,6 +7,7 @@ from fastapi.testclient import TestClient
 from models.tortoise_models import (
     Device,
     DispenserState,
+    Door,
     DoorState,
     FleetState,
     HealthStatus,
@@ -38,8 +39,10 @@ class TestCaseLogParserDispatcher(unittest.IsolatedAsyncioTestCase):
 
     async def test_door_state_created(self):
         await log_model_dispatcher(parsed_data.mock_door_state)
-        instance = await DoorState.first()
-        self.assertEqual(instance.name, "hardware_door")
+        door = await Door.first()
+        status = await DoorState.first()
+        self.assertEqual(door.name, "hardware_door")
+        self.assertIsNotNone(status)
 
     async def test_fleet_state_created(self):
         await log_model_dispatcher(parsed_data.mock_fleet_state)

@@ -7,7 +7,7 @@ import { format } from 'date-fns';
 
 export type DoorStateRowsType = {
   created: string; //date
-  name: string;
+  door: { id: number; name: string };
   state: string;
 }[];
 
@@ -28,7 +28,7 @@ export const DoorStateReportTable = (props: DoorStateReportTable): React.ReactEl
           field: 'name',
           type: 'string',
           render: (rowData) => {
-            return <Typography>{rowData.name}</Typography>;
+            return <Typography>{rowData.door.name}</Typography>;
           },
         },
         {

@@ -1,5 +1,5 @@
 from models.tortoise_models.dispenser_state import DispenserState
-from models.tortoise_models.door_state import DoorState
+from models.tortoise_models.door_state import Door, DoorState
 from models.tortoise_models.fleet_state import FleetState
 from models.tortoise_models.health import Device, HealthStatus
 from models.tortoise_models.ingestor_state import IngestorState
@@ -33,7 +33,8 @@ async def log_model_dispatcher(fullstring: str):
 
     elif "door_state:" in fullstring.lower():
         data = await doors_state_parser(fullstring)
-        await DoorState.create(**data)
+        door = await Door.get_or_create(name=data["name"])
+        await DoorState.create(state=data["state"], door=door[0])
 
     elif "fleet_state:" in fullstring.lower():
         robots = await fleet_state_parser(fullstring)
