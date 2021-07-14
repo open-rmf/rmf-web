@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { TransferList } from './transfer-list';
 
-fdescribe('TransferList', () => {
+describe('TransferList', () => {
   let left: string[];
   let right: string[];
 
