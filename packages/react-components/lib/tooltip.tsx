@@ -1,4 +1,4 @@
-import { makeStyles, Tooltip as MuiTooltip } from '@material-ui/core';
+import { makeStyles, Tooltip } from '@material-ui/core';
 import React from 'react';
 
 export interface TooltipProps {
@@ -14,13 +14,13 @@ const useStyles = makeStyles({
   },
 });
 
-export const Tooltip = (props: TooltipProps): JSX.Element => {
+export const DashboardTooltip = (props: TooltipProps): JSX.Element => {
   const { title, id, enabled } = props;
   const classes = useStyles();
   return (
     <div>
       {enabled && (
-        <MuiTooltip
+        <Tooltip
           title={title}
           arrow
           id={id}
@@ -28,11 +28,11 @@ export const Tooltip = (props: TooltipProps): JSX.Element => {
           data-testid={id + '-tooltip'}
         >
           {props.children}
-        </MuiTooltip>
+        </Tooltip>
       )}
       {!enabled && props.children}
     </div>
   );
 };
 
-export default Tooltip;
+export default DashboardTooltip;

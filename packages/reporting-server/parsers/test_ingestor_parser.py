@@ -16,3 +16,7 @@ class TestCaseIngestorState(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(
             parsed_values["state"], IngestorState.service.get_state_name(0)
         )
+        self.assertEqual(
+            parsed_values["payload"],
+            '{"time": {"sec": 1600, "nanosec": 0}, "guid": "coke_ingestor", "mode": 0, "request_guid_queue": [], "seconds_remaining": 0.0}\n',
+        )

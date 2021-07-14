@@ -42,6 +42,7 @@ class FleetState(models.Model):
     id = fields.IntField(pk=True)
     created = fields.DatetimeField(auto_now_add=True)
     fleet_name = fields.CharField(max_length=200)
+    payload = fields.JSONField()
     robot_battery_percent = fields.CharField(max_length=200)
     robot_location = fields.CharField(max_length=200)
     robot_mode: RobotStateEnum = fields.CharEnumField(

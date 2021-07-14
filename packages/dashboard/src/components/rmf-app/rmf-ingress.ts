@@ -8,8 +8,7 @@ import {
   SioClient,
   TasksApi,
 } from 'api-client';
-import axios from 'axios';
-import { Authenticator } from 'rmf-auth';
+import { User } from 'rmf-auth';
 import appConfig from '../../app-config';
 import { NegotiationStatusManager } from '../../managers/negotiation-status-manager';
 import { RobotTrajectoryManager } from '../../managers/robot-trajectory-manager';
@@ -25,7 +24,7 @@ export class RmfIngress {
   negotiationStatusManager: NegotiationStatusManager;
   trajectoryManager?: RobotTrajectoryManager;
 
-  constructor(authenticator: Authenticator, trajMgr?: RobotTrajectoryManager, ws?: WebSocket) {
+  constructor(user: User | null, trajMgr?: RobotTrajectoryManager, ws?: WebSocket) {
     this.negotiationStatusManager = new NegotiationStatusManager(ws, appConfig.authenticator);
     this.sioClient = (() => {
       const token = appConfig.authenticator.token;
@@ -42,29 +41,24 @@ export class RmfIngress {
     })();
     this.sioClient.sio.on('error', console.error);
 
-    // the axios swagger generator is bugged, it does not properly attach the token so we have
-    // to manually add them.
-    const axiosInst = axios.create();
-    axiosInst.interceptors.request.use(async (req) => {
-      await authenticator.refreshToken();
-      const token = authenticator.token;
-      if (!token) {
-        return req;
+    const axiosOptions = (() => {
+      if (user) {
+        return { headers: { Authorization: `Bearer ${user.token}` } };
       }
-      req.headers['Authorization'] = `Bearer ${token}`;
-      return req;
-    });
+      return {};
+    })();
     const apiConfig: Configuration = {
-      accessToken: authenticator.user?.token,
+      accessToken: user?.token || undefined,
       basePath: appConfig.rmfServerUrl,
+      baseOptions: axiosOptions,
     };
 
-    this.doorsApi = new DoorsApi(apiConfig, undefined, axiosInst);
-    this.liftsApi = new LiftsApi(apiConfig, undefined, axiosInst);
-    this.dispensersApi = new DispensersApi(apiConfig, undefined, axiosInst);
-    this.ingestorsApi = new IngestorsApi(apiConfig, undefined, axiosInst);
-    this.fleetsApi = new FleetsApi(apiConfig, undefined, axiosInst);
-    this.tasksApi = new TasksApi(apiConfig, undefined, axiosInst);
+    this.doorsApi = new DoorsApi(apiConfig);
+    this.liftsApi = new LiftsApi(apiConfig);
+    this.dispensersApi = new DispensersApi(apiConfig);
+    this.ingestorsApi = new IngestorsApi(apiConfig);
+    this.fleetsApi = new FleetsApi(apiConfig);
+    this.tasksApi = new TasksApi(apiConfig);
     this.trajectoryManager = trajMgr;
   }
 }

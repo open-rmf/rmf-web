@@ -9,6 +9,7 @@ export type IngestorStateRowsType = {
   created: string; //date
   guid: string;
   state: string;
+  payload: string | unknown;
 }[];
 
 export interface IngestorStateReportTable extends DefaultLogTableProps {

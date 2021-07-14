@@ -20,11 +20,11 @@ module.exports = (config) => {
     // list of files / patterns to load in the browser
     files: [
       {
-        pattern: 'lib/**/*spec.+(ts|tsx)',
+        pattern: 'tests/**/*spec.+(ts|tsx)',
         watched: false,
       },
       {
-        pattern: 'test-data/assets/*',
+        pattern: 'tests/assets/*',
         watched: false,
         included: false,
         served: true,
@@ -37,7 +37,7 @@ module.exports = (config) => {
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-    preprocessors: { 'lib/**/*spec.+(ts|tsx)': ['webpack'] },
+    preprocessors: { 'tests/**/*spec.+(ts|tsx)': ['webpack'] },
 
     webpack: testWebpackConfig,
 

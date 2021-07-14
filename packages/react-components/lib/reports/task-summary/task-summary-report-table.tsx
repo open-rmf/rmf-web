@@ -10,6 +10,7 @@ import * as RmfModels from 'rmf-models';
 
 export type TaskSummaryRowsType = {
   created: string; //date
+  payload: string | unknown;
   fleet_name: string;
   task_id: string;
   task_profile: RmfModels.TaskProfile;

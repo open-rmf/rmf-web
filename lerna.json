@@ -7,7 +7,6 @@
     "packages/dashboard-e2e",
     "packages/react-components",
     "packages/reporting",
-    "packages/reporting-e2e",
     "packages/reporting-server",
     "packages/rmf-auth",
     "packages/rmf-models",

@@ -23,6 +23,7 @@ class DispenserStateService:
 class DispenserState(models.Model):
     id = fields.IntField(pk=True)
     state = fields.CharEnumField(DispenserStateEnum)
+    payload = fields.JSONField()
     guid = fields.CharField(max_length=200)
     created = fields.DatetimeField(auto_now_add=True)
 

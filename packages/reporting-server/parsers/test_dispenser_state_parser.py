@@ -16,5 +16,8 @@ class TestCaseDispenserState(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(
             parsed_values["state"], DispenserState.service.get_state_name(0)
         )
-
+        self.assertEqual(
+            parsed_values["payload"],
+            '{"time": {"sec": 1600, "nanosec": 0}, "guid": "coke_dispenser", "mode": 0, "request_guid_queue": [], "seconds_remaining": 0.0}\n',
+        )
         self.assertEqual(parsed_values["guid"], "coke_dispenser")

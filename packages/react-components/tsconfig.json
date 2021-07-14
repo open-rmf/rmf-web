@@ -2,7 +2,6 @@
   "compilerOptions": {
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
-    "outDir": "dist",
     "allowJs": true,
     "declaration": true,
     "skipLibCheck": true,
@@ -17,7 +16,6 @@
     "jsx": "react"
   },
   "include": ["lib/"],
-  "exclude": ["**/*.spec.*", "**/*.stories.*"],
   "ts-node": {
     "preferTsExts": true
   }

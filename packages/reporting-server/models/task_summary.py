@@ -109,6 +109,7 @@ class TaskProfile:
 class TaskSummary(models.Model):
     id = fields.IntField(pk=True)
     created = fields.DatetimeField(auto_now_add=True)
+    payload = fields.JSONField()
     fleet_name = fields.CharField(max_length=50)
     task_id = fields.CharField(max_length=50)
     task_profile: TaskProfile = fields.JSONField()

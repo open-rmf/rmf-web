@@ -12,7 +12,10 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import HelpIcon from '@material-ui/icons/Help';
 import SettingsIcon from '@material-ui/icons/Settings';
 import React from 'react';
-import { HeaderBar, LogoButton, NavigationBar, Tooltip } from 'react-components';
+import { HeaderBar } from 'react-components/lib/header-bar';
+import { LogoButton } from 'react-components/lib/logo-button';
+import { NavigationBar } from 'react-components/lib/navigation-bar';
+import DashboardTooltip from 'react-components/lib/tooltip';
 import { AppControllerContext, ResourcesContext, TooltipsContext } from './app-contexts';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
 
@@ -75,7 +78,7 @@ export const AppBar = React.memo(
           </NavigationBar>
           <Toolbar variant="dense" className={classes.toolbar}>
             <Typography variant="caption">Powered by OpenRMF</Typography>
-            <Tooltip
+            <DashboardTooltip
               title="Define dashboard trajectory settings"
               id="setting-tooltip"
               enabled={showTooltips}
@@ -88,7 +91,7 @@ export const AppBar = React.memo(
               >
                 <SettingsIcon />
               </IconButton>
-            </Tooltip>
+            </DashboardTooltip>
             {user && (
               <>
                 <IconButton
@@ -119,7 +122,11 @@ export const AppBar = React.memo(
                 </Menu>
               </>
             )}
-            <Tooltip title="Help tools and resources" id="help-tooltip" enabled={showTooltips}>
+            <DashboardTooltip
+              title="Help tools and resources"
+              id="help-tooltip"
+              enabled={showTooltips}
+            >
               <IconButton
                 id="show-help-btn"
                 aria-label="help"
@@ -128,7 +135,7 @@ export const AppBar = React.memo(
               >
                 <HelpIcon />
               </IconButton>
-            </Tooltip>
+            </DashboardTooltip>
           </Toolbar>
         </HeaderBar>
       </div>

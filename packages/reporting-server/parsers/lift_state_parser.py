@@ -29,6 +29,7 @@ async def lift_state_parser(fullstring: str):
     return {
         "name": state_json["lift_name"],
         "state": state,
+        "payload": modified_string,
         "motion_state": motion_state,
         "door_state": door_state,
         "session_id": state_json["session_id"],

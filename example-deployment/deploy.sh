@@ -78,6 +78,7 @@ docker save rmf-web/dashboard | bash -c 'eval $(.bin/minikube docker-env) && doc
 echo 'deploying dashboard...'
 kubectl apply -f k8s/dashboard.yaml
 
+
 echo 'building reporting-server image...'
 docker build -t rmf-web/reporting-server -f docker/reporting-server.dockerfile $rmf_web_ws
 echo 'publishing reporting-server image...'

@@ -183,45 +183,37 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
 
   React.useEffect(() => {
     let interval: number;
-    let cancel = false;
+    (async () => {
+      async function updateTrajectory() {
+        if (!curMapFloorLayer || !trajManager) {
+          return;
+        }
 
-    const updateTrajectory = async () => {
-      debug('updating trajectories');
+        const resp = await trajManager.latestTrajectory({
+          request: 'trajectory',
+          param: {
+            map_name: curMapFloorLayer.level.name,
+            duration: trajLookahead,
+            trim: true,
+          },
+          token: authenticator.token,
+        });
 
-      if (cancel || !curMapFloorLayer || !trajManager) {
-        return;
+        debug('set trajectories');
+        if (showTrajectories === undefined || showTrajectories) {
+          setTrajectories((prev) => ({
+            ...prev,
+            [curMapFloorLayer.level.name]: resp,
+          }));
+        } else {
+          setTrajectories({});
+        }
       }
 
-      const resp = await trajManager.latestTrajectory({
-        request: 'trajectory',
-        param: {
-          map_name: curMapFloorLayer.level.name,
-          duration: trajLookahead,
-          trim: true,
-        },
-        token: authenticator.token,
-      });
-
-      debug('set trajectories');
-      if (showTrajectories === undefined || showTrajectories) {
-        setTrajectories((prev) => ({
-          ...prev,
-          [curMapFloorLayer.level.name]: resp,
-        }));
-      } else {
-        setTrajectories({});
-      }
-    };
-
-    updateTrajectory();
-    interval = window.setInterval(updateTrajectory, trajAnimDuration);
-    debug(`created trajectory update interval ${interval}`);
-
-    return () => {
-      cancel = true;
-      clearInterval(interval);
-      debug(`cleared interval ${interval}`);
-    };
+      await updateTrajectory();
+      interval = window.setInterval(updateTrajectory, trajAnimDuration);
+    })();
+    return () => clearInterval(interval);
   }, [trajManager, curMapFloorLayer, trajAnimDuration, showTrajectories, authenticator.token]);
 
   function handleBaseLayerChange(e: L.LayersControlEvent): void {

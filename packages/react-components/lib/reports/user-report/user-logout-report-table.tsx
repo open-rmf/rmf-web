@@ -8,6 +8,7 @@ import { format } from 'date-fns';
 export type UserLogoutRowsType = {
   created: string; //date
   ip_address: string;
+  payload: string | unknown;
   user_id: string;
   username: string;
 }[];

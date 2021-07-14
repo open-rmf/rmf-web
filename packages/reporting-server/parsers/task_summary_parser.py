@@ -13,6 +13,7 @@ async def task_summary_parser(fullstring: str):
         else:
             status = state_json["status"]
         return {
+            "payload": modified_string,
             "fleet_name": state_json["fleet_name"],
             "task_id": state_json["task_id"],
             "task_profile": state_json["task_profile"],

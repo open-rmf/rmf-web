@@ -9,5 +9,6 @@ async def dispenser_state_parser(fullstring: str):
 
     return {
         "state": DispenserState.service.get_state_name(state_json["mode"]),
+        "payload": modified_string,
         "guid": state_json["guid"],
     }

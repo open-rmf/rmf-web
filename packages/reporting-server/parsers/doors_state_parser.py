@@ -11,5 +11,6 @@ async def doors_state_parser(fullstring: str):
         "state": DoorState.service.get_state_name(
             door_state_json["current_mode"]["value"]
         ),
+        "payload": modified_string,
         "name": door_state_json["door_name"],
     }
