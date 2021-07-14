@@ -2,7 +2,7 @@ from datetime import timezone
 from typing import Optional
 
 from dateutil import parser
-from models.pydantic_models import LiftState_Pydantic
+from models.pydantic_models import FleetState_Pydantic
 from models.tortoise_models.fleet_state import FleetState
 
 
@@ -24,6 +24,13 @@ async def get_fleet_state(
         to_log_utc_time = to_log_local_time.astimezone(timezone.utc)
         query["created__lt"] = to_log_utc_time
 
-    return await LiftState_Pydantic.from_queryset(
-        FleetState.filter(**query).offset(offset).limit(limit).order_by("-created")
+    queryset = (
+        FleetState.filter(**query)
+        .prefetch_related("fleet")
+        .prefetch_related("robot")
+        .offset(offset)
+        .limit(limit)
+        .order_by("-created")
     )
+
+    return await FleetState_Pydantic.from_queryset(queryset)

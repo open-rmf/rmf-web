@@ -27,11 +27,6 @@ class DoorStateService:
             return DoorStateEnum.UNKNOWN
 
 
-class Door(models.Model):
-    id = fields.IntField(pk=True)
-    name = fields.CharField(max_length=200)
-
-
 class DoorState(models.Model):
     id = fields.IntField(pk=True)
     state: DoorStateEnum = fields.CharEnumField(

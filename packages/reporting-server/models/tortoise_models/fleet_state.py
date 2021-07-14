@@ -40,16 +40,19 @@ class RobotStateService:
 class FleetState(models.Model):
     id = fields.IntField(pk=True)
     created = fields.DatetimeField(auto_now_add=True)
-    fleet_name = fields.CharField(max_length=200)
+    fleet = fields.ForeignKeyField(
+        "models.Fleet", related_name="fleet_states", null=True
+    )
+    robot = fields.ForeignKeyField(
+        "models.Robot", related_name="fleet_states", null=True
+    )
     robot_battery_percent = fields.CharField(max_length=200)
     robot_location = fields.CharField(max_length=200)
     robot_mode: RobotStateEnum = fields.CharEnumField(
         RobotStateEnum, default=RobotStateEnum.MODE_IDLE
     )
-    robot_model = fields.CharField(max_length=200)
-    robot_name = fields.CharField(max_length=200)
     robot_seq = fields.IntField()
     robot_task_id = fields.CharField(max_length=200)
-    robots = fields.JSONField()
+    # robots = fields.JSONField()
 
     service = RobotStateService()

@@ -24,6 +24,12 @@ async def get_lift_state(
         to_log_utc_time = to_log_local_time.astimezone(timezone.utc)
         query["created__lt"] = to_log_utc_time
 
-    return await LiftState_Pydantic.from_queryset(
-        LiftState.filter(**query).offset(offset).limit(limit).order_by("-created")
+    queryset = (
+        LiftState.filter(**query)
+        .prefetch_related("lift")
+        .offset(offset)
+        .limit(limit)
+        .order_by("-created")
     )
+
+    return await LiftState_Pydantic.from_queryset(queryset)

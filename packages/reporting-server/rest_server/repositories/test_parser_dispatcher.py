@@ -12,6 +12,7 @@ from models.tortoise_models import (
     FleetState,
     HealthStatus,
     IngestorState,
+    Lift,
     LiftState,
     TaskSummary,
 )
@@ -46,14 +47,19 @@ class TestCaseLogParserDispatcher(unittest.IsolatedAsyncioTestCase):
 
     async def test_fleet_state_created(self):
         await log_model_dispatcher(parsed_data.mock_fleet_state)
-        instance = await FleetState.all()
+        instance = await FleetState.all().prefetch_related("robot", "fleet")
         self.assertEqual(len(instance), 2)
 
-        self.assertEqual(instance[0].fleet_name, "tinyRobot")
-        self.assertEqual(instance[0].robot_name, "tinyRobot1")
+    async def test_fleet_state_fk_created(self):
+        await log_model_dispatcher(parsed_data.mock_fleet_state)
+        instance = await FleetState.all().prefetch_related("robot", "fleet")
+        self.assertEqual(len(instance), 2)
 
-        self.assertEqual(instance[1].fleet_name, "tinyRobot")
-        self.assertEqual(instance[1].robot_name, "tinyRobot2")
+        self.assertEqual(instance[0].fleet.name, "tinyRobot")
+        self.assertEqual(instance[0].robot.name, "tinyRobot1")
+
+        self.assertEqual(instance[1].fleet.name, "tinyRobot")
+        self.assertEqual(instance[1].robot.name, "tinyRobot2")
 
     async def test_task_summary_created(self):
         await log_model_dispatcher(parsed_data.mock_task_summary)
@@ -68,8 +74,11 @@ class TestCaseLogParserDispatcher(unittest.IsolatedAsyncioTestCase):
 
     async def test_lift_state_created(self):
         await log_model_dispatcher(parsed_data.mock_lift_state)
+        lift = await Lift.first()
+        self.assertIsNotNone(lift.name, "test_lift")
         instance = await LiftState.first()
-        self.assertEqual(instance.name, "test_lift")
+        self.assertIsNotNone(instance)
+        self.assertEqual(instance.current_floor, "L1")
 
 
 class TestCaseHealthParserDispatcher(unittest.IsolatedAsyncioTestCase):

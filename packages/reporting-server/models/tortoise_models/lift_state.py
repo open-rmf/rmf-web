@@ -62,7 +62,9 @@ class LiftStateService:
 
 class LiftState(models.Model):
     id = fields.IntField(pk=True)
-    name = fields.CharField(max_length=200)
+    lift = fields.ForeignKeyField(
+        "models.Lift", related_name="lift_states", on_delete="CASCADE"
+    )
     door_state: LiftDoorStateEmun = fields.CharEnumField(
         LiftDoorStateEmun, default=LiftDoorStateEmun.DOOR_CLOSED
     )
