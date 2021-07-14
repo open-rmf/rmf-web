@@ -28,7 +28,7 @@ export const getDoorLogs = (): DoorStateRowsType => {
     rows.push({
       created: timestamp,
       state: 'OPEN',
-      name: 'door_test',
+      door: { id: 1, name: 'door_test' },
     });
   }
   return rows;
