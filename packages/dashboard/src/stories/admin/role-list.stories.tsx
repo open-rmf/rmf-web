@@ -7,7 +7,7 @@ export default {
   component: RoleListCard,
   argTypes: {
     roles: {
-      defaultValue: ['role1'],
+      defaultValue: ['role1', 'role2', 'role3', 'role4'],
     },
   },
 } as Meta;

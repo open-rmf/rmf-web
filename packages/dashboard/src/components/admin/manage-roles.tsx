@@ -1,17 +1,30 @@
 import {
   Button,
+  Card,
+  CardHeader,
   Dialog,
   DialogActions,
   DialogContent,
   DialogProps,
   DialogTitle,
+  Divider,
+  List,
+  ListItem,
+  ListItemText,
   makeStyles,
 } from '@material-ui/core';
+import SecurityIcon from '@material-ui/icons/Security';
 import React from 'react';
 import { Loading, TransferList } from '../../../../react-components/dist';
-import { RoleListCard } from './role-list';
 
 const useStyles = makeStyles((theme) => ({
+  action: {
+    margin: 0,
+  },
+  list: {
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
+  },
   dialogContent: {
     height: '50vh',
   },
@@ -121,12 +134,15 @@ export function ManageRolesCard({
   getAllRoles,
   saveRoles,
 }: ManageRolesCardProps): JSX.Element {
+  const classes = useStyles();
   const [openDialog, setOpenDialog] = React.useState(false);
 
   return (
-    <>
-      <RoleListCard
-        roles={assignedRoles}
+    <Card variant="outlined">
+      <CardHeader
+        title="Roles"
+        titleTypographyProps={{ variant: 'h5' }}
+        avatar={<SecurityIcon />}
         action={
           <Button
             variant="contained"
@@ -139,7 +155,16 @@ export function ManageRolesCard({
             Add/Remove
           </Button>
         }
+        classes={{ action: classes.action }}
       />
+      <Divider />
+      <List dense className={classes.list}>
+        {assignedRoles.map((r) => (
+          <ListItem key={r}>
+            <ListItemText>{r}</ListItemText>
+          </ListItem>
+        ))}
+      </List>
       <ManageRolesDialog
         open={openDialog}
         setOpen={setOpenDialog}
@@ -147,6 +172,6 @@ export function ManageRolesCard({
         getAllRoles={getAllRoles}
         saveRoles={saveRoles}
       />
-    </>
+    </Card>
   );
 }
