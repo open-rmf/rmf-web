@@ -14,7 +14,6 @@ import React from 'react';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     container: {
-      margin: 'auto',
       height: '100%',
       '& > *': {
         height: '100%',
@@ -60,7 +59,7 @@ function CustomList({ title, items, checked, setChecked }: CustomListProps) {
   }, [items, numberOfChecked, setChecked]);
 
   return (
-    <Card className={classes.container}>
+    <Card variant="outlined" className={classes.container}>
       <Grid container direction="column" wrap="nowrap">
         <CardHeader
           className={classes.cardHeader}

@@ -3,7 +3,7 @@ import React from 'react';
 import { UserProfileCard } from '../../components/admin/user-profile';
 
 export default {
-  title: 'User Profile Card',
+  title: 'Admin/User Profile Card',
   component: UserProfileCard,
   argTypes: {
     username: {

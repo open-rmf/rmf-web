@@ -1,4 +1,4 @@
-import { Button, Card, CardHeader, Divider, List, ListItem, ListItemText } from '@material-ui/core';
+import { Card, CardHeader, Divider, List, ListItem, ListItemText } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import SecurityIcon from '@material-ui/icons/Security';
 import React from 'react';
@@ -15,27 +15,19 @@ const useStyles = makeStyles((theme) => ({
 
 export interface RoleListCardProps {
   roles: string[];
-  onAddRemoveClick?: React.MouseEventHandler;
+  action?: React.ReactNode;
 }
 
-export function RoleListCard({ roles, onAddRemoveClick }: RoleListCardProps): JSX.Element {
+export function RoleListCard({ roles, action = null }: RoleListCardProps): JSX.Element {
   const classes = useStyles();
+
   return (
     <Card variant="outlined">
       <CardHeader
         title="Roles"
         titleTypographyProps={{ variant: 'h5' }}
         avatar={<SecurityIcon />}
-        action={
-          <Button
-            variant="contained"
-            color="primary"
-            aria-label="Add/Remove"
-            onClick={onAddRemoveClick}
-          >
-            Add/Remove
-          </Button>
-        }
+        action={action}
         classes={{ action: classes.action }}
       />
       <Divider />

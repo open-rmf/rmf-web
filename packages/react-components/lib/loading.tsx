@@ -4,6 +4,7 @@ import React from 'react';
 const useStyles = makeStyles({
   root: {
     position: 'relative',
+    height: '100%',
   },
   container: {
     position: 'absolute',
@@ -20,7 +21,7 @@ const useStyles = makeStyles({
     flex: '0 0 auto',
   },
   loadingOverlay: {
-    filter: 'blur(5px)',
+    filter: 'blur(2px)',
     opacity: 0.6,
     pointerEvents: 'none',
     userSelect: 'none',
@@ -46,23 +47,24 @@ export function Loading({
   ...otherProps
 }: LoadingProps): JSX.Element {
   const classes = useStyles();
-  return (
+  return loading ? (
     <div className={classes.root}>
       <div
-        className={loading ? `${classes.loadingOverlay} ${loadingClassName}` : undefined}
-        style={{ visibility: loading && hideChildren ? 'hidden' : 'visible' }}
+        className={`${classes.loadingOverlay} ${loadingClassName}`}
+        style={{ visibility: hideChildren ? 'hidden' : 'visible' }}
       >
         {children}
       </div>
       <div className={classes.container}>
         <CircularProgress
+          aria-label="loading"
           className={`${classes.loadingProgress} ${className}`}
           style={{ visibility: loading ? 'visible' : 'hidden', ...style }}
-          color="inherit"
-          size="1em"
           {...otherProps}
         />
       </div>
     </div>
+  ) : (
+    <>{children}</>
   );
 }

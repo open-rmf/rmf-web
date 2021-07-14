@@ -3,11 +3,11 @@ import React from 'react';
 import { RoleListCard, RoleListCardProps } from '../../components/admin/role-list';
 
 export default {
-  title: 'Role List',
+  title: 'Admin/Role List Card',
   component: RoleListCard,
   argTypes: {
     roles: {
-      defaultValue: ['role1', 'role2', 'role3', 'role4'],
+      defaultValue: ['role1'],
     },
   },
 } as Meta;
@@ -16,4 +16,4 @@ export const Default: Story<RoleListCardProps> = (args) => {
   return <RoleListCard {...args} />;
 };
 
-Default.storyName = 'Role List';
+Default.storyName = 'Role List Card';
