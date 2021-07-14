@@ -17,7 +17,6 @@ export interface DoorStateReportTable extends DefaultLogTableProps {
 
 export const DoorStateReportTable = (props: DoorStateReportTable): React.ReactElement => {
   const { rows, tableSize, addMoreRows } = props;
-
   return (
     <MaterialTable
       title="Door State"

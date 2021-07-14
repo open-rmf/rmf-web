@@ -39,13 +39,10 @@ export const getFleetLogs = (): FleetStateRowsType => {
   for (let i = 0; i < 200; i++) {
     rows.push({
       created: timestamp,
-      name: 'fleet_test',
-      fleet_name: 'test',
-      robots: 'test',
+      fleet: { id: 1, name: 'fleet_test' },
+      robot: { id: 1, name: 'robot_test', model: 'model' },
       robot_battery_percent: 'test',
       robot_location: 'test',
-      robot_mode: 'test',
-      robot_model: 'test',
       robot_name: 'test',
       robot_seq: 1,
       robot_task_id: 'test',
@@ -113,7 +110,8 @@ export const getTaskSummaryLogs = (): TaskSummaryRowsType => {
   for (let i = 0; i < 200; i++) {
     rows.push({
       created: timestamp,
-      fleet_name: 'Test',
+      fleet: { id: 1, name: 'fleet_test' },
+      robot: { id: 1, name: 'robot_test', model: 'model' },
       task_id: i.toString(),
       task_profile: exampleData,
       state: 'test',
@@ -121,7 +119,6 @@ export const getTaskSummaryLogs = (): TaskSummaryRowsType => {
       submission_time: { sec: 131, nanosec: 553000000 },
       start_time: { sec: 131, nanosec: 553000000 },
       end_time: { sec: 131, nanosec: 553000000 },
-      robot_name: 'test',
     });
   }
   return rows;
