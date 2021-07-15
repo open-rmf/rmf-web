@@ -131,8 +131,8 @@ export function TaskPage() {
       paginationOptions={{
         page,
         count: totalCount,
-        rowsPerPage: 10,
-        rowsPerPageOptions: [10],
+        rowsPerPage: 20,
+        rowsPerPageOptions: [20],
         onChangePage: (_ev, newPage) => setPage(newPage),
       }}
       cleaningZones={cleanZones}
