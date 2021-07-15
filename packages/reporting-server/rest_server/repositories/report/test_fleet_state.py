@@ -3,12 +3,9 @@
 import unittest
 
 from fastapi.testclient import TestClient
-from models.tortoise_models.door import Door
-from models.tortoise_models.door_state import DoorStateEnum
 from models.tortoise_models.fleet import Fleet, Robot
 from models.tortoise_models.fleet_state import FleetState, RobotStateEnum
 from rest_server.app import get_app
-from rest_server.repositories.report.door_state import get_door_state
 from rest_server.repositories.report.fleet_state import get_fleet_state
 from rest_server.test_utils import start_test_database
 from tortoise import Tortoise
