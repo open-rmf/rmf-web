@@ -9,20 +9,21 @@ import {
   Toolbar,
   Tooltip,
   Typography,
+  TextField,
 } from '@material-ui/core';
 import {
   AddOutlined as AddOutlinedIcon,
   Autorenew as AutorenewIcon,
   Refresh as RefreshIcon,
 } from '@material-ui/icons';
-import { Alert, AlertProps } from '@material-ui/lab';
+import { Alert, AlertProps, Autocomplete } from '@material-ui/lab';
 import type { SubmitTask } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { CreateTaskForm, CreateTaskFormProps } from './create-task';
 import { TaskInfo } from './task-info';
 import { TaskTable } from './task-table';
-import { parseTasksFile } from './utils';
+import { parseTasksFile, taskStateToStr, filterTaskFromState } from './utils';
 
 const useStyles = makeStyles((theme) => ({
   tableContainer: {
@@ -40,6 +41,11 @@ const useStyles = makeStyles((theme) => ({
   },
   enabledToggleButton: {
     background: theme.palette.action.selected,
+  },
+  select: {
+    padding: '0.46rem',
+    paddingRight: '0.5rem',
+    width: '100%',
   },
 }));
 
@@ -99,6 +105,11 @@ export function TaskPanel({
   const [snackbarMessage, setSnackbarMessage] = React.useState('');
   const [snackbarSeverity, setSnackbarSeverity] = React.useState<AlertProps['severity']>('success');
   const [autoRefresh, setAutoRefresh] = React.useState(true);
+  const [selectedState, setSelectedState] = React.useState('');
+  const taskStateList: string[] = React.useMemo(
+    () => [...Array.from(new Set(tasks.map((task) => taskStateToStr(task.state))))],
+    [tasks],
+  );
 
   const handleCancelTask = React.useCallback(
     async (task: RmfModels.TaskSummary) => {
@@ -153,6 +164,20 @@ export function TaskPanel({
             <Typography className={classes.tableTitle} variant="h6">
               Tasks
             </Typography>
+            <Autocomplete
+              className={classes.select}
+              options={taskStateList}
+              onChange={(_, value) => setSelectedState(value || '')}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  margin="normal"
+                  label="Filter task by state"
+                  placeholder="Select available state"
+                  value={selectedState ? selectedState : null}
+                />
+              )}
+            />
             <Tooltip title={`${autoRefreshTooltipPrefix} auto refresh`}>
               <IconButton
                 className={autoRefresh ? classes.enabledToggleButton : undefined}
@@ -177,7 +202,10 @@ export function TaskPanel({
             </Tooltip>
           </Toolbar>
           <TableContainer>
-            <TaskTable tasks={tasks} onTaskClick={(_ev, task) => setSelectedTask(task)} />
+            <TaskTable
+              tasks={filterTaskFromState(selectedState, tasks)}
+              onTaskClick={(_ev, task) => setSelectedTask(task)}
+            />
           </TableContainer>
           {paginationOptions && (
             <TablePagination component="div" {...paginationOptions} style={{ flex: '0 0 auto' }} />
