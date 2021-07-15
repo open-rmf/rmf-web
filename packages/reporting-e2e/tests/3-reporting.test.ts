@@ -7,8 +7,7 @@ describe('reporting interactions', () => {
   before(() => browser.url('/'));
 
   before(login);
-
-  it('should populate the database', async () => {
+  before(async () => {
     const options = {
       method: 'POST',
       body: JSON.stringify(rmfData),
@@ -17,15 +16,12 @@ describe('reporting interactions', () => {
       },
     };
 
-    let response;
     try {
       const res = await fetch(`http://localhost:8003/log/rmfserver`, options);
-      response = await res.text();
+      await res.text();
     } catch (error) {
       console.log(error);
     }
-
-    expect(response).toBe('"Logs were saved correctly"');
   });
 
   it('should retrieve dispenser state report', async () => {
