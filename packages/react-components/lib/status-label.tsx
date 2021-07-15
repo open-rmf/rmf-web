@@ -9,7 +9,7 @@ const useStyles = makeStyles((theme) => ({
     borderStyle: 'solid',
     border: 2,
     padding: 5,
-    width: '4rem',
+    width: '5rem',
     textAlign: 'center',
     flexShrink: 0,
   },
