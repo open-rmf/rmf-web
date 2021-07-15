@@ -25,7 +25,36 @@ export function TaskPage() {
   const [page, setPage] = React.useState(0);
   const [totalCount, setTotalCount] = React.useState(0);
   const places = React.useContext(PlacesContext);
-  const placeNames = places.map((p) => p.vertex.name);
+
+  const cleanZonesTemp = Object.values(places).reduce<string[]>((place, it) => {
+    for (const param of it.vertex.params) {
+      if (param.name === 'is_cleaning_zone' && param.value_bool) {
+        place.push(it.vertex.name);
+        break;
+      }
+    }
+    return place;
+  }, []);
+  const cleanZones = [...Array.from(new Set(cleanZonesTemp))];
+
+  // TODO should retain workcell name, and parse it to TaskPanel
+  const deliveryPlacesTemp = Object.values(places).reduce<string[]>((place, it) => {
+    const param_names = it.vertex.params.map((param) => param.name);
+    if (param_names.includes('pickup_dispenser') || param_names.includes('dropoff_ingestor'))
+      place.push(it.vertex.name);
+    return place;
+  }, []);
+  const deliveryPlaces = [...Array.from(new Set(deliveryPlacesTemp))];
+
+  // TODO This is custom to the throwaway demo. We are not showing any
+  // charging waypoints and cleaning waypoints on loop request. dock_name is valid
+  // for charging and cleaning waypoints
+  const loopPlacesTemp = Object.values(places).reduce<string[]>((place, it) => {
+    const param_names = it.vertex.params.map((param) => param.name);
+    if (!param_names.includes('dock_name')) place.push(it.vertex.name);
+    return place;
+  }, []);
+  const loopPlaces = [...Array.from(new Set(loopPlacesTemp))];
 
   const fetchTasks = React.useCallback(
     async (page: number) => {
@@ -77,6 +106,7 @@ export function TaskPage() {
     async (task) => {
       try {
         await tasksApi?.cancelTaskTasksCancelTaskPost({ task_id: task.task_id });
+        handleRefresh();
       } catch (e) {
         const axiosErr = e as AxiosError;
         let errMsg = 'unspecified error';
@@ -90,7 +120,7 @@ export function TaskPage() {
         throw new Error(errMsg);
       }
     },
-    [tasksApi],
+    [tasksApi, handleRefresh],
   );
 
   return (
@@ -104,9 +134,9 @@ export function TaskPage() {
         rowsPerPageOptions: [10],
         onChangePage: (_ev, newPage) => setPage(newPage),
       }}
-      cleaningZones={placeNames}
-      loopWaypoints={placeNames}
-      deliveryWaypoints={placeNames}
+      cleaningZones={cleanZones}
+      loopWaypoints={loopPlaces}
+      deliveryWaypoints={deliveryPlaces}
       submitTasks={submitTasks}
       cancelTask={cancelTask}
       onRefresh={handleRefresh}
