@@ -53,6 +53,5 @@ class FleetState(models.Model):
     )
     robot_seq = fields.IntField()
     robot_task_id = fields.CharField(max_length=200)
-    # robots = fields.JSONField()
 
     service = RobotStateService()
