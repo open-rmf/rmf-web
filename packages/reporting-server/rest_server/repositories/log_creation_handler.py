@@ -38,7 +38,6 @@ class RawLogHandler:
                 name=log["kubernetes"]["container_name"]
             )
 
-            # print(container[0])
             await RawLog.create(
                 level=log_level,
                 message=log["log"],
