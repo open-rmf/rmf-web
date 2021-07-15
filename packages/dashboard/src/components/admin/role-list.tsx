@@ -10,18 +10,68 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import SecurityIcon from '@material-ui/icons/Security';
+import { Permission } from 'api-client';
 import React from 'react';
+import { Loading } from 'react-components';
+import { PermissionsCard, PermissionsCardProps } from './permissions-card';
 
-const useStyles = makeStyles((theme) => ({}));
+const useRoleAccordionStyles = makeStyles({
+  permissionsCard: {
+    width: '100%',
+  },
+});
 
-export interface RoleListCardProps {
-  roles: string[];
-  action?: React.ReactNode;
-  onRoleClick?: React.MouseEventHandler;
+interface RoleAccordionProps extends Pick<PermissionsCardProps, 'savePermission'> {
+  role: string;
+  getPermissions?: (role: string) => Promise<Permission[]> | Permission[];
 }
 
-export function RoleListCard({ roles, onRoleClick }: RoleListCardProps): JSX.Element {
-  const classes = useStyles();
+function RoleAccordion({ role, getPermissions, savePermission }: RoleAccordionProps) {
+  const classes = useRoleAccordionStyles();
+  const [permissions, setPermissions] = React.useState<Permission[]>([]);
+  const [loading, setLoading] = React.useState(false);
+  const [expanded, setExpanded] = React.useState(false);
+
+  return (
+    <Accordion expanded={expanded}>
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon />}
+        onClick={async () => {
+          setExpanded((prev) => !prev);
+          if (expanded) {
+            return;
+          }
+          setLoading(true);
+          getPermissions && setPermissions(await getPermissions(role));
+          setLoading(false);
+        }}
+      >
+        <Typography>{role}</Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+        <Loading loading={loading}>
+          <PermissionsCard
+            className={classes.permissionsCard}
+            permissions={permissions}
+            savePermission={savePermission}
+          />
+        </Loading>
+      </AccordionDetails>
+    </Accordion>
+  );
+}
+
+export interface RoleListCardProps
+  extends Pick<RoleAccordionProps, 'savePermission' | 'getPermissions'> {
+  roles: string[];
+}
+
+export function RoleListCard({
+  roles,
+  getPermissions,
+  savePermission,
+}: RoleListCardProps): JSX.Element {
+  roles.sort();
 
   return (
     <Card variant="outlined">
@@ -32,14 +82,12 @@ export function RoleListCard({ roles, onRoleClick }: RoleListCardProps): JSX.Ele
       />
       <Divider />
       {roles.map((r) => (
-        <Accordion key={r}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography variant="body1">{r}</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Typography>TODO: Permissions list</Typography>
-          </AccordionDetails>
-        </Accordion>
+        <RoleAccordion
+          key={r}
+          role={r}
+          getPermissions={getPermissions}
+          savePermission={savePermission}
+        />
       ))}
     </Card>
   );

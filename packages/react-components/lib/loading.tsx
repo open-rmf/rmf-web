@@ -5,6 +5,7 @@ const useStyles = makeStyles({
   root: {
     position: 'relative',
     height: '100%',
+    flex: '1 1 auto',
   },
   container: {
     position: 'absolute',

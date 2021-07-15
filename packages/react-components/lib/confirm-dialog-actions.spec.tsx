@@ -4,11 +4,17 @@ import React from 'react';
 import { ConfirmDialogActions } from './confirm-dialog-actions';
 
 describe('ConfirmDialogActions', () => {
-  it('shows loading when performing confirmation action', () => {
-    const root = render(
-      <ConfirmDialogActions confirmAction={() => new Promise((res) => setTimeout(res, 500))} />,
-    );
+  it('calls onCancelClick when cancel button is clicked', () => {
+    const onCancelClick = jasmine.createSpy();
+    const root = render(<ConfirmDialogActions onCancelClick={onCancelClick} />);
+    userEvent.click(root.getByText('Cancel'));
+    expect(onCancelClick).toHaveBeenCalled();
+  });
+
+  it('calls onConfirmClick when confirm button is clicked', () => {
+    const onConfirmClick = jasmine.createSpy();
+    const root = render(<ConfirmDialogActions onConfirmClick={onConfirmClick} />);
     userEvent.click(root.getByText('OK'));
-    expect(() => root.getByLabelText('loading')).not.toThrow();
+    expect(onConfirmClick).toHaveBeenCalled();
   });
 });

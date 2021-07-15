@@ -5,32 +5,21 @@ import { Loading } from './loading';
 export interface ConfirmDialogActionsProps extends DialogActionsProps {
   confirmText?: string;
   cancelText?: string;
+  loading?: boolean;
   classes?: DialogActionsProps['classes'] & { button: string };
-  confirmAction?: () => Promise<void> | void;
+  onConfirmClick?: React.MouseEventHandler;
   onCancelClick?: React.MouseEventHandler;
 }
 
 export function ConfirmDialogActions({
   confirmText = 'OK',
   cancelText = 'Cancel',
+  loading = false,
   classes,
-  confirmAction,
+  onConfirmClick,
   onCancelClick,
   ...otherProps
 }: ConfirmDialogActionsProps): JSX.Element {
-  const [confirming, setConfirming] = React.useState(false);
-
-  const handleOkClick = React.useCallback(() => {
-    if (!confirmAction) {
-      return;
-    }
-    setConfirming(true);
-    (async () => {
-      await confirmAction();
-      setConfirming(false);
-    })();
-  }, [confirmAction]);
-
   return (
     <DialogActions {...otherProps}>
       <Button
@@ -38,7 +27,7 @@ export function ConfirmDialogActions({
         color="secondary"
         aria-label={cancelText}
         onClick={onCancelClick}
-        disabled={confirming}
+        disabled={loading}
         className={classes?.button}
       >
         {cancelText}
@@ -47,11 +36,11 @@ export function ConfirmDialogActions({
         variant="contained"
         color="primary"
         aria-label={confirmText}
-        disabled={confirming}
-        onClick={handleOkClick}
+        disabled={loading}
+        onClick={onConfirmClick}
         className={classes?.button}
       >
-        <Loading hideChildren loading={confirming} size="1.5em" color="inherit">
+        <Loading hideChildren loading={loading} size="1.5em" color="inherit">
           {confirmText}
         </Loading>
       </Button>
