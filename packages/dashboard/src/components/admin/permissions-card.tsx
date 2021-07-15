@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(4),
     width: 'auto',
   },
-  controlsCell: {
+  controlsButton: {
     float: 'right',
   },
 }));
@@ -66,7 +66,7 @@ export function PermissionsCard({
           Permissions
         </Typography>
         <IconButton onClick={() => setOpenDialog(true)} aria-label="add permission">
-          <AddIcon />
+          <AddIcon fontSize="large" color="primary" />
         </IconButton>
       </Toolbar>
       <TableContainer className={classes.tableContainer}>
@@ -83,11 +83,12 @@ export function PermissionsCard({
               <TableRow key={idx}>
                 <TableCell>{getActionText(p.action)}</TableCell>
                 <TableCell>{p.authz_grp}</TableCell>
-                <TableCell className={classes.controlsCell}>
+                <TableCell>
                   <Button
                     variant="contained"
                     color="secondary"
                     startIcon={<DeleteIcon />}
+                    className={classes.controlsButton}
                     onClick={(ev) => onRemovePermissionClick && onRemovePermissionClick(ev, p)}
                   >
                     Remove

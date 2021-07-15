@@ -2,12 +2,15 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Button,
   Card,
   CardHeader,
   Divider,
+  Grid,
   Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import DeleteIcon from '@material-ui/icons/Delete';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import SecurityIcon from '@material-ui/icons/Security';
 import { Permission } from 'api-client';
@@ -18,6 +21,9 @@ import { PermissionsCard, PermissionsCardProps } from './permissions-card';
 const useRoleAccordionStyles = makeStyles({
   permissionsCard: {
     width: '100%',
+  },
+  deleteRoleButton: {
+    float: 'right',
   },
 });
 
@@ -49,13 +55,25 @@ function RoleAccordion({ role, getPermissions, savePermission }: RoleAccordionPr
         <Typography>{role}</Typography>
       </AccordionSummary>
       <AccordionDetails>
-        <Loading loading={loading}>
-          <PermissionsCard
-            className={classes.permissionsCard}
-            permissions={permissions}
-            savePermission={savePermission}
-          />
-        </Loading>
+        <Grid container direction="column" wrap="nowrap">
+          <Grid item>
+            <Button
+              variant="contained"
+              color="secondary"
+              startIcon={<DeleteIcon />}
+              className={classes.deleteRoleButton}
+            >
+              Delete Role
+            </Button>
+          </Grid>
+          <Loading loading={loading}>
+            <PermissionsCard
+              className={classes.permissionsCard}
+              permissions={permissions}
+              savePermission={savePermission}
+            />
+          </Loading>
+        </Grid>
       </AccordionDetails>
     </Accordion>
   );
