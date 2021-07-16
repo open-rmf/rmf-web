@@ -3,6 +3,7 @@ import {
   Card,
   CardHeader,
   IconButton,
+  InputAdornment,
   makeStyles,
   Table,
   TableBody,
@@ -17,8 +18,10 @@ import {
 import AccountIcon from '@material-ui/icons/AccountCircle';
 import AddIcon from '@material-ui/icons/AddCircle';
 import DeleteIcon from '@material-ui/icons/Delete';
+import SearchIcon from '@material-ui/icons/Search';
 import React from 'react';
 import { ConfirmationDialog } from 'react-components';
+import { CreateUserDialog, CreateUserDialogProps } from './create-user-dialog';
 
 const ItemsPerPage = 20;
 
@@ -26,14 +29,26 @@ const useStyles = makeStyles((theme) => ({
   controlsButton: {
     float: 'right',
   },
+  tableRow: {
+    cursor: 'pointer',
+    '&:hover': {
+      backgroundColor: theme.palette.action.hover,
+    },
+  },
 }));
 
-export interface UserListCardProps {
+export interface UserListCardProps extends Pick<CreateUserDialogProps, 'createUser'> {
   searchUsers?: (search: string, limit: number, offset: number) => Promise<string[]> | string[];
   deleteUser?: (user: string) => Promise<void> | void;
+  onUserClick?: (ev: React.MouseEvent, user: string) => void;
 }
 
-export function UserListCard({ searchUsers, deleteUser }: UserListCardProps): JSX.Element {
+export function UserListCard({
+  searchUsers,
+  deleteUser,
+  onUserClick,
+  createUser,
+}: UserListCardProps): JSX.Element {
   const classes = useStyles();
   const [users, setUsers] = React.useState<string[]>([]);
   const [selectedUser, setSelectedUser] = React.useState<string | null>(null);
@@ -41,9 +56,11 @@ export function UserListCard({ searchUsers, deleteUser }: UserListCardProps): JS
   const [searchInput, setSearchInput] = React.useState('');
   const [page, setPage] = React.useState(0);
   const [hasMore, setHasMore] = React.useState(false);
-  const [openDialog, setOpenDialog] = React.useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
   const [deleting, setDeleting] = React.useState(false);
   const searchTimer = React.useRef<number | undefined>(undefined);
+  const [openCreateDialog, setOpenCreateDialog] = React.useState(false);
+  const [refresh, setRefresh] = React.useState(0);
 
   React.useEffect(() => {
     if (!searchUsers) {
@@ -54,7 +71,7 @@ export function UserListCard({ searchUsers, deleteUser }: UserListCardProps): JS
       setHasMore(results.length > ItemsPerPage);
       setUsers(results.slice(0, ItemsPerPage));
     })();
-  }, [searchUsers, search, page]);
+  }, [searchUsers, search, page, refresh]);
 
   return (
     <Card variant="outlined">
@@ -68,15 +85,27 @@ export function UserListCard({ searchUsers, deleteUser }: UserListCardProps): JS
               variant="outlined"
               id="search-users"
               label="Search Users"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
               value={searchInput}
               onChange={(ev) => {
-                setSearchInput(ev.target.value);
+                const newInput = ev.target.value;
+                setSearchInput(newInput);
                 clearTimeout(searchTimer.current);
-                searchTimer.current = window.setTimeout(() => setSearch(searchInput), 500);
+                searchTimer.current = window.setTimeout(() => setSearch(newInput), 500);
               }}
             />
-            <IconButton>
-              <AddIcon fontSize="large" color="primary" />
+            <IconButton
+              color="primary"
+              onClick={() => setOpenCreateDialog(true)}
+              aria-label="create user"
+            >
+              <AddIcon color="primary" fontSize="large" />
             </IconButton>
           </>
         }
@@ -91,7 +120,11 @@ export function UserListCard({ searchUsers, deleteUser }: UserListCardProps): JS
           </TableHead>
           <TableBody>
             {users.map((u) => (
-              <TableRow key={u}>
+              <TableRow
+                key={u}
+                className={classes.tableRow}
+                onClick={(ev) => onUserClick && onUserClick(ev, u)}
+              >
                 <TableCell>{u}</TableCell>
                 <TableCell>
                   <Button
@@ -101,7 +134,7 @@ export function UserListCard({ searchUsers, deleteUser }: UserListCardProps): JS
                     className={classes.controlsButton}
                     onClick={() => {
                       setSelectedUser(u);
-                      setOpenDialog(true);
+                      setOpenDeleteDialog(true);
                     }}
                   >
                     Delete
@@ -121,19 +154,29 @@ export function UserListCard({ searchUsers, deleteUser }: UserListCardProps): JS
         />
       </TableContainer>
       <ConfirmationDialog
-        open={openDialog}
+        open={openDeleteDialog}
         title="Confirm Delete"
         loading={deleting}
-        onCancelClick={() => setOpenDialog(false)}
+        onCancelClick={() => setOpenDeleteDialog(false)}
         onConfirmClick={async () => {
           setDeleting(true);
           selectedUser && deleteUser && (await deleteUser(selectedUser));
           setDeleting(false);
-          setOpenDialog(false);
+          setOpenDeleteDialog(false);
         }}
       >
-        <Typography>{`Are you sure you want to delete ${selectedUser}?`}</Typography>
+        <Typography>{`Are you sure you want to delete "${selectedUser}"?`}</Typography>
       </ConfirmationDialog>
+      {openCreateDialog && (
+        <CreateUserDialog
+          open={openCreateDialog}
+          setOpen={setOpenCreateDialog}
+          createUser={async (u) => {
+            createUser && (await createUser(u));
+            setRefresh((prev) => prev + 1);
+          }}
+        />
+      )}
     </Card>
   );
 }

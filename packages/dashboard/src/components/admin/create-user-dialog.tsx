@@ -2,13 +2,17 @@ import { TextField } from '@material-ui/core';
 import React from 'react';
 import { ConfirmationDialog } from 'react-components';
 
-export interface AddUserDialogProps {
+export interface CreateUserDialogProps {
   open: boolean;
   setOpen?: (open: boolean) => void;
   createUser?: (username: string) => Promise<void> | void;
 }
 
-export function AddUserDialog({ open, setOpen, createUser }: AddUserDialogProps): JSX.Element {
+export function CreateUserDialog({
+  open,
+  setOpen,
+  createUser,
+}: CreateUserDialogProps): JSX.Element {
   const [creating, setCreating] = React.useState(false);
   const [username, setUsername] = React.useState('');
   const [usernameError, setUsernameError] = React.useState(false);
@@ -30,12 +34,13 @@ export function AddUserDialog({ open, setOpen, createUser }: AddUserDialogProps)
     setCreating(true);
     createUser && (await createUser(username));
     setCreating(false);
+    setOpen && setOpen(false);
   };
 
   return (
     <ConfirmationDialog
       open={open}
-      title="Add User"
+      title="Create User"
       confirmText="Create"
       loading={creating}
       onCancelClick={() => setOpen && setOpen(false)}

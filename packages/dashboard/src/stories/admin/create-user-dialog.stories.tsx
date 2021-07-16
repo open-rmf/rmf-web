@@ -1,15 +1,15 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
-import { AddUserDialog, AddUserDialogProps } from '../../components/admin/add-user-dialog';
+import { CreateUserDialog, CreateUserDialogProps } from '../../components/admin/create-user-dialog';
 
 export default {
   title: 'Admin/Add User Dialog',
-  component: AddUserDialog,
+  component: CreateUserDialog,
 } as Meta;
 
-export const Default: Story<AddUserDialogProps> = (args) => {
+export const Default: Story<CreateUserDialogProps> = (args) => {
   return (
-    <AddUserDialog
+    <CreateUserDialog
       {...args}
       open={true}
       createUser={() => new Promise((res) => setTimeout(res, 500))}

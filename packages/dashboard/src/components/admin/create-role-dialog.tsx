@@ -2,13 +2,17 @@ import { TextField } from '@material-ui/core';
 import React from 'react';
 import { ConfirmationDialog } from 'react-components';
 
-export interface AddRoleDialogProps {
+export interface CreateRoleDialogProps {
   open: boolean;
   setOpen?: (open: boolean) => void;
   createRole?: (role: string) => Promise<void> | void;
 }
 
-export function AddRoleDialog({ open, setOpen, createRole }: AddRoleDialogProps): JSX.Element {
+export function CreateRoleDialog({
+  open,
+  setOpen,
+  createRole,
+}: CreateRoleDialogProps): JSX.Element {
   const [creating, setCreating] = React.useState(false);
   const [role, setRole] = React.useState('');
   const [roleError, setRoleError] = React.useState(false);
@@ -30,12 +34,13 @@ export function AddRoleDialog({ open, setOpen, createRole }: AddRoleDialogProps)
     setCreating(true);
     createRole && (await createRole(role));
     setCreating(false);
+    setOpen && setOpen(false);
   };
 
   return (
     <ConfirmationDialog
       open={open}
-      title="Add Role"
+      title="Create Role"
       confirmText="Create"
       loading={creating}
       onCancelClick={() => setOpen && setOpen(false)}

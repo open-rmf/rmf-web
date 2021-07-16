@@ -24,6 +24,7 @@ export const Default: Story<RoleListCardProps> = (args) => {
           { action: RmfAction.TaskRead, authz_grp: 'group1' },
         ];
       }}
+      createRole={() => new Promise((res) => setTimeout(res, 500))}
     />
   );
 };

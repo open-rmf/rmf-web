@@ -13,6 +13,7 @@ for (let i = 0; i < 100; i++) {
 }
 
 function searchUsers(search: string, limit: number, offset: number) {
+  console.log(search);
   return users.filter((u) => u.startsWith(search)).slice(offset, offset + limit);
 }
 
@@ -22,6 +23,7 @@ export const Default: Story<UserListCardProps> = (args) => {
       {...args}
       searchUsers={searchUsers}
       deleteUser={() => new Promise((res) => setTimeout(res, 500))}
+      createUser={() => new Promise((res) => setTimeout(res, 500))}
     />
   );
 };

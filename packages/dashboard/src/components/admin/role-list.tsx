@@ -7,15 +7,18 @@ import {
   CardHeader,
   Divider,
   Grid,
+  IconButton,
   Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import AddIcon from '@material-ui/icons/AddCircle';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import SecurityIcon from '@material-ui/icons/Security';
 import { Permission } from 'api-client';
 import React from 'react';
 import { Loading } from 'react-components';
+import { CreateRoleDialog, CreateRoleDialogProps } from './create-role-dialog';
 import { PermissionsCard, PermissionsCardProps } from './permissions-card';
 
 const useRoleAccordionStyles = makeStyles({
@@ -80,15 +83,18 @@ function RoleAccordion({ role, getPermissions, savePermission }: RoleAccordionPr
 }
 
 export interface RoleListCardProps
-  extends Pick<RoleAccordionProps, 'savePermission' | 'getPermissions'> {
-  roles: string[];
+  extends Pick<RoleAccordionProps, 'savePermission' | 'getPermissions'>,
+    Pick<CreateRoleDialogProps, 'createRole'> {
+  roles?: string[];
 }
 
 export function RoleListCard({
-  roles,
+  roles = [],
   getPermissions,
   savePermission,
+  createRole,
 }: RoleListCardProps): JSX.Element {
+  const [openDialog, setOpenDialog] = React.useState(false);
   roles.sort();
 
   return (
@@ -97,6 +103,11 @@ export function RoleListCard({
         title="Roles"
         titleTypographyProps={{ variant: 'h5' }}
         avatar={<SecurityIcon />}
+        action={
+          <IconButton color="primary" onClick={() => setOpenDialog(true)} aria-label="create role">
+            <AddIcon fontSize="large" />
+          </IconButton>
+        }
       />
       <Divider />
       {roles.map((r) => (
@@ -107,6 +118,9 @@ export function RoleListCard({
           savePermission={savePermission}
         />
       ))}
+      {openDialog && (
+        <CreateRoleDialog open={openDialog} setOpen={setOpenDialog} createRole={createRole} />
+      )}
     </Card>
   );
 }

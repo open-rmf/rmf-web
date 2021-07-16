@@ -1,15 +1,15 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
-import { AddRoleDialog, AddRoleDialogProps } from '../../components/admin/add-role-dialog';
+import { CreateRoleDialog, CreateRoleDialogProps } from '../../components/admin/create-role-dialog';
 
 export default {
   title: 'Admin/Add Role Dialog',
-  component: AddRoleDialog,
+  component: CreateRoleDialog,
 } as Meta;
 
-export const Default: Story<AddRoleDialogProps> = (args) => {
+export const Default: Story<CreateRoleDialogProps> = (args) => {
   return (
-    <AddRoleDialog
+    <CreateRoleDialog
       {...args}
       open={true}
       createRole={() => new Promise((res) => setTimeout(res, 500))}

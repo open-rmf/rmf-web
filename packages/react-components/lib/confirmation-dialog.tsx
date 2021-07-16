@@ -9,12 +9,16 @@ import {
   Grid,
   makeStyles,
 } from '@material-ui/core';
+import clsx from 'clsx';
 import React from 'react';
 import { Loading } from './loading';
 
 const useStyles = makeStyles({
   title: {
     flex: '1 1 100%',
+  },
+  actionBtn: {
+    minWidth: 80,
   },
 });
 
@@ -61,7 +65,7 @@ export function ConfirmationDialog({
           aria-label={cancelText}
           onClick={onCancelClick}
           disabled={loading}
-          className={classes?.button}
+          className={clsx(myClasses.actionBtn, classes?.button)}
         >
           {cancelText}
         </Button>
@@ -71,7 +75,7 @@ export function ConfirmationDialog({
           aria-label={confirmText}
           disabled={loading}
           onClick={onConfirmClick}
-          className={classes?.button}
+          className={clsx(myClasses.actionBtn, classes?.button)}
         >
           <Loading hideChildren loading={loading} size="1.5em" color="inherit">
             {confirmText}
