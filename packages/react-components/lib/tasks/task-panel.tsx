@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
   select: {
     padding: '0.46rem',
     paddingRight: '0.5rem',
-    width: '100%',
+    width: '50%',
   },
 }));
 
@@ -105,7 +105,7 @@ export function TaskPanel({
   const [snackbarMessage, setSnackbarMessage] = React.useState('');
   const [snackbarSeverity, setSnackbarSeverity] = React.useState<AlertProps['severity']>('success');
   const [autoRefresh, setAutoRefresh] = React.useState(true);
-  const [selectedState, setSelectedState] = React.useState('');
+  const [selectedState, setSelectedState] = React.useState<string[]>([]);
   const taskStateList: string[] = React.useMemo(
     () => [...Array.from(new Set(tasks.map((task) => taskStateToStr(task.state))))],
     [tasks],
@@ -165,13 +165,13 @@ export function TaskPanel({
               Tasks
             </Typography>
             <Autocomplete
+              multiple
               className={classes.select}
               options={taskStateList}
-              onChange={(_, value) => setSelectedState(value || '')}
+              onChange={(_, value) => setSelectedState(value)}
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  margin="normal"
                   label="Filter task by state"
                   placeholder="Select available state"
                   value={selectedState ? selectedState : null}
