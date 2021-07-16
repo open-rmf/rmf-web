@@ -50,7 +50,20 @@ if (!eval(process.env.E2E_NO_REPORTING_SERVER)) {
 concurrently([...services, `node scripts/auth-ready.js && wdio ${wdioArgs}`], {
   killOthers: ['success', 'failure'],
   successCondition: 'first',
-}).catch((e) => {
-  console.error(e);
-  process.exitCode = -1;
-});
+})
+  .then(
+    function onSuccess(exitInfo) {
+      // This code is necessary to make sure the parent terminates
+      // when the application is closed successfully.
+      process.exit();
+    },
+    function onFailure(exitInfo) {
+      // This code is necessary to make sure the parent terminates
+      // when the application is closed because of a failure.
+      process.exit();
+    },
+  )
+  .catch((e) => {
+    console.error(e);
+    process.exitCode = -1;
+  });
