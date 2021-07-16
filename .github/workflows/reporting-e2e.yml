@@ -28,7 +28,6 @@ jobs:
       - uses: actions/checkout@v2
       - name: bootstrap
         run: |
-          . /opt/rmf/setup.bash
           npm config set unsafe-perm
           npm install -g lerna@4
           lerna bootstrap --scope=reporting-e2e
@@ -36,7 +35,6 @@ jobs:
         working-directory: .
       - name: e2e test
         run: |
-          . /opt/rmf/setup.bash
           npm test || npm test
         env:
           E2E_DOCKER_NETWORK: ${{job.container.network}}

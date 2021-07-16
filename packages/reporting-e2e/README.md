@@ -66,7 +66,7 @@ This is to document the flow and interaction of the e2e services in the github e
 
 ## Starting up the services
 
-Below is a diagram representing the flow of commands when running `npm run test:e2e`
+Below is a diagram representing the flow of commands when running `npm run test`
 
 ![Flow of commands diagram](docs/resources/reporting-e2e-process.png)
 
