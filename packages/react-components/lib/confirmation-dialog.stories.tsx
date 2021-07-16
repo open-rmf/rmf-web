@@ -15,7 +15,7 @@ export const Default: Story<ConfirmationDialogProps> = (args) => {
       {...args}
       open={true}
       loading={loading}
-      onConfirmClick={async () => {
+      onSubmit={async () => {
         setLoading(true);
         await new Promise((res) => setTimeout(res, 500));
         setLoading(false);

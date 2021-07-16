@@ -15,7 +15,7 @@ import { Loading } from './loading';
 
 const useStyles = makeStyles({
   title: {
-    flex: '1 1 100%',
+    flex: '1 1 auto',
   },
   actionBtn: {
     minWidth: 80,
@@ -30,7 +30,7 @@ export interface ConfirmationDialogProps extends DialogProps {
   loading?: boolean;
   classes?: DialogActionsProps['classes'] & { button: string };
   toolbar?: React.ReactNode;
-  onConfirmClick?: React.MouseEventHandler;
+  onSubmit?: React.FormEventHandler;
   onCancelClick?: React.MouseEventHandler;
 }
 
@@ -40,7 +40,7 @@ export function ConfirmationDialog({
   cancelText = 'Cancel',
   loading = false,
   classes,
-  onConfirmClick,
+  onSubmit,
   onCancelClick,
   toolbar,
   children,
@@ -49,39 +49,41 @@ export function ConfirmationDialog({
   const myClasses = useStyles();
   return (
     <Dialog {...otherProps}>
-      <DialogTitle>
-        <Grid container wrap="nowrap">
-          <Grid item className={myClasses.title}>
-            {title}
+      <form onSubmit={onSubmit} aria-label="form">
+        <DialogTitle>
+          <Grid container wrap="nowrap">
+            <Grid item className={myClasses.title}>
+              {title}
+            </Grid>
+            <Grid item>{toolbar}</Grid>
           </Grid>
-          <Grid item>{toolbar}</Grid>
-        </Grid>
-      </DialogTitle>
-      <DialogContent>{children}</DialogContent>
-      <DialogActions {...otherProps}>
-        <Button
-          variant="outlined"
-          color="secondary"
-          aria-label={cancelText}
-          onClick={onCancelClick}
-          disabled={loading}
-          className={clsx(myClasses.actionBtn, classes?.button)}
-        >
-          {cancelText}
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          aria-label={confirmText}
-          disabled={loading}
-          onClick={onConfirmClick}
-          className={clsx(myClasses.actionBtn, classes?.button)}
-        >
-          <Loading hideChildren loading={loading} size="1.5em" color="inherit">
-            {confirmText}
-          </Loading>
-        </Button>
-      </DialogActions>
+        </DialogTitle>
+        <DialogContent>{children}</DialogContent>
+        <DialogActions>
+          <Button
+            variant="outlined"
+            color="secondary"
+            aria-label={cancelText}
+            onClick={onCancelClick}
+            disabled={loading}
+            className={clsx(myClasses.actionBtn, classes?.button)}
+          >
+            {cancelText}
+          </Button>
+          <Button
+            variant="contained"
+            type="submit"
+            color="primary"
+            aria-label={confirmText}
+            disabled={loading}
+            className={clsx(myClasses.actionBtn, classes?.button)}
+          >
+            <Loading hideChildren loading={loading} size="1.5em" color="inherit">
+              {confirmText}
+            </Loading>
+          </Button>
+        </DialogActions>
+      </form>
     </Dialog>
   );
 }

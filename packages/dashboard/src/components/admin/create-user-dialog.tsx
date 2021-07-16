@@ -22,6 +22,8 @@ export function CreateUserDialog({
     if (!username) {
       setUsernameError(true);
       error = true;
+    } else {
+      setUsernameError(false);
     }
     return !error;
   };
@@ -30,7 +32,6 @@ export function CreateUserDialog({
     if (!validateForm()) {
       return;
     }
-    setUsernameError(false);
     setCreating(true);
     createUser && (await createUser(username));
     setCreating(false);
@@ -43,26 +44,19 @@ export function CreateUserDialog({
       title="Create User"
       confirmText="Create"
       loading={creating}
+      onSubmit={submitForm}
       onCancelClick={() => setOpen && setOpen(false)}
-      onConfirmClick={submitForm}
     >
-      <form
-        onSubmit={(ev) => {
-          ev.preventDefault();
-          submitForm();
-        }}
-      >
-        <TextField
-          id="username"
-          variant="outlined"
-          fullWidth
-          label="Username"
-          value={username}
-          onChange={(ev) => setUsername(ev.target.value)}
-          error={usernameError}
-          helperText="Required"
-        />
-      </form>
+      <TextField
+        id="username"
+        variant="outlined"
+        fullWidth
+        label="Username"
+        value={username}
+        onChange={(ev) => setUsername(ev.target.value)}
+        error={usernameError}
+        helperText="Required"
+      />
     </ConfirmationDialog>
   );
 }

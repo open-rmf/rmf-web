@@ -158,7 +158,7 @@ export function UserListCard({
         title="Confirm Delete"
         loading={deleting}
         onCancelClick={() => setOpenDeleteDialog(false)}
-        onConfirmClick={async () => {
+        onSubmit={async () => {
           setDeleting(true);
           selectedUser && deleteUser && (await deleteUser(selectedUser));
           setDeleting(false);

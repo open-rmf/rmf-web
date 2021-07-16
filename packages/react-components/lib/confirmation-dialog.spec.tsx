@@ -11,10 +11,10 @@ describe('ConfirmDialogActions', () => {
     expect(onCancelClick).toHaveBeenCalled();
   });
 
-  it('calls onConfirmClick when confirm button is clicked', () => {
-    const onConfirmClick = jasmine.createSpy();
-    const root = render(<ConfirmationDialog open={true} onConfirmClick={onConfirmClick} />);
+  it('calls onSubmit when form is submitted', () => {
+    const onSubmit = jasmine.createSpy();
+    const root = render(<ConfirmationDialog open={true} onSubmit={onSubmit} />);
     userEvent.click(root.getByText('OK'));
-    expect(onConfirmClick).toHaveBeenCalled();
+    expect(onSubmit).toHaveBeenCalled();
   });
 });

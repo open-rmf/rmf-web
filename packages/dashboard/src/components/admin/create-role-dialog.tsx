@@ -22,6 +22,8 @@ export function CreateRoleDialog({
     if (!role) {
       setRoleError(true);
       error = true;
+    } else {
+      setRoleError(false);
     }
     return !error;
   };
@@ -30,7 +32,6 @@ export function CreateRoleDialog({
     if (!validateForm()) {
       return;
     }
-    setRoleError(false);
     setCreating(true);
     createRole && (await createRole(role));
     setCreating(false);
@@ -43,26 +44,19 @@ export function CreateRoleDialog({
       title="Create Role"
       confirmText="Create"
       loading={creating}
+      onSubmit={submitForm}
       onCancelClick={() => setOpen && setOpen(false)}
-      onConfirmClick={submitForm}
     >
-      <form
-        onSubmit={(ev) => {
-          ev.preventDefault();
-          submitForm();
-        }}
-      >
-        <TextField
-          id="role"
-          variant="outlined"
-          fullWidth
-          label="Role"
-          value={role}
-          onChange={(ev) => setRole(ev.target.value)}
-          error={roleError}
-          helperText="Required"
-        />
-      </form>
+      <TextField
+        id="role"
+        variant="outlined"
+        fullWidth
+        label="Role"
+        value={role}
+        onChange={(ev) => setRole(ev.target.value)}
+        error={roleError}
+        helperText="Required"
+      />
     </ConfirmationDialog>
   );
 }
