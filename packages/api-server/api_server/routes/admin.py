@@ -2,6 +2,7 @@ from typing import Callable, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
+from tortoise.transactions import in_transaction
 
 from ..dependencies import AddPaginationQuery, pagination_query
 from ..models import User
@@ -117,6 +118,20 @@ def admin_router(user_dep: Callable[..., User]):
         await user.fetch_related("roles")
         role = await _get_db_role(body.name)
         await user.roles.remove(role)
+
+    @router.put("/users/{username}/roles")
+    async def set_user_roles(username: str, body: List[PostRoles]):
+        """
+        Set the roles of an user
+        """
+        user = await _get_db_user(username)
+        async with in_transaction():
+            role_names = [r.name for r in body]
+            roles = await ttm.Role.filter(name__in=role_names)
+            if len(roles) != len(role_names):
+                raise HTTPException(422, "one or more roles does not exist")
+            await user.roles.clear()
+            await user.roles.add(*roles)
 
     @router.get("/roles", response_model=List[str])
     async def get_roles():

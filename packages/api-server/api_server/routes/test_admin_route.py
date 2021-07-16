@@ -91,3 +91,31 @@ class TestAdminRoute(RouteFixture):
         self.assertEqual(200, resp.status_code)
         user = resp.json()
         self.assertEqual(0, len(user["roles"]))
+
+    def test_put_user_roles(self):
+        username = self.create_user()
+        role = self.create_role()
+        role2 = self.create_role()
+        role3 = self.create_role()
+        self.assign_role(username, role3)
+
+        # error when one of the is invalid
+        resp = self.session.put(
+            f"{self.base_url}/admin/users/{username}/roles",
+            json=[{"name": role}, {"name": "non_existing_role"}],
+        )
+        self.assertEqual(422, resp.status_code)
+
+        resp = self.session.put(
+            f"{self.base_url}/admin/users/{username}/roles",
+            json=[{"name": role}, {"name": role2}],
+        )
+        self.assertEqual(200, resp.status_code)
+
+        resp = self.session.get(f"{self.base_url}/admin/users/{username}")
+        self.assertEqual(200, resp.status_code)
+        user = resp.json()
+        self.assertEqual(2, len(user["roles"]))
+        self.assertIn(role, user["roles"])
+        self.assertIn(role2, user["roles"])
+        self.assertNotIn(role3, user["roles"])
