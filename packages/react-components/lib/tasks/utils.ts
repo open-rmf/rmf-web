@@ -93,6 +93,8 @@ const taskStateMap: { [key: string]: number } = {
   Pending: RmfModels.TaskSummary.STATE_PENDING,
 };
 
-export const filterTaskFromState = (state: string, tasks: RmfModels.TaskSummary[]) => {
-  return state.length > 0 ? tasks.filter((task) => taskStateMap[state] === task.state) : tasks;
+export const filterTaskFromState = (state: string[], tasks: RmfModels.TaskSummary[]) => {
+  const filteredStates: number[] = [];
+  state.forEach((s) => filteredStates.push(taskStateMap[s]));
+  return state.length > 0 ? tasks.filter((task) => filteredStates.includes(task.state)) : tasks;
 };
