@@ -2,9 +2,6 @@ import {
   Button,
   Card,
   CardHeader,
-  Dialog,
-  DialogContent,
-  DialogTitle,
   IconButton,
   makeStyles,
   Table,
@@ -21,15 +18,9 @@ import AccountIcon from '@material-ui/icons/AccountCircle';
 import AddIcon from '@material-ui/icons/AddCircle';
 import DeleteIcon from '@material-ui/icons/Delete';
 import React from 'react';
-import { ConfirmDialogActions } from '../../../../react-components/dist';
+import { ConfirmationDialog } from 'react-components';
 
 const ItemsPerPage = 20;
-
-const useConfirmDialogActionsStyles = makeStyles({
-  button: {
-    width: 80,
-  },
-});
 
 const useStyles = makeStyles((theme) => ({
   controlsButton: {
@@ -44,7 +35,6 @@ export interface UserListCardProps {
 
 export function UserListCard({ searchUsers, deleteUser }: UserListCardProps): JSX.Element {
   const classes = useStyles();
-  const confirmDialogActionsClasses = useConfirmDialogActionsStyles();
   const [users, setUsers] = React.useState<string[]>([]);
   const [selectedUser, setSelectedUser] = React.useState<string | null>(null);
   const [search, setSearch] = React.useState('');
@@ -130,23 +120,20 @@ export function UserListCard({ searchUsers, deleteUser }: UserListCardProps): JS
           onChangePage={(_, newPage) => setPage(newPage)}
         />
       </TableContainer>
-      <Dialog open={openDialog}>
-        <DialogTitle>Confirm Delete?</DialogTitle>
-        <DialogContent>
-          <Typography>{`Are you sure you want to delete ${selectedUser}?`}</Typography>
-        </DialogContent>
-        <ConfirmDialogActions
-          loading={deleting}
-          classes={confirmDialogActionsClasses}
-          onCancelClick={() => setOpenDialog(false)}
-          onConfirmClick={async () => {
-            setDeleting(true);
-            selectedUser && deleteUser && (await deleteUser(selectedUser));
-            setDeleting(false);
-            setOpenDialog(false);
-          }}
-        />
-      </Dialog>
+      <ConfirmationDialog
+        open={openDialog}
+        title="Confirm Delete"
+        loading={deleting}
+        onCancelClick={() => setOpenDialog(false)}
+        onConfirmClick={async () => {
+          setDeleting(true);
+          selectedUser && deleteUser && (await deleteUser(selectedUser));
+          setDeleting(false);
+          setOpenDialog(false);
+        }}
+      >
+        <Typography>{`Are you sure you want to delete ${selectedUser}?`}</Typography>
+      </ConfirmationDialog>
     </Card>
   );
 }

@@ -2,7 +2,6 @@ import { Button } from '@material-ui/core';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { AlertDialog, AlertDialogProps } from './alert-dialog';
-import { ConfirmationAlertDialog } from './confirmation-alert-dialog';
 
 interface BaseStoryArgs {
   variant: AlertDialogProps['variant'];
@@ -67,11 +66,3 @@ AlertDialogStory.storyName = 'Alert Dialog';
 AlertDialogStory.args = {
   title: 'Something has happened',
 };
-
-export const ConfirmationDialog: Story = ({ withCloseButton, ...args }) => (
-  <OpenDialogButton
-    DialogComponent={ConfirmationAlertDialog}
-    componentProps={args}
-    withCloseButton={withCloseButton}
-  />
-);
