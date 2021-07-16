@@ -121,7 +121,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     [fleets],
   );
 
-  const trajLookahead = 60000; // 1 min
+  const trajLookahead = 600000; // 10 min
   const trajAnimDuration = 2000;
 
   React.useEffect(() => {
