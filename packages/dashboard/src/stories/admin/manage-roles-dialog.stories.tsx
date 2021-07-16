@@ -1,7 +1,7 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
-import { ManageRolesCard } from '../../components/admin/manage-roles';
-import { RoleListCardProps } from '../../components/admin/role-list';
+import { ManageRolesCard } from '../../components/admin/manage-roles-dialog';
+import { RoleListCardProps } from '../../components/admin/role-list-card';
 
 export default {
   title: 'Admin/Manage Roles Card',

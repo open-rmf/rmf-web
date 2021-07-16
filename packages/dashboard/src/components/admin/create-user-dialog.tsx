@@ -33,9 +33,12 @@ export function CreateUserDialog({
       return;
     }
     setCreating(true);
-    createUser && (await createUser(username));
-    setCreating(false);
-    setOpen && setOpen(false);
+    try {
+      createUser && (await createUser(username));
+      setOpen && setOpen(false);
+    } finally {
+      setCreating(false);
+    }
   };
 
   return (

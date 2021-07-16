@@ -1,4 +1,5 @@
 import {
+  AdminApi,
   Configuration,
   DefaultApi,
   DispensersApi,
@@ -24,6 +25,7 @@ export class RmfIngress {
   ingestorsApi: IngestorsApi;
   fleetsApi: FleetsApi;
   tasksApi: TasksApi;
+  adminApi: AdminApi;
   negotiationStatusManager: NegotiationStatusManager;
   trajectoryManager?: RobotTrajectoryManager;
 
@@ -68,6 +70,7 @@ export class RmfIngress {
     this.ingestorsApi = new IngestorsApi(apiConfig, undefined, axiosInst);
     this.fleetsApi = new FleetsApi(apiConfig, undefined, axiosInst);
     this.tasksApi = new TasksApi(apiConfig, undefined, axiosInst);
+    this.adminApi = new AdminApi(apiConfig, undefined, axiosInst);
     this.trajectoryManager = trajMgr;
   }
 }

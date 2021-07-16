@@ -1,7 +1,7 @@
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { UserListCard } from '../user-list';
+import { UserListCard } from '../user-list-card';
 
 describe('UserListCard', () => {
   it('opens delete dialog when button is clicked', async () => {

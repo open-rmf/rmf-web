@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { RoleListCard } from '../role-list';
+import { RoleListCard } from '../role-list-card';
 
 describe('Role List', () => {
   it('renders list of roles', () => {

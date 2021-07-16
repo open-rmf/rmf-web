@@ -1,7 +1,7 @@
 import { render, waitFor, waitForElementToBeRemoved } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { ManageRolesCard, ManageRolesDialog } from '../manage-roles';
+import { ManageRolesCard, ManageRolesDialog } from '../manage-roles-dialog';
 
 describe('ManageRolesCard', () => {
   it('shows dialog when add/remove is clicked', async () => {

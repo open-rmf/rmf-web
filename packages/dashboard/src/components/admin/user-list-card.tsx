@@ -160,9 +160,13 @@ export function UserListCard({
         onCancelClick={() => setOpenDeleteDialog(false)}
         onSubmit={async () => {
           setDeleting(true);
-          selectedUser && deleteUser && (await deleteUser(selectedUser));
-          setDeleting(false);
-          setOpenDeleteDialog(false);
+          try {
+            selectedUser && deleteUser && (await deleteUser(selectedUser));
+            setOpenDeleteDialog(false);
+            setRefresh((prev) => prev + 1);
+          } finally {
+            setDeleting(false);
+          }
         }}
       >
         <Typography>{`Are you sure you want to delete "${selectedUser}"?`}</Typography>

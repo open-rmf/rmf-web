@@ -49,7 +49,13 @@ export function ConfirmationDialog({
   const myClasses = useStyles();
   return (
     <Dialog {...otherProps}>
-      <form onSubmit={onSubmit} aria-label="form">
+      <form
+        onSubmit={(ev) => {
+          ev.preventDefault();
+          onSubmit && onSubmit(ev);
+        }}
+        aria-label="form"
+      >
         <DialogTitle>
           <Grid container wrap="nowrap">
             <Grid item className={myClasses.title}>
