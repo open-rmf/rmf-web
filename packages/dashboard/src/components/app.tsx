@@ -10,7 +10,6 @@ import { getUrl, LoginHOC, PrivateRouteHOC } from 'rmf-auth';
 import appConfig from '../app-config';
 import ResourceManager from '../managers/resource-manager';
 import { ADMIN_ROUTE, DASHBOARD_ROUTE, LOGIN_ROUTE, ROBOTS_ROUTE, TASKS_ROUTE } from '../util/url';
-import { UserListPage } from './admin';
 import { AppBase } from './app-base';
 import { AppConfigContext, ResourcesContext, TrajectorySocketContext } from './app-contexts';
 import './app.css';
@@ -157,14 +156,10 @@ export default function App(): JSX.Element | null {
                             >
                               <TaskPage />
                             </PrivateRoute>
-                            <PrivateRoute path={ADMIN_ROUTE} redirectPath={LOGIN_ROUTE} user={user}>
-                              <UserListPage />
-                            </PrivateRoute>
                           </Switch>
                           {tabValue === 'building' && <Redirect to={DASHBOARD_ROUTE} />}
                           {tabValue === 'robots' && <Redirect to={ROBOTS_ROUTE} />}
                           {tabValue === 'tasks' && <Redirect to={TASKS_ROUTE} />}
-                          {tabValue === 'admin' && <Redirect to={ADMIN_ROUTE} />}
                         </AppBase>
                       </RmfApp>
                     </PrivateRoute>

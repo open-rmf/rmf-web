@@ -72,7 +72,6 @@ export const AppBar = React.memo(
             <Tab label="Building" value="building" aria-label="Building" />
             <Tab label="Robots" value="robots" aria-label="Robots" />
             <Tab label="Tasks" value="tasks" aria-label="Tasks" />
-            {user?.profile.is_admin && <Tab label="Admin" value="admin" aria-label="Admin" />}
           </NavigationBar>
           <Toolbar variant="dense" className={classes.toolbar}>
             <Typography variant="caption">Powered by OpenRMF</Typography>
