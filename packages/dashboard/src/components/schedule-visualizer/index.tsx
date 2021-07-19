@@ -65,6 +65,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   debug('render');
   const { buildingMap, negotiationTrajStore, mapFloorSort, showTrajectories } = props;
   const negotiationColors = React.useMemo(() => new NegotiationColors(), []);
+  const defaultFootPrint = 0.5;
 
   const authenticator = React.useContext(AppConfigContext).authenticator;
 
@@ -91,6 +92,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   const [conflictRobotNames, setConflictRobotNames] = React.useState<string[][]>(() => []);
   const [curMapTrajectories, setCurMapTrajectories] = React.useState<Trajectory[]>(() => []);
   const [curMapConflicts, setCurMapConflicts] = React.useState<Conflict[]>(() => []);
+  const [footPrint, setFootPrint] = React.useState<number>(defaultFootPrint);
 
   const initialBounds = React.useMemo<Readonly<L.LatLngBounds> | undefined>(() => {
     const initialLayer = mapFloorLayers[mapFloorLayerSorted[0]];
@@ -201,7 +203,8 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
         },
         token: authenticator.token,
       });
-
+      if (resp && resp.values[0].dimensions > defaultFootPrint)
+        setFootPrint(resp.values[0].dimensions);
       debug('set trajectories');
       if (showTrajectories === undefined || showTrajectories) {
         setTrajectories((prev) => ({
@@ -367,6 +370,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
           {curMapFloorLayer && (
             <Pane>
               <RobotsOverlay
+                footprint={footPrint}
                 currentFloorName={curLevelName}
                 bounds={curMapFloorLayer.bounds}
                 fleets={fleets}

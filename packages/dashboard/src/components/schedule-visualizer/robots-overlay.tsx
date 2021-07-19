@@ -10,6 +10,7 @@ const debug = Debug('ScheduleVisualizer:RobotsOverlay');
 const RobotMarker = React.memo(RobotMarker_);
 
 export interface RobotsOverlayProps extends SVGOverlayProps {
+  footprint: number;
   fleets: RmfModels.FleetState[];
   conflictRobotNames: string[][];
   currentFloorName: string;
@@ -21,6 +22,7 @@ export const RobotsOverlay = (props: RobotsOverlayProps) => {
   debug('render');
 
   const {
+    footprint,
     fleets,
     conflictRobotNames,
     currentFloorName,
@@ -30,7 +32,6 @@ export const RobotsOverlay = (props: RobotsOverlayProps) => {
   } = props;
   const robotResourcesContext = React.useContext(ResourcesContext)?.robots;
   const viewBox = viewBoxFromLeafletBounds(props.bounds);
-  const footprint = 0.5;
 
   function inConflict(robotName: string): boolean {
     return conflictRobotNames.flat().includes(robotName) ? true : false;

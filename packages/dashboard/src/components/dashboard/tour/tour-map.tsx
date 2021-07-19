@@ -177,6 +177,7 @@ export default function TourMap(props: TourMapProps): React.ReactElement {
           {curMapFloorLayer && (
             <Pane>
               <RobotsOverlay
+                footprint={0.5}
                 currentFloorName={curLevelName}
                 bounds={curMapFloorLayer.bounds}
                 fleets={props.fleets}
