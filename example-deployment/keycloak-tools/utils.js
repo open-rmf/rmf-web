@@ -23,9 +23,6 @@ async function request(url, options, body) {
         if (resp.statusCode < 200 || resp.statusCode >= 300) {
           rej(resp);
         }
-        if (resp.headers['content-type'] === 'application/json') {
-          resp.body = JSON.parse(resp.body);
-        }
         res(resp);
       });
       resp.on('data', (data) => (resp.body += data.toString()));
@@ -77,7 +74,7 @@ async function getToken() {
     grant_type: 'password',
     client_id: 'admin-cli',
   });
-  return resp.body.access_token;
+  return JSON.parse(resp.body).access_token;
 }
 
 module.exports = {
