@@ -6,6 +6,7 @@ import { fromRmfCoords, fromRmfYaw } from '../geometry-utils';
 import { BaseMarkerProps } from './base-marker';
 import { DefaultMarker } from './default-marker';
 import { ImageMarker } from './image-marker';
+import { robotModeToString } from './utils';
 
 const debug = Debug('Robots:RobotMarker');
 
@@ -40,6 +41,7 @@ export const RobotMarker = React.forwardRef(
     const {
       name,
       model,
+      robotMode,
       x,
       y,
       yaw: rmfYaw,
@@ -80,7 +82,14 @@ export const RobotMarker = React.forwardRef(
     }, [name, model, colorManager, fleetName, useImageMarker]);
 
     return (
-      <Tooltip title={name}>
+      <Tooltip
+        title={
+          <React.Fragment>
+            <div>Name - {name}</div>
+            <div>State - {robotModeToString(robotMode)}</div>
+          </React.Fragment>
+        }
+      >
         <g ref={ref} onClick={(ev) => onClick && onClick(ev, fleetName, name)} {...otherProps}>
           <g transform={translateTransform}>
             <g className={classes.clickable} aria-label={name} transform={`rotate(${yaw})`}>

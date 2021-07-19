@@ -53,6 +53,19 @@ function useDoorStyle(doorMode?: number): string {
   }
 }
 
+function doorStateToString(doorMode?: number): string {
+  switch (doorMode) {
+    case RmfModels.DoorMode.MODE_OPEN:
+      return 'Open';
+    case RmfModels.DoorMode.MODE_MOVING:
+      return 'Moving';
+    case RmfModels.DoorMode.MODE_CLOSED:
+      return 'Closed';
+    default:
+      return 'Unknown';
+  }
+}
+
 function getDoorCenter(door: RmfModels.Door): [number, number] {
   const v1 = [door.v1_x, door.v1_y];
   const v2 = [door.v2_x, door.v2_y];
@@ -248,7 +261,14 @@ export const DoorMarker = React.forwardRef(
     try {
       const center = getDoorCenter(door);
       return (
-        <Tooltip title={door.name}>
+        <Tooltip
+          title={
+            <React.Fragment>
+              <div>Name - {door.name}</div>
+              <div>State - {doorStateToString(doorMode)}</div>
+            </React.Fragment>
+          }
+        >
           <g ref={ref} onClick={(ev) => onClick && onClick(ev, door)} {...otherProps}>
             <g
               className={onClick ? classes.marker : undefined}
