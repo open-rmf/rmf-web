@@ -12,13 +12,12 @@ class AuthenticationError(Exception):
 
 
 class JwtAuthenticator:
-    def __init__(self, pem_file: str, client_id: str, aud: str, iss: str):
+    def __init__(self, pem_file: str, aud: str, iss: str):
         """
         Authenticates with a JWT token, the client must send an auth params with
         a "token" key.
         :param pem_file: path to a pem encoded certificate used to verify a token.
         """
-        self.client_id = client_id
         self.aud = aud
         self.iss = iss
         with open(pem_file, "br") as f:

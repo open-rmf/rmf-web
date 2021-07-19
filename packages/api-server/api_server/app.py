@@ -38,7 +38,6 @@ class App(FastIO):
         authenticator = (
             JwtAuthenticator(
                 app_config.jwt_public_key,
-                app_config.client_id,
                 app_config.aud,
                 app_config.iss,
             )

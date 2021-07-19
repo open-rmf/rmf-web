@@ -16,7 +16,6 @@ class AppConfig:
     builtin_admin: str
     jwt_public_key: Optional[str]
     oidc_url: Optional[str]
-    client_id: str
     aud: str
     iss: Optional[str]
 

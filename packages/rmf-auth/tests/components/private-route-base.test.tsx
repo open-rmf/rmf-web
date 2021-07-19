@@ -20,7 +20,7 @@ describe('PrivateRoute', () => {
     const root = render(
       <BrowserRouter>
         <PrivateRouteBase
-          user={{ username: 'test', token: '', roles: [], groups: [] }}
+          user="test"
           unauthorized={<h1>unauthorized</h1>}
           redirect={<Redirect to={{ pathname: '/test', state: { from: location } }} />}
         />
@@ -49,7 +49,7 @@ describe('PrivateRoute', () => {
       <Router history={history}>
         <Switch>
           <PrivateRouteBase
-            user={{ username: 'test', token: '', roles: [], groups: [] }}
+            user="test"
             unauthorized={<h1>unauthorized</h1>}
             redirect={<Redirect to={{ pathname: '/login', state: { from: location } }} />}
           />
@@ -65,7 +65,7 @@ describe('PrivateRoute', () => {
       <BrowserRouter>
         <PrivateRouteBase
           noRedirectToLogin={true}
-          user={{ username: 'test', token: '', roles: [], groups: [] }}
+          user="test"
           unauthorized={<h1>unauthorized</h1>}
           redirect={<Redirect to={{ pathname: '/login', state: { from: location } }} />}
         />

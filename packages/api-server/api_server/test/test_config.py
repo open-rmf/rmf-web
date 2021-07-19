@@ -10,7 +10,6 @@ config.update(
         "port": int(test_port),
         "log_level": "CRITICAL",
         "jwt_public_key": f"{here}/../test/test.pub",
-        "client_id": "test",
         "aud": "test",
         "iss": "test",
     }

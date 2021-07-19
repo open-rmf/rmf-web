@@ -12,6 +12,7 @@ class DispatcherClient:
     def __init__(self, rmf_gateway: RmfGateway):
         self.rmf_gateway = rmf_gateway
 
+    # pylint: disable=unused-argument
     @staticmethod
     async def _get_submit_task_authz_grp(task: RmfSubmitTask.Request):
         # TODO
@@ -45,6 +46,7 @@ class DispatcherClient:
             sim_time = None
         return sim_time
 
+    # pylint: disable=unused-argument
     @staticmethod
     async def _get_cancel_task_authz_grp(task: mdl.CancelTask):
         # TODO

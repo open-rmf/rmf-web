@@ -72,7 +72,6 @@ with open(f"{here}/test.key", "br") as f:
 def generate_token(username: str):
     return jwt.encode(
         {
-            "client_id": "test",
             "aud": "test",
             "iss": "test",
             "preferred_username": username,
