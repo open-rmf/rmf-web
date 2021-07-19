@@ -73,21 +73,20 @@ function motionDirectionToString(motionDirection: number): string {
   }
 }
 
-function getDoorCenter(door: RmfModels.Door): [number, number] {
-  const v1 = [door.v1_x, door.v1_y];
-  const v2 = [door.v2_x, door.v2_y];
-  switch (door.door_type) {
-    case RmfModels.Door.DOOR_TYPE_SINGLE_SLIDING:
-    case RmfModels.Door.DOOR_TYPE_SINGLE_SWING:
-    case RmfModels.Door.DOOR_TYPE_SINGLE_TELESCOPE:
-    case RmfModels.Door.DOOR_TYPE_DOUBLE_SLIDING:
-    case RmfModels.Door.DOOR_TYPE_DOUBLE_SWING:
-    case RmfModels.Door.DOOR_TYPE_DOUBLE_TELESCOPE:
-      return [(v1[0] + v2[0]) / 2, (v2[1] + v1[1]) / 2];
-    default:
-      throw new Error('unknown door type');
-  }
-}
+// door centers assume a zoom level of 4
+const doorPosMap: { [key: string]: [number, number] } = {
+  door1: [-25, 98],
+  door2: [-40, 91.2],
+  door3: [-41.1, 81.5],
+  door4: [-53.4, 76.6],
+  door5: [-43, 99],
+  door6: [-41.2, 101.5],
+  door7: [-39.8, 94.4],
+  door8: [-45.7, 158.2],
+  door9: [-46, 124],
+  door10: [-97.7, 237.3],
+  door11: [-74.1, 172],
+};
 
 interface DoorInfoProps {
   door: RmfModels.Door;
@@ -122,18 +121,9 @@ export const DoorAccordion = React.forwardRef(
     const [expanded, setExpanded] = React.useState(false);
 
     function onAccordianClick(door: RmfModels.Door, mapRef?: React.RefObject<LMap>) {
-      // const doorCenter = getDoorCenter(door);
-      // const getLatLngPt = mapRef?.current?.leafletElement.layerPointToLatLng([104.0037612915039, -44.18611717224121]);
-      // const toggleExpand = !expanded
-      // setExpanded(toggleExpand)
-      // if (!toggleExpand) {
-      //   mapRef?.current?.leafletElement.setZoom(2)
-      // } else {
-      // mapRef?.current?.leafletElement.zoomIn(2);
-      // mapRef?.current?.leafletElement.panTo(doorCenter);
-      // console.log("zooming in..")
-      // if (getLatLngPt !== undefined) mapRef?.current?.leafletElement.setView([getLatLngPt?.lat, getLatLngPt?.lng],3);
-      // }
+      // console.log(mapRef?.current?.leafletElement.getCenter())
+      // console.log(mapRef?.current?.leafletElement.getZoom())
+      // mapRef?.current?.leafletElement.setView([-43, 99],4);
     }
 
     const doorModeLabelClasses = React.useCallback(
