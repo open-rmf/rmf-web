@@ -8,6 +8,7 @@ import { TaskPanel, TaskPanelProps } from 'react-components';
 import * as RmfModels from 'rmf-models';
 import { PlacesContext, RmfIngressContext } from '../rmf-app';
 import { useAutoRefresh } from './auto-refresh';
+import { sortTasks } from './utils';
 
 const useStyles = makeStyles((theme) => ({
   taskPanel: {
@@ -72,13 +73,13 @@ export function TaskPage() {
         undefined,
         undefined,
         undefined,
-        10,
-        page * 10,
-        'state,-priority,-start_time',
+        20,
+        page * 20,
+        'state,start_time,-priority',
       );
       setTotalCount(resp.data.total_count);
       const taskProgresses: TaskProgress[] = resp.data.items;
-      return taskProgresses.map((t) => t.task_summary) as RmfModels.TaskSummary[];
+      return sortTasks(taskProgresses.map((t) => t.task_summary)) as RmfModels.TaskSummary[];
     },
     [tasksApi],
   );
@@ -126,12 +127,12 @@ export function TaskPage() {
   return (
     <TaskPanel
       className={classes.taskPanel}
-      tasks={autoRefreshState.tasks}
+      tasks={sortTasks(autoRefreshState.tasks)}
       paginationOptions={{
         page,
         count: totalCount,
-        rowsPerPage: 10,
-        rowsPerPageOptions: [10],
+        rowsPerPage: 20,
+        rowsPerPageOptions: [20],
         onChangePage: (_ev, newPage) => setPage(newPage),
       }}
       cleaningZones={cleanZones}

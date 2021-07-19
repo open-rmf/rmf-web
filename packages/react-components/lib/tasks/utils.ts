@@ -83,3 +83,18 @@ export function parseTasksFile(contents: string): SubmitTask[] {
   }
   return tasks;
 }
+
+const taskStateMap: { [key: string]: number } = {
+  Queued: RmfModels.TaskSummary.STATE_QUEUED,
+  Active: RmfModels.TaskSummary.STATE_ACTIVE,
+  Completed: RmfModels.TaskSummary.STATE_COMPLETED,
+  Failed: RmfModels.TaskSummary.STATE_FAILED,
+  Cancelled: RmfModels.TaskSummary.STATE_CANCELED,
+  Pending: RmfModels.TaskSummary.STATE_PENDING,
+};
+
+export const filterTaskFromState = (state: string[], tasks: RmfModels.TaskSummary[]) => {
+  const filteredStates: number[] = [];
+  state.forEach((s) => filteredStates.push(taskStateMap[s]));
+  return state.length > 0 ? tasks.filter((task) => filteredStates.includes(task.state)) : tasks;
+};
