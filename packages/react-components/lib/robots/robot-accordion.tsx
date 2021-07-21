@@ -53,9 +53,13 @@ export const RobotAccordion = React.forwardRef(
     const { fleetName, robot, mapRef, ...otherProps } = props;
     debug(`render ${robot.name}`);
     const classes = useStyles();
+    const [expanded, setExpanded] = React.useState(false);
 
     function onAccordianClick(robot: RmfModels.RobotState, mapRef?: React.RefObject<LMap>) {
-      mapRef?.current?.leafletElement.setView([robot.location.y, robot.location.x], 5);
+      setExpanded(!expanded);
+      expanded
+        ? mapRef?.current?.leafletElement.setView([-66.375, 154.5], 2)
+        : mapRef?.current?.leafletElement.setView([robot.location.y, robot.location.x], 5);
     }
 
     return (
