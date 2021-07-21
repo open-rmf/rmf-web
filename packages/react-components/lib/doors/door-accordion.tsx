@@ -73,20 +73,21 @@ function motionDirectionToString(motionDirection: number): string {
   }
 }
 
-// door centers assume a zoom level of 4
-const doorPosMap: { [key: string]: [number, number] } = {
-  door1: [-25, 98],
-  door2: [-40, 91.2],
-  door3: [-41.1, 81.5],
-  door4: [-53.4, 76.6],
-  door5: [-43, 99],
-  door6: [-41.2, 101.5],
-  door7: [-39.8, 94.4],
-  door8: [-45.7, 158.2],
-  door9: [-46, 124],
-  door10: [-97.7, 237.3],
-  door11: [-74.1, 172],
-};
+function getDoorCenter(door: RmfModels.Door): [number, number] {
+  const v1 = [door.v1_x, door.v1_y];
+  const v2 = [door.v2_x, door.v2_y];
+  switch (door.door_type) {
+    case RmfModels.Door.DOOR_TYPE_SINGLE_SLIDING:
+    case RmfModels.Door.DOOR_TYPE_SINGLE_SWING:
+    case RmfModels.Door.DOOR_TYPE_SINGLE_TELESCOPE:
+    case RmfModels.Door.DOOR_TYPE_DOUBLE_SLIDING:
+    case RmfModels.Door.DOOR_TYPE_DOUBLE_SWING:
+    case RmfModels.Door.DOOR_TYPE_DOUBLE_TELESCOPE:
+      return [(v1[0] + v2[0]) / 2, (v2[1] + v1[1]) / 2];
+    default:
+      throw new Error('unknown door type');
+  }
+}
 
 interface DoorInfoProps {
   door: RmfModels.Door;
@@ -120,7 +121,8 @@ export const DoorAccordion = React.forwardRef(
     const classes = useStyles();
 
     function onAccordianClick(door: RmfModels.Door, mapRef?: React.RefObject<LMap>) {
-      mapRef?.current?.leafletElement.setView(doorPosMap[door.name], 5);
+      const center = getDoorCenter(door);
+      mapRef?.current?.leafletElement.setView([center[1], center[0]], 5);
     }
 
     const doorModeLabelClasses = React.useCallback(

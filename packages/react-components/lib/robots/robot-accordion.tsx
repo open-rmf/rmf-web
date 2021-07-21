@@ -5,7 +5,7 @@ import React from 'react';
 import ItemAccordionDetails from '../item-accordion-details';
 import ItemAccordionSummary from '../item-accordion-summary';
 import { SimpleInfo } from '../simple-info';
-import { robotModeToString, robotPosMap } from './utils';
+import { robotModeToString } from './utils';
 import { Map as LMap } from 'react-leaflet';
 
 const debug = Debug('Robots:RobotAccordion');
@@ -55,7 +55,7 @@ export const RobotAccordion = React.forwardRef(
     const classes = useStyles();
 
     function onAccordianClick(robot: RmfModels.RobotState, mapRef?: React.RefObject<LMap>) {
-      mapRef?.current?.leafletElement.setView(robotPosMap[robot.name], 5);
+      mapRef?.current?.leafletElement.setView([robot.location.y, robot.location.x], 5);
     }
 
     return (

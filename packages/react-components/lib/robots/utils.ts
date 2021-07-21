@@ -37,10 +37,3 @@ export interface VerboseRobot {
   state: RmfModels.RobotState;
   tasks: TaskProgress[];
 }
-
-// assumes a zoom level of 4
-export const robotPosMap: { [key: string]: [number, number] } = {
-  ecobot_1: [-31, 96.2],
-  ecobot_2: [-30.2, 96.8],
-  avidbot_1: [-40.1, 96.3],
-};
