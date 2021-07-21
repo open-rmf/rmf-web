@@ -358,6 +358,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                     robot={robot}
                     fleetName={fleet.name}
                     data-component="RobotAccordion"
+                    mapRef={windowMap.get('lmap')}
                   />
                 ) : null;
               }),

@@ -118,12 +118,9 @@ export const DoorAccordion = React.forwardRef(
     const { door, doorState, onDoorControlClick, mapRef, ...otherProps } = props;
     debug(`render ${door.name}`);
     const classes = useStyles();
-    const [expanded, setExpanded] = React.useState(false);
 
     function onAccordianClick(door: RmfModels.Door, mapRef?: React.RefObject<LMap>) {
-      // console.log(mapRef?.current?.leafletElement.getCenter())
-      // console.log(mapRef?.current?.leafletElement.getZoom())
-      // mapRef?.current?.leafletElement.setView([-43, 99],4);
+      mapRef?.current?.leafletElement.setView(doorPosMap[door.name], 5);
     }
 
     const doorModeLabelClasses = React.useCallback(
