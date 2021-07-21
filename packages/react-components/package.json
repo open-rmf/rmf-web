@@ -34,6 +34,7 @@
     "material-table": "^1.69.2",
     "node-vibrant": "^3.1.6",
     "react-customizable-progressbar": "^1.0.3",
+    "react-leaflet": "^2.7.0",
     "rmf-models": "*"
   },
   "devDependencies": {
