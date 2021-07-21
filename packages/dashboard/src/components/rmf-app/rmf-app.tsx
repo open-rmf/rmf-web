@@ -265,7 +265,7 @@ function UserProvider(props: React.PropsWithChildren<{}>) {
     return () => {
       cancel = true;
     };
-  });
+  }, [rmfIngress]);
 
   return <UserContext.Provider value={user}>{props.children}</UserContext.Provider>;
 }
