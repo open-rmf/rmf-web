@@ -34,7 +34,6 @@
     "material-table": "^1.69.2",
     "node-vibrant": "^3.1.6",
     "react-customizable-progressbar": "^1.0.3",
-    "react-leaflet": "^2.7.0",
     "rmf-models": "*"
   },
   "devDependencies": {
@@ -50,6 +49,7 @@
     "@types/jasmine": "^3.6.6",
     "@types/react": "^16.9.49",
     "@types/react-dom": "^16.9.12",
+    "@types/react-leaflet": "^2.5.2",
     "@types/react-router": "^5.1.7",
     "@types/react-router-dom": "^5.1.7",
     "@typescript-eslint/eslint-plugin": "^4.22.1",
@@ -68,6 +68,7 @@
     "puppeteer": "^5.5.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-leaflet": "^2.7.0",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "ts-loader": "^8.1.0",
