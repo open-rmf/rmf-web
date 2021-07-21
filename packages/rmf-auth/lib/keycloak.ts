@@ -24,22 +24,6 @@ export default class KeycloakAuthenticator
   }
 
   private _getUser(): string {
-    const tokenRoles =
-      this._inst.clientId &&
-      this._inst.resourceAccess &&
-      this._inst.resourceAccess[this._inst.clientId]
-        ? this._inst.resourceAccess[this._inst.clientId].roles
-        : [];
-
-    const roles: string[] = [];
-    const groups: string[] = [];
-    tokenRoles.forEach((role) => {
-      if (role.startsWith('_rmf_')) {
-        roles.push(role);
-      } else if (role.startsWith('rmf_')) {
-        groups.push(role);
-      }
-    });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (this._inst.idTokenParsed as any).preferred_username;
   }

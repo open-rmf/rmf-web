@@ -4,6 +4,8 @@ import unittest
 from rmf_door_msgs.msg import DoorMode
 from tortoise import Tortoise
 
+from api_server.test import init_db
+
 from ..models import (
     DispenserHealth,
     DoorHealth,
@@ -23,11 +25,7 @@ from .book_keeper import RmfBookKeeper
 
 class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
-        await Tortoise.init(
-            db_url="sqlite://:memory:",
-            modules={"models": ["api_server.models.tortoise_models"]},
-        )
-        await Tortoise.generate_schemas()
+        await init_db()
 
         self.rmf = RmfEvents()
         self.repo = RmfRepository()

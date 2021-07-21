@@ -52,31 +52,6 @@ class TestTasksRoute(TasksFixture):
             RmfCancelTask, "cancel_task", rmf_cancel_task
         )
 
-        # async def populate_db():
-        #     role1 = await ttm.Role.create(name="role1")
-        #     await ttm.ResourcePermission.create(
-        #         authz_grp="group1", role=role1, action=RmfAction.TaskRead
-        #     )
-        #     await ttm.ResourcePermission.create(
-        #         authz_grp="group1", role=role1, action=RmfAction.TaskSubmit
-        #     )
-        #     await ttm.ResourcePermission.create(
-        #         authz_grp="group1", role=role1, action=RmfAction.TaskCancel
-        #     )
-        #     role2 = await ttm.Role.create(name="role2")
-        #     await ttm.ResourcePermission.create(
-        #         authz_grp="group1", role=role2, action=RmfAction.TaskRead
-        #     )
-
-        #     await ttm.User.create(username="user1", is_admin=True)
-        #     user2 = await ttm.User.create(username="user2", is_admin=False)
-        #     await user2.roles.add(role1)
-        #     await ttm.User.create(username="user3", is_admin=False)
-        #     user4 = await ttm.User.create(username="user4", is_admin=False)
-        #     await user4.roles.add(role2)
-
-        # self.run_in_app_loop(populate_db())
-
         user1 = self.create_user(True)
         user2 = self.create_user()
         role1 = self.create_role()

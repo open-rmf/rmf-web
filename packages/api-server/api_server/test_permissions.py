@@ -4,6 +4,8 @@ from tortoise import Tortoise
 from tortoise.fields import CharField
 from tortoise.models import Model as TortoiseModel
 
+from api_server.test import init_db
+
 from .models import User
 from .models.tortoise_models import ProtectedResource, ResourcePermission, Role
 from .permissions import Enforcer
@@ -15,16 +17,12 @@ class Greeting(TortoiseModel, ProtectedResource):
 
 class TestPermissions(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
-        await Tortoise.init(
-            db_url="sqlite://:memory:",
-            modules={
-                "models": [
-                    "api_server.test_permissions",
-                    "api_server.models.tortoise_models.authorization",
-                ]
-            },
+        await init_db(
+            [
+                "api_server.test_permissions",
+                "api_server.models.tortoise_models.authorization",
+            ]
         )
-        await Tortoise.generate_schemas()
 
     async def asyncTearDown(self):
         await Tortoise.close_connections()
