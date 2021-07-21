@@ -20,6 +20,7 @@ class TestUser(unittest.IsolatedAsyncioTestCase):
         user = await User.load_from_db("test_user")
         self.assertEqual("test_user", user.username)
         self.assertTrue(user.is_admin)
+        self.assertEqual(0, len(user.roles))
 
         # automatically creates an user if it does not exist
         user = await User.load_from_db("test_user2")
