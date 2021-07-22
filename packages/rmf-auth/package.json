@@ -2,7 +2,7 @@
   "name": "rmf-auth",
   "version": "0.0.1",
   "description": "Auth layer to be used on web UI services",
-  "main": "lib/index.js",
+  "main": "index.js",
   "scripts": {
     "start": "start-storybook -p 6006 -s stories",
     "prepare": "npm run build",
@@ -21,6 +21,9 @@
   ],
   "author": "matiasbavera@gmail.com",
   "license": "Apache-2.0",
+  "publishConfig": {
+    "directory": "dist"
+  },
   "dependencies": {
     "@fontsource/roboto": "^4.3.0",
     "@material-ui/icons": "^4.9.1",

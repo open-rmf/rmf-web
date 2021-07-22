@@ -5,7 +5,7 @@ import { Authenticator, AuthenticatorEventType } from './authenticator';
 
 const debug = Debug('authenticator');
 
-export default class KeycloakAuthenticator
+export class KeycloakAuthenticator
   extends EventEmitter<AuthenticatorEventType>
   implements Authenticator {
   get user(): string | undefined {
@@ -100,3 +100,5 @@ export default class KeycloakAuthenticator
   private _silentCheckSsoRedirectUri?: string;
   private _user?: string;
 }
+
+export default KeycloakAuthenticator;

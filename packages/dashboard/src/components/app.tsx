@@ -4,8 +4,8 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 import React from 'react';
-import { BrowserRouter, Redirect, Route, Switch, useLocation } from 'react-router-dom';
-import { LoginHOC, PrivateRouteHOC } from 'rmf-auth';
+import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
+import { LoginPage, PrivateRoute } from 'rmf-auth';
 import appConfig from '../app-config';
 import ResourceManager from '../managers/resource-manager';
 import { AdminRoute, DashboardRoute, LoginRoute, RobotsRoute, TasksRoute } from '../util/url';
@@ -17,9 +17,6 @@ import Dashboard from './dashboard/dashboard';
 import { RmfApp } from './rmf-app';
 import { RobotPage } from './robots';
 import { TaskPage } from './tasks';
-
-const PrivateRoute = PrivateRouteHOC(Route, Redirect, useLocation);
-const Login = LoginHOC(Redirect);
 
 const theme = createMuiTheme({
   palette: {
@@ -34,7 +31,7 @@ const theme = createMuiTheme({
 export default function App(): JSX.Element | null {
   const authenticator = appConfig.authenticator;
   const [authInitialized, setAuthInitialized] = React.useState(!!appConfig.authenticator.user);
-  const [user, setUser] = React.useState<string | null>(null);
+  const [user, setUser] = React.useState<string | null>(authenticator.user || null);
 
   React.useEffect(() => {
     let cancel = false;
@@ -72,6 +69,8 @@ export default function App(): JSX.Element | null {
     })();
   }, []);
 
+  const loginRedirect = React.useMemo(() => <Redirect to={LoginRoute} />, []);
+
   return authInitialized && appReady ? (
     <ResourcesContext.Provider value={resourceManager.current}>
       <ThemeProvider theme={theme}>
@@ -83,19 +82,34 @@ export default function App(): JSX.Element | null {
                   <Route exact path={LoginRoute}>
                     <Redirect to={DashboardRoute} />
                   </Route>
-                  <PrivateRoute exact path={DashboardRoute} redirectPath={LoginRoute} user={user}>
+                  <PrivateRoute
+                    exact
+                    path={DashboardRoute}
+                    unauthorizedComponent={loginRedirect}
+                    user={user}
+                  >
                     <Dashboard />
                   </PrivateRoute>
-                  <PrivateRoute exact path={RobotsRoute} redirectPath={LoginRoute} user={user}>
+                  <PrivateRoute
+                    exact
+                    path={RobotsRoute}
+                    unauthorizedComponent={loginRedirect}
+                    user={user}
+                  >
                     <RobotPage />
                   </PrivateRoute>
-                  <PrivateRoute exact path={TasksRoute} redirectPath={LoginRoute} user={user}>
+                  <PrivateRoute
+                    exact
+                    path={TasksRoute}
+                    unauthorizedComponent={loginRedirect}
+                    user={user}
+                  >
                     <TaskPage />
                   </PrivateRoute>
-                  <PrivateRoute path={AdminRoute} redirectPath={LoginRoute} user={user}>
+                  <PrivateRoute path={AdminRoute} unauthorizedComponent={loginRedirect} user={user}>
                     <UserListPage />
                   </PrivateRoute>
-                  <PrivateRoute redirectPath={LoginRoute} user={user}>
+                  <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
                     <Redirect to={DashboardRoute} />
                   </PrivateRoute>
                 </Switch>
@@ -104,11 +118,12 @@ export default function App(): JSX.Element | null {
           ) : (
             <Switch>
               <Route exact path={LoginRoute}>
-                <Login
-                  user={user}
+                <LoginPage
                   title={'Dashboard'}
-                  authenticator={authenticator}
-                  successRedirectUri={`${window.location.origin}${DashboardRoute}`}
+                  logo="assets/ros-health.png"
+                  onLoginClick={() =>
+                    authenticator.login(`${window.location.origin}${DashboardRoute}`)
+                  }
                 />
               </Route>
               <Route>

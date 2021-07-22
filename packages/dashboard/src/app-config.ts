@@ -1,8 +1,7 @@
 /* istanbul ignore file */
 
 import { Authenticator } from 'rmf-auth';
-import KeycloakAuthenticator from 'rmf-auth/lib/keycloak';
-import StubAuthenticator from 'rmf-auth/lib/stub';
+import { KeycloakAuthenticator, StubAuthenticator } from 'rmf-auth';
 import ResourceManager from './managers/resource-manager';
 import { BasePath } from './util/url';
 

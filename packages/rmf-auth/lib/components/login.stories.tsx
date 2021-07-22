@@ -1,6 +1,6 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
-import { LoginCard as LoginCard_, LoginPage as LoginPage_ } from '../lib/components';
+import { LoginCard as LoginCard_, LoginPage as LoginPage_ } from '.';
 
 export default {
   title: 'Login',
