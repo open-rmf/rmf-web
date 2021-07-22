@@ -13,11 +13,7 @@ import HelpIcon from '@material-ui/icons/Help';
 import SettingsIcon from '@material-ui/icons/Settings';
 import PagesIcon from '@material-ui/icons/Pages';
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { HeaderBar } from 'react-components/lib/header-bar';
-import { LogoButton } from 'react-components/lib/logo-button';
-import { NavigationBar } from 'react-components/lib/navigation-bar';
-import DashboardTooltip from 'react-components/lib/tooltip';
+import { HeaderBar, LogoButton, NavigationBar, Tooltip } from 'react-components';
 import { AppControllerContext, ResourcesContext, TooltipsContext } from './app-contexts';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
 
@@ -84,7 +80,7 @@ export const AppBar = React.memo(
           </NavigationBar>
           <Toolbar variant="dense" className={classes.toolbar}>
             <Typography variant="caption">Powered by OpenRMF</Typography>
-            <DashboardTooltip
+            <Tooltip
               title="Define dashboard trajectory settings"
               id="setting-tooltip"
               enabled={showTooltips}
@@ -97,7 +93,7 @@ export const AppBar = React.memo(
               >
                 <SettingsIcon />
               </IconButton>
-            </DashboardTooltip>
+            </Tooltip>
             {user && (
               <>
                 <IconButton
@@ -128,11 +124,7 @@ export const AppBar = React.memo(
                 </Menu>
               </>
             )}
-            <DashboardTooltip
-              title="Help tools and resources"
-              id="help-tooltip"
-              enabled={showTooltips}
-            >
+            <Tooltip title="Help tools and resources" id="help-tooltip" enabled={showTooltips}>
               <IconButton
                 id="show-help-btn"
                 aria-label="help"
@@ -141,35 +133,7 @@ export const AppBar = React.memo(
               >
                 <HelpIcon />
               </IconButton>
-            </DashboardTooltip>
-            <IconButton
-              id="show-pages-btn"
-              aria-label="pages"
-              color="inherit"
-              onClick={(event) => setAnchorEl(event.currentTarget)}
-            >
-              <PagesIcon />
-            </IconButton>
-            <Menu
-              anchorEl={anchorEl}
-              getContentAnchorEl={null}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'right',
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={!!anchorEl}
-              onClose={() => setAnchorEl(null)}
-            >
-              <MenuItem id="beverage-station">
-                <Link className={classes.link} to="/bev-station">
-                  Beverage Station
-                </Link>
-              </MenuItem>
-            </Menu>
+            </Tooltip>
           </Toolbar>
         </HeaderBar>
       </div>
