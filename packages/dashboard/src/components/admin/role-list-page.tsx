@@ -5,28 +5,27 @@ import { RmfIngressContext } from '../rmf-app';
 import { usePageStyles } from './page-css';
 import { RoleListCard } from './role-list-card';
 
-export function RoleListPage(): JSX.Element {
+export function RoleListPage(): JSX.Element | null {
   const classes = usePageStyles();
   const rmfIngress = React.useContext(RmfIngressContext);
   const adminApi = rmfIngress?.adminApi;
-  const [roles, setRoles] = React.useState<string[]>([]);
 
-  React.useEffect(() => {
-    if (!adminApi) return;
-    let cancel = false;
-    (async () => {
-      const results = await adminApi.getRolesAdminRolesGet();
-      if (cancel || results.status !== 200) return;
-      setRoles(results.data);
-    })();
-    return () => {
-      cancel = true;
-    };
-  }, [adminApi]);
+  if (!adminApi) return null;
 
   return (
     <div className={classes.pageRoot}>
-      <RoleListCard roles={roles} />
+      <RoleListCard
+        getRoles={async () => (await adminApi.getRolesAdminRolesGet()).data}
+        createRole={async (role) => {
+          await adminApi.createRoleAdminRolesPost({ name: role });
+        }}
+        getPermissions={async (role) =>
+          (await adminApi.getRolePermissionsAdminRolesRolePermissionsGet(role)).data
+        }
+        savePermission={async (role, permission) => {
+          await adminApi.addRolePermissionAdminRolesRolePermissionsPost(permission, role);
+        }}
+      />
     </div>
   );
 }

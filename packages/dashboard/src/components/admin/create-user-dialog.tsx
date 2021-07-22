@@ -1,6 +1,6 @@
 import { TextField } from '@material-ui/core';
 import React from 'react';
-import { ConfirmationDialog } from 'react-components';
+import { ConfirmationDialog, ErrorSnackbar } from 'react-components';
 
 export interface CreateUserDialogProps {
   open: boolean;
@@ -16,6 +16,8 @@ export function CreateUserDialog({
   const [creating, setCreating] = React.useState(false);
   const [username, setUsername] = React.useState('');
   const [usernameError, setUsernameError] = React.useState(false);
+  const [openSnackbar, setOpenSnackbar] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState('');
 
   const validateForm = () => {
     let error = false;
@@ -36,6 +38,9 @@ export function CreateUserDialog({
     try {
       createUser && (await createUser(username));
       setOpen && setOpen(false);
+    } catch (e) {
+      setErrorMessage(`Failed to create user: ${e.message}`);
+      setOpenSnackbar(true);
     } finally {
       setCreating(false);
     }
@@ -54,11 +59,17 @@ export function CreateUserDialog({
         id="username"
         variant="outlined"
         fullWidth
+        autoFocus
         label="Username"
         value={username}
         onChange={(ev) => setUsername(ev.target.value)}
         error={usernameError}
         helperText="Required"
+      />
+      <ErrorSnackbar
+        open={openSnackbar}
+        message={errorMessage}
+        onClose={() => setOpenSnackbar(false)}
       />
     </ConfirmationDialog>
   );

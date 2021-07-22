@@ -2,10 +2,11 @@ from typing import Callable, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
+from tortoise.exceptions import IntegrityError
 from tortoise.transactions import in_transaction
 
 from ..dependencies import AddPaginationQuery, pagination_query
-from ..models import User
+from ..models import Permission, User
 from ..models import tortoise_models as ttm
 
 
@@ -20,13 +21,7 @@ class PostRoles(BaseModel):
 
 class PostRolePermissions(BaseModel):
     action: str
-    authz_grp: Optional[str] = ""
-
-
-class GetRolePermission(BaseModel):
-    authz_grp: Optional[str] = ""
-    role: str
-    action: str
+    authz_grp: str
 
 
 async def _get_db_role(role_name: str) -> ttm.Role:
@@ -145,7 +140,10 @@ def admin_router(user_dep: Callable[..., User]):
         """
         Create a new role
         """
-        await ttm.Role.create(name=body.name)
+        try:
+            await ttm.Role.create(name=body.name)
+        except IntegrityError as e:
+            raise HTTPException(422, str(e)) from e
 
     @router.delete("/roles/{role}")
     async def delete_role(role: str):
@@ -155,7 +153,7 @@ def admin_router(user_dep: Callable[..., User]):
         db_role = await _get_db_role(role)
         await db_role.delete()
 
-    @router.get("/roles/{role}/permissions", response_model=List[GetRolePermission])
+    @router.get("/roles/{role}/permissions", response_model=List[Permission])
     async def get_role_permissions(role: str):
         """
         Get all permissions of a role
@@ -164,10 +162,7 @@ def admin_router(user_dep: Callable[..., User]):
         permissions = await ttm.ResourcePermission.filter(
             role=db_role
         ).prefetch_related("role")
-        return [
-            GetRolePermission(authz_grp=p.authz_grp, role=p.role.name, action=p.action)
-            for p in permissions
-        ]
+        return [Permission(authz_grp=p.authz_grp, action=p.action) for p in permissions]
 
     @router.post("/roles/{role}/permissions")
     async def add_role_permission(role: str, body: PostRolePermissions):

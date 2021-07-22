@@ -19,7 +19,6 @@ export * from './door-request';
 export * from './door-state';
 export * from './fleet';
 export * from './fleet-state';
-export * from './get-role-permission';
 export * from './graph';
 export * from './graph-edge';
 export * from './graph-node';

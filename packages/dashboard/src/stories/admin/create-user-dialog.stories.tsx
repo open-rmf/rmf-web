@@ -3,7 +3,7 @@ import React from 'react';
 import { CreateUserDialog, CreateUserDialogProps } from '../../components/admin/create-user-dialog';
 
 export default {
-  title: 'Admin/Add User Dialog',
+  title: 'Admin/Create User Dialog',
   component: CreateUserDialog,
 } as Meta;
 
@@ -17,4 +17,4 @@ export const Default: Story<CreateUserDialogProps> = (args) => {
   );
 };
 
-Default.storyName = 'Add User Dialog';
+Default.storyName = 'Create User Dialog';

@@ -20,7 +20,7 @@ import AddIcon from '@material-ui/icons/AddCircle';
 import DeleteIcon from '@material-ui/icons/Delete';
 import SearchIcon from '@material-ui/icons/Search';
 import React from 'react';
-import { ConfirmationDialog } from 'react-components';
+import { ConfirmationDialog, ErrorSnackbar } from 'react-components';
 import { CreateUserDialog, CreateUserDialogProps } from './create-user-dialog';
 
 const ItemsPerPage = 20;
@@ -61,16 +61,26 @@ export function UserListCard({
   const searchTimer = React.useRef<number | undefined>(undefined);
   const [openCreateDialog, setOpenCreateDialog] = React.useState(false);
   const [refresh, setRefresh] = React.useState(0);
+  const [openSnackbar, setOpenSnackbar] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState('');
 
   React.useEffect(() => {
-    if (!searchUsers) {
-      return;
-    }
+    if (!searchUsers) return;
+    let cancel = false;
     (async () => {
-      const results = await searchUsers(search, ItemsPerPage + 1, ItemsPerPage * page);
-      setHasMore(results.length > ItemsPerPage);
-      setUsers(results.slice(0, ItemsPerPage));
+      try {
+        const results = await searchUsers(search, ItemsPerPage + 1, ItemsPerPage * page);
+        if (cancel) return;
+        setHasMore(results.length > ItemsPerPage);
+        setUsers(results.slice(0, ItemsPerPage));
+      } catch (e) {
+        setErrorMessage(`Failed to get users: ${e.message}`);
+        setOpenSnackbar(true);
+      }
     })();
+    return () => {
+      cancel = true;
+    };
   }, [searchUsers, search, page, refresh]);
 
   return (
@@ -153,24 +163,29 @@ export function UserListCard({
           onChangePage={(_, newPage) => setPage(newPage)}
         />
       </TableContainer>
-      <ConfirmationDialog
-        open={openDeleteDialog}
-        title="Confirm Delete"
-        loading={deleting}
-        onCancelClick={() => setOpenDeleteDialog(false)}
-        onSubmit={async () => {
-          setDeleting(true);
-          try {
-            selectedUser && deleteUser && (await deleteUser(selectedUser));
-            setOpenDeleteDialog(false);
-            setRefresh((prev) => prev + 1);
-          } finally {
-            setDeleting(false);
-          }
-        }}
-      >
-        <Typography>{`Are you sure you want to delete "${selectedUser}"?`}</Typography>
-      </ConfirmationDialog>
+      {openDeleteDialog && (
+        <ConfirmationDialog
+          open={openDeleteDialog}
+          title="Confirm Delete"
+          loading={deleting}
+          onCancelClick={() => setOpenDeleteDialog(false)}
+          onSubmit={async () => {
+            setDeleting(true);
+            try {
+              selectedUser && deleteUser && (await deleteUser(selectedUser));
+              setOpenDeleteDialog(false);
+              setRefresh((prev) => prev + 1);
+            } catch (e) {
+              setErrorMessage(`Failed to delete user: ${e.message}`);
+              setOpenSnackbar(true);
+            } finally {
+              setDeleting(false);
+            }
+          }}
+        >
+          <Typography>{`Are you sure you want to delete "${selectedUser}"?`}</Typography>
+        </ConfirmationDialog>
+      )}
       {openCreateDialog && (
         <CreateUserDialog
           open={openCreateDialog}
@@ -181,6 +196,11 @@ export function UserListCard({
           }}
         />
       )}
+      <ErrorSnackbar
+        open={openSnackbar}
+        message={errorMessage}
+        onClose={() => setOpenSnackbar(false)}
+      />
     </Card>
   );
 }

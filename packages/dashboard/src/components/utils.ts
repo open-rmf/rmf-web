@@ -1,5 +1,5 @@
-import { AxiosResponse } from 'axios';
+import { AxiosError } from 'axios';
 
-export function getApiErrorMessage(apiResp: AxiosResponse): string {
-  return apiResp.data.detail[0]?.msg || '';
+export function getApiErrorMessage(error: AxiosError): string {
+  return error.response?.data.detail[0]?.msg || '';
 }

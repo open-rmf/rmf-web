@@ -3,15 +3,19 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { LogoButton } from './logo-button';
 
-describe('LogoImage', () => {
+describe('LogoButton', () => {
   it('renders and is clickable', () => {
     const mockOnClick = jasmine.createSpy();
     render(
-      <LogoButton src="../stories/resources/roshealth-logo-white.png" onClick={mockOnClick} />,
+      <LogoButton
+        src="../stories/resources/roshealth-logo-white.png"
+        alt="logo"
+        onClick={mockOnClick}
+      />,
     );
-    expect(screen.getAllByRole('img').length).toBe(1);
+    expect(screen.getAllByRole('button').length).toBe(1);
     expect(screen.getByAltText('logo')).toBeTruthy();
-    userEvent.click(screen.getByRole('img'));
+    userEvent.click(screen.getByRole('button'));
     expect(mockOnClick).toHaveBeenCalled();
     cleanup();
   });

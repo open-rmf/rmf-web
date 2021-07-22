@@ -3,7 +3,7 @@ import React from 'react';
 import { CreateRoleDialog, CreateRoleDialogProps } from '../../components/admin/create-role-dialog';
 
 export default {
-  title: 'Admin/Add Role Dialog',
+  title: 'Admin/Create Role Dialog',
   component: CreateRoleDialog,
 } as Meta;
 
@@ -17,4 +17,4 @@ export const Default: Story<CreateRoleDialogProps> = (args) => {
   );
 };
 
-Default.storyName = 'Add Role Dialog';
+Default.storyName = 'Create Role Dialog';

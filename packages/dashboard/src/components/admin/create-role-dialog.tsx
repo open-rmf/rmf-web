@@ -1,6 +1,6 @@
 import { TextField } from '@material-ui/core';
 import React from 'react';
-import { ConfirmationDialog } from 'react-components';
+import { ConfirmationDialog, ErrorSnackbar } from 'react-components';
 
 export interface CreateRoleDialogProps {
   open: boolean;
@@ -16,6 +16,8 @@ export function CreateRoleDialog({
   const [creating, setCreating] = React.useState(false);
   const [role, setRole] = React.useState('');
   const [roleError, setRoleError] = React.useState(false);
+  const [openSnackbar, setOpenSnackbar] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState('');
 
   const validateForm = () => {
     let error = false;
@@ -33,9 +35,15 @@ export function CreateRoleDialog({
       return;
     }
     setCreating(true);
-    createRole && (await createRole(role));
-    setCreating(false);
-    setOpen && setOpen(false);
+    try {
+      createRole && (await createRole(role));
+      setOpen && setOpen(false);
+    } catch (e) {
+      setErrorMessage(`Failed to create role: ${e.message}`);
+      setOpenSnackbar(true);
+    } finally {
+      setCreating(false);
+    }
   };
 
   return (
@@ -51,11 +59,17 @@ export function CreateRoleDialog({
         id="role"
         variant="outlined"
         fullWidth
+        autoFocus
         label="Role"
         value={role}
         onChange={(ev) => setRole(ev.target.value)}
         error={roleError}
         helperText="Required"
+      />
+      <ErrorSnackbar
+        open={openSnackbar}
+        message={errorMessage}
+        onClose={() => setOpenSnackbar(false)}
       />
     </ConfirmationDialog>
   );

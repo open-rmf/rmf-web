@@ -1,7 +1,7 @@
 import { MenuItem, TextField } from '@material-ui/core';
 import { Permission } from 'api-client';
 import React from 'react';
-import { ConfirmationDialog } from 'react-components';
+import { ConfirmationDialog, ErrorSnackbar } from 'react-components';
 import { getActionText, RmfAction } from '../permissions';
 
 export interface AddPermissionDialogProps {
@@ -20,6 +20,8 @@ export function AddPermissionDialog({
   const [actionError, setActionError] = React.useState(false);
   const [authzGrpError, setAuthzGrpError] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
+  const [openSnackbar, setOpenSnackbar] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState('');
 
   const validateForm = () => {
     let error = false;
@@ -43,8 +45,15 @@ export function AddPermissionDialog({
       return;
     }
     setSaving(true);
-    savePermission && (await savePermission({ action, authz_grp: authzGrp }));
-    setSaving(false);
+    try {
+      savePermission && (await savePermission({ action, authz_grp: authzGrp }));
+      setOpen && setOpen(false);
+    } catch (e) {
+      setErrorMessage(`Failed to save permission: ${e.message}`);
+      setOpenSnackbar(true);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -61,6 +70,7 @@ export function AddPermissionDialog({
         select
         variant="outlined"
         fullWidth
+        autoFocus
         label="Action"
         value={action}
         onChange={(ev) => setAction(ev.target.value)}
@@ -82,6 +92,11 @@ export function AddPermissionDialog({
         onChange={(ev) => setAuthzGrp(ev.target.value)}
         error={authzGrpError}
         helperText="Required"
+      />
+      <ErrorSnackbar
+        open={openSnackbar}
+        message={errorMessage}
+        onClose={() => setOpenSnackbar(false)}
       />
     </ConfirmationDialog>
   );

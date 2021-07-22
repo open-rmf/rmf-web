@@ -16,9 +16,9 @@ import { Configuration } from '../configuration';
 // Some imports not used depending on template conditions
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-import { GetRolePermission } from '../models';
 import { HTTPValidationError } from '../models';
 import { ModelObject } from '../models';
+import { Permission } from '../models';
 import { PostRolePermissions } from '../models';
 import { PostRoles } from '../models';
 import { PostUsers } from '../models';
@@ -1001,9 +1001,7 @@ export const AdminApiFp = function (configuration?: Configuration) {
     async getRolePermissionsAdminRolesRolePermissionsGet(
       role: string,
       options?: any,
-    ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<GetRolePermission>>
-    > {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Permission>>> {
       const localVarAxiosArgs = await AdminApiAxiosParamCreator(
         configuration,
       ).getRolePermissionsAdminRolesRolePermissionsGet(role, options);
@@ -1250,7 +1248,7 @@ export const AdminApiFactory = function (
     getRolePermissionsAdminRolesRolePermissionsGet(
       role: string,
       options?: any,
-    ): AxiosPromise<Array<GetRolePermission>> {
+    ): AxiosPromise<Array<Permission>> {
       return AdminApiFp(configuration)
         .getRolePermissionsAdminRolesRolePermissionsGet(role, options)
         .then((request) => request(axios, basePath));

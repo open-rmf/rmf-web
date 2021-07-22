@@ -171,7 +171,7 @@ function UserProvider(props: React.PropsWithChildren<{}>) {
     };
   }, [rmfIngress]);
 
-  return <UserContext.Provider value={user}>{props.children}</UserContext.Provider>;
+  return <UserContext.Provider value={user}>{user && props.children}</UserContext.Provider>;
 }
 
 export interface RmfAppProps extends React.PropsWithChildren<{}> {}

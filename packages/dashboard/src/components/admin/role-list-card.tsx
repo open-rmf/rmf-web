@@ -17,9 +17,9 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import SecurityIcon from '@material-ui/icons/Security';
 import { Permission } from 'api-client';
 import React from 'react';
-import { Loading } from 'react-components';
+import { ErrorSnackbar, Loading } from 'react-components';
 import { CreateRoleDialog, CreateRoleDialogProps } from './create-role-dialog';
-import { PermissionsCard, PermissionsCardProps } from './permissions-card';
+import { PermissionsCard } from './permissions-card';
 
 const useRoleAccordionStyles = makeStyles({
   permissionsCard: {
@@ -30,31 +30,18 @@ const useRoleAccordionStyles = makeStyles({
   },
 });
 
-interface RoleAccordionProps extends Pick<PermissionsCardProps, 'savePermission'> {
+interface RoleAccordionProps {
   role: string;
   getPermissions?: (role: string) => Promise<Permission[]> | Permission[];
+  savePermission?: (role: string, permission: Permission) => Promise<void> | void;
 }
 
 function RoleAccordion({ role, getPermissions, savePermission }: RoleAccordionProps) {
   const classes = useRoleAccordionStyles();
-  const [permissions, setPermissions] = React.useState<Permission[]>([]);
-  const [loading, setLoading] = React.useState(false);
-  const [expanded, setExpanded] = React.useState(false);
 
   return (
-    <Accordion expanded={expanded}>
-      <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
-        onClick={async () => {
-          setExpanded((prev) => !prev);
-          if (expanded) {
-            return;
-          }
-          setLoading(true);
-          getPermissions && setPermissions(await getPermissions(role));
-          setLoading(false);
-        }}
-      >
+    <Accordion>
+      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Typography>{role}</Typography>
       </AccordionSummary>
       <AccordionDetails>
@@ -69,13 +56,11 @@ function RoleAccordion({ role, getPermissions, savePermission }: RoleAccordionPr
               Delete Role
             </Button>
           </Grid>
-          <Loading loading={loading}>
-            <PermissionsCard
-              className={classes.permissionsCard}
-              permissions={permissions}
-              savePermission={savePermission}
-            />
-          </Loading>
+          <PermissionsCard
+            className={classes.permissionsCard}
+            getPermissions={getPermissions && (() => getPermissions(role))}
+            savePermission={(p) => savePermission && savePermission(role, p)}
+          />
         </Grid>
       </AccordionDetails>
     </Accordion>
@@ -85,17 +70,43 @@ function RoleAccordion({ role, getPermissions, savePermission }: RoleAccordionPr
 export interface RoleListCardProps
   extends Pick<RoleAccordionProps, 'savePermission' | 'getPermissions'>,
     Pick<CreateRoleDialogProps, 'createRole'> {
-  roles?: string[];
+  getRoles?: () => Promise<string[]> | string[];
 }
 
 export function RoleListCard({
-  roles = [],
+  getRoles,
   getPermissions,
   savePermission,
   createRole,
 }: RoleListCardProps): JSX.Element {
+  const [roles, setRoles] = React.useState<string[]>([]);
+  const [loading, setLoading] = React.useState(true);
   const [openDialog, setOpenDialog] = React.useState(false);
+  const [refresh, setRefresh] = React.useState(0);
+  const [openSnackbar, setOpenSnackbar] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState('');
   roles.sort();
+
+  React.useEffect(() => {
+    if (!getRoles) return;
+    let cancel = false;
+    setLoading(true);
+    (async () => {
+      try {
+        const newRoles = await getRoles();
+        if (cancel) return;
+        setRoles(newRoles);
+      } catch (e) {
+        setErrorMessage(`Failed to get roles: ${e.message}`);
+        setOpenSnackbar(true);
+      } finally {
+        setLoading(false);
+      }
+    })();
+    return () => {
+      cancel = true;
+    };
+  }, [getRoles, refresh]);
 
   return (
     <Card variant="outlined">
@@ -110,17 +121,42 @@ export function RoleListCard({
         }
       />
       <Divider />
-      {roles.map((r) => (
-        <RoleAccordion
-          key={r}
-          role={r}
-          getPermissions={getPermissions}
-          savePermission={savePermission}
-        />
-      ))}
-      {openDialog && (
-        <CreateRoleDialog open={openDialog} setOpen={setOpenDialog} createRole={createRole} />
-      )}
+      <Loading loading={loading}>
+        {roles.map((r) => (
+          <RoleAccordion
+            key={r}
+            role={r}
+            getPermissions={
+              getPermissions &&
+              (async (r) => {
+                try {
+                  return await getPermissions(r);
+                } catch (e) {
+                  setErrorMessage(`Failed to get permissions: ${e.message}`);
+                  setOpenSnackbar(true);
+                  return [];
+                }
+              })
+            }
+            savePermission={savePermission}
+          />
+        ))}
+        {openDialog && (
+          <CreateRoleDialog
+            open={openDialog}
+            setOpen={setOpenDialog}
+            createRole={async (r) => {
+              createRole && (await createRole(r));
+              setRefresh((prev) => prev + 1);
+            }}
+          />
+        )}
+      </Loading>
+      <ErrorSnackbar
+        open={openSnackbar}
+        message={errorMessage}
+        onClose={() => setOpenSnackbar(false)}
+      />
     </Card>
   );
 }

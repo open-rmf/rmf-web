@@ -28,5 +28,5 @@ export interface PostRolePermissions {
    * @type {string}
    * @memberof PostRolePermissions
    */
-  authz_grp?: any;
+  authz_grp: any;
 }

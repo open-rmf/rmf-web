@@ -15,7 +15,7 @@ import {
 } from '@material-ui/core';
 import SecurityIcon from '@material-ui/icons/Security';
 import React from 'react';
-import { Loading, TransferList } from '../../../../react-components/dist';
+import { ErrorSnackbar, Loading, TransferList } from '../../../../react-components/dist';
 
 const useStyles = makeStyles((theme) => ({
   action: {
@@ -35,9 +35,9 @@ const useStyles = makeStyles((theme) => ({
 
 export interface ManageRolesDialogProps extends Omit<DialogProps, 'onClose'> {
   defaultAssignedRoles: string[];
-  setOpen: (open: boolean) => void;
-  getAllRoles: () => Promise<string[]>;
-  saveRoles: (roles: string[]) => Promise<void>;
+  setOpen?: (open: boolean) => void;
+  getAllRoles?: () => Promise<string[]>;
+  saveRoles?: (roles: string[]) => Promise<void>;
 }
 
 export function ManageRolesDialog({
@@ -53,31 +53,54 @@ export function ManageRolesDialog({
   const [assignedRoles, setAssignedRoles] = React.useState<string[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
+  const [openSnackbar, setOpenSnackbar] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState('');
 
   React.useEffect(() => {
-    if (!open) {
-      return;
-    }
+    if (!open || !getAllRoles) return;
+    let cancel = false;
     setLoading(true);
     (async () => {
-      const allRoles = await getAllRoles();
-      setAvailableRoles(allRoles.filter((r) => defaultAssignedRoles.indexOf(r) === -1).sort());
-      setAssignedRoles(defaultAssignedRoles.sort());
-      setLoading(false);
+      try {
+        const allRoles = await getAllRoles();
+        if (cancel) return;
+        setAvailableRoles(allRoles.filter((r) => defaultAssignedRoles.indexOf(r) === -1).sort());
+        setAssignedRoles(defaultAssignedRoles.sort());
+      } catch (e) {
+        setErrorMessage(`Failed to get roles: ${e.message}`);
+        setOpenSnackbar(true);
+      } finally {
+        setLoading(false);
+      }
     })();
+    return () => {
+      cancel = true;
+    };
   }, [open, getAllRoles, defaultAssignedRoles]);
 
   const handleOkClick = () => {
     setSaving(true);
     (async () => {
-      await saveRoles(assignedRoles);
-      setSaving(false);
-      setOpen(false);
+      try {
+        saveRoles && (await saveRoles(assignedRoles));
+        setOpen && setOpen(false);
+      } catch (e) {
+        setErrorMessage(`Failed to save roles: ${e.message}`);
+        setOpenSnackbar(true);
+      } finally {
+        setSaving(false);
+      }
     })();
   };
 
   return (
-    <Dialog maxWidth="md" fullWidth open={open} onClose={() => setOpen(false)} {...dialogProps}>
+    <Dialog
+      maxWidth="md"
+      fullWidth
+      open={open}
+      onClose={() => setOpen && setOpen(false)}
+      {...dialogProps}
+    >
       <DialogTitle>Manage Roles</DialogTitle>
       <DialogContent dividers className={classes.dialogContent}>
         <Loading loading={loading} size="5em">
@@ -101,7 +124,7 @@ export function ManageRolesDialog({
           className={classes.dialogButton}
           onClick={() => {
             setLoading(false);
-            setOpen(false);
+            setOpen && setOpen(false);
           }}
           disabled={saving}
         >
@@ -120,6 +143,11 @@ export function ManageRolesDialog({
           </Loading>
         </Button>
       </DialogActions>
+      <ErrorSnackbar
+        open={openSnackbar}
+        message={errorMessage}
+        onClose={() => setOpenSnackbar(false)}
+      />
     </Dialog>
   );
 }
