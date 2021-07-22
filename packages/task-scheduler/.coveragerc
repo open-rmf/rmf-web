@@ -1,0 +1,7 @@
+[run]
+source =
+    task_scheduler
+omit =
+    # test files
+    **/test_*.py
+

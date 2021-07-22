@@ -1,0 +1,17 @@
+{
+  "name": "task-scheduler",
+  "version": "0.0.0",
+  "description": "dummy package",
+  "private": true,
+  "scripts": {
+    "prepack": "pipenv run python setup.py bdist_wheel",
+    "start": "pipenv run python -m task_scheduler",
+    "test": "python3 -m pipenv run python -m unittest",
+    "test:cov": "RMF_TASK_SERVER_LOG_LEVEL=CRITICAL RMF_TASK_SERVER_TEST_COVERAGE=1 pipenv run python -m coverage run -p -m unittest && pipenv run python -m coverage combine",
+    "test:report": "pipenv run python -m coverage html && xdg-open htmlcov/index.html",
+    "lint": "python3 -m pipenv run pylint task_scheduler"
+  },
+  "devDependencies": {
+    "pipenv-install": "*"
+  }
+}
