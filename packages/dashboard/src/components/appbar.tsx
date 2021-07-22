@@ -19,8 +19,14 @@ import { AdminRoute, DashboardRoute, RobotsRoute, TasksRoute } from '../util/url
 import { AppControllerContext, ResourcesContext, TooltipsContext } from './app-contexts';
 import { UserContext } from './auth/contexts';
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles((theme) =>
   createStyles({
+    appBar: {
+      zIndex: theme.zIndex.drawer + 1,
+    },
+    logoBtn: {
+      width: theme.appBar.logoSize,
+    },
     toolbar: {
       textAlign: 'right',
       flexGrow: -1,
@@ -78,96 +84,94 @@ export const AppBar = React.memo(
     }, [logoResourcesContext]);
 
     return (
-      <div>
-        <HeaderBar>
-          <LogoButton logoPath={brandingIconPath} />
-          <NavigationBar value={tabValue}>
+      <HeaderBar className={classes.appBar}>
+        <LogoButton src={brandingIconPath} alt="logo" className={classes.logoBtn} />
+        <NavigationBar value={tabValue}>
+          <Tab
+            label="Building"
+            value="building"
+            aria-label="Building"
+            onClick={() => history.push(DashboardRoute)}
+          />
+          <Tab
+            label="Robots"
+            value="robots"
+            aria-label="Robots"
+            onClick={() => history.push(RobotsRoute)}
+          />
+          <Tab
+            label="Tasks"
+            value="tasks"
+            aria-label="Tasks"
+            onClick={() => history.push(TasksRoute)}
+          />
+          {user?.profile.is_admin && (
             <Tab
-              label="Building"
-              value="building"
-              aria-label="Building"
-              onClick={() => history.push(DashboardRoute)}
+              label="Admin"
+              value="admin"
+              aria-label="Admin"
+              onClick={() => history.push(AdminRoute)}
             />
-            <Tab
-              label="Robots"
-              value="robots"
-              aria-label="Robots"
-              onClick={() => history.push(RobotsRoute)}
-            />
-            <Tab
-              label="Tasks"
-              value="tasks"
-              aria-label="Tasks"
-              onClick={() => history.push(TasksRoute)}
-            />
-            {user?.profile.is_admin && (
-              <Tab
-                label="Admin"
-                value="admin"
-                aria-label="Admin"
-                onClick={() => history.push(AdminRoute)}
-              />
-            )}
-          </NavigationBar>
-          <Toolbar variant="dense" className={classes.toolbar}>
-            <Typography variant="caption">Powered by OpenRMF</Typography>
-            <Tooltip
-              title="Define dashboard trajectory settings"
-              id="setting-tooltip"
-              enabled={showTooltips}
+          )}
+        </NavigationBar>
+        <Toolbar variant="dense" className={classes.toolbar}>
+          <Typography variant="caption">Powered by OpenRMF</Typography>
+          <Tooltip
+            title="Define dashboard trajectory settings"
+            id="setting-tooltip"
+            enabled={showTooltips}
+          >
+            <IconButton
+              id="show-settings-btn"
+              aria-label="settings"
+              color="inherit"
+              onClick={() => setShowSettings(true)}
             >
+              <SettingsIcon />
+            </IconButton>
+          </Tooltip>
+          {user && (
+            <>
               <IconButton
-                id="show-settings-btn"
-                aria-label="settings"
+                id="user-btn"
+                aria-label={'user-btn'}
                 color="inherit"
-                onClick={() => setShowSettings(true)}
+                onClick={(event) => setAnchorEl(event.currentTarget)}
               >
-                <SettingsIcon />
+                <AccountCircleIcon />
               </IconButton>
-            </Tooltip>
-            {user && (
-              <>
-                <IconButton
-                  id="user-btn"
-                  aria-label={'user-btn'}
-                  color="inherit"
-                  onClick={(event) => setAnchorEl(event.currentTarget)}
-                >
-                  <AccountCircleIcon />
-                </IconButton>
-                <Menu
-                  anchorEl={anchorEl}
-                  getContentAnchorEl={null}
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right',
-                  }}
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                  open={!!anchorEl}
-                  onClose={() => setAnchorEl(null)}
-                >
-                  <MenuItem id="logout-btn" onClick={handleLogout}>
-                    Logout
-                  </MenuItem>
-                </Menu>
-              </>
-            )}
-            <Tooltip title="Help tools and resources" id="help-tooltip" enabled={showTooltips}>
-              <IconButton
-                id="show-help-btn"
-                aria-label="help"
-                color="inherit"
-                onClick={() => setShowHelp(true)}
+              <Menu
+                anchorEl={anchorEl}
+                getContentAnchorEl={null}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={!!anchorEl}
+                onClose={() => setAnchorEl(null)}
               >
-                <HelpIcon />
-              </IconButton>
-            </Tooltip>
-          </Toolbar>
-        </HeaderBar>
-      </div>
+                <MenuItem id="logout-btn" onClick={handleLogout}>
+                  Logout
+                </MenuItem>
+              </Menu>
+            </>
+          )}
+          <Tooltip title="Help tools and resources" id="help-tooltip" enabled={showTooltips}>
+            <IconButton
+              id="show-help-btn"
+              aria-label="help"
+              color="inherit"
+              onClick={() => setShowHelp(true)}
+            >
+              <HelpIcon />
+            </IconButton>
+          </Tooltip>
+        </Toolbar>
+      </HeaderBar>
     );
   },
 );

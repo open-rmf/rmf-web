@@ -2,14 +2,14 @@ import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@material-ui/core';
 import React from 'react';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import { LoginPage, PrivateRoute } from 'rmf-auth';
 import appConfig from '../app-config';
 import ResourceManager from '../managers/resource-manager';
 import { AdminRoute, DashboardRoute, LoginRoute, RobotsRoute, TasksRoute } from '../util/url';
-import { UserListPage } from './admin';
+import { AdminRouter } from './admin';
 import { AppBase } from './app-base';
 import { ResourcesContext } from './app-contexts';
 import './app.css';
@@ -17,16 +17,7 @@ import Dashboard from './dashboard/dashboard';
 import { RmfApp } from './rmf-app';
 import { RobotPage } from './robots';
 import { TaskPage } from './tasks';
-
-const theme = createMuiTheme({
-  palette: {
-    primary: {
-      main: '#44497a',
-      dark: '#323558',
-      light: '#565d99',
-    },
-  },
-});
+import { theme } from './theme';
 
 export default function App(): JSX.Element | null {
   const authenticator = appConfig.authenticator;
@@ -107,7 +98,7 @@ export default function App(): JSX.Element | null {
                     <TaskPage />
                   </PrivateRoute>
                   <PrivateRoute path={AdminRoute} unauthorizedComponent={loginRedirect} user={user}>
-                    <UserListPage />
+                    <AdminRouter />
                   </PrivateRoute>
                   <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
                     <Redirect to={DashboardRoute} />

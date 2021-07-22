@@ -11,7 +11,7 @@ import { UserListCard } from './user-list-card';
 export function UserListPage(): JSX.Element {
   const classes = usePageStyles();
   const rmfIngress = React.useContext(RmfIngressContext);
-  const adminApi = rmfIngress && rmfIngress.adminApi;
+  const adminApi = rmfIngress?.adminApi;
   const [openSnackbar, setOpenSnackbar] = React.useState(false);
   const [snackbarSeverity, setSnackbarSeverity] = React.useState<AlertProps['severity']>('error');
   const [snackbarMessage, setSnackbarMessage] = React.useState('');

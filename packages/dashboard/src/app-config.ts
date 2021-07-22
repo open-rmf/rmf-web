@@ -1,7 +1,6 @@
 /* istanbul ignore file */
 
-import { Authenticator } from 'rmf-auth';
-import { KeycloakAuthenticator, StubAuthenticator } from 'rmf-auth';
+import { Authenticator, KeycloakAuthenticator, StubAuthenticator } from 'rmf-auth';
 import ResourceManager from './managers/resource-manager';
 import { BasePath } from './util/url';
 
@@ -51,7 +50,7 @@ export const appConfig: AppConfig = (() => {
     appResourcesFactory: ResourceManager.getResourceConfigurationFile,
     trajServerUrl: trajServer,
     rmfServerUrl: process.env.REACT_APP_RMF_SERVER,
-  };
+  } as AppConfig;
 })();
 
 export default appConfig;
