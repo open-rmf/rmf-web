@@ -69,8 +69,8 @@ export const CustomRecurrence = () => {
             margin="normal"
             variant="outlined"
             value={recurrence}
-            onChange={(ev) => {
-              setRecurrence(parseInt(ev.target.value) || 0);
+            onChange={(_ev, val) => {
+              setRecurrence(val || 0);
             }}
           />
         </Grid>
