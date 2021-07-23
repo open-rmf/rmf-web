@@ -1,4 +1,5 @@
 from .building_map import *
+from .chargers import *
 from .dispensers import *
 from .doors import *
 from .fleets import *

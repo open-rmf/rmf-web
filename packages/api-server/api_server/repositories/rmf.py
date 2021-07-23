@@ -2,6 +2,7 @@ from typing import List, Optional
 
 from ..models import (
     BuildingMap,
+    ChargerState,
     Dispenser,
     DispenserHealth,
     DispenserState,
@@ -227,3 +228,21 @@ class RmfRepository:
     async def get_tasks(self):
         task_summaries = await ttm.TaskSummary.all()
         return [Task(task_id=ts.data["task_id"]) for ts in task_summaries]
+
+    async def get_charger_state(self, charger_name: str) -> Optional[ChargerState]:
+        charger_state = await ttm.ChargerState.get_or_none(id_=charger_name)
+        if charger_state is None:
+            return None
+        return ChargerState(**charger_state.data)
+
+    async def query_charger_states(self, **queries) -> List[ChargerState]:
+        return [
+            ChargerState(**charger_state.data)
+            for charger_state in await ttm.ChargerState.filter(**queries)
+        ]
+
+    async def save_charger_state(self, charger_state: ChargerState):
+        await ttm.ChargerState.update_or_create(
+            {"data": charger_state.dict()},
+            id_=charger_state.name,
+        )

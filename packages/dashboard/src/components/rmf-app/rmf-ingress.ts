@@ -7,6 +7,7 @@ import {
   LiftsApi,
   SioClient,
   TasksApi,
+  ChargersApi,
 } from 'api-client';
 import axios from 'axios';
 import { Authenticator } from 'rmf-auth';
@@ -22,6 +23,7 @@ export class RmfIngress {
   ingestorsApi: IngestorsApi;
   fleetsApi: FleetsApi;
   tasksApi: TasksApi;
+  chargersApi: ChargersApi;
   negotiationStatusManager: NegotiationStatusManager;
   trajectoryManager?: RobotTrajectoryManager;
 
@@ -65,6 +67,7 @@ export class RmfIngress {
     this.ingestorsApi = new IngestorsApi(apiConfig, undefined, axiosInst);
     this.fleetsApi = new FleetsApi(apiConfig, undefined, axiosInst);
     this.tasksApi = new TasksApi(apiConfig, undefined, axiosInst);
+    this.chargersApi = new ChargersApi(apiConfig, undefined, axiosInst);
     this.trajectoryManager = trajMgr;
   }
 }

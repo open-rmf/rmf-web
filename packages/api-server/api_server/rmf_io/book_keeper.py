@@ -11,6 +11,7 @@ from rx.subject.subject import Subject
 from ..models import (
     BasicHealth,
     BuildingMap,
+    ChargerState,
     DispenserHealth,
     DispenserState,
     DoorHealth,
@@ -110,6 +111,7 @@ class RmfBookKeeper:
         self._record_fleet_state()
         self._record_robot_health()
         self._record_task_summary()
+        self._record_charger_state()
 
     async def stop(self):
         for sub in self._subscriptions:
@@ -254,4 +256,13 @@ class RmfBookKeeper:
 
         self._subscriptions.append(
             self.rmf.task_summaries.subscribe(lambda x: self._create_task(update(x)))
+        )
+
+    def _record_charger_state(self):
+        async def update(charger_state: ChargerState):
+            await self.repo.save_charger_state(charger_state)
+            self._loggers.charger_state.info(json.dumps(charger_state.dict()))
+
+        self._subscriptions.append(
+            self.rmf.charger_states.subscribe(lambda x: self._create_task(update(x)))
         )

@@ -119,6 +119,10 @@ class App(FastIO):
                 rmf_events.robot_health.on_next(health)
             logger.info(f"loaded {len(robot_health)} robot health")
 
+            charger_states = await rmf_repo.query_charger_states()
+            for charger in charger_states:
+                rmf_events.charger_states.on_next(charger)
+
             logger.info("updating tasks from RMF")
             try:
                 # Sometimes the node has not finished discovery so we need to call
@@ -174,6 +178,11 @@ class App(FastIO):
         self.include_router(
             routes.FleetsRouter(self.rmf_events, rmf_gateway_dep, logger=logger),
             prefix="/fleets",
+        )
+
+        self.include_router(
+            routes.ChargersRouter(self.rmf_events, rmf_gateway_dep),
+            prefix="/chargers",
         )
 
         @self.fapi.on_event("startup")

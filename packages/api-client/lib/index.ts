@@ -12,6 +12,7 @@ import {
   LiftState,
   RobotHealth,
   TaskSummary,
+  ChargerState,
 } from 'rmf-models';
 import { io, Socket } from 'socket.io-client';
 
@@ -109,6 +110,14 @@ export class SioClient {
   subscribeTaskSummary(taskId: string, listener: Listener<TaskSummary>): Listener<TaskSummary> {
     const encoded = taskId.replace('/', '__');
     return this.subscribe<TaskSummary>(`/tasks/${encoded}/summary`, listener);
+  }
+
+  subscribeChargerState(
+    chargerName: string,
+    listener: Listener<ChargerState>,
+  ): Listener<ChargerState> {
+    console.log(chargerName);
+    return this.subscribe<ChargerState>(`/chargers/${chargerName}/state`, listener);
   }
 }
 

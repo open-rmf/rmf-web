@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core';
 import React from 'react';
 import { RobotPanel, VerboseRobot } from 'react-components';
 import { RmfIngressContext } from '../rmf-app';
+import { Subscription } from 'api-client';
 
 const useStyles = makeStyles((theme) => ({
   robotPanel: {
@@ -16,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
 
 export function RobotPage() {
   const classes = useStyles();
-  const { fleetsApi } = React.useContext(RmfIngressContext) || {};
+  const { fleetsApi, sioClient } = React.useContext(RmfIngressContext) || {};
 
   const [totalCount, setTotalCount] = React.useState(0);
   const [page, setPage] = React.useState(0);
@@ -37,6 +38,20 @@ export function RobotPage() {
     setVerboseRobots(resp.data.items);
     return resp.data.items;
   }, [fleetsApi, page]);
+
+  // const test = async () => {
+  //   const resp = await chargersApi?.getChargersChargersGet();
+  //   console.log(resp)
+  // }
+
+  // React.useEffect(() => {
+  if (sioClient) {
+    console.log('trying to subscribe .....');
+    const subscriptions: Subscription[] = [];
+    subscriptions.push(sioClient.subscribeChargerState('ecobot_1', (state) => console.log(state)));
+  }
+  // test();
+  // }, [sioClient])
 
   React.useEffect(() => {
     fetchVerboseRobots();
