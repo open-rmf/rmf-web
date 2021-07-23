@@ -20,7 +20,7 @@ import {
   SettingsContext,
 } from './app-contexts';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
-import { ThemeMode, UseTheme } from '../settings';
+import { ThemeMode } from '../settings';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -54,7 +54,6 @@ export const AppBar = React.memo(
     const { showTooltips } = React.useContext(TooltipsContext);
 
     const curTheme = React.useContext(SettingsContext).themeMode;
-    const isUseTheme = React.useContext(SettingsContext).useTheme;
 
     async function handleLogout(): Promise<void> {
       try {
@@ -72,11 +71,9 @@ export const AppBar = React.memo(
       }
       const logoPath = logoResourcesContext.getIconPath('headerLogo');
       const blueLogoPath = logoResourcesContext.getIconPath('darkThemeLogo');
-
-      if (isUseTheme === UseTheme.False) return logoPath;
       logoUrl = curTheme === ThemeMode.Dark ? logoPath : blueLogoPath;
       return logoUrl;
-    }, [logoResourcesContext, curTheme, isUseTheme]);
+    }, [logoResourcesContext, curTheme]);
 
     return (
       <div>
