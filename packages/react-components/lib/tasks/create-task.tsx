@@ -546,13 +546,7 @@ export function CreateTaskForm({
                     updateTasks();
                   }}
                 />
-                  value={task.task_type !== -1 ? task.task_type : ''}
-                  onChange={handleTaskTypeChange}
-                >
-                  <MenuItem value={RmfModels.TaskType.TYPE_CLEAN}>Clean</MenuItem>
-                  <MenuItem value={RmfModels.TaskType.TYPE_LOOP}>Loop</MenuItem>
-                  <MenuItem value={RmfModels.TaskType.TYPE_DELIVERY}>Delivery</MenuItem>
-                </TextField>
+
                 <Grid container wrap="nowrap">
                   <Grid style={{ flexGrow: 1 }}>
                     <KeyboardDateTimePicker
