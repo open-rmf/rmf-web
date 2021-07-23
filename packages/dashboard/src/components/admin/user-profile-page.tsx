@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 
-import { makeStyles, Paper, Typography } from '@material-ui/core';
+import { makeStyles, Typography } from '@material-ui/core';
 import { User } from 'api-client';
 import { AxiosError } from 'axios';
 import React from 'react';
@@ -13,6 +13,10 @@ import { usePageStyles } from './page-css';
 import { UserProfileCard } from './user-profile';
 
 const useStyles = makeStyles((theme) => ({
+  notFound: {
+    marginTop: '50%',
+    textAlign: 'center',
+  },
   manageRoles: {
     marginTop: theme.spacing(4),
   },
@@ -28,7 +32,7 @@ export function UserProfilePage(): JSX.Element | null {
   const [profile, setProfile] = React.useState<User | undefined>(undefined);
   const [notFound, setNotFound] = React.useState(false);
 
-  React.useEffect(() => {
+  const refresh = React.useCallback(() => {
     if (!adminApi || !user) return;
     (async () => {
       try {
@@ -40,41 +44,48 @@ export function UserProfilePage(): JSX.Element | null {
         setNotFound(true);
       }
     })();
-  }, [adminApi, user, safeAsync]);
+  }, [adminApi, safeAsync, user]);
 
-  return adminApi && profile ? (
+  React.useEffect(() => {
+    refresh();
+  }, [refresh]);
+
+  return adminApi ? (
     <div className={pageClasses.pageRoot}>
       {notFound ? (
-        <Paper>
-          <Typography>404 Not Found</Typography>
-        </Paper>
+        <Typography variant="h6" className={classes.notFound}>
+          404 Not Found
+        </Typography>
       ) : (
-        <>
-          <UserProfileCard profile={profile} />
-          <ManageRolesCard
-            className={classes.manageRoles}
-            assignedRoles={profile.roles}
-            getAllRoles={async () => {
-              try {
-                return (await adminApi.getRolesAdminRolesGet()).data;
-              } catch (e) {
-                throw new Error(getApiErrorMessage(e));
-              }
-            }}
-            saveRoles={async (roles) => {
-              try {
-                await adminApi.setUserRolesAdminUsersUsernameRolesPut(
-                  roles.map((r) => ({
-                    name: r,
-                  })),
-                  profile.username,
-                );
-              } catch (e) {
-                throw new Error(getApiErrorMessage(e));
-              }
-            }}
-          />
-        </>
+        profile && (
+          <>
+            <UserProfileCard profile={profile} />
+            <ManageRolesCard
+              className={classes.manageRoles}
+              assignedRoles={profile.roles}
+              getAllRoles={async () => {
+                try {
+                  return (await adminApi.getRolesAdminRolesGet()).data;
+                } catch (e) {
+                  throw new Error(getApiErrorMessage(e));
+                }
+              }}
+              saveRoles={async (roles) => {
+                try {
+                  await adminApi.setUserRolesAdminUsersUsernameRolesPut(
+                    roles.map((r) => ({
+                      name: r,
+                    })),
+                    profile.username,
+                  );
+                  refresh();
+                } catch (e) {
+                  throw new Error(getApiErrorMessage(e));
+                }
+              }}
+            />
+          </>
+        )
       )}
     </div>
   ) : null;
