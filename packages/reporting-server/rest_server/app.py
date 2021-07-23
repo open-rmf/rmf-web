@@ -48,9 +48,6 @@ def get_app(run_config=SystemMode.ALL):
             dependencies=[Depends(auth_scheme)],
         )
 
-    setup_database(
-        app, generate_schemas=run_config in (
-            SystemMode.ALL, SystemMode.FLUENTD)
-    )
+    setup_database(app, generate_schemas=False)
 
     return app
