@@ -1,8 +1,8 @@
 import { Dispenser, Fleet, Ingestor } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import appConfig from '../../app-config';
 import RmfHealthStateManager from '../../managers/rmf-health-state-manager';
+import { AppConfigContext } from '../app-contexts';
 import { User, UserContext } from '../auth/contexts';
 import {
   BuildingMapContext,
@@ -133,15 +133,17 @@ function RmfHealthProvider(props: React.PropsWithChildren<{}>): JSX.Element {
 }
 
 function RmfIngressProvider(props: React.PropsWithChildren<{}>): JSX.Element {
-  const authenticator = appConfig.authenticator;
-  const [rmfIngress, setRmfIngress] = React.useState<RmfIngress | undefined>(() => {
+  const { authenticator } = React.useContext(AppConfigContext);
+  const [rmfIngress, setRmfIngress] = React.useState<RmfIngress | undefined>(undefined);
+
+  React.useEffect(() => {
     if (authenticator.user) {
-      return new RmfIngress();
+      return setRmfIngress(new RmfIngress(authenticator));
     } else {
-      authenticator.once('userChanged', () => setRmfIngress(new RmfIngress()));
+      authenticator.once('userChanged', () => setRmfIngress(new RmfIngress(authenticator)));
       return undefined;
     }
-  });
+  }, [authenticator]);
 
   return (
     <RmfIngressContext.Provider value={rmfIngress}>{props.children}</RmfIngressContext.Provider>

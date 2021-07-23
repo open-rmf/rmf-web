@@ -19,13 +19,12 @@ import {
 } from 'react-components';
 import { GlobalHotKeys } from 'react-hotkeys';
 import * as RmfModels from 'rmf-models';
-import appConfig from '../../app-config';
 import { buildHotKeys } from '../../hotkeys';
 import {
   NegotiationConflict,
   NegotiationTrajectoryResponse,
 } from '../../managers/negotiation-status-manager';
-import { AppControllerContext } from '../app-contexts';
+import { AppConfigContext, AppControllerContext } from '../app-contexts';
 import { DispensersContext, RmfIngressContext } from '../rmf-app';
 import ScheduleVisualizer, { ScheduleVisualizerProps } from '../schedule-visualizer';
 import { RobotsOverlayProps } from '../schedule-visualizer/robots-overlay';
@@ -100,7 +99,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   debug('render');
 
   const classes = useStyles();
-
+  const appConfig = React.useContext(AppConfigContext);
   const appController = React.useContext(AppControllerContext);
   const rmfIngress = React.useContext(RmfIngressContext);
   const sioClient = rmfIngress?.sioClient;
@@ -299,7 +298,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     return () => {
       negotiationStatusManager.off('updated', onUpdated);
     };
-  }, [negotiationStatusManager]);
+  }, [negotiationStatusManager, appConfig]);
   const [negotiationSpotlight, setNegotiationSpotlight] = React.useState<
     SpotlightValue<string> | undefined
   >(undefined);

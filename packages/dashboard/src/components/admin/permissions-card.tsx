@@ -17,7 +17,8 @@ import AddIcon from '@material-ui/icons/AddCircle';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { Permission } from 'api-client';
 import React from 'react';
-import { ErrorSnackbar, Loading } from '../../../../react-components/dist';
+import { Loading, useAsync } from 'react-components';
+import { AppControllerContext } from '../app-contexts';
 import { getActionText } from '../permissions';
 import { AddPermissionDialog, AddPermissionDialogProps } from './add-permission-dialog';
 
@@ -39,50 +40,45 @@ export interface PermissionsCardProps
   extends PaperProps,
     Pick<AddPermissionDialogProps, 'savePermission'> {
   getPermissions?: () => Promise<Permission[]> | Permission[];
-  onRemovePermissionClick?: (ev: React.MouseEvent, permission: Permission) => void;
+  removePermission?: (permission: Permission) => Promise<void> | void;
 }
 
 export function PermissionsCard({
   getPermissions,
   savePermission,
-  onRemovePermissionClick,
+  removePermission,
   ...otherProps
 }: PermissionsCardProps): JSX.Element {
   const classes = useStyles();
+  const safeAsync = useAsync();
   const [loading, setLoading] = React.useState(false);
   const [permissions, setPermissions] = React.useState<Permission[]>([]);
   const [openDialog, setOpenDialog] = React.useState(false);
-  const [openSnackbar, setOpenSnackbar] = React.useState(false);
-  const [errorMessage, setErrorMessage] = React.useState('');
+  const { showErrorAlert } = React.useContext(AppControllerContext);
+
+  const refresh = React.useCallback(async () => {
+    if (!getPermissions) return;
+    setLoading(true);
+    try {
+      const newPermissions = await safeAsync(getPermissions());
+      newPermissions.sort((a, b) => {
+        if (a.action < b.action) return -1;
+        if (a.action > b.action) return 1;
+        if (a.authz_grp < b.authz_grp) return -1;
+        if (a.authz_grp > b.authz_grp) return 1;
+        return 0;
+      });
+      setPermissions(newPermissions);
+    } catch (e) {
+      showErrorAlert(`Failed to get permissions: ${e.message}`);
+    } finally {
+      setLoading(false);
+    }
+  }, [getPermissions, showErrorAlert, safeAsync]);
 
   React.useEffect(() => {
-    if (!getPermissions) return;
-    let cancel = false;
-    setLoading(true);
-    (async () => {
-      try {
-        const newPermissions = await getPermissions();
-        if (cancel) return;
-        // sort by action first, then by authorization group
-        newPermissions.sort((a, b) => {
-          if (a.action < b.action) return -1;
-          if (a.action > b.action) return 1;
-          if (a.authz_grp < b.authz_grp) return -1;
-          if (a.authz_grp > b.authz_grp) return 1;
-          return 0;
-        });
-        setPermissions(newPermissions);
-      } catch (e) {
-        setErrorMessage(`Failed to get permissions: ${e.message}`);
-        setOpenSnackbar(true);
-      } finally {
-        setLoading(false);
-      }
-    })();
-    return () => {
-      cancel = true;
-    };
-  }, [getPermissions]);
+    refresh();
+  }, [refresh]);
 
   return (
     <Paper elevation={0} {...otherProps}>
@@ -115,7 +111,17 @@ export function PermissionsCard({
                       color="secondary"
                       startIcon={<DeleteIcon />}
                       className={classes.controlsButton}
-                      onClick={(ev) => onRemovePermissionClick && onRemovePermissionClick(ev, p)}
+                      onClick={
+                        removePermission &&
+                        (async () => {
+                          try {
+                            await removePermission(p);
+                            refresh();
+                          } catch (e) {
+                            showErrorAlert(`Failed to remove permission: ${e.message}`);
+                          }
+                        })
+                      }
                     >
                       Remove
                     </Button>
@@ -129,12 +135,13 @@ export function PermissionsCard({
       <AddPermissionDialog
         open={openDialog}
         setOpen={setOpenDialog}
-        savePermission={savePermission}
-      />
-      <ErrorSnackbar
-        open={openSnackbar}
-        message={errorMessage}
-        onClose={() => setOpenSnackbar(false)}
+        savePermission={
+          savePermission &&
+          (async (p) => {
+            await savePermission(p);
+            refresh();
+          })
+        }
       />
     </Paper>
   );

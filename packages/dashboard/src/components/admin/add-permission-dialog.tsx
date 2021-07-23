@@ -1,7 +1,8 @@
 import { MenuItem, TextField } from '@material-ui/core';
 import { Permission } from 'api-client';
 import React from 'react';
-import { ConfirmationDialog, ErrorSnackbar } from 'react-components';
+import { ConfirmationDialog, useAsync } from 'react-components';
+import { AppControllerContext } from '../app-contexts';
 import { getActionText, RmfAction } from '../permissions';
 
 export interface AddPermissionDialogProps {
@@ -15,13 +16,13 @@ export function AddPermissionDialog({
   setOpen,
   savePermission,
 }: AddPermissionDialogProps): JSX.Element {
+  const safeAsync = useAsync();
   const [action, setAction] = React.useState('');
   const [authzGrp, setAuthzGrp] = React.useState('');
   const [actionError, setActionError] = React.useState(false);
   const [authzGrpError, setAuthzGrpError] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
-  const [openSnackbar, setOpenSnackbar] = React.useState(false);
-  const [errorMessage, setErrorMessage] = React.useState('');
+  const { showErrorAlert } = React.useContext(AppControllerContext);
 
   const validateForm = () => {
     let error = false;
@@ -46,13 +47,12 @@ export function AddPermissionDialog({
     }
     setSaving(true);
     try {
-      savePermission && (await savePermission({ action, authz_grp: authzGrp }));
+      savePermission && (await safeAsync(savePermission({ action, authz_grp: authzGrp })));
+      setSaving(false);
       setOpen && setOpen(false);
     } catch (e) {
-      setErrorMessage(`Failed to save permission: ${e.message}`);
-      setOpenSnackbar(true);
-    } finally {
       setSaving(false);
+      showErrorAlert(`Failed to save permission: ${e.message}`);
     }
   };
 
@@ -92,11 +92,6 @@ export function AddPermissionDialog({
         onChange={(ev) => setAuthzGrp(ev.target.value)}
         error={authzGrpError}
         helperText="Required"
-      />
-      <ErrorSnackbar
-        open={openSnackbar}
-        message={errorMessage}
-        onClose={() => setOpenSnackbar(false)}
       />
     </ConfirmationDialog>
   );

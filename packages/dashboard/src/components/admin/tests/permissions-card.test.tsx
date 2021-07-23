@@ -23,18 +23,19 @@ describe('PermissionsCard', () => {
     expect(() => root.getByText('Add Permission')).not.toThrow();
   });
 
-  it('calls onRemovePermissionClick when button is clicked', async () => {
-    const onRemovePermissionClick = jest.fn();
+  it('calls removePermission when button is clicked', async () => {
+    const removePermission = jest.fn();
     const root = render(
       <PermissionsCard
         getPermissions={() => [{ action: RmfAction.TaskRead, authz_grp: 'test_group' }]}
-        onRemovePermissionClick={onRemovePermissionClick}
+        removePermission={removePermission}
       />,
     );
     await waitFor(() => root.getByText('Remove'));
     userEvent.click(root.getByText('Remove'));
-    expect(onRemovePermissionClick).toHaveBeenCalled();
-    expect(onRemovePermissionClick.mock.calls[0][1].action).toBe(RmfAction.TaskRead);
-    expect(onRemovePermissionClick.mock.calls[0][1].authz_grp).toBe('test_group');
+    await waitFor(() => root.getByLabelText('loading'));
+    expect(removePermission).toHaveBeenCalled();
+    expect(removePermission.mock.calls[0][0].action).toBe(RmfAction.TaskRead);
+    expect(removePermission.mock.calls[0][0].authz_grp).toBe('test_group');
   });
 });

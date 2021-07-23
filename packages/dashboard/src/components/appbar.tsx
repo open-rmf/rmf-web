@@ -14,9 +14,13 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import React from 'react';
 import { HeaderBar, LogoButton, NavigationBar, Tooltip } from 'react-components';
 import { useHistory, useLocation } from 'react-router-dom';
-import appConfig from '../app-config';
 import { AdminRoute, DashboardRoute, RobotsRoute, TasksRoute } from '../util/url';
-import { AppControllerContext, ResourcesContext, TooltipsContext } from './app-contexts';
+import {
+  AppConfigContext,
+  AppControllerContext,
+  ResourcesContext,
+  TooltipsContext,
+} from './app-contexts';
 import { UserContext } from './auth/contexts';
 
 const useStyles = makeStyles((theme) =>
@@ -62,7 +66,7 @@ export const AppBar = React.memo(
     const logoResourcesContext = React.useContext(ResourcesContext)?.logos;
     const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
     const classes = useStyles();
-    const authenticator = appConfig.authenticator;
+    const { authenticator } = React.useContext(AppConfigContext);
     const user = React.useContext(UserContext);
     const { showTooltips } = React.useContext(TooltipsContext);
 

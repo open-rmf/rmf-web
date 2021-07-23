@@ -1,4 +1,5 @@
 import React from 'react';
+import appConfig, { AppConfig } from '../app-config';
 import ResourceManager from '../managers/resource-manager';
 import { defaultSettings, Settings } from '../settings';
 
@@ -26,6 +27,7 @@ export interface AppController {
    * a tooltip to show.
    */
   toggleTooltips(): void;
+  showErrorAlert: (message: string) => void;
 }
 
 export interface Tooltips {
@@ -47,9 +49,7 @@ export const AppControllerContext = React.createContext<AppController>({
   toggleHotkeysDialog: () => {},
   showTooltips: () => {},
   toggleTooltips: () => {},
+  showErrorAlert: () => {},
 });
 
-export interface AppContent {
-  tabNames: string[];
-}
-export const AppContentContext = React.createContext<AppContent>({ tabNames: ['Building'] });
+export const AppConfigContext = React.createContext<AppConfig>(appConfig);

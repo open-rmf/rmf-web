@@ -11,6 +11,7 @@ import {
   TasksApi,
 } from 'api-client';
 import axios from 'axios';
+import { Authenticator } from 'rmf-auth';
 import appConfig from '../../app-config';
 import { NegotiationStatusManager } from '../../managers/negotiation-status-manager';
 import {
@@ -31,9 +32,7 @@ export class RmfIngress {
   negotiationStatusManager: NegotiationStatusManager;
   trajectoryManager: RobotTrajectoryManager;
 
-  constructor() {
-    const authenticator = appConfig.authenticator;
-
+  constructor(authenticator: Authenticator) {
     if (!authenticator.user) {
       throw new Error(
         'user is undefined, RmfIngress should only be initialized after the authenticator is ready',

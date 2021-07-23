@@ -19,11 +19,17 @@ export function RoleListPage(): JSX.Element | null {
         createRole={async (role) => {
           await adminApi.createRoleAdminRolesPost({ name: role });
         }}
+        deleteRole={async (role) => {
+          await adminApi.deleteRoleAdminRolesRoleDelete(role);
+        }}
         getPermissions={async (role) =>
           (await adminApi.getRolePermissionsAdminRolesRolePermissionsGet(role)).data
         }
         savePermission={async (role, permission) => {
           await adminApi.addRolePermissionAdminRolesRolePermissionsPost(permission, role);
+        }}
+        removePermission={async (role, permission) => {
+          await adminApi.deleteRolePermissionAdminRolesRolePermissionsDelete(permission, role);
         }}
       />
     </div>

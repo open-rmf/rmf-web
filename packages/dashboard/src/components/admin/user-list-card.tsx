@@ -20,7 +20,8 @@ import AddIcon from '@material-ui/icons/AddCircle';
 import DeleteIcon from '@material-ui/icons/Delete';
 import SearchIcon from '@material-ui/icons/Search';
 import React from 'react';
-import { ConfirmationDialog, ErrorSnackbar } from 'react-components';
+import { ConfirmationDialog, useAsync } from 'react-components';
+import { AppControllerContext } from '../app-contexts';
 import { CreateUserDialog, CreateUserDialogProps } from './create-user-dialog';
 
 const ItemsPerPage = 20;
@@ -50,6 +51,7 @@ export function UserListCard({
   createUser,
 }: UserListCardProps): JSX.Element {
   const classes = useStyles();
+  const safeAsync = useAsync();
   const [users, setUsers] = React.useState<string[]>([]);
   const [selectedUser, setSelectedUser] = React.useState<string | null>(null);
   const [search, setSearch] = React.useState('');
@@ -60,28 +62,24 @@ export function UserListCard({
   const [deleting, setDeleting] = React.useState(false);
   const searchTimer = React.useRef<number | undefined>(undefined);
   const [openCreateDialog, setOpenCreateDialog] = React.useState(false);
-  const [refresh, setRefresh] = React.useState(0);
-  const [openSnackbar, setOpenSnackbar] = React.useState(false);
-  const [errorMessage, setErrorMessage] = React.useState('');
+  const { showErrorAlert } = React.useContext(AppControllerContext);
 
-  React.useEffect(() => {
+  const refresh = React.useCallback(async () => {
     if (!searchUsers) return;
-    let cancel = false;
     (async () => {
       try {
-        const results = await searchUsers(search, ItemsPerPage + 1, ItemsPerPage * page);
-        if (cancel) return;
+        const results = await safeAsync(searchUsers(search, ItemsPerPage + 1, ItemsPerPage * page));
         setHasMore(results.length > ItemsPerPage);
         setUsers(results.slice(0, ItemsPerPage));
       } catch (e) {
-        setErrorMessage(`Failed to get users: ${e.message}`);
-        setOpenSnackbar(true);
+        showErrorAlert(`Failed to get users: ${e.message}`);
       }
     })();
-    return () => {
-      cancel = true;
-    };
-  }, [searchUsers, search, page, refresh]);
+  }, [page, search, searchUsers, showErrorAlert, safeAsync]);
+
+  React.useEffect(() => {
+    refresh();
+  }, [refresh]);
 
   return (
     <Card variant="outlined">
@@ -172,14 +170,12 @@ export function UserListCard({
           onSubmit={async () => {
             setDeleting(true);
             try {
-              selectedUser && deleteUser && (await deleteUser(selectedUser));
-              setOpenDeleteDialog(false);
-              setRefresh((prev) => prev + 1);
-            } catch (e) {
-              setErrorMessage(`Failed to delete user: ${e.message}`);
-              setOpenSnackbar(true);
-            } finally {
+              selectedUser && deleteUser && (await safeAsync(deleteUser(selectedUser)));
               setDeleting(false);
+              setOpenDeleteDialog(false);
+            } catch (e) {
+              setDeleting(false);
+              showErrorAlert(`Failed to delete user: ${e.message}`);
             }
           }}
         >
@@ -190,17 +186,9 @@ export function UserListCard({
         <CreateUserDialog
           open={openCreateDialog}
           setOpen={setOpenCreateDialog}
-          createUser={async (u) => {
-            createUser && (await createUser(u));
-            setRefresh((prev) => prev + 1);
-          }}
+          createUser={createUser}
         />
       )}
-      <ErrorSnackbar
-        open={openSnackbar}
-        message={errorMessage}
-        onClose={() => setOpenSnackbar(false)}
-      />
     </Card>
   );
 }

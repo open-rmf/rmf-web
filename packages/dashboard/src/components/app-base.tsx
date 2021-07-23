@@ -1,5 +1,6 @@
 import { Grid, makeStyles } from '@material-ui/core';
 import React from 'react';
+import { ErrorSnackbar } from 'react-components';
 import { loadSettings, saveSettings } from '../settings';
 import {
   AppController,
@@ -36,12 +37,11 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
 
   const [settings, setSettings] = React.useState(() => loadSettings());
   const [showSettings, setShowSettings] = React.useState(false);
-
   const [showHelp, setShowHelp] = React.useState(false);
-
   const [showHotkeysDialog, setShowHotkeysDialog] = React.useState(false);
-
   const [showTooltips, setShowTooltips] = React.useState(false);
+  const [showErrorAlert, setShowErrorAlert] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState('');
 
   const tooltips = React.useMemo<Tooltips>(
     () => ({
@@ -62,6 +62,10 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
       toggleHotkeysDialog: () => setShowHotkeysDialog((prev) => !prev),
       showTooltips: setShowTooltips,
       toggleTooltips: () => setShowTooltips((prev) => !prev),
+      showErrorAlert: (message) => {
+        setErrorMessage(message);
+        setShowErrorAlert(true);
+      },
     }),
     [],
   );
@@ -78,6 +82,11 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
               showHelp={showHelp}
               showHotkeysDialog={showHotkeysDialog}
               showSettings={showSettings}
+            />
+            <ErrorSnackbar
+              open={showErrorAlert}
+              message={errorMessage}
+              onClose={() => setShowErrorAlert(false)}
             />
           </Grid>
         </AppControllerContext.Provider>
