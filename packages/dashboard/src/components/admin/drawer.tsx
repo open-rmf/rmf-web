@@ -11,7 +11,7 @@ import { SvgIconComponent } from '@material-ui/icons';
 import AccountIcon from '@material-ui/icons/AccountCircle';
 import SecurityIcon from '@material-ui/icons/Security';
 import React from 'react';
-import { matchPath, RouteProps, useHistory, useLocation } from 'react-router';
+import { matchPath, RouteProps, useHistory, useLocation, useRouteMatch } from 'react-router';
 
 export type AdminDrawerValues = 'Users' | 'Roles';
 
@@ -41,12 +41,13 @@ export function AdminDrawer(): JSX.Element {
   const classes = useStyles();
   const location = useLocation();
   const history = useHistory();
+  const match = useRouteMatch();
   const activeItem = React.useMemo<AdminDrawerValues>(() => {
     const matched = Object.entries(drawerValuesRoutesMap).find(([_k, v]) =>
-      matchPath(location.pathname, v),
+      matchPath(location.pathname, `${match.path}${v.path}`),
     );
     return matched ? (matched[0] as AdminDrawerValues) : 'Users';
-  }, [location.pathname]);
+  }, [location.pathname, match.path]);
 
   const DrawerItem = React.useCallback(
     ({ Icon, text, route }: { Icon: SvgIconComponent; text: AdminDrawerValues; route: string }) => {
@@ -71,8 +72,8 @@ export function AdminDrawer(): JSX.Element {
       <Toolbar />
       <div className={classes.drawerContainer}>
         <List>
-          <DrawerItem text="Users" route="/users" Icon={AccountIcon} />
-          <DrawerItem text="Roles" route="/roles" Icon={SecurityIcon} />
+          <DrawerItem text="Users" route={`${match.path}/users`} Icon={AccountIcon} />
+          <DrawerItem text="Roles" route={`${match.path}/roles`} Icon={SecurityIcon} />
         </List>
       </div>
     </Drawer>

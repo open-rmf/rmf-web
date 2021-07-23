@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { RmfIngressContext } from '../rmf-app';
+import { getApiErrorMessage } from '../utils';
 import { usePageStyles } from './page-css';
 import { RoleListCard } from './role-list-card';
 
@@ -17,19 +18,39 @@ export function RoleListPage(): JSX.Element | null {
       <RoleListCard
         getRoles={async () => (await adminApi.getRolesAdminRolesGet()).data}
         createRole={async (role) => {
-          await adminApi.createRoleAdminRolesPost({ name: role });
+          try {
+            await adminApi.createRoleAdminRolesPost({ name: role });
+          } catch (e) {
+            throw new Error(getApiErrorMessage(e));
+          }
         }}
         deleteRole={async (role) => {
-          await adminApi.deleteRoleAdminRolesRoleDelete(role);
+          try {
+            await adminApi.deleteRoleAdminRolesRoleDelete(role);
+          } catch (e) {
+            throw new Error(getApiErrorMessage(e));
+          }
         }}
-        getPermissions={async (role) =>
-          (await adminApi.getRolePermissionsAdminRolesRolePermissionsGet(role)).data
-        }
+        getPermissions={async (role) => {
+          try {
+            return (await adminApi.getRolePermissionsAdminRolesRolePermissionsGet(role)).data;
+          } catch (e) {
+            throw new Error(getApiErrorMessage(e));
+          }
+        }}
         savePermission={async (role, permission) => {
-          await adminApi.addRolePermissionAdminRolesRolePermissionsPost(permission, role);
+          try {
+            await adminApi.addRolePermissionAdminRolesRolePermissionsPost(permission, role);
+          } catch (e) {
+            throw new Error(getApiErrorMessage(e));
+          }
         }}
         removePermission={async (role, permission) => {
-          await adminApi.deleteRolePermissionAdminRolesRolePermissionsDelete(permission, role);
+          try {
+            await adminApi.deleteRolePermissionAdminRolesRolePermissionsDelete(permission, role);
+          } catch (e) {
+            throw new Error(getApiErrorMessage(e));
+          }
         }}
       />
     </div>

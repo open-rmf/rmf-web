@@ -2,6 +2,7 @@ import {
   Button,
   Card,
   CardHeader,
+  CardProps,
   Dialog,
   DialogActions,
   DialogContent,
@@ -142,7 +143,8 @@ export function ManageRolesDialog({
 }
 
 export interface ManageRolesCardProps
-  extends Pick<ManageRolesDialogProps, 'getAllRoles' | 'saveRoles'> {
+  extends CardProps,
+    Pick<ManageRolesDialogProps, 'getAllRoles' | 'saveRoles'> {
   assignedRoles: string[];
 }
 
@@ -150,12 +152,13 @@ export function ManageRolesCard({
   assignedRoles,
   getAllRoles,
   saveRoles,
+  ...otherProps
 }: ManageRolesCardProps): JSX.Element {
   const classes = useStyles();
   const [openDialog, setOpenDialog] = React.useState(false);
 
   return (
-    <Card variant="outlined">
+    <Card variant="outlined" {...otherProps}>
       <CardHeader
         title="Roles"
         titleTypographyProps={{ variant: 'h5' }}

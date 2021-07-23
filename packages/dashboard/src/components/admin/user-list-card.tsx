@@ -21,6 +21,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import SearchIcon from '@material-ui/icons/Search';
 import React from 'react';
 import { ConfirmationDialog, useAsync } from 'react-components';
+import { useHistory, useRouteMatch } from 'react-router';
 import { AppControllerContext } from '../app-contexts';
 import { CreateUserDialog, CreateUserDialogProps } from './create-user-dialog';
 
@@ -41,17 +42,17 @@ const useStyles = makeStyles((theme) => ({
 export interface UserListCardProps extends Pick<CreateUserDialogProps, 'createUser'> {
   searchUsers?: (search: string, limit: number, offset: number) => Promise<string[]> | string[];
   deleteUser?: (user: string) => Promise<void> | void;
-  onUserClick?: (ev: React.MouseEvent, user: string) => void;
 }
 
 export function UserListCard({
   searchUsers,
   deleteUser,
-  onUserClick,
   createUser,
 }: UserListCardProps): JSX.Element {
   const classes = useStyles();
   const safeAsync = useAsync();
+  const history = useHistory();
+  const match = useRouteMatch();
   const [users, setUsers] = React.useState<string[]>([]);
   const [selectedUser, setSelectedUser] = React.useState<string | null>(null);
   const [search, setSearch] = React.useState('');
@@ -131,7 +132,7 @@ export function UserListCard({
               <TableRow
                 key={u}
                 className={classes.tableRow}
-                onClick={(ev) => onUserClick && onUserClick(ev, u)}
+                onClick={() => history.push(`${match.path}/${u}`)}
               >
                 <TableCell>{u}</TableCell>
                 <TableCell>
