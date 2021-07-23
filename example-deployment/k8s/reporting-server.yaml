@@ -70,7 +70,7 @@ metadata:
     app: reporting-server
     tier: app
 spec:
-  type: LoadBalancer
+    #type: LoadBalancer
   selector:
     app: reporting-server
     tier: app
