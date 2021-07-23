@@ -3,7 +3,7 @@ set -e
 
 cd "$(dirname $0)"
 source ../../scripts/version.sh
-source ../../scripts/rmf-helpers.sh
+source ../../scripts/rmf-task-helper.sh
 
 usage() {
   echo "Usage: generate-models.sh"
@@ -43,13 +43,11 @@ build_and_source_rmf_msgs "$rmf_tag"
 pipenv run ros_translator -t=pydantic -o=task_scheduler/models/ros_pydantic "${rmf_msgs[@]}"
 
 rmf_internal_msgs_ver=$(getVersion "build/rmf/src/rmf_internal_msgs")
-rmf_building_map_msgs_ver=$(getVersion "build/rmf/src/rmf_building_map_msgs")
 
 cat << EOF > task_scheduler/models/ros_pydantic/version.py
 # THIS FILE IS GENERATED
 version = {
   "rmf_internal_msgs": "$rmf_internal_msgs_ver",
-  "rmf_building_map_msgs": "$rmf_building_map_msgs_ver",
   "ros_translator": "$ros_translator_ver",
 }
 
@@ -61,7 +59,6 @@ pipenv run black task_scheduler/models/ros_pydantic
 echo ''
 echo 'versions:'
 echo "  rmf_internal_msgs: $rmf_internal_msgs_ver"
-echo "  rmf_building_map_msgs: $rmf_building_map_msgs_ver"
 echo "  ros_translator: $ros_translator"
 echo ''
 echo 'Successfully generated ros_pydantic models'
