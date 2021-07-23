@@ -12,10 +12,7 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import HelpIcon from '@material-ui/icons/Help';
 import SettingsIcon from '@material-ui/icons/Settings';
 import React from 'react';
-import { HeaderBar } from 'react-components/lib/header-bar';
-import { LogoButton } from 'react-components/lib/logo-button';
-import { NavigationBar } from 'react-components/lib/navigation-bar';
-import DashboardTooltip from 'react-components/lib/tooltip';
+import { HeaderBar, LogoButton, NavigationBar, Tooltip } from 'react-components';
 import {
   AppControllerContext,
   ResourcesContext,
@@ -92,7 +89,7 @@ export const AppBar = React.memo(
           </NavigationBar>
           <Toolbar variant="dense" className={classes.toolbar}>
             <Typography variant="caption">Powered by OpenRMF</Typography>
-            <DashboardTooltip
+            <Tooltip
               title="Define dashboard trajectory settings"
               id="setting-tooltip"
               enabled={showTooltips}
@@ -105,7 +102,7 @@ export const AppBar = React.memo(
               >
                 <SettingsIcon />
               </IconButton>
-            </DashboardTooltip>
+            </Tooltip>
             {user && (
               <>
                 <IconButton
@@ -136,11 +133,7 @@ export const AppBar = React.memo(
                 </Menu>
               </>
             )}
-            <DashboardTooltip
-              title="Help tools and resources"
-              id="help-tooltip"
-              enabled={showTooltips}
-            >
+            <Tooltip title="Help tools and resources" id="help-tooltip" enabled={showTooltips}>
               <IconButton
                 id="show-help-btn"
                 aria-label="help"
@@ -149,7 +142,7 @@ export const AppBar = React.memo(
               >
                 <HelpIcon />
               </IconButton>
-            </DashboardTooltip>
+            </Tooltip>
           </Toolbar>
         </HeaderBar>
       </div>
