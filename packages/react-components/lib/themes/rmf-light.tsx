@@ -13,15 +13,22 @@ declare module '@material-ui/core/styles/createMuiTheme' {
 export const rmfLight = createMuiTheme({
   palette: {
     ...commonTheme,
-    primary: {
-      main: '#FFFFFF',
-    },
     text: {
       primary: '#1F396B',
+      secondary: '#103375',
+      disabled: 'rgba(0, 0, 0, 0.38)',
     },
     background: {
       default: '#F3F3F3',
       paper: '#FFFFFF',
+    },
+    divider: 'rgba(0, 0, 0, 0.12)',
+    action: {
+      active: 'rgba(0, 0, 0, 0.54)',
+      hover: 'rgba(0, 0, 0, 0.04)',
+      selected: 'rgba(0, 0, 0, 0.08)',
+      disabledBackground: 'rgba(0, 0, 0, 0.12)',
+      disabled: 'rgba(0, 0, 0, 0.26)',
     },
   },
   mapClass: '',
