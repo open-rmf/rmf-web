@@ -552,9 +552,7 @@ export function CreateTaskForm({
                       id="priority"
                       label="Priority"
                       margin="normal"
-                      helperText={
-                        'Tasks that are not active with higher priority will be given precedence'
-                      }
+                      helperText={'A task with non-zero priority score will be given precedence'}
                       value={task.priority || 0}
                       onChange={(_ev, val) => {
                         task.priority = val;
