@@ -168,13 +168,11 @@ To exit out of the PostgreSQL prompt, run the following:
 \q
 ```
 
-
-
 ### PostgresSQL URL
 
 Once the above steps are finished you can build your db_url:
 
-``` 
+``` bash
 postgres://<user>:<password>@<host>/<database>
 ```
 
