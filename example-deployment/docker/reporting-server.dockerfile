@@ -2,7 +2,7 @@ FROM python:3.8.11-buster
 
 RUN apt-get update && apt-get install -y curl && \
   curl -sL https://deb.nodesource.com/setup_12.x | bash - && \
-  apt-get update && apt-get install -y nodejs python3-pip
+  apt-get update && apt-get install -y nodejs
 
 RUN pip3 install pipenv
 
@@ -15,9 +15,6 @@ RUN npm config set unsafe-perm && \
   npm run prepack
 
 FROM python:3.8.11-buster
-
-RUN apt-get update && apt-get install -y python3-pip
-RUN pip3 install pipenv
 
 COPY --from=0 /root/rmf-web/packages/reporting-server/dist/ .
 
