@@ -203,9 +203,9 @@ class RmfGateway(rclpy.node.Node):
         )
         if not resp.success:
             raise HTTPException(500, "service call succeeded but RMF returned an error")
-        for task_summary in resp.active_tasks:
-            task_summary: RmfTaskSummary
-            await repo.save_task_summary(task_summary)
-        for task_summary in resp.terminated_tasks:
-            task_summary: RmfTaskSummary
-            await repo.save_task_summary(task_summary)
+#        for task_summary in resp.active_tasks:
+#            task_summary: RmfTaskSummary
+#            await repo.save_task_summary(task_summary)
+#        for task_summary in resp.terminated_tasks:
+#            task_summary: RmfTaskSummary
+#            await repo.save_task_summary(task_summary)

@@ -25,4 +25,4 @@ RUN apt install ros-foxy-rmw-cyclonedds-cpp -y
 RUN rm -rf /root/rmf_ws
 
 # Set this based on your use_sim_time configuration when launching the backend
-ENV RMF_SERVER_USE_SIM_TIME=true 
+ENV RMF_SERVER_USE_SIM_TIME=false
