@@ -176,6 +176,8 @@ Once the above steps are finished you can build your db_url:
 postgres://<user>:<password>@<host>/<database>
 ```
 
+Now that you have your db_url you can place it in the [packages/reporting-server/rest_server/default_config.py](https://github.com/open-rmf/rmf-web/blob/main/packages/reporting-server/rest_server/default_config.py) file.
+
 For more information you can check [this tutorial](https://www.digitalocean.com/community/tutorials/how-to-install-postgresql-on-ubuntu-20-04-quickstart)
 
 
