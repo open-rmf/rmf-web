@@ -1,5 +1,4 @@
 import { Grid, makeStyles } from '@material-ui/core';
-import { Subscription } from 'api-client';
 import React from 'react';
 import { loadSettings, saveSettings } from '../settings';
 import {
@@ -52,43 +51,37 @@ export function AppBase({
 
   const [showTooltips, setShowTooltips] = React.useState(false);
 
-  const [chargeId, setChargeId] = React.useState<string[]>([]);
-
   const { sioClient } = React.useContext(RmfIngressContext) || {};
   const places = React.useContext(PlacesContext);
-  const chargers = Object.values(places).reduce<string[]>((place, it) => {
-    for (const param of it.vertex.params) {
-      if (param.name === 'is_charger' && param.value_bool) {
-        place.push(it.vertex.name);
-        break;
-      }
-    }
-    return place;
-  }, []);
+  const chargers = React.useMemo(
+    () =>
+      Object.values(places).reduce<string[]>((place, it) => {
+        for (const param of it.vertex.params) {
+          if (param.name === 'is_charger' && param.value_bool) {
+            place.push(it.vertex.name);
+            break;
+          }
+        }
+        return place;
+      }, []),
+    [places],
+  );
 
   React.useEffect(() => {
-    if (!sioClient) {
-      return;
-    }
-    const subscriptions: Subscription[] = [];
+    (async () => {
+      if (!sioClient || chargers.length === 0) {
+        return;
+      }
 
-    chargers.forEach((charger) => {
-      subscriptions.push(
+      chargers.forEach((charger) => {
         sioClient.subscribeChargerRequest(charger, (state) => {
-          if (!chargeId.includes(state.request_id)) {
-            alert(
-              `Robot ${state.charger_name} has returned for charging. Please connect its charger and press ok.`,
-            );
-            setChargeId([...chargeId, state.request_id]);
-          }
-        }),
-      );
-    });
-
-    return () => {
-      subscriptions.forEach((s) => sioClient.unsubscribe(s));
-    };
-  }, [sioClient, chargers, chargeId]);
+          alert(
+            `Robot ${state.robot_name} has returned for charging. Please connect its charger and press ok.`,
+          );
+        });
+      });
+    })();
+  }, [sioClient, chargers]);
 
   const tooltips = React.useMemo<Tooltips>(
     () => ({
