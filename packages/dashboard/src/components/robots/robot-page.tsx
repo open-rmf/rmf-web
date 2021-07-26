@@ -39,20 +39,6 @@ export function RobotPage() {
     return resp.data.items;
   }, [fleetsApi, page]);
 
-  // const test = async () => {
-  //   const resp = await chargersApi?.getChargersChargersGet();
-  //   console.log(resp)
-  // }
-
-  // React.useEffect(() => {
-  if (sioClient) {
-    console.log('trying to subscribe .....');
-    const subscriptions: Subscription[] = [];
-    subscriptions.push(sioClient.subscribeChargerState('ecobot_1', (state) => console.log(state)));
-  }
-  // test();
-  // }, [sioClient])
-
   React.useEffect(() => {
     fetchVerboseRobots();
   }, [fetchVerboseRobots]);
