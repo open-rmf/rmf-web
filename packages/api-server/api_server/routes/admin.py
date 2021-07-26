@@ -19,6 +19,10 @@ class PostRoles(BaseModel):
     name: str
 
 
+class PostMakeAdmin(BaseModel):
+    admin: bool
+
+
 class PostRolePermissions(BaseModel):
     action: str
     authz_grp: str
@@ -76,7 +80,7 @@ def admin_router(user_dep: Callable[..., User]):
     @router.get("/users/{username}", response_model=User)
     async def get_user(username: str):
         """
-        Get an user
+        Get a user
         """
         # checks if the user exist in the database
         await _get_db_user(username)
@@ -85,7 +89,7 @@ def admin_router(user_dep: Callable[..., User]):
     @router.delete("/users/{username}")
     async def delete_user(username: str):
         """
-        Delete an user
+        Delete a user
 
         This only performs a soft delete, while the user is deleted from the app database,
         it still exists in the idp so they can still log in, the user will then be re-created
@@ -94,10 +98,19 @@ def admin_router(user_dep: Callable[..., User]):
         user = await _get_db_user(username)
         await user.delete()
 
+    @router.post("/users/{username}/make_admin")
+    async def make_admin(username: str, body: PostMakeAdmin):
+        """
+        Make or remove admin privilege from a user
+        """
+        user = await _get_db_user(username)
+        user.is_admin = body.admin
+        await user.save()
+
     @router.post("/users/{username}/roles")
     async def add_user_role(username: str, body: PostRoles):
         """
-        Add role to an user
+        Add role to a user
         """
         user = await _get_db_user(username)
         await user.fetch_related("roles")
@@ -107,7 +120,7 @@ def admin_router(user_dep: Callable[..., User]):
     @router.delete("/users/{username}/roles")
     async def delete_user_role(username: str, body: PostRoles):
         """
-        Remove role from an user
+        Remove role from a user
         """
         user = await _get_db_user(username)
         await user.fetch_related("roles")
@@ -117,7 +130,7 @@ def admin_router(user_dep: Callable[..., User]):
     @router.put("/users/{username}/roles")
     async def set_user_roles(username: str, body: List[PostRoles]):
         """
-        Set the roles of an user
+        Set the roles of a user
         """
         user = await _get_db_user(username)
         async with in_transaction():
