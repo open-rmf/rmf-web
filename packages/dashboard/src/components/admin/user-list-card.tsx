@@ -146,7 +146,8 @@ export function UserListCard({
                       color="secondary"
                       startIcon={<DeleteIcon />}
                       className={classes.controlsButton}
-                      onClick={() => {
+                      onClick={(ev) => {
+                        ev.stopPropagation();
                         setSelectedUser(u);
                         setOpenDeleteDialog(true);
                       }}
@@ -181,6 +182,7 @@ export function UserListCard({
               selectedUser && deleteUser && (await safeAsync(deleteUser(selectedUser)));
               setDeleting(false);
               setOpenDeleteDialog(false);
+              refresh();
             } catch (e) {
               setDeleting(false);
               showErrorAlert(`Failed to delete user: ${e.message}`);
@@ -194,7 +196,13 @@ export function UserListCard({
         <CreateUserDialog
           open={openCreateDialog}
           setOpen={setOpenCreateDialog}
-          createUser={createUser}
+          createUser={
+            createUser &&
+            (async (user) => {
+              await createUser(user);
+              refresh();
+            })
+          }
         />
       )}
     </Card>

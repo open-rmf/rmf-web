@@ -67,6 +67,7 @@ export function UserProfilePage(): JSX.Element | null {
                     { admin },
                     profile.username,
                   );
+                  refresh();
                 } catch (e) {
                   throw new Error(getApiErrorMessage(e));
                 }

@@ -12,6 +12,7 @@ import AccountIcon from '@material-ui/icons/AccountCircle';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import React from 'react';
 import { useAsync } from 'react-components';
+import { AppControllerContext } from '../app-contexts';
 import { UserProfile } from '../auth';
 
 const useStyles = makeStyles((theme) => ({
@@ -31,6 +32,7 @@ export function UserProfileCard({ profile, makeAdmin }: UserProfileCardProps): J
   const safeAsync = useAsync();
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const [disableAdminCheckbox, setDisableAdminCheckbox] = React.useState(false);
+  const { showErrorAlert } = React.useContext(AppControllerContext);
 
   return (
     <Card variant="outlined">
@@ -49,8 +51,13 @@ export function UserProfileCard({ profile, makeAdmin }: UserProfileCardProps): J
         <MenuItem
           onClick={async () => {
             setDisableAdminCheckbox(true);
-            makeAdmin && (await safeAsync(makeAdmin(!profile.is_admin)));
-            setDisableAdminCheckbox(false);
+            try {
+              makeAdmin && (await safeAsync(makeAdmin(!profile.is_admin)));
+            } catch (e) {
+              showErrorAlert(`Failed to change admin status: ${e.message}`);
+            } finally {
+              setDisableAdminCheckbox(false);
+            }
           }}
         >
           <FormControlLabel
