@@ -166,8 +166,8 @@ export function UserListCard({
         <ConfirmationDialog
           open={openDeleteDialog}
           title="Confirm Delete"
-          loading={deleting}
-          onCancelClick={() => setOpenDeleteDialog(false)}
+          submitting={deleting}
+          onClose={() => setOpenDeleteDialog(false)}
           onSubmit={async () => {
             setDeleting(true);
             try {

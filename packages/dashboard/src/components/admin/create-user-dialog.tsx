@@ -51,9 +51,9 @@ export function CreateUserDialog({
       open={open}
       title="Create User"
       confirmText="Create"
-      loading={creating}
+      submitting={creating}
       onSubmit={submitForm}
-      onCancelClick={() => setOpen && setOpen(false)}
+      onClose={() => setOpen && setOpen(false)}
     >
       <TextField
         id="username"

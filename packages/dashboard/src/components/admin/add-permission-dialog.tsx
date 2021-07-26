@@ -61,9 +61,9 @@ export function AddPermissionDialog({
       open={open}
       title="Add Permission"
       confirmText="Save"
-      loading={saving}
+      submitting={saving}
       onSubmit={handleSubmit}
-      onCancelClick={() => setOpen && setOpen(false)}
+      onClose={() => setOpen && setOpen(false)}
     >
       <TextField
         id="action-input"

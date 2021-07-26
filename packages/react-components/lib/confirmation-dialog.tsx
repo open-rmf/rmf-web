@@ -27,28 +27,27 @@ export interface ConfirmationDialogProps extends DialogProps {
   confirmText?: string;
   cancelText?: string;
   // disable the dialog actions and shows a loading indicator
-  loading?: boolean;
+  submitting?: boolean;
   classes?: DialogActionsProps['classes'] & { button: string };
   toolbar?: React.ReactNode;
   onSubmit?: React.FormEventHandler;
-  onCancelClick?: React.MouseEventHandler;
 }
 
 export function ConfirmationDialog({
   title = 'Confirm',
   confirmText = 'OK',
   cancelText = 'Cancel',
-  loading = false,
+  submitting = false,
   classes,
   onSubmit,
-  onCancelClick,
   toolbar,
+  onClose,
   children,
   ...otherProps
 }: ConfirmationDialogProps): JSX.Element {
   const myClasses = useStyles();
   return (
-    <Dialog {...otherProps}>
+    <Dialog onClose={onClose} {...otherProps}>
       <form
         onSubmit={(ev) => {
           ev.preventDefault();
@@ -70,8 +69,8 @@ export function ConfirmationDialog({
             variant="outlined"
             color="secondary"
             aria-label={cancelText}
-            onClick={onCancelClick}
-            disabled={loading}
+            onClick={(ev) => onClose && onClose(ev, 'escapeKeyDown')}
+            disabled={submitting}
             className={clsx(myClasses.actionBtn, classes?.button)}
           >
             {cancelText}
@@ -81,10 +80,10 @@ export function ConfirmationDialog({
             type="submit"
             color="primary"
             aria-label={confirmText}
-            disabled={loading}
+            disabled={submitting}
             className={clsx(myClasses.actionBtn, classes?.button)}
           >
-            <Loading hideChildren loading={loading} size="1.5em" color="inherit">
+            <Loading hideChildren loading={submitting} size="1.5em" color="inherit">
               {confirmText}
             </Loading>
           </Button>

@@ -51,9 +51,9 @@ export function CreateRoleDialog({
       open={open}
       title="Create Role"
       confirmText="Create"
-      loading={creating}
+      submitting={creating}
       onSubmit={submitForm}
-      onCancelClick={() => setOpen && setOpen(false)}
+      onClose={() => setOpen && setOpen(false)}
     >
       <TextField
         id="role"
