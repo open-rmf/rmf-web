@@ -172,7 +172,7 @@ To exit out of the PostgreSQL prompt, run the following:
 
 ### PostgresSQL URL
 
-Once the above steps are finished you can build your bd_url:
+Once the above steps are finished you can build your db_url:
 
 ``` 
 postgres://<user>:<password>@<host>/<database>
