@@ -40,7 +40,7 @@ jobs:
           python-version: '3.x'
 
       - name: Install python dependencies
-        run: pip3 install tortoise-orm pydantic aerich asyncpg 
+        run: python setup.py install 
  
       - name: Connect to PostgreSQL and run migrations
         # Runs a script that creates a PostgreSQL table, populates
