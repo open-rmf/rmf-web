@@ -1,5 +1,5 @@
 from .building_map import BuildingMap
-from .charger_state import ChargerState
+from .charger_request import ChargerRequest
 from .dispenser_state import DispenserState
 from .door_state import DoorState
 from .fleet_state import FleetState, RobotState

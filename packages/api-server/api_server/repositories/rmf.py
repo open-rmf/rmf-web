@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from ..models import (
     BuildingMap,
-    ChargerState,
+    ChargerRequest,
     Dispenser,
     DispenserHealth,
     DispenserState,
@@ -229,20 +229,20 @@ class RmfRepository:
         task_summaries = await ttm.TaskSummary.all()
         return [Task(task_id=ts.data["task_id"]) for ts in task_summaries]
 
-    async def get_charger_state(self, charger_name: str) -> Optional[ChargerState]:
-        charger_state = await ttm.ChargerState.get_or_none(id_=charger_name)
-        if charger_state is None:
+    async def get_charger_requests(self, charger_name: str) -> Optional[ChargerRequest]:
+        charger_request = await ttm.ChargerRequest.get_or_none(id_=charger_name)
+        if charger_request is None:
             return None
-        return ChargerState(**charger_state.data)
+        return ChargerRequest(**charger_request.data)
 
-    async def query_charger_states(self, **queries) -> List[ChargerState]:
+    async def query_charger_requests(self, **queries) -> List[ChargerRequest]:
         return [
-            ChargerState(**charger_state.data)
-            for charger_state in await ttm.ChargerState.filter(**queries)
+            ChargerRequest(**charger_request.data)
+            for charger_request in await ttm.ChargerRequest.filter(**queries)
         ]
 
-    async def save_charger_state(self, charger_state: ChargerState):
-        await ttm.ChargerState.update_or_create(
-            {"data": charger_state.dict()},
-            id_=charger_state.name,
+    async def save_charger_request(self, charger_request: ChargerRequest):
+        await ttm.ChargerRequest.update_or_create(
+            {"data": charger_request.dict()},
+            id_=charger_request.charger_name,
         )

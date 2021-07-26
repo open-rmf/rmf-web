@@ -6,7 +6,7 @@ export * from './behavior';
 export * from './behavior-parameter';
 export * from './building-map';
 export * from './cancel-task';
-export * from './charger-state';
+export * from './charger-request';
 export * from './clean';
 export * from './clean-task-description';
 export * from './delivery';

@@ -16,7 +16,7 @@ import { Configuration } from '../configuration';
 // Some imports not used depending on template conditions
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-import { ChargerState } from '../models';
+import { ChargerRequest } from '../models';
 import { HTTPValidationError } from '../models';
 import { ModelObject } from '../models';
 /**
@@ -27,12 +27,12 @@ export const ChargersApiAxiosParamCreator = function (configuration?: Configurat
   return {
     /**
      * **Available in socket.io**
-     * @summary Get Charger State
+     * @summary Get Charger Query
      * @param {string} charger_name
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getChargerStateChargersChargerNameStateGet: async (
+    getChargerQueryChargersChargerNameRequestGet: async (
       charger_name: string,
       options: any = {},
     ): Promise<RequestArgs> => {
@@ -40,10 +40,10 @@ export const ChargersApiAxiosParamCreator = function (configuration?: Configurat
       if (charger_name === null || charger_name === undefined) {
         throw new RequiredError(
           'charger_name',
-          'Required parameter charger_name was null or undefined when calling getChargerStateChargersChargerNameStateGet.',
+          'Required parameter charger_name was null or undefined when calling getChargerQueryChargersChargerNameRequestGet.',
         );
       }
-      const localVarPath = `/chargers/{charger_name}/state`.replace(
+      const localVarPath = `/chargers/{charger_name}/request`.replace(
         `{${'charger_name'}}`,
         encodeURIComponent(String(charger_name)),
       );
@@ -126,18 +126,18 @@ export const ChargersApiFp = function (configuration?: Configuration) {
   return {
     /**
      * **Available in socket.io**
-     * @summary Get Charger State
+     * @summary Get Charger Query
      * @param {string} charger_name
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async getChargerStateChargersChargerNameStateGet(
+    async getChargerQueryChargersChargerNameRequestGet(
       charger_name: string,
       options?: any,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ChargerState>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ChargerRequest>> {
       const localVarAxiosArgs = await ChargersApiAxiosParamCreator(
         configuration,
-      ).getChargerStateChargersChargerNameStateGet(charger_name, options);
+      ).getChargerQueryChargersChargerNameRequestGet(charger_name, options);
       return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
         const axiosRequestArgs = {
           ...localVarAxiosArgs.options,
@@ -181,17 +181,17 @@ export const ChargersApiFactory = function (
   return {
     /**
      * **Available in socket.io**
-     * @summary Get Charger State
+     * @summary Get Charger Query
      * @param {string} charger_name
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getChargerStateChargersChargerNameStateGet(
+    getChargerQueryChargersChargerNameRequestGet(
       charger_name: string,
       options?: any,
-    ): AxiosPromise<ChargerState> {
+    ): AxiosPromise<ChargerRequest> {
       return ChargersApiFp(configuration)
-        .getChargerStateChargersChargerNameStateGet(charger_name, options)
+        .getChargerQueryChargersChargerNameRequestGet(charger_name, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -217,15 +217,15 @@ export const ChargersApiFactory = function (
 export class ChargersApi extends BaseAPI {
   /**
    * **Available in socket.io**
-   * @summary Get Charger State
+   * @summary Get Charger Query
    * @param {string} charger_name
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof ChargersApi
    */
-  public getChargerStateChargersChargerNameStateGet(charger_name: string, options?: any) {
+  public getChargerQueryChargersChargerNameRequestGet(charger_name: string, options?: any) {
     return ChargersApiFp(this.configuration)
-      .getChargerStateChargersChargerNameStateGet(charger_name, options)
+      .getChargerQueryChargersChargerNameRequestGet(charger_name, options)
       .then((request) => request(this.axios, this.basePath));
   }
   /**

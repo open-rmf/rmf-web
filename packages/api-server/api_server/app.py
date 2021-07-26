@@ -119,9 +119,9 @@ class App(FastIO):
                 rmf_events.robot_health.on_next(health)
             logger.info(f"loaded {len(robot_health)} robot health")
 
-            charger_states = await rmf_repo.query_charger_states()
-            for charger in charger_states:
-                rmf_events.charger_states.on_next(charger)
+            charger_requests = await rmf_repo.query_charger_requests()
+            for charger in charger_requests:
+                rmf_events.charger_requests.on_next(charger)
 
             logger.info("updating tasks from RMF")
             try:

@@ -14,55 +14,37 @@
 /**
  *
  * @export
- * @interface ChargerState
+ * @interface ChargerRequest
  */
-export interface ChargerState {
-  /**
-   *
-   * @type {Time}
-   * @memberof ChargerState
-   */
-  charger_time?: any;
-  /**
-   *
-   * @type {number}
-   * @memberof ChargerState
-   */
-  state?: any;
+export interface ChargerRequest {
   /**
    *
    * @type {string}
-   * @memberof ChargerState
+   * @memberof ChargerRequest
    */
   charger_name?: any;
   /**
    *
    * @type {string}
-   * @memberof ChargerState
+   * @memberof ChargerRequest
    */
-  error_message?: any;
+  fleet_name?: any;
   /**
    *
    * @type {string}
-   * @memberof ChargerState
-   */
-  request_id?: any;
-  /**
-   *
-   * @type {string}
-   * @memberof ChargerState
-   */
-  robot_fleet?: any;
-  /**
-   *
-   * @type {string}
-   * @memberof ChargerState
+   * @memberof ChargerRequest
    */
   robot_name?: any;
   /**
    *
    * @type {Duration}
-   * @memberof ChargerState
+   * @memberof ChargerRequest
    */
-  time_to_fully_charged?: any;
+  start_timeout?: any;
+  /**
+   *
+   * @type {string}
+   * @memberof ChargerRequest
+   */
+  request_id?: any;
 }

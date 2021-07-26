@@ -17,27 +17,10 @@ class ChargersRouter(FastIORouter):
     ):
         super().__init__(tags=["Chargers"])
 
-        @self.get("")
-        async def get_chargers():
-            print("charges is hitttt !!!!!!!!!!")
-            return "this is charger"
-
         @self.watch(
-            "/{charger_name}/state",
-            rmf_events.charger_states,
-            response_model=ChargerState,
+            "/{charger_name}/request",
+            rmf_events.charger_requests,
+            response_model=ChargerRequest,
         )
-        def get_charger_state(charger_state: ChargerState):
-            print("I am hit")
-            return {"name": charger_state.charger_name}, charger_state
-
-        # @self.post("/{charger_name}/ruest")
-        # async def post_charger_request(
-        #   charger_name: str,
-        #   charger_request: ChargerRequest,
-        #   ros_node: RmfGateway = Depends(rmf_gateway_dep),
-        # ):
-        #   print("testing")
-        #   msg = RmfChargerRequest(
-        #     charger_name=charger_name
-        # )
+        def get_charger_request(charger_request: ChargerRequest):
+            return {"charger_name": charger_request.charger_name}, charger_request

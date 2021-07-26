@@ -11,7 +11,7 @@ from rx.subject.subject import Subject
 from ..models import (
     BasicHealth,
     BuildingMap,
-    ChargerState,
+    ChargerRequest,
     DispenserHealth,
     DispenserState,
     DoorHealth,
@@ -51,6 +51,7 @@ class RmfBookKeeper:
             "fleet_state",
             "robot_health",
             "task_summary",
+            "charger_request",
         ],
     )
 
@@ -81,6 +82,7 @@ class RmfBookKeeper:
             self._main_logger.getChild("fleet_state"),
             self._main_logger.getChild("robot_health"),
             self._main_logger.getChild("task_summary"),
+            self._main_logger.getChild("charger_request"),
         )
 
         self._loggers.door_state.parent = self._main_logger
@@ -111,7 +113,7 @@ class RmfBookKeeper:
         self._record_fleet_state()
         self._record_robot_health()
         self._record_task_summary()
-        self._record_charger_state()
+        self._record_charger_request()
 
     async def stop(self):
         for sub in self._subscriptions:
@@ -258,11 +260,11 @@ class RmfBookKeeper:
             self.rmf.task_summaries.subscribe(lambda x: self._create_task(update(x)))
         )
 
-    def _record_charger_state(self):
-        async def update(charger_state: ChargerState):
-            await self.repo.save_charger_state(charger_state)
-            self._loggers.charger_state.info(json.dumps(charger_state.dict()))
+    def _record_charger_request(self):
+        async def update(charger_request: ChargerRequest):
+            await self.repo.save_charger_request(charger_request)
+            self._loggers.charger_request.info(json.dumps(charger_request.dict()))
 
         self._subscriptions.append(
-            self.rmf.charger_states.subscribe(lambda x: self._create_task(update(x)))
+            self.rmf.charger_requests.subscribe(lambda x: self._create_task(update(x)))
         )
