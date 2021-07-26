@@ -2,6 +2,7 @@ import logging
 import unittest
 from typing import Any, Callable, Optional
 
+from api_server.test import init_db
 from rmf_dispenser_msgs.msg import DispenserState
 from rmf_door_msgs.msg import DoorMode
 from rmf_fleet_msgs.msg import RobotMode
@@ -27,11 +28,7 @@ from .health_watchdog import HealthWatchdog
 
 class BaseFixture(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
-        await Tortoise.init(
-            db_url="sqlite://:memory:",
-            modules={"models": ["api_server.models.tortoise_models"]},
-        )
-        await Tortoise.generate_schemas()
+        await init_db()
         self.repo = RmfRepository()
 
         self.scheduler = HistoricalScheduler()

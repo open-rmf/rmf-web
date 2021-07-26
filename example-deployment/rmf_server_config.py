@@ -14,3 +14,4 @@ config[
 ] = "https://example.com/auth/realms/rmf-web/.well-known/openid-configuration"
 config["aud"] = "dashboard"
 config["iss"] = "https://example.com/auth/realms/rmf-web"
+config["builtin_admin"] = "example"

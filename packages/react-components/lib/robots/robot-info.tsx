@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Button,
   createStyles,
@@ -8,13 +7,14 @@ import {
   Typography,
   useTheme,
 } from '@material-ui/core';
-import { LinearProgressBar } from './linear-progress-bar';
-import { CircularProgressBar } from './circular-progress-bar';
+import { Task } from 'api-client';
+import React from 'react';
 import * as RmfModels from 'rmf-models';
-import { taskTypeToStr, taskStateToStr } from '../tasks/utils';
-import { VerboseRobot } from './utils';
+import { taskStateToStr, taskTypeToStr } from '../tasks/utils';
 import { rosTimeToJs } from '../utils';
-import { TaskProgress } from 'api-client';
+import { CircularProgressBar } from './circular-progress-bar';
+import { LinearProgressBar } from './linear-progress-bar';
+import { VerboseRobot } from './utils';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -36,7 +36,7 @@ export interface RobotInfoProps {
 export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
   const theme = useTheme();
   const classes = useStyles();
-  const [currentTask, setCurrentTask] = React.useState<TaskProgress | undefined>();
+  const [currentTask, setCurrentTask] = React.useState<Task | undefined>();
   const [hasConcreteEndTime, setHasConcreteEndTime] = React.useState<boolean>(false);
 
   function returnTaskLocations(task: RmfModels.TaskSummary): string {
@@ -67,9 +67,9 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
     return robot.tasks
       .map((task, index) => {
         if (index !== robot.tasks.length - 1) {
-          return task.task_summary.task_id.concat(' → ');
+          return task.summary.task_id.concat(' → ');
         } else {
-          return task.task_summary.task_id;
+          return task.summary.task_id;
         }
       })
       .join('');
@@ -85,7 +85,7 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
     if (robot.tasks.length > 0) {
       setCurrentTask(robot.tasks[0]);
       if (currentTask) {
-        setHasConcreteEndTime(concreteTasks.includes(currentTask.task_summary.state));
+        setHasConcreteEndTime(concreteTasks.includes(currentTask.summary.state));
       }
     } else {
       setCurrentTask(undefined);
@@ -95,8 +95,8 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
 
   const taskDetails = React.useMemo(() => {
     if (currentTask) {
-      const location = returnTaskLocations(currentTask.task_summary);
-      const destination = returnTaskDestinations(currentTask.task_summary);
+      const location = returnTaskLocations(currentTask.summary);
+      const destination = returnTaskDestinations(currentTask.summary);
       const assignedTasks = assignedTasksToStr(robot);
       return { location, destination, assignedTasks };
     }
@@ -160,10 +160,13 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
         </Grid>
         <Grid item xs={6}>
           {currentTask && (
-            <CircularProgressBar progress={parseInt(currentTask.progress)} strokeColor="#20a39e">
-              <Typography variant="h6">{currentTask.progress}</Typography>
+            <CircularProgressBar
+              progress={parseInt(currentTask.progress.status)}
+              strokeColor="#20a39e"
+            >
+              <Typography variant="h6">{currentTask.progress.status}</Typography>
               <Typography variant="h6">
-                {currentTask ? taskStateToStr(currentTask.task_summary.state) : '-'}
+                {currentTask ? taskStateToStr(currentTask.summary.state) : '-'}
               </Typography>
             </CircularProgressBar>
           )}
@@ -175,9 +178,7 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
         </Grid>
         <Grid item xs={6}>
           <Button size="small" disableElevation variant="outlined" disabled>
-            {currentTask
-              ? rosTimeToJs(currentTask.task_summary.end_time).toLocaleTimeString()
-              : '-'}
+            {currentTask ? rosTimeToJs(currentTask.summary.end_time).toLocaleTimeString() : '-'}
           </Button>
         </Grid>
       </Grid>

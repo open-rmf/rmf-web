@@ -15,7 +15,7 @@ interface SimpleOmniPanelProps {
 
 const useStyles = makeStyles((theme) => ({
   omnipanel: {
-    backgroundColor: theme.palette.background.paper,
+    backgroundColor: theme.palette.background.default,
   },
 }));
 
