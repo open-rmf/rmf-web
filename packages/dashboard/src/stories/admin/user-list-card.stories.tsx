@@ -1,5 +1,6 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
+import { MemoryRouter } from 'react-router';
 import { UserListCard, UserListCardProps } from '../../components/admin/user-list-card';
 
 export default {
@@ -12,19 +13,21 @@ for (let i = 0; i < 100; i++) {
   users.push(`user${i + 1}`);
 }
 
-function searchUsers(search: string, limit: number, offset: number) {
-  console.log(search);
+async function searchUsers(search: string, limit: number, offset: number) {
+  await new Promise((res) => setTimeout(res, 100));
   return users.filter((u) => u.startsWith(search)).slice(offset, offset + limit);
 }
 
 export const Default: Story<UserListCardProps> = (args) => {
   return (
-    <UserListCard
-      {...args}
-      searchUsers={searchUsers}
-      deleteUser={() => new Promise((res) => setTimeout(res, 500))}
-      createUser={() => new Promise((res) => setTimeout(res, 500))}
-    />
+    <MemoryRouter>
+      <UserListCard
+        {...args}
+        searchUsers={searchUsers}
+        deleteUser={() => new Promise((res) => setTimeout(res, 100))}
+        createUser={() => new Promise((res) => setTimeout(res, 100))}
+      />
+    </MemoryRouter>
   );
 };
 

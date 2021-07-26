@@ -12,7 +12,7 @@ export const Default: Story<CreateRoleDialogProps> = (args) => {
     <CreateRoleDialog
       {...args}
       open={true}
-      createRole={() => new Promise((res) => setTimeout(res, 500))}
+      createRole={() => new Promise((res) => setTimeout(res, 100))}
     />
   );
 };

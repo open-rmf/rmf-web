@@ -12,7 +12,7 @@ export const Default: Story<CreateUserDialogProps> = (args) => {
     <CreateUserDialog
       {...args}
       open={true}
-      createUser={() => new Promise((res) => setTimeout(res, 500))}
+      createUser={() => new Promise((res) => setTimeout(res, 100))}
     />
   );
 };

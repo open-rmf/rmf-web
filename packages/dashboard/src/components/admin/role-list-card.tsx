@@ -77,18 +77,18 @@ function RoleAccordion({
 
 export interface RoleListCardProps extends Pick<CreateRoleDialogProps, 'createRole'> {
   getRoles?: () => Promise<string[]> | string[];
+  deleteRole?: (role: string) => Promise<void> | void;
   getPermissions?: (role: string) => Promise<Permission[]> | Permission[];
   savePermission?: (role: string, permission: Permission) => Promise<void> | void;
   removePermission?: (role: string, permission: Permission) => Promise<void> | void;
-  onDeleteRole?: (role: string) => Promise<void> | void;
 }
 
 export function RoleListCard({
   getRoles,
+  deleteRole,
   getPermissions,
   savePermission,
   removePermission,
-  onDeleteRole,
   createRole,
 }: RoleListCardProps): JSX.Element {
   const safeAsync = useAsync();
@@ -153,7 +153,7 @@ export function RoleListCard({
         }
       />
       <Divider />
-      <Loading loading={loading}>
+      <Loading loading={loading} size="50px">
         {roles.map((r, i) => (
           <RoleAccordion
             key={r}
@@ -164,6 +164,7 @@ export function RoleListCard({
             onDeleteClick={handleRoleDelete[i]}
           />
         ))}
+        {roles.length === 0 && <div style={{ height: 100 }} />}
       </Loading>
       {openDialog && (
         <CreateRoleDialog
@@ -187,7 +188,7 @@ export function RoleListCard({
           onSubmit={async () => {
             try {
               setDeleting(true);
-              onDeleteRole && (await safeAsync(onDeleteRole(selectedDeleteRole)));
+              deleteRole && (await safeAsync(deleteRole(selectedDeleteRole)));
               refresh();
             } catch (e) {
               showErrorAlert(`Failed to delete user: ${e.message}`);
@@ -196,7 +197,7 @@ export function RoleListCard({
             }
           }}
         >
-          <Typography>{`Are you sure you want to delete "${deleting}"?`}</Typography>
+          <Typography>{`Are you sure you want to delete "${selectedDeleteRole}"?`}</Typography>
         </ConfirmationDialog>
       )}
     </Card>
