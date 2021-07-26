@@ -14,6 +14,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexFlow: 'column',
     borderRadius: '16px 16px 0px 0px',
+    backgroundColor: theme.palette.background.paper,
   },
   viewContainer: {
     height: '100%',

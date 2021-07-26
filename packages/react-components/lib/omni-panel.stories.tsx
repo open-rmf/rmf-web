@@ -1,4 +1,4 @@
-import { Button, makeStyles } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 import { Story } from '@storybook/react';
 import React from 'react';
 import { OmniPanel } from './omni-panel';
@@ -13,21 +13,13 @@ interface SimpleOmniPanelProps {
   style?: React.CSSProperties;
 }
 
-const useStyles = makeStyles((theme) => ({
-  omnipanel: {
-    backgroundColor: theme.palette.background.default,
-  },
-}));
-
 const SimpleOmniPanel = (props: SimpleOmniPanelProps): JSX.Element => {
   const [stack, stackDispatch] = useStackNavigator([0], 0);
-  const classes = useStyles();
 
   return (
     <OmniPanel
       stack={stack}
       style={props.style}
-      className={classes.omnipanel}
       onBack={() => stackDispatch.pop()}
       onHome={() => stackDispatch.home()}
     >
