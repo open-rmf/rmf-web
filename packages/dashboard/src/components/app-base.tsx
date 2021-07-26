@@ -10,6 +10,7 @@ import {
 } from './app-contexts';
 import { AppDrawers } from './app-drawers';
 import AppBar, { AppBarProps } from './appbar';
+import { RmfIngressContext } from './rmf-app';
 
 const useStyles = makeStyles((theme) => ({
   appBase: {
@@ -49,6 +50,25 @@ export function AppBase({
   const [showHotkeysDialog, setShowHotkeysDialog] = React.useState(false);
 
   const [showTooltips, setShowTooltips] = React.useState(false);
+
+  const { sioClient } = React.useContext(RmfIngressContext) || {};
+
+  React.useEffect(() => {
+    (async () => {
+      if (!sioClient) {
+        return;
+      }
+      // Temp workaround by hardcoding charger names
+      const chargers = ['ecobot_1', 'ecobot_2', 'avidbot_1'];
+      chargers.forEach((charger) => {
+        sioClient?.subscribeChargerRequest(charger, (state) => {
+          alert(
+            `Robot ${state.charger_name} has returned for charging. Please connect its charger and press ok.`,
+          );
+        });
+      });
+    })();
+  }, [sioClient]);
 
   const tooltips = React.useMemo<Tooltips>(
     () => ({
