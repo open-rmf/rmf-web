@@ -1,9 +1,10 @@
 import unittest
 
-from api_server.test import init_db
 from tortoise import Tortoise
 from tortoise.fields import CharField
 from tortoise.models import Model as TortoiseModel
+
+from api_server.test import init_db
 
 from .models import User
 from .models.tortoise_models import ProtectedResource, ResourcePermission, Role

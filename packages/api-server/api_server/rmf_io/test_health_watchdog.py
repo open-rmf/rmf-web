@@ -2,7 +2,6 @@ import logging
 import unittest
 from typing import Any, Callable, Optional
 
-from api_server.test import init_db
 from rmf_dispenser_msgs.msg import DispenserState
 from rmf_door_msgs.msg import DoorMode
 from rmf_fleet_msgs.msg import RobotMode
@@ -11,6 +10,8 @@ from rmf_lift_msgs.msg import LiftState
 from rx import Observable
 from rx.scheduler.historicalscheduler import HistoricalScheduler
 from tortoise import Tortoise
+
+from api_server.test import init_db
 
 from ..models import (
     DispenserHealth,

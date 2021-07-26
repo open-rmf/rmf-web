@@ -1,9 +1,10 @@
 import logging
 from typing import Callable, List, Optional
 
+from fastapi import Depends, Query
+
 from api_server.models.fleets import Robot
 from api_server.models.tasks import TaskStateEnum
-from fastapi import Depends, Query
 
 from ..dependencies import AddPaginationQuery, pagination_query
 from ..fast_io import FastIORouter

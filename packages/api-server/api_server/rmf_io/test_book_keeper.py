@@ -1,9 +1,10 @@
 import logging
 import unittest
 
-from api_server.test import init_db
 from rmf_door_msgs.msg import DoorMode
 from tortoise import Tortoise
+
+from api_server.test import init_db
 
 from ..models import (
     DispenserHealth,

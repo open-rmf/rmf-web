@@ -1,7 +1,8 @@
 from typing import List
 
-from api_server.models.tasks import Task
 from pydantic import BaseModel
+
+from api_server.models.tasks import Task
 
 from .health import BasicHealth
 from .ros_pydantic import rmf_fleet_msgs
