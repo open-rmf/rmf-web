@@ -4,15 +4,15 @@
   "description": "Auth layer to be used on web UI services",
   "main": "index.js",
   "scripts": {
-    "start": "start-storybook -p 6006 -s stories",
+    "start": "start-storybook -p 6006 -s test-data",
     "prepare": "tsc --build && cp package.json dist/",
     "prepack": "npm run lint && npm run test",
     "build:watch": "tsc --build --watch",
-    "build:storybook": "build-storybook -s stories",
+    "build:storybook": "build-storybook -s test-data",
     "clean": "tsc --build --clean",
     "test": "jest --watch",
     "test:coverage": "jest --coverage",
-    "lint": "eslint --ext ts,tsx, lib stories tests"
+    "lint": "eslint --ext ts,tsx, lib"
   },
   "keywords": [
     "auth",
