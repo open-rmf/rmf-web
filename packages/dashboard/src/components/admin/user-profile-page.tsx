@@ -59,7 +59,19 @@ export function UserProfilePage(): JSX.Element | null {
       ) : (
         profile && (
           <>
-            <UserProfileCard profile={profile} />
+            <UserProfileCard
+              profile={profile}
+              makeAdmin={async (admin) => {
+                try {
+                  await adminApi.makeAdminAdminUsersUsernameMakeAdminPost(
+                    { admin },
+                    profile.username,
+                  );
+                } catch (e) {
+                  throw new Error(getApiErrorMessage(e));
+                }
+              }}
+            />
             <ManageRolesCard
               className={classes.manageRoles}
               assignedRoles={profile.roles}
