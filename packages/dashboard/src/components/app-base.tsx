@@ -1,4 +1,5 @@
 import { Grid, makeStyles } from '@material-ui/core';
+import { Subscription } from 'api-client';
 import React from 'react';
 import { loadSettings, saveSettings } from '../settings';
 import {
@@ -10,7 +11,7 @@ import {
 } from './app-contexts';
 import { AppDrawers } from './app-drawers';
 import AppBar, { AppBarProps } from './appbar';
-import { RmfIngressContext } from './rmf-app';
+import { RmfIngressContext, PlacesContext } from './rmf-app';
 
 const useStyles = makeStyles((theme) => ({
   appBase: {
@@ -51,24 +52,43 @@ export function AppBase({
 
   const [showTooltips, setShowTooltips] = React.useState(false);
 
+  const [chargeId, setChargeId] = React.useState<string[]>([]);
+
   const { sioClient } = React.useContext(RmfIngressContext) || {};
+  const places = React.useContext(PlacesContext);
+  const chargers = Object.values(places).reduce<string[]>((place, it) => {
+    for (const param of it.vertex.params) {
+      if (param.name === 'is_charger' && param.value_bool) {
+        place.push(it.vertex.name);
+        break;
+      }
+    }
+    return place;
+  }, []);
 
   React.useEffect(() => {
-    (async () => {
-      if (!sioClient) {
-        return;
-      }
-      // Temp workaround by hardcoding charger names
-      const chargers = ['ecobot_1', 'ecobot_2', 'avidbot_1'];
-      chargers.forEach((charger) => {
-        sioClient?.subscribeChargerRequest(charger, (state) => {
-          alert(
-            `Robot ${state.charger_name} has returned for charging. Please connect its charger and press ok.`,
-          );
-        });
-      });
-    })();
-  }, [sioClient]);
+    if (!sioClient) {
+      return;
+    }
+    const subscriptions: Subscription[] = [];
+
+    chargers.forEach((charger) => {
+      subscriptions.push(
+        sioClient.subscribeChargerRequest(charger, (state) => {
+          if (!chargeId.includes(state.request_id)) {
+            alert(
+              `Robot ${state.charger_name} has returned for charging. Please connect its charger and press ok.`,
+            );
+            setChargeId([...chargeId, state.request_id]);
+          }
+        }),
+      );
+    });
+
+    return () => {
+      subscriptions.forEach((s) => sioClient.unsubscribe(s));
+    };
+  }, [sioClient, chargers, chargeId]);
 
   const tooltips = React.useMemo<Tooltips>(
     () => ({
