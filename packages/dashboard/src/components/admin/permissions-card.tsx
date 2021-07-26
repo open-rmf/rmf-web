@@ -132,17 +132,19 @@ export function PermissionsCard({
           </Table>
         </TableContainer>
       </Loading>
-      <AddPermissionDialog
-        open={openDialog}
-        setOpen={setOpenDialog}
-        savePermission={
-          savePermission &&
-          (async (p) => {
-            await savePermission(p);
-            refresh();
-          })
-        }
-      />
+      {openDialog && (
+        <AddPermissionDialog
+          open={openDialog}
+          setOpen={setOpenDialog}
+          savePermission={
+            savePermission &&
+            (async (p) => {
+              await savePermission(p);
+              refresh();
+            })
+          }
+        />
+      )}
     </Paper>
   );
 }
