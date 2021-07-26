@@ -247,9 +247,14 @@ To test the migrations on your local machine you can run the following command:
 npm run test:migrations
 ```
 
-
 **Long version:**  
-First, you need to build the docker image, this will copy all the migrations to the container.
+First, you need to prepack the project:
+
+```bash
+npm run prepack
+```
+
+As a second step you need to build the docker image, this will copy all the migrations to the container.
 
 ```bash
 docker build . -t rmf-web/reporting-server-migration-test -f migration-test.dockerfile

@@ -1,7 +1,9 @@
 
 DOCKER_CONTAINER_NAME="reporting-server-migration-test"
-# First, we need to build the docker image, this will copy all the migrations to the container.
 
+npm run prepack
+
+# We need to build the docker image, this will copy all the migrations to the container.
 docker build . -t rmf-web/reporting-server-migration-test -f migration-test.dockerfile
 
 if [ ! "$(docker ps -q -f name=$DOCKER_CONTAINER_NAME)" ]; then
