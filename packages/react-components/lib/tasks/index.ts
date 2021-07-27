@@ -1,6 +1,4 @@
 export * from './create-task';
-export * from './custom-task-panel';
-export * from './custom-task-table';
 export * from './task-info';
 export * from './task-panel';
 export * from './task-phases';
