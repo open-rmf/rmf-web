@@ -37,7 +37,7 @@ from .models import (
     LiftState,
     TaskSummary,
 )
-from .repositories import RmfRepository, StaticFilesRepository
+from .repositories import StaticFilesRepository
 from .rmf_io import RmfEvents
 
 
@@ -194,7 +194,7 @@ class RmfGateway(rclpy.node.Node):
             sub.destroy()
         self._subscriptions = []
 
-    async def update_tasks(self, repo: RmfRepository):
+    async def update_tasks(self):
         """
         Updates the tasks in a RmfRepository with the current tasks in RMF.
         """
@@ -203,6 +203,8 @@ class RmfGateway(rclpy.node.Node):
         )
         if not resp.success:
             raise HTTPException(500, "service call succeeded but RMF returned an error")
+
+
 #        for task_summary in resp.active_tasks:
 #            task_summary: RmfTaskSummary
 #            await repo.save_task_summary(task_summary)
