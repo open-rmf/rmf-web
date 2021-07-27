@@ -18,7 +18,8 @@ A recent version of pipenv is needed, the system packaged version is too old.
 pip3 install pipenv
 ```
 
-Install rmf
+### Install rmf
+
 Refer to the following documentation:
 
 * [rmf](https://github.com/open-rmf/rmf)
