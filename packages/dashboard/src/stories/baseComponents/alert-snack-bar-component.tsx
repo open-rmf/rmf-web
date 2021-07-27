@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Divider, Typography, Button, Grid } from '@material-ui/core';
 
-import AlertSnackBar from '../../components/__trash/alert-snack-bar';
-import { AlertSnackBarProps } from '../../components/__trash/alert-snack-bar';
+import AlertSnackBar from '../../components/alert-snack-bar';
+import { AlertSnackBarProps, iniCharger } from '../../components/alert-snack-bar';
 import { StyleTyping, defaultStyles } from './utils';
 
 const styles: StyleTyping = {
@@ -13,7 +13,7 @@ const styles: StyleTyping = {
 };
 
 export default function AlertSnackBarStory(props: AlertSnackBarProps) {
-  const { message, type } = props;
+  const { message, type, charger, showAlert } = props;
   const [showNotifications, setShowNotifications] = useState(false);
   const [disableButton, setDisableButton] = useState(false);
 
@@ -49,7 +49,9 @@ export default function AlertSnackBarStory(props: AlertSnackBarProps) {
         </Grid>
       </div>
       <Divider />
-      {showNotifications ? <AlertSnackBar message={message} type={type} /> : null}
+      {showNotifications ? (
+        <AlertSnackBar message={message} type={type} charger={charger} showAlert={showAlert} />
+      ) : null}
     </div>
   );
 }

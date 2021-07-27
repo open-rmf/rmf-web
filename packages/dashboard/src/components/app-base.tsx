@@ -10,7 +10,6 @@ import {
 } from './app-contexts';
 import { AppDrawers } from './app-drawers';
 import AppBar, { AppBarProps } from './appbar';
-import { RmfIngressContext, PlacesContext } from './rmf-app';
 
 const useStyles = makeStyles((theme) => ({
   appBase: {
@@ -50,38 +49,6 @@ export function AppBase({
   const [showHotkeysDialog, setShowHotkeysDialog] = React.useState(false);
 
   const [showTooltips, setShowTooltips] = React.useState(false);
-
-  const { sioClient } = React.useContext(RmfIngressContext) || {};
-  const places = React.useContext(PlacesContext);
-  const chargers = React.useMemo(
-    () =>
-      Object.values(places).reduce<string[]>((place, it) => {
-        for (const param of it.vertex.params) {
-          if (param.name === 'is_charger' && param.value_bool) {
-            place.push(it.vertex.name);
-            break;
-          }
-        }
-        return place;
-      }, []),
-    [places],
-  );
-
-  React.useEffect(() => {
-    (async () => {
-      if (!sioClient || chargers.length === 0) {
-        return;
-      }
-
-      chargers.forEach((charger) => {
-        sioClient.subscribeChargerRequest(charger, (state) => {
-          alert(
-            `Robot ${state.robot_name} has returned for charging. Please connect its charger and press ok.`,
-          );
-        });
-      });
-    })();
-  }, [sioClient, chargers]);
 
   const tooltips = React.useMemo<Tooltips>(
     () => ({
