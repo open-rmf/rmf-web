@@ -18,7 +18,6 @@ import { Configuration } from '../configuration';
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 import { ChargerRequest } from '../models';
 import { HTTPValidationError } from '../models';
-import { ModelObject } from '../models';
 /**
  * ChargersApi - axios parameter creator
  * @export
@@ -27,12 +26,12 @@ export const ChargersApiAxiosParamCreator = function (configuration?: Configurat
   return {
     /**
      * **Available in socket.io**
-     * @summary Get Charger Query
+     * @summary Get Charger Request
      * @param {string} charger_name
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getChargerQueryChargersChargerNameRequestGet: async (
+    getChargerRequestChargersChargerNameRequestGet: async (
       charger_name: string,
       options: any = {},
     ): Promise<RequestArgs> => {
@@ -40,51 +39,13 @@ export const ChargersApiAxiosParamCreator = function (configuration?: Configurat
       if (charger_name === null || charger_name === undefined) {
         throw new RequiredError(
           'charger_name',
-          'Required parameter charger_name was null or undefined when calling getChargerQueryChargersChargerNameRequestGet.',
+          'Required parameter charger_name was null or undefined when calling getChargerRequestChargersChargerNameRequestGet.',
         );
       }
       const localVarPath = `/chargers/{charger_name}/request`.replace(
         `{${'charger_name'}}`,
         encodeURIComponent(String(charger_name)),
       );
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, 'https://example.com');
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      const query = new URLSearchParams(localVarUrlObj.search);
-      for (const key in localVarQueryParameter) {
-        query.set(key, localVarQueryParameter[key]);
-      }
-      for (const key in options.query) {
-        query.set(key, options.query[key]);
-      }
-      localVarUrlObj.search = new URLSearchParams(query).toString();
-      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers,
-      };
-
-      return {
-        url: localVarUrlObj.pathname + localVarUrlObj.search + localVarUrlObj.hash,
-        options: localVarRequestOptions,
-      };
-    },
-    /**
-     *
-     * @summary Get Chargers
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    getChargersChargersGet: async (options: any = {}): Promise<RequestArgs> => {
-      const localVarPath = `/chargers`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, 'https://example.com');
       let baseOptions;
@@ -126,38 +87,18 @@ export const ChargersApiFp = function (configuration?: Configuration) {
   return {
     /**
      * **Available in socket.io**
-     * @summary Get Charger Query
+     * @summary Get Charger Request
      * @param {string} charger_name
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async getChargerQueryChargersChargerNameRequestGet(
+    async getChargerRequestChargersChargerNameRequestGet(
       charger_name: string,
       options?: any,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ChargerRequest>> {
       const localVarAxiosArgs = await ChargersApiAxiosParamCreator(
         configuration,
-      ).getChargerQueryChargersChargerNameRequestGet(charger_name, options);
-      return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
-        const axiosRequestArgs = {
-          ...localVarAxiosArgs.options,
-          url: basePath + localVarAxiosArgs.url,
-        };
-        return axios.request(axiosRequestArgs);
-      };
-    },
-    /**
-     *
-     * @summary Get Chargers
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async getChargersChargersGet(
-      options?: any,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ModelObject>> {
-      const localVarAxiosArgs = await ChargersApiAxiosParamCreator(
-        configuration,
-      ).getChargersChargersGet(options);
+      ).getChargerRequestChargersChargerNameRequestGet(charger_name, options);
       return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
         const axiosRequestArgs = {
           ...localVarAxiosArgs.options,
@@ -181,28 +122,17 @@ export const ChargersApiFactory = function (
   return {
     /**
      * **Available in socket.io**
-     * @summary Get Charger Query
+     * @summary Get Charger Request
      * @param {string} charger_name
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getChargerQueryChargersChargerNameRequestGet(
+    getChargerRequestChargersChargerNameRequestGet(
       charger_name: string,
       options?: any,
     ): AxiosPromise<ChargerRequest> {
       return ChargersApiFp(configuration)
-        .getChargerQueryChargersChargerNameRequestGet(charger_name, options)
-        .then((request) => request(axios, basePath));
-    },
-    /**
-     *
-     * @summary Get Chargers
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    getChargersChargersGet(options?: any): AxiosPromise<ModelObject> {
-      return ChargersApiFp(configuration)
-        .getChargersChargersGet(options)
+        .getChargerRequestChargersChargerNameRequestGet(charger_name, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -217,27 +147,15 @@ export const ChargersApiFactory = function (
 export class ChargersApi extends BaseAPI {
   /**
    * **Available in socket.io**
-   * @summary Get Charger Query
+   * @summary Get Charger Request
    * @param {string} charger_name
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof ChargersApi
    */
-  public getChargerQueryChargersChargerNameRequestGet(charger_name: string, options?: any) {
+  public getChargerRequestChargersChargerNameRequestGet(charger_name: string, options?: any) {
     return ChargersApiFp(this.configuration)
-      .getChargerQueryChargersChargerNameRequestGet(charger_name, options)
-      .then((request) => request(this.axios, this.basePath));
-  }
-  /**
-   *
-   * @summary Get Chargers
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof ChargersApi
-   */
-  public getChargersChargersGet(options?: any) {
-    return ChargersApiFp(this.configuration)
-      .getChargersChargersGet(options)
+      .getChargerRequestChargersChargerNameRequestGet(charger_name, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
