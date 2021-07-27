@@ -25,7 +25,7 @@ import {
   NegotiationTrajectoryResponse,
 } from '../../managers/negotiation-status-manager';
 import { AppConfigContext, AppControllerContext } from '../app-contexts';
-import { DispensersContext, RmfIngressContext } from '../rmf-app';
+import { DispensersContext, IngestorsContext, RmfIngressContext } from '../rmf-app';
 import ScheduleVisualizer, { ScheduleVisualizerProps } from '../schedule-visualizer';
 import { RobotsOverlayProps } from '../schedule-visualizer/robots-overlay';
 import { SpotlightValue } from '../spotlight-value';
@@ -228,17 +228,39 @@ export default function Dashboard(_props: {}): React.ReactElement {
       subs.forEach((s) => sioClient.unsubscribe(s));
     };
   }, [sioClient, dispensers]);
-  const dispenserAccordionRefs = React.useMemo(() => defaultDict(createSpotlightRef), []);
-  const handleDispenserMarkerClick = React.useCallback<
+
+  const ingestors = React.useContext(IngestorsContext);
+  const [ingestorStates, setIngestorStates] = React.useState<
+    Record<string, RmfModels.IngestorState>
+  >({});
+  React.useEffect(() => {
+    if (!sioClient) return;
+    const subs = ingestors.map((d) =>
+      sioClient.subscribeIngestorState(d.guid, (state) =>
+        setIngestorStates((prev) => ({ ...prev, [d.guid]: state })),
+      ),
+    );
+    return () => {
+      subs.forEach((s) => sioClient.unsubscribe(s));
+    };
+  }, [sioClient, ingestors]);
+
+  const workcells = React.useMemo(() => [...dispensers, ...ingestors], [dispensers, ingestors]);
+  const workcellStates = React.useMemo(() => ({ ...dispenserStates, ...ingestorStates }), [
+    dispenserStates,
+    ingestorStates,
+  ]);
+  const workcellAccordionRefs = React.useMemo(() => defaultDict(createSpotlightRef), []);
+  const handleWorkcellMarkerClick = React.useCallback<
     Required<ScheduleVisualizerProps>['onDispenserClick']
   >(
     (_, guid) => {
       setShowOmniPanel(true);
       viewStackDispatch.push(OmniPanelViewIndex.Dispensers);
-      dispenserAccordionRefs[guid].spotlight();
+      workcellAccordionRefs[guid].spotlight();
       setFilter('');
     },
-    [dispenserAccordionRefs, viewStackDispatch, setShowOmniPanel],
+    [workcellAccordionRefs, viewStackDispatch, setShowOmniPanel],
   );
 
   const [fleets, setFleets] = React.useState<Fleet[]>([]);
@@ -371,7 +393,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
             onDoorClick={handleDoorMarkerClick}
             onLiftClick={handleLiftMarkerClick}
             onRobotClick={handleRobotMarkerClick}
-            onDispenserClick={handleDispenserMarkerClick}
+            onDispenserClick={handleWorkcellMarkerClick}
           >
             <OmniPanelControl show={!showOmniPanel} dashboardDispatch={dashboardDispatch} />
           </ScheduleVisualizer>
@@ -440,22 +462,20 @@ export default function Dashboard(_props: {}): React.ReactElement {
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Dispensers}>
             <SimpleFilter onChange={onChange} value={filter} />
-            {dispensers
-              ? Object.keys(dispensers).map((dispenser) => {
-                  const toLower = dispenser.toLowerCase();
-                  return toLower.includes(filter) ? (
-                    <DispenserAccordion
-                      key={dispenser}
-                      ref={dispenserAccordionRefs[dispenser].ref}
-                      dispenserState={
-                        dispenserStates[dispenser] ? dispenserStates[dispenser] : null
-                      }
-                      data-component="DispenserAccordion"
-                      dispenser={dispenser}
-                    />
-                  ) : null;
-                })
-              : null}
+            {workcells.map((workcell) => {
+              const toLower = workcell.guid.toLowerCase();
+              return toLower.includes(filter) ? (
+                <DispenserAccordion
+                  key={workcell.guid}
+                  ref={workcellAccordionRefs[workcell.guid].ref}
+                  dispenserState={
+                    workcellStates[workcell.guid] ? workcellStates[workcell.guid] : null
+                  }
+                  data-component="DispenserAccordion"
+                  dispenser={workcell.guid}
+                />
+              ) : null;
+            })}
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Negotiations}>
             <NegotiationsPanel
