@@ -34,7 +34,7 @@ export const ComponentUnmountedError = 'ComponentUnmountedError';
  *   React.useEffect(() => {
  *     (async () => {
  *       const newData = await safeAsync(fetchData());
- *       setData(newData); // will never run if component is already unmounted.
+ *       setData(newData); // will not run if component is already unmounted.
  *
  *       // works when everything is in 1 statement also.
  *       // setData(await safeAsync(fetchData()));
