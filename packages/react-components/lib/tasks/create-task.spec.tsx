@@ -72,9 +72,9 @@ describe('CreateTaskForm', () => {
     });
   });
 
-  it('onCancelClick is called when cancel button is clicked', () => {
+  it('onClose is called when cancel button is clicked', () => {
     const spy = jasmine.createSpy();
-    const root = render(<CreateTaskForm open onCancelClick={spy} />);
+    const root = render(<CreateTaskForm open onClose={spy} />);
     userEvent.click(root.getByLabelText('Cancel'));
     expect(spy).toHaveBeenCalledTimes(1);
   });

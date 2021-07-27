@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react-hooks/dom';
 import { useAsync } from './use-async';
 
-fdescribe('useAsync', () => {
+describe('useAsync', () => {
   it('resolves if component is still mounted', async () => {
     const hook = renderHook(() => useAsync());
     const safeAsync = hook.result.current;
