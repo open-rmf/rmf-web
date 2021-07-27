@@ -11,7 +11,6 @@ import {
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import HelpIcon from '@material-ui/icons/Help';
 import SettingsIcon from '@material-ui/icons/Settings';
-import PagesIcon from '@material-ui/icons/Pages';
 import React from 'react';
 import { HeaderBar, LogoButton, NavigationBar, Tooltip } from 'react-components';
 import { AppControllerContext, ResourcesContext, TooltipsContext } from './app-contexts';
