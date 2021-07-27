@@ -4,34 +4,38 @@ import {
   FormControlLabel,
   FormLabel,
   Grid,
+  makeStyles,
   Radio,
   RadioGroup,
 } from '@material-ui/core';
 
+const useStyles = makeStyles((theme) => ({
+  root: {
+    flexWrap: 'nowrap',
+  },
+}));
 interface RadioGroupProps {
   formLabel: string;
-  radioGroupName: string;
   options: string[];
+  radioGroupName: string;
   row?: boolean;
-  onHandleChange: () => void;
+  onHandleChange: (value: string) => void;
 }
 
 export const RadioButtonGroup = (props: RadioGroupProps): JSX.Element => {
   const { formLabel, radioGroupName, options, row, onHandleChange } = props;
   const [radioOptions, setRadioOptions] = React.useState<string[]>([]);
   const [value, setValue] = React.useState('');
+  const classes = useStyles();
 
   React.useEffect(() => {
-    if (options.length > 0) {
-      setRadioOptions(options);
-      setValue(options[0]);
-    }
+    setRadioOptions(options);
   }, [options]);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const elem = event.target as HTMLInputElement;
     setValue(elem.value);
-    onHandleChange();
+    onHandleChange(elem.value);
   };
 
   const populateRadioButtons = (options: string[]): JSX.Element[] => {
@@ -55,6 +59,7 @@ export const RadioButtonGroup = (props: RadioGroupProps): JSX.Element => {
               name={radioGroupName}
               value={value}
               onChange={handleChange}
+              classes={{ root: classes.root }}
             >
               {populateRadioButtons(radioOptions)}
             </RadioGroup>
