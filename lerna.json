@@ -5,6 +5,7 @@
     "packages/api-server",
     "packages/dashboard",
     "packages/dashboard-e2e",
+    "packages/minimal",
     "packages/react-components",
     "packages/reporting",
     "packages/reporting-e2e",
