@@ -24,4 +24,4 @@ RUN . /opt/ros/foxy/setup.bash && cd /root/rmf_ws && \
 RUN rm -rf /root/rmf_ws
 
 # Set this based on your use_sim_time configuration when launching the backend
-ENV RMF_SERVER_USE_SIM_TIME=true 
+ENV RMF_SERVER_USE_SIM_TIME=false
