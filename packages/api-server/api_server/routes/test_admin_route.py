@@ -1,4 +1,4 @@
-from ..test.test_fixtures import RouteFixture
+from api_server.test.test_fixtures import RouteFixture
 
 
 class TestAdminRoute(RouteFixture):

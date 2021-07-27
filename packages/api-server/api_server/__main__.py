@@ -1,7 +1,7 @@
 import uvicorn
 
-from .app import app
-from .app_config import default_config
+from api_server.app import app
+from api_server.app_config import default_config
 
 
 def main():

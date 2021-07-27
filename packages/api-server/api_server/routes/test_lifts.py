@@ -3,7 +3,7 @@ from concurrent.futures import Future
 from rmf_lift_msgs.msg import LiftRequest as RmfLiftRequest
 from rmf_lift_msgs.msg import LiftState as RmfLiftState
 
-from ..test.test_fixtures import RouteFixture, try_until
+from api_server.test.test_fixtures import RouteFixture, try_until
 
 
 class TestLiftsRoute(RouteFixture):

@@ -11,9 +11,7 @@ from rx import Observable
 from rx.scheduler.historicalscheduler import HistoricalScheduler
 from tortoise import Tortoise
 
-from api_server.test import init_db
-
-from ..models import (
+from api_server.models import (
     DispenserHealth,
     DoorHealth,
     HealthStatus,
@@ -21,10 +19,10 @@ from ..models import (
     LiftHealth,
     RobotHealth,
 )
-from ..repositories import RmfRepository
-from ..test import test_data
-from .events import RmfEvents
-from .health_watchdog import HealthWatchdog
+from api_server.repositories import RmfRepository
+from api_server.rmf_io.events import RmfEvents
+from api_server.rmf_io.health_watchdog import HealthWatchdog
+from api_server.test import init_db, test_data
 
 
 class BaseFixture(unittest.IsolatedAsyncioTestCase):

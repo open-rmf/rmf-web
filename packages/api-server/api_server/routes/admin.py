@@ -5,9 +5,9 @@ from pydantic import BaseModel
 from tortoise.exceptions import IntegrityError
 from tortoise.transactions import in_transaction
 
-from ..dependencies import AddPaginationQuery, pagination_query
-from ..models import Permission, User
-from ..models import tortoise_models as ttm
+from api_server.dependencies import AddPaginationQuery, pagination_query
+from api_server.models import Permission, User
+from api_server.models import tortoise_models as ttm
 
 
 class PostUsers(BaseModel):

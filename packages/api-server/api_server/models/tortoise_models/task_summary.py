@@ -3,10 +3,10 @@ from typing import Optional
 from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
 from tortoise import Model, fields
 
-from ...ros_time import ros_to_py_datetime
-from ..tasks import TaskSummary as PydanticTaskSummary
-from .authorization import ProtectedResource
-from .json_mixin import JsonMixin
+from api_server.models.tasks import TaskSummary as PydanticTaskSummary
+from api_server.models.tortoise_models.authorization import ProtectedResource
+from api_server.models.tortoise_models.json_mixin import JsonMixin
+from api_server.ros_time import ros_to_py_datetime
 
 
 class TaskSummary(Model, JsonMixin, ProtectedResource):

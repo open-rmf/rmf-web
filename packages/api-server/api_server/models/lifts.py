@@ -3,8 +3,8 @@ from typing import List
 from pydantic import BaseModel, Field
 from tortoise.contrib.pydantic.creator import pydantic_model_creator
 
-from . import tortoise_models as ttm
-from .ros_pydantic import rmf_building_map_msgs, rmf_lift_msgs
+from api_server.models import tortoise_models as ttm
+from api_server.models.ros_pydantic import rmf_building_map_msgs, rmf_lift_msgs
 
 Lift = rmf_building_map_msgs.Lift
 LiftHealth = pydantic_model_creator(ttm.LiftHealth)

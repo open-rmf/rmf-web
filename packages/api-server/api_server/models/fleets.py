@@ -2,10 +2,9 @@ from typing import List
 
 from pydantic import BaseModel
 
+from api_server.models.health import BasicHealth
+from api_server.models.ros_pydantic import rmf_fleet_msgs
 from api_server.models.tasks import Task
-
-from .health import BasicHealth
-from .ros_pydantic import rmf_fleet_msgs
 
 FleetState = rmf_fleet_msgs.FleetState
 RobotState = rmf_fleet_msgs.RobotState

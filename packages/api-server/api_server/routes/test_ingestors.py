@@ -1,7 +1,7 @@
 from rmf_ingestor_msgs.msg import IngestorState as RmfIngestorState
 
-from ..models import Ingestor
-from ..test.test_fixtures import RouteFixture, try_until
+from api_server.models import Ingestor
+from api_server.test.test_fixtures import RouteFixture, try_until
 
 
 class TestIngestorsRoute(RouteFixture):

@@ -3,7 +3,7 @@ import unittest
 from pydantic import ValidationError
 from rmf_task_msgs.msg import TaskType as RmfTaskType
 
-from .tasks import SubmitTask
+from api_server.models.tasks import SubmitTask
 
 
 class TestSubmitTaskModel(unittest.TestCase):

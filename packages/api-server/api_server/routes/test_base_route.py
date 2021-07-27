@@ -1,8 +1,8 @@
 import asyncio
 
-from ..models import TaskSummary
-from ..models import tortoise_models as ttm
-from ..test.test_fixtures import RouteFixture
+from api_server.models import TaskSummary
+from api_server.models import tortoise_models as ttm
+from api_server.test.test_fixtures import RouteFixture
 
 
 class TestPaginationQuery(RouteFixture):

@@ -3,8 +3,8 @@ from typing import List
 from tortoise.expressions import Subquery
 from tortoise.queryset import QuerySet
 
-from .models import User
-from .models import tortoise_models as ttm
+from api_server.models import User
+from api_server.models import tortoise_models as ttm
 
 
 class RmfAction:

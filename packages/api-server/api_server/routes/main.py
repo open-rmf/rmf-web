@@ -2,8 +2,8 @@ from typing import Callable, List
 
 from fastapi import APIRouter, Depends
 
-from ..models import Permission, User
-from ..models import tortoise_models as ttm
+from api_server.models import Permission, User
+from api_server.models import tortoise_models as ttm
 
 
 def main_router(user_dep: Callable[..., User]):

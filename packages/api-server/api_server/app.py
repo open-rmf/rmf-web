@@ -13,15 +13,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from tortoise import Tortoise
 
-from . import routes
-from .app_config import AppConfig, default_config
-from .authenticator import JwtAuthenticator
-from .dependencies import auth_scheme
-from .fast_io import FastIO
-from .gateway import RmfGateway
-from .models import tortoise_models as ttm
-from .repositories import RmfRepository, StaticFilesRepository
-from .rmf_io import HealthWatchdog, RmfBookKeeper, RmfEvents
+from api_server import routes
+from api_server.app_config import AppConfig, default_config
+from api_server.authenticator import JwtAuthenticator
+from api_server.dependencies import auth_scheme
+from api_server.fast_io import FastIO
+from api_server.gateway import RmfGateway
+from api_server.models import tortoise_models as ttm
+from api_server.repositories import RmfRepository, StaticFilesRepository
+from api_server.rmf_io import HealthWatchdog, RmfBookKeeper, RmfEvents
 
 
 class App(FastIO):

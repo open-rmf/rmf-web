@@ -6,7 +6,7 @@ from rmf_ingestor_msgs.msg import IngestorState as RmfIngestorState
 from rmf_lift_msgs.msg import LiftState as RmfLiftState
 from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
 
-from ..models import (
+from api_server.models import (
     AffineImage,
     BuildingMap,
     DispenserState,

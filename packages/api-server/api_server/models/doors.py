@@ -1,8 +1,8 @@
 from pydantic import BaseModel, Field
 from tortoise.contrib.pydantic.creator import pydantic_model_creator
 
-from . import tortoise_models as ttm
-from .ros_pydantic import rmf_building_map_msgs, rmf_door_msgs
+from api_server.models import tortoise_models as ttm
+from api_server.models.ros_pydantic import rmf_building_map_msgs, rmf_door_msgs
 
 Door = rmf_building_map_msgs.Door
 DoorMode = rmf_door_msgs.DoorMode

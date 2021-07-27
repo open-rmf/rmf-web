@@ -5,10 +5,10 @@ from typing import Optional
 
 import socketio
 
-from .app import App
-from .app_config import load_config
-from .test.server import BackgroundServer
-from .test.test_fixtures import generate_token
+from api_server.app import App
+from api_server.app_config import load_config
+from api_server.test.server import BackgroundServer
+from api_server.test.test_fixtures import generate_token
 
 
 class TestSioAuth(unittest.TestCase):

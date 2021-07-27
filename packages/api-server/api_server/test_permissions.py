@@ -4,11 +4,14 @@ from tortoise import Tortoise
 from tortoise.fields import CharField
 from tortoise.models import Model as TortoiseModel
 
+from api_server.models import User
+from api_server.models.tortoise_models import (
+    ProtectedResource,
+    ResourcePermission,
+    Role,
+)
+from api_server.permissions import Enforcer
 from api_server.test import init_db
-
-from .models import User
-from .models.tortoise_models import ProtectedResource, ResourcePermission, Role
-from .permissions import Enforcer
 
 
 class Greeting(TortoiseModel, ProtectedResource):

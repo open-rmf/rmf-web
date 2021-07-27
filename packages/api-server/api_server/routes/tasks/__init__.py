@@ -1,1 +1,1 @@
-from .tasks import TasksRouter
+from api_server.routes.tasks.tasks import TasksRouter

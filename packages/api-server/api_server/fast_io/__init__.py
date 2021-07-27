@@ -27,9 +27,9 @@ from fastapi.types import DecoratedCallable
 from rx import Observable
 from starlette.routing import compile_path, replace_params
 
-from ..authenticator import AuthenticationError, JwtAuthenticator
-from ..models import User
-from .errors import *
+from api_server.authenticator import AuthenticationError, JwtAuthenticator
+from api_server.fast_io.errors import *
+from api_server.models import User
 
 T = TypeVar("T")
 

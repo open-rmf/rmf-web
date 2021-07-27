@@ -1,9 +1,9 @@
 from typing import List
 
-from ..fast_io import FastIORouter
-from ..models import Dispenser, DispenserHealth, DispenserState
-from ..repositories import RmfRepository
-from ..rmf_io import RmfEvents
+from api_server.fast_io import FastIORouter
+from api_server.models import Dispenser, DispenserHealth, DispenserState
+from api_server.repositories import RmfRepository
+from api_server.rmf_io import RmfEvents
 
 
 class DispensersRouter(FastIORouter):

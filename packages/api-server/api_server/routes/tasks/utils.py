@@ -1,7 +1,7 @@
 import rclpy.node
 from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
 
-from ...models.tasks import TaskProgress, TaskSummary
+from api_server.models.tasks import TaskProgress, TaskSummary
 
 
 def get_task_progress(

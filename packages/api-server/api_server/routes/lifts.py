@@ -3,11 +3,11 @@ from typing import Callable, List
 from fastapi import Depends
 from rmf_lift_msgs.msg import LiftRequest as RmfLiftRequest
 
-from ..fast_io import FastIORouter
-from ..gateway import RmfGateway
-from ..models import Lift, LiftHealth, LiftRequest, LiftState
-from ..repositories import RmfRepository
-from ..rmf_io import RmfEvents
+from api_server.fast_io import FastIORouter
+from api_server.gateway import RmfGateway
+from api_server.models import Lift, LiftHealth, LiftRequest, LiftState
+from api_server.repositories import RmfRepository
+from api_server.rmf_io import RmfEvents
 
 
 class LiftsRouter(FastIORouter):

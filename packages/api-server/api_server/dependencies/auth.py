@@ -1,7 +1,7 @@
 from typing import Optional
 
-from ..authenticator import JwtAuthenticator
-from ..models import User
+from api_server.authenticator import JwtAuthenticator
+from api_server.models import User
 
 
 def auth_scheme(

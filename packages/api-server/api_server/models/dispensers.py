@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
-from .health import BasicHealth
-from .ros_pydantic import rmf_dispenser_msgs
+from api_server.models.health import BasicHealth
+from api_server.models.ros_pydantic import rmf_dispenser_msgs
 
 DispenserState = rmf_dispenser_msgs.DispenserState
 DispenserHealth = BasicHealth

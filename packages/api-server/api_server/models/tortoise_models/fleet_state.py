@@ -1,8 +1,8 @@
 from tortoise import Model, fields
 
-from ..fleets import FleetState as PydanticFleetState
-from ..fleets import RobotState as PydanticRobotState
-from .json_mixin import JsonMixin
+from api_server.models.fleets import FleetState as PydanticFleetState
+from api_server.models.fleets import RobotState as PydanticRobotState
+from api_server.models.tortoise_models.json_mixin import JsonMixin
 
 
 class FleetState(Model, JsonMixin):

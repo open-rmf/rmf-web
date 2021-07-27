@@ -4,9 +4,7 @@ import unittest
 from rmf_door_msgs.msg import DoorMode
 from tortoise import Tortoise
 
-from api_server.test import init_db
-
-from ..models import (
+from api_server.models import (
     DispenserHealth,
     DoorHealth,
     HealthStatus,
@@ -15,12 +13,12 @@ from ..models import (
     RobotHealth,
     TaskSummary,
 )
-from ..models import tortoise_models as ttm
-from ..repositories import RmfRepository
-from ..rmf_io import RmfEvents
-from ..test import test_data
-from ..test.test_fixtures import async_try_until
-from .book_keeper import RmfBookKeeper
+from api_server.models import tortoise_models as ttm
+from api_server.repositories import RmfRepository
+from api_server.rmf_io import RmfEvents
+from api_server.rmf_io.book_keeper import RmfBookKeeper
+from api_server.test import init_db, test_data
+from api_server.test.test_fixtures import async_try_until
 
 
 class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):

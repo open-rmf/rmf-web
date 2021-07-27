@@ -1,2 +1,2 @@
-from .rmf import RmfRepository
-from .static_files import StaticFilesRepository
+from api_server.repositories.rmf import RmfRepository
+from api_server.repositories.static_files import StaticFilesRepository

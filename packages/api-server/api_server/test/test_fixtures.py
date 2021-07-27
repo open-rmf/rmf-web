@@ -15,9 +15,9 @@ import rclpy.node
 import requests
 from urllib3.util.retry import Retry
 
-from ..app import App
-from ..app_config import load_config
-from ..test.server import BackgroundServer
+from api_server.app import App
+from api_server.app_config import load_config
+from api_server.test.server import BackgroundServer
 
 T = TypeVar("T")
 

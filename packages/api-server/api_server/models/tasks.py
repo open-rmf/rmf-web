@@ -5,7 +5,7 @@ from pydantic import BaseModel, validator
 from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
 from rmf_task_msgs.msg import TaskType as RmfTaskType
 
-from .ros_pydantic import rmf_task_msgs
+from api_server.models.ros_pydantic import rmf_task_msgs
 
 TaskSummary = rmf_task_msgs.TaskSummary
 
