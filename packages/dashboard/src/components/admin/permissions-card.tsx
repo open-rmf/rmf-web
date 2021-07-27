@@ -61,6 +61,7 @@ export function PermissionsCard({
     setLoading(true);
     try {
       const newPermissions = await safeAsync(getPermissions());
+      // sort by action first, then by authorization group
       newPermissions.sort((a, b) => {
         if (a.action < b.action) return -1;
         if (a.action > b.action) return 1;
