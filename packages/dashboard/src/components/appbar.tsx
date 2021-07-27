@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) =>
   }),
 );
 
-export type TabValue = 'building' | 'robots' | 'tasks';
+export type TabValue = 'building' | 'robots' | 'tasks' | 'admin';
 
 export interface AppBarProps {
   tabValue: TabValue;
