@@ -1,8 +1,7 @@
-import { Snackbar, makeStyles, Typography, IconButton } from '@material-ui/core';
+import { Snackbar, makeStyles, Typography, Button, Grid } from '@material-ui/core';
 import Alert, { AlertProps } from '@material-ui/lab/Alert';
 import React, { useEffect } from 'react';
 import * as RmfModels from 'rmf-models';
-import CloseIcon from '@material-ui/icons/Close';
 
 export const iniCharger: RmfModels.ChargerRequest = {
   charger_name: '',
@@ -28,13 +27,16 @@ const useStyles = makeStyles((theme) => ({
   },
   cookieAlert: {
     '& .MuiAlert-icon': {
-      fontSize: '4rem',
+      fontSize: '2.5rem',
     },
     padding: '2rem',
     width: '1000px',
   },
-  closeIcon: {
-    fontSize: '4rem',
+  button: {
+    color: theme.palette.warning.light,
+    backgroundColor: 'rgb(102, 60, 0)',
+    width: '100%',
+    marginTop: '0.5rem',
   },
 }));
 
@@ -56,16 +58,21 @@ const AlertSnackBar = (props: AlertSnackBarProps) => {
       autoHideDuration={null}
       onClose={() => onMessageClose && onMessageClose()}
     >
-      <Alert
-        className={classes.cookieAlert}
-        severity={type ? type : 'error'}
-        action={
-          <IconButton color="inherit" onClick={() => onMessageClose && onMessageClose()}>
-            <CloseIcon fontSize="large" />
-          </IconButton>
-        }
-      >
-        <Typography variant="h5">{message}</Typography>
+      <Alert className={classes.cookieAlert} severity={type ? type : 'error'}>
+        <Grid container direction="column" justify="center" alignItems="center">
+          <Grid item>
+            <Typography variant="h5">{message}</Typography>
+          </Grid>
+        </Grid>
+        <Grid item>
+          <Button
+            className={classes.button}
+            color="inherit"
+            onClick={() => onMessageClose && onMessageClose()}
+          >
+            <Typography variant="h5">Ok</Typography>
+          </Button>
+        </Grid>
       </Alert>
     </Snackbar>
   );
