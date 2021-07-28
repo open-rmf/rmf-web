@@ -21,6 +21,8 @@ setup(
         "uvicorn[standard]~=0.13.4",
         "tortoise-orm~=0.17.4",
         "pyjwt[crypto]~=2.0",
+        "python-socketio~=5.1",
+        "rx~=3.1",
         "pydantic~=1.8",
     ],
     extras_require={
@@ -30,7 +32,7 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "task_scheduler=rest_server.__main__:main",
+            "task_scheduler=task_scheduler.__main__:main",
         ],
     },
     license="Apache License, Version 2.0",
