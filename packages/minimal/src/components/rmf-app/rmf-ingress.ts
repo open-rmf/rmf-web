@@ -55,7 +55,7 @@ export class RmfIngress {
       return req;
     });
     const apiConfig: Configuration = {
-      accessToken: authenticator.user?.token,
+      accessToken: authenticator.token,
       basePath: appConfig.rmfServerUrl,
     };
 

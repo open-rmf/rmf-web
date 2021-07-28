@@ -8,12 +8,11 @@ import {
   Paper,
 } from '@material-ui/core';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
+import type { Task, SubmitTask } from 'api-client';
 import { RadioButtonGroup, TaskTable } from 'react-components';
 import { DataConfigContext } from '../app-contexts';
 import { useAutoRefresh } from './auto-refresh';
 import { PlacesContext, RmfIngressContext } from '../rmf-app/contexts';
-import { SubmitTask, TaskProgress } from '../../../../api-client/dist';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -49,10 +48,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const appUser = process.env.REACT_APP_USER;
 
   const { tasksApi, sioClient } = React.useContext(RmfIngressContext) || {};
-  const [task, setTask] = React.useState<SubmitTask>();
   const [autoRefreshState, autoRefreshDispatcher] = useAutoRefresh(sioClient);
+  const [task, setTask] = React.useState<SubmitTask>();
   const [page, setPage] = React.useState(0);
-  const [totalCount, setTotalCount] = React.useState(0);
+  const [hasMore, setHasMore] = React.useState(true);
   const places = React.useContext(PlacesContext);
   const placeNames = places.map((p) => p.vertex.name);
   const paginationOptions: Omit<
@@ -60,13 +59,13 @@ export default function Dashboard(_props: {}): React.ReactElement {
     'component'
   > = {
     page,
-    count: totalCount,
+    count: hasMore ? -1 : page * 10 + autoRefreshState.tasks.length,
     rowsPerPage: 10,
     rowsPerPageOptions: [10],
     onChangePage: (_ev, newPage) => setPage(newPage),
   };
 
-  const createLoopTask = (destination: string) => {
+  const createLoopTask = (destination: string): SubmitTask => {
     return {
       description: {
         start_name: 'supplies',
@@ -82,7 +81,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const fetchTasks = React.useCallback(
     async (page: number) => {
       if (!tasksApi) {
-        setTotalCount(0);
         return [];
       }
 
@@ -100,9 +98,9 @@ export default function Dashboard(_props: {}): React.ReactElement {
         page * 10,
         '-priority,-start_time',
       );
-      setTotalCount(resp.data.total_count);
-      const taskProgresses: TaskProgress[] = resp.data.items;
-      return taskProgresses.map((t) => t.task_summary) as RmfModels.TaskSummary[];
+      const tasks = resp.data as Task[];
+      setHasMore(tasks.length > 10);
+      return tasks.slice(0, 10);
     },
     [tasksApi],
   );
@@ -171,7 +169,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
         <Paper className={classes.paper}>
           <Grid container>
             <Grid item xs={12}>
-              <TaskTable tasks={autoRefreshState.tasks} />
+              <TaskTable tasks={autoRefreshState.tasks.map((t) => t.summary)} />
               {paginationOptions && (
                 <TablePagination
                   component="div"
