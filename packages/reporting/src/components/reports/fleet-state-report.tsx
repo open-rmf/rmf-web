@@ -3,8 +3,9 @@ import { DefaultReportQueryPayload, FleetStateReport, FleetStateRowsType } from 
 import appConfig from '../../app-config';
 import { AuthenticatorContext } from '../auth-contexts';
 import { getLogData } from './utils';
+import { ConfigProps } from 'react-components';
 
-const FleetStateReportConfig = () => {
+const FleetStateReportConfig = (props: ConfigProps) => {
   const authenticator = React.useContext(AuthenticatorContext);
   const getLogs = async (params: DefaultReportQueryPayload): Promise<FleetStateRowsType> => {
     return (await getLogData(
@@ -14,7 +15,7 @@ const FleetStateReportConfig = () => {
     )) as FleetStateRowsType;
   };
 
-  return <FleetStateReport getLogs={getLogs} />;
+  return <FleetStateReport getLogs={getLogs} {...props} />;
 };
 
 export default FleetStateReportConfig;

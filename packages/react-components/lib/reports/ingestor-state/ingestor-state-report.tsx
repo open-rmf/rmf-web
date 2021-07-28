@@ -2,13 +2,14 @@ import React from 'react';
 import { DefaultReportQueryPayload, defaultReportStyles } from '../default-report-interface';
 import { DefaultDatesForm } from '../default-dates-form';
 import { IngestorStateReportTable, IngestorStateRowsType } from './ingestor-state-report-table';
+import { ConfigProps } from '../utils';
 
-export interface IngestorStateReportProps {
+export interface IngestorStateReportProps extends ConfigProps {
   getLogs: (data: DefaultReportQueryPayload) => Promise<IngestorStateRowsType>;
 }
 
 export const IngestorStateReport = (props: IngestorStateReportProps): React.ReactElement => {
-  const { getLogs } = props;
+  const { getLogs, ...otherProps } = props;
   const [logs, setLogs] = React.useState<IngestorStateRowsType>([]);
   const [lastSearchParams, setLastSearchParams] = React.useState<DefaultReportQueryPayload>({});
 
@@ -25,7 +26,7 @@ export const IngestorStateReport = (props: IngestorStateReportProps): React.Reac
 
   return (
     <>
-      <DefaultDatesForm search={searchLogs} />
+      <DefaultDatesForm search={searchLogs} {...otherProps} />
       <div className={classes.table}>
         {logs.length !== 0 && (
           <IngestorStateReportTable rows={logs} tableSize={'48vh'} addMoreRows={getMoreLogs} />

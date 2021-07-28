@@ -3,8 +3,9 @@ import { DefaultReportQueryPayload, UserLoginReport, UserLoginRowsType } from 'r
 import appConfig from '../../app-config';
 import { AuthenticatorContext } from '../auth-contexts';
 import { getLogData } from './utils';
+import { ConfigProps } from 'react-components';
 
-const UserLoginReportConfig = () => {
+const UserLoginReportConfig = (props: ConfigProps) => {
   const authenticator = React.useContext(AuthenticatorContext);
   const getLogs = async (params: DefaultReportQueryPayload): Promise<UserLoginRowsType> => {
     return (await getLogData(
@@ -14,7 +15,7 @@ const UserLoginReportConfig = () => {
     )) as UserLoginRowsType;
   };
 
-  return <UserLoginReport getLogs={getLogs} />;
+  return <UserLoginReport getLogs={getLogs} {...props} />;
 };
 
 export default UserLoginReportConfig;

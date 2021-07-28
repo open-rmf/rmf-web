@@ -7,8 +7,9 @@ import {
 import appConfig from '../../app-config';
 import { AuthenticatorContext } from '../auth-contexts';
 import { getLogData } from './utils';
+import { ConfigProps } from 'react-components';
 
-const IngestorStateReportConfig = () => {
+const IngestorStateReportConfig = (props: ConfigProps) => {
   const authenticator = React.useContext(AuthenticatorContext);
   const getLogs = async (params: DefaultReportQueryPayload): Promise<IngestorStateRowsType> => {
     return (await getLogData(
@@ -18,7 +19,7 @@ const IngestorStateReportConfig = () => {
     )) as IngestorStateRowsType;
   };
 
-  return <IngestorStateReport getLogs={getLogs} />;
+  return <IngestorStateReport getLogs={getLogs} {...props} />;
 };
 
 export default IngestorStateReportConfig;

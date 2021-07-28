@@ -1,5 +1,6 @@
 import React from 'react';
 import { BuildMenuType } from './reporter-side-bar-structure';
+import { ConfigProps } from 'react-components';
 
 import clsx from 'clsx';
 import { makeStyles, useTheme, Theme } from '@material-ui/core/styles';
@@ -13,6 +14,7 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 
 import { ReportContainer, Reports } from './report-list';
 import { ExpandableMultilevelMenuProps, MultiLevelMenu } from 'react-components';
@@ -94,6 +96,43 @@ export const ReportDashboard = (props: ReportDashboardProps) => {
   const [open, setOpen] = React.useState(true);
   const [currentReport, setCurrentReport] = React.useState(Reports.queryAllLogs);
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
+
+  const [fromLogDate, setFromLogDate] = React.useState<MaterialUiPickersDate>(new Date());
+  const [toLogDate, setToLogDate] = React.useState<MaterialUiPickersDate>(new Date());
+
+  const handleFromLogDateChange = React.useCallback((date: MaterialUiPickersDate) => {
+    setFromLogDate(date);
+  }, []);
+
+  const handleToLogDateChange = React.useCallback((date: MaterialUiPickersDate) => {
+    setToLogDate(date);
+  }, []);
+
+  const itemConfig = (props: ConfigProps): JSX.Element | null => {
+    if (Object.prototype.hasOwnProperty.call(reportContainer, currentReport)) {
+      switch (currentReport) {
+        case Reports.queryAllLogs:
+          const QueryConfig = reportContainer[currentReport];
+          return <QueryConfig />;
+        case Reports.showDispenserStateReport:
+        case Reports.showDoorStateReport:
+        case Reports.showFleetStateReport:
+        case Reports.showHealthReport:
+        case Reports.showIngestorStateReport:
+        case Reports.showLiftStateReport:
+        case Reports.showLoginsReport:
+        case Reports.showLogoutsReport:
+        case Reports.showLoginFailuresReport:
+        case Reports.showTasksReport:
+          const Config = reportContainer[currentReport];
+          return <Config {...props} />;
+        default:
+          return null;
+      }
+    } else {
+      return null;
+    }
+  };
 
   const setReport = React.useCallback(
     (report: Reports) => {
@@ -202,10 +241,12 @@ export const ReportDashboard = (props: ReportDashboardProps) => {
         })}
       >
         <div className={classes.drawerHeader} />
-        {Object.prototype.hasOwnProperty.call(reportContainer, currentReport) &&
-        reportContainer[currentReport]
-          ? reportContainer[currentReport]
-          : null}
+        {itemConfig({
+          fromLogDate,
+          toLogDate,
+          onSelectFromDate: handleFromLogDateChange,
+          onSelectToDate: handleToLogDateChange,
+        })}
       </main>
     </div>
   );

@@ -1,4 +1,3 @@
-import React from 'react';
 import AllLogsReport from './reports/all-logs-report';
 import DispenserStateReportConfig from './reports/dispenser-state-report';
 import DoorStateReportConfig from './reports/door-state-report';
@@ -10,6 +9,7 @@ import TaskSummaryReportConfig from './reports/task-summary-report';
 import UserLoginFailureReportConfig from './reports/user-login-failure-report';
 import UserLoginReportConfig from './reports/user-login-report';
 import UserLogoutReportConfig from './reports/user-logout-report';
+import { ConfigProps } from 'react-components';
 
 export enum Reports {
   queryAllLogs = 'queryAllLogs',
@@ -36,18 +36,18 @@ export enum Reports {
  * Report dictionary with it associated component
  */
 
-export const ReportContainer: Record<string, React.ReactElement> = {
-  [Reports.queryAllLogs]: <AllLogsReport />,
-  [Reports.showDispenserStateReport]: <DispenserStateReportConfig />,
-  [Reports.showDoorStateReport]: <DoorStateReportConfig />,
-  [Reports.showFleetStateReport]: <FleetStateReportConfig />,
-  [Reports.showHealthReport]: <HealthReportConfig />,
-  [Reports.showIngestorStateReport]: <IngestorStateReportConfig />,
-  [Reports.showLiftStateReport]: <LiftStateReportConfig />,
-  [Reports.showLoginsReport]: <UserLoginReportConfig />,
-  [Reports.showLogoutsReport]: <UserLogoutReportConfig />,
-  [Reports.showLoginFailuresReport]: <UserLoginFailureReportConfig />,
-  [Reports.showTasksReport]: <TaskSummaryReportConfig />,
+export const ReportContainer: Record<string, (props: ConfigProps) => JSX.Element> = {
+  [Reports.queryAllLogs]: AllLogsReport,
+  [Reports.showDispenserStateReport]: DispenserStateReportConfig,
+  [Reports.showDoorStateReport]: DoorStateReportConfig,
+  [Reports.showFleetStateReport]: FleetStateReportConfig,
+  [Reports.showHealthReport]: HealthReportConfig,
+  [Reports.showIngestorStateReport]: IngestorStateReportConfig,
+  [Reports.showLiftStateReport]: LiftStateReportConfig,
+  [Reports.showLoginsReport]: UserLoginReportConfig,
+  [Reports.showLogoutsReport]: UserLogoutReportConfig,
+  [Reports.showLoginFailuresReport]: UserLoginFailureReportConfig,
+  [Reports.showTasksReport]: TaskSummaryReportConfig,
 };
 
 // To be implemented

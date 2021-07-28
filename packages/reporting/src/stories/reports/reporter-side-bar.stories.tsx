@@ -3,6 +3,7 @@ import { LogManagement } from 'react-components';
 import { ReportDashboard } from '../../components/report-dashboard';
 import { Reports } from '../../components/report-list';
 import { buildReportMenuStructure } from '../../components/reporter-side-bar-structure';
+import { ConfigProps } from 'react-components';
 
 export default {
   title: 'Reports',
@@ -34,21 +35,23 @@ const getLogs = () => {
 const getLogsPromise = async () => getLogs();
 const getLabelsPromise = async () => getLogLabels();
 
-const ReportContainer: Record<string, React.ReactElement> = {
-  [Reports.queryAllLogs]: <LogManagement getLogs={getLogsPromise} getLabels={getLabelsPromise} />,
-  [Reports.showChargerStateReport]: <h1>Still not implemented</h1>,
-  [Reports.showDoorStateReport]: <h1>Still not implemented</h1>,
-  [Reports.showLiftStateReport]: <h1>Still not implemented</h1>,
-  [Reports.showNegotiationsReport]: <h1>Still not implemented</h1>,
-  [Reports.showRobotStateReport]: <h1>Still not implemented</h1>,
-  [Reports.showRobotMotionPlansReport]: <h1>Still not implemented</h1>,
-  [Reports.showRobotActionReport]: <h1>Still not implemented</h1>,
-  [Reports.showTasksReport]: <h1>Still not implemented</h1>,
-  [Reports.showUserActionsReport]: <h1>Still not implemented</h1>,
-  [Reports.showLoginsReport]: <h1>Still not implemented</h1>,
-  [Reports.showLogoutsReport]: <h1>Still not implemented</h1>,
-  [Reports.showLoginFailuresReport]: <h1>Still not implemented</h1>,
-  [Reports.showWorkCellStatesReport]: <h1>Still not implemented</h1>,
+const ReportContainer: Record<string, (props: ConfigProps) => JSX.Element> = {
+  [Reports.queryAllLogs]: () => (
+    <LogManagement getLogs={getLogsPromise} getLabels={getLabelsPromise} />
+  ),
+  [Reports.showChargerStateReport]: () => <h1>Still not implemented</h1>,
+  [Reports.showDoorStateReport]: () => <h1>Still not implemented</h1>,
+  [Reports.showLiftStateReport]: () => <h1>Still not implemented</h1>,
+  [Reports.showNegotiationsReport]: () => <h1>Still not implemented</h1>,
+  [Reports.showRobotStateReport]: () => <h1>Still not implemented</h1>,
+  [Reports.showRobotMotionPlansReport]: () => <h1>Still not implemented</h1>,
+  [Reports.showRobotActionReport]: () => <h1>Still not implemented</h1>,
+  [Reports.showTasksReport]: () => <h1>Still not implemented</h1>,
+  [Reports.showUserActionsReport]: () => <h1>Still not implemented</h1>,
+  [Reports.showLoginsReport]: () => <h1>Still not implemented</h1>,
+  [Reports.showLogoutsReport]: () => <h1>Still not implemented</h1>,
+  [Reports.showLoginFailuresReport]: () => <h1>Still not implemented</h1>,
+  [Reports.showWorkCellStatesReport]: () => <h1>Still not implemented</h1>,
 };
 
 export const StaticReportsView = () => (

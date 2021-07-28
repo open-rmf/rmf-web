@@ -2,13 +2,14 @@ import React from 'react';
 import { DefaultReportQueryPayload, defaultReportStyles } from '../default-report-interface';
 import { DefaultDatesForm } from '../default-dates-form';
 import { TaskSummaryReportTable, TaskSummaryRowsType } from './task-summary-report-table';
+import { ConfigProps } from '../utils';
 
-export interface TaskSummaryReportProps {
+export interface TaskSummaryReportProps extends ConfigProps {
   getLogs: (data: DefaultReportQueryPayload) => Promise<TaskSummaryRowsType>;
 }
 
 export const TaskSummaryReport = (props: TaskSummaryReportProps): React.ReactElement => {
-  const { getLogs } = props;
+  const { getLogs, ...otherProps } = props;
   const [logs, setLogs] = React.useState<TaskSummaryRowsType>([]);
   const [lastSearchParams, setLastSearchParams] = React.useState<DefaultReportQueryPayload>({});
 
@@ -25,7 +26,7 @@ export const TaskSummaryReport = (props: TaskSummaryReportProps): React.ReactEle
 
   return (
     <>
-      <DefaultDatesForm search={searchLogs} />
+      <DefaultDatesForm search={searchLogs} {...otherProps} />
       <div className={classes.table}>
         {logs.length !== 0 && (
           <TaskSummaryReportTable rows={logs} tableSize={'48vh'} addMoreRows={getMoreLogs} />

@@ -2,13 +2,14 @@ import React from 'react';
 import { DefaultReportQueryPayload, defaultReportStyles } from '../default-report-interface';
 import { DefaultDatesForm } from '../default-dates-form';
 import { HealthReportTable, HealthRowsType } from './health-report-table';
+import { ConfigProps } from '../utils';
 
-export interface HealthReportProps {
+export interface HealthReportProps extends ConfigProps {
   getLogs: (data: DefaultReportQueryPayload) => Promise<HealthRowsType>;
 }
 
 export const HealthReport = (props: HealthReportProps): React.ReactElement => {
-  const { getLogs } = props;
+  const { getLogs, ...otherProps } = props;
   const [logs, setLogs] = React.useState<HealthRowsType>([]);
   const [lastSearchParams, setLastSearchParams] = React.useState<DefaultReportQueryPayload>({});
 
@@ -25,7 +26,7 @@ export const HealthReport = (props: HealthReportProps): React.ReactElement => {
 
   return (
     <>
-      <DefaultDatesForm search={searchLogs} />
+      <DefaultDatesForm search={searchLogs} {...otherProps} />
       <div className={classes.table}>
         {logs.length !== 0 && (
           <HealthReportTable rows={logs} tableSize={'48vh'} addMoreRows={getMoreLogs} />

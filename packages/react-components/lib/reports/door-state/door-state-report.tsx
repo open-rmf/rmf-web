@@ -2,13 +2,14 @@ import React from 'react';
 import { DefaultReportQueryPayload, defaultReportStyles } from '../default-report-interface';
 import { DefaultDatesForm } from '../default-dates-form';
 import { DoorStateReportTable, DoorStateRowsType } from './door-state-report-table';
+import { ConfigProps } from '../utils';
 
-export interface DoorStateReportProps {
+export interface DoorStateReportProps extends ConfigProps {
   getLogs: (data: DefaultReportQueryPayload) => Promise<DoorStateRowsType>;
 }
 
 export const DoorStateReport = (props: DoorStateReportProps): React.ReactElement => {
-  const { getLogs } = props;
+  const { getLogs, ...otherProps } = props;
   const [logs, setLogs] = React.useState<DoorStateRowsType>([]);
   const [lastSearchParams, setLastSearchParams] = React.useState<DefaultReportQueryPayload>({});
 
@@ -25,7 +26,7 @@ export const DoorStateReport = (props: DoorStateReportProps): React.ReactElement
 
   return (
     <>
-      <DefaultDatesForm search={searchLogs} />
+      <DefaultDatesForm search={searchLogs} {...otherProps} />
       <div className={classes.table}>
         {logs.length !== 0 && (
           <DoorStateReportTable rows={logs} tableSize={'48vh'} addMoreRows={getMoreLogs} />
