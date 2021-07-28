@@ -1,13 +1,13 @@
 from datetime import datetime
-from typing import Callable, Dict, List, Optional
+from typing import Dict, List, Optional
 
 from fastapi import Depends, HTTPException
 from fastapi.param_functions import Query
 from fastapi.responses import JSONResponse
 
+from api_server.base_app import BaseApp
 from api_server.dependencies import AddPaginationQuery, pagination_query
 from api_server.fast_io import DataStore, FastIORouter
-from api_server.gateway import RmfGateway
 from api_server.models import (
     CancelTask,
     SubmitTask,
@@ -19,28 +19,24 @@ from api_server.models import (
     User,
 )
 from api_server.models import tortoise_models as ttm
-from api_server.repositories import RmfRepository
-from api_server.rmf_io import RmfEvents
 from api_server.routes.tasks.dispatcher import DispatcherClient
 from api_server.routes.tasks.utils import get_task_progress
 from api_server.services.tasks import convert_task_request
 
 
 class TasksRouter(FastIORouter):
-    def __init__(
-        self,
-        user_dep: Callable[[], User],
-        rmf_repo: RmfRepository,
-        rmf_events: RmfEvents,
-        rmf_gateway_dep: Callable[[], RmfGateway],
-    ):
+    def __init__(self, app: BaseApp):
+        user_dep = app.auth_dep
+        rmf_repo = app.rmf_repo
+        rmf_events = app.rmf_events
+
         super().__init__(tags=["Tasks"], user_dep=user_dep)
         _dispatcher_client: Optional[DispatcherClient] = None
 
         def dispatcher_client_dep():
             nonlocal _dispatcher_client
             if _dispatcher_client is None:
-                _dispatcher_client = DispatcherClient(rmf_gateway_dep())
+                _dispatcher_client = DispatcherClient(app.rmf_gateway)
             return _dispatcher_client
 
         class TaskSummaryDataStore(DataStore[TaskSummary]):
@@ -80,7 +76,7 @@ class TasksRouter(FastIORouter):
                 authz_grp=tt_summary.authz_grp,
                 progress=get_task_progress(
                     py_summary,
-                    rmf_gateway_dep(),
+                    app.rmf_gateway.now(),
                 ),
                 summary=py_summary,
             )
@@ -152,7 +148,7 @@ class TasksRouter(FastIORouter):
             dispatcher_client: DispatcherClient = Depends(dispatcher_client_dep),
         ):
             req_msg, err_msg = convert_task_request(
-                submit_task_params, dispatcher_client.get_sim_time()
+                submit_task_params, app.rmf_gateway.now()
             )
 
             if err_msg:

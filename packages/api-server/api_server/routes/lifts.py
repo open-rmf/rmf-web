@@ -1,23 +1,15 @@
-from typing import Callable, List
+from typing import List
 
-from fastapi import Depends
-from rmf_lift_msgs.msg import LiftRequest as RmfLiftRequest
-
+from api_server.base_app import BaseApp
 from api_server.fast_io import FastIORouter
-from api_server.gateway import RmfGateway
 from api_server.models import Lift, LiftHealth, LiftRequest, LiftState
-from api_server.repositories import RmfRepository
-from api_server.rmf_io import RmfEvents
 
 
 class LiftsRouter(FastIORouter):
-    def __init__(
-        self,
-        rmf_events: RmfEvents,
-        rmf_gateway_dep: Callable[[], RmfGateway],
-        rmf_repo: RmfRepository,
-    ):
+    def __init__(self, app: BaseApp):
         super().__init__(tags=["Lifts"])
+        rmf_repo = app.rmf_repo
+        rmf_events = app.rmf_events
 
         @self.get("", response_model=List[Lift])
         async def get_lifts():
@@ -38,17 +30,13 @@ class LiftsRouter(FastIORouter):
             return {"lift_name": lift_health.id_}, lift_health
 
         @self.post("/{lift_name}/request")
-        async def _post_lift_request(
+        def _post_lift_request(
             lift_name: str,
             lift_request: LiftRequest,
-            ros_node: RmfGateway = Depends(rmf_gateway_dep),
         ):
-            msg = RmfLiftRequest(
-                lift_name=lift_name,
-                request_time=ros_node.get_clock().now().to_msg(),
-                session_id=ros_node.get_name(),
-                request_type=lift_request.request_type,
-                destination_floor=lift_request.destination,
-                door_state=lift_request.door_mode,
+            app.rmf_gateway.request_lift(
+                lift_name,
+                lift_request.destination,
+                lift_request.request_type,
+                lift_request.door_mode,
             )
-            ros_node.lift_req.publish(msg)

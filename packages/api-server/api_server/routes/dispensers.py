@@ -1,18 +1,15 @@
 from typing import List
 
+from api_server.base_app import BaseApp
 from api_server.fast_io import FastIORouter
 from api_server.models import Dispenser, DispenserHealth, DispenserState
-from api_server.repositories import RmfRepository
-from api_server.rmf_io import RmfEvents
 
 
 class DispensersRouter(FastIORouter):
-    def __init__(
-        self,
-        rmf_events: RmfEvents,
-        rmf_repo: RmfRepository,
-    ):
+    def __init__(self, app: BaseApp):
         super().__init__(tags=["Dispensers"])
+        rmf_repo = app.rmf_repo
+        rmf_events = app.rmf_events
 
         @self.get("", response_model=List[Dispenser])
         async def get_dispensers():

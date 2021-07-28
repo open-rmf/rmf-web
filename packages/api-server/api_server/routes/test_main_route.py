@@ -1,21 +1,21 @@
-from api_server.test.test_fixtures import RouteFixture
+from api_server.test.test_fixtures import AppFixture
 
 
-class TestMainRoute(RouteFixture):
-    def test_effective_permissions(self):
-        user = self.create_user()
-        role1 = self.create_role()
-        self.add_permission(role1, "test_action", "test_group")
-        role2 = self.create_role()
-        self.add_permission(role2, "test_action_2", "test_group")
-        role3 = self.create_role()
-        self.add_permission(role3, "test_action_2", "test_group")
-        self.assign_role(user, role1)
-        self.assign_role(user, role2)
-        self.assign_role(user, role3)
+class TestMainRoute(AppFixture):
+    async def test_effective_permissions(self):
+        user = await self.create_user()
+        role1 = await self.create_role()
+        await self.add_permission(role1, "test_action", "test_group")
+        role2 = await self.create_role()
+        await self.add_permission(role2, "test_action_2", "test_group")
+        role3 = await self.create_role()
+        await self.add_permission(role3, "test_action_2", "test_group")
+        await self.assign_role(user, role1)
+        await self.assign_role(user, role2)
+        await self.assign_role(user, role3)
 
         self.set_user(user)
-        resp = self.session.get(f"{self.base_url}/permissions")
+        resp = await self.client.get("/permissions")
         self.assertEqual(200, resp.status_code)
         perms = resp.json()
         self.assertEqual(2, len(perms))

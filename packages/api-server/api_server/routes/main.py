@@ -1,13 +1,15 @@
-from typing import Callable, List
+from typing import List
 
 from fastapi import APIRouter, Depends
 
+from api_server.base_app import BaseApp
 from api_server.models import Permission, User
 from api_server.models import tortoise_models as ttm
 
 
-def main_router(user_dep: Callable[..., User]):
+def main_router(app: BaseApp):
     router = APIRouter()
+    user_dep = app.auth_dep
 
     @router.get("/user", response_model=User)
     async def get_user(user: User = Depends(user_dep)):

@@ -7,16 +7,19 @@ import threading
 import time
 import unittest
 from typing import Awaitable, Callable, Optional, TypeVar, Union
+from unittest.mock import Mock
 from uuid import uuid4
 
 import jwt
 import rclpy
 import rclpy.node
 import requests
+from httpx import AsyncClient
 from urllib3.util.retry import Retry
 
 from api_server.app import App
 from api_server.app_config import load_config
+from api_server.gateway import RmfGateway
 from api_server.test.server import BackgroundServer
 
 T = TypeVar("T")
@@ -81,10 +84,78 @@ def generate_token(username: str):
     )
 
 
+class AppFixture(unittest.IsolatedAsyncioTestCase):
+    async def asyncSetUp(self):
+        self.rmf_gateway: RmfGateway = None
+
+        def rmf_gateway_fc(rmf_events, static_files_repo):
+            orig = RmfGateway(rmf_events, static_files_repo)
+            self.rmf_gateway = Mock(orig)
+            self.rmf_gateway.now = orig.now
+            return self.rmf_gateway
+
+        self.app = App(
+            app_config=load_config(f"{os.path.dirname(__file__)}/test_config.py"),
+            rmf_gateway_fc=rmf_gateway_fc,
+        )
+        for handler in self.app.fapi.router.on_startup:
+            if asyncio.iscoroutinefunction(handler):
+                await handler()
+            else:
+                handler()
+        self.client = AsyncClient(app=self.app, base_url="http://test")
+        self.set_user("admin")
+        await self.client.__aenter__()
+
+    async def asyncTearDown(self):
+        await self.client.__aexit__()
+        for handler in self.app.fapi.router.on_shutdown:
+            if asyncio.iscoroutinefunction(handler):
+                await handler()
+            else:
+                handler()
+
+    def set_user(self, username: str):
+        token = generate_token(username)
+        self.client.headers["Authorization"] = f"bearer {token}"
+
+    async def create_user(self, admin: bool = False):
+        username = f"user_{uuid4().hex}"
+        resp = await self.client.post(
+            "/admin/users",
+            json={"username": username, "is_admin": admin},
+        )
+        self.assertEqual(200, resp.status_code)
+        return username
+
+    async def create_role(self):
+        role_name = f"role_{uuid4().hex}"
+        resp = await self.client.post("/admin/roles", json={"name": role_name})
+        self.assertEqual(200, resp.status_code)
+        return role_name
+
+    async def add_permission(
+        self, role: str, action: str, authz_grp: Optional[str] = ""
+    ):
+        resp = await self.client.post(
+            f"/admin/roles/{role}/permissions",
+            json={"action": action, "authz_grp": authz_grp},
+        )
+        self.assertEqual(200, resp.status_code)
+
+    async def assign_role(self, username: str, role: str):
+        resp = await self.client.post(
+            f"/admin/users/{username}/roles", json={"name": role}
+        )
+        self.assertEqual(200, resp.status_code)
+
+
 class RouteFixture(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.app = App(load_config(f"{os.path.dirname(__file__)}/test_config.py"))
+        cls.app = App(
+            app_config=load_config(f"{os.path.dirname(__file__)}/test_config.py")
+        )
         cls.server = BackgroundServer(cls.app)
         cls.server.start()
         cls.base_url = cls.server.base_url

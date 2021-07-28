@@ -1,10 +1,11 @@
-from typing import Callable, List, Optional
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 from tortoise.exceptions import IntegrityError
 from tortoise.transactions import in_transaction
 
+from api_server.base_app import BaseApp
 from api_server.dependencies import AddPaginationQuery, pagination_query
 from api_server.models import Permission, User
 from api_server.models import tortoise_models as ttm
@@ -42,7 +43,9 @@ async def _get_db_user(username: str) -> ttm.User:
     return user
 
 
-def admin_router(user_dep: Callable[..., User]):
+def admin_router(app: BaseApp):
+    user_dep = app.auth_dep
+
     def admin_dep(user: User = Depends(user_dep)):
         if not user.is_admin:
             raise HTTPException(403)
@@ -117,16 +120,6 @@ def admin_router(user_dep: Callable[..., User]):
         role = await _get_db_role(body.name)
         await user.roles.add(role)
 
-    @router.delete("/users/{username}/roles")
-    async def delete_user_role(username: str, body: PostRoles):
-        """
-        Remove role from a user
-        """
-        user = await _get_db_user(username)
-        await user.fetch_related("roles")
-        role = await _get_db_role(body.name)
-        await user.roles.remove(role)
-
     @router.put("/users/{username}/roles")
     async def set_user_roles(username: str, body: List[PostRoles]):
         """
@@ -140,6 +133,16 @@ def admin_router(user_dep: Callable[..., User]):
                 raise HTTPException(422, "one or more roles does not exist")
             await user.roles.clear()
             await user.roles.add(*roles)
+
+    @router.delete("/users/{username}/roles/{role}")
+    async def delete_user_role(username: str, role: str):
+        """
+        Remove role from a user
+        """
+        user = await _get_db_user(username)
+        await user.fetch_related("roles")
+        role = await _get_db_role(role)
+        await user.roles.remove(role)
 
     @router.get("/roles", response_model=List[str])
     async def get_roles():
@@ -175,7 +178,10 @@ def admin_router(user_dep: Callable[..., User]):
         permissions = await ttm.ResourcePermission.filter(
             role=db_role
         ).prefetch_related("role")
-        return [Permission(authz_grp=p.authz_grp, action=p.action) for p in permissions]
+        return [
+            Permission(id=p.pk, authz_grp=p.authz_grp, action=p.action)
+            for p in permissions
+        ]
 
     @router.post("/roles/{role}/permissions")
     async def add_role_permission(role: str, body: PostRolePermissions):
@@ -189,15 +195,13 @@ def admin_router(user_dep: Callable[..., User]):
             action=body.action,
         )
 
-    @router.delete("/roles/{role}/permissions")
-    async def delete_role_permission(role: str, body: PostRolePermissions):
+    @router.delete("/roles/{role}/permissions/{perm_id}")
+    async def delete_role_permission(role: str, perm_id: int):
         """
         Delete a permission from a role
         """
         db_role = await _get_db_role(role)
-        perm = await ttm.ResourcePermission.get_or_none(
-            authz_grp=body.authz_grp, role=db_role, action=body.action
-        )
+        perm = await ttm.ResourcePermission.get_or_none(id=perm_id, role=db_role)
         if perm:
             await perm.delete()
 

@@ -49,6 +49,7 @@ def make_building_map():
             Level(
                 name="L1",
                 elevation=0.0,
+                doors=[make_door()],
                 images=[
                     AffineImage(
                         name="test_image",
@@ -58,7 +59,7 @@ def make_building_map():
                 ],
             ),
         ],
-        lifts=[],
+        lifts=[make_lift()],
     )
 
 

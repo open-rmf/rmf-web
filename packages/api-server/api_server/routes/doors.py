@@ -1,28 +1,18 @@
-from typing import Callable, List
+from typing import List
 
-from fastapi import Depends
-from rmf_door_msgs.msg import DoorMode as RmfDoorMode
-from rmf_door_msgs.msg import DoorRequest as RmfDoorRequest
-
+from api_server.base_app import BaseApp
 from api_server.fast_io import FastIORouter
-from api_server.gateway import RmfGateway
 from api_server.models import Door, DoorHealth, DoorRequest, DoorState
-from api_server.repositories import RmfRepository
-from api_server.rmf_io import RmfEvents
 
 
 class DoorsRouter(FastIORouter):
-    def __init__(
-        self,
-        rmf_events: RmfEvents,
-        rmf_gateway_dep: Callable[[], RmfGateway],
-        rmf_repo: RmfRepository,
-    ):
+    def __init__(self, app: BaseApp):
         super().__init__(tags=["Doors"])
+        rmf_events = app.rmf_events
 
         @self.get("", response_model=List[Door])
         async def get_doors():
-            return await rmf_repo.get_doors()
+            return await app.rmf_repo.get_doors()
 
         @self.watch(
             "/{door_name}/state", rmf_events.door_states, response_model=DoorState
@@ -37,17 +27,8 @@ class DoorsRouter(FastIORouter):
             return {"door_name": door_health.id_}, door_health
 
         @self.post("/{door_name}/request")
-        async def post_door_request(
+        def post_door_request(
             door_name: str,
             door_request: DoorRequest,
-            ros_node: RmfGateway = Depends(rmf_gateway_dep),
         ):
-            msg = RmfDoorRequest(
-                door_name=door_name,
-                request_time=ros_node.get_clock().now().to_msg(),
-                requester_id=ros_node.get_name(),
-                requested_mode=RmfDoorMode(
-                    value=door_request.mode,
-                ),
-            )
-            ros_node.door_req.publish(msg)
+            app.rmf_gateway.request_door(door_name, door_request.mode)

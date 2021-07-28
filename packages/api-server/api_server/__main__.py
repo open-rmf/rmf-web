@@ -1,16 +1,15 @@
 import uvicorn
 
 from api_server.app import app
-from api_server.app_config import default_config
 
 
 def main():
     uvicorn.run(
         app,
-        host=default_config.host,
-        port=default_config.port,
-        root_path=default_config.public_url.path,
-        log_level=default_config.log_level.lower(),
+        host=app.app_config.host,
+        port=app.app_config.port,
+        root_path=app.app_config.public_url.path,
+        log_level=app.app_config.log_level.lower(),
     )
 
 

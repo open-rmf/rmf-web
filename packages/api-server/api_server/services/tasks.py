@@ -1,5 +1,3 @@
-from typing import Optional
-
 from builtin_interfaces.msg import Time as RosTime
 from fastapi import HTTPException
 from rmf_task_msgs.msg import Delivery as RmfDelivery
@@ -18,7 +16,7 @@ from api_server.models import tortoise_models as ttm
 from api_server.ros_time import convert_to_rmf_time
 
 
-def convert_task_request(task_request: SubmitTask, sim_time: Optional[RosTime] = None):
+def convert_task_request(task_request: SubmitTask, now: RosTime):
     """
     :param (obj) task_json:
     :return req_msgs, error_msg
@@ -61,7 +59,7 @@ def convert_task_request(task_request: SubmitTask, sim_time: Optional[RosTime] =
     else:
         return None, "Invalid TaskType"
 
-    rmf_start_time = convert_to_rmf_time(task_request.start_time, sim_time)
+    rmf_start_time = convert_to_rmf_time(task_request.start_time, now)
     req_msg.description.start_time = rmf_start_time
     return req_msg, ""
 

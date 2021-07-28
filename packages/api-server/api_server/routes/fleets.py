@@ -1,28 +1,22 @@
-import logging
-from typing import Callable, List, Optional
+from typing import List, Optional
 
 from fastapi import Depends, Query
 
+from api_server.base_app import BaseApp
 from api_server.dependencies import AddPaginationQuery, pagination_query
 from api_server.fast_io import FastIORouter
-from api_server.gateway import RmfGateway
 from api_server.models import Fleet, FleetState, RobotHealth, Task
 from api_server.models import tortoise_models as ttm
 from api_server.models.fleets import Robot
 from api_server.models.tasks import TaskStateEnum
-from api_server.rmf_io import RmfEvents
 from api_server.routes.tasks.utils import get_task_progress
 
 
 class FleetsRouter(FastIORouter):
-    def __init__(
-        self,
-        rmf_events: RmfEvents,
-        rmf_gateway_dep: Callable[[], RmfGateway],
-        *,
-        logger: logging.Logger,
-    ):
+    def __init__(self, app: BaseApp):
         super().__init__(tags=["Fleets"])
+        logger = app.logger
+        rmf_events = app.rmf_events
 
         @self.get("", response_model=List[Fleet])
         async def get_fleets(
@@ -91,7 +85,9 @@ class FleetsRouter(FastIORouter):
                         task_id=ts.task_id,
                         authz_grp=t.authz_grp,
                         summary=ts,
-                        progress=get_task_progress(t.to_pydantic(), rmf_gateway_dep()),
+                        progress=get_task_progress(
+                            t.to_pydantic(), app.rmf_gateway.get_clock().now().to_msg()
+                        ),
                     )
                 )
 

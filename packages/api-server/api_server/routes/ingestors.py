@@ -1,18 +1,15 @@
 from typing import List
 
+from api_server.base_app import BaseApp
 from api_server.fast_io import FastIORouter
 from api_server.models import Ingestor, IngestorHealth, IngestorState
-from api_server.repositories import RmfRepository
-from api_server.rmf_io import RmfEvents
 
 
 class IngestorsRouter(FastIORouter):
-    def __init__(
-        self,
-        rmf_events: RmfEvents,
-        rmf_repo: RmfRepository,
-    ):
+    def __init__(self, app: BaseApp):
         super().__init__(tags=["Ingestors"])
+        rmf_repo = app.rmf_repo
+        rmf_events = app.rmf_events
 
         @self.get("", response_model=List[Ingestor])
         async def get_ingestors():
