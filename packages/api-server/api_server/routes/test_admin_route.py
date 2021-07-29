@@ -67,8 +67,12 @@ class TestAdminRoute(AppFixture):
         self.assertEqual("test_group", permissions[0]["authz_grp"])
         self.assertEqual("test_action", permissions[0]["action"])
 
-        resp = await self.client.delete(
-            f"/admin/roles/{role}/permissions/{permissions[0]['id']}",
+        resp = await self.client.post(
+            f"/admin/roles/{role}/permissions/remove",
+            json={
+                "authz_grp": permissions[0]["authz_grp"],
+                "action": permissions[0]["action"],
+            },
         )
         self.assertEqual(200, resp.status_code)
 

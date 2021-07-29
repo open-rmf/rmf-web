@@ -29,7 +29,7 @@ import { ModelObject } from '../models';
 export const DoorsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     * **Available in socket.io**
+     * Available in socket.io
      * @summary Get Door Health
      * @param {string} door_name
      * @param {*} [options] Override http request option.
@@ -81,7 +81,7 @@ export const DoorsApiAxiosParamCreator = function (configuration?: Configuration
       };
     },
     /**
-     * **Available in socket.io**
+     * Available in socket.io
      * @summary Get Door State
      * @param {string} door_name
      * @param {*} [options] Override http request option.
@@ -249,7 +249,7 @@ export const DoorsApiAxiosParamCreator = function (configuration?: Configuration
 export const DoorsApiFp = function (configuration?: Configuration) {
   return {
     /**
-     * **Available in socket.io**
+     * Available in socket.io
      * @summary Get Door Health
      * @param {string} door_name
      * @param {*} [options] Override http request option.
@@ -276,7 +276,7 @@ export const DoorsApiFp = function (configuration?: Configuration) {
       };
     },
     /**
-     * **Available in socket.io**
+     * Available in socket.io
      * @summary Get Door State
      * @param {string} door_name
      * @param {*} [options] Override http request option.
@@ -355,7 +355,7 @@ export const DoorsApiFactory = function (
 ) {
   return {
     /**
-     * **Available in socket.io**
+     * Available in socket.io
      * @summary Get Door Health
      * @param {string} door_name
      * @param {*} [options] Override http request option.
@@ -370,7 +370,7 @@ export const DoorsApiFactory = function (
         .then((request) => request(axios, basePath));
     },
     /**
-     * **Available in socket.io**
+     * Available in socket.io
      * @summary Get Door State
      * @param {string} door_name
      * @param {*} [options] Override http request option.
@@ -420,7 +420,7 @@ export const DoorsApiFactory = function (
  */
 export class DoorsApi extends BaseAPI {
   /**
-   * **Available in socket.io**
+   * Available in socket.io
    * @summary Get Door Health
    * @param {string} door_name
    * @param {*} [options] Override http request option.
@@ -433,7 +433,7 @@ export class DoorsApi extends BaseAPI {
       .then((request) => request(this.axios, this.basePath));
   }
   /**
-   * **Available in socket.io**
+   * Available in socket.io
    * @summary Get Door State
    * @param {string} door_name
    * @param {*} [options] Override http request option.

@@ -36,7 +36,6 @@ export * from './param';
 export * from './permission';
 export * from './place';
 export * from './post-make-admin';
-export * from './post-role-permissions';
 export * from './post-roles';
 export * from './post-users';
 export * from './priority';

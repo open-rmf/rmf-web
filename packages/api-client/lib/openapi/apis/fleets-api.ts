@@ -28,7 +28,7 @@ import { Robot } from '../models';
 export const FleetsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     * **Available in socket.io**
+     * Available in socket.io
      * @summary Get Fleet State
      * @param {string} name
      * @param {*} [options] Override http request option.
@@ -144,7 +144,7 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
       };
     },
     /**
-     * **Available in socket.io**
+     * Available in socket.io
      * @summary Get Robot Health
      * @param {string} fleet
      * @param {string} robot
@@ -283,7 +283,7 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
 export const FleetsApiFp = function (configuration?: Configuration) {
   return {
     /**
-     * **Available in socket.io**
+     * Available in socket.io
      * @summary Get Fleet State
      * @param {string} name
      * @param {*} [options] Override http request option.
@@ -337,7 +337,7 @@ export const FleetsApiFp = function (configuration?: Configuration) {
       };
     },
     /**
-     * **Available in socket.io**
+     * Available in socket.io
      * @summary Get Robot Health
      * @param {string} fleet
      * @param {string} robot
@@ -404,7 +404,7 @@ export const FleetsApiFactory = function (
 ) {
   return {
     /**
-     * **Available in socket.io**
+     * Available in socket.io
      * @summary Get Fleet State
      * @param {string} name
      * @param {*} [options] Override http request option.
@@ -437,7 +437,7 @@ export const FleetsApiFactory = function (
         .then((request) => request(axios, basePath));
     },
     /**
-     * **Available in socket.io**
+     * Available in socket.io
      * @summary Get Robot Health
      * @param {string} fleet
      * @param {string} robot
@@ -487,7 +487,7 @@ export const FleetsApiFactory = function (
  */
 export class FleetsApi extends BaseAPI {
   /**
-   * **Available in socket.io**
+   * Available in socket.io
    * @summary Get Fleet State
    * @param {string} name
    * @param {*} [options] Override http request option.
@@ -522,7 +522,7 @@ export class FleetsApi extends BaseAPI {
       .then((request) => request(this.axios, this.basePath));
   }
   /**
-   * **Available in socket.io**
+   * Available in socket.io
    * @summary Get Robot Health
    * @param {string} fleet
    * @param {string} robot

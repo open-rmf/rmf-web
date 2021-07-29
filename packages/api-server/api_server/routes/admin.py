@@ -1,14 +1,14 @@
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query
-from pydantic import BaseModel
-from tortoise.exceptions import IntegrityError
-from tortoise.transactions import in_transaction
-
 from api_server.base_app import BaseApp
 from api_server.dependencies import AddPaginationQuery, pagination_query
 from api_server.models import User
 from api_server.models import tortoise_models as ttm
+from api_server.models.authz import Permission
+from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel
+from tortoise.exceptions import IntegrityError
+from tortoise.transactions import in_transaction
 
 
 class PostUsers(BaseModel):
@@ -22,17 +22,6 @@ class PostRoles(BaseModel):
 
 class PostMakeAdmin(BaseModel):
     admin: bool
-
-
-class GetRolePermission(BaseModel):
-    id: int
-    authz_grp: str
-    action: str
-
-
-class PostRolePermissions(BaseModel):
-    action: str
-    authz_grp: str
 
 
 async def _get_db_role(role_name: str) -> ttm.Role:
@@ -175,7 +164,7 @@ def admin_router(app: BaseApp):
         db_role = await _get_db_role(role)
         await db_role.delete()
 
-    @router.get("/roles/{role}/permissions", response_model=List[GetRolePermission])
+    @router.get("/roles/{role}/permissions", response_model=List[Permission])
     async def get_role_permissions(role: str):
         """
         Get all permissions of a role
@@ -184,13 +173,10 @@ def admin_router(app: BaseApp):
         permissions = await ttm.ResourcePermission.filter(
             role=db_role
         ).prefetch_related("role")
-        return [
-            GetRolePermission(id=p.pk, authz_grp=p.authz_grp, action=p.action)
-            for p in permissions
-        ]
+        return [Permission(authz_grp=p.authz_grp, action=p.action) for p in permissions]
 
     @router.post("/roles/{role}/permissions")
-    async def add_role_permission(role: str, body: PostRolePermissions):
+    async def add_role_permission(role: str, body: Permission):
         """
         Add a permission to a role
         """
@@ -201,13 +187,15 @@ def admin_router(app: BaseApp):
             action=body.action,
         )
 
-    @router.delete("/roles/{role}/permissions/{perm_id}")
-    async def delete_role_permission(role: str, perm_id: int):
+    @router.post("/roles/{role}/permissions/remove")
+    async def remove_role_permission(role: str, permission: Permission):
         """
         Delete a permission from a role
         """
         db_role = await _get_db_role(role)
-        perm = await ttm.ResourcePermission.get_or_none(id=perm_id, role=db_role)
+        perm = await ttm.ResourcePermission.get_or_none(
+            role=db_role, authz_grp=permission.authz_grp, action=permission.action
+        )
         if perm:
             await perm.delete()
 
