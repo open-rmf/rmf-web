@@ -14,31 +14,37 @@
 /**
  *
  * @export
- * @interface Robot
+ * @interface ChargerRequest
  */
-export interface Robot {
+export interface ChargerRequest {
   /**
    *
    * @type {string}
-   * @memberof Robot
+   * @memberof ChargerRequest
    */
-  fleet: any;
+  charger_name?: any;
   /**
    *
    * @type {string}
-   * @memberof Robot
+   * @memberof ChargerRequest
    */
-  name: any;
+  fleet_name?: any;
   /**
    *
-   * @type {RobotState}
-   * @memberof Robot
+   * @type {string}
+   * @memberof ChargerRequest
    */
-  state: any;
+  robot_name?: any;
   /**
    *
-   * @type {Array&lt;TaskProgress&gt;}
-   * @memberof Robot
+   * @type {Duration}
+   * @memberof ChargerRequest
    */
-  tasks?: any;
+  start_timeout?: any;
+  /**
+   *
+   * @type {string}
+   * @memberof ChargerRequest
+   */
+  request_id?: any;
 }

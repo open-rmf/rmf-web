@@ -13,6 +13,7 @@ from rclpy.subscription import Subscription
 from rmf_building_map_msgs.msg import AffineImage as RmfAffineImage
 from rmf_building_map_msgs.msg import BuildingMap as RmfBuildingMap
 from rmf_building_map_msgs.msg import Level as RmfLevel
+from rmf_charger_msgs.msg import ChargerRequest as RmfChargerRequest
 from rmf_dispenser_msgs.msg import DispenserState as RmfDispenserState
 from rmf_door_msgs.msg import DoorRequest as RmfDoorRequest
 from rmf_door_msgs.msg import DoorState as RmfDoorState
@@ -28,6 +29,7 @@ from rosidl_runtime_py.convert import message_to_ordereddict
 
 from .models import (
     BuildingMap,
+    ChargerRequest,
     DispenserState,
     DoorState,
     FleetState,
@@ -35,7 +37,7 @@ from .models import (
     LiftState,
     TaskSummary,
 )
-from .repositories import RmfRepository, StaticFilesRepository
+from .repositories import StaticFilesRepository
 from .rmf_io import RmfEvents
 
 
@@ -177,12 +179,22 @@ class RmfGateway(rclpy.node.Node):
         )
         self._subscriptions.append(map_sub)
 
+        charger_request_sub = self.create_subscription(
+            RmfChargerRequest,
+            "rmf_charger/requests",
+            lambda msg: self.rmf_events.charger_requests.on_next(
+                ChargerRequest.from_orm(msg)
+            ),
+            10,
+        )
+        self._subscriptions.append(charger_request_sub)
+
     def unsubscribe_all(self):
         for sub in self._subscriptions:
             sub.destroy()
         self._subscriptions = []
 
-    async def update_tasks(self, repo: RmfRepository):
+    async def update_tasks(self):
         """
         Updates the tasks in a RmfRepository with the current tasks in RMF.
         """
@@ -191,6 +203,8 @@ class RmfGateway(rclpy.node.Node):
         )
         if not resp.success:
             raise HTTPException(500, "service call succeeded but RMF returned an error")
+
+
 #        for task_summary in resp.active_tasks:
 #            task_summary: RmfTaskSummary
 #            await repo.save_task_summary(task_summary)

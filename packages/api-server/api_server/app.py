@@ -119,6 +119,10 @@ class App(FastIO):
                 rmf_events.robot_health.on_next(health)
             logger.info(f"loaded {len(robot_health)} robot health")
 
+            charger_requests = await rmf_repo.query_charger_requests()
+            for charger in charger_requests:
+                rmf_events.charger_requests.on_next(charger)
+
             logger.info("updating tasks from RMF")
             try:
                 # Sometimes the node has not finished discovery so we need to call
@@ -128,7 +132,7 @@ class App(FastIO):
                 ready = self.rmf_gateway.get_tasks_srv.wait_for_service(1)
                 if not ready:
                     raise HTTPException(503, "ros service not ready")
-                await self.rmf_gateway.update_tasks(rmf_repo)
+                await self.rmf_gateway.update_tasks()
             except HTTPException as e:
                 logger.error(f"failed to update tasks from RMF ({e.detail})")
 
@@ -174,6 +178,11 @@ class App(FastIO):
         self.include_router(
             routes.FleetsRouter(self.rmf_events, rmf_gateway_dep, logger=logger),
             prefix="/fleets",
+        )
+
+        self.include_router(
+            routes.ChargersRouter(self.rmf_events),
+            prefix="/chargers",
         )
 
         @self.fapi.on_event("startup")

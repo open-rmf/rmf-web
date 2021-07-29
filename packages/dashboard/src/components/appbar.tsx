@@ -15,6 +15,9 @@ import React from 'react';
 import { HeaderBar, LogoButton, NavigationBar, Tooltip } from 'react-components';
 import { AppControllerContext, ResourcesContext, TooltipsContext } from './app-contexts';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
+import { RmfIngressContext, PlacesContext } from './rmf-app';
+import AlertSnackBar, { iniCharger } from './alert-snack-bar';
+import * as RmfModels from 'rmf-models';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -46,6 +49,44 @@ export const AppBar = React.memo(
     const authenticator = React.useContext(AuthenticatorContext);
     const user = React.useContext(UserContext);
     const { showTooltips } = React.useContext(TooltipsContext);
+
+    const { sioClient } = React.useContext(RmfIngressContext) || {};
+    const places = React.useContext(PlacesContext);
+    const chargers = React.useMemo(
+      () =>
+        Object.values(places).reduce<string[]>((place, it) => {
+          for (const param of it.vertex.params) {
+            if (param.name === 'is_charger' && param.value_bool) {
+              place.push(it.vertex.name);
+              break;
+            }
+          }
+          return place;
+        }, []),
+      [places],
+    );
+
+    const [charger, setCharger] = React.useState<RmfModels.ChargerRequest>(iniCharger);
+    const [showAlert, setShowAlert] = React.useState(false);
+
+    const onMessageClose = () => {
+      setCharger(iniCharger);
+      setShowAlert(false);
+    };
+
+    React.useEffect(() => {
+      (async () => {
+        if (!sioClient || chargers.length === 0) {
+          return;
+        }
+
+        chargers.forEach((charger) => {
+          sioClient.subscribeChargerRequest(charger, (state) => {
+            setCharger(state);
+          });
+        });
+      })();
+    }, [sioClient, chargers]);
 
     async function handleLogout(): Promise<void> {
       try {
@@ -131,6 +172,14 @@ export const AppBar = React.memo(
             </Tooltip>
           </Toolbar>
         </HeaderBar>
+        <AlertSnackBar
+          message={`Robot ${charger.robot_name} has returned for charging. Please connect its charger and press ok.`}
+          type={'warning'}
+          charger={charger}
+          showAlert={showAlert}
+          onShowAlert={() => setShowAlert(true)}
+          onMessageClose={onMessageClose}
+        />
       </div>
     );
   },

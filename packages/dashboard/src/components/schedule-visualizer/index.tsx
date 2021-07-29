@@ -205,7 +205,8 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
         },
         token: authenticator.token,
       });
-      if (resp && resp.values[0].dimensions > defaultFootPrint)
+
+      if (resp && resp.values.length > 0 && resp.values[0].dimensions > defaultFootPrint)
         setFootPrint(resp.values[0].dimensions);
       debug('set trajectories');
       if (showTrajectories === undefined || showTrajectories) {

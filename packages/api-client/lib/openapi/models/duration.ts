@@ -14,31 +14,19 @@
 /**
  *
  * @export
- * @interface Robot
+ * @interface Duration
  */
-export interface Robot {
+export interface Duration {
   /**
    *
-   * @type {string}
-   * @memberof Robot
+   * @type {number}
+   * @memberof Duration
    */
-  fleet: any;
+  sec?: any;
   /**
    *
-   * @type {string}
-   * @memberof Robot
+   * @type {number}
+   * @memberof Duration
    */
-  name: any;
-  /**
-   *
-   * @type {RobotState}
-   * @memberof Robot
-   */
-  state: any;
-  /**
-   *
-   * @type {Array&lt;TaskProgress&gt;}
-   * @memberof Robot
-   */
-  tasks?: any;
+  nanosec?: any;
 }
