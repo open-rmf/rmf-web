@@ -9,7 +9,7 @@ import { BrowserRouter, Link, Redirect, Route, Switch, useLocation } from 'react
 import { getUrl, LoginHOC, PrivateRouteHOC, User } from 'rmf-auth';
 import appConfig from '../app-config';
 import ResourceManager from '../managers/resource-manager';
-import { DASHBOARD_ROUTE, LOGIN_ROUTE, TASKS_ROUTE, ROBOTS_ROUTE } from '../util/url';
+import { DASHBOARD_ROUTE, LOGIN_ROUTE, TASKS_ROUTE, ROBOTS_ROUTE, TELEOP_ROUTE } from '../util/url';
 import { AppBase } from './app-base';
 import { AppConfigContext, ResourcesContext, TrajectorySocketContext } from './app-contexts';
 import './app.css';
@@ -19,6 +19,7 @@ import Dashboard from './dashboard/dashboard';
 import { RmfApp } from './rmf-app';
 import { RobotPage } from './robots';
 import { TaskPage } from './tasks';
+import { TeleopPage } from './teleop';
 
 const PrivateRoute = PrivateRouteHOC(Route, Redirect, useLocation);
 const Login = LoginHOC(Redirect);
@@ -41,6 +42,8 @@ function locationToTabValue(pathname: string): TabValue | null {
       return 'tasks';
     case ROBOTS_ROUTE:
       return 'robots';
+    case TELEOP_ROUTE:
+      return 'teleop';
     default:
       return null;
   }
@@ -51,7 +54,7 @@ export default function App(): JSX.Element | null {
   const [authenticator, setAuthenticator] = React.useState(appConfig.authenticator);
   const [user, setUser] = React.useState<User | null>(appConfig.authenticator.user || null);
   const [ws, setWs] = React.useState<WebSocket>(new WebSocket(appConfig.trajServerUrl));
-  const appRoutes = [DASHBOARD_ROUTE, TASKS_ROUTE, ROBOTS_ROUTE];
+  const appRoutes = [DASHBOARD_ROUTE, TASKS_ROUTE, ROBOTS_ROUTE, TELEOP_ROUTE];
   const [tabValue, setTabValue] = React.useState<TabValue | null>(() =>
     locationToTabValue(window.location.pathname),
   );
@@ -121,7 +124,6 @@ export default function App(): JSX.Element | null {
                     </Route>
                     {/* FIXME: Might not need this anymore after we changed to let each page control
                   which topics to subscribe instead of a global context subscribing to everything.
-
                   we need this because we don't want to re-mount `AppIntrinsics` when just moving
                   from one route to another, but we want to unmount it when going "outside" the app. */}
                     {tabValue ? (
@@ -153,10 +155,19 @@ export default function App(): JSX.Element | null {
                               >
                                 <TaskPage />
                               </PrivateRoute>
+                              <PrivateRoute
+                                exact
+                                path={TELEOP_ROUTE}
+                                redirectPath={LOGIN_ROUTE}
+                                user={user}
+                              >
+                                <TeleopPage />
+                              </PrivateRoute>
                             </Switch>
                             {tabValue === 'building' && <Redirect to={DASHBOARD_ROUTE} />}
                             {tabValue === 'robots' && <Redirect to={ROBOTS_ROUTE} />}
                             {tabValue === 'tasks' && <Redirect to={TASKS_ROUTE} />}
+                            {tabValue === 'teleop' && <Redirect to={TELEOP_ROUTE} />}
                           </AppBase>
                         </RmfApp>
                       </PrivateRoute>
