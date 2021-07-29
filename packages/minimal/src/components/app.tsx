@@ -27,10 +27,6 @@ const theme = createMuiTheme({
   },
 });
 
-//  think you should have react-components be able to take in various props which controls what data to render. In the app itself, have some build time configuration which "hardcodes" those values passed as props to the components.
-// One way to do it is to generate an app-config.ts as part of the build process, you could use handlebars or other templating engines to do it, or keep it simple and just have the config as a typescript source directly. An environment variable at build time would choose which app-config.ts to use, if not provided, the default can be used, or the build can fail.
-// Ideally we should avoid downloading a json config file at runtime, or use dynamic import() as those solutions requires separate http requests.
-
 export default function App(): JSX.Element | null {
   const [authInitialized, setAuthInitialized] = React.useState(!!appConfig.authenticator.user);
   const [authenticator, setAuthenticator] = React.useState(appConfig.authenticator);

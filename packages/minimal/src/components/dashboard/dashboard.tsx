@@ -27,6 +27,9 @@ const useStyles = makeStyles((theme) =>
         flexWrap: 'nowrap',
       },
     },
+    taskDetails: {
+      marginTop: '1em',
+    },
     paper: {
       padding: '2em',
       marginLeft: '0.5em',
@@ -36,6 +39,7 @@ const useStyles = makeStyles((theme) =>
       },
     },
     actions: {
+      marginTop: '1em',
       textAlign: 'right',
     },
   }),
@@ -148,11 +152,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
               formLabel={data.radioGroup.formLabel}
               options={placeNames}
               radioGroupName={data.radioGroup.radioGroupTitle}
-              row={true}
               onHandleChange={onHandleChange}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} className={classes.taskDetails}>
             <Typography variant="subtitle2">Task Details</Typography>
             <Typography variant="body2">Start: {task?.description.start_name}</Typography>
             <Typography variant="body2">End: {task?.description.finish_name}</Typography>
@@ -168,7 +171,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
       {appUser === 'admin' ? (
         <Paper className={classes.paper}>
           <Grid container>
-            <Grid item xs={12}>
+            <Grid item xs={12} md={8}>
               <TaskTable tasks={autoRefreshState.tasks.map((t) => t.summary)} />
               {paginationOptions && (
                 <TablePagination
