@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { getDoorLogs } from '../utils.spec';
+import { getDoorLogs, configProps } from '../utils.spec';
 import { DoorStateReport } from './door-state-report';
 
 const getLogsPromise = async () => await getDoorLogs();
@@ -26,7 +26,7 @@ it('calls the retrieve log function when the button is clicked', async () => {
     getLogsPromiseMock();
     return await getDoorLogs();
   };
-  render(<DoorStateReport getLogs={getLogsPromise} />);
+  render(<DoorStateReport getLogs={getLogsPromise} {...configProps} />);
   expect(screen.getByRole('button', { name: /Retrieve Logs/i })).toBeTruthy();
   userEvent.click(screen.getByRole('button', { name: /Retrieve Logs/i }));
   expect(getLogsPromiseMock).toHaveBeenCalled();
