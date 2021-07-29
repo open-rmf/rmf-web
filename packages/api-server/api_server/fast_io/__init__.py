@@ -2,12 +2,9 @@ import asyncio
 import inspect
 import logging
 from abc import ABC, abstractmethod
-from copy import copy
 from dataclasses import dataclass
 from re import Pattern
 from typing import (
-    Any,
-    Awaitable,
     Callable,
     Dict,
     Generic,
@@ -20,13 +17,11 @@ from typing import (
 )
 from urllib.parse import unquote as url_unquote
 
-import pydantic
 import socketio
-from fastapi import APIRouter, Depends, FastAPI, Path, Request
+from fastapi import APIRouter, FastAPI
 from fastapi.exceptions import HTTPException
 from fastapi.types import DecoratedCallable
-from rx import Observable
-from starlette.routing import compile_path, replace_params
+from starlette.routing import compile_path
 
 from api_server.authenticator import AuthenticationError, JwtAuthenticator
 from api_server.fast_io.errors import *
@@ -89,19 +84,7 @@ class SioRoute:
 class FastIORouter(APIRouter):
     """
     This is a router that extends on the default fastapi router. It adds a new virtual
-    method "watch". The method registers a socketio endpoint along with a GET endpoint,
-    it requires a "target" observable and a function that returns a dict containing
-    the path parameters or `None`. If `None` is returns, the data won't be available
-    in any rooms/routes.
-
-    The GET endpoint created is automatically registered to fastapi, including the
-    the openapi docs.
-
-    In a way this is like a "reverse" get request, normally in a get request, fastapi
-    will parse the url and other params and provide it to the decorated function, the
-    function is then expected to return the response. In the "watch" method, the flow
-    is reversed, FastIO will provide the response, and the decorated function should
-    return the path parameters (query and body parameters are not supported).
+    method "watch" which registers a socket.io endpoint.
 
     .. code-block::
         import rx.subject
@@ -109,22 +92,21 @@ class FastIORouter(APIRouter):
 
         from api_server.fast_io import FastIORouter
 
-        class ReturnVideo(pydantic.BaseModel):
-            film_title: str
-
         app = FastIO()
         router = FastIORouter()
-        target = rx.subject.Subject()
+        watches = {}
 
 
-        @router.watch("/video_rental/{film_title}/available", target)
-        def watch_availability(rental: dict):
-            return {"film_title": rental["film"]}, rental
+        @router.watch("/film_rental/{film}/available")
+        def router_watch_availability(req: WatchRequest, film: str):
+            watches[film] = req
 
 
-        @router.post("/video_rental/return_video")
-        def post_return_video(return_video: ReturnVideo):
-            target.on_next({"film": return_video.film_title, "available": True})
+        @router.post("/film_rental/{film}/return")
+        def router_post_return_video(film: str):
+            watch_req = watches.get(film, None)
+            if watch_req:
+                watch_req.emit({ "available": True }, to=film)
 
 
         app.include_router(router)
@@ -153,12 +135,7 @@ class FastIORouter(APIRouter):
 
     def watch(self, path: str):
         """
-        Registers a socket.io and rest GET endpoint. The decorated function should
-        take in the event from the target observable and returns either `None` or a
-        tuple containing a dict of the path parameters that the event should be
-        bind to and the response. The response must be a dict or a pydantic model.
-
-        :param data_store: default is `MemoryDataStore`.
+        Registers a socket.io endpoint.
         """
 
         def decorator(func: OnSubscribe) -> DecoratedCallable:
