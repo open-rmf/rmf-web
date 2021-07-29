@@ -27,7 +27,6 @@ class TaskRule(models.Model):
     id = models.IntField(pk=True)
     description = fields.TextField()
     task_type: TaskTypeEnum = fields.CharEnumField(TaskTypeEnum)
-    # frequency (Can be 1-7[days of week], 1-30(or 28)[days of month], 1-365[days of year] or null(for daily, fixed) - ArrayField(of ints) - [1, 7] OR [23] OR [235]OR null
     frequency = fields.IntField()
     frequency_type: FrequencyEnum = fields.CharEnumField(
         FrequencyEnum, default=FrequencyEnum.MINUTELY
@@ -35,7 +34,7 @@ class TaskRule(models.Model):
     time_of_day = fields.TimeField()
     created_at = fields.DatetimeField(auto_now_add=True)
     start_date = fields.DateTimeField()
-    end_date = fields.DateTimeField()
+    end_date = fields.DateTimeField(null=True)
     args = fields.JSONField()
 
 
