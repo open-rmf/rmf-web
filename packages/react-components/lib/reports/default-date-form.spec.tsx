@@ -10,8 +10,9 @@ describe('Default date form', () => {
   });
 
   it('places correctly initial values', () => {
-    const root = render(<DefaultDatesForm {...configProps} />);
     const currentDate = format(new Date(), 'MM/dd/yyyy HH:mm');
+    const newConfig = { ...configProps, fromLogDate: new Date(), toLogDate: new Date() };
+    const root = render(<DefaultDatesForm {...newConfig} />);
     const fromLogDate = root.container.querySelector('#fromLogDate-datetime-local');
     expect(fromLogDate?.getAttribute('value')).toBe(currentDate);
     const toLogDate = root.container.querySelector('#toLogDate-datetime-local');
