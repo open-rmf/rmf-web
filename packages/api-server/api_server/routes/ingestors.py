@@ -1,30 +1,51 @@
 from typing import List
 
+from rx import operators as rxops
+
 from api_server.base_app import BaseApp
-from api_server.fast_io import FastIORouter
+from api_server.fast_io import FastIORouter, WatchRequest
 from api_server.models import Ingestor, IngestorHealth, IngestorState
+from api_server.routes.utils import rx_watcher
 
 
 class IngestorsRouter(FastIORouter):
     def __init__(self, app: BaseApp):
         super().__init__(tags=["Ingestors"])
-        rmf_repo = app.rmf_repo
-        rmf_events = app.rmf_events
 
         @self.get("", response_model=List[Ingestor])
         async def get_ingestors():
-            return await rmf_repo.query_ingestors()
+            return await app.rmf_repo.query_ingestors()
 
-        @self.watch(
-            "/{guid}/state", rmf_events.ingestor_states, response_model=IngestorState
-        )
-        def get_ingestor_state(ingestor_state: IngestorState):
-            return {"guid": ingestor_state.guid}, ingestor_state
+        @self.get("/{guid}/state", response_model=IngestorState)
+        async def get_ingestor_state(guid: str):
+            """
+            Available in socket.io
+            """
+            return await app.rmf_repo.get_ingestor_state(guid)
 
-        @self.watch(
-            "/{guid}/health",
-            rmf_events.ingestor_health,
-            response_model=IngestorHealth,
-        )
-        def get_ingestor_health(ingestor_health: IngestorHealth):
-            return {"guid": ingestor_health.id_}, ingestor_health
+        @self.watch("/{guid}/state")
+        async def watch_ingestor_state(req: WatchRequest, guid: str):
+            await req.emit(await get_ingestor_state(guid))
+            rx_watcher(
+                req,
+                app.rmf_events().ingestor_states.pipe(
+                    rxops.filter(lambda x: x.guid == guid)
+                ),
+            )
+
+        @self.get("/{guid}/health", response_model=IngestorHealth)
+        async def get_ingestor_health(guid: str):
+            """
+            Available in socket.io
+            """
+            return await app.rmf_repo.get_ingestor_health(guid)
+
+        @self.watch("/{guid}/health")
+        async def watch_ingestor_health(req: WatchRequest, guid: str):
+            await req.emit(await get_ingestor_health(guid))
+            rx_watcher(
+                req,
+                app.rmf_events().ingestor_health.pipe(
+                    rxops.filter(lambda x: x.id_ == guid)
+                ),
+            )

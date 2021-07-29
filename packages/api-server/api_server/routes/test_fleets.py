@@ -34,17 +34,18 @@ class TestFleetsRoute(AppFixture):
         ]
 
         for f in fleet_states:
-            self.app.rmf_events.fleet_states.on_next(f)
+            self.app.rmf_events().fleet_states.on_next(f)
         for t in tasks:
-            self.app.rmf_events.task_summaries.on_next(t)
+            self.app.rmf_events().task_summaries.on_next(t)
 
-    async def test_get_fleets(self):
+    async def test_smoke(self):
+        # get fleets
         resp = await self.client.get("/fleets?fleet_name=fleet_1")
         self.assertEqual(200, resp.status_code)
         resp_json = resp.json()
         self.assertEqual(len(resp_json), 1)
 
-    async def test_get_robots(self):
+        # get robots
         resp = await self.client.get(
             "/fleets/robots?fleet_name=fleet_1&robot_name=robot_1"
         )
@@ -53,7 +54,7 @@ class TestFleetsRoute(AppFixture):
         self.assertEqual(len(resp_json), 1)
         self.assertEqual(len(resp_json[0]["tasks"]), 2)
 
-    async def test_get_fleet_state(self):
+        # get fleet state
         resp = await self.client.get("/fleets/fleet_1/state")
         self.assertEqual(200, resp.status_code)
         state = resp.json()

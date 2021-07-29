@@ -46,7 +46,6 @@ class App(FastIO, BaseApp):
         logger = logging.getLogger("app")
         handler = logging.StreamHandler(sys.stdout)
         handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
-        logger.handlers.clear()
         logger.addHandler(handler)
         logger.setLevel(self.app_config.log_level)
 
@@ -85,17 +84,17 @@ class App(FastIO, BaseApp):
         # will be called in reverse order on app shutdown
         shutdown_cbs: List[Callable[[], Union[None, Awaitable[None]]]] = []
 
-        self.rmf_events = RmfEvents()
+        self._rmf_events = RmfEvents()
         self.rmf_repo = RmfRepository()
         self.static_files_repo = StaticFilesRepository(
             f"{self.app_config.public_url.geturl()}/static",
             self.app_config.static_directory,
             self.logger.getChild("static_files"),
         )
-        self.rmf_gateway: RmfGateway = None
+        self._rmf_gateway: RmfGateway = None
 
-        self.rmf_bookkeeper = RmfBookKeeper(
-            self.rmf_repo, self.rmf_events, logger=self.logger.getChild("BookKeeper")
+        self._rmf_bookkeeper = RmfBookKeeper(
+            self.rmf_repo, self._rmf_events, logger=self.logger.getChild("BookKeeper")
         )
 
         self.fapi.include_router(routes.main_router(self))
@@ -154,10 +153,10 @@ class App(FastIO, BaseApp):
                 rclpy.init()
             shutdown_cbs.append(rclpy.shutdown)
 
-            self.rmf_gateway = rmf_gateway_fc(self.rmf_events, self.static_files_repo)
+            self._rmf_gateway = rmf_gateway_fc(self._rmf_events, self.static_files_repo)
 
-            self.rmf_gateway.spin_background()
-            shutdown_cbs.append(self.rmf_gateway.stop_spinning)
+            self._rmf_gateway.spin_background()
+            shutdown_cbs.append(self._rmf_gateway.stop_spinning)
 
             # Order is important here
             # 1. load states from db, this populate the sio/fast_io rooms with the latest data
@@ -167,17 +166,17 @@ class App(FastIO, BaseApp):
             # used. Failing to do so will cause for example, book keeper to save the loaded states
             # back into the db and mess up health watchdog's heartbeat system.
 
-            await self.rmf_bookkeeper.start()
-            shutdown_cbs.append(self.rmf_bookkeeper.stop())
+            await self._rmf_bookkeeper.start()
+            shutdown_cbs.append(self._rmf_bookkeeper.stop())
             health_watchdog = HealthWatchdog(
-                self.rmf_events,
-                rmf_repo=self.rmf_bookkeeper.repo,
+                self._rmf_events,
+                rmf_repo=self._rmf_bookkeeper.repo,
                 logger=self.logger.getChild("HealthWatchdog"),
             )
             await health_watchdog.start()
 
-            self.rmf_gateway.subscribe_all()
-            shutdown_cbs.append(self.rmf_gateway.unsubscribe_all)
+            self._rmf_gateway.subscribe_all()
+            shutdown_cbs.append(self._rmf_gateway.unsubscribe_all)
 
             self._started.set_result(True)
             self.logger.info("started app")
@@ -203,52 +202,52 @@ class App(FastIO, BaseApp):
 
         door_states = await self.rmf_repo.query_door_states()
         for state in door_states:
-            self.rmf_events.door_states.on_next(state)
+            self._rmf_events.door_states.on_next(state)
         self.logger.info(f"loaded {len(door_states)} door states")
 
         door_health = await self.rmf_repo.query_door_health()
         for health in door_health:
-            self.rmf_events.door_health.on_next(health)
+            self._rmf_events.door_health.on_next(health)
         self.logger.info(f"loaded {len(door_health)} door health")
 
         lift_states = await self.rmf_repo.query_lift_states()
         for state in lift_states:
-            self.rmf_events.lift_states.on_next(state)
+            self._rmf_events.lift_states.on_next(state)
         self.logger.info(f"loaded {len(lift_states)} lift states")
 
         lift_health = await self.rmf_repo.query_lift_health()
         for health in lift_health:
-            self.rmf_events.lift_health.on_next(health)
+            self._rmf_events.lift_health.on_next(health)
         self.logger.info(f"loaded {len(lift_health)} lift health")
 
         dispenser_states = await self.rmf_repo.query_dispenser_states()
         for state in dispenser_states:
-            self.rmf_events.dispenser_states.on_next(state)
+            self._rmf_events.dispenser_states.on_next(state)
         self.logger.info(f"loaded {len(dispenser_states)} dispenser states")
 
         dispenser_health = await self.rmf_repo.query_dispenser_health()
         for health in dispenser_health:
-            self.rmf_events.dispenser_health.on_next(health)
+            self._rmf_events.dispenser_health.on_next(health)
         self.logger.info(f"loaded {len(dispenser_health)} dispenser health")
 
         ingestor_states = await self.rmf_repo.query_ingestor_states()
         for state in ingestor_states:
-            self.rmf_events.ingestor_states.on_next(state)
+            self._rmf_events.ingestor_states.on_next(state)
         self.logger.info(f"loaded {len(ingestor_states)} ingestor states")
 
         ingestor_health = await self.rmf_repo.query_ingestor_health()
         for health in ingestor_health:
-            self.rmf_events.ingestor_health.on_next(health)
+            self._rmf_events.ingestor_health.on_next(health)
         self.logger.info(f"loaded {len(ingestor_health)} ingestor health")
 
         fleet_states = await self.rmf_repo.query_fleet_states()
         for state in fleet_states:
-            self.rmf_events.fleet_states.on_next(state)
+            self._rmf_events.fleet_states.on_next(state)
         self.logger.info(f"loaded {len(fleet_states)} fleet states")
 
         robot_health = await self.rmf_repo.query_robot_health()
         for health in robot_health:
-            self.rmf_events.robot_health.on_next(health)
+            self._rmf_events.robot_health.on_next(health)
         self.logger.info(f"loaded {len(robot_health)} robot health")
 
         self.logger.info("updating tasks from RMF")
@@ -257,10 +256,10 @@ class App(FastIO, BaseApp):
             # `wait_for_service` here.
             # As of rclpy 3.0, `wait_for_service` uses a blocking sleep in a loop so
             # using it is not recommended after the app has finish startup.
-            ready = self.rmf_gateway.get_tasks_srv.wait_for_service(1)
+            ready = self._rmf_gateway.get_tasks_srv.wait_for_service(1)
             if not ready:
                 raise HTTPException(503, "ros service not ready")
-            tasks = await self.rmf_gateway.get_tasks()
+            tasks = await self._rmf_gateway.get_tasks()
             for t in tasks:
                 await ttm.TaskSummary.save_pydantic(t)
         except HTTPException as e:
@@ -268,5 +267,11 @@ class App(FastIO, BaseApp):
 
         self.logger.info("successfully loaded all states")
 
+    def rmf_events(self) -> RmfEvents:
+        return self._rmf_events
 
-app = App()
+    def rmf_gateway(self) -> RmfGateway:
+        return self._rmf_gateway
+
+    def rmf_bookkeeper(self) -> RmfBookKeeper:
+        return self._rmf_bookkeeper

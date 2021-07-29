@@ -13,6 +13,7 @@ from typing import (
     Generic,
     List,
     Optional,
+    Protocol,
     TypeVar,
     Union,
     cast,
@@ -47,29 +48,42 @@ class DataStore(ABC, Generic[T]):
 
 
 @dataclass
-class Subscription:
+class SubscriptionData:
     path: str
 
 
 @dataclass
+class WatchRequest:
+    sid: str
+    sio: socketio.AsyncServer
+    path: str
+    user: User
+    _on_unsubscribe: Optional[Callable[[], None]] = None
+
+    def on_unsubscribe(self, cb: Callable[[], None]) -> None:
+        self._on_unsubscribe = cb
+
+    async def emit(self, data, to: Optional[str] = None) -> None:
+        to = to or self.sid
+        await self.sio.emit(self.path, data, to=to)
+
+
+class OnSubscribe(Protocol):
+    def __call__(self, req: WatchRequest, **path_params):
+        ...
+
+
+@dataclass
 class Watch:
-    target: Observable
+    func: OnSubscribe
     prefix: str
     path: str
-    data_store: DataStore
-    on_subscribe: Callable[[str, Dict[str, str]], Awaitable[Any]]
-    on_data: Callable[[Any], Awaitable[Any]]
 
 
-class MemoryDataStore(DataStore[T]):
-    def __init__(self):
-        self._store = {}
-
-    async def get(self, key: str, path_params: Dict[str, str], user: User):
-        return self._store.get(key, None)
-
-    async def set(self, key: str, path_params: Dict[str, str], data: T):
-        self._store[key] = data
+@dataclass
+class SioRoute:
+    pattern: Pattern
+    func: OnSubscribe
 
 
 class FastIORouter(APIRouter):
@@ -131,24 +145,13 @@ class FastIORouter(APIRouter):
         for watch in router.watches:
             self.watches.append(
                 Watch(
-                    target=watch.target,
+                    func=watch.func,
                     prefix=prefix + watch.prefix,
                     path=prefix + watch.path,
-                    data_store=watch.data_store,
-                    on_subscribe=watch.on_subscribe,
-                    on_data=watch.on_data,
                 )
             )
 
-    def watch(
-        self,
-        path: str,
-        target: Observable,
-        *args,
-        data_store: Optional[DataStore] = None,
-        param_docs: Optional[Dict[str, str]] = None,
-        **kwargs,
-    ):
+    def watch(self, path: str):
         """
         Registers a socket.io and rest GET endpoint. The decorated function should
         take in the event from the target observable and returns either `None` or a
@@ -157,86 +160,11 @@ class FastIORouter(APIRouter):
 
         :param data_store: default is `MemoryDataStore`.
         """
-        data_store = data_store or MemoryDataStore()
-        param_docs = param_docs or {}
-        get_deco = super().get(path, *args, **kwargs)
 
-        def decorator(func: DecoratedCallable) -> DecoratedCallable:
-            prefixed_path = self.prefix + path
-            _, _, convertors = compile_path(prefixed_path)
-
-            async def on_subscribe(path: str, path_params: Dict[str, str], user: User):
-                return await data_store.get(path, path_params, user)
-
-            async def on_data(data):
-                if asyncio.iscoroutinefunction(func):
-                    result = await func(data)
-                else:
-                    result = func(data)
-                if result is None:
-                    return None
-                path_params, resp = result
-                room_id, _ = replace_params(path, convertors, path_params)
-                if isinstance(resp, pydantic.BaseModel):
-                    resp = resp.dict()
-                await data_store.set(room_id, path_params, resp)
-                return room_id, resp
-
-            watch = Watch(
-                target=target,
-                prefix=self.prefix,
-                path=self.prefix + path,
-                data_store=data_store,
-                on_subscribe=on_subscribe,
-                on_data=on_data,
+        def decorator(func: OnSubscribe) -> DecoratedCallable:
+            self.watches.append(
+                Watch(func=func, prefix=self.prefix, path=self.prefix + path)
             )
-            self.watches.append(watch)
-
-            async def get_func(user: User = Depends(self.user_dep), **path_params):
-                orig_path_params = copy(path_params)
-                room_id, _ = replace_params(path, convertors, path_params)
-                data = await data_store.get(room_id, orig_path_params, user)
-                if data is None:
-                    raise HTTPException(404)
-                return data
-
-            get_func.__name__ = func.__name__
-            get_func.__doc__ = "**Available in socket.io**\n\n" + (func.__doc__ or "")
-            params = [
-                inspect.Parameter(
-                    "user",
-                    inspect.Parameter.KEYWORD_ONLY,
-                    annotation=User,
-                    default=Depends(self.user_dep),
-                )
-            ]
-            params.extend(
-                [
-                    inspect.Parameter(
-                        "req", inspect.Parameter.KEYWORD_ONLY, annotation=Request
-                    )
-                ]
-            )
-
-            def make_param(name: str):
-                docs = param_docs.get(name, None)
-                if docs:
-                    return inspect.Parameter(
-                        name,
-                        inspect.Parameter.KEYWORD_ONLY,
-                        annotation=str,
-                        default=Path(..., description=docs),
-                    )
-                return inspect.Parameter(
-                    name,
-                    inspect.Parameter.KEYWORD_ONLY,
-                    annotation=str,
-                )
-
-            params.extend([make_param(k) for k in convertors])
-            get_func.__signature__ = inspect.Signature(params)
-
-            get_deco(get_func)
 
         return decorator
 
@@ -251,21 +179,23 @@ def make_sio(authenticator: Optional[JwtAuthenticator], logger: logging.Logger):
             f'[{sid}] new connection from "{environ["REMOTE_ADDR"]}:{environ["REMOTE_PORT"]}"'
         )
 
-        if not authenticator:
-            await sio.save_session(sid, {"user": User(username="stub", is_admin=True)})
-            return True
+        async with sio.session(sid) as session:
+            session["subscriptions"] = {}
+            if not authenticator:
+                session["user"] = User(username="stub", is_admin=True)
+                return True
 
-        try:
-            if auth is None:
-                raise AuthenticationError("no auth options provided")
-            if "token" not in auth:
-                raise AuthenticationError("no token provided")
-            user = await authenticator.verify_token(auth["token"])
-            await sio.save_session(sid, {"user": user})
-            return True
-        except AuthenticationError as e:
-            logger.error(f"authentication failed: {e}")
-            return False
+            try:
+                if auth is None:
+                    raise AuthenticationError("no auth options provided")
+                if "token" not in auth:
+                    raise AuthenticationError("no token provided")
+                user = await authenticator.verify_token(auth["token"])
+                session["user"] = user
+                return True
+            except AuthenticationError as e:
+                logger.error(f"authentication failed: {e}")
+                return False
 
     sio.on("connect", on_connect)
 
@@ -289,57 +219,43 @@ class FastIO(socketio.ASGIApp):
         self.sio = make_sio(authenticator, self.logger)
         self.fapi = FastAPI(**fast_api_args)
         super().__init__(self.sio, other_asgi_app=self.fapi)
-        self._router = FastIORouter()
-        self._patterns = cast(Dict[Pattern, Watch], {})
+        self._sio_routes: List[SioRoute] = []
 
         self.sio.on("subscribe", self._on_subscribe)
         self.sio.on("unsubscribe", self._on_unsubscribe)
-        self.fapi.add_event_handler("startup", self._on_startup)
 
     def include_router(self, router: FastIORouter, prefix: str = "", **kwargs):
-        self._router.include_router(router, prefix=prefix, **kwargs)
         self.fapi.include_router(router, prefix=prefix, **kwargs)
-
-    def _on_startup(self):
-        loop = asyncio.get_event_loop()
-
-        for watch in self._router.watches:
-            pattern, _, _ = compile_path(watch.path)
-            self._patterns[pattern] = watch
-
-            async def on_next(data, watch=watch):
-                result = await watch.on_data(data)
-                if result is None:
-                    return
-                room_id, resp = result
-                await self.sio.emit(watch.prefix + room_id, resp)
-
-            watch.target.subscribe(
-                lambda data, on_next=on_next: loop.create_task(on_next(data))
-            )
+        for watch in router.watches:
+            pattern, _, _ = compile_path(prefix + watch.path)
+            self._sio_routes.append(SioRoute(pattern, watch.func))
 
     @staticmethod
-    def _parse_sub_data(data: dict) -> Subscription:
+    def _parse_sub_data(data: dict) -> SubscriptionData:
         if "path" not in data:
             raise SubscribeError("missing 'path'")
         path = url_unquote(data["path"])
-        return Subscription(path=path)
+        return SubscriptionData(path=path)
 
     async def _on_subscribe(self, sid: str, data: dict):
         try:
-            sub = self._parse_sub_data(data)
+            sub_data = self._parse_sub_data(data)
         except SubscribeError as e:
             await self.sio.emit("subscribe", {"success": False, "error": str(e)})
             return
 
-        matches = (
-            (watch, pattern.match(sub.path))
-            for pattern, watch in self._patterns.items()
-        )
+        matches = ((r.pattern.match(sub_data.path), r) for r in self._sio_routes)
         try:
-            watch, path_params = next(
-                (watch, match.groupdict()) for watch, match in matches if match
-            )
+            match, sio_route = next((m for m in matches if m[0]))
+
+            async with self.sio.session(sid) as session:
+                user = session["user"]
+                req = WatchRequest(sid=sid, sio=self.sio, path=sub_data.path, user=user)
+                session["subscriptions"][sub_data.path] = req
+                maybe_coro = sio_route.func(req, **match.groupdict())
+                if inspect.isawaitable(maybe_coro):
+                    await maybe_coro
+                self.sio.enter_room(sid, sub_data.path)
         except StopIteration:
             await self.sio.emit(
                 "subscribe", {"success": False, "error": "no events in path"}
@@ -347,20 +263,18 @@ class FastIO(socketio.ASGIApp):
             return
 
         await self.sio.emit("subscribe", {"success": True}, sid)
-        stripped_path = sub.path[len(watch.prefix) :]
-        user = (await self.sio.get_session(sid))["user"]
-        current = await watch.on_subscribe(stripped_path, path_params, user)
-        if current is None:
-            return
-        if isinstance(current, pydantic.BaseModel):
-            current = current.dict()
-        await self.sio.emit(sub.path, current, to=sid)
 
     async def _on_unsubscribe(self, sid: str, data: dict):
         try:
-            sub = self._parse_sub_data(data)
+            sub_data = self._parse_sub_data(data)
+            async with self.sio.session(sid) as session:
+                req: WatchRequest = session["subscriptions"].get(sub_data.path, None)
+                if req is None:
+                    raise SubscribeError("not subscribed to topic")
+                maybe_coro = req._on_unsubscribe()  # pylint: disable=protected-access
+                if inspect.isawaitable(maybe_coro):
+                    await maybe_coro
+                self.sio.leave_room(sid, sub_data.path)
+                await self.sio.emit("unsubscribe", {"success": True})
         except SubscribeError as e:
             await self.sio.emit("unsubscribe", {"success": False, "error": str(e)})
-
-        self.sio.leave_room(sid, sub.path)
-        await self.sio.emit("unsubscribe", {"success": True})

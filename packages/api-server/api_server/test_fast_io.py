@@ -56,14 +56,10 @@ class TestFastIO(unittest.TestCase):
             f"{self.base_url}{prefix}/video_rental/return_video",
             json={"film_title": "aegis rim"},
         )
+        self.assertEqual(200, resp.status_code)
         event = event_fut.result(1)
         self.assertEqual(event["film"], "aegis rim")
         self.assertTrue(event["available"])
-
-        resp = requests.get(f"{self.base_url}{prefix}/video_rental/aegis rim/available")
-        resp_json = resp.json()
-        self.assertEqual(resp_json["film"], "aegis rim")
-        self.assertTrue(resp_json["available"])
 
     def test_receive_events(self):
         self.check_events("")

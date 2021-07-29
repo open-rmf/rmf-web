@@ -1,13 +1,14 @@
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import List, Optional
 
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, Path
 from fastapi.param_functions import Query
 from fastapi.responses import JSONResponse
+from rx import operators as rxops
 
 from api_server.base_app import BaseApp
 from api_server.dependencies import AddPaginationQuery, pagination_query
-from api_server.fast_io import DataStore, FastIORouter
+from api_server.fast_io import FastIORouter, WatchRequest
 from api_server.models import (
     CancelTask,
     SubmitTask,
@@ -21,6 +22,7 @@ from api_server.models import (
 from api_server.models import tortoise_models as ttm
 from api_server.routes.tasks.dispatcher import DispatcherClient
 from api_server.routes.tasks.utils import get_task_progress
+from api_server.routes.utils import rx_watcher
 from api_server.services.tasks import convert_task_request
 
 
@@ -28,7 +30,6 @@ class TasksRouter(FastIORouter):
     def __init__(self, app: BaseApp):
         user_dep = app.auth_dep
         rmf_repo = app.rmf_repo
-        rmf_events = app.rmf_events
 
         super().__init__(tags=["Tasks"], user_dep=user_dep)
         _dispatcher_client: Optional[DispatcherClient] = None
@@ -36,38 +37,33 @@ class TasksRouter(FastIORouter):
         def dispatcher_client_dep():
             nonlocal _dispatcher_client
             if _dispatcher_client is None:
-                _dispatcher_client = DispatcherClient(app.rmf_gateway)
+                _dispatcher_client = DispatcherClient(app.rmf_gateway())
             return _dispatcher_client
 
-        class TaskSummaryDataStore(DataStore[TaskSummary]):
-            async def get(
-                self,
-                key: str,
-                path_params: Dict[str, str],
-                user: User,
-            ):
-                # FIXME: This would fail if task_id contains "_/"
-                task_id = path_params["task_id"].replace("__", "/")
-                data = await rmf_repo.query_tasks(user).get_or_none(id_=task_id)
-                if data is None:
-                    return None
-                return TaskSummary(**data.data)
+        @self.get("/{task_id}/summary", response_model=TaskSummary)
+        async def get_task_summary(
+            task_id: str = Path(..., description="task_id with '/' replaced with '__'"),
+            user: User = Depends(user_dep),
+        ):
+            """
+            Available in socket.io
+            """
+            # FIXME: This would fail if task_id contains "_/"
+            task_id = task_id.replace("__", "/")
+            ts = await rmf_repo.query_tasks(user).get_or_none(id_=task_id)
+            if ts is None:
+                raise HTTPException(404)
+            return TaskSummary(**ts.data)
 
-            async def set(
-                self, key: str, path_params: Dict[str, str], data: TaskSummary
-            ):
-                # RmfBookKeeper will handle writing to db
-                pass
-
-        @self.watch(
-            "/{task_id}/summary",
-            target=rmf_events.task_summaries,
-            response_model=TaskSummary,
-            data_store=TaskSummaryDataStore(),
-            param_docs={"task_id": "task_id with '/' replaced with '__'"},
-        )
-        async def get_task_summary(task_summary: TaskSummary):
-            return {"task_id": task_summary.task_id.replace("/", "__")}, task_summary
+        @self.watch("/{task_id}/summary")
+        async def watch_task_summary(req: WatchRequest, task_id: str):
+            await req.emit(await get_task_summary(task_id))
+            rx_watcher(
+                req,
+                app.rmf_events().task_summaries.pipe(
+                    rxops.filter(lambda x: x.task_id == task_id)
+                ),
+            )
 
         def to_task(tt_summary: ttm.TaskSummary):
             py_summary = tt_summary.to_pydantic()
@@ -76,7 +72,7 @@ class TasksRouter(FastIORouter):
                 authz_grp=tt_summary.authz_grp,
                 progress=get_task_progress(
                     py_summary,
-                    app.rmf_gateway.now(),
+                    app.rmf_gateway().now(),
                 ),
                 summary=py_summary,
             )
@@ -148,7 +144,7 @@ class TasksRouter(FastIORouter):
             dispatcher_client: DispatcherClient = Depends(dispatcher_client_dep),
         ):
             req_msg, err_msg = convert_task_request(
-                submit_task_params, app.rmf_gateway.now()
+                submit_task_params, app.rmf_gateway().now()
             )
 
             if err_msg:

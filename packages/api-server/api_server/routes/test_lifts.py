@@ -2,23 +2,31 @@ from unittest.mock import Mock
 
 from rmf_lift_msgs.msg import LiftRequest as RmfLiftRequest
 
-from api_server.test.test_data import make_building_map
+from api_server.test.test_data import make_building_map, make_lift_state
 from api_server.test.test_fixtures import AppFixture
 
 
 class TestLiftsRoute(AppFixture):
     async def asyncSetUp(self):
         await super().asyncSetUp()
-        self.app.rmf_events.building_map.on_next(make_building_map())
+        self.app.rmf_events().building_map.on_next(make_building_map())
 
-    async def test_get_lifts(self):
+    async def test_smoke(self):
+        # get lifts
         resp = await self.client.get("/lifts")
         self.assertEqual(200, resp.status_code)
         lifts = resp.json()
         self.assertEqual(1, len(lifts))
         self.assertEqual("test_lift", lifts[0]["name"])
 
-    async def test_lift_request(self):
+        # get lift state
+        self.app.rmf_events().lift_states.on_next(make_lift_state())
+        resp = await self.client.get("/lifts/test_lift/state")
+        self.assertEqual(200, resp.status_code)
+        state = resp.json()
+        self.assertEqual("test_lift", state["lift_name"])
+
+        # request lift
         resp = await self.client.post(
             "/lifts/test_lift/request",
             json={

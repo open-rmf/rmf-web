@@ -2,13 +2,12 @@ import asyncio
 
 from api_server.models import TaskSummary
 from api_server.models import tortoise_models as ttm
-from api_server.test.test_fixtures import RouteFixture
+from api_server.test.test_fixtures import AppFixture
 
 
-class TestPaginationQuery(RouteFixture):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
+class TestPaginationQuery(AppFixture):
+    async def asyncSetUp(self):
+        await super().asyncSetUp()
         dataset = [
             TaskSummary(
                 task_id=f"task_{i}",
@@ -17,46 +16,43 @@ class TestPaginationQuery(RouteFixture):
             for i in range(200)
         ]
 
-        async def save_data():
-            await asyncio.gather(
-                *(ttm.TaskSummary.save_pydantic(t, "test_group") for t in dataset)
-            )
+        await asyncio.gather(
+            *(ttm.TaskSummary.save_pydantic(t, "test_group") for t in dataset)
+        )
 
-        cls.run_in_app_loop(save_data())
-
-    def test_limit_results(self):
-        resp = self.session.get(f"{self.base_url}/tasks")
+    async def test_limit_results(self):
+        resp = await self.client.get("/tasks")
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
         self.assertEqual(len(resp_json), 100)
 
-    def test_offset(self):
-        resp = self.session.get(f"{self.base_url}/tasks?offset=150")
+    async def test_offset(self):
+        resp = await self.client.get("/tasks?offset=150")
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
         self.assertEqual(len(resp_json), 50)
         self.assertEqual(resp_json[0]["summary"]["task_id"], "task_150")
 
-    def test_order_by(self):
-        resp = self.session.get(f"{self.base_url}/tasks?order_by=-priority")
+    async def test_order_by(self):
+        resp = await self.client.get("/tasks?order_by=-priority")
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
         self.assertEqual(len(resp_json), 100)
         self.assertEqual(resp_json[0]["summary"]["task_id"], "task_199")
 
-    def test_order_by_mapped_fields(self):
-        resp = self.session.get(f"{self.base_url}/tasks?order_by=-task_id")
+    async def test_order_by_mapped_fields(self):
+        resp = await self.client.get("/tasks?order_by=-task_id")
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
         self.assertEqual(len(resp_json), 100)
         self.assertEqual(resp_json[0]["summary"]["task_id"], "task_99")
 
-    def test_limit(self):
-        resp = self.session.get(f"{self.base_url}/tasks?limit=10")
+    async def test_limit(self):
+        resp = await self.client.get("/tasks?limit=10")
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
         self.assertEqual(len(resp_json), 10)
 
-    def test_max_limit(self):
-        resp = self.session.get(f"{self.base_url}/tasks?limit=101")
+    async def test_max_limit(self):
+        resp = await self.client.get("/tasks?limit=101")
         self.assertEqual(resp.status_code, 422)

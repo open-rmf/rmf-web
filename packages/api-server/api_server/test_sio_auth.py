@@ -14,7 +14,9 @@ from api_server.test.test_fixtures import generate_token
 class TestSioAuth(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        app = App(load_config(f"{os.path.dirname(__file__)}/test/test_config.py"))
+        app = App(
+            app_config=load_config(f"{os.path.dirname(__file__)}/test/test_config.py")
+        )
         cls.server = BackgroundServer(app)
         cls.server.start()
         cls.base_url = cls.server.base_url

@@ -1,6 +1,6 @@
 import asyncio
 from typing import Sequence
-from unittest.mock import AsyncMock, Mock
+from unittest.mock import AsyncMock
 
 from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
 from rmf_task_msgs.msg import TaskType as RmfTaskType
@@ -27,14 +27,14 @@ class TasksFixture(AppFixture):
             )
 
         mock.side_effect = mock_submit_task
-        self.app.rmf_gateway.submit_task = mock
+        self.app.rmf_gateway().submit_task = mock
 
         def mock_cancel_task(_req):
             return RmfCancelTask.Response(success=True)
 
         mock = AsyncMock()
         mock.side_effect = mock_cancel_task
-        self.app.rmf_gateway.cancel_task = mock
+        self.app.rmf_gateway().cancel_task = mock
 
     async def save_tasks(self, tasks: Sequence[TaskSummary], authz_grp: str):
         await asyncio.gather(

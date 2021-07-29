@@ -1,40 +1,61 @@
 from typing import List
 
+from rx import operators as rxops
+
 from api_server.base_app import BaseApp
-from api_server.fast_io import FastIORouter
+from api_server.fast_io import FastIORouter, WatchRequest
 from api_server.models import Lift, LiftHealth, LiftRequest, LiftState
+from api_server.routes.utils import rx_watcher
 
 
 class LiftsRouter(FastIORouter):
     def __init__(self, app: BaseApp):
         super().__init__(tags=["Lifts"])
-        rmf_repo = app.rmf_repo
-        rmf_events = app.rmf_events
 
         @self.get("", response_model=List[Lift])
         async def get_lifts():
-            return await rmf_repo.get_lifts()
+            return await app.rmf_repo.get_lifts()
 
-        @self.watch(
-            "/{lift_name}/state", rmf_events.lift_states, response_model=LiftState
-        )
-        def get_lift_state(lift_state: LiftState):
-            return {"lift_name": lift_state.lift_name}, lift_state
+        @self.get("/{lift_name}/state", response_model=LiftState)
+        async def get_lift_state(lift_name: str):
+            """
+            Available in socket.io
+            """
+            return await app.rmf_repo.get_lift_state(lift_name)
 
-        @self.watch(
-            "/{lift_name}/health",
-            rmf_events.lift_health,
-            response_model=LiftHealth,
-        )
-        def get_lift_health(lift_health: LiftHealth):
-            return {"lift_name": lift_health.id_}, lift_health
+        @self.watch("/{lift_name}/state")
+        async def watch_lift_state(req: WatchRequest, lift_name: str):
+            await req.emit(await get_lift_state(lift_name))
+            rx_watcher(
+                req,
+                app.rmf_events().lift_states.pipe(
+                    rxops.filter(lambda x: x.lift_name == lift_name)
+                ),
+            )
+
+        @self.get("/{lift_name}/health", response_model=LiftHealth)
+        async def get_lift_health(lift_name: str):
+            """
+            Available in socket.io
+            """
+            return await app.rmf_repo.get_lift_health(lift_name)
+
+        @self.watch("/{lift_name}/health")
+        async def watch_lift_health(req: WatchRequest, lift_name: str):
+            await req.emit(get_lift_health(lift_name))
+            rx_watcher(
+                req,
+                app.rmf_events().lift_health.pipe(
+                    rxops.filter(lambda x: x.id_ == lift_name)
+                ),
+            )
 
         @self.post("/{lift_name}/request")
         def _post_lift_request(
             lift_name: str,
             lift_request: LiftRequest,
         ):
-            app.rmf_gateway.request_lift(
+            app.rmf_gateway().request_lift(
                 lift_name,
                 lift_request.destination,
                 lift_request.request_type,

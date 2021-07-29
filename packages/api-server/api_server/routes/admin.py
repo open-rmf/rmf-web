@@ -7,7 +7,7 @@ from tortoise.transactions import in_transaction
 
 from api_server.base_app import BaseApp
 from api_server.dependencies import AddPaginationQuery, pagination_query
-from api_server.models import Permission, User
+from api_server.models import User
 from api_server.models import tortoise_models as ttm
 
 
@@ -22,6 +22,12 @@ class PostRoles(BaseModel):
 
 class PostMakeAdmin(BaseModel):
     admin: bool
+
+
+class GetRolePermission(BaseModel):
+    id: int
+    authz_grp: str
+    action: str
 
 
 class PostRolePermissions(BaseModel):
@@ -169,7 +175,7 @@ def admin_router(app: BaseApp):
         db_role = await _get_db_role(role)
         await db_role.delete()
 
-    @router.get("/roles/{role}/permissions", response_model=List[Permission])
+    @router.get("/roles/{role}/permissions", response_model=List[GetRolePermission])
     async def get_role_permissions(role: str):
         """
         Get all permissions of a role
@@ -179,7 +185,7 @@ def admin_router(app: BaseApp):
             role=db_role
         ).prefetch_related("role")
         return [
-            Permission(id=p.pk, authz_grp=p.authz_grp, action=p.action)
+            GetRolePermission(id=p.pk, authz_grp=p.authz_grp, action=p.action)
             for p in permissions
         ]
 
