@@ -261,6 +261,10 @@ class FastIO(socketio.ASGIApp):
                 "subscribe", {"success": False, "error": "no events in path"}
             )
             return
+        except HTTPException as e:
+            await self.sio.emit(
+                "subscribe", {"success": False, "error": f"{e.status_code} {e.detail}"}
+            )
 
         await self.sio.emit("subscribe", {"success": True}, sid)
 
