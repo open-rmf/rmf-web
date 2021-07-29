@@ -1,6 +1,8 @@
 import uvicorn
 
-from api_server.app import app
+from api_server.app import App
+
+app = App()
 
 
 def main():

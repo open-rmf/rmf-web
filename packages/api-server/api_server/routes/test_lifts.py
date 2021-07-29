@@ -36,7 +36,8 @@ class TestLiftsRoute(AppFixture):
             },
         )
         self.assertEqual(resp.status_code, 200)
-        mock: Mock = self.rmf_gateway.request_lift
+        mock = self.app.rmf_gateway().request_lift
+        mock: Mock
         self.assertEqual(mock.call_args.args[0], "test_lift")
         self.assertEqual(mock.call_args.args[1], "L1")
         self.assertEqual(mock.call_args.args[2], RmfLiftRequest.REQUEST_AGV_MODE)

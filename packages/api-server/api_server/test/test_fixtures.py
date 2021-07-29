@@ -1,9 +1,7 @@
 import asyncio
-import concurrent.futures
 import inspect
 import os
 import os.path
-import threading
 import time
 import unittest
 from typing import Awaitable, Callable, Optional, TypeVar, Union
@@ -11,16 +9,11 @@ from unittest.mock import Mock
 from uuid import uuid4
 
 import jwt
-import rclpy
-import rclpy.node
-import requests
 from httpx import AsyncClient
-from urllib3.util.retry import Retry
 
 from api_server.app import App
 from api_server.app_config import load_config
 from api_server.gateway import RmfGateway
-from api_server.test.server import BackgroundServer
 
 T = TypeVar("T")
 
@@ -84,18 +77,33 @@ def generate_token(username: str):
     )
 
 
+def rmf_gateway_fc(rmf_events, static_files_repo):
+    orig = RmfGateway(rmf_events, static_files_repo)
+    rmf_gateway = Mock(orig)
+    rmf_gateway.now = orig.now
+    return rmf_gateway
+
+
+test_app = App(
+    app_config=load_config(f"{os.path.dirname(__file__)}/test_config.py"),
+    rmf_gateway_fc=rmf_gateway_fc,
+)
+
+
 class AppFixture(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
-        def rmf_gateway_fc(rmf_events, static_files_repo):
-            orig = RmfGateway(rmf_events, static_files_repo)
-            self.rmf_gateway = Mock(orig)
-            self.rmf_gateway.now = orig.now
-            return self.rmf_gateway
+        # def rmf_gateway_fc(rmf_events, static_files_repo):
+        #     orig = RmfGateway(rmf_events, static_files_repo)
+        #     self.rmf_gateway = Mock(orig)
+        #     self.rmf_gateway.now = orig.now
+        #     return self.rmf_gateway
 
-        self.app = App(
-            app_config=load_config(f"{os.path.dirname(__file__)}/test_config.py"),
-            rmf_gateway_fc=rmf_gateway_fc,
-        )
+        # self.app = App(
+        #     app_config=load_config(f"{os.path.dirname(__file__)}/test_config.py"),
+        #     rmf_gateway_fc=rmf_gateway_fc,
+        # )
+        self.app = test_app
+
         for handler in self.app.fapi.router.on_startup:
             if asyncio.iscoroutinefunction(handler):
                 await handler()
