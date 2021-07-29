@@ -100,6 +100,8 @@ export const ReportDashboard = (props: ReportDashboardProps) => {
   const [fromLogDate, setFromLogDate] = React.useState<MaterialUiPickersDate>(new Date());
   const [toLogDate, setToLogDate] = React.useState<MaterialUiPickersDate>(new Date());
 
+  const [header, setHeader] = React.useState<string>('');
+
   const handleFromLogDateChange = React.useCallback((date: MaterialUiPickersDate) => {
     setFromLogDate(date);
   }, []);
@@ -133,6 +135,32 @@ export const ReportDashboard = (props: ReportDashboardProps) => {
       return null;
     }
   };
+
+  const headerTitle = (): void => {
+    switch (currentReport) {
+      case Reports.queryAllLogs:
+        setHeader(currentReport.split('query')[1]);
+        break;
+      case Reports.showDispenserStateReport:
+      case Reports.showDoorStateReport:
+      case Reports.showFleetStateReport:
+      case Reports.showHealthReport:
+      case Reports.showIngestorStateReport:
+      case Reports.showLiftStateReport:
+      case Reports.showLoginsReport:
+      case Reports.showLogoutsReport:
+      case Reports.showLoginFailuresReport:
+      case Reports.showTasksReport:
+        setHeader(currentReport.split('show')[1].split('Report')[0]);
+        break;
+      default:
+        break;
+    }
+  };
+
+  React.useEffect(() => {
+    headerTitle();
+  });
 
   const setReport = React.useCallback(
     (report: Reports) => {
@@ -179,7 +207,7 @@ export const ReportDashboard = (props: ReportDashboardProps) => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" className={classes.toolbarTitle}>
-            Reports
+            Reports - {header}
           </Typography>
           {authenticator.user && (
             <>

@@ -3,11 +3,12 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { ReportDashboard } from '../../components/report-dashboard';
 import { buildReportMenuStructure } from '../../components/reporter-side-bar-structure';
+import { ConfigProps } from 'react-components';
 
 describe('ReportDashboard', () => {
   beforeEach(() => {
-    const ReportContainer: Record<string, React.ReactElement> = {
-      queryAllLogs: <h1>QueryAllLogs</h1>,
+    const ReportContainer: Record<string, (props: ConfigProps) => JSX.Element> = {
+      queryAllLogs: () => <h1>QueryAllLogs</h1>,
     };
 
     render(
@@ -44,9 +45,9 @@ describe('ReportDashboard', () => {
 });
 
 it('picks a different report and renders correctly', () => {
-  const ReportContainer: Record<string, React.ReactElement> = {
-    queryAllLogs: <h1>QueryAllLogs</h1>,
-    showDoorStateReport: <h1>Test</h1>,
+  const ReportContainer: Record<string, (props: ConfigProps) => JSX.Element> = {
+    queryAllLogs: () => <h1>QueryAllLogs</h1>,
+    showDoorStateReport: () => <h1>Test</h1>,
   };
 
   render(
