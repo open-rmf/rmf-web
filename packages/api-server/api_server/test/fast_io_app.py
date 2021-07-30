@@ -1,4 +1,5 @@
 import pydantic
+import socketio
 from rx import operators as rxops
 from rx.core.typing import Observable
 from rx.subject import Subject
@@ -6,7 +7,8 @@ from rx.subject import Subject
 from api_server.fast_io import FastIO, FastIORouter, WatchRequest
 from api_server.routes.utils import rx_watcher
 
-app = FastIO()
+sio = socketio.AsyncServer()
+app = FastIO(sio)
 router = FastIORouter()
 router_with_prefix = FastIORouter(prefix="/router_with_prefix")
 router_include_with_prefix = FastIORouter()

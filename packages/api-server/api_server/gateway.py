@@ -52,10 +52,10 @@ def process_building_map(
     """
     processed_map = message_to_ordereddict(rmf_building_map)
 
-    for i in range(len(rmf_building_map.levels)):
-        level: RmfLevel = rmf_building_map.levels[i]
-        for j in range(len(level.images)):
-            image: RmfAffineImage = level.images[j]
+    for i, level in enumerate(rmf_building_map.levels):
+        level: RmfLevel
+        for j, image in enumerate(level.images):
+            image: RmfAffineImage
             # look at non-crypto hashes if we need more performance
             sha1_hash = hashlib.sha1()
             sha1_hash.update(image.data)

@@ -37,7 +37,7 @@ class TestSubmitTaskModel(unittest.TestCase):
             RmfTaskType.TYPE_DELIVERY: delivery_desc,
         }
 
-        for task_type in task_types:
+        for task_type in task_types.items():
             for desc in task_types.values():
                 # success when task type matches description
                 if task_types[task_type] is desc:

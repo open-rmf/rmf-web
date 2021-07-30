@@ -1,14 +1,15 @@
 from typing import List, Optional
 
+from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel
+from tortoise.exceptions import IntegrityError
+from tortoise.transactions import in_transaction
+
 from api_server.base_app import BaseApp
 from api_server.dependencies import AddPaginationQuery, pagination_query
 from api_server.models import User
 from api_server.models import tortoise_models as ttm
 from api_server.models.authz import Permission
-from fastapi import APIRouter, Depends, HTTPException, Query
-from pydantic import BaseModel
-from tortoise.exceptions import IntegrityError
-from tortoise.transactions import in_transaction
 
 
 class PostUsers(BaseModel):
