@@ -4,11 +4,11 @@ import React from 'react';
 import { ConfirmationDialog } from './confirmation-dialog';
 
 describe('ConfirmDialogActions', () => {
-  it('calls onCancelClick when cancel button is clicked', () => {
-    const onCancelClick = jasmine.createSpy();
-    const root = render(<ConfirmationDialog open={true} onCancelClick={onCancelClick} />);
+  it('calls onClose when cancel button is clicked', () => {
+    const onClose = jasmine.createSpy();
+    const root = render(<ConfirmationDialog open={true} onClose={onClose} />);
     userEvent.click(root.getByText('Cancel'));
-    expect(onCancelClick).toHaveBeenCalled();
+    expect(onClose).toHaveBeenCalled();
   });
 
   it('calls onSubmit when form is submitted', () => {

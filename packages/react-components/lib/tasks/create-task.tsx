@@ -374,7 +374,6 @@ export function CreateTaskForm({
   tasksFromFile,
   onSuccess,
   onFail,
-  onCancelClick,
   ...otherProps
 }: CreateTaskFormProps): JSX.Element {
   const theme = useTheme();
@@ -487,13 +486,12 @@ export function CreateTaskForm({
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <ConfirmationDialog
         title="Create Task"
-        loading={submitting}
+        submitting={submitting}
         confirmText={submitText}
         maxWidth="md"
         fullWidth={tasks.length > 1}
         toolbar={<FormToolbar onSelectFileClick={handleSelectFileClick} />}
         onSubmit={handleSubmit}
-        onCancelClick={onCancelClick}
         {...otherProps}
       >
         <Grid container direction="row" wrap="nowrap">

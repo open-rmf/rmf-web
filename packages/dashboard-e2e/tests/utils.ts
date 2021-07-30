@@ -5,7 +5,7 @@ import { Element } from '@wdio/sync';
  * this can fix flaky tests where the click is missed as the position changes as the animation is
  * running.
  */
-export function overwriteClick() {
+export function overwriteClick(): void {
   browser.overwriteCommand(
     'click',
     function (this: Element, origClick) {
@@ -39,7 +39,7 @@ export function removeTextFromAutocomplete(characterNum: number): string {
  */
 export const getRobotLocations = (browser: WebdriverIO.BrowserObject): string[] => {
   const allRobotItems = browser.$$('[data-component=RobotAccordion]');
-  let robotLocations = allRobotItems.map((robot) => {
+  const robotLocations = allRobotItems.map((robot) => {
     robot.click();
     const getLocations = () => {
       const items = robot.$$('[role=row]');
@@ -55,7 +55,7 @@ export const getRobotLocations = (browser: WebdriverIO.BrowserObject): string[] 
 
 export function login(): void {
   browser.url('/login');
-  $('#login-button').click();
+  $('button=Login').click();
   $('#username').setValue(process.env.E2E_USER);
   $('#password').setValue(process.env.E2E_PASSWORD);
   $('#kc-login').click();

@@ -17,11 +17,11 @@ export const Default: Story<RoleListCardProps> = (args) => {
     <ManageRolesCard
       assignedRoles={['role1']}
       getAllRoles={async () => {
-        await new Promise((res) => setTimeout(res, 500));
+        await new Promise((res) => setTimeout(res, 100));
         return allRoles;
       }}
       saveRoles={async () => {
-        await new Promise((res) => setTimeout(res, 500));
+        await new Promise((res) => setTimeout(res, 100));
       }}
       {...args}
     />
