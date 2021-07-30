@@ -1,3 +1,5 @@
+# pragma: no cover
+
 import asyncio
 import base64
 import hashlib
