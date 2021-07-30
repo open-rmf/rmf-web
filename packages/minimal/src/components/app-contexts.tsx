@@ -1,7 +1,6 @@
 import React from 'react';
 import appConfig, { AppConfig } from '../app-config';
 import dataConfig, { DataConfig } from '../config/data-config';
-import layoutConfig, { LayoutConfig } from '../config/layout-config';
 import ResourceManager from '../managers/resource-manager';
 import { defaultSettings, Settings } from '../settings';
 
@@ -26,13 +25,10 @@ export const AppControllerContext = React.createContext<AppController>({
 
 export const AppConfigContext = React.createContext<AppConfig>(appConfig);
 
-export const LayoutConfigContext = React.createContext<LayoutConfig>(layoutConfig);
-
 export const DataConfigContext = React.createContext<DataConfig>(dataConfig);
 
 export interface AppContent {
   tabNames: string[];
 }
-export const AppContentContext = React.createContext<AppContent>({ tabNames: ['Building'] });
 
 export const TrajectorySocketContext = React.createContext<WebSocket | undefined>(undefined);

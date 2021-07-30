@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+
 
 function kubectl() {
   .bin/minikube kubectl -- "$@"
@@ -77,6 +77,13 @@ echo 'publishing dashboard image...'
 docker save rmf-web/dashboard | bash -c 'eval $(.bin/minikube docker-env) && docker load'
 echo 'deploying dashboard...'
 kubectl apply -f k8s/dashboard.yaml
+
+echo 'building minimal dashboard image...'
+docker build -t rmf-web/minimal -f docker/minimal.dockerfile $rmf_web_ws
+echo 'publishing minimal dashboard image...'
+docker save rmf-web/minimal | bash -c 'eval $(.bin/minikube docker-env) && docker load'
+echo 'deploying minimal dashboard...'
+kubectl apply -f k8s/minimal.yaml
 
 echo 'building reporting-server image...'
 docker build -t rmf-web/reporting-server -f docker/reporting-server.dockerfile $rmf_web_ws

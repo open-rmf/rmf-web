@@ -27,14 +27,18 @@ const useStyles = makeStyles((theme) =>
   }),
 );
 
+export type TabValue = 'dashboard';
+
 export interface AppBarProps {
+  tabValue: TabValue;
+  onTabChange?(event: React.ChangeEvent<unknown>, newValue: TabValue): void;
   // TODO: change the alarm status to required when we have an alarm
   // service working properly in the backend
   alarmState?: boolean | null;
 }
 
 export const AppBar = React.memo(
-  (): React.ReactElement => {
+  ({ tabValue, onTabChange }: AppBarProps): React.ReactElement => {
     const { showSettings: setShowSettings } = React.useContext(AppControllerContext);
     const logoResourcesContext = React.useContext(ResourcesContext)?.logos;
     const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
@@ -65,7 +69,6 @@ export const AppBar = React.memo(
           <LogoButton logoPath={brandingIconPath} />
           <Toolbar variant="dense" className={classes.toolbar}>
             <Typography variant="caption">Powered by OpenRMF</Typography>
-
             <IconButton
               id="show-settings-btn"
               aria-label="settings"

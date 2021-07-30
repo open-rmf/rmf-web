@@ -12,6 +12,6 @@ config["jwt_public_key"] = "/jwt-configmap/jwt-pub-key.pub"
 config[
     "oidc_url"
 ] = "https://example.com/auth/realms/rmf-web/.well-known/openid-configuration"
-config["aud"] = "dashboard"
+config["aud"] = ["dashboard", "minimal"]
 config["iss"] = "https://example.com/auth/realms/rmf-web"
 config["builtin_admin"] = "example"

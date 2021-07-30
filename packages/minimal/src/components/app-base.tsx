@@ -1,15 +1,9 @@
 import { Grid, makeStyles } from '@material-ui/core';
 import React from 'react';
-import dataConfig from '../config/data-config';
 import { loadSettings, saveSettings } from '../settings';
-import {
-  AppController,
-  AppControllerContext,
-  DataConfigContext,
-  SettingsContext,
-} from './app-contexts';
+import { AppController, AppControllerContext, SettingsContext } from './app-contexts';
 import { AppDrawers } from './app-drawers';
-import AppBar from './appbar';
+import AppBar, { AppBarProps } from './appbar';
 
 const useStyles = makeStyles((theme) => ({
   appBase: {
@@ -19,7 +13,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export interface AppBaseProps {}
+export interface AppBaseProps {
+  appbarProps: AppBarProps;
+}
 
 /**
  * Contains various components that are essential to the app and provides contexts to control them.
@@ -29,7 +25,10 @@ export interface AppBaseProps {}
  *
  * Also provides `AppControllerContext` to allow children components to control them.
  */
-export function AppBase({ children }: React.PropsWithChildren<AppBaseProps>): JSX.Element | null {
+export function AppBase({
+  appbarProps,
+  children,
+}: React.PropsWithChildren<AppBaseProps>): JSX.Element | null {
   const classes = useStyles();
 
   const [settings, setSettings] = React.useState(() => loadSettings());
@@ -48,13 +47,11 @@ export function AppBase({ children }: React.PropsWithChildren<AppBaseProps>): JS
   return (
     <SettingsContext.Provider value={settings}>
       <AppControllerContext.Provider value={appController}>
-        <DataConfigContext.Provider value={dataConfig}>
-          <Grid container direction="column" className={classes.appBase} wrap="nowrap">
-            <AppBar />
-            {children}
-            <AppDrawers settings={settings} showSettings={showSettings} />
-          </Grid>
-        </DataConfigContext.Provider>
+        <Grid container direction="column" className={classes.appBase} wrap="nowrap">
+          <AppBar {...appbarProps} />
+          {children}
+          <AppDrawers settings={settings} showSettings={showSettings} />
+        </Grid>
       </AppControllerContext.Provider>
     </SettingsContext.Provider>
   );

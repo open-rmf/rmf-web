@@ -6,6 +6,7 @@ import ResourceManager from '../managers/resource-manager';
 import { AppBase } from './app-base';
 import { AppConfigContext, ResourcesContext, TrajectorySocketContext } from './app-contexts';
 import './app.css';
+import { TabValue } from './appbar';
 import { AuthenticatorContext } from './auth/contexts';
 import { RmfApp } from './rmf-app';
 import { Route, Redirect, useLocation, Switch } from 'react-router';
@@ -27,12 +28,29 @@ const theme = createMuiTheme({
   },
 });
 
+function locationToTabValue(pathname: string): TabValue | null {
+  switch (pathname) {
+    case DASHBOARD_ROUTE:
+      return 'dashboard';
+    default:
+      return null;
+  }
+}
+
 export default function App(): JSX.Element | null {
   const [authInitialized, setAuthInitialized] = React.useState(!!appConfig.authenticator.user);
   const [authenticator, setAuthenticator] = React.useState(appConfig.authenticator);
   const [user, setUser] = React.useState<string | null>(appConfig.authenticator.user || null);
   const [ws, setWs] = React.useState<WebSocket>(new WebSocket(appConfig.trajServerUrl));
   const appRoutes = [DASHBOARD_ROUTE];
+  const [tabValue, setTabValue] = React.useState<TabValue | null>(() =>
+    locationToTabValue(window.location.pathname),
+  );
+
+  const onTabChange = React.useCallback(
+    (_ev: React.ChangeEvent<unknown>, newValue: TabValue) => setTabValue(newValue),
+    [],
+  );
 
   const onTokenExpired = () => setAuthenticator(appConfig.authenticator);
   authenticator.on('tokenRefresh', onTokenExpired);
@@ -93,10 +111,10 @@ export default function App(): JSX.Element | null {
                       successRedirectUri={getUrl(DASHBOARD_ROUTE)}
                     />
                   </Route>
-                  {user ? (
+                  {tabValue ? (
                     <PrivateRoute exact path={appRoutes} redirectPath={LOGIN_ROUTE} user={user}>
                       <RmfApp>
-                        <AppBase>
+                        <AppBase appbarProps={{ tabValue, onTabChange }}>
                           <Switch>
                             <PrivateRoute
                               exact
@@ -107,6 +125,7 @@ export default function App(): JSX.Element | null {
                               <Dashboard />
                             </PrivateRoute>
                           </Switch>
+                          {tabValue === 'dashboard' && <Redirect to={DASHBOARD_ROUTE} />}
                         </AppBase>
                       </RmfApp>
                     </PrivateRoute>
