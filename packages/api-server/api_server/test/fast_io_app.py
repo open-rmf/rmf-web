@@ -7,7 +7,7 @@ from rx.subject import Subject
 from api_server.fast_io import FastIO, FastIORouter, WatchRequest
 from api_server.routes.utils import rx_watcher
 
-sio = socketio.AsyncServer()
+sio = socketio.AsyncServer(async_mode="asgi")
 app = FastIO(sio)
 router = FastIORouter()
 router_with_prefix = FastIORouter(prefix="/router_with_prefix")

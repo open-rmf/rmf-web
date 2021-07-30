@@ -12,6 +12,7 @@ from typing import (
     List,
     Optional,
     Protocol,
+    Sequence,
     TypedDict,
     TypeVar,
     Union,
@@ -20,12 +21,17 @@ from typing import (
 from urllib.parse import unquote as url_unquote
 
 import socketio
-from fastapi import APIRouter, FastAPI
+from fastapi import APIRouter, Depends, FastAPI
 from fastapi.exceptions import HTTPException
 from fastapi.types import DecoratedCallable
 from socketio.asyncio_server import AsyncServer
 from starlette.routing import compile_path
 
+from api_server.authenticator import (
+    AuthenticationError,
+    JwtAuthenticator,
+    StubAuthenticator,
+)
 from api_server.fast_io.errors import *
 from api_server.models import User
 
@@ -83,7 +89,7 @@ class SioRoute:
     func: OnSubscribe
 
 
-class Session(TypedDict):
+class Session(TypedDict, total=False):
     user: User
     subscriptions: Dict[str, WatchRequest]
 
@@ -165,7 +171,9 @@ class FastIO(socketio.ASGIApp):
         self,
         sio: AsyncServer,
         *,
+        authenticator: Optional[JwtAuthenticator] = None,
         logger: logging.Logger = None,
+        dependencies: Optional[Sequence[Depends]] = None,
         **fast_api_args,
     ):
         """
@@ -174,9 +182,33 @@ class FastIO(socketio.ASGIApp):
         """
         self.logger = logger or logging.getLogger(self.__class__.__name__)
         self.sio = cast(_CustomSio, sio)
-        self.fapi = FastAPI(**fast_api_args)
+        self.authenticator = authenticator or StubAuthenticator()
+        self.auth_dep = self.authenticator.fastapi_dep()
+        dependencies = dependencies or []
+        dependencies.append(Depends(self.auth_dep))
+        self.fapi = FastAPI(dependencies=dependencies, **fast_api_args)
         super().__init__(self.sio, other_asgi_app=self.fapi)
         self._sio_routes: List[SioRoute] = []
+
+        async def on_connect(sid: str, _environ: dict, auth: Optional[dict] = None):
+            async with self.sio.session(sid) as session:
+                session["subscriptions"] = {}
+                if not self.authenticator:
+                    session["user"] = User(username="stub", is_admin=True)
+                    return True
+                token = None
+                if auth:
+                    token = auth["token"]
+
+                try:
+                    user = await self.authenticator.verify_token(token)
+                    session["user"] = user
+                    return True
+                except AuthenticationError as e:
+                    logger.error(f"authentication failed: {e}")
+                    return False
+
+        sio.on("connect", on_connect)
 
         self.sio.on("subscribe", self._on_subscribe)
         self.sio.on("unsubscribe", self._on_unsubscribe)

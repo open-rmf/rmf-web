@@ -1,4 +1,5 @@
 import unittest
+from itertools import product
 
 from pydantic import ValidationError
 from rmf_task_msgs.msg import TaskType as RmfTaskType
@@ -7,16 +8,6 @@ from api_server.models.tasks import SubmitTask
 
 
 class TestSubmitTaskModel(unittest.TestCase):
-    @staticmethod
-    def validate_task(task_type: int, desc):
-        SubmitTask.validate(
-            {
-                "task_type": task_type,
-                "start_time": 0,
-                "description": desc,
-            }
-        )
-
     def test_validate_task_description(self):
         clean_desc = {"cleaning_zone": "test_zone"}
         loop_desc = {
@@ -37,16 +28,20 @@ class TestSubmitTaskModel(unittest.TestCase):
             RmfTaskType.TYPE_DELIVERY: delivery_desc,
         }
 
-        for task_type in task_types.items():
-            for desc in task_types.values():
-                # success when task type matches description
-                if task_types[task_type] is desc:
-                    TestSubmitTaskModel.validate_task(task_type, desc)
-                else:
-                    # fails when sending description with wrong task type
-                    self.assertRaises(
-                        ValidationError,
-                        TestSubmitTaskModel.validate_task,
-                        task_type,
-                        desc,
-                    )
+        for task_type, desc in product(task_types, task_types.values()):
+            # success when task type matches description
+            if task_types[task_type] is desc:
+                SubmitTask(
+                    task_type=task_type,
+                    start_time=0,
+                    description=desc,
+                )
+            else:
+                # fails when sending description with wrong task type
+                self.assertRaises(
+                    ValidationError,
+                    SubmitTask,
+                    task_type=task_type,
+                    start_time=0,
+                    desc=desc,
+                )

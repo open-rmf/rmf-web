@@ -3,8 +3,6 @@ from typing import Callable, Dict, Optional, TypeVar
 from fastapi import Query
 from tortoise.queryset import QuerySet
 
-from api_server.dependencies.auth import auth_scheme
-
 ResultT = TypeVar("ResultT")
 AddPaginationQuery = Callable[[QuerySet[ResultT]], QuerySet[ResultT]]
 
