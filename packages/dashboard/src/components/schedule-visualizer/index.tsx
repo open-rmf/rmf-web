@@ -245,11 +245,9 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   const ref = React.useRef<ImageOverlay>(null);
   const mapRef = React.useRef<LMap>(null);
 
-  if (ref.current) {
+  if (ref.current && mapRef.current) {
     ref.current.leafletElement.setZIndex(0);
-    if (mapRef.current && !windowMap.get('lmap')) {
-      windowMap.set('lmap', mapRef);
-    }
+    windowMap.set('lmap', mapRef);
   }
 
   React.useEffect(() => {
