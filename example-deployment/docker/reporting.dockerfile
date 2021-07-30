@@ -22,6 +22,7 @@ RUN cd /root/rmf-web/packages/reporting && \
 ###
 
 FROM nginx:stable
+COPY /nginx.conf /etc/nginx/nginx.conf
 COPY --from=0 /root/rmf-web/packages/reporting/build /usr/share/nginx/html/reporting
 SHELL ["bash", "-c"]
 RUN echo -e 'server {\n\
