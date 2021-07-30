@@ -1,4 +1,4 @@
-from models.tortoise import TaskRule
+from models.tortoise_models import TaskRule
 
 
 class TaskRuleManager:

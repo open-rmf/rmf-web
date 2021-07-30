@@ -1,4 +1,4 @@
-from models.tortoise import ScheduledTask
+from models.tortoise_models import ScheduledTask
 
 
 class ScheduledTaskManager:

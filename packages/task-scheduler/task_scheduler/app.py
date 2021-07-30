@@ -2,11 +2,12 @@ import logging
 import os
 import sys
 
-from dependencies import auth_scheme, logger
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
 from task_scheduler.database import setup_database
-from task_scheduler.routes import scheduled_task_router
+from task_scheduler.routes.scheduled_task_router import router as scheduled_task_router
+from task_scheduler.routes.task_rule_router import router as task_rule_router
 
 logger = logging.getLogger("task_scheduler")
 handler = logging.StreamHandler(sys.stdout)
@@ -36,6 +37,12 @@ def get_app():
         scheduled_task_router,
         prefix="/scheduledtask",
         tags=["scheduledtask"],
+    )
+
+    app.include_router(
+        task_rule_router,
+        prefix="/taskrule",
+        tags=["taskrule"],
     )
 
     setup_database(app, generate_schemas=True)

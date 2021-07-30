@@ -31,11 +31,11 @@ class TaskRule(models.Model):
     frequency_type: FrequencyEnum = fields.CharEnumField(
         FrequencyEnum, default=FrequencyEnum.MINUTELY
     )
-    time_of_day = fields.TimeField()
+    time_of_day = fields.DatetimeField()
     created_at = fields.DatetimeField(auto_now_add=True)
-    start_date = fields.DateTimeField()
-    end_date = fields.DateTimeField(null=True)
-    args = fields.JSONField()
+    start_date = fields.DatetimeField()
+    end_date = fields.DatetimeField(null=True)
+    # args = fields.JSONField()
 
 
 @post_save(TaskRule)
@@ -46,6 +46,7 @@ async def signal_post_save(
     using_db: "Optional[BaseDBAsyncClient]",
     update_fields: List[str],
 ) -> None:
+    print(instance.description)
     print(sender, instance, using_db, created, update_fields)
 
 
