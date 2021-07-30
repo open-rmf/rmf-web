@@ -5,12 +5,14 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from re import Pattern
 from typing import (
+    AsyncContextManager,
     Callable,
     Dict,
     Generic,
     List,
     Optional,
     Protocol,
+    TypedDict,
     TypeVar,
     Union,
     cast,
@@ -21,9 +23,9 @@ import socketio
 from fastapi import APIRouter, FastAPI
 from fastapi.exceptions import HTTPException
 from fastapi.types import DecoratedCallable
+from socketio.asyncio_server import AsyncServer
 from starlette.routing import compile_path
 
-from api_server.authenticator import AuthenticationError, JwtAuthenticator
 from api_server.fast_io.errors import *
 from api_server.models import User
 
@@ -79,6 +81,18 @@ class Watch:
 class SioRoute:
     pattern: Pattern
     func: OnSubscribe
+
+
+class Session(TypedDict):
+    user: User
+    subscriptions: Dict[str, WatchRequest]
+
+
+# For typing purposes
+class _CustomSio(ABC, socketio.AsyncServer):
+    @abstractmethod
+    def session(self, sid, namespace=None) -> AsyncContextManager[Session]:
+        pass
 
 
 class FastIORouter(APIRouter):
@@ -146,44 +160,11 @@ class FastIORouter(APIRouter):
         return decorator
 
 
-def make_sio(authenticator: Optional[JwtAuthenticator], logger: logging.Logger):
-    sio = socketio.AsyncServer(
-        async_mode="asgi", cors_allowed_origins="*", logger=logger
-    )
-
-    async def on_connect(sid: str, environ: dict, auth: Optional[dict] = None):
-        logger.info(
-            f'[{sid}] new connection from "{environ["REMOTE_ADDR"]}:{environ["REMOTE_PORT"]}"'
-        )
-
-        async with sio.session(sid) as session:
-            session["subscriptions"] = {}
-            if not authenticator:
-                session["user"] = User(username="stub", is_admin=True)
-                return True
-
-            try:
-                if auth is None:
-                    raise AuthenticationError("no auth options provided")
-                if "token" not in auth:
-                    raise AuthenticationError("no token provided")
-                user = await authenticator.verify_token(auth["token"])
-                session["user"] = user
-                return True
-            except AuthenticationError as e:
-                logger.error(f"authentication failed: {e}")
-                return False
-
-    sio.on("connect", on_connect)
-
-    return sio
-
-
 class FastIO(socketio.ASGIApp):
     def __init__(
         self,
+        sio: AsyncServer,
         *,
-        authenticator: Optional[JwtAuthenticator] = None,
         logger: logging.Logger = None,
         **fast_api_args,
     ):
@@ -191,9 +172,8 @@ class FastIO(socketio.ASGIApp):
         :param authenticator: Authenticator used to verify socket.io connections, for
             FastAPI endpoints, a dependency must be provided.
         """
-        self.authenticator = authenticator
         self.logger = logger or logging.getLogger(self.__class__.__name__)
-        self.sio = make_sio(authenticator, self.logger)
+        self.sio = cast(_CustomSio, sio)
         self.fapi = FastAPI(**fast_api_args)
         super().__init__(self.sio, other_asgi_app=self.fapi)
         self._sio_routes: List[SioRoute] = []

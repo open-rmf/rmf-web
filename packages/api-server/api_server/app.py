@@ -5,10 +5,11 @@ import signal
 import sys
 import threading
 import time
-from typing import Awaitable, Callable, List, Union
+from typing import Awaitable, Callable, List, Optional, Union
 
 import rclpy
 import rclpy.executors
+import socketio
 from fastapi import Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -16,12 +17,13 @@ from tortoise import Tortoise
 
 from api_server import routes
 from api_server.app_config import AppConfig, load_config
-from api_server.authenticator import JwtAuthenticator
+from api_server.authenticator import AuthenticationError, JwtAuthenticator
 from api_server.base_app import BaseApp
 from api_server.dependencies import auth_scheme
 from api_server.fast_io import FastIO
 from api_server.gateway import RmfGateway
 from api_server.models import tortoise_models as ttm
+from api_server.models.user import User
 from api_server.repositories import RmfRepository, StaticFilesRepository
 from api_server.rmf_io import HealthWatchdog, RmfBookKeeper, RmfEvents
 
@@ -59,9 +61,38 @@ class App(FastIO, BaseApp):
             else None
         )
 
+        sio = socketio.AsyncServer(
+            async_mode="asgi", cors_allowed_origins="*", logger=logger
+        )
+
+        async def on_connect(sid: str, environ: dict, auth: Optional[dict] = None):
+            logger.info(
+                f'[{sid}] new connection from "{environ["REMOTE_ADDR"]}:{environ["REMOTE_PORT"]}"'
+            )
+
+            async with sio.session(sid) as session:
+                session["subscriptions"] = {}
+                if not self.authenticator:
+                    session["user"] = User(username="stub", is_admin=True)
+                    return True
+
+                try:
+                    if auth is None:
+                        raise AuthenticationError("no auth options provided")
+                    if "token" not in auth:
+                        raise AuthenticationError("no token provided")
+                    user = await self.authenticator.verify_token(auth["token"])
+                    session["user"] = user
+                    return True
+                except AuthenticationError as e:
+                    logger.error(f"authentication failed: {e}")
+                    return False
+
+        sio.on("connect", on_connect)
         self.auth_dep = auth_scheme(self.authenticator, self.app_config.oidc_url)
+
         super().__init__(
-            authenticator=self.authenticator,
+            sio,
             logger=logger,
             title="RMF API Server",
             dependencies=[Depends(self.auth_dep)],
