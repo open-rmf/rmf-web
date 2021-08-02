@@ -13,6 +13,7 @@ import { RadioButtonGroup, TaskTable } from 'react-components';
 import { DataConfigContext } from '../app-contexts';
 import { useAutoRefresh } from './auto-refresh';
 import { PlacesContext, RmfIngressContext } from '../rmf-app/contexts';
+import { UserContext } from '../auth/contexts';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -49,7 +50,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const classes = useStyles();
   const data = React.useContext(DataConfigContext);
   const [radioValue, setRadioValue] = React.useState('');
-  const appUser = process.env.REACT_APP_USER;
+  const user = React.useContext(UserContext);
 
   const { tasksApi, sioClient } = React.useContext(RmfIngressContext) || {};
   const [autoRefreshState, autoRefreshDispatcher] = useAutoRefresh(sioClient);
@@ -68,19 +69,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     rowsPerPageOptions: [10],
     onChangePage: (_ev, newPage) => setPage(newPage),
   };
-
-  const createLoopTask = (destination: string): SubmitTask => {
-    return {
-      description: {
-        start_name: 'supplies',
-        finish_name: destination,
-        num_loops: 1,
-      },
-      start_time: Math.floor(Date.now() / 1000),
-      task_type: 1,
-      priority: 0,
-    };
-  };
+  const startPlace = placeNames[0];
 
   const fetchTasks = React.useCallback(
     async (page: number) => {
@@ -126,8 +115,20 @@ export default function Dashboard(_props: {}): React.ReactElement {
   }
 
   React.useEffect(() => {
+    const createLoopTask = (destination: string): SubmitTask => {
+      return {
+        description: {
+          start_name: startPlace,
+          finish_name: destination,
+          num_loops: 1,
+        },
+        start_time: Math.floor(Date.now() / 1000),
+        task_type: 1,
+        priority: 0,
+      };
+    };
     setTask(createLoopTask(radioValue));
-  }, [radioValue]);
+  }, [radioValue, startPlace]);
 
   const submitTask = async () => {
     if (!tasksApi) {
@@ -150,7 +151,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
           <Grid item xs={12}>
             <RadioButtonGroup
               formLabel={data.radioGroup.formLabel}
-              options={placeNames}
+              options={placeNames.slice(1)}
               radioGroupName={data.radioGroup.radioGroupTitle}
               onHandleChange={onHandleChange}
             />
@@ -168,7 +169,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
           </Grid>
         </Grid>
       </Paper>
-      {appUser === 'admin' ? (
+      {user?.profile.is_admin ? (
         <Paper className={classes.paper}>
           <Grid container>
             <Grid item xs={12} md={8}>
