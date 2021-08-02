@@ -28,13 +28,6 @@ const RobotInfo = (props: RobotInfoProps) => {
     { name: 'Name', value: robot.name },
     { name: 'Model', value: robot.model },
     { name: 'Fleet', value: fleetName },
-    {
-      name: 'Location',
-      value: `${robot.location.level_name} (${robot.location.x.toFixed(
-        3,
-      )}, ${robot.location.y.toFixed(3)})`,
-    },
-    { name: 'Yaw', value: robot.location.yaw.toFixed(3) },
     { name: 'Task Id', value: robot.task_id },
     { name: 'Battery', value: robot.battery_percent.toFixed(0) },
   ];

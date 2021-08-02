@@ -48,14 +48,6 @@ it('renders basic robot information', () => {
   expect(fleet).toBeTruthy();
   expect(within(fleet).queryByText('test_fleet')).toBeTruthy();
 
-  const location = rows.find((r) => r.getAttribute('aria-label') === 'Location')!;
-  expect(location).toBeTruthy();
-  expect(within(location).queryByText('test_level (0.000, 0.000)')).toBeTruthy();
-
-  const yaw = rows.find((r) => r.getAttribute('aria-label') === 'Yaw')!;
-  expect(yaw).toBeTruthy();
-  expect(within(yaw).queryByText('0.000')).toBeTruthy();
-
   const taskId = rows.find((r) => r.getAttribute('aria-label') === 'Task Id')!;
   expect(taskId).toBeTruthy();
   expect(within(taskId).queryByText('test_task_id')).toBeTruthy();
