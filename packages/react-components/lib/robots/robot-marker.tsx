@@ -14,7 +14,7 @@ const useStyles = makeStyles(() => ({
   text: {
     dominantBaseline: 'central',
     textAnchor: 'middle',
-    fontSize: '0.18px',
+    fontSize: '0.24px',
     fontWeight: 'bold',
     fill: 'white',
     /* 1 pixel black shadow to left, top, right and bottom */
