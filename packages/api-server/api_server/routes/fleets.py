@@ -102,7 +102,8 @@ class FleetsRouter(FastIORouter):
             rx_watcher(
                 req,
                 app.rmf_events().fleet_states.pipe(
-                    rxops.filter(lambda x: x.name == name)
+                    rxops.filter(lambda x: x.name == name),
+                    rxops.map(lambda x: x.dict()),
                 ),
             )
 
@@ -122,6 +123,7 @@ class FleetsRouter(FastIORouter):
             rx_watcher(
                 req,
                 app.rmf_events().robot_health.pipe(
-                    rxops.filter(lambda x: x.id_ == f"{fleet}/{robot}")
+                    rxops.filter(lambda x: x.id_ == f"{fleet}/{robot}"),
+                    rxops.map(lambda x: x.dict()),
                 ),
             )

@@ -35,7 +35,8 @@ class DoorsRouter(FastIORouter):
             rx_watcher(
                 req,
                 app.rmf_events().door_states.pipe(
-                    rxops.filter(lambda x: x.door_name == door_name)
+                    rxops.filter(lambda x: x.door_name == door_name),
+                    rxops.map(lambda x: x.dict()),
                 ),
             )
 
@@ -55,7 +56,8 @@ class DoorsRouter(FastIORouter):
             rx_watcher(
                 req,
                 app.rmf_events().door_health.pipe(
-                    rxops.filter(lambda x: x.id_ == door_name)
+                    rxops.filter(lambda x: x.id_ == door_name),
+                    rxops.map(lambda x: x.dict()),
                 ),
             )
 

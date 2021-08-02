@@ -55,7 +55,8 @@ class TasksRouter(FastIORouter):
             rx_watcher(
                 req,
                 app.rmf_events().task_summaries.pipe(
-                    rxops.filter(lambda x: x.task_id == task_id)
+                    rxops.filter(lambda x: x.task_id == task_id),
+                    rxops.map(lambda x: x.dict()),
                 ),
             )
 

@@ -35,7 +35,8 @@ class LiftsRouter(FastIORouter):
             rx_watcher(
                 req,
                 app.rmf_events().lift_states.pipe(
-                    rxops.filter(lambda x: x.lift_name == lift_name)
+                    rxops.filter(lambda x: x.lift_name == lift_name),
+                    rxops.map(lambda x: x.dict()),
                 ),
             )
 
@@ -55,7 +56,8 @@ class LiftsRouter(FastIORouter):
             rx_watcher(
                 req,
                 app.rmf_events().lift_health.pipe(
-                    rxops.filter(lambda x: x.id_ == lift_name)
+                    rxops.filter(lambda x: x.id_ == lift_name),
+                    rxops.map(lambda x: x.dict()),
                 ),
             )
 

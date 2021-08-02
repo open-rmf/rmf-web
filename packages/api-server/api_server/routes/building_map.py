@@ -25,6 +25,7 @@ class BuildingMapRouter(FastIORouter):
             rx_watcher(
                 req,
                 app.rmf_events().building_map.pipe(
-                    rxops.filter(lambda x: x is not None)
+                    rxops.filter(lambda x: x is not None),
+                    rxops.map(lambda x: x.dict()),
                 ),
             )

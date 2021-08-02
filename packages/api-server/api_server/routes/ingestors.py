@@ -35,7 +35,8 @@ class IngestorsRouter(FastIORouter):
             rx_watcher(
                 req,
                 app.rmf_events().ingestor_states.pipe(
-                    rxops.filter(lambda x: x.guid == guid)
+                    rxops.filter(lambda x: x.guid == guid),
+                    rxops.map(lambda x: x.dict()),
                 ),
             )
 
@@ -55,6 +56,7 @@ class IngestorsRouter(FastIORouter):
             rx_watcher(
                 req,
                 app.rmf_events().ingestor_health.pipe(
-                    rxops.filter(lambda x: x.id_ == guid)
+                    rxops.filter(lambda x: x.id_ == guid),
+                    rxops.map(lambda x: x.dict()),
                 ),
             )
