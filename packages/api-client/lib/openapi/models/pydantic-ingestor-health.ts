@@ -14,25 +14,25 @@
 /**
  *
  * @export
- * @interface ApiServerModelsTortoiseModelsHealthDoorHealthLeaf
+ * @interface PydanticIngestorHealth
  */
-export interface ApiServerModelsTortoiseModelsHealthDoorHealthLeaf {
+export interface PydanticIngestorHealth {
   /**
    *
    * @type {string}
-   * @memberof ApiServerModelsTortoiseModelsHealthDoorHealthLeaf
+   * @memberof PydanticIngestorHealth
    */
-  health_status?: any | null;
+  health_status: any | null;
   /**
    *
    * @type {string}
-   * @memberof ApiServerModelsTortoiseModelsHealthDoorHealthLeaf
+   * @memberof PydanticIngestorHealth
    */
   health_message?: any | null;
   /**
    *
    * @type {string}
-   * @memberof ApiServerModelsTortoiseModelsHealthDoorHealthLeaf
+   * @memberof PydanticIngestorHealth
    */
   id_: any;
 }

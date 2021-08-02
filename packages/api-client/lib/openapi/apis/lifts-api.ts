@@ -16,12 +16,12 @@ import { Configuration } from '../configuration';
 // Some imports not used depending on template conditions
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-import { ApiServerModelsTortoiseModelsHealthLiftHealthLeaf } from '../models';
 import { HTTPValidationError } from '../models';
 import { Lift } from '../models';
 import { LiftRequest } from '../models';
 import { LiftState } from '../models';
 import { ModelObject } from '../models';
+import { PydanticLiftHealth } from '../models';
 /**
  * LiftsApi - axios parameter creator
  * @export
@@ -258,12 +258,7 @@ export const LiftsApiFp = function (configuration?: Configuration) {
     async getLiftHealthLiftsLiftNameHealthGet(
       lift_name: string,
       options?: any,
-    ): Promise<
-      (
-        axios?: AxiosInstance,
-        basePath?: string,
-      ) => AxiosPromise<ApiServerModelsTortoiseModelsHealthLiftHealthLeaf>
-    > {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PydanticLiftHealth>> {
       const localVarAxiosArgs = await LiftsApiAxiosParamCreator(
         configuration,
       ).getLiftHealthLiftsLiftNameHealthGet(lift_name, options);
@@ -364,7 +359,7 @@ export const LiftsApiFactory = function (
     getLiftHealthLiftsLiftNameHealthGet(
       lift_name: string,
       options?: any,
-    ): AxiosPromise<ApiServerModelsTortoiseModelsHealthLiftHealthLeaf> {
+    ): AxiosPromise<PydanticLiftHealth> {
       return LiftsApiFp(configuration)
         .getLiftHealthLiftsLiftNameHealthGet(lift_name, options)
         .then((request) => request(axios, basePath));

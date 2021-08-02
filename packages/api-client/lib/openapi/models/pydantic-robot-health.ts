@@ -14,25 +14,25 @@
 /**
  *
  * @export
- * @interface ApiServerModelsTortoiseModelsHealthLiftHealthLeaf
+ * @interface PydanticRobotHealth
  */
-export interface ApiServerModelsTortoiseModelsHealthLiftHealthLeaf {
+export interface PydanticRobotHealth {
   /**
    *
    * @type {string}
-   * @memberof ApiServerModelsTortoiseModelsHealthLiftHealthLeaf
+   * @memberof PydanticRobotHealth
    */
-  health_status?: any | null;
+  health_status: any | null;
   /**
    *
    * @type {string}
-   * @memberof ApiServerModelsTortoiseModelsHealthLiftHealthLeaf
+   * @memberof PydanticRobotHealth
    */
   health_message?: any | null;
   /**
    *
    * @type {string}
-   * @memberof ApiServerModelsTortoiseModelsHealthLiftHealthLeaf
+   * @memberof PydanticRobotHealth
    */
   id_: any;
 }

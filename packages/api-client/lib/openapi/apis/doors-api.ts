@@ -16,12 +16,12 @@ import { Configuration } from '../configuration';
 // Some imports not used depending on template conditions
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-import { ApiServerModelsTortoiseModelsHealthDoorHealthLeaf } from '../models';
 import { Door } from '../models';
 import { DoorRequest } from '../models';
 import { DoorState } from '../models';
 import { HTTPValidationError } from '../models';
 import { ModelObject } from '../models';
+import { PydanticDoorHealth } from '../models';
 /**
  * DoorsApi - axios parameter creator
  * @export
@@ -258,12 +258,7 @@ export const DoorsApiFp = function (configuration?: Configuration) {
     async getDoorHealthDoorsDoorNameHealthGet(
       door_name: string,
       options?: any,
-    ): Promise<
-      (
-        axios?: AxiosInstance,
-        basePath?: string,
-      ) => AxiosPromise<ApiServerModelsTortoiseModelsHealthDoorHealthLeaf>
-    > {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PydanticDoorHealth>> {
       const localVarAxiosArgs = await DoorsApiAxiosParamCreator(
         configuration,
       ).getDoorHealthDoorsDoorNameHealthGet(door_name, options);
@@ -364,7 +359,7 @@ export const DoorsApiFactory = function (
     getDoorHealthDoorsDoorNameHealthGet(
       door_name: string,
       options?: any,
-    ): AxiosPromise<ApiServerModelsTortoiseModelsHealthDoorHealthLeaf> {
+    ): AxiosPromise<PydanticDoorHealth> {
       return DoorsApiFp(configuration)
         .getDoorHealthDoorsDoorNameHealthGet(door_name, options)
         .then((request) => request(axios, basePath));

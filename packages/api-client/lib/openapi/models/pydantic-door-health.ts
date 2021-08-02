@@ -14,31 +14,25 @@
 /**
  *
  * @export
- * @interface Task
+ * @interface PydanticDoorHealth
  */
-export interface Task {
+export interface PydanticDoorHealth {
   /**
    *
    * @type {string}
-   * @memberof Task
+   * @memberof PydanticDoorHealth
    */
-  task_id: any;
+  health_status: any | null;
   /**
    *
    * @type {string}
-   * @memberof Task
+   * @memberof PydanticDoorHealth
    */
-  authz_grp?: any;
+  health_message?: any | null;
   /**
    *
-   * @type {TaskSummary}
-   * @memberof Task
+   * @type {string}
+   * @memberof PydanticDoorHealth
    */
-  summary: any;
-  /**
-   *
-   * @type {TaskProgress}
-   * @memberof Task
-   */
-  progress: any;
+  id_: any;
 }

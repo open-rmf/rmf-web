@@ -14,25 +14,25 @@
 /**
  *
  * @export
- * @interface BasicHealth
+ * @interface PydanticDispenserHealth
  */
-export interface BasicHealth {
+export interface PydanticDispenserHealth {
   /**
    *
    * @type {string}
-   * @memberof BasicHealth
+   * @memberof PydanticDispenserHealth
+   */
+  health_status: any | null;
+  /**
+   *
+   * @type {string}
+   * @memberof PydanticDispenserHealth
+   */
+  health_message?: any | null;
+  /**
+   *
+   * @type {string}
+   * @memberof PydanticDispenserHealth
    */
   id_: any;
-  /**
-   *
-   * @type {string}
-   * @memberof BasicHealth
-   */
-  health_status: any;
-  /**
-   *
-   * @type {string}
-   * @memberof BasicHealth
-   */
-  health_message?: any;
 }

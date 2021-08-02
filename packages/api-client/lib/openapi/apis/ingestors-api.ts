@@ -16,10 +16,10 @@ import { Configuration } from '../configuration';
 // Some imports not used depending on template conditions
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-import { BasicHealth } from '../models';
 import { HTTPValidationError } from '../models';
 import { Ingestor } from '../models';
 import { IngestorState } from '../models';
+import { PydanticIngestorHealth } from '../models';
 /**
  * IngestorsApi - axios parameter creator
  * @export
@@ -187,7 +187,7 @@ export const IngestorsApiFp = function (configuration?: Configuration) {
     async getIngestorHealthIngestorsGuidHealthGet(
       guid: string,
       options?: any,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BasicHealth>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PydanticIngestorHealth>> {
       const localVarAxiosArgs = await IngestorsApiAxiosParamCreator(
         configuration,
       ).getIngestorHealthIngestorsGuidHealthGet(guid, options);
@@ -264,7 +264,7 @@ export const IngestorsApiFactory = function (
     getIngestorHealthIngestorsGuidHealthGet(
       guid: string,
       options?: any,
-    ): AxiosPromise<BasicHealth> {
+    ): AxiosPromise<PydanticIngestorHealth> {
       return IngestorsApiFp(configuration)
         .getIngestorHealthIngestorsGuidHealthGet(guid, options)
         .then((request) => request(axios, basePath));
