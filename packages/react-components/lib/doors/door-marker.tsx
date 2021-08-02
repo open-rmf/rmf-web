@@ -13,7 +13,7 @@ const useDoorStyles = makeStyles({
     pointerEvents: 'auto',
   },
   base: {
-    strokeWidth: 0.2,
+    strokeWidth: 0.5,
   },
   open: {
     stroke: '#AFDDAE',
