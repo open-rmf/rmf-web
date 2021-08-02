@@ -11,8 +11,8 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import SettingsIcon from '@material-ui/icons/Settings';
 import React from 'react';
 import { HeaderBar, LogoButton } from 'react-components';
-import { AppControllerContext, ResourcesContext } from './app-contexts';
-import { AuthenticatorContext, UserContext } from './auth/contexts';
+import { AppConfigContext, AppControllerContext, ResourcesContext } from './app-contexts';
+import { UserContext } from './auth/contexts';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -23,6 +23,9 @@ const useStyles = makeStyles((theme) =>
     link: {
       textDecoration: 'none',
       color: '#000',
+    },
+    logoBtn: {
+      width: theme.appBar.logoSize,
     },
   }),
 );
@@ -38,12 +41,12 @@ export interface AppBarProps {
 }
 
 export const AppBar = React.memo(
-  ({ tabValue, onTabChange }: AppBarProps): React.ReactElement => {
+  (): React.ReactElement => {
     const { showSettings: setShowSettings } = React.useContext(AppControllerContext);
     const logoResourcesContext = React.useContext(ResourcesContext)?.logos;
     const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
     const classes = useStyles();
-    const authenticator = React.useContext(AuthenticatorContext);
+    const { authenticator } = React.useContext(AppConfigContext);
     const user = React.useContext(UserContext);
 
     async function handleLogout(): Promise<void> {
@@ -66,7 +69,7 @@ export const AppBar = React.memo(
     return (
       <div>
         <HeaderBar>
-          <LogoButton logoPath={brandingIconPath} />
+          <LogoButton src={brandingIconPath} alt="logo" className={classes.logoBtn} />
           <Toolbar variant="dense" className={classes.toolbar}>
             <Typography variant="caption">Powered by OpenRMF</Typography>
             <IconButton

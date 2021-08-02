@@ -1,7 +1,8 @@
-import { Authenticator } from 'rmf-auth';
-import KeycloakAuthenticator from 'rmf-auth/lib/keycloak';
-import StubAuthenticator from 'rmf-auth/lib/stub';
+/* istanbul ignore file */
+
+import { Authenticator, KeycloakAuthenticator, StubAuthenticator } from 'rmf-auth';
 import ResourceManager from './managers/resource-manager';
+import { BasePath } from './util/url';
 
 export interface AppConfig {
   authenticator: Authenticator;
@@ -29,7 +30,10 @@ export const appConfig: AppConfig = (() => {
         if (!process.env.REACT_APP_KEYCLOAK_CONFIG) {
           throw new Error('missing REACT_APP_KEYCLOAK_CONFIG');
         }
-        return new KeycloakAuthenticator(JSON.parse(process.env.REACT_APP_KEYCLOAK_CONFIG));
+        return new KeycloakAuthenticator(
+          JSON.parse(process.env.REACT_APP_KEYCLOAK_CONFIG),
+          `${window.location.origin}${BasePath}/silent-check-sso.html`,
+        );
       case 'stub':
         return new StubAuthenticator();
       default:

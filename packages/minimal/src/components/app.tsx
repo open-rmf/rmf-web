@@ -1,63 +1,25 @@
-import { createMuiTheme, ThemeProvider } from '@material-ui/core';
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
+import { ThemeProvider } from '@material-ui/core';
 import React from 'react';
-import { NotFoundPage } from 'react-components';
+import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
+import { LoginPage, PrivateRoute } from 'rmf-auth';
 import appConfig from '../app-config';
 import ResourceManager from '../managers/resource-manager';
+import { DashboardRoute, LoginRoute } from '../util/url';
 import { AppBase } from './app-base';
-import { AppConfigContext, ResourcesContext, TrajectorySocketContext } from './app-contexts';
+import { ResourcesContext } from './app-contexts';
 import './app.css';
-import { TabValue } from './appbar';
-import { AuthenticatorContext } from './auth/contexts';
-import { RmfApp } from './rmf-app';
-import { Route, Redirect, useLocation, Switch } from 'react-router';
-import { BrowserRouter, Link } from 'react-router-dom';
-import { getUrl, LoginHOC, PrivateRouteHOC } from 'rmf-auth';
-import { DASHBOARD_ROUTE, LOGIN_ROUTE } from '../util/url';
 import Dashboard from './dashboard/dashboard';
-
-const PrivateRoute = PrivateRouteHOC(Route, Redirect, useLocation);
-const Login = LoginHOC(Redirect);
-
-const theme = createMuiTheme({
-  palette: {
-    primary: {
-      main: '#44497a',
-      dark: '#323558',
-      light: '#565d99',
-    },
-  },
-});
-
-function locationToTabValue(pathname: string): TabValue | null {
-  switch (pathname) {
-    case DASHBOARD_ROUTE:
-      return 'dashboard';
-    default:
-      return null;
-  }
-}
+import { RmfApp } from './rmf-app';
+import { theme } from './theme';
 
 export default function App(): JSX.Element | null {
+  const authenticator = appConfig.authenticator;
   const [authInitialized, setAuthInitialized] = React.useState(!!appConfig.authenticator.user);
-  const [authenticator, setAuthenticator] = React.useState(appConfig.authenticator);
-  const [user, setUser] = React.useState<string | null>(appConfig.authenticator.user || null);
-  const [ws, setWs] = React.useState<WebSocket>(new WebSocket(appConfig.trajServerUrl));
-  const appRoutes = [DASHBOARD_ROUTE];
-  const [tabValue, setTabValue] = React.useState<TabValue | null>(() =>
-    locationToTabValue(window.location.pathname),
-  );
-
-  const onTabChange = React.useCallback(
-    (_ev: React.ChangeEvent<unknown>, newValue: TabValue) => setTabValue(newValue),
-    [],
-  );
-
-  const onTokenExpired = () => setAuthenticator(appConfig.authenticator);
-  authenticator.on('tokenRefresh', onTokenExpired);
-
-  React.useEffect(() => {
-    setWs(new WebSocket(appConfig.trajServerUrl));
-  }, [setWs]);
+  const [user, setUser] = React.useState<string | null>(authenticator.user || null);
 
   React.useEffect(() => {
     let cancel = false;
@@ -95,53 +57,51 @@ export default function App(): JSX.Element | null {
     })();
   }, []);
 
+  const loginRedirect = React.useMemo(() => <Redirect to={LoginRoute} />, []);
+
   return authInitialized && appReady ? (
-    <AppConfigContext.Provider value={appConfig}>
-      <ResourcesContext.Provider value={resourceManager.current}>
-        <AuthenticatorContext.Provider value={authenticator}>
-          <TrajectorySocketContext.Provider value={ws}>
-            <ThemeProvider theme={theme}>
-              <BrowserRouter>
+    <ResourcesContext.Provider value={resourceManager.current}>
+      <ThemeProvider theme={theme}>
+        <BrowserRouter>
+          {user ? (
+            <RmfApp>
+              <AppBase>
                 <Switch>
-                  <Route exact path={LOGIN_ROUTE}>
-                    <Login
-                      user={user}
-                      title={'Dashboard'}
-                      authenticator={authenticator}
-                      successRedirectUri={getUrl(DASHBOARD_ROUTE)}
-                    />
+                  <Route exact path={LoginRoute}>
+                    <Redirect to={DashboardRoute} />
                   </Route>
-                  {tabValue ? (
-                    <PrivateRoute exact path={appRoutes} redirectPath={LOGIN_ROUTE} user={user}>
-                      <RmfApp>
-                        <AppBase appbarProps={{ tabValue, onTabChange }}>
-                          <Switch>
-                            <PrivateRoute
-                              exact
-                              path={DASHBOARD_ROUTE}
-                              redirectPath={LOGIN_ROUTE}
-                              user={user}
-                            >
-                              <Dashboard />
-                            </PrivateRoute>
-                          </Switch>
-                          {tabValue === 'dashboard' && <Redirect to={DASHBOARD_ROUTE} />}
-                        </AppBase>
-                      </RmfApp>
-                    </PrivateRoute>
-                  ) : (
-                    <Route>
-                      <NotFoundPage
-                        routeLinkComponent={<Link to={LOGIN_ROUTE}>Go to Login</Link>}
-                      />
-                    </Route>
-                  )}
+                  <PrivateRoute
+                    exact
+                    path={DashboardRoute}
+                    unauthorizedComponent={loginRedirect}
+                    user={user}
+                  >
+                    <Dashboard />
+                  </PrivateRoute>
+                  <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
+                    <Redirect to={DashboardRoute} />
+                  </PrivateRoute>
                 </Switch>
-              </BrowserRouter>
-            </ThemeProvider>
-          </TrajectorySocketContext.Provider>
-        </AuthenticatorContext.Provider>
-      </ResourcesContext.Provider>
-    </AppConfigContext.Provider>
+              </AppBase>
+            </RmfApp>
+          ) : (
+            <Switch>
+              <Route exact path={LoginRoute}>
+                <LoginPage
+                  title={'Dashboard'}
+                  logo="assets/ros-health.png"
+                  onLoginClick={() =>
+                    authenticator.login(`${window.location.origin}${DashboardRoute}`)
+                  }
+                />
+              </Route>
+              <Route>
+                <Redirect to={LoginRoute} />
+              </Route>
+            </Switch>
+          )}
+        </BrowserRouter>
+      </ThemeProvider>
+    </ResourcesContext.Provider>
   ) : null;
 }

@@ -3,7 +3,7 @@ import React from 'react';
 import { loadSettings, saveSettings } from '../settings';
 import { AppController, AppControllerContext, SettingsContext } from './app-contexts';
 import { AppDrawers } from './app-drawers';
-import AppBar, { AppBarProps } from './appbar';
+import AppBar from './appbar';
 
 const useStyles = makeStyles((theme) => ({
   appBase: {
@@ -13,10 +13,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export interface AppBaseProps {
-  appbarProps: AppBarProps;
-}
-
 /**
  * Contains various components that are essential to the app and provides contexts to control them.
  * Components include:
@@ -25,10 +21,7 @@ export interface AppBaseProps {
  *
  * Also provides `AppControllerContext` to allow children components to control them.
  */
-export function AppBase({
-  appbarProps,
-  children,
-}: React.PropsWithChildren<AppBaseProps>): JSX.Element | null {
+export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element | null {
   const classes = useStyles();
 
   const [settings, setSettings] = React.useState(() => loadSettings());
@@ -48,7 +41,7 @@ export function AppBase({
     <SettingsContext.Provider value={settings}>
       <AppControllerContext.Provider value={appController}>
         <Grid container direction="column" className={classes.appBase} wrap="nowrap">
-          <AppBar {...appbarProps} />
+          <AppBar />
           {children}
           <AppDrawers settings={settings} showSettings={showSettings} />
         </Grid>

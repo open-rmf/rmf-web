@@ -60,7 +60,6 @@ export class RmfIngress {
       accessToken: authenticator.token,
       basePath: appConfig.rmfServerUrl,
     };
-    console.log(authenticator);
 
     this.defaultApi = new DefaultApi(apiConfig, undefined, axiosInst);
     this.doorsApi = new DoorsApi(apiConfig, undefined, axiosInst);
