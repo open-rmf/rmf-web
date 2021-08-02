@@ -14,7 +14,7 @@ const useStyles = makeStyles(() => ({
   text: {
     dominantBaseline: 'central',
     textAnchor: 'middle',
-    fontSize: '0.24px',
+    fontSize: '0.35px',
     fontWeight: 'bold',
     fill: 'white',
     /* 1 pixel black shadow to left, top, right and bottom */
@@ -103,7 +103,13 @@ export const RobotMarker = React.forwardRef(
                 <DefaultMarker color={robotColor} {...props} />
               ) : null}
             </g>
-            <SvgText text={name} targetWidth={footprint * 1.9} className={classes.text} />
+            <SvgText
+              x="1.5"
+              y="-0.8"
+              text={name}
+              targetWidth={footprint * 3}
+              className={classes.text}
+            />
           </g>
         </g>
       </Tooltip>
