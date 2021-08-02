@@ -17,7 +17,7 @@ export const LoadingButton: Story<LoadingProps> = (args) => {
   return (
     <>
       <Button variant="contained" disabled={args.loading}>
-        <Loading {...args} size="1.5em">
+        <Loading {...args} size="1.5em" hideChildren>
           OK
         </Loading>
       </Button>

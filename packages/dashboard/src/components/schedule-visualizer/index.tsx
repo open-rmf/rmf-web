@@ -5,6 +5,7 @@ import React from 'react';
 import { ColorContext, robotHash } from 'react-components';
 import { AttributionControl, ImageOverlay, LayersControl, Map as LMap, Pane } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
+import appConfig from '../../app-config';
 import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
 import {
   Conflict,
@@ -12,8 +13,7 @@ import {
   Trajectory,
   TrajectoryResponse,
 } from '../../managers/robot-trajectory-manager';
-import { AppConfigContext } from '../app-contexts';
-import { FleetStateContext, RmfIngressContext } from '../rmf-app';
+import { RmfIngressContext } from '../rmf-app';
 import DispensersOverlay from './dispensers-overlay';
 import DoorsOverlay from './doors-overlay';
 import LiftsOverlay from './lift-overlay';
@@ -42,6 +42,9 @@ export interface MapFloorLayer {
 export interface ScheduleVisualizerProps extends React.PropsWithChildren<{}> {
   buildingMap: RmfModels.BuildingMap;
   negotiationTrajStore: Readonly<Record<string, NegotiationTrajectoryResponse>>;
+  doorStates?: Record<string, RmfModels.DoorState>;
+  liftStates?: Record<string, RmfModels.LiftState>;
+  fleetStates?: Record<string, RmfModels.FleetState>;
   showTrajectories?: boolean;
   mapFloorSort?(levels: RmfModels.Level[]): string[];
   onDoorClick?(door: RmfModels.Door): void;
@@ -63,10 +66,24 @@ export function calcMaxBounds(
 
 export default function ScheduleVisualizer(props: ScheduleVisualizerProps): React.ReactElement {
   debug('render');
-  const { buildingMap, negotiationTrajStore, mapFloorSort, showTrajectories } = props;
+  const {
+    buildingMap,
+    negotiationTrajStore,
+    doorStates = {},
+    liftStates = {},
+    fleetStates = {},
+    showTrajectories,
+    mapFloorSort,
+    onDoorClick,
+    onLiftClick,
+    onRobotClick,
+    onDispenserClick,
+    children,
+  } = props;
   const negotiationColors = React.useMemo(() => new NegotiationColors(), []);
 
-  const authenticator = React.useContext(AppConfigContext).authenticator;
+  // FIXME: trajectory manager should handle the tokens
+  const authenticator = appConfig.authenticator;
 
   const mapFloorLayerSorted = React.useMemo(
     () =>
@@ -105,7 +122,6 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   );
   const [bound, setBound] = React.useState(initialBounds);
 
-  const fleetStates = React.useContext(FleetStateContext);
   const fleets = React.useMemo(() => Object.values(fleetStates), [fleetStates]);
 
   const { trajectoryManager: trajManager } = React.useContext(RmfIngressContext) || {};
@@ -133,7 +149,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     (async () => {
       const promises: Promise<any>[] = [];
       const mapFloorLayers: Record<string, MapFloorLayer> = {};
-      for (const level of props.buildingMap.levels) {
+      for (const level of buildingMap.levels) {
         const image = level.images[0]; // when will there be > 1 image?
         if (!image) {
           continue;
@@ -179,7 +195,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       debug('set max bounds');
       setMaxBounds(calcMaxBounds(Object.values(mapFloorLayers)));
     })();
-  }, [props.buildingMap]);
+  }, [buildingMap]);
 
   React.useEffect(() => {
     let interval: number;
@@ -346,7 +362,8 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
               <DoorsOverlay
                 bounds={curMapFloorLayer.bounds}
                 doors={curMapFloorLayer.level.doors}
-                onDoorClick={props.onDoorClick}
+                doorStates={doorStates}
+                onDoorClick={onDoorClick}
               />
             </Pane>
           )}
@@ -357,8 +374,9 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
               <LiftsOverlay
                 bounds={curMapFloorLayer.bounds}
                 currentFloor={curLevelName}
-                lifts={props.buildingMap.lifts}
-                onLiftClick={props.onLiftClick}
+                lifts={buildingMap.lifts}
+                liftStates={liftStates}
+                onLiftClick={onLiftClick}
               />
             </Pane>
           )}
@@ -370,7 +388,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
                 currentFloorName={curLevelName}
                 bounds={curMapFloorLayer.bounds}
                 fleets={fleets}
-                onRobotClick={props.onRobotClick}
+                onRobotClick={onRobotClick}
                 conflictRobotNames={conflictRobotNames}
               />
             </Pane>
@@ -392,13 +410,13 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
               <DispensersOverlay
                 currentFloorName={curLevelName}
                 bounds={curMapFloorLayer.bounds}
-                onDispenserClick={props.onDispenserClick}
+                onDispenserClick={onDispenserClick}
               />
             </Pane>
           )}
         </LayersControl.Overlay>
       </LayersControl>
-      {props.children}
+      {children}
     </LMap>
   );
 }

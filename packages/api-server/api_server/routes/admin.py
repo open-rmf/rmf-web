@@ -2,10 +2,11 @@ from typing import Callable, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
+from tortoise.exceptions import IntegrityError
 from tortoise.transactions import in_transaction
 
 from ..dependencies import AddPaginationQuery, pagination_query
-from ..models import User
+from ..models import Permission, User
 from ..models import tortoise_models as ttm
 
 
@@ -18,15 +19,13 @@ class PostRoles(BaseModel):
     name: str
 
 
+class PostMakeAdmin(BaseModel):
+    admin: bool
+
+
 class PostRolePermissions(BaseModel):
     action: str
-    authz_grp: Optional[str] = ""
-
-
-class GetRolePermission(BaseModel):
-    authz_grp: Optional[str] = ""
-    role: str
-    action: str
+    authz_grp: str
 
 
 async def _get_db_role(role_name: str) -> ttm.Role:
@@ -81,7 +80,7 @@ def admin_router(user_dep: Callable[..., User]):
     @router.get("/users/{username}", response_model=User)
     async def get_user(username: str):
         """
-        Get an user
+        Get a user
         """
         # checks if the user exist in the database
         await _get_db_user(username)
@@ -90,7 +89,7 @@ def admin_router(user_dep: Callable[..., User]):
     @router.delete("/users/{username}")
     async def delete_user(username: str):
         """
-        Delete an user
+        Delete a user
 
         This only performs a soft delete, while the user is deleted from the app database,
         it still exists in the idp so they can still log in, the user will then be re-created
@@ -99,10 +98,19 @@ def admin_router(user_dep: Callable[..., User]):
         user = await _get_db_user(username)
         await user.delete()
 
+    @router.post("/users/{username}/make_admin")
+    async def make_admin(username: str, body: PostMakeAdmin):
+        """
+        Make or remove admin privilege from a user
+        """
+        user = await _get_db_user(username)
+        user.is_admin = body.admin
+        await user.save()
+
     @router.post("/users/{username}/roles")
     async def add_user_role(username: str, body: PostRoles):
         """
-        Add role to an user
+        Add role to a user
         """
         user = await _get_db_user(username)
         await user.fetch_related("roles")
@@ -112,7 +120,7 @@ def admin_router(user_dep: Callable[..., User]):
     @router.delete("/users/{username}/roles")
     async def delete_user_role(username: str, body: PostRoles):
         """
-        Remove role from an user
+        Remove role from a user
         """
         user = await _get_db_user(username)
         await user.fetch_related("roles")
@@ -122,7 +130,7 @@ def admin_router(user_dep: Callable[..., User]):
     @router.put("/users/{username}/roles")
     async def set_user_roles(username: str, body: List[PostRoles]):
         """
-        Set the roles of an user
+        Set the roles of a user
         """
         user = await _get_db_user(username)
         async with in_transaction():
@@ -145,7 +153,10 @@ def admin_router(user_dep: Callable[..., User]):
         """
         Create a new role
         """
-        await ttm.Role.create(name=body.name)
+        try:
+            await ttm.Role.create(name=body.name)
+        except IntegrityError as e:
+            raise HTTPException(422, str(e)) from e
 
     @router.delete("/roles/{role}")
     async def delete_role(role: str):
@@ -155,7 +166,7 @@ def admin_router(user_dep: Callable[..., User]):
         db_role = await _get_db_role(role)
         await db_role.delete()
 
-    @router.get("/roles/{role}/permissions", response_model=List[GetRolePermission])
+    @router.get("/roles/{role}/permissions", response_model=List[Permission])
     async def get_role_permissions(role: str):
         """
         Get all permissions of a role
@@ -164,10 +175,7 @@ def admin_router(user_dep: Callable[..., User]):
         permissions = await ttm.ResourcePermission.filter(
             role=db_role
         ).prefetch_related("role")
-        return [
-            GetRolePermission(authz_grp=p.authz_grp, role=p.role.name, action=p.action)
-            for p in permissions
-        ]
+        return [Permission(authz_grp=p.authz_grp, action=p.action) for p in permissions]
 
     @router.post("/roles/{role}/permissions")
     async def add_role_permission(role: str, body: PostRolePermissions):
