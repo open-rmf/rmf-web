@@ -1,4 +1,4 @@
-import { makeStyles, Tooltip } from '@material-ui/core';
+import { makeStyles, Tooltip, Typography } from '@material-ui/core';
 import Debug from 'debug';
 import React from 'react';
 import { ColorContext, SvgText } from '..';
@@ -84,10 +84,10 @@ export const RobotMarker = React.forwardRef(
     return (
       <Tooltip
         title={
-          <React.Fragment>
+          <Typography variant="h5">
             <div>Name - {name}</div>
             <div>State - {robotModeToString(robotMode)}</div>
-          </React.Fragment>
+          </Typography>
         }
       >
         <g ref={ref} onClick={(ev) => onClick && onClick(ev, fleetName, name)} {...otherProps}>
