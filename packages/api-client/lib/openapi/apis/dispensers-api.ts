@@ -17,9 +17,9 @@ import { Configuration } from '../configuration';
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 import { Dispenser } from '../models';
+import { DispenserHealth } from '../models';
 import { DispenserState } from '../models';
 import { HTTPValidationError } from '../models';
-import { PydanticDispenserHealth } from '../models';
 /**
  * DispensersApi - axios parameter creator
  * @export
@@ -187,9 +187,7 @@ export const DispensersApiFp = function (configuration?: Configuration) {
     async getDispenserHealthDispensersGuidHealthGet(
       guid: string,
       options?: any,
-    ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<PydanticDispenserHealth>
-    > {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DispenserHealth>> {
       const localVarAxiosArgs = await DispensersApiAxiosParamCreator(
         configuration,
       ).getDispenserHealthDispensersGuidHealthGet(guid, options);
@@ -266,7 +264,7 @@ export const DispensersApiFactory = function (
     getDispenserHealthDispensersGuidHealthGet(
       guid: string,
       options?: any,
-    ): AxiosPromise<PydanticDispenserHealth> {
+    ): AxiosPromise<DispenserHealth> {
       return DispensersApiFp(configuration)
         .getDispenserHealthDispensersGuidHealthGet(guid, options)
         .then((request) => request(axios, basePath));

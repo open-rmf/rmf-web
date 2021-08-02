@@ -43,6 +43,6 @@ def basic_health_model(
 
     # tortoise uses the class name to keep track of the model definitions, inline classes
     # with same name will cause it to fail.
-    BasicHealth.__name__ = f"Pydantic{TortoiseModel.__name__}"
+    BasicHealth.__name__ = TortoiseModel.__name__
 
     return BasicHealth

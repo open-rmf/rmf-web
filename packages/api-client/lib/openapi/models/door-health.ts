@@ -14,25 +14,25 @@
 /**
  *
  * @export
- * @interface PydanticDispenserHealth
+ * @interface DoorHealth
  */
-export interface PydanticDispenserHealth {
+export interface DoorHealth {
   /**
    *
    * @type {string}
-   * @memberof PydanticDispenserHealth
+   * @memberof DoorHealth
    */
   health_status: any | null;
   /**
    *
    * @type {string}
-   * @memberof PydanticDispenserHealth
+   * @memberof DoorHealth
    */
   health_message?: any | null;
   /**
    *
    * @type {string}
-   * @memberof PydanticDispenserHealth
+   * @memberof DoorHealth
    */
   id_: any;
 }

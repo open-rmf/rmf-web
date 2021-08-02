@@ -14,25 +14,25 @@
 /**
  *
  * @export
- * @interface PydanticIngestorHealth
+ * @interface DispenserHealth
  */
-export interface PydanticIngestorHealth {
+export interface DispenserHealth {
   /**
    *
    * @type {string}
-   * @memberof PydanticIngestorHealth
+   * @memberof DispenserHealth
    */
   health_status: any | null;
   /**
    *
    * @type {string}
-   * @memberof PydanticIngestorHealth
+   * @memberof DispenserHealth
    */
   health_message?: any | null;
   /**
    *
    * @type {string}
-   * @memberof PydanticIngestorHealth
+   * @memberof DispenserHealth
    */
   id_: any;
 }

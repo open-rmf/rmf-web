@@ -14,25 +14,25 @@
 /**
  *
  * @export
- * @interface PydanticLiftHealth
+ * @interface IngestorHealth
  */
-export interface PydanticLiftHealth {
+export interface IngestorHealth {
   /**
    *
    * @type {string}
-   * @memberof PydanticLiftHealth
+   * @memberof IngestorHealth
    */
   health_status: any | null;
   /**
    *
    * @type {string}
-   * @memberof PydanticLiftHealth
+   * @memberof IngestorHealth
    */
   health_message?: any | null;
   /**
    *
    * @type {string}
-   * @memberof PydanticLiftHealth
+   * @memberof IngestorHealth
    */
   id_: any;
 }

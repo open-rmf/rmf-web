@@ -14,25 +14,25 @@
 /**
  *
  * @export
- * @interface PydanticDoorHealth
+ * @interface RobotHealth
  */
-export interface PydanticDoorHealth {
+export interface RobotHealth {
   /**
    *
    * @type {string}
-   * @memberof PydanticDoorHealth
+   * @memberof RobotHealth
    */
   health_status: any | null;
   /**
    *
    * @type {string}
-   * @memberof PydanticDoorHealth
+   * @memberof RobotHealth
    */
   health_message?: any | null;
   /**
    *
    * @type {string}
-   * @memberof PydanticDoorHealth
+   * @memberof RobotHealth
    */
   id_: any;
 }

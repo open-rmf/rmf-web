@@ -19,8 +19,8 @@ import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } fr
 import { Fleet } from '../models';
 import { FleetState } from '../models';
 import { HTTPValidationError } from '../models';
-import { PydanticRobotHealth } from '../models';
 import { Robot } from '../models';
+import { RobotHealth } from '../models';
 /**
  * FleetsApi - axios parameter creator
  * @export
@@ -348,7 +348,7 @@ export const FleetsApiFp = function (configuration?: Configuration) {
       fleet: string,
       robot: string,
       options?: any,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PydanticRobotHealth>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RobotHealth>> {
       const localVarAxiosArgs = await FleetsApiAxiosParamCreator(
         configuration,
       ).getRobotHealthFleetsFleetRobotHealthGet(fleet, robot, options);
@@ -448,7 +448,7 @@ export const FleetsApiFactory = function (
       fleet: string,
       robot: string,
       options?: any,
-    ): AxiosPromise<PydanticRobotHealth> {
+    ): AxiosPromise<RobotHealth> {
       return FleetsApiFp(configuration)
         .getRobotHealthFleetsFleetRobotHealthGet(fleet, robot, options)
         .then((request) => request(axios, basePath));

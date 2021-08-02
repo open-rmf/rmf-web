@@ -14,25 +14,25 @@
 /**
  *
  * @export
- * @interface PydanticRobotHealth
+ * @interface LiftHealth
  */
-export interface PydanticRobotHealth {
+export interface LiftHealth {
   /**
    *
    * @type {string}
-   * @memberof PydanticRobotHealth
+   * @memberof LiftHealth
    */
   health_status: any | null;
   /**
    *
    * @type {string}
-   * @memberof PydanticRobotHealth
+   * @memberof LiftHealth
    */
   health_message?: any | null;
   /**
    *
    * @type {string}
-   * @memberof PydanticRobotHealth
+   * @memberof LiftHealth
    */
   id_: any;
 }

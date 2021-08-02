@@ -18,10 +18,10 @@ import { Configuration } from '../configuration';
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 import { HTTPValidationError } from '../models';
 import { Lift } from '../models';
+import { LiftHealth } from '../models';
 import { LiftRequest } from '../models';
 import { LiftState } from '../models';
 import { ModelObject } from '../models';
-import { PydanticLiftHealth } from '../models';
 /**
  * LiftsApi - axios parameter creator
  * @export
@@ -258,7 +258,7 @@ export const LiftsApiFp = function (configuration?: Configuration) {
     async getLiftHealthLiftsLiftNameHealthGet(
       lift_name: string,
       options?: any,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PydanticLiftHealth>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<LiftHealth>> {
       const localVarAxiosArgs = await LiftsApiAxiosParamCreator(
         configuration,
       ).getLiftHealthLiftsLiftNameHealthGet(lift_name, options);
@@ -359,7 +359,7 @@ export const LiftsApiFactory = function (
     getLiftHealthLiftsLiftNameHealthGet(
       lift_name: string,
       options?: any,
-    ): AxiosPromise<PydanticLiftHealth> {
+    ): AxiosPromise<LiftHealth> {
       return LiftsApiFp(configuration)
         .getLiftHealthLiftsLiftNameHealthGet(lift_name, options)
         .then((request) => request(axios, basePath));
