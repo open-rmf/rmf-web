@@ -7,7 +7,8 @@ from api_server.base_app import BaseApp
 from api_server.fast_io import FastIORouter, WatchRequest
 from api_server.models import Dispenser, DispenserHealth, DispenserState
 from api_server.repositories import RmfRepository
-from api_server.routes.utils import rx_watcher
+
+from .utils import rx_watcher
 
 
 class DispensersRouter(FastIORouter):

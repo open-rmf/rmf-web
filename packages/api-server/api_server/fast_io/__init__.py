@@ -32,8 +32,9 @@ from api_server.authenticator import (
     JwtAuthenticator,
     StubAuthenticator,
 )
-from api_server.fast_io.errors import *
 from api_server.models import User
+
+from .errors import *
 
 T = TypeVar("T")
 

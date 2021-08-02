@@ -2,7 +2,7 @@ from typing import List
 
 from pydantic import BaseModel
 
-from api_server.models import tortoise_models as ttm
+from . import tortoise_models as ttm
 
 
 class User(BaseModel):

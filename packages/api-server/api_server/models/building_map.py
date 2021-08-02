@@ -1,7 +1,7 @@
 from typing import List
 
-from api_server.models import tortoise_models as ttm
-from api_server.models.ros_pydantic import rmf_building_map_msgs
+from . import tortoise_models as ttm
+from .ros_pydantic import rmf_building_map_msgs
 
 
 class AffineImage(rmf_building_map_msgs.AffineImage):

@@ -1,8 +1,7 @@
 from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
 
-from api_server.models import TaskSummary
-from api_server.models.fleets import FleetState, RobotState
-from api_server.test.test_fixtures import AppFixture
+from api_server.models import FleetState, RobotState, TaskSummary
+from api_server.test import AppFixture
 
 
 class TestFleetsRoute(AppFixture):

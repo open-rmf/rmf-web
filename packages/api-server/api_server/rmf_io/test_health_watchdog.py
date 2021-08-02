@@ -19,9 +19,10 @@ from api_server.models import (
     LiftHealth,
     RobotHealth,
 )
-from api_server.rmf_io.events import RmfEvents
-from api_server.rmf_io.health_watchdog import HealthWatchdog
 from api_server.test import init_db, test_data
+
+from .events import RmfEvents
+from .health_watchdog import HealthWatchdog
 
 
 class BaseFixture(unittest.IsolatedAsyncioTestCase):

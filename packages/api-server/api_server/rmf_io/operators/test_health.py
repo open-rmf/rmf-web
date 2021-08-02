@@ -5,7 +5,8 @@ from rx import operators as ops
 from rx.scheduler.historicalscheduler import HistoricalScheduler
 
 from api_server.models import BaseBasicHealth, HealthStatus
-from api_server.rmf_io.operators import most_critical
+
+from .health import most_critical
 
 
 class TestMostCritical(unittest.TestCase):

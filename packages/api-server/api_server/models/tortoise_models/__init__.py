@@ -1,9 +1,9 @@
-from api_server.models.tortoise_models.authorization import *
-from api_server.models.tortoise_models.building_map import BuildingMap
-from api_server.models.tortoise_models.dispenser_state import DispenserState
-from api_server.models.tortoise_models.door_state import DoorState
-from api_server.models.tortoise_models.fleet_state import FleetState, RobotState
-from api_server.models.tortoise_models.health import (
+from .authorization import *
+from .building_map import BuildingMap
+from .dispenser_state import DispenserState
+from .door_state import DoorState
+from .fleet_state import FleetState, RobotState
+from .health import (
     BasicHealthModel,
     DispenserHealth,
     DoorHealth,
@@ -11,7 +11,7 @@ from api_server.models.tortoise_models.health import (
     LiftHealth,
     RobotHealth,
 )
-from api_server.models.tortoise_models.ingestor_state import IngestorState
-from api_server.models.tortoise_models.lift_state import LiftState
-from api_server.models.tortoise_models.task_summary import TaskSummary
-from api_server.models.tortoise_models.user import *
+from .ingestor_state import IngestorState
+from .lift_state import LiftState
+from .task_summary import TaskSummary
+from .user import *

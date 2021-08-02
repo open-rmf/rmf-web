@@ -4,7 +4,7 @@ import jwt
 from fastapi import Depends, HTTPException
 from fastapi.security import OpenIdConnect
 
-from api_server.models import User
+from .models import User
 
 
 class AuthenticationError(Exception):

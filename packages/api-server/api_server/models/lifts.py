@@ -2,9 +2,9 @@ from typing import List
 
 from pydantic import BaseModel, Field
 
-from api_server.models import tortoise_models as ttm
-from api_server.models.health import basic_health_model
-from api_server.models.ros_pydantic import rmf_building_map_msgs, rmf_lift_msgs
+from . import tortoise_models as ttm
+from .health import basic_health_model
+from .ros_pydantic import rmf_building_map_msgs, rmf_lift_msgs
 
 Lift = rmf_building_map_msgs.Lift
 LiftHealth = basic_health_model(ttm.LiftHealth)

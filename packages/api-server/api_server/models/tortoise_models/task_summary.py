@@ -1,8 +1,8 @@
 from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
 from tortoise import Model, fields
 
-from api_server.models.tortoise_models.authorization import ProtectedResource
-from api_server.models.tortoise_models.json_mixin import JsonMixin
+from .authorization import ProtectedResource
+from .json_mixin import JsonMixin
 
 
 class TaskSummary(Model, JsonMixin, ProtectedResource):

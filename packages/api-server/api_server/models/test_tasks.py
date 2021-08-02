@@ -4,7 +4,7 @@ from itertools import product
 from pydantic import ValidationError
 from rmf_task_msgs.msg import TaskType as RmfTaskType
 
-from api_server.models.tasks import SubmitTask
+from .tasks import SubmitTask
 
 
 class TestSubmitTaskModel(unittest.TestCase):

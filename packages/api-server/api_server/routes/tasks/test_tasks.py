@@ -9,7 +9,7 @@ from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
 
 from api_server.models import CancelTask, CleanTaskDescription, SubmitTask, TaskSummary
 from api_server.permissions import RmfAction
-from api_server.test.test_fixtures import AppFixture
+from api_server.test import AppFixture
 
 
 class TasksFixture(AppFixture):

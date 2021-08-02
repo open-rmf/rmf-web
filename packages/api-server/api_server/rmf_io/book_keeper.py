@@ -25,7 +25,8 @@ from api_server.models import (
     TaskSummary,
 )
 from api_server.models import tortoise_models as ttm
-from api_server.rmf_io.events import RmfEvents
+
+from .events import RmfEvents
 
 
 class RmfBookKeeperEvents:

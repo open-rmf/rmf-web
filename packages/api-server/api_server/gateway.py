@@ -30,7 +30,7 @@ from rmf_task_msgs.srv import GetTaskList as RmfGetTaskList
 from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
 from rosidl_runtime_py.convert import message_to_ordereddict
 
-from api_server.models import (
+from .models import (
     BuildingMap,
     DispenserState,
     DoorState,
@@ -39,8 +39,8 @@ from api_server.models import (
     LiftState,
     TaskSummary,
 )
-from api_server.repositories import StaticFilesRepository
-from api_server.rmf_io import RmfEvents
+from .repositories import StaticFilesRepository
+from .rmf_io import RmfEvents
 
 
 def process_building_map(

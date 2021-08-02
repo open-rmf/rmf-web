@@ -1,7 +1,7 @@
 from tortoise.fields import BooleanField, CharField, ManyToManyField, ManyToManyRelation
 from tortoise.models import Model
 
-from api_server.models.tortoise_models.authorization import Role
+from .authorization import Role
 
 
 class User(Model):

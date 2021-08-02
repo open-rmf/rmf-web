@@ -2,7 +2,7 @@ import os.path
 import unittest
 from os.path import dirname
 
-from api_server.repositories.static_files import StaticFilesRepository
+from .static_files import StaticFilesRepository
 
 
 class TestStaticFilesRepository(unittest.TestCase):

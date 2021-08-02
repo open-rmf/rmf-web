@@ -2,7 +2,7 @@ from typing import Optional, Type
 
 from tortoise.contrib.pydantic.base import PydanticModel
 
-from api_server.models import tortoise_models as ttm
+from . import tortoise_models as ttm
 
 
 class HealthStatus:

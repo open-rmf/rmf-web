@@ -2,8 +2,7 @@ from unittest.mock import Mock
 
 from rmf_lift_msgs.msg import LiftRequest as RmfLiftRequest
 
-from api_server.test.test_data import make_building_map, make_lift_state
-from api_server.test.test_fixtures import AppFixture
+from api_server.test import AppFixture, make_building_map, make_lift_state
 
 
 class TestLiftsRoute(AppFixture):

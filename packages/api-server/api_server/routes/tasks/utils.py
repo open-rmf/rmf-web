@@ -1,7 +1,7 @@
 from builtin_interfaces.msg import Time as RosTime
 from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
 
-from api_server.models.tasks import TaskProgress, TaskSummary
+from api_server.models import TaskProgress, TaskSummary
 
 
 def get_task_progress(task_summary: TaskSummary, now: RosTime) -> TaskProgress:

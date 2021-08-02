@@ -19,10 +19,11 @@ from api_server.models import (
 )
 from api_server.models.pagination import Pagination
 from api_server.repositories import RmfRepository
-from api_server.routes.tasks.dispatcher import DispatcherClient
-from api_server.routes.tasks.utils import get_task_progress
 from api_server.routes.utils import rx_watcher
 from api_server.services.tasks import convert_task_request
+
+from .dispatcher import DispatcherClient
+from .utils import get_task_progress
 
 
 class TasksRouter(FastIORouter):

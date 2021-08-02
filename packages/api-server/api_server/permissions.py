@@ -3,8 +3,8 @@ from typing import List, TypeVar
 from tortoise.expressions import Subquery
 from tortoise.queryset import QuerySet
 
-from api_server.models import User
-from api_server.models import tortoise_models as ttm
+from .models import User
+from .models import tortoise_models as ttm
 
 ResourceT = TypeVar("ResourceT", bound=ttm.ProtectedResource)
 

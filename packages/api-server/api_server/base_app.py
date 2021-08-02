@@ -2,11 +2,11 @@ from abc import ABC, abstractmethod
 from logging import Logger
 from typing import Callable
 
-from api_server.authenticator import JwtAuthenticator
-from api_server.gateway import RmfGateway
-from api_server.models import User
-from api_server.repositories import RmfRepository, StaticFilesRepository
-from api_server.rmf_io import RmfBookKeeper, RmfEvents
+from .authenticator import JwtAuthenticator
+from .gateway import RmfGateway
+from .models import User
+from .repositories import RmfRepository, StaticFilesRepository
+from .rmf_io import RmfBookKeeper, RmfEvents
 
 
 class BaseApp(ABC):

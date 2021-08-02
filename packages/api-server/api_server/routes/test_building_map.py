@@ -1,5 +1,4 @@
-from api_server.test.test_data import make_building_map
-from api_server.test.test_fixtures import AppFixture
+from api_server.test import AppFixture, make_building_map
 
 
 class TestBuildingMapRoute(AppFixture):

@@ -2,8 +2,7 @@ from unittest.mock import Mock
 
 from rmf_door_msgs.msg import DoorMode as RmfDoorMode
 
-from api_server.test.test_data import make_building_map, make_door_state
-from api_server.test.test_fixtures import AppFixture
+from api_server.test import AppFixture, make_building_map, make_door_state
 
 
 class TestDoorsRoute(AppFixture):

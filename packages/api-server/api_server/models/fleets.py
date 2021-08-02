@@ -2,10 +2,10 @@ from typing import List
 
 from pydantic import BaseModel
 
-from api_server.models import tortoise_models as ttm
-from api_server.models.health import basic_health_model
-from api_server.models.ros_pydantic import rmf_fleet_msgs
-from api_server.models.tasks import Task
+from . import tortoise_models as ttm
+from .health import basic_health_model
+from .ros_pydantic import rmf_fleet_msgs
+from .tasks import Task
 
 RobotMode = rmf_fleet_msgs.RobotMode
 RobotHealth = basic_health_model(ttm.RobotHealth)

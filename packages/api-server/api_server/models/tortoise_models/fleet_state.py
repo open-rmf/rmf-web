@@ -1,6 +1,6 @@
 from tortoise import Model, fields
 
-from api_server.models.tortoise_models.json_mixin import JsonMixin
+from .json_mixin import JsonMixin
 
 
 class FleetState(Model, JsonMixin):

@@ -1,7 +1,7 @@
 import asyncio
 
 from api_server.models import TaskSummary
-from api_server.test.test_fixtures import AppFixture
+from api_server.test import AppFixture
 
 
 class TestPaginationQuery(AppFixture):

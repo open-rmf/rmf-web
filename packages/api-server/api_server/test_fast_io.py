@@ -6,8 +6,8 @@ from concurrent.futures import Future
 import requests
 import socketio
 
-from api_server.test.fast_io_app import app
-from api_server.test.server import BackgroundServer
+from .test.fast_io_app import app
+from .test.server import BackgroundServer
 
 
 class TestFastIO(unittest.TestCase):

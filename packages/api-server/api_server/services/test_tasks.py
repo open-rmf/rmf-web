@@ -9,7 +9,8 @@ from api_server.models import (
     LoopTaskDescription,
     SubmitTask,
 )
-from api_server.services.tasks import convert_task_request
+
+from .tasks import convert_task_request
 
 
 class TestDispatcherClient(unittest.TestCase):

@@ -31,8 +31,9 @@ from api_server.models import (
     RobotState,
 )
 from api_server.models import tortoise_models as ttm
-from api_server.rmf_io.events import RmfEvents
-from api_server.rmf_io.operators import heartbeat, most_critical
+
+from .events import RmfEvents
+from .operators import heartbeat, most_critical
 
 
 class HealthWatchdog:

@@ -8,8 +8,9 @@ from api_server.dependencies import pagination_query
 from api_server.fast_io import FastIORouter, WatchRequest
 from api_server.models import Fleet, FleetState, Pagination, Robot, RobotHealth, Task
 from api_server.repositories import RmfRepository
-from api_server.routes.tasks.utils import get_task_progress
-from api_server.routes.utils import rx_watcher
+
+from .tasks.utils import get_task_progress
+from .utils import rx_watcher
 
 
 class FleetsRouter(FastIORouter):

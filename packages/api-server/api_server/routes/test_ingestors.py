@@ -1,6 +1,5 @@
 from api_server.models import Ingestor
-from api_server.test.test_data import make_ingestor_state
-from api_server.test.test_fixtures import AppFixture
+from api_server.test import AppFixture, make_ingestor_state
 
 
 class TestIngestorsRoute(AppFixture):

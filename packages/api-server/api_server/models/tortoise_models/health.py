@@ -2,7 +2,7 @@ from tortoise import Model, fields
 from tortoise.contrib.pydantic.base import PydanticModel
 from tortoise.contrib.pydantic.creator import pydantic_model_creator
 
-from api_server.models.tortoise_models.health_status_mixin import HealthStatusMixin
+from .health_status_mixin import HealthStatusMixin
 
 
 class BasicHealthModel(Model, HealthStatusMixin):

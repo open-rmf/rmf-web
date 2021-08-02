@@ -3,7 +3,7 @@ import unittest
 from rx.scheduler.historicalscheduler import HistoricalScheduler
 from rx.subject import Subject
 
-from api_server.rmf_io.operators import grouped_sample
+from .grouped_sample import grouped_sample
 
 
 class TestGroupedSample(unittest.TestCase):

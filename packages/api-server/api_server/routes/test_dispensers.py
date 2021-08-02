@@ -1,6 +1,5 @@
 from api_server.models import Dispenser
-from api_server.test.test_data import make_dispenser_state
-from api_server.test.test_fixtures import AppFixture
+from api_server.test import AppFixture, make_dispenser_state
 
 
 class TestDispensersRoute(AppFixture):

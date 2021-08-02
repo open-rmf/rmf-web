@@ -2,9 +2,9 @@ from fastapi.exceptions import HTTPException
 from rmf_task_msgs.srv import CancelTask as RmfCancelTask
 from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
 
-from api_server import models as mdl
+import api_server.models as mdl
+import api_server.models.tortoise_models as ttm
 from api_server.gateway import RmfGateway
-from api_server.models import tortoise_models as ttm
 from api_server.permissions import Enforcer, RmfAction
 
 
