@@ -1,7 +1,6 @@
 import asyncio
 
 from api_server.models import TaskSummary
-from api_server.models import tortoise_models as ttm
 from api_server.test.test_fixtures import AppFixture
 
 
@@ -16,9 +15,7 @@ class TestPaginationQuery(AppFixture):
             for i in range(200)
         ]
 
-        await asyncio.gather(
-            *(ttm.TaskSummary.save_pydantic(t, "test_group") for t in dataset)
-        )
+        await asyncio.gather(*(t.save("test_group") for t in dataset))
 
     async def test_limit_results(self):
         resp = await self.client.get("/tasks")

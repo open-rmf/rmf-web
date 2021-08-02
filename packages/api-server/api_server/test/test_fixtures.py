@@ -46,18 +46,21 @@ async def async_try_until(
 ) -> Awaitable[T]:
     """
     Do action until an expected result is received.
-    Returns the last result.
+    Returns the last result, or throws if the last result raises an exception.
     """
     end_time = time.time() + timeout
     while time.time() < end_time:
-        result = await action()
-        success = predicate(result)
-        if inspect.isawaitable(success):
-            success = await success
-        if success:
-            return result
+        try:
+            result = await action()
+            success = predicate(result)
+            if inspect.isawaitable(success):
+                success = await success
+            if success:
+                return result
+        except Exception:  # pylint: disable=broad-except
+            pass
         await asyncio.sleep(interval)
-    return result
+    return await action()
 
 
 here = os.path.dirname(__file__)

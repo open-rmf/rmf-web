@@ -210,7 +210,7 @@ class RmfGateway(rclpy.node.Node):
         """
         return self.get_clock().now().to_msg()
 
-    async def get_tasks(self) -> TaskSummary:
+    async def get_tasks(self) -> List[TaskSummary]:
         """
         Gets the list of tasks from RMF.
         """

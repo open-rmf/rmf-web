@@ -19,10 +19,12 @@ from api_server import routes
 from api_server.app_config import AppConfig, load_config
 from api_server.authenticator import JwtAuthenticator, StubAuthenticator
 from api_server.base_app import BaseApp
+from api_server.dependencies import rmf_repo as rmf_repo_dep
 from api_server.fast_io import FastIO
 from api_server.gateway import RmfGateway
+from api_server.models import DispenserState, DoorState, IngestorState, LiftState
 from api_server.models import tortoise_models as ttm
-from api_server.repositories import RmfRepository, StaticFilesRepository
+from api_server.repositories import StaticFilesRepository
 from api_server.rmf_io import HealthWatchdog, RmfBookKeeper, RmfEvents
 
 
@@ -89,7 +91,7 @@ class App(FastIO, BaseApp):
         shutdown_cbs: List[Callable[[], Union[None, Awaitable[None]]]] = []
 
         self._rmf_events = RmfEvents()
-        self.rmf_repo = RmfRepository()
+        self.rmf_repo = rmf_repo_dep(self.auth_dep)
         self.static_files_repo = StaticFilesRepository(
             f"{self.app_config.public_url.geturl()}/static",
             self.app_config.static_directory,
@@ -98,7 +100,7 @@ class App(FastIO, BaseApp):
         self._rmf_gateway: RmfGateway = None
 
         self._rmf_bookkeeper = RmfBookKeeper(
-            self.rmf_repo, self._rmf_events, logger=self.logger.getChild("BookKeeper")
+            self._rmf_events, logger=self.logger.getChild("BookKeeper")
         )
 
         self.fapi.include_router(routes.main_router(self))
@@ -171,7 +173,6 @@ class App(FastIO, BaseApp):
             shutdown_cbs.append(self._rmf_bookkeeper.stop())
             health_watchdog = HealthWatchdog(
                 self._rmf_events,
-                rmf_repo=self._rmf_bookkeeper.repo,
                 logger=self.logger.getChild("HealthWatchdog"),
             )
             await health_watchdog.start()
@@ -201,52 +202,56 @@ class App(FastIO, BaseApp):
     async def _load_states(self):
         self.logger.info("loading states from database...")
 
-        door_states = await self.rmf_repo.query_door_states()
+        door_states = [DoorState.from_tortoise(x) for x in await ttm.DoorState.all()]
         for state in door_states:
             self._rmf_events.door_states.on_next(state)
         self.logger.info(f"loaded {len(door_states)} door states")
 
-        door_health = await self.rmf_repo.query_door_health()
+        door_health = [x.to_pydantic() for x in await ttm.DoorHealth.all()]
         for health in door_health:
             self._rmf_events.door_health.on_next(health)
         self.logger.info(f"loaded {len(door_health)} door health")
 
-        lift_states = await self.rmf_repo.query_lift_states()
+        lift_states = [LiftState.from_tortoise(x) for x in await ttm.LiftState.all()]
         for state in lift_states:
             self._rmf_events.lift_states.on_next(state)
         self.logger.info(f"loaded {len(lift_states)} lift states")
 
-        lift_health = await self.rmf_repo.query_lift_health()
+        lift_health = [x.to_pydantic() for x in await ttm.LiftHealth.all()]
         for health in lift_health:
             self._rmf_events.lift_health.on_next(health)
         self.logger.info(f"loaded {len(lift_health)} lift health")
 
-        dispenser_states = await self.rmf_repo.query_dispenser_states()
+        dispenser_states = [
+            DispenserState.from_tortoise(x) for x in await ttm.DispenserState.all()
+        ]
         for state in dispenser_states:
             self._rmf_events.dispenser_states.on_next(state)
         self.logger.info(f"loaded {len(dispenser_states)} dispenser states")
 
-        dispenser_health = await self.rmf_repo.query_dispenser_health()
+        dispenser_health = [x.to_pydantic() for x in await ttm.DispenserHealth.all()]
         for health in dispenser_health:
             self._rmf_events.dispenser_health.on_next(health)
         self.logger.info(f"loaded {len(dispenser_health)} dispenser health")
 
-        ingestor_states = await self.rmf_repo.query_ingestor_states()
+        ingestor_states = [
+            IngestorState.from_tortoise(x) for x in await ttm.IngestorState.all()
+        ]
         for state in ingestor_states:
             self._rmf_events.ingestor_states.on_next(state)
         self.logger.info(f"loaded {len(ingestor_states)} ingestor states")
 
-        ingestor_health = await self.rmf_repo.query_ingestor_health()
+        ingestor_health = [x.to_pydantic() for x in await ttm.IngestorHealth.all()]
         for health in ingestor_health:
             self._rmf_events.ingestor_health.on_next(health)
         self.logger.info(f"loaded {len(ingestor_health)} ingestor health")
 
-        fleet_states = await self.rmf_repo.query_fleet_states()
+        fleet_states = [x.to_pydantic() for x in await ttm.FleetState.all()]
         for state in fleet_states:
             self._rmf_events.fleet_states.on_next(state)
         self.logger.info(f"loaded {len(fleet_states)} fleet states")
 
-        robot_health = await self.rmf_repo.query_robot_health()
+        robot_health = [x.to_pydantic() for x in await ttm.RobotHealth.all()]
         for health in robot_health:
             self._rmf_events.robot_health.on_next(health)
         self.logger.info(f"loaded {len(robot_health)} robot health")
@@ -262,7 +267,7 @@ class App(FastIO, BaseApp):
                 raise HTTPException(503, "ros service not ready")
             tasks = await self._rmf_gateway.get_tasks()
             for t in tasks:
-                await ttm.TaskSummary.save_pydantic(t)
+                await t.save()
         except HTTPException as e:
             self.logger.error(f"failed to update tasks from RMF ({e.detail})")
 

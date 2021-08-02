@@ -5,9 +5,37 @@ from pydantic import BaseModel, validator
 from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
 from rmf_task_msgs.msg import TaskType as RmfTaskType
 
+from api_server.models import tortoise_models as ttm
 from api_server.models.ros_pydantic import rmf_task_msgs
+from api_server.ros_time import ros_to_py_datetime
 
-TaskSummary = rmf_task_msgs.TaskSummary
+
+class TaskSummary(rmf_task_msgs.TaskSummary):
+    authz_grp: Optional[str] = None
+
+    @staticmethod
+    def from_tortoise(tortoise: ttm.TaskSummary) -> "TaskSummary":
+        return TaskSummary(authz_grp=tortoise.authz_grp, **tortoise.data)
+
+    async def save(self, authz_grp: Optional[str] = None) -> None:
+        dic = self.dict()
+        del dic["authz_grp"]
+
+        defaults = {
+            "fleet_name": self.fleet_name,
+            "submission_time": ros_to_py_datetime(self.submission_time),
+            "start_time": ros_to_py_datetime(self.start_time),
+            "end_time": ros_to_py_datetime(self.end_time),
+            "robot_name": self.robot_name,
+            "state": self.state,
+            "task_type": self.task_profile.description.task_type.type,
+            "priority": self.task_profile.description.priority.value,
+            "data": dic,
+        }
+        if authz_grp is not None:
+            defaults["authz_grp"] = authz_grp
+        result = await ttm.TaskSummary.update_or_create(defaults, id_=self.task_id)
+        return result[0]
 
 
 class TaskStateEnum(IntEnum):
@@ -53,7 +81,7 @@ class TaskProgress(BaseModel):
 
 class Task(BaseModel):
     task_id: str
-    authz_grp: str
+    authz_grp: Optional[str]
     summary: TaskSummary
     progress: TaskProgress
 

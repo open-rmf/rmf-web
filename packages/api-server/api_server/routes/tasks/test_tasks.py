@@ -8,7 +8,6 @@ from rmf_task_msgs.srv import CancelTask as RmfCancelTask
 from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
 
 from api_server.models import CancelTask, CleanTaskDescription, SubmitTask, TaskSummary
-from api_server.models import tortoise_models as ttm
 from api_server.permissions import RmfAction
 from api_server.test.test_fixtures import AppFixture
 
@@ -37,9 +36,7 @@ class TasksFixture(AppFixture):
         self.app.rmf_gateway().cancel_task = mock
 
     async def save_tasks(self, tasks: Sequence[TaskSummary], authz_grp: str):
-        await asyncio.gather(
-            *(ttm.TaskSummary.save_pydantic(t, authz_grp) for t in tasks)
-        )
+        await asyncio.gather(*(t.save(authz_grp) for t in tasks))
 
 
 class TestTasksRoute(TasksFixture):

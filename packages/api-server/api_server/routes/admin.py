@@ -6,10 +6,12 @@ from tortoise.exceptions import IntegrityError
 from tortoise.transactions import in_transaction
 
 from api_server.base_app import BaseApp
-from api_server.dependencies import AddPaginationQuery, pagination_query
+from api_server.dependencies import pagination_query
 from api_server.models import User
 from api_server.models import tortoise_models as ttm
 from api_server.models.authz import Permission
+from api_server.models.pagination import Pagination
+from api_server.repositories.rmf import RmfRepository
 
 
 class PostUsers(BaseModel):
@@ -50,7 +52,8 @@ def admin_router(app: BaseApp):
 
     @router.get("/users", response_model=List[str])
     async def get_users(
-        add_pagination: AddPaginationQuery[ttm.User] = Depends(pagination_query()),
+        rmf_repo: RmfRepository = Depends(app.rmf_repo),
+        pagination: Pagination = Depends(pagination_query),
         username: Optional[str] = Query(
             None, description="filters username that starts with the value"
         ),
@@ -59,15 +62,9 @@ def admin_router(app: BaseApp):
         """
         Search users
         """
-        filter_params = {}
-        if username is not None:
-            filter_params["username__istartswith"] = username
-        if is_admin is not None:
-            filter_params["is_admin"] = is_admin
-        q = add_pagination(ttm.User.filter(**filter_params)).values_list(
-            "username", flat=True
+        return await rmf_repo.query_users(
+            pagination, username=username, is_admin=is_admin
         )
-        return await q
 
     @router.post("/users")
     async def create_user(body: PostUsers):

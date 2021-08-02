@@ -13,8 +13,8 @@ class BaseApp(ABC):
     def __init__(self):
         self.authenticator: JwtAuthenticator
         self.auth_dep: Callable[..., User]
+        self.rmf_repo: Callable[..., RmfRepository]
         self.logger: Logger
-        self.rmf_repo: RmfRepository
         self.static_files_repo: StaticFilesRepository
 
     @abstractmethod
