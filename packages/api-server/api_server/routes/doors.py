@@ -30,7 +30,8 @@ class DoorsRouter(FastIORouter):
 
         @self.watch("/{door_name}/state")
         async def watch_door_state(req: WatchRequest, door_name: str):
-            await req.emit(await get_door_state(RmfRepository(req.user), door_name))
+            door_state = await get_door_state(door_name, RmfRepository(req.user))
+            await req.emit(door_state.dict())
             rx_watcher(
                 req,
                 app.rmf_events().door_states.pipe(
@@ -49,7 +50,8 @@ class DoorsRouter(FastIORouter):
 
         @self.watch("/{door_name}/health")
         async def watch_door_health(req: WatchRequest, door_name: str):
-            await req.emit(get_door_health(RmfRepository(req.user), door_name))
+            health = await get_door_health(door_name, RmfRepository(req.user))
+            await req.emit(health.to_dict())
             rx_watcher(
                 req,
                 app.rmf_events().door_health.pipe(

@@ -30,7 +30,8 @@ class DispensersRouter(FastIORouter):
 
         @self.watch("/{guid}/state")
         async def watch_dispenser_state(req: WatchRequest, guid: str):
-            await req.emit(await get_dispenser_state(RmfRepository(req.user), guid))
+            dispenser_state = await get_dispenser_state(guid, RmfRepository(req.user))
+            await req.emit(dispenser_state.dict())
             rx_watcher(
                 req,
                 app.rmf_events().dispenser_states.pipe(
@@ -49,7 +50,8 @@ class DispensersRouter(FastIORouter):
 
         @self.watch("/{guid}/health")
         async def watch_dispenser_health(req: WatchRequest, guid: str):
-            await req.emit(await get_dispenser_health(RmfRepository(req.user), guid))
+            health = await get_dispenser_health(guid, RmfRepository(req.user))
+            await req.emit(health.dict())
             rx_watcher(
                 req,
                 app.rmf_events().dispenser_health.pipe(

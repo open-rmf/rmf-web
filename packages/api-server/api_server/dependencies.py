@@ -17,7 +17,7 @@ def pagination_query(
     return Pagination(limit=limit, offset=offset, order_by=order_by)
 
 
-def rmf_repo(user_dep: Callable[..., User]) -> RmfRepository:
+def rmf_repo(user_dep: Callable[..., User]) -> Callable[..., RmfRepository]:
     def dep(user: User = Depends(user_dep)):
         return RmfRepository(user)
 

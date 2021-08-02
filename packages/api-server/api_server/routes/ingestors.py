@@ -30,7 +30,8 @@ class IngestorsRouter(FastIORouter):
 
         @self.watch("/{guid}/state")
         async def watch_ingestor_state(req: WatchRequest, guid: str):
-            await req.emit(await get_ingestor_state(RmfRepository(req.user), guid))
+            ingestor_state = await get_ingestor_state(guid, RmfRepository(req.user))
+            await req.emit(ingestor_state.dict())
             rx_watcher(
                 req,
                 app.rmf_events().ingestor_states.pipe(
@@ -49,7 +50,8 @@ class IngestorsRouter(FastIORouter):
 
         @self.watch("/{guid}/health")
         async def watch_ingestor_health(req: WatchRequest, guid: str):
-            await req.emit(await get_ingestor_health(RmfRepository(req.user), guid))
+            health = await get_ingestor_health(guid, RmfRepository(req.user))
+            await req.emit(health.dict())
             rx_watcher(
                 req,
                 app.rmf_events().ingestor_health.pipe(

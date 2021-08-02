@@ -97,7 +97,8 @@ class FleetsRouter(FastIORouter):
 
         @self.watch("/{name}/state")
         async def watch_fleet_state(req: WatchRequest, name: str):
-            await req.emit(await get_fleet_state(RmfRepository(req.user), name))
+            fleet_state = await get_fleet_state(name, RmfRepository(req.user))
+            await req.emit(fleet_state.dict())
             rx_watcher(
                 req,
                 app.rmf_events().fleet_states.pipe(
@@ -116,9 +117,8 @@ class FleetsRouter(FastIORouter):
 
         @self.watch("/{fleet}/{robot}/health")
         async def watch_robot_health(req: WatchRequest, fleet: str, robot: str):
-            await req.emit(
-                await get_robot_health(RmfRepository(req.user), fleet, robot)
-            )
+            health = await get_robot_health(fleet, robot, RmfRepository(req.user))
+            await req.emit(health.dict())
             rx_watcher(
                 req,
                 app.rmf_events().robot_health.pipe(
