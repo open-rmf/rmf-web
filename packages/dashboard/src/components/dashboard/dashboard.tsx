@@ -1,4 +1,5 @@
 import { Fade, makeStyles } from '@material-ui/core';
+import { Fleet, Level } from 'api-client';
 import Debug from 'debug';
 import React from 'react';
 import {
@@ -19,18 +20,12 @@ import {
 import { GlobalHotKeys } from 'react-hotkeys';
 import * as RmfModels from 'rmf-models';
 import { buildHotKeys } from '../../hotkeys';
-import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
-import { DispenserResource } from '../../managers/resource-manager-dispensers';
-import { AppControllerContext, ResourcesContext } from '../app-contexts';
 import {
-  BuildingMapContext,
-  DispenserStateContext,
-  DoorStateContext,
-  FleetStateContext,
-  LiftStateContext,
-  NegotiationStatusContext,
-  RmfIngressContext,
-} from '../rmf-app';
+  NegotiationConflict,
+  NegotiationTrajectoryResponse,
+} from '../../managers/negotiation-status-manager';
+import { AppConfigContext, AppControllerContext } from '../app-contexts';
+import { DispensersContext, IngestorsContext, RmfIngressContext } from '../rmf-app';
 import ScheduleVisualizer, { ScheduleVisualizerProps } from '../schedule-visualizer';
 import { RobotsOverlayProps } from '../schedule-visualizer/robots-overlay';
 import { SpotlightValue } from '../spotlight-value';
@@ -104,11 +99,17 @@ export default function Dashboard(_props: {}): React.ReactElement {
   debug('render');
 
   const classes = useStyles();
-
+  const appConfig = React.useContext(AppConfigContext);
   const appController = React.useContext(AppControllerContext);
+  const rmfIngress = React.useContext(RmfIngressContext);
+  const sioClient = rmfIngress?.sioClient;
 
-  const buildingMap = React.useContext(BuildingMapContext);
-  const resourceManager = React.useContext(ResourcesContext);
+  const [buildingMap, setBuildingMap] = React.useState<RmfModels.BuildingMap | null>(null);
+  React.useEffect(() => {
+    if (!sioClient) return;
+    sioClient.subscribeBuildingMap(setBuildingMap);
+    return () => sioClient.unsubscribe(setBuildingMap);
+  }, [sioClient]);
 
   const { state: dashboardState, dispatch: dashboardDispatch } = useDashboardReducer(
     dashboardInitialValues,
@@ -159,11 +160,22 @@ export default function Dashboard(_props: {}): React.ReactElement {
     setFilter('');
   }, [viewStackDispatch]);
 
-  const doorStates = React.useContext(DoorStateContext);
-  const doors = React.useMemo(
-    () => (buildingMap ? buildingMap.levels.flatMap((x) => x.doors) : []),
+  const [doorStates, setDoorStates] = React.useState<Record<string, RmfModels.DoorState>>({});
+  const doors: RmfModels.Door[] = React.useMemo(
+    () => (buildingMap ? (buildingMap.levels as Level[]).flatMap((x) => x.doors) : []),
     [buildingMap],
   );
+  React.useEffect(() => {
+    if (!sioClient) return;
+    const subs = doors.map((d) =>
+      sioClient.subscribeDoorState(d.name, (state) =>
+        setDoorStates((prev) => ({ ...prev, [d.name]: state })),
+      ),
+    );
+    return () => {
+      subs.forEach((s) => sioClient.unsubscribe(s));
+    };
+  }, [sioClient, doors]);
   const doorAccordionRefs = React.useMemo(() => defaultDict(createSpotlightRef), []);
   const handleDoorMarkerClick = React.useCallback(
     (door: RmfModels.Door) => {
@@ -175,8 +187,21 @@ export default function Dashboard(_props: {}): React.ReactElement {
     [doorAccordionRefs, viewStackDispatch, setShowOmniPanel],
   );
 
-  const liftStates = React.useContext(LiftStateContext);
-  const lifts = React.useMemo(() => (buildingMap ? buildingMap.lifts : []), [buildingMap]);
+  const [liftStates, setLiftStates] = React.useState<Record<string, RmfModels.LiftState>>({});
+  const lifts: RmfModels.Lift[] = React.useMemo(() => (buildingMap ? buildingMap.lifts : []), [
+    buildingMap,
+  ]);
+  React.useEffect(() => {
+    if (!sioClient) return;
+    const subs = lifts.map((l) =>
+      sioClient.subscribeLiftState(l.name, (state) =>
+        setLiftStates((prev) => ({ ...prev, [l.name]: state })),
+      ),
+    );
+    return () => {
+      subs.forEach((s) => sioClient.unsubscribe(s));
+    };
+  }, [sioClient, lifts]);
   const liftAccordionRefs = React.useMemo(() => defaultDict(createSpotlightRef), []);
   const handleLiftMarkerClick = React.useCallback(
     (lift: RmfModels.Lift) => {
@@ -188,26 +213,81 @@ export default function Dashboard(_props: {}): React.ReactElement {
     [liftAccordionRefs, viewStackDispatch, setShowOmniPanel],
   );
 
-  const dispenserStates = React.useContext(DispenserStateContext);
-  const dispenserAccordionRefs = React.useMemo(() => defaultDict(createSpotlightRef), []);
-  const handleDispenserMarkerClick = React.useCallback<
+  const dispensers = React.useContext(DispensersContext);
+  const [dispenserStates, setDispenserStates] = React.useState<
+    Record<string, RmfModels.DispenserState>
+  >({});
+  React.useEffect(() => {
+    if (!sioClient) return;
+    const subs = dispensers.map((d) =>
+      sioClient.subscribeDispenserState(d.guid, (state) =>
+        setDispenserStates((prev) => ({ ...prev, [d.guid]: state })),
+      ),
+    );
+    return () => {
+      subs.forEach((s) => sioClient.unsubscribe(s));
+    };
+  }, [sioClient, dispensers]);
+
+  const ingestors = React.useContext(IngestorsContext);
+  const [ingestorStates, setIngestorStates] = React.useState<
+    Record<string, RmfModels.IngestorState>
+  >({});
+  React.useEffect(() => {
+    if (!sioClient) return;
+    const subs = ingestors.map((d) =>
+      sioClient.subscribeIngestorState(d.guid, (state) =>
+        setIngestorStates((prev) => ({ ...prev, [d.guid]: state })),
+      ),
+    );
+    return () => {
+      subs.forEach((s) => sioClient.unsubscribe(s));
+    };
+  }, [sioClient, ingestors]);
+
+  const workcells = React.useMemo(() => [...dispensers, ...ingestors], [dispensers, ingestors]);
+  const workcellStates = React.useMemo(() => ({ ...dispenserStates, ...ingestorStates }), [
+    dispenserStates,
+    ingestorStates,
+  ]);
+  const workcellAccordionRefs = React.useMemo(() => defaultDict(createSpotlightRef), []);
+  const handleWorkcellMarkerClick = React.useCallback<
     Required<ScheduleVisualizerProps>['onDispenserClick']
   >(
     (_, guid) => {
       setShowOmniPanel(true);
       viewStackDispatch.push(OmniPanelViewIndex.Dispensers);
-      dispenserAccordionRefs[guid].spotlight();
+      workcellAccordionRefs[guid].spotlight();
       setFilter('');
     },
-    [dispenserAccordionRefs, viewStackDispatch, setShowOmniPanel],
+    [workcellAccordionRefs, viewStackDispatch, setShowOmniPanel],
   );
-  let dispensers: Record<string, DispenserResource> | undefined;
-  if (resourceManager && resourceManager.dispensers) {
-    dispensers = resourceManager.dispensers.dispensers;
-  }
 
-  const fleetStates = React.useContext(FleetStateContext);
-  const fleets = React.useMemo(() => Object.values(fleetStates), [fleetStates]);
+  const [fleets, setFleets] = React.useState<Fleet[]>([]);
+  React.useEffect(() => {
+    if (!rmfIngress) return;
+    let cancel = false;
+    (async () => {
+      const result = await rmfIngress.fleetsApi.getFleetsFleetsGet();
+      if (cancel || result.status !== 200) return;
+      setFleets(result.data);
+    })();
+    return () => {
+      cancel = true;
+    };
+  }, [rmfIngress]);
+  const [fleetStates, setFleetStates] = React.useState<Record<string, RmfModels.FleetState>>({});
+  React.useEffect(() => {
+    if (!sioClient) return;
+    const subs = fleets.map((f) =>
+      sioClient.subscribeFleetState(f.name, (state) =>
+        setFleetStates((prev) => ({ ...prev, [f.name]: state })),
+      ),
+    );
+    return () => {
+      subs.forEach((s) => sioClient.unsubscribe(s));
+    };
+  }, [sioClient, fleets]);
   const fleetNames = React.useRef<string[]>([]);
   const newFleetNames = Object.keys(fleetStates);
   if (newFleetNames.some((fleetName) => !fleetNames.current.includes(fleetName))) {
@@ -225,7 +305,22 @@ export default function Dashboard(_props: {}): React.ReactElement {
   );
 
   const { negotiationStatusManager } = React.useContext(RmfIngressContext) || {};
-  const negotiationStatus = React.useContext(NegotiationStatusContext);
+  const [negotiationStatus, setNegotiationStatus] = React.useState<
+    Record<number, NegotiationConflict>
+  >({});
+  React.useEffect(() => {
+    if (!negotiationStatusManager) {
+      return;
+    }
+    negotiationStatusManager.startSubscription(appConfig.authenticator.token);
+    const onUpdated = () => setNegotiationStatus(negotiationStatusManager.allConflicts());
+    negotiationStatusManager.on('updated', onUpdated);
+    // FIXME: unable to unsubscribe
+
+    return () => {
+      negotiationStatusManager.off('updated', onUpdated);
+    };
+  }, [negotiationStatusManager, appConfig]);
   const [negotiationSpotlight, setNegotiationSpotlight] = React.useState<
     SpotlightValue<string> | undefined
   >(undefined);
@@ -289,13 +384,16 @@ export default function Dashboard(_props: {}): React.ReactElement {
         <>
           <ScheduleVisualizer
             buildingMap={buildingMap}
+            doorStates={doorStates}
+            liftStates={liftStates}
+            fleetStates={fleetStates}
             mapFloorSort={mapFloorSort}
             negotiationTrajStore={negotiationTrajStore}
             showTrajectories={!(currentView === OmniPanelViewIndex.Negotiations)}
             onDoorClick={handleDoorMarkerClick}
             onLiftClick={handleLiftMarkerClick}
             onRobotClick={handleRobotMarkerClick}
-            onDispenserClick={handleDispenserMarkerClick}
+            onDispenserClick={handleWorkcellMarkerClick}
           >
             <OmniPanelControl show={!showOmniPanel} dashboardDispatch={dashboardDispatch} />
           </ScheduleVisualizer>
@@ -348,7 +446,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
           <OmniPanelView viewId={OmniPanelViewIndex.Robots}>
             <SimpleFilter onChange={onChange} value={filter} />
             {fleets.flatMap((fleet) =>
-              fleet.robots.map((robot) => {
+              (fleet.state.robots as RmfModels.RobotState[]).map((robot) => {
                 const toLower = robot.name;
                 return toLower.includes(filter) ? (
                   <RobotAccordion
@@ -364,22 +462,20 @@ export default function Dashboard(_props: {}): React.ReactElement {
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Dispensers}>
             <SimpleFilter onChange={onChange} value={filter} />
-            {dispensers
-              ? Object.keys(dispensers).map((dispenser) => {
-                  const toLower = dispenser.toLowerCase();
-                  return toLower.includes(filter) ? (
-                    <DispenserAccordion
-                      key={dispenser}
-                      ref={dispenserAccordionRefs[dispenser].ref}
-                      dispenserState={
-                        dispenserStates[dispenser] ? dispenserStates[dispenser] : null
-                      }
-                      data-component="DispenserAccordion"
-                      dispenser={dispenser}
-                    />
-                  ) : null;
-                })
-              : null}
+            {workcells.map((workcell) => {
+              const toLower = workcell.guid.toLowerCase();
+              return toLower.includes(filter) ? (
+                <DispenserAccordion
+                  key={workcell.guid}
+                  ref={workcellAccordionRefs[workcell.guid].ref}
+                  dispenserState={
+                    workcellStates[workcell.guid] ? workcellStates[workcell.guid] : null
+                  }
+                  data-component="DispenserAccordion"
+                  dispenser={workcell.guid}
+                />
+              ) : null;
+            })}
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Negotiations}>
             <NegotiationsPanel

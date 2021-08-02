@@ -18,7 +18,7 @@ export default {
 
 export const Default: Story<PermissionsCardProps> = (args) => {
   return (
-    <PermissionsCard {...args} savePermission={() => new Promise((res) => setTimeout(res, 500))} />
+    <PermissionsCard {...args} savePermission={() => new Promise((res) => setTimeout(res, 100))} />
   );
 };
 

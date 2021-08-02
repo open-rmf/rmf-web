@@ -2,6 +2,7 @@ import {
   Button,
   Card,
   CardHeader,
+  CardProps,
   Dialog,
   DialogActions,
   DialogContent,
@@ -15,7 +16,8 @@ import {
 } from '@material-ui/core';
 import SecurityIcon from '@material-ui/icons/Security';
 import React from 'react';
-import { Loading, TransferList } from '../../../../react-components/dist';
+import { Loading, TransferList, useAsync } from 'react-components';
+import { AppControllerContext } from '../app-contexts';
 
 const useStyles = makeStyles((theme) => ({
   action: {
@@ -35,9 +37,9 @@ const useStyles = makeStyles((theme) => ({
 
 export interface ManageRolesDialogProps extends Omit<DialogProps, 'onClose'> {
   defaultAssignedRoles: string[];
-  setOpen: (open: boolean) => void;
-  getAllRoles: () => Promise<string[]>;
-  saveRoles: (roles: string[]) => Promise<void>;
+  setOpen?: (open: boolean) => void;
+  getAllRoles?: () => Promise<string[]>;
+  saveRoles?: (roles: string[]) => Promise<void>;
 }
 
 export function ManageRolesDialog({
@@ -49,35 +51,51 @@ export function ManageRolesDialog({
   ...dialogProps
 }: ManageRolesDialogProps): JSX.Element {
   const classes = useStyles();
+  const safeAsync = useAsync();
   const [availableRoles, setAvailableRoles] = React.useState<string[]>([]);
   const [assignedRoles, setAssignedRoles] = React.useState<string[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
+  const { showErrorAlert } = React.useContext(AppControllerContext);
 
   React.useEffect(() => {
-    if (!open) {
-      return;
-    }
+    if (!open || !getAllRoles) return;
     setLoading(true);
     (async () => {
-      const allRoles = await getAllRoles();
-      setAvailableRoles(allRoles.filter((r) => defaultAssignedRoles.indexOf(r) === -1).sort());
-      setAssignedRoles(defaultAssignedRoles.sort());
-      setLoading(false);
+      try {
+        const allRoles = await safeAsync(getAllRoles());
+        setAvailableRoles(allRoles.filter((r) => defaultAssignedRoles.indexOf(r) === -1).sort());
+        setAssignedRoles(defaultAssignedRoles.sort());
+      } catch (e) {
+        showErrorAlert(`Failed to get roles: ${e.message}`);
+      } finally {
+        setLoading(false);
+      }
     })();
-  }, [open, getAllRoles, defaultAssignedRoles]);
+  }, [open, getAllRoles, defaultAssignedRoles, showErrorAlert, safeAsync]);
 
   const handleOkClick = () => {
     setSaving(true);
     (async () => {
-      await saveRoles(assignedRoles);
-      setSaving(false);
-      setOpen(false);
+      try {
+        saveRoles && (await safeAsync(saveRoles(assignedRoles)));
+        setSaving(false);
+        setOpen && setOpen(false);
+      } catch (e) {
+        setSaving(false);
+        showErrorAlert(`Failed to save roles: ${e.message}`);
+      }
     })();
   };
 
   return (
-    <Dialog maxWidth="md" fullWidth open={open} onClose={() => setOpen(false)} {...dialogProps}>
+    <Dialog
+      maxWidth="md"
+      fullWidth
+      open={open}
+      onClose={() => setOpen && setOpen(false)}
+      {...dialogProps}
+    >
       <DialogTitle>Manage Roles</DialogTitle>
       <DialogContent dividers className={classes.dialogContent}>
         <Loading loading={loading} size="5em">
@@ -101,7 +119,7 @@ export function ManageRolesDialog({
           className={classes.dialogButton}
           onClick={() => {
             setLoading(false);
-            setOpen(false);
+            setOpen && setOpen(false);
           }}
           disabled={saving}
         >
@@ -125,7 +143,8 @@ export function ManageRolesDialog({
 }
 
 export interface ManageRolesCardProps
-  extends Pick<ManageRolesDialogProps, 'getAllRoles' | 'saveRoles'> {
+  extends CardProps,
+    Pick<ManageRolesDialogProps, 'getAllRoles' | 'saveRoles'> {
   assignedRoles: string[];
 }
 
@@ -133,12 +152,13 @@ export function ManageRolesCard({
   assignedRoles,
   getAllRoles,
   saveRoles,
+  ...otherProps
 }: ManageRolesCardProps): JSX.Element {
   const classes = useStyles();
   const [openDialog, setOpenDialog] = React.useState(false);
 
   return (
-    <Card variant="outlined">
+    <Card variant="outlined" {...otherProps}>
       <CardHeader
         title="Roles"
         titleTypographyProps={{ variant: 'h5' }}

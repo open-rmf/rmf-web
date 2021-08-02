@@ -16,7 +16,7 @@ export const Default: Story<AddPermissionDialogProps> = (args) => {
       {...args}
       open={true}
       setOpen={() => {}}
-      savePermission={() => new Promise((res) => setTimeout(res, 500))}
+      savePermission={() => new Promise((res) => setTimeout(res, 100))}
     />
   );
 };

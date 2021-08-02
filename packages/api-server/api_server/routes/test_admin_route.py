@@ -24,6 +24,15 @@ class TestAdminRoute(RouteFixture):
         user = resp.json()
         self.assertEqual(username, user["username"])
 
+        resp = self.session.post(
+            f"{self.base_url}/admin/users/{username}/make_admin", json={"admin": True}
+        )
+        self.assertEqual(200, resp.status_code)
+        resp = self.session.get(f"{self.base_url}/admin/users/{username}")
+        self.assertEqual(200, resp.status_code)
+        user = resp.json()
+        self.assertEqual(True, user["is_admin"])
+
         resp = self.session.delete(f"{self.base_url}/admin/users/{username}")
         self.assertEqual(200, resp.status_code)
 

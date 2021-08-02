@@ -1,7 +1,7 @@
 import EventEmitter from 'eventemitter3';
 import { Authenticator, AuthenticatorEventType } from './authenticator';
 
-export default class StubAuthenticator
+export class StubAuthenticator
   extends EventEmitter<AuthenticatorEventType>
   implements Authenticator {
   readonly user = 'stub';
@@ -24,3 +24,5 @@ export default class StubAuthenticator
     return Promise.resolve();
   }
 }
+
+export default StubAuthenticator;

@@ -1,18 +1,33 @@
-import { Drawer, List, ListItem, ListItemIcon, ListItemText, makeStyles } from '@material-ui/core';
+import {
+  Drawer,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  makeStyles,
+  Toolbar,
+} from '@material-ui/core';
 import { SvgIconComponent } from '@material-ui/icons';
 import AccountIcon from '@material-ui/icons/AccountCircle';
 import SecurityIcon from '@material-ui/icons/Security';
 import React from 'react';
+import { matchPath, RouteProps, useHistory, useLocation, useRouteMatch } from 'react-router';
 
 export type AdminDrawerValues = 'Users' | 'Roles';
 
-const DrawerMinWidth = 180;
+const drawerValuesRoutesMap: Record<AdminDrawerValues, RouteProps> = {
+  Users: { path: '/users', exact: true },
+  Roles: { path: '/roles', exact: true },
+};
 
 const useStyles = makeStyles((theme) => ({
   drawerPaper: {
     backgroundColor: theme.palette.primary.dark,
     color: theme.palette.getContrastText(theme.palette.primary.dark),
-    minWidth: DrawerMinWidth,
+    minWidth: theme.appDrawer.width,
+  },
+  drawerContainer: {
+    overflow: 'auto',
   },
   itemIcon: {
     color: theme.palette.getContrastText(theme.palette.primary.dark),
@@ -22,26 +37,25 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export interface AdminDrawerProps {
-  active: AdminDrawerValues;
-  onItemClick?: (ev: React.MouseEvent, item: AdminDrawerValues) => void;
-}
-
-export function AdminDrawer({ active, onItemClick }: AdminDrawerProps): JSX.Element {
+export function AdminDrawer(): JSX.Element {
   const classes = useStyles();
+  const location = useLocation();
+  const history = useHistory();
+  const match = useRouteMatch();
+  const activeItem = React.useMemo<AdminDrawerValues>(() => {
+    const matched = Object.entries(drawerValuesRoutesMap).find(([_k, v]) =>
+      matchPath(location.pathname, `${match.path}${v.path}`),
+    );
+    return matched ? (matched[0] as AdminDrawerValues) : 'Users';
+  }, [location.pathname, match.path]);
 
   const DrawerItem = React.useCallback(
-    ({ Icon, text }: { Icon: SvgIconComponent; text: AdminDrawerValues }) => {
+    ({ Icon, text, route }: { Icon: SvgIconComponent; text: AdminDrawerValues; route: string }) => {
       return (
         <ListItem
           button
-          className={active === text ? classes.activeItem : undefined}
-          onClick={(ev) => {
-            if (active === text) {
-              return;
-            }
-            onItemClick && onItemClick(ev, text);
-          }}
+          className={activeItem === text ? classes.activeItem : undefined}
+          onClick={() => history.push(route)}
         >
           <ListItemIcon>
             <Icon className={classes.itemIcon} />
@@ -50,15 +64,18 @@ export function AdminDrawer({ active, onItemClick }: AdminDrawerProps): JSX.Elem
         </ListItem>
       );
     },
-    [active, classes.activeItem, classes.itemIcon, onItemClick],
+    [activeItem, classes.activeItem, classes.itemIcon, history],
   );
 
   return (
     <Drawer variant="permanent" classes={{ paper: classes.drawerPaper }}>
-      <List>
-        <DrawerItem text="Users" Icon={AccountIcon} />
-        <DrawerItem text="Roles" Icon={SecurityIcon} />
-      </List>
+      <Toolbar />
+      <div className={classes.drawerContainer}>
+        <List>
+          <DrawerItem text="Users" route={`${match.path}/users`} Icon={AccountIcon} />
+          <DrawerItem text="Roles" route={`${match.path}/roles`} Icon={SecurityIcon} />
+        </List>
+      </div>
     </Drawer>
   );
 }
