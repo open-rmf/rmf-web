@@ -9,11 +9,8 @@ from .helpers.task_rule import calculate_next_time, is_time_between
 from .scheduled_task import ScheduledTask
 from .task import TaskTypeEnum
 
-# type (minutes, hours, Daily, monthly, weekly, fixed, yearly) - Enum
-
 
 class FrequencyEnum(str, Enum):
-    YEARLY = "Yearly"
     MONTHLY = "Monthly"
     WEEKLY = "Weekly"
     DAILY = "Daily"
@@ -22,8 +19,37 @@ class FrequencyEnum(str, Enum):
     ONCE = "Once"
 
 
+MONTH_DAYS = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+MONTH_DAYS_LEAP = [0, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
+
 class TaskRuleService:
-    def get_timedelta(delta_type, frequency):
+    # Check if a day is a leap year
+    def is_leap_year(self, year: int) -> int:
+        return (year % 4 == 0 and year % 100 != 0) or year % 400 == 0
+
+    def get_sum_of_month_days(self, frequency: int, datetime: datetime) -> int:
+        current_month: int = datetime.month
+        total_days = 0
+        month_list = self.get_list_of_month_days(datetime)
+        if frequency == 1:
+            return month_list[datetime.month]
+        for month in range(current_month, current_month + frequency):
+            total_days += month_list[month]
+        return total_days
+
+    # Check the number of days of a month including leap years
+    def get_month_days_number(self, datetime: datetime):
+        month_list = self.get_list_of_month_days(datetime)
+        return month_list[datetime.month]
+
+    def get_list_of_month_days(self, datetime: datetime) -> List[int]:
+        year = datetime.year
+        if self.is_leap_year(year):
+            return MONTH_DAYS_LEAP
+        return MONTH_DAYS
+
+    def get_timedelta(self, delta_type, frequency, datetime=None):
         if delta_type == FrequencyEnum.MINUTELY:
             return timedelta(minutes=frequency)
         elif delta_type == FrequencyEnum.HOURLY:
@@ -33,7 +59,10 @@ class TaskRuleService:
         elif delta_type == FrequencyEnum.WEEKLY:
             return timedelta(days=frequency * 7)
         elif delta_type == FrequencyEnum.MONTHLY:
-            return timedelta(days=frequency * 30)
+            if datetime is None:
+                raise ValueError("Month can't be None")
+
+            return timedelta(days=self.get_sum_of_month_days(frequency, datetime))
         else:
             return None
 
@@ -51,7 +80,7 @@ class TaskRule(models.Model):
     start_datetime = fields.DatetimeField()
     end_datetime = fields.DatetimeField(null=True)
     # args = fields.JSONField()
-    service = TaskRuleService
+    service = TaskRuleService()
 
 
 @post_save(TaskRule)
@@ -73,12 +102,7 @@ async def signal_post_save(
         return
 
     time_delta_content = TaskRule.service.get_timedelta(
-        instance.frequency_type, instance.frequency
-    )
-    print(
-        is_time_between(
-            instance.start_datetime, instance.end_datetime, last_task_datetime
-        )
+        instance.frequency_type, instance.frequency, instance.start_datetime
     )
 
     while is_time_between(
@@ -91,7 +115,6 @@ async def signal_post_save(
             rule=instance,
         )
         last_task_datetime = calculate_next_time(last_task_datetime, time_delta_content)
-        print(last_task_datetime)
 
 
 @post_delete(TaskRule)
