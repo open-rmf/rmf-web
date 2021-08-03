@@ -1,6 +1,6 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
-import { AdminDrawer, AdminDrawerProps } from '../../components/admin/drawer';
+import { AdminDrawer } from '../../components/admin/drawer';
 
 export default {
   title: 'Admin/Drawer',
@@ -12,7 +12,7 @@ export default {
   },
 } as Meta;
 
-export const Default: Story<AdminDrawerProps> = (args) => {
+export const Default: Story<{}> = (args) => {
   return <AdminDrawer {...args} />;
 };
 

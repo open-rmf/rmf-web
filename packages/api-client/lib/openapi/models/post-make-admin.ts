@@ -14,25 +14,13 @@
 /**
  *
  * @export
- * @interface GetRolePermission
+ * @interface PostMakeAdmin
  */
-export interface GetRolePermission {
+export interface PostMakeAdmin {
   /**
    *
-   * @type {string}
-   * @memberof GetRolePermission
+   * @type {boolean}
+   * @memberof PostMakeAdmin
    */
-  authz_grp?: any;
-  /**
-   *
-   * @type {string}
-   * @memberof GetRolePermission
-   */
-  role: any;
-  /**
-   *
-   * @type {string}
-   * @memberof GetRolePermission
-   */
-  action: any;
+  admin: any;
 }

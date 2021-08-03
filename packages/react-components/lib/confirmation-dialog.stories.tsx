@@ -6,20 +6,16 @@ import { ConfirmationDialog, ConfirmationDialogProps } from './confirmation-dial
 export default {
   title: 'Dialog/Confirmation Dialog',
   component: ConfirmationDialog,
+  argTypes: {
+    onClose: { actions: 'close' },
+  },
 } as Meta;
 
 export const Default: Story<ConfirmationDialogProps> = (args) => {
-  const [loading, setLoading] = React.useState(false);
   return (
     <ConfirmationDialog
       {...args}
       open={true}
-      loading={loading}
-      onSubmit={async () => {
-        setLoading(true);
-        await new Promise((res) => setTimeout(res, 500));
-        setLoading(false);
-      }}
       toolbar={
         <Button variant="contained" color="primary">
           Action

@@ -1,4 +1,4 @@
-import { makeStyles, Typography } from '@material-ui/core';
+import { Button, makeStyles, Typography } from '@material-ui/core';
 import React from 'react';
 
 const useStyles = makeStyles((theme) => ({
@@ -24,15 +24,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export interface LoginCardProps {
+export interface LoginCardProps extends React.PropsWithChildren<{}> {
   title: string;
   logo: string;
-  children?: React.ReactNode;
+  onLoginClick?: React.MouseEventHandler;
 }
 
 export const LoginCard = React.forwardRef(
-  (props: LoginCardProps, ref: React.Ref<HTMLDivElement>): JSX.Element => {
-    const { title, logo, children } = props;
+  (
+    { title, logo, onLoginClick, children }: LoginCardProps,
+    ref: React.Ref<HTMLDivElement>,
+  ): JSX.Element => {
     const classes = useStyles();
 
     return (
@@ -41,6 +43,9 @@ export const LoginCard = React.forwardRef(
           {title}
         </Typography>
         <img src={logo} alt="" className={classes.logo} />
+        <Button variant="contained" aria-label="Login" onClick={onLoginClick}>
+          Login
+        </Button>
         {children}
       </div>
     );

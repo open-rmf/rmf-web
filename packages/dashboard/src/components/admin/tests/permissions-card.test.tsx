@@ -1,16 +1,20 @@
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { getActionText, RmfAction } from '../../permissions';
 import { PermissionsCard } from '../permissions-card';
 
 describe('PermissionsCard', () => {
-  it('renders permissions', () => {
+  it('renders permissions', async () => {
     const root = render(
-      <PermissionsCard permissions={[{ action: RmfAction.TaskRead, authz_grp: 'test_group' }]} />,
+      <PermissionsCard
+        getPermissions={() => [{ action: RmfAction.TaskRead, authz_grp: 'test_group' }]}
+      />,
     );
-    expect(() => root.getByText(getActionText(RmfAction.TaskRead))).not.toThrow();
-    expect(() => root.getByText('test_group')).not.toThrow();
+    await expect(
+      waitFor(() => root.getByText(getActionText(RmfAction.TaskRead))),
+    ).resolves.not.toThrow();
+    await expect(waitFor(() => root.getByText('test_group'))).resolves.not.toThrow();
   });
 
   it('opens add permission dialog when button is clicked', () => {
@@ -19,17 +23,19 @@ describe('PermissionsCard', () => {
     expect(() => root.getByText('Add Permission')).not.toThrow();
   });
 
-  it('calls onRemovePermissionClick when button is clicked', () => {
-    const onRemovePermissionClick = jest.fn();
+  it('calls removePermission when button is clicked', async () => {
+    const removePermission = jest.fn();
     const root = render(
       <PermissionsCard
-        permissions={[{ action: RmfAction.TaskRead, authz_grp: 'test_group' }]}
-        onRemovePermissionClick={onRemovePermissionClick}
+        getPermissions={() => [{ action: RmfAction.TaskRead, authz_grp: 'test_group' }]}
+        removePermission={removePermission}
       />,
     );
+    await waitFor(() => root.getByText('Remove'));
     userEvent.click(root.getByText('Remove'));
-    expect(onRemovePermissionClick).toHaveBeenCalled();
-    expect(onRemovePermissionClick.mock.calls[0][1].action).toBe(RmfAction.TaskRead);
-    expect(onRemovePermissionClick.mock.calls[0][1].authz_grp).toBe('test_group');
+    await waitFor(() => root.getByLabelText('loading'));
+    expect(removePermission).toHaveBeenCalled();
+    expect(removePermission.mock.calls[0][0].action).toBe(RmfAction.TaskRead);
+    expect(removePermission.mock.calls[0][0].authz_grp).toBe('test_group');
   });
 });
