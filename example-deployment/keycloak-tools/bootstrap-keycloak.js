@@ -92,38 +92,75 @@ async function createAudienceClientScope(headers, name, description, audience) {
       },
     );
 
-    // create example user
-    await tryRequest(
-      `${baseUrl}/admin/realms/rmf-web/users`,
-      {
-        method: 'POST',
-        headers: authHeaders(token),
-      },
-      {
-        username: 'example',
-        enabled: true,
-      },
-    );
+    {
+      // create admin user
+      await tryRequest(
+        `${baseUrl}/admin/realms/rmf-web/users`,
+        {
+          method: 'POST',
+          headers: authHeaders(token),
+        },
+        {
+          username: 'admin',
+          enabled: true,
+        },
+      );
 
-    // get the newly created user
-    resp = await request(`${baseUrl}/admin/realms/rmf-web/users?username=example`, {
-      method: 'GET',
-      headers: authHeaders(token),
-    });
-    const user = JSON.parse(resp.body)[0];
-
-    // set the password
-    await request(
-      `${baseUrl}/admin/realms/rmf-web/users/${user.id}/reset-password`,
-      {
-        method: 'PUT',
+      // get the newly created user
+      resp = await request(`${baseUrl}/admin/realms/rmf-web/users?username=admin`, {
+        method: 'GET',
         headers: authHeaders(token),
-      },
-      {
-        value: 'example',
-        temporary: false,
-      },
-    );
+      });
+      const user = JSON.parse(resp.body)[0];
+
+      // set the password
+      await request(
+        `${baseUrl}/admin/realms/rmf-web/users/${user.id}/reset-password`,
+        {
+          method: 'PUT',
+          headers: authHeaders(token),
+        },
+        {
+          value: 'admin',
+          temporary: false,
+        },
+      );
+    }
+
+    {
+      // create example user
+      await tryRequest(
+        `${baseUrl}/admin/realms/rmf-web/users`,
+        {
+          method: 'POST',
+          headers: authHeaders(token),
+        },
+        {
+          username: 'example',
+          enabled: true,
+        },
+      );
+
+      // get the newly created user
+      resp = await request(`${baseUrl}/admin/realms/rmf-web/users?username=example`, {
+        method: 'GET',
+        headers: authHeaders(token),
+      });
+      const user = JSON.parse(resp.body)[0];
+
+      // set the password
+      await request(
+        `${baseUrl}/admin/realms/rmf-web/users/${user.id}/reset-password`,
+        {
+          method: 'PUT',
+          headers: authHeaders(token),
+        },
+        {
+          value: 'example',
+          temporary: false,
+        },
+      );
+    }
 
     await tryRequest(
       `${baseUrl}/admin/realms/rmf-web/events/config`,
