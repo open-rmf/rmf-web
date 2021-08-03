@@ -141,7 +141,7 @@ class RmfRepository:
         states = await self._add_pagination(
             ttm.FleetState.filter(**filter_params), pagination, {"fleet_name": "id_"}
         )
-        return [Fleet(name=s.id_, state=s) for s in states]
+        return [Fleet(name=s.id_, state=FleetState.from_tortoise(s)) for s in states]
 
     async def get_fleet_state(self, fleet_name: str) -> Optional[FleetState]:
         fleet_state = await ttm.FleetState.get_or_none(id_=fleet_name)
