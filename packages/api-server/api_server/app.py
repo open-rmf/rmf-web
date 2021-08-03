@@ -4,7 +4,6 @@ import os
 import signal
 import sys
 import threading
-import time
 from typing import Awaitable, Callable, List, Union
 
 import rclpy
@@ -116,7 +115,6 @@ class App(FastIO, BaseApp):
         @self.fapi.on_event("startup")
         async def on_startup():
             self.loop = asyncio.get_event_loop()
-            self._started = asyncio.Future()
 
             # shutdown event is not called when the app crashes, this can cause the app to be
             # "locked up" as some dependencies like tortoise does not allow python to exit until
@@ -180,7 +178,6 @@ class App(FastIO, BaseApp):
             self._rmf_gateway.subscribe_all()
             shutdown_cbs.append(self._rmf_gateway.unsubscribe_all)
 
-            self._started.set_result(True)
             self.logger.info("started app")
 
         @self.fapi.on_event("shutdown")
@@ -193,11 +190,6 @@ class App(FastIO, BaseApp):
                     cb()
 
             self.logger.info("shutdown app")
-
-    def wait_ready(self):
-        while self._started is None or not self._started.done():
-            time.sleep(0.1)
-        return True
 
     async def _load_states(self):
         self.logger.info("loading states from database...")

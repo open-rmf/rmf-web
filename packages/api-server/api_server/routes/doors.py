@@ -31,7 +31,8 @@ class DoorsRouter(FastIORouter):
         @self.watch("/{door_name}/state")
         async def watch_door_state(req: WatchRequest, door_name: str):
             door_state = await get_door_state(door_name, RmfRepository(req.user))
-            await req.emit(door_state.dict())
+            if door_state:
+                await req.emit(door_state.dict())
             rx_watcher(
                 req,
                 app.rmf_events().door_states.pipe(
