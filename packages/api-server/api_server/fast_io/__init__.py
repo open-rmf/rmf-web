@@ -63,6 +63,7 @@ class WatchRequest:
     path: str
     user: User
     _on_unsubscribe: Optional[Callable[[], None]] = None
+    _subscribe_task: Optional[asyncio.Task] = None
 
     def on_unsubscribe(self, cb: Callable[[], None]) -> None:
         self._on_unsubscribe = cb
@@ -238,13 +239,14 @@ class FastIO(socketio.ASGIApp):
         try:
             match, sio_route = next((m for m in matches if m[0]))
 
+            # pylint: disable=protected-access
             async with self.sio.session(sid) as session:
                 user = session["user"]
                 req = WatchRequest(sid=sid, sio=self.sio, path=sub_data.path, user=user)
                 session["subscriptions"][sub_data.path] = req
                 maybe_coro = sio_route.func(req, **match.groupdict())
-                if inspect.isawaitable(maybe_coro):
-                    await maybe_coro
+                if asyncio.iscoroutine(maybe_coro):
+                    req._subscribe_task = asyncio.create_task(maybe_coro)
                 self.sio.enter_room(sid, sub_data.path)
         except StopIteration:
             await self.sio.emit(
@@ -261,13 +263,17 @@ class FastIO(socketio.ASGIApp):
     async def _on_unsubscribe(self, sid: str, data: dict):
         try:
             sub_data = self._parse_sub_data(data)
+            # pylint: disable=protected-access
             async with self.sio.session(sid) as session:
                 req: WatchRequest = session["subscriptions"].get(sub_data.path, None)
                 if req is None:
                     raise SubscribeError("not subscribed to topic")
-                maybe_coro = req._on_unsubscribe()  # pylint: disable=protected-access
-                if inspect.isawaitable(maybe_coro):
-                    await maybe_coro
+                if req._subscribe_task and not req._subscribe_task.done():
+                    await asyncio.wait([req._subscribe_task])
+                if req._on_unsubscribe:
+                    maybe_coro = req._on_unsubscribe()
+                    if inspect.isawaitable(maybe_coro):
+                        await maybe_coro
                 self.sio.leave_room(sid, sub_data.path)
                 await self.sio.emit("unsubscribe", {"success": True})
         except SubscribeError as e:
