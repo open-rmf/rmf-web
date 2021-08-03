@@ -13,7 +13,6 @@ coverage = "~=5.5"
 # api-server
 api-server = {editable = true, path = "./packages/api-server"}
 requests = "~=2.25"
-httpx = "~=0.18.2"
 # reporting-server
 reporting-server = {editable = true, path = "./packages/reporting-server"}
 # ros-translator
