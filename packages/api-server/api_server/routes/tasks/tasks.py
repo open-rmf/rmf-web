@@ -47,7 +47,8 @@ class TasksRouter(FastIORouter):
             """
             Available in socket.io
             """
-            return await rmf_repo.get_task_summary(task_id)
+            ts = await rmf_repo.get_task_summary(task_id)
+            return ts.dict(exclude_unset=True)
 
         @self.watch("/{task_id}/summary")
         async def watch_task_summary(req: WatchRequest, task_id: str):
@@ -56,7 +57,7 @@ class TasksRouter(FastIORouter):
                 req,
                 app.rmf_events().task_summaries.pipe(
                     rxops.filter(lambda x: x.task_id == task_id),
-                    rxops.map(lambda x: x.dict()),
+                    rxops.map(lambda x: x.dict(exclude_unset=True)),
                 ),
             )
 

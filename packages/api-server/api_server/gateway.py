@@ -253,9 +253,9 @@ class RmfGateway(rclpy.node.Node):
     async def submit_task(
         self, req_msg: RmfSubmitTask.Request
     ) -> RmfSubmitTask.Response:
-        return self.call_service(self._submit_task_srv, req_msg)
+        return await self.call_service(self._submit_task_srv, req_msg)
 
     async def cancel_task(
         self, req_msg: RmfCancelTask.Request
     ) -> RmfCancelTask.Response:
-        return self.call_service(self._cancel_task_srv, req_msg)
+        return await self.call_service(self._cancel_task_srv, req_msg)
