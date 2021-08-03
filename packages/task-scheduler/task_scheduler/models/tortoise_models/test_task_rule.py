@@ -23,23 +23,39 @@ class TestCaseTaskRuleService(unittest.IsolatedAsyncioTestCase):
     async def asyncTearDown(self):
         await Tortoise.close_connections()
 
-    async def test_create_task_rule_correctly(self):
-        now = datetime.utcnow()
-        task_rule = await TaskRule.create(
-            description="test",
-            task_type=TaskTypeEnum.LOOP,
-            frequency=1,
-            frequency_type=FrequencyEnum.ONCE,
-            time_of_day=now,
-            start_datetime=now,
-        )
+    async def test_is_leap_year(self):
+        self.assertTrue(TaskRule.service.is_leap_year(2020))
 
-        self.assertEqual(task_rule.description, "test")
-        self.assertEqual(task_rule.frequency, 1)
-        self.assertEqual(task_rule.task_type, TaskTypeEnum.LOOP)
-        self.assertEqual(task_rule.frequency_type, FrequencyEnum.ONCE)
-        # self.assertEqual(task_rule.time_of_day, now)
-        # self.assertEqual(task_rule.start_date, now)
+    async def test_is_not_leap_year(self):
+        self.assertFalse(TaskRule.service.is_leap_year(2021))
+
+    async def test_get_leap_year_list(self):
+        now = datetime.utcnow()
+        now = now.replace(year=2020)
+        self.assertEqual(TaskRule.service.get_list_of_month_days(now)[2], 29)
+
+    async def test_get_normal_year_list(self):
+        now = datetime.utcnow()
+        now = now.replace(year=2021)
+        self.assertEqual(TaskRule.service.get_list_of_month_days(now)[2], 28)
+
+    async def test_get_month_days_numbers_in_normal_year(self):
+        now = datetime.utcnow()
+        now = now.replace(year=2021, month=2)
+        days = TaskRule.service.get_month_days_number(now)
+        self.assertEqual(days, 28)
+
+    async def test_get_month_days_numbers_in_leap_year(self):
+        now = datetime.utcnow()
+        now = now.replace(year=2020, month=2)
+        days = TaskRule.service.get_month_days_number(now)
+        self.assertEqual(days, 29)
+
+    async def test_sum_month_days_correctly(self):
+        now = datetime.utcnow()
+        now = now.replace(year=2021, month=2)
+        days = TaskRule.service.get_sum_of_month_days(2, now)
+        self.assertEqual(days, 28 + 31)
 
 
 class TestCaseTaskRuleCreateEffect(unittest.IsolatedAsyncioTestCase):
@@ -57,7 +73,7 @@ class TestCaseTaskRuleCreateEffect(unittest.IsolatedAsyncioTestCase):
             task_type=TaskTypeEnum.LOOP,
             frequency=1,
             frequency_type=FrequencyEnum.ONCE,
-            time_of_day=now,
+            first_day_to_apply_rule=now,
             start_datetime=now,
         )
 
@@ -65,8 +81,6 @@ class TestCaseTaskRuleCreateEffect(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(task_rule.frequency, 1)
         self.assertEqual(task_rule.task_type, TaskTypeEnum.LOOP)
         self.assertEqual(task_rule.frequency_type, FrequencyEnum.ONCE)
-        # self.assertEqual(task_rule.time_of_day, now)
-        # self.assertEqual(task_rule.start_date, now)
 
     async def test_create_task_rule_generates_scheduled_task(self):
         now = datetime.utcnow()
@@ -75,7 +89,7 @@ class TestCaseTaskRuleCreateEffect(unittest.IsolatedAsyncioTestCase):
             task_type=TaskTypeEnum.LOOP,
             frequency=1,
             frequency_type=FrequencyEnum.ONCE,
-            time_of_day=now,
+            first_day_to_apply_rule=now,
             start_datetime=now,
         )
 
@@ -92,7 +106,7 @@ class TestCaseTaskRuleCreateEffect(unittest.IsolatedAsyncioTestCase):
             task_type=TaskTypeEnum.LOOP,
             frequency=1,
             frequency_type=FrequencyEnum.ONCE,
-            time_of_day=now,
+            first_day_to_apply_rule=now,
             start_datetime=now,
         )
         await task_rule.delete()
@@ -105,7 +119,7 @@ class TestCaseTaskRuleCreateEffect(unittest.IsolatedAsyncioTestCase):
             task_type=TaskTypeEnum.LOOP,
             frequency=2,
             frequency_type=FrequencyEnum.HOURLY,
-            time_of_day=now,
+            first_day_to_apply_rule=now,
             start_datetime=now,
             end_datetime=now + timedelta(hours=4),
         )
@@ -138,7 +152,7 @@ class TestCaseCorrectNumberOfScheduledtTaskGenerationOneDate(
             task_type=TaskTypeEnum.LOOP,
             frequency=1,
             frequency_type=FrequencyEnum.ONCE,
-            time_of_day=now,
+            first_day_to_apply_rule=now,
             start_datetime=now,
         )
 
@@ -157,7 +171,7 @@ class TestCaseCorrectNumberOfScheduledtTaskGenerationOneDate(
             task_type=TaskTypeEnum.LOOP,
             frequency=60,
             frequency_type=FrequencyEnum.MINUTELY,
-            time_of_day=now,
+            first_day_to_apply_rule=now,
             start_datetime=now,
             end_datetime=future,
         )
@@ -172,7 +186,7 @@ class TestCaseCorrectNumberOfScheduledtTaskGenerationOneDate(
             task_type=TaskTypeEnum.LOOP,
             frequency=2,
             frequency_type=FrequencyEnum.HOURLY,
-            time_of_day=now,
+            first_day_to_apply_rule=now,
             start_datetime=now,
             end_datetime=now + timedelta(hours=2),
         )
@@ -188,7 +202,7 @@ class TestCaseCorrectNumberOfScheduledtTaskGenerationOneDate(
             task_type=TaskTypeEnum.LOOP,
             frequency=2,
             frequency_type=FrequencyEnum.HOURLY,
-            time_of_day=future,
+            first_day_to_apply_rule=future,
             start_datetime=future,
             end_datetime=now + timedelta(hours=2),
         )
@@ -205,7 +219,7 @@ class TestCaseCorrectNumberOfScheduledtTaskGenerationOneDate(
             task_type=TaskTypeEnum.LOOP,
             frequency=1,
             frequency_type=FrequencyEnum.DAILY,
-            time_of_day=now,
+            first_day_to_apply_rule=now,
             start_datetime=now,
             end_datetime=future,
         )
@@ -222,7 +236,7 @@ class TestCaseCorrectNumberOfScheduledtTaskGenerationOneDate(
             task_type=TaskTypeEnum.LOOP,
             frequency=1,
             frequency_type=FrequencyEnum.WEEKLY,
-            time_of_day=now,
+            first_day_to_apply_rule=now,
             start_datetime=now,
             end_datetime=future,
         )
@@ -240,7 +254,7 @@ class TestCaseCorrectNumberOfScheduledtTaskGenerationOneDate(
             task_type=TaskTypeEnum.LOOP,
             frequency=3,
             frequency_type=FrequencyEnum.MONTHLY,
-            time_of_day=now,
+            first_day_to_apply_rule=now,
             start_datetime=now,
             end_datetime=future,
         )
@@ -264,7 +278,7 @@ class TestCaseScheduledtTaskGenerationDateCorrectness(unittest.IsolatedAsyncioTe
             task_type=TaskTypeEnum.LOOP,
             frequency=1,
             frequency_type=FrequencyEnum.ONCE,
-            time_of_day=now,
+            first_day_to_apply_rule=now,
             start_datetime=now,
         )
 
@@ -282,7 +296,7 @@ class TestCaseScheduledtTaskGenerationDateCorrectness(unittest.IsolatedAsyncioTe
             task_type=TaskTypeEnum.LOOP,
             frequency=2,
             frequency_type=FrequencyEnum.HOURLY,
-            time_of_day=now,
+            first_day_to_apply_rule=now,
             start_datetime=now,
             end_datetime=future,
         )
@@ -305,7 +319,7 @@ class TestCaseScheduledtTaskGenerationDateCorrectness(unittest.IsolatedAsyncioTe
             task_type=TaskTypeEnum.LOOP,
             frequency=2,
             frequency_type=FrequencyEnum.DAILY,
-            time_of_day=now,
+            first_day_to_apply_rule=now,
             start_datetime=now,
             end_datetime=future,
         )
@@ -328,7 +342,7 @@ class TestCaseScheduledtTaskGenerationDateCorrectness(unittest.IsolatedAsyncioTe
             task_type=TaskTypeEnum.LOOP,
             frequency=2,
             frequency_type=FrequencyEnum.WEEKLY,
-            time_of_day=now,
+            first_day_to_apply_rule=now,
             start_datetime=now,
             end_datetime=future,
         )
@@ -352,7 +366,7 @@ class TestCaseScheduledtTaskGenerationDateCorrectness(unittest.IsolatedAsyncioTe
             task_type=TaskTypeEnum.LOOP,
             frequency=2,
             frequency_type=FrequencyEnum.MONTHLY,
-            time_of_day=now,
+            first_day_to_apply_rule=now,
             start_datetime=now,
             end_datetime=future,
         )
@@ -377,44 +391,85 @@ class TestCaseScheduledtTaskGenerationDateCorrectness(unittest.IsolatedAsyncioTe
         for task in created_tasks:
             self.assertEqual(task.task_datetime.time(), now.time())
 
-    # async def test_task_monthly_leap_year(self):
+    async def test_task_monthly_leap_year(self):
+        now = datetime.utcnow()
+        now = now.replace(day=2, month=2, year=2024)
+        future = now + timedelta(days=60)
+
+        await TaskRule.create(
+            description="test",
+            task_type=TaskTypeEnum.LOOP,
+            frequency=2,
+            frequency_type=FrequencyEnum.MONTHLY,
+            first_day_to_apply_rule=now,
+            start_datetime=now,
+            end_datetime=future,
+        )
+
+        created_tasks = await ScheduledTask.all()
+
+        month_list = TaskRule.service.get_list_of_month_days(
+            created_tasks[0].task_datetime
+        )
+
+        self.assertEqual(
+            created_tasks[0].task_datetime.date(), (now + timedelta(days=0)).date()
+        )
+
+        self.assertEqual(
+            created_tasks[1].task_datetime.date(),
+            (now + timedelta(days=month_list[2] + month_list[3])).date(),
+        )
+
+        for task in created_tasks:
+            self.assertEqual(task.task_datetime.time(), now.time())
+
+    # async def test_weekly_every_monday(self):
     #     now = datetime.utcnow()
-    #     now = now.replace(day=2, month=2, year=2024)
-    #     future = now + timedelta(days=60)
+    #     now = now.replace(day=2, month=8, year=2021)
+    #     future = now + timedelta(days=360)
 
     #     await TaskRule.create(
     #         description="test",
     #         task_type=TaskTypeEnum.LOOP,
-    #         frequency=2,
-    #         frequency_type=FrequencyEnum.WEEKLY,
-    #         time_of_day=now,
+    #         frequency=1,
+    #         frequency_type=FrequencyEnum.MONTHLY,
+    #         first_day_to_apply_rule=now,
     #         start_datetime=now,
     #         end_datetime=future,
     #     )
 
     #     created_tasks = await ScheduledTask.all()
-    #     delta = 0
+
+    #     month_list = TaskRule.service.get_list_of_month_days(
+    #         created_tasks[0].task_datetime
+    #     )
+
+    #     self.assertEqual(
+    #         created_tasks[0].task_datetime.date(
+    #         ), (now + timedelta(days=0)).date()
+    #     )
+
+    #     self.assertEqual(
+    #         created_tasks[1].task_datetime.date(),
+    #         (now + timedelta(days=month_list[2] + month_list[3])).date(),
+    #     )
+
     #     for task in created_tasks:
     #         self.assertEqual(task.task_datetime.time(), now.time())
-    #         self.assertEqual(task.task_datetime.date(),
-    #                          (now + timedelta(days=delta)).date()
-    #                          )
-    #         delta += 2 * \
-    #             TaskRule.service.get_month_days_number(task.task_datetime)
+    #     pass
 
-    async def test_monthly_day_of_week(self):
+    async def test_monthly_every_first_monday(self):
         pass
 
-    async def test_monthly_days_of_week(self):
+    async def test_monthly_every_four_monday(self):
         pass
 
-    async def test_every_third_day_of_week(self):
-        pass
-
-    async def test_weekly_every_monday(self):
+    async def test_monthly_every_monday_and_friday(self):
         pass
 
     async def test_every_third_week(self):
+
         pass
 
     # TODO: When a specific event occurs (i.e. start, end of another task)

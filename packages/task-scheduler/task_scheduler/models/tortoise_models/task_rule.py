@@ -3,8 +3,9 @@ from enum import Enum
 from typing import List, Optional, Type
 
 from tortoise import BaseDBAsyncClient, fields, models
-from tortoise.signals import post_delete, post_save, pre_delete, pre_save
+from tortoise.signals import post_delete, post_save, pre_save
 
+from .days_of_week import DaysOfWeek
 from .helpers.task_rule import calculate_next_time, is_time_between
 from .scheduled_task import ScheduledTask
 from .task import TaskTypeEnum
@@ -17,6 +18,7 @@ class FrequencyEnum(str, Enum):
     HOURLY = "Hourly"
     MINUTELY = "Minutely"
     ONCE = "Once"
+    CUSTOM = "Custom"
 
 
 MONTH_DAYS = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
@@ -63,6 +65,12 @@ class TaskRuleService:
                 raise ValueError("Month can't be None")
 
             return timedelta(days=self.get_sum_of_month_days(frequency, datetime))
+
+        elif delta_type == FrequencyEnum.CUSTOM:
+            if datetime is None:
+                raise ValueError("Month can't be None")
+
+            return timedelta(days=self.get_sum_of_month_days(frequency, datetime))
         else:
             return None
 
@@ -75,12 +83,50 @@ class TaskRule(models.Model):
     frequency_type: FrequencyEnum = fields.CharEnumField(
         FrequencyEnum, default=FrequencyEnum.MINUTELY
     )
-    time_of_day = fields.DatetimeField()
+    first_day_to_apply_rule = fields.DatetimeField(null=True)
     created_at = fields.DatetimeField(auto_now_add=True)
     start_datetime = fields.DatetimeField()
     end_datetime = fields.DatetimeField(null=True)
     # args = fields.JSONField()
     service = TaskRuleService()
+    days_of_week = fields.ForeignKeyField(
+        "models.DaysOfWeek", related_name="task_rule", null=True
+    )
+
+
+# @pre_save(TaskRule)
+# async def signal_post_save(
+#     sender: "Type[TaskRule]",
+#     instance: TaskRule,
+#     created: bool,
+#     using_db: "Optional[BaseDBAsyncClient]",
+#     update_fields: List[str],
+# ) -> None:
+#     last_task_datetime = instance.start_datetime
+#     if instance.frequency_type == FrequencyEnum.ONCE:
+#         await ScheduledTask.create(
+#             task_type=instance.task_type,
+#             # Need to modify this
+#             task_datetime=instance.first_day_to_apply_rule,
+#             rule=instance,
+#         )
+#         return
+
+#     time_delta_content = TaskRule.service.get_timedelta(
+#         instance.frequency_type, instance.frequency, instance.start_datetime
+#     )
+
+#     while is_time_between(
+#         instance.start_datetime, instance.end_datetime, last_task_datetime
+#     ):
+#         await ScheduledTask.create(
+#             task_type=instance.task_type,
+#             # Need to modify this
+#             task_datetime=last_task_datetime,
+#             rule=instance,
+#         )
+#         last_task_datetime = calculate_next_time(
+#             last_task_datetime, time_delta_content)
 
 
 @post_save(TaskRule)
@@ -91,12 +137,28 @@ async def signal_post_save(
     using_db: "Optional[BaseDBAsyncClient]",
     update_fields: List[str],
 ) -> None:
+
+    # print(instance.days_of_week['id'])
+    print(instance.id)
+    hi = await TaskRule.get(id=instance.id).prefetch_related("days_of_week")
+    print("hehe", hi.days_of_week)
+    if instance.days_of_week is None:
+        instance.first_day_to_apply_rule = instance.start_datetime
+    else:
+        pass
+        # instance.first_day_to_apply_rule = await DaysOfWeek.service.get_first_active_day(
+        #     id=instance.days_of_week.id,
+        #     current_datetime=instance.start_datetime
+        # )
+
+    # instance.save()
+
     last_task_datetime = instance.start_datetime
     if instance.frequency_type == FrequencyEnum.ONCE:
         await ScheduledTask.create(
             task_type=instance.task_type,
             # Need to modify this
-            task_datetime=instance.time_of_day,
+            task_datetime=instance.first_day_to_apply_rule,
             rule=instance,
         )
         return

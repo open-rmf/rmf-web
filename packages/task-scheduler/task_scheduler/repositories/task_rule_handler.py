@@ -27,7 +27,7 @@ class TaskRuleManager:
     # frequency_type: FrequencyEnum = fields.CharEnumField(
     #     FrequencyEnum, default=FrequencyEnum.MINUTELY
     # )
-    # time_of_day = fields.TimeField()
+    # first_day_to_apply_rule = fields.TimeField()
     # start_date = fields.DateTimeField()
     # end_date = fields.DateTimeField()
     # args = fields.JSONField()
