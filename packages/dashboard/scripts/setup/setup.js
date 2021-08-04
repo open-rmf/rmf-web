@@ -2,6 +2,7 @@ const chalk = require('chalk');
 const inquirer = require('inquirer');
 const { exec } = require('child_process');
 const fs = require('fs');
+const { getIcons } = require('./get-icons');
 
 class Ament {
   findPackage(packageName) {
@@ -38,7 +39,9 @@ class Ament {
 }
 
 const ament = new Ament();
-const fileExists = fs.existsSync('./.resources.json');
+const ProjectDir = __dirname.slice(0, __dirname.length - '/scripts/setup'.length);
+const resourcesPath = process.env.RMF_DASHBOARD_RESOURCES_FILE || `${ProjectDir}/.resources.json`;
+const configExists = fs.existsSync(resourcesPath);
 
 const createConfigFile = () => {
   console.log(chalk`
@@ -52,7 +55,7 @@ You have two options:
 {cyan →} 3. {blue get from ws} assets from workspace folder (Do not forget to source rmf_demos project before using this option).
 `);
 
-  inquirer
+  return inquirer
     .prompt([
       {
         name: 'GET_OR_COPY',
@@ -68,7 +71,6 @@ You have two options:
             input,
           ) || 'Not a valid URL',
       },
-      // TODO: change to "main" when rmf completes the switch
       {
         name: 'BRANCH',
         message: `Set BRANCH. Example: main`,
@@ -108,55 +110,31 @@ You have two options:
         }/`;
         information = { path: rmfDashboardResources };
       }
-      fs.writeFile('.resources.json', JSON.stringify(information), function (err) {
-        if (err) {
-          exec('mv .bak-resources.json .resources.json');
-          throw err;
-        }
-        console.log(chalk`{green File .resources.json was created successfully.}`);
-        try {
-          exec('rm .bak-resources.json');
-        } catch (error) {}
-      });
+      fs.writeFileSync(
+        '.resources.json',
+        JSON.stringify(information, undefined, 2),
+        function (err) {
+          if (err) {
+            exec('mv .bak-resources.json .resources.json');
+            throw err;
+          }
+          console.log(chalk`{green File .resources.json was created successfully.}`);
+          try {
+            exec('rm .bak-resources.json');
+          } catch (error) {}
+        },
+      );
     })
     .catch((error) => console.error(error));
 };
 
-if (fileExists) {
-  console.log(chalk`
-  {blue Hello! 👋 You already configured a resource source!
-  1. Continue and do nothing.
-  2. Do you want to modify it? (You can also update the values manually on .resources.json) }`);
+(async () => {
+  if (configExists) {
+    console.log(chalk`{blue Using existing resources config}`);
+  } else {
+    await createConfigFile();
+  }
 
-  inquirer
-    .prompt({
-      name: 'QUIT_OR_MODIFY',
-      message: chalk`{blue What option are you going to choose?}`,
-      validate: (input) => /^[1-2-]$/.test(input) || 'Invalid option',
-      default: 1,
-    })
-    .then((keys) => {
-      if (keys.QUIT_OR_MODIFY === '1') {
-        return;
-      }
-      if (keys.QUIT_OR_MODIFY === '2') {
-        // Rename and save a copy of the file
-        exec('mv .resources.json .bak-resources.json', (error, stdout, stderr) => {
-          if (error) {
-            console.error(chalk`{red exec error: ${error}}`);
-            return;
-          }
-          if (stderr) {
-            console.error(`stderr: ${stderr}`);
-            return;
-          }
-          createConfigFile();
-        });
-      }
-    })
-    .catch((error) => console.error(error));
-}
-
-if (!fileExists) {
-  createConfigFile();
-}
+  const resourcesData = JSON.parse(fs.readFileSync(resourcesPath));
+  getIcons(resourcesData);
+})();
