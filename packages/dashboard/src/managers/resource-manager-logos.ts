@@ -9,7 +9,7 @@ export class LogoResourceManager {
     this.logos = logoResources;
   }
 
-  getIconPath = (logoName: string): string | null => {
+  getIconPath = async (logoName: string): Promise<string | null> => {
     if (!this.logoExists(logoName)) {
       return null;
     }
@@ -18,7 +18,11 @@ export class LogoResourceManager {
     }
     const logoIcon = this.logos[logoName].icons[logoName];
 
-    return logoIcon ? `${logoIcon}` : null;
+    try {
+      return (await import(/* webpackMode: "eager" */ `../assets${logoIcon}`)).default;
+    } catch {
+      return null;
+    }
   };
 
   get all(): Record<string, LogoResource> {
