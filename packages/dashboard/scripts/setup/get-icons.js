@@ -1,12 +1,47 @@
 'use strict';
 
-const { exec, execSync } = require('child_process');
+const { execSync } = require('child_process');
 const chalk = require('chalk');
 const path = require('path');
+const fs = require('fs');
 
 const ProjectDir = __dirname.slice(0, __dirname.length - '/scripts/setup'.length);
 const ResourcesPath = `${ProjectDir}/src/assets/resources`;
 const TempDir = `${ProjectDir}/tmp`;
+
+class Ament {
+  findPackage(packageName) {
+    this._isEmpty(packageName);
+    return this._getPackageLocation(packageName);
+  }
+
+  _isEmpty(packageName) {
+    if (!packageName) {
+      throw new Error('You must provide a package name');
+    }
+  }
+
+  _getPackageLocation(packageName) {
+    const paths = this._getAmentPrefixPath().split(':');
+    // Is package inside?
+    for (let p in paths) {
+      const path = paths[p];
+      const location = `${path}/share/${packageName}/`;
+      const directoryExists = fs.existsSync(location);
+      if (directoryExists) {
+        return location;
+      }
+    }
+  }
+
+  _getAmentPrefixPath() {
+    const amentPath = process.env.AMENT_PREFIX_PATH;
+    if (!amentPath) {
+      throw new Error('Cannot find AMENT_PREFIX_PATH');
+    }
+    return process.env.AMENT_PREFIX_PATH;
+  }
+}
 
 class IconManagerBase {
   constructor(resourcesData) {
@@ -73,18 +108,13 @@ class IconManager extends IconManagerBase {
     // Safeguard in case the tmp is not deleted and already have a remote defined
     this.removeTmpFolder();
     this.createTmpFolder();
-    exec(`git --version`, (error, stdout, stderr) => {
-      if (error) {
-        console.error(chalk`{red exec error: ${error}}`);
-        return;
-      }
-      const cloneImplementation =
-        this.getGitMinorVersion(stdout) < 25 ? SparseCheckoutGitV217 : SparseCheckoutGitV225;
+    const stdout = execSync(`git --version`).toString();
+    const cloneImplementation =
+      this.getGitMinorVersion(stdout) < 25 ? SparseCheckoutGitV217 : SparseCheckoutGitV225;
 
-      new cloneImplementation(this.resourcesData).execute();
-      this.moveFromTmpFolderToIconFolder();
-      this.removeTmpFolder();
-    });
+    new cloneImplementation(this.resourcesData).execute();
+    this.moveFromTmpFolderToIconFolder();
+    this.removeTmpFolder();
   };
 
   cloneRepo = () => {
@@ -97,51 +127,50 @@ class IconManager extends IconManagerBase {
   };
 
   removeTmpFolder = () => {
-    exec(`[ -d "${TempDir}" ] && rm -rf ${TempDir}`);
+    execSync(`[ -d "${TempDir}" ] && rm -rf ${TempDir}`);
   };
 
   createTmpFolder = () => {
-    exec(`[ -d "${TempDir}" ] && rm -rf ${TempDir}`);
-    exec(`mkdir -p ${TempDir}`);
+    execSync(`[ -d "${TempDir}" ] && rm -rf ${TempDir}`);
+    execSync(`mkdir -p ${TempDir}`);
   };
 
   moveFromTmpFolderToIconFolder = () => {
-    exec(`cp -r ${TempDir}/${this.resourcesData.folder}/* ${ResourcesPath}`, {
+    execSync(`cp -r ${TempDir}/${this.resourcesData.folder}/* ${ResourcesPath}`, {
       stdio: 'inherit',
       cwd: ProjectDir,
     });
   };
 
+  _copyDir = (from, to) => {
+    if (!from.endsWith('/')) from += '/';
+    const stdout = execSync(`cp -r ${from}* ${to}`).toString();
+    console.log(stdout);
+    console.log(
+      chalk`{green The icons have been successfully obtained. Check "${path.relative(
+        ProjectDir,
+        ResourcesPath,
+      )}".}`,
+    );
+  };
+
   copyFromLocalDirectory = () => {
-    exec(`cp -r ${this.resourcesData.path}* ${ResourcesPath}`, (error, stdout, stderr) => {
-      if (error) {
-        console.error(chalk`{red exec error: ${error}}`);
-        return;
-      }
+    this._copyDir(this.resourcesData.path, ResourcesPath);
+  };
 
-      if (stderr) {
-        console.error(`stderr: ${stderr}`);
-        return;
-      }
+  copyFromRosPackage = () => {
+    const ament = new Ament();
+    const packageDir = ament.findPackage(this.resourcesData.rosPackage);
 
-      console.log(stdout);
-      console.log(
-        chalk`{green The icons have been successfully obtained. Check "${path.relative(
-          ProjectDir,
-          ResourcesPath,
-        )}".}`,
-      );
-    });
+    this._copyDir(`${packageDir}${this.resourcesData.path}`, ResourcesPath);
   };
 }
 
 const getIcons = (resourcesData) => {
   const iconManager = new IconManager(resourcesData);
 
-  if (resourcesData.hasOwnProperty('repoUrl') || resourcesData.hasOwnProperty('path')) {
-    exec(`[ -d "${ResourcesPath}" ] && rm -rf ${ResourcesPath}`);
-  }
-  exec(`mkdir -p ${ResourcesPath}`);
+  execSync(`[ -d "${ResourcesPath}" ] && rm -rf ${ResourcesPath}`);
+  execSync(`mkdir -p ${ResourcesPath}`);
 
   if (resourcesData.hasOwnProperty('repoUrl')) {
     // If we don't want to clone a specific folder of the repo, it'll clone the whole repo
@@ -150,6 +179,8 @@ const getIcons = (resourcesData) => {
       return;
     }
     iconManager.cloneSpecificFolder();
+  } else if (resourcesData.hasOwnProperty('rosPackage')) {
+    iconManager.copyFromRosPackage();
   } else {
     iconManager.copyFromLocalDirectory();
   }

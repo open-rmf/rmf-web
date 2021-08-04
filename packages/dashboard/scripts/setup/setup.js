@@ -4,41 +4,6 @@ const { exec } = require('child_process');
 const fs = require('fs');
 const { getIcons } = require('./get-icons');
 
-class Ament {
-  findPackage(packageName) {
-    this._isEmpty(packageName);
-    return this._getPackageLocation(packageName);
-  }
-
-  _isEmpty(packageName) {
-    if (!packageName) {
-      throw new Error('You must provide a package name');
-    }
-  }
-
-  _getPackageLocation(packageName) {
-    const paths = this._getAmentPrefixPath().split(':');
-    // Is package inside?
-    for (let p in paths) {
-      const path = paths[p];
-      const location = `${path}/share/${packageName}/`;
-      const directoryExists = fs.existsSync(location);
-      if (directoryExists) {
-        return location;
-      }
-    }
-  }
-
-  _getAmentPrefixPath() {
-    const amentPath = process.env.AMENT_PREFIX_PATH;
-    if (!amentPath) {
-      throw new Error('Cannot find AMENT_PREFIX_PATH');
-    }
-    return process.env.AMENT_PREFIX_PATH;
-  }
-}
-
-const ament = new Ament();
 const ProjectDir = __dirname.slice(0, __dirname.length - '/scripts/setup'.length);
 const resourcesPath = process.env.RMF_DASHBOARD_RESOURCES_FILE || `${ProjectDir}/.resources.json`;
 const configExists = fs.existsSync(resourcesPath);
@@ -90,9 +55,15 @@ You have two options:
         validate: (input) => /^(\/[^\/]+){0,20}\/?$/gm.test(input) || 'Not a valid PATH',
       },
       {
-        name: 'COPY_FROM_WORKSPACE',
-        message: 'Set world map',
+        name: 'ROS_PACKAGE',
+        message: 'ROS package',
         when: (keys) => keys['GET_OR_COPY'] === '3',
+        default: 'rmf_demos_dashboard_resources',
+      },
+      {
+        name: 'ROS_PACKAGE_PATH',
+        message: 'path',
+        when: (keys) => !!keys['ROS_PACKAGE'],
         default: 'office',
       },
     ])
@@ -105,10 +76,7 @@ You have two options:
         information = { path: keys.COPY };
       }
       if (keys.GET_OR_COPY === '3') {
-        const rmfDashboardResources = `${ament.findPackage('rmf_demos_dashboard_resources')}${
-          keys.COPY_FROM_WORKSPACE
-        }/`;
-        information = { path: rmfDashboardResources };
+        information = { rosPackage: keys.ROS_PACKAGE, path: keys.ROS_PACKAGE_PATH };
       }
       fs.writeFileSync(
         '.resources.json',
