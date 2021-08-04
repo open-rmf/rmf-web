@@ -30,9 +30,7 @@ const RobotInfo = (props: RobotInfoProps) => {
     { name: 'Fleet', value: fleetName },
     {
       name: 'Location',
-      value: `${robot.location.level_name} (${robot.location.x.toFixed(
-        3,
-      )}, ${robot.location.y.toFixed(3)})`,
+      value: `${robot.location.level_name}`,
     },
     { name: 'Task Id', value: robot.task_id },
     { name: 'Battery', value: robot.battery_percent.toFixed(0) },
