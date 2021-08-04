@@ -29,7 +29,7 @@ jobs:
           lerna bootstrap --scope=rmf-auth
         working-directory: .
       - name: build
-        run: npm run build
+        run: npm run prepare
       - name: unit test
         run: npm run test:coverage
       - name: Upload coverage to Codecov

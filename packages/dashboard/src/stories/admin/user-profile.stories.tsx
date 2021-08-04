@@ -1,0 +1,36 @@
+import { Meta, Story } from '@storybook/react';
+import { User } from 'api-client';
+import React from 'react';
+import { UserProfileCard, UserProfileCardProps } from '../../components/admin/user-profile';
+
+export default {
+  title: 'Admin/User Profile Card',
+  component: UserProfileCard,
+  argTypes: {
+    profile: {
+      control: {
+        disable: true,
+      },
+    },
+  },
+} as Meta;
+
+export const Default: Story<UserProfileCardProps> = (args) => {
+  const [profile, setProfile] = React.useState<User>({
+    username: 'example',
+    is_admin: false,
+    roles: [],
+  });
+  return (
+    <UserProfileCard
+      {...args}
+      profile={profile}
+      makeAdmin={async (admin) => {
+        await new Promise((res) => setTimeout(res, 100));
+        setProfile((prev) => ({ ...prev, is_admin: admin }));
+      }}
+    ></UserProfileCard>
+  );
+};
+
+Default.storyName = 'User Profile Card';

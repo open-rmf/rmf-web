@@ -1,14 +1,12 @@
 import EventEmitter from 'eventemitter3';
-import Keycloak_ from 'keycloak-js';
-import { User } from './user';
 
 export type AuthenticatorEventType = {
-  userChanged: [User | null];
+  userChanged: [string | null];
   tokenRefresh: null;
 };
 
 export interface Authenticator extends EventEmitter<AuthenticatorEventType> {
-  readonly user?: User;
+  readonly user?: string;
   readonly token?: string;
 
   /**
@@ -32,7 +30,5 @@ export interface Authenticator extends EventEmitter<AuthenticatorEventType> {
    */
   refreshToken(): Promise<void>;
 }
-
-export type AuthConfig<T = typeof Keycloak_> = T extends (config: infer U) => unknown ? U : never;
 
 export default Authenticator;

@@ -13,11 +13,24 @@ import HelpIcon from '@material-ui/icons/Help';
 import SettingsIcon from '@material-ui/icons/Settings';
 import React from 'react';
 import { HeaderBar, LogoButton, NavigationBar, Tooltip } from 'react-components';
-import { AppControllerContext, ResourcesContext, TooltipsContext } from './app-contexts';
-import { AuthenticatorContext, UserContext } from './auth/contexts';
+import { useHistory, useLocation } from 'react-router-dom';
+import { AdminRoute, DashboardRoute, RobotsRoute, TasksRoute } from '../util/url';
+import {
+  AppConfigContext,
+  AppControllerContext,
+  ResourcesContext,
+  TooltipsContext,
+} from './app-contexts';
+import { UserContext } from './auth/contexts';
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles((theme) =>
   createStyles({
+    appBar: {
+      zIndex: theme.zIndex.drawer + 1,
+    },
+    logoBtn: {
+      width: theme.appBar.logoSize,
+    },
     toolbar: {
       textAlign: 'right',
       flexGrow: -1,
@@ -25,25 +38,35 @@ const useStyles = makeStyles(() =>
   }),
 );
 
-export type TabValue = 'building' | 'robots' | 'tasks';
+export type TabValue = 'building' | 'robots' | 'tasks' | 'admin';
+
+function locationToTabValue(pathname: string): TabValue | undefined {
+  // `DashboardRoute` being the root, it is a prefix to all routes, so we need to check exactly.
+  if (pathname === DashboardRoute) return 'building';
+  if (pathname.startsWith(TasksRoute)) return 'tasks';
+  if (pathname.startsWith(RobotsRoute)) return 'robots';
+  if (pathname.startsWith(AdminRoute)) return 'admin';
+  return undefined;
+}
 
 export interface AppBarProps {
-  tabValue: TabValue;
-  onTabChange?(event: React.ChangeEvent<unknown>, newValue: TabValue): void;
   // TODO: change the alarm status to required when we have an alarm
   // service working properly in the backend
   alarmState?: boolean | null;
 }
 
 export const AppBar = React.memo(
-  ({ tabValue, onTabChange }: AppBarProps): React.ReactElement => {
+  (): React.ReactElement => {
     const { showHelp: setShowHelp, showSettings: setShowSettings } = React.useContext(
       AppControllerContext,
     );
+    const history = useHistory();
+    const location = useLocation();
+    const tabValue = React.useMemo(() => locationToTabValue(location.pathname), [location]);
     const logoResourcesContext = React.useContext(ResourcesContext)?.logos;
     const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
     const classes = useStyles();
-    const authenticator = React.useContext(AuthenticatorContext);
+    const { authenticator } = React.useContext(AppConfigContext);
     const user = React.useContext(UserContext);
     const { showTooltips } = React.useContext(TooltipsContext);
 
@@ -65,73 +88,94 @@ export const AppBar = React.memo(
     }, [logoResourcesContext]);
 
     return (
-      <div>
-        <HeaderBar>
-          <LogoButton logoPath={brandingIconPath} />
-          <NavigationBar onTabChange={onTabChange} value={tabValue}>
-            <Tab label="Building" value="building" aria-label="Building" />
-            <Tab label="Robots" value="robots" aria-label="Robots" />
-            <Tab label="Tasks" value="tasks" aria-label="Tasks" />
-          </NavigationBar>
-          <Toolbar variant="dense" className={classes.toolbar}>
-            <Typography variant="caption">Powered by OpenRMF</Typography>
-            <Tooltip
-              title="Define dashboard trajectory settings"
-              id="setting-tooltip"
-              enabled={showTooltips}
+      <HeaderBar className={classes.appBar}>
+        <LogoButton src={brandingIconPath} alt="logo" className={classes.logoBtn} />
+        <NavigationBar value={tabValue}>
+          <Tab
+            label="Building"
+            value="building"
+            aria-label="Building"
+            onClick={() => history.push(DashboardRoute)}
+          />
+          <Tab
+            label="Robots"
+            value="robots"
+            aria-label="Robots"
+            onClick={() => history.push(RobotsRoute)}
+          />
+          <Tab
+            label="Tasks"
+            value="tasks"
+            aria-label="Tasks"
+            onClick={() => history.push(TasksRoute)}
+          />
+          {user?.profile.is_admin && (
+            <Tab
+              label="Admin"
+              value="admin"
+              aria-label="Admin"
+              onClick={() => history.push(AdminRoute)}
+            />
+          )}
+        </NavigationBar>
+        <Toolbar variant="dense" className={classes.toolbar}>
+          <Typography variant="caption">Powered by OpenRMF</Typography>
+          <Tooltip
+            title="Define dashboard trajectory settings"
+            id="setting-tooltip"
+            enabled={showTooltips}
+          >
+            <IconButton
+              id="show-settings-btn"
+              aria-label="settings"
+              color="inherit"
+              onClick={() => setShowSettings(true)}
             >
+              <SettingsIcon />
+            </IconButton>
+          </Tooltip>
+          {user && (
+            <>
               <IconButton
-                id="show-settings-btn"
-                aria-label="settings"
+                id="user-btn"
+                aria-label={'user-btn'}
                 color="inherit"
-                onClick={() => setShowSettings(true)}
+                onClick={(event) => setAnchorEl(event.currentTarget)}
               >
-                <SettingsIcon />
+                <AccountCircleIcon />
               </IconButton>
-            </Tooltip>
-            {user && (
-              <>
-                <IconButton
-                  id="user-btn"
-                  aria-label={'user-btn'}
-                  color="inherit"
-                  onClick={(event) => setAnchorEl(event.currentTarget)}
-                >
-                  <AccountCircleIcon />
-                </IconButton>
-                <Menu
-                  anchorEl={anchorEl}
-                  getContentAnchorEl={null}
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right',
-                  }}
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                  open={!!anchorEl}
-                  onClose={() => setAnchorEl(null)}
-                >
-                  <MenuItem id="logout-btn" onClick={handleLogout}>
-                    Logout
-                  </MenuItem>
-                </Menu>
-              </>
-            )}
-            <Tooltip title="Help tools and resources" id="help-tooltip" enabled={showTooltips}>
-              <IconButton
-                id="show-help-btn"
-                aria-label="help"
-                color="inherit"
-                onClick={() => setShowHelp(true)}
+              <Menu
+                anchorEl={anchorEl}
+                getContentAnchorEl={null}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={!!anchorEl}
+                onClose={() => setAnchorEl(null)}
               >
-                <HelpIcon />
-              </IconButton>
-            </Tooltip>
-          </Toolbar>
-        </HeaderBar>
-      </div>
+                <MenuItem id="logout-btn" onClick={handleLogout}>
+                  Logout
+                </MenuItem>
+              </Menu>
+            </>
+          )}
+          <Tooltip title="Help tools and resources" id="help-tooltip" enabled={showTooltips}>
+            <IconButton
+              id="show-help-btn"
+              aria-label="help"
+              color="inherit"
+              onClick={() => setShowHelp(true)}
+            >
+              <HelpIcon />
+            </IconButton>
+          </Tooltip>
+        </Toolbar>
+      </HeaderBar>
     );
   },
 );

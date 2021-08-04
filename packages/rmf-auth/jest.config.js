@@ -1,14 +1,8 @@
 module.exports = {
   preset: 'ts-jest',
+  rootDir: 'lib',
   testEnvironment: 'jsdom',
-  collectCoverageFrom: [
-    'lib/**/*.{ts,tsx}',
-    '!lib/**/*.d.ts',
-    '!lib/index.ts',
-    '!lib/utils/index.ts',
-    '!**/stories/**',
-    '!**/tests/**',
-  ],
+  collectCoverageFrom: ['lib/**/*.{ts,tsx}', '!**/*.stories.*', '!**/*.test.*'],
   coveragePathIgnorePatterns: [],
   moduleFileExtensions: ['ts', 'tsx', 'json', 'js', 'jsx', 'node'],
 };

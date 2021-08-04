@@ -1,5 +1,7 @@
 import {
+  AdminApi,
   Configuration,
+  DefaultApi,
   DispensersApi,
   DoorsApi,
   FleetsApi,
@@ -12,23 +14,33 @@ import axios from 'axios';
 import { Authenticator } from 'rmf-auth';
 import appConfig from '../../app-config';
 import { NegotiationStatusManager } from '../../managers/negotiation-status-manager';
-import { RobotTrajectoryManager } from '../../managers/robot-trajectory-manager';
+import {
+  DefaultTrajectoryManager,
+  RobotTrajectoryManager,
+} from '../../managers/robot-trajectory-manager';
 
 export class RmfIngress {
   sioClient: SioClient;
+  defaultApi: DefaultApi;
   doorsApi: DoorsApi;
   liftsApi: LiftsApi;
   dispensersApi: DispensersApi;
   ingestorsApi: IngestorsApi;
   fleetsApi: FleetsApi;
   tasksApi: TasksApi;
+  adminApi: AdminApi;
   negotiationStatusManager: NegotiationStatusManager;
-  trajectoryManager?: RobotTrajectoryManager;
+  trajectoryManager: RobotTrajectoryManager;
 
-  constructor(authenticator: Authenticator, trajMgr?: RobotTrajectoryManager, ws?: WebSocket) {
-    this.negotiationStatusManager = new NegotiationStatusManager(ws, appConfig.authenticator);
+  constructor(authenticator: Authenticator) {
+    if (!authenticator.user) {
+      throw new Error(
+        'user is undefined, RmfIngress should only be initialized after the authenticator is ready',
+      );
+    }
+
     this.sioClient = (() => {
-      const token = appConfig.authenticator.token;
+      const token = authenticator.token;
       const url = new URL(appConfig.rmfServerUrl);
       const path = url.pathname === '/' ? '' : url.pathname;
 
@@ -55,16 +67,21 @@ export class RmfIngress {
       return req;
     });
     const apiConfig: Configuration = {
-      accessToken: authenticator.user?.token,
+      accessToken: authenticator.token,
       basePath: appConfig.rmfServerUrl,
     };
 
+    this.defaultApi = new DefaultApi(apiConfig, undefined, axiosInst);
     this.doorsApi = new DoorsApi(apiConfig, undefined, axiosInst);
     this.liftsApi = new LiftsApi(apiConfig, undefined, axiosInst);
     this.dispensersApi = new DispensersApi(apiConfig, undefined, axiosInst);
     this.ingestorsApi = new IngestorsApi(apiConfig, undefined, axiosInst);
     this.fleetsApi = new FleetsApi(apiConfig, undefined, axiosInst);
     this.tasksApi = new TasksApi(apiConfig, undefined, axiosInst);
-    this.trajectoryManager = trajMgr;
+    this.adminApi = new AdminApi(apiConfig, undefined, axiosInst);
+
+    const ws = new WebSocket(appConfig.trajServerUrl);
+    this.trajectoryManager = new DefaultTrajectoryManager(ws, authenticator);
+    this.negotiationStatusManager = new NegotiationStatusManager(ws, authenticator);
   }
 }
