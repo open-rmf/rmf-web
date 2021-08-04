@@ -37,23 +37,24 @@ describe('The correct operation of the getIconPath method of the RobotResourceMa
     manager = new RobotResourceManager(resourceData);
   });
 
-  test('Returns falsy when fleetName does not exists', () => {
-    const icon = manager.getIconPath('Not exists');
+  test('Returns falsy when fleetName does not exists', async () => {
+    const icon = await manager.getIconPath('Not exists');
     expect(icon).toBeFalsy();
   });
 
-  test('Returns falsy if the icon path it`s empty', () => {
+  test('Returns falsy if the icon path it`s empty', async () => {
     resourceData.testFleet = {
       icons: {
         testFleet: '',
       },
       places: {},
     };
-    const icon = manager.getIconPath('testFleet');
+    const icon = await manager.getIconPath('testFleet');
     expect(icon).toBeFalsy();
   });
 
-  test('Returns fleet model even if fleetName is also defined', () => {
+  test('Returns fleet model even if fleetName is also defined', async () => {
+    jest.mock('../../assets/model', () => '/assets/icons/model', { virtual: true });
     resourceData.testFleet = {
       icons: {
         testFleet: '/fleet',
@@ -61,8 +62,9 @@ describe('The correct operation of the getIconPath method of the RobotResourceMa
       },
       places: {},
     };
-    const icon = manager.getIconPath('testFleet', 'testModel');
+    const icon = await manager.getIconPath('testFleet', 'testModel');
     expect(icon).toEqual('/assets/icons/model');
+    jest.resetAllMocks();
   });
 
   test('Returns trusty if the icon path exists', () => {
