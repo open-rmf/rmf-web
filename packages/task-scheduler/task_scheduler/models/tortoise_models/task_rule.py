@@ -143,39 +143,75 @@ class TaskRule(models.Model):
     )
 
 
-# @pre_save(TaskRule)
-# async def signal_post_save(
-#     sender: "Type[TaskRule]",
-#     instance: TaskRule,
-#     created: bool,
-#     using_db: "Optional[BaseDBAsyncClient]",
-#     update_fields: List[str],
-# ) -> None:
-#     last_task_datetime = instance.start_datetime
-#     if instance.frequency_type == FrequencyEnum.ONCE:
-#         await ScheduledTask.create(
-#             task_type=instance.task_type,
-#             # Need to modify this
-#             task_datetime=instance.first_day_to_apply_rule,
-#             rule=instance,
-#         )
-#         return
+class SimpleScheduleManager:
+    @staticmethod
+    async def handleScheduleWithOneDate(instance):
+        last_task_datetime = instance.start_datetime
 
-#     time_delta_content = TaskRule.service.get_timedelta(
-#         instance.frequency_type, instance.frequency, instance.start_datetime
-#     )
+        if instance.frequency_type == FrequencyEnum.ONCE:
+            await ScheduledTask.create(
+                task_type=instance.task_type,
+                # Need to modify this
+                task_datetime=instance.first_day_to_apply_rule,
+                rule=instance,
+            )
+            return
 
-#     while is_time_between(
-#         instance.start_datetime, instance.end_datetime, last_task_datetime
-#     ):
-#         await ScheduledTask.create(
-#             task_type=instance.task_type,
-#             # Need to modify this
-#             task_datetime=last_task_datetime,
-#             rule=instance,
-#         )
-#         last_task_datetime = calculate_next_time(
-#             last_task_datetime, time_delta_content)
+        time_delta_content = TaskRule.service.get_timedelta(
+            instance.frequency_type, instance.frequency, instance.start_datetime
+        )
+
+        while is_time_between(
+            instance.start_datetime, instance.end_datetime, last_task_datetime
+        ):
+            await ScheduledTask.create(
+                task_type=instance.task_type,
+                # Need to modify this
+                task_datetime=last_task_datetime,
+                rule=instance,
+            )
+            last_task_datetime = calculate_next_time(
+                last_task_datetime, time_delta_content
+            )
+
+
+class MultipleDaysScheduleManager:
+    @staticmethod
+    async def handleScheduleWithMultipleDays(instance, week_id):
+        # We pick first_day_to_apply_rule because the task can start with
+        # earlier but not the execution
+        last_task_datetime = instance.first_day_to_apply_rule
+        active_weekdays = await DaysOfWeek.service.get_active_days_of_week(week_id)
+
+        if instance.frequency_type == FrequencyEnum.ONCE:
+            # for active_weekday in active_weekdays:
+
+            await ScheduledTask.create(
+                task_type=instance.task_type,
+                # Need to modify this
+                task_datetime=instance.first_day_to_apply_rule,
+                rule=instance,
+            )
+            return
+
+        time_delta_content = TaskRule.service.get_timedelta(
+            instance.frequency_type, instance.frequency, instance.start_datetime
+        )
+
+        while is_time_between(
+            instance.start_datetime, instance.end_datetime, last_task_datetime
+        ):
+            # for active_weekday in active_weekdays:
+
+            await ScheduledTask.create(
+                task_type=instance.task_type,
+                # Need to modify this
+                task_datetime=last_task_datetime,
+                rule=instance,
+            )
+            last_task_datetime = calculate_next_time(
+                last_task_datetime, time_delta_content
+            )
 
 
 @post_save(TaskRule)
@@ -187,45 +223,23 @@ async def signal_post_save(
     update_fields: List[str],
 ) -> None:
 
-    # print(instance.days_of_week['id'])
-    print(instance.id)
-    hi = await TaskRule.get(id=instance.id).prefetch_related("days_of_week")
-    print("hehe", hi.days_of_week)
-    if instance.days_of_week is None:
-        instance.first_day_to_apply_rule = instance.start_datetime
-    else:
-        pass
-        # instance.first_day_to_apply_rule = await DaysOfWeek.service.get_first_active_day(
-        #     id=instance.days_of_week.id,
-        #     current_datetime=instance.start_datetime
-        # )
-
-    # instance.save()
-
-    last_task_datetime = instance.start_datetime
-    if instance.frequency_type == FrequencyEnum.ONCE:
-        await ScheduledTask.create(
-            task_type=instance.task_type,
-            # Need to modify this
-            task_datetime=instance.first_day_to_apply_rule,
-            rule=instance,
-        )
-        return
-
-    time_delta_content = TaskRule.service.get_timedelta(
-        instance.frequency_type, instance.frequency, instance.start_datetime
+    task_rule_instance = await TaskRule.get(id=instance.id).prefetch_related(
+        "days_of_week"
     )
 
-    while is_time_between(
-        instance.start_datetime, instance.end_datetime, last_task_datetime
-    ):
-        await ScheduledTask.create(
-            task_type=instance.task_type,
-            # Need to modify this
-            task_datetime=last_task_datetime,
-            rule=instance,
+    if task_rule_instance.days_of_week is None:
+        instance.first_day_to_apply_rule = instance.start_datetime
+        await SimpleScheduleManager.handleScheduleWithOneDate(instance)
+    else:
+        instance.first_day_to_apply_rule = (
+            await DaysOfWeek.service.get_first_active_day(
+                id=task_rule_instance.days_of_week.id,
+                current_datetime=task_rule_instance.start_datetime,
+            )
         )
-        last_task_datetime = calculate_next_time(last_task_datetime, time_delta_content)
+        await MultipleDaysScheduleManager.handleScheduleWithMultipleDays(
+            instance, task_rule_instance.days_of_week.id
+        )
 
 
 @post_delete(TaskRule)
@@ -237,18 +251,3 @@ async def signal_post_delete(
     tasks = await ScheduledTask.filter(rule=instance).all()
     for task in tasks:
         await task.delete()
-
-
-# id SERIAL UNIQUE,                      -- unique identifier for the job
-# name varchar(64) NOT NULL,             -- human readable name for the job
-# description text,                      -- details about the job
-# schedule varchar(64) NOT NULL,         -- valid CRON expression for the job schedule
-# handler varchar(64) NOT NULL,          -- string representing handler for the job
-# args text NOT NULL,                    -- arguments for the job handler
-# enabled boolean NOT NULL DEFAULT TRUE, -- whether the job should be run
-# created_at timestamp NOT NULL,         -- when was the job created
-# updated_at timestamp NOT NULL,         -- when was the job updated
-# start_date timestamp,                  -- job should not run until this time
-# end_date timestamp,                    -- job should not run after this time
-# last_triggered_at timestamp,           -- when was the job last triggered
-# meta json                              -- additional metadata for the job

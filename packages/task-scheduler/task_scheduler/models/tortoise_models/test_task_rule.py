@@ -9,6 +9,7 @@ from tortoise import Tortoise
 from task_scheduler.app import get_app
 from task_scheduler.test_utils import start_test_database
 
+from .days_of_week import DaysOfWeek
 from .scheduled_task import ScheduledTask
 from .task_rule import MONTH_DAYS, FrequencyEnum, TaskRule, TaskTypeEnum
 
@@ -459,43 +460,31 @@ class TestCaseScheduledtTaskGenerationDateCorrectness(unittest.IsolatedAsyncioTe
         check_correct_date(0, 0)
         check_correct_date(1, (expect_date - now).days)
 
-    # async def test_monthly_every_first_monday(self):
-    #     now = datetime.utcnow()
-    #     now = now.replace(day=2, month=8, year=2021, hour=0, minute=0)
-    #     future = now + timedelta(days=60)
+    async def test_monthly_every_first_monday(self):
+        now = datetime.utcnow()
+        now = now.replace(day=2, month=8, year=2021, hour=0, minute=0)
+        future = now + timedelta(days=60)
 
-    #     await TaskRule.create(
-    #         description="test",
-    #         task_type=TaskTypeEnum.LOOP,
-    #         frequency=1,
-    #         frequency_type=FrequencyEnum.MONTHLY,
-    #         first_day_to_apply_rule=now,
-    #         start_datetime=now,
-    #         end_datetime=future,
-    #     )
+        await TaskRule.create(
+            description="test",
+            task_type=TaskTypeEnum.LOOP,
+            frequency=1,
+            frequency_type=FrequencyEnum.MONTHLY,
+            first_day_to_apply_rule=now,
+            start_datetime=now,
+            end_datetime=future,
+        )
 
-    #     created_tasks = await ScheduledTask.all()
+        created_tasks = await ScheduledTask.all()
 
-    #     month_list = TaskRule.service.get_list_of_month_days(
-    #         created_tasks[0].task_datetime
-    #     )
+        def check_correct_date(index, delta):
+            self.assertEqual(
+                created_tasks[index].task_datetime.date(),
+                (now + timedelta(days=delta)).date(),
+            )
 
-    #     def check_correct_date(index, delta):
-    #         self.assertEqual(
-    #             created_tasks[index].task_datetime.date(
-    #             ), (now + timedelta(days=delta)).date()
-    #         )
-
-    #     check_correct_date(0, 0)
-    #     check_correct_date(1, 35)
-
-    #     self.assertEqual(
-    #         created_tasks[1].task_datetime.date(),
-    #         (now + timedelta(days=month_list[2] + month_list[3])).date(),
-    #     )
-
-    async def test_monthly_every_monday_and_friday(self):
-        pass
+        check_correct_date(0, 0)
+        check_correct_date(1, 35)
 
     # TODO: When a specific event occurs (i.e. start, end of another task)
 
@@ -508,6 +497,39 @@ class TestCaseScheduledtTaskGenerationDateCorrectness(unittest.IsolatedAsyncioTe
 """
 User picks several week days and set a rule based on that.
 """
+
+
+class TestCaseTwoWeekdaysScheduledtTaskGenerationDateCorrectness(
+    unittest.IsolatedAsyncioTestCase
+):
+    async def asyncSetUp(self):
+        await start_test_database()
+        self.client = TestClient(app)
+
+    async def asyncTearDown(self):
+        await Tortoise.close_connections()
+
+    async def test_monthly_every_monday_and_wednesday(self):
+        now = datetime(2021, 8, 2)
+        future = now + timedelta(days=14)
+        expect_date = datetime(2020, 3, 1)
+        days_of_week = await DaysOfWeek.get_or_create(monday=True, wednesday=True)
+        await TaskRule.create(
+            description="test",
+            task_type=TaskTypeEnum.LOOP,
+            frequency=1,
+            frequency_type=FrequencyEnum.WEEKLY,
+            first_day_to_apply_rule=now,
+            start_datetime=now,
+            end_datetime=future,
+            days_of_week=days_of_week[0],
+        )
+        created_tasks = await ScheduledTask.all()
+        print(created_tasks[0].task_datetime)
+        print(created_tasks[1].task_datetime)
+        print(created_tasks[2].task_datetime)
+        self.assertEqual(len(created_tasks), 4)
+
 
 # Set a rule for a weekly monday and start next tuesday.
 # Check start date

@@ -22,7 +22,7 @@ class TestCaseDaysOfWeekService(unittest.IsolatedAsyncioTestCase):
 
     async def test_get_list_of_week_days(self):
         await DaysOfWeek.create(monday=True, sunday=True)
-        list = await DaysOfWeek.service.get_days_of_week(id=1)
+        list = await DaysOfWeek.service._get_days_of_week(id=1)
         self.assertEqual(list, [True, False, False, False, False, False, True])
 
     async def test_get_first_active_day_on_week(self):
