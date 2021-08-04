@@ -384,7 +384,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
             </Pane>
           )}
         </LayersControl.Overlay>
-        <LayersControl.Overlay name="Waypoints" checked>
+        <LayersControl.Overlay name="Waypoints">
           {curMapFloorLayer && (
             <Pane>
               <WaypointsOverlay

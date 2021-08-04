@@ -1,4 +1,4 @@
-import { makeStyles, Tooltip } from '@material-ui/core';
+import { makeStyles, Tooltip, Typography } from '@material-ui/core';
 import Debug from 'debug';
 import React from 'react';
 import { ColorContext, SvgText } from '..';
@@ -14,7 +14,7 @@ const useStyles = makeStyles(() => ({
   text: {
     dominantBaseline: 'central',
     textAnchor: 'middle',
-    fontSize: '0.18px',
+    fontSize: '0.35px',
     fontWeight: 'bold',
     fill: 'white',
     /* 1 pixel black shadow to left, top, right and bottom */
@@ -84,10 +84,10 @@ export const RobotMarker = React.forwardRef(
     return (
       <Tooltip
         title={
-          <React.Fragment>
+          <Typography variant="h5">
             <div>Name - {name}</div>
             <div>State - {robotModeToString(robotMode)}</div>
-          </React.Fragment>
+          </Typography>
         }
       >
         <g ref={ref} onClick={(ev) => onClick && onClick(ev, fleetName, name)} {...otherProps}>
@@ -103,7 +103,13 @@ export const RobotMarker = React.forwardRef(
                 <DefaultMarker color={robotColor} {...props} />
               ) : null}
             </g>
-            <SvgText text={name} targetWidth={footprint * 1.9} className={classes.text} />
+            <SvgText
+              x="1.5"
+              y="-0.8"
+              text={name}
+              targetWidth={footprint * 3}
+              className={classes.text}
+            />
           </g>
         </g>
       </Tooltip>

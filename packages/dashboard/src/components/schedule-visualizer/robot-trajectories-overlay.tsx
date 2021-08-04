@@ -63,11 +63,15 @@ export const RobotTrajectoriesOverlay = (props: RobotTrajectoriesOverlayProps) =
             console.error(`trajectory ${traj_json} belongs to unknown robot`);
             return;
           }
-          newColors[traj.id] = await colorManager.robotPrimaryColor(
-            traj.fleet_name,
-            robot.name,
-            robot.model,
-          );
+          if (robot.mode.mode === RmfModels.RobotMode.MODE_DOCKING) {
+            newColors[traj.id] = 'grey';
+          } else {
+            newColors[traj.id] = await colorManager.robotPrimaryColor(
+              traj.fleet_name,
+              robot.name,
+              robot.model,
+            );
+          }
         }),
       );
       if (!cancel) {

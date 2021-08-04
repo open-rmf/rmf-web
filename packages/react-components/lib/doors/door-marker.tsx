@@ -1,4 +1,4 @@
-import { makeStyles, Tooltip } from '@material-ui/core';
+import { makeStyles, Tooltip, Typography } from '@material-ui/core';
 import Debug from 'debug';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
@@ -13,7 +13,7 @@ const useDoorStyles = makeStyles({
     pointerEvents: 'auto',
   },
   base: {
-    strokeWidth: 0.2,
+    strokeWidth: 0.5,
   },
   open: {
     stroke: '#AFDDAE',
@@ -263,10 +263,10 @@ export const DoorMarker = React.forwardRef(
       return (
         <Tooltip
           title={
-            <React.Fragment>
+            <Typography variant="h5">
               <div>Name - {door.name}</div>
               <div>State - {doorStateToString(doorMode)}</div>
-            </React.Fragment>
+            </Typography>
           }
         >
           <g ref={ref} onClick={(ev) => onClick && onClick(ev, door)} {...otherProps}>
