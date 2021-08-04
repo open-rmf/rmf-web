@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from enum import Enum
+from math import ceil
 from typing import List, Optional, Type
 
 from tortoise import BaseDBAsyncClient, fields, models
@@ -51,6 +52,53 @@ class TaskRuleService:
             return MONTH_DAYS_LEAP
         return MONTH_DAYS
 
+    def week_of_month(self, dt):
+
+        first_day = dt.replace(day=1)
+        dom = dt.day
+        if first_day.weekday() == 6:
+            adjusted_dom = dom
+        else:
+            adjusted_dom = dom + first_day.weekday()
+        if adjusted_dom % 7 == 0 and first_day.weekday() != 6:
+            value = adjusted_dom / 7.0 + 1
+        elif first_day.weekday() == 6 and adjusted_dom % 7 == 0 and adjusted_dom == 7:
+            value = 1
+        else:
+            value = int(ceil(adjusted_dom / 7.0))
+
+        return int(value)
+
+    def is_next_month(
+        self, current: datetime, new_date: datetime, frequency: int
+    ) -> bool:
+        current_month: int = current.month
+        new_month: int = new_date.month
+        return (current_month + frequency) == new_month
+
+    def is_same_week(self, current: datetime, new_date: datetime) -> bool:
+        current_week = self.week_of_month(current)
+        new_week = self.week_of_month(new_date)
+        return current_week == new_week
+
+    def get_delta_days(self, current: datetime, frequency: int) -> int:
+        # Months can have 4 to 6 week but not less than 4
+        # 4 weeks = 28 days
+        basic_days = 28 * frequency
+        new_date = current + timedelta(days=basic_days)
+
+        def is_next_month() -> bool:
+            return self.is_next_month(current, new_date, frequency)
+
+        def is_same_week() -> bool:
+            return self.is_same_week(current, new_date)
+
+        while not is_next_month() and not is_same_week():
+            new_date = new_date + timedelta(days=7)
+        # get the days of difference between current and new date
+        days = (new_date - current).days
+        return days
+
     def get_timedelta(self, delta_type, frequency, datetime=None):
         if delta_type == FrequencyEnum.MINUTELY:
             return timedelta(minutes=frequency)
@@ -60,17 +108,18 @@ class TaskRuleService:
             return timedelta(days=frequency)
         elif delta_type == FrequencyEnum.WEEKLY:
             return timedelta(days=frequency * 7)
+        # Monthly on weekdays
         elif delta_type == FrequencyEnum.MONTHLY:
             if datetime is None:
                 raise ValueError("Month can't be None")
 
-            return timedelta(days=self.get_sum_of_month_days(frequency, datetime))
+            return timedelta(days=self.get_delta_days(datetime, frequency))
 
         elif delta_type == FrequencyEnum.CUSTOM:
             if datetime is None:
                 raise ValueError("Month can't be None")
 
-            return timedelta(days=self.get_sum_of_month_days(frequency, datetime))
+            return timedelta(days=self.get_delta_days(datetime, frequency))
         else:
             return None
 

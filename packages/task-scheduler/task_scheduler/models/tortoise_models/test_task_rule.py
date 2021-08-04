@@ -57,6 +57,16 @@ class TestCaseTaskRuleService(unittest.IsolatedAsyncioTestCase):
         days = TaskRule.service.get_sum_of_month_days(2, now)
         self.assertEqual(days, 28 + 31)
 
+    async def test_get_delta_days(self):
+        now = datetime(2021, 8, 2)
+        delta_days = TaskRule.service.get_delta_days(now, 1)
+        self.assertEqual((datetime(2021, 9, 6) - now).days, delta_days)
+
+    async def test_get_delta_days_2(self):
+        now = datetime(2021, 4, 1)
+        delta_days = TaskRule.service.get_delta_days(now, 2)
+        self.assertEqual((datetime(2021, 6, 3) - now).days, delta_days)
+
 
 class TestCaseTaskRuleCreateEffect(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
@@ -356,11 +366,46 @@ class TestCaseScheduledtTaskGenerationDateCorrectness(unittest.IsolatedAsyncioTe
             )
             delta += 2 * 7
 
-    async def test_task_monthly(self):
+    async def test_weekly_every_monday(self):
         now = datetime.utcnow()
-        now = now.replace(day=2, month=2, year=2020, hour=0, minute=0)
-        future = now + timedelta(days=60)
+        now = now.replace(day=2, month=8, year=2021)
+        future = now + timedelta(days=30)
 
+        await TaskRule.create(
+            description="test",
+            task_type=TaskTypeEnum.LOOP,
+            frequency=1,
+            frequency_type=FrequencyEnum.WEEKLY,
+            first_day_to_apply_rule=now,
+            start_datetime=now,
+            end_datetime=future,
+        )
+
+        created_tasks = await ScheduledTask.all()
+
+        for task in created_tasks:
+            self.assertEqual(task.task_datetime.time(), now.time())
+
+        def check_correct_date(index, delta):
+            self.assertEqual(
+                created_tasks[index].task_datetime.date(),
+                (now + timedelta(days=delta)).date(),
+            )
+
+        check_correct_date(0, 0)
+        check_correct_date(1, 7)
+        check_correct_date(2, 14)
+        check_correct_date(3, 21)
+
+        self.assertEqual(created_tasks[0].task_datetime.weekday(), 0)
+        self.assertEqual(created_tasks[1].task_datetime.weekday(), 0)
+        self.assertEqual(created_tasks[2].task_datetime.weekday(), 0)
+        self.assertEqual(created_tasks[3].task_datetime.weekday(), 0)
+
+    async def test_task_monthly(self):
+        now = datetime(2021, 5, 2)
+        future = now + timedelta(days=120)
+        expect_date = datetime(2021, 7, 4)
         await TaskRule.create(
             description="test",
             task_type=TaskTypeEnum.LOOP,
@@ -372,34 +417,28 @@ class TestCaseScheduledtTaskGenerationDateCorrectness(unittest.IsolatedAsyncioTe
         )
 
         created_tasks = await ScheduledTask.all()
-        print(created_tasks[0].task_datetime.date())
-        print(created_tasks[1].task_datetime.date())
 
-        month_list = TaskRule.service.get_list_of_month_days(
-            created_tasks[0].task_datetime
-        )
+        def check_correct_date(index, delta):
+            self.assertEqual(
+                created_tasks[index].task_datetime.date(),
+                (now + timedelta(days=delta)).date(),
+            )
 
-        self.assertEqual(
-            created_tasks[0].task_datetime.date(), (now + timedelta(days=0)).date()
-        )
-
-        self.assertEqual(
-            created_tasks[1].task_datetime.date(),
-            (now + timedelta(days=month_list[2] + month_list[3])).date(),
-        )
+        check_correct_date(0, 0)
+        check_correct_date(1, (expect_date - now).days)
 
         for task in created_tasks:
             self.assertEqual(task.task_datetime.time(), now.time())
 
     async def test_task_monthly_leap_year(self):
-        now = datetime.utcnow()
-        now = now.replace(day=2, month=2, year=2024)
-        future = now + timedelta(days=60)
+        now = datetime(2020, 2, 2)
+        future = now + timedelta(days=31)
+        expect_date = datetime(2020, 3, 1)
 
         await TaskRule.create(
             description="test",
             task_type=TaskTypeEnum.LOOP,
-            frequency=2,
+            frequency=1,
             frequency_type=FrequencyEnum.MONTHLY,
             first_day_to_apply_rule=now,
             start_datetime=now,
@@ -408,26 +447,22 @@ class TestCaseScheduledtTaskGenerationDateCorrectness(unittest.IsolatedAsyncioTe
 
         created_tasks = await ScheduledTask.all()
 
-        month_list = TaskRule.service.get_list_of_month_days(
-            created_tasks[0].task_datetime
-        )
-
-        self.assertEqual(
-            created_tasks[0].task_datetime.date(), (now + timedelta(days=0)).date()
-        )
-
-        self.assertEqual(
-            created_tasks[1].task_datetime.date(),
-            (now + timedelta(days=month_list[2] + month_list[3])).date(),
-        )
-
         for task in created_tasks:
             self.assertEqual(task.task_datetime.time(), now.time())
 
-    # async def test_weekly_every_monday(self):
+        def check_correct_date(index, delta):
+            self.assertEqual(
+                created_tasks[index].task_datetime.date(),
+                (now + timedelta(days=delta)).date(),
+            )
+
+        check_correct_date(0, 0)
+        check_correct_date(1, (expect_date - now).days)
+
+    # async def test_monthly_every_first_monday(self):
     #     now = datetime.utcnow()
-    #     now = now.replace(day=2, month=8, year=2021)
-    #     future = now + timedelta(days=360)
+    #     now = now.replace(day=2, month=8, year=2021, hour=0, minute=0)
+    #     future = now + timedelta(days=60)
 
     #     await TaskRule.create(
     #         description="test",
@@ -445,34 +480,25 @@ class TestCaseScheduledtTaskGenerationDateCorrectness(unittest.IsolatedAsyncioTe
     #         created_tasks[0].task_datetime
     #     )
 
-    #     self.assertEqual(
-    #         created_tasks[0].task_datetime.date(
-    #         ), (now + timedelta(days=0)).date()
-    #     )
+    #     def check_correct_date(index, delta):
+    #         self.assertEqual(
+    #             created_tasks[index].task_datetime.date(
+    #             ), (now + timedelta(days=delta)).date()
+    #         )
+
+    #     check_correct_date(0, 0)
+    #     check_correct_date(1, 35)
 
     #     self.assertEqual(
     #         created_tasks[1].task_datetime.date(),
     #         (now + timedelta(days=month_list[2] + month_list[3])).date(),
     #     )
 
-    #     for task in created_tasks:
-    #         self.assertEqual(task.task_datetime.time(), now.time())
-    #     pass
-
-    async def test_monthly_every_first_monday(self):
-        pass
-
-    async def test_monthly_every_four_monday(self):
-        pass
-
     async def test_monthly_every_monday_and_friday(self):
         pass
 
-    async def test_every_third_week(self):
-
-        pass
-
     # TODO: When a specific event occurs (i.e. start, end of another task)
+
     async def test_on_a_specific_event(self):
         pass
 
