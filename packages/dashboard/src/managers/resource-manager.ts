@@ -2,7 +2,7 @@ import { DispenserResourceManager, RawDispenserResource } from './resource-manag
 import { LogoResource, LogoResourceManager } from './resource-manager-logos';
 import { RobotResource, RobotResourceManager } from './resource-manager-robots';
 
-const ResourceFile = 'main.json';
+const ResourceFile = 'resources/main.json';
 
 export interface ResourceConfigurationsType {
   robots?: Record<string, RobotResource>; // Record<FleetName, RobotResource>

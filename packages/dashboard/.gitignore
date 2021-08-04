@@ -7,7 +7,7 @@
 # setup artifacts
 /.resources.json
 /tmp
-/src/assets
+/src/assets/resources
 
 # testing
 /coverage

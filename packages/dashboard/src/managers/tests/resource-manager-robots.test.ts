@@ -54,7 +54,9 @@ describe('The correct operation of the getIconPath method of the RobotResourceMa
   });
 
   test('Returns fleet model even if fleetName is also defined', async () => {
-    jest.mock('../../assets/model', () => '/assets/icons/model', { virtual: true });
+    jest.mock('../../assets/resources/model', () => '/assets/resources/icons/model', {
+      virtual: true,
+    });
     resourceData.testFleet = {
       icons: {
         testFleet: '/fleet',
@@ -63,7 +65,7 @@ describe('The correct operation of the getIconPath method of the RobotResourceMa
       places: {},
     };
     const icon = await manager.getIconPath('testFleet', 'testModel');
-    expect(icon).toEqual('/assets/icons/model');
+    expect(icon).toEqual('/assets/resources/icons/model');
     jest.resetAllMocks();
   });
 

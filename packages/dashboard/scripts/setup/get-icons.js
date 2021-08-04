@@ -5,7 +5,7 @@ const chalk = require('chalk');
 const path = require('path');
 
 const ProjectDir = __dirname.slice(0, __dirname.length - '/scripts/setup'.length);
-const AssetsPath = `${ProjectDir}/src/assets`;
+const ResourcesPath = `${ProjectDir}/src/assets/resources`;
 const TempDir = `${ProjectDir}/tmp`;
 
 class IconManagerBase {
@@ -89,7 +89,7 @@ class IconManager extends IconManagerBase {
 
   cloneRepo = () => {
     execSync(
-      `git clone "${this.resourcesData.repoUrl}" --depth=1 --single-branch --branch ${this.resourcesData.branch} ${AssetsPath} -o repo`,
+      `git clone "${this.resourcesData.repoUrl}" --depth=1 --single-branch --branch ${this.resourcesData.branch} ${ResourcesPath} -o repo`,
       {
         stdio: 'inherit', // we need this so node will print the command output
       },
@@ -106,14 +106,14 @@ class IconManager extends IconManagerBase {
   };
 
   moveFromTmpFolderToIconFolder = () => {
-    exec(`cp -r ${TempDir}/${this.resourcesData.folder}/* ${AssetsPath}`, {
+    exec(`cp -r ${TempDir}/${this.resourcesData.folder}/* ${ResourcesPath}`, {
       stdio: 'inherit',
       cwd: ProjectDir,
     });
   };
 
   copyFromLocalDirectory = () => {
-    exec(`cp -r ${this.resourcesData.path}* ${AssetsPath}`, (error, stdout, stderr) => {
+    exec(`cp -r ${this.resourcesData.path}* ${ResourcesPath}`, (error, stdout, stderr) => {
       if (error) {
         console.error(chalk`{red exec error: ${error}}`);
         return;
@@ -128,7 +128,7 @@ class IconManager extends IconManagerBase {
       console.log(
         chalk`{green The icons have been successfully obtained. Check "${path.relative(
           ProjectDir,
-          AssetsPath,
+          ResourcesPath,
         )}".}`,
       );
     });
@@ -139,9 +139,9 @@ const getIcons = (resourcesData) => {
   const iconManager = new IconManager(resourcesData);
 
   if (resourcesData.hasOwnProperty('repoUrl') || resourcesData.hasOwnProperty('path')) {
-    exec(`[ -d "${AssetsPath}" ] && rm -rf ${AssetsPath}`);
+    exec(`[ -d "${ResourcesPath}" ] && rm -rf ${ResourcesPath}`);
   }
-  exec(`mkdir -p ${AssetsPath}`);
+  exec(`mkdir -p ${ResourcesPath}`);
 
   if (resourcesData.hasOwnProperty('repoUrl')) {
     // If we don't want to clone a specific folder of the repo, it'll clone the whole repo

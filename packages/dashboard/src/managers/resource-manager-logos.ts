@@ -19,10 +19,16 @@ export class LogoResourceManager {
     const logoIcon = this.logos[logoName].icons[logoName];
 
     try {
-      return (await import(/* webpackMode: "eager" */ `../assets${logoIcon}`)).default;
+      return (await import(/* webpackMode: "eager" */ `../assets/resources${logoIcon}`)).default;
     } catch {
       return null;
     }
+  };
+
+  getHeaderLogoPath = async (): Promise<string> => {
+    const iconPath = await this.getIconPath('headerLogo');
+    if (iconPath) return iconPath;
+    return (await import(/* webpackMode: "eager" */ '../assets/defaultLogo.png')).default;
   };
 
   get all(): Record<string, LogoResource> {

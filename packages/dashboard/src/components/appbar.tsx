@@ -70,7 +70,7 @@ export const AppBar = React.memo(
     const user = React.useContext(UserContext);
     const { showTooltips } = React.useContext(TooltipsContext);
     const safeAsync = useAsync();
-    const [brandingIconPath, setBrandingIconPath] = React.useState<string>('/defaultLogo.png');
+    const [brandingIconPath, setBrandingIconPath] = React.useState<string>('');
 
     async function handleLogout(): Promise<void> {
       try {
@@ -83,8 +83,7 @@ export const AppBar = React.memo(
     React.useLayoutEffect(() => {
       if (!logoResourcesContext) return;
       (async () => {
-        const iconPath = await safeAsync(logoResourcesContext.getIconPath('headerLogo'));
-        iconPath && setBrandingIconPath(iconPath);
+        setBrandingIconPath(await safeAsync(logoResourcesContext.getHeaderLogoPath()));
       })();
     }, [logoResourcesContext, safeAsync]);
 

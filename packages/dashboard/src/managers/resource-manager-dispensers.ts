@@ -31,7 +31,8 @@ export class DispenserResourceManager {
     const dispenserIcon = this.dispensers[dispenserName].icons[dispenserName];
 
     try {
-      return (await import(/* webpackMode: "eager" */ `../assets${dispenserIcon}`)).default;
+      return (await import(/* webpackMode: "eager" */ `../assets/resources${dispenserIcon}`))
+        .default;
     } catch {
       return null;
     }

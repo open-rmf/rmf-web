@@ -38,7 +38,7 @@ export class RobotResourceManager {
     }
 
     try {
-      return (await import(/* webpackMode: "eager" */ `../assets${iconPath}`)).default;
+      return (await import(/* webpackMode: "eager" */ `../assets/resources${iconPath}`)).default;
     } catch {
       return null;
     }
