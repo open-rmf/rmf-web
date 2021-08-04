@@ -77,7 +77,7 @@ export const RobotsOverlay = (props: RobotsOverlayProps) => {
         }),
       );
       await safeAsync(Promise.all(ps));
-      setIconPaths(results);
+      setIconPaths((prev) => ({ ...prev, ...results }));
     })();
   }, [robotResourcesContext, robotsInCurLevel, safeAsync]);
 

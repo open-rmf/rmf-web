@@ -21,7 +21,7 @@ export class DispenserResourceManager {
     this.dispensers = this.assignGuidToDispensers(dispenserResources);
   }
 
-  getIconPath = (dispenserName: string): string | null => {
+  getIconPath = async (dispenserName: string): Promise<string | null> => {
     if (!this.dispenserExists(dispenserName)) {
       return null;
     }
@@ -30,7 +30,11 @@ export class DispenserResourceManager {
     }
     const dispenserIcon = this.dispensers[dispenserName].icons[dispenserName];
 
-    return dispenserIcon ? `${dispenserIcon}` : null;
+    try {
+      return (await import(/* webpackMode: "eager" */ `../assets${dispenserIcon}`)).default;
+    } catch {
+      return null;
+    }
   };
 
   get all(): Record<string, DispenserResource> {
