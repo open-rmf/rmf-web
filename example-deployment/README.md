@@ -13,17 +13,19 @@ Deploying a web app can be very complicated, so this repo serves as an example d
 In this example, we will be using the following software
 
 rmf-web:
-* rmf-server (aka api-server)
-* dashboard
+
+- rmf-server (aka api-server)
+- dashboard
 
 others:
-* kubernetes
-* minikube
-* keycloak
-* nginx
-* postgres
-* minio
-* fluentd
+
+- kubernetes
+- minikube
+- keycloak
+- nginx
+- postgres
+- minio
+- fluentd
 
 **NOTE: If you are using this example as a starting point for your own deployment, you must make sure that you have the proper license to use the softwares used in this example.**
 
@@ -107,13 +109,13 @@ docker pull quay.io/keycloak/keycloak:12.0.4
 
 build the image
 
-``` bash
+```bash
 docker build -t rmf-web/keycloak -f docker/keycloak/keycloak.dockerfile docker/keycloak/
 ```
 
 "publish" the image
 
-``` bash
+```bash
 docker save rmf-web/keycloak | bash -c 'eval $(.bin/minikube docker-env) && docker load'
 ```
 
@@ -264,14 +266,35 @@ deploy it
 .bin/minikube kubectl -- apply -f k8s/dashboard.yaml
 ```
 
+## minimal
+
+build the image
+
+```bash
+docker build -t rmf-web/minimal -f docker/minimal.dockerfile ws/rmf-web
+```
+
+"publish" the image
+
+```bash
+docker save rmf-web/minimal | bash -c 'eval $(.bin/minikube docker-env) && docker load'
+```
+
+deploy it
+
+```bash
+.bin/minikube kubectl -- apply -f k8s/minimal.yaml
+```
+
 ## [MinIO](https://github.com/minio/minio)
+
 MinIO is a High-Performance Object Storage released under Apache License v2.0. MinIO has several uses but in our case, we will use MinIO to store logs.
 
 This requires internet connection, see [Deploying in an airgapped network](#deploying-in-an-airgapped-network) if you are in an airgap network.
 
 Let's deploy our `Minio`:
 
-``` bash
+```bash
 .bin/minikube kubectl -- apply -f k8s/minio.yaml
 ```
 
@@ -282,15 +305,16 @@ Fluentd is an open source data collector for unified logging layer. Fluentd allo
 ### Fluentd Configmap
 
 We have 4 files in our `fluentd-configmap.yaml` :
-* `fluent.conf`: Our main config which includes all configurations we want to run.
-* `pods-fluent.conf`: `tail` config that sources all pod logs on the `kubernetes` host in the cluster.
-* `minio-fluent.conf`: `match` config to capture all logs and send them to MinIO. Every chunck of logs should have 5mb.
-Capture all logs and send them to MinIO. Every chunck of logs should have 5mb.
-* `minio-fluent-dev.conf`: `match` config to capture all logs and send them to MinIO. Every chunck of logs should have 2kb for development purposes.
+
+- `fluent.conf`: Our main config which includes all configurations we want to run.
+- `pods-fluent.conf`: `tail` config that sources all pod logs on the `kubernetes` host in the cluster.
+- `minio-fluent.conf`: `match` config to capture all logs and send them to MinIO. Every chunck of logs should have 5mb.
+  Capture all logs and send them to MinIO. Every chunck of logs should have 5mb.
+- `minio-fluent-dev.conf`: `match` config to capture all logs and send them to MinIO. Every chunck of logs should have 2kb for development purposes.
 
 Let's deploy our `configmap`:
 
-``` bash
+```bash
 .bin/minikube kubectl -- apply -f k8s/fluentd-configmap.yaml
 ```
 
@@ -300,7 +324,7 @@ Let's deploy the `daemonset`,
 
 This requires internet connection, see [Deploying in an airgapped network](#deploying-in-an-airgapped-network) if you are in an airgap network.
 
-``` bash
+```bash
 .bin/minikube kubectl -- apply -f k8s/fluentd.yaml
 ```
 
@@ -393,6 +417,7 @@ Sit back and relax, everything will be done for you!
 There are certain parts that requires an internet connection to fetch the docker images and source codes, in order to deploy from within an airgapped network, you can use obtain the images first, then push them directly to minikube. For example
 
 when you have internet, run this to get the keycloak, MinIO and Fluentd images
+
 ```bash
 docker pull quay.io/keycloak/keycloak:12.0.4
 docker pull minio/minio:RELEASE.2021-03-10T05-11-33Z
@@ -400,6 +425,7 @@ docker pull fluent/fluentd-kubernetes-daemonset:v1.12.2-debian-s3-1.0
 ```
 
 now, connect to the airgapped network and push the images to minikube
+
 ```bash
 docker save quay.io/keycloak/keycloak:12.0.4 | bash -c 'eval $(.bin/minikube docker-env) && docker load'
 docker save minio/minio:RELEASE.2021-03-10T05-11-33Z | bash -c 'eval $(.bin/minikube docker-env) && docker load'
@@ -409,7 +435,6 @@ docker save fluent/fluentd-kubernetes-daemonset:v1.12.2-debian-s3-1.0 | bash -c 
 now you can deploy keycloak, MinIO and Fluentd without require access to the internet
 
 If connection to the internet from the same PC is not possible, you can use `docker save` to save the image into a tarball, then transfer it to the minikube PC through whatever method possible (thumbdrives, cds etc) and use `docker load` to load the image. Then you can use `.bin/minikube load` to push it into minikube.
-
 
 ## Updating the deployment
 
@@ -457,8 +482,8 @@ The most common cause is that connection to the keycloak server is not working, 
 
 This is usually because the rmf-server server can't connect to rmf, first make sure that
 
-* rmf_demos is running
-* your version of rmf_demos is exactly the same as the one used to build your rmf-server image.
+- rmf_demos is running
+- your version of rmf_demos is exactly the same as the one used to build your rmf-server image.
 
 If it still doesn't work, get a shell into the rmf-server port
 
