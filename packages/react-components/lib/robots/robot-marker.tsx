@@ -53,12 +53,13 @@ export const RobotMarker = React.forwardRef(
       ...otherProps
     } = props;
     debug(`render ${name}`);
-    const [useImageMarker, setUseImageMarker] = React.useState(!!iconPath);
+    const [imageHasError, setImageHasError] = React.useState(false);
     const [robotColor, setRobotColor] = React.useState<string | undefined>(undefined);
     const colorManager = React.useContext(ColorContext);
     const classes = useStyles();
     const pos = fromRmfCoords([x, y]);
     const yaw = (fromRmfYaw(rmfYaw) / Math.PI) * 180;
+    const useImageMarker = !!iconPath && !imageHasError;
 
     const translateTransform = translate ? `translate(${pos[0]} ${pos[1]})` : undefined;
 
@@ -84,11 +85,7 @@ export const RobotMarker = React.forwardRef(
         <g transform={translateTransform}>
           <g className={classes.clickable} aria-label={name} transform={`rotate(${yaw})`}>
             {useImageMarker && iconPath ? (
-              <ImageMarker
-                {...props}
-                iconPath={iconPath}
-                onError={() => setUseImageMarker(false)}
-              />
+              <ImageMarker {...props} iconPath={iconPath} onError={() => setImageHasError(true)} />
             ) : robotColor ? (
               <DefaultMarker color={robotColor} {...props} />
             ) : null}

@@ -1,9 +1,8 @@
-import axios from 'axios';
 import { DispenserResourceManager, RawDispenserResource } from './resource-manager-dispensers';
-import { LogoResourceManager, LogoResource } from './resource-manager-logos';
+import { LogoResource, LogoResourceManager } from './resource-manager-logos';
 import { RobotResource, RobotResourceManager } from './resource-manager-robots';
 
-export const RESOURCE_PREFIX = process.env.PUBLIC_URL || '';
+const ResourceFile = 'main.json';
 
 export interface ResourceConfigurationsType {
   robots?: Record<string, RobotResource>; // Record<FleetName, RobotResource>
@@ -22,12 +21,13 @@ export default class ResourceManager {
 
   static getResourceConfigurationFile = async (): Promise<ResourceManager | undefined> => {
     try {
-      // Gets data served by the project itself
-      const response = await axios.get(RESOURCE_PREFIX + '/assets/icons/main.json');
-      const resources = response.data as ResourceConfigurationsType;
+      // need to use interpolate string to make webpack resolve import at run time and for
+      // typescript to not attempt to typecheck it.
+      const resources = (await import(
+        /* webpackMode: "eager" */ `../assets/${ResourceFile}`
+      )) as ResourceConfigurationsType;
       return ResourceManager.resourceManagerFactory(resources);
     } catch (error) {
-      console.error(error);
       return undefined;
     }
   };

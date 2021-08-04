@@ -6,7 +6,7 @@ describe('The correct operation of the getAvailablePlacesPerFleet method of the 
   let resourceData: Record<string, RobotResource>;
 
   beforeAll(() => {
-    resourceData = fakeResources().robots;
+    resourceData = fakeResources().robots!;
     manager = new RobotResourceManager(resourceData);
   });
 
@@ -77,7 +77,7 @@ describe('The correct operation of the getDispensersPerFleet method of the Robot
   let resourceData: Record<string, RobotResource>;
 
   beforeAll(() => {
-    resourceData = fakeResources().robots;
+    resourceData = fakeResources().robots!;
     manager = new RobotResourceManager(resourceData);
   });
 
