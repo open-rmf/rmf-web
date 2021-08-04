@@ -1,11 +1,4 @@
-FROM ros:foxy-ros-base-focal
-
-RUN apt-get update && apt-get install -y curl && \
-  curl -sL https://deb.nodesource.com/setup_12.x | bash - && \
-  apt-get update && apt-get install -y nodejs python3-pip
-
-RUN pip3 install pipenv
-
+FROM rmf-web/builder
 COPY . /root/rmf-web
 SHELL ["bash", "-c"]
 
@@ -14,7 +7,8 @@ RUN npm config set unsafe-perm && cd /root/rmf-web && \
 
 RUN cd /root/rmf-web/packages/minimal && \
   PUBLIC_URL='/minimal' \
-  REACT_APP_REPORTING_SERVER='https://example.com/logserver/api/v1' \
+  REACT_APP_TRAJECTORY_SERVER='ws://localhost:8006' \
+  REACT_APP_RMF_SERVER='https://example.com/rmf/api/v1' \
   REACT_APP_AUTH_PROVIDER='keycloak' \
   REACT_APP_KEYCLOAK_CONFIG='{ "realm": "rmf-web", "clientId": "minimal", "url": "https://example.com/auth" }' \
   npm run build
