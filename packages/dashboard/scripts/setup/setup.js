@@ -104,5 +104,10 @@ You have two options:
   }
 
   const resourcesData = JSON.parse(fs.readFileSync(resourcesPath));
-  getIcons(resourcesData);
+  try {
+    getIcons(resourcesData);
+  } catch (e) {
+    console.error(e.message);
+    process.exit(1);
+  }
 })();
