@@ -142,16 +142,15 @@ class IconManager extends IconManagerBase {
   };
 
   moveFromTmpFolderToIconFolder = () => {
-    execSync(`cp -r "${TempDir}/${this.resourcesData.folder}" "${ResourcesPath}/"`, {
+    execSync(`cp -r "${TempDir}/${this.resourcesData.folder}"/* "${ResourcesPath}/"`, {
       stdio: 'inherit',
       cwd: ProjectDir,
     });
   };
 
   _copyDir = (from, to) => {
-    if (from.endsWith('/')) from = from.slice(0, -1);
-    if (!to.endsWith('/')) to += '/';
-    const stdout = execSync(`cp -r "${from}" "${to}"`).toString();
+    if (!from.endsWith('/')) from += '/';
+    const stdout = execSync(`cp -r "${from}"* "${to}"`).toString();
     console.log(stdout);
     console.log(
       chalk`{green The icons have been successfully obtained. Check "${path.relative(

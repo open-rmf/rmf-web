@@ -27,7 +27,7 @@ export default class ResourceManager {
         /* webpackMode: "eager" */ `../assets/${ResourceFile}`
       )) as ResourceConfigurationsType;
       return ResourceManager.resourceManagerFactory(resources);
-    } catch (error) {
+    } catch {
       return undefined;
     }
   };
