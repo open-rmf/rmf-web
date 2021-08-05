@@ -1,5 +1,7 @@
 'use strict';
 
+// FIXME: do not use shell commands to support cross platform.
+
 const { execSync } = require('child_process');
 const chalk = require('chalk');
 const path = require('path');
@@ -55,7 +57,7 @@ class IconManagerBase {
 class SparseCheckoutGitV225 extends IconManagerBase {
   execute = () => {
     execSync(
-      `git clone "${this.resourcesData.repoUrl}" --no-checkout  --depth=1 --single-branch --branch ${this.resourcesData.branch} ${TempDir} -o repo`,
+      `git clone "${this.resourcesData.repoUrl}" --no-checkout  --depth=1 --single-branch --branch "${this.resourcesData.branch}" "${TempDir}" -o repo`,
       {
         stdio: 'inherit',
       },
@@ -64,7 +66,7 @@ class SparseCheckoutGitV225 extends IconManagerBase {
     execSync(
       `git sparse-checkout init --cone &&
             git config core.sparseCheckout 1 &&
-            git sparse-checkout set ${this.resourcesData.folder} &&
+            git sparse-checkout set "${this.resourcesData.folder}" &&
             git checkout`,
       {
         stdio: 'inherit',
@@ -84,13 +86,13 @@ class SparseCheckoutGitV217 extends IconManagerBase {
       cwd: path.resolve(__dirname, TempDir),
     });
     execSync(
-      `git config core.sparseCheckout true && echo ${this.resourcesData.folder} >> .git/info/sparse-checkout`,
+      `git config core.sparseCheckout true && echo "${this.resourcesData.folder}" >> .git/info/sparse-checkout`,
       {
         stdio: 'inherit',
         cwd: path.resolve(__dirname, TempDir),
       },
     );
-    execSync(`git pull --depth=1 resources ${this.resourcesData.branch}`, {
+    execSync(`git pull --depth=1 resources "${this.resourcesData.branch}"`, {
       stdio: 'inherit',
       cwd: path.resolve(__dirname, TempDir),
     });
@@ -127,24 +129,29 @@ class IconManager extends IconManagerBase {
   };
 
   removeTmpFolder = () => {
-    execSync(`[ -d "${TempDir}" ] && rm -rf ${TempDir}`);
+    try {
+      execSync(`[ -d "${TempDir}" ] && rm -rf "${TempDir}"`);
+    } catch {}
   };
 
   createTmpFolder = () => {
-    execSync(`[ -d "${TempDir}" ] && rm -rf ${TempDir}`);
-    execSync(`mkdir -p ${TempDir}`);
+    try {
+      execSync(`[ -d "${TempDir}" ] && rm -rf "${TempDir}"`);
+    } catch {}
+    execSync(`mkdir -p "${TempDir}"`);
   };
 
   moveFromTmpFolderToIconFolder = () => {
-    execSync(`cp -r ${TempDir}/${this.resourcesData.folder}/* ${ResourcesPath}`, {
+    execSync(`cp -r "${TempDir}/${this.resourcesData.folder}" "${ResourcesPath}/"`, {
       stdio: 'inherit',
       cwd: ProjectDir,
     });
   };
 
   _copyDir = (from, to) => {
-    if (!from.endsWith('/')) from += '/';
-    const stdout = execSync(`cp -r ${from}* ${to}`).toString();
+    if (from.endsWith('/')) from = from.slice(0, -1);
+    if (!to.endsWith('/')) to += '/';
+    const stdout = execSync(`cp -r "${from}" "${to}"`).toString();
     console.log(stdout);
     console.log(
       chalk`{green The icons have been successfully obtained. Check "${path.relative(
@@ -169,8 +176,10 @@ class IconManager extends IconManagerBase {
 const getIcons = (resourcesData) => {
   const iconManager = new IconManager(resourcesData);
 
-  execSync(`[ -d "${ResourcesPath}" ] && rm -rf ${ResourcesPath}`);
-  execSync(`mkdir -p ${ResourcesPath}`);
+  try {
+    execSync(`[ -d "${ResourcesPath}" ] && rm -rf "${ResourcesPath}"`);
+  } catch {}
+  execSync(`mkdir -p "${ResourcesPath}"`);
 
   if (resourcesData.hasOwnProperty('repoUrl')) {
     // If we don't want to clone a specific folder of the repo, it'll clone the whole repo

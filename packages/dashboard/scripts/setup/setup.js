@@ -107,7 +107,7 @@ You have two options:
   try {
     getIcons(resourcesData);
   } catch (e) {
-    console.error(e.message);
-    process.exit(1);
+    console.error(e);
+    process.exit(e.status);
   }
 })();
