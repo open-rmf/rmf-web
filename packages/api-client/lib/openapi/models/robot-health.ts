@@ -14,31 +14,25 @@
 /**
  *
  * @export
- * @interface Task
+ * @interface RobotHealth
  */
-export interface Task {
+export interface RobotHealth {
   /**
    *
    * @type {string}
-   * @memberof Task
+   * @memberof RobotHealth
    */
-  task_id: any;
+  health_status: any | null;
   /**
    *
    * @type {string}
-   * @memberof Task
+   * @memberof RobotHealth
    */
-  authz_grp?: any;
+  health_message?: any | null;
   /**
    *
-   * @type {TaskSummary}
-   * @memberof Task
+   * @type {string}
+   * @memberof RobotHealth
    */
-  summary: any;
-  /**
-   *
-   * @type {TaskProgress}
-   * @memberof Task
-   */
-  progress: any;
+  id_: any;
 }

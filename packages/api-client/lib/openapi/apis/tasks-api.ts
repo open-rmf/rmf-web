@@ -87,7 +87,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       };
     },
     /**
-     * **Available in socket.io**
+     * Available in socket.io
      * @summary Get Task Summary
      * @param {string} task_id task_id with &#x27;/&#x27; replaced with &#x27;__&#x27;
      * @param {*} [options] Override http request option.
@@ -348,7 +348,7 @@ export const TasksApiFp = function (configuration?: Configuration) {
       };
     },
     /**
-     * **Available in socket.io**
+     * Available in socket.io
      * @summary Get Task Summary
      * @param {string} task_id task_id with &#x27;/&#x27; replaced with &#x27;__&#x27;
      * @param {*} [options] Override http request option.
@@ -473,7 +473,7 @@ export const TasksApiFactory = function (
         .then((request) => request(axios, basePath));
     },
     /**
-     * **Available in socket.io**
+     * Available in socket.io
      * @summary Get Task Summary
      * @param {string} task_id task_id with &#x27;/&#x27; replaced with &#x27;__&#x27;
      * @param {*} [options] Override http request option.
@@ -574,7 +574,7 @@ export class TasksApi extends BaseAPI {
       .then((request) => request(this.axios, this.basePath));
   }
   /**
-   * **Available in socket.io**
+   * Available in socket.io
    * @summary Get Task Summary
    * @param {string} task_id task_id with &#x27;/&#x27; replaced with &#x27;__&#x27;
    * @param {*} [options] Override http request option.

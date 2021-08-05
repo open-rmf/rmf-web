@@ -14,25 +14,25 @@
 /**
  *
  * @export
- * @interface ApiServerModelsTortoiseModelsHealthDoorHealthLeaf
+ * @interface IngestorHealth
  */
-export interface ApiServerModelsTortoiseModelsHealthDoorHealthLeaf {
+export interface IngestorHealth {
   /**
    *
    * @type {string}
-   * @memberof ApiServerModelsTortoiseModelsHealthDoorHealthLeaf
+   * @memberof IngestorHealth
    */
-  health_status?: any | null;
+  health_status: any | null;
   /**
    *
    * @type {string}
-   * @memberof ApiServerModelsTortoiseModelsHealthDoorHealthLeaf
+   * @memberof IngestorHealth
    */
   health_message?: any | null;
   /**
    *
    * @type {string}
-   * @memberof ApiServerModelsTortoiseModelsHealthDoorHealthLeaf
+   * @memberof IngestorHealth
    */
   id_: any;
 }

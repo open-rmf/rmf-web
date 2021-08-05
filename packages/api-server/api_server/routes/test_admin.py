@@ -1,17 +1,17 @@
-from ..test.test_fixtures import RouteFixture
+from api_server.test import AppFixture
 
 
-class TestAdminRoute(RouteFixture):
+class TestAdminRoute(AppFixture):
     def test_query_users(self):
         # query usernames
         user = self.create_user()
-        resp = self.session.get(f"{self.base_url}/admin/users?username={user}")
+        resp = self.session.get(f"/admin/users?username={user}")
         self.assertEqual(200, resp.status_code)
         users = resp.json()
         self.assertIn(user, users)
 
         # query admins
-        resp = self.session.get(f"{self.base_url}/admin/users?is_admin=true")
+        resp = self.session.get("/admin/users?is_admin=true")
         self.assertEqual(200, resp.status_code)
         users = resp.json()
         self.assertIn("admin", users)
@@ -19,38 +19,38 @@ class TestAdminRoute(RouteFixture):
     def test_crud_user(self):
         username = self.create_user()
 
-        resp = self.session.get(f"{self.base_url}/admin/users/{username}")
+        resp = self.session.get(f"/admin/users/{username}")
         self.assertEqual(200, resp.status_code)
         user = resp.json()
         self.assertEqual(username, user["username"])
 
         resp = self.session.post(
-            f"{self.base_url}/admin/users/{username}/make_admin", json={"admin": True}
+            f"/admin/users/{username}/make_admin", json={"admin": True}
         )
         self.assertEqual(200, resp.status_code)
-        resp = self.session.get(f"{self.base_url}/admin/users/{username}")
+        resp = self.session.get(f"/admin/users/{username}")
         self.assertEqual(200, resp.status_code)
         user = resp.json()
         self.assertEqual(True, user["is_admin"])
 
-        resp = self.session.delete(f"{self.base_url}/admin/users/{username}")
+        resp = self.session.delete(f"/admin/users/{username}")
         self.assertEqual(200, resp.status_code)
 
-        resp = self.session.get(f"{self.base_url}/admin/users/{username}")
+        resp = self.session.get(f"/admin/users/{username}")
         self.assertEqual(404, resp.status_code)
 
     def test_crud_roles(self):
         role = self.create_role()
 
-        resp = self.session.get(f"{self.base_url}/admin/roles")
+        resp = self.session.get("/admin/roles")
         self.assertEqual(200, resp.status_code)
         roles = resp.json()
         self.assertIn(role, roles)
 
-        resp = self.session.delete(f"{self.base_url}/admin/roles/{role}")
+        resp = self.session.delete(f"/admin/roles/{role}")
         self.assertEqual(200, resp.status_code)
 
-        resp = self.session.get(f"{self.base_url}/admin/roles")
+        resp = self.session.get("/admin/roles")
         self.assertEqual(200, resp.status_code)
         self.assertNotIn(role, resp.json())
 
@@ -59,7 +59,7 @@ class TestAdminRoute(RouteFixture):
         self.add_permission(role, "test_action", "test_group")
 
         resp = self.session.get(
-            f"{self.base_url}/admin/roles/{role}/permissions",
+            f"/admin/roles/{role}/permissions",
         )
         self.assertEqual(200, resp.status_code)
         permissions = resp.json()
@@ -67,14 +67,17 @@ class TestAdminRoute(RouteFixture):
         self.assertEqual("test_group", permissions[0]["authz_grp"])
         self.assertEqual("test_action", permissions[0]["action"])
 
-        resp = self.session.delete(
-            f"{self.base_url}/admin/roles/{role}/permissions",
-            json={"action": "test_action", "authz_grp": "test_group"},
+        resp = self.session.post(
+            f"/admin/roles/{role}/permissions/remove",
+            json={
+                "authz_grp": permissions[0]["authz_grp"],
+                "action": permissions[0]["action"],
+            },
         )
         self.assertEqual(200, resp.status_code)
 
         resp = self.session.get(
-            f"{self.base_url}/admin/roles/{role}/permissions",
+            f"/admin/roles/{role}/permissions",
         )
         self.assertEqual(200, resp.status_code)
         permissions = resp.json()
@@ -85,18 +88,16 @@ class TestAdminRoute(RouteFixture):
         role = self.create_role()
         self.assign_role(username, role)
 
-        resp = self.session.get(f"{self.base_url}/admin/users/{username}")
+        resp = self.session.get(f"/admin/users/{username}")
         self.assertEqual(200, resp.status_code)
         user = resp.json()
         self.assertEqual(1, len(user["roles"]))
         self.assertEqual(role, user["roles"][0])
 
-        resp = self.session.delete(
-            f"{self.base_url}/admin/users/{username}/roles", json={"name": role}
-        )
+        resp = self.session.delete(f"/admin/users/{username}/roles/{role}")
         self.assertEqual(200, resp.status_code)
 
-        resp = self.session.get(f"{self.base_url}/admin/users/{username}")
+        resp = self.session.get(f"/admin/users/{username}")
         self.assertEqual(200, resp.status_code)
         user = resp.json()
         self.assertEqual(0, len(user["roles"]))
@@ -110,18 +111,18 @@ class TestAdminRoute(RouteFixture):
 
         # error when one of the is invalid
         resp = self.session.put(
-            f"{self.base_url}/admin/users/{username}/roles",
+            f"/admin/users/{username}/roles",
             json=[{"name": role}, {"name": "non_existing_role"}],
         )
         self.assertEqual(422, resp.status_code)
 
         resp = self.session.put(
-            f"{self.base_url}/admin/users/{username}/roles",
+            f"/admin/users/{username}/roles",
             json=[{"name": role}, {"name": role2}],
         )
         self.assertEqual(200, resp.status_code)
 
-        resp = self.session.get(f"{self.base_url}/admin/users/{username}")
+        resp = self.session.get(f"/admin/users/{username}")
         self.assertEqual(200, resp.status_code)
         user = resp.json()
         self.assertEqual(2, len(user["roles"]))

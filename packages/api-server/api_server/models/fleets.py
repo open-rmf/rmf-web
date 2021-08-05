@@ -2,21 +2,39 @@ from typing import List
 
 from pydantic import BaseModel
 
-from api_server.models.tasks import Task
-
-from .health import BasicHealth
+from . import tortoise_models as ttm
+from .health import basic_health_model
 from .ros_pydantic import rmf_fleet_msgs
+from .tasks import Task
 
-FleetState = rmf_fleet_msgs.FleetState
-RobotState = rmf_fleet_msgs.RobotState
 RobotMode = rmf_fleet_msgs.RobotMode
-RobotHealth = BasicHealth
+RobotHealth = basic_health_model(ttm.RobotHealth)
 Location = rmf_fleet_msgs.Location
+
+
+class FleetState(rmf_fleet_msgs.FleetState):
+    @staticmethod
+    def from_tortoise(tortoise: ttm.FleetState) -> "FleetState":
+        return FleetState(**tortoise.data)
+
+    async def save(self) -> None:
+        await ttm.FleetState.update_or_create({"data": self.dict()}, id_=self.name)
 
 
 class Fleet(BaseModel):
     name: str
     state: FleetState
+
+
+class RobotState(rmf_fleet_msgs.RobotState):
+    @staticmethod
+    def from_tortoise(tortoise: ttm.RobotState) -> "RobotState":
+        return RobotState(**tortoise.data)
+
+    async def save(self, fleet_name: str) -> None:
+        await ttm.RobotState.update_or_create(
+            {"data": self.dict()}, fleet_name=fleet_name, robot_name=self.name
+        )
 
 
 class Robot(BaseModel):

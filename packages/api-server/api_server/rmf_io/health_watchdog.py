@@ -13,13 +13,16 @@ from rx.core.typing import Disposable
 from rx.scheduler.scheduler import Scheduler
 from rx.subject import BehaviorSubject, Subject
 
-from ..models import (
+from api_server.models import (
+    BuildingMap,
+    Dispenser,
     DispenserHealth,
     DispenserState,
     DoorHealth,
     DoorState,
     FleetState,
     HealthStatus,
+    Ingestor,
     IngestorHealth,
     IngestorState,
     LiftHealth,
@@ -27,8 +30,8 @@ from ..models import (
     RobotHealth,
     RobotState,
 )
-from ..models import tortoise_models as ttm
-from ..repositories import RmfRepository
+from api_server.models import tortoise_models as ttm
+
 from .events import RmfEvents
 from .operators import heartbeat, most_critical
 
@@ -40,12 +43,10 @@ class HealthWatchdog:
         self,
         rmf_events: RmfEvents,
         *,
-        rmf_repo: Optional[RmfRepository] = None,
         scheduler: Optional[Scheduler] = None,
         logger: logging.Logger = None,
     ):
         self.rmf = rmf_events
-        self.repo = rmf_repo
         self.scheduler = scheduler
         self.logger = logger or logging.getLogger(self.__class__.__name__)
         self._building_watchers: List[Disposable] = []
@@ -136,8 +137,13 @@ class HealthWatchdog:
                 self._combine_most_critical(door_mode_health),
             ).subscribe(self.rmf.door_health.on_next, scheduler=self.scheduler)
 
-        doors = await self.repo.get_doors() if self.repo else []
-        states_list = await self.repo.query_door_states() if self.repo else []
+        ttm_map = await ttm.BuildingMap.get_or_none()
+        if ttm_map is None:
+            doors = []
+        else:
+            building_map = BuildingMap.from_tortoise(ttm_map)
+            doors = [door for level in building_map.levels for door in level.doors]
+        states_list = [DoorState.from_tortoise(x) for x in await ttm.DoorState.all()]
         door_states = {state.door_name: state for state in states_list}
         initial_states = {door.name: door_states.get(door.name, None) for door in doors}
 
@@ -207,8 +213,13 @@ class HealthWatchdog:
                 self._combine_most_critical(lift_mode_health),
             ).subscribe(self.rmf.lift_health.on_next, scheduler=self.scheduler)
 
-        lifts = await self.repo.get_lifts() if self.repo else []
-        states_list = await self.repo.query_lift_states() if self.repo else []
+        ttm_map = await ttm.BuildingMap.get_or_none()
+        if ttm_map is None:
+            lifts = []
+        else:
+            building_map = BuildingMap.from_tortoise(ttm_map)
+            lifts = building_map.lifts
+        states_list = [LiftState.from_tortoise(x) for x in await ttm.LiftState.all()]
         lift_states = {state.lift_name: state for state in states_list}
         initial_states = {lift.name: lift_states.get(lift.name, None) for lift in lifts}
 
@@ -271,8 +282,10 @@ class HealthWatchdog:
                 self._combine_most_critical(dispenser_mode_health),
             ).subscribe(self.rmf.dispenser_health.on_next, scheduler=self.scheduler)
 
-        dispensers = await self.repo.query_dispensers() if self.repo else []
-        states_list = await self.repo.query_dispenser_states() if self.repo else []
+        states_list = [
+            DispenserState.from_tortoise(x) for x in await ttm.DispenserState.all()
+        ]
+        dispensers = [Dispenser(guid=x.guid) for x in states_list]
         dispenser_states = {state.guid: state for state in states_list}
         initial_states = {
             dispenser.guid: dispenser_states.get(dispenser.guid, None)
@@ -337,8 +350,10 @@ class HealthWatchdog:
                 self._combine_most_critical(ingestor_mode_health),
             ).subscribe(self.rmf.ingestor_health.on_next, scheduler=self.scheduler)
 
-        ingestors = await self.repo.query_ingestors() if self.repo else []
-        states_list = await self.repo.query_ingestor_states() if self.repo else []
+        states_list = [
+            IngestorState.from_tortoise(x) for x in await ttm.IngestorState.all()
+        ]
+        ingestors = [Ingestor(guid=x.guid) for x in states_list]
         ingestor_states = {state.guid: state for state in states_list}
         initial_states = {
             ingestor.guid: ingestor_states.get(ingestor.guid, None)
@@ -423,10 +438,9 @@ class HealthWatchdog:
                 self._combine_most_critical(robot_mode_health),
             ).subscribe(self.rmf.robot_health.on_next, scheduler=self.scheduler)
 
-        fleet_states = [q.to_pydantic() for q in await ttm.FleetState.all()]
+        fleet_states = [FleetState.from_tortoise(x) for x in await ttm.FleetState.all()]
         initial_states = {s.name: s for s in fleet_states}
 
-        fleet_states = await self.repo.query_fleet_states() if self.repo else []
         subjects: Dict[str, Subject] = {}
         for fleet_state in initial_states.values():
             fleet_state: FleetState

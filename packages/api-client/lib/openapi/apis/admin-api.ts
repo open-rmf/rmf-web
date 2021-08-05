@@ -20,7 +20,6 @@ import { HTTPValidationError } from '../models';
 import { ModelObject } from '../models';
 import { Permission } from '../models';
 import { PostMakeAdmin } from '../models';
-import { PostRolePermissions } from '../models';
 import { PostRoles } from '../models';
 import { PostUsers } from '../models';
 import { User } from '../models';
@@ -33,13 +32,13 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
     /**
      * Add a permission to a role
      * @summary Add Role Permission
-     * @param {PostRolePermissions} body
+     * @param {Permission} body
      * @param {string} role
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     addRolePermissionAdminRolesRolePermissionsPost: async (
-      body: PostRolePermissions,
+      body: Permission,
       role: string,
       options: any = {},
     ): Promise<RequestArgs> => {
@@ -329,75 +328,6 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
       };
     },
     /**
-     * Delete a permission from a role
-     * @summary Delete Role Permission
-     * @param {PostRolePermissions} body
-     * @param {string} role
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    deleteRolePermissionAdminRolesRolePermissionsDelete: async (
-      body: PostRolePermissions,
-      role: string,
-      options: any = {},
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'body' is not null or undefined
-      if (body === null || body === undefined) {
-        throw new RequiredError(
-          'body',
-          'Required parameter body was null or undefined when calling deleteRolePermissionAdminRolesRolePermissionsDelete.',
-        );
-      }
-      // verify required parameter 'role' is not null or undefined
-      if (role === null || role === undefined) {
-        throw new RequiredError(
-          'role',
-          'Required parameter role was null or undefined when calling deleteRolePermissionAdminRolesRolePermissionsDelete.',
-        );
-      }
-      const localVarPath = `/admin/roles/{role}/permissions`.replace(
-        `{${'role'}}`,
-        encodeURIComponent(String(role)),
-      );
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, 'https://example.com');
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-      const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      localVarHeaderParameter['Content-Type'] = 'application/json';
-
-      const query = new URLSearchParams(localVarUrlObj.search);
-      for (const key in localVarQueryParameter) {
-        query.set(key, localVarQueryParameter[key]);
-      }
-      for (const key in options.query) {
-        query.set(key, options.query[key]);
-      }
-      localVarUrlObj.search = new URLSearchParams(query).toString();
-      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers,
-      };
-      const needsSerialization =
-        typeof body !== 'string' ||
-        localVarRequestOptions.headers['Content-Type'] === 'application/json';
-      localVarRequestOptions.data = needsSerialization
-        ? JSON.stringify(body !== undefined ? body : {})
-        : body || '';
-
-      return {
-        url: localVarUrlObj.pathname + localVarUrlObj.search + localVarUrlObj.hash,
-        options: localVarRequestOptions,
-      };
-    },
-    /**
      * Delete a user  This only performs a soft delete, while the user is deleted from the app database, it still exists in the idp so they can still log in, the user will then be re-created with the default permissions.
      * @summary Delete User
      * @param {string} username
@@ -452,34 +382,33 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
     /**
      * Remove role from a user
      * @summary Delete User Role
-     * @param {PostRoles} body
      * @param {string} username
+     * @param {string} role
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    deleteUserRoleAdminUsersUsernameRolesDelete: async (
-      body: PostRoles,
+    deleteUserRoleAdminUsersUsernameRolesRoleDelete: async (
       username: string,
+      role: string,
       options: any = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'body' is not null or undefined
-      if (body === null || body === undefined) {
-        throw new RequiredError(
-          'body',
-          'Required parameter body was null or undefined when calling deleteUserRoleAdminUsersUsernameRolesDelete.',
-        );
-      }
       // verify required parameter 'username' is not null or undefined
       if (username === null || username === undefined) {
         throw new RequiredError(
           'username',
-          'Required parameter username was null or undefined when calling deleteUserRoleAdminUsersUsernameRolesDelete.',
+          'Required parameter username was null or undefined when calling deleteUserRoleAdminUsersUsernameRolesRoleDelete.',
         );
       }
-      const localVarPath = `/admin/users/{username}/roles`.replace(
-        `{${'username'}}`,
-        encodeURIComponent(String(username)),
-      );
+      // verify required parameter 'role' is not null or undefined
+      if (role === null || role === undefined) {
+        throw new RequiredError(
+          'role',
+          'Required parameter role was null or undefined when calling deleteUserRoleAdminUsersUsernameRolesRoleDelete.',
+        );
+      }
+      const localVarPath = `/admin/users/{username}/roles/{role}`
+        .replace(`{${'username'}}`, encodeURIComponent(String(username)))
+        .replace(`{${'role'}}`, encodeURIComponent(String(role)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, 'https://example.com');
       let baseOptions;
@@ -489,8 +418,6 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
       const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
-
-      localVarHeaderParameter['Content-Type'] = 'application/json';
 
       const query = new URLSearchParams(localVarUrlObj.search);
       for (const key in localVarQueryParameter) {
@@ -506,12 +433,6 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
         ...headersFromBaseOptions,
         ...options.headers,
       };
-      const needsSerialization =
-        typeof body !== 'string' ||
-        localVarRequestOptions.headers['Content-Type'] === 'application/json';
-      localVarRequestOptions.data = needsSerialization
-        ? JSON.stringify(body !== undefined ? body : {})
-        : body || '';
 
       return {
         url: localVarUrlObj.pathname + localVarUrlObj.search + localVarUrlObj.hash,
@@ -800,6 +721,75 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
       };
     },
     /**
+     * Delete a permission from a role
+     * @summary Remove Role Permission
+     * @param {Permission} body
+     * @param {string} role
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    removeRolePermissionAdminRolesRolePermissionsRemovePost: async (
+      body: Permission,
+      role: string,
+      options: any = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'body' is not null or undefined
+      if (body === null || body === undefined) {
+        throw new RequiredError(
+          'body',
+          'Required parameter body was null or undefined when calling removeRolePermissionAdminRolesRolePermissionsRemovePost.',
+        );
+      }
+      // verify required parameter 'role' is not null or undefined
+      if (role === null || role === undefined) {
+        throw new RequiredError(
+          'role',
+          'Required parameter role was null or undefined when calling removeRolePermissionAdminRolesRolePermissionsRemovePost.',
+        );
+      }
+      const localVarPath = `/admin/roles/{role}/permissions/remove`.replace(
+        `{${'role'}}`,
+        encodeURIComponent(String(role)),
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, 'https://example.com');
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      const query = new URLSearchParams(localVarUrlObj.search);
+      for (const key in localVarQueryParameter) {
+        query.set(key, localVarQueryParameter[key]);
+      }
+      for (const key in options.query) {
+        query.set(key, options.query[key]);
+      }
+      localVarUrlObj.search = new URLSearchParams(query).toString();
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      const needsSerialization =
+        typeof body !== 'string' ||
+        localVarRequestOptions.headers['Content-Type'] === 'application/json';
+      localVarRequestOptions.data = needsSerialization
+        ? JSON.stringify(body !== undefined ? body : {})
+        : body || '';
+
+      return {
+        url: localVarUrlObj.pathname + localVarUrlObj.search + localVarUrlObj.hash,
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      * Set the roles of a user
      * @summary Set User Roles
      * @param {Array&lt;PostRoles&gt;} body
@@ -880,13 +870,13 @@ export const AdminApiFp = function (configuration?: Configuration) {
     /**
      * Add a permission to a role
      * @summary Add Role Permission
-     * @param {PostRolePermissions} body
+     * @param {Permission} body
      * @param {string} role
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async addRolePermissionAdminRolesRolePermissionsPost(
-      body: PostRolePermissions,
+      body: Permission,
       role: string,
       options?: any,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ModelObject>> {
@@ -992,30 +982,6 @@ export const AdminApiFp = function (configuration?: Configuration) {
       };
     },
     /**
-     * Delete a permission from a role
-     * @summary Delete Role Permission
-     * @param {PostRolePermissions} body
-     * @param {string} role
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async deleteRolePermissionAdminRolesRolePermissionsDelete(
-      body: PostRolePermissions,
-      role: string,
-      options?: any,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ModelObject>> {
-      const localVarAxiosArgs = await AdminApiAxiosParamCreator(
-        configuration,
-      ).deleteRolePermissionAdminRolesRolePermissionsDelete(body, role, options);
-      return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
-        const axiosRequestArgs = {
-          ...localVarAxiosArgs.options,
-          url: basePath + localVarAxiosArgs.url,
-        };
-        return axios.request(axiosRequestArgs);
-      };
-    },
-    /**
      * Delete a user  This only performs a soft delete, while the user is deleted from the app database, it still exists in the idp so they can still log in, the user will then be re-created with the default permissions.
      * @summary Delete User
      * @param {string} username
@@ -1040,19 +1006,19 @@ export const AdminApiFp = function (configuration?: Configuration) {
     /**
      * Remove role from a user
      * @summary Delete User Role
-     * @param {PostRoles} body
      * @param {string} username
+     * @param {string} role
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async deleteUserRoleAdminUsersUsernameRolesDelete(
-      body: PostRoles,
+    async deleteUserRoleAdminUsersUsernameRolesRoleDelete(
       username: string,
+      role: string,
       options?: any,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ModelObject>> {
       const localVarAxiosArgs = await AdminApiAxiosParamCreator(
         configuration,
-      ).deleteUserRoleAdminUsersUsernameRolesDelete(body, username, options);
+      ).deleteUserRoleAdminUsersUsernameRolesRoleDelete(username, role, options);
       return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
         const axiosRequestArgs = {
           ...localVarAxiosArgs.options,
@@ -1180,6 +1146,30 @@ export const AdminApiFp = function (configuration?: Configuration) {
       };
     },
     /**
+     * Delete a permission from a role
+     * @summary Remove Role Permission
+     * @param {Permission} body
+     * @param {string} role
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async removeRolePermissionAdminRolesRolePermissionsRemovePost(
+      body: Permission,
+      role: string,
+      options?: any,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ModelObject>> {
+      const localVarAxiosArgs = await AdminApiAxiosParamCreator(
+        configuration,
+      ).removeRolePermissionAdminRolesRolePermissionsRemovePost(body, role, options);
+      return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
+        const axiosRequestArgs = {
+          ...localVarAxiosArgs.options,
+          url: basePath + localVarAxiosArgs.url,
+        };
+        return axios.request(axiosRequestArgs);
+      };
+    },
+    /**
      * Set the roles of a user
      * @summary Set User Roles
      * @param {Array&lt;PostRoles&gt;} body
@@ -1219,13 +1209,13 @@ export const AdminApiFactory = function (
     /**
      * Add a permission to a role
      * @summary Add Role Permission
-     * @param {PostRolePermissions} body
+     * @param {Permission} body
      * @param {string} role
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     addRolePermissionAdminRolesRolePermissionsPost(
-      body: PostRolePermissions,
+      body: Permission,
       role: string,
       options?: any,
     ): AxiosPromise<ModelObject> {
@@ -1287,23 +1277,6 @@ export const AdminApiFactory = function (
         .then((request) => request(axios, basePath));
     },
     /**
-     * Delete a permission from a role
-     * @summary Delete Role Permission
-     * @param {PostRolePermissions} body
-     * @param {string} role
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    deleteRolePermissionAdminRolesRolePermissionsDelete(
-      body: PostRolePermissions,
-      role: string,
-      options?: any,
-    ): AxiosPromise<ModelObject> {
-      return AdminApiFp(configuration)
-        .deleteRolePermissionAdminRolesRolePermissionsDelete(body, role, options)
-        .then((request) => request(axios, basePath));
-    },
-    /**
      * Delete a user  This only performs a soft delete, while the user is deleted from the app database, it still exists in the idp so they can still log in, the user will then be re-created with the default permissions.
      * @summary Delete User
      * @param {string} username
@@ -1318,18 +1291,18 @@ export const AdminApiFactory = function (
     /**
      * Remove role from a user
      * @summary Delete User Role
-     * @param {PostRoles} body
      * @param {string} username
+     * @param {string} role
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    deleteUserRoleAdminUsersUsernameRolesDelete(
-      body: PostRoles,
+    deleteUserRoleAdminUsersUsernameRolesRoleDelete(
       username: string,
+      role: string,
       options?: any,
     ): AxiosPromise<ModelObject> {
       return AdminApiFp(configuration)
-        .deleteUserRoleAdminUsersUsernameRolesDelete(body, username, options)
+        .deleteUserRoleAdminUsersUsernameRolesRoleDelete(username, role, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -1411,6 +1384,23 @@ export const AdminApiFactory = function (
         .then((request) => request(axios, basePath));
     },
     /**
+     * Delete a permission from a role
+     * @summary Remove Role Permission
+     * @param {Permission} body
+     * @param {string} role
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    removeRolePermissionAdminRolesRolePermissionsRemovePost(
+      body: Permission,
+      role: string,
+      options?: any,
+    ): AxiosPromise<ModelObject> {
+      return AdminApiFp(configuration)
+        .removeRolePermissionAdminRolesRolePermissionsRemovePost(body, role, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
      * Set the roles of a user
      * @summary Set User Roles
      * @param {Array&lt;PostRoles&gt;} body
@@ -1440,14 +1430,14 @@ export class AdminApi extends BaseAPI {
   /**
    * Add a permission to a role
    * @summary Add Role Permission
-   * @param {PostRolePermissions} body
+   * @param {Permission} body
    * @param {string} role
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AdminApi
    */
   public addRolePermissionAdminRolesRolePermissionsPost(
-    body: PostRolePermissions,
+    body: Permission,
     role: string,
     options?: any,
   ) {
@@ -1509,24 +1499,6 @@ export class AdminApi extends BaseAPI {
       .then((request) => request(this.axios, this.basePath));
   }
   /**
-   * Delete a permission from a role
-   * @summary Delete Role Permission
-   * @param {PostRolePermissions} body
-   * @param {string} role
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof AdminApi
-   */
-  public deleteRolePermissionAdminRolesRolePermissionsDelete(
-    body: PostRolePermissions,
-    role: string,
-    options?: any,
-  ) {
-    return AdminApiFp(this.configuration)
-      .deleteRolePermissionAdminRolesRolePermissionsDelete(body, role, options)
-      .then((request) => request(this.axios, this.basePath));
-  }
-  /**
    * Delete a user  This only performs a soft delete, while the user is deleted from the app database, it still exists in the idp so they can still log in, the user will then be re-created with the default permissions.
    * @summary Delete User
    * @param {string} username
@@ -1542,19 +1514,19 @@ export class AdminApi extends BaseAPI {
   /**
    * Remove role from a user
    * @summary Delete User Role
-   * @param {PostRoles} body
    * @param {string} username
+   * @param {string} role
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AdminApi
    */
-  public deleteUserRoleAdminUsersUsernameRolesDelete(
-    body: PostRoles,
+  public deleteUserRoleAdminUsersUsernameRolesRoleDelete(
     username: string,
+    role: string,
     options?: any,
   ) {
     return AdminApiFp(this.configuration)
-      .deleteUserRoleAdminUsersUsernameRolesDelete(body, username, options)
+      .deleteUserRoleAdminUsersUsernameRolesRoleDelete(username, role, options)
       .then((request) => request(this.axios, this.basePath));
   }
   /**
@@ -1635,6 +1607,24 @@ export class AdminApi extends BaseAPI {
   ) {
     return AdminApiFp(this.configuration)
       .makeAdminAdminUsersUsernameMakeAdminPost(body, username, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+  /**
+   * Delete a permission from a role
+   * @summary Remove Role Permission
+   * @param {Permission} body
+   * @param {string} role
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof AdminApi
+   */
+  public removeRolePermissionAdminRolesRolePermissionsRemovePost(
+    body: Permission,
+    role: string,
+    options?: any,
+  ) {
+    return AdminApiFp(this.configuration)
+      .removeRolePermissionAdminRolesRolePermissionsRemovePost(body, role, options)
       .then((request) => request(this.axios, this.basePath));
   }
   /**

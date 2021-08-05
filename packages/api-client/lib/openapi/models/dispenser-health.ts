@@ -14,25 +14,25 @@
 /**
  *
  * @export
- * @interface BasicHealth
+ * @interface DispenserHealth
  */
-export interface BasicHealth {
+export interface DispenserHealth {
   /**
    *
    * @type {string}
-   * @memberof BasicHealth
+   * @memberof DispenserHealth
+   */
+  health_status: any | null;
+  /**
+   *
+   * @type {string}
+   * @memberof DispenserHealth
+   */
+  health_message?: any | null;
+  /**
+   *
+   * @type {string}
+   * @memberof DispenserHealth
    */
   id_: any;
-  /**
-   *
-   * @type {string}
-   * @memberof BasicHealth
-   */
-  health_status: any;
-  /**
-   *
-   * @type {string}
-   * @memberof BasicHealth
-   */
-  health_message?: any;
 }

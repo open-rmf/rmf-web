@@ -14,19 +14,25 @@
 /**
  *
  * @export
- * @interface PostRolePermissions
+ * @interface DoorHealth
  */
-export interface PostRolePermissions {
+export interface DoorHealth {
   /**
    *
    * @type {string}
-   * @memberof PostRolePermissions
+   * @memberof DoorHealth
    */
-  action: any;
+  health_status: any | null;
   /**
    *
    * @type {string}
-   * @memberof PostRolePermissions
+   * @memberof DoorHealth
    */
-  authz_grp: any;
+  health_message?: any | null;
+  /**
+   *
+   * @type {string}
+   * @memberof DoorHealth
+   */
+  id_: any;
 }

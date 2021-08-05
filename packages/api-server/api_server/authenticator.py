@@ -1,4 +1,4 @@
-from typing import Awaitable, Callable
+from typing import Awaitable, Callable, Optional, Union
 
 import jwt
 from fastapi import Depends, HTTPException
@@ -12,7 +12,7 @@ class AuthenticationError(Exception):
 
 
 class JwtAuthenticator:
-    def __init__(self, pem_file: str, aud: str, iss: str):
+    def __init__(self, pem_file: str, aud: str, iss: str, *, oidc_url: str = ""):
         """
         Authenticates with a JWT token, the client must send an auth params with
         a "token" key.
@@ -20,6 +20,7 @@ class JwtAuthenticator:
         """
         self.aud = aud
         self.iss = iss
+        self.oidc_url = oidc_url
         with open(pem_file, "br") as f:
             self._public_key = f.read()
 
@@ -32,7 +33,9 @@ class JwtAuthenticator:
         username = claims["preferred_username"]
         return await User.load_from_db(username)
 
-    async def verify_token(self, token: str) -> User:
+    async def verify_token(self, token: Optional[str]) -> User:
+        if not token:
+            raise AuthenticationError("authentication required")
         try:
             claims = jwt.decode(
                 token,
@@ -45,9 +48,9 @@ class JwtAuthenticator:
         except jwt.InvalidTokenError as e:
             raise AuthenticationError(str(e)) from e
 
-    def fastapi_dep(self, oidc_url: str) -> Callable[..., Awaitable[User]]:
+    def fastapi_dep(self) -> Callable[..., Union[Awaitable[User], User]]:
         async def dep(
-            auth_header: str = Depends(OpenIdConnect(openIdConnectUrl=oidc_url)),
+            auth_header: str = Depends(OpenIdConnect(openIdConnectUrl=self.oidc_url)),
         ):
             parts = auth_header.split(" ")
             if len(parts) != 2 or parts[0].lower() != "bearer":
@@ -58,3 +61,14 @@ class JwtAuthenticator:
                 raise HTTPException(401, str(e)) from e
 
         return dep
+
+
+class StubAuthenticator(JwtAuthenticator):
+    def __init__(self):  # pylint: disable=super-init-not-called
+        self._user = User(username="stub", is_admin=True)
+
+    async def verify_token(self, token: Optional[str]) -> User:
+        return self._user
+
+    def fastapi_dep(self) -> Callable[..., Union[Awaitable[User], User]]:
+        return lambda: self._user
