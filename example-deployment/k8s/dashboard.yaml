@@ -5,7 +5,7 @@ metadata:
   labels:
     app: dashboard
 spec:
-  type: LoadBalancer
+  #type: LoadBalancer
   selector:
     app: dashboard
   ports:
