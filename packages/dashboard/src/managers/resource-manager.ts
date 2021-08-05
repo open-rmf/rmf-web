@@ -16,8 +16,8 @@ interface ResourceManagersProps extends ResourceConfigurationsType {
 
 export default class ResourceManager {
   robots: RobotResourceManager;
-  dispensers: DispenserResourceManager | undefined;
-  logos: LogoResourceManager | undefined;
+  dispensers?: DispenserResourceManager;
+  logos?: LogoResourceManager;
 
   static getResourceConfigurationFile = async (): Promise<ResourceManager | undefined> => {
     try {
@@ -43,13 +43,13 @@ export default class ResourceManager {
       return {} as ResourceManager;
     }
 
-    if (resources?.dispensers && !Object.keys(resources.dispensers).length) {
+    if (resources.dispensers && !Object.keys(resources.dispensers).length) {
       const data = Object.assign({}, resources);
       delete data['dispensers'];
       return new ResourceManager(data as ResourceManagersProps);
     }
 
-    if (resources?.logos && !Object.keys(resources.logos).length) {
+    if (resources.logos && !Object.keys(resources.logos).length) {
       const data = Object.assign({}, resources);
       delete data['logos'];
       return new ResourceManager(data as ResourceManagersProps);
