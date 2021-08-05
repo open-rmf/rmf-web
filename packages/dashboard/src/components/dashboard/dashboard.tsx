@@ -16,6 +16,8 @@ import {
   SimpleFilter,
   useStackNavigator,
   withSpotlight,
+  DoorPanel,
+  DetailedDoor,
 } from 'react-components';
 import { GlobalHotKeys } from 'react-hotkeys';
 import * as RmfModels from 'rmf-models';
@@ -33,6 +35,7 @@ import MainMenu from './main-menu';
 import NegotiationsPanel from './negotiations-panel';
 import OmniPanelControl_ from './omnipanel-control';
 import { DashboardState, useDashboardReducer } from './reducers/dashboard-reducer';
+import { door } from './tests/items';
 
 const debug = Debug('Dashboard');
 const DispenserAccordion = React.memo(withSpotlight(DispenserAccordion_));
@@ -86,6 +89,13 @@ const useStyles = makeStyles((theme) => ({
       borderTopRightRadius: borderRadius,
       boxShadow: theme.shadows[12],
     },
+  },
+  buildingPanel: {
+    display: 'flex',
+    height: '100%',
+  },
+  itemPanels: {
+    width: '900px',
   },
 }));
 
@@ -161,10 +171,14 @@ export default function Dashboard(_props: {}): React.ReactElement {
   }, [viewStackDispatch]);
 
   const [doorStates, setDoorStates] = React.useState<Record<string, RmfModels.DoorState>>({});
-  const doors: RmfModels.Door[] = React.useMemo(
-    () => (buildingMap ? (buildingMap.levels as Level[]).flatMap((x) => x.doors) : []),
-    [buildingMap],
-  );
+  const doors: DetailedDoor[] = React.useMemo(() => {
+    return buildingMap
+      ? (buildingMap.levels as Level[]).flatMap((x) =>
+          (x.doors as RmfModels.Door[]).map((door) => ({ ...door, level: x.name })),
+        )
+      : [];
+  }, [buildingMap]);
+
   React.useEffect(() => {
     if (!sioClient) return;
     const subs = doors.map((d) =>
@@ -381,7 +395,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   return (
     <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
       {buildingMap && (
-        <>
+        <div className={classes.buildingPanel}>
           <ScheduleVisualizer
             buildingMap={buildingMap}
             doorStates={doorStates}
@@ -395,101 +409,17 @@ export default function Dashboard(_props: {}): React.ReactElement {
             onRobotClick={handleRobotMarkerClick}
             onDispenserClick={handleWorkcellMarkerClick}
           >
-            <OmniPanelControl show={!showOmniPanel} dashboardDispatch={dashboardDispatch} />
+            {/* <OmniPanelControl show={!showOmniPanel} dashboardDispatch={dashboardDispatch} /> */}
           </ScheduleVisualizer>
-        </>
-      )}
-      <Fade in={showOmniPanel}>
-        <OmniPanel
-          className={classes.omniPanel}
-          stack={viewStack}
-          variant="backHomeClose"
-          onBack={handleOmniPanelBack}
-          onHome={handleOmniPanelHome}
-          onClose={handleOmniPanelClose}
-          id="omnipanel"
-        >
-          <OmniPanelView viewId={OmniPanelViewIndex.MainMenu}>
-            <MainMenu pushView={viewStackDispatch.push} setFilter={() => setFilter('')} />
-          </OmniPanelView>
-          <OmniPanelView viewId={OmniPanelViewIndex.Doors}>
-            <SimpleFilter onChange={onChange} value={filter} />
-            {doors.map((door) => {
-              const toLower = door.name.toLowerCase();
-              return toLower.includes(filter) ? (
-                <DoorAccordion
-                  key={door.name}
-                  ref={doorAccordionRefs[door.name].ref}
-                  door={door}
-                  doorState={doorStates[door.name]}
-                  onDoorControlClick={handleOnDoorControlClick}
-                  data-name={door.name}
-                />
-              ) : null;
-            })}
-          </OmniPanelView>
-          <OmniPanelView viewId={OmniPanelViewIndex.Lifts}>
-            <SimpleFilter onChange={onChange} value={filter} />
-            {lifts.map((lift) => {
-              const toLower = lift.name.toLowerCase();
-              return toLower.includes(filter) ? (
-                <LiftAccordion
-                  key={lift.name}
-                  ref={liftAccordionRefs[lift.name].ref}
-                  lift={lift}
-                  liftState={liftStates[lift.name]}
-                  onRequestSubmit={handleLiftRequestSubmit}
-                />
-              ) : null;
-            })}
-          </OmniPanelView>
-          <OmniPanelView viewId={OmniPanelViewIndex.Robots}>
-            <SimpleFilter onChange={onChange} value={filter} />
-            {fleets.flatMap((fleet) =>
-              (fleet.state.robots as RmfModels.RobotState[]).map((robot) => {
-                const toLower = robot.name;
-                return toLower.includes(filter) ? (
-                  <RobotAccordion
-                    key={robotKey(fleet.name, robot.name)}
-                    ref={robotAccordionRefs[robotKey(fleet.name, robot.name)].ref}
-                    robot={robot}
-                    fleetName={fleet.name}
-                    data-component="RobotAccordion"
-                  />
-                ) : null;
-              }),
-            )}
-          </OmniPanelView>
-          <OmniPanelView viewId={OmniPanelViewIndex.Dispensers}>
-            <SimpleFilter onChange={onChange} value={filter} />
-            {workcells.map((workcell) => {
-              const toLower = workcell.guid.toLowerCase();
-              return toLower.includes(filter) ? (
-                <DispenserAccordion
-                  key={workcell.guid}
-                  ref={workcellAccordionRefs[workcell.guid].ref}
-                  dispenserState={
-                    workcellStates[workcell.guid] ? workcellStates[workcell.guid] : null
-                  }
-                  data-component="DispenserAccordion"
-                  dispenser={workcell.guid}
-                />
-              ) : null;
-            })}
-          </OmniPanelView>
-          <OmniPanelView viewId={OmniPanelViewIndex.Negotiations}>
-            <NegotiationsPanel
-              conflicts={negotiationStatus}
-              spotlight={negotiationSpotlight}
-              mapFloorLayerSorted={mapFloorLayerSorted}
-              negotiationStatusManager={negotiationStatusManager}
-              negotiationTrajStore={negotiationTrajStore}
-              negotiationStatusUpdateTS={statusUpdateTS.current}
-              setNegotiationTrajStore={setNegotiationTrajStore}
+          <div className={classes.itemPanels}>
+            <DoorPanel
+              doors={doors}
+              doorStates={doorStates}
+              onDoorControlClick={handleOnDoorControlClick}
             />
-          </OmniPanelView>
-        </OmniPanel>
-      </Fade>
+          </div>
+        </div>
+      )}
     </GlobalHotKeys>
   );
 }
