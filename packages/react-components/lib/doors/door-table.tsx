@@ -58,7 +58,13 @@ const TaskRow = (props: DoorInfoProps) => {
         onMouseOut={() => setHover(false)}
       >
         <TableCell>{door.name}</TableCell>
-        <TableCell>{getOpMode(doorState)}</TableCell>
+        <TableCell
+          className={
+            getOpMode(doorState) === 'Offline' ? classes.doorLabelClosed : classes.doorLabelOpen
+          }
+        >
+          {getOpMode(doorState)}
+        </TableCell>
         <TableCell>{door.level}</TableCell>
         <TableCell>{doorTypeToString(door.door_type)}</TableCell>
         <TableCell className={doorStatusClass}>{doorModeToString(doorState)}</TableCell>
