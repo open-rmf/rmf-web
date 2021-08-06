@@ -3,9 +3,9 @@ import { DefaultReportQueryPayload, DoorStateReport, DoorStateRowsType } from 'r
 import appConfig from '../../app-config';
 import { AuthenticatorContext } from '../auth-contexts';
 import { getLogData } from './utils';
-import { ConfigProps } from 'react-components';
+import { ReportConfigProps } from 'react-components';
 
-const DoorStateReportConfig = (props: ConfigProps) => {
+const DoorStateReportConfig = (props: ReportConfigProps) => {
   const authenticator = React.useContext(AuthenticatorContext);
   const getLogs = async (params: DefaultReportQueryPayload): Promise<DoorStateRowsType> => {
     return (await getLogData(

@@ -1,6 +1,6 @@
 import React from 'react';
 import { BuildMenuType } from './reporter-side-bar-structure';
-import { ConfigProps } from 'react-components';
+import { ReportConfigProps } from 'react-components';
 
 import clsx from 'clsx';
 import { makeStyles, useTheme, Theme } from '@material-ui/core/styles';
@@ -110,7 +110,7 @@ export const ReportDashboard = (props: ReportDashboardProps) => {
     setToLogDate(date);
   }, []);
 
-  const itemConfig = (props: ConfigProps): JSX.Element | null => {
+  const itemConfig = (props: ReportConfigProps): JSX.Element | null => {
     if (Object.prototype.hasOwnProperty.call(reportContainer, currentReport)) {
       switch (currentReport) {
         case Reports.queryAllLogs:

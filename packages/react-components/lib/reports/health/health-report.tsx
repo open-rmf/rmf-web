@@ -2,9 +2,9 @@ import React from 'react';
 import { DefaultReportQueryPayload, defaultReportStyles } from '../default-report-interface';
 import { DefaultDatesForm } from '../default-dates-form';
 import { HealthReportTable, HealthRowsType } from './health-report-table';
-import { ConfigProps } from '../utils';
+import { ReportConfigProps } from '../utils';
 
-export interface HealthReportProps extends ConfigProps {
+export interface HealthReportProps extends ReportConfigProps {
   getLogs: (data: DefaultReportQueryPayload) => Promise<HealthRowsType>;
 }
 

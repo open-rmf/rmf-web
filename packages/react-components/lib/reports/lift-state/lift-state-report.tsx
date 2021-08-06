@@ -2,9 +2,9 @@ import React from 'react';
 import { DefaultReportQueryPayload, defaultReportStyles } from '../default-report-interface';
 import { DefaultDatesForm } from '../default-dates-form';
 import { LiftStateReportTable, LiftStateRowsType } from './lift-state-report-table';
-import { ConfigProps } from '../utils';
+import { ReportConfigProps } from '../utils';
 
-export interface LiftStateReportProps extends ConfigProps {
+export interface LiftStateReportProps extends ReportConfigProps {
   getLogs: (data: DefaultReportQueryPayload) => Promise<LiftStateRowsType>;
 }
 

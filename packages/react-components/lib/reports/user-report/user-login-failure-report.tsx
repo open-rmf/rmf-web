@@ -5,9 +5,9 @@ import {
   UserLoginFailureReportTable,
   UserLoginFailureRowsType,
 } from './user-login-failure-report-table';
-import { ConfigProps } from '../utils';
+import { ReportConfigProps } from '../utils';
 
-export interface UserLoginFailureReportProps extends ConfigProps {
+export interface UserLoginFailureReportProps extends ReportConfigProps {
   getLogs: (data: DefaultReportQueryPayload) => Promise<UserLoginFailureRowsType>;
 }
 

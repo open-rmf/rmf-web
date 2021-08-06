@@ -9,7 +9,7 @@ import TaskSummaryReportConfig from './reports/task-summary-report';
 import UserLoginFailureReportConfig from './reports/user-login-failure-report';
 import UserLoginReportConfig from './reports/user-login-report';
 import UserLogoutReportConfig from './reports/user-logout-report';
-import { ConfigProps } from 'react-components';
+import { ReportConfigProps } from 'react-components';
 
 export enum Reports {
   queryAllLogs = 'queryAllLogs',
@@ -36,7 +36,7 @@ export enum Reports {
  * Report dictionary with it associated component
  */
 
-export const ReportContainer: Record<string, (props: ConfigProps) => JSX.Element> = {
+export const ReportContainer: Record<string, (props: ReportConfigProps) => JSX.Element> = {
   [Reports.queryAllLogs]: AllLogsReport,
   [Reports.showDispenserStateReport]: DispenserStateReportConfig,
   [Reports.showDoorStateReport]: DoorStateReportConfig,

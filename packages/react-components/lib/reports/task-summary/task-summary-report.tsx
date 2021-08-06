@@ -2,9 +2,9 @@ import React from 'react';
 import { DefaultReportQueryPayload, defaultReportStyles } from '../default-report-interface';
 import { DefaultDatesForm } from '../default-dates-form';
 import { TaskSummaryReportTable, TaskSummaryRowsType } from './task-summary-report-table';
-import { ConfigProps } from '../utils';
+import { ReportConfigProps } from '../utils';
 
-export interface TaskSummaryReportProps extends ConfigProps {
+export interface TaskSummaryReportProps extends ReportConfigProps {
   getLogs: (data: DefaultReportQueryPayload) => Promise<TaskSummaryRowsType>;
 }
 

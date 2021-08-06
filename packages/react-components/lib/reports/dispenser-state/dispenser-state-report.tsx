@@ -2,9 +2,9 @@ import React from 'react';
 import { DefaultReportQueryPayload, defaultReportStyles } from '../default-report-interface';
 import { DefaultDatesForm } from '../default-dates-form';
 import { DispenserStateReportTable, DispenserStateRowsType } from './dispenser-state-report-table';
-import { ConfigProps } from '../utils';
+import { ReportConfigProps } from '../utils';
 
-export interface DispenserStateReportProps extends ConfigProps {
+export interface DispenserStateReportProps extends ReportConfigProps {
   getLogs: (data: DefaultReportQueryPayload) => Promise<DispenserStateRowsType>;
 }
 

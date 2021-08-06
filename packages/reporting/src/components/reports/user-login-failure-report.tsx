@@ -7,9 +7,9 @@ import {
 import appConfig from '../../app-config';
 import { AuthenticatorContext } from '../auth-contexts';
 import { getLogData } from './utils';
-import { ConfigProps } from 'react-components';
+import { ReportConfigProps } from 'react-components';
 
-const UserLoginFailureReportConfig = (props: ConfigProps) => {
+const UserLoginFailureReportConfig = (props: ReportConfigProps) => {
   const authenticator = React.useContext(AuthenticatorContext);
   const getLogs = async (params: DefaultReportQueryPayload): Promise<UserLoginFailureRowsType> => {
     return (await getLogData(

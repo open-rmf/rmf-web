@@ -2,9 +2,9 @@ import React from 'react';
 import { DefaultReportQueryPayload, defaultReportStyles } from '../default-report-interface';
 import { DefaultDatesForm } from '../default-dates-form';
 import { FleetStateReportTable, FleetStateRowsType } from './fleet-state-report-table';
-import { ConfigProps } from '../utils';
+import { ReportConfigProps } from '../utils';
 
-export interface FleetStateReportProps extends ConfigProps {
+export interface FleetStateReportProps extends ReportConfigProps {
   getLogs: (data: DefaultReportQueryPayload) => Promise<FleetStateRowsType>;
 }
 

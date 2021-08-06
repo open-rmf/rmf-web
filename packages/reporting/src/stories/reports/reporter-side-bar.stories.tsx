@@ -3,7 +3,7 @@ import { LogManagement } from 'react-components';
 import { ReportDashboard } from '../../components/report-dashboard';
 import { Reports } from '../../components/report-list';
 import { buildReportMenuStructure } from '../../components/reporter-side-bar-structure';
-import { ConfigProps } from 'react-components';
+import { ReportConfigProps } from 'react-components';
 
 export default {
   title: 'Reports',
@@ -35,7 +35,7 @@ const getLogs = () => {
 const getLogsPromise = async () => getLogs();
 const getLabelsPromise = async () => getLogLabels();
 
-const ReportContainer: Record<string, (props: ConfigProps) => JSX.Element> = {
+const ReportContainer: Record<string, (props: ReportConfigProps) => JSX.Element> = {
   [Reports.queryAllLogs]: () => (
     <LogManagement getLogs={getLogsPromise} getLabels={getLabelsPromise} />
   ),

@@ -3,8 +3,8 @@ import { DefaultReportQueryPayload, defaultReportStyles } from '../default-repor
 import { DefaultDatesForm } from '../default-dates-form';
 import { UserLoginReportTable, UserLoginRowsType } from './user-login-report-table';
 
-import { ConfigProps } from '../utils';
-export interface UserLoginReportProps extends ConfigProps {
+import { ReportConfigProps } from '../utils';
+export interface UserLoginReportProps extends ReportConfigProps {
   getLogs: (data: DefaultReportQueryPayload) => Promise<UserLoginRowsType>;
 }
 

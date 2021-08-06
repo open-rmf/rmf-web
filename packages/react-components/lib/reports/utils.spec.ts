@@ -7,7 +7,7 @@ import {
   LiftStateRowsType,
   TaskSummaryRowsType,
 } from '.';
-import { ConfigProps } from './utils';
+import { ReportConfigProps } from './utils';
 
 const timestamp = new Date('Mon Jan  1 00:00:02 UTC 2001').toISOString();
 
@@ -125,7 +125,7 @@ export const getTaskSummaryLogs = (): TaskSummaryRowsType => {
   return rows;
 };
 
-export const configProps: ConfigProps = {
+export const reportConfigProps: ReportConfigProps = {
   toLogDate: new Date(),
   fromLogDate: new Date(),
   onSelectFromDate: (date: Date) => {},
