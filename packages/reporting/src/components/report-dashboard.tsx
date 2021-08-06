@@ -162,13 +162,6 @@ export const ReportDashboard = (props: ReportDashboardProps) => {
     headerTitle();
   });
 
-  const setReport = React.useCallback(
-    (report: Reports) => {
-      setCurrentReport(report);
-    },
-    [setCurrentReport],
-  );
-
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -259,7 +252,7 @@ export const ReportDashboard = (props: ReportDashboardProps) => {
             </div>
 
             <Divider />
-            <MultiLevelMenu menuStructure={buildMenuReportStructure(setReport)} />
+            <MultiLevelMenu menuStructure={buildMenuReportStructure(setCurrentReport)} />
           </>
         )}
       </Drawer>
