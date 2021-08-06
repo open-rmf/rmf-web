@@ -57,6 +57,10 @@ spec:
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: rmf-server-db
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
       volumes:
         - name: rmf-server-db
           persistentVolumeClaim:

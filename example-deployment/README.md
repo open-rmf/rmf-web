@@ -481,3 +481,19 @@ If you can connect to rmf, there is a chance that there is some discovery issues
 .bin/minikube kubectl -- delete -f k8s/rmf-server.yaml
 .bin/minikube kubectl -- apply -f k8s/rmf-server.yaml
 ```
+
+## Some containers crashes at first startup
+
+Some deployments like the rmf-server may crash on the first startup, this is often due to the database not being ready yet. This is normal and kubernetes will automatically restart the container.
+
+One solution is to add an init container to probe for the readiness of the database, but this comes at a small cost which is not normally expected to happen in an actual deployment. It is also not fail proof as there is no guarantee that
+
+1. the probe succeeding means that service is definitely ready, this is often the case for tcp connection test probes.
+2. the service remains available between the time when the probe succeeds and the pod being created.
+
+If you want to avoid cluttering the logs with the initial crash (which should only happen in development), the recommended solution is to modify the deploy scripts to wait for the database to be ready before deploying the app.
+
+```bash
+kubectl apply -f k8s/rmf-server.yaml -ltier=db && kubectl wait deploy/rmf-server-db --for=condition=available
+kubectl apply -f k8s/rmf-server.yaml -ltier=app
+```
