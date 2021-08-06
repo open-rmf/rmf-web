@@ -77,7 +77,7 @@ export const DoorTable = (props: DoorPanelAndTableProps) => {
   const { doors, doorStates, onDoorControlClick } = props;
 
   return (
-    <Table stickyHeader size="small">
+    <Table stickyHeader size="small" aria-label="door-table">
       <TableHead>
         <TableRow>
           <TableCell>Door Name</TableCell>

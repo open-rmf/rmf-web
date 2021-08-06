@@ -78,13 +78,13 @@ const DoorCell = (props: DoorInfoProps): JSX.Element => {
       <Typography variant="body1" align="center">
         {door.name}
       </Typography>
-      <Grid container direction="row">
-        <Grid item xs={6} spacing={1}>
+      <Grid container direction="row" spacing={1}>
+        <Grid item xs={6}>
           <Typography variant="body2" align="center">
             {door.level}
           </Typography>
         </Grid>
-        <Grid item xs={6} spacing={1}>
+        <Grid item xs={6}>
           <Typography className={doorStatusClass} variant="body2" align="center">
             {doorModeToString(doorState)}
           </Typography>
@@ -96,6 +96,7 @@ const DoorCell = (props: DoorInfoProps): JSX.Element => {
       <div className={classes.buttonGroup}>
         <ButtonGroup size="small">
           <Button
+            aria-label={`${door.name}_open`}
             onClick={(ev) =>
               onDoorControlClick && onDoorControlClick(ev, door, RmfModels.DoorMode.MODE_OPEN)
             }
@@ -103,6 +104,7 @@ const DoorCell = (props: DoorInfoProps): JSX.Element => {
             Open
           </Button>
           <Button
+            aria-label={`${door.name}_close`}
             onClick={(ev) =>
               onDoorControlClick && onDoorControlClick(ev, door, RmfModels.DoorMode.MODE_CLOSED)
             }
@@ -127,15 +129,19 @@ export function DoorPanel(props: DoorPanelAndTableProps) {
         <IconButton className={classes.itemIcon}>
           <FilterListIcon />
         </IconButton>
-        <IconButton className={classes.itemIcon} onClick={() => setIsCellView(!isCellView)}>
+        <IconButton
+          aria-label="view-mode"
+          className={classes.itemIcon}
+          onClick={() => setIsCellView(!isCellView)}
+        >
           {isCellView ? <ViewListIcon /> : <ViewModuleIcon />}
         </IconButton>
       </Paper>
       <Grid className={classes.grid} container direction="row" spacing={1}>
         {isCellView ? (
-          doors.map((door) => {
+          doors.map((door, i) => {
             return (
-              <Grid item xs={4}>
+              <Grid item xs={4} key={`${door.name}_${i}`}>
                 <DoorCell
                   door={door}
                   doorState={doorStates[door.name]}

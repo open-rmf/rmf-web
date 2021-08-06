@@ -45,7 +45,7 @@ export function allDoorModes(): RmfModels.DoorMode[] {
   ];
 }
 
-export const doors = [
+export const doors: RmfModels.Door[] = [
   {
     name: 'main_door',
     v1_x: 8.2,
@@ -86,9 +86,24 @@ export const doors = [
     motion_range: -1.571,
     motion_direction: 1,
   },
+  {
+    name: 'extra_door',
+    v1_x: 12.2,
+    v1_y: -2.7,
+    v2_x: 14.1,
+    v2_y: -2.7,
+    door_type: 1,
+    motion_range: -1.571,
+    motion_direction: 1,
+  },
 ];
 
 export const doorStates: Record<string, RmfModels.DoorState> = {
+  main_door: {
+    door_name: 'main_door',
+    current_mode: { value: -1 },
+    door_time: { sec: 0, nanosec: 0 },
+  },
   coe_door: {
     door_name: 'coe_door',
     current_mode: { value: RmfModels.DoorMode.MODE_OPEN },
