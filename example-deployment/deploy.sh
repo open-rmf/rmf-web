@@ -37,7 +37,7 @@ fi
 cd $(dirname $0)
 
 echo 'building base keycloak image...'
-docker build -t rmf-web/keycloak -f docker/keycloak/keycloak.dockerfile docker/keycloak/
+docker build -t rmf-web/keycloak -f docker/keycloak/keycloak.Dockerfile docker/keycloak/
 echo 'publishing keycloak image...'
 docker save rmf-web/keycloak | bash -c 'eval $(.bin/minikube docker-env) && docker load'
 echo 'deploying keycloak...'
@@ -59,11 +59,11 @@ kubectl create configmap jwt-pub-key --from-file=jwt-pub-key.pub -o=yaml --dry-r
 echo 'deploying Minio...'
 .bin/minikube kubectl -- apply -f k8s/minio.yaml
 
-echo 'building base rmf image...'
-docker build -t rmf-web/builder -f docker/builder.dockerfile $rmf_ws/src
+echo 'building base builder image...'
+./build-builder.sh "$rmf_web_ws"
 
 echo 'building rmf-server image...'
-docker build -t rmf-web/rmf-server -f docker/rmf-server.dockerfile $rmf_web_ws
+./build-rmf-server.sh "$rmf_ws" "$rmf_web_ws"
 echo 'publishing rmf-server image...'
 docker save rmf-web/rmf-server | bash -c 'eval $(.bin/minikube docker-env) && docker load'
 echo 'creating rmf-server configmap...'
@@ -72,14 +72,14 @@ echo 'deploying rmf-server...'
 kubectl apply -f k8s/rmf-server.yaml
 
 echo 'building dashboard image...'
-docker build -t rmf-web/dashboard -f docker/dashboard.dockerfile $rmf_web_ws
+docker build -t rmf-web/dashboard -f docker/dashboard.Dockerfile "$rmf_web_ws"
 echo 'publishing dashboard image...'
 docker save rmf-web/dashboard | bash -c 'eval $(.bin/minikube docker-env) && docker load'
 echo 'deploying dashboard...'
 kubectl apply -f k8s/dashboard.yaml
 
 echo 'building reporting-server image...'
-docker build -t rmf-web/reporting-server -f docker/reporting-server.dockerfile $rmf_web_ws
+docker build -t rmf-web/reporting-server -f docker/reporting-server.Dockerfile "$rmf_web_ws"
 echo 'publishing reporting-server image...'
 docker save rmf-web/reporting-server | bash -c 'eval $(.bin/minikube docker-env) && docker load'
 echo 'creating reporting-server configmap...'
@@ -89,7 +89,7 @@ kubectl apply -f k8s/reporting-server.yaml
 
 
 echo 'building reporting image...'
-docker build -t rmf-web/reporting -f docker/reporting.dockerfile $rmf_web_ws
+docker build -t rmf-web/reporting -f docker/reporting.Dockerfile "$rmf_web_ws"
 echo 'publishing reporting image...'
 docker save rmf-web/reporting | bash -c 'eval $(.bin/minikube docker-env) && docker load'
 echo 'deploying reporting-server...'
