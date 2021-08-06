@@ -13,7 +13,7 @@ const debug = Debug('Robots:RobotMarker');
 const useStyles = makeStyles(() => ({
   text: {
     dominantBaseline: 'central',
-    textAnchor: 'middle',
+    textAnchor: 'start',
     fontSize: '0.35px',
     fontWeight: 'bold',
     fill: 'white',
@@ -104,10 +104,10 @@ export const RobotMarker = React.forwardRef(
               ) : null}
             </g>
             <SvgText
-              x="1.5"
+              x="0.8"
               y="-0.8"
               text={name}
-              targetWidth={footprint * 3}
+              targetWidth={footprint * 8}
               className={classes.text}
             />
           </g>
