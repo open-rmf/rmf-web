@@ -14,55 +14,55 @@
 /**
  *
  * @export
- * @interface RobotState
+ * @interface ApiServerModelsRosPydanticRmfFleetMsgsRobotStateRobotState
  */
-export interface RobotState {
+export interface ApiServerModelsRosPydanticRmfFleetMsgsRobotStateRobotState {
   /**
    *
    * @type {string}
-   * @memberof RobotState
+   * @memberof ApiServerModelsRosPydanticRmfFleetMsgsRobotStateRobotState
    */
   name?: any;
   /**
    *
    * @type {string}
-   * @memberof RobotState
+   * @memberof ApiServerModelsRosPydanticRmfFleetMsgsRobotStateRobotState
    */
   model?: any;
   /**
    *
    * @type {string}
-   * @memberof RobotState
+   * @memberof ApiServerModelsRosPydanticRmfFleetMsgsRobotStateRobotState
    */
   task_id?: any;
   /**
    *
    * @type {number}
-   * @memberof RobotState
+   * @memberof ApiServerModelsRosPydanticRmfFleetMsgsRobotStateRobotState
    */
   seq?: any;
   /**
    *
    * @type {RobotMode}
-   * @memberof RobotState
+   * @memberof ApiServerModelsRosPydanticRmfFleetMsgsRobotStateRobotState
    */
   mode?: any;
   /**
    *
    * @type {number}
-   * @memberof RobotState
+   * @memberof ApiServerModelsRosPydanticRmfFleetMsgsRobotStateRobotState
    */
   battery_percent?: any;
   /**
    *
    * @type {Location}
-   * @memberof RobotState
+   * @memberof ApiServerModelsRosPydanticRmfFleetMsgsRobotStateRobotState
    */
   location?: any;
   /**
    *
    * @type {Array&lt;Location&gt;}
-   * @memberof RobotState
+   * @memberof ApiServerModelsRosPydanticRmfFleetMsgsRobotStateRobotState
    */
   path?: any;
 }

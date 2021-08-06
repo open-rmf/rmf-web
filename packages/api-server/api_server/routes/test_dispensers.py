@@ -1,27 +1,31 @@
-from rmf_dispenser_msgs.msg import DispenserState as RmfDispenserState
-
-from ..models import Dispenser
-from ..test.test_fixtures import RouteFixture, try_until
+from api_server.models import Dispenser
+from api_server.test import AppFixture, make_dispenser_state, try_until
 
 
-class TestDispensersRoute(RouteFixture):
+class TestDispensersRoute(AppFixture):
     def test_get_dispensers(self):
-        pub = self.node.create_publisher(RmfDispenserState, "dispenser_states", 10)
-        rmf_dispenser_state = RmfDispenserState(guid="test_dispenser")
-
-        def try_get():
-            pub.publish(rmf_dispenser_state)
-            return self.session.get(f"{self.base_url}/dispensers/test_dispenser/state")
-
-        resp = try_until(
-            try_get,
-            lambda x: x.status_code == 200,
-        )
-        self.assertEqual(resp.status_code, 200)
-
-        # should be able to see it in /dispensers
-        resp = self.session.get(f"{self.base_url}/dispensers")
+        self.app.rmf_events().dispenser_states.on_next(make_dispenser_state())
+        resp = self.session.get("/dispensers")
         self.assertEqual(resp.status_code, 200)
         dispensers = [Dispenser(**d) for d in resp.json()]
         self.assertEqual(1, len(dispensers))
         self.assertEqual("test_dispenser", dispensers[0].guid)
+
+    def test_get_dispenser_state(self):
+        self.app.rmf_events().dispenser_states.on_next(make_dispenser_state())
+        resp = self.session.get("/dispensers/test_dispenser/state")
+        self.assertEqual(200, resp.status_code)
+        state = resp.json()
+        self.assertEqual("test_dispenser", state["guid"])
+
+    def test_watch_dispenser_state(self):
+        dispenser_state = make_dispenser_state()
+        dispenser_state.time.sec = 1
+        fut = self.subscribe_sio("/dispensers/test_dispenser/state")
+
+        def wait():
+            self.app.rmf_events().dispenser_states.on_next(dispenser_state)
+            return fut.result(0)
+
+        result = try_until(wait, lambda _: True)
+        self.assertEqual(1, result["time"]["sec"])
