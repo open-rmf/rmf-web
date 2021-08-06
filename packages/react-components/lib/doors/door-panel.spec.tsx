@@ -1,14 +1,9 @@
-import { cleanup, render, within } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 
 import { DoorPanel } from './door-panel';
-import { doorStates, doors } from './test-utils.spec';
-import { DetailedDoor } from './utils';
-
-const makeDetailedDoors = (): DetailedDoor[] => {
-  return doors.map((door) => ({ ...door, level: 'L1' }));
-};
+import { doorStates, makeDetailedDoors } from './test-utils.spec';
 
 describe('Door Panel', () => {
   it('smoke test with different door types and states', () => {

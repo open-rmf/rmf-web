@@ -1,4 +1,5 @@
 import * as RmfModels from 'rmf-models';
+import { DetailedDoor } from './utils';
 
 export function makeDoor(door?: Partial<RmfModels.Door>): RmfModels.Door {
   return {
@@ -119,4 +120,8 @@ export const doorStates: Record<string, RmfModels.DoorState> = {
     current_mode: { value: RmfModels.DoorMode.MODE_MOVING },
     door_time: { sec: 0, nanosec: 0 },
   },
+};
+
+export const makeDetailedDoors = (): DetailedDoor[] => {
+  return doors.map((door) => ({ ...door, level: 'L1' }));
 };
