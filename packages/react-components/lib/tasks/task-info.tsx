@@ -3,6 +3,7 @@ import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { rosTimeToJs } from '../utils';
 import { taskStateToStr, taskTypeToStr } from './utils';
+import { TaskTimeline } from './task-timeline';
 
 const useStyles = makeStyles({
   infoValue: {
@@ -153,6 +154,7 @@ export function TaskInfo({ task }: TaskInfoProps): JSX.Element {
         <InfoValue>{taskStateToStr(task.state)}</InfoValue>
       </InfoLine>
       {detailInfo}
+      <TaskTimeline taskSummary={task} />
     </div>
   );
 }

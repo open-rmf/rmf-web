@@ -38,6 +38,10 @@ const useStyles = makeStyles((theme) => {
     failedPhase: {
       background: phaseColors.failed,
     },
+    dotInfo: {
+      textOverflow: 'ellipsis',
+      overflow: 'hidden',
+    },
   };
 });
 
@@ -92,18 +96,22 @@ export function TaskTimeline({ taskSummary }: TaskTimelineProps): JSX.Element {
           <TimelineItem key={idx}>
             <TimelineOppositeContent>
               <Typography variant="body2" color="textSecondary">
-                {idx == 0 && rosTimeToJs(taskSummary.start_time).toLocaleString()}
-                {idx == timelineInfo.length - 1 &&
-                  rosTimeToJs(taskSummary.end_time).toLocaleString()}
+                {idx == 0 && rosTimeToJs(taskSummary.start_time).toLocaleTimeString()}
+                {idx != 0 &&
+                  idx == timelineInfo.length - 1 &&
+                  rosTimeToJs(taskSummary.end_time).toLocaleTimeString()}
               </Typography>
             </TimelineOppositeContent>
             <TimelineSeparator>
               <TimelineDot className={timelineDotProps[idx].className} />
-              <TimelineConnector />
+              {idx < timelineInfo.length - 1 && <TimelineConnector />}
+              {idx == timelineInfo.length - 1 && (
+                <TimelineConnector style={{ background: 'transparent' }} />
+              )}
             </TimelineSeparator>
             <TimelineContent>
               <Paper elevation={3} style={{ padding: '6px 16px' }}>
-                <Typography>{dotInfo}</Typography>
+                <Typography className={classes.dotInfo}>{dotInfo}</Typography>
               </Paper>
             </TimelineContent>
           </TimelineItem>
