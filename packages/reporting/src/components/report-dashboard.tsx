@@ -139,19 +139,37 @@ export const ReportDashboard = (props: ReportDashboardProps) => {
   const headerTitle = (): void => {
     switch (currentReport) {
       case Reports.queryAllLogs:
-        setHeader(currentReport.split('query')[1]);
+        setHeader('All Logs');
         break;
       case Reports.showDispenserStateReport:
+        setHeader('Dispenser State Report');
+        break;
       case Reports.showDoorStateReport:
+        setHeader('Door State Report');
+        break;
       case Reports.showFleetStateReport:
+        setHeader('Fleet State Report');
+        break;
       case Reports.showHealthReport:
+        setHeader('Health Report');
+        break;
       case Reports.showIngestorStateReport:
+        setHeader('Ingestor State Report');
+        break;
       case Reports.showLiftStateReport:
+        setHeader('Lift State Report');
+        break;
       case Reports.showLoginsReport:
+        setHeader('Logins Report');
+        break;
       case Reports.showLogoutsReport:
+        setHeader('Logout Report');
+        break;
       case Reports.showLoginFailuresReport:
+        setHeader('Login Failure Report');
+        break;
       case Reports.showTasksReport:
-        setHeader(currentReport.split('show')[1].split('Report')[0]);
+        setHeader('Task Report');
         break;
       default:
         break;
