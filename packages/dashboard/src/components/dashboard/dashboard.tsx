@@ -27,7 +27,12 @@ import {
   NegotiationTrajectoryResponse,
 } from '../../managers/negotiation-status-manager';
 import { AppConfigContext, AppControllerContext } from '../app-contexts';
-import { DispensersContext, IngestorsContext, RmfIngressContext } from '../rmf-app';
+import {
+  BuildingMapContext,
+  DispensersContext,
+  IngestorsContext,
+  RmfIngressContext,
+} from '../rmf-app';
 import ScheduleVisualizer, { ScheduleVisualizerProps } from '../schedule-visualizer';
 import { RobotsOverlayProps } from '../schedule-visualizer/robots-overlay';
 import { SpotlightValue } from '../spotlight-value';
@@ -114,12 +119,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const rmfIngress = React.useContext(RmfIngressContext);
   const sioClient = rmfIngress?.sioClient;
 
-  const [buildingMap, setBuildingMap] = React.useState<RmfModels.BuildingMap | null>(null);
-  React.useEffect(() => {
-    if (!sioClient) return;
-    sioClient.subscribeBuildingMap(setBuildingMap);
-    return () => sioClient.unsubscribe(setBuildingMap);
-  }, [sioClient]);
+  const buildingMap = React.useContext(BuildingMapContext);
 
   const { state: dashboardState, dispatch: dashboardDispatch } = useDashboardReducer(
     dashboardInitialValues,

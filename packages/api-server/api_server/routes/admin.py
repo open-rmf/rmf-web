@@ -1,13 +1,15 @@
-from typing import Callable, List, Optional
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 from tortoise.exceptions import IntegrityError
 from tortoise.transactions import in_transaction
 
-from ..dependencies import AddPaginationQuery, pagination_query
-from ..models import Permission, User
-from ..models import tortoise_models as ttm
+import api_server.models.tortoise_models as ttm
+from api_server.base_app import BaseApp
+from api_server.dependencies import pagination_query
+from api_server.models import Pagination, Permission, User
+from api_server.repositories.rmf import RmfRepository
 
 
 class PostUsers(BaseModel):
@@ -21,11 +23,6 @@ class PostRoles(BaseModel):
 
 class PostMakeAdmin(BaseModel):
     admin: bool
-
-
-class PostRolePermissions(BaseModel):
-    action: str
-    authz_grp: str
 
 
 async def _get_db_role(role_name: str) -> ttm.Role:
@@ -42,7 +39,9 @@ async def _get_db_user(username: str) -> ttm.User:
     return user
 
 
-def admin_router(user_dep: Callable[..., User]):
+def admin_router(app: BaseApp):
+    user_dep = app.auth_dep
+
     def admin_dep(user: User = Depends(user_dep)):
         if not user.is_admin:
             raise HTTPException(403)
@@ -51,7 +50,8 @@ def admin_router(user_dep: Callable[..., User]):
 
     @router.get("/users", response_model=List[str])
     async def get_users(
-        add_pagination: AddPaginationQuery[ttm.User] = Depends(pagination_query()),
+        rmf_repo: RmfRepository = Depends(app.rmf_repo),
+        pagination: Pagination = Depends(pagination_query),
         username: Optional[str] = Query(
             None, description="filters username that starts with the value"
         ),
@@ -60,15 +60,9 @@ def admin_router(user_dep: Callable[..., User]):
         """
         Search users
         """
-        filter_params = {}
-        if username is not None:
-            filter_params["username__istartswith"] = username
-        if is_admin is not None:
-            filter_params["is_admin"] = is_admin
-        q = add_pagination(ttm.User.filter(**filter_params)).values_list(
-            "username", flat=True
+        return await rmf_repo.query_users(
+            pagination, username=username, is_admin=is_admin
         )
-        return await q
 
     @router.post("/users")
     async def create_user(body: PostUsers):
@@ -117,16 +111,6 @@ def admin_router(user_dep: Callable[..., User]):
         role = await _get_db_role(body.name)
         await user.roles.add(role)
 
-    @router.delete("/users/{username}/roles")
-    async def delete_user_role(username: str, body: PostRoles):
-        """
-        Remove role from a user
-        """
-        user = await _get_db_user(username)
-        await user.fetch_related("roles")
-        role = await _get_db_role(body.name)
-        await user.roles.remove(role)
-
     @router.put("/users/{username}/roles")
     async def set_user_roles(username: str, body: List[PostRoles]):
         """
@@ -140,6 +124,16 @@ def admin_router(user_dep: Callable[..., User]):
                 raise HTTPException(422, "one or more roles does not exist")
             await user.roles.clear()
             await user.roles.add(*roles)
+
+    @router.delete("/users/{username}/roles/{role}")
+    async def delete_user_role(username: str, role: str):
+        """
+        Remove role from a user
+        """
+        user = await _get_db_user(username)
+        await user.fetch_related("roles")
+        role = await _get_db_role(role)
+        await user.roles.remove(role)
 
     @router.get("/roles", response_model=List[str])
     async def get_roles():
@@ -178,7 +172,7 @@ def admin_router(user_dep: Callable[..., User]):
         return [Permission(authz_grp=p.authz_grp, action=p.action) for p in permissions]
 
     @router.post("/roles/{role}/permissions")
-    async def add_role_permission(role: str, body: PostRolePermissions):
+    async def add_role_permission(role: str, body: Permission):
         """
         Add a permission to a role
         """
@@ -189,14 +183,14 @@ def admin_router(user_dep: Callable[..., User]):
             action=body.action,
         )
 
-    @router.delete("/roles/{role}/permissions")
-    async def delete_role_permission(role: str, body: PostRolePermissions):
+    @router.post("/roles/{role}/permissions/remove")
+    async def remove_role_permission(role: str, permission: Permission):
         """
         Delete a permission from a role
         """
         db_role = await _get_db_role(role)
         perm = await ttm.ResourcePermission.get_or_none(
-            authz_grp=body.authz_grp, role=db_role, action=body.action
+            role=db_role, authz_grp=permission.authz_grp, action=permission.action
         )
         if perm:
             await perm.delete()

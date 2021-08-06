@@ -6,7 +6,7 @@ from rmf_ingestor_msgs.msg import IngestorState as RmfIngestorState
 from rmf_lift_msgs.msg import LiftState as RmfLiftState
 from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
 
-from ..models import (
+from api_server.models import (
     AffineImage,
     BuildingMap,
     DispenserState,
@@ -49,6 +49,7 @@ def make_building_map():
             Level(
                 name="L1",
                 elevation=0.0,
+                doors=[make_door()],
                 images=[
                     AffineImage(
                         name="test_image",
@@ -58,7 +59,7 @@ def make_building_map():
                 ],
             ),
         ],
-        lifts=[],
+        lifts=[make_lift()],
     )
 
 
