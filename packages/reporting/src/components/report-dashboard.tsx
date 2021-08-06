@@ -1,7 +1,5 @@
 import React from 'react';
-import { BuildMenuType } from './reporter-side-bar-structure';
 import { ReportConfigProps } from 'react-components';
-
 import clsx from 'clsx';
 import { makeStyles, useTheme, Theme } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -15,12 +13,24 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
-
-import { ReportContainer, Reports } from './report-list';
 import { ExpandableMultilevelMenuProps, MultiLevelMenu } from 'react-components';
 import { Menu, MenuItem } from '@material-ui/core';
 import { AuthenticatorContext } from './auth-contexts';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+
+import { Reports } from './report-list';
+import { BuildMenuType } from './reporter-side-bar-structure';
+import AllLogsReport from './reports/all-logs-report';
+import DispenserStateReportConfig from './reports/dispenser-state-report';
+import DoorStateReportConfig from './reports/door-state-report';
+import FleetStateReportConfig from './reports/fleet-state-report';
+import HealthReportConfig from './reports/health-report';
+import IngestorStateReportConfig from './reports/ingestor-state-report';
+import LiftStateReportConfig from './reports/lift-state-report';
+import TaskSummaryReportConfig from './reports/task-summary-report';
+import UserLoginFailureReportConfig from './reports/user-login-failure-report';
+import UserLoginReportConfig from './reports/user-login-report';
+import UserLogoutReportConfig from './reports/user-logout-report';
 
 const drawerWidth = 240;
 
@@ -86,11 +96,10 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export interface ReportDashboardProps {
   buildMenuReportStructure(setCurrentReport: BuildMenuType): ExpandableMultilevelMenuProps[];
-  reportContainer: typeof ReportContainer;
 }
 
 export const ReportDashboard = (props: ReportDashboardProps) => {
-  const { buildMenuReportStructure, reportContainer } = props;
+  const { buildMenuReportStructure } = props;
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
@@ -111,28 +120,31 @@ export const ReportDashboard = (props: ReportDashboardProps) => {
   }, []);
 
   const itemConfig = (props: ReportConfigProps): JSX.Element | null => {
-    if (Object.prototype.hasOwnProperty.call(reportContainer, currentReport)) {
-      switch (currentReport) {
-        case Reports.queryAllLogs:
-          const QueryConfig = reportContainer[currentReport];
-          return <QueryConfig />;
-        case Reports.showDispenserStateReport:
-        case Reports.showDoorStateReport:
-        case Reports.showFleetStateReport:
-        case Reports.showHealthReport:
-        case Reports.showIngestorStateReport:
-        case Reports.showLiftStateReport:
-        case Reports.showLoginsReport:
-        case Reports.showLogoutsReport:
-        case Reports.showLoginFailuresReport:
-        case Reports.showTasksReport:
-          const Config = reportContainer[currentReport];
-          return <Config {...props} />;
-        default:
-          return null;
-      }
-    } else {
-      return null;
+    switch (currentReport) {
+      case Reports.queryAllLogs:
+        return <AllLogsReport />;
+      case Reports.showDispenserStateReport:
+        return <DispenserStateReportConfig {...props} />;
+      case Reports.showDoorStateReport:
+        return <DoorStateReportConfig {...props} />;
+      case Reports.showFleetStateReport:
+        return <FleetStateReportConfig {...props} />;
+      case Reports.showHealthReport:
+        return <HealthReportConfig {...props} />;
+      case Reports.showIngestorStateReport:
+        return <IngestorStateReportConfig {...props} />;
+      case Reports.showLiftStateReport:
+        return <LiftStateReportConfig {...props} />;
+      case Reports.showLoginsReport:
+        return <UserLoginReportConfig {...props} />;
+      case Reports.showLogoutsReport:
+        return <UserLogoutReportConfig {...props} />;
+      case Reports.showLoginFailuresReport:
+        return <UserLoginFailureReportConfig {...props} />;
+      case Reports.showTasksReport:
+        return <TaskSummaryReportConfig {...props} />;
+      default:
+        return null;
     }
   };
 
