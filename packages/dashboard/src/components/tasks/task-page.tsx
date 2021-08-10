@@ -92,23 +92,45 @@ export function TaskPage() {
   );
 
   return (
-    <TaskPanel
-      className={classes.taskPanel}
-      tasks={autoRefreshState.tasks}
-      paginationOptions={{
-        page,
-        count: hasMore ? -1 : page * 10 + autoRefreshState.tasks.length,
-        rowsPerPage: 10,
-        rowsPerPageOptions: [10],
-        onChangePage: (_ev, newPage) => setPage(newPage),
-      }}
-      cleaningZones={placeNames}
-      loopWaypoints={placeNames}
-      deliveryWaypoints={placeNames}
-      submitTasks={submitTasks}
-      cancelTask={cancelTask}
-      onRefresh={handleRefresh}
-      onAutoRefresh={autoRefreshDispatcher.setEnabled}
-    />
+    <div>
+      <TaskPanel
+        className={classes.taskPanel}
+        tasks={autoRefreshState.tasks}
+        paginationOptions={{
+          page,
+          count: hasMore ? -1 : page * 10 + autoRefreshState.tasks.length,
+          rowsPerPage: 10,
+          rowsPerPageOptions: [10],
+          onChangePage: (_ev, newPage) => setPage(newPage),
+        }}
+        cleaningZones={placeNames}
+        loopWaypoints={placeNames}
+        deliveryWaypoints={placeNames}
+        submitTasks={submitTasks}
+        cancelTask={cancelTask}
+        onRefresh={handleRefresh}
+        onAutoRefresh={autoRefreshDispatcher.setEnabled}
+        timeline={true}
+      />
+      <TaskPanel
+        className={classes.taskPanel}
+        tasks={autoRefreshState.tasks}
+        paginationOptions={{
+          page,
+          count: hasMore ? -1 : page * 10 + autoRefreshState.tasks.length,
+          rowsPerPage: 10,
+          rowsPerPageOptions: [10],
+          onChangePage: (_ev, newPage) => setPage(newPage),
+        }}
+        cleaningZones={placeNames}
+        loopWaypoints={placeNames}
+        deliveryWaypoints={placeNames}
+        submitTasks={submitTasks}
+        cancelTask={cancelTask}
+        onRefresh={handleRefresh}
+        onAutoRefresh={autoRefreshDispatcher.setEnabled}
+        timeline={false}
+      />
+    </div>
   );
 }

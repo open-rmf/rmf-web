@@ -98,9 +98,10 @@ function DeliveryTaskInfoProps({ task }: DeliveryTaskInfoProps) {
 
 export interface TaskInfoProps {
   task: RmfModels.TaskSummary;
+  timeline: boolean;
 }
 
-export function TaskInfo({ task }: TaskInfoProps): JSX.Element {
+export function TaskInfo({ task, timeline }: TaskInfoProps): JSX.Element {
   const theme = useTheme();
   const taskType = task.task_profile.description.task_type.type;
   const hasConcreteEndTime = [
@@ -154,7 +155,7 @@ export function TaskInfo({ task }: TaskInfoProps): JSX.Element {
         <InfoValue>{taskStateToStr(task.state)}</InfoValue>
       </InfoLine>
       {detailInfo}
-      <TaskTimeline taskSummary={task} />
+      {timeline && <TaskTimeline taskSummary={task} />}
     </div>
   );
 }
