@@ -1,6 +1,6 @@
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import { Paper, IconButton, makeStyles, Grid, Typography, Box } from '@material-ui/core';
+import { Paper, IconButton, makeStyles, Grid, Typography, Box, Button } from '@material-ui/core';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
 import FilterListIcon from '@material-ui/icons/FilterList';
@@ -8,8 +8,9 @@ import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 
 import { LiftTable } from './lift-table';
-import { LiftPanelProps, LiftCellProps } from './lift-utils';
+import { LiftPanelProps, LiftCellProps, requestDoorModes, requestModes } from './lift-utils';
 import { motionStateToString, doorStateToString } from './lift-utils';
+import LiftRequestForm from './lift-request-form';
 
 const useStyles = makeStyles((theme) => ({
   buttonBar: {
@@ -50,8 +51,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const LiftCell = (props: LiftCellProps): JSX.Element => {
-  const { lift, liftState } = props;
+  const { lift, liftState, onRequestSubmit } = props;
   const classes = useStyles();
+
+  const [showForms, setShowForms] = React.useState(false);
 
   const currMotion = motionStateToString(liftState.motion_state);
   const getMotionArrowColor = (currMotion: string, arrowDirection: string) => {
@@ -97,6 +100,23 @@ const LiftCell = (props: LiftCellProps): JSX.Element => {
           </Typography>
         </Grid>
       </Grid>
+      <Button
+        variant="contained"
+        color="primary"
+        fullWidth
+        size="small"
+        onClick={() => setShowForms(true)}
+      >
+        Request Form
+      </Button>
+      <LiftRequestForm
+        lift={lift}
+        availableDoorModes={requestDoorModes}
+        availableRequestTypes={requestModes}
+        showFormDialog={showForms}
+        onRequestSubmit={onRequestSubmit}
+        onClose={() => setShowForms(false)}
+      />
     </Paper>
   );
 };

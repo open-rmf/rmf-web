@@ -7,13 +7,13 @@ import { AntTab, AntTabs, TabPanel } from '../ant-tab';
 import ItemAccordionDetails from '../item-accordion-details';
 import ItemAccordionSummary from '../item-accordion-summary';
 import { SimpleInfo, SimpleInfoData } from '../simple-info';
-import LiftRequestForm from './lift-request-form';
+// import LiftRequestForm from './lift-request-form';
 import {
   doorStateToString,
   liftModeToString,
   motionStateToString,
-  requestDoorModes,
-  requestModes,
+  // requestDoorModes,
+  // requestModes,
 } from './lift-utils';
 
 const debug = Debug('Lifts:Accordion');
@@ -135,14 +135,14 @@ export const LiftAccordion = React.forwardRef(
             <LiftInfo className={classes.noPadding} lift={lift} liftState={liftState} />
           </TabPanel>
           <TabPanel value={tabValue} index={1}>
-            {lift.levels && (
+            {/* {lift.levels && (
               <LiftRequestForm
                 lift={lift}
                 availableDoorModes={requestDoorModes}
                 availableRequestTypes={requestModes}
                 onRequestSubmit={onRequestSubmit}
               />
-            )}
+            )} */}
           </TabPanel>
         </ItemAccordionDetails>
       </Accordion>
