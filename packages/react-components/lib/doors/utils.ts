@@ -30,11 +30,14 @@ export interface DoorInfoProps {
   onDoorControlClick?(event: React.MouseEvent, door: RmfModels.Door, mode: number): void;
 }
 
-export interface DoorPanelAndTableProps {
+export interface DoorPanelProps {
   doors: DetailedDoor[];
   doorStates: Record<string, RmfModels.DoorState>;
   onDoorControlClick?(event: React.MouseEvent, door: RmfModels.Door, mode: number): void;
 }
+
+export interface DoorRowProps extends Omit<DoorInfoProps, 'onDoorControlClick'> {}
+export interface DoorTableProps extends Omit<DoorPanelProps, 'onDoorControlClick'> {}
 
 export function doorModeToString(doorState?: RmfModels.DoorState): string {
   if (!doorState) {

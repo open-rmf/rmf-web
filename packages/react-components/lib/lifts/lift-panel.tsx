@@ -1,4 +1,5 @@
 import React from 'react';
+import * as RmfModels from 'rmf-models';
 import { Paper, IconButton, makeStyles, Grid, Typography, Box } from '@material-ui/core';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
@@ -58,18 +59,21 @@ const LiftCell = (props: LiftCellProps): JSX.Element => {
   };
 
   const currDoorMotion = doorStateToString(liftState.door_state);
-  const getDoorMotionColor = (doorMotion: string) => {
-    switch (doorMotion) {
-      case 'Open':
-        return `${classes.doorLabelOpen}`;
-      case 'Closed':
-        return `${classes.doorLabelClosed}`;
-      case 'Moving':
-        return `${classes.doorLabelMoving}`;
-      default:
-        return '';
-    }
-  };
+  const doorModeLabelClasses = React.useCallback(
+    (liftState?: RmfModels.LiftState): string => {
+      switch (liftState?.door_state) {
+        case RmfModels.DoorMode.MODE_OPEN:
+          return `${classes.doorLabelOpen}`;
+        case RmfModels.DoorMode.MODE_CLOSED:
+          return `${classes.doorLabelClosed}`;
+        case RmfModels.DoorMode.MODE_MOVING:
+          return `${classes.doorLabelMoving}`;
+        default:
+          return '';
+      }
+    },
+    [classes],
+  );
 
   return (
     <Paper className={classes.cellPaper}>
@@ -79,7 +83,7 @@ const LiftCell = (props: LiftCellProps): JSX.Element => {
           <Box border={1} borderColor="divider" m={0.5}>
             <Typography align="center">{liftState.destination_floor}</Typography>
           </Box>
-          <Typography align="center" className={getDoorMotionColor(currDoorMotion)}>
+          <Typography align="center" className={doorModeLabelClasses(liftState)}>
             {currDoorMotion}
           </Typography>
         </Grid>

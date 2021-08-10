@@ -14,7 +14,7 @@ import ViewModuleIcon from '@material-ui/icons/ViewModule';
 import FilterListIcon from '@material-ui/icons/FilterList';
 
 import { DoorTable } from './door-table';
-import { DoorInfoProps, DoorPanelAndTableProps, doorModeToString, doorTypeToString } from './utils';
+import { DoorInfoProps, DoorPanelProps, doorModeToString, doorTypeToString } from './utils';
 
 const useStyles = makeStyles((theme) => ({
   buttonBar: {
@@ -117,7 +117,7 @@ const DoorCell = (props: DoorInfoProps): JSX.Element => {
   );
 };
 
-export function DoorPanel(props: DoorPanelAndTableProps) {
+export function DoorPanel(props: DoorPanelProps) {
   const { doors, doorStates, onDoorControlClick } = props;
   const classes = useStyles();
 
@@ -151,11 +151,7 @@ export function DoorPanel(props: DoorPanelAndTableProps) {
             );
           })
         ) : (
-          <DoorTable
-            doors={doors}
-            doorStates={doorStates}
-            onDoorControlClick={onDoorControlClick}
-          />
+          <DoorTable doors={doors} doorStates={doorStates} />
         )}
       </Grid>
     </div>

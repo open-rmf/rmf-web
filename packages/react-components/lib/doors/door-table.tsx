@@ -2,7 +2,7 @@ import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { makeStyles, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
 
-import { DoorPanelAndTableProps, DoorInfoProps, doorModeToString, doorTypeToString } from './utils';
+import { DoorTableProps, DoorRowProps, doorModeToString, doorTypeToString } from './utils';
 
 const useStyles = makeStyles((theme) => ({
   taskRowHover: {
@@ -24,7 +24,7 @@ const getOpMode = (doorState: RmfModels.DoorState) => {
   return getState === 'N/A' ? 'Offline' : 'Online';
 };
 
-const TaskRow = (props: DoorInfoProps) => {
+const DoorRow = (props: DoorRowProps) => {
   const { door, doorState } = props;
   const classes = useStyles();
   const [hover, setHover] = React.useState(false);
@@ -73,8 +73,8 @@ const TaskRow = (props: DoorInfoProps) => {
   );
 };
 
-export const DoorTable = (props: DoorPanelAndTableProps) => {
-  const { doors, doorStates, onDoorControlClick } = props;
+export const DoorTable = (props: DoorTableProps) => {
+  const { doors, doorStates } = props;
 
   return (
     <Table stickyHeader size="small" aria-label="door-table">
@@ -89,11 +89,7 @@ export const DoorTable = (props: DoorPanelAndTableProps) => {
       </TableHead>
       <TableBody>
         {doors.map((door) => (
-          <TaskRow
-            door={door}
-            doorState={doorStates[door.name]}
-            onDoorControlClick={onDoorControlClick}
-          />
+          <DoorRow door={door} doorState={doorStates[door.name]} />
         ))}
       </TableBody>
     </Table>
