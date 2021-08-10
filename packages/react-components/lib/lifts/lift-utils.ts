@@ -96,3 +96,6 @@ export interface LiftCellProps {
     destination: string,
   ): void;
 }
+
+export interface LiftTableProps extends Omit<LiftPanelProps, 'onRequestSubmit'> {}
+export interface LiftRowProps extends Omit<LiftCellProps, 'onRequestSubmit'> {}

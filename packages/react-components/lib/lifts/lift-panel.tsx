@@ -6,6 +6,7 @@ import FilterListIcon from '@material-ui/icons/FilterList';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 
+import { LiftTable } from './lift-table';
 import { LiftPanelProps, LiftCellProps } from './lift-utils';
 import { motionStateToString, doorStateToString } from './lift-utils';
 
@@ -117,13 +118,17 @@ export function LiftPanel(props: LiftPanelProps) {
         </IconButton>
       </Paper>
       <Grid className={classes.grid} container direction="row" spacing={1}>
-        {lifts.map((lift, i) => {
-          return (
-            <Grid item xs={4} key={`${lift.name}_${i}`}>
-              <LiftCell lift={lift} liftState={liftStates[lift.name]} />
-            </Grid>
-          );
-        })}
+        {isCellView ? (
+          lifts.map((lift, i) => {
+            return (
+              <Grid item xs={4} key={`${lift.name}_${i}`}>
+                <LiftCell lift={lift} liftState={liftStates[lift.name]} />
+              </Grid>
+            );
+          })
+        ) : (
+          <LiftTable lifts={lifts} liftStates={liftStates} />
+        )}
       </Grid>
     </div>
   );
