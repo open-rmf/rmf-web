@@ -18,6 +18,7 @@ import {
   withSpotlight,
   DoorPanel,
   DetailedDoor,
+  LiftPanel,
 } from 'react-components';
 import { GlobalHotKeys } from 'react-hotkeys';
 import * as RmfModels from 'rmf-models';
@@ -416,6 +417,11 @@ export default function Dashboard(_props: {}): React.ReactElement {
               doors={doors}
               doorStates={doorStates}
               onDoorControlClick={handleOnDoorControlClick}
+            />
+            <LiftPanel
+              lifts={lifts}
+              liftStates={liftStates}
+              onRequestSubmit={handleLiftRequestSubmit}
             />
           </div>
         </div>

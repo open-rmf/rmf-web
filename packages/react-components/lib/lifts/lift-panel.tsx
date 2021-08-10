@@ -1,17 +1,13 @@
 import React from 'react';
-import * as RmfModels from 'rmf-models';
-import {
-  Paper,
-  IconButton,
-  makeStyles,
-  Grid,
-  Typography,
-  Button,
-  ButtonGroup,
-} from '@material-ui/core';
+import { Paper, IconButton, makeStyles, Grid, Typography, Box } from '@material-ui/core';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
 import FilterListIcon from '@material-ui/icons/FilterList';
+import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
+
+import { LiftPanelProps, LiftCellProps } from './lift-utils';
+import { motionStateToString, doorStateToString } from './lift-utils';
 
 const useStyles = makeStyles((theme) => ({
   buttonBar: {
@@ -34,19 +30,74 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     justifyContent: 'center',
   },
+  iconMoving: {
+    color: theme.palette.success.dark,
+  },
+  iconOtherStates: {
+    color: 'white',
+  },
+  doorLabelOpen: {
+    backgroundColor: theme.palette.success.main,
+  },
+  doorLabelClosed: {
+    backgroundColor: theme.palette.error.main,
+  },
+  doorLabelMoving: {
+    backgroundColor: theme.palette.warning.main,
+  },
 }));
 
-const LiftCell = (): JSX.Element => {
+const LiftCell = (props: LiftCellProps): JSX.Element => {
+  const { lift, liftState } = props;
   const classes = useStyles();
+
+  const currMotion = motionStateToString(liftState.motion_state);
+  const getMotionArrowColor = (currMotion: string, arrowDirection: string) => {
+    return currMotion === arrowDirection ? classes.iconMoving : classes.iconOtherStates;
+  };
+
+  const currDoorMotion = doorStateToString(liftState.door_state);
+  const getDoorMotionColor = (doorMotion: string) => {
+    switch (doorMotion) {
+      case 'Open':
+        return `${classes.doorLabelOpen}`;
+      case 'Closed':
+        return `${classes.doorLabelClosed}`;
+      case 'Moving':
+        return `${classes.doorLabelMoving}`;
+      default:
+        return '';
+    }
+  };
 
   return (
     <Paper className={classes.cellPaper}>
-      <Typography variant="body1" align="center"></Typography>
+      <Grid container direction="row">
+        <Grid item xs={9}>
+          <Typography align="center">{lift.name}</Typography>
+          <Box border={1} borderColor="divider" m={0.5}>
+            <Typography align="center">{liftState.destination_floor}</Typography>
+          </Box>
+          <Typography align="center" className={getDoorMotionColor(currDoorMotion)}>
+            {currDoorMotion}
+          </Typography>
+        </Grid>
+        <Grid item xs>
+          <Typography align="center" className={getMotionArrowColor(currMotion, 'Up')}>
+            <ArrowUpwardIcon />
+          </Typography>
+          <Typography align="center">{liftState.current_floor}</Typography>
+          <Typography align="center" className={getMotionArrowColor(currMotion, 'Down')}>
+            <ArrowDownwardIcon />
+          </Typography>
+        </Grid>
+      </Grid>
     </Paper>
   );
 };
 
-export function LiftPanel() {
+export function LiftPanel(props: LiftPanelProps) {
+  const { lifts, liftStates } = props;
   const classes = useStyles();
 
   const [isCellView, setIsCellView] = React.useState(true);
@@ -65,7 +116,15 @@ export function LiftPanel() {
           {isCellView ? <ViewListIcon /> : <ViewModuleIcon />}
         </IconButton>
       </Paper>
-      <Grid className={classes.grid} container direction="row" spacing={1}></Grid>
+      <Grid className={classes.grid} container direction="row" spacing={1}>
+        {lifts.map((lift, i) => {
+          return (
+            <Grid item xs={4} key={`${lift.name}_${i}`}>
+              <LiftCell lift={lift} liftState={liftStates[lift.name]} />
+            </Grid>
+          );
+        })}
+      </Grid>
     </div>
   );
 }
