@@ -409,6 +409,7 @@ One solution is to add an init container to probe for the readiness of the datab
 If you want to avoid cluttering the logs with the initial crash (which should only happen in development), the recommended solution is to modify the deploy scripts to wait for the database to be ready before deploying the app.
 
 ```bash
-kubectl apply -f k8s/rmf-server.yaml -ltier=db && kubectl wait deploy/rmf-server-db --for=condition=available
-kubectl apply -f k8s/rmf-server.yaml -ltier=app
+export RMF_SERVER_TAG=<your-tag>
+kubectl apply -k k8s/example-full -lapp=rmf-server -ltier=db && kubectl wait deploy/rmf-server-db --for=condition=available
+kubectl apply -k k8s/example-full -lapp=rmf-server -ltier=app
 ```
