@@ -23,7 +23,7 @@ describe('Door Panel', () => {
     expect(mockDoorControl).toHaveBeenCalled();
   });
 
-  it('should call onDoorControlClick when Open/Close button is clicked', () => {
+  it('should call show layout when view mode button is clicked', () => {
     const panel = render(<DoorPanel doors={makeDetailedDoors()} doorStates={doorStates} />);
     userEvent.click(panel.getByLabelText('view-mode'));
     expect(panel.getByLabelText('door-table')).toBeTruthy();

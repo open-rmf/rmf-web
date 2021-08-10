@@ -6,11 +6,14 @@ import { LiftRequestForm } from './lift-request-form';
 import { makeLift } from './test-utils.spec';
 
 function renderLiftRequestForm() {
+  const mockOnClose = jasmine.createSpy();
   return render(
     <LiftRequestForm
       lift={makeLift()}
       availableRequestTypes={requestModes}
       availableDoorModes={requestDoorModes}
+      showFormDialog={true}
+      onClose={mockOnClose}
     />,
   );
 }
@@ -19,11 +22,14 @@ describe('Lift request form', () => {
   let root: ReturnType<typeof renderLiftRequestForm>;
 
   beforeEach(() => {
+    const mockOnClose = jasmine.createSpy();
     root = render(
       <LiftRequestForm
         lift={makeLift()}
         availableRequestTypes={requestModes}
         availableDoorModes={requestDoorModes}
+        showFormDialog={true}
+        onClose={mockOnClose}
       />,
     );
   });
@@ -46,6 +52,6 @@ describe('Lift request form', () => {
   it('destination is required', () => {
     userEvent.type(root.getByPlaceholderText('Pick a Destination'), '{selectall}{backspace}');
     userEvent.click(root.getByText('Request'));
-    expect(root.container.querySelector('.MuiFormHelperText-root.Mui-error')).toBeTruthy();
+    expect(root.getByText('Destination cannot be empty')).toBeTruthy();
   });
 });
