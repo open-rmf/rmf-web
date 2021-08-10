@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: reporting-server-db
+  name: rmf-server-db
   labels:
-    app: reporting-server
+    app: rmf-server
     tier: db
 spec:
   accessModes:
@@ -16,13 +16,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: reporting-server-db
+  name: rmf-server-db
   labels:
-    app: reporting-server
+    app: rmf-server
     tier: db
 spec:
   selector:
-    app: reporting-server
+    app: rmf-server
     tier: db
   ports:
     - port: 5432
@@ -30,20 +30,20 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: reporting-server-db
+  name: rmf-server-db
   labels:
-    app: reporting-server
+    app: rmf-server
     tier: db
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: reporting-server
+      app: rmf-server
       tier: db
   template:
     metadata:
       labels:
-        app: reporting-server
+        app: rmf-server
         tier: db
     spec:
       containers:
@@ -51,90 +51,83 @@ spec:
           image: postgres:13
           env:
             - name: POSTGRES_USER
-              value: reporting-server
+              value: rmf-server
             - name: POSTGRES_PASSWORD
-              value: reporting-server
+              value: rmf-server
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
-              name: reporting-server-db
+              name: rmf-server-db
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
       volumes:
-        - name: reporting-server-db
+        - name: rmf-server-db
           persistentVolumeClaim:
-            claimName: reporting-server-db
+            claimName: rmf-server-db
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: reporting-server
+  name: rmf-server
   labels:
-    app: reporting-server
+    app: rmf-server
     tier: app
 spec:
-  type: LoadBalancer
   selector:
-    app: reporting-server
+    app: rmf-server
     tier: app
   ports:
     - protocol: TCP
-      port: 8002
-      targetPort: 8002
-      name: report
-    - protocol: TCP
-      port: 8003
-      targetPort: 8003
-      name: fluentd
+      port: 8000
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: reporting-server
+  name: rmf-server
   labels:
-    app: reporting-server
+    app: rmf-server
     tier: app
 spec:
   selector:
     matchLabels:
-      app: reporting-server
+      app: rmf-server
       tier: app
   template:
     metadata:
       labels:
-        app: reporting-server
+        app: rmf-server
         tier: app
     spec:
       containers:
-        - name: reporting-server
-          image: rmf-web/reporting-server
-          imagePullPolicy: Never # remove this in a real deployment
+        - name: rmf-server
+          image: rmf-web/rmf-server
           ports:
-            - containerPort: 8002
-              name: report
-            - containerPort: 8003
-              name: fluentd
+            - containerPort: 8000
           env:
-            - name: RMF_REPORT_REST_SERVER_CONFIG
-              value: /reporting-server-config/reporting_server_config.py
+            - name: RMF_API_SERVER_CONFIG
+              value: /rmf-server-config/rmf_server_config.py
           volumeMounts:
             - mountPath: /jwt-configmap
               name: jwt-pub-key
-            - mountPath: /reporting-server-config
-              name: reporting-server-config
+            - mountPath: /rmf-server-config
+              name: rmf-server-config
       hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
       volumes:
         - name: jwt-pub-key
           configMap:
             name: jwt-pub-key
-        - name: reporting-server-config
+        - name: rmf-server-config
           configMap:
-            name: reporting-server-config
+            name: rmf-server-config
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: reporting-server
+  name: rmf-server
   labels:
-    app: reporting-server
+    app: rmf-server
     tier: app
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$2
@@ -146,10 +139,10 @@ spec:
     - host: example.com
       http:
         paths:
-          - path: /logserver/api/v1(/|$)(.*)
+          - path: /rmf/api/v1(/|$)(.*)
             pathType: Prefix
             backend:
               service:
-                name: reporting-server
+                name: rmf-server
                 port:
-                  number: 8002
+                  number: 8000

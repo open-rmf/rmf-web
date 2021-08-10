@@ -1,0 +1,22 @@
+# rmf-server and dashboard only
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+commonLabels:
+  project: rmf-web-example-lite
+
+bases:
+  - ../base/rmf-server
+  - ../base/dashboard
+
+images:
+  - name: rmf-web/rmf-server
+    newTag: ${RMF_SERVER_TAG}
+  - name: rmf-web/dashboard
+    newTag: ${DASHBOARD_TAG}
+
+configMapGenerator:
+  - name: rmf-server-config
+    files:
+      - rmf_server_config.py

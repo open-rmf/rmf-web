@@ -1,4 +1,5 @@
-FROM rmf-web/builder
+ARG BUILDER_TAG
+FROM rmf-web/builder:$BUILDER_TAG
 
 COPY . /root/rmf-web
 RUN cd /root/rmf-web && \
