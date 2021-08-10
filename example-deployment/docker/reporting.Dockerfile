@@ -5,6 +5,11 @@ COPY . /root/rmf-web
 RUN cd /root/rmf-web && \
   lerna run prepare --include-dependencies --scope=reporting
 
+ARG PUBLIC_URL
+ARG REACT_APP_REPORTING_SERVER
+ARG REACT_APP_AUTH_PROVIDER
+ARG REACT_APP_KEYCLOAK_CONFIG
+
 RUN cd /root/rmf-web/packages/reporting && \
   PUBLIC_URL='/reporting' \
   REACT_APP_REPORTING_SERVER='https://example.com/logserver/api/v1' \

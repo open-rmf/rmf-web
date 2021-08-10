@@ -108,16 +108,11 @@ spec:
             - name: RMF_API_SERVER_CONFIG
               value: /rmf-server-config/rmf_server_config.py
           volumeMounts:
-            - mountPath: /jwt-configmap
-              name: jwt-pub-key
             - mountPath: /rmf-server-config
               name: rmf-server-config
       hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
       volumes:
-        - name: jwt-pub-key
-          configMap:
-            name: jwt-pub-key
         - name: rmf-server-config
           configMap:
             name: rmf-server-config

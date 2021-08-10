@@ -3,3 +3,8 @@ kind: Kustomization
 
 resources:
   - rmf-server.yaml
+
+configMapGenerator:
+  - name: rmf-server-config
+    files:
+      - rmf_server_config.py

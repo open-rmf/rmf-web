@@ -5,13 +5,13 @@ COPY . /root/rmf-web
 RUN cd /root/rmf-web && \
   lerna run prepare --include-dependencies --scope=rmf-dashboard
 
-RUN cd /root/rmf-web/packages/dashboard && \
-  PUBLIC_URL='/dashboard' \
-  REACT_APP_TRAJECTORY_SERVER='ws://localhost:8006' \
-  REACT_APP_RMF_SERVER='https://example.com/rmf/api/v1' \
-  REACT_APP_AUTH_PROVIDER='keycloak' \
-  REACT_APP_KEYCLOAK_CONFIG='{ "realm": "rmf-web", "clientId": "dashboard", "url": "https://example.com/auth" }' \
-  npm run build
+ARG PUBLIC_URL
+ARG REACT_APP_TRAJECTORY_SERVER
+ARG REACT_APP_RMF_SERVER
+ARG REACT_APP_AUTH_PROVIDER
+ARG REACT_APP_KEYCLOAK_CONFIG
+
+RUN cd /root/rmf-web/packages/dashboard && npm run build
 
 ###
 

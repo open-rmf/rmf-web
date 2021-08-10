@@ -13,6 +13,9 @@ resources:
   - cronjobs.yaml
   - fluentd-configmap.yaml
 
+patchesStrategicMerge:
+  - rmf-server-patch.yaml
+
 images:
   - name: rmf-web/rmf-server
     newTag: ${RMF_SERVER_TAG}

@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rmf-server
+spec:
+  template:
+    spec:
+      containers:
+        - name: rmf-server
+          volumeMounts:
+            - mountPath: /jwt-configmap
+              name: jwt-pub-key
+      hostNetwork: true
+      volumes:
+        - name: jwt-pub-key
+          configMap:
+            name: jwt-pub-key

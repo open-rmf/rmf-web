@@ -13,10 +13,5 @@ bases:
 images:
   - name: rmf-web/rmf-server
     newTag: ${RMF_SERVER_TAG}
-  - name: rmf-web/dashboard
+  - name: rmf-web/dashboard # should be built with no authentication
     newTag: ${DASHBOARD_TAG}
-
-configMapGenerator:
-  - name: rmf-server-config
-    files:
-      - rmf_server_config.py

@@ -34,7 +34,13 @@ docker save rmf-web/keycloak:12.04 | bash -c 'eval $(.bin/minikube docker-env) &
 echo '📤 publishing rmf-server image...'
 docker save rmf-web/rmf-server:$rmf_web_ver | bash -c 'eval $(.bin/minikube docker-env) && docker load'
 
-docker build -t rmf-web/dashboard:$rmf_web_ver -f docker/dashboard.Dockerfile "$rmf_web_ws" --build-arg BUILDER_TAG=$rmf_web_ver
+docker build -t rmf-web/dashboard:$rmf_web_ver -f docker/dashboard.Dockerfile "$rmf_web_ws" \
+  --build-arg BUILDER_TAG=$rmf_web_ver \
+  --build-arg PUBLIC_URL='/dashboard' \
+  --build-arg REACT_APP_TRAJECTORY_SERVER='ws://localhost:8006' \
+  --build-arg REACT_APP_RMF_SERVER='https://example.com/rmf/api/v1' \
+  --build-arg REACT_APP_AUTH_PROVIDER='keycloak' \
+  --build-arg REACT_APP_KEYCLOAK_CONFIG='{ "realm": "rmf-web", "clientId": "dashboard", "url": "https://example.com/auth" }'
 echo '📤 publishing dashboard image...'
 docker save rmf-web/dashboard:$rmf_web_ver | bash -c 'eval $(.bin/minikube docker-env) && docker load'
 
@@ -42,7 +48,12 @@ docker build -t rmf-web/reporting-server:$rmf_web_ver -f docker/reporting-server
 echo '📤 publishing reporting-server image...'
 docker save rmf-web/reporting-server:$rmf_web_ver | bash -c 'eval $(.bin/minikube docker-env) && docker load'
 
-docker build -t rmf-web/reporting:$rmf_web_ver -f docker/reporting.Dockerfile "$rmf_web_ws" --build-arg BUILDER_TAG=$rmf_web_ver
+docker build -t rmf-web/reporting:$rmf_web_ver -f docker/reporting.Dockerfile "$rmf_web_ws" \
+  --build-arg BUILDER_TAG=$rmf_web_ver \
+  --build-arg PUBLIC_URL='/reporting' \
+  --build-arg REACT_APP_REPORTING_SERVER='https://example.com/logserver/api/v1' \
+  --build-arg REACT_APP_AUTH_PROVIDER='keycloak' \
+  --build-arg REACT_APP_KEYCLOAK_CONFIG='{ "realm": "rmf-web", "clientId": "reporting", "url": "https://example.com/auth" }'
 echo '📤 publishing reporting image...'
 docker save rmf-web/reporting:$rmf_web_ver | bash -c 'eval $(.bin/minikube docker-env) && docker load'
 
