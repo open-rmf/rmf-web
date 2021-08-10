@@ -13,7 +13,6 @@ spec:
           containers:
             - name: reporting-server-clean-logs
               image: rmf-web/reporting-server
-              imagePullPolicy: Never # remove this in a real deployment
               command:
                 - /bin/sh
                 - -c
