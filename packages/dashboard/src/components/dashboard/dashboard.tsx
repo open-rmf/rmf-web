@@ -19,6 +19,7 @@ import {
   DoorPanel,
   DetailedDoor,
   LiftPanel,
+  DispenserPanel,
 } from 'react-components';
 import { GlobalHotKeys } from 'react-hotkeys';
 import * as RmfModels from 'rmf-models';
@@ -423,6 +424,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
               liftStates={liftStates}
               onRequestSubmit={handleLiftRequestSubmit}
             />
+            <DispenserPanel dispensers={workcells} dispenserStates={workcellStates} />
           </div>
         </div>
       )}
