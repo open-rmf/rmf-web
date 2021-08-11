@@ -8,6 +8,6 @@ export default {
   component: LiftPanel,
 } as Meta;
 
-export const DoorSidePanel: Story = (args) => {
+export const LiftPanelStory: Story = (args) => {
   return <LiftPanel lifts={testLifts} liftStates={testLiftStates} {...args} />;
 };

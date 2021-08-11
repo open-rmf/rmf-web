@@ -1,4 +1,5 @@
 import * as RmfModels from 'rmf-models';
+import { Dispenser } from './utils';
 
 export function allStateModes(): number[] {
   return [
@@ -19,5 +20,12 @@ export function makeDispenserState(
     seconds_remaining: 0,
     time: { sec: 0, nanosec: 0 },
     ...dispenserState,
+  };
+}
+
+export function makeDispenser(dispenser?: Dispenser) {
+  return {
+    guid: 'test',
+    ...dispenser,
   };
 }

@@ -37,10 +37,13 @@ const DispenserCell = (props: DispenserCellProps): JSX.Element => {
           <Typography align="center">{dispenser.guid}</Typography>
           <Grid container direction="row">
             <Grid item xs={6}>
-              <Typography>{`Queue: ${dispenserState.request_guid_queue.length}`}</Typography>
+              <Typography
+                align="center"
+                variant="body2"
+              >{`Queue: ${dispenserState.request_guid_queue.length}`}</Typography>
             </Grid>
             <Grid item xs={6}>
-              <Typography>
+              <Typography align="center" variant="body2">
                 {dispenserState.request_guid_queue.length
                   ? dispenserState.request_guid_queue
                   : 'Unknown'}

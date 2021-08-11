@@ -1,6 +1,6 @@
 import * as RmfModels from 'rmf-models';
 
-interface Dispenser {
+export interface Dispenser {
   guid: string;
 }
 
