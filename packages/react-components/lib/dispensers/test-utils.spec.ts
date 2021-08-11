@@ -23,7 +23,7 @@ export function makeDispenserState(
   };
 }
 
-export function makeDispenser(dispenser?: Dispenser) {
+export function makeDispenser(dispenser?: Dispenser): Dispenser {
   return {
     guid: 'test',
     ...dispenser,

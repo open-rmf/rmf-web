@@ -1,7 +1,7 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 
-import { DispenserPanel } from './dispenser.panel';
+import { DispenserPanel } from './dispenser-panel';
 import { makeDispenser, makeDispenserState } from './test-utils.spec';
 
 export default {
