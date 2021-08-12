@@ -88,8 +88,8 @@ export function TaskTimeline({ taskSummary }: TaskTimelineProps): JSX.Element {
       {timelineInfo.map((dotInfo, idx) => {
         return (
           <TimelineItem key={idx}>
-            <TimelineOppositeContent style={{ flex: 0.1 }}>
-              <Typography variant="body2" color="textSecondary">
+            <TimelineOppositeContent style={{ flex: 0.1, padding: '0px 12px 0px 0px' }}>
+              <Typography variant="overline" color="textSecondary">
                 {idx == 0 && rosTimeToJs(taskSummary.start_time).toLocaleTimeString()}
                 {idx != 0 &&
                   idx == timelineInfo.length - 1 &&
