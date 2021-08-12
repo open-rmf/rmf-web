@@ -3,12 +3,13 @@ import { DefaultReportQueryPayload, defaultReportStyles } from '../default-repor
 import { DefaultDatesForm } from '../default-dates-form';
 import { UserLoginReportTable, UserLoginRowsType } from './user-login-report-table';
 
-export interface UserLoginReportProps {
+import { ReportConfigProps } from '../utils';
+export interface UserLoginReportProps extends ReportConfigProps {
   getLogs: (data: DefaultReportQueryPayload) => Promise<UserLoginRowsType>;
 }
 
 export const UserLoginReport = (props: UserLoginReportProps): React.ReactElement => {
-  const { getLogs } = props;
+  const { getLogs, ...otherProps } = props;
   const [logs, setLogs] = React.useState<UserLoginRowsType>([]);
   const [lastSearchParams, setLastSearchParams] = React.useState<DefaultReportQueryPayload>({});
 
@@ -25,7 +26,7 @@ export const UserLoginReport = (props: UserLoginReportProps): React.ReactElement
 
   return (
     <>
-      <DefaultDatesForm search={searchLogs} />
+      <DefaultDatesForm search={searchLogs} {...otherProps} />
       <div className={classes.table}>
         {logs.length !== 0 && (
           <UserLoginReportTable rows={logs} tableSize={'48vh'} addMoreRows={getMoreLogs} />

@@ -5,13 +5,14 @@ import {
   UserLoginFailureReportTable,
   UserLoginFailureRowsType,
 } from './user-login-failure-report-table';
+import { ReportConfigProps } from '../utils';
 
-export interface UserLoginFailureReportProps {
+export interface UserLoginFailureReportProps extends ReportConfigProps {
   getLogs: (data: DefaultReportQueryPayload) => Promise<UserLoginFailureRowsType>;
 }
 
 export const UserLoginFailureReport = (props: UserLoginFailureReportProps): React.ReactElement => {
-  const { getLogs } = props;
+  const { getLogs, ...otherProps } = props;
   const [logs, setLogs] = React.useState<UserLoginFailureRowsType>([]);
   const [lastSearchParams, setLastSearchParams] = React.useState<DefaultReportQueryPayload>({});
 
@@ -28,7 +29,7 @@ export const UserLoginFailureReport = (props: UserLoginFailureReportProps): Reac
 
   return (
     <>
-      <DefaultDatesForm search={searchLogs} />
+      <DefaultDatesForm search={searchLogs} {...otherProps} />
       <div className={classes.table}>
         {logs.length !== 0 && (
           <UserLoginFailureReportTable rows={logs} tableSize={'48vh'} addMoreRows={getMoreLogs} />
