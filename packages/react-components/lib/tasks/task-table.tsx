@@ -18,9 +18,9 @@ const useStyles = makeStyles((theme) => ({
   },
   taskRowHover: {
     background: theme.palette.action.hover,
+    cursor: 'pointer',
   },
   infoRow: {
-    boxShadow: `${theme.shadows[1]}`,
     '& > *': {
       borderBottom: 'unset',
     },
@@ -52,7 +52,7 @@ function TaskRow({ task, onClick, timeline }: TaskRowProps) {
   return (
     <>
       <TableRow
-        className={clsx(classes.infoRow, hover && classes.taskRowHover)}
+        className={clsx(hover && classes.taskRowHover)}
         onClick={onClick}
         onMouseOver={() => setHover(true)}
         onMouseOut={() => setHover(false)}

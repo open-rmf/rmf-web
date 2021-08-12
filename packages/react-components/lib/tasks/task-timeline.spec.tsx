@@ -5,10 +5,18 @@ import { TaskTimeline } from './task-timeline';
 import { makeTask } from './test-data.spec';
 
 describe('Task Timeline', () => {
+  it('shows the time', () => {
+    const task = makeTask('task_0', 3, 3);
+    const root = render(<TaskTimeline taskSummary={task} />);
+    expect(root.getAllByText('7:30:00AM').length).toBe(2);
+  });
+
   it('shows all task phases', () => {
     const task = makeTask('task_0', 3, 3);
     const root = render(<TaskTimeline taskSummary={task} />);
     expect(root.getByText('Phase 1 test phase 1')).toBeTruthy();
+    expect(root.getByText('Phase 2 test phase 2')).toBeTruthy();
+    expect(root.getByText('Phase 3 test phase 3')).toBeTruthy();
   });
 
   it('smoke test for different task states', () => {

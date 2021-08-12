@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeStyles, Theme, useTheme } from '@material-ui/core/styles';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 import {
   Timeline,
   TimelineItem,
@@ -25,6 +25,10 @@ const useStyles = makeStyles((theme) => {
   return {
     paper: {
       padding: '6px 16px',
+      width: '200px',
+      height: '100px',
+      overflow: 'auto',
+      display: 'inline-block',
     },
     secondaryTail: {
       backgroundColor: theme.palette.secondary.main,
@@ -38,10 +42,6 @@ const useStyles = makeStyles((theme) => {
     failedPhase: {
       background: phaseColors.failed,
     },
-    dotInfo: {
-      textOverflow: 'ellipsis',
-      overflow: 'hidden',
-    },
   };
 });
 
@@ -51,8 +51,6 @@ export interface TaskTimelineProps {
 
 export function TaskTimeline({ taskSummary }: TaskTimelineProps): JSX.Element {
   const classes = useStyles();
-  const theme = useTheme();
-  const phaseColors = getPhaseColors(theme);
   const timelinePhases = taskSummary.status.split('\n\n');
   const currentDotIdx = timelinePhases.findIndex((msg) => msg.startsWith('*'));
   const timelineInfo = taskSummary.status.split('\n\n');
@@ -65,36 +63,32 @@ export function TaskTimeline({ taskSummary }: TaskTimelineProps): JSX.Element {
     ) {
       return {
         className: classes.failedPhase,
-        color: phaseColors.failed,
       };
     }
 
     if (taskSummary.state === RmfModels.TaskSummary.STATE_COMPLETED) {
       return {
         className: classes.completedPhase,
-        color: phaseColors.completed,
       };
     }
 
     if (taskSummary.state === RmfModels.TaskSummary.STATE_ACTIVE && idx < currentDotIdx) {
       return {
         className: classes.completedPhase,
-        color: phaseColors.completed,
       };
     }
 
     return {
       className: classes.pendingPhase,
-      color: phaseColors.pending,
     };
   });
 
   return (
-    <Timeline>
+    <Timeline align="left">
       {timelineInfo.map((dotInfo, idx) => {
         return (
           <TimelineItem key={idx}>
-            <TimelineOppositeContent>
+            <TimelineOppositeContent style={{ flex: 0.1 }}>
               <Typography variant="body2" color="textSecondary">
                 {idx == 0 && rosTimeToJs(taskSummary.start_time).toLocaleTimeString()}
                 {idx != 0 &&
@@ -103,15 +97,12 @@ export function TaskTimeline({ taskSummary }: TaskTimelineProps): JSX.Element {
               </Typography>
             </TimelineOppositeContent>
             <TimelineSeparator>
-              <TimelineDot className={timelineDotProps[idx].className} />
+              <TimelineDot {...timelineDotProps[idx]} />
               {idx < timelineInfo.length - 1 && <TimelineConnector />}
-              {idx == timelineInfo.length - 1 && (
-                <TimelineConnector style={{ background: 'transparent' }} />
-              )}
             </TimelineSeparator>
             <TimelineContent>
-              <Paper elevation={3} style={{ padding: '6px 16px' }}>
-                <Typography className={classes.dotInfo}>{dotInfo}</Typography>
+              <Paper className={classes.paper}>
+                <Typography variant="caption">{dotInfo}</Typography>
               </Paper>
             </TimelineContent>
           </TimelineItem>
