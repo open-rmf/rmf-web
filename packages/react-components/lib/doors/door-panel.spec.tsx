@@ -5,27 +5,39 @@ import React from 'react';
 import { DoorPanel } from './door-panel';
 import { doorStates, makeDetailedDoors } from './test-utils.spec';
 
-describe('Door Panel', () => {
-  it('smoke test with different door types and states', () => {
-    render(<DoorPanel doors={makeDetailedDoors()} doorStates={doorStates} />);
-  });
+function renderDoorPanel() {
+  const mockControlClickSubmit = jasmine.createSpy();
+  return render(
+    <DoorPanel
+      doors={makeDetailedDoors()}
+      doorStates={doorStates}
+      onDoorControlClick={mockControlClickSubmit}
+    />,
+  );
+}
 
-  it('should call onDoorControlClick when Open/Close button is clicked', () => {
-    const mockDoorControl = jasmine.createSpy();
-    const panel = render(
+describe('Door Panel', () => {
+  let root: ReturnType<typeof renderDoorPanel>;
+  let mockControlClickSubmit: jasmine.Spy<jasmine.Func>;
+
+  beforeEach(() => {
+    mockControlClickSubmit = jasmine.createSpy();
+    root = render(
       <DoorPanel
         doors={makeDetailedDoors()}
         doorStates={doorStates}
-        onDoorControlClick={mockDoorControl}
+        onDoorControlClick={mockControlClickSubmit}
       />,
     );
-    userEvent.click(panel.getByLabelText('hardware_door_open'));
-    expect(mockDoorControl).toHaveBeenCalled();
+  });
+
+  it('should call onDoorControlClick when Open/Close button is clicked', () => {
+    userEvent.click(root.getByLabelText('hardware_door_open'));
+    expect(mockControlClickSubmit).toHaveBeenCalled();
   });
 
   it('should call show layout when view mode button is clicked', () => {
-    const panel = render(<DoorPanel doors={makeDetailedDoors()} doorStates={doorStates} />);
-    userEvent.click(panel.getByLabelText('view-mode'));
-    expect(panel.getByLabelText('door-table')).toBeTruthy();
+    userEvent.click(root.getByLabelText('view-mode'));
+    expect(root.getByLabelText('door-table')).toBeTruthy();
   });
 });
