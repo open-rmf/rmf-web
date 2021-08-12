@@ -6,16 +6,7 @@ import { buildReportMenuStructure } from '../../components/reporter-side-bar-str
 
 describe('ReportDashboard', () => {
   beforeEach(() => {
-    const ReportContainer: Record<string, React.ReactElement> = {
-      queryAllLogs: <h1>QueryAllLogs</h1>,
-    };
-
-    render(
-      <ReportDashboard
-        buildMenuReportStructure={buildReportMenuStructure}
-        reportContainer={ReportContainer}
-      />,
-    );
+    render(<ReportDashboard buildMenuReportStructure={buildReportMenuStructure} />);
   });
 
   afterEach(() => cleanup());
@@ -44,17 +35,7 @@ describe('ReportDashboard', () => {
 });
 
 it('picks a different report and renders correctly', () => {
-  const ReportContainer: Record<string, React.ReactElement> = {
-    queryAllLogs: <h1>QueryAllLogs</h1>,
-    showDoorStateReport: <h1>Test</h1>,
-  };
-
-  render(
-    <ReportDashboard
-      buildMenuReportStructure={buildReportMenuStructure}
-      reportContainer={ReportContainer}
-    />,
-  );
+  render(<ReportDashboard buildMenuReportStructure={buildReportMenuStructure} />);
   userEvent.click(screen.getByText('Doors'));
-  expect(screen.getByText('Test'));
+  expect(screen.getByText('Reports - Door State Report'));
 });

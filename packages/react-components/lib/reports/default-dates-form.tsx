@@ -8,13 +8,14 @@ import { LogQueryPayload } from '.';
 
 interface DefaultDatesFormProps {
   search?: (payload: LogQueryPayload) => void;
+  fromLogDate?: MaterialUiPickersDate;
+  toLogDate?: MaterialUiPickersDate;
+  onSelectFromDate?: (date: MaterialUiPickersDate) => void;
+  onSelectToDate?: (date: MaterialUiPickersDate) => void;
 }
 
-export const DefaultDatesForm = (props: DefaultDatesFormProps): React.ReactElement => {
-  const { search } = props;
-
-  const [fromLogDate, setFromLogDate] = React.useState<MaterialUiPickersDate>(new Date());
-  const [toLogDate, setToLogDate] = React.useState<MaterialUiPickersDate>(new Date());
+export const DefaultDatesForm = (props: DefaultDatesFormProps) => {
+  const { search, fromLogDate, toLogDate, onSelectToDate, onSelectFromDate } = props;
 
   const classes = useStyles();
 
@@ -22,15 +23,7 @@ export const DefaultDatesForm = (props: DefaultDatesFormProps): React.ReactEleme
     search && search({ toLogDate, fromLogDate });
   };
 
-  const handleFromLogDateChange = React.useCallback((date: MaterialUiPickersDate) => {
-    setFromLogDate(date);
-  }, []);
-
-  const handleToLogDateChange = React.useCallback((date: MaterialUiPickersDate) => {
-    setToLogDate(date);
-  }, []);
-
-  return (
+  return onSelectFromDate && onSelectToDate ? (
     <>
       <div className={classes.searchForm}>
         <DateAndTimePickers
@@ -38,14 +31,14 @@ export const DefaultDatesForm = (props: DefaultDatesFormProps): React.ReactEleme
           maxDate={new Date()}
           label="From"
           value={fromLogDate}
-          onChange={handleFromLogDateChange}
+          onChange={onSelectFromDate}
         />
         <DateAndTimePickers
           name="toLogDate"
           maxDate={new Date()}
           label="To"
           value={toLogDate}
-          onChange={handleToLogDateChange}
+          onChange={onSelectToDate}
         />
       </div>
 
@@ -59,7 +52,7 @@ export const DefaultDatesForm = (props: DefaultDatesFormProps): React.ReactEleme
         Retrieve Logs
       </Button>
     </>
-  );
+  ) : null;
 };
 
 const useStyles = makeStyles(() => ({
