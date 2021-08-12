@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => {
     paper: {
       padding: '6px 16px',
       width: '200px',
-      height: '100px',
+      maxHeight: '100px',
       overflow: 'auto',
       display: 'inline-block',
     },
