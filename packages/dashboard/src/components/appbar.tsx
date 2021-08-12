@@ -96,7 +96,11 @@ export const AppBar = React.memo(
 
     return (
       <HeaderBar className={classes.appBar}>
-        <LogoButton src={brandingIconPath} alt="logo" className={classes.logoBtn} />
+        <LogoButton
+          src={brandingIconPath ? brandingIconPath : ''}
+          alt="logo"
+          className={classes.logoBtn}
+        />
         <NavigationBar value={tabValue}>
           <Tab
             label="Building"

@@ -96,6 +96,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     children,
   } = props;
   const negotiationColors = React.useMemo(() => new NegotiationColors(), []);
+  const classes = useStyles();
 
   // FIXME: trajectory manager should handle the tokens
   const authenticator = appConfig.authenticator;

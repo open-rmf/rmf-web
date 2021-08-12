@@ -10,15 +10,14 @@ import AppBar from '../appbar';
 import { User, UserContext } from '../auth/contexts';
 import FakeAuthenticator from '../auth/__mocks__/fake-authenticator';
 import { makeMockAppController } from './mock-app-controller';
-import { mountAsUser } from './test-utils';
-import { lightTheme } from 'react-components';
+import { mountAsUser, mockTheme } from './test-utils';
 
 describe('AppBar', () => {
   let appController: AppController;
   const Base = (props: React.PropsWithChildren<{}>) => {
     return (
       <MemoryRouter>
-        <ThemeProvider theme={lightTheme}>
+        <ThemeProvider theme={mockTheme}>
           <AppControllerContext.Provider value={appController}>
             {props.children}
           </AppControllerContext.Provider>

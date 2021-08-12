@@ -2,6 +2,12 @@ import { createMuiTheme } from '@material-ui/core/styles';
 import commonTheme from './common-theme';
 
 export const rmfDark = createMuiTheme({
+  appBar: {
+    logoSize: 180,
+  },
+  appDrawer: {
+    width: 240,
+  },
   palette: {
     ...commonTheme,
     text: {
