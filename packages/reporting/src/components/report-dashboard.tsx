@@ -109,8 +109,6 @@ export const ReportDashboard = (props: ReportDashboardProps) => {
   const [fromLogDate, setFromLogDate] = React.useState<MaterialUiPickersDate>(new Date());
   const [toLogDate, setToLogDate] = React.useState<MaterialUiPickersDate>(new Date());
 
-  const [header, setHeader] = React.useState<string>('');
-
   const handleFromLogDateChange = React.useCallback((date: MaterialUiPickersDate) => {
     setFromLogDate(date);
   }, []);
@@ -148,49 +146,34 @@ export const ReportDashboard = (props: ReportDashboardProps) => {
     }
   };
 
-  const headerTitle = (): void => {
+  const headerTitle = React.useMemo(() => {
     switch (currentReport) {
       case Reports.queryAllLogs:
-        setHeader('All Logs');
-        break;
+        return 'All Logs';
       case Reports.showDispenserStateReport:
-        setHeader('Dispenser State Report');
-        break;
+        return 'Dispenser State Report';
       case Reports.showDoorStateReport:
-        setHeader('Door State Report');
-        break;
+        return 'Door State Report';
       case Reports.showFleetStateReport:
-        setHeader('Fleet State Report');
-        break;
+        return 'Fleet State Report';
       case Reports.showHealthReport:
-        setHeader('Health Report');
-        break;
+        return 'Health Report';
       case Reports.showIngestorStateReport:
-        setHeader('Ingestor State Report');
-        break;
+        return 'Ingestor State Report';
       case Reports.showLiftStateReport:
-        setHeader('Lift State Report');
-        break;
+        return 'Lift State Report';
       case Reports.showLoginsReport:
-        setHeader('Logins Report');
-        break;
+        return 'Login Report';
       case Reports.showLogoutsReport:
-        setHeader('Logout Report');
-        break;
+        return 'Logout Report';
       case Reports.showLoginFailuresReport:
-        setHeader('Login Failure Report');
-        break;
+        return 'Login Failure Report';
       case Reports.showTasksReport:
-        setHeader('Task Report');
-        break;
+        return 'Task Report';
       default:
-        break;
+        return '';
     }
-  };
-
-  React.useEffect(() => {
-    headerTitle();
-  });
+  }, [currentReport]);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -230,7 +213,7 @@ export const ReportDashboard = (props: ReportDashboardProps) => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" className={classes.toolbarTitle}>
-            Reports - {header}
+            Reports - {headerTitle}
           </Typography>
           {authenticator.user && (
             <>
