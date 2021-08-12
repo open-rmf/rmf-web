@@ -24,12 +24,12 @@ import { BuildingMap } from '../models';
 export const BuildingApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     * **Available in socket.io**
-     * @summary Watch Building Map
+     * Available in socket.io
+     * @summary Get Building Map
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    watchBuildingMapBuildingMapGet: async (options: any = {}): Promise<RequestArgs> => {
+    getBuildingMapBuildingMapGet: async (options: any = {}): Promise<RequestArgs> => {
       const localVarPath = `/building_map`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, 'https://example.com');
@@ -71,17 +71,17 @@ export const BuildingApiAxiosParamCreator = function (configuration?: Configurat
 export const BuildingApiFp = function (configuration?: Configuration) {
   return {
     /**
-     * **Available in socket.io**
-     * @summary Watch Building Map
+     * Available in socket.io
+     * @summary Get Building Map
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async watchBuildingMapBuildingMapGet(
+    async getBuildingMapBuildingMapGet(
       options?: any,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BuildingMap>> {
       const localVarAxiosArgs = await BuildingApiAxiosParamCreator(
         configuration,
-      ).watchBuildingMapBuildingMapGet(options);
+      ).getBuildingMapBuildingMapGet(options);
       return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
         const axiosRequestArgs = {
           ...localVarAxiosArgs.options,
@@ -104,14 +104,14 @@ export const BuildingApiFactory = function (
 ) {
   return {
     /**
-     * **Available in socket.io**
-     * @summary Watch Building Map
+     * Available in socket.io
+     * @summary Get Building Map
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    watchBuildingMapBuildingMapGet(options?: any): AxiosPromise<BuildingMap> {
+    getBuildingMapBuildingMapGet(options?: any): AxiosPromise<BuildingMap> {
       return BuildingApiFp(configuration)
-        .watchBuildingMapBuildingMapGet(options)
+        .getBuildingMapBuildingMapGet(options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -125,15 +125,15 @@ export const BuildingApiFactory = function (
  */
 export class BuildingApi extends BaseAPI {
   /**
-   * **Available in socket.io**
-   * @summary Watch Building Map
+   * Available in socket.io
+   * @summary Get Building Map
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof BuildingApi
    */
-  public watchBuildingMapBuildingMapGet(options?: any) {
+  public getBuildingMapBuildingMapGet(options?: any) {
     return BuildingApiFp(this.configuration)
-      .watchBuildingMapBuildingMapGet(options)
+      .getBuildingMapBuildingMapGet(options)
       .then((request) => request(this.axios, this.basePath));
   }
 }

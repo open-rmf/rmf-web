@@ -1,10 +1,18 @@
 import { ThemeProvider } from '@material-ui/core';
-import { render, waitForElementToBeRemoved } from '@testing-library/react';
+import { render as render_, waitForElementToBeRemoved } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { lightTheme } from 'react-components';
+import { MemoryRouter } from 'react-router';
 import { AppBase } from '../app-base';
 import { AppControllerContext } from '../app-contexts';
+import { lightTheme } from 'react-components';
+
+const render = (children: React.ReactNode) =>
+  render_(
+    <MemoryRouter>
+      <ThemeProvider theme={lightTheme}>{children}</ThemeProvider>
+    </MemoryRouter>,
+  );
 
 test('can show and hide settings', async () => {
   const TestComponent = () => {
@@ -19,10 +27,9 @@ test('can show and hide settings', async () => {
 
   const root = render(
     <ThemeProvider theme={lightTheme}>
-      <AppBase appbarProps={{ tabValue: 'building' }}>
+      <AppBase>
         <TestComponent />
       </AppBase>
-      ,
     </ThemeProvider>,
   );
 
@@ -44,9 +51,9 @@ test('can toggle settings', async () => {
     );
   };
 
-  const root = await render(
+  const root = render(
     <ThemeProvider theme={lightTheme}>
-      <AppBase appbarProps={{ tabValue: 'building' }}>
+      <AppBase>
         <TestComponent />
       </AppBase>
     </ThemeProvider>,
@@ -71,9 +78,9 @@ test('can show and hide settings', async () => {
     );
   };
 
-  const root = await render(
+  const root = render(
     <ThemeProvider theme={lightTheme}>
-      <AppBase appbarProps={{ tabValue: 'building' }}>
+      <AppBase>
         <TestComponent />
       </AppBase>
     </ThemeProvider>,
@@ -97,9 +104,9 @@ test('can toggle help', async () => {
     );
   };
 
-  const root = await render(
+  const root = render(
     <ThemeProvider theme={lightTheme}>
-      <AppBase appbarProps={{ tabValue: 'building' }}>
+      <AppBase>
         <TestComponent />
       </AppBase>
     </ThemeProvider>,
@@ -124,9 +131,9 @@ test('can show and hide hotkeys dialog', async () => {
     );
   };
 
-  const root = await render(
+  const root = render(
     <ThemeProvider theme={lightTheme}>
-      <AppBase appbarProps={{ tabValue: 'building' }}>
+      <AppBase>
         <TestComponent />
       </AppBase>
     </ThemeProvider>,
@@ -149,9 +156,9 @@ test('can toggle hotkeys dialog', async () => {
     );
   };
 
-  const root = await render(
+  const root = render(
     <ThemeProvider theme={lightTheme}>
-      <AppBase appbarProps={{ tabValue: 'building' }}>
+      <AppBase>
         <TestComponent />
       </AppBase>
     </ThemeProvider>,

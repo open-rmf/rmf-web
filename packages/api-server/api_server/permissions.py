@@ -1,10 +1,12 @@
-from typing import List
+from typing import List, TypeVar
 
 from tortoise.expressions import Subquery
 from tortoise.queryset import QuerySet
 
 from .models import User
 from .models import tortoise_models as ttm
+
+ResourceT = TypeVar("ResourceT", bound=ttm.ProtectedResource)
 
 
 class RmfAction:
@@ -29,9 +31,9 @@ class Enforcer:
     @staticmethod
     def query(
         user: User,
-        resource: QuerySet[ttm.ProtectedResource],
+        resource: QuerySet[ResourceT],
         action: str,
-    ) -> QuerySet[ttm.Types.ProtectedResourceModel]:
+    ) -> QuerySet[ResourceT]:
         """
         Augments a query with the read permissions of an user, this returns a query
         that only returns results that the user can see. The admin roles can always see

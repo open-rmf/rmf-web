@@ -225,7 +225,6 @@ export function TaskPanel({
           onClose={() => setOpenCreateTaskForm(false)}
           submitTasks={submitTasks}
           tasksFromFile={tasksFromFile}
-          onCancelClick={() => setOpenCreateTaskForm(false)}
           onSuccess={() => {
             setOpenCreateTaskForm(false);
             setSnackbarSeverity('success');

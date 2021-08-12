@@ -1,47 +1,33 @@
+import { ButtonBase, ButtonBaseProps, makeStyles } from '@material-ui/core';
+import clsx from 'clsx';
 import React from 'react';
-import { Button, createStyles, makeStyles } from '@material-ui/core';
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    root: {
-      '&$disabled': {
-        backgroundColor: theme.palette.background.paper,
-        color: theme.palette.primary.main,
-        borderRadius: 0,
-      },
-    },
-    disabled: {},
-  }),
-);
+const useStyles = makeStyles((theme) => ({
+  logoBtn: {
+    padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
+    boxSizing: 'border-box',
+  },
+  logoImg: {
+    width: '100%',
+    height: '100%',
+  },
+}));
 
-export interface LogoButtonProps {
-  logoPath?: string;
-  onClick?: () => void;
+export interface LogoButtonProps extends ButtonBaseProps {
+  src: string;
+  alt?: string;
 }
 
-export const LogoButton = (props: LogoButtonProps): JSX.Element => {
-  const { logoPath, onClick } = props;
+export const LogoButton = ({
+  src,
+  alt,
+  className,
+  ...otherProps
+}: LogoButtonProps): JSX.Element => {
   const classes = useStyles();
-
-  if (onClick) {
-    return (
-      <Button disableElevation color="primary" variant="contained" onClick={onClick}>
-        <img src={logoPath} style={{ width: '120px' }} alt="logo" />
-      </Button>
-    );
-  } else {
-    return (
-      <Button
-        disableElevation
-        variant="contained"
-        classes={{
-          root: classes.root,
-          disabled: classes.disabled,
-        }}
-        disabled
-      >
-        <img src={logoPath} style={{ width: '120px' }} alt="logo" />
-      </Button>
-    );
-  }
+  return (
+    <ButtonBase className={clsx(classes.logoBtn, className)} disableRipple {...otherProps}>
+      <img src={src} alt={alt} className={classes.logoImg} />
+    </ButtonBase>
+  );
 };

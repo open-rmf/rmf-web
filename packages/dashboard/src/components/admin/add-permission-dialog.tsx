@@ -1,7 +1,8 @@
 import { MenuItem, TextField } from '@material-ui/core';
 import { Permission } from 'api-client';
 import React from 'react';
-import { ConfirmationDialog } from 'react-components';
+import { ConfirmationDialog, useAsync } from 'react-components';
+import { AppControllerContext } from '../app-contexts';
 import { getActionText, RmfAction } from '../permissions';
 
 export interface AddPermissionDialogProps {
@@ -15,11 +16,13 @@ export function AddPermissionDialog({
   setOpen,
   savePermission,
 }: AddPermissionDialogProps): JSX.Element {
+  const safeAsync = useAsync();
   const [action, setAction] = React.useState('');
   const [authzGrp, setAuthzGrp] = React.useState('');
   const [actionError, setActionError] = React.useState(false);
   const [authzGrpError, setAuthzGrpError] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
+  const { showErrorAlert } = React.useContext(AppControllerContext);
 
   const validateForm = () => {
     let error = false;
@@ -43,8 +46,14 @@ export function AddPermissionDialog({
       return;
     }
     setSaving(true);
-    savePermission && (await savePermission({ action, authz_grp: authzGrp }));
-    setSaving(false);
+    try {
+      savePermission && (await safeAsync(savePermission({ action, authz_grp: authzGrp })));
+      setSaving(false);
+      setOpen && setOpen(false);
+    } catch (e) {
+      setSaving(false);
+      showErrorAlert(`Failed to save permission: ${e.message}`);
+    }
   };
 
   return (
@@ -52,15 +61,16 @@ export function AddPermissionDialog({
       open={open}
       title="Add Permission"
       confirmText="Save"
-      loading={saving}
+      submitting={saving}
       onSubmit={handleSubmit}
-      onCancelClick={() => setOpen && setOpen(false)}
+      onClose={() => setOpen && setOpen(false)}
     >
       <TextField
         id="action-input"
         select
         variant="outlined"
         fullWidth
+        autoFocus
         label="Action"
         value={action}
         onChange={(ev) => setAction(ev.target.value)}

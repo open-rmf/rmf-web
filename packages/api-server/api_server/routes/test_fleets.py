@@ -1,36 +1,31 @@
-import asyncio
-import concurrent.futures
-
-from rmf_fleet_msgs.msg import FleetState as RmfFleetState
-from rmf_fleet_msgs.msg import RobotState as RmfRobotState
+from api_server.models import FleetState, RobotState, TaskSummary
+from api_server.test import AppFixture, try_until
+from api_server.test.test_data import make_fleet_state
 from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
 
-from ..models import tortoise_models as ttm
-from ..test.test_fixtures import RouteFixture, try_until
 
-
-class TestFleetsRoute(RouteFixture):
+class TestFleetsRoute(AppFixture):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
         fleet_states = [
-            RmfFleetState(
+            FleetState(
                 name="fleet_1",
-                robots=[RmfRobotState(name="robot_1"), RmfRobotState(name="robot_2")],
+                robots=[RobotState(name="robot_1"), RobotState(name="robot_2")],
             ),
-            RmfFleetState(
+            FleetState(
                 name="fleet_2",
-                robots=[RmfRobotState(name="robot_3")],
+                robots=[RobotState(name="robot_3")],
             ),
         ]
         tasks = [
-            RmfTaskSummary(
+            TaskSummary(
                 task_id="task_1",
                 fleet_name="fleet_1",
                 robot_name="robot_1",
                 state=RmfTaskSummary.STATE_ACTIVE,
             ),
-            RmfTaskSummary(
+            TaskSummary(
                 task_id="task_2",
                 fleet_name="fleet_1",
                 robot_name="robot_1",
@@ -38,65 +33,37 @@ class TestFleetsRoute(RouteFixture):
             ),
         ]
 
-        fut = concurrent.futures.Future()
-        fleet_states_pub = cls.node.create_publisher(RmfFleetState, "fleet_states", 10)
-        task_summaries_pub = cls.node.create_publisher(
-            RmfTaskSummary, "task_summaries", 10
-        )
-
-        async def wait():
-            timeout = asyncio.create_task(asyncio.sleep(5))
-            while not timeout.done():
-                for f in fleet_states:
-                    fleet_states_pub.publish(f)
-                for t in tasks:
-                    task_summaries_pub.publish(t)
-                if (
-                    await ttm.FleetState.all().count() >= 2
-                    and await ttm.RobotState.all().count() >= 3
-                    and await ttm.TaskSummary.all().count() >= 2
-                ):
-                    timeout.cancel()
-                    fut.set_result(True)
-                    return
-                await asyncio.sleep(0.5)
-            fut.set_exception(TimeoutError())
-
-        cls.server.app.wait_ready()
-        cls.server.app.loop.create_task(wait())
-        try:
-            fut.result()
-        except TimeoutError:
-            cls.tearDownClass()
-            raise
+        for f in fleet_states:
+            cls.app.rmf_events().fleet_states.on_next(f)
+        for t in tasks:
+            cls.app.rmf_events().task_summaries.on_next(t)
 
     def test_get_fleets(self):
-        resp = self.session.get(f"{self.base_url}/fleets?fleet_name=fleet_1")
-        self.assertEqual(resp.status_code, 200)
+        resp = self.session.get("/fleets?fleet_name=fleet_1")
+        self.assertEqual(200, resp.status_code)
         resp_json = resp.json()
         self.assertEqual(len(resp_json), 1)
 
     def test_get_robots(self):
-        resp = self.session.get(
-            f"{self.base_url}/fleets/robots?fleet_name=fleet_1&robot_name=robot_1"
-        )
-        self.assertEqual(resp.status_code, 200)
+        resp = self.session.get("/fleets/robots?fleet_name=fleet_1&robot_name=robot_1")
+        self.assertEqual(200, resp.status_code)
         resp_json = resp.json()
         self.assertEqual(len(resp_json), 1)
         self.assertEqual(len(resp_json[0]["tasks"]), 2)
 
-
-class TestFleetsRoute_RMF(RouteFixture):
     def test_get_fleet_state(self):
-        pub = self.node.create_publisher(RmfFleetState, "fleet_states", 10)
-        rmf_ingestor_state = RmfFleetState(name="test_fleet")
+        resp = self.session.get("/fleets/fleet_1/state")
+        self.assertEqual(200, resp.status_code)
+        state = resp.json()
+        self.assertEqual("fleet_1", state["name"])
 
-        def try_get():
-            pub.publish(rmf_ingestor_state)
-            return self.session.get(f"{self.base_url}/fleets/test_fleet/state")
+    def test_watch_fleet_state(self):
+        fleet_state = make_fleet_state()
+        fut = self.subscribe_sio("/fleets/test_fleet/state")
 
-        resp = try_until(
-            try_get,
-            lambda x: x.status_code == 200,
-        )
-        self.assertEqual(resp.status_code, 200)
+        def wait():
+            self.app.rmf_events().fleet_states.on_next(fleet_state)
+            return fut.result(0)
+
+        result = try_until(wait, lambda _: True)
+        self.assertEqual(1, len(result["robots"]))

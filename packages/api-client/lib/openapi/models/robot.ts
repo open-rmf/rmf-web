@@ -31,7 +31,7 @@ export interface Robot {
   name: any;
   /**
    *
-   * @type {RobotState}
+   * @type {ApiServerModelsFleetsRobotState}
    * @memberof Robot
    */
   state: any;

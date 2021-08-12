@@ -1,4 +1,5 @@
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { UserProfileCard } from '../user-profile';
 
@@ -11,5 +12,15 @@ describe('UserProfileCard', () => {
   it('renders admin', () => {
     const root = render(<UserProfileCard profile={{ username: 'test', is_admin: true }} />);
     root.getByText('Admin');
+  });
+
+  it('calls makeAdmin when checkbox is clicked', async () => {
+    const makeAdmin = jest.fn();
+    const root = render(<UserProfileCard profile={{ username: 'test' }} makeAdmin={makeAdmin} />);
+
+    userEvent.click(root.getByLabelText('more actions'));
+    userEvent.click(root.getByRole('menuitem', { name: 'Admin' }));
+    await waitFor(() => true); // let async effects run
+    expect(makeAdmin).toHaveBeenCalledWith(true);
   });
 });

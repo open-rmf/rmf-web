@@ -1,12 +1,4 @@
-from rmf_building_map_msgs.msg import Door as RmfDoor
-from rmf_dispenser_msgs.msg import DispenserState as RmfDispenserState
-from rmf_door_msgs.msg import DoorMode as RmfDoorMode
-from rmf_fleet_msgs.msg import RobotMode as RmfRobotMode
-from rmf_ingestor_msgs.msg import IngestorState as RmfIngestorState
-from rmf_lift_msgs.msg import LiftState as RmfLiftState
-from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
-
-from ..models import (
+from api_server.models import (
     AffineImage,
     BuildingMap,
     DispenserState,
@@ -22,6 +14,13 @@ from ..models import (
     RobotState,
     TaskSummary,
 )
+from rmf_building_map_msgs.msg import Door as RmfDoor
+from rmf_dispenser_msgs.msg import DispenserState as RmfDispenserState
+from rmf_door_msgs.msg import DoorMode as RmfDoorMode
+from rmf_fleet_msgs.msg import RobotMode as RmfRobotMode
+from rmf_ingestor_msgs.msg import IngestorState as RmfIngestorState
+from rmf_lift_msgs.msg import LiftState as RmfLiftState
+from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
 
 
 def make_door(name: str = "test_door") -> Door:
@@ -49,6 +48,7 @@ def make_building_map():
             Level(
                 name="L1",
                 elevation=0.0,
+                doors=[make_door()],
                 images=[
                     AffineImage(
                         name="test_image",
@@ -58,7 +58,7 @@ def make_building_map():
                 ],
             ),
         ],
-        lifts=[],
+        lifts=[make_lift()],
     )
 
 

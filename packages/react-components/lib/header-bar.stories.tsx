@@ -75,7 +75,7 @@ export const FullHeaderBar: Story = () => {
     <>
       <TabContext value={value}>
         <HeaderBar>
-          <LogoButton logoPath="/assets/roshealth-logo-white.png" />
+          <LogoButton src="/assets/roshealth-logo-white.png" />
           <NavigationBar onTabChange={onTabChange} value={value}>
             <Tab key="building-tab" label="Building" value="building" aria-label="building-tab" />
             <Tab key={'robots'} label={'Robots'} value={'robots'} aria-label={`building-tab`} />

@@ -1,27 +1,31 @@
-from rmf_ingestor_msgs.msg import IngestorState as RmfIngestorState
-
-from ..models import Ingestor
-from ..test.test_fixtures import RouteFixture, try_until
+from api_server.models import Ingestor
+from api_server.test import AppFixture, make_ingestor_state, try_until
 
 
-class TestIngestorsRoute(RouteFixture):
+class TestIngestorsRoute(AppFixture):
     def test_get_ingestors(self):
-        pub = self.node.create_publisher(RmfIngestorState, "ingestor_states", 10)
-        rmf_ingestor_state = RmfIngestorState(guid="test_ingestor")
-
-        def try_get():
-            pub.publish(rmf_ingestor_state)
-            return self.session.get(f"{self.base_url}/ingestors/test_ingestor/state")
-
-        resp = try_until(
-            try_get,
-            lambda x: x.status_code == 200,
-        )
-        self.assertEqual(resp.status_code, 200)
-
-        # should be able to see it in /ingestors
-        resp = self.session.get(f"{self.base_url}/ingestors")
+        self.app.rmf_events().ingestor_states.on_next(make_ingestor_state())
+        resp = self.session.get("/ingestors")
         self.assertEqual(resp.status_code, 200)
         ingestors = [Ingestor(**d) for d in resp.json()]
         self.assertEqual(1, len(ingestors))
         self.assertEqual("test_ingestor", ingestors[0].guid)
+
+    def test_get_ingestor_state(self):
+        self.app.rmf_events().ingestor_states.on_next(make_ingestor_state())
+        resp = self.session.get("/ingestors/test_ingestor/state")
+        self.assertEqual(200, resp.status_code)
+        state = resp.json()
+        self.assertEqual("test_ingestor", state["guid"])
+
+    def test_watch_ingestor_state(self):
+        ingestor_state = make_ingestor_state()
+        ingestor_state.time.sec = 1
+        fut = self.subscribe_sio("/ingestors/test_ingestor/state")
+
+        def wait():
+            self.app.rmf_events().ingestor_states.on_next(ingestor_state)
+            return fut.result(0)
+
+        result = try_until(wait, lambda _: True)
+        self.assertEqual(1, result["time"]["sec"])

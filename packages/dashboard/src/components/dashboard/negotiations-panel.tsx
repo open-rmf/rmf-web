@@ -16,8 +16,8 @@ import {
   ResolveState,
 } from '../../managers/negotiation-status-manager';
 import { colorPalette } from '../../util/css-utils';
-import { SpotlightValue } from '../spotlight-value';
 import { AppConfigContext } from '../app-contexts';
+import { SpotlightValue } from '../spotlight-value';
 
 const debug = Debug('OmniPanel:NegotiationsPanel');
 
@@ -101,7 +101,8 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
   const [selected, setSelected] = React.useState<string>('');
   const [conflictIds, setConflictIds] = React.useState<string[]>([]);
 
-  const authenticator = React.useContext(AppConfigContext).authenticator;
+  // FIXME: negotiation manager should handle the tokens
+  const { authenticator } = React.useContext(AppConfigContext);
 
   React.useEffect(() => {
     if (!spotlight) {

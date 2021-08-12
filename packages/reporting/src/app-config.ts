@@ -1,6 +1,4 @@
-import { Authenticator } from 'rmf-auth';
-import KeycloakAuthenticator from 'rmf-auth/lib/keycloak';
-import StubAuthenticator from 'rmf-auth/lib/stub';
+import { Authenticator, KeycloakAuthenticator, StubAuthenticator } from 'rmf-auth';
 export interface AppConfig {
   authenticator: Authenticator;
   reportingServerUrl: string;

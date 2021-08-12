@@ -71,4 +71,10 @@ export interface TaskSummary {
    * @memberof TaskSummary
    */
   robot_name?: any;
+  /**
+   *
+   * @type {string}
+   * @memberof TaskSummary
+   */
+  authz_grp?: any;
 }

@@ -1,6 +1,7 @@
 import { TextField } from '@material-ui/core';
 import React from 'react';
-import { ConfirmationDialog } from 'react-components';
+import { ConfirmationDialog, useAsync } from 'react-components';
+import { AppControllerContext } from '../app-contexts';
 
 export interface CreateUserDialogProps {
   open: boolean;
@@ -13,9 +14,11 @@ export function CreateUserDialog({
   setOpen,
   createUser,
 }: CreateUserDialogProps): JSX.Element {
+  const safeAsync = useAsync();
   const [creating, setCreating] = React.useState(false);
   const [username, setUsername] = React.useState('');
   const [usernameError, setUsernameError] = React.useState(false);
+  const { showErrorAlert } = React.useContext(AppControllerContext);
 
   const validateForm = () => {
     let error = false;
@@ -34,10 +37,12 @@ export function CreateUserDialog({
     }
     setCreating(true);
     try {
-      createUser && (await createUser(username));
-      setOpen && setOpen(false);
-    } finally {
+      createUser && (await safeAsync(createUser(username)));
       setCreating(false);
+      setOpen && setOpen(false);
+    } catch (e) {
+      setCreating(false);
+      showErrorAlert(`Failed to create user: ${e.message}`);
     }
   };
 
@@ -46,14 +51,15 @@ export function CreateUserDialog({
       open={open}
       title="Create User"
       confirmText="Create"
-      loading={creating}
+      submitting={creating}
       onSubmit={submitForm}
-      onCancelClick={() => setOpen && setOpen(false)}
+      onClose={() => setOpen && setOpen(false)}
     >
       <TextField
         id="username"
         variant="outlined"
         fullWidth
+        autoFocus
         label="Username"
         value={username}
         onChange={(ev) => setUsername(ev.target.value)}

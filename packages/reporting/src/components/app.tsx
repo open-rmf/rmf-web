@@ -5,8 +5,8 @@ import '@fontsource/roboto/700.css';
 import { ThemeProvider } from '@material-ui/core';
 import React from 'react';
 import { NotFoundPage, rmfLight } from 'react-components';
-import { BrowserRouter, Link, Redirect, Route, Switch, useLocation } from 'react-router-dom';
-import { getUrl, LoginHOC, PrivateRouteHOC } from 'rmf-auth';
+import { BrowserRouter, Link, Redirect, Route, Switch } from 'react-router-dom';
+import { LoginPage, PrivateRoute } from 'rmf-auth';
 import appConfig from '../app-config';
 import { DASHBOARD_ROUTE, LOGIN_ROUTE } from '../util/url';
 import { AppConfigContext } from './app-contexts';
@@ -35,8 +35,7 @@ export default function App(): JSX.Element | null {
     };
   }, [authenticator, user]);
 
-  const PrivateRoute = PrivateRouteHOC(Route, Redirect, useLocation);
-  const Login = LoginHOC(Redirect);
+  const loginRedirect = React.useMemo(() => <Redirect to={LOGIN_ROUTE} />, []);
 
   return authInitialized ? (
     <AppConfigContext.Provider value={appConfig}>
@@ -46,19 +45,25 @@ export default function App(): JSX.Element | null {
             <BrowserRouter>
               <Switch>
                 <Route exact path={LOGIN_ROUTE}>
-                  <Login
-                    user={user}
+                  <LoginPage
                     title={'Reporting'}
-                    authenticator={authenticator}
-                    successRedirectUri={getUrl(DASHBOARD_ROUTE)}
+                    logo="assets/ros-health.png"
+                    onLoginClick={() =>
+                      authenticator.login(`${window.location.origin}${DASHBOARD_ROUTE}`)
+                    }
                   />
                 </Route>
-                <PrivateRoute exact path={appRoutes} redirectPath={LOGIN_ROUTE} user={user}>
+                <PrivateRoute
+                  exact
+                  path={appRoutes}
+                  unauthorizedComponent={loginRedirect}
+                  user={user}
+                >
                   <Switch>
                     <PrivateRoute
                       exact
                       path={DASHBOARD_ROUTE}
-                      redirectPath={LOGIN_ROUTE}
+                      unauthorizedComponent={loginRedirect}
                       user={user}
                     >
                       <Dashboard />

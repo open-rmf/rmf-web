@@ -1,26 +1,27 @@
 import logging
 import unittest
 
-from rmf_door_msgs.msg import DoorMode
-from tortoise import Tortoise
-
-from api_server.test import init_db
-
-from ..models import (
+from api_server.models import (
     DispenserHealth,
+    DispenserState,
     DoorHealth,
+    DoorState,
+    FleetState,
     HealthStatus,
     IngestorHealth,
+    IngestorState,
     LiftHealth,
+    LiftState,
     RobotHealth,
     TaskSummary,
 )
-from ..models import tortoise_models as ttm
-from ..repositories import RmfRepository
-from ..rmf_io import RmfEvents
-from ..test import test_data
-from ..test.test_fixtures import async_try_until
+from api_server.models import tortoise_models as ttm
+from api_server.test import async_try_until, init_db, test_data
+from rmf_door_msgs.msg import DoorMode
+from tortoise import Tortoise
+
 from .book_keeper import RmfBookKeeper
+from .events import RmfEvents
 
 
 class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
@@ -28,10 +29,8 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
         await init_db()
 
         self.rmf = RmfEvents()
-        self.repo = RmfRepository()
         logger = logging.Logger("test", level="CRITICAL")
-        self.book_keeper = RmfBookKeeper(self.repo, self.rmf, logger=logger)
-        self.repo = self.book_keeper.repo
+        self.book_keeper = RmfBookKeeper(self.rmf, logger=logger)
         await self.book_keeper.start()
 
     async def asyncTearDown(self):
@@ -44,7 +43,7 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
         self.rmf.door_states.on_next(state)
 
         async def get():
-            return await self.repo.get_door_state("test_door")
+            return DoorState.from_tortoise(await ttm.DoorState.get(id_="test_door"))
 
         result = await async_try_until(get, lambda x: x is not None, 1, 0.02)
         self.assertIsNotNone(result)
@@ -68,9 +67,11 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
         )
 
         async def get():
-            return await self.repo.get_door_health("test_door")
+            return await DoorHealth.from_tortoise_orm(
+                await ttm.DoorHealth.get(id_="test_door")
+            )
 
-        health = await async_try_until(get, lambda x: x is not None, 1, 0.02)
+        health = await async_try_until(get, lambda _: True, 1, 0.02)
         self.assertIsNotNone(health)
         self.assertEqual(health.health_status, HealthStatus.HEALTHY)
 
@@ -93,7 +94,7 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
         self.rmf.lift_states.on_next(state)
 
         async def get():
-            return await self.repo.get_lift_state("test_lift")
+            return LiftState.from_tortoise(await ttm.LiftState.get(id_="test_lift"))
 
         result = await async_try_until(get, lambda x: x is not None, 1, 0.02)
         self.assertIsNotNone(result)
@@ -116,10 +117,11 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
         )
 
         async def get():
-            result = await ttm.LiftHealth.get_or_none(id_="test_lift")
-            return await result.to_pydantic() if result is not None else None
+            return await LiftHealth.from_tortoise_orm(
+                await ttm.LiftHealth.get(id_="test_lift")
+            )
 
-        health = await async_try_until(get, lambda x: x is not None, 1, 0.02)
+        health = await async_try_until(get, lambda _: True, 1, 0.02)
         self.assertIsNotNone(health)
         self.assertEqual(health.health_status, HealthStatus.HEALTHY)
 
@@ -141,7 +143,9 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
         self.rmf.dispenser_states.on_next(state)
 
         async def get_state():
-            return await self.repo.get_dispenser_state("test_dispenser")
+            return DispenserState.from_tortoise(
+                await ttm.DispenserState.get(id_="test_dispenser")
+            )
 
         result = await async_try_until(get_state, lambda x: x is not None, 1, 0.02)
         self.assertIsNotNone(result)
@@ -165,10 +169,11 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
         )
 
         async def get():
-            result = await ttm.DispenserHealth.get_or_none(id_="test_dispenser")
-            return await result.to_pydantic() if result is not None else None
+            return await DispenserHealth.from_tortoise_orm(
+                await ttm.DispenserHealth.get(id_="test_dispenser")
+            )
 
-        health = await async_try_until(get, lambda x: x is not None, 1, 0.02)
+        health = await async_try_until(get, lambda _: True, 1, 0.02)
         self.assertIsNotNone(health)
         self.assertEqual(health.health_status, HealthStatus.HEALTHY)
 
@@ -190,7 +195,9 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
         self.rmf.ingestor_states.on_next(state)
 
         async def get():
-            return await self.repo.get_ingestor_state("test_ingestor")
+            return IngestorState.from_tortoise(
+                await ttm.IngestorState.get(id_="test_ingestor")
+            )
 
         result = await async_try_until(get, lambda x: x is not None, 1, 0.02)
         self.assertIsNotNone(result)
@@ -214,10 +221,11 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
         )
 
         async def get():
-            result = await ttm.IngestorHealth.get_or_none(id_="test_ingestor")
-            return await result.to_pydantic() if result is not None else None
+            return await IngestorHealth.from_tortoise_orm(
+                await ttm.IngestorHealth.get(id_="test_ingestor")
+            )
 
-        health = await async_try_until(get, lambda x: x is not None, 1, 0.02)
+        health = await async_try_until(get, lambda _: True, 1, 0.02)
         self.assertIsNotNone(health)
         self.assertEqual(health.health_status, HealthStatus.HEALTHY)
 
@@ -239,9 +247,9 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
         self.rmf.fleet_states.on_next(state)
 
         async def get():
-            return await self.repo.get_fleet_state("test_fleet")
+            return FleetState.from_tortoise(await ttm.FleetState.get(id_="test_fleet"))
 
-        result = await async_try_until(get, lambda x: x is not None, 1, 0.02)
+        result = await async_try_until(get, lambda _: True, 1, 0.02)
         self.assertIsNotNone(result)
         self.assertEqual(len(result.robots), 1)
 
@@ -261,10 +269,11 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
         )
 
         async def get():
-            result = await ttm.RobotHealth.get_or_none(id_="test_fleet/test_robot")
-            return await result.to_pydantic() if result is not None else None
+            return await RobotHealth.from_tortoise_orm(
+                await ttm.RobotHealth.get(id_="test_fleet/test_robot")
+            )
 
-        health = await async_try_until(get, lambda x: x is not None, 1, 0.02)
+        health = await async_try_until(get, lambda _: True, 1, 0.02)
         self.assertIsNotNone(health)
         self.assertEqual(health.health_status, HealthStatus.HEALTHY)
 
@@ -286,9 +295,9 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
         self.rmf.task_summaries.on_next(task)
 
         async def get():
-            return await self.repo.get_task_summary("test_task")
+            return TaskSummary.from_tortoise(await ttm.TaskSummary.get(id_="test_task"))
 
-        result = await async_try_until(get, lambda x: x is not None, 1, 0.02)
+        result = await async_try_until(get, lambda _: True, 1, 0.02)
         self.assertIsNotNone(result)
         self.assertEqual(result.status, "test_status")
 

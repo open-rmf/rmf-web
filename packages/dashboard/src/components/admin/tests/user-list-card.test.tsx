@@ -1,7 +1,10 @@
-import { render, waitFor } from '@testing-library/react';
+import { render as render_, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
+import { MemoryRouter } from 'react-router';
 import { UserListCard } from '../user-list-card';
+
+const render = (component: React.ReactNode) => render_(<MemoryRouter>{component}</MemoryRouter>);
 
 describe('UserListCard', () => {
   it('opens delete dialog when button is clicked', async () => {

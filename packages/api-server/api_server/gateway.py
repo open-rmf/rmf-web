@@ -1,19 +1,23 @@
+# pragma: no cover
+
 import asyncio
 import base64
 import hashlib
 import logging
 import threading
-from typing import List, Optional, cast
+from typing import List, Optional
 
-import rclpy.client
+import rclpy
+import rclpy.executors
 import rclpy.node
-import rclpy.qos
+from builtin_interfaces.msg import Time as RosTime
 from fastapi import HTTPException
 from rclpy.subscription import Subscription
 from rmf_building_map_msgs.msg import AffineImage as RmfAffineImage
 from rmf_building_map_msgs.msg import BuildingMap as RmfBuildingMap
 from rmf_building_map_msgs.msg import Level as RmfLevel
 from rmf_dispenser_msgs.msg import DispenserState as RmfDispenserState
+from rmf_door_msgs.msg import DoorMode as RmfDoorMode
 from rmf_door_msgs.msg import DoorRequest as RmfDoorRequest
 from rmf_door_msgs.msg import DoorState as RmfDoorState
 from rmf_fleet_msgs.msg import FleetState as RmfFleetState
@@ -35,7 +39,6 @@ from .models import (
     LiftState,
     TaskSummary,
 )
-from .models import tortoise_models as ttm
 from .repositories import StaticFilesRepository
 from .rmf_io import RmfEvents
 
@@ -51,10 +54,10 @@ def process_building_map(
     """
     processed_map = message_to_ordereddict(rmf_building_map)
 
-    for i in range(len(rmf_building_map.levels)):
-        level: RmfLevel = rmf_building_map.levels[i]
-        for j in range(len(level.images)):
-            image: RmfAffineImage = level.images[j]
+    for i, level in enumerate(rmf_building_map.levels):
+        level: RmfLevel
+        for j, image in enumerate(level.images):
+            image: RmfAffineImage
             # look at non-crypto hashes if we need more performance
             sha1_hash = hashlib.sha1()
             sha1_hash.update(image.data)
@@ -74,23 +77,39 @@ class RmfGateway(rclpy.node.Node):
         logger: logging.Logger = None,
     ):
         super().__init__("rmf_api_server")
-        self.door_req = self.create_publisher(
+        self._door_req = self.create_publisher(
             RmfDoorRequest, "adapter_door_requests", 10
         )
-        self.lift_req = self.create_publisher(
+        self._lift_req = self.create_publisher(
             RmfLiftRequest, "adapter_lift_requests", 10
         )
-        self.submit_task_srv = self.create_client(RmfSubmitTask, "submit_task")
+        self._submit_task_srv = self.create_client(RmfSubmitTask, "submit_task")
         self.get_tasks_srv = self.create_client(RmfGetTaskList, "get_tasks")
-        self.cancel_task_srv = self.create_client(RmfCancelTask, "cancel_task")
+        self._cancel_task_srv = self.create_client(RmfCancelTask, "cancel_task")
 
         self.rmf_events = rmf_events
         self.static_files = static_files
         self.logger = logger or logging.getLogger(self.__class__.__name__)
-        self._subscriptions = cast(List[Subscription], [])
+        self._subscriptions: List[Subscription] = []
         self._spin_thread: Optional[threading.Thread] = None
-        self._stopping = False
+        self._finish_spin = rclpy.executors.Future()
+        self._finish_gc = self.create_guard_condition(
+            lambda: self._finish_spin.set_result(None)
+        )
         self._loop: asyncio.AbstractEventLoop = None
+
+    def spin_background(self):
+        def spin():
+            self.logger.info("start spinning rclpy node")
+            rclpy.spin_until_future_complete(self, self._finish_spin)
+            self.logger.info("finished spinning rclpy node")
+
+        self._spin_thread = threading.Thread(target=spin)
+        self._spin_thread.start()
+
+    def stop_spinning(self):
+        self._finish_gc.trigger()
+        self._spin_thread.join()
 
     async def call_service(self, client: rclpy.client.Client, req, timeout=1):
         """
@@ -178,23 +197,65 @@ class RmfGateway(rclpy.node.Node):
         )
         self._subscriptions.append(map_sub)
 
-    def unsubscribe_all(self):
+        self.executor.wake()
+
+    def unsubscribe_all(self) -> None:
         for sub in self._subscriptions:
             sub.destroy()
         self._subscriptions = []
 
-    async def update_tasks(self):
+    def now(self) -> Optional[RosTime]:
         """
-        Updates the tasks in a RmfRepository with the current tasks in RMF.
+        Returns the current sim time, or `None` if not using sim time
+        """
+        return self.get_clock().now().to_msg()
+
+    async def get_tasks(self) -> List[TaskSummary]:
+        """
+        Gets the list of tasks from RMF.
         """
         resp: RmfGetTaskList.Response = await self.call_service(
             self.get_tasks_srv, RmfGetTaskList.Request()
         )
         if not resp.success:
             raise HTTPException(500, "service call succeeded but RMF returned an error")
-        for task_summary in resp.active_tasks:
-            task_summary: RmfTaskSummary
-            await ttm.TaskSummary.save_pydantic(TaskSummary.from_orm(task_summary))
-        for task_summary in resp.terminated_tasks:
-            task_summary: RmfTaskSummary
-            await ttm.TaskSummary.save_pydantic(TaskSummary.from_orm(task_summary))
+        tasks: List[TaskSummary] = []
+        for t in resp.active_tasks:
+            tasks.append(TaskSummary.from_orm(t))
+        for t in resp.terminated_tasks:
+            tasks.append(TaskSummary.from_orm(t))
+        return tasks
+
+    def request_door(self, door_name: str, mode: int) -> None:
+        msg = RmfDoorRequest(
+            door_name=door_name,
+            request_time=self.get_clock().now().to_msg(),
+            requester_id=self.get_name(),  # FIXME: use username
+            requested_mode=RmfDoorMode(
+                value=mode,
+            ),
+        )
+        self._door_req.publish(msg)
+
+    def request_lift(
+        self, lift_name: str, destination: str, request_type: int, door_mode: int
+    ):
+        msg = RmfLiftRequest(
+            lift_name=lift_name,
+            request_time=self.get_clock().now().to_msg(),
+            session_id=self.get_name(),
+            request_type=request_type,
+            destination_floor=destination,
+            door_state=door_mode,
+        )
+        self._lift_req.publish(msg)
+
+    async def submit_task(
+        self, req_msg: RmfSubmitTask.Request
+    ) -> RmfSubmitTask.Response:
+        return await self.call_service(self._submit_task_srv, req_msg)
+
+    async def cancel_task(
+        self, req_msg: RmfCancelTask.Request
+    ) -> RmfCancelTask.Response:
+        return await self.call_service(self._cancel_task_srv, req_msg)
