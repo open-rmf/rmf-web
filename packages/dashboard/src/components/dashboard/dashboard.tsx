@@ -35,7 +35,7 @@ const useStyles = makeStyles(() => ({
     height: '100%',
   },
   itemPanels: {
-    width: '900px',
+    width: '1100px',
   },
 }));
 
