@@ -9,7 +9,7 @@ describe('Task Timeline', () => {
     const task = makeTask('task_0', 2, 1);
     const root = render(<TaskTimeline taskSummary={task} />);
     root.debug();
-    expect(root.getAllByText('7:30:00 AM').length).toBeTruthy();
+    expect(root.getAllByText(/7:30:00 AM/i).length).toBeTruthy();
   });
 
   it('shows all task phases', () => {
