@@ -3,7 +3,6 @@ import * as RmfModels from 'rmf-models';
 import { Paper, IconButton, makeStyles, Grid, Typography, Box, Button } from '@material-ui/core';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
-import FilterListIcon from '@material-ui/icons/FilterList';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 
@@ -129,9 +128,6 @@ export function LiftPanel(props: LiftPanelProps) {
   return (
     <div>
       <Paper className={classes.buttonBar}>
-        <IconButton className={classes.itemIcon}>
-          <FilterListIcon />
-        </IconButton>
         <IconButton
           aria-label="view-mode"
           className={classes.itemIcon}

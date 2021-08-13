@@ -11,7 +11,6 @@ import {
 } from '@material-ui/core';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
-import FilterListIcon from '@material-ui/icons/FilterList';
 
 import { DoorTable } from './door-table';
 import { DoorInfoProps, DoorPanelProps, doorModeToString, doorTypeToString } from './utils';
@@ -126,9 +125,6 @@ export function DoorPanel(props: DoorPanelProps) {
   return (
     <div>
       <Paper className={classes.buttonBar}>
-        <IconButton className={classes.itemIcon}>
-          <FilterListIcon />
-        </IconButton>
         <IconButton
           aria-label="view-mode"
           className={classes.itemIcon}
