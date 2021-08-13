@@ -1,7 +1,8 @@
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { DoorAccordion as DoorAccordion_, useSpotlightRef, withSpotlight } from '../lib';
+import { DoorAccordion as DoorAccordion_ } from './doors/_trash/door-accordion';
+import { useSpotlightRef, withSpotlight } from './spotlight-accordion';
 import { makeDoor } from './doors/test-utils.spec';
 
 const DoorAccordion = withSpotlight(DoorAccordion_);

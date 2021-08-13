@@ -2,10 +2,10 @@ import { Accordion, AccordionProps, makeStyles } from '@material-ui/core';
 import Debug from 'debug';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import { ErrorOverlay } from '../error-overlay';
-import ItemAccordionDetails from '../item-accordion-details';
-import ItemAccordionSummary from '../item-accordion-summary';
-import { SimpleInfo, SimpleInfoProps } from '../simple-info';
+import { ErrorOverlay } from '../../error-overlay';
+import ItemAccordionDetails from '../../item-accordion-details';
+import ItemAccordionSummary from '../../item-accordion-summary';
+import { SimpleInfo, SimpleInfoProps } from '../../simple-info';
 
 const debug = Debug('Dispensers:DispenserAccordion');
 

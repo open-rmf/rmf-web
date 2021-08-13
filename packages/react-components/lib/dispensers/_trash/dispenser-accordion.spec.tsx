@@ -2,7 +2,7 @@ import { cleanup, render, within } from '@testing-library/react';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { DispenserAccordion } from './dispenser-accordion';
-import { allStateModes, makeDispenserState } from './test-utils.spec';
+import { allStateModes, makeDispenserState } from '../test-utils.spec';
 
 it('smoke test with different states', () => {
   allStateModes().forEach((mode) => {

@@ -8,7 +8,7 @@ import {
   allLiftMotion,
   makeLift,
   makeLiftState,
-} from './test-utils.spec';
+} from '../test-utils.spec';
 
 it('smoke test with different lift motion', () => {
   allLiftMotion()

@@ -1,9 +1,9 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { DoorAccordion } from './door-accordion';
-import { DoorMode, DoorMotion, DoorType } from './utils';
-import { makeDoor, makeDoorState } from './test-utils.spec';
-import { doors, doorStates } from './test-utils.spec';
+import { DoorMode, DoorMotion, DoorType } from '../utils';
+import { makeDoor, makeDoorState } from '../test-utils.spec';
+import { doors, doorStates } from '../test-utils.spec';
 
 export default {
   title: 'Door Accordion',

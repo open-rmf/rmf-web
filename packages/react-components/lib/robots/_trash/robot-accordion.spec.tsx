@@ -2,7 +2,7 @@ import { cleanup, render, within } from '@testing-library/react';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { RobotAccordion } from './robot-accordion';
-import { allRobotModes, makeRobot } from './test-utils.spec';
+import { allRobotModes, makeRobot } from '../test-utils.spec';
 
 it('smoke test with different robot modes', () => {
   allRobotModes()

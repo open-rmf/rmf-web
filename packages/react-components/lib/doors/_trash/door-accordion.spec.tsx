@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { DoorAccordion } from './door-accordion';
-import { allDoorModes, allDoorTypes, makeDoor, makeDoorState } from './test-utils.spec';
+import { allDoorModes, allDoorTypes, makeDoor, makeDoorState } from '../test-utils.spec';
 
 describe('Door accordion', () => {
   it('smoke test with different door types', () => {
