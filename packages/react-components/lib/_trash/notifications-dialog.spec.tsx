@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent, { TargetElement } from '@testing-library/user-event';
 import { format } from 'date-fns';
 import React from 'react';
-import { NotificationsDialog } from '../lib';
+import { NotificationsDialog } from '..';
 import { Notification, Severity } from './notifications-dialog';
 
 const notifications: Notification[] = [

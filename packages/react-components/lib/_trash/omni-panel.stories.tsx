@@ -3,7 +3,7 @@ import { Story } from '@storybook/react';
 import React from 'react';
 import { OmniPanel } from './omni-panel';
 import { OmniPanelView } from './omni-panel-view';
-import { useStackNavigator } from './stack-navigator';
+import { useStackNavigator } from '../stack-navigator';
 
 export default {
   title: 'Omni Panel',

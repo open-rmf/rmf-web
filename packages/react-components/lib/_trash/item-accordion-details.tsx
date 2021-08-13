@@ -1,7 +1,7 @@
 import { makeStyles } from '@material-ui/core';
 import AccordionDetails, { AccordionDetailsProps } from '@material-ui/core/AccordionDetails';
 import React from 'react';
-import { joinClasses } from './css-utils';
+import { joinClasses } from '../css-utils';
 
 const useStyles = makeStyles({
   details: {

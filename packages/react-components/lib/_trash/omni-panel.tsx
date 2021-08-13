@@ -4,7 +4,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import HomeIcon from '@material-ui/icons/Home';
 import BackIcon from '@material-ui/icons/KeyboardBackspace';
 import React, { ReactElement } from 'react';
-import { joinClasses } from './css-utils';
+import { joinClasses } from '../css-utils';
 import { OmniPanelViewProps } from './omni-panel-view';
 
 const useStyles = makeStyles((theme) => ({

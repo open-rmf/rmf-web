@@ -1,7 +1,7 @@
 import React from 'react';
 import { makeStyles, Typography, Button, Badge } from '@material-ui/core';
 import NotificationsIcon from '@material-ui/icons/Notifications';
-import { NotificationsDialog, Notification } from '../index';
+import { NotificationsDialog, Notification } from '../notifications-dialog';
 
 export interface SystemSummaryAlertProps {
   notifications: Notification[];

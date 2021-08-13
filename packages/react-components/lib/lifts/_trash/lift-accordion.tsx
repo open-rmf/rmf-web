@@ -4,8 +4,8 @@ import Debug from 'debug';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { AntTab, AntTabs, TabPanel } from '../../ant-tab';
-import ItemAccordionDetails from '../../item-accordion-details';
-import ItemAccordionSummary from '../../item-accordion-summary';
+import ItemAccordionDetails from '../../_trash/item-accordion-details';
+import ItemAccordionSummary from '../../_trash/item-accordion-summary';
 import { SimpleInfo, SimpleInfoData } from '../../simple-info';
 // import LiftRequestForm from './lift-request-form';
 import {

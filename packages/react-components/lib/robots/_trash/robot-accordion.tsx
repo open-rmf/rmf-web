@@ -2,8 +2,8 @@ import { Accordion, AccordionProps, makeStyles } from '@material-ui/core';
 import * as RmfModels from 'rmf-models';
 import Debug from 'debug';
 import React from 'react';
-import ItemAccordionDetails from '../../item-accordion-details';
-import ItemAccordionSummary from '../../item-accordion-summary';
+import ItemAccordionDetails from '../../_trash/item-accordion-details';
+import ItemAccordionSummary from '../../_trash/item-accordion-summary';
 import { SimpleInfo } from '../../simple-info';
 import { robotModeToString } from './../utils';
 

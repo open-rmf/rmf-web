@@ -3,8 +3,8 @@ import AccordionSummary from '@material-ui/core/AccordionSummary';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import React from 'react';
-import { joinClasses } from './css-utils';
-import { StatusLabel, StatusLabelProps } from './status-label';
+import { joinClasses } from '../css-utils';
+import { StatusLabel, StatusLabelProps } from '../status-label';
 
 export interface ItemAccordionSummaryProps {
   title: string;

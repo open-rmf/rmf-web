@@ -5,8 +5,8 @@ import ButtonGroup from '@material-ui/core/ButtonGroup';
 import Debug from 'debug';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import ItemAccordionDetails from '../../item-accordion-details';
-import ItemAccordionSummary from '../../item-accordion-summary';
+import ItemAccordionDetails from '../../_trash/item-accordion-details';
+import ItemAccordionSummary from '../../_trash/item-accordion-summary';
 import { SimpleInfo, SimpleInfoData } from '../../simple-info';
 
 const debug = Debug('Doors:DoorAccordion');
