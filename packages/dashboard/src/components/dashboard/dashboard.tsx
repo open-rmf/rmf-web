@@ -39,6 +39,15 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+export enum OmniPanelViewIndex {
+  MainMenu = 0,
+  Doors,
+  Lifts,
+  Robots,
+  Dispensers,
+  Negotiations,
+}
+
 function robotKey(fleet: string, robotName: string): string {
   return `${fleet}-${robotName}`;
 }
