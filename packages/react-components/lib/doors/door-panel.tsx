@@ -74,7 +74,7 @@ const DoorCell = (props: DoorInfoProps): JSX.Element => {
   const doorStatusClass = doorModeLabelClasses(doorState);
 
   return (
-    <Paper className={classes.cellPaper}>
+    <Paper className={classes.cellPaper} data-item={door.name}>
       <Typography variant="body1" align="center">
         {door.name}
       </Typography>

@@ -3,7 +3,7 @@ import { makeLauncher } from '../../dashboard/rmf-launcher';
 import { login, overwriteClick } from './utils';
 
 describe('ui interactions', () => {
-  let doorAccordion: Element;
+  let doorCell: Element;
   const launcher = makeLauncher();
 
   before(async () => await launcher.launch());
@@ -14,79 +14,17 @@ describe('ui interactions', () => {
 
   before(login);
 
-  function closeOmniPanel() {
-    $(`#omnipanel [aria-label=Close]`).click();
-  }
-
-  function omniPanelMainMenu() {
-    $(`#omnipanel [aria-label=Back]`).click();
-  }
-
-  function openDoorAccordian() {
-    doorAccordion = $('.MuiAccordion-root*=main_door');
-    doorAccordion.click();
-  }
-
-  // interactive item tests
-  it('clicking a door on the map focuses it on the panel', () => {
-    closeOmniPanel();
-    const door = $(`[data-component=DoorMarker]`);
-    const doorName = door.getAttribute('aria-label');
-    door.waitForClickable();
-    door.click();
-
-    expect($(`.MuiAccordion-root*=${doorName}`).$('.MuiAccordionDetails-root')).toBeVisible();
-  });
-
-  it('clicking a dispenser on the map focuses it on the panel', () => {
-    closeOmniPanel();
-    const dispenser = $('[data-component=DispenserMarker]');
-    const guid = dispenser.getAttribute('aria-label');
-    dispenser.click();
-
-    expect($(`.MuiAccordion-root*=${guid}`).$('.MuiAccordionDetails-root')).toBeVisible();
-  });
-
-  it('clicking a robot on the map focuses it on the panel', () => {
-    closeOmniPanel();
-    const robot = $('[data-component=RobotMarker]');
-    const robotName = robot.getAttribute('aria-label');
-    robot.click();
-
-    expect($(`.MuiAccordion-root*=${robotName}`).$('.MuiAccordionDetails-root')).toBeVisible();
-  });
-
-  // filter test
-  it('Clicking on an equipment on the map resets the filter', () => {
-    omniPanelMainMenu();
-    $('[data-component=MainMenu] [data-item=Doors]').click();
-    // set value to filter input
-    $('[data-component=simple-filter]').$('input').setValue('value');
-
-    // get door marker and click
-    const door = $('[data-component=DoorMarker]');
-    const doorName = door.getAttribute('aria-label');
-
-    door.waitForClickable();
-    door.click();
-
-    // check that the filter is empty after clicking
-    expect($('[data-component=simple-filter]').$('input').getValue()).toEqual('');
-    // check that door panel is expanded
-    expect($(`.MuiAccordion-root*=${doorName}`).$('.MuiAccordionDetails-root')).toBeVisible();
-  });
-
   // door interaction test
   it('clicking on open button opens the door', () => {
-    openDoorAccordian();
-    doorAccordion.$('button=Open').click();
-    expect(doorAccordion.$('[role=status]')).toHaveText('OPEN');
+    doorCell = $('[data-item=main_door]');
+    $('button[aria-label="main_door_open"]').click();
+    expect(doorCell.$('p=OPEN')).toBeDisplayed();
   });
 
   it('clicking on close button closes the door', () => {
-    openDoorAccordian();
-    doorAccordion.$('button=Close').click();
-    expect(doorAccordion.$('[role=status]')).toHaveText('CLOSED');
+    doorCell = $('[data-item=main_door]');
+    $('button[aria-label="main_door_close"]').click();
+    expect(doorCell.$('p=CLOSED')).toBeDisplayed();
   });
 
   // submit task test
