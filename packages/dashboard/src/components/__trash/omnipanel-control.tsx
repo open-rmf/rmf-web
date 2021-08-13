@@ -4,7 +4,7 @@ import Leaflet from 'leaflet';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { MapControl, MapControlProps, withLeaflet } from 'react-leaflet';
-import { ReducerDashboardDispatch } from './reducers/dashboard-reducer';
+import { ReducerDashboardDispatch } from '../dashboard/reducers/dashboard-reducer';
 
 const debug = Debug('Dashboard:OmniPanelControl');
 

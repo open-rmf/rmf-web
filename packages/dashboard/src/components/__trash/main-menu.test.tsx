@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import React from 'react';
-import MainMenu from '../main-menu';
+import MainMenu from './main-menu';
 import userEvent from '@testing-library/user-event';
 
 it('renders without crashing', () => {

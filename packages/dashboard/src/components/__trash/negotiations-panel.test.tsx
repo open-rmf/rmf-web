@@ -5,8 +5,8 @@ import {
   NegotiationConflict,
   NegotiationStatusManager,
   ResolveState,
-} from '../../../managers/negotiation-status-manager';
-import NegotiationsPanel from '../negotiations-panel';
+} from '../../managers/negotiation-status-manager';
+import NegotiationsPanel from './negotiations-panel';
 
 let negotiationStatuses: Record<number, NegotiationConflict>;
 let setNegotiationTrajStore: jest.Mock<any, any>;
