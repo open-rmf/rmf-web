@@ -79,26 +79,22 @@ export function DispenserPanel(props: DispenserPanelProps) {
           {isCellView ? <ViewListIcon /> : <ViewModuleIcon />}
         </IconButton>
       </Paper>
-      {dispensers.length > 0 ? (
-        <Grid className={classes.grid} container direction="row" spacing={1}>
-          {isCellView ? (
-            dispensers.map((dispenser, i) => {
-              return (
-                <Grid item xs={4} key={`${dispenser.guid}_${i}`}>
-                  <DispenserCell
-                    dispenser={dispenser}
-                    dispenserState={dispenserStates[dispenser.guid]}
-                  />
-                </Grid>
-              );
-            })
-          ) : (
-            <DispenserTable dispensers={dispensers} dispenserStates={dispenserStates} />
-          )}
-        </Grid>
-      ) : (
-        <Typography align="center">No Dispensers on the map</Typography>
-      )}
+      <Grid className={classes.grid} container direction="row" spacing={1}>
+        {isCellView ? (
+          dispensers.map((dispenser, i) => {
+            return (
+              <Grid item xs={4} key={`${dispenser.guid}_${i}`}>
+                <DispenserCell
+                  dispenser={dispenser}
+                  dispenserState={dispenserStates[dispenser.guid]}
+                />
+              </Grid>
+            );
+          })
+        ) : (
+          <DispenserTable dispensers={dispensers} dispenserStates={dispenserStates} />
+        )}
+      </Grid>
     </div>
   );
 }

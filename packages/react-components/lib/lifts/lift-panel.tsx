@@ -140,27 +140,23 @@ export function LiftPanel(props: LiftPanelProps) {
           {isCellView ? <ViewListIcon /> : <ViewModuleIcon />}
         </IconButton>
       </Paper>
-      {lifts.length > 0 ? (
-        <Grid className={classes.grid} container direction="row" spacing={1}>
-          {isCellView ? (
-            lifts.map((lift, i) => {
-              return (
-                <Grid item xs={4} key={`${lift.name}_${i}`}>
-                  <LiftCell
-                    lift={lift}
-                    liftState={liftStates[lift.name]}
-                    onRequestSubmit={onRequestSubmit}
-                  />
-                </Grid>
-              );
-            })
-          ) : (
-            <LiftTable lifts={lifts} liftStates={liftStates} />
-          )}
-        </Grid>
-      ) : (
-        <Typography align="center">No Lifts on this map</Typography>
-      )}
+      <Grid className={classes.grid} container direction="row" spacing={1}>
+        {isCellView ? (
+          lifts.map((lift, i) => {
+            return (
+              <Grid item xs={4} key={`${lift.name}_${i}`}>
+                <LiftCell
+                  lift={lift}
+                  liftState={liftStates[lift.name]}
+                  onRequestSubmit={onRequestSubmit}
+                />
+              </Grid>
+            );
+          })
+        ) : (
+          <LiftTable lifts={lifts} liftStates={liftStates} />
+        )}
+      </Grid>
     </div>
   );
 }

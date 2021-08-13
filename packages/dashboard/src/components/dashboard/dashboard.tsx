@@ -255,17 +255,23 @@ export default function Dashboard(_props: {}): React.ReactElement {
             onDispenserClick={handleWorkcellMarkerClick}
           ></ScheduleVisualizer>
           <div className={classes.itemPanels}>
-            <DoorPanel
-              doors={doors}
-              doorStates={doorStates}
-              onDoorControlClick={handleOnDoorControlClick}
-            />
-            <LiftPanel
-              lifts={lifts}
-              liftStates={liftStates}
-              onRequestSubmit={handleLiftRequestSubmit}
-            />
-            <DispenserPanel dispensers={workcells} dispenserStates={workcellStates} />
+            {doors.length > 0 ? (
+              <DoorPanel
+                doors={doors}
+                doorStates={doorStates}
+                onDoorControlClick={handleOnDoorControlClick}
+              />
+            ) : null}
+            {lifts.length > 0 ? (
+              <LiftPanel
+                lifts={lifts}
+                liftStates={liftStates}
+                onRequestSubmit={handleLiftRequestSubmit}
+              />
+            ) : null}
+            {workcells.length > 0 ? (
+              <DispenserPanel dispensers={workcells} dispenserStates={workcellStates} />
+            ) : null}
           </div>
         </div>
       )}

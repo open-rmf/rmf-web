@@ -16,10 +16,8 @@ function renderDispenserPanel() {
 
 describe('Dispenser Panel', () => {
   let root: ReturnType<typeof renderDispenserPanel>;
-  let mockRequestSubmit: jasmine.Spy<jasmine.Func>;
 
   beforeEach(() => {
-    mockRequestSubmit = jasmine.createSpy();
     root = render(
       <DispenserPanel
         dispensers={[makeDispenser()]}

@@ -137,27 +137,23 @@ export function DoorPanel(props: DoorPanelProps) {
           {isCellView ? <ViewListIcon /> : <ViewModuleIcon />}
         </IconButton>
       </Paper>
-      {doors.length > 0 ? (
-        <Grid className={classes.grid} container direction="row" spacing={1}>
-          {isCellView ? (
-            doors.map((door, i) => {
-              return (
-                <Grid item xs={4} key={`${door.name}_${i}`}>
-                  <DoorCell
-                    door={door}
-                    doorState={doorStates[door.name]}
-                    onDoorControlClick={onDoorControlClick}
-                  />
-                </Grid>
-              );
-            })
-          ) : (
-            <DoorTable doors={doors} doorStates={doorStates} />
-          )}
-        </Grid>
-      ) : (
-        <Typography align="center">No Doors on the map</Typography>
-      )}
+      <Grid className={classes.grid} container direction="row" spacing={1}>
+        {isCellView ? (
+          doors.map((door, i) => {
+            return (
+              <Grid item xs={4} key={`${door.name}_${i}`}>
+                <DoorCell
+                  door={door}
+                  doorState={doorStates[door.name]}
+                  onDoorControlClick={onDoorControlClick}
+                />
+              </Grid>
+            );
+          })
+        ) : (
+          <DoorTable doors={doors} doorStates={doorStates} />
+        )}
+      </Grid>
     </div>
   );
 }
