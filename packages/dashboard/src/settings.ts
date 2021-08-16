@@ -3,9 +3,8 @@ export enum TrajectoryAnimation {
   Follow,
 }
 
-export interface Settings {
-  trajectoryAnimation: TrajectoryAnimation;
-}
+// placeholder because there is no settings
+export interface Settings {}
 
 export function saveSettings(settings: Settings): void {
   localStorage.setItem('settings', JSON.stringify(settings));
@@ -20,7 +19,5 @@ export function loadSettings(): Settings {
 }
 
 export function defaultSettings(): Settings {
-  return {
-    trajectoryAnimation: TrajectoryAnimation.Follow,
-  };
+  return {};
 }

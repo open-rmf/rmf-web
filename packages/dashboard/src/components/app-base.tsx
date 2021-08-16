@@ -9,8 +9,10 @@ import {
   Tooltips,
   TooltipsContext,
 } from './app-contexts';
-import { AppDrawers } from './app-drawers';
 import AppBar from './appbar';
+import HelpDrawer from './drawers/help-drawer';
+import HotKeysDialog from './drawers/hotkeys-dialog';
+import SettingsDrawer from './drawers/settings-drawer';
 
 const useStyles = makeStyles((theme) => ({
   appBase: {
@@ -52,10 +54,7 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
 
   const appController = React.useMemo<AppController>(
     () => ({
-      showSettings: setShowSettings,
-      setSettings,
-      saveSettings,
-      toggleSettings: () => setShowSettings((prev) => !prev),
+      setShowSettings,
       showHelp: setShowHelp,
       toggleHelp: () => setShowHelp((prev) => !prev),
       showHotkeysDialog: setShowHotkeysDialog,
@@ -77,12 +76,31 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
           <Grid container direction="column" className={classes.appBase} wrap="nowrap">
             <AppBar />
             {children}
-            <AppDrawers
+            <SettingsDrawer
+              open={showSettings}
               settings={settings}
-              showHelp={showHelp}
-              showHotkeysDialog={showHotkeysDialog}
-              showSettings={showSettings}
+              onSettingsChange={(settings) => {
+                setSettings(settings);
+                saveSettings(settings);
+              }}
+              handleCloseButton={() => setShowSettings(false)}
             />
+            <HelpDrawer
+              open={showHelp}
+              handleCloseButton={() => setShowHelp(false)}
+              onClose={() => setShowHelp(false)}
+              setShowHotkeyDialog={() => setShowHotkeysDialog(true)}
+              showTour={() => {
+                setShowHelp(false);
+              }}
+            />
+
+            {showHotkeysDialog && (
+              <HotKeysDialog
+                open={showHotkeysDialog}
+                handleClose={() => setShowHotkeysDialog(false)}
+              />
+            )}
             <ErrorSnackbar
               open={showErrorAlert}
               message={errorMessage}
