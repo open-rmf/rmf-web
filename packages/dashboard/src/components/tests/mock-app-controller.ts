@@ -2,15 +2,12 @@ import { AppController } from '../app-contexts';
 
 export function makeMockAppController(): AppController {
   return {
-    saveSettings: jest.fn(),
-    setSettings: jest.fn(),
     showHelp: jest.fn(),
     showHotkeysDialog: jest.fn(),
-    showSettings: jest.fn(),
+    setShowSettings: jest.fn(),
     showTooltips: jest.fn(),
     toggleHelp: jest.fn(),
     toggleHotkeysDialog: jest.fn(),
-    toggleSettings: jest.fn(),
     toggleTooltips: jest.fn(),
     showErrorAlert: jest.fn(),
   };

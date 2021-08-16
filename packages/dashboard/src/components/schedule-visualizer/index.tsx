@@ -20,9 +20,11 @@ import LiftsOverlay from './lift-overlay';
 import { NegotiationColors } from './negotiation-colors';
 import RobotTrajectoriesOverlay from './robot-trajectories-overlay';
 import RobotsOverlay, { RobotsOverlayProps } from './robots-overlay';
+import TrajectoryTimeControl from './trajectory-time-control';
 import WaypointsOverlay from './waypoints-overlay';
 
 const debug = Debug('ScheduleVisualizer');
+const TrajectoryUpdateInterval = 2000;
 
 const useStyles = makeStyles(() => ({
   map: {
@@ -137,8 +139,8 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     [fleets],
   );
 
-  const trajLookahead = 60000; // 1 min
-  const trajAnimDuration = 2000;
+  const [trajectoryTime, setTrajectoryTime] = React.useState(60000); // 1 min
+  const trajectoryAnimScale = trajectoryTime / (0.9 * TrajectoryUpdateInterval);
 
   React.useEffect(() => {
     // We need the image to be loaded to know the bounds, but the image cannot be loaded without a
@@ -212,7 +214,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
         request: 'trajectory',
         param: {
           map_name: curMapFloorLayer.level.name,
-          duration: trajLookahead,
+          duration: trajectoryTime,
           trim: true,
         },
         token: authenticator.token,
@@ -230,7 +232,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     };
 
     updateTrajectory();
-    interval = window.setInterval(updateTrajectory, trajAnimDuration);
+    interval = window.setInterval(updateTrajectory, TrajectoryUpdateInterval);
     debug(`created trajectory update interval ${interval}`);
 
     return () => {
@@ -238,7 +240,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       clearInterval(interval);
       debug(`cleared interval ${interval}`);
     };
-  }, [trajManager, curMapFloorLayer, trajAnimDuration, showTrajectories, authenticator.token]);
+  }, [trajManager, curMapFloorLayer, trajectoryTime, showTrajectories, authenticator.token]);
 
   function handleBaseLayerChange(e: L.LayersControlEvent): void {
     debug('set current level name');
@@ -338,6 +340,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
                 robots={robots}
                 trajectories={curMapTrajectories}
                 conflicts={curMapConflicts}
+                animationScale={trajectoryAnimScale}
               />
             </Pane>
           )}
@@ -351,6 +354,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
                 robots={robots}
                 trajectories={negoTrajs}
                 conflicts={getConflicts(curLevelName)}
+                animationScale={trajectoryAnimScale}
               />
             </ColorContext.Provider>
           </Pane>
@@ -416,6 +420,13 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
           )}
         </LayersControl.Overlay>
       </LayersControl>
+      <TrajectoryTimeControl
+        position="topleft"
+        value={trajectoryTime}
+        min={60000}
+        max={600000}
+        onChange={(_ev, newValue) => setTrajectoryTime(newValue)}
+      />
       {children}
     </LMap>
   );

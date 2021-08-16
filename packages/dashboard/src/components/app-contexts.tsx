@@ -9,7 +9,7 @@ export const ResourcesContext = React.createContext<ResourceManager | undefined>
 export const SettingsContext = React.createContext(defaultSettings());
 
 export interface AppController {
-  setShowSettings(show: boolean): void;
+  setShowSettings: React.Dispatch<React.SetStateAction<boolean>>;
   showHelp(show: boolean): void;
   toggleHelp(): void;
   showHotkeysDialog(show: boolean): void;
