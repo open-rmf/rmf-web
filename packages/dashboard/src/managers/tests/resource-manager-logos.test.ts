@@ -10,18 +10,18 @@ describe('The correct operation of the getIconPath method of the LogoResourceMan
     manager = new LogoResourceManager(resourceData);
   });
 
-  test('Returns falsy when logoName does not exist', () => {
-    const icon = manager.getIconPath('Not exists');
+  test('Returns falsy when logoName does not exist', async () => {
+    const icon = await manager.getIconPath('Not exists');
     expect(icon).toBeFalsy();
   });
 
-  test('Returns falsy if the icon path it`s empty', () => {
+  test('Returns falsy if the icon path it`s empty', async () => {
     resourceData.testLogo = {
       icons: {
         testLogo: '',
       },
     };
-    const icon = manager.getIconPath('testLogo');
+    const icon = await manager.getIconPath('testLogo');
     expect(icon).toBeFalsy();
   });
 

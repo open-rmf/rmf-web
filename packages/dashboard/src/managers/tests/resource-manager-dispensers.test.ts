@@ -10,12 +10,12 @@ describe('The correct operation of the getIconPath method of the DispenserResour
     manager = new DispenserResourceManager(resourceData);
   });
 
-  test('Returns falsy when dispenserName does not exist', () => {
-    const icon = manager.getIconPath('Not exists');
+  test('Returns falsy when dispenserName does not exist', async () => {
+    const icon = await manager.getIconPath('Not exists');
     expect(icon).toBeFalsy();
   });
 
-  test('Returns falsy if the icon path it`s empty', () => {
+  test('Returns falsy if the icon path it`s empty', async () => {
     resourceData.testDispenser = {
       guid: 'testDispenser',
       icons: {
@@ -23,7 +23,7 @@ describe('The correct operation of the getIconPath method of the DispenserResour
       },
       location: { x: 1, y: 1, yaw: 1, level_name: 'L1' },
     };
-    const icon = manager.getIconPath('testDispenser');
+    const icon = await manager.getIconPath('testDispenser');
     expect(icon).toBeFalsy();
   });
 
