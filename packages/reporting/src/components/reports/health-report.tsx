@@ -3,8 +3,9 @@ import { DefaultReportQueryPayload, HealthReport, HealthRowsType } from 'react-c
 import appConfig from '../../app-config';
 import { AuthenticatorContext } from '../auth-contexts';
 import { getLogData } from './utils';
+import { ReportConfigProps } from 'react-components';
 
-const HealthReportConfig = () => {
+const HealthReportConfig = (props: ReportConfigProps) => {
   const authenticator = React.useContext(AuthenticatorContext);
   const getLogs = async (params: DefaultReportQueryPayload): Promise<HealthRowsType> => {
     return (await getLogData(
@@ -14,7 +15,7 @@ const HealthReportConfig = () => {
     )) as HealthRowsType;
   };
 
-  return <HealthReport getLogs={getLogs} />;
+  return <HealthReport getLogs={getLogs} {...props} />;
 };
 
 export default HealthReportConfig;

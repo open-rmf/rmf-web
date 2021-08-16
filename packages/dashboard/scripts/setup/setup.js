@@ -2,43 +2,11 @@ const chalk = require('chalk');
 const inquirer = require('inquirer');
 const { exec } = require('child_process');
 const fs = require('fs');
+const { getIcons } = require('./get-icons');
 
-class Ament {
-  findPackage(packageName) {
-    this._isEmpty(packageName);
-    return this._getPackageLocation(packageName);
-  }
-
-  _isEmpty(packageName) {
-    if (!packageName) {
-      throw new Error('You must provide a package name');
-    }
-  }
-
-  _getPackageLocation(packageName) {
-    const paths = this._getAmentPrefixPath().split(':');
-    // Is package inside?
-    for (let p in paths) {
-      const path = paths[p];
-      const location = `${path}/share/${packageName}/`;
-      const directoryExists = fs.existsSync(location);
-      if (directoryExists) {
-        return location;
-      }
-    }
-  }
-
-  _getAmentPrefixPath() {
-    const amentPath = process.env.AMENT_PREFIX_PATH;
-    if (!amentPath) {
-      throw new Error('Cannot find AMENT_PREFIX_PATH');
-    }
-    return process.env.AMENT_PREFIX_PATH;
-  }
-}
-
-const ament = new Ament();
-const fileExists = fs.existsSync('./.resources.json');
+const ProjectDir = __dirname.slice(0, __dirname.length - '/scripts/setup'.length);
+const resourcesPath = process.env.RMF_DASHBOARD_RESOURCES_FILE || `${ProjectDir}/.resources.json`;
+const configExists = fs.existsSync(resourcesPath);
 
 const createConfigFile = () => {
   console.log(chalk`
@@ -52,7 +20,7 @@ You have two options:
 {cyan →} 3. {blue get from ws} assets from workspace folder (Do not forget to source rmf_demos project before using this option).
 `);
 
-  inquirer
+  return inquirer
     .prompt([
       {
         name: 'GET_OR_COPY',
@@ -68,7 +36,6 @@ You have two options:
             input,
           ) || 'Not a valid URL',
       },
-      // TODO: change to "main" when rmf completes the switch
       {
         name: 'BRANCH',
         message: `Set BRANCH. Example: main`,
@@ -88,9 +55,15 @@ You have two options:
         validate: (input) => /^(\/[^\/]+){0,20}\/?$/gm.test(input) || 'Not a valid PATH',
       },
       {
-        name: 'COPY_FROM_WORKSPACE',
-        message: 'Set world map',
+        name: 'ROS_PACKAGE',
+        message: 'ROS package',
         when: (keys) => keys['GET_OR_COPY'] === '3',
+        default: 'rmf_demos_dashboard_resources',
+      },
+      {
+        name: 'ROS_PACKAGE_PATH',
+        message: 'path',
+        when: (keys) => !!keys['ROS_PACKAGE'],
         default: 'office',
       },
     ])
@@ -103,60 +76,38 @@ You have two options:
         information = { path: keys.COPY };
       }
       if (keys.GET_OR_COPY === '3') {
-        const rmfDashboardResources = `${ament.findPackage('rmf_demos_dashboard_resources')}${
-          keys.COPY_FROM_WORKSPACE
-        }/`;
-        information = { path: rmfDashboardResources };
+        information = { rosPackage: keys.ROS_PACKAGE, path: keys.ROS_PACKAGE_PATH };
       }
-      fs.writeFile('.resources.json', JSON.stringify(information), function (err) {
-        if (err) {
-          exec('mv .bak-resources.json .resources.json');
-          throw err;
-        }
-        console.log(chalk`{green File .resources.json was created successfully.}`);
-        try {
-          exec('rm .bak-resources.json');
-        } catch (error) {}
-      });
+      fs.writeFileSync(
+        '.resources.json',
+        JSON.stringify(information, undefined, 2),
+        function (err) {
+          if (err) {
+            exec('mv .bak-resources.json .resources.json');
+            throw err;
+          }
+          console.log(chalk`{green File .resources.json was created successfully.}`);
+          try {
+            exec('rm .bak-resources.json');
+          } catch (error) {}
+        },
+      );
     })
     .catch((error) => console.error(error));
 };
 
-if (fileExists) {
-  console.log(chalk`
-  {blue Hello! 👋 You already configured a resource source!
-  1. Continue and do nothing.
-  2. Do you want to modify it? (You can also update the values manually on .resources.json) }`);
+(async () => {
+  if (configExists) {
+    console.log(chalk`{blue Using existing resources config}`);
+  } else {
+    await createConfigFile();
+  }
 
-  inquirer
-    .prompt({
-      name: 'QUIT_OR_MODIFY',
-      message: chalk`{blue What option are you going to choose?}`,
-      validate: (input) => /^[1-2-]$/.test(input) || 'Invalid option',
-      default: 1,
-    })
-    .then((keys) => {
-      if (keys.QUIT_OR_MODIFY === '1') {
-        return;
-      }
-      if (keys.QUIT_OR_MODIFY === '2') {
-        // Rename and save a copy of the file
-        exec('mv .resources.json .bak-resources.json', (error, stdout, stderr) => {
-          if (error) {
-            console.error(chalk`{red exec error: ${error}}`);
-            return;
-          }
-          if (stderr) {
-            console.error(`stderr: ${stderr}`);
-            return;
-          }
-          createConfigFile();
-        });
-      }
-    })
-    .catch((error) => console.error(error));
-}
-
-if (!fileExists) {
-  createConfigFile();
-}
+  const resourcesData = JSON.parse(fs.readFileSync(resourcesPath));
+  try {
+    getIcons(resourcesData);
+  } catch (e) {
+    console.error(e);
+    process.exit(e.status);
+  }
+})();

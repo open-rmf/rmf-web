@@ -1,5 +1,3 @@
-import { RESOURCE_PREFIX } from './resource-manager';
-
 export interface LogoResource {
   icons: Record<string, string>;
 }
@@ -11,17 +9,26 @@ export class LogoResourceManager {
     this.logos = logoResources;
   }
 
-  getIconPath = (logoName: string): string | null => {
+  getIconPath = async (logoName: string): Promise<string | null> => {
     if (!this.logoExists(logoName)) {
       return null;
     }
     if (!this.logos[logoName].hasOwnProperty('icons')) {
       return null;
     }
-    const rootIconPath = RESOURCE_PREFIX + '/assets/icons';
     const logoIcon = this.logos[logoName].icons[logoName];
 
-    return logoIcon ? `${rootIconPath}${logoIcon}` : null;
+    try {
+      return (await import(/* webpackMode: "eager" */ `../assets/resources${logoIcon}`)).default;
+    } catch {
+      return null;
+    }
+  };
+
+  getHeaderLogoPath = async (): Promise<string> => {
+    const iconPath = await this.getIconPath('headerLogo');
+    if (iconPath) return iconPath;
+    return (await import(/* webpackMode: "eager" */ '../assets/defaultLogo.png')).default;
   };
 
   get all(): Record<string, LogoResource> {

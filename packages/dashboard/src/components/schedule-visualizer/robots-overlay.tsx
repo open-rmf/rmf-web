@@ -1,6 +1,6 @@
 import Debug from 'debug';
 import React, { useMemo } from 'react';
-import { RobotMarker as RobotMarker_, RobotMarkerProps } from 'react-components';
+import { RobotMarker as RobotMarker_, RobotMarkerProps, useAsync } from 'react-components';
 import * as RmfModels from 'rmf-models';
 import { viewBoxFromLeafletBounds } from '../../util/css-utils';
 import { ResourcesContext } from '../app-contexts';
@@ -8,6 +8,10 @@ import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 
 const debug = Debug('ScheduleVisualizer:RobotsOverlay');
 const RobotMarker = React.memo(RobotMarker_);
+
+function robotModelId(fleet: string, robot: RmfModels.RobotState) {
+  return `${fleet}/${robot.model}`;
+}
 
 export interface RobotsOverlayProps extends SVGOverlayProps {
   fleets: RmfModels.FleetState[];
@@ -31,6 +35,8 @@ export const RobotsOverlay = (props: RobotsOverlayProps) => {
   const robotResourcesContext = React.useContext(ResourcesContext)?.robots;
   const viewBox = viewBoxFromLeafletBounds(props.bounds);
   const footprint = 0.5;
+  const safeAsync = useAsync();
+  const [iconPaths, setIconPaths] = React.useState<Record<string, string>>({});
 
   function inConflict(robotName: string): boolean {
     return conflictRobotNames.flat().includes(robotName) ? true : false;
@@ -60,13 +66,20 @@ export const RobotsOverlay = (props: RobotsOverlayProps) => {
     }));
   }, [fleets, currentFloorName]);
 
-  const getIconPath = React.useCallback(
-    (fleet: string, robot: RmfModels.RobotState) => {
-      const icon = robotResourcesContext?.getIconPath(fleet, robot.model);
-      return icon ? icon : undefined;
-    },
-    [robotResourcesContext],
-  );
+  React.useEffect(() => {
+    if (!robotResourcesContext) return;
+    (async () => {
+      const results: Record<string, string> = {};
+      const ps = robotsInCurLevel.flatMap(({ fleet, robots }) =>
+        robots.map(async (robot) => {
+          const iconPath = await robotResourcesContext.getIconPath(fleet, robot.model);
+          if (iconPath) results[robotModelId(fleet, robot)] = iconPath;
+        }),
+      );
+      await safeAsync(Promise.all(ps));
+      setIconPaths((prev) => ({ ...prev, ...results }));
+    })();
+  }, [robotResourcesContext, robotsInCurLevel, safeAsync]);
 
   return (
     <SVGOverlay {...otherProps}>
@@ -84,7 +97,7 @@ export const RobotsOverlay = (props: RobotsOverlayProps) => {
               fleetName={fleetContainer[`${robot.name}_${robot.model}`]}
               footprint={footprint}
               variant={inConflict(robot.name) ? 'inConflict' : 'normal'}
-              iconPath={getIconPath(fleet, robot)}
+              iconPath={iconPaths[robotModelId(fleet, robot)]}
               onClick={onRobotClick}
               aria-label={robot.name}
               data-component="RobotMarker"

@@ -2,13 +2,14 @@ import React from 'react';
 import { DefaultReportQueryPayload, defaultReportStyles } from '../default-report-interface';
 import { DefaultDatesForm } from '../default-dates-form';
 import { DispenserStateReportTable, DispenserStateRowsType } from './dispenser-state-report-table';
+import { ReportConfigProps } from '../utils';
 
-export interface DispenserStateReportProps {
+export interface DispenserStateReportProps extends ReportConfigProps {
   getLogs: (data: DefaultReportQueryPayload) => Promise<DispenserStateRowsType>;
 }
 
 export const DispenserStateReport = (props: DispenserStateReportProps): React.ReactElement => {
-  const { getLogs } = props;
+  const { getLogs, ...otherProps } = props;
   const [logs, setLogs] = React.useState<DispenserStateRowsType>([]);
   const [lastSearchParams, setLastSearchParams] = React.useState<DefaultReportQueryPayload>({});
 
@@ -25,7 +26,7 @@ export const DispenserStateReport = (props: DispenserStateReportProps): React.Re
 
   return (
     <>
-      <DefaultDatesForm search={searchLogs} />
+      <DefaultDatesForm search={searchLogs} {...otherProps} />
       <div className={classes.table}>
         {logs.length !== 0 && (
           <DispenserStateReportTable rows={logs} tableSize={'48vh'} addMoreRows={getMoreLogs} />

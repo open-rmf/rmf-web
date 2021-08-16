@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { getTaskSummaryLogs } from '../utils.spec';
+import { getTaskSummaryLogs, reportConfigProps } from '../utils.spec';
 import { TaskSummaryReport } from './task-summary-report';
 
 const getLogsPromise = async () => await getTaskSummaryLogs();
@@ -27,7 +27,7 @@ it('calls the Retrieve Logs function when the button is clicked', async () => {
     return await getTaskSummaryLogs();
   };
 
-  render(<TaskSummaryReport getLogs={getLogsPromise} />);
+  render(<TaskSummaryReport getLogs={getLogsPromise} {...reportConfigProps} />);
   const retrieveLogsButton = screen.getByRole('button', { name: /Retrieve Logs/i });
   expect(retrieveLogsButton).toBeTruthy();
   userEvent.click(retrieveLogsButton);
