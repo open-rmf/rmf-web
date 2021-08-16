@@ -7,7 +7,7 @@ const commonTheme = {
   },
   error: {
     // fireOpal
-    main: '#F25F5C',
+    main: '#e94843',
     dark: '#D63F3C',
     light: '#F0A0A1',
   },

@@ -31,12 +31,12 @@ export const rmfLight = createMuiTheme({
   },
   palette: {
     type: 'light',
+    ...commonTheme,
     primary: {
       main: '#44497a',
       dark: '#323558',
       light: '#565d99',
     },
-    ...commonTheme,
   },
   mapClass: '',
 });

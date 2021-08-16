@@ -6,7 +6,10 @@ export const GlobalDarkCss = withStyles(() => ({
     '.MuiTableCell-head': {
       borderBottom: 'none',
     },
-    '#log-table .MuiTableCell-root': {
+    '#log-table .MuiTableCell-root.MuiTableCell-body': {
+      borderBottom: '1px solid rgba(255, 255, 255, 0.5)',
+    },
+    '#admin-user-table .MuiTableCell-root.MuiTableCell-body': {
       borderBottom: '1px solid rgba(255, 255, 255, 0.5)',
     },
     '*::-webkit-scrollbar-thumb': {

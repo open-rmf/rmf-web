@@ -13,20 +13,14 @@ export default {
 } as Meta;
 
 export const DeliveryRequest: Story = (args) => (
-  // add a background to visualize different theme colors properly
-  <div style={{ backgroundColor: '#A8A8A8', padding: '1rem' }}>
-    <DeliveryRequestForm
-      fleetNames={fleets}
-      availablePlaces={availablePlaces}
-      availableDispensers={availableDispensers}
-      {...args}
-    />
-  </div>
+  <DeliveryRequestForm
+    fleetNames={fleets}
+    availablePlaces={availablePlaces}
+    availableDispensers={availableDispensers}
+    {...args}
+  />
 );
 
 export const LoopRequest: Story = (args) => (
-  // add a background to visualize different theme colors properly
-  <div style={{ backgroundColor: '#A8A8A8', padding: '1rem' }}>
-    <LoopRequestForm fleetNames={fleets} availablePlaces={availablePlaces} {...args} />
-  </div>
+  <LoopRequestForm fleetNames={fleets} availablePlaces={availablePlaces} {...args} />
 );
