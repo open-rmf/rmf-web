@@ -1,16 +1,14 @@
-FROM ros:foxy-ros-base-focal
-
-RUN apt-get update && apt-get install -y curl && \
-  curl -sL https://deb.nodesource.com/setup_12.x | bash - && \
-  apt-get update && apt-get install -y nodejs python3-pip
-
-RUN pip3 install pipenv
+ARG BUILDER_TAG
+FROM rmf-web/builder:$BUILDER_TAG
 
 COPY . /root/rmf-web
-SHELL ["bash", "-c"]
+RUN cd /root/rmf-web && \
+  lerna run prepare --include-dependencies --scope=reporting
 
-RUN npm config set unsafe-perm && cd /root/rmf-web && \
-  CI=1 npm install -g lerna@4 && lerna bootstrap --scope=reporting
+ARG PUBLIC_URL
+ARG REACT_APP_REPORTING_SERVER
+ARG REACT_APP_AUTH_PROVIDER
+ARG REACT_APP_KEYCLOAK_CONFIG
 
 RUN cd /root/rmf-web/packages/reporting && \
   PUBLIC_URL='/reporting' \
