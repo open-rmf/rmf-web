@@ -1,11 +1,19 @@
 import { ThemeProvider } from '@material-ui/core';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { act } from '@testing-library/react-hooks';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { MemoryRouter } from 'react-router';
 import { AppConfig } from '../../app-config';
-import { AppConfigContext, AppController, AppControllerContext } from '../app-contexts';
+import ResourceManager from '../../managers/resource-manager';
+import { LogoResourceManager } from '../../managers/resource-manager-logos';
+import { RobotResourceManager } from '../../managers/resource-manager-robots';
+import {
+  AppConfigContext,
+  AppController,
+  AppControllerContext,
+  ResourcesContext,
+} from '../app-contexts';
 import AppBar from '../appbar';
 import { User, UserContext } from '../auth/contexts';
 import FakeAuthenticator from '../auth/__mocks__/fake-authenticator';
@@ -121,5 +129,26 @@ describe('AppBar', () => {
     userEvent.click(root.getByLabelText('user-btn'));
     userEvent.click(root.getByText('Logout'));
     expect(spy).toHaveBeenCalledTimes(1);
+  });
+
+  test('uses headerLogo from logo resources manager', async () => {
+    const robotResourcesMgr = new RobotResourceManager({});
+    const logoResourcesMgr = new LogoResourceManager({});
+    logoResourcesMgr.getHeaderLogoPath = () => Promise.resolve('/test-logo.png');
+    const resourceMgr: ResourceManager = { robots: robotResourcesMgr, logos: logoResourcesMgr };
+
+    const root = render(
+      <ResourcesContext.Provider value={resourceMgr}>
+        <AppBar />
+      </ResourcesContext.Provider>,
+      { wrapper: Base },
+    );
+    await expect(
+      waitFor(() => {
+        const q = root.container.querySelector('[src="/test-logo.png"][alt="logo"]');
+        if (!q) throw new Error();
+        return q;
+      }),
+    ).resolves.not.toThrow();
   });
 });

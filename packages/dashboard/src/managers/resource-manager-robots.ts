@@ -1,5 +1,3 @@
-import { RESOURCE_PREFIX } from './resource-manager';
-
 export interface RobotResource {
   icons: Record<string, string>; // Record<ModelName|FleetName, IconPath>
   places: Record<string, string[]>; // Record<Places, Dispensers[]>
@@ -19,21 +17,30 @@ export class RobotResourceManager {
     return Object.keys(this.robots[fleetName].places);
   };
 
-  getIconPath = (fleetName: string, robotModel?: string | undefined): string | null => {
+  getIconPath = async (
+    fleetName: string,
+    robotModel?: string | undefined,
+  ): Promise<string | null> => {
     if (!this.fleetExists(fleetName)) {
       return null;
     }
     if (!this.robots[fleetName].hasOwnProperty('icons')) {
       return null;
     }
-    const rootIconPath = RESOURCE_PREFIX + '/assets/icons';
     const robotIcons = this.robots[fleetName].icons;
     // In case the fleet has different models
+    let iconPath: string | null = null;
+
     if (!!robotModel && robotIcons.hasOwnProperty(robotModel)) {
-      const iconPath = robotIcons[robotModel];
-      return !!iconPath ? `${rootIconPath}${iconPath}` : null;
+      iconPath = robotIcons[robotModel];
     } else {
-      return !!robotIcons[fleetName] ? `${rootIconPath}${robotIcons[fleetName]}` : null;
+      iconPath = !!robotIcons[fleetName] ? `${robotIcons[fleetName]}` : null;
+    }
+
+    try {
+      return (await import(/* webpackMode: "eager" */ `../assets/resources${iconPath}`)).default;
+    } catch {
+      return null;
     }
   };
 

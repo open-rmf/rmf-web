@@ -1,4 +1,4 @@
-import { RESOURCE_PREFIX } from './resource-manager';
+import { ThemeMode } from '../settings';
 
 export interface LogoResource {
   icons: Record<string, string>;
@@ -11,17 +11,28 @@ export class LogoResourceManager {
     this.logos = logoResources;
   }
 
-  getIconPath = (logoName: string): string | null => {
+  getIconPath = async (logoName: string): Promise<string | null> => {
     if (!this.logoExists(logoName)) {
       return null;
     }
     if (!this.logos[logoName].hasOwnProperty('icons')) {
       return null;
     }
-    const rootIconPath = RESOURCE_PREFIX + '/assets/icons';
     const logoIcon = this.logos[logoName].icons[logoName];
 
-    return logoIcon ? `${rootIconPath}${logoIcon}` : null;
+    try {
+      return (await import(/* webpackMode: "eager" */ `../assets/resources${logoIcon}`)).default;
+    } catch {
+      return null;
+    }
+  };
+
+  getHeaderLogoPath = async (theme: ThemeMode): Promise<string> => {
+    const iconPath = await this.getIconPath('headerLogo');
+    const darkIconPath = await this.getIconPath('darkThemeLogo');
+    const themeIcon = theme === ThemeMode.Dark ? darkIconPath : iconPath;
+    if (themeIcon) return themeIcon;
+    return (await import(/* webpackMode: "eager" */ '../assets/defaultLogo.png')).default;
   };
 
   get all(): Record<string, LogoResource> {

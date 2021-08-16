@@ -4,6 +4,6 @@
   "description": "dummy package",
   "private": true,
   "scripts": {
-    "prepare": "node ../scripts/pipenv-install.js"
+    "install": "node ../scripts/pipenv-install.js"
   }
 }

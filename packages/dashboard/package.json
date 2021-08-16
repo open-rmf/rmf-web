@@ -15,7 +15,7 @@
     "test:e2e": "cd e2e && npm test",
     "test:e2e:dev": "cd e2e && npm run test:dev",
     "eject": "react-scripts eject",
-    "setup": "node ./scripts/setup/setup.js && node ./scripts/setup/get-icons.js",
+    "setup": "node ./scripts/setup/setup.js",
     "storybook": "start-storybook -p 9009 -s public -s src/stories/static",
     "build:storybook": "build-storybook -s public -s src/stories/static"
   },
@@ -70,6 +70,7 @@
     "enzyme-adapter-react-16": "^1.15.5",
     "enzyme-to-json": "^3.5.0",
     "eventemitter3": "^4.0.7",
+    "inquirer": "^8.1.2",
     "keycloak-js": "^11.0.2",
     "leaflet": "^1.7.1",
     "node-vibrant": "^3.1.6",

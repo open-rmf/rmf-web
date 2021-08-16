@@ -1,36 +1,53 @@
 'use strict';
-const { exec, execSync } = require('child_process');
-const fs = require('fs');
+
+// FIXME: do not use shell commands to support cross platform.
+
+const { execSync } = require('child_process');
 const chalk = require('chalk');
 const path = require('path');
+const fs = require('fs');
 
-const basePath = __dirname.slice(0, __dirname.length - 'scripts/setup'.length);
-let file = basePath + '.resources.json';
-if (process.env.RESOURCE_FILE) {
-  file = process.env.RESOURCE_FILE;
-}
+const ProjectDir = __dirname.slice(0, __dirname.length - '/scripts/setup'.length);
+const ResourcesPath = `${ProjectDir}/src/assets/resources`;
+const TempDir = `${ProjectDir}/tmp`;
 
-const fileExists = fs.existsSync(file);
-if (!fileExists) {
-  console.log(`Configuration file ${file} not exists`);
-  return;
-}
+class Ament {
+  findPackage(packageName) {
+    this._isEmpty(packageName);
+    return this._getPackageLocation(packageName);
+  }
 
-const resourcesData = JSON.parse(fs.readFileSync(file));
+  _isEmpty(packageName) {
+    if (!packageName) {
+      throw new Error('You must provide a package name');
+    }
+  }
 
-const iconPath = 'public/assets/icons/';
-const iconFolder = basePath + iconPath;
+  _getPackageLocation(packageName) {
+    const paths = this._getAmentPrefixPath().split(':');
+    // Is package inside?
+    for (let p in paths) {
+      const path = paths[p];
+      const location = `${path}/share/${packageName}/`;
+      const directoryExists = fs.existsSync(location);
+      if (directoryExists) {
+        return location;
+      }
+    }
+  }
 
-if (!resourcesData.hasOwnProperty('repoUrl') && !resourcesData.hasOwnProperty('path')) {
-  return;
+  _getAmentPrefixPath() {
+    const amentPath = process.env.AMENT_PREFIX_PATH;
+    if (!amentPath) {
+      throw new Error('Cannot find AMENT_PREFIX_PATH');
+    }
+    return process.env.AMENT_PREFIX_PATH;
+  }
 }
 
 class IconManagerBase {
-  constructor(resourcesData, iconFolder, tempFolder) {
+  constructor(resourcesData) {
     this.resourcesData = resourcesData;
-    this.iconFolder = iconFolder;
-    this.tempFolder = tempFolder;
-    this.rootPath = '../../';
   }
 }
 
@@ -38,27 +55,22 @@ class IconManagerBase {
  * Implementation for git sparse-checkout, on versions of git greater or equal to 2.25.
  */
 class SparseCheckoutGitV225 extends IconManagerBase {
-  constructor(resourcesData, iconFolder, tempFolder) {
-    super(resourcesData, iconFolder, tempFolder);
-  }
-
   execute = () => {
     execSync(
-      `git clone "${this.resourcesData.repoUrl}" --no-checkout  --depth=1 --single-branch --branch ${this.resourcesData.branch} ${this.tempFolder} -o repo`,
+      `git clone "${this.resourcesData.repoUrl}" --no-checkout  --depth=1 --single-branch --branch "${this.resourcesData.branch}" "${TempDir}" -o repo`,
       {
-        stdio: [0, 1, 2],
-        cwd: path.resolve(__dirname, this.rootPath),
+        stdio: 'inherit',
       },
     );
 
     execSync(
       `git sparse-checkout init --cone &&
             git config core.sparseCheckout 1 &&
-            git sparse-checkout set ${this.resourcesData.folder} &&
+            git sparse-checkout set "${this.resourcesData.folder}" &&
             git checkout`,
       {
-        stdio: [0, 1, 2],
-        cwd: path.resolve(__dirname, `../../${this.tempFolder}`),
+        stdio: 'inherit',
+        cwd: TempDir,
       },
     );
   };
@@ -68,35 +80,26 @@ class SparseCheckoutGitV225 extends IconManagerBase {
  * Implementation for git sparse-checkout, on versions of git lesser than 2.25.
  */
 class SparseCheckoutGitV217 extends IconManagerBase {
-  constructor(resourcesData, iconFolder, tempFolder) {
-    super(resourcesData, iconFolder, tempFolder);
-    this.tempFolderLocation = `../../${tempFolder}`;
-  }
-
   execute = () => {
     execSync(`git init && git remote add -f resources "${this.resourcesData.repoUrl}"`, {
-      stdio: [0, 1, 2],
-      cwd: path.resolve(__dirname, this.tempFolderLocation),
+      stdio: 'inherit',
+      cwd: path.resolve(__dirname, TempDir),
     });
     execSync(
-      `git config core.sparseCheckout true && echo ${this.resourcesData.folder} >> .git/info/sparse-checkout`,
+      `git config core.sparseCheckout true && echo "${this.resourcesData.folder}" >> .git/info/sparse-checkout`,
       {
-        stdio: [0, 1, 2],
-        cwd: path.resolve(__dirname, this.tempFolderLocation),
+        stdio: 'inherit',
+        cwd: path.resolve(__dirname, TempDir),
       },
     );
-    execSync(`git pull --depth=1 resources ${this.resourcesData.branch}`, {
-      stdio: [0, 1, 2],
-      cwd: path.resolve(__dirname, this.tempFolderLocation),
+    execSync(`git pull --depth=1 resources "${this.resourcesData.branch}"`, {
+      stdio: 'inherit',
+      cwd: path.resolve(__dirname, TempDir),
     });
   };
 }
 
 class IconManager extends IconManagerBase {
-  constructor(resourcesData, iconFolder, tempFolder) {
-    super(resourcesData, iconFolder, tempFolder);
-  }
-
   getGitMinorVersion = (rawGitVersion) => {
     const gitVersion = rawGitVersion.split(' ')[2];
     const gitMinorVersion = gitVersion.split('.')[1];
@@ -107,74 +110,75 @@ class IconManager extends IconManagerBase {
     // Safeguard in case the tmp is not deleted and already have a remote defined
     this.removeTmpFolder();
     this.createTmpFolder();
-    exec(`git --version`, (error, stdout, stderr) => {
-      if (error) {
-        console.error(chalk`{red exec error: ${error}}`);
-        return;
-      }
-      const cloneImplementation =
-        this.getGitMinorVersion(stdout) < 25 ? SparseCheckoutGitV217 : SparseCheckoutGitV225;
+    const stdout = execSync(`git --version`).toString();
+    const cloneImplementation =
+      this.getGitMinorVersion(stdout) < 25 ? SparseCheckoutGitV217 : SparseCheckoutGitV225;
 
-      new cloneImplementation(this.resourcesData, this.iconFolder, this.tempFolder).execute();
-      this.moveFromTmpFolderToIconFolder();
-      this.removeTmpFolder();
-    });
+    new cloneImplementation(this.resourcesData).execute();
+    this.moveFromTmpFolderToIconFolder();
+    this.removeTmpFolder();
   };
 
   cloneRepo = () => {
     execSync(
-      `git clone "${this.resourcesData.repoUrl}" --depth=1 --single-branch --branch ${this.resourcesData.branch} ${this.iconFolder} -o repo`,
+      `git clone "${this.resourcesData.repoUrl}" --depth=1 --single-branch --branch ${this.resourcesData.branch} ${ResourcesPath} -o repo`,
       {
-        stdio: [0, 1, 2], // we need this so node will print the command output
-        cwd: path.resolve(__dirname, this.rootPath), // path to where you want to save the file
+        stdio: 'inherit', // we need this so node will print the command output
       },
     );
   };
 
   removeTmpFolder = () => {
-    exec(`[ -d "${this.tempFolder}" ] && rm -rf ${this.tempFolder}`);
+    try {
+      execSync(`[ -d "${TempDir}" ] && rm -rf "${TempDir}"`);
+    } catch {}
   };
 
   createTmpFolder = () => {
-    exec(`[ -d "${this.tempFolder}" ] && rm -rf ${this.tempFolder}`);
-    exec(`mkdir -p ${this.tempFolder}`);
+    try {
+      execSync(`[ -d "${TempDir}" ] && rm -rf "${TempDir}"`);
+    } catch {}
+    execSync(`mkdir -p "${TempDir}"`);
   };
 
   moveFromTmpFolderToIconFolder = () => {
-    exec(`cp -r ${this.tempFolder}/${this.resourcesData.folder}/* ${this.iconFolder}`, {
-      stdio: [0, 1, 2],
-      cwd: path.resolve(__dirname, this.rootPath),
+    execSync(`cp -r "${TempDir}/${this.resourcesData.folder}"/* "${ResourcesPath}/"`, {
+      stdio: 'inherit',
+      cwd: ProjectDir,
     });
+  };
+
+  _copyDir = (from, to) => {
+    if (!from.endsWith('/')) from += '/';
+    const stdout = execSync(`cp -r "${from}"* "${to}"`).toString();
+    console.log(stdout);
+    console.log(
+      chalk`{green The icons have been successfully obtained. Check "${path.relative(
+        ProjectDir,
+        ResourcesPath,
+      )}".}`,
+    );
   };
 
   copyFromLocalDirectory = () => {
-    exec(`cp -r ${this.resourcesData.path}* ${this.iconFolder}`, (error, stdout, stderr) => {
-      if (error) {
-        console.error(chalk`{red exec error: ${error}}`);
-        return;
-      }
+    this._copyDir(this.resourcesData.path, ResourcesPath);
+  };
 
-      if (stderr) {
-        console.error(`stderr: ${stderr}`);
-        return;
-      }
+  copyFromRosPackage = () => {
+    const ament = new Ament();
+    const packageDir = ament.findPackage(this.resourcesData.rosPackage);
 
-      console.log(`stdout: ${stdout}`);
-      console.log(
-        chalk`{green The icons have been successfully obtained. Check ${this.iconFolder}}`,
-      );
-    });
+    this._copyDir(`${packageDir}${this.resourcesData.path}`, ResourcesPath);
   };
 }
 
-const getIcons = () => {
-  const tempFolder = 'tmp';
-  const iconManager = new IconManager(resourcesData, iconFolder, tempFolder);
+const getIcons = (resourcesData) => {
+  const iconManager = new IconManager(resourcesData);
 
-  if (resourcesData.hasOwnProperty('repoUrl') || resourcesData.hasOwnProperty('path')) {
-    exec(`[ -d "${iconFolder}" ] && rm -rf ${iconFolder}`);
-    exec(`mkdir -p ${iconFolder}`);
-  }
+  try {
+    execSync(`[ -d "${ResourcesPath}" ] && rm -rf "${ResourcesPath}"`);
+  } catch {}
+  execSync(`mkdir -p "${ResourcesPath}"`);
 
   if (resourcesData.hasOwnProperty('repoUrl')) {
     // If we don't want to clone a specific folder of the repo, it'll clone the whole repo
@@ -183,9 +187,13 @@ const getIcons = () => {
       return;
     }
     iconManager.cloneSpecificFolder();
+  } else if (resourcesData.hasOwnProperty('rosPackage')) {
+    iconManager.copyFromRosPackage();
   } else {
     iconManager.copyFromLocalDirectory();
   }
 };
 
-getIcons();
+module.exports = {
+  getIcons,
+};

@@ -12,7 +12,7 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import HelpIcon from '@material-ui/icons/Help';
 import SettingsIcon from '@material-ui/icons/Settings';
 import React from 'react';
-import { HeaderBar, LogoButton, NavigationBar, Tooltip } from 'react-components';
+import { HeaderBar, LogoButton, NavigationBar, Tooltip, useAsync } from 'react-components';
 import { useHistory, useLocation } from 'react-router-dom';
 import { AdminRoute, DashboardRoute, RobotsRoute, TasksRoute } from '../util/url';
 import {
@@ -71,6 +71,8 @@ export const AppBar = React.memo(
     const { authenticator } = React.useContext(AppConfigContext);
     const user = React.useContext(UserContext);
     const { showTooltips } = React.useContext(TooltipsContext);
+    const safeAsync = useAsync();
+    const [brandingIconPath, setBrandingIconPath] = React.useState<string>('');
 
     const curTheme = React.useContext(SettingsContext).themeMode;
 
@@ -82,25 +84,16 @@ export const AppBar = React.memo(
       }
     }
 
-    const brandingIconPath = React.useMemo(() => {
-      const defaultIcon = 'defaultLogo.png';
-      let logoUrl: string | null;
-      if (!logoResourcesContext) {
-        return defaultIcon;
-      }
-      const logoPath = logoResourcesContext.getIconPath('headerLogo');
-      const blueLogoPath = logoResourcesContext.getIconPath('darkThemeLogo');
-      logoUrl = curTheme === ThemeMode.Dark ? logoPath : blueLogoPath;
-      return logoUrl;
-    }, [logoResourcesContext, curTheme]);
+    React.useLayoutEffect(() => {
+      if (!logoResourcesContext) return;
+      (async () => {
+        setBrandingIconPath(await safeAsync(logoResourcesContext.getHeaderLogoPath(curTheme)));
+      })();
+    }, [logoResourcesContext, safeAsync]);
 
     return (
       <HeaderBar className={classes.appBar}>
-        <LogoButton
-          src={brandingIconPath ? brandingIconPath : ''}
-          alt="logo"
-          className={classes.logoBtn}
-        />
+        <LogoButton src={brandingIconPath} alt="logo" className={classes.logoBtn} />
         <NavigationBar value={tabValue}>
           <Tab
             label="Building"

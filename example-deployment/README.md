@@ -92,7 +92,9 @@ In this example, we will be using [Keycloak](https://www.keycloak.org/) to do us
 There is a kubernetes resource file to deploy keycloak along with postgres for its database.
 
 ```bash
-.bin/minikube kubectl -- apply -f k8s/keycloak.yaml
+docker build -t rmf-web/keycloak:12.04 -f docker/keycloak/keycloak.Dockerfile docker/keycloak/
+docker save rmf-web/keycloak:12.04 | bash -c 'eval $(.bin/minikube docker-env) && docker load'
+kubectl apply -k k8s/example-full/keycloak
 ```
 
 This requires internet connection, see [Deploying in an airgapped network](#deploying-in-an-airgapped-network) if you are in an airgap network. tldr:
@@ -108,17 +110,19 @@ docker pull quay.io/keycloak/keycloak:12.0.4
 build the image
 
 ``` bash
-docker build -t rmf-web/keycloak -f docker/keycloak/keycloak.dockerfile docker/keycloak/
+docker build -t rmf-web/keycloak:12.04 -f docker/keycloak/keycloak.Dockerfile docker/keycloak/
 ```
 
 "publish" the image
 
 ``` bash
-docker save rmf-web/keycloak | bash -c 'eval $(.bin/minikube docker-env) && docker load'
+docker save rmf-web/keycloak:12.04 | bash -c 'eval $(.bin/minikube docker-env) && docker load'
 ```
 
+deploy it
+
 ```
-.bin/minikube kubectl -- apply -f k8s/keycloak.yaml
+kubectl apply -k k8s/example-full/keycloak
 ```
 
 Use kubectl to wait for keycloak to be ready
@@ -159,41 +163,28 @@ You may check out the keycloak docs if you would like to learn more about it's f
 Keycloak implements the openid-connect standard, by default the JWT is signed with an auto generated RSA key. We will need the cert so that `rmf-web` backend services can verify the token. You can use the admin console to get it or use the provided script
 
 ```bash
-node keycloak-tools/get-cert.js > keycloak.pem
+node keycloak-tools/get-cert.js > k8s/example-full/keycloak/keycloak.pem
 ```
 
 If you wish to, you may check the cert with
 
 ```bash
-openssl x509 -in keycloak.pem -noout -text
+openssl x509 -in k8s/example-full/keycloak/keycloak.pem -noout -text
 ```
 
 get the public key from the cert
 
 ```bash
-openssl x509 -in keycloak.pem -pubkey -noout -out jwt-pub-key.pub
+openssl x509 -in k8s/example-full/keycloak/keycloak.pem -pubkey -noout -out k8s/example-full/keycloak/jwt-pub-key.pub
 ```
 
 **NOTE: deleting the persistent volume used by postgres will delete the database, the next time you start keycloak it will start from a fresh state, meaning the realm we created will be gone and the public key will be different.**
 
-### Add the cert to kubernetes
+## Get the Sources
 
-In order to use the cert, we will add it as a configmap to kubernetes
+Because some packages like rmf-server depends on some internal rmf libraries, these libraries are not stable across versions so it is highly recommended to build them from source.
 
-```bash
-kubectl create configmap jwt-pub-key --from-file=jwt-pub-key.pub -o=yaml --dry-run=client | kubectl apply -f -
-
-```
-
-## rmf-server
-
-### Build minimal RMF image
-
-We will need a minimal base image containing all the RMF messages. This image will be used to build the rmf-server image.
-
-How you get this image will vary depending what version of RMF, and what extensions you are deploying it with. It is important that rmf-server is using the exact same message definitions as used by the deployment of RMF. For this example, we assume that you built rmf_demos from source using the main branch, so we will build the messages from source as well.
-
-Get RMF source code
+rmf:
 
 ```bash
 mkdir -p ws/rmf
@@ -204,64 +195,35 @@ vcs import src < rmf.repos
 popd
 ```
 
-build the image
+rmf-web:
+
+`git clone --depth 1 https://github.com/open-rmf/rmf-web ws/rmf-web`
+
+
+## Prepare "Builder" Image
+
+In order to optimize build performance, we will build a base image with all the dependencies required to build all the packages in `rmf-web`.
 
 ```bash
-docker build -t rmf-web/builder -f docker/builder.dockerfile ws/rmf/src
+./build-builder.sh ws/rmf-web example
 ```
 
-NOTE: It is not recommended to use the default "latest" tag in a real deployment, be sure to tag your images accordingly.
+## rmf-server
 
-### Build rmf-server image
-
-Get rmf-web source
+build and publish the rmf-server image
 
 ```bash
-git clone --depth 1 https://github.com/open-rmf/rmf-web ws/rmf-web
-```
-
-build the image
-
-```bash
-docker build -t rmf-web/rmf-server -f docker/rmf-server.dockerfile ws/rmf-web
-```
-
-"publish" the image, in a normal deployment, you would publish this to your docker registry, since we don't have a registry in this example, we will push the image directly to minikube
-
-```bash
-docker save rmf-web/rmf-server | bash -c 'eval $(.bin/minikube docker-env) && docker load'
-```
-
-create a configmap for the server
-
-```bash
-kubectl create configmap rmf-server-config --from-file=rmf_server_config.py -o=yaml --dry-run=client | kubectl apply -f -
-```
-
-deploy it
-
-```bash
-.bin/minikube kubectl -- apply -f k8s/rmf-server.yaml
+./build-rmf-server.sh ws/rmf ws/rmf-web example
+docker save rmf-web/rmf-server:example | bash -c 'eval $(.bin/minikube docker-env) && docker load'
 ```
 
 ## dashboard
 
-build the image
+build and publish the image
 
 ```bash
-docker build -t rmf-web/dashboard -f docker/dashboard.dockerfile ws/rmf-web
-```
-
-"publish" the image
-
-```bash
-docker save rmf-web/dashboard | bash -c 'eval $(.bin/minikube docker-env) && docker load'
-```
-
-deploy it
-
-```bash
-.bin/minikube kubectl -- apply -f k8s/dashboard.yaml
+docker build -t rmf-web/dashboard:example -f docker/dashboard.Dockerfile ws/rmf-web --build-arg BUILDER_TAG=example
+docker save rmf-web/dashboard:example | bash -c 'eval $(.bin/minikube docker-env) && docker load'
 ```
 
 ## [MinIO](https://github.com/minio/minio)
@@ -269,17 +231,17 @@ MinIO is a High-Performance Object Storage released under Apache License v2.0. M
 
 This requires internet connection, see [Deploying in an airgapped network](#deploying-in-an-airgapped-network) if you are in an airgap network.
 
-Let's deploy our `Minio`:
-
-``` bash
-.bin/minikube kubectl -- apply -f k8s/minio.yaml
-```
+We will be using the official minio image, so there is no need to build or publish anything.
 
 ## FluentD
 
 Fluentd is an open source data collector for unified logging layer. Fluentd allows you to unify data collection and consumption for a better use and understanding of data.
 
+We will be using the official fluentd image, so there is no need to build or publish anything.
+
 ### Fluentd Configmap
+
+The fluentd config used in this example can be found at `k8s/example-full/fluentd-configmap.yaml`.
 
 We have 4 files in our `fluentd-configmap.yaml` :
 * `fluent.conf`: Our main config which includes all configurations we want to run.
@@ -288,77 +250,28 @@ We have 4 files in our `fluentd-configmap.yaml` :
 Capture all logs and send them to MinIO. Every chunck of logs should have 5mb.
 * `minio-fluent-dev.conf`: `match` config to capture all logs and send them to MinIO. Every chunck of logs should have 2kb for development purposes.
 
-Let's deploy our `configmap`:
+## reporting-server
 
-``` bash
-.bin/minikube kubectl -- apply -f k8s/fluentd-configmap.yaml
-```
-
-### Fluentd Daemonset
-
-Let's deploy the `daemonset`,
-
-This requires internet connection, see [Deploying in an airgapped network](#deploying-in-an-airgapped-network) if you are in an airgap network.
-
-``` bash
-.bin/minikube kubectl -- apply -f k8s/fluentd.yaml
-```
-
-### Build reporting-server image
-
-build the image
+build and publish the image
 
 ```bash
-docker build -t rmf-web/reporting-server -f docker/reporting-server.dockerfile ws/rmf-web
+docker build -t rmf-web/reporting-server:example -f docker/reporting-server.Dockerfile ws/rmf-web --build-arg BUILDER_TAG=example
+docker save rmf-web/reporting-server:example | bash -c 'eval $(.bin/minikube docker-env) && docker load'
 ```
 
-"publish" the image, in a normal deployment, you would publish this to your docker registry, since we don't have a registry in this example, we will push the image directly to minikube
+## reporting
+
+build and publish the image
 
 ```bash
-docker save rmf-web/reporting-server | bash -c 'eval $(.bin/minikube docker-env) && docker load'
-```
-
-create a configmap for the server
-
-```bash
-kubectl create configmap reporting-server-config --from-file=reporting_server_config.py -o=yaml --dry-run=client | kubectl apply -f -
-```
-
-deploy it
-
-```bash
-.bin/minikube kubectl -- apply -f k8s/reporting-server.yaml
-```
-
-## Reporting
-
-build the image
-
-```bash
-docker build -t rmf-web/reporting -f docker/reporting.dockerfile ws/rmf-web
-```
-
-"publish" the image
-
-```bash
-docker save rmf-web/reporting | bash -c 'eval $(.bin/minikube docker-env) && docker load'
-```
-
-deploy it
-
-```bash
-.bin/minikube kubectl -- apply -f k8s/reporting.yaml
+docker build -t rmf-web/reporting:example -f docker/reporting.Dockerfile ws/rmf-web --build-arg BUILDER_TAG=example
 ```
 
 ## CronJobs
 
 Cronjobs are jobs that run periodically on a given schedule. You can configure the schedule following this [cron schedule syntax](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/#cron-schedule-syntax)
 
-deploy cronjobs
-
-```bash
-.bin/minikube kubectl -- apply -f k8s/cronjobs.yaml
-```
+The jobs we will run in this example can be found at `k8s/example-full/cronjobs.yaml`, it clean old logs from the database once a day at 0004 (timezone depends on the configuration of the kubernetes cluster).
 
 ## Test the deployment
 
@@ -383,6 +296,8 @@ Before you run the script, first you have to obtain the source. Refer to the abo
 ```
 
 Note: If you followed the above instructions to obtain the source, your rmf workspace will be in `ws/rmf`, and your rmf-web workspace will be in `ws/rmf-web`. So you will run it with `./deploy.sh --rmf-ws ws/rmf --rmf-web-ws ws/rmf`.
+
+Note that the deploy scripts also show how you can tag each image to identify them uniquely. Using proper tags is important in a production scenario, without it, kubernetes cannot determine which pods are outdated and need to be re-deployed.
 
 Sit back and relax, everything will be done for you!
 
@@ -480,4 +395,21 @@ If you can connect to rmf, there is a chance that there is some discovery issues
 ```bash
 .bin/minikube kubectl -- delete -f k8s/rmf-server.yaml
 .bin/minikube kubectl -- apply -f k8s/rmf-server.yaml
+```
+
+## Some containers crashes at first startup
+
+Some deployments like the rmf-server may crash on the first startup, this is often due to the database not being ready yet. This is normal and kubernetes will automatically restart the container.
+
+One solution is to add an init container to probe for the readiness of the database, but this comes at a small cost which is not normally expected to happen in an actual deployment. It is also not fail proof as there is no guarantee that
+
+1. the probe succeeding means that service is definitely ready, this is often the case for tcp connection test probes.
+2. the service remains available between the time when the probe succeeds and the pod being created.
+
+If you want to avoid cluttering the logs with the initial crash (which should only happen in development), the recommended solution is to modify the deploy scripts to wait for the database to be ready before deploying the app.
+
+```bash
+export RMF_SERVER_TAG=<your-tag>
+kubectl apply -k k8s/example-full -lapp=rmf-server -ltier=db && kubectl wait deploy/rmf-server-db --for=condition=available
+kubectl apply -k k8s/example-full -lapp=rmf-server -ltier=app
 ```
