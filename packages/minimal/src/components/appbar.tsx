@@ -8,10 +8,9 @@ import {
   Typography,
 } from '@material-ui/core';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import SettingsIcon from '@material-ui/icons/Settings';
 import React from 'react';
 import { HeaderBar, LogoButton } from 'react-components';
-import { AppConfigContext, AppControllerContext, ResourcesContext } from './app-contexts';
+import { AppConfigContext, ResourcesContext } from './app-contexts';
 import { UserContext } from './auth/contexts';
 
 const useStyles = makeStyles((theme) =>
@@ -30,11 +29,7 @@ const useStyles = makeStyles((theme) =>
   }),
 );
 
-export type TabValue = 'dashboard';
-
 export interface AppBarProps {
-  tabValue: TabValue;
-  onTabChange?(event: React.ChangeEvent<unknown>, newValue: TabValue): void;
   // TODO: change the alarm status to required when we have an alarm
   // service working properly in the backend
   alarmState?: boolean | null;
@@ -42,7 +37,6 @@ export interface AppBarProps {
 
 export const AppBar = React.memo(
   (): React.ReactElement => {
-    const { showSettings: setShowSettings } = React.useContext(AppControllerContext);
     const logoResourcesContext = React.useContext(ResourcesContext)?.logos;
     const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
     const classes = useStyles();
@@ -72,14 +66,6 @@ export const AppBar = React.memo(
           <LogoButton src={brandingIconPath} alt="logo" className={classes.logoBtn} />
           <Toolbar variant="dense" className={classes.toolbar}>
             <Typography variant="caption">Powered by OpenRMF</Typography>
-            <IconButton
-              id="show-settings-btn"
-              aria-label="settings"
-              color="inherit"
-              onClick={() => setShowSettings(true)}
-            >
-              <SettingsIcon />
-            </IconButton>
             {user && (
               <>
                 <IconButton
