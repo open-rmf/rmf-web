@@ -1,6 +1,6 @@
 import { Grid, makeStyles, ThemeProvider } from '@material-ui/core';
 import React from 'react';
-import { rmfDark, rmfLight, GlobalCss } from 'react-components';
+import { rmfDark, rmfLight, GlobalCss, GlobalDarkCss } from 'react-components';
 import { loadSettings, saveSettings, ThemeMode } from '../settings';
 import { ErrorSnackbar } from 'react-components';
 import {
@@ -77,7 +77,7 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
 
   return (
     <ThemeProvider theme={theme}>
-      <GlobalCss />
+      {settings.themeMode === ThemeMode.Dark ? <GlobalDarkCss /> : <GlobalCss />}
       <SettingsContext.Provider value={settings}>
         <TooltipsContext.Provider value={tooltips}>
           <AppControllerContext.Provider value={appController}>

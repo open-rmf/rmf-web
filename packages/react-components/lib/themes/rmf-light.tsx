@@ -30,24 +30,13 @@ export const rmfLight = createMuiTheme({
     width: 240,
   },
   palette: {
+    type: 'light',
+    primary: {
+      main: '#44497a',
+      dark: '#323558',
+      light: '#565d99',
+    },
     ...commonTheme,
-    text: {
-      primary: '#1F396B',
-      secondary: '#103375',
-      disabled: 'rgba(0, 0, 0, 0.38)',
-    },
-    background: {
-      default: '#F3F3F3',
-      paper: '#FFFFFF',
-    },
-    divider: 'rgba(0, 0, 0, 0.12)',
-    action: {
-      active: 'rgba(0, 0, 0, 0.54)',
-      hover: 'rgba(0, 0, 0, 0.04)',
-      selected: 'rgba(0, 0, 0, 0.08)',
-      disabledBackground: 'rgba(0, 0, 0, 0.12)',
-      disabled: 'rgba(0, 0, 0, 0.26)',
-    },
   },
   mapClass: '',
 });

@@ -45,8 +45,10 @@ const useStyles = makeStyles((theme) => ({
   displayName: {
     display: 'table-cell',
     borderBottom: '1px solid',
+    borderBottomColor: theme.palette.divider,
     borderTop: '1px solid',
-    background: 'rgba(0, 0, 0, 0.1)',
+    borderTopColor: theme.palette.divider,
+    background: theme.palette.action.hover,
     padding: theme.spacing(0.25, 2),
     width: '30%',
   },
@@ -54,7 +56,9 @@ const useStyles = makeStyles((theme) => ({
     display: 'table-cell',
     textAlign: 'end',
     borderBottom: '1px solid',
+    borderBottomColor: theme.palette.divider,
     borderTop: '1px solid',
+    borderTopColor: theme.palette.divider,
     padding: theme.spacing(0.25, 2),
   },
   arrayListItem: {

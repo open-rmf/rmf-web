@@ -37,17 +37,11 @@ const getLogsPromise = async () => getLogs();
 const getLabelsPromise = async () => getLogLabels();
 
 export const LogManagementExample: Story = (args) => (
-  // add a background to visualize different theme colors properly
-  <div style={{ backgroundColor: '#A8A8A8', padding: '1rem' }}>
-    <LogManagement getLogs={getLogsPromise} getLabels={getLabelsPromise} {...args} />
-  </div>
+  <LogManagement getLogs={getLogsPromise} getLabels={getLabelsPromise} {...args} />
 );
 
 export const SimpleSearchLogForm: Story = (args) => (
-  // add a background to visualize different theme colors properly
-  <div style={{ backgroundColor: '#A8A8A8', padding: '1rem' }}>
-    <SearchLogForm logLabelValues={getLogLabels()} {...args} />
-  </div>
+  <SearchLogForm logLabelValues={getLogLabels()} {...args} />
 );
 
 export const SimpleLogTable: Story = (args) => {

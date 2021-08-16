@@ -24,7 +24,6 @@ const commonTheme = {
     dark: '#8E44EA',
     light: '#E2CDFD',
   },
-  divider: '#20A39E',
 };
 
 export default commonTheme;

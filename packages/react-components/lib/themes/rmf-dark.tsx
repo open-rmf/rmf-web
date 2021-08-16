@@ -9,23 +9,16 @@ export const rmfDark = createMuiTheme({
     width: 240,
   },
   palette: {
+    type: 'dark',
     ...commonTheme,
-    text: {
-      primary: '#FBFCFF',
-      secondary: '#F3F3F3',
-      disabled: 'rgba(255, 255, 255, 0.5)',
+    primary: {
+      main: '#84693d',
+      dark: '#533b11',
+      light: '#bea582',
     },
     background: {
       default: '#103375',
-      paper: '#1F396B',
-    },
-    divider: 'rgba(255, 255, 255, 0.12)',
-    action: {
-      active: '#fff',
-      hover: 'rgba(255, 255, 255, 0.08)',
-      selected: 'rgba(255, 255, 255, 0.16)',
-      disabledBackground: 'rgba(255, 255, 255, 0.12)',
-      disabled: 'rgba(255, 255, 255, 0.3)',
+      paper: '#2e4d83',
     },
   },
   mapClass:
