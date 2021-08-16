@@ -25,6 +25,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.primary.dark,
     color: theme.palette.getContrastText(theme.palette.primary.dark),
     minWidth: theme.appDrawer.width,
+    width: '16%',
   },
   drawerContainer: {
     overflow: 'auto',
