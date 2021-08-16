@@ -12,7 +12,7 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import HelpIcon from '@material-ui/icons/Help';
 import SettingsIcon from '@material-ui/icons/Settings';
 import React from 'react';
-import { HeaderBar, LogoButton, NavigationBar, Tooltip } from 'react-components';
+import { HeaderBar, LogoButton, NavigationBar, Tooltip, useAsync } from 'react-components';
 import { useHistory, useLocation } from 'react-router-dom';
 import { AdminRoute, DashboardRoute, RobotsRoute, TasksRoute } from '../util/url';
 import {
@@ -73,6 +73,8 @@ export const AppBar = React.memo(
     const { authenticator } = React.useContext(AppConfigContext);
     const user = React.useContext(UserContext);
     const { showTooltips } = React.useContext(TooltipsContext);
+    const safeAsync = useAsync();
+    const [brandingIconPath, setBrandingIconPath] = React.useState<string>('');
 
     async function handleLogout(): Promise<void> {
       try {
@@ -82,14 +84,12 @@ export const AppBar = React.memo(
       }
     }
 
-    const brandingIconPath = React.useMemo(() => {
-      const defaultIcon = 'defaultLogo.png';
-      if (!logoResourcesContext) {
-        return defaultIcon;
-      }
-      const iconPath = logoResourcesContext.getIconPath('headerLogo');
-      return iconPath ? iconPath : defaultIcon;
-    }, [logoResourcesContext]);
+    React.useLayoutEffect(() => {
+      if (!logoResourcesContext) return;
+      (async () => {
+        setBrandingIconPath(await safeAsync(logoResourcesContext.getHeaderLogoPath()));
+      })();
+    }, [logoResourcesContext, safeAsync]);
 
     return (
       <HeaderBar className={classes.appBar}>

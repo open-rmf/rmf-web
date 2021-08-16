@@ -1,6 +1,10 @@
 import Debug from 'debug';
 import React from 'react';
-import { DispenserMarker as DispenserMarker_, DispenserMarkerProps } from 'react-components';
+import {
+  DispenserMarker as DispenserMarker_,
+  DispenserMarkerProps,
+  useAsync,
+} from 'react-components';
 import { DispenserResource } from '../../managers/resource-manager-dispensers';
 import { viewBoxFromLeafletBounds } from '../../util/css-utils';
 import { ResourcesContext } from '../app-contexts';
@@ -27,6 +31,8 @@ export const DispensersOverlay = (props: DispensersOverlayProps): React.ReactEle
   const viewBox = viewBoxFromLeafletBounds(props.bounds);
   const footprint = 0.4;
   const dispenserResourcesContext = React.useContext(ResourcesContext)?.dispensers;
+  const safeAsync = useAsync();
+  const [iconPaths, setIconPaths] = React.useState<Record<string, string>>({});
 
   /**
    * We choose to iterate the dispensers inside resources because we get the positions
@@ -51,6 +57,19 @@ export const DispensersOverlay = (props: DispensersOverlayProps): React.ReactEle
     [dispenserInCurLevel],
   );
 
+  React.useEffect(() => {
+    if (!dispenserResourcesContext) return;
+    (async () => {
+      const newIcons: Record<string, string> = {};
+      const ps = dispenserInCurLevel.map(async (dispenser) => {
+        const icon = await dispenserResourcesContext.getIconPath(dispenser.guid);
+        if (icon) newIcons[dispenser.guid] = icon;
+      });
+      await safeAsync(Promise.all(ps));
+      setIconPaths((prev) => ({ ...prev, ...newIcons }));
+    })();
+  }, [dispenserResourcesContext, dispenserInCurLevel, safeAsync]);
+
   return (
     <SVGOverlay {...otherProps}>
       <svg viewBox={viewBox}>
@@ -61,7 +80,7 @@ export const DispensersOverlay = (props: DispensersOverlayProps): React.ReactEle
                 key={dispenser.guid}
                 guid={dispenser.guid}
                 location={dispenserLocations[idx]}
-                iconPath={dispenserResourcesContext.getIconPath(dispenser.guid) || undefined}
+                iconPath={iconPaths[dispenser.guid]}
                 footprint={footprint}
                 onClick={onDispenserClick}
                 aria-label={dispenser.guid}

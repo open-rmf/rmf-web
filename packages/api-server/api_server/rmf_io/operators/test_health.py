@@ -1,21 +1,21 @@
 import unittest
 
 import rx
+from api_server.models import BaseBasicHealth, HealthStatus
 from rx import operators as ops
 from rx.scheduler.historicalscheduler import HistoricalScheduler
 
-from ...models import BasicHealth, HealthStatus
-from . import most_critical
+from .health import most_critical
 
 
 class TestMostCritical(unittest.TestCase):
     def test_returns_dead_over_unhealthy(self):
         healths = [
-            BasicHealth(
+            BaseBasicHealth(
                 id_="test",
                 health_status=HealthStatus.DEAD,
             ),
-            BasicHealth(
+            BaseBasicHealth(
                 id_="test",
                 health_status=HealthStatus.UNHEALTHY,
             ),
@@ -23,7 +23,7 @@ class TestMostCritical(unittest.TestCase):
         obs_a = rx.of(healths[0]).pipe(ops.timestamp(scheduler=HistoricalScheduler(1)))
         obs_b = rx.of(healths[1]).pipe(ops.timestamp(scheduler=HistoricalScheduler(2)))
 
-        result: BasicHealth = None
+        result: BaseBasicHealth = None
 
         def assign(v):
             nonlocal result
@@ -34,12 +34,12 @@ class TestMostCritical(unittest.TestCase):
 
     def test_return_most_recent(self):
         healths = [
-            BasicHealth(
+            BaseBasicHealth(
                 id_="test",
                 health_status=HealthStatus.DEAD,
                 health_message="first",
             ),
-            BasicHealth(
+            BaseBasicHealth(
                 id_="test",
                 health_status=HealthStatus.DEAD,
                 health_message="second",
@@ -48,7 +48,7 @@ class TestMostCritical(unittest.TestCase):
         obs_a = rx.of(healths[0]).pipe(ops.timestamp(scheduler=HistoricalScheduler(1)))
         obs_b = rx.of(healths[1]).pipe(ops.timestamp(scheduler=HistoricalScheduler(2)))
 
-        result: BasicHealth = None
+        result: BaseBasicHealth = None
 
         def assign(v):
             nonlocal result
@@ -60,7 +60,7 @@ class TestMostCritical(unittest.TestCase):
 
     def test_ignore_none_values(self):
         healths = [
-            BasicHealth(
+            BaseBasicHealth(
                 id_="test",
                 health_status=HealthStatus.HEALTHY,
             ),
@@ -69,7 +69,7 @@ class TestMostCritical(unittest.TestCase):
         obs_a = rx.of(healths[0]).pipe(ops.timestamp(scheduler=HistoricalScheduler(1)))
         obs_b = rx.of(healths[1]).pipe(ops.timestamp(scheduler=HistoricalScheduler(2)))
 
-        result: BasicHealth = None
+        result: BaseBasicHealth = None
 
         def assign(v):
             nonlocal result

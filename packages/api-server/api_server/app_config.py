@@ -31,11 +31,3 @@ def load_config(config_file: str) -> AppConfig:
     if "RMF_API_SERVER_LOG_LEVEL" in os.environ:
         config.log_level = os.environ["RMF_API_SERVER_LOG_LEVEL"]
     return config
-
-
-# The default config automatically loaded as a singleton
-if "RMF_API_SERVER_CONFIG" in os.environ:
-    default_config_file = os.environ["RMF_API_SERVER_CONFIG"]
-else:
-    default_config_file = f"{os.path.dirname(__file__)}/default_config.py"
-default_config = load_config(default_config_file)

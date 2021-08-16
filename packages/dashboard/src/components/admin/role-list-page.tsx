@@ -47,7 +47,10 @@ export function RoleListPage(): JSX.Element | null {
         }}
         removePermission={async (role, permission) => {
           try {
-            await adminApi.deleteRolePermissionAdminRolesRolePermissionsDelete(permission, role);
+            await adminApi.removeRolePermissionAdminRolesRolePermissionsRemovePost(
+              permission,
+              role,
+            );
           } catch (e) {
             throw new Error(getApiErrorMessage(e));
           }

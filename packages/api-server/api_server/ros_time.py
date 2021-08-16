@@ -1,5 +1,4 @@
 from datetime import datetime, timezone
-from typing import Optional
 
 from builtin_interfaces.msg import Time as RosTime
 
@@ -23,10 +22,10 @@ def py_to_ros_time(py_datetime: datetime) -> RosTime:
     )
 
 
-def convert_to_rmf_time(timestamp: int, sim_time: Optional[RosTime]) -> RosTime:
+def convert_to_rmf_time(timestamp: int, now: RosTime) -> RosTime:
     """
     Given a timestamp (in seconds), convert it to rmf time. If rmf is not using simulation time,
-    this simply converts to to ros time format.
+    this simply converts to ros time format.
     If it is using sim time, this returns rmf time, relative to the
     difference between the given time and the system's current time.
 
@@ -41,12 +40,9 @@ def convert_to_rmf_time(timestamp: int, sim_time: Optional[RosTime]) -> RosTime:
         sec=timestamp,
         nanosec=0,
     )
-    if sim_time is None:
-        return ros_time
-    sim_now = sim_time
     utc_now = py_to_ros_time(datetime.now())
-    sec = ros_time.sec - utc_now.sec + sim_now.sec
-    nanosec = ros_time.nanosec - utc_now.nanosec + sim_now.nanosec
+    sec = ros_time.sec - utc_now.sec + now.sec
+    nanosec = ros_time.nanosec - utc_now.nanosec + now.nanosec
     if nanosec < 0:
         sec = sec - 1
         nanosec = 1000000000 + nanosec

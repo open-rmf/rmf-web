@@ -7,3 +7,12 @@ omit =
 
     # generated files
     api_server/models/ros_pydantic/**
+
+    # unsuitable to be unit tested
+    api_server/__main__.py
+    api_server/app.py
+    api_server/gateway.py
+
+[report]
+exclude_lines =
+    class .*ABC.*

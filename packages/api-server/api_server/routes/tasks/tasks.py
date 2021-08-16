@@ -1,96 +1,80 @@
 from datetime import datetime
-from typing import Callable, Dict, List, Optional
+from typing import List, Optional
 
-from fastapi import Depends, HTTPException
-from fastapi.param_functions import Query
-from fastapi.responses import JSONResponse
-
-from ...dependencies import AddPaginationQuery, pagination_query
-from ...fast_io import DataStore, FastIORouter
-from ...gateway import RmfGateway
-from ...models import (
+from api_server.base_app import BaseApp
+from api_server.dependencies import pagination_query
+from api_server.fast_io import FastIORouter, WatchRequest
+from api_server.models import (
     CancelTask,
     SubmitTask,
     SubmitTaskResponse,
     Task,
-    TaskStateEnum,
     TaskSummary,
-    TaskTypeEnum,
     User,
 )
-from ...models import tortoise_models as ttm
-from ...repositories import RmfRepository
-from ...rmf_io import RmfEvents
-from ...services.tasks import convert_task_request
+from api_server.models.pagination import Pagination
+from api_server.repositories import RmfRepository
+from api_server.routes.utils import rx_watcher
+from api_server.services.tasks import convert_task_request
+from fastapi import Depends, HTTPException, Path
+from fastapi.param_functions import Query
+from fastapi.responses import JSONResponse
+from rx import operators as rxops
+
 from .dispatcher import DispatcherClient
 from .utils import get_task_progress
 
 
 class TasksRouter(FastIORouter):
-    def __init__(
-        self,
-        user_dep: Callable[[], User],
-        rmf_repo: RmfRepository,
-        rmf_events: RmfEvents,
-        rmf_gateway_dep: Callable[[], RmfGateway],
-    ):
+    def __init__(self, app: BaseApp):
+        user_dep = app.auth_dep
+
         super().__init__(tags=["Tasks"], user_dep=user_dep)
         _dispatcher_client: Optional[DispatcherClient] = None
 
         def dispatcher_client_dep():
             nonlocal _dispatcher_client
             if _dispatcher_client is None:
-                _dispatcher_client = DispatcherClient(rmf_gateway_dep())
+                _dispatcher_client = DispatcherClient(app.rmf_gateway())
             return _dispatcher_client
 
-        class TaskSummaryDataStore(DataStore[TaskSummary]):
-            async def get(
-                self,
-                key: str,
-                path_params: Dict[str, str],
-                user: User,
-            ):
-                # FIXME: This would fail if task_id contains "_/"
-                task_id = path_params["task_id"].replace("__", "/")
-                data = await rmf_repo.query_tasks(user).get_or_none(id_=task_id)
-                if data is None:
-                    return None
-                return TaskSummary(**data.data)
+        @self.get("/{task_id}/summary", response_model=TaskSummary)
+        async def get_task_summary(
+            rmf_repo: RmfRepository = Depends(app.rmf_repo),
+            task_id: str = Path(..., description="task_id with '/' replaced with '__'"),
+        ):
+            """
+            Available in socket.io
+            """
+            ts = await rmf_repo.get_task_summary(task_id)
+            return ts.dict(exclude_none=True)
 
-            async def set(
-                self, key: str, path_params: Dict[str, str], data: TaskSummary
-            ):
-                # RmfBookKeeper will handle writing to db
-                pass
-
-        @self.watch(
-            "/{task_id}/summary",
-            target=rmf_events.task_summaries,
-            response_model=TaskSummary,
-            data_store=TaskSummaryDataStore(),
-            param_docs={"task_id": "task_id with '/' replaced with '__'"},
-        )
-        async def get_task_summary(task_summary: TaskSummary):
-            return {"task_id": task_summary.task_id.replace("/", "__")}, task_summary
-
-        def to_task(tt_summary: ttm.TaskSummary):
-            py_summary = tt_summary.to_pydantic()
-            return Task.construct(
-                task_id=py_summary.task_id,
-                authz_grp=tt_summary.authz_grp,
-                progress=get_task_progress(
-                    py_summary,
-                    rmf_gateway_dep(),
+        @self.watch("/{task_id}/summary")
+        async def watch_task_summary(req: WatchRequest, task_id: str):
+            await req.emit(await get_task_summary(RmfRepository(req.user), task_id))
+            rx_watcher(
+                req,
+                app.rmf_events().task_summaries.pipe(
+                    rxops.filter(lambda x: x.task_id == task_id),
+                    rxops.map(lambda x: x.dict(exclude_none=True)),
                 ),
-                summary=py_summary,
+            )
+
+        def to_task(task_summary: TaskSummary):
+            return Task.construct(
+                task_id=task_summary.task_id,
+                authz_grp=task_summary.authz_grp,
+                progress=get_task_progress(
+                    task_summary,
+                    app.rmf_gateway().now(),
+                ),
+                summary=task_summary,
             )
 
         @self.get("", response_model=List[Task])
         async def get_tasks(
-            user: User = Depends(user_dep),
-            add_pagination: AddPaginationQuery[ttm.TaskSummary] = Depends(
-                pagination_query({"task_id": "id_"})
-            ),
+            rmf_repo: RmfRepository = Depends(app.rmf_repo),
+            pagination: Pagination = Depends(pagination_query),
             task_id: Optional[str] = Query(
                 None, description="comma separated list of task ids"
             ),
@@ -111,39 +95,19 @@ class TasksRouter(FastIORouter):
             ),
             priority: Optional[int] = None,
         ):
-            filter_params = {}
-            if task_id is not None:
-                filter_params["id___in"] = task_id.split(",")
-            if fleet_name is not None:
-                filter_params["fleet_name__in"] = fleet_name.split(",")
-            if submission_time_since is not None:
-                filter_params["submission_time__gte"] = submission_time_since
-            if start_time_since is not None:
-                filter_params["start_time__gte"] = start_time_since
-            if end_time_since is not None:
-                filter_params["end_time__gte"] = end_time_since
-            if robot_name is not None:
-                filter_params["robot_name__in"] = robot_name.split(",")
-            if state is not None:
-                try:
-                    filter_params["state__in"] = [
-                        TaskStateEnum[s.upper()].value for s in state.split(",")
-                    ]
-                except KeyError as e:
-                    raise HTTPException(422, "unknown state") from e
-            if task_type is not None:
-                try:
-                    filter_params["task_type__in"] = [
-                        TaskTypeEnum[t.upper()].value for t in task_type.split(",")
-                    ]
-                except KeyError as e:
-                    raise HTTPException(422, "unknown task type") from e
-            if priority is not None:
-                filter_params["priority"] = priority
-
-            q = rmf_repo.query_tasks(user).filter(**filter_params)
-            task_summaries = await add_pagination(q)
-            return [to_task(ts) for ts in task_summaries]
+            task_summaries = await rmf_repo.query_task_summaries(
+                pagination,
+                task_id=task_id,
+                fleet_name=fleet_name,
+                submission_time_since=submission_time_since,
+                start_time_since=start_time_since,
+                end_time_since=end_time_since,
+                robot_name=robot_name,
+                state=state,
+                task_type=task_type,
+                priority=priority,
+            )
+            return [to_task(t) for t in task_summaries]
 
         @self.post("/submit_task", response_model=SubmitTaskResponse)
         async def submit_task(
@@ -152,7 +116,7 @@ class TasksRouter(FastIORouter):
             dispatcher_client: DispatcherClient = Depends(dispatcher_client_dep),
         ):
             req_msg, err_msg = convert_task_request(
-                submit_task_params, dispatcher_client.get_sim_time()
+                submit_task_params, app.rmf_gateway().now()
             )
 
             if err_msg:

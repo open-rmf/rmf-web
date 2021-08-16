@@ -49,8 +49,9 @@ export const DispenserMarker = React.forwardRef(function (
   const { guid, location: location_, footprint = 0.4, iconPath, onClick, ...otherProps } = props;
   debug(`render ${guid}`);
   const classes = useStyles();
-  const [useImageIcon, setUseImageIcon] = React.useState(!!iconPath);
+  const [imageHasError, setImageHasError] = React.useState(false);
   const location = fromRmfCoords(location_);
+  const useImageIcon = !!iconPath && !imageHasError;
 
   return (
     <g ref={ref} onClick={(e) => onClick && onClick(e, guid)} {...otherProps}>
@@ -65,7 +66,7 @@ export const DispenserMarker = React.forwardRef(function (
             y={-footprint}
             width={footprint * 2}
             height={footprint * 2}
-            onError={() => setUseImageIcon(false)}
+            onError={() => setImageHasError(true)}
           />
         ) : (
           // the default marker's size is slightly smaller than the footprint

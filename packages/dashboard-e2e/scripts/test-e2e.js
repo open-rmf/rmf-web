@@ -1,9 +1,10 @@
 const concurrently = require('concurrently');
 const { execSync } = require('child_process');
 const { services } = require('./config');
+const path = require('path');
 
-execSync('WORLD_NAME=office node scripts/get-resources-location.js', { stdio: 'inherit' });
-execSync('cd ../dashboard && node scripts/setup/get-icons.js', { stdio: 'inherit' });
+process.env.RMF_DASHBOARD_RESOURCES_FILE = path.resolve(`${__dirname}/../dashboard-resources.json`);
+execSync('cd ../dashboard && npm run setup', { stdio: 'inherit' });
 execSync('npm --prefix ../dashboard run build', { stdio: 'inherit' });
 
 // wrap in double quotes to support args with spaces

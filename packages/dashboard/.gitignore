@@ -3,9 +3,11 @@
 # dependencies
 /public/assets/icons/
 /node_modules
-/.pnp
-.pnp.js
-.resources.json
+
+# setup artifacts
+/.resources.json
+/tmp
+/src/assets/resources
 
 # testing
 /coverage

@@ -2,3 +2,6 @@
 .venv/
 .git/
 example-deployment/
+**/__pycache__/
+**/build/
+**/dist/

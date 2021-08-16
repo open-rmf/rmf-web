@@ -1,0 +1,17 @@
+# rmf-server and dashboard only
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+commonLabels:
+  project: rmf-web-example-lite
+
+bases:
+  - ../base/rmf-server
+  - ../base/dashboard
+
+images:
+  - name: rmf-web/rmf-server
+    newTag: ${RMF_SERVER_TAG}
+  - name: rmf-web/dashboard # should be built with no authentication
+    newTag: ${DASHBOARD_TAG}
