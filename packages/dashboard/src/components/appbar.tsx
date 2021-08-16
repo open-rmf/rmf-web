@@ -23,7 +23,6 @@ import {
   SettingsContext,
 } from './app-contexts';
 import { UserContext } from './auth/contexts';
-import { ThemeMode } from '../settings';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -84,12 +83,12 @@ export const AppBar = React.memo(
       }
     }
 
-    React.useLayoutEffect(() => {
+    React.useEffect(() => {
       if (!logoResourcesContext) return;
       (async () => {
         setBrandingIconPath(await safeAsync(logoResourcesContext.getHeaderLogoPath(curTheme)));
       })();
-    }, [logoResourcesContext, safeAsync]);
+    }, [logoResourcesContext, safeAsync, curTheme]);
 
     return (
       <HeaderBar className={classes.appBar}>

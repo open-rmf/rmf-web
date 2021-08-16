@@ -30,7 +30,7 @@ export class LogoResourceManager {
   getHeaderLogoPath = async (theme: ThemeMode): Promise<string> => {
     const iconPath = await this.getIconPath('headerLogo');
     const darkIconPath = await this.getIconPath('darkThemeLogo');
-    const themeIcon = theme === ThemeMode.Dark ? darkIconPath : iconPath;
+    const themeIcon = theme === ThemeMode.Dark ? iconPath : darkIconPath;
     if (themeIcon) return themeIcon;
     return (await import(/* webpackMode: "eager" */ '../assets/defaultLogo.png')).default;
   };
