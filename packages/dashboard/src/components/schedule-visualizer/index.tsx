@@ -25,6 +25,9 @@ import WaypointsOverlay from './waypoints-overlay';
 
 const debug = Debug('ScheduleVisualizer');
 const TrajectoryUpdateInterval = 2000;
+// schedule visualizer manages it's own settings so that it doesn't cause a re-render
+// of the whole app when it changes.
+const SettingsKey = 'scheduleVisualizerSettings';
 
 const useStyles = makeStyles(() => ({
   map: {
@@ -64,6 +67,10 @@ export function calcMaxBounds(
   const bounds = new L.LatLngBounds([0, 0], [0, 0]);
   Object.values(mapFloorLayers).forEach((x) => bounds.extend(x.bounds));
   return bounds.pad(0.2);
+}
+
+interface ScheduleVisualizerSettings {
+  trajectoryTime: number;
 }
 
 export default function ScheduleVisualizer(props: ScheduleVisualizerProps): React.ReactElement {
@@ -139,7 +146,16 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     [fleets],
   );
 
-  const [trajectoryTime, setTrajectoryTime] = React.useState(60000); // 1 min
+  const [
+    scheduleVisualizerSettings,
+    setScheduleVisualizerSettings,
+  ] = React.useState<ScheduleVisualizerSettings>(
+    () =>
+      window.localStorage[SettingsKey] || {
+        trajectoryTime: 60000, // 1 min
+      },
+  );
+  const trajectoryTime = scheduleVisualizerSettings.trajectoryTime;
   const trajectoryAnimScale = trajectoryTime / (0.9 * TrajectoryUpdateInterval);
 
   React.useEffect(() => {
@@ -425,7 +441,13 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
         value={trajectoryTime}
         min={60000}
         max={600000}
-        onChange={(_ev, newValue) => setTrajectoryTime(newValue)}
+        onChange={(_ev, newValue) => {
+          setScheduleVisualizerSettings((prev) => {
+            const newSettings = { ...prev, trajectoryTime: newValue };
+            window.localStorage[SettingsKey] = newSettings;
+            return newSettings;
+          });
+        }}
       />
       {children}
     </LMap>

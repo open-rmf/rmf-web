@@ -1,8 +1,3 @@
-export enum TrajectoryAnimation {
-  None,
-  Follow,
-}
-
 // placeholder because there is no settings
 export interface Settings {}
 

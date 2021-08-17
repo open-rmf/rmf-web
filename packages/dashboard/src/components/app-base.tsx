@@ -1,7 +1,7 @@
 import { Grid, makeStyles } from '@material-ui/core';
 import React from 'react';
 import { ErrorSnackbar } from 'react-components';
-import { loadSettings, saveSettings } from '../settings';
+import { loadSettings, saveSettings, Settings } from '../settings';
 import {
   AppController,
   AppControllerContext,
@@ -52,9 +52,15 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
     [showTooltips],
   );
 
+  const updateSettings = React.useCallback((newSettings: Settings) => {
+    saveSettings(newSettings);
+    setSettings(newSettings);
+  }, []);
+
   const appController = React.useMemo<AppController>(
     () => ({
       setShowSettings,
+      updateSettings,
       showHelp: setShowHelp,
       toggleHelp: () => setShowHelp((prev) => !prev),
       showHotkeysDialog: setShowHotkeysDialog,
@@ -66,7 +72,7 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
         setShowErrorAlert(true);
       },
     }),
-    [],
+    [updateSettings],
   );
 
   return (
