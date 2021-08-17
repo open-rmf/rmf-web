@@ -1,3 +1,7 @@
+import Debug from 'debug';
+
+const debug = Debug('ResourceManger');
+
 export interface LogoResource {
   icons: Record<string, string>;
 }
@@ -21,6 +25,7 @@ export class LogoResourceManager {
     try {
       return (await import(/* webpackMode: "eager" */ `../assets/resources${logoIcon}`)).default;
     } catch {
+      debug(`failed to load icon for "${logoName}"`);
       return null;
     }
   };
@@ -28,6 +33,7 @@ export class LogoResourceManager {
   getHeaderLogoPath = async (): Promise<string> => {
     const iconPath = await this.getIconPath('headerLogo');
     if (iconPath) return iconPath;
+    debug('using default header logo');
     return (await import(/* webpackMode: "eager" */ '../assets/defaultLogo.png')).default;
   };
 
