@@ -1,0 +1,30 @@
+{
+  "name": "rmf-tools",
+  "version": "0.0.0",
+  "description": "utility package for rmf interfaces",
+  "keywords": [
+    "rmf",
+    "tools"
+  ],
+  "author": "vallq <val@openrobotics.org>",
+  "homepage": "https://github.com/open-rmf/rmf-web#readme",
+  "license": "ISC",
+  "main": "lib/index.ts",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/open-rmf/rmf-web.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/open-rmf/rmf-web/issues"
+  }
+}
