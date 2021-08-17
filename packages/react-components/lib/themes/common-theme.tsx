@@ -1,4 +1,9 @@
 const commonTheme = {
+  secondary: {
+    main: '#f13768',
+    light: '#e33371',
+    dark: '#9a0036',
+  },
   success: {
     // Light sea green
     main: '#20A39E',
@@ -20,7 +25,7 @@ const commonTheme = {
   info: {
     // wisteria
     // used in admin/information buttons/indicators
-    main: '#994af1',
+    main: '#945be6',
     dark: '#803be0',
     light: '#bb86fc',
   },
