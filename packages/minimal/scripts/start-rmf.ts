@@ -1,3 +1,3 @@
-import { makeLauncher } from '../rmf-launcher';
+import { makeLauncher } from 'rmf-tools';
 
 makeLauncher().launch();
