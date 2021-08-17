@@ -12,6 +12,9 @@ export const GlobalDarkCss = withStyles(() => ({
     '#admin-user-table .MuiTableCell-root.MuiTableCell-body': {
       borderBottom: '1px solid rgba(255, 255, 255, 0.5)',
     },
+    '#permission-table .MuiTableCell-root.MuiTableCell-body': {
+      borderBottom: '1px solid rgba(255, 255, 255, 0.5)',
+    },
     '*::-webkit-scrollbar-thumb': {
       border: 'none !important',
     },

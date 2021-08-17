@@ -20,9 +20,9 @@ const commonTheme = {
   info: {
     // wisteria
     // used in admin/information buttons/indicators
-    main: '#BB86FC',
-    dark: '#8E44EA',
-    light: '#E2CDFD',
+    main: '#994af1',
+    dark: '#803be0',
+    light: '#bb86fc',
   },
 };
 

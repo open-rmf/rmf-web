@@ -123,55 +123,53 @@ export function UserListCard({
           </>
         }
       />
-      <div id="admin-user-table">
-        <TableContainer>
-          <Loading loading={searching}>
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell>Username</TableCell>
-                  <TableCell />
+      <TableContainer id="admin-user-table">
+        <Loading loading={searching}>
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell>Username</TableCell>
+                <TableCell />
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {users.map((u) => (
+                <TableRow
+                  key={u}
+                  className={classes.tableRow}
+                  onClick={() => history.push(`${match.path}/${u}`)}
+                >
+                  <TableCell>{u}</TableCell>
+                  <TableCell>
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      startIcon={<DeleteIcon />}
+                      className={classes.controlsButton}
+                      onClick={(ev) => {
+                        ev.stopPropagation();
+                        setSelectedUser(u);
+                        setOpenDeleteDialog(true);
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  </TableCell>
                 </TableRow>
-              </TableHead>
-              <TableBody>
-                {users.map((u) => (
-                  <TableRow
-                    key={u}
-                    className={classes.tableRow}
-                    onClick={() => history.push(`${match.path}/${u}`)}
-                  >
-                    <TableCell>{u}</TableCell>
-                    <TableCell>
-                      <Button
-                        variant="contained"
-                        color="secondary"
-                        startIcon={<DeleteIcon />}
-                        className={classes.controlsButton}
-                        onClick={(ev) => {
-                          ev.stopPropagation();
-                          setSelectedUser(u);
-                          setOpenDeleteDialog(true);
-                        }}
-                      >
-                        Delete
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            {users.length === 0 && searching && <div style={{ height: 100 }} />}
-          </Loading>
-          <TablePagination
-            component="div"
-            count={hasMore ? -1 : page * ItemsPerPage + users.length}
-            page={page}
-            rowsPerPage={ItemsPerPage}
-            rowsPerPageOptions={[ItemsPerPage]}
-            onChangePage={(_, newPage) => setPage(newPage)}
-          />
-        </TableContainer>
-      </div>
+              ))}
+            </TableBody>
+          </Table>
+          {users.length === 0 && searching && <div style={{ height: 100 }} />}
+        </Loading>
+        <TablePagination
+          component="div"
+          count={hasMore ? -1 : page * ItemsPerPage + users.length}
+          page={page}
+          rowsPerPage={ItemsPerPage}
+          rowsPerPageOptions={[ItemsPerPage]}
+          onChangePage={(_, newPage) => setPage(newPage)}
+        />
+      </TableContainer>
       {openDeleteDialog && (
         <ConfirmationDialog
           open={openDeleteDialog}
