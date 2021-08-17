@@ -6,7 +6,8 @@ import { render } from './leaflet-fixture';
 
 describe('TrajectoryTimeControl', () => {
   const getControl = (root: RenderResult) => root.getByLabelText('trajectory time control');
-  const getSlider = (root: RenderResult) => root.getByRole('slider', { name: 'Time (min)' });
+  const getSlider = (root: RenderResult) =>
+    root.getByRole('slider', { name: 'Trajectory Time (min)' });
 
   test('shows slider only when mouse hover', () => {
     const root = render(<TrajectoryTimeControl value={60000} min={60000} max={600000} />);

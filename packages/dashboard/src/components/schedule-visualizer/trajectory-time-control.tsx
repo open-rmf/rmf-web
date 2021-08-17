@@ -52,12 +52,10 @@ function Component({ value, min, max, onChange }: TrajectoryTimeControlProps) {
       className={classes.root}
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
+      aria-label="trajectory time control"
+      aria-haspopup={true}
     >
-      <div
-        className={classes.container}
-        style={{ display: open ? 'block' : 'none' }}
-        aria-label="trajectory time control"
-      >
+      <div className={classes.container} style={{ display: open ? 'block' : 'none' }}>
         <Typography id="trajectory-time">Trajectory Time (min)</Typography>
         <Grid container spacing={2} alignItems="center">
           <Grid item>
