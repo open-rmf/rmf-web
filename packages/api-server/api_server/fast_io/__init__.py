@@ -21,17 +21,18 @@ from typing import (
 from urllib.parse import unquote as url_unquote
 
 import socketio
+from fastapi import APIRouter, Depends, FastAPI
+from fastapi.exceptions import HTTPException
+from fastapi.types import DecoratedCallable
+from socketio.asyncio_server import AsyncServer
+from starlette.routing import compile_path
+
 from api_server.authenticator import (
     AuthenticationError,
     JwtAuthenticator,
     StubAuthenticator,
 )
 from api_server.models import User
-from fastapi import APIRouter, Depends, FastAPI
-from fastapi.exceptions import HTTPException
-from fastapi.types import DecoratedCallable
-from socketio.asyncio_server import AsyncServer
-from starlette.routing import compile_path
 
 from .errors import *
 

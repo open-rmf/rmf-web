@@ -2,6 +2,15 @@ import logging
 import unittest
 from typing import Any, Callable, Optional
 
+from rmf_dispenser_msgs.msg import DispenserState
+from rmf_door_msgs.msg import DoorMode
+from rmf_fleet_msgs.msg import RobotMode
+from rmf_ingestor_msgs.msg import IngestorState
+from rmf_lift_msgs.msg import LiftState
+from rx import Observable
+from rx.scheduler.historicalscheduler import HistoricalScheduler
+from tortoise import Tortoise
+
 from api_server.models import (
     DispenserHealth,
     DoorHealth,
@@ -11,14 +20,6 @@ from api_server.models import (
     RobotHealth,
 )
 from api_server.test import init_db, test_data
-from rmf_dispenser_msgs.msg import DispenserState
-from rmf_door_msgs.msg import DoorMode
-from rmf_fleet_msgs.msg import RobotMode
-from rmf_ingestor_msgs.msg import IngestorState
-from rmf_lift_msgs.msg import LiftState
-from rx import Observable
-from rx.scheduler.historicalscheduler import HistoricalScheduler
-from tortoise import Tortoise
 
 from .events import RmfEvents
 from .health_watchdog import HealthWatchdog

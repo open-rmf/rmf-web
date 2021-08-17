@@ -2,13 +2,14 @@ import asyncio
 from typing import Sequence
 from unittest.mock import AsyncMock
 
-from api_server.models import CancelTask, CleanTaskDescription, SubmitTask, TaskSummary
-from api_server.permissions import RmfAction
-from api_server.test import AppFixture, make_task_summary, try_until
 from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
 from rmf_task_msgs.msg import TaskType as RmfTaskType
 from rmf_task_msgs.srv import CancelTask as RmfCancelTask
 from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
+
+from api_server.models import CancelTask, CleanTaskDescription, SubmitTask, TaskSummary
+from api_server.permissions import RmfAction
+from api_server.test import AppFixture, make_task_summary, try_until
 
 
 class TasksFixture(AppFixture):

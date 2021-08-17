@@ -1,10 +1,11 @@
 import pydantic
 import socketio
-from api_server.fast_io import FastIO, FastIORouter, WatchRequest
-from api_server.routes.utils import rx_watcher
 from rx import operators as rxops
 from rx.core.typing import Observable
 from rx.subject import Subject
+
+from api_server.fast_io import FastIO, FastIORouter, WatchRequest
+from api_server.routes.utils import rx_watcher
 
 sio = socketio.AsyncServer(async_mode="asgi")
 app = FastIO(sio)
