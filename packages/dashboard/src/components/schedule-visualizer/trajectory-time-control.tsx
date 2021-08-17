@@ -103,6 +103,11 @@ export class BaseTrajectoryTimeControl extends MapControl<TrajectoryTimeControlP
     const LeafletControl = Leaflet.Control.extend({
       onAdd: () => {
         ReactDOM.render(<Component {...props} />, this._container);
+        // FIXME: react <= 16 installs event handlers on the root document. Stopping propagation
+        // of the events on the container will stop react from receiving these events, but not
+        // stopping them causes them to propagate to leaflet, causing weird behavior when
+        // interacting with the widget.
+        // Leaflet.DomEvent.disableClickPropagation(this._container);
         return this._container;
       },
     });
