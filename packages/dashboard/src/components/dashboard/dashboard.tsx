@@ -6,7 +6,7 @@ import {
   createSpotlightRef,
   defaultDict,
   DoorPanel,
-  DetailedDoor,
+  DoorData,
   LiftPanel,
   LiftPanelProps,
   DispenserPanel,
@@ -68,10 +68,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
   );
 
   const [doorStates, setDoorStates] = React.useState<Record<string, RmfModels.DoorState>>({});
-  const doors: DetailedDoor[] = React.useMemo(() => {
+  const doors: DoorData[] = React.useMemo(() => {
     return buildingMap
       ? (buildingMap.levels as Level[]).flatMap((x) =>
-          (x.doors as RmfModels.Door[]).map((door) => ({ ...door, level: x.name })),
+          (x.doors as RmfModels.Door[]).map((door) => ({ door, level: x.name })),
         )
       : [];
   }, [buildingMap]);
@@ -79,8 +79,8 @@ export default function Dashboard(_props: {}): React.ReactElement {
   React.useEffect(() => {
     if (!sioClient) return;
     const subs = doors.map((d) =>
-      sioClient.subscribeDoorState(d.name, (state) =>
-        setDoorStates((prev) => ({ ...prev, [d.name]: state })),
+      sioClient.subscribeDoorState(d.door.name, (state) =>
+        setDoorStates((prev) => ({ ...prev, [d.door.name]: state })),
       ),
     );
     return () => {

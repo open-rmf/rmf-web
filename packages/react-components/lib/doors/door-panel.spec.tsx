@@ -36,7 +36,7 @@ describe('Door Panel', () => {
     expect(mockControlClickSubmit).toHaveBeenCalled();
   });
 
-  it('should call show layout when view mode button is clicked', () => {
+  it('layout view should change when view mode button is clicked', () => {
     userEvent.click(root.getByLabelText('view-mode'));
     expect(root.getByLabelText('door-table')).toBeTruthy();
   });

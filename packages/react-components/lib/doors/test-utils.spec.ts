@@ -1,5 +1,5 @@
 import * as RmfModels from 'rmf-models';
-import { DetailedDoor } from './utils';
+import { DoorData } from './utils';
 
 export function makeDoor(door?: Partial<RmfModels.Door>): RmfModels.Door {
   return {
@@ -47,81 +47,29 @@ export function allDoorModes(): RmfModels.DoorMode[] {
 }
 
 export const doors: RmfModels.Door[] = [
-  {
-    name: 'main_door',
-    v1_x: 8.2,
-    v1_y: -5.5,
-    v2_x: 7.85,
-    v2_y: -6.2,
-    door_type: 2,
-    motion_range: -1.571,
-    motion_direction: 1,
-  },
-  {
-    name: 'hardware_door',
-    v1_x: 4.9,
-    v1_y: -4,
-    v2_x: 4.4,
-    v2_y: -5,
-    door_type: 1,
-    motion_range: 1.571,
-    motion_direction: -1,
-  },
-  {
-    name: 'coe_door',
-    v1_x: 19.5,
-    v1_y: -10.8,
-    v2_x: 19.5,
-    v2_y: -9.9,
-    door_type: 1,
-    motion_range: 1.571,
-    motion_direction: 1,
-  },
-  {
-    name: 'exit_door',
-    v1_x: 12.2,
-    v1_y: -2.7,
-    v2_x: 14.1,
-    v2_y: -2.7,
-    door_type: 1,
-    motion_range: -1.571,
-    motion_direction: 1,
-  },
-  {
-    name: 'extra_door',
-    v1_x: 12.2,
-    v1_y: -2.7,
-    v2_x: 14.1,
-    v2_y: -2.7,
-    door_type: 1,
-    motion_range: -1.571,
-    motion_direction: 1,
-  },
+  makeDoor({ name: 'main_door' }),
+  makeDoor({ name: 'hardware_door' }),
+  makeDoor({ name: 'coe_door' }),
+  makeDoor({ name: 'exit_door' }),
+  makeDoor({ name: 'extra_door' }),
 ];
 
 export const doorStates: Record<string, RmfModels.DoorState> = {
-  main_door: {
-    door_name: 'main_door',
-    current_mode: { value: -1 },
-    door_time: { sec: 0, nanosec: 0 },
-  },
-  coe_door: {
+  main_door: makeDoorState({ door_name: 'main_door', current_mode: { value: -1 } }),
+  coe_door: makeDoorState({
     door_name: 'coe_door',
     current_mode: { value: RmfModels.DoorMode.MODE_OPEN },
-    door_time: { sec: 0, nanosec: 0 },
-  },
-  hardware_door: {
+  }),
+  hardware_door: makeDoorState({
     door_name: 'hardware_door',
     current_mode: { value: RmfModels.DoorMode.MODE_CLOSED },
-    door_time: { sec: 0, nanosec: 0 },
-  },
-  exit_door: {
+  }),
+  exit_door: makeDoorState({
     door_name: 'exit_door',
     current_mode: { value: RmfModels.DoorMode.MODE_MOVING },
-    door_time: { sec: 0, nanosec: 0 },
-  },
+  }),
 };
 
-export const makeDetailedDoors = (): DetailedDoor[] => {
-  return doors.map((door) => ({ ...door, level: 'L1' }));
+export const makeDetailedDoors = (): DoorData[] => {
+  return doors.map((door) => ({ door: door, level: 'L1' }));
 };

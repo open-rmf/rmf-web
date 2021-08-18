@@ -2,7 +2,17 @@ import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { makeStyles, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
 
-import { DoorTableProps, DoorRowProps, doorModeToString, doorTypeToString } from './utils';
+import { DoorData, doorModeToString, doorTypeToString } from './utils';
+
+export interface DoorTableProps {
+  doors: DoorData[];
+  doorStates: Record<string, RmfModels.DoorState>;
+}
+
+export interface DoorRowProps {
+  door: DoorData;
+  doorState: RmfModels.DoorState;
+}
 
 const useStyles = makeStyles((theme) => ({
   taskRowHover: {
@@ -51,25 +61,23 @@ const DoorRow = (props: DoorRowProps) => {
   const doorStatusClass = doorModeLabelClasses(doorState);
 
   return (
-    <>
-      <TableRow
-        className={hover ? classes.taskRowHover : ''}
-        onMouseOver={() => setHover(true)}
-        onMouseOut={() => setHover(false)}
+    <TableRow
+      className={hover ? classes.taskRowHover : ''}
+      onMouseOver={() => setHover(true)}
+      onMouseOut={() => setHover(false)}
+    >
+      <TableCell>{door.door.name}</TableCell>
+      <TableCell
+        className={
+          getOpMode(doorState) === 'Offline' ? classes.doorLabelClosed : classes.doorLabelOpen
+        }
       >
-        <TableCell>{door.name}</TableCell>
-        <TableCell
-          className={
-            getOpMode(doorState) === 'Offline' ? classes.doorLabelClosed : classes.doorLabelOpen
-          }
-        >
-          {getOpMode(doorState)}
-        </TableCell>
-        <TableCell>{door.level}</TableCell>
-        <TableCell>{doorTypeToString(door.door_type)}</TableCell>
-        <TableCell className={doorStatusClass}>{doorModeToString(doorState)}</TableCell>
-      </TableRow>
-    </>
+        {getOpMode(doorState)}
+      </TableCell>
+      <TableCell>{door.level}</TableCell>
+      <TableCell>{doorTypeToString(door.door.door_type)}</TableCell>
+      <TableCell className={doorStatusClass}>{doorModeToString(doorState)}</TableCell>
+    </TableRow>
   );
 };
 
@@ -89,7 +97,7 @@ export const DoorTable = (props: DoorTableProps) => {
       </TableHead>
       <TableBody>
         {doors.map((door) => (
-          <DoorRow door={door} doorState={doorStates[door.name]} />
+          <DoorRow door={door} doorState={doorStates[door.door.name]} />
         ))}
       </TableBody>
     </Table>

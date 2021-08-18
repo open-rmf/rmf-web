@@ -13,7 +13,19 @@ import ViewListIcon from '@material-ui/icons/ViewList';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
 
 import { DoorTable } from './door-table';
-import { DoorInfoProps, DoorPanelProps, doorModeToString, doorTypeToString } from './utils';
+import { DoorData, doorModeToString, doorTypeToString } from './utils';
+
+export interface DoorPanelProps {
+  doors: DoorData[];
+  doorStates: Record<string, RmfModels.DoorState>;
+  onDoorControlClick?(event: React.MouseEvent, door: RmfModels.Door, mode: number): void;
+}
+
+export interface DoorInfoProps {
+  door: DoorData;
+  doorState: RmfModels.DoorState;
+  onDoorControlClick?(event: React.MouseEvent, door: RmfModels.Door, mode: number): void;
+}
 
 const useStyles = makeStyles((theme) => ({
   buttonBar: {
@@ -73,9 +85,9 @@ const DoorCell = (props: DoorInfoProps): JSX.Element => {
   const doorStatusClass = doorModeLabelClasses(doorState);
 
   return (
-    <Paper className={classes.cellPaper} data-item={door.name}>
+    <Paper className={classes.cellPaper} data-item={door.door.name}>
       <Typography variant="body1" align="center">
-        {door.name}
+        {door.door.name}
       </Typography>
       <Grid container direction="row" spacing={1}>
         <Grid item xs={6}>
@@ -90,22 +102,23 @@ const DoorCell = (props: DoorInfoProps): JSX.Element => {
         </Grid>
       </Grid>
       <Typography variant="body1" align="center">
-        {doorTypeToString(door.door_type)}
+        {doorTypeToString(door.door.door_type)}
       </Typography>
       <div className={classes.buttonGroup}>
         <ButtonGroup size="small">
           <Button
-            aria-label={`${door.name}_open`}
+            aria-label={`${door.door.name}_open`}
             onClick={(ev) =>
-              onDoorControlClick && onDoorControlClick(ev, door, RmfModels.DoorMode.MODE_OPEN)
+              onDoorControlClick && onDoorControlClick(ev, door.door, RmfModels.DoorMode.MODE_OPEN)
             }
           >
             Open
           </Button>
           <Button
-            aria-label={`${door.name}_close`}
+            aria-label={`${door.door.name}_close`}
             onClick={(ev) =>
-              onDoorControlClick && onDoorControlClick(ev, door, RmfModels.DoorMode.MODE_CLOSED)
+              onDoorControlClick &&
+              onDoorControlClick(ev, door.door, RmfModels.DoorMode.MODE_CLOSED)
             }
           >
             Close
@@ -137,10 +150,10 @@ export function DoorPanel(props: DoorPanelProps) {
         {isCellView ? (
           doors.map((door, i) => {
             return (
-              <Grid item xs={4} key={`${door.name}_${i}`}>
+              <Grid item xs={4} key={`${door.door.name}_${i}`}>
                 <DoorCell
                   door={door}
-                  doorState={doorStates[door.name]}
+                  doorState={doorStates[door.door.name]}
                   onDoorControlClick={onDoorControlClick}
                 />
               </Grid>

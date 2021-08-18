@@ -20,24 +20,10 @@ export enum DoorMode {
   Moving = RmfModels.DoorMode.MODE_MOVING,
 }
 
-export interface DetailedDoor extends RmfModels.Door {
+export interface DoorData {
   level: string;
+  door: RmfModels.Door;
 }
-
-export interface DoorInfoProps {
-  door: DetailedDoor;
-  doorState: RmfModels.DoorState;
-  onDoorControlClick?(event: React.MouseEvent, door: RmfModels.Door, mode: number): void;
-}
-
-export interface DoorPanelProps {
-  doors: DetailedDoor[];
-  doorStates: Record<string, RmfModels.DoorState>;
-  onDoorControlClick?(event: React.MouseEvent, door: RmfModels.Door, mode: number): void;
-}
-
-export interface DoorRowProps extends Omit<DoorInfoProps, 'onDoorControlClick'> {}
-export interface DoorTableProps extends Omit<DoorPanelProps, 'onDoorControlClick'> {}
 
 export function doorModeToString(doorState?: RmfModels.DoorState): string {
   if (!doorState) {
