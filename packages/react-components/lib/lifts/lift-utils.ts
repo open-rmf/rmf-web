@@ -72,30 +72,3 @@ export const requestDoorModeStrings: Record<number, string> = {
 export function requestDoorModeToString(requestDoorMode: number): string {
   return requestDoorModeStrings[requestDoorMode] || 'Unknown';
 }
-
-export interface LiftPanelProps {
-  lifts: RmfModels.Lift[];
-  liftStates: Record<string, RmfModels.LiftState>;
-  onRequestSubmit?(
-    event: React.FormEvent,
-    lift: RmfModels.Lift,
-    doorState: number,
-    requestType: number,
-    destination: string,
-  ): void;
-}
-
-export interface LiftCellProps {
-  lift: RmfModels.Lift;
-  liftState: RmfModels.LiftState;
-  onRequestSubmit?(
-    event: React.FormEvent,
-    lift: RmfModels.Lift,
-    doorState: number,
-    requestType: number,
-    destination: string,
-  ): void;
-}
-
-export interface LiftTableProps extends Omit<LiftPanelProps, 'onRequestSubmit'> {}
-export interface LiftRowProps extends Omit<LiftCellProps, 'onRequestSubmit'> {}

@@ -1,10 +1,11 @@
-import { makeStyles, Dialog, IconButton, DialogContent } from '@material-ui/core';
+import { makeStyles, IconButton } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import CloseIcon from '@material-ui/icons/Close';
 import * as RmfModels from 'rmf-models';
 import React from 'react';
+import { ConfirmationDialog } from '../confirmation-dialog';
 import { requestDoorModeToString, requestModeToString } from './lift-utils';
 
 const useStyles = makeStyles((theme) => ({
@@ -57,7 +58,7 @@ export interface LiftRequestFormProps {
   onClose: () => void;
 }
 
-export const LiftRequestForm = (props: LiftRequestFormProps): JSX.Element => {
+export const LiftRequestFormDialog = (props: LiftRequestFormProps): JSX.Element => {
   const {
     lift,
     availableRequestTypes,
@@ -110,78 +111,81 @@ export const LiftRequestForm = (props: LiftRequestFormProps): JSX.Element => {
   };
 
   return (
-    <Dialog open={showFormDialog} onClose={() => onClose()} fullWidth={true} maxWidth={'md'}>
+    <ConfirmationDialog
+      open={showFormDialog}
+      onClose={() => onClose()}
+      fullWidth={true}
+      maxWidth={'md'}
+    >
       <IconButton aria-label="close" className={classes.closeButton} onClick={() => onClose()}>
         <CloseIcon />
       </IconButton>
-      <DialogContent className={classes.dialogContent} dividers>
-        <form className={classes.form} onSubmit={handleLiftRequest}>
-          <div className={classes.divForm}>
-            <Autocomplete
-              getOptionLabel={(option) => option}
-              onChange={(_, value) => setDestination(value || '')}
-              options={['', ...lift.levels]}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Pick a Destination"
-                  placeholder="Pick a Destination"
-                  variant="outlined"
-                  error={!!destinationError}
-                  helperText={destinationError}
-                />
-              )}
-              value={destination}
-            />
-          </div>
+      <form className={classes.form} onSubmit={handleLiftRequest}>
+        <div className={classes.divForm}>
+          <Autocomplete
+            getOptionLabel={(option) => option}
+            onChange={(_, value) => setDestination(value || '')}
+            options={['', ...lift.levels]}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Pick a Destination"
+                placeholder="Pick a Destination"
+                variant="outlined"
+                error={!!destinationError}
+                helperText={destinationError}
+              />
+            )}
+            value={destination}
+          />
+        </div>
 
-          <div className={classes.divForm}>
-            <Autocomplete
-              getOptionLabel={(option) => requestDoorModeToString(option)}
-              onChange={(_, value) => setDoorState(value as number)}
-              options={availableDoorModes}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Pick a Door State"
-                  placeholder="Pick a Door State"
-                  variant="outlined"
-                  error={!!doorStateError}
-                  helperText={doorStateError}
-                />
-              )}
-              value={doorState}
-            />
-          </div>
+        <div className={classes.divForm}>
+          <Autocomplete
+            getOptionLabel={(option) => requestDoorModeToString(option)}
+            onChange={(_, value) => setDoorState(value as number)}
+            options={availableDoorModes}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Pick a Door State"
+                placeholder="Pick a Door State"
+                variant="outlined"
+                error={!!doorStateError}
+                helperText={doorStateError}
+              />
+            )}
+            value={doorState}
+          />
+        </div>
 
-          <div className={classes.divForm}>
-            <Autocomplete
-              getOptionLabel={(option) => requestModeToString(option)}
-              onChange={(_, value) => setRequestType((value as number) || availableRequestTypes[0])}
-              options={availableRequestTypes}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Pick Request Type"
-                  placeholder="Pick Request Type"
-                  variant="outlined"
-                  error={!!requestTypeError}
-                  helperText={requestTypeError}
-                />
-              )}
-              value={requestType}
-            />
-          </div>
+        <div className={classes.divForm}>
+          <Autocomplete
+            getOptionLabel={(option) => requestModeToString(option)}
+            onChange={(_, value) => setRequestType((value as number) || availableRequestTypes[0])}
+            options={availableRequestTypes}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Pick Request Type"
+                placeholder="Pick Request Type"
+                variant="outlined"
+                error={!!requestTypeError}
+                helperText={requestTypeError}
+              />
+            )}
+            value={requestType}
+          />
+        </div>
 
-          <div className={classes.buttonContainer}>
-            <Button variant="contained" color="primary" type="submit" className={classes.button}>
-              Request
-            </Button>
-          </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+        <div className={classes.buttonContainer}>
+          <Button variant="contained" color="primary" type="submit" className={classes.button}>
+            Request
+          </Button>
+        </div>
+      </form>
+    </ConfirmationDialog>
   );
 };
 
-export default LiftRequestForm;
+export default LiftRequestFormDialog;

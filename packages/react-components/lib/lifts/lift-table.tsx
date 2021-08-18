@@ -1,12 +1,18 @@
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import { makeStyles, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
-import { LiftTableProps, LiftRowProps, doorStateToString, liftModeToString } from './lift-utils';
+import {
+  makeStyles,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Button,
+} from '@material-ui/core';
+import LiftRequestFormDialog from './lift-request-form-dialog';
+import { doorStateToString, liftModeToString, requestDoorModes, requestModes } from './lift-utils';
 
 const useStyles = makeStyles((theme) => ({
-  taskRowHover: {
-    background: theme.palette.action.hover,
-  },
   doorLabelOpen: {
     color: theme.palette.success.main,
   },
@@ -18,10 +24,35 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+export interface LiftTableProps {
+  lifts: RmfModels.Lift[];
+  liftStates: Record<string, RmfModels.LiftState>;
+  onRequestSubmit?(
+    event: React.FormEvent,
+    lift: RmfModels.Lift,
+    doorState: number,
+    requestType: number,
+    destination: string,
+  ): void;
+}
+
+export interface LiftRowProps {
+  lift: RmfModels.Lift;
+  liftState: RmfModels.LiftState;
+  onRequestSubmit?(
+    event: React.FormEvent,
+    lift: RmfModels.Lift,
+    doorState: number,
+    requestType: number,
+    destination: string,
+  ): void;
+}
+
 const LiftRow = (props: LiftRowProps) => {
-  const { lift, liftState } = props;
+  const { lift, liftState, onRequestSubmit } = props;
   const classes = useStyles();
-  const [hover, setHover] = React.useState(false);
+
+  const [showForms, setShowForms] = React.useState(false);
 
   const doorModeLabelClasses = React.useCallback(
     (liftState?: RmfModels.LiftState): string => {
@@ -40,26 +71,39 @@ const LiftRow = (props: LiftRowProps) => {
   );
 
   return (
-    <>
-      <TableRow
-        className={hover ? classes.taskRowHover : ''}
-        onMouseOver={() => setHover(true)}
-        onMouseOut={() => setHover(false)}
-      >
-        <TableCell>{lift.name}</TableCell>
-        <TableCell>{liftModeToString(liftState.current_mode)}</TableCell>
-        <TableCell>{liftState.current_floor}</TableCell>
-        <TableCell>{liftState.destination_floor}</TableCell>
-        <TableCell className={doorModeLabelClasses(liftState)}>
-          {doorStateToString(liftState.door_state)}
-        </TableCell>
-      </TableRow>
-    </>
+    <TableRow aria-label={`${lift.name}`}>
+      <TableCell>{lift.name}</TableCell>
+      <TableCell>{liftModeToString(liftState.current_mode)}</TableCell>
+      <TableCell>{liftState.current_floor}</TableCell>
+      <TableCell>{liftState.destination_floor}</TableCell>
+      <TableCell className={doorModeLabelClasses(liftState)}>
+        {doorStateToString(liftState.door_state)}
+      </TableCell>
+      <TableCell>
+        <Button
+          variant="contained"
+          color="primary"
+          fullWidth
+          size="small"
+          onClick={() => setShowForms(true)}
+        >
+          Request Form
+        </Button>
+        <LiftRequestFormDialog
+          lift={lift}
+          availableDoorModes={requestDoorModes}
+          availableRequestTypes={requestModes}
+          showFormDialog={showForms}
+          onRequestSubmit={onRequestSubmit}
+          onClose={() => setShowForms(false)}
+        />
+      </TableCell>
+    </TableRow>
   );
 };
 
 export const LiftTable = (props: LiftTableProps) => {
-  const { lifts, liftStates } = props;
+  const { lifts, liftStates, onRequestSubmit } = props;
   return (
     <Table stickyHeader size="small" aria-label="lift-table">
       <TableHead>
@@ -69,12 +113,18 @@ export const LiftTable = (props: LiftTableProps) => {
           <TableCell>Current Floor</TableCell>
           <TableCell>Destination</TableCell>
           <TableCell>Doors State</TableCell>
+          <TableCell>Request Form</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
         {lifts.map((lift, i) => {
           return (
-            <LiftRow lift={lift} liftState={liftStates[lift.name]} key={`${lift.name}_${i}`} />
+            <LiftRow
+              lift={lift}
+              liftState={liftStates[lift.name]}
+              key={`${lift.name}_${i}`}
+              onRequestSubmit={onRequestSubmit}
+            />
           );
         })}
       </TableBody>

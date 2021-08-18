@@ -2,13 +2,13 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { requestDoorModes, requestModes } from '../../lib/lifts/lift-utils';
-import { LiftRequestForm } from './lift-request-form';
+import { LiftRequestFormDialog } from './lift-request-form-dialog';
 import { makeLift } from './test-utils.spec';
 
 function renderLiftRequestForm() {
   const mockOnClose = jasmine.createSpy();
   return render(
-    <LiftRequestForm
+    <LiftRequestFormDialog
       lift={makeLift()}
       availableRequestTypes={requestModes}
       availableDoorModes={requestDoorModes}
@@ -24,7 +24,7 @@ describe('Lift request form', () => {
   beforeEach(() => {
     const mockOnClose = jasmine.createSpy();
     root = render(
-      <LiftRequestForm
+      <LiftRequestFormDialog
         lift={makeLift()}
         availableRequestTypes={requestModes}
         availableDoorModes={requestDoorModes}

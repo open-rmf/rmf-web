@@ -32,7 +32,7 @@ describe('Lift Panel', () => {
     expect(root.getByPlaceholderText('Pick a Destination')).toBeTruthy();
   });
 
-  it('should call show layout when view mode button is clicked', () => {
+  it('layout view should change when view mode button is clicked', () => {
     userEvent.click(root.getByLabelText('view-mode'));
     expect(root.getByLabelText('lift-table')).toBeTruthy();
   });

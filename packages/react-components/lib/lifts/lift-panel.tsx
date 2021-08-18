@@ -7,9 +7,37 @@ import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 
 import { LiftTable } from './lift-table';
-import { LiftPanelProps, LiftCellProps, requestDoorModes, requestModes } from './lift-utils';
-import { motionStateToString, doorStateToString } from './lift-utils';
-import LiftRequestForm from './lift-request-form';
+import {
+  requestDoorModes,
+  requestModes,
+  motionStateToString,
+  doorStateToString,
+} from './lift-utils';
+import LiftRequestFormDialog from './lift-request-form-dialog';
+
+export interface LiftPanelProps {
+  lifts: RmfModels.Lift[];
+  liftStates: Record<string, RmfModels.LiftState>;
+  onRequestSubmit?(
+    event: React.FormEvent,
+    lift: RmfModels.Lift,
+    doorState: number,
+    requestType: number,
+    destination: string,
+  ): void;
+}
+
+export interface LiftCellProps {
+  lift: RmfModels.Lift;
+  liftState: RmfModels.LiftState;
+  onRequestSubmit?(
+    event: React.FormEvent,
+    lift: RmfModels.Lift,
+    doorState: number,
+    requestType: number,
+    destination: string,
+  ): void;
+}
 
 const useStyles = makeStyles((theme) => ({
   buttonBar: {
@@ -108,7 +136,7 @@ const LiftCell = (props: LiftCellProps): JSX.Element => {
       >
         Request Form
       </Button>
-      <LiftRequestForm
+      <LiftRequestFormDialog
         lift={lift}
         availableDoorModes={requestDoorModes}
         availableRequestTypes={requestModes}
