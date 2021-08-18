@@ -1,3 +1,7 @@
+import Debug from 'debug';
+
+const debug = Debug('ResourceManager');
+
 export interface RobotResource {
   icons: Record<string, string>; // Record<ModelName|FleetName, IconPath>
   places: Record<string, string[]>; // Record<Places, Dispensers[]>
@@ -22,9 +26,13 @@ export class RobotResourceManager {
     robotModel?: string | undefined,
   ): Promise<string | null> => {
     if (!this.fleetExists(fleetName)) {
+      debug(`failed to load icon for "${fleetName}/${robotModel}" (fleet not in resources)`);
       return null;
     }
     if (!this.robots[fleetName].hasOwnProperty('icons')) {
+      debug(
+        `failed to load icon for "${fleetName}/${robotModel}" (fleet/model does not have an icon)`,
+      );
       return null;
     }
     const robotIcons = this.robots[fleetName].icons;
@@ -40,15 +48,22 @@ export class RobotResourceManager {
     try {
       return (await import(/* webpackMode: "eager" */ `../assets/resources${iconPath}`)).default;
     } catch {
+      debug(`failed to load icon for "${fleetName}/${robotModel}" (failed to load icon module)`);
       return null;
     }
   };
 
   getDispensersPerFleet = (fleetName: string, placeName: string): string[] | null => {
     if (!this.fleetExists(fleetName) || !this.placesExists(fleetName)) {
+      debug(
+        `failed to load dispensers for "${fleetName}, ${placeName}" (fleet or place does not exist in resources)`,
+      );
       return null;
     }
     if (!this.robots[fleetName].places.hasOwnProperty(placeName)) {
+      debug(
+        `failed to load dispensers for "${fleetName}, ${placeName}" (place does not exist in resources)`,
+      );
       return null;
     }
     return this.robots[fleetName].places[placeName];
