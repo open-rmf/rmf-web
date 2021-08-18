@@ -1,4 +1,4 @@
-export function radiansToDegrees(radians: number) {
+export function radiansToDegrees(radians: number): number {
   return radians * (180 / Math.PI);
 }
 
@@ -10,6 +10,6 @@ export const transformMiddleCoordsOfRectToSVGBeginPoint = (
   y: number,
   width: number,
   depth: number,
-) => {
-  return { x: x - width / 2, y: y + depth / 2 };
+): [x: number, y: number] => {
+  return [x - width / 2, y + depth / 2];
 };
