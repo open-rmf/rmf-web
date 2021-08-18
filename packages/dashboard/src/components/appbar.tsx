@@ -13,6 +13,7 @@ import HelpIcon from '@material-ui/icons/Help';
 import React from 'react';
 import { HeaderBar, LogoButton, NavigationBar, Tooltip, useAsync } from 'react-components';
 import { useHistory, useLocation } from 'react-router-dom';
+import { UserProfileContext } from 'rmf-auth';
 import { AdminRoute, DashboardRoute, RobotsRoute, TasksRoute } from '../util/url';
 import {
   AppConfigContext,
@@ -20,7 +21,6 @@ import {
   ResourcesContext,
   TooltipsContext,
 } from './app-contexts';
-import { UserProfileContext } from './auth/contexts';
 
 const useStyles = makeStyles((theme) =>
   createStyles({

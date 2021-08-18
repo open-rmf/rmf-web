@@ -1,7 +1,7 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
+import { UserProfileContext } from 'rmf-auth';
 import * as RmfModels from 'rmf-models';
-import { UserProfileContext } from '../components/auth/contexts';
 import { TaskPanel } from '../components/tasks/task-panel';
 import { makeTask } from '../components/tasks/tests/make-tasks';
 

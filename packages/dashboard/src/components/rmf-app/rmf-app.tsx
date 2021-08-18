@@ -1,10 +1,11 @@
 import { Dispenser, Fleet, Ingestor } from 'api-client';
 import React from 'react';
 import { getPlaces } from 'react-components';
+import { UserProfileProvider } from 'rmf-auth';
 import * as RmfModels from 'rmf-models';
+import appConfig from '../../app-config';
 import RmfHealthStateManager from '../../managers/rmf-health-state-manager';
 import { AppConfigContext } from '../app-contexts';
-import { UserProfile, UserProfileContext } from '../auth/contexts';
 import {
   BuildingMapContext,
   DispensersContext,
@@ -150,43 +151,13 @@ function RmfIngressProvider(props: React.PropsWithChildren<{}>): JSX.Element {
   );
 }
 
-function UserProfileProvider(props: React.PropsWithChildren<{}>) {
-  const rmfIngress = React.useContext(RmfIngressContext);
-  const [profile, setProfile] = React.useState<UserProfile | null>(null);
-
-  React.useEffect(() => {
-    if (!rmfIngress) {
-      return;
-    }
-    let cancel = false;
-    (async () => {
-      const getUserResp = await rmfIngress.defaultApi.getUserUserGet();
-      const getPermResp = await rmfIngress.defaultApi.getEffectivePermissionsPermissionsGet();
-      if (cancel || getUserResp.status !== 200 || getPermResp.status !== 200) return;
-      setProfile({
-        user: getUserResp.data,
-        permissions: getPermResp.data,
-      });
-    })();
-    return () => {
-      cancel = true;
-    };
-  }, [rmfIngress]);
-
-  return (
-    <UserProfileContext.Provider value={profile}>
-      {profile && props.children}
-    </UserProfileContext.Provider>
-  );
-}
-
 export interface RmfAppProps extends React.PropsWithChildren<{}> {}
 
 /**
  * Provides the following contexts:
  *
- * - RmfIngressContext
  * - UserProfileContext
+ * - RmfIngressContext
  * - BuildingMapContext
  * - PlacesContext
  * - FleetsContext
@@ -199,8 +170,8 @@ export interface RmfAppProps extends React.PropsWithChildren<{}> {}
  */
 export function RmfApp(props: RmfAppProps): JSX.Element {
   return (
-    <RmfIngressProvider>
-      <UserProfileProvider>
+    <UserProfileProvider authenticator={appConfig.authenticator} basePath={appConfig.rmfServerUrl}>
+      <RmfIngressProvider>
         <BuildingMapProvider>
           <FleetsProvider>
             <DispensersProvider>
@@ -210,7 +181,7 @@ export function RmfApp(props: RmfAppProps): JSX.Element {
             </DispensersProvider>
           </FleetsProvider>
         </BuildingMapProvider>
-      </UserProfileProvider>
-    </RmfIngressProvider>
+      </RmfIngressProvider>
+    </UserProfileProvider>
   );
 }

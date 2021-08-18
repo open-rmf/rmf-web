@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 import React from 'react';
-import { UserProfile, UserProfileContext } from '../auth/contexts';
+import { UserProfile, UserProfileContext } from 'rmf-auth';
 
 export const superUser: UserProfile = {
   user: {

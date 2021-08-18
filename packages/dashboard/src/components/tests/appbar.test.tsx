@@ -4,6 +4,7 @@ import { act } from '@testing-library/react-hooks';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { MemoryRouter } from 'react-router';
+import { StubAuthenticator, UserProfile, UserProfileContext } from 'rmf-auth';
 import { AppConfig } from '../../app-config';
 import ResourceManager from '../../managers/resource-manager';
 import { LogoResourceManager } from '../../managers/resource-manager-logos';
@@ -15,8 +16,6 @@ import {
   ResourcesContext,
 } from '../app-contexts';
 import AppBar from '../appbar';
-import { UserProfile, UserProfileContext } from '../auth/contexts';
-import FakeAuthenticator from '../auth/__mocks__/fake-authenticator';
 import { theme } from '../theme';
 import { makeMockAppController } from './mock-app-controller';
 import { mountAsUser } from './test-utils';
@@ -88,7 +87,7 @@ describe('AppBar', () => {
   });
 
   test('logout is triggered when logout button is clicked', () => {
-    const authenticator = new FakeAuthenticator('test');
+    const authenticator = new StubAuthenticator('test');
     const appConfig: AppConfig = {
       authenticator,
       appResourcesFactory: jest.fn(),
