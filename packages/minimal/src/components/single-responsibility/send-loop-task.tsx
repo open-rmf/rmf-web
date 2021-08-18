@@ -12,13 +12,10 @@ import type { Task, SubmitTask } from 'api-client';
 import { RadioButtonGroup, TaskTable } from 'react-components';
 import { useAutoRefresh } from '../dashboard/auto-refresh';
 import { PlacesContext, RmfIngressContext } from '../rmf-app/contexts';
-import { User } from '../auth/contexts';
 import { DataConfig } from '../../config/data-config';
 
 interface LoopTaskPageProps {
   data: DataConfig;
-  places: string[];
-  user: User | null;
 }
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -53,10 +50,9 @@ const useStyles = makeStyles((theme) =>
 
 export default function LoopTaskPage(props: LoopTaskPageProps) {
   const classes = useStyles();
-  const { data, user } = props;
+  const { data } = props;
   const { tasksApi, sioClient } = React.useContext(RmfIngressContext) || {};
   const [radioValue, setRadioValue] = React.useState('');
-
   const [autoRefreshState, autoRefreshDispatcher] = useAutoRefresh(sioClient);
   const [task, setTask] = React.useState<SubmitTask>();
   const [page, setPage] = React.useState(0);
@@ -73,7 +69,6 @@ export default function LoopTaskPage(props: LoopTaskPageProps) {
     rowsPerPageOptions: [10],
     onChangePage: (_ev, newPage) => setPage(newPage),
   };
-  const startPlace = placeNames[0];
 
   const fetchTasks = React.useCallback(
     async (page: number) => {
@@ -122,7 +117,7 @@ export default function LoopTaskPage(props: LoopTaskPageProps) {
     const createLoopTask = (destination: string): SubmitTask => {
       return {
         description: {
-          start_name: startPlace,
+          start_name: data.loopTaskDetails.start,
           finish_name: destination,
           num_loops: 1,
         },
@@ -132,7 +127,7 @@ export default function LoopTaskPage(props: LoopTaskPageProps) {
       };
     };
     setTask(createLoopTask(radioValue));
-  }, [radioValue, startPlace]);
+  }, [radioValue, data]);
 
   const submitTask = async () => {
     if (!tasksApi) {
@@ -150,12 +145,12 @@ export default function LoopTaskPage(props: LoopTaskPageProps) {
       <Paper className={classes.paper}>
         <Grid container>
           <Grid item xs={12}>
-            <Typography variant="h6">Loading Bay</Typography>
+            <Typography variant="h6">{data.locationDetails.name}</Typography>
           </Grid>
           <Grid item xs={12}>
             <RadioButtonGroup
               formLabel={data.radioGroup.formLabel}
-              options={placeNames.slice(1)}
+              options={data.radioGroup.waypointValues ? data.radioGroup.waypointValues : placeNames}
               radioGroupName={data.radioGroup.radioGroupTitle}
               onHandleChange={onHandleChange}
             />
@@ -173,24 +168,20 @@ export default function LoopTaskPage(props: LoopTaskPageProps) {
           </Grid>
         </Grid>
       </Paper>
-      {user?.profile.is_admin ? (
-        <Paper className={classes.paper}>
-          <Grid container>
-            <Grid item xs={12}>
-              <TaskTable tasks={autoRefreshState.tasks.map((t) => t.summary)} />
-              {paginationOptions && (
-                <TablePagination
-                  component="div"
-                  {...paginationOptions}
-                  style={{ flex: '0 0 auto' }}
-                />
-              )}
-            </Grid>
+      <Paper className={classes.paper}>
+        <Grid container>
+          <Grid item xs={12}>
+            <TaskTable tasks={autoRefreshState.tasks.map((t) => t.summary)} />
+            {paginationOptions && (
+              <TablePagination
+                component="div"
+                {...paginationOptions}
+                style={{ flex: '0 0 auto' }}
+              />
+            )}
           </Grid>
-        </Paper>
-      ) : (
-        <></>
-      )}
+        </Grid>
+      </Paper>
     </div>
   );
 }

@@ -1,9 +1,12 @@
 export interface DataConfig {
+  locationDetails: {
+    name: string;
+  };
   loopTaskDetails: {
     start: string;
   };
   radioGroup: {
-    waypointValues: string[];
+    waypointValues?: string[];
     formLabel: string;
     radioGroupTitle: string;
   };
@@ -11,22 +14,25 @@ export interface DataConfig {
 
 export const dataConfig: DataConfig = (() => {
   const appUser = process.env.REACT_APP_USER;
-  if (!appUser) {
-    throw new Error('missing REACT_APP_USER');
-  }
-  if (appUser === 'admin') {
+
+  if (appUser === 'loading-bay-operator') {
     return {
+      locationDetails: {
+        name: 'Loading Bay',
+      },
       loopTaskDetails: {
         start: 'supplies',
       },
       radioGroup: {
-        waypointValues: ['lounge', 'coe', 'hardware', 'pantry'],
         formLabel: 'Destination',
         radioGroupTitle: 'Destination Values',
       },
     };
   }
   return {
+    locationDetails: {
+      name: 'Office',
+    },
     loopTaskDetails: {
       start: 'pantry',
     },
