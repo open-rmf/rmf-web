@@ -22,6 +22,7 @@ export * from './navigation-bar';
 export * from './notifications-dialog';
 export * from './omni-panel';
 export * from './omni-panel-view';
+export * from './place';
 export * from './reports';
 export * from './robots';
 export * from './simple-filter';

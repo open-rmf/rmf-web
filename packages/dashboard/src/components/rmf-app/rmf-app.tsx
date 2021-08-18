@@ -1,5 +1,6 @@
 import { Dispenser, Fleet, Ingestor } from 'api-client';
 import React from 'react';
+import { getPlaces } from 'react-components';
 import * as RmfModels from 'rmf-models';
 import RmfHealthStateManager from '../../managers/rmf-health-state-manager';
 import { AppConfigContext } from '../app-contexts';
@@ -14,7 +15,6 @@ import {
   RmfIngressContext,
 } from './contexts';
 import { RmfIngress } from './rmf-ingress';
-import { getPlaces } from './utils';
 
 function PlacesProvider({ children }: React.PropsWithChildren<unknown>): JSX.Element {
   const buildingMap = React.useContext(BuildingMapContext);
