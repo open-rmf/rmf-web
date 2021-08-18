@@ -1,0 +1,143 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rmf-server-db
+  labels:
+    app: rmf-server
+    tier: db
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rmf-server-db
+  labels:
+    app: rmf-server
+    tier: db
+spec:
+  selector:
+    app: rmf-server
+    tier: db
+  ports:
+    - port: 5432
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rmf-server-db
+  labels:
+    app: rmf-server
+    tier: db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rmf-server
+      tier: db
+  template:
+    metadata:
+      labels:
+        app: rmf-server
+        tier: db
+    spec:
+      containers:
+        - name: postgresql
+          image: postgres:13
+          env:
+            - name: POSTGRES_USER
+              value: rmf-server
+            - name: POSTGRES_PASSWORD
+              value: rmf-server
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: rmf-server-db
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+      volumes:
+        - name: rmf-server-db
+          persistentVolumeClaim:
+            claimName: rmf-server-db
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rmf-server
+  labels:
+    app: rmf-server
+    tier: app
+spec:
+  selector:
+    app: rmf-server
+    tier: app
+  ports:
+    - protocol: TCP
+      port: 8000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rmf-server
+  labels:
+    app: rmf-server
+    tier: app
+spec:
+  selector:
+    matchLabels:
+      app: rmf-server
+      tier: app
+  template:
+    metadata:
+      labels:
+        app: rmf-server
+        tier: app
+    spec:
+      containers:
+        - name: rmf-server
+          image: rmf-web/rmf-server
+          ports:
+            - containerPort: 8000
+          env:
+            - name: RMF_API_SERVER_CONFIG
+              value: /rmf-server-config/rmf_server_config.py
+          volumeMounts:
+            - mountPath: /rmf-server-config
+              name: rmf-server-config
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      volumes:
+        - name: rmf-server-config
+          configMap:
+            name: rmf-server-config
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rmf-server
+  labels:
+    app: rmf-server
+    tier: app
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  tls:
+    - hosts:
+      - example.com
+  rules:
+    - host: example.com
+      http:
+        paths:
+          - path: /rmf/api/v1(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: rmf-server
+                port:
+                  number: 8000
