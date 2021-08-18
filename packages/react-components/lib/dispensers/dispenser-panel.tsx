@@ -1,10 +1,21 @@
 import React from 'react';
+import * as RmfModels from 'rmf-models';
+import { Dispenser } from 'api-client';
 import { Paper, IconButton, makeStyles, Grid, Typography } from '@material-ui/core';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
 
 import { DispenserTable } from './dispenser-table';
-import { DispenserCellProps, DispenserPanelProps } from './utils';
+
+export interface DispenserPanelProps {
+  dispensers: Dispenser[];
+  dispenserStates: Record<string, RmfModels.DispenserState>;
+}
+
+export interface DispenserCellProps {
+  dispenser: Dispenser;
+  dispenserState: RmfModels.DispenserState;
+}
 
 const useStyles = makeStyles((theme) => ({
   buttonBar: {

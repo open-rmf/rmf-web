@@ -1,12 +1,10 @@
 import React from 'react';
+import { Dispenser } from 'api-client';
 import { makeStyles, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
 import * as RmfModels from 'rmf-models';
-import { dispenserModeToString, DispenserRowProps, DispenserTableProps } from './utils';
+import { dispenserModeToString } from './utils';
 
 const useStyles = makeStyles((theme) => ({
-  taskRowHover: {
-    background: theme.palette.action.hover,
-  },
   dispenserLabelIdle: {
     color: theme.palette.success.main,
   },
@@ -18,10 +16,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+export interface DispenserTableProps {
+  dispensers: Dispenser[];
+  dispenserStates: Record<string, RmfModels.DispenserState>;
+}
+
+export interface DispenserRowProps {
+  dispenser: Dispenser;
+  dispenserState: RmfModels.DispenserState;
+}
+
 const DispenserRow = (props: DispenserRowProps) => {
   const { dispenser, dispenserState } = props;
   const classes = useStyles();
-  const [hover, setHover] = React.useState(false);
 
   const dispenserModeLabelClasses = React.useCallback(
     (mode: number): string => {
@@ -41,11 +48,7 @@ const DispenserRow = (props: DispenserRowProps) => {
 
   return (
     <>
-      <TableRow
-        className={hover ? classes.taskRowHover : ''}
-        onMouseOver={() => setHover(true)}
-        onMouseOut={() => setHover(false)}
-      >
+      <TableRow aria-label={`${dispenser.guid}`}>
         {dispenserState ? (
           <React.Fragment>
             <TableCell>{dispenser.guid}</TableCell>

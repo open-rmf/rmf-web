@@ -18,6 +18,17 @@ describe('Dispenser table', () => {
       test2: makeDispenserState({ mode: RmfModels.DispenserState.OFFLINE }),
       test3: makeDispenserState({ mode: -1 }),
     };
-    render(<DispenserTable dispensers={dispensers} dispenserStates={dispenserStates} />);
+    const root = render(
+      <DispenserTable dispensers={dispensers} dispenserStates={dispenserStates} />,
+    );
+
+    // check if all dispensers are rendered
+    expect(root.getByLabelText('test')).toBeTruthy();
+    expect(root.getByLabelText('test1')).toBeTruthy();
+    expect(root.getByLabelText('test2')).toBeTruthy();
+    expect(root.getByLabelText('test3')).toBeTruthy();
+
+    // check if state unknown dispenser state is handled
+    expect(root.getAllByText('N/A').length).toEqual(1);
   });
 });
