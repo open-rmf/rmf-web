@@ -1,11 +1,9 @@
-import { Permission, User as ApiUser } from 'api-client';
+import { Permission, User } from 'api-client';
 import React from 'react';
 
-export type UserProfile = ApiUser;
-
-export interface User {
-  profile: UserProfile;
+export interface UserProfile {
+  user: User;
   permissions: Permission[];
 }
 
-export const UserContext = React.createContext<User | null>(null);
+export const UserProfileContext = React.createContext<UserProfile | null>(null);

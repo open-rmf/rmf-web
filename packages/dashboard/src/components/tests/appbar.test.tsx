@@ -15,7 +15,7 @@ import {
   ResourcesContext,
 } from '../app-contexts';
 import AppBar from '../appbar';
-import { User, UserContext } from '../auth/contexts';
+import { UserProfile, UserProfileContext } from '../auth/contexts';
 import FakeAuthenticator from '../auth/__mocks__/fake-authenticator';
 import { theme } from '../theme';
 import { makeMockAppController } from './mock-app-controller';
@@ -74,12 +74,12 @@ describe('AppBar', () => {
   });
 
   test('user button is shown when there is an authenticated user', () => {
-    const user: User = {
-      profile: { username: 'test', is_admin: false, roles: [] },
+    const profile: UserProfile = {
+      user: { username: 'test', is_admin: false, roles: [] },
       permissions: [],
     };
     const root = mountAsUser(
-      user,
+      profile,
       <Base>
         <AppBar />
       </Base>,
@@ -96,16 +96,16 @@ describe('AppBar', () => {
       trajServerUrl: '',
     };
     const spy = jest.spyOn(authenticator, 'logout').mockImplementation(() => undefined as any);
-    const user: User = {
-      profile: { username: 'test', is_admin: false, roles: [] },
+    const profile: UserProfile = {
+      user: { username: 'test', is_admin: false, roles: [] },
       permissions: [],
     };
     const root = render(
       <AppConfigContext.Provider value={appConfig}>
         <Base>
-          <UserContext.Provider value={user}>
+          <UserProfileContext.Provider value={profile}>
             <AppBar />
-          </UserContext.Provider>
+          </UserProfileContext.Provider>
         </Base>
       </AppConfigContext.Provider>,
     );

@@ -1,5 +1,5 @@
 import { Task } from 'api-client';
-import { User } from './auth/contexts';
+import { UserProfile } from './auth/contexts';
 
 export enum RmfAction {
   TaskRead = 'task_read',
@@ -12,11 +12,11 @@ export function getActionText(action: RmfAction): string {
 }
 
 export class Enforcer {
-  static canCancelTask(user: User, task: Task): boolean {
-    if (user.profile.is_admin) {
+  static canCancelTask(profile: UserProfile, task: Task): boolean {
+    if (profile.user.is_admin) {
       return true;
     }
-    for (const p of user.permissions) {
+    for (const p of profile.permissions) {
       if (p.authz_grp === task.authz_grp && p.action === RmfAction.TaskCancel) {
         return true;
       }

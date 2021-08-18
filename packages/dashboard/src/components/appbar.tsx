@@ -20,7 +20,7 @@ import {
   ResourcesContext,
   TooltipsContext,
 } from './app-contexts';
-import { UserContext } from './auth/contexts';
+import { UserProfileContext } from './auth/contexts';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -64,7 +64,7 @@ export const AppBar = React.memo(
     const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
     const classes = useStyles();
     const { authenticator } = React.useContext(AppConfigContext);
-    const user = React.useContext(UserContext);
+    const profile = React.useContext(UserProfileContext);
     const { showTooltips } = React.useContext(TooltipsContext);
     const safeAsync = useAsync();
     const [brandingIconPath, setBrandingIconPath] = React.useState<string>('');
@@ -106,7 +106,7 @@ export const AppBar = React.memo(
             aria-label="Tasks"
             onClick={() => history.push(TasksRoute)}
           />
-          {user?.profile.is_admin && (
+          {profile?.user.is_admin && (
             <Tab
               label="Admin"
               value="admin"
@@ -117,7 +117,7 @@ export const AppBar = React.memo(
         </NavigationBar>
         <Toolbar variant="dense" className={classes.toolbar}>
           <Typography variant="caption">Powered by OpenRMF</Typography>
-          {user && (
+          {profile && (
             <>
               <IconButton
                 id="user-btn"
