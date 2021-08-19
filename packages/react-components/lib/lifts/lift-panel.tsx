@@ -1,6 +1,15 @@
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import { Paper, IconButton, makeStyles, Grid, Typography, Box, Button } from '@material-ui/core';
+import {
+  Paper,
+  IconButton,
+  makeStyles,
+  Grid,
+  Typography,
+  Box,
+  Button,
+  Card,
+} from '@material-ui/core';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
@@ -74,6 +83,10 @@ const useStyles = makeStyles((theme) => ({
   },
   doorLabelMoving: {
     backgroundColor: theme.palette.warning.main,
+  },
+  panelHeader: {
+    color: theme.palette.getContrastText(theme.palette.primary.main),
+    marginLeft: '1rem',
   },
 }));
 
@@ -154,15 +167,24 @@ export function LiftPanel(props: LiftPanelProps) {
   const [isCellView, setIsCellView] = React.useState(true);
 
   return (
-    <div>
+    <Card variant="outlined">
       <Paper className={classes.buttonBar}>
-        <IconButton
-          aria-label="view-mode"
-          className={classes.itemIcon}
-          onClick={() => setIsCellView(!isCellView)}
-        >
-          {isCellView ? <ViewListIcon /> : <ViewModuleIcon />}
-        </IconButton>
+        <Grid container direction="row" justify="space-between" alignItems="center">
+          <Grid item xs={6}>
+            <Typography variant="h5" className={classes.panelHeader}>
+              Lifts Panel
+            </Typography>
+          </Grid>
+          <Grid item>
+            <IconButton
+              aria-label="view-mode"
+              className={classes.itemIcon}
+              onClick={() => setIsCellView(!isCellView)}
+            >
+              {isCellView ? <ViewListIcon /> : <ViewModuleIcon />}
+            </IconButton>
+          </Grid>
+        </Grid>
       </Paper>
       <Grid className={classes.grid} container direction="row" spacing={1}>
         {isCellView ? (
@@ -181,6 +203,6 @@ export function LiftPanel(props: LiftPanelProps) {
           <LiftTable lifts={lifts} liftStates={liftStates} onRequestSubmit={onRequestSubmit} />
         )}
       </Grid>
-    </div>
+    </Card>
   );
 }
