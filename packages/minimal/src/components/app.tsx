@@ -13,7 +13,6 @@ import { AppBase } from './app-base';
 import { ResourcesContext } from './app-contexts';
 import './app.css';
 import Dashboard from './dashboard/dashboard';
-import { RmfApp } from './rmf-app';
 import { theme } from './theme';
 
 export default function App(): JSX.Element | null {
@@ -64,26 +63,24 @@ export default function App(): JSX.Element | null {
       <ThemeProvider theme={theme}>
         <BrowserRouter>
           {user ? (
-            <RmfApp>
-              <AppBase>
-                <Switch>
-                  <Route exact path={LoginRoute}>
-                    <Redirect to={DashboardRoute} />
-                  </Route>
-                  <PrivateRoute
-                    exact
-                    path={DashboardRoute}
-                    unauthorizedComponent={loginRedirect}
-                    user={user}
-                  >
-                    <Dashboard />
-                  </PrivateRoute>
-                  <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
-                    <Redirect to={DashboardRoute} />
-                  </PrivateRoute>
-                </Switch>
-              </AppBase>
-            </RmfApp>
+            <AppBase>
+              <Switch>
+                <Route exact path={LoginRoute}>
+                  <Redirect to={DashboardRoute} />
+                </Route>
+                <PrivateRoute
+                  exact
+                  path={DashboardRoute}
+                  unauthorizedComponent={loginRedirect}
+                  user={user}
+                >
+                  <Dashboard />
+                </PrivateRoute>
+                <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
+                  <Redirect to={DashboardRoute} />
+                </PrivateRoute>
+              </Switch>
+            </AppBase>
           ) : (
             <Switch>
               <Route exact path={LoginRoute}>

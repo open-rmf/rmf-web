@@ -11,12 +11,18 @@ import React from 'react';
 import type { Task, SubmitTask } from 'api-client';
 import { RadioButtonGroup, TaskTable } from 'react-components';
 import { useAutoRefresh } from '../dashboard/auto-refresh';
-import { PlacesContext, RmfIngressContext } from '../rmf-app/contexts';
+import { PlacesContext } from '../rmf-app/contexts';
 import { DataConfig } from '../../config/data-config';
+import { Configuration, SioClient, TasksApi } from 'api-client';
+import { AxiosInstance } from 'axios';
 
 interface LoopTaskPageProps {
   data: DataConfig;
+  sioClient: SioClient;
+  apiConfig: Configuration;
+  axiosInst: AxiosInstance;
 }
+
 const useStyles = makeStyles((theme) =>
   createStyles({
     container: {
@@ -50,8 +56,7 @@ const useStyles = makeStyles((theme) =>
 
 export default function LoopTaskPage(props: LoopTaskPageProps) {
   const classes = useStyles();
-  const { data } = props;
-  const { tasksApi, sioClient } = React.useContext(RmfIngressContext) || {};
+  const { data, sioClient, apiConfig, axiosInst } = props;
   const [radioValue, setRadioValue] = React.useState('');
   const [autoRefreshState, autoRefreshDispatcher] = useAutoRefresh(sioClient);
   const [task, setTask] = React.useState<SubmitTask>();
@@ -69,6 +74,10 @@ export default function LoopTaskPage(props: LoopTaskPageProps) {
     rowsPerPageOptions: [10],
     onChangePage: (_ev, newPage) => setPage(newPage),
   };
+
+  const tasksApi = React.useMemo(() => {
+    return new TasksApi(apiConfig, undefined, axiosInst);
+  }, [apiConfig, axiosInst]);
 
   const fetchTasks = React.useCallback(
     async (page: number) => {
@@ -99,7 +108,7 @@ export default function LoopTaskPage(props: LoopTaskPageProps) {
 
   const handleRefresh = React.useCallback(async () => {
     autoRefreshDispatcher.setTasks(await fetchTasks(page));
-  }, [fetchTasks, page, autoRefreshDispatcher]);
+  }, [autoRefreshDispatcher, fetchTasks, page]);
 
   React.useEffect(() => {
     handleRefresh();

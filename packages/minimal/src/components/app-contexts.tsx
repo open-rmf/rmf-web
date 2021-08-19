@@ -9,9 +9,3 @@ export const ResourcesContext = React.createContext<ResourceManager | undefined>
 export const AppConfigContext = React.createContext<AppConfig>(appConfig);
 
 export const DataConfigContext = React.createContext<DataConfig>(dataConfig);
-
-export interface AppContent {
-  tabNames: string[];
-}
-
-export const TrajectorySocketContext = React.createContext<WebSocket | undefined>(undefined);
