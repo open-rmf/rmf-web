@@ -9,7 +9,7 @@ import {
   DoorData,
   LiftPanel,
   LiftPanelProps,
-  DispenserPanel,
+  WorkcellPanel,
 } from 'react-components';
 import { GlobalHotKeys } from 'react-hotkeys';
 import * as RmfModels from 'rmf-models';
@@ -270,7 +270,11 @@ export default function Dashboard(_props: {}): React.ReactElement {
               />
             ) : null}
             {workcells.length > 0 ? (
-              <DispenserPanel dispensers={workcells} dispenserStates={workcellStates} />
+              <WorkcellPanel
+                dispensers={dispensers}
+                ingestors={ingestors}
+                workCellStates={workcellStates}
+              />
             ) : null}
           </div>
         </div>

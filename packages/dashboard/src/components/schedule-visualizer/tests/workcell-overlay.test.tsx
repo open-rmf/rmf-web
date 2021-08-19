@@ -1,19 +1,19 @@
 import { render, waitFor } from '@testing-library/react';
 import L from 'leaflet';
 import React from 'react';
-import { DispenserMarkerProps } from 'react-components';
+import { WorkcellMarkerProps } from 'react-components';
 import { Map as LMap } from 'react-leaflet';
 import ResourceManager from '../../../managers/resource-manager';
 import fakeResources from '../../../managers/__mocks__/resources';
 import { ResourcesContext } from '../../app-contexts';
-import DispensersOverlay from '../dispensers-overlay';
+import WorkcellsOverlay from '../workcell-overlay';
 
-function FakeMarker(props: DispenserMarkerProps & { 'data-testid'?: string }) {
+function FakeMarker(props: WorkcellMarkerProps & { 'data-testid'?: string }) {
   return <div data-testid={props['data-testid']}></div>;
 }
 
-describe('Dispensers Overlay', () => {
-  test('Render dispensers correctly', async () => {
+describe('Workcell Overlay', () => {
+  test('Render workcell correctly', async () => {
     const bounds = new L.LatLngBounds([0, 25.7], [-14, 0]);
     const resources = new ResourceManager(fakeResources());
 
@@ -25,7 +25,7 @@ describe('Dispensers Overlay', () => {
             [1, 1],
           ]}
         >
-          <DispensersOverlay bounds={bounds} currentFloorName="L1" MarkerComponent={FakeMarker} />
+          <WorkcellsOverlay bounds={bounds} currentFloorName="L1" MarkerComponent={FakeMarker} />
         </LMap>
       </ResourcesContext.Provider>,
     );

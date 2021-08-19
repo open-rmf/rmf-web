@@ -1,26 +1,24 @@
 import { render } from '@testing-library/react';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import { DispenserTable } from './dispenser-table';
+import { WorkcellTable } from './workcell-table';
 import { makeDispenser, makeDispenserState } from './test-utils.spec';
 
-describe('Dispenser table', () => {
+describe('Workcell table', () => {
   it('should render properly', () => {
-    const dispensers = [
+    const workcells = [
       makeDispenser(),
       makeDispenser({ guid: 'test1' }),
       makeDispenser({ guid: 'test2' }),
       makeDispenser({ guid: 'test3' }),
     ];
-    const dispenserStates = {
+    const workcellStates = {
       test: makeDispenserState(),
       test1: makeDispenserState({ mode: RmfModels.DispenserState.BUSY }),
       test2: makeDispenserState({ mode: RmfModels.DispenserState.OFFLINE }),
       test3: makeDispenserState({ mode: -1 }),
     };
-    const root = render(
-      <DispenserTable dispensers={dispensers} dispenserStates={dispenserStates} />,
-    );
+    const root = render(<WorkcellTable workcells={workcells} workcellStates={workcellStates} />);
 
     // check if all dispensers are rendered
     expect(root.getByLabelText('test')).toBeTruthy();

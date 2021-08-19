@@ -4,7 +4,7 @@ import * as L from 'leaflet';
 import React from 'react';
 import { AttributionControl, ImageOverlay, LayersControl, Map as LMap, Pane } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
-import DispensersOverlay from '../../schedule-visualizer/dispensers-overlay';
+import DispensersOverlay from '../../schedule-visualizer/workcell-overlay';
 import DoorsOverlay from '../../schedule-visualizer/doors-overlay';
 import { calcMaxBounds, MapFloorLayer } from '../../schedule-visualizer/index';
 import LiftsOverlay from '../../schedule-visualizer/lift-overlay';

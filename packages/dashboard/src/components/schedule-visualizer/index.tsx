@@ -14,7 +14,7 @@ import {
   TrajectoryResponse,
 } from '../../managers/robot-trajectory-manager';
 import { RmfIngressContext } from '../rmf-app';
-import DispensersOverlay from './dispensers-overlay';
+import WorkcellsOverlay from './workcell-overlay';
 import DoorsOverlay from './doors-overlay';
 import LiftsOverlay from './lift-overlay';
 import { NegotiationColors } from './negotiation-colors';
@@ -407,7 +407,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
         <LayersControl.Overlay name="Dispensers" checked>
           {curMapFloorLayer && (
             <Pane>
-              <DispensersOverlay
+              <WorkcellsOverlay
                 currentFloorName={curLevelName}
                 bounds={curMapFloorLayer.bounds}
                 onDispenserClick={onDispenserClick}

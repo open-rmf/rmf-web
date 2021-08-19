@@ -1,5 +1,5 @@
 import * as RmfModels from 'rmf-models';
-import { Dispenser } from './utils';
+import { Dispenser } from 'api-client';
 
 export function allStateModes(): number[] {
   return [

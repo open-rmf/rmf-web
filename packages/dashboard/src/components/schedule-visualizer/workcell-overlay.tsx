@@ -1,25 +1,21 @@
 import Debug from 'debug';
 import React from 'react';
-import {
-  DispenserMarker as DispenserMarker_,
-  DispenserMarkerProps,
-  useAsync,
-} from 'react-components';
+import { WorkcellMarker as WorkcellMarker_, WorkcellMarkerProps, useAsync } from 'react-components';
 import { DispenserResource } from '../../managers/resource-manager-dispensers';
 import { viewBoxFromLeafletBounds } from '../../util/css-utils';
 import { ResourcesContext } from '../app-contexts';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 
 const debug = Debug('ScheduleVisualizer:DispensersOverlay');
-const DispenserMarker = React.memo(DispenserMarker_);
+const DispenserMarker = React.memo(WorkcellMarker_);
 
-export interface DispensersOverlayProps extends SVGOverlayProps {
+export interface WorkcellsOverlayProps extends SVGOverlayProps {
   currentFloorName: string;
   onDispenserClick?(event: React.MouseEvent, guid: string): void;
-  MarkerComponent?: React.ComponentType<DispenserMarkerProps>;
+  MarkerComponent?: React.ComponentType<WorkcellMarkerProps>;
 }
 
-export const DispensersOverlay = (props: DispensersOverlayProps): React.ReactElement => {
+export const WorkcellsOverlay = (props: WorkcellsOverlayProps): React.ReactElement => {
   debug('render');
 
   const {
@@ -94,4 +90,4 @@ export const DispensersOverlay = (props: DispensersOverlayProps): React.ReactEle
   );
 };
 
-export default DispensersOverlay;
+export default WorkcellsOverlay;

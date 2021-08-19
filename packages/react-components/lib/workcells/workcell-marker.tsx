@@ -3,7 +3,7 @@ import Debug from 'debug';
 import React from 'react';
 import { fromRmfCoords } from '../geometry-utils';
 import SvgText from '../svg-text';
-import DefaultMarkerIcon from './default-marker-icon';
+import WorkcellDefaultIcon from './default-marker-icon';
 
 const debug = Debug('Dispensers:DispenserMarker');
 
@@ -26,7 +26,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export interface DispenserMarkerProps extends Omit<React.SVGProps<SVGGElement>, 'onClick'> {
+export interface WorkcellMarkerProps extends Omit<React.SVGProps<SVGGElement>, 'onClick'> {
   guid: string;
   /**
    * Location of the dispenser in RMF coordinates.
@@ -42,8 +42,8 @@ export interface DispenserMarkerProps extends Omit<React.SVGProps<SVGGElement>, 
   onClick?(e: React.MouseEvent<SVGGElement>, guid: string): void;
 }
 
-export const DispenserMarker = React.forwardRef(function (
-  props: DispenserMarkerProps,
+export const WorkcellMarker = React.forwardRef(function (
+  props: WorkcellMarkerProps,
   ref: React.Ref<SVGGElement>,
 ): React.ReactElement {
   const { guid, location: location_, footprint = 0.4, iconPath, onClick, ...otherProps } = props;
@@ -70,7 +70,7 @@ export const DispenserMarker = React.forwardRef(function (
           />
         ) : (
           // the default marker's size is slightly smaller than the footprint
-          <DefaultMarkerIcon footprint={footprint * 1.4} />
+          <WorkcellDefaultIcon footprint={footprint * 1.4} />
         )}
         <rect
           x={-footprint}
@@ -85,4 +85,4 @@ export const DispenserMarker = React.forwardRef(function (
   );
 });
 
-export default DispenserMarker;
+export default WorkcellMarker;

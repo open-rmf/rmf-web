@@ -8,7 +8,7 @@ export * from './color-manager';
 export * from './commands';
 export * from './confirmation-dialog';
 export * from './date-time-picker';
-export * from './dispensers';
+export * from './workcells';
 export * from './doors';
 export * from './error-overlay';
 export * from './error-pages';

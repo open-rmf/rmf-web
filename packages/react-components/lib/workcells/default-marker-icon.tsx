@@ -1,7 +1,7 @@
 import { useTheme } from '@material-ui/core';
 import React from 'react';
 
-const DispenserDefaultIcon = (props: { footprint: number }): JSX.Element => {
+const WorkcellDefaultIcon = (props: { footprint: number }): JSX.Element => {
   const { footprint } = props;
   const theme = useTheme();
   return (
@@ -22,4 +22,4 @@ const DispenserDefaultIcon = (props: { footprint: number }): JSX.Element => {
   );
 };
 
-export default DispenserDefaultIcon;
+export default WorkcellDefaultIcon;
