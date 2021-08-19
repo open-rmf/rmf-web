@@ -181,37 +181,96 @@ class MultipleDaysScheduleManager:
         # We pick first_day_to_apply_rule because the task can start with
         # earlier but not the execution
         last_task_datetime = instance.first_day_to_apply_rule
+        # [0,6]
         active_weekdays = await DaysOfWeek.service.get_active_days_of_week(week_id)
 
-        if instance.frequency_type == FrequencyEnum.ONCE:
-            # for active_weekday in active_weekdays:
-
-            await ScheduledTask.create(
-                task_type=instance.task_type,
-                # Need to modify this
-                task_datetime=instance.first_day_to_apply_rule,
-                rule=instance,
+        if (
+            instance.frequency_type == FrequencyEnum.DAILY
+            or instance.frequency_type == FrequencyEnum.HOURLY
+            or instance.frequency_type == FrequencyEnum.MINUTELY
+        ):
+            raise Exception(
+                "You cannot set the rule DAILY|HOURLY|MINUTELY and pick weekdays"
             )
+
+        if instance.frequency_type == FrequencyEnum.ONCE:
+
+            week_day_tasks = MultipleDaysScheduleManager._get_initialized_datetime_list(
+                active_weekdays, instance.first_day_to_apply_rule
+            )
+            for weekday in week_day_tasks:
+                if weekday is None:
+                    continue
+
+                await ScheduledTask.create(
+                    task_type=instance.task_type,
+                    task_datetime=weekday,
+                    rule=instance,
+                )
             return
 
-        time_delta_content = TaskRule.service.get_timedelta(
-            instance.frequency_type, instance.frequency, instance.start_datetime
+        # Get next week, month
+        # time_delta_content = TaskRule.service.get_timedelta(
+        #     instance.frequency_type, instance.frequency, instance.start_datetime
+        # )
+
+        week_day_tasks = MultipleDaysScheduleManager._get_initialized_datetime_list(
+            active_weekdays, instance.first_day_to_apply_rule
         )
 
         while is_time_between(
-            instance.start_datetime, instance.end_datetime, last_task_datetime
+            instance.start_datetime,
+            instance.end_datetime,
+            week_day_tasks[active_weekdays[0]],
         ):
             # for active_weekday in active_weekdays:
+            for index, weekday_datetime in enumerate(week_day_tasks):
+                if weekday_datetime is None:
+                    continue
 
-            await ScheduledTask.create(
-                task_type=instance.task_type,
-                # Need to modify this
-                task_datetime=last_task_datetime,
-                rule=instance,
+                if instance.end_datetime < weekday_datetime:
+                    break
+
+                await ScheduledTask.create(
+                    task_type=instance.task_type,
+                    task_datetime=weekday_datetime,
+                    rule=instance,
+                )
+                # Add the frecuency again
+                week_day_tasks[index] = calculate_next_time(
+                    weekday_datetime, timedelta(days=7)
+                )
+
+    # Calculate date distance between weekdays
+
+    @staticmethod
+    def get_weekday_distance(weekday_1: int, weekday_2: int) -> int:
+        return abs(weekday_1 - weekday_2)
+
+    # Get first day of next week
+    @staticmethod
+    def get_monday_of_next_week(current_day: datetime) -> datetime:
+        return current_day + timedelta(days=7 - current_day.weekday())
+
+    @staticmethod
+    def _get_initialized_datetime_list(
+        active_weekdays: List[int], last_task_datetime
+    ) -> List[datetime]:
+        week_day_tasks: List[datetime] = [None, None, None, None, None, None, None]
+        count = 0
+        # Initialize week with first values
+        for weekday in active_weekdays:
+            if count == 0:
+                week_day_tasks[weekday] = last_task_datetime
+
+            weekday_distance = MultipleDaysScheduleManager.get_weekday_distance(
+                weekday, last_task_datetime.weekday()
             )
-            last_task_datetime = calculate_next_time(
-                last_task_datetime, time_delta_content
+
+            week_day_tasks[weekday] = calculate_next_time(
+                last_task_datetime, timedelta(days=weekday_distance)
             )
+        return week_day_tasks
 
 
 @post_save(TaskRule)

@@ -299,7 +299,7 @@ class TestCaseScheduledtTaskGenerationDateCorrectness(unittest.IsolatedAsyncioTe
         self.assertEqual(created_task[0].task_datetime.time(), now.time())
 
     async def test_task_hourly(self):
-        now = datetime.utcnow()
+        now = datetime(2021, 8, 2)
         future = now + timedelta(hours=3)
 
         await TaskRule.create(
@@ -509,10 +509,66 @@ class TestCaseTwoWeekdaysScheduledtTaskGenerationDateCorrectness(
     async def asyncTearDown(self):
         await Tortoise.close_connections()
 
-    async def test_monthly_every_monday_and_wednesday(self):
+    async def test_once_monday_and_wednesday(self):
         now = datetime(2021, 8, 2)
         future = now + timedelta(days=14)
-        expect_date = datetime(2020, 3, 1)
+        days_of_week = await DaysOfWeek.get_or_create(monday=True, wednesday=True)
+        await TaskRule.create(
+            description="test",
+            task_type=TaskTypeEnum.LOOP,
+            frequency=1,
+            frequency_type=FrequencyEnum.ONCE,
+            first_day_to_apply_rule=now,
+            start_datetime=now,
+            end_datetime=future,
+            days_of_week=days_of_week[0],
+        )
+        created_tasks = await ScheduledTask.all()
+        self.assertEqual(created_tasks[0].task_datetime.weekday(), 0)
+        self.assertEqual(created_tasks[1].task_datetime.weekday(), 2)
+        self.assertEqual(len(created_tasks), 2)
+
+    async def test_fail_when_daily_hourly_minutely_are_selected(self):
+        now = datetime(2021, 8, 2)
+        future = now + timedelta(days=14)
+        days_of_week = await DaysOfWeek.get_or_create(monday=True, wednesday=True)
+        with self.assertRaises(Exception):
+            await TaskRule.create(
+                description="test",
+                task_type=TaskTypeEnum.LOOP,
+                frequency=1,
+                frequency_type=FrequencyEnum.DAILY,
+                first_day_to_apply_rule=now,
+                start_datetime=now,
+                end_datetime=future,
+                days_of_week=days_of_week[0],
+            )
+
+            await TaskRule.create(
+                description="test",
+                task_type=TaskTypeEnum.LOOP,
+                frequency=1,
+                frequency_type=FrequencyEnum.HOURLY,
+                first_day_to_apply_rule=now,
+                start_datetime=now,
+                end_datetime=future,
+                days_of_week=days_of_week[0],
+            )
+
+            await TaskRule.create(
+                description="test",
+                task_type=TaskTypeEnum.LOOP,
+                frequency=1,
+                frequency_type=FrequencyEnum.MINUTELY,
+                first_day_to_apply_rule=now,
+                start_datetime=now,
+                end_datetime=future,
+                days_of_week=days_of_week[0],
+            )
+
+    async def test_weekly_monday_and_wednesday(self):
+        now = datetime(2021, 8, 2)
+        future = now + timedelta(days=13)
         days_of_week = await DaysOfWeek.get_or_create(monday=True, wednesday=True)
         await TaskRule.create(
             description="test",
@@ -525,10 +581,32 @@ class TestCaseTwoWeekdaysScheduledtTaskGenerationDateCorrectness(
             days_of_week=days_of_week[0],
         )
         created_tasks = await ScheduledTask.all()
-        print(created_tasks[0].task_datetime)
-        print(created_tasks[1].task_datetime)
-        print(created_tasks[2].task_datetime)
+        self.assertEqual(created_tasks[0].task_datetime.weekday(), 0)
+        self.assertEqual(created_tasks[1].task_datetime.weekday(), 2)
+        self.assertEqual(created_tasks[2].task_datetime.weekday(), 0)
+        self.assertEqual(created_tasks[3].task_datetime.weekday(), 2)
         self.assertEqual(len(created_tasks), 4)
+
+    # async def test_monthly_every_monday_and_wednesday(self):
+    #     now = datetime(2021, 8, 2)
+    #     future = now + timedelta(days=14)
+    #     expect_date = datetime(2020, 3, 1)
+    #     days_of_week = await DaysOfWeek.get_or_create(monday=True, wednesday=True)
+    #     await TaskRule.create(
+    #         description="test",
+    #         task_type=TaskTypeEnum.LOOP,
+    #         frequency=1,
+    #         frequency_type=FrequencyEnum.WEEKLY,
+    #         first_day_to_apply_rule=now,
+    #         start_datetime=now,
+    #         end_datetime=future,
+    #         days_of_week=days_of_week[0],
+    #     )
+    #     created_tasks = await ScheduledTask.all()
+    #     print(created_tasks[0].task_datetime)
+    #     print(created_tasks[1].task_datetime)
+    #     print(created_tasks[2].task_datetime)
+    #     self.assertEqual(len(created_tasks), 4)
 
 
 # Set a rule for a weekly monday and start next tuesday.
