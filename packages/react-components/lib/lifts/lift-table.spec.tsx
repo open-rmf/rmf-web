@@ -1,5 +1,6 @@
 import { render } from '@testing-library/react';
 import React from 'react';
+import userEvent from '@testing-library/user-event';
 
 import { LiftTable } from './lift-table';
 import { testLifts, testLiftStates } from './test-utils.spec';
@@ -28,5 +29,11 @@ describe('lift table', () => {
     expect(root.getAllByText('Closed').length).toEqual(3);
     expect(root.getAllByText('Moving').length).toEqual(1);
     expect(root.getAllByText('Open').length).toEqual(1);
+  });
+
+  it('should open up form dialog when Request Form button is clicked', () => {
+    const root = render(<LiftTable lifts={testLifts} liftStates={testLiftStates} />);
+    userEvent.click(root.getAllByRole('button', { name: /Request Form/i })[0]);
+    expect(root.getByPlaceholderText('Pick a Destination')).toBeTruthy();
   });
 });

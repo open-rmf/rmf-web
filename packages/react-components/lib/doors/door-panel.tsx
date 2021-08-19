@@ -160,7 +160,11 @@ export function DoorPanel(props: DoorPanelProps) {
             );
           })
         ) : (
-          <DoorTable doors={doors} doorStates={doorStates} />
+          <DoorTable
+            doors={doors}
+            doorStates={doorStates}
+            onDoorControlClick={onDoorControlClick}
+          />
         )}
       </Grid>
     </div>

@@ -90,7 +90,11 @@ export const DispenserTable = (props: DispenserTableProps) => {
       <TableBody>
         {dispensers.map((dispenser) => {
           return (
-            <DispenserRow dispenser={dispenser} dispenserState={dispenserStates[dispenser.guid]} />
+            <DispenserRow
+              dispenser={dispenser}
+              dispenserState={dispenserStates[dispenser.guid]}
+              key={dispenser.guid}
+            />
           );
         })}
       </TableBody>

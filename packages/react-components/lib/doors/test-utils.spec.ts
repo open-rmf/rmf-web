@@ -71,5 +71,5 @@ export const doorStates: Record<string, RmfModels.DoorState> = {
 };
 
 export const makeDetailedDoors = (): DoorData[] => {
-  return doors.map((door) => ({ door: door, level: 'L1' }));
+  return doors.map((door) => ({ door, level: 'L1' }));
 };

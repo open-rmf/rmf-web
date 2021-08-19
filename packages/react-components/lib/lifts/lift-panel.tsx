@@ -178,7 +178,7 @@ export function LiftPanel(props: LiftPanelProps) {
             );
           })
         ) : (
-          <LiftTable lifts={lifts} liftStates={liftStates} />
+          <LiftTable lifts={lifts} liftStates={liftStates} onRequestSubmit={onRequestSubmit} />
         )}
       </Grid>
     </div>
