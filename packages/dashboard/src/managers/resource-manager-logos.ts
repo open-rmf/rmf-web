@@ -1,4 +1,7 @@
+import Debug from 'debug';
 import { ThemeMode } from '../settings';
+
+const debug = Debug('ResourceManger');
 
 export interface LogoResource {
   icons: Record<string, string>;
@@ -23,6 +26,7 @@ export class LogoResourceManager {
     try {
       return (await import(/* webpackMode: "eager" */ `../assets/resources${logoIcon}`)).default;
     } catch {
+      debug(`failed to load icon for "${logoName}"`);
       return null;
     }
   };
@@ -32,6 +36,7 @@ export class LogoResourceManager {
     const darkIconPath = await this.getIconPath('darkThemeLogo');
     const themeIcon = theme === ThemeMode.Dark ? iconPath : darkIconPath;
     if (themeIcon) return themeIcon;
+    debug('using default header logo');
     return (await import(/* webpackMode: "eager" */ '../assets/defaultLogo.png')).default;
   };
 
