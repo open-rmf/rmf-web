@@ -22,6 +22,16 @@ class FrequencyEnum(str, Enum):
     CUSTOM = "Custom"
 
 
+class WeekDayEnum(Enum):
+    MONDAY = 0
+    TUESDAY = 1
+    WEDNESDAY = 2
+    THURSDAY = 3
+    FRIDAY = 4
+    SATURDAY = 5
+    SUNDAY = 6
+
+
 MONTH_DAYS = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 MONTH_DAYS_LEAP = [0, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
@@ -236,9 +246,12 @@ class MultipleDaysScheduleManager:
                     task_datetime=weekday_datetime,
                     rule=instance,
                 )
+                time_delta_content = TaskRule.service.get_timedelta(
+                    instance.frequency_type, instance.frequency, instance.start_datetime
+                )
                 # Add the frecuency again
                 week_day_tasks[index] = calculate_next_time(
-                    weekday_datetime, timedelta(days=7)
+                    weekday_datetime, time_delta_content
                 )
 
     # Calculate date distance between weekdays
