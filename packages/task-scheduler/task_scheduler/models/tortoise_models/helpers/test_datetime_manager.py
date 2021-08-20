@@ -1,5 +1,5 @@
-import datetime
 import unittest
+from datetime import datetime, timedelta
 
 from task_scheduler.models.tortoise_models.helpers.datetime_manager import (
     DatetimeManager,
@@ -54,44 +54,32 @@ class TestCaseTaskRuleService(unittest.TestCase):
     def test_calculate_next_time_with_date(self):
         """Tests the calculate_next_time method"""
         now = datetime.now()
-        delta = datetime.timedelta(days=1)
+        delta = timedelta(days=1)
         self.assertEqual(
-            DatetimeManager.calculate_next_time(now, delta).date, (now + delta).date
+            DatetimeManager.calculate_next_time(now, delta).date(), (now + delta).date()
         )
 
     def test_calculate_next_time_with_time(self):
         """Tests the calculate_next_time method with a time"""
         now = datetime.now()
-        delta = datetime.timedelta(days=1)
+        delta = timedelta(days=1)
         self.assertEqual(
-            DatetimeManager.calculate_next_time(now, delta, now.time()).time(),
-            (now + delta).time(),
+            DatetimeManager.calculate_next_time(now, delta).time(), (now + delta).time()
         )
 
     def test_calculate_next_time_with_time_and_date(self):
         """Tests the calculate_next_time method with a time and a date"""
         now = datetime.now()
-        delta = datetime.timedelta(minutes=1)
+        delta = timedelta(minutes=1)
         self.assertEqual(
-            DatetimeManager.calculate_next_time(
-                now, delta, now.time(), now.date()
-            ).date(),
+            DatetimeManager.calculate_next_time(now, delta).date(),
             (now + delta).date(),
         )
 
     def test_is_time_between(self):
         """Tests the is_time_between method"""
         now = datetime.now()
-        delta = datetime.timedelta(minutes=1)
-        self.assertTrue(DatetimeManager.is_time_between(now, now + delta, now.time()))
-        self.assertFalse(
-            DatetimeManager.is_time_between(now, now + delta, now.time() + delta)
-        )
-        self.assertFalse(
-            DatetimeManager.is_time_between(now, now + delta, now.time() - delta)
-        )
-        self.assertFalse(
-            DatetimeManager.is_time_between(
-                now, now + delta, now.time() + delta, now.date()
-            )
-        )
+        delta = timedelta(minutes=1)
+        self.assertTrue(DatetimeManager.is_time_between(now, now + delta, now))
+        self.assertTrue(DatetimeManager.is_time_between(now, now + delta, now + delta))
+        self.assertFalse(DatetimeManager.is_time_between(now, now + delta, now - delta))

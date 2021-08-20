@@ -7,7 +7,9 @@ from .task_rule_definition import MONTH_DAYS, MONTH_DAYS_LEAP, FrequencyEnum
 
 class DatetimeManager:
     @staticmethod
-    def is_time_between(start_time, end_time, current_time) -> bool:
+    def is_time_between(
+        start_time: datetime, end_time: datetime, current_time: datetime
+    ) -> bool:
         return start_time <= current_time <= end_time
 
     @staticmethod

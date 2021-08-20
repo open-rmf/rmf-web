@@ -10,8 +10,9 @@ from task_scheduler.app import get_app
 from task_scheduler.test_utils import start_test_database
 
 from .days_of_week import DaysOfWeek
+from .helpers.task_rule_definition import WeekDayEnum
 from .scheduled_task import ScheduledTask
-from .task_rule import FrequencyEnum, TaskRule, TaskTypeEnum, WeekDayEnum
+from .task_rule import FrequencyEnum, TaskRule, TaskTypeEnum
 
 app = get_app()
 

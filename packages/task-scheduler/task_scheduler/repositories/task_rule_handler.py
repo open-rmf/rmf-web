@@ -1,25 +1,17 @@
-from models.tortoise_models import TaskRule
+from typing import Any, List
+
+from task_scheduler.models.tortoise_models import TaskRule
 
 
-class TaskRuleManager:
+class TaskRuleRepository:
     @staticmethod
-    async def get_rules():
-        """
-        Get the list of scheduled tasks.
-
-        :return: list of scheduled tasks
-        """
-        return TaskRule.all()
-
-    @staticmethod
-    async def create_rule():
+    async def create(payload: Any) -> TaskRule:
         """
         Create a scheduled task.
 
         :return: scheduled task
         """
-
-        return TaskRule.create()
+        return TaskRule.create(payload)
 
     # description = fields.TextField()
     # task_type: TaskTypeEnum = fields.CharEnumField(TaskTypeEnum)
@@ -33,11 +25,20 @@ class TaskRuleManager:
     # args = fields.JSONField()
 
     @staticmethod
-    async def delete_rule():
+    async def get() -> List[TaskRule]:
+        """
+        Get the list of scheduled tasks.
+
+        :return: list of scheduled tasks
+        """
+        return TaskRule.all()
+
+    @staticmethod
+    async def delete(id: int) -> None:
         """
         Delete a scheduled task.
 
-        :return: scheduled task
+        :return: None
         """
         pass
-        # return TaskRule.delete()
+        return TaskRule.delete(id)

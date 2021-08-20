@@ -2,9 +2,10 @@ from typing import Any, List, Optional
 
 from fastapi import APIRouter, HTTPException, status
 
+from task_scheduler.repositories import ScheduledTaskRepository
+
 router = APIRouter()
 
-# This will receive information from different sources
 LIMIT = 500
 
 
@@ -14,22 +15,18 @@ async def get_scheduled_task(
     limit: Optional[int] = LIMIT,
 ):
     try:
-        return await get_scheduled_tasks(offset, limit)
+        return await ScheduledTaskRepository.get(offset, limit)
     except Exception as e:
-        print(e)
-        raise HTTPException(503, "cannot create the log" + str(e)) from e
+        raise HTTPException(503, "Cannot get scheduled tasks" + str(e)) from e
 
 
 # Will receive information from keycloak only
-@router.delete("/", tags=["delete_scheduled_task"], status_code=status.HTTP_201_CREATED)
+@router.delete(
+    "/", tags=["delete_scheduled_task"], status_code=status.HTTP_204_NO_CONTENT
+)
 async def delete_scheduled_task(id: int):
     try:
-        response = await create_keycloak_log(body)
-        if not isinstance(response, str):
-            raise HTTPException(503, "Error creating some logs" + str(response))
-
-        return response
+        await ScheduledTaskRepository.delete(id)
 
     except Exception as e:
-        print(e)
-        raise HTTPException(503, "cannot create the keycloak log" + str(e)) from e
+        raise HTTPException(503, "Cannot delete the scheduled task" + str(e)) from e
