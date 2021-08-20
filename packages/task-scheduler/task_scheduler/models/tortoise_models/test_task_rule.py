@@ -11,62 +11,9 @@ from task_scheduler.test_utils import start_test_database
 
 from .days_of_week import DaysOfWeek
 from .scheduled_task import ScheduledTask
-from .task_rule import MONTH_DAYS, FrequencyEnum, TaskRule, TaskTypeEnum, WeekDayEnum
+from .task_rule import FrequencyEnum, TaskRule, TaskTypeEnum, WeekDayEnum
 
 app = get_app()
-
-
-class TestCaseTaskRuleService(unittest.IsolatedAsyncioTestCase):
-    async def asyncSetUp(self):
-        await start_test_database()
-        self.client = TestClient(app)
-
-    async def asyncTearDown(self):
-        await Tortoise.close_connections()
-
-    async def test_is_leap_year(self):
-        self.assertTrue(TaskRule.service.is_leap_year(2020))
-
-    async def test_is_not_leap_year(self):
-        self.assertFalse(TaskRule.service.is_leap_year(2021))
-
-    async def test_get_leap_year_list(self):
-        now = datetime.utcnow()
-        now = now.replace(year=2020)
-        self.assertEqual(TaskRule.service.get_list_of_month_days(now)[2], 29)
-
-    async def test_get_normal_year_list(self):
-        now = datetime.utcnow()
-        now = now.replace(year=2021)
-        self.assertEqual(TaskRule.service.get_list_of_month_days(now)[2], 28)
-
-    async def test_get_month_days_numbers_in_normal_year(self):
-        now = datetime.utcnow()
-        now = now.replace(year=2021, month=2)
-        days = TaskRule.service.get_month_days_number(now)
-        self.assertEqual(days, 28)
-
-    async def test_get_month_days_numbers_in_leap_year(self):
-        now = datetime.utcnow()
-        now = now.replace(year=2020, month=2)
-        days = TaskRule.service.get_month_days_number(now)
-        self.assertEqual(days, 29)
-
-    async def test_sum_month_days_correctly(self):
-        now = datetime.utcnow()
-        now = now.replace(year=2021, month=2)
-        days = TaskRule.service.get_sum_of_month_days(2, now)
-        self.assertEqual(days, 28 + 31)
-
-    async def test_get_delta_days(self):
-        now = datetime(2021, 8, 2)
-        delta_days = TaskRule.service.get_delta_days(now, 1)
-        self.assertEqual((datetime(2021, 9, 6) - now).days, delta_days)
-
-    async def test_get_delta_days_2(self):
-        now = datetime(2021, 4, 1)
-        delta_days = TaskRule.service.get_delta_days(now, 2)
-        self.assertEqual((datetime(2021, 6, 3) - now).days, delta_days)
 
 
 class TestCaseTaskRuleCreateEffect(unittest.IsolatedAsyncioTestCase):
