@@ -1,11 +1,11 @@
 import { makeStyles } from '@material-ui/core';
+import clsx from 'clsx';
 import Debug from 'debug';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import { joinClasses } from '../css-utils';
 import { fromRmfCoords } from '../geometry-utils';
 
-const debug = Debug('Doors:DoorMarker');
+const debug = Debug('Map:DoorMarker');
 
 const useDoorStyles = makeStyles({
   marker: {
@@ -90,13 +90,7 @@ const BaseDoor = (props: BaseDoorProps) => {
 
   return (
     <g>
-      <line
-        className={joinClasses(classes.base, className)}
-        x1={v1[0]}
-        y1={v1[1]}
-        x2={v2[0]}
-        y2={v2[1]}
-      />
+      <line className={clsx(classes.base, className)} x1={v1[0]} y1={v1[1]} x2={v2[0]} y2={v2[1]} />
     </g>
   );
 };
@@ -119,7 +113,7 @@ const DummyDoor = (props: DummyDoorProps) => {
   return (
     <g>
       <line
-        className={joinClasses(classes.base, classes.transparent)}
+        className={clsx(classes.base, classes.transparent)}
         x1={v1[0]}
         y1={-v1[1]} // rmf y grows up while svg y grows down
         x2={v2[0]}

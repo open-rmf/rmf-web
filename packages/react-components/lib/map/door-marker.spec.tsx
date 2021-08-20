@@ -1,8 +1,8 @@
 import { cleanup, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
+import { allDoorModes, allDoorTypes, makeDoor } from '../doors/test-utils.spec';
 import { DoorMarker } from './door-marker';
-import { allDoorModes, allDoorTypes, makeDoor } from './test-utils.spec';
 
 it('smoke test with different door modes', () => {
   allDoorModes().forEach((mode) => {

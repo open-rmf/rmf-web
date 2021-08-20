@@ -2,10 +2,10 @@ import { makeStyles } from '@material-ui/core';
 import Debug from 'debug';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import { DoorMarker, fromRmfYaw } from '..';
-import { fromRmfCoords, radiansToDegrees } from '../geometry-utils';
+import { fromRmfCoords, fromRmfYaw, radiansToDegrees } from '../geometry-utils';
+import { DoorMarker } from './door-marker';
 
-const debug = Debug('Lifts:LiftMarker');
+const debug = Debug('Map:LiftMarker');
 
 // Gets the text to insert to the lift, the text depend on the current mode, motion state and the
 // current and destination floor of the lift.
@@ -57,7 +57,7 @@ const useStyles = makeStyles({
 });
 
 export const useLiftMarkerStyles = makeStyles({
-  onCurrentFloor: {
+  onCurrentLevel: {
     fill: 'green',
     opacity: '70%',
   },
@@ -121,7 +121,7 @@ export const LiftMarker = React.forwardRef(function (
 
   const classes = useStyles();
   const markerClasses = useLiftMarkerStyles();
-  const markerClass = variant ? markerClasses[variant] : markerClasses.onCurrentFloor;
+  const markerClass = variant ? markerClasses[variant] : markerClasses.onCurrentLevel;
 
   /**
    * In order to keep consistent spacing, we render at a "unit box" scale it according to the

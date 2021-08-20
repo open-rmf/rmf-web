@@ -1,13 +1,13 @@
 import { makeStyles } from '@material-ui/core';
 import Debug from 'debug';
 import React from 'react';
-import { ColorContext, SvgText } from '..';
+import { SvgText } from '..';
 import { fromRmfCoords, fromRmfYaw } from '../geometry-utils';
-import { BaseMarkerProps } from './base-marker';
+import { BaseRobotMarkerProps } from './base-robot-marker';
 import { DefaultMarker } from './default-marker';
 import { ImageMarker } from './image-marker';
 
-const debug = Debug('Robots:RobotMarker');
+const debug = Debug('Map:RobotMarker');
 
 const useStyles = makeStyles(() => ({
   text: {
@@ -27,7 +27,8 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export interface RobotMarkerProps extends BaseMarkerProps {
+export interface RobotMarkerProps extends BaseRobotMarkerProps {
+  color: string;
   iconPath?: string;
 }
 
@@ -35,30 +36,27 @@ export interface RobotMarkerProps extends BaseMarkerProps {
  * Contexts: ColorContext
  */
 export const RobotMarker = React.forwardRef(
-  (props: RobotMarkerProps, ref: React.Ref<SVGGElement>) => {
-    // some props are not used but have to be declared to correctly set `otherProps`
-    const {
+  (
+    {
+      color,
+      iconPath,
+      fleet,
       name,
       model,
-      x,
-      y,
-      yaw: rmfYaw,
       footprint,
-      fleetName,
-      iconPath,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      variant,
+      state,
+      inConflict,
       translate = true,
       onClick,
       ...otherProps
-    } = props;
-    debug(`render ${name}`);
+    }: RobotMarkerProps,
+    ref: React.Ref<SVGGElement>,
+  ) => {
+    debug(`render ${fleet}/${name}`);
     const [imageHasError, setImageHasError] = React.useState(false);
-    const [robotColor, setRobotColor] = React.useState<string | undefined>(undefined);
-    const colorManager = React.useContext(ColorContext);
     const classes = useStyles();
-    const pos = fromRmfCoords([x, y]);
-    const yaw = (fromRmfYaw(rmfYaw) / Math.PI) * 180;
+    const pos = fromRmfCoords([state.location.x, state.location.y]);
+    const yaw = (fromRmfYaw(state.location.yaw) / Math.PI) * 180;
     const useImageMarker = !!iconPath && !imageHasError;
 
     const translateTransform = translate ? `translate(${pos[0]} ${pos[1]})` : undefined;
@@ -70,25 +68,32 @@ export const RobotMarker = React.forwardRef(
       };
     }, []);
 
-    React.useEffect(() => {
-      if (useImageMarker) {
-        return;
-      }
-      (async () => {
-        const color = await colorManager.robotPrimaryColor(fleetName, name, model);
-        isMounted.current && setRobotColor(color);
-      })();
-    }, [name, model, colorManager, fleetName, useImageMarker]);
-
     return (
-      <g ref={ref} onClick={(ev) => onClick && onClick(ev, fleetName, name)} {...otherProps}>
+      <g ref={ref} onClick={(ev) => onClick && onClick(ev, fleet, name)} {...otherProps}>
         <g transform={translateTransform}>
           <g className={classes.clickable} aria-label={name} transform={`rotate(${yaw})`}>
             {useImageMarker && iconPath ? (
-              <ImageMarker {...props} iconPath={iconPath} onError={() => setImageHasError(true)} />
-            ) : robotColor ? (
-              <DefaultMarker color={robotColor} {...props} />
-            ) : null}
+              <ImageMarker
+                iconPath={iconPath}
+                onError={() => setImageHasError(true)}
+                fleet={fleet}
+                name={name}
+                model={model}
+                footprint={footprint}
+                state={state}
+                inConflict={inConflict}
+              />
+            ) : (
+              <DefaultMarker
+                color={color}
+                fleet={fleet}
+                name={name}
+                model={model}
+                footprint={footprint}
+                state={state}
+                inConflict={inConflict}
+              />
+            )}
           </g>
           <SvgText text={name} targetWidth={footprint * 1.9} className={classes.text} />
         </g>

@@ -1,8 +1,8 @@
 import { useTheme } from '@material-ui/core';
 import React from 'react';
 import { ColorContext } from '../color-manager';
-import { uniqueId } from '../css-utils';
-import { BaseMarkerProps } from './base-marker';
+import { uniqueId } from '../utils';
+import { BaseRobotMarkerProps } from './base-robot-marker';
 
 /**
  *
@@ -24,12 +24,15 @@ function makeGradientShadow(
   );
 }
 
-export interface DefaultMarkerProps extends BaseMarkerProps {
+export interface DefaultMarkerProps extends BaseRobotMarkerProps {
   color: string;
 }
 
-export const DefaultMarker = (props: DefaultMarkerProps): JSX.Element => {
-  const { color, footprint, variant = 'normal' } = props;
+export const DefaultMarker = ({
+  color,
+  footprint,
+  inConflict = false,
+}: DefaultMarkerProps): JSX.Element => {
   const colorManager = React.useContext(ColorContext);
   const theme = useTheme();
 
@@ -53,7 +56,7 @@ export const DefaultMarker = (props: DefaultMarkerProps): JSX.Element => {
       <circle
         id="shadow"
         r={footprint * 1.3}
-        fill={variant === 'inConflict' ? `url(#${conflictShadowId})` : `url(#${shadowId})`}
+        fill={inConflict ? `url(#${conflictShadowId})` : `url(#${shadowId})`}
       />
       <circle r={footprint} fill={color} />
       <line x2={footprint} stroke={theme.palette.common.black} strokeWidth="0.05" />

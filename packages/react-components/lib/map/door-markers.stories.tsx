@@ -1,8 +1,8 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
+import { makeDoor, makeDoorState } from '../doors/test-utils.spec';
 import { DoorMarker } from './door-marker';
-import { makeDoor, makeDoorState } from './test-utils.spec';
 
 export default {
   title: 'Door Markers',

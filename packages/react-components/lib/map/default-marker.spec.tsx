@@ -1,8 +1,8 @@
 import { cleanup, render } from '@testing-library/react';
 import React from 'react';
-import { RobotMarkerProps } from '../../lib';
-import DefaultMarker from '../../lib/robots/default-marker';
-import { makeRobot } from './test-utils.spec';
+import { makeRobot } from '../robots/test-utils.spec';
+import { DefaultMarker } from './default-marker';
+import { RobotMarkerProps } from './robot-marker';
 
 it('smoke test with different variants', () => {
   const variants: RobotMarkerProps['variant'][] = ['inConflict', 'normal', undefined];

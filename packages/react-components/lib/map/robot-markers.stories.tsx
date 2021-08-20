@@ -2,8 +2,8 @@ import { Grid, Paper, Typography } from '@material-ui/core';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
+import { makeRobot } from '../robots/test-utils.spec';
 import { RobotMarker, RobotMarkerProps } from './robot-marker';
-import { makeRobot } from './test-utils.spec';
 
 export default {
   title: 'Robot Markers',

@@ -2,8 +2,8 @@ import { act, cleanup, render as render_, RenderResult } from '@testing-library/
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { ColorContext, ColorManager } from '..';
+import { makeRobot } from '../robots/test-utils.spec';
 import { RobotMarker, RobotMarkerProps } from './robot-marker';
-import { makeRobot } from './test-utils.spec';
 
 describe('robot-markers', () => {
   let colorManager: ColorManager;
