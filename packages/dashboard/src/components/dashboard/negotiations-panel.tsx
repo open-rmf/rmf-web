@@ -95,7 +95,6 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
   const [selected, setSelected] = React.useState<string>('');
   const [conflictIds, setConflictIds] = React.useState<string[]>([]);
 
-  // FIXME: negotiation manager should handle the tokens
   const { authenticator } = React.useContext(AppConfigContext);
 
   React.useEffect(() => {
@@ -302,7 +301,6 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
       const resp = await negotiationStatusManager.negotiationTrajectory({
         request: 'negotiation_trajectory',
         param: trajParams,
-        token: authenticator.token,
       });
       if (resp.error) {
         if (resp.error === 'token expired') authenticator?.logout();

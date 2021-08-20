@@ -79,7 +79,10 @@ export class DefaultTrajectoryManager extends TrajectorySocketManager {
 
   async latestTrajectory(request: TrajectoryRequest): Promise<TrajectoryResponse> {
     await this._authenticator?.refreshToken();
-    const event = await this.send(JSON.stringify(request), this._webSocket);
+    const event = await this.send(
+      JSON.stringify({ ...request, token: this._authenticator?.token }),
+      this._webSocket,
+    );
     const resp = JSON.parse(event.data);
     const validResp = this._checkResponse(request, resp);
     if (resp.values === null || !validResp) {

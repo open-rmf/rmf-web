@@ -5,7 +5,6 @@ import React from 'react';
 import { ColorContext, robotHash } from 'react-components';
 import { AttributionControl, ImageOverlay, LayersControl, Map as LMap, Pane } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
-import appConfig from '../../app-config';
 import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
 import {
   Conflict,
@@ -81,9 +80,6 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     children,
   } = props;
   const negotiationColors = React.useMemo(() => new NegotiationColors(), []);
-
-  // FIXME: trajectory manager should handle the tokens
-  const authenticator = appConfig.authenticator;
 
   const mapFloorLayerSorted = React.useMemo(
     () =>
@@ -215,7 +211,6 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
           duration: trajLookahead,
           trim: true,
         },
-        token: authenticator.token,
       });
 
       debug('set trajectories');
@@ -238,7 +233,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       clearInterval(interval);
       debug(`cleared interval ${interval}`);
     };
-  }, [trajManager, curMapFloorLayer, trajAnimDuration, showTrajectories, authenticator.token]);
+  }, [trajManager, curMapFloorLayer, trajAnimDuration, showTrajectories]);
 
   function handleBaseLayerChange(e: L.LayersControlEvent): void {
     debug('set current level name');

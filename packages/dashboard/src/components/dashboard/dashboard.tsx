@@ -11,7 +11,7 @@ import {
   LiftAccordionProps,
   OmniPanel,
   OmniPanelView,
-  OnChangeEvent,
+  OnFilterChangeEvent,
   RobotAccordion as RobotAccordion_,
   SimpleFilter,
   useStackNavigator,
@@ -374,7 +374,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
 
   const [filter, setFilter] = React.useState('');
 
-  const onChange = (e: React.ChangeEvent<OnChangeEvent>) => {
+  const onChange = (e: React.ChangeEvent<OnFilterChangeEvent>) => {
     setFilter(e.target.value.toLowerCase());
   };
 

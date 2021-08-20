@@ -1,14 +1,13 @@
 import React from 'react';
 import { TextField, makeStyles, Divider } from '@material-ui/core';
 
-// FIXME: This is likely to cause naming clashes
-export interface OnChangeEvent {
+export interface OnFilterChangeEvent {
   name?: string | undefined;
   value: string;
 }
 
 export interface SimpleFilterProps {
-  onChange?: (e: React.ChangeEvent<OnChangeEvent>) => void;
+  onChange?: (e: React.ChangeEvent<OnFilterChangeEvent>) => void;
   value: string;
 }
 
