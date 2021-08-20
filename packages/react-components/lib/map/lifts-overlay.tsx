@@ -64,6 +64,7 @@ export const LiftsOverlay = ({
               liftStates[lift.name]?.current_mode,
               liftStates[lift.name]?.current_floor,
             )}
+            aria-label={lift.name}
           />
         ))}
       </svg>

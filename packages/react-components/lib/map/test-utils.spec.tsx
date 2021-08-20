@@ -1,4 +1,5 @@
 import * as RmfModels from 'rmf-models';
+import { Place } from '../place';
 import { makeRobot } from '../robots/test-utils.spec';
 import { RobotData } from './robots-overlay';
 import { TrajectoryData } from './trajectories-overlay';
@@ -351,6 +352,11 @@ export const officeMap: RmfModels.BuildingMap = {
   lifts: [],
 };
 
+export const officeL1Bounds: L.LatLngBoundsExpression = [
+  [0, 0],
+  [-14, 25.7],
+];
+
 export function makeRobotData(robot: Partial<RobotData> = {}): RobotData {
   return {
     fleet: 'test_fleet',
@@ -642,3 +648,21 @@ export const createRandomTrajectories = (numberOfTraj: number): Trajectory[] => 
   }
   return trajHolder;
 };
+
+export function makeVertex(vertex: Partial<RmfModels.GraphNode> = {}): RmfModels.GraphNode {
+  return {
+    x: 0,
+    y: 0,
+    name: 'test_vertex',
+    params: [],
+    ...vertex,
+  };
+}
+
+export function makePlace(place: Partial<Place> = {}): Place {
+  return {
+    level: 'test_level',
+    vertex: makeVertex({ name: 'test_place' }),
+    ...place,
+  };
+}

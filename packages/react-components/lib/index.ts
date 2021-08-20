@@ -17,6 +17,7 @@ export * from './header-bar';
 export * from './lifts';
 export * from './loading';
 export * from './logo-button';
+export * from './map';
 export * from './material-table-icons';
 export * from './navigation-bar';
 export * from './notifications-dialog';

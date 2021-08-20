@@ -56,6 +56,7 @@ describe('robot-markers', () => {
         footprint={robot.footprint}
         color="#000000"
         onClick={onClick}
+        data-testid="marker"
       />,
     );
     userEvent.click(root.getByTestId('marker'));

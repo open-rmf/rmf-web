@@ -1,7 +1,7 @@
 import { makeStyles } from '@material-ui/core';
-import * as RmfModels from 'rmf-models';
 import Debug from 'debug';
 import React from 'react';
+import * as RmfModels from 'rmf-models';
 import { fromRmfCoords } from '../geometry-utils';
 
 const debug = Debug('Map:WaypointMarker');

@@ -23,7 +23,12 @@ export const WaypointsOverlay = ({
     <SVGOverlay bounds={bounds} {...otherProps}>
       <svg viewBox={viewBox}>
         {waypoints.map((waypoint, idx) => (
-          <WaypointMarker key={idx} waypoint={waypoint.vertex} size={size} />
+          <WaypointMarker
+            key={idx}
+            waypoint={waypoint.vertex}
+            size={size}
+            aria-label={waypoint.vertex.name}
+          />
         ))}
       </svg>
     </SVGOverlay>

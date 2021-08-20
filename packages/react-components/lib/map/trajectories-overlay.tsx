@@ -22,7 +22,11 @@ export const TrajectoriesOverlay = ({
     <SVGOverlay bounds={bounds} {...otherProps}>
       <svg viewBox={viewBox}>
         {trajectoriesData.map((trajData) => (
-          <TrajectoryMarker key={trajData.trajectory.id} {...trajData} />
+          <TrajectoryMarker
+            key={trajData.trajectory.id}
+            aria-label={`trajectory ${trajData.trajectory.id}`}
+            {...trajData}
+          />
         ))}
       </svg>
     </SVGOverlay>

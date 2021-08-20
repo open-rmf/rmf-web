@@ -70,7 +70,7 @@ export const RobotMarker = React.forwardRef(
     return (
       <g ref={ref} {...otherProps}>
         <g transform={translateTransform}>
-          <g className={classes.clickable} aria-label={name} transform={`rotate(${yaw})`}>
+          <g className={classes.clickable} transform={`rotate(${yaw})`}>
             {useImageMarker && iconPath ? (
               <ImageMarker
                 iconPath={iconPath}
