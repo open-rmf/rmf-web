@@ -4,7 +4,7 @@ import React from 'react';
 import { SvgText } from '..';
 import { fromRmfCoords, fromRmfYaw } from '../geometry-utils';
 import { BaseRobotMarkerProps } from './base-robot-marker';
-import { DefaultMarker } from './default-marker';
+import { DefaultMarker } from './default-robot-marker';
 import { ImageMarker } from './image-marker';
 
 const debug = Debug('Map:RobotMarker');
@@ -47,7 +47,6 @@ export const RobotMarker = React.forwardRef(
       state,
       inConflict,
       translate = true,
-      onClick,
       ...otherProps
     }: RobotMarkerProps,
     ref: React.Ref<SVGGElement>,
@@ -69,7 +68,7 @@ export const RobotMarker = React.forwardRef(
     }, []);
 
     return (
-      <g ref={ref} onClick={(ev) => onClick && onClick(ev, fleet, name)} {...otherProps}>
+      <g ref={ref} {...otherProps}>
         <g transform={translateTransform}>
           <g className={classes.clickable} aria-label={name} transform={`rotate(${yaw})`}>
             {useImageMarker && iconPath ? (

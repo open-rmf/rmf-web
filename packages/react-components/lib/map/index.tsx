@@ -5,5 +5,8 @@ export * from './lifts-overlay';
 export * from './map';
 export * from './robot-marker';
 export * from './robots-overlay';
+export * from './trajectories-overlay';
+export * from './trajectory';
+export * from './trajectory-marker';
 export * from './workcell-marker';
 export * from './workcells-overlay';

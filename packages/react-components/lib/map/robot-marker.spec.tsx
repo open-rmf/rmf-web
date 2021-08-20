@@ -1,46 +1,43 @@
 import { act, cleanup, render as render_, RenderResult } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { ColorContext, ColorManager } from '..';
 import { makeRobot } from '../robots/test-utils.spec';
-import { RobotMarker, RobotMarkerProps } from './robot-marker';
+import { RobotMarker } from './robot-marker';
+import { RobotData } from './robots-overlay';
+import { makeRobotData } from './test-utils.spec';
 
 describe('robot-markers', () => {
-  let colorManager: ColorManager;
-  let fakeOnClick: ReturnType<typeof jasmine.createSpy>;
-
-  beforeEach(() => {
-    colorManager = new ColorManager();
-    fakeOnClick = jasmine.createSpy();
-  });
-
   async function render(Component: JSX.Element): Promise<RenderResult> {
     let root: RenderResult;
     await act(async () => {
-      root = render_(
-        <ColorContext.Provider value={colorManager}>
-          <svg>{Component}</svg>
-        </ColorContext.Provider>,
-      );
+      root = render_(<svg>{Component}</svg>);
     });
 
     return root!;
   }
 
-  it('smoke test with different variant', async () => {
-    const variants: RobotMarkerProps['variant'][] = ['inConflict', 'normal', undefined];
-    const robot = makeRobot();
-    for (const v of variants) {
+  it('smoke test', async () => {
+    const robots: RobotData[] = [
+      makeRobotData({
+        name: 'test_robot_1',
+        state: makeRobot({ name: 'test_robot_1' }),
+        inConflict: false,
+      }),
+      makeRobotData({
+        name: 'test_robot_2',
+        state: makeRobot({ name: 'test_robot_2' }),
+        inConflict: true,
+      }),
+    ];
+    for (const robot of robots) {
       await render(
         <RobotMarker
+          fleet={robot.fleet}
           name={robot.name}
           model={robot.model}
-          x={robot.location.x}
-          y={robot.location.y}
-          yaw={robot.location.yaw}
-          fleetName="test_fleet"
-          footprint={1}
-          variant={v}
+          state={robot.state}
+          footprint={robot.footprint}
+          color="#000000"
         />,
       );
       cleanup();
@@ -48,35 +45,33 @@ describe('robot-markers', () => {
   });
 
   it('trigger onClick event', async () => {
-    const robot = makeRobot();
+    const robot = makeRobotData();
+    const onClick = jasmine.createSpy();
     const root = await render(
       <RobotMarker
+        fleet={robot.fleet}
         name={robot.name}
         model={robot.model}
-        x={robot.location.x}
-        y={robot.location.y}
-        yaw={robot.location.yaw}
-        fleetName="test_fleet"
-        footprint={1}
-        onClick={fakeOnClick}
-        data-testid="marker"
+        state={robot.state}
+        footprint={robot.footprint}
+        color="#000000"
+        onClick={onClick}
       />,
     );
     userEvent.click(root.getByTestId('marker'));
-    expect(fakeOnClick).toHaveBeenCalled();
+    expect(onClick).toHaveBeenCalled();
   });
 
   it('providing iconPath renders an image', async () => {
-    const robot = makeRobot();
+    const robot = makeRobotData();
     const root = await render(
       <RobotMarker
+        fleet={robot.fleet}
         name={robot.name}
         model={robot.model}
-        x={robot.location.x}
-        y={robot.location.y}
-        yaw={robot.location.yaw}
-        fleetName="test_fleet"
-        footprint={1}
+        state={robot.state}
+        footprint={robot.footprint}
+        color="#000000"
         iconPath="test_icon"
       />,
     );

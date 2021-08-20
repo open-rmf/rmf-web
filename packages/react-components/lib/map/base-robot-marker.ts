@@ -1,6 +1,6 @@
 import * as RmfModels from 'rmf-models';
 
-export interface BaseRobotMarkerProps extends Omit<React.SVGAttributes<SVGGElement>, 'onClick'> {
+export interface BaseRobotMarkerProps extends React.SVGAttributes<SVGGElement> {
   fleet: string;
   name: string;
   model: string;
@@ -14,5 +14,4 @@ export interface BaseRobotMarkerProps extends Omit<React.SVGAttributes<SVGGEleme
    * default: true
    */
   translate?: boolean;
-  onClick?(event: React.MouseEvent, fleet: string, robot: string): void;
 }

@@ -1,25 +1,11 @@
-import { useTheme } from '@material-ui/core';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
 import { RobotMarker as RobotMarker_, RobotMarkerProps } from './robot-marker';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 import { viewBoxFromLeafletBounds } from './utils';
 
 const RobotMarker = React.memo(RobotMarker_);
 
-export interface RobotData {
-  fleet: string;
-  name: string;
-  model: string;
-  footprint: number;
-  state: RmfModels.RobotState;
-  inConflict?: boolean;
-  /**
-   * defaults to theme primary color
-   */
-  color?: string;
-  iconPath?: string;
-}
+export type RobotData = Omit<RobotMarkerProps, 'onClick'>;
 
 export interface RobotsOverlayProps extends SVGOverlayProps {
   robots: RobotData[];
@@ -35,7 +21,6 @@ export const RobotsOverlay = ({
   ...otherProps
 }: RobotsOverlayProps): JSX.Element => {
   const viewBox = viewBoxFromLeafletBounds(bounds);
-  const theme = useTheme();
 
   return (
     <SVGOverlay bounds={bounds} {...otherProps}>
@@ -43,16 +28,9 @@ export const RobotsOverlay = ({
         {robots.map((robot) => (
           <MarkerComponent
             key={robot.name}
-            color={robot.color || theme.palette.primary.main}
-            iconPath={robot.iconPath}
-            fleet={robot.fleet}
-            name={robot.name}
-            model={robot.model}
-            footprint={robot.footprint}
-            state={robot.state}
-            inConflict={robot.inConflict}
             onClick={onRobotClick}
             aria-label={robot.name}
+            {...robot}
           />
         ))}
       </svg>

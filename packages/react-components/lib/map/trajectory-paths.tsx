@@ -59,7 +59,7 @@ export interface TrajectoryPathProps {
   /**
    * default: false
    */
-  animationLoop?: boolean;
+  loopAnimation?: boolean;
 }
 
 export const FollowAnimationPath = (props: TrajectoryPathProps): JSX.Element => {
@@ -70,7 +70,7 @@ export const FollowAnimationPath = (props: TrajectoryPathProps): JSX.Element => 
     conflict,
     footprint,
     animationScale = 1,
-    animationLoop = false,
+    loopAnimation = false,
   } = props;
   const pathRef = React.useRef<SVGPathElement>(null);
 
@@ -102,14 +102,14 @@ export const FollowAnimationPath = (props: TrajectoryPathProps): JSX.Element => 
         duration: animationDuration(trajectory, animationScale),
         easing: 'linear',
         fill: 'forwards',
-        iterations: animationLoop ? Infinity : 1,
+        iterations: loopAnimation ? Infinity : 1,
       },
     );
 
     return () => {
       pathAnim.getAnimations().forEach((anim) => anim.cancel());
     };
-  }, [animationScale, animationLoop, trajectory]);
+  }, [animationScale, loopAnimation, trajectory]);
 
   return (
     <>

@@ -1,16 +1,19 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { LayersControl, Pane } from 'react-leaflet';
+import * as RmfModels from 'rmf-models';
 import ColorManager from '../color-manager';
+import { makeRobot } from '../robots/test-utils.spec';
 import { useAsync } from '../use-async';
 import { AffineImageOverlay } from './affine-image-overlay';
 import DoorsOverlay from './doors-overlay';
 import { LiftsOverlay } from './lifts-overlay';
 import { LMap, LMapProps } from './map';
 import { RobotData, RobotsOverlay } from './robots-overlay';
-import { dispensers, fleetState, ingestors, officeMap } from './test-utils.spec';
+import { makeTrajectoryData, officeMap } from './test-utils.spec';
+import { TrajectoriesOverlay } from './trajectories-overlay';
 import { affineImageBounds, loadImage } from './utils';
-import { WorkcellsOverlay } from './workcells-overlay';
+import { WorkcellData, WorkcellsOverlay } from './workcells-overlay';
 
 export default {
   title: 'Schedule Visualizer',
@@ -19,6 +22,17 @@ export default {
 } as Meta;
 
 const colorManager = new ColorManager();
+const dispensers: WorkcellData[] = [{ guid: 'test_dispenser', location: [18, -9] }];
+const ingestors: WorkcellData[] = [{ guid: 'test_ingestor', location: [16, -9] }];
+const fleetState: RmfModels.FleetState = {
+  name: 'test_fleet',
+  robots: [
+    makeRobot({
+      location: { x: 20, y: -10, yaw: 0, level_name: 'L1', index: 0, t: { sec: 0, nanosec: 0 } },
+    }),
+  ],
+};
+const trajectories = [makeTrajectoryData()];
 
 export const ScheduleVisualizer: Story<LMapProps> = () => {
   const safeAsync = useAsync();
@@ -113,6 +127,11 @@ export const ScheduleVisualizer: Story<LMapProps> = () => {
           <LayersControl.Overlay name="Ingestors" checked>
             <Pane>
               <WorkcellsOverlay bounds={bounds} workcells={ingestors} />
+            </Pane>
+          </LayersControl.Overlay>
+          <LayersControl.Overlay name="Trajectories" checked>
+            <Pane>
+              <TrajectoriesOverlay bounds={bounds} trajectoriesData={trajectories} />
             </Pane>
           </LayersControl.Overlay>
         </LayersControl>

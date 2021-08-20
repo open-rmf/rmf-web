@@ -1,10 +1,8 @@
 import { bezierControlPoints, Knot, knotsToSegmentCoefficientsArray } from '../geometry-utils';
 
-// RawVelocity received from server is in this format (x, y, theta)
-export type RawVelocity = [number, number, number];
+export type RawVelocity = [x: number, y: number, theta: number];
 
-// RawPose2D received from server is in this format (x, y, theta)
-export type RawPose2D = [number, number, number];
+export type RawPose2D = [x: number, y: number, theta: number];
 
 export interface RawKnot {
   t: number; // milliseconds
