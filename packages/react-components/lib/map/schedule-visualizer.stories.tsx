@@ -3,6 +3,7 @@ import React from 'react';
 import { LayersControl, Pane } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
 import ColorManager from '../color-manager';
+import { Place } from '../place';
 import { makeRobot } from '../robots/test-utils.spec';
 import { useAsync } from '../use-async';
 import { AffineImageOverlay } from './affine-image-overlay';
@@ -13,6 +14,7 @@ import { RobotData, RobotsOverlay } from './robots-overlay';
 import { makeTrajectoryData, officeMap } from './test-utils.spec';
 import { TrajectoriesOverlay } from './trajectories-overlay';
 import { affineImageBounds, loadImage } from './utils';
+import { WaypointsOverlay } from './waypoints-overlay';
 import { WorkcellData, WorkcellsOverlay } from './workcells-overlay';
 
 export default {
@@ -33,6 +35,17 @@ const fleetState: RmfModels.FleetState = {
   ],
 };
 const trajectories = [makeTrajectoryData()];
+const waypoints: Place[] = [
+  {
+    level: 'L1',
+    vertex: {
+      x: 19.89569854736328,
+      y: -3.4071500301361084,
+      name: 'lounge',
+      params: [],
+    },
+  },
+];
 
 export const ScheduleVisualizer: Story<LMapProps> = () => {
   const safeAsync = useAsync();
@@ -132,6 +145,11 @@ export const ScheduleVisualizer: Story<LMapProps> = () => {
           <LayersControl.Overlay name="Trajectories" checked>
             <Pane>
               <TrajectoriesOverlay bounds={bounds} trajectoriesData={trajectories} />
+            </Pane>
+          </LayersControl.Overlay>
+          <LayersControl.Overlay name="Waypoints" checked>
+            <Pane>
+              <WaypointsOverlay bounds={bounds} waypoints={waypoints} />
             </Pane>
           </LayersControl.Overlay>
         </LayersControl>

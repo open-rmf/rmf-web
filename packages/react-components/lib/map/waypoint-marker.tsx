@@ -4,7 +4,7 @@ import Debug from 'debug';
 import React from 'react';
 import { fromRmfCoords } from '../geometry-utils';
 
-const debug = Debug('Waypoints:WaypointMarker');
+const debug = Debug('Map:WaypointMarker');
 
 const useStyles = makeStyles(() => ({
   marker: {
@@ -38,8 +38,10 @@ export interface WaypointMarkerProps extends React.SVGProps<SVGGElement> {
 }
 
 export const WaypointMarker = React.forwardRef(
-  (props: WaypointMarkerProps, ref: React.Ref<SVGGElement>) => {
-    const { waypoint, size = 0.1, translate = true, ...otherProps } = props;
+  (
+    { waypoint, size = 0.1, translate = true, ...otherProps }: WaypointMarkerProps,
+    ref: React.Ref<SVGGElement>,
+  ) => {
     debug(`render ${waypoint.name}`);
     const pos = fromRmfCoords([waypoint.x, waypoint.y]);
 
