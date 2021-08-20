@@ -1,11 +1,10 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles, TextField } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import { SearchFilter } from './search-filter';
 import DateAndTimePickers from '../../date-time-picker';
 import { LogLevel } from './log-level';
 
-import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 import { LogQueryPayload } from '.';
 
 interface SearchLogFormProps {
@@ -27,8 +26,8 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
   // The log contains information from different services, the label help us differentiate the service
   const [logLabel, setLogLabel] = React.useState('');
   const [logLevel, setLogLevel] = React.useState(LogLevel.All);
-  const [fromLogDate, setFromLogDate] = React.useState<MaterialUiPickersDate>(new Date());
-  const [toLogDate, setToLogDate] = React.useState<MaterialUiPickersDate>(new Date());
+  const [fromLogDate, setFromLogDate] = React.useState<Date>(new Date());
+  const [toLogDate, setToLogDate] = React.useState<Date>(new Date());
 
   const classes = useStyles();
 
@@ -50,11 +49,11 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
     [],
   );
 
-  const handleFromLogDateChange = React.useCallback((date: MaterialUiPickersDate) => {
+  const handleFromLogDateChange = React.useCallback((date: any) => {
     setFromLogDate(date);
   }, []);
 
-  const handleToLogDateChange = React.useCallback((date: MaterialUiPickersDate) => {
+  const handleToLogDateChange = React.useCallback((date: any) => {
     setToLogDate(date);
   }, []);
 
@@ -79,18 +78,18 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
         />
 
         <DateAndTimePickers
-          name="fromLogDate"
           maxDate={new Date()}
           label="From"
           value={fromLogDate}
           onChange={handleFromLogDateChange}
+          renderInput={(props) => <TextField {...props} />}
         />
         <DateAndTimePickers
-          name="toLogDate"
           maxDate={new Date()}
           label="To"
           value={toLogDate}
           onChange={handleToLogDateChange}
+          renderInput={(props) => <TextField {...props} />}
         />
       </div>
 

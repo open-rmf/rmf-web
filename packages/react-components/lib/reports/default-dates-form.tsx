@@ -1,17 +1,16 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles, TextField } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import DateAndTimePickers from '../date-time-picker';
 
-import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 import { LogQueryPayload } from '.';
 
 interface DefaultDatesFormProps {
   search?: (payload: LogQueryPayload) => void;
-  fromLogDate?: MaterialUiPickersDate;
-  toLogDate?: MaterialUiPickersDate;
-  onSelectFromDate?: (date: MaterialUiPickersDate) => void;
-  onSelectToDate?: (date: MaterialUiPickersDate) => void;
+  fromLogDate?: Date;
+  toLogDate?: Date;
+  onSelectFromDate?: (date: any) => void;
+  onSelectToDate?: (date: any) => void;
 }
 
 export const DefaultDatesForm = (props: DefaultDatesFormProps) => {
@@ -27,18 +26,18 @@ export const DefaultDatesForm = (props: DefaultDatesFormProps) => {
     <>
       <div className={classes.searchForm}>
         <DateAndTimePickers
-          name="fromLogDate"
           maxDate={new Date()}
           label="From"
           value={fromLogDate}
           onChange={onSelectFromDate}
+          renderInput={(props) => <TextField {...props} />}
         />
         <DateAndTimePickers
-          name="toLogDate"
           maxDate={new Date()}
           label="To"
           value={toLogDate}
           onChange={onSelectToDate}
+          renderInput={(props) => <TextField {...props} />}
         />
       </div>
 

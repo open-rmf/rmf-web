@@ -1,4 +1,3 @@
-import DateFnsUtils from '@date-io/date-fns';
 import {
   Button,
   Divider,
@@ -12,7 +11,8 @@ import {
   useTheme,
 } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
-import { KeyboardDateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import { DateTimePicker, LocalizationProvider } from '@material-ui/pickers';
+import DateFnsAdapter from '@material-ui/pickers/adapter/date-fns';
 import type {
   CleanTaskDescription,
   DeliveryTaskDescription,
@@ -483,7 +483,7 @@ export function CreateTaskForm({
   const submitText = tasks.length > 1 ? 'Submit All' : 'Submit';
 
   return (
-    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+    <LocalizationProvider dateAdapter={DateFnsAdapter}>
       <ConfirmationDialog
         title="Create Task"
         submitting={submitting}
@@ -512,8 +512,7 @@ export function CreateTaskForm({
             </TextField>
             <Grid container wrap="nowrap">
               <Grid style={{ flexGrow: 1 }}>
-                <KeyboardDateTimePicker
-                  id="start-time"
+                <DateTimePicker
                   value={new Date(task.start_time * 1000)}
                   onChange={(date) => {
                     if (!date) {
@@ -524,8 +523,7 @@ export function CreateTaskForm({
                     updateTasks();
                   }}
                   label="Start Time"
-                  margin="normal"
-                  fullWidth
+                  renderInput={(props) => <TextField {...props} />}
                 />
               </Grid>
               <Grid
@@ -573,6 +571,6 @@ export function CreateTaskForm({
           )}
         </Grid>
       </ConfirmationDialog>
-    </MuiPickersUtilsProvider>
+    </LocalizationProvider>
   );
 }
