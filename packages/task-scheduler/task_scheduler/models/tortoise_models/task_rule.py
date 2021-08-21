@@ -1,7 +1,7 @@
 from typing import List, Optional, Type
 
 from tortoise import BaseDBAsyncClient, fields, models
-from tortoise.signals import post_delete, post_save
+from tortoise.signals import post_delete, post_save, pre_save
 
 from .helpers.task_rule_definition import FrequencyEnum
 from .helpers.task_rule_manager import SchedulerFactory
@@ -26,6 +26,18 @@ class TaskRule(models.Model):
     days_of_week = fields.ForeignKeyField(
         "models.DaysOfWeek", related_name="task_rule", null=True
     )
+
+
+@pre_save(TaskRule)
+async def signal_pre_save(
+    sender: "Type[TaskRule]",
+    instance: TaskRule,
+    using_db: "Optional[BaseDBAsyncClient]",
+    update_fields: List[str],
+) -> None:
+
+    if instance.frequency_type != FrequencyEnum.ONCE and instance.end_datetime is None:
+        raise Exception("You should set a end_datetime")
 
 
 @post_save(TaskRule)

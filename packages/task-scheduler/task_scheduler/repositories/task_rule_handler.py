@@ -1,6 +1,10 @@
 from typing import Any, List
 
-from task_scheduler.models.tortoise_models import TaskRule
+from task_scheduler.models.pydantic_models import TaskRule_Pydantic
+from task_scheduler.models.tortoise_models import DaysOfWeek, TaskRule
+from task_scheduler.models.tortoise_models.helpers.task_rule_definition import (
+    FrequencyEnum,
+)
 
 
 class TaskRuleRepository:
@@ -11,27 +15,51 @@ class TaskRuleRepository:
 
         :return: scheduled task
         """
-        return TaskRule.create(payload)
+        days_of_week = payload.get("days_of_week", None)
 
-    # description = fields.TextField()
-    # task_type: TaskTypeEnum = fields.CharEnumField(TaskTypeEnum)
-    # frequency = fields.IntField()
-    # frequency_type: FrequencyEnum = fields.CharEnumField(
-    #     FrequencyEnum, default=FrequencyEnum.MINUTELY
-    # )
-    # first_day_to_apply_rule = fields.TimeField()
-    # start_date = fields.DateTimeField()
-    # end_date = fields.DateTimeField()
-    # args = fields.JSONField()
+        if days_of_week is not None:
+            days = payload["days_of_week"]
+            days_of_week = await DaysOfWeek.create(
+                monday=days[0],
+                tuesday=days[1],
+                wednesday=days[2],
+                thursday=days[3],
+                friday=days[4],
+                saturday=days[5],
+                sunday=days[6],
+            )
+
+        if (
+            payload.get("frequency_type") != FrequencyEnum.ONCE
+            and payload.get("end_datetime") is None
+        ):
+            raise Exception(
+                "If you want to schedule a task more than ONCE you should set an end_datetime"
+            )
+
+        return await TaskRule.create(
+            description=payload.get("description"),
+            task_type=payload.get("task_type"),
+            frequency=payload.get("frequency"),
+            frequency_type=payload.get("frequency_type"),
+            start_datetime=payload.get("start_datetime"),
+            end_datetime=payload.get("end_datetime"),
+            days_of_week=days_of_week,
+            # args=payload.get("args")
+        )
 
     @staticmethod
-    async def get() -> List[TaskRule]:
+    async def get(offset: int, limit: int) -> List[TaskRule]:
         """
         Get the list of scheduled tasks.
 
         :return: list of scheduled tasks
         """
-        return TaskRule.all()
+        query = {}
+
+        return await TaskRule_Pydantic.from_queryset(
+            TaskRule.filter(**query).offset(offset).limit(limit).order_by("-created_at")
+        )
 
     @staticmethod
     async def delete(id: int) -> None:
@@ -40,5 +68,4 @@ class TaskRuleRepository:
 
         :return: None
         """
-        pass
-        return TaskRule.delete(id)
+        await TaskRule.filter(id=id).delete()
