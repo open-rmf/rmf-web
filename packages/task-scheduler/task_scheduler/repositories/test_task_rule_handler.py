@@ -67,10 +67,10 @@ class TestCaseTaskRule(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(task_rule.description, "test")
 
-    async def test_deletes_scheduled_task(self):
+    async def test_deletes_task_rule(self):
 
         now = datetime.utcnow()
-        task_rule = await TaskRuleRepository.create(
+        await TaskRuleRepository.create(
             {
                 "description": "test",
                 "task_type": "delivery",
@@ -87,38 +87,33 @@ class TestCaseTaskRule(unittest.IsolatedAsyncioTestCase):
         await TaskRuleRepository.delete(tasks[0].id)
         self.assertEqual(len(await ScheduledTask.all()), 0)
 
-    # async def test_gets_scheduled_tasks(self):
-    #     await ScheduledTask.create(
-    #         task_rule=self.task_rule,
-    #         task_type=TaskTypeEnum.LOOP,
-    #         task_datetime=datetime.utcnow(),
-    #     )
-    #     await ScheduledTask.create(
-    #         task_rule=self.task_rule2,
-    #         task_type=TaskTypeEnum.LOOP,
-    #         task_datetime=datetime.utcnow(),
-    #     )
-    #     tasks = await ScheduledTaskRepository.get(0, 500)
-    #     self.assertEqual(len(tasks), 4)
+    async def test_gets_task_rules(self):
+        now = datetime.utcnow()
 
-    # async def test_gets_and_filters_scheduled_tasks(self):
-    #     now = datetime.utcnow()
-    #     rule = await TaskRule.create(
-    #         description="test3",
-    #         task_type=TaskTypeEnum.DELIVERY,
-    #         frequency=1,
-    #         frequency_type=FrequencyEnum.DAILY,
-    #         first_day_to_apply_rule=now,
-    #         start_datetime=now,
-    #         end_datetime=now + timedelta(days=2)
-    #     )
+        await TaskRuleRepository.create(
+            {
+                "description": "test",
+                "task_type": "delivery",
+                "frequency": 1,
+                "frequency_type": "Once",
+                "start_datetime": now,
+                "days_of_week": [True, True, True, True, True, False, False],
+            }
+        )
 
-    #     self.assertEqual(len(await ScheduledTask.all()), 5)
-    #     tasks1 = await ScheduledTaskRepository.get(0, 500, self.task_rule.id)
-    #     self.assertEqual(len(tasks1), 1)
+        await TaskRuleRepository.create(
+            {
+                "description": "test2",
+                "task_type": "delivery",
+                "frequency": 1,
+                "frequency_type": "Once",
+                "start_datetime": now,
+                "days_of_week": [True, True, True, True, True, False, False],
+            }
+        )
 
-    #     tasks2 = await ScheduledTaskRepository.get(0, 500, self.task_rule2.id)
-    #     self.assertEqual(len(tasks2), 1)
+        rules = await TaskRuleRepository.get(0, 500)
+        self.assertEqual(len(rules), 2)
 
-    #     tasks3 = await ScheduledTaskRepository.get(0, 500, rule.id)
-    #     self.assertEqual(len(tasks3), 3)
+        rules2 = await TaskRuleRepository.get(0, 1)
+        self.assertEqual(len(rules2), 1)
