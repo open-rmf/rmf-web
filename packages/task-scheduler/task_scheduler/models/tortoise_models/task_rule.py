@@ -1,3 +1,4 @@
+# pylint: disable=unused-import
 from typing import List, Optional, Type
 
 from tortoise import BaseDBAsyncClient, fields, models
@@ -29,6 +30,7 @@ class TaskRule(models.Model):
 
 
 @pre_save(TaskRule)
+# pylint: disable=unused-argument
 async def signal_pre_save(
     sender: "Type[TaskRule]",
     instance: TaskRule,
@@ -41,6 +43,7 @@ async def signal_pre_save(
 
 
 @post_save(TaskRule)
+# pylint: disable=unused-argument
 async def signal_post_save(
     sender: "Type[TaskRule]",
     instance: TaskRule,
@@ -59,6 +62,7 @@ async def signal_post_save(
 
 
 @post_delete(TaskRule)
+# pylint: disable=unused-argument
 async def signal_post_delete(
     sender: "Type[TaskRule]",
     instance: TaskRule,

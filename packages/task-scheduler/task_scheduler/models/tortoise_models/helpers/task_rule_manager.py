@@ -60,7 +60,7 @@ class MultipleDaysScheduleManager:
     async def schedule_tasks(self):
         week_id = self.task_rule_instance.days_of_week.id
         first_active_day = await DaysOfWeek.service.get_first_active_day(
-            id=week_id,
+            week_id=week_id,
             current_datetime=self.task_rule_instance.start_datetime,
         )
         self.task_rule_instance.first_day_to_apply_rule = first_active_day
@@ -164,5 +164,5 @@ class SchedulerFactory:
 
         if task_rule_instance.days_of_week is None:
             return SimpleScheduleManager(task_rule_instance)
-        else:
-            return MultipleDaysScheduleManager(task_rule_instance)
+
+        return MultipleDaysScheduleManager(task_rule_instance)

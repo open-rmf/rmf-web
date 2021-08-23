@@ -5,10 +5,7 @@ from fastapi.testclient import TestClient
 from tortoise import Tortoise
 
 from task_scheduler.app import get_app
-from task_scheduler.models.tortoise_models import ScheduledTask, TaskRule, TaskTypeEnum
-from task_scheduler.models.tortoise_models.helpers.task_rule_definition import (
-    FrequencyEnum,
-)
+from task_scheduler.models.tortoise_models import ScheduledTask, TaskRule
 from task_scheduler.repositories.task_rule_handler import TaskRuleRepository
 from task_scheduler.test_utils import start_test_database
 
@@ -64,7 +61,6 @@ class TestCaseTaskRule(unittest.IsolatedAsyncioTestCase):
 
     async def test_deletes_task_rule(self):
 
-        now = datetime.utcnow()
         await TaskRuleRepository.create(
             {
                 "description": "test",

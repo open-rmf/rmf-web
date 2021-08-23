@@ -89,14 +89,13 @@ class TestCaseTaskRuleCreateEffect(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(await ScheduledTask.all(), [])
 
 
-"""
-User picks one date and set a rule based on that.
-"""
-
-
 class TestCaseCorrectNumberOfScheduledtTaskGenerationOneDate(
     unittest.IsolatedAsyncioTestCase
 ):
+    """
+    User picks one date and set a rule based on that.
+    """
+
     async def asyncSetUp(self):
         await start_test_database()
         self.client = TestClient(app)
@@ -442,14 +441,13 @@ class TestCaseScheduledtTaskGenerationDateCorrectness(unittest.IsolatedAsyncioTe
     # TODO: Is it holiday?
 
 
-"""
-User picks several week days and set a rule based on that.
-"""
-
-
 class TestCaseTwoWeekdaysScheduledtTaskGenerationDateCorrectness(
     unittest.IsolatedAsyncioTestCase
 ):
+    """
+    User picks several week days and set a rule based on that.
+    """
+
     async def asyncSetUp(self):
         await start_test_database()
         self.client = TestClient(app)
@@ -546,7 +544,6 @@ class TestCaseTwoWeekdaysScheduledtTaskGenerationDateCorrectness(
     async def test_monthly_every_monday_and_wednesday(self):
         now = datetime(2021, 8, 2)
         future = now + timedelta(days=45)
-        expect_date = datetime(2020, 3, 1)
         days_of_week = await DaysOfWeek.get_or_create(monday=True, wednesday=True)
         await TaskRule.create(
             description="test",

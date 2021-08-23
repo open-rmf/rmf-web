@@ -17,6 +17,8 @@ requests = "~=2.25"
 reporting-server = {editable = true, path = "./packages/reporting-server"}
 # ros-translator
 ros-translator = {editable = true, path = "./packages/ros-translator"}
+task-scheduler = {editable = true, path = "./packages/task-scheduler"}
+
 
 [requires]
 python_version = "3.8"

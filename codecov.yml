@@ -27,3 +27,7 @@ flags:
     paths:
       - packages/rmf-auth
     carryforward: true
+  task-scheduler:
+    paths:
+      - packages/task-scheduler
+    carryforward: true

@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import List
 
 from task_scheduler.models.pydantic_models import TaskRule_Pydantic
 from task_scheduler.models.tortoise_models import DaysOfWeek, TaskRule
@@ -62,14 +62,14 @@ class TaskRuleRepository:
         )
 
     @staticmethod
-    async def delete(id: int) -> None:
+    async def delete(task_rule_id: int) -> None:
         """
         Delete a task rule .
 
         :return: None
         """
-        task_rule = await TaskRule.get(id=id)
+        task_rule = await TaskRule.get(id=task_rule_id)
         if task_rule is None:
-            raise Exception("Task rule id not found: %s" % id)
+            raise Exception("Task rule id not found: %s" % task_rule_id)
 
-        await task_rule.get(id=id).delete()
+        await task_rule.get(id=task_rule_id).delete()

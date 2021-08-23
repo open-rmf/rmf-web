@@ -21,25 +21,25 @@ class DatetimeManager:
         return (year % 4 == 0 and year % 100 != 0) or year % 400 == 0
 
     @staticmethod
-    def get_sum_of_month_days(frequency: int, datetime: datetime) -> int:
-        current_month: int = datetime.month
+    def get_sum_of_month_days(frequency: int, current_datetime: datetime) -> int:
+        current_month: int = current_datetime.month
         total_days = 0
-        month_list = DatetimeManager.get_list_of_month_days(datetime)
+        month_list = DatetimeManager.get_list_of_month_days(current_datetime)
         if frequency == 1:
-            return month_list[datetime.month]
+            return month_list[current_datetime.month]
         for month in range(current_month, current_month + frequency):
             total_days += month_list[month]
         return total_days
 
     @staticmethod
     # Check the number of days of a month including leap years
-    def get_month_days_number(datetime: datetime):
-        month_list = DatetimeManager.get_list_of_month_days(datetime)
-        return month_list[datetime.month]
+    def get_month_days_number(current_datetime: datetime):
+        month_list = DatetimeManager.get_list_of_month_days(current_datetime)
+        return month_list[current_datetime.month]
 
     @staticmethod
-    def get_list_of_month_days(datetime: datetime) -> List[int]:
-        year = datetime.year
+    def get_list_of_month_days(current_datetime: datetime) -> List[int]:
+        year = current_datetime.year
         if DatetimeManager.is_leap_year(year):
             return MONTH_DAYS_LEAP
         return MONTH_DAYS
@@ -93,26 +93,30 @@ class DatetimeManager:
         return days
 
     @staticmethod
-    def get_timedelta(delta_type, frequency, datetime=None):
+    def get_timedelta(delta_type, frequency, current_datetime=None):
         if delta_type == FrequencyEnum.MINUTELY:
             return timedelta(minutes=frequency)
-        elif delta_type == FrequencyEnum.HOURLY:
+        if delta_type == FrequencyEnum.HOURLY:
             return timedelta(hours=frequency)
-        elif delta_type == FrequencyEnum.DAILY:
+        if delta_type == FrequencyEnum.DAILY:
             return timedelta(days=frequency)
-        elif delta_type == FrequencyEnum.WEEKLY:
+        if delta_type == FrequencyEnum.WEEKLY:
             return timedelta(days=frequency * 7)
         # Monthly on weekdays
-        elif delta_type == FrequencyEnum.MONTHLY:
-            if datetime is None:
+        if delta_type == FrequencyEnum.MONTHLY:
+            if current_datetime is None:
                 raise ValueError("Month can't be None")
 
-            return timedelta(days=DatetimeManager.get_delta_days(datetime, frequency))
+            return timedelta(
+                days=DatetimeManager.get_delta_days(current_datetime, frequency)
+            )
 
-        elif delta_type == FrequencyEnum.CUSTOM:
-            if datetime is None:
+        if delta_type == FrequencyEnum.CUSTOM:
+            if current_datetime is None:
                 raise ValueError("Month can't be None")
 
-            return timedelta(days=DatetimeManager.get_delta_days(datetime, frequency))
-        else:
-            return None
+            return timedelta(
+                days=DatetimeManager.get_delta_days(current_datetime, frequency)
+            )
+
+        return None

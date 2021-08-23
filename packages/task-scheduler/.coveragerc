@@ -5,3 +5,6 @@ omit =
     # test files
     **/test_*.py
 
+    # generated files
+    task_scheduler/models/ros_pydantic/**
+

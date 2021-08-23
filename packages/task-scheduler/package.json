@@ -9,7 +9,7 @@
     "test": "python3 -m pipenv run python -m unittest",
     "test:cov": "RMF_TASK_SERVER_LOG_LEVEL=CRITICAL RMF_TASK_SERVER_TEST_COVERAGE=1 pipenv run python -m coverage run -p -m unittest && pipenv run python -m coverage combine",
     "test:report": "pipenv run python -m coverage html && xdg-open htmlcov/index.html",
-    "lint": "python3 -m pipenv run pylint task_scheduler"
+    "lint": "python3 -m pipenv run pylint task_scheduler  --ignore=ros_pydantic"
   },
   "devDependencies": {
     "pipenv-install": "*"

@@ -7,7 +7,7 @@ from datetime import datetime
 from fastapi.testclient import TestClient
 from tortoise import Tortoise
 
-from task_scheduler.models.tortoise_models import ScheduledTask, TaskRule, TaskTypeEnum
+from task_scheduler.models.tortoise_models import TaskRule, TaskTypeEnum
 from task_scheduler.models.tortoise_models.helpers.task_rule_definition import (
     FrequencyEnum,
 )

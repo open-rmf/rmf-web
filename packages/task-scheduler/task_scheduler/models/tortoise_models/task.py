@@ -1,7 +1,8 @@
-from enum import Enum, IntEnum
-from typing import Optional, Union
+from enum import Enum
 
-from pydantic import BaseModel, validator
+# from typing import Optional, Union
+
+# from pydantic import BaseModel, validator
 
 # from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
 # from rmf_task_msgs.msg import TaskType as RmfTaskType

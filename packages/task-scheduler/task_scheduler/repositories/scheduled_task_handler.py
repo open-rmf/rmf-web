@@ -30,22 +30,13 @@ class ScheduledTaskRepository:
         return await ScheduledTask_Pydantic.from_queryset(queryset)
 
     @staticmethod
-    async def delete(id):
+    async def delete(task_id):
         """
         Delete a scheduled task.
 
         :return: None
         """
-        task = await ScheduledTask.get(id=id)
+        task = await ScheduledTask.get(id=task_id)
         if task is None:
-            raise Exception("Task id not found: %s" % id)
+            raise Exception("Task id not found: %s" % task_id)
         await task.delete()
-
-    @staticmethod
-    async def create():
-        """
-        Create a scheduled task.
-
-        :return: scheduled task
-        """
-        pass
