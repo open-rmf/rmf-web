@@ -1,9 +1,5 @@
-name: End-to-End
+name: Nightly
 on:
-  pull_request:
-  push:
-    branches:
-      - main
   schedule:
     # 2am SGT
     - cron: '0 18 * * *'
@@ -13,35 +9,23 @@ jobs:
   build-docker-images:
     name: Push Docker images to GitHub Packages
     runs-on: ubuntu-latest
-    if: github.event_name == 'schedule'
     steps:
       - uses: actions/checkout@v2
-      - name: Push rmf image to GitHub Packages
-        uses: docker/build-push-action@v1
-        with:
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-          registry: docker.pkg.github.com
-          repository: ${{ github.repository }}/rmf
-          tags: nightly
-          path: packages/dashboard-e2e/docker/rmf
       - name: Push e2e image to GitHub Packages
         uses: docker/build-push-action@v1
         with:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-          registry: docker.pkg.github.com
+          registry: ghcr.io
           repository: ${{ github.repository }}/e2e
           tags: latest
-          build_args: BASE_IMAGE=docker.pkg.github.com/open-rmf/rmf-web/rmf:nightly
           path: packages/dashboard-e2e/docker/e2e
-  e2e-tests:
-    name: End-to-End Tests
+  dashboard-e2e:
+    name: Dashboard e2e
     runs-on: ubuntu-latest
-    if: always()
     needs: build-docker-images
     container:
-      image: docker.pkg.github.com/open-rmf/rmf-web/e2e
+      image: ${{ github.repository }}/e2e
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -71,7 +55,7 @@ jobs:
           REACT_APP_KEYCLOAK_CONFIG: '{ "realm": "master", "clientId": "rmf-dashboard", "url": "http://rmf-web_keycloak_1:8080/auth" }'
       - name: upload artifacts
         uses: actions/upload-artifact@v2
-        if: ${{ always() }}
+        if: always()
         with:
-          name: screenshots
+          name: dashboard-e2e-artifacts
           path: packages/dashboard-e2e/artifacts
