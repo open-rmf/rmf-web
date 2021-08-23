@@ -8,6 +8,7 @@ export default function DateAndTimePickers(props: DateTimePickerProps): React.Re
   return (
     <LocalizationProvider dateAdapter={DateFnsAdapter}>
       <DateTimePicker
+        inputFormat={'MM/dd/yyyy HH:mm'}
         value={value ? value : format(new Date(), 'MM/dd/yyyy HH:mm')}
         label={label}
         {...rest}
