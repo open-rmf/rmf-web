@@ -24,15 +24,13 @@ class TestCaseTaskRule(unittest.IsolatedAsyncioTestCase):
         await Tortoise.close_connections()
 
     async def test_creates_task_rule_without_weekdays(self):
-
-        now = datetime.utcnow()
         task_rule = await TaskRuleRepository.create(
             {
                 "description": "test",
                 "task_type": "delivery",
                 "frequency": 1,
                 "frequency_type": "Once",
-                "start_datetime": now,
+                "start_datetime": "2021-08-23T15:11:03.979209",
             }
         )
 
@@ -40,27 +38,24 @@ class TestCaseTaskRule(unittest.IsolatedAsyncioTestCase):
 
     async def test_fails_on_creation_without_enddate_and_frequency_daily(self):
         with self.assertRaises(Exception):
-            now = datetime.utcnow()
             await TaskRuleRepository.create(
                 {
                     "description": "test",
                     "task_type": "delivery",
                     "frequency": 1,
                     "frequency_type": "Daily",
-                    "start_datetime": now,
+                    "start_datetime": "2021-08-23T15:11:03.979209",
                 }
             )
 
     async def test_creates_task_rule_with_weekdays(self):
-
-        now = datetime.utcnow()
         task_rule = await TaskRuleRepository.create(
             {
                 "description": "test",
                 "task_type": "delivery",
                 "frequency": 1,
                 "frequency_type": "Once",
-                "start_datetime": now,
+                "start_datetime": "2021-08-23T15:11:03.979209",
                 "days_of_week": [True, True, True, True, True, False, False],
             }
         )
@@ -76,7 +71,7 @@ class TestCaseTaskRule(unittest.IsolatedAsyncioTestCase):
                 "task_type": "delivery",
                 "frequency": 1,
                 "frequency_type": "Once",
-                "start_datetime": now,
+                "start_datetime": "2021-08-23T15:11:03.979209",
                 "days_of_week": [True, True, True, True, True, False, False],
             }
         )

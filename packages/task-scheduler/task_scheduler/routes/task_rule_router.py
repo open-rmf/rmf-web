@@ -28,17 +28,20 @@ async def get_task_rules(
     status_code=status.HTTP_201_CREATED,
     response_model=TaskRule_Pydantic,
 )
-async def create_scheduled_task(body: dict):
+async def create_task_rule(body: dict):
     try:
-        return await TaskRuleRepository.create(body)
+        obj = await TaskRuleRepository.create(body)
+        return await TaskRule_Pydantic.from_tortoise_orm(obj)
     except Exception as e:
         raise HTTPException(503, "Cannot create the task rule" + str(e)) from e
 
 
-@router.delete("/", tags=["delete_rule"], status_code=status.HTTP_204_NO_CONTENT)
-async def delete_scheduled_task(id: int):
+@router.delete(
+    "/{task_rule_id}", tags=["delete_rule"], status_code=status.HTTP_204_NO_CONTENT
+)
+async def delete_scheduled_task(task_rule_id: int):
     try:
-        await TaskRuleRepository.delete(id)
+        await TaskRuleRepository.delete(task_rule_id)
 
     except Exception as e:
         print(e)

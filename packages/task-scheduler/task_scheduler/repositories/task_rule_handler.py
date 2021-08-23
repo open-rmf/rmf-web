@@ -9,7 +9,7 @@ from task_scheduler.models.tortoise_models.helpers.task_rule_definition import (
 
 class TaskRuleRepository:
     @staticmethod
-    async def create(payload: Any) -> TaskRule:
+    async def create(payload: dict) -> TaskRule:
         """
         Create a scheduled task.
 
@@ -36,7 +36,7 @@ class TaskRuleRepository:
             raise Exception(
                 "If you want to schedule a task more than ONCE you should set an end_datetime"
             )
-
+        print(payload)
         return await TaskRule.create(
             description=payload.get("description"),
             task_type=payload.get("task_type"),
@@ -51,9 +51,9 @@ class TaskRuleRepository:
     @staticmethod
     async def get(offset: int, limit: int) -> List[TaskRule]:
         """
-        Get the list of scheduled tasks.
+        Get the list of task rules.
 
-        :return: list of scheduled tasks
+        :return: list of task rules
         """
         query = {}
 
@@ -64,8 +64,12 @@ class TaskRuleRepository:
     @staticmethod
     async def delete(id: int) -> None:
         """
-        Delete a scheduled task.
+        Delete a task rule .
 
         :return: None
         """
-        await TaskRule.filter(id=id).delete()
+        task_rule = await TaskRule.get(id=id)
+        if task_rule is None:
+            raise Exception("Task rule id not found: %s" % id)
+
+        await task_rule.get(id=id).delete()

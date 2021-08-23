@@ -36,7 +36,10 @@ class ScheduledTaskRepository:
 
         :return: None
         """
-        await ScheduledTask.filter(id=id).delete()
+        task = await ScheduledTask.get(id=id)
+        if task is None:
+            raise Exception("Task id not found: %s" % id)
+        await task.delete()
 
     @staticmethod
     async def create():

@@ -62,6 +62,10 @@ class TestCaseScheduledTasks(unittest.IsolatedAsyncioTestCase):
         await ScheduledTaskRepository.delete(tasks[1].id)
         self.assertEqual(len(await ScheduledTask.all()), 2)
 
+    async def test_fails_to_delete_inexistent_scheduled_task(self):
+        with self.assertRaises(Exception):
+            await ScheduledTaskRepository.delete(999)
+
     async def test_gets_scheduled_tasks(self):
         await ScheduledTask.create(
             task_rule=self.task_rule,

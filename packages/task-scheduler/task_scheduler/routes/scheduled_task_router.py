@@ -22,11 +22,13 @@ async def get_scheduled_task(
 
 # Will receive information from keycloak only
 @router.delete(
-    "/", tags=["delete_scheduled_task"], status_code=status.HTTP_204_NO_CONTENT
+    "/{scheduled_task_id}",
+    tags=["delete_scheduled_task"],
+    status_code=status.HTTP_204_NO_CONTENT,
 )
-async def delete_scheduled_task(id: int):
+async def delete_scheduled_task(scheduled_task_id: int):
     try:
-        await ScheduledTaskRepository.delete(id)
+        await ScheduledTaskRepository.delete(scheduled_task_id)
 
     except Exception as e:
         raise HTTPException(503, "Cannot delete the scheduled task" + str(e)) from e
