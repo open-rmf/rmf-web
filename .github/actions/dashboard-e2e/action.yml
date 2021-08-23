@@ -1,0 +1,19 @@
+name: Dashboard e2e
+description: Run dashboard e2e tests
+runs:
+  using: composite
+  steps:
+    - run: |
+        . /rmf_demos_ws/install/setup.bash
+        npm config set unsafe-perm
+        npm install -g lerna@4
+        lerna bootstrap --scope=rmf-dashboard-e2e
+        docker pull quay.io/keycloak/keycloak:12.0.4
+        npm test || npm test
+      env:
+        E2E_DOCKER_NETWORK: ${{job.container.network}}
+        REACT_APP_AUTH_PROVIDER: keycloak
+        # need to use the internal port because we are connecting from within the same network
+        REACT_APP_KEYCLOAK_CONFIG: '{ "realm": "master", "clientId": "rmf-dashboard", "url": "http://rmf-web_keycloak_1:8080/auth" }'
+      working-directory: packages/dashboard-e2e
+      shell: bash

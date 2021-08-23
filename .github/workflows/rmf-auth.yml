@@ -18,9 +18,10 @@ jobs:
         working-directory: packages/rmf-auth
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2
         with:
-          node-version: 14
+          node-version: '14'
+          cache: 'npm'
       - name: bootstrap
         run: |
           pip3 install pipenv
