@@ -30,13 +30,13 @@ jobs:
       - name: bootstrap
         run: |
           npm config set unsafe-perm
-          . /opt/rmf/setup.bash
+          . /rmf_demo_ws/install/setup.bash
           npm install -g lerna@4
           lerna bootstrap --scope=api-server
         working-directory: .
       - name: tests
         run: |
-          . /opt/rmf/setup.bash
+          . /rmf_demo_ws/install/setup.bash
           npm run lint
           npm run test:cov
           python3 -m pipenv run python -m coverage xml
