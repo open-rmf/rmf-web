@@ -62,23 +62,6 @@ export interface TrajectoryPathProps {
   animationLoop?: boolean;
 }
 
-export const NoAnimationPath = (props: TrajectoryPathProps): JSX.Element => {
-  const { trajectory, d, color, conflict, footprint } = props;
-  return (
-    <>
-      <path
-        d={d}
-        stroke={color}
-        opacity={0.8}
-        strokeWidth={conflict ? footprint * 0.8 : footprint}
-        strokeLinecap="round"
-        fill={'none'}
-      />
-      {conflict ? <ConflictPath d={d} trajectory={trajectory} footprint={footprint} /> : null}
-    </>
-  );
-};
-
 export const FollowAnimationPath = (props: TrajectoryPathProps): JSX.Element => {
   const {
     trajectory,
@@ -127,71 +110,6 @@ export const FollowAnimationPath = (props: TrajectoryPathProps): JSX.Element => 
       pathAnim.getAnimations().forEach((anim) => anim.cancel());
     };
   }, [animationScale, animationLoop, trajectory]);
-
-  return (
-    <>
-      <path
-        d={d}
-        stroke={color}
-        opacity={0.4}
-        strokeWidth={conflict ? footprint * 0.8 : footprint}
-        strokeLinecap="round"
-        fill={'none'}
-      />
-      <path
-        ref={pathRef}
-        d={d}
-        stroke={color}
-        opacity={0.8}
-        strokeWidth={conflict ? footprint * 0.8 : footprint}
-        strokeLinecap="round"
-        fill={'none'}
-        pathLength={1}
-        strokeDasharray={2}
-        strokeDashoffset={2}
-      />
-      {conflict ? <ConflictPath d={d} trajectory={trajectory} footprint={footprint} /> : null}
-    </>
-  );
-};
-
-export const FillAnimationPath = (props: TrajectoryPathProps): JSX.Element => {
-  const {
-    trajectory,
-    d,
-    color,
-    conflict,
-    footprint,
-    animationScale = 1,
-    animationLoop = false,
-  } = props;
-  const pathRef = React.useRef<SVGPathElement>(null);
-
-  React.useLayoutEffect(() => {
-    if (!pathRef.current) {
-      return;
-    }
-
-    const offsets = keyframeOffsets(trajectory);
-    const pathAnim = pathRef.current;
-
-    pathAnim.animate(
-      offsets.map((offset) => ({
-        offset: offset,
-        strokeDashoffset: 2 - offset,
-      })),
-      {
-        duration: animationDuration(trajectory, animationScale),
-        easing: 'linear',
-        fill: 'forwards',
-        iterations: animationLoop ? Infinity : 1,
-      },
-    );
-
-    return () => {
-      pathAnim.getAnimations().forEach((anim) => anim.cancel());
-    };
-  }, [trajectory, animationScale, animationLoop]);
 
   return (
     <>
