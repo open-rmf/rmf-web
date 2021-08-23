@@ -1,6 +1,6 @@
 # Description
 
-This package is responsible for generating pre-scheduled tasks. This module exposes REST endpoints for creating and managing pre-scheduled tasks. The idea is that the API-server (or rmf-server) serves as a bridge between this module and the UI. This module should also be connected to the RMF task manager to send the task in a specific time.
+This package is responsible for generating pre-scheduled tasks. This module exposes REST endpoints for creating and managing pre-scheduled tasks. The idea is that the API-server (or rmf-server) serves as a bridge between this module and the UI. This module should also be connected to the RMF task manager to send the task at a specific time.
 
 Among the supported schedule are:
 

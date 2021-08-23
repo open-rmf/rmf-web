@@ -36,7 +36,6 @@ class TaskRuleRepository:
             raise Exception(
                 "If you want to schedule a task more than ONCE you should set an end_datetime"
             )
-        print(payload)
         return await TaskRule.create(
             description=payload.get("description"),
             task_type=payload.get("task_type"),

@@ -41,7 +41,6 @@ class DayOfWeekService:
             "saturday",
             "sunday",
         )
-        print(available_days[0])
         return [value for key, value in available_days[0].items()]
 
 
