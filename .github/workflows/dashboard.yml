@@ -33,13 +33,13 @@ jobs:
           cache: 'npm'
       - name: bootstrap
         run: |
-          . /opt/rmf/setup.bash
+          . /rmf_demos_ws/install/setup.bash
           npm config set unsafe-perm
           npm install -g lerna@4
           lerna bootstrap --scope=rmf-dashboard
         working-directory: .
       - name: unit test
-        run: . /opt/rmf/setup.bash && npm run test:coverage
+        run: . /rmf_demos_ws/install/setup.bash && npm run test:coverage
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
