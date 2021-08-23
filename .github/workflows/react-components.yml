@@ -22,6 +22,10 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
+          cache: 'npm'
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
       - name: bootstrap
         run: |
           pip3 install pipenv
