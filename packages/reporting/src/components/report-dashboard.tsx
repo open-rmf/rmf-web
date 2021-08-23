@@ -12,7 +12,6 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 import { ExpandableMultilevelMenuProps, MultiLevelMenu } from 'react-components';
 import { Menu, MenuItem } from '@material-ui/core';
 import { AuthenticatorContext } from './auth-contexts';
@@ -106,14 +105,14 @@ export const ReportDashboard = (props: ReportDashboardProps) => {
   const [currentReport, setCurrentReport] = React.useState(Reports.queryAllLogs);
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
 
-  const [fromLogDate, setFromLogDate] = React.useState<MaterialUiPickersDate>(new Date());
-  const [toLogDate, setToLogDate] = React.useState<MaterialUiPickersDate>(new Date());
+  const [fromLogDate, setFromLogDate] = React.useState<Date>(new Date());
+  const [toLogDate, setToLogDate] = React.useState<Date>(new Date());
 
-  const handleFromLogDateChange = React.useCallback((date: MaterialUiPickersDate) => {
+  const handleFromLogDateChange = React.useCallback((date: any) => {
     setFromLogDate(date);
   }, []);
 
-  const handleToLogDateChange = React.useCallback((date: MaterialUiPickersDate) => {
+  const handleToLogDateChange = React.useCallback((date: any) => {
     setToLogDate(date);
   }, []);
 

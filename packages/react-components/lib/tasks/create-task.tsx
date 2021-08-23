@@ -492,6 +492,7 @@ export function CreateTaskForm({
         fullWidth={tasks.length > 1}
         toolbar={<FormToolbar onSelectFileClick={handleSelectFileClick} />}
         onSubmit={handleSubmit}
+        disableEnforceFocus
         {...otherProps}
       >
         <Grid container direction="row" wrap="nowrap">
