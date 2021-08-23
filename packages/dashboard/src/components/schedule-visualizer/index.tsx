@@ -23,7 +23,7 @@ import RobotsOverlay, { RobotsOverlayProps } from './robots-overlay';
 import TrajectoryTimeControl from './trajectory-time-control';
 import WaypointsOverlay from './waypoints-overlay';
 
-const debug = Debug('ScheduleVisualizer');
+const debug = Debug('ScheduleVisualizer:TrajectoryTimeControl');
 const TrajectoryUpdateInterval = 2000;
 // schedule visualizer manages it's own settings so that it doesn't cause a re-render
 // of the whole app when it changes.
@@ -149,12 +149,10 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   const [
     scheduleVisualizerSettings,
     setScheduleVisualizerSettings,
-  ] = React.useState<ScheduleVisualizerSettings>(
-    () =>
-      window.localStorage[SettingsKey] || {
-        trajectoryTime: 60000, // 1 min
-      },
-  );
+  ] = React.useState<ScheduleVisualizerSettings>(() => {
+    const settings = window.localStorage.getItem(SettingsKey);
+    return settings ? JSON.parse(settings) : { trajectoryTime: 60000 /* 1 min */ };
+  });
   const trajectoryTime = scheduleVisualizerSettings.trajectoryTime;
   const trajectoryAnimScale = trajectoryTime / (0.9 * TrajectoryUpdateInterval);
 
@@ -441,13 +439,13 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
         value={trajectoryTime}
         min={60000}
         max={600000}
-        onChange={(_ev, newValue) => {
+        onChange={(_ev, newValue) =>
           setScheduleVisualizerSettings((prev) => {
             const newSettings = { ...prev, trajectoryTime: newValue };
-            window.localStorage[SettingsKey] = newSettings;
+            window.localStorage.setItem(SettingsKey, JSON.stringify(newSettings));
             return newSettings;
-          });
-        }}
+          })
+        }
       />
       {children}
     </LMap>
