@@ -25,14 +25,12 @@ jobs:
       - uses: actions/checkout@v2
       - name: bootstrap
         run: |
-          . /opt/rmf/setup.bash
           npm config set unsafe-perm
           npm install -g lerna@4
           lerna bootstrap --scope=task-scheduler
         working-directory: .
       - name: tests
         run: |
-          . /opt/rmf/setup.bash
           npm run lint
           npm run test:cov
           python3 -m pipenv run python -m coverage xml
