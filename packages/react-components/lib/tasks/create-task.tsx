@@ -514,6 +514,7 @@ export function CreateTaskForm({
             <Grid container wrap="nowrap">
               <Grid style={{ flexGrow: 1 }}>
                 <DateTimePicker
+                  inputFormat={'MM/dd/yyyy HH:mm'}
                   value={new Date(task.start_time * 1000)}
                   onChange={(date) => {
                     if (!date) {
