@@ -1,0 +1,4 @@
+/dist/
+lcov.info
+coverage-final.json
+node_modules
