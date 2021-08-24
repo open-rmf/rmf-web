@@ -10,10 +10,10 @@ import {
 } from '@material-ui/core';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import HelpIcon from '@material-ui/icons/Help';
-import SettingsIcon from '@material-ui/icons/Settings';
 import React from 'react';
 import { HeaderBar, LogoButton, NavigationBar, Tooltip, useAsync } from 'react-components';
 import { useHistory, useLocation } from 'react-router-dom';
+import { UserProfileContext } from 'rmf-auth';
 import { AdminRoute, DashboardRoute, RobotsRoute, TasksRoute } from '../util/url';
 import {
   AppConfigContext,
@@ -21,7 +21,6 @@ import {
   ResourcesContext,
   TooltipsContext,
 } from './app-contexts';
-import { UserContext } from './auth/contexts';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -61,9 +60,7 @@ export interface AppBarProps {
 
 export const AppBar = React.memo(
   (): React.ReactElement => {
-    const { showHelp: setShowHelp, showSettings: setShowSettings } = React.useContext(
-      AppControllerContext,
-    );
+    const { showHelp: setShowHelp } = React.useContext(AppControllerContext);
     const history = useHistory();
     const location = useLocation();
     const tabValue = React.useMemo(() => locationToTabValue(location.pathname), [location]);
@@ -71,7 +68,7 @@ export const AppBar = React.memo(
     const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
     const classes = useStyles();
     const { authenticator } = React.useContext(AppConfigContext);
-    const user = React.useContext(UserContext);
+    const profile = React.useContext(UserProfileContext);
     const { showTooltips } = React.useContext(TooltipsContext);
     const safeAsync = useAsync();
     const [brandingIconPath, setBrandingIconPath] = React.useState<string>('');
@@ -113,7 +110,7 @@ export const AppBar = React.memo(
             aria-label="Tasks"
             onClick={() => history.push(TasksRoute)}
           />
-          {user?.profile.is_admin && (
+          {profile?.user.is_admin && (
             <Tab
               label="Admin"
               value="admin"
@@ -124,21 +121,7 @@ export const AppBar = React.memo(
         </NavigationBar>
         <Toolbar variant="dense" className={classes.toolbar}>
           <Typography variant="caption">Powered by OpenRMF</Typography>
-          <Tooltip
-            title="Define dashboard trajectory settings"
-            id="setting-tooltip"
-            enabled={showTooltips}
-          >
-            <IconButton
-              id="show-settings-btn"
-              aria-label="settings"
-              color="inherit"
-              onClick={() => setShowSettings(true)}
-            >
-              <SettingsIcon />
-            </IconButton>
-          </Tooltip>
-          {user && (
+          {profile && (
             <>
               <IconButton
                 id="user-btn"

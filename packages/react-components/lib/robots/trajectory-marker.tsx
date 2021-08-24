@@ -1,7 +1,7 @@
 import Debug from 'debug';
 import React from 'react';
 import { Trajectory, trajectoryPath } from './trajectory';
-import { FillAnimationPath, FollowAnimationPath, NoAnimationPath } from './trajectory-paths';
+import { FollowAnimationPath } from './trajectory-paths';
 
 const debug = Debug('Robots:TrajectoryMarker');
 
@@ -11,10 +11,6 @@ export interface TrajectoryMarkerProps {
   trajectory: Trajectory;
   conflict: boolean;
   color: string;
-  /**
-   * default: follow
-   */
-  variant?: 'follow' | 'fill' | 'plain';
   /**
    * default: false
    */
@@ -31,7 +27,6 @@ export const TrajectoryMarker = React.forwardRef(
       trajectory,
       conflict,
       color,
-      variant = 'follow',
       animationLoop = false,
       animationScale = 1,
       ...otherProps
@@ -43,22 +38,9 @@ export const TrajectoryMarker = React.forwardRef(
       return trajectoryPath(trajectory.segments).d;
     }, [trajectory]);
 
-    const PathComponent = React.useMemo(() => {
-      switch (variant) {
-        case 'plain':
-          return NoAnimationPath;
-        case 'follow':
-          return FollowAnimationPath;
-        case 'fill':
-          return FillAnimationPath;
-        default:
-          return NoAnimationPath;
-      }
-    }, [variant]);
-
     return (
       <g ref={ref} {...otherProps}>
-        <PathComponent
+        <FollowAnimationPath
           trajectory={trajectory}
           d={pathD}
           color={color}

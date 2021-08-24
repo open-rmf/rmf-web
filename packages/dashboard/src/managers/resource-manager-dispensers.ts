@@ -1,3 +1,7 @@
+import Debug from 'debug';
+
+const debug = Debug('ResourceManager');
+
 interface Location {
   x: number;
   y: number;
@@ -23,9 +27,11 @@ export class DispenserResourceManager {
 
   getIconPath = async (dispenserName: string): Promise<string | null> => {
     if (!this.dispenserExists(dispenserName)) {
+      debug(`failed to load icon for "${dispenserName}" (dispenser does not exist in resources)`);
       return null;
     }
     if (!this.dispensers[dispenserName].hasOwnProperty('icons')) {
+      debug(`failed to load icon for "${dispenserName}" (dispenser does not have an icon)`);
       return null;
     }
     const dispenserIcon = this.dispensers[dispenserName].icons[dispenserName];
@@ -34,6 +40,7 @@ export class DispenserResourceManager {
       return (await import(/* webpackMode: "eager" */ `../assets/resources${dispenserIcon}`))
         .default;
     } catch {
+      debug(`failed to load icon for "${dispenserName}" (failed to load icon module)`);
       return null;
     }
   };

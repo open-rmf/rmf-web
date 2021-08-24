@@ -1,5 +1,9 @@
 import * as RmfModels from 'rmf-models';
-import { Place } from './place';
+
+export interface Place {
+  level: string;
+  vertex: RmfModels.GraphNode;
+}
 
 export function getPlaces(buildingMap: RmfModels.BuildingMap): Place[] {
   const places: Place[] = [];

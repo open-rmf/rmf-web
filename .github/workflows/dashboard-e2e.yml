@@ -1,4 +1,4 @@
-name: Reporting End-to-End
+name: Dashboard End-to-End
 on:
   pull_request:
   push:
@@ -7,8 +7,8 @@ on:
 env:
   CI: true
 jobs:
-  reporting-e2e:
-    name: Reporting e2e
+  dashboard-e2e:
+    name: Dashboard e2e
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/${{ github.repository }}/e2e
@@ -19,7 +19,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: packages/reporting-e2e
+        working-directory: packages/dashboard-e2e
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -27,10 +27,10 @@ jobs:
           node-version: '14'
           cache: 'npm'
       - name: test
-        uses: ./.github/actions/reporting-e2e
+        uses: ./.github/actions/dashboard-e2e
       - name: upload artifacts
         uses: actions/upload-artifact@v2
         if: always()
         with:
           name: artifacts
-          path: packages/reporting-e2e/artifacts
+          path: packages/dashboard-e2e/artifacts

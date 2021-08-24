@@ -1,3 +1,21 @@
+/* istanbul ignore file */
+
+export function radiansToDegrees(radians: number): number {
+  return radians * (180 / Math.PI);
+}
+
+/**
+ * Transform coords on the middle of a SVG's Rect to top left coords.
+ */
+export const transformMiddleCoordsOfRectToSVGBeginPoint = (
+  x: number,
+  y: number,
+  width: number,
+  depth: number,
+): [x: number, y: number] => {
+  return [x - width / 2, y + depth / 2];
+};
+
 export interface Pose2D {
   x: number;
   y: number;
@@ -65,7 +83,11 @@ export function segmentToCoefficientSet(segment: Segment): CoefficientSet {
   };
 }
 
-export function assignKnotsToSegment(knot: Knot, nextKnot: Knot, forCoordinate: keyof Pose2D) {
+export function assignKnotsToSegment(
+  knot: Knot,
+  nextKnot: Knot,
+  forCoordinate: keyof Pose2D,
+): Segment {
   return {
     initialPose: knot.pose[forCoordinate],
     finalPose: nextKnot.pose[forCoordinate],
@@ -97,7 +119,7 @@ export function knotsToSegmentCoefficientsArray(knots: Knot[]): SegmentCoefficie
   return scs;
 }
 
-export function getInterpolatedTime(initialTime: number, finalTime: number, time: number) {
+export function getInterpolatedTime(initialTime: number, finalTime: number, time: number): number {
   return (time - initialTime) / (finalTime - initialTime);
 }
 
@@ -157,7 +179,9 @@ function bezierHelper(coeffs: CoefficientSet): [number, number, number, number] 
   return [p0, p1, p2, p3];
 }
 
-export function bezierControlPoints(segmentCoefficients: SegmentCoefficients) {
+export function bezierControlPoints(
+  segmentCoefficients: SegmentCoefficients,
+): [x: number, y: number][] {
   const px = bezierHelper(segmentCoefficients.x);
   const py = bezierHelper(segmentCoefficients.y);
   return px.map((x, i) => [x, py[i]]);

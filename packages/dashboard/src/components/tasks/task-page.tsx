@@ -1,11 +1,10 @@
 /* istanbul ignore file */
 
 import { makeStyles } from '@material-ui/core';
-import type { Task } from 'api-client';
+import type { Task, TaskSummary } from 'api-client';
 import type { AxiosError } from 'axios';
 import React from 'react';
 import { PlacesContext, RmfIngressContext } from '../rmf-app';
-import { useAutoRefresh } from './auto-refresh';
 import { TaskPanel, TaskPanelProps } from './task-panel';
 
 const useStyles = makeStyles((theme) => ({
@@ -20,11 +19,17 @@ const useStyles = makeStyles((theme) => ({
 export function TaskPage() {
   const classes = useStyles();
   const { tasksApi, sioClient } = React.useContext(RmfIngressContext) || {};
-  const [autoRefreshState, autoRefreshDispatcher] = useAutoRefresh(sioClient);
+  const [fetchedTasks, setFetchedTasks] = React.useState<Task[]>([]);
+  const [updatedSummaries, setUpdatedSummaries] = React.useState<Record<string, TaskSummary>>({});
+  const [autoRefreshEnabled, setAutoRefreshEnabled] = React.useState(true);
   const [page, setPage] = React.useState(0);
   const [hasMore, setHasMore] = React.useState(true);
   const places = React.useContext(PlacesContext);
   const placeNames = places.map((p) => p.vertex.name);
+  const tasks = React.useMemo(
+    () => fetchedTasks.map((t) => ({ ...t, summary: updatedSummaries[t.task_id] || t.summary })),
+    [fetchedTasks, updatedSummaries],
+  );
 
   const fetchTasks = React.useCallback(
     async (page: number) => {
@@ -45,16 +50,31 @@ export function TaskPage() {
         page * 10,
         '-priority,-start_time',
       );
-      const tasks = resp.data as Task[];
-      setHasMore(tasks.length > 10);
-      return tasks.slice(0, 10);
+      const results = resp.data as Task[];
+      setHasMore(results.length > 10);
+      setFetchedTasks(results.slice(0, 10));
     },
     [tasksApi],
   );
 
+  React.useEffect(() => {
+    if (!autoRefreshEnabled || !sioClient) return;
+    const subs = fetchedTasks.map((t) =>
+      sioClient.subscribeTaskSummary(t.task_id, (newSummary) =>
+        setUpdatedSummaries((prev) => ({
+          ...prev,
+          [newSummary.task_id]: newSummary,
+        })),
+      ),
+    );
+    return () => {
+      subs.forEach((s) => sioClient.unsubscribe(s));
+    };
+  }, [autoRefreshEnabled, sioClient, fetchedTasks]);
+
   const handleRefresh = React.useCallback<Required<TaskPanelProps>['onRefresh']>(async () => {
-    autoRefreshDispatcher.setTasks(await fetchTasks(page));
-  }, [fetchTasks, page, autoRefreshDispatcher]);
+    fetchTasks(page);
+  }, [fetchTasks, page]);
 
   React.useEffect(() => {
     handleRefresh();
@@ -94,10 +114,10 @@ export function TaskPage() {
   return (
     <TaskPanel
       className={classes.taskPanel}
-      tasks={autoRefreshState.tasks}
+      tasks={tasks}
       paginationOptions={{
         page,
-        count: hasMore ? -1 : page * 10 + autoRefreshState.tasks.length,
+        count: hasMore ? -1 : page * 10 + tasks.length,
         rowsPerPage: 10,
         rowsPerPageOptions: [10],
         onChangePage: (_ev, newPage) => setPage(newPage),
@@ -108,7 +128,7 @@ export function TaskPage() {
       submitTasks={submitTasks}
       cancelTask={cancelTask}
       onRefresh={handleRefresh}
-      onAutoRefresh={autoRefreshDispatcher.setEnabled}
+      onAutoRefresh={setAutoRefreshEnabled}
     />
   );
 }

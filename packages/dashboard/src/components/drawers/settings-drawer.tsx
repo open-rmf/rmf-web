@@ -1,21 +1,15 @@
 import {
-  IconButton,
-  Divider,
   Drawer,
   DrawerProps,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  makeStyles,
-  Radio,
-  RadioGroup,
-  useMediaQuery,
-  Typography,
   Grid,
+  IconButton,
+  makeStyles,
+  Typography,
+  useMediaQuery,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import React from 'react';
-import { Settings, TrajectoryAnimation } from '../../settings';
+import { Settings } from '../../settings';
 
 export interface SettingsDrawerProps extends DrawerProps {
   settings: Readonly<Settings>;
@@ -23,26 +17,16 @@ export interface SettingsDrawerProps extends DrawerProps {
   handleCloseButton: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+// Drawer is empty because there is no settings.
 export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactElement {
   const classes = useStyles();
   const { settings, onSettingsChange, handleCloseButton, ...otherProps } = props;
-  const { trajectoryAnimation } = settings;
-
-  const trajAnimsText = React.useMemo(
-    () => Object.keys(TrajectoryAnimation).slice(Object.keys(TrajectoryAnimation).length * 0.5),
-    [],
-  );
 
   const drawerAnchor = useMediaQuery('(max-aspect-ratio: 8/10') ? 'bottom' : 'right';
 
   const modalProp = {
     disableEnforceFocus: true,
   };
-
-  function handleTrajectoryAnimationChange(ev: React.ChangeEvent<HTMLInputElement>): void {
-    const newSettings: Settings = { ...settings, trajectoryAnimation: Number(ev.target.value) };
-    onSettingsChange && onSettingsChange(newSettings);
-  }
 
   return (
     <Drawer
@@ -66,29 +50,6 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
           </IconButton>
         </Grid>
       </Grid>
-      <FormControl component="fieldset">
-        <FormLabel component="legend" className={classes.legendLabel}>
-          Trajectory Animation
-        </FormLabel>
-        <Divider />
-        <RadioGroup
-          className={classes.trajGroup}
-          value={trajectoryAnimation}
-          onChange={handleTrajectoryAnimationChange}
-        >
-          {trajAnimsText.map((text, i) => (
-            <FormControlLabel
-              key={i}
-              className={classes.flexBasis}
-              value={i}
-              control={<Radio />}
-              label={text}
-              name={text}
-            />
-          ))}
-        </RadioGroup>
-        <Divider />
-      </FormControl>
     </Drawer>
   );
 }
