@@ -1,9 +1,9 @@
 import { render } from '@testing-library/react';
 import React from 'react';
-import { User, UserContext } from '../auth/contexts';
+import { UserProfile, UserProfileContext } from 'rmf-auth';
 
-export const superUser: User = {
-  profile: {
+export const superUser: UserProfile = {
+  user: {
     username: 'test',
     is_admin: true,
     roles: [],
@@ -11,6 +11,8 @@ export const superUser: User = {
   permissions: [],
 };
 
-export function mountAsUser(user: User, component: React.ReactElement) {
-  return render(<UserContext.Provider value={user}>{component}</UserContext.Provider>);
+export function mountAsUser(profile: UserProfile, component: React.ReactElement) {
+  return render(
+    <UserProfileContext.Provider value={profile}>{component}</UserProfileContext.Provider>,
+  );
 }

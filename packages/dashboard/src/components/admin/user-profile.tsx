@@ -10,10 +10,10 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import AccountIcon from '@material-ui/icons/AccountCircle';
 import MoreIcon from '@material-ui/icons/MoreVert';
+import { User } from 'api-client';
 import React from 'react';
 import { useAsync } from 'react-components';
 import { AppControllerContext } from '../app-contexts';
-import { UserProfile } from '../auth';
 
 const useStyles = makeStyles((theme) => ({
   avatar: {
@@ -23,11 +23,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export interface UserProfileCardProps {
-  profile: UserProfile;
+  user: User;
   makeAdmin?: (admin: boolean) => Promise<void> | void;
 }
 
-export function UserProfileCard({ profile, makeAdmin }: UserProfileCardProps): JSX.Element {
+export function UserProfileCard({ user, makeAdmin }: UserProfileCardProps): JSX.Element {
   const classes = useStyles();
   const safeAsync = useAsync();
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
@@ -37,9 +37,9 @@ export function UserProfileCard({ profile, makeAdmin }: UserProfileCardProps): J
   return (
     <Card variant="outlined">
       <CardHeader
-        title={profile.username}
+        title={user.username}
         titleTypographyProps={{ variant: 'h5' }}
-        subheader={profile.is_admin ? 'Admin' : 'User'}
+        subheader={user.is_admin ? 'Admin' : 'User'}
         avatar={<AccountIcon className={classes.avatar} />}
         action={
           <IconButton onClick={(ev) => setAnchorEl(ev.currentTarget)} aria-label="more actions">
@@ -52,7 +52,7 @@ export function UserProfileCard({ profile, makeAdmin }: UserProfileCardProps): J
           onClick={async () => {
             setDisableAdminCheckbox(true);
             try {
-              makeAdmin && (await safeAsync(makeAdmin(!profile.is_admin)));
+              makeAdmin && (await safeAsync(makeAdmin(!user.is_admin)));
             } catch (e) {
               showErrorAlert(`Failed to change admin status: ${e.message}`);
             } finally {
@@ -61,7 +61,7 @@ export function UserProfileCard({ profile, makeAdmin }: UserProfileCardProps): J
           }}
         >
           <FormControlLabel
-            control={<Checkbox checked={profile.is_admin} disabled={disableAdminCheckbox} />}
+            control={<Checkbox checked={user.is_admin} disabled={disableAdminCheckbox} />}
             label="Admin"
           />
         </MenuItem>

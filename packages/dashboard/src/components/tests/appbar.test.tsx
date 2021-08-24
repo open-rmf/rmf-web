@@ -4,6 +4,7 @@ import { act } from '@testing-library/react-hooks';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { MemoryRouter } from 'react-router';
+import { StubAuthenticator, UserProfile, UserProfileContext } from 'rmf-auth';
 import { AppConfig } from '../../app-config';
 import ResourceManager from '../../managers/resource-manager';
 import { LogoResourceManager } from '../../managers/resource-manager-logos';
@@ -15,8 +16,6 @@ import {
   ResourcesContext,
 } from '../app-contexts';
 import AppBar from '../appbar';
-import { User, UserContext } from '../auth/contexts';
-import FakeAuthenticator from '../auth/__mocks__/fake-authenticator';
 import { theme } from '../theme';
 import { makeMockAppController } from './mock-app-controller';
 import { mountAsUser } from './test-utils';
@@ -48,21 +47,6 @@ describe('AppBar', () => {
     expect(root.getAllByRole('tablist').length > 0).toBeTruthy();
   });
 
-  test('show settings when settings button is clicked', () => {
-    const root = render(
-      <Base>
-        <AppBar />
-      </Base>,
-    );
-    act(() => {
-      const elements = root.getAllByTestId('setting-tooltip-tooltip');
-      for (let element in elements) {
-        userEvent.click(elements[element]);
-      }
-    });
-    expect(appController.showSettings).toBeCalledTimes(1);
-  });
-
   test('shows help when help button is clicked', () => {
     const root = render(
       <Base>
@@ -86,18 +70,15 @@ describe('AppBar', () => {
     );
     userEvent.hover(root.getByTestId('help-tooltip-tooltip'));
     expect(await root.findByText('Help tools and resources')).toBeTruthy();
-
-    userEvent.hover(root.getByTestId('setting-tooltip-tooltip'));
-    expect(await root.findByText('Define dashboard trajectory settings')).toBeTruthy();
   });
 
   test('user button is shown when there is an authenticated user', () => {
-    const user: User = {
-      profile: { username: 'test', is_admin: false, roles: [] },
+    const profile: UserProfile = {
+      user: { username: 'test', is_admin: false, roles: [] },
       permissions: [],
     };
     const root = mountAsUser(
-      user,
+      profile,
       <Base>
         <AppBar />
       </Base>,
@@ -106,7 +87,7 @@ describe('AppBar', () => {
   });
 
   test('logout is triggered when logout button is clicked', () => {
-    const authenticator = new FakeAuthenticator('test');
+    const authenticator = new StubAuthenticator('test');
     const appConfig: AppConfig = {
       authenticator,
       appResourcesFactory: jest.fn(),
@@ -114,16 +95,16 @@ describe('AppBar', () => {
       trajServerUrl: '',
     };
     const spy = jest.spyOn(authenticator, 'logout').mockImplementation(() => undefined as any);
-    const user: User = {
-      profile: { username: 'test', is_admin: false, roles: [] },
+    const profile: UserProfile = {
+      user: { username: 'test', is_admin: false, roles: [] },
       permissions: [],
     };
     const root = render(
       <AppConfigContext.Provider value={appConfig}>
         <Base>
-          <UserContext.Provider value={user}>
+          <UserProfileContext.Provider value={profile}>
             <AppBar />
-          </UserContext.Provider>
+          </UserProfileContext.Provider>
         </Base>
       </AppConfigContext.Provider>,
     );

@@ -19,9 +19,14 @@ import LiftsOverlay from './lift-overlay';
 import { NegotiationColors } from './negotiation-colors';
 import RobotTrajectoriesOverlay from './robot-trajectories-overlay';
 import RobotsOverlay, { RobotsOverlayProps } from './robots-overlay';
+import TrajectoryTimeControl from './trajectory-time-control';
 import WaypointsOverlay from './waypoints-overlay';
 
-const debug = Debug('ScheduleVisualizer');
+const debug = Debug('ScheduleVisualizer:TrajectoryTimeControl');
+const TrajectoryUpdateInterval = 2000;
+// schedule visualizer manages it's own settings so that it doesn't cause a re-render
+// of the whole app when it changes.
+const SettingsKey = 'scheduleVisualizerSettings';
 
 const useStyles = makeStyles(() => ({
   map: {
@@ -61,6 +66,10 @@ export function calcMaxBounds(
   const bounds = new L.LatLngBounds([0, 0], [0, 0]);
   Object.values(mapFloorLayers).forEach((x) => bounds.extend(x.bounds));
   return bounds.pad(0.2);
+}
+
+interface ScheduleVisualizerSettings {
+  trajectoryTime: number;
 }
 
 export default function ScheduleVisualizer(props: ScheduleVisualizerProps): React.ReactElement {
@@ -133,8 +142,15 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     [fleets],
   );
 
-  const trajLookahead = 60000; // 1 min
-  const trajAnimDuration = 2000;
+  const [
+    scheduleVisualizerSettings,
+    setScheduleVisualizerSettings,
+  ] = React.useState<ScheduleVisualizerSettings>(() => {
+    const settings = window.localStorage.getItem(SettingsKey);
+    return settings ? JSON.parse(settings) : { trajectoryTime: 60000 /* 1 min */ };
+  });
+  const trajectoryTime = scheduleVisualizerSettings.trajectoryTime;
+  const trajectoryAnimScale = trajectoryTime / (0.9 * TrajectoryUpdateInterval);
 
   React.useEffect(() => {
     // We need the image to be loaded to know the bounds, but the image cannot be loaded without a
@@ -208,7 +224,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
         request: 'trajectory',
         param: {
           map_name: curMapFloorLayer.level.name,
-          duration: trajLookahead,
+          duration: trajectoryTime,
           trim: true,
         },
       });
@@ -225,7 +241,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
     };
 
     updateTrajectory();
-    interval = window.setInterval(updateTrajectory, trajAnimDuration);
+    interval = window.setInterval(updateTrajectory, TrajectoryUpdateInterval);
     debug(`created trajectory update interval ${interval}`);
 
     return () => {
@@ -233,7 +249,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       clearInterval(interval);
       debug(`cleared interval ${interval}`);
     };
-  }, [trajManager, curMapFloorLayer, trajAnimDuration, showTrajectories]);
+  }, [trajManager, curMapFloorLayer, trajectoryTime, showTrajectories]);
 
   function handleBaseLayerChange(e: L.LayersControlEvent): void {
     debug('set current level name');
@@ -333,6 +349,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
                 robots={robots}
                 trajectories={curMapTrajectories}
                 conflicts={curMapConflicts}
+                animationScale={trajectoryAnimScale}
               />
             </Pane>
           )}
@@ -346,6 +363,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
                 robots={robots}
                 trajectories={negoTrajs}
                 conflicts={getConflicts(curLevelName)}
+                animationScale={trajectoryAnimScale}
               />
             </ColorContext.Provider>
           </Pane>
@@ -411,6 +429,19 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
           )}
         </LayersControl.Overlay>
       </LayersControl>
+      <TrajectoryTimeControl
+        position="topleft"
+        value={trajectoryTime}
+        min={60000}
+        max={600000}
+        onChange={(_ev, newValue) =>
+          setScheduleVisualizerSettings((prev) => {
+            const newSettings = { ...prev, trajectoryTime: newValue };
+            window.localStorage.setItem(SettingsKey, JSON.stringify(newSettings));
+            return newSettings;
+          })
+        }
+      />
       {children}
     </LMap>
   );
