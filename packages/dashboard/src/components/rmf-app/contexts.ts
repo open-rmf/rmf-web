@@ -1,8 +1,8 @@
 import { Dispenser, Fleet, Ingestor } from 'api-client';
 import React from 'react';
+import { Place } from 'react-components';
 import * as RmfModels from 'rmf-models';
 import { HealthStatus } from '../../managers/rmf-health-state-manager';
-import { Place } from './place';
 import { RmfIngress } from './rmf-ingress';
 
 export const BuildingMapContext = React.createContext<RmfModels.BuildingMap | null>(null);
