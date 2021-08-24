@@ -4,7 +4,25 @@ import { LiftMarker as LiftMarker_, LiftMarkerProps, useLiftMarkerStyles } from 
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 import { viewBoxFromLeafletBounds } from './utils';
 
-const LiftMarker = React.memo(LiftMarker_);
+interface BoundedMarkerProps extends Omit<LiftMarkerProps, 'onClick'> {
+  onClick?: (ev: React.MouseEvent, lift: string) => void;
+}
+
+/**
+ * Bind a marker to include the lift name in the click event.
+ * This is needed to avoid re-rendering all markers when only one of them changes.
+ */
+function bindMarker(MarkerComponent: React.ComponentType<LiftMarkerProps>) {
+  return ({ onClick, ...otherProps }: BoundedMarkerProps) => {
+    const handleClick = React.useCallback((ev) => onClick && onClick(ev, otherProps.lift.name), [
+      onClick,
+      otherProps.lift.name,
+    ]);
+    return <MarkerComponent onClick={handleClick} {...otherProps} />;
+  };
+}
+
+const LiftMarker = React.memo(bindMarker(LiftMarker_));
 
 export const getLiftModeVariant = (
   currentLevel: string,
@@ -31,7 +49,7 @@ export interface LiftsOverlayProps extends SVGOverlayProps {
   currentLevel: string;
   lifts: RmfModels.Lift[];
   liftStates?: Record<string, RmfModels.LiftState>;
-  onLiftClick?(lift: RmfModels.Lift): void;
+  onLiftClick?: (ev: React.MouseEvent, lift: string) => void;
 }
 
 export const LiftsOverlay = ({
@@ -44,11 +62,6 @@ export const LiftsOverlay = ({
 }: LiftsOverlayProps): JSX.Element => {
   const viewBox = viewBoxFromLeafletBounds(bounds);
 
-  const handleLiftClick = React.useCallback<Required<LiftMarkerProps>['onClick']>(
-    (_, lift) => onLiftClick && onLiftClick(lift),
-    [onLiftClick],
-  );
-
   return (
     <SVGOverlay bounds={bounds} {...otherProps}>
       <svg viewBox={viewBox}>
@@ -57,7 +70,7 @@ export const LiftsOverlay = ({
             key={lift.name}
             id={`Lift-${lift.name}`}
             lift={lift}
-            onClick={handleLiftClick}
+            onClick={onLiftClick}
             liftState={liftStates && liftStates[lift.name]}
             variant={getLiftModeVariant(
               currentLevel,

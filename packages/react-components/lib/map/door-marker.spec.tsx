@@ -4,42 +4,44 @@ import React from 'react';
 import { allDoorModes, allDoorTypes, makeDoor } from '../doors/test-utils.spec';
 import { DoorMarker } from './door-marker';
 
-it('smoke test with different door modes', () => {
-  allDoorModes().forEach((mode) => {
-    render(
-      <svg>
-        <DoorMarker door={makeDoor()} doorMode={mode.value} />
-      </svg>,
-    );
-    cleanup();
-  });
-});
-
-it('smoke test with different door types', () => {
-  allDoorTypes()
-    .map((type) =>
-      makeDoor({
-        door_type: type,
-      }),
-    )
-    .forEach((door) => {
+describe('DoorMarker', () => {
+  it('smoke test with different door modes', () => {
+    allDoorModes().forEach((mode) => {
       render(
         <svg>
-          <DoorMarker door={door} />
+          <DoorMarker door={makeDoor()} doorMode={mode.value} />
         </svg>,
       );
       cleanup();
     });
-});
+  });
 
-it('triggers onClick callback when button is clicked', () => {
-  const mockOnClick = jasmine.createSpy();
+  it('smoke test with different door types', () => {
+    allDoorTypes()
+      .map((type) =>
+        makeDoor({
+          door_type: type,
+        }),
+      )
+      .forEach((door) => {
+        render(
+          <svg>
+            <DoorMarker door={door} />
+          </svg>,
+        );
+        cleanup();
+      });
+  });
 
-  const root = render(
-    <svg>
-      <DoorMarker door={makeDoor()} onClick={mockOnClick} data-testid="marker" />
-    </svg>,
-  );
-  userEvent.click(root.getByTestId('marker'));
-  expect(mockOnClick).toHaveBeenCalled();
+  it('triggers onClick callback when button is clicked', () => {
+    const mockOnClick = jasmine.createSpy();
+
+    const root = render(
+      <svg>
+        <DoorMarker door={makeDoor()} onClick={mockOnClick} data-testid="marker" />
+      </svg>,
+    );
+    userEvent.click(root.getByTestId('marker'));
+    expect(mockOnClick).toHaveBeenCalled();
+  });
 });

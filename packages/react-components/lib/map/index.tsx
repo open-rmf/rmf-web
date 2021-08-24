@@ -1,3 +1,4 @@
+export * from './affine-image-overlay';
 export * from './door-marker';
 export * from './doors-overlay';
 export * from './lift-marker';

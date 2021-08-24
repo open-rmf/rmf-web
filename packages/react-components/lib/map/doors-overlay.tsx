@@ -4,12 +4,30 @@ import { DoorMarker as DoorMarker_, DoorMarkerProps } from './door-marker';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 import { viewBoxFromLeafletBounds } from './utils';
 
-const DoorMarker = React.memo(DoorMarker_);
+interface BoundedMarkerProps extends Omit<DoorMarkerProps, 'onClick'> {
+  onClick?: (ev: React.MouseEvent, door: string) => void;
+}
+
+/**
+ * Bind a marker to include the door name in the click event.
+ * This is needed to avoid re-rendering all markers when only one of them changes.
+ */
+function bindMarker(MarkerComponent: React.ComponentType<DoorMarkerProps>) {
+  return ({ onClick, ...otherProps }: BoundedMarkerProps) => {
+    const handleClick = React.useCallback((ev) => onClick && onClick(ev, otherProps.door.name), [
+      onClick,
+      otherProps.door.name,
+    ]);
+    return <MarkerComponent onClick={handleClick} {...otherProps} />;
+  };
+}
+
+const DoorMarker = React.memo(bindMarker(DoorMarker_));
 
 export interface DoorsOverlayProps extends SVGOverlayProps {
   doors: RmfModels.Door[];
   doorStates?: Record<string, RmfModels.DoorState>;
-  onDoorClick?(ev: React.MouseEvent, door: RmfModels.Door): void;
+  onDoorClick?: (ev: React.MouseEvent, door: string) => void;
 }
 
 export const DoorsOverlay = ({
@@ -21,18 +39,13 @@ export const DoorsOverlay = ({
 }: DoorsOverlayProps): JSX.Element => {
   const viewBox = viewBoxFromLeafletBounds(bounds);
 
-  const handleDoorClick = React.useCallback<Required<DoorMarkerProps>['onClick']>(
-    (ev, door) => onDoorClick && onDoorClick(ev, door),
-    [onDoorClick],
-  );
-
   return (
     <SVGOverlay bounds={bounds} {...otherProps}>
       <svg viewBox={viewBox}>
         {doors.map((door) => (
           <DoorMarker
             key={door.name}
-            onClick={handleDoorClick}
+            onClick={onDoorClick}
             door={door}
             doorMode={
               doorStates && doorStates[door.name] && doorStates[door.name].current_mode.value

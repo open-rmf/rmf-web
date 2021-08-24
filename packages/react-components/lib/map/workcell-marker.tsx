@@ -4,7 +4,7 @@ import React from 'react';
 import { fromRmfCoords } from '../geometry-utils';
 import SvgText from '../svg-text';
 
-const debug = Debug('Dispensers:DispenserMarker');
+const debug = Debug('Map:WorkcellMarker');
 
 const DefaultIcon = (props: { footprint: number }): JSX.Element => {
   const { footprint } = props;
@@ -73,7 +73,10 @@ export const WorkcellMarker = React.forwardRef(function (
 
   return (
     <g ref={ref} {...otherProps}>
-      <g transform={`translate(${location[0]} ${location[1]})`}>
+      <g
+        className={otherProps.onClick && classes.clickable}
+        transform={`translate(${location[0]} ${location[1]})`}
+      >
         {useImageIcon ? (
           <image
             href={iconPath}

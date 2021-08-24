@@ -27,7 +27,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export interface RobotMarkerProps extends BaseRobotMarkerProps {
+export interface RobotMarkerProps extends React.PropsWithRef<BaseRobotMarkerProps> {
   color: string;
   iconPath?: string;
 }
@@ -70,7 +70,7 @@ export const RobotMarker = React.forwardRef(
     return (
       <g ref={ref} {...otherProps}>
         <g transform={translateTransform}>
-          <g className={classes.clickable} transform={`rotate(${yaw})`}>
+          <g className={otherProps.onClick && classes.clickable} transform={`rotate(${yaw})`}>
             {useImageMarker && iconPath ? (
               <ImageMarker
                 iconPath={iconPath}

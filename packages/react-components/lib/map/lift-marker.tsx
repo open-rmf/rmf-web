@@ -1,4 +1,5 @@
 import { makeStyles } from '@material-ui/core';
+import clsx from 'clsx';
 import Debug from 'debug';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
@@ -93,7 +94,7 @@ function toDoorMode(liftState: RmfModels.LiftState): RmfModels.DoorMode {
   return { value: liftState.door_state };
 }
 
-export interface LiftMarkerProps extends Omit<React.SVGProps<SVGGElement>, 'onClick'> {
+export interface LiftMarkerProps extends React.PropsWithRef<React.SVGProps<SVGGElement>> {
   lift: RmfModels.Lift;
   liftState?: RmfModels.LiftState;
   /**
@@ -104,14 +105,12 @@ export interface LiftMarkerProps extends Omit<React.SVGProps<SVGGElement>, 'onCl
    */
   translate?: boolean;
   variant?: keyof ReturnType<typeof useLiftMarkerStyles>;
-  onClick?(event: React.MouseEvent, lift: RmfModels.Lift): void;
 }
 
 export const LiftMarker = React.forwardRef(function (
-  props: LiftMarkerProps,
+  { lift, liftState, variant, translate = true, ...otherProps }: LiftMarkerProps,
   ref: React.Ref<SVGGElement>,
 ): JSX.Element {
-  const { lift, liftState, variant, translate = true, onClick, ...otherProps } = props;
   debug(`render ${lift.name}`);
 
   const { width, depth, ref_x, ref_y, ref_yaw, doors } = lift;
@@ -157,8 +156,7 @@ export const LiftMarker = React.forwardRef(function (
   return (
     <g
       ref={ref}
-      className={onClick ? classes.marker : undefined}
-      onClick={(ev) => onClick && onClick(ev, lift)}
+      className={clsx(otherProps.onClick ? classes.marker : undefined, otherProps.className)}
       {...otherProps}
     >
       {/* it is easier to render it translate, and reverse the translation here */}

@@ -5,7 +5,7 @@ import { FollowAnimationPath } from './trajectory-paths';
 
 const debug = Debug('Map:TrajectoryMarker');
 
-export interface TrajectoryMarkerProps {
+export interface TrajectoryMarkerProps extends React.PropsWithRef<{}> {
   trajectory: Trajectory;
   color: string;
   conflict?: boolean;
