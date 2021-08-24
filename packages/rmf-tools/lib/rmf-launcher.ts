@@ -105,7 +105,7 @@ export class LocalLauncher {
   private _launched = false;
   private _rmfDemo?: ManagedProcess;
 
-  private async _rmfReady(timeout: number = 30000): Promise<boolean> {
+  private async _rmfReady(timeout = 30000): Promise<boolean> {
     const ros2Echo = ChildProcess.spawn('ros2', [
       'topic',
       'echo',
@@ -172,7 +172,7 @@ class ManagedProcess {
 
     return new Promise((res) => {
       this._proc.once('exit', res);
-      process.kill(-this._proc.pid, signal);
+      this._proc.pid && process.kill(-this._proc.pid, signal);
     });
   }
 
@@ -185,6 +185,10 @@ class ManagedProcess {
  * processes manually.
  */
 export class StubLauncher {
-  async launch(): Promise<void> {}
-  async kill(): Promise<void> {}
+  async launch(): Promise<void> {
+    //does not do anything
+  }
+  async kill(): Promise<void> {
+    //does not do anything
+  }
 }
