@@ -32,9 +32,6 @@ export interface RobotMarkerProps extends React.PropsWithRef<BaseRobotMarkerProp
   iconPath?: string;
 }
 
-/**
- * Contexts: ColorContext
- */
 export const RobotMarker = React.forwardRef(
   (
     {

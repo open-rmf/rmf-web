@@ -68,7 +68,6 @@ export const ScheduleVisualizer: Story<LMapProps> = () => {
         name: r.name,
         model: r.model,
         footprint: 0.5,
-        state: r,
         color: await colorManager.robotPrimaryColor(fleetState.name, r.name, r.model),
       }));
       setRobots(await safeAsync(Promise.all(promises)));
@@ -127,7 +126,11 @@ export const ScheduleVisualizer: Story<LMapProps> = () => {
           </LayersControl.Overlay>
           <LayersControl.Overlay name="Robots" checked>
             <Pane>
-              <RobotsOverlay bounds={bounds} robots={robots} />
+              <RobotsOverlay
+                bounds={bounds}
+                robots={robots}
+                getRobotState={(fleet, robot) => fleetState.robots.find((r) => r.name === robot)}
+              />
             </Pane>
           </LayersControl.Overlay>
           <LayersControl.Overlay name="Dispensers" checked>

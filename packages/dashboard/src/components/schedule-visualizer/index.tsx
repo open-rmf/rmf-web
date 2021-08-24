@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { Dispenser, Ingestor } from 'api-client';
 import Debug from 'debug';
 import * as L from 'leaflet';
@@ -103,7 +105,9 @@ export default function ScheduleVisualizer({
     {},
   );
   const bounds = React.useMemo(() => levelBounds[currentLevel.name], [levelBounds, currentLevel]);
+
   const [robots, setRobots] = React.useState<RobotData[]>([]);
+  const { current: robotsStore } = React.useRef<Record<string, RobotData>>({});
 
   // FIXME: trajectory manager should handle the tokens
   const authenticator = appConfig.authenticator;
@@ -238,18 +242,34 @@ export default function ScheduleVisualizer({
   React.useEffect(() => {
     (async () => {
       const promises = Object.values(fleetStates).flatMap((fleetState) =>
-        fleetState.robots.map(async (r) => ({
-          fleet: fleetState.name,
-          name: r.name,
-          model: r.model,
-          footprint: 0.5,
-          state: r,
-          color: await colorManager.robotPrimaryColor(fleetState.name, r.name, r.model),
-        })),
+        fleetState.robots.map(async (r) => {
+          const robotId = `${fleetState.name}/${r.name}`;
+          if (robotId in robotsStore) return;
+          robotsStore[robotId] = {
+            fleet: fleetState.name,
+            name: r.name,
+            model: r.model,
+            footprint: 0.5,
+            color: await colorManager.robotPrimaryColor(fleetState.name, r.name, r.model),
+          };
+        }),
       );
-      setRobots(await safeAsync(Promise.all(promises)));
+      await safeAsync(Promise.all(promises));
     })();
-  }, [safeAsync, fleetStates]);
+  }, [safeAsync, fleetStates, robotsStore]);
+
+  React.useEffect(() => {
+    const newRobots = Object.values(fleetStates).flatMap((fleetState) =>
+      fleetState.robots
+        .filter(
+          (r) =>
+            r.location.level_name === currentLevel.name &&
+            `${fleetState.name}/${r.name}` in robotsStore,
+        )
+        .map((r) => robotsStore[`${fleetState.name}/${r.name}`]),
+    );
+    setRobots(newRobots);
+  }, [safeAsync, fleetStates, robotsStore, currentLevel]);
 
   React.useEffect(() => {
     (async () => {
@@ -313,7 +333,15 @@ export default function ScheduleVisualizer({
 
         <LayersControl.Overlay name="Robots" checked>
           <Pane>
-            <RobotsOverlay bounds={bounds} robots={robots} onRobotClick={onRobotClick} />
+            <RobotsOverlay
+              bounds={bounds}
+              robots={robots}
+              getRobotState={(fleet, robot) => {
+                const state = fleetStates[fleet].robots.find((r) => r.name === robot);
+                return state || null;
+              }}
+              onRobotClick={onRobotClick}
+            />
           </Pane>
         </LayersControl.Overlay>
 

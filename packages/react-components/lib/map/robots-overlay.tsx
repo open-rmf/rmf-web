@@ -1,11 +1,20 @@
 import React from 'react';
+import * as RmfModels from 'rmf-models';
 import { RobotMarker as RobotMarker_, RobotMarkerProps } from './robot-marker';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 import { viewBoxFromLeafletBounds } from './utils';
 
 const RobotMarker = React.memo(RobotMarker_);
 
-export type RobotData = Omit<RobotMarkerProps, 'onClick'>;
+export interface RobotData {
+  fleet: string;
+  name: string;
+  model: string;
+  footprint: number;
+  color: string;
+  inConflict?: boolean;
+  iconPath?: string;
+}
 
 interface BoundedMarkerProps extends Omit<RobotMarkerProps, 'onClick'> {
   onClick?: (ev: React.MouseEvent, fleet: string, robot: string) => void;
@@ -27,12 +36,14 @@ function bindMarker(MarkerComponent: React.ComponentType<RobotMarkerProps>) {
 
 export interface RobotsOverlayProps extends SVGOverlayProps {
   robots: RobotData[];
+  getRobotState: (fleet: string, robot: string) => RmfModels.RobotState | null;
   onRobotClick?: (ev: React.MouseEvent, fleet: string, robot: string) => void;
   MarkerComponent?: React.ComponentType<RobotMarkerProps>;
 }
 
 export const RobotsOverlay = ({
   robots,
+  getRobotState,
   onRobotClick,
   MarkerComponent = RobotMarker,
   bounds,
@@ -44,14 +55,20 @@ export const RobotsOverlay = ({
   return (
     <SVGOverlay bounds={bounds} {...otherProps}>
       <svg viewBox={viewBox}>
-        {robots.map((robot) => (
-          <BoundedMarker
-            key={robot.name}
-            onClick={onRobotClick}
-            aria-label={robot.name}
-            {...robot}
-          />
-        ))}
+        {robots
+          .map((robot) => {
+            const state = getRobotState(robot.fleet, robot.name);
+            return state ? (
+              <BoundedMarker
+                key={robot.name}
+                state={state}
+                onClick={onRobotClick}
+                aria-label={robot.name}
+                {...robot}
+              />
+            ) : null;
+          })
+          .filter((x) => x !== null)}
       </svg>
     </SVGOverlay>
   );
