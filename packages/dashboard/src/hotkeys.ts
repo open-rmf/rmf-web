@@ -45,13 +45,12 @@ export const keyMap: KeyMap = {
 };
 
 export const buildHotKeys = (props: HotKeysProps): HotKeysEnabledProps => {
-  const { toggleHotkeysDialog: toggleHotkeys, toggleSettings, toggleHelp } = props.appController;
+  const { toggleHotkeysDialog: toggleHotkeys, toggleHelp } = props.appController;
 
   // Keep the same name as the KeyMap
   const handlers = {
     OPEN_HELP_PANEL: () => toggleHelp(),
     OPEN_HOTKEYS: () => toggleHotkeys(),
-    OPEN_SETTINGS: () => toggleSettings(),
   };
 
   return { keyMap, handlers };

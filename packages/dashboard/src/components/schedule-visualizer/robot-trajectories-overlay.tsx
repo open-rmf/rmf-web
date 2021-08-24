@@ -1,16 +1,9 @@
-import * as RmfModels from 'rmf-models';
 import Debug from 'debug';
 import * as L from 'leaflet';
 import React from 'react';
-import {
-  ColorContext,
-  robotHash,
-  TrajectoryMarker as TrajectoryMarker_,
-  TrajectoryMarkerProps,
-} from 'react-components';
+import { ColorContext, robotHash, TrajectoryMarker as TrajectoryMarker_ } from 'react-components';
+import * as RmfModels from 'rmf-models';
 import { Conflict, Trajectory } from '../../managers/robot-trajectory-manager';
-import { TrajectoryAnimation } from '../../settings';
-import { SettingsContext } from '../app-contexts';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 
 const debug = Debug('ScheduleVisualizer:RobotTrajectoriesOverlay');
@@ -25,7 +18,7 @@ export interface RobotTrajectoriesOverlayProps extends SVGOverlayProps {
   robots: Record<string, RmfModels.RobotState>;
   trajectories: Trajectory[];
   conflicts: Conflict[];
-  animationScale?: number;
+  animationScale: number;
 }
 
 /**
@@ -34,7 +27,7 @@ export interface RobotTrajectoriesOverlayProps extends SVGOverlayProps {
 export const RobotTrajectoriesOverlay = (props: RobotTrajectoriesOverlayProps) => {
   debug('render');
 
-  const { robots, trajectories, conflicts, animationScale = 60000 / 1800, ...otherProps } = props;
+  const { robots, trajectories, conflicts, animationScale, ...otherProps } = props;
   const colorManager = React.useContext(ColorContext);
   const [colors, setColors] = React.useState<Record<number, string>>({});
 
@@ -79,18 +72,6 @@ export const RobotTrajectoriesOverlay = (props: RobotTrajectoriesOverlayProps) =
     };
   }, [trajectories, colorManager, robots]);
 
-  const settings = React.useContext(SettingsContext);
-  const trajectoryVariant = ((): TrajectoryMarkerProps['variant'] => {
-    switch (settings.trajectoryAnimation) {
-      case TrajectoryAnimation.Follow:
-        return 'follow';
-      case TrajectoryAnimation.None:
-        return 'plain';
-      default:
-        return 'plain';
-    }
-  })();
-
   return (
     <SVGOverlay {...otherProps}>
       <svg viewBox={viewBox}>
@@ -103,7 +84,6 @@ export const RobotTrajectoriesOverlay = (props: RobotTrajectoriesOverlayProps) =
                 color={colors[traj.id]}
                 conflict={conflictsFlat.includes(traj.id)}
                 animationScale={animationScale}
-                variant={trajectoryVariant}
                 data-component="TrajectoryMarker"
                 data-testid="trajMarker"
               />

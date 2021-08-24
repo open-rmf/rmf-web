@@ -13,7 +13,7 @@ jobs:
     name: Tests
     runs-on: ubuntu-latest
     container:
-      image: docker.pkg.github.com/open-rmf/rmf-web/e2e
+      image: ghcr.io/${{ github.repository }}/e2e
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -23,16 +23,20 @@ jobs:
         working-directory: packages/api-server
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+          cache: 'npm'
       - name: bootstrap
         run: |
           npm config set unsafe-perm
-          . /opt/rmf/setup.bash
+          . /rmf_demos_ws/install/setup.bash
           npm install -g lerna@4
           lerna bootstrap --scope=api-server
         working-directory: .
       - name: tests
         run: |
-          . /opt/rmf/setup.bash
+          . /rmf_demos_ws/install/setup.bash
           npm run lint
           npm run test:cov
           python3 -m pipenv run python -m coverage xml

@@ -27,11 +27,11 @@ describe('update states correctly', () => {
     act(() => {
       hotkeys.handlers?.OPEN_SETTINGS();
     });
-    expect(appController.toggleSettings).toBeCalledTimes(1);
+    expect(appController.setShowSettings).toBeCalledTimes(1);
 
     act(() => {
       hotkeys.handlers?.OPEN_SETTINGS();
     });
-    expect(appController.toggleSettings).toBeCalledTimes(2);
+    expect(appController.setShowSettings).toBeCalledTimes(2);
   });
 });
