@@ -29,8 +29,8 @@ export function RobotPage() {
     const resp = await fleetsApi?.getRobotsFleetsRobotsGet(
       undefined,
       undefined,
-      10,
-      page * 10,
+      20,
+      page * 20,
       'fleet_name,robot_name',
     );
     setTotalCount(resp.data.total_count);
@@ -48,8 +48,8 @@ export function RobotPage() {
       fetchVerboseRobots={fetchVerboseRobots}
       paginationOptions={{
         count: totalCount,
-        rowsPerPage: 10,
-        rowsPerPageOptions: [10],
+        rowsPerPage: 20,
+        rowsPerPageOptions: [20],
         page,
         onChangePage: (_ev, newPage) => setPage(newPage),
       }}
