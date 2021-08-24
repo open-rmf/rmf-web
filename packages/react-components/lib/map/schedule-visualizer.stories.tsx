@@ -13,7 +13,7 @@ import { LMap, LMapProps } from './map';
 import { RobotData, RobotsOverlay } from './robots-overlay';
 import { makeTrajectoryData, officeMap } from './test-utils.spec';
 import { TrajectoriesOverlay } from './trajectories-overlay';
-import { affineImageBounds, loadImage } from './utils';
+import { affineImageBounds, loadAffineImage } from './utils';
 import { WaypointsOverlay } from './waypoints-overlay';
 import { WorkcellData, WorkcellsOverlay } from './workcells-overlay';
 
@@ -77,7 +77,7 @@ export const ScheduleVisualizer: Story<LMapProps> = () => {
 
   React.useEffect(() => {
     (async () => {
-      const images = await safeAsync(Promise.all(levels.map((l) => loadImage(l.images[0]))));
+      const images = await safeAsync(Promise.all(levels.map((l) => loadAffineImage(l.images[0]))));
       setImages(
         levels.reduce((acc, l, idx) => {
           acc[l.name] = images[idx];
@@ -113,18 +113,16 @@ export const ScheduleVisualizer: Story<LMapProps> = () => {
               <AffineImageOverlay bounds={levelBounds[level.name]} image={level.images[0]} />
             </LayersControl.BaseLayer>
           ))}
-          <LayersControl.Overlay name="Doors" checked>
+          {/* zIndex are ordered in reverse,
+          i.e. in this case, trajectories will be on to top most pane and doors is on the bottom most pane*/}
+          <LayersControl.Overlay name="Trajectories" checked>
             <Pane>
-              <DoorsOverlay bounds={bounds} doors={currentLevel.doors} />
+              <TrajectoriesOverlay bounds={bounds} trajectoriesData={trajectories} />
             </Pane>
           </LayersControl.Overlay>
-          <LayersControl.Overlay name="Lifts" checked>
+          <LayersControl.Overlay name="Waypoints" checked>
             <Pane>
-              <LiftsOverlay
-                bounds={bounds}
-                lifts={officeMap.lifts}
-                currentLevel={currentLevel.name}
-              />
+              <WaypointsOverlay bounds={bounds} waypoints={waypoints} />
             </Pane>
           </LayersControl.Overlay>
           <LayersControl.Overlay name="Robots" checked>
@@ -142,20 +140,22 @@ export const ScheduleVisualizer: Story<LMapProps> = () => {
               <WorkcellsOverlay bounds={bounds} workcells={ingestors} />
             </Pane>
           </LayersControl.Overlay>
-          <LayersControl.Overlay name="Trajectories" checked>
+          <LayersControl.Overlay name="Lifts" checked>
             <Pane>
-              <TrajectoriesOverlay bounds={bounds} trajectoriesData={trajectories} />
+              <LiftsOverlay
+                bounds={bounds}
+                lifts={officeMap.lifts}
+                currentLevel={currentLevel.name}
+              />
             </Pane>
           </LayersControl.Overlay>
-          <LayersControl.Overlay name="Waypoints" checked>
+          <LayersControl.Overlay name="Doors" checked>
             <Pane>
-              <WaypointsOverlay bounds={bounds} waypoints={waypoints} />
+              <DoorsOverlay bounds={bounds} doors={currentLevel.doors} />
             </Pane>
           </LayersControl.Overlay>
         </LayersControl>
       </LMap>
     </div>
-  ) : (
-    <></>
-  );
+  ) : null;
 };

@@ -18,7 +18,7 @@ function bindMarker(MarkerComponent: React.ComponentType<DoorMarkerProps>) {
       onClick,
       otherProps.door.name,
     ]);
-    return <MarkerComponent onClick={handleClick} {...otherProps} />;
+    return <MarkerComponent onClick={onClick && handleClick} {...otherProps} />;
   };
 }
 

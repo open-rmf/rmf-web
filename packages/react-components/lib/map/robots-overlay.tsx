@@ -21,7 +21,7 @@ function bindMarker(MarkerComponent: React.ComponentType<RobotMarkerProps>) {
       (ev) => onClick && onClick(ev, otherProps.fleet, otherProps.name),
       [onClick, otherProps.fleet, otherProps.name],
     );
-    return <MarkerComponent onClick={handleClick} {...otherProps} />;
+    return <MarkerComponent onClick={onClick && handleClick} {...otherProps} />;
   };
 }
 

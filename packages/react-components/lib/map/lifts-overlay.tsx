@@ -18,7 +18,7 @@ function bindMarker(MarkerComponent: React.ComponentType<LiftMarkerProps>) {
       onClick,
       otherProps.lift.name,
     ]);
-    return <MarkerComponent onClick={handleClick} {...otherProps} />;
+    return <MarkerComponent onClick={onClick && handleClick} {...otherProps} />;
   };
 }
 

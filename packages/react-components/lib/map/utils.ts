@@ -24,7 +24,7 @@ export function affineImageBounds(
   ];
 }
 
-export function loadImage(image: AffineImage): Promise<HTMLImageElement> {
+export function loadAffineImage(image: AffineImage): Promise<HTMLImageElement> {
   const imageElement = new Image();
   const imageUrl = image.data;
   imageElement.src = imageUrl;

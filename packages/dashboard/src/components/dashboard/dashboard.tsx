@@ -13,6 +13,7 @@ import {
   OmniPanelView,
   OnChangeEvent,
   RobotAccordion as RobotAccordion_,
+  RobotsOverlayProps,
   SimpleFilter,
   useStackNavigator,
   withSpotlight,
@@ -32,7 +33,6 @@ import {
   RmfIngressContext,
 } from '../rmf-app';
 import ScheduleVisualizer, { ScheduleVisualizerProps } from '../schedule-visualizer';
-import { RobotsOverlayProps } from '../schedule-visualizer/robots-overlay';
 import { SpotlightValue } from '../spotlight-value';
 import MainMenu from './main-menu';
 import NegotiationsPanel from './negotiations-panel';
@@ -119,20 +119,9 @@ export default function Dashboard(_props: {}): React.ReactElement {
     initialStack,
     OmniPanelViewIndex.MainMenu,
   );
-  const currentView = viewStack[viewStack.length - 1];
 
   const { showOmniPanel } = dashboardState;
   const { setShowOmniPanel } = dashboardDispatch;
-
-  const mapFloorSort = React.useCallback(
-    (levels: RmfModels.Level[]) =>
-      levels.sort((a, b) => a.elevation - b.elevation).map((x) => x.name),
-    [],
-  );
-  const mapFloorLayerSorted = React.useMemo(
-    () => (buildingMap ? mapFloorSort(buildingMap.levels) : undefined),
-    [buildingMap, mapFloorSort],
-  );
 
   const handleOmniPanelClose = React.useCallback(() => {
     clearSpotlights();
@@ -178,10 +167,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
   }, [sioClient, doors]);
   const doorAccordionRefs = React.useMemo(() => defaultDict(createSpotlightRef), []);
   const handleDoorMarkerClick = React.useCallback(
-    (door: RmfModels.Door) => {
+    (_ev: React.MouseEvent, door: string) => {
       setShowOmniPanel(true);
       viewStackDispatch.push(OmniPanelViewIndex.Doors);
-      doorAccordionRefs[door.name].spotlight();
+      doorAccordionRefs[door].spotlight();
       setFilter('');
     },
     [doorAccordionRefs, viewStackDispatch, setShowOmniPanel],
@@ -204,10 +193,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
   }, [sioClient, lifts]);
   const liftAccordionRefs = React.useMemo(() => defaultDict(createSpotlightRef), []);
   const handleLiftMarkerClick = React.useCallback(
-    (lift: RmfModels.Lift) => {
+    (_ev: React.MouseEvent, lift: string) => {
       setShowOmniPanel(true);
       viewStackDispatch.push(OmniPanelViewIndex.Lifts);
-      liftAccordionRefs[lift.name].spotlight();
+      liftAccordionRefs[lift].spotlight();
       setFilter('');
     },
     [liftAccordionRefs, viewStackDispatch, setShowOmniPanel],
@@ -251,7 +240,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     ingestorStates,
   ]);
   const workcellAccordionRefs = React.useMemo(() => defaultDict(createSpotlightRef), []);
-  const handleWorkcellMarkerClick = React.useCallback<
+  const handleDispenserMarkerClick = React.useCallback<
     Required<ScheduleVisualizerProps>['onDispenserClick']
   >(
     (_, guid) => {
@@ -262,6 +251,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     },
     [workcellAccordionRefs, viewStackDispatch, setShowOmniPanel],
   );
+  const handleIngestorMarkerClick = handleDispenserMarkerClick;
 
   const [fleets, setFleets] = React.useState<Fleet[]>([]);
   React.useEffect(() => {
@@ -384,16 +374,17 @@ export default function Dashboard(_props: {}): React.ReactElement {
         <>
           <ScheduleVisualizer
             buildingMap={buildingMap}
+            negotiationTrajStore={negotiationTrajStore}
+            dispensers={dispensers}
+            ingestors={ingestors}
             doorStates={doorStates}
             liftStates={liftStates}
             fleetStates={fleetStates}
-            mapFloorSort={mapFloorSort}
-            negotiationTrajStore={negotiationTrajStore}
-            showTrajectories={!(currentView === OmniPanelViewIndex.Negotiations)}
             onDoorClick={handleDoorMarkerClick}
             onLiftClick={handleLiftMarkerClick}
             onRobotClick={handleRobotMarkerClick}
-            onDispenserClick={handleWorkcellMarkerClick}
+            onDispenserClick={handleDispenserMarkerClick}
+            onIngestorClick={handleIngestorMarkerClick}
           >
             <OmniPanelControl show={!showOmniPanel} dashboardDispatch={dashboardDispatch} />
           </ScheduleVisualizer>
@@ -481,7 +472,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
             <NegotiationsPanel
               conflicts={negotiationStatus}
               spotlight={negotiationSpotlight}
-              mapFloorLayerSorted={mapFloorLayerSorted}
+              mapFloorLayerSorted={buildingMap?.levels.map((l) => l.name) || []}
               negotiationStatusManager={negotiationStatusManager}
               negotiationTrajStore={negotiationTrajStore}
               negotiationStatusUpdateTS={statusUpdateTS.current}

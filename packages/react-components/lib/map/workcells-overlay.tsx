@@ -19,7 +19,7 @@ function bindMarker(MarkerComponent: React.ComponentType<WorkcellMarkerProps>) {
       onClick,
       otherProps.guid,
     ]);
-    return <MarkerComponent onClick={handleClick} {...otherProps} />;
+    return <MarkerComponent onClick={onClick && handleClick} {...otherProps} />;
   };
 }
 
