@@ -68,21 +68,23 @@ class FleetsRouter(FastIORouter):
                 # multiple fleets with the same robot name and there are active tasks
                 # assigned to those robots and the robot states are not synced to the
                 # tasks summaries.
-                if r is None:
+                if r is None and t.fleet_name == "":
                     logger.warn(
                         f'task "{t.id_}" is assigned to an unknown fleet/robot ({t.fleet_name}/{t.robot_name}'
                     )
-                r.tasks.append(
-                    Task(
-                        task_id=t.task_id,
-                        authz_grp=t.authz_grp,
-                        summary=t,
-                        progress=get_task_progress(
-                            t,
-                            app.rmf_gateway().now(),
-                        ),
+
+                elif r and t.fleet_name:
+                    r.tasks.append(
+                        Task(
+                            task_id=t.task_id,
+                            authz_grp=t.authz_grp,
+                            summary=t,
+                            progress=get_task_progress(
+                                t,
+                                app.rmf_gateway().now(),
+                            ),
+                        )
                     )
-                )
 
             return list(robots.values())
 
