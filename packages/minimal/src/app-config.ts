@@ -47,10 +47,10 @@ export const appConfig: AppConfig = (() => {
 
   return {
     authenticator,
-    appResourcesFactory: ResourceManager.getResourceConfigurationFile,
+    appResourcesFactory: ResourceManager.defaultResourceManager,
     trajServerUrl: trajServer,
     rmfServerUrl: process.env.REACT_APP_RMF_SERVER,
-  };
+  } as AppConfig;
 })();
 
 export default appConfig;

@@ -9,7 +9,7 @@ import {
 } from '@material-ui/core';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import React from 'react';
-import { HeaderBar, LogoButton } from 'react-components';
+import { HeaderBar, LogoButton, useAsync } from 'react-components';
 import { AppConfigContext, ResourcesContext } from './app-contexts';
 import { UserContext } from './auth/contexts';
 
@@ -42,6 +42,8 @@ export const AppBar = React.memo(
     const classes = useStyles();
     const { authenticator } = React.useContext(AppConfigContext);
     const user = React.useContext(UserContext);
+    const safeAsync = useAsync();
+    const [brandingIconPath, setBrandingIconPath] = React.useState<string>('');
 
     async function handleLogout(): Promise<void> {
       try {
@@ -51,14 +53,12 @@ export const AppBar = React.memo(
       }
     }
 
-    const brandingIconPath = React.useMemo(() => {
-      const defaultIcon = 'defaultLogo.png';
-      if (!logoResourcesContext) {
-        return defaultIcon;
-      }
-      const iconPath = logoResourcesContext.getIconPath('headerLogo');
-      return iconPath ? iconPath : defaultIcon;
-    }, [logoResourcesContext]);
+    React.useLayoutEffect(() => {
+      if (!logoResourcesContext) return;
+      (async () => {
+        setBrandingIconPath(await safeAsync(logoResourcesContext.getHeaderLogoPath()));
+      })();
+    }, [logoResourcesContext, safeAsync]);
 
     return (
       <div>
