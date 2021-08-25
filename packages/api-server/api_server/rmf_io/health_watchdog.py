@@ -2,6 +2,17 @@ import logging
 from typing import Any, Callable, Dict, List, Optional, Sequence
 
 import rx
+from rmf_dispenser_msgs.msg import DispenserState as RmfDispenserState
+from rmf_door_msgs.msg import DoorMode as RmfDoorMode
+from rmf_fleet_msgs.msg import RobotMode as RmfRobotMode
+from rmf_ingestor_msgs.msg import IngestorState as RmfIngestorState
+from rmf_lift_msgs.msg import LiftState as RmfLiftState
+from rx import Observable
+from rx import operators as ops
+from rx.core.typing import Disposable
+from rx.scheduler.scheduler import Scheduler
+from rx.subject import BehaviorSubject, Subject
+
 from api_server.models import (
     BuildingMap,
     Dispenser,
@@ -20,16 +31,6 @@ from api_server.models import (
     RobotState,
 )
 from api_server.models import tortoise_models as ttm
-from rmf_dispenser_msgs.msg import DispenserState as RmfDispenserState
-from rmf_door_msgs.msg import DoorMode as RmfDoorMode
-from rmf_fleet_msgs.msg import RobotMode as RmfRobotMode
-from rmf_ingestor_msgs.msg import IngestorState as RmfIngestorState
-from rmf_lift_msgs.msg import LiftState as RmfLiftState
-from rx import Observable
-from rx import operators as ops
-from rx.core.typing import Disposable
-from rx.scheduler.scheduler import Scheduler
-from rx.subject import BehaviorSubject, Subject
 
 from .events import RmfEvents
 from .operators import heartbeat, most_critical

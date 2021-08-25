@@ -12,10 +12,11 @@ from uuid import uuid4
 import jwt
 import requests
 import socketio
+from urllib3.util.retry import Retry
+
 from api_server.app import App
 from api_server.app_config import load_config
 from api_server.gateway import RmfGateway
-from urllib3.util.retry import Retry
 
 from .server import BackgroundServer
 

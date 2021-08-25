@@ -1,9 +1,10 @@
 import asyncio
 
-from api_server.fast_io import WatchRequest
 from rx import operators as rxops
 from rx.core.typing import Observable
 from rx.scheduler.eventloop.asyncioscheduler import AsyncIOScheduler
+
+from api_server.fast_io import WatchRequest
 
 
 def rx_watcher(req: WatchRequest, target: Observable):

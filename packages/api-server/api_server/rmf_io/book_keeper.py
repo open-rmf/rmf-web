@@ -5,6 +5,9 @@ from collections import namedtuple
 from typing import Coroutine, List
 
 import tortoise.transactions
+from rx.core.typing import Disposable
+from rx.subject.subject import Subject
+
 from api_server.models import (
     BaseBasicHealth,
     BuildingMap,
@@ -22,8 +25,6 @@ from api_server.models import (
     TaskSummary,
 )
 from api_server.models import tortoise_models as ttm
-from rx.core.typing import Disposable
-from rx.subject.subject import Subject
 
 from .events import RmfEvents
 

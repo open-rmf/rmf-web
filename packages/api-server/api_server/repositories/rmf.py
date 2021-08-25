@@ -1,6 +1,9 @@
 from datetime import datetime
 from typing import Dict, List, Optional, TypeVar
 
+from fastapi.exceptions import HTTPException
+from tortoise.queryset import QuerySet
+
 from api_server.models import (
     BuildingMap,
     Dispenser,
@@ -26,8 +29,6 @@ from api_server.models import (
 from api_server.models import tortoise_models as ttm
 from api_server.models.fleets import Fleet, Robot
 from api_server.permissions import Enforcer, RmfAction
-from fastapi.exceptions import HTTPException
-from tortoise.queryset import QuerySet
 
 T = TypeVar("T")
 

@@ -1,6 +1,5 @@
 import unittest
 
-from api_server.test import init_db
 from tortoise import Tortoise
 from tortoise.fields import CharField
 from tortoise.models import Model as TortoiseModel

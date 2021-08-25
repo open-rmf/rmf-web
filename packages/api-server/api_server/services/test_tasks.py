@@ -1,50 +1,47 @@
 import unittest
+from itertools import product
 
-from api_server.models import (
-    CleanTaskDescription,
-    DeliveryTaskDescription,
-    LoopTaskDescription,
-    SubmitTask,
-)
-from builtin_interfaces.msg import Time as RosTime
+from pydantic import ValidationError
 from rmf_task_msgs.msg import TaskType as RmfTaskType
 
-from .tasks import convert_task_request
+from .tasks import SubmitTask
 
 
-class TestDispatcherClient(unittest.TestCase):
-    def test_convert_task_request(self):
-        now = RosTime(sec=0, nanosec=0)
-        task = SubmitTask(
-            task_type=RmfTaskType.TYPE_CLEAN,
-            start_time=0,
-            description=CleanTaskDescription(cleaning_zone="zone_2"),
-        )
-        result, err = convert_task_request(task, now)
-        self.assertEqual(err, "")
-        self.assertIsNotNone(result)
+class TestSubmitTaskModel(unittest.TestCase):
+    def test_validate_task_description(self):
+        clean_desc = {"cleaning_zone": "test_zone"}
+        loop_desc = {
+            "num_loops": 1,
+            "start_name": "start",
+            "finish_name": "finish",
+        }
+        delivery_desc = {
+            "pickup_place_name": "pickup_place",
+            "pickup_dispenser": "pickup_dispenser",
+            "dropoff_ingestor": "dropoff_ingestor",
+            "dropoff_place_name": "dropoff_place_name",
+        }
 
-        task = SubmitTask(
-            task_type=RmfTaskType.TYPE_LOOP,
-            start_time=0,
-            description=LoopTaskDescription(
-                num_loops=1, start_name="start", finish_name="finish"
-            ),
-        )
-        result, err = convert_task_request(task, now)
-        self.assertEqual(err, "")
-        self.assertIsNotNone(result)
+        task_types = {
+            RmfTaskType.TYPE_CLEAN: clean_desc,
+            RmfTaskType.TYPE_LOOP: loop_desc,
+            RmfTaskType.TYPE_DELIVERY: delivery_desc,
+        }
 
-        task = SubmitTask(
-            task_type=RmfTaskType.TYPE_DELIVERY,
-            start_time=0,
-            description=DeliveryTaskDescription(
-                pickup_place_name="coe",
-                pickup_dispenser="coke_dispenser",
-                dropoff_ingestor="coke_ingestor",
-                dropoff_place_name="supplies",
-            ),
-        )
-        result, err = convert_task_request(task, now)
-        self.assertEqual(err, "")
-        self.assertIsNotNone(result)
+        for task_type, desc in product(task_types, task_types.values()):
+            # success when task type matches description
+            if task_types[task_type] is desc:
+                SubmitTask(
+                    task_type=task_type,
+                    start_time=0,
+                    description=desc,
+                )
+            else:
+                # fails when sending description with wrong task type
+                self.assertRaises(
+                    ValidationError,
+                    SubmitTask,
+                    task_type=task_type,
+                    start_time=0,
+                    desc=desc,
+                )

@@ -1,9 +1,10 @@
 from typing import List
 
+from fastapi import APIRouter, Depends
+
 import api_server.models.tortoise_models as ttm
 from api_server.base_app import BaseApp
 from api_server.models import Permission, User
-from fastapi import APIRouter, Depends
 
 
 def main_router(app: BaseApp):
