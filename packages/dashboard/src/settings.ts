@@ -1,15 +1,9 @@
-export enum TrajectoryAnimation {
-  None,
-  Follow,
-}
-
 export enum ThemeMode {
   Light,
   Dark,
 }
 
 export interface Settings {
-  trajectoryAnimation: TrajectoryAnimation;
   themeMode: ThemeMode;
 }
 
@@ -27,7 +21,6 @@ export function loadSettings(): Settings {
 
 export function defaultSettings(): Settings {
   return {
-    trajectoryAnimation: TrajectoryAnimation.Follow,
     themeMode: ThemeMode.Light,
   };
 }

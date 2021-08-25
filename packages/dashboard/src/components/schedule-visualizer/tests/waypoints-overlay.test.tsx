@@ -1,8 +1,9 @@
 import { render, waitFor } from '@testing-library/react';
 import L from 'leaflet';
 import React from 'react';
+import { getPlaces } from 'react-components';
 import { Map as LMap } from 'react-leaflet';
-import { getPlaces, PlacesContext } from '../../rmf-app';
+import { PlacesContext } from '../../rmf-app';
 import WaypointsOverlay from '../waypoints-overlay';
 import getBuildingMap from './building-map';
 

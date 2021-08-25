@@ -1,9 +1,11 @@
 import { Dispenser, Fleet, Ingestor } from 'api-client';
 import React from 'react';
+import { getPlaces } from 'react-components';
+import { UserProfileProvider } from 'rmf-auth';
 import * as RmfModels from 'rmf-models';
+import appConfig from '../../app-config';
 import RmfHealthStateManager from '../../managers/rmf-health-state-manager';
 import { AppConfigContext } from '../app-contexts';
-import { User, UserContext } from '../auth/contexts';
 import {
   BuildingMapContext,
   DispensersContext,
@@ -14,7 +16,6 @@ import {
   RmfIngressContext,
 } from './contexts';
 import { RmfIngress } from './rmf-ingress';
-import { getPlaces } from './utils';
 
 function PlacesProvider({ children }: React.PropsWithChildren<unknown>): JSX.Element {
   const buildingMap = React.useContext(BuildingMapContext);
@@ -150,39 +151,13 @@ function RmfIngressProvider(props: React.PropsWithChildren<{}>): JSX.Element {
   );
 }
 
-function UserProvider(props: React.PropsWithChildren<{}>) {
-  const rmfIngress = React.useContext(RmfIngressContext);
-  const [user, setUser] = React.useState<User | null>(null);
-
-  React.useEffect(() => {
-    if (!rmfIngress) {
-      return;
-    }
-    let cancel = false;
-    (async () => {
-      const getUserResp = await rmfIngress.defaultApi.getUserUserGet();
-      const getPermResp = await rmfIngress.defaultApi.getEffectivePermissionsPermissionsGet();
-      if (cancel || getUserResp.status !== 200 || getPermResp.status !== 200) return;
-      setUser({
-        profile: getUserResp.data,
-        permissions: getPermResp.data,
-      });
-    })();
-    return () => {
-      cancel = true;
-    };
-  }, [rmfIngress]);
-
-  return <UserContext.Provider value={user}>{user && props.children}</UserContext.Provider>;
-}
-
 export interface RmfAppProps extends React.PropsWithChildren<{}> {}
 
 /**
  * Provides the following contexts:
  *
+ * - UserProfileContext
  * - RmfIngressContext
- * - UserContext
  * - BuildingMapContext
  * - PlacesContext
  * - FleetsContext
@@ -195,8 +170,8 @@ export interface RmfAppProps extends React.PropsWithChildren<{}> {}
  */
 export function RmfApp(props: RmfAppProps): JSX.Element {
   return (
-    <RmfIngressProvider>
-      <UserProvider>
+    <UserProfileProvider authenticator={appConfig.authenticator} basePath={appConfig.rmfServerUrl}>
+      <RmfIngressProvider>
         <BuildingMapProvider>
           <FleetsProvider>
             <DispensersProvider>
@@ -206,7 +181,7 @@ export function RmfApp(props: RmfAppProps): JSX.Element {
             </DispensersProvider>
           </FleetsProvider>
         </BuildingMapProvider>
-      </UserProvider>
-    </RmfIngressProvider>
+      </RmfIngressProvider>
+    </UserProfileProvider>
   );
 }

@@ -52,7 +52,7 @@ export const keyMap: KeyMap = {
 export const buildHotKeys = (props: HotKeysProps): HotKeysEnabledProps => {
   const { setShowOmniPanel, toggleOmnipanel } = props.reducerDashboardDispatch;
   const { viewStackDispatch } = props;
-  const { toggleHotkeysDialog: toggleHotkeys, toggleSettings, toggleHelp } = props.appController;
+  const { toggleHotkeysDialog: toggleHotkeys, setShowSettings, toggleHelp } = props.appController;
 
   const openDispensers = () => {
     setShowOmniPanel(true);
@@ -83,7 +83,7 @@ export const buildHotKeys = (props: HotKeysProps): HotKeysEnabledProps => {
     OPEN_LIFTS: openLifts,
     OPEN_OMNIPANEL: () => toggleOmnipanel(),
     OPEN_ROBOTS: openRobots,
-    OPEN_SETTINGS: () => toggleSettings(),
+    OPEN_SETTINGS: () => setShowSettings((prev) => !prev),
   };
 
   return { keyMap, handlers };

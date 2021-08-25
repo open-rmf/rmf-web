@@ -4,9 +4,15 @@ import { Authenticator, AuthenticatorEventType } from './authenticator';
 export class StubAuthenticator
   extends EventEmitter<AuthenticatorEventType>
   implements Authenticator {
-  readonly user = 'stub';
+  readonly user: string;
 
-  readonly token?: string = undefined;
+  readonly token?: string;
+
+  constructor(user = 'stub', token: string | undefined = undefined) {
+    super();
+    this.user = user;
+    this.token = token;
+  }
 
   init(): Promise<void> {
     return Promise.resolve();

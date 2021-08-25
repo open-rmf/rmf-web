@@ -19,8 +19,8 @@ test('can show and hide settings', async () => {
     const appController = React.useContext(AppControllerContext);
     return (
       <>
-        <button onClick={() => appController.showSettings(true)}>Show Settings</button>
-        <button onClick={() => appController.showSettings(false)}>Hide Settings</button>
+        <button onClick={() => appController.setShowSettings(true)}>Show Settings</button>
+        <button onClick={() => appController.setShowSettings(false)}>Hide Settings</button>
       </>
     );
   };
@@ -41,33 +41,7 @@ test('can show and hide settings', async () => {
   expect(root.queryByText('Settings')).toBeFalsy();
 });
 
-test('can toggle settings', async () => {
-  const TestComponent = () => {
-    const appController = React.useContext(AppControllerContext);
-    return (
-      <>
-        <button onClick={() => appController.toggleSettings()}>Toggle Settings</button>
-      </>
-    );
-  };
-
-  const root = render(
-    <ThemeProvider theme={mockTheme}>
-      <AppBase>
-        <TestComponent />
-      </AppBase>
-    </ThemeProvider>,
-  );
-
-  userEvent.click(root.getByText('Toggle Settings'));
-  expect(root.getByText('Settings')).toBeTruthy();
-
-  userEvent.click(root.getByText('Toggle Settings'));
-  await waitForElementToBeRemoved(root.getByText('Settings'));
-  expect(root.queryByText('Settings')).toBeFalsy();
-});
-
-test('can show and hide settings', async () => {
+test('can show and hide help', async () => {
   const TestComponent = () => {
     const appController = React.useContext(AppControllerContext);
     return (

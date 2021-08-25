@@ -21,8 +21,8 @@ import { Alert, AlertProps } from '@material-ui/lab';
 import { SubmitTask, Task } from 'api-client';
 import React from 'react';
 import { CreateTaskForm, CreateTaskFormProps, TaskInfo, TaskTable } from 'react-components';
+import { UserProfileContext } from 'rmf-auth';
 import * as RmfModels from 'rmf-models';
-import { UserContext } from '../auth/contexts';
 import { Enforcer } from '../permissions';
 import { parseTasksFile } from './utils';
 
@@ -98,7 +98,7 @@ export function TaskPanel({
   const [snackbarMessage, setSnackbarMessage] = React.useState('');
   const [snackbarSeverity, setSnackbarSeverity] = React.useState<AlertProps['severity']>('success');
   const [autoRefresh, setAutoRefresh] = React.useState(true);
-  const user = React.useContext(UserContext);
+  const profile = React.useContext(UserProfileContext);
 
   const handleCancelTaskClick = React.useCallback<React.MouseEventHandler>(async () => {
     if (!cancelTask || !selectedTask) {
@@ -144,8 +144,8 @@ export function TaskPanel({
 
   const taskCancellable =
     selectedTask &&
-    user &&
-    Enforcer.canCancelTask(user, selectedTask) &&
+    profile &&
+    Enforcer.canCancelTask(profile, selectedTask) &&
     (selectedTask.summary.state === RmfModels.TaskSummary.STATE_ACTIVE ||
       selectedTask.summary.state === RmfModels.TaskSummary.STATE_PENDING ||
       selectedTask.summary.state === RmfModels.TaskSummary.STATE_QUEUED);

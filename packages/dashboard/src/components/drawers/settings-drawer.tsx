@@ -1,23 +1,20 @@
 import {
-  IconButton,
   Divider,
   Drawer,
   DrawerProps,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  makeStyles,
-  Radio,
-  RadioGroup,
-  useMediaQuery,
-  Typography,
-  Grid,
-  Switch,
   FormGroup,
+  FormLabel,
+  FormControlLabel,
+  Grid,
+  IconButton,
+  makeStyles,
+  Switch,
+  Typography,
+  useMediaQuery,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import React from 'react';
-import { Settings, TrajectoryAnimation, ThemeMode } from '../../settings';
+import { Settings, ThemeMode } from '../../settings';
 
 export interface SettingsDrawerProps extends DrawerProps {
   settings: Readonly<Settings>;
@@ -25,15 +22,11 @@ export interface SettingsDrawerProps extends DrawerProps {
   handleCloseButton: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+// Drawer is empty because there is no settings.
 export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactElement {
   const classes = useStyles();
   const { settings, onSettingsChange, handleCloseButton, ...otherProps } = props;
-  const { trajectoryAnimation, themeMode } = settings;
-
-  const trajAnimsText = React.useMemo(
-    () => Object.keys(TrajectoryAnimation).slice(Object.keys(TrajectoryAnimation).length * 0.5),
-    [],
-  );
+  const { themeMode } = settings;
 
   const themeText = React.useMemo(
     () => Object.keys(ThemeMode).slice(Object.keys(ThemeMode).length * 0.5),
@@ -45,11 +38,6 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
   const modalProp = {
     disableEnforceFocus: true,
   };
-
-  function handleTrajectoryAnimationChange(ev: React.ChangeEvent<HTMLInputElement>): void {
-    const newSettings: Settings = { ...settings, trajectoryAnimation: Number(ev.target.value) };
-    onSettingsChange && onSettingsChange(newSettings);
-  }
 
   function handleThemeModeChange(ev: React.ChangeEvent<HTMLInputElement>): void {
     const newSettings: Settings = { ...settings, themeMode: Number(ev.target.checked) };
@@ -78,29 +66,6 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
           </IconButton>
         </Grid>
       </Grid>
-      <FormControl component="fieldset">
-        <FormLabel component="legend" className={classes.legendLabel}>
-          Trajectory Animation
-        </FormLabel>
-        <Divider />
-        <RadioGroup
-          className={classes.trajGroup}
-          value={trajectoryAnimation}
-          onChange={handleTrajectoryAnimationChange}
-        >
-          {trajAnimsText.map((text, i) => (
-            <FormControlLabel
-              key={i}
-              className={classes.flexBasis}
-              value={i}
-              control={<Radio />}
-              label={text}
-              name={text}
-            />
-          ))}
-        </RadioGroup>
-        <Divider />
-      </FormControl>
       <FormGroup className={classes.formGroup}>
         <FormLabel component="legend" className={classes.legendLabel}>
           Theme Mode

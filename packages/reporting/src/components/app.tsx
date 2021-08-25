@@ -4,7 +4,7 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import { ThemeProvider } from '@material-ui/core';
 import React from 'react';
-import { NotFoundPage, rmfLight } from 'react-components';
+import { rmfLight } from 'react-components';
 import { BrowserRouter, Link, Redirect, Route, Switch } from 'react-router-dom';
 import { LoginPage, PrivateRoute } from 'rmf-auth';
 import appConfig from '../app-config';
@@ -12,6 +12,7 @@ import { DASHBOARD_ROUTE, LOGIN_ROUTE } from '../util/url';
 import { AppConfigContext } from './app-contexts';
 import { AuthenticatorContext, UserContext } from './auth-contexts';
 import Dashboard from './dashboard';
+import { NotFoundPage } from './page-not-found';
 
 export default function App(): JSX.Element | null {
   const authenticator = appConfig.authenticator;
@@ -71,7 +72,7 @@ export default function App(): JSX.Element | null {
                   </Switch>
                 </PrivateRoute>
                 <Route>
-                  <NotFoundPage routeLinkComponent={<Link to={LOGIN_ROUTE}>Go to Login</Link>} />
+                  <NotFoundPage linkComponent={<Link to={LOGIN_ROUTE}>Go to Login</Link>} />
                 </Route>
               </Switch>
             </BrowserRouter>

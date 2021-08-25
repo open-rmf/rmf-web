@@ -1,16 +1,17 @@
-import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { loadSettings } from '../../../settings';
+import React from 'react';
+import { Settings } from '../../../settings';
 import { SettingsContext } from '../../app-contexts';
 import SettingsDrawer from '../../drawers/settings-drawer';
 
 describe('Settings Drawer', () => {
-  let settings = loadSettings();
+  let settings: Settings;
   let onSettingsChange: jest.Mock;
   let handleCloseButton: jest.Mock;
 
   beforeEach(() => {
+    settings = {};
     onSettingsChange = jest.fn();
     handleCloseButton = jest.fn();
   });
@@ -27,22 +28,6 @@ describe('Settings Drawer', () => {
       </SettingsContext.Provider>,
     );
     root.unmount();
-  });
-
-  it('should call onSettingsChange function when handleTrajectoryAnimationChange is called', () => {
-    const root = render(
-      <SettingsContext.Provider value={settings}>
-        <SettingsDrawer
-          handleCloseButton={handleCloseButton}
-          settings={settings}
-          onSettingsChange={onSettingsChange}
-          open={true}
-        />
-      </SettingsContext.Provider>,
-    );
-    const input = root.getByLabelText('None');
-    userEvent.click(input);
-    expect(onSettingsChange).toHaveBeenCalledTimes(1);
   });
 
   it('should call handleCloseButton function when closeIcon button is clicked', () => {

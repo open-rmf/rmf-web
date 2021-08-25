@@ -1,0 +1,69 @@
+name: Nightly
+on:
+  schedule:
+    # 2am SGT
+    - cron: '0 18 * * *'
+jobs:
+  build-docker-images:
+    name: Push Docker images to GitHub Packages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Push e2e image to GitHub Packages
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: ghcr.io
+          repository: ${{ github.repository }}/e2e
+          tags: latest
+          path: packages/dashboard-e2e/docker/e2e
+  dashboard-e2e:
+    needs: build-docker-images
+    name: Dashboard e2e
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/${{ github.repository }}/e2e
+      options: --privileged --ipc=host
+    defaults:
+      run:
+        shell: bash
+        working-directory: packages/dashboard-e2e
+    steps:
+      - uses: actions/checkout@v2
+      - name: test
+        uses: ./.github/actions/dashboard-e2e
+      - name: upload artifacts
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: artifacts
+          path: packages/dashboard-e2e/artifacts
+  reporting-e2e:
+    needs: build-docker-images
+    name: Reporting e2e
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/${{ github.repository }}/e2e
+      credentials:
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+      options: --privileged --ipc=host
+    defaults:
+      run:
+        shell: bash
+        working-directory: packages/reporting-e2e
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+          cache: 'npm'
+      - name: test
+        uses: ./.github/actions/reporting-e2e
+      - name: upload artifacts
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: artifacts
+          path: packages/reporting-e2e/artifacts

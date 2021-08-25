@@ -4,13 +4,13 @@ import type { Link } from 'react-router-dom';
 
 export interface NotFoundPageProps {
   /**
-   * FIXME: This is expecting a react-router-dom Link component. We cannot keep the scope of the BrowserRouter (react-router component) on components outside the package.
+   * The link to redirect user to the correct page.
    */
-  routeLinkComponent: React.ReactElement<Link>;
+  linkComponent: React.ReactElement<Link>;
 }
 
 export const NotFoundPage = (props: NotFoundPageProps): React.ReactElement => {
-  const { routeLinkComponent } = props;
+  const { linkComponent: routeLinkComponent } = props;
   const classes = useStyles();
   console.warn('Photo by Aron Visuals on Unsplash');
   return (

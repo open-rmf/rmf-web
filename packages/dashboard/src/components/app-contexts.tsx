@@ -9,10 +9,8 @@ export const ResourcesContext = React.createContext<ResourceManager | undefined>
 export const SettingsContext = React.createContext(defaultSettings());
 
 export interface AppController {
-  setSettings: React.Dispatch<React.SetStateAction<Settings>>;
-  saveSettings(settings: Settings): void;
-  showSettings(show: boolean): void;
-  toggleSettings(): void;
+  setShowSettings: React.Dispatch<React.SetStateAction<boolean>>;
+  updateSettings: (settings: Settings) => void;
   showHelp(show: boolean): void;
   toggleHelp(): void;
   showHotkeysDialog(show: boolean): void;
@@ -39,10 +37,8 @@ export const TooltipsContext = React.createContext<Tooltips>({
 });
 
 export const AppControllerContext = React.createContext<AppController>({
-  setSettings: () => {},
-  saveSettings: () => {},
-  showSettings: () => {},
-  toggleSettings: () => {},
+  setShowSettings: () => {},
+  updateSettings: () => {},
   showHelp: () => {},
   toggleHelp: () => {},
   showHotkeysDialog: () => {},
