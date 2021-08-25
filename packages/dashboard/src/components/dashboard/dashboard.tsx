@@ -376,25 +376,23 @@ export default function Dashboard(_props: {}): React.ReactElement {
   return (
     <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
       {buildingMap && (
-        <>
-          <ScheduleVisualizer
-            buildingMap={buildingMap}
-            negotiationTrajStore={negotiationTrajStore}
-            dispensers={dispensers}
-            ingestors={ingestors}
-            doorStates={doorStates}
-            liftStates={liftStates}
-            fleetStates={fleetStates}
-            mode={scheduleVisMode}
-            onDoorClick={handleDoorMarkerClick}
-            onLiftClick={handleLiftMarkerClick}
-            onRobotClick={handleRobotMarkerClick}
-            onDispenserClick={handleDispenserMarkerClick}
-            onIngestorClick={handleIngestorMarkerClick}
-          >
-            <OmniPanelControl show={!showOmniPanel} dashboardDispatch={dashboardDispatch} />
-          </ScheduleVisualizer>
-        </>
+        <ScheduleVisualizer
+          buildingMap={buildingMap}
+          negotiationTrajStore={negotiationTrajStore}
+          dispensers={dispensers}
+          ingestors={ingestors}
+          doorStates={doorStates}
+          liftStates={liftStates}
+          fleetStates={fleetStates}
+          mode={scheduleVisMode}
+          onDoorClick={handleDoorMarkerClick}
+          onLiftClick={handleLiftMarkerClick}
+          onRobotClick={handleRobotMarkerClick}
+          onDispenserClick={handleDispenserMarkerClick}
+          onIngestorClick={handleIngestorMarkerClick}
+        >
+          <OmniPanelControl show={!showOmniPanel} dashboardDispatch={dashboardDispatch} />
+        </ScheduleVisualizer>
       )}
       <Fade in={showOmniPanel}>
         <OmniPanel
