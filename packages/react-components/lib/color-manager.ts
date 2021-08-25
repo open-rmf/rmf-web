@@ -8,6 +8,8 @@ function _hash(s: string): number {
 }
 
 export class ColorManager {
+  readonly conflictHighlight = '#f44336';
+
   async robotPrimaryColor(
     fleet: string,
     name: string,
