@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from task_scheduler.database import setup_database
 from task_scheduler.routes.scheduled_task_router import router as scheduled_task_router
 from task_scheduler.routes.task_rule_router import router as task_rule_router
+from task_scheduler.scheduler.timer_job import scheduler
 
 logger = logging.getLogger("task_scheduler")
 handler = logging.StreamHandler(sys.stdout)
@@ -24,6 +25,16 @@ logger.info("started app")
 def get_app():
 
     app = FastAPI()
+
+    @app.on_event("startup")
+    async def startup_event():
+        scheduler.init_timer()
+        # scheduler.new_job()
+
+    # Final event
+    @app.on_event("shutdown")
+    def shutdown_event():
+        scheduler.close_timer()
 
     app.add_middleware(
         CORSMiddleware,
@@ -46,10 +57,23 @@ def get_app():
     )
 
     setup_database(app, generate_schemas=True)
+    # print(scheduler)
+    # await scheduler.add_job(get_scheduled_tasks, 'interval', seconds=5)
+
+    # async with AsyncScheduler() as scheduler, AsyncWorker(scheduler.data_store):
+    #     await scheduler.add_schedule(get_scheduled_tasks, IntervalTrigger(seconds=5))
+    #     await scheduler.wait_until_stopped()
 
     return app
 
 
+# scheduler.configure(jobstores=jobstores, executors=executors, job_defaults=job_defaults, timezone=utc)
+
+# schedule.every(5).seconds.do(get_scheduled_tasks)
+
+# while True:
+#     schedule.run_pending()
+#     time.sleep(1)
 # import asyncio
 # import logging
 # import os
