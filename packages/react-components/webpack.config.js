@@ -63,6 +63,8 @@ module.exports = (options) => {
       ],
     },
 
+    stats: 'errors-only',
+
     /**
      * Include polyfills or mocks for various node stuff
      * Description: Node configuration

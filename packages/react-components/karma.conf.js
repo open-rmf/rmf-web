@@ -15,7 +15,7 @@ module.exports = (config) => {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine'],
+    frameworks: ['jasmine', 'webpack'],
 
     // list of files / patterns to load in the browser
     files: [
@@ -41,14 +41,6 @@ module.exports = (config) => {
 
     webpack: testWebpackConfig,
 
-    // Webpack please don't spam the console when running in karma!
-    webpackMiddleware: {
-      quiet: true,
-      stats: {
-        colors: true,
-      },
-    },
-
     coverageReporter: {
       dir: '.',
       subdir: '.',
@@ -58,12 +50,12 @@ module.exports = (config) => {
     // List of plugins to load. A plugin can be a string (in which case it will be required by
     // Karma or an inlined plugin - Object. By default, Karma loads all sibling NPM modules which
     // have a name starting with karma-*.
-    // plugins: [],
+    plugins: ['karma-chrome-launcher', 'karma-jasmine', 'karma-webpack'],
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: isCoverage ? ['progress', 'coverage', 'dots'] : ['progress'],
+    reporters: isCoverage ? ['dots', 'coverage'] : ['dots'],
 
     port: 9876,
 
@@ -77,16 +69,17 @@ module.exports = (config) => {
     // enable / disable watching file and executing tests whenever any file changes
     autoWatch: true,
 
-    // start these browsers
-    // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['CustomChromeHeadless'],
-
     customLaunchers: {
       CustomChromeHeadless: {
         base: 'ChromeHeadless',
         flags: chromeFlags,
       },
     },
+
+    // start these browsers
+    // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
+    // browsers: ['CustomChromeHeadless'],
+    browsers: ['CustomChromeHeadless'],
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
