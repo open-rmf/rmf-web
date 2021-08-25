@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { Fade, makeStyles } from '@material-ui/core';
 import { Fleet, Level } from 'api-client';
 import Debug from 'debug';
