@@ -7,7 +7,7 @@ const chalk = require('chalk');
 const path = require('path');
 const fs = require('fs');
 
-const ProjectDir = __dirname.slice(0, __dirname.length - '/scripts/setup'.length);
+const ProjectDir = process.cwd();
 const ResourcesPath = `${ProjectDir}/src/assets/resources`;
 const TempDir = `${ProjectDir}/tmp`;
 

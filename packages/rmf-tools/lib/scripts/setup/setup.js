@@ -3,11 +3,12 @@ const inquirer = require('inquirer');
 const { exec } = require('child_process');
 const fs = require('fs');
 const { getIcons } = require('./get-icons');
+const path = require('path');
 
-const ProjectDir = __dirname.slice(0, __dirname.length - '/scripts/setup'.length);
+const ProjectDir = process.cwd();
 const resourcesPath = process.env.RMF_DASHBOARD_RESOURCES_FILE || `${ProjectDir}/.resources.json`;
 const configExists = fs.existsSync(resourcesPath);
-
+console.log(`${ProjectDir}`);
 const createConfigFile = () => {
   console.log(chalk`
 Hello! 👋
