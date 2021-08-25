@@ -6,7 +6,7 @@ import { RobotMarker } from './robot-marker';
 import { RobotData } from './robots-overlay';
 import { makeRobotData } from './test-utils.spec';
 
-describe('robot-markers', () => {
+describe('RobotMarker', () => {
   async function render(Component: JSX.Element): Promise<RenderResult> {
     let root: RenderResult;
     await act(async () => {
@@ -20,12 +20,10 @@ describe('robot-markers', () => {
     const robots: RobotData[] = [
       makeRobotData({
         name: 'test_robot_1',
-        state: makeRobot({ name: 'test_robot_1' }),
         inConflict: false,
       }),
       makeRobotData({
         name: 'test_robot_2',
-        state: makeRobot({ name: 'test_robot_2' }),
         inConflict: true,
       }),
     ];
@@ -35,9 +33,9 @@ describe('robot-markers', () => {
           fleet={robot.fleet}
           name={robot.name}
           model={robot.model}
-          state={robot.state}
           footprint={robot.footprint}
           color="#000000"
+          state={makeRobot({ name: robot.name })}
         />,
       );
       cleanup();
@@ -52,9 +50,9 @@ describe('robot-markers', () => {
         fleet={robot.fleet}
         name={robot.name}
         model={robot.model}
-        state={robot.state}
         footprint={robot.footprint}
         color="#000000"
+        state={makeRobot({ name: robot.name })}
         onClick={onClick}
         data-testid="marker"
       />,
@@ -70,9 +68,9 @@ describe('robot-markers', () => {
         fleet={robot.fleet}
         name={robot.name}
         model={robot.model}
-        state={robot.state}
         footprint={robot.footprint}
         color="#000000"
+        state={makeRobot({ name: robot.name })}
         iconPath="test_icon"
       />,
     );

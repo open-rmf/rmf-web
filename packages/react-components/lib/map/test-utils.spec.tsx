@@ -363,7 +363,6 @@ export function makeRobotData(robot: Partial<RobotData> = {}): RobotData {
     name: 'test_robot',
     model: 'test_model',
     footprint: 1,
-    state: makeRobot({ name: 'test_robot' }),
     color: '#00a000',
     ...robot,
   };
