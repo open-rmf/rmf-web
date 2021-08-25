@@ -120,7 +120,7 @@ export function TaskPage() {
         count: hasMore ? -1 : page * 10 + tasks.length,
         rowsPerPage: 10,
         rowsPerPageOptions: [10],
-        onChangePage: (_ev, newPage) => setPage(newPage),
+        onPageChange: (_ev, newPage) => setPage(newPage),
       }}
       cleaningZones={placeNames}
       loopWaypoints={placeNames}

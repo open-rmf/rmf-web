@@ -1,4 +1,4 @@
-import { createMuiTheme } from '@material-ui/core';
+import { createTheme } from '@material-ui/core';
 
 declare module '@material-ui/core' {
   interface Theme {
@@ -21,7 +21,7 @@ declare module '@material-ui/core' {
   }
 }
 
-export const theme = createMuiTheme({
+export const theme = createTheme({
   appBar: {
     logoSize: 180,
   },
