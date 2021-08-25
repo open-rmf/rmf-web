@@ -1,6 +1,6 @@
 import { Element } from '@wdio/sync';
 import { makeLauncher } from '../../dashboard/rmf-launcher';
-import { login, overwriteClick } from './utils';
+import { getScheduleVisualizer, login, overwriteClick } from './utils';
 
 describe('ui interactions', () => {
   let doorAccordion: Element;
@@ -30,30 +30,30 @@ describe('ui interactions', () => {
   // interactive item tests
   it('clicking a door on the map focuses it on the panel', () => {
     closeOmniPanel();
-    const door = $(`[data-component=DoorMarker]`);
-    const doorName = door.getAttribute('aria-label');
+    const scheduleVisualizer = getScheduleVisualizer();
+    const door = scheduleVisualizer.$(`[aria-label=main_door]`);
     door.waitForClickable();
     door.click();
 
-    expect($(`.MuiAccordion-root*=${doorName}`).$('.MuiAccordionDetails-root')).toBeVisible();
+    expect($('.MuiAccordion-root*=main_door').$('.MuiAccordionDetails-root')).toBeVisible();
   });
 
   it('clicking a dispenser on the map focuses it on the panel', () => {
     closeOmniPanel();
-    const dispenser = $('[data-component=DispenserMarker]');
-    const guid = dispenser.getAttribute('aria-label');
+    const scheduleVisualizer = getScheduleVisualizer();
+    const dispenser = scheduleVisualizer.$('[aria-label=coke_dispenser]');
     dispenser.click();
 
-    expect($(`.MuiAccordion-root*=${guid}`).$('.MuiAccordionDetails-root')).toBeVisible();
+    expect($('.MuiAccordion-root*=coke_dispenser').$('.MuiAccordionDetails-root')).toBeVisible();
   });
 
   it('clicking a robot on the map focuses it on the panel', () => {
     closeOmniPanel();
-    const robot = $('[data-component=RobotMarker]');
-    const robotName = robot.getAttribute('aria-label');
+    const scheduleVisualizer = getScheduleVisualizer();
+    const robot = scheduleVisualizer.$('[aria-label=tinyRobot1]');
     robot.click();
 
-    expect($(`.MuiAccordion-root*=${robotName}`).$('.MuiAccordionDetails-root')).toBeVisible();
+    expect($('.MuiAccordion-root*=tinyRobot1').$('.MuiAccordionDetails-root')).toBeVisible();
   });
 
   // filter test
@@ -64,8 +64,8 @@ describe('ui interactions', () => {
     $('[data-component=simple-filter]').$('input').setValue('value');
 
     // get door marker and click
-    const door = $('[data-component=DoorMarker]');
-    const doorName = door.getAttribute('aria-label');
+    const scheduleVisualizer = getScheduleVisualizer();
+    const door = scheduleVisualizer.$('[aria-label=main_door]');
 
     door.waitForClickable();
     door.click();
@@ -73,7 +73,7 @@ describe('ui interactions', () => {
     // check that the filter is empty after clicking
     expect($('[data-component=simple-filter]').$('input').getValue()).toEqual('');
     // check that door panel is expanded
-    expect($(`.MuiAccordion-root*=${doorName}`).$('.MuiAccordionDetails-root')).toBeVisible();
+    expect($('.MuiAccordion-root*=main_door').$('.MuiAccordionDetails-root')).toBeVisible();
   });
 
   // door interaction test

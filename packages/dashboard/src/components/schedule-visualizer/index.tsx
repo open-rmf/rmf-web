@@ -295,6 +295,7 @@ export default function ScheduleVisualizer({
 
   return bounds ? (
     <LMap
+      id="schedule-visualizer"
       attributionControl={false}
       minZoom={0}
       maxZoom={8}
