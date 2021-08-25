@@ -125,6 +125,9 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const { showOmniPanel } = dashboardState;
   const { setShowOmniPanel } = dashboardDispatch;
 
+  const scheduleVisMode: ScheduleVisualizerProps['mode'] =
+    viewStack[viewStack.length - 1] === OmniPanelViewIndex.Negotiations ? 'negotiation' : 'normal';
+
   const handleOmniPanelClose = React.useCallback(() => {
     clearSpotlights();
     setNegotiationTrajStore({});
@@ -382,6 +385,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
             doorStates={doorStates}
             liftStates={liftStates}
             fleetStates={fleetStates}
+            mode={scheduleVisMode}
             onDoorClick={handleDoorMarkerClick}
             onLiftClick={handleLiftMarkerClick}
             onRobotClick={handleRobotMarkerClick}

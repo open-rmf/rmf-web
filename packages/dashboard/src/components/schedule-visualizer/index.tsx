@@ -50,7 +50,6 @@ export interface ScheduleVisualizerProps extends React.PropsWithChildren<{}> {
   doorStates?: Record<string, RmfModels.DoorState>;
   liftStates?: Record<string, RmfModels.LiftState>;
   fleetStates?: Record<string, RmfModels.FleetState>;
-  colorManager?: ColorManager;
   /**
    * default: 'normal'
    */
@@ -127,13 +126,16 @@ export default function ScheduleVisualizer({
 
   const negoTrajectories = React.useMemo<TrajectoryData[]>(() => {
     if (mode !== 'negotiation') return [];
-    return negotiationTrajStore[currentLevel.name].values.map((v) => ({
-      trajectory: v,
-      color: 'orange',
-      animationScale: trajectoryAnimScale,
-      loopAnimation: true,
-      conflict: false,
-    }));
+    const negoTrajs = negotiationTrajStore[currentLevel.name];
+    return negoTrajs
+      ? negoTrajs.values.map((v) => ({
+          trajectory: v,
+          color: 'orange',
+          animationScale: trajectoryAnimScale,
+          loopAnimation: false,
+          conflict: false,
+        }))
+      : [];
   }, [mode, negotiationTrajStore, currentLevel, trajectoryAnimScale]);
 
   const renderedTrajectories = React.useMemo(() => {
