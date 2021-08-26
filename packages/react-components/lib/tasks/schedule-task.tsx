@@ -23,7 +23,10 @@ import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
 import { PositiveIntField } from '../form-inputs';
+import { CleanTaskForm, DeliveryTaskForm, LoopTaskForm } from './create-task';
+import { RecurrenceType } from './scheduler/rules';
 import Scheduler from './scheduler/scheduler';
+import { TaskActionType, useTaskReducer } from './task-reducer';
 
 type TaskDescription = CleanTaskDescription | LoopTaskDescription | DeliveryTaskDescription;
 
@@ -59,248 +62,6 @@ function getShortDescription(task: SubmitTask): string {
     default:
       return `[Unknown] type ${task.task_type}`;
   }
-}
-
-interface FormToolbarProps {
-  onSelectFileClick?: React.MouseEventHandler<HTMLButtonElement>;
-}
-
-function FormToolbar({ onSelectFileClick }: FormToolbarProps) {
-  const classes = useStyles();
-
-  return (
-    <Button
-      aria-label="Select File"
-      className={classes.selectFileBtn}
-      variant="contained"
-      color="primary"
-      onClick={onSelectFileClick}
-    >
-      Select File
-    </Button>
-  );
-}
-
-export interface DeliveryTaskFormProps {
-  taskDesc: DeliveryTaskDescription;
-  deliveryWaypoints: string[];
-  dispensers: string[];
-  ingestors: string[];
-  onChange(deliveryTaskDescription: DeliveryTaskDescription): void;
-}
-
-export function DeliveryTaskForm({
-  taskDesc,
-  deliveryWaypoints,
-  dispensers,
-  ingestors,
-  onChange,
-}: DeliveryTaskFormProps) {
-  const theme = useTheme();
-
-  return (
-    <>
-      <Grid container wrap="nowrap">
-        <Grid style={{ flex: '1 1 60%' }}>
-          <Autocomplete
-            id="pickup-location"
-            freeSolo
-            fullWidth
-            options={deliveryWaypoints}
-            value={taskDesc.pickup_place_name}
-            onChange={(_ev, newValue) =>
-              onChange({
-                ...taskDesc,
-                pickup_place_name: newValue,
-              })
-            }
-            onBlur={(ev) =>
-              onChange({ ...taskDesc, pickup_place_name: (ev.target as HTMLInputElement).value })
-            }
-            renderInput={(params) => (
-              <TextField {...params} label="Pickup Location" margin="normal" />
-            )}
-          />
-        </Grid>
-        <Grid
-          style={{
-            flex: '1 1 40%',
-            marginLeft: theme.spacing(2),
-            marginRight: theme.spacing(2),
-          }}
-        >
-          <Autocomplete
-            id="dispenser"
-            freeSolo
-            fullWidth
-            options={dispensers}
-            value={taskDesc.pickup_dispenser}
-            onChange={(_ev, newValue) =>
-              onChange({
-                ...taskDesc,
-                pickup_dispenser: newValue,
-              })
-            }
-            onBlur={(ev) =>
-              onChange({ ...taskDesc, pickup_dispenser: (ev.target as HTMLInputElement).value })
-            }
-            renderInput={(params) => <TextField {...params} label="Dispenser" margin="normal" />}
-          />
-        </Grid>
-      </Grid>
-      <Grid container wrap="nowrap">
-        <Grid style={{ flex: '1 1 60%' }}>
-          <Autocomplete
-            id="dropoff-location"
-            freeSolo
-            fullWidth
-            options={deliveryWaypoints}
-            value={taskDesc.dropoff_place_name}
-            onChange={(_ev, newValue) =>
-              onChange({
-                ...taskDesc,
-                dropoff_place_name: newValue,
-              })
-            }
-            onBlur={(ev) =>
-              onChange({ ...taskDesc, dropoff_place_name: (ev.target as HTMLInputElement).value })
-            }
-            renderInput={(params) => (
-              <TextField {...params} label="Dropoff Location" margin="normal" />
-            )}
-          />
-        </Grid>
-        <Grid
-          style={{
-            flex: '1 1 40%',
-            marginLeft: theme.spacing(2),
-            marginRight: theme.spacing(2),
-          }}
-        >
-          <Autocomplete
-            id="ingestor"
-            freeSolo
-            fullWidth
-            options={ingestors}
-            value={taskDesc.dropoff_ingestor}
-            onChange={(_ev, newValue) =>
-              onChange({
-                ...taskDesc,
-                dropoff_ingestor: newValue,
-              })
-            }
-            onBlur={(ev) =>
-              onChange({ ...taskDesc, dropoff_ingestor: (ev.target as HTMLInputElement).value })
-            }
-            renderInput={(params) => <TextField {...params} label="Ingestor" margin="normal" />}
-          />
-        </Grid>
-      </Grid>
-    </>
-  );
-}
-
-export interface LoopTaskFormProps {
-  taskDesc: LoopTaskDescription;
-  loopWaypoints: string[];
-  onChange(loopTaskDescription: LoopTaskDescription): void;
-}
-
-export function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) {
-  const theme = useTheme();
-
-  return (
-    <>
-      <Autocomplete
-        id="start-location"
-        freeSolo
-        fullWidth
-        options={loopWaypoints}
-        value={taskDesc.start_name}
-        onChange={(_ev, newValue) =>
-          onChange({
-            ...taskDesc,
-            start_name: newValue,
-          })
-        }
-        onBlur={(ev) =>
-          onChange({ ...taskDesc, start_name: (ev.target as HTMLInputElement).value })
-        }
-        renderInput={(params) => <TextField {...params} label="Start Location" margin="normal" />}
-      />
-      <Grid container wrap="nowrap">
-        <Grid style={{ flex: '1 1 100%' }}>
-          <Autocomplete
-            id="finish-location"
-            freeSolo
-            fullWidth
-            options={loopWaypoints}
-            value={taskDesc.finish_name}
-            onChange={(_ev, newValue) =>
-              onChange({
-                ...taskDesc,
-                finish_name: newValue,
-              })
-            }
-            onBlur={(ev) =>
-              onChange({ ...taskDesc, finish_name: (ev.target as HTMLInputElement).value })
-            }
-            renderInput={(params) => (
-              <TextField {...params} label="Finish Location" margin="normal" />
-            )}
-          />
-        </Grid>
-        <Grid
-          style={{
-            flex: '0 1 5em',
-            marginLeft: theme.spacing(2),
-            marginRight: theme.spacing(2),
-          }}
-        >
-          <PositiveIntField
-            id="loops"
-            label="Loops"
-            margin="normal"
-            value={taskDesc.num_loops}
-            onChange={(_ev, val) => {
-              onChange({
-                ...taskDesc,
-                num_loops: val,
-              });
-            }}
-          />
-        </Grid>
-      </Grid>
-    </>
-  );
-}
-
-export interface CleanTaskFormProps {
-  taskDesc: CleanTaskDescription;
-  cleaningZones: string[];
-  onChange(cleanTaskDescription: CleanTaskDescription): void;
-}
-
-export function CleanTaskForm({ taskDesc, cleaningZones, onChange }: CleanTaskFormProps) {
-  return (
-    <Autocomplete
-      id="cleaning-zone"
-      freeSolo
-      fullWidth
-      options={cleaningZones}
-      value={taskDesc.cleaning_zone}
-      onChange={(_ev, newValue) =>
-        onChange({
-          ...taskDesc,
-          cleaning_zone: newValue,
-        })
-      }
-      onBlur={(ev) =>
-        onChange({ ...taskDesc, cleaning_zone: (ev.target as HTMLInputElement).value })
-      }
-      renderInput={(params) => <TextField {...params} label="Cleaning Zone" margin="normal" />}
-    />
-  );
 }
 
 function defaultCleanTask(): CleanTaskDescription {
@@ -348,7 +109,7 @@ function defaultTask(): SubmitTask {
   };
 }
 
-export interface CreateTaskFormProps
+export interface ScheduleTaskFormProps
   extends Omit<ConfirmationDialogProps, 'onConfirmClick' | 'toolbar'> {
   /**
    * Shows extra UI elements suitable for submittng batched tasks. Default to 'false'.
@@ -365,22 +126,29 @@ export interface CreateTaskFormProps
   onFail?(error: Error, tasks: SubmitTask[]): void;
 }
 
-export function CreateTaskForm({
+export function ScheduleTaskForm({
   cleaningZones = [],
   loopWaypoints = [],
   deliveryWaypoints = [],
   dispensers = [],
   ingestors = [],
   submitTasks,
-  tasksFromFile,
   onSuccess,
   onFail,
   ...otherProps
-}: CreateTaskFormProps): JSX.Element {
+}: ScheduleTaskFormProps): JSX.Element {
   const theme = useTheme();
   const classes = useStyles();
   const [tasks, setTasks] = React.useState<SubmitTask[]>(() => [defaultTask()]);
   const [selectedTaskIdx, setSelectedTaskIdx] = React.useState(0);
+  const { state, dispatch } = useTaskReducer({
+    [TaskActionType.FrequencyType]: RecurrenceType.DoesNotRepeat,
+    [TaskActionType.FrequencyTypeCustom]: RecurrenceType.Daily,
+    [TaskActionType.Frequency]: 1,
+    [TaskActionType.DayOfWeek]: [],
+    [TaskActionType.EndDatetime]: null,
+  });
+
   const taskTitles = React.useMemo(
     () => tasks && tasks.map((t, i) => `${i + 1}: ${getShortDescription(t)}`),
     [tasks],
@@ -467,31 +235,15 @@ export function CreateTaskForm({
     }
   };
 
-  const handleSelectFileClick: React.MouseEventHandler<HTMLButtonElement> = () => {
-    if (!tasksFromFile) {
-      return;
-    }
-    (async () => {
-      const newTasks = await tasksFromFile();
-      if (newTasks.length === 0) {
-        return;
-      }
-      setTasks(newTasks);
-      setSelectedTaskIdx(0);
-    })();
-  };
-
-  const submitText = tasks.length > 1 ? 'Submit All' : 'Submit';
-
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <ConfirmationDialog
-        title="Create Task"
+        title="Schedule Task"
         submitting={submitting}
-        confirmText={submitText}
+        confirmText={'Schedule'}
         maxWidth="md"
-        fullWidth={tasks.length > 1}
-        toolbar={<FormToolbar onSelectFileClick={handleSelectFileClick} />}
+        fullWidth={false}
+        // toolbar={}
         onSubmit={handleSubmit}
         {...otherProps}
       >
@@ -574,6 +326,15 @@ export function CreateTaskForm({
               </List>
             </>
           )}
+        </Grid>
+        <Grid container wrap="nowrap">
+          <Grid style={{ flexGrow: 1 }}>
+            <Scheduler
+              selectedDate={new Date(task.start_time * 1000)}
+              state={state}
+              dispatch={dispatch}
+            ></Scheduler>
+          </Grid>
         </Grid>
       </ConfirmationDialog>
     </MuiPickersUtilsProvider>

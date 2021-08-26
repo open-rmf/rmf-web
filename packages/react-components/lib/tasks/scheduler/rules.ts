@@ -1,13 +1,22 @@
 export enum RecurrenceType {
   DoesNotRepeat = 'DoesNotRepeat',
+  Once = 'Once',
   Minutely = 'Minutely',
   Hourly = 'Hourly',
   Daily = 'Daily',
   Weekly = 'Weekly',
   Monthly = 'Monthly',
-  Annually = 'Annually',
-  EveryWeekDay = 'EveryWeekDay',
   Custom = 'Custom',
+}
+
+export enum WeekDay {
+  Monday = 0,
+  Tuesday,
+  Wednesday,
+  Thursday,
+  Friday,
+  Saturday,
+  Sunday,
 }
 
 export class RecurrentRules {
@@ -71,6 +80,14 @@ export class RecurrentRules {
         value: 'Does not repeat',
       },
       {
+        key: RecurrenceType.Once,
+        value: 'Once',
+      },
+      {
+        key: RecurrenceType.Hourly,
+        value: 'Hourly',
+      },
+      {
         key: RecurrenceType.Daily,
         value: 'Daily',
       },
@@ -81,14 +98,6 @@ export class RecurrentRules {
       {
         key: RecurrenceType.Monthly,
         value: `Monthly On the First ${dayName}`,
-      },
-      {
-        key: RecurrenceType.Annually,
-        value: `Anually On ${monthAndDate}`,
-      },
-      {
-        key: RecurrenceType.EveryWeekDay,
-        value: 'Every Week Day (Monday to Friday)',
       },
       {
         key: RecurrenceType.Custom,
@@ -121,10 +130,6 @@ export class RecurrentRules {
       {
         key: RecurrenceType.Monthly,
         value: `Month(s)`,
-      },
-      {
-        key: RecurrenceType.Annually,
-        value: `Year(s)`,
       },
     ];
   };

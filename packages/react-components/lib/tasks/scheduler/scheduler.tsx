@@ -10,10 +10,12 @@ import {
   Typography,
 } from '@material-ui/core';
 import React from 'react';
-import { RecurrentRules, RecurrenceType } from '.';
+import { RecurrentRules, RecurrenceType, WeekDay } from '.';
 import { PositiveIntField } from '../..';
 import { IconButton } from '@material-ui/core';
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
+import { KeyboardDateTimePicker } from '@material-ui/pickers';
+import { ReducerTaskDispatch, TaskState } from '../task-reducer';
 /**
  * Date hour to hout date timezone
  * Does not repeat | Daily | Weekly on Monday | Monthly on the first Monday | Anually on Month X | Every week day |custom
@@ -32,13 +34,52 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const CustomRecurrence = () => {
-  const [recurrence, setRecurrence] = React.useState(1);
-  const [recurrenceType, setRecurrenceType] = React.useState('Day');
+interface CustomTaskScheduleProps {
+  state: TaskState;
+  dispatch: ReducerTaskDispatch;
+  selectedDate?: Date;
+}
+
+interface DaysButtonProps {
+  text: string;
+  onClick?: () => void;
+}
+
+export const DaysButton = (props: DaysButtonProps): JSX.Element => {
+  const { text, onClick } = props;
+  const [selected, setSelected] = React.useState(false);
+
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
+    }
+    setSelected(!selected);
+  };
+
+  return (
+    <Fab color={selected ? 'primary' : undefined} onClick={handleClick}>
+      {text}
+    </Fab>
+  );
+};
+
+export const CustomTaskSchedule = (props: CustomTaskScheduleProps): JSX.Element => {
+  const { state, dispatch } = props;
   const classes = useStyles();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRecurrenceType(event.target.value as string);
+    dispatch.setFrequencyTypeCustom(event.target.value as string);
+  };
+
+  const handleDaysClick = (day: number) => {
+    if (state.dayOfWeek.includes(day)) {
+      const filteredWeekDays = state.dayOfWeek.filter((e) => e !== day);
+      dispatch.setDayOfWeek(filteredWeekDays);
+      return;
+    }
+
+    state.dayOfWeek.push(day);
+    dispatch.setDayOfWeek(state.dayOfWeek);
   };
 
   return (
@@ -64,25 +105,25 @@ export const CustomRecurrence = () => {
           }}
         >
           <PositiveIntField
-            id="recurrencenumber"
-            label="Recurrence"
+            id="frequency"
+            label="Frequency"
             margin="normal"
             variant="outlined"
-            value={recurrence}
+            value={state.frequency}
             onChange={(_ev, val) => {
-              setRecurrence(val || 0);
+              dispatch.setFrequency(val || 0);
             }}
           />
         </Grid>
         <Grid style={{ flexGrow: 1 }}>
           <TextField
             select
-            id="recurrencetype"
+            id="frequencyType"
             label="Type"
             variant="outlined"
             fullWidth
             margin="normal"
-            value={recurrenceType || 'Day'}
+            value={state.frequencyTypeCustom}
             onChange={handleChange}
           >
             {RecurrentRules.getBasicRecurrenceTypeList().map((option) => (
@@ -102,41 +143,45 @@ export const CustomRecurrence = () => {
         }}
       >
         <Typography>Repeat On</Typography>
-        <Fab>S</Fab>
-        <Fab color="primary">M</Fab>
-        <Fab color="primary">T</Fab>
-        <Fab color="primary">W</Fab>
-        <Fab color="primary">T</Fab>
-        <Fab color="primary">F</Fab>
-        <Fab>S</Fab>
+        <DaysButton text={'S'} onClick={() => handleDaysClick(WeekDay.Sunday)}></DaysButton>
+        <DaysButton text={'M'} onClick={() => handleDaysClick(WeekDay.Monday)}></DaysButton>
+        <DaysButton text={'T'} onClick={() => handleDaysClick(WeekDay.Tuesday)}></DaysButton>
+        <DaysButton text={'W'} onClick={() => handleDaysClick(WeekDay.Wednesday)}></DaysButton>
+        <DaysButton text={'T'} onClick={() => handleDaysClick(WeekDay.Thursday)}></DaysButton>
+        <DaysButton text={'F'} onClick={() => handleDaysClick(WeekDay.Friday)}></DaysButton>
+        <DaysButton text={'S'} onClick={() => handleDaysClick(WeekDay.Saturday)}></DaysButton>
       </div>
       <br />
       <div>
-        <Typography>Ends</Typography>
-        <RadioGroup aria-label="recurrence-ends" value={'never'} onChange={handleChange}>
-          <FormControlLabel value="never" control={<Radio />} label="Never" />
-          <FormControlLabel value={new Date()} control={<Radio />} label="On" />
-          <FormControlLabel value="after" control={<Radio />} label="After" />
-        </RadioGroup>
+        <KeyboardDateTimePicker
+          id="start-time"
+          value={state.endDatetime || new Date()}
+          onChange={(date) => {
+            if (!date) {
+              return;
+            }
+            dispatch.setEndDatetime(date.toString());
+          }}
+          label="Ends"
+          margin="normal"
+          fullWidth
+        />
       </div>
     </>
   );
 };
 
 interface SchedulerProps {
-  onComplete?: () => void;
-  currentDate?: Date;
+  state: TaskState;
+  dispatch: ReducerTaskDispatch;
+  selectedDate?: Date;
 }
 
-const Scheduler = (props: SchedulerProps) => {
-  const { onComplete, currentDate } = props;
-  const [recurrentValue, setRecurrentValues] = React.useState(
-    RecurrenceType.DoesNotRepeat as string,
-  );
-  const optionList = RecurrentRules.getRecurrenceTypeList(currentDate);
-
+export const Scheduler = (props: SchedulerProps): JSX.Element => {
+  const { selectedDate, state, dispatch } = props;
+  const optionList = RecurrentRules.getRecurrenceTypeList(selectedDate);
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRecurrentValues(event.target.value as string);
+    dispatch.setFrequencyType(event.target.value as string);
   };
 
   return (
@@ -148,7 +193,7 @@ const Scheduler = (props: SchedulerProps) => {
         variant="outlined"
         fullWidth
         margin="normal"
-        value={recurrentValue || RecurrenceType.DoesNotRepeat}
+        value={state.frequencyType || RecurrenceType.DoesNotRepeat}
         onChange={handleChange}
       >
         {optionList.map((option) => (
@@ -158,7 +203,9 @@ const Scheduler = (props: SchedulerProps) => {
         ))}
       </TextField>
       <br />
-      {recurrentValue === RecurrenceType.Custom && <CustomRecurrence />}
+      {state.frequencyType === RecurrenceType.Custom && (
+        <CustomTaskSchedule state={state} dispatch={dispatch} />
+      )}
     </>
   );
 };
