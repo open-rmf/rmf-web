@@ -87,13 +87,21 @@ module.exports = (config) => {
         os: 'Windows',
         os_version: '10',
       },
+      bsSafari: {
+        base: 'BrowserStack',
+        browser: 'safari',
+        browser_version: 'latest',
+        os: 'OS X',
+        os_version: 'Big Sur',
+      },
     },
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: [useBrowserStack && 'bsChrome', !useBrowserStack && 'ChromeHeadless'].filter(
-      (x) => x,
-    ),
+    browsers: [
+      ...(useBrowserStack && ['bsSafari', 'bsChrome']),
+      !useBrowserStack && 'ChromeHeadless',
+    ].filter((x) => x),
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
