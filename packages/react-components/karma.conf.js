@@ -1,3 +1,5 @@
+// FIXME: loading assets bundled by webpack results in 404, https://github.com/ryanclark/karma-webpack/issues/498
+
 process.env.CHROME_BIN = require('puppeteer').executablePath();
 
 module.exports = (config) => {
@@ -19,7 +21,7 @@ module.exports = (config) => {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine'],
+    frameworks: ['jasmine', 'webpack'],
 
     // list of files / patterns to load in the browser
     files: [
@@ -44,14 +46,6 @@ module.exports = (config) => {
     preprocessors: { 'lib/**/*spec.+(ts|tsx)': ['webpack'] },
 
     webpack: testWebpackConfig,
-
-    // Webpack please don't spam the console when running in karma!
-    webpackMiddleware: {
-      quiet: true,
-      stats: {
-        colors: true,
-      },
-    },
 
     coverageReporter: {
       dir: '.',

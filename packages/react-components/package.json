@@ -42,12 +42,14 @@
     "rmf-models": "*"
   },
   "devDependencies": {
-    "@material-ui/core": "^4.11.0",
     "@jsdevtools/coverage-istanbul-loader": "^3.0.5",
-    "@storybook/addon-actions": "^6.2.9",
-    "@storybook/addon-essentials": "^6.2.9",
-    "@storybook/addon-links": "^6.2.9",
-    "@storybook/react": "^6.2.9",
+    "@material-ui/core": "^4.11.0",
+    "@storybook/addon-actions": "^6.3.7",
+    "@storybook/addon-essentials": "^6.3.7",
+    "@storybook/addon-links": "^6.3.7",
+    "@storybook/builder-webpack5": "^6.3.7",
+    "@storybook/manager-webpack5": "^6.3.7",
+    "@storybook/react": "^6.3.7",
     "@testing-library/react": "^11.2.3",
     "@testing-library/react-hooks": "^5.0.3",
     "@testing-library/user-event": "^12.1.9",
@@ -80,8 +82,8 @@
     "react-router-dom": "^5.2.0",
     "ts-loader": "^8.1.0",
     "typescript": "4.2.4",
-    "webpack": "^4.46.0",
-    "webpack-cli": "^4.5.0"
+    "webpack": "^5.51.1",
+    "webpack-cli": "^4.8.0"
   },
   "peerDependencies": {
     "@material-ui/core": "^4.11.0",
