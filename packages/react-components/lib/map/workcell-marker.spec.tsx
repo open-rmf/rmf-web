@@ -19,7 +19,11 @@ describe('WorkcellMarker', () => {
   it('smoke test - marker with image icon', () => {
     render(
       <svg>
-        <WorkcellMarker guid="test" location={[0, 0]} iconPath="/resources/ros-health.png" />
+        <WorkcellMarker
+          guid="test"
+          location={[0, 0]}
+          iconPath="/base/test-data/assets/ros-health.png"
+        />
       </svg>,
     );
   });

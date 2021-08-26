@@ -17,6 +17,7 @@ module.exports = (options) => {
   return {
     mode: options.env,
     devtool: 'inline-source-map',
+    stats: 'errors-only',
 
     /**
      * Options affecting the resolving of modules.

@@ -1,15 +1,19 @@
 process.env.CHROME_BIN = require('puppeteer').executablePath();
 
-const chromeFlags = process.env.CHROME_FLAGS ? JSON.parse(process.env.CHROME_FLAGS) : [];
-
 module.exports = (config) => {
   const isCoverage = config.coverage ? true : false;
+  const useBrowserStack = process.env.BROWSERSTACK_USERNAME && process.env.BROWSERSTACK_ACCESS_KEY;
   const testWebpackConfig = require('./webpack.config.js')({
     env: 'development',
     coverage: isCoverage,
   });
 
   config.set({
+    browserStack: {
+      username: process.env.BROWSERSTACK_USERNAME,
+      accessKey: process.env.BROWSERSTACK_ACCESS_KEY,
+    },
+
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: '',
 
@@ -24,7 +28,7 @@ module.exports = (config) => {
         watched: false,
       },
       {
-        pattern: 'test-data/assets/*',
+        pattern: 'test-data/assets/**/*',
         watched: false,
         included: false,
         served: true,
@@ -63,7 +67,9 @@ module.exports = (config) => {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: isCoverage ? ['progress', 'coverage', 'dots'] : ['progress'],
+    reporters: ['dots', isCoverage && 'coverage', useBrowserStack && 'BrowserStack'].filter(
+      (x) => x,
+    ),
 
     port: 9876,
 
@@ -77,16 +83,21 @@ module.exports = (config) => {
     // enable / disable watching file and executing tests whenever any file changes
     autoWatch: true,
 
-    // start these browsers
-    // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['CustomChromeHeadless'],
-
     customLaunchers: {
-      CustomChromeHeadless: {
-        base: 'ChromeHeadless',
-        flags: chromeFlags,
+      bsChrome: {
+        base: 'BrowserStack',
+        browser: 'chrome',
+        browser_version: 'latest',
+        os: 'Windows',
+        os_version: '10',
       },
     },
+
+    // start these browsers
+    // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
+    browsers: [useBrowserStack && 'bsChrome', !useBrowserStack && 'ChromeHeadless'].filter(
+      (x) => x,
+    ),
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
