@@ -15,7 +15,7 @@ module.exports = (config) => {
       username: process.env.BROWSERSTACK_USERNAME,
       accessKey: process.env.BROWSERSTACK_ACCESS_KEY,
       project: 'rmf-web',
-      build: `react-components:${process.env.GITHUB_HEAD_REF || 'local'}`,
+      build: `react-components:${process.env.BROWSERSTACK_BUILD || 'local'}`,
     },
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
@@ -99,7 +99,7 @@ module.exports = (config) => {
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
     browsers: [
-      ...(useBrowserStack && ['bsSafari', 'bsChrome']),
+      ...(useBrowserStack ? ['bsSafari', 'bsChrome'] : []),
       !useBrowserStack && 'ChromeHeadless',
     ].filter((x) => x),
 
