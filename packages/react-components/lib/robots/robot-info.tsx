@@ -1,12 +1,4 @@
-import {
-  Button,
-  createStyles,
-  Divider,
-  Grid,
-  makeStyles,
-  Typography,
-  useTheme,
-} from '@material-ui/core';
+import { Button, Divider, Grid, makeStyles, Typography, useTheme } from '@material-ui/core';
 import { Task } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
@@ -16,18 +8,14 @@ import { CircularProgressBar } from './circular-progress-bar';
 import { LinearProgressBar } from './linear-progress-bar';
 import { VerboseRobot } from './utils';
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    logo: {
-      maxWidth: 120,
-      opacity: 1,
+const useStyles = makeStyles(() => ({
+  button: {
+    '&:hover': {
+      background: 'none',
+      cursor: 'default',
     },
-    infoValue: {
-      float: 'right',
-      textAlign: 'right',
-    },
-  }),
-);
+  },
+}));
 
 export interface RobotInfoProps {
   robot: VerboseRobot;
@@ -35,9 +23,9 @@ export interface RobotInfoProps {
 
 export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
   const theme = useTheme();
-  const classes = useStyles();
   const [currentTask, setCurrentTask] = React.useState<Task | undefined>();
   const [hasConcreteEndTime, setHasConcreteEndTime] = React.useState<boolean>(false);
+  const classes = useStyles();
 
   function returnTaskLocations(task: RmfModels.TaskSummary): string {
     switch (taskTypeToStr(task.task_profile.description.task_type.type)) {
@@ -124,7 +112,12 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
           </Typography>
         </Grid>
         <Grid container item xs={12} justify="center">
-          <Button disableElevation variant="outlined" disabled>
+          <Button
+            disableElevation
+            variant="outlined"
+            className={classes.button}
+            disableRipple={true}
+          >
             {taskDetails ? taskDetails.assignedTasks : '-'}
           </Button>
         </Grid>
@@ -139,12 +132,24 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
           </Typography>
         </Grid>
         <Grid item xs={6}>
-          <Button size="small" disableElevation variant="outlined" disabled>
+          <Button
+            size="small"
+            disableElevation
+            variant="outlined"
+            className={classes.button}
+            disableRipple={true}
+          >
             {taskDetails ? taskDetails.location : '-'}
           </Button>
         </Grid>
         <Grid item xs={6}>
-          <Button size="small" disableElevation variant="outlined" disabled>
+          <Button
+            size="small"
+            disableElevation
+            variant="outlined"
+            className={classes.button}
+            disableRipple={true}
+          >
             {taskDetails ? taskDetails.destination : '-'}
           </Button>
         </Grid>
@@ -171,13 +176,25 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
             </CircularProgressBar>
           )}
           {!currentTask && (
-            <Button size="small" disableElevation variant="outlined" disabled>
+            <Button
+              size="small"
+              disableElevation
+              variant="outlined"
+              className={classes.button}
+              disableRipple={true}
+            >
               -
             </Button>
           )}
         </Grid>
         <Grid item xs={6}>
-          <Button size="small" disableElevation variant="outlined" disabled>
+          <Button
+            size="small"
+            disableElevation
+            variant="outlined"
+            className={classes.button}
+            disableRipple={true}
+          >
             {currentTask ? rosTimeToJs(currentTask.summary.end_time).toLocaleTimeString() : '-'}
           </Button>
         </Grid>

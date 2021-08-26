@@ -28,11 +28,6 @@ const useStyles = makeStyles((theme) => ({
   taskRowHover: {
     background: theme.palette.action.hover,
   },
-  infoRow: {
-    '& > *': {
-      borderBottom: 'unset',
-    },
-  },
   icons: {
     color: theme.palette.text.primary,
   },
@@ -99,7 +94,7 @@ function RobotRow({ robot, onClick }: RobotRowProps) {
   } else {
     return (
       <>
-        <TableRow className={classes.infoRow} onClick={onClick}>
+        <TableRow onClick={onClick}>
           <TableCell>{robot.name}</TableCell>
           {returnLocationCells(robot)}
           <TableCell>
@@ -150,7 +145,7 @@ export function RobotTable({
           <RefreshIcon className={classes.icons} />
         </IconButton>
       </Toolbar>
-      <TableContainer style={{ flex: '1 1 auto' }}>
+      <TableContainer style={{ flex: '1 1 auto' }} id="robot-table">
         <Table className={classes.table} stickyHeader size="small" style={{ tableLayout: 'fixed' }}>
           <TableHead>
             <TableRow>
