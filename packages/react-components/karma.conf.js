@@ -14,6 +14,8 @@ module.exports = (config) => {
     browserStack: {
       username: process.env.BROWSERSTACK_USERNAME,
       accessKey: process.env.BROWSERSTACK_ACCESS_KEY,
+      project: 'rmf-web',
+      build: `react-components:${process.env.BROWSERSTACK_BUILD || 'local'}`,
     },
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
