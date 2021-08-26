@@ -1,17 +1,5 @@
 import DateFnsUtils from '@date-io/date-fns';
-import {
-  Button,
-  Divider,
-  Grid,
-  List,
-  ListItem,
-  ListItemText,
-  makeStyles,
-  MenuItem,
-  TextField,
-  useTheme,
-} from '@material-ui/core';
-import { Autocomplete } from '@material-ui/lab';
+import { Grid, makeStyles, MenuItem, TextField, useTheme } from '@material-ui/core';
 import { KeyboardDateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import type {
   CleanTaskDescription,
@@ -21,9 +9,10 @@ import type {
 } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
+import { TaskDescriptionForm } from '.';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
 import { PositiveIntField } from '../form-inputs';
-import { CleanTaskForm, DeliveryTaskForm, LoopTaskForm } from './create-task';
+import { defaultTask, defaultTaskDescription } from './create-task';
 import { RecurrenceType } from './scheduler/rules';
 import Scheduler from './scheduler/scheduler';
 import { TaskActionType, useTaskReducer } from './task-reducer';
@@ -45,85 +34,26 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function getShortDescription(task: SubmitTask): string {
-  switch (task.task_type) {
-    case RmfModels.TaskType.TYPE_CLEAN: {
-      const desc: CleanTaskDescription = task.description;
-      return `[Clean] zone [${desc.cleaning_zone}]`;
-    }
-    case RmfModels.TaskType.TYPE_DELIVERY: {
-      const desc: DeliveryTaskDescription = task.description;
-      return `[Delivery] from [${desc.pickup_place_name}] to [${desc.dropoff_place_name}]`;
-    }
-    case RmfModels.TaskType.TYPE_LOOP: {
-      const desc: LoopTaskDescription = task.description;
-      return `[Loop] from [${desc.start_name}] to [${desc.finish_name}]`;
-    }
-    default:
-      return `[Unknown] type ${task.task_type}`;
-  }
-}
-
-function defaultCleanTask(): CleanTaskDescription {
-  return {
-    cleaning_zone: '',
-  };
-}
-
-function defaultLoopsTask(): LoopTaskDescription {
-  return {
-    start_name: '',
-    finish_name: '',
-    num_loops: 1,
-  };
-}
-
-function defaultDeliveryTask(): DeliveryTaskDescription {
-  return {
-    pickup_place_name: '',
-    pickup_dispenser: '',
-    dropoff_place_name: '',
-    dropoff_ingestor: '',
-  };
-}
-
-function defaultTaskDescription(taskType?: number): TaskDescription | undefined {
-  switch (taskType) {
-    case RmfModels.TaskType.TYPE_CLEAN:
-      return defaultCleanTask();
-    case RmfModels.TaskType.TYPE_LOOP:
-      return defaultLoopsTask();
-    case RmfModels.TaskType.TYPE_DELIVERY:
-      return defaultDeliveryTask();
-    default:
-      return undefined;
-  }
-}
-
-function defaultTask(): SubmitTask {
-  return {
-    description: defaultCleanTask(),
-    start_time: Math.floor(Date.now() / 1000),
-    task_type: -1,
-    priority: 0,
-  };
+export interface SubmitTaskSchedule {
+  ruleName: string;
+  dayOfWeek: number[];
+  endDatetime: string | null;
+  frequency: number;
+  frequencyType: string;
+  frequencyTypeCustom: string;
+  task: SubmitTask;
 }
 
 export interface ScheduleTaskFormProps
   extends Omit<ConfirmationDialogProps, 'onConfirmClick' | 'toolbar'> {
-  /**
-   * Shows extra UI elements suitable for submittng batched tasks. Default to 'false'.
-   */
-  allowBatch?: boolean;
   cleaningZones?: string[];
   loopWaypoints?: string[];
   deliveryWaypoints?: string[];
   dispensers?: string[];
   ingestors?: string[];
-  submitTasks?(tasks: SubmitTask[]): Promise<void>;
-  tasksFromFile?(): Promise<SubmitTask[]> | SubmitTask[];
-  onSuccess?(tasks: SubmitTask[]): void;
-  onFail?(error: Error, tasks: SubmitTask[]): void;
+  submitTask?(tasks: SubmitTaskSchedule): Promise<void>;
+  onSuccess?(tasks: SubmitTaskSchedule): void;
+  onFail?(error: Error, tasks: SubmitTaskSchedule): void;
 }
 
 export function ScheduleTaskForm({
@@ -132,77 +62,36 @@ export function ScheduleTaskForm({
   deliveryWaypoints = [],
   dispensers = [],
   ingestors = [],
-  submitTasks,
+  submitTask,
   onSuccess,
   onFail,
   ...otherProps
 }: ScheduleTaskFormProps): JSX.Element {
   const theme = useTheme();
   const classes = useStyles();
-  const [tasks, setTasks] = React.useState<SubmitTask[]>(() => [defaultTask()]);
-  const [selectedTaskIdx, setSelectedTaskIdx] = React.useState(0);
+  // const [taskState, setTaskState] = React.useState<SubmitTask>(() => defaultTask());
   const { state, dispatch } = useTaskReducer({
     [TaskActionType.FrequencyType]: RecurrenceType.DoesNotRepeat,
     [TaskActionType.FrequencyTypeCustom]: RecurrenceType.Daily,
     [TaskActionType.Frequency]: 1,
     [TaskActionType.DayOfWeek]: [],
     [TaskActionType.EndDatetime]: null,
+    [TaskActionType.RuleName]: '',
+    [TaskActionType.Task]: defaultTask(),
   });
 
-  const taskTitles = React.useMemo(
-    () => tasks && tasks.map((t, i) => `${i + 1}: ${getShortDescription(t)}`),
-    [tasks],
-  );
   const [submitting, setSubmitting] = React.useState(false);
-  const task = tasks[selectedTaskIdx];
+  const task = defaultTask();
 
   const updateTasks = () => {
-    setTasks((prev) => {
-      prev.splice(selectedTaskIdx, 1, task);
-      return [...prev];
-    });
+    // setTaskState(task);
+    dispatch.setTask(task);
   };
 
   const handleTaskDescriptionChange = (newType: number, newDesc: TaskDescription) => {
     task.task_type = newType;
     task.description = newDesc;
     updateTasks();
-  };
-
-  const renderTaskDescriptionForm = () => {
-    if (task.task_type === -1) {
-      return null;
-    }
-    switch (task.task_type) {
-      case RmfModels.TaskType.TYPE_CLEAN:
-        return (
-          <CleanTaskForm
-            taskDesc={task.description as CleanTaskDescription}
-            cleaningZones={cleaningZones}
-            onChange={(desc) => handleTaskDescriptionChange(RmfModels.TaskType.TYPE_CLEAN, desc)}
-          />
-        );
-      case RmfModels.TaskType.TYPE_LOOP:
-        return (
-          <LoopTaskForm
-            taskDesc={task.description as LoopTaskDescription}
-            loopWaypoints={loopWaypoints}
-            onChange={(desc) => handleTaskDescriptionChange(RmfModels.TaskType.TYPE_LOOP, desc)}
-          />
-        );
-      case RmfModels.TaskType.TYPE_DELIVERY:
-        return (
-          <DeliveryTaskForm
-            taskDesc={task.description as DeliveryTaskDescription}
-            deliveryWaypoints={deliveryWaypoints}
-            dispensers={dispensers}
-            ingestors={ingestors}
-            onChange={(desc) => handleTaskDescriptionChange(RmfModels.TaskType.TYPE_DELIVERY, desc)}
-          />
-        );
-      default:
-        return null;
-    }
   };
 
   const handleTaskTypeChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
@@ -219,19 +108,19 @@ export function ScheduleTaskForm({
   // no memo because deps would likely change
   const handleSubmit: React.MouseEventHandler = async (ev) => {
     ev.preventDefault();
-    if (!submitTasks) {
-      onSuccess && onSuccess(tasks);
+    if (!submitTask) {
+      onSuccess && onSuccess(state);
       return;
     }
     setSubmitting(true);
     try {
       setSubmitting(true);
-      await submitTasks(tasks);
+      await submitTask(state);
       setSubmitting(false);
-      onSuccess && onSuccess(tasks);
+      onSuccess && onSuccess(state);
     } catch (e) {
       setSubmitting(false);
-      onFail && onFail(e, tasks);
+      onFail && onFail(e, state);
     }
   };
 
@@ -243,7 +132,6 @@ export function ScheduleTaskForm({
         confirmText={'Schedule'}
         maxWidth="md"
         fullWidth={false}
-        // toolbar={}
         onSubmit={handleSubmit}
         {...otherProps}
       >
@@ -256,7 +144,7 @@ export function ScheduleTaskForm({
               variant="outlined"
               fullWidth
               margin="normal"
-              value={task.task_type !== -1 ? task.task_type : ''}
+              value={state.task.task_type !== -1 ? state.task.task_type : ''}
               onChange={handleTaskTypeChange}
             >
               <MenuItem value={RmfModels.TaskType.TYPE_CLEAN}>Clean</MenuItem>
@@ -298,34 +186,18 @@ export function ScheduleTaskForm({
                     updateTasks();
                   }}
                 />
-
-                {renderTaskDescriptionForm()}
               </Grid>
             </Grid>
-            {renderTaskDescriptionForm()}
+            <TaskDescriptionForm
+              task={state.task}
+              handleTaskDescriptionChange={handleTaskDescriptionChange}
+              cleaningZones={cleaningZones}
+              loopWaypoints={loopWaypoints}
+              deliveryWaypoints={deliveryWaypoints}
+              dispensers={dispensers}
+              ingestors={ingestors}
+            />
           </Grid>
-          {taskTitles.length > 1 && (
-            <>
-              <Divider
-                orientation="vertical"
-                flexItem
-                style={{ marginLeft: theme.spacing(2), marginRight: theme.spacing(2) }}
-              />
-              <List dense className={classes.taskList} aria-label="Tasks List">
-                {taskTitles.map((title, idx) => (
-                  <ListItem
-                    key={idx}
-                    button
-                    onClick={() => setSelectedTaskIdx(idx)}
-                    className={selectedTaskIdx === idx ? classes.selectedTask : undefined}
-                    role="listitem button"
-                  >
-                    <ListItemText primary={title} />
-                  </ListItem>
-                ))}
-              </List>
-            </>
-          )}
         </Grid>
         <Grid container wrap="nowrap">
           <Grid style={{ flexGrow: 1 }}>

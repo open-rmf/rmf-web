@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function getShortDescription(task: SubmitTask): string {
+export function getShortDescription(task: SubmitTask): string {
   switch (task.task_type) {
     case RmfModels.TaskType.TYPE_CLEAN: {
       const desc: CleanTaskDescription = task.description;
@@ -303,13 +303,13 @@ export function CleanTaskForm({ taskDesc, cleaningZones, onChange }: CleanTaskFo
   );
 }
 
-function defaultCleanTask(): CleanTaskDescription {
+export function defaultCleanTask(): CleanTaskDescription {
   return {
     cleaning_zone: '',
   };
 }
 
-function defaultLoopsTask(): LoopTaskDescription {
+export function defaultLoopsTask(): LoopTaskDescription {
   return {
     start_name: '',
     finish_name: '',
@@ -317,7 +317,7 @@ function defaultLoopsTask(): LoopTaskDescription {
   };
 }
 
-function defaultDeliveryTask(): DeliveryTaskDescription {
+export function defaultDeliveryTask(): DeliveryTaskDescription {
   return {
     pickup_place_name: '',
     pickup_dispenser: '',
@@ -326,7 +326,7 @@ function defaultDeliveryTask(): DeliveryTaskDescription {
   };
 }
 
-function defaultTaskDescription(taskType?: number): TaskDescription | undefined {
+export function defaultTaskDescription(taskType?: number): TaskDescription | undefined {
   switch (taskType) {
     case RmfModels.TaskType.TYPE_CLEAN:
       return defaultCleanTask();
@@ -339,7 +339,7 @@ function defaultTaskDescription(taskType?: number): TaskDescription | undefined 
   }
 }
 
-function defaultTask(): SubmitTask {
+export function defaultTask(): SubmitTask {
   return {
     description: defaultCleanTask(),
     start_time: Math.floor(Date.now() / 1000),
@@ -546,8 +546,6 @@ export function CreateTaskForm({
                     updateTasks();
                   }}
                 />
-
-                {renderTaskDescriptionForm()}
               </Grid>
             </Grid>
             {renderTaskDescriptionForm()}
