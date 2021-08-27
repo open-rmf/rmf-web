@@ -1,8 +1,6 @@
 # import schedule
 from datetime import datetime, timedelta
 
-from fastapi.applications import FastAPI
-
 from task_scheduler.models.tortoise_models.scheduled_task import ScheduledTask
 
 # def setup_scheduler(app: FastAPI):
@@ -18,10 +16,11 @@ async def get_scheduled_tasks():
     print(tasks)
     for task in tasks:
         time = task.task_datetime.time()
-        print(f"{time} {task.task_name}")
+        print(time)
+        # print(f"{time} {task.task_name}")
 
-        def job():
-            print(f"{time} {task.task_name}")
+        # def job():
+        #     print(f"{time} {task.task_name}")
 
         # schedule.every().day.at().do(job)
 

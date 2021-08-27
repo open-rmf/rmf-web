@@ -1,5 +1,7 @@
+# pylint: disable=unused-import
 from typing import List, Optional, Type
 
+from apscheduler.jobstores.base import JobLookupError
 from tortoise import BaseDBAsyncClient, fields, models
 from tortoise.signals import post_delete, post_save
 
@@ -34,7 +36,7 @@ async def signal_post_save(
         scheduler.new_job(
             str(instance.id), send_task, (), instance.task_datetime.isoformat()
         )
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-except
         print(e)
 
 
@@ -48,5 +50,7 @@ async def signal_post_delete(
 
     try:
         scheduler.delete_job(instance.id)
-    except Exception as e:
+    except JobLookupError as e:
+        print(e)
+    except Exception as e:  # pylint: disable=broad-except
         print(e)
