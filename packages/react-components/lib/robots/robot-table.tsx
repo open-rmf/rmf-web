@@ -13,6 +13,7 @@ import {
   Toolbar,
   Typography,
 } from '@material-ui/core';
+import * as RmfModels from 'rmf-models';
 import { Refresh as RefreshIcon } from '@material-ui/icons';
 import React from 'react';
 import { taskTypeToStr } from '../tasks/utils';
@@ -33,6 +34,18 @@ const useStyles = makeStyles((theme) => ({
   },
   phasesCell: {
     padding: `0 ${theme.spacing(1)}px`,
+  },
+  robotErrorClass: {
+    backgroundColor: theme.palette.error.main,
+  },
+  robotStoppedClass: {
+    backgroundColor: theme.palette.warning.main,
+  },
+  robotInMotionClass: {
+    backgroundColor: theme.palette.success.main,
+  },
+  robotChargingClass: {
+    backgroundColor: theme.palette.info.main,
   },
 }));
 
@@ -78,6 +91,28 @@ const returnLocationCells = (robot: VerboseRobot) => {
 function RobotRow({ robot, onClick }: RobotRowProps) {
   const classes = useStyles();
 
+  const getRobotModeClass = (robotMode: RmfModels.RobotMode) => {
+    switch (robotMode.mode) {
+      case RmfModels.RobotMode.MODE_EMERGENCY:
+        return classes.robotErrorClass;
+      case RmfModels.RobotMode.MODE_CHARGING:
+        return classes.robotChargingClass;
+      case RmfModels.RobotMode.MODE_GOING_HOME:
+      case RmfModels.RobotMode.MODE_DOCKING:
+      case RmfModels.RobotMode.MODE_MOVING:
+        return classes.robotInMotionClass;
+      case RmfModels.RobotMode.MODE_IDLE:
+      case RmfModels.RobotMode.MODE_PAUSED:
+      case RmfModels.RobotMode.MODE_WAITING:
+        return classes.robotStoppedClass;
+      default:
+        return '';
+    }
+  };
+
+  const robotMode = robotModeToString(robot.state.mode);
+  const robotModeClass = getRobotModeClass(robot.state.mode);
+
   if (robot.tasks.length === 0) {
     return (
       <>
@@ -87,7 +122,7 @@ function RobotRow({ robot, onClick }: RobotRowProps) {
           <TableCell>{'-'}</TableCell>
           <TableCell>{'-'}</TableCell>
           <TableCell>{robot.state.battery_percent.toFixed(2)}%</TableCell>
-          <TableCell>{robotModeToString(robot.state.mode)}</TableCell>
+          <TableCell className={robotModeClass}>{robotMode}</TableCell>
         </TableRow>
       </>
     );
@@ -103,7 +138,7 @@ function RobotRow({ robot, onClick }: RobotRowProps) {
               : '-'}
           </TableCell>
           <TableCell>{robot.state.battery_percent.toFixed(2)}%</TableCell>
-          <TableCell>{robotModeToString(robot.state.mode)}</TableCell>
+          <TableCell className={robotModeClass}>{robotMode}</TableCell>
         </TableRow>
       </>
     );
