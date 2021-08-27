@@ -24,7 +24,7 @@ setup(
         "python-socketio~=5.1",
         "rx~=3.1",
         "pydantic~=1.8",
-        "apscheduler~=1.14.0",
+        "apscheduler~=3.7.0",
     ],
     extras_require={
         "postgres": ["asyncpg~=0.22.0"],

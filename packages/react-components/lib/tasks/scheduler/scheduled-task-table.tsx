@@ -27,22 +27,22 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export interface TaskRule {
-  name: string;
-  day_of_Week: number[];
-  start_datetime: string;
-  end_datetime: string | null;
-  frequency: number;
-  frequency_type: string;
+export interface ScheduledTask {
+  id: number;
+  created_at: string;
+  enabled: number[];
+  rule: string;
+  task_datetime: string | null;
+  task_type: number;
   args?: SubmitTask;
 }
 
 interface TaskRowProps {
-  taskRule: TaskRule;
+  scheduledTask: ScheduledTask;
   onClick: React.MouseEventHandler<HTMLTableRowElement>;
 }
 
-function TaskRow({ taskRule, onClick }: TaskRowProps) {
+function TaskRow({ scheduledTask, onClick }: TaskRowProps) {
   const classes = useStyles();
   const [hover, setHover] = React.useState(false);
 
@@ -54,13 +54,12 @@ function TaskRow({ taskRule, onClick }: TaskRowProps) {
         onMouseOver={() => setHover(true)}
         onMouseOut={() => setHover(false)}
       >
-        <TableCell>{taskRule.name}</TableCell>
-        <TableCell>{taskRule.day_of_Week}</TableCell>
-        <TableCell>{taskRule.start_datetime}</TableCell>
-        <TableCell>{taskRule.end_datetime ? taskRule.end_datetime : null}</TableCell>
-        <TableCell>{taskRule.frequency}</TableCell>
-        <TableCell>{taskRule.frequency_type}</TableCell>
-        <TableCell>{taskRule.args}</TableCell>
+        <TableCell>{scheduledTask.created_at}</TableCell>
+        <TableCell>{scheduledTask.enabled}</TableCell>
+        <TableCell>{scheduledTask.rule}</TableCell>
+        <TableCell>{scheduledTask.task_datetime}</TableCell>
+        <TableCell>{scheduledTask.task_type}</TableCell>
+        <TableCell>{scheduledTask.args}</TableCell>
       </TableRow>
     </>
   );
@@ -70,16 +69,16 @@ const toRelativeDate = (rosTime: RmfModels.Time) => {
   return formatDistanceToNow(rosTimeToJs(rosTime), { addSuffix: true });
 };
 
-export interface TaskRuleTableProps {
+export interface ScheduledTaskTableProps {
   /**
    * The current list of tasks to display, when pagination is enabled, this should only
    * contain the tasks for the current page.
    */
-  taskRules: TaskRule[];
-  onTaskClick?(ev: React.MouseEvent<HTMLDivElement>, taskRule: TaskRule): void;
+  taskRules: ScheduledTask[];
+  onTaskClick?(ev: React.MouseEvent<HTMLDivElement>, taskRule: ScheduledTask): void;
 }
 
-export function TaskRuleTable(props: TaskRuleTableProps): JSX.Element {
+export function ScheduledTaskTable(props: ScheduledTaskTableProps): JSX.Element {
   const { taskRules, onTaskClick } = props;
   const classes = useStyles();
   return (
@@ -99,8 +98,8 @@ export function TaskRuleTable(props: TaskRuleTableProps): JSX.Element {
       <TableBody>
         {taskRules.map((task) => (
           <TaskRow
-            key={task.name}
-            taskRule={task}
+            key={task.id}
+            scheduledTask={task}
             onClick={(ev) => onTaskClick && onTaskClick(ev, task)}
           />
         ))}
