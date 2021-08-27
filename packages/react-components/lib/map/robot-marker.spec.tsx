@@ -30,11 +30,11 @@ describe('RobotMarker', () => {
     for (const robot of robots) {
       await render(
         <RobotMarker
+          color={robot.color}
           fleet={robot.fleet}
           name={robot.name}
           model={robot.model}
           footprint={robot.footprint}
-          color="#000000"
           state={makeRobot({ name: robot.name })}
         />,
       );

@@ -23,12 +23,13 @@ module.exports = (config) => {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine', 'webpack'],
+    frameworks: ['jasmine'],
 
     // list of files / patterns to load in the browser
     files: [
       {
-        pattern: 'lib/**/*spec.+(ts|tsx)',
+        // pattern: 'lib/**/*spec.+(ts|tsx)',
+        pattern: 'test/index.spec.js',
         watched: false,
       },
       {
@@ -45,9 +46,16 @@ module.exports = (config) => {
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-    preprocessors: { 'lib/**/*spec.+(ts|tsx)': ['webpack'] },
+    // preprocessors: { 'lib/**/*spec.+(ts|tsx)': ['webpack'] },
+    preprocessors: { 'test/index.spec.js': ['webpack'] },
 
     webpack: testWebpackConfig,
+
+    webpackMiddleware: {
+      // webpack-dev-middleware configuration
+      // i. e.
+      stats: 'errors-only',
+    },
 
     coverageReporter: {
       dir: '.',
@@ -63,9 +71,11 @@ module.exports = (config) => {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['dots', isCoverage && 'coverage', useBrowserStack && 'BrowserStack'].filter(
-      (x) => x,
-    ),
+    reporters: [
+      'dots',
+      ...(isCoverage ? ['coverage'] : []),
+      ...(useBrowserStack ? ['BrowserStack'] : []),
+    ],
 
     port: 9876,
 
@@ -99,9 +109,9 @@ module.exports = (config) => {
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
     browsers: [
-      ...(useBrowserStack ? ['bsSafari', 'bsChrome'] : []),
-      !useBrowserStack && 'ChromeHeadless',
-    ].filter((x) => x),
+      ...(useBrowserStack ? ['bsSafari', 'bsChrome'] : ['ChromeHeadless']),
+      ...(!useBrowserStack ? ['ChromeHeadless'] : []),
+    ],
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
