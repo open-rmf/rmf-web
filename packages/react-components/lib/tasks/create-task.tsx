@@ -23,6 +23,7 @@ import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
 import { PositiveIntField } from '../form-inputs';
+import Scheduler from './scheduler/scheduler';
 
 type TaskDescription = CleanTaskDescription | LoopTaskDescription | DeliveryTaskDescription;
 
@@ -41,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function getShortDescription(task: SubmitTask): string {
+export function getShortDescription(task: SubmitTask): string {
   switch (task.task_type) {
     case RmfModels.TaskType.TYPE_CLEAN: {
       const desc: CleanTaskDescription = task.description;
@@ -80,7 +81,7 @@ function FormToolbar({ onSelectFileClick }: FormToolbarProps) {
   );
 }
 
-interface DeliveryTaskFormProps {
+export interface DeliveryTaskFormProps {
   taskDesc: DeliveryTaskDescription;
   deliveryWaypoints: string[];
   dispensers: string[];
@@ -88,7 +89,7 @@ interface DeliveryTaskFormProps {
   onChange(deliveryTaskDescription: DeliveryTaskDescription): void;
 }
 
-function DeliveryTaskForm({
+export function DeliveryTaskForm({
   taskDesc,
   deliveryWaypoints,
   dispensers,
@@ -199,13 +200,13 @@ function DeliveryTaskForm({
   );
 }
 
-interface LoopTaskFormProps {
+export interface LoopTaskFormProps {
   taskDesc: LoopTaskDescription;
   loopWaypoints: string[];
   onChange(loopTaskDescription: LoopTaskDescription): void;
 }
 
-function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) {
+export function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) {
   const theme = useTheme();
 
   return (
@@ -274,13 +275,13 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
   );
 }
 
-interface CleanTaskFormProps {
+export interface CleanTaskFormProps {
   taskDesc: CleanTaskDescription;
   cleaningZones: string[];
   onChange(cleanTaskDescription: CleanTaskDescription): void;
 }
 
-function CleanTaskForm({ taskDesc, cleaningZones, onChange }: CleanTaskFormProps) {
+export function CleanTaskForm({ taskDesc, cleaningZones, onChange }: CleanTaskFormProps) {
   return (
     <Autocomplete
       id="cleaning-zone"
@@ -302,13 +303,13 @@ function CleanTaskForm({ taskDesc, cleaningZones, onChange }: CleanTaskFormProps
   );
 }
 
-function defaultCleanTask(): CleanTaskDescription {
+export function defaultCleanTask(): CleanTaskDescription {
   return {
     cleaning_zone: '',
   };
 }
 
-function defaultLoopsTask(): LoopTaskDescription {
+export function defaultLoopsTask(): LoopTaskDescription {
   return {
     start_name: '',
     finish_name: '',
@@ -316,7 +317,7 @@ function defaultLoopsTask(): LoopTaskDescription {
   };
 }
 
-function defaultDeliveryTask(): DeliveryTaskDescription {
+export function defaultDeliveryTask(): DeliveryTaskDescription {
   return {
     pickup_place_name: '',
     pickup_dispenser: '',
@@ -325,7 +326,7 @@ function defaultDeliveryTask(): DeliveryTaskDescription {
   };
 }
 
-function defaultTaskDescription(taskType?: number): TaskDescription | undefined {
+export function defaultTaskDescription(taskType?: number): TaskDescription | undefined {
   switch (taskType) {
     case RmfModels.TaskType.TYPE_CLEAN:
       return defaultCleanTask();
@@ -338,7 +339,7 @@ function defaultTaskDescription(taskType?: number): TaskDescription | undefined 
   }
 }
 
-function defaultTask(): SubmitTask {
+export function defaultTask(): SubmitTask {
   return {
     description: defaultCleanTask(),
     start_time: Math.floor(Date.now() / 1000),

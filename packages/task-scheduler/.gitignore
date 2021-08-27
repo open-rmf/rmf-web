@@ -1,0 +1,9 @@
+/task_scheduler.egg-info
+/static
+/test_artifacts/
+/.coverage
+/.coverage.*
+/htmlcov/
+/build/
+/dist/
+
