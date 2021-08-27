@@ -226,9 +226,17 @@ export default function Dashboard(_props: {}): React.ReactElement {
     return resp.data.items;
   }, [fleetsApi]);
 
+  // implement a set interval when I'm back on 30th aug
   React.useEffect(() => {
-    fetchVerboseRobots();
-  }, [fetchVerboseRobots]);
+    const autoRefresh = setInterval(() => {
+      fetchVerboseRobots();
+      verboseRobots.forEach((robot) => {
+        if (selectedRobot && robot.fleet + robot.name === selectedRobot.fleet + selectedRobot.name)
+          setSelectedRobot(robot);
+      });
+    }, 3000);
+    return () => clearInterval(autoRefresh);
+  }, [fetchVerboseRobots, verboseRobots, selectedRobot]);
 
   const fleetStates = React.useContext(FleetStateContext);
   const fleetNames = React.useRef<string[]>([]);
