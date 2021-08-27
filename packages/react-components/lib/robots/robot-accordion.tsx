@@ -5,7 +5,7 @@ import React from 'react';
 import ItemAccordionDetails from '../item-accordion-details';
 import ItemAccordionSummary from '../item-accordion-summary';
 import { SimpleInfo } from '../simple-info';
-import { robotModeToString } from './utils';
+import { robotModeToString, VerboseRobot } from './utils';
 import { Map as LMap } from 'react-leaflet';
 
 const debug = Debug('Robots:RobotAccordion');
@@ -41,18 +41,20 @@ const RobotInfo = (props: RobotInfoProps) => {
 
 export interface RobotAccordionProps extends Omit<AccordionProps, 'children'> {
   fleetName: string;
-  robot: RmfModels.RobotState;
+  robot: VerboseRobot;
   mapRef?: React.RefObject<LMap>;
+  onRobotSelect?: React.Dispatch<React.SetStateAction<VerboseRobot | undefined>>;
 }
 
 export const RobotAccordion = React.forwardRef(
   (props: RobotAccordionProps, ref: React.Ref<HTMLElement>) => {
-    const { fleetName, robot, mapRef, ...otherProps } = props;
+    const { fleetName, robot, mapRef, onRobotSelect, ...otherProps } = props;
     debug(`render ${robot.name}`);
     const classes = useStyles();
 
-    function onAccordianClick(robot: RmfModels.RobotState, mapRef?: React.RefObject<LMap>) {
-      mapRef?.current?.leafletElement.setView([robot.location.y, robot.location.x], 5);
+    function onAccordianClick(robot: VerboseRobot, mapRef?: React.RefObject<LMap>) {
+      mapRef?.current?.leafletElement.setView([robot.state.location.y, robot.state.location.x], 5);
+      onRobotSelect && onRobotSelect(robot);
     }
 
     return (
@@ -61,12 +63,12 @@ export const RobotAccordion = React.forwardRef(
           title={robot.name}
           statusProps={{
             className: classes.robotStatusLabel,
-            text: robotModeToString(robot.mode),
+            text: robotModeToString(robot.state.mode),
           }}
           onAccordianClick={() => onAccordianClick(robot, mapRef)}
         />
         <ItemAccordionDetails>
-          <RobotInfo fleetName={fleetName} robot={robot} />
+          <RobotInfo fleetName={fleetName} robot={robot.state} />
         </ItemAccordionDetails>
       </Accordion>
     );

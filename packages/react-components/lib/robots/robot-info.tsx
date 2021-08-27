@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) =>
 );
 
 export interface RobotInfoProps {
-  robot: VerboseRobot;
+  robot?: VerboseRobot;
 }
 
 export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
@@ -89,7 +89,7 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
       RmfModels.TaskSummary.STATE_FAILED,
     ];
 
-    if (robot.tasks.length > 0) {
+    if (robot && robot.tasks.length > 0) {
       setCurrentTask(robot.tasks[0]);
       if (currentTask) {
         setHasConcreteEndTime(concreteTasks.includes(currentTask.task_summary.state));
@@ -104,7 +104,7 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
     if (currentTask) {
       const location = returnTaskLocations(currentTask.task_summary);
       const destination = returnTaskDestinations(currentTask.task_summary);
-      const assignedTasks = assignedTasksToStr(robot);
+      const assignedTasks = robot ? assignedTasksToStr(robot) : '-';
       return { location, destination, assignedTasks };
     }
   }, [currentTask, robot]);
@@ -112,7 +112,7 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
   return (
     <div>
       <Typography variant="h6" style={{ textAlign: 'center' }} gutterBottom>
-        {robot.name}
+        {robot ? robot.name : '-'}
       </Typography>
       <Divider />
       <div style={{ marginBottom: theme.spacing(1) }}></div>
@@ -123,7 +123,7 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
           </Typography>
         </Grid>
         <Grid item xs={12}>
-          <LinearProgressBar value={robot.state.battery_percent} />
+          <LinearProgressBar value={robot ? robot.state.battery_percent : 0} />
         </Grid>
         <Grid container item xs={12} justify="center">
           <Typography variant="h6" gutterBottom>

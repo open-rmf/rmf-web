@@ -14,6 +14,7 @@ import {
   RobotAccordion as RobotAccordion_,
   SimpleFilter,
   useStackNavigator,
+  VerboseRobot,
   withSpotlight,
 } from 'react-components';
 import { GlobalHotKeys } from 'react-hotkeys';
@@ -206,8 +207,30 @@ export default function Dashboard(_props: {}): React.ReactElement {
     dispensers = resourceManager.dispensers.dispensers;
   }
 
+  // fleets
+  const { fleetsApi } = React.useContext(RmfIngressContext) || {};
+  const [verboseRobots, setVerboseRobots] = React.useState<VerboseRobot[]>([]);
+  const [selectedRobot, setSelectedRobot] = React.useState<VerboseRobot>();
+  const fetchVerboseRobots = React.useCallback(async () => {
+    if (!fleetsApi) {
+      return [];
+    }
+    const resp = await fleetsApi?.getRobotsFleetsRobotsGet(
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      'fleet_name,robot_name',
+    );
+    setVerboseRobots(resp.data.items);
+    return resp.data.items;
+  }, [fleetsApi]);
+
+  React.useEffect(() => {
+    fetchVerboseRobots();
+  }, [fetchVerboseRobots]);
+
   const fleetStates = React.useContext(FleetStateContext);
-  const fleets = React.useMemo(() => Object.values(fleetStates), [fleetStates]);
   const fleetNames = React.useRef<string[]>([]);
   const newFleetNames = Object.keys(fleetStates);
   if (newFleetNames.some((fleetName) => !fleetNames.current.includes(fleetName))) {
@@ -305,6 +328,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
         <OmniPanel
           className={classes.omniPanel}
           stack={viewStack}
+          robot={selectedRobot}
           variant="backHomeClose"
           onBack={handleOmniPanelBack}
           onHome={handleOmniPanelHome}
@@ -348,21 +372,20 @@ export default function Dashboard(_props: {}): React.ReactElement {
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Robots}>
             <SimpleFilter onChange={onChange} value={filter} />
-            {fleets.flatMap((fleet) =>
-              fleet.robots.map((robot) => {
-                const toLower = robot.name;
-                return toLower.includes(filter) ? (
-                  <RobotAccordion
-                    key={robotKey(fleet.name, robot.name)}
-                    ref={robotAccordionRefs[robotKey(fleet.name, robot.name)].ref}
-                    robot={robot}
-                    fleetName={fleet.name}
-                    data-component="RobotAccordion"
-                    mapRef={windowMap.get('lmap')}
-                  />
-                ) : null;
-              }),
-            )}
+            {verboseRobots.map((robot) => {
+              const toLower = robot.name;
+              return toLower.includes(filter) ? (
+                <RobotAccordion
+                  key={robotKey(robot.fleet, robot.name)}
+                  ref={robotAccordionRefs[robotKey(robot.fleet, robot.name)].ref}
+                  robot={robot}
+                  fleetName={robot.fleet}
+                  data-component="RobotAccordion"
+                  mapRef={windowMap.get('lmap')}
+                  onRobotSelect={setSelectedRobot}
+                />
+              ) : null;
+            })}
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Dispensers}>
             <SimpleFilter onChange={onChange} value={filter} />
