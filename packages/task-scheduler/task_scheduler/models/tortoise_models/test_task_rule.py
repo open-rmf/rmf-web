@@ -28,7 +28,7 @@ class TestCaseTaskRuleCreateEffect(unittest.IsolatedAsyncioTestCase):
     async def test_create_task_rule_correctly(self):
         now = datetime.utcnow()
         task_rule = await TaskRule.create(
-            description="test",
+            name="test",
             task_type=TaskTypeEnum.LOOP,
             frequency=1,
             frequency_type=FrequencyEnum.ONCE,
@@ -36,7 +36,7 @@ class TestCaseTaskRuleCreateEffect(unittest.IsolatedAsyncioTestCase):
             start_datetime=now,
         )
 
-        self.assertEqual(task_rule.description, "test")
+        self.assertEqual(task_rule.name, "test")
         self.assertEqual(task_rule.frequency, 1)
         self.assertEqual(task_rule.task_type, TaskTypeEnum.LOOP)
         self.assertEqual(task_rule.frequency_type, FrequencyEnum.ONCE)
@@ -44,7 +44,7 @@ class TestCaseTaskRuleCreateEffect(unittest.IsolatedAsyncioTestCase):
     async def test_create_task_rule_generates_scheduled_task(self):
         now = datetime.utcnow()
         await TaskRule.create(
-            description="test",
+            name="test",
             task_type=TaskTypeEnum.LOOP,
             frequency=1,
             frequency_type=FrequencyEnum.ONCE,
@@ -61,7 +61,7 @@ class TestCaseTaskRuleCreateEffect(unittest.IsolatedAsyncioTestCase):
     async def test_delete_task_rule_correctly(self):
         now = datetime.utcnow()
         task_rule = await TaskRule.create(
-            description="test",
+            name="test",
             task_type=TaskTypeEnum.LOOP,
             frequency=1,
             frequency_type=FrequencyEnum.ONCE,
@@ -74,7 +74,7 @@ class TestCaseTaskRuleCreateEffect(unittest.IsolatedAsyncioTestCase):
     async def test_delete_task_rule_deletes_all_related_scheduled_tasks(self):
         now = datetime.utcnow()
         task_rule = await TaskRule.create(
-            description="test",
+            name="test",
             task_type=TaskTypeEnum.LOOP,
             frequency=2,
             frequency_type=FrequencyEnum.HOURLY,
@@ -106,7 +106,7 @@ class TestCaseCorrectNumberOfScheduledtTaskGenerationOneDate(
     async def test_create_task_rule_generates_scheduled_task_once(self):
         now = datetime.utcnow()
         await TaskRule.create(
-            description="test",
+            name="test",
             task_type=TaskTypeEnum.LOOP,
             frequency=1,
             frequency_type=FrequencyEnum.ONCE,
@@ -125,7 +125,7 @@ class TestCaseCorrectNumberOfScheduledtTaskGenerationOneDate(
         future = now + timedelta(days=2)
 
         await TaskRule.create(
-            description="test",
+            name="test",
             task_type=TaskTypeEnum.LOOP,
             frequency=60,
             frequency_type=FrequencyEnum.MINUTELY,
@@ -140,7 +140,7 @@ class TestCaseCorrectNumberOfScheduledtTaskGenerationOneDate(
     async def test_create_task_rule_generate_three_scheduled_task(self):
         now = datetime.utcnow()
         await TaskRule.create(
-            description="test",
+            name="test",
             task_type=TaskTypeEnum.LOOP,
             frequency=2,
             frequency_type=FrequencyEnum.HOURLY,
@@ -156,7 +156,7 @@ class TestCaseCorrectNumberOfScheduledtTaskGenerationOneDate(
         now = datetime.utcnow()
         future = now + timedelta(hours=1)
         await TaskRule.create(
-            description="test",
+            name="test",
             task_type=TaskTypeEnum.LOOP,
             frequency=2,
             frequency_type=FrequencyEnum.HOURLY,
@@ -173,7 +173,7 @@ class TestCaseCorrectNumberOfScheduledtTaskGenerationOneDate(
         future = now + timedelta(days=60)
 
         await TaskRule.create(
-            description="test",
+            name="test",
             task_type=TaskTypeEnum.LOOP,
             frequency=1,
             frequency_type=FrequencyEnum.DAILY,
@@ -190,7 +190,7 @@ class TestCaseCorrectNumberOfScheduledtTaskGenerationOneDate(
         future = now + timedelta(days=90)
 
         await TaskRule.create(
-            description="test",
+            name="test",
             task_type=TaskTypeEnum.LOOP,
             frequency=1,
             frequency_type=FrequencyEnum.WEEKLY,
@@ -208,7 +208,7 @@ class TestCaseCorrectNumberOfScheduledtTaskGenerationOneDate(
         future = now + timedelta(days=365)
 
         await TaskRule.create(
-            description="test",
+            name="test",
             task_type=TaskTypeEnum.LOOP,
             frequency=3,
             frequency_type=FrequencyEnum.MONTHLY,
@@ -232,7 +232,7 @@ class TestCaseScheduledtTaskGenerationDateCorrectness(unittest.IsolatedAsyncioTe
     async def test_task_once(self):
         now = datetime.utcnow()
         await TaskRule.create(
-            description="test",
+            name="test",
             task_type=TaskTypeEnum.LOOP,
             frequency=1,
             frequency_type=FrequencyEnum.ONCE,
@@ -250,7 +250,7 @@ class TestCaseScheduledtTaskGenerationDateCorrectness(unittest.IsolatedAsyncioTe
         future = now + timedelta(hours=3)
 
         await TaskRule.create(
-            description="test",
+            name="test",
             task_type=TaskTypeEnum.LOOP,
             frequency=2,
             frequency_type=FrequencyEnum.HOURLY,
@@ -273,7 +273,7 @@ class TestCaseScheduledtTaskGenerationDateCorrectness(unittest.IsolatedAsyncioTe
         future = now + timedelta(days=5)
 
         await TaskRule.create(
-            description="test",
+            name="test",
             task_type=TaskTypeEnum.LOOP,
             frequency=2,
             frequency_type=FrequencyEnum.DAILY,
@@ -296,7 +296,7 @@ class TestCaseScheduledtTaskGenerationDateCorrectness(unittest.IsolatedAsyncioTe
         future = now + timedelta(days=28)
 
         await TaskRule.create(
-            description="test",
+            name="test",
             task_type=TaskTypeEnum.LOOP,
             frequency=2,
             frequency_type=FrequencyEnum.WEEKLY,
@@ -320,7 +320,7 @@ class TestCaseScheduledtTaskGenerationDateCorrectness(unittest.IsolatedAsyncioTe
         future = now + timedelta(days=30)
 
         await TaskRule.create(
-            description="test",
+            name="test",
             task_type=TaskTypeEnum.LOOP,
             frequency=1,
             frequency_type=FrequencyEnum.WEEKLY,
@@ -355,7 +355,7 @@ class TestCaseScheduledtTaskGenerationDateCorrectness(unittest.IsolatedAsyncioTe
         future = now + timedelta(days=120)
         expect_date = datetime(2021, 7, 4)
         await TaskRule.create(
-            description="test",
+            name="test",
             task_type=TaskTypeEnum.LOOP,
             frequency=2,
             frequency_type=FrequencyEnum.MONTHLY,
@@ -384,7 +384,7 @@ class TestCaseScheduledtTaskGenerationDateCorrectness(unittest.IsolatedAsyncioTe
         expect_date = datetime(2020, 3, 1)
 
         await TaskRule.create(
-            description="test",
+            name="test",
             task_type=TaskTypeEnum.LOOP,
             frequency=1,
             frequency_type=FrequencyEnum.MONTHLY,
@@ -413,7 +413,7 @@ class TestCaseScheduledtTaskGenerationDateCorrectness(unittest.IsolatedAsyncioTe
         future = now + timedelta(days=60)
 
         await TaskRule.create(
-            description="test",
+            name="test",
             task_type=TaskTypeEnum.LOOP,
             frequency=1,
             frequency_type=FrequencyEnum.MONTHLY,
@@ -460,7 +460,7 @@ class TestCaseTwoWeekdaysScheduledtTaskGenerationDateCorrectness(
         future = now + timedelta(days=14)
         days_of_week = await DaysOfWeek.get_or_create(monday=True, wednesday=True)
         await TaskRule.create(
-            description="test",
+            name="test",
             task_type=TaskTypeEnum.LOOP,
             frequency=1,
             frequency_type=FrequencyEnum.ONCE,
@@ -480,7 +480,7 @@ class TestCaseTwoWeekdaysScheduledtTaskGenerationDateCorrectness(
         days_of_week = await DaysOfWeek.get_or_create(monday=True, wednesday=True)
         with self.assertRaises(Exception):
             await TaskRule.create(
-                description="test",
+                name="test",
                 task_type=TaskTypeEnum.LOOP,
                 frequency=1,
                 frequency_type=FrequencyEnum.DAILY,
@@ -491,7 +491,7 @@ class TestCaseTwoWeekdaysScheduledtTaskGenerationDateCorrectness(
             )
 
             await TaskRule.create(
-                description="test",
+                name="test",
                 task_type=TaskTypeEnum.LOOP,
                 frequency=1,
                 frequency_type=FrequencyEnum.HOURLY,
@@ -502,7 +502,7 @@ class TestCaseTwoWeekdaysScheduledtTaskGenerationDateCorrectness(
             )
 
             await TaskRule.create(
-                description="test",
+                name="test",
                 task_type=TaskTypeEnum.LOOP,
                 frequency=1,
                 frequency_type=FrequencyEnum.MINUTELY,
@@ -517,7 +517,7 @@ class TestCaseTwoWeekdaysScheduledtTaskGenerationDateCorrectness(
         future = now + timedelta(days=13)
         days_of_week = await DaysOfWeek.get_or_create(monday=True, wednesday=True)
         await TaskRule.create(
-            description="test",
+            name="test",
             task_type=TaskTypeEnum.LOOP,
             frequency=1,
             frequency_type=FrequencyEnum.WEEKLY,
@@ -546,7 +546,7 @@ class TestCaseTwoWeekdaysScheduledtTaskGenerationDateCorrectness(
         future = now + timedelta(days=45)
         days_of_week = await DaysOfWeek.get_or_create(monday=True, wednesday=True)
         await TaskRule.create(
-            description="test",
+            name="test",
             task_type=TaskTypeEnum.LOOP,
             frequency=1,
             frequency_type=FrequencyEnum.MONTHLY,

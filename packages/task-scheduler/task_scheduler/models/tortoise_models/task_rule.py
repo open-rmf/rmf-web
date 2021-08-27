@@ -12,7 +12,7 @@ from .task import TaskTypeEnum
 
 class TaskRule(models.Model):
     id = models.IntField(pk=True)
-    description = fields.CharField(unique=True, max_length=150)
+    name = fields.CharField(unique=True, max_length=150)
     task_type: TaskTypeEnum = fields.CharEnumField(TaskTypeEnum)
     frequency = fields.IntField()
     frequency_type: FrequencyEnum = fields.CharEnumField(

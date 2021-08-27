@@ -21,7 +21,7 @@ class TestCaseScheduledTasks(unittest.IsolatedAsyncioTestCase):
         self.client = TestClient(app)
         now = datetime.utcnow()
         self.task_rule = await TaskRule.create(
-            description="test",
+            name="test",
             task_type=TaskTypeEnum.LOOP,
             frequency=1,
             frequency_type=FrequencyEnum.ONCE,
@@ -30,7 +30,7 @@ class TestCaseScheduledTasks(unittest.IsolatedAsyncioTestCase):
         )
 
         self.task_rule2 = await TaskRule.create(
-            description="test2",
+            name="test2",
             task_type=TaskTypeEnum.DELIVERY,
             frequency=1,
             frequency_type=FrequencyEnum.ONCE,
@@ -83,7 +83,7 @@ class TestCaseScheduledTasks(unittest.IsolatedAsyncioTestCase):
     async def test_gets_and_filters_scheduled_tasks(self):
         now = datetime.utcnow()
         rule = await TaskRule.create(
-            description="test3",
+            name="test3",
             task_type=TaskTypeEnum.DELIVERY,
             frequency=1,
             frequency_type=FrequencyEnum.DAILY,

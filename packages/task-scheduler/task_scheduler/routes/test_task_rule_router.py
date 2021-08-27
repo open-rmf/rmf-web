@@ -25,7 +25,7 @@ class TestTaskRuleRouter(unittest.IsolatedAsyncioTestCase):
 
         now = datetime.utcnow()
         self.task_rule = await TaskRule.create(
-            description="test",
+            name="test",
             task_type=TaskTypeEnum.LOOP,
             frequency=1,
             frequency_type=FrequencyEnum.ONCE,
@@ -53,7 +53,7 @@ class TestTaskRuleRouter(unittest.IsolatedAsyncioTestCase):
         response = self.client.post(
             "/taskrule/",
             json={
-                "description": "test5",
+                "name": "test5",
                 "task_type": "delivery",
                 "frequency": 1,
                 "frequency_type": "Once",
@@ -62,7 +62,7 @@ class TestTaskRuleRouter(unittest.IsolatedAsyncioTestCase):
             },
         )
         assert response.status_code == 201
-        self.assertEqual(response.json()["description"], "test5")
+        self.assertEqual(response.json()["name"], "test5")
 
     def test_fails_creating_wrong_rule_(self):
         response = self.client.post("/taskrule/", json={})

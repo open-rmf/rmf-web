@@ -25,7 +25,7 @@ class TestScheduledTaskRouter(unittest.IsolatedAsyncioTestCase):
 
         now = datetime.utcnow()
         self.task_rule = await TaskRule.create(
-            description="test",
+            name="test",
             task_type=TaskTypeEnum.LOOP,
             frequency=1,
             frequency_type=FrequencyEnum.ONCE,

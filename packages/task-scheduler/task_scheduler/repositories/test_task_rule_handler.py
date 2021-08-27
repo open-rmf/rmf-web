@@ -23,7 +23,7 @@ class TestCaseTaskRule(unittest.IsolatedAsyncioTestCase):
     async def test_creates_task_rule_without_weekdays(self):
         task_rule = await TaskRuleRepository.create(
             {
-                "description": "test",
+                "name": "test",
                 "task_type": "delivery",
                 "frequency": 1,
                 "frequency_type": "Once",
@@ -31,13 +31,13 @@ class TestCaseTaskRule(unittest.IsolatedAsyncioTestCase):
             }
         )
 
-        self.assertEqual(task_rule.description, "test")
+        self.assertEqual(task_rule.name, "test")
 
     async def test_fails_on_creation_without_enddate_and_frequency_daily(self):
         with self.assertRaises(Exception):
             await TaskRuleRepository.create(
                 {
-                    "description": "test",
+                    "name": "test",
                     "task_type": "delivery",
                     "frequency": 1,
                     "frequency_type": "Daily",
@@ -48,7 +48,7 @@ class TestCaseTaskRule(unittest.IsolatedAsyncioTestCase):
     async def test_creates_task_rule_with_weekdays(self):
         task_rule = await TaskRuleRepository.create(
             {
-                "description": "test",
+                "name": "test",
                 "task_type": "delivery",
                 "frequency": 1,
                 "frequency_type": "Once",
@@ -57,13 +57,13 @@ class TestCaseTaskRule(unittest.IsolatedAsyncioTestCase):
             }
         )
 
-        self.assertEqual(task_rule.description, "test")
+        self.assertEqual(task_rule.name, "test")
 
     async def test_deletes_task_rule(self):
 
         await TaskRuleRepository.create(
             {
-                "description": "test",
+                "name": "test",
                 "task_type": "delivery",
                 "frequency": 1,
                 "frequency_type": "Once",
@@ -83,7 +83,7 @@ class TestCaseTaskRule(unittest.IsolatedAsyncioTestCase):
 
         await TaskRuleRepository.create(
             {
-                "description": "test",
+                "name": "test",
                 "task_type": "delivery",
                 "frequency": 1,
                 "frequency_type": "Once",
@@ -94,7 +94,7 @@ class TestCaseTaskRule(unittest.IsolatedAsyncioTestCase):
 
         await TaskRuleRepository.create(
             {
-                "description": "test2",
+                "name": "test2",
                 "task_type": "delivery",
                 "frequency": 1,
                 "frequency_type": "Once",
