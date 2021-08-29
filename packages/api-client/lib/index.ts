@@ -114,3 +114,4 @@ export class SioClient {
 
 export * from './openapi';
 export * from './openapi/models';
+export * from './custom';

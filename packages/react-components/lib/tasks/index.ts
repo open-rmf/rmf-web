@@ -5,3 +5,4 @@ export * from './task-summary-accordion';
 export * from './task-summary-utils';
 export * from './task-table';
 export * from './scheduler';
+export * from './schedule-task';

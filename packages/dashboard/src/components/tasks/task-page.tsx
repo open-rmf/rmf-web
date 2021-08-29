@@ -1,12 +1,15 @@
 /* istanbul ignore file */
 
-import { makeStyles } from '@material-ui/core';
+import { AppBar, Box, makeStyles, Tab, Tabs, Typography } from '@material-ui/core';
 import type { Task } from 'api-client';
 import type { AxiosError } from 'axios';
 import React from 'react';
+import { getScheduledTasksAPI, getTaskRulesAPI } from '../../managers/task-scheduler-manager';
 import { PlacesContext, RmfIngressContext } from '../rmf-app';
 import { useAutoRefresh } from './auto-refresh';
+import { TabPanel, a11yProps } from './tab-panel';
 import { TaskPanel, TaskPanelProps } from './task-panel';
+import TaskSchedulerPanel, { TaskSchedulerPanelProps } from './task-schedule-panel';
 
 const useStyles = makeStyles((theme) => ({
   taskPanel: {
@@ -25,6 +28,12 @@ export function TaskPage() {
   const [hasMore, setHasMore] = React.useState(true);
   const places = React.useContext(PlacesContext);
   const placeNames = places.map((p) => p.vertex.name);
+
+  const [value, setValue] = React.useState(0);
+
+  const handleChange = (event: any, newValue: number) => {
+    setValue(newValue);
+  };
 
   const fetchTasks = React.useCallback(
     async (page: number) => {
@@ -91,24 +100,84 @@ export function TaskPage() {
     [tasksApi],
   );
 
+  /*
+  ---------------
+  */
+
+  const submitTaskSchedule = React.useCallback<Required<TaskSchedulerPanelProps>['submitTask']>(
+    async (task) => {
+      // await Promise.all(tasks.map((t) => tasksApi.submitTaskTasksSubmitTaskPost(t)));
+      // handleRefresh();
+    },
+    [],
+  );
+
+  const getTaskRules = React.useCallback(async (offset: number) => {
+    console.log(offset);
+    const response = await getTaskRulesAPI(0);
+    console.log(response);
+    return [];
+    // await Promise.all(tasks.map((t) => tasksApi.submitTaskTasksSubmitTaskPost(t)));
+    // handleRefresh();
+  }, []);
+
+  const getScheduledTasks = React.useCallback(async (offset: number) => {
+    console.log(offset);
+    const response = await getScheduledTasksAPI(0);
+    console.log(response);
+    // await Promise.all(tasks.map((t) => tasksApi.submitTaskTasksSubmitTaskPost(t)));
+    // handleRefresh();
+    return [];
+  }, []);
+
   return (
-    <TaskPanel
-      className={classes.taskPanel}
-      tasks={autoRefreshState.tasks}
-      paginationOptions={{
-        page,
-        count: hasMore ? -1 : page * 10 + autoRefreshState.tasks.length,
-        rowsPerPage: 10,
-        rowsPerPageOptions: [10],
-        onChangePage: (_ev, newPage) => setPage(newPage),
-      }}
-      cleaningZones={placeNames}
-      loopWaypoints={placeNames}
-      deliveryWaypoints={placeNames}
-      submitTasks={submitTasks}
-      cancelTask={cancelTask}
-      onRefresh={handleRefresh}
-      onAutoRefresh={autoRefreshDispatcher.setEnabled}
-    />
+    <>
+      <AppBar position="static">
+        <Tabs value={value} onChange={handleChange} aria-label="simple tabs example">
+          <Tab label="Tasks" {...a11yProps(0)} />
+          <Tab label="Schedule Task" {...a11yProps(1)} />
+        </Tabs>
+      </AppBar>
+      <TabPanel value={value} index={0}>
+        <TaskPanel
+          className={classes.taskPanel}
+          tasks={autoRefreshState.tasks}
+          paginationOptions={{
+            page,
+            count: hasMore ? -1 : page * 10 + autoRefreshState.tasks.length,
+            rowsPerPage: 10,
+            rowsPerPageOptions: [10],
+            onChangePage: (_ev, newPage) => setPage(newPage),
+          }}
+          cleaningZones={placeNames}
+          loopWaypoints={placeNames}
+          deliveryWaypoints={placeNames}
+          submitTasks={submitTasks}
+          cancelTask={cancelTask}
+          onRefresh={handleRefresh}
+          onAutoRefresh={autoRefreshDispatcher.setEnabled}
+        />
+      </TabPanel>
+      <TabPanel value={value} index={1}>
+        <TaskSchedulerPanel
+          className={classes.taskPanel}
+          tasks={autoRefreshState.tasks}
+          getTaskRules={getTaskRules}
+          getScheduledTasks={getScheduledTasks}
+          paginationOptions={{
+            page,
+            count: hasMore ? -1 : page * 10 + autoRefreshState.tasks.length,
+            rowsPerPage: 10,
+            rowsPerPageOptions: [10],
+            onChangePage: (_ev, newPage) => setPage(newPage),
+          }}
+          cleaningZones={placeNames}
+          loopWaypoints={placeNames}
+          deliveryWaypoints={placeNames}
+          submitTask={submitTaskSchedule}
+          cancelTask={cancelTask}
+        ></TaskSchedulerPanel>
+      </TabPanel>
+    </>
   );
 }

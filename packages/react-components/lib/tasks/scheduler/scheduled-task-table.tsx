@@ -74,29 +74,25 @@ export interface ScheduledTaskTableProps {
    * The current list of tasks to display, when pagination is enabled, this should only
    * contain the tasks for the current page.
    */
-  taskRules: ScheduledTask[];
+  scheduledTasks: ScheduledTask[];
   onTaskClick?(ev: React.MouseEvent<HTMLDivElement>, taskRule: ScheduledTask): void;
 }
 
 export function ScheduledTaskTable(props: ScheduledTaskTableProps): JSX.Element {
-  const { taskRules, onTaskClick } = props;
+  const { scheduledTasks, onTaskClick } = props;
   const classes = useStyles();
   return (
     <Table className={classes.table} stickyHeader size="small" style={{ tableLayout: 'fixed' }}>
       <TableHead>
         <TableRow>
-          <TableCell>Rule Name</TableCell>
-          <TableCell>Task</TableCell>
-          <TableCell>Frequency</TableCell>
-          <TableCell>Frequency Type</TableCell>
+          <TableCell>Enabled</TableCell>
           <TableCell>Start Time</TableCell>
-          <TableCell>End Time</TableCell>
-          <TableCell>Days of week</TableCell>
+          <TableCell>Task (Args)</TableCell>
           <TableCell>Created at</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
-        {taskRules.map((task) => (
+        {scheduledTasks.map((task) => (
           <TaskRow
             key={task.id}
             scheduledTask={task}

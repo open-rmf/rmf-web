@@ -28,6 +28,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export interface TaskRule {
+  id: number;
   name: string;
   day_of_Week: number[];
   start_datetime: string;
@@ -108,3 +109,5 @@ export function TaskRuleTable(props: TaskRuleTableProps): JSX.Element {
     </Table>
   );
 }
+
+export default TaskRuleTable;
