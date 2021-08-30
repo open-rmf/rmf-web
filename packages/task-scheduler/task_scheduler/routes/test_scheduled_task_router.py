@@ -37,14 +37,14 @@ class TestScheduledTaskRouter(unittest.IsolatedAsyncioTestCase):
         await Tortoise.close_connections()
 
     def test_deletes_scheduled_task(self):
-        response = self.client.delete("/scheduledtask/1")
+        response = self.client.delete("/task/scheduled/1")
         assert response.status_code == 204
 
     def test_fails_on_deleting_scheduled_task(self):
-        response = self.client.delete("/scheduledtask/100")
+        response = self.client.delete("/task/scheduled/100")
         assert response.status_code == 503
 
     def test_gets_scheduled_task(self):
-        response = self.client.get("/scheduledtask/")
+        response = self.client.get("/task/scheduled/")
         assert response.status_code == 200
         self.assertEqual(len(response.json()), 1)
