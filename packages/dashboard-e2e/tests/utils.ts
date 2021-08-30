@@ -53,14 +53,30 @@ export const getRobotLocations = (browser: WebdriverIO.BrowserObject): string[] 
   return robotLocations;
 };
 
-export function login(): void {
-  browser.url('/login');
-  $('button=Login').click();
-  $('#username').setValue(process.env.E2E_USER);
-  $('#password').setValue(process.env.E2E_PASSWORD);
-  $('#kc-login').click();
+export function getAppBar(): Element {
+  return $('#appbar');
 }
 
 export function getScheduleVisualizer(): Element {
   return $('#schedule-visualizer');
+}
+
+export function getOmniPanel(): Element {
+  return $('#omnipanel');
+}
+
+export function closeOmniPanel(): void {
+  $(`#omnipanel [aria-label=Close]`).click();
+}
+
+export function openOmniPanel(): void {
+  $('#omnipanel-control').click();
+}
+
+export function omniPanelMainMenu(): void {
+  $(`#omnipanel [aria-label=Home]`).click();
+}
+
+export function getDoorAccordion(doorName: string): Element {
+  return $(`.MuiAccordion-root*=${doorName}`);
 }

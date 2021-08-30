@@ -39,7 +39,7 @@ class OmniPanelControl extends MapControl<OmniPanelControlProps> {
     ReactDOM.render(
       // leaflet css uses `a` element to style controls
       // eslint-disable-next-line jsx-a11y/anchor-is-valid
-      <a href="#" onClick={() => dashboardDispatch.setShowOmniPanel(true)}>
+      <a id="omnipanel-control" href="#" onClick={() => dashboardDispatch.setShowOmniPanel(true)}>
         <DashboardIcon style={{ verticalAlign: 'middle' }} />
       </a>,
       this._container,

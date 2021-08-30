@@ -1,18 +1,6 @@
-import { makeLauncher } from '../../dashboard/rmf-launcher';
-import { login, overwriteClick } from './utils';
 import { execSync } from 'child_process';
 
 describe('Loop request for negotiations', () => {
-  const launcher = makeLauncher();
-
-  before(async () => await launcher.launch());
-  after(async () => await launcher.kill());
-
-  before(() => overwriteClick());
-  before(() => browser.url('/'));
-
-  before(login);
-
   it('renders negotiation trajectory', () => {
     browser.setTimeout({ script: 120000 });
     execSync('ros2 launch rmf_demos office_conflict.launch.xml');

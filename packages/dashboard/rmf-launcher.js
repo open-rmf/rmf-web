@@ -1,48 +1,16 @@
-import * as ChildProcess from 'child_process';
-import { mkdirSync } from 'fs';
+const { spawn } = require('child_process');
+const { mkdirSync } = require('fs');
 
-enum LaunchMode {
-  None,
-  LocalSingleton,
-}
-
-interface Launcher {
-  launch(): Promise<void>;
-  kill(): Promise<void>;
-}
-
-/**
- * Creates a launcher based on the RMF_LAUNCH_MODE environment variable. Value can be one of:
- *
- *   * none
- *   * local
- *
- * Defaults to `local`.
- *
- * If the value is `local`, a singleton instance is used and signal handlers are installed.
- */
-export function makeLauncher(): Launcher {
-  let launchMode = LaunchMode.LocalSingleton;
-
-  if (process.env.RMF_LAUNCH_MODE === 'none') {
-    launchMode = LaunchMode.None;
-  }
-
-  switch (launchMode) {
-    case LaunchMode.None:
-      return new StubLauncher();
-    case LaunchMode.LocalSingleton:
-      return LocalLauncher.instance;
-    default:
-      throw new Error('unknown launch mode');
-  }
-}
+const LaunchMode = {
+  None: 0,
+  LocalSingleton: 1,
+};
 
 /**
  * Help to launch and kill all required RMF processes. Assumes required rmf components are installed
  * and launches them locally.
  */
-export class LocalLauncher {
+exports.LocalLauncher = class {
   /**
    * Singleton instance of rmfLauncher, signal handlers are installed to cleanup processses spawned
    * by this instance.
@@ -51,9 +19,9 @@ export class LocalLauncher {
    * or future handlers. If there are other signal handlers installed, it is recommended to not use
    * this, the instance is lazy created so no handlers will be installed if this is never called.
    */
-  static get instance(): LocalLauncher {
+  static get instance() {
     if (!this._instance) {
-      this._instance = new LocalLauncher();
+      this._instance = new exports.LocalLauncher();
       /**
        * Make sure spawned processes are killed when the program exits.
        */
@@ -69,9 +37,9 @@ export class LocalLauncher {
     return this._instance;
   }
 
-  private static _instance?: LocalLauncher;
+  static _instance;
 
-  async launch(): Promise<void> {
+  async launch() {
     if (this._launched) {
       return;
     }
@@ -96,17 +64,17 @@ export class LocalLauncher {
     this._launched = true;
   }
 
-  async kill(): Promise<void> {
+  async kill() {
     await Promise.all([this._rmfDemo?.kill('SIGINT')]);
     this._rmfDemo = undefined;
     this._launched = false;
   }
 
-  private _launched = false;
-  private _rmfDemo?: ManagedProcess;
+  _launched = false;
+  _rmfDemo;
 
-  private async _rmfReady(timeout: number = 30000): Promise<boolean> {
-    const ros2Echo = ChildProcess.spawn('ros2', [
+  async _rmfReady(timeout = 30000) {
+    const ros2Echo = spawn('ros2', [
       'topic',
       'echo',
       'fleet_states',
@@ -128,7 +96,7 @@ export class LocalLauncher {
       });
     });
   }
-}
+};
 
 /**
  * A wrapper around child process that helps manages spawned process and their subprocesses' life.
@@ -139,20 +107,16 @@ export class LocalLauncher {
  * signals to its children. So killing `ros2 launch` will leave zombie processes.
  */
 class ManagedProcess {
-  get proc(): ChildProcess.ChildProcess {
+  get proc() {
     return this._proc;
   }
 
-  get alive(): boolean {
+  get alive() {
     return this._procAlive;
   }
 
-  constructor(
-    command: string,
-    args: string[],
-    options?: Omit<ChildProcess.SpawnOptions, 'detached'>,
-  ) {
-    this._proc = ChildProcess.spawn(command, args, {
+  constructor(command, args, options) {
+    this._proc = spawn(command, args, {
       ...options,
       detached: true,
     });
@@ -165,7 +129,7 @@ class ManagedProcess {
   /**
    * Kill the child process and all their childrens.
    */
-  async kill(signal?: NodeJS.Signals): Promise<void> {
+  async kill(signal) {
     if (!this._procAlive) {
       return;
     }
@@ -176,15 +140,42 @@ class ManagedProcess {
     });
   }
 
-  private _proc: ChildProcess.ChildProcess;
-  private _procAlive = false;
+  _proc;
+  _procAlive = false;
 }
 
 /**
  * Stub launcher that does not do anything, useful in dev cycle when you want to manage the rmf
  * processes manually.
  */
-export class StubLauncher {
-  async launch(): Promise<void> {}
-  async kill(): Promise<void> {}
-}
+exports.StubLauncher = class {
+  async launch() {}
+  async kill() {}
+};
+
+/**
+ * Creates a launcher based on the RMF_LAUNCH_MODE environment variable. Value can be one of:
+ *
+ *   * none
+ *   * local
+ *
+ * Defaults to `local`.
+ *
+ * If the value is `local`, a singleton instance is used and signal handlers are installed.
+ */
+exports.makeLauncher = () => {
+  let launchMode = LaunchMode.LocalSingleton;
+
+  if (process.env.RMF_LAUNCH_MODE === 'none') {
+    launchMode = LaunchMode.None;
+  }
+
+  switch (launchMode) {
+    case LaunchMode.None:
+      return new exports.StubLauncher();
+    case LaunchMode.LocalSingleton:
+      return exports.LocalLauncher.instance;
+    default:
+      throw new Error('unknown launch mode');
+  }
+};

@@ -1,6 +1,4 @@
-const path = require('path');
-const fs = require('fs');
-const os = require('os');
+const launcher = require('../dashboard/rmf-launcher').makeLauncher();
 
 const mode =
   process.env.BROWSERSTACK_USERNAME && process.env.BROWSERSTACK_ACCESS_KEY
@@ -25,7 +23,7 @@ exports.config = {
   // NPM script (see https://docs.npmjs.com/cli/run-script) then the current working
   // directory is where your package.json resides, so `wdio` will be called from there.
   //
-  specs: ['tests/**/*.test.ts'],
+  specs: ['tests/ui-interactions/index.test.ts', 'tests/negotiations.test.ts'],
   // Patterns to exclude.
   exclude: [
     // 'path/to/excluded/files'
@@ -71,7 +69,7 @@ exports.config = {
 
             'goog:chromeOptions': {
               binary: process.env.CHROME_BIN || undefined,
-              args: [/*'--headless', */ '--window-size=1920,1080'],
+              args: ['--headless', '--window-size=1920,1080'],
             },
           },
         ]
@@ -208,8 +206,18 @@ exports.config = {
    * Hook that gets executed before the suite starts
    * @param {Object} suite suite details
    */
-  // beforeSuite: function (suite) {
-  // },
+  beforeSuite: async function (/* suite */) {
+    browser.overwriteCommand(
+      'click',
+      function (orig) {
+        this.waitForClickable();
+        return orig();
+      },
+      true,
+    );
+    await launcher.launch();
+    browser.url('/');
+  },
   /**
    * Function to be executed before a test (in Mocha/Jasmine) starts.
    */
