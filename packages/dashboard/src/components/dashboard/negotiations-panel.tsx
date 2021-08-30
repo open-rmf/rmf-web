@@ -325,13 +325,16 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
       for (let resp of Object.values(negotiationTrajStore)) {
         resp.values = [];
       }
-      resp.values.forEach((traj) => {
-        if (negotiationTrajStore[traj.map_name] === undefined)
-          negotiationTrajStore[traj.map_name] = {
-            response: 'negotiation_trajectory',
-            values: [],
-          };
-        negotiationTrajStore[traj.map_name].values.push(traj);
+      setNegotiationTrajStore((prev) => {
+        resp.values.forEach((traj) => {
+          if (prev[traj.map_name] === undefined)
+            prev[traj.map_name] = {
+              response: 'negotiation_trajectory',
+              values: [],
+            };
+          prev[traj.map_name].values.push(traj);
+        });
+        return { ...prev };
       });
     }
 

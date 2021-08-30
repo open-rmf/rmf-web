@@ -60,3 +60,7 @@ export function login(): void {
   $('#password').setValue(process.env.E2E_PASSWORD);
   $('#kc-login').click();
 }
+
+export function getScheduleVisualizer(): Element {
+  return $('#schedule-visualizer');
+}

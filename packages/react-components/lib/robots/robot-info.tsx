@@ -166,7 +166,7 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
         <Grid item xs={6}>
           {currentTask && (
             <CircularProgressBar
-              progress={parseInt(currentTask.progress.status)}
+              progress={parseInt(currentTask.progress.status) || 0}
               strokeColor="#20a39e"
             >
               <Typography variant="h6">{currentTask.progress.status}</Typography>

@@ -3,8 +3,8 @@ import Slide from '@material-ui/core/Slide';
 import CloseIcon from '@material-ui/icons/Close';
 import HomeIcon from '@material-ui/icons/Home';
 import BackIcon from '@material-ui/icons/KeyboardBackspace';
+import clsx from 'clsx';
 import React, { ReactElement } from 'react';
-import { joinClasses } from './css-utils';
 import { OmniPanelViewProps } from './omni-panel-view';
 
 const useStyles = makeStyles((theme) => ({
@@ -77,7 +77,7 @@ export const OmniPanel = (props: OmniPanelProps): JSX.Element => {
         mountOnEnter={mountOnEnter}
         unmountOnExit={unmountOnExit}
       >
-        <div className={joinClasses(slideIn ? classes_.slideIn : classes_.slideOut)}>{child}</div>
+        <div className={clsx(slideIn ? classes_.slideIn : classes_.slideOut)}>{child}</div>
       </Slide>
     );
   };
