@@ -26,15 +26,13 @@ const RobotInfo = (props: RobotInfoProps) => {
   const { fleetName, robot } = props;
 
   const data = [
-    { name: 'Name', value: robot.name },
     { name: 'Model', value: robot.model },
     { name: 'Fleet', value: fleetName },
     {
-      name: 'Location',
+      name: 'Current Map',
       value: `${robot.location.level_name}`,
     },
     { name: 'Task Id', value: robot.task_id },
-    { name: 'Battery', value: robot.battery_percent.toFixed(0) },
   ];
 
   return <SimpleInfo infoData={data} />;

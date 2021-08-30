@@ -111,10 +111,6 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
 
   return (
     <div>
-      <Typography variant="h6" style={{ textAlign: 'center' }} gutterBottom>
-        {robot ? robot.name : '-'}
-      </Typography>
-      <Divider />
       <div style={{ marginBottom: theme.spacing(1) }}></div>
       <Grid container>
         <Grid container item xs={12} justify="center">
