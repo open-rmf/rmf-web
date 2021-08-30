@@ -1,3 +1,5 @@
+const path = require('path');
+const fs = require('fs');
 const launcher = require('../dashboard/rmf-launcher').makeLauncher();
 
 const mode =
@@ -5,7 +7,21 @@ const mode =
     ? 'browserstack'
     : 'local';
 
+/**
+ * Create browserstack options with some base settings.
+ */
+function browserstackOptions(opts) {
+  return {
+    projectName: 'rmf-web',
+    build: `dashboard-e2e:${process.env.BROWSERSTACK_BUILD || 'local'}`,
+    ...opts,
+  };
+}
+
 exports.config = {
+  user: process.env.BROWSERSTACK_USERNAME,
+  key: process.env.BROWSERSTACK_ACCESS_KEY,
+
   //
   // ====================
   // Runner Configuration
@@ -45,6 +61,7 @@ exports.config = {
   // from the same test should run tests.
   //
   maxInstances: 1,
+  maxInstancesPerCapability: 1,
   //
   // If you have trouble getting all important capabilities together, check out the
   // Sauce Labs platform configurator - a great tool to configure your capabilities:
@@ -69,8 +86,28 @@ exports.config = {
 
             'goog:chromeOptions': {
               binary: process.env.CHROME_BIN || undefined,
-              args: ['--headless', '--window-size=1920,1080'],
+              args: ['--headless'],
             },
+          },
+        ]
+      : []),
+    ...(mode === 'browserstack'
+      ? [
+          // {
+          //   browserName: 'chrome',
+          //   browserVersion: 'latest',
+          //   ...browserstackOptions({
+          //     os: 'Windows',
+          //     osVersion: '10',
+          //   }),
+          // },
+          {
+            browser: 'safari',
+            browserVersion: 'latest',
+            ...browserstackOptions({
+              os: 'OS X',
+              osVersion: 'Big Sur',
+            }),
           },
         ]
       : []),
@@ -122,7 +159,18 @@ exports.config = {
   // Services take over a specific job you don't want to take care of. They enhance
   // your test setup with almost no effort. Unlike plugins, they don't add new
   // commands. Instead, they hook themselves up into the test process.
-  services: [],
+  services: [
+    ...(mode === 'browserstack'
+      ? [
+          [
+            'browserstack',
+            {
+              browserstackLocal: true,
+            },
+          ],
+        ]
+      : []),
+  ],
 
   // Framework you want to run your specs with.
   // The following are supported: Mocha, Jasmine, and Cucumber
@@ -207,6 +255,7 @@ exports.config = {
    * @param {Object} suite suite details
    */
   beforeSuite: async function (/* suite */) {
+    browser.setWindowSize(1920, 1080);
     browser.overwriteCommand(
       'click',
       function (orig) {
@@ -238,14 +287,12 @@ exports.config = {
   /**
    * Function to be executed after a test (in Mocha/Jasmine).
    */
-  // afterTest: function (test, context, { error, result, duration, passed, retries }) {
-  //   const testPath = path.relative('tests', test.file);
-  //   const artifactDir = `artifacts/${testPath}/${test.title}`;
-  //   fs.mkdirSync(artifactDir, { recursive: true });
-  //   browser.saveScreenshot(`${artifactDir}/end.png`);
-  //   const logs = JSON.stringify(browser.getLogs('browser'), undefined, 2);
-  //   fs.writeFileSync(`${artifactDir}/logs.json`, logs);
-  // },
+  afterTest: function (test /*, context, { error, result, duration, passed, retries }*/) {
+    const testPath = path.relative('tests', test.file);
+    const artifactDir = `artifacts/${testPath}/${test.title}`;
+    fs.mkdirSync(artifactDir, { recursive: true });
+    browser.saveScreenshot(`${artifactDir}/end.png`);
+  },
 
   /**
    * Hook that gets executed after the suite has ended
