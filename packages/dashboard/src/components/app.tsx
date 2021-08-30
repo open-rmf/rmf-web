@@ -17,7 +17,6 @@ import { TabValue } from './appbar';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
 import Dashboard from './dashboard/dashboard';
 import { RmfApp } from './rmf-app';
-import { RobotPage } from './robots';
 import { TaskPage } from './tasks';
 
 const PrivateRoute = PrivateRouteHOC(Route, Redirect, useLocation);
@@ -136,14 +135,6 @@ export default function App(): JSX.Element | null {
                                 user={user}
                               >
                                 <Dashboard />
-                              </PrivateRoute>
-                              <PrivateRoute
-                                exact
-                                path={ROBOTS_ROUTE}
-                                redirectPath={LOGIN_ROUTE}
-                                user={user}
-                              >
-                                <RobotPage />
                               </PrivateRoute>
                               <PrivateRoute
                                 exact
