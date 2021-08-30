@@ -26,17 +26,17 @@ export function UserProfilePage(): JSX.Element | null {
   const pageClasses = usePageStyles();
   const classes = useStyles();
   const match = useRouteMatch<{ user: string }>();
-  const user: string | undefined = match.params.user;
+  const userId: string | undefined = match.params.user;
   const safeAsync = useAsync();
   const { adminApi } = React.useContext(RmfIngressContext) || {};
-  const [profile, setProfile] = React.useState<User | undefined>(undefined);
+  const [user, setUser] = React.useState<User | undefined>(undefined);
   const [notFound, setNotFound] = React.useState(false);
 
   const refresh = React.useCallback(() => {
-    if (!adminApi || !user) return;
+    if (!adminApi || !userId) return;
     (async () => {
       try {
-        setProfile((await safeAsync(adminApi.getUserAdminUsersUsernameGet(user))).data);
+        setUser((await safeAsync(adminApi.getUserAdminUsersUsernameGet(userId))).data);
       } catch (e) {
         if ((e as AxiosError).response?.status !== 404) {
           throw new Error(getApiErrorMessage(e));
@@ -44,7 +44,7 @@ export function UserProfilePage(): JSX.Element | null {
         setNotFound(true);
       }
     })();
-  }, [adminApi, safeAsync, user]);
+  }, [adminApi, safeAsync, userId]);
 
   React.useEffect(() => {
     refresh();
@@ -57,16 +57,13 @@ export function UserProfilePage(): JSX.Element | null {
           404 Not Found
         </Typography>
       ) : (
-        profile && (
+        user && (
           <>
             <UserProfileCard
-              profile={profile}
+              user={user}
               makeAdmin={async (admin) => {
                 try {
-                  await adminApi.makeAdminAdminUsersUsernameMakeAdminPost(
-                    { admin },
-                    profile.username,
-                  );
+                  await adminApi.makeAdminAdminUsersUsernameMakeAdminPost({ admin }, user.username);
                   refresh();
                 } catch (e) {
                   throw new Error(getApiErrorMessage(e));
@@ -75,7 +72,7 @@ export function UserProfilePage(): JSX.Element | null {
             />
             <ManageRolesCard
               className={classes.manageRoles}
-              assignedRoles={profile.roles}
+              assignedRoles={user.roles}
               getAllRoles={async () => {
                 try {
                   return (await adminApi.getRolesAdminRolesGet()).data;
@@ -89,7 +86,7 @@ export function UserProfilePage(): JSX.Element | null {
                     roles.map((r) => ({
                       name: r,
                     })),
-                    profile.username,
+                    user.username,
                   );
                   refresh();
                 } catch (e) {

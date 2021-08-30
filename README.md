@@ -1,4 +1,4 @@
-[![End-to-End](https://github.com/open-rmf/rmf-web/workflows/End-to-End/badge.svg?branch=main)](https://github.com/open-rmf/rmf-web/actions?query=workflow%3AEnd-to-End+branch%3Amain) [![react-components](https://github.com/open-rmf/rmf-web/workflows/react-components/badge.svg?branch=main)](https://github.com/open-rmf/rmf-web/actions?query=workflow%3Areact-components+branch%3Amain) [![dashboard](https://github.com/open-rmf/rmf-web/workflows/dashboard/badge.svg?branch=main)](https://github.com/open-rmf/rmf-web/actions?query=workflow%3Adashboard+branch%3Amain) [![api-server](https://github.com/open-rmf/rmf-web/workflows/api-server/badge.svg?branch=main)](https://github.com/open-rmf/rmf-web/actions?query=workflow%3Aapi-server+branch%3Amain) [![codecov](https://codecov.io/gh/open-rmf/rmf-web/branch/main/graph/badge.svg)](https://codecov.io/gh/open-rmf/rmf-web)
+[![Nightly](https://github.com/open-rmf/rmf-web/actions/workflows/nightly.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/nightly.yml) [![Dashboard End-to-End](https://github.com/open-rmf/rmf-web/actions/workflows/dashboard-e2e.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/dashboard-e2e.yml) [![Reporting End-to-End](https://github.com/open-rmf/rmf-web/actions/workflows/reporting-e2e.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/reporting-e2e.yml) [![react-components](https://github.com/open-rmf/rmf-web/workflows/react-components/badge.svg)](https://github.com/open-rmf/rmf-web/actions?query=workflow%3Areact-components+branch%3Amain) [![dashboard](https://github.com/open-rmf/rmf-web/workflows/dashboard/badge.svg)](https://github.com/open-rmf/rmf-web/actions?query=workflow%3Adashboard+branch%3Amain) [![api-server](https://github.com/open-rmf/rmf-web/workflows/api-server/badge.svg)](https://github.com/open-rmf/rmf-web/actions?query=workflow%3Aapi-server+branch%3Amain) [![reporting](https://github.com/open-rmf/rmf-web/actions/workflows/reporting.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/reporting.yml) [![reporting-server](https://github.com/open-rmf/rmf-web/actions/workflows/reporting-server.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/reporting-server.yml) [![rmf-auth](https://github.com/open-rmf/rmf-web/actions/workflows/rmf-auth.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/rmf-auth.yml) [![ros-translator](https://github.com/open-rmf/rmf-web/actions/workflows/ros-translator.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/ros-translator.yml) [![codecov](https://codecov.io/gh/open-rmf/rmf-web/branch/main/graph/badge.svg)](https://codecov.io/gh/open-rmf/rmf-web)
 
 # Building the Dashboard
 
@@ -18,24 +18,17 @@ A recent version of pipenv is needed, the system packaged version is too old.
 pip3 install pipenv
 ```
 
-Install rmf
-```bash
-sudo apt update && sudo apt install curl gnupg2 lsb-release
-curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
-sudo sh -c 'echo "deb [arch=$(dpkg --print-architecture)] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" > /etc/apt/sources.list.d/ros2-latest.list'
-sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
-wget https://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
-curl -sL http://rmf.servehttp.com/repos.key | sudo apt-key add -
-echo 'deb [arch=amd64] http://rmf.servehttp.com/ubuntu/main focal main' | sudo tee /etc/apt/sources.list.d/rmf.list
-sudo apt update && sudo apt install '^ros-foxy-rmf-.*'
-```
+### Install rmf
+
+Refer to the following documentation:
+
+* [rmf](https://github.com/open-rmf/rmf)
 
 ### Others
 
 Refer to the following documentations:
 
 * [nodejs](https://nodejs.org/en/download/package-manager/) >= 12
-* [rmf](https://github.com/open-rmf/rmf)
 * [rmf_demos](https://github.com/open-rmf/rmf_demos)
 
 ## Bootstrap

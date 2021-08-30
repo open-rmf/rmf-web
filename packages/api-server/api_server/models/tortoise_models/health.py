@@ -10,9 +10,6 @@ class BasicHealthModel(Model, HealthStatusMixin):
 
     id_ = fields.CharField(255, pk=True, source_field="id")
 
-    async def to_pydantic(self):
-        return await self.PydanticModel.from_tortoise_orm(self)
-
 
 BasicHealthModel.PydanticModel = pydantic_model_creator(BasicHealthModel)
 

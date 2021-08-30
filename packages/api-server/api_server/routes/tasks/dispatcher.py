@@ -1,11 +1,10 @@
+import api_server.models as mdl
+import api_server.models.tortoise_models as ttm
+from api_server.gateway import RmfGateway
+from api_server.permissions import Enforcer, RmfAction
 from fastapi.exceptions import HTTPException
 from rmf_task_msgs.srv import CancelTask as RmfCancelTask
 from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
-
-from ... import models as mdl
-from ...gateway import RmfGateway
-from ...models import tortoise_models as ttm
-from ...permissions import Enforcer, RmfAction
 
 
 class DispatcherClient:
@@ -28,9 +27,7 @@ class DispatcherClient:
         if not await Enforcer.is_authorized(user, authz_grp, RmfAction.TaskSubmit):
             raise HTTPException(403)
 
-        resp: RmfSubmitTask.Response = await self.rmf_gateway.call_service(
-            self.rmf_gateway.submit_task_srv, req_msg
-        )
+        resp = await self.rmf_gateway.submit_task(req_msg)
 
         await ttm.TaskSummary.update_or_create(
             {"authz_grp": authz_grp, "data": {"task_id": resp.task_id}},
@@ -38,13 +35,6 @@ class DispatcherClient:
         )
 
         return resp
-
-    def get_sim_time(self):
-        if self.rmf_gateway.get_parameter("use_sim_time").value:
-            sim_time = self.rmf_gateway.get_clock().now().to_msg()
-        else:
-            sim_time = None
-        return sim_time
 
     # pylint: disable=unused-argument
     @staticmethod
@@ -66,9 +56,7 @@ class DispatcherClient:
         req = RmfCancelTask.Request()
         req.requester = "rmf-server"
         req.task_id = task.task_id
-        response: RmfCancelTask.Response = await self.rmf_gateway.call_service(
-            self.rmf_gateway.cancel_task_srv, req
-        )
+        response = await self.rmf_gateway.cancel_task(req)
         if not response.success:
             raise HTTPException(500, response.message)
         return response.success

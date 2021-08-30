@@ -1,11 +1,10 @@
 import unittest
 
+from api_server.test import init_db
 from tortoise import Tortoise
 
-from api_server.test import init_db
-
-from . import User
 from . import tortoise_models as ttm
+from .user import User
 
 
 class TestUser(unittest.IsolatedAsyncioTestCase):

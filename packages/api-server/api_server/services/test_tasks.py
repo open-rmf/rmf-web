@@ -1,24 +1,26 @@
 import unittest
 
-from rmf_task_msgs.msg import TaskType as RmfTaskType
-
-from ..models import (
+from api_server.models import (
     CleanTaskDescription,
     DeliveryTaskDescription,
     LoopTaskDescription,
     SubmitTask,
 )
+from builtin_interfaces.msg import Time as RosTime
+from rmf_task_msgs.msg import TaskType as RmfTaskType
+
 from .tasks import convert_task_request
 
 
 class TestDispatcherClient(unittest.TestCase):
     def test_convert_task_request(self):
+        now = RosTime(sec=0, nanosec=0)
         task = SubmitTask(
             task_type=RmfTaskType.TYPE_CLEAN,
             start_time=0,
             description=CleanTaskDescription(cleaning_zone="zone_2"),
         )
-        result, err = convert_task_request(task)
+        result, err = convert_task_request(task, now)
         self.assertEqual(err, "")
         self.assertIsNotNone(result)
 
@@ -29,7 +31,7 @@ class TestDispatcherClient(unittest.TestCase):
                 num_loops=1, start_name="start", finish_name="finish"
             ),
         )
-        result, err = convert_task_request(task)
+        result, err = convert_task_request(task, now)
         self.assertEqual(err, "")
         self.assertIsNotNone(result)
 
@@ -43,6 +45,6 @@ class TestDispatcherClient(unittest.TestCase):
                 dropoff_place_name="supplies",
             ),
         )
-        result, err = convert_task_request(task)
+        result, err = convert_task_request(task, now)
         self.assertEqual(err, "")
         self.assertIsNotNone(result)

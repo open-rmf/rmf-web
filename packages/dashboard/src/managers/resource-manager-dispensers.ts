@@ -1,4 +1,6 @@
-import { RESOURCE_PREFIX } from './resource-manager';
+import Debug from 'debug';
+
+const debug = Debug('ResourceManager');
 
 interface Location {
   x: number;
@@ -23,17 +25,24 @@ export class DispenserResourceManager {
     this.dispensers = this.assignGuidToDispensers(dispenserResources);
   }
 
-  getIconPath = (dispenserName: string): string | null => {
+  getIconPath = async (dispenserName: string): Promise<string | null> => {
     if (!this.dispenserExists(dispenserName)) {
+      debug(`failed to load icon for "${dispenserName}" (dispenser does not exist in resources)`);
       return null;
     }
     if (!this.dispensers[dispenserName].hasOwnProperty('icons')) {
+      debug(`failed to load icon for "${dispenserName}" (dispenser does not have an icon)`);
       return null;
     }
-    const rootIconPath = RESOURCE_PREFIX + '/assets/icons';
     const dispenserIcon = this.dispensers[dispenserName].icons[dispenserName];
 
-    return dispenserIcon ? `${rootIconPath}${dispenserIcon}` : null;
+    try {
+      return (await import(/* webpackMode: "eager" */ `../assets/resources${dispenserIcon}`))
+        .default;
+    } catch {
+      debug(`failed to load icon for "${dispenserName}" (failed to load icon module)`);
+      return null;
+    }
   };
 
   get all(): Record<string, DispenserResource> {

@@ -2,6 +2,15 @@ import logging
 import unittest
 from typing import Any, Callable, Optional
 
+from api_server.models import (
+    DispenserHealth,
+    DoorHealth,
+    HealthStatus,
+    IngestorHealth,
+    LiftHealth,
+    RobotHealth,
+)
+from api_server.test import init_db, test_data
 from rmf_dispenser_msgs.msg import DispenserState
 from rmf_door_msgs.msg import DoorMode
 from rmf_fleet_msgs.msg import RobotMode
@@ -11,18 +20,6 @@ from rx import Observable
 from rx.scheduler.historicalscheduler import HistoricalScheduler
 from tortoise import Tortoise
 
-from api_server.test import init_db
-
-from ..models import (
-    DispenserHealth,
-    DoorHealth,
-    HealthStatus,
-    IngestorHealth,
-    LiftHealth,
-    RobotHealth,
-)
-from ..repositories import RmfRepository
-from ..test import test_data
 from .events import RmfEvents
 from .health_watchdog import HealthWatchdog
 
@@ -30,14 +27,13 @@ from .health_watchdog import HealthWatchdog
 class BaseFixture(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         await init_db()
-        self.repo = RmfRepository()
 
         self.scheduler = HistoricalScheduler()
         self.rmf = RmfEvents()
         self.logger = logging.Logger("test")
         self.logger.setLevel("CRITICAL")
         self.health_watchdog = HealthWatchdog(
-            self.rmf, scheduler=self.scheduler, logger=self.logger, rmf_repo=self.repo
+            self.rmf, scheduler=self.scheduler, logger=self.logger
         )
 
     async def asyncTearDown(self):
@@ -109,7 +105,7 @@ class TestHealthWatchdog_DoorHealth(BaseFixture):
     async def test_heartbeat_with_no_state(self):
         building_map = test_data.make_building_map()
         building_map.levels[0].doors = [test_data.make_door("test_door")]
-        await self.repo.save_building_map(building_map)
+        await building_map.save()
         await self.health_watchdog.start()
 
         health: Optional[DoorHealth] = None
@@ -142,7 +138,7 @@ class TestHealthWatchdog_LiftHealth(BaseFixture):
         """
         building_map = test_data.make_building_map()
         building_map.lifts = [test_data.make_lift("test_lift")]
-        await self.repo.save_building_map(building_map)
+        await building_map.save()
         await self.health_watchdog.start()
 
         health: Optional[LiftHealth] = None
@@ -186,9 +182,7 @@ class TestHealthWatchdog_DispenserHealth(BaseFixture):
         )
 
     async def test_heartbeat_with_no_state(self):
-        await self.repo.save_dispenser_state(
-            test_data.make_dispenser_state("test_dispenser")
-        )
+        await test_data.make_dispenser_state("test_dispenser").save()
         await self.health_watchdog.start()
 
         health: Optional[DispenserHealth] = None
@@ -229,9 +223,7 @@ class TestHealthWatchdog_IngestorHealth(BaseFixture):
         )
 
     async def test_heartbeat_with_no_state(self):
-        await self.repo.save_ingestor_state(
-            test_data.make_ingestor_state("test_ingestor")
-        )
+        await test_data.make_ingestor_state("test_ingestor").save()
         await self.health_watchdog.start()
 
         health: Optional[IngestorHealth] = None
@@ -299,7 +291,7 @@ class TestHealthWatchdog_RobotHealth(BaseFixture):
         self.assertEqual(health.id_, robot_id)
 
     async def test_heartbeat_with_no_state(self):
-        await self.repo.save_fleet_state(test_data.make_fleet_state("test_fleet"))
+        await test_data.make_fleet_state("test_fleet").save()
         await self.health_watchdog.start()
 
         def factory():

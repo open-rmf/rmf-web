@@ -1,10 +1,9 @@
 from typing import Sequence
 
 import rx
+from api_server.models import HealthStatus
 from rx import operators as ops
 from rx.core.operators.timestamp import Timestamp
-
-from ...models import HealthStatus
 
 
 def most_critical():

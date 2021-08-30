@@ -1,51 +1,36 @@
-import logging
-from typing import Callable, List, Optional
+from typing import List, Optional
 
+from api_server.base_app import BaseApp
+from api_server.dependencies import pagination_query
+from api_server.fast_io import FastIORouter, WatchRequest
+from api_server.models import Fleet, FleetState, Pagination, Robot, RobotHealth, Task
+from api_server.repositories import RmfRepository
 from fastapi import Depends, Query
+from rx import operators as rxops
 
-from api_server.models.fleets import Robot
-from api_server.models.tasks import TaskStateEnum
-
-from ..dependencies import AddPaginationQuery, pagination_query
-from ..fast_io import FastIORouter
-from ..gateway import RmfGateway
-from ..models import Fleet, FleetState, RobotHealth, Task
-from ..models import tortoise_models as ttm
-from ..rmf_io import RmfEvents
 from .tasks.utils import get_task_progress
+from .utils import rx_watcher
 
 
 class FleetsRouter(FastIORouter):
-    def __init__(
-        self,
-        rmf_events: RmfEvents,
-        rmf_gateway_dep: Callable[[], RmfGateway],
-        *,
-        logger: logging.Logger,
-    ):
+    def __init__(self, app: BaseApp):
         super().__init__(tags=["Fleets"])
+        logger = app.logger
 
         @self.get("", response_model=List[Fleet])
         async def get_fleets(
-            add_pagination: AddPaginationQuery[ttm.FleetState] = Depends(
-                pagination_query({"fleet_name": "id_"})
-            ),
+            rmf_repo: RmfRepository = Depends(app.rmf_repo),
+            pagination: Pagination = Depends(pagination_query),
             fleet_name: Optional[str] = Query(
                 None, description="comma separated list of fleet names"
             ),
         ):
-            filter_params = {}
-            if fleet_name is not None:
-                filter_params["id___in"] = fleet_name.split(",")
-            states = await add_pagination(ttm.FleetState.filter(**filter_params))
-            states = [s.to_pydantic() for s in states]
-            return [Fleet(name=s.name, state=s) for s in states]
+            return await rmf_repo.query_fleets(pagination, fleet_name=fleet_name)
 
         @self.get("/robots", response_model=List[Robot])
         async def get_robots(
-            add_pagination: AddPaginationQuery[ttm.RobotState] = Depends(
-                pagination_query()
-            ),
+            rmf_repo: RmfRepository = Depends(app.rmf_repo),
+            pagination: Pagination = Depends(pagination_query),
             fleet_name: Optional[str] = Query(
                 None, description="comma separated list of fleet names"
             ),
@@ -53,29 +38,29 @@ class FleetsRouter(FastIORouter):
                 None, description="comma separated list of robot names"
             ),
         ):
-            filter_params = {}
-            if fleet_name is not None:
-                filter_params["fleet_name__in"] = fleet_name.split(",")
-            if robot_name is not None:
-                filter_params["robot_name__in"] = robot_name.split(",")
-
-            robot_states = await add_pagination(ttm.RobotState.filter(**filter_params))
             robots = {
-                f"{q.fleet_name}/{q.robot_name}": Robot(
-                    fleet=q.fleet_name, name=q.robot_name, state=q.data
+                f"{r.fleet}/{r.name}": r
+                for r in await rmf_repo.query_robots(
+                    pagination,
+                    fleet_name=fleet_name,
+                    robot_name=robot_name,
                 )
-                for q in robot_states
             }
 
             filter_states = [
-                TaskStateEnum.ACTIVE.value,
-                TaskStateEnum.PENDING.value,
-                TaskStateEnum.QUEUED.value,
+                "active",
+                "pending",
+                "queued",
             ]
-            tasks = await ttm.TaskSummary.filter(
-                state__in=filter_states,
-                **filter_params,
-            ).order_by("start_time")
+
+            tasks_pagination = Pagination(limit=100, offset=0, order_by="start_time")
+            tasks = await rmf_repo.query_task_summaries(
+                tasks_pagination,
+                fleet_name=fleet_name,
+                robot_name=robot_name,
+                state=",".join(filter_states),
+            )
+
             for t in tasks:
                 r = robots.get(f"{t.fleet_name}/{t.robot_name}", None)
                 # This should only happen under very rare scenarios, when there are
@@ -86,27 +71,58 @@ class FleetsRouter(FastIORouter):
                     logger.warn(
                         f'task "{t.id_}" is assigned to an unknown fleet/robot ({t.fleet_name}/{t.robot_name}'
                     )
-                ts = t.to_pydantic()
                 r.tasks.append(
                     Task(
-                        task_id=ts.task_id,
+                        task_id=t.task_id,
                         authz_grp=t.authz_grp,
-                        summary=ts,
-                        progress=get_task_progress(t.to_pydantic(), rmf_gateway_dep()),
+                        summary=t,
+                        progress=get_task_progress(
+                            t,
+                            app.rmf_gateway().now(),
+                        ),
                     )
                 )
 
             return list(robots.values())
 
-        @self.watch("/{name}/state", rmf_events.fleet_states, response_model=FleetState)
-        def get_fleet_state(fleet_state: FleetState):
-            return {"name": fleet_state.name}, fleet_state
+        @self.get("/{name}/state", response_model=FleetState)
+        async def get_fleet_state(
+            name: str, rmf_repo: RmfRepository = Depends(app.rmf_repo)
+        ):
+            """
+            Available in socket.io
+            """
+            return await rmf_repo.get_fleet_state(name)
 
-        @self.watch(
-            "/{fleet}/{robot}/health",
-            rmf_events.robot_health,
-            response_model=RobotHealth,
-        )
-        def get_robot_health(robot_health: RobotHealth):
-            fleet, robot = robot_health.id_.split("/")
-            return {"fleet": fleet, "robot": robot}, robot_health
+        @self.watch("/{name}/state")
+        async def watch_fleet_state(req: WatchRequest, name: str):
+            fleet_state = await get_fleet_state(name, RmfRepository(req.user))
+            await req.emit(fleet_state.dict())
+            rx_watcher(
+                req,
+                app.rmf_events().fleet_states.pipe(
+                    rxops.filter(lambda x: x.name == name),
+                    rxops.map(lambda x: x.dict()),
+                ),
+            )
+
+        @self.get("/{fleet}/{robot}/health", response_model=RobotHealth)
+        async def get_robot_health(
+            fleet: str, robot: str, rmf_repo: RmfRepository = Depends(app.rmf_repo)
+        ):
+            """
+            Available in socket.io
+            """
+            return await rmf_repo.get_robot_health(fleet, robot)
+
+        @self.watch("/{fleet}/{robot}/health")
+        async def watch_robot_health(req: WatchRequest, fleet: str, robot: str):
+            health = await get_robot_health(fleet, robot, RmfRepository(req.user))
+            await req.emit(health.dict())
+            rx_watcher(
+                req,
+                app.rmf_events().robot_health.pipe(
+                    rxops.filter(lambda x: x.id_ == f"{fleet}/{robot}"),
+                    rxops.map(lambda x: x.dict()),
+                ),
+            )

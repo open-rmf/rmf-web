@@ -16,9 +16,9 @@ import { Configuration } from '../configuration';
 // Some imports not used depending on template conditions
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-import { BasicHealth } from '../models';
 import { HTTPValidationError } from '../models';
 import { Ingestor } from '../models';
+import { IngestorHealth } from '../models';
 import { IngestorState } from '../models';
 /**
  * IngestorsApi - axios parameter creator
@@ -27,7 +27,7 @@ import { IngestorState } from '../models';
 export const IngestorsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     * **Available in socket.io**
+     * Available in socket.io
      * @summary Get Ingestor Health
      * @param {string} guid
      * @param {*} [options] Override http request option.
@@ -79,7 +79,7 @@ export const IngestorsApiAxiosParamCreator = function (configuration?: Configura
       };
     },
     /**
-     * **Available in socket.io**
+     * Available in socket.io
      * @summary Get Ingestor State
      * @param {string} guid
      * @param {*} [options] Override http request option.
@@ -178,7 +178,7 @@ export const IngestorsApiAxiosParamCreator = function (configuration?: Configura
 export const IngestorsApiFp = function (configuration?: Configuration) {
   return {
     /**
-     * **Available in socket.io**
+     * Available in socket.io
      * @summary Get Ingestor Health
      * @param {string} guid
      * @param {*} [options] Override http request option.
@@ -187,7 +187,7 @@ export const IngestorsApiFp = function (configuration?: Configuration) {
     async getIngestorHealthIngestorsGuidHealthGet(
       guid: string,
       options?: any,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BasicHealth>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<IngestorHealth>> {
       const localVarAxiosArgs = await IngestorsApiAxiosParamCreator(
         configuration,
       ).getIngestorHealthIngestorsGuidHealthGet(guid, options);
@@ -200,7 +200,7 @@ export const IngestorsApiFp = function (configuration?: Configuration) {
       };
     },
     /**
-     * **Available in socket.io**
+     * Available in socket.io
      * @summary Get Ingestor State
      * @param {string} guid
      * @param {*} [options] Override http request option.
@@ -255,7 +255,7 @@ export const IngestorsApiFactory = function (
 ) {
   return {
     /**
-     * **Available in socket.io**
+     * Available in socket.io
      * @summary Get Ingestor Health
      * @param {string} guid
      * @param {*} [options] Override http request option.
@@ -264,13 +264,13 @@ export const IngestorsApiFactory = function (
     getIngestorHealthIngestorsGuidHealthGet(
       guid: string,
       options?: any,
-    ): AxiosPromise<BasicHealth> {
+    ): AxiosPromise<IngestorHealth> {
       return IngestorsApiFp(configuration)
         .getIngestorHealthIngestorsGuidHealthGet(guid, options)
         .then((request) => request(axios, basePath));
     },
     /**
-     * **Available in socket.io**
+     * Available in socket.io
      * @summary Get Ingestor State
      * @param {string} guid
      * @param {*} [options] Override http request option.
@@ -306,7 +306,7 @@ export const IngestorsApiFactory = function (
  */
 export class IngestorsApi extends BaseAPI {
   /**
-   * **Available in socket.io**
+   * Available in socket.io
    * @summary Get Ingestor Health
    * @param {string} guid
    * @param {*} [options] Override http request option.
@@ -319,7 +319,7 @@ export class IngestorsApi extends BaseAPI {
       .then((request) => request(this.axios, this.basePath));
   }
   /**
-   * **Available in socket.io**
+   * Available in socket.io
    * @summary Get Ingestor State
    * @param {string} guid
    * @param {*} [options] Override http request option.

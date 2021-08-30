@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=docker.pkg.github.com/open-rmf/rmf-web/rmf
+ARG BASE_IMAGE=ghcr.io/open-rmf/rmf/rmf_demos
 FROM $BASE_IMAGE
 
 RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - && \
@@ -10,4 +10,4 @@ RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add
     docker.io \
     docker-compose && \
   pip3 install pipenv && \
-  rm -rf /var/lib/apt/lists/*
+  npm config set unsafe-perm

@@ -28,6 +28,10 @@ RUN echo -e 'server {\n\
     try_files $uri /dashboard/index.html;\n\
   }\n\
 \n\
+  location /dashboard/static/ {\n\
+    expires 30d;\n\
+  }\n\
+\n\
   error_page 500 502 503 504 /50x.html;\n\
   location = /50x.html {\n\
     root /usr/share/nginx/html;\n\

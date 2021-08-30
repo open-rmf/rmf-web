@@ -15,7 +15,7 @@
     "test:e2e": "cd e2e && npm test",
     "test:e2e:dev": "cd e2e && npm run test:dev",
     "eject": "react-scripts eject",
-    "setup": "node ./scripts/setup/setup.js && node ./scripts/setup/get-icons.js",
+    "setup": "node ./scripts/setup/setup.js",
     "storybook": "start-storybook -p 9009 -s public -s src/stories/static",
     "build:storybook": "build-storybook -s public -s src/stories/static"
   },
@@ -50,12 +50,9 @@
     "@testing-library/react-hooks": "^5.0.3",
     "@testing-library/user-event": "^12.1.9",
     "@types/debug": "^4.1.5",
-    "@types/enzyme-adapter-react-16": "^1.0.6",
     "@types/jest": "^26.0.13",
-    "@types/leaflet": "^1.5.17",
     "@types/react": "^16.9.49",
     "@types/react-dom": "^16.9.12",
-    "@types/react-leaflet": "^2.5.2",
     "@types/react-router": "^5.1.7",
     "@types/react-router-dom": "^5.1.7",
     "@types/reactour": "^1.17.1",
@@ -66,20 +63,15 @@
     "chalk": "^4.1.0",
     "concurrently": "^5.3.0",
     "debug": "^4.2.0",
-    "enzyme": "^3.11.0",
-    "enzyme-adapter-react-16": "^1.15.5",
-    "enzyme-to-json": "^3.5.0",
     "eventemitter3": "^4.0.7",
+    "inquirer": "^8.1.2",
     "keycloak-js": "^11.0.2",
-    "leaflet": "^1.7.1",
     "node-vibrant": "^3.1.6",
     "react": "^16.13.1",
     "react-components": "*",
     "react-customizable-progressbar": "^1.0.3",
     "react-dom": "^16.13.1",
     "react-hotkeys": "^2.0.0",
-    "react-leaflet": "^2.7.0",
-    "react-leaflet-control": "^2.1.1",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^4.0.1",
@@ -97,17 +89,11 @@
       "!src/index.tsx",
       "!src/serviceWorker.ts",
       "!src/app-config.ts",
-      "!src/leaflet/**",
       "!src/managers/**",
       "!src/components/rmf-app/**",
       "!**/stories/**",
       "!**/tests/**",
-      "!src/components/__trash/**",
-      "!src/components/dashboard/dashboard.tsx",
-      "!src/components/dashboard/index.ts"
-    ],
-    "snapshotSerializers": [
-      "enzyme-to-json/serializer"
+      "!src/components/__trash/**"
     ]
   }
 }

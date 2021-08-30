@@ -16,7 +16,7 @@ export default {
 } as Meta;
 
 export const Default: Story<UserProfileCardProps> = (args) => {
-  const [profile, setProfile] = React.useState<User>({
+  const [user, setUser] = React.useState<User>({
     username: 'example',
     is_admin: false,
     roles: [],
@@ -24,10 +24,10 @@ export const Default: Story<UserProfileCardProps> = (args) => {
   return (
     <UserProfileCard
       {...args}
-      profile={profile}
+      user={user}
       makeAdmin={async (admin) => {
         await new Promise((res) => setTimeout(res, 100));
-        setProfile((prev) => ({ ...prev, is_admin: admin }));
+        setUser((prev) => ({ ...prev, is_admin: admin }));
       }}
     ></UserProfileCard>
   );

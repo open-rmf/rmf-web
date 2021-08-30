@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { Fade, makeStyles } from '@material-ui/core';
 import { Fleet, Level } from 'api-client';
 import Debug from 'debug';
@@ -13,6 +15,7 @@ import {
   OmniPanelView,
   OnChangeEvent,
   RobotAccordion as RobotAccordion_,
+  RobotsOverlayProps,
   SimpleFilter,
   useStackNavigator,
   withSpotlight,
@@ -25,9 +28,13 @@ import {
   NegotiationTrajectoryResponse,
 } from '../../managers/negotiation-status-manager';
 import { AppConfigContext, AppControllerContext } from '../app-contexts';
-import { DispensersContext, IngestorsContext, RmfIngressContext } from '../rmf-app';
+import {
+  BuildingMapContext,
+  DispensersContext,
+  IngestorsContext,
+  RmfIngressContext,
+} from '../rmf-app';
 import ScheduleVisualizer, { ScheduleVisualizerProps } from '../schedule-visualizer';
-import { RobotsOverlayProps } from '../schedule-visualizer/robots-overlay';
 import { SpotlightValue } from '../spotlight-value';
 import MainMenu from './main-menu';
 import NegotiationsPanel from './negotiations-panel';
@@ -104,12 +111,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const rmfIngress = React.useContext(RmfIngressContext);
   const sioClient = rmfIngress?.sioClient;
 
-  const [buildingMap, setBuildingMap] = React.useState<RmfModels.BuildingMap | null>(null);
-  React.useEffect(() => {
-    if (!sioClient) return;
-    sioClient.subscribeBuildingMap(setBuildingMap);
-    return () => sioClient.unsubscribe(setBuildingMap);
-  }, [sioClient]);
+  const buildingMap = React.useContext(BuildingMapContext);
 
   const { state: dashboardState, dispatch: dashboardDispatch } = useDashboardReducer(
     dashboardInitialValues,
@@ -119,20 +121,12 @@ export default function Dashboard(_props: {}): React.ReactElement {
     initialStack,
     OmniPanelViewIndex.MainMenu,
   );
-  const currentView = viewStack[viewStack.length - 1];
 
   const { showOmniPanel } = dashboardState;
   const { setShowOmniPanel } = dashboardDispatch;
 
-  const mapFloorSort = React.useCallback(
-    (levels: RmfModels.Level[]) =>
-      levels.sort((a, b) => a.elevation - b.elevation).map((x) => x.name),
-    [],
-  );
-  const mapFloorLayerSorted = React.useMemo(
-    () => (buildingMap ? mapFloorSort(buildingMap.levels) : undefined),
-    [buildingMap, mapFloorSort],
-  );
+  const scheduleVisMode: ScheduleVisualizerProps['mode'] =
+    viewStack[viewStack.length - 1] === OmniPanelViewIndex.Negotiations ? 'negotiation' : 'normal';
 
   const handleOmniPanelClose = React.useCallback(() => {
     clearSpotlights();
@@ -178,10 +172,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
   }, [sioClient, doors]);
   const doorAccordionRefs = React.useMemo(() => defaultDict(createSpotlightRef), []);
   const handleDoorMarkerClick = React.useCallback(
-    (door: RmfModels.Door) => {
+    (_ev: React.MouseEvent, door: string) => {
       setShowOmniPanel(true);
       viewStackDispatch.push(OmniPanelViewIndex.Doors);
-      doorAccordionRefs[door.name].spotlight();
+      doorAccordionRefs[door].spotlight();
       setFilter('');
     },
     [doorAccordionRefs, viewStackDispatch, setShowOmniPanel],
@@ -204,10 +198,10 @@ export default function Dashboard(_props: {}): React.ReactElement {
   }, [sioClient, lifts]);
   const liftAccordionRefs = React.useMemo(() => defaultDict(createSpotlightRef), []);
   const handleLiftMarkerClick = React.useCallback(
-    (lift: RmfModels.Lift) => {
+    (_ev: React.MouseEvent, lift: string) => {
       setShowOmniPanel(true);
       viewStackDispatch.push(OmniPanelViewIndex.Lifts);
-      liftAccordionRefs[lift.name].spotlight();
+      liftAccordionRefs[lift].spotlight();
       setFilter('');
     },
     [liftAccordionRefs, viewStackDispatch, setShowOmniPanel],
@@ -251,7 +245,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     ingestorStates,
   ]);
   const workcellAccordionRefs = React.useMemo(() => defaultDict(createSpotlightRef), []);
-  const handleWorkcellMarkerClick = React.useCallback<
+  const handleDispenserMarkerClick = React.useCallback<
     Required<ScheduleVisualizerProps>['onDispenserClick']
   >(
     (_, guid) => {
@@ -262,6 +256,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
     },
     [workcellAccordionRefs, viewStackDispatch, setShowOmniPanel],
   );
+  const handleIngestorMarkerClick = handleDispenserMarkerClick;
 
   const [fleets, setFleets] = React.useState<Fleet[]>([]);
   React.useEffect(() => {
@@ -381,23 +376,23 @@ export default function Dashboard(_props: {}): React.ReactElement {
   return (
     <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
       {buildingMap && (
-        <>
-          <ScheduleVisualizer
-            buildingMap={buildingMap}
-            doorStates={doorStates}
-            liftStates={liftStates}
-            fleetStates={fleetStates}
-            mapFloorSort={mapFloorSort}
-            negotiationTrajStore={negotiationTrajStore}
-            showTrajectories={!(currentView === OmniPanelViewIndex.Negotiations)}
-            onDoorClick={handleDoorMarkerClick}
-            onLiftClick={handleLiftMarkerClick}
-            onRobotClick={handleRobotMarkerClick}
-            onDispenserClick={handleWorkcellMarkerClick}
-          >
-            <OmniPanelControl show={!showOmniPanel} dashboardDispatch={dashboardDispatch} />
-          </ScheduleVisualizer>
-        </>
+        <ScheduleVisualizer
+          buildingMap={buildingMap}
+          negotiationTrajStore={negotiationTrajStore}
+          dispensers={dispensers}
+          ingestors={ingestors}
+          doorStates={doorStates}
+          liftStates={liftStates}
+          fleetStates={fleetStates}
+          mode={scheduleVisMode}
+          onDoorClick={handleDoorMarkerClick}
+          onLiftClick={handleLiftMarkerClick}
+          onRobotClick={handleRobotMarkerClick}
+          onDispenserClick={handleDispenserMarkerClick}
+          onIngestorClick={handleIngestorMarkerClick}
+        >
+          <OmniPanelControl show={!showOmniPanel} dashboardDispatch={dashboardDispatch} />
+        </ScheduleVisualizer>
       )}
       <Fade in={showOmniPanel}>
         <OmniPanel
@@ -481,7 +476,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
             <NegotiationsPanel
               conflicts={negotiationStatus}
               spotlight={negotiationSpotlight}
-              mapFloorLayerSorted={mapFloorLayerSorted}
+              mapFloorLayerSorted={buildingMap?.levels.map((l) => l.name) || []}
               negotiationStatusManager={negotiationStatusManager}
               negotiationTrajStore={negotiationTrajStore}
               negotiationStatusUpdateTS={statusUpdateTS.current}

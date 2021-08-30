@@ -1,29 +1,12 @@
-import rclpy.qos
-from rmf_building_map_msgs.msg import BuildingMap as RmfBuildingMap
-
-from ..test.test_fixtures import RouteFixture, try_until
+from api_server.test import AppFixture, make_building_map
 
 
-class TestBuildingMapRoute(RouteFixture):
+class TestBuildingMapRoute(AppFixture):
     def test_get_building_map(self):
-        rmf_building_map = RmfBuildingMap(name="test_map")
-        pub = self.node.create_publisher(
-            RmfBuildingMap,
-            "map",
-            rclpy.qos.QoSProfile(
-                history=rclpy.qos.HistoryPolicy.KEEP_ALL,
-                depth=1,
-                reliability=rclpy.qos.ReliabilityPolicy.RELIABLE,
-                durability=rclpy.qos.DurabilityPolicy.TRANSIENT_LOCAL,
-            ),
-        )
+        building_map = make_building_map()
+        self.app.rmf_events().building_map.on_next(building_map)
 
-        def try_get():
-            pub.publish(rmf_building_map)
-            return self.session.get(f"{self.base_url}/building_map")
-
-        resp = try_until(
-            try_get,
-            lambda x: x.status_code == 200,
-        )
-        self.assertEqual(resp.status_code, 200)
+        resp = self.session.get("/building_map")
+        self.assertEqual(200, resp.status_code)
+        result_map = resp.json()
+        self.assertEqual(building_map.name, result_map["name"])

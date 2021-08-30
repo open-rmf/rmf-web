@@ -1,6 +1,5 @@
 import React from 'react';
-import { BuildMenuType } from './reporter-side-bar-structure';
-
+import { ReportConfigProps } from 'react-components';
 import clsx from 'clsx';
 import { makeStyles, useTheme, Theme } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -13,12 +12,25 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-
-import { ReportContainer, Reports } from './report-list';
+import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 import { ExpandableMultilevelMenuProps, MultiLevelMenu } from 'react-components';
 import { Menu, MenuItem } from '@material-ui/core';
 import { AuthenticatorContext } from './auth-contexts';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+
+import { Reports } from './report-list';
+import { BuildMenuType } from './reporter-side-bar-structure';
+import AllLogsReport from './reports/all-logs-report';
+import DispenserStateReportConfig from './reports/dispenser-state-report';
+import DoorStateReportConfig from './reports/door-state-report';
+import FleetStateReportConfig from './reports/fleet-state-report';
+import HealthReportConfig from './reports/health-report';
+import IngestorStateReportConfig from './reports/ingestor-state-report';
+import LiftStateReportConfig from './reports/lift-state-report';
+import TaskSummaryReportConfig from './reports/task-summary-report';
+import UserLoginFailureReportConfig from './reports/user-login-failure-report';
+import UserLoginReportConfig from './reports/user-login-report';
+import UserLogoutReportConfig from './reports/user-logout-report';
 
 const drawerWidth = 240;
 
@@ -84,23 +96,84 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export interface ReportDashboardProps {
   buildMenuReportStructure(setCurrentReport: BuildMenuType): ExpandableMultilevelMenuProps[];
-  reportContainer: typeof ReportContainer;
 }
 
 export const ReportDashboard = (props: ReportDashboardProps) => {
-  const { buildMenuReportStructure, reportContainer } = props;
+  const { buildMenuReportStructure } = props;
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
   const [currentReport, setCurrentReport] = React.useState(Reports.queryAllLogs);
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
 
-  const setReport = React.useCallback(
-    (report: Reports) => {
-      setCurrentReport(report);
-    },
-    [setCurrentReport],
-  );
+  const [fromLogDate, setFromLogDate] = React.useState<MaterialUiPickersDate>(new Date());
+  const [toLogDate, setToLogDate] = React.useState<MaterialUiPickersDate>(new Date());
+
+  const handleFromLogDateChange = React.useCallback((date: MaterialUiPickersDate) => {
+    setFromLogDate(date);
+  }, []);
+
+  const handleToLogDateChange = React.useCallback((date: MaterialUiPickersDate) => {
+    setToLogDate(date);
+  }, []);
+
+  const itemConfig = (props: ReportConfigProps): JSX.Element | null => {
+    switch (currentReport) {
+      case Reports.queryAllLogs:
+        return <AllLogsReport />;
+      case Reports.showDispenserStateReport:
+        return <DispenserStateReportConfig {...props} />;
+      case Reports.showDoorStateReport:
+        return <DoorStateReportConfig {...props} />;
+      case Reports.showFleetStateReport:
+        return <FleetStateReportConfig {...props} />;
+      case Reports.showHealthReport:
+        return <HealthReportConfig {...props} />;
+      case Reports.showIngestorStateReport:
+        return <IngestorStateReportConfig {...props} />;
+      case Reports.showLiftStateReport:
+        return <LiftStateReportConfig {...props} />;
+      case Reports.showLoginsReport:
+        return <UserLoginReportConfig {...props} />;
+      case Reports.showLogoutsReport:
+        return <UserLogoutReportConfig {...props} />;
+      case Reports.showLoginFailuresReport:
+        return <UserLoginFailureReportConfig {...props} />;
+      case Reports.showTasksReport:
+        return <TaskSummaryReportConfig {...props} />;
+      default:
+        return null;
+    }
+  };
+
+  const headerTitle = React.useMemo(() => {
+    switch (currentReport) {
+      case Reports.queryAllLogs:
+        return 'All Logs';
+      case Reports.showDispenserStateReport:
+        return 'Dispenser State Report';
+      case Reports.showDoorStateReport:
+        return 'Door State Report';
+      case Reports.showFleetStateReport:
+        return 'Fleet State Report';
+      case Reports.showHealthReport:
+        return 'Health Report';
+      case Reports.showIngestorStateReport:
+        return 'Ingestor State Report';
+      case Reports.showLiftStateReport:
+        return 'Lift State Report';
+      case Reports.showLoginsReport:
+        return 'Login Report';
+      case Reports.showLogoutsReport:
+        return 'Logout Report';
+      case Reports.showLoginFailuresReport:
+        return 'Login Failure Report';
+      case Reports.showTasksReport:
+        return 'Task Report';
+      default:
+        return '';
+    }
+  }, [currentReport]);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -140,7 +213,7 @@ export const ReportDashboard = (props: ReportDashboardProps) => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" className={classes.toolbarTitle}>
-            Reports
+            Reports - {headerTitle}
           </Typography>
           {authenticator.user && (
             <>
@@ -192,7 +265,7 @@ export const ReportDashboard = (props: ReportDashboardProps) => {
             </div>
 
             <Divider />
-            <MultiLevelMenu menuStructure={buildMenuReportStructure(setReport)} />
+            <MultiLevelMenu menuStructure={buildMenuReportStructure(setCurrentReport)} />
           </>
         )}
       </Drawer>
@@ -202,10 +275,12 @@ export const ReportDashboard = (props: ReportDashboardProps) => {
         })}
       >
         <div className={classes.drawerHeader} />
-        {Object.prototype.hasOwnProperty.call(reportContainer, currentReport) &&
-        reportContainer[currentReport]
-          ? reportContainer[currentReport]
-          : null}
+        {itemConfig({
+          fromLogDate,
+          toLogDate,
+          onSelectFromDate: handleFromLogDateChange,
+          onSelectToDate: handleToLogDateChange,
+        })}
       </main>
     </div>
   );

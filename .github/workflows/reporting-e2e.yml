@@ -4,18 +4,14 @@ on:
   push:
     branches:
       - main
-  schedule:
-    # 2am SGT
-    - cron: '0 18 * * *'
 env:
   CI: true
 jobs:
-  e2e-tests:
-    name: End-to-End Tests
+  reporting-e2e:
+    name: Reporting e2e
     runs-on: ubuntu-latest
-    if: always()
     container:
-      image: docker.pkg.github.com/open-rmf/rmf-web/e2e
+      image: ghcr.io/${{ github.repository }}/e2e
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -26,24 +22,15 @@ jobs:
         working-directory: packages/reporting-e2e
     steps:
       - uses: actions/checkout@v2
-      - name: bootstrap
-        run: |
-          npm config set unsafe-perm
-          npm install -g lerna@4
-          lerna bootstrap --scope=reporting-e2e
-          docker pull quay.io/keycloak/keycloak:12.0.4
-        working-directory: .
-      - name: e2e test
-        run: |
-          npm test || npm test
-        env:
-          E2E_DOCKER_NETWORK: ${{job.container.network}}
-          REACT_APP_AUTH_PROVIDER: keycloak
-          # need to use the internal port because we are connecting from within the same network
-          REACT_APP_KEYCLOAK_CONFIG: '{ "realm": "master", "clientId": "reporting", "url": "http://rmf-web_keycloak_1:8080/auth" }'
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+          cache: 'npm'
+      - name: test
+        uses: ./.github/actions/reporting-e2e
       - name: upload artifacts
         uses: actions/upload-artifact@v2
-        if: ${{ always() }}
+        if: always()
         with:
-          name: screenshots
+          name: artifacts
           path: packages/reporting-e2e/artifacts

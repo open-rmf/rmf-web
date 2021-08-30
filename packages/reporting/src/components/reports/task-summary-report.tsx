@@ -7,8 +7,9 @@ import {
 import appConfig from '../../app-config';
 import { AuthenticatorContext } from '../auth-contexts';
 import { getLogData } from './utils';
+import { ReportConfigProps } from 'react-components';
 
-const TaskSummaryReportConfig = () => {
+const TaskSummaryReportConfig = (props: ReportConfigProps) => {
   const authenticator = React.useContext(AuthenticatorContext);
   const getLogs = async (params: DefaultReportQueryPayload): Promise<TaskSummaryRowsType> => {
     return (await getLogData(
@@ -18,7 +19,7 @@ const TaskSummaryReportConfig = () => {
     )) as TaskSummaryRowsType;
   };
 
-  return <TaskSummaryReport getLogs={getLogs} />;
+  return <TaskSummaryReport getLogs={getLogs} {...props} />;
 };
 
 export default TaskSummaryReportConfig;

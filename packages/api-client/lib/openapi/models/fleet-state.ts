@@ -25,7 +25,7 @@ export interface FleetState {
   name?: any;
   /**
    *
-   * @type {Array&lt;RobotState&gt;}
+   * @type {Array&lt;ApiServerModelsRosPydanticRmfFleetMsgsRobotStateRobotState&gt;}
    * @memberof FleetState
    */
   robots?: any;
