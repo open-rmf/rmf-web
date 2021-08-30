@@ -7,7 +7,7 @@ import React from 'react';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import { LoginPage, PrivateRoute } from 'rmf-auth';
 import appConfig from '../app-config';
-import ResourceManager from '../managers/resource-manager';
+import { ResourceManager } from 'rmf-tools';
 import { DashboardRoute, LoginRoute } from '../util/url';
 import { AppBase } from './app-base';
 import { ResourcesContext } from './app-contexts';

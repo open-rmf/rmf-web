@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 
 import { Authenticator, KeycloakAuthenticator, StubAuthenticator } from 'rmf-auth';
-import ResourceManager from './managers/resource-manager';
+import { ResourceManager } from 'rmf-tools';
 import { BasePath } from './util/url';
 
 export interface AppConfig {
