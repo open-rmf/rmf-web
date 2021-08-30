@@ -12,7 +12,7 @@ export interface ResourceConfigurationsType {
   logos?: Record<string, LogoResource>;
 }
 
-export default class ResourceManager {
+export class ResourceManager {
   robots: RobotResourceManager;
   logos: LogoResourceManager;
   dispensers?: DispenserResourceManager;
