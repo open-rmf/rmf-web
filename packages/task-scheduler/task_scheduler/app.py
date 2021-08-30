@@ -46,13 +46,13 @@ def get_app():
 
     app.include_router(
         scheduled_task_router,
-        prefix="/scheduledtask",
+        prefix="/task/scheduled",
         tags=["scheduledtask"],
     )
 
     app.include_router(
         task_rule_router,
-        prefix="/taskrule",
+        prefix="/task/rule",
         tags=["taskrule"],
     )
 

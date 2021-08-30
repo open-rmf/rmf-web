@@ -37,21 +37,21 @@ class TestTaskRuleRouter(unittest.IsolatedAsyncioTestCase):
         await Tortoise.close_connections()
 
     def test_deletes_task_rule(self):
-        response = self.client.delete("/taskrule/1")
+        response = self.client.delete("/task/rule/1")
         assert response.status_code == 204
 
     def test_fails_on_deleting_task_rule(self):
-        response = self.client.delete("/taskrule/100")
+        response = self.client.delete("/task/rule/100")
         assert response.status_code == 503
 
     def test_gets_task_rule(self):
-        response = self.client.get("/taskrule/")
+        response = self.client.get("/task/rule/")
         assert response.status_code == 200
         self.assertEqual(len(response.json()), 1)
 
     def test_creates_task_rule(self):
         response = self.client.post(
-            "/taskrule/",
+            "/task/rule/",
             json={
                 "name": "test5",
                 "task_type": "delivery",
@@ -65,5 +65,5 @@ class TestTaskRuleRouter(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(response.json()["name"], "test5")
 
     def test_fails_creating_wrong_rule_(self):
-        response = self.client.post("/taskrule/", json={})
+        response = self.client.post("/task/rule/", json={})
         assert response.status_code == 503

@@ -14,30 +14,25 @@ class TestCaseTaskRuleService(unittest.TestCase):
         self.assertFalse(DatetimeManager.is_leap_year(2021))
 
     def test_get_leap_year_list(self):
-        now = datetime.utcnow()
-        now = now.replace(year=2020)
+        now = datetime(2020, 8, 2)
         self.assertEqual(DatetimeManager.get_list_of_month_days(now)[2], 29)
 
     def test_get_normal_year_list(self):
-        now = datetime.utcnow()
-        now = now.replace(year=2021)
+        now = datetime(2021, 8, 2)
         self.assertEqual(DatetimeManager.get_list_of_month_days(now)[2], 28)
 
     def test_get_month_days_numbers_in_normal_year(self):
-        now = datetime.utcnow()
-        now = now.replace(year=2021, month=2)
+        now = datetime(2021, 2, 2)
         days = DatetimeManager.get_month_days_number(now)
         self.assertEqual(days, 28)
 
     def test_get_month_days_numbers_in_leap_year(self):
-        now = datetime.utcnow()
-        now = now.replace(year=2020, month=2)
+        now = datetime(2020, 2, 2)
         days = DatetimeManager.get_month_days_number(now)
         self.assertEqual(days, 29)
 
     def test_sum_month_days_correctly(self):
-        now = datetime.utcnow()
-        now = now.replace(year=2021, month=2)
+        now = datetime(2021, 2, 2)
         days = DatetimeManager.get_sum_of_month_days(2, now)
         self.assertEqual(days, 28 + 31)
 

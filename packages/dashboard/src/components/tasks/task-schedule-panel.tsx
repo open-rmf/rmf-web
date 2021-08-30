@@ -27,12 +27,21 @@ import {
   ScheduledTaskTable,
   ScheduleTaskForm,
   ScheduleTaskFormProps,
+  SubmitTaskSchedule,
   TaskInfo,
   TaskRule,
   TaskRuleTable,
   TaskTable,
 } from 'react-components';
 import * as RmfModels from 'rmf-models';
+import {
+  createTaskRuleAPI,
+  deleteScheduledTaskAPI,
+  deleteTaskRuleAPI,
+  getScheduledTasksAPI,
+  getTaskRulesAPI,
+} from '../../managers/task-scheduler-manager';
+
 import { UserContext } from '../auth/contexts';
 import { Enforcer } from '../permissions';
 import { a11yProps, TabPanel } from './tab-panel';
@@ -77,10 +86,6 @@ export interface TaskSchedulerPanelProps extends React.HTMLProps<HTMLDivElement>
   deliveryWaypoints?: string[];
   dispensers?: string[];
   ingestors?: string[];
-  getTaskRules: (offset: number) => Promise<TaskRule[]>;
-  getScheduledTasks: (offset: number) => Promise<ScheduledTask[]>;
-  submitTask?: ScheduleTaskFormProps['submitTask'];
-  cancelTask?: (task: RmfModels.TaskSummary) => Promise<void>;
   onRefresh?: () => void;
   onAutoRefresh?: (enabled: boolean) => void;
 }
@@ -93,35 +98,36 @@ export function TaskSchedulerPanel({
   deliveryWaypoints,
   dispensers,
   ingestors,
-  getTaskRules,
-  getScheduledTasks,
-  submitTask,
-  cancelTask,
   onRefresh,
   onAutoRefresh,
   ...divProps
 }: TaskSchedulerPanelProps): JSX.Element {
   const classes = useStyles();
   const theme = useTheme();
-  const [selectedTask, setSelectedTask] = React.useState<Task | undefined>(undefined);
+  const [selectedTask, setSelectedTask] = React.useState<ScheduledTask | undefined>(undefined);
+  const [selectedRule, setSelectedRule] = React.useState<TaskRule | undefined>(undefined);
   const uploadFileInputRef = React.useRef<HTMLInputElement>(null);
   const [openCreateTaskForm, setOpenCreateTaskForm] = React.useState(false);
   const [openSnackbar, setOpenSnackbar] = React.useState(false);
   const [snackbarMessage, setSnackbarMessage] = React.useState('');
   const [snackbarSeverity, setSnackbarSeverity] = React.useState<AlertProps['severity']>('success');
   const [autoRefresh, setAutoRefresh] = React.useState(true);
+  const [taskRules, setTaskRules] = React.useState([] as TaskRule[]);
+  const [scheduledTasks, setScheduledTasks] = React.useState([] as ScheduledTask[]);
+
   const user = React.useContext(UserContext);
 
   const [value, setValue] = React.useState(0);
   const handleChange = (event: any, newValue: number) => {
     setValue(newValue);
   };
+
   const handleCancelTaskClick = React.useCallback<React.MouseEventHandler>(async () => {
-    if (!cancelTask || !selectedTask) {
+    if (!selectedTask) {
       return;
     }
     try {
-      await cancelTask(selectedTask.summary);
+      await deleteScheduledTaskAPI(selectedTask.id);
       setSnackbarMessage('Successfully cancelled task');
       setSnackbarSeverity('success');
       setOpenSnackbar(true);
@@ -131,22 +137,74 @@ export function TaskSchedulerPanel({
       setSnackbarSeverity('error');
       setOpenSnackbar(true);
     }
-  }, [cancelTask, selectedTask]);
+  }, [selectedTask]);
+
+  const handleDeleteRuleClick = React.useCallback<React.MouseEventHandler>(async () => {
+    if (!selectedRule) {
+      return;
+    }
+
+    try {
+      await deleteTaskRuleAPI(selectedRule.id);
+      setSnackbarMessage('Rule successfully deleted');
+      setSnackbarSeverity('success');
+      setOpenSnackbar(true);
+      setSelectedTask(undefined);
+    } catch (e) {
+      setSnackbarMessage(`Failed to delete rule: ${e.message}`);
+      setSnackbarSeverity('error');
+      setOpenSnackbar(true);
+    }
+  }, [selectedRule]);
 
   const autoRefreshTooltipPrefix = autoRefresh ? 'Disable' : 'Enable';
 
-  const taskCancellable =
-    selectedTask &&
-    user &&
-    Enforcer.canCancelTask(user, selectedTask) &&
-    (selectedTask.summary.state === RmfModels.TaskSummary.STATE_ACTIVE ||
-      selectedTask.summary.state === RmfModels.TaskSummary.STATE_PENDING ||
-      selectedTask.summary.state === RmfModels.TaskSummary.STATE_QUEUED);
+  /*
+  ---------------
+  */
 
-  React.useEffect(() => {
-    getTaskRules(0);
-    // getScheduledTasks(0);
-  }, [getTaskRules]);
+  const submitTaskSchedule = React.useCallback<Required<ScheduleTaskFormProps>['submitTask']>(
+    async (task: SubmitTaskSchedule) => {
+      console.log(task);
+      // const response = await createTaskRuleAPI({
+      //   name: task.ruleName,
+      //   day_of_week: task.dayOfWeek,
+      //   start_datetime: task.name,
+      //   end_datetime: task.endDatetime,
+      //   frequency: task.frequency,
+      //   frequency_type: task.frequencyType,
+      //   args: task.task,
+      // });
+      // console.log(response);
+      // await Promise.all(tasks.map((t) => tasksApi.submitTaskTasksSubmitTaskPost(t)));
+      // handleRefresh();
+    },
+    [],
+  );
+
+  const getTaskRules = React.useCallback(async () => {
+    const response = await getTaskRulesAPI(0);
+    setTaskRules(response);
+    // await Promise.all(tasks.map((t) => tasksApi.submitTaskTasksSubmitTaskPost(t)));
+    // handleRefresh();
+  }, []);
+
+  const getScheduledTasks = React.useCallback(async () => {
+    const response = await getScheduledTasksAPI(0);
+    // await Promise.all(tasks.map((t) => tasksApi.submitTaskTasksSubmitTaskPost(t)));
+    // handleRefresh();
+    setScheduledTasks(response);
+  }, []);
+
+  const taskCancellable =
+    selectedTask?.task_datetime && new Date(selectedTask?.task_datetime) > new Date();
+  // const taskCancellable =
+  //   selectedTask &&
+  //   user &&
+  //   Enforcer.canCancelTask(user, selectedTask) &&
+  //   (selectedTask.summary.state === RmfModels.TaskSummary.STATE_ACTIVE ||
+  //     selectedTask.summary.state === RmfModels.TaskSummary.STATE_PENDING ||
+  //     selectedTask.summary.state === RmfModels.TaskSummary.STATE_QUEUED);
 
   return (
     <div {...divProps}>
@@ -163,10 +221,6 @@ export function TaskSchedulerPanel({
               <Tab label="Scheduled Task" {...a11yProps(0)} />
               <Tab label="Task Rules" {...a11yProps(1)} />
             </Tabs>
-            {/* </AppBar> */}
-            {/* <Typography className={classes.tableTitle} variant="h6">
-              Scheduled Tasks
-            </Typography> */}
             <Tooltip title="Schedule task">
               <IconButton onClick={() => setOpenCreateTaskForm(true)} aria-label="Create Task">
                 <AddOutlinedIcon />
@@ -177,9 +231,10 @@ export function TaskSchedulerPanel({
           <TabPanel value={value} index={0}>
             <TableContainer>
               <ScheduledTaskTable
-                scheduledTasks={tasks.map((t) => t.summary)}
+                onLoad={getScheduledTasks}
+                scheduledTasks={scheduledTasks}
                 onTaskClick={(_ev, task) =>
-                  setSelectedTask(tasks.find((t) => t.task_id === task.id))
+                  setSelectedTask(scheduledTasks.find((t) => t.id === task.id))
                 }
               />
             </TableContainer>
@@ -195,9 +250,10 @@ export function TaskSchedulerPanel({
           <TabPanel value={value} index={1}>
             <TableContainer>
               <TaskRuleTable
-                taskRules={tasks.map((t) => t.summary)}
+                onLoad={getTaskRules}
+                taskRules={taskRules}
                 onTaskClick={(_ev, task) =>
-                  setSelectedTask(tasks.find((t) => t.task_id === task.id))
+                  setSelectedRule(taskRules.find((t) => t.id === task.id))
                 }
               />
             </TableContainer>
@@ -213,7 +269,7 @@ export function TaskSchedulerPanel({
         <Paper className={classes.detailPanelContainer}>
           {selectedTask ? (
             <>
-              <TaskInfo task={selectedTask.summary} />
+              {/* <TaskInfo task={selectedTask} /> */}
               <Button
                 style={{ marginTop: theme.spacing(1) }}
                 fullWidth
@@ -223,7 +279,25 @@ export function TaskSchedulerPanel({
                 disabled={!taskCancellable}
                 onClick={handleCancelTaskClick}
               >
-                Cancel Task
+                Delete Task
+              </Button>
+            </>
+          ) : (
+            <NoSelectedTask />
+          )}
+          {selectedRule ? (
+            <>
+              {/* <TaskInfo task={selectedTask.summary} /> */}
+              <Button
+                style={{ marginTop: theme.spacing(1) }}
+                fullWidth
+                variant="contained"
+                color="secondary"
+                aria-label="Cancel Task"
+                disabled={!taskCancellable}
+                onClick={handleDeleteRuleClick}
+              >
+                Delete Rule
               </Button>
             </>
           ) : (
@@ -240,7 +314,7 @@ export function TaskSchedulerPanel({
           ingestors={ingestors}
           open={openCreateTaskForm}
           onClose={() => setOpenCreateTaskForm(false)}
-          submitTask={submitTask}
+          submitTask={submitTaskSchedule}
           onSuccess={() => {
             setOpenCreateTaskForm(false);
             setSnackbarSeverity('success');

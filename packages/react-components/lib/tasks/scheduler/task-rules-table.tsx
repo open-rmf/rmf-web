@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
 export interface TaskRule {
   id: number;
   name: string;
-  day_of_Week: number[];
+  day_of_week: number[];
   start_datetime: string;
   end_datetime: string | null;
   frequency: number;
@@ -56,11 +56,12 @@ function TaskRow({ taskRule, onClick }: TaskRowProps) {
         onMouseOut={() => setHover(false)}
       >
         <TableCell>{taskRule.name}</TableCell>
-        <TableCell>{taskRule.day_of_Week}</TableCell>
-        <TableCell>{taskRule.start_datetime}</TableCell>
-        <TableCell>{taskRule.end_datetime ? taskRule.end_datetime : null}</TableCell>
         <TableCell>{taskRule.frequency}</TableCell>
         <TableCell>{taskRule.frequency_type}</TableCell>
+        <TableCell>{taskRule.start_datetime}</TableCell>
+        <TableCell>{taskRule.end_datetime ? taskRule.end_datetime : null}</TableCell>
+        <TableCell>{taskRule.day_of_week}</TableCell>
+
         <TableCell>{taskRule.args}</TableCell>
       </TableRow>
     </>
@@ -78,23 +79,28 @@ export interface TaskRuleTableProps {
    */
   taskRules: TaskRule[];
   onTaskClick?(ev: React.MouseEvent<HTMLDivElement>, taskRule: TaskRule): void;
+  onLoad?(): Promise<void>;
 }
 
 export function TaskRuleTable(props: TaskRuleTableProps): JSX.Element {
-  const { taskRules, onTaskClick } = props;
+  const { taskRules, onTaskClick, onLoad } = props;
   const classes = useStyles();
+
+  React.useEffect(() => {
+    onLoad && onLoad();
+  }, [onLoad]);
+
   return (
     <Table className={classes.table} stickyHeader size="small" style={{ tableLayout: 'fixed' }}>
       <TableHead>
         <TableRow>
           <TableCell>Rule Name</TableCell>
-          <TableCell>Task</TableCell>
           <TableCell>Frequency</TableCell>
           <TableCell>Frequency Type</TableCell>
           <TableCell>Start Time</TableCell>
           <TableCell>End Time</TableCell>
           <TableCell>Days of week</TableCell>
-          <TableCell>Created at</TableCell>
+          <TableCell>Task</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>

@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
 export interface ScheduledTask {
   id: number;
   created_at: string;
-  enabled: number[];
+  enabled: boolean;
   rule: string;
   task_datetime: string | null;
   task_type: number;
@@ -54,9 +54,8 @@ function TaskRow({ scheduledTask, onClick }: TaskRowProps) {
         onMouseOver={() => setHover(true)}
         onMouseOut={() => setHover(false)}
       >
-        <TableCell>{scheduledTask.created_at}</TableCell>
         <TableCell>{scheduledTask.enabled}</TableCell>
-        <TableCell>{scheduledTask.rule}</TableCell>
+        {/* <TableCell>{scheduledTask.rule}</TableCell> */}
         <TableCell>{scheduledTask.task_datetime}</TableCell>
         <TableCell>{scheduledTask.task_type}</TableCell>
         <TableCell>{scheduledTask.args}</TableCell>
@@ -75,20 +74,26 @@ export interface ScheduledTaskTableProps {
    * contain the tasks for the current page.
    */
   scheduledTasks: ScheduledTask[];
-  onTaskClick?(ev: React.MouseEvent<HTMLDivElement>, taskRule: ScheduledTask): void;
+  onTaskClick?(ev: React.MouseEvent<HTMLDivElement>, task: ScheduledTask): void;
+  onLoad?(): Promise<void>;
 }
 
 export function ScheduledTaskTable(props: ScheduledTaskTableProps): JSX.Element {
-  const { scheduledTasks, onTaskClick } = props;
+  const { scheduledTasks, onTaskClick, onLoad } = props;
   const classes = useStyles();
+
+  React.useEffect(() => {
+    onLoad && onLoad();
+  }, [onLoad]);
+
   return (
     <Table className={classes.table} stickyHeader size="small" style={{ tableLayout: 'fixed' }}>
       <TableHead>
         <TableRow>
           <TableCell>Enabled</TableCell>
           <TableCell>Start Time</TableCell>
+          <TableCell>Task Type</TableCell>
           <TableCell>Task (Args)</TableCell>
-          <TableCell>Created at</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
