@@ -7,6 +7,7 @@ import ItemAccordionSummary from '../item-accordion-summary';
 import { SimpleInfo } from '../simple-info';
 import { robotModeToString, VerboseRobot } from './utils';
 import { Map as LMap } from 'react-leaflet';
+import { RobotInfo as RobotGraphics } from './robot-info';
 
 const debug = Debug('Robots:RobotAccordion');
 
@@ -43,18 +44,16 @@ export interface RobotAccordionProps extends Omit<AccordionProps, 'children'> {
   fleetName: string;
   robot: VerboseRobot;
   mapRef?: React.RefObject<LMap>;
-  onRobotSelect?: React.Dispatch<React.SetStateAction<VerboseRobot | undefined>>;
 }
 
 export const RobotAccordion = React.forwardRef(
   (props: RobotAccordionProps, ref: React.Ref<HTMLElement>) => {
-    const { fleetName, robot, mapRef, onRobotSelect, ...otherProps } = props;
+    const { fleetName, robot, mapRef, ...otherProps } = props;
     debug(`render ${robot.name}`);
     const classes = useStyles();
 
     function onAccordianClick(robot: VerboseRobot, mapRef?: React.RefObject<LMap>) {
       mapRef?.current?.leafletElement.setView([robot.state.location.y, robot.state.location.x], 5);
-      onRobotSelect && onRobotSelect(robot);
     }
 
     return (
@@ -69,6 +68,9 @@ export const RobotAccordion = React.forwardRef(
         />
         <ItemAccordionDetails>
           <RobotInfo fleetName={fleetName} robot={robot.state} />
+          <div style={{ padding: '1rem' }}>
+            <RobotGraphics robot={robot} />
+          </div>
         </ItemAccordionDetails>
       </Accordion>
     );

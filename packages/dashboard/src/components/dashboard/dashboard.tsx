@@ -210,7 +210,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
   // fleets
   const { fleetsApi } = React.useContext(RmfIngressContext) || {};
   const [verboseRobots, setVerboseRobots] = React.useState<VerboseRobot[]>([]);
-  const [selectedRobot, setSelectedRobot] = React.useState<VerboseRobot>();
   const fetchVerboseRobots = React.useCallback(async () => {
     if (!fleetsApi) {
       return [];
@@ -230,13 +229,13 @@ export default function Dashboard(_props: {}): React.ReactElement {
   React.useEffect(() => {
     const autoRefresh = setInterval(() => {
       fetchVerboseRobots();
-      verboseRobots.forEach((robot) => {
-        if (selectedRobot && robot.fleet + robot.name === selectedRobot.fleet + selectedRobot.name)
-          setSelectedRobot(robot);
-      });
+      //   verboseRobots.forEach((robot) => {
+      //     if (selectedRobot && robot.fleet + robot.name === selectedRobot.fleet + selectedRobot.name)
+      //       setSelectedRobot(robot);
+      //   });
     }, 3000);
     return () => clearInterval(autoRefresh);
-  }, [fetchVerboseRobots, verboseRobots, selectedRobot]);
+  }, [fetchVerboseRobots]);
 
   const fleetStates = React.useContext(FleetStateContext);
   const fleetNames = React.useRef<string[]>([]);
@@ -336,7 +335,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
         <OmniPanel
           className={classes.omniPanel}
           stack={viewStack}
-          robot={selectedRobot}
           variant="backHomeClose"
           onBack={handleOmniPanelBack}
           onHome={handleOmniPanelHome}
@@ -390,7 +388,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
                   fleetName={robot.fleet}
                   data-component="RobotAccordion"
                   mapRef={windowMap.get('lmap')}
-                  onRobotSelect={setSelectedRobot}
                 />
               ) : null;
             })}

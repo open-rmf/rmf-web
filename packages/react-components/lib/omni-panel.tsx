@@ -6,7 +6,6 @@ import BackIcon from '@material-ui/icons/KeyboardBackspace';
 import React, { ReactElement } from 'react';
 import { joinClasses } from './css-utils';
 import { OmniPanelViewProps } from './omni-panel-view';
-import { VerboseRobot, RobotInfo } from './robots';
 
 const useStyles = makeStyles((theme) => ({
   mainContainer: {
@@ -40,15 +39,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-enum OmniPanelViewIndex {
-  MainMenu = 0,
-  Doors,
-  Lifts,
-  Robots,
-  Dispensers,
-  Negotiations,
-}
-
 export interface OmniPanelProps extends React.HTMLProps<HTMLDivElement> {
   stack: (number | string)[];
   children: React.ReactElement<OmniPanelViewProps>[] | React.ReactElement<OmniPanelViewProps>;
@@ -56,7 +46,6 @@ export interface OmniPanelProps extends React.HTMLProps<HTMLDivElement> {
   timeout?: number;
   mountOnEnter?: boolean;
   unmountOnExit?: boolean;
-  robot?: VerboseRobot;
   onBack?: React.MouseEventHandler<HTMLButtonElement>;
   onHome?: React.MouseEventHandler<HTMLButtonElement>;
   onClose?: React.MouseEventHandler<HTMLButtonElement>;
@@ -70,7 +59,6 @@ export const OmniPanel = (props: OmniPanelProps): JSX.Element => {
     timeout,
     mountOnEnter,
     unmountOnExit = true,
-    robot,
     onBack,
     onHome,
     onClose,
@@ -125,11 +113,6 @@ export const OmniPanel = (props: OmniPanelProps): JSX.Element => {
         <div className={classes_.viewContainer}>
           {Array.isArray(children) ? children.map(renderView) : renderView(children)}
         </div>
-        {stack[stack.length - 1] === OmniPanelViewIndex.Robots ? (
-          <div style={{ padding: '1rem', overflow: 'scroll', minHeight: '300px' }}>
-            <RobotInfo robot={robot} />
-          </div>
-        ) : null}
       </div>
     </div>
   );
