@@ -1,7 +1,7 @@
 import { makeStyles } from '@material-ui/core';
 import AccordionDetails, { AccordionDetailsProps } from '@material-ui/core/AccordionDetails';
+import clsx from 'clsx';
 import React from 'react';
-import { joinClasses } from './css-utils';
 
 const useStyles = makeStyles({
   details: {
@@ -17,7 +17,7 @@ export const ItemAccordionDetails = (props: ItemAccordionDetailsProps): JSX.Elem
   const classes = useStyles();
   return (
     <AccordionDetails
-      className={joinClasses(classes.details, className)}
+      className={clsx(classes.details, className)}
       {...otherProps}
     ></AccordionDetails>
   );

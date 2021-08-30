@@ -1,11 +1,10 @@
+import { crc32 } from 'crc';
 import Vibrant from 'node-vibrant';
 import React from 'react';
 import { robotHash } from './robots';
 
-async function _hash(s: string): Promise<ArrayBuffer> {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(s);
-  return crypto.subtle.digest('SHA-256', data);
+function _hash(s: string): number {
+  return crc32(s);
 }
 
 export class ColorManager {
@@ -23,7 +22,7 @@ export class ColorManager {
     }
 
     if (!image) {
-      this._robotColorCache[key] = await this._robotColorFromId(fleet, name, model);
+      this._robotColorCache[key] = this._robotColorFromId(fleet, name, model);
       return this._robotColorCache[key];
     } else {
       try {
@@ -44,11 +43,6 @@ export class ColorManager {
     }
   }
 
-  robotColorFromCache(fleet: string, name: string): string | null {
-    const key = robotHash(name, fleet);
-    return this._robotColorCache[key] ? this._robotColorCache[key] : null;
-  }
-
   // Gets a light color different than red
   private static _getLightColor(firstNumber: number, secondNumber: number): string {
     // Hue is a degree on the color wheel from 0 to 360. 0 is red, 120 is green, 240 is blue.
@@ -62,10 +56,10 @@ export class ColorManager {
     return `hsl(${hue}, ${saturation}%, ${luminance}%)`;
   }
 
-  private async _robotColorFromId(fleet: string, name: string, model: string): Promise<string> {
-    const modelHash = new Uint16Array(await _hash(model));
-    const nameHash = new Uint16Array(await _hash(name));
-    return ColorManager._getLightColor(modelHash[0], nameHash[0]);
+  private _robotColorFromId(fleet: string, name: string, model: string): string {
+    const modelHash = _hash(model);
+    const nameHash = _hash(name);
+    return ColorManager._getLightColor(modelHash, nameHash);
   }
 
   private _robotColorCache: Record<string, string> = {};
