@@ -27,7 +27,6 @@ export const getScheduledTasksAPI = async (offset: number): Promise<ScheduledTas
     offset: offset,
     limit: 500,
   });
-  console.log(response);
 
   return response as ScheduledTask[];
 };
@@ -38,7 +37,6 @@ export const getTaskRulesAPI = async (offset: number): Promise<TaskRule[]> => {
     offset: offset,
     limit: 500,
   });
-  console.log(response);
   return response as TaskRule[];
 };
 
@@ -62,12 +60,10 @@ export const deleteTaskRuleAPI = async (ruleId: number): Promise<void> => {
 
 type TaskRuleCreation = Omit<TaskRule, 'id'>;
 export const createTaskRuleAPI = async (payload: TaskRuleCreation) => {
-  const url = BASE_PATH + '/task/rule';
+  const url = BASE_PATH + '/task/rule/';
 
   try {
-    const response = await axios.post(url, {
-      data: payload,
-    });
+    const response = await axios.post(url, payload);
     return response.data;
   } catch (error) {
     console.error(error);

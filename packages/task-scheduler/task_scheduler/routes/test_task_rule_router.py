@@ -64,6 +64,28 @@ class TestTaskRuleRouter(unittest.IsolatedAsyncioTestCase):
         assert response.status_code == 201
         self.assertEqual(response.json()["name"], "test5")
 
+    def test_creates_task_rule_with_args(self):
+        response = self.client.post(
+            "/task/rule/",
+            json={
+                "name": "test5",
+                "task_type": "delivery",
+                "frequency": 1,
+                "frequency_type": "Once",
+                "start_datetime": "2021-08-30T21:56:37.256Z",
+                "end_datetime": None,
+                "days_of_week": [],
+                "args": {
+                    "description": {"cleaning_zone": "lounge"},
+                    "start_time": 1630360603,
+                    "task_type": 4,
+                    "priority": 0,
+                },
+            },
+        )
+        assert response.status_code == 201
+        self.assertEqual(response.json()["name"], "test5")
+
     def test_fails_creating_wrong_rule_(self):
         response = self.client.post("/task/rule/", json={})
         assert response.status_code == 503

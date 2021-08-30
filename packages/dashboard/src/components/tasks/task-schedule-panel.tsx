@@ -162,20 +162,36 @@ export function TaskSchedulerPanel({
   /*
   ---------------
   */
+  const taskTypeParser = (task: number): string => {
+    switch (task) {
+      case RmfModels.TaskType.TYPE_CLEAN:
+        return 'clean';
+
+      case RmfModels.TaskType.TYPE_LOOP:
+        return 'loop';
+
+      case RmfModels.TaskType.TYPE_DELIVERY:
+        return 'delivery';
+
+      default:
+        return 'error';
+    }
+  };
 
   const submitTaskSchedule = React.useCallback<Required<ScheduleTaskFormProps>['submitTask']>(
     async (task: SubmitTaskSchedule) => {
       console.log(task);
-      // const response = await createTaskRuleAPI({
-      //   name: task.ruleName,
-      //   day_of_week: task.dayOfWeek,
-      //   start_datetime: task.name,
-      //   end_datetime: task.endDatetime,
-      //   frequency: task.frequency,
-      //   frequency_type: task.frequencyType,
-      //   args: task.task,
-      // });
-      // console.log(response);
+      const response = await createTaskRuleAPI({
+        name: task.ruleName,
+        day_of_week: task.dayOfWeek,
+        start_datetime: task.startDatetime,
+        end_datetime: task.endDatetime,
+        frequency: task.frequency,
+        frequency_type: task.frequencyType,
+        task_type: taskTypeParser(task.task.task_type),
+        args: task.task,
+      });
+      console.log(response);
       // await Promise.all(tasks.map((t) => tasksApi.submitTaskTasksSubmitTaskPost(t)));
       // handleRefresh();
     },

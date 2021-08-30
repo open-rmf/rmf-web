@@ -12,6 +12,7 @@ export enum TaskActionType {
   FrequencyType = 'frequencyType',
   FrequencyTypeCustom = 'frequencyTypeCustom',
   RuleName = 'ruleName',
+  StartDatetime = 'startDatetime',
   Task = 'task',
 }
 
@@ -22,6 +23,7 @@ export type TaskState = {
   [TaskActionType.FrequencyType]: string;
   [TaskActionType.FrequencyTypeCustom]: string;
   [TaskActionType.RuleName]: string;
+  [TaskActionType.StartDatetime]: any;
   [TaskActionType.Task]: SubmitTask;
 };
 
@@ -32,6 +34,7 @@ export type TaskAction =
   | TaskActionFormat<'frequencyType', TaskState['frequencyType']>
   | TaskActionFormat<'frequencyTypeCustom', TaskState['frequencyTypeCustom']>
   | TaskActionFormat<'ruleName', TaskState['ruleName']>
+  | TaskActionFormat<'startDatetime', TaskState['startDatetime']>
   | TaskActionFormat<'task', TaskState['task']>;
 
 export const taskReducer = (state: TaskState, action: TaskAction): TaskState => {
@@ -48,6 +51,8 @@ export const taskReducer = (state: TaskState, action: TaskAction): TaskState => 
       return { ...state, [TaskActionType.FrequencyTypeCustom]: action.payload };
     case TaskActionType.RuleName:
       return { ...state, [TaskActionType.RuleName]: action.payload };
+    case TaskActionType.StartDatetime:
+      return { ...state, [TaskActionType.StartDatetime]: action.payload };
     case TaskActionType.Task:
       return { ...state, [TaskActionType.Task]: action.payload };
     default:
@@ -63,6 +68,7 @@ export interface ReducerTaskDispatch {
   setFrequencyType: (payload: TaskState['frequencyType']) => void;
   setFrequencyTypeCustom: (payload: TaskState['frequencyTypeCustom']) => void;
   setRuleName: (payload: TaskState['ruleName']) => void;
+  setStartDatetime: (payload: TaskState['startDatetime']) => void;
   setTask: (payload: TaskState['task']) => void;
 }
 
@@ -87,6 +93,8 @@ export const useTaskReducer = (initialValue: TaskState): ReducerTaskProps => {
       setFrequencyTypeCustom: (payload) =>
         _dispatch({ type: TaskActionType.FrequencyTypeCustom, payload: payload }),
       setRuleName: (payload) => _dispatch({ type: TaskActionType.RuleName, payload: payload }),
+      setStartDatetime: (payload) =>
+        _dispatch({ type: TaskActionType.StartDatetime, payload: payload }),
       setTask: (payload) => _dispatch({ type: TaskActionType.Task, payload: payload }),
     } as ReducerTaskDispatch;
   }, []);

@@ -15,7 +15,7 @@ import { PositiveIntField } from '../form-inputs';
 import { defaultTask, defaultTaskDescription } from './create-task';
 import { RecurrenceType } from './scheduler/rules';
 import Scheduler from './scheduler/scheduler';
-import { TaskActionType, useTaskReducer } from './task-reducer';
+import { TaskActionType, TaskState, useTaskReducer } from './task-reducer';
 
 type TaskDescription = CleanTaskDescription | LoopTaskDescription | DeliveryTaskDescription;
 
@@ -34,15 +34,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export interface SubmitTaskSchedule {
-  ruleName: string;
-  dayOfWeek: number[];
-  endDatetime: string | null;
-  frequency: number;
-  frequencyType: string;
-  frequencyTypeCustom: string;
-  task: SubmitTask;
-}
+export type SubmitTaskSchedule = TaskState;
 
 export interface ScheduleTaskFormProps
   extends Omit<ConfirmationDialogProps, 'onConfirmClick' | 'toolbar'> {
@@ -71,12 +63,13 @@ export function ScheduleTaskForm({
   const classes = useStyles();
   // const [taskState, setTaskState] = React.useState<SubmitTask>(() => defaultTask());
   const { state, dispatch } = useTaskReducer({
-    [TaskActionType.FrequencyType]: RecurrenceType.DoesNotRepeat,
+    [TaskActionType.FrequencyType]: RecurrenceType.Once,
     [TaskActionType.FrequencyTypeCustom]: RecurrenceType.Daily,
     [TaskActionType.Frequency]: 1,
     [TaskActionType.DayOfWeek]: [],
     [TaskActionType.EndDatetime]: null,
     [TaskActionType.RuleName]: '',
+    [TaskActionType.StartDatetime]: new Date().toISOString(),
     [TaskActionType.Task]: defaultTask(),
   });
 
@@ -84,7 +77,6 @@ export function ScheduleTaskForm({
   const task = defaultTask();
 
   const updateTasks = () => {
-    // setTaskState(task);
     dispatch.setTask(task);
   };
 
@@ -92,6 +84,10 @@ export function ScheduleTaskForm({
     task.task_type = newType;
     task.description = newDesc;
     updateTasks();
+  };
+
+  const handleRuleNameChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch.setRuleName(ev.target.value);
   };
 
   const handleTaskTypeChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
@@ -155,14 +151,17 @@ export function ScheduleTaskForm({
               <Grid style={{ flexGrow: 1 }}>
                 <KeyboardDateTimePicker
                   id="start-time"
-                  value={new Date(task.start_time * 1000)}
+                  value={state.startDatetime}
+                  // value={new Date(task.start_time * 1000)}
                   onChange={(date) => {
                     if (!date) {
                       return;
                     }
                     // FIXME: needed because dateio typings default to moment
-                    task.start_time = Math.floor(((date as unknown) as Date).getTime() / 1000);
-                    updateTasks();
+                    dispatch.setStartDatetime(date);
+                    // task.start_time =   Math.floor(((date as unknown) as Date).getTime() / 1000),
+
+                    // updateTasks();
                   }}
                   label="Start Time"
                   margin="normal"
@@ -202,10 +201,21 @@ export function ScheduleTaskForm({
         <Grid container wrap="nowrap">
           <Grid style={{ flexGrow: 1 }}>
             <Scheduler
-              selectedDate={new Date(task.start_time * 1000)}
+              selectedDate={state.startDatetime}
               state={state}
               dispatch={dispatch}
             ></Scheduler>
+          </Grid>
+          <Grid style={{ flexGrow: 1 }}>
+            <TextField
+              id="rule-name"
+              label="Rule Name"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={state.ruleName}
+              onChange={handleRuleNameChange}
+            ></TextField>
           </Grid>
         </Grid>
       </ConfirmationDialog>

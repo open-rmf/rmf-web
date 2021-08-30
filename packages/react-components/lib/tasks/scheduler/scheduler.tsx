@@ -193,7 +193,7 @@ export const Scheduler = (props: SchedulerProps): JSX.Element => {
         variant="outlined"
         fullWidth
         margin="normal"
-        value={state.frequencyType || RecurrenceType.DoesNotRepeat}
+        value={state.frequencyType || RecurrenceType.Once}
         onChange={handleChange}
       >
         {optionList.map((option) => (

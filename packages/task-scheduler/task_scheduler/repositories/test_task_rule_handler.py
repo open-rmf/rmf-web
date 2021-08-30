@@ -59,6 +59,21 @@ class TestCaseTaskRule(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(task_rule.name, "test")
 
+    async def test_creates_task_rule_with_weekdays_empty(self):
+        task_rule = await TaskRuleRepository.create(
+            {
+                "name": "test2",
+                "task_type": "delivery",
+                "frequency": 1,
+                "frequency_type": "Once",
+                "start_datetime": "2021-08-23T15:11:03.979209",
+                "end_datetime": None,
+                "days_of_week": [],
+            }
+        )
+
+        self.assertEqual(task_rule.name, "test")
+
     async def test_deletes_task_rule(self):
 
         await TaskRuleRepository.create(

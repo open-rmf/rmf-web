@@ -1,5 +1,4 @@
 export enum RecurrenceType {
-  DoesNotRepeat = 'DoesNotRepeat',
   Once = 'Once',
   Minutely = 'Minutely',
   Hourly = 'Hourly',
@@ -67,18 +66,16 @@ export class RecurrentRules {
     if (!date) {
       return [
         {
-          key: RecurrenceType.DoesNotRepeat,
-          value: 'Does not repeat',
+          key: RecurrenceType.Once,
+          value: 'Once',
         },
       ];
     }
+
     const dayName = RecurrentRules.getDayName(date);
-    const monthAndDate = `${RecurrentRules.getMonthName(date)} ${date.getDate()}`;
+    // const monthAndDate = `${RecurrentRules.getMonthName(date)} ${date.getDate()}`;
+
     return [
-      {
-        key: RecurrenceType.DoesNotRepeat,
-        value: 'Does not repeat',
-      },
       {
         key: RecurrenceType.Once,
         value: 'Once',

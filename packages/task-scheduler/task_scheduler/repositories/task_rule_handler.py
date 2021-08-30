@@ -17,7 +17,7 @@ class TaskRuleRepository:
         """
         days_of_week = payload.get("days_of_week", None)
 
-        if days_of_week is not None:
+        if days_of_week is not None and len(days_of_week) > 0:
             days = payload["days_of_week"]
             days_of_week = await DaysOfWeek.create(
                 monday=days[0],

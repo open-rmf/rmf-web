@@ -35,6 +35,7 @@ export interface TaskRule {
   end_datetime: string | null;
   frequency: number;
   frequency_type: string;
+  task_type: string;
   args?: SubmitTask;
 }
 
