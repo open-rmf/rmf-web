@@ -108,10 +108,7 @@ module.exports = (config) => {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: [
-      ...(useBrowserStack ? ['bsSafari', 'bsChrome'] : ['ChromeHeadless']),
-      ...(!useBrowserStack ? ['ChromeHeadless'] : []),
-    ],
+    browsers: [...(useBrowserStack ? ['bsSafari', 'bsChrome'] : ['ChromeHeadless'])],
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
