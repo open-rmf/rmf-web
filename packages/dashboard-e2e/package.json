@@ -19,10 +19,8 @@
     "@wdio/mocha-framework": "6.11.0",
     "@wdio/spec-reporter": "6.11.0",
     "@wdio/sync": "6.11.0",
-    "chromedriver": "*",
     "rmf-dashboard": "*",
     "serve": "^11.3.2",
-    "ts-node": "^9.1.1",
-    "wdio-chromedriver-service": "^6.0.4"
+    "ts-node": "^9.1.1"
   }
 }
