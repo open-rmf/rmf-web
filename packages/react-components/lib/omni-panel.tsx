@@ -126,7 +126,7 @@ export const OmniPanel = (props: OmniPanelProps): JSX.Element => {
           {Array.isArray(children) ? children.map(renderView) : renderView(children)}
         </div>
         {stack[stack.length - 1] === OmniPanelViewIndex.Robots ? (
-          <div style={{ padding: '1rem', overflow: 'scroll' }}>
+          <div style={{ padding: '1rem', overflow: 'scroll', minHeight: '300px' }}>
             <RobotInfo robot={robot} />
           </div>
         ) : null}
