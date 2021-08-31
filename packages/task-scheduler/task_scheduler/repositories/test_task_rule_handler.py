@@ -53,7 +53,7 @@ class TestCaseTaskRule(unittest.IsolatedAsyncioTestCase):
                 "frequency": 1,
                 "frequency_type": "Once",
                 "start_datetime": "2021-08-23T15:11:03.979209",
-                "days_of_week": [True, True, True, True, True, False, False],
+                "days_of_week": [0, 1, 2],
             }
         )
 
@@ -83,7 +83,7 @@ class TestCaseTaskRule(unittest.IsolatedAsyncioTestCase):
                 "frequency": 1,
                 "frequency_type": "Once",
                 "start_datetime": "2021-08-23T15:11:03.979209",
-                "days_of_week": [True, True, True, True, True, False, False],
+                "days_of_week": [0, 1, 2, 3, 4],
             }
         )
 
@@ -103,7 +103,7 @@ class TestCaseTaskRule(unittest.IsolatedAsyncioTestCase):
                 "frequency": 1,
                 "frequency_type": "Once",
                 "start_datetime": now,
-                "days_of_week": [True, True, True, True, True, False, False],
+                "days_of_week": [0, 1, 2, 3, 4],
             }
         )
 
@@ -114,7 +114,7 @@ class TestCaseTaskRule(unittest.IsolatedAsyncioTestCase):
                 "frequency": 1,
                 "frequency_type": "Once",
                 "start_datetime": now,
-                "days_of_week": [True, True, True, True, True, False, False],
+                "days_of_week": [0, 1, 2, 3, 4],
             }
         )
 

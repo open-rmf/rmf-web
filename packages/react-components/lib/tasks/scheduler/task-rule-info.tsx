@@ -62,7 +62,7 @@ export function TaskRuleInfo({ task }: TaskRuleInfoProps): JSX.Element {
       </InfoLine>
       <InfoLine>
         <span>Day of week:</span>
-        <InfoValue>{task.day_of_week}</InfoValue>
+        {/* <InfoValue>{task.days_of_week}</InfoValue> */}
       </InfoLine>
     </div>
   );

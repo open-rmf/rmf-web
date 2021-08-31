@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
 export interface TaskRule {
   id: number;
   name: string;
-  day_of_week: number[];
+  days_of_week: number[];
   start_datetime: string;
   end_datetime: string | null;
   frequency: number;
@@ -48,6 +48,16 @@ function TaskRow({ taskRule, onClick }: TaskRowProps) {
   const classes = useStyles();
   const [hover, setHover] = React.useState(false);
 
+  const parsedDayOfWeek = (daysOfWeek: any): string | null => {
+    if (!daysOfWeek) return null;
+    const days = [];
+    for (const [key, value] of Object.entries(daysOfWeek)) {
+      if (value === true) {
+        days.push(key);
+      }
+    }
+    return days.join(', ');
+  };
   return (
     <>
       <TableRow
@@ -61,7 +71,7 @@ function TaskRow({ taskRule, onClick }: TaskRowProps) {
         <TableCell>{taskRule.frequency_type}</TableCell>
         <TableCell>{taskRule.start_datetime}</TableCell>
         <TableCell>{taskRule.end_datetime ? taskRule.end_datetime : null}</TableCell>
-        <TableCell>{taskRule.day_of_week}</TableCell>
+        <TableCell>{taskRule.days_of_week && parsedDayOfWeek(taskRule.days_of_week)}</TableCell>
         <TableCell>{JSON.stringify(taskRule.args?.description)}</TableCell>
       </TableRow>
     </>

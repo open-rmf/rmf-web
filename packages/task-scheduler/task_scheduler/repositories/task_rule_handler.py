@@ -18,15 +18,19 @@ class TaskRuleRepository:
         days_of_week = payload.get("days_of_week", None)
 
         if days_of_week is not None and len(days_of_week) > 0:
-            days = payload["days_of_week"]
+            incoming_days = payload["days_of_week"]
+            bool_day_array = [False] * 7
+            for day in incoming_days:
+                bool_day_array[day] = True
+
             days_of_week = await DaysOfWeek.create(
-                monday=days[0],
-                tuesday=days[1],
-                wednesday=days[2],
-                thursday=days[3],
-                friday=days[4],
-                saturday=days[5],
-                sunday=days[6],
+                monday=bool_day_array[0],
+                tuesday=bool_day_array[1],
+                wednesday=bool_day_array[2],
+                thursday=bool_day_array[3],
+                friday=bool_day_array[4],
+                saturday=bool_day_array[5],
+                sunday=bool_day_array[6],
             )
 
         if (

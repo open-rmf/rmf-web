@@ -13,7 +13,7 @@ import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dia
 import { PositiveIntField } from '../form-inputs';
 import { defaultTask, defaultTaskDescription } from './create-task';
 import RecurrentRules, { RecurrenceType } from './scheduler/rules';
-import { CustomTaskSchedule } from './scheduler/scheduler';
+import { CustomTaskSchedule } from './scheduler/custom-task-scheduler';
 import { TaskActionType, TaskState, useTaskReducer } from './task-reducer';
 
 type TaskDescription = CleanTaskDescription | LoopTaskDescription | DeliveryTaskDescription;
@@ -65,7 +65,7 @@ export function ScheduleTaskForm({
     [TaskActionType.FrequencyType]: RecurrenceType.Once,
     [TaskActionType.FrequencyTypeCustom]: RecurrenceType.Daily,
     [TaskActionType.Frequency]: 1,
-    [TaskActionType.DayOfWeek]: [],
+    [TaskActionType.DaysOfWeek]: [],
     [TaskActionType.EndDatetime]: new Date(),
     [TaskActionType.RuleName]: '',
     [TaskActionType.StartDatetime]: new Date(),

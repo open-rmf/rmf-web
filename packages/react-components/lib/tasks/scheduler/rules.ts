@@ -94,7 +94,7 @@ export class RecurrentRules {
       },
       {
         key: RecurrenceType.Monthly,
-        value: `Monthly On the First ${dayName}`,
+        value: `Monthly On ${dayName}`,
       },
       {
         key: RecurrenceType.Custom,
@@ -120,6 +120,22 @@ export class RecurrentRules {
         key: RecurrenceType.Daily,
         value: 'Day(s)',
       },
+      {
+        key: RecurrenceType.Weekly,
+        value: `Week(s)`,
+      },
+      {
+        key: RecurrenceType.Monthly,
+        value: `Month(s)`,
+      },
+    ];
+  };
+
+  static getDaysOfWeekRecurrenceTypeList = (): {
+    key: RecurrenceType;
+    value: string;
+  }[] => {
+    return [
       {
         key: RecurrenceType.Weekly,
         value: `Week(s)`,

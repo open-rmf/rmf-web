@@ -23,7 +23,6 @@ import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
 import { PositiveIntField } from '../form-inputs';
-import Scheduler from './scheduler/scheduler';
 
 type TaskDescription = CleanTaskDescription | LoopTaskDescription | DeliveryTaskDescription;
 

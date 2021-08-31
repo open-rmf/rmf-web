@@ -6,7 +6,7 @@ type TaskActionFormat<T, K> = {
 };
 
 export enum TaskActionType {
-  DayOfWeek = 'dayOfWeek',
+  DaysOfWeek = 'daysOfWeek',
   EndDatetime = 'endDatetime',
   Frequency = 'frequency',
   FrequencyType = 'frequencyType',
@@ -17,7 +17,7 @@ export enum TaskActionType {
 }
 
 export type TaskState = {
-  [TaskActionType.DayOfWeek]: number[];
+  [TaskActionType.DaysOfWeek]: number[];
   [TaskActionType.EndDatetime]: any | null;
   [TaskActionType.Frequency]: number;
   [TaskActionType.FrequencyType]: string;
@@ -28,7 +28,7 @@ export type TaskState = {
 };
 
 export type TaskAction =
-  | TaskActionFormat<'dayOfWeek', TaskState['dayOfWeek']>
+  | TaskActionFormat<'daysOfWeek', TaskState['daysOfWeek']>
   | TaskActionFormat<'endDatetime', TaskState['endDatetime']>
   | TaskActionFormat<'frequency', TaskState['frequency']>
   | TaskActionFormat<'frequencyType', TaskState['frequencyType']>
@@ -39,8 +39,8 @@ export type TaskAction =
 
 export const taskReducer = (state: TaskState, action: TaskAction): TaskState => {
   switch (action.type) {
-    case TaskActionType.DayOfWeek:
-      return { ...state, [TaskActionType.DayOfWeek]: action.payload };
+    case TaskActionType.DaysOfWeek:
+      return { ...state, [TaskActionType.DaysOfWeek]: action.payload };
     case TaskActionType.EndDatetime:
       return { ...state, [TaskActionType.EndDatetime]: action.payload };
     case TaskActionType.Frequency:
@@ -62,7 +62,7 @@ export const taskReducer = (state: TaskState, action: TaskAction): TaskState => 
 };
 
 export interface ReducerTaskDispatch {
-  setDayOfWeek: (payload: TaskState['dayOfWeek']) => void;
+  setDaysOfWeek: (payload: TaskState['daysOfWeek']) => void;
   setEndDatetime: (payload: TaskState['endDatetime']) => void;
   setFrequency: (payload: TaskState['frequency']) => void;
   setFrequencyType: (payload: TaskState['frequencyType']) => void;
@@ -84,7 +84,7 @@ export const useTaskReducer = (initialValue: TaskState): ReducerTaskProps => {
   const state = React.useMemo(() => _state, [_state]);
   const dispatch: ReducerTaskDispatch = React.useMemo(() => {
     return {
-      setDayOfWeek: (payload) => _dispatch({ type: TaskActionType.DayOfWeek, payload: payload }),
+      setDaysOfWeek: (payload) => _dispatch({ type: TaskActionType.DaysOfWeek, payload: payload }),
       setEndDatetime: (payload) =>
         _dispatch({ type: TaskActionType.EndDatetime, payload: payload }),
       setFrequencyType: (payload) =>

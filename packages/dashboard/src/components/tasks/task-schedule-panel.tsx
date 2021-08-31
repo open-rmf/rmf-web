@@ -14,13 +14,9 @@ import {
   Typography,
   useTheme,
 } from '@material-ui/core';
-import {
-  AddOutlined as AddOutlinedIcon,
-  Autorenew as AutorenewIcon,
-  Refresh as RefreshIcon,
-} from '@material-ui/icons';
+import { AddOutlined as AddOutlinedIcon } from '@material-ui/icons';
 import { Alert, AlertProps } from '@material-ui/lab';
-import { SubmitTask, Task } from 'api-client';
+import { Task } from 'api-client';
 import React from 'react';
 import {
   ScheduledTask,
@@ -28,10 +24,8 @@ import {
   ScheduleTaskForm,
   ScheduleTaskFormProps,
   SubmitTaskSchedule,
-  TaskInfo,
   TaskRule,
   TaskRuleTable,
-  TaskTable,
   TaskRuleInfo,
   ScheduledTaskInfo,
 } from 'react-components';
@@ -44,8 +38,7 @@ import {
   getTaskRulesAPI,
 } from '../../managers/task-scheduler-manager';
 
-import { UserContext } from '../auth/contexts';
-import { Enforcer } from '../permissions';
+// import { UserContext } from '../auth/contexts';
 import { a11yProps, TabPanel } from './tab-panel';
 
 const useStyles = makeStyles((theme) => ({
@@ -113,11 +106,11 @@ export function TaskSchedulerPanel({
   const [openSnackbar, setOpenSnackbar] = React.useState(false);
   const [snackbarMessage, setSnackbarMessage] = React.useState('');
   const [snackbarSeverity, setSnackbarSeverity] = React.useState<AlertProps['severity']>('success');
-  const [autoRefresh, setAutoRefresh] = React.useState(true);
+  // const [autoRefresh, setAutoRefresh] = React.useState(true);
   const [taskRules, setTaskRules] = React.useState([] as TaskRule[]);
   const [scheduledTasks, setScheduledTasks] = React.useState([] as ScheduledTask[]);
 
-  const user = React.useContext(UserContext);
+  // const user = React.useContext(UserContext);
 
   const [value, setValue] = React.useState(0);
   const handleChange = (event: any, newValue: number) => {
@@ -159,7 +152,7 @@ export function TaskSchedulerPanel({
     }
   }, [selectedRule]);
 
-  const autoRefreshTooltipPrefix = autoRefresh ? 'Disable' : 'Enable';
+  // const autoRefreshTooltipPrefix = autoRefresh ? 'Disable' : 'Enable';
 
   /*
   ---------------
@@ -182,19 +175,19 @@ export function TaskSchedulerPanel({
 
   const submitTaskSchedule = React.useCallback<Required<ScheduleTaskFormProps>['submitTask']>(
     async (task: SubmitTaskSchedule) => {
-      const response = await createTaskRuleAPI({
+      const frequencyType =
+        task.frequencyType === 'Custom' ? task.frequencyTypeCustom : task.frequencyType;
+
+      await createTaskRuleAPI({
         name: task.ruleName,
-        day_of_week: task.dayOfWeek,
+        days_of_week: task.daysOfWeek,
         start_datetime: task.startDatetime.toISOString(),
         end_datetime: task.endDatetime?.toISOString(),
         frequency: task.frequency,
-        frequency_type: task.frequencyType,
+        frequency_type: frequencyType,
         task_type: taskTypeParser(task.task.task_type),
         args: task.task,
       });
-      console.log(response);
-      // await Promise.all(tasks.map((t) => tasksApi.submitTaskTasksSubmitTaskPost(t)));
-      // handleRefresh();
     },
     [],
   );
@@ -287,9 +280,6 @@ export function TaskSchedulerPanel({
           {value === 0 &&
             (selectedTask ? (
               <>
-                {/* <Typography variant="h6">{JSON.stringify(selectedTask)}</Typography> */}
-                {/* <Typography variant="h6">{JSON.stringify(selectedTask.args)}</Typography> */}
-                {/* <TaskInfo task={selectedTask} /> */}
                 <ScheduledTaskInfo task={selectedTask} />
                 <Button
                   style={{ marginTop: theme.spacing(1) }}
@@ -297,7 +287,7 @@ export function TaskSchedulerPanel({
                   variant="contained"
                   color="secondary"
                   aria-label="Cancel Task"
-                  disabled={!taskCancellable}
+                  disabled={!!taskCancellable}
                   onClick={handleCancelTaskClick}
                 >
                   Delete Task
@@ -309,8 +299,6 @@ export function TaskSchedulerPanel({
           {value === 1 &&
             (selectedRule ? (
               <>
-                {/* <Typography variant="h6">{JSON.stringify(selectedRule)}</Typography> */}
-
                 <TaskRuleInfo task={selectedRule} />
                 <Button
                   style={{ marginTop: theme.spacing(1) }}

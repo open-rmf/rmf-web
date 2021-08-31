@@ -1,33 +1,12 @@
-import {
-  Fab,
-  FormControlLabel,
-  Grid,
-  makeStyles,
-  MenuItem,
-  Radio,
-  RadioGroup,
-  TextField,
-  Typography,
-} from '@material-ui/core';
+import { Fab, Grid, makeStyles, MenuItem, TextField, Typography } from '@material-ui/core';
 import React from 'react';
-import { RecurrentRules, RecurrenceType, WeekDay } from '.';
+import { RecurrentRules, WeekDay } from '.';
 import { PositiveIntField } from '../..';
-import { IconButton } from '@material-ui/core';
-import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
-import { KeyboardDateTimePicker } from '@material-ui/pickers';
 import { ReducerTaskDispatch, TaskState } from '../task-reducer';
-/**
- * Date hour to hout date timezone
- * Does not repeat | Daily | Weekly on Monday | Monthly on the first Monday | Anually on Month X | Every week day |custom
- * Custom recurrence. Repeat every [number] [week] [day] [month] [year]. Ends On date, after x recurrences.
- */
 
 const useStyles = makeStyles((theme) => ({
   taskList: {
     flex: '1 1 auto',
-    // minHeight: 400,
-    // maxHeight: '50vh',
-    // overflow: 'auto',
   },
   selectedTask: {
     background: theme.palette.action.focus,
@@ -72,16 +51,23 @@ export const CustomTaskSchedule = (props: CustomTaskScheduleProps): JSX.Element 
   };
 
   const handleDaysClick = (day: number) => {
-    if (state.dayOfWeek.includes(day)) {
-      const filteredWeekDays = state.dayOfWeek.filter((e) => e !== day);
-      dispatch.setDayOfWeek(filteredWeekDays);
+    if (state.daysOfWeek.includes(day)) {
+      const filteredWeekDays = state.daysOfWeek.filter((e) => e !== day);
+      dispatch.setDaysOfWeek(filteredWeekDays);
       return;
     }
 
-    state.dayOfWeek.push(day);
-    dispatch.setDayOfWeek(state.dayOfWeek);
+    const newArray = state.daysOfWeek.concat(day);
+    dispatch.setDaysOfWeek(newArray);
   };
 
+  const customFrequencyTypeList = React.useMemo(() => {
+    if (state.daysOfWeek.length === 0) {
+      return RecurrentRules.getBasicRecurrenceTypeList();
+    } else {
+      return RecurrentRules.getDaysOfWeekRecurrenceTypeList();
+    }
+  }, [state.daysOfWeek]);
   return (
     <>
       <Grid
@@ -126,7 +112,7 @@ export const CustomTaskSchedule = (props: CustomTaskScheduleProps): JSX.Element 
             value={state.frequencyTypeCustom}
             onChange={handleChange}
           >
-            {RecurrentRules.getBasicRecurrenceTypeList().map((option) => (
+            {customFrequencyTypeList.map((option) => (
               <MenuItem key={option.key} value={option.key as string}>
                 {option.value}
               </MenuItem>
