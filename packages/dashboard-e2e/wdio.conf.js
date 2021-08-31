@@ -14,6 +14,7 @@ function browserstackOptions(opts) {
   return {
     projectName: 'rmf-web',
     build: `dashboard-e2e:${process.env.BROWSERSTACK_BUILD || 'local'}`,
+    resolution: '1920x1080',
     ...opts,
   };
 }
@@ -93,16 +94,16 @@ exports.config = {
       : []),
     ...(mode === 'browserstack'
       ? [
-          // {
-          //   browserName: 'chrome',
-          //   browserVersion: 'latest',
-          //   ...browserstackOptions({
-          //     os: 'Windows',
-          //     osVersion: '10',
-          //   }),
-          // },
           {
-            browser: 'safari',
+            browserName: 'chrome',
+            browserVersion: 'latest',
+            ...browserstackOptions({
+              os: 'Windows',
+              osVersion: '10',
+            }),
+          },
+          {
+            browserName: 'safari',
             browserVersion: 'latest',
             ...browserstackOptions({
               os: 'OS X',
@@ -255,12 +256,18 @@ exports.config = {
    * @param {Object} suite suite details
    */
   beforeSuite: async function (/* suite */) {
-    browser.setWindowSize(1920, 1080);
+    browser.maximizeWindow();
     browser.overwriteCommand(
       'click',
-      function (orig) {
+      function (orig, { force = false, ...clickOpts } = {}) {
+        if (force) {
+          browser.execute(function click(el) {
+            el.dispatchEvent(new MouseEvent('click', { bubbles: true })); // eslint-disable-line no-undef
+          }, this);
+          return;
+        }
         this.waitForClickable();
-        return orig();
+        return orig(clickOpts);
       },
       true,
     );

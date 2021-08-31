@@ -1,12 +1,22 @@
+import { OverwriteClickOptions } from '@wdio/sync';
 import { closeOmniPanel, getScheduleVisualizer, omniPanelMainMenu } from '../utils';
 
 describe('schedule visualizer interactions', () => {
+  let clickOpts: OverwriteClickOptions;
+
+  beforeEach(() => {
+    clickOpts = {
+      // `getClientRects` which is needed to wait for element to be clickable
+      // does not work properly for svg components in safari.
+      force: browser.requestedCapabilities.browserName === 'safari',
+    };
+  });
+
   it('clicking a door on the map focuses it on the panel', () => {
     closeOmniPanel();
     const scheduleVisualizer = getScheduleVisualizer();
     const door = scheduleVisualizer.$(`[aria-label=main_door]`);
-    door.waitForClickable();
-    door.click();
+    door.click(clickOpts);
 
     expect($('.MuiAccordion-root*=main_door').$('.MuiAccordionDetails-root')).toBeVisible();
   });
@@ -15,7 +25,7 @@ describe('schedule visualizer interactions', () => {
     closeOmniPanel();
     const scheduleVisualizer = getScheduleVisualizer();
     const dispenser = scheduleVisualizer.$('[aria-label=coke_dispenser]');
-    dispenser.click();
+    dispenser.click(clickOpts);
 
     expect($('.MuiAccordion-root*=coke_dispenser').$('.MuiAccordionDetails-root')).toBeVisible();
   });
@@ -24,7 +34,7 @@ describe('schedule visualizer interactions', () => {
     closeOmniPanel();
     const scheduleVisualizer = getScheduleVisualizer();
     const robot = scheduleVisualizer.$('[aria-label=tinyRobot1]');
-    robot.click();
+    robot.click(clickOpts);
 
     expect($('.MuiAccordion-root*=tinyRobot1').$('.MuiAccordionDetails-root')).toBeVisible();
   });
@@ -40,8 +50,7 @@ describe('schedule visualizer interactions', () => {
     const scheduleVisualizer = getScheduleVisualizer();
     const door = scheduleVisualizer.$('[aria-label=main_door]');
 
-    door.waitForClickable();
-    door.click();
+    door.click(clickOpts);
 
     // check that the filter is empty after clicking
     expect($('[data-component=simple-filter]').$('input').getValue()).toEqual('');
