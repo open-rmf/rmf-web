@@ -30,11 +30,11 @@ describe('RobotMarker', () => {
     for (const robot of robots) {
       await render(
         <RobotMarker
+          color={robot.color}
           fleet={robot.fleet}
           name={robot.name}
           model={robot.model}
           footprint={robot.footprint}
-          color="#000000"
           state={makeRobot({ name: robot.name })}
         />,
       );
@@ -71,7 +71,7 @@ describe('RobotMarker', () => {
         footprint={robot.footprint}
         color="#000000"
         state={makeRobot({ name: robot.name })}
-        iconPath="test_icon"
+        iconPath="/base/test-data/assets/tiny-robot.png"
       />,
     );
     expect(root.container.querySelector('image')).not.toBeNull();

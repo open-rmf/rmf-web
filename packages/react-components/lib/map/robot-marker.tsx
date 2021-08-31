@@ -1,7 +1,7 @@
 import { makeStyles } from '@material-ui/core';
 import Debug from 'debug';
 import React from 'react';
-import { SvgText } from '..';
+import { SvgText } from '../svg-text';
 import { fromRmfCoords, fromRmfYaw } from '../geometry-utils';
 import { BaseRobotMarkerProps } from './base-robot-marker';
 import { DefaultMarker } from './default-robot-marker';
