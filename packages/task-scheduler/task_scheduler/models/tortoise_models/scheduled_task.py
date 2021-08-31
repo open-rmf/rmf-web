@@ -17,6 +17,8 @@ class ScheduledTask(models.Model):
     rule = fields.ForeignKeyField("models.TaskRule", related_name="rules", null=True)
     task_datetime = fields.DatetimeField()
     task_type: TaskTypeEnum = fields.CharEnumField(TaskTypeEnum)
+    # This should contain the task information to run
+    task_description = fields.JSONField(null=True)
 
 
 @post_save(ScheduledTask)

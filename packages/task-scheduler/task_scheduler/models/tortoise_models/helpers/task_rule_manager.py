@@ -21,6 +21,7 @@ class SimpleScheduleManager:
                 # Need to modify this
                 task_datetime=self.task_rule_instance.first_day_to_apply_rule,
                 rule=self.task_rule_instance,
+                task_description=self.task_rule_instance.args,
             )
             return
 
@@ -39,6 +40,7 @@ class SimpleScheduleManager:
                 task_type=self.task_rule_instance.task_type,
                 task_datetime=last_task_datetime,
                 rule=self.task_rule_instance,
+                task_description=self.task_rule_instance.args,
             )
 
             last_task_datetime = DatetimeManager.calculate_next_time(
@@ -88,6 +90,7 @@ class MultipleDaysScheduleManager:
                     task_type=self.task_rule_instance.task_type,
                     task_datetime=weekday,
                     rule=self.task_rule_instance,
+                    task_description=self.task_rule_instance.args,
                 )
             return
 
@@ -112,6 +115,7 @@ class MultipleDaysScheduleManager:
                     task_type=self.task_rule_instance.task_type,
                     task_datetime=weekday_datetime,
                     rule=self.task_rule_instance,
+                    task_description=self.task_rule_instance.args,
                 )
                 time_delta_content = DatetimeManager.get_timedelta(
                     self.task_rule_instance.frequency_type,

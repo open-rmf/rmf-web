@@ -44,7 +44,7 @@ class TaskRuleRepository:
             start_datetime=payload.get("start_datetime"),
             end_datetime=payload.get("end_datetime"),
             days_of_week=days_of_week,
-            # args=payload.get("args")
+            args=payload.get("args"),
         )
 
     @staticmethod

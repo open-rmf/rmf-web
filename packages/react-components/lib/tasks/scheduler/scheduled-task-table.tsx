@@ -34,7 +34,7 @@ export interface ScheduledTask {
   rule?: TaskRule;
   task_datetime: string | null;
   task_type: number;
-  args?: SubmitTask;
+  task_description?: SubmitTask;
 }
 
 interface TaskRowProps {
@@ -58,7 +58,7 @@ function TaskRow({ scheduledTask, onClick }: TaskRowProps) {
         <TableCell>{scheduledTask.rule?.name}</TableCell>
         <TableCell>{scheduledTask.task_datetime}</TableCell>
         <TableCell>{scheduledTask.task_type}</TableCell>
-        <TableCell>{scheduledTask.args}</TableCell>
+        <TableCell>{JSON.stringify(scheduledTask.task_description?.description)}</TableCell>
       </TableRow>
     </>
   );

@@ -22,8 +22,7 @@ class TaskRule(models.Model):
     created_at = fields.DatetimeField(auto_now_add=True)
     start_datetime = fields.DatetimeField()
     end_datetime = fields.DatetimeField(null=True)
-    # args = fields.JSONField()
-    # service = TaskRuleService()
+    args = fields.JSONField(null=True)
     days_of_week = fields.ForeignKeyField(
         "models.DaysOfWeek", related_name="task_rule", null=True
     )

@@ -62,8 +62,7 @@ function TaskRow({ taskRule, onClick }: TaskRowProps) {
         <TableCell>{taskRule.start_datetime}</TableCell>
         <TableCell>{taskRule.end_datetime ? taskRule.end_datetime : null}</TableCell>
         <TableCell>{taskRule.day_of_week}</TableCell>
-
-        <TableCell>{taskRule.args}</TableCell>
+        <TableCell>{JSON.stringify(taskRule.args?.description)}</TableCell>
       </TableRow>
     </>
   );
