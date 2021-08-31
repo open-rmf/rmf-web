@@ -278,7 +278,7 @@ exports.config = {
       try {
         await browser.url('/');
         const elem = await browser.$('#schedule-visualizer [aria-label=main_door]');
-        await elem.waitForDisplayed({ timeout: 5000 });
+        await elem.waitForDisplayed({ timeout: 10000 });
         break;
       } catch {
         /* ignore */
