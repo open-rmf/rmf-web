@@ -87,7 +87,7 @@ exports.config = {
 
             'goog:chromeOptions': {
               binary: process.env.CHROME_BIN || undefined,
-              args: ['--headless'],
+              // args: ['--headless'],
             },
           },
         ]
@@ -272,9 +272,18 @@ exports.config = {
       true,
     );
     await launcher.launch();
-    await browser.url('/');
-    const elem = await browser.$('#schedule-visualizer [aria-label=main_door]');
-    await elem.waitForDisplayed({ timeout: 30000 });
+
+    // wait for schedule visualizer to load
+    for (let i = 0; i < 5; i++) {
+      try {
+        await browser.url('/');
+        const elem = await browser.$('#schedule-visualizer [aria-label=main_door]');
+        await elem.waitForDisplayed({ timeout: 5000 });
+        break;
+      } catch {
+        /* ignore */
+      }
+    }
   },
   /**
    * Function to be executed before a test (in Mocha/Jasmine) starts.
