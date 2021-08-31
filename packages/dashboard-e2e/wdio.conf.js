@@ -87,7 +87,7 @@ exports.config = {
 
             'goog:chromeOptions': {
               binary: process.env.CHROME_BIN || undefined,
-              // args: ['--headless'],
+              args: ['--headless'],
             },
           },
         ]
