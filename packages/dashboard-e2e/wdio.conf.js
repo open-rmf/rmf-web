@@ -273,9 +273,8 @@ exports.config = {
     );
     await launcher.launch();
     await browser.url('/');
-    await (await browser.$('#schedule-visualizer [aria-label=main_door]')).waitForDisplayed({
-      timeout: 60000,
-    });
+    const elem = await browser.$('#schedule-visualizer [aria-label=main_door]');
+    await elem.waitForDisplayed({ timeout: 30000 });
   },
   /**
    * Function to be executed before a test (in Mocha/Jasmine) starts.
