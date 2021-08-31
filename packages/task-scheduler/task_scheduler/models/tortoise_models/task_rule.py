@@ -41,6 +41,15 @@ async def signal_pre_save(
     if instance.frequency_type != FrequencyEnum.ONCE and instance.end_datetime is None:
         raise Exception("You should set a end_datetime")
 
+    if (
+        instance.end_datetime is not None
+        and instance.end_datetime < instance.start_datetime
+    ):
+        raise Exception("end_datetime should be greater than start_datetime")
+
+    if instance.frequency <= 0:
+        raise Exception("frequency must be greater than 0")
+
 
 @post_save(TaskRule)
 # pylint: disable=unused-argument

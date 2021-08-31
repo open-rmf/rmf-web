@@ -5,7 +5,6 @@ import type {
   CleanTaskDescription,
   DeliveryTaskDescription,
   LoopTaskDescription,
-  SubmitTask,
 } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
@@ -13,8 +12,8 @@ import { TaskDescriptionForm } from '.';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
 import { PositiveIntField } from '../form-inputs';
 import { defaultTask, defaultTaskDescription } from './create-task';
-import { RecurrenceType } from './scheduler/rules';
-import Scheduler from './scheduler/scheduler';
+import RecurrentRules, { RecurrenceType } from './scheduler/rules';
+import { CustomTaskSchedule } from './scheduler/scheduler';
 import { TaskActionType, TaskState, useTaskReducer } from './task-reducer';
 
 type TaskDescription = CleanTaskDescription | LoopTaskDescription | DeliveryTaskDescription;
@@ -67,11 +66,20 @@ export function ScheduleTaskForm({
     [TaskActionType.FrequencyTypeCustom]: RecurrenceType.Daily,
     [TaskActionType.Frequency]: 1,
     [TaskActionType.DayOfWeek]: [],
-    [TaskActionType.EndDatetime]: null,
+    [TaskActionType.EndDatetime]: new Date(),
     [TaskActionType.RuleName]: '',
-    [TaskActionType.StartDatetime]: new Date().toISOString(),
+    [TaskActionType.StartDatetime]: new Date(),
     [TaskActionType.Task]: defaultTask(),
   });
+
+  const frequencyOptionList = React.useMemo(
+    () => RecurrentRules.getRecurrenceTypeList(state.startDatetime),
+    [state.startDatetime],
+  );
+
+  const handleFrequencyTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch.setFrequencyType(event.target.value as string);
+  };
 
   const [submitting, setSubmitting] = React.useState(false);
   const task = defaultTask();
@@ -101,8 +109,49 @@ export function ScheduleTaskForm({
     updateTasks();
   };
 
+  const isFormValid = () => {
+    // TODO add states and error messages in every input field
+    let isValid = true;
+
+    if (state.endDatetime) {
+      if (state.endDatetime < state.startDatetime) {
+        console.error('EndDatetime cannot be less than StartDatetime');
+
+        isValid = false;
+      }
+    }
+
+    if (state.endDatetime < new Date()) {
+      isValid = false;
+      console.error('endDatetime cannot be less than current date');
+    }
+
+    if (state.startDatetime < new Date()) {
+      isValid = false;
+      console.error('StartDatetime cannot be less than current date');
+    }
+
+    if (state.frequencyType === RecurrenceType.Custom) {
+      if (state.frequency === 0) {
+        isValid = false;
+        console.error('Frequency cannot be empty');
+      }
+    }
+
+    if (state.ruleName === '') {
+      isValid = false;
+      console.error('Rule Name cannot be empty');
+    }
+
+    return isValid;
+  };
   // no memo because deps would likely change
   const handleSubmit: React.MouseEventHandler = async (ev) => {
+    if (!isFormValid()) {
+      console.error('Form not valid');
+      return;
+    }
+
     ev.preventDefault();
     if (!submitTask) {
       onSuccess && onSuccess(state);
@@ -199,13 +248,24 @@ export function ScheduleTaskForm({
           </Grid>
         </Grid>
         <Grid container wrap="nowrap">
+          <br />
           <Grid style={{ flexGrow: 1 }}>
-            <Scheduler
-              selectedDate={state.startDatetime}
-              state={state}
-              dispatch={dispatch}
-            ></Scheduler>
+            <KeyboardDateTimePicker
+              id="end-time"
+              value={state.endDatetime || new Date()}
+              onChange={(date) => {
+                if (!date) {
+                  return;
+                }
+                dispatch.setEndDatetime(date);
+              }}
+              label="Ends"
+              margin="normal"
+              fullWidth
+            />
           </Grid>
+        </Grid>
+        <Grid container wrap="nowrap">
           <Grid style={{ flexGrow: 1 }}>
             <TextField
               id="rule-name"
@@ -216,6 +276,32 @@ export function ScheduleTaskForm({
               value={state.ruleName}
               onChange={handleRuleNameChange}
             ></TextField>
+          </Grid>
+          <Grid style={{ flexGrow: 1 }}>
+            <TextField
+              select
+              id="frequency-type-picker"
+              label="Task frequency"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={state.frequencyType}
+              onChange={handleFrequencyTypeChange}
+            >
+              {frequencyOptionList.map((option) => (
+                <MenuItem key={option.key} value={option.key as string}>
+                  {option.value}
+                </MenuItem>
+              ))}
+            </TextField>
+            <br />
+          </Grid>
+        </Grid>
+        <Grid container wrap="nowrap">
+          <Grid style={{ flexGrow: 1 }}>
+            {state.frequencyType === RecurrenceType.Custom && (
+              <CustomTaskSchedule state={state} dispatch={dispatch} />
+            )}
           </Grid>
         </Grid>
       </ConfirmationDialog>

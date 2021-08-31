@@ -72,7 +72,7 @@ class TestCaseTaskRule(unittest.IsolatedAsyncioTestCase):
             }
         )
 
-        self.assertEqual(task_rule.name, "test")
+        self.assertEqual(task_rule.name, "test2")
 
     async def test_deletes_task_rule(self):
 

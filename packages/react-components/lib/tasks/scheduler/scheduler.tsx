@@ -151,63 +151,8 @@ export const CustomTaskSchedule = (props: CustomTaskScheduleProps): JSX.Element 
         <DaysButton text={'F'} onClick={() => handleDaysClick(WeekDay.Friday)}></DaysButton>
         <DaysButton text={'S'} onClick={() => handleDaysClick(WeekDay.Saturday)}></DaysButton>
       </div>
-      <br />
-      <div>
-        <KeyboardDateTimePicker
-          id="start-time"
-          value={state.endDatetime || new Date()}
-          onChange={(date) => {
-            if (!date) {
-              return;
-            }
-            dispatch.setEndDatetime(date.toString());
-          }}
-          label="Ends"
-          margin="normal"
-          fullWidth
-        />
-      </div>
     </>
   );
 };
 
-interface SchedulerProps {
-  state: TaskState;
-  dispatch: ReducerTaskDispatch;
-  selectedDate?: Date;
-}
-
-export const Scheduler = (props: SchedulerProps): JSX.Element => {
-  const { selectedDate, state, dispatch } = props;
-  const optionList = RecurrentRules.getRecurrenceTypeList(selectedDate);
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch.setFrequencyType(event.target.value as string);
-  };
-
-  return (
-    <>
-      <TextField
-        select
-        id="task-scheduler"
-        label="Schedule a task"
-        variant="outlined"
-        fullWidth
-        margin="normal"
-        value={state.frequencyType || RecurrenceType.Once}
-        onChange={handleChange}
-      >
-        {optionList.map((option) => (
-          <MenuItem key={option.key} value={option.key as string}>
-            {option.value}
-          </MenuItem>
-        ))}
-      </TextField>
-      <br />
-      {state.frequencyType === RecurrenceType.Custom && (
-        <CustomTaskSchedule state={state} dispatch={dispatch} />
-      )}
-    </>
-  );
-};
-
-export default Scheduler;
+export default CustomTaskSchedule;

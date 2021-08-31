@@ -32,6 +32,8 @@ import {
   TaskRule,
   TaskRuleTable,
   TaskTable,
+  TaskRuleInfo,
+  ScheduledTaskInfo,
 } from 'react-components';
 import * as RmfModels from 'rmf-models';
 import {
@@ -183,8 +185,8 @@ export function TaskSchedulerPanel({
       const response = await createTaskRuleAPI({
         name: task.ruleName,
         day_of_week: task.dayOfWeek,
-        start_datetime: task.startDatetime,
-        end_datetime: task.endDatetime,
+        start_datetime: task.startDatetime.toISOString(),
+        end_datetime: task.endDatetime?.toISOString(),
         frequency: task.frequency,
         frequency_type: task.frequencyType,
         task_type: taskTypeParser(task.task.task_type),
@@ -236,7 +238,7 @@ export function TaskSchedulerPanel({
               <Tab label="Scheduled Task" {...a11yProps(0)} />
               <Tab label="Task Rules" {...a11yProps(1)} />
             </Tabs>
-            <Tooltip title="Schedule task">
+            <Tooltip title="Create Task Rule. The task rule will generate the correspondent scheduled tasks">
               <IconButton onClick={() => setOpenCreateTaskForm(true)} aria-label="Create Task">
                 <AddOutlinedIcon />
               </IconButton>
@@ -285,8 +287,10 @@ export function TaskSchedulerPanel({
           {value === 0 &&
             (selectedTask ? (
               <>
-                <Typography variant="h6">{JSON.stringify(selectedTask)}</Typography>
+                {/* <Typography variant="h6">{JSON.stringify(selectedTask)}</Typography> */}
+                {/* <Typography variant="h6">{JSON.stringify(selectedTask.args)}</Typography> */}
                 {/* <TaskInfo task={selectedTask} /> */}
+                <ScheduledTaskInfo task={selectedTask} />
                 <Button
                   style={{ marginTop: theme.spacing(1) }}
                   fullWidth
@@ -305,9 +309,9 @@ export function TaskSchedulerPanel({
           {value === 1 &&
             (selectedRule ? (
               <>
-                <Typography variant="h6">{JSON.stringify(selectedRule)}</Typography>
+                {/* <Typography variant="h6">{JSON.stringify(selectedRule)}</Typography> */}
 
-                {/* <TaskInfo task={selectedTask.summary} /> */}
+                <TaskRuleInfo task={selectedRule} />
                 <Button
                   style={{ marginTop: theme.spacing(1) }}
                   fullWidth

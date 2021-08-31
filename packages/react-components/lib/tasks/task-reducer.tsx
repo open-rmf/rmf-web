@@ -18,7 +18,7 @@ export enum TaskActionType {
 
 export type TaskState = {
   [TaskActionType.DayOfWeek]: number[];
-  [TaskActionType.EndDatetime]: string | null;
+  [TaskActionType.EndDatetime]: any | null;
   [TaskActionType.Frequency]: number;
   [TaskActionType.FrequencyType]: string;
   [TaskActionType.FrequencyTypeCustom]: string;

@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { formatDistanceToNow } from 'date-fns';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import { rosTimeToJs } from '../..';
+import { rosTimeToJs, TaskRule } from '../..';
 import { taskStateToStr } from '../utils';
 import type { SubmitTask } from 'api-client';
 
@@ -31,7 +31,7 @@ export interface ScheduledTask {
   id: number;
   created_at: string;
   enabled: boolean;
-  rule: string;
+  rule?: TaskRule;
   task_datetime: string | null;
   task_type: number;
   args?: SubmitTask;
@@ -54,8 +54,8 @@ function TaskRow({ scheduledTask, onClick }: TaskRowProps) {
         onMouseOver={() => setHover(true)}
         onMouseOut={() => setHover(false)}
       >
-        <TableCell>{scheduledTask.enabled}</TableCell>
-        {/* <TableCell>{scheduledTask.rule}</TableCell> */}
+        <TableCell>{scheduledTask.enabled.toString()}</TableCell>
+        <TableCell>{scheduledTask.rule?.name}</TableCell>
         <TableCell>{scheduledTask.task_datetime}</TableCell>
         <TableCell>{scheduledTask.task_type}</TableCell>
         <TableCell>{scheduledTask.args}</TableCell>
@@ -91,6 +91,7 @@ export function ScheduledTaskTable(props: ScheduledTaskTableProps): JSX.Element 
       <TableHead>
         <TableRow>
           <TableCell>Enabled</TableCell>
+          <TableCell>Related Rule</TableCell>
           <TableCell>Start Time</TableCell>
           <TableCell>Task Type</TableCell>
           <TableCell>Task (Args)</TableCell>
