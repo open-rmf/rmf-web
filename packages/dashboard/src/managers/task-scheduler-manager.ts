@@ -41,21 +41,13 @@ export const getTaskRulesAPI = async (offset: number): Promise<TaskRule[]> => {
 };
 
 export const deleteScheduledTaskAPI = async (taskId: number): Promise<void> => {
-  const url = BASE_PATH + '/task/scheduled';
-  await axios.delete(url, {
-    params: {
-      id: taskId,
-    },
-  });
+  const url = BASE_PATH + `/task/scheduled/${taskId}`;
+  await axios.delete(url);
 };
 
 export const deleteTaskRuleAPI = async (ruleId: number): Promise<void> => {
-  const url = BASE_PATH + '/task/rule';
-  await axios.delete(url, {
-    params: {
-      id: ruleId,
-    },
-  });
+  const url = BASE_PATH + `/task/rule/${ruleId}`;
+  await axios.delete(url);
 };
 
 type TaskRuleCreation = Omit<TaskRule, 'id'>;

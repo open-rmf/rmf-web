@@ -107,7 +107,7 @@ export function TaskRuleTable(props: TaskRuleTableProps): JSX.Element {
       <TableBody>
         {taskRules.map((task) => (
           <TaskRow
-            key={task.name}
+            key={task.id}
             taskRule={task}
             onClick={(ev) => onTaskClick && onTaskClick(ev, task)}
           />

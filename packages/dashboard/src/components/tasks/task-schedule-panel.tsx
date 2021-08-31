@@ -180,7 +180,6 @@ export function TaskSchedulerPanel({
 
   const submitTaskSchedule = React.useCallback<Required<ScheduleTaskFormProps>['submitTask']>(
     async (task: SubmitTaskSchedule) => {
-      console.log(task);
       const response = await createTaskRuleAPI({
         name: task.ruleName,
         day_of_week: task.dayOfWeek,
@@ -213,7 +212,7 @@ export function TaskSchedulerPanel({
   }, []);
 
   const taskCancellable =
-    selectedTask?.task_datetime && new Date(selectedTask?.task_datetime) > new Date();
+    selectedTask?.task_datetime && new Date(selectedTask?.task_datetime) < new Date();
   // const taskCancellable =
   //   selectedTask &&
   //   user &&
@@ -268,9 +267,9 @@ export function TaskSchedulerPanel({
               <TaskRuleTable
                 onLoad={getTaskRules}
                 taskRules={taskRules}
-                onTaskClick={(_ev, task) =>
-                  setSelectedRule(taskRules.find((t) => t.id === task.id))
-                }
+                onTaskClick={(_ev, task) => {
+                  setSelectedRule(taskRules.find((t) => t.id === task.id));
+                }}
               />
             </TableContainer>
             {paginationOptions && (
@@ -283,42 +282,46 @@ export function TaskSchedulerPanel({
           </TabPanel>
         </Paper>
         <Paper className={classes.detailPanelContainer}>
-          {selectedTask ? (
-            <>
-              {/* <TaskInfo task={selectedTask} /> */}
-              <Button
-                style={{ marginTop: theme.spacing(1) }}
-                fullWidth
-                variant="contained"
-                color="secondary"
-                aria-label="Cancel Task"
-                disabled={!taskCancellable}
-                onClick={handleCancelTaskClick}
-              >
-                Delete Task
-              </Button>
-            </>
-          ) : (
-            <NoSelectedTask />
-          )}
-          {selectedRule ? (
-            <>
-              {/* <TaskInfo task={selectedTask.summary} /> */}
-              <Button
-                style={{ marginTop: theme.spacing(1) }}
-                fullWidth
-                variant="contained"
-                color="secondary"
-                aria-label="Cancel Task"
-                disabled={!taskCancellable}
-                onClick={handleDeleteRuleClick}
-              >
-                Delete Rule
-              </Button>
-            </>
-          ) : (
-            <NoSelectedTask />
-          )}
+          {value === 0 &&
+            (selectedTask ? (
+              <>
+                <Typography variant="h6">{JSON.stringify(selectedTask)}</Typography>
+                {/* <TaskInfo task={selectedTask} /> */}
+                <Button
+                  style={{ marginTop: theme.spacing(1) }}
+                  fullWidth
+                  variant="contained"
+                  color="secondary"
+                  aria-label="Cancel Task"
+                  disabled={!taskCancellable}
+                  onClick={handleCancelTaskClick}
+                >
+                  Delete Task
+                </Button>
+              </>
+            ) : (
+              <NoSelectedTask />
+            ))}
+          {value === 1 &&
+            (selectedRule ? (
+              <>
+                <Typography variant="h6">{JSON.stringify(selectedRule)}</Typography>
+
+                {/* <TaskInfo task={selectedTask.summary} /> */}
+                <Button
+                  style={{ marginTop: theme.spacing(1) }}
+                  fullWidth
+                  variant="contained"
+                  color="secondary"
+                  aria-label="Cancel Task"
+                  onClick={handleDeleteRuleClick}
+                >
+                  Delete Rule
+                </Button>
+              </>
+            ) : (
+              <NoSelectedTask />
+            ))}
         </Paper>
       </Grid>
       {openCreateTaskForm && (
