@@ -39,7 +39,7 @@ exports.LocalLauncher = class {
 
   static _instance;
 
-  async launch() {
+  async launch(timeout = 30000) {
     if (this._launched) {
       return;
     }
@@ -56,7 +56,7 @@ exports.LocalLauncher = class {
       cwd: `${__dirname}/.rmf`,
     });
 
-    const ready = await this._rmfReady();
+    const ready = await this._rmfReady(timeout);
     if (!ready) {
       throw new Error('unable to detect rmf');
     }
@@ -73,7 +73,7 @@ exports.LocalLauncher = class {
   _launched = false;
   _rmfDemo;
 
-  async _rmfReady(timeout = 30000) {
+  async _rmfReady(timeout) {
     const ros2Echo = spawn('ros2', [
       'topic',
       'echo',

@@ -199,7 +199,7 @@ exports.config = {
     // as of wdio 6.12.1, it automatically registers ts-node, registering it again would cause conflict
     // require: ['ts-node/register'],
     ui: 'bdd',
-    timeout: 60000,
+    timeout: 300000,
   },
   //
   // =====
@@ -255,7 +255,8 @@ exports.config = {
    * Hook that gets executed before the suite starts
    * @param {Object} suite suite details
    */
-  beforeSuite: async function (/* suite */) {
+  beforeSuite: async function (suite) {
+    console.log(suite);
     browser.maximizeWindow();
     browser.overwriteCommand(
       'click',
@@ -271,7 +272,7 @@ exports.config = {
       },
       true,
     );
-    await launcher.launch();
+    await launcher.launch(300000);
 
     // wait for schedule visualizer to load
     for (let i = 0; i < 5; i++) {
