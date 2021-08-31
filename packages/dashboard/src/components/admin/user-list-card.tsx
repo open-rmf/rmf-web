@@ -118,7 +118,7 @@ export function UserListCard({
               onClick={() => setOpenCreateDialog(true)}
               aria-label="create user"
             >
-              <AddIcon color="primary" fontSize="large" />
+              <AddIcon fontSize="large" />
             </IconButton>
           </>
         }
