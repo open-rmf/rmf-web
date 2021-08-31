@@ -155,6 +155,7 @@ export function TaskInfo({ task, timeline }: TaskInfoProps): JSX.Element {
         <InfoValue>{taskStateToStr(task.state)}</InfoValue>
       </InfoLine>
       {detailInfo}
+      <Typography variant="h6">Progress</Typography>
       {timeline && <TaskTimeline taskSummary={task} />}
     </div>
   );

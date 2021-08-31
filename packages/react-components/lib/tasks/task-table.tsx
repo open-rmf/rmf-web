@@ -36,6 +36,27 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(1),
     marginTop: theme.spacing(1),
   },
+  taskActiveCell: {
+    backgroundColor: theme.palette.primary.light,
+  },
+  taskCancelledCell: {
+    backgroundColor: theme.palette.grey[500],
+  },
+  taskCompletedCell: {
+    backgroundColor: theme.palette.success.light,
+  },
+  taskFailedCell: {
+    backgroundColor: theme.palette.error.light,
+  },
+  taskPendingCell: {
+    backgroundColor: theme.palette.info.light,
+  },
+  taskQueuedCell: {
+    backgroundColor: theme.palette.info.light,
+  },
+  taskUnknownCell: {
+    backgroundColor: theme.palette.warning.light,
+  },
 }));
 
 interface TaskRowProps {
@@ -49,6 +70,27 @@ function TaskRow({ task, onClick, timeline }: TaskRowProps) {
   const [hover, setHover] = React.useState(false);
   const [open, setOpen] = React.useState(false);
 
+  const returnTaskStateCellClass = (task: RmfModels.TaskSummary) => {
+    switch (task.state) {
+      case RmfModels.TaskSummary.STATE_ACTIVE:
+        return classes.taskActiveCell;
+      case RmfModels.TaskSummary.STATE_CANCELED:
+        return classes.taskCancelledCell;
+      case RmfModels.TaskSummary.STATE_COMPLETED:
+        return classes.taskCompletedCell;
+      case RmfModels.TaskSummary.STATE_FAILED:
+        return classes.taskFailedCell;
+      case RmfModels.TaskSummary.STATE_PENDING:
+        return classes.taskPendingCell;
+      case RmfModels.TaskSummary.STATE_QUEUED:
+        return classes.taskQueuedCell;
+      default:
+        return classes.taskUnknownCell;
+    }
+  };
+
+  const taskStateCellClass = returnTaskStateCellClass(task);
+
   return (
     <>
       <TableRow
@@ -61,7 +103,7 @@ function TaskRow({ task, onClick, timeline }: TaskRowProps) {
         <TableCell>{task.robot_name}</TableCell>
         <TableCell>{toRelativeDate(task.start_time)}</TableCell>
         <TableCell>{toRelativeDate(task.end_time)}</TableCell>
-        <TableCell>{taskStateToStr(task.state)}</TableCell>
+        <TableCell className={taskStateCellClass}>{taskStateToStr(task.state)}</TableCell>
         {!timeline && (
           <TableCell>
             <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
