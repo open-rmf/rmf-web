@@ -1,4 +1,5 @@
 const launcher = require('../dashboard/rmf-launcher').makeLauncher();
+const { downloadBstackVideos } = require('./scripts/download-bstack-video');
 
 const mode =
   process.env.BROWSERSTACK_USERNAME && process.env.BROWSERSTACK_ACCESS_KEY
@@ -9,13 +10,15 @@ const mode =
 
 const localIdentifier = `${Date.now().toString()}+${Math.random()}`;
 
+const sessionIds = {};
+
 /**
  * Create browserstack options with some base settings.
  */
 function browserstackOptions(opts) {
   return {
     projectName: 'rmf-web',
-    build: `dashboard-e2e:${process.env.BROWSERSTACK_BUILD || 'local'}`,
+    buildName: `dashboard-e2e:${process.env.BROWSERSTACK_BUILD || 'local'}`,
     resolution: '1920x1080',
     localIdentifier,
     ...opts,
@@ -113,7 +116,7 @@ exports.config = {
           {
             browserName: 'chrome',
             browserVersion: 'latest',
-            ...browserstackOptions({
+            'bstack:options': browserstackOptions({
               os: 'Windows',
               osVersion: '10',
             }),
@@ -121,7 +124,7 @@ exports.config = {
           {
             browserName: 'safari',
             browserVersion: 'latest',
-            ...browserstackOptions({
+            'bstack:options': browserstackOptions({
               os: 'OS X',
               osVersion: 'Big Sur',
             }),
@@ -183,7 +186,9 @@ exports.config = {
             'browserstack',
             {
               browserstackLocal: true,
-              localIdentifier,
+              opts: {
+                localIdentifier,
+              },
             },
           ],
         ]
@@ -270,7 +275,8 @@ exports.config = {
    * Hook that gets executed before the suite starts
    * @param {Object} suite suite details
    */
-  beforeSuite: async function (/* suite */) {
+  beforeSuite: async function (suite) {
+    sessionIds[`${browser.requestedCapabilities.browserName} - ${suite.title}`] = browser.sessionId;
     browser.maximizeWindow();
     browser.overwriteCommand(
       'click',
@@ -366,8 +372,11 @@ exports.config = {
    * @param {Array.<Object>} capabilities list of capabilities details
    * @param {<Object>} results object containing test results
    */
-  // onComplete: function(exitCode, config, capabilities, results) {
-  // },
+  onComplete: async function (/* exitCode, config, capabilities, results */) {
+    if (mode === 'browserstack' && process.env.CI) {
+      await downloadBstackVideos(sessionIds);
+    }
+  },
   /**
    * Gets executed when a refresh happens.
    * @param {String} oldSessionId session ID of the old session
