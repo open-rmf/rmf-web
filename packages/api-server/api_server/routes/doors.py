@@ -1,11 +1,12 @@
 from typing import List
 
+from fastapi import Depends
+from rx import operators as rxops
+
 from api_server.base_app import BaseApp
 from api_server.fast_io import FastIORouter, WatchRequest
 from api_server.models import Door, DoorHealth, DoorRequest, DoorState
 from api_server.repositories import RmfRepository
-from fastapi import Depends
-from rx import operators as rxops
 
 from .utils import rx_watcher
 

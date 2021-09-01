@@ -1,7 +1,8 @@
 from unittest.mock import Mock
 
-from api_server.test import AppFixture, make_building_map, make_lift_state, try_until
 from rmf_lift_msgs.msg import LiftRequest as RmfLiftRequest
+
+from api_server.test import AppFixture, make_building_map, make_lift_state, try_until
 
 
 class TestLiftsRoute(AppFixture):

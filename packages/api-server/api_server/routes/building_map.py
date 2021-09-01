@@ -1,9 +1,10 @@
+from fastapi import Depends
+from rx import operators as rxops
+
 from api_server.base_app import BaseApp
 from api_server.fast_io import FastIORouter, WatchRequest
 from api_server.models import BuildingMap
 from api_server.repositories.rmf import RmfRepository
-from fastapi import Depends
-from rx import operators as rxops
 
 from .utils import rx_watcher
 

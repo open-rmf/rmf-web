@@ -1,13 +1,14 @@
 import unittest
 
+from builtin_interfaces.msg import Time as RosTime
+from rmf_task_msgs.msg import TaskType as RmfTaskType
+
 from api_server.models import (
     CleanTaskDescription,
     DeliveryTaskDescription,
     LoopTaskDescription,
     SubmitTask,
 )
-from builtin_interfaces.msg import Time as RosTime
-from rmf_task_msgs.msg import TaskType as RmfTaskType
 
 from .tasks import convert_task_request
 

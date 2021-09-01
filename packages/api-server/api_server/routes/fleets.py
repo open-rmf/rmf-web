@@ -1,12 +1,13 @@
 from typing import List, Optional
 
+from fastapi import Depends, Query
+from rx import operators as rxops
+
 from api_server.base_app import BaseApp
 from api_server.dependencies import pagination_query
 from api_server.fast_io import FastIORouter, WatchRequest
 from api_server.models import Fleet, FleetState, Pagination, Robot, RobotHealth, Task
 from api_server.repositories import RmfRepository
-from fastapi import Depends, Query
-from rx import operators as rxops
 
 from .tasks.utils import get_task_progress
 from .utils import rx_watcher

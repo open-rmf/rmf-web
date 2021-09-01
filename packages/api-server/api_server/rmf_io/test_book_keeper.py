@@ -1,6 +1,9 @@
 import logging
 import unittest
 
+from rmf_door_msgs.msg import DoorMode
+from tortoise import Tortoise
+
 from api_server.models import (
     DispenserHealth,
     DispenserState,
@@ -17,8 +20,6 @@ from api_server.models import (
 )
 from api_server.models import tortoise_models as ttm
 from api_server.test import async_try_until, init_db, test_data
-from rmf_door_msgs.msg import DoorMode
-from tortoise import Tortoise
 
 from .book_keeper import RmfBookKeeper
 from .events import RmfEvents

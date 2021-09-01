@@ -1,9 +1,10 @@
 import unittest
 
 import rx
-from api_server.models import BaseBasicHealth, HealthStatus
 from rx import operators as ops
 from rx.scheduler.historicalscheduler import HistoricalScheduler
+
+from api_server.models import BaseBasicHealth, HealthStatus
 
 from .health import most_critical
 
