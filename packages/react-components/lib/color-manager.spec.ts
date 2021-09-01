@@ -27,7 +27,7 @@ describe('ColorManager', () => {
         'test_fleet',
         'test_robot',
         'test_model',
-        '/non-existing-image.png',
+        '/base/test-data/assets/non-existing-image.png',
       );
     }).not.toThrow();
   });
