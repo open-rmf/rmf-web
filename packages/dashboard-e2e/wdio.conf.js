@@ -1,5 +1,9 @@
 const launcher = require('../dashboard/rmf-launcher').makeLauncher();
-const { downloadBstackVideos } = require('./scripts/download-bstack-video');
+const getPublicUrl = require('./scripts/bstack');
+const { writeFileSync, mkdirSync } = require('fs');
+const { resolve } = require('path');
+
+const artifactsDir = resolve(`${__dirname}/artifacts`);
 
 const mode =
   process.env.BROWSERSTACK_USERNAME && process.env.BROWSERSTACK_ACCESS_KEY
@@ -9,8 +13,6 @@ const mode =
     : 'local';
 
 const localIdentifier = `${Date.now().toString()}+${Math.random()}`;
-
-const sessionIds = {};
 
 /**
  * Create browserstack options with some base settings.
@@ -276,7 +278,14 @@ exports.config = {
    * @param {Object} suite suite details
    */
   beforeSuite: async function (suite) {
-    sessionIds[`${browser.requestedCapabilities.browserName} - ${suite.title}`] = browser.sessionId;
+    if (mode === 'browserstack') {
+      const sessionId = browser.sessionId;
+      const bstackArtifact = { publicUrl: await getPublicUrl(sessionId) };
+      const outDir = `${artifactsDir}/${browser.requestedCapabilities.browserName}/${suite.title}`;
+      mkdirSync(outDir, { recursive: true });
+      writeFileSync(`${outDir}/bstack.json`, JSON.stringify(bstackArtifact, undefined, 2));
+    }
+
     browser.maximizeWindow();
     browser.overwriteCommand(
       'click',
@@ -336,7 +345,7 @@ exports.config = {
    * Hook that gets executed after the suite has ended
    * @param {Object} suite suite details
    */
-  // afterSuite: function (suite) {
+  // afterSuite: async function (suite) {
   // },
   /**
    * Runs after a WebdriverIO command gets executed
@@ -362,7 +371,7 @@ exports.config = {
    * @param {Array.<Object>} capabilities list of capabilities details
    * @param {Array.<String>} specs List of spec file paths that ran
    */
-  // afterSession: function (config, capabilities, specs) {
+  // afterSession: async function (config, capabilities, specs) {
   // },
   /**
    * Gets executed after all workers got shut down and the process is about to exit. An error
@@ -372,11 +381,8 @@ exports.config = {
    * @param {Array.<Object>} capabilities list of capabilities details
    * @param {<Object>} results object containing test results
    */
-  onComplete: async function (/* exitCode, config, capabilities, results */) {
-    if (mode === 'browserstack' && process.env.CI) {
-      await downloadBstackVideos(sessionIds);
-    }
-  },
+  // onComplete: function (exitCode, config, capabilities, results) {
+  // },
   /**
    * Gets executed when a refresh happens.
    * @param {String} oldSessionId session ID of the old session
