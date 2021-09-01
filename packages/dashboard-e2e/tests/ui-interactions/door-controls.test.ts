@@ -3,7 +3,6 @@ import { getDoorAccordion, getOmniPanel, omniPanelMainMenu } from '../utils';
 describe('door controls', () => {
   beforeEach(omniPanelMainMenu);
 
-  // door interaction test
   it('clicking on open button opens the door', () => {
     const omnipanel = getOmniPanel();
     omnipanel.$('h5=Doors').click();
