@@ -83,8 +83,6 @@ exports.config = {
             // excludeDriverLogs: ['*'], // pass '*' to exclude all driver session logs
             // excludeDriverLogs: ['bugreport', 'server'],
 
-            acceptInsecureCerts: true,
-
             'goog:chromeOptions': {
               binary: process.env.CHROME_BIN || undefined,
               args: [...(mode === 'localHeadless' ? ['--headless'] : [])],
