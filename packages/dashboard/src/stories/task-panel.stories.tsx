@@ -61,7 +61,7 @@ export const ExampleTaskPanel: Story<StoryArgs> = (args) => {
           count: tasks.length,
           rowsPerPage: 10,
           rowsPerPageOptions: [10],
-          onPageChange: (_ev, newPage) => setPage(newPage),
+          onChangePage: (_ev, newPage) => setPage(newPage),
         }}
         style={{ height: '95vh', margin: 'auto', maxWidth: 1600 }}
         submitTasks={() => new Promise((res) => setTimeout(res, 1000))}

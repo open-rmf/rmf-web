@@ -167,7 +167,7 @@ export function UserListCard({
           page={page}
           rowsPerPage={ItemsPerPage}
           rowsPerPageOptions={[ItemsPerPage]}
-          onPageChange={(_, newPage) => setPage(newPage)}
+          onChangePage={(_, newPage) => setPage(newPage)}
         />
       </TableContainer>
       {openDeleteDialog && (

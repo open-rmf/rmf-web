@@ -53,7 +53,7 @@ export function RobotPage() {
         rowsPerPage: 10,
         rowsPerPageOptions: [10],
         page,
-        onPageChange: (_ev, newPage) => setPage(newPage),
+        onChangePage: (_ev, newPage) => setPage(newPage),
       }}
       verboseRobots={verboseRobots}
     />

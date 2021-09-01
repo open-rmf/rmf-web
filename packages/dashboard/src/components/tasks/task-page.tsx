@@ -110,26 +110,47 @@ export function TaskPage() {
     },
     [tasksApi],
   );
-
+  //extra task panel will be removed
   return (
-    <TaskPanel
-      className={classes.taskPanel}
-      tasks={tasks}
-      paginationOptions={{
-        page,
-        count: hasMore ? -1 : page * 10 + tasks.length,
-        rowsPerPage: 10,
-        rowsPerPageOptions: [10],
-        onPageChange: (_ev, newPage) => setPage(newPage),
-      }}
-      cleaningZones={placeNames}
-      loopWaypoints={placeNames}
-      deliveryWaypoints={placeNames}
-      submitTasks={submitTasks}
-      cancelTask={cancelTask}
-      onRefresh={handleRefresh}
-      onAutoRefresh={setAutoRefreshEnabled}
-      timeline={true}
-    />
+    <div>
+      <TaskPanel
+        className={classes.taskPanel}
+        tasks={tasks}
+        paginationOptions={{
+          page,
+          count: hasMore ? -1 : page * 10 + tasks.length,
+          rowsPerPage: 10,
+          rowsPerPageOptions: [10],
+          onChangePage: (_ev, newPage) => setPage(newPage),
+        }}
+        cleaningZones={placeNames}
+        loopWaypoints={placeNames}
+        deliveryWaypoints={placeNames}
+        submitTasks={submitTasks}
+        cancelTask={cancelTask}
+        onRefresh={handleRefresh}
+        onAutoRefresh={setAutoRefreshEnabled}
+        timeline={true}
+      />
+      <TaskPanel
+        className={classes.taskPanel}
+        tasks={tasks}
+        paginationOptions={{
+          page,
+          count: hasMore ? -1 : page * 10 + tasks.length,
+          rowsPerPage: 10,
+          rowsPerPageOptions: [10],
+          onChangePage: (_ev, newPage) => setPage(newPage),
+        }}
+        cleaningZones={placeNames}
+        loopWaypoints={placeNames}
+        deliveryWaypoints={placeNames}
+        submitTasks={submitTasks}
+        cancelTask={cancelTask}
+        onRefresh={handleRefresh}
+        onAutoRefresh={setAutoRefreshEnabled}
+        timeline={false}
+      />
+    </div>
   );
 }
