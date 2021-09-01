@@ -7,6 +7,8 @@ const mode =
     ? 'localHeadless'
     : 'local';
 
+const localIdentifier = `${Date.now().toString()}+${Math.random()}`;
+
 /**
  * Create browserstack options with some base settings.
  */
@@ -15,6 +17,7 @@ function browserstackOptions(opts) {
     projectName: 'rmf-web',
     build: `dashboard-e2e:${process.env.BROWSERSTACK_BUILD || 'local'}`,
     resolution: '1920x1080',
+    localIdentifier,
     ...opts,
   };
 }
@@ -165,6 +168,7 @@ exports.config = {
             'browserstack',
             {
               browserstackLocal: true,
+              localIdentifier,
             },
           ],
         ]
