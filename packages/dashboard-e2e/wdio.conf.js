@@ -1,10 +1,10 @@
-const path = require('path');
-const fs = require('fs');
 const launcher = require('../dashboard/rmf-launcher').makeLauncher();
 
 const mode =
   process.env.BROWSERSTACK_USERNAME && process.env.BROWSERSTACK_ACCESS_KEY
     ? 'browserstack'
+    : process.env.CI
+    ? 'localHeadless'
     : 'local';
 
 /**
@@ -87,7 +87,7 @@ exports.config = {
 
             'goog:chromeOptions': {
               binary: process.env.CHROME_BIN || undefined,
-              args: ['--headless'],
+              args: [...(mode === 'localHeadless' ? ['--headless'] : [])],
             },
           },
         ]
@@ -306,12 +306,8 @@ exports.config = {
   /**
    * Function to be executed after a test (in Mocha/Jasmine).
    */
-  afterTest: function (test /*, context, { error, result, duration, passed, retries }*/) {
-    const testPath = path.relative('tests', test.file);
-    const artifactDir = `artifacts/${testPath}/${test.title}`;
-    fs.mkdirSync(artifactDir, { recursive: true });
-    browser.saveScreenshot(`${artifactDir}/end.png`);
-  },
+  // afterTest: function (test, context, { error, result, duration, passed, retries }) {
+  // },
 
   /**
    * Hook that gets executed after the suite has ended
