@@ -48,6 +48,21 @@ exports.config = {
   exclude: [
     // 'path/to/excluded/files'
   ],
+
+  autoCompileOpts: {
+    autoCompile: true,
+    // see https://github.com/TypeStrong/ts-node#cli-and-programmatic-options
+    // for all available options
+    tsNodeOpts: {
+      transpileOnly: true,
+      project: 'tsconfig.json',
+    },
+    // tsconfig-paths is only used if "tsConfigPathsOpts" are provided, if you
+    // do please make sure "tsconfig-paths" is installed as dependency
+    tsConfigPathsOpts: {
+      baseUrl: './',
+    },
+  },
   //
   // ============
   // Capabilities
@@ -195,11 +210,9 @@ exports.config = {
   reporters: ['spec'],
 
   //
-  // Options to be passed to Mocha.
+  // Options to be passed to mocha.
   // See the full list at http://mochajs.org/
   mochaOpts: {
-    // as of wdio 6.12.1, it automatically registers ts-node, registering it again would cause conflict
-    // require: ['ts-node/register'],
     ui: 'bdd',
     timeout: 300000,
   },
@@ -257,20 +270,22 @@ exports.config = {
    * Hook that gets executed before the suite starts
    * @param {Object} suite suite details
    */
-  beforeSuite: async function (suite) {
-    console.log(suite);
+  beforeSuite: async function (/* suite */) {
     browser.maximizeWindow();
     browser.overwriteCommand(
       'click',
-      function (orig, { force = false, ...clickOpts } = {}) {
+      async function (orig, { force = false, ...clickOpts } = {}) {
         if (force) {
-          browser.execute(function click(el) {
+          await browser.execute(function click(el) {
             el.dispatchEvent(new MouseEvent('click', { bubbles: true })); // eslint-disable-line no-undef
           }, this);
+          await browser.pause(500);
           return;
         }
-        this.waitForClickable();
-        return orig(clickOpts);
+        // BUG: calling `waitForClickable` seems to cause wdio chain selectors to stop working.
+        await this.waitForClickable();
+        await orig.apply(this, [clickOpts]);
+        await browser.pause(500);
       },
       true,
     );

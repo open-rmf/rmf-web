@@ -1,20 +1,29 @@
 import { getAppBar } from '../utils';
 
 describe('submit task', () => {
-  it('can submit loop task', () => {
-    const appBar = getAppBar();
-    appBar.$('span=Tasks').click();
-    $('button[aria-label="Create Task"]').click();
-    $('#task-type').click();
-    const getLoopOption = () => $$('[role=option]').find((elem) => elem.getText() === 'Loop');
-    browser.waitUntil(() => !!getLoopOption());
-    const loopOption = getLoopOption()!;
-    loopOption.click();
+  it('can submit loop task', async () => {
+    const appBar = await getAppBar();
+    await (await appBar.$('span=Tasks')).click();
+    await (await $('button[aria-label="Create Task"]')).click();
+    await (await $('#task-type')).click();
+    const getLoopOption = async () => {
+      const options = await $$('[role=option]');
+      for (const opt of options) {
+        const text = await opt.getText();
+        if (text === 'Loop') {
+          return opt;
+        }
+      }
+      return null;
+    };
+    await browser.waitUntil(async () => !!(await getLoopOption()));
+    const loopOption = (await getLoopOption())!;
+    await loopOption.click();
 
-    $('#start-location').setValue('coe');
-    $('#finish-location').setValue('pantry');
+    await (await $('#start-location')).setValue('coe');
+    await (await $('#finish-location')).setValue('pantry');
 
-    $('button[aria-label="Submit"]').click();
-    $('div=Successfully created task').waitForDisplayed();
+    await (await $('button[aria-label="Submit"]')).click();
+    await expect($('div=Successfully created task')).toBeDisplayed({ wait: 20000 });
   }).timeout(20000);
 });

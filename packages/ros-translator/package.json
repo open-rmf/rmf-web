@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/jasmine": "^3.6.6",
+    "@types/jasmine": "^3.8.2",
     "jasmine": "^3.6.6",
     "pipenv-install": "*",
     "ts-node": "^9.1.1",

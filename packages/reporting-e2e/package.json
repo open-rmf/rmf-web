@@ -22,6 +22,7 @@
     "reporting": "*",
     "serve": "^11.3.2",
     "ts-node": "^9.1.1",
+    "typescript": "4.2.4",
     "wdio-chromedriver-service": "^6.0.4"
   }
 }
