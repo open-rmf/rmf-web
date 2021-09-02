@@ -1,5 +1,9 @@
 const launcher = require('../dashboard/rmf-launcher').makeLauncher();
 const getPublicUrl = require('./scripts/bstack');
+const { writeFileSync, mkdirSync } = require('fs');
+const { resolve } = require('path');
+
+const artifactsDir = resolve(`${__dirname}/artifacts`);
 
 const mode =
   process.env.BROWSERSTACK_USERNAME && process.env.BROWSERSTACK_ACCESS_KEY
@@ -275,9 +279,19 @@ exports.config = {
    */
   beforeSuite: async function (suite) {
     if (mode === 'browserstack') {
-      const publicUrl = await getPublicUrl(browser.sessionId);
       const browserName = browser.requestedCapabilities.browserName;
-      console.log(`::notice title=(${browserName}) ${suite.title}::${publicUrl}`);
+      const bstackArtifact = {
+        browserName,
+        suite: suite.title,
+        sessionId: browser.sessionId,
+        publicUrl: await getPublicUrl(browser.sessionId),
+      };
+      const outDir = `${artifactsDir}/browserstack`;
+      mkdirSync(outDir, { recursive: true });
+      writeFileSync(
+        `${outDir}/${suite.title}.${browserName}.json`,
+        JSON.stringify(bstackArtifact, undefined, 2),
+      );
     }
 
     browser.maximizeWindow();
