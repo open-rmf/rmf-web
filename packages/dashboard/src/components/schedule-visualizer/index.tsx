@@ -253,12 +253,14 @@ export default function ScheduleVisualizer({
             model: r.model,
             footprint: 0.5,
             color: await colorManager.robotPrimaryColor(fleetState.name, r.name, r.model),
+            iconPath:
+              (await resourceManager?.robots.getIconPath(fleetState.name, r.model)) || undefined,
           };
         }),
       );
       await safeAsync(Promise.all(promises));
     })();
-  }, [safeAsync, fleetStates, robotsStore]);
+  }, [safeAsync, fleetStates, robotsStore, resourceManager]);
 
   React.useEffect(() => {
     const newRobots = Object.values(fleetStates).flatMap((fleetState) =>
