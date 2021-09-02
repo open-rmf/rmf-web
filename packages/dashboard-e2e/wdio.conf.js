@@ -277,7 +277,7 @@ exports.config = {
     if (mode === 'browserstack') {
       const publicUrl = await getPublicUrl(browser.sessionId);
       const browserName = browser.requestedCapabilities.browserName;
-      console.log(`::notice::(${browserName}) ${suite.title}: ${publicUrl}`);
+      console.log(`::notice title=(${browserName}) ${suite.title}::${publicUrl}`);
     }
 
     browser.maximizeWindow();
