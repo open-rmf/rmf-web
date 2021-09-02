@@ -32,9 +32,3 @@ jobs:
           cache: 'npm'
       - name: test
         uses: ./.github/actions/dashboard-e2e
-      - name: upload artifacts
-        uses: actions/upload-artifact@v2
-        if: always()
-        with:
-          name: artifacts
-          path: packages/dashboard-e2e/artifacts
