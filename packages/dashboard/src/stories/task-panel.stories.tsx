@@ -66,7 +66,6 @@ export const ExampleTaskPanel: Story<StoryArgs> = (args) => {
         style={{ height: '95vh', margin: 'auto', maxWidth: 1600 }}
         submitTasks={() => new Promise((res) => setTimeout(res, 1000))}
         cancelTask={() => new Promise((res) => setTimeout(res, 1000))}
-        timeline={true}
       />
     </UserProfileContext.Provider>
   );

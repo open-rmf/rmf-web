@@ -42,6 +42,9 @@ const useStyles = makeStyles((theme) => {
     failedPhase: {
       background: phaseColors.failed,
     },
+    timelineRoot: {
+      padding: '6px 0px',
+    },
   };
 });
 
@@ -84,14 +87,14 @@ export function TaskTimeline({ taskSummary }: TaskTimelineProps): JSX.Element {
   });
 
   return (
-    <Timeline align="left">
+    <Timeline align="left" className={classes.timelineRoot}>
       {timelineInfo.map((dotInfo, idx) => {
         return (
           <TimelineItem key={idx}>
             <TimelineOppositeContent style={{ flex: 0.1, padding: '0px 12px 0px 0px' }}>
-              <Typography variant="overline" color="textSecondary">
+              <Typography variant="overline" color="textSecondary" style={{ textAlign: 'justify' }}>
                 {idx == 0 && rosTimeToJs(taskSummary.start_time).toLocaleTimeString()}
-                {idx != 0 &&
+                {idx > 0 &&
                   idx == timelineInfo.length - 1 &&
                   rosTimeToJs(taskSummary.end_time).toLocaleTimeString()}
               </Typography>

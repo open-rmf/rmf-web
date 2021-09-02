@@ -5,12 +5,6 @@ import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { rosTimeToJs } from '../utils';
 import { taskStateToStr } from './utils';
-//TO REMOVE IF TIMELINE IS USED
-import Collapse from '@material-ui/core/Collapse';
-import IconButton from '@material-ui/core/IconButton';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
-import { TaskPhases } from './task-phases';
 
 const useStyles = makeStyles((theme) => ({
   table: {
@@ -62,13 +56,11 @@ const useStyles = makeStyles((theme) => ({
 interface TaskRowProps {
   task: RmfModels.TaskSummary;
   onClick: React.MouseEventHandler<HTMLTableRowElement>;
-  timeline: boolean;
 }
 
-function TaskRow({ task, onClick, timeline }: TaskRowProps) {
+function TaskRow({ task, onClick }: TaskRowProps) {
   const classes = useStyles();
   const [hover, setHover] = React.useState(false);
-  const [open, setOpen] = React.useState(false);
 
   const returnTaskStateCellClass = (task: RmfModels.TaskSummary) => {
     switch (task.state) {
@@ -104,28 +96,7 @@ function TaskRow({ task, onClick, timeline }: TaskRowProps) {
         <TableCell>{toRelativeDate(task.start_time)}</TableCell>
         <TableCell>{toRelativeDate(task.end_time)}</TableCell>
         <TableCell className={taskStateCellClass}>{taskStateToStr(task.state)}</TableCell>
-        {!timeline && (
-          <TableCell>
-            <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
-              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-            </IconButton>
-          </TableCell>
-        )}
       </TableRow>
-      {!timeline && (
-        <TableRow
-          className={clsx(classes.infoRow, hover && classes.taskRowHover)}
-          onClick={onClick}
-          onMouseOver={() => setHover(true)}
-          onMouseOut={() => setHover(false)}
-        >
-          <TableCell className={classes.phasesCell} colSpan={6}>
-            <Collapse in={open} timeout={'auto'} unmountOnExit>
-              <TaskPhases className={classes.phasesRow} taskSummary={task} />
-            </Collapse>
-          </TableCell>
-        </TableRow>
-      )}
     </>
   );
 }
@@ -141,10 +112,9 @@ export interface TaskTableProps {
    */
   tasks: RmfModels.TaskSummary[];
   onTaskClick?(ev: React.MouseEvent<HTMLDivElement>, task: RmfModels.TaskSummary): void;
-  timeline: boolean;
 }
 
-export function TaskTable({ tasks, onTaskClick, timeline }: TaskTableProps): JSX.Element {
+export function TaskTable({ tasks, onTaskClick }: TaskTableProps): JSX.Element {
   const classes = useStyles();
   return (
     <Table className={classes.table} stickyHeader size="small" style={{ tableLayout: 'fixed' }}>
@@ -163,7 +133,6 @@ export function TaskTable({ tasks, onTaskClick, timeline }: TaskTableProps): JSX
             key={task.task_id}
             task={task}
             onClick={(ev) => onTaskClick && onTaskClick(ev, task)}
-            timeline={timeline}
           />
         ))}
       </TableBody>

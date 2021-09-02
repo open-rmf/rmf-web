@@ -70,7 +70,6 @@ export interface TaskPanelProps extends React.HTMLProps<HTMLDivElement> {
   cancelTask?: (task: RmfModels.TaskSummary) => Promise<void>;
   onRefresh?: () => void;
   onAutoRefresh?: (enabled: boolean) => void;
-  timeline: boolean;
 }
 
 export function TaskPanel({
@@ -85,7 +84,6 @@ export function TaskPanel({
   cancelTask,
   onRefresh,
   onAutoRefresh,
-  timeline,
   ...divProps
 }: TaskPanelProps): JSX.Element {
   const classes = useStyles();
@@ -186,7 +184,6 @@ export function TaskPanel({
               onTaskClick={(_ev, task) =>
                 setSelectedTask(tasks.find((t) => t.task_id === task.task_id))
               }
-              timeline={timeline}
             />
           </TableContainer>
           {paginationOptions && (
@@ -196,7 +193,7 @@ export function TaskPanel({
         <Paper className={classes.detailPanelContainer}>
           {selectedTask ? (
             <>
-              <TaskInfo task={selectedTask.summary} timeline={timeline} />
+              <TaskInfo task={selectedTask.summary} />
               <Button
                 style={{ marginTop: theme.spacing(1) }}
                 fullWidth
