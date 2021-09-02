@@ -54,8 +54,8 @@ async function writeMetadata(artifactsDir, browser, suite) {
 }
 
 /**
- * Annonate public urls into github workflows. Should be called after a test runs which uses `writeMetadata`.
- * Should be called in the `onComplete` hook.
+ * Annonate public urls into github workflows.
+ * Should be called in the `onComplete` hook of a test run which called `writeMetadata`.
  * @param {string} artifactsDir Must be the same directory passed to `writeMetadata`.
  */
 function annonatePublicUrls(artifactsDir) {
