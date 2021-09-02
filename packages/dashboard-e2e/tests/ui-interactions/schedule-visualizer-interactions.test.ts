@@ -56,7 +56,7 @@ describe('schedule visualizer interactions', () => {
     await (await $('[data-component=MainMenu] [data-item=Doors]')).click();
 
     // set value to filter input
-    (await getFilterInput()).setValue('value');
+    await (await getFilterInput()).setValue('value');
 
     // get door marker and click
     const scheduleVisualizer = await getScheduleVisualizer();
