@@ -1,6 +1,5 @@
 const launcher = require('../dashboard/rmf-launcher').makeLauncher();
-const getPublicUrl = require('./scripts/bstack');
-const { writeFileSync, mkdirSync } = require('fs');
+const { writeMetadata, annonatePublicUrls } = require('./scripts/bstack');
 const { resolve } = require('path');
 
 const artifactsDir = resolve(`${__dirname}/artifacts`);
@@ -279,19 +278,7 @@ exports.config = {
    */
   beforeSuite: async function (suite) {
     if (mode === 'browserstack') {
-      const browserName = browser.requestedCapabilities.browserName;
-      const bstackArtifact = {
-        browserName,
-        suite: suite.title,
-        sessionId: browser.sessionId,
-        publicUrl: await getPublicUrl(browser.sessionId),
-      };
-      const outDir = `${artifactsDir}/browserstack`;
-      mkdirSync(outDir, { recursive: true });
-      writeFileSync(
-        `${outDir}/${suite.title}.${browserName}.json`,
-        JSON.stringify(bstackArtifact, undefined, 2),
-      );
+      await writeMetadata(artifactsDir, browser, suite);
     }
 
     browser.maximizeWindow();
@@ -389,8 +376,9 @@ exports.config = {
    * @param {Array.<Object>} capabilities list of capabilities details
    * @param {<Object>} results object containing test results
    */
-  // onComplete: function (exitCode, config, capabilities, results) {
-  // },
+  onComplete: function (/* exitCode, config, capabilities, results */) {
+    annonatePublicUrls(artifactsDir);
+  },
   /**
    * Gets executed when a refresh happens.
    * @param {String} oldSessionId session ID of the old session

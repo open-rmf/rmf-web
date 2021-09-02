@@ -32,7 +32,3 @@ jobs:
           cache: 'npm'
       - name: test
         uses: ./.github/actions/dashboard-e2e
-      - name: annonate browserstack public urls
-        uses: ./.github/actions/annonate-browserstack
-        with:
-          browserstackArtifiactsDir: ./packages/dashboard-e2e/artifacts/browserstack

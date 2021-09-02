@@ -16,6 +16,7 @@ const wdioArgs = process.argv
 concurrently([...services, `wdio ${wdioArgs}`], {
   killOthers: ['success', 'failure'],
   successCondition: 'first',
+  prefix: 'none',
 }).catch((e) => {
   console.error(e);
   process.exitCode = -1;
