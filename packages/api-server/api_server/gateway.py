@@ -24,7 +24,7 @@ from rmf_fleet_msgs.msg import FleetState as RmfFleetState
 from rmf_ingestor_msgs.msg import IngestorState as RmfIngestorState
 from rmf_lift_msgs.msg import LiftRequest as RmfLiftRequest
 from rmf_lift_msgs.msg import LiftState as RmfLiftState
-from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
+from rmf_task_msgs.msg import Tasks as RmfTasks
 from rmf_task_msgs.srv import CancelTask as RmfCancelTask
 from rmf_task_msgs.srv import GetTaskList as RmfGetTaskList
 from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
@@ -173,12 +173,13 @@ class RmfGateway(rclpy.node.Node):
         self._subscriptions.append(fleet_states_sub)
 
         task_summaries_sub = self.create_subscription(
-            RmfTaskSummary,
-            "task_summaries",
-            lambda msg: self.rmf_events.task_summaries.on_next(
-                TaskSummary.from_orm(msg)
-            ),
-            10,
+            RmfTasks,
+            "dispatcher_ongoing_tasks",
+            lambda msg: [
+                self.rmf_events.task_summaries.on_next(
+                    TaskSummary.from_orm(task)
+                ) for task in msg.tasks
+            ],
         )
         self._subscriptions.append(task_summaries_sub)
 
