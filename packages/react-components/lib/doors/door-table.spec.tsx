@@ -1,13 +1,12 @@
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-
 import { DoorTable } from './door-table';
-import { doorStates, makeDetailedDoors } from './test-utils.spec';
+import { doorStates, makeDoorsData } from './test-utils.spec';
 
 describe('door table', () => {
   it('should render properly', () => {
-    const root = render(<DoorTable doors={makeDetailedDoors()} doorStates={doorStates} />);
+    const root = render(<DoorTable doors={makeDoorsData()} doorStates={doorStates} />);
 
     // test to see if door names are rendered
     expect(root.getByText('main_door')).toBeTruthy();
@@ -31,7 +30,7 @@ describe('door table', () => {
     const onControlClickSpy = jasmine.createSpy();
     const root = render(
       <DoorTable
-        doors={makeDetailedDoors()}
+        doors={makeDoorsData()}
         doorStates={doorStates}
         onDoorControlClick={onControlClickSpy}
       />,
@@ -45,7 +44,7 @@ describe('door table', () => {
     const onControlClickSpy = jasmine.createSpy();
     const root = render(
       <DoorTable
-        doors={makeDetailedDoors()}
+        doors={makeDoorsData()}
         doorStates={doorStates}
         onDoorControlClick={onControlClickSpy}
       />,

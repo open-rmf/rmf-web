@@ -150,7 +150,7 @@ export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelPr
           </Grid>
           <Grid item>
             <IconButton
-              aria-label="view-mode"
+              aria-label="view mode"
               className={classes.itemIcon}
               onClick={() => setIsCellView(!isCellView)}
             >

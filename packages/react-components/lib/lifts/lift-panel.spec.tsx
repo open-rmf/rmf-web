@@ -29,7 +29,7 @@ describe('Lift Panel', () => {
   });
 
   it('layout view should change when view mode button is clicked', () => {
-    userEvent.click(root.getByLabelText('view-mode'));
+    userEvent.click(root.getByLabelText('view mode'));
     expect(root.getByLabelText('lift-table')).toBeTruthy();
   });
 });

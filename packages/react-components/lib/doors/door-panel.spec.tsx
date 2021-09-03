@@ -1,11 +1,11 @@
-import { render } from '@testing-library/react';
+import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { DoorPanel } from './door-panel';
-import { doorStates, makeDetailedDoors } from './test-utils.spec';
+import { doorStates, makeDoorsData } from './test-utils.spec';
 
 function renderDoorPanel() {
-  return render(<DoorPanel doors={makeDetailedDoors()} doorStates={doorStates} />);
+  return render(<DoorPanel doors={makeDoorsData()} doorStates={doorStates} />);
 }
 
 describe('Door Panel', () => {
@@ -16,7 +16,7 @@ describe('Door Panel', () => {
     mockControlClickSubmit = jasmine.createSpy();
     root = render(
       <DoorPanel
-        doors={makeDetailedDoors()}
+        doors={makeDoorsData()}
         doorStates={doorStates}
         onDoorControlClick={mockControlClickSubmit}
       />,
@@ -24,12 +24,14 @@ describe('Door Panel', () => {
   });
 
   it('should call onDoorControlClick when Open/Close button is clicked', () => {
-    userEvent.click(root.getByLabelText('hardware_door_open'));
+    const doorCell = root.getByRole('region', { name: 'main_door' });
+    const openBtn = within(doorCell).getByRole('button', { name: 'Open' });
+    openBtn.click();
     expect(mockControlClickSubmit).toHaveBeenCalled();
   });
 
   it('layout view should change when view mode button is clicked', () => {
-    userEvent.click(root.getByLabelText('view-mode'));
+    userEvent.click(root.getByLabelText('view mode'));
     expect(root.getByLabelText('door-table')).toBeTruthy();
   });
 });
