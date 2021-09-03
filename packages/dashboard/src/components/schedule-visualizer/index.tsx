@@ -36,12 +36,6 @@ const TrajectoryUpdateInterval = 2000;
 const SettingsKey = 'scheduleVisualizerSettings';
 const colorManager = new ColorManager();
 
-export interface MapFloorLayer {
-  level: RmfModels.Level;
-  imageUrl: string;
-  bounds: L.LatLngBounds;
-}
-
 export interface ScheduleVisualizerProps extends React.PropsWithChildren<{}> {
   buildingMap: RmfModels.BuildingMap;
   negotiationTrajStore?: Record<string, NegotiationTrajectoryResponse>;
@@ -59,17 +53,6 @@ export interface ScheduleVisualizerProps extends React.PropsWithChildren<{}> {
   onRobotClick?: (ev: React.MouseEvent, fleet: string, robot: string) => void;
   onDispenserClick?: (ev: React.MouseEvent, guid: string) => void;
   onIngestorClick?: (ev: React.MouseEvent, guid: string) => void;
-}
-
-export function calcMaxBounds(
-  mapFloorLayers: readonly MapFloorLayer[],
-): L.LatLngBounds | undefined {
-  if (!mapFloorLayers.length) {
-    return undefined;
-  }
-  const bounds = new L.LatLngBounds([0, 0], [0, 0]);
-  Object.values(mapFloorLayers).forEach((x) => bounds.extend(x.bounds));
-  return bounds.pad(0.2);
 }
 
 interface ScheduleVisualizerSettings {

@@ -1,4 +1,4 @@
-import { Card, Grid, IconButton, makeStyles, Paper, Typography } from '@material-ui/core';
+import { Box, Card, Grid, IconButton, makeStyles, Paper, Typography } from '@material-ui/core';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
 import { Dispenser } from 'api-client';
@@ -7,7 +7,6 @@ import * as RmfModels from 'rmf-models';
 import { WorkcellTable } from './workcell-table';
 
 export interface WorkcellPanelProps {
-  // workcells: Dispenser[];
   dispensers: Dispenser[];
   ingestors: Dispenser[];
   workCellStates: Record<string, RmfModels.DispenserState>;
@@ -19,6 +18,9 @@ export interface WorkcellCellProps {
 }
 
 const useStyles = makeStyles((theme) => ({
+  container: {
+    margin: theme.spacing(1),
+  },
   buttonBar: {
     display: 'flex',
     justifyContent: 'flex-end',
@@ -46,15 +48,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const WorkcellCell = (props: WorkcellCellProps): JSX.Element => {
-  const { workcell, workCellState } = props;
+const WorkcellCell = ({ workcell, workCellState }: WorkcellCellProps): JSX.Element => {
   const classes = useStyles();
 
   return (
     <Paper className={classes.cellPaper}>
       {workCellState ? (
         <React.Fragment>
-          <Typography align="center">{workcell.guid}</Typography>
+          <Typography component="div" align="center">
+            <Box fontWeight="fontWeightBold">{workcell.guid}</Box>
+          </Typography>
           <Grid container direction="row">
             <Grid item xs={6}>
               <Typography
@@ -89,12 +92,12 @@ export function WorkcellPanel({
   const [isCellView, setIsCellView] = React.useState(true);
 
   return (
-    <Card variant="outlined">
+    <Card variant="outlined" className={classes.container}>
       <Paper className={classes.buttonBar}>
         <Grid container direction="row" justify="space-between" alignItems="center">
           <Grid item xs={6}>
             <Typography variant="h5" className={classes.panelHeader}>
-              Workcell Panel
+              Workcells
             </Typography>
           </Grid>
           <Grid item>

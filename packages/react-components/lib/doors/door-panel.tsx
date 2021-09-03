@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   ButtonGroup,
   Card,
@@ -28,6 +29,9 @@ export interface DoorInfoProps {
 }
 
 const useStyles = makeStyles((theme) => ({
+  container: {
+    margin: theme.spacing(1),
+  },
   buttonBar: {
     display: 'flex',
     justifyContent: 'flex-end',
@@ -63,8 +67,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const DoorCell = (props: DoorInfoProps): JSX.Element => {
-  const { door, doorState, onDoorControlClick } = props;
+const DoorCell = ({ door, doorState, onDoorControlClick }: DoorInfoProps): JSX.Element => {
   const classes = useStyles();
 
   const doorModeLabelClasses = React.useCallback(
@@ -90,8 +93,8 @@ const DoorCell = (props: DoorInfoProps): JSX.Element => {
 
   return (
     <Paper className={classes.cellPaper} data-item={door.door.name}>
-      <Typography variant="body1" align="center">
-        {door.door.name}
+      <Typography component="div" variant="body1" align="center">
+        <Box fontWeight="fontWeightBold">{door.door.name}</Box>
       </Typography>
       <Grid container direction="row" spacing={1}>
         <Grid item xs={6}>
@@ -139,12 +142,12 @@ export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelPr
   const [isCellView, setIsCellView] = React.useState(true);
 
   return (
-    <Card variant="outlined">
+    <Card variant="outlined" className={classes.container}>
       <Paper className={classes.buttonBar}>
         <Grid container direction="row" justify="space-between" alignItems="center">
           <Grid item xs={6}>
             <Typography variant="h5" className={classes.panelHeader}>
-              Doors Panel
+              Doors
             </Typography>
           </Grid>
           <Grid item>

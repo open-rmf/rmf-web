@@ -48,6 +48,9 @@ export interface LiftCellProps {
 }
 
 const useStyles = makeStyles((theme) => ({
+  container: {
+    margin: theme.spacing(1),
+  },
   buttonBar: {
     display: 'flex',
     justifyContent: 'flex-end',
@@ -89,8 +92,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const LiftCell = (props: LiftCellProps): JSX.Element => {
-  const { lift, liftState, onRequestSubmit } = props;
+const LiftCell = ({ lift, liftState, onRequestSubmit }: LiftCellProps): JSX.Element => {
   const classes = useStyles();
 
   const [showForms, setShowForms] = React.useState(false);
@@ -121,7 +123,9 @@ const LiftCell = (props: LiftCellProps): JSX.Element => {
     <Paper className={classes.cellPaper}>
       <Grid container direction="row">
         <Grid item xs={9}>
-          <Typography align="center">{lift.name}</Typography>
+          <Typography component="div" align="center">
+            <Box fontWeight="fontWeightBold">{lift.name}</Box>
+          </Typography>
           <Box border={1} borderColor="divider" m={0.5}>
             <Typography align="center">{liftState.destination_floor}</Typography>
           </Box>
@@ -165,12 +169,12 @@ export function LiftPanel({ lifts, liftStates, onRequestSubmit }: LiftPanelProps
   const [isCellView, setIsCellView] = React.useState(true);
 
   return (
-    <Card variant="outlined">
+    <Card variant="outlined" className={classes.container}>
       <Paper className={classes.buttonBar}>
         <Grid container direction="row" justify="space-between" alignItems="center">
           <Grid item xs={6}>
             <Typography variant="h5" className={classes.panelHeader}>
-              Lifts Panel
+              Lifts
             </Typography>
           </Grid>
           <Grid item>

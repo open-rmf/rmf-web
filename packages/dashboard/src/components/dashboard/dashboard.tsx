@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 
-import { makeStyles } from '@material-ui/core';
+import { Card, Grid, makeStyles } from '@material-ui/core';
 import { Fleet, Level } from 'api-client';
 import Debug from 'debug';
 import React from 'react';
@@ -19,16 +19,19 @@ import ScheduleVisualizer from '../schedule-visualizer';
 
 const debug = Debug('Dashboard');
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   toolBarTitle: {
     flexGrow: 1,
   },
   buildingPanel: {
-    display: 'flex',
     height: '100%',
   },
+  mapPanel: {
+    margin: theme.spacing(1),
+    flex: '1 0 auto',
+  },
   itemPanels: {
-    width: '1100px',
+    width: 800,
   },
 }));
 
@@ -184,17 +187,19 @@ export default function Dashboard(_props: {}): React.ReactElement {
   return (
     <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
       {buildingMap && (
-        <div className={classes.buildingPanel}>
-          <ScheduleVisualizer
-            buildingMap={buildingMap}
-            dispensers={dispensers}
-            ingestors={ingestors}
-            doorStates={doorStates}
-            liftStates={liftStates}
-            fleetStates={fleetStates}
-            mode="normal"
-          ></ScheduleVisualizer>
-          <div className={classes.itemPanels}>
+        <Grid container className={classes.buildingPanel} wrap="nowrap">
+          <Card variant="outlined" className={classes.mapPanel}>
+            <ScheduleVisualizer
+              buildingMap={buildingMap}
+              dispensers={dispensers}
+              ingestors={ingestors}
+              doorStates={doorStates}
+              liftStates={liftStates}
+              fleetStates={fleetStates}
+              mode="normal"
+            ></ScheduleVisualizer>
+          </Card>
+          <Grid item className={classes.itemPanels}>
             {doors.length > 0 ? (
               <DoorPanel
                 doors={doors}
@@ -216,8 +221,8 @@ export default function Dashboard(_props: {}): React.ReactElement {
                 workCellStates={workcellStates}
               />
             ) : null}
-          </div>
-        </div>
+          </Grid>
+        </Grid>
       )}
     </GlobalHotKeys>
   );
