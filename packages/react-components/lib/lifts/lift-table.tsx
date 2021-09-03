@@ -1,14 +1,14 @@
-import React from 'react';
-import * as RmfModels from 'rmf-models';
 import {
+  Button,
   makeStyles,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
-  Button,
 } from '@material-ui/core';
+import React from 'react';
+import * as RmfModels from 'rmf-models';
 import LiftRequestFormDialog from './lift-request-form-dialog';
 import { doorStateToString, liftModeToString, requestDoorModes, requestModes } from './lift-utils';
 
@@ -102,8 +102,7 @@ const LiftRow = (props: LiftRowProps) => {
   );
 };
 
-export const LiftTable = (props: LiftTableProps) => {
-  const { lifts, liftStates, onRequestSubmit } = props;
+export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps): JSX.Element => {
   return (
     <Table stickyHeader size="small" aria-label="lift-table">
       <TableHead>

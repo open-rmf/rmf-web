@@ -1,6 +1,6 @@
-import React from 'react';
-import { Dispenser } from 'api-client';
 import { makeStyles, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
+import { Dispenser } from 'api-client';
+import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { dispenserModeToString } from './utils';
 
@@ -71,9 +71,7 @@ const WorkcellRow = (props: WorkcellRowProps) => {
   );
 };
 
-export const WorkcellTable = (props: WorkcellTableProps) => {
-  const { workcells, workcellStates } = props;
-
+export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps): JSX.Element => {
   return (
     <Table stickyHeader size="small" aria-label="workcell-table">
       <TableHead>

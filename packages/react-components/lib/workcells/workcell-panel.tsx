@@ -1,10 +1,9 @@
-import React from 'react';
-import * as RmfModels from 'rmf-models';
-import { Dispenser } from 'api-client';
-import { Paper, IconButton, makeStyles, Grid, Typography, Card, Divider } from '@material-ui/core';
+import { Card, Grid, IconButton, makeStyles, Paper, Typography } from '@material-ui/core';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
-
+import { Dispenser } from 'api-client';
+import React from 'react';
+import * as RmfModels from 'rmf-models';
 import { WorkcellTable } from './workcell-table';
 
 export interface WorkcellPanelProps {
@@ -80,8 +79,11 @@ const WorkcellCell = (props: WorkcellCellProps): JSX.Element => {
   );
 };
 
-export function WorkcellPanel(props: WorkcellPanelProps) {
-  const { dispensers, ingestors, workCellStates } = props;
+export function WorkcellPanel({
+  dispensers,
+  ingestors,
+  workCellStates,
+}: WorkcellPanelProps): JSX.Element {
   const classes = useStyles();
 
   const [isCellView, setIsCellView] = React.useState(true);

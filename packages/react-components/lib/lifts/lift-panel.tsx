@@ -1,28 +1,27 @@
-import React from 'react';
-import * as RmfModels from 'rmf-models';
 import {
-  Paper,
-  IconButton,
-  makeStyles,
-  Grid,
-  Typography,
   Box,
   Button,
   Card,
+  Grid,
+  IconButton,
+  makeStyles,
+  Paper,
+  Typography,
 } from '@material-ui/core';
-import ViewListIcon from '@material-ui/icons/ViewList';
-import ViewModuleIcon from '@material-ui/icons/ViewModule';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
-
+import ViewListIcon from '@material-ui/icons/ViewList';
+import ViewModuleIcon from '@material-ui/icons/ViewModule';
+import React from 'react';
+import * as RmfModels from 'rmf-models';
+import LiftRequestFormDialog from './lift-request-form-dialog';
 import { LiftTable } from './lift-table';
 import {
+  doorStateToString,
+  motionStateToString,
   requestDoorModes,
   requestModes,
-  motionStateToString,
-  doorStateToString,
 } from './lift-utils';
-import LiftRequestFormDialog from './lift-request-form-dialog';
 
 export interface LiftPanelProps {
   lifts: RmfModels.Lift[];
@@ -161,8 +160,7 @@ const LiftCell = (props: LiftCellProps): JSX.Element => {
   );
 };
 
-export function LiftPanel(props: LiftPanelProps) {
-  const { lifts, liftStates, onRequestSubmit } = props;
+export function LiftPanel({ lifts, liftStates, onRequestSubmit }: LiftPanelProps): JSX.Element {
   const classes = useStyles();
   const [isCellView, setIsCellView] = React.useState(true);
 

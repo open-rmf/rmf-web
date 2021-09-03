@@ -105,9 +105,11 @@ const DoorRow = (props: DoorRowProps) => {
   );
 };
 
-export const DoorTable = (props: DoorTableProps) => {
-  const { doors, doorStates, onDoorControlClick } = props;
-
+export const DoorTable = ({
+  doors,
+  doorStates,
+  onDoorControlClick,
+}: DoorTableProps): JSX.Element => {
   return (
     <Table stickyHeader size="small" aria-label="door-table">
       <TableHead>

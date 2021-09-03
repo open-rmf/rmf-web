@@ -1,18 +1,17 @@
-import React from 'react';
-import * as RmfModels from 'rmf-models';
 import {
-  Paper,
-  IconButton,
-  makeStyles,
-  Grid,
-  Typography,
   Button,
   ButtonGroup,
   Card,
+  Grid,
+  IconButton,
+  makeStyles,
+  Paper,
+  Typography,
 } from '@material-ui/core';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
-
+import React from 'react';
+import * as RmfModels from 'rmf-models';
 import { DoorTable } from './door-table';
 import { DoorData, doorModeToString, doorTypeToString } from './utils';
 
@@ -134,8 +133,7 @@ const DoorCell = (props: DoorInfoProps): JSX.Element => {
   );
 };
 
-export function DoorPanel(props: DoorPanelProps) {
-  const { doors, doorStates, onDoorControlClick } = props;
+export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelProps): JSX.Element {
   const classes = useStyles();
 
   const [isCellView, setIsCellView] = React.useState(true);

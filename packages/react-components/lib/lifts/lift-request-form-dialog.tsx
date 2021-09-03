@@ -1,10 +1,10 @@
-import { makeStyles, IconButton } from '@material-ui/core';
+import { IconButton, makeStyles } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 import CloseIcon from '@material-ui/icons/Close';
-import * as RmfModels from 'rmf-models';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import React from 'react';
+import * as RmfModels from 'rmf-models';
 import { ConfirmationDialog } from '../confirmation-dialog';
 import { requestDoorModeToString, requestModeToString } from './lift-utils';
 
@@ -58,15 +58,14 @@ export interface LiftRequestFormProps {
   onClose: () => void;
 }
 
-export const LiftRequestFormDialog = (props: LiftRequestFormProps): JSX.Element => {
-  const {
-    lift,
-    availableRequestTypes,
-    availableDoorModes,
-    showFormDialog,
-    onRequestSubmit,
-    onClose,
-  } = props;
+export const LiftRequestFormDialog = ({
+  lift,
+  availableRequestTypes,
+  availableDoorModes,
+  showFormDialog,
+  onRequestSubmit,
+  onClose,
+}: LiftRequestFormProps): JSX.Element => {
   const classes = useStyles();
 
   const [doorState, setDoorState] = React.useState(availableDoorModes[0]);
