@@ -115,74 +115,73 @@ export const LiftRequestFormDialog = ({
       onClose={() => onClose()}
       fullWidth={true}
       maxWidth={'md'}
+      onSubmit={handleLiftRequest}
     >
       <IconButton aria-label="close" className={classes.closeButton} onClick={() => onClose()}>
         <CloseIcon />
       </IconButton>
-      <form className={classes.form} onSubmit={handleLiftRequest}>
-        <div className={classes.divForm}>
-          <Autocomplete
-            getOptionLabel={(option) => option}
-            onChange={(_, value) => setDestination(value || '')}
-            options={['', ...lift.levels]}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Pick a Destination"
-                placeholder="Pick a Destination"
-                variant="outlined"
-                error={!!destinationError}
-                helperText={destinationError}
-              />
-            )}
-            value={destination}
-          />
-        </div>
+      <div className={classes.divForm}>
+        <Autocomplete
+          getOptionLabel={(option) => option}
+          onChange={(_, value) => setDestination(value || '')}
+          options={['', ...lift.levels]}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Pick a Destination"
+              placeholder="Pick a Destination"
+              variant="outlined"
+              error={!!destinationError}
+              helperText={destinationError}
+            />
+          )}
+          value={destination}
+        />
+      </div>
 
-        <div className={classes.divForm}>
-          <Autocomplete
-            getOptionLabel={(option) => requestDoorModeToString(option)}
-            onChange={(_, value) => setDoorState(value as number)}
-            options={availableDoorModes}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Pick a Door State"
-                placeholder="Pick a Door State"
-                variant="outlined"
-                error={!!doorStateError}
-                helperText={doorStateError}
-              />
-            )}
-            value={doorState}
-          />
-        </div>
+      <div className={classes.divForm}>
+        <Autocomplete
+          getOptionLabel={(option) => requestDoorModeToString(option)}
+          onChange={(_, value) => setDoorState(value as number)}
+          options={availableDoorModes}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Pick a Door State"
+              placeholder="Pick a Door State"
+              variant="outlined"
+              error={!!doorStateError}
+              helperText={doorStateError}
+            />
+          )}
+          value={doorState}
+        />
+      </div>
 
-        <div className={classes.divForm}>
-          <Autocomplete
-            getOptionLabel={(option) => requestModeToString(option)}
-            onChange={(_, value) => setRequestType((value as number) || availableRequestTypes[0])}
-            options={availableRequestTypes}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Pick Request Type"
-                placeholder="Pick Request Type"
-                variant="outlined"
-                error={!!requestTypeError}
-                helperText={requestTypeError}
-              />
-            )}
-            value={requestType}
-          />
-        </div>
+      <div className={classes.divForm}>
+        <Autocomplete
+          getOptionLabel={(option) => requestModeToString(option)}
+          onChange={(_, value) => setRequestType((value as number) || availableRequestTypes[0])}
+          options={availableRequestTypes}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Pick Request Type"
+              placeholder="Pick Request Type"
+              variant="outlined"
+              error={!!requestTypeError}
+              helperText={requestTypeError}
+            />
+          )}
+          value={requestType}
+        />
+      </div>
 
-        <div className={classes.buttonContainer}>
-          <Button variant="contained" color="primary" type="submit" className={classes.button}>
-            Request
-          </Button>
-        </div>
-      </form>
+      <div className={classes.buttonContainer}>
+        <Button variant="contained" color="primary" type="submit" className={classes.button}>
+          Request
+        </Button>
+      </div>
     </ConfirmationDialog>
   );
 };

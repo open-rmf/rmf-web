@@ -1,6 +1,7 @@
 import { render } from '@testing-library/react';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
+import { rosTimeToJs } from '../utils';
 import { TaskTimeline } from './task-timeline';
 import { makeTask } from './test-data.spec';
 
@@ -8,7 +9,8 @@ describe('Task Timeline', () => {
   it('shows the time', () => {
     const task = makeTask('task_0', 2, 1);
     const root = render(<TaskTimeline taskSummary={task} />);
-    expect(root.getAllByText(/^([1-9]|1[0-2]):([0-5]\d)\s?:([0-5]\d)\s?(AM|PM)?$/i).length).toBe(2);
+    const expectedTime = rosTimeToJs(task.start_time).toLocaleTimeString();
+    expect(root.getAllByText(expectedTime).length).toBeGreaterThan(0);
   });
 
   it('shows all task phases', () => {
