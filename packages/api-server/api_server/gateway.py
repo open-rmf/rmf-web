@@ -180,6 +180,7 @@ class RmfGateway(rclpy.node.Node):
                     TaskSummary.from_orm(task)
                 ) for task in msg.tasks
             ],
+            10,
         )
         self._subscriptions.append(task_summaries_sub)
 
