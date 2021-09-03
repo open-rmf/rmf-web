@@ -1,19 +1,11 @@
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-
 import { DoorPanel } from './door-panel';
 import { doorStates, makeDetailedDoors } from './test-utils.spec';
 
 function renderDoorPanel() {
-  const mockControlClickSubmit = jasmine.createSpy();
-  return render(
-    <DoorPanel
-      doors={makeDetailedDoors()}
-      doorStates={doorStates}
-      onDoorControlClick={mockControlClickSubmit}
-    />,
-  );
+  return render(<DoorPanel doors={makeDetailedDoors()} doorStates={doorStates} />);
 }
 
 describe('Door Panel', () => {

@@ -1,15 +1,11 @@
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-
 import { LiftPanel } from './lift-panel';
 import { testLifts, testLiftStates } from './test-utils.spec';
 
 function renderLiftPanel() {
-  const mockRequestSubmit = jasmine.createSpy();
-  return render(
-    <LiftPanel lifts={testLifts} liftStates={testLiftStates} onRequestSubmit={mockRequestSubmit} />,
-  );
+  return render(<LiftPanel lifts={testLifts} liftStates={testLiftStates} />);
 }
 
 describe('Lift Panel', () => {
