@@ -53,7 +53,7 @@ export function ConfirmationDialog({
           ev.preventDefault();
           onSubmit && onSubmit(ev);
         }}
-        aria-label="form"
+        aria-label={title}
       >
         <DialogTitle>
           <Grid container wrap="nowrap">
@@ -68,7 +68,6 @@ export function ConfirmationDialog({
           <Button
             variant="outlined"
             color="secondary"
-            aria-label={cancelText}
             onClick={(ev) => onClose && onClose(ev, 'escapeKeyDown')}
             disabled={submitting}
             className={clsx(myClasses.actionBtn, classes?.button)}
@@ -79,7 +78,6 @@ export function ConfirmationDialog({
             variant="contained"
             type="submit"
             color="primary"
-            aria-label={confirmText}
             disabled={submitting}
             className={clsx(myClasses.actionBtn, classes?.button)}
           >

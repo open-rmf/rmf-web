@@ -23,7 +23,7 @@ describe('submit task', () => {
     await (await $('#start-location')).setValue('coe');
     await (await $('#finish-location')).setValue('pantry');
 
-    await (await $('button[aria-label="Submit"]')).click();
+    await (await $('button=Submit')).click();
     await expect($('div=Successfully created task')).toBeDisplayed({ wait: 20000 });
   }).timeout(60000);
 });

@@ -22,7 +22,7 @@ describe('CreateTaskForm', () => {
       userEvent.click(root.getByRole('option', { name: 'Clean' }));
       await waitForElementToBeRemoved(() => root.getByRole('option', { name: 'Clean' }));
       userEvent.type(root.getByLabelText('Cleaning Zone'), 'test_zone');
-      userEvent.click(root.getByLabelText('Submit'));
+      userEvent.click(root.getByText('Submit'));
 
       expect(spy).toHaveBeenCalledTimes(1);
       const task = spy.calls.argsFor(0)[0][0] as SubmitTask;
@@ -40,7 +40,7 @@ describe('CreateTaskForm', () => {
       const loopsInput = root.getByLabelText('Loops');
       userEvent.clear(loopsInput);
       userEvent.type(loopsInput, '2');
-      userEvent.click(root.getByLabelText('Submit'));
+      userEvent.click(root.getByText('Submit'));
 
       expect(spy).toHaveBeenCalledTimes(1);
       const task = spy.calls.argsFor(0)[0][0] as SubmitTask;
@@ -60,7 +60,7 @@ describe('CreateTaskForm', () => {
       userEvent.type(root.getByLabelText('Dispenser'), 'pickup_dispenser');
       userEvent.type(root.getByLabelText('Dropoff Location'), 'dropoff_location');
       userEvent.type(root.getByLabelText('Ingestor'), 'dropoff_ingestor');
-      userEvent.click(root.getByLabelText('Submit'));
+      userEvent.click(root.getByText('Submit'));
 
       expect(spy).toHaveBeenCalledTimes(1);
       const task = spy.calls.argsFor(0)[0][0] as SubmitTask;
@@ -75,7 +75,7 @@ describe('CreateTaskForm', () => {
   it('onClose is called when cancel button is clicked', () => {
     const spy = jasmine.createSpy();
     const root = render(<CreateTaskForm open onClose={spy} />);
-    userEvent.click(root.getByLabelText('Cancel'));
+    userEvent.click(root.getByText('Cancel'));
     expect(spy).toHaveBeenCalledTimes(1);
   });
 
@@ -83,7 +83,7 @@ describe('CreateTaskForm', () => {
     const submitSpy = jasmine.createSpy().and.rejectWith(new Error('error!!'));
     const failSpy = jasmine.createSpy();
     const root = render(<CreateTaskForm open submitTasks={submitSpy} onFail={failSpy} />);
-    userEvent.click(root.getByLabelText('Submit'));
+    userEvent.click(root.getByText('Submit'));
     await new Promise((res) => setTimeout(res, 0));
     expect(failSpy).toHaveBeenCalledTimes(1);
   });

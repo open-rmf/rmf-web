@@ -4,6 +4,8 @@ const { resolve } = require('path');
 
 const artifactsDir = resolve(`${__dirname}/artifacts`);
 
+const localChromeArgs = process.env.CHROME_ARGS ? JSON.parse(process.env.CHROME_ARGS) : [];
+
 const mode =
   process.env.BROWSERSTACK_USERNAME && process.env.BROWSERSTACK_ACCESS_KEY
     ? 'browserstack'
@@ -47,7 +49,7 @@ exports.config = {
   // NPM script (see https://docs.npmjs.com/cli/run-script) then the current working
   // directory is where your package.json resides, so `wdio` will be called from there.
   //
-  specs: ['tests/ui-interactions/index.test.ts', 'tests/negotiations.test.ts'],
+  specs: ['tests/ui-interactions/index.test.ts'],
   // Patterns to exclude.
   exclude: [
     // 'path/to/excluded/files'
@@ -107,7 +109,7 @@ exports.config = {
 
             'goog:chromeOptions': {
               binary: process.env.CHROME_BIN || undefined,
-              args: [...(mode === 'localHeadless' ? ['--headless'] : [])],
+              args: [...(mode === 'localHeadless' ? ['--headless'] : []), ...localChromeArgs],
             },
           },
         ]

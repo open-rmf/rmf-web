@@ -1,16 +1,16 @@
-import React from 'react';
+import Paper from '@material-ui/core/Paper';
 import { makeStyles, Theme } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import {
   Timeline,
-  TimelineItem,
-  TimelineSeparator,
   TimelineConnector,
   TimelineContent,
-  TimelineOppositeContent,
   TimelineDot,
+  TimelineItem,
+  TimelineOppositeContent,
+  TimelineSeparator,
 } from '@material-ui/lab';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
+import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { rosTimeToJs } from '../utils';
 
@@ -93,9 +93,9 @@ export function TaskTimeline({ taskSummary }: TaskTimelineProps): JSX.Element {
           <TimelineItem key={idx}>
             <TimelineOppositeContent style={{ flex: 0.1, padding: '0px 12px 0px 0px' }}>
               <Typography variant="overline" color="textSecondary" style={{ textAlign: 'justify' }}>
-                {idx == 0 && rosTimeToJs(taskSummary.start_time).toLocaleTimeString()}
+                {idx === 0 && rosTimeToJs(taskSummary.start_time).toLocaleTimeString()}
                 {idx > 0 &&
-                  idx == timelineInfo.length - 1 &&
+                  idx === timelineInfo.length - 1 &&
                   rosTimeToJs(taskSummary.end_time).toLocaleTimeString()}
               </Typography>
             </TimelineOppositeContent>
