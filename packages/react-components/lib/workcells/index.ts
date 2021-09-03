@@ -1,2 +1,2 @@
-export * from './workcell-marker';
 export * from './workcell-panel';
+export * from './workcell-table';
