@@ -7,7 +7,6 @@ RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add
   apt-get update && apt-get install -y \
     nodejs \
     google-chrome-stable \
-    docker.io \
-    docker-compose && \
+    jq && \
   pip3 install pipenv && \
   npm config set unsafe-perm

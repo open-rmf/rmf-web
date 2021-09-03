@@ -8,21 +8,21 @@
   "scripts": {
     "start": "node scripts/start.js",
     "start:keycloak": "docker/keycloak/dockert docker-compose -f docker/docker-compose.yml -p rmf-web up keycloak",
-    "start:rmf-server": "scripts/start-rmf-server.sh",
+    "start:rmf-server": "npm --prefix ../api-server start",
     "test": "node scripts/test-e2e.js",
     "test:dev": "E2E_DASHBOARD_URL=http://localhost:3000 RMF_LAUNCH_MODE=none wdio"
   },
   "devDependencies": {
-    "@types/mocha": "^8.0.3",
-    "@wdio/cli": "6.12.1",
-    "@wdio/local-runner": "6.12.1",
-    "@wdio/mocha-framework": "6.11.0",
-    "@wdio/spec-reporter": "6.11.0",
-    "@wdio/sync": "6.11.0",
-    "chromedriver": "*",
+    "@types/mocha": "^9.0.0",
+    "@wdio/browserstack-service": "7.11.1",
+    "@wdio/cli": "7.11.1",
+    "@wdio/local-runner": "7.11.1",
+    "@wdio/mocha-framework": "7.11.1",
+    "@wdio/spec-reporter": "7.10.1",
+    "concurrently": "^5.3.0",
     "rmf-dashboard": "*",
     "serve": "^11.3.2",
     "ts-node": "^9.1.1",
-    "wdio-chromedriver-service": "^6.0.4"
+    "typescript": "4.2.4"
   }
 }

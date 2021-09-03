@@ -1,36 +1,29 @@
-import { makeLauncher } from '../../dashboard/rmf-launcher';
-import { login, overwriteClick } from './utils';
 import { execSync } from 'child_process';
 
 describe('Loop request for negotiations', () => {
-  const launcher = makeLauncher();
-
-  before(async () => await launcher.launch());
-  after(async () => await launcher.kill());
-
-  before(() => overwriteClick());
-  before(() => browser.url('/'));
-
-  before(login);
-
-  it('renders negotiation trajectory', () => {
+  before(() => {
     browser.setTimeout({ script: 120000 });
+  });
+
+  it('renders negotiation trajectory', async () => {
     execSync('ros2 launch rmf_demos office_conflict.launch.xml');
 
-    $('[data-component=MainMenu] [data-item=Negotiations]').click();
+    await (await $('[data-component=MainMenu] [data-item=Negotiations]')).click();
 
-    browser.waitUntil(() => $('[data-component=TreeItem]').isDisplayed() === true, {
-      timeout: 60000,
-      timeoutMsg: 'expected TreeItem to be not null!',
-    });
-    console.log('done');
+    await browser.waitUntil(
+      async () => (await (await $('[data-component=TreeItem]')).isDisplayed()) === true,
+      {
+        timeout: 60000,
+        timeoutMsg: 'expected TreeItem to be not null!',
+      },
+    );
 
-    const treeItem = $('[data-component=TreeItem]');
-    expect(treeItem).toBeVisible();
+    const treeItem = await $('[data-component=TreeItem]');
+    expect(treeItem).toBeDisplayed();
     treeItem.click();
 
-    const subTreeItem = treeItem.$('[data-component=TreeItem]');
-    expect(subTreeItem).toBeVisible();
+    const subTreeItem = await treeItem.$('[data-component=TreeItem]');
+    expect(subTreeItem).toBeDisplayed();
     subTreeItem.click();
   }).timeout(300000);
 

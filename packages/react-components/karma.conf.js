@@ -2,6 +2,8 @@
 
 process.env.CHROME_BIN = require('puppeteer').executablePath();
 
+const localIdentifier = `${Date.now().toString()}+${Math.random()}`;
+
 module.exports = (config) => {
   const isCoverage = config.coverage ? true : false;
   const useBrowserStack = process.env.BROWSERSTACK_USERNAME && process.env.BROWSERSTACK_ACCESS_KEY;
@@ -16,6 +18,7 @@ module.exports = (config) => {
       accessKey: process.env.BROWSERSTACK_ACCESS_KEY,
       project: 'rmf-web',
       build: `react-components:${process.env.BROWSERSTACK_BUILD || 'local'}`,
+      localIdentifier,
     },
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
