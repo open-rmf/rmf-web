@@ -4,6 +4,8 @@ const { resolve } = require('path');
 
 const artifactsDir = resolve(`${__dirname}/artifacts`);
 
+const localChromeArgs = process.env.CHROME_ARGS ? JSON.parse(process.env.CHROME_ARGS) : [];
+
 const mode =
   process.env.BROWSERSTACK_USERNAME && process.env.BROWSERSTACK_ACCESS_KEY
     ? 'browserstack'
@@ -107,7 +109,7 @@ exports.config = {
 
             'goog:chromeOptions': {
               binary: process.env.CHROME_BIN || undefined,
-              args: [...(mode === 'localHeadless' ? ['--headless'] : [])],
+              args: [...(mode === 'localHeadless' ? ['--headless'] : []), ...localChromeArgs],
             },
           },
         ]

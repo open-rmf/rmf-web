@@ -2,6 +2,5 @@
 // but doing it this way allows us to correctly populate the wdio test suite name.
 describe('ui interactions', async () => {
   await import('./door-controls.test');
-  await import('./schedule-visualizer-interactions.test');
   await import('./submit-task.test');
 });

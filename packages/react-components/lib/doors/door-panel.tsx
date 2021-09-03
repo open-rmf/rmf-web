@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   ButtonGroup,
   Card,
@@ -90,11 +89,12 @@ const DoorCell = ({ door, doorState, onDoorControlClick }: DoorInfoProps): JSX.E
   );
 
   const doorStatusClass = doorModeLabelClasses(doorState);
+  const labelId = `door-cell-${door.door.name}`;
 
   return (
-    <Paper className={classes.cellPaper} data-item={door.door.name}>
-      <Typography component="div" variant="body1" align="center">
-        <Box fontWeight="fontWeightBold">{door.door.name}</Box>
+    <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
+      <Typography id={labelId} variant="body1" align="center" style={{ fontWeight: 'bold' }}>
+        {door.door.name}
       </Typography>
       <Grid container direction="row" spacing={1}>
         <Grid item xs={6}>
@@ -103,7 +103,7 @@ const DoorCell = ({ door, doorState, onDoorControlClick }: DoorInfoProps): JSX.E
           </Typography>
         </Grid>
         <Grid item xs={6}>
-          <Typography className={doorStatusClass} variant="body2" align="center">
+          <Typography className={doorStatusClass} variant="body2" align="center" role="status">
             {doorModeToString(doorState)}
           </Typography>
         </Grid>
@@ -114,7 +114,6 @@ const DoorCell = ({ door, doorState, onDoorControlClick }: DoorInfoProps): JSX.E
       <div className={classes.buttonGroup}>
         <ButtonGroup size="small">
           <Button
-            aria-label={`${door.door.name}_open`}
             onClick={(ev) =>
               onDoorControlClick && onDoorControlClick(ev, door.door, RmfModels.DoorMode.MODE_OPEN)
             }
@@ -122,7 +121,6 @@ const DoorCell = ({ door, doorState, onDoorControlClick }: DoorInfoProps): JSX.E
             Open
           </Button>
           <Button
-            aria-label={`${door.door.name}_close`}
             onClick={(ev) =>
               onDoorControlClick &&
               onDoorControlClick(ev, door.door, RmfModels.DoorMode.MODE_CLOSED)

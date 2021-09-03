@@ -1,4 +1,4 @@
-import { Box, Card, Grid, IconButton, makeStyles, Paper, Typography } from '@material-ui/core';
+import { Card, Grid, IconButton, makeStyles, Paper, Typography } from '@material-ui/core';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
 import { Dispenser } from 'api-client';
@@ -51,12 +51,14 @@ const useStyles = makeStyles((theme) => ({
 const WorkcellCell = ({ workcell, workCellState }: WorkcellCellProps): JSX.Element => {
   const classes = useStyles();
 
+  const labelId = `workcell-cell-${workcell.guid}`;
+
   return (
-    <Paper className={classes.cellPaper}>
+    <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
       {workCellState ? (
         <React.Fragment>
-          <Typography component="div" align="center">
-            <Box fontWeight="fontWeightBold">{workcell.guid}</Box>
+          <Typography id={labelId} align="center" style={{ fontWeight: 'bold' }}>
+            {workcell.guid}
           </Typography>
           <Grid container direction="row">
             <Grid item xs={6}>
@@ -76,7 +78,7 @@ const WorkcellCell = ({ workcell, workCellState }: WorkcellCellProps): JSX.Eleme
           <Typography align="center">{`Remaining: ${workCellState.seconds_remaining}s`}</Typography>
         </React.Fragment>
       ) : (
-        <Typography color="error">{`${workcell} not sending states`}</Typography>
+        <Typography id={labelId} color="error">{`${workcell} not sending states`}</Typography>
       )}
     </Paper>
   );
@@ -102,7 +104,7 @@ export function WorkcellPanel({
           </Grid>
           <Grid item>
             <IconButton
-              aria-label="view-mode"
+              aria-label="view mode"
               className={classes.itemIcon}
               onClick={() => setIsCellView(!isCellView)}
             >

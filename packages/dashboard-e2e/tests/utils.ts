@@ -18,22 +18,6 @@ export function getScheduleVisualizer(): ReturnType<WebdriverIO.Browser['$']> {
   return $('#schedule-visualizer');
 }
 
-export function getOmniPanel(): ReturnType<WebdriverIO.Browser['$']> {
-  return $('#omnipanel');
-}
-
-export async function closeOmniPanel(): Promise<void> {
-  return (await $(`#omnipanel [aria-label=Close]`)).click();
-}
-
-export async function openOmniPanel(): Promise<void> {
-  return (await $('#omnipanel-control')).click();
-}
-
-export async function omniPanelMainMenu(): Promise<void> {
-  return (await $(`#omnipanel [aria-label=Home]`)).click();
-}
-
-export function getDoorAccordion(doorName: string): ReturnType<WebdriverIO.Browser['$']> {
-  return $(`.MuiAccordion-root*=${doorName}`);
+export function getDoorCell(doorName: string): ReturnType<WebdriverIO.Browser['$']> {
+  return $(`[role=region][aria-labelledby=door-cell-${doorName}`);
 }

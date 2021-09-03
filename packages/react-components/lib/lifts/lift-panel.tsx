@@ -119,12 +119,14 @@ const LiftCell = ({ lift, liftState, onRequestSubmit }: LiftCellProps): JSX.Elem
     [classes],
   );
 
+  const labelId = `lift-cell-${lift.name}`;
+
   return (
-    <Paper className={classes.cellPaper}>
+    <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
       <Grid container direction="row">
         <Grid item xs={9}>
-          <Typography component="div" align="center">
-            <Box fontWeight="fontWeightBold">{lift.name}</Box>
+          <Typography id={labelId} align="center" style={{ fontWeight: 'bold' }}>
+            {lift.name}
           </Typography>
           <Box border={1} borderColor="divider" m={0.5}>
             <Typography align="center">{liftState.destination_floor}</Typography>
@@ -179,7 +181,7 @@ export function LiftPanel({ lifts, liftStates, onRequestSubmit }: LiftPanelProps
           </Grid>
           <Grid item>
             <IconButton
-              aria-label="view-mode"
+              aria-label="view mode"
               className={classes.itemIcon}
               onClick={() => setIsCellView(!isCellView)}
             >
