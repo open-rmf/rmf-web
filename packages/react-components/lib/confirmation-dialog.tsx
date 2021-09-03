@@ -53,6 +53,7 @@ export function ConfirmationDialog({
           ev.preventDefault();
           onSubmit && onSubmit(ev);
         }}
+        aria-label={title}
       >
         <DialogTitle>
           <Grid container wrap="nowrap">
