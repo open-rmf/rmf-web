@@ -1,13 +1,7 @@
-import { login, overwriteClick } from './utils';
 import { rmfData } from './mock-data';
 import fetch from 'node-fetch';
 
 describe('logs', () => {
-  before(() => overwriteClick());
-  before(() => browser.url('/'));
-
-  before(login);
-
   it('should store the logs correctly', async () => {
     const options = {
       method: 'POST',

@@ -9,4 +9,5 @@ RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add
     google-chrome-stable \
     jq && \
   pip3 install pipenv && \
-  npm config set unsafe-perm
+  npm config set unsafe-perm && \
+  npm install -g lerna@4

@@ -5,8 +5,6 @@ runs:
   steps:
     - run: |
         . /rmf_demos_ws/install/setup.bash
-        npm config set unsafe-perm
-        npm install -g lerna@4
         lerna bootstrap --scope=rmf-dashboard-e2e
         npm test
       working-directory: packages/dashboard-e2e
