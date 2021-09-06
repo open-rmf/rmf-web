@@ -31,7 +31,8 @@ class LiftsRouter(FastIORouter):
         @self.watch("/{lift_name}/state")
         async def watch_lift_state(req: WatchRequest, lift_name: str):
             lift_state = await get_lift_state(lift_name, RmfRepository(req.user))
-            await req.emit(lift_state.dict())
+            if lift_state is not None:
+                await req.emit(lift_state.dict())
             rx_watcher(
                 req,
                 app.rmf_events().lift_states.pipe(
