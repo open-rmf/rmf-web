@@ -8,7 +8,7 @@ from . import tortoise_models as ttm
 class User(BaseModel):
     username: str
     is_admin: bool = False
-    roles: List[str] = list()
+    roles: List[str] = []
 
     @staticmethod
     async def load_from_db(username: str) -> "User":

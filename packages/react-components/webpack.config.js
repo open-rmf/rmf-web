@@ -2,12 +2,6 @@
 
 const webpack = require('webpack');
 
-const coverageRule = {
-  test: /\.(ts|tsx)$/,
-  exclude: /node_modules|\.test.(ts|tsx)|tasks.ts|test-utils.ts$/,
-  use: ['@jsdevtools/coverage-istanbul-loader'],
-};
-
 /**
  * Webpack configuration
  *
@@ -16,7 +10,7 @@ const coverageRule = {
 module.exports = (options) => {
   return {
     mode: options.env,
-    devtool: 'inline-source-map',
+    devtool: 'eval-source-map',
 
     /**
      * Options affecting the resolving of modules.
@@ -36,7 +30,15 @@ module.exports = (options) => {
      */
     module: {
       rules: [
-        options.coverage ? coverageRule : {},
+        ...(options.coverage
+          ? [
+              {
+                test: /\.(ts|tsx)$/,
+                exclude: /node_modules|\.test.(ts|tsx)|tasks.ts|test-utils.ts$/,
+                use: ['@jsdevtools/coverage-istanbul-loader'],
+              },
+            ]
+          : []),
         {
           test: /\.(tsx|ts)$/,
           loader: 'ts-loader',
@@ -49,7 +51,7 @@ module.exports = (options) => {
           },
         },
         {
-          test: /\.(woff|woff2|eot|ttf|otf|svg)$/,
+          test: /\.(woff|woff2|eot|ttf|otf|svg|png)$/,
           use: [
             {
               loader: 'file-loader',
@@ -62,8 +64,6 @@ module.exports = (options) => {
         },
       ],
     },
-
-    stats: 'errors-only',
 
     /**
      * Include polyfills or mocks for various node stuff

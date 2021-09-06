@@ -1,6 +1,6 @@
 import { makeStyles, Typography } from '@material-ui/core';
+import clsx from 'clsx';
 import React from 'react';
-import { joinClasses } from './css-utils';
 
 const useStyles = makeStyles((theme) => ({
   status: {
@@ -40,7 +40,7 @@ export const StatusLabel = (props: StatusLabelProps): JSX.Element => {
   const classes = useStyles();
   return (
     <div
-      className={joinClasses(
+      className={clsx(
         classes.status,
         className,
         variant === 'unknown' ? classes.unknown : undefined,

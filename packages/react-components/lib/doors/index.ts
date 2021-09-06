@@ -1,3 +1,3 @@
-export * from './door-accordion';
-export * from './door-marker';
-export * from './enums';
+export * from './door-panel';
+export * from './door-table';
+export * from './utils';

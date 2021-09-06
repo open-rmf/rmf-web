@@ -2,8 +2,8 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import clsx from 'clsx';
 import React from 'react';
-import { joinClasses } from './css-utils';
 
 type DataValueTypePrimitive = number | string;
 type DataValueTypeArray = DataValueTypePrimitive[];
@@ -98,7 +98,7 @@ export const SimpleInfo = (props: SimpleInfoProps): JSX.Element => {
       <Typography
         noWrap={!wrap}
         variant="body1"
-        className={joinClasses(
+        className={clsx(
           className?.overrideValue ? className?.overrideValue : classes.value,
           disabled ? classes.disabled : undefined,
           className?.value,
@@ -130,7 +130,7 @@ export const SimpleInfo = (props: SimpleInfoProps): JSX.Element => {
             <ListItem key={i} className={classes.arrayListItem}>
               <Typography
                 variant="body1"
-                className={joinClasses(
+                className={clsx(
                   arrayItemValueStyle,
                   disabled ? classes.disabled : undefined,
                   Array.isArray(className?.value) ? className?.value[i] : className?.value,

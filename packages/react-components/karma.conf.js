@@ -1,30 +1,42 @@
+// FIXME: loading assets bundled by webpack results in 404, https://github.com/ryanclark/karma-webpack/issues/498
+
 process.env.CHROME_BIN = require('puppeteer').executablePath();
 
-const chromeFlags = process.env.CHROME_FLAGS ? JSON.parse(process.env.CHROME_FLAGS) : [];
+const localIdentifier = `${Date.now().toString()}+${Math.random()}`;
 
 module.exports = (config) => {
   const isCoverage = config.coverage ? true : false;
+  const useBrowserStack = process.env.BROWSERSTACK_USERNAME && process.env.BROWSERSTACK_ACCESS_KEY;
   const testWebpackConfig = require('./webpack.config.js')({
     env: 'development',
     coverage: isCoverage,
   });
 
   config.set({
+    browserStack: {
+      username: process.env.BROWSERSTACK_USERNAME,
+      accessKey: process.env.BROWSERSTACK_ACCESS_KEY,
+      project: 'rmf-web',
+      build: `react-components:${process.env.BROWSERSTACK_BUILD || 'local'}`,
+      localIdentifier,
+    },
+
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: '',
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine', 'webpack'],
+    frameworks: ['jasmine'],
 
     // list of files / patterns to load in the browser
     files: [
       {
-        pattern: 'lib/**/*spec.+(ts|tsx)',
+        // pattern: 'lib/**/*spec.+(ts|tsx)',
+        pattern: 'test/index.spec.js',
         watched: false,
       },
       {
-        pattern: 'test-data/assets/*',
+        pattern: 'test-data/assets/**/*',
         watched: false,
         included: false,
         served: true,
@@ -37,9 +49,16 @@ module.exports = (config) => {
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-    preprocessors: { 'lib/**/*spec.+(ts|tsx)': ['webpack'] },
+    // preprocessors: { 'lib/**/*spec.+(ts|tsx)': ['webpack'] },
+    preprocessors: { 'test/index.spec.js': ['webpack'] },
 
     webpack: testWebpackConfig,
+
+    webpackMiddleware: {
+      // webpack-dev-middleware configuration
+      // i. e.
+      stats: 'errors-only',
+    },
 
     coverageReporter: {
       dir: '.',
@@ -50,12 +69,16 @@ module.exports = (config) => {
     // List of plugins to load. A plugin can be a string (in which case it will be required by
     // Karma or an inlined plugin - Object. By default, Karma loads all sibling NPM modules which
     // have a name starting with karma-*.
-    plugins: ['karma-chrome-launcher', 'karma-jasmine', 'karma-webpack'],
+    // plugins: [],
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: isCoverage ? ['dots', 'coverage'] : ['dots'],
+    reporters: [
+      'dots',
+      ...(isCoverage ? ['coverage'] : []),
+      ...(useBrowserStack ? ['BrowserStack'] : []),
+    ],
 
     port: 9876,
 
@@ -70,16 +93,25 @@ module.exports = (config) => {
     autoWatch: true,
 
     customLaunchers: {
-      CustomChromeHeadless: {
-        base: 'ChromeHeadless',
-        flags: chromeFlags,
+      bsChrome: {
+        base: 'BrowserStack',
+        browser: 'chrome',
+        browser_version: 'latest',
+        os: 'Windows',
+        os_version: '10',
+      },
+      bsSafari: {
+        base: 'BrowserStack',
+        browser: 'safari',
+        browser_version: 'latest',
+        os: 'OS X',
+        os_version: 'Big Sur',
       },
     },
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    // browsers: ['CustomChromeHeadless'],
-    browsers: ['CustomChromeHeadless'],
+    browsers: [...(useBrowserStack ? ['bsSafari', 'bsChrome'] : ['ChromeHeadless'])],
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits

@@ -1,146 +1,97 @@
-import { makeStyles } from '@material-ui/core';
+/* istanbul ignore file */
+
+import { Dispenser, Ingestor } from 'api-client';
 import Debug from 'debug';
 import * as L from 'leaflet';
 import React from 'react';
-import { ColorContext, robotHash } from 'react-components';
-import { AttributionControl, ImageOverlay, LayersControl, Map as LMap, Pane } from 'react-leaflet';
+import {
+  affineImageBounds,
+  AffineImageOverlay,
+  ColorManager,
+  DoorsOverlay,
+  LiftsOverlay,
+  LMap,
+  loadAffineImage,
+  RobotData,
+  RobotsOverlay,
+  TrajectoriesOverlay,
+  TrajectoryData,
+  TrajectoryTimeControl,
+  useAsync,
+  WaypointsOverlay,
+  WorkcellData,
+  WorkcellsOverlay,
+} from 'react-components';
+import { AttributionControl, LayersControl, Pane } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
 import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
-import {
-  Conflict,
-  DefaultTrajectoryManager,
-  Trajectory,
-  TrajectoryResponse,
-} from '../../managers/robot-trajectory-manager';
-import { RmfIngressContext } from '../rmf-app';
-import DispensersOverlay from './dispensers-overlay';
-import DoorsOverlay from './doors-overlay';
-import LiftsOverlay from './lift-overlay';
-import { NegotiationColors } from './negotiation-colors';
-import RobotTrajectoriesOverlay from './robot-trajectories-overlay';
-import RobotsOverlay, { RobotsOverlayProps } from './robots-overlay';
-import TrajectoryTimeControl from './trajectory-time-control';
-import WaypointsOverlay from './waypoints-overlay';
+import { ResourcesContext } from '../app-contexts';
+import { PlacesContext, RmfIngressContext } from '../rmf-app';
 
-const debug = Debug('ScheduleVisualizer:TrajectoryTimeControl');
+const debug = Debug('ScheduleVisualizer');
 const TrajectoryUpdateInterval = 2000;
 // schedule visualizer manages it's own settings so that it doesn't cause a re-render
 // of the whole app when it changes.
 const SettingsKey = 'scheduleVisualizerSettings';
-
-const useStyles = makeStyles(() => ({
-  map: {
-    height: '100%',
-    width: '100%',
-    margin: 0,
-    padding: 0,
-  },
-}));
-
-export interface MapFloorLayer {
-  level: RmfModels.Level;
-  imageUrl: string;
-  bounds: L.LatLngBounds;
-}
+const colorManager = new ColorManager();
 
 export interface ScheduleVisualizerProps extends React.PropsWithChildren<{}> {
   buildingMap: RmfModels.BuildingMap;
-  negotiationTrajStore: Readonly<Record<string, NegotiationTrajectoryResponse>>;
+  negotiationTrajStore?: Record<string, NegotiationTrajectoryResponse>;
+  dispensers?: Dispenser[];
+  ingestors?: Ingestor[];
   doorStates?: Record<string, RmfModels.DoorState>;
   liftStates?: Record<string, RmfModels.LiftState>;
   fleetStates?: Record<string, RmfModels.FleetState>;
-  showTrajectories?: boolean;
-  mapFloorSort?(levels: RmfModels.Level[]): string[];
-  onDoorClick?(door: RmfModels.Door): void;
-  onLiftClick?(lift: RmfModels.Lift): void;
-  onRobotClick?: RobotsOverlayProps['onRobotClick'];
-  onDispenserClick?(event: React.MouseEvent, guid: string): void;
-}
-
-export function calcMaxBounds(
-  mapFloorLayers: readonly MapFloorLayer[],
-): L.LatLngBounds | undefined {
-  if (!mapFloorLayers.length) {
-    return undefined;
-  }
-  const bounds = new L.LatLngBounds([0, 0], [0, 0]);
-  Object.values(mapFloorLayers).forEach((x) => bounds.extend(x.bounds));
-  return bounds.pad(0.2);
+  /**
+   * default: 'normal'
+   */
+  mode?: 'normal' | 'negotiation';
+  onDoorClick?: (ev: React.MouseEvent, door: string) => void;
+  onLiftClick?: (ev: React.MouseEvent, lift: string) => void;
+  onRobotClick?: (ev: React.MouseEvent, fleet: string, robot: string) => void;
+  onDispenserClick?: (ev: React.MouseEvent, guid: string) => void;
+  onIngestorClick?: (ev: React.MouseEvent, guid: string) => void;
 }
 
 interface ScheduleVisualizerSettings {
   trajectoryTime: number;
 }
 
-export default function ScheduleVisualizer(props: ScheduleVisualizerProps): React.ReactElement {
+export default function ScheduleVisualizer({
+  buildingMap,
+  negotiationTrajStore = {},
+  dispensers = [],
+  ingestors = [],
+  doorStates = {},
+  liftStates = {},
+  fleetStates = {},
+  mode = 'normal',
+  onDoorClick,
+  onLiftClick,
+  onRobotClick,
+  onDispenserClick,
+  onIngestorClick,
+  children,
+}: ScheduleVisualizerProps): JSX.Element | null {
   debug('render');
-  const {
-    buildingMap,
-    negotiationTrajStore,
-    doorStates = {},
-    liftStates = {},
-    fleetStates = {},
-    showTrajectories,
-    mapFloorSort,
-    onDoorClick,
-    onLiftClick,
-    onRobotClick,
-    onDispenserClick,
-    children,
-  } = props;
-  const negotiationColors = React.useMemo(() => new NegotiationColors(), []);
-
-  const mapFloorLayerSorted = React.useMemo(
-    () =>
-      mapFloorSort
-        ? mapFloorSort(buildingMap.levels)
-        : buildingMap.levels.map((level) => level.name),
-    [mapFloorSort, buildingMap.levels],
+  const safeAsync = useAsync();
+  const levels = React.useMemo(
+    () => [...buildingMap.levels].sort((a, b) => a.name.localeCompare(b.name)),
+    [buildingMap],
   );
-
-  const classes = useStyles();
-
-  const [mapFloorLayers, setMapFloorLayers] = React.useState<
-    Readonly<Record<string, MapFloorLayer>>
-  >({});
-  const [curLevelName, setCurLevelName] = React.useState(() => mapFloorLayerSorted[0]);
-  const curMapFloorLayer = React.useMemo(() => mapFloorLayers[curLevelName], [
-    curLevelName,
-    mapFloorLayers,
-  ]);
-
-  const [trajectories, setTrajectories] = React.useState<Record<string, TrajectoryResponse>>({});
-  const [conflictRobotNames, setConflictRobotNames] = React.useState<string[][]>(() => []);
-  const [curMapTrajectories, setCurMapTrajectories] = React.useState<Trajectory[]>(() => []);
-  const [curMapConflicts, setCurMapConflicts] = React.useState<Conflict[]>(() => []);
-
-  const initialBounds = React.useMemo<Readonly<L.LatLngBounds> | undefined>(() => {
-    const initialLayer = mapFloorLayers[mapFloorLayerSorted[0]];
-    if (!initialLayer) {
-      return undefined;
-    }
-
-    return initialLayer.bounds;
-  }, [mapFloorLayers, mapFloorLayerSorted]);
-  const [maxBounds, setMaxBounds] = React.useState<Readonly<L.LatLngBounds> | undefined>(() =>
-    calcMaxBounds(Object.values(mapFloorLayers)),
+  const [currentLevel, setCurrentLevel] = React.useState(levels[0]);
+  const [images, setImages] = React.useState<Record<string, HTMLImageElement>>({});
+  const [levelBounds, setLevelBounds] = React.useState<Record<string, L.LatLngBoundsExpression>>(
+    {},
   );
-  const [bound, setBound] = React.useState(initialBounds);
+  const bounds = React.useMemo(() => levelBounds[currentLevel.name], [levelBounds, currentLevel]);
 
-  const fleets = React.useMemo(() => Object.values(fleetStates), [fleetStates]);
+  const [robots, setRobots] = React.useState<RobotData[]>([]);
+  const { current: robotsStore } = React.useRef<Record<string, RobotData>>({});
 
+  const [trajectories, setTrajectories] = React.useState<TrajectoryData[]>([]);
   const { trajectoryManager: trajManager } = React.useContext(RmfIngressContext) || {};
-
-  const robots = React.useMemo(
-    () =>
-      fleets.reduce<Record<string, RmfModels.RobotState>>((prev, fleet) => {
-        fleet.robots.forEach((robot) => {
-          prev[robotHash(robot.name, fleet.name)] = robot;
-        });
-        return prev;
-      }, {}),
-    [fleets],
-  );
 
   const [
     scheduleVisualizerSettings,
@@ -152,92 +103,60 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   const trajectoryTime = scheduleVisualizerSettings.trajectoryTime;
   const trajectoryAnimScale = trajectoryTime / (0.9 * TrajectoryUpdateInterval);
 
-  React.useEffect(() => {
-    // We need the image to be loaded to know the bounds, but the image cannot be loaded without a
-    // bounds, it is possible to use a temporary bounds but that would cause the viewport to move
-    // when we replace the temporary bounds. A solution is to load the image in a temporary HTML
-    // image element, then load the ImageOverlay in leaflet, the downside is that the image gets
-    // loaded twice.
-    (async () => {
-      const promises: Promise<any>[] = [];
-      const mapFloorLayers: Record<string, MapFloorLayer> = {};
-      for (const level of buildingMap.levels) {
-        const image = level.images[0]; // when will there be > 1 image?
-        if (!image) {
-          continue;
-        }
+  const negoTrajectories = React.useMemo<TrajectoryData[]>(() => {
+    if (mode !== 'negotiation') return [];
+    const negoTrajs = negotiationTrajStore[currentLevel.name];
+    return negoTrajs
+      ? negoTrajs.values.map((v) => ({
+          trajectory: v,
+          color: 'orange',
+          animationScale: trajectoryAnimScale,
+          loopAnimation: false,
+          conflict: false,
+        }))
+      : [];
+  }, [mode, negotiationTrajStore, currentLevel, trajectoryAnimScale]);
 
-        promises.push(
-          new Promise<void>((res) => {
-            const imageElement = new Image();
-            const imageUrl = image.data;
-            imageElement.src = imageUrl;
-
-            const listener = () => {
-              imageElement.removeEventListener('load', listener);
-              const width = imageElement.naturalWidth * image.scale;
-              const height = imageElement.naturalHeight * image.scale;
-              // TODO: support both svg and image
-              // const svgElement = rawCompressedSVGToSVGSVGElement(image.data);
-              // const height = (svgElement.height.baseVal.value * scale) / IMAGE_SCALE;
-              // const width = (svgElement.width.baseVal.value * scale) / IMAGE_SCALE;
-
-              const bounds = new L.LatLngBounds(
-                [image.y_offset - height, image.x_offset],
-                [image.y_offset, image.x_offset + width],
-              );
-
-              mapFloorLayers[level.name] = {
-                level: level,
-                imageUrl: imageUrl,
-                bounds: bounds,
-              };
-              res();
-            };
-            imageElement.addEventListener('load', listener);
-          }),
-        );
-      }
-
-      for (const p of promises) {
-        await p;
-      }
-      debug('set map floor layers');
-      setMapFloorLayers(mapFloorLayers);
-      debug('set max bounds');
-      setMaxBounds(calcMaxBounds(Object.values(mapFloorLayers)));
-    })();
-  }, [buildingMap]);
+  const renderedTrajectories = React.useMemo(() => {
+    switch (mode) {
+      case 'normal':
+        return trajectories;
+      case 'negotiation':
+        return negoTrajectories;
+    }
+  }, [mode, trajectories, negoTrajectories]);
 
   React.useEffect(() => {
     let interval: number;
     let cancel = false;
 
+    if (mode !== 'normal') return;
+
     const updateTrajectory = async () => {
       debug('updating trajectories');
 
-      if (cancel || !curMapFloorLayer || !trajManager) {
-        return;
-      }
+      if (cancel || !trajManager) return;
 
       const resp = await trajManager.latestTrajectory({
         request: 'trajectory',
         param: {
-          map_name: curMapFloorLayer.level.name,
+          map_name: currentLevel.name,
           duration: trajectoryTime,
           trim: true,
         },
       });
+      const flatConflicts = resp.conflicts.flatMap((c) => c);
 
       debug('set trajectories');
-      if (showTrajectories === undefined || showTrajectories) {
-        setTrajectories((prev) => ({
-          ...prev,
-          [curMapFloorLayer.level.name]: resp,
-        }));
-      } else {
-        setTrajectories({});
-      }
+      setTrajectories(
+        resp.values.map((v) => ({
+          trajectory: v,
+          color: 'green',
+          conflict: flatConflicts.includes(v.id),
+          animationScale: trajectoryAnimScale,
+          loopAnimation: false,
+        })),
+      );
     };
 
     updateTrajectory();
@@ -249,186 +168,210 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       clearInterval(interval);
       debug(`cleared interval ${interval}`);
     };
-  }, [trajManager, curMapFloorLayer, trajectoryTime, showTrajectories]);
+  }, [trajManager, currentLevel, trajectoryTime, mode, trajectoryAnimScale]);
 
-  function handleBaseLayerChange(e: L.LayersControlEvent): void {
-    debug('set current level name');
-    setCurLevelName(e.name);
-    setBound(mapFloorLayers[e.name].bounds);
-  }
+  const resourceManager = React.useContext(ResourcesContext);
 
-  function getConflicts(levelName: string): Conflict[] {
-    const resp = trajectories[levelName];
-    return resp ? resp.conflicts : [];
-  }
+  const [dispensersData, setDispensersData] = React.useState<WorkcellData[]>([]);
+  React.useEffect(() => {
+    const dispenserManager = resourceManager?.dispensers;
+    if (!dispenserManager) return;
+    (async () => {
+      const dispenserResources = dispenserManager.dispensers;
+      const availableData = dispensers.filter((wc) => wc.guid in dispenserResources);
+      const promises = availableData.map((wc) => dispenserManager.getIconPath(wc.guid));
+      const icons = await safeAsync(Promise.all(promises));
+      setDispensersData(
+        availableData.map((wc, i) => ({
+          guid: wc.guid,
+          location: [
+            dispenserResources[wc.guid].location.x,
+            dispenserResources[wc.guid].location.y,
+          ],
+          iconPath: icons[i] || undefined,
+        })),
+      );
+    })();
+  }, [safeAsync, resourceManager?.dispensers, dispensers]);
 
-  const sortedMapFloorLayers = mapFloorLayerSorted.map((x) => mapFloorLayers[x]);
-  const ref = React.useRef<ImageOverlay>(null);
-  const mapRef = React.useRef<LMap>(null);
+  const [ingestorsData, setIngestorsData] = React.useState<WorkcellData[]>([]);
+  React.useEffect(() => {
+    const dispenserManager = resourceManager?.dispensers;
+    if (!dispenserManager) return;
+    (async () => {
+      const dispenserResources = dispenserManager.dispensers;
+      const availableData = ingestors.filter((wc) => wc.guid in dispenserResources);
+      const promises = availableData.map((wc) => dispenserManager.getIconPath(wc.guid));
+      const icons = await safeAsync(Promise.all(promises));
+      setIngestorsData(
+        availableData.map((wc, i) => ({
+          guid: wc.guid,
+          location: [
+            dispenserResources[wc.guid].location.x,
+            dispenserResources[wc.guid].location.y,
+          ],
+          iconPath: icons[i] || undefined,
+        })),
+      );
+    })();
+  }, [safeAsync, resourceManager?.dispensers, ingestors]);
 
-  if (ref.current) {
-    ref.current.leafletElement.setZIndex(0);
-  }
+  const places = React.useContext(PlacesContext);
+  const waypoints = React.useMemo(() => places.filter((p) => p.vertex.name.length > 0), [places]);
 
   React.useEffect(() => {
-    function getTrajectory(levelName: string): Trajectory[] {
-      const resp = trajectories[levelName];
-      return resp ? resp.values : [];
-    }
+    (async () => {
+      const promises = Object.values(fleetStates).flatMap((fleetState) =>
+        fleetState.robots.map(async (r) => {
+          const robotId = `${fleetState.name}/${r.name}`;
+          if (robotId in robotsStore) return;
+          robotsStore[robotId] = {
+            fleet: fleetState.name,
+            name: r.name,
+            model: r.model,
+            footprint: 0.5,
+            color: await colorManager.robotPrimaryColor(fleetState.name, r.name, r.model),
+            iconPath:
+              (await resourceManager?.robots.getIconPath(fleetState.name, r.model)) || undefined,
+          };
+        }),
+      );
+      await safeAsync(Promise.all(promises));
+    })();
+  }, [safeAsync, fleetStates, robotsStore, resourceManager]);
 
-    function getConflicts(levelName: string): Conflict[] {
-      const resp = trajectories[levelName];
-      return resp ? resp.conflicts : [];
-    }
+  React.useEffect(() => {
+    const newRobots = Object.values(fleetStates).flatMap((fleetState) =>
+      fleetState.robots
+        .filter(
+          (r) =>
+            r.location.level_name === currentLevel.name &&
+            `${fleetState.name}/${r.name}` in robotsStore,
+        )
+        .map((r) => robotsStore[`${fleetState.name}/${r.name}`]),
+    );
+    setRobots(newRobots);
+  }, [safeAsync, fleetStates, robotsStore, currentLevel]);
 
-    function getConflictRobotsName(conflicts: Conflict[], trajs: Trajectory[]): string[][] {
-      let conflictRobotNames: string[][] = [];
-      if (conflicts.length === 0) {
-        return [];
-      }
-      conflicts.forEach((conflictPair) => {
-        let robotNames: string[] = [];
-        conflictPair.forEach((conflictId) => {
-          const robotName = DefaultTrajectoryManager.getRobotNameFromPathId(conflictId, trajs);
-          robotName && robotNames.push(robotName);
-        });
-        robotNames && conflictRobotNames.push(robotNames);
-      });
-      return conflictRobotNames;
-    }
+  React.useEffect(() => {
+    (async () => {
+      const images = await safeAsync(Promise.all(levels.map((l) => loadAffineImage(l.images[0]))));
+      setImages(
+        levels.reduce((acc, l, idx) => {
+          acc[l.name] = images[idx];
+          return acc;
+        }, {} as Record<string, HTMLImageElement>),
+      );
+    })();
+  }, [levels, safeAsync]);
 
-    if (curMapFloorLayer) {
-      const mapTrajectories = getTrajectory(curMapFloorLayer.level.name);
-      const mapConflicts = getConflicts(curMapFloorLayer.level.name);
-      debug('set current map trajectories');
-      setCurMapTrajectories(mapTrajectories);
-      debug('set current map conflicts');
-      setCurMapConflicts(mapConflicts);
-      debug('set conflicting robots');
-      setConflictRobotNames(getConflictRobotsName(mapConflicts, mapTrajectories));
-    }
-  }, [curMapFloorLayer, trajectories]);
+  React.useEffect(() => {
+    const bounds = levels.reduce((acc, l) => {
+      const imageEl = images[l.name];
+      if (!imageEl) return acc;
+      acc[l.name] = affineImageBounds(l.images[0], imageEl.naturalWidth, imageEl.naturalHeight);
+      return acc;
+    }, {} as Record<string, L.LatLngBoundsExpression>);
+    setLevelBounds(bounds);
+  }, [images, levels]);
 
-  const negoTrajs = negotiationTrajStore[curLevelName]
-    ? negotiationTrajStore[curLevelName].values
-    : [];
-
-  return (
+  return bounds ? (
     <LMap
-      id="ScheduleVisualizer" // # data-* attrs are not set on the leaflet container
-      className={classes.map}
+      id="schedule-visualizer"
       attributionControl={false}
-      crs={L.CRS.Simple}
       minZoom={0}
       maxZoom={8}
       zoomDelta={0.5}
       zoomSnap={0.5}
-      bounds={bound ? bound : initialBounds}
-      maxBounds={maxBounds}
-      onbaselayerchange={handleBaseLayerChange}
-      ref={mapRef}
+      bounds={bounds}
     >
       <AttributionControl position="bottomright" prefix="OSRC-SG" />
-      <LayersControl position="topleft">
-        {sortedMapFloorLayers.every((x) => x) &&
-          sortedMapFloorLayers.map((floorLayer, i) => (
-            <LayersControl.BaseLayer
-              checked={i === 0}
-              name={floorLayer.level.name}
-              key={floorLayer.level.name}
-            >
-              <ImageOverlay bounds={floorLayer.bounds} url={floorLayer.imageUrl} ref={ref} />
-            </LayersControl.BaseLayer>
-          ))}
+      <LayersControl
+        position="topleft"
+        onbaselayerchange={(ev) =>
+          setCurrentLevel(levels.find((l) => l.name === ev.name) || levels[0])
+        }
+      >
+        {buildingMap.levels.map((level) => (
+          <LayersControl.BaseLayer
+            key={level.name}
+            name={level.name}
+            checked={currentLevel === level}
+          >
+            <AffineImageOverlay bounds={levelBounds[level.name]} image={level.images[0]} />
+          </LayersControl.BaseLayer>
+        ))}
 
-        <LayersControl.Overlay name="Robot Trajectories" checked>
-          {curMapFloorLayer && (
-            <Pane>
-              <RobotTrajectoriesOverlay
-                bounds={curMapFloorLayer.bounds}
-                robots={robots}
-                trajectories={curMapTrajectories}
-                conflicts={curMapConflicts}
-                animationScale={trajectoryAnimScale}
-              />
-            </Pane>
-          )}
+        <LayersControl.Overlay name="Trajectories" checked>
+          <Pane>
+            <TrajectoriesOverlay bounds={bounds} trajectoriesData={renderedTrajectories} />
+          </Pane>
         </LayersControl.Overlay>
 
-        {curMapFloorLayer && (
+        <LayersControl.Overlay name="Waypoints" checked>
           <Pane>
-            <ColorContext.Provider value={negotiationColors}>
-              <RobotTrajectoriesOverlay
-                bounds={curMapFloorLayer.bounds}
-                robots={robots}
-                trajectories={negoTrajs}
-                conflicts={getConflicts(curLevelName)}
-                animationScale={trajectoryAnimScale}
-              />
-            </ColorContext.Provider>
+            <WaypointsOverlay bounds={bounds} waypoints={waypoints} />
           </Pane>
-        )}
+        </LayersControl.Overlay>
+
+        <LayersControl.Overlay name="Robots" checked>
+          <Pane>
+            <RobotsOverlay
+              bounds={bounds}
+              robots={robots}
+              getRobotState={(fleet, robot) => {
+                const state = fleetStates[fleet].robots.find((r) => r.name === robot);
+                return state || null;
+              }}
+              onRobotClick={onRobotClick}
+            />
+          </Pane>
+        </LayersControl.Overlay>
+
+        <LayersControl.Overlay name="Dispensers" checked>
+          <Pane>
+            <WorkcellsOverlay
+              bounds={bounds}
+              workcells={dispensersData}
+              onWorkcellClick={onDispenserClick}
+            />
+          </Pane>
+        </LayersControl.Overlay>
+
+        <LayersControl.Overlay name="Ingestors" checked>
+          <Pane>
+            <WorkcellsOverlay
+              bounds={bounds}
+              workcells={ingestorsData}
+              onWorkcellClick={onIngestorClick}
+            />
+          </Pane>
+        </LayersControl.Overlay>
+
+        <LayersControl.Overlay name="Lifts" checked>
+          <Pane>
+            <LiftsOverlay
+              bounds={bounds}
+              currentLevel={currentLevel.name}
+              lifts={buildingMap.lifts}
+              liftStates={liftStates}
+              onLiftClick={onLiftClick}
+            />
+          </Pane>
+        </LayersControl.Overlay>
 
         <LayersControl.Overlay name="Doors" checked>
-          {curMapFloorLayer && (
-            <Pane>
-              <DoorsOverlay
-                bounds={curMapFloorLayer.bounds}
-                doors={curMapFloorLayer.level.doors}
-                doorStates={doorStates}
-                onDoorClick={onDoorClick}
-              />
-            </Pane>
-          )}
-        </LayersControl.Overlay>
-        <LayersControl.Overlay name="Lifts" checked>
-          {curMapFloorLayer && (
-            <Pane>
-              <LiftsOverlay
-                bounds={curMapFloorLayer.bounds}
-                currentFloor={curLevelName}
-                lifts={buildingMap.lifts}
-                liftStates={liftStates}
-                onLiftClick={onLiftClick}
-              />
-            </Pane>
-          )}
-        </LayersControl.Overlay>
-        <LayersControl.Overlay name="Robots" checked>
-          {curMapFloorLayer && (
-            <Pane>
-              <RobotsOverlay
-                currentFloorName={curLevelName}
-                bounds={curMapFloorLayer.bounds}
-                fleets={fleets}
-                onRobotClick={onRobotClick}
-                conflictRobotNames={conflictRobotNames}
-              />
-            </Pane>
-          )}
-        </LayersControl.Overlay>
-        <LayersControl.Overlay name="Waypoints" checked>
-          {curMapFloorLayer && (
-            <Pane>
-              <WaypointsOverlay
-                bounds={curMapFloorLayer.bounds}
-                currentLevel={curMapFloorLayer.level}
-              />
-            </Pane>
-          )}
-        </LayersControl.Overlay>
-        <LayersControl.Overlay name="Dispensers" checked>
-          {curMapFloorLayer && (
-            <Pane>
-              <DispensersOverlay
-                currentFloorName={curLevelName}
-                bounds={curMapFloorLayer.bounds}
-                onDispenserClick={onDispenserClick}
-              />
-            </Pane>
-          )}
+          <Pane>
+            <DoorsOverlay
+              bounds={bounds}
+              doors={currentLevel.doors}
+              doorStates={doorStates}
+              onDoorClick={onDoorClick}
+            />
+          </Pane>
         </LayersControl.Overlay>
       </LayersControl>
+
       <TrajectoryTimeControl
         position="topleft"
         value={trajectoryTime}
@@ -444,5 +387,5 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       />
       {children}
     </LMap>
-  );
+  ) : null;
 }

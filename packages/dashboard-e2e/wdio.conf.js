@@ -1,14 +1,37 @@
-const path = require('path');
-const fs = require('fs');
-const os = require('os');
+const launcher = require('../dashboard/rmf-launcher').makeLauncher();
+const { writeMetadata, annonatePublicUrls } = require('./scripts/bstack');
+const { resolve } = require('path');
 
-const headlessArgs = process.env.CI ? ['--headless', '--disable-gpu'] : [];
-const chromeArgs = [...headlessArgs];
-if (os.userInfo().uid === 0) {
-  chromeArgs.push('--no-sandbox');
+const artifactsDir = resolve(`${__dirname}/artifacts`);
+
+const localChromeArgs = process.env.CHROME_ARGS ? JSON.parse(process.env.CHROME_ARGS) : [];
+
+const mode =
+  process.env.BROWSERSTACK_USERNAME && process.env.BROWSERSTACK_ACCESS_KEY
+    ? 'browserstack'
+    : process.env.CI
+    ? 'localHeadless'
+    : 'local';
+
+const localIdentifier = `${Date.now().toString()}+${Math.random()}`;
+
+/**
+ * Create browserstack options with some base settings.
+ */
+function browserstackOptions(opts) {
+  return {
+    projectName: 'rmf-web',
+    buildName: `dashboard-e2e:${process.env.BROWSERSTACK_BUILD || 'local'}`,
+    resolution: '1920x1080',
+    localIdentifier,
+    ...opts,
+  };
 }
 
 exports.config = {
+  user: process.env.BROWSERSTACK_USERNAME,
+  key: process.env.BROWSERSTACK_ACCESS_KEY,
+
   //
   // ====================
   // Runner Configuration
@@ -26,11 +49,26 @@ exports.config = {
   // NPM script (see https://docs.npmjs.com/cli/run-script) then the current working
   // directory is where your package.json resides, so `wdio` will be called from there.
   //
-  specs: ['tests/**/*.test.ts'],
+  specs: ['tests/ui-interactions/index.test.ts'],
   // Patterns to exclude.
   exclude: [
     // 'path/to/excluded/files'
   ],
+
+  autoCompileOpts: {
+    autoCompile: true,
+    // see https://github.com/TypeStrong/ts-node#cli-and-programmatic-options
+    // for all available options
+    tsNodeOpts: {
+      transpileOnly: true,
+      project: 'tsconfig.json',
+    },
+    // tsconfig-paths is only used if "tsConfigPathsOpts" are provided, if you
+    // do please make sure "tsconfig-paths" is installed as dependency
+    tsConfigPathsOpts: {
+      baseUrl: './',
+    },
+  },
   //
   // ============
   // Capabilities
@@ -48,33 +86,54 @@ exports.config = {
   // from the same test should run tests.
   //
   maxInstances: 1,
+  maxInstancesPerCapability: 1,
   //
   // If you have trouble getting all important capabilities together, check out the
   // Sauce Labs platform configurator - a great tool to configure your capabilities:
   // https://docs.saucelabs.com/reference/platforms-configurator
   //
   capabilities: [
-    {
-      // maxInstances can get overwritten per capability. So if you have an in-house Selenium
-      // grid with only 5 firefox instances available you can make sure that not more than
-      // 5 instances get started at a time.
-      maxInstances: 1,
-      //
-      browserName: 'chrome',
-      // If outputDir is provided WebdriverIO can capture driver session logs
-      // it is possible to configure which logTypes to include/exclude.
-      // excludeDriverLogs: ['*'], // pass '*' to exclude all driver session logs
-      // excludeDriverLogs: ['bugreport', 'server'],
+    ...(mode === 'local'
+      ? [
+          {
+            // maxInstances can get overwritten per capability. So if you have an in-house Selenium
+            // grid with only 5 firefox instances available you can make sure that not more than
+            // 5 instances get started at a time.
+            // maxInstances: 1,
+            //
+            browserName: 'chrome',
+            // If outputDir is provided WebdriverIO can capture driver session logs
+            // it is possible to configure which logTypes to include/exclude.
+            // excludeDriverLogs: ['*'], // pass '*' to exclude all driver session logs
+            // excludeDriverLogs: ['bugreport', 'server'],
 
-      acceptInsecureCerts: true,
-
-      'goog:chromeOptions': {
-        binary: process.env.CHROME_BIN || undefined,
-        // to run chrome headless the following flags are required
-        // (see https://developers.google.com/web/updates/2017/04/headless-chrome)
-        args: [...chromeArgs, '--window-size=1366,768'],
-      },
-    },
+            'goog:chromeOptions': {
+              binary: process.env.CHROME_BIN || undefined,
+              args: [...(mode === 'localHeadless' ? ['--headless'] : []), ...localChromeArgs],
+            },
+          },
+        ]
+      : []),
+    ...(mode === 'browserstack'
+      ? [
+          {
+            browserName: 'chrome',
+            browserVersion: 'latest',
+            'bstack:options': browserstackOptions({
+              os: 'Windows',
+              osVersion: '10',
+            }),
+          },
+          {
+            browserName: 'safari',
+            browserVersion: 'latest',
+            'bstack:options': browserstackOptions({
+              os: 'OS X',
+              osVersion: 'Big Sur',
+            }),
+          },
+        ]
+      : []),
   ],
   //
   // ===================
@@ -123,7 +182,21 @@ exports.config = {
   // Services take over a specific job you don't want to take care of. They enhance
   // your test setup with almost no effort. Unlike plugins, they don't add new
   // commands. Instead, they hook themselves up into the test process.
-  services: ['chromedriver'],
+  services: [
+    ...(mode === 'browserstack'
+      ? [
+          [
+            'browserstack',
+            {
+              browserstackLocal: true,
+              opts: {
+                localIdentifier,
+              },
+            },
+          ],
+        ]
+      : []),
+  ],
 
   // Framework you want to run your specs with.
   // The following are supported: Mocha, Jasmine, and Cucumber
@@ -145,13 +218,11 @@ exports.config = {
   reporters: ['spec'],
 
   //
-  // Options to be passed to Mocha.
+  // Options to be passed to mocha.
   // See the full list at http://mochajs.org/
   mochaOpts: {
-    // as of wdio 6.12.1, it automatically registers ts-node, registering it again would cause conflict
-    // require: ['ts-node/register'],
     ui: 'bdd',
-    timeout: 60000,
+    timeout: 300000,
   },
   //
   // =====
@@ -194,10 +265,8 @@ exports.config = {
    * @param {Array.<Object>} capabilities list of capabilities details
    * @param {Array.<String>} specs List of spec file paths that are to be run
    */
-  before: function (capabilities, specs) {
-    browser.url('/');
-    browser.execute(() => localStorage.setItem('tourComplete', 'true'));
-  },
+  // before: function (capabilities, specs) {
+  // },
   /**
    * Runs before a WebdriverIO command gets executed.
    * @param {String} commandName hook command name
@@ -209,8 +278,43 @@ exports.config = {
    * Hook that gets executed before the suite starts
    * @param {Object} suite suite details
    */
-  // beforeSuite: function (suite) {
-  // },
+  beforeSuite: async function (suite) {
+    if (mode === 'browserstack') {
+      await writeMetadata(artifactsDir, browser, suite);
+    }
+
+    browser.maximizeWindow();
+    browser.overwriteCommand(
+      'click',
+      async function (orig, { force = false, ...clickOpts } = {}) {
+        if (force) {
+          await browser.execute(function click(el) {
+            el.dispatchEvent(new MouseEvent('click', { bubbles: true })); // eslint-disable-line no-undef
+          }, this);
+          await browser.pause(500);
+          return;
+        }
+        // BUG: calling `waitForClickable` seems to cause wdio chain selectors to stop working.
+        await this.waitForClickable();
+        await orig.apply(this, [clickOpts]);
+        await browser.pause(500);
+      },
+      true,
+    );
+    await launcher.launch(300000);
+
+    // wait for schedule visualizer to load
+    for (let i = 0; i < 5; i++) {
+      try {
+        await browser.url('/');
+        const elem = await browser.$('#schedule-visualizer [aria-label=main_door]');
+        await elem.waitForDisplayed({ timeout: 10000 });
+        break;
+      } catch {
+        /* ignore */
+      }
+    }
+  },
   /**
    * Function to be executed before a test (in Mocha/Jasmine) starts.
    */
@@ -231,20 +335,14 @@ exports.config = {
   /**
    * Function to be executed after a test (in Mocha/Jasmine).
    */
-  afterTest: function (test, context, { error, result, duration, passed, retries }) {
-    const testPath = path.relative('tests', test.file);
-    const artifactDir = `artifacts/${testPath}/${test.title}`;
-    fs.mkdirSync(artifactDir, { recursive: true });
-    browser.saveScreenshot(`${artifactDir}/end.png`);
-    const logs = JSON.stringify(browser.getLogs('browser'), undefined, 2);
-    fs.writeFileSync(`${artifactDir}/logs.json`, logs);
-  },
+  // afterTest: function (test, context, { error, result, duration, passed, retries }) {
+  // },
 
   /**
    * Hook that gets executed after the suite has ended
    * @param {Object} suite suite details
    */
-  // afterSuite: function (suite) {
+  // afterSuite: async function (suite) {
   // },
   /**
    * Runs after a WebdriverIO command gets executed
@@ -270,7 +368,7 @@ exports.config = {
    * @param {Array.<Object>} capabilities list of capabilities details
    * @param {Array.<String>} specs List of spec file paths that ran
    */
-  // afterSession: function (config, capabilities, specs) {
+  // afterSession: async function (config, capabilities, specs) {
   // },
   /**
    * Gets executed after all workers got shut down and the process is about to exit. An error
@@ -280,8 +378,9 @@ exports.config = {
    * @param {Array.<Object>} capabilities list of capabilities details
    * @param {<Object>} results object containing test results
    */
-  // onComplete: function(exitCode, config, capabilities, results) {
-  // },
+  onComplete: function (/* exitCode, config, capabilities, results */) {
+    annonatePublicUrls(artifactsDir);
+  },
   /**
    * Gets executed when a refresh happens.
    * @param {String} oldSessionId session ID of the old session

@@ -1,44 +1,11 @@
-# Running with Keycloak
-
-By default, the tests are ran using keycloak as the authentication server, docker and docker-compose it used to simplify the set up of keycloak.
-
-## Ubuntu 20.04
-
-Install docker and docker-compose
-```bash
-sudo apt update && sudo apt install docker.io docker-compose
-```
-
-If you're using GNOME or KDE, there will be a pop-up window to ask for privilege escalation when running the Docker container which runs Keycloak, the authentication mechanism we are currently using.
-If you're using `i3` or other "unusual" window managers, this pop-up may not occur, which can be confusing since a password prompt can be easily lost in the console text stream.
-You can add yourself to the `docker` group to allow containers to start without requesting your password:
-```
-sudo usermod -aG docker $USER
-```
-After issuing this command, you may need to logout/login or restart your system depending on your OS/environment.
-
-Keep in mind that this convenience has security implications. This tradeoff is described in more detail in the Docker documentation:
-https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user
-
-## Others
-
-See
-
-* [docker](https://docs.docker.com/engine/install/ubuntu/)
-* [docker-compose](https://docs.docker.com/compose/install/)
-
 # Settings
 
 There are some environment variables that control how the test runs.
 
 | Key | Description |
 |---|---|
-| E2E_DOCKER_NETWORK | _(string)_ The network that services uses, defaults to `rmf-web_default` |
-| E2E_NO_AUTH | _(bool)_ Do not launch the authentication provider service |
 | E2E_NO_DASHBOARD | _(bool)_ Do not launch the dashboard server |
 | E2E_NO_RMF_SERVER | _(bool)_ Do not launch the rmf api server |
-| E2E_USER | _(string)_ The user to login with |
-| E2E_PASSWORD | _(string)_ The password to login with |
 | E2E_DASHBOARD_URL | _(string)_ Base url where the dashboard is hosted |
 
 Boolean values can be 0/1/true/false.
@@ -47,33 +14,51 @@ There are also some environment variables the test runner sets by default
 
 | Key | Default Value |
 |---|---|
-| REACT_APP_AUTH_PROVIDER | keycloak |
-| REACT_APP_KEYCLOAK_CONFIG | { "realm": "master", "clientId": "rmf-dashboard", "url": "http://localhost:8088/auth" } |
 | REACT_APP_TRAJECTORY_SERVER | ws://localhost:8006 |
-| REACT_APP_ROS2_BRIDGE_SERVER | ws://localhost:50002 |
-| E2E_USER | admin |
-| E2E_PASSWORD | admin |
 | E2E_DASHBOARD_URL | http://localhost:5000 |
 
 You can overwrite them by setting them in your environment variables.
 
-# E2E workflow in CI
+# Regarding wdio async Selectors Chaining
 
-NOTE: This section only pertains to running the e2e tests in github workflows.
+**NOTE: It is recommened to NOT use async selectors chaining.**
 
-This is to document the flow and interaction of the e2e services in the github environment when:
+wdio selectors chaining is a useful way to simplify code by allowing async selectors to be chained as if they are sync selectors, for example
 
-- starting up the services
-- running the tests
+```ts
+await appBar.$('span=Tasks').click();
+```
 
-## Starting up the services
+However in practice, as of v7.11.1, this is found to be very buggy and will often fail for unexplained reasons. These are some snippets of code which will cause it to fail.
 
-Below is a diagram representing the flow of commands when running `npm run test:e2e`
+```js
+browser.overwriteCommand(
+  'click',
+  async function (orig, { force = false, ...clickOpts } = {}) {
+    if (force) {
+      await browser.execute(function click(el) {
+        el.dispatchEvent(new MouseEvent('click', { bubbles: true })); // eslint-disable-line no-undef
+      }, this);
+      await browser.pause(500);
+      return;
+    }
+    // BUG: calling `waitForClickable` seems to cause wdio chain selectors to stop working sometimes.
+    await this.waitForClickable();
+    await orig.apply(this, [clickOpts]);
+    await browser.pause(500);
+  },
+  true,
+);
+```
 
-![Flow of commands diagram](docs/resources/e2e-E2e-start-process.png)
+```ts
+// this will fail depending on the context on which `getLoopOption` is called.
+const getLoopOption = async () => {
+  return $$('[role=option]').find(async (elem) => await elem.getText() === 'Loop');
+};
 
-## Container and network interactions
+await browser.waitUntil(async () => !!(await getLoopOption)); // ok
+await console.log(await getLoopOption()); // error
+```
 
-The key difference between running the tests locally and in github workflows is that in github, the tests are ran from inside a container with docker-beside-docker. So, the docker commands connect to the host daemon, this causes that the "localhost" in GitHub refers to the container. "Localhost" in local runs refers to the host (where the docker daemon is running). Tests in CI runs wouldn't be able to connect to the auth service with "localhost" because when a port is "exposed" or "published" is mapped to the host and not the container.
-
-Instead of host <-> container communication, we will need to do container <-> container communication. This is achieved by setting `E2E_DOCKER_NETWORK` to the github workflow's network and setting `REACT_APP_KEYCLOAK_CONFIG` to point to the auth service via the container name.
+Possible reason is because async selectors chaining relies on a "finalizer" or some kind of context to resolve the promises. As a result, when running `getLoopOption` without a wdio await, the chaining does not work. But this is all speculation, the inner workings of async selector chainings are very complex.

@@ -72,3 +72,42 @@ export function makeLiftState(liftState?: Partial<RmfModels.LiftState>): RmfMode
     ...liftState,
   };
 }
+
+const defaultLift = makeLift();
+export const testLifts = [
+  { ...defaultLift },
+  { ...defaultLift, name: 'test1' },
+  { ...defaultLift, name: 'test2' },
+  { ...defaultLift, name: 'test3' },
+  { ...defaultLift, name: 'test4' },
+  { ...defaultLift, name: 'test5' },
+];
+const defaultState = makeLiftState();
+export const testLiftStates: Record<string, RmfModels.LiftState> = {
+  test: defaultState,
+  test1: {
+    ...defaultState,
+    door_state: RmfModels.LiftState.DOOR_MOVING,
+    motion_state: RmfModels.LiftState.MOTION_DOWN,
+    current_mode: RmfModels.LiftState.MODE_EMERGENCY,
+  },
+  test2: {
+    ...defaultState,
+    door_state: RmfModels.LiftState.DOOR_OPEN,
+    motion_state: RmfModels.LiftState.MOTION_UP,
+    current_mode: RmfModels.LiftState.MODE_FIRE,
+  },
+  test3: {
+    ...defaultState,
+    door_state: -1,
+    current_mode: RmfModels.LiftState.MODE_HUMAN,
+  },
+  test4: {
+    ...defaultState,
+    current_mode: RmfModels.LiftState.MODE_OFFLINE,
+  },
+  test5: {
+    ...defaultState,
+    current_mode: RmfModels.LiftState.MODE_UNKNOWN,
+  },
+};

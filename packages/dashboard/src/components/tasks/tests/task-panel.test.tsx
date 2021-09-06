@@ -101,7 +101,7 @@ describe('TaskPanel', () => {
       userEvent.type(priorityEl, '2');
       expect(priorityEl.value).toBe('2');
 
-      userEvent.click(root.getByLabelText('Cancel'));
+      userEvent.click(root.getByText('Cancel'));
       userEvent.click(root.getByLabelText('Create Task'));
       priorityEl = root.getByLabelText('Priority') as HTMLInputElement;
       expect(priorityEl.value).toBe('0');
@@ -112,7 +112,7 @@ describe('TaskPanel', () => {
     const spy = jest.fn(() => Promise.resolve(undefined));
     const root = mountAsUser(superUser, <TaskPanel tasks={[]} submitTasks={spy} />);
     userEvent.click(root.getByLabelText('Create Task'));
-    userEvent.click(root.getByLabelText('Submit'));
+    userEvent.click(root.getByText('Submit'));
     await waitFor(() => root.getByText('Successfully created task'));
   });
 
@@ -120,7 +120,7 @@ describe('TaskPanel', () => {
     const spy = jest.fn(() => Promise.reject('error!!'));
     const root = mountAsUser(superUser, <TaskPanel tasks={[]} submitTasks={spy} />);
     userEvent.click(root.getByLabelText('Create Task'));
-    userEvent.click(root.getByLabelText('Submit'));
+    userEvent.click(root.getByText('Submit'));
     await waitFor(() => root.getByText('Failed to create task', { exact: false }));
   });
 

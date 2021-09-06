@@ -1,8 +1,0 @@
-{
-  "rewrites": [
-    {
-      "source": "/login",
-      "destination": "/index.html"
-    }
-  ]
-}
