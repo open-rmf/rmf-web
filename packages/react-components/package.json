@@ -23,9 +23,8 @@
     "@date-io/core": "^2.11.0",
     "@date-io/date-fns": "^2.11.0",
     "@fontsource/roboto": "^4.3.0",
-    "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "^4.0.0-alpha.56",
-    "@material-ui/pickers": "^4.0.0-alpha.1",
+    "@mui/icons-material": "^5.0.0-rc.0",
+    "@mui/lab": "^5.0.0-alpha.45",
     "@types/crc": "^3.4.0",
     "@types/leaflet": "^1.5.17",
     "@types/react-leaflet": "^2.5.2",
@@ -42,8 +41,10 @@
     "rmf-models": "*"
   },
   "devDependencies": {
+    "@emotion/react": "^11.4.1",
+    "@emotion/styled": "^11.3.0",
     "@jsdevtools/coverage-istanbul-loader": "^3.0.5",
-    "@material-ui/core": "^4.11.0",
+    "@mui/material": "^5.0.0-rc.0",
     "@storybook/addon-actions": "^6.3.7",
     "@storybook/addon-essentials": "^6.3.7",
     "@storybook/addon-links": "^6.3.7",
@@ -84,7 +85,7 @@
     "webpack-cli": "^4.8.0"
   },
   "peerDependencies": {
-    "@material-ui/core": "^4.11.0",
+    "@mui/material": "^5.0.0-rc.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-router": "^5.2.0",
