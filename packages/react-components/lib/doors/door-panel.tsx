@@ -66,73 +66,76 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const DoorCell = ({ door, doorState, onDoorControlClick }: DoorInfoProps): JSX.Element => {
-  const classes = useStyles();
+const DoorCell = React.memo(
+  ({ door, doorState, onDoorControlClick }: DoorInfoProps): JSX.Element => {
+    const classes = useStyles();
 
-  const doorModeLabelClasses = React.useCallback(
-    (doorState?: RmfModels.DoorState): string => {
-      if (!doorState) {
-        return '';
-      }
-      switch (doorState.current_mode.value) {
-        case RmfModels.DoorMode.MODE_OPEN:
-          return `${classes.doorLabelOpen}`;
-        case RmfModels.DoorMode.MODE_CLOSED:
-          return `${classes.doorLabelClosed}`;
-        case RmfModels.DoorMode.MODE_MOVING:
-          return `${classes.doorLabelMoving}`;
-        default:
+    const doorModeLabelClasses = React.useCallback(
+      (doorState?: RmfModels.DoorState): string => {
+        if (!doorState) {
           return '';
-      }
-    },
-    [classes],
-  );
+        }
+        switch (doorState.current_mode.value) {
+          case RmfModels.DoorMode.MODE_OPEN:
+            return `${classes.doorLabelOpen}`;
+          case RmfModels.DoorMode.MODE_CLOSED:
+            return `${classes.doorLabelClosed}`;
+          case RmfModels.DoorMode.MODE_MOVING:
+            return `${classes.doorLabelMoving}`;
+          default:
+            return '';
+        }
+      },
+      [classes],
+    );
 
-  const doorStatusClass = doorModeLabelClasses(doorState);
-  const labelId = `door-cell-${door.door.name}`;
+    const doorStatusClass = doorModeLabelClasses(doorState);
+    const labelId = `door-cell-${door.door.name}`;
 
-  return (
-    <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
-      <Typography id={labelId} variant="body1" align="center" style={{ fontWeight: 'bold' }}>
-        {door.door.name}
-      </Typography>
-      <Grid container direction="row" spacing={1}>
-        <Grid item xs={6}>
-          <Typography variant="body2" align="center">
-            {door.level}
-          </Typography>
+    return (
+      <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
+        <Typography id={labelId} variant="body1" align="center" style={{ fontWeight: 'bold' }}>
+          {door.door.name}
+        </Typography>
+        <Grid container direction="row" spacing={1}>
+          <Grid item xs={6}>
+            <Typography variant="body2" align="center">
+              {door.level}
+            </Typography>
+          </Grid>
+          <Grid item xs={6}>
+            <Typography className={doorStatusClass} variant="body2" align="center" role="status">
+              {doorModeToString(doorState)}
+            </Typography>
+          </Grid>
         </Grid>
-        <Grid item xs={6}>
-          <Typography className={doorStatusClass} variant="body2" align="center" role="status">
-            {doorModeToString(doorState)}
-          </Typography>
-        </Grid>
-      </Grid>
-      <Typography variant="body1" align="center">
-        {doorTypeToString(door.door.door_type)}
-      </Typography>
-      <div className={classes.buttonGroup}>
-        <ButtonGroup size="small">
-          <Button
-            onClick={(ev) =>
-              onDoorControlClick && onDoorControlClick(ev, door.door, RmfModels.DoorMode.MODE_OPEN)
-            }
-          >
-            Open
-          </Button>
-          <Button
-            onClick={(ev) =>
-              onDoorControlClick &&
-              onDoorControlClick(ev, door.door, RmfModels.DoorMode.MODE_CLOSED)
-            }
-          >
-            Close
-          </Button>
-        </ButtonGroup>
-      </div>
-    </Paper>
-  );
-};
+        <Typography variant="body1" align="center">
+          {doorTypeToString(door.door.door_type)}
+        </Typography>
+        <div className={classes.buttonGroup}>
+          <ButtonGroup size="small">
+            <Button
+              onClick={(ev) =>
+                onDoorControlClick &&
+                onDoorControlClick(ev, door.door, RmfModels.DoorMode.MODE_OPEN)
+              }
+            >
+              Open
+            </Button>
+            <Button
+              onClick={(ev) =>
+                onDoorControlClick &&
+                onDoorControlClick(ev, door.door, RmfModels.DoorMode.MODE_CLOSED)
+              }
+            >
+              Close
+            </Button>
+          </ButtonGroup>
+        </div>
+      </Paper>
+    );
+  },
+);
 
 export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelProps): JSX.Element {
   const classes = useStyles();
@@ -161,9 +164,9 @@ export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelPr
       </Paper>
       <Grid className={classes.grid} container direction="row" spacing={1}>
         {isCellView ? (
-          doors.map((door, i) => {
+          doors.map((door) => {
             return (
-              <Grid item xs={4} key={`${door.door.name}_${i}`}>
+              <Grid item xs={4} key={door.door.name}>
                 <DoorCell
                   door={door}
                   doorState={doorStates[door.door.name]}
