@@ -42,8 +42,7 @@ const getOpMode = (doorState: RmfModels.DoorState) => {
   return getState === 'N/A' ? 'Offline' : 'Online';
 };
 
-const DoorRow = (props: DoorRowProps) => {
-  const { door, doorState, onDoorControlClick } = props;
+const DoorRow = React.memo(({ door, doorState, onDoorControlClick }: DoorRowProps) => {
   const classes = useStyles();
 
   const doorModeLabelClasses = React.useCallback(
@@ -103,7 +102,7 @@ const DoorRow = (props: DoorRowProps) => {
       </TableCell>
     </TableRow>
   );
-};
+});
 
 export const DoorTable = ({
   doors,

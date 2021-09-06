@@ -48,41 +48,43 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const WorkcellCell = ({ workcell, workCellState }: WorkcellCellProps): JSX.Element => {
-  const classes = useStyles();
+const WorkcellCell = React.memo(
+  ({ workcell, workCellState }: WorkcellCellProps): JSX.Element => {
+    const classes = useStyles();
 
-  const labelId = `workcell-cell-${workcell.guid}`;
+    const labelId = `workcell-cell-${workcell.guid}`;
 
-  return (
-    <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
-      {workCellState ? (
-        <React.Fragment>
-          <Typography id={labelId} align="center" style={{ fontWeight: 'bold' }}>
-            {workcell.guid}
-          </Typography>
-          <Grid container direction="row">
-            <Grid item xs={6}>
-              <Typography
-                align="center"
-                variant="body2"
-              >{`Queue: ${workCellState.request_guid_queue.length}`}</Typography>
+    return (
+      <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
+        {workCellState ? (
+          <React.Fragment>
+            <Typography id={labelId} align="center" style={{ fontWeight: 'bold' }}>
+              {workcell.guid}
+            </Typography>
+            <Grid container direction="row">
+              <Grid item xs={6}>
+                <Typography
+                  align="center"
+                  variant="body2"
+                >{`Queue: ${workCellState.request_guid_queue.length}`}</Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography align="center" variant="body2">
+                  {workCellState.request_guid_queue.length
+                    ? workCellState.request_guid_queue
+                    : 'Unknown'}
+                </Typography>
+              </Grid>
             </Grid>
-            <Grid item xs={6}>
-              <Typography align="center" variant="body2">
-                {workCellState.request_guid_queue.length
-                  ? workCellState.request_guid_queue
-                  : 'Unknown'}
-              </Typography>
-            </Grid>
-          </Grid>
-          <Typography align="center">{`Remaining: ${workCellState.seconds_remaining}s`}</Typography>
-        </React.Fragment>
-      ) : (
-        <Typography id={labelId} color="error">{`${workcell} not sending states`}</Typography>
-      )}
-    </Paper>
-  );
-};
+            <Typography align="center">{`Remaining: ${workCellState.seconds_remaining}s`}</Typography>
+          </React.Fragment>
+        ) : (
+          <Typography id={labelId} color="error">{`${workcell} not sending states`}</Typography>
+        )}
+      </Paper>
+    );
+  },
+);
 
 export function WorkcellPanel({
   dispensers,
