@@ -24,6 +24,6 @@ describe('submit task', () => {
     await (await $('#finish-location')).setValue('pantry');
 
     await (await $('button=Submit')).click();
-    await expect($('div=Successfully created task')).toBeDisplayed({ interval: 200, wait: 20000 });
+    await expect($('div=Successfully created task')).toBeDisplayed();
   }).timeout(60000);
 });
