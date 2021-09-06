@@ -97,7 +97,9 @@ export function TaskPage() {
       if (!tasksApi) {
         throw new Error('tasks api not available');
       }
-      await Promise.all(tasks.map((t) => tasksApi.submitTaskTasksSubmitTaskPost(t)));
+      for (const t of tasks) {
+        await tasksApi.submitTaskTasksSubmitTaskPost(t);
+      }
       handleRefresh();
     },
     [tasksApi, handleRefresh],
