@@ -116,14 +116,14 @@ exports.config = {
       : []),
     ...(mode === 'browserstack'
       ? [
-          // {
-          //   browserName: 'chrome',
-          //   browserVersion: 'latest',
-          //   'bstack:options': browserstackOptions({
-          //     os: 'Windows',
-          //     osVersion: '10',
-          //   }),
-          // },
+          {
+            browserName: 'chrome',
+            browserVersion: 'latest',
+            'bstack:options': browserstackOptions({
+              os: 'Windows',
+              osVersion: '10',
+            }),
+          },
           {
             browserName: 'safari',
             browserVersion: 'latest',
