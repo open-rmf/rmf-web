@@ -283,6 +283,8 @@ exports.config = {
       await writeMetadata(artifactsDir, browser, suite);
     }
 
+    // safari tests on browserstack are flaky for unknown reasons, try
+    // adding implicit wait to maybe improve its reliability.
     if (browser.requestedCapabilities.browserName === 'safari') {
       browser.setTimeout({ implicit: 100 });
     }
