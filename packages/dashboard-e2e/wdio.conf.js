@@ -283,6 +283,10 @@ exports.config = {
       await writeMetadata(artifactsDir, browser, suite);
     }
 
+    if (browser.requestedCapabilities.browserName === 'safari') {
+      browser.setTimeout({ implicit: 100 });
+    }
+
     browser.maximizeWindow();
     browser.overwriteCommand(
       'click',
