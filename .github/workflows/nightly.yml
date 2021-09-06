@@ -17,7 +17,7 @@ jobs:
           registry: ghcr.io
           repository: ${{ github.repository }}/e2e
           tags: latest
-          path: packages/dashboard-e2e/docker
+          path: docker
   dashboard-e2e:
     needs: build-docker-images
     name: Dashboard e2e
