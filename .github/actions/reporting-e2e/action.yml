@@ -4,8 +4,6 @@ runs:
   using: composite
   steps:
     - run: |
-        npm config set unsafe-perm
-        npm install -g lerna@4
         lerna bootstrap --scope=reporting-e2e
         npm test || npm test
       working-directory: packages/reporting-e2e
