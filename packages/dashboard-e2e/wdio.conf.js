@@ -296,7 +296,7 @@ exports.config = {
         }
         // BUG: calling `waitForClickable` seems to cause wdio chain selectors to stop working.
         await this.waitForClickable();
-        await orig.apply(this, [clickOpts]);
+        await orig(clickOpts);
         await browser.pause(500);
       },
       true,
