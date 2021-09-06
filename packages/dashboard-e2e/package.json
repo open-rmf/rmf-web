@@ -7,7 +7,6 @@
   },
   "scripts": {
     "start": "node scripts/start.js",
-    "start:keycloak": "docker/keycloak/dockert docker-compose -f docker/docker-compose.yml -p rmf-web up keycloak",
     "start:rmf-server": "npm --prefix ../api-server start",
     "test": "node scripts/test-e2e.js",
     "test:dev": "E2E_DASHBOARD_URL=http://localhost:3000 RMF_LAUNCH_MODE=none wdio"

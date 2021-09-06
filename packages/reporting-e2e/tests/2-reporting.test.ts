@@ -1,12 +1,11 @@
-import { getReport, login, overwriteClick } from './utils';
-import { rmfData } from './mock-data';
 import fetch from 'node-fetch';
+import { rmfData } from './mock-data';
+import { getReport, overwriteClick } from './utils';
 
 describe('reporting interactions', () => {
   before(() => overwriteClick());
   before(() => browser.url('/'));
 
-  before(login);
   before(async () => {
     const options = {
       method: 'POST',
@@ -28,68 +27,69 @@ describe('reporting interactions', () => {
     const options = {
       listOrder: 2,
       elemName: 'div*=Dispensers',
-      reportTitle: 'h6=Dispenser State',
+      reportTitle: 'h6*=Dispenser State',
     };
-    getReport(options);
-    expect($('h6=Dispenser State')).toBeVisible();
+    await getReport(options);
+    await expect($('h6*=Dispenser State')).toBeDisplayed();
   });
+
   it('should retrieve door state report', async () => {
     const options = {
       listOrder: 3,
       elemName: 'div*=Doors',
-      reportTitle: 'h6=Door State',
+      reportTitle: 'h6*=Door State',
     };
-    getReport(options);
-    expect($('h6=Door State')).toBeVisible();
+    await getReport(options);
+    await expect($('h6*=Door State')).toBeDisplayed();
   });
 
   it('should retrieve the fleet state report', async () => {
     const options = {
       listOrder: 4,
       elemName: 'div*=Fleets',
-      reportTitle: 'h6=Fleet State',
+      reportTitle: 'h6*=Fleet State',
     };
-    getReport(options);
-    expect($('h6=Fleet State')).toBeVisible();
+    await getReport(options);
+    await expect($('h6*=Fleet State')).toBeDisplayed();
   });
 
   it('should retrieve the health report', async () => {
     const options = {
       listOrder: 5,
       elemName: 'div*=Health',
-      reportTitle: 'h6=Health',
+      reportTitle: 'h6*=Health',
     };
-    getReport(options);
-    expect($('h6=Health')).toBeVisible();
+    await getReport(options);
+    await expect($('h6*=Health')).toBeDisplayed();
   });
 
   it('should retrieve ingestor state report', async () => {
     const options = {
       listOrder: 6,
       elemName: 'div*=Ingestor',
-      reportTitle: 'h6=Ingestor State',
+      reportTitle: 'h6*=Ingestor State',
     };
-    getReport(options);
-    expect($('h6=Ingestor State')).toBeVisible();
+    await getReport(options);
+    await expect($('h6*=Ingestor State')).toBeDisplayed();
   });
 
   it('should retrieve lift state report', async () => {
     const options = {
       listOrder: 7,
       elemName: 'div*=Lifts',
-      reportTitle: 'h6=Lift State',
+      reportTitle: 'h6*=Lift State',
     };
-    getReport(options);
-    expect($('h6=Lift State')).toBeVisible();
+    await getReport(options);
+    await expect($('h6*=Lift State')).toBeDisplayed();
   });
 
   it('should retrieve the task summary report', async () => {
     const options = {
       listOrder: 8,
       elemName: 'div*=Tasks',
-      reportTitle: 'h6=Task Summary',
+      reportTitle: 'h6*=Task',
     };
-    getReport(options);
-    expect($('h6=Task Summary')).toBeVisible();
+    await getReport(options);
+    await expect($('h6*=Task')).toBeDisplayed();
   });
 });
