@@ -1,4 +1,4 @@
-import { Fade, makeStyles, Button } from '@material-ui/core';
+import { Fade, makeStyles, Switch } from '@material-ui/core';
 import Debug from 'debug';
 import React from 'react';
 import {
@@ -237,6 +237,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
 
   const { doorsApi, liftsApi, fireAlarmApi } = React.useContext(RmfIngressContext) || {};
 
+  const [alarm, setAlarm] = React.useState(false);
   const handleOnDoorControlClick = React.useCallback(
     (_ev, door: RmfModels.Door, mode: number) =>
       doorsApi?.postDoorRequestDoorsDoorNameRequestPost(
@@ -263,9 +264,13 @@ export default function Dashboard(_props: {}): React.ReactElement {
     [liftsApi],
   );
 
-  const handleFireAlarm = React.useCallback(() => {
-    fireAlarmApi?.postFireAlarmRequestFireAlarmRequestPost(true);
-  }, [fireAlarmApi]);
+  const handleFireAlarm = React.useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      fireAlarmApi?.postFireAlarmRequestFireAlarmRequestPost(event.target.checked);
+      setAlarm(event.target.checked);
+    },
+    [fireAlarmApi],
+  );
 
   function clearSpotlights() {
     setNegotiationSpotlight(undefined);
@@ -400,7 +405,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
           </OmniPanelView>
         </OmniPanel>
       </Fade>
-      <Button onClick={() => handleFireAlarm()}>Fire Alarm</Button>
+      <Switch checked={alarm} onChange={handleFireAlarm} />
     </GlobalHotKeys>
   );
 }
