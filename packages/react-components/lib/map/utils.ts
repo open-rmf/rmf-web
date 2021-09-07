@@ -1,6 +1,7 @@
 import type { AffineImage } from 'api-client';
 import L from 'leaflet';
 import * as RmfModels from 'rmf-models';
+import { fromRmfCoords, fromRmfYaw } from '..';
 
 export function viewBoxFromLeafletBounds(bounds: L.LatLngBoundsExpression): string {
   const lbounds = bounds instanceof L.LatLngBounds ? bounds : new L.LatLngBounds(bounds);
@@ -36,4 +37,10 @@ export function loadAffineImage(image: AffineImage): Promise<HTMLImageElement> {
     };
     imageElement.addEventListener('load', listener);
   });
+}
+
+export function getRmfTransform(location: RmfModels.Location): string {
+  const pos = fromRmfCoords([location.x, location.y]);
+  const yaw = (fromRmfYaw(location.yaw) / Math.PI) * 180;
+  return `translate(${pos[0]} ${pos[1]}) rotate(${yaw})`;
 }

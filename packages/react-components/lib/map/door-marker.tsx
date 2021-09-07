@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import Debug from 'debug';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import { fromRmfCoords } from '../geometry-utils';
+import { fromRmfCoords } from '../utils/geometry';
 
 const debug = Debug('Map:DoorMarker');
 

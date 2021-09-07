@@ -44,11 +44,7 @@ export const RobotMarker = React.forwardRef(
     debug(`render ${fleet}/${name}`);
     const [imageHasError, setImageHasError] = React.useState(false);
     const classes = useStyles();
-    // const pos = fromRmfCoords([state.location.x, state.location.y]);
-    // const yaw = (fromRmfYaw(state.location.yaw) / Math.PI) * 180;
     const useImageMarker = !!iconPath && !imageHasError;
-
-    // const translateTransform = translate ? `translate(${pos[0]} ${pos[1]})` : undefined;
 
     const isMounted = React.useRef(true);
     React.useEffect(() => {

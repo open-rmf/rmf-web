@@ -186,3 +186,35 @@ export function bezierControlPoints(
   const py = bezierHelper(segmentCoefficients.y);
   return px.map((x, i) => [x, py[i]]);
 }
+
+/**
+ * Converts a svg coordinate to RMF.
+ * @param pos
+ */
+export function toRmfCoords(pos: [number, number]): [number, number] {
+  return [pos[0], -pos[1]];
+}
+
+/**
+ * Converts a RMF coordinate to SVG
+ * @param pos
+ */
+export function fromRmfCoords(pos: [number, number]): [number, number] {
+  return [pos[0], -pos[1]];
+}
+
+/**
+ * Converts a SVG rotation (in radians) to RMF yaw (in radians)
+ * @param yaw
+ */
+export function toRmfYaw(yaw: number): number {
+  return -yaw;
+}
+
+/**
+ * Converts a RMF yaw angle (in radians) to svg (in radians)
+ * @param yaw
+ */
+export function fromRmfYaw(yaw: number): number {
+  return -yaw;
+}

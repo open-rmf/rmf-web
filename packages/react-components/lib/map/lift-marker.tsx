@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import Debug from 'debug';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import { fromRmfCoords, fromRmfYaw, radiansToDegrees } from '../geometry-utils';
+import { fromRmfCoords, fromRmfYaw, radiansToDegrees } from '../utils/geometry';
 import { DoorMarker } from './door-marker';
 
 const debug = Debug('Map:LiftMarker');

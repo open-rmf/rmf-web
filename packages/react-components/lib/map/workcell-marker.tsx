@@ -1,7 +1,7 @@
 import { makeStyles, useTheme } from '@material-ui/core';
 import Debug from 'debug';
 import React from 'react';
-import { fromRmfCoords } from '../geometry-utils';
+import { fromRmfCoords } from '../utils/geometry';
 import SvgText from '../svg-text';
 
 const debug = Debug('Map:WorkcellMarker');

@@ -1,4 +1,4 @@
-import { bezierControlPoints, Knot, knotsToSegmentCoefficientsArray } from '../geometry-utils';
+import { bezierControlPoints, Knot, knotsToSegmentCoefficientsArray } from '../utils/geometry';
 
 export type RawVelocity = [x: number, y: number, theta: number];
 
