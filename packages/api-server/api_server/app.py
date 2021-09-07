@@ -184,6 +184,9 @@ class App(FastIO):
             routes.ChargersRouter(self.rmf_events),
             prefix="/chargers",
         )
+        self.include_router(
+            routes.FireAlarmRouter(rmf_gateway_dep), prefix="/fire_alarm"
+        )
 
         @self.fapi.on_event("startup")
         async def on_startup():

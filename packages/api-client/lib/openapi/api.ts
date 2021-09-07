@@ -14,6 +14,7 @@
 export * from './apis/chargers-api';
 export * from './apis/dispensers-api';
 export * from './apis/doors-api';
+export * from './apis/fire-alarm-api';
 export * from './apis/fleets-api';
 export * from './apis/ingestors-api';
 export * from './apis/lifts-api';

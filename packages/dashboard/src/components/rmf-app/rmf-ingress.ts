@@ -8,6 +8,7 @@ import {
   SioClient,
   TasksApi,
   ChargersApi,
+  FireAlarmApi,
 } from 'api-client';
 import axios from 'axios';
 import { Authenticator } from 'rmf-auth';
@@ -26,6 +27,7 @@ export class RmfIngress {
   chargersApi: ChargersApi;
   negotiationStatusManager: NegotiationStatusManager;
   trajectoryManager?: RobotTrajectoryManager;
+  fireAlarmApi?: FireAlarmApi;
 
   constructor(authenticator: Authenticator, trajMgr?: RobotTrajectoryManager, ws?: WebSocket) {
     this.negotiationStatusManager = new NegotiationStatusManager(ws, appConfig.authenticator);
@@ -68,6 +70,7 @@ export class RmfIngress {
     this.fleetsApi = new FleetsApi(apiConfig, undefined, axiosInst);
     this.tasksApi = new TasksApi(apiConfig, undefined, axiosInst);
     this.chargersApi = new ChargersApi(apiConfig, undefined, axiosInst);
+    this.fireAlarmApi = new FireAlarmApi(apiConfig, undefined, axiosInst);
     this.trajectoryManager = trajMgr;
   }
 }

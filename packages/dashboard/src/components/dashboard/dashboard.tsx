@@ -1,4 +1,4 @@
-import { Fade, makeStyles } from '@material-ui/core';
+import { Fade, makeStyles, Button } from '@material-ui/core';
 import Debug from 'debug';
 import React from 'react';
 import {
@@ -235,7 +235,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const statusUpdateTS = React.useRef<number>();
   statusUpdateTS.current = negotiationStatusManager?.getLastUpdateTS() || -1;
 
-  const { doorsApi, liftsApi } = React.useContext(RmfIngressContext) || {};
+  const { doorsApi, liftsApi, fireAlarmApi } = React.useContext(RmfIngressContext) || {};
 
   const handleOnDoorControlClick = React.useCallback(
     (_ev, door: RmfModels.Door, mode: number) =>
@@ -262,6 +262,12 @@ export default function Dashboard(_props: {}): React.ReactElement {
       ),
     [liftsApi],
   );
+
+  const handleFireAlarm = React.useCallback(() => {
+    fireAlarmApi?.postFireAlarmRequestFireAlarmRequestPost({
+      data: true,
+    });
+  }, [fireAlarmApi]);
 
   function clearSpotlights() {
     setNegotiationSpotlight(undefined);
@@ -396,6 +402,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
           </OmniPanelView>
         </OmniPanel>
       </Fade>
+      <Button onClick={() => handleFireAlarm()}>Fire Alarm</Button>
     </GlobalHotKeys>
   );
 }

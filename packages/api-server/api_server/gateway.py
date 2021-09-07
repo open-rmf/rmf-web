@@ -26,6 +26,7 @@ from rmf_task_msgs.srv import CancelTask as RmfCancelTask
 from rmf_task_msgs.srv import GetTaskList as RmfGetTaskList
 from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
 from rosidl_runtime_py.convert import message_to_ordereddict
+from std_msgs.msg import Bool
 
 from .models import (
     BuildingMap,
@@ -81,6 +82,7 @@ class RmfGateway(rclpy.node.Node):
         self.lift_req = self.create_publisher(
             RmfLiftRequest, "adapter_lift_requests", 10
         )
+        self.fire_alarm_trigger = self.create_publisher(Bool, "fire_alarm_trigger", 100)
         self.submit_task_srv = self.create_client(RmfSubmitTask, "submit_task")
         self.get_tasks_srv = self.create_client(RmfGetTaskList, "get_tasks")
         self.cancel_task_srv = self.create_client(RmfCancelTask, "cancel_task")
