@@ -3,7 +3,7 @@ import React from 'react';
 import { WaypointMarker } from './waypoint-marker';
 
 export default {
-  title: 'Waypoint Marker',
+  title: 'Map/Waypoint Marker',
   component: WaypointMarker,
   parameters: { actions: { argTypesRegex: '^on.*' } },
 } as Meta;

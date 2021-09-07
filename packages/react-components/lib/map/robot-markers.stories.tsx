@@ -6,7 +6,7 @@ import { makeRobot } from '../robots/test-utils.spec';
 import { RobotMarker, RobotMarkerProps } from './robot-marker';
 
 export default {
-  title: 'Robot Markers',
+  title: 'Map/Robot Markers',
   component: RobotMarker,
   parameters: { controls: { include: ['onClick'], hideNoControlsWarning: true } },
 } as Meta;
@@ -16,15 +16,15 @@ function makeRobotMarkerProps(
   props?: Partial<Omit<RobotMarkerProps, 'robot'>>,
 ): RobotMarkerProps {
   props = props || {};
-  const robot = makeRobot(robotState);
+  const state = makeRobot(robotState);
   return {
-    name: robot.name,
-    model: robot.model,
-    x: robot.location.x,
-    y: robot.location.y,
-    yaw: robot.location.yaw,
-    fleetName: 'testFleet',
-    footprint: 1,
+    fleet: 'test_fleet',
+    name: state.name,
+    model: state.model,
+    footprint: 0.5,
+    state,
+    inConflict: false,
+    color: 'blue',
     ...props,
   };
 }
@@ -34,15 +34,15 @@ const robotMarkerProps: Record<string, RobotMarkerProps> = {
   'Really Really Loooonnnnnggggg Name': makeRobotMarkerProps({
     name: 'I have a really really loooonnnnnggggg name',
   }),
-  'In Conflict': makeRobotMarkerProps({ name: 'ConflictingRobot' }, { variant: 'inConflict' }),
+  'In Conflict': makeRobotMarkerProps({ name: 'ConflictingRobot' }, { inConflict: true }),
   'Name With Space': makeRobotMarkerProps({ name: 'I have spaces' }),
   'With Icon': makeRobotMarkerProps(
     { name: 'RobotWithIcon', model: 'fleetWithIcon' },
-    { fleetName: 'fleetWithIcon', iconPath: '/assets/tinyRobot.png' },
+    { fleet: 'fleetWithIcon', iconPath: '/assets/tinyRobot.png' },
   ),
   'With Icon, In Conflict': makeRobotMarkerProps(
     { name: 'RobotWithIcon', model: 'fleetWithIcon' },
-    { fleetName: 'fleetWithIcon', iconPath: '/assets/tinyRobot.png', variant: 'inConflict' },
+    { fleet: 'fleetWithIcon', iconPath: '/assets/tinyRobot.png', inConflict: true },
   ),
 };
 

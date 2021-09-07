@@ -3,7 +3,7 @@ import React from 'react';
 import { WorkcellMarker } from './workcell-marker';
 
 export default {
-  title: 'Workcell Marker',
+  title: 'Map/Workcell Marker',
   component: WorkcellMarker,
   parameters: { actions: { argTypesRegex: '^on.*' } },
 } as Meta;

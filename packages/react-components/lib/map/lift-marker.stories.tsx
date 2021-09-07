@@ -1,11 +1,11 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
+import { makeLift, makeLiftState } from '../lifts/test-utils.spec';
 import { LiftMarker, LiftMarkerProps } from './lift-marker';
-import { makeLift, makeLiftState } from './test-utils.spec';
 
 export default {
-  title: 'Lift Markers',
+  title: 'Map/Lift Markers',
   component: LiftMarker,
 } as Meta;
 

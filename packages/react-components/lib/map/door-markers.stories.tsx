@@ -5,7 +5,7 @@ import { makeDoor, makeDoorState } from '../doors/test-utils.spec';
 import { DoorMarker } from './door-marker';
 
 export default {
-  title: 'Door Markers',
+  title: 'Map/Door Markers',
   component: DoorMarker,
 } as Meta;
 

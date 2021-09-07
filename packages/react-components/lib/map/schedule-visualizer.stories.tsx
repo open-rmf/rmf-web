@@ -18,7 +18,7 @@ import { WaypointsOverlay } from './waypoints-overlay';
 import { WorkcellData, WorkcellsOverlay } from './workcells-overlay';
 
 export default {
-  title: 'Schedule Visualizer',
+  title: 'Map/Schedule Visualizer',
   component: LMap,
   parameters: { layout: 'fullscreen' },
 } as Meta;
