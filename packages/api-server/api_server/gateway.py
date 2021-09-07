@@ -82,7 +82,7 @@ class RmfGateway(rclpy.node.Node):
         self.lift_req = self.create_publisher(
             RmfLiftRequest, "adapter_lift_requests", 10
         )
-        self.fire_alarm_trigger = self.create_publisher(Bool, "fire_alarm_trigger", 100)
+        self.fire_alarm_trigger = self.create_publisher(Bool, "fire_alarm_trigger", 10)
         self.submit_task_srv = self.create_client(RmfSubmitTask, "submit_task")
         self.get_tasks_srv = self.create_client(RmfGetTaskList, "get_tasks")
         self.cancel_task_srv = self.create_client(RmfCancelTask, "cancel_task")

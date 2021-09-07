@@ -27,12 +27,12 @@ export const FireAlarmApiAxiosParamCreator = function (configuration?: Configura
     /**
      *
      * @summary Post Fire Alarm Request
-     * @param {ModelObject} alarm
+     * @param {boolean} alarm
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postFireAlarmRequestFireAlarmRequestPost: async (
-      alarm: ModelObject,
+      alarm: boolean,
       options: any = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'alarm' is not null or undefined
@@ -89,12 +89,12 @@ export const FireAlarmApiFp = function (configuration?: Configuration) {
     /**
      *
      * @summary Post Fire Alarm Request
-     * @param {ModelObject} alarm
+     * @param {boolean} alarm
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async postFireAlarmRequestFireAlarmRequestPost(
-      alarm: ModelObject,
+      alarm: boolean,
       options?: any,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ModelObject>> {
       const localVarAxiosArgs = await FireAlarmApiAxiosParamCreator(
@@ -124,12 +124,12 @@ export const FireAlarmApiFactory = function (
     /**
      *
      * @summary Post Fire Alarm Request
-     * @param {ModelObject} alarm
+     * @param {boolean} alarm
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postFireAlarmRequestFireAlarmRequestPost(
-      alarm: ModelObject,
+      alarm: boolean,
       options?: any,
     ): AxiosPromise<ModelObject> {
       return FireAlarmApiFp(configuration)
@@ -149,12 +149,12 @@ export class FireAlarmApi extends BaseAPI {
   /**
    *
    * @summary Post Fire Alarm Request
-   * @param {ModelObject} alarm
+   * @param {boolean} alarm
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof FireAlarmApi
    */
-  public postFireAlarmRequestFireAlarmRequestPost(alarm: ModelObject, options?: any) {
+  public postFireAlarmRequestFireAlarmRequestPost(alarm: boolean, options?: any) {
     return FireAlarmApiFp(this.configuration)
       .postFireAlarmRequestFireAlarmRequestPost(alarm, options)
       .then((request) => request(this.axios, this.basePath));

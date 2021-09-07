@@ -264,9 +264,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   );
 
   const handleFireAlarm = React.useCallback(() => {
-    fireAlarmApi?.postFireAlarmRequestFireAlarmRequestPost({
-      data: true,
-    });
+    fireAlarmApi?.postFireAlarmRequestFireAlarmRequestPost(true);
   }, [fireAlarmApi]);
 
   function clearSpotlights() {
