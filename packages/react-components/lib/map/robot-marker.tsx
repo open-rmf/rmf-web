@@ -1,9 +1,8 @@
 import { makeStyles } from '@material-ui/core';
+import clsx from 'clsx';
 import Debug from 'debug';
 import React from 'react';
-import { SvgText } from '../svg-text';
-import { fromRmfCoords, fromRmfYaw } from '../geometry-utils';
-import { BaseRobotMarkerProps } from './base-robot-marker';
+import * as RmfModels from 'rmf-models';
 import { DefaultMarker } from './default-robot-marker';
 import { ImageMarker } from './image-marker';
 
@@ -27,35 +26,29 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export interface RobotMarkerProps extends React.PropsWithRef<BaseRobotMarkerProps> {
+interface _RobotMarkerProps extends React.PropsWithoutRef<React.SVGProps<SVGGElement>> {
+  fleet: string;
+  name: string;
+  model: string;
+  state: RmfModels.RobotState;
+  inConflict?: boolean;
   color: string;
   iconPath?: string;
 }
 
 export const RobotMarker = React.forwardRef(
   (
-    {
-      color,
-      iconPath,
-      fleet,
-      name,
-      model,
-      footprint,
-      state,
-      inConflict,
-      translate = true,
-      ...otherProps
-    }: RobotMarkerProps,
+    { color, iconPath, fleet, name, inConflict, className, ...otherProps }: _RobotMarkerProps,
     ref: React.Ref<SVGGElement>,
   ) => {
     debug(`render ${fleet}/${name}`);
     const [imageHasError, setImageHasError] = React.useState(false);
     const classes = useStyles();
-    const pos = fromRmfCoords([state.location.x, state.location.y]);
-    const yaw = (fromRmfYaw(state.location.yaw) / Math.PI) * 180;
+    // const pos = fromRmfCoords([state.location.x, state.location.y]);
+    // const yaw = (fromRmfYaw(state.location.yaw) / Math.PI) * 180;
     const useImageMarker = !!iconPath && !imageHasError;
 
-    const translateTransform = translate ? `translate(${pos[0]} ${pos[1]})` : undefined;
+    // const translateTransform = translate ? `translate(${pos[0]} ${pos[1]})` : undefined;
 
     const isMounted = React.useRef(true);
     React.useEffect(() => {
@@ -65,37 +58,27 @@ export const RobotMarker = React.forwardRef(
     }, []);
 
     return (
-      <g ref={ref} {...otherProps}>
-        <g transform={translateTransform}>
-          <g className={otherProps.onClick && classes.clickable} transform={`rotate(${yaw})`}>
-            {useImageMarker && iconPath ? (
-              <ImageMarker
-                iconPath={iconPath}
-                onError={() => setImageHasError(true)}
-                fleet={fleet}
-                name={name}
-                model={model}
-                footprint={footprint}
-                state={state}
-                inConflict={inConflict}
-              />
-            ) : (
-              <DefaultMarker
-                color={color}
-                fleet={fleet}
-                name={name}
-                model={model}
-                footprint={footprint}
-                state={state}
-                inConflict={inConflict}
-              />
-            )}
-          </g>
-          <SvgText text={name} targetWidth={footprint * 1.9} className={classes.text} />
+      <g
+        ref={ref}
+        className={clsx(otherProps.onClick && classes.clickable, className)}
+        {...otherProps}
+      >
+        <g>
+          {useImageMarker && iconPath ? (
+            <ImageMarker
+              iconPath={iconPath}
+              onError={() => setImageHasError(true)}
+              inConflict={inConflict}
+            />
+          ) : (
+            <DefaultMarker color={color} inConflict={inConflict} />
+          )}
         </g>
       </g>
     );
   },
 );
+
+export type RobotMarkerProps = React.ComponentPropsWithRef<typeof RobotMarker>;
 
 export default RobotMarker;

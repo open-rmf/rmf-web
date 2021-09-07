@@ -34,7 +34,6 @@ describe('RobotMarker', () => {
           fleet={robot.fleet}
           name={robot.name}
           model={robot.model}
-          footprint={robot.footprint}
           state={makeRobot({ name: robot.name })}
         />,
       );
@@ -50,7 +49,6 @@ describe('RobotMarker', () => {
         fleet={robot.fleet}
         name={robot.name}
         model={robot.model}
-        footprint={robot.footprint}
         color="#000000"
         state={makeRobot({ name: robot.name })}
         onClick={onClick}
@@ -68,7 +66,6 @@ describe('RobotMarker', () => {
         fleet={robot.fleet}
         name={robot.name}
         model={robot.model}
-        footprint={robot.footprint}
         color="#000000"
         state={makeRobot({ name: robot.name })}
         iconPath="/base/test-data/assets/tiny-robot.png"

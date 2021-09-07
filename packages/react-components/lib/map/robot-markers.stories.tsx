@@ -21,7 +21,6 @@ function makeRobotMarkerProps(
     fleet: 'test_fleet',
     name: state.name,
     model: state.model,
-    footprint: 0.5,
     state,
     inConflict: false,
     color: 'blue',
@@ -31,11 +30,7 @@ function makeRobotMarkerProps(
 
 const robotMarkerProps: Record<string, RobotMarkerProps> = {
   Basic: makeRobotMarkerProps({ name: 'BasicRobot' }),
-  'Really Really Loooonnnnnggggg Name': makeRobotMarkerProps({
-    name: 'I have a really really loooonnnnnggggg name',
-  }),
   'In Conflict': makeRobotMarkerProps({ name: 'ConflictingRobot' }, { inConflict: true }),
-  'Name With Space': makeRobotMarkerProps({ name: 'I have spaces' }),
   'With Icon': makeRobotMarkerProps(
     { name: 'RobotWithIcon', model: 'fleetWithIcon' },
     { fleet: 'fleetWithIcon', iconPath: '/assets/tiny-robot.png' },
@@ -57,7 +52,7 @@ export const Gallery: Story = (args) => {
                 <Typography align="center">{k}</Typography>
               </Grid>
               <Grid item>
-                <svg viewBox="-2 -2 4 4" style={{ minWidth: 200 }}>
+                <svg viewBox="-2 -2 4 4" style={{ width: 200 }}>
                   <RobotMarker {...robotMarkerProps[k]} {...args} />
                 </svg>
               </Grid>
@@ -66,24 +61,5 @@ export const Gallery: Story = (args) => {
         </Grid>
       ))}
     </Grid>
-  );
-};
-
-export const NoTranslate: Story = (args) => {
-  const robotMarkerProps = makeRobotMarkerProps({
-    location: {
-      level_name: 'test',
-      x: 10,
-      y: 10,
-      yaw: 0,
-      t: { sec: 0, nanosec: 0 },
-      index: 0,
-    },
-  });
-
-  return (
-    <svg viewBox="-2 -2 4 4" width={400} height={400}>
-      <RobotMarker {...robotMarkerProps} translate={false} {...args} />
-    </svg>
   );
 };

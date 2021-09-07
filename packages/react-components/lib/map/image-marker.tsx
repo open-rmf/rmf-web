@@ -1,7 +1,6 @@
 import React from 'react';
 import { ColorContext } from '../color-manager';
 import { uniqueId } from '../utils';
-import { BaseRobotMarkerProps } from './base-robot-marker';
 
 /**
  *
@@ -20,23 +19,18 @@ function makeGradientShadow(
   );
 }
 
-export interface ImageMarkerProps extends BaseRobotMarkerProps {
+export interface ImageMarkerProps {
   iconPath: string;
+  inConflict?: boolean;
   onError?: React.EventHandler<React.SyntheticEvent<SVGImageElement, Event>>;
 }
 
 export const ImageMarker = ({
   iconPath,
-  onError,
-  footprint,
   inConflict = false,
+  onError,
 }: ImageMarkerProps): JSX.Element | null => {
-  // The default icon uses footprint as the radius, so we * 2 here because the width/height
-  // is in a square. With the double size of the footprint, we achieved a similar
-  // size to the robot default svg icon.
-  const [imgIconWidth, imgIconHeight] = React.useMemo(() => [footprint * 2, footprint * 2], [
-    footprint,
-  ]);
+  const [imgIconWidth, imgIconHeight] = React.useMemo(() => [2, 2], []);
   const colorManager = React.useContext(ColorContext);
 
   const componentId = React.useMemo(uniqueId, []);
@@ -56,16 +50,13 @@ export const ImageMarker = ({
         <Shadow id={shadowId} />
         <ShadowConflict id={conflictShadowId} />
       </defs>
-      <circle
-        r={footprint * 1.3}
-        fill={inConflict ? `url(#${conflictShadowId})` : `url(#${shadowId})`}
-      />
+      <circle r={1.3} fill={inConflict ? `url(#${conflictShadowId})` : `url(#${shadowId})`} />
       <image
         href={iconPath}
         width={imgIconWidth}
         height={imgIconHeight}
-        x={-footprint}
-        y={-footprint}
+        x={-1}
+        y={-1}
         onError={onError}
       />
     </g>
