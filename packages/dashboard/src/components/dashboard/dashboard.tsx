@@ -47,7 +47,8 @@ export default function Dashboard(_props: {}): React.ReactElement {
 
   const [_triggerRender, setTriggerRender] = React.useState(0); // eslint-disable-line @typescript-eslint/no-unused-vars
   React.useEffect(() => {
-    setInterval(() => setTriggerRender((prev) => prev + 1), UpdateRate);
+    const interval = setInterval(() => setTriggerRender((prev) => prev + 1), UpdateRate);
+    return () => clearInterval(interval);
   }, []);
 
   const doorStatesRef = React.useRef<Record<string, RmfModels.DoorState>>({});
