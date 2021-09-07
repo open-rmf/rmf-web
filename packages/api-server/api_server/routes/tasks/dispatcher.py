@@ -4,6 +4,7 @@ from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
 
 from ... import models as mdl
 from ...gateway import RmfGateway
+from ...models import tortoise_models as ttm
 
 
 class DispatcherClient:
@@ -18,6 +19,10 @@ class DispatcherClient:
         """
         resp: RmfSubmitTask.Response = await self.rmf_gateway.call_service(
             self.rmf_gateway.submit_task_srv, req_msg
+        )
+        await ttm.TaskSummary.update_or_create(
+            {"data": {"task_id": resp.task_id}},
+            id_=resp.task_id,
         )
         return resp
 
