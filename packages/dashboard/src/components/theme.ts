@@ -1,6 +1,6 @@
-import { createTheme } from '@material-ui/core';
+import { createTheme } from '@mui/material';
 
-declare module '@material-ui/core' {
+declare module '@mui/material' {
   interface Theme {
     appBar: {
       logoSize: React.CSSProperties['width'];

@@ -6,7 +6,7 @@ import {
   ListItemText,
   MenuItem,
   Select,
-} from '@material-ui/core';
+} from '@mui/material';
 import { Column, EditCellColumnDef } from 'material-table';
 import React from 'react';
 import { ContainerType } from './log-table';

@@ -1,6 +1,6 @@
 import React from 'react';
-import { TextField, Typography, Divider } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import { TextField, Typography, Divider } from '@mui/material';
+import Autocomplete from '@mui/lab/Autocomplete';
 
 import { StyleTyping, FormProps, defaultStyles } from './utils';
 
@@ -30,9 +30,9 @@ export default function AutoCompleteComponent(props: FormProps) {
             <Divider />
             <div style={styles.autoComplete}>
               <Autocomplete
-                getOptionLabel={option => option}
+                getOptionLabel={(option) => option}
                 options={fleetNames}
-                renderInput={params => (
+                renderInput={(params) => (
                   <TextField
                     {...params}
                     label={labels[index]}

@@ -9,7 +9,7 @@ import {
   TableRow,
   ButtonGroup,
   Button,
-} from '@material-ui/core';
+} from '@mui/material';
 
 import { DoorData, doorModeToString, doorTypeToString } from './utils';
 

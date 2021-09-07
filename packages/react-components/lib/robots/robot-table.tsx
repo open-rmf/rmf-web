@@ -12,8 +12,8 @@ import {
   TableRow,
   Toolbar,
   Typography,
-} from '@material-ui/core';
-import { Refresh as RefreshIcon } from '@material-ui/icons';
+} from '@mui/material';
+import { Refresh as RefreshIcon } from '@mui/icons-material';
 import React from 'react';
 import { taskTypeToStr } from '../tasks/utils';
 import { robotModeToString, VerboseRobot } from './utils';

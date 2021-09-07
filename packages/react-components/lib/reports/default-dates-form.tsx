@@ -1,6 +1,6 @@
 import React from 'react';
-import { makeStyles, TextField } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
+import { makeStyles, TextField } from '@mui/material';
+import Button from '@mui/material/Button';
 import DateAndTimePickers from '../date-time-picker';
 
 import { LogQueryPayload } from '.';

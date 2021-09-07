@@ -1,4 +1,4 @@
-import { Button, makeStyles, Typography } from '@material-ui/core';
+import { Button, makeStyles, Typography } from '@mui/material';
 import React from 'react';
 
 const useStyles = makeStyles((theme) => ({

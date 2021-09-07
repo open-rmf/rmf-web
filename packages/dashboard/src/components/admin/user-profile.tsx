@@ -6,10 +6,10 @@ import {
   IconButton,
   Menu,
   MenuItem,
-} from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import AccountIcon from '@material-ui/icons/AccountCircle';
-import MoreIcon from '@material-ui/icons/MoreVert';
+} from '@mui/material';
+import { makeStyles } from '@mui/material/styles';
+import AccountIcon from '@mui/icons-material/AccountCircle';
+import MoreIcon from '@mui/icons-material/MoreVert';
 import { User } from 'api-client';
 import React from 'react';
 import { useAsync } from 'react-components';

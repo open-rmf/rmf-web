@@ -1,4 +1,4 @@
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@mui/material';
 import clsx from 'clsx';
 import Debug from 'debug';
 import React from 'react';

@@ -1,4 +1,4 @@
-import { Grid, makeStyles } from '@material-ui/core';
+import { Grid, makeStyles } from '@mui/material';
 import React from 'react';
 import { ErrorSnackbar } from 'react-components';
 import { loadSettings, saveSettings, Settings } from '../settings';

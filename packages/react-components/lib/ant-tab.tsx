@@ -1,4 +1,5 @@
-import { Box, createStyles, Tab, Tabs, Theme, withStyles } from '@material-ui/core';
+import { Box, createStyles, Tab, Tabs, Theme } from '@mui/material';
+import { withStyles } from '@mui/styles';
 import React from 'react';
 
 interface StyledTabProps {

@@ -1,4 +1,4 @@
-import { Grid, makeStyles, Paper, TablePagination, Typography } from '@material-ui/core';
+import { Grid, makeStyles, Paper, TablePagination, Typography } from '@mui/material';
 import React from 'react';
 import { RobotInfo } from './robot-info';
 import { RobotTable } from './robot-table';

@@ -1,6 +1,6 @@
-import { IconButton } from '@material-ui/core';
+import { IconButton } from '@mui/material';
 import React from 'react';
-import NotificationsActiveIcon from '@material-ui/icons/NotificationsActive';
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 
 export interface EmergencyAlarmProps {
   isActive: boolean | null;

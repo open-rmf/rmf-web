@@ -7,7 +7,7 @@ import {
   Tooltip,
   Typography,
   useTheme,
-} from '@material-ui/core';
+} from '@mui/material';
 import clsx from 'clsx';
 import React from 'react';
 import * as RmfModels from 'rmf-models';

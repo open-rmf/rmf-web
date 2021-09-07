@@ -9,8 +9,8 @@ import {
   MenuItem,
   TextField,
   useTheme,
-} from '@material-ui/core';
-import { Autocomplete } from '@material-ui/lab';
+} from '@mui/material';
+import { Autocomplete } from '@mui/lab';
 import { DateTimePicker, LocalizationProvider } from '@material-ui/pickers';
 import DateFnsAdapter from '@material-ui/pickers/adapter/date-fns';
 import type {
