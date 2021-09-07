@@ -12,7 +12,6 @@ from ..rmf_io import RmfEvents
 class FireAlarmRouter(FastIORouter):
     def __init__(
         self,
-        rmf_events: RmfEvents,
         rmf_gateway_dep: Callable[[], RmfGateway],
     ):
         super().__init__(tags=["FireAlarm"])
