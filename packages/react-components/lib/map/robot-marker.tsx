@@ -9,17 +9,6 @@ import { ImageMarker } from './image-marker';
 const debug = Debug('Map:RobotMarker');
 
 const useStyles = makeStyles(() => ({
-  text: {
-    dominantBaseline: 'central',
-    textAnchor: 'middle',
-    fontSize: '0.18px',
-    fontWeight: 'bold',
-    fill: 'white',
-    /* 1 pixel black shadow to left, top, right and bottom */
-    textShadow: '-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black',
-    pointerEvents: 'none',
-    userSelect: 'none',
-  },
   clickable: {
     pointerEvents: 'auto',
     cursor: 'pointer',
