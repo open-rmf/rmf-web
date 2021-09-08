@@ -5,16 +5,14 @@ import React from 'react';
 
 export type HeaderBarProps = React.PropsWithChildren<AppBarProps>;
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    root: {
-      display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'center',
-      width: '100%',
-    },
-  }),
-);
+const useStyles = makeStyles(() => ({
+  root: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+  },
+}));
 
 export const HeaderBar = ({
   id = 'appbar',

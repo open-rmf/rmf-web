@@ -88,7 +88,7 @@ export function TaskTimeline({ taskSummary }: TaskTimelineProps): JSX.Element {
   });
 
   return (
-    <Timeline align="left" className={classes.timelineRoot}>
+    <Timeline position="left" className={classes.timelineRoot}>
       {timelineInfo.map((dotInfo, idx) => {
         return (
           <TimelineItem key={idx}>
