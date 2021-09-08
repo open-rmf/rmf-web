@@ -14,16 +14,23 @@ const useStyles = makeStyles((theme) =>
       maxWidth: 120,
       opacity: 1,
     },
+    alarmOn: {
+      backgroundColor: theme.palette.error.main,
+    },
+    alarmOff: {
+      backgroundColor: theme.palette.primary.main,
+    },
   }),
 );
 
 export interface LogoButtonProps {
   logoPath?: string;
+  alarm: boolean;
   onClick?: () => void;
 }
 
 export const LogoButton = (props: LogoButtonProps): JSX.Element => {
-  const { logoPath, onClick } = props;
+  const { alarm, logoPath, onClick } = props;
   const classes = useStyles();
 
   if (onClick) {
@@ -36,12 +43,12 @@ export const LogoButton = (props: LogoButtonProps): JSX.Element => {
     return (
       <Button
         disableElevation
-        color="primary"
         variant="contained"
         classes={{
           root: classes.root,
           disabled: classes.disabled,
         }}
+        className={alarm ? classes.alarmOn : classes.alarmOff}
         disabled
       >
         <img src={logoPath} style={{ width: '120px' }} alt="logo" />

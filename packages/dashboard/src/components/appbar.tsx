@@ -7,13 +7,19 @@ import {
   Tab,
   Toolbar,
   Typography,
+  Button,
 } from '@material-ui/core';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import HelpIcon from '@material-ui/icons/Help';
 import SettingsIcon from '@material-ui/icons/Settings';
 import React from 'react';
 import { HeaderBar, LogoButton, NavigationBar, Tooltip } from 'react-components';
-import { AppControllerContext, ResourcesContext, TooltipsContext } from './app-contexts';
+import {
+  AppControllerContext,
+  ResourcesContext,
+  TooltipsContext,
+  SettingsContext,
+} from './app-contexts';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
 import { RmfIngressContext, PlacesContext } from './rmf-app';
 import AlertSnackBar, { iniCharger } from './alert-snack-bar';
@@ -24,6 +30,10 @@ const useStyles = makeStyles(() =>
     toolbar: {
       textAlign: 'right',
       flexGrow: -1,
+    },
+    alarmMsg: {
+      marginLeft: 'auto',
+      marginRight: 'auto',
     },
   }),
 );
@@ -49,6 +59,8 @@ export const AppBar = React.memo(
     const authenticator = React.useContext(AuthenticatorContext);
     const user = React.useContext(UserContext);
     const { showTooltips } = React.useContext(TooltipsContext);
+
+    const alarmSettings = React.useContext(SettingsContext).alarm;
 
     const { sioClient } = React.useContext(RmfIngressContext) || {};
     const places = React.useContext(PlacesContext);
@@ -107,12 +119,17 @@ export const AppBar = React.memo(
 
     return (
       <div>
-        <HeaderBar>
-          <LogoButton logoPath={brandingIconPath} />
+        <HeaderBar alarm={alarmSettings}>
+          <LogoButton alarm={alarmSettings} logoPath={brandingIconPath} />
           <NavigationBar onTabChange={onTabChange} value={tabValue}>
             <Tab label="Building" value="building" aria-label="Building" />
             <Tab label="Robots" value="robots" aria-label="Robots" />
             <Tab label="Tasks" value="tasks" aria-label="Tasks" />
+            {alarmSettings ? (
+              <Button className={classes.alarmMsg} color="inherit">
+                <Typography variant="h5">Emergency alarm is active!</Typography>
+              </Button>
+            ) : null}
           </NavigationBar>
           <Toolbar variant="dense" className={classes.toolbar}>
             <Typography variant="caption">Powered by OpenRMF</Typography>

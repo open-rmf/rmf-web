@@ -5,6 +5,7 @@ export enum TrajectoryAnimation {
 
 export interface Settings {
   trajectoryAnimation: TrajectoryAnimation;
+  alarm: boolean;
 }
 
 export function saveSettings(settings: Settings): void {
@@ -22,5 +23,6 @@ export function loadSettings(): Settings {
 export function defaultSettings(): Settings {
   return {
     trajectoryAnimation: TrajectoryAnimation.Follow,
+    alarm: false,
   };
 }

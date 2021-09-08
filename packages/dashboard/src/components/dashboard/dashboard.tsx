@@ -21,7 +21,8 @@ import * as RmfModels from 'rmf-models';
 import { buildHotKeys } from '../../hotkeys';
 import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
 import { DispenserResource } from '../../managers/resource-manager-dispensers';
-import { AppControllerContext, ResourcesContext } from '../app-contexts';
+import { AppControllerContext, ResourcesContext, SettingsContext } from '../app-contexts';
+import { saveSettings, Settings } from '../../settings';
 import {
   BuildingMapContext,
   DispenserStateContext,
@@ -236,8 +237,9 @@ export default function Dashboard(_props: {}): React.ReactElement {
   statusUpdateTS.current = negotiationStatusManager?.getLastUpdateTS() || -1;
 
   const { doorsApi, liftsApi, fireAlarmApi } = React.useContext(RmfIngressContext) || {};
+  const settings = React.useContext(SettingsContext);
+  const [alarmToggle, setAlarmToggle] = React.useState(settings.alarm);
 
-  const [alarm, setAlarm] = React.useState(false);
   const handleOnDoorControlClick = React.useCallback(
     (_ev, door: RmfModels.Door, mode: number) =>
       doorsApi?.postDoorRequestDoorsDoorNameRequestPost(
@@ -267,9 +269,12 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const handleFireAlarm = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       fireAlarmApi?.postFireAlarmRequestFireAlarmRequestPost(event.target.checked);
-      setAlarm(event.target.checked);
+      const newSettings: Settings = { ...settings, alarm: event.target.checked };
+      saveSettings(newSettings);
+      setAlarmToggle(event.target.checked);
+      appController.setSettings(newSettings);
     },
-    [fireAlarmApi],
+    [fireAlarmApi, settings, appController],
   );
 
   function clearSpotlights() {
@@ -405,7 +410,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
           </OmniPanelView>
         </OmniPanel>
       </Fade>
-      <Switch checked={alarm} onChange={handleFireAlarm} />
+      <Switch checked={alarmToggle} onChange={handleFireAlarm} />
     </GlobalHotKeys>
   );
 }
