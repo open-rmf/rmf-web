@@ -1,10 +1,9 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
-import { MarkerContainer, NameLabel, NameLabelProps } from './marker-label';
+import { NameLabel, NameLabelProps } from './marker-label';
 
 export default {
   title: 'Map/Marker Labels',
-  component: MarkerContainer,
 } as Meta;
 
 export const NameLabelStory: Story<NameLabelProps> = (args) => {
