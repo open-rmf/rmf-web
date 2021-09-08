@@ -1,5 +1,6 @@
 import Paper from '@mui/material/Paper';
-import { makeStyles, Theme } from '@mui/material/styles';
+import { Theme } from '@mui/material/styles';
+import { makeStyles } from '@mui/styles';
 import Typography from '@mui/material/Typography';
 import {
   Timeline,

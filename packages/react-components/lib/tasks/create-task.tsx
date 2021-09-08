@@ -5,14 +5,13 @@ import {
   List,
   ListItem,
   ListItemText,
-  makeStyles,
   MenuItem,
   TextField,
   useTheme,
 } from '@mui/material';
-import { Autocomplete } from '@mui/lab';
-import { DateTimePicker, LocalizationProvider } from '@material-ui/pickers';
-import DateFnsAdapter from '@material-ui/pickers/adapter/date-fns';
+import { Autocomplete, DateTimePicker, LocalizationProvider } from '@mui/lab';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import { makeStyles } from '@mui/styles';
 import type {
   CleanTaskDescription,
   DeliveryTaskDescription,
@@ -483,7 +482,7 @@ export function CreateTaskForm({
   const submitText = tasks.length > 1 ? 'Submit All' : 'Submit';
 
   return (
-    <LocalizationProvider dateAdapter={DateFnsAdapter}>
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
       <ConfirmationDialog
         title="Create Task"
         submitting={submitting}

@@ -1,6 +1,6 @@
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import { makeStyles } from '@mui/material/styles';
+import { makeStyles } from '@mui/styles';
 import Typography from '@mui/material/Typography';
 import clsx from 'clsx';
 import React from 'react';

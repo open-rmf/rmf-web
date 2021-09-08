@@ -1,5 +1,6 @@
 import React from 'react';
-import { TextField, makeStyles, Divider } from '@mui/material';
+import { TextField, Divider } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 
 export interface OnFilterChangeEvent {
   name?: string | undefined;

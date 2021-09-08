@@ -8,7 +8,8 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import { createStyles, makeStyles, Theme } from '@mui/material/styles';
+import { Theme } from '@mui/material/styles';
+import { makeStyles, createStyles } from '@mui/styles';
 import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -135,7 +136,13 @@ export function TransferList({
   const [rightChecked, setRightChecked] = React.useState<Set<string>>(new Set());
 
   return (
-    <Grid container spacing={2} justify="center" alignItems="stretch" className={classes.container}>
+    <Grid
+      container
+      spacing={2}
+      justifyContent="center"
+      alignItems="stretch"
+      className={classes.container}
+    >
       <CustomList
         title={leftTitle}
         items={leftItems}

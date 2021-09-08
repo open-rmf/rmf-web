@@ -1,13 +1,5 @@
-import {
-  Box,
-  BoxProps,
-  Grid,
-  makeStyles,
-  Theme,
-  Tooltip,
-  Typography,
-  useTheme,
-} from '@mui/material';
+import { Box, BoxProps, Grid, Theme, Tooltip, Typography, useTheme } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import clsx from 'clsx';
 import React from 'react';
 import * as RmfModels from 'rmf-models';

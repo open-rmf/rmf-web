@@ -1,7 +1,8 @@
 import React from 'react';
 import Debug from 'debug';
 import * as RmfModels from 'rmf-models';
-import { IconButton, makeStyles, Typography } from '@mui/material';
+import { IconButton, Typography } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { MultiSelectTreeViewProps, SingleSelectTreeViewProps, TreeItem, TreeView } from '@mui/lab';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
