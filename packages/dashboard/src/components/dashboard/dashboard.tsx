@@ -1,4 +1,4 @@
-import { Fade, makeStyles, Switch } from '@material-ui/core';
+import { Fade, makeStyles, Switch, FormGroup, FormControlLabel } from '@material-ui/core';
 import Debug from 'debug';
 import React from 'react';
 import {
@@ -93,10 +93,20 @@ const useStyles = makeStyles((theme) => ({
       boxShadow: theme.shadows[12],
     },
   },
-  switch: {
+  formGroup: {
     position: 'absolute',
     zIndex: 1000,
     top: 190,
+  },
+  formLabelRoot: {
+    alignItems: 'flex-start',
+    padding: 0,
+  },
+  switch: {
+    right: 6,
+  },
+  label: {
+    color: theme.palette.error.main,
   },
 }));
 
@@ -415,7 +425,19 @@ export default function Dashboard(_props: {}): React.ReactElement {
           </OmniPanelView>
         </OmniPanel>
       </Fade>
-      <Switch className={classes.switch} checked={alarmToggle} onChange={handleFireAlarm} />
+      <FormGroup className={classes.formGroup}>
+        <FormControlLabel
+          control={
+            <Switch className={classes.switch} checked={alarmToggle} onChange={handleFireAlarm} />
+          }
+          label="Fire Alarm"
+          labelPlacement="top"
+          classes={{
+            root: classes.formLabelRoot,
+            labelPlacementTop: classes.label,
+          }}
+        />
+      </FormGroup>
     </GlobalHotKeys>
   );
 }
