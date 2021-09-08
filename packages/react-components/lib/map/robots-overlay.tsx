@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLeaflet } from 'react-leaflet';
+import { useLeaflet, Marker } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
 import { getRmfTransform } from '.';
 import { DefaultMarkerActualSizeMinZoom } from './constants';

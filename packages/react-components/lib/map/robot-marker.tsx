@@ -5,6 +5,7 @@ import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { DefaultMarker } from './default-robot-marker';
 import { ImageMarker } from './image-marker';
+import { NameLabel } from './marker-label';
 
 const debug = Debug('Map:RobotMarker');
 
@@ -34,6 +35,8 @@ export const RobotMarker = React.forwardRef(
     const [imageHasError, setImageHasError] = React.useState(false);
     const classes = useStyles();
     const useImageMarker = !!iconPath && !imageHasError;
+    const labelAnchorX = 0.707106781187; // cos(45°)
+    const labelAnchorY = -0.707106781187; // sin(-45°)
 
     const isMounted = React.useRef(true);
     React.useEffect(() => {
@@ -58,6 +61,12 @@ export const RobotMarker = React.forwardRef(
           ) : (
             <DefaultMarker color={color} inConflict={inConflict} />
           )}
+          <NameLabel
+            anchorX={labelAnchorX}
+            anchorY={labelAnchorY}
+            text={name}
+            transform="scale(12)"
+          />
         </g>
       </g>
     );

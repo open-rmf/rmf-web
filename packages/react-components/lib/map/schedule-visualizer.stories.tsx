@@ -30,6 +30,7 @@ const fleetState: RmfModels.FleetState = {
   name: 'test_fleet',
   robots: [
     makeRobot({
+      name: 'test_robot',
       location: { x: 20, y: -10, yaw: 0, level_name: 'L1', index: 0, t: { sec: 0, nanosec: 0 } },
     }),
   ],

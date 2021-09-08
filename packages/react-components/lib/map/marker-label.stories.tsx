@@ -9,7 +9,7 @@ export default {
 export const NameLabelStory: Story<NameLabelProps> = (args) => {
   return (
     <svg viewBox="-4 -2 8 4" width={800} height={400} style={{ border: '1px black solid' }}>
-      <NameLabel x={0} y={0} {...args} />
+      <NameLabel {...args} anchorX={0} anchorY={0} transform="scale(8)" />
     </svg>
   );
 };

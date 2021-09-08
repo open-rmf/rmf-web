@@ -52,7 +52,7 @@ export const Gallery: Story = (args) => {
                 <Typography align="center">{k}</Typography>
               </Grid>
               <Grid item>
-                <svg viewBox="-2 -2 4 4" style={{ width: 200 }}>
+                <svg viewBox="-4 -2 8 4" width={400} height={200}>
                   <RobotMarker {...robotMarkerProps[k]} {...args} />
                 </svg>
               </Grid>
