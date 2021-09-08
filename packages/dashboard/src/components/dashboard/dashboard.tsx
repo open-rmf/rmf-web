@@ -93,6 +93,11 @@ const useStyles = makeStyles((theme) => ({
       boxShadow: theme.shadows[12],
     },
   },
+  switch: {
+    position: 'absolute',
+    zIndex: 1000,
+    top: 190,
+  },
 }));
 
 function robotKey(fleet: string, robotName: string): string {
@@ -410,7 +415,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
           </OmniPanelView>
         </OmniPanel>
       </Fade>
-      <Switch checked={alarmToggle} onChange={handleFireAlarm} />
+      <Switch className={classes.switch} checked={alarmToggle} onChange={handleFireAlarm} />
     </GlobalHotKeys>
   );
 }
