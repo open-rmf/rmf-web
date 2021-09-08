@@ -1,4 +1,5 @@
-import { AppBar, AppBarProps, createStyles, makeStyles } from '@mui/material';
+import { AppBar, AppBarProps, createStyles } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import clsx from 'clsx';
 import React from 'react';
 

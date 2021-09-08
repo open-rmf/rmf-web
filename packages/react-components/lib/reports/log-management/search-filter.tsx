@@ -1,9 +1,10 @@
 import React from 'react';
-import { FormControl, InputLabel, makeStyles, MenuItem, Select } from '@mui/material';
+import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 
 interface SearchFilterProps {
   options: { label: string; value: string }[];
-  handleOnChange: (event: React.ChangeEvent<{ name?: string; value: unknown }>) => void;
+  handleOnChange: (event: SelectChangeEvent<React.ReactText>, child: React.ReactNode) => void;
   label: string;
   name: string;
   currentValue: string | number;

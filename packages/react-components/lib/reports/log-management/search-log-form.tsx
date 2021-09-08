@@ -1,5 +1,6 @@
 import React from 'react';
-import { makeStyles, TextField } from '@mui/material';
+import { TextField, SelectChangeEvent } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import Button from '@mui/material/Button';
 import { SearchFilter } from './search-filter';
 import DateAndTimePickers from '../../date-time-picker';
@@ -35,19 +36,13 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
     search && search({ toLogDate, fromLogDate, logLabel, logLevel });
   };
 
-  const handleLogLabelChange = React.useCallback(
-    (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
-      setLogLabel(event.target.value as string);
-    },
-    [],
-  );
+  const handleLogLabelChange = React.useCallback((event: SelectChangeEvent<React.ReactText>) => {
+    setLogLabel(event.target.value as string);
+  }, []);
 
-  const handleLogLevelChange = React.useCallback(
-    (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
-      setLogLevel(event.target.value as LogLevel);
-    },
-    [],
-  );
+  const handleLogLevelChange = React.useCallback((event: SelectChangeEvent<React.ReactText>) => {
+    setLogLevel(event.target.value as LogLevel);
+  }, []);
 
   const handleFromLogDateChange = React.useCallback((date: any) => {
     setFromLogDate(date);

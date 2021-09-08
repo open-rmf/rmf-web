@@ -1,8 +1,9 @@
-import { Grid, makeStyles, Paper, TablePagination, Typography } from '@mui/material';
+import { Grid, Paper, TablePagination, Typography } from '@mui/material';
 import React from 'react';
 import { RobotInfo } from './robot-info';
 import { RobotTable } from './robot-table';
 import { VerboseRobot } from './utils';
+import { makeStyles } from '@mui/styles';
 
 const useStyles = makeStyles((theme) => ({
   detailPanelContainer: {
@@ -56,7 +57,7 @@ export function RobotPanel({
 
   return (
     <div {...divProps}>
-      <Grid container wrap="nowrap" justify="center" style={{ height: 'inherit' }}>
+      <Grid container wrap="nowrap" justifyContent="center" style={{ height: 'inherit' }}>
         <Grid style={{ flex: '1 1 auto' }}>
           <RobotTable
             className={classes.robotTable}

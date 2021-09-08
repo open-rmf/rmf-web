@@ -1,8 +1,9 @@
-import { IconButton, makeStyles } from '@mui/material';
+import { IconButton } from '@mui/material';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import CloseIcon from '@mui/icons-material/Close';
 import Autocomplete from '@mui/lab/Autocomplete';
+import { makeStyles } from '@mui/styles';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { ConfirmationDialog } from '../confirmation-dialog';

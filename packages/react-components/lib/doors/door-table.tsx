@@ -1,7 +1,6 @@
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import {
-  makeStyles,
   Table,
   TableBody,
   TableCell,
@@ -10,6 +9,7 @@ import {
   ButtonGroup,
   Button,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 
 import { DoorData, doorModeToString, doorTypeToString } from './utils';
 

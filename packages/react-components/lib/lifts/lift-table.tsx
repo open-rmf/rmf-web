@@ -1,12 +1,5 @@
-import {
-  Button,
-  makeStyles,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-} from '@mui/material';
+import { Button, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import LiftRequestFormDialog from './lift-request-form-dialog';

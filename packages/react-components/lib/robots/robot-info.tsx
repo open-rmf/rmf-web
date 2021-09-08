@@ -110,7 +110,7 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
       <Divider />
       <div style={{ marginBottom: theme.spacing(1) }}></div>
       <Grid container>
-        <Grid container item xs={12} justify="center">
+        <Grid container item xs={12} justifyContent="center">
           <Typography variant="h6" gutterBottom>
             Battery
           </Typography>
@@ -118,12 +118,12 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
         <Grid item xs={12}>
           <LinearProgressBar value={robot.state.battery_percent} />
         </Grid>
-        <Grid container item xs={12} justify="center">
+        <Grid container item xs={12} justifyContent="center">
           <Typography variant="h6" gutterBottom>
             Assigned Tasks
           </Typography>
         </Grid>
-        <Grid container item xs={12} justify="center">
+        <Grid container item xs={12} justifyContent="center">
           <Button
             disableElevation
             variant="outlined"

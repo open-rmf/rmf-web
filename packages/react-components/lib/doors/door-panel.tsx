@@ -1,13 +1,5 @@
-import {
-  Button,
-  ButtonGroup,
-  Card,
-  Grid,
-  IconButton,
-  makeStyles,
-  Paper,
-  Typography,
-} from '@mui/material';
+import { Button, ButtonGroup, Card, Grid, IconButton, Paper, Typography } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import React from 'react';
@@ -142,7 +134,7 @@ export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelPr
   return (
     <Card variant="outlined" className={classes.container}>
       <Paper className={classes.buttonBar}>
-        <Grid container direction="row" justify="space-between" alignItems="center">
+        <Grid container direction="row" justifyContent="space-between" alignItems="center">
           <Grid item xs={6}>
             <Typography variant="h5" className={classes.panelHeader}>
               Doors

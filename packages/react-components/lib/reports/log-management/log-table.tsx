@@ -1,7 +1,8 @@
 import React from 'react';
 import MaterialTable, { Column } from 'material-table';
 import { CustomLookupFilterParser, LogLevel } from '.';
-import { makeStyles, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { materialTableIcons } from '../../material-table-icons';
 import { format } from 'date-fns';
 

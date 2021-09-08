@@ -1,4 +1,4 @@
-import { createStyles, makeStyles } from '@mui/material';
+import { makeStyles, createStyles } from '@mui/styles';
 import Tabs from '@mui/material/Tabs';
 import React from 'react';
 

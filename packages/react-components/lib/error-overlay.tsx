@@ -1,7 +1,7 @@
 import React from 'react';
-import { makeStyles } from '@mui/material';
 import ErrorIcon from '@mui/icons-material/Error';
 import { Typography, Grid } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 
 const useStyles = makeStyles((theme) => ({
   errorIcon: {
@@ -52,7 +52,7 @@ export const ErrorOverlay = React.memo(
           }
         >
           <div>
-            <Grid container direction="row" justify="center" alignItems="center" spacing={2}>
+            <Grid container direction="row" justifyContent="center" alignItems="center" spacing={2}>
               <Grid item>
                 <ErrorIcon className={classes.errorIcon} />
               </Grid>

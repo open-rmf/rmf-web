@@ -1,4 +1,4 @@
-import { makeStyles } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import React from 'react';
 import { LoginCard, LoginCardProps } from './login-card';
 

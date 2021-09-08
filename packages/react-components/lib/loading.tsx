@@ -1,4 +1,5 @@
-import { CircularProgress, CircularProgressProps, makeStyles } from '@mui/material';
+import { CircularProgress, CircularProgressProps } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import React from 'react';
 
 const useStyles = makeStyles({

@@ -1,4 +1,5 @@
-import { makeStyles, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
+import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { Dispenser } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';

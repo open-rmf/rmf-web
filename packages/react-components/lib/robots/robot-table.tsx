@@ -1,6 +1,5 @@
 import {
   IconButton,
-  makeStyles,
   Paper,
   PaperProps,
   Table,
@@ -17,6 +16,7 @@ import { Refresh as RefreshIcon } from '@mui/icons-material';
 import React from 'react';
 import { taskTypeToStr } from '../tasks/utils';
 import { robotModeToString, VerboseRobot } from './utils';
+import { makeStyles } from '@mui/styles';
 
 const useStyles = makeStyles((theme) => ({
   table: {

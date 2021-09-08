@@ -1,8 +1,9 @@
-import { Box, Button, Card, Grid, IconButton, makeStyles, Paper, Typography } from '@mui/material';
+import { Box, Button, Card, Grid, IconButton, Paper, Typography } from '@mui/material';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
+import { makeStyles } from '@mui/styles';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import LiftRequestFormDialog from './lift-request-form-dialog';
@@ -164,7 +165,7 @@ export function LiftPanel({ lifts, liftStates, onRequestSubmit }: LiftPanelProps
   return (
     <Card variant="outlined" className={classes.container}>
       <Paper className={classes.buttonBar}>
-        <Grid container direction="row" justify="space-between" alignItems="center">
+        <Grid container direction="row" justifyContent="space-between" alignItems="center">
           <Grid item xs={6}>
             <Typography variant="h5" className={classes.panelHeader}>
               Lifts

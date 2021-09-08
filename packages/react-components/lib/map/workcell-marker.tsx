@@ -1,4 +1,5 @@
-import { makeStyles, useTheme } from '@mui/material';
+import { useTheme } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import Debug from 'debug';
 import React from 'react';
 import { fromRmfCoords } from '../geometry-utils';

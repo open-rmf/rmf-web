@@ -1,4 +1,5 @@
-import { ButtonBase, ButtonBaseProps, makeStyles } from '@mui/material';
+import { ButtonBase, ButtonBaseProps } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import clsx from 'clsx';
 import React from 'react';
 
