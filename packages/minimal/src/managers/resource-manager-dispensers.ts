@@ -30,18 +30,15 @@ export class DispenserResourceManager {
       debug(`failed to load icon for "${dispenserName}" (dispenser does not exist in resources)`);
       return null;
     }
-    if (!Object.prototype.hasOwnProperty.call(this.dispensers[dispenserName], 'icons')) {
+    if (!this.dispensers[dispenserName].hasOwnProperty('icons')) {
       debug(`failed to load icon for "${dispenserName}" (dispenser does not have an icon)`);
       return null;
     }
     const dispenserIcon = this.dispensers[dispenserName].icons[dispenserName];
 
-    const currDir = process.cwd();
-
     try {
-      return (
-        await import(/* webpackMode: "eager" */ `${currDir}/src/assets/resources${dispenserIcon}`)
-      ).default;
+      return (await import(/* webpackMode: "eager" */ `../assets/resources${dispenserIcon}`))
+        .default;
     } catch {
       debug(`failed to load icon for "${dispenserName}" (failed to load icon module)`);
       return null;
@@ -59,8 +56,7 @@ export class DispenserResourceManager {
   private assignGuidToDispensers(
     dispensers: Record<string, RawDispenserResource>,
   ): Record<string, DispenserResource> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const newDict: any = Object.assign({}, dispensers);
+    let newDict: any = Object.assign({}, dispensers);
     Object.keys(dispensers).forEach((key) => {
       newDict[key].guid = key;
     });
@@ -68,7 +64,7 @@ export class DispenserResourceManager {
   }
 
   private dispenserExists = (dispenserName: string) => {
-    if (!Object.prototype.hasOwnProperty.call(this.dispensers, dispenserName)) {
+    if (!this.dispensers.hasOwnProperty(dispenserName)) {
       return false;
     }
     return true;

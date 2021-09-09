@@ -29,7 +29,7 @@ export class RobotResourceManager {
       debug(`failed to load icon for "${fleetName}/${robotModel}" (fleet not in resources)`);
       return null;
     }
-    if (!Object.prototype.hasOwnProperty.call(this.robots[fleetName], 'icons')) {
+    if (!this.robots[fleetName].hasOwnProperty('icons')) {
       debug(
         `failed to load icon for "${fleetName}/${robotModel}" (fleet/model does not have an icon)`,
       );
@@ -39,10 +39,10 @@ export class RobotResourceManager {
     // In case the fleet has different models
     let iconPath: string | null = null;
 
-    if (!!robotModel && Object.prototype.hasOwnProperty.call(robotIcons, robotModel)) {
+    if (!!robotModel && robotIcons.hasOwnProperty(robotModel)) {
       iconPath = robotIcons[robotModel];
     } else {
-      iconPath = robotIcons[fleetName] ? `${robotIcons[fleetName]}` : null;
+      iconPath = !!robotIcons[fleetName] ? `${robotIcons[fleetName]}` : null;
     }
 
     try {
@@ -60,7 +60,7 @@ export class RobotResourceManager {
       );
       return null;
     }
-    if (!Object.prototype.hasOwnProperty.call(this.robots[fleetName].places, placeName)) {
+    if (!this.robots[fleetName].places.hasOwnProperty(placeName)) {
       debug(
         `failed to load dispensers for "${fleetName}, ${placeName}" (place does not exist in resources)`,
       );
@@ -70,14 +70,14 @@ export class RobotResourceManager {
   };
 
   private fleetExists = (fleetName: string): boolean => {
-    if (!Object.prototype.hasOwnProperty.call(this.robots, fleetName)) {
+    if (!this.robots.hasOwnProperty(fleetName)) {
       return false;
     }
     return true;
   };
 
   private placesExists = (fleetName: string): boolean => {
-    if (!Object.prototype.hasOwnProperty.call(this.robots[fleetName], 'places')) {
+    if (!this.robots[fleetName].hasOwnProperty('places')) {
       return false;
     }
     return true;

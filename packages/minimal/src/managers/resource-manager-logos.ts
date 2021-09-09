@@ -17,15 +17,13 @@ export class LogoResourceManager {
     if (!this.logoExists(logoName)) {
       return null;
     }
-    if (!Object.prototype.hasOwnProperty.call(this.logos[logoName], 'icons')) {
+    if (!this.logos[logoName].hasOwnProperty('icons')) {
       return null;
     }
     const logoIcon = this.logos[logoName].icons[logoName];
-    const currDir = process.cwd();
 
     try {
-      return (await import(/* webpackMode: "eager" */ `${currDir}/src/assets/resources${logoIcon}`))
-        .default;
+      return (await import(/* webpackMode: "eager" */ `../assets/resources${logoIcon}`)).default;
     } catch {
       debug(`failed to load icon for "${logoName}"`);
       return null;
@@ -33,12 +31,10 @@ export class LogoResourceManager {
   };
 
   getHeaderLogoPath = async (): Promise<string> => {
-    const currDir = process.cwd();
     const iconPath = await this.getIconPath('headerLogo');
     if (iconPath) return iconPath;
     debug('using default header logo');
-    return (await import(/* webpackMode: "eager" */ `${currDir}/src/assets/defaultLogo.png`))
-      .default;
+    return (await import(/* webpackMode: "eager" */ '../assets/defaultLogo.png')).default;
   };
 
   get all(): Record<string, LogoResource> {
@@ -50,7 +46,7 @@ export class LogoResourceManager {
   }
 
   private logoExists = (logoName: string) => {
-    if (!Object.prototype.hasOwnProperty.call(this.logos, logoName)) {
+    if (!this.logos.hasOwnProperty(logoName)) {
       return false;
     }
     return true;

@@ -12,7 +12,7 @@ export interface ResourceConfigurationsType {
   logos?: Record<string, LogoResource>;
 }
 
-export class ResourceManager {
+export default class ResourceManager {
   robots: RobotResourceManager;
   logos: LogoResourceManager;
   dispensers?: DispenserResourceManager;
@@ -24,9 +24,8 @@ export class ResourceManager {
     try {
       // need to use interpolate string to make webpack resolve import at run time and for
       // typescript to not attempt to typecheck it.
-      const currDir = process.cwd();
       const resources = (await import(
-        /* webpackMode: "eager" */ `${currDir}/src/assets/${ResourceFile}`
+        /* webpackMode: "eager" */ `../assets/${ResourceFile}`
       )) as ResourceConfigurationsType;
       return new ResourceManager(resources);
     } catch {

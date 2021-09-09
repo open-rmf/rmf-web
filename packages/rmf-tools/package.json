@@ -31,7 +31,6 @@
     "babel-jest": "^27.0.6",
     "eslint": "^7.26.0",
     "jest": "^26.5.0",
-    "react-components": "*",
     "rmf-auth": "*",
     "ts-jest": "^26.4.1",
     "ts-node": "^9.1.1",

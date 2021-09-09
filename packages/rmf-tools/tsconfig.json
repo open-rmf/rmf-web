@@ -15,7 +15,6 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noFallthroughCasesInSwitch": true,
-    "jsx": "react-jsx"
   },
   "include": ["lib"],
   "exclude": ["**/*/tests", "**/*/__mocks__"]
