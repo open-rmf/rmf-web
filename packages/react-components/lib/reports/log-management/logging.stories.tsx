@@ -3,6 +3,7 @@ import React from 'react';
 import { LogManagement } from './log-management';
 import { LogTable } from './log-table';
 import { SearchLogForm } from './search-log-form';
+import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 
 export default {
   title: 'Logging',
@@ -27,7 +28,7 @@ const getLogs = () => {
       message: 'Test' + i,
       level: 'Debug',
       created: randomDate(new Date(2012, 0, 1), new Date()).toISOString(),
-      container: { id: 1, name: 'container_test' },
+      container: { id: i + 2, name: 'container_test' },
     });
   }
   return rows;
@@ -66,8 +67,8 @@ export const SimpleLogTable: Story = (args) => {
     message: `long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long msg`,
     level: 'Debug',
     created: timestamp,
-    container: { id: 1, name: 'container_test' },
+    container: { id: 0, name: 'container_test' },
   });
 
-  return <LogTable rows={logs} {...args} />;
+  return <LogTable rows={logs} tableSize={500} {...args} />;
 };
