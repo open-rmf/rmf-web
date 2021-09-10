@@ -1,4 +1,5 @@
-import { createStyles, IconButton, makeStyles, Toolbar, Typography } from '@material-ui/core';
+import { IconButton, Toolbar, Typography } from '@material-ui/core';
+import { makeStyles, createStyles } from '@material-ui/styles';
 import Tab from '@material-ui/core/Tab';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import TabContext from '@material-ui/lab/TabContext';

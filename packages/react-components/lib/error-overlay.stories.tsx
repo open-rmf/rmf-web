@@ -1,4 +1,4 @@
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { ErrorOverlay } from './error-overlay';
