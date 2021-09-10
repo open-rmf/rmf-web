@@ -2,6 +2,7 @@ import { useTheme } from '@material-ui/core';
 import EventEmitter from 'eventemitter3';
 import L from 'leaflet';
 import React from 'react';
+import { uniqueId } from '../utils';
 import { NameLabel, NameLabelProps } from './label-marker';
 
 interface OverrideLabelProps {
@@ -98,11 +99,12 @@ export function ManagedNameLabel({
       );
       return;
     }
-    const newLabel = labelManager.addLabel('test', labelTarget);
+    const labelId = `label-${uniqueId()}`;
+    const newLabel = labelManager.addLabel(labelId, labelTarget);
     setManagedProps(newLabel.managedProps);
     newLabel.events.on('change', setManagedProps);
     return () => {
-      labelManager.removeLabel('test');
+      labelManager.removeLabel(labelId);
     };
   }, [labelManager, labelTarget]);
 
