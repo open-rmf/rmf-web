@@ -1,7 +1,7 @@
 import { useTheme } from '@material-ui/core';
 import React from 'react';
 
-export interface MarkerContainerProps extends React.SVGProps<SVGGElement> {
+export interface LabelContainerProps extends React.SVGProps<SVGGElement> {
   anchorX: number;
   anchorY: number;
   arrowLength: number;
@@ -14,14 +14,10 @@ export interface MarkerContainerProps extends React.SVGProps<SVGGElement> {
    * Default: -30
    */
   theta?: number;
-  /**
-   * TODO: Allow the arrow to points towards left.
-   */
-  // variant?: 'normal' | 'reverse';
   children?: React.ReactNode;
 }
 
-export function MarkerContainer({
+export function LabelContainer({
   anchorX,
   anchorY,
   arrowLength,
@@ -32,7 +28,7 @@ export function MarkerContainer({
   theta = -30,
   children,
   ...otherProps
-}: MarkerContainerProps): JSX.Element {
+}: LabelContainerProps): JSX.Element {
   const theme = useTheme();
   const contentWidthOuter = contentWidth + contentPadding * 2;
   const contentHeightOuter = contentHeight + contentPadding * 2;
@@ -88,25 +84,20 @@ export function MarkerContainer({
 }
 
 export interface NameLabelProps
-  extends Omit<MarkerContainerProps, 'arrowLength' | 'contentWidth' | 'contentHeight'> {
+  extends Omit<LabelContainerProps, 'contentWidth' | 'contentHeight' | 'contentPadding'> {
   text: string;
+  fontSize: number;
 }
 
-export function NameLabel({ text, ...otherProps }: NameLabelProps): JSX.Element {
-  const theme = useTheme();
-  const stroke = theme.palette.primary.main;
-  const [contentWidth, setContentWidth] = React.useState(0.1);
-  const [contentHeight, setContentHeight] = React.useState(0.1);
+export function NameLabel({ text, fontSize, ...otherProps }: NameLabelProps): JSX.Element {
+  const [contentWidth, setContentWidth] = React.useState(0);
+  const [contentHeight, setContentHeight] = React.useState(0);
 
   return (
-    <MarkerContainer
-      arrowLength={0.05}
+    <LabelContainer
       contentWidth={contentWidth}
       contentHeight={contentHeight}
-      contentPadding={0.005}
-      radius={0.01}
-      stroke={stroke}
-      strokeWidth={0.003}
+      contentPadding={fontSize / 2}
       {...otherProps}
     >
       <text
@@ -121,12 +112,12 @@ export function NameLabel({ text, ...otherProps }: NameLabelProps): JSX.Element 
         strokeWidth={0}
         dominantBaseline="middle"
         textAnchor="middle"
-        style={{ fontSize: 0.05, userSelect: 'none' }}
-        fill={stroke}
+        style={{ fontSize, userSelect: 'none' }}
+        fill={otherProps.stroke}
         transform={`translate(${contentWidth / 2},${contentHeight / 2})`}
       >
         {text}
       </text>
-    </MarkerContainer>
+    </LabelContainer>
   );
 }

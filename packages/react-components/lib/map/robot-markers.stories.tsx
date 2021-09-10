@@ -1,8 +1,6 @@
 import { Grid, Paper, Typography } from '@material-ui/core';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
-import { makeRobot } from '../robots/test-utils.spec';
 import { RobotMarker, RobotMarkerProps } from './robot-marker';
 
 export default {
@@ -11,34 +9,27 @@ export default {
   parameters: { controls: { include: ['onClick'], hideNoControlsWarning: true } },
 } as Meta;
 
-function makeRobotMarkerProps(
-  robotState?: Partial<RmfModels.RobotState>,
-  props?: Partial<Omit<RobotMarkerProps, 'robot'>>,
-): RobotMarkerProps {
+function makeRobotMarkerProps(props?: Partial<Omit<RobotMarkerProps, 'robot'>>): RobotMarkerProps {
   props = props || {};
-  const state = makeRobot(robotState);
   return {
-    fleet: 'test_fleet',
-    name: state.name,
-    model: state.model,
-    state,
-    inConflict: false,
+    x: 0,
+    y: 0,
+    theta: 0,
+    radius: 1,
     color: 'blue',
+    inConflict: false,
     ...props,
   };
 }
 
 const robotMarkerProps: Record<string, RobotMarkerProps> = {
-  Basic: makeRobotMarkerProps({ name: 'BasicRobot' }),
-  'In Conflict': makeRobotMarkerProps({ name: 'ConflictingRobot' }, { inConflict: true }),
-  'With Icon': makeRobotMarkerProps(
-    { name: 'RobotWithIcon', model: 'fleetWithIcon' },
-    { fleet: 'fleetWithIcon', iconPath: '/assets/tiny-robot.png' },
-  ),
-  'With Icon, In Conflict': makeRobotMarkerProps(
-    { name: 'RobotWithIcon', model: 'fleetWithIcon' },
-    { fleet: 'fleetWithIcon', iconPath: '/assets/tiny-robot.png', inConflict: true },
-  ),
+  Basic: makeRobotMarkerProps(),
+  'In Conflict': makeRobotMarkerProps({ inConflict: true }),
+  'With Icon': makeRobotMarkerProps({ iconPath: '/assets/tiny-robot.png' }),
+  'With Icon, In Conflict': makeRobotMarkerProps({
+    iconPath: '/assets/tiny-robot.png',
+    inConflict: true,
+  }),
 };
 
 export const Gallery: Story = (args) => {

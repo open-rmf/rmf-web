@@ -1,8 +1,9 @@
 import React from 'react';
-import { useLeaflet, Marker } from 'react-leaflet';
+import { useLeaflet } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
-import { getRmfTransform } from '.';
+import { fromRmfCoords, fromRmfYaw } from '../utils/geometry';
 import { DefaultMarkerActualSizeMinZoom } from './constants';
+import { ManagedNameLabel } from './label-manager';
 import { RobotMarker as RobotMarker_, RobotMarkerProps } from './robot-marker';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 import { viewBoxFromLeafletBounds } from './utils';
@@ -20,18 +21,21 @@ export interface RobotData {
 }
 
 interface BoundedMarkerProps extends Omit<RobotMarkerProps, 'onClick'> {
+  robotData: RobotData;
   onClick?: (ev: React.MouseEvent, fleet: string, robot: string) => void;
 }
 
 /**
  * Bind a marker to include the fleet and robot name in the click event.
  * This is needed to avoid re-rendering all markers when only one of them changes.
+ *
+ * Also allows them to track labels.
  */
 function bindMarker(MarkerComponent: React.ComponentType<RobotMarkerProps>) {
-  return ({ onClick, ...otherProps }: BoundedMarkerProps) => {
+  return ({ robotData, onClick, ...otherProps }: BoundedMarkerProps) => {
     const handleClick = React.useCallback(
-      (ev) => onClick && onClick(ev, otherProps.fleet, otherProps.name),
-      [onClick, otherProps.fleet, otherProps.name],
+      (ev) => onClick && onClick(ev, robotData.fleet, robotData.name),
+      [onClick, robotData.fleet, robotData.name],
     );
     return <MarkerComponent onClick={onClick && handleClick} {...otherProps} />;
   };
@@ -59,49 +63,68 @@ export const RobotsOverlay = ({
 }: RobotsOverlayProps): JSX.Element => {
   const viewBox = viewBoxFromLeafletBounds(bounds);
   const BoundedMarker = React.useMemo(() => bindMarker(MarkerComponent), [MarkerComponent]);
-
   const leaflet = useLeaflet();
-  const getScaleTransform = React.useCallback(() => {
-    const zoom = leaflet.map?.getZoom();
-    return zoom === undefined
-      ? ''
-      : zoom >= markerActualSizeMinZoom
-      ? `scale(${footprint})`
-      : `scale(${30 / 2 ** zoom})`;
-  }, [leaflet.map, markerActualSizeMinZoom]);
+  const [zoom, setZoom] = React.useState(leaflet.map?.getZoom());
 
-  // TODO: hardcoded because this is not available in rmf.
-  const footprint = 0.5;
-  const [scaleTransform, setScaleTransform] = React.useState(getScaleTransform);
+  const getRadius = React.useCallback(
+    (footprint): number | null =>
+      zoom === undefined || zoom >= markerActualSizeMinZoom ? footprint : 30 / 2 ** zoom,
+    [markerActualSizeMinZoom, zoom],
+  );
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     const lmap = leaflet.map;
     if (!lmap) return;
-    const listener = () => setScaleTransform(getScaleTransform());
+    const listener = () => setZoom(lmap.getZoom());
     lmap.on('zoom', listener);
     return () => {
       lmap.off('zoom', listener);
     };
-  }, [leaflet.map, getScaleTransform]);
+  }, [leaflet.map]);
+
+  const markerProps = new Map<RobotData, RobotMarkerProps>();
+  robots.forEach((robot) => {
+    const state = getRobotState(robot.fleet, robot.name);
+    if (!state) return;
+    const [x, y] = fromRmfCoords([state.location.x, state.location.y]);
+    const theta = fromRmfYaw(state.location.yaw);
+    // TODO: hardcoded because this is not available in rmf.
+    const footprint = 0.5;
+    const radius = getRadius(footprint);
+    if (!radius) return;
+    markerProps.set(robot, {
+      x,
+      y,
+      theta,
+      radius,
+      color: robot.color,
+      inConflict: robot.inConflict,
+    });
+  });
 
   return (
     <SVGOverlay bounds={bounds} {...otherProps}>
       <svg viewBox={viewBox}>
-        {robots
-          .map((robot) => {
-            const state = getRobotState(robot.fleet, robot.name);
-            return state ? (
-              <BoundedMarker
-                key={robot.name}
-                state={state}
-                onClick={onRobotClick}
-                aria-label={robot.name}
-                transform={`${getRmfTransform(state.location)} ${scaleTransform}`}
-                {...robot}
-              />
-            ) : null;
-          })
-          .filter((x) => x !== null)}
+        {Array.from(markerProps.entries()).map(([r, p]) => (
+          <BoundedMarker
+            {...p}
+            key={r.name}
+            robotData={r}
+            onClick={onRobotClick}
+            aria-label={r.name}
+          />
+        ))}
+        {Array.from(markerProps.entries()).map(([r, p]) => (
+          <ManagedNameLabel
+            key={r.name}
+            text={r.name}
+            labelTarget={{
+              centerX: p.x,
+              centerY: p.y,
+              radius: p.radius,
+            }}
+          />
+        ))}
       </svg>
     </SVGOverlay>
   );
