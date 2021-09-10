@@ -61,4 +61,5 @@ export const Table: Story<TaskTableProps> = (args) => {
 
 Table.args = {
   tasks,
+  timeline: true,
 };

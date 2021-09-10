@@ -25,9 +25,9 @@ describe('TaskInfo', () => {
 
     render(
       <>
-        <TaskInfo task={cleanTask} />
-        <TaskInfo task={loopTask} />
-        <TaskInfo task={deliveryTask} />
+        <TaskInfo task={cleanTask} timeline={true} />
+        <TaskInfo task={loopTask} timeline={true} />
+        <TaskInfo task={deliveryTask} timeline={true} />
       </>,
     );
   });

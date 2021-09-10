@@ -1,4 +1,5 @@
 import * as RmfModels from 'rmf-models';
+import { DoorData } from './utils';
 
 export function makeDoor(door?: Partial<RmfModels.Door>): RmfModels.Door {
   return {
@@ -44,3 +45,31 @@ export function allDoorModes(): RmfModels.DoorMode[] {
     { value: -1 },
   ];
 }
+
+export const doors: RmfModels.Door[] = [
+  makeDoor({ name: 'main_door' }),
+  makeDoor({ name: 'hardware_door' }),
+  makeDoor({ name: 'coe_door' }),
+  makeDoor({ name: 'exit_door' }),
+  makeDoor({ name: 'extra_door' }),
+];
+
+export const doorStates: Record<string, RmfModels.DoorState> = {
+  main_door: makeDoorState({ door_name: 'main_door', current_mode: { value: -1 } }),
+  coe_door: makeDoorState({
+    door_name: 'coe_door',
+    current_mode: { value: RmfModels.DoorMode.MODE_OPEN },
+  }),
+  hardware_door: makeDoorState({
+    door_name: 'hardware_door',
+    current_mode: { value: RmfModels.DoorMode.MODE_CLOSED },
+  }),
+  exit_door: makeDoorState({
+    door_name: 'exit_door',
+    current_mode: { value: RmfModels.DoorMode.MODE_MOVING },
+  }),
+};
+
+export const makeDoorsData = (): DoorData[] => {
+  return doors.map((door) => ({ door, level: 'L1' }));
+};

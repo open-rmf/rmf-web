@@ -2,10 +2,7 @@ import 'leaflet/dist/leaflet.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './components/app';
-import { extendControlPositions } from './leaflet/control-positions';
 import * as serviceWorker from './serviceWorker';
-
-extendControlPositions();
 
 ReactDOM.render(<App />, document.getElementById('root'));
 

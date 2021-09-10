@@ -24,3 +24,8 @@ export function defaultDict<T>(factory: (key: any) => T): Record<any, T> {
 export function rosTimeToJs(rosTime: RmfModels.Time): Date {
   return new Date(rosTime.sec * 1000 + Math.floor(rosTime.nanosec / 1000000));
 }
+
+let id = 0;
+export function uniqueId(): string {
+  return (id++).toString();
+}

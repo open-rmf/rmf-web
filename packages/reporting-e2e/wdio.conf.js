@@ -124,7 +124,7 @@ exports.config = {
   // Services take over a specific job you don't want to take care of. They enhance
   // your test setup with almost no effort. Unlike plugins, they don't add new
   // commands. Instead, they hook themselves up into the test process.
-  services: ['chromedriver'],
+  services: [],
 
   // Framework you want to run your specs with.
   // The following are supported: Mocha, Jasmine, and Cucumber
@@ -230,13 +230,11 @@ exports.config = {
   /**
    * Function to be executed after a test (in Mocha/Jasmine).
    */
-  afterTest: function (test, context, { error, result, duration, passed, retries }) {
+  afterTest: async function (test /*, context, { error, result, duration, passed, retries }*/) {
     const testPath = path.relative('tests', test.file);
     const artifactDir = `artifacts/${testPath}/${test.title}`;
     fs.mkdirSync(artifactDir, { recursive: true });
-    browser.saveScreenshot(`${artifactDir}/end.png`);
-    const logs = JSON.stringify(browser.getLogs('browser'), undefined, 2);
-    fs.writeFileSync(`${artifactDir}/logs.json`, logs);
+    await browser.saveScreenshot(`${artifactDir}/end.png`);
   },
 
   /**
@@ -279,7 +277,8 @@ exports.config = {
    * @param {Array.<Object>} capabilities list of capabilities details
    * @param {<Object>} results object containing test results
    */
-  onComplete: function (exitCode, config, capabilities, results) {
+  onComplete: function (/* exitCode, config, capabilities, results */) {
+    // FIXME: This is very dangerous. Also force killing the process is definitely not a right way to close it.
     execSync('kill -9 `pgrep reporting`');
   },
   /**

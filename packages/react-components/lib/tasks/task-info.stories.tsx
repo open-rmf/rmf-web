@@ -19,6 +19,7 @@ cleanTask.task_profile.description.clean.start_waypoint = 'test_waypoint';
 
 CleanTask.args = {
   task: cleanTask,
+  timeline: true,
 };
 
 export const LoopTask: Story<TaskInfoProps> = (args) => {
@@ -33,6 +34,7 @@ loopTask.task_profile.description.loop.num_loops = 3;
 
 LoopTask.args = {
   task: loopTask,
+  timeline: true,
 };
 
 export const DeliveryTask: Story<TaskInfoProps> = (args) => {
@@ -48,4 +50,5 @@ deliveryTask.task_profile.description.delivery.dropoff_ingestor = 'test_ingestor
 
 DeliveryTask.args = {
   task: deliveryTask,
+  timeline: true,
 };

@@ -38,7 +38,7 @@ others:
 For this example we will be using [rmf_demos](https://github.com/open-rmf/rmf_demos) as a local "deployment" of RMF, check that you have a working installation with
 
 ```bash
-ros2 launch rmf_demos office.launch.xml
+ros2 launch rmf_demos_gz office.launch.xml
 ```
 
 ## kubernetes
@@ -302,7 +302,7 @@ The jobs we will run in this example can be found at `k8s/example-full/cronjobs.
 If not done so already, launch the office demo
 
 ```bash
-ros2 launch rmf_demos office.launch.xml headless:=true
+ros2 launch rmf_demos_gz office.launch.xml headless:=true
 ```
 
 Go to https://example.com/dashboard, if everything works, you should see a log in screen, use user=example, password=example.

@@ -1,12 +1,7 @@
-import { StackNavigatorDispatch } from 'react-components';
 import { HotKeysEnabledProps, KeyMap, KeySequence } from 'react-hotkeys';
 import { AppController } from './components/app-contexts';
-import { OmniPanelViewIndex } from './components/dashboard/dashboard';
-import { ReducerDashboardDispatch } from './components/dashboard/reducers/dashboard-reducer';
 
 export interface HotKeysProps {
-  reducerDashboardDispatch: ReducerDashboardDispatch;
-  viewStackDispatch: StackNavigatorDispatch<OmniPanelViewIndex>;
   appController: AppController;
 }
 
@@ -50,40 +45,12 @@ export const keyMap: KeyMap = {
 };
 
 export const buildHotKeys = (props: HotKeysProps): HotKeysEnabledProps => {
-  const { setShowOmniPanel, toggleOmnipanel } = props.reducerDashboardDispatch;
-  const { viewStackDispatch } = props;
-  const { toggleHotkeysDialog: toggleHotkeys, setShowSettings, toggleHelp } = props.appController;
-
-  const openDispensers = () => {
-    setShowOmniPanel(true);
-    viewStackDispatch.push(OmniPanelViewIndex.Dispensers);
-  };
-
-  const openDoors = () => {
-    setShowOmniPanel(true);
-    viewStackDispatch.push(OmniPanelViewIndex.Doors);
-  };
-
-  const openLifts = () => {
-    setShowOmniPanel(true);
-    viewStackDispatch.push(OmniPanelViewIndex.Lifts);
-  };
-
-  const openRobots = () => {
-    setShowOmniPanel(true);
-    viewStackDispatch.push(OmniPanelViewIndex.Robots);
-  };
+  const { toggleHotkeysDialog: toggleHotkeys, toggleHelp } = props.appController;
 
   // Keep the same name as the KeyMap
   const handlers = {
-    OPEN_DISPENSERS: openDispensers,
-    OPEN_DOORS: openDoors,
     OPEN_HELP_PANEL: () => toggleHelp(),
     OPEN_HOTKEYS: () => toggleHotkeys(),
-    OPEN_LIFTS: openLifts,
-    OPEN_OMNIPANEL: () => toggleOmnipanel(),
-    OPEN_ROBOTS: openRobots,
-    OPEN_SETTINGS: () => setShowSettings((prev) => !prev),
   };
 
   return { keyMap, handlers };

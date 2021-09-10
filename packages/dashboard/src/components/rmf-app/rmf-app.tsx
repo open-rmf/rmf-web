@@ -4,7 +4,6 @@ import { getPlaces } from 'react-components';
 import { UserProfileProvider } from 'rmf-auth';
 import * as RmfModels from 'rmf-models';
 import appConfig from '../../app-config';
-import RmfHealthStateManager from '../../managers/rmf-health-state-manager';
 import { AppConfigContext } from '../app-contexts';
 import {
   BuildingMapContext,
@@ -12,7 +11,6 @@ import {
   FleetsContext,
   IngestorsContext,
   PlacesContext,
-  RmfHealthContext,
   RmfIngressContext,
 } from './contexts';
 import { RmfIngress } from './rmf-ingress';
@@ -122,17 +120,6 @@ function FleetsProvider(props: React.PropsWithChildren<{}>): JSX.Element {
   return <FleetsContext.Provider value={fleets}>{props.children}</FleetsContext.Provider>;
 }
 
-function RmfHealthProvider(props: React.PropsWithChildren<{}>): JSX.Element {
-  // FIXME: This does not listen for health events
-  const healthManager = React.useMemo(() => new RmfHealthStateManager(), []);
-
-  return (
-    <RmfHealthContext.Provider value={healthManager.getHealthStatus()}>
-      {props.children}
-    </RmfHealthContext.Provider>
-  );
-}
-
 function RmfIngressProvider(props: React.PropsWithChildren<{}>): JSX.Element {
   const { authenticator } = React.useContext(AppConfigContext);
   const [rmfIngress, setRmfIngress] = React.useState<RmfIngress | undefined>(undefined);
@@ -175,9 +162,7 @@ export function RmfApp(props: RmfAppProps): JSX.Element {
         <BuildingMapProvider>
           <FleetsProvider>
             <DispensersProvider>
-              <IngestorsProvider>
-                <RmfHealthProvider>{props.children}</RmfHealthProvider>
-              </IngestorsProvider>
+              <IngestorsProvider>{props.children}</IngestorsProvider>
             </DispensersProvider>
           </FleetsProvider>
         </BuildingMapProvider>

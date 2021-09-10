@@ -29,9 +29,7 @@ jobs:
           cache: 'npm'
       - name: bootstrap
         run: |
-          npm config set unsafe-perm
           . /rmf_demos_ws/install/setup.bash
-          npm install -g lerna@4
           lerna bootstrap --scope=api-server
         working-directory: .
       - name: tests

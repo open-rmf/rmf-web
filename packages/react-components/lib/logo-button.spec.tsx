@@ -8,7 +8,7 @@ describe('LogoButton', () => {
     const mockOnClick = jasmine.createSpy();
     render(
       <LogoButton
-        src="../stories/resources/roshealth-logo-white.png"
+        src="/base/test-data/assets/roshealth-logo-white.png"
         alt="logo"
         onClick={mockOnClick}
       />,

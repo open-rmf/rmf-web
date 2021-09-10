@@ -167,7 +167,7 @@ export function TaskPanel({
                 <AutorenewIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Refersh">
+            <Tooltip title="Refresh">
               <IconButton onClick={() => onRefresh && onRefresh()} aria-label="Refresh">
                 <RefreshIcon />
               </IconButton>
