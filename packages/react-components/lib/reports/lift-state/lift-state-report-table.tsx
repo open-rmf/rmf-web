@@ -1,7 +1,7 @@
 import React from 'react';
-import MaterialTable from 'material-table';
-import { Typography } from '@mui/material';
-import { materialTableIcons } from '../../material-table-icons';
+import { DataGrid } from '@mui/x-data-grid';
+import { Typography } from '@material-ui/core';
+// import { materialTableIcons } from '../../material-table-icons';
 import { DefaultLogTableProps } from '../default-report-interface';
 import { format } from 'date-fns';
 
@@ -24,83 +24,78 @@ export const LiftStateReportTable = (props: LiftStateReportTable): React.ReactEl
   const { rows, tableSize, addMoreRows } = props;
 
   return (
-    <MaterialTable
-      title="Lift State"
-      icons={materialTableIcons}
+    <DataGrid
+      // title="Lift State"
+      // icons={materialTableIcons}
       columns={[
         {
-          title: <Typography>Session ID</Typography>,
-          field: 'level',
+          headerName: 'Session ID',
+          field: 'session_id',
           type: 'string',
-          render: (rowData) => {
-            return <Typography>{rowData.session_id}</Typography>;
+          valueFormatter: (rowData) => {
+            return <Typography>{rowData.row.session_id}</Typography>;
           },
         },
         {
-          title: <Typography>State</Typography>,
-          field: 'message',
+          headerName: 'State',
+          field: 'state',
           type: 'string',
-          render: (rowData) => {
-            return <Typography>{rowData.state}</Typography>;
+          valueFormatter: (rowData) => {
+            return <Typography>{rowData.row.state}</Typography>;
           },
         },
         {
-          title: <Typography>Door State</Typography>,
-          field: 'message',
+          headerName: 'Door State',
+          field: 'door_state',
           type: 'string',
-          render: (rowData) => {
-            return <Typography>{rowData.door_state}</Typography>;
+          valueFormatter: (rowData) => {
+            return <Typography>{rowData.row.door_state}</Typography>;
           },
         },
         {
-          title: <Typography>Destination Floor</Typography>,
-          field: 'message',
+          headerName: 'Destination Floor',
+          field: 'destination_floor',
           type: 'string',
-          render: (rowData) => {
-            return <Typography>{rowData.destination_floor}</Typography>;
+          valueFormatter: (rowData) => {
+            return <Typography>{rowData.row.destination_floor}</Typography>;
           },
         },
         {
-          title: <Typography>Motion State</Typography>,
-          field: 'message',
+          headerName: 'Motion State',
+          field: 'motion_state',
           type: 'string',
-          render: (rowData) => {
-            return <Typography>{rowData.motion_state}</Typography>;
+          valueFormatter: (rowData) => {
+            return <Typography>{rowData.row.motion_state}</Typography>;
           },
         },
         {
-          title: <Typography>Current Floor</Typography>,
-          field: 'message',
+          headerName: 'Current Floor',
+          field: 'current_floor',
           type: 'string',
-          render: (rowData) => {
-            return <Typography>{rowData.current_floor}</Typography>;
+          valueFormatter: (rowData) => {
+            return <Typography>{rowData.row.current_floor}</Typography>;
           },
         },
 
         {
-          title: <Typography>Timestamp</Typography>,
+          headerName: 'Timestamp',
           field: 'timestamp',
           type: 'datetime',
-          filtering: false,
+          filterable: false,
           align: 'center',
-          render: (rowData) => {
+          valueFormatter: (rowData) => {
             return (
               <Typography data-testid={'lift-table-date'}>
-                {format(new Date(rowData.created), 'MMM dd yyyy hh:mm aaa')}
+                {format(new Date(rowData.row.created), 'MMM dd yyyy hh:mm aaa')}
               </Typography>
             );
           },
         },
       ]}
-      data={rows}
-      options={{
-        filtering: true,
-        search: false,
-        pageSize: 100,
-        pageSizeOptions: [50, 100, 200],
-        maxBodyHeight: tableSize ? tableSize : '80vh',
-      }}
-      onChangePage={(page, pageSize) => {
+      rows={rows}
+      pageSize={100}
+      rowsPerPageOptions={[50, 100, 200]}
+      onPageChange={(page, pageSize) => {
         if (addMoreRows) {
           rows.length / pageSize - 1 === page && addMoreRows();
         }

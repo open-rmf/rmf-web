@@ -1,5 +1,5 @@
-import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
 import clsx from 'clsx';
 import { formatDistanceToNow } from 'date-fns';
 import React from 'react';

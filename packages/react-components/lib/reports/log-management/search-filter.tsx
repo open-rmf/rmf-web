@@ -1,6 +1,6 @@
 import React from 'react';
-import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
 
 interface SearchFilterProps {
   options: { label: string; value: string }[];

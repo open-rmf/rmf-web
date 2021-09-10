@@ -11,12 +11,12 @@ import {
   TableRow,
   Toolbar,
   Typography,
-} from '@mui/material';
-import { Refresh as RefreshIcon } from '@mui/icons-material';
+} from '@material-ui/core';
+import { Refresh as RefreshIcon } from '@material-ui/icons';
 import React from 'react';
 import { taskTypeToStr } from '../tasks/utils';
 import { robotModeToString, VerboseRobot } from './utils';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from '@material-ui/styles';
 
 const useStyles = makeStyles((theme) => ({
   table: {

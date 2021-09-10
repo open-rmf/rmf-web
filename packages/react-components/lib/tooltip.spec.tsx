@@ -1,4 +1,4 @@
-import { Typography } from '@mui/material';
+import { Typography } from '@material-ui/core';
 import { fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
 import Tooltip from './tooltip';

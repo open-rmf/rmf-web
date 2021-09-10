@@ -1,7 +1,7 @@
 import React from 'react';
-import ErrorIcon from '@mui/icons-material/Error';
-import { Typography, Grid } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import ErrorIcon from '@material-ui/icons/Error';
+import { Typography, Grid } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
 
 const useStyles = makeStyles((theme) => ({
   errorIcon: {

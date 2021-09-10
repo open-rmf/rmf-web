@@ -14,11 +14,11 @@ import {
   TableRow,
   TextField,
   Typography,
-} from '@mui/material';
-import AccountIcon from '@mui/icons-material/AccountCircle';
-import AddIcon from '@mui/icons-material/AddCircle';
-import DeleteIcon from '@mui/icons-material/Delete';
-import SearchIcon from '@mui/icons-material/Search';
+} from '@material-ui/core';
+import AccountIcon from '@material-ui/icons/AccountCircle';
+import AddIcon from '@material-ui/icons/AddCircle';
+import DeleteIcon from '@material-ui/icons/Delete';
+import SearchIcon from '@material-ui/icons/Search';
 import React from 'react';
 import { ConfirmationDialog, Loading, useAsync } from 'react-components';
 import { useHistory, useRouteMatch } from 'react-router';

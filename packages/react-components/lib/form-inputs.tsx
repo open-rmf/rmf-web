@@ -1,4 +1,4 @@
-import { TextField, TextFieldProps } from '@mui/material';
+import { TextField, TextFieldProps } from '@material-ui/core';
 import React from 'react';
 
 export interface PositiveIntField

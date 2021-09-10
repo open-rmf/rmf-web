@@ -1,4 +1,4 @@
-import { useTheme } from '@mui/material';
+import { useTheme } from '@material-ui/core';
 import React from 'react';
 import { ColorContext } from '../color-manager';
 import { uniqueId } from '../utils';

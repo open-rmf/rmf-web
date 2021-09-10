@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Divider } from '@mui/material';
+import { Typography, Divider } from '@material-ui/core';
 
 import { StyleTyping } from './baseComponents/utils';
 

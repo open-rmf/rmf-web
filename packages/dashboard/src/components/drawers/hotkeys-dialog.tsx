@@ -8,8 +8,8 @@ import {
   IconButton,
   makeStyles,
   Typography,
-} from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
+} from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
 import React from 'react';
 import { getApplicationKeyMap } from 'react-hotkeys';
 

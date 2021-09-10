@@ -1,4 +1,4 @@
-import { Typography } from '@mui/material';
+import { Typography } from '@material-ui/core';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import {

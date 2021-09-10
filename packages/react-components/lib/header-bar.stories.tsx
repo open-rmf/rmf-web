@@ -1,8 +1,8 @@
-import { createStyles, IconButton, makeStyles, Toolbar, Typography } from '@mui/material';
-import Tab from '@mui/material/Tab';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import TabContext from '@mui/lab/TabContext';
-import TabPanel from '@mui/lab/TabPanel';
+import { createStyles, IconButton, makeStyles, Toolbar, Typography } from '@material-ui/core';
+import Tab from '@material-ui/core/Tab';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import TabContext from '@material-ui/lab/TabContext';
+import TabPanel from '@material-ui/lab/TabPanel';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { HeaderBar } from '../lib/header-bar';

@@ -1,6 +1,6 @@
 import React from 'react';
-import { TextField, Typography, Divider } from '@mui/material';
-import Autocomplete from '@mui/lab/Autocomplete';
+import { TextField, Typography, Divider } from '@material-ui/core';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import { StyleTyping, FormProps, defaultStyles } from './utils';
 

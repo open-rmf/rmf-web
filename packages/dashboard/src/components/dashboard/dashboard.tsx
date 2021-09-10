@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 
-import { Card, Grid, makeStyles } from '@mui/material';
+import { Card, Grid, makeStyles } from '@material-ui/core';
 import { Fleet, Level } from 'api-client';
 import Debug from 'debug';
 import React from 'react';

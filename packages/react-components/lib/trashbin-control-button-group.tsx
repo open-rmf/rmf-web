@@ -1,8 +1,8 @@
-import { Button, ButtonGroup } from '@mui/material';
-import ClearAllIcon from '@mui/icons-material/ClearAll';
-import RestoreIcon from '@mui/icons-material/Restore';
-import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
-import SaveIcon from '@mui/icons-material/Save';
+import { Button, ButtonGroup } from '@material-ui/core';
+import ClearAllIcon from '@material-ui/icons/ClearAll';
+import RestoreIcon from '@material-ui/icons/Restore';
+import RestoreFromTrashIcon from '@material-ui/icons/RestoreFromTrash';
+import SaveIcon from '@material-ui/icons/Save';
 import React from 'react';
 
 export interface TrashBinControlButtonGroupProps extends React.HTMLAttributes<HTMLDivElement> {

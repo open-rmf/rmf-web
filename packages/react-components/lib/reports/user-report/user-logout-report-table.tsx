@@ -1,7 +1,7 @@
 import React from 'react';
-import MaterialTable from 'material-table';
-import { Typography } from '@mui/material';
-import { materialTableIcons } from '../../material-table-icons';
+import { DataGrid } from '@mui/x-data-grid';
+import { Typography } from '@material-ui/core';
+// import { materialTableIcons } from '../../material-table-icons';
 import { DefaultLogTableProps } from '../default-report-interface';
 import { format } from 'date-fns';
 
@@ -20,58 +20,60 @@ export const UserLogoutReportTable = (props: UserLogoutReportTable): React.React
   const { rows, tableSize, addMoreRows } = props;
 
   return (
-    <MaterialTable
-      title="Logout Report"
-      icons={materialTableIcons}
+    <DataGrid
+      // title="Logout Report"
+      // icons={materialTableIcons}
       columns={[
         {
-          title: <Typography>Username</Typography>,
+          headerName: 'Username',
           field: 'username',
           type: 'string',
-          render: (rowData) => {
-            return <Typography>{rowData.username}</Typography>;
+          valueFormatter: (rowData) => {
+            return <Typography>{rowData.row.username}</Typography>;
           },
         },
         {
-          title: <Typography>Timestamp</Typography>,
+          headerName: 'Timestamp',
           field: 'timestamp',
           type: 'datetime',
-          filtering: false,
+          filterable: false,
           align: 'center',
-          render: (rowData) => {
+          valueFormatter: (rowData) => {
             return (
               <Typography data-testid={'user-logout-table-date'}>
-                {format(new Date(rowData.created), 'MMM dd yyyy hh:mm aaa')}
+                {format(new Date(rowData.row.created), 'MMM dd yyyy hh:mm aaa')}
               </Typography>
             );
           },
         },
         {
-          title: <Typography>User ID</Typography>,
-          field: 'message',
+          headerName: 'User ID',
+          field: 'user_id',
           type: 'string',
-          render: (rowData) => {
-            return <Typography>{rowData.user_id}</Typography>;
+          valueFormatter: (rowData) => {
+            return <Typography>{rowData.row.user_id}</Typography>;
           },
         },
         {
-          title: <Typography>IP Addr.</Typography>,
-          field: 'message',
+          headerName: 'IP Addr',
+          field: 'ip_address',
           type: 'string',
-          render: (rowData) => {
-            return <Typography>{rowData.ip_address}</Typography>;
+          valueFormatter: (rowData) => {
+            return <Typography>{rowData.row.ip_address}</Typography>;
           },
         },
       ]}
-      data={rows}
-      options={{
-        filtering: true,
-        search: false,
-        pageSize: 100,
-        pageSizeOptions: [50, 100, 200],
-        maxBodyHeight: tableSize ? tableSize : '80vh',
-      }}
-      onChangePage={(page, pageSize) => {
+      rows={rows}
+      pageSize={100}
+      rowsPerPageOptions={[50, 100, 200]}
+      // options={{
+      //   filtering: true,
+      //   search: false,
+      //   pageSize: 100,
+      //   pageSizeOptions: [50, 100, 200],
+      //   maxBodyHeight: tableSize ? tableSize : '80vh',
+      // }}
+      onPageChange={(page, pageSize) => {
         if (addMoreRows) {
           rows.length / pageSize - 1 === page && addMoreRows();
         }

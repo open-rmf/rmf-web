@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeStyles, Typography } from '@mui/material';
+import { makeStyles, Typography } from '@material-ui/core';
 import type { Link } from 'react-router-dom';
 
 export interface NotFoundPageProps {

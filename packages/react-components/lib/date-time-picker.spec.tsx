@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import { format } from 'date-fns';
 import React from 'react';
-import { TextField } from '@mui/material';
+import { TextField } from '@material-ui/core';
 import DateAndTimePickers from './date-time-picker';
 
 describe('date time picker', () => {

@@ -1,7 +1,7 @@
 import React from 'react';
-import { TextField, SelectChangeEvent } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import Button from '@mui/material/Button';
+import { TextField, SelectChangeEvent } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
+import Button from '@material-ui/core/Button';
 import { SearchFilter } from './search-filter';
 import DateAndTimePickers from '../../date-time-picker';
 import { LogLevel } from './log-level';

@@ -1,6 +1,6 @@
 import React from 'react';
 import ProgressBar from 'react-customizable-progressbar';
-import { createStyles, makeStyles } from '@mui/styles';
+import { createStyles, makeStyles } from '@material-ui/styles';
 
 export interface CircularProgressBarProps {
   progress: number;

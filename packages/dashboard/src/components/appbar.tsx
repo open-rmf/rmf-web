@@ -7,9 +7,9 @@ import {
   Tab,
   Toolbar,
   Typography,
-} from '@mui/material';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import HelpIcon from '@mui/icons-material/Help';
+} from '@material-ui/core';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import HelpIcon from '@material-ui/icons/Help';
 import React from 'react';
 import { HeaderBar, LogoButton, NavigationBar, Tooltip, useAsync } from 'react-components';
 import { useHistory, useLocation } from 'react-router-dom';

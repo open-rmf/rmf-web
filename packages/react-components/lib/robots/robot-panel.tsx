@@ -1,9 +1,9 @@
-import { Grid, Paper, TablePagination, Typography } from '@mui/material';
+import { Grid, Paper, TablePagination, Typography } from '@material-ui/core';
 import React from 'react';
 import { RobotInfo } from './robot-info';
 import { RobotTable } from './robot-table';
 import { VerboseRobot } from './utils';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from '@material-ui/styles';
 
 const useStyles = makeStyles((theme) => ({
   detailPanelContainer: {

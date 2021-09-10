@@ -1,9 +1,10 @@
 import React from 'react';
-import MaterialTable, { Column } from 'material-table';
-import { CustomLookupFilterParser, LogLevel } from '.';
-import { Typography } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import { materialTableIcons } from '../../material-table-icons';
+// import MaterialTable, { Column } from 'material-table';
+import { DataGrid } from '@mui/x-data-grid';
+import { LogLevel } from '.';
+import { Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
+// import { materialTableIcons } from '../../material-table-icons';
 import { format } from 'date-fns';
 
 export type ContainerType = {
@@ -78,97 +79,91 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
   }, []);
 
   return (
-    <MaterialTable
-      title="Log Result"
-      icons={materialTableIcons}
+    <DataGrid
       columns={[
         {
-          title: <Typography>Level</Typography>,
+          headerName: 'Level',
           field: 'level',
           type: 'string',
           align: 'center',
-          cellStyle: { padding: '0px', width: '2rem', maxWidth: '2rem' },
-          headerStyle: {
-            width: '2rem',
-            maxWidth: '2rem',
-          },
-          filterCellStyle: {
-            maxHeight: '2px',
-          },
-          lookup: logLevels as Column<{
-            level: string;
-            message: string;
-            created: string;
-          }>['lookup'],
-          filterComponent: (props) => <CustomLookupFilterParser {...props} />,
-          render: (rowData) => {
+          // cellStyle: { padding: '0px', width: '2rem', maxWidth: '2rem' },
+          // headerStyle: {
+          //   width: '2rem',
+          //   maxWidth: '2rem',
+          // },
+          // filterCellStyle: {
+          //   maxHeight: '2px',
+          // },
+          // lookup: logLevels as Column<{
+          //   level: string;
+          //   message: string;
+          //   created: string;
+          // }>['lookup'],
+          // filterComponent: (props) => <CustomLookupFilterParser {...props} />,
+          valueFormatter: (rowData) => {
             return (
-              <Typography className={`${getLogLevelStyle(rowData.level)} ${classes.cellContent}`}>
-                {rowData.level}
+              <Typography
+                className={`${getLogLevelStyle(rowData.row.level)} ${classes.cellContent}`}
+              >
+                {rowData.row.level}
               </Typography>
             );
           },
         },
         {
-          title: <Typography>Container</Typography>,
+          headerName: 'Container',
           field: 'container',
           type: 'string',
           align: 'center',
-          cellStyle: { padding: '0px', width: '2rem', maxWidth: '2rem' },
-          headerStyle: {
-            width: '2rem',
-            maxWidth: '2rem',
-          },
-          filterCellStyle: {
-            maxHeight: '2px',
-          },
-
-          render: (rowData) => {
+          // cellStyle: { padding: '0px', width: '2rem', maxWidth: '2rem' },
+          // headerStyle: {
+          //   width: '2rem',
+          //   maxWidth: '2rem',
+          // },
+          // filterCellStyle: {
+          //   maxHeight: '2px',
+          // },
+          valueFormatter: (rowData) => {
             return (
               <Typography className={classes.cellContent}>
-                {rowData.container ? rowData.container.name : 'Unknown'}
+                {rowData.row.container ? rowData.row.container.name : 'Unknown'}
               </Typography>
             );
           },
         },
         {
-          title: <Typography>Message</Typography>,
+          headerName: 'Message',
           field: 'message',
           type: 'string',
-          cellStyle: { padding: '0px', width: '75rem', minWidth: '75rem', whiteSpace: 'pre-wrap' },
-          headerStyle: {
-            width: '75rem',
-            minWidth: '75rem',
-          },
-          render: (rowData) => {
-            return <Typography className={classes.cellContent}>{rowData.message}</Typography>;
+          // cellStyle: { padding: '0px', width: '75rem', minWidth: '75rem', whiteSpace: 'pre-wrap' },
+          // headerStyle: {
+          //   width: '75rem',
+          //   minWidth: '75rem',
+          // },
+          valueFormatter: (rowData) => {
+            return <Typography className={classes.cellContent}>{rowData.row.message}</Typography>;
           },
         },
         {
-          title: <Typography>Timestamp</Typography>,
+          headerName: 'Timestamp',
           field: 'created',
           type: 'datetime',
-          filtering: false,
+          filterable: false,
           align: 'center',
-          cellStyle: { padding: '0px' },
-          render: (rowData) => {
+          // cellStyle: { padding: '0px' },
+          valueFormatter: (rowData) => {
             return (
               <Typography className={classes.cellContent} data-testid={'log-table-date'}>
-                {format(new Date(rowData.created), 'MMM dd yyyy hh:mm aaa')}
+                {format(new Date(rowData.row.created), 'MMM dd yyyy hh:mm aaa')}
               </Typography>
             );
           },
         },
       ]}
-      data={rows}
-      options={{
-        filtering: true,
-        search: false,
-        pageSize: 100,
-        pageSizeOptions: [50, 100, 200],
-        maxBodyHeight: tableSize ? tableSize : '80vh',
-      }}
-      onChangePage={(page, pageSize) => {
+      rows={rows}
+      pageSize={100}
+      rowsPerPageOptions={[50, 100, 200]}
+      onPageChange={(page, pageSize) => {
         if (addMoreRows) {
           rows.length / pageSize - 1 === page && addMoreRows();
         }

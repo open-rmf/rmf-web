@@ -1,6 +1,6 @@
-import { Divider, makeStyles, Grid, Typography, IconButton } from '@mui/material';
-import { KeyboardBackspace as BackIcon } from '@mui/icons-material';
-import CloseIcon from '@mui/icons-material/Close';
+import { Divider, makeStyles, Grid, Typography, IconButton } from '@material-ui/core';
+import { KeyboardBackspace as BackIcon } from '@material-ui/icons';
+import CloseIcon from '@material-ui/icons/Close';
 import React from 'react';
 
 interface DrawerHeaderProps {

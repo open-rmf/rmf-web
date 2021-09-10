@@ -8,10 +8,10 @@ import {
   MenuItem,
   TextField,
   useTheme,
-} from '@mui/material';
-import { Autocomplete, DateTimePicker, LocalizationProvider } from '@mui/lab';
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
-import { makeStyles } from '@mui/styles';
+} from '@material-ui/core';
+import { Autocomplete, DateTimePicker, LocalizationProvider } from '@material-ui/lab';
+import AdapterDateFns from '@material-ui/lab/AdapterDateFns';
+import { makeStyles } from '@material-ui/styles';
 import type {
   CleanTaskDescription,
   DeliveryTaskDescription,

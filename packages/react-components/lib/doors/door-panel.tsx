@@ -1,7 +1,7 @@
-import { Button, ButtonGroup, Card, Grid, IconButton, Paper, Typography } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import ViewListIcon from '@mui/icons-material/ViewList';
-import ViewModuleIcon from '@mui/icons-material/ViewModule';
+import { Button, ButtonGroup, Card, Grid, IconButton, Paper, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
+import ViewListIcon from '@material-ui/icons/ViewList';
+import ViewModuleIcon from '@material-ui/icons/ViewModule';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { DoorTable } from './door-table';

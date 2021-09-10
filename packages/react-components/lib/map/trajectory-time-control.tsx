@@ -1,6 +1,6 @@
-import { Grid, Slider, Typography } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import GestureIcon from '@mui/icons-material/Gesture';
+import { Grid, Slider, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
+import GestureIcon from '@material-ui/icons/Gesture';
 import Leaflet from 'leaflet';
 import React from 'react';
 import ReactDOM from 'react-dom';

@@ -1,7 +1,8 @@
 import React from 'react';
-import MaterialTable from 'material-table';
-import { Typography } from '@mui/material';
-import { materialTableIcons } from '../../material-table-icons';
+// import MaterialTable from 'material-table';
+import { DataGrid } from '@mui/x-data-grid';
+import { Typography } from '@material-ui/core';
+// import { materialTableIcons } from '../../material-table-icons';
 import { DefaultLogTableProps } from '../default-report-interface';
 import { format } from 'date-fns';
 
@@ -24,82 +25,75 @@ export const FleetStateReportTable = (props: FleetStateReportTable): React.React
   const { rows, tableSize, addMoreRows } = props;
 
   return (
-    <MaterialTable
-      title="Fleet State"
-      icons={materialTableIcons}
+    <DataGrid
       columns={[
         {
-          title: <Typography>Fleet</Typography>,
+          headerName: 'Fleet',
           field: 'fleet_name',
           type: 'string',
-          render: (rowData) => {
-            return <Typography>{rowData.fleet.name}</Typography>;
+          valueFormatter: (rowData) => {
+            return <Typography>{rowData.row.fleet.name}</Typography>;
           },
         },
         {
-          title: <Typography>Robot</Typography>,
+          headerName: 'Robot',
           field: 'robot_name',
           type: 'string',
-          render: (rowData) => {
-            return <Typography>{rowData.robot.name}</Typography>;
+          valueFormatter: (rowData) => {
+            return <Typography>{rowData.row.robot.name}</Typography>;
           },
         },
         {
-          title: <Typography>Battery</Typography>,
+          headerName: 'Battery',
           field: 'robot_battery_percent',
           type: 'string',
-          render: (rowData) => {
-            return <Typography>{rowData.robot_battery_percent}</Typography>;
+          valueFormatter: (rowData) => {
+            return <Typography>{rowData.row.robot_battery_percent}</Typography>;
           },
         },
         {
-          title: <Typography>Mode</Typography>,
+          headerName: 'Mode',
           field: 'robot_mode',
           type: 'string',
-          render: (rowData) => {
-            return <Typography>{rowData.robot_mode}</Typography>;
+          valueFormatter: (rowData) => {
+            return <Typography>{rowData.row.robot_mode}</Typography>;
           },
         },
         {
-          title: <Typography>Model</Typography>,
+          headerName: 'Model',
           field: 'robot_model',
           type: 'string',
-          render: (rowData) => {
-            return <Typography>{rowData.robot.model}</Typography>;
+          valueFormatter: (rowData) => {
+            return <Typography>{rowData.row.robot.model}</Typography>;
           },
         },
         {
-          title: <Typography>TaskID</Typography>,
+          headerName: 'TaskID',
           field: 'robot_task_id',
           type: 'string',
-          render: (rowData) => {
-            return <Typography>{rowData.robot_task_id}</Typography>;
+          valueFormatter: (rowData) => {
+            return <Typography>{rowData.row.robot_task_id}</Typography>;
           },
         },
         {
-          title: <Typography>Timestamp</Typography>,
+          headerName: 'Timestamp',
           field: 'timestamp',
           type: 'datetime',
-          filtering: false,
+          filterable: false,
           align: 'center',
-          render: (rowData) => {
+          valueFormatter: (rowData) => {
             return (
               <Typography data-testid={'fleet-table-date'}>
-                {format(new Date(rowData.created), 'MMM dd yyyy hh:mm aaa')}
+                {format(new Date(rowData.row.created), 'MMM dd yyyy hh:mm aaa')}
               </Typography>
             );
           },
         },
       ]}
-      data={rows}
-      options={{
-        filtering: true,
-        search: false,
-        pageSize: 100,
-        pageSizeOptions: [50, 100, 200],
-        maxBodyHeight: tableSize ? tableSize : '80vh',
-      }}
-      onChangePage={(page, pageSize) => {
+      rows={rows}
+      pageSize={100}
+      rowsPerPageOptions={[50, 100, 200]}
+      onPageChange={(page, pageSize) => {
         if (addMoreRows) {
           rows.length / pageSize - 1 === page && addMoreRows();
         }

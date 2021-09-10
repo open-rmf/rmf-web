@@ -1,4 +1,4 @@
-import { Button } from '@mui/material';
+import { Button } from '@material-ui/core';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { ErrorSnackbar, ErrorSnackbarProps } from './error-snackbar';

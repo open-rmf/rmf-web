@@ -8,8 +8,8 @@ import {
   TableRow,
   ButtonGroup,
   Button,
-} from '@mui/material';
-import { makeStyles } from '@mui/styles';
+} from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
 
 import { DoorData, doorModeToString, doorTypeToString } from './utils';
 

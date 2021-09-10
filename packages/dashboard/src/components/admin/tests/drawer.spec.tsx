@@ -1,4 +1,4 @@
-import { ThemeProvider } from '@mui/material';
+import { ThemeProvider } from '@material-ui/core';
 import { render as render_ } from '@testing-library/react';
 import React from 'react';
 import { MemoryRouter } from 'react-router';

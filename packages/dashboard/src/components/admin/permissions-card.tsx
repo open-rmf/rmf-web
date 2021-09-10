@@ -12,9 +12,9 @@ import {
   TableRow,
   Toolbar,
   Typography,
-} from '@mui/material';
-import AddIcon from '@mui/icons-material/AddCircle';
-import DeleteIcon from '@mui/icons-material/Delete';
+} from '@material-ui/core';
+import AddIcon from '@material-ui/icons/AddCircle';
+import DeleteIcon from '@material-ui/icons/Delete';
 import { Permission } from 'api-client';
 import React from 'react';
 import { Loading, useAsync } from 'react-components';

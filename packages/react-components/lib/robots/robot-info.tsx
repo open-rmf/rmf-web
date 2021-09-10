@@ -1,4 +1,4 @@
-import { Button, Divider, Grid, Typography, useTheme } from '@mui/material';
+import { Button, Divider, Grid, Typography, useTheme } from '@material-ui/core';
 import { Task } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
@@ -7,7 +7,7 @@ import { rosTimeToJs } from '../utils';
 import { CircularProgressBar } from './circular-progress-bar';
 import { LinearProgressBar } from './linear-progress-bar';
 import { VerboseRobot } from './utils';
-import { createStyles, makeStyles } from '@mui/styles';
+import { createStyles, makeStyles } from '@material-ui/styles';
 
 const useStyles = makeStyles((theme) =>
   createStyles({

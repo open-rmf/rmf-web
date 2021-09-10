@@ -1,4 +1,4 @@
-import { Paper, TableContainer, TablePagination } from '@mui/material';
+import { Paper, TableContainer, TablePagination } from '@material-ui/core';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import * as RmfModels from 'rmf-models';

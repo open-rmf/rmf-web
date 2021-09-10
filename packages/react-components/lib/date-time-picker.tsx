@@ -1,6 +1,6 @@
 import React from 'react';
-import { DateTimePickerProps, DateTimePicker, LocalizationProvider } from '@mui/lab';
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import { DateTimePickerProps, DateTimePicker, LocalizationProvider } from '@material-ui/lab';
+import AdapterDateFns from '@material-ui/lab/AdapterDateFns';
 import { format } from 'date-fns';
 
 export default function DateAndTimePickers(props: DateTimePickerProps): React.ReactElement {

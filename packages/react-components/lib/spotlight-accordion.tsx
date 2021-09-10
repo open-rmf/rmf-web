@@ -1,4 +1,4 @@
-import { AccordionProps } from '@mui/material';
+import { AccordionProps } from '@material-ui/core';
 import React, { MutableRefObject } from 'react';
 
 type ManagedProps = 'onChange' | 'expanded';

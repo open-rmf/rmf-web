@@ -1,4 +1,4 @@
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from '@material-ui/styles';
 
 export const useFormStyles = makeStyles({
   form: {

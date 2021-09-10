@@ -11,13 +11,13 @@ import {
   Tooltip,
   Typography,
   useTheme,
-} from '@mui/material';
+} from '@material-ui/core';
 import {
   AddOutlined as AddOutlinedIcon,
   Autorenew as AutorenewIcon,
   Refresh as RefreshIcon,
-} from '@mui/icons-material';
-import { Alert, AlertProps } from '@mui/lab';
+} from '@material-ui/icons';
+import { Alert, AlertProps } from '@material-ui/lab';
 import { SubmitTask, Task } from 'api-client';
 import React from 'react';
 import { CreateTaskForm, CreateTaskFormProps, TaskInfo, TaskTable } from 'react-components';
