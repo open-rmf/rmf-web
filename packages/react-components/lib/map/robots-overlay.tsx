@@ -28,8 +28,6 @@ interface BoundedMarkerProps extends Omit<RobotMarkerProps, 'onClick'> {
 /**
  * Bind a marker to include the fleet and robot name in the click event.
  * This is needed to avoid re-rendering all markers when only one of them changes.
- *
- * Also allows them to track labels.
  */
 function bindMarker(MarkerComponent: React.ComponentType<RobotMarkerProps>) {
   return ({ robotData, onClick, ...otherProps }: BoundedMarkerProps) => {

@@ -56,6 +56,7 @@ export class LabelManager {
   private _labels: Record<string, ManagedLabel> = {};
 
   private _getManagedProps(target: LabelTarget): OverrideLabelProps {
+    // TODO: return non-overlapping labels.
     const thetaRad = (-30 * Math.PI) / 180;
     return {
       anchorX: target.centerX + Math.cos(thetaRad) * target.radius,
