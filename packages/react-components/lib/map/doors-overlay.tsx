@@ -1,8 +1,11 @@
 import React from 'react';
 import * as RmfModels from 'rmf-models';
+import { fromRmfCoords } from '../utils/geometry';
 import { DoorMarker as DoorMarker_, DoorMarkerProps } from './door-marker';
+import { useAutoScale } from './hooks';
+import { ManagedNameLabel } from './label-manager';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
-import { viewBoxFromLeafletBounds } from './utils';
+import { getDoorCenter, viewBoxFromLeafletBounds } from './utils';
 
 interface BoundedMarkerProps extends Omit<DoorMarkerProps, 'onClick'> {
   onClick?: (ev: React.MouseEvent, door: string) => void;
@@ -38,21 +41,35 @@ export const DoorsOverlay = ({
   ...otherProps
 }: DoorsOverlayProps): JSX.Element => {
   const viewBox = viewBoxFromLeafletBounds(bounds);
+  const scale = useAutoScale(40);
 
   return (
     <SVGOverlay bounds={bounds} {...otherProps}>
       <svg viewBox={viewBox}>
-        {doors.map((door) => (
-          <DoorMarker
-            key={door.name}
-            onClick={onDoorClick}
-            door={door}
-            doorMode={
-              doorStates && doorStates[door.name] && doorStates[door.name].current_mode.value
-            }
-            aria-label={door.name}
-          />
-        ))}
+        {doors.map((door) => {
+          const center = fromRmfCoords(getDoorCenter(door));
+          return (
+            <g key={door.name}>
+              <DoorMarker
+                onClick={onDoorClick}
+                door={door}
+                doorMode={
+                  doorStates && doorStates[door.name] && doorStates[door.name].current_mode.value
+                }
+                aria-label={door.name}
+                transform={`translate(${center[0]} ${center[1]}) scale(${scale})`}
+              />
+              <ManagedNameLabel
+                text={door.name}
+                labelTarget={{
+                  centerX: center[0],
+                  centerY: center[1],
+                  radius: 0,
+                }}
+              />
+            </g>
+          );
+        })}
       </svg>
     </SVGOverlay>
   );

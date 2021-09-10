@@ -4,6 +4,7 @@ import Debug from 'debug';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { fromRmfCoords } from '../utils/geometry';
+import { getDoorCenter } from './utils';
 
 const debug = Debug('Map:DoorMarker');
 
@@ -50,22 +51,6 @@ function useDoorStyle(doorMode?: number): string {
       return classes.close;
     default:
       return classes.unknown;
-  }
-}
-
-function getDoorCenter(door: RmfModels.Door): [number, number] {
-  const v1 = [door.v1_x, door.v1_y];
-  const v2 = [door.v2_x, door.v2_y];
-  switch (door.door_type) {
-    case RmfModels.Door.DOOR_TYPE_SINGLE_SLIDING:
-    case RmfModels.Door.DOOR_TYPE_SINGLE_SWING:
-    case RmfModels.Door.DOOR_TYPE_SINGLE_TELESCOPE:
-    case RmfModels.Door.DOOR_TYPE_DOUBLE_SLIDING:
-    case RmfModels.Door.DOOR_TYPE_DOUBLE_SWING:
-    case RmfModels.Door.DOOR_TYPE_DOUBLE_TELESCOPE:
-      return [(v1[0] + v2[0]) / 2, (v2[1] + v1[1]) / 2];
-    default:
-      throw new Error('unknown door type');
   }
 }
 
@@ -205,17 +190,15 @@ export interface DoorMarkerProps extends React.PropsWithRef<React.SVGProps<SVGGE
   door: RmfModels.Door;
   doorMode?: number;
   /**
-   * Whether the component should perform a translate transform to put it inline with the position
-   * in RMF.
-   *
-   * default: true
+   * Renders the door at it's rmf coordinates.
+   * Default: false
    */
-  translate?: boolean;
+  rmfCoords?: boolean;
 }
 
 export const DoorMarker = React.forwardRef(
   (
-    { door, doorMode, translate = true, ...otherProps }: DoorMarkerProps,
+    { door, doorMode, rmfCoords = false, ...otherProps }: DoorMarkerProps,
     ref: React.Ref<SVGGElement>,
   ) => {
     debug(`render ${door.name}`);
@@ -241,12 +224,12 @@ export const DoorMarker = React.forwardRef(
     };
 
     try {
-      const center = getDoorCenter(door);
+      const center = fromRmfCoords(getDoorCenter(door));
       return (
         <g ref={ref} {...otherProps}>
           <g
             className={otherProps.onClick ? classes.marker : undefined}
-            transform={!translate ? `translate(${-center[0]} ${center[1]})` : undefined}
+            transform={!rmfCoords ? `translate(${-center[0]} ${-center[1]})` : undefined}
           >
             {renderDoor()}
           </g>

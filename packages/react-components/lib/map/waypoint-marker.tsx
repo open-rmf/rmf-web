@@ -1,8 +1,7 @@
 import { makeStyles } from '@material-ui/core';
 import Debug from 'debug';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
-import { fromRmfCoords } from '../utils/geometry';
+import { uniqueId } from '..';
 
 const debug = Debug('Map:WaypointMarker');
 
@@ -22,60 +21,27 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export interface WaypointMarkerProps extends React.SVGProps<SVGGElement> {
-  waypoint: RmfModels.GraphNode;
-  /**
-   * default: 0.1
-   */
-  size?: number;
-  /**
-   * Whether the component should perform a translate transform to put it inline with the position
-   * in RMF.
-   *
-   * default: true
-   */
-  translate?: boolean;
-}
+export type WaypointMarkerProps = React.SVGProps<SVGGElement>;
 
 export const WaypointMarker = React.forwardRef(
-  (
-    { waypoint, size = 0.1, translate = true, ...otherProps }: WaypointMarkerProps,
-    ref: React.Ref<SVGGElement>,
-  ) => {
-    debug(`render ${waypoint.name}`);
-    const pos = fromRmfCoords([waypoint.x, waypoint.y]);
-
+  ({ ...otherProps }: WaypointMarkerProps, ref: React.Ref<SVGGElement>) => {
+    debug('render');
     const classes = useStyles();
+    const waypointId = React.useMemo(uniqueId, []);
     return (
       <g ref={ref} {...otherProps}>
-        <g transform={translate ? `translate(${pos[0]} ${pos[1]})` : undefined}>
-          <filter
-            id={`waypoint-${waypoint.name}-shadow`}
-            x="-20%"
-            y="-20%"
-            width="140%"
-            height="140%"
-          >
-            <feDropShadow
-              dx={-size * 0.1}
-              dy={-size * 0.1}
-              stdDeviation={size * 0.15}
-              floodColor="black"
-            />
-          </filter>
-          <rect
-            className={classes.marker}
-            x={-size}
-            y={-size}
-            width={size * 2}
-            height={size * 2}
-            fill={'#FFBF00'}
-            filter={`url(#waypoint-${waypoint.name}-shadow)`}
-          />
-          <text y={size * 2.5} className={classes.text}>
-            {waypoint.name}
-          </text>
-        </g>
+        <filter id={`waypoint-${waypointId}-shadow`} x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx={-0.1} dy={-0.1} stdDeviation={0.15} floodColor="black" />
+        </filter>
+        <rect
+          className={classes.marker}
+          x={-1}
+          y={-1}
+          width={2}
+          height={2}
+          fill={'#FFBF00'}
+          filter={`url(#waypoint-${waypointId}-shadow)`}
+        />
       </g>
     );
   },

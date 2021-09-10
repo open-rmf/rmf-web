@@ -1,8 +1,6 @@
 import { makeStyles, useTheme } from '@material-ui/core';
 import Debug from 'debug';
 import React from 'react';
-import { fromRmfCoords } from '../utils/geometry';
-import SvgText from '../svg-text';
 
 const debug = Debug('Map:WorkcellMarker');
 
@@ -47,57 +45,35 @@ const useStyles = makeStyles(() => ({
 }));
 
 export interface WorkcellMarkerProps extends React.PropsWithRef<React.SVGProps<SVGGElement>> {
-  guid: string;
-  /**
-   * Location of the dispenser in RMF coordinates.
-   */
-  location: [number, number];
-
-  /**
-   * radius of the dispenser.
-   * default: 0.4
-   */
-  footprint?: number;
   iconPath?: string;
 }
 
 export const WorkcellMarker = React.forwardRef(function (
-  { guid, location: location_, footprint = 0.4, iconPath, ...otherProps }: WorkcellMarkerProps,
+  { iconPath, ...otherProps }: WorkcellMarkerProps,
   ref: React.Ref<SVGGElement>,
 ): React.ReactElement {
-  debug(`render ${guid}`);
+  debug('render');
   const classes = useStyles();
   const [imageHasError, setImageHasError] = React.useState(false);
-  const location = fromRmfCoords(location_);
   const useImageIcon = !!iconPath && !imageHasError;
 
   return (
     <g ref={ref} {...otherProps}>
-      <g
-        className={otherProps.onClick && classes.clickable}
-        transform={`translate(${location[0]} ${location[1]})`}
-      >
+      <g className={otherProps.onClick && classes.clickable}>
         {useImageIcon ? (
           <image
             href={iconPath}
-            x={-footprint}
-            y={-footprint}
-            width={footprint * 2}
-            height={footprint * 2}
+            x={-1}
+            y={-1}
+            width={2}
+            height={2}
             onError={() => setImageHasError(true)}
           />
         ) : (
           // the default marker's size is slightly smaller than the footprint
-          <DefaultIcon footprint={footprint * 1.4} />
+          <DefaultIcon footprint={1.4} />
         )}
-        <rect
-          x={-footprint}
-          y={-footprint}
-          width={footprint * 2}
-          height={footprint * 2}
-          fill="transparent"
-        ></rect>
-        <SvgText className={classes.text} text={guid} targetWidth={footprint * 2.2} />
+        <rect x={-1} y={-1} width={2} height={2} fill="transparent"></rect>
       </g>
     </g>
   );

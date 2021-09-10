@@ -97,18 +97,11 @@ function toDoorMode(liftState: RmfModels.LiftState): RmfModels.DoorMode {
 export interface LiftMarkerProps extends React.PropsWithRef<React.SVGProps<SVGGElement>> {
   lift: RmfModels.Lift;
   liftState?: RmfModels.LiftState;
-  /**
-   * Whether the component should perform a translate transform to put it inline with the position
-   * in RMF.
-   *
-   * default: true
-   */
-  translate?: boolean;
   variant?: keyof ReturnType<typeof useLiftMarkerStyles>;
 }
 
 export const LiftMarker = React.forwardRef(function (
-  { lift, liftState, variant, translate = true, ...otherProps }: LiftMarkerProps,
+  { lift, liftState, variant, ...otherProps }: LiftMarkerProps,
   ref: React.Ref<SVGGElement>,
 ): JSX.Element {
   debug(`render ${lift.name}`);
@@ -159,26 +152,24 @@ export const LiftMarker = React.forwardRef(function (
       className={clsx(otherProps.onClick ? classes.marker : undefined, otherProps.className)}
       {...otherProps}
     >
-      {/* it is easier to render it translate, and reverse the translation here */}
-      <g transform={!translate ? `translate(${-pos[0]} ${-pos[1]})` : undefined}>
-        <g transform={`translate(${pos[0]} ${pos[1]})`}>
-          <rect
-            className={`${classes.lift} ${markerClass}`}
-            width={width}
-            height={depth}
-            x={-width / 2}
-            y={-depth / 2}
-            rx="0.1"
-            ry="0.1"
-            transform={`rotate(${radiansToDegrees(fromRmfYaw(ref_yaw))})`}
-          />
-          {renderStatusText()}
-        </g>
-        <g>
-          {doors.map((door, i) => (
-            <DoorMarker key={i} door={door} doorMode={doorMode?.value} translate={true} />
-          ))}
-        </g>
+      {/* it is easier to render it and reverse the translation */}
+      <g transform={`translate(${-pos[0]} ${-pos[1]})`}>
+        <rect
+          className={`${classes.lift} ${markerClass}`}
+          width={width}
+          height={depth}
+          x={-width / 2}
+          y={-depth / 2}
+          rx="0.1"
+          ry="0.1"
+          transform={`rotate(${radiansToDegrees(fromRmfYaw(ref_yaw))})`}
+        />
+        {renderStatusText()}
+      </g>
+      <g>
+        {doors.map((door, i) => (
+          <DoorMarker key={i} door={door} doorMode={doorMode?.value} rmfCoords />
+        ))}
       </g>
     </g>
   );

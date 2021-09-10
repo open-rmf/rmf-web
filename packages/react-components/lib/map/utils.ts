@@ -44,3 +44,19 @@ export function getRmfTransform(location: RmfModels.Location): string {
   const yaw = (fromRmfYaw(location.yaw) / Math.PI) * 180;
   return `translate(${pos[0]} ${pos[1]}) rotate(${yaw})`;
 }
+
+export function getDoorCenter(door: RmfModels.Door): [number, number] {
+  const v1 = [door.v1_x, door.v1_y];
+  const v2 = [door.v2_x, door.v2_y];
+  switch (door.door_type) {
+    case RmfModels.Door.DOOR_TYPE_SINGLE_SLIDING:
+    case RmfModels.Door.DOOR_TYPE_SINGLE_SWING:
+    case RmfModels.Door.DOOR_TYPE_SINGLE_TELESCOPE:
+    case RmfModels.Door.DOOR_TYPE_DOUBLE_SLIDING:
+    case RmfModels.Door.DOOR_TYPE_DOUBLE_SWING:
+    case RmfModels.Door.DOOR_TYPE_DOUBLE_TELESCOPE:
+      return [(v1[0] + v2[0]) / 2, (v2[1] + v1[1]) / 2];
+    default:
+      throw new Error('unknown door type');
+  }
+}

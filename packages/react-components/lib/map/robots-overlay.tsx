@@ -1,8 +1,7 @@
 import React from 'react';
-import { useLeaflet } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
 import { fromRmfCoords, fromRmfYaw } from '../utils/geometry';
-import { DefaultMarkerActualSizeMinZoom } from './constants';
+import { useAutoScale } from './hooks';
 import { ManagedNameLabel } from './label-manager';
 import { RobotMarker as RobotMarker_, RobotMarkerProps } from './robot-marker';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
@@ -53,7 +52,6 @@ export interface RobotsOverlayProps extends SVGOverlayProps {
 export const RobotsOverlay = ({
   robots,
   getRobotState,
-  markerActualSizeMinZoom = DefaultMarkerActualSizeMinZoom,
   onRobotClick,
   MarkerComponent = RobotMarker,
   bounds,
@@ -61,68 +59,40 @@ export const RobotsOverlay = ({
 }: RobotsOverlayProps): JSX.Element => {
   const viewBox = viewBoxFromLeafletBounds(bounds);
   const BoundedMarker = React.useMemo(() => bindMarker(MarkerComponent), [MarkerComponent]);
-  const leaflet = useLeaflet();
-  const [zoom, setZoom] = React.useState(leaflet.map?.getZoom());
-
-  const getRadius = React.useCallback(
-    (footprint): number | null =>
-      zoom === undefined || zoom >= markerActualSizeMinZoom ? footprint : 30 / 2 ** zoom,
-    [markerActualSizeMinZoom, zoom],
-  );
-
-  React.useLayoutEffect(() => {
-    const lmap = leaflet.map;
-    if (!lmap) return;
-    const listener = () => setZoom(lmap.getZoom());
-    lmap.on('zoom', listener);
-    return () => {
-      lmap.off('zoom', listener);
-    };
-  }, [leaflet.map]);
-
-  const markerProps = new Map<RobotData, RobotMarkerProps>();
-  robots.forEach((robot) => {
-    const state = getRobotState(robot.fleet, robot.name);
-    if (!state) return;
-    const [x, y] = fromRmfCoords([state.location.x, state.location.y]);
-    const theta = fromRmfYaw(state.location.yaw);
-    // TODO: hardcoded because this is not available in rmf.
-    const footprint = 0.5;
-    const radius = getRadius(footprint);
-    if (!radius) return;
-    markerProps.set(robot, {
-      x,
-      y,
-      theta,
-      radius,
-      color: robot.color,
-      inConflict: robot.inConflict,
-    });
-  });
+  const scale = useAutoScale(40);
+  // TODO: hardcoded because footprint is not available in rmf.
+  const footprint = 0.5;
 
   return (
     <SVGOverlay bounds={bounds} {...otherProps}>
       <svg viewBox={viewBox}>
-        {Array.from(markerProps.entries()).map(([r, p]) => (
-          <BoundedMarker
-            {...p}
-            key={r.name}
-            robotData={r}
-            onClick={onRobotClick}
-            aria-label={r.name}
-          />
-        ))}
-        {Array.from(markerProps.entries()).map(([r, p]) => (
-          <ManagedNameLabel
-            key={r.name}
-            text={r.name}
-            labelTarget={{
-              centerX: p.x,
-              centerY: p.y,
-              radius: p.radius,
-            }}
-          />
-        ))}
+        {robots.map((robot) => {
+          const state = getRobotState(robot.fleet, robot.name);
+          if (!state) return;
+          const [x, y] = fromRmfCoords([state.location.x, state.location.y]);
+          const theta = fromRmfYaw(state.location.yaw);
+
+          return (
+            <g key={`${robot.fleet}/${robot.name}`}>
+              <BoundedMarker
+                robotData={robot}
+                color={robot.color}
+                iconPath={robot.iconPath}
+                onClick={onRobotClick}
+                aria-label={robot.name}
+                transform={`translate(${x} ${y}) rotate(${theta}) scale(${footprint * scale})`}
+              />
+              <ManagedNameLabel
+                text={robot.name}
+                labelTarget={{
+                  centerX: x,
+                  centerY: y,
+                  radius: footprint * scale,
+                }}
+              />
+            </g>
+          );
+        })}
       </svg>
     </SVGOverlay>
   );
