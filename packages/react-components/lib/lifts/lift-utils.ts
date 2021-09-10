@@ -17,7 +17,9 @@ export function liftModeToString(liftMode: number): string {
   }
 }
 
-export function doorStateToString(doorState: number): string {
+export function doorStateToString(doorState?: number): string {
+  if (doorState === undefined) return 'Unknown';
+
   switch (doorState) {
     case RmfModels.LiftState.DOOR_OPEN:
       return 'Open';
@@ -30,7 +32,9 @@ export function doorStateToString(doorState: number): string {
   }
 }
 
-export function motionStateToString(motionState: number): string {
+export function motionStateToString(motionState?: number): string {
+  if (motionState === undefined) return 'Unknown';
+
   switch (motionState) {
     case RmfModels.LiftState.MOTION_DOWN:
       return 'Down';

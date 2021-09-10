@@ -29,7 +29,7 @@ export interface LiftPanelProps {
 
 export interface LiftCellProps {
   lift: RmfModels.Lift;
-  liftState: RmfModels.LiftState;
+  liftState?: RmfModels.LiftState;
   onRequestSubmit?(
     event: React.FormEvent,
     lift: RmfModels.Lift,
@@ -84,79 +84,81 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const LiftCell = ({ lift, liftState, onRequestSubmit }: LiftCellProps): JSX.Element => {
-  const classes = useStyles();
+const LiftCell = React.memo(
+  ({ lift, liftState, onRequestSubmit }: LiftCellProps): JSX.Element => {
+    const classes = useStyles();
 
-  const [showForms, setShowForms] = React.useState(false);
+    const [showForms, setShowForms] = React.useState(false);
 
-  const currMotion = motionStateToString(liftState.motion_state);
-  const getMotionArrowColor = (currMotion: string, arrowDirection: string) => {
-    return currMotion === arrowDirection ? classes.iconMoving : classes.iconOtherStates;
-  };
+    const currMotion = motionStateToString(liftState?.motion_state);
+    const getMotionArrowColor = (currMotion: string, arrowDirection: string) => {
+      return currMotion === arrowDirection ? classes.iconMoving : classes.iconOtherStates;
+    };
 
-  const currDoorMotion = doorStateToString(liftState.door_state);
-  const doorModeLabelClasses = React.useCallback(
-    (liftState?: RmfModels.LiftState): string => {
-      switch (liftState?.door_state) {
-        case RmfModels.DoorMode.MODE_OPEN:
-          return `${classes.doorLabelOpen}`;
-        case RmfModels.DoorMode.MODE_CLOSED:
-          return `${classes.doorLabelClosed}`;
-        case RmfModels.DoorMode.MODE_MOVING:
-          return `${classes.doorLabelMoving}`;
-        default:
-          return '';
-      }
-    },
-    [classes],
-  );
+    const currDoorMotion = doorStateToString(liftState?.door_state);
+    const doorModeLabelClasses = React.useCallback(
+      (liftState?: RmfModels.LiftState): string => {
+        switch (liftState?.door_state) {
+          case RmfModels.DoorMode.MODE_OPEN:
+            return `${classes.doorLabelOpen}`;
+          case RmfModels.DoorMode.MODE_CLOSED:
+            return `${classes.doorLabelClosed}`;
+          case RmfModels.DoorMode.MODE_MOVING:
+            return `${classes.doorLabelMoving}`;
+          default:
+            return '';
+        }
+      },
+      [classes],
+    );
 
-  const labelId = `lift-cell-${lift.name}`;
+    const labelId = `lift-cell-${lift.name}`;
 
-  return (
-    <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
-      <Grid container direction="row">
-        <Grid item xs={9}>
-          <Typography id={labelId} align="center" style={{ fontWeight: 'bold' }}>
-            {lift.name}
-          </Typography>
-          <Box border={1} borderColor="divider" m={0.5}>
-            <Typography align="center">{liftState.destination_floor}</Typography>
-          </Box>
-          <Typography align="center" className={doorModeLabelClasses(liftState)}>
-            {currDoorMotion}
-          </Typography>
+    return (
+      <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
+        <Grid container direction="row">
+          <Grid item xs={9}>
+            <Typography id={labelId} align="center" style={{ fontWeight: 'bold' }}>
+              {lift.name}
+            </Typography>
+            <Box border={1} borderColor="divider" m={0.5}>
+              <Typography align="center">{liftState?.destination_floor || 'Unknown'}</Typography>
+            </Box>
+            <Typography align="center" className={doorModeLabelClasses(liftState)}>
+              {currDoorMotion}
+            </Typography>
+          </Grid>
+          <Grid item xs>
+            <Typography align="center" className={getMotionArrowColor(currMotion, 'Up')}>
+              <ArrowUpwardIcon />
+            </Typography>
+            <Typography align="center">{liftState?.current_floor || '?'}</Typography>
+            <Typography align="center" className={getMotionArrowColor(currMotion, 'Down')}>
+              <ArrowDownwardIcon />
+            </Typography>
+          </Grid>
         </Grid>
-        <Grid item xs>
-          <Typography align="center" className={getMotionArrowColor(currMotion, 'Up')}>
-            <ArrowUpwardIcon />
-          </Typography>
-          <Typography align="center">{liftState.current_floor}</Typography>
-          <Typography align="center" className={getMotionArrowColor(currMotion, 'Down')}>
-            <ArrowDownwardIcon />
-          </Typography>
-        </Grid>
-      </Grid>
-      <Button
-        variant="contained"
-        color="primary"
-        fullWidth
-        size="small"
-        onClick={() => setShowForms(true)}
-      >
-        Request Form
-      </Button>
-      <LiftRequestFormDialog
-        lift={lift}
-        availableDoorModes={requestDoorModes}
-        availableRequestTypes={requestModes}
-        showFormDialog={showForms}
-        onRequestSubmit={onRequestSubmit}
-        onClose={() => setShowForms(false)}
-      />
-    </Paper>
-  );
-};
+        <Button
+          variant="contained"
+          color="primary"
+          fullWidth
+          size="small"
+          onClick={() => setShowForms(true)}
+        >
+          Request Form
+        </Button>
+        <LiftRequestFormDialog
+          lift={lift}
+          availableDoorModes={requestDoorModes}
+          availableRequestTypes={requestModes}
+          showFormDialog={showForms}
+          onRequestSubmit={onRequestSubmit}
+          onClose={() => setShowForms(false)}
+        />
+      </Paper>
+    );
+  },
+);
 
 export function LiftPanel({ lifts, liftStates, onRequestSubmit }: LiftPanelProps): JSX.Element {
   const classes = useStyles();

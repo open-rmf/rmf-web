@@ -41,8 +41,7 @@ export interface LiftRowProps {
   ): void;
 }
 
-const LiftRow = (props: LiftRowProps) => {
-  const { lift, liftState, onRequestSubmit } = props;
+const LiftRow = React.memo(({ lift, liftState, onRequestSubmit }: LiftRowProps) => {
   const classes = useStyles();
 
   const [showForms, setShowForms] = React.useState(false);
@@ -93,7 +92,7 @@ const LiftRow = (props: LiftRowProps) => {
       </TableCell>
     </TableRow>
   );
-};
+});
 
 export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps): JSX.Element => {
   return (

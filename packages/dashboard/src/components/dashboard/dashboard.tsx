@@ -18,6 +18,7 @@ import {
 import ScheduleVisualizer from '../schedule-visualizer';
 
 const debug = Debug('Dashboard');
+const UpdateRate = 1000;
 
 const useStyles = makeStyles((theme) => ({
   toolBarTitle: {
@@ -44,7 +45,13 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const sioClient = rmfIngress?.sioClient;
   const buildingMap = React.useContext(BuildingMapContext);
 
-  const [doorStates, setDoorStates] = React.useState<Record<string, RmfModels.DoorState>>({});
+  const [_triggerRender, setTriggerRender] = React.useState(0); // eslint-disable-line @typescript-eslint/no-unused-vars
+  React.useEffect(() => {
+    const interval = setInterval(() => setTriggerRender((prev) => prev + 1), UpdateRate);
+    return () => clearInterval(interval);
+  }, []);
+
+  const doorStatesRef = React.useRef<Record<string, RmfModels.DoorState>>({});
   const doors: DoorData[] = React.useMemo(() => {
     return buildingMap
       ? (buildingMap.levels as Level[]).flatMap((x) =>
@@ -56,8 +63,9 @@ export default function Dashboard(_props: {}): React.ReactElement {
   React.useEffect(() => {
     if (!sioClient) return;
     const subs = doors.map((d) =>
-      sioClient.subscribeDoorState(d.door.name, (state) =>
-        setDoorStates((prev) => ({ ...prev, [d.door.name]: state })),
+      sioClient.subscribeDoorState(
+        d.door.name,
+        (state) => (doorStatesRef.current[d.door.name] = state),
       ),
     );
     return () => {
@@ -65,16 +73,14 @@ export default function Dashboard(_props: {}): React.ReactElement {
     };
   }, [sioClient, doors]);
 
-  const [liftStates, setLiftStates] = React.useState<Record<string, RmfModels.LiftState>>({});
+  const liftStatesRef = React.useRef<Record<string, RmfModels.LiftState>>({});
   const lifts: RmfModels.Lift[] = React.useMemo(() => (buildingMap ? buildingMap.lifts : []), [
     buildingMap,
   ]);
   React.useEffect(() => {
     if (!sioClient) return;
     const subs = lifts.map((l) =>
-      sioClient.subscribeLiftState(l.name, (state) =>
-        setLiftStates((prev) => ({ ...prev, [l.name]: state })),
-      ),
+      sioClient.subscribeLiftState(l.name, (state) => (liftStatesRef.current[l.name] = state)),
     );
     return () => {
       subs.forEach((s) => sioClient.unsubscribe(s));
@@ -82,14 +88,13 @@ export default function Dashboard(_props: {}): React.ReactElement {
   }, [sioClient, lifts]);
 
   const dispensers = React.useContext(DispensersContext);
-  const [dispenserStates, setDispenserStates] = React.useState<
-    Record<string, RmfModels.DispenserState>
-  >({});
+  const dispenserStatesRef = React.useRef<Record<string, RmfModels.DispenserState>>({});
   React.useEffect(() => {
     if (!sioClient) return;
     const subs = dispensers.map((d) =>
-      sioClient.subscribeDispenserState(d.guid, (state) =>
-        setDispenserStates((prev) => ({ ...prev, [d.guid]: state })),
+      sioClient.subscribeDispenserState(
+        d.guid,
+        (state) => (dispenserStatesRef.current[d.guid] = state),
       ),
     );
     return () => {
@@ -98,14 +103,13 @@ export default function Dashboard(_props: {}): React.ReactElement {
   }, [sioClient, dispensers]);
 
   const ingestors = React.useContext(IngestorsContext);
-  const [ingestorStates, setIngestorStates] = React.useState<
-    Record<string, RmfModels.IngestorState>
-  >({});
+  const ingestorStatesRef = React.useRef<Record<string, RmfModels.IngestorState>>({});
   React.useEffect(() => {
     if (!sioClient) return;
     const subs = ingestors.map((d) =>
-      sioClient.subscribeIngestorState(d.guid, (state) =>
-        setIngestorStates((prev) => ({ ...prev, [d.guid]: state })),
+      sioClient.subscribeIngestorState(
+        d.guid,
+        (state) => (ingestorStatesRef.current[d.guid] = state),
       ),
     );
     return () => {
@@ -114,10 +118,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   }, [sioClient, ingestors]);
 
   const workcells = React.useMemo(() => [...dispensers, ...ingestors], [dispensers, ingestors]);
-  const workcellStates = React.useMemo(() => ({ ...dispenserStates, ...ingestorStates }), [
-    dispenserStates,
-    ingestorStates,
-  ]);
+  const workcellStates = { ...dispenserStatesRef.current, ...ingestorStatesRef.current };
 
   const [fleets, setFleets] = React.useState<Fleet[]>([]);
   React.useEffect(() => {
@@ -132,20 +133,18 @@ export default function Dashboard(_props: {}): React.ReactElement {
       cancel = true;
     };
   }, [rmfIngress]);
-  const [fleetStates, setFleetStates] = React.useState<Record<string, RmfModels.FleetState>>({});
+  const fleetStatesRef = React.useRef<Record<string, RmfModels.FleetState>>({});
   React.useEffect(() => {
     if (!sioClient) return;
     const subs = fleets.map((f) =>
-      sioClient.subscribeFleetState(f.name, (state) =>
-        setFleetStates((prev) => ({ ...prev, [f.name]: state })),
-      ),
+      sioClient.subscribeFleetState(f.name, (state) => (fleetStatesRef.current[f.name] = state)),
     );
     return () => {
       subs.forEach((s) => sioClient.unsubscribe(s));
     };
   }, [sioClient, fleets]);
   const fleetNames = React.useRef<string[]>([]);
-  const newFleetNames = Object.keys(fleetStates);
+  const newFleetNames = Object.keys(fleetStatesRef.current);
   if (newFleetNames.some((fleetName) => !fleetNames.current.includes(fleetName))) {
     fleetNames.current = newFleetNames;
   }
@@ -193,9 +192,9 @@ export default function Dashboard(_props: {}): React.ReactElement {
               buildingMap={buildingMap}
               dispensers={dispensers}
               ingestors={ingestors}
-              doorStates={doorStates}
-              liftStates={liftStates}
-              fleetStates={fleetStates}
+              doorStates={doorStatesRef.current}
+              liftStates={liftStatesRef.current}
+              fleetStates={fleetStatesRef.current}
               mode="normal"
             ></ScheduleVisualizer>
           </Card>
@@ -203,14 +202,14 @@ export default function Dashboard(_props: {}): React.ReactElement {
             {doors.length > 0 ? (
               <DoorPanel
                 doors={doors}
-                doorStates={doorStates}
+                doorStates={doorStatesRef.current}
                 onDoorControlClick={handleOnDoorControlClick}
               />
             ) : null}
             {lifts.length > 0 ? (
               <LiftPanel
                 lifts={lifts}
-                liftStates={liftStates}
+                liftStates={liftStatesRef.current}
                 onRequestSubmit={handleLiftRequestSubmit}
               />
             ) : null}

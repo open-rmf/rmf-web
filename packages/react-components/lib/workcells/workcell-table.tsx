@@ -27,8 +27,7 @@ export interface WorkcellRowProps {
   workcellState: RmfModels.DispenserState;
 }
 
-const WorkcellRow = (props: WorkcellRowProps) => {
-  const { workcell, workcellState } = props;
+const WorkcellRow = React.memo(({ workcell, workcellState }: WorkcellRowProps) => {
   const classes = useStyles();
 
   const dispenserModeLabelClasses = React.useCallback(
@@ -70,7 +69,7 @@ const WorkcellRow = (props: WorkcellRowProps) => {
       )}
     </TableRow>
   );
-};
+});
 
 export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps): JSX.Element => {
   return (
