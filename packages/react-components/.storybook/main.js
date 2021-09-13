@@ -1,6 +1,3 @@
-// const path = require('path');
-// const toPath = (filePath) => path.join(process.cwd(), filePath);
-
 module.exports = {
   typescript: {
     check: true,
@@ -17,7 +14,6 @@ module.exports = {
           ...config.resolve.alias,
           '@emotion/core': require.resolve('@emotion/react'),
           'emotion-theming': require.resolve('@emotion/react'),
-          '@emotion/styled': require.resolve('@emotion/styled'),
         },
       },
     };
