@@ -29,7 +29,7 @@ export const HealthReport = (props: HealthReportProps): React.ReactElement => {
       <DefaultDatesForm search={searchLogs} {...otherProps} />
       <div className={classes.table}>
         {logs.length !== 0 && (
-          <HealthReportTable rows={logs} tableSize={'48vh'} addMoreRows={getMoreLogs} />
+          <HealthReportTable rows={logs} tableSize={500} addMoreRows={getMoreLogs} />
         )}
       </div>
     </>

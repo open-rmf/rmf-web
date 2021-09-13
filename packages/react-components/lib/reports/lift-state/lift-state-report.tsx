@@ -29,7 +29,7 @@ export const LiftStateReport = (props: LiftStateReportProps): React.ReactElement
       <DefaultDatesForm search={searchLogs} {...otherProps} />
       <div className={classes.table}>
         {logs.length !== 0 && (
-          <LiftStateReportTable rows={logs} tableSize={'48vh'} addMoreRows={getMoreLogs} />
+          <LiftStateReportTable rows={logs} tableSize={500} addMoreRows={getMoreLogs} />
         )}
       </div>
     </>

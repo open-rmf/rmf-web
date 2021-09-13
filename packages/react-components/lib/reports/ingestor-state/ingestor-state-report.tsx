@@ -29,7 +29,7 @@ export const IngestorStateReport = (props: IngestorStateReportProps): React.Reac
       <DefaultDatesForm search={searchLogs} {...otherProps} />
       <div className={classes.table}>
         {logs.length !== 0 && (
-          <IngestorStateReportTable rows={logs} tableSize={'48vh'} addMoreRows={getMoreLogs} />
+          <IngestorStateReportTable rows={logs} tableSize={500} addMoreRows={getMoreLogs} />
         )}
       </div>
     </>

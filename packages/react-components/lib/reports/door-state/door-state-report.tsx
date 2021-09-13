@@ -29,7 +29,7 @@ export const DoorStateReport = (props: DoorStateReportProps): React.ReactElement
       <DefaultDatesForm search={searchLogs} {...otherProps} />
       <div className={classes.table}>
         {logs.length !== 0 && (
-          <DoorStateReportTable rows={logs} tableSize={'48vh'} addMoreRows={getMoreLogs} />
+          <DoorStateReportTable rows={logs} tableSize={500} addMoreRows={getMoreLogs} />
         )}
       </div>
     </>

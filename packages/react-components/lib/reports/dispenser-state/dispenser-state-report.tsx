@@ -29,7 +29,7 @@ export const DispenserStateReport = (props: DispenserStateReportProps): React.Re
       <DefaultDatesForm search={searchLogs} {...otherProps} />
       <div className={classes.table}>
         {logs.length !== 0 && (
-          <DispenserStateReportTable rows={logs} tableSize={'48vh'} addMoreRows={getMoreLogs} />
+          <DispenserStateReportTable rows={logs} tableSize={500} addMoreRows={getMoreLogs} />
         )}
       </div>
     </>

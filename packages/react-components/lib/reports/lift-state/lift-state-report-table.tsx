@@ -24,82 +24,84 @@ export const LiftStateReportTable = (props: LiftStateReportTable): React.ReactEl
   const { rows, tableSize, addMoreRows } = props;
 
   return (
-    <DataGrid
-      // title="Lift State"
-      // icons={materialTableIcons}
-      columns={[
-        {
-          headerName: 'Session ID',
-          field: 'session_id',
-          type: 'string',
-          valueFormatter: (rowData) => {
-            return <Typography>{rowData.row.session_id}</Typography>;
+    <div style={{ height: tableSize, width: '100%' }}>
+      <DataGrid
+        // title="Lift State"
+        // icons={materialTableIcons}
+        columns={[
+          {
+            headerName: 'Session ID',
+            field: 'session_id',
+            type: 'string',
+            valueFormatter: (rowData) => {
+              return <Typography>{rowData.row.session_id}</Typography>;
+            },
           },
-        },
-        {
-          headerName: 'State',
-          field: 'state',
-          type: 'string',
-          valueFormatter: (rowData) => {
-            return <Typography>{rowData.row.state}</Typography>;
+          {
+            headerName: 'State',
+            field: 'state',
+            type: 'string',
+            valueFormatter: (rowData) => {
+              return <Typography>{rowData.row.state}</Typography>;
+            },
           },
-        },
-        {
-          headerName: 'Door State',
-          field: 'door_state',
-          type: 'string',
-          valueFormatter: (rowData) => {
-            return <Typography>{rowData.row.door_state}</Typography>;
+          {
+            headerName: 'Door State',
+            field: 'door_state',
+            type: 'string',
+            valueFormatter: (rowData) => {
+              return <Typography>{rowData.row.door_state}</Typography>;
+            },
           },
-        },
-        {
-          headerName: 'Destination Floor',
-          field: 'destination_floor',
-          type: 'string',
-          valueFormatter: (rowData) => {
-            return <Typography>{rowData.row.destination_floor}</Typography>;
+          {
+            headerName: 'Destination Floor',
+            field: 'destination_floor',
+            type: 'string',
+            valueFormatter: (rowData) => {
+              return <Typography>{rowData.row.destination_floor}</Typography>;
+            },
           },
-        },
-        {
-          headerName: 'Motion State',
-          field: 'motion_state',
-          type: 'string',
-          valueFormatter: (rowData) => {
-            return <Typography>{rowData.row.motion_state}</Typography>;
+          {
+            headerName: 'Motion State',
+            field: 'motion_state',
+            type: 'string',
+            valueFormatter: (rowData) => {
+              return <Typography>{rowData.row.motion_state}</Typography>;
+            },
           },
-        },
-        {
-          headerName: 'Current Floor',
-          field: 'current_floor',
-          type: 'string',
-          valueFormatter: (rowData) => {
-            return <Typography>{rowData.row.current_floor}</Typography>;
+          {
+            headerName: 'Current Floor',
+            field: 'current_floor',
+            type: 'string',
+            valueFormatter: (rowData) => {
+              return <Typography>{rowData.row.current_floor}</Typography>;
+            },
           },
-        },
 
-        {
-          headerName: 'Timestamp',
-          field: 'timestamp',
-          type: 'datetime',
-          filterable: false,
-          align: 'center',
-          valueFormatter: (rowData) => {
-            return (
-              <Typography data-testid={'lift-table-date'}>
-                {format(new Date(rowData.row.created), 'MMM dd yyyy hh:mm aaa')}
-              </Typography>
-            );
+          {
+            headerName: 'Timestamp',
+            field: 'timestamp',
+            type: 'datetime',
+            filterable: false,
+            align: 'center',
+            valueFormatter: (rowData) => {
+              return (
+                <Typography data-testid={'lift-table-date'}>
+                  {format(new Date(rowData.row.created), 'MMM dd yyyy hh:mm aaa')}
+                </Typography>
+              );
+            },
           },
-        },
-      ]}
-      rows={rows}
-      pageSize={100}
-      rowsPerPageOptions={[50, 100, 200]}
-      onPageChange={(page, pageSize) => {
-        if (addMoreRows) {
-          rows.length / pageSize - 1 === page && addMoreRows();
-        }
-      }}
-    />
+        ]}
+        rows={rows}
+        pageSize={100}
+        rowsPerPageOptions={[50, 100, 200]}
+        onPageChange={(page, pageSize) => {
+          if (addMoreRows) {
+            rows.length / pageSize - 1 === page && addMoreRows();
+          }
+        }}
+      />
+    </div>
   );
 };

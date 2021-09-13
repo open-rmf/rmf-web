@@ -29,7 +29,7 @@ export const TaskSummaryReport = (props: TaskSummaryReportProps): React.ReactEle
       <DefaultDatesForm search={searchLogs} {...otherProps} />
       <div className={classes.table}>
         {logs.length !== 0 && (
-          <TaskSummaryReportTable rows={logs} tableSize={'48vh'} addMoreRows={getMoreLogs} />
+          <TaskSummaryReportTable rows={logs} tableSize={500} addMoreRows={getMoreLogs} />
         )}
       </div>
     </>

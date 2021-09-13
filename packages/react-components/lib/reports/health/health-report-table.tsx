@@ -21,65 +21,67 @@ export const HealthReportTable = (props: HealthReportTable): React.ReactElement 
   const { rows, tableSize, addMoreRows } = props;
 
   return (
-    <DataGrid
-      // title="Health"
-      // icons={materialTableIcons}
-      columns={[
-        {
-          headerName: 'Device',
-          field: 'device',
-          type: 'string',
-          valueFormatter: (rowData) => {
-            return <Typography>{rowData.row.device.type}</Typography>;
+    <div style={{ height: tableSize, width: '100%' }}>
+      <DataGrid
+        // title="Health"
+        // icons={materialTableIcons}
+        columns={[
+          {
+            headerName: 'Device',
+            field: 'device',
+            type: 'string',
+            valueFormatter: (rowData) => {
+              return <Typography>{rowData.row.device.type}</Typography>;
+            },
           },
-        },
-        {
-          headerName: 'Actor',
-          field: 'actor_id',
-          type: 'string',
-          valueFormatter: (rowData) => {
-            return <Typography>{rowData.row.device.actor}</Typography>;
+          {
+            headerName: 'Actor',
+            field: 'actor_id',
+            type: 'string',
+            valueFormatter: (rowData) => {
+              return <Typography>{rowData.row.device.actor}</Typography>;
+            },
           },
-        },
-        {
-          headerName: 'Health Status',
-          field: 'health_status',
-          type: 'string',
-          valueFormatter: (rowData) => {
-            return <Typography>{rowData.row.health_status}</Typography>;
+          {
+            headerName: 'Health Status',
+            field: 'health_status',
+            type: 'string',
+            valueFormatter: (rowData) => {
+              return <Typography>{rowData.row.health_status}</Typography>;
+            },
           },
-        },
-        {
-          headerName: 'Health Message',
-          field: 'health_message',
-          type: 'string',
-          valueFormatter: (rowData) => {
-            return <Typography>{rowData.row.health_message}</Typography>;
+          {
+            headerName: 'Health Message',
+            field: 'health_message',
+            type: 'string',
+            valueFormatter: (rowData) => {
+              return <Typography>{rowData.row.health_message}</Typography>;
+            },
           },
-        },
-        {
-          headerName: 'Timestamp',
-          field: 'created',
-          type: 'datetime',
-          filterable: false,
-          align: 'center',
-          valueFormatter: (rowData) => {
-            return (
-              <Typography data-testid={'health-table-date'}>
-                {format(new Date(rowData.row.created), 'MMM dd yyyy hh:mm aaa')}
-              </Typography>
-            );
+          {
+            headerName: 'Timestamp',
+            field: 'created',
+            type: 'datetime',
+            filterable: false,
+            align: 'center',
+            valueFormatter: (rowData) => {
+              return (
+                <Typography data-testid={'health-table-date'}>
+                  {format(new Date(rowData.row.created), 'MMM dd yyyy hh:mm aaa')}
+                </Typography>
+              );
+            },
           },
-        },
-      ]}
-      rows={rows}
-      pageSize={100}
-      rowsPerPageOptions={[50, 100, 200]}
-      onPageChange={(page, pageSize) => {
-        if (addMoreRows) {
-          rows.length / pageSize - 1 === page && addMoreRows();
-        }
-      }}
-    />
+        ]}
+        rows={rows}
+        pageSize={100}
+        rowsPerPageOptions={[50, 100, 200]}
+        onPageChange={(page, pageSize) => {
+          if (addMoreRows) {
+            rows.length / pageSize - 1 === page && addMoreRows();
+          }
+        }}
+      />
+    </div>
   );
 };

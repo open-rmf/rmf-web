@@ -29,7 +29,7 @@ export const UserLogoutReport = (props: UserLogoutReportProps): React.ReactEleme
       <DefaultDatesForm search={searchLogs} {...otherProps} />
       <div className={classes.table}>
         {logs.length !== 0 && (
-          <UserLogoutReportTable rows={logs} tableSize={'48vh'} addMoreRows={getMoreLogs} />
+          <UserLogoutReportTable rows={logs} tableSize={500} addMoreRows={getMoreLogs} />
         )}
       </div>
     </>

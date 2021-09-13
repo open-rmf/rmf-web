@@ -15,6 +15,6 @@ export interface DefaultReportQueryPayload {
 }
 
 export interface DefaultLogTableProps {
-  tableSize?: string; // units vh or rem
+  tableSize?: number;
   addMoreRows?(): void;
 }

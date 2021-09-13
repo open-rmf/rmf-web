@@ -32,7 +32,7 @@ export const UserLoginFailureReport = (props: UserLoginFailureReportProps): Reac
       <DefaultDatesForm search={searchLogs} {...otherProps} />
       <div className={classes.table}>
         {logs.length !== 0 && (
-          <UserLoginFailureReportTable rows={logs} tableSize={'48vh'} addMoreRows={getMoreLogs} />
+          <UserLoginFailureReportTable rows={logs} tableSize={500} addMoreRows={getMoreLogs} />
         )}
       </div>
     </>

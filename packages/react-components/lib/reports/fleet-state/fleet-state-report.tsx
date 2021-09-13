@@ -29,7 +29,7 @@ export const FleetStateReport = (props: FleetStateReportProps): React.ReactEleme
       <DefaultDatesForm search={searchLogs} {...otherProps} />
       <div className={classes.table}>
         {logs.length !== 0 && (
-          <FleetStateReportTable rows={logs} tableSize={'48vh'} addMoreRows={getMoreLogs} />
+          <FleetStateReportTable rows={logs} tableSize={500} addMoreRows={getMoreLogs} />
         )}
       </div>
     </>
