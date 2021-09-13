@@ -1,5 +1,5 @@
 import { Grid, Slider, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
+import makeStyles from '@material-ui/styles/makeStyles';
 import GestureIcon from '@material-ui/icons/Gesture';
 import Leaflet from 'leaflet';
 import React from 'react';
@@ -7,13 +7,13 @@ import ReactDOM from 'react-dom';
 import { MapControl, MapControlProps, withLeaflet } from 'react-leaflet';
 import { PositiveIntField } from '../form-inputs';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     width: '100%',
     height: '100%',
   },
   container: {
-    padding: theme.spacing(2),
+    padding: '16px',
   },
   slider: {
     width: 200,

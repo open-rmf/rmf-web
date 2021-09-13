@@ -1,6 +1,7 @@
 /* istanbul ignore file */
 
-import { makeStyles, Typography } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
 import { User } from 'api-client';
 import { AxiosError } from 'axios';
 import React from 'react';

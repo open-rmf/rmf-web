@@ -1,13 +1,5 @@
-import {
-  createStyles,
-  IconButton,
-  makeStyles,
-  Menu,
-  MenuItem,
-  Tab,
-  Toolbar,
-  Typography,
-} from '@material-ui/core';
+import { IconButton, Menu, MenuItem, Tab, Toolbar, Typography } from '@material-ui/core';
+import { makeStyles, createStyles } from '@material-ui/styles';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import HelpIcon from '@material-ui/icons/Help';
 import React from 'react';
@@ -21,6 +13,7 @@ import {
   ResourcesContext,
   TooltipsContext,
 } from './app-contexts';
+import { customThemeValues } from './theme';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -28,7 +21,7 @@ const useStyles = makeStyles((theme) =>
       zIndex: theme.zIndex.drawer + 1,
     },
     logoBtn: {
-      width: theme.appBar.logoSize,
+      width: customThemeValues.appBar.logoSize,
     },
     toolbar: {
       textAlign: 'right',
@@ -129,7 +122,6 @@ export const AppBar = React.memo(
               </IconButton>
               <Menu
                 anchorEl={anchorEl}
-                getContentAnchorEl={null}
                 anchorOrigin={{
                   vertical: 'bottom',
                   horizontal: 'right',

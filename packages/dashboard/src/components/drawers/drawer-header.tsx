@@ -1,4 +1,5 @@
-import { Divider, makeStyles, Grid, Typography, IconButton } from '@material-ui/core';
+import { Divider, Grid, Typography, IconButton } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
 import { KeyboardBackspace as BackIcon } from '@material-ui/icons';
 import CloseIcon from '@material-ui/icons/Close';
 import React from 'react';

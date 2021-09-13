@@ -7,7 +7,7 @@ import {
   Menu,
   MenuItem,
 } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/styles';
 import AccountIcon from '@material-ui/icons/AccountCircle';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import { User } from 'api-client';
@@ -17,7 +17,7 @@ import { AppControllerContext } from '../app-contexts';
 
 const useStyles = makeStyles((theme) => ({
   avatar: {
-    color: theme.palette.type === 'light' ? theme.palette.grey[400] : theme.palette.grey[600],
+    color: theme.palette.mode === 'light' ? theme.palette.grey[400] : theme.palette.grey[600],
     fontSize: '3em',
   },
 }));

@@ -2,7 +2,6 @@ import {
   Button,
   Grid,
   IconButton,
-  makeStyles,
   Paper,
   Snackbar,
   TableContainer,
@@ -12,6 +11,7 @@ import {
   Typography,
   useTheme,
 } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
 import {
   AddOutlined as AddOutlinedIcon,
   Autorenew as AutorenewIcon,
@@ -149,7 +149,7 @@ export function TaskPanel({
 
   return (
     <div {...divProps}>
-      <Grid container wrap="nowrap" justify="center" style={{ height: 'inherit' }}>
+      <Grid container wrap="nowrap" justifyContent="center" style={{ height: 'inherit' }}>
         <Paper className={classes.tableContainer}>
           <Toolbar>
             <Typography className={classes.tableTitle} variant="h6">

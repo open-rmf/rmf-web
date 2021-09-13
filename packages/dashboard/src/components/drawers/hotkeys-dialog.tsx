@@ -6,9 +6,9 @@ import {
   DialogTitle,
   Divider,
   IconButton,
-  makeStyles,
   Typography,
 } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
 import CloseIcon from '@material-ui/icons/Close';
 import React from 'react';
 import { getApplicationKeyMap } from 'react-hotkeys';

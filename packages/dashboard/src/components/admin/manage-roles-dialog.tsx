@@ -12,8 +12,8 @@ import {
   List,
   ListItem,
   ListItemText,
-  makeStyles,
 } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
 import SecurityIcon from '@material-ui/icons/Security';
 import React from 'react';
 import { Loading, TransferList, useAsync } from 'react-components';

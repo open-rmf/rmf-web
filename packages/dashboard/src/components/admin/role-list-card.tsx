@@ -10,7 +10,7 @@ import {
   IconButton,
   Typography,
 } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/styles';
 import AddIcon from '@material-ui/icons/AddCircle';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';

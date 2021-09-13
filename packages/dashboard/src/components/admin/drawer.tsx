@@ -1,17 +1,11 @@
-import {
-  Drawer,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  makeStyles,
-  Toolbar,
-} from '@material-ui/core';
+import { Drawer, List, ListItem, ListItemIcon, ListItemText, Toolbar } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
 import { SvgIconComponent } from '@material-ui/icons';
 import AccountIcon from '@material-ui/icons/AccountCircle';
 import SecurityIcon from '@material-ui/icons/Security';
 import React from 'react';
 import { matchPath, RouteProps, useHistory, useLocation, useRouteMatch } from 'react-router';
+import { customThemeValues } from '../theme';
 
 export type AdminDrawerValues = 'Users' | 'Roles';
 
@@ -24,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
   drawerPaper: {
     backgroundColor: theme.palette.primary.dark,
     color: theme.palette.getContrastText(theme.palette.primary.dark),
-    minWidth: theme.appDrawer.width,
+    minWidth: customThemeValues.appDrawer.width,
   },
   drawerContainer: {
     overflow: 'auto',

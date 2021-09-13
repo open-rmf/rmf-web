@@ -4,10 +4,10 @@ import {
   Drawer,
   DrawerProps,
   IconButton,
-  makeStyles,
   Typography,
   useMediaQuery,
 } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
 import BugReportIcon from '@material-ui/icons/BugReport';
 import DirectionsIcon from '@material-ui/icons/Directions';
 import React from 'react';
