@@ -1,7 +1,13 @@
 import { ThemeProvider } from '@material-ui/core';
-// import { Theme } from '@material-ui/core/styles';
+import { Theme, StyledEngineProvider } from '@material-ui/core/styles';
 import defaultTheme from '@material-ui/core/styles/defaultTheme';
 import { DecoratorFn } from '@storybook/react';
+import CssBaseline from '@material-ui/core/CssBaseline';
+
+declare module '@material-ui/styles/defaultTheme' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface (remove this line if you don't have the rule enabled)
+  interface DefaultTheme extends Theme {}
+}
 
 export const parameters = {
   actions: { argTypesRegex: '^on[A-Z].*' },
@@ -9,9 +15,12 @@ export const parameters = {
 
 const withThemeProvider: DecoratorFn = (Story, context) => {
   return (
-    <ThemeProvider theme={defaultTheme}>
-      <Story {...context} />
-    </ThemeProvider>
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={defaultTheme}>
+        <CssBaseline />
+        <Story {...context} />
+      </ThemeProvider>
+    </StyledEngineProvider>
   );
 };
 export const decorators = [withThemeProvider];

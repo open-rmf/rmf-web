@@ -5,7 +5,7 @@ import React from 'react';
 
 const useStyles = makeStyles((theme) => ({
   logoBtn: {
-    padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
+    padding: `${theme.spacing(1)} ${theme.spacing(2)}`,
     boxSizing: 'border-box',
   },
   logoImg: {
