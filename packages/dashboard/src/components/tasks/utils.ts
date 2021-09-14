@@ -54,7 +54,7 @@ export function parseTasksFile(
         checkField(desc, 'finish_name', 'string', errMsgs);
         break;
       default:
-        throw new TypeError('unknown task_type');
+        errMsgs.push('Unknown Task Type');
     }
   }
   if (errMsgs.length > 0) setParseErrMsg && setParseErrMsg(errMsgs);
