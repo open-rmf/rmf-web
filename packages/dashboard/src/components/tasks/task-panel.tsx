@@ -10,8 +10,8 @@ import {
   Tooltip,
   Typography,
   useTheme,
+  styled,
 } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
 import {
   AddOutlined as AddOutlinedIcon,
   Autorenew as AutorenewIcon,
@@ -26,21 +26,28 @@ import * as RmfModels from 'rmf-models';
 import { Enforcer } from '../permissions';
 import { parseTasksFile } from './utils';
 
-const useStyles = makeStyles((theme) => ({
-  tableContainer: {
+const classes = {
+  tableContainer: 'table-container',
+  tableTitle: 'table-title',
+  detailPanelContainer: 'detail-panel-container',
+  enabledToggleButton: 'enable-toggle-button',
+};
+
+const Root = styled('div')(({ theme }) => ({
+  [`& .${classes.tableContainer}`]: {
     display: 'flex',
     flexDirection: 'column',
   },
-  tableTitle: {
+  [`& .${classes.tableTitle}`]: {
     flex: '1 1 100%',
   },
-  detailPanelContainer: {
+  [`& .${classes.detailPanelContainer}`]: {
     width: 350,
     padding: theme.spacing(2),
     marginLeft: theme.spacing(1),
     flex: '0 0 auto',
   },
-  enabledToggleButton: {
+  [`& .${classes.enabledToggleButton}`]: {
     background: theme.palette.action.selected,
   },
 }));
@@ -55,7 +62,8 @@ function NoSelectedTask() {
   );
 }
 
-export interface TaskPanelProps extends React.HTMLProps<HTMLDivElement> {
+export interface TaskPanelProps
+  extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
   /**
    * Should only contain the tasks of the current page.
    */
@@ -86,7 +94,6 @@ export function TaskPanel({
   onAutoRefresh,
   ...divProps
 }: TaskPanelProps): JSX.Element {
-  const classes = useStyles();
   const theme = useTheme();
   const [selectedTask, setSelectedTask] = React.useState<Task | undefined>(undefined);
   const uploadFileInputRef = React.useRef<HTMLInputElement>(null);
@@ -148,7 +155,7 @@ export function TaskPanel({
       selectedTask.summary.state === RmfModels.TaskSummary.STATE_QUEUED);
 
   return (
-    <div {...divProps}>
+    <Root {...divProps}>
       <Grid container wrap="nowrap" justifyContent="center" style={{ height: 'inherit' }}>
         <Paper className={classes.tableContainer}>
           <Toolbar>
@@ -239,6 +246,6 @@ export function TaskPanel({
       <Snackbar open={openSnackbar} onClose={() => setOpenSnackbar(false)} autoHideDuration={2000}>
         <Alert severity={snackbarSeverity}>{snackbarMessage}</Alert>
       </Snackbar>
-    </div>
+    </Root>
   );
 }
