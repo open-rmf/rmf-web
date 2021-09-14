@@ -9,6 +9,7 @@ import {
   makeStyles,
   MenuItem,
   TextField,
+  Typography,
   useTheme,
 } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
@@ -358,6 +359,7 @@ export interface CreateTaskFormProps
   deliveryWaypoints?: string[];
   dispensers?: string[];
   ingestors?: string[];
+  parseErrMsg?: string[];
   submitTasks?(tasks: SubmitTask[]): Promise<void>;
   tasksFromFile?(): Promise<SubmitTask[]> | SubmitTask[];
   onSuccess?(tasks: SubmitTask[]): void;
@@ -370,6 +372,7 @@ export function CreateTaskForm({
   deliveryWaypoints = [],
   dispensers = [],
   ingestors = [],
+  parseErrMsg,
   submitTasks,
   tasksFromFile,
   onSuccess,
@@ -549,7 +552,7 @@ export function CreateTaskForm({
             </Grid>
             {renderTaskDescriptionForm()}
           </Grid>
-          {taskTitles.length > 1 && (
+          {parseErrMsg && parseErrMsg.length > 0 ? (
             <>
               <Divider
                 orientation="vertical"
@@ -557,19 +560,41 @@ export function CreateTaskForm({
                 style={{ marginLeft: theme.spacing(2), marginRight: theme.spacing(2) }}
               />
               <List dense className={classes.taskList} aria-label="Tasks List">
-                {taskTitles.map((title, idx) => (
-                  <ListItem
-                    key={idx}
-                    button
-                    onClick={() => setSelectedTaskIdx(idx)}
-                    className={selectedTaskIdx === idx ? classes.selectedTask : undefined}
-                    role="listitem button"
-                  >
-                    <ListItemText primary={title} />
+                <ListItem key={'error'}>
+                  <Typography variant="h6" color="error">
+                    Error
+                  </Typography>
+                </ListItem>
+                {parseErrMsg.map((err, idx) => (
+                  <ListItem key={idx}>
+                    <ListItemText primary={err} style={{ color: theme.palette.error.main }} />
                   </ListItem>
                 ))}
               </List>
             </>
+          ) : (
+            taskTitles.length > 1 && (
+              <>
+                <Divider
+                  orientation="vertical"
+                  flexItem
+                  style={{ marginLeft: theme.spacing(2), marginRight: theme.spacing(2) }}
+                />
+                <List dense className={classes.taskList} aria-label="Tasks List">
+                  {taskTitles.map((title, idx) => (
+                    <ListItem
+                      key={idx}
+                      button
+                      onClick={() => setSelectedTaskIdx(idx)}
+                      className={selectedTaskIdx === idx ? classes.selectedTask : undefined}
+                      role="listitem button"
+                    >
+                      <ListItemText primary={title} />
+                    </ListItem>
+                  ))}
+                </List>
+              </>
+            )
           )}
         </Grid>
       </ConfirmationDialog>

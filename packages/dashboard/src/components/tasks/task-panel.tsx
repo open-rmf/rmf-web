@@ -95,6 +95,7 @@ export function TaskPanel({
   const [snackbarMessage, setSnackbarMessage] = React.useState('');
   const [snackbarSeverity, setSnackbarSeverity] = React.useState<AlertProps['severity']>('success');
   const [autoRefresh, setAutoRefresh] = React.useState(true);
+  const [parseErrMsg, setParseErrMsg] = React.useState<string[]>([]);
   const profile = React.useContext(UserProfileContext);
 
   const handleCancelTaskClick = React.useCallback<React.MouseEventHandler>(async () => {
@@ -126,7 +127,7 @@ export function TaskPanel({
           if (!fileInputEl.files || fileInputEl.files.length === 0) {
             return res([]);
           }
-          return res(parseTasksFile(await fileInputEl.files[0].text()));
+          return res(parseTasksFile(await fileInputEl.files[0].text(), setParseErrMsg));
         } finally {
           fileInputEl.removeEventListener('input', listener);
           fileInputEl.value = '';
@@ -219,6 +220,7 @@ export function TaskPanel({
           dispensers={dispensers}
           ingestors={ingestors}
           open={openCreateTaskForm}
+          parseErrMsg={parseErrMsg}
           onClose={() => setOpenCreateTaskForm(false)}
           submitTasks={submitTasks}
           tasksFromFile={tasksFromFile}
