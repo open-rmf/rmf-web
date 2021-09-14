@@ -29,6 +29,7 @@ export const NavigationBar = (props: NavigationBarProps): JSX.Element => {
       value={value}
       onChange={onTabChange}
       className={classes.tabsContainer}
+      TabIndicatorProps={{ style: { backgroundColor: '#d32f2f' } }}
     >
       {children}
     </Tabs>

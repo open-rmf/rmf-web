@@ -1,4 +1,4 @@
-import { IconButton, Toolbar, Typography } from '@material-ui/core';
+import { IconButton, Toolbar, Typography, TabProps, styled } from '@material-ui/core';
 import { makeStyles, createStyles } from '@material-ui/styles';
 import Tab from '@material-ui/core/Tab';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
@@ -15,6 +15,16 @@ export default {
   component: HeaderBar,
 } as Meta;
 
+const StyledTab = styled((props: TabProps) => <Tab {...props} />)(({ theme }) => ({
+  color: 'rgba(255, 255, 255, 0.7)',
+  '&.Mui-selected': {
+    color: theme.palette.text.primary,
+  },
+  '&.Mui-focusVisible': {
+    backgroundColor: 'rgba(100, 95, 228, 0.32)',
+  },
+}));
+
 export const NavBar: Story = () => {
   const [value, setValue] = React.useState('building');
 
@@ -27,13 +37,18 @@ export const NavBar: Story = () => {
       <TabContext value={value}>
         <HeaderBar>
           <NavigationBar onTabChange={onTabChange} value={value}>
-            <Tab
+            <StyledTab
               key={'building-tab'}
               label={'Building'}
               value={'building'}
               aria-label={`building-tab`}
             />
-            <Tab key={'robots'} label={'Robots'} value={'robots'} aria-label={`building-tab`} />
+            <StyledTab
+              key={'robots'}
+              label={'Robots'}
+              value={'robots'}
+              aria-label={`building-tab`}
+            />
           </NavigationBar>
         </HeaderBar>
         <TabPanel key={'building-panel'} value={'building'}>
@@ -78,8 +93,18 @@ export const FullHeaderBar: Story = () => {
         <HeaderBar>
           <LogoButton src="/assets/roshealth-logo-white.png" />
           <NavigationBar onTabChange={onTabChange} value={value}>
-            <Tab key="building-tab" label="Building" value="building" aria-label="building-tab" />
-            <Tab key={'robots'} label={'Robots'} value={'robots'} aria-label={`building-tab`} />
+            <StyledTab
+              key="building-tab"
+              label="Building"
+              value="building"
+              aria-label="building-tab"
+            />
+            <StyledTab
+              key={'robots'}
+              label={'Robots'}
+              value={'robots'}
+              aria-label={`building-tab`}
+            />
           </NavigationBar>
           <Toolbar variant="dense" className={classes.toolbar}>
             <Typography variant="caption">Powered by OpenRMF</Typography>

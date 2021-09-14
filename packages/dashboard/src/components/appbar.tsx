@@ -1,4 +1,13 @@
-import { IconButton, Menu, MenuItem, Tab, Toolbar, Typography } from '@material-ui/core';
+import {
+  IconButton,
+  Menu,
+  MenuItem,
+  Tab,
+  Toolbar,
+  Typography,
+  styled,
+  TabProps,
+} from '@material-ui/core';
 import { makeStyles, createStyles } from '@material-ui/styles';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import HelpIcon from '@material-ui/icons/Help';
@@ -29,6 +38,16 @@ const useStyles = makeStyles((theme) =>
     },
   }),
 );
+
+const StyledTab = styled((props: TabProps) => <Tab {...props} />)(({ theme }) => ({
+  color: 'rgba(255, 255, 255, 0.7)',
+  '&.Mui-selected': {
+    color: theme.palette.text.primary,
+  },
+  '&.Mui-focusVisible': {
+    backgroundColor: 'rgba(100, 95, 228, 0.32)',
+  },
+}));
 
 export type TabValue = 'building' | 'robots' | 'tasks' | 'admin';
 
@@ -81,26 +100,26 @@ export const AppBar = React.memo(
       <HeaderBar className={classes.appBar}>
         <LogoButton src={brandingIconPath} alt="logo" className={classes.logoBtn} />
         <NavigationBar value={tabValue}>
-          <Tab
+          <StyledTab
             label="Building"
             value="building"
             aria-label="Building"
             onClick={() => history.push(DashboardRoute)}
           />
-          <Tab
+          <StyledTab
             label="Robots"
             value="robots"
             aria-label="Robots"
             onClick={() => history.push(RobotsRoute)}
           />
-          <Tab
+          <StyledTab
             label="Tasks"
             value="tasks"
             aria-label="Tasks"
             onClick={() => history.push(TasksRoute)}
           />
           {profile?.user.is_admin && (
-            <Tab
+            <StyledTab
               label="Admin"
               value="admin"
               aria-label="Admin"
