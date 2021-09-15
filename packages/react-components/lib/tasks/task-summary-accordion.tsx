@@ -1,13 +1,14 @@
 import React from 'react';
 import Debug from 'debug';
 import * as RmfModels from 'rmf-models';
-import { IconButton, Typography } from '@material-ui/core';
+import { IconButton, Typography, styled } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import {
   MultiSelectTreeViewProps,
   SingleSelectTreeViewProps,
   TreeItem,
   TreeView,
+  TreeViewProps,
 } from '@material-ui/lab';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
@@ -22,12 +23,87 @@ const debug = Debug('Tasks:TaskSummaryAccordion');
 interface TaskSummaryAccordionInfoProps {
   task: RmfModels.TaskSummary;
 }
+interface TreeViewRootProps extends SingleSelectTreeViewProps {
+  onNodeToggle?: MultiSelectTreeViewProps['onNodeSelect'];
+}
+
+const classes = {
+  root: 'task-summary-root',
+  accordionDetailLine: 'accordion-detail-line',
+  treeChildren: 'tree-children',
+  labelContent: 'label-content',
+  expanded: 'expanded',
+  completed: 'completed',
+  queued: 'queued',
+  active: 'active',
+  failed: 'failed',
+  taskActor: 'task-actor',
+  overrideArrayItemValue: 'override-array-item-value',
+  overrideContainer: 'override-container',
+  overrideValue: 'override-value',
+};
+const TaskSummaryAccordianRoot = styled((props: TreeViewRootProps) => <TreeView {...props} />)(
+  ({ theme }) => ({
+    [`& .${classes.root}`]: {
+      padding: '1rem',
+    },
+    [`& .${classes.accordionDetailLine}`]: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      padding: theme.spacing(0.5),
+    },
+    [`& .${classes.treeChildren}`]: {
+      margin: '0.5rem 0',
+    },
+    [`& .${classes.labelContent}`]: {
+      padding: '0.5rem',
+      borderRadius: '0.5rem',
+      boxShadow: '0 0 25px 0 rgb(72, 94, 116, 0.3)',
+      overflowX: 'hidden',
+      display: 'flex',
+      flexDirection: 'column',
+    },
+    [`& .${classes.expanded}`]: {
+      borderLeft: `0.1rem solid #cccccc`,
+    },
+    [`& .${classes.completed}`]: {
+      backgroundColor: '#4E5453 !important',
+    },
+    [`& .${classes.queued}`]: {
+      backgroundColor: theme.palette.warning.main + '!important',
+    },
+    [`& .${classes.active}`]: {
+      backgroundColor: theme.palette.success.light + '!important',
+    },
+    [`& .${classes.failed}`]: {
+      backgroundColor: theme.palette.error.main + '!important',
+    },
+    [`& .${classes.taskActor}`]: {
+      alignSelf: 'center',
+    },
+    [`& .${classes.overrideArrayItemValue}`]: {
+      textAlign: 'center',
+    },
+    [`& .${classes.overrideContainer}`]: {
+      borderCollapse: 'collapse',
+      width: '100%',
+      overflowX: 'auto',
+    },
+    [`& .${classes.overrideValue}`]: {
+      display: 'table-cell',
+      textAlign: 'end',
+      borderBottom: '1px solid',
+      borderBottomColor: theme.palette.divider,
+      borderTop: '1px solid',
+      borderTopColor: theme.palette.divider,
+    },
+  }),
+);
 
 export const TaskSummaryAccordionInfo = (props: TaskSummaryAccordionInfoProps): JSX.Element => {
   const { task } = props;
   const statusDetails = formatStatus(task.status);
   const stateLabel = getStateLabel(task.state);
-  const classes = useStylesAccordionItems();
   const data = [
     { name: 'TaskId', value: task.task_id, wrap: true },
     { name: 'State', value: stateLabel },
@@ -54,7 +130,6 @@ export interface TaskSummaryAccordionProps {
 export const TaskSummaryAccordion = React.memo((props: TaskSummaryAccordionProps) => {
   debug('task summary status panel render');
   const { tasks } = props;
-  const classes = useStyles();
   const [expanded, setExpanded] = React.useState<string[]>([]);
   const [selected, setSelected] = React.useState<string>('');
 
@@ -128,7 +203,7 @@ export const TaskSummaryAccordion = React.memo((props: TaskSummaryAccordionProps
   };
 
   return (
-    <TreeView
+    <TaskSummaryAccordianRoot
       className={classes.root}
       onNodeSelect={handleSelect}
       onNodeToggle={handleToggle}
@@ -139,74 +214,8 @@ export const TaskSummaryAccordion = React.memo((props: TaskSummaryAccordionProps
       selected={selected}
     >
       {tasks.map((task) => renderTaskTreeItem(task))}
-    </TreeView>
+    </TaskSummaryAccordianRoot>
   );
 });
-
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    padding: '1rem',
-  },
-  accordionDetailLine: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    padding: theme.spacing(0.5),
-  },
-  treeChildren: {
-    margin: '0.5rem 0',
-  },
-  labelContent: {
-    padding: '0.5rem',
-    borderRadius: '0.5rem',
-    boxShadow: '0 0 25px 0 rgb(72, 94, 116, 0.3)',
-    overflowX: 'hidden',
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  expanded: {
-    borderLeft: `0.1rem solid #cccccc`,
-  },
-  /**
-   * The idea is to maintain the same itemTree color depending on the task state even on selected.
-   * There are two styles API provided by the material-ui Tree library: `selected` and `label`.
-   * On a item select the library creates a class called `selected` that has precedence over the
-   * classes we could add using the API. So to override the background color of the `selected`
-   * we added `!important` to our custom styles that manage background color of the item tree.
-   */
-  completed: {
-    backgroundColor: '#4E5453 !important',
-  },
-  queued: {
-    backgroundColor: theme.palette.warning.main + '!important',
-  },
-  active: {
-    backgroundColor: theme.palette.success.light + '!important',
-  },
-  failed: {
-    backgroundColor: theme.palette.error.main + '!important',
-  },
-  taskActor: {
-    alignSelf: 'center',
-  },
-}));
-
-const useStylesAccordionItems = makeStyles((theme: Theme) => ({
-  overrideArrayItemValue: {
-    textAlign: 'center',
-  },
-  overrideContainer: {
-    borderCollapse: 'collapse',
-    width: '100%',
-    overflowX: 'auto',
-  },
-  overrideValue: {
-    display: 'table-cell',
-    textAlign: 'end',
-    borderBottom: '1px solid',
-    borderBottomColor: theme.palette.divider,
-    borderTop: '1px solid',
-    borderTopColor: theme.palette.divider,
-  },
-}));
 
 export default TaskSummaryAccordion;

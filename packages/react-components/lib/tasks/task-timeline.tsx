@@ -2,6 +2,7 @@ import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles';
 import { makeStyles } from '@material-ui/styles';
 import Typography from '@material-ui/core/Typography';
+import { styled } from '@material-ui/core';
 import {
   Timeline,
   TimelineConnector,
@@ -10,51 +11,57 @@ import {
   TimelineItem,
   TimelineOppositeContent,
   TimelineSeparator,
+  TimelineProps,
 } from '@material-ui/lab';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { rosTimeToJs } from '../utils';
 
-const getPhaseColors = (theme: Theme) => ({
-  pending: theme.palette.info.light,
-  completed: theme.palette.success.light,
-  failed: theme.palette.error.light,
-});
+interface TimeLinePropsWithRef extends TimelineProps {
+  ref?: React.RefObject<HTMLUListElement>;
+}
 
-const useStyles = makeStyles((theme) => {
-  const phaseColors = getPhaseColors(theme);
-  return {
-    paper: {
+const classes = {
+  paper: 'timeline-paper',
+  secondaryTail: 'secondary-tail',
+  pendingPhase: 'pending-phase',
+  completedPhase: 'completed-phase',
+  failedPhase: 'failed-phase',
+  timelineRoot: 'timeline-root',
+};
+const TimeLineRoot = styled((props: TimeLinePropsWithRef) => <Timeline {...props} />)(
+  ({ theme }) => ({
+    [`& .${classes.paper}`]: {
       padding: '6px 16px',
       width: '200px',
       maxHeight: '100px',
       overflow: 'auto',
       display: 'inline-block',
     },
-    secondaryTail: {
+    [`& .${classes.secondaryTail}`]: {
       backgroundColor: theme.palette.secondary.main,
     },
-    pendingPhase: {
-      background: phaseColors.pending,
+    [`& .${classes.pendingPhase}`]: {
+      background: theme.palette.info.light,
     },
-    completedPhase: {
-      background: phaseColors.completed,
+    [`& .${classes.completedPhase}`]: {
+      background: theme.palette.success.light,
     },
-    failedPhase: {
-      background: phaseColors.failed,
+    [`& .${classes.failedPhase}`]: {
+      background: theme.palette.error.light,
     },
-    timelineRoot: {
+    [`& .${classes.timelineRoot}`]: {
       padding: '6px 0px',
     },
-  };
-});
+  }),
+);
 
 export interface TaskTimelineProps {
   taskSummary: RmfModels.TaskSummary;
 }
 
 export function TaskTimeline({ taskSummary }: TaskTimelineProps): JSX.Element {
-  const classes = useStyles();
+  // const classes = useStyles();
   const timelinePhases = taskSummary.status.split('\n\n');
   const currentDotIdx = timelinePhases.findIndex((msg) => msg.startsWith('*'));
   const timelineInfo = taskSummary.status.split('\n\n');
@@ -88,7 +95,7 @@ export function TaskTimeline({ taskSummary }: TaskTimelineProps): JSX.Element {
   });
 
   return (
-    <Timeline position="left" className={classes.timelineRoot}>
+    <TimeLineRoot position="left" className={classes.timelineRoot}>
       {timelineInfo.map((dotInfo, idx) => {
         return (
           <TimelineItem key={idx}>
@@ -112,6 +119,6 @@ export function TaskTimeline({ taskSummary }: TaskTimelineProps): JSX.Element {
           </TimelineItem>
         );
       })}
-    </Timeline>
+    </TimeLineRoot>
   );
 }

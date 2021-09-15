@@ -16,7 +16,7 @@ describe('date time picker', () => {
         renderInput={(props) => <TextField {...props} />}
       />,
     );
-    expect(await root.findByText('Test')).toBeTruthy();
+    expect(await root.findAllByText('Test')).toBeTruthy();
   });
 
   it('shows the current date if `date` parameter is undefined', () => {
@@ -31,7 +31,7 @@ describe('date time picker', () => {
         renderInput={(props) => <TextField {...props} />}
       />,
     );
-    const datePicker = root.container.querySelector('.MuiInputBase-input.MuiInput-input');
+    const datePicker = root.container.querySelector('.MuiOutlinedInput-input.MuiInputBase-input');
     expect(datePicker?.getAttribute('value')).toBe(currentDate);
   });
 });

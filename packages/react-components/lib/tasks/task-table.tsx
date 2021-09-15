@@ -1,4 +1,12 @@
-import { Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  TableProps,
+  styled,
+} from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import clsx from 'clsx';
 import { formatDistanceToNow } from 'date-fns';
@@ -7,49 +15,63 @@ import * as RmfModels from 'rmf-models';
 import { rosTimeToJs } from '../utils';
 import { taskStateToStr } from './utils';
 
-const useStyles = makeStyles((theme) => ({
-  table: {
+const classes = {
+  table: 'table-root',
+  taskRowHover: 'taskrow-hover',
+  infoRow: 'info-row',
+  phasesCell: 'phase-cell',
+  phasesRow: 'phase-row',
+  taskActiveCell: 'task-active-cell',
+  taskCancelledCell: 'task-cancelled-cell',
+  taskCompletedCell: 'task-completed-cell',
+  taskFailedCell: 'task-failed-cell',
+  taskPendingCell: 'task-pending-cell',
+  taskQueuedCell: 'task-queued-cell',
+  taskUnknownCell: 'task-unknown-cell',
+};
+const TableRoot = styled((props: TableProps) => <Table {...props} />)(({ theme }) => ({
+  [`& .${classes.table}`]: {
     minWidth: 650,
   },
-  taskRowHover: {
+  [`& .${classes.taskRowHover}`]: {
     background: theme.palette.action.hover,
     cursor: 'pointer',
   },
-  infoRow: {
+  [`& .${classes.infoRow}`]: {
     '& > *': {
       borderBottom: 'unset',
     },
   },
-  phasesCell: {
+  [`& .${classes.phasesCell}`]: {
     padding: `0 ${theme.spacing(1)}px 0 ${theme.spacing(1)}px`,
     boxShadow: `${theme.shadows[1]}`,
     '&:last-child': {
       paddingRight: `${theme.spacing(1)}px`,
     },
   },
-  phasesRow: {
+  [`& .${classes.phasesRow}`]: {
     marginBottom: theme.spacing(1),
     marginTop: theme.spacing(1),
   },
-  taskActiveCell: {
+  [`& .${classes.taskActiveCell}`]: {
     backgroundColor: theme.palette.primary.light,
   },
-  taskCancelledCell: {
+  [`& .${classes.taskCancelledCell}`]: {
     backgroundColor: theme.palette.grey[500],
   },
-  taskCompletedCell: {
+  [`& .${classes.taskCompletedCell}`]: {
     backgroundColor: theme.palette.success.light,
   },
-  taskFailedCell: {
+  [`& .${classes.taskFailedCell}`]: {
     backgroundColor: theme.palette.error.light,
   },
-  taskPendingCell: {
+  [`& .${classes.taskPendingCell}`]: {
     backgroundColor: theme.palette.info.light,
   },
-  taskQueuedCell: {
+  [`& .${classes.taskQueuedCell}`]: {
     backgroundColor: theme.palette.info.light,
   },
-  taskUnknownCell: {
+  [`& .${classes.taskUnknownCell}`]: {
     backgroundColor: theme.palette.warning.light,
   },
 }));
@@ -60,7 +82,6 @@ interface TaskRowProps {
 }
 
 function TaskRow({ task, onClick }: TaskRowProps) {
-  const classes = useStyles();
   const [hover, setHover] = React.useState(false);
 
   const returnTaskStateCellClass = (task: RmfModels.TaskSummary) => {
@@ -116,9 +137,8 @@ export interface TaskTableProps {
 }
 
 export function TaskTable({ tasks, onTaskClick }: TaskTableProps): JSX.Element {
-  const classes = useStyles();
   return (
-    <Table className={classes.table} stickyHeader size="small" style={{ tableLayout: 'fixed' }}>
+    <TableRoot className={classes.table} stickyHeader size="small" style={{ tableLayout: 'fixed' }}>
       <TableHead>
         <TableRow>
           <TableCell>Task Id</TableCell>
@@ -137,6 +157,6 @@ export function TaskTable({ tasks, onTaskClick }: TaskTableProps): JSX.Element {
           />
         ))}
       </TableBody>
-    </Table>
+    </TableRoot>
   );
 }
