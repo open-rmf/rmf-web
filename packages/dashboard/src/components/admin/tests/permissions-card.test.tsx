@@ -4,7 +4,7 @@ import React from 'react';
 import { getActionText, RmfAction } from '../../permissions';
 import { PermissionsCard } from '../permissions-card';
 
-describe('PermissionsCard', () => {
+fdescribe('PermissionsCard', () => {
   it('renders permissions', async () => {
     const root = render(
       <PermissionsCard

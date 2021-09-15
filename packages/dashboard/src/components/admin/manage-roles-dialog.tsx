@@ -12,25 +12,31 @@ import {
   List,
   ListItem,
   ListItemText,
+  styled,
 } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
 import SecurityIcon from '@material-ui/icons/Security';
 import React from 'react';
 import { Loading, TransferList, useAsync } from 'react-components';
 import { AppControllerContext } from '../app-contexts';
 
-const useStyles = makeStyles((theme) => ({
-  action: {
+const classes = {
+  action: 'action',
+  list: 'list',
+  dialogContent: 'dialog-content',
+  dialogButton: 'dialog-button',
+};
+const ManageRolesDialogRoot = styled((props: CardProps) => <Card {...props} />)(({ theme }) => ({
+  [`& .${classes.action}`]: {
     margin: 0,
   },
-  list: {
+  [`& .${classes.list}`]: {
     paddingLeft: theme.spacing(1),
     paddingRight: theme.spacing(1),
   },
-  dialogContent: {
+  [`& .${classes.dialogContent}`]: {
     height: '50vh',
   },
-  dialogButton: {
+  [`& .${classes.dialogButton}`]: {
     width: 100,
   },
 }));
@@ -50,7 +56,6 @@ export function ManageRolesDialog({
   open,
   ...dialogProps
 }: ManageRolesDialogProps): JSX.Element {
-  const classes = useStyles();
   const safeAsync = useAsync();
   const [availableRoles, setAvailableRoles] = React.useState<string[]>([]);
   const [assignedRoles, setAssignedRoles] = React.useState<string[]>([]);
@@ -154,11 +159,10 @@ export function ManageRolesCard({
   saveRoles,
   ...otherProps
 }: ManageRolesCardProps): JSX.Element {
-  const classes = useStyles();
   const [openDialog, setOpenDialog] = React.useState(false);
 
   return (
-    <Card variant="outlined" {...otherProps}>
+    <ManageRolesDialogRoot variant="outlined" {...otherProps}>
       <CardHeader
         title="Roles"
         titleTypographyProps={{ variant: 'h5' }}
@@ -192,6 +196,6 @@ export function ManageRolesCard({
         getAllRoles={getAllRoles}
         saveRoles={saveRoles}
       />
-    </Card>
+    </ManageRolesDialogRoot>
   );
 }

@@ -8,10 +8,15 @@ import {
   MenuItem,
   TextField,
   useTheme,
+  styled,
 } from '@material-ui/core';
-import { Autocomplete, DateTimePicker, LocalizationProvider } from '@material-ui/lab';
+import {
+  Autocomplete,
+  DateTimePicker,
+  LocalizationProvider,
+  LocalizationProviderProps,
+} from '@material-ui/lab';
 import AdapterDateFns from '@material-ui/lab/AdapterDateFns';
-import { makeStyles } from '@material-ui/styles';
 import type {
   CleanTaskDescription,
   DeliveryTaskDescription,
@@ -25,17 +30,24 @@ import { PositiveIntField } from '../form-inputs';
 
 type TaskDescription = CleanTaskDescription | LoopTaskDescription | DeliveryTaskDescription;
 
-const useStyles = makeStyles((theme) => ({
-  selectFileBtn: {
+const classes = {
+  selectFileBtn: 'selected-file-btn',
+  taskList: 'task-list',
+  selectedTask: 'selected-task',
+};
+const CreateTaskRoot = styled((props: LocalizationProviderProps) => (
+  <LocalizationProvider {...props} />
+))(({ theme }) => ({
+  [`& .${classes.selectFileBtn}`]: {
     marginBottom: theme.spacing(1),
   },
-  taskList: {
+  [`& .${classes.taskList}`]: {
     flex: '1 1 auto',
     minHeight: 400,
     maxHeight: '50vh',
     overflow: 'auto',
   },
-  selectedTask: {
+  [`& .${classes.selectedTask}`]: {
     background: theme.palette.action.focus,
   },
 }));
@@ -64,8 +76,6 @@ interface FormToolbarProps {
 }
 
 function FormToolbar({ onSelectFileClick }: FormToolbarProps) {
-  const classes = useStyles();
-
   return (
     <Button
       aria-label="Select File"
@@ -376,7 +386,6 @@ export function CreateTaskForm({
   ...otherProps
 }: CreateTaskFormProps): JSX.Element {
   const theme = useTheme();
-  const classes = useStyles();
   const [tasks, setTasks] = React.useState<SubmitTask[]>(() => [defaultTask()]);
   const [selectedTaskIdx, setSelectedTaskIdx] = React.useState(0);
   const taskTitles = React.useMemo(
@@ -482,7 +491,7 @@ export function CreateTaskForm({
   const submitText = tasks.length > 1 ? 'Submit All' : 'Submit';
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
+    <CreateTaskRoot dateAdapter={AdapterDateFns}>
       <ConfirmationDialog
         title="Create Task"
         submitting={submitting}
@@ -572,6 +581,6 @@ export function CreateTaskForm({
           )}
         </Grid>
       </ConfirmationDialog>
-    </LocalizationProvider>
+    </CreateTaskRoot>
   );
 }

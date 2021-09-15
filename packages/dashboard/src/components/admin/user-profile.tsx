@@ -1,13 +1,14 @@
 import {
   Card,
+  CardProps,
   CardHeader,
   Checkbox,
   FormControlLabel,
   IconButton,
   Menu,
   MenuItem,
+  styled,
 } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
 import AccountIcon from '@material-ui/icons/AccountCircle';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import { User } from 'api-client';
@@ -15,8 +16,11 @@ import React from 'react';
 import { useAsync } from 'react-components';
 import { AppControllerContext } from '../app-contexts';
 
-const useStyles = makeStyles((theme) => ({
-  avatar: {
+const classes = {
+  avatar: 'action',
+};
+const UserProfileRoot = styled((props: CardProps) => <Card {...props} />)(({ theme }) => ({
+  [`& .${classes.avatar}`]: {
     color: theme.palette.mode === 'light' ? theme.palette.grey[400] : theme.palette.grey[600],
     fontSize: '3em',
   },
@@ -28,14 +32,13 @@ export interface UserProfileCardProps {
 }
 
 export function UserProfileCard({ user, makeAdmin }: UserProfileCardProps): JSX.Element {
-  const classes = useStyles();
   const safeAsync = useAsync();
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const [disableAdminCheckbox, setDisableAdminCheckbox] = React.useState(false);
   const { showErrorAlert } = React.useContext(AppControllerContext);
 
   return (
-    <Card variant="outlined">
+    <UserProfileRoot variant="outlined">
       <CardHeader
         title={user.username}
         titleTypographyProps={{ variant: 'h5' }}
@@ -66,6 +69,6 @@ export function UserProfileCard({ user, makeAdmin }: UserProfileCardProps): JSX.
           />
         </MenuItem>
       </Menu>
-    </Card>
+    </UserProfileRoot>
   );
 }

@@ -1,14 +1,19 @@
-import { CircularProgress, CircularProgressProps } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
+import { CircularProgress, CircularProgressProps, styled } from '@material-ui/core';
 import React from 'react';
 
-const useStyles = makeStyles({
-  root: {
+const classes = {
+  root: 'loading-root',
+  container: 'loading-container',
+  loadingProgress: 'loading-progress',
+  loadingOverlay: 'loading-overlay',
+};
+const LoadingRoot = styled('div')(({ theme }) => ({
+  [`& .${classes.root}`]: {
     position: 'relative',
     height: '100%',
     flex: '1 1 auto',
   },
-  container: {
+  [`& .${classes.container}`]: {
     position: 'absolute',
     display: 'flex',
     justifyContent: 'center',
@@ -18,17 +23,17 @@ const useStyles = makeStyles({
     width: '100%',
     height: '100%',
   },
-  loadingProgress: {
+  [`& .${classes.loadingProgress}`]: {
     position: 'absolute',
     flex: '0 0 auto',
   },
-  loadingOverlay: {
+  [`& .${classes.loadingOverlay}`]: {
     filter: 'blur(2px)',
     opacity: 0.6,
     pointerEvents: 'none',
     userSelect: 'none',
   },
-});
+}));
 
 export interface LoadingProps extends React.PropsWithoutRef<CircularProgressProps> {
   children: React.ReactNode;
@@ -48,9 +53,8 @@ export function Loading({
   style = {},
   ...otherProps
 }: LoadingProps): JSX.Element {
-  const classes = useStyles();
   return loading ? (
-    <div className={classes.root}>
+    <LoadingRoot className={classes.root}>
       <div
         className={`${classes.loadingOverlay} ${loadingClassName}`}
         style={{ visibility: hideChildren ? 'hidden' : 'visible' }}
@@ -65,7 +69,7 @@ export function Loading({
           {...otherProps}
         />
       </div>
-    </div>
+    </LoadingRoot>
   ) : (
     <>{children}</>
   );

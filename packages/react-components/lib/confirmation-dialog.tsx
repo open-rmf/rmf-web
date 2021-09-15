@@ -7,20 +7,24 @@ import {
   DialogProps,
   DialogTitle,
   Grid,
+  styled,
 } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
 import clsx from 'clsx';
 import React from 'react';
 import { Loading } from './loading';
 
-const useStyles = makeStyles({
-  title: {
+const dialogClasses = {
+  title: 'info-value',
+  actionBtn: 'action-button',
+};
+const ConfirmationDialogRoot = styled((props: DialogProps) => <Dialog {...props} />)(() => ({
+  [`& .${dialogClasses.title}`]: {
     flex: '1 1 auto',
   },
-  actionBtn: {
+  [`& .${dialogClasses.actionBtn}`]: {
     minWidth: 80,
   },
-});
+}));
 
 export interface ConfirmationDialogProps extends DialogProps {
   title?: string;
@@ -45,9 +49,8 @@ export function ConfirmationDialog({
   children,
   ...otherProps
 }: ConfirmationDialogProps): JSX.Element {
-  const myClasses = useStyles();
   return (
-    <Dialog onClose={onClose} {...otherProps}>
+    <ConfirmationDialogRoot onClose={onClose} {...otherProps}>
       <form
         onSubmit={(ev) => {
           ev.preventDefault();
@@ -57,7 +60,7 @@ export function ConfirmationDialog({
       >
         <DialogTitle>
           <Grid container wrap="nowrap">
-            <Grid item className={myClasses.title}>
+            <Grid item className={dialogClasses.title}>
               {title}
             </Grid>
             <Grid item>{toolbar}</Grid>
@@ -70,7 +73,7 @@ export function ConfirmationDialog({
             color="secondary"
             onClick={(ev) => onClose && onClose(ev, 'escapeKeyDown')}
             disabled={submitting}
-            className={clsx(myClasses.actionBtn, classes?.button)}
+            className={clsx(dialogClasses.actionBtn, classes?.button)}
           >
             {cancelText}
           </Button>
@@ -79,7 +82,7 @@ export function ConfirmationDialog({
             type="submit"
             color="primary"
             disabled={submitting}
-            className={clsx(myClasses.actionBtn, classes?.button)}
+            className={clsx(dialogClasses.actionBtn, classes?.button)}
           >
             <Loading hideChildren loading={submitting} size="1.5em" color="inherit">
               {confirmText}
@@ -87,6 +90,6 @@ export function ConfirmationDialog({
           </Button>
         </DialogActions>
       </form>
-    </Dialog>
+    </ConfirmationDialogRoot>
   );
 }

@@ -11,7 +11,7 @@ describe('AddPermissionDialog', () => {
     userEvent.click(root.getByLabelText('Action'));
     userEvent.click(root.getByText('Task Read'));
     userEvent.type(root.getByLabelText('Authorization Group'), 'test group');
-    userEvent.click(root.getByLabelText('Save'));
+    userEvent.click(root.getByText('Save'));
     expect(savePermission).toHaveBeenCalled();
     expect(savePermission.mock.calls[0][0].action).toBe(RmfAction.TaskRead);
     expect(savePermission.mock.calls[0][0].authz_grp).toBe('test group');

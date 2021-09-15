@@ -6,6 +6,7 @@ import {
   IconButton,
   Typography,
   useMediaQuery,
+  styled,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import BugReportIcon from '@material-ui/icons/BugReport';
@@ -20,9 +21,69 @@ export interface HotKeysDrawerProps extends DrawerProps {
   showTour(): void;
 }
 
+// const useStyles = makeStyles((theme) => ({
+//   detailLine: {
+//     display: 'inline-flex',
+//     padding: theme.spacing(0.5),
+//     width: '100%',
+//     '& button': {
+//       padding: '0 5px 0 0',
+//     },
+//     '&:hover': {
+//       backgroundColor: 'rgba(0, 0, 0, 0.04)',
+//     },
+//     cursor: 'pointer',
+//   },
+//   detail: {
+//     display: 'flex',
+//     flexFlow: 'column',
+//     padding: '1rem',
+//   },
+//   drawer: {
+//     '@media (min-aspect-ratio: 8/10)': {
+//       width: 300,
+//     },
+//     '@media (max-aspect-ratio: 8/10)': {
+//       width: '100%',
+//     },
+//   },
+// }));
+const classes = {
+  detailLine: 'detail-line',
+  detail: 'detail',
+  drawer: 'drawer',
+};
+const HelpDrawerRoot = styled((props: DrawerProps) => <Drawer {...props} />)(({ theme }) => ({
+  [`& .${classes.detailLine}`]: {
+    display: 'inline-flex',
+    padding: theme.spacing(0.5),
+    width: '100%',
+    '& button': {
+      padding: '0 5px 0 0',
+    },
+    '&:hover': {
+      backgroundColor: 'rgba(0, 0, 0, 0.04)',
+    },
+    cursor: 'pointer',
+  },
+  [`& .${classes.detail}`]: {
+    display: 'flex',
+    flexFlow: 'column',
+    padding: '1rem',
+  },
+  [`& .${classes.drawer}`]: {
+    '@media (min-aspect-ratio: 8/10)': {
+      width: 300,
+    },
+    '@media (max-aspect-ratio: 8/10)': {
+      width: '100%',
+    },
+  },
+}));
+
 export default function HelpDrawer(props: HotKeysDrawerProps): React.ReactElement {
   const { handleCloseButton, setShowHotkeyDialog, showTour, ...otherProps } = props;
-  const classes = useStyles();
+  // const classes = useStyles();
   const drawerAnchor = useMediaQuery('(max-aspect-ratio: 8/10)') ? 'bottom' : 'right';
   const modalProp = {
     disableEnforceFocus: true,
@@ -31,7 +92,7 @@ export default function HelpDrawer(props: HotKeysDrawerProps): React.ReactElemen
   const { toggleTooltips } = React.useContext(AppControllerContext);
 
   return (
-    <Drawer
+    <HelpDrawerRoot
       PaperProps={{ className: classes.drawer }}
       anchor={drawerAnchor}
       ModalProps={modalProp}
@@ -77,34 +138,6 @@ export default function HelpDrawer(props: HotKeysDrawerProps): React.ReactElemen
         </div>
         <Divider />
       </div>
-    </Drawer>
+    </HelpDrawerRoot>
   );
 }
-
-const useStyles = makeStyles((theme) => ({
-  detailLine: {
-    display: 'inline-flex',
-    padding: theme.spacing(0.5),
-    width: '100%',
-    '& button': {
-      padding: '0 5px 0 0',
-    },
-    '&:hover': {
-      backgroundColor: 'rgba(0, 0, 0, 0.04)',
-    },
-    cursor: 'pointer',
-  },
-  detail: {
-    display: 'flex',
-    flexFlow: 'column',
-    padding: '1rem',
-  },
-  drawer: {
-    '@media (min-aspect-ratio: 8/10)': {
-      width: 300,
-    },
-    '@media (max-aspect-ratio: 8/10)': {
-      width: '100%',
-    },
-  },
-}));

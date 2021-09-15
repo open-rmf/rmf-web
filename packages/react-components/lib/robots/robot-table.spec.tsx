@@ -3,7 +3,7 @@ import React from 'react';
 import { RobotTable } from './robot-table';
 import { makeRandomRobot } from './test-utils.spec';
 
-describe('RobotTable', () => {
+fdescribe('RobotTable', () => {
   it('shows all robots', () => {
     const robots = [
       makeRandomRobot('test_robot1', 'test_fleet', 2),
@@ -49,7 +49,7 @@ describe('RobotTable', () => {
           page: 0,
           rowsPerPage: 10,
           rowsPerPageOptions: [10],
-          onChangePage: spy,
+          onPageChange: spy,
         }}
       />,
     );
