@@ -37,7 +37,6 @@ export const RadioButtonGroup = (props: RadioGroupProps): JSX.Element => {
     setValue(elem.value);
     onHandleChange(elem.value);
   };
-
   const populateRadioButtons = (options: string[]): JSX.Element[] => {
     const radioButtons = options.map((option, index) => {
       return (
