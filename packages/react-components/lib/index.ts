@@ -21,6 +21,7 @@ export * from './map';
 export * from './material-table-icons';
 export * from './navigation-bar';
 export * from './place';
+export * from './radio-button-group';
 export * from './reports';
 export * from './robots';
 export * from './simple-filter';
