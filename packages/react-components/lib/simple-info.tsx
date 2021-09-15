@@ -1,7 +1,6 @@
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import { styled } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
 import Typography from '@material-ui/core/Typography';
 import clsx from 'clsx';
 import React from 'react';
