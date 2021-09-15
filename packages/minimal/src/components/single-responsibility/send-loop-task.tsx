@@ -9,9 +9,9 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import type { Task, SubmitTask } from 'api-client';
-import { RadioButtonGroup, TaskTable } from 'react-components';
+import { getPlaces, RadioButtonGroup, TaskTable } from 'react-components';
 import { useAutoRefresh } from '../dashboard/auto-refresh';
-import { PlacesContext } from '../rmf-app/contexts';
+import { BuildingMapContext } from '../rmf-app/contexts';
 import { DataConfig } from '../../config/data-config';
 import { Configuration, SioClient, TasksApi } from 'api-client';
 import { AxiosInstance } from 'axios';
@@ -62,8 +62,15 @@ export default function LoopTaskPage(props: LoopTaskPageProps) {
   const [task, setTask] = React.useState<SubmitTask>();
   const [page, setPage] = React.useState(0);
   const [hasMore, setHasMore] = React.useState(true);
-  const places = React.useContext(PlacesContext);
-  const placeNames = places.map((p) => p.vertex.name);
+
+  const buildingMap = React.useContext(BuildingMapContext);
+  const placeNames = React.useMemo(() => {
+    if (!buildingMap) {
+      return [];
+    }
+    return getPlaces(buildingMap).map((p) => p.vertex.name);
+  }, [buildingMap]);
+
   const paginationOptions: Omit<
     React.ComponentPropsWithoutRef<typeof TablePagination>,
     'component'
@@ -138,15 +145,27 @@ export default function LoopTaskPage(props: LoopTaskPageProps) {
     setTask(createLoopTask(radioValue));
   }, [radioValue, data]);
 
+  const removeStartPoint = (places: string[], startPoint: string) => {
+    const startIdx = places.indexOf(startPoint);
+    if (startIdx > -1) {
+      places.splice(startIdx, 1);
+    }
+    return places;
+  };
+
   const submitTask = async () => {
-    if (!tasksApi) {
-      throw new Error('tasks api not available');
+    if (radioValue.length < 1) {
+      alert('A destination must be selected');
+    } else {
+      if (!tasksApi) {
+        throw new Error('tasks api not available');
+      }
+      if (task) {
+        await tasksApi.submitTaskTasksSubmitTaskPost(task);
+      }
+      handleRefresh();
+      clearForm();
     }
-    if (task) {
-      await tasksApi.submitTaskTasksSubmitTaskPost(task);
-    }
-    handleRefresh();
-    clearForm();
   };
 
   return (
@@ -159,7 +178,11 @@ export default function LoopTaskPage(props: LoopTaskPageProps) {
           <Grid item xs={12}>
             <RadioButtonGroup
               formLabel={data.radioGroup.formLabel}
-              options={data.radioGroup.waypointValues ? data.radioGroup.waypointValues : placeNames}
+              options={
+                data.radioGroup.waypointValues
+                  ? data.radioGroup.waypointValues
+                  : removeStartPoint(placeNames, task?.description.start_name)
+              }
               radioGroupName={data.radioGroup.radioGroupTitle}
               onHandleChange={onHandleChange}
             />
