@@ -25,6 +25,7 @@ export const HealthReportTable = (props: HealthReportTable): React.ReactElement 
       <DataGrid
         // title="Health"
         // icons={materialTableIcons}
+        getRowId={(r) => r.device.id}
         columns={[
           {
             headerName: 'Device',

@@ -25,6 +25,7 @@ export const UserLoginReportTable = (props: UserLoginReportTable): React.ReactEl
       <DataGrid
         // title="Login Report"
         // icons={materialTableIcons}
+        getRowId={(r) => r.client_id}
         columns={[
           {
             headerName: 'Username',

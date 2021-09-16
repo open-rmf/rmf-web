@@ -23,6 +23,7 @@ export const DispenserStateReportTable = (props: DispenserStateReportTable): Rea
       <DataGrid
         // title="Dispenser State"
         // icons={materialTableIcons}
+        getRowId={(r) => r.guid}
         columns={[
           {
             headerName: 'Guid',

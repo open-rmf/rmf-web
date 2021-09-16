@@ -29,7 +29,7 @@ export const getDoorLogs = (): DoorStateRowsType => {
     rows.push({
       created: timestamp,
       state: 'OPEN',
-      door: { id: 1, name: 'door_test' },
+      door: { id: i, name: 'door_test' },
     });
   }
   return rows;
@@ -41,7 +41,7 @@ export const getFleetLogs = (): FleetStateRowsType => {
     rows.push({
       created: timestamp,
       fleet: { id: 1, name: 'fleet_test' },
-      robot: { id: 1, name: 'robot_test', model: 'model' },
+      robot: { id: i, name: 'robot_test', model: 'model' },
       robot_battery_percent: 'test',
       robot_location: 'test',
       robot_name: 'test',
@@ -56,7 +56,7 @@ export const getHealthLogs = (): HealthRowsType => {
   const rows = [];
   for (let i = 0; i < 200; i++) {
     rows.push({
-      device: { id: 1, type: 'door', actor: 'door-1' },
+      device: { id: i, type: 'door', actor: 'door-1' },
       health_status: 'DEAD',
       health_message: 'this is a message',
       created: timestamp,
@@ -79,6 +79,7 @@ export const getLiftLogs = (): LiftStateRowsType => {
       current_floor: 'L2',
       session_id: 'session',
       created: timestamp,
+      id: i,
     });
   }
   return rows;
@@ -95,7 +96,7 @@ export const getTaskSummaryLogs = (): TaskSummaryRowsType => {
       station: { task_id: '', robot_type: '', place_name: '' },
       loop: { task_id: '', robot_type: '', num_loops: 1, start_name: '', finish_name: '' },
       delivery: {
-        task_id: '',
+        task_id: 1,
         items: [],
         pickup_place_name: '',
         pickup_dispenser: '',
@@ -112,7 +113,7 @@ export const getTaskSummaryLogs = (): TaskSummaryRowsType => {
     rows.push({
       created: timestamp,
       fleet: { id: 1, name: 'fleet_test' },
-      robot: { id: 1, name: 'robot_test', model: 'model' },
+      robot: { id: i, name: 'robot_test', model: 'model' },
       task_id: i.toString(),
       task_profile: exampleData,
       state: 'test',

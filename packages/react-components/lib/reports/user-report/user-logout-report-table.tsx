@@ -24,6 +24,7 @@ export const UserLogoutReportTable = (props: UserLogoutReportTable): React.React
       <DataGrid
         // title="Logout Report"
         // icons={materialTableIcons}
+        getRowId={(r) => r.user_id}
         columns={[
           {
             headerName: 'Username',

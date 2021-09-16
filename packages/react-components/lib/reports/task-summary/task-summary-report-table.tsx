@@ -33,6 +33,7 @@ export const TaskSummaryReportTable = (props: TaskSummaryReportTable): React.Rea
       <DataGrid
         // title="Task Summary"
         // icons={materialTableIcons}
+        getRowId={(r) => r.task_id}
         columns={[
           {
             headerName: 'Task ID',

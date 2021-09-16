@@ -22,6 +22,7 @@ export const DoorStateReportTable = (props: DoorStateReportTable): React.ReactEl
       <DataGrid
         // title="Door State"
         // icons={materialTableIcons}
+        getRowId={(r) => r.door.id}
         columns={[
           {
             headerName: 'Name',

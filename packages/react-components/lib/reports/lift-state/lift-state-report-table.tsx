@@ -28,6 +28,7 @@ export const LiftStateReportTable = (props: LiftStateReportTable): React.ReactEl
       <DataGrid
         // title="Lift State"
         // icons={materialTableIcons}
+        getRowId={(r) => r.lift.id}
         columns={[
           {
             headerName: 'Session ID',

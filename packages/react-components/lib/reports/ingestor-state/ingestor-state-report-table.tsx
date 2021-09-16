@@ -23,6 +23,7 @@ export const IngestorStateReportTable = (props: IngestorStateReportTable): React
       <DataGrid
         // title="Ingestor State"
         // icons={materialTableIcons}
+        getRowId={(r) => r.guid}
         columns={[
           {
             headerName: 'Guid',

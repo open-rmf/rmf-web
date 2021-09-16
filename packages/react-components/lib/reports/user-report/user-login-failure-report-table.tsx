@@ -27,6 +27,7 @@ export const UserLoginFailureReportTable = (
       <DataGrid
         // title="Lift State"
         // icons={materialTableIcons}
+        getRowId={(r) => r.client_id}
         columns={[
           {
             headerName: 'Username',

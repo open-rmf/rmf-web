@@ -27,6 +27,7 @@ export const FleetStateReportTable = (props: FleetStateReportTable): React.React
   return (
     <div style={{ height: tableSize, width: '100%' }}>
       <DataGrid
+        getRowId={(r) => r.robot.id}
         columns={[
           {
             headerName: 'Fleet',
