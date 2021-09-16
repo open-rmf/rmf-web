@@ -176,16 +176,18 @@ export default function LoopTaskPage(props: LoopTaskPageProps) {
             <Typography variant="h6">{data.locationDetails.name}</Typography>
           </Grid>
           <Grid item xs={12}>
-            <RadioButtonGroup
-              formLabel={data.radioGroup.formLabel}
-              options={
-                data.radioGroup.waypointValues
-                  ? data.radioGroup.waypointValues
-                  : removeStartPoint(placeNames, task?.description.start_name)
-              }
-              radioGroupName={data.radioGroup.radioGroupTitle}
-              onHandleChange={onHandleChange}
-            />
+            {data.radioGroup && (
+              <RadioButtonGroup
+                formLabel={data.radioGroup.formLabel}
+                options={
+                  data.radioGroup.waypointValues
+                    ? data.radioGroup.waypointValues
+                    : removeStartPoint(placeNames, task?.description.start_name)
+                }
+                radioGroupName={data.radioGroup.radioGroupTitle}
+                onHandleChange={onHandleChange}
+              />
+            )}
           </Grid>
           <Grid item xs={12} className={classes.taskDetails}>
             <Typography variant="h6">Task Details</Typography>

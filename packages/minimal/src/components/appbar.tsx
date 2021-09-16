@@ -11,7 +11,7 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import React from 'react';
 import { HeaderBar, LogoButton, useAsync } from 'react-components';
 import { AppConfigContext, ResourcesContext } from './app-contexts';
-import { UserContext } from './auth/contexts';
+import { UserProfileContext } from 'rmf-auth';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -41,7 +41,8 @@ export const AppBar = React.memo(
     const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
     const classes = useStyles();
     const { authenticator } = React.useContext(AppConfigContext);
-    const user = React.useContext(UserContext);
+    const profile = React.useContext(UserProfileContext);
+    console.log(profile);
     const safeAsync = useAsync();
     const [brandingIconPath, setBrandingIconPath] = React.useState<string>('');
 
@@ -66,7 +67,7 @@ export const AppBar = React.memo(
           <LogoButton src={brandingIconPath} alt="logo" className={classes.logoBtn} />
           <Toolbar variant="dense" className={classes.toolbar}>
             <Typography variant="caption">Powered by OpenRMF</Typography>
-            {user && (
+            {profile && (
               <>
                 <IconButton
                   id="user-btn"
