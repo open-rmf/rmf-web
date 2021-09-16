@@ -1,9 +1,18 @@
-import { Box, Button, Card, Grid, IconButton, Paper, Typography } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  Card,
+  CardProps,
+  Grid,
+  IconButton,
+  Paper,
+  Typography,
+  styled,
+} from '@material-ui/core';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
-import { makeStyles } from '@material-ui/styles';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import LiftRequestFormDialog from './lift-request-form-dialog';
@@ -39,46 +48,60 @@ export interface LiftCellProps {
   ): void;
 }
 
-const useStyles = makeStyles((theme) => ({
-  container: {
+const classes = {
+  container: 'lift-panel-container',
+  buttonBar: 'button-bar',
+  grid: 'lift-panel-grid',
+  cellPaper: 'lift-panel-cell-paper',
+  itemIcon: 'lift-panel-item-icon',
+  buttonGroup: 'lift-panel-button-group',
+  iconMoving: 'lift-panel-icon-moving',
+  iconOtherStates: 'lift-panel-other-states',
+  doorLabelOpen: 'lift-panel-door-label-open',
+  doorLabelClosed: 'lift-panel-door-label-closed',
+  doorLabelMoving: 'lift-panel-door-label-moving',
+  panelHeader: 'lift-panel-panel-header',
+};
+const LiftPanelRoot = styled((props: CardProps) => <Card {...props} />)(({ theme }) => ({
+  [`& .${classes.container}`]: {
     margin: theme.spacing(1),
   },
-  buttonBar: {
+  [`& .${classes.buttonBar}`]: {
     display: 'flex',
     justifyContent: 'flex-end',
     borderRadius: '0px',
     backgroundColor: theme.palette.primary.main,
   },
-  grid: {
+  [`& .${classes.grid}`]: {
     padding: '1rem',
   },
-  cellPaper: {
+  [`& .${classes.cellPaper}`]: {
     padding: '0.5rem',
     backgroundColor: theme.palette.info.light,
   },
-  itemIcon: {
+  [`& .${classes.itemIcon}`]: {
     color: theme.palette.getContrastText(theme.palette.primary.main),
   },
-  buttonGroup: {
+  [`& .${classes.buttonGroup}`]: {
     display: 'flex',
     justifyContent: 'center',
   },
-  iconMoving: {
+  [`& .${classes.iconMoving}`]: {
     color: theme.palette.success.dark,
   },
-  iconOtherStates: {
+  [`& .${classes.iconOtherStates}`]: {
     color: 'white',
   },
-  doorLabelOpen: {
+  [`& .${classes.doorLabelOpen}`]: {
     backgroundColor: theme.palette.success.main,
   },
-  doorLabelClosed: {
+  [`& .${classes.doorLabelClosed}`]: {
     backgroundColor: theme.palette.error.main,
   },
-  doorLabelMoving: {
+  [`& .${classes.doorLabelMoving}`]: {
     backgroundColor: theme.palette.warning.main,
   },
-  panelHeader: {
+  [`& .${classes.panelHeader}`]: {
     color: theme.palette.getContrastText(theme.palette.primary.main),
     marginLeft: '1rem',
   },
@@ -86,8 +109,6 @@ const useStyles = makeStyles((theme) => ({
 
 const LiftCell = React.memo(
   ({ lift, liftState, onRequestSubmit }: LiftCellProps): JSX.Element => {
-    const classes = useStyles();
-
     const [showForms, setShowForms] = React.useState(false);
 
     const currMotion = motionStateToString(liftState?.motion_state);
@@ -161,11 +182,10 @@ const LiftCell = React.memo(
 );
 
 export function LiftPanel({ lifts, liftStates, onRequestSubmit }: LiftPanelProps): JSX.Element {
-  const classes = useStyles();
   const [isCellView, setIsCellView] = React.useState(true);
 
   return (
-    <Card variant="outlined" className={classes.container}>
+    <LiftPanelRoot variant="outlined" className={classes.container}>
       <Paper className={classes.buttonBar}>
         <Grid container direction="row" justifyContent="space-between" alignItems="center">
           <Grid item xs={6}>
@@ -201,6 +221,6 @@ export function LiftPanel({ lifts, liftStates, onRequestSubmit }: LiftPanelProps
           <LiftTable lifts={lifts} liftStates={liftStates} onRequestSubmit={onRequestSubmit} />
         )}
       </Grid>
-    </Card>
+    </LiftPanelRoot>
   );
 }

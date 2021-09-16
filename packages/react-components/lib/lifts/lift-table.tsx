@@ -1,18 +1,44 @@
-import { Button, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
+import {
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  TableProps,
+  styled,
+} from '@material-ui/core';
+// import { makeStyles } from '@material-ui/styles';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import LiftRequestFormDialog from './lift-request-form-dialog';
 import { doorStateToString, liftModeToString, requestDoorModes, requestModes } from './lift-utils';
 
-const useStyles = makeStyles((theme) => ({
-  doorLabelOpen: {
+// const useStyles = makeStyles((theme) => ({
+//   doorLabelOpen: {
+//     color: theme.palette.success.main,
+//   },
+//   doorLabelClosed: {
+//     color: theme.palette.error.main,
+//   },
+//   doorLabelMoving: {
+//     color: theme.palette.warning.main,
+//   },
+// }));
+
+const classes = {
+  doorLabelOpen: 'lift-table-doorlabelopen',
+  doorLabelClosed: 'lift-table-doorlabelclosed',
+  doorLabelMoving: 'lift-table-doorlabelmoving',
+};
+const LiftTableRoot = styled((props: TableProps) => <Table {...props} />)(({ theme }) => ({
+  [`& .${classes.doorLabelOpen}`]: {
     color: theme.palette.success.main,
   },
-  doorLabelClosed: {
+  [`& .${classes.doorLabelClosed}`]: {
     color: theme.palette.error.main,
   },
-  doorLabelMoving: {
+  [`& .${classes.doorLabelMoving}`]: {
     color: theme.palette.warning.main,
   },
 }));
@@ -42,7 +68,7 @@ export interface LiftRowProps {
 }
 
 const LiftRow = React.memo(({ lift, liftState, onRequestSubmit }: LiftRowProps) => {
-  const classes = useStyles();
+  // const classes = useStyles();
 
   const [showForms, setShowForms] = React.useState(false);
 
@@ -96,7 +122,7 @@ const LiftRow = React.memo(({ lift, liftState, onRequestSubmit }: LiftRowProps) 
 
 export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps): JSX.Element => {
   return (
-    <Table stickyHeader size="small" aria-label="lift-table">
+    <LiftTableRoot stickyHeader size="small" aria-label="lift-table">
       <TableHead>
         <TableRow>
           <TableCell>Lift Name</TableCell>
@@ -119,6 +145,6 @@ export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps
           );
         })}
       </TableBody>
-    </Table>
+    </LiftTableRoot>
   );
 };

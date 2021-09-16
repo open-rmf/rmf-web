@@ -13,7 +13,7 @@ import { makeSubmitTask } from './test-data.spec';
 
 const getTaskTypeEl = (root: RenderResult) => root.getByLabelText('Task Type');
 
-fdescribe('CreateTaskForm', () => {
+describe('CreateTaskForm', () => {
   describe('submit tasks', () => {
     it('is called with correct clean task data when form is submitted', async () => {
       const spy = jasmine.createSpy().and.resolveTo(undefined);

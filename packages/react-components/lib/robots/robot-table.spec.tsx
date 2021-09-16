@@ -3,7 +3,7 @@ import React from 'react';
 import { RobotTable } from './robot-table';
 import { makeRandomRobot } from './test-utils.spec';
 
-fdescribe('RobotTable', () => {
+describe('RobotTable', () => {
   it('shows all robots', () => {
     const robots = [
       makeRandomRobot('test_robot1', 'test_fleet', 2),

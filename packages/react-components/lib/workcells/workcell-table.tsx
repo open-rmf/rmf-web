@@ -1,18 +1,30 @@
-import { Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  TableProps,
+  styled,
+} from '@material-ui/core';
 import { Dispenser } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { dispenserModeToString } from './utils';
 
-const useStyles = makeStyles((theme) => ({
-  dispenserLabelIdle: {
+const classes = {
+  dispenserLabelIdle: 'workcell-dispenser-label-idle',
+  dispenserLabelBusy: 'workcell-dispenser-label-busy',
+  dispenserLabelOffline: 'workcell-offline-label',
+};
+const WorkCellTableRoot = styled((props: TableProps) => <Table {...props} />)(({ theme }) => ({
+  [`& .${classes.dispenserLabelIdle}`]: {
     color: theme.palette.success.main,
   },
-  dispenserLabelBusy: {
+  [`& .${classes.dispenserLabelBusy}`]: {
     color: theme.palette.error.main,
   },
-  offlineLabelOffline: {
+  [`& .${classes.dispenserLabelOffline}`]: {
     color: theme.palette.warning.main,
   },
 }));
@@ -28,8 +40,6 @@ export interface WorkcellRowProps {
 }
 
 const WorkcellRow = React.memo(({ workcell, workcellState }: WorkcellRowProps) => {
-  const classes = useStyles();
-
   const dispenserModeLabelClasses = React.useCallback(
     (mode: number): string => {
       switch (mode) {
@@ -38,7 +48,7 @@ const WorkcellRow = React.memo(({ workcell, workcellState }: WorkcellRowProps) =
         case RmfModels.DispenserState.BUSY:
           return `${classes.dispenserLabelBusy}`;
         case RmfModels.DispenserState.OFFLINE:
-          return `${classes.offlineLabelOffline}`;
+          return `${classes.dispenserLabelOffline}`;
         default:
           return '';
       }
@@ -73,7 +83,7 @@ const WorkcellRow = React.memo(({ workcell, workcellState }: WorkcellRowProps) =
 
 export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps): JSX.Element => {
   return (
-    <Table stickyHeader size="small" aria-label="workcell-table">
+    <WorkCellTableRoot stickyHeader size="small" aria-label="workcell-table">
       <TableHead>
         <TableRow>
           <TableCell>Dispenser Name</TableCell>
@@ -94,6 +104,6 @@ export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps)
           );
         })}
       </TableBody>
-    </Table>
+    </WorkCellTableRoot>
   );
 };

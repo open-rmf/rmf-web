@@ -1,5 +1,4 @@
-import { Card, Grid, IconButton, Paper, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
+import { Card, CardProps, Grid, IconButton, Paper, Typography, styled } from '@material-ui/core';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
 import { Dispenser } from 'api-client';
@@ -18,41 +17,48 @@ export interface WorkcellCellProps {
   workCellState: RmfModels.DispenserState;
 }
 
-const useStyles = makeStyles((theme) => ({
-  container: {
+const classes = {
+  container: 'workcell-panel-container',
+  buttonBar: 'workcell-buttonbar',
+  cellContainer: 'workcell-cell-container',
+  cellPaper: 'workcell-cell-paper',
+  itemIcon: 'workcell-item-icon',
+  panelHeader: 'workcell-panel-header',
+  subPanelHeader: 'workcell-sub-panel-header',
+};
+const WorkCellPanelRoot = styled((props: CardProps) => <Card {...props} />)(({ theme }) => ({
+  [`& .${classes.container}`]: {
     margin: theme.spacing(1),
   },
-  buttonBar: {
+  [`& .${classes.buttonBar}`]: {
     display: 'flex',
     justifyContent: 'flex-end',
     borderRadius: '0px',
     backgroundColor: theme.palette.primary.main,
   },
-  cellContainer: {
+  [`& .${classes.cellContainer}`]: {
     paddingLeft: '1rem',
     paddingRight: '1rem',
     paddingBottom: '1rem',
   },
-  cellPaper: {
+  [`& .${classes.cellPaper}`]: {
     padding: '0.5rem',
     backgroundColor: theme.palette.info.light,
   },
-  itemIcon: {
+  [`& .${classes.itemIcon}`]: {
     color: theme.palette.getContrastText(theme.palette.primary.main),
   },
-  panelHeader: {
+  [`& .${classes.panelHeader}`]: {
     color: theme.palette.getContrastText(theme.palette.primary.main),
     marginLeft: '1rem',
   },
-  subPanelHeader: {
+  [`& .${classes.subPanelHeader}`]: {
     marginLeft: '1rem',
   },
 }));
 
 const WorkcellCell = React.memo(
   ({ workcell, workCellState }: WorkcellCellProps): JSX.Element => {
-    const classes = useStyles();
-
     const labelId = `workcell-cell-${workcell.guid}`;
 
     return (
@@ -92,12 +98,10 @@ export function WorkcellPanel({
   ingestors,
   workCellStates,
 }: WorkcellPanelProps): JSX.Element {
-  const classes = useStyles();
-
   const [isCellView, setIsCellView] = React.useState(true);
 
   return (
-    <Card variant="outlined" className={classes.container}>
+    <WorkCellPanelRoot variant="outlined" className={classes.container}>
       <Paper className={classes.buttonBar}>
         <Grid container direction="row" justifyContent="space-between" alignItems="center">
           <Grid item xs={6}>
@@ -173,6 +177,6 @@ export function WorkcellPanel({
           ) : null}
         </React.Fragment>
       )}
-    </Card>
+    </WorkCellPanelRoot>
   );
 }

@@ -1,12 +1,12 @@
 /* istanbul ignore file */
 
-import { Card, Grid } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
+import { Card, Grid, styled } from '@material-ui/core';
+// import { makeStyles } from '@material-ui/styles';
 import { Fleet, Level } from 'api-client';
 import Debug from 'debug';
 import React from 'react';
 import { DoorData, DoorPanel, LiftPanel, LiftPanelProps, WorkcellPanel } from 'react-components';
-import { GlobalHotKeys } from 'react-hotkeys';
+import { GlobalHotKeys, GlobalHotKeysProps } from 'react-hotkeys';
 import * as RmfModels from 'rmf-models';
 import { buildHotKeys } from '../../hotkeys';
 import { AppControllerContext } from '../app-contexts';
@@ -21,26 +21,50 @@ import ScheduleVisualizer from '../schedule-visualizer';
 const debug = Debug('Dashboard');
 const UpdateRate = 1000;
 
-const useStyles = makeStyles((theme) => ({
-  toolBarTitle: {
-    flexGrow: 1,
-  },
-  buildingPanel: {
-    height: '100%',
-  },
-  mapPanel: {
-    margin: theme.spacing(1),
-    flex: '1 0 auto',
-  },
-  itemPanels: {
-    width: 800,
-  },
-}));
+// const useStyles = makeStyles((theme) => ({
+//   toolBarTitle: {
+//     flexGrow: 1,
+//   },
+//   buildingPanel: {
+//     height: '100%',
+//   },
+//   mapPanel: {
+//     margin: theme.spacing(1),
+//     flex: '1 0 auto',
+//   },
+//   itemPanels: {
+//     width: 800,
+//   },
+// }));
+
+const classes = {
+  toolBarTitle: 'dashboard-toolbar-title',
+  buildingPanel: 'dashboard-building-panel',
+  mapPanel: 'dashboard-map-panel',
+  itemPanels: 'dashboard-item-panels',
+};
+const DashboardRoot = styled((props: GlobalHotKeysProps) => <GlobalHotKeys {...props} />)(
+  ({ theme }) => ({
+    [`& .${classes.toolBarTitle}`]: {
+      flexGrow: 1,
+    },
+    [`& .${classes.buildingPanel}`]: {
+      height: '100%',
+    },
+    [`& .${classes.mapPanel}`]: {
+      margin: theme.spacing(1),
+      flex: '1 0 auto',
+    },
+    [`& .${classes.itemPanels}`]: {
+      width: 800,
+    },
+  }),
+);
 
 export default function Dashboard(_props: {}): React.ReactElement {
   debug('render');
 
-  const classes = useStyles();
+  // const classes = useStyles();
   const appController = React.useContext(AppControllerContext);
   const rmfIngress = React.useContext(RmfIngressContext);
   const sioClient = rmfIngress?.sioClient;
@@ -185,7 +209,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   );
 
   return (
-    <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
+    <DashboardRoot keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
       {buildingMap && (
         <Grid container className={classes.buildingPanel} wrap="nowrap">
           <Card variant="outlined" className={classes.mapPanel}>
@@ -224,6 +248,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
           </Grid>
         </Grid>
       )}
-    </GlobalHotKeys>
+    </DashboardRoot>
   );
 }
