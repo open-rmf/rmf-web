@@ -6,7 +6,7 @@ const classes = {
   container: 'login-page-container',
 };
 const LoginPageRoot = styled('div')(({ theme }) => ({
-  [`& .${classes.container}`]: {
+  [`&.${classes.container}`]: {
     width: '100vw',
     height: '100vh',
     position: 'absolute',

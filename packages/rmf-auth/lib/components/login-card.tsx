@@ -7,7 +7,7 @@ const classes = {
   logo: 'login-card-logo',
 };
 const LoginCardRoot = styled('div')(({ theme }) => ({
-  [`& .${classes.container}`]: {
+  [`&.${classes.container}`]: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
