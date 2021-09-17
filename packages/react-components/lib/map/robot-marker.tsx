@@ -1,4 +1,4 @@
-import { makeStyles } from '@material-ui/styles';
+import { styled } from '@material-ui/core';
 import Debug from 'debug';
 import React from 'react';
 import { SvgText } from '../svg-text';
@@ -9,8 +9,12 @@ import { ImageMarker } from './image-marker';
 
 const debug = Debug('Map:RobotMarker');
 
-const useStyles = makeStyles(() => ({
-  text: {
+const classes = {
+  text: 'robot-marker-text',
+  clickable: 'robot-marker-clickable',
+};
+const RobotMarkerRoot = styled('g')(() => ({
+  [`& .${classes.text}`]: {
     dominantBaseline: 'central',
     textAnchor: 'middle',
     fontSize: '0.18px',
@@ -21,7 +25,7 @@ const useStyles = makeStyles(() => ({
     pointerEvents: 'none',
     userSelect: 'none',
   },
-  clickable: {
+  [`& .${classes.clickable}`]: {
     pointerEvents: 'auto',
     cursor: 'pointer',
   },
@@ -50,7 +54,6 @@ export const RobotMarker = React.forwardRef(
   ) => {
     debug(`render ${fleet}/${name}`);
     const [imageHasError, setImageHasError] = React.useState(false);
-    const classes = useStyles();
     const pos = fromRmfCoords([state.location.x, state.location.y]);
     const yaw = (fromRmfYaw(state.location.yaw) / Math.PI) * 180;
     const useImageMarker = !!iconPath && !imageHasError;
@@ -65,7 +68,7 @@ export const RobotMarker = React.forwardRef(
     }, []);
 
     return (
-      <g ref={ref} {...otherProps}>
+      <RobotMarkerRoot ref={ref} {...otherProps}>
         <g transform={translateTransform}>
           <g className={otherProps.onClick && classes.clickable} transform={`rotate(${yaw})`}>
             {useImageMarker && iconPath ? (
@@ -93,7 +96,7 @@ export const RobotMarker = React.forwardRef(
           </g>
           <SvgText text={name} targetWidth={footprint * 1.9} className={classes.text} />
         </g>
-      </g>
+      </RobotMarkerRoot>
     );
   },
 );

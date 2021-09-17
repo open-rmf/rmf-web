@@ -1,4 +1,4 @@
-import { makeStyles } from '@material-ui/styles';
+import { styled } from '@material-ui/core';
 import clsx from 'clsx';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -6,8 +6,11 @@ import React from 'react';
 import { Map as LMap_, MapProps as LMapProps_ } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
 
-const useStyles = makeStyles(() => ({
-  map: {
+const classes = {
+  map: 'map-root',
+};
+const MapRoot = styled((props: LMapProps_) => <LMap_ {...props} />)(() => ({
+  [`&.${classes.map}`]: {
     height: '100%',
     width: '100%',
     margin: 0,
@@ -35,11 +38,9 @@ export function calcMaxBounds(
 export type LMapProps = Omit<LMapProps_, 'crs'>;
 
 export function LMap({ className, children, ...otherProps }: LMapProps): React.ReactElement {
-  const classes = useStyles();
-
   return (
-    <LMap_ className={clsx(classes.map, className)} crs={L.CRS.Simple} {...otherProps}>
+    <MapRoot className={clsx(classes.map, className)} crs={L.CRS.Simple} {...otherProps}>
       {children}
-    </LMap_>
+    </MapRoot>
   );
 }

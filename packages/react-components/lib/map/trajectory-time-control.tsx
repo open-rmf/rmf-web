@@ -1,5 +1,4 @@
-import { Grid, Slider, Typography } from '@material-ui/core';
-import makeStyles from '@material-ui/styles/makeStyles';
+import { Grid, Slider, Typography, styled } from '@material-ui/core';
 import GestureIcon from '@material-ui/icons/Gesture';
 import Leaflet from 'leaflet';
 import React from 'react';
@@ -7,19 +6,25 @@ import ReactDOM from 'react-dom';
 import { MapControl, MapControlProps, withLeaflet } from 'react-leaflet';
 import { PositiveIntField } from '../form-inputs';
 
-const useStyles = makeStyles(() => ({
-  root: {
+const classes = {
+  root: 'traj-time-control-root',
+  container: 'traj-time-control-container',
+  slider: 'traj-time-control-slider',
+  textField: 'traj-time-control-textfield',
+};
+const TrajectoryTimeControlRoot = styled('div')(() => ({
+  [`&.${classes.root}`]: {
     width: '100%',
     height: '100%',
   },
-  container: {
-    padding: '16px',
+  [`& .${classes.container}`]: {
+    padding: 16,
   },
-  slider: {
+  [`& .${classes.slider}`]: {
     width: 200,
     verticalAlign: 'middle',
   },
-  textField: {
+  [`& .${classes.textField}`]: {
     width: '3em',
   },
 }));
@@ -43,13 +48,12 @@ export interface TrajectoryTimeControlProps extends MapControlProps {
 }
 
 function Component({ value, min, max, onChange }: TrajectoryTimeControlProps) {
-  const classes = useStyles();
   const [open, setOpen] = React.useState(false);
 
   const getValueFormat = (value: number) => `${value / 60000}`;
 
   return (
-    <div
+    <TrajectoryTimeControlRoot
       className={classes.root}
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
@@ -87,7 +91,7 @@ function Component({ value, min, max, onChange }: TrajectoryTimeControlProps) {
         style={{ verticalAlign: 'middle', display: open ? 'none' : 'block' }}
         fontSize="large"
       />
-    </div>
+    </TrajectoryTimeControlRoot>
   );
 }
 

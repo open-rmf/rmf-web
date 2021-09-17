@@ -1,12 +1,11 @@
 /* istanbul ignore file */
 
 import { Card, Grid, styled } from '@material-ui/core';
-// import { makeStyles } from '@material-ui/styles';
 import { Fleet, Level } from 'api-client';
 import Debug from 'debug';
 import React from 'react';
 import { DoorData, DoorPanel, LiftPanel, LiftPanelProps, WorkcellPanel } from 'react-components';
-import { GlobalHotKeys, GlobalHotKeysProps } from 'react-hotkeys';
+import { GlobalHotKeys } from 'react-hotkeys';
 import * as RmfModels from 'rmf-models';
 import { buildHotKeys } from '../../hotkeys';
 import { AppControllerContext } from '../app-contexts';
@@ -21,50 +20,27 @@ import ScheduleVisualizer from '../schedule-visualizer';
 const debug = Debug('Dashboard');
 const UpdateRate = 1000;
 
-// const useStyles = makeStyles((theme) => ({
-//   toolBarTitle: {
-//     flexGrow: 1,
-//   },
-//   buildingPanel: {
-//     height: '100%',
-//   },
-//   mapPanel: {
-//     margin: theme.spacing(1),
-//     flex: '1 0 auto',
-//   },
-//   itemPanels: {
-//     width: 800,
-//   },
-// }));
-
 const classes = {
-  toolBarTitle: 'dashboard-toolbar-title',
   buildingPanel: 'dashboard-building-panel',
   mapPanel: 'dashboard-map-panel',
   itemPanels: 'dashboard-item-panels',
 };
-const DashboardRoot = styled((props: GlobalHotKeysProps) => <GlobalHotKeys {...props} />)(
-  ({ theme }) => ({
-    [`& .${classes.toolBarTitle}`]: {
-      flexGrow: 1,
-    },
-    [`& .${classes.buildingPanel}`]: {
-      height: '100%',
-    },
-    [`& .${classes.mapPanel}`]: {
-      margin: theme.spacing(1),
-      flex: '1 0 auto',
-    },
-    [`& .${classes.itemPanels}`]: {
-      width: 800,
-    },
-  }),
-);
+const DashboardRoot = styled('div')(({ theme }) => ({
+  [`& .${classes.buildingPanel}`]: {
+    height: '100%',
+  },
+  [`& .${classes.mapPanel}`]: {
+    margin: theme.spacing(1),
+    flex: '1 0 auto',
+  },
+  [`& .${classes.itemPanels}`]: {
+    width: 800,
+  },
+}));
 
 export default function Dashboard(_props: {}): React.ReactElement {
   debug('render');
 
-  // const classes = useStyles();
   const appController = React.useContext(AppControllerContext);
   const rmfIngress = React.useContext(RmfIngressContext);
   const sioClient = rmfIngress?.sioClient;
@@ -209,45 +185,47 @@ export default function Dashboard(_props: {}): React.ReactElement {
   );
 
   return (
-    <DashboardRoot keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
-      {buildingMap && (
-        <Grid container className={classes.buildingPanel} wrap="nowrap">
-          <Card variant="outlined" className={classes.mapPanel}>
-            <ScheduleVisualizer
-              buildingMap={buildingMap}
-              dispensers={dispensers}
-              ingestors={ingestors}
-              doorStates={doorStatesRef.current}
-              liftStates={liftStatesRef.current}
-              fleetStates={fleetStatesRef.current}
-              mode="normal"
-            ></ScheduleVisualizer>
-          </Card>
-          <Grid item className={classes.itemPanels}>
-            {doors.length > 0 ? (
-              <DoorPanel
-                doors={doors}
-                doorStates={doorStatesRef.current}
-                onDoorControlClick={handleOnDoorControlClick}
-              />
-            ) : null}
-            {lifts.length > 0 ? (
-              <LiftPanel
-                lifts={lifts}
-                liftStates={liftStatesRef.current}
-                onRequestSubmit={handleLiftRequestSubmit}
-              />
-            ) : null}
-            {workcells.length > 0 ? (
-              <WorkcellPanel
+    <DashboardRoot>
+      <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
+        {buildingMap && (
+          <Grid container className={classes.buildingPanel} wrap="nowrap">
+            <Card variant="outlined" className={classes.mapPanel}>
+              <ScheduleVisualizer
+                buildingMap={buildingMap}
                 dispensers={dispensers}
                 ingestors={ingestors}
-                workCellStates={workcellStates}
-              />
-            ) : null}
+                doorStates={doorStatesRef.current}
+                liftStates={liftStatesRef.current}
+                fleetStates={fleetStatesRef.current}
+                mode="normal"
+              ></ScheduleVisualizer>
+            </Card>
+            <Grid item className={classes.itemPanels}>
+              {doors.length > 0 ? (
+                <DoorPanel
+                  doors={doors}
+                  doorStates={doorStatesRef.current}
+                  onDoorControlClick={handleOnDoorControlClick}
+                />
+              ) : null}
+              {lifts.length > 0 ? (
+                <LiftPanel
+                  lifts={lifts}
+                  liftStates={liftStatesRef.current}
+                  onRequestSubmit={handleLiftRequestSubmit}
+                />
+              ) : null}
+              {workcells.length > 0 ? (
+                <WorkcellPanel
+                  dispensers={dispensers}
+                  ingestors={ingestors}
+                  workCellStates={workcellStates}
+                />
+              ) : null}
+            </Grid>
           </Grid>
-        </Grid>
-      )}
+        )}
+      </GlobalHotKeys>
     </DashboardRoot>
   );
 }

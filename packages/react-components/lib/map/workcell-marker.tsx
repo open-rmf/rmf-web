@@ -1,5 +1,4 @@
-import { useTheme } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
+import { useTheme, styled } from '@material-ui/core';
 import Debug from 'debug';
 import React from 'react';
 import { fromRmfCoords } from '../geometry-utils';
@@ -28,8 +27,12 @@ const DefaultIcon = (props: { footprint: number }): JSX.Element => {
   );
 };
 
-const useStyles = makeStyles(() => ({
-  text: {
+const classes = {
+  text: 'workcell-marker-text',
+  clickable: 'workcell-marker-clickable',
+};
+const WorkCellMarkerRoot = styled('g')(() => ({
+  [`& .${classes.text}`]: {
     dominantBaseline: 'central',
     textAnchor: 'middle',
     fontSize: '0.18px',
@@ -40,8 +43,7 @@ const useStyles = makeStyles(() => ({
     pointerEvents: 'none',
     userSelect: 'none',
   },
-
-  clickable: {
+  [`& .${classes.clickable}`]: {
     pointerEvents: 'auto',
     cursor: 'pointer',
   },
@@ -67,13 +69,12 @@ export const WorkcellMarker = React.forwardRef(function (
   ref: React.Ref<SVGGElement>,
 ): React.ReactElement {
   debug(`render ${guid}`);
-  const classes = useStyles();
   const [imageHasError, setImageHasError] = React.useState(false);
   const location = fromRmfCoords(location_);
   const useImageIcon = !!iconPath && !imageHasError;
 
   return (
-    <g ref={ref} {...otherProps}>
+    <WorkCellMarkerRoot ref={ref} {...otherProps}>
       <g
         className={otherProps.onClick && classes.clickable}
         transform={`translate(${location[0]} ${location[1]})`}
@@ -100,7 +101,7 @@ export const WorkcellMarker = React.forwardRef(function (
         ></rect>
         <SvgText className={classes.text} text={guid} targetWidth={footprint * 2.2} />
       </g>
-    </g>
+    </WorkCellMarkerRoot>
   );
 });
 

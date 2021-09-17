@@ -1,4 +1,4 @@
-import { makeStyles } from '@material-ui/styles';
+import { styled } from '@material-ui/core';
 import Debug from 'debug';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
@@ -6,11 +6,15 @@ import { fromRmfCoords } from '../geometry-utils';
 
 const debug = Debug('Map:WaypointMarker');
 
-const useStyles = makeStyles(() => ({
-  marker: {
+const classes = {
+  marker: 'waypoint-marker-marker',
+  text: 'waypoint-marker-text',
+};
+const WayPointMarkerRoot = styled('g')(() => ({
+  [`& .${classes.marker}`]: {
     pointerEvents: 'none',
   },
-  text: {
+  [`& .${classes.text}`]: {
     dominantBaseline: 'central',
     textAnchor: 'middle',
     fontSize: '0.25px',
@@ -45,9 +49,8 @@ export const WaypointMarker = React.forwardRef(
     debug(`render ${waypoint.name}`);
     const pos = fromRmfCoords([waypoint.x, waypoint.y]);
 
-    const classes = useStyles();
     return (
-      <g ref={ref} {...otherProps}>
+      <WayPointMarkerRoot ref={ref} {...otherProps}>
         <g transform={translate ? `translate(${pos[0]} ${pos[1]})` : undefined}>
           <filter
             id={`waypoint-${waypoint.name}-shadow`}
@@ -76,7 +79,7 @@ export const WaypointMarker = React.forwardRef(
             {waypoint.name}
           </text>
         </g>
-      </g>
+      </WayPointMarkerRoot>
     );
   },
 );
