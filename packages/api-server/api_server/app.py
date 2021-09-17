@@ -21,7 +21,18 @@ from .base_app import BaseApp
 from .dependencies import rmf_repo as rmf_repo_dep
 from .fast_io import FastIO
 from .gateway import RmfGateway
-from .models import DispenserState, DoorState, IngestorState, LiftState
+from .models import (
+    DispenserHealth,
+    DispenserState,
+    DoorHealth,
+    DoorState,
+    FleetState,
+    IngestorHealth,
+    IngestorState,
+    LiftHealth,
+    LiftState,
+    RobotHealth,
+)
 from .models import tortoise_models as ttm
 from .repositories import StaticFilesRepository
 from .rmf_io import HealthWatchdog, RmfBookKeeper, RmfEvents
@@ -199,7 +210,9 @@ class App(FastIO, BaseApp):
             self._rmf_events.door_states.on_next(state)
         self.logger.info(f"loaded {len(door_states)} door states")
 
-        door_health = [x.to_pydantic() for x in await ttm.DoorHealth.all()]
+        door_health = [
+            await DoorHealth.from_tortoise(x) for x in await ttm.DoorHealth.all()
+        ]
         for health in door_health:
             self._rmf_events.door_health.on_next(health)
         self.logger.info(f"loaded {len(door_health)} door health")
@@ -209,7 +222,9 @@ class App(FastIO, BaseApp):
             self._rmf_events.lift_states.on_next(state)
         self.logger.info(f"loaded {len(lift_states)} lift states")
 
-        lift_health = [x.to_pydantic() for x in await ttm.LiftHealth.all()]
+        lift_health = [
+            await LiftHealth.from_tortoise(x) for x in await ttm.LiftHealth.all()
+        ]
         for health in lift_health:
             self._rmf_events.lift_health.on_next(health)
         self.logger.info(f"loaded {len(lift_health)} lift health")
@@ -221,7 +236,10 @@ class App(FastIO, BaseApp):
             self._rmf_events.dispenser_states.on_next(state)
         self.logger.info(f"loaded {len(dispenser_states)} dispenser states")
 
-        dispenser_health = [x.to_pydantic() for x in await ttm.DispenserHealth.all()]
+        dispenser_health = [
+            await DispenserHealth.from_tortoise(x)
+            for x in await ttm.DispenserHealth.all()
+        ]
         for health in dispenser_health:
             self._rmf_events.dispenser_health.on_next(health)
         self.logger.info(f"loaded {len(dispenser_health)} dispenser health")
@@ -233,17 +251,22 @@ class App(FastIO, BaseApp):
             self._rmf_events.ingestor_states.on_next(state)
         self.logger.info(f"loaded {len(ingestor_states)} ingestor states")
 
-        ingestor_health = [x.to_pydantic() for x in await ttm.IngestorHealth.all()]
+        ingestor_health = [
+            await IngestorHealth.from_tortoise(x)
+            for x in await ttm.IngestorHealth.all()
+        ]
         for health in ingestor_health:
             self._rmf_events.ingestor_health.on_next(health)
         self.logger.info(f"loaded {len(ingestor_health)} ingestor health")
 
-        fleet_states = [x.to_pydantic() for x in await ttm.FleetState.all()]
+        fleet_states = [FleetState.from_tortoise(x) for x in await ttm.FleetState.all()]
         for state in fleet_states:
             self._rmf_events.fleet_states.on_next(state)
         self.logger.info(f"loaded {len(fleet_states)} fleet states")
 
-        robot_health = [x.to_pydantic() for x in await ttm.RobotHealth.all()]
+        robot_health = [
+            await RobotHealth.from_tortoise(x) for x in await ttm.RobotHealth.all()
+        ]
         for health in robot_health:
             self._rmf_events.robot_health.on_next(health)
         self.logger.info(f"loaded {len(robot_health)} robot health")
