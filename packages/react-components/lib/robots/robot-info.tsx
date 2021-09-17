@@ -9,7 +9,7 @@ import { LinearProgressBar } from './linear-progress-bar';
 import { VerboseRobot } from './utils';
 
 const classes = {
-  root: 'robot-info-root',
+  root: 'robot-info-button-root',
   disabled: 'robot-info-disabled',
   logo: 'robot-info-logo',
   infoValue: 'robot-info-infovalue',

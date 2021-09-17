@@ -8,38 +8,8 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import { Theme } from '@material-ui/core/styles';
 import { styled, GridProps } from '@material-ui/core';
-import { makeStyles, createStyles } from '@material-ui/styles';
 import React from 'react';
-
-// const useStyles = makeStyles((theme: Theme) =>
-//   createStyles({
-//     container: {
-//       height: '100%',
-//       '& > *': {
-//         height: '100%',
-//         flex: '1 1 0',
-//       },
-//     },
-//     cardHeader: {
-//       padding: theme.spacing(1, 2),
-//     },
-//     list: {
-//       backgroundColor: theme.palette.background.paper,
-//       overflow: 'auto',
-//     },
-//     button: {
-//       margin: theme.spacing(0.5, 0),
-//     },
-//     transferControls: {
-//       marginTop: 'auto',
-//       marginBottom: 'auto',
-//       height: 'auto',
-//       flex: '0 0 auto',
-//     },
-//   }),
-// );
 
 const classes = {
   container: 'transfer-list-container',
@@ -165,7 +135,6 @@ export function TransferList({
   rightTitle = 'Choices',
   onTransfer,
 }: TransferListProps): JSX.Element {
-  // const classes = useStyles();
   const [leftChecked, setLeftChecked] = React.useState<Set<string>>(new Set());
   const [rightChecked, setRightChecked] = React.useState<Set<string>>(new Set());
 

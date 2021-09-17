@@ -7,8 +7,8 @@ const classes = {
   loadingProgress: 'loading-progress',
   loadingOverlay: 'loading-overlay',
 };
-const LoadingRoot = styled('div')(({ theme }) => ({
-  [`& .${classes.root}`]: {
+const LoadingRoot = styled('div')(() => ({
+  [`&.${classes.root}`]: {
     position: 'relative',
     height: '100%',
     flex: '1 1 auto',
