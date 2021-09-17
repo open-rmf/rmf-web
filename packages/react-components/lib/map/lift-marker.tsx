@@ -1,4 +1,4 @@
-import { makeStyles } from '@material-ui/styles';
+import { styled } from '@material-ui/core';
 import clsx from 'clsx';
 import Debug from 'debug';
 import React from 'react';
@@ -39,15 +39,28 @@ function getLiftMotionText(liftState: RmfModels.LiftState): string {
   }
 }
 
-const useStyles = makeStyles({
-  marker: {
+export const liftMarkerClasses = {
+  marker: 'lift-marker-root',
+  lift: 'lift-marker-lift',
+  text: 'lift-marker-text',
+  onCurrentLevel: 'lift-marker-oncurrentlevel',
+  moving: 'lift-marker-moving',
+  unknown: 'lift-marker-unknown',
+  emergency: 'lift-marker-emergency',
+  fire: 'lift-marker-fire',
+  offLine: 'lift-marker-offline',
+  human: 'lift-marker-human',
+};
+
+const LiftMarkerRoot = styled('g')(() => ({
+  [`&.${liftMarkerClasses.marker}`]: {
     cursor: 'pointer',
     pointerEvents: 'auto',
   },
-  lift: {
+  [`& .${liftMarkerClasses.lift}`]: {
     strokeWidth: '0.2',
   },
-  text: {
+  [`& .${liftMarkerClasses.text}`]: {
     dominantBaseline: 'central',
     textAnchor: 'middle',
     fontSize: '0.16px',
@@ -55,38 +68,35 @@ const useStyles = makeStyles({
     cursor: 'inherit',
     userSelect: 'none',
   },
-});
-
-export const useLiftMarkerStyles = makeStyles({
-  onCurrentLevel: {
+  [`& .${liftMarkerClasses.onCurrentLevel}`]: {
     fill: 'green',
     opacity: '70%',
   },
-  moving: {
+  [`& .${liftMarkerClasses.moving}`]: {
     fill: 'grey',
     opacity: '70%',
   },
-  unknown: {
+  [`& .${liftMarkerClasses.unknown}`]: {
     fill: '#3d3c3c',
     opacity: '80%',
   },
-  emergency: {
+  [`& .${liftMarkerClasses.emergency}`]: {
     fill: 'red',
     opacity: '80%',
   },
-  fire: {
+  [`& .${liftMarkerClasses.fire}`]: {
     fill: '#ff562a',
     opacity: '80%',
   },
-  offLine: {
+  [`& .${liftMarkerClasses.offLine}`]: {
     fill: 'yellow',
     opacity: '80%',
   },
-  human: {
+  [`& .${liftMarkerClasses.human}`]: {
     fill: '#90dfef',
     opacity: '80%',
   },
-});
+}));
 
 function toDoorMode(liftState: RmfModels.LiftState): RmfModels.DoorMode {
   // LiftState uses its own enum definition of door state/mode which is separated from DoorMode.
@@ -104,7 +114,7 @@ export interface LiftMarkerProps extends React.PropsWithRef<React.SVGProps<SVGGE
    * default: true
    */
   translate?: boolean;
-  variant?: keyof ReturnType<typeof useLiftMarkerStyles>;
+  variant?: keyof typeof liftMarkerClasses;
 }
 
 export const LiftMarker = React.forwardRef(function (
@@ -117,10 +127,7 @@ export const LiftMarker = React.forwardRef(function (
   const pos = fromRmfCoords([ref_x, ref_y]);
   // Get properties from lift state
   const doorMode = liftState ? toDoorMode(liftState) : undefined;
-
-  const classes = useStyles();
-  const markerClasses = useLiftMarkerStyles();
-  const markerClass = variant ? markerClasses[variant] : markerClasses.onCurrentLevel;
+  const markerClass = variant ? liftMarkerClasses[variant] : liftMarkerClasses.onCurrentLevel;
 
   /**
    * In order to keep consistent spacing, we render at a "unit box" scale it according to the
@@ -130,7 +137,7 @@ export const LiftMarker = React.forwardRef(function (
     // QN: do we need to take into account rotation?
     const textScale = Math.min(width, depth); // keep aspect ratio
     return liftState ? (
-      <text className={classes.text} transform={`scale(${textScale})`}>
+      <text className={liftMarkerClasses.text} transform={`scale(${textScale})`}>
         <tspan x="0" dy="-1.8em">
           {liftState.current_floor}
         </tspan>
@@ -142,7 +149,7 @@ export const LiftMarker = React.forwardRef(function (
         </tspan>
       </text>
     ) : (
-      <text className={classes.text} transform={`scale(${textScale})`}>
+      <text className={liftMarkerClasses.text} transform={`scale(${textScale})`}>
         <tspan x="0" dy="-0.5em">
           Unknown
         </tspan>
@@ -154,16 +161,19 @@ export const LiftMarker = React.forwardRef(function (
   };
 
   return (
-    <g
+    <LiftMarkerRoot
       ref={ref}
-      className={clsx(otherProps.onClick ? classes.marker : undefined, otherProps.className)}
+      className={clsx(
+        otherProps.onClick ? liftMarkerClasses.marker : undefined,
+        otherProps.className,
+      )}
       {...otherProps}
     >
       {/* it is easier to render it translate, and reverse the translation here */}
       <g transform={!translate ? `translate(${-pos[0]} ${-pos[1]})` : undefined}>
         <g transform={`translate(${pos[0]} ${pos[1]})`}>
           <rect
-            className={`${classes.lift} ${markerClass}`}
+            className={`${liftMarkerClasses.lift} ${markerClass}`}
             width={width}
             height={depth}
             x={-width / 2}
@@ -180,7 +190,7 @@ export const LiftMarker = React.forwardRef(function (
           ))}
         </g>
       </g>
-    </g>
+    </LiftMarkerRoot>
   );
 });
 

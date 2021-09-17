@@ -27,7 +27,7 @@ const classes = {
 };
 const DashboardRoot = styled('div')(({ theme }) => ({
   [`& .${classes.buildingPanel}`]: {
-    height: '100%',
+    height: '100vh',
   },
   [`& .${classes.mapPanel}`]: {
     margin: theme.spacing(1),
