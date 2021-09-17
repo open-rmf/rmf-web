@@ -1,18 +1,21 @@
-import { Grid, Paper, TablePagination, Typography } from '@material-ui/core';
+import { Grid, Paper, TablePagination, Typography, styled } from '@material-ui/core';
 import React from 'react';
 import { RobotInfo } from './robot-info';
 import { RobotTable } from './robot-table';
 import { VerboseRobot } from './utils';
-import { makeStyles } from '@material-ui/styles';
 
-const useStyles = makeStyles((theme) => ({
-  detailPanelContainer: {
+const classes = {
+  detailPanelContainer: 'robot-panel-detail-container',
+  robotTable: 'robot-panel-table',
+};
+const RobotPanelRoot = styled('div')(({ theme }) => ({
+  [`& .${classes.detailPanelContainer}`]: {
     width: 350,
     padding: theme.spacing(2),
     marginLeft: theme.spacing(1),
     flex: '0 0 auto',
   },
-  robotTable: {
+  [`& .${classes.robotTable}`]: {
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
@@ -29,7 +32,8 @@ function NoSelectedRobot() {
   );
 }
 
-export interface RobotPanelProps extends React.HTMLProps<HTMLDivElement> {
+export interface RobotPanelProps
+  extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
   paginationOptions?: Omit<React.ComponentPropsWithoutRef<typeof TablePagination>, 'component'>;
   verboseRobots: VerboseRobot[];
   fetchVerboseRobots: () => Promise<VerboseRobot[]>;
@@ -41,7 +45,6 @@ export function RobotPanel({
   fetchVerboseRobots,
   ...divProps
 }: RobotPanelProps): JSX.Element {
-  const classes = useStyles();
   const [selectedRobot, setSelectedRobot] = React.useState<VerboseRobot | undefined>(undefined);
 
   const handleRefresh = async (selectedRobot?: VerboseRobot) => {
@@ -56,7 +59,7 @@ export function RobotPanel({
   };
 
   return (
-    <div {...divProps}>
+    <RobotPanelRoot {...divProps}>
       <Grid container wrap="nowrap" justifyContent="center" style={{ height: 'inherit' }}>
         <Grid style={{ flex: '1 1 auto' }}>
           <RobotTable
@@ -71,6 +74,6 @@ export function RobotPanel({
           {selectedRobot ? <RobotInfo robot={selectedRobot} /> : <NoSelectedRobot />}
         </Paper>
       </Grid>
-    </div>
+    </RobotPanelRoot>
   );
 }

@@ -20,9 +20,9 @@ import { robotModeToString, VerboseRobot } from './utils';
 
 const classes = {
   table: 'robot-table',
-  title: 'title',
-  infoRow: 'info-row',
-  phasesCell: 'phases-cell',
+  title: 'robot-table-title',
+  infoRow: 'robot-table-info-row',
+  phasesCell: 'robot-table-phases-cell',
 };
 const RobotTableRoot = styled((props: PaperProps) => <Paper {...props} />)(({ theme }) => ({
   [`& .${classes.table}`]: {

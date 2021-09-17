@@ -1,4 +1,4 @@
-import { Button, Divider, Grid, Typography, useTheme } from '@material-ui/core';
+import { Button, Divider, Grid, Typography, useTheme, styled } from '@material-ui/core';
 import { Task } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
@@ -7,27 +7,30 @@ import { rosTimeToJs } from '../utils';
 import { CircularProgressBar } from './circular-progress-bar';
 import { LinearProgressBar } from './linear-progress-bar';
 import { VerboseRobot } from './utils';
-import { createStyles, makeStyles } from '@material-ui/styles';
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    root: {
-      '&$disabled': {
-        color: theme.palette.primary.main,
-        borderColor: theme.palette.primary.main,
-      },
+const classes = {
+  root: 'robot-info-root',
+  disabled: 'robot-info-disabled',
+  logo: 'robot-info-logo',
+  infoValue: 'robot-info-infovalue',
+};
+const RobotInfoRoot = styled('div')(({ theme }) => ({
+  [`& .${classes.root}`]: {
+    '&$disabled': {
+      color: theme.palette.primary.main,
+      borderColor: theme.palette.primary.main,
     },
-    disabled: {},
-    logo: {
-      maxWidth: 120,
-      opacity: 1,
-    },
-    infoValue: {
-      float: 'right',
-      textAlign: 'right',
-    },
-  }),
-);
+  },
+  [`& .${classes.disabled}`]: {},
+  [`& .${classes.logo}`]: {
+    maxWidth: 120,
+    opacity: 1,
+  },
+  [`& .${classes.infoValue}`]: {
+    float: 'right',
+    textAlign: 'right',
+  },
+}));
 
 export interface RobotInfoProps {
   robot: VerboseRobot;
@@ -35,7 +38,7 @@ export interface RobotInfoProps {
 
 export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
   const theme = useTheme();
-  const classes = useStyles();
+
   const [currentTask, setCurrentTask] = React.useState<Task | undefined>();
   const [hasConcreteEndTime, setHasConcreteEndTime] = React.useState<boolean>(false);
 
@@ -103,7 +106,7 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
   }, [currentTask, robot]);
 
   return (
-    <div>
+    <RobotInfoRoot>
       <Typography variant="h6" style={{ textAlign: 'center' }} gutterBottom>
         {robot.name}
       </Typography>
@@ -211,6 +214,6 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
           </Button>
         </Grid>
       </Grid>
-    </div>
+    </RobotInfoRoot>
   );
 }
