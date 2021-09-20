@@ -1,10 +1,13 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/styles';
+import { styled } from '@material-ui/core';
 import { SearchLogForm } from './search-log-form';
 import { LogRowsType, LogTable } from './log-table';
 
-const useStyles = makeStyles(() => ({
-  table: {
+const classes = {
+  table: 'log-management-table',
+};
+const LogManagementRoot = styled('div')(() => ({
+  [`& .${classes.table}`]: {
     overflowY: 'scroll',
     paddingTop: '20px',
   },
@@ -29,8 +32,6 @@ export const LogManagement = (props: LogManagementProps): React.ReactElement => 
   const [logLabels, setLogLabels] = React.useState<{ label: string; value: string }[]>([]);
   const [lastSearchParams, setLastSearchParams] = React.useState<LogQueryPayload>({});
 
-  const classes = useStyles();
-
   React.useEffect(() => {
     const getLogLabels = async () => {
       const labels = await getLabels();
@@ -49,11 +50,11 @@ export const LogManagement = (props: LogManagementProps): React.ReactElement => 
   };
 
   return (
-    <>
+    <LogManagementRoot>
       <SearchLogForm logLabelValues={logLabels} search={searchLogs}></SearchLogForm>
       <div className={classes.table}>
-        {logs.length !== 0 && <LogTable rows={logs} tableSize={500} addMoreRows={getMoreLogs} />}
+        {logs.length !== 0 && <LogTable rows={logs} addMoreRows={getMoreLogs} />}
       </div>
-    </>
+    </LogManagementRoot>
   );
 };

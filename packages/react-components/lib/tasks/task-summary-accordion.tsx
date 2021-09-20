@@ -25,19 +25,19 @@ interface TreeViewRootProps extends SingleSelectTreeViewProps {
 }
 
 const classes = {
-  root: 'task-summary-root',
-  accordionDetailLine: 'accordion-detail-line',
-  treeChildren: 'tree-children',
-  labelContent: 'label-content',
-  expanded: 'expanded',
-  completed: 'completed',
-  queued: 'queued',
-  active: 'active',
-  failed: 'failed',
-  taskActor: 'task-actor',
-  overrideArrayItemValue: 'override-array-item-value',
-  overrideContainer: 'override-container',
-  overrideValue: 'override-value',
+  root: 'task-summary-accordion-root',
+  accordionDetailLine: 'task-summary-accordion-accordion-detail-line',
+  treeChildren: 'task-summary-accordion-tree-children',
+  labelContent: 'task-summary-accordion-label-content',
+  expanded: 'task-summary-accordion-expanded',
+  completed: 'task-summary-accordion-completed',
+  queued: 'task-summary-accordion-queued',
+  active: 'task-summary-accordion-active',
+  failed: 'task-summary-accordion-failed',
+  taskActor: 'task-summary-accordion-task-actor',
+  overrideArrayItemValue: 'task-summary-accordion-override-array-item-value',
+  overrideContainer: 'task-summary-accordion-override-container',
+  overrideValue: 'task-summary-accordion-override-value',
 };
 const TaskSummaryAccordianRoot = styled((props: TreeViewRootProps) => <TreeView {...props} />)(
   ({ theme }) => ({

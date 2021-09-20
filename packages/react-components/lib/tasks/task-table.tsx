@@ -7,7 +7,6 @@ import {
   TableProps,
   styled,
 } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
 import clsx from 'clsx';
 import { formatDistanceToNow } from 'date-fns';
 import React from 'react';

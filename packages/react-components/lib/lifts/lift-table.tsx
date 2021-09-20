@@ -8,23 +8,10 @@ import {
   TableProps,
   styled,
 } from '@material-ui/core';
-// import { makeStyles } from '@material-ui/styles';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import LiftRequestFormDialog from './lift-request-form-dialog';
 import { doorStateToString, liftModeToString, requestDoorModes, requestModes } from './lift-utils';
-
-// const useStyles = makeStyles((theme) => ({
-//   doorLabelOpen: {
-//     color: theme.palette.success.main,
-//   },
-//   doorLabelClosed: {
-//     color: theme.palette.error.main,
-//   },
-//   doorLabelMoving: {
-//     color: theme.palette.warning.main,
-//   },
-// }));
 
 const classes = {
   doorLabelOpen: 'lift-table-doorlabelopen',

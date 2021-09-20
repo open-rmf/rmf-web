@@ -1,6 +1,5 @@
 import React from 'react';
-import { TextField, SelectChangeEvent } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
+import { TextField, SelectChangeEvent, styled } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import { SearchFilter } from './search-filter';
 import DateAndTimePickers from '../../date-time-picker';
@@ -12,6 +11,22 @@ interface SearchLogFormProps {
   logLabelValues: { label: string; value: string }[];
   search?: (payload: LogQueryPayload) => void;
 }
+
+const classes = {
+  searchForm: 'search-log-search-from',
+  searchButton: 'search-log-search-button',
+};
+const SearchLogRoot = styled('div')(() => ({
+  [`& .${classes.searchForm}`]: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr 1fr 1fr',
+    alignItems: 'center',
+    justifyItems: 'center',
+  },
+  [`& .${classes.searchButton}`]: {
+    width: '100%',
+  },
+}));
 
 const logLevelValues = [
   { label: 'ALL', value: LogLevel.All },
@@ -29,8 +44,6 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
   const [logLevel, setLogLevel] = React.useState(LogLevel.All);
   const [fromLogDate, setFromLogDate] = React.useState<Date>(new Date());
   const [toLogDate, setToLogDate] = React.useState<Date>(new Date());
-
-  const classes = useStyles();
 
   const searchQuery = () => {
     search && search({ toLogDate, fromLogDate, logLabel, logLevel });
@@ -53,7 +66,7 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
   }, []);
 
   return (
-    <>
+    <SearchLogRoot>
       <div className={classes.searchForm}>
         <SearchFilter
           options={logLabelValues}
@@ -97,22 +110,6 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
       >
         Retrieve Logs
       </Button>
-    </>
+    </SearchLogRoot>
   );
 };
-
-const useStyles = makeStyles((theme) => ({
-  searchForm: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr 1fr 1fr',
-    alignItems: 'center',
-    justifyItems: 'center',
-  },
-  searchButton: {
-    width: '100%',
-  },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-  },
-}));
