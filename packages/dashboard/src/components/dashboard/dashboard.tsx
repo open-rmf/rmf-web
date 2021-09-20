@@ -192,9 +192,9 @@ export default function Dashboard(_props: {}): React.ReactElement {
               buildingMap={buildingMap}
               dispensers={dispensers}
               ingestors={ingestors}
-              doorStates={doorStatesRef.current}
-              liftStates={liftStatesRef.current}
-              fleetStates={fleetStatesRef.current}
+              doorStates={Object.assign({}, doorStatesRef.current)}
+              liftStates={Object.assign({}, liftStatesRef.current)}
+              fleetStates={Object.assign({}, fleetStatesRef.current)}
               mode="normal"
             ></ScheduleVisualizer>
           </Card>
