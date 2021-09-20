@@ -1,6 +1,5 @@
 import React from 'react';
-import { TextField } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
+import { TextField, styled } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import DateAndTimePickers from '../date-time-picker';
 
@@ -14,17 +13,28 @@ interface DefaultDatesFormProps {
   onSelectToDate?: (date: any) => void;
 }
 
+const classes = {
+  searchForm: 'traj-time-control-root',
+  searchButton: 'traj-time-control-container',
+};
+const DefaultDatesFormRoot = styled('div')(() => ({
+  [`& .${classes.searchForm}`]: {
+    display: 'flex',
+    justifyContent: 'space-evenly',
+  },
+  [`& .${classes.searchButton}`]: {
+    width: '100%',
+  },
+}));
+
 export const DefaultDatesForm = (props: DefaultDatesFormProps) => {
   const { search, fromLogDate, toLogDate, onSelectToDate, onSelectFromDate } = props;
-
-  const classes = useStyles();
-
   const searchQuery = () => {
     search && search({ toLogDate, fromLogDate });
   };
 
   return onSelectFromDate && onSelectToDate ? (
-    <>
+    <DefaultDatesFormRoot>
       <div className={classes.searchForm}>
         <DateAndTimePickers
           maxDate={new Date()}
@@ -51,16 +61,6 @@ export const DefaultDatesForm = (props: DefaultDatesFormProps) => {
       >
         Retrieve Logs
       </Button>
-    </>
+    </DefaultDatesFormRoot>
   ) : null;
 };
-
-const useStyles = makeStyles(() => ({
-  searchForm: {
-    display: 'flex',
-    justifyContent: 'space-evenly',
-  },
-  searchButton: {
-    width: '100%',
-  },
-}));

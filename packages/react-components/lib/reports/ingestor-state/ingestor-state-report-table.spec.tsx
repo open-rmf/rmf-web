@@ -14,7 +14,11 @@ describe('Ingestor table test', () => {
   beforeEach(() => {
     mockAddMoreRows = jasmine.createSpy();
     root = render(
-      <IngestorStateReportTable rows={getIngestorLogs()} addMoreRows={mockAddMoreRows} />,
+      <IngestorStateReportTable
+        tableSize={500}
+        rows={getIngestorLogs()}
+        addMoreRows={mockAddMoreRows}
+      />,
     );
   });
 

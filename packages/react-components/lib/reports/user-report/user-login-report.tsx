@@ -1,5 +1,9 @@
 import React from 'react';
-import { DefaultReportQueryPayload, defaultReportStyles } from '../default-report-interface';
+import {
+  DefaultReportQueryPayload,
+  defaultReportClasses,
+  DefaultReportRoot,
+} from '../default-report-interface';
 import { DefaultDatesForm } from '../default-dates-form';
 import { UserLoginReportTable, UserLoginRowsType } from './user-login-report-table';
 
@@ -13,8 +17,6 @@ export const UserLoginReport = (props: UserLoginReportProps): React.ReactElement
   const [logs, setLogs] = React.useState<UserLoginRowsType>([]);
   const [lastSearchParams, setLastSearchParams] = React.useState<DefaultReportQueryPayload>({});
 
-  const classes = defaultReportStyles();
-
   const searchLogs = async (payload: DefaultReportQueryPayload) => {
     setLastSearchParams(payload);
     setLogs(await getLogs(payload));
@@ -25,14 +27,14 @@ export const UserLoginReport = (props: UserLoginReportProps): React.ReactElement
   };
 
   return (
-    <>
+    <DefaultReportRoot>
       <DefaultDatesForm search={searchLogs} {...otherProps} />
-      <div className={classes.table}>
+      <div className={defaultReportClasses.table}>
         {logs.length !== 0 && (
           <UserLoginReportTable rows={logs} tableSize={500} addMoreRows={getMoreLogs} />
         )}
       </div>
-    </>
+    </DefaultReportRoot>
   );
 };
 

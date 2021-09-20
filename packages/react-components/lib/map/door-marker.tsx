@@ -1,4 +1,4 @@
-import { makeStyles } from '@material-ui/styles';
+import { styled } from '@material-ui/core';
 import clsx from 'clsx';
 import Debug from 'debug';
 import React from 'react';
@@ -7,36 +7,44 @@ import { fromRmfCoords } from '../geometry-utils';
 
 const debug = Debug('Map:DoorMarker');
 
-const useDoorStyles = makeStyles({
-  marker: {
+const classes = {
+  marker: 'door-marker-base-marker',
+  base: 'door-marker-base-door',
+  open: 'door-marker-open',
+  close: 'door-marker-close',
+  moving: 'door-marker-moving',
+  unknown: 'door-marker-unknown',
+  transparent: 'door-marker-transparent',
+};
+const DoorMarkerRoot = styled('g')(() => ({
+  [`& .${classes.marker}`]: {
     cursor: 'pointer',
     pointerEvents: 'auto',
   },
-  base: {
+  [`& .${classes.base}`]: {
     strokeWidth: 0.2,
   },
-  open: {
+  [`& .${classes.open}`]: {
+    width: 200,
     stroke: '#AFDDAE',
     strokeDasharray: 0.1,
   },
-  close: {
+  [`& .${classes.close}`]: {
     stroke: '#BC4812',
   },
-  moving: {
+  [`& .${classes.moving}`]: {
     stroke: '#E9CE9F',
     strokeDasharray: 0.3,
   },
-  unknown: {
+  [`& .${classes.unknown}`]: {
     stroke: 'grey',
   },
-  transparent: {
+  [`& .${classes.transparent}`]: {
     stroke: 'transparent',
   },
-});
+}));
 
 function useDoorStyle(doorMode?: number): string {
-  const classes = useDoorStyles();
-
   if (doorMode === undefined) {
     return classes.unknown;
   }
@@ -83,7 +91,6 @@ interface BaseDoorProps {
 
 const BaseDoor = (props: BaseDoorProps) => {
   const { v1: v1_, v2: v2_, className } = props;
-  const classes = useDoorStyles();
 
   const v1 = fromRmfCoords(v1_);
   const v2 = fromRmfCoords(v2_);
@@ -108,8 +115,6 @@ interface DummyDoorProps {
  */
 const DummyDoor = (props: DummyDoorProps) => {
   const { v1, v2 } = props;
-  const classes = useDoorStyles();
-
   return (
     <g>
       <line
@@ -219,8 +224,6 @@ export const DoorMarker = React.forwardRef(
     ref: React.Ref<SVGGElement>,
   ) => {
     debug(`render ${door.name}`);
-    const classes = useDoorStyles();
-
     const renderDoor = () => {
       switch (door.door_type) {
         case RmfModels.Door.DOOR_TYPE_SINGLE_SWING:
@@ -243,14 +246,14 @@ export const DoorMarker = React.forwardRef(
     try {
       const center = getDoorCenter(door);
       return (
-        <g ref={ref} {...otherProps}>
+        <DoorMarkerRoot ref={ref} {...otherProps}>
           <g
             className={otherProps.onClick ? classes.marker : undefined}
             transform={!translate ? `translate(${-center[0]} ${center[1]})` : undefined}
           >
             {renderDoor()}
           </g>
-        </g>
+        </DoorMarkerRoot>
       );
     } catch (e) {
       console.error((e as Error).message);

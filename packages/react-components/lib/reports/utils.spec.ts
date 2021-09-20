@@ -16,7 +16,7 @@ export const getDispenserLogs = (): DispenserStateRowsType => {
   for (let i = 0; i < 200; i++) {
     rows.push({
       state: 'OPEN',
-      guid: 'dispenser_test',
+      guid: `dispenser_test_${i}`,
       created: timestamp,
     });
   }

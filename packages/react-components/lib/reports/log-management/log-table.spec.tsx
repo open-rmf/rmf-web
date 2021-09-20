@@ -21,11 +21,11 @@ for (let i = 0; i < 110; i++) {
     message: 'Test' + i,
     level: getRandomLogLevel().toUpperCase(),
     created: format(timestamp, 'MMM dd yyyy hh:mm aaa'),
-    container: { id: 1, name: 'container' },
+    container: { id: i, name: 'container' },
   });
 }
 
-describe('Log table test', () => {
+fdescribe('Log table test', () => {
   let root: RenderResult;
   beforeEach(() => {
     root = render(<LogTable rows={rows} />);
@@ -39,13 +39,12 @@ describe('Log table test', () => {
   });
 
   it('shows the correct number of rows', () => {
-    const allRows = root.container.querySelectorAll('tr').length;
-    // -3. from the tr of the table header, filter and pagination table
-    expect(allRows - 3).toBe(100);
+    const allRows = root.container.querySelectorAll('.MuiDataGrid-row').length;
+    expect(allRows).toBe(100);
   });
 });
 
-describe('Table footer Pagination', () => {
+fdescribe('Table footer Pagination', () => {
   beforeEach(() => {
     render(<LogTable rows={rows} />);
   });
@@ -53,35 +52,34 @@ describe('Table footer Pagination', () => {
   afterEach(cleanup);
 
   it('show the correct number of rows per page', () => {
-    // It's generating an <span> and a <p> on the real dom
-    expect(screen.getAllByText('1-100 of 110').length > 1).toBeTruthy();
+    expect(screen.getByText('1-100 of 110')).toBeTruthy();
   });
 
   it('can change the rows per page', async () => {
-    userEvent.click(screen.getByText('100 rows'));
+    userEvent.click(screen.getByText('100'));
     userEvent.click(screen.getByText('50'));
 
-    expect(screen.getAllByText('1-50 of 110').length > 1).toBeTruthy();
+    expect(await screen.getByText('1-50 of 110')).toBeTruthy();
   });
 
   it('advance page when the `Next Page` button is clicked ', async () => {
-    const nextPageButton = screen.queryByTitle('Next Page')?.children[0];
+    const nextPageButton = screen.queryByLabelText('Go to next page');
     nextPageButton && userEvent.click(nextPageButton);
-    expect(screen.getAllByText('101-110 of 110').length > 1).toBeTruthy();
+    expect(screen.getByText('101-110 of 110')).toBeTruthy();
   });
 
   it('goes to previous page when the `Previous page` button is clicked ', () => {
-    const nextPageButton = screen.queryByTitle('Next Page')?.children[0];
+    const nextPageButton = screen.queryByLabelText('Go to next page');
     nextPageButton && userEvent.click(nextPageButton);
-    expect(screen.getAllByText('101-110 of 110').length > 1).toBeTruthy();
+    expect(screen.getByText('101-110 of 110')).toBeTruthy();
 
-    const previousPageButton = screen.queryByTitle('Previous Page')?.children[0];
+    const previousPageButton = screen.queryByLabelText('Go to previous page');
     previousPageButton && userEvent.click(previousPageButton);
-    expect(screen.getAllByText('1-100 of 110').length > 1).toBeTruthy();
+    expect(screen.getByText('1-100 of 110')).toBeTruthy();
   });
 });
 
-describe('Applies styles to labels correctly', () => {
+fdescribe('Applies styles to labels correctly', () => {
   const styleRows = [] as LogRowsType;
 
   for (let i = 0; i < logLevels.length; i++) {
@@ -89,7 +87,7 @@ describe('Applies styles to labels correctly', () => {
       message: 'Test' + i,
       level: logLevels[i].toUpperCase(),
       created: format(timestamp, 'MMM dd yyyy hh:mm aaa'),
-      container: { id: 1, name: 'container' },
+      container: { id: i, name: 'container' },
     });
   }
 
@@ -98,18 +96,18 @@ describe('Applies styles to labels correctly', () => {
   });
 
   it('set the style correctly when the label ERROR ', () => {
-    expect(screen.getByText('ERROR').className).toContain('makeStyles-error');
+    expect(screen.getByText('ERROR').className).toContain('log-table-error');
   });
 
   it('set the style correctly when the label DEBUG ', () => {
-    expect(screen.getByText('DEBUG').className).toContain('makeStyles-debug');
+    expect(screen.getByText('DEBUG').className).toContain('log-table-debug');
   });
 
   it('set the style correctly when the label WARN ', () => {
-    expect(screen.getByText('WARN').className).toContain('makeStyles-warn');
+    expect(screen.getByText('WARN').className).toContain('log-table-warn');
   });
 
   it('set the style correctly when the label FATAL ', () => {
-    expect(screen.getByText('FATAL').className).toContain('makeStyles-error');
+    expect(screen.getByText('FATAL').className).toContain('log-table-error');
   });
 });

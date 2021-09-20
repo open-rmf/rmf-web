@@ -1,10 +1,7 @@
 import React from 'react';
-// import MaterialTable, { Column } from 'material-table';
 import { DataGrid, GridRenderCellParams } from '@mui/x-data-grid';
 import { LogLevel } from '.';
-import { Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
-// import { materialTableIcons } from '../../material-table-icons';
+import { Typography, styled } from '@material-ui/core';
 import { format } from 'date-fns';
 
 export type ContainerType = {
@@ -25,20 +22,27 @@ export interface LogTableProps {
   addMoreRows?(): void;
 }
 
-const useStyles = makeStyles((theme) => ({
-  error: {
+const classes = {
+  error: 'log-table-error',
+  debug: 'log-table-debug',
+  warn: 'log-table-warn',
+  info: 'log-table-info',
+  cellContent: 'log-table-cell-content',
+};
+const LogTableRoot = styled('div')(({ theme }) => ({
+  [`& .${classes.error}`]: {
     color: theme.palette.error.main,
   },
-  debug: {
+  [`& .${classes.debug}`]: {
     color: theme.palette.secondary.dark,
   },
-  warn: {
+  [`& .${classes.warn}`]: {
     color: theme.palette.warning.light,
   },
-  info: {
+  [`& .${classes.info}`]: {
     color: theme.palette.info.main,
   },
-  cellContent: {
+  [`& .${classes.cellContent}`]: {
     display: 'block',
     marginBlockStart: '1em',
     marginBlockEnd: '1em',
@@ -48,8 +52,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const LogTable = (props: LogTableProps): React.ReactElement => {
-  const { rows, tableSize, addMoreRows } = props;
-  const classes = useStyles();
+  const { rows, addMoreRows } = props;
+  const [pageSize, setPageSize] = React.useState(100);
   const getLogLevelStyle = (level: string): string | undefined => {
     level = level.toLowerCase();
     switch (level) {
@@ -79,9 +83,10 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
   }, []);
 
   return (
-    <div style={{ height: tableSize, width: '100%' }}>
+    <LogTableRoot style={{ height: '100%', width: '100%' }}>
       <DataGrid
         getRowId={(r) => r.container.id}
+        autoHeight={true}
         columns={[
           {
             headerName: 'Level',
@@ -90,20 +95,6 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
             align: 'center',
             width: 100,
             sortable: false,
-            // cellStyle: { padding: '0px', width: '2rem', maxWidth: '2rem' },
-            // headerStyle: {
-            //   width: '2rem',
-            //   maxWidth: '2rem',
-            // },
-            // filterCellStyle: {
-            //   maxHeight: '2px',
-            // },
-            // lookup: logLevels as Column<{
-            //   level: string;
-            //   message: string;
-            //   created: string;
-            // }>['lookup'],
-            // filterComponent: (props) => <CustomLookupFilterParser {...props} />,
             renderCell: (rowData: GridRenderCellParams) => {
               return (
                 <Typography
@@ -121,14 +112,6 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
             align: 'center',
             width: 120,
             sortable: false,
-            // cellStyle: { padding: '0px', width: '2rem', maxWidth: '2rem' },
-            // headerStyle: {
-            //   width: '2rem',
-            //   maxWidth: '2rem',
-            // },
-            // filterCellStyle: {
-            //   maxHeight: '2px',
-            // },
             renderCell: (rowData: GridRenderCellParams) => {
               return (
                 <Typography className={classes.cellContent}>
@@ -143,11 +126,6 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
             type: 'string',
             width: 1200,
             sortable: false,
-            // cellStyle: { padding: '0px', width: '75rem', minWidth: '75rem', whiteSpace: 'pre-wrap' },
-            // headerStyle: {
-            //   width: '75rem',
-            //   minWidth: '75rem',
-            // },
             renderCell: (rowData: GridRenderCellParams) => {
               return <Typography className={classes.cellContent}>{rowData.value}</Typography>;
             },
@@ -159,7 +137,6 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
             filterable: false,
             sortable: false,
             align: 'center',
-            // cellStyle: { padding: '0px' },
             renderCell: (rowData: GridRenderCellParams) => {
               return (
                 <Typography className={classes.cellContent} data-testid={'log-table-date'}>
@@ -170,14 +147,17 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
           },
         ]}
         rows={rows}
-        pageSize={100}
-        rowsPerPageOptions={[50, 100, 200]}
-        onPageChange={(page, pageSize) => {
+        pageSize={pageSize}
+        rowsPerPageOptions={[50, 100]}
+        onPageChange={() => {
           if (addMoreRows) {
-            rows.length / pageSize - 1 === page && addMoreRows();
+            addMoreRows();
           }
         }}
+        onPageSizeChange={(pageSize) => {
+          setPageSize(pageSize);
+        }}
       />
-    </div>
+    </LogTableRoot>
   );
 };

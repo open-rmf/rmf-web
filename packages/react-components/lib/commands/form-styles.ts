@@ -1,25 +1,32 @@
-import { makeStyles } from '@material-ui/styles';
+import { styled } from '@material-ui/core';
 
-export const useFormStyles = makeStyles({
-  form: {
+export const commandFormsClasses = {
+  form: 'command-form-root',
+  divForm: 'command-form-div-wrapper',
+  input: 'command-form-input',
+  button: 'command-form-button',
+  buttonContainer: 'command-form-button-container',
+};
+export const CommandsFormRoot = styled('form')(() => ({
+  [`&.${commandFormsClasses.form}`]: {
     display: 'flex',
     flexDirection: 'column',
     width: '100%',
   },
-  divForm: {
+  [`& .${commandFormsClasses.divForm}`]: {
     padding: '0.46rem',
     paddingRight: '0.5rem',
     width: '100%',
   },
-  input: {
+  [`& .${commandFormsClasses.input}`]: {
     width: '100%',
   },
-  button: {
+  [`& .${commandFormsClasses.button}`]: {
     width: '100%',
   },
-  buttonContainer: {
+  [`& .${commandFormsClasses.buttonContainer}`]: {
     paddingTop: '0.5rem',
     paddingLeft: '0.5rem',
     width: '100%',
   },
-});
+}));
