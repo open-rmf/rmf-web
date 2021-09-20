@@ -57,8 +57,8 @@ export const DispenserStateReportTable = (props: DispenserStateReportTable): Rea
         ]}
         rows={rows}
         pageSize={100}
-        rowsPerPageOptions={[50, 100, 200]}
-        onPageChange={(page) => {
+        rowsPerPageOptions={[50, 100]}
+        onPageChange={() => {
           if (addMoreRows) {
             addMoreRows();
           }

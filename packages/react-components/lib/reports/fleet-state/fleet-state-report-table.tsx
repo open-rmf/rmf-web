@@ -1,8 +1,6 @@
 import React from 'react';
-// import MaterialTable from 'material-table';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridRenderCellParams } from '@mui/x-data-grid';
 import { Typography } from '@material-ui/core';
-// import { materialTableIcons } from '../../material-table-icons';
 import { DefaultLogTableProps } from '../default-report-interface';
 import { format } from 'date-fns';
 
@@ -22,18 +20,19 @@ export interface FleetStateReportTable extends DefaultLogTableProps {
 }
 
 export const FleetStateReportTable = (props: FleetStateReportTable): React.ReactElement => {
-  const { rows, tableSize, addMoreRows } = props;
+  const { rows, addMoreRows } = props;
 
   return (
-    <div style={{ height: tableSize, width: '100%' }}>
+    <div style={{ height: '100%', width: '100%' }}>
       <DataGrid
+        autoHeight={true}
         getRowId={(r) => r.robot.id}
         columns={[
           {
             headerName: 'Fleet',
             field: 'fleet_name',
             type: 'string',
-            valueFormatter: (rowData) => {
+            renderCell: (rowData: GridRenderCellParams) => {
               return <Typography>{rowData.row.fleet.name}</Typography>;
             },
           },
@@ -41,7 +40,7 @@ export const FleetStateReportTable = (props: FleetStateReportTable): React.React
             headerName: 'Robot',
             field: 'robot_name',
             type: 'string',
-            valueFormatter: (rowData) => {
+            renderCell: (rowData: GridRenderCellParams) => {
               return <Typography>{rowData.row.robot.name}</Typography>;
             },
           },
@@ -49,7 +48,7 @@ export const FleetStateReportTable = (props: FleetStateReportTable): React.React
             headerName: 'Battery',
             field: 'robot_battery_percent',
             type: 'string',
-            valueFormatter: (rowData) => {
+            renderCell: (rowData: GridRenderCellParams) => {
               return <Typography>{rowData.row.robot_battery_percent}</Typography>;
             },
           },
@@ -57,7 +56,7 @@ export const FleetStateReportTable = (props: FleetStateReportTable): React.React
             headerName: 'Mode',
             field: 'robot_mode',
             type: 'string',
-            valueFormatter: (rowData) => {
+            renderCell: (rowData: GridRenderCellParams) => {
               return <Typography>{rowData.row.robot_mode}</Typography>;
             },
           },
@@ -65,7 +64,7 @@ export const FleetStateReportTable = (props: FleetStateReportTable): React.React
             headerName: 'Model',
             field: 'robot_model',
             type: 'string',
-            valueFormatter: (rowData) => {
+            renderCell: (rowData: GridRenderCellParams) => {
               return <Typography>{rowData.row.robot.model}</Typography>;
             },
           },
@@ -73,20 +72,20 @@ export const FleetStateReportTable = (props: FleetStateReportTable): React.React
             headerName: 'TaskID',
             field: 'robot_task_id',
             type: 'string',
-            valueFormatter: (rowData) => {
+            renderCell: (rowData: GridRenderCellParams) => {
               return <Typography>{rowData.row.robot_task_id}</Typography>;
             },
           },
           {
             headerName: 'Timestamp',
-            field: 'timestamp',
+            field: 'created',
             type: 'datetime',
             filterable: false,
             align: 'center',
-            valueFormatter: (rowData) => {
+            renderCell: (rowData: GridRenderCellParams) => {
               return (
                 <Typography data-testid={'fleet-table-date'}>
-                  {format(new Date(rowData.row.created), 'MMM dd yyyy hh:mm aaa')}
+                  {format(new Date(rowData.value as number), 'MMM dd yyyy hh:mm aaa')}
                 </Typography>
               );
             },
@@ -94,10 +93,10 @@ export const FleetStateReportTable = (props: FleetStateReportTable): React.React
         ]}
         rows={rows}
         pageSize={100}
-        rowsPerPageOptions={[50, 100, 200]}
-        onPageChange={(page, pageSize) => {
+        rowsPerPageOptions={[50, 100]}
+        onPageChange={() => {
           if (addMoreRows) {
-            rows.length / pageSize - 1 === page && addMoreRows();
+            addMoreRows();
           }
         }}
       />

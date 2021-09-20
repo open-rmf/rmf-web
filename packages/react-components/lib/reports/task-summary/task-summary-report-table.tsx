@@ -1,7 +1,6 @@
 import React from 'react';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridRenderCellParams } from '@mui/x-data-grid';
 import { Typography } from '@material-ui/core';
-// import { materialTableIcons } from '../../material-table-icons';
 import { DefaultLogTableProps } from '../default-report-interface';
 import { format } from 'date-fns';
 import { returnTaskDetails } from './utils';
@@ -26,20 +25,19 @@ export interface TaskSummaryReportTable extends DefaultLogTableProps {
 }
 
 export const TaskSummaryReportTable = (props: TaskSummaryReportTable): React.ReactElement => {
-  const { rows, tableSize, addMoreRows } = props;
+  const { rows, addMoreRows } = props;
 
   return (
-    <div style={{ height: tableSize, width: '100%' }}>
+    <div style={{ height: '100%', width: '100%' }}>
       <DataGrid
-        // title="Task Summary"
-        // icons={materialTableIcons}
+        autoHeight={true}
         getRowId={(r) => r.task_id}
         columns={[
           {
             headerName: 'Task ID',
             field: 'task_id',
             type: 'string',
-            valueFormatter: (rowData) => {
+            renderCell: (rowData: GridRenderCellParams) => {
               return <Typography>{rowData.row.task_id}</Typography>;
             },
           },
@@ -47,7 +45,7 @@ export const TaskSummaryReportTable = (props: TaskSummaryReportTable): React.Rea
             headerName: 'Fleet',
             field: 'fleet_name',
             type: 'string',
-            valueFormatter: (rowData) => {
+            renderCell: (rowData: GridRenderCellParams) => {
               return <Typography>{rowData.row.fleet.name}</Typography>;
             },
           },
@@ -55,7 +53,7 @@ export const TaskSummaryReportTable = (props: TaskSummaryReportTable): React.Rea
             headerName: 'Robot',
             field: 'robot_name',
             type: 'string',
-            valueFormatter: (rowData) => {
+            renderCell: (rowData: GridRenderCellParams) => {
               return <Typography>{rowData.row.robot.name}</Typography>;
             },
           },
@@ -63,7 +61,7 @@ export const TaskSummaryReportTable = (props: TaskSummaryReportTable): React.Rea
             headerName: 'Task Description',
             field: 'description',
             type: 'string',
-            valueFormatter: (rowData) => {
+            renderCell: (rowData: GridRenderCellParams) => {
               const taskTypeDetails = returnTaskDetails(
                 rowData.row.task_id,
                 rowData.row.task_profile.description,
@@ -75,7 +73,7 @@ export const TaskSummaryReportTable = (props: TaskSummaryReportTable): React.Rea
             headerName: 'State',
             field: 'state',
             type: 'string',
-            valueFormatter: (rowData) => {
+            renderCell: (rowData: GridRenderCellParams) => {
               return <Typography>{rowData.row.state}</Typography>;
             },
           },
@@ -83,7 +81,7 @@ export const TaskSummaryReportTable = (props: TaskSummaryReportTable): React.Rea
             headerName: 'Time',
             field: 'time_information',
             type: 'string',
-            valueFormatter: (rowData) => {
+            renderCell: (rowData: GridRenderCellParams) => {
               const submissionTime = rosTimeToJs(
                 rowData.row.task_profile.submission_time,
               ).toLocaleTimeString();
@@ -100,14 +98,14 @@ export const TaskSummaryReportTable = (props: TaskSummaryReportTable): React.Rea
           },
           {
             headerName: 'Timestamp',
-            field: 'timestamp',
+            field: 'created',
             type: 'datetime',
             filterable: false,
             align: 'center',
-            valueFormatter: (rowData) => {
+            renderCell: (rowData: GridRenderCellParams) => {
               return (
                 <Typography data-testid={'task-table-date'}>
-                  {format(new Date(rowData.row.created), 'MMM dd yyyy hh:mm aaa')}
+                  {format(new Date(rowData.value as number), 'MMM dd yyyy hh:mm aaa')}
                 </Typography>
               );
             },
@@ -115,17 +113,10 @@ export const TaskSummaryReportTable = (props: TaskSummaryReportTable): React.Rea
         ]}
         rows={rows}
         pageSize={100}
-        rowsPerPageOptions={[50, 100, 200]}
-        // options={{
-        //   filtering: true,
-        //   search: false,
-        //   pageSize: 100,
-        //   pageSizeOptions: [50, 100, 200],
-        //   maxBodyHeight: tableSize ? tableSize : '80vh',
-        // }}
-        onPageChange={(page, pageSize) => {
+        rowsPerPageOptions={[50, 100]}
+        onPageChange={() => {
           if (addMoreRows) {
-            rows.length / pageSize - 1 === page && addMoreRows();
+            addMoreRows();
           }
         }}
       />

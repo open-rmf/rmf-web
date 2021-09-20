@@ -1,7 +1,6 @@
 import React from 'react';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridRenderCellParams } from '@mui/x-data-grid';
 import { Typography } from '@material-ui/core';
-// import { materialTableIcons } from '../../material-table-icons';
 import { DefaultLogTableProps } from '../default-report-interface';
 import { format } from 'date-fns';
 
@@ -16,19 +15,18 @@ export interface DoorStateReportTable extends DefaultLogTableProps {
 }
 
 export const DoorStateReportTable = (props: DoorStateReportTable): React.ReactElement => {
-  const { rows, tableSize, addMoreRows } = props;
+  const { rows, addMoreRows } = props;
   return (
-    <div style={{ height: tableSize, width: '100%' }}>
+    <div style={{ height: '100%', width: '100%' }}>
       <DataGrid
-        // title="Door State"
-        // icons={materialTableIcons}
+        autoHeight={true}
         getRowId={(r) => r.door.id}
         columns={[
           {
             headerName: 'Name',
             field: 'name',
             type: 'string',
-            valueFormatter: (rowData) => {
+            renderCell: (rowData: GridRenderCellParams) => {
               return <Typography>{rowData.row.door.name}</Typography>;
             },
           },
@@ -36,7 +34,7 @@ export const DoorStateReportTable = (props: DoorStateReportTable): React.ReactEl
             headerName: 'State',
             field: 'state',
             type: 'string',
-            valueFormatter: (rowData) => {
+            renderCell: (rowData: GridRenderCellParams) => {
               return <Typography>{rowData.row.state}</Typography>;
             },
           },
@@ -46,10 +44,10 @@ export const DoorStateReportTable = (props: DoorStateReportTable): React.ReactEl
             type: 'datetime',
             filterable: false,
             align: 'center',
-            valueFormatter: (rowData) => {
+            renderCell: (rowData: GridRenderCellParams) => {
               return (
                 <Typography data-testid={'door-table-date'}>
-                  {format(new Date(rowData.row.created), 'MMM dd yyyy hh:mm aaa')}
+                  {format(new Date(rowData.value as number), 'MMM dd yyyy hh:mm aaa')}
                 </Typography>
               );
             },
@@ -57,17 +55,10 @@ export const DoorStateReportTable = (props: DoorStateReportTable): React.ReactEl
         ]}
         rows={rows}
         pageSize={100}
-        rowsPerPageOptions={[50, 100, 200]}
-        // options={{
-        //   filtering: true,
-        //   search: false,
-        //   pageSize: 100,
-        //   pageSizeOptions: [50, 100, 200],
-        //   maxBodyHeight: tableSize ? tableSize : '80vh',
-        // }}
-        onPageChange={(page, pageSize) => {
+        rowsPerPageOptions={[50, 100]}
+        onPageChange={() => {
           if (addMoreRows) {
-            rows.length / pageSize - 1 === page && addMoreRows();
+            addMoreRows();
           }
         }}
       />

@@ -79,7 +79,7 @@ export const getLiftLogs = (): LiftStateRowsType => {
       current_floor: 'L2',
       session_id: 'session',
       created: timestamp,
-      id: i,
+      lift: { id: i, name: `lift_${i}` },
     });
   }
   return rows;

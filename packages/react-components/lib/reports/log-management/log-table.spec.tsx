@@ -25,7 +25,7 @@ for (let i = 0; i < 110; i++) {
   });
 }
 
-fdescribe('Log table test', () => {
+describe('Log table test', () => {
   let root: RenderResult;
   beforeEach(() => {
     root = render(<LogTable rows={rows} />);
@@ -44,7 +44,7 @@ fdescribe('Log table test', () => {
   });
 });
 
-fdescribe('Table footer Pagination', () => {
+describe('Table footer Pagination', () => {
   beforeEach(() => {
     render(<LogTable rows={rows} />);
   });
@@ -79,7 +79,7 @@ fdescribe('Table footer Pagination', () => {
   });
 });
 
-fdescribe('Applies styles to labels correctly', () => {
+describe('Applies styles to labels correctly', () => {
   const styleRows = [] as LogRowsType;
 
   for (let i = 0; i < logLevels.length; i++) {

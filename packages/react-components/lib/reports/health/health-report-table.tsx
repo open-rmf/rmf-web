@@ -1,8 +1,6 @@
 import React from 'react';
-// import MaterialTable from 'material-table';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridRenderCellParams } from '@mui/x-data-grid';
 import { Typography } from '@material-ui/core';
-// import { materialTableIcons } from '../../material-table-icons';
 import { DefaultLogTableProps } from '../default-report-interface';
 import { format } from 'date-fns';
 
@@ -18,20 +16,19 @@ export interface HealthReportTable extends DefaultLogTableProps {
 }
 
 export const HealthReportTable = (props: HealthReportTable): React.ReactElement => {
-  const { rows, tableSize, addMoreRows } = props;
+  const { rows, addMoreRows } = props;
 
   return (
-    <div style={{ height: tableSize, width: '100%' }}>
+    <div style={{ height: '100%', width: '100%' }}>
       <DataGrid
-        // title="Health"
-        // icons={materialTableIcons}
+        autoHeight={true}
         getRowId={(r) => r.device.id}
         columns={[
           {
             headerName: 'Device',
             field: 'device',
             type: 'string',
-            valueFormatter: (rowData) => {
+            renderCell: (rowData: GridRenderCellParams) => {
               return <Typography>{rowData.row.device.type}</Typography>;
             },
           },
@@ -39,7 +36,7 @@ export const HealthReportTable = (props: HealthReportTable): React.ReactElement 
             headerName: 'Actor',
             field: 'actor_id',
             type: 'string',
-            valueFormatter: (rowData) => {
+            renderCell: (rowData: GridRenderCellParams) => {
               return <Typography>{rowData.row.device.actor}</Typography>;
             },
           },
@@ -47,7 +44,7 @@ export const HealthReportTable = (props: HealthReportTable): React.ReactElement 
             headerName: 'Health Status',
             field: 'health_status',
             type: 'string',
-            valueFormatter: (rowData) => {
+            renderCell: (rowData: GridRenderCellParams) => {
               return <Typography>{rowData.row.health_status}</Typography>;
             },
           },
@@ -55,7 +52,7 @@ export const HealthReportTable = (props: HealthReportTable): React.ReactElement 
             headerName: 'Health Message',
             field: 'health_message',
             type: 'string',
-            valueFormatter: (rowData) => {
+            renderCell: (rowData: GridRenderCellParams) => {
               return <Typography>{rowData.row.health_message}</Typography>;
             },
           },
@@ -65,10 +62,10 @@ export const HealthReportTable = (props: HealthReportTable): React.ReactElement 
             type: 'datetime',
             filterable: false,
             align: 'center',
-            valueFormatter: (rowData) => {
+            renderCell: (rowData: GridRenderCellParams) => {
               return (
                 <Typography data-testid={'health-table-date'}>
-                  {format(new Date(rowData.row.created), 'MMM dd yyyy hh:mm aaa')}
+                  {format(new Date(rowData.value as number), 'MMM dd yyyy hh:mm aaa')}
                 </Typography>
               );
             },
@@ -76,10 +73,10 @@ export const HealthReportTable = (props: HealthReportTable): React.ReactElement 
         ]}
         rows={rows}
         pageSize={100}
-        rowsPerPageOptions={[50, 100, 200]}
-        onPageChange={(page, pageSize) => {
+        rowsPerPageOptions={[50, 100]}
+        onPageChange={() => {
           if (addMoreRows) {
-            rows.length / pageSize - 1 === page && addMoreRows();
+            addMoreRows();
           }
         }}
       />

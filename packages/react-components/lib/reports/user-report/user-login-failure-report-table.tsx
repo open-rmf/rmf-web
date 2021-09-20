@@ -1,7 +1,6 @@
 import React from 'react';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridRenderCellParams } from '@mui/x-data-grid';
 import { Typography } from '@material-ui/core';
-// import { materialTableIcons } from '../../material-table-icons';
 import { DefaultLogTableProps } from '../default-report-interface';
 import { format } from 'date-fns';
 
@@ -20,20 +19,19 @@ export interface UserLoginFailureReportTable extends DefaultLogTableProps {
 export const UserLoginFailureReportTable = (
   props: UserLoginFailureReportTable,
 ): React.ReactElement => {
-  const { rows, tableSize, addMoreRows } = props;
+  const { rows, addMoreRows } = props;
 
   return (
-    <div style={{ height: tableSize, width: '100%' }}>
+    <div style={{ height: '100%', width: '100%' }}>
       <DataGrid
-        // title="Lift State"
-        // icons={materialTableIcons}
+        autoHeight={true}
         getRowId={(r) => r.client_id}
         columns={[
           {
             headerName: 'Username',
             field: 'username',
             type: 'string',
-            valueFormatter: (rowData) => {
+            renderCell: (rowData: GridRenderCellParams) => {
               return <Typography>{rowData.row.username}</Typography>;
             },
           },
@@ -42,7 +40,7 @@ export const UserLoginFailureReportTable = (
             headerName: 'Client ID',
             field: 'client_id',
             type: 'string',
-            valueFormatter: (rowData) => {
+            renderCell: (rowData: GridRenderCellParams) => {
               return <Typography>{rowData.row.client_id}</Typography>;
             },
           },
@@ -50,21 +48,21 @@ export const UserLoginFailureReportTable = (
             headerName: 'IP Addr.',
             field: 'ip_address',
             type: 'string',
-            valueFormatter: (rowData) => {
+            renderCell: (rowData: GridRenderCellParams) => {
               return <Typography>{rowData.row.ip_address}</Typography>;
             },
           },
 
           {
             headerName: 'Timestamp',
-            field: 'timestamp',
+            field: 'created',
             type: 'datetime',
             filterable: false,
             align: 'center',
-            valueFormatter: (rowData) => {
+            renderCell: (rowData: GridRenderCellParams) => {
               return (
                 <Typography data-testid={'lift-table-date'}>
-                  {format(new Date(rowData.row.created), 'MMM dd yyyy hh:mm aaa')}
+                  {format(new Date(rowData.value as number), 'MMM dd yyyy hh:mm aaa')}
                 </Typography>
               );
             },
@@ -72,17 +70,10 @@ export const UserLoginFailureReportTable = (
         ]}
         rows={rows}
         pageSize={100}
-        rowsPerPageOptions={[50, 100, 200]}
-        // options={{
-        //   filtering: true,
-        //   search: false,
-        //   pageSize: 100,
-        //   pageSizeOptions: [50, 100, 200],
-        //   maxBodyHeight: tableSize ? tableSize : '80vh',
-        // }}
-        onPageChange={(page, pageSize) => {
+        rowsPerPageOptions={[50, 100]}
+        onPageChange={() => {
           if (addMoreRows) {
-            rows.length / pageSize - 1 === page && addMoreRows();
+            addMoreRows();
           }
         }}
       />
