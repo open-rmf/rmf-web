@@ -1,33 +1,16 @@
 import { makeStyles, useTheme } from '@material-ui/core';
 import clsx from 'clsx';
-import Debug from 'debug';
-import RBush, { BBox } from 'rbush';
 import React from 'react';
+import { BBox, EntityManagerContext } from './entity-manager';
 import { useAutoScale } from './hooks';
 
-const debug = Debug('Map:LabelMarker');
-
-type LabelLocation = BBox;
-
-export class LabelManager {
-  addLabel(preferredLocation: LabelLocation): LabelLocation {
-    const labelLocation = this._getLocation(preferredLocation);
-    this._labels.insert(labelLocation);
-    return labelLocation;
-  }
-
-  removeLabel(label: LabelLocation): void {
-    this._labels.remove(label);
-  }
-
-  private _labels = new RBush<LabelLocation>();
-
-  private _getLocation(preferredLocation: LabelLocation): LabelLocation {
-    return preferredLocation;
-  }
+export interface LabelLocation {
+  anchorX1: number;
+  anchorY1: number;
+  anchorX2: number;
+  anchorY2: number;
+  borderBBox: BBox;
 }
-
-export const LabelManagerContext = React.createContext(new LabelManager());
 
 export interface LabelContainerProps extends React.SVGProps<SVGGElement> {
   sourceX: number;
@@ -61,10 +44,11 @@ export function LabelContainer(props: LabelContainerProps): JSX.Element {
     children,
     ...otherProps
   } = props;
-  const labelManager = React.useContext(LabelManagerContext);
+  const entityManager = React.useContext(EntityManagerContext);
   const contentWidthOuter = contentWidth + contentPadding * 2;
   const contentHeightOuter = contentHeight + contentPadding * 2;
-  const preferredTheta = React.useMemo(() => {
+
+  const preferredLocation = React.useMemo<LabelLocation>(() => {
     const normalizedAngle = (() => {
       let cur = angle;
       while (cur > 180 || cur < -180) {
@@ -76,114 +60,112 @@ export function LabelContainer(props: LabelContainerProps): JSX.Element {
       }
       return cur;
     })();
-    return (normalizedAngle * Math.PI) / 180;
-  }, [angle]);
-  const preferredAnchorX1 = React.useMemo(() => sourceX + Math.cos(preferredTheta) * sourceRadius, [
-    sourceX,
-    sourceRadius,
-    preferredTheta,
-  ]);
-  const preferredAnchorY1 = React.useMemo(() => sourceY + Math.sin(preferredTheta) * sourceRadius, [
-    sourceY,
-    sourceRadius,
-    preferredTheta,
-  ]);
-  const preferredAnchorX2 = React.useMemo(
-    () => preferredAnchorX1 + Math.cos(preferredTheta) * preferredArrowLength,
-    [preferredAnchorX1, preferredTheta, preferredArrowLength],
-  );
-  const preferredAnchorY2 = React.useMemo(
-    () => preferredAnchorY1 + Math.sin(preferredTheta) * preferredArrowLength,
-    [preferredAnchorY1, preferredTheta, preferredArrowLength],
-  );
-
-  const preferredLocation = React.useMemo(() => {
+    const theta = (normalizedAngle * Math.PI) / 180;
+    const anchorX1 = sourceX + Math.cos(theta) * sourceRadius;
+    const anchorY1 = sourceY + Math.sin(theta) * sourceRadius;
+    const anchorX2 = anchorX1 + Math.cos(theta) * preferredArrowLength;
+    const anchorY2 = anchorY1 + Math.sin(theta) * preferredArrowLength;
     const rectStart = (() => {
-      if (preferredTheta >= 0 && preferredTheta < Math.PI / 2) {
-        return [preferredAnchorX2 - contentBorderRadius, preferredAnchorY2];
-      } else if (preferredTheta >= Math.PI / 2 && preferredTheta < Math.PI) {
-        return [preferredAnchorX2 - contentWidthOuter + contentBorderRadius, preferredAnchorY2];
-      } else if (preferredTheta >= -Math.PI && preferredTheta < -Math.PI / 2) {
-        return [
-          preferredAnchorX2 - contentWidthOuter + contentBorderRadius,
-          preferredAnchorY2 - contentHeightOuter,
-        ];
+      if (theta >= 0 && theta < Math.PI / 2) {
+        return [anchorX2 - contentBorderRadius, anchorY2];
+      } else if (theta >= Math.PI / 2 && theta < Math.PI) {
+        return [anchorX2 - contentWidthOuter + contentBorderRadius, anchorY2];
+      } else if (theta >= -Math.PI && theta < -Math.PI / 2) {
+        return [anchorX2 - contentWidthOuter + contentBorderRadius, anchorY2 - contentHeightOuter];
       } else {
-        return [preferredAnchorX2 - contentBorderRadius, preferredAnchorY2 - contentHeightOuter];
+        return [anchorX2 - contentBorderRadius, anchorY2 - contentHeightOuter];
       }
     })();
-
     return {
-      minX: rectStart[0],
-      minY: rectStart[1],
-      maxX: rectStart[0] + contentWidthOuter,
-      maxY: rectStart[1] + contentHeightOuter,
+      anchorX1,
+      anchorX2,
+      anchorY1,
+      anchorY2,
+      borderBBox: {
+        minX: rectStart[0],
+        minY: rectStart[1],
+        maxX: rectStart[0] + contentWidthOuter,
+        maxY: rectStart[1] + contentHeightOuter,
+      },
     };
   }, [
-    preferredTheta,
-    preferredAnchorX2,
-    preferredAnchorY2,
+    angle,
+    contentBorderRadius,
     contentWidthOuter,
     contentHeightOuter,
-    contentBorderRadius,
-  ]);
-  const [labelLocation, setLabelLocation] = React.useState(preferredLocation);
-  React.useEffect(() => {
-    const newLocation = labelManager.addLabel(preferredLocation);
-    setLabelLocation(newLocation);
-    return () => {
-      labelManager.removeLabel(newLocation);
-    };
-  }, [labelManager, preferredLocation]);
-
-  const theta = React.useMemo(() => {
-    const width = labelLocation.maxX - labelLocation.minX;
-    const height = labelLocation.maxY - labelLocation.minY;
-    const labelCenterX = labelLocation.minX + width / 2;
-    const labelCenterY = labelLocation.minY + height / 2;
-    return Math.atan2(labelCenterY - sourceY, labelCenterX - sourceX);
-  }, [labelLocation, sourceX, sourceY]);
-  const anchorX1 = React.useMemo(() => sourceX + Math.cos(theta) * sourceRadius, [
+    preferredArrowLength,
+    sourceRadius,
     sourceX,
-    sourceRadius,
-    theta,
-  ]);
-  const anchorY1 = React.useMemo(() => sourceY + Math.sin(theta) * sourceRadius, [
     sourceY,
-    sourceRadius,
-    theta,
   ]);
-  const anchorX2 = React.useMemo(() => {
-    if (theta >= -Math.PI / 2 && theta < Math.PI / 2) {
-      return labelLocation.minX + contentBorderRadius;
+
+  const [labelLocation, setLabelLocation] = React.useState(preferredLocation);
+  React.useLayoutEffect(() => {
+    console.log(preferredLocation.borderBBox);
+    const nonColliding = entityManager.getNonColliding(preferredLocation.borderBBox);
+    if (!nonColliding) return;
+
+    const entity = entityManager.add({ bbox: nonColliding });
+    if (nonColliding !== preferredLocation.borderBBox) {
+      const width = nonColliding.maxX - nonColliding.minX;
+      const height = nonColliding.maxY - nonColliding.minY;
+      const centerX = nonColliding.minX + width / 2;
+      const centerY = nonColliding.minY + height / 2;
+      const theta = Math.atan2(centerY - sourceY, centerX - sourceX);
+      const anchorX1 = sourceX + Math.cos(theta) * sourceRadius;
+      const anchorY1 = sourceY + Math.sin(theta) * sourceRadius;
+      const anchorX2 = (() => {
+        if (theta >= -Math.PI / 2 && theta < Math.PI / 2) {
+          return nonColliding.minX + contentBorderRadius;
+        } else {
+          return nonColliding.maxX - contentBorderRadius;
+        }
+      })();
+      const anchorY2 = (() => {
+        if (theta >= 0 && theta < Math.PI) {
+          return nonColliding.minY;
+        } else {
+          return nonColliding.maxY;
+        }
+      })();
+
+      setLabelLocation({
+        anchorX1,
+        anchorY1,
+        anchorX2,
+        anchorY2,
+        borderBBox: nonColliding,
+      });
     } else {
-      return labelLocation.maxX - contentBorderRadius;
+      setLabelLocation(preferredLocation);
     }
-  }, [labelLocation, theta, contentBorderRadius]);
-  const anchorY2 = React.useMemo(() => {
-    if (theta >= 0 && theta < Math.PI) {
-      return labelLocation.minY;
-    } else {
-      return labelLocation.maxY;
-    }
-  }, [labelLocation, theta]);
+
+    return () => {
+      entityManager.remove(entity);
+    };
+  }, [entityManager, preferredLocation, contentBorderRadius, sourceRadius, sourceX, sourceY]);
 
   return (
     <g>
-      <g id="testtest" {...otherProps}>
-        <line x1={anchorX1} y1={anchorY1} x2={anchorX2} y2={anchorY2} />
+      <g {...otherProps}>
+        <line
+          x1={labelLocation.anchorX1}
+          y1={labelLocation.anchorY1}
+          x2={labelLocation.anchorX2}
+          y2={labelLocation.anchorY2}
+        />
         <rect
-          x={labelLocation.minX}
-          y={labelLocation.minY}
-          width={labelLocation.maxX - labelLocation.minX}
-          height={labelLocation.maxY - labelLocation.minY}
+          x={labelLocation.borderBBox.minX}
+          y={labelLocation.borderBBox.minY}
+          width={labelLocation.borderBBox.maxX - labelLocation.borderBBox.minX}
+          height={labelLocation.borderBBox.maxY - labelLocation.borderBBox.minY}
           rx={contentBorderRadius}
           ry={contentBorderRadius}
           fill={theme.palette.background.paper}
         />
         <g
-          transform={`translate(${labelLocation.minX + contentPadding} ${
-            labelLocation.minY + contentPadding
+          transform={`translate(${labelLocation.borderBBox.minX + contentPadding} ${
+            labelLocation.borderBBox.minY + contentPadding
           })`}
         >
           {children}
@@ -217,19 +199,6 @@ export function NameLabel(props: NameLabelProps): JSX.Element {
   const [contentHeight, setContentHeight] = React.useState(0);
   const [show, setShow] = React.useState(false);
   const textRef = React.useRef<SVGTextElement>(null);
-
-  const updateContentSize = React.useCallback((bbox: DOMRect) => {
-    if (bbox.width !== 0) {
-      setContentWidth(bbox.width);
-      setContentHeight(bbox.height);
-      setShow(true);
-    } else {
-      debug('bbox not available, trying again in next frame');
-      requestAnimationFrame(() => {
-        updateContentSize(bbox);
-      });
-    }
-  }, []);
 
   React.useEffect(() => {
     const updateContentSize = () => {
@@ -285,13 +254,16 @@ export function withAutoScaling<PropsType extends ScalableLabelProps>(
 ) {
   return ({ sourceX, sourceY, sourceRadius, transform, ...otherProps }: PropsType): JSX.Element => {
     const scale = useAutoScale(1, Infinity);
+    // getBBox returns the bbox BEFORE transform. Not pre-scaling the source x, y will cause the
+    // collision detection to think the bbox is different size than what it actually is on screen.
     return (
       <LabelComponent
         {...((otherProps as unknown) as PropsType)}
-        sourceX={0}
-        sourceY={0}
+        sourceX={sourceX / scale}
+        sourceY={sourceY / scale}
         sourceRadius={sourceRadius / scale}
-        transform={clsx(transform, `translate(${sourceX} ${sourceY}) scale(${scale})`)}
+        transform={clsx(transform, `scale(${scale})`)}
+        transform-origin={`${scale / sourceX} ${scale / sourceY}`}
       />
     );
   };

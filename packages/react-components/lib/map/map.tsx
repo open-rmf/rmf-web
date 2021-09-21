@@ -5,7 +5,7 @@ import 'leaflet/dist/leaflet.css';
 import React from 'react';
 import { Map as LMap_, MapProps as LMapProps_, useLeaflet } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
-import { LabelManager, LabelManagerContext } from './label-marker';
+import { EntityManager, EntityManagerContext } from './entity-manager';
 
 const useStyles = makeStyles(() => ({
   map: {
@@ -35,7 +35,7 @@ export function calcMaxBounds(
 
 function LabelManagerProvider({ children }: React.PropsWithChildren<{}>) {
   const leaflet = useLeaflet();
-  const { current: labelManager } = React.useRef(new LabelManager());
+  const { current: entityManager } = React.useRef(new EntityManager());
 
   React.useEffect(() => {
     if (!leaflet.map) return;
@@ -48,8 +48,8 @@ function LabelManagerProvider({ children }: React.PropsWithChildren<{}>) {
     };
   }, [leaflet.map]);
 
-  return labelManager ? (
-    <LabelManagerContext.Provider value={labelManager}>{children}</LabelManagerContext.Provider>
+  return entityManager ? (
+    <EntityManagerContext.Provider value={entityManager}>{children}</EntityManagerContext.Provider>
   ) : null;
 }
 
