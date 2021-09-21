@@ -1,4 +1,4 @@
-import { SubmitTask } from 'api-client';
+import { SubmitTaskDetails } from 'react-components';
 import * as RmfModels from 'rmf-models';
 
 /* istanbul ignore next */
@@ -19,17 +19,15 @@ function checkField(
 
 // TODO: See if we can generate validators from the schema.
 /* istanbul ignore next */
-export function parseTasksFile(
-  contents: string,
-  setParseErrMsg?: React.Dispatch<React.SetStateAction<string[]>>,
-): SubmitTask[] {
+export function parseTasksFile(contents: string): SubmitTaskDetails {
   const tasks = JSON.parse(contents);
   let errMsgs: string[] = [];
+  let res: SubmitTaskDetails = { submitTask: [], errors: {} };
   if (!Array.isArray(tasks)) {
     throw new TypeError('expected an array');
   }
 
-  for (const t of tasks) {
+  tasks.forEach((t, i) => {
     if (typeof t !== 'object') {
       throw new TypeError('expected object');
     }
@@ -56,10 +54,9 @@ export function parseTasksFile(
       default:
         errMsgs.push('Unknown Task Type');
     }
-  }
-  if (errMsgs.length > 0) setParseErrMsg && setParseErrMsg(errMsgs);
-  else {
-    setParseErrMsg && setParseErrMsg([]);
-  }
-  return tasks;
+    res.errors[i] = [...errMsgs];
+    errMsgs = [];
+  });
+  res.submitTask = tasks;
+  return res;
 }

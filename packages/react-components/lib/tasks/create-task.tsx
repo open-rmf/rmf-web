@@ -9,7 +9,6 @@ import {
   makeStyles,
   MenuItem,
   TextField,
-  Typography,
   useTheme,
 } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
@@ -39,6 +38,9 @@ const useStyles = makeStyles((theme) => ({
   },
   selectedTask: {
     background: theme.palette.action.focus,
+  },
+  errorTask: {
+    color: theme.palette.error.main,
   },
 }));
 
@@ -348,6 +350,11 @@ function defaultTask(): SubmitTask {
   };
 }
 
+export interface SubmitTaskDetails {
+  submitTask: SubmitTask[];
+  errors: { [index: string]: string[] };
+}
+
 export interface CreateTaskFormProps
   extends Omit<ConfirmationDialogProps, 'onConfirmClick' | 'toolbar'> {
   /**
@@ -359,9 +366,8 @@ export interface CreateTaskFormProps
   deliveryWaypoints?: string[];
   dispensers?: string[];
   ingestors?: string[];
-  parseErrMsg?: string[];
   submitTasks?(tasks: SubmitTask[]): Promise<void>;
-  tasksFromFile?(): Promise<SubmitTask[]> | SubmitTask[];
+  tasksFromFile?(): Promise<SubmitTaskDetails> | SubmitTaskDetails;
   onSuccess?(tasks: SubmitTask[]): void;
   onFail?(error: Error, tasks: SubmitTask[]): void;
 }
@@ -372,7 +378,6 @@ export function CreateTaskForm({
   deliveryWaypoints = [],
   dispensers = [],
   ingestors = [],
-  parseErrMsg,
   submitTasks,
   tasksFromFile,
   onSuccess,
@@ -382,6 +387,10 @@ export function CreateTaskForm({
   const theme = useTheme();
   const classes = useStyles();
   const [tasks, setTasks] = React.useState<SubmitTask[]>(() => [defaultTask()]);
+  const [taskDetails, setTaskDetails] = React.useState<SubmitTaskDetails>({
+    submitTask: [],
+    errors: {},
+  });
   const [selectedTaskIdx, setSelectedTaskIdx] = React.useState(0);
   const taskTitles = React.useMemo(
     () => tasks && tasks.map((t, i) => `${i + 1}: ${getShortDescription(t)}`),
@@ -475,10 +484,11 @@ export function CreateTaskForm({
     }
     (async () => {
       const newTasks = await tasksFromFile();
-      if (newTasks.length === 0) {
+      if (newTasks.submitTask.length === 0) {
         return;
       }
-      setTasks(newTasks);
+      setTasks(newTasks.submitTask);
+      setTaskDetails(newTasks);
       setSelectedTaskIdx(0);
     })();
   };
@@ -552,7 +562,7 @@ export function CreateTaskForm({
             </Grid>
             {renderTaskDescriptionForm()}
           </Grid>
-          {parseErrMsg && parseErrMsg.length > 0 ? (
+          {taskTitles.length > 1 && Object.keys(taskDetails.errors).length > 0 && (
             <>
               <Divider
                 orientation="vertical"
@@ -560,41 +570,22 @@ export function CreateTaskForm({
                 style={{ marginLeft: theme.spacing(2), marginRight: theme.spacing(2) }}
               />
               <List dense className={classes.taskList} aria-label="Tasks List">
-                <ListItem key={'error'}>
-                  <Typography variant="h6" color="error">
-                    Error
-                  </Typography>
-                </ListItem>
-                {parseErrMsg.map((err, idx) => (
-                  <ListItem key={idx}>
-                    <ListItemText primary={err} style={{ color: theme.palette.error.main }} />
+                {taskTitles.map((title, idx) => (
+                  <ListItem
+                    key={idx}
+                    button
+                    onClick={() => setSelectedTaskIdx(idx)}
+                    className={selectedTaskIdx === idx ? classes.selectedTask : undefined}
+                    role="listitem button"
+                  >
+                    <ListItemText
+                      className={taskDetails.errors[idx].length > 0 ? classes.errorTask : ''}
+                      primary={title}
+                    />
                   </ListItem>
                 ))}
               </List>
             </>
-          ) : (
-            taskTitles.length > 1 && (
-              <>
-                <Divider
-                  orientation="vertical"
-                  flexItem
-                  style={{ marginLeft: theme.spacing(2), marginRight: theme.spacing(2) }}
-                />
-                <List dense className={classes.taskList} aria-label="Tasks List">
-                  {taskTitles.map((title, idx) => (
-                    <ListItem
-                      key={idx}
-                      button
-                      onClick={() => setSelectedTaskIdx(idx)}
-                      className={selectedTaskIdx === idx ? classes.selectedTask : undefined}
-                      role="listitem button"
-                    >
-                      <ListItemText primary={title} />
-                    </ListItem>
-                  ))}
-                </List>
-              </>
-            )
           )}
         </Grid>
       </ConfirmationDialog>
