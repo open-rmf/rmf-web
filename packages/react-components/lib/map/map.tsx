@@ -5,7 +5,7 @@ import 'leaflet/dist/leaflet.css';
 import React from 'react';
 import { Map as LMap_, MapProps as LMapProps_, useLeaflet } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
-import { LabelManager, LabelManagerContext } from './label-manager';
+import { LabelManager, LabelManagerContext } from './label-marker';
 
 const useStyles = makeStyles(() => ({
   map: {
@@ -35,10 +35,18 @@ export function calcMaxBounds(
 
 function LabelManagerProvider({ children }: React.PropsWithChildren<{}>) {
   const leaflet = useLeaflet();
-  const labelManager = React.useMemo<LabelManager | null>(
-    () => (leaflet.map ? new LabelManager(leaflet.map) : null),
-    [leaflet.map],
-  );
+  const { current: labelManager } = React.useRef(new LabelManager());
+
+  React.useEffect(() => {
+    if (!leaflet.map) return;
+    const listener = () => {
+      // TODO: recalculate positions
+    };
+    leaflet.map.on('zoom', listener);
+    return () => {
+      leaflet.map && leaflet.map.off('zoom', listener);
+    };
+  }, [leaflet.map]);
 
   return labelManager ? (
     <LabelManagerContext.Provider value={labelManager}>{children}</LabelManagerContext.Provider>

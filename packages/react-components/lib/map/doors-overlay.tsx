@@ -3,7 +3,7 @@ import * as RmfModels from 'rmf-models';
 import { fromRmfCoords } from '../utils/geometry';
 import { DoorMarker as DoorMarker_, DoorMarkerProps } from './door-marker';
 import { useAutoScale } from './hooks';
-import { ManagedNameLabel } from './label-manager';
+import { ScaledNameLabel } from './label-marker';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 import { getDoorCenter, viewBoxFromLeafletBounds } from './utils';
 
@@ -59,13 +59,11 @@ export const DoorsOverlay = ({
                 aria-label={door.name}
                 transform={`translate(${center[0]} ${center[1]}) scale(${scale})`}
               />
-              <ManagedNameLabel
+              <ScaledNameLabel
                 text={door.name}
-                labelTarget={{
-                  centerX: center[0],
-                  centerY: center[1],
-                  radius: 0,
-                }}
+                sourceX={center[0]}
+                sourceY={center[1]}
+                sourceRadius={0}
               />
             </g>
           );

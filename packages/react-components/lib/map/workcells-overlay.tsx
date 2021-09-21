@@ -1,7 +1,7 @@
 import React from 'react';
 import { fromRmfCoords } from '../utils/geometry';
 import { useAutoScale } from './hooks';
-import { ManagedNameLabel } from './label-manager';
+import { ScaledNameLabel } from './label-marker';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 import { viewBoxFromLeafletBounds } from './utils';
 import { WorkcellMarker as WorkcellMarker_, WorkcellMarkerProps } from './workcell-marker';
@@ -63,13 +63,11 @@ export const WorkcellsOverlay = ({
                 aria-label={workcell.guid}
                 transform={`translate(${x} ${y}) scale(${0.5 * scale})`}
               />
-              <ManagedNameLabel
+              <ScaledNameLabel
                 text={workcell.guid}
-                labelTarget={{
-                  centerX: x,
-                  centerY: y,
-                  radius: 0.5 * scale,
-                }}
+                sourceX={x}
+                sourceY={y}
+                sourceRadius={0.5 * scale}
               />
             </g>
           );

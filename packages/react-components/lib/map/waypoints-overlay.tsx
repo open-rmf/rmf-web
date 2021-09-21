@@ -2,7 +2,7 @@ import React from 'react';
 import { Place } from '../place';
 import { fromRmfCoords } from '../utils/geometry';
 import { useAutoScale } from './hooks';
-import { ManagedNameLabel } from './label-manager';
+import { ScaledNameLabel } from './label-marker';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 import { viewBoxFromLeafletBounds } from './utils';
 import { WaypointMarker as WaypointMarker_ } from './waypoint-marker';
@@ -34,13 +34,11 @@ export const WaypointsOverlay = ({
                 aria-label={waypoint.vertex.name}
                 transform={`translate(${x} ${y}) scale(${size * scale})`}
               />
-              <ManagedNameLabel
+              <ScaledNameLabel
                 text={waypoint.vertex.name}
-                labelTarget={{
-                  centerX: x,
-                  centerY: y,
-                  radius: size * scale,
-                }}
+                sourceX={x}
+                sourceY={y}
+                sourceRadius={size * scale}
               />
             </g>
           );

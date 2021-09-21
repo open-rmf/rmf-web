@@ -2,7 +2,7 @@ import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { fromRmfCoords, fromRmfYaw } from '../utils/geometry';
 import { useAutoScale } from './hooks';
-import { ManagedNameLabel } from './label-manager';
+import { ScaledNameLabel } from './label-marker';
 import { RobotMarker as RobotMarker_, RobotMarkerProps } from './robot-marker';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 import { viewBoxFromLeafletBounds } from './utils';
@@ -82,13 +82,11 @@ export const RobotsOverlay = ({
                 aria-label={robot.name}
                 transform={`translate(${x} ${y}) rotate(${theta}) scale(${footprint * scale})`}
               />
-              <ManagedNameLabel
+              <ScaledNameLabel
                 text={robot.name}
-                labelTarget={{
-                  centerX: x,
-                  centerY: y,
-                  radius: footprint * scale,
-                }}
+                sourceX={x}
+                sourceY={y}
+                sourceRadius={footprint * scale}
               />
             </g>
           );
