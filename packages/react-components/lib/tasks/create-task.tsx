@@ -10,6 +10,7 @@ import {
   MenuItem,
   TextField,
   useTheme,
+  Tooltip,
 } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 import { KeyboardDateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
@@ -350,6 +351,18 @@ function defaultTask(): SubmitTask {
   };
 }
 
+function getToolTipMessage(errMsgs: string[]) {
+  return errMsgs.length === 0 ? (
+    ''
+  ) : (
+    <div>
+      {errMsgs.map((msg) => {
+        return <div>{msg}</div>;
+      })}
+    </div>
+  );
+}
+
 export interface SubmitTaskDetails {
   submitTask: SubmitTask[];
   errors: { [index: string]: string[] };
@@ -578,10 +591,12 @@ export function CreateTaskForm({
                     className={selectedTaskIdx === idx ? classes.selectedTask : undefined}
                     role="listitem button"
                   >
-                    <ListItemText
-                      className={taskDetails.errors[idx].length > 0 ? classes.errorTask : ''}
-                      primary={title}
-                    />
+                    <Tooltip title={getToolTipMessage(taskDetails.errors[idx])}>
+                      <ListItemText
+                        className={taskDetails.errors[idx].length > 0 ? classes.errorTask : ''}
+                        primary={title}
+                      />
+                    </Tooltip>
                   </ListItem>
                 ))}
               </List>
