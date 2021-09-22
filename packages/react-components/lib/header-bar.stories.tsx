@@ -1,5 +1,4 @@
 import { IconButton, Toolbar, Typography, TabProps, styled } from '@material-ui/core';
-import { makeStyles, createStyles } from '@material-ui/styles';
 import Tab from '@material-ui/core/Tab';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import TabContext from '@material-ui/lab/TabContext';
@@ -63,32 +62,35 @@ export const NavBar: Story = () => {
 };
 
 export const FullHeaderBar: Story = () => {
-  const useStyles = makeStyles((theme) =>
-    createStyles({
-      toolbar: {
-        textAlign: 'right',
-        flexGrow: -1,
-      },
-      avatar: {
-        flexGrow: 1,
-        minWidth: theme.spacing(16),
-        overflow: 'auto',
-      },
-      logo: {
-        maxWidth: 120,
-        opacity: 1,
-      },
-    }),
-  );
+  const classes = {
+    toolbar: 'headerbar-story-toolbar',
+    avatar: 'headerbar-story-avatar',
+    logo: 'headerbar-story-logo',
+  };
+  const FullHeaderBarStory = styled('div')(({ theme }) => ({
+    [`& .${classes.toolbar}`]: {
+      textAlign: 'right',
+      flexGrow: -1,
+    },
+    [`& .${classes.avatar}`]: {
+      flexGrow: 1,
+      minWidth: theme.spacing(16),
+      overflow: 'auto',
+    },
+    [`& .${classes.logo}`]: {
+      maxWidth: 120,
+      opacity: 1,
+    },
+  }));
+
   const [value, setValue] = React.useState('building');
-  const classes = useStyles();
 
   const onTabChange = (event: React.ChangeEvent<unknown>, newValue: string) => {
     setValue(newValue);
   };
 
   return (
-    <>
+    <FullHeaderBarStory>
       <TabContext value={value}>
         <HeaderBar>
           <LogoButton src="/assets/roshealth-logo-white.png" />
@@ -120,6 +122,6 @@ export const FullHeaderBar: Story = () => {
           <Typography variant="caption">other tab panel data</Typography>
         </TabPanel>
       </TabContext>
-    </>
+    </FullHeaderBarStory>
   );
 };

@@ -1,8 +1,8 @@
-import { makeStyles } from '@material-ui/styles';
+import { styled } from '@material-ui/core';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { ErrorOverlay } from './error-overlay';
-import { SimpleInfo } from './simple-info';
+import { SimpleInfo, SimpleInfoProps } from './simple-info';
 
 export default {
   title: 'Error Overlay',
@@ -10,9 +10,11 @@ export default {
 } as Meta;
 
 export const ErrorOverlayPanel: Story = (args) => {
-  // override style with userSelect disabled
-  const useStyles = makeStyles(() => ({
-    container: {
+  const classes = {
+    container: 'simple-info-testcomponent',
+  };
+  const SimpleInfo_ = styled((props: SimpleInfoProps) => <SimpleInfo {...props} />)(() => ({
+    [`& .${classes.container}`]: {
       display: 'table',
       borderCollapse: 'collapse',
       width: '100%',
@@ -20,7 +22,6 @@ export const ErrorOverlayPanel: Story = (args) => {
       userSelect: 'none',
     },
   }));
-  const classes = useStyles();
 
   function TestComponent() {
     const data = [
@@ -31,7 +32,7 @@ export const ErrorOverlayPanel: Story = (args) => {
         value: ['one', 'two', 'three'],
       },
     ];
-    return <SimpleInfo infoData={data} overrideStyle={classes} />;
+    return <SimpleInfo_ infoData={data} overrideStyle={classes} />;
   }
 
   return (

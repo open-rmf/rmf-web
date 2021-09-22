@@ -27,7 +27,6 @@
     "@emotion/styled": "^11.3.0",
     "@material-ui/icons": "^5.0.0-beta.5",
     "@material-ui/lab": "^5.0.0-alpha.44",
-    "@material-ui/styles": "^5.0.0-beta.5",
     "@mui/x-data-grid": "^4.0.0",
     "@types/crc": "^3.4.0",
     "@types/leaflet": "^1.5.17",

@@ -1,22 +1,21 @@
-import { Box, Tab, Tabs, Theme } from '@material-ui/core';
-import { withStyles, createStyles } from '@material-ui/styles';
+import { Box, Tab, Tabs, TabsProps, styled } from '@material-ui/core';
 import React from 'react';
 
 interface StyledTabProps {
   label: string;
 }
 
-export const AntTabs = withStyles({
+export const AntTabs = styled((props: TabsProps) => <Tabs disableRipple {...props} />)(() => ({
   root: {
     borderBottom: '1px solid #e8e8e8',
   },
   indicator: {
     backgroundColor: '#1890ff',
   },
-})(Tabs);
+}));
 
-export const AntTab = withStyles((theme: Theme) =>
-  createStyles({
+export const AntTab = styled((props: StyledTabProps) => <Tab disableRipple {...props} />)(
+  ({ theme }) => ({
     root: {
       textTransform: 'none',
       minWidth: 72,
@@ -47,7 +46,7 @@ export const AntTab = withStyles((theme: Theme) =>
     },
     selected: {},
   }),
-)((props: StyledTabProps) => <Tab disableRipple {...props} />);
+);
 
 export interface TabPanelProps {
   children?: React.ReactNode;
