@@ -23,6 +23,7 @@
 
 ## Self-checks
 
+- [ ] I have prototyped this new feature (if necessary) on Figma 
 - [ ] I'm familiar with and follow this [Typescript guideline](https://basarat.gitbook.io/typescript/styleguide)
 - [ ] I added unit-tests for new components
 - [ ] I tried testing edge cases
