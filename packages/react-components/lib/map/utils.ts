@@ -1,7 +1,7 @@
 import type { AffineImage } from 'api-client';
 import L from 'leaflet';
 import * as RmfModels from 'rmf-models';
-import { fromRmfCoords, fromRmfYaw } from '..';
+import { fromRmfCoords, fromRmfYaw } from '../utils';
 
 export function viewBoxFromLeafletBounds(bounds: L.LatLngBoundsExpression): string {
   const lbounds = bounds instanceof L.LatLngBounds ? bounds : new L.LatLngBounds(bounds);

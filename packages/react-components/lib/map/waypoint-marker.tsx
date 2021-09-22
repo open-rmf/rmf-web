@@ -1,7 +1,7 @@
 import { makeStyles } from '@material-ui/core';
 import Debug from 'debug';
 import React from 'react';
-import { uniqueId } from '..';
+import { uniqueId } from '../utils';
 
 const debug = Debug('Map:WaypointMarker');
 

@@ -14,7 +14,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-interface _RobotMarkerProps extends React.PropsWithoutRef<React.SVGProps<SVGGElement>> {
+export interface RobotMarkerProps extends React.PropsWithRef<React.SVGProps<SVGGElement>> {
   color: string;
   inConflict?: boolean;
   iconPath?: string;
@@ -22,7 +22,7 @@ interface _RobotMarkerProps extends React.PropsWithoutRef<React.SVGProps<SVGGEle
 
 export const RobotMarker = React.forwardRef(
   (
-    { color, inConflict, iconPath, ...otherProps }: _RobotMarkerProps,
+    { color, inConflict, iconPath, ...otherProps }: RobotMarkerProps,
     ref: React.Ref<SVGGElement>,
   ) => {
     debug('render');
@@ -48,7 +48,5 @@ export const RobotMarker = React.forwardRef(
     );
   },
 );
-
-export type RobotMarkerProps = React.ComponentPropsWithRef<typeof RobotMarker>;
 
 export default RobotMarker;
