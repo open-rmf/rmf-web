@@ -33,7 +33,7 @@ const classes = {
   enabledToggleButton: 'enable-toggle-button',
 };
 
-const Root = styled('div')(({ theme }) => ({
+const TaskPanelRoot = styled('div')(({ theme }) => ({
   [`& .${classes.tableContainer}`]: {
     display: 'flex',
     flexDirection: 'column',
@@ -155,7 +155,7 @@ export function TaskPanel({
       selectedTask.summary.state === RmfModels.TaskSummary.STATE_QUEUED);
 
   return (
-    <Root {...divProps}>
+    <TaskPanelRoot {...divProps}>
       <Grid container wrap="nowrap" justifyContent="center" style={{ height: 'inherit' }}>
         <Paper className={classes.tableContainer}>
           <Toolbar>
@@ -246,6 +246,6 @@ export function TaskPanel({
       <Snackbar open={openSnackbar} onClose={() => setOpenSnackbar(false)} autoHideDuration={2000}>
         <Alert severity={snackbarSeverity}>{snackbarMessage}</Alert>
       </Snackbar>
-    </Root>
+    </TaskPanelRoot>
   );
 }

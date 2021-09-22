@@ -1,7 +1,7 @@
 import React from 'react';
 import { ReportConfigProps } from 'react-components';
 import clsx from 'clsx';
-import { makeStyles, useTheme, Theme } from '@material-ui/core/styles';
+import { styled, useTheme } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import AppBar from '@material-ui/core/AppBar';
@@ -33,17 +33,31 @@ import UserLogoutReportConfig from './reports/user-logout-report';
 
 const drawerWidth = 240;
 
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
+const classes = {
+  root: 'report-dashboard-root',
+  appBar: 'report-dashboard-appbar',
+  appBarShift: 'report-dashboard-appbar-shift',
+  menuButton: 'report-dashboard-menu-button',
+  hide: 'report-dashboard-hide',
+  drawer: 'report-dashboard-drawer',
+  drawerPaper: 'report-dashboard-drawer-paper',
+  drawerHeader: 'report-dashboard-drawer-header',
+  content: 'report-dashboard-content',
+  contentShift: 'report-dashboard-content-shift',
+  toolbarTitle: 'report-dashboard-toolbar-title',
+};
+
+const ReportDashboardRoot = styled('div')(({ theme }) => ({
+  [`&.${classes.root}`]: {
     display: 'flex',
   },
-  appBar: {
+  [`& .${classes.appBar}`]: {
     transition: theme.transitions.create(['margin', 'width'], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
   },
-  appBarShift: {
+  [`& .${classes.appBarShift}`]: {
     width: `calc(100% - ${drawerWidth}px)`,
     marginLeft: drawerWidth,
     transition: theme.transitions.create(['margin', 'width'], {
@@ -51,20 +65,20 @@ const useStyles = makeStyles((theme: Theme) => ({
       duration: theme.transitions.duration.enteringScreen,
     }),
   },
-  menuButton: {
+  [`& .${classes.menuButton}`]: {
     marginRight: theme.spacing(2),
   },
-  hide: {
+  [`& .${classes.hide}`]: {
     display: 'none',
   },
-  drawer: {
+  [`& .${classes.drawer}`]: {
     width: drawerWidth,
     flexShrink: 0,
   },
-  drawerPaper: {
+  [`& .${classes.drawerPaper}`]: {
     width: drawerWidth,
   },
-  drawerHeader: {
+  [`& .${classes.drawerHeader}`]: {
     display: 'flex',
     alignItems: 'center',
     padding: theme.spacing(0, 1),
@@ -72,7 +86,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     ...theme.mixins.toolbar,
     justifyContent: 'flex-end',
   },
-  content: {
+  [`& .${classes.content}`]: {
     flexGrow: 1,
     padding: theme.spacing(3),
     transition: theme.transitions.create('margin', {
@@ -81,14 +95,14 @@ const useStyles = makeStyles((theme: Theme) => ({
     }),
     marginLeft: -drawerWidth,
   },
-  contentShift: {
+  [`& .${classes.contentShift}`]: {
     transition: theme.transitions.create('margin', {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
     }),
     marginLeft: 0,
   },
-  toolbarTitle: {
+  [`& .${classes.toolbarTitle}`]: {
     flexGrow: 1,
   },
 }));
@@ -99,7 +113,6 @@ export interface ReportDashboardProps {
 
 export const ReportDashboard = (props: ReportDashboardProps) => {
   const { buildMenuReportStructure } = props;
-  const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
   const [currentReport, setCurrentReport] = React.useState(Reports.queryAllLogs);
@@ -193,7 +206,7 @@ export const ReportDashboard = (props: ReportDashboardProps) => {
   }
 
   return (
-    <div className={classes.root}>
+    <ReportDashboardRoot className={classes.root}>
       <CssBaseline />
       <AppBar
         position="fixed"
@@ -226,7 +239,6 @@ export const ReportDashboard = (props: ReportDashboardProps) => {
               </IconButton>
               <Menu
                 anchorEl={anchorEl}
-                getContentAnchorEl={null}
                 anchorOrigin={{
                   vertical: 'bottom',
                   horizontal: 'right',
@@ -281,6 +293,6 @@ export const ReportDashboard = (props: ReportDashboardProps) => {
           onSelectToDate: handleToLogDateChange,
         })}
       </main>
-    </div>
+    </ReportDashboardRoot>
   );
 };

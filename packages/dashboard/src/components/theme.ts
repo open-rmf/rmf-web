@@ -14,7 +14,7 @@ export const theme = createTheme({
   },
 });
 
-// TODO - temp object to specify appBar and appDrawer values until we move to actual material version
+// TODO - temp object to specify appBar and appDrawer values until we move to officials material version
 export const customThemeValues = {
   appBar: {
     logoSize: 180,
