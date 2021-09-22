@@ -57,7 +57,9 @@ export const DoorsOverlay = ({
                   doorStates && doorStates[door.name] && doorStates[door.name].current_mode.value
                 }
                 aria-label={door.name}
-                transform={`translate(${center[0]} ${center[1]}) scale(${scale})`}
+                translate
+                transform={`scale(${scale})`}
+                transform-origin={`${center[0]} ${center[1]}`}
               />
               <ScaledNameLabel
                 text={door.name}

@@ -190,15 +190,15 @@ export interface DoorMarkerProps extends React.PropsWithRef<React.SVGProps<SVGGE
   door: RmfModels.Door;
   doorMode?: number;
   /**
-   * Renders the door at it's rmf coordinates.
-   * Default: false
+   * Whether the component should perform a translate transform to put it inline with the position
+   * in RMF.
    */
-  rmfCoords?: boolean;
+  translate?: boolean;
 }
 
 export const DoorMarker = React.forwardRef(
   (
-    { door, doorMode, rmfCoords = false, ...otherProps }: DoorMarkerProps,
+    { door, doorMode, translate = false, ...otherProps }: DoorMarkerProps,
     ref: React.Ref<SVGGElement>,
   ) => {
     debug(`render ${door.name}`);
@@ -224,12 +224,12 @@ export const DoorMarker = React.forwardRef(
     };
 
     try {
-      const center = fromRmfCoords(getDoorCenter(door));
+      const center = getDoorCenter(door);
       return (
         <g ref={ref} {...otherProps}>
           <g
             className={otherProps.onClick ? classes.marker : undefined}
-            transform={!rmfCoords ? `translate(${-center[0]} ${-center[1]})` : undefined}
+            transform={!translate ? `translate(${-center[0]} ${center[1]})` : undefined}
           >
             {renderDoor()}
           </g>

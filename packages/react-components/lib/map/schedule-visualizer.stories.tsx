@@ -3,6 +3,7 @@ import React from 'react';
 import { LayersControl, Pane } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
 import ColorManager from '../color-manager';
+import { makeLift } from '../lifts/test-utils.spec';
 import { Place } from '../place';
 import { makeRobot } from '../robots/test-utils.spec';
 import { useAsync } from '../use-async';
@@ -46,6 +47,18 @@ const waypoints: Place[] = [
       params: [],
     },
   },
+];
+const lifts: RmfModels.Lift[] = [
+  makeLift({
+    name: 'test_lift',
+    ref_x: 2,
+    ref_y: -4,
+    ref_yaw: Math.PI / 4,
+    width: 2,
+    depth: 1,
+    levels: ['L1', 'L2'],
+    doors: [],
+  }),
 ];
 
 export const ScheduleVisualizer: Story<LMapProps> = () => {
@@ -146,11 +159,7 @@ export const ScheduleVisualizer: Story<LMapProps> = () => {
           </LayersControl.Overlay>
           <LayersControl.Overlay name="Lifts" checked>
             <Pane>
-              <LiftsOverlay
-                bounds={bounds}
-                lifts={officeMap.lifts}
-                currentLevel={currentLevel.name}
-              />
+              <LiftsOverlay bounds={bounds} lifts={lifts} currentLevel={currentLevel.name} />
             </Pane>
           </LayersControl.Overlay>
           <LayersControl.Overlay name="Doors" checked>

@@ -45,7 +45,7 @@ export function getRmfTransform(location: RmfModels.Location): string {
   return `translate(${pos[0]} ${pos[1]}) rotate(${yaw})`;
 }
 
-export function getDoorCenter(door: RmfModels.Door): [number, number] {
+export function getDoorCenter(door: RmfModels.Door): [x: number, y: number] {
   const v1 = [door.v1_x, door.v1_y];
   const v2 = [door.v2_x, door.v2_y];
   switch (door.door_type) {

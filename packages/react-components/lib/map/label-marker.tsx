@@ -245,13 +245,20 @@ export function NameLabel(props: NameLabelProps): JSX.Element {
 
 export type ScalableLabelProps = Pick<
   LabelContainerProps,
-  'sourceX' | 'sourceY' | 'sourceRadius' | 'transform'
+  'sourceX' | 'sourceY' | 'sourceRadius' | 'arrowLength' | 'transform'
 >;
 
 export function withAutoScaling<PropsType extends ScalableLabelProps>(
   LabelComponent: React.ComponentType<PropsType>,
 ) {
-  return ({ sourceX, sourceY, sourceRadius, transform, ...otherProps }: PropsType): JSX.Element => {
+  return ({
+    sourceX,
+    sourceY,
+    sourceRadius,
+    arrowLength,
+    transform,
+    ...otherProps
+  }: PropsType): JSX.Element => {
     const scale = useAutoScale(1.2, Infinity);
     // getBBox returns the bbox BEFORE transform. Not pre-scaling the source x, y will cause the
     // collision detection to think the bbox is different size than what it actually is on screen.
@@ -261,6 +268,7 @@ export function withAutoScaling<PropsType extends ScalableLabelProps>(
         sourceX={sourceX / scale}
         sourceY={sourceY / scale}
         sourceRadius={sourceRadius / scale}
+        arrowLength={arrowLength ? arrowLength / scale : undefined}
         transform={clsx(transform, `scale(${scale})`)}
       />
     );
