@@ -101,7 +101,6 @@ export function LabelContainer(props: LabelContainerProps): JSX.Element {
 
   const [labelLocation, setLabelLocation] = React.useState(preferredLocation);
   React.useLayoutEffect(() => {
-    console.log(preferredLocation.borderBBox);
     const nonColliding = entityManager.getNonColliding(preferredLocation.borderBBox);
     if (!nonColliding) return;
 
@@ -253,7 +252,7 @@ export function withAutoScaling<PropsType extends ScalableLabelProps>(
   LabelComponent: React.ComponentType<PropsType>,
 ) {
   return ({ sourceX, sourceY, sourceRadius, transform, ...otherProps }: PropsType): JSX.Element => {
-    const scale = useAutoScale(1, Infinity);
+    const scale = useAutoScale(1.2, Infinity);
     // getBBox returns the bbox BEFORE transform. Not pre-scaling the source x, y will cause the
     // collision detection to think the bbox is different size than what it actually is on screen.
     return (
@@ -263,7 +262,6 @@ export function withAutoScaling<PropsType extends ScalableLabelProps>(
         sourceY={sourceY / scale}
         sourceRadius={sourceRadius / scale}
         transform={clsx(transform, `scale(${scale})`)}
-        transform-origin={`${scale / sourceX} ${scale / sourceY}`}
       />
     );
   };

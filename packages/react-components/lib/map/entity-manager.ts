@@ -26,55 +26,64 @@ export class EntityManager {
   /**
    * Get a bounding box that does not collides with any other entities.
    * @param bbox Preferred location.
-   * @param searchThreshold
+   * @param searchDepth
    * @returns
    */
-  getNonColliding(bbox: BBox, searchThreshold = 0): BBox | null {
-    if (!this.collides(bbox)) {
-      return bbox;
+  getNonColliding(bbox: BBox, searchDepth = 4): BBox | null {
+    const candidates: BBox[] = [];
+    const stack: { bbox: BBox; depth: number }[] = [{ bbox, depth: 0 }];
+
+    for (let top = stack.pop(); top !== undefined; top = stack.pop()) {
+      const { bbox: search, depth } = top;
+      const collidingEntites = this._entities.search(search);
+      if (collidingEntites.length === 0) {
+        candidates.push(search);
+      } else if (depth < searchDepth) {
+        collidingEntites.forEach((colliding) => {
+          // left
+          stack.push({
+            bbox: {
+              minX: bbox.minX - (bbox.maxX - colliding.bbox.minX + 0.001),
+              minY: bbox.minY,
+              maxX: colliding.bbox.minX - 0.001,
+              maxY: bbox.maxY,
+            },
+            depth: depth + 1,
+          });
+          // right
+          stack.push({
+            bbox: {
+              minX: colliding.bbox.maxX + 0.001,
+              minY: bbox.minY,
+              maxX: bbox.maxX + (colliding.bbox.maxX - bbox.minX + 0.001),
+              maxY: bbox.maxY,
+            },
+            depth: depth + 1,
+          });
+          // top
+          stack.push({
+            bbox: {
+              minX: bbox.minX,
+              minY: bbox.minY - (bbox.maxY - colliding.bbox.minY + 0.001),
+              maxX: bbox.maxX,
+              maxY: colliding.bbox.minY - 0.001,
+            },
+            depth: depth + 1,
+          });
+          // bottom
+          stack.push({
+            bbox: {
+              minX: bbox.minX,
+              minY: colliding.bbox.maxY + 0.001,
+              maxX: bbox.maxX,
+              maxY: bbox.maxY + (colliding.bbox.maxY - bbox.minY + 0.001),
+            },
+            depth: depth + 1,
+          });
+        });
+      }
     }
 
-    const halfThreshold = searchThreshold / 2;
-    const collidingEntites = this._entities.search({
-      minX: bbox.minX - halfThreshold,
-      minY: bbox.minY - halfThreshold,
-      maxX: bbox.maxX + halfThreshold,
-      maxY: bbox.maxY + halfThreshold,
-    });
-
-    let candidates: BBox[] = [];
-    collidingEntites.forEach((colliding) => {
-      // left
-      candidates.push({
-        minX: bbox.minX - (bbox.maxX - colliding.bbox.minX + 0.001),
-        minY: bbox.minY,
-        maxX: colliding.bbox.minX - 0.001,
-        maxY: bbox.maxY,
-      });
-      // right
-      candidates.push({
-        minX: colliding.bbox.maxX + 0.001,
-        minY: bbox.minY,
-        maxX: bbox.maxX + (colliding.bbox.maxX - bbox.minX + 0.001),
-        maxY: bbox.maxY,
-      });
-      // top
-      candidates.push({
-        minX: bbox.minX,
-        minY: bbox.minY - (bbox.maxY - colliding.bbox.minY + 0.001),
-        maxX: bbox.maxX,
-        maxY: colliding.bbox.minY - 0.001,
-      });
-      // bottom
-      candidates.push({
-        minX: bbox.minX,
-        minY: colliding.bbox.maxY + 0.001,
-        maxX: bbox.maxX,
-        maxY: bbox.maxY + (colliding.bbox.maxY - bbox.minY + 0.001),
-      });
-    });
-
-    candidates = candidates.filter((candidate) => !this.collides(candidate));
     if (candidates.length === 0) return null;
 
     const preferredCenterX = bbox.minX + (bbox.maxX - bbox.minX) / 2;
