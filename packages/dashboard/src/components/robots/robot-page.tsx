@@ -8,13 +8,12 @@ import { RmfIngressContext } from '../rmf-app';
 const classes = {
   robotPanel: 'robot-page-container',
 };
-
 const RobotPageRoot = styled((props: RobotPanelProps) => <RobotPanel {...props} />)(
   ({ theme }) => ({
     [`&.${classes.robotPanel}`]: {
-      margin: `${theme.spacing(4)}px auto`,
+      margin: `${theme.spacing(4)} auto`,
       width: '100%',
-      height: '100%',
+      height: '100vh',
       maxWidth: 1600,
     },
   }),

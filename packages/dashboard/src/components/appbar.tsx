@@ -8,11 +8,17 @@ import {
   styled,
   TabProps,
 } from '@material-ui/core';
-import { makeStyles, createStyles } from '@material-ui/styles';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import HelpIcon from '@material-ui/icons/Help';
 import React from 'react';
-import { HeaderBar, LogoButton, NavigationBar, Tooltip, useAsync } from 'react-components';
+import {
+  HeaderBar,
+  HeaderBarProps,
+  LogoButton,
+  NavigationBar,
+  Tooltip,
+  useAsync,
+} from 'react-components';
 import { useHistory, useLocation } from 'react-router-dom';
 import { UserProfileContext } from 'rmf-auth';
 import { AdminRoute, DashboardRoute, RobotsRoute, TasksRoute } from '../util/url';
@@ -24,20 +30,24 @@ import {
 } from './app-contexts';
 import { customThemeValues } from './theme';
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    appBar: {
-      zIndex: theme.zIndex.drawer + 1,
-    },
-    logoBtn: {
-      width: customThemeValues.appBar.logoSize,
-    },
-    toolbar: {
-      textAlign: 'right',
-      flexGrow: -1,
-    },
-  }),
-);
+const classes = {
+  appBar: 'app-bar-root',
+  logoBtn: 'app-bar-logo-button',
+  toolbar: 'app-bar-toolbar',
+};
+
+const AppBarRoot = styled((props: HeaderBarProps) => <HeaderBar {...props} />)(({ theme }) => ({
+  [`&.${classes.appBar}`]: {
+    zIndex: theme.zIndex.drawer + 1,
+  },
+  [`& .${classes.logoBtn}`]: {
+    width: customThemeValues.appBar.logoSize,
+  },
+  [`& .${classes.toolbar}`]: {
+    textAlign: 'right',
+    flexGrow: -1,
+  },
+}));
 
 const StyledTab = styled((props: TabProps) => <Tab {...props} />)(({ theme }) => ({
   color: 'rgba(255, 255, 255, 0.7)',
@@ -74,7 +84,6 @@ export const AppBar = React.memo(
     const tabValue = React.useMemo(() => locationToTabValue(location.pathname), [location]);
     const logoResourcesContext = React.useContext(ResourcesContext)?.logos;
     const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
-    const classes = useStyles();
     const { authenticator } = React.useContext(AppConfigContext);
     const profile = React.useContext(UserProfileContext);
     const { showTooltips } = React.useContext(TooltipsContext);
@@ -97,7 +106,7 @@ export const AppBar = React.memo(
     }, [logoResourcesContext, safeAsync]);
 
     return (
-      <HeaderBar className={classes.appBar}>
+      <AppBarRoot className={classes.appBar}>
         <LogoButton src={brandingIconPath} alt="logo" className={classes.logoBtn} />
         <NavigationBar value={tabValue}>
           <StyledTab
@@ -169,7 +178,7 @@ export const AppBar = React.memo(
             </IconButton>
           </Tooltip>
         </Toolbar>
-      </HeaderBar>
+      </AppBarRoot>
     );
   },
 );

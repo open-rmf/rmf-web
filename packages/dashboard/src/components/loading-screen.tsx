@@ -1,5 +1,5 @@
 import { Backdrop, CircularProgress, Typography, useTheme } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
+import { styled } from '@material-ui/core';
 import { Check as SuccessIcon, ErrorOutline as ErrorIcon } from '@material-ui/icons';
 import React from 'react';
 
@@ -8,8 +8,12 @@ export interface LoadingScreenProps extends React.PropsWithChildren<{}> {
   variant?: 'loading' | 'success' | 'error';
 }
 
-const useStyles = makeStyles((theme) => ({
-  root: {
+const classes = {
+  root: 'loading-screen-root',
+  caption: 'loading-screen-caption',
+};
+const LoadingScreenRoot = styled('div')(({ theme }) => ({
+  [`& .${classes.root}`]: {
     display: 'flex',
     flexFlow: 'column',
     justifyContent: 'center',
@@ -18,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
     height: '100%',
     position: 'absolute',
   },
-  caption: {
+  [`& .${classes.caption}`]: {
     marginTop: theme.spacing(4),
   },
 }));
@@ -26,9 +30,8 @@ const useStyles = makeStyles((theme) => ({
 export default function LoadingScreen(props: LoadingScreenProps): JSX.Element {
   const { caption, children } = props;
   const theme = useTheme();
-  const classes = useStyles();
   return (
-    <>
+    <LoadingScreenRoot>
       <Backdrop className={classes.root} open={!!caption}>
         {(props.variant === undefined || props.variant === 'loading') && (
           <CircularProgress size="8rem" />
@@ -46,6 +49,6 @@ export default function LoadingScreen(props: LoadingScreenProps): JSX.Element {
         </Typography>
       </Backdrop>
       {children}
-    </>
+    </LoadingScreenRoot>
   );
 }

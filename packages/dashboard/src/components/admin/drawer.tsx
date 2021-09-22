@@ -1,5 +1,13 @@
-import { Drawer, List, ListItem, ListItemIcon, ListItemText, Toolbar } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
+import {
+  Drawer,
+  DrawerProps,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Toolbar,
+  styled,
+} from '@material-ui/core';
 import { SvgIconComponent } from '@material-ui/icons';
 import AccountIcon from '@material-ui/icons/AccountCircle';
 import SecurityIcon from '@material-ui/icons/Security';
@@ -14,25 +22,30 @@ const drawerValuesRoutesMap: Record<AdminDrawerValues, RouteProps> = {
   Roles: { path: '/roles', exact: true },
 };
 
-const useStyles = makeStyles((theme) => ({
-  drawerPaper: {
+const classes = {
+  drawerPaper: 'drawer-paper',
+  drawerContainer: 'drawer-container',
+  itemIcon: 'drawer-itemicon',
+  activeItem: 'drawer-active-item',
+};
+const DrawerRoot = styled((props: DrawerProps) => <Drawer {...props} />)(({ theme }) => ({
+  [`& .${classes.drawerPaper}`]: {
     backgroundColor: theme.palette.primary.dark,
     color: theme.palette.getContrastText(theme.palette.primary.dark),
     minWidth: customThemeValues.appDrawer.width,
   },
-  drawerContainer: {
+  [`& .${classes.drawerContainer}`]: {
     overflow: 'auto',
   },
-  itemIcon: {
+  [`& .${classes.itemIcon}`]: {
     color: theme.palette.getContrastText(theme.palette.primary.dark),
   },
-  activeItem: {
+  [`& .${classes.activeItem}`]: {
     backgroundColor: `${theme.palette.primary.light} !important`,
   },
 }));
 
 export function AdminDrawer(): JSX.Element {
-  const classes = useStyles();
   const location = useLocation();
   const history = useHistory();
   const match = useRouteMatch();
@@ -58,11 +71,11 @@ export function AdminDrawer(): JSX.Element {
         </ListItem>
       );
     },
-    [activeItem, classes.activeItem, classes.itemIcon, history],
+    [activeItem, history],
   );
 
   return (
-    <Drawer variant="permanent" classes={{ paper: classes.drawerPaper }}>
+    <DrawerRoot variant="permanent" classes={{ paper: classes.drawerPaper }}>
       <Toolbar />
       <div className={classes.drawerContainer}>
         <List>
@@ -70,6 +83,6 @@ export function AdminDrawer(): JSX.Element {
           <DrawerItem text="Roles" route={`${match.path}/roles`} Icon={SecurityIcon} />
         </List>
       </div>
-    </Drawer>
+    </DrawerRoot>
   );
 }
