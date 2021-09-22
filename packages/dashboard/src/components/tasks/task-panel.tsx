@@ -27,10 +27,10 @@ import { Enforcer } from '../permissions';
 import { parseTasksFile } from './utils';
 
 const classes = {
-  tableContainer: 'table-container',
-  tableTitle: 'table-title',
-  detailPanelContainer: 'detail-panel-container',
-  enabledToggleButton: 'enable-toggle-button',
+  tableContainer: 'task-panel-table-container',
+  tableTitle: 'task-panel-table-title',
+  detailPanelContainer: 'task-panel-detail-panel-container',
+  enabledToggleButton: 'task-panel-enable-toggle-button',
 };
 
 const TaskPanelRoot = styled('div')(({ theme }) => ({

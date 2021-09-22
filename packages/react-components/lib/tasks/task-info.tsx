@@ -1,5 +1,4 @@
 import { Divider, Typography, useTheme } from '@material-ui/core';
-// import { makeStyles } from '@material-ui/styles';
 import { styled } from '@material-ui/core';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
@@ -8,7 +7,7 @@ import { taskStateToStr, taskTypeToStr } from './utils';
 import { TaskTimeline } from './task-timeline';
 
 const classes = {
-  infoValue: 'info-value',
+  infoValue: 'task-info-info-value',
 };
 const TaskInfoRoot = styled('div')(() => ({
   [`& .${classes.infoValue}`]: {

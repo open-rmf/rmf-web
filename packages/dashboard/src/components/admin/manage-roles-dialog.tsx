@@ -20,10 +20,10 @@ import { Loading, TransferList, useAsync } from 'react-components';
 import { AppControllerContext } from '../app-contexts';
 
 const classes = {
-  action: 'action',
-  list: 'list',
-  dialogContent: 'dialog-content',
-  dialogButton: 'dialog-button',
+  action: 'manage-roles-dialog-action',
+  list: 'manage-roles-dialog-list',
+  dialogContent: 'manage-roles-dialog-content',
+  dialogButton: 'manage-roles-dialog-button',
 };
 const ManageRolesDialogRoot = styled((props: CardProps) => <Card {...props} />)(({ theme }) => ({
   [`& .${classes.action}`]: {

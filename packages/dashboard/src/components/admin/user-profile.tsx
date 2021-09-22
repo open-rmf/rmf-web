@@ -17,7 +17,7 @@ import { useAsync } from 'react-components';
 import { AppControllerContext } from '../app-contexts';
 
 const classes = {
-  avatar: 'action',
+  avatar: 'user-profile-action',
 };
 const UserProfileRoot = styled((props: CardProps) => <Card {...props} />)(({ theme }) => ({
   [`& .${classes.avatar}`]: {
