@@ -34,15 +34,15 @@ export interface SimpleInfoData<T extends DataValueType = DataValueType> {
 
 const classes = {
   container: 'simpleinfo-container',
-  tableRow: 'table-row',
-  displayName: 'display-name',
-  value: 'value',
-  arrayListItem: 'array-list-item',
-  arrayItemValue: 'array-item-value',
-  disabled: 'disabled',
+  tableRow: 'simpleinfo-table-row',
+  displayName: 'simpleinfo-display-name',
+  value: 'simpleinfo-value',
+  arrayListItem: 'simpleinfo-array-list-item',
+  arrayItemValue: 'simpleinfo-array-item-value',
+  disabled: 'simpleinfo-disabled',
 };
 
-const Root = styled('div')(({ theme }) => ({
+const SimpleInfoRoot = styled('div')(({ theme }) => ({
   [`& .${classes.container}`]: {
     display: 'table',
     borderCollapse: 'collapse',
@@ -173,7 +173,7 @@ export const SimpleInfo = (props: SimpleInfoProps): JSX.Element => {
   };
 
   return (
-    <Root {...otherProps}>
+    <SimpleInfoRoot {...otherProps}>
       <div
         className={overrideStyle?.container ? overrideStyle?.container : classes.container}
         role="table"
@@ -190,7 +190,7 @@ export const SimpleInfo = (props: SimpleInfoProps): JSX.Element => {
           </React.Fragment>
         ))}
       </div>
-    </Root>
+    </SimpleInfoRoot>
   );
 };
 

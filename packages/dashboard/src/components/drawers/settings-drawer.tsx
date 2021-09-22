@@ -18,12 +18,12 @@ export interface SettingsDrawerProps extends DrawerProps {
 }
 
 const classes = {
-  drawer: 'settings-drawer',
-  legendLabel: 'legend-label',
-  trajGroup: 'traj-group',
-  flexBasis: 'flex-basis',
-  heading: 'heading',
-  button: 'button',
+  drawer: 'settings-drawer-paper',
+  legendLabel: 'settings-drawer-legend-label',
+  trajGroup: 'settings-drawer-traj-group',
+  flexBasis: 'settings-drawer-flex-basis',
+  heading: 'settings-drawer-heading',
+  button: 'settings-drawer-button',
 };
 const SettingsDrawerRoot = styled((props: DrawerProps) => <Drawer {...props} />)(({ theme }) => ({
   [`& .${classes.drawer}`]: {

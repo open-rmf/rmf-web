@@ -14,12 +14,12 @@ import * as RmfModels from 'rmf-models';
 
 const classes = {
   taskPhasesContainer: 'task-phase-container',
-  taskPhase: 'task-phase',
-  pendingPhase: 'pending-phase',
-  completedPhase: 'completed-phase',
-  failedPhase: 'failed-phase',
-  phaseSeparator: 'phase-separator',
-  phaseStatus: 'phase-status',
+  taskPhase: 'task-phase-phase-component',
+  pendingPhase: 'task-phase-pending-phase',
+  completedPhase: 'task-phase-completed-phase',
+  failedPhase: 'task-phase-failed-phase',
+  phaseSeparator: 'task-phase-phase-separator',
+  phaseStatus: 'task-phase-phase-status',
 };
 const PhasesRoot = styled((props: BoxProps) => <Box {...props} />)(({ theme }) => ({
   [`& .${classes.taskPhasesContainer}`]: {

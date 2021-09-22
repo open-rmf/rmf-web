@@ -20,11 +20,11 @@ export interface HotKeysDialogProps {
 }
 
 const classes = {
-  closeButton: 'close-button',
-  dialogContent: 'dialog-content',
-  dialogActions: 'dialog-actions',
-  detailLine: 'detail-line',
-  detail: 'detail',
+  closeButton: 'hotkey-dialog-close-button',
+  dialogContent: 'hotkey-dialog-content',
+  dialogActions: 'hotkey-dialog-actions',
+  detailLine: 'hotkey-dialog-detail-line',
+  detail: 'hotkey-dialog-detail',
 };
 const HotKeysDialogRoot = styled((props: DialogProps) => <Dialog {...props} />)(({ theme }) => ({
   [`& .${classes.closeButton}`]: {

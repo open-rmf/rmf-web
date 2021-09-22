@@ -30,18 +30,18 @@ export interface DoorInfoProps {
 
 const classes = {
   container: 'door-panel-container',
-  buttonBar: 'button-bar',
+  buttonBar: 'door-panel-button-bar',
   grid: 'door-panel-grid',
-  doorLabelOpen: 'door-label-open-panel',
-  doorLabelClosed: 'door-label-closed-panel',
-  doorLabelMoving: 'door-label-moving-panel',
-  cellPaper: 'door-panel-cell-paper',
+  doorLabelOpen: 'door-panel-door-label-open-panel',
+  doorLabelClosed: 'door-panel-door-label-closed-panel',
+  doorLabelMoving: 'door-panel-door-label-moving-panel',
+  cellPaper: 'door-panel-door-panel-cell-paper',
   itemIcon: 'door-panel-item-icon',
   buttonGroup: 'door-panel-button-group',
   panelHeader: 'door-panel-panel-header',
 };
 const DoorPanelRoot = styled((props: CardProps) => <Card {...props} />)(({ theme }) => ({
-  [`& .${classes.container}`]: {
+  [`&.${classes.container}`]: {
     margin: theme.spacing(1),
   },
   [`& .${classes.buttonBar}`]: {

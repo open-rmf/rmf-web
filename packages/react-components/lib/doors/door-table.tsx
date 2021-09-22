@@ -26,9 +26,9 @@ export interface DoorRowProps {
 }
 
 const classes = {
-  doorLabelOpen: 'door-label-open-table',
-  doorLabelClosed: 'door-label-closed-table',
-  doorLabelMoving: 'door-label-moving-table',
+  doorLabelOpen: 'door-table-label-open',
+  doorLabelClosed: 'door-table-label-closed',
+  doorLabelMoving: 'door-table-label-moving',
 };
 const DoorTableRoot = styled((props: TableProps) => <Table {...props} />)(({ theme }) => ({
   [`& .${classes.doorLabelOpen}`]: {

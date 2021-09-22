@@ -14,8 +14,8 @@ import React from 'react';
 import { Loading } from './loading';
 
 const dialogClasses = {
-  title: 'info-value',
-  actionBtn: 'action-button',
+  title: 'confirmation-dialogue-info-value',
+  actionBtn: 'confirmation-dialogue-action-button',
 };
 const ConfirmationDialogRoot = styled((props: DialogProps) => <Dialog {...props} />)(() => ({
   [`& .${dialogClasses.title}`]: {

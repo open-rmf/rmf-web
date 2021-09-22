@@ -31,9 +31,9 @@ import { PositiveIntField } from '../form-inputs';
 type TaskDescription = CleanTaskDescription | LoopTaskDescription | DeliveryTaskDescription;
 
 const classes = {
-  selectFileBtn: 'selected-file-btn',
-  taskList: 'task-list',
-  selectedTask: 'selected-task',
+  selectFileBtn: 'create-task-selected-file-btn',
+  taskList: 'create-task-task-list',
+  selectedTask: 'create-task-selected-task',
 };
 const CreateTaskRoot = styled((props: LocalizationProviderProps) => (
   <LocalizationProvider {...props} />

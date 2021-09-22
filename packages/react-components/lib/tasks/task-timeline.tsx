@@ -21,10 +21,10 @@ interface TimeLinePropsWithRef extends TimelineProps {
 
 const classes = {
   paper: 'timeline-paper',
-  secondaryTail: 'secondary-tail',
-  pendingPhase: 'pending-phase',
-  completedPhase: 'completed-phase',
-  failedPhase: 'failed-phase',
+  secondaryTail: 'timeline-secondary-tail',
+  pendingPhase: 'timeline-pending-phase',
+  completedPhase: 'timeline-completed-phase',
+  failedPhase: 'timeline-failed-phase',
   timelineRoot: 'timeline-root',
 };
 const TimeLineRoot = styled((props: TimeLinePropsWithRef) => <Timeline {...props} />)(
@@ -48,7 +48,7 @@ const TimeLineRoot = styled((props: TimeLinePropsWithRef) => <Timeline {...props
     [`& .${classes.failedPhase}`]: {
       background: theme.palette.error.light,
     },
-    [`& .${classes.timelineRoot}`]: {
+    [`&.${classes.timelineRoot}`]: {
       padding: '6px 0px',
     },
   }),
@@ -59,7 +59,6 @@ export interface TaskTimelineProps {
 }
 
 export function TaskTimeline({ taskSummary }: TaskTimelineProps): JSX.Element {
-  // const classes = useStyles();
   const timelinePhases = taskSummary.status.split('\n\n');
   const currentDotIdx = timelinePhases.findIndex((msg) => msg.startsWith('*'));
   const timelineInfo = taskSummary.status.split('\n\n');

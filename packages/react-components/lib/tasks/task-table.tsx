@@ -15,21 +15,21 @@ import { rosTimeToJs } from '../utils';
 import { taskStateToStr } from './utils';
 
 const classes = {
-  table: 'table-root',
-  taskRowHover: 'taskrow-hover',
-  infoRow: 'info-row',
-  phasesCell: 'phase-cell',
-  phasesRow: 'phase-row',
-  taskActiveCell: 'task-active-cell',
-  taskCancelledCell: 'task-cancelled-cell',
-  taskCompletedCell: 'task-completed-cell',
-  taskFailedCell: 'task-failed-cell',
-  taskPendingCell: 'task-pending-cell',
-  taskQueuedCell: 'task-queued-cell',
-  taskUnknownCell: 'task-unknown-cell',
+  table: 'task-table-table-root',
+  taskRowHover: 'task-table-taskrow-hover',
+  infoRow: 'task-table-info-row',
+  phasesCell: 'task-table-phase-cell',
+  phasesRow: 'task-table-phase-row',
+  taskActiveCell: 'task-table-active-cell',
+  taskCancelledCell: 'task-table-cancelled-cell',
+  taskCompletedCell: 'task-table-completed-cell',
+  taskFailedCell: 'task-table-failed-cell',
+  taskPendingCell: 'task-table-pending-cell',
+  taskQueuedCell: 'task-table-queued-cell',
+  taskUnknownCell: 'task-table-unknown-cell',
 };
 const TableRoot = styled((props: TableProps) => <Table {...props} />)(({ theme }) => ({
-  [`& .${classes.table}`]: {
+  [`&.${classes.table}`]: {
     minWidth: 650,
   },
   [`& .${classes.taskRowHover}`]: {

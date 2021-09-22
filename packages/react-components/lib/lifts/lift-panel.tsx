@@ -50,7 +50,7 @@ export interface LiftCellProps {
 
 const classes = {
   container: 'lift-panel-container',
-  buttonBar: 'button-bar',
+  buttonBar: 'lift-panel-button-bar',
   grid: 'lift-panel-grid',
   cellPaper: 'lift-panel-cell-paper',
   itemIcon: 'lift-panel-item-icon',
@@ -63,7 +63,7 @@ const classes = {
   panelHeader: 'lift-panel-panel-header',
 };
 const LiftPanelRoot = styled((props: CardProps) => <Card {...props} />)(({ theme }) => ({
-  [`& .${classes.container}`]: {
+  [`&.${classes.container}`]: {
     margin: theme.spacing(1),
   },
   [`& .${classes.buttonBar}`]: {

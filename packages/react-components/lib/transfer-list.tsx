@@ -13,13 +13,21 @@ import React from 'react';
 
 const classes = {
   container: 'transfer-list-container',
-  cardHeader: 'card-header',
-  list: 'list',
-  button: 'button',
-  transferControls: 'transfer-controls',
+  cardHeader: 'transfer-list-card-header',
+  list: 'transfer-list-list',
+  button: 'transfer-list-button',
+  transferControls: 'transfer-list-controls',
+  cardContainer: 'transfer-list-card-container',
 };
 const TransferListRoot = styled((props: GridProps) => <Grid {...props} />)(({ theme }) => ({
-  [`& .${classes.container}`]: {
+  [`&.${classes.container}`]: {
+    height: '100%',
+    '& > *': {
+      height: '100%',
+      flex: '1 1 0',
+    },
+  },
+  [`& .${classes.cardContainer}`]: {
     height: '100%',
     '& > *': {
       height: '100%',
@@ -52,7 +60,6 @@ interface CustomListProps {
 }
 
 function CustomList({ title, items, checked, setChecked }: CustomListProps) {
-  // const classes = useStyles();
   const numberOfChecked = checked.size;
 
   const handleToggleAllClick = React.useCallback(() => {
@@ -64,7 +71,7 @@ function CustomList({ title, items, checked, setChecked }: CustomListProps) {
   }, [items, numberOfChecked, setChecked]);
 
   return (
-    <Card variant="outlined" className={classes.container}>
+    <Card variant="outlined" className={classes.cardContainer}>
       <Grid container direction="column" wrap="nowrap">
         <CardHeader
           className={classes.cardHeader}

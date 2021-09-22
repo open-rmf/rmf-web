@@ -27,7 +27,7 @@ const classes = {
   subPanelHeader: 'workcell-sub-panel-header',
 };
 const WorkCellPanelRoot = styled((props: CardProps) => <Card {...props} />)(({ theme }) => ({
-  [`& .${classes.container}`]: {
+  [`&.${classes.container}`]: {
     margin: theme.spacing(1),
   },
   [`& .${classes.buttonBar}`]: {

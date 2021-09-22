@@ -55,8 +55,6 @@ export interface LiftRowProps {
 }
 
 const LiftRow = React.memo(({ lift, liftState, onRequestSubmit }: LiftRowProps) => {
-  // const classes = useStyles();
-
   const [showForms, setShowForms] = React.useState(false);
 
   const doorModeLabelClasses = React.useCallback(
