@@ -105,6 +105,7 @@ export const LiftRequestFormDialog = ({
     event.preventDefault();
     if (isFormValid()) {
       onRequestSubmit && onRequestSubmit(event, lift, doorState, requestType, destination);
+      onClose();
       cleanUpForm();
     }
   };
@@ -116,6 +117,7 @@ export const LiftRequestFormDialog = ({
       fullWidth={true}
       maxWidth={'md'}
       onSubmit={handleLiftRequest}
+      showDialogActions={false}
     >
       <IconButton aria-label="close" className={classes.closeButton} onClick={() => onClose()}>
         <CloseIcon />

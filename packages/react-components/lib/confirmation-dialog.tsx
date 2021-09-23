@@ -30,6 +30,7 @@ export interface ConfirmationDialogProps extends DialogProps {
   submitting?: boolean;
   classes?: DialogActionsProps['classes'] & { button: string };
   toolbar?: React.ReactNode;
+  showDialogActions?: boolean;
   onSubmit?: React.FormEventHandler;
 }
 
@@ -38,6 +39,7 @@ export function ConfirmationDialog({
   confirmText = 'OK',
   cancelText = 'Cancel',
   submitting = false,
+  showDialogActions,
   classes,
   onSubmit,
   toolbar,
@@ -64,28 +66,30 @@ export function ConfirmationDialog({
           </Grid>
         </DialogTitle>
         <DialogContent>{children}</DialogContent>
-        <DialogActions>
-          <Button
-            variant="outlined"
-            color="secondary"
-            onClick={(ev) => onClose && onClose(ev, 'escapeKeyDown')}
-            disabled={submitting}
-            className={clsx(myClasses.actionBtn, classes?.button)}
-          >
-            {cancelText}
-          </Button>
-          <Button
-            variant="contained"
-            type="submit"
-            color="primary"
-            disabled={submitting}
-            className={clsx(myClasses.actionBtn, classes?.button)}
-          >
-            <Loading hideChildren loading={submitting} size="1.5em" color="inherit">
-              {confirmText}
-            </Loading>
-          </Button>
-        </DialogActions>
+        {showDialogActions || showDialogActions === undefined ? (
+          <DialogActions>
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={(ev) => onClose && onClose(ev, 'escapeKeyDown')}
+              disabled={submitting}
+              className={clsx(myClasses.actionBtn, classes?.button)}
+            >
+              {cancelText}
+            </Button>
+            <Button
+              variant="contained"
+              type="submit"
+              color="primary"
+              disabled={submitting}
+              className={clsx(myClasses.actionBtn, classes?.button)}
+            >
+              <Loading hideChildren loading={submitting} size="1.5em" color="inherit">
+                {confirmText}
+              </Loading>
+            </Button>
+          </DialogActions>
+        ) : null}
       </form>
     </Dialog>
   );
