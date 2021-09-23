@@ -76,11 +76,15 @@ export const RobotsOverlay = ({
             <g key={`${robot.fleet}/${robot.name}`}>
               <BoundedMarker
                 robotData={robot}
+                cx={x}
+                cy={y}
+                r={footprint}
                 color={robot.color}
                 iconPath={robot.iconPath}
                 onClick={onRobotClick}
                 aria-label={robot.name}
-                transform={`translate(${x} ${y}) rotate(${theta}) scale(${footprint * scale})`}
+                transform={`rotate(${theta}) scale(${scale})`}
+                transform-origin={`${x} ${y}`}
               />
               <ScaledNameLabel
                 text={robot.name}

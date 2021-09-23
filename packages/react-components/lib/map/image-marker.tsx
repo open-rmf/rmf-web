@@ -1,6 +1,7 @@
 import React from 'react';
 import { ColorContext } from '../color-manager';
 import { uniqueId } from '../utils';
+import type { RobotMarkerProps } from './robot-marker';
 
 /**
  *
@@ -19,18 +20,23 @@ function makeGradientShadow(
   );
 }
 
-export interface ImageMarkerProps {
+export interface ImageMarkerProps extends Omit<RobotMarkerProps, 'color'> {
   iconPath: string;
-  inConflict?: boolean;
   onError?: React.EventHandler<React.SyntheticEvent<SVGImageElement, Event>>;
 }
 
+// TODO: Support rectangle markers?
+/**
+ * Image should be 1x1 aspect ratio.
+ */
 export const ImageMarker = ({
+  cx,
+  cy,
+  r,
   iconPath,
   inConflict = false,
   onError,
 }: ImageMarkerProps): JSX.Element | null => {
-  const [imgIconWidth, imgIconHeight] = React.useMemo(() => [2, 2], []);
   const colorManager = React.useContext(ColorContext);
 
   const componentId = React.useMemo(uniqueId, []);
@@ -50,15 +56,8 @@ export const ImageMarker = ({
         <Shadow id={shadowId} />
         <ShadowConflict id={conflictShadowId} />
       </defs>
-      <circle r={1.3} fill={inConflict ? `url(#${conflictShadowId})` : `url(#${shadowId})`} />
-      <image
-        href={iconPath}
-        width={imgIconWidth}
-        height={imgIconHeight}
-        x={-1}
-        y={-1}
-        onError={onError}
-      />
+      <circle r={r * 1.3} fill={inConflict ? `url(#${conflictShadowId})` : `url(#${shadowId})`} />
+      <image href={iconPath} width={r * 2} height={r * 2} x={cx - r} y={cy - r} onError={onError} />
     </g>
   ) : null;
 };

@@ -8,22 +8,12 @@ export default {
   parameters: { actions: { argTypesRegex: '^on.*' } },
 } as Meta;
 
-export const Basic: Story = (args) => {
+export const Default: Story = (args) => {
   return (
     <svg viewBox="-2 -2 4 4" width={400} height={400}>
-      <WaypointMarker waypoint={{ name: 'test', params: [], x: 0, y: 0 }} {...args} />
+      <WaypointMarker cx={0} cy={0} size={1} {...args} />
     </svg>
   );
 };
 
-export const NoTranslate: Story = (args) => {
-  return (
-    <svg viewBox="-2 -2 4 4" width={400} height={400}>
-      <WaypointMarker
-        waypoint={{ name: 'test', params: [], x: 10, y: 10 }}
-        translate={false}
-        {...args}
-      />
-    </svg>
-  );
-};
+Default.storyName = 'Waypoint Marker';

@@ -20,7 +20,7 @@ export const WaypointsOverlay = ({
 }: WaypointsOverlayProps): JSX.Element => {
   const viewBox = viewBoxFromLeafletBounds(bounds);
   // Set the size of the waypoint. At least for now we don't want for this to change. We left this here in case we want for this to change in the future.
-  const size = 0.1;
+  const size = 0.2;
   const scale = useAutoScale(60);
 
   return (
@@ -31,14 +31,18 @@ export const WaypointsOverlay = ({
           return (
             <g key={idx}>
               <WaypointMarker
+                cx={x}
+                cy={y}
+                size={size}
                 aria-label={waypoint.vertex.name}
-                transform={`translate(${x} ${y}) scale(${size * scale})`}
+                transform={`scale(${scale})`}
+                transform-origin={`${x} ${y}`}
               />
               <ScaledNameLabel
                 text={waypoint.vertex.name}
                 sourceX={x}
                 sourceY={y}
-                sourceRadius={size * scale}
+                sourceRadius={size / 2}
               />
             </g>
           );

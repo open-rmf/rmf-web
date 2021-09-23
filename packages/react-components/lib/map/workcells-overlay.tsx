@@ -57,11 +57,15 @@ export const WorkcellsOverlay = ({
           return (
             <g key={workcell.guid}>
               <BoundedMarker
+                cx={x}
+                cy={y}
+                size={1}
                 guid={workcell.guid}
                 iconPath={workcell.iconPath}
                 onClick={onWorkcellClick}
                 aria-label={workcell.guid}
-                transform={`translate(${x} ${y}) scale(${0.5 * scale})`}
+                transform={`scale(${scale})`}
+                transform-origin={`${x} ${y}`}
               />
               <ScaledNameLabel
                 text={workcell.guid}

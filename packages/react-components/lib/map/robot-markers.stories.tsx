@@ -12,10 +12,9 @@ export default {
 function makeRobotMarkerProps(props?: Partial<Omit<RobotMarkerProps, 'robot'>>): RobotMarkerProps {
   props = props || {};
   return {
-    x: 0,
-    y: 0,
-    theta: 0,
-    radius: 1,
+    cx: 0,
+    cy: 0,
+    r: 1,
     color: 'blue',
     inConflict: false,
     ...props,

@@ -2,6 +2,7 @@ import { useTheme } from '@material-ui/core';
 import React from 'react';
 import { ColorContext } from '../color-manager';
 import { uniqueId } from '../utils';
+import type { RobotMarkerProps } from './robot-marker';
 
 /**
  *
@@ -23,12 +24,13 @@ function makeGradientShadow(
   );
 }
 
-export interface DefaultMarkerProps {
-  color: string;
-  inConflict?: boolean;
-}
-
-export const DefaultMarker = ({ color, inConflict = false }: DefaultMarkerProps): JSX.Element => {
+export const DefaultMarker = ({
+  cx,
+  cy,
+  r,
+  color,
+  inConflict = false,
+}: RobotMarkerProps): JSX.Element => {
   const colorManager = React.useContext(ColorContext);
   const theme = useTheme();
 
@@ -49,9 +51,21 @@ export const DefaultMarker = ({ color, inConflict = false }: DefaultMarkerProps)
         <Shadow id={shadowId} />
         <ShadowConflict id={conflictShadowId} />
       </defs>
-      <circle r={1.3} fill={inConflict ? `url(#${conflictShadowId})` : `url(#${shadowId})`} />
-      <circle r={1} cx={0} cy={0} fill={color} />
-      <line x2={1} stroke={theme.palette.common.black} strokeWidth="0.05" />
+      <circle
+        r={r * 1.3}
+        cx={cx}
+        cy={cy}
+        fill={inConflict ? `url(#${conflictShadowId})` : `url(#${shadowId})`}
+      />
+      <circle r={r} cx={cx} cy={cy} fill={color} />
+      <line
+        x1={cx}
+        y1={cy}
+        x2={cx + r}
+        y2={cy}
+        stroke={theme.palette.common.black}
+        strokeWidth="0.05"
+      />
     </g>
   );
 };

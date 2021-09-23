@@ -21,24 +21,42 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export type WaypointMarkerProps = React.SVGProps<SVGGElement>;
+export interface WaypointMarkerProps extends React.PropsWithRef<React.SVGProps<SVGGElement>> {
+  cx: number;
+  cy: number;
+  size: number;
+}
 
 export const WaypointMarker = React.forwardRef(
-  ({ ...otherProps }: WaypointMarkerProps, ref: React.Ref<SVGGElement>) => {
+  ({ cx, cy, size, ...otherProps }: WaypointMarkerProps, ref: React.Ref<SVGGElement>) => {
     debug('render');
     const classes = useStyles();
     const waypointId = React.useMemo(uniqueId, []);
     return (
       <g ref={ref} {...otherProps}>
-        <filter id={`waypoint-${waypointId}-shadow`} x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx={-0.1} dy={-0.1} stdDeviation={0.15} floodColor="black" />
-        </filter>
+        <defs>
+          <filter
+            id={`waypoint-${waypointId}-shadow`}
+            x="-20%"
+            y="-20%"
+            width="140%"
+            height="140%"
+            filterUnits="userSpaceOnUse"
+          >
+            <feDropShadow
+              dx={-0.05 * size}
+              dy={-0.05 * size}
+              stdDeviation={0.15 * size}
+              floodColor="black"
+            />
+          </filter>
+        </defs>
         <rect
           className={classes.marker}
-          x={-1}
-          y={-1}
-          width={2}
-          height={2}
+          x={cx - size / 2}
+          y={cy - size / 2}
+          width={size}
+          height={size}
           fill={'#FFBF00'}
           filter={`url(#waypoint-${waypointId}-shadow)`}
         />

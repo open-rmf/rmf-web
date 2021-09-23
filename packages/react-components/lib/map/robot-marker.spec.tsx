@@ -27,7 +27,7 @@ describe('RobotMarker', () => {
       }),
     ];
     for (const robot of robots) {
-      await render(<RobotMarker color={robot.color} />);
+      await render(<RobotMarker cx={0} cy={0} r={1} color={robot.color} />);
       cleanup();
     }
   });
@@ -35,7 +35,7 @@ describe('RobotMarker', () => {
   it('trigger onClick event', async () => {
     const onClick = jasmine.createSpy();
     const root = await render(
-      <RobotMarker color="#000000" onClick={onClick} data-testid="marker" />,
+      <RobotMarker cx={0} cy={0} r={1} color="#000000" onClick={onClick} data-testid="marker" />,
     );
     userEvent.click(root.getByTestId('marker'));
     expect(onClick).toHaveBeenCalled();
@@ -43,7 +43,13 @@ describe('RobotMarker', () => {
 
   it('providing iconPath renders an image', async () => {
     const root = await render(
-      <RobotMarker color="#000000" iconPath="/base/test-data/assets/tiny-robot.png" />,
+      <RobotMarker
+        cx={0}
+        cy={0}
+        r={1}
+        color="#000000"
+        iconPath="/base/test-data/assets/tiny-robot.png"
+      />,
     );
     expect(root.container.querySelector('image')).not.toBeNull();
   });

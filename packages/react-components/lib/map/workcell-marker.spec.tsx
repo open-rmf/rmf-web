@@ -9,7 +9,7 @@ describe('WorkcellMarker', () => {
 
     const root = render(
       <svg>
-        <WorkcellMarker onClick={mockOnClick} data-testid="marker" />
+        <WorkcellMarker cx={0} cy={0} size={1} onClick={mockOnClick} data-testid="marker" />
       </svg>,
     );
     userEvent.click(root.getByTestId('marker'));
@@ -19,7 +19,7 @@ describe('WorkcellMarker', () => {
   it('smoke test - marker with image icon', () => {
     render(
       <svg>
-        <WorkcellMarker iconPath="/base/test-data/assets/ros-health.png" />
+        <WorkcellMarker cx={0} cy={0} size={1} iconPath="/base/test-data/assets/ros-health.png" />
       </svg>,
     );
   });
