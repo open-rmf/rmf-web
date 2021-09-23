@@ -91,7 +91,7 @@ export const LiftsOverlay = ({
                 sourceX={pos[0]}
                 sourceY={pos[1]}
                 sourceRadius={Math.min(lift.width / 2, lift.depth / 2)}
-                arrowLength={Math.max((lift.width / 2) * scale, (lift.depth / 2) * scale)}
+                arrowLength={Math.max((lift.width / 3) * scale, (lift.depth / 3) * scale)}
                 text={lift.name}
               />
             </g>
