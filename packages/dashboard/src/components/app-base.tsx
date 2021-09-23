@@ -1,5 +1,6 @@
-import { Grid, makeStyles } from '@material-ui/core';
-import React from 'react';
+import { Grid } from '@material-ui/core';
+import { styled } from '@material-ui/core';
+import React, { ProviderProps } from 'react';
 import { ErrorSnackbar } from 'react-components';
 import { loadSettings, saveSettings, Settings } from '../settings';
 import {
@@ -14,8 +15,13 @@ import HelpDrawer from './drawers/help-drawer';
 import HotKeysDialog from './drawers/hotkeys-dialog';
 import SettingsDrawer from './drawers/settings-drawer';
 
-const useStyles = makeStyles((theme) => ({
-  appBase: {
+const classes = {
+  appBase: 'app-base-grid',
+};
+const AppBaseRoot = styled((props: ProviderProps<Settings>) => (
+  <SettingsContext.Provider {...props} />
+))(({ theme }) => ({
+  [`& .${classes.appBase}`]: {
     width: '100%',
     height: '100%',
     backgroundColor: theme.palette.background.default,
@@ -35,8 +41,6 @@ const useStyles = makeStyles((theme) => ({
  * Also provides `AppControllerContext` to allow children components to control them.
  */
 export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element | null {
-  const classes = useStyles();
-
   const [settings, setSettings] = React.useState(() => loadSettings());
   const [showSettings, setShowSettings] = React.useState(false);
   const [showHelp, setShowHelp] = React.useState(false);
@@ -76,7 +80,7 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
   );
 
   return (
-    <SettingsContext.Provider value={settings}>
+    <AppBaseRoot value={settings}>
       <TooltipsContext.Provider value={tooltips}>
         <AppControllerContext.Provider value={appController}>
           <Grid container direction="column" className={classes.appBase} wrap="nowrap">
@@ -115,6 +119,6 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
           </Grid>
         </AppControllerContext.Provider>
       </TooltipsContext.Provider>
-    </SettingsContext.Provider>
+    </AppBaseRoot>
   );
 }

@@ -1,36 +1,38 @@
 import React from 'react';
-import { TextField, makeStyles, Divider } from '@material-ui/core';
+import { TextField, Divider, styled } from '@material-ui/core';
 
-// FIXME: This is likely to cause naming clashes
-export interface OnChangeEvent {
+export interface OnFilterChangeEvent {
   name?: string | undefined;
   value: string;
 }
 
 export interface SimpleFilterProps {
-  onChange?: (e: React.ChangeEvent<OnChangeEvent>) => void;
+  onChange?: (e: React.ChangeEvent<OnFilterChangeEvent>) => void;
   value: string;
 }
 
-const useStyles = makeStyles(() => ({
-  simpleFilter: {
+const classes = {
+  simpleFilter: 'simple-filter-root',
+  filterBar: 'simple-filter-filterbar',
+  divider: 'simple-filter-divider',
+};
+const SimpleFilterRoot = styled('div')(() => ({
+  [`&.${classes.simpleFilter}`]: {
     margin: '1rem',
   },
-  filterBar: {
+  [`& .${classes.filterBar}`]: {
     width: '100%',
   },
-  divider: {
+  [`& .${classes.divider}`]: {
     margin: '1.5rem 0',
   },
 }));
 
 export const SimpleFilter = (props: SimpleFilterProps): JSX.Element => {
-  const classes = useStyles();
-
   const { onChange, value } = props;
 
   return (
-    <div className={classes.simpleFilter}>
+    <SimpleFilterRoot className={classes.simpleFilter}>
       <TextField
         label="Filter"
         value={value}
@@ -41,6 +43,6 @@ export const SimpleFilter = (props: SimpleFilterProps): JSX.Element => {
         data-component="simple-filter"
       />
       <Divider className={classes.divider} />
-    </div>
+    </SimpleFilterRoot>
   );
 };

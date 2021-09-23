@@ -8,7 +8,7 @@ describe('CreateRoleDialog', () => {
     const createRole = jest.fn();
     const root = render(<CreateRoleDialog open={true} createRole={createRole} />);
     userEvent.type(root.getByLabelText('Role'), 'role');
-    root.getByRole('form').dispatchEvent(new Event('submit'));
+    userEvent.click(root.getByText('Create'));
     expect(createRole).toHaveBeenCalled();
     expect(createRole.mock.calls[0][0]).toBe('role');
     await expect(

@@ -1,16 +1,17 @@
-import { createStyles, makeStyles } from '@material-ui/core';
-import Tabs from '@material-ui/core/Tabs';
+import { styled } from '@material-ui/core';
+import Tabs, { TabsProps } from '@material-ui/core/Tabs';
 import React from 'react';
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    tabsContainer: {
-      borderRight: '0.25px solid rgba(251, 252, 255, 0.5)',
-      borderLeft: '0.25px solid rgba(251, 252, 255, 0.5)',
-      flexGrow: 4,
-    },
-  }),
-);
+const classes = {
+  tabsContainer: 'navigation-bar-root',
+};
+const NavigationBarRoot = styled((props: TabsProps) => <Tabs {...props} />)(() => ({
+  [`&.${classes.tabsContainer}`]: {
+    borderRight: '0.25px solid rgba(251, 252, 255, 0.5)',
+    borderLeft: '0.25px solid rgba(251, 252, 255, 0.5)',
+    flexGrow: 4,
+  },
+}));
 
 export interface NavigationBarProps {
   value?: string;
@@ -20,17 +21,16 @@ export interface NavigationBarProps {
 
 export const NavigationBar = (props: NavigationBarProps): JSX.Element => {
   const { value, onTabChange, children } = props;
-  const classes = useStyles();
-
   return (
-    <Tabs
+    <NavigationBarRoot
       variant="scrollable"
       scrollButtons="auto"
       value={value}
       onChange={onTabChange}
       className={classes.tabsContainer}
+      TabIndicatorProps={{ style: { backgroundColor: '#d32f2f' } }}
     >
       {children}
-    </Tabs>
+    </NavigationBarRoot>
   );
 };

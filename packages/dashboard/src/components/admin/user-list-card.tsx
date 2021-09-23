@@ -2,9 +2,9 @@ import {
   Button,
   Card,
   CardHeader,
+  CardProps,
   IconButton,
   InputAdornment,
-  makeStyles,
   Table,
   TableBody,
   TableCell,
@@ -14,6 +14,7 @@ import {
   TableRow,
   TextField,
   Typography,
+  styled,
 } from '@material-ui/core';
 import AccountIcon from '@material-ui/icons/AccountCircle';
 import AddIcon from '@material-ui/icons/AddCircle';
@@ -27,11 +28,15 @@ import { CreateUserDialog, CreateUserDialogProps } from './create-user-dialog';
 
 const ItemsPerPage = 20;
 
-const useStyles = makeStyles((theme) => ({
-  controlsButton: {
+const classes = {
+  controlsButton: 'user-list-card-controls-button',
+  tableRow: 'user-list-card-table-row',
+};
+const UserListRoot = styled((props: CardProps) => <Card {...props} />)(({ theme }) => ({
+  [`& .${classes.controlsButton}`]: {
     float: 'right',
   },
-  tableRow: {
+  [`& .${classes.tableRow}`]: {
     cursor: 'pointer',
     '&:hover': {
       backgroundColor: theme.palette.action.hover,
@@ -49,7 +54,6 @@ export function UserListCard({
   deleteUser,
   createUser,
 }: UserListCardProps): JSX.Element {
-  const classes = useStyles();
   const safeAsync = useAsync();
   const history = useHistory();
   const match = useRouteMatch();
@@ -87,7 +91,7 @@ export function UserListCard({
   }, [refresh]);
 
   return (
-    <Card variant="outlined">
+    <UserListRoot variant="outlined">
       <CardHeader
         title="Users"
         titleTypographyProps={{ variant: 'h5' }}
@@ -167,7 +171,7 @@ export function UserListCard({
           page={page}
           rowsPerPage={ItemsPerPage}
           rowsPerPageOptions={[ItemsPerPage]}
-          onChangePage={(_, newPage) => setPage(newPage)}
+          onPageChange={(_, newPage) => setPage(newPage)}
         />
       </TableContainer>
       {openDeleteDialog && (
@@ -205,6 +209,6 @@ export function UserListCard({
           }
         />
       )}
-    </Card>
+    </UserListRoot>
   );
 }

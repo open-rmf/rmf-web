@@ -1,21 +1,25 @@
 /* istanbul ignore file */
 
-import { makeStyles } from '@material-ui/core';
+import { styled } from '@material-ui/core';
 import React from 'react';
-import { RobotPanel, VerboseRobot } from 'react-components';
+import { RobotPanel, RobotPanelProps, VerboseRobot } from 'react-components';
 import { RmfIngressContext } from '../rmf-app';
 
-const useStyles = makeStyles((theme) => ({
-  robotPanel: {
-    margin: `${theme.spacing(4)}px auto`,
-    width: '100%',
-    height: '100%',
-    maxWidth: 1600,
-  },
-}));
+const classes = {
+  robotPanel: 'robot-page-container',
+};
+const RobotPageRoot = styled((props: RobotPanelProps) => <RobotPanel {...props} />)(
+  ({ theme }) => ({
+    [`&.${classes.robotPanel}`]: {
+      margin: `${theme.spacing(4)} auto`,
+      width: '100%',
+      height: '100vh',
+      maxWidth: 1600,
+    },
+  }),
+);
 
 export function RobotPage() {
-  const classes = useStyles();
   const { fleetsApi } = React.useContext(RmfIngressContext) || {};
 
   const [hasMore, setHasMore] = React.useState(true);
@@ -45,7 +49,7 @@ export function RobotPage() {
   }, [fetchVerboseRobots]);
 
   return (
-    <RobotPanel
+    <RobotPageRoot
       className={classes.robotPanel}
       fetchVerboseRobots={fetchVerboseRobots}
       paginationOptions={{
@@ -53,7 +57,7 @@ export function RobotPage() {
         rowsPerPage: 10,
         rowsPerPageOptions: [10],
         page,
-        onChangePage: (_ev, newPage) => setPage(newPage),
+        onPageChange: (_ev, newPage) => setPage(newPage),
       }}
       verboseRobots={verboseRobots}
     />

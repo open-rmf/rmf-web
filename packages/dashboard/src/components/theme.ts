@@ -1,33 +1,6 @@
-import { createMuiTheme } from '@material-ui/core';
+import { createTheme } from '@material-ui/core/styles';
 
-declare module '@material-ui/core' {
-  interface Theme {
-    appBar: {
-      logoSize: React.CSSProperties['width'];
-    };
-    appDrawer: {
-      width: React.CSSProperties['width'];
-    };
-  }
-
-  // allow configuration using `createTheme`
-  interface ThemeOptions {
-    appBar: {
-      logoSize: React.CSSProperties['width'];
-    };
-    appDrawer: {
-      width: React.CSSProperties['width'];
-    };
-  }
-}
-
-export const theme = createMuiTheme({
-  appBar: {
-    logoSize: 180,
-  },
-  appDrawer: {
-    width: 240,
-  },
+export const theme = createTheme({
   palette: {
     primary: {
       main: '#44497a',
@@ -36,3 +9,13 @@ export const theme = createMuiTheme({
     },
   },
 });
+
+// TODO - temp object to specify appBar and appDrawer values until we move to officials material version
+export const customThemeValues = {
+  appBar: {
+    logoSize: 180,
+  },
+  appDrawer: {
+    width: 240,
+  },
+};

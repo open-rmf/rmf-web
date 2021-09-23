@@ -1,16 +1,20 @@
-import { Divider, makeStyles, Typography, useTheme } from '@material-ui/core';
+import { Divider, Typography, useTheme } from '@material-ui/core';
+import { styled } from '@material-ui/core';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { rosTimeToJs } from '../utils';
 import { taskStateToStr, taskTypeToStr } from './utils';
 import { TaskTimeline } from './task-timeline';
 
-const useStyles = makeStyles({
-  infoValue: {
+const classes = {
+  infoValue: 'task-info-info-value',
+};
+const TaskInfoRoot = styled('div')(() => ({
+  [`& .${classes.infoValue}`]: {
     float: 'right',
     textAlign: 'right',
   },
-});
+}));
 
 function InfoLine({ children }: React.PropsWithChildren<unknown>) {
   return (
@@ -21,7 +25,6 @@ function InfoLine({ children }: React.PropsWithChildren<unknown>) {
 }
 
 function InfoValue({ children }: React.PropsWithChildren<unknown>) {
-  const classes = useStyles();
   return <span className={classes.infoValue}>{children}</span>;
 }
 
@@ -123,7 +126,7 @@ export function TaskInfo({ task }: TaskInfoProps): JSX.Element {
   })();
 
   return (
-    <div>
+    <TaskInfoRoot>
       <Typography variant="h6" style={{ textAlign: 'center' }} gutterBottom>
         {task.task_id}
       </Typography>
@@ -156,6 +159,6 @@ export function TaskInfo({ task }: TaskInfoProps): JSX.Element {
       {detailInfo}
       <Typography variant="h6">Progress</Typography>
       <TaskTimeline taskSummary={task} />
-    </div>
+    </TaskInfoRoot>
   );
 }

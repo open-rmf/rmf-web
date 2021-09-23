@@ -24,7 +24,6 @@ import {
 } from 'react-components';
 import { AttributionControl, LayersControl, Pane } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
-import appConfig from '../../app-config';
 import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
 import { ResourcesContext } from '../app-contexts';
 import { PlacesContext, RmfIngressContext } from '../rmf-app';
@@ -91,9 +90,6 @@ export default function ScheduleVisualizer({
   const [robots, setRobots] = React.useState<RobotData[]>([]);
   const { current: robotsStore } = React.useRef<Record<string, RobotData>>({});
 
-  // FIXME: trajectory manager should handle the tokens
-  const authenticator = appConfig.authenticator;
-
   const [trajectories, setTrajectories] = React.useState<TrajectoryData[]>([]);
   const { trajectoryManager: trajManager } = React.useContext(RmfIngressContext) || {};
 
@@ -148,7 +144,6 @@ export default function ScheduleVisualizer({
           duration: trajectoryTime,
           trim: true,
         },
-        token: authenticator.token,
       });
       const flatConflicts = resp.conflicts.flatMap((c) => c);
 
@@ -173,7 +168,7 @@ export default function ScheduleVisualizer({
       clearInterval(interval);
       debug(`cleared interval ${interval}`);
     };
-  }, [trajManager, currentLevel, trajectoryTime, mode, authenticator.token, trajectoryAnimScale]);
+  }, [trajManager, currentLevel, trajectoryTime, mode, trajectoryAnimScale]);
 
   const resourceManager = React.useContext(ResourcesContext);
 

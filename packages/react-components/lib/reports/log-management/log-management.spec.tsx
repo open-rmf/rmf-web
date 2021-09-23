@@ -15,7 +15,7 @@ const getLogs = () => {
       message: 'Test' + i,
       level: 'WARN',
       created: new Date('Mon Jan  1 00:00:02 UTC 2001').toISOString(),
-      container: { id: 1, name: 'container' },
+      container: { id: i, name: 'container' },
     });
   }
   return rows;

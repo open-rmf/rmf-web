@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 
-import { Card, Grid, makeStyles } from '@material-ui/core';
+import { Card, Grid, styled } from '@material-ui/core';
 import { Fleet, Level } from 'api-client';
 import Debug from 'debug';
 import React from 'react';
@@ -20,18 +20,20 @@ import ScheduleVisualizer from '../schedule-visualizer';
 const debug = Debug('Dashboard');
 const UpdateRate = 1000;
 
-const useStyles = makeStyles((theme) => ({
-  toolBarTitle: {
-    flexGrow: 1,
+const classes = {
+  buildingPanel: 'dashboard-building-panel',
+  mapPanel: 'dashboard-map-panel',
+  itemPanels: 'dashboard-item-panels',
+};
+const DashboardRoot = styled('div')(({ theme }) => ({
+  [`& .${classes.buildingPanel}`]: {
+    height: '100vh',
   },
-  buildingPanel: {
-    height: '100%',
-  },
-  mapPanel: {
+  [`& .${classes.mapPanel}`]: {
     margin: theme.spacing(1),
     flex: '1 0 auto',
   },
-  itemPanels: {
+  [`& .${classes.itemPanels}`]: {
     width: 800,
   },
 }));
@@ -39,7 +41,6 @@ const useStyles = makeStyles((theme) => ({
 export default function Dashboard(_props: {}): React.ReactElement {
   debug('render');
 
-  const classes = useStyles();
   const appController = React.useContext(AppControllerContext);
   const rmfIngress = React.useContext(RmfIngressContext);
   const sioClient = rmfIngress?.sioClient;
@@ -184,45 +185,47 @@ export default function Dashboard(_props: {}): React.ReactElement {
   );
 
   return (
-    <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
-      {buildingMap && (
-        <Grid container className={classes.buildingPanel} wrap="nowrap">
-          <Card variant="outlined" className={classes.mapPanel}>
-            <ScheduleVisualizer
-              buildingMap={buildingMap}
-              dispensers={dispensers}
-              ingestors={ingestors}
-              doorStates={Object.assign({}, doorStatesRef.current)}
-              liftStates={Object.assign({}, liftStatesRef.current)}
-              fleetStates={Object.assign({}, fleetStatesRef.current)}
-              mode="normal"
-            ></ScheduleVisualizer>
-          </Card>
-          <Grid item className={classes.itemPanels}>
-            {doors.length > 0 ? (
-              <DoorPanel
-                doors={doors}
-                doorStates={doorStatesRef.current}
-                onDoorControlClick={handleOnDoorControlClick}
-              />
-            ) : null}
-            {lifts.length > 0 ? (
-              <LiftPanel
-                lifts={lifts}
-                liftStates={liftStatesRef.current}
-                onRequestSubmit={handleLiftRequestSubmit}
-              />
-            ) : null}
-            {workcells.length > 0 ? (
-              <WorkcellPanel
+    <DashboardRoot>
+      <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
+        {buildingMap && (
+          <Grid container className={classes.buildingPanel} wrap="nowrap">
+            <Card variant="outlined" className={classes.mapPanel}>
+              <ScheduleVisualizer
+                buildingMap={buildingMap}
                 dispensers={dispensers}
                 ingestors={ingestors}
-                workCellStates={workcellStates}
-              />
-            ) : null}
+                doorStates={Object.assign({}, doorStatesRef.current)}
+                liftStates={Object.assign({}, liftStatesRef.current)}
+                fleetStates={Object.assign({}, fleetStatesRef.current)}
+                mode="normal"
+              ></ScheduleVisualizer>
+            </Card>
+            <Grid item className={classes.itemPanels}>
+              {doors.length > 0 ? (
+                <DoorPanel
+                  doors={doors}
+                  doorStates={doorStatesRef.current}
+                  onDoorControlClick={handleOnDoorControlClick}
+                />
+              ) : null}
+              {lifts.length > 0 ? (
+                <LiftPanel
+                  lifts={lifts}
+                  liftStates={liftStatesRef.current}
+                  onRequestSubmit={handleLiftRequestSubmit}
+                />
+              ) : null}
+              {workcells.length > 0 ? (
+                <WorkcellPanel
+                  dispensers={dispensers}
+                  ingestors={ingestors}
+                  workCellStates={workcellStates}
+                />
+              ) : null}
+            </Grid>
           </Grid>
-        </Grid>
-      )}
-    </GlobalHotKeys>
+        )}
+      </GlobalHotKeys>
+    </DashboardRoot>
   );
 }

@@ -1,6 +1,5 @@
 import {
   IconButton,
-  makeStyles,
   Paper,
   PaperProps,
   Table,
@@ -12,28 +11,32 @@ import {
   TableRow,
   Toolbar,
   Typography,
+  styled,
 } from '@material-ui/core';
 import { Refresh as RefreshIcon } from '@material-ui/icons';
 import React from 'react';
 import { taskTypeToStr } from '../tasks/utils';
 import { robotModeToString, VerboseRobot } from './utils';
 
-const useStyles = makeStyles((theme) => ({
-  table: {
+const classes = {
+  table: 'robot-table',
+  title: 'robot-table-title',
+  infoRow: 'robot-table-info-row',
+  phasesCell: 'robot-table-phases-cell',
+};
+const RobotTableRoot = styled((props: PaperProps) => <Paper {...props} />)(({ theme }) => ({
+  [`& .${classes.table}`]: {
     minWidth: 650,
   },
-  title: {
+  [`& .${classes.title}`]: {
     flex: '1 1 100%',
   },
-  taskRowHover: {
-    background: theme.palette.action.hover,
-  },
-  infoRow: {
+  [`& .${classes.infoRow}`]: {
     '& > *': {
       borderBottom: 'unset',
     },
   },
-  phasesCell: {
+  [`& .${classes.phasesCell}`]: {
     padding: `0 ${theme.spacing(1)}px`,
   },
 }));
@@ -78,8 +81,6 @@ const returnLocationCells = (robot: VerboseRobot) => {
 };
 
 function RobotRow({ robot, onClick }: RobotRowProps) {
-  const classes = useStyles();
-
   if (robot.tasks.length === 0) {
     return (
       <>
@@ -135,10 +136,8 @@ export function RobotTable({
   onRobotClick,
   ...paperProps
 }: RobotTableProps): JSX.Element {
-  const classes = useStyles();
-
   return (
-    <Paper {...paperProps}>
+    <RobotTableRoot {...paperProps}>
       <Toolbar>
         <Typography className={classes.title} variant="h6">
           Robots
@@ -174,6 +173,6 @@ export function RobotTable({
       {paginationOptions && (
         <TablePagination component="div" {...paginationOptions} style={{ flex: '0 0 auto' }} />
       )}
-    </Paper>
+    </RobotTableRoot>
   );
 }

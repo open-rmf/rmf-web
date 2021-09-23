@@ -1,7 +1,10 @@
-import { makeStyles } from '@material-ui/core';
+import { styled } from '@material-ui/core';
 
-export const defaultReportStyles = makeStyles(() => ({
-  table: {
+export const defaultReportClasses = {
+  table: 'default-report-table',
+};
+export const DefaultReportRoot = styled('div')(() => ({
+  [`& .${defaultReportClasses.table}`]: {
     overflowY: 'scroll',
     paddingTop: '20px',
   },
@@ -15,6 +18,6 @@ export interface DefaultReportQueryPayload {
 }
 
 export interface DefaultLogTableProps {
-  tableSize?: string; // units vh or rem
+  tableSize?: number;
   addMoreRows?(): void;
 }

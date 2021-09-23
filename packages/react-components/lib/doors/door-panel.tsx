@@ -2,11 +2,12 @@ import {
   Button,
   ButtonGroup,
   Card,
+  CardProps,
   Grid,
   IconButton,
-  makeStyles,
   Paper,
   Typography,
+  styled,
 } from '@material-ui/core';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
@@ -27,40 +28,52 @@ export interface DoorInfoProps {
   onDoorControlClick?(event: React.MouseEvent, door: RmfModels.Door, mode: number): void;
 }
 
-const useStyles = makeStyles((theme) => ({
-  container: {
+const classes = {
+  container: 'door-panel-container',
+  buttonBar: 'door-panel-button-bar',
+  grid: 'door-panel-grid',
+  doorLabelOpen: 'door-panel-door-label-open-panel',
+  doorLabelClosed: 'door-panel-door-label-closed-panel',
+  doorLabelMoving: 'door-panel-door-label-moving-panel',
+  cellPaper: 'door-panel-door-panel-cell-paper',
+  itemIcon: 'door-panel-item-icon',
+  buttonGroup: 'door-panel-button-group',
+  panelHeader: 'door-panel-panel-header',
+};
+const DoorPanelRoot = styled((props: CardProps) => <Card {...props} />)(({ theme }) => ({
+  [`&.${classes.container}`]: {
     margin: theme.spacing(1),
   },
-  buttonBar: {
+  [`& .${classes.buttonBar}`]: {
     display: 'flex',
     justifyContent: 'flex-end',
     borderRadius: '0px',
     backgroundColor: theme.palette.primary.main,
   },
-  grid: {
+  [`& .${classes.grid}`]: {
     padding: '1rem',
   },
-  doorLabelOpen: {
+  [`& .${classes.doorLabelOpen}`]: {
     backgroundColor: theme.palette.success.main,
   },
-  doorLabelClosed: {
+  [`& .${classes.doorLabelClosed}`]: {
     backgroundColor: theme.palette.error.main,
   },
-  doorLabelMoving: {
+  [`& .${classes.doorLabelMoving}`]: {
     backgroundColor: theme.palette.warning.main,
   },
-  cellPaper: {
+  [`& .${classes.cellPaper}`]: {
     padding: '0.5rem',
     backgroundColor: theme.palette.info.light,
   },
-  itemIcon: {
+  [`& .${classes.itemIcon}`]: {
     color: theme.palette.getContrastText(theme.palette.primary.main),
   },
-  buttonGroup: {
+  [`& .${classes.buttonGroup}`]: {
     display: 'flex',
     justifyContent: 'center',
   },
-  panelHeader: {
+  [`& .${classes.panelHeader}`]: {
     color: theme.palette.getContrastText(theme.palette.primary.main),
     marginLeft: '1rem',
   },
@@ -68,8 +81,6 @@ const useStyles = makeStyles((theme) => ({
 
 const DoorCell = React.memo(
   ({ door, doorState, onDoorControlClick }: DoorInfoProps): JSX.Element => {
-    const classes = useStyles();
-
     const doorModeLabelClasses = React.useCallback(
       (doorState?: RmfModels.DoorState): string => {
         if (!doorState) {
@@ -138,14 +149,12 @@ const DoorCell = React.memo(
 );
 
 export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelProps): JSX.Element {
-  const classes = useStyles();
-
   const [isCellView, setIsCellView] = React.useState(true);
 
   return (
-    <Card variant="outlined" className={classes.container}>
+    <DoorPanelRoot variant="outlined" className={classes.container}>
       <Paper className={classes.buttonBar}>
-        <Grid container direction="row" justify="space-between" alignItems="center">
+        <Grid container direction="row" justifyContent="space-between" alignItems="center">
           <Grid item xs={6}>
             <Typography variant="h5" className={classes.panelHeader}>
               Doors
@@ -183,6 +192,6 @@ export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelPr
           />
         )}
       </Grid>
-    </Card>
+    </DoorPanelRoot>
   );
 }

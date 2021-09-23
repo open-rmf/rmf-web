@@ -13,9 +13,8 @@ describe('Default date form', () => {
     const currentDate = format(new Date(), 'MM/dd/yyyy HH:mm');
     const newConfig = { ...reportConfigProps, fromLogDate: new Date(), toLogDate: new Date() };
     const root = render(<DefaultDatesForm {...newConfig} />);
-    const fromLogDate = root.container.querySelector('#fromLogDate-datetime-local');
-    expect(fromLogDate?.getAttribute('value')).toBe(currentDate);
-    const toLogDate = root.container.querySelector('#toLogDate-datetime-local');
-    expect(toLogDate?.getAttribute('value')).toBe(currentDate);
+    const getInputs = root.container.querySelectorAll('.MuiOutlinedInput-input.MuiInputBase-input');
+    expect(getInputs[0].getAttribute('value')).toBe(currentDate);
+    expect(getInputs[1].getAttribute('value')).toBe(currentDate);
   });
 });

@@ -1,8 +1,9 @@
 import {
+  Alert,
+  AlertProps,
   Button,
   Grid,
   IconButton,
-  makeStyles,
   Paper,
   Snackbar,
   TableContainer,
@@ -11,13 +12,13 @@ import {
   Tooltip,
   Typography,
   useTheme,
+  styled,
 } from '@material-ui/core';
 import {
   AddOutlined as AddOutlinedIcon,
   Autorenew as AutorenewIcon,
   Refresh as RefreshIcon,
 } from '@material-ui/icons';
-import { Alert, AlertProps } from '@material-ui/lab';
 import { SubmitTask, Task } from 'api-client';
 import React from 'react';
 import { CreateTaskForm, CreateTaskFormProps, TaskInfo, TaskTable } from 'react-components';
@@ -26,21 +27,28 @@ import * as RmfModels from 'rmf-models';
 import { Enforcer } from '../permissions';
 import { parseTasksFile } from './utils';
 
-const useStyles = makeStyles((theme) => ({
-  tableContainer: {
+const classes = {
+  tableContainer: 'task-panel-table-container',
+  tableTitle: 'task-panel-table-title',
+  detailPanelContainer: 'task-panel-detail-panel-container',
+  enabledToggleButton: 'task-panel-enable-toggle-button',
+};
+
+const TaskPanelRoot = styled('div')(({ theme }) => ({
+  [`& .${classes.tableContainer}`]: {
     display: 'flex',
     flexDirection: 'column',
   },
-  tableTitle: {
+  [`& .${classes.tableTitle}`]: {
     flex: '1 1 100%',
   },
-  detailPanelContainer: {
+  [`& .${classes.detailPanelContainer}`]: {
     width: 350,
     padding: theme.spacing(2),
     marginLeft: theme.spacing(1),
     flex: '0 0 auto',
   },
-  enabledToggleButton: {
+  [`& .${classes.enabledToggleButton}`]: {
     background: theme.palette.action.selected,
   },
 }));
@@ -55,7 +63,8 @@ function NoSelectedTask() {
   );
 }
 
-export interface TaskPanelProps extends React.HTMLProps<HTMLDivElement> {
+export interface TaskPanelProps
+  extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
   /**
    * Should only contain the tasks of the current page.
    */
@@ -86,7 +95,6 @@ export function TaskPanel({
   onAutoRefresh,
   ...divProps
 }: TaskPanelProps): JSX.Element {
-  const classes = useStyles();
   const theme = useTheme();
   const [selectedTask, setSelectedTask] = React.useState<Task | undefined>(undefined);
   const uploadFileInputRef = React.useRef<HTMLInputElement>(null);
@@ -148,8 +156,8 @@ export function TaskPanel({
       selectedTask.summary.state === RmfModels.TaskSummary.STATE_QUEUED);
 
   return (
-    <div {...divProps}>
-      <Grid container wrap="nowrap" justify="center" style={{ height: 'inherit' }}>
+    <TaskPanelRoot {...divProps}>
+      <Grid container wrap="nowrap" justifyContent="center" style={{ height: 'inherit' }}>
         <Paper className={classes.tableContainer}>
           <Toolbar>
             <Typography className={classes.tableTitle} variant="h6">
@@ -239,6 +247,6 @@ export function TaskPanel({
       <Snackbar open={openSnackbar} onClose={() => setOpenSnackbar(false)} autoHideDuration={2000}>
         <Alert severity={snackbarSeverity}>{snackbarMessage}</Alert>
       </Snackbar>
-    </div>
+    </TaskPanelRoot>
   );
 }

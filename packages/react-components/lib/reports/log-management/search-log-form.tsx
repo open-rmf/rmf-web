@@ -1,17 +1,32 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core';
+import { TextField, SelectChangeEvent, styled } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import { SearchFilter } from './search-filter';
 import DateAndTimePickers from '../../date-time-picker';
 import { LogLevel } from './log-level';
 
-import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 import { LogQueryPayload } from '.';
 
 interface SearchLogFormProps {
   logLabelValues: { label: string; value: string }[];
   search?: (payload: LogQueryPayload) => void;
 }
+
+const classes = {
+  searchForm: 'search-log-search-from',
+  searchButton: 'search-log-search-button',
+};
+const SearchLogRoot = styled('div')(() => ({
+  [`& .${classes.searchForm}`]: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr 1fr 1fr',
+    alignItems: 'center',
+    justifyItems: 'center',
+  },
+  [`& .${classes.searchButton}`]: {
+    width: '100%',
+  },
+}));
 
 const logLevelValues = [
   { label: 'ALL', value: LogLevel.All },
@@ -27,39 +42,31 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
   // The log contains information from different services, the label help us differentiate the service
   const [logLabel, setLogLabel] = React.useState('');
   const [logLevel, setLogLevel] = React.useState(LogLevel.All);
-  const [fromLogDate, setFromLogDate] = React.useState<MaterialUiPickersDate>(new Date());
-  const [toLogDate, setToLogDate] = React.useState<MaterialUiPickersDate>(new Date());
-
-  const classes = useStyles();
+  const [fromLogDate, setFromLogDate] = React.useState<Date>(new Date());
+  const [toLogDate, setToLogDate] = React.useState<Date>(new Date());
 
   const searchQuery = () => {
     search && search({ toLogDate, fromLogDate, logLabel, logLevel });
   };
 
-  const handleLogLabelChange = React.useCallback(
-    (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
-      setLogLabel(event.target.value as string);
-    },
-    [],
-  );
+  const handleLogLabelChange = React.useCallback((event: SelectChangeEvent<React.ReactText>) => {
+    setLogLabel(event.target.value as string);
+  }, []);
 
-  const handleLogLevelChange = React.useCallback(
-    (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
-      setLogLevel(event.target.value as LogLevel);
-    },
-    [],
-  );
+  const handleLogLevelChange = React.useCallback((event: SelectChangeEvent<React.ReactText>) => {
+    setLogLevel(event.target.value as LogLevel);
+  }, []);
 
-  const handleFromLogDateChange = React.useCallback((date: MaterialUiPickersDate) => {
+  const handleFromLogDateChange = React.useCallback((date: any) => {
     setFromLogDate(date);
   }, []);
 
-  const handleToLogDateChange = React.useCallback((date: MaterialUiPickersDate) => {
+  const handleToLogDateChange = React.useCallback((date: any) => {
     setToLogDate(date);
   }, []);
 
   return (
-    <>
+    <SearchLogRoot>
       <div className={classes.searchForm}>
         <SearchFilter
           options={logLabelValues}
@@ -79,18 +86,18 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
         />
 
         <DateAndTimePickers
-          name="fromLogDate"
           maxDate={new Date()}
           label="From"
           value={fromLogDate}
           onChange={handleFromLogDateChange}
+          renderInput={(props) => <TextField {...props} />}
         />
         <DateAndTimePickers
-          name="toLogDate"
           maxDate={new Date()}
           label="To"
           value={toLogDate}
           onChange={handleToLogDateChange}
+          renderInput={(props) => <TextField {...props} />}
         />
       </div>
 
@@ -103,22 +110,6 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
       >
         Retrieve Logs
       </Button>
-    </>
+    </SearchLogRoot>
   );
 };
-
-const useStyles = makeStyles((theme) => ({
-  searchForm: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr 1fr 1fr',
-    alignItems: 'center',
-    justifyItems: 'center',
-  },
-  searchButton: {
-    width: '100%',
-  },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-  },
-}));

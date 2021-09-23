@@ -1,16 +1,16 @@
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import {
-  makeStyles,
   Table,
+  TableProps,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
   ButtonGroup,
   Button,
+  styled,
 } from '@material-ui/core';
-
 import { DoorData, doorModeToString, doorTypeToString } from './utils';
 
 export interface DoorTableProps {
@@ -25,14 +25,19 @@ export interface DoorRowProps {
   onDoorControlClick?(event: React.MouseEvent, door: RmfModels.Door, mode: number): void;
 }
 
-const useStyles = makeStyles((theme) => ({
-  doorLabelOpen: {
+const classes = {
+  doorLabelOpen: 'door-table-label-open',
+  doorLabelClosed: 'door-table-label-closed',
+  doorLabelMoving: 'door-table-label-moving',
+};
+const DoorTableRoot = styled((props: TableProps) => <Table {...props} />)(({ theme }) => ({
+  [`& .${classes.doorLabelOpen}`]: {
     color: theme.palette.success.main,
   },
-  doorLabelClosed: {
+  [`& .${classes.doorLabelClosed}`]: {
     color: theme.palette.error.main,
   },
-  doorLabelMoving: {
+  [`& .${classes.doorLabelMoving}`]: {
     color: theme.palette.warning.main,
   },
 }));
@@ -43,8 +48,6 @@ const getOpMode = (doorState: RmfModels.DoorState) => {
 };
 
 const DoorRow = React.memo(({ door, doorState, onDoorControlClick }: DoorRowProps) => {
-  const classes = useStyles();
-
   const doorModeLabelClasses = React.useCallback(
     (doorState?: RmfModels.DoorState): string => {
       if (!doorState) {
@@ -110,7 +113,7 @@ export const DoorTable = ({
   onDoorControlClick,
 }: DoorTableProps): JSX.Element => {
   return (
-    <Table stickyHeader size="small" aria-label="door-table">
+    <DoorTableRoot stickyHeader size="small" aria-label="door-table">
       <TableHead>
         <TableRow>
           <TableCell>Door Name</TableCell>
@@ -131,6 +134,6 @@ export const DoorTable = ({
           />
         ))}
       </TableBody>
-    </Table>
+    </DoorTableRoot>
   );
 };

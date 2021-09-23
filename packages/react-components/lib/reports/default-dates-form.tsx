@@ -1,44 +1,54 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core';
+import { TextField, styled } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import DateAndTimePickers from '../date-time-picker';
 
-import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 import { LogQueryPayload } from '.';
 
 interface DefaultDatesFormProps {
   search?: (payload: LogQueryPayload) => void;
-  fromLogDate?: MaterialUiPickersDate;
-  toLogDate?: MaterialUiPickersDate;
-  onSelectFromDate?: (date: MaterialUiPickersDate) => void;
-  onSelectToDate?: (date: MaterialUiPickersDate) => void;
+  fromLogDate?: Date;
+  toLogDate?: Date;
+  onSelectFromDate?: (date: any) => void;
+  onSelectToDate?: (date: any) => void;
 }
+
+const classes = {
+  searchForm: 'traj-time-control-root',
+  searchButton: 'traj-time-control-container',
+};
+const DefaultDatesFormRoot = styled('div')(() => ({
+  [`& .${classes.searchForm}`]: {
+    display: 'flex',
+    justifyContent: 'space-evenly',
+  },
+  [`& .${classes.searchButton}`]: {
+    width: '100%',
+  },
+}));
 
 export const DefaultDatesForm = (props: DefaultDatesFormProps) => {
   const { search, fromLogDate, toLogDate, onSelectToDate, onSelectFromDate } = props;
-
-  const classes = useStyles();
-
   const searchQuery = () => {
     search && search({ toLogDate, fromLogDate });
   };
 
   return onSelectFromDate && onSelectToDate ? (
-    <>
+    <DefaultDatesFormRoot>
       <div className={classes.searchForm}>
         <DateAndTimePickers
-          name="fromLogDate"
           maxDate={new Date()}
           label="From"
           value={fromLogDate}
           onChange={onSelectFromDate}
+          renderInput={(props) => <TextField {...props} />}
         />
         <DateAndTimePickers
-          name="toLogDate"
           maxDate={new Date()}
           label="To"
           value={toLogDate}
           onChange={onSelectToDate}
+          renderInput={(props) => <TextField {...props} />}
         />
       </div>
 
@@ -51,16 +61,6 @@ export const DefaultDatesForm = (props: DefaultDatesFormProps) => {
       >
         Retrieve Logs
       </Button>
-    </>
+    </DefaultDatesFormRoot>
   ) : null;
 };
-
-const useStyles = makeStyles(() => ({
-  searchForm: {
-    display: 'flex',
-    justifyContent: 'space-evenly',
-  },
-  searchButton: {
-    width: '100%',
-  },
-}));

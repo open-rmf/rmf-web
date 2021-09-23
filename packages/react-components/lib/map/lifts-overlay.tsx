@@ -1,6 +1,6 @@
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import { LiftMarker as LiftMarker_, LiftMarkerProps, useLiftMarkerStyles } from './lift-marker';
+import { LiftMarker as LiftMarker_, LiftMarkerProps, liftMarkerClasses } from './lift-marker';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 import { viewBoxFromLeafletBounds } from './utils';
 
@@ -28,7 +28,7 @@ export const getLiftModeVariant = (
   currentLevel: string,
   liftStateMode?: number,
   liftStateFloor?: string,
-): keyof ReturnType<typeof useLiftMarkerStyles> | undefined => {
+): keyof typeof liftMarkerClasses | undefined => {
   if (!liftStateMode && !liftStateFloor) return 'unknown';
   if (liftStateMode === RmfModels.LiftState.MODE_FIRE) return 'fire';
   if (liftStateMode === RmfModels.LiftState.MODE_EMERGENCY) return 'emergency';

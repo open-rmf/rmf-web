@@ -1,7 +1,6 @@
 import {
   Button,
   IconButton,
-  makeStyles,
   Paper,
   PaperProps,
   Table,
@@ -17,21 +16,27 @@ import AddIcon from '@material-ui/icons/AddCircle';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { Permission } from 'api-client';
 import React from 'react';
+import { styled } from '@material-ui/core';
 import { Loading, useAsync } from 'react-components';
 import { AppControllerContext } from '../app-contexts';
 import { getActionText } from '../permissions';
 import { AddPermissionDialog, AddPermissionDialogProps } from './add-permission-dialog';
 
-const useStyles = makeStyles((theme) => ({
-  title: {
+const classes = {
+  title: 'permissions-card-title',
+  tableContainer: 'permissions-card-table-container',
+  controlsButton: 'permissions-card-controls-button',
+};
+const PermissionsCardRoot = styled((props: PaperProps) => <Paper {...props} />)(({ theme }) => ({
+  [`& .${classes.title}`]: {
     flex: '1 1 100%',
   },
-  tableContainer: {
+  [`& .${classes.tableContainer}`]: {
     marginLeft: theme.spacing(4),
     marginRight: theme.spacing(4),
     width: 'auto',
   },
-  controlsButton: {
+  [`& .${classes.controlsButton}`]: {
     float: 'right',
   },
 }));
@@ -49,7 +54,6 @@ export function PermissionsCard({
   removePermission,
   ...otherProps
 }: PermissionsCardProps): JSX.Element {
-  const classes = useStyles();
   const safeAsync = useAsync();
   const [loading, setLoading] = React.useState(false);
   const [permissions, setPermissions] = React.useState<Permission[]>([]);
@@ -82,7 +86,7 @@ export function PermissionsCard({
   }, [refresh]);
 
   return (
-    <Paper elevation={0} {...otherProps}>
+    <PermissionsCardRoot elevation={0} {...otherProps}>
       <Toolbar>
         <Typography variant="h6" className={classes.title}>
           Permissions
@@ -146,6 +150,6 @@ export function PermissionsCard({
           }
         />
       )}
-    </Paper>
+    </PermissionsCardRoot>
   );
 }

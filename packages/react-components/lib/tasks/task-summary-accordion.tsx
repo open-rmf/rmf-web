@@ -1,7 +1,7 @@
 import React from 'react';
 import Debug from 'debug';
 import * as RmfModels from 'rmf-models';
-import { IconButton, makeStyles, Typography } from '@material-ui/core';
+import { IconButton, Typography, styled } from '@material-ui/core';
 import {
   MultiSelectTreeViewProps,
   SingleSelectTreeViewProps,
@@ -12,7 +12,6 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import PlayCircleFilledWhiteIcon from '@material-ui/icons/PlayCircleFilledWhite';
 import PauseCircleFilledIcon from '@material-ui/icons/PauseCircleFilled';
-import { Theme } from '@material-ui/core';
 import { SimpleInfo, SimpleInfoData } from '../simple-info';
 import { formatStatus, getActorFromStatus, getStateLabel } from './task-summary-utils';
 
@@ -21,12 +20,87 @@ const debug = Debug('Tasks:TaskSummaryAccordion');
 interface TaskSummaryAccordionInfoProps {
   task: RmfModels.TaskSummary;
 }
+interface TreeViewRootProps extends SingleSelectTreeViewProps {
+  onNodeToggle?: MultiSelectTreeViewProps['onNodeSelect'];
+}
+
+const classes = {
+  root: 'task-summary-accordion-root',
+  accordionDetailLine: 'task-summary-accordion-accordion-detail-line',
+  treeChildren: 'task-summary-accordion-tree-children',
+  labelContent: 'task-summary-accordion-label-content',
+  expanded: 'task-summary-accordion-expanded',
+  completed: 'task-summary-accordion-completed',
+  queued: 'task-summary-accordion-queued',
+  active: 'task-summary-accordion-active',
+  failed: 'task-summary-accordion-failed',
+  taskActor: 'task-summary-accordion-task-actor',
+  overrideArrayItemValue: 'task-summary-accordion-override-array-item-value',
+  overrideContainer: 'task-summary-accordion-override-container',
+  overrideValue: 'task-summary-accordion-override-value',
+};
+const TaskSummaryAccordianRoot = styled((props: TreeViewRootProps) => <TreeView {...props} />)(
+  ({ theme }) => ({
+    [`& .${classes.root}`]: {
+      padding: '1rem',
+    },
+    [`& .${classes.accordionDetailLine}`]: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      padding: theme.spacing(0.5),
+    },
+    [`& .${classes.treeChildren}`]: {
+      margin: '0.5rem 0',
+    },
+    [`& .${classes.labelContent}`]: {
+      padding: '0.5rem',
+      borderRadius: '0.5rem',
+      boxShadow: '0 0 25px 0 rgb(72, 94, 116, 0.3)',
+      overflowX: 'hidden',
+      display: 'flex',
+      flexDirection: 'column',
+    },
+    [`& .${classes.expanded}`]: {
+      borderLeft: `0.1rem solid #cccccc`,
+    },
+    [`& .${classes.completed}`]: {
+      backgroundColor: '#4E5453 !important',
+    },
+    [`& .${classes.queued}`]: {
+      backgroundColor: theme.palette.warning.main + '!important',
+    },
+    [`& .${classes.active}`]: {
+      backgroundColor: theme.palette.success.light + '!important',
+    },
+    [`& .${classes.failed}`]: {
+      backgroundColor: theme.palette.error.main + '!important',
+    },
+    [`& .${classes.taskActor}`]: {
+      alignSelf: 'center',
+    },
+    [`& .${classes.overrideArrayItemValue}`]: {
+      textAlign: 'center',
+    },
+    [`& .${classes.overrideContainer}`]: {
+      borderCollapse: 'collapse',
+      width: '100%',
+      overflowX: 'auto',
+    },
+    [`& .${classes.overrideValue}`]: {
+      display: 'table-cell',
+      textAlign: 'end',
+      borderBottom: '1px solid',
+      borderBottomColor: theme.palette.divider,
+      borderTop: '1px solid',
+      borderTopColor: theme.palette.divider,
+    },
+  }),
+);
 
 export const TaskSummaryAccordionInfo = (props: TaskSummaryAccordionInfoProps): JSX.Element => {
   const { task } = props;
   const statusDetails = formatStatus(task.status);
   const stateLabel = getStateLabel(task.state);
-  const classes = useStylesAccordionItems();
   const data = [
     { name: 'TaskId', value: task.task_id, wrap: true },
     { name: 'State', value: stateLabel },
@@ -53,7 +127,6 @@ export interface TaskSummaryAccordionProps {
 export const TaskSummaryAccordion = React.memo((props: TaskSummaryAccordionProps) => {
   debug('task summary status panel render');
   const { tasks } = props;
-  const classes = useStyles();
   const [expanded, setExpanded] = React.useState<string[]>([]);
   const [selected, setSelected] = React.useState<string>('');
 
@@ -127,7 +200,7 @@ export const TaskSummaryAccordion = React.memo((props: TaskSummaryAccordionProps
   };
 
   return (
-    <TreeView
+    <TaskSummaryAccordianRoot
       className={classes.root}
       onNodeSelect={handleSelect}
       onNodeToggle={handleToggle}
@@ -138,74 +211,8 @@ export const TaskSummaryAccordion = React.memo((props: TaskSummaryAccordionProps
       selected={selected}
     >
       {tasks.map((task) => renderTaskTreeItem(task))}
-    </TreeView>
+    </TaskSummaryAccordianRoot>
   );
 });
-
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    padding: '1rem',
-  },
-  accordionDetailLine: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    padding: theme.spacing(0.5),
-  },
-  treeChildren: {
-    margin: '0.5rem 0',
-  },
-  labelContent: {
-    padding: '0.5rem',
-    borderRadius: '0.5rem',
-    boxShadow: '0 0 25px 0 rgb(72, 94, 116, 0.3)',
-    overflowX: 'hidden',
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  expanded: {
-    borderLeft: `0.1rem solid #cccccc`,
-  },
-  /**
-   * The idea is to maintain the same itemTree color depending on the task state even on selected.
-   * There are two styles API provided by the material-ui Tree library: `selected` and `label`.
-   * On a item select the library creates a class called `selected` that has precedence over the
-   * classes we could add using the API. So to override the background color of the `selected`
-   * we added `!important` to our custom styles that manage background color of the item tree.
-   */
-  completed: {
-    backgroundColor: '#4E5453 !important',
-  },
-  queued: {
-    backgroundColor: theme.palette.warning.main + '!important',
-  },
-  active: {
-    backgroundColor: theme.palette.success.light + '!important',
-  },
-  failed: {
-    backgroundColor: theme.palette.error.main + '!important',
-  },
-  taskActor: {
-    alignSelf: 'center',
-  },
-}));
-
-const useStylesAccordionItems = makeStyles((theme: Theme) => ({
-  overrideArrayItemValue: {
-    textAlign: 'center',
-  },
-  overrideContainer: {
-    borderCollapse: 'collapse',
-    width: '100%',
-    overflowX: 'auto',
-  },
-  overrideValue: {
-    display: 'table-cell',
-    textAlign: 'end',
-    borderBottom: '1px solid',
-    borderBottomColor: theme.palette.divider,
-    borderTop: '1px solid',
-    borderTopColor: theme.palette.divider,
-  },
-}));
 
 export default TaskSummaryAccordion;

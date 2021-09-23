@@ -134,7 +134,7 @@ describe('TaskPanel', () => {
           page: 0,
           rowsPerPage: 10,
           rowsPerPageOptions: [10],
-          onChangePage: spy,
+          onPageChange: spy,
         }}
       />,
     );

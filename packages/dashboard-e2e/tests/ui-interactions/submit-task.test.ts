@@ -3,7 +3,7 @@ import { getAppBar } from '../utils';
 describe('submit task', () => {
   it('can submit loop task', async () => {
     const appBar = await getAppBar();
-    await (await appBar.$('span=Tasks')).click();
+    await (await appBar.$('button[aria-label="Tasks"]')).click();
     await (await $('button[aria-label="Create Task"]')).click();
     await (await $('#task-type')).click();
     const getLoopOption = async () => {

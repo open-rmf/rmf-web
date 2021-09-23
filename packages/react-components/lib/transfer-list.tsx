@@ -8,36 +8,49 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { styled, GridProps } from '@material-ui/core';
 import React from 'react';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    container: {
+const classes = {
+  container: 'transfer-list-container',
+  cardHeader: 'transfer-list-card-header',
+  list: 'transfer-list-list',
+  button: 'transfer-list-button',
+  transferControls: 'transfer-list-controls',
+  cardContainer: 'transfer-list-card-container',
+};
+const TransferListRoot = styled((props: GridProps) => <Grid {...props} />)(({ theme }) => ({
+  [`&.${classes.container}`]: {
+    height: '100%',
+    '& > *': {
       height: '100%',
-      '& > *': {
-        height: '100%',
-        flex: '1 1 0',
-      },
+      flex: '1 1 0',
     },
-    cardHeader: {
-      padding: theme.spacing(1, 2),
+  },
+  [`& .${classes.cardContainer}`]: {
+    height: '100%',
+    '& > *': {
+      height: '100%',
+      flex: '1 1 0',
     },
-    list: {
-      backgroundColor: theme.palette.background.paper,
-      overflow: 'auto',
-    },
-    button: {
-      margin: theme.spacing(0.5, 0),
-    },
-    transferControls: {
-      marginTop: 'auto',
-      marginBottom: 'auto',
-      height: 'auto',
-      flex: '0 0 auto',
-    },
-  }),
-);
+  },
+  [`& .${classes.cardHeader}`]: {
+    padding: theme.spacing(1, 2),
+  },
+  [`& .${classes.list}`]: {
+    backgroundColor: theme.palette.background.paper,
+    overflow: 'auto',
+  },
+  [`& .${classes.button}`]: {
+    margin: theme.spacing(0.5, 0),
+  },
+  [`& .${classes.transferControls}`]: {
+    marginTop: 'auto',
+    marginBottom: 'auto',
+    height: 'auto',
+    flex: '0 0 auto',
+  },
+}));
 
 interface CustomListProps {
   title: React.ReactNode;
@@ -47,7 +60,6 @@ interface CustomListProps {
 }
 
 function CustomList({ title, items, checked, setChecked }: CustomListProps) {
-  const classes = useStyles();
   const numberOfChecked = checked.size;
 
   const handleToggleAllClick = React.useCallback(() => {
@@ -59,7 +71,7 @@ function CustomList({ title, items, checked, setChecked }: CustomListProps) {
   }, [items, numberOfChecked, setChecked]);
 
   return (
-    <Card variant="outlined" className={classes.container}>
+    <Card variant="outlined" className={classes.cardContainer}>
       <Grid container direction="column" wrap="nowrap">
         <CardHeader
           className={classes.cardHeader}
@@ -130,12 +142,17 @@ export function TransferList({
   rightTitle = 'Choices',
   onTransfer,
 }: TransferListProps): JSX.Element {
-  const classes = useStyles();
   const [leftChecked, setLeftChecked] = React.useState<Set<string>>(new Set());
   const [rightChecked, setRightChecked] = React.useState<Set<string>>(new Set());
 
   return (
-    <Grid container spacing={2} justify="center" alignItems="stretch" className={classes.container}>
+    <TransferListRoot
+      container
+      spacing={2}
+      justifyContent="center"
+      alignItems="stretch"
+      className={classes.container}
+    >
       <CustomList
         title={leftTitle}
         items={leftItems}
@@ -182,6 +199,6 @@ export function TransferList({
         checked={rightChecked}
         setChecked={setRightChecked}
       />
-    </Grid>
+    </TransferListRoot>
   );
 }

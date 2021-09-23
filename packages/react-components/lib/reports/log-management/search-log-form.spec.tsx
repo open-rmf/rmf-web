@@ -17,9 +17,8 @@ describe('Search log form tests', () => {
     const root = render(<SearchLogForm logLabelValues={logLabel}></SearchLogForm>);
     expect(root.getByText('ALL')).toBeTruthy();
     const currentDate = format(new Date(), 'MM/dd/yyyy HH:mm');
-    const fromLogDate = root.container.querySelector('#fromLogDate-datetime-local');
-    expect(fromLogDate?.getAttribute('value')).toBe(currentDate);
-    const toLogDate = root.container.querySelector('#toLogDate-datetime-local');
-    expect(toLogDate?.getAttribute('value')).toBe(currentDate);
+    const getInputs = root.container.querySelectorAll('.MuiOutlinedInput-input.MuiInputBase-input');
+    expect(getInputs[2].getAttribute('value')).toBe(currentDate);
+    expect(getInputs[3].getAttribute('value')).toBe(currentDate);
   });
 });

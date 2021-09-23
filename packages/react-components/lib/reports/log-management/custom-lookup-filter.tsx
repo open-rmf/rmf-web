@@ -7,9 +7,7 @@ import {
   MenuItem,
   Select,
 } from '@material-ui/core';
-import { Column, EditCellColumnDef } from 'material-table';
 import React from 'react';
-import { ContainerType } from './log-table';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -22,72 +20,33 @@ const MenuProps = {
   },
 };
 
-export interface CustomLookupFilterParserProps {
-  // Prop RowData from material-table is not exported so unknown
-  columnDef: Column<{ level: string; message: string; created: string; container: ContainerType }>;
-  onFilterChanged: (rowId: string, value: string | number | unknown) => void;
-}
-
-/**
- * Component created to override the default lookup filter.
- */
-
-export const CustomLookupFilterParser = (
-  props: CustomLookupFilterParserProps,
-): React.ReactElement => {
-  const { columnDef: columnDefRaw, onFilterChanged } = props;
-  /**
-   * The column type in the material-table library it's not working correctly. So as a workaround I'm assigning the types to the properties need it in this component.
-   */
-  const columnDef = columnDefRaw as {
-    tableData: EditCellColumnDef['tableData'];
-    filterOnItemSelect: unknown;
-    lookup: Record<string, string>;
-  };
-
-  return (
-    <CustomLookupFilter
-      tableId={columnDef.tableData.id}
-      filterValue={columnDef.tableData.filterValue}
-      filterOnItemSelect={columnDef.filterOnItemSelect}
-      onFilterChanged={onFilterChanged}
-      lookup={columnDef.lookup}
-    />
-  );
-};
-
 export interface CustomLookupFilterProps {
-  tableId: number;
-  filterValue: EditCellColumnDef['tableData']['filterValue'];
-  filterOnItemSelect: unknown;
-  onFilterChanged: (rowId: string, value: string | number | unknown) => void;
   lookup: Record<string, string>;
+  selectedFilter: string[];
+  setSelectedFilter: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 export const CustomLookupFilter = (props: CustomLookupFilterProps): React.ReactElement => {
-  const { tableId, filterValue, filterOnItemSelect, onFilterChanged, lookup } = props;
-  const [selectedFilter, setSelectedFilter] = React.useState(filterValue || []);
-  React.useEffect(() => {
-    setSelectedFilter(filterValue || []);
-  }, [filterValue]);
-
+  const { lookup, selectedFilter, setSelectedFilter } = props;
+  const [filterTracker, setFilterTracker] = React.useState<string[]>(selectedFilter);
   return (
-    <FormControl style={{ width: '100%' }}>
-      <InputLabel
-        htmlFor={'select-multiple-checkbox' + tableId}
-        style={{ marginTop: -16 }}
-      ></InputLabel>
+    <FormControl style={{ width: '100%', padding: '1rem' }}>
+      <InputLabel htmlFor={'select-multiple-checkbox'}>Level Filter</InputLabel>
       <Select
         multiple
-        value={selectedFilter}
+        value={filterTracker}
         onClose={() => {
-          if (filterOnItemSelect !== true) onFilterChanged(tableId.toString(), selectedFilter);
+          setSelectedFilter(filterTracker);
+          setFilterTracker(filterTracker);
         }}
         onChange={(event) => {
-          setSelectedFilter(event.target.value);
-          if (filterOnItemSelect === true) onFilterChanged(tableId.toString(), event.target.value);
+          if (typeof event.target.value === 'string') {
+            setFilterTracker([...filterTracker, event.target.value]);
+          } else {
+            setFilterTracker(event.target.value);
+          }
         }}
-        input={<Input id={'select-multiple-checkbox' + tableId} />}
+        input={<Input id={'select-multiple-checkbox'} />}
         renderValue={(selecteds) =>
           (selecteds as string[]).map((selected: string) => lookup[selected]).join(', ')
         }
@@ -96,7 +55,7 @@ export const CustomLookupFilter = (props: CustomLookupFilterProps): React.ReactE
       >
         {Object.keys(lookup).map((key: string) => (
           <MenuItem key={key} value={key}>
-            <Checkbox checked={selectedFilter.indexOf(key.toString()) > -1} />
+            <Checkbox checked={filterTracker.indexOf(key.toString()) > -1} />
             <ListItemText primary={lookup[key]} />
           </MenuItem>
         ))}
