@@ -17,18 +17,13 @@ describe('RobotInfo', () => {
     deliveryTask.task_profile.description.delivery.dropoff_ingestor = 'test_ingestor';
     const task: Task = {
       summary: deliveryTask,
-      progress: 10,
-      owner: 'test',
+      progress: { status: '10' },
       task_id: 'delivery_task',
     };
 
     const robot1 = { ...robot, tasks: [task] };
 
-    const root = render(
-      <>
-        <RobotInfo robot={robot1} />
-      </>,
-    );
+    const root = render(<RobotInfo robot={robot1} />);
 
     expect(root.getByRole('heading', { name: 'test_robot' })).toBeTruthy();
     expect(root.getByRole('button', { name: 'delivery_task' })).toBeTruthy();

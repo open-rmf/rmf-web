@@ -4,7 +4,6 @@ import { formatDistanceToNow } from 'date-fns';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { rosTimeToJs } from '../utils';
-import { TaskPhases } from './task-phases';
 import { taskStateToStr } from './utils';
 
 const useStyles = makeStyles((theme) => ({
@@ -13,6 +12,7 @@ const useStyles = makeStyles((theme) => ({
   },
   taskRowHover: {
     background: theme.palette.action.hover,
+    cursor: 'pointer',
   },
   infoRow: {
     '& > *': {
@@ -20,11 +20,36 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   phasesCell: {
-    padding: `0 ${theme.spacing(1)}px`,
-    borderBottom: 'none',
+    padding: `0 ${theme.spacing(1)}px 0 ${theme.spacing(1)}px`,
+    boxShadow: `${theme.shadows[1]}`,
+    '&:last-child': {
+      paddingRight: `${theme.spacing(1)}px`,
+    },
   },
   phasesRow: {
     marginBottom: theme.spacing(1),
+    marginTop: theme.spacing(1),
+  },
+  taskActiveCell: {
+    backgroundColor: theme.palette.primary.light,
+  },
+  taskCancelledCell: {
+    backgroundColor: theme.palette.grey[500],
+  },
+  taskCompletedCell: {
+    backgroundColor: theme.palette.success.light,
+  },
+  taskFailedCell: {
+    backgroundColor: theme.palette.error.light,
+  },
+  taskPendingCell: {
+    backgroundColor: theme.palette.info.light,
+  },
+  taskQueuedCell: {
+    backgroundColor: theme.palette.info.light,
+  },
+  taskUnknownCell: {
+    backgroundColor: theme.palette.warning.light,
   },
 }));
 
@@ -37,10 +62,31 @@ function TaskRow({ task, onClick }: TaskRowProps) {
   const classes = useStyles();
   const [hover, setHover] = React.useState(false);
 
+  const returnTaskStateCellClass = (task: RmfModels.TaskSummary) => {
+    switch (task.state) {
+      case RmfModels.TaskSummary.STATE_ACTIVE:
+        return classes.taskActiveCell;
+      case RmfModels.TaskSummary.STATE_CANCELED:
+        return classes.taskCancelledCell;
+      case RmfModels.TaskSummary.STATE_COMPLETED:
+        return classes.taskCompletedCell;
+      case RmfModels.TaskSummary.STATE_FAILED:
+        return classes.taskFailedCell;
+      case RmfModels.TaskSummary.STATE_PENDING:
+        return classes.taskPendingCell;
+      case RmfModels.TaskSummary.STATE_QUEUED:
+        return classes.taskQueuedCell;
+      default:
+        return classes.taskUnknownCell;
+    }
+  };
+
+  const taskStateCellClass = returnTaskStateCellClass(task);
+
   return (
     <>
       <TableRow
-        className={clsx(classes.infoRow, hover && classes.taskRowHover)}
+        className={clsx(hover && classes.taskRowHover)}
         onClick={onClick}
         onMouseOver={() => setHover(true)}
         onMouseOut={() => setHover(false)}
@@ -49,17 +95,7 @@ function TaskRow({ task, onClick }: TaskRowProps) {
         <TableCell>{task.robot_name}</TableCell>
         <TableCell>{toRelativeDate(task.start_time)}</TableCell>
         <TableCell>{toRelativeDate(task.end_time)}</TableCell>
-        <TableCell>{taskStateToStr(task.state)}</TableCell>
-      </TableRow>
-      <TableRow
-        className={clsx(hover && classes.taskRowHover)}
-        onClick={onClick}
-        onMouseOver={() => setHover(true)}
-        onMouseOut={() => setHover(false)}
-      >
-        <TableCell className={classes.phasesCell} colSpan={5}>
-          <TaskPhases className={classes.phasesRow} taskSummary={task}></TaskPhases>
-        </TableCell>
+        <TableCell className={taskStateCellClass}>{taskStateToStr(task.state)}</TableCell>
       </TableRow>
     </>
   );

@@ -43,15 +43,9 @@ const TrajectoryUpdateInterval = 2000;
 const SettingsKey = 'scheduleVisualizerSettings';
 const colorManager = new ColorManager();
 
-export interface MapFloorLayer {
-  level: RmfModels.Level;
-  imageUrl: string;
-  bounds: L.LatLngBounds;
-}
-
 export interface ScheduleVisualizerProps extends React.PropsWithChildren<{}> {
   buildingMap: RmfModels.BuildingMap;
-  negotiationTrajStore: Record<string, NegotiationTrajectoryResponse>;
+  negotiationTrajStore?: Record<string, NegotiationTrajectoryResponse>;
   dispensers?: Dispenser[];
   ingestors?: Ingestor[];
   doorStates?: Record<string, RmfModels.DoorState>;
@@ -68,24 +62,13 @@ export interface ScheduleVisualizerProps extends React.PropsWithChildren<{}> {
   onIngestorClick?: (ev: React.MouseEvent, guid: string) => void;
 }
 
-export function calcMaxBounds(
-  mapFloorLayers: readonly MapFloorLayer[],
-): L.LatLngBounds | undefined {
-  if (!mapFloorLayers.length) {
-    return undefined;
-  }
-  const bounds = new L.LatLngBounds([0, 0], [0, 0]);
-  Object.values(mapFloorLayers).forEach((x) => bounds.extend(x.bounds));
-  return bounds.pad(0.2);
-}
-
 interface ScheduleVisualizerSettings {
   trajectoryTime: number;
 }
 
 export default function ScheduleVisualizer({
   buildingMap,
-  negotiationTrajStore,
+  negotiationTrajStore = {},
   dispensers = [],
   ingestors = [],
   doorStates = {},
@@ -261,12 +244,14 @@ export default function ScheduleVisualizer({
             model: r.model,
             footprint: 0.5,
             color: await colorManager.robotPrimaryColor(fleetState.name, r.name, r.model),
+            iconPath:
+              (await resourceManager?.robots.getIconPath(fleetState.name, r.model)) || undefined,
           };
         }),
       );
       await safeAsync(Promise.all(promises));
     })();
-  }, [safeAsync, fleetStates, robotsStore]);
+  }, [safeAsync, fleetStates, robotsStore, resourceManager]);
 
   React.useEffect(() => {
     const newRobots = Object.values(fleetStates).flatMap((fleetState) =>

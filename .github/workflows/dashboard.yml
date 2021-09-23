@@ -34,8 +34,6 @@ jobs:
       - name: bootstrap
         run: |
           . /rmf_demos_ws/install/setup.bash
-          npm config set unsafe-perm
-          npm install -g lerna@4
           lerna bootstrap --scope=rmf-dashboard
         working-directory: .
       - name: unit test

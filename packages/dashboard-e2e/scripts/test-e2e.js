@@ -13,9 +13,10 @@ const wdioArgs = process.argv
   .map((arg) => `"${arg}"`)
   .join(' ');
 
-concurrently([...services, `node scripts/auth-ready.js && wdio ${wdioArgs}`], {
+concurrently([...services, `wdio ${wdioArgs}`], {
   killOthers: ['success', 'failure'],
   successCondition: 'first',
+  prefix: 'none',
 }).catch((e) => {
   console.error(e);
   process.exitCode = -1;
