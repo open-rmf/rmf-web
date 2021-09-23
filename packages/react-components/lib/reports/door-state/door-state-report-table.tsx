@@ -61,6 +61,7 @@ export const DoorStateReportTable = (props: DoorStateReportTable): React.ReactEl
             addMoreRows();
           }
         }}
+        disableColumnMenu={true}
       />
     </div>
   );

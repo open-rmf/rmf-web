@@ -62,6 +62,7 @@ export const IngestorStateReportTable = (props: IngestorStateReportTable): React
             addMoreRows();
           }
         }}
+        disableColumnMenu={true}
       />
     </div>
   );

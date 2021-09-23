@@ -80,6 +80,7 @@ export const UserLoginReportTable = (props: UserLoginReportTable): React.ReactEl
             addMoreRows();
           }
         }}
+        disableColumnMenu={true}
       />
     </div>
   );

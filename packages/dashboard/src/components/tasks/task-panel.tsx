@@ -1,4 +1,6 @@
 import {
+  Alert,
+  AlertProps,
   Button,
   Grid,
   IconButton,
@@ -17,7 +19,6 @@ import {
   Autorenew as AutorenewIcon,
   Refresh as RefreshIcon,
 } from '@material-ui/icons';
-import { Alert, AlertProps } from '@material-ui/lab';
 import { SubmitTask, Task } from 'api-client';
 import React from 'react';
 import { CreateTaskForm, CreateTaskFormProps, TaskInfo, TaskTable } from 'react-components';

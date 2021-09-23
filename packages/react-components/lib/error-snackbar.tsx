@@ -1,5 +1,4 @@
-import { Snackbar, SnackbarProps } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+import { Snackbar, SnackbarProps, Alert } from '@material-ui/core';
 import React from 'react';
 
 export interface ErrorSnackbarProps extends SnackbarProps {

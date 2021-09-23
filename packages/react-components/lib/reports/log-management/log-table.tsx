@@ -3,6 +3,7 @@ import { DataGrid, GridRenderCellParams } from '@mui/x-data-grid';
 import { LogLevel } from '.';
 import { Typography, styled } from '@material-ui/core';
 import { format } from 'date-fns';
+import { CustomLookupFilter } from './custom-lookup-filter';
 
 export type ContainerType = {
   id: number;
@@ -72,6 +73,7 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
     }
   };
 
+  const [selectedFilter, setSelectedFilter] = React.useState<string[]>([]);
   // FIXME: we cannot copy the LogLevel Enum directly and remove the all attribute because it has a protected attribute.
   const logLevels = React.useMemo(() => {
     const logLevelCopy: Record<string, string> = {};
@@ -146,7 +148,18 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
             },
           },
         ]}
-        rows={rows}
+        components={{
+          Toolbar: () => (
+            <CustomLookupFilter
+              lookup={logLevels}
+              selectedFilter={selectedFilter}
+              setSelectedFilter={setSelectedFilter}
+            />
+          ),
+        }}
+        rows={rows.filter((row) => {
+          if (!selectedFilter.includes(row.level)) return row;
+        })}
         pageSize={pageSize}
         rowsPerPageOptions={[50, 100]}
         onPageChange={() => {
@@ -157,6 +170,7 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
         onPageSizeChange={(pageSize) => {
           setPageSize(pageSize);
         }}
+        disableColumnMenu={true}
       />
     </LogTableRoot>
   );

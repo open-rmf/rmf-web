@@ -1,5 +1,4 @@
-import { Button, TextField } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import { Button, TextField, Autocomplete } from '@material-ui/core';
 import React, { ChangeEvent } from 'react';
 import * as RmfModels from 'rmf-models';
 import { CommandsFormRoot, commandFormsClasses } from './form-styles';

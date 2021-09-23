@@ -99,6 +99,7 @@ export const FleetStateReportTable = (props: FleetStateReportTable): React.React
             addMoreRows();
           }
         }}
+        disableColumnMenu={true}
       />
     </div>
   );

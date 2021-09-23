@@ -119,6 +119,7 @@ export const TaskSummaryReportTable = (props: TaskSummaryReportTable): React.Rea
             addMoreRows();
           }
         }}
+        disableColumnMenu={true}
       />
     </div>
   );

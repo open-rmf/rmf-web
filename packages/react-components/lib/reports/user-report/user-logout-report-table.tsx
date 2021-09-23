@@ -71,6 +71,7 @@ export const UserLogoutReportTable = (props: UserLogoutReportTable): React.React
             addMoreRows();
           }
         }}
+        disableColumnMenu={true}
       />
     </div>
   );

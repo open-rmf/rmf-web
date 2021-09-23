@@ -62,6 +62,7 @@ export const DispenserStateReportTable = (props: DispenserStateReportTable): Rea
             addMoreRows();
           }
         }}
+        disableColumnMenu={true}
       />
     </div>
   );

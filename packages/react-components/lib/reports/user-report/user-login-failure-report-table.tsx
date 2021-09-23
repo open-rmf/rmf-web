@@ -76,6 +76,7 @@ export const UserLoginFailureReportTable = (
             addMoreRows();
           }
         }}
+        disableColumnMenu={true}
       />
     </div>
   );

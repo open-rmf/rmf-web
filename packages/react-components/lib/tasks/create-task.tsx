@@ -1,4 +1,5 @@
 import {
+  Autocomplete,
   Button,
   Divider,
   Grid,
@@ -10,12 +11,7 @@ import {
   useTheme,
   styled,
 } from '@material-ui/core';
-import {
-  Autocomplete,
-  DateTimePicker,
-  LocalizationProvider,
-  LocalizationProviderProps,
-} from '@material-ui/lab';
+import { DateTimePicker, LocalizationProvider, LocalizationProviderProps } from '@material-ui/lab';
 import AdapterDateFns from '@material-ui/lab/AdapterDateFns';
 import type {
   CleanTaskDescription,

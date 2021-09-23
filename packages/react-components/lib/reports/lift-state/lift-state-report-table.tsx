@@ -100,6 +100,7 @@ export const LiftStateReportTable = (props: LiftStateReportTable): React.ReactEl
             addMoreRows();
           }
         }}
+        disableColumnMenu={true}
       />
     </div>
   );

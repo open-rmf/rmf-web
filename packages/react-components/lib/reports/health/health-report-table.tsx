@@ -79,6 +79,7 @@ export const HealthReportTable = (props: HealthReportTable): React.ReactElement 
             addMoreRows();
           }
         }}
+        disableColumnMenu={true}
       />
     </div>
   );

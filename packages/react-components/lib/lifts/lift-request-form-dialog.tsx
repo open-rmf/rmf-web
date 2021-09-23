@@ -1,8 +1,7 @@
-import { IconButton, styled } from '@material-ui/core';
+import { IconButton, styled, Autocomplete } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import CloseIcon from '@material-ui/icons/Close';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
