@@ -35,8 +35,7 @@ export const WaypointsOverlay = ({
                 cy={y}
                 size={size}
                 aria-label={waypoint.vertex.name}
-                transform={`scale(${scale})`}
-                transform-origin={`${x} ${y}`}
+                style={{ transform: `scale(${scale})`, transformOrigin: `${x}px ${y}px` }}
               />
               <ScaledNameLabel
                 text={waypoint.vertex.name}

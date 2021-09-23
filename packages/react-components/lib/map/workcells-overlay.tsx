@@ -64,8 +64,7 @@ export const WorkcellsOverlay = ({
                 iconPath={workcell.iconPath}
                 onClick={onWorkcellClick}
                 aria-label={workcell.guid}
-                transform={`scale(${scale})`}
-                transform-origin={`${x} ${y}`}
+                style={{ transform: `scale(${scale})`, transformOrigin: `${x}px ${y}px` }}
               />
               <ScaledNameLabel
                 text={workcell.guid}

@@ -83,8 +83,10 @@ export const RobotsOverlay = ({
                 iconPath={robot.iconPath}
                 onClick={onRobotClick}
                 aria-label={robot.name}
-                transform={`rotate(${theta}) scale(${scale})`}
-                transform-origin={`${x} ${y}`}
+                style={{
+                  transform: `rotate(${theta}) scale(${scale})`,
+                  transformOrigin: `${x}px ${y}px`,
+                }}
               />
               <ScaledNameLabel
                 text={robot.name}

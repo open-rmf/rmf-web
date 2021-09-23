@@ -83,8 +83,7 @@ export const LiftsOverlay = ({
                   liftStates[lift.name]?.current_floor,
                 )}
                 translate
-                transform={`scale(${scale})`}
-                transform-origin={`${pos[0]} ${pos[1]}`}
+                style={{ transform: `scale(${scale})`, transformOrigin: `${pos[0]}px ${pos[1]}px` }}
                 aria-label={lift.name}
               />
               <ScaledNameLabel

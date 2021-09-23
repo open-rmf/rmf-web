@@ -58,8 +58,10 @@ export const DoorsOverlay = ({
                 }
                 aria-label={door.name}
                 translate
-                transform={`scale(${scale})`}
-                transform-origin={`${center[0]} ${center[1]}`}
+                style={{
+                  transform: `scale(${scale})`,
+                  transformOrigin: `${center[0]}px ${center[1]}px`,
+                }}
               />
               <ScaledNameLabel
                 text={door.name}
