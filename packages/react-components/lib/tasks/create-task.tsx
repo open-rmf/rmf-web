@@ -10,6 +10,7 @@ import {
   MenuItem,
   TextField,
   useTheme,
+  Tooltip,
 } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 import { KeyboardDateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
@@ -38,6 +39,9 @@ const useStyles = makeStyles((theme) => ({
   },
   selectedTask: {
     background: theme.palette.action.focus,
+  },
+  errorTask: {
+    color: theme.palette.error.main,
   },
 }));
 
@@ -347,6 +351,23 @@ function defaultTask(): SubmitTask {
   };
 }
 
+function getToolTipMessage(errMsgs: string[]) {
+  return errMsgs.length === 0 ? (
+    ''
+  ) : (
+    <div>
+      {errMsgs.map((msg) => {
+        return <div>{msg}</div>;
+      })}
+    </div>
+  );
+}
+
+export interface SubmitTaskDetails {
+  submitTask: SubmitTask[];
+  errors: { [index: string]: string[] };
+}
+
 export interface CreateTaskFormProps
   extends Omit<ConfirmationDialogProps, 'onConfirmClick' | 'toolbar'> {
   /**
@@ -359,7 +380,7 @@ export interface CreateTaskFormProps
   dispensers?: string[];
   ingestors?: string[];
   submitTasks?(tasks: SubmitTask[]): Promise<void>;
-  tasksFromFile?(): Promise<SubmitTask[]> | SubmitTask[];
+  tasksFromFile?(): Promise<SubmitTaskDetails> | SubmitTaskDetails;
   onSuccess?(tasks: SubmitTask[]): void;
   onFail?(error: Error, tasks: SubmitTask[]): void;
 }
@@ -379,6 +400,10 @@ export function CreateTaskForm({
   const theme = useTheme();
   const classes = useStyles();
   const [tasks, setTasks] = React.useState<SubmitTask[]>(() => [defaultTask()]);
+  const [taskDetails, setTaskDetails] = React.useState<SubmitTaskDetails>({
+    submitTask: [],
+    errors: {},
+  });
   const [selectedTaskIdx, setSelectedTaskIdx] = React.useState(0);
   const taskTitles = React.useMemo(
     () => tasks && tasks.map((t, i) => `${i + 1}: ${getShortDescription(t)}`),
@@ -472,10 +497,11 @@ export function CreateTaskForm({
     }
     (async () => {
       const newTasks = await tasksFromFile();
-      if (newTasks.length === 0) {
+      if (newTasks.submitTask.length === 0) {
         return;
       }
-      setTasks(newTasks);
+      setTasks(newTasks.submitTask);
+      setTaskDetails(newTasks);
       setSelectedTaskIdx(0);
     })();
   };
@@ -549,7 +575,7 @@ export function CreateTaskForm({
             </Grid>
             {renderTaskDescriptionForm()}
           </Grid>
-          {taskTitles.length > 1 && (
+          {taskTitles.length > 1 && Object.keys(taskDetails.errors).length > 0 && (
             <>
               <Divider
                 orientation="vertical"
@@ -565,7 +591,12 @@ export function CreateTaskForm({
                     className={selectedTaskIdx === idx ? classes.selectedTask : undefined}
                     role="listitem button"
                   >
-                    <ListItemText primary={title} />
+                    <Tooltip title={getToolTipMessage(taskDetails.errors[idx])}>
+                      <ListItemText
+                        className={taskDetails.errors[idx].length > 0 ? classes.errorTask : ''}
+                        primary={title}
+                      />
+                    </Tooltip>
                   </ListItem>
                 ))}
               </List>

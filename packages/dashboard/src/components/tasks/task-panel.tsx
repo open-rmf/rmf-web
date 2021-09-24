@@ -18,9 +18,15 @@ import {
   Refresh as RefreshIcon,
 } from '@material-ui/icons';
 import { Alert, AlertProps } from '@material-ui/lab';
-import { SubmitTask, Task } from 'api-client';
+import { Task } from 'api-client';
 import React from 'react';
-import { CreateTaskForm, CreateTaskFormProps, TaskInfo, TaskTable } from 'react-components';
+import {
+  CreateTaskForm,
+  CreateTaskFormProps,
+  TaskInfo,
+  TaskTable,
+  SubmitTaskDetails,
+} from 'react-components';
 import { UserProfileContext } from 'rmf-auth';
 import * as RmfModels from 'rmf-models';
 import { Enforcer } from '../permissions';
@@ -115,7 +121,7 @@ export function TaskPanel({
   }, [cancelTask, selectedTask]);
 
   /* istanbul ignore next */
-  const tasksFromFile = (): Promise<SubmitTask[]> => {
+  const tasksFromFile = (): Promise<SubmitTaskDetails> => {
     return new Promise((res) => {
       const fileInputEl = uploadFileInputRef.current;
       if (!fileInputEl) {
@@ -124,7 +130,7 @@ export function TaskPanel({
       const listener = async () => {
         try {
           if (!fileInputEl.files || fileInputEl.files.length === 0) {
-            return res([]);
+            return res({ submitTask: [], errors: {} });
           }
           return res(parseTasksFile(await fileInputEl.files[0].text()));
         } finally {
