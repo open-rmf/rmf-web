@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 export function radiansToDegrees(radians: number): number {
   return radians * (180 / Math.PI);
 }
@@ -5,46 +7,14 @@ export function radiansToDegrees(radians: number): number {
 /**
  * Transform coords on the middle of a SVG's Rect to top left coords.
  */
-export function transformMiddleCoordsOfRectToSVGBeginPoint(
+export const transformMiddleCoordsOfRectToSVGBeginPoint = (
   x: number,
   y: number,
   width: number,
   depth: number,
-): [number, number] {
+): [x: number, y: number] => {
   return [x - width / 2, y + depth / 2];
-}
-
-/**
- * Converts a svg coordinate to RMF.
- * @param pos
- */
-export function toRmfCoords(pos: [number, number]): [number, number] {
-  return [pos[0], -pos[1]];
-}
-
-/**
- * Converts a RMF coordinate to SVG
- * @param pos
- */
-export function fromRmfCoords(pos: [number, number]): [number, number] {
-  return [pos[0], -pos[1]];
-}
-
-/**
- * Converts a SVG rotation (in radians) to RMF yaw (in radians)
- * @param yaw
- */
-export function toRmfYaw(yaw: number): number {
-  return -yaw;
-}
-
-/**
- * Converts a RMF yaw angle (in radians) to svg (in radians)
- * @param yaw
- */
-export function fromRmfYaw(yaw: number): number {
-  return -yaw;
-}
+};
 
 export interface Pose2D {
   x: number;
@@ -209,8 +179,42 @@ function bezierHelper(coeffs: CoefficientSet): [number, number, number, number] 
   return [p0, p1, p2, p3];
 }
 
-export function bezierControlPoints(segmentCoefficients: SegmentCoefficients): number[][] {
+export function bezierControlPoints(
+  segmentCoefficients: SegmentCoefficients,
+): [x: number, y: number][] {
   const px = bezierHelper(segmentCoefficients.x);
   const py = bezierHelper(segmentCoefficients.y);
   return px.map((x, i) => [x, py[i]]);
+}
+
+/**
+ * Converts a svg coordinate to RMF.
+ * @param pos
+ */
+export function toRmfCoords(pos: [number, number]): [number, number] {
+  return [pos[0], -pos[1]];
+}
+
+/**
+ * Converts a RMF coordinate to SVG
+ * @param pos
+ */
+export function fromRmfCoords(pos: [number, number]): [number, number] {
+  return [pos[0], -pos[1]];
+}
+
+/**
+ * Converts a SVG rotation (in radians) to RMF yaw (in radians)
+ * @param yaw
+ */
+export function toRmfYaw(yaw: number): number {
+  return -yaw;
+}
+
+/**
+ * Converts a RMF yaw angle (in radians) to svg (in radians)
+ * @param yaw
+ */
+export function fromRmfYaw(yaw: number): number {
+  return -yaw;
 }

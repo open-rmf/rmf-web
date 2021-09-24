@@ -4,7 +4,7 @@ import { makeTrajectory } from './test-utils.spec';
 import { TrajectoryMarker, TrajectoryMarkerProps } from './trajectory-marker';
 
 export default {
-  title: 'Trajectory Markers',
+  title: 'Map/Trajectory Markers',
   component: TrajectoryMarker,
   argTypes: {
     color: {
@@ -31,6 +31,5 @@ export const Basic: Story<Omit<TrajectoryMarkerProps, 'trajectory'>> = (args) =>
 };
 Basic.args = {
   color: 'green',
-  animationLoop: true,
-  variant: 'follow',
+  loopAnimation: true,
 };

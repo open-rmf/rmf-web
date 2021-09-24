@@ -1,6 +1,5 @@
 import * as RmfModels from 'rmf-models';
 import { Place } from '../place';
-import { makeRobot } from '../robots/test-utils.spec';
 import { RobotData } from './robots-overlay';
 import { TrajectoryData } from './trajectories-overlay';
 import { RawKnot, RawVelocity, Trajectory } from './trajectory';

@@ -1,4 +1,4 @@
-import { defaultDict } from './utils';
+import { defaultDict } from './misc';
 
 it('sets correct default value', () => {
   const dict = defaultDict(() => 'hello');

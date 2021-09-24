@@ -1,49 +1,34 @@
 import { Grid, Paper, Typography } from '@material-ui/core';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
-import { makeRobot } from '../robots/test-utils.spec';
 import { RobotMarker, RobotMarkerProps } from './robot-marker';
 
 export default {
-  title: 'Robot Markers',
+  title: 'Map/Robot Markers',
   component: RobotMarker,
   parameters: { controls: { include: ['onClick'], hideNoControlsWarning: true } },
 } as Meta;
 
-function makeRobotMarkerProps(
-  robotState?: Partial<RmfModels.RobotState>,
-  props?: Partial<Omit<RobotMarkerProps, 'robot'>>,
-): RobotMarkerProps {
+function makeRobotMarkerProps(props?: Partial<Omit<RobotMarkerProps, 'robot'>>): RobotMarkerProps {
   props = props || {};
-  const robot = makeRobot(robotState);
   return {
-    name: robot.name,
-    model: robot.model,
-    x: robot.location.x,
-    y: robot.location.y,
-    yaw: robot.location.yaw,
-    fleetName: 'testFleet',
-    footprint: 1,
+    cx: 0,
+    cy: 0,
+    r: 1,
+    color: 'blue',
+    inConflict: false,
     ...props,
   };
 }
 
 const robotMarkerProps: Record<string, RobotMarkerProps> = {
-  Basic: makeRobotMarkerProps({ name: 'BasicRobot' }),
-  'Really Really Loooonnnnnggggg Name': makeRobotMarkerProps({
-    name: 'I have a really really loooonnnnnggggg name',
+  Basic: makeRobotMarkerProps(),
+  'In Conflict': makeRobotMarkerProps({ inConflict: true }),
+  'With Icon': makeRobotMarkerProps({ iconPath: '/assets/tiny-robot.png' }),
+  'With Icon, In Conflict': makeRobotMarkerProps({
+    iconPath: '/assets/tiny-robot.png',
+    inConflict: true,
   }),
-  'In Conflict': makeRobotMarkerProps({ name: 'ConflictingRobot' }, { variant: 'inConflict' }),
-  'Name With Space': makeRobotMarkerProps({ name: 'I have spaces' }),
-  'With Icon': makeRobotMarkerProps(
-    { name: 'RobotWithIcon', model: 'fleetWithIcon' },
-    { fleetName: 'fleetWithIcon', iconPath: '/assets/tinyRobot.png' },
-  ),
-  'With Icon, In Conflict': makeRobotMarkerProps(
-    { name: 'RobotWithIcon', model: 'fleetWithIcon' },
-    { fleetName: 'fleetWithIcon', iconPath: '/assets/tinyRobot.png', variant: 'inConflict' },
-  ),
 };
 
 export const Gallery: Story = (args) => {
@@ -57,7 +42,7 @@ export const Gallery: Story = (args) => {
                 <Typography align="center">{k}</Typography>
               </Grid>
               <Grid item>
-                <svg viewBox="-2 -2 4 4" style={{ minWidth: 200 }}>
+                <svg viewBox="-4 -2 8 4" width={400} height={200}>
                   <RobotMarker {...robotMarkerProps[k]} {...args} />
                 </svg>
               </Grid>
@@ -66,24 +51,5 @@ export const Gallery: Story = (args) => {
         </Grid>
       ))}
     </Grid>
-  );
-};
-
-export const NoTranslate: Story = (args) => {
-  const robotMarkerProps = makeRobotMarkerProps({
-    location: {
-      level_name: 'test',
-      x: 10,
-      y: 10,
-      yaw: 0,
-      t: { sec: 0, nanosec: 0 },
-      index: 0,
-    },
-  });
-
-  return (
-    <svg viewBox="-2 -2 4 4" width={400} height={400}>
-      <RobotMarker {...robotMarkerProps} translate={false} {...args} />
-    </svg>
   );
 };

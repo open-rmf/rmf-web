@@ -1,7 +1,6 @@
 import { act, cleanup, render as render_, RenderResult } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { makeRobot } from '../robots/test-utils.spec';
 import { RobotMarker } from './robot-marker';
 import { RobotData } from './robots-overlay';
 import { makeRobotData } from './test-utils.spec';
@@ -28,49 +27,27 @@ describe('RobotMarker', () => {
       }),
     ];
     for (const robot of robots) {
-      await render(
-        <RobotMarker
-          color={robot.color}
-          fleet={robot.fleet}
-          name={robot.name}
-          model={robot.model}
-          footprint={robot.footprint}
-          state={makeRobot({ name: robot.name })}
-        />,
-      );
+      await render(<RobotMarker cx={0} cy={0} r={1} color={robot.color} />);
       cleanup();
     }
   });
 
   it('trigger onClick event', async () => {
-    const robot = makeRobotData();
     const onClick = jasmine.createSpy();
     const root = await render(
-      <RobotMarker
-        fleet={robot.fleet}
-        name={robot.name}
-        model={robot.model}
-        footprint={robot.footprint}
-        color="#000000"
-        state={makeRobot({ name: robot.name })}
-        onClick={onClick}
-        data-testid="marker"
-      />,
+      <RobotMarker cx={0} cy={0} r={1} color="#000000" onClick={onClick} data-testid="marker" />,
     );
     userEvent.click(root.getByTestId('marker'));
     expect(onClick).toHaveBeenCalled();
   });
 
   it('providing iconPath renders an image', async () => {
-    const robot = makeRobotData();
     const root = await render(
       <RobotMarker
-        fleet={robot.fleet}
-        name={robot.name}
-        model={robot.model}
-        footprint={robot.footprint}
+        cx={0}
+        cy={0}
+        r={1}
         color="#000000"
-        state={makeRobot({ name: robot.name })}
         iconPath="/base/test-data/assets/tiny-robot.png"
       />,
     );

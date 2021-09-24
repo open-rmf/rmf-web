@@ -3,8 +3,9 @@ import clsx from 'clsx';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import React from 'react';
-import { Map as LMap_, MapProps as LMapProps_ } from 'react-leaflet';
+import { Map as LMap_, MapProps as LMapProps_, useLeaflet } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
+import { EntityManager, EntityManagerContext } from './entity-manager';
 
 const useStyles = makeStyles(() => ({
   map: {
@@ -32,14 +33,33 @@ export function calcMaxBounds(
   return bounds.pad(0.2);
 }
 
+function LabelManagerProvider({ children }: React.PropsWithChildren<{}>) {
+  const leaflet = useLeaflet();
+  const { current: entityManager } = React.useRef(new EntityManager());
+
+  React.useEffect(() => {
+    if (!leaflet.map) return;
+    const listener = () => {
+      // TODO: recalculate positions
+    };
+    leaflet.map.on('zoom', listener);
+    return () => {
+      leaflet.map && leaflet.map.off('zoom', listener);
+    };
+  }, [leaflet.map]);
+
+  return entityManager ? (
+    <EntityManagerContext.Provider value={entityManager}>{children}</EntityManagerContext.Provider>
+  ) : null;
+}
+
 export type LMapProps = Omit<LMapProps_, 'crs'>;
 
 export function LMap({ className, children, ...otherProps }: LMapProps): React.ReactElement {
   const classes = useStyles();
-
   return (
     <LMap_ className={clsx(classes.map, className)} crs={L.CRS.Simple} {...otherProps}>
-      {children}
+      <LabelManagerProvider>{children}</LabelManagerProvider>
     </LMap_>
   );
 }

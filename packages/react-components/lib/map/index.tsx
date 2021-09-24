@@ -1,6 +1,7 @@
 export * from './affine-image-overlay';
 export * from './door-marker';
 export * from './doors-overlay';
+export * from './entity-manager';
 export * from './lift-marker';
 export * from './lifts-overlay';
 export * from './map';
