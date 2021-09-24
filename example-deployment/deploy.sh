@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+
 
 if [ $# -lt 2 ]; then
   echo 'Usage: deploy.sh <rmf-ws> <rmf-web-ws>'
@@ -72,6 +72,63 @@ try() {
   "$@" || (sleep 1 && "$@") || (sleep 5 && "$@")
 }
 try node keycloak-tools/bootstrap-keycloak.js
+try node keycloak-tools/get-cert.js > keycloak.pem
+openssl x509 -in keycloak.pem -pubkey -noout -out jwt-pub-key.pub
+kubectl create configmap jwt-pub-key --from-file=jwt-pub-key.pub -o=yaml --dry-run=client | kubectl apply -f -
+
+echo 'deploying Minio...'
+.bin/minikube kubectl -- apply -f k8s/minio.yaml
+
+echo 'building base rmf image...'
+docker build -t rmf-web/builder -f docker/builder.dockerfile $rmf_ws/src
+
+echo 'building rmf-server image...'
+docker build -t rmf-web/rmf-server -f docker/rmf-server.dockerfile $rmf_web_ws
+echo 'publishing rmf-server image...'
+docker save rmf-web/rmf-server | bash -c 'eval $(.bin/minikube docker-env) && docker load'
+echo 'creating rmf-server configmap...'
+kubectl create configmap rmf-server-config --from-file=rmf_server_config.py -o=yaml --dry-run=client | kubectl apply -f -
+echo 'deploying rmf-server...'
+kubectl apply -f k8s/rmf-server.yaml
+
+echo 'building dashboard image...'
+docker build -t rmf-web/dashboard -f docker/dashboard.dockerfile $rmf_web_ws
+echo 'publishing dashboard image...'
+docker save rmf-web/dashboard | bash -c 'eval $(.bin/minikube docker-env) && docker load'
+echo 'deploying dashboard...'
+kubectl apply -f k8s/dashboard.yaml
+
+echo 'building minimal dashboard image...'
+docker build -t rmf-web/minimal -f docker/minimal.dockerfile $rmf_web_ws
+echo 'publishing minimal dashboard image...'
+docker save rmf-web/minimal | bash -c 'eval $(.bin/minikube docker-env) && docker load'
+echo 'deploying minimal dashboard...'
+kubectl apply -f k8s/minimal.yaml
+
+echo 'building reporting-server image...'
+docker build -t rmf-web/reporting-server -f docker/reporting-server.dockerfile $rmf_web_ws
+echo 'publishing reporting-server image...'
+docker save rmf-web/reporting-server | bash -c 'eval $(.bin/minikube docker-env) && docker load'
+echo 'creating reporting-server configmap...'
+kubectl create configmap reporting-server-config --from-file=reporting_server_config.py -o=yaml --dry-run=client | kubectl apply -f -
+echo 'deploying reporting-server...'
+kubectl apply -f k8s/reporting-server.yaml
+
+
+echo 'building reporting image...'
+docker build -t rmf-web/reporting -f docker/reporting.dockerfile $rmf_web_ws
+echo 'publishing reporting image...'
+docker save rmf-web/reporting | bash -c 'eval $(.bin/minikube docker-env) && docker load'
+echo 'deploying reporting-server...'
+kubectl apply -f k8s/reporting.yaml
+
+echo 'Applying FluentD configmap ...'
+.bin/minikube kubectl -- apply -f k8s/fluentd-configmap.yaml
+echo 'deploying FluentD daemonset...'
+.bin/minikube kubectl -- apply -f k8s/fluentd.yaml
+
+echo 'deploying cronjobs ...'
+.bin/minikube kubectl -- apply -f k8s/cronjobs.yaml
 try node keycloak-tools/get-cert.js > k8s/example-full/keycloak/keycloak.pem
 openssl x509 -in k8s/example-full/keycloak/keycloak.pem -pubkey -noout -out k8s/example-full/keycloak/jwt-pub-key.pub
 echo '✅ successfully setup keycloak'

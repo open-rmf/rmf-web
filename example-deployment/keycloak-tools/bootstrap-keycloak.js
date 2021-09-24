@@ -92,6 +92,21 @@ async function createAudienceClientScope(headers, name, description, audience) {
       },
     );
 
+    await tryRequest(
+      `${baseUrl}/admin/realms/rmf-web/clients`,
+      {
+        method: 'POST',
+        headers: authHeaders(token),
+      },
+      {
+        clientId: 'minimal',
+        rootUrl: 'https://example.com',
+        redirectUris: ['https://example.com/*'],
+        webOrigins: ['https://example.com'],
+        publicClient: true,
+      },
+    );
+
     {
       // create admin user
       await tryRequest(
@@ -189,7 +204,9 @@ async function createAudienceClientScope(headers, name, description, audience) {
       'reporting',
     );
 
-    // get existing clients (dashboard and reporting)
+    await createAudienceClientScope(authHeaders(token), 'minimal', 'minimal scope', 'minimal');
+
+    // get existing clients (dashboard, reporting and minimal)
     const clientsRaw = await request(`${baseUrl}/admin/realms/rmf-web/clients`, {
       method: 'GET',
       headers: authHeaders(token),
@@ -205,7 +222,11 @@ async function createAudienceClientScope(headers, name, description, audience) {
       return item.clientId === 'reporting';
     })[0].id;
 
-    // get existing clients (dashboard and reporting)
+    const minimalId = clientArray.filter(function (item) {
+      return item.clientId === 'minimal';
+    })[0].id;
+
+    // get existing clients (dashboard, reporting and minimal)
     const clientsScopeRaw = await request(`${baseUrl}/admin/realms/rmf-web/client-scopes`, {
       method: 'GET',
       headers: authHeaders(token),
@@ -220,8 +241,13 @@ async function createAudienceClientScope(headers, name, description, audience) {
       return item.name == 'reporting';
     })[0].id;
 
+    const clientScopeMinimalId = clientScopesArray.filter(function (item) {
+      return item.name == 'minimal';
+    })[0].id;
+
     await setClientScopeToClient(authHeaders(token), dashboardId, clientScopeDashboardId);
     await setClientScopeToClient(authHeaders(token), reportingId, clientScopeReportingId);
+    await setClientScopeToClient(authHeaders(token), minimalId, clientScopeMinimalId);
   } catch (e) {
     process.exitCode = 1;
   }

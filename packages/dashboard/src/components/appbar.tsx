@@ -34,6 +34,10 @@ const useStyles = makeStyles((theme) =>
       textAlign: 'right',
       flexGrow: -1,
     },
+    link: {
+      textDecoration: 'none',
+      color: '#000',
+    },
   }),
 );
 
