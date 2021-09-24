@@ -1,7 +1,7 @@
 import { cleanup, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { allLiftModes, allLiftMotion, makeLift, makeLiftState } from '../lifts/test-utils.spec';
+import { allLiftModes, allLiftMotion, makeLiftState } from '../lifts/test-utils.spec';
 import { LiftMarker, LiftMarkerProps } from './lift-marker';
 
 describe('LiftMarker', () => {
@@ -18,7 +18,15 @@ describe('LiftMarker', () => {
     ] as LiftMarkerProps['variant'][]).forEach((variant) => {
       render(
         <svg>
-          <LiftMarker lift={makeLift()} liftState={makeLiftState()} variant={variant} />
+          <LiftMarker
+            cx={0}
+            cy={0}
+            width={1}
+            height={1}
+            yaw={0}
+            liftState={makeLiftState()}
+            variant={variant}
+          />
         </svg>,
       );
       cleanup();
@@ -28,7 +36,7 @@ describe('LiftMarker', () => {
   it('smoke test with translate false', () => {
     render(
       <svg>
-        <LiftMarker lift={makeLift()} liftState={makeLiftState()} />
+        <LiftMarker cx={0} cy={0} width={1} height={1} yaw={0} liftState={makeLiftState()} />
       </svg>,
     );
   });
@@ -43,7 +51,7 @@ describe('LiftMarker', () => {
       .forEach((state) => {
         render(
           <svg>
-            <LiftMarker lift={makeLift()} liftState={state} />
+            <LiftMarker cx={0} cy={0} width={1} height={1} yaw={0} liftState={state} />
           </svg>,
         );
         cleanup();
@@ -60,7 +68,7 @@ describe('LiftMarker', () => {
       .forEach((state) => {
         render(
           <svg>
-            <LiftMarker lift={makeLift()} liftState={state} />
+            <LiftMarker cx={0} cy={0} width={1} height={1} yaw={0} liftState={state} />
           </svg>,
         );
         cleanup();
@@ -70,7 +78,7 @@ describe('LiftMarker', () => {
   it('smoke test with no state', () => {
     render(
       <svg>
-        <LiftMarker lift={makeLift()} />
+        <LiftMarker cx={0} cy={0} width={1} height={1} yaw={0} />
       </svg>,
     );
   });
@@ -80,7 +88,11 @@ describe('LiftMarker', () => {
     const root = render(
       <svg>
         <LiftMarker
-          lift={makeLift()}
+          cx={0}
+          cy={0}
+          width={1}
+          height={1}
+          yaw={0}
           liftState={makeLiftState()}
           onClick={mockOnClick}
           data-testid="marker"

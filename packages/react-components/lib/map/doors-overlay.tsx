@@ -8,6 +8,7 @@ import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 import { getDoorCenter, viewBoxFromLeafletBounds } from './utils';
 
 interface BoundedMarkerProps extends Omit<DoorMarkerProps, 'onClick'> {
+  door: RmfModels.Door;
   onClick?: (ev: React.MouseEvent, door: string) => void;
 }
 
@@ -16,10 +17,10 @@ interface BoundedMarkerProps extends Omit<DoorMarkerProps, 'onClick'> {
  * This is needed to avoid re-rendering all markers when only one of them changes.
  */
 function bindMarker(MarkerComponent: React.ComponentType<DoorMarkerProps>) {
-  return ({ onClick, ...otherProps }: BoundedMarkerProps) => {
-    const handleClick = React.useCallback((ev) => onClick && onClick(ev, otherProps.door.name), [
+  return ({ door, onClick, ...otherProps }: BoundedMarkerProps) => {
+    const handleClick = React.useCallback((ev) => onClick && onClick(ev, door.name), [
       onClick,
-      otherProps.door.name,
+      door.name,
     ]);
     return <MarkerComponent onClick={onClick && handleClick} {...otherProps} />;
   };
@@ -48,16 +49,22 @@ export const DoorsOverlay = ({
       <svg viewBox={viewBox}>
         {doors.map((door) => {
           const center = fromRmfCoords(getDoorCenter(door));
+          const [x1, y1] = fromRmfCoords([door.v1_x, door.v1_y]);
+          const [x2, y2] = fromRmfCoords([door.v2_x, door.v2_y]);
           return (
             <g key={door.name}>
               <DoorMarker
-                onClick={onDoorClick}
                 door={door}
+                onClick={onDoorClick}
+                x1={x1}
+                y1={y1}
+                x2={x2}
+                y2={y2}
+                doorType={door.door_type}
                 doorMode={
                   doorStates && doorStates[door.name] && doorStates[door.name].current_mode.value
                 }
                 aria-label={door.name}
-                translate
                 style={{
                   transform: `scale(${scale})`,
                   transformOrigin: `${center[0]}px ${center[1]}px`,
