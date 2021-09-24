@@ -6,7 +6,7 @@ describe('WaypointMarker', () => {
   it('smoke test', () => {
     render(
       <svg>
-        <WaypointMarker />
+        <WaypointMarker cx={0} cy={0} size={1} />
       </svg>,
     );
   });

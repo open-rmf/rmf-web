@@ -123,24 +123,27 @@ export interface DoorMarkerProps extends React.PropsWithRef<React.SVGProps<SVGGE
 }
 
 export const DoorMarker = React.forwardRef(
-  (props: DoorMarkerProps, ref: React.Ref<SVGGElement>) => {
-    const { doorType, ...otherProps } = props;
+  (
+    { x1, y1, x2, y2, doorType, doorMode, ...otherProps }: DoorMarkerProps,
+    ref: React.Ref<SVGGElement>,
+  ) => {
     const classes = useDoorStyles();
+    const doorProps = { x1, y1, x2, y2, doorType, doorMode };
 
     const renderDoor = () => {
       switch (doorType) {
         case RmfModels.Door.DOOR_TYPE_SINGLE_SWING:
-          return <SingleSwingDoor {...props} />;
+          return <SingleSwingDoor {...doorProps} />;
         case RmfModels.Door.DOOR_TYPE_SINGLE_SLIDING:
-          return <SingleSlidingDoor {...props} />;
+          return <SingleSlidingDoor {...doorProps} />;
         case RmfModels.Door.DOOR_TYPE_SINGLE_TELESCOPE:
-          return <SingleTelescopeDoor {...props} />;
+          return <SingleTelescopeDoor {...doorProps} />;
         case RmfModels.Door.DOOR_TYPE_DOUBLE_SWING:
-          return <DoubleSwingDoor {...props} />;
+          return <DoubleSwingDoor {...doorProps} />;
         case RmfModels.Door.DOOR_TYPE_DOUBLE_SLIDING:
-          return <DoubleSlidingDoor {...props} />;
+          return <DoubleSlidingDoor {...doorProps} />;
         case RmfModels.Door.DOOR_TYPE_DOUBLE_TELESCOPE:
-          return <DoubleTelescopeDoor {...props} />;
+          return <DoubleTelescopeDoor {...doorProps} />;
         default:
           return null;
       }
