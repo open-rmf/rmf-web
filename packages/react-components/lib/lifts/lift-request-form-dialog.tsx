@@ -117,11 +117,10 @@ export const LiftRequestFormDialog = ({
       fullWidth={true}
       maxWidth={'md'}
       onSubmit={handleLiftRequest}
-      showDialogActions={false}
+      title={'Lift Request Form'}
+      confirmText={'Request'}
+      cancelText={'Close'}
     >
-      <IconButton aria-label="close" className={classes.closeButton} onClick={() => onClose()}>
-        <CloseIcon />
-      </IconButton>
       <div className={classes.divForm}>
         <Autocomplete
           getOptionLabel={(option) => option}
@@ -177,12 +176,6 @@ export const LiftRequestFormDialog = ({
           )}
           value={requestType}
         />
-      </div>
-
-      <div className={classes.buttonContainer}>
-        <Button variant="contained" color="primary" type="submit" className={classes.button}>
-          Request
-        </Button>
       </div>
     </ConfirmationDialog>
   );

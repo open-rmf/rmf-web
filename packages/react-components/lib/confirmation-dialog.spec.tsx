@@ -17,22 +17,4 @@ describe('ConfirmDialogActions', () => {
     userEvent.click(root.getByText('OK'));
     expect(onSubmit).toHaveBeenCalled();
   });
-
-  it('should not show dialog actions section when showDialogActions is false', () => {
-    const onSubmit = jasmine.createSpy();
-    const root = render(
-      <ConfirmationDialog open={true} onSubmit={onSubmit} showDialogActions={false} />,
-    );
-    expect(root.queryByText('Cancel')).toBeNull();
-    expect(root.queryByText('OK')).toBeNull();
-  });
-
-  it('should show dialog actions section when showDialogActions is true', () => {
-    const onSubmit = jasmine.createSpy();
-    const root = render(
-      <ConfirmationDialog open={true} onSubmit={onSubmit} showDialogActions={true} />,
-    );
-    expect(root.queryByText('Cancel')).toBeTruthy();
-    expect(root.queryByText('OK')).toBeTruthy();
-  });
 });
