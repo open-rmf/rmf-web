@@ -39,6 +39,7 @@
     "node-vibrant": "^3.1.6",
     "react-customizable-progressbar": "^1.0.3",
     "react-leaflet": "^2.7.0",
+    "react-window": "^1.8.6",
     "rmf-models": "*"
   },
   "devDependencies": {
@@ -57,6 +58,7 @@
     "@types/react-dom": "^16.9.12",
     "@types/react-router": "^5.1.7",
     "@types/react-router-dom": "^5.1.7",
+    "@types/react-window": "^1.8.5",
     "@typescript-eslint/eslint-plugin": "^4.22.1",
     "@typescript-eslint/parser": "^4.22.1",
     "concurrently": "^5.3.0",
