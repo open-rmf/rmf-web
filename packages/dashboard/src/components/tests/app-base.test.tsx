@@ -5,12 +5,12 @@ import React from 'react';
 import { MemoryRouter } from 'react-router';
 import { AppBase } from '../app-base';
 import { AppControllerContext } from '../app-contexts';
-import { theme } from '../theme';
+import { mockTheme } from './test-utils';
 
 const render = (children: React.ReactNode) =>
   render_(
     <MemoryRouter>
-      <ThemeProvider theme={theme}>{children}</ThemeProvider>
+      <ThemeProvider theme={mockTheme}>{children}</ThemeProvider>
     </MemoryRouter>,
   );
 
@@ -26,9 +26,11 @@ test('can show and hide settings', async () => {
   };
 
   const root = render(
-    <AppBase>
-      <TestComponent />
-    </AppBase>,
+    <ThemeProvider theme={mockTheme}>
+      <AppBase>
+        <TestComponent />
+      </AppBase>
+    </ThemeProvider>,
   );
 
   userEvent.click(root.getByText('Show Settings'));
@@ -51,9 +53,11 @@ test('can show and hide help', async () => {
   };
 
   const root = render(
-    <AppBase>
-      <TestComponent />
-    </AppBase>,
+    <ThemeProvider theme={mockTheme}>
+      <AppBase>
+        <TestComponent />
+      </AppBase>
+    </ThemeProvider>,
   );
 
   userEvent.click(root.getByText('Show Help'));
@@ -75,9 +79,11 @@ test('can toggle help', async () => {
   };
 
   const root = render(
-    <AppBase>
-      <TestComponent />
-    </AppBase>,
+    <ThemeProvider theme={mockTheme}>
+      <AppBase>
+        <TestComponent />
+      </AppBase>
+    </ThemeProvider>,
   );
 
   userEvent.click(root.getByText('Toggle Help'));
@@ -100,9 +106,11 @@ test('can show and hide hotkeys dialog', async () => {
   };
 
   const root = render(
-    <AppBase>
-      <TestComponent />
-    </AppBase>,
+    <ThemeProvider theme={mockTheme}>
+      <AppBase>
+        <TestComponent />
+      </AppBase>
+    </ThemeProvider>,
   );
 
   userEvent.click(root.getByText('Show Hotkeys'));
@@ -123,9 +131,11 @@ test('can toggle hotkeys dialog', async () => {
   };
 
   const root = render(
-    <AppBase>
-      <TestComponent />
-    </AppBase>,
+    <ThemeProvider theme={mockTheme}>
+      <AppBase>
+        <TestComponent />
+      </AppBase>
+    </ThemeProvider>,
   );
 
   userEvent.click(root.getByText('Toggle Hotkeys'));

@@ -1,5 +1,11 @@
-// placeholder because there is no settings
-export interface Settings {}
+export enum ThemeMode {
+  Light,
+  Dark,
+}
+
+export interface Settings {
+  themeMode: ThemeMode;
+}
 
 export function saveSettings(settings: Settings): void {
   localStorage.setItem('settings', JSON.stringify(settings));
@@ -14,5 +20,7 @@ export function loadSettings(): Settings {
 }
 
 export function defaultSettings(): Settings {
-  return {};
+  return {
+    themeMode: ThemeMode.Light,
+  };
 }

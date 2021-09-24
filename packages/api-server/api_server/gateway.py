@@ -176,9 +176,8 @@ class RmfGateway(rclpy.node.Node):
             RmfTasks,
             "dispatcher_ongoing_tasks",
             lambda msg: [
-                self.rmf_events.task_summaries.on_next(
-                    TaskSummary.from_orm(task)
-                ) for task in msg.tasks
+                self.rmf_events.task_summaries.on_next(TaskSummary.from_orm(task))
+                for task in msg.tasks
             ],
             10,
         )

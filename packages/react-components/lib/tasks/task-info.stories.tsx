@@ -3,6 +3,7 @@ import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { TaskInfo, TaskInfoProps } from './task-info';
 import { makeTask } from './test-data.spec';
+import { Paper } from '@material-ui/core';
 
 export default {
   title: 'Tasks/Task Infos',
@@ -10,7 +11,11 @@ export default {
 } as Meta;
 
 export const CleanTask: Story<TaskInfoProps> = (args) => {
-  return <TaskInfo {...args}></TaskInfo>;
+  return (
+    <Paper style={{ padding: '1rem' }}>
+      <TaskInfo {...args}></TaskInfo>
+    </Paper>
+  );
 };
 
 const cleanTask = makeTask('clean_task', 1, 1);
@@ -23,7 +28,11 @@ CleanTask.args = {
 };
 
 export const LoopTask: Story<TaskInfoProps> = (args) => {
-  return <TaskInfo {...args}></TaskInfo>;
+  return (
+    <Paper style={{ padding: '1rem' }}>
+      <TaskInfo {...args}></TaskInfo>
+    </Paper>
+  );
 };
 
 const loopTask = makeTask('loop_task', 1, 1);
@@ -38,7 +47,11 @@ LoopTask.args = {
 };
 
 export const DeliveryTask: Story<TaskInfoProps> = (args) => {
-  return <TaskInfo {...args}></TaskInfo>;
+  return (
+    <Paper style={{ padding: '1rem' }}>
+      <TaskInfo {...args}></TaskInfo>
+    </Paper>
+  );
 };
 
 const deliveryTask = makeTask('delivery_task', 1, 1);

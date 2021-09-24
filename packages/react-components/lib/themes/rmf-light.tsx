@@ -1,6 +1,7 @@
-import { createMuiTheme } from '@material-ui/core';
+import { createMuiTheme } from '@material-ui/core/styles';
+import commonTheme from './common-theme';
 
-declare module '@material-ui/core' {
+declare module '@material-ui/core/styles/createMuiTheme' {
   interface Theme {
     appBar: {
       logoSize: React.CSSProperties['width'];
@@ -8,9 +9,8 @@ declare module '@material-ui/core' {
     appDrawer: {
       width: React.CSSProperties['width'];
     };
+    mapClass: string;
   }
-
-  // allow configuration using `createTheme`
   interface ThemeOptions {
     appBar: {
       logoSize: React.CSSProperties['width'];
@@ -18,10 +18,11 @@ declare module '@material-ui/core' {
     appDrawer: {
       width: React.CSSProperties['width'];
     };
+    mapClass: string;
   }
 }
 
-export const theme = createMuiTheme({
+export const rmfLight = createMuiTheme({
   appBar: {
     logoSize: 180,
   },
@@ -29,10 +30,13 @@ export const theme = createMuiTheme({
     width: 240,
   },
   palette: {
+    type: 'light',
+    ...commonTheme,
     primary: {
       main: '#44497a',
       dark: '#323558',
       light: '#565d99',
     },
   },
+  mapClass: '',
 });

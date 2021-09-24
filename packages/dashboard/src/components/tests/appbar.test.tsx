@@ -16,16 +16,15 @@ import {
   ResourcesContext,
 } from '../app-contexts';
 import AppBar from '../appbar';
-import { theme } from '../theme';
 import { makeMockAppController } from './mock-app-controller';
-import { mountAsUser } from './test-utils';
+import { mountAsUser, mockTheme } from './test-utils';
 
 describe('AppBar', () => {
   let appController: AppController;
   const Base = (props: React.PropsWithChildren<{}>) => {
     return (
       <MemoryRouter>
-        <ThemeProvider theme={theme}>
+        <ThemeProvider theme={mockTheme}>
           <AppControllerContext.Provider value={appController}>
             {props.children}
           </AppControllerContext.Provider>

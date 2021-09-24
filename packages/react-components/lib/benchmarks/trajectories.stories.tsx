@@ -1,7 +1,7 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
-import { TrajectoryMarker, TrajectoryMarkerProps } from '../../lib';
-import { createRandomTrajectories } from '../../lib/robots/test-utils.spec';
+import { TrajectoryMarker } from '../map';
+import { createRandomTrajectories } from '../map/test-utils.spec';
 
 export default {
   title: 'Benchmarks/Trajectories',
@@ -12,17 +12,10 @@ export default {
     conflict: {
       name: 'Conflict',
     },
-    variant: {
-      name: 'Variant',
-      control: {
-        type: 'select',
-        options: ['fill', 'follow', 'plain'] as TrajectoryMarkerProps['variant'][],
-      },
-    },
   },
 } as Meta;
 
-export const TrajectoryMarkers: Story = ({ count, conflict, variant, ...args }) => {
+export const TrajectoryMarkers: Story = ({ count, conflict, ...args }) => {
   const trajectories = React.useMemo(() => createRandomTrajectories(count), [count]);
 
   return (
@@ -33,9 +26,8 @@ export const TrajectoryMarkers: Story = ({ count, conflict, variant, ...args }) 
           color="green"
           conflict={conflict}
           trajectory={traj}
-          animationLoop={true}
+          loopAnimation
           animationScale={4}
-          variant={variant}
           {...args}
         />
       ))}
@@ -45,5 +37,4 @@ export const TrajectoryMarkers: Story = ({ count, conflict, variant, ...args }) 
 TrajectoryMarkers.args = {
   count: 100,
   conflict: false,
-  variant: 'follow' as TrajectoryMarkerProps['variant'],
 };

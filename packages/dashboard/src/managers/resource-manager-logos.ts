@@ -1,4 +1,5 @@
 import Debug from 'debug';
+import { ThemeMode } from '../settings';
 
 const debug = Debug('ResourceManger');
 
@@ -30,9 +31,11 @@ export class LogoResourceManager {
     }
   };
 
-  getHeaderLogoPath = async (): Promise<string> => {
+  getHeaderLogoPath = async (theme: ThemeMode): Promise<string> => {
     const iconPath = await this.getIconPath('headerLogo');
-    if (iconPath) return iconPath;
+    const darkIconPath = await this.getIconPath('darkThemeLogo');
+    const themeIcon = theme === ThemeMode.Dark ? iconPath : darkIconPath;
+    if (themeIcon) return themeIcon;
     debug('using default header logo');
     return (await import(/* webpackMode: "eager" */ '../assets/defaultLogo.png')).default;
   };
