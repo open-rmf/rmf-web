@@ -1,8 +1,9 @@
-import { ThemeProvider } from '@material-ui/core';
+import { makeStyles, ThemeProvider } from '@material-ui/core';
 import { Theme } from '@material-ui/core/styles';
 import defaultTheme from '@material-ui/core/styles/defaultTheme';
 import { DecoratorFn } from '@storybook/react';
-import { rmfDark, rmfLight, GlobalCss, GlobalDarkCss } from '../lib';
+import React from 'react';
+import { GlobalDarkCss, rmfDark, rmfLight } from '../lib';
 
 export const parameters = {
   actions: { argTypesRegex: '^on[A-Z].*' },
@@ -19,11 +20,26 @@ const getTheme = (themeName: string): Theme => {
   }
 };
 
+const useStyles = makeStyles((theme) => ({
+  '@global': {
+    body: {
+      backgroundColor: theme.palette.background.paper,
+    },
+  },
+}));
+
+function StorybookBodyStyles() {
+  useStyles();
+  return null;
+}
+
 const withThemeProvider: DecoratorFn = (Story, context) => {
   const theme = getTheme(context.globals.theme);
+  useStyles();
   return (
     <ThemeProvider theme={theme}>
-      {context.globals.theme === 'rmf-dark' ? <GlobalDarkCss /> : <GlobalCss />}
+      {context.globals.theme === 'rmf-dark' ? <GlobalDarkCss /> : null}
+      <StorybookBodyStyles />
       <Story {...context} />
     </ThemeProvider>
   );
