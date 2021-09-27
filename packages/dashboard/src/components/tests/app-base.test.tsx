@@ -5,12 +5,12 @@ import React from 'react';
 import { MemoryRouter } from 'react-router';
 import { AppBase } from '../app-base';
 import { AppControllerContext } from '../app-contexts';
-import { mockTheme } from './test-utils';
+import { rmfLight as theme } from 'react-components';
 
 const render = (children: React.ReactNode) =>
   render_(
     <MemoryRouter>
-      <ThemeProvider theme={mockTheme}>{children}</ThemeProvider>
+      <ThemeProvider theme={theme}>{children}</ThemeProvider>
     </MemoryRouter>,
   );
 
@@ -26,7 +26,7 @@ test('can show and hide settings', async () => {
   };
 
   const root = render(
-    <ThemeProvider theme={mockTheme}>
+    <ThemeProvider theme={theme}>
       <AppBase>
         <TestComponent />
       </AppBase>
@@ -53,7 +53,7 @@ test('can show and hide help', async () => {
   };
 
   const root = render(
-    <ThemeProvider theme={mockTheme}>
+    <ThemeProvider theme={theme}>
       <AppBase>
         <TestComponent />
       </AppBase>
@@ -79,7 +79,7 @@ test('can toggle help', async () => {
   };
 
   const root = render(
-    <ThemeProvider theme={mockTheme}>
+    <ThemeProvider theme={theme}>
       <AppBase>
         <TestComponent />
       </AppBase>
@@ -106,7 +106,7 @@ test('can show and hide hotkeys dialog', async () => {
   };
 
   const root = render(
-    <ThemeProvider theme={mockTheme}>
+    <ThemeProvider theme={theme}>
       <AppBase>
         <TestComponent />
       </AppBase>
@@ -131,7 +131,7 @@ test('can toggle hotkeys dialog', async () => {
   };
 
   const root = render(
-    <ThemeProvider theme={mockTheme}>
+    <ThemeProvider theme={theme}>
       <AppBase>
         <TestComponent />
       </AppBase>
