@@ -1,4 +1,4 @@
-import { SubmitTaskDetails } from 'react-components';
+import { SubmitTask } from 'api-client';
 import * as RmfModels from 'rmf-models';
 
 /* istanbul ignore next */
@@ -15,6 +15,11 @@ function checkField(
   } catch (err) {
     errMsgs.push(err.message);
   }
+}
+
+export interface SubmitTaskDetails {
+  submitTask: SubmitTask[];
+  errors: { [index: string]: string[] };
 }
 
 // TODO: See if we can generate validators from the schema.
@@ -54,7 +59,7 @@ export function parseTasksFile(contents: string): SubmitTaskDetails {
       default:
         errMsgs.push('Unknown Task Type');
     }
-    res.errors[i] = [...errMsgs];
+    if (errMsgs.length > 0) res.errors[i] = [...errMsgs];
     errMsgs = [];
   });
   res.submitTask = tasks;

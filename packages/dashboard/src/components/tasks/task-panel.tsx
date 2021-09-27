@@ -18,19 +18,14 @@ import {
   Refresh as RefreshIcon,
 } from '@material-ui/icons';
 import { Alert, AlertProps } from '@material-ui/lab';
-import { Task } from 'api-client';
+import { SubmitTask, Task } from 'api-client';
 import React from 'react';
-import {
-  CreateTaskForm,
-  CreateTaskFormProps,
-  TaskInfo,
-  TaskTable,
-  SubmitTaskDetails,
-} from 'react-components';
+import { CreateTaskForm, CreateTaskFormProps, TaskInfo, TaskTable } from 'react-components';
 import { UserProfileContext } from 'rmf-auth';
 import * as RmfModels from 'rmf-models';
 import { Enforcer } from '../permissions';
 import { parseTasksFile } from './utils';
+import { AppControllerContext } from '../app-contexts';
 
 const useStyles = makeStyles((theme) => ({
   tableContainer: {
@@ -102,6 +97,7 @@ export function TaskPanel({
   const [snackbarSeverity, setSnackbarSeverity] = React.useState<AlertProps['severity']>('success');
   const [autoRefresh, setAutoRefresh] = React.useState(true);
   const profile = React.useContext(UserProfileContext);
+  const { showErrorAlert } = React.useContext(AppControllerContext);
 
   const handleCancelTaskClick = React.useCallback<React.MouseEventHandler>(async () => {
     if (!cancelTask || !selectedTask) {
@@ -121,7 +117,7 @@ export function TaskPanel({
   }, [cancelTask, selectedTask]);
 
   /* istanbul ignore next */
-  const tasksFromFile = (): Promise<SubmitTaskDetails> => {
+  const tasksFromFile = (): Promise<SubmitTask[]> => {
     return new Promise((res) => {
       const fileInputEl = uploadFileInputRef.current;
       if (!fileInputEl) {
@@ -130,9 +126,18 @@ export function TaskPanel({
       const listener = async () => {
         try {
           if (!fileInputEl.files || fileInputEl.files.length === 0) {
-            return res({ submitTask: [], errors: {} });
+            return res([]);
           }
-          return res(parseTasksFile(await fileInputEl.files[0].text()));
+          const tasksFiles = parseTasksFile(await fileInputEl.files[0].text());
+          if (Object.keys(tasksFiles.errors).length > 0) {
+            // show the first error only
+            const key = Object.keys(tasksFiles.errors)[0];
+            const error = tasksFiles.errors[key][0];
+            showErrorAlert(`Task${Number(key) + 1}. ${error}`);
+            return res([]);
+          }
+          // only submit tasks when all tasks are error free
+          return res(tasksFiles.submitTask);
         } finally {
           fileInputEl.removeEventListener('input', listener);
           fileInputEl.value = '';

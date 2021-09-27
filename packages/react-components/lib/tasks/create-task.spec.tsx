@@ -1,11 +1,4 @@
-import {
-  fireEvent,
-  render,
-  RenderResult,
-  waitFor,
-  waitForElementToBeRemoved,
-  within,
-} from '@testing-library/react';
+import { render, RenderResult, waitForElementToBeRemoved, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type {
   CleanTaskDescription,
@@ -102,7 +95,7 @@ describe('CreateTaskForm', () => {
     expect(spy).toHaveBeenCalledTimes(1);
   });
 
-  fdescribe('task list', () => {
+  describe('task list', () => {
     let errMsg = 'test-error';
     const mount = () => {
       const task1 = makeSubmitTask();
@@ -115,8 +108,7 @@ describe('CreateTaskForm', () => {
         num_loops: 2,
       } as LoopTaskDescription;
       task2.task_type = RmfModels.TaskType.TYPE_LOOP;
-      const tasksFromFile = () =>
-        Promise.resolve({ submitTask: [task1, task2], errors: { 0: [], 1: [errMsg] } });
+      const tasksFromFile = () => Promise.resolve([task1, task2]);
       const root = render(<CreateTaskForm open tasksFromFile={tasksFromFile} />);
       userEvent.click(root.getByLabelText('Select File'));
 
@@ -146,13 +138,6 @@ describe('CreateTaskForm', () => {
       within(getTaskTypeEl(root)).getByText('Clean');
       userEvent.click(tasks[1]);
       within(getTaskTypeEl(root)).getByText('Loop');
-    });
-
-    it('should show tooltip hover details on mouse hover when error array is > 0', async () => {
-      const { root, q } = mount();
-      await q.getTaskItems();
-      fireEvent.mouseOver(root.getByText('2: [Loop] from [start] to [finish]'));
-      expect(await waitFor(() => root.getByText(errMsg))).toBeTruthy();
     });
   });
 });
