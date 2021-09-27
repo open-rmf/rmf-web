@@ -15,5 +15,4 @@ export function uniqueId(): string {
 // colors used outside material ui
 export const colorPalette: { [key: string]: string } = {
   unknown: '#cccccc',
-  disabled: '#A8A8A8',
 };
