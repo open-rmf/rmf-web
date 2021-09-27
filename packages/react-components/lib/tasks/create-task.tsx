@@ -39,9 +39,6 @@ const useStyles = makeStyles((theme) => ({
   selectedTask: {
     background: theme.palette.action.focus,
   },
-  errorTask: {
-    color: theme.palette.error.main,
-  },
 }));
 
 function getShortDescription(task: SubmitTask): string {

@@ -96,7 +96,6 @@ describe('CreateTaskForm', () => {
   });
 
   describe('task list', () => {
-    let errMsg = 'test-error';
     const mount = () => {
       const task1 = makeSubmitTask();
       task1.description = { cleaning_zone: 'clean' } as CleanTaskDescription;
