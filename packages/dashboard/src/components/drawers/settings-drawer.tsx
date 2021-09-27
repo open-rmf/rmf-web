@@ -28,11 +28,11 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
   const { settings, onSettingsChange, handleCloseButton, ...otherProps } = props;
   const { themeMode } = settings;
 
+  // get the text of the thememode via generated enum object which is in the second half of the object
   const themeText = React.useMemo(
     () => Object.keys(ThemeMode).slice(Object.keys(ThemeMode).length * 0.5),
     [],
   );
-
   const drawerAnchor = useMediaQuery('(max-aspect-ratio: 8/10') ? 'bottom' : 'right';
 
   const modalProp = {
