@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextField, makeStyles, Divider, withStyles } from '@material-ui/core';
+import { TextField, makeStyles, Divider } from '@material-ui/core';
 
 // FIXME: This is likely to cause naming clashes
 export interface OnChangeEvent {
@@ -11,32 +11,6 @@ export interface SimpleFilterProps {
   onChange?: (e: React.ChangeEvent<OnChangeEvent>) => void;
   value: string;
 }
-
-const CustomTextField = withStyles((theme) => ({
-  root: {
-    '& label': {
-      color: theme.palette.success.main,
-    },
-    '& label.Mui-focused': {
-      color: '#A8A8A8',
-    },
-    '& .MuiInput-underline:after': {
-      borderBottomColor: '#A8A8A8',
-    },
-    '& .MuiOutlinedInput-root': {
-      color: '#A8A8A8',
-      '& fieldset': {
-        borderColor: theme.palette.success.main,
-      },
-      '&:hover fieldset': {
-        borderColor: '#868686',
-      },
-      '&.Mui-focused fieldset': {
-        borderColor: '#A8A8A8',
-      },
-    },
-  },
-}))(TextField);
 
 const useStyles = makeStyles((theme) => ({
   simpleFilter: {
@@ -58,7 +32,7 @@ export const SimpleFilter = (props: SimpleFilterProps): JSX.Element => {
 
   return (
     <div className={classes.simpleFilter}>
-      <CustomTextField
+      <TextField
         label="Filter"
         value={value}
         variant="outlined"
