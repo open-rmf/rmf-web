@@ -38,8 +38,6 @@ const useStyles = makeStyles((theme) => ({
   },
   grid: {
     padding: '1rem',
-    // height: '250px',
-    // overflow: 'auto'
   },
   doorLabelOpen: {
     backgroundColor: theme.palette.success.main,
@@ -170,34 +168,23 @@ export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelPr
           </Grid>
         </Grid>
       </Paper>
-      <FixedSizeGrid
-        columnCount={3}
-        columnWidth={250}
-        height={250}
-        rowCount={3}
-        rowHeight={120}
-        width={800}
-        itemData={{
-          doors,
-          doorStates,
-          onDoorControlClick,
-        }}
-      >
-        {DoorCell}
-      </FixedSizeGrid>
-      {/* <Grid className={classes.grid} container direction="row" spacing={1}>
+      <Grid className={classes.grid} container direction="row" spacing={1}>
         {isCellView ? (
-          doors.map((door) => {
-            return (
-              <Grid item xs={4} key={door.door.name}>
-                <DoorCell
-                  door={door}
-                  doorState={doorStates[door.door.name]}
-                  onDoorControlClick={onDoorControlClick}
-                />
-              </Grid>
-            );
-          })
+          <FixedSizeGrid
+            columnCount={3}
+            columnWidth={250}
+            height={250}
+            rowCount={3}
+            rowHeight={120}
+            width={800}
+            itemData={{
+              doors,
+              doorStates,
+              onDoorControlClick,
+            }}
+          >
+            {DoorCell}
+          </FixedSizeGrid>
         ) : (
           <DoorTable
             doors={doors}
@@ -205,7 +192,7 @@ export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelPr
             onDoorControlClick={onDoorControlClick}
           />
         )}
-      </Grid> */}
+      </Grid>
     </Card>
   );
 }

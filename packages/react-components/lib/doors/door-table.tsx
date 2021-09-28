@@ -10,7 +10,7 @@ import {
   ButtonGroup,
   Button,
 } from '@material-ui/core';
-
+import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import { DoorData, doorModeToString, doorTypeToString } from './utils';
 
 export interface DoorTableProps {
@@ -19,10 +19,8 @@ export interface DoorTableProps {
   onDoorControlClick?(event: React.MouseEvent, door: RmfModels.Door, mode: number): void;
 }
 
-export interface DoorRowProps {
-  door: DoorData;
-  doorState: RmfModels.DoorState;
-  onDoorControlClick?(event: React.MouseEvent, door: RmfModels.Door, mode: number): void;
+export interface DoorRowProps extends ListChildComponentProps {
+  data: DoorTableProps;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -42,8 +40,11 @@ const getOpMode = (doorState: RmfModels.DoorState) => {
   return getState === 'N/A' ? 'Offline' : 'Online';
 };
 
-const DoorRow = React.memo(({ door, doorState, onDoorControlClick }: DoorRowProps) => {
+const DoorRow = React.memo(({ data, index, style }: DoorRowProps) => {
   const classes = useStyles();
+  const door = data.doors[index];
+  const doorState = data.doorStates[door.door.name];
+  const onDoorControlClick = data.onDoorControlClick;
 
   const doorModeLabelClasses = React.useCallback(
     (doorState?: RmfModels.DoorState): string => {
@@ -67,40 +68,43 @@ const DoorRow = React.memo(({ door, doorState, onDoorControlClick }: DoorRowProp
   const doorStatusClass = doorModeLabelClasses(doorState);
 
   return (
-    <TableRow arial-label={`${door.door.name}`}>
-      <TableCell>{door.door.name}</TableCell>
-      <TableCell
-        className={
-          getOpMode(doorState) === 'Offline' ? classes.doorLabelClosed : classes.doorLabelOpen
-        }
-      >
-        {getOpMode(doorState)}
-      </TableCell>
-      <TableCell>{door.level}</TableCell>
-      <TableCell>{doorTypeToString(door.door.door_type)}</TableCell>
-      <TableCell className={doorStatusClass}>{doorModeToString(doorState)}</TableCell>
-      <TableCell>
-        <ButtonGroup size="small">
-          <Button
-            aria-label={`${door.door.name}_open`}
-            onClick={(ev) =>
-              onDoorControlClick && onDoorControlClick(ev, door.door, RmfModels.DoorMode.MODE_OPEN)
-            }
-          >
-            Open
-          </Button>
-          <Button
-            aria-label={`${door.door.name}_close`}
-            onClick={(ev) =>
-              onDoorControlClick &&
-              onDoorControlClick(ev, door.door, RmfModels.DoorMode.MODE_CLOSED)
-            }
-          >
-            Close
-          </Button>
-        </ButtonGroup>
-      </TableCell>
-    </TableRow>
+    <div style={style}>
+      <TableRow arial-label={`${door.door.name}`}>
+        <TableCell>{door.door.name}</TableCell>
+        <TableCell
+          className={
+            getOpMode(doorState) === 'Offline' ? classes.doorLabelClosed : classes.doorLabelOpen
+          }
+        >
+          {getOpMode(doorState)}
+        </TableCell>
+        <TableCell>{door.level}</TableCell>
+        <TableCell>{doorTypeToString(door.door.door_type)}</TableCell>
+        <TableCell className={doorStatusClass}>{doorModeToString(doorState)}</TableCell>
+        <TableCell>
+          <ButtonGroup size="small">
+            <Button
+              aria-label={`${door.door.name}_open`}
+              onClick={(ev) =>
+                onDoorControlClick &&
+                onDoorControlClick(ev, door.door, RmfModels.DoorMode.MODE_OPEN)
+              }
+            >
+              Open
+            </Button>
+            <Button
+              aria-label={`${door.door.name}_close`}
+              onClick={(ev) =>
+                onDoorControlClick &&
+                onDoorControlClick(ev, door.door, RmfModels.DoorMode.MODE_CLOSED)
+              }
+            >
+              Close
+            </Button>
+          </ButtonGroup>
+        </TableCell>
+      </TableRow>
+    </div>
   );
 });
 
@@ -122,14 +126,27 @@ export const DoorTable = ({
         </TableRow>
       </TableHead>
       <TableBody>
-        {doors.map((door) => (
+        <FixedSizeList
+          itemSize={40}
+          itemCount={doors.length}
+          height={250}
+          width={800}
+          itemData={{
+            doors,
+            doorStates,
+            onDoorControlClick,
+          }}
+        >
+          {DoorRow}
+        </FixedSizeList>
+        {/* {doors.map((door) => (
           <DoorRow
             door={door}
             doorState={doorStates[door.door.name]}
             onDoorControlClick={onDoorControlClick}
             key={door.door.name}
           />
-        ))}
+        ))} */}
       </TableBody>
     </Table>
   );
