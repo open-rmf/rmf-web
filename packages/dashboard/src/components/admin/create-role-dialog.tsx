@@ -61,6 +61,7 @@ export function CreateRoleDialog({
         fullWidth
         autoFocus
         label="Role"
+        margin="normal"
         value={role}
         onChange={(ev) => setRole(ev.target.value)}
         error={roleError}

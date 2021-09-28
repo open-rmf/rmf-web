@@ -60,6 +60,7 @@ export function CreateUserDialog({
         variant="outlined"
         fullWidth
         autoFocus
+        margin="normal"
         label="Username"
         value={username}
         onChange={(ev) => setUsername(ev.target.value)}

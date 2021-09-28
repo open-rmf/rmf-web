@@ -71,6 +71,7 @@ export function AddPermissionDialog({
         variant="outlined"
         fullWidth
         autoFocus
+        margin="normal"
         label="Action"
         value={action}
         onChange={(ev) => setAction(ev.target.value)}
