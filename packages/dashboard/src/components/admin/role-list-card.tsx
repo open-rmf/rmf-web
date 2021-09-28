@@ -67,12 +67,14 @@ function RoleAccordion({
               Delete Role
             </Button>
           </Grid>
-          <PermissionsCard
-            className={classes.permissionsCard}
-            getPermissions={getPermissions}
-            savePermission={savePermission}
-            removePermission={removePermission}
-          />
+          <Grid item>
+            <PermissionsCard
+              className={classes.permissionsCard}
+              getPermissions={getPermissions}
+              savePermission={savePermission}
+              removePermission={removePermission}
+            />
+          </Grid>
         </Grid>
       </AccordionDetails>
     </Accordion>

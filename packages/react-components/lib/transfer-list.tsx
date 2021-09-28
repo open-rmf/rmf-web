@@ -153,52 +153,60 @@ export function TransferList({
       alignItems="stretch"
       className={classes.container}
     >
-      <CustomList
-        title={leftTitle}
-        items={leftItems}
-        checked={leftChecked}
-        setChecked={setLeftChecked}
-      />
+      <Grid item>
+        <CustomList
+          title={leftTitle}
+          items={leftItems}
+          checked={leftChecked}
+          setChecked={setLeftChecked}
+        />
+      </Grid>
       <Grid item className={classes.transferControls}>
-        <Grid container direction="column" alignItems="center">
-          <Button
-            variant="outlined"
-            size="small"
-            className={classes.button}
-            onClick={() => {
-              const newLeft = leftItems.filter((val) => !leftChecked.has(val));
-              const newRight = rightItems.concat(Array.from(leftChecked.values()));
-              onTransfer && onTransfer(newLeft, newRight);
-              setLeftChecked(new Set());
-            }}
-            disabled={leftChecked.size === 0}
-            aria-label="move selected right"
-          >
-            &gt;
-          </Button>
-          <Button
-            variant="outlined"
-            size="small"
-            className={classes.button}
-            onClick={() => {
-              const newRight = rightItems.filter((val) => !rightChecked.has(val));
-              const newLeft = leftItems.concat(Array.from(rightChecked.values()));
-              onTransfer && onTransfer(newLeft, newRight);
-              setRightChecked(new Set());
-            }}
-            disabled={rightChecked.size === 0}
-            aria-label="move selected left"
-          >
-            &lt;
-          </Button>
+        <Grid container direction="column" justifyContent="center">
+          <Grid item>
+            <Button
+              variant="outlined"
+              size="small"
+              className={classes.button}
+              onClick={() => {
+                const newLeft = leftItems.filter((val) => !leftChecked.has(val));
+                const newRight = rightItems.concat(Array.from(leftChecked.values()));
+                onTransfer && onTransfer(newLeft, newRight);
+                setLeftChecked(new Set());
+              }}
+              disabled={leftChecked.size === 0}
+              aria-label="move selected right"
+            >
+              &gt;
+            </Button>
+          </Grid>
+          <Grid item>
+            <Button
+              variant="outlined"
+              size="small"
+              className={classes.button}
+              onClick={() => {
+                const newRight = rightItems.filter((val) => !rightChecked.has(val));
+                const newLeft = leftItems.concat(Array.from(rightChecked.values()));
+                onTransfer && onTransfer(newLeft, newRight);
+                setRightChecked(new Set());
+              }}
+              disabled={rightChecked.size === 0}
+              aria-label="move selected left"
+            >
+              &lt;
+            </Button>
+          </Grid>
         </Grid>
       </Grid>
-      <CustomList
-        title={rightTitle}
-        items={rightItems}
-        checked={rightChecked}
-        setChecked={setRightChecked}
-      />
+      <Grid item>
+        <CustomList
+          title={rightTitle}
+          items={rightItems}
+          checked={rightChecked}
+          setChecked={setRightChecked}
+        />
+      </Grid>
     </TransferListRoot>
   );
 }
