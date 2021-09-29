@@ -32,9 +32,11 @@ export class LogoResourceManager {
   };
 
   getHeaderLogoPath = async (theme: ThemeMode): Promise<string> => {
-    const iconPath = await this.getIconPath('headerLogo');
-    const darkIconPath = await this.getIconPath('darkThemeLogo');
-    const themeIcon = theme === ThemeMode.Dark ? iconPath : darkIconPath;
+    // FIXME: standardize a way to define different assets for different theme mode.
+    const themeIcon =
+      theme === ThemeMode.Dark
+        ? await this.getIconPath('darkThemeLogo')
+        : await this.getIconPath('headerLogo');
     if (themeIcon) return themeIcon;
     debug('using default header logo');
     return (await import(/* webpackMode: "eager" */ '../assets/defaultLogo.png')).default;
