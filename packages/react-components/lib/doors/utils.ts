@@ -59,3 +59,12 @@ export function doorTypeToString(doorType: number): string {
       return `Unknown (${doorType})`;
   }
 }
+
+export const doorCellWidth = {
+  doorName: 145.6,
+  doorMode: 109.6,
+  doorLevel: 80,
+  doorType: 136.8,
+  doorState: 42.6,
+  doorControl: 160.8,
+};

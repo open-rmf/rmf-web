@@ -11,7 +11,8 @@ import {
   Button,
 } from '@material-ui/core';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
-import { DoorData, doorModeToString, doorTypeToString } from './utils';
+import { DoorData, doorModeToString, doorTypeToString, doorCellWidth } from './utils';
+import clsx from 'clsx';
 
 export interface DoorTableProps {
   doors: DoorData[];
@@ -33,6 +34,21 @@ const useStyles = makeStyles((theme) => ({
   doorLabelMoving: {
     color: theme.palette.warning.main,
   },
+  tableRow: {
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'nowrap',
+    alignItems: 'center',
+    boxSizing: 'border-box',
+    minWidth: '100%',
+    width: '100%',
+  },
+  tableCell: {
+    display: 'block',
+    flexGrow: 0,
+    flexShrink: 0,
+  },
+  // need to specify exact width of the cells
 }));
 
 const getOpMode = (doorState: RmfModels.DoorState) => {
@@ -68,27 +84,60 @@ const DoorRow = React.memo(({ data, index, style }: DoorRowProps) => {
   const doorStatusClass = doorModeLabelClasses(doorState);
 
   return (
-    <TableRow arial-label={`${door.door.name}`} component="div" style={style}>
-      <TableCell component="div" variant="body">
+    <TableRow
+      arial-label={`${door.door.name}`}
+      component="div"
+      className={classes.tableRow}
+      style={style}
+    >
+      <TableCell
+        component="div"
+        variant="body"
+        className={classes.tableCell}
+        style={{ flexBasis: doorCellWidth.doorName }}
+      >
         {door.door.name}
       </TableCell>
       <TableCell
         component="div"
         variant="body"
-        className={
-          getOpMode(doorState) === 'Offline' ? classes.doorLabelClosed : classes.doorLabelOpen
-        }
+        className={clsx(
+          getOpMode(doorState) === 'Offline' ? classes.doorLabelClosed : classes.doorLabelOpen,
+          classes.tableCell,
+        )}
+        style={{ flexBasis: doorCellWidth.doorMode }}
       >
         {getOpMode(doorState)}
       </TableCell>
-      <TableCell component="div" variant="body">
+      <TableCell
+        component="div"
+        variant="body"
+        className={classes.tableCell}
+        style={{ flexBasis: doorCellWidth.doorLevel }}
+      >
         {door.level}
       </TableCell>
-      <TableCell component="div">{doorTypeToString(door.door.door_type)}</TableCell>
-      <TableCell className={doorStatusClass} component="div" variant="body">
+      <TableCell
+        component="div"
+        className={classes.tableCell}
+        style={{ flexBasis: doorCellWidth.doorType }}
+      >
+        {doorTypeToString(door.door.door_type)}
+      </TableCell>
+      <TableCell
+        className={clsx(doorStatusClass, classes.tableCell)}
+        component="div"
+        variant="body"
+        style={{ flexBasis: doorCellWidth.doorState }}
+      >
         {doorModeToString(doorState)}
       </TableCell>
-      <TableCell component="div" variant="body">
+      <TableCell
+        component="div"
+        variant="body"
+        className={classes.tableCell}
+        style={{ flexBasis: doorCellWidth.doorControl }}
+      >
         <ButtonGroup size="small">
           <Button
             aria-label={`${door.door.name}_open`}
@@ -118,26 +167,57 @@ export const DoorTable = ({
   doorStates,
   onDoorControlClick,
 }: DoorTableProps): JSX.Element => {
+  const classes = useStyles();
   return (
     <Table stickyHeader size="small" aria-label="door-table" component="div">
       <TableHead component="div">
-        <TableRow component="div">
-          <TableCell component="div" variant="head">
+        <TableRow component="div" className={classes.tableRow}>
+          <TableCell
+            component="div"
+            variant="head"
+            className={classes.tableCell}
+            style={{ flexBasis: doorCellWidth.doorName }}
+          >
             Door Name
           </TableCell>
-          <TableCell component="div" variant="head">
+          <TableCell
+            component="div"
+            variant="head"
+            className={classes.tableCell}
+            style={{ flexBasis: doorCellWidth.doorMode }}
+          >
             Op. Mode
           </TableCell>
-          <TableCell component="div" variant="head">
+          <TableCell
+            component="div"
+            variant="head"
+            className={classes.tableCell}
+            style={{ flexBasis: doorCellWidth.doorLevel }}
+          >
             Level
           </TableCell>
-          <TableCell component="div" variant="head">
+          <TableCell
+            component="div"
+            variant="head"
+            className={classes.tableCell}
+            style={{ flexBasis: doorCellWidth.doorType }}
+          >
             Door Type
           </TableCell>
-          <TableCell component="div" variant="head">
+          <TableCell
+            component="div"
+            variant="head"
+            className={classes.tableCell}
+            style={{ flexBasis: doorCellWidth.doorState }}
+          >
             Doors State
           </TableCell>
-          <TableCell component="div" variant="head">
+          <TableCell
+            component="div"
+            variant="head"
+            className={classes.tableCell}
+            style={{ flexBasis: doorCellWidth.doorControl }}
+          >
             Door Control
           </TableCell>
         </TableRow>
