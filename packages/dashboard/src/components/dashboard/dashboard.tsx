@@ -21,6 +21,10 @@ const debug = Debug('Dashboard');
 const UpdateRate = 1000;
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    height: '100%',
+    backgroundColor: theme.palette.background.default,
+  },
   toolBarTitle: {
     flexGrow: 1,
   },
@@ -184,45 +188,47 @@ export default function Dashboard(_props: {}): React.ReactElement {
   );
 
   return (
-    <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
-      {buildingMap && (
-        <Grid container className={classes.buildingPanel} wrap="nowrap">
-          <Card variant="outlined" className={classes.mapPanel}>
-            <ScheduleVisualizer
-              buildingMap={buildingMap}
-              dispensers={dispensers}
-              ingestors={ingestors}
-              doorStates={Object.assign({}, doorStatesRef.current)}
-              liftStates={Object.assign({}, liftStatesRef.current)}
-              fleetStates={Object.assign({}, fleetStatesRef.current)}
-              mode="normal"
-            ></ScheduleVisualizer>
-          </Card>
-          <Grid item className={classes.itemPanels}>
-            {doors.length > 0 ? (
-              <DoorPanel
-                doors={doors}
-                doorStates={doorStatesRef.current}
-                onDoorControlClick={handleOnDoorControlClick}
-              />
-            ) : null}
-            {lifts.length > 0 ? (
-              <LiftPanel
-                lifts={lifts}
-                liftStates={liftStatesRef.current}
-                onRequestSubmit={handleLiftRequestSubmit}
-              />
-            ) : null}
-            {workcells.length > 0 ? (
-              <WorkcellPanel
+    <div className={classes.root}>
+      <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
+        {buildingMap && (
+          <Grid container className={classes.buildingPanel} wrap="nowrap">
+            <Card variant="outlined" className={classes.mapPanel}>
+              <ScheduleVisualizer
+                buildingMap={buildingMap}
                 dispensers={dispensers}
                 ingestors={ingestors}
-                workCellStates={workcellStates}
-              />
-            ) : null}
+                doorStates={Object.assign({}, doorStatesRef.current)}
+                liftStates={Object.assign({}, liftStatesRef.current)}
+                fleetStates={Object.assign({}, fleetStatesRef.current)}
+                mode="normal"
+              ></ScheduleVisualizer>
+            </Card>
+            <Grid item className={classes.itemPanels}>
+              {doors.length > 0 ? (
+                <DoorPanel
+                  doors={doors}
+                  doorStates={doorStatesRef.current}
+                  onDoorControlClick={handleOnDoorControlClick}
+                />
+              ) : null}
+              {lifts.length > 0 ? (
+                <LiftPanel
+                  lifts={lifts}
+                  liftStates={liftStatesRef.current}
+                  onRequestSubmit={handleLiftRequestSubmit}
+                />
+              ) : null}
+              {workcells.length > 0 ? (
+                <WorkcellPanel
+                  dispensers={dispensers}
+                  ingestors={ingestors}
+                  workCellStates={workcellStates}
+                />
+              ) : null}
+            </Grid>
           </Grid>
-        </Grid>
-      )}
-    </GlobalHotKeys>
+        )}
+      </GlobalHotKeys>
+    </div>
   );
 }

@@ -19,6 +19,7 @@ import {
   AppConfigContext,
   AppControllerContext,
   ResourcesContext,
+  SettingsContext,
   TooltipsContext,
 } from './app-contexts';
 
@@ -28,7 +29,7 @@ const useStyles = makeStyles((theme) =>
       zIndex: theme.zIndex.drawer + 1,
     },
     logoBtn: {
-      width: theme.appBar.logoSize,
+      width: 180,
     },
     toolbar: {
       textAlign: 'right',
@@ -56,7 +57,9 @@ export interface AppBarProps {
 
 export const AppBar = React.memo(
   (): React.ReactElement => {
-    const { showHelp: setShowHelp } = React.useContext(AppControllerContext);
+    const { showHelp: setShowHelp /* , setShowSettings */ } = React.useContext(
+      AppControllerContext,
+    );
     const history = useHistory();
     const location = useLocation();
     const tabValue = React.useMemo(() => locationToTabValue(location.pathname), [location]);
@@ -69,6 +72,8 @@ export const AppBar = React.memo(
     const safeAsync = useAsync();
     const [brandingIconPath, setBrandingIconPath] = React.useState<string>('');
 
+    const curTheme = React.useContext(SettingsContext).themeMode;
+
     async function handleLogout(): Promise<void> {
       try {
         await authenticator.logout();
@@ -77,12 +82,12 @@ export const AppBar = React.memo(
       }
     }
 
-    React.useLayoutEffect(() => {
+    React.useEffect(() => {
       if (!logoResourcesContext) return;
       (async () => {
-        setBrandingIconPath(await safeAsync(logoResourcesContext.getHeaderLogoPath()));
+        setBrandingIconPath(await safeAsync(logoResourcesContext.getHeaderLogoPath(curTheme)));
       })();
-    }, [logoResourcesContext, safeAsync]);
+    }, [logoResourcesContext, safeAsync, curTheme]);
 
     return (
       <HeaderBar className={classes.appBar}>
@@ -117,6 +122,15 @@ export const AppBar = React.memo(
         </NavigationBar>
         <Toolbar variant="dense" className={classes.toolbar}>
           <Typography variant="caption">Powered by OpenRMF</Typography>
+          {/* TODO: Hiding until we have a better theme */}
+          {/* <IconButton
+            id="show-settings-btn"
+            aria-label="settings"
+            color="inherit"
+            onClick={() => setShowSettings(true)}
+          >
+            <SettingsIcon />
+          </IconButton> */}
           {profile && (
             <>
               <IconButton

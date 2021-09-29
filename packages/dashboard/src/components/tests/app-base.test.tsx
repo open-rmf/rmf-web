@@ -1,18 +1,9 @@
-import { ThemeProvider } from '@material-ui/core';
-import { render as render_, waitForElementToBeRemoved } from '@testing-library/react';
+import { waitForElementToBeRemoved } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { MemoryRouter } from 'react-router';
 import { AppBase } from '../app-base';
 import { AppControllerContext } from '../app-contexts';
-import { theme } from '../theme';
-
-const render = (children: React.ReactNode) =>
-  render_(
-    <MemoryRouter>
-      <ThemeProvider theme={theme}>{children}</ThemeProvider>
-    </MemoryRouter>,
-  );
+import { render } from '../tests/test-utils';
 
 test('can show and hide settings', async () => {
   const TestComponent = () => {

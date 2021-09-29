@@ -3,6 +3,7 @@ import React from 'react';
 import { makeDefinedTask } from '../tasks/test-data.spec';
 import { RobotInfo, RobotInfoProps } from './robot-info';
 import { makeRobot } from './test-utils.spec';
+import { Paper } from '@material-ui/core';
 
 export default {
   title: 'Robots/Info',
@@ -10,7 +11,11 @@ export default {
 } as Meta;
 
 export const Info: Story<RobotInfoProps> = (args) => {
-  return <RobotInfo {...args}></RobotInfo>;
+  return (
+    <Paper style={{ padding: '1rem' }}>
+      <RobotInfo {...args}></RobotInfo>
+    </Paper>
+  );
 };
 
 const exampleRobot = makeRobot();
