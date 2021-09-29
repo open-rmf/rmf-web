@@ -1,6 +1,6 @@
-import { Grid, makeStyles, ThemeProvider } from '@material-ui/core';
+import { createMuiTheme, Grid, makeStyles, ThemeProvider } from '@material-ui/core';
 import React from 'react';
-import { ErrorSnackbar, GlobalDarkCss, rmfDark, rmfLight } from 'react-components';
+import { ErrorSnackbar, GlobalDarkCss, rmfDark } from 'react-components';
 import { loadSettings, saveSettings, Settings, ThemeMode } from '../settings';
 import {
   AppController,
@@ -13,6 +13,8 @@ import AppBar from './appbar';
 import HelpDrawer from './drawers/help-drawer';
 import HotKeysDialog from './drawers/hotkeys-dialog';
 import SettingsDrawer from './drawers/settings-drawer';
+
+const defaultTheme = createMuiTheme();
 
 const useStyles = makeStyles((theme) => ({
   appBase: {
@@ -46,7 +48,7 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
 
   const theme = React.useMemo(() => {
     const preferDarkMode = settings.themeMode === ThemeMode.Dark;
-    return preferDarkMode ? rmfDark : rmfLight;
+    return preferDarkMode ? rmfDark : defaultTheme;
   }, [settings.themeMode]);
 
   const tooltips = React.useMemo<Tooltips>(

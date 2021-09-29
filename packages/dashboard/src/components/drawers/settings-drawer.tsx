@@ -22,7 +22,6 @@ export interface SettingsDrawerProps extends DrawerProps {
   handleCloseButton: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-// Drawer is empty because there is no settings.
 export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactElement {
   const classes = useStyles();
   const { settings, onSettingsChange, handleCloseButton, ...otherProps } = props;

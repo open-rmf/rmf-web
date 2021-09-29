@@ -9,7 +9,6 @@ import {
   Typography,
 } from '@material-ui/core';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import SettingsIcon from '@material-ui/icons/Settings';
 import HelpIcon from '@material-ui/icons/Help';
 import React from 'react';
 import { HeaderBar, LogoButton, NavigationBar, Tooltip, useAsync } from 'react-components';
@@ -20,8 +19,8 @@ import {
   AppConfigContext,
   AppControllerContext,
   ResourcesContext,
-  TooltipsContext,
   SettingsContext,
+  TooltipsContext,
 } from './app-contexts';
 
 const useStyles = makeStyles((theme) =>
@@ -58,7 +57,9 @@ export interface AppBarProps {
 
 export const AppBar = React.memo(
   (): React.ReactElement => {
-    const { showHelp: setShowHelp, setShowSettings } = React.useContext(AppControllerContext);
+    const { showHelp: setShowHelp /* , setShowSettings */ } = React.useContext(
+      AppControllerContext,
+    );
     const history = useHistory();
     const location = useLocation();
     const tabValue = React.useMemo(() => locationToTabValue(location.pathname), [location]);
@@ -121,14 +122,15 @@ export const AppBar = React.memo(
         </NavigationBar>
         <Toolbar variant="dense" className={classes.toolbar}>
           <Typography variant="caption">Powered by OpenRMF</Typography>
-          <IconButton
+          {/* TODO: Hiding until we have a better theme */}
+          {/* <IconButton
             id="show-settings-btn"
             aria-label="settings"
             color="inherit"
             onClick={() => setShowSettings(true)}
           >
             <SettingsIcon />
-          </IconButton>
+          </IconButton> */}
           {profile && (
             <>
               <IconButton
