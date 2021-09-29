@@ -111,6 +111,7 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
               open={showErrorAlert}
               message={errorMessage}
               onClose={() => setShowErrorAlert(false)}
+              autoHideDuration={5000}
             />
           </Grid>
         </AppControllerContext.Provider>

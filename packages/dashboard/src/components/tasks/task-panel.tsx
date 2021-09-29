@@ -123,21 +123,20 @@ export function TaskPanel({
       if (!fileInputEl) {
         return [];
       }
+      let taskFiles: SubmitTask[];
       const listener = async () => {
         try {
           if (!fileInputEl.files || fileInputEl.files.length === 0) {
             return res([]);
           }
-          const tasksFiles = parseTasksFile(await fileInputEl.files[0].text());
-          if (Object.keys(tasksFiles.errors).length > 0) {
-            // show the first error only
-            const key = Object.keys(tasksFiles.errors)[0];
-            const error = tasksFiles.errors[key][0];
-            showErrorAlert(`Task${Number(key) + 1}. ${error}`);
+          try {
+            taskFiles = parseTasksFile(await fileInputEl.files[0].text());
+          } catch (err) {
+            showErrorAlert(err.message);
             return res([]);
           }
           // only submit tasks when all tasks are error free
-          return res(tasksFiles.submitTask);
+          return res(taskFiles);
         } finally {
           fileInputEl.removeEventListener('input', listener);
           fileInputEl.value = '';
