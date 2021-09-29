@@ -68,43 +68,48 @@ const DoorRow = React.memo(({ data, index, style }: DoorRowProps) => {
   const doorStatusClass = doorModeLabelClasses(doorState);
 
   return (
-    <div style={style}>
-      <TableRow arial-label={`${door.door.name}`}>
-        <TableCell>{door.door.name}</TableCell>
-        <TableCell
-          className={
-            getOpMode(doorState) === 'Offline' ? classes.doorLabelClosed : classes.doorLabelOpen
-          }
-        >
-          {getOpMode(doorState)}
-        </TableCell>
-        <TableCell>{door.level}</TableCell>
-        <TableCell>{doorTypeToString(door.door.door_type)}</TableCell>
-        <TableCell className={doorStatusClass}>{doorModeToString(doorState)}</TableCell>
-        <TableCell>
-          <ButtonGroup size="small">
-            <Button
-              aria-label={`${door.door.name}_open`}
-              onClick={(ev) =>
-                onDoorControlClick &&
-                onDoorControlClick(ev, door.door, RmfModels.DoorMode.MODE_OPEN)
-              }
-            >
-              Open
-            </Button>
-            <Button
-              aria-label={`${door.door.name}_close`}
-              onClick={(ev) =>
-                onDoorControlClick &&
-                onDoorControlClick(ev, door.door, RmfModels.DoorMode.MODE_CLOSED)
-              }
-            >
-              Close
-            </Button>
-          </ButtonGroup>
-        </TableCell>
-      </TableRow>
-    </div>
+    <TableRow arial-label={`${door.door.name}`} component="div" style={style}>
+      <TableCell component="div" variant="body">
+        {door.door.name}
+      </TableCell>
+      <TableCell
+        component="div"
+        variant="body"
+        className={
+          getOpMode(doorState) === 'Offline' ? classes.doorLabelClosed : classes.doorLabelOpen
+        }
+      >
+        {getOpMode(doorState)}
+      </TableCell>
+      <TableCell component="div" variant="body">
+        {door.level}
+      </TableCell>
+      <TableCell component="div">{doorTypeToString(door.door.door_type)}</TableCell>
+      <TableCell className={doorStatusClass} component="div" variant="body">
+        {doorModeToString(doorState)}
+      </TableCell>
+      <TableCell component="div" variant="body">
+        <ButtonGroup size="small">
+          <Button
+            aria-label={`${door.door.name}_open`}
+            onClick={(ev) =>
+              onDoorControlClick && onDoorControlClick(ev, door.door, RmfModels.DoorMode.MODE_OPEN)
+            }
+          >
+            Open
+          </Button>
+          <Button
+            aria-label={`${door.door.name}_close`}
+            onClick={(ev) =>
+              onDoorControlClick &&
+              onDoorControlClick(ev, door.door, RmfModels.DoorMode.MODE_CLOSED)
+            }
+          >
+            Close
+          </Button>
+        </ButtonGroup>
+      </TableCell>
+    </TableRow>
   );
 });
 
@@ -114,22 +119,34 @@ export const DoorTable = ({
   onDoorControlClick,
 }: DoorTableProps): JSX.Element => {
   return (
-    <Table stickyHeader size="small" aria-label="door-table">
-      <TableHead>
-        <TableRow>
-          <TableCell>Door Name</TableCell>
-          <TableCell>Op. Mode</TableCell>
-          <TableCell>Level</TableCell>
-          <TableCell>Door Type</TableCell>
-          <TableCell>Doors State</TableCell>
-          <TableCell>Door Control</TableCell>
+    <Table stickyHeader size="small" aria-label="door-table" component="div">
+      <TableHead component="div">
+        <TableRow component="div">
+          <TableCell component="div" variant="head">
+            Door Name
+          </TableCell>
+          <TableCell component="div" variant="head">
+            Op. Mode
+          </TableCell>
+          <TableCell component="div" variant="head">
+            Level
+          </TableCell>
+          <TableCell component="div" variant="head">
+            Door Type
+          </TableCell>
+          <TableCell component="div" variant="head">
+            Doors State
+          </TableCell>
+          <TableCell component="div" variant="head">
+            Door Control
+          </TableCell>
         </TableRow>
       </TableHead>
-      <TableBody>
+      <TableBody component="div">
         <FixedSizeList
-          itemSize={40}
+          itemSize={42}
           itemCount={doors.length}
-          height={250}
+          height={200}
           width={800}
           itemData={{
             doors,

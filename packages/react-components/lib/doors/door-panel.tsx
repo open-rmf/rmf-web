@@ -67,12 +67,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DoorCell = React.memo(
-  ({ data, columnIndex, rowIndex, style }: DoorInfoProps): JSX.Element => {
+  ({ data, columnIndex, rowIndex, style }: DoorInfoProps): JSX.Element | null => {
     const classes = useStyles();
     const columnCount = 3;
-    const door = data.doors[rowIndex * columnCount + columnIndex];
-    const doorState = data.doorStates[door.door.name];
-    const onDoorControlClick = data.onDoorControlClick;
+    let door: DoorData | undefined;
+    let doorState: RmfModels.DoorState | undefined;
+    let doorStatusClass: string | undefined;
+    let labelId: string | undefined;
 
     const doorModeLabelClasses = React.useCallback(
       (doorState?: RmfModels.DoorState): string => {
@@ -93,19 +94,23 @@ const DoorCell = React.memo(
       [classes],
     );
 
-    const doorStatusClass = doorModeLabelClasses(doorState);
-    const labelId = `door-cell-${door.door.name}`;
-
-    return (
+    if (rowIndex * columnCount + columnIndex <= data.doors.length - 1) {
+      door = data.doors[rowIndex * columnCount + columnIndex];
+      doorState = data.doorStates[door.door.name];
+      doorStatusClass = doorModeLabelClasses(doorState);
+      labelId = `door-cell-${door.door.name}`;
+    }
+    const onDoorControlClick = data.onDoorControlClick;
+    return door ? (
       <div style={style}>
         <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
           <Typography id={labelId} variant="body1" align="center" style={{ fontWeight: 'bold' }}>
-            {door.door.name}
+            {door?.door.name}
           </Typography>
           <Grid container direction="row" spacing={1}>
             <Grid item xs={6}>
               <Typography variant="body2" align="center">
-                {door.level}
+                {door?.level}
               </Typography>
             </Grid>
             <Grid item xs={6}>
@@ -115,12 +120,13 @@ const DoorCell = React.memo(
             </Grid>
           </Grid>
           <Typography variant="body1" align="center">
-            {doorTypeToString(door.door.door_type)}
+            {door && doorTypeToString(door.door.door_type)}
           </Typography>
           <div className={classes.buttonGroup}>
             <ButtonGroup size="small">
               <Button
                 onClick={(ev) =>
+                  door &&
                   onDoorControlClick &&
                   onDoorControlClick(ev, door.door, RmfModels.DoorMode.MODE_OPEN)
                 }
@@ -129,6 +135,7 @@ const DoorCell = React.memo(
               </Button>
               <Button
                 onClick={(ev) =>
+                  door &&
                   onDoorControlClick &&
                   onDoorControlClick(ev, door.door, RmfModels.DoorMode.MODE_CLOSED)
                 }
@@ -139,13 +146,12 @@ const DoorCell = React.memo(
           </div>
         </Paper>
       </div>
-    );
+    ) : null;
   },
 );
 
 export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelProps): JSX.Element {
   const classes = useStyles();
-
   const [isCellView, setIsCellView] = React.useState(true);
 
   return (
@@ -174,7 +180,7 @@ export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelPr
             columnCount={3}
             columnWidth={250}
             height={250}
-            rowCount={3}
+            rowCount={Math.ceil(doors.length / 3)}
             rowHeight={120}
             width={800}
             itemData={{

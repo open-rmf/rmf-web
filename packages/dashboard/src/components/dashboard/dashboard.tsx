@@ -55,7 +55,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const doors: DoorData[] = React.useMemo(() => {
     return buildingMap
       ? (buildingMap.levels as Level[]).flatMap((x) =>
-          (x.doors as RmfModels.Door[]).map((door) => ({ door, level: x.name })),
+          (x.doors as RmfModels.Door[]).map((door, i) => ({ door, level: x.name })),
         )
       : [];
   }, [buildingMap]);
