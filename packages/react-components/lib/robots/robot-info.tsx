@@ -117,6 +117,7 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
             variant="outlined"
             className={classes.button}
             disableRipple={true}
+            component="div"
           >
             {taskDetails ? taskDetails.assignedTasks : '-'}
           </Button>
