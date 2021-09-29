@@ -182,7 +182,7 @@ export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelPr
             height={250}
             rowCount={Math.ceil(doors.length / 3)}
             rowHeight={120}
-            width={800}
+            width={760}
             itemData={{
               doors,
               doorStates,
