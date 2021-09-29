@@ -1,16 +1,6 @@
-import { ThemeProvider } from '@material-ui/core';
-import { render as render_ } from '@testing-library/react';
 import React from 'react';
-import { MemoryRouter } from 'react-router';
-import { rmfLight as theme } from 'react-components';
+import { render } from '../../tests/test-utils';
 import { AdminDrawer } from '../drawer';
-
-const render = (component: React.ReactNode) =>
-  render_(
-    <ThemeProvider theme={theme}>
-      <MemoryRouter>{component}</MemoryRouter>
-    </ThemeProvider>,
-  );
 
 describe('AdminDrawer', () => {
   it('smoke test', () => {
