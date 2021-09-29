@@ -1,6 +1,6 @@
-import { createMuiTheme, Grid, makeStyles, ThemeProvider } from '@material-ui/core';
+import { createMuiTheme, Grid, makeStyles } from '@material-ui/core';
 import React from 'react';
-import { ErrorSnackbar, GlobalDarkCss, rmfDark } from 'react-components';
+import { ErrorSnackbar, rmfDark, ThemeProvider } from 'react-components';
 import { loadSettings, saveSettings, Settings, ThemeMode } from '../settings';
 import {
   AppController,
@@ -16,12 +16,12 @@ import SettingsDrawer from './drawers/settings-drawer';
 
 const defaultTheme = createMuiTheme();
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles({
   appBase: {
     width: '100%',
     height: '100%',
   },
-}));
+});
 
 /**
  * Contains various components that are essential to the app and provides contexts to control them.
@@ -83,7 +83,6 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
 
   return (
     <ThemeProvider theme={theme}>
-      {settings.themeMode === ThemeMode.Dark && <GlobalDarkCss />}
       <SettingsContext.Provider value={settings}>
         <TooltipsContext.Provider value={tooltips}>
           <AppControllerContext.Provider value={appController}>

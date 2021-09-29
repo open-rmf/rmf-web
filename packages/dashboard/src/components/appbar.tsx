@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) =>
       zIndex: theme.zIndex.drawer + 1,
     },
     logoBtn: {
-      width: theme.appBar.logoSize,
+      width: 180,
     },
     toolbar: {
       textAlign: 'right',
