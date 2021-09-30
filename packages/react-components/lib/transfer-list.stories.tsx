@@ -1,5 +1,6 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
+import { Paper } from '@material-ui/core';
 import { TransferList, TransferListProps } from './transfer-list';
 
 export default {
@@ -42,7 +43,7 @@ export const TransferListStory: Story<TransferListProps> = (args) => {
   const [leftItems, setLeftItems] = React.useState(['one', 'two', 'three', 'four']);
   const [rightItems, setRightItems] = React.useState(['five', 'six', 'seven', 'eight']);
   return (
-    <div style={{ width: '100%', height: 250 }}>
+    <Paper style={{ width: '100%', height: 250 }}>
       <TransferList
         {...args}
         leftItems={leftItems}
@@ -54,7 +55,7 @@ export const TransferListStory: Story<TransferListProps> = (args) => {
           setRightItems(right);
         }}
       ></TransferList>
-    </div>
+    </Paper>
   );
 };
 

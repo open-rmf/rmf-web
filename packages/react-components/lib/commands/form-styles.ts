@@ -1,10 +1,11 @@
 import { makeStyles } from '@material-ui/core';
 
-export const useFormStyles = makeStyles({
+export const useFormStyles = makeStyles((theme) => ({
   form: {
     display: 'flex',
     flexDirection: 'column',
     width: '100%',
+    backgroundColor: theme.palette.background.paper,
   },
   divForm: {
     padding: '0.46rem',
@@ -22,4 +23,4 @@ export const useFormStyles = makeStyles({
     paddingLeft: '0.5rem',
     width: '100%',
   },
-});
+}));

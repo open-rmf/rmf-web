@@ -3,10 +3,13 @@ import { makeStyles } from '@material-ui/core';
 import { SearchLogForm } from './search-log-form';
 import { LogRowsType, LogTable } from './log-table';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   table: {
     overflowY: 'scroll',
     paddingTop: '20px',
+  },
+  background: {
+    backgroundColor: theme.palette.background.paper,
   },
 }));
 
@@ -49,11 +52,11 @@ export const LogManagement = (props: LogManagementProps): React.ReactElement => 
   };
 
   return (
-    <>
+    <div className={classes.background}>
       <SearchLogForm logLabelValues={logLabels} search={searchLogs}></SearchLogForm>
       <div className={classes.table}>
         {logs.length !== 0 && <LogTable rows={logs} tableSize={'48vh'} addMoreRows={getMoreLogs} />}
       </div>
-    </>
+    </div>
   );
 };

@@ -28,6 +28,7 @@ export * from './stack-navigator';
 export * from './status-label';
 export * from './svg-text';
 export * from './tasks';
+export * from './themes';
 export * from './tooltip';
 export * from './transfer-list';
 export * from './trashbin-control-button-group';

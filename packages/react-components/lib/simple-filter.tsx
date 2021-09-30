@@ -12,9 +12,10 @@ export interface SimpleFilterProps {
   value: string;
 }
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   simpleFilter: {
     margin: '1rem',
+    borderColor: theme.palette.success.main,
   },
   filterBar: {
     width: '100%',
