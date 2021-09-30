@@ -1,9 +1,7 @@
-import { ThemeProvider } from '@material-ui/core';
-import { render, waitFor } from '@testing-library/react';
+import { waitFor } from '@testing-library/react';
 import { act } from '@testing-library/react-hooks';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { MemoryRouter } from 'react-router';
 import { StubAuthenticator, UserProfile, UserProfileContext } from 'rmf-auth';
 import { AppConfig } from '../../app-config';
 import ResourceManager from '../../managers/resource-manager';
@@ -16,21 +14,16 @@ import {
   ResourcesContext,
 } from '../app-contexts';
 import AppBar from '../appbar';
-import { theme } from '../theme';
+import { render } from '../tests/test-utils';
 import { makeMockAppController } from './mock-app-controller';
-import { mountAsUser } from './test-utils';
 
 describe('AppBar', () => {
   let appController: AppController;
   const Base = (props: React.PropsWithChildren<{}>) => {
     return (
-      <MemoryRouter>
-        <ThemeProvider theme={theme}>
-          <AppControllerContext.Provider value={appController}>
-            {props.children}
-          </AppControllerContext.Provider>
-        </ThemeProvider>
-      </MemoryRouter>
+      <AppControllerContext.Provider value={appController}>
+        {props.children}
+      </AppControllerContext.Provider>
     );
   };
 
@@ -77,10 +70,11 @@ describe('AppBar', () => {
       user: { username: 'test', is_admin: false, roles: [] },
       permissions: [],
     };
-    const root = mountAsUser(
-      profile,
+    const root = render(
       <Base>
-        <AppBar />
+        <UserProfileContext.Provider value={profile}>
+          <AppBar />
+        </UserProfileContext.Provider>
       </Base>,
     );
     expect(root.getByLabelText('user-btn')).toBeTruthy();
@@ -121,9 +115,10 @@ describe('AppBar', () => {
 
     const root = render(
       <ResourcesContext.Provider value={resourceMgr}>
-        <AppBar />
+        <Base>
+          <AppBar />
+        </Base>
       </ResourcesContext.Provider>,
-      { wrapper: Base },
     );
     await expect(
       waitFor(() => {

@@ -18,13 +18,12 @@ function makeRobotMarkerProps(
   props = props || {};
   const robot = makeRobot(robotState);
   return {
+    fleet: 'testFleet',
     name: robot.name,
     model: robot.model,
-    x: robot.location.x,
-    y: robot.location.y,
-    yaw: robot.location.yaw,
-    fleetName: 'testFleet',
     footprint: 1,
+    state: robot,
+    color: 'lightblue',
     ...props,
   };
 }
@@ -34,15 +33,15 @@ const robotMarkerProps: Record<string, RobotMarkerProps> = {
   'Really Really Loooonnnnnggggg Name': makeRobotMarkerProps({
     name: 'I have a really really loooonnnnnggggg name',
   }),
-  'In Conflict': makeRobotMarkerProps({ name: 'ConflictingRobot' }, { variant: 'inConflict' }),
+  'In Conflict': makeRobotMarkerProps({ name: 'ConflictingRobot' }, { inConflict: true }),
   'Name With Space': makeRobotMarkerProps({ name: 'I have spaces' }),
   'With Icon': makeRobotMarkerProps(
     { name: 'RobotWithIcon', model: 'fleetWithIcon' },
-    { fleetName: 'fleetWithIcon', iconPath: '/assets/tinyRobot.png' },
+    { fleet: 'fleetWithIcon', iconPath: '/assets/tiny-robot.png' },
   ),
   'With Icon, In Conflict': makeRobotMarkerProps(
     { name: 'RobotWithIcon', model: 'fleetWithIcon' },
-    { fleetName: 'fleetWithIcon', iconPath: '/assets/tinyRobot.png', variant: 'inConflict' },
+    { fleet: 'fleetWithIcon', iconPath: '/assets/tiny-robot.png', inConflict: true },
   ),
 };
 
